@@ -9,6 +9,7 @@ import {
   bool,
   Field,
   InfoCallout,
+  num,
   PluginPanelProps,
   SettingsSection,
   SitePluginPanelFrame,
@@ -173,6 +174,112 @@ export default function SiteDynamicPluginPanel({
               placeholder="972501234567"
             />
           </Field>
+          <Field label="הודעה התחלתית">
+            <TextInput
+              value={str(settings.message, "שלום, אשמח לפרטים")}
+              onChange={(v) => updateField("message", v)}
+            />
+          </Field>
+          <Toggle
+            label="הצגה גם במובייל"
+            checked={bool(settings.showOnMobile, true)}
+            onChange={(v) => updateField("showOnMobile", v)}
+          />
+        </SettingsSection>
+      ) : null}
+
+      {pluginKey === "announcement-bar" ? (
+        <SettingsSection title="תוכן הפס">
+          <Field label="הודעה">
+            <TextInput
+              value={str(settings.message)}
+              onChange={(v) => updateField("message", v)}
+              placeholder="משלוח חינם עד חמישי"
+            />
+          </Field>
+          <Field label="קישור (אופציונלי)">
+            <TextInput
+              value={str(settings.linkUrl)}
+              onChange={(v) => updateField("linkUrl", v)}
+              placeholder="https://"
+            />
+          </Field>
+          <Field label="טקסט קישור">
+            <TextInput
+              value={str(settings.linkLabel)}
+              onChange={(v) => updateField("linkLabel", v)}
+              placeholder="לפרטים"
+            />
+          </Field>
+          <Toggle
+            label="ניתן לסגירה"
+            checked={bool(settings.dismissible, true)}
+            onChange={(v) => updateField("dismissible", v)}
+          />
+        </SettingsSection>
+      ) : null}
+
+      {pluginKey === "cookie-banner" ? (
+        <SettingsSection title="באנר עוגיות">
+          <Field label="הודעה">
+            <TextInput
+              value={str(settings.message)}
+              onChange={(v) => updateField("message", v)}
+            />
+          </Field>
+          <Field label="טקסט אישור">
+            <TextInput
+              value={str(settings.acceptLabel, "אני מסכים/ה")}
+              onChange={(v) => updateField("acceptLabel", v)}
+            />
+          </Field>
+          <Field label="טקסט דחייה">
+            <TextInput
+              value={str(settings.declineLabel, "דחייה")}
+              onChange={(v) => updateField("declineLabel", v)}
+            />
+          </Field>
+          <Field label="קישור למדיניות פרטיות">
+            <TextInput
+              value={str(settings.policyUrl, "/privacy")}
+              onChange={(v) => updateField("policyUrl", v)}
+            />
+          </Field>
+        </SettingsSection>
+      ) : null}
+
+      {pluginKey === "exit-popup" ? (
+        <SettingsSection title="פופאפ לידים">
+          <Field label="כותרת">
+            <TextInput
+              value={str(settings.headline)}
+              onChange={(v) => updateField("headline", v)}
+            />
+          </Field>
+          <Field label="תת־כותרת">
+            <TextInput
+              value={str(settings.subheadline)}
+              onChange={(v) => updateField("subheadline", v)}
+            />
+          </Field>
+          <Field label="טקסט כפתור">
+            <TextInput
+              value={str(settings.ctaLabel)}
+              onChange={(v) => updateField("ctaLabel", v)}
+            />
+          </Field>
+          <Field label="השהייה בשניות (אם רלוונטי)">
+            <TextInput
+              value={String(num(settings.delaySeconds, 25))}
+              onChange={(v) => updateField("delaySeconds", Number(v) || 25)}
+              type="number"
+            />
+          </Field>
+          <Toggle
+            label="טלפון חובה"
+            checked={bool(settings.requirePhone, true)}
+            onChange={(v) => updateField("requirePhone", v)}
+          />
         </SettingsSection>
       ) : null}
 

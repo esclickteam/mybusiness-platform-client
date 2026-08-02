@@ -7,16 +7,28 @@ import BenefitsWheelWidget from "../../../site-plugins/benefits-wheel/BenefitsWh
 import SmartSearchWidget from "../../../site-plugins/smart-search/SmartSearchWidget";
 import SmartBotWidget from "../../../site-plugins/smart-bot/SmartBotWidget";
 import AccessibilityWidget from "../../../site-plugins/accessibility/AccessibilityWidget";
+import WhatsAppFloatWidget from "../../../site-plugins/whatsapp-float/WhatsAppFloatWidget";
+import AnnouncementBarWidget from "../../../site-plugins/announcement-bar/AnnouncementBarWidget";
+import CookieBannerWidget from "../../../site-plugins/cookie-banner/CookieBannerWidget";
+import ExitPopupWidget from "../../../site-plugins/exit-popup/ExitPopupWidget";
 import type { BenefitsWheelSettings } from "../../../site-plugins/benefits-wheel/benefitsWheelUtils";
 import type { SmartSearchSettings } from "../../../site-plugins/smart-search/smartSearchUtils";
 import type { SmartBotSettings } from "../../../site-plugins/smart-bot/smartBotUtils";
 import type { AccessibilitySettings } from "../../../site-plugins/accessibility/accessibilityUtils";
+import type { WhatsAppFloatSettings } from "../../../site-plugins/whatsapp-float/whatsappFloatUtils";
+import type { AnnouncementBarSettings } from "../../../site-plugins/announcement-bar/announcementBarUtils";
+import type { CookieBannerSettings } from "../../../site-plugins/cookie-banner/cookieBannerUtils";
+import type { ExitPopupSettings } from "../../../site-plugins/exit-popup/exitPopupUtils";
 import { mergeSmartSearchSettings } from "../../../site-plugins/smart-search/smartSearchUtils";
 import {
   mergeSmartBotSettings,
   removeSmartBotPlaceholderMarkers,
 } from "../../../site-plugins/smart-bot/smartBotUtils";
 import { mergeAccessibilitySettings } from "../../../site-plugins/accessibility/accessibilityUtils";
+import { mergeWhatsAppFloatSettings } from "../../../site-plugins/whatsapp-float/whatsappFloatUtils";
+import { mergeAnnouncementBarSettings } from "../../../site-plugins/announcement-bar/announcementBarUtils";
+import { mergeCookieBannerSettings } from "../../../site-plugins/cookie-banner/cookieBannerUtils";
+import { mergeExitPopupSettings } from "../../../site-plugins/exit-popup/exitPopupUtils";
 
 type EditorPluginOverlaysProps = {
   siteId?: string;
@@ -26,6 +38,7 @@ type EditorPluginOverlaysProps = {
 
 export default function EditorPluginOverlays({
   siteId,
+  siteSlug = "",
   refreshKey = 0,
 }: EditorPluginOverlaysProps) {
   const [wheelSettings, setWheelSettings] = useState<BenefitsWheelSettings | null>(null);
@@ -36,10 +49,19 @@ export default function EditorPluginOverlays({
   const [botEnabled, setBotEnabled] = useState(false);
   const [a11ySettings, setA11ySettings] = useState<AccessibilitySettings | null>(null);
   const [a11yEnabled, setA11yEnabled] = useState(false);
+  const [whatsappSettings, setWhatsappSettings] = useState<WhatsAppFloatSettings | null>(null);
+  const [whatsappEnabled, setWhatsappEnabled] = useState(false);
+  const [announcementSettings, setAnnouncementSettings] =
+    useState<AnnouncementBarSettings | null>(null);
+  const [announcementEnabled, setAnnouncementEnabled] = useState(false);
+  const [cookieSettings, setCookieSettings] = useState<CookieBannerSettings | null>(null);
+  const [cookieEnabled, setCookieEnabled] = useState(false);
+  const [exitSettings, setExitSettings] = useState<ExitPopupSettings | null>(null);
+  const [exitEnabled, setExitEnabled] = useState(false);
   const [pages, setPages] = useState<Array<Record<string, unknown>>>([]);
+  const [slug, setSlug] = useState(siteSlug);
 
   useEffect(() => {
-    // Remove obsolete dashed placeholder boxes left from older widget inserts.
     const clean = () => {
       removeSmartBotPlaceholderMarkers(document);
       document.querySelectorAll("iframe").forEach((frame) => {
@@ -72,6 +94,10 @@ export default function EditorPluginOverlays({
         const searchOn = plugins.enabledPlugins.includes("smart-search");
         const botOn = plugins.enabledPlugins.includes("smart-bot");
         const a11yOn = plugins.enabledPlugins.includes("accessibility");
+        const whatsappOn = plugins.enabledPlugins.includes("whatsapp-float");
+        const announcementOn = plugins.enabledPlugins.includes("announcement-bar");
+        const cookieOn = plugins.enabledPlugins.includes("cookie-banner");
+        const exitOn = plugins.enabledPlugins.includes("exit-popup");
 
         if (cancelled) return;
 
@@ -79,43 +105,78 @@ export default function EditorPluginOverlays({
         setSearchEnabled(searchOn);
         setBotEnabled(botOn);
         setA11yEnabled(a11yOn);
+        setWhatsappEnabled(whatsappOn);
+        setAnnouncementEnabled(announcementOn);
+        setCookieEnabled(cookieOn);
+        setExitEnabled(exitOn);
         setPages(Array.isArray(site?.pages) ? site.pages : []);
+        setSlug(String(site?.slug || siteSlug || ""));
 
         const { getSitePluginSettings } = await import(
           "../../../../api/sitePluginSettingsApi"
         );
 
-        if (!wheelOn) {
-          setWheelSettings(null);
-        } else {
+        if (!wheelOn) setWheelSettings(null);
+        else {
           const settings = await getSitePluginSettings(siteId, "benefits-wheel");
           if (!cancelled) setWheelSettings(settings as BenefitsWheelSettings);
         }
 
-        if (!searchOn) {
-          setSearchSettings(null);
-        } else {
+        if (!searchOn) setSearchSettings(null);
+        else {
           const settings = await getSitePluginSettings(siteId, "smart-search");
           if (!cancelled) {
             setSearchSettings(mergeSmartSearchSettings(settings as SmartSearchSettings));
           }
         }
 
-        if (!botOn) {
-          setBotSettings(null);
-        } else {
+        if (!botOn) setBotSettings(null);
+        else {
           const settings = await getSitePluginSettings(siteId, "smart-bot");
           if (!cancelled) {
             setBotSettings(mergeSmartBotSettings(settings as SmartBotSettings));
           }
         }
 
-        if (!a11yOn) {
-          setA11ySettings(null);
-        } else {
+        if (!a11yOn) setA11ySettings(null);
+        else {
           const settings = await getSitePluginSettings(siteId, "accessibility");
           if (!cancelled) {
             setA11ySettings(mergeAccessibilitySettings(settings as AccessibilitySettings));
+          }
+        }
+
+        if (!whatsappOn) setWhatsappSettings(null);
+        else {
+          const settings = await getSitePluginSettings(siteId, "whatsapp-float");
+          if (!cancelled) {
+            setWhatsappSettings(mergeWhatsAppFloatSettings(settings as WhatsAppFloatSettings));
+          }
+        }
+
+        if (!announcementOn) setAnnouncementSettings(null);
+        else {
+          const settings = await getSitePluginSettings(siteId, "announcement-bar");
+          if (!cancelled) {
+            setAnnouncementSettings(
+              mergeAnnouncementBarSettings(settings as AnnouncementBarSettings)
+            );
+          }
+        }
+
+        if (!cookieOn) setCookieSettings(null);
+        else {
+          const settings = await getSitePluginSettings(siteId, "cookie-banner");
+          if (!cancelled) {
+            setCookieSettings(mergeCookieBannerSettings(settings as CookieBannerSettings));
+          }
+        }
+
+        if (!exitOn) setExitSettings(null);
+        else {
+          const settings = await getSitePluginSettings(siteId, "exit-popup");
+          if (!cancelled) {
+            setExitSettings(mergeExitPopupSettings(settings as ExitPopupSettings));
           }
         }
       } catch {
@@ -128,6 +189,14 @@ export default function EditorPluginOverlays({
           setBotSettings(null);
           setA11yEnabled(false);
           setA11ySettings(null);
+          setWhatsappEnabled(false);
+          setWhatsappSettings(null);
+          setAnnouncementEnabled(false);
+          setAnnouncementSettings(null);
+          setCookieEnabled(false);
+          setCookieSettings(null);
+          setExitEnabled(false);
+          setExitSettings(null);
         }
       }
     })();
@@ -135,7 +204,7 @@ export default function EditorPluginOverlays({
     return () => {
       cancelled = true;
     };
-  }, [siteId, refreshKey]);
+  }, [siteId, siteSlug, refreshKey]);
 
   const handleWheelPositionChange = useCallback(
     async (pos: { x: number; y: number }) => {
@@ -199,6 +268,8 @@ export default function EditorPluginOverlays({
     }
   }, [siteId]);
 
+  const siteKey = siteId || "editor";
+
   return (
     <>
       {siteId && wheelEnabled && wheelSettings && wheelSettings.isActive !== false ? (
@@ -230,8 +301,39 @@ export default function EditorPluginOverlays({
 
       {a11yEnabled && a11ySettings && a11ySettings.isActive !== false ? (
         <AccessibilityWidget
-          siteKey={siteId || "editor"}
+          siteKey={siteKey}
           settings={a11ySettings}
+          mode="editor"
+        />
+      ) : null}
+
+      {whatsappEnabled && whatsappSettings && whatsappSettings.isActive !== false ? (
+        <WhatsAppFloatWidget settings={whatsappSettings} mode="editor" />
+      ) : null}
+
+      {announcementEnabled &&
+      announcementSettings &&
+      announcementSettings.isActive !== false ? (
+        <AnnouncementBarWidget
+          siteKey={siteKey}
+          settings={announcementSettings}
+          mode="editor"
+        />
+      ) : null}
+
+      {cookieEnabled && cookieSettings && cookieSettings.isActive !== false ? (
+        <CookieBannerWidget
+          siteKey={siteKey}
+          settings={cookieSettings}
+          mode="editor"
+        />
+      ) : null}
+
+      {exitEnabled && exitSettings && exitSettings.isActive !== false ? (
+        <ExitPopupWidget
+          siteKey={siteKey}
+          slug={slug}
+          settings={exitSettings}
           mode="editor"
         />
       ) : null}

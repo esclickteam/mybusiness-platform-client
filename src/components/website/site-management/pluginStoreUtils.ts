@@ -27,15 +27,18 @@ export const CATEGORY_GROUPS: Array<{
     categories: ["commerce", "engagement"],
   },
   {
+    title: "תזמון ושיווק",
+    categories: ["scheduling", "marketing", "conversion"],
+  },
+  {
     title: "AI וניווט",
     categories: ["ai", "navigation"],
   },
   {
-    title: "נגישות",
-    categories: ["accessibility"],
+    title: "כלים ונגישות",
+    categories: ["utility", "accessibility"],
   },
 ];
-
 export type SortOption = "relevant" | "name-asc" | "name-desc" | "price-asc";
 export type InstallFilter = "all" | "installed" | "available";
 

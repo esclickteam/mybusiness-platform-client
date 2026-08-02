@@ -5,7 +5,9 @@ import {
   CalendarDays,
   CircleDot,
   Compass,
+  Cookie,
   CreditCard,
+  DoorOpen,
   FileText,
   Flame,
   FormInput,
@@ -14,6 +16,8 @@ import {
   LayoutGrid,
   LogIn,
   Mail,
+  Megaphone,
+  MessageCircle,
   Puzzle,
   Route,
   ShoppingBag,
@@ -90,6 +94,10 @@ export const PLUGIN_SECTION_MAP: Record<string, SitePanelSection> = {
   "sales-agent": "smart-bot",
   "service-finder": "service-finder",
   accessibility: "accessibility",
+  "whatsapp-float": "whatsapp-float",
+  "exit-popup": "exit-popup",
+  "announcement-bar": "announcement-bar",
+  "cookie-banner": "cookie-banner",
 };
 
 export const PLUGIN_ACCENTS: Record<string, string> = {
@@ -109,6 +117,10 @@ export const PLUGIN_ACCENTS: Record<string, string> = {
   "smart-bot": "#0F766E",
   "service-finder": "#2563EB",
   accessibility: "#7C3AED",
+  "whatsapp-float": "#22C55E",
+  "exit-popup": "#EF4444",
+  "announcement-bar": "#6366F1",
+  "cookie-banner": "#0F766E",
 };
 
 export const SECTION_META: Record<
@@ -203,6 +215,26 @@ export const SECTION_META: Record<
     description: "כלי נגישות לאתר",
     pluginKey: "accessibility",
   },
+  "whatsapp-float": {
+    label: "WhatsApp צף",
+    description: "כפתור שיחה ב-WhatsApp",
+    pluginKey: "whatsapp-float",
+  },
+  "exit-popup": {
+    label: "פופאפ לידים",
+    description: "חלון קופץ עם טופס לידים",
+    pluginKey: "exit-popup",
+  },
+  "announcement-bar": {
+    label: "פס הודעות",
+    description: "הודעה קבועה בראש האתר",
+    pluginKey: "announcement-bar",
+  },
+  "cookie-banner": {
+    label: "באנר עוגיות",
+    description: "הסכמה לעוגיות ומדיניות פרטיות",
+    pluginKey: "cookie-banner",
+  },
 };
 
 export function getPluginAccent(key: string, fallback?: string) {
@@ -248,6 +280,14 @@ export function getPluginIcon(key: string) {
       return Compass;
     case "accessibility":
       return Accessibility;
+    case "whatsapp-float":
+      return MessageCircle;
+    case "exit-popup":
+      return DoorOpen;
+    case "announcement-bar":
+      return Megaphone;
+    case "cookie-banner":
+      return Cookie;
     default:
       return Puzzle;
   }
