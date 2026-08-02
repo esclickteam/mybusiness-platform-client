@@ -755,12 +755,6 @@ export default function VisualEditorShell({
           />
         ) : null}
 
-        <EditorPluginOverlays
-          siteId={siteId}
-          siteSlug={siteSlug}
-          refreshKey={overlayRefreshKey}
-        />
-
         {!isPreviewMode ? (
           <VisualSitePagesPanel
             open={sidePanelMode === "pages"}
@@ -874,6 +868,12 @@ export default function VisualEditorShell({
           }}
         />
       </main>
+
+      <EditorPluginOverlays
+        siteId={siteId}
+        siteSlug={siteSlug}
+        refreshKey={overlayRefreshKey}
+      />
 
       <ConnectDomainModal
         open={connectDomainOpen}

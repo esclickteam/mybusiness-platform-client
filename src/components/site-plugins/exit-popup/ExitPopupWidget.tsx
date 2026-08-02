@@ -104,6 +104,7 @@ export default function ExitPopupWidget({
     <div
       dir="rtl"
       data-bizuply-widget="exit-popup"
+      data-bizuply-plugin-runtime="true"
       className="fixed inset-0 z-[2147483200] flex items-center justify-center bg-slate-900/50 p-4"
       role="dialog"
       aria-modal="true"

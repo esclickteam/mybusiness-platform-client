@@ -1,4 +1,5 @@
 import React from "react";
+import { createPortal } from "react-dom";
 import { MessageCircle } from "lucide-react";
 
 import {
@@ -26,26 +27,30 @@ export default function WhatsAppFloatWidget({
   const hideOnMobile = cfg.showOnMobile === false;
   const missingPhone = !href;
 
-  return (
+  const ui = (
     <div
-      className={`fixed z-[2147483000] ${hideOnMobile ? "hidden sm:block" : "block"}`}
-      style={{ bottom: 24, left: 24 }}
+      className={`${hideOnMobile ? "hidden sm:block" : "block"}`}
+      style={{
+        position: "fixed",
+        zIndex: 2147483000,
+        bottom: 24,
+        left: 24,
+      }}
       data-bizuply-widget="whatsapp-float"
+      data-bizuply-plugin-runtime="true"
     >
       <a
         href={href || undefined}
         target="_blank"
         rel="noopener noreferrer"
         onClick={(e) => {
-          if (!href) {
-            e.preventDefault();
-            return;
-          }
-          // Allow opening WhatsApp in editor for a quick sanity check.
+          if (!href) e.preventDefault();
         }}
         aria-label="פתחו שיחה ב-WhatsApp"
         className={`relative flex h-14 w-14 items-center justify-center rounded-full text-white shadow-lg transition hover:scale-105 ${
-          missingPhone ? "bg-slate-400 cursor-not-allowed" : "bg-[#25D366] hover:bg-[#1ebe57]"
+          missingPhone
+            ? "cursor-not-allowed bg-slate-400"
+            : "bg-[#25D366] hover:bg-[#1ebe57]"
         }`}
         title={
           missingPhone
@@ -60,6 +65,14 @@ export default function WhatsAppFloatWidget({
           </span>
         ) : null}
       </a>
+      {mode === "editor" ? (
+        <div className="mt-1 rounded-md bg-slate-900/80 px-2 py-0.5 text-center text-[10px] font-bold text-white">
+          WhatsApp
+        </div>
+      ) : null}
     </div>
   );
+
+  if (typeof document === "undefined") return ui;
+  return createPortal(ui, document.body);
 }

@@ -96,8 +96,23 @@ export default function SiteDynamicPluginPanel({
       }
       sidebar={
         <InfoCallout>
-          <strong>חיבור לעמודים:</strong> לאחר שמירה, הוסיפו את התוסף דרך{" "}
-          <strong>עורך האתר → הוספה → תוספים</strong>.
+          {pluginKey === "whatsapp-float" ||
+          pluginKey === "announcement-bar" ||
+          pluginKey === "cookie-banner" ||
+          pluginKey === "exit-popup" ||
+          pluginKey === "smart-bot" ||
+          pluginKey === "benefits-wheel" ||
+          pluginKey === "accessibility" ? (
+            <>
+              <strong>תוסף צף:</strong> אחרי שמירה הוא מופיע אוטומטית באתר
+              ובעורך — אין צורך להוסיף רכיב לעמוד.
+            </>
+          ) : (
+            <>
+              <strong>חיבור לעמודים:</strong> לאחר שמירה, הוסיפו את התוסף דרך{" "}
+              <strong>עורך האתר → הוספה → תוספים</strong>.
+            </>
+          )}
         </InfoCallout>
       }
     >

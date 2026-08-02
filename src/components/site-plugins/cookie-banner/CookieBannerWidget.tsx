@@ -57,6 +57,7 @@ export default function CookieBannerWidget({
     <div
       dir="rtl"
       data-bizuply-widget="cookie-banner"
+      data-bizuply-plugin-runtime="true"
       className="fixed inset-x-0 z-[2147483100] px-3 sm:px-4"
       style={positionStyle}
     >

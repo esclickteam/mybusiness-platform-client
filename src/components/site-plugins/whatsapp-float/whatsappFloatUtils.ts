@@ -51,7 +51,10 @@ const OVERLAY_PLACEHOLDER_KEYS = [
   "accessibility",
 ];
 
-/** Remove obsolete in-page placeholder boxes for floating overlay plugins. */
+/**
+ * Remove obsolete in-page placeholder boxes for floating overlay plugins.
+ * Never touch live overlay widgets (runtime / position:fixed).
+ */
 export function removeOverlayPluginPlaceholders(root?: ParentNode | null) {
   const scope = root || (typeof document !== "undefined" ? document : null);
   if (!scope) return 0;
@@ -63,7 +66,18 @@ export function removeOverlayPluginPlaceholders(root?: ParentNode | null) {
 
   const markers = Array.from(scope.querySelectorAll<HTMLElement>(selector));
   let removed = 0;
+
   markers.forEach((marker) => {
+    if (marker.getAttribute("data-bizuply-plugin-runtime") === "true") return;
+    if (marker.closest('[data-bizuply-plugin-runtime="true"]')) return;
+
+    try {
+      const style = window.getComputedStyle(marker);
+      if (style.position === "fixed") return;
+    } catch {
+      // ignore
+    }
+
     const shell = marker.closest<HTMLElement>(
       '[data-bizuply-plugin-widget="true"], [data-visual-inserted-element="true"]'
     );
@@ -71,5 +85,6 @@ export function removeOverlayPluginPlaceholders(root?: ParentNode | null) {
     target.remove();
     removed += 1;
   });
+
   return removed;
 }

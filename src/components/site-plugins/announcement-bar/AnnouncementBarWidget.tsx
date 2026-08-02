@@ -43,6 +43,7 @@ export default function AnnouncementBarWidget({
     <div
       dir="rtl"
       data-bizuply-widget="announcement-bar"
+      data-bizuply-plugin-runtime="true"
       className="fixed top-0 inset-x-0 z-[2147482900] w-full"
       style={{
         background: cfg.backgroundColor || "#0F172A",
