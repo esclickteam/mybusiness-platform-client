@@ -9,6 +9,7 @@ import {
   useNodesState,
   useReactFlow,
   ReactFlowProvider,
+  MarkerType,
   type Connection,
   type Edge,
   type Node,
@@ -29,7 +30,10 @@ import {
   saveAutomationWorkflow,
   type AutomationWorkflow,
 } from "../../../../api/automationWorkflowApi";
-import { listWhatsAppTemplates, type WhatsAppTemplate } from "../../../../api/whatsappApi";
+import {
+  listWhatsAppTemplates,
+  type WhatsAppTemplate,
+} from "../../../../api/whatsappApi";
 import { automationNodeTypes } from "./FlowNodes";
 import {
   ACTION_OPTIONS,
@@ -38,6 +42,8 @@ import {
   PALETTE,
   TRIGGER_OPTIONS,
   TYPE_META,
+  clampRouteCount,
+  ensureRouterPaths,
   type PaletteItem,
 } from "./automationFlowTypes";
 
@@ -47,6 +53,43 @@ type Props = {
   onBack: () => void;
   onSaved: (workflow: AutomationWorkflow) => void;
 };
+
+function edgeLabelFromHandle(handle?: string | null) {
+  if (!handle) return "";
+  if (handle === "yes") return "כן";
+  if (handle === "no") return "לא";
+  if (handle.startsWith("route_")) return `ניתוב ${handle.split("_")[1]}`;
+  if (handle.startsWith("path_")) return `מסלול ${handle.split("_")[1]}`;
+  return "";
+}
+
+function styleEdge(edge: Partial<Edge>): Edge {
+  const handle = edge.sourceHandle || null;
+  const label = edge.label || edgeLabelFromHandle(handle);
+  const isYes = handle === "yes";
+  const isNo = handle === "no";
+  const stroke = isYes ? "#059669" : isNo ? "#dc2626" : "#64748b";
+  return {
+    id: String(edge.id),
+    source: String(edge.source),
+    target: String(edge.target),
+    sourceHandle: edge.sourceHandle || undefined,
+    targetHandle: edge.targetHandle || undefined,
+    label,
+    animated: true,
+    style: { stroke, strokeWidth: 2.25 },
+    labelStyle: { fill: "#334155", fontWeight: 800, fontSize: 11 },
+    labelBgStyle: { fill: "#fff", fillOpacity: 0.92 },
+    labelBgPadding: [6, 4] as [number, number],
+    labelBgBorderRadius: 8,
+    markerEnd: {
+      type: MarkerType.ArrowClosed,
+      width: 16,
+      height: 16,
+      color: stroke,
+    },
+  };
+}
 
 function toFlowNodes(workflow: AutomationWorkflow): Node[] {
   return (workflow.nodes || []).map((n) => ({
@@ -58,16 +101,16 @@ function toFlowNodes(workflow: AutomationWorkflow): Node[] {
 }
 
 function toFlowEdges(workflow: AutomationWorkflow): Edge[] {
-  return (workflow.edges || []).map((e) => ({
-    id: e.id,
-    source: e.source,
-    target: e.target,
-    sourceHandle: e.sourceHandle || undefined,
-    targetHandle: e.targetHandle || undefined,
-    label: e.label || undefined,
-    animated: true,
-    style: { stroke: "#94a3b8", strokeWidth: 2 },
-  }));
+  return (workflow.edges || []).map((e) =>
+    styleEdge({
+      id: e.id,
+      source: e.source,
+      target: e.target,
+      sourceHandle: e.sourceHandle || undefined,
+      targetHandle: e.targetHandle || undefined,
+      label: e.label || undefined,
+    })
+  );
 }
 
 function newId(prefix: string) {
@@ -103,16 +146,22 @@ function EditorInner({ businessId, workflow, onBack, onSaved }: Props) {
     [nodes, selectedId]
   );
 
+  const groupedPalette = useMemo(() => {
+    return {
+      triggers: PALETTE.filter((p) => p.group === "triggers"),
+      flow: PALETTE.filter((p) => p.group === "flow"),
+      actions: PALETTE.filter((p) => p.group === "actions"),
+    };
+  }, []);
+
   const onConnect: OnConnect = useCallback(
     (connection: Connection) => {
       setEdges((eds) =>
         addEdge(
-          {
+          styleEdge({
             ...connection,
             id: newId("e"),
-            animated: true,
-            style: { stroke: "#94a3b8", strokeWidth: 2 },
-          },
+          }),
           eds
         )
       );
@@ -190,7 +239,8 @@ function EditorInner({ businessId, workflow, onBack, onSaved }: Props) {
         enabled: nextEnabled,
         nodes: nodes.map((n) => ({
           id: n.id,
-          type: (n.type || "action") as AutomationWorkflow["nodes"][number]["type"],
+          type: (n.type ||
+            "action") as AutomationWorkflow["nodes"][number]["type"],
           position: n.position,
           data: (n.data || {}) as Record<string, unknown>,
         })),
@@ -220,26 +270,39 @@ function EditorInner({ businessId, workflow, onBack, onSaved }: Props) {
     }
   };
 
+  const renderPaletteGroup = (title: string, items: PaletteItem[]) => (
+    <div className="af-palette__group" key={title}>
+      <div className="af-palette__title">{title}</div>
+      {items.map((item) => (
+        <button
+          key={`${item.type}-${item.key}`}
+          type="button"
+          className="af-palette__item"
+          draggable
+          onDragStart={(e) => onDragStart(e, item)}
+          style={{ borderInlineStart: `4px solid ${item.color}` }}
+        >
+          <strong>{item.label}</strong>
+          <span>{item.description}</span>
+        </button>
+      ))}
+    </div>
+  );
+
+  const selectedRouter = selectedNode?.type === "router"
+    ? ensureRouterPaths((selectedNode.data || {}) as Record<string, unknown>)
+    : null;
+
   return (
     <div className="af-editor" dir="rtl">
       <aside className="af-palette">
-        <div className="af-palette__title">מודולים</div>
-        <p style={{ margin: 0, fontSize: 12, fontWeight: 700, color: "#64748b" }}>
-          גררו לבד הציור כמו ב־Make / n8n
-        </p>
-        {PALETTE.map((item) => (
-          <button
-            key={`${item.type}-${item.key}`}
-            type="button"
-            className="af-palette__item"
-            draggable
-            onDragStart={(e) => onDragStart(e, item)}
-            style={{ borderInlineStart: `4px solid ${item.color}` }}
-          >
-            <strong>{item.label}</strong>
-            <span>{item.description}</span>
-          </button>
-        ))}
+        <div className="af-palette__head">
+          <strong>מודולים</strong>
+          <p>גררו לבד · חברו כמה ניתובים מכל טריגר</p>
+        </div>
+        {renderPaletteGroup("טריגרים", groupedPalette.triggers)}
+        {renderPaletteGroup("זרימה וניתוב", groupedPalette.flow)}
+        {renderPaletteGroup("פעולות", groupedPalette.actions)}
       </aside>
 
       <div className="af-canvas-wrap">
@@ -251,8 +314,7 @@ function EditorInner({ businessId, workflow, onBack, onSaved }: Props) {
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
-            className="af-toolbar__btn"
-            style={{ minWidth: 180, fontWeight: 900 }}
+            className="af-toolbar__btn af-toolbar__name"
             aria-label="שם האוטומציה"
           />
           <button
@@ -261,7 +323,11 @@ function EditorInner({ businessId, workflow, onBack, onSaved }: Props) {
             disabled={saving}
             onClick={() => handleSave()}
           >
-            {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
+            {saving ? (
+              <Loader2 size={14} className="animate-spin" />
+            ) : (
+              <Save size={14} />
+            )}
             שמירה
           </button>
           <button
@@ -290,11 +356,16 @@ function EditorInner({ businessId, workflow, onBack, onSaved }: Props) {
           fitView
           deleteKeyCode={["Backspace", "Delete"]}
           proOptions={{ hideAttribution: true }}
+          connectionLineStyle={{ stroke: "#7c3aed", strokeWidth: 2 }}
+          defaultEdgeOptions={{
+            animated: true,
+            markerEnd: { type: MarkerType.ArrowClosed },
+          }}
         >
           <Background
             variant={BackgroundVariant.Dots}
-            gap={22}
-            size={1.4}
+            gap={20}
+            size={1.5}
             color="#94a3b8"
           />
           <Controls position="bottom-left" />
@@ -317,17 +388,23 @@ function EditorInner({ businessId, workflow, onBack, onSaved }: Props) {
       <aside className="af-inspector">
         <h3>הגדרות מודול</h3>
         {!selectedNode ? (
-          <p style={{ margin: 0, color: "#64748b", fontSize: 13, fontWeight: 600 }}>
-            בחרו מודול בבד הציור או גררו מודול חדש מהצד.
-          </p>
+          <div className="af-inspector__hint">
+            <p>בחרו מודול או גררו חדש מהפלטה.</p>
+            <ul>
+              <li>אפשר כמה טריגרים על אותו בד</li>
+              <li>מכל טריגר אפשר למשוך כמה ניתובים</li>
+              <li>מודול ״ניתוב״ מפצל ל־2–6 תוצאות</li>
+            </ul>
+          </div>
         ) : (
           <>
             <div
-              className="af-pill af-pill--on"
+              className="af-pill"
               style={{
                 width: "fit-content",
                 background:
-                  TYPE_META[selectedNode.type as keyof typeof TYPE_META]?.accent,
+                  TYPE_META[selectedNode.type as keyof typeof TYPE_META]
+                    ?.accent,
                 color:
                   TYPE_META[selectedNode.type as keyof typeof TYPE_META]?.color,
               }}
@@ -344,27 +421,81 @@ function EditorInner({ businessId, workflow, onBack, onSaved }: Props) {
             </label>
 
             {selectedNode.type === "trigger" ? (
-              <label>
-                סוג טריגר
-                <select
-                  value={String(selectedNode.data?.triggerKey || "new_lead")}
-                  onChange={(e) => {
-                    const opt = TRIGGER_OPTIONS.find(
-                      (o) => o.value === e.target.value
-                    );
-                    updateSelectedData({
-                      triggerKey: e.target.value,
-                      label: opt?.label || selectedNode.data?.label,
-                    });
-                  }}
-                >
-                  {TRIGGER_OPTIONS.map((o) => (
-                    <option key={o.value} value={o.value}>
-                      {o.label}
-                    </option>
-                  ))}
-                </select>
-              </label>
+              <>
+                <label>
+                  סוג טריגר
+                  <select
+                    value={String(selectedNode.data?.triggerKey || "new_lead")}
+                    onChange={(e) => {
+                      const opt = TRIGGER_OPTIONS.find(
+                        (o) => o.value === e.target.value
+                      );
+                      updateSelectedData({
+                        triggerKey: e.target.value,
+                        label: opt?.label || selectedNode.data?.label,
+                      });
+                    }}
+                  >
+                    {TRIGGER_OPTIONS.map((o) => (
+                      <option key={o.value} value={o.value}>
+                        {o.label}
+                      </option>
+                    ))}
+                  </select>
+                </label>
+                <label>
+                  מספר ניתובים מהטריגר
+                  <input
+                    type="number"
+                    min={1}
+                    max={6}
+                    value={clampRouteCount(selectedNode.data?.routeCount, 2)}
+                    onChange={(e) =>
+                      updateSelectedData({
+                        routeCount: clampRouteCount(e.target.value, 2),
+                      })
+                    }
+                  />
+                </label>
+              </>
+            ) : null}
+
+            {selectedNode.type === "router" && selectedRouter ? (
+              <>
+                <label>
+                  מספר מסלולים
+                  <input
+                    type="number"
+                    min={2}
+                    max={6}
+                    value={selectedRouter.pathCount}
+                    onChange={(e) => {
+                      const next = ensureRouterPaths({
+                        ...selectedNode.data,
+                        pathCount: clampRouteCount(e.target.value, 3),
+                      });
+                      updateSelectedData(next);
+                    }}
+                  />
+                </label>
+                {selectedRouter.paths.map((path, index) => (
+                  <label key={path.id}>
+                    שם מסלול {index + 1}
+                    <input
+                      value={path.label}
+                      onChange={(e) => {
+                        const paths = selectedRouter.paths.map((p, i) =>
+                          i === index ? { ...p, label: e.target.value } : p
+                        );
+                        updateSelectedData({
+                          paths,
+                          pathCount: paths.length,
+                        });
+                      }}
+                    />
+                  </label>
+                ))}
+              </>
             ) : null}
 
             {selectedNode.type === "delay" ? (
@@ -376,7 +507,9 @@ function EditorInner({ businessId, workflow, onBack, onSaved }: Props) {
                     min={1}
                     value={Number(selectedNode.data?.amount) || 1}
                     onChange={(e) =>
-                      updateSelectedData({ amount: Number(e.target.value) || 1 })
+                      updateSelectedData({
+                        amount: Number(e.target.value) || 1,
+                      })
                     }
                   />
                 </label>
@@ -384,7 +517,9 @@ function EditorInner({ businessId, workflow, onBack, onSaved }: Props) {
                   יחידה
                   <select
                     value={String(selectedNode.data?.unit || "minutes")}
-                    onChange={(e) => updateSelectedData({ unit: e.target.value })}
+                    onChange={(e) =>
+                      updateSelectedData({ unit: e.target.value })
+                    }
                   >
                     {DELAY_UNITS.map((u) => (
                       <option key={u.value} value={u.value}>
@@ -400,7 +535,9 @@ function EditorInner({ businessId, workflow, onBack, onSaved }: Props) {
               <label>
                 תנאי
                 <select
-                  value={String(selectedNode.data?.conditionKey || "no_response")}
+                  value={String(
+                    selectedNode.data?.conditionKey || "no_response"
+                  )}
                   onChange={(e) => {
                     const opt = CONDITION_OPTIONS.find(
                       (o) => o.value === e.target.value
