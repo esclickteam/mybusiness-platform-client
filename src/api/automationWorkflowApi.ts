@@ -59,6 +59,7 @@ export type AutomationRecipeSummary = {
   key: string;
   name: string;
   description: string;
+  tier?: "standard" | "ai_paid";
   triggerCount: number;
   pathCount: number;
   nodeCount: number;

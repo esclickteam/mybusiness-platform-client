@@ -13,6 +13,7 @@ import {
   Sparkles,
   Workflow,
   Zap,
+  ArrowLeft,
 } from "lucide-react";
 import { useLocaleDir } from "@/hooks/useLocaleDir";
 
@@ -22,6 +23,7 @@ type AiAutomationsTabProps = {
 
 type AutomationCard = {
   id: string;
+  recipeKey: string;
   icon: React.ElementType;
   titleKey: string;
   descKey: string;
@@ -30,36 +32,42 @@ type AutomationCard = {
 const AUTOMATION_CARDS: AutomationCard[] = [
   {
     id: "rank_leads",
+    recipeKey: "ai_rank_leads",
     icon: ListChecks,
     titleKey: "advisor.aiAutomations.features.rankLeads.title",
     descKey: "advisor.aiAutomations.features.rankLeads.desc",
   },
   {
     id: "summarize_calls",
+    recipeKey: "ai_summarize_calls",
     icon: MessageSquareText,
     titleKey: "advisor.aiAutomations.features.summarizeCalls.title",
     descKey: "advisor.aiAutomations.features.summarizeCalls.desc",
   },
   {
     id: "auto_reply",
+    recipeKey: "ai_auto_reply",
     icon: Bot,
     titleKey: "advisor.aiAutomations.features.autoReply.title",
     descKey: "advisor.aiAutomations.features.autoReply.desc",
   },
   {
     id: "risk_lead",
+    recipeKey: "ai_risk_lead",
     icon: ShieldAlert,
     titleKey: "advisor.aiAutomations.features.riskLead.title",
     descKey: "advisor.aiAutomations.features.riskLead.desc",
   },
   {
     id: "campaign_change",
+    recipeKey: "ai_campaign_change",
     icon: Megaphone,
     titleKey: "advisor.aiAutomations.features.campaignChange.title",
     descKey: "advisor.aiAutomations.features.campaignChange.desc",
   },
   {
     id: "tasks_from_chat",
+    recipeKey: "ai_tasks_from_chat",
     icon: Workflow,
     titleKey: "advisor.aiAutomations.features.tasksFromChat.title",
     descKey: "advisor.aiAutomations.features.tasksFromChat.desc",
@@ -74,6 +82,9 @@ export default function AiAutomationsTab({
   const automationsPath = businessId
     ? `/business/${businessId}/dashboard/automations`
     : "/";
+
+  const recipePath = (recipeKey: string) =>
+    `${automationsPath}?recipe=${encodeURIComponent(recipeKey)}`;
 
   return (
     <section
@@ -102,7 +113,7 @@ export default function AiAutomationsTab({
           </div>
 
           <Link
-            to={automationsPath}
+            to={`${automationsPath}?tier=ai`}
             className="inline-flex h-11 items-center justify-center gap-2 rounded-2xl border border-amber-300 bg-white px-5 text-sm font-black text-amber-900 shadow-sm transition hover:bg-amber-50"
           >
             <Sparkles className="h-4 w-4" />
@@ -110,6 +121,15 @@ export default function AiAutomationsTab({
           </Link>
         </div>
       </header>
+
+      <div className="mt-5 rounded-[22px] border border-sky-200 bg-sky-50/70 p-4">
+        <p className="text-sm font-black text-sky-950">
+          {t("advisor.aiAutomations.whereTitle")}
+        </p>
+        <p className="mt-2 text-xs font-semibold leading-6 text-sky-900/85">
+          {t("advisor.aiAutomations.whereBody")}
+        </p>
+      </div>
 
       <div className="mt-5 grid gap-3 rounded-[22px] border border-slate-200 bg-slate-50 p-4 sm:grid-cols-2">
         <div className="rounded-2xl border border-slate-200 bg-white p-4">
@@ -142,7 +162,7 @@ export default function AiAutomationsTab({
           return (
             <article
               key={card.id}
-              className="rounded-[22px] border border-slate-200 bg-white p-4 shadow-sm"
+              className="flex flex-col rounded-[22px] border border-slate-200 bg-white p-4 shadow-sm"
             >
               <span className="flex h-10 w-10 items-center justify-center rounded-xl border border-violet-200 bg-violet-50 text-violet-700">
                 <Icon className="h-5 w-5" />
@@ -150,12 +170,19 @@ export default function AiAutomationsTab({
               <h3 className="mt-3 text-base font-black text-slate-900">
                 {t(card.titleKey)}
               </h3>
-              <p className="mt-1.5 text-xs font-semibold leading-6 text-slate-600">
+              <p className="mt-1.5 flex-1 text-xs font-semibold leading-6 text-slate-600">
                 {t(card.descKey)}
               </p>
               <p className="mt-3 text-[11px] font-black uppercase tracking-wide text-amber-700">
                 {t("advisor.aiAutomations.paidTag")}
               </p>
+              <Link
+                to={recipePath(card.recipeKey)}
+                className="mt-3 inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-amber-200 bg-amber-50 px-3 text-xs font-black text-amber-900 transition hover:bg-amber-100"
+              >
+                {t("advisor.aiAutomations.buildInAutomations")}
+                <ArrowLeft className="h-3.5 w-3.5" />
+              </Link>
             </article>
           );
         })}

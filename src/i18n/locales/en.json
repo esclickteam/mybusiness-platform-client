@@ -2458,15 +2458,18 @@
     "aiAutomations": {
       "title": "AI Automations",
       "badge": "Paid add-on",
-      "subtitle": "This is where advanced automatic actions live. The advisor recommends — automations execute.",
-      "openBuilder": "Open automations builder",
+      "subtitle": "Choose what to build here. Execution happens in the Automations builder — not in the advisor.",
+      "openBuilder": "Open AI automations builder",
+      "whereTitle": "Where should automations be built?",
+      "whereBody": "Best approach: pick an AI recipe here, then edit it in the existing Automations builder (Automations nav). The advisor only recommends — the builder is where actions live.",
+      "buildInAutomations": "Build in Automations",
       "advisorOnlyTitle": "Business Advisor",
       "advisorOnlyBody": "Analyzes, recommends, and drafts. Does not create tasks, update leads, or run actions.",
       "automationsTitle": "AI Automations",
-      "automationsBody": "Execute advanced automatic actions as part of a paid add-on package.",
+      "automationsBody": "AI recipes and actions inside the Automations builder — as a paid add-on.",
       "paidTag": "Paid AI",
       "ctaTitle": "Need automatic execution?",
-      "ctaBody": "Go to AI Automations — that's where actions run.",
+      "ctaBody": "Go to AI Automations — then build it in the Automations builder.",
       "features": {
         "rankLeads": {
           "title": "Automatic lead ranking",
