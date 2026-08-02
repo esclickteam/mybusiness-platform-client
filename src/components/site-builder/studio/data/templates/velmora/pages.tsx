@@ -1022,14 +1022,15 @@ export default function VelmoraPages({
   });
 
   const shopCatalog = React.useMemo(() => {
-    // Same contract as every store/commerce template:
-    // loading → empty (no demo flash); live products → full replace; else demos.
+    // Keep demos while loading — empty catalogs remount grids under visual DOM
+    // text paint and can crash the editor (same race Chanel hit).
+    // Live products still fully replace demos once the shop resolves.
     if (storeCatalogLoading) {
-      return {
-        products: [] as ReturnType<typeof buildVelmoraShopCatalog>["products"],
-        categories: ["הכל"],
-        isLive: false as const,
-      };
+      return buildVelmoraShopCatalog({
+        fromPlugin: false,
+        storeProducts: [],
+        storeCategories: [],
+      });
     }
 
     return buildVelmoraShopCatalog({
