@@ -1,23 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  ArrowLeft,
-  Eye,
-  EyeOff,
-  FileStack,
-  Globe2,
-  Layers3,
-  Code2,
-  Monitor,
-  Plus,
-  Redo2,
-  Settings2,
-  ShoppingBag,
-  Smartphone,
-  Tablet,
-  Undo2,
-} from "lucide-react";
-
+import { Eye, EyeOff, Settings2 } from "lucide-react";
 
 import VisualEditorCanvas from "./VisualEditorCanvas";
 import VisualFloatingToolbar from "./VisualFloatingToolbar";
@@ -28,6 +11,7 @@ import VisualSitePagesPanel, {
   type VisualSitePageItem,
 } from "./VisualSitePagesPanel";
 import VisualStorePanel from "./VisualStorePanel";
+import VisualEditorIconRail from "./VisualEditorIconRail";
 import VisualMediaModal from "./components/VisualMediaModal";
 import VisualLinkModal from "./components/VisualLinkModal";
 import FormBuilderModal from "../FormBuilderModal";
@@ -74,6 +58,9 @@ type VisualEditorRuntime = ReturnType<typeof useVisualEditorState> & {
   redo?: () => void;
   canUndo?: boolean;
   canRedo?: boolean;
+
+  deviceMode?: VisualDeviceMode;
+  setDeviceMode?: (mode: VisualDeviceMode) => void;
 };
 
 type VisualEditorShellProps = {
@@ -103,28 +90,6 @@ type VisualEditorShellProps = {
     },
   ) => void;
 };
-
-const DEVICE_OPTIONS: Array<{
-  value: VisualDeviceMode;
-  label: string;
-  icon: React.ReactNode;
-}> = [
-  {
-    value: "desktop",
-    label: "דסקטופ",
-    icon: <Monitor className="h-4 w-4" />,
-  },
-  {
-    value: "tablet",
-    label: "טאבלט",
-    icon: <Tablet className="h-4 w-4" />,
-  },
-  {
-    value: "mobile",
-    label: "מובייל",
-    icon: <Smartphone className="h-4 w-4" />,
-  },
-];
 
 export default function VisualEditorShell({
   editor,
@@ -373,207 +338,21 @@ export default function VisualEditorShell({
         .join(" ")}
       dir="rtl"
     >
-      <header className="relative z-[2147483100] flex h-[72px] shrink-0 items-center justify-between border-b border-slate-200 bg-white/95 px-3 shadow-sm backdrop-blur-xl lg:px-5">
-        <div className="flex min-w-0 items-center gap-2">
-          <button
-            type="button"
-            onClick={onBack}
-            disabled={!onBack}
-            className="inline-flex h-11 items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 text-sm font-black text-slate-700 shadow-sm transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40 lg:px-4"
-          >
-            <ArrowLeft className="h-4 w-4" />
-            <span className="hidden sm:inline">חזרה</span>
-          </button>
-
-          <div className="hidden min-w-0 lg:block">
-            <p className="max-w-[220px] truncate text-sm font-black text-slate-800">
-              {templateName}
-            </p>
-          </div>
-
-          <div className="hidden items-center gap-1 rounded-2xl border border-slate-200 bg-slate-50 p-1 xl:flex">
-            <button
-              type="button"
-              title="ביטול"
-              disabled={!editor.canUndo || busy}
-              onClick={handleUndo}
-              className="flex h-9 w-9 items-center justify-center rounded-xl text-slate-600 transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-35"
-            >
-              <Undo2 className="h-4 w-4" />
-            </button>
-
-            <button
-              type="button"
-              title="ביצוע מחדש"
-              disabled={!editor.canRedo || busy}
-              onClick={handleRedo}
-              className="flex h-9 w-9 items-center justify-center rounded-xl text-slate-600 transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-35"
-            >
-              <Redo2 className="h-4 w-4" />
-            </button>
-          </div>
-        </div>
-
-        <div className="flex min-w-0 flex-1 items-center justify-center gap-2 px-2">
-          <div className="flex items-center gap-1 rounded-2xl border border-slate-200 bg-slate-50 p-1">
-            {DEVICE_OPTIONS.map((device) => (
-              <button
-                key={device.value}
-                type="button"
-                title={device.label}
-                onClick={() => editor.setDeviceMode(device.value)}
-                className={[
-                  "inline-flex h-10 items-center gap-2 rounded-xl px-3 text-sm font-black transition",
-                  editor.deviceMode === device.value
-                    ? "bg-white text-violet-700 shadow-sm"
-                    : "text-slate-500 hover:bg-white/70 hover:text-slate-800",
-                ].join(" ")}
-              >
-                {device.icon}
-
-                <span className="hidden 2xl:inline">
-                  {device.label}
-                </span>
-              </button>
-            ))}
-          </div>
-
-          <div
+      <header className="relative z-[2147483100] flex h-14 shrink-0 items-center justify-between gap-3 border-b border-slate-200 bg-white/95 px-3 shadow-sm backdrop-blur-xl lg:px-5">
+        <div className="min-w-0">
+          <p className="truncate text-sm font-black text-slate-800">
+            {templateName}
+          </p>
+          <p
             dir="ltr"
-            className="hidden min-w-0 max-w-[420px] items-center gap-3 rounded-full border border-slate-200 bg-slate-50 px-4 py-2 xl:flex"
+            className="truncate text-[11px] font-bold text-slate-500"
+            title={siteUrlLabel}
           >
-            <span className="truncate text-xs font-black text-slate-600">
-              {siteUrlLabel}
-            </span>
-            <button
-              type="button"
-              onClick={() => setConnectDomainOpen(true)}
-              className="shrink-0 text-xs font-black text-violet-700 transition hover:text-violet-900"
-            >
-              {linkedCustomDomain ? "ניהול דומיין" : "חיבור דומיין"}
-            </button>
-          </div>
+            {siteUrlLabel}
+          </p>
         </div>
 
-        <div className="flex items-center gap-2">
-          <button
-            type="button"
-            onClick={() => setConnectDomainOpen(true)}
-            className="inline-flex h-11 items-center gap-2 rounded-2xl border border-violet-200 bg-violet-50 px-3 text-sm font-black text-violet-800 shadow-sm transition hover:bg-violet-100 lg:px-4 xl:hidden"
-            title="חיבור דומיין"
-          >
-            <Globe2 className="h-4 w-4" />
-            <span className="hidden sm:inline">דומיין</span>
-          </button>
-
-          {!isPreviewMode ? (
-            <>
-              <button
-                type="button"
-                onClick={() =>
-                  setSidePanelMode((current) =>
-                    current === "pages" ? null : "pages",
-                  )
-                }
-                className={[
-                  "inline-flex h-11 items-center gap-2 rounded-2xl border px-3 text-sm font-black shadow-sm transition lg:px-4",
-                  sidePanelMode === "pages"
-                    ? "border-blue-300 bg-blue-50 text-blue-700"
-                    : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50",
-                ].join(" ")}
-              >
-                <FileStack className="h-4 w-4" />
-                <span className="hidden xl:inline">עמודים</span>
-                {sitePages.length ? (
-                  <span className="hidden rounded-full bg-slate-100 px-1.5 py-0.5 text-[10px] font-black text-slate-600 2xl:inline">
-                    {sitePages.length}
-                  </span>
-                ) : null}
-              </button>
-
-              {storePluginEnabled ? (
-                <button
-                  type="button"
-                  onClick={() =>
-                    setSidePanelMode((current) =>
-                      current === "store" ? null : "store",
-                    )
-                  }
-                  className={[
-                    "inline-flex h-11 items-center gap-2 rounded-2xl border px-3 text-sm font-black shadow-sm transition lg:px-4",
-                    sidePanelMode === "store"
-                      ? "border-violet-300 bg-violet-50 text-violet-700"
-                      : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50",
-                  ].join(" ")}
-                >
-                  <ShoppingBag className="h-4 w-4" />
-                  <span className="hidden xl:inline">חנות</span>
-                </button>
-              ) : null}
-
-              <button
-                type="button"
-                onClick={() => {
-                  setPreferredAddTab("sections");
-                  setSidePanelMode((current) =>
-                    current === "add" ? null : "add",
-                  );
-                }}
-                className={[
-                  "inline-flex h-11 items-center gap-2 rounded-2xl border px-3 text-sm font-black shadow-sm transition lg:px-4",
-                  sidePanelMode === "add"
-                    ? "border-violet-300 bg-violet-50 text-violet-700"
-                    : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50",
-                ].join(" ")}
-              >
-                <Plus className="h-4 w-4" />
-                <span className="hidden xl:inline">
-                  הוספה
-                </span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() =>
-                  setSidePanelMode((current) =>
-                    current === "layers" ? null : "layers",
-                  )
-                }
-                className={[
-                  "inline-flex h-11 items-center gap-2 rounded-2xl border px-3 text-sm font-black shadow-sm transition lg:px-4",
-                  sidePanelMode === "layers"
-                    ? "border-violet-300 bg-violet-50 text-violet-700"
-                    : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50",
-                ].join(" ")}
-              >
-                <Layers3 className="h-4 w-4" />
-                <span className="hidden xl:inline">
-                  שכבות
-                </span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() =>
-                  setSidePanelMode((current) =>
-                    current === "code" ? null : "code",
-                  )
-                }
-                className={[
-                  "inline-flex h-11 items-center gap-2 rounded-2xl border px-3 text-sm font-black shadow-sm transition lg:px-4",
-                  sidePanelMode === "code"
-                    ? "border-violet-300 bg-violet-50 text-violet-700"
-                    : "border-slate-200 bg-white text-slate-700 hover:bg-slate-50",
-                ].join(" ")}
-              >
-                <Code2 className="h-4 w-4" />
-                <span className="hidden xl:inline">
-                  קוד מותאם
-                </span>
-              </button>
-            </>
-          ) : null}
-
+        <div className="flex shrink-0 items-center gap-2">
           {siteId && businessId ? (
             <button
               type="button"
@@ -582,26 +361,25 @@ export default function VisualEditorShell({
                   `/business/${businessId}/dashboard/website/sites/${siteId}/manage`,
                 )
               }
-              className="inline-flex h-11 items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 text-sm font-black text-slate-700 shadow-sm transition hover:bg-slate-50 lg:px-4"
+              className="inline-flex h-10 items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 text-sm font-black text-slate-700 shadow-sm transition hover:bg-slate-50 lg:px-4"
               title="פאנל ניהול"
             >
               <Settings2 className="h-4 w-4" />
-              <span className="hidden xl:inline">פאנל ניהול</span>
+              <span className="hidden sm:inline">פאנל ניהול</span>
             </button>
           ) : null}
 
           <button
             type="button"
             onClick={handleTogglePreview}
-            className="inline-flex h-11 items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 text-sm font-black text-slate-700 shadow-sm transition hover:bg-slate-50 lg:px-4"
+            className="inline-flex h-10 items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 text-sm font-black text-slate-700 shadow-sm transition hover:bg-slate-50 lg:px-4"
           >
             {isPreviewMode ? (
               <EyeOff className="h-4 w-4" />
             ) : (
               <Eye className="h-4 w-4" />
             )}
-
-            <span className="hidden md:inline">
+            <span className="hidden sm:inline">
               {isPreviewMode ? "חזרה לעריכה" : "תצוגה מקדימה"}
             </span>
           </button>
@@ -610,7 +388,7 @@ export default function VisualEditorShell({
             type="button"
             disabled={busy}
             onClick={handlePublish}
-            className="inline-flex h-11 items-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-4 text-sm font-black text-black shadow-sm transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:cursor-not-allowed disabled:opacity-60 lg:px-5"
+            className="inline-flex h-10 items-center gap-2 rounded-2xl border border-violet-200/70 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-4 text-sm font-black text-black shadow-sm transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:cursor-not-allowed disabled:opacity-60 lg:px-5"
           >
             {isSaving ? "מפרסם..." : "פרסום"}
           </button>
@@ -623,7 +401,37 @@ export default function VisualEditorShell({
         </div>
       ) : null}
 
-      <main className="relative min-h-0 flex-1 overflow-hidden">
+      <div className="relative flex min-h-0 flex-1 overflow-hidden">
+        {!isPreviewMode ? (
+          <VisualEditorIconRail
+            sidePanelMode={sidePanelMode}
+            deviceMode={(editor.deviceMode || "desktop") as any}
+            storePluginEnabled={storePluginEnabled}
+            canUndo={Boolean(editor.canUndo)}
+            canRedo={Boolean(editor.canRedo)}
+            busy={busy}
+            hasDomain={Boolean(linkedCustomDomain)}
+            pageCount={sitePages.length}
+            onBack={onBack}
+            onUndo={handleUndo}
+            onRedo={handleRedo}
+            onDeviceChange={(mode) => editor.setDeviceMode?.(mode)}
+            onOpenDomain={() => setConnectDomainOpen(true)}
+            onOpenAdd={() => {
+              setPreferredAddTab("sections");
+              setSidePanelMode((current) =>
+                current === "add" ? null : "add",
+              );
+            }}
+            onTogglePanel={(mode) =>
+              setSidePanelMode((current) =>
+                current === mode ? null : mode,
+              )
+            }
+          />
+        ) : null}
+
+        <main className="relative min-h-0 min-w-0 flex-1 overflow-hidden">
         <section className="absolute inset-0 min-h-0 overflow-hidden">
           <VisualEditorCanvas editor={editor as any} siteId={siteId} />
         </section>
@@ -766,7 +574,8 @@ export default function VisualEditorShell({
             (editor as any).resetMediaEditValues?.();
           }}
         />
-      </main>
+        </main>
+      </div>
 
       <EditorPluginOverlays
         siteId={siteId}
