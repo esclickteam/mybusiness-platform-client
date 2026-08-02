@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useParams, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import {
@@ -30,6 +30,7 @@ import "./automationFlow.css";
 export default function AutomationsMain() {
   const { t } = useTranslation();
   const dir = useLocaleDir();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { businessId: urlBusinessId } = useParams<{ businessId: string }>();
   const { user } = useAuth() as {
     user?: { businessId?: string | null } | null;
@@ -44,6 +45,17 @@ export default function AutomationsMain() {
   const [workflows, setWorkflows] = useState<AutomationWorkflow[]>([]);
   const [recipes, setRecipes] = useState<AutomationRecipeSummary[]>(FALLBACK_RECIPES);
   const [active, setActive] = useState<AutomationWorkflow | null>(null);
+  const autoCreateHandled = useRef<string | null>(null);
+
+  const standardRecipes = useMemo(
+    () => recipes.filter((recipe) => (recipe.tier || "standard") !== "ai_paid"),
+    [recipes]
+  );
+  const aiRecipes = useMemo(
+    () => recipes.filter((recipe) => recipe.tier === "ai_paid"),
+    [recipes]
+  );
+  const highlightAi = searchParams.get("tier") === "ai";
 
   const load = useCallback(async () => {
     if (!businessId) return;
@@ -73,33 +85,46 @@ export default function AutomationsMain() {
     void load();
   }, [load]);
 
-  const handleCreate = async (recipe?: string) => {
-    if (!businessId) return;
-    setCreatingKey(recipe || "blank");
-    try {
-      const created = await createAutomationWorkflow(businessId, {
-        recipe,
-        useStarter: !recipe ? true : undefined,
-        name: recipe
-          ? undefined
-          : "אוטומציה חדשה",
-      });
-      setWorkflows((prev) => [created, ...prev]);
-      setActive(created);
-      toast.success("האוטומציה מוכנה לעריכה על הבד");
-    } catch (error: unknown) {
-      const message =
-        error && typeof error === "object" && "response" in error
-          ? String(
-              (error as { response?: { data?: { error?: string } } }).response
-                ?.data?.error || ""
-            )
-          : "";
-      toast.error(message || "שגיאה ביצירת אוטומציה");
-    } finally {
-      setCreatingKey(null);
-    }
-  };
+  const handleCreate = useCallback(
+    async (recipe?: string) => {
+      if (!businessId) return;
+      setCreatingKey(recipe || "blank");
+      try {
+        const created = await createAutomationWorkflow(businessId, {
+          recipe,
+          useStarter: !recipe ? true : undefined,
+          name: recipe ? undefined : "אוטומציה חדשה",
+        });
+        setWorkflows((prev) => [created, ...prev]);
+        setActive(created);
+        toast.success("האוטומציה מוכנה לעריכה על הבד");
+      } catch (error: unknown) {
+        const message =
+          error && typeof error === "object" && "response" in error
+            ? String(
+                (error as { response?: { data?: { error?: string } } }).response
+                  ?.data?.error || ""
+              )
+            : "";
+        toast.error(message || "שגיאה ביצירת אוטומציה");
+      } finally {
+        setCreatingKey(null);
+      }
+    },
+    [businessId]
+  );
+
+  useEffect(() => {
+    const recipeKey = searchParams.get("recipe");
+    if (!businessId || !recipeKey || loading) return;
+    if (autoCreateHandled.current === recipeKey) return;
+    autoCreateHandled.current = recipeKey;
+    void handleCreate(recipeKey).finally(() => {
+      const next = new URLSearchParams(searchParams);
+      next.delete("recipe");
+      setSearchParams(next, { replace: true });
+    });
+  }, [businessId, handleCreate, loading, searchParams, setSearchParams]);
 
   const handleDelete = async (id: string) => {
     if (!businessId) return;
@@ -156,7 +181,9 @@ export default function AutomationsMain() {
             <div className="af-list">
               <div className="af-list__toolbar">
                 <div>
-                  <strong style={{ fontSize: 15 }}>4 מתכונים מוכנים</strong>
+                  <strong style={{ fontSize: 15 }}>
+                    {standardRecipes.length} מתכונים רגילים
+                  </strong>
                   <p className="af-muted">
                     בחרו תבנית מקצועית עם פיצולים, או התחילו בד ריק.
                   </p>
@@ -177,7 +204,7 @@ export default function AutomationsMain() {
               </div>
 
               <div className="af-list__cards">
-                {recipes.slice(0, 4).map((recipe) => (
+                {standardRecipes.map((recipe) => (
                   <article key={recipe.key} className="af-card af-card--recipe">
                     <div className="af-card__icon">
                       <Zap size={16} />
@@ -205,6 +232,74 @@ export default function AutomationsMain() {
                 ))}
               </div>
 
+              {aiRecipes.length > 0 && (
+                <>
+                  <div
+                    className="af-list__toolbar"
+                    style={{
+                      marginTop: 12,
+                      border: highlightAi
+                        ? "1px solid #f59e0b"
+                        : undefined,
+                      borderRadius: 16,
+                      padding: highlightAi ? 12 : undefined,
+                      background: highlightAi ? "#fffbeb" : undefined,
+                    }}
+                  >
+                    <div>
+                      <strong style={{ fontSize: 15 }}>
+                        אוטומציות AI · בתשלום נוסף
+                      </strong>
+                      <p className="af-muted">
+                        היועץ ממליץ — כאן בונים ומריצים את הפעולות האוטומטיות
+                        המתקדמות.
+                      </p>
+                    </div>
+                    <span className="af-pill af-pill--on">AI Paid</span>
+                  </div>
+
+                  <div className="af-list__cards">
+                    {aiRecipes.map((recipe) => (
+                      <article
+                        key={recipe.key}
+                        className="af-card af-card--recipe"
+                        style={{
+                          borderColor: "#fbbf24",
+                          background:
+                            "linear-gradient(180deg,#fffbeb 0%,#ffffff 55%)",
+                        }}
+                      >
+                        <div
+                          className="af-card__icon"
+                          style={{ background: "#fef3c7", color: "#b45309" }}
+                        >
+                          <Sparkles size={16} />
+                        </div>
+                        <div className="af-card__title">{recipe.name}</div>
+                        <p className="af-muted">{recipe.description}</p>
+                        <div className="af-card__meta">
+                          {recipe.triggerCount} טריגרים · {recipe.nodeCount}{" "}
+                          מודולים · {recipe.pathCount} חיבורים
+                        </div>
+                        <button
+                          type="button"
+                          className="af-btn af-btn--primary"
+                          disabled={!businessId || Boolean(creatingKey)}
+                          onClick={() => handleCreate(recipe.key)}
+                        >
+                          {creatingKey === recipe.key ? (
+                            <Loader2 size={14} className="animate-spin" />
+                          ) : (
+                            <Plus size={14} />
+                          )}
+                          בנה אוטומציית AI
+                        </button>
+                      </article>
+                    ))}
+                  </div>
+                </>
+              )}
+
               <div className="af-list__toolbar" style={{ marginTop: 8 }}>
                 <div>
                   <strong style={{ fontSize: 15 }}>האוטומציות שלי</strong>
@@ -225,7 +320,7 @@ export default function AutomationsMain() {
                   <strong style={{ display: "block", marginBottom: 6 }}>
                     עוד אין אוטומציות
                   </strong>
-                  התחילו מאחד מ־4 המתכונים למעלה.
+                  התחילו ממתכון רגיל או ממתכון AI למעלה.
                 </div>
               ) : (
                 <div className="af-list__cards">

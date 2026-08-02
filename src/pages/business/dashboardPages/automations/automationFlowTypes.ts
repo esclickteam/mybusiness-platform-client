@@ -25,6 +25,7 @@ export type RecipeSummary = {
   key: string;
   name: string;
   description: string;
+  tier?: "standard" | "ai_paid";
   triggerCount: number;
   pathCount: number;
   nodeCount: number;
@@ -58,6 +59,12 @@ export const ACTION_OPTIONS = [
   { value: "create_appointment", label: "יצירת פגישה" },
   { value: "webhook", label: "קריאת Webhook" },
   { value: "wait_until", label: "המתנה עד תאריך/שעה" },
+  { value: "ai_rank_lead", label: "AI · דירוג ליד" },
+  { value: "ai_summarize_call", label: "AI · סיכום שיחה" },
+  { value: "ai_draft_reply", label: "AI · ניסוח תשובה" },
+  { value: "ai_detect_risk_lead", label: "AI · ליד בסיכון" },
+  { value: "ai_campaign_recommend", label: "AI · המלצת קמפיין" },
+  { value: "ai_tasks_from_chat", label: "AI · משימות משיחה" },
 ] as const;
 
 export const CONDITION_OPTIONS = [
@@ -91,6 +98,7 @@ export const FALLBACK_RECIPES: RecipeSummary[] = [
     key: "lead_multi_route",
     name: "ליד חדש · כמה ניתובים",
     description: "טריגר אחד מתפצל ל־3 מסלולים במקביל.",
+    tier: "standard",
     triggerCount: 1,
     pathCount: 4,
     nodeCount: 5,
@@ -99,6 +107,7 @@ export const FALLBACK_RECIPES: RecipeSummary[] = [
     key: "lead_no_response",
     name: "ליד שלא נענה · פולואפ חכם",
     description: "תנאי כן/לא עם שני תוצאות שונות.",
+    tier: "standard",
     triggerCount: 1,
     pathCount: 4,
     nodeCount: 5,
@@ -107,6 +116,7 @@ export const FALLBACK_RECIPES: RecipeSummary[] = [
     key: "appointment_duo",
     name: "פגישה · תזכורת + תודה",
     description: "שני טריגרים באותה אוטומציה עם ניתובים.",
+    tier: "standard",
     triggerCount: 2,
     pathCount: 4,
     nodeCount: 6,
@@ -115,9 +125,64 @@ export const FALLBACK_RECIPES: RecipeSummary[] = [
     key: "new_client_welcome",
     name: "לקוח חדש · ברוכים הבאים",
     description: "טריגר לקוח חדש עם שני מסלולים.",
+    tier: "standard",
     triggerCount: 1,
     pathCount: 3,
     nodeCount: 4,
+  },
+  {
+    key: "ai_rank_leads",
+    name: "AI · דירוג לידים אוטומטי",
+    description: "דירוג ליד חדש לפי סיכוי סגירה ודחיפות.",
+    tier: "ai_paid",
+    triggerCount: 1,
+    pathCount: 2,
+    nodeCount: 3,
+  },
+  {
+    key: "ai_summarize_calls",
+    name: "AI · סיכום שיחות",
+    description: "סיכום אוטומטי אחרי פגישה.",
+    tier: "ai_paid",
+    triggerCount: 1,
+    pathCount: 2,
+    nodeCount: 3,
+  },
+  {
+    key: "ai_auto_reply",
+    name: "AI · ניסוח תשובה אוטומטית",
+    description: "ניסוח תשובה כשמתקבלת הודעת וואטסאפ.",
+    tier: "ai_paid",
+    triggerCount: 1,
+    pathCount: 2,
+    nodeCount: 3,
+  },
+  {
+    key: "ai_risk_lead",
+    name: "AI · זיהוי ליד בסיכון",
+    description: "התראה כשליד עלול ליפול בין הכיסאות.",
+    tier: "ai_paid",
+    triggerCount: 1,
+    pathCount: 2,
+    nodeCount: 3,
+  },
+  {
+    key: "ai_campaign_change",
+    name: "AI · המלצה ושינוי בקמפיין",
+    description: "המלצת שינוי קמפיין לפי תנועת לידים.",
+    tier: "ai_paid",
+    triggerCount: 1,
+    pathCount: 2,
+    nodeCount: 3,
+  },
+  {
+    key: "ai_tasks_from_chat",
+    name: "AI · משימות לפי תוכן שיחה",
+    description: "יצירת משימות אוטומטית מתוכן השיחה.",
+    tier: "ai_paid",
+    triggerCount: 1,
+    pathCount: 2,
+    nodeCount: 3,
   },
 ];
 
@@ -231,6 +296,12 @@ export const PALETTE: PaletteItem[] = [
   actionItem("send_email", "אימייל", "שולח מייל ללקוח"),
   actionItem("create_appointment", "קביעת פגישה", "יוצר תור ביומן"),
   actionItem("webhook", "Webhook", "שולח נתונים למערכת חיצונית"),
+  actionItem("ai_rank_lead", "AI דירוג ליד", "מדרג ליד לפי סיכוי ודחיפות"),
+  actionItem("ai_summarize_call", "AI סיכום שיחה", "מסכם שיחה/פגישה"),
+  actionItem("ai_draft_reply", "AI ניסוח תשובה", "מנסח תשובה מהקשר"),
+  actionItem("ai_detect_risk_lead", "AI ליד בסיכון", "מזהה ליד שמתקרר"),
+  actionItem("ai_campaign_recommend", "AI קמפיין", "ממליץ על שינוי קמפיין"),
+  actionItem("ai_tasks_from_chat", "AI משימות משיחה", "יוצר משימות מתוכן שיחה"),
 ];
 
 export const TYPE_META: Record<
