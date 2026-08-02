@@ -38,6 +38,30 @@ export const PLUGIN_EDITOR_ACTIONS: Record<string, PluginEditorAction> = {
     label: "בוט חכם צף",
     description: "כפתור צף שפותח חלון שיחה — לא רכיב בעמוד",
   },
+  "whatsapp-float": {
+    pluginKey: "whatsapp-float",
+    kind: "overlay",
+    label: "כפתור WhatsApp צף",
+    description: "כפתור ירוק קבוע בפינה — לא רכיב בעמוד",
+  },
+  "announcement-bar": {
+    pluginKey: "announcement-bar",
+    kind: "overlay",
+    label: "פס הודעות",
+    description: "פס עליון בכל האתר — לא סקשן בעמוד",
+  },
+  "cookie-banner": {
+    pluginKey: "cookie-banner",
+    kind: "overlay",
+    label: "באנר עוגיות",
+    description: "באנר הסכמה בתחתית האתר — לא רכיב בעמוד",
+  },
+  "exit-popup": {
+    pluginKey: "exit-popup",
+    kind: "overlay",
+    label: "פופאפ לידים",
+    description: "חלון קופץ עם טופס — לא רכיב בעמוד",
+  },
   store: {
     pluginKey: "store",
     kind: "page",

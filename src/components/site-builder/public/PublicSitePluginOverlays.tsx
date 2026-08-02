@@ -11,11 +11,11 @@ import ExitPopupWidget from "../../site-plugins/exit-popup/ExitPopupWidget";
 import { mergePluginSettings as mergeWheelSettings } from "./benefitsWheelPublicUtils";
 import { mergePluginSettings as mergeSearchSettings } from "./smartSearchPublicUtils";
 import { mergeAccessibilitySettings } from "../../site-plugins/accessibility/accessibilityUtils";
+import { mergeSmartBotSettings } from "../../site-plugins/smart-bot/smartBotUtils";
 import {
-  mergeSmartBotSettings,
-  removeSmartBotPlaceholderMarkers,
-} from "../../site-plugins/smart-bot/smartBotUtils";
-import { mergeWhatsAppFloatSettings } from "../../site-plugins/whatsapp-float/whatsappFloatUtils";
+  mergeWhatsAppFloatSettings,
+  removeOverlayPluginPlaceholders,
+} from "../../site-plugins/whatsapp-float/whatsappFloatUtils";
 import { mergeAnnouncementBarSettings } from "../../site-plugins/announcement-bar/announcementBarUtils";
 import { mergeCookieBannerSettings } from "../../site-plugins/cookie-banner/cookieBannerUtils";
 import { mergeExitPopupSettings } from "../../site-plugins/exit-popup/exitPopupUtils";
@@ -98,11 +98,32 @@ export default function PublicSitePluginOverlays({ site }: PublicSitePluginOverl
   const showExitPopup = Boolean(exitPopupSettings?.isActive);
   const showStoreCheckout = Boolean(businessId);
 
+  const whatsappFallbackPhone = useMemo(() => {
+    const business = site?.business || {};
+    const brand = site?.brand || {};
+    return String(
+      business.whatsappUrl ||
+        business.whatsapp ||
+        business.whatsappLink ||
+        business.phone ||
+        brand.phone ||
+        site?.phone ||
+        ""
+    ).trim();
+  }, [site]);
+
   useEffect(() => {
-    removeSmartBotPlaceholderMarkers(document);
+    removeOverlayPluginPlaceholders(document);
     const root = document.querySelector("[data-bizuply-public-render-root='true']");
-    if (root) removeSmartBotPlaceholderMarkers(root);
-  }, [siteId, showSmartBot]);
+    if (root) removeOverlayPluginPlaceholders(root);
+  }, [
+    siteId,
+    showSmartBot,
+    showWhatsapp,
+    showAnnouncement,
+    showCookie,
+    showExitPopup,
+  ]);
 
   if (
     !showWheel &&
@@ -144,7 +165,11 @@ export default function PublicSitePluginOverlays({ site }: PublicSitePluginOverl
         />
       ) : null}
       {showWhatsapp ? (
-        <WhatsAppFloatWidget settings={whatsappSettings!} mode="live" />
+        <WhatsAppFloatWidget
+          settings={whatsappSettings!}
+          fallbackPhone={whatsappFallbackPhone}
+          mode="live"
+        />
       ) : null}
       {showCookie ? (
         <CookieBannerWidget siteKey={siteKey} settings={cookieSettings!} mode="live" />

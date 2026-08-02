@@ -20,12 +20,12 @@ import type { AnnouncementBarSettings } from "../../../site-plugins/announcement
 import type { CookieBannerSettings } from "../../../site-plugins/cookie-banner/cookieBannerUtils";
 import type { ExitPopupSettings } from "../../../site-plugins/exit-popup/exitPopupUtils";
 import { mergeSmartSearchSettings } from "../../../site-plugins/smart-search/smartSearchUtils";
-import {
-  mergeSmartBotSettings,
-  removeSmartBotPlaceholderMarkers,
-} from "../../../site-plugins/smart-bot/smartBotUtils";
+import { mergeSmartBotSettings } from "../../../site-plugins/smart-bot/smartBotUtils";
 import { mergeAccessibilitySettings } from "../../../site-plugins/accessibility/accessibilityUtils";
-import { mergeWhatsAppFloatSettings } from "../../../site-plugins/whatsapp-float/whatsappFloatUtils";
+import {
+  mergeWhatsAppFloatSettings,
+  removeOverlayPluginPlaceholders,
+} from "../../../site-plugins/whatsapp-float/whatsappFloatUtils";
 import { mergeAnnouncementBarSettings } from "../../../site-plugins/announcement-bar/announcementBarUtils";
 import { mergeCookieBannerSettings } from "../../../site-plugins/cookie-banner/cookieBannerUtils";
 import { mergeExitPopupSettings } from "../../../site-plugins/exit-popup/exitPopupUtils";
@@ -63,11 +63,11 @@ export default function EditorPluginOverlays({
 
   useEffect(() => {
     const clean = () => {
-      removeSmartBotPlaceholderMarkers(document);
+      removeOverlayPluginPlaceholders(document);
       document.querySelectorAll("iframe").forEach((frame) => {
         try {
           if (frame.contentDocument) {
-            removeSmartBotPlaceholderMarkers(frame.contentDocument);
+            removeOverlayPluginPlaceholders(frame.contentDocument);
           }
         } catch {
           // cross-origin iframe
@@ -77,7 +77,7 @@ export default function EditorPluginOverlays({
     clean();
     const t = window.setTimeout(clean, 400);
     return () => window.clearTimeout(t);
-  }, [refreshKey, botEnabled]);
+  }, [refreshKey, botEnabled, whatsappEnabled]);
 
   useEffect(() => {
     if (!siteId) return;
@@ -308,7 +308,10 @@ export default function EditorPluginOverlays({
       ) : null}
 
       {whatsappEnabled && whatsappSettings && whatsappSettings.isActive !== false ? (
-        <WhatsAppFloatWidget settings={whatsappSettings} mode="editor" />
+        <WhatsAppFloatWidget
+          settings={whatsappSettings}
+          mode="editor"
+        />
       ) : null}
 
       {announcementEnabled &&

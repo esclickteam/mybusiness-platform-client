@@ -167,11 +167,14 @@ export default function SiteDynamicPluginPanel({
 
       {pluginKey === "whatsapp-float" ? (
         <SettingsSection title="WhatsApp">
-          <Field label="מספר WhatsApp" hint="פורמט בינלאומי, ללא +">
+          <Field
+            label="מספר WhatsApp"
+            hint="חובה כדי שהכפתור יעבוד. אפשר 0501234567 או 972501234567"
+          >
             <TextInput
               value={str(settings.phone)}
               onChange={(v) => updateField("phone", v)}
-              placeholder="972501234567"
+              placeholder="0501234567"
             />
           </Field>
           <Field label="הודעה התחלתית">

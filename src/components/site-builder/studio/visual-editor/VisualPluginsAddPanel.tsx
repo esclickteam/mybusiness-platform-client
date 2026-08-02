@@ -114,16 +114,43 @@ export default function VisualPluginsAddPanel({
     if (!siteId) return;
     try {
       const current = await getSitePluginSettings(siteId, plugin.key);
-      await saveSitePluginSettings(siteId, plugin.key, {
+      const nextSettings: Record<string, unknown> = {
         ...current,
         isActive: true,
         showTrigger: true,
         buttonMode: "floating",
         triggerPosition: current?.triggerPosition || { x: 88, y: 82 },
-      });
+      };
+
+      if (plugin.key === "whatsapp-float" && !String(current?.phone || "").trim()) {
+        try {
+          const { getMySite } = await import("../../../../api/mySitesApi");
+          const site = await getMySite(siteId);
+          const business = (site as any)?.business || {};
+          const phone = String(
+            business.whatsappUrl ||
+              business.whatsapp ||
+              business.whatsappLink ||
+              business.phone ||
+              (site as any)?.brand?.phone ||
+              ""
+          ).trim();
+          if (phone) nextSettings.phone = phone;
+        } catch {
+          // keep empty — user can set in panel
+        }
+      }
+
+      await saveSitePluginSettings(siteId, plugin.key, nextSettings);
       setOverlayActive((prev) => ({ ...prev, [plugin.key]: true }));
       onOverlayInstalled?.();
-      onAdded?.(`«${plugin.name}» הופעל — גררו את הכפתור הצף למיקום הרצוי`);
+      if (plugin.key === "whatsapp-float" && !String(nextSettings.phone || "").trim()) {
+        onAdded?.(
+          `«${plugin.name}» הופעל — הזינו מספר WhatsApp בפאנל הניהול של התוסף`
+        );
+      } else {
+        onAdded?.(`«${plugin.name}» הופעל — מופיע ככפתור צף באתר`);
+      }
     } catch {
       onAdded?.(`שגיאה בהפעלת ${plugin.name}`);
     }
