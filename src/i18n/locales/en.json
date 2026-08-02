@@ -403,6 +403,7 @@
   "businessNav": {
     "dashboard": "Dashboard",
     "crmSystem": "CRM System",
+    "automations": "Automations",
     "collaborations": "Collaborations",
     "bizuplyAdvisor": "BizUply Advisor",
     "editBusinessPage": "Edit Business Page",
@@ -420,6 +421,14 @@
     "whatsapp": "WhatsApp Messages",
     "metaCampaigns": "Meta Campaign Management",
     "socialSchedule": "Schedule Posts & Stories"
+  },
+  "automations": {
+    "shell": {
+      "badge": "Automations",
+      "title": "Automations",
+      "subtitle": "Reminders, follow-ups and WhatsApp workflows that run in the background and connect to CRM.",
+      "channel": "CRM + WhatsApp"
+    }
   },
   "layout": {
     "adminImpersonationTitle": "Admin mode — business access",

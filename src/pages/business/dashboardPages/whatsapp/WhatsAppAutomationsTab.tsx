@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { useOutletContext } from "react-router-dom";
+import { useOutletContext, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import { CalendarClock, Loader2, Plus, Trash2 } from "lucide-react";
@@ -13,6 +13,8 @@ import {
   type WhatsAppAutomationTrigger,
   type WhatsAppTemplate,
 } from "../../../../api/whatsappApi";
+import { useAuth } from "../../../../context/AuthContext";
+import { normalizeBusinessId } from "../../../../utils/notificationNavigation";
 import {
   btnPrimary,
   btnSecondary,
@@ -20,7 +22,12 @@ import {
   inputBase,
 } from "../../../../styles/bizuplyUi";
 
-type OutletCtx = { businessId: string | null };
+type OutletCtx = { businessId?: string | null };
+
+type WhatsAppAutomationsTabProps = {
+  /** When rendered outside WhatsAppMain (e.g. top-level Automations page). */
+  businessIdOverride?: string | null;
+};
 
 const TRIGGERS: WhatsAppAutomationTrigger[] = [
   "new_lead_welcome",
@@ -80,9 +87,21 @@ const DEFAULTS: Record<
   },
 };
 
-export default function WhatsAppAutomationsTab() {
+export default function WhatsAppAutomationsTab({
+  businessIdOverride = null,
+}: WhatsAppAutomationsTabProps) {
   const { t } = useTranslation();
-  const { businessId } = useOutletContext<OutletCtx>();
+  const { businessId: urlBusinessId } = useParams<{ businessId: string }>();
+  const { user } = useAuth() as {
+    user?: { businessId?: string | null } | null;
+  };
+  const outletCtx = useOutletContext<OutletCtx | null>();
+  const businessId =
+    normalizeBusinessId(businessIdOverride) ||
+    normalizeBusinessId(outletCtx?.businessId) ||
+    normalizeBusinessId(urlBusinessId) ||
+    normalizeBusinessId(user?.businessId) ||
+    null;
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [automations, setAutomations] = useState<WhatsAppAutomation[]>([]);

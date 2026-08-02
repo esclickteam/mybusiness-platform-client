@@ -13,6 +13,7 @@ import {
   LayoutTemplate,
   Megaphone,
   MessageCircle,
+  Workflow,
 } from "lucide-react";
 import { getTextDirection } from "../i18n/localeUtils";
 import { useAuth } from "../context/AuthContext";
@@ -181,6 +182,13 @@ export default function BusinessWorkspaceNav({
       to: `${basePath}/dashboard/crm`,
       icon: CircleUserRound,
       moduleKey: "crm",
+    },
+    {
+      labelKey: "businessNav.automations",
+      fallback: "Automations",
+      to: `${basePath}/dashboard/automations`,
+      icon: Workflow,
+      moduleKey: "automations",
     },
     ...(showWhatsappAndMeta
       ? ([
