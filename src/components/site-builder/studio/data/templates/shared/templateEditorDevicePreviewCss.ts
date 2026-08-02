@@ -4,6 +4,8 @@
  * behavior for all templates.
  */
 
+import { TEMPLATE_BREAKPOINTS } from "./templateBreakpoints";
+
 function gridForce(device: "mobile" | "tablet", value: string, cols: number[]) {
   const root = `[data-visual-device="${device}"]`;
   return cols
@@ -32,14 +34,51 @@ export const templateEditorDevicePreviewCss = `
 ${gridForce("mobile", "minmax(0, 1fr)", [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12])}
 
 ${typeForce("mobile", {
-  "text-9xl": "clamp(1.75rem, 8vw, 2.5rem)",
-  "text-8xl": "clamp(1.7rem, 7.5vw, 2.35rem)",
-  "text-7xl": "clamp(1.65rem, 7vw, 2.15rem)",
-  "text-6xl": "clamp(1.55rem, 6.5vw, 1.95rem)",
-  "text-5xl": "clamp(1.45rem, 6vw, 1.75rem)",
-  "text-4xl": "clamp(1.35rem, 5.5vw, 1.55rem)",
-  "text-3xl": "clamp(1.25rem, 5vw, 1.4rem)",
+  "text-9xl": "clamp(1.75rem, 8cqw, 2.5rem)",
+  "text-8xl": "clamp(1.7rem, 7.5cqw, 2.35rem)",
+  "text-7xl": "clamp(1.65rem, 7cqw, 2.15rem)",
+  "text-6xl": "clamp(1.55rem, 6.5cqw, 1.95rem)",
+  "text-5xl": "clamp(1.45rem, 6cqw, 1.75rem)",
+  "text-4xl": "clamp(1.35rem, 5.5cqw, 1.55rem)",
+  "text-3xl": "clamp(1.25rem, 5cqw, 1.4rem)",
 })}
+
+/* vw display headings + heavy shadows — match real phone layout in preview */
+[data-visual-device="mobile"] [class*='text-'][class*='vw'] {
+  font-size: clamp(1.35rem, 11cqw, 2.85rem) !important;
+  line-height: 1.08 !important;
+  max-width: 100% !important;
+  overflow-wrap: anywhere !important;
+  word-break: break-word !important;
+}
+
+[data-visual-device="mobile"] [class*='drop-shadow-'] {
+  filter: drop-shadow(0 8px 22px rgba(0,0,0,.42)) !important;
+}
+
+[data-visual-device="mobile"] h1,
+[data-visual-device="mobile"] h2,
+[data-visual-device="mobile"] h3,
+[data-visual-device="mobile"] h4,
+[data-visual-device="mobile"] h5,
+[data-visual-device="mobile"] h6,
+[data-visual-device="mobile"] [data-visual-edit-type='text'],
+[data-visual-device="mobile"] [style*='text-shadow'] {
+  text-shadow: 0 2px 14px rgba(0,0,0,.28) !important;
+  max-width: 100% !important;
+  overflow-wrap: anywhere !important;
+  word-break: break-word !important;
+}
+
+[data-visual-device="mobile"] .whitespace-nowrap {
+  white-space: normal !important;
+}
+
+[data-visual-device="mobile"] [class*='w-['],
+[data-visual-device="mobile"] [class*='min-w-['],
+[data-visual-device="mobile"] [class*='max-w-\\['] {
+  max-width: 100% !important;
+}
 
 /* Desktop nav pattern: hidden md:flex / hidden lg:flex → stay hidden */
 [data-visual-device="mobile"] .hidden.md\\:flex,
@@ -148,4 +187,15 @@ ${typeForce("tablet", {
 [data-visual-device="tablet"] .flex-col.lg\\:flex-row {
   flex-direction: column !important;
 }
+
+[data-visual-device="tablet"] [class*='text-'][class*='vw'] {
+  font-size: clamp(1.65rem, 9cqw, 4.5rem) !important;
+  line-height: 1.08 !important;
+}
+
+[data-visual-device="tablet"] [class*='drop-shadow-'] {
+  filter: drop-shadow(0 14px 36px rgba(0,0,0,.52)) !important;
+}
+
+/* Editor frame widths align with Tailwind breakpoints (${TEMPLATE_BREAKPOINTS.mobileMax}/${TEMPLATE_BREAKPOINTS.tabletMax}) */
 `.trim();
