@@ -357,6 +357,8 @@ export type VisualEditorController = {
     elementId?: string,
   ) => boolean | void;
   duplicateSelected?: () => boolean | void;
+  copySelectedElement?: () => boolean | void;
+  pasteCopiedElement?: () => boolean | void;
 
   deleteElement?: (
     elementId?: string,

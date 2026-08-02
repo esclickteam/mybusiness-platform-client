@@ -24,6 +24,9 @@ import { applyVisualSectionOrderToDom } from "./visualSectionOrder";
 
 import {
   applyMediaFitStyles,
+  bindMediaSlotFitOnLoad,
+  fitMediaElementToSlot,
+  fitMediaNodeTree,
   getNodeMediaAlt,
   getNodeMediaSrc,
   getVisualMediaTypeFromNode,
@@ -1768,6 +1771,8 @@ export function applyMediaContentToNode(
       }
 
       markMediaNode(imageNode, "image");
+      fitMediaElementToSlot(imageNode);
+      bindMediaSlotFitOnLoad(imageNode);
       return;
     }
 

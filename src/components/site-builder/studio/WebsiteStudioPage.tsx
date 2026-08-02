@@ -3497,6 +3497,12 @@ function applyPublishedMediaToNode(
     );
     targetMedia.setAttribute("data-resource-type", "image");
     targetMedia.setAttribute("alt", value.alt || "");
+    targetMedia.style.width = "100%";
+    targetMedia.style.height = "100%";
+    targetMedia.style.objectFit = "cover";
+    targetMedia.style.objectPosition = "center";
+    targetMedia.style.display = "block";
+    targetMedia.style.boxSizing = "border-box";
 
     return true;
   }
@@ -3524,6 +3530,12 @@ function applyPublishedMediaToNode(
         src,
       );
       existing.setAttribute("alt", value.alt || "");
+      existing.style.width = "100%";
+      existing.style.height = "100%";
+      existing.style.objectFit = "cover";
+      existing.style.objectPosition = "center";
+      existing.style.display = "block";
+      existing.style.boxSizing = "border-box";
       return true;
     }
 

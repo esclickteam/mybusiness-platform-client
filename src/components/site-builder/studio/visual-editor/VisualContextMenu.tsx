@@ -238,6 +238,28 @@ export default function VisualContextMenu({
         />
 
         <ContextAction
+          label="העתק"
+          icon={<Copy className="h-4 w-4" />}
+          disabled={locked}
+          onClick={() =>
+            runAndClose(() => {
+              editor?.copySelectedElement?.();
+            })
+          }
+        />
+
+        <ContextAction
+          label="הדבק (שכפול)"
+          icon={<ClipboardList className="h-4 w-4" />}
+          disabled={locked}
+          onClick={() =>
+            runAndClose(() => {
+              editor?.pasteCopiedElement?.();
+            })
+          }
+        />
+
+        <ContextAction
           label="שכפול"
           icon={<Copy className="h-4 w-4" />}
           disabled={locked}

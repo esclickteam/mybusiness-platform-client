@@ -118,6 +118,7 @@ import {
 } from "../library/sectionTheme";
 import {
   buildMediaEditFilter,
+  fitMediaNodeTree,
   getNodeMediaAlt,
   getNodeMediaSrc,
   type VisualMediaEditValues,
@@ -1690,6 +1691,11 @@ export function useVisualEditorState({
           });
 
           applyAllVisualDataToDom(canvasRef.current, latestData);
+
+          targetIds.forEach((targetId) => {
+            fitMediaNodeTree(findVisualNodeById(canvasRef.current, targetId));
+          });
+
           selection.refreshSelectedElement?.();
         });
       });
@@ -4054,6 +4060,26 @@ export function useVisualEditorState({
     ],
   );
 
+  const copiedElementIdRef = useRef("");
+
+  const copySelectedElement = useCallback(() => {
+    const id = String(selection.selectedElement?.id || "").trim();
+    if (!id) return false;
+
+    copiedElementIdRef.current = id;
+    return true;
+  }, [selection.selectedElement?.id]);
+
+  const pasteCopiedElement = useCallback(() => {
+    const sourceId =
+      String(copiedElementIdRef.current || "").trim() ||
+      String(selection.selectedElement?.id || "").trim();
+
+    if (!sourceId) return false;
+
+    return duplicateElement(sourceId);
+  }, [duplicateElement, selection.selectedElement?.id]);
+
   const addLibraryElement = useCallback(
     async (libraryId: string) => {
       const libraryItem = ELEMENT_LIBRARY.find((item) => item.id === libraryId);
@@ -4345,6 +4371,8 @@ export function useVisualEditorState({
     onUndo: history.undo,
     onRedo: history.redo,
     onDelete: () => deleteElement(),
+    onCopy: copySelectedElement,
+    onPaste: pasteCopiedElement,
     onDuplicate: duplicateElement,
     onSave: saveDraftWithPendingMedia,
     onClearSelection: selection.clearSelection,
@@ -4479,6 +4507,8 @@ export function useVisualEditorState({
       deleteElement,
       restoreElement,
       duplicateElement,
+      copySelectedElement,
+      pasteCopiedElement,
       bringForward,
       sendBackward,
       applyDataToDom,
@@ -4621,6 +4651,8 @@ export function useVisualEditorState({
       deleteElement,
       restoreElement,
       duplicateElement,
+      copySelectedElement,
+      pasteCopiedElement,
       bringForward,
       sendBackward,
       togglePreviewMode,

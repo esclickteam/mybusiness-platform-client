@@ -161,6 +161,115 @@ export function applyMediaFitStyles(
   node.style.setProperty("object-position", position, priority);
 }
 
+function isFreePositionedCanvasMedia(node: HTMLElement) {
+  if (node.getAttribute("data-visual-free-position") === "true") {
+    return true;
+  }
+
+  const position = String(node.style.position || node.style.getPropertyValue("position") || "")
+    .trim()
+    .toLowerCase();
+
+  return position === "absolute" || position === "fixed";
+}
+
+/**
+ * Force img/video to fill its slot (template card, orbit frame, hero box, etc.)
+ * instead of rendering at the uploaded asset's natural pixel size.
+ */
+export function fitMediaElementToSlot(
+  mediaNode: HTMLImageElement | HTMLVideoElement,
+) {
+  applyMediaFitStyles(mediaNode, {
+    objectFit: "cover",
+    objectPosition: "center",
+    important: true,
+  });
+
+  mediaNode.style.display = "block";
+  mediaNode.style.boxSizing = "border-box";
+  mediaNode.style.minWidth = "0";
+  mediaNode.style.minHeight = "0";
+  mediaNode.style.removeProperty("aspect-ratio");
+
+  const parent = mediaNode.parentElement;
+  const parentHasBox =
+    Boolean(parent) &&
+    (Boolean(parent?.style.width || parent?.style.height) ||
+      Boolean(
+        parent &&
+          typeof window !== "undefined" &&
+          (() => {
+            const rect = parent.getBoundingClientRect();
+            return rect.width > 8 && rect.height > 8;
+          })(),
+      ));
+
+  const isTemplateSlot =
+    mediaNode.getAttribute("data-editable") === "image" ||
+    mediaNode.hasAttribute("data-visual-image-field") ||
+    mediaNode.hasAttribute("data-image-field");
+
+  const shouldFillParent =
+    isTemplateSlot ||
+    parentHasBox ||
+    Boolean(parent?.classList.contains("overflow-hidden"));
+
+  if (shouldFillParent && !isFreePositionedCanvasMedia(mediaNode)) {
+    mediaNode.style.width = "100%";
+    mediaNode.style.height = "100%";
+    mediaNode.style.maxWidth = "100%";
+    mediaNode.style.maxHeight = "100%";
+    return;
+  }
+
+  if (isFreePositionedCanvasMedia(mediaNode)) {
+    if (!mediaNode.style.width) {
+      mediaNode.style.width = "100%";
+    }
+    if (!mediaNode.style.height) {
+      mediaNode.style.height = "100%";
+    }
+    mediaNode.style.maxWidth = "none";
+    mediaNode.style.maxHeight = "none";
+  }
+}
+
+export function fitMediaNodeTree(node: HTMLElement | null | undefined) {
+  if (!node) return;
+
+  if (
+    node instanceof HTMLImageElement ||
+    node instanceof HTMLVideoElement
+  ) {
+    fitMediaElementToSlot(node);
+    return;
+  }
+
+  node
+    .querySelectorAll<HTMLImageElement | HTMLVideoElement>("img, video")
+    .forEach((mediaNode) => {
+      fitMediaElementToSlot(mediaNode);
+    });
+}
+
+export function bindMediaSlotFitOnLoad(
+  mediaNode: HTMLImageElement | HTMLVideoElement,
+) {
+  if (!(mediaNode instanceof HTMLImageElement)) return;
+
+  const handleLoad = () => {
+    fitMediaElementToSlot(mediaNode);
+    mediaNode.removeEventListener("load", handleLoad);
+  };
+
+  mediaNode.addEventListener("load", handleLoad);
+
+  if (mediaNode.complete) {
+    handleLoad();
+  }
+}
+
 /**
  * שומר את תיבת המדיה של העורך גם אחרי img→video באתר הציבורי.
  * בלי זה הווידאו נוטה לפרוץ לפי יחס הפריים המקורי ולשנות גודל.
