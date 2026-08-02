@@ -25,6 +25,8 @@ export type PricingAddon = {
   priceLabelEn: string;
   accent: string;
   featured?: boolean;
+  /** Hidden from the public pricing page until the service is active */
+  hidden?: boolean;
   details: string[];
   detailsEn: string[];
   tracks?: PricingAddonTrack[];
@@ -46,9 +48,9 @@ export const PRICING_CATEGORY_LABELS: Record<
   support: { he: "תמיכה חודשית", en: "Monthly support" },
 };
 
+/** Public category chips/sections — growth is kept in data but not shown yet */
 export const PRICING_CATEGORY_ORDER = [
   "setup",
-  "growth",
   "agents",
   "support",
 ] as const;
@@ -291,7 +293,7 @@ export const PRICING_ADDONS: PricingAddon[] = [
     ],
   },
 
-  /* ── שיווק וצמיחה ── */
+  /* ── שיווק וצמיחה (מוסתר זמנית — עדיין לא פעיל) ── */
   {
     key: "paid-campaign-setup",
     name: "הקמת קמפיין ממומן",
@@ -305,6 +307,7 @@ export const PRICING_ADDONS: PricingAddon[] = [
     priceLabel: "החל מ־690 ₪ חד־פעמי",
     priceLabelEn: "From ₪690 one-time",
     accent: "#E11D8C",
+    hidden: true,
     details: [
       "הקמת קמפיין במטא",
       "הגדרת קהל יעד",
@@ -356,6 +359,7 @@ export const PRICING_ADDONS: PricingAddon[] = [
     priceLabel: "החל מ־990 ₪ לחודש",
     priceLabelEn: "From ₪990 / month",
     accent: "#DB2777",
+    hidden: true,
     details: [
       "8 פוסטים בחודש",
       "כתיבה ועיצוב",
@@ -393,6 +397,7 @@ export const PRICING_ADDONS: PricingAddon[] = [
     note: "צילום מקצועי ותזמון פרסומים אינם כלולים כרגע.",
     noteEn: "Professional photography and publishing scheduling are not included at this time.",
   },
+  /* ── נציגים ושירות אנושי ── */
   {
     key: "collab-manager",
     name: "מנהל שיתופי פעולה אישי",
@@ -401,11 +406,11 @@ export const PRICING_ADDONS: PricingAddon[] = [
       "מנהל שמאתר עסקים רלוונטיים, יוצר חיבורים ומלווה את התקשורת בין הצדדים.",
     descriptionEn:
       "A manager who finds relevant businesses, makes introductions, and guides communication between both sides.",
-    category: "growth",
+    category: "agents",
     icon: "handshake",
     priceLabel: "החל מ־790 ₪ לחודש",
     priceLabelEn: "From ₪790 / month",
-    accent: "#F43F5E",
+    accent: "#0D9488",
     details: [
       "איתור עד 10 עסקים מתאימים",
       "פנייה ראשונית",
@@ -440,8 +445,6 @@ export const PRICING_ADDONS: PricingAddon[] = [
     noteEn:
       "The service does not guarantee a specific number of closed collaborations.",
   },
-
-  /* ── נציגים ושירות אנושי ── */
   {
     key: "lead-first-response",
     name: "מענה ראשוני ללידים",

@@ -19,7 +19,6 @@ import {
   Package,
   Plus,
   RefreshCw,
-  Search,
   Settings2,
   Sparkles,
   UserRound,
@@ -114,7 +113,6 @@ export default function Plans() {
   const [loadingPlan, setLoadingPlan] = useState(null);
   const [selectedKeys, setSelectedKeys] = useState(() => new Set());
   const [activeCategory, setActiveCategory] = useState("all");
-  const [query, setQuery] = useState("");
   const [detailKey, setDetailKey] = useState(null);
   const [websiteAddonByPlan, setWebsiteAddonByPlan] = useState({
     monthly: false,
@@ -221,25 +219,21 @@ export default function Plans() {
   const categories = useMemo(() => ["all", ...PRICING_CATEGORY_ORDER], []);
 
   const localizedAddons = useMemo(
-    () => PRICING_ADDONS.map((addon) => localizeService(addon, isHe)),
+    () =>
+      PRICING_ADDONS.filter((addon) => !addon.hidden).map((addon) =>
+        localizeService(addon, isHe)
+      ),
     [isHe]
   );
 
   const filteredAddons = useMemo(() => {
-    const q = query.trim().toLowerCase();
     return localizedAddons.filter((addon) => {
       if (activeCategory !== "all" && addon.category !== activeCategory) {
         return false;
       }
-      if (!q) return true;
-      return (
-        addon.displayName.toLowerCase().includes(q) ||
-        addon.displayDescription.toLowerCase().includes(q) ||
-        addon.key.toLowerCase().includes(q) ||
-        addon.displayDetails.some((d) => d.toLowerCase().includes(q))
-      );
+      return true;
     });
-  }, [activeCategory, query, localizedAddons]);
+  }, [activeCategory, localizedAddons]);
 
   const addonsByCategory = useMemo(() => {
     const visibleCategories =
@@ -654,23 +648,7 @@ export default function Plans() {
 
           <div className="pricing-wow__cat-sticky mt-10">
             <div className="rounded-[1.75rem] border border-white/80 bg-white/80 p-3 shadow-[0_18px_50px_rgba(15,23,42,0.1)] backdrop-blur-xl sm:p-4">
-              <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
-                <label className="relative min-w-0 flex-1">
-                  <Search
-                    size={16}
-                    className="pointer-events-none absolute start-4 top-1/2 -translate-y-1/2 text-slate-400"
-                  />
-                  <input
-                    type="search"
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    placeholder={t("pricing.addonsSearch")}
-                    className="h-12 w-full rounded-2xl border border-slate-200 bg-white pe-4 ps-11 text-sm font-semibold text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-indigo-300 focus:ring-4 focus:ring-indigo-100"
-                  />
-                </label>
-              </div>
-
-              <div className="mt-3 flex gap-2 overflow-x-auto pb-0.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              <div className="flex gap-2 overflow-x-auto pb-0.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                 {categories.map((key) => {
                   const active = activeCategory === key;
                   const accent =
