@@ -1874,6 +1874,7 @@
         "clientDataFields": "Client Data Fields",
         "portalAccess": "Portal Access",
         "tabProfile": "Client Profile",
+        "tabDocumentation": "Documentation",
         "tabCommunication": "Communication",
         "tabAppointments": "Appointments",
         "tabPayments": "Payments",
@@ -1881,6 +1882,7 @@
         "tabFiles": "Files",
         "tabClientData": "Client data",
         "tabPortalAccess": "Portal access",
+        "openDocumentation": "Open documentation, tasks & files",
         "profileSummaryTitle": "File summary",
         "profileSummaryText": "All activities, appointments, payments, tasks, and files for this client are gathered in this file.",
         "quickFacts": "Quick facts"
@@ -1920,8 +1922,9 @@
       },
       "filesPanel": {
         "title": "Files & agreements",
-        "subtitle": "All files attached in this client's documentation.",
+        "subtitle": "All files attached in this client's documentation — with search and image preview.",
         "addFromDocs": "Upload from documentation",
+        "searchPlaceholder": "Search file...",
         "emptyTitle": "No files yet",
         "emptyDescription": "Attach files or agreements from the documentation area."
       },
@@ -1970,12 +1973,22 @@
         "dueAt": "Due date",
         "attachFiles": "Attach files / images",
         "filesSelected": "{{count}} files selected",
+        "clearFiles": "Clear files",
         "defaultNowHint": "Date & time default to now. You can change them before saving.",
         "saveActivity": "Save documentation",
         "saveTask": "Save task",
         "uploading": "Uploading files...",
+        "viewTimeline": "Timeline",
+        "viewGallery": "File gallery",
+        "filtersTitle": "Filter & search",
+        "searchPlaceholder": "Search docs, files, or names...",
+        "filterAllTypes": "All types",
+        "dateFrom": "From date",
+        "dateTo": "To date",
         "emptyTitle": "No documentation yet",
         "emptyDescription": "Calls, tasks, meeting summaries, and files for this client will appear here.",
+        "emptyGalleryTitle": "No files in view",
+        "emptyGalleryDescription": "Attach images or files to documentation, or change the date filter.",
         "markDone": "Mark done",
         "reopenTask": "Reopen",
         "dueTimeLabel": "Due: {{time}}",
@@ -2001,6 +2014,7 @@
         "errors": {
           "textOrFileRequired": "Enter text or attach a file",
           "fileRequired": "Attach a file or image",
+          "uploadFailed": "File upload failed",
           "saveFailed": "Failed to save documentation",
           "taskUpdateFailed": "Failed to update task"
         }
