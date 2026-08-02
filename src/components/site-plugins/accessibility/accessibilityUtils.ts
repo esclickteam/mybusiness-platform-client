@@ -42,6 +42,7 @@ export type AccessibilityVisitorState = {
 export type AccessibilitySettings = {
   isActive?: boolean;
   widgetPosition?: AccessibilityWidgetPosition;
+  triggerPosition?: { x: number; y: number };
   accentColor?: string;
   defaultFontScale?: number;
   features?: Partial<Record<AccessibilityFeatureKey, boolean>>;
@@ -189,6 +190,7 @@ const DEFAULT_VISITOR_STATE: AccessibilityVisitorState = {
 export const DEFAULT_ACCESSIBILITY_SETTINGS: AccessibilitySettings = {
   isActive: true,
   widgetPosition: "bottom-left",
+  triggerPosition: { x: 88, y: 88 },
   accentColor: "#7C3AED",
   defaultFontScale: 100,
   features: { ...DEFAULT_FEATURES },
@@ -232,6 +234,16 @@ export function mergeAccessibilitySettings(
     // Menu always opens on the left; trigger can still be left/right.
     widgetPosition:
       stored?.widgetPosition === "bottom-right" ? "bottom-right" : "bottom-left",
+    triggerPosition: {
+      x: Number.isFinite(Number(stored?.triggerPosition?.x))
+        ? Number(stored?.triggerPosition?.x)
+        : stored?.widgetPosition === "bottom-right"
+          ? 8
+          : 88,
+      y: Number.isFinite(Number(stored?.triggerPosition?.y))
+        ? Number(stored?.triggerPosition?.y)
+        : 88,
+    },
     accentColor: String(stored?.accentColor || DEFAULT_ACCESSIBILITY_SETTINGS.accentColor),
     defaultFontScale: Math.min(
       200,

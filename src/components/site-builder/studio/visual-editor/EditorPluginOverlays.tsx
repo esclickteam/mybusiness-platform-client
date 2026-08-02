@@ -215,6 +215,24 @@ export default function EditorPluginOverlays({
     [siteId, searchSettings]
   );
 
+  const handleA11yPositionChange = useCallback(
+    async (pos: { x: number; y: number }) => {
+      if (!siteId || !a11ySettings) return;
+      const next = {
+        ...a11ySettings,
+        triggerPosition: pos,
+        widgetPosition: pos.x > 50 ? ("bottom-left" as const) : ("bottom-right" as const),
+      };
+      setA11ySettings(next);
+      try {
+        await saveSitePluginSettings(siteId, "accessibility", next);
+      } catch {
+        // local preview still updates
+      }
+    },
+    [siteId, a11ySettings]
+  );
+
   const handleBotPositionChange = useCallback(
     async (pos: { x: number; y: number }) => {
       if (!siteId || !botSettings) return;
@@ -285,6 +303,7 @@ export default function EditorPluginOverlays({
           siteKey={siteKey}
           settings={a11ySettings}
           mode="editor"
+          onPositionChange={handleA11yPositionChange}
         />
       ) : null}
 

@@ -43,6 +43,7 @@ type AccessibilityWidgetProps = {
   siteKey?: string;
   settings?: Partial<AccessibilitySettings> | null;
   mode?: "live" | "editor";
+  onPositionChange?: (pos: { x: number; y: number }) => void;
 };
 
 const FEATURE_ICONS: Record<
@@ -83,12 +84,85 @@ export default function AccessibilityWidget({
   siteKey = "site",
   settings: settingsProp,
   mode = "live",
+  onPositionChange,
 }: AccessibilityWidgetProps) {
   const settings = useMemo(
     () => mergeAccessibilitySettings(settingsProp),
     [settingsProp]
   );
   const isEditor = mode === "editor";
+  const position = settings.triggerPosition || {
+    x: settings.widgetPosition === "bottom-right" ? 8 : 88,
+    y: 88,
+  };
+  const [dragPos, setDragPos] = useState(position);
+  const dragRef = useRef<{
+    pointerId: number;
+    startX: number;
+    startY: number;
+    origX: number;
+    origY: number;
+    moved: boolean;
+  } | null>(null);
+  const dragPosRef = useRef(dragPos);
+  const suppressClickRef = useRef(false);
+
+  useEffect(() => {
+    if (dragRef.current) return;
+    setDragPos(position);
+    dragPosRef.current = position;
+  }, [position.x, position.y]);
+
+  useEffect(() => {
+    dragPosRef.current = dragPos;
+  }, [dragPos]);
+
+  function onPointerDown(e: React.PointerEvent) {
+    if (!isEditor) return;
+    e.preventDefault();
+    e.stopPropagation();
+    (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
+    dragRef.current = {
+      pointerId: e.pointerId,
+      startX: e.clientX,
+      startY: e.clientY,
+      origX: dragPosRef.current.x,
+      origY: dragPosRef.current.y,
+      moved: false,
+    };
+  }
+
+  function onPointerMove(e: React.PointerEvent) {
+    if (!dragRef.current || !isEditor) return;
+    if (e.pointerId !== dragRef.current.pointerId) return;
+    const vw = Math.max(1, window.innerWidth);
+    const vh = Math.max(1, window.innerHeight);
+    const dx = ((e.clientX - dragRef.current.startX) / vw) * 100;
+    const dy = ((e.clientY - dragRef.current.startY) / vh) * 100;
+    if (Math.abs(dx) > 0.3 || Math.abs(dy) > 0.3) dragRef.current.moved = true;
+    const next = {
+      x: Math.min(94, Math.max(6, dragRef.current.origX - dx)),
+      y: Math.min(94, Math.max(6, dragRef.current.origY + dy)),
+    };
+    dragPosRef.current = next;
+    setDragPos(next);
+  }
+
+  function onPointerUp(e: React.PointerEvent) {
+    if (!dragRef.current || !isEditor) return;
+    if (e.pointerId !== dragRef.current.pointerId) return;
+    const moved = dragRef.current.moved;
+    dragRef.current = null;
+    if (moved) {
+      suppressClickRef.current = true;
+      onPositionChange?.(dragPosRef.current);
+      e.preventDefault();
+      e.stopPropagation();
+      window.setTimeout(() => {
+        suppressClickRef.current = false;
+      }, 0);
+    }
+  }
   const titleId = useId();
   const panelRef = useRef<HTMLDivElement>(null);
 
@@ -144,6 +218,7 @@ export default function AccessibilityWidget({
   // Trigger defaults to left; panel always docks left.
   const triggerSide =
     settings.widgetPosition === "bottom-right" ? "right" : "left";
+  const useFreePos = Boolean(settings.triggerPosition) || isEditor;
 
   const visibleFeatures = ACCESSIBILITY_FEATURES.filter((feature) =>
     isFeatureEnabled(settings, feature.key)
@@ -218,12 +293,35 @@ export default function AccessibilityWidget({
     >
       <button
         type="button"
-        className={`bizuply-a11y-trigger bizuply-a11y-trigger--${triggerSide}`}
+        className={`bizuply-a11y-trigger ${
+          useFreePos
+            ? "bizuply-a11y-trigger--free"
+            : `bizuply-a11y-trigger--${triggerSide}`
+        } ${isEditor ? "ring-2 ring-violet-300 ring-offset-2" : ""}`}
+        style={
+          useFreePos
+            ? {
+                ...(dragPos.x > 50
+                  ? { left: `${100 - dragPos.x}%`, right: "auto" }
+                  : { right: `${dragPos.x}%`, left: "auto" }),
+                bottom: `${100 - dragPos.y}%`,
+                maxWidth: "calc(100vw - 1.5rem)",
+              }
+            : undefined
+        }
         aria-label="פתח תפריט נגישות"
         aria-haspopup="dialog"
         aria-expanded={open}
-        title="תפריט נגישות (Ctrl+U)"
-        onClick={() => setOpen(true)}
+        title={isEditor ? "גררו לכל מקום בעמוד" : "תפריט נגישות (Ctrl+U)"}
+        onPointerDown={onPointerDown}
+        onPointerMove={onPointerMove}
+        onPointerUp={onPointerUp}
+        onPointerCancel={onPointerUp}
+        onClick={() => {
+          if (suppressClickRef.current) return;
+          if (isEditor) return;
+          setOpen(true);
+        }}
       >
         <Accessibility size={28} strokeWidth={2.2} aria-hidden="true" />
       </button>

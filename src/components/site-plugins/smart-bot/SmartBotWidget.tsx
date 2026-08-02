@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { Bot, GripVertical, Mail, MessageCircle, Phone, Send, X } from "lucide-react";
 
 import {
@@ -142,10 +143,13 @@ export default function SmartBotWidget({
     if (Math.abs(dx) > 0.3 || Math.abs(dy) > 0.3) {
       dragRef.current.moved = true;
     }
-    // right/bottom positioning (RTL-friendly), invert X like benefits-wheel
+    // Keep labeled triggers fully on-screen on both edges.
+    const triggerStyleNow = settings.triggerStyle || "both";
+    const padX = triggerStyleNow === "icon" ? 6 : 10;
+    const padY = 10;
     const next = {
-      x: Math.min(96, Math.max(4, dragRef.current.origX - dx)),
-      y: Math.min(96, Math.max(4, dragRef.current.origY + dy)),
+      x: Math.min(100 - padX, Math.max(padX, dragRef.current.origX - dx)),
+      y: Math.min(100 - padY, Math.max(padY, dragRef.current.origY + dy)),
     };
     dragPosRef.current = next;
     setDragPos(next);
@@ -282,7 +286,7 @@ export default function SmartBotWidget({
   const options =
     showContact || awaitingInput || !currentNode ? [] : currentNode.options || [];
 
-  return (
+  const ui = (
     <div data-bizuply-smart-bot="true" dir="rtl">
       <button
         type="button"
@@ -304,11 +308,15 @@ export default function SmartBotWidget({
             : "h-14 w-14 justify-center rounded-full"
         }`}
         style={{
-          right: `${dragPos.x}%`,
+          // Anchor to the nearest side so wide labels grow inward, not off-screen.
+          ...(dragPos.x > 50
+            ? { left: `${100 - dragPos.x}%`, right: "auto" }
+            : { right: `${dragPos.x}%`, left: "auto" }),
           bottom: `${100 - dragPos.y}%`,
-          transform: "translate(50%, 50%)",
+          transform: "translateY(50%)",
           background: triggerColor,
           color: triggerTextColor,
+          maxWidth: "calc(100vw - 1.5rem)",
         }}
       >
         {isEditor ? <GripVertical size={14} className="opacity-80" /> : null}
@@ -324,8 +332,11 @@ export default function SmartBotWidget({
         <div
           className="fixed z-[99995] w-[min(100vw-1.5rem,380px)]"
           style={{
-            right: `max(0.75rem, calc(${dragPos.x}% - 8px))`,
+            ...(dragPos.x > 50
+              ? { left: "0.75rem", right: "auto" }
+              : { right: "0.75rem", left: "auto" }),
             bottom: `max(5.5rem, calc(${100 - dragPos.y}% + 36px))`,
+            maxWidth: "calc(100vw - 1.5rem)",
           }}
         >
           <div
@@ -504,4 +515,7 @@ export default function SmartBotWidget({
       ) : null}
     </div>
   );
+
+  if (typeof document === "undefined") return ui;
+  return createPortal(ui, document.body);
 }

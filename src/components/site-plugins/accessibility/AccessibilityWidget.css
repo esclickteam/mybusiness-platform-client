@@ -312,3 +312,22 @@
     min-height: 96px;
   }
 }
+
+
+.bizuply-a11y-trigger--free {
+  left: auto;
+  right: auto;
+  bottom: auto;
+  transform: translateY(50%);
+  touch-action: none;
+  cursor: grab;
+}
+
+.bizuply-a11y-trigger--free:active {
+  cursor: grabbing;
+}
+
+.bizuply-a11y-trigger.bizuply-a11y-trigger--free:hover,
+.bizuply-a11y-trigger.bizuply-a11y-trigger--free:focus-visible {
+  transform: translateY(50%) scale(1.04);
+}
