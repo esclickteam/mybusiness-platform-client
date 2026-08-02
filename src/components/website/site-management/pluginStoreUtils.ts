@@ -23,24 +23,16 @@ export const CATEGORY_GROUPS: Array<{
   categories: string[];
 }> = [
   {
-    title: "פרודוקטיביות",
-    categories: ["commerce", "scheduling", "finance"],
+    title: "מסחר ומעורבות",
+    categories: ["commerce", "engagement"],
   },
   {
-    title: "שיווק והמרות",
-    categories: ["marketing", "conversion", "engagement"],
+    title: "AI וניווט",
+    categories: ["ai", "navigation"],
   },
   {
-    title: "כלים וניווט",
-    categories: ["navigation", "utility", "content"],
-  },
-  {
-    title: "אנליטיקה ו-AI",
-    categories: ["analytics", "ai"],
-  },
-  {
-    title: "אמון ונגישות",
-    categories: ["trust", "accessibility", "media"],
+    title: "נגישות",
+    categories: ["accessibility"],
   },
 ];
 

@@ -334,14 +334,15 @@ export default function SmartBotWidget({
             onPointerDown={(e) => e.stopPropagation()}
           >
             <header
-              className="flex items-center justify-between gap-3 px-4 py-3 text-white"
+              dir="rtl"
+              className="flex items-center justify-between gap-3 px-4 py-3 text-right text-white"
               style={{ background: headerColor }}
             >
               <div className="flex min-w-0 items-center gap-3">
                 <span className="grid h-10 w-10 place-items-center rounded-2xl bg-white/15">
                   <Bot size={20} />
                 </span>
-                <div className="min-w-0">
+                <div className="min-w-0 text-right">
                   <strong className="block truncate text-sm font-black">
                     {settings.botName || "בוט חכם"}
                   </strong>
@@ -362,15 +363,19 @@ export default function SmartBotWidget({
 
             <div
               ref={scrollRef}
-              className="max-h-[min(50vh,360px)] space-y-3 overflow-y-auto px-4 py-4"
+              dir="rtl"
+              className="max-h-[min(50vh,360px)] space-y-3 overflow-y-auto px-4 py-4 text-right"
             >
               {lines.map((line) => (
                 <div
                   key={line.id}
-                  className={`flex ${line.role === "user" ? "justify-start" : "justify-end"}`}
+                  className={`flex ${
+                    line.role === "user" ? "justify-end" : "justify-start"
+                  }`}
                 >
                   <div
-                    className="max-w-[85%] rounded-2xl px-3.5 py-2.5 text-sm font-medium leading-6"
+                    dir="rtl"
+                    className="max-w-[85%] rounded-2xl px-3.5 py-2.5 text-right text-sm font-medium leading-6"
                     style={
                       line.role === "user"
                         ? { background: userBubble, color: userText }
@@ -383,9 +388,9 @@ export default function SmartBotWidget({
               ))}
             </div>
 
-            <div className="border-t border-slate-100 px-3 py-3">
+            <div className="border-t border-slate-100 px-3 py-3" dir="rtl">
               {showContact && hasContact ? (
-                <div className="grid gap-2">
+                <div className="grid gap-2 text-right">
                   {phone ? (
                     <a
                       href={isEditor ? undefined : `tel:${phone}`}
@@ -438,16 +443,17 @@ export default function SmartBotWidget({
                   </button>
                 </div>
               ) : awaitingInput ? (
-                <div className="flex items-center gap-2">
+                <div className="flex flex-row-reverse items-center gap-2">
                   <input
                     type="text"
+                    dir="rtl"
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
                     onKeyDown={(e) => {
                       if (e.key === "Enter") submitManualInput();
                     }}
                     placeholder="כתבו תשובה כאן..."
-                    className="h-11 min-w-0 flex-1 rounded-xl border border-slate-200 px-3 text-sm outline-none focus:border-teal-300 focus:ring-2 focus:ring-teal-100"
+                    className="h-11 min-w-0 flex-1 rounded-xl border border-slate-200 px-3 text-right text-sm outline-none focus:border-teal-300 focus:ring-2 focus:ring-teal-100"
                   />
                   <button
                     type="button"
@@ -460,13 +466,13 @@ export default function SmartBotWidget({
                   </button>
                 </div>
               ) : (
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap justify-start gap-2">
                   {options.map((option) => (
                     <button
                       key={option.id}
                       type="button"
                       onClick={() => handleOption(option)}
-                      className="rounded-full border border-slate-200 bg-white px-3 py-2 text-xs font-bold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
+                      className="rounded-full border border-slate-200 bg-white px-3 py-2 text-right text-xs font-bold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
                     >
                       {option.label}
                     </button>
@@ -479,7 +485,7 @@ export default function SmartBotWidget({
                         setShowContact(true);
                         pushLine("bot", "בחרו איך ליצור קשר:");
                       }}
-                      className="rounded-full px-3 py-2 text-xs font-bold text-white"
+                      className="rounded-full px-3 py-2 text-right text-xs font-bold text-white"
                       style={{ background: headerColor }}
                     >
                       {settings.contactLabel || "צרו קשר"}
