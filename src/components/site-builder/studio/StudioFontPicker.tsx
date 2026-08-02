@@ -236,6 +236,7 @@ function loadGoogleFont(font: StudioFont | string) {
   link.href = `https://fonts.googleapis.com/css2?family=${encodeURIComponent(
     family,
   ).replace(/%20/g, "+")}:wght@${weights}&display=swap`;
+  link.setAttribute("crossorigin", "anonymous");
 
   document.head.appendChild(link);
 }
