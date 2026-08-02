@@ -434,7 +434,7 @@ export default function VelmoraHome({
   onPageChange,
   onOpenProduct,
   catalogProducts,
-  isLiveCatalog: _isLiveCatalog = false,
+  isLiveCatalog = false,
   templateData,
   data,
   studioData,
