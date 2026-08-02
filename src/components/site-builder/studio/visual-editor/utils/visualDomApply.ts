@@ -20,6 +20,7 @@ import {
   type VisualLayoutItem,
 } from "./visualData";
 
+import { detectDeviceModeFromWidth } from "../../data/templates/shared/templateBreakpoints";
 import { applyVisualSectionOrderToDom } from "./visualSectionOrder";
 
 import {
@@ -1977,10 +1978,7 @@ function detectVisualDeviceMode(root: HTMLElement): VisualDeviceMode {
 
   const width = root.getBoundingClientRect().width || root.clientWidth;
 
-  if (width <= 480) return "mobile";
-  if (width <= 900) return "tablet";
-
-  return "desktop";
+  return detectDeviceModeFromWidth(width);
 }
 
 function layoutItemToStyle(

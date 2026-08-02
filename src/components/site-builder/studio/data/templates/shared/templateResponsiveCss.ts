@@ -8,7 +8,15 @@
  *
  * Scopes to template roots + public/editor roots. Targets unprefixed
  * Tailwind utilities only so mobile-first patterns stay intact.
+ *
+ * Container queries (`bizuply-template`) use the canvas/site width — not the
+ * desktop browser viewport — so Mobile/Tablet toggles and real phones match.
  */
+
+import {
+  TEMPLATE_CONTAINER,
+  TEMPLATE_MEDIA,
+} from "./templateBreakpoints";
 
 const ROOTS = [
   "[data-template-id]",
@@ -50,6 +58,16 @@ function mediaRules(
   return `@media ${query} {\n${inner}\n}`;
 }
 
+function containerRules(
+  query: string,
+  pairs: Array<{ selector: string; body: string }>,
+): string {
+  const inner = pairs
+    .map(({ selector, body }) => rule(underRoots(selector), body))
+    .join("\n\n");
+  return `@container ${TEMPLATE_CONTAINER} ${query} {\n${inner}\n}`;
+}
+
 function deviceRules(
   device: "mobile" | "tablet",
   pairs: Array<{ selector: string; body: string }>,
@@ -60,6 +78,48 @@ function deviceRules(
     )
     .join("\n\n");
 }
+
+/** vw display type + heavy shadows — scaled for narrow containers / phones */
+const MOBILE_DISPLAY_PAIRS: Array<{ selector: string; body: string }> = [
+  {
+    selector:
+      "h1, h2, h3, h4, h5, h6, [data-visual-edit-type='text'], p, span, a, button, label",
+    body:
+      "max-width: 100% !important; overflow-wrap: anywhere !important; word-break: break-word !important;",
+  },
+  {
+    selector: "[class*='text-'][class*='vw']",
+    body:
+      "font-size: clamp(1.35rem, 11cqw, 2.85rem) !important; line-height: 1.08 !important;",
+  },
+  {
+    selector: "[class*='drop-shadow-']",
+    body:
+      "filter: drop-shadow(0 8px 22px rgba(0,0,0,.42)) !important;",
+  },
+  {
+    selector:
+      "h1, h2, h3, h4, h5, h6, [data-visual-edit-type='text']",
+    body: "text-shadow: 0 2px 14px rgba(0,0,0,.28) !important;",
+  },
+  {
+    selector: "[style*='text-shadow']",
+    body: "text-shadow: 0 2px 14px rgba(0,0,0,.28) !important;",
+  },
+];
+
+const TABLET_DISPLAY_PAIRS: Array<{ selector: string; body: string }> = [
+  {
+    selector: "[class*='text-'][class*='vw']",
+    body:
+      "font-size: clamp(1.65rem, 9cqw, 4.5rem) !important; line-height: 1.08 !important;",
+  },
+  {
+    selector: "[class*='drop-shadow-']",
+    body:
+      "filter: drop-shadow(0 14px 36px rgba(0,0,0,.52)) !important;",
+  },
+];
 
 const GRID_MOBILE = [
   ".grid-cols-2",
@@ -89,37 +149,38 @@ const GRID_TABLET = [
 ];
 
 const MOBILE_PAIRS: Array<{ selector: string; body: string }> = [
+  ...MOBILE_DISPLAY_PAIRS,
   ...GRID_MOBILE.map((selector) => ({
     selector,
     body: "grid-template-columns: minmax(0, 1fr) !important;",
   })),
   {
     selector: ".text-9xl",
-    body: "font-size: clamp(1.75rem, 8vw, 2.5rem) !important; line-height: 1.1 !important;",
+    body: "font-size: clamp(1.75rem, 8cqw, 2.5rem) !important; line-height: 1.1 !important;",
   },
   {
     selector: ".text-8xl",
-    body: "font-size: clamp(1.7rem, 7.5vw, 2.35rem) !important; line-height: 1.1 !important;",
+    body: "font-size: clamp(1.7rem, 7.5cqw, 2.35rem) !important; line-height: 1.1 !important;",
   },
   {
     selector: ".text-7xl",
-    body: "font-size: clamp(1.65rem, 7vw, 2.15rem) !important; line-height: 1.12 !important;",
+    body: "font-size: clamp(1.65rem, 7cqw, 2.15rem) !important; line-height: 1.12 !important;",
   },
   {
     selector: ".text-6xl",
-    body: "font-size: clamp(1.55rem, 6.5vw, 1.95rem) !important; line-height: 1.15 !important;",
+    body: "font-size: clamp(1.55rem, 6.5cqw, 1.95rem) !important; line-height: 1.15 !important;",
   },
   {
     selector: ".text-5xl",
-    body: "font-size: clamp(1.45rem, 6vw, 1.75rem) !important; line-height: 1.2 !important;",
+    body: "font-size: clamp(1.45rem, 6cqw, 1.75rem) !important; line-height: 1.2 !important;",
   },
   {
     selector: ".text-4xl",
-    body: "font-size: clamp(1.35rem, 5.5vw, 1.55rem) !important; line-height: 1.25 !important;",
+    body: "font-size: clamp(1.35rem, 5.5cqw, 1.55rem) !important; line-height: 1.25 !important;",
   },
   {
     selector: ".text-3xl",
-    body: "font-size: clamp(1.25rem, 5vw, 1.4rem) !important; line-height: 1.3 !important;",
+    body: "font-size: clamp(1.25rem, 5cqw, 1.4rem) !important; line-height: 1.3 !important;",
   },
   {
     selector:
@@ -198,6 +259,7 @@ const MOBILE_PAIRS: Array<{ selector: string; body: string }> = [
 ];
 
 const TABLET_PAIRS: Array<{ selector: string; body: string }> = [
+  ...TABLET_DISPLAY_PAIRS,
   ...GRID_TABLET.map((selector) => ({
     selector,
     body: "grid-template-columns: repeat(2, minmax(0, 1fr)) !important;",
@@ -238,6 +300,8 @@ width: 100%;
 max-width: 100%;
 overflow-x: clip;
 box-sizing: border-box;
+container-type: inline-size;
+container-name: ${TEMPLATE_CONTAINER};
 `,
 )}
 
@@ -401,9 +465,14 @@ word-break: break-word;
 `,
 )}
 
-${mediaRules("(max-width: 767px)", MOBILE_PAIRS)}
+${mediaRules(TEMPLATE_MEDIA.mobile, MOBILE_PAIRS)}
 
-${mediaRules("(min-width: 768px) and (max-width: 1023px)", TABLET_PAIRS)}
+${mediaRules(TEMPLATE_MEDIA.tablet, TABLET_PAIRS)}
+
+/* Container width (editor frame + published site) — fixes vw + preview parity */
+${containerRules(`(max-width: ${767}px)`, MOBILE_PAIRS)}
+
+${containerRules(`(min-width: 768px) and (max-width: 1023px)`, TABLET_PAIRS)}
 
 /* Editor device preview + public JS device detection */
 ${deviceRules("mobile", MOBILE_PAIRS)}

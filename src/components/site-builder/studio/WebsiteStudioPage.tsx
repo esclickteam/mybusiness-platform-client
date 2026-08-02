@@ -34,6 +34,7 @@ import {
 } from "./utils/pageSeoUtils";
 
 import { getStudioTemplateRenderer } from "./data/templates/templateRendererRegistry";
+import { TEMPLATE_MEDIA } from "./data/templates/shared/templateBreakpoints";
 
 import { initBizuplyEditor } from "./grapes/initEditor";
 
@@ -3973,9 +3974,9 @@ function buildPublishedResponsiveCss(
     PublishedVisualDeviceMode,
     string
   > = {
-    desktop: "(min-width: 901px)",
-    tablet: "(min-width: 481px) and (max-width: 900px)",
-    mobile: "(max-width: 480px)",
+    desktop: TEMPLATE_MEDIA.desktop,
+    tablet: TEMPLATE_MEDIA.tablet,
+    mobile: TEMPLATE_MEDIA.mobile,
   };
 
   (

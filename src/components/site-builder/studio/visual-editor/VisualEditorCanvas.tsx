@@ -38,6 +38,7 @@ import {
 } from "./utils/visualSectionOrder";
 import { subscribeStoreCatalogChanged } from "../data/templates/shared/storeCatalogSync";
 import { templateEditorDevicePreviewCss } from "../data/templates/shared/templateEditorDevicePreviewCss";
+import { TEMPLATE_BREAKPOINTS } from "../data/templates/shared/templateBreakpoints";
 
 import type { VisualDeviceMode } from "./visualEditorTypes";
 import type { useVisualEditorState } from "./hooks/useVisualEditorState";
@@ -195,24 +196,27 @@ const EDITOR_UI_SELECTOR = [
 ].join(",");
 
 function getDeviceWidth(device: VisualDeviceMode, preview = false) {
-  if (device === "mobile") return "390px";
-  if (device === "tablet") return "820px";
+  const frame = TEMPLATE_BREAKPOINTS.editorFrame;
+  if (device === "mobile") return `${frame.mobile}px`;
+  if (device === "tablet") return `${frame.tablet}px`;
   // Wix-style framed desktop preview (not full bleed)
-  if (preview) return "min(1280px, calc(100vw - 96px))";
+  if (preview) return `min(${frame.desktop}px, calc(100vw - 96px))`;
   return "100%";
 }
 
 function getDeviceMaxWidth(device: VisualDeviceMode, preview = false) {
-  if (device === "mobile") return "390px";
-  if (device === "tablet") return "820px";
-  if (preview) return "1280px";
+  const frame = TEMPLATE_BREAKPOINTS.editorFrame;
+  if (device === "mobile") return `${frame.mobile}px`;
+  if (device === "tablet") return `${frame.tablet}px`;
+  if (preview) return `${frame.desktop}px`;
   return "100%";
 }
 
 function getPreviewDeviceLabel(device: VisualDeviceMode) {
-  if (device === "mobile") return "מובייל · 390px";
-  if (device === "tablet") return "טאבלט · 820px";
-  return "דסקטופ · 1280px";
+  const frame = TEMPLATE_BREAKPOINTS.editorFrame;
+  if (device === "mobile") return `מובייל · ${frame.mobile}px`;
+  if (device === "tablet") return `טאבלט · ${frame.tablet}px`;
+  return `דסקטופ · ${frame.desktop}px`;
 }
 
 function isHTMLElement(value: unknown): value is HTMLElement {
