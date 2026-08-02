@@ -591,6 +591,29 @@ function shouldApplyTextToNode(node: HTMLElement) {
   return false;
 }
 
+function applyMultilineTextValue(node: HTMLElement, value: string) {
+  const normalized = String(value || "").replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+
+  /*
+    Preserve intentional line breaks from the editor (Enter) so publish +
+    re-apply match what the user typed. Use pre-wrap only when needed so
+    single-line nav/CTA labels keep their original wrapping behavior.
+  */
+  if (normalized.includes("\n")) {
+    const current = String(
+      node.style.whiteSpace || node.style.getPropertyValue("white-space") || "",
+    )
+      .trim()
+      .toLowerCase();
+
+    if (!current || current === "normal" || current === "nowrap") {
+      node.style.whiteSpace = "pre-wrap";
+    }
+  }
+
+  node.textContent = normalized;
+}
+
 function applyTextContentToNode(node: HTMLElement, value: string) {
   const tagName = String(node.tagName || "").toLowerCase();
 
@@ -627,11 +650,11 @@ function applyTextContentToNode(node: HTMLElement, value: string) {
   const paintTarget = getTextPaintTarget(node);
 
   if (paintTarget && paintTarget !== node) {
-    paintTarget.textContent = value;
+    applyMultilineTextValue(paintTarget, value);
     return;
   }
 
-  node.textContent = value;
+  applyMultilineTextValue(node, value);
 }
 
 function applyLinkContentToNode(
@@ -1716,6 +1739,18 @@ export function applyMediaContentToNode(
       imageNode.style.visibility = "";
       imageNode.style.pointerEvents = "";
 
+      /*
+        Replace in-place (never leave a preview sibling on top of the old image)
+        and force the new asset to fill the existing slot.
+      */
+      if (imageNode.style.maxWidth === "none") {
+        imageNode.style.removeProperty("max-width");
+      }
+      if (imageNode.style.maxHeight === "none") {
+        imageNode.style.removeProperty("max-height");
+      }
+      applyMediaFitStyles(imageNode);
+
       imageNode.setAttribute("src", src);
       imageNode.setAttribute("data-visual-current-src", src);
       imageNode.setAttribute("data-image-src", src);
@@ -1779,12 +1814,9 @@ export function applyMediaContentToNode(
         `url("${safeSrc}")`,
         "important",
       );
-      if (!node.style.backgroundSize) {
-        node.style.setProperty("background-size", "cover");
-      }
-      if (!node.style.backgroundPosition) {
-        node.style.setProperty("background-position", "center");
-      }
+      node.style.setProperty("background-size", "cover", "important");
+      node.style.setProperty("background-position", "center", "important");
+      node.style.setProperty("background-repeat", "no-repeat", "important");
       node.setAttribute("data-visual-background-src", src);
     }
   }
@@ -1821,16 +1853,19 @@ export function applyVisualStylesToDom(
       });
 
       /*
-        וידאו מכבד עכשיו את הסגנון השמור בדיוק כמו תמונה.
-        אם לא הוגדר object-fit שמור, מחילים ברירת מחדל cover (ללא important)
-        כדי שלא תהיה עיוות מברירת המחדל של הדפדפן, אך מבלי לדרוס בחירה של המשתמש.
+        תמונה ווידאו מקבלים object-fit: cover כברירת מחדל אם עדיין לא הוגדר,
+        כדי שהמדיה תמלא את מיקום הסלוט ולא תשנה את גודל המיכל.
       */
-      const isVideoMedia =
+      const isMediaNode =
+        node instanceof HTMLImageElement ||
         node instanceof HTMLVideoElement ||
         node.getAttribute("data-visual-media-type") === "video" ||
-        node.getAttribute("data-resource-type") === "video";
+        node.getAttribute("data-visual-media-type") === "image" ||
+        node.getAttribute("data-resource-type") === "video" ||
+        node.getAttribute("data-resource-type") === "image" ||
+        node.getAttribute("data-visual-edit-type") === "image";
 
-      if (isVideoMedia && !node.style.objectFit) {
+      if (isMediaNode && !node.style.objectFit) {
         applyMediaFitStyles(node);
       }
     });

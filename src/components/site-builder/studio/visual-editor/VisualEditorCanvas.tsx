@@ -226,6 +226,22 @@ function getElementId(node: HTMLElement | null) {
 function getElementType(node: HTMLElement | null) {
   if (!node) return "";
 
+  const editableAttr = String(node.getAttribute("data-editable") || "")
+    .trim()
+    .toLowerCase();
+
+  if (editableAttr === "text") {
+    return "text";
+  }
+
+  if (editableAttr === "image" || editableAttr === "video" || editableAttr === "media") {
+    return "image";
+  }
+
+  if (editableAttr === "button" || editableAttr === "link") {
+    return "button";
+  }
+
   const explicit = String(
     node.getAttribute("data-visual-edit-type") ||
       node.getAttribute("data-visual-type") ||
@@ -296,12 +312,52 @@ function normalizeEditableText(value: unknown) {
 }
 
 /**
+ * Plain text containers (pills, badges, footer lines) often use a div with only
+ * phrasing content. Treat those as inline-editable across all templates.
+ */
+function isLeafTextContainer(node: HTMLElement) {
+  const tagName = String(node.tagName || "").toLowerCase();
+  if (!["div", "li", "td", "th", "dt", "dd"].includes(tagName)) return false;
+
+  if (
+    node.querySelector(
+      "img, video, svg, input, textarea, select, iframe, canvas, a, button, h1, h2, h3, h4, h5, h6, p, ul, ol, section, article, form",
+    )
+  ) {
+    return false;
+  }
+
+  for (const child of Array.from(node.childNodes)) {
+    if (child.nodeType === Node.TEXT_NODE) continue;
+    if (!(child instanceof HTMLElement)) return false;
+
+    const childTag = String(child.tagName || "").toLowerCase();
+    if (
+      !["span", "strong", "em", "b", "i", "br", "small", "u", "mark"].includes(
+        childTag,
+      )
+    ) {
+      return false;
+    }
+
+    if (child.querySelector("img, video, svg, input, textarea, select")) {
+      return false;
+    }
+  }
+
+  return Boolean(
+    normalizeEditableText(node.innerText || node.textContent || ""),
+  );
+}
+
+/**
  * Header nav links / CTAs are typed as "button" but their label text must still
- * be inline-editable. Also allow text-bearing anchors/buttons.
+ * be inline-editable. Also allow text-bearing anchors/buttons and leaf text divs.
  */
 function isInlineTextEditableNode(node: HTMLElement | null) {
   if (!node) return false;
   if (isTextNode(node)) return true;
+  if (isLeafTextContainer(node)) return true;
 
   const type = getElementType(node);
   const tagName = String(node.tagName || "").toLowerCase();
@@ -1095,16 +1151,24 @@ export default function VisualEditorCanvas({
       if (!node) return;
 
       const elementId = getElementId(node);
+      const nextText = save
+        ? normalizeText(node.innerText || node.textContent || "")
+        : originalTextRef.current;
 
       if (save && elementId) {
-        editorAny.updateText?.(
-          elementId,
-          normalizeText(node.innerText || node.textContent || ""),
-        );
+        editorAny.updateText?.(elementId, nextText);
       }
 
       if (!save) {
         node.innerText = originalTextRef.current;
+      }
+
+      /*
+        Keep multiline text visible after leaving contenteditable.
+        Without pre-wrap, saved "\n" from Enter collapses to a single line.
+      */
+      if (String(nextText || "").includes("\n")) {
+        node.style.whiteSpace = "pre-wrap";
       }
 
       node.removeAttribute("contenteditable");
@@ -1565,9 +1629,35 @@ export default function VisualEditorCanvas({
       event.preventDefault();
       event.stopPropagation();
 
-      const text = event.clipboardData?.getData("text/plain") || "";
+      const text = String(event.clipboardData?.getData("text/plain") || "")
+        .replace(/\r\n/g, "\n")
+        .replace(/\r/g, "\n");
 
-      document.execCommand("insertText", false, text);
+      if (!text) return;
+
+      const inserted = document.execCommand("insertText", false, text);
+      if (!inserted) {
+        // Fallback for browsers that reject insertText with multiline values
+        const selection = window.getSelection();
+        if (selection && selection.rangeCount > 0) {
+          const range = selection.getRangeAt(0);
+          range.deleteContents();
+          range.insertNode(document.createTextNode(text));
+          range.collapse(false);
+          selection.removeAllRanges();
+          selection.addRange(range);
+        }
+      }
+
+      window.requestAnimationFrame(refreshSelectionBox);
+    };
+
+    const handleCopyOrCut = (event: ClipboardEvent) => {
+      const node = editingNodeRef.current;
+      if (!node || !(event.target instanceof Node)) return;
+      if (!node.contains(event.target)) return;
+      // Allow native clipboard copy/cut while editing (mouse + keyboard).
+      event.stopPropagation();
     };
 
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -1586,9 +1676,30 @@ export default function VisualEditorCanvas({
         return;
       }
 
-      if (event.key === "Enter" && !event.shiftKey) {
+      // Ctrl/Cmd+Enter commits. Plain Enter / Shift+Enter insert a new line.
+      if (event.key === "Enter" && (event.ctrlKey || event.metaKey)) {
         event.preventDefault();
         finishInlineEdit(true);
+        return;
+      }
+
+      if (event.key === "Enter") {
+        event.preventDefault();
+        const inserted =
+          document.execCommand("insertLineBreak") ||
+          document.execCommand("insertText", false, "\n");
+        if (!inserted) {
+          const sel = window.getSelection();
+          if (sel && sel.rangeCount > 0) {
+            const range = sel.getRangeAt(0);
+            range.deleteContents();
+            range.insertNode(document.createElement("br"));
+            range.collapse(false);
+            sel.removeAllRanges();
+            sel.addRange(range);
+          }
+        }
+        window.requestAnimationFrame(refreshSelectionBox);
       }
     };
 
@@ -1597,6 +1708,8 @@ export default function VisualEditorCanvas({
     root.addEventListener("beforeinput", handleBeforeInput as EventListener, true);
     root.addEventListener("input", handleInput, true);
     root.addEventListener("paste", handlePaste, true);
+    root.addEventListener("copy", handleCopyOrCut, true);
+    root.addEventListener("cut", handleCopyOrCut, true);
     window.addEventListener("keydown", handleKeyDown, true);
 
     return () => {
@@ -1609,6 +1722,8 @@ export default function VisualEditorCanvas({
       );
       root.removeEventListener("input", handleInput, true);
       root.removeEventListener("paste", handlePaste, true);
+      root.removeEventListener("copy", handleCopyOrCut, true);
+      root.removeEventListener("cut", handleCopyOrCut, true);
       window.removeEventListener("keydown", handleKeyDown, true);
     };
   }, [
@@ -1876,6 +1991,24 @@ export default function VisualEditorCanvas({
       const elementId = String(selected?.id || getElementId(node)).trim();
 
       if (!node || !elementId || Boolean(editorAny.locked?.[elementId])) {
+        return;
+      }
+
+      /*
+        טקסט: לא מתחילים גרירה אוטומטית כדי לאפשר סימון / העתק-הדבק בעכבר.
+        הזזה של טקסט נשארת דרך ידית ההזזה של מסגרת הבחירה.
+      */
+      const textTarget =
+        event.target instanceof HTMLElement
+          ? resolveInlineTextEditTarget(node, event.target)
+          : null;
+
+      if (
+        textTarget ||
+        isInlineTextEditableNode(node) ||
+        (event.target instanceof HTMLElement &&
+          isInlineTextEditableNode(event.target))
+      ) {
         return;
       }
 

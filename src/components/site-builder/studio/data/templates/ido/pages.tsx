@@ -1,6 +1,10 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 
 import { TemplateText } from "../shared/TemplateText";
+import {
+  templateMediaProps,
+  templateSectionProps,
+} from "../shared/templateVisualAttrs";
 import { idoEditorCss } from "./editorCss";
 
 export type IdoPageId =
@@ -34,12 +38,25 @@ function isIdoEditMode(mode?: string) {
   return value === "edit" || value === "editor";
 }
 
-function useReveal() {
+function useReveal(editMode = false) {
   const [visible, setVisible] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
+    if (editMode) {
+      const nodes = Array.from(
+        document.querySelectorAll<HTMLElement>("[data-ido-reveal]"),
+      );
+      const all: Record<string, boolean> = {};
+      nodes.forEach((node) => {
+        const id = node.dataset.idoReveal;
+        if (id) all[id] = true;
+      });
+      setVisible(all);
+      return undefined;
+    }
+
     const nodes = Array.from(
-      document.querySelectorAll<HTMLElement>("[data-ido-reveal]")
+      document.querySelectorAll<HTMLElement>("[data-ido-reveal]"),
     );
 
     const observer = new IntersectionObserver(
@@ -56,12 +73,12 @@ function useReveal() {
           observer.unobserve(entry.target);
         });
       },
-      { threshold: 0.35 }
+      { threshold: 0.35 },
     );
 
     nodes.forEach((node) => observer.observe(node));
     return () => observer.disconnect();
-  }, []);
+  }, [editMode]);
 
   return visible;
 }
@@ -77,40 +94,40 @@ function revealClass(isVisible: boolean, delay = "") {
 }
 
 /**
- * Whole-block title (one editable text node). Letter-per-span animation made
- * the visual editor select each Hebrew character instead of the headline.
+ * Whole-block title (one editable text node). Newlines are preserved via
+ * white-space: pre-wrap so Enter in the visual editor creates real lines.
  */
 function AnimatedTitle({
-  lines,
+  text,
+  editId,
+  editLabel,
   active,
   className,
   startDelay = 0,
 }: {
-  lines: string[];
+  text: string;
+  editId: string;
+  editLabel: string;
   active: boolean;
   className: string;
   startDelay?: number;
 }) {
   return (
-    <h2
+    <TemplateText
+      as="h2"
+      editId={editId}
+      editLabel={editLabel}
       className={[
         className,
-        "transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)] will-change-transform",
+        "transition-all duration-700 ease-[cubic-bezier(0.19,1,0.22,1)] will-change-transform whitespace-pre-wrap",
         active
           ? "translate-y-0 opacity-100 blur-none"
           : "translate-y-8 opacity-0 blur-md",
       ].join(" ")}
       style={{ transitionDelay: `${startDelay}ms` }}
-      data-editable="text"
-      data-visual-edit-type="text"
     >
-      {lines.map((line, index) => (
-        <React.Fragment key={`${index}-${line}`}>
-          {index > 0 ? <br /> : null}
-          {line}
-        </React.Fragment>
-      ))}
-    </h2>
+      {text}
+    </TemplateText>
   );
 }
 
@@ -142,11 +159,8 @@ function FormFieldSlot({
 function Header() {
   return (
     <header
+      {...templateSectionProps("header", "Header", "header")}
       data-template-section-type="header"
-      data-section-kind="header"
-      data-template-section-id="header"
-      data-section-title="Header"
-      data-visual-section-key="header"
       className="sticky top-0 z-50 px-4 pt-4 md:px-8"
       dir="rtl"
     >
@@ -212,10 +226,14 @@ function Header() {
 function Hero({ editMode = false }: { editMode?: boolean }) {
   const [open, setOpen] = useState(editMode);
 
-  const titleLines = ["מומחה סושיאל", "שבונה נוכחות", "שמוכרת בשבילך"];
-
   const heroImage =
     "https://images.unsplash.com/photo-1556761175-4b46a572b786?auto=format&fit=crop&w=2400&q=95";
+
+  const heroMediaAttrs = {
+    ...templateMediaProps("hero.background", "תמונת הירו"),
+    "data-visual-background-layer": "true",
+    "data-visual-background-src": heroImage,
+  };
 
   useEffect(() => {
     if (editMode) {
@@ -230,43 +248,57 @@ function Hero({ editMode = false }: { editMode?: boolean }) {
   return (
     <section
       id="home"
+      {...templateSectionProps("hero", "הירו", "hero")}
       className="relative min-h-[100dvh] overflow-hidden bg-[#07100e] text-white"
       dir="rtl"
     >
       <div className="absolute inset-0 bg-[#07100e]" />
 
       <div className="absolute inset-0 z-0 overflow-hidden">
+        {/*
+          Same stable media id on all hero layers so replacing the image updates
+          every animated layer in place (no overlay of old + new).
+        */}
         <div
+          {...heroMediaAttrs}
           className={[
             "absolute inset-0 bg-cover bg-center transition-all duration-[1700ms] ease-[cubic-bezier(0.83,0,0.17,1)] will-change-transform",
             open ? "translate-x-0 opacity-100" : "-translate-x-full opacity-100",
           ].join(" ")}
           style={{
             backgroundImage: `url(${heroImage})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
             clipPath: "inset(0 50% 0 0)",
             transitionDelay: "1450ms",
           }}
         />
 
         <div
+          {...heroMediaAttrs}
           className={[
             "absolute inset-0 bg-cover bg-center transition-all duration-[1700ms] ease-[cubic-bezier(0.83,0,0.17,1)] will-change-transform",
             open ? "translate-x-0 opacity-100" : "translate-x-full opacity-100",
           ].join(" ")}
           style={{
             backgroundImage: `url(${heroImage})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
             clipPath: "inset(0 0 0 50%)",
             transitionDelay: "1450ms",
           }}
         />
 
         <div
+          {...heroMediaAttrs}
           className={[
             "absolute inset-0 bg-cover bg-center transition-opacity duration-700",
             open ? "opacity-100" : "opacity-0",
           ].join(" ")}
           style={{
             backgroundImage: `url(${heroImage})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center",
             transitionDelay: "3100ms",
           }}
         />
@@ -289,19 +321,31 @@ function Hero({ editMode = false }: { editMode?: boolean }) {
           ].join(" ")}
           style={{ transitionDelay: "100ms" }}
         >
-          <span className="h-2 w-2 rounded-full bg-[#c9f4dc]" />
-          אסטרטגיה · תוכן · קמפיינים · צמיחה דיגיטלית
+          <span className="h-2 w-2 shrink-0 rounded-full bg-[#c9f4dc]" />
+          <TemplateText
+            as="span"
+            editId="hero.eyebrow"
+            editLabel="תג הירו"
+            className="whitespace-pre-wrap"
+          >
+            אסטרטגיה · תוכן · קמפיינים · צמיחה דיגיטלית
+          </TemplateText>
         </div>
 
         <AnimatedTitle
-          lines={titleLines}
+          text={"מומחה סושיאל\nשבונה נוכחות\nשמוכרת בשבילך"}
+          editId="hero.title"
+          editLabel="כותרת הירו"
           active={open}
           className="relative z-40 mx-auto max-w-[1450px] overflow-visible pb-4 text-center text-[15.5vw] font-semibold leading-[0.86] tracking-[-0.085em] text-white drop-shadow-[0_30px_90px_rgba(0,0,0,.82)] sm:text-[12vw] md:text-[9vw] lg:text-[7.6vw] xl:text-[7.3rem]"
         />
 
-        <p
+        <TemplateText
+          as="p"
+          editId="hero.subtitle"
+          editLabel="תת-כותרת הירו"
           className={[
-            "relative z-40 mx-auto mt-5 max-w-2xl text-center text-base leading-8 text-white/76 drop-shadow-[0_16px_42px_rgba(0,0,0,.75)] md:text-lg",
+            "relative z-40 mx-auto mt-5 max-w-2xl whitespace-pre-wrap text-center text-base leading-8 text-white/76 drop-shadow-[0_16px_42px_rgba(0,0,0,.75)] md:text-lg",
             "transition-all duration-900 ease-[cubic-bezier(0.19,1,0.22,1)]",
             open
               ? "translate-y-0 opacity-100 blur-none"
@@ -311,7 +355,7 @@ function Hero({ editMode = false }: { editMode?: boolean }) {
         >
           בניית מותג דיגיטלי, תוכן שמייצר אמון וקמפיינים שמביאים לידים,
           לקוחות ותוצאות מדידות.
-        </p>
+        </TemplateText>
 
         <div
           className={[
@@ -328,20 +372,24 @@ function Hero({ editMode = false }: { editMode?: boolean }) {
             className="rounded-full bg-[#c9f4dc] px-7 py-4 text-sm font-black shadow-[0_18px_60px_rgba(201,244,220,.22)] transition duration-500 hover:-translate-y-0.5 hover:bg-white"
             style={{ color: "#07100e" }}
           >
-            קביעת שיחת ייעוץ
+            <TemplateText as="span" editId="hero.cta.primary" editLabel="כפתור ייעוץ">
+              קביעת שיחת ייעוץ
+            </TemplateText>
           </a>
 
           <a
             href="#services"
             className="rounded-full border border-white/15 bg-white/[0.09] px-7 py-4 text-sm font-black text-white shadow-2xl backdrop-blur-2xl transition duration-500 hover:-translate-y-0.5 hover:border-[#c9f4dc] hover:bg-white/[0.14]"
           >
-            צפייה בשירותים
+            <TemplateText as="span" editId="hero.cta.secondary" editLabel="כפתור שירותים">
+              צפייה בשירותים
+            </TemplateText>
           </a>
         </div>
 
         <div
           className={[
-            "relative z-40 mt-10 grid w-full max-w-xl grid-cols-1 md:grid-cols-3 gap-3",
+            "relative z-40 mt-10 grid w-full max-w-xl grid-cols-1 gap-3 md:grid-cols-3",
             "transition-all duration-900 ease-[cubic-bezier(0.19,1,0.22,1)]",
             open
               ? "translate-y-0 opacity-100 blur-none"
@@ -350,18 +398,30 @@ function Hero({ editMode = false }: { editMode?: boolean }) {
           style={{ transitionDelay: "2750ms" }}
         >
           {[
-            ["7.2M", "חשיפות"],
-            ["340%", "צמיחה"],
-            ["48+", "מותגים"],
-          ].map(([num, label]) => (
+            ["7.2M", "חשיפות", "hero.stat.1"],
+            ["340%", "צמיחה", "hero.stat.2"],
+            ["48+", "מותגים", "hero.stat.3"],
+          ].map(([num, label, id]) => (
             <div
-              key={label}
+              key={id}
               className="rounded-[1.5rem] border border-white/10 bg-[#07100e]/45 p-4 text-center shadow-2xl backdrop-blur-2xl"
             >
-              <div className="text-2xl font-semibold tracking-[-0.05em] text-[#c9f4dc]">
+              <TemplateText
+                as="div"
+                editId={`${id}.value`}
+                editLabel={`מספר ${label}`}
+                className="text-2xl font-semibold tracking-[-0.05em] text-[#c9f4dc]"
+              >
                 {num}
-              </div>
-              <div className="mt-1 text-xs text-white/60">{label}</div>
+              </TemplateText>
+              <TemplateText
+                as="div"
+                editId={`${id}.label`}
+                editLabel={`תווית ${label}`}
+                className="mt-1 text-xs text-white/60"
+              >
+                {label}
+              </TemplateText>
             </div>
           ))}
         </div>
@@ -372,14 +432,21 @@ function Hero({ editMode = false }: { editMode?: boolean }) {
   );
 }
 
-function Services({ visible }: { visible: Record<string, boolean> }) {
-  const showRight = visible["services-right"];
-  const showImage = visible["services-image"];
-  const showLeft = visible["services-left"];
+function Services({
+  visible,
+  editMode = false,
+}: {
+  visible: Record<string, boolean>;
+  editMode?: boolean;
+}) {
+  const showRight = editMode || visible["services-right"];
+  const showImage = editMode || visible["services-image"];
+  const showLeft = editMode || visible["services-left"];
 
   return (
     <section
       id="services"
+      {...templateSectionProps("services", "שירותים", "services")}
       className="relative overflow-hidden bg-[#aebcc3] px-4 py-20 text-[#111827] md:px-8 md:py-0"
       dir="rtl"
     >
@@ -397,20 +464,32 @@ function Services({ visible }: { visible: Record<string, boolean> }) {
             transitionDelay: "120ms",
           }}
         >
-          <h2 className="text-4xl font-semibold leading-[1.04] tracking-[-0.055em] md:text-5xl">
+          <TemplateText
+            as="h2"
+            editId="services.title"
+            editLabel="כותרת שירותים"
+            className="whitespace-pre-wrap text-4xl font-semibold leading-[1.04] tracking-[-0.055em] md:text-5xl"
+          >
             אסטרטגיית תוכן שמרגישה כמו מותג, לא כמו עוד פוסט.
-          </h2>
+          </TemplateText>
 
-          <p className="mt-7 text-lg leading-8 text-[#111827]/75">
+          <TemplateText
+            as="p"
+            editId="services.body"
+            editLabel="תיאור שירותים"
+            className="mt-7 whitespace-pre-wrap text-lg leading-8 text-[#111827]/75"
+          >
             אנחנו בונים לעסק שפה ברורה, מסרים חדים ותוכן שמוביל את הקהל
             מהיכרות ראשונה ועד פנייה אמיתית.
-          </p>
+          </TemplateText>
 
           <a
             href="#about"
             className="mt-9 inline-flex items-center gap-3 text-sm font-black uppercase tracking-[0.12em] text-[#111827]"
           >
-            אודות
+            <TemplateText as="span" editId="services.cta" editLabel="כפתור אודות">
+              אודות
+            </TemplateText>
             <span className="grid h-8 w-8 place-items-center rounded-md bg-[#111827] text-white">
               ←
             </span>
@@ -434,6 +513,7 @@ function Services({ visible }: { visible: Record<string, boolean> }) {
           <img
             src="https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&w=1500&q=90"
             alt="Social media strategist"
+            {...templateMediaProps("services.image", "תמונת שירותים")}
             className={[
               "h-full w-full object-cover transition-transform ease-[cubic-bezier(0.19,1,0.22,1)]",
               showImage ? "scale-100" : "scale-125",
@@ -441,10 +521,12 @@ function Services({ visible }: { visible: Record<string, boolean> }) {
             style={{
               transitionDuration: "2600ms",
               transitionDelay: "520ms",
+              objectFit: "cover",
+              objectPosition: "center",
             }}
           />
 
-          <div className="absolute inset-0 bg-gradient-to-t from-[#07100e]/35 via-transparent to-transparent" />
+          <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#07100e]/35 via-transparent to-transparent" />
         </div>
 
         <div
@@ -461,7 +543,7 @@ function Services({ visible }: { visible: Record<string, boolean> }) {
           }}
         >
           <div className="mx-auto mb-24 hidden h-14 w-14 items-center justify-center md:flex">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-[2px]">
+            <div className="grid grid-cols-1 gap-[2px] sm:grid-cols-2 lg:grid-cols-4">
               {Array.from({ length: 16 }).map((_, index) => (
                 <span
                   key={index}
@@ -471,14 +553,24 @@ function Services({ visible }: { visible: Record<string, boolean> }) {
             </div>
           </div>
 
-          <p className="text-sm font-black uppercase leading-7 tracking-[0.12em] text-[#111827]/80">
+          <TemplateText
+            as="p"
+            editId="services.sideCopy"
+            editLabel="טקסט צד שירותים"
+            className="whitespace-pre-wrap text-sm font-black uppercase leading-7 tracking-[0.12em] text-[#111827]/80"
+          >
             ניהול סושיאל, קריאייטיב, קמפיינים, תוכן, דוחות, מסעות לקוח
             ושיפור מתמיד של הביצועים — במקום אחד.
-          </p>
+          </TemplateText>
 
-          <div className="mt-24 text-xs font-black uppercase tracking-[0.24em] text-[#111827]/60">
+          <TemplateText
+            as="div"
+            editId="services.partnerLabel"
+            editLabel="Digital Growth Partner"
+            className="mt-24 whitespace-pre-wrap text-xs font-black uppercase tracking-[0.24em] text-[#111827]/60"
+          >
             Digital Growth Partner
-          </div>
+          </TemplateText>
         </div>
       </div>
     </section>
@@ -497,16 +589,19 @@ function About({
 
   const aboutImages = [
     {
+      id: "about.card.1",
       src: "https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1500&q=90",
       title: "תוכן שמייצר אמון",
       text: "פוסטים, קמפיינים ומסרים שנבנים לפי קהל, שלב במסע ומטרה עסקית.",
     },
     {
+      id: "about.card.2",
       src: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1500&q=90",
       title: "דאטה שמוביל החלטות",
       text: "מעקב אחרי ביצועים, שיפור קמפיינים והבנה מה באמת מזיז את המספרים.",
     },
     {
+      id: "about.card.3",
       src: "https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1500&q=90",
       title: "מערכת שמביאה פניות",
       text: "חיבור בין קריאייטיב, הצעה, תוכן, מודעות ולידים במקום אחד ברור.",
@@ -516,12 +611,13 @@ function About({
   return (
     <section
       id="about"
+      {...templateSectionProps("about", "אודות", "about")}
       className="relative overflow-hidden bg-[#07100e] px-4 py-24 text-white md:px-8 md:py-32"
       dir="rtl"
     >
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute left-[-16rem] top-[8rem] h-[36rem] w-[36rem] rounded-full bg-[#c9f4dc]/10 blur-3xl" />
-        <div className="absolute right-[-14rem] bottom-[-10rem] h-[34rem] w-[34rem] rounded-full bg-[#d8b98f]/10 blur-3xl" />
+        <div className="absolute bottom-[-10rem] right-[-14rem] h-[34rem] w-[34rem] rounded-full bg-[#d8b98f]/10 blur-3xl" />
       </div>
 
       <div className="relative z-10 mx-auto max-w-[1500px]">
@@ -538,20 +634,32 @@ function About({
                 : "translate-y-8 opacity-0 blur-md",
             ].join(" ")}
           >
-            <span className="h-2 w-2 rounded-full bg-[#c9f4dc]" />
-            לא רק תוכן — מערכת צמיחה
+            <span className="h-2 w-2 shrink-0 rounded-full bg-[#c9f4dc]" />
+            <TemplateText
+              as="span"
+              editId="about.eyebrow"
+              editLabel="תג אודות"
+              className="whitespace-pre-wrap"
+            >
+              לא רק תוכן — מערכת צמיחה
+            </TemplateText>
           </div>
 
           <AnimatedTitle
-            lines={["לא מעלים פוסטים.", "בונים ביקוש.", "מייצרים פניות."]}
+            text={"לא מעלים פוסטים.\nבונים ביקוש.\nמייצרים פניות."}
+            editId="about.title"
+            editLabel="כותרת אודות"
             active={titleActive}
             startDelay={160}
             className="mx-auto overflow-visible pb-5 text-center text-[13vw] font-semibold leading-[0.86] tracking-[-0.08em] text-white drop-shadow-[0_26px_90px_rgba(0,0,0,.7)] sm:text-[9vw] md:text-[7vw] lg:text-[5.8rem]"
           />
 
-          <p
+          <TemplateText
+            as="p"
+            editId="about.subtitle"
+            editLabel="תיאור אודות"
             className={[
-              "mx-auto mt-5 max-w-2xl text-center text-base leading-8 text-white/62 md:text-lg",
+              "mx-auto mt-5 max-w-2xl whitespace-pre-wrap text-center text-base leading-8 text-white/62 md:text-lg",
               "transition-all duration-1000 ease-[cubic-bezier(0.19,1,0.22,1)]",
               titleActive
                 ? "translate-y-0 opacity-100 blur-none"
@@ -561,7 +669,7 @@ function About({
           >
             הבלוק הזה מציג את הדרך שבה משווק מקצועי הופך נראות דיגיטלית
             למערכת שמייצרת אמון, תנועה, לידים ומכירות.
-          </p>
+          </TemplateText>
         </div>
 
         <div
@@ -570,7 +678,7 @@ function About({
         >
           {aboutImages.map((item, index) => (
             <article
-              key={item.title}
+              key={item.id}
               className={[
                 "group overflow-hidden rounded-[2rem] border border-white/10 bg-white/[0.055] shadow-[0_35px_120px_rgba(0,0,0,.32)] backdrop-blur-xl",
                 "transition-all ease-[cubic-bezier(0.19,1,0.22,1)]",
@@ -588,6 +696,7 @@ function About({
                 <img
                   src={item.src}
                   alt={item.title}
+                  {...templateMediaProps(`${item.id}.image`, `תמונת כרטיס ${index + 1}`)}
                   className={[
                     "h-full w-full object-cover transition-transform ease-[cubic-bezier(0.19,1,0.22,1)] group-hover:scale-110",
                     imagesActive ? "scale-100" : "scale-125",
@@ -595,18 +704,37 @@ function About({
                   style={{
                     transitionDuration: "2200ms",
                     transitionDelay: `${index * 220}ms`,
+                    objectFit: "cover",
+                    objectPosition: "center",
                   }}
                 />
               </div>
 
               <div className="p-7">
-                <div className="mb-4 text-xs font-black uppercase tracking-[0.22em] text-[#c9f4dc]">
-                  0{index + 1}
-                </div>
-                <h3 className="text-3xl font-semibold tracking-[-0.045em]">
+                <TemplateText
+                  as="div"
+                  editId={`${item.id}.index`}
+                  editLabel={`מספר כרטיס ${index + 1}`}
+                  className="mb-4 text-xs font-black uppercase tracking-[0.22em] text-[#c9f4dc]"
+                >
+                  {`0${index + 1}`}
+                </TemplateText>
+                <TemplateText
+                  as="h3"
+                  editId={`${item.id}.title`}
+                  editLabel={`כותרת כרטיס ${index + 1}`}
+                  className="whitespace-pre-wrap text-3xl font-semibold tracking-[-0.045em]"
+                >
                   {item.title}
-                </h3>
-                <p className="mt-4 leading-7 text-white/58">{item.text}</p>
+                </TemplateText>
+                <TemplateText
+                  as="p"
+                  editId={`${item.id}.text`}
+                  editLabel={`תיאור כרטיס ${index + 1}`}
+                  className="mt-4 whitespace-pre-wrap leading-7 text-white/58"
+                >
+                  {item.text}
+                </TemplateText>
               </div>
             </article>
           ))}
@@ -616,13 +744,18 @@ function About({
   );
 }
 
-function Gallery() {
+function Gallery({ editMode = false }: { editMode?: boolean }) {
   const sectionRef = useRef<HTMLElement | null>(null);
-  const [active, setActive] = useState(false);
+  const [active, setActive] = useState(editMode);
 
   useEffect(() => {
+    if (editMode) {
+      setActive(true);
+      return undefined;
+    }
+
     const element = sectionRef.current;
-    if (!element) return;
+    if (!element) return undefined;
 
     const observer = new IntersectionObserver(
       ([entry]) => {
@@ -631,16 +764,17 @@ function Gallery() {
           observer.unobserve(element);
         }
       },
-      { threshold: 0.28 }
+      { threshold: 0.28 },
     );
 
     observer.observe(element);
 
     return () => observer.disconnect();
-  }, []);
+  }, [editMode]);
 
   const orbitImages = [
     {
+      id: "gallery.orbit.1",
       src: "https://images.unsplash.com/photo-1551836022-d5d88e9218df?auto=format&fit=crop&w=1300&q=90",
       alt: "Marketing meeting",
       className:
@@ -650,6 +784,7 @@ function Gallery() {
       delay: 2100,
     },
     {
+      id: "gallery.orbit.2",
       src: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1300&q=90",
       alt: "Marketing analytics",
       className:
@@ -659,6 +794,7 @@ function Gallery() {
       delay: 2900,
     },
     {
+      id: "gallery.orbit.3",
       src: "https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1300&q=90",
       alt: "Digital team",
       className:
@@ -668,6 +804,7 @@ function Gallery() {
       delay: 3700,
     },
     {
+      id: "gallery.orbit.4",
       src: "https://images.unsplash.com/photo-1559136555-9303baea8ebd?auto=format&fit=crop&w=1300&q=90",
       alt: "Creative workspace",
       className:
@@ -691,7 +828,8 @@ function Gallery() {
     <section
       id="gallery"
       ref={sectionRef}
-      className="relative min-h-[100dvh] overflow-hidden bg-[#22292b] px-4 py-12 md:py-24 text-white md:px-8"
+      {...templateSectionProps("gallery", "גלריה", "gallery")}
+      className="relative min-h-[100dvh] overflow-hidden bg-[#22292b] px-4 py-12 text-white md:px-8 md:py-24"
       dir="rtl"
     >
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(201,244,220,.08),transparent_38%),linear-gradient(180deg,rgba(255,255,255,.03),transparent)]" />
@@ -777,23 +915,29 @@ function Gallery() {
             transitionDelay: "1500ms",
           }}
         >
-          <h2 className="text-4xl font-semibold leading-[1.08] tracking-[-0.06em] text-white drop-shadow-[0_22px_70px_rgba(0,0,0,.58)] md:text-7xl">
-            מחברים בין קהל, תוכן, דאטה
-            <br />
-            וקמפיינים
-            <br />
-            למערכת צמיחה אחת ברורה.
-          </h2>
+          <TemplateText
+            as="h2"
+            editId="gallery.title"
+            editLabel="כותרת גלריה"
+            className="whitespace-pre-wrap text-4xl font-semibold leading-[1.08] tracking-[-0.06em] text-white drop-shadow-[0_22px_70px_rgba(0,0,0,.58)] md:text-7xl"
+          >
+            {"מחברים בין קהל, תוכן, דאטה\nוקמפיינים\nלמערכת צמיחה אחת ברורה."}
+          </TemplateText>
 
-          <p className="mx-auto mt-7 max-w-2xl text-base leading-8 text-white/64 md:text-lg">
+          <TemplateText
+            as="p"
+            editId="gallery.subtitle"
+            editLabel="תיאור גלריה"
+            className="mx-auto mt-7 max-w-2xl whitespace-pre-wrap text-base leading-8 text-white/64 md:text-lg"
+          >
             המעגלים מייצגים את מערכת השיווק: חשיפה, מסר, קהל, ליד,
             מכירה ושיפור מתמיד — כל שכבה מתרחבת ומחזקת את הבאה.
-          </p>
+          </TemplateText>
         </div>
 
         {orbitImages.map((image) => (
           <div
-            key={image.alt}
+            key={image.id}
             className={[
               "absolute z-30 hidden overflow-hidden rounded-[2.4rem] border border-white/10 bg-black shadow-[0_35px_110px_rgba(0,0,0,.42)] md:block",
               image.className,
@@ -813,10 +957,12 @@ function Gallery() {
             <img
               src={image.src}
               alt={image.alt}
+              {...templateMediaProps(image.id, image.alt)}
               className="h-full w-full object-cover"
+              style={{ objectFit: "cover", objectPosition: "center" }}
             />
 
-            <div className="absolute inset-0 bg-gradient-to-t from-[#22292b]/20 via-transparent to-transparent" />
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#22292b]/20 via-transparent to-transparent" />
           </div>
         ))}
       </div>
@@ -839,8 +985,8 @@ function Booking({
   return (
     <section
       id="booking"
+      {...templateSectionProps("booking", "שיחת ייעוץ", "contact")}
       data-template-section-type="contact"
-      data-section-kind="contact"
       className="bg-[#ecf3ea] px-4 py-24 text-[#07100e] md:px-8 md:py-32"
       dir="rtl"
     >
@@ -851,32 +997,34 @@ function Booking({
         >
           <div className="mb-5 flex items-center gap-3">
             <span className="h-px w-12 bg-[#07100e]" />
-            <span
+            <TemplateText
+              as="span"
+              editId="booking.eyebrow"
+              editLabel="תג ייעוץ"
               className="text-sm font-black tracking-[0.24em] text-[#07100e]/70"
-              data-editable="text"
             >
               CONSULTATION
-            </span>
+            </TemplateText>
           </div>
 
-          <h2
-            className="text-5xl font-semibold leading-[0.92] tracking-[-0.065em] md:text-8xl"
-            data-editable="text"
+          <TemplateText
+            as="h2"
+            editId="booking.title"
+            editLabel="כותרת ייעוץ"
+            className="whitespace-pre-wrap text-5xl font-semibold leading-[0.92] tracking-[-0.065em] md:text-8xl"
           >
-            בואו נבנה
-            <br />
-            תוכנית צמיחה
-            <br />
-            לעסק שלך.
-          </h2>
+            {"בואו נבנה\nתוכנית צמיחה\nלעסק שלך."}
+          </TemplateText>
 
-          <p
-            className="mt-7 max-w-xl text-lg leading-8 text-[#07100e]/65"
-            data-editable="text"
+          <TemplateText
+            as="p"
+            editId="booking.subtitle"
+            editLabel="תיאור ייעוץ"
+            className="mt-7 max-w-xl whitespace-pre-wrap text-lg leading-8 text-[#07100e]/65"
           >
             אזור שמוכן לחיבור ל־CRM, וואטסאפ, יומן או כל מערכת לידים שתוסיף
             בהמשך.
-          </p>
+          </TemplateText>
         </div>
 
         <form
@@ -937,7 +1085,13 @@ function Booking({
                 tabIndex={0}
                 className="flex h-14 w-full cursor-pointer items-center justify-center rounded-full bg-[#07100e] text-sm font-black text-white transition duration-500 hover:-translate-y-0.5 hover:bg-[#17342d]"
               >
-                שליחת בקשה לשיחה
+                <TemplateText
+                  as="span"
+                  editId="booking.form.submitLabel"
+                  editLabel="טקסט כפתור שליחה"
+                >
+                  שליחת בקשה לשיחה
+                </TemplateText>
               </div>
             </FormFieldSlot>
           </div>
@@ -947,52 +1101,94 @@ function Booking({
   );
 }
 
-function Faq({ visible }: { visible: Record<string, boolean> }) {
+function Faq({
+  visible,
+  editMode = false,
+}: {
+  visible: Record<string, boolean>;
+  editMode?: boolean;
+}) {
+  const titleVisible = editMode || Boolean(visible["faq-title"]);
+
+  const items = [
+    {
+      id: "faq.item.1",
+      q: "אפשר לערוך את כל הטקסטים והתמונות?",
+      a: "כן. זה בנוי כתבנית רגילה לעורך שלך עם תמונות, טקסטים וכפתורים.",
+    },
+    {
+      id: "faq.item.2",
+      q: "זה מותאם לנייד?",
+      a: "כן. המבנה רספונסיבי עם Tailwind בלבד.",
+    },
+    {
+      id: "faq.item.3",
+      q: "אפשר לחבר לוואטסאפ או CRM?",
+      a: "כן. הטופס מוכן עיצובית לחיבור למערכת לידים בהמשך.",
+    },
+  ];
+
   return (
     <section
+      {...templateSectionProps("faq", "שאלות נפוצות", "faq")}
+      data-template-section-type="faq"
       className="bg-[#07100e] px-4 py-24 text-white md:px-8 md:py-32"
       dir="rtl"
     >
       <div className="mx-auto max-w-4xl">
         <div
           data-ido-reveal="faq-title"
-          className={revealClass(visible["faq-title"])}
+          className={revealClass(titleVisible)}
         >
           <div className="mb-5 flex items-center gap-3">
             <span className="h-px w-12 bg-[#c9f4dc]" />
-            <span className="text-sm font-black tracking-[0.24em] text-[#c9f4dc]">
+            <TemplateText
+              as="span"
+              editId="faq.eyebrow"
+              editLabel="תג FAQ"
+              className="text-sm font-black tracking-[0.24em] text-[#c9f4dc]"
+            >
               FAQ
-            </span>
+            </TemplateText>
           </div>
 
-          <h2 className="max-w-5xl text-4xl font-semibold leading-[1.02] tracking-[-0.055em] text-white md:text-7xl">
+          <TemplateText
+            as="h2"
+            editId="faq.title"
+            editLabel="כותרת FAQ"
+            className="max-w-5xl whitespace-pre-wrap text-4xl font-semibold leading-[1.02] tracking-[-0.055em] text-white md:text-7xl"
+          >
             שאלות לפני שמתחילים לבנות נוכחות דיגיטלית.
-          </h2>
+          </TemplateText>
         </div>
 
         <div className="mt-12 space-y-4">
-          {[
-            [
-              "אפשר לערוך את כל הטקסטים והתמונות?",
-              "כן. זה בנוי כתבנית רגילה לעורך שלך עם תמונות, טקסטים וכפתורים.",
-            ],
-            ["זה מותאם לנייד?", "כן. המבנה רספונסיבי עם Tailwind בלבד."],
-            [
-              "אפשר לחבר לוואטסאפ או CRM?",
-              "כן. הטופס מוכן עיצובית לחיבור למערכת לידים בהמשך.",
-            ],
-          ].map(([q, a], index) => (
+          {items.map((item, index) => (
             <div
-              key={q}
+              key={item.id}
               data-ido-reveal={`faq-${index}`}
               className={[
-                revealClass(visible[`faq-${index}`]),
+                revealClass(editMode || Boolean(visible[`faq-${index}`])),
                 "rounded-[1.7rem] border border-white/10 bg-white/[0.06] p-6 backdrop-blur-xl",
               ].join(" ")}
             >
-              <h3 className="text-xl font-semibold">{q}</h3>
+              <TemplateText
+                as="h3"
+                editId={`${item.id}.question`}
+                editLabel={`שאלת FAQ ${index + 1}`}
+                className="whitespace-pre-wrap text-xl font-semibold"
+              >
+                {item.q}
+              </TemplateText>
 
-              <p className="mt-3 leading-7 text-white/62">{a}</p>
+              <TemplateText
+                as="p"
+                editId={`${item.id}.answer`}
+                editLabel={`תשובת FAQ ${index + 1}`}
+                className="mt-3 whitespace-pre-wrap leading-7 text-white/62"
+              >
+                {item.a}
+              </TemplateText>
             </div>
           ))}
         </div>
@@ -1001,13 +1197,44 @@ function Faq({ visible }: { visible: Record<string, boolean> }) {
   );
 }
 
+function Footer() {
+  return (
+    <footer
+      {...templateSectionProps("footer", "פוטר", "footer")}
+      data-template-section-type="footer"
+      className="bg-[#ecf3ea] px-4 py-10 text-[#07100e] md:px-8"
+      dir="rtl"
+    >
+      <div className="mx-auto flex max-w-7xl flex-col gap-4 border-t border-[#07100e]/10 pt-8 text-sm md:flex-row md:items-center md:justify-between">
+        <TemplateText
+          as="div"
+          editId="footer.brand"
+          editLabel="שם בפוטר"
+          className="whitespace-pre-wrap font-black tracking-[0.22em]"
+        >
+          IDO SOCIAL STUDIO
+        </TemplateText>
+
+        <TemplateText
+          as="div"
+          editId="footer.tagline"
+          editLabel="תיאור בפוטר"
+          className="whitespace-pre-wrap text-[#07100e]/60"
+        >
+          תבנית יוקרתית למשווק, איש סושיאל ואסטרטג דיגיטל
+        </TemplateText>
+      </div>
+    </footer>
+  );
+}
+
 export default function IdoPages({
   initialPage = "home",
   mode = "preview",
 }: IdoPagesProps) {
-  const visible = useReveal();
-  const page = useMemo(() => initialPage || "home", [initialPage]);
   const editMode = isIdoEditMode(mode);
+  const visible = useReveal(editMode);
+  const page = useMemo(() => initialPage || "home", [initialPage]);
 
   return (
     <main
@@ -1021,11 +1248,11 @@ export default function IdoPages({
       <style>{idoEditorCss}</style>
       <Header />
       <Hero editMode={editMode} />
-      <Services visible={visible} />
+      <Services visible={visible} editMode={editMode} />
       <About visible={visible} editMode={editMode} />
-      <Gallery />
+      <Gallery editMode={editMode} />
       <Booking visible={visible} editMode={editMode} />
-      <Faq visible={visible} />
+      <Faq visible={visible} editMode={editMode} />
 
       {/* Host for library/contact sections so form fields can be freely dragged */}
       <div
@@ -1034,18 +1261,7 @@ export default function IdoPages({
         className="relative min-h-0 overflow-visible"
       />
 
-      <footer
-        className="bg-[#ecf3ea] px-4 py-10 text-[#07100e] md:px-8"
-        dir="rtl"
-      >
-        <div className="mx-auto flex max-w-7xl flex-col gap-4 border-t border-[#07100e]/10 pt-8 text-sm md:flex-row md:items-center md:justify-between">
-          <div className="font-black tracking-[0.22em]">IDO SOCIAL STUDIO</div>
-
-          <div className="text-[#07100e]/60">
-            תבנית יוקרתית למשווק, איש סושיאל ואסטרטג דיגיטל
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </main>
   );
 }
