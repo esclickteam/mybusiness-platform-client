@@ -425,7 +425,7 @@ export default function CRMClientDossier({
           />
         </div>
 
-        <div className="flex flex-wrap gap-1 border-t border-slate-100 px-2 sm:px-3">
+        <div className="flex flex-wrap items-center justify-center gap-1 border-t border-slate-100 px-2 sm:px-3">
           <TabButton
             active={resolvedTab === "profile"}
             icon={UserRound}
