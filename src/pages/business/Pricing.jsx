@@ -325,11 +325,11 @@ export default function Plans() {
           delay: reduceMotion ? 0 : Math.min(index * 0.04, 0.24),
         }}
         onPointerMove={onCardPointerMove}
-        className={`pricing-wow__service group flex h-full flex-col rounded-[1.85rem] border bg-white/90 p-5 text-start shadow-[0_18px_50px_rgba(15,23,42,0.08)] backdrop-blur-xl sm:p-6 ${
+        className={`pricing-wow__service group flex h-full flex-col rounded-[1.85rem] border bg-white/90 p-4 text-start shadow-[0_18px_50px_rgba(15,23,42,0.08)] backdrop-blur-xl sm:p-5 ${
           selected
             ? "is-selected border-indigo-300 ring-2 ring-indigo-200"
             : "border-slate-200/90"
-        } ${featured ? "is-featured sm:p-7" : ""}`}
+        } ${featured ? "is-featured sm:p-5" : ""}`}
         style={{ "--pw-accent": addon.accent }}
       >
         <span className="pricing-wow__sheen" aria-hidden="true" />
@@ -718,7 +718,7 @@ export default function Plans() {
                   </span>
                 </div>
 
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
                   <AnimatePresence mode="popLayout">
                     {group.items.map((addon, index) =>
                       renderServiceCard(addon, index, Boolean(addon.featured))
