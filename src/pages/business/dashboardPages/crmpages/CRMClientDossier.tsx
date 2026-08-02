@@ -631,6 +631,7 @@ export default function CRMClientDossier({
               <ClientDocumentationPanel
                 clientId={client._id}
                 businessId={businessId}
+                clientName={client.fullName}
                 activities={client.activities || []}
                 onActivitiesChange={onActivitiesChange}
               />
