@@ -5,16 +5,10 @@ import {
   FileStack,
   Globe2,
   Layers3,
-  Monitor,
   Plus,
   Puzzle,
-  Redo2,
   ShoppingBag,
-  Smartphone,
-  Tablet,
-  Undo2,
 } from "lucide-react";
-import type { VisualDeviceMode } from "./visualEditorTypes";
 
 export type VisualEditorSidePanelMode =
   | "add"
@@ -22,39 +16,20 @@ export type VisualEditorSidePanelMode =
   | "code"
   | "pages"
   | "store"
+  | "plugins"
   | null;
-
-export type VisualEditorAddTab = "sections" | "pages" | "plugins";
 
 type VisualEditorIconRailProps = {
   sidePanelMode: VisualEditorSidePanelMode;
-  preferredAddTab?: VisualEditorAddTab;
-  deviceMode: VisualDeviceMode;
   storePluginEnabled: boolean;
-  canUndo: boolean;
-  canRedo: boolean;
-  busy: boolean;
   hasDomain: boolean;
   pageCount: number;
   onBack?: () => void;
-  onUndo: () => void;
-  onRedo: () => void;
-  onDeviceChange: (mode: VisualDeviceMode) => void;
   onOpenDomain: () => void;
   onTogglePanel: (mode: Exclude<VisualEditorSidePanelMode, null>) => void;
   onOpenAdd: () => void;
   onOpenPlugins: () => void;
 };
-
-const DEVICE_OPTIONS: Array<{
-  value: VisualDeviceMode;
-  label: string;
-  icon: React.ReactNode;
-}> = [
-  { value: "desktop", label: "דסקטופ", icon: <Monitor className="h-4 w-4" /> },
-  { value: "tablet", label: "טאבלט", icon: <Tablet className="h-4 w-4" /> },
-  { value: "mobile", label: "מובייל", icon: <Smartphone className="h-4 w-4" /> },
-];
 
 function RailButton({
   title,
@@ -77,7 +52,7 @@ function RailButton({
       disabled={disabled}
       onClick={onClick}
       className={[
-        "relative flex h-11 w-11 items-center justify-center rounded-xl transition",
+        "relative flex h-12 w-12 flex-col items-center justify-center gap-0.5 rounded-xl transition",
         active
           ? "bg-violet-100 text-violet-700 shadow-sm ring-1 ring-violet-200"
           : "text-slate-600 hover:bg-slate-100 hover:text-slate-900",
@@ -93,26 +68,15 @@ export const VISUAL_EDITOR_ICON_RAIL_WIDTH_PX = 72;
 
 export default function VisualEditorIconRail({
   sidePanelMode,
-  preferredAddTab = "sections",
-  deviceMode,
   storePluginEnabled,
-  canUndo,
-  canRedo,
-  busy,
   hasDomain,
   pageCount,
   onBack,
-  onUndo,
-  onRedo,
-  onDeviceChange,
   onOpenDomain,
   onTogglePanel,
   onOpenAdd,
   onOpenPlugins,
 }: VisualEditorIconRailProps) {
-  const addActive = sidePanelMode === "add" && preferredAddTab !== "plugins";
-  const pluginsActive = sidePanelMode === "add" && preferredAddTab === "plugins";
-
   return (
     <aside
       data-visual-editor-icon-rail="true"
@@ -121,21 +85,25 @@ export default function VisualEditorIconRail({
     >
       <div className="flex flex-col items-center gap-1 px-1">
         <RailButton title="חזרה" onClick={onBack} disabled={!onBack}>
-          <ArrowLeft className="h-4 w-4" />
+          <ArrowLeft className="h-5 w-5" />
         </RailButton>
       </div>
 
       <div className="mt-2 flex flex-1 flex-col items-center gap-1 overflow-y-auto px-1">
-        <RailButton title="הוספה" active={addActive} onClick={onOpenAdd}>
-          <Plus className="h-4 w-4" />
+        <RailButton
+          title="הוספה"
+          active={sidePanelMode === "add"}
+          onClick={onOpenAdd}
+        >
+          <Plus className="h-5 w-5" />
         </RailButton>
 
         <RailButton
           title="חנות תוספים"
-          active={pluginsActive}
+          active={sidePanelMode === "plugins"}
           onClick={onOpenPlugins}
         >
-          <Puzzle className="h-4 w-4" />
+          <Puzzle className="h-5 w-5" />
         </RailButton>
 
         <RailButton
@@ -143,7 +111,7 @@ export default function VisualEditorIconRail({
           active={sidePanelMode === "pages"}
           onClick={() => onTogglePanel("pages")}
         >
-          <FileStack className="h-4 w-4" />
+          <FileStack className="h-5 w-5" />
           {pageCount > 0 ? (
             <span className="absolute -left-0.5 -top-0.5 grid h-4 min-w-4 place-items-center rounded-full bg-slate-800 px-1 text-[9px] font-black text-white">
               {pageCount > 99 ? "99+" : pageCount}
@@ -156,7 +124,7 @@ export default function VisualEditorIconRail({
           active={sidePanelMode === "layers"}
           onClick={() => onTogglePanel("layers")}
         >
-          <Layers3 className="h-4 w-4" />
+          <Layers3 className="h-5 w-5" />
         </RailButton>
 
         <RailButton
@@ -164,7 +132,7 @@ export default function VisualEditorIconRail({
           active={sidePanelMode === "code"}
           onClick={() => onTogglePanel("code")}
         >
-          <Code2 className="h-4 w-4" />
+          <Code2 className="h-5 w-5" />
         </RailButton>
 
         {storePluginEnabled ? (
@@ -173,7 +141,7 @@ export default function VisualEditorIconRail({
             active={sidePanelMode === "store"}
             onClick={() => onTogglePanel("store")}
           >
-            <ShoppingBag className="h-4 w-4" />
+            <ShoppingBag className="h-5 w-5" />
           </RailButton>
         ) : null}
 
@@ -181,40 +149,8 @@ export default function VisualEditorIconRail({
           title={hasDomain ? "ניהול דומיין" : "חיבור דומיין"}
           onClick={onOpenDomain}
         >
-          <Globe2 className="h-4 w-4" />
+          <Globe2 className="h-5 w-5" />
         </RailButton>
-      </div>
-
-      <div className="mt-auto flex flex-col items-center gap-1 border-t border-slate-100 px-1 pt-2">
-        <div className="flex flex-col items-center gap-0.5 rounded-2xl border border-slate-200 bg-slate-50 p-1">
-          {DEVICE_OPTIONS.map((device) => (
-            <RailButton
-              key={device.value}
-              title={device.label}
-              active={deviceMode === device.value}
-              onClick={() => onDeviceChange(device.value)}
-            >
-              {device.icon}
-            </RailButton>
-          ))}
-        </div>
-
-        <div className="mt-1 flex flex-col items-center gap-0.5 rounded-2xl border border-slate-200 bg-slate-50 p-1">
-          <RailButton
-            title="ביטול"
-            disabled={!canUndo || busy}
-            onClick={onUndo}
-          >
-            <Undo2 className="h-4 w-4" />
-          </RailButton>
-          <RailButton
-            title="ביצוע מחדש"
-            disabled={!canRedo || busy}
-            onClick={onRedo}
-          >
-            <Redo2 className="h-4 w-4" />
-          </RailButton>
-        </div>
       </div>
     </aside>
   );

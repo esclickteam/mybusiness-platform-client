@@ -1,6 +1,15 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Eye, EyeOff, Settings2 } from "lucide-react";
+import {
+  Eye,
+  EyeOff,
+  Monitor,
+  Redo2,
+  Settings2,
+  Smartphone,
+  Tablet,
+  Undo2,
+} from "lucide-react";
 
 import VisualEditorCanvas from "./VisualEditorCanvas";
 import VisualFloatingToolbar from "./VisualFloatingToolbar";
@@ -12,6 +21,7 @@ import VisualSitePagesPanel, {
 } from "./VisualSitePagesPanel";
 import VisualStorePanel from "./VisualStorePanel";
 import VisualEditorIconRail from "./VisualEditorIconRail";
+import VisualEditorPluginStorePanel from "./VisualEditorPluginStorePanel";
 import VisualMediaModal from "./components/VisualMediaModal";
 import VisualLinkModal from "./components/VisualLinkModal";
 import FormBuilderModal from "../FormBuilderModal";
@@ -25,6 +35,16 @@ import {
 import type { VisualDeviceMode } from "./visualEditorTypes";
 import type { useVisualEditorState } from "./hooks/useVisualEditorState";
 import type { VisualLibraryPageTemplate } from "./library/visualLibraryTypes";
+
+const DEVICE_OPTIONS: Array<{
+  value: VisualDeviceMode;
+  label: string;
+  icon: React.ReactNode;
+}> = [
+  { value: "desktop", label: "דסקטופ", icon: <Monitor className="h-4 w-4" /> },
+  { value: "tablet", label: "טאבלט", icon: <Tablet className="h-4 w-4" /> },
+  { value: "mobile", label: "מובייל", icon: <Smartphone className="h-4 w-4" /> },
+];
 
 const PUBLIC_SITE_DOMAIN =
   import.meta.env.VITE_BIZUPLY_PUBLIC_SITE_DOMAIN || "sites.bizuply.com";
@@ -108,7 +128,7 @@ export default function VisualEditorShell({
   const navigate = useNavigate();
   const [actionError, setActionError] = useState("");
   const [sidePanelMode, setSidePanelMode] = useState<
-    "add" | "layers" | "code" | "pages" | "store" | null
+    "add" | "layers" | "code" | "pages" | "store" | "plugins" | null
   >(null);
   const [preferredAddTab, setPreferredAddTab] = useState<
     "sections" | "pages" | "plugins"
@@ -226,15 +246,12 @@ export default function VisualEditorShell({
     const addPage = params.get("addPage");
     const addSection = params.get("addSection");
 
-    if (addPlugin || addPage || addSection) {
-      setPreferredAddTab(
-        addPage ? "pages" : addSection ? "sections" : "plugins",
-      );
+    if (addPlugin) {
+      setSidePanelMode("plugins");
+      setOverlayRefreshKey((k) => k + 1);
+    } else if (addPage || addSection) {
+      setPreferredAddTab(addPage ? "pages" : "sections");
       setSidePanelMode("add");
-      // Ensure floating overlays refresh after install-from-store deep link.
-      if (addPlugin) {
-        setOverlayRefreshKey((k) => k + 1);
-      }
     }
 
     if (addPage && typeof onAddLibraryPage === "function") {
@@ -338,7 +355,7 @@ export default function VisualEditorShell({
         .join(" ")}
       dir="rtl"
     >
-      <header className="relative z-[2147483100] flex h-14 shrink-0 items-center justify-between gap-3 border-b border-slate-200 bg-white/95 px-3 shadow-sm backdrop-blur-xl lg:px-5">
+      <header className="relative z-[2147483100] flex h-16 shrink-0 items-center justify-between gap-3 border-b border-slate-200 bg-white/95 px-3 shadow-sm backdrop-blur-xl lg:px-5">
         <div className="min-w-0">
           <p className="truncate text-sm font-black text-slate-800">
             {templateName}
@@ -352,7 +369,48 @@ export default function VisualEditorShell({
           </p>
         </div>
 
+        <div className="flex items-center gap-1 rounded-2xl border border-slate-200 bg-slate-50 p-1">
+          {DEVICE_OPTIONS.map((device) => (
+            <button
+              key={device.value}
+              type="button"
+              title={device.label}
+              onClick={() => editor.setDeviceMode?.(device.value)}
+              className={[
+                "inline-flex h-11 items-center gap-2 rounded-xl px-3 text-sm font-black transition",
+                editor.deviceMode === device.value
+                  ? "bg-white text-violet-700 shadow-sm"
+                  : "text-slate-500 hover:bg-white/70 hover:text-slate-800",
+              ].join(" ")}
+            >
+              {device.icon}
+              <span className="hidden lg:inline">{device.label}</span>
+            </button>
+          ))}
+        </div>
+
         <div className="flex shrink-0 items-center gap-2">
+          <div className="flex items-center gap-1 rounded-2xl border border-slate-200 bg-slate-50 p-1">
+            <button
+              type="button"
+              title="ביטול"
+              disabled={!editor.canUndo || busy}
+              onClick={handleUndo}
+              className="flex h-11 w-11 items-center justify-center rounded-xl text-slate-600 transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-35"
+            >
+              <Undo2 className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              title="ביצוע מחדש"
+              disabled={!editor.canRedo || busy}
+              onClick={handleRedo}
+              className="flex h-11 w-11 items-center justify-center rounded-xl text-slate-600 transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-35"
+            >
+              <Redo2 className="h-4 w-4" />
+            </button>
+          </div>
+
           {siteId && businessId ? (
             <button
               type="button"
@@ -361,7 +419,7 @@ export default function VisualEditorShell({
                   `/business/${businessId}/dashboard/website/sites/${siteId}/manage`,
                 )
               }
-              className="inline-flex h-10 items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 text-sm font-black text-slate-700 shadow-sm transition hover:bg-slate-50 lg:px-4"
+              className="inline-flex h-11 items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 text-sm font-black text-slate-700 shadow-sm transition hover:bg-slate-50 lg:px-4"
               title="פאנל ניהול"
             >
               <Settings2 className="h-4 w-4" />
@@ -372,7 +430,7 @@ export default function VisualEditorShell({
           <button
             type="button"
             onClick={handleTogglePreview}
-            className="inline-flex h-10 items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 text-sm font-black text-slate-700 shadow-sm transition hover:bg-slate-50 lg:px-4"
+            className="inline-flex h-11 items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 text-sm font-black text-slate-700 shadow-sm transition hover:bg-slate-50 lg:px-4"
           >
             {isPreviewMode ? (
               <EyeOff className="h-4 w-4" />
@@ -388,7 +446,7 @@ export default function VisualEditorShell({
             type="button"
             disabled={busy}
             onClick={handlePublish}
-            className="inline-flex h-10 items-center gap-2 rounded-2xl border border-violet-200/70 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-4 text-sm font-black text-black shadow-sm transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:cursor-not-allowed disabled:opacity-60 lg:px-5"
+            className="inline-flex h-11 items-center gap-2 rounded-2xl border border-violet-200/70 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-4 text-sm font-black text-black shadow-sm transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:cursor-not-allowed disabled:opacity-60 lg:px-5"
           >
             {isSaving ? "מפרסם..." : "פרסום"}
           </button>
@@ -405,35 +463,22 @@ export default function VisualEditorShell({
         {!isPreviewMode ? (
           <VisualEditorIconRail
             sidePanelMode={sidePanelMode}
-            preferredAddTab={preferredAddTab}
-            deviceMode={(editor.deviceMode || "desktop") as any}
             storePluginEnabled={storePluginEnabled}
-            canUndo={Boolean(editor.canUndo)}
-            canRedo={Boolean(editor.canRedo)}
-            busy={busy}
             hasDomain={Boolean(linkedCustomDomain)}
             pageCount={sitePages.length}
             onBack={onBack}
-            onUndo={handleUndo}
-            onRedo={handleRedo}
-            onDeviceChange={(mode) => editor.setDeviceMode?.(mode)}
             onOpenDomain={() => setConnectDomainOpen(true)}
             onOpenAdd={() => {
-              if (sidePanelMode === "add" && preferredAddTab !== "plugins") {
-                setSidePanelMode(null);
-                return;
-              }
               setPreferredAddTab("sections");
-              setSidePanelMode("add");
+              setSidePanelMode((current) =>
+                current === "add" ? null : "add",
+              );
             }}
-            onOpenPlugins={() => {
-              if (sidePanelMode === "add" && preferredAddTab === "plugins") {
-                setSidePanelMode(null);
-                return;
-              }
-              setPreferredAddTab("plugins");
-              setSidePanelMode("add");
-            }}
+            onOpenPlugins={() =>
+              setSidePanelMode((current) =>
+                current === "plugins" ? null : "plugins",
+              )
+            }
             onTogglePanel={(mode) =>
               setSidePanelMode((current) =>
                 current === mode ? null : mode,
@@ -470,6 +515,15 @@ export default function VisualEditorShell({
             preferredAddTab={preferredAddTab}
             siteId={siteId}
             onOverlayInstalled={() => setOverlayRefreshKey((k) => k + 1)}
+          />
+        ) : null}
+
+        {!isPreviewMode ? (
+          <VisualEditorPluginStorePanel
+            open={sidePanelMode === "plugins"}
+            siteId={siteId}
+            onClose={() => setSidePanelMode(null)}
+            onInstalled={() => setOverlayRefreshKey((k) => k + 1)}
           />
         ) : null}
 
