@@ -1,13 +1,11 @@
 import React, { useEffect, useMemo, useState } from "react";
 import {
   ArrowDownUp,
-  ArrowLeft,
   Building2,
   CalendarDays,
   ChevronLeft,
   ChevronRight,
   Download,
-  Edit3,
   Filter,
   Grid2X2,
   Layers3,
@@ -27,13 +25,18 @@ import {
   X,
 } from "lucide-react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import type { TFunction } from "i18next";
 import API from "@api";
 import { useLocaleDir } from "../../../../hooks/useLocaleDir";
 import BizuplyLoader from "../../../../components/ui/BizuplyLoader";
+import { formatCrmMoney } from "../../../../utils/crmCurrency";
 import { SHOW_BUSINESS_MINI_SAAS } from "./crmFeatureFlags";
-import ClientDocumentationPanel, {
+import CRMClientDossier, {
+  type ClientDetailTab,
+} from "./CRMClientDossier";
+import {
   type ClientActivity,
 } from "./ClientDocumentationPanel";
 
@@ -95,7 +98,9 @@ type CRMClient = {
   email: string;
   address: string;
   appointments?: unknown[];
+  appointmentsCount?: number;
   totalSpent?: number;
+  unpaidBalance?: number;
   customTabs?: CustomClientTab[];
   activities?: ClientActivity[];
   createdAt?: string;
@@ -131,12 +136,6 @@ type ConfiguredClientField = {
 };
 
 type ClientDataDraft = Record<string, unknown>;
-
-type ClientDetailTab =
-  | "profile"
-  | "appointments"
-  | "client-data"
-  | "portal-access";
 
 type PortalAccessSettings = {
   enabled: boolean;
@@ -315,8 +314,14 @@ async function fetchClients(
     email: String(client.email || "").replace(/\s/g, ""),
     address: client.address || "",
     appointments: Array.isArray(client.appointments) ? client.appointments : [],
+    appointmentsCount: Number(
+      client.appointmentsCount ??
+        (Array.isArray(client.appointments) ? client.appointments.length : 0)
+    ),
     totalSpent: Number(client.totalSpent) || 0,
+    unpaidBalance: Number(client.unpaidBalance) || 0,
     customTabs: normalizeCustomTabs(client.customTabs, t),
+    activities: Array.isArray(client.activities) ? client.activities : [],
     createdAt: client.createdAt,
     updatedAt: client.updatedAt,
   }));
@@ -530,6 +535,7 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
   const { t } = useTranslation();
   const dir = useLocaleDir();
   const queryClient = useQueryClient();
+  const [searchParams, setSearchParams] = useSearchParams();
 
   const [mode, setMode] = useState<Mode>("list");
   const [search, setSearch] = useState("");
@@ -562,6 +568,18 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
 
     return () => window.removeEventListener("storage", loadFields);
   }, [t]);
+
+  useEffect(() => {
+    const clientId = searchParams.get("clientId");
+    if (!clientId || clients.length === 0) return;
+
+    const match = clients.find((client) => client._id === clientId);
+    if (!match) return;
+
+    setSelectedClient(match);
+    setActiveClientTab("profile");
+    setMode("view");
+  }, [clients, searchParams]);
 
   const filteredClients = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -599,7 +617,12 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
     return clients.reduce((sum, client) => {
       return (
         sum +
-        (Array.isArray(client.appointments) ? client.appointments.length : 0)
+        Number(
+          client.appointmentsCount ??
+            (Array.isArray(client.appointments)
+              ? client.appointments.length
+              : 0)
+        )
       );
     }, 0);
   }, [clients]);
@@ -643,6 +666,9 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
     setSelectedClient(client);
     setActiveClientTab("profile");
     setMode("view");
+    const next = new URLSearchParams(searchParams);
+    next.set("clientId", client._id);
+    setSearchParams(next, { replace: true });
   };
 
   const closeForm = () => {
@@ -659,6 +685,15 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
     await queryClient.invalidateQueries({
       queryKey: ["clients", businessId],
     });
+  };
+
+  const closeClientDossier = () => {
+    setSelectedClient(null);
+    setMode("list");
+    const next = new URLSearchParams(searchParams);
+    next.delete("clientId");
+    setSearchParams(next, { replace: true });
+    void invalidateClients();
   };
 
   const persistClientCustomTabs = async (
@@ -758,6 +793,9 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
       if (selectedClient?._id === client._id) {
         setSelectedClient(null);
         setMode("list");
+        const next = new URLSearchParams(searchParams);
+        next.delete("clientId");
+        setSearchParams(next, { replace: true });
       }
     } catch (err) {
       console.error("Delete client error:", err);
@@ -816,6 +854,11 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
       resetForm();
       setActiveClientTab("profile");
       setMode("view");
+      if (createdClient._id) {
+        const next = new URLSearchParams(searchParams);
+        next.set("clientId", createdClient._id);
+        setSearchParams(next, { replace: true });
+      }
     } catch (err) {
       console.error("Create client error:", err);
       alert(t("crm.clients.alerts.createFailed"));
@@ -877,23 +920,33 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
 
   if (mode === "view" && selectedClient) {
     return (
-      <ClientDetailsView
+      <CRMClientDossier
         client={selectedClient}
         businessId={businessId}
         activeTab={activeClientTab}
         setActiveTab={setActiveClientTab}
-        configuredFields={configuredClientFields}
-        onBack={() => {
-          setSelectedClient(null);
-          setMode("list");
-          invalidateClients();
-        }}
+        statusLabel={getClientStatusLabel(getClientStatus(selectedClient), t)}
+        onBack={closeClientDossier}
         onEdit={() => setMode("edit")}
         onDelete={(event) => handleDelete(selectedClient, event)}
-        onSaveClientData={handleSaveClientData}
-        onSavePortalAccess={handleSavePortalAccess}
-        onSendPortalInvite={handleSendPortalInvite}
         onActivitiesChange={handleClientActivitiesChange}
+        clientDataPanel={
+          <ClientDataPanel
+            client={selectedClient}
+            fields={configuredClientFields}
+            onSave={handleSaveClientData}
+          />
+        }
+        portalAccessPanel={
+          SHOW_BUSINESS_MINI_SAAS ? (
+            <PortalAccessPanel
+              client={selectedClient}
+              settings={getPortalAccessSettings(selectedClient, t)}
+              onSave={handleSavePortalAccess}
+              onSendInvite={handleSendPortalInvite}
+            />
+          ) : null
+        }
       />
     );
   }
@@ -973,7 +1026,7 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
         />
         <StatCard
           label={t("crm.clients.stats.monthlyRevenue")}
-          value={t("crm.common.currencyAmount", { amount: revenue.toLocaleString() })}
+          value={formatCrmMoney(revenue)}
           icon={Building2}
           trend="16.7%"
           tone="sky"
@@ -1089,427 +1142,6 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
         </div>
       </section>
     </div>
-  );
-}
-
-function ClientDetailsView({
-  client,
-  businessId,
-  activeTab,
-  setActiveTab,
-  configuredFields,
-  onBack,
-  onEdit,
-  onDelete,
-  onSaveClientData,
-  onSavePortalAccess,
-  onSendPortalInvite,
-  onActivitiesChange,
-}: {
-  client: CRMClient;
-  businessId: string;
-  activeTab: ClientDetailTab;
-  setActiveTab: (tab: ClientDetailTab) => void;
-  configuredFields: ConfiguredClientField[];
-  onBack: () => void;
-  onEdit: () => void;
-  onDelete: (event?: React.MouseEvent<HTMLButtonElement>) => void;
-  onActivitiesChange: (activities: ClientActivity[]) => void;
-  onSaveClientData: (values: ClientDataDraft) => Promise<void>;
-  onSavePortalAccess: (settings: PortalAccessSettings) => Promise<void>;
-  onSendPortalInvite: () => Promise<void>;
-}) {
-  const { t } = useTranslation();
-  const portalAccess = getPortalAccessSettings(client, t);
-
-  const resolvedTab =
-    !SHOW_BUSINESS_MINI_SAAS && activeTab === "portal-access"
-      ? "profile"
-      : activeTab;
-
-  return (
-    <div className="space-y-4">
-      <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-[0_14px_40px_rgba(15,23,42,0.06)]">
-        <div className="p-4 sm:p-5">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-            <div className="flex min-w-0 items-center gap-3">
-              <div className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl bg-violet-100 text-[#6D28D9]">
-                {getInitials(client.fullName) || (
-                  <UserRound className="h-6 w-6" />
-                )}
-              </div>
-
-              <div className="min-w-0">
-                <button
-                  type="button"
-                  onClick={onBack}
-                  className="mb-1.5 inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-2.5 py-1 text-xs font-black text-slate-600 transition hover:bg-slate-50"
-                >
-                  <ArrowLeft className="h-3.5 w-3.5" />
-                  {t("crm.clients.details.backToClients")}
-                </button>
-
-                <h2 className="truncate text-2xl font-black tracking-tight text-slate-900 sm:text-3xl">
-                  {client.fullName || t("crm.common.unnamedClient")}
-                </h2>
-
-                <p className="mt-1 text-sm font-semibold text-slate-500">
-                  {t("crm.clients.details.clientFile", {
-                    phone: formatPhone(client.phone) || t("crm.common.noPhone"),
-                    email: client.email || t("crm.common.noEmail"),
-                  })}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex flex-wrap gap-2">
-              <button
-                type="button"
-                onClick={onEdit}
-                className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-[#6D28D9] px-4 text-sm font-black text-white transition hover:bg-[#5B21B6]"
-              >
-                <Edit3 className="h-4 w-4" />
-                {t("crm.common.edit")}
-              </button>
-
-              <button
-                type="button"
-                onClick={onDelete}
-                className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-rose-50 px-4 text-sm font-black text-rose-700 transition hover:bg-rose-100"
-              >
-                <Trash2 className="h-4 w-4" />
-                {t("crm.common.delete")}
-              </button>
-            </div>
-          </div>
-
-          <div
-            className={[
-              "mt-5 grid gap-3 sm:grid-cols-2",
-              SHOW_BUSINESS_MINI_SAAS ? "xl:grid-cols-4" : "xl:grid-cols-3",
-            ].join(" ")}
-          >
-            <ClientMiniMetric label={t("crm.clients.details.status")} value={getClientStatusLabel(getClientStatus(client), t)} />
-            <ClientMiniMetric
-              label={t("crm.clients.details.appointments")}
-              value={
-                Array.isArray(client.appointments)
-                  ? client.appointments.length
-                  : 0
-              }
-            />
-            <ClientMiniMetric
-              label={t("crm.clients.details.clientDataFields")}
-              value={configuredFields.length}
-            />
-            {SHOW_BUSINESS_MINI_SAAS && (
-              <ClientMiniMetric
-                label={t("crm.clients.details.portalAccess")}
-                value={
-                  portalAccess.enabled
-                    ? accessStatusLabel(portalAccess.status, t)
-                    : t("crm.common.off")
-                }
-              />
-            )}
-          </div>
-        </div>
-
-        <div className="border-t border-slate-100 bg-white px-2 sm:px-3">
-          <div className="flex flex-wrap gap-1">
-            <ClientTabButton
-              active={resolvedTab === "profile"}
-              icon={UserRound}
-              label={t("crm.clients.details.tabProfile")}
-              onClick={() => setActiveTab("profile")}
-            />
-            <ClientTabButton
-              active={resolvedTab === "appointments"}
-              icon={CalendarDays}
-              label={t("crm.clients.details.tabAppointments")}
-              onClick={() => setActiveTab("appointments")}
-            />
-            <ClientTabButton
-              active={resolvedTab === "client-data"}
-              icon={Layers3}
-              label={t("crm.clients.details.tabClientData")}
-              onClick={() => setActiveTab("client-data")}
-            />
-            {SHOW_BUSINESS_MINI_SAAS && (
-              <ClientTabButton
-                active={resolvedTab === "portal-access"}
-                icon={LockKeyhole}
-                label={t("crm.clients.details.tabPortalAccess")}
-                onClick={() => setActiveTab("portal-access")}
-              />
-            )}
-          </div>
-        </div>
-      </section>
-
-      {resolvedTab === "profile" && (
-        <div className="space-y-4">
-          <ClientProfilePanel client={client} />
-          <ClientDocumentationPanel
-            clientId={client._id}
-            businessId={businessId}
-            activities={client.activities || []}
-            onActivitiesChange={onActivitiesChange}
-          />
-        </div>
-      )}
-
-      {resolvedTab === "appointments" && (
-        <ClientAppointmentsPanel client={client} />
-      )}
-
-      {resolvedTab === "client-data" && (
-        <ClientDataPanel
-          client={client}
-          fields={configuredFields}
-          onSave={onSaveClientData}
-        />
-      )}
-
-      {SHOW_BUSINESS_MINI_SAAS && resolvedTab === "portal-access" && (
-        <PortalAccessPanel
-          client={client}
-          settings={portalAccess}
-          onSave={onSavePortalAccess}
-          onSendInvite={onSendPortalInvite}
-        />
-      )}
-    </div>
-  );
-}
-
-function ClientTabButton({
-  active,
-  icon: Icon,
-  label,
-  onClick,
-}: {
-  active: boolean;
-  icon: React.ElementType;
-  label: string;
-  onClick: () => void;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={[
-        "relative inline-flex h-11 items-center justify-center gap-2 px-3 text-sm font-black transition",
-        active
-          ? "text-[#6D28D9]"
-          : "text-slate-500 hover:bg-slate-50 hover:text-slate-800",
-      ].join(" ")}
-    >
-      <Icon className="h-4 w-4" />
-      {label}
-      <span
-        className={[
-          "absolute inset-x-2 bottom-0 h-0.5 rounded-full",
-          active ? "bg-[#6D28D9]" : "bg-transparent",
-        ].join(" ")}
-      />
-    </button>
-  );
-}
-
-function ClientMiniMetric({
-  label,
-  value,
-}: {
-  label: string;
-  value: React.ReactNode;
-}) {
-  return (
-    <div className="rounded-xl border border-slate-200 bg-slate-50/80 p-3.5">
-      <p className="text-[11px] font-black uppercase tracking-[0.14em] text-slate-400">
-        {label}
-      </p>
-      <p className="mt-1.5 text-lg font-black text-slate-900">{value}</p>
-    </div>
-  );
-}
-
-function ClientProfilePanel({ client }: { client: CRMClient }) {
-  const { t, i18n } = useTranslation();
-  const locale = i18n.language || "en";
-  const emDash = t("crm.common.emDash");
-
-  return (
-    <section className="rounded-2xl border border-white/80 bg-white p-5 shadow-[0_24px_80px_rgba(15,23,42,0.07)] sm:p-6">
-      <div className="mb-5 flex items-center gap-3">
-        <div className="grid h-12 w-12 place-items-center rounded-2xl bg-sky-50 text-sky-700">
-          <UserRound className="h-5 w-5" />
-        </div>
-        <div>
-          <h3 className="text-2xl font-black text-slate-800">{t("crm.clients.profile.title")}</h3>
-          <p className="text-sm font-bold text-slate-500">
-            {t("crm.clients.profile.subtitle")}
-          </p>
-        </div>
-      </div>
-
-      <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <InfoCard
-          icon={UserRound}
-          label={t("crm.clients.profile.fullName")}
-          value={client.fullName || emDash}
-        />
-        <InfoCard
-          icon={Phone}
-          label={t("crm.clients.profile.phone")}
-          value={formatPhone(client.phone) || emDash}
-        />
-        <InfoCard icon={Mail} label={t("crm.clients.profile.email")} value={client.email || emDash} />
-        <InfoCard icon={MapPin} label={t("crm.clients.profile.address")} value={client.address || emDash} />
-      </div>
-
-      <div className="mt-5 rounded-2xl border border-slate-100 bg-slate-50 p-5">
-        <h4 className="text-base font-black text-slate-800">{t("crm.clients.profile.crmSummary")}</h4>
-        <div className="mt-4 grid gap-3 md:grid-cols-3">
-          <SummaryBox label={t("crm.clients.profile.created")} value={formatDate(client.createdAt, locale, emDash)} />
-          <SummaryBox label={t("crm.clients.profile.updated")} value={formatDate(client.updatedAt, locale, emDash)} />
-          <SummaryBox
-            label={t("crm.clients.profile.totalSpent")}
-            value={t("crm.common.currencyAmount", {
-              amount: Number(client.totalSpent || 0).toLocaleString(),
-            })}
-          />
-        </div>
-      </div>
-    </section>
-  );
-}
-
-function ClientAppointmentsPanel({ client }: { client: CRMClient }) {
-  const { t } = useTranslation();
-  const { data: fetchedAppointments = [], isLoading } = useQuery({
-    queryKey: ["client-appointments", client._id],
-    queryFn: async () => {
-      const { data } = await API.get<unknown[]>(
-        `/crm-clients/${client._id}/appointments`
-      );
-      return Array.isArray(data) ? data : [];
-    },
-  });
-
-  const appointments =
-    fetchedAppointments.length > 0
-      ? fetchedAppointments
-      : Array.isArray(client.appointments)
-        ? client.appointments
-        : [];
-
-  return (
-    <section className="rounded-2xl border border-white/80 bg-white p-5 shadow-[0_24px_80px_rgba(15,23,42,0.07)] sm:p-6">
-      <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div className="flex items-center gap-3">
-          <div className="grid h-12 w-12 place-items-center rounded-2xl bg-violet-50 text-violet-700">
-            <CalendarDays className="h-5 w-5" />
-          </div>
-          <div>
-            <h3 className="text-2xl font-black text-slate-800">
-              {t("crm.clients.appointmentsPanel.title")}
-            </h3>
-            <p className="text-sm font-bold text-slate-500">
-              {t("crm.clients.appointmentsPanel.subtitle")}
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {isLoading ? (
-        <div className="flex justify-center py-10">
-          <BizuplyLoader />
-        </div>
-      ) : appointments.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-10 text-center">
-          <CalendarDays className="mx-auto h-10 w-10 text-slate-300" />
-          <h4 className="mt-3 text-xl font-black text-slate-800">
-            {t("crm.clients.appointmentsPanel.emptyTitle")}
-          </h4>
-          <p className="mt-2 text-sm font-bold text-slate-500">
-            {t("crm.clients.appointmentsPanel.emptyDescription")}
-          </p>
-        </div>
-      ) : (
-        <div className="grid gap-3">
-          {appointments.map((appointment, index) => (
-            <ClientAppointmentCard
-              key={getAppointmentId(appointment, index)}
-              appointment={appointment}
-            />
-          ))}
-        </div>
-      )}
-    </section>
-  );
-}
-
-function ClientAppointmentCard({ appointment }: { appointment: unknown }) {
-  const { t, i18n } = useTranslation();
-  const locale = i18n.language || "en";
-  const emDash = t("crm.common.emDash");
-  const item = appointment as Record<string, any>;
-  const serviceName =
-    item.serviceName ||
-    item.service?.name ||
-    item.title ||
-    t("crm.clients.appointmentsPanel.defaultService");
-  const date =
-    item.date || item.appointmentDate || item.startDate || item.startAt;
-  const time = item.time || item.appointmentTime || item.startHour || emDash;
-  const duration =
-    item.duration || item.durationMinutes || item.service?.duration || 30;
-  const price = Number(item.price || item.service?.price || 0);
-  const paid = Boolean(item.paid);
-
-  return (
-    <article className="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm transition hover:border-sky-100 hover:shadow-[0_16px_40px_rgba(15,23,42,0.07)]">
-      <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div className="flex min-w-0 items-center gap-3">
-          <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-sky-50 text-sky-700">
-            <CalendarDays className="h-5 w-5" />
-          </div>
-
-          <div className="min-w-0">
-            <h4 className="truncate text-base font-black text-slate-800">
-              {serviceName}
-            </h4>
-            <p className="mt-1 text-sm font-bold text-slate-500">
-              {t("crm.clients.appointmentsPanel.meta", {
-                date: formatDate(date, locale, emDash),
-                time,
-                duration,
-              })}
-            </p>
-          </div>
-        </div>
-
-        <div className="flex flex-wrap items-center gap-2">
-          {price > 0 && (
-            <span className="rounded-full bg-slate-50 px-3 py-1.5 text-xs font-black text-slate-700 ring-1 ring-slate-100">
-              {t("crm.common.currencyAmount", { amount: price.toLocaleString() })}
-            </span>
-          )}
-
-          <span
-            className={[
-              "rounded-full px-3 py-1.5 text-xs font-black",
-              paid
-                ? "bg-emerald-50 text-emerald-700"
-                : "bg-amber-50 text-amber-700",
-            ].join(" ")}
-          >
-            {paid ? t("crm.common.paid") : t("crm.common.unpaid")}
-          </span>
-        </div>
-      </div>
-    </article>
   );
 }
 
@@ -1998,30 +1630,6 @@ function PortalFormField({
   );
 }
 
-function InfoCard({
-  icon: Icon,
-  label,
-  value,
-}: {
-  icon: React.ElementType;
-  label: string;
-  value: React.ReactNode;
-}) {
-  return (
-    <div className="rounded-2xl border border-slate-100 bg-slate-50 p-4">
-      <div className="mb-3 grid h-10 w-10 place-items-center rounded-2xl bg-white text-sky-700 shadow-sm ring-1 ring-sky-100">
-        <Icon className="h-4 w-4" />
-      </div>
-      <p className="text-xs font-black uppercase tracking-[0.14em] text-slate-400">
-        {label}
-      </p>
-      <p className="mt-2 truncate text-base font-black text-slate-800">
-        {value}
-      </p>
-    </div>
-  );
-}
-
 function SummaryBox({
   label,
   value,
@@ -2181,9 +1789,7 @@ function ClientsTable({
 
                 <td className="px-4 py-4">
                   <p className="text-sm font-black text-slate-900">
-                    {t("crm.common.currencyAmount", {
-                      amount: Number(client.totalSpent || 0).toLocaleString(),
-                    })}
+                    {formatCrmMoney(Number(client.totalSpent || 0))}
                   </p>
                 </td>
 
@@ -2605,9 +2211,10 @@ function getInitials(name: string) {
 }
 
 function getClientStatus(client: CRMClient): ClientStatus {
-  const appts = Array.isArray(client.appointments)
-    ? client.appointments.length
-    : 0;
+  const appts = Number(
+    client.appointmentsCount ??
+      (Array.isArray(client.appointments) ? client.appointments.length : 0)
+  );
 
   if (appts >= 3) return "Customer";
   if (appts >= 1) return "Active";
@@ -2632,11 +2239,6 @@ function formatDate(value?: unknown, locale = "en-US", emDash = "—") {
     day: "2-digit",
     year: "numeric",
   }).format(date);
-}
-
-function getAppointmentId(appointment: unknown, index: number) {
-  const item = appointment as Record<string, any>;
-  return String(item._id || item.id || item.appointmentId || index);
 }
 
 function accessStatusLabel(

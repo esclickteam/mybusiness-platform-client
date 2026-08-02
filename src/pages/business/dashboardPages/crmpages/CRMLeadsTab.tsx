@@ -2124,24 +2124,10 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
 
       {selectedLead && (
         <div
-          className={[
-            "fixed inset-0 z-[90] bg-slate-900/40 backdrop-blur-sm",
-            isDesktopLeads
-              ? "flex items-start justify-center overflow-y-auto p-2 pt-3 sm:p-4 sm:pt-5"
-              : "flex flex-col",
-          ].join(" ")}
+          className="fixed inset-0 z-[90] flex flex-col bg-[#F4F5F8]"
           dir={dir}
         >
-          <div className="fixed inset-0" onClick={handleCloseLead} />
-
-          <section
-            className={[
-              "relative flex w-full flex-col overflow-hidden bg-[#F4F5F8]",
-              isDesktopLeads
-                ? "max-h-[min(90vh,860px)] max-w-[1180px] rounded-2xl border border-slate-200 shadow-[0_24px_80px_rgba(15,23,42,0.22)]"
-                : "h-[100dvh] max-h-[100dvh] rounded-none",
-            ].join(" ")}
-          >
+          <section className="relative flex h-[100dvh] max-h-[100dvh] w-full flex-col overflow-hidden bg-[#F4F5F8]">
             <div className="flex min-h-0 flex-1 flex-col">
               <header className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-slate-200 bg-white px-3 py-2.5 sm:px-4 sm:py-3">
                 <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3">
@@ -2175,7 +2161,10 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                   </div>
 
                   <div className="min-w-0">
-                    <h2 className="truncate text-xl font-black text-slate-800">
+                    <p className="text-[11px] font-black uppercase tracking-[0.14em] text-violet-700">
+                      {t("crm.leads.drawer.dossierBadge")}
+                    </p>
+                    <h2 className="truncate text-xl font-black text-slate-800 sm:text-2xl">
                       {getLeadName(selectedLead, t)}
                     </h2>
 
@@ -2496,6 +2485,25 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                           </p>
                         </div>
                       )}
+                    </section>
+
+                    <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                      <div className="mb-3">
+                        <h3 className="text-base font-black text-slate-800">
+                          {t("crm.leads.drawer.paymentsTitle")}
+                        </h3>
+                        <p className="mt-1 text-[11px] font-bold text-slate-400">
+                          {t("crm.leads.drawer.paymentsSubtitle")}
+                        </p>
+                      </div>
+                      <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 p-5 text-center">
+                        <p className="text-sm font-bold text-slate-500">
+                          {t("crm.leads.drawer.paymentsEmpty")}
+                        </p>
+                        <p className="mt-2 text-lg font-black text-slate-800">
+                          ₪0
+                        </p>
+                      </div>
                     </section>
 
                     <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">

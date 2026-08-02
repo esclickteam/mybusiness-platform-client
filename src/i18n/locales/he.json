@@ -1125,7 +1125,7 @@
       "paused": "מושהה",
       "notInvited": "לא הוזמן",
       "minutes": "{{count}} דק׳",
-      "currencyAmount": "{{amount}} $"
+      "currencyAmount": "{{amount}} ₪"
     },
     "appointments": {
       "loading": "טוען פגישות מסונכרנות…",
@@ -1738,6 +1738,7 @@
         "requestFailed": "הבקשה נכשלה"
       },
       "drawer": {
+        "dossierBadge": "תיק ליד",
         "leadDetails": "פרטי ליד",
         "backToForm": "חזרה לטופס",
         "updateStatus": "עדכון סטטוס",
@@ -1748,6 +1749,9 @@
         "allFormData": "כל נתוני הטופס",
         "fieldsCount": "{{count}} שדות",
         "noFormData": "אין נתוני טופס נוספים עבור ליד זה",
+        "paymentsTitle": "תשלומים",
+        "paymentsSubtitle": "כל הסכומים בתיק מוצגים בשקלים (₪).",
+        "paymentsEmpty": "עדיין אין תשלומים לליד זה. לאחר המרה ללקוח ותיאום תורים — התשלומים יופיעו כאן בשקלים.",
         "documentationTitle": "תיעוד, הערות ומשימות",
         "documentationSubtitle": "משימה היא רשומת פעילות עם תאריך ושעת יעד.",
         "taskPlaceholder": "כתבו את המשימה לביצוע...",
@@ -1845,6 +1849,7 @@
       },
       "details": {
         "backToClients": "חזרה ללקוחות",
+        "dossierBadge": "תיק לקוח",
         "clientFile": "תיק לקוח · {{phone}} · {{email}}",
         "status": "סטטוס",
         "appointments": "תורים",
@@ -1852,8 +1857,38 @@
         "portalAccess": "גישה לפורטל",
         "tabProfile": "פרופיל לקוח",
         "tabAppointments": "תורים",
+        "tabPayments": "תשלומים",
         "tabClientData": "נתוני לקוח",
-        "tabPortalAccess": "גישה לפורטל"
+        "tabPortalAccess": "גישה לפורטל",
+        "profileSummaryTitle": "סיכום תיק",
+        "profileSummaryText": "כל הפעילויות, התורים והתשלומים של הלקוח מרוכזים בתיק זה — לפי סדר כרונולוגי.",
+        "quickFacts": "נתונים מהירים"
+      },
+      "payments": {
+        "title": "תשלומים וחשבונות",
+        "subtitle": "כל הסכומים מוצגים בשקלים (₪) לפי תורי הלקוח וסטטוס התשלום.",
+        "sidebarTitle": "סיכום כספי",
+        "openPayments": "פתיחת תשלומים",
+        "totalCharged": "סה״כ לחיוב",
+        "totalPaid": "שולם",
+        "unpaidBalance": "יתרה לתשלום",
+        "paidVisits": "ביקורים ששולמו",
+        "openInvoices": "ממתינים לתשלום",
+        "emptyTitle": "עדיין אין תשלומים",
+        "emptyDescription": "כאשר ייקבעו תורים עם מחיר, הם יופיעו כאן בשקלים עם סטטוס תשלום.",
+        "colService": "שירות",
+        "colDate": "תאריך",
+        "colAmount": "סכום (₪)",
+        "colMethod": "אמצעי תשלום",
+        "colStatus": "סטטוס",
+        "methods": {
+          "cash": "מזומן",
+          "credit": "אשראי",
+          "transfer": "העברה בנקאית",
+          "bit": "Bit",
+          "paybox": "PayBox",
+          "other": "אחר"
+        }
       },
       "profile": {
         "title": "פרופיל לקוח",

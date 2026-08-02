@@ -451,19 +451,26 @@ function detectCurrencyFromUser(user?: AuthUser | null): DetectedCurrency {
     };
   }
 
-  // Default for the current system
+  // Default for this product: Israeli Shekels
   return {
-    currency: "USD",
-    locale: "en-US",
+    currency: "ILS",
+    locale: "he-IL",
   };
 }
 
 function formatMoney(value?: number, user?: AuthUser | null) {
   const detected = detectCurrencyFromUser(user);
 
-  return new Intl.NumberFormat(detected.locale, {
+  // Never show USD when the business looks Israeli / unset — prefer ₪
+  const currency =
+    detected.currency === "USD" && !user?.business?.currency
+      ? "ILS"
+      : detected.currency;
+  const locale = currency === "ILS" ? "he-IL" : detected.locale;
+
+  return new Intl.NumberFormat(locale, {
     style: "currency",
-    currency: detected.currency,
+    currency,
     maximumFractionDigits: 0,
   }).format(Number(value || 0));
 }

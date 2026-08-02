@@ -1125,7 +1125,7 @@
       "paused": "Paused",
       "notInvited": "Not invited",
       "minutes": "{{count}} min",
-      "currencyAmount": "{{amount}} $"
+      "currencyAmount": "₪{{amount}}"
     },
     "appointments": {
       "loading": "Loading synced appointments…",
@@ -1216,7 +1216,7 @@
       "statAvgDurationHelper": "Appointment scheduling",
       "statCatalogValue": "Catalog Value",
       "statCatalogValueHelper": "Pricing setup",
-      "catalogValue": "{{value}} $",
+      "catalogValue": "₪{{value}}",
       "statWithImage": "With Image",
       "statWithImageHelper": "Visual services",
       "listTitle": "Services",
@@ -1257,7 +1257,7 @@
       "durationMinutes": "{{count}} min",
       "durationHours": "{{count}} h",
       "durationHoursMinutes": "{{hours}}h {{minutes}}m",
-      "priceValue": "{{value}} $"
+      "priceValue": "₪{{value}}"
     },
     "settings": {
       "badge": "CRM Settings",
@@ -1738,6 +1738,7 @@
         "requestFailed": "Request failed"
       },
       "drawer": {
+        "dossierBadge": "Lead file",
         "leadDetails": "Lead Details",
         "backToForm": "Back to form",
         "updateStatus": "Update Status",
@@ -1748,6 +1749,9 @@
         "allFormData": "All Form Data",
         "fieldsCount": "{{count}} Fields",
         "noFormData": "There is no additional form data for this lead",
+        "paymentsTitle": "Payments",
+        "paymentsSubtitle": "All amounts in the file are shown in Shekels (₪).",
+        "paymentsEmpty": "No payments for this lead yet. After conversion to a client and booking appointments, payments will appear here in Shekels.",
         "documentationTitle": "Documentation, Notes and Tasks",
         "documentationSubtitle": "A task is an activity record with a due date and time.",
         "taskPlaceholder": "Write the task to complete...",
@@ -1845,6 +1849,7 @@
       },
       "details": {
         "backToClients": "Back to clients",
+        "dossierBadge": "Client file",
         "clientFile": "Client file · {{phone}} · {{email}}",
         "status": "Status",
         "appointments": "Appointments",
@@ -1852,8 +1857,38 @@
         "portalAccess": "Portal Access",
         "tabProfile": "Client Profile",
         "tabAppointments": "Appointments",
+        "tabPayments": "Payments",
         "tabClientData": "Client data",
-        "tabPortalAccess": "Portal access"
+        "tabPortalAccess": "Portal access",
+        "profileSummaryTitle": "File summary",
+        "profileSummaryText": "All activities, appointments, and payments for this client are gathered in this file — in chronological order.",
+        "quickFacts": "Quick facts"
+      },
+      "payments": {
+        "title": "Payments & billing",
+        "subtitle": "All amounts are shown in Shekels (₪) based on this client's appointments and payment status.",
+        "sidebarTitle": "Financial summary",
+        "openPayments": "Open payments",
+        "totalCharged": "Total charged",
+        "totalPaid": "Paid",
+        "unpaidBalance": "Balance due",
+        "paidVisits": "Paid visits",
+        "openInvoices": "Awaiting payment",
+        "emptyTitle": "No payments yet",
+        "emptyDescription": "When priced appointments are booked, they will appear here in Shekels with payment status.",
+        "colService": "Service",
+        "colDate": "Date",
+        "colAmount": "Amount (₪)",
+        "colMethod": "Payment method",
+        "colStatus": "Status",
+        "methods": {
+          "cash": "Cash",
+          "credit": "Credit card",
+          "transfer": "Bank transfer",
+          "bit": "Bit",
+          "paybox": "PayBox",
+          "other": "Other"
+        }
       },
       "profile": {
         "title": "Client Profile",
