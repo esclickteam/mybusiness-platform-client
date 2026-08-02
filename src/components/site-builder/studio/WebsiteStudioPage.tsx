@@ -3356,7 +3356,25 @@ function applyPublishedTextToNode(
     return false;
   }
 
-  node.textContent = text;
+  const normalized = String(text || "")
+    .replace(/\r\n/g, "\n")
+    .replace(/\r/g, "\n");
+
+  if (normalized.includes("\n")) {
+    const current = String(
+      node.style.whiteSpace ||
+        node.style.getPropertyValue("white-space") ||
+        "",
+    )
+      .trim()
+      .toLowerCase();
+
+    if (!current || current === "normal" || current === "nowrap") {
+      node.style.whiteSpace = "pre-wrap";
+    }
+  }
+
+  node.textContent = normalized;
   return true;
 }
 
