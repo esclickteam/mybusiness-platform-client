@@ -1022,8 +1022,8 @@ export default function VelmoraPages({
   });
 
   const shopCatalog = React.useMemo(() => {
-    // While the public shop is loading, do not paint template demos — they
-    // get replaced by seeded DEMO-* products and flash the home/shop cards.
+    // Same contract as every store/commerce template:
+    // loading → empty (no demo flash); live products → full replace; else demos.
     if (storeCatalogLoading) {
       return {
         products: [] as ReturnType<typeof buildVelmoraShopCatalog>["products"],

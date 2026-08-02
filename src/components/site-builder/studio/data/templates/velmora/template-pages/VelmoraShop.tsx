@@ -30,10 +30,12 @@ type SortOption = "newest" | "price-low" | "price-high" | "popular";
 
 type Product = VelmoraShopProduct;
 
-const FALLBACK_PRODUCTS = velmoraDemoProductSeeds.map(mapDemoSeedToVelmora);
-const FALLBACK_CATEGORIES = [
+const PREVIEW_DEMO_PRODUCTS = velmoraDemoProductSeeds.map(mapDemoSeedToVelmora);
+const PREVIEW_DEMO_CATEGORIES = [
   "הכל",
-  ...Array.from(new Set(FALLBACK_PRODUCTS.map((product) => product.category))),
+  ...Array.from(
+    new Set(PREVIEW_DEMO_PRODUCTS.map((product) => product.category)),
+  ),
 ];
 
 function Reveal({
@@ -228,18 +230,23 @@ export default function VelmoraShop({
   isLiveCatalog = false,
   catalogLoading = false,
 }: Props) {
-  // Never paint fallback demos while the live catalog is resolving — that flash
-  // is what made shop cards swap after load.
+  // Match shared store templates: while resolving → empty; live catalog → only
+  // merchant products; preview/empty store → demos. Never override a live resolve
+  // with local FALLBACK when the parent already decided the catalog.
   const products = catalogLoading
     ? []
-    : productsProp?.length
+    : Array.isArray(productsProp)
       ? productsProp
-      : FALLBACK_PRODUCTS;
+      : isLiveCatalog
+        ? []
+        : PREVIEW_DEMO_PRODUCTS;
   const categories = catalogLoading
     ? ["הכל"]
-    : categoriesProp?.length
+    : Array.isArray(categoriesProp) && categoriesProp.length > 0
       ? categoriesProp
-      : FALLBACK_CATEGORIES;
+      : isLiveCatalog
+        ? ["הכל"]
+        : PREVIEW_DEMO_CATEGORIES;
   const [activeCategory, setActiveCategory] = React.useState("הכל");
   const [query, setQuery] = React.useState("");
   const [sort, setSort] = React.useState<SortOption>("newest");
