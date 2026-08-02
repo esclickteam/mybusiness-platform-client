@@ -1,13 +1,20 @@
 .af-shell {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
   min-height: calc(100vh - 120px);
+}
+
+.af-muted {
+  margin: 4px 0 0;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 600;
 }
 
 .af-list {
   display: grid;
-  gap: 12px;
+  gap: 14px;
 }
 
 .af-list__toolbar {
@@ -20,7 +27,7 @@
 
 .af-list__cards {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
   gap: 12px;
 }
 
@@ -36,10 +43,27 @@
   text-align: start;
 }
 
+.af-card--recipe {
+  background: linear-gradient(180deg, #faf5ff 0%, #fff 55%);
+  border-color: #ddd6fe;
+}
+
+.af-card__icon {
+  width: 34px;
+  height: 34px;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: #ede9fe;
+  color: #7c3aed;
+}
+
 .af-card__title {
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 900;
   color: #0f172a;
+  line-height: 1.35;
 }
 
 .af-card__meta {
@@ -77,14 +101,14 @@
 
 .af-editor {
   display: grid;
-  grid-template-columns: 240px minmax(0, 1fr) 280px;
+  grid-template-columns: 250px minmax(0, 1fr) 290px;
   gap: 0;
-  min-height: calc(100vh - 160px);
-  border: 1px solid #e2e8f0;
+  min-height: calc(100vh - 140px);
+  border: 1px solid #dbe3f0;
   border-radius: 18px;
   overflow: hidden;
   background: #fff;
-  box-shadow: 0 14px 36px rgba(15, 23, 42, 0.06);
+  box-shadow: 0 18px 40px rgba(15, 23, 42, 0.08);
 }
 
 @media (max-width: 1100px) {
@@ -97,19 +121,39 @@
 .af-palette {
   border-inline-end: 1px solid #e2e8f0;
   background: linear-gradient(180deg, #f8fafc 0%, #fff 100%);
-  padding: 14px;
+  padding: 12px;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
   overflow: auto;
 }
 
-.af-palette__title {
-  font-size: 11px;
+.af-palette__head strong {
+  display: block;
+  font-size: 14px;
   font-weight: 900;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
+  color: #0f172a;
+}
+
+.af-palette__head p {
+  margin: 4px 0 0;
+  font-size: 11px;
+  font-weight: 700;
   color: #64748b;
+}
+
+.af-palette__group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.af-palette__title {
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #94a3b8;
 }
 
 .af-palette__item {
@@ -127,12 +171,12 @@
 
 .af-palette__item:hover {
   border-color: #c4b5fd;
-  box-shadow: 0 8px 18px rgba(124, 58, 237, 0.08);
+  box-shadow: 0 8px 18px rgba(124, 58, 237, 0.1);
   transform: translateY(-1px);
 }
 
 .af-palette__item strong {
-  font-size: 13px;
+  font-size: 12.5px;
   font-weight: 900;
   color: #0f172a;
 }
@@ -145,10 +189,10 @@
 
 .af-canvas-wrap {
   position: relative;
-  min-height: 480px;
+  min-height: 520px;
   background:
-    radial-gradient(circle at 1px 1px, #cbd5e1 1px, transparent 0) 0 0 / 22px 22px,
-    linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
+    radial-gradient(circle at 1px 1px, #cbd5e1 1px, transparent 0) 0 0 / 20px 20px,
+    linear-gradient(180deg, #f8fafc 0%, #eef2ff 100%);
 }
 
 .af-canvas-wrap .react-flow__attribution {
@@ -181,6 +225,11 @@
   cursor: pointer;
 }
 
+.af-toolbar__name {
+  min-width: 190px;
+  font-weight: 900;
+}
+
 .af-btn--primary {
   background: linear-gradient(135deg, #7c3aed, #2563eb);
   border-color: transparent;
@@ -208,6 +257,22 @@
   margin: 0;
   font-size: 14px;
   font-weight: 900;
+}
+
+.af-inspector__hint p {
+  margin: 0 0 8px;
+  color: #64748b;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.af-inspector__hint ul {
+  margin: 0;
+  padding-inline-start: 18px;
+  color: #475569;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.6;
 }
 
 .af-inspector label {
@@ -241,21 +306,36 @@
 }
 
 .af-node {
-  min-width: 190px;
-  max-width: 230px;
+  position: relative;
+  min-width: 200px;
+  max-width: 240px;
   border-radius: 14px;
   border: 1px solid #e2e8f0;
   background: #fff;
-  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
-  padding: 12px 12px 14px;
+  box-shadow: 0 12px 28px rgba(15, 23, 42, 0.1);
+  padding: 12px 14px 14px;
   border-inline-start: 4px solid var(--af-color);
   text-align: start;
 }
 
+.af-node--router {
+  min-width: 220px;
+  padding-inline-end: 58px;
+}
+
+.af-node--trigger {
+  padding-inline-end: 28px;
+}
+
+.af-node--condition {
+  padding-inline-end: 36px;
+}
+
 .af-node--selected {
   border-color: var(--af-color);
-  box-shadow: 0 0 0 3px color-mix(in srgb, var(--af-color) 22%, transparent),
-    0 12px 28px rgba(15, 23, 42, 0.1);
+  box-shadow:
+    0 0 0 3px color-mix(in srgb, var(--af-color) 24%, transparent),
+    0 14px 30px rgba(15, 23, 42, 0.12);
 }
 
 .af-node__badge {
@@ -288,10 +368,14 @@
 }
 
 .af-handle {
-  width: 10px !important;
-  height: 10px !important;
+  width: 11px !important;
+  height: 11px !important;
   background: var(--af-color) !important;
   border: 2px solid #fff !important;
+}
+
+.af-handle--route {
+  background: #7c3aed !important;
 }
 
 .af-handle--yes {
@@ -300,4 +384,38 @@
 
 .af-handle--no {
   background: #dc2626 !important;
+}
+
+.af-route-label {
+  position: absolute;
+  inset-inline-end: 4px;
+  transform: translateY(-50%);
+  font-size: 9px;
+  font-weight: 900;
+  color: #64748b;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+  border-radius: 999px;
+  padding: 1px 6px;
+  pointer-events: none;
+  max-width: 72px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.af-route-label--yes {
+  top: 35%;
+  color: #047857;
+  border-color: #a7f3d0;
+}
+
+.af-route-label--no {
+  top: 70%;
+  color: #b91c1c;
+  border-color: #fecaca;
+}
+
+.react-flow__edge-path {
+  stroke-linecap: round;
 }
