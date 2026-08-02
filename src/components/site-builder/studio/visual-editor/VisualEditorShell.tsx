@@ -4,11 +4,9 @@ import {
   Eye,
   EyeOff,
   Monitor,
-  Redo2,
   Settings2,
   Smartphone,
   Tablet,
-  Undo2,
 } from "lucide-react";
 
 import VisualEditorCanvas from "./VisualEditorCanvas";
@@ -329,18 +327,6 @@ export default function VisualEditorShell({
     });
   }
 
-  function handleUndo() {
-    if (busy || !editor.canUndo) return;
-
-    editor.undo?.();
-  }
-
-  function handleRedo() {
-    if (busy || !editor.canRedo) return;
-
-    editor.redo?.();
-  }
-
   return (
     <div
       data-template-visual-editor="true"
@@ -390,27 +376,6 @@ export default function VisualEditorShell({
         </div>
 
         <div className="flex shrink-0 items-center gap-2">
-          <div className="flex items-center gap-1 rounded-2xl border border-slate-200 bg-slate-50 p-1">
-            <button
-              type="button"
-              title="ביטול"
-              disabled={!editor.canUndo || busy}
-              onClick={handleUndo}
-              className="flex h-11 w-11 items-center justify-center rounded-xl text-slate-600 transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-35"
-            >
-              <Undo2 className="h-4 w-4" />
-            </button>
-            <button
-              type="button"
-              title="ביצוע מחדש"
-              disabled={!editor.canRedo || busy}
-              onClick={handleRedo}
-              className="flex h-11 w-11 items-center justify-center rounded-xl text-slate-600 transition hover:bg-white disabled:cursor-not-allowed disabled:opacity-35"
-            >
-              <Redo2 className="h-4 w-4" />
-            </button>
-          </div>
-
           {siteId && businessId ? (
             <button
               type="button"
