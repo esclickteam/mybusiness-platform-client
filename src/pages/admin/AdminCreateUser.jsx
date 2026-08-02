@@ -11,6 +11,7 @@ import {
 import API from "../../api";
 import { useAuth } from "../../context/AuthContext";
 import BizuplyLoader from "../../components/ui/BizuplyLoader";
+import UpsellPicker from "../../components/pricing/UpsellPicker";
 import AdminHeader from "./AdminsHeader";
 
 const USER_TYPES = [
@@ -32,7 +33,7 @@ const PAYMENT_MODES = [
   {
     id: "stripe",
     label: "תשלום ב-Stripe",
-    hint: "פותח Checkout לפי מחיר מהקטלוג",
+    hint: "פותח Checkout לפי המחיר שבחרתם לכל שורה",
   },
   {
     id: "none",
@@ -68,7 +69,9 @@ const EMPTY = {
   publicId: "",
   commissionRate: "20",
   packageSku: "monthly",
-  includeWebsiteAddon: false,
+  packageIls: "",
+  upsellSkus: [],
+  upsellAmounts: {},
   paymentMode: "manual_paid",
   fullAccess: true,
   enabledModules: ["crm", "meta-campaigns"],
@@ -149,21 +152,59 @@ export default function AdminCreateUser() {
     [catalog]
   );
 
-  const websiteAddon = useMemo(
-    () => catalog.find((item) => item.sku === "website_addon"),
+  const upsells = useMemo(
+    () =>
+      catalog.filter(
+        (item) => item.active !== false && item.kind === "upsell"
+      ),
     [catalog]
+  );
+
+  const selectedPackage = useMemo(
+    () => packages.find((item) => item.sku === form.packageSku) || null,
+    [packages, form.packageSku]
   );
 
   const selectedType = USER_TYPES.find((t) => t.id === form.userType);
   const needsPackage = Boolean(selectedType?.needsPackage);
-  const canAddWebsiteAddon =
-    needsPackage && form.packageSku !== "website_only" && websiteAddon;
 
   const onChange = (e) => {
     const { name, value, type, checked } = e.target;
     setForm((prev) => ({
       ...prev,
       [name]: type === "checkbox" ? checked : value,
+    }));
+  };
+
+  const toggleUpsell = (sku) => {
+    setForm((prev) => {
+      const set = new Set(prev.upsellSkus || []);
+      const nextAmounts = { ...(prev.upsellAmounts || {}) };
+      if (set.has(sku)) {
+        set.delete(sku);
+        delete nextAmounts[sku];
+      } else {
+        set.add(sku);
+        const catalogItem = upsells.find((item) => item.sku === sku);
+        if (nextAmounts[sku] == null && catalogItem) {
+          nextAmounts[sku] = Number(catalogItem.amountIls || 0);
+        }
+      }
+      return {
+        ...prev,
+        upsellSkus: Array.from(set),
+        upsellAmounts: nextAmounts,
+      };
+    });
+  };
+
+  const setUpsellAmount = (sku, value) => {
+    setForm((prev) => ({
+      ...prev,
+      upsellAmounts: {
+        ...(prev.upsellAmounts || {}),
+        [sku]: value,
+      },
     }));
   };
 
@@ -196,7 +237,30 @@ export default function AdminCreateUser() {
         payload.businessName = form.businessName.trim();
         payload.category = form.category.trim() || "general";
         payload.packageSku = form.packageSku;
-        payload.includeWebsiteAddon = Boolean(form.includeWebsiteAddon);
+        payload.upsellSkus = form.upsellSkus || [];
+        payload.upsellAmounts = Object.fromEntries(
+          (form.upsellSkus || []).map((sku) => {
+            const catalogItem = upsells.find((item) => item.sku === sku);
+            const raw = form.upsellAmounts?.[sku];
+            const amount =
+              raw !== "" && raw != null && Number.isFinite(Number(raw))
+                ? Number(raw)
+                : Number(catalogItem?.amountIls || 0);
+            return [sku, amount];
+          })
+        );
+        {
+          const packageAmount =
+            form.packageIls !== "" && form.packageIls != null
+              ? Number(form.packageIls)
+              : Number(selectedPackage?.amountIls);
+          if (Number.isFinite(packageAmount)) {
+            payload.packageIls = packageAmount;
+          }
+        }
+        payload.includeWebsiteAddon = (form.upsellSkus || []).includes(
+          "website_addon"
+        );
         payload.paymentMode = form.paymentMode;
         payload.notes = form.notes.trim() || undefined;
         if (form.affiliateId) payload.affiliateId = form.affiliateId;
@@ -524,24 +588,36 @@ export default function AdminCreateUser() {
                   </div>
                 )}
 
-                {canAddWebsiteAddon ? (
-                  <label className="mt-3 flex items-start gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-3 text-sm font-bold">
+                {selectedPackage ? (
+                  <label className="mt-3 block text-sm font-bold">
+                    מחיר חבילה לתשלום (₪) — ניתן לשנות
                     <input
-                      type="checkbox"
-                      name="includeWebsiteAddon"
-                      checked={form.includeWebsiteAddon}
+                      type="number"
+                      min={0}
+                      name="packageIls"
+                      value={
+                        form.packageIls !== ""
+                          ? form.packageIls
+                          : selectedPackage.amountIls
+                      }
                       onChange={onChange}
-                      className="mt-1"
+                      className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm font-black outline-none focus:border-violet-300"
                     />
-                    <span>
-                      אפסייל: {websiteAddon.nameHe || "תוספת אתר"} — ₪
-                      {websiteAddon.amountIls}
-                      <span className="mt-0.5 block text-xs font-bold text-slate-500">
-                        {websiteAddon.descriptionHe || "תוספת חד־פעמית"}
-                      </span>
-                    </span>
                   </label>
                 ) : null}
+
+                <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50/80 p-3">
+                  <UpsellPicker
+                    upsells={upsells}
+                    selectedSkus={form.upsellSkus}
+                    amountsBySku={form.upsellAmounts}
+                    onToggle={toggleUpsell}
+                    onAmountChange={setUpsellAmount}
+                    allowCustomPrice
+                    packageSku={form.packageSku}
+                    hint="סמנו אפסיילים. המחיר שתגדירו כאן הוא מה שיחויב ב-Stripe."
+                  />
+                </div>
               </section>
 
               <section>

@@ -13,9 +13,20 @@ import {
 
 import API from "../../api";
 import AdminDialButton from "../../components/AdminDialButton";
+import UpsellPicker from "../../components/pricing/UpsellPicker";
 import { useAuth } from "../../context/AuthContext";
 import BizuplyLoader from "../../components/ui/BizuplyLoader";
 import AdminHeader from "./AdminsHeader";
+
+type CatalogUpsell = {
+  sku: string;
+  kind?: string;
+  nameHe?: string;
+  amountIls?: number;
+  billing?: string;
+  descriptionHe?: string;
+  active?: boolean;
+};
 
 type CustomerOwner = {
   _id?: string;
@@ -60,8 +71,10 @@ type CreateForm = {
   category: string;
   password: string;
   plan: "monthly" | "yearly";
+  packageIls: string;
   startCheckout: boolean;
-  includeWebsiteAddon: boolean;
+  upsellSkus: string[];
+  upsellAmounts: Record<string, string | number>;
 };
 
 type PurchaseLine = {
@@ -93,8 +106,19 @@ const EMPTY_FORM: CreateForm = {
   category: "general",
   password: "",
   plan: "monthly",
+  packageIls: "",
   startCheckout: true,
-  includeWebsiteAddon: false,
+  upsellSkus: [],
+  upsellAmounts: {},
+};
+
+type PayModalState = {
+  customer: AdminCustomer;
+  mode: "stripe" | "manual";
+  plan: "monthly" | "yearly";
+  packageIls: string;
+  upsellSkus: string[];
+  upsellAmounts: Record<string, string | number>;
 };
 
 const PACKAGES = [
@@ -169,10 +193,8 @@ function AdminCustomers() {
   const [creating, setCreating] = useState(false);
   const [checkoutUserId, setCheckoutUserId] = useState<string | null>(null);
   const [markingUserId, setMarkingUserId] = useState<string | null>(null);
-  const [payPlanByUser, setPayPlanByUser] = useState<
-    Record<string, "monthly" | "yearly">
-  >({});
-  const [addonByUser, setAddonByUser] = useState<Record<string, boolean>>({});
+  const [upsells, setUpsells] = useState<CatalogUpsell[]>([]);
+  const [payModal, setPayModal] = useState<PayModalState | null>(null);
   const [purchasesFor, setPurchasesFor] = useState<AdminCustomer | null>(null);
   const [purchases, setPurchases] = useState<BusinessPurchase[]>([]);
   const [purchasesLoading, setPurchasesLoading] = useState(false);
@@ -205,6 +227,23 @@ function AdminCustomers() {
     }, 300);
     return () => window.clearTimeout(timer);
   }, [search]);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const { data } = await API.get("/admin/pricing");
+        const items = Array.isArray(data?.items) ? data.items : [];
+        setUpsells(
+          items.filter(
+            (item: CatalogUpsell) =>
+              item?.kind === "upsell" && item.active !== false
+          )
+        );
+      } catch (err) {
+        console.error("Failed to load pricing catalog", err);
+      }
+    })();
+  }, []);
 
   const loadCustomers = useCallback(async () => {
     setLoading(true);
@@ -242,6 +281,65 @@ function AdminCustomers() {
     setForm((prev) => ({ ...prev, [key]: value }));
   }
 
+  function buildUpsellPayload(
+    upsellSkus: string[],
+    upsellAmounts: Record<string, string | number>
+  ) {
+    const amounts: Record<string, number> = {};
+    for (const sku of upsellSkus) {
+      const catalogItem = upsells.find((item) => item.sku === sku);
+      const raw = upsellAmounts?.[sku];
+      const amount =
+        raw !== "" && raw != null && Number.isFinite(Number(raw))
+          ? Number(raw)
+          : Number(catalogItem?.amountIls || 0);
+      amounts[sku] = amount;
+    }
+    return {
+      upsellSkus,
+      upsellAmounts: amounts,
+      includeWebsiteAddon: upsellSkus.includes("website_addon"),
+    };
+  }
+
+  function toggleCreateUpsell(sku: string) {
+    setForm((prev) => {
+      const set = new Set(prev.upsellSkus || []);
+      const nextAmounts = { ...(prev.upsellAmounts || {}) };
+      if (set.has(sku)) {
+        set.delete(sku);
+        delete nextAmounts[sku];
+      } else {
+        set.add(sku);
+        const catalogItem = upsells.find((item) => item.sku === sku);
+        if (nextAmounts[sku] == null && catalogItem) {
+          nextAmounts[sku] = Number(catalogItem.amountIls || 0);
+        }
+      }
+      return {
+        ...prev,
+        upsellSkus: Array.from(set),
+        upsellAmounts: nextAmounts,
+      };
+    });
+  }
+
+  function openPayModal(customer: AdminCustomer, mode: "stripe" | "manual") {
+    const ownerId = customer.owner?._id;
+    if (!ownerId) {
+      setError("לעסק זה אין בעלים מקושר");
+      return;
+    }
+    setPayModal({
+      customer,
+      mode,
+      plan: "monthly",
+      packageIls: mode === "stripe" || mode === "manual" ? "149" : "",
+      upsellSkus: [],
+      upsellAmounts: {},
+    });
+  }
+
   async function handleCreate(e: React.FormEvent) {
     e.preventDefault();
     setCreating(true);
@@ -249,6 +347,17 @@ function AdminCustomers() {
     setBanner("");
 
     try {
+      const upsellPayload = buildUpsellPayload(
+        form.upsellSkus,
+        form.upsellAmounts
+      );
+      const packageIls =
+        form.packageIls !== "" && Number.isFinite(Number(form.packageIls))
+          ? Number(form.packageIls)
+          : form.plan === "yearly"
+            ? 1490
+            : 149;
+
       const { data } = await API.post("/admin/customers", {
         name: form.name,
         email: form.email,
@@ -258,7 +367,8 @@ function AdminCustomers() {
         password: form.password,
         plan: form.plan,
         startCheckout: form.startCheckout,
-        includeWebsiteAddon: form.includeWebsiteAddon,
+        packageIls,
+        ...upsellPayload,
       });
 
       const checkoutUrl = data?.checkout?.url;
@@ -284,66 +394,57 @@ function AdminCustomers() {
     }
   }
 
-  async function handleCheckout(customer: AdminCustomer) {
-    const userId = customer.owner?._id;
-    if (!userId) {
-      setError("לעסק זה אין בעלים מקושר — לא ניתן לפתוח תשלום");
-      return;
-    }
+  async function submitPayModal() {
+    if (!payModal?.customer?.owner?._id) return;
+    const userId = payModal.customer.owner._id;
+    const upsellPayload = buildUpsellPayload(
+      payModal.upsellSkus,
+      payModal.upsellAmounts
+    );
+    const packageIls =
+      payModal.packageIls !== "" &&
+      Number.isFinite(Number(payModal.packageIls))
+        ? Number(payModal.packageIls)
+        : payModal.plan === "yearly"
+          ? 1490
+          : 149;
 
-    const plan = payPlanByUser[userId] || "monthly";
-    setCheckoutUserId(userId);
     setError("");
     setBanner("");
 
-    try {
-      const { data } = await API.post(`/admin/customers/${userId}/checkout`, {
-        plan,
-        includeWebsiteAddon: Boolean(addonByUser[userId]),
-      });
-
-      const checkoutUrl = data?.checkout?.url;
-      if (!checkoutUrl) {
-        setError("לא התקבל קישור תשלום מ־Stripe");
-        return;
+    if (payModal.mode === "stripe") {
+      setCheckoutUserId(userId);
+      try {
+        const { data } = await API.post(`/admin/customers/${userId}/checkout`, {
+          plan: payModal.plan,
+          packageIls,
+          ...upsellPayload,
+        });
+        const checkoutUrl = data?.checkout?.url;
+        if (!checkoutUrl) {
+          setError("לא התקבל קישור תשלום מ־Stripe");
+          return;
+        }
+        window.location.href = checkoutUrl;
+      } catch (err: any) {
+        console.error("Checkout failed:", err);
+        setError(err?.response?.data?.error || "לא ניתן לפתוח תשלום Stripe");
+      } finally {
+        setCheckoutUserId(null);
       }
-
-      window.location.href = checkoutUrl;
-    } catch (err: any) {
-      console.error("Checkout failed:", err);
-      setError(err?.response?.data?.error || "לא ניתן לפתוח תשלום Stripe");
-    } finally {
-      setCheckoutUserId(null);
-    }
-  }
-
-  async function handleMarkPaid(customer: AdminCustomer) {
-    const userId = customer.owner?._id;
-    if (!userId) {
-      setError("לעסק זה אין בעלים מקושר");
-      return;
-    }
-    const plan = payPlanByUser[userId] || "monthly";
-    if (
-      !window.confirm(
-        `לסמן את ${customer.businessName || "העסק"} כשולם עבור חבילת ${
-          plan === "yearly" ? "שנתית" : "חודשית"
-        }${addonByUser[userId] ? " + תוספת אתר" : ""}?`
-      )
-    ) {
       return;
     }
 
     setMarkingUserId(userId);
-    setError("");
-    setBanner("");
     try {
       await API.post(`/admin/customers/${userId}/mark-paid`, {
-        plan,
-        includeWebsiteAddon: Boolean(addonByUser[userId]),
+        plan: payModal.plan,
+        packageIls,
+        ...upsellPayload,
         notes: "סומן כשולם ידנית ממסך ניהול לקוחות",
       });
       setBanner("סומן כשולם — הרכישה נשמרה במערכת עם פירוט מלא.");
+      setPayModal(null);
       await loadCustomers();
     } catch (err: any) {
       console.error("Mark paid failed:", err);
@@ -507,11 +608,6 @@ function AdminCustomers() {
                 <div className="space-y-3 p-3 md:hidden">
                   {customers.map((customer) => {
                     const ownerId = customer.owner?._id || "";
-                    const selectedPlan =
-                      payPlanByUser[ownerId] ||
-                      (customer.owner?.subscriptionPlan === "yearly"
-                        ? "yearly"
-                        : "monthly");
 
                     return (
                       <article
@@ -576,42 +672,10 @@ function AdminCustomers() {
                         ) : null}
 
                         <div className="mt-3 grid gap-2">
-                          <select
-                            value={selectedPlan}
-                            disabled={
-                              !ownerId ||
-                              checkoutUserId === ownerId ||
-                              markingUserId === ownerId
-                            }
-                            onChange={(e) =>
-                              setPayPlanByUser((prev) => ({
-                                ...prev,
-                                [ownerId]: e.target.value as "monthly" | "yearly",
-                              }))
-                            }
-                            className="min-h-11 rounded-2xl border border-purple-200 bg-white px-3 text-sm font-bold outline-none focus:ring-2 focus:ring-purple-300"
-                          >
-                            <option value="monthly">חודשי</option>
-                            <option value="yearly">שנתי</option>
-                          </select>
-                          <label className="inline-flex min-h-11 items-center gap-2 text-xs font-bold text-slate-600">
-                            <input
-                              type="checkbox"
-                              checked={Boolean(addonByUser[ownerId])}
-                              disabled={!ownerId}
-                              onChange={(e) =>
-                                setAddonByUser((prev) => ({
-                                  ...prev,
-                                  [ownerId]: e.target.checked,
-                                }))
-                              }
-                            />
-                            + תוספת אתר
-                          </label>
                           <button
                             type="button"
                             disabled={!ownerId || checkoutUserId === ownerId}
-                            onClick={() => handleCheckout(customer)}
+                            onClick={() => openPayModal(customer, "stripe")}
                             className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-3 text-xs font-black text-black"
                           >
                             <CreditCard className="h-3.5 w-3.5" />
@@ -625,7 +689,7 @@ function AdminCustomers() {
                             <button
                               type="button"
                               disabled={!ownerId || markingUserId === ownerId}
-                              onClick={() => handleMarkPaid(customer)}
+                              onClick={() => openPayModal(customer, "manual")}
                               className="inline-flex min-h-11 items-center justify-center gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 px-3 text-xs font-black text-emerald-800 disabled:opacity-60"
                             >
                               <CheckCircle2 className="h-3.5 w-3.5" />
@@ -663,11 +727,6 @@ function AdminCustomers() {
                     <tbody>
                       {customers.map((customer) => {
                         const ownerId = customer.owner?._id || "";
-                        const selectedPlan =
-                          payPlanByUser[ownerId] ||
-                          (customer.owner?.subscriptionPlan === "yearly"
-                            ? "yearly"
-                            : "monthly");
 
                         return (
                           <tr
@@ -756,47 +815,13 @@ function AdminCustomers() {
                               )}
                             </td>
                             <td className="px-4 py-4">
-                              <div className="flex min-w-[240px] flex-col gap-2">
-                                <select
-                                  value={selectedPlan}
-                                  disabled={
-                                    !ownerId ||
-                                    checkoutUserId === ownerId ||
-                                    markingUserId === ownerId
-                                  }
-                                  onChange={(e) =>
-                                    setPayPlanByUser((prev) => ({
-                                      ...prev,
-                                      [ownerId]: e.target.value as
-                                        | "monthly"
-                                        | "yearly",
-                                    }))
-                                  }
-                                  className="rounded-xl border border-purple-200 bg-white px-3 py-2 text-xs font-bold outline-none focus:ring-2 focus:ring-purple-300"
-                                >
-                                  <option value="monthly">חודשי</option>
-                                  <option value="yearly">שנתי</option>
-                                </select>
-                                <label className="inline-flex items-center gap-2 text-[11px] font-bold text-slate-600">
-                                  <input
-                                    type="checkbox"
-                                    checked={Boolean(addonByUser[ownerId])}
-                                    disabled={!ownerId}
-                                    onChange={(e) =>
-                                      setAddonByUser((prev) => ({
-                                        ...prev,
-                                        [ownerId]: e.target.checked,
-                                      }))
-                                    }
-                                  />
-                                  + תוספת אתר
-                                </label>
+                              <div className="flex min-w-[220px] flex-col gap-2">
                                 <button
                                   type="button"
                                   disabled={
                                     !ownerId || checkoutUserId === ownerId
                                   }
-                                  onClick={() => handleCheckout(customer)}
+                                  onClick={() => openPayModal(customer, "stripe")}
                                   className="inline-flex items-center justify-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-3 py-2.5 text-xs font-black text-black shadow-lg shadow-purple-700/15 transition hover:-translate-y-0.5 disabled:cursor-wait disabled:opacity-60"
                                 >
                                   <CreditCard className="h-3.5 w-3.5" />
@@ -811,7 +836,7 @@ function AdminCustomers() {
                                   disabled={
                                     !ownerId || markingUserId === ownerId
                                   }
-                                  onClick={() => handleMarkPaid(customer)}
+                                  onClick={() => openPayModal(customer, "manual")}
                                   className="inline-flex items-center justify-center gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 px-3 py-2.5 text-xs font-black text-emerald-800 transition hover:bg-emerald-100 disabled:opacity-60"
                                 >
                                   <CheckCircle2 className="h-3.5 w-3.5" />
@@ -978,22 +1003,40 @@ function AdminCustomers() {
                 </div>
               </div>
 
-              <label className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-bold text-slate-700">
+              <label className="block text-sm font-bold text-slate-700">
+                מחיר חבילה לתשלום (₪)
                 <input
-                  type="checkbox"
-                  className="mt-1"
-                  checked={form.includeWebsiteAddon}
-                  onChange={(e) =>
-                    updateForm("includeWebsiteAddon", e.target.checked)
+                  type="number"
+                  min={0}
+                  value={
+                    form.packageIls !== ""
+                      ? form.packageIls
+                      : form.plan === "yearly"
+                        ? "1490"
+                        : "149"
                   }
+                  onChange={(e) => updateForm("packageIls", e.target.value)}
+                  className="mt-1 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm font-black outline-none focus:border-violet-300"
                 />
-                <span>
-                  + תוספת אתר (אפסייל)
-                  <span className="mt-1 block text-xs font-semibold text-slate-500">
-                    יתווסף לפירוט הרכישה ול־Stripe כשפותחים תשלום.
-                  </span>
-                </span>
               </label>
+
+              <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3">
+                <UpsellPicker
+                  upsells={upsells}
+                  selectedSkus={form.upsellSkus}
+                  amountsBySku={form.upsellAmounts}
+                  onToggle={toggleCreateUpsell}
+                  onAmountChange={(sku, value) =>
+                    setForm((prev) => ({
+                      ...prev,
+                      upsellAmounts: { ...prev.upsellAmounts, [sku]: value },
+                    }))
+                  }
+                  allowCustomPrice
+                  packageSku={form.plan}
+                  hint="המחיר שתבחרו כאן הוא מה שיחויב ב-Stripe."
+                />
+              </div>
 
               <label className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-bold text-slate-700">
                 <input
@@ -1129,6 +1172,157 @@ function AdminCustomers() {
                 ))}
               </div>
             )}
+          </div>
+        </div>
+      ) : null}
+
+      {payModal ? (
+        <div className="fixed inset-0 z-[80] flex items-end justify-center bg-slate-950/45 p-3 sm:items-center">
+          <div className="max-h-[90vh] w-full max-w-2xl overflow-y-auto rounded-[28px] border border-white bg-white p-5 shadow-2xl sm:p-6">
+            <div className="mb-4 flex items-start justify-between gap-3">
+              <div>
+                <h3 className="text-lg font-black text-slate-900">
+                  {payModal.mode === "stripe"
+                    ? "תשלום / שדרוג ב-Stripe"
+                    : "סימון שולם ידני"}
+                </h3>
+                <p className="mt-1 text-sm font-bold text-slate-500">
+                  {payModal.customer.businessName || "עסק"} · בחרו חבילה, אפסיילים
+                  ומחירים לתשלום
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setPayModal(null)}
+                className="rounded-xl border border-slate-200 p-2 text-slate-500"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            <div className="space-y-4">
+              <div className="grid gap-2 sm:grid-cols-2">
+                {PACKAGES.map((pkg) => {
+                  const active = payModal.plan === pkg.id;
+                  return (
+                    <button
+                      key={pkg.id}
+                      type="button"
+                      onClick={() =>
+                        setPayModal((prev) =>
+                          prev
+                            ? {
+                                ...prev,
+                                plan: pkg.id,
+                                packageIls:
+                                  pkg.id === "yearly" ? "1490" : "149",
+                              }
+                            : prev
+                        )
+                      }
+                      className={`rounded-2xl border p-3 text-right ${
+                        active
+                          ? "border-[#7C4DFF] bg-violet-50"
+                          : "border-slate-200"
+                      }`}
+                    >
+                      <strong className="block text-sm font-black">
+                        {pkg.name}
+                      </strong>
+                      <span className="mt-1 block text-xs font-bold text-slate-500">
+                        {pkg.price} {pkg.period}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              <label className="block text-sm font-bold">
+                מחיר חבילה לתשלום (₪)
+                <input
+                  type="number"
+                  min={0}
+                  value={payModal.packageIls}
+                  onChange={(e) =>
+                    setPayModal((prev) =>
+                      prev ? { ...prev, packageIls: e.target.value } : prev
+                    )
+                  }
+                  className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm font-black outline-none focus:border-violet-300"
+                />
+              </label>
+
+              <UpsellPicker
+                upsells={upsells}
+                selectedSkus={payModal.upsellSkus}
+                amountsBySku={payModal.upsellAmounts}
+                onToggle={(sku) =>
+                  setPayModal((prev) => {
+                    if (!prev) return prev;
+                    const set = new Set(prev.upsellSkus);
+                    const nextAmounts = { ...prev.upsellAmounts };
+                    if (set.has(sku)) {
+                      set.delete(sku);
+                      delete nextAmounts[sku];
+                    } else {
+                      set.add(sku);
+                      const catalogItem = upsells.find((item) => item.sku === sku);
+                      if (nextAmounts[sku] == null && catalogItem) {
+                        nextAmounts[sku] = Number(catalogItem.amountIls || 0);
+                      }
+                    }
+                    return {
+                      ...prev,
+                      upsellSkus: Array.from(set),
+                      upsellAmounts: nextAmounts,
+                    };
+                  })
+                }
+                onAmountChange={(sku, value) =>
+                  setPayModal((prev) =>
+                    prev
+                      ? {
+                          ...prev,
+                          upsellAmounts: {
+                            ...prev.upsellAmounts,
+                            [sku]: value,
+                          },
+                        }
+                      : prev
+                  )
+                }
+                allowCustomPrice
+                packageSku={payModal.plan}
+                hint="המחיר שתגדירו לכל אפסייל יחויב ב-Stripe."
+              />
+
+              <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-start">
+                <button
+                  type="button"
+                  disabled={Boolean(checkoutUserId || markingUserId)}
+                  onClick={submitPayModal}
+                  className="inline-flex items-center justify-center gap-2 rounded-2xl bg-[#7C4DFF] px-5 py-3.5 text-sm font-black text-white disabled:opacity-60"
+                >
+                  {payModal.mode === "stripe" ? (
+                    <CreditCard className="h-4 w-4" />
+                  ) : (
+                    <CheckCircle2 className="h-4 w-4" />
+                  )}
+                  {checkoutUserId || markingUserId
+                    ? "מעבד..."
+                    : payModal.mode === "stripe"
+                      ? "פתח תשלום Stripe"
+                      : "סמן שולם"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPayModal(null)}
+                  className="rounded-2xl border border-slate-200 bg-white px-5 py-3.5 text-sm font-black text-slate-600"
+                >
+                  ביטול
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       ) : null}
