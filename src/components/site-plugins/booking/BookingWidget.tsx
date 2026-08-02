@@ -398,7 +398,11 @@ function BookingSplitShell({
   calendarPanel: React.ReactNode;
 }) {
   return (
-    <div style={styles.root} dir="rtl">
+    <div
+      className="bizuply-booking-widget-root"
+      style={styles.root}
+      dir="rtl"
+    >
       <aside style={styles.servicesCol}>{servicesPanel}</aside>
       <div style={styles.calendarCol}>{calendarPanel}</div>
     </div>
@@ -800,6 +804,7 @@ export default function BookingWidget({
 
   return (
     <div
+      className="bizuply-booking-widget-root"
       style={styles.root}
       dir="rtl"
       data-bizuply-booking-live="true"
