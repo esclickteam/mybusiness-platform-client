@@ -123,6 +123,11 @@ type StoreSettingsData = {
   bitPhone?: string;
   allowPayboxPayment?: boolean;
   payboxPhone?: string;
+  orderConfirmationEmail?: {
+    enabled?: boolean;
+    language?: string;
+    replyToOverride?: string;
+  };
 };
 
 type PaymentProviderType =
@@ -201,6 +206,12 @@ type StoreOrder = {
   paymentStatus?: string;
   paymentMethod?: string;
   createdAt?: string;
+  confirmationEmail?: {
+    status?: "none" | "queued" | "sending" | "sent" | "failed" | "skipped";
+    lastSentAt?: string | null;
+    lastError?: string;
+    attemptCount?: number;
+  };
   items?: Array<{
     name: string;
     quantity: number;
@@ -273,6 +284,11 @@ const emptySettings: StoreSettingsData = {
   allowBitPayment: false,
   bitPhone: "",
   allowPayboxPayment: false,
+  orderConfirmationEmail: {
+    enabled: true,
+    language: "he",
+    replyToOverride: "",
+  },
   payboxPhone: "",
 };
 
@@ -1096,16 +1112,49 @@ export default function StoreProductsManager({
     }
   };
 
-  const updateOrderStatus = async (orderId: string, status: string) => {
+  const updateOrderStatus = async (
+    orderId: string,
+    status: string,
+    options?: { sendConfirmationEmail?: boolean }
+  ) => {
     if (!businessId) return;
 
     try {
-      await API.put(`/store/${businessId}/orders/${orderId}`, { status });
+      const payload: Record<string, unknown> = { status };
+      if (status === "paid") {
+        payload.paymentStatus = "paid";
+        payload.sendConfirmationEmail =
+          options?.sendConfirmationEmail !== false;
+      }
+
+      await API.put(`/store/${businessId}/orders/${orderId}`, payload);
       await loadStoreData();
       showMessage("success", "סטטוס ההזמנה עודכן");
     } catch (err) {
       console.error("Update order status error:", err);
       showMessage("error", "שגיאה בעדכון הזמנה");
+    }
+  };
+
+  const resendOrderConfirmationEmail = async (orderId: string) => {
+    if (!businessId) return;
+
+    try {
+      const { data } = await API.post(
+        `/store/${businessId}/orders/${orderId}/resend-confirmation-email`
+      );
+      await loadStoreData();
+      if (data?.skipped) {
+        showMessage("error", data?.reason || "המייל לא נשלח מחדש");
+        return;
+      }
+      showMessage("success", "מייל אישור ההזמנה נכנס לתור שליחה");
+    } catch (err: any) {
+      console.error("Resend confirmation email error:", err);
+      showMessage(
+        "error",
+        err?.response?.data?.error || "שגיאה בשליחה מחדש של מייל האישור"
+      );
     }
   };
 
@@ -1347,6 +1396,7 @@ export default function StoreProductsManager({
             orders={orders}
             settings={settings}
             onUpdateOrderStatus={updateOrderStatus}
+            onResendConfirmationEmail={resendOrderConfirmationEmail}
           />
         )}
       </div>
@@ -2960,6 +3010,34 @@ function SettingsView({
             ))}
           </div>
 
+          {focus !== "shipping" ? (
+            <div className="mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-4">
+              <p className="text-sm font-black text-slate-800">
+                מייל אישור הזמנה
+              </p>
+              <p className="mt-1 text-xs font-bold text-slate-500">
+                נשלח אוטומטית רק אחרי שהתשלום אומת בשרת וההזמנה סומנה כ־paid.
+                השולח: שם העסק &lt;noreply@bizuply.com&gt;
+              </p>
+              <label className="mt-4 flex items-center gap-2 text-sm font-black text-slate-700">
+                <input
+                  type="checkbox"
+                  checked={settings.orderConfirmationEmail?.enabled !== false}
+                  onChange={(e) =>
+                    setSettings((prev) => ({
+                      ...prev,
+                      orderConfirmationEmail: {
+                        ...(prev.orderConfirmationEmail || {}),
+                        enabled: e.target.checked,
+                      },
+                    }))
+                  }
+                />
+                שליחה אוטומטית של מייל אישור לאחר תשלום
+              </label>
+            </div>
+          ) : null}
+
           <div className="mt-6">
             <PrimaryButton type="button" onClick={onSave} loading={saving}>
               <Save size={17} />
@@ -3348,14 +3426,37 @@ function CouponsView({
   );
 }
 
+function confirmationEmailLabel(status?: string) {
+  switch (status) {
+    case "queued":
+      return { text: "מייל בתור", className: "bg-amber-50 text-amber-700" };
+    case "sending":
+      return { text: "שולח מייל…", className: "bg-sky-50 text-sky-700" };
+    case "sent":
+      return { text: "מייל נשלח", className: "bg-emerald-50 text-emerald-700" };
+    case "failed":
+      return { text: "שליחת מייל נכשלה", className: "bg-rose-50 text-rose-700" };
+    case "skipped":
+      return { text: "מייל לא נשלח", className: "bg-slate-100 text-slate-600" };
+    default:
+      return { text: "אין מייל אישור", className: "bg-slate-100 text-slate-500" };
+  }
+}
+
 function OrdersView({
   orders,
   settings,
   onUpdateOrderStatus,
+  onResendConfirmationEmail,
 }: {
   orders: StoreOrder[];
   settings: StoreSettingsData;
-  onUpdateOrderStatus: (orderId: string, status: string) => void;
+  onUpdateOrderStatus: (
+    orderId: string,
+    status: string,
+    options?: { sendConfirmationEmail?: boolean }
+  ) => void;
+  onResendConfirmationEmail: (orderId: string) => void;
 }) {
   return (
     <div className="rounded-[32px] border border-slate-200 bg-white p-5 shadow-sm">
@@ -3368,65 +3469,116 @@ function OrdersView({
         />
       ) : (
         <div className="grid gap-4">
-          {orders.map((order) => (
-            <div
-              key={order._id}
-              className="rounded-[26px] border border-slate-200 bg-white p-4 shadow-sm"
-            >
-              <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
-                <div>
-                  <p className="text-lg font-black text-slate-800">
-                    {order.orderNumber}
-                  </p>
-                  <p className="mt-1 text-sm font-bold text-slate-500">
-                    {order.customerName} · {order.customerPhone || "אין טלפון"}
-                  </p>
-                </div>
+          {orders.map((order) => {
+            const emailBadge = confirmationEmailLabel(
+              order.confirmationEmail?.status
+            );
+            const canResend =
+              order.paymentStatus === "paid" || order.status === "paid";
 
-                <div className="flex flex-wrap items-center gap-3">
-                  <p className="text-2xl font-black text-violet-700">
-                    {formatMoney(order.total, order.currency || settings.currency)}
-                  </p>
+            return (
+              <div
+                key={order._id}
+                className="rounded-[26px] border border-slate-200 bg-white p-4 shadow-sm"
+              >
+                <div className="flex flex-col justify-between gap-4 lg:flex-row lg:items-center">
+                  <div>
+                    <p className="text-lg font-black text-slate-800">
+                      {order.orderNumber}
+                    </p>
+                    <p className="mt-1 text-sm font-bold text-slate-500">
+                      {order.customerName} · {order.customerPhone || "אין טלפון"}
+                      {order.customerEmail ? ` · ${order.customerEmail}` : ""}
+                    </p>
+                  </div>
 
-                  <SelectInput
-                    value={order.status || "new"}
-                    onChange={(e) =>
-                      onUpdateOrderStatus(order._id, e.target.value)
-                    }
-                    className="min-w-[190px]"
-                  >
-                    <option value="new">חדשה</option>
-                    <option value="pending_payment">ממתינה לתשלום</option>
-                    <option value="paid">שולמה</option>
-                    <option value="processing">בטיפול</option>
-                    <option value="shipped">נשלחה</option>
-                    <option value="completed">הושלמה</option>
-                    <option value="cancelled">בוטלה</option>
-                  </SelectInput>
-                </div>
-              </div>
+                  <div className="flex flex-wrap items-center gap-3">
+                    <p className="text-2xl font-black text-violet-700">
+                      {formatMoney(
+                        order.total,
+                        order.currency || settings.currency
+                      )}
+                    </p>
 
-              {order.items?.length ? (
-                <div className="mt-4 grid gap-2">
-                  {order.items.map((item, index) => (
-                    <div
-                      key={`${order._id}-${index}`}
-                      className="flex items-center justify-between rounded-2xl bg-slate-50 px-4 py-3 text-sm font-bold text-slate-600"
+                    <SelectInput
+                      value={order.status || "new"}
+                      onChange={(e) => {
+                        const nextStatus = e.target.value;
+                        if (
+                          nextStatus === "paid" &&
+                          order.paymentStatus !== "paid"
+                        ) {
+                          const markPaid = window.confirm(
+                            "לסמן את ההזמנה כשולמה?"
+                          );
+                          if (!markPaid) return;
+                          const sendConfirmationEmail = window.confirm(
+                            "לשלוח מייל אישור הזמנה ללקוח?"
+                          );
+                          onUpdateOrderStatus(order._id, nextStatus, {
+                            sendConfirmationEmail,
+                          });
+                          return;
+                        }
+                        onUpdateOrderStatus(order._id, nextStatus);
+                      }}
+                      className="min-w-[190px]"
                     >
-                      <span>{item.name}</span>
-                      <span>
-                        {item.quantity} ×{" "}
-                        {formatMoney(
-                          item.price,
-                          order.currency || settings.currency
-                        )}
-                      </span>
-                    </div>
-                  ))}
+                      <option value="new">חדשה</option>
+                      <option value="pending_payment">ממתינה לתשלום</option>
+                      <option value="paid">שולמה</option>
+                      <option value="processing">בטיפול</option>
+                      <option value="shipped">נשלחה</option>
+                      <option value="completed">הושלמה</option>
+                      <option value="cancelled">בוטלה</option>
+                    </SelectInput>
+                  </div>
                 </div>
-              ) : null}
-            </div>
-          ))}
+
+                <div className="mt-3 flex flex-wrap items-center gap-2">
+                  <span
+                    className={`rounded-full px-3 py-1 text-xs font-black ${emailBadge.className}`}
+                  >
+                    {emailBadge.text}
+                  </span>
+                  {order.confirmationEmail?.lastError ? (
+                    <span className="text-xs font-bold text-rose-600">
+                      {order.confirmationEmail.lastError}
+                    </span>
+                  ) : null}
+                  {canResend ? (
+                    <button
+                      type="button"
+                      onClick={() => onResendConfirmationEmail(order._id)}
+                      className="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-black text-slate-700 hover:bg-slate-50"
+                    >
+                      שליחה מחדש של מייל אישור
+                    </button>
+                  ) : null}
+                </div>
+
+                {order.items?.length ? (
+                  <div className="mt-4 grid gap-2">
+                    {order.items.map((item, index) => (
+                      <div
+                        key={`${order._id}-${index}`}
+                        className="flex items-center justify-between rounded-2xl bg-slate-50 px-4 py-3 text-sm font-bold text-slate-600"
+                      >
+                        <span>{item.name}</span>
+                        <span>
+                          {item.quantity} ×{" "}
+                          {formatMoney(
+                            item.price,
+                            order.currency || settings.currency
+                          )}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                ) : null}
+              </div>
+            );
+          })}
         </div>
       )}
     </div>
