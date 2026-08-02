@@ -163,6 +163,18 @@ export default function SiteManagementPanelPage() {
       const hints = result.editorHints || [];
       const storeHint = hints.find((h) => h.action === "add-products-page");
       const bookingHint = hints.find((h) => h.action === "add-booking-section");
+      const reviewsHint = hints.find((h) => h.action === "add-reviews-section");
+      const leadsHint = hints.find((h) => h.action === "add-leads-section");
+      const overlayKeys = new Set([
+        "whatsapp-float",
+        "announcement-bar",
+        "cookie-banner",
+        "exit-popup",
+        "smart-bot",
+        "benefits-wheel",
+        "accessibility",
+      ]);
+
       if (storeHint && enabled) {
         // Never dump merchants into the blank Grapes page-builder for store setup.
         // Product CRUD lives in the store management panel; template shops sync alone.
@@ -187,8 +199,22 @@ export default function SiteManagementPanelPage() {
           `${editorHref}?addSection=${encodeURIComponent(
             bookingHint.sectionId ||
               "section-booking-showcase-month-centered",
-          )}`,
+          )}&addPlugin=booking`,
         );
+      } else if (reviewsHint && enabled) {
+        navigate(
+          `${editorHref}?addSection=${encodeURIComponent(
+            reviewsHint.sectionId || "section-testimonials",
+          )}&addPlugin=reviews`,
+        );
+      } else if (leadsHint && enabled) {
+        navigate(
+          `${editorHref}?addSection=${encodeURIComponent(
+            leadsHint.sectionId || "section-contact",
+          )}&addPlugin=leads`,
+        );
+      } else if (enabled && overlayKeys.has(pluginKey)) {
+        navigate(`${editorHref}?addPlugin=${encodeURIComponent(pluginKey)}`);
       }
     } catch (err: any) {
       const serverError =

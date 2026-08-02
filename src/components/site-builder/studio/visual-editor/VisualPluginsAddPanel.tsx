@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Download, Puzzle, Search, Trash2 } from "lucide-react";
 
 import {
@@ -26,6 +26,31 @@ type VisualPluginsAddPanelProps = {
   onOverlayInstalled?: () => void;
 };
 
+function pageHasPluginContent(root: ParentNode | null | undefined, pluginKey: string) {
+  if (!root) return false;
+  const hay = (root as HTMLElement).innerHTML || "";
+  if (pluginKey === "booking") {
+    return /data-bizuply-booking-mount|data-bizuply-widget=["']booking["']|section-booking-showcase/.test(hay);
+  }
+  if (pluginKey === "reviews") {
+    return /section-testimonials|data-bizuply-reviews|ביקורות/.test(hay);
+  }
+  if (pluginKey === "leads") {
+    return /data-bizuply-block=["']lead-form["']|data-bizuply-crm-lead|section-contact/.test(hay);
+  }
+  if (pluginKey === "store") {
+    return /data-bizuply-block=["']products["']|bizuply-products|data-store-plugin|section-products/.test(hay);
+  }
+  if (pluginKey === "countdown") {
+    return pageHasCountdownWidget(root as HTMLElement);
+  }
+  return Boolean(
+    (root as HTMLElement).querySelector?.(
+      `[data-bizuply-plugin="${pluginKey}"], [data-bizuply-widget="${pluginKey}"]`
+    )
+  );
+}
+
 export default function VisualPluginsAddPanel({
   siteId,
   editor,
@@ -38,10 +63,78 @@ export default function VisualPluginsAddPanel({
   const [catalog, setCatalog] = useState<SitePluginDefinition[]>([]);
   const [enabledPlugins, setEnabledPlugins] = useState<string[]>([]);
   const [overlayActive, setOverlayActive] = useState<Record<string, boolean>>({});
+  const [contentActive, setContentActive] = useState<Record<string, boolean>>({});
   const [query, setQuery] = useState("");
   const [pageWidgetsEpoch, setPageWidgetsEpoch] = useState(0);
+  const autoActivatedRef = useRef(false);
 
-  const loadOverlayStates = useCallback(
+  const refreshContentActive = useCallback(
+    (enabled: string[]) => {
+      const root = editor?.canvasRef?.current as HTMLElement | null;
+      const next: Record<string, boolean> = {};
+      enabled.forEach((key) => {
+        const kind = getPluginEditorAction(key).kind;
+        if (kind === "overlay") return;
+        next[key] = pageHasPluginContent(root, key);
+      });
+      setContentActive(next);
+    },
+    [editor?.canvasRef]
+  );
+
+  const activateOverlay = useCallback(
+    async (plugin: SitePluginDefinition, silent = false) => {
+      if (!siteId) return false;
+      try {
+        const current = await getSitePluginSettings(siteId, plugin.key);
+        const nextSettings: Record<string, unknown> = {
+          ...current,
+          isActive: true,
+          showTrigger: true,
+          buttonMode: "floating",
+          triggerPosition: current?.triggerPosition || { x: 88, y: 82 },
+        };
+
+        if (plugin.key === "whatsapp-float" && !String(current?.phone || "").trim()) {
+          try {
+            const { getMySite } = await import("../../../../api/mySitesApi");
+            const site = await getMySite(siteId);
+            const business = (site as any)?.business || {};
+            const phone = String(
+              business.whatsappUrl ||
+                business.whatsapp ||
+                business.whatsappLink ||
+                business.phone ||
+                (site as any)?.brand?.phone ||
+                ""
+            ).trim();
+            if (phone) nextSettings.phone = phone;
+          } catch {
+            // keep empty
+          }
+        }
+
+        await saveSitePluginSettings(siteId, plugin.key, nextSettings);
+        setOverlayActive((prev) => ({ ...prev, [plugin.key]: true }));
+        if (!silent) {
+          if (plugin.key === "whatsapp-float" && !String(nextSettings.phone || "").trim()) {
+            onAdded?.(
+              `«${plugin.name}» הופעל — הזינו מספר WhatsApp בפאנל הניהול של התוסף`
+            );
+          } else {
+            onAdded?.(`«${plugin.name}» פעיל בעורך ובאתר`);
+          }
+        }
+        return true;
+      } catch {
+        if (!silent) onAdded?.(`שגיאה בהפעלת ${plugin.name}`);
+        return false;
+      }
+    },
+    [onAdded, siteId]
+  );
+
+  const loadAndActivateOverlays = useCallback(
     async (plugins: SitePluginDefinition[], enabled: string[]) => {
       if (!siteId) return;
       const enabledSet = new Set(enabled);
@@ -49,19 +142,34 @@ export default function VisualPluginsAddPanel({
         (p) => enabledSet.has(p.key) && getPluginEditorAction(p.key).kind === "overlay"
       );
       const next: Record<string, boolean> = {};
+      let activatedAny = false;
+
       await Promise.all(
         overlays.map(async (plugin) => {
           try {
             const settings = await getSitePluginSettings(siteId, plugin.key);
-            next[plugin.key] = settings?.isActive !== false;
+            const alreadyOn = settings?.isActive !== false;
+            if (alreadyOn) {
+              next[plugin.key] = true;
+              return;
+            }
+            const ok = await activateOverlay(plugin, true);
+            next[plugin.key] = ok;
+            if (ok) activatedAny = true;
           } catch {
-            next[plugin.key] = false;
+            const ok = await activateOverlay(plugin, true);
+            next[plugin.key] = ok;
+            if (ok) activatedAny = true;
           }
         })
       );
+
       setOverlayActive(next);
+      if (activatedAny || overlays.length > 0) {
+        onOverlayInstalled?.();
+      }
     },
-    [siteId]
+    [activateOverlay, onOverlayInstalled, siteId]
   );
 
   useEffect(() => {
@@ -71,19 +179,34 @@ export default function VisualPluginsAddPanel({
     }
 
     setLoading(true);
+    autoActivatedRef.current = false;
     getSitePlugins(siteId)
       .then(async (data) => {
         setCatalog(data.catalog);
         setEnabledPlugins(data.enabledPlugins);
-        await loadOverlayStates(data.catalog, data.enabledPlugins);
+        await loadAndActivateOverlays(data.catalog, data.enabledPlugins);
+        refreshContentActive(data.enabledPlugins);
+        autoActivatedRef.current = true;
       })
       .catch(() => {
         setCatalog([]);
         setEnabledPlugins([]);
         setOverlayActive({});
+        setContentActive({});
       })
       .finally(() => setLoading(false));
-  }, [siteId, loadOverlayStates]);
+  }, [siteId, loadAndActivateOverlays, refreshContentActive]);
+
+  useEffect(() => {
+    refreshContentActive(enabledPlugins);
+  }, [
+    enabledPlugins,
+    pageWidgetsEpoch,
+    editor?.data,
+    editor?.activePageId,
+    editor?.activePageID,
+    refreshContentActive,
+  ]);
 
   const installed = useMemo(() => {
     const set = new Set(enabledPlugins);
@@ -98,63 +221,6 @@ export default function VisualPluginsAddPanel({
         );
       });
   }, [catalog, enabledPlugins, query]);
-
-  const countdownOnPage = useMemo(() => {
-    void pageWidgetsEpoch;
-    return pageHasCountdownWidget(editor?.canvasRef?.current);
-  }, [
-    editor?.canvasRef,
-    editor?.data,
-    editor?.activePageId,
-    editor?.activePageID,
-    pageWidgetsEpoch,
-  ]);
-
-  async function activateOverlay(plugin: SitePluginDefinition) {
-    if (!siteId) return;
-    try {
-      const current = await getSitePluginSettings(siteId, plugin.key);
-      const nextSettings: Record<string, unknown> = {
-        ...current,
-        isActive: true,
-        showTrigger: true,
-        buttonMode: "floating",
-        triggerPosition: current?.triggerPosition || { x: 88, y: 82 },
-      };
-
-      if (plugin.key === "whatsapp-float" && !String(current?.phone || "").trim()) {
-        try {
-          const { getMySite } = await import("../../../../api/mySitesApi");
-          const site = await getMySite(siteId);
-          const business = (site as any)?.business || {};
-          const phone = String(
-            business.whatsappUrl ||
-              business.whatsapp ||
-              business.whatsappLink ||
-              business.phone ||
-              (site as any)?.brand?.phone ||
-              ""
-          ).trim();
-          if (phone) nextSettings.phone = phone;
-        } catch {
-          // keep empty — user can set in panel
-        }
-      }
-
-      await saveSitePluginSettings(siteId, plugin.key, nextSettings);
-      setOverlayActive((prev) => ({ ...prev, [plugin.key]: true }));
-      onOverlayInstalled?.();
-      if (plugin.key === "whatsapp-float" && !String(nextSettings.phone || "").trim()) {
-        onAdded?.(
-          `«${plugin.name}» הופעל — הזינו מספר WhatsApp בפאנל הניהול של התוסף`
-        );
-      } else {
-        onAdded?.(`«${plugin.name}» הופעל — מופיע ככפתור צף באתר`);
-      }
-    } catch {
-      onAdded?.(`שגיאה בהפעלת ${plugin.name}`);
-    }
-  }
 
   async function removeOverlay(plugin: SitePluginDefinition) {
     if (!siteId) return;
@@ -184,7 +250,8 @@ export default function VisualPluginsAddPanel({
     const action = getPluginEditorAction(plugin.key);
 
     if (action.kind === "overlay" && siteId) {
-      await activateOverlay(plugin);
+      const ok = await activateOverlay(plugin, false);
+      if (ok) onOverlayInstalled?.();
       return;
     }
 
@@ -192,7 +259,9 @@ export default function VisualPluginsAddPanel({
       const page = getPageTemplateById(action.pageTemplateId);
       if (page && typeof onAddLibraryPage === "function") {
         onAddLibraryPage(page);
-        onAdded?.(`עמוד «${page.title}» נוסף — ${plugin.name}`);
+        setContentActive((prev) => ({ ...prev, [plugin.key]: true }));
+        setPageWidgetsEpoch((e) => e + 1);
+        onAdded?.(`עמוד «${page.title}» נוסף — ${plugin.name} פעיל`);
         return;
       }
     }
@@ -206,18 +275,20 @@ export default function VisualPluginsAddPanel({
           ]);
           setEnabledPlugins(result.enabledPlugins);
         } catch {
-          // still insert the section
+          // still insert
         }
       }
       if (typeof editor?.addLibrarySection === "function") {
-        editor.addLibrarySection(action.sectionId);
+        editor.addLibrarySection(action.sectionId, "append");
       } else {
         editor?.addSection?.("after", undefined, action.sectionId);
       }
+      setContentActive((prev) => ({ ...prev, [plugin.key]: true }));
+      setPageWidgetsEpoch((e) => e + 1);
       onAdded?.(
         plugin.key === "booking"
-          ? `«${plugin.name}» נוסף — מחובר ליומן ה-CRM`
-          : `«${plugin.name}» נוסף לעמוד`,
+          ? `«${plugin.name}» נוסף ופעיל — מחובר ליומן ה-CRM`
+          : `«${plugin.name}» נוסף ופעיל בעמוד`
       );
       return;
     }
@@ -233,16 +304,13 @@ export default function VisualPluginsAddPanel({
       });
     } else if (typeof editor?.insertHtmlAtSelection === "function") {
       editor.insertHtmlAtSelection(html);
-    } else if (typeof editor?.addSection === "function") {
-      editor.addSection("append");
-      onAdded?.(`«${plugin.name}» — הוסיפו את הרכיב מהסקשן החדש`);
-      return;
     } else {
       onAdded?.(`«${plugin.name}» — נשמר; הוסיפו דרך סקשן מתאים`);
       return;
     }
+    setContentActive((prev) => ({ ...prev, [plugin.key]: true }));
     setPageWidgetsEpoch((epoch) => epoch + 1);
-    onAdded?.(`«${plugin.name}» נוסף לעמוד`);
+    onAdded?.(`«${plugin.name}» נוסף ופעיל בעמוד`);
   }
 
   if (!siteId) {
@@ -271,7 +339,7 @@ export default function VisualPluginsAddPanel({
         <Puzzle className="h-10 w-10 text-violet-400" />
         <p className="mt-3 text-sm font-bold text-slate-700">אין תוספים מותקנים</p>
         <p className="mt-1 max-w-sm text-xs leading-relaxed text-slate-500">
-          התקינו תוספים מפאנל הניהול → חנות תוספים, ואז חזרו לכאן להוספה לעמוד
+          התקינו תוספים מפאנל הניהול → חנות תוספים, ואז חזרו לכאן
         </p>
       </div>
     );
@@ -291,7 +359,7 @@ export default function VisualPluginsAddPanel({
           />
         </label>
         <p className="mt-3 text-xs font-bold text-slate-500">
-          {installed.length} תוספים מותקנים — לחצו להוספה לעמוד הנוכחי
+          {installed.length} תוספים מותקנים — תוספים צפים פעילים מיד; לחצו «הוספה» לסקשנים בעמוד
         </p>
       </div>
 
@@ -303,13 +371,17 @@ export default function VisualPluginsAddPanel({
             const action = getPluginEditorAction(plugin.key);
             const isOverlay = action.kind === "overlay";
             const isOverlayActive = isOverlay && overlayActive[plugin.key];
-            const isCountdownOnPage =
-              plugin.key === "countdown" && action.kind === "widget" && countdownOnPage;
+            const isContentActive = !isOverlay && Boolean(contentActive[plugin.key]);
+            const isActive = isOverlayActive || isContentActive;
 
             return (
               <div
                 key={plugin.key}
-                className="group flex flex-col rounded-2xl border border-slate-200 bg-white p-4 text-right transition hover:-translate-y-0.5 hover:border-violet-300 hover:shadow-lg"
+                className={`group flex flex-col rounded-2xl border bg-white p-4 text-right transition hover:-translate-y-0.5 hover:shadow-lg ${
+                  isActive
+                    ? "border-emerald-200 hover:border-emerald-300"
+                    : "border-slate-200 hover:border-violet-300"
+                }`}
               >
                 <div className="flex items-start gap-3">
                   <div
@@ -326,26 +398,28 @@ export default function VisualPluginsAddPanel({
                   </div>
                 </div>
 
-                <span className="mt-3 inline-flex items-center gap-1 self-start rounded-full bg-violet-50 px-2.5 py-1 text-[10px] font-black text-violet-700">
+                <span
+                  className={`mt-3 inline-flex items-center gap-1 self-start rounded-full px-2.5 py-1 text-[10px] font-black ${
+                    isActive
+                      ? "bg-emerald-50 text-emerald-700"
+                      : "bg-violet-50 text-violet-700"
+                  }`}
+                >
                   <Download className="h-3 w-3" />
-                  {action.kind === "page"
-                    ? "הוספת עמוד"
-                    : action.kind === "section"
-                      ? "הוספת סקשן"
-                      : action.kind === "overlay"
-                        ? isOverlayActive
-                          ? "פעיל — הסרה מוחקת לגמרי"
-                          : "הפעלת תוסף צף"
-                        : "הוספת רכיב"}
+                  {isOverlay
+                    ? isOverlayActive
+                      ? "פעיל בעורך ובאתר"
+                      : "ממתין להפעלה"
+                    : isContentActive
+                      ? "פעיל בעמוד הנוכחי"
+                      : action.kind === "page"
+                        ? "הוספת עמוד"
+                        : action.kind === "section"
+                          ? "הוספת סקשן לעמוד"
+                          : "הוספת רכיב"}
                 </span>
 
                 <div className="mt-3 flex flex-wrap gap-2">
-                  {isCountdownOnPage ? (
-                    <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2.5 py-1 text-[10px] font-black text-emerald-700">
-                      כבר בעמוד הנוכחי
-                    </span>
-                  ) : null}
-
                   {isOverlay && isOverlayActive ? (
                     <>
                       <button
@@ -358,10 +432,10 @@ export default function VisualPluginsAddPanel({
                       </button>
                       <button
                         type="button"
-                        onClick={() => activateOverlay(plugin)}
+                        onClick={() => activateOverlay(plugin).then((ok) => ok && onOverlayInstalled?.())}
                         className="inline-flex flex-1 items-center justify-center rounded-xl border border-violet-200 bg-violet-50 px-3 py-2 text-[11px] font-black text-violet-700 transition hover:bg-violet-100"
                       >
-                        הפעלה מחדש
+                        רענון
                       </button>
                     </>
                   ) : (
@@ -369,12 +443,16 @@ export default function VisualPluginsAddPanel({
                       type="button"
                       onClick={() => insertPlugin(plugin)}
                       className={`inline-flex w-full items-center justify-center rounded-xl px-3 py-2 text-[11px] font-black transition ${
-                        isCountdownOnPage
+                        isContentActive
                           ? "border border-violet-200 bg-violet-50 text-violet-700 hover:bg-violet-100"
                           : "bg-violet-600 text-white hover:bg-violet-700"
                       }`}
                     >
-                      {isOverlay ? "הוספה לעמוד" : isCountdownOnPage ? "הוספה שוב" : "הוספה"}
+                      {isOverlay
+                        ? "הפעלה בעורך"
+                        : isContentActive
+                          ? "הוספה שוב"
+                          : "הוספה ופתיחה בעורך"}
                     </button>
                   )}
                 </div>

@@ -294,6 +294,10 @@ export default function VisualEditorShell({
         addPage ? "pages" : addSection ? "sections" : "plugins",
       );
       setSidePanelMode("add");
+      // Ensure floating overlays refresh after install-from-store deep link.
+      if (addPlugin) {
+        setOverlayRefreshKey((k) => k + 1);
+      }
     }
 
     if (addPage && typeof onAddLibraryPage === "function") {
@@ -317,6 +321,7 @@ export default function VisualEditorShell({
       const timer = window.setTimeout(() => {
         addLibrarySection(addSection, "append");
         params.delete("addSection");
+        params.delete("addPlugin");
         const next = params.toString();
         const url = `${window.location.pathname}${next ? `?${next}` : ""}`;
         window.history.replaceState({}, "", url);

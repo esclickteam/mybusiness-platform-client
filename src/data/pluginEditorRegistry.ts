@@ -78,8 +78,10 @@ export const PLUGIN_EDITOR_ACTIONS: Record<string, PluginEditorAction> = {
   },
   leads: {
     pluginKey: "leads",
-    kind: "widget",
-    label: "טופס לידים",
+    kind: "section",
+    sectionId: "section-contact",
+    label: "טופס לידים / צור קשר",
+    description: "מוסיף סקשן יצירת קשר שמחובר ל-CRM",
   },
   reviews: {
     pluginKey: "reviews",
