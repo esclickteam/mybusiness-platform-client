@@ -525,7 +525,42 @@ function selectionBelongsToNode(
 function normalizeText(value: string) {
   return String(value || "")
     .replace(/\u00a0/g, " ")
-    .replace(/\r\n/g, "\n");
+    .replace(/\r\n/g, "\n")
+    .replace(/\r/g, "\n");
+}
+
+function insertPlainTextAtSelection(text: string) {
+  const selection = window.getSelection();
+  if (!selection || selection.rangeCount === 0) return false;
+
+  const normalized = normalizeText(text);
+  if (!normalized) return false;
+
+  const range = selection.getRangeAt(0);
+  range.deleteContents();
+
+  const parts = normalized.split("\n");
+  parts.forEach((part, index) => {
+    if (part) {
+      range.insertNode(document.createTextNode(part));
+    }
+
+    if (index < parts.length - 1) {
+      range.insertNode(document.createElement("br"));
+    }
+  });
+
+  range.collapse(false);
+  selection.removeAllRanges();
+  selection.addRange(range);
+  return true;
+}
+
+function isClipboardShortcut(event: KeyboardEvent) {
+  if (!(event.ctrlKey || event.metaKey)) return false;
+
+  const key = String(event.key || "").toLowerCase();
+  return key === "c" || key === "v" || key === "x" || key === "a";
 }
 
 function parseCssLength(value: string | undefined) {
@@ -1606,6 +1641,22 @@ export default function VisualEditorCanvas({
       if (!node || !(event.target instanceof Node)) return;
       if (!node.contains(event.target)) return;
 
+      if (event.inputType === "insertFromPaste") {
+        event.preventDefault();
+        event.stopPropagation();
+
+        const text = String(
+          event.data ||
+            (event as InputEvent & { clipboardData?: DataTransfer | null })
+              .clipboardData?.getData("text/plain") ||
+            "",
+        );
+
+        insertPlainTextAtSelection(text);
+        window.requestAnimationFrame(refreshSelectionBox);
+        return;
+      }
+
       event.stopPropagation();
     };
 
@@ -1629,24 +1680,10 @@ export default function VisualEditorCanvas({
       event.preventDefault();
       event.stopPropagation();
 
-      const text = String(event.clipboardData?.getData("text/plain") || "")
-        .replace(/\r\n/g, "\n")
-        .replace(/\r/g, "\n");
+      const text = String(event.clipboardData?.getData("text/plain") || "");
 
-      if (!text) return;
-
-      const inserted = document.execCommand("insertText", false, text);
-      if (!inserted) {
-        // Fallback for browsers that reject insertText with multiline values
-        const selection = window.getSelection();
-        if (selection && selection.rangeCount > 0) {
-          const range = selection.getRangeAt(0);
-          range.deleteContents();
-          range.insertNode(document.createTextNode(text));
-          range.collapse(false);
-          selection.removeAllRanges();
-          selection.addRange(range);
-        }
+      if (!insertPlainTextAtSelection(text)) {
+        document.execCommand("insertText", false, normalizeText(text));
       }
 
       window.requestAnimationFrame(refreshSelectionBox);
@@ -1656,7 +1693,7 @@ export default function VisualEditorCanvas({
       const node = editingNodeRef.current;
       if (!node || !(event.target instanceof Node)) return;
       if (!node.contains(event.target)) return;
-      // Allow native clipboard copy/cut while editing (mouse + keyboard).
+      // Allow native clipboard copy/cut (mouse + keyboard).
       event.stopPropagation();
     };
 
@@ -1667,6 +1704,14 @@ export default function VisualEditorCanvas({
       const selection = window.getSelection();
 
       if (!selectionBelongsToNode(selection, node)) return;
+
+      /*
+        Do not swallow clipboard shortcuts — stopPropagation on capture was
+        blocking Ctrl/Cmd+C/V/X/A from reaching contenteditable.
+      */
+      if (isClipboardShortcut(event)) {
+        return;
+      }
 
       event.stopPropagation();
 
@@ -1687,7 +1732,7 @@ export default function VisualEditorCanvas({
         event.preventDefault();
         const inserted =
           document.execCommand("insertLineBreak") ||
-          document.execCommand("insertText", false, "\n");
+          insertPlainTextAtSelection("\n");
         if (!inserted) {
           const sel = window.getSelection();
           if (sel && sel.rangeCount > 0) {
@@ -1991,24 +2036,6 @@ export default function VisualEditorCanvas({
       const elementId = String(selected?.id || getElementId(node)).trim();
 
       if (!node || !elementId || Boolean(editorAny.locked?.[elementId])) {
-        return;
-      }
-
-      /*
-        טקסט: לא מתחילים גרירה אוטומטית כדי לאפשר סימון / העתק-הדבק בעכבר.
-        הזזה של טקסט נשארת דרך ידית ההזזה של מסגרת הבחירה.
-      */
-      const textTarget =
-        event.target instanceof HTMLElement
-          ? resolveInlineTextEditTarget(node, event.target)
-          : null;
-
-      if (
-        textTarget ||
-        isInlineTextEditableNode(node) ||
-        (event.target instanceof HTMLElement &&
-          isInlineTextEditableNode(event.target))
-      ) {
         return;
       }
 
