@@ -208,11 +208,10 @@ export function mergeSmartBotSettings(
     if (merged.positionAnchor !== "right-bottom" && Number.isFinite(x) && x > 50) {
       x = 100 - x;
     }
-    // Keep the centered trigger (translate 50%/50%) fully on-screen.
-    const pad = merged.triggerStyle === "icon" ? 8 : 16;
+    // Allow near-edge positions; runtime drag clamps by measured button size.
     merged.triggerPosition = {
-      x: Math.min(100 - pad, Math.max(pad, Number.isFinite(x) ? x : 8)),
-      y: Math.min(100 - pad, Math.max(pad, Number.isFinite(y) ? y : 82)),
+      x: Math.min(98.8, Math.max(1.2, Number.isFinite(x) ? x : 8)),
+      y: Math.min(98.8, Math.max(1.2, Number.isFinite(y) ? y : 82)),
     };
     merged.positionAnchor = "right-bottom";
   }
