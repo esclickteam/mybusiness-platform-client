@@ -798,8 +798,27 @@ export default function StoreProductsManager({
     setSaving(true);
 
     try {
-      const { data } = await API.put(`/store/${businessId}/settings`, settings);
-      setSettings({ ...emptySettings, ...(data?.settings || {}) });
+      // Never round-trip paymentProviders — GET masks secrets as "••••••••"
+      // and a full settings PUT would wipe real Stripe/Hyp keys in Mongo.
+      const {
+        paymentProviders: _paymentProviders,
+        defaultPaymentProvider: _defaultPaymentProvider,
+        paymentMethods: _paymentMethods,
+        ...safeSettings
+      } = settings;
+
+      const { data } = await API.put(
+        `/store/${businessId}/settings`,
+        safeSettings
+      );
+      setSettings({
+        ...emptySettings,
+        ...(data?.settings || {}),
+        // Keep local payment snapshot from previous load / payments panel.
+        paymentProviders: settings.paymentProviders,
+        defaultPaymentProvider: settings.defaultPaymentProvider,
+        paymentMethods: settings.paymentMethods,
+      });
       showMessage("success", "הגדרות החנות נשמרו בהצלחה");
     } catch (err) {
       console.error("Save store settings error:", err);
