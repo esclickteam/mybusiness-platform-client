@@ -190,8 +190,9 @@ export default function VelmoraCustom({
   catalogProducts,
   isLiveCatalog = false,
 }: Props) {
+  // Prefer curated cards until a non-empty catalog is ready (avoids demo→seed flash).
   const featuredProducts =
-    catalogProducts !== undefined
+    Array.isArray(catalogProducts) && catalogProducts.length > 0
       ? catalogProducts.slice(0, 4).map((product) => ({
           id: product.id,
           ref: product.ref,

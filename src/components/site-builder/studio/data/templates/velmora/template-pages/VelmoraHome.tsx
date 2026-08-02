@@ -434,7 +434,7 @@ export default function VelmoraHome({
   onPageChange,
   onOpenProduct,
   catalogProducts,
-  isLiveCatalog = false,
+  isLiveCatalog: _isLiveCatalog = false,
   templateData,
   data,
   studioData,
@@ -452,27 +452,43 @@ export default function VelmoraHome({
   const productsStrip = getDataSection(visualData, "productsStrip");
   const contact = getDataSection(visualData, "contact");
 
-  // Live store = catalog only. Preview/gallery keeps template VLM demos.
-  const displayProducts: HomeProductCard[] =
-    catalogProducts !== undefined
-      ? catalogProducts.map(mapCatalogToHomeCard)
-      : isLiveCatalog
-        ? []
-        : velmoraProducts.map((product) => ({
-            id: product.id,
-            ref: product.ref,
-            title: product.title,
-            subtitle: product.subtitle,
-            price: product.price,
-            image: product.image,
-          }));
+  // Hero fan stays on curated template art — never swaps when the store
+  // catalog finishes loading (demos → DEMO-FASH seeds caused a visible flash).
+  const curatedProducts: HomeProductCard[] = velmoraProducts.map((product) => ({
+    id: product.id,
+    ref: product.ref,
+    title: product.title,
+    subtitle: product.subtitle,
+    price: product.price,
+    image: product.image,
+  }));
 
-  const heroProducts = displayProducts.slice(0, 7);
-  const stripProducts = displayProducts.slice(0, 3);
+  const catalogCards =
+    Array.isArray(catalogProducts) && catalogProducts.length > 0
+      ? catalogProducts.map(mapCatalogToHomeCard)
+      : null;
+
+  const heroProducts = curatedProducts.slice(0, 7);
+  // Keep home merchandising on curated art so store seed load never reshuffles cards.
+  const stripProducts = curatedProducts.slice(0, 3);
 
   function openProduct(productId: string) {
+    const id = String(productId || "").trim();
+    // Curated home cards are visual — open shop, or a live catalog name match.
+    if (curatedProducts.some((product) => product.id === id)) {
+      const curatedTitle = curatedProducts.find((item) => item.id === id)?.title;
+      const liveMatch = catalogCards?.find(
+        (product) => product.title === curatedTitle,
+      );
+      if (liveMatch && onOpenProduct) {
+        onOpenProduct(liveMatch.id);
+        return;
+      }
+      onPageChange("shop");
+      return;
+    }
     if (onOpenProduct) {
-      onOpenProduct(productId);
+      onOpenProduct(id);
       return;
     }
     onPageChange("product");

@@ -1010,9 +1010,18 @@ export default function VelmoraPages({
   });
 
   const shopCatalog = React.useMemo(() => {
-    // Keep demos visible while loading / when store is still empty.
+    // While the public shop is loading, do not paint template demos — they
+    // get replaced by seeded DEMO-* products and flash the home/shop cards.
+    if (storeCatalogLoading) {
+      return {
+        products: [] as ReturnType<typeof buildVelmoraShopCatalog>["products"],
+        categories: ["הכל"],
+        isLive: false as const,
+      };
+    }
+
     return buildVelmoraShopCatalog({
-      fromPlugin: storeCatalogLoading ? false : fromPlugin,
+      fromPlugin,
       storeProducts,
       storeCategories,
     });
