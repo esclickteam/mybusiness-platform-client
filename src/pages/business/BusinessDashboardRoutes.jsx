@@ -98,6 +98,11 @@ const MiniSaaSManager = lazy(() =>
 
 const HelpCenter = lazy(() => import("../HelpCenter"));
 
+/* Automations — top-level business dashboard tab */
+const AutomationsMain = lazy(() =>
+  import("./dashboardPages/automations/AutomationsMain")
+);
+
 /* WhatsApp messaging */
 const WhatsAppMain = lazy(() =>
   import("./dashboardPages/whatsapp/WhatsAppMain")
@@ -473,6 +478,9 @@ const BusinessDashboardRoutes = () => {
           />
           <Route path="affiliate" element={<AffiliatePage />} />
           <Route path="billing" element={<BillingPage />} />
+
+          {/* Automations — visible to all business users */}
+          <Route path="automations" element={<AutomationsMain />} />
 
           {/* WhatsApp messaging — test user only */}
           <Route

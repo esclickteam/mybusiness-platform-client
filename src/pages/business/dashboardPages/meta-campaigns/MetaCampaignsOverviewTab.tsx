@@ -1097,7 +1097,7 @@ export default function MetaCampaignsOverviewTab() {
               ))}
             </ol>
             <Link
-              to={`/business/${urlBusinessId || businessId}/dashboard/whatsapp/automations`}
+              to={`/business/${urlBusinessId || businessId}/dashboard/automations`}
               className={`${btnSecondary} mt-4 w-full`}
             >
               <ArrowUpRight className="h-4 w-4" />

@@ -403,6 +403,7 @@
   "businessNav": {
     "dashboard": "דשבורד",
     "crmSystem": "מערכת CRM",
+    "automations": "אוטומציות",
     "collaborations": "שיתופי פעולה",
     "bizuplyAdvisor": "יועץ BizUply",
     "editBusinessPage": "עריכת עמוד עסקי",
@@ -420,6 +421,14 @@
     "whatsapp": "שליחת הודעות וואטסאפ",
     "metaCampaigns": "ניהול קמפיינים מטא",
     "socialSchedule": "תזמון פוסטים וסטוריז"
+  },
+  "automations": {
+    "shell": {
+      "badge": "אוטומציות",
+      "title": "אוטומציות",
+      "subtitle": "תזכורות, פולואפים ותהליכי וואטסאפ שרצים ברקע ומחוברים ל־CRM.",
+      "channel": "CRM + וואטסאפ"
+    }
   },
   "layout": {
     "adminImpersonationTitle": "מצב אדמין — כניסה לעסק",

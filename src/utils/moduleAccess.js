@@ -5,6 +5,7 @@
 
 export const MODULE_ROUTE_PREFIXES = {
   crm: "crm",
+  automations: "automations",
   "meta-campaigns": "meta-campaigns",
   whatsapp: "whatsapp",
   "social-schedule": "social-schedule",
@@ -20,6 +21,7 @@ export const MODULE_ROUTE_PREFIXES = {
 export const NAV_PATH_MODULE_MAP = {
   dashboard: "dashboard",
   crm: "crm",
+  automations: "automations",
   whatsapp: "whatsapp",
   "meta-campaigns": "meta-campaigns",
   "social-schedule": "social-schedule",
