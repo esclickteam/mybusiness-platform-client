@@ -1299,8 +1299,14 @@ export default function ChanelPages({
     const merged = mergeData(data);
     const curatedCategories = safeArray(merged.categories);
 
-    // Preview / empty store / loading: keep curated demos until real products exist.
-    if (!fromPlugin || storeLoading || storeProducts.length === 0) {
+    // While the live shop resolves, paint no product cards — curated demos used to
+    // flash then swap to seeded/live products.
+    if (storeLoading) {
+      return { ...merged, products: [] };
+    }
+
+    // Preview / empty store: keep curated demos until real products exist.
+    if (!fromPlugin || storeProducts.length === 0) {
       return merged;
     }
 

@@ -23,6 +23,7 @@ type Props = {
   products?: VelmoraShopProduct[];
   categories?: string[];
   isLiveCatalog?: boolean;
+  catalogLoading?: boolean;
 };
 
 type SortOption = "newest" | "price-low" | "price-high" | "popular";
@@ -225,11 +226,20 @@ export default function VelmoraShop({
   products: productsProp,
   categories: categoriesProp,
   isLiveCatalog = false,
+  catalogLoading = false,
 }: Props) {
-  const products = productsProp?.length ? productsProp : FALLBACK_PRODUCTS;
-  const categories = categoriesProp?.length
-    ? categoriesProp
-    : FALLBACK_CATEGORIES;
+  // Never paint fallback demos while the live catalog is resolving — that flash
+  // is what made shop cards swap after load.
+  const products = catalogLoading
+    ? []
+    : productsProp?.length
+      ? productsProp
+      : FALLBACK_PRODUCTS;
+  const categories = catalogLoading
+    ? ["הכל"]
+    : categoriesProp?.length
+      ? categoriesProp
+      : FALLBACK_CATEGORIES;
   const [activeCategory, setActiveCategory] = React.useState("הכל");
   const [query, setQuery] = React.useState("");
   const [sort, setSort] = React.useState<SortOption>("newest");
@@ -445,7 +455,13 @@ export default function VelmoraShop({
             </div>
           </Reveal>
 
-          {filteredProducts.length > 0 ? (
+          {catalogLoading ? (
+            <div className="rounded-[8px] border border-black/10 bg-white p-12 text-center shadow-sm">
+              <p className="text-sm tracking-[0.18em] text-black/45">
+                טוען מוצרים מהחנות...
+              </p>
+            </div>
+          ) : filteredProducts.length > 0 ? (
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {filteredProducts.map((product, index) => (
                 <ProductCard

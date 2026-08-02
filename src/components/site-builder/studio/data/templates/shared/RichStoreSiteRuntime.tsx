@@ -2238,24 +2238,32 @@ export default function RichStoreSiteRuntime({
             איפוס
           </button>
         </div>
-        <div className={cx("mt-10 grid gap-5 sm:grid-cols-2", skin.grid)}>
-          {filteredProducts.map((product, index) => (
-            <ProductCard
-              key={product.id}
-              product={product}
-              currency={currency}
-              skin={skin}
-              index={index}
-              onOpen={() => openProduct(product)}
-              onAdd={() => addToCart(product)}
-            />
-          ))}
-        </div>
-        {!filteredProducts.length ? (
-          <div className={cx("mt-12 border border-dashed p-10 text-center text-[var(--muted)]", skin.softCard)}>
-            לא נמצאו מוצרים בסינון הנוכחי. נסו חיפוש אחר או קטגוריה אחרת.
-          </div>
-        ) : null}
+        {loading ? (
+          <p className="mt-10 text-sm text-[var(--muted)]">
+            טוען מוצרים מתוסף החנות...
+          </p>
+        ) : (
+          <>
+            <div className={cx("mt-10 grid gap-5 sm:grid-cols-2", skin.grid)}>
+              {filteredProducts.map((product, index) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  currency={currency}
+                  skin={skin}
+                  index={index}
+                  onOpen={() => openProduct(product)}
+                  onAdd={() => addToCart(product)}
+                />
+              ))}
+            </div>
+            {!filteredProducts.length ? (
+              <div className={cx("mt-12 border border-dashed p-10 text-center text-[var(--muted)]", skin.softCard)}>
+                לא נמצאו מוצרים בסינון הנוכחי. נסו חיפוש אחר או קטגוריה אחרת.
+              </div>
+            ) : null}
+          </>
+        )}
       </div>
     </section>
   );
@@ -2287,7 +2295,7 @@ export default function RichStoreSiteRuntime({
           {Header}
           <section {...sectionProps("collections-rich-hero", "hero", "קולקציות")} className="px-5 py-16 lg:px-8 lg:py-24"><div className="mx-auto max-w-7xl"><SectionHeading eyebrow={g("collectionsEyebrow")} title={g("collectionsTitle")} text={g("collectionsText")} skin={skin} giant /></div></section>
           <section {...sectionProps("collections-category-map", "categories", "מפת אוספים")} className={skin.alt + " px-5 py-20 lg:px-8"}><div className="mx-auto grid max-w-7xl gap-5 md:grid-cols-4">{categoryTiles.slice(0, 4).map((cat, index) => <CategoryTile key={cat.id} cat={cat} index={index} className="aspect-[3/4]" />)}</div></section>
-          <section {...sectionProps("collections-product-rows", "products", "שורות אוסף")} className="px-5 py-20 lg:px-8" data-bizuply-widget="products"><div className="mx-auto grid max-w-7xl gap-10">{categoryTiles.slice(0, 4).map((cat) => { const items = products.filter((product) => product.categorySlug === cat.slug || product.category === cat.name).slice(0, 4); const displayItems = items.length ? items : showcase.slice(0, 4); return <div key={cat.id}><div className="flex items-center justify-between gap-4 border-b border-[var(--line)] pb-4"><h2 className={cx("store-display text-3xl font-black", skin.title)}>{cat.name}</h2><button type="button" onClick={() => navigateCategory(cat)} className="text-xs font-black uppercase tracking-[0.18em] text-[var(--p)]">לצפייה</button></div><div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">{displayItems.map((product, index) => <ProductCard key={`${cat.id}-${product.id}`} product={product} currency={currency} skin={skin} index={index} onOpen={() => openProduct(product)} onAdd={() => addToCart(product)} />)}</div></div>; })}</div></section>
+          <section {...sectionProps("collections-product-rows", "products", "שורות אוסף")} className="px-5 py-20 lg:px-8" data-bizuply-widget="products"><div className="mx-auto grid max-w-7xl gap-10">{loading ? <p className="text-sm text-[var(--muted)]">טוען מוצרים מתוסף החנות...</p> : categoryTiles.slice(0, 4).map((cat) => { const items = products.filter((product) => product.categorySlug === cat.slug || product.category === cat.name).slice(0, 4); const displayItems = items.length ? items : showcase.slice(0, 4); return <div key={cat.id}><div className="flex items-center justify-between gap-4 border-b border-[var(--line)] pb-4"><h2 className={cx("store-display text-3xl font-black", skin.title)}>{cat.name}</h2><button type="button" onClick={() => navigateCategory(cat)} className="text-xs font-black uppercase tracking-[0.18em] text-[var(--p)]">לצפייה</button></div><div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">{displayItems.map((product, index) => <ProductCard key={`${cat.id}-${product.id}`} product={product} currency={currency} skin={skin} index={index} onOpen={() => openProduct(product)} onAdd={() => addToCart(product)} />)}</div></div>; })}</div></section>
           <SimpleInfoSection id="collections-story" kind="about" label="סיפור אוסף" title={g("aboutTitle")} text={g("aboutText")} className={skin.alt} />
           <ProductRail id="collections-featured" label="אוסף מוביל" title="האוסף שהלקוחות בוחרים" productsToShow={showcase.slice(0, 4)} />
           <ValuesSection id="collections-comparison" className={skin.alt} />

@@ -1250,6 +1250,7 @@ export default function VelmoraPages({
                     products={shopCatalog.products}
                     categories={shopCatalog.categories}
                     isLiveCatalog={shopCatalog.isLive}
+                    catalogLoading={storeCatalogLoading}
                   />
                 ),
               },

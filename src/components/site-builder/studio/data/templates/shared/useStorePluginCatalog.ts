@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import {
   getPublicShop,
@@ -225,8 +225,9 @@ const EMPTY_DEMO_PRODUCTS: DemoStoreProductSeed[] = [];
  *
  * Behavior:
  * - No businessId / studio static → template demo seeds (preview)
- * - businessId + live products → live catalog replaces demos
- * - businessId + empty store → keep demos (edit looks like preview until products exist)
+ * - businessId + fetching → empty catalog (no demo→live card flash)
+ * - businessId + live products → live catalog
+ * - businessId + empty store / error → template demos after resolve
  */
 export function useStorePluginCatalog(options: {
   businessId?: string | null;
@@ -244,16 +245,24 @@ export function useStorePluginCatalog(options: {
   const shouldFetch =
     options.enabled !== false && Boolean(businessId);
 
-  // Always start from demos so editor/preview never flash empty while fetching.
-  const [products, setProducts] = useState<StoreCatalogProduct[]>(demo.products);
-  const [categories, setCategories] = useState<StoreCatalogCategory[]>(
-    demo.categories,
+  // When a live shop will load, start empty — painting demos first caused every
+  // store template to flash demo cards then swap to seeded/live products.
+  const [products, setProducts] = useState<StoreCatalogProduct[]>(() =>
+    shouldFetch ? [] : demo.products,
+  );
+  const [categories, setCategories] = useState<StoreCatalogCategory[]>(() =>
+    shouldFetch ? [] : demo.categories,
   );
   const [loading, setLoading] = useState(shouldFetch);
   const [fromPlugin, setFromPlugin] = useState(false);
   const [storeName, setStoreName] = useState("");
   const [currency, setCurrency] = useState("ILS");
   const [refreshToken, setRefreshToken] = useState(0);
+  const fromPluginRef = useRef(false);
+
+  useEffect(() => {
+    fromPluginRef.current = fromPlugin;
+  }, [fromPlugin]);
 
   useEffect(() => {
     // Demo/template previews have no businessId — ignore live store mutations.
@@ -277,6 +286,12 @@ export function useStorePluginCatalog(options: {
     }
 
     setLoading(true);
+    // Clear demos/placeholders before the first live resolve. Keep the current
+    // live catalog visible while a refresh is in flight.
+    if (!fromPluginRef.current) {
+      setProducts([]);
+      setCategories([]);
+    }
 
     getPublicShop(businessId)
       .then((shop) => {
@@ -291,7 +306,7 @@ export function useStorePluginCatalog(options: {
         setStoreName(String(shop.settings?.storeName || ""));
         setCurrency(String(shop.settings?.currency || "ILS"));
 
-        // Empty store → keep template demos (editor matches preview) until products exist.
+        // Empty store → demos only after resolve (never as a pre-live flash).
         if (apiProducts.length === 0) {
           setProducts(demo.products);
           setCategories(demo.categories);
@@ -316,10 +331,12 @@ export function useStorePluginCatalog(options: {
       })
       .catch(() => {
         if (cancelled) return;
-        // Network error → keep demos visible, never wipe the canvas.
-        setProducts(demo.products);
-        setCategories(demo.categories);
-        setFromPlugin(false);
+        // Network error → demos after resolve, never wipe a live catalog mid-refresh.
+        if (!fromPluginRef.current) {
+          setProducts(demo.products);
+          setCategories(demo.categories);
+          setFromPlugin(false);
+        }
       })
       .finally(() => {
         if (!cancelled) setLoading(false);

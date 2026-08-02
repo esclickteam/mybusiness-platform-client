@@ -1857,12 +1857,21 @@ export function NovastraPages({
   businessId,
   isStudioStatic = false,
 }: NovastraPagesProps) {
-  const { products: storeProducts, fromPlugin, currency } = useStorePluginCatalog({
+  const {
+    products: storeProducts,
+    fromPlugin,
+    currency,
+    loading: storeLoading,
+  } = useStorePluginCatalog({
     businessId,
     enabled: !isStudioStatic,
   });
   const mergedData = useMemo(() => {
     const base = mergeTemplateData(data);
+    // Avoid curated→live flash: hold empty product cards while the shop resolves.
+    if (storeLoading) {
+      return { ...base, products: [] };
+    }
     // Demo/curated defaults until the live store has real products.
     if (!fromPlugin || storeProducts.length === 0) return base;
     return {
@@ -1875,7 +1884,7 @@ export function NovastraPages({
         image: product.image,
       })),
     };
-  }, [currency, data, fromPlugin, storeProducts]);
+  }, [currency, data, fromPlugin, storeLoading, storeProducts]);
   const requestedPage = String(
     activePageId ||
       currentPageId ||

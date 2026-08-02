@@ -1300,30 +1300,36 @@ export default function StoreSiteRuntime({
 
       <section {...sectionProps("shop-grid", "products", "רשת מוצרים")} className="px-5 py-16 lg:px-8 lg:py-20" data-bizuply-widget="products">
         <div className="mx-auto max-w-7xl">
-          <p className="mb-8 text-sm text-[var(--muted)]">
-            {filteredProducts.length} מוצרים
-            {fromPlugin
-              ? " · המוצרים מהחנות שלך"
-              : " · דמו זמני — הוסיפו מוצרים בפאנל חנות"}
-          </p>
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {filteredProducts.map((product, index) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                currency={currency}
-                index={index}
-                layout={layoutId}
-                onOpen={() => openProduct(product)}
-                onAdd={() => addToCart(product)}
-              />
-            ))}
-          </div>
-          {!filteredProducts.length ? (
-            <div className="mt-16 border border-dashed border-[var(--line)] p-10 text-center text-[var(--muted)]">
-              לא נמצאו מוצרים בסינון הנוכחי. הוסיפו מוצרים בתוסף החנות או נסו קטגוריה אחרת.
-            </div>
-          ) : null}
+          {loading ? (
+            <p className="text-sm text-[var(--muted)]">טוען מוצרים מתוסף החנות...</p>
+          ) : (
+            <>
+              <p className="mb-8 text-sm text-[var(--muted)]">
+                {filteredProducts.length} מוצרים
+                {fromPlugin
+                  ? " · המוצרים מהחנות שלך"
+                  : " · דמו זמני — הוסיפו מוצרים בפאנל חנות"}
+              </p>
+              <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+                {filteredProducts.map((product, index) => (
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    currency={currency}
+                    index={index}
+                    layout={layoutId}
+                    onOpen={() => openProduct(product)}
+                    onAdd={() => addToCart(product)}
+                  />
+                ))}
+              </div>
+              {!filteredProducts.length ? (
+                <div className="mt-16 border border-dashed border-[var(--line)] p-10 text-center text-[var(--muted)]">
+                  לא נמצאו מוצרים בסינון הנוכחי. הוסיפו מוצרים בתוסף החנות או נסו קטגוריה אחרת.
+                </div>
+              ) : null}
+            </>
+          )}
         </div>
       </section>
       <ShippingTeaser className="bg-[var(--bg-soft)]" />
@@ -1346,23 +1352,27 @@ export default function StoreSiteRuntime({
       </section>
       <section {...sectionProps("collection-rows", "products", "שורות קולקציה")} className="bg-[var(--bg-soft)] px-5 py-16 lg:px-8" data-bizuply-widget="products">
         <div className="mx-auto grid max-w-7xl gap-10">
-          {categoryTiles.slice(0, 4).map((cat) => {
-            const items = products.filter((product) => product.categorySlug === cat.slug || product.category === cat.name).slice(0, 4);
-            const displayItems = items.length ? items : showcase.slice(0, 4);
-            return (
-              <div key={cat.id}>
-                <div className="flex items-center justify-between gap-4 border-b border-[var(--line)] pb-4">
-                  <h2 className="store-display text-3xl font-black">{cat.name}</h2>
-                  <button type="button" onClick={() => navigateCategory(cat)} className="text-xs font-black uppercase tracking-[0.18em] text-[var(--p)]">לצפייה</button>
+          {loading ? (
+            <p className="text-sm text-[var(--muted)]">טוען מוצרים מתוסף החנות...</p>
+          ) : (
+            categoryTiles.slice(0, 4).map((cat) => {
+              const items = products.filter((product) => product.categorySlug === cat.slug || product.category === cat.name).slice(0, 4);
+              const displayItems = items.length ? items : showcase.slice(0, 4);
+              return (
+                <div key={cat.id}>
+                  <div className="flex items-center justify-between gap-4 border-b border-[var(--line)] pb-4">
+                    <h2 className="store-display text-3xl font-black">{cat.name}</h2>
+                    <button type="button" onClick={() => navigateCategory(cat)} className="text-xs font-black uppercase tracking-[0.18em] text-[var(--p)]">לצפייה</button>
+                  </div>
+                  <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+                    {displayItems.map((product, index) => (
+                      <ProductCard key={`${cat.id}-${product.id}`} product={product} currency={currency} index={index} layout={layoutId} onOpen={() => openProduct(product)} onAdd={() => addToCart(product)} />
+                    ))}
+                  </div>
                 </div>
-                <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-                  {displayItems.map((product, index) => (
-                    <ProductCard key={`${cat.id}-${product.id}`} product={product} currency={currency} index={index} layout={layoutId} onOpen={() => openProduct(product)} onAdd={() => addToCart(product)} />
-                  ))}
-                </div>
-              </div>
-            );
-          })}
+              );
+            })
+          )}
         </div>
       </section>
       {Footer}

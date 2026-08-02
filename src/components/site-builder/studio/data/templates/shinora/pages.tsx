@@ -1494,14 +1494,16 @@ function ProductsSection({
       }))
     : [];
 
-  const { products } = useStorePluginCatalog({
+  const { products, loading: storeLoading } = useStorePluginCatalog({
     businessId,
     demoProducts,
     enabled: true,
   });
 
-  const displayProducts =
-    products.length > 0
+  // Hold empty while fetching so demo cards never paint then swap to live.
+  const displayProducts = storeLoading
+    ? []
+    : products.length > 0
       ? products.map((product) => ({
           name: product.name,
           price: `₪${Math.round(product.price)}`,
