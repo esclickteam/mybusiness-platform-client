@@ -5,6 +5,10 @@ import {
   type PublicStoreCategory,
   type PublicStoreProduct,
 } from "../../../../../../api/publicStoreApi";
+import {
+  resolveStoreUnitPrice,
+  resolveStoreVariantPrice,
+} from "../../../../../../utils/storePricing";
 import { subscribeStoreCatalogChanged } from "./storeCatalogSync";
 
 export type StoreCatalogVariant = {
@@ -90,8 +94,7 @@ function categorySlugOf(product: PublicStoreProduct) {
 }
 
 function mapApiProduct(product: PublicStoreProduct): StoreCatalogProduct {
-  const price = Number(product.salePrice ?? product.price ?? 0);
-  const compareAt = Number(product.compareAtPrice || product.price || 0);
+  const { price, compareAtPrice } = resolveStoreUnitPrice(product);
   const trackStock = product.trackStock !== false;
   const allowBackorder = Boolean(product.allowBackorder);
   const variants = (Array.isArray(product.variants) ? product.variants : [])
@@ -99,12 +102,7 @@ function mapApiProduct(product: PublicStoreProduct): StoreCatalogProduct {
       const optionName = String(variant.optionName || "").trim();
       const optionValue = String(variant.optionValue || "").trim();
       const label = [optionName, optionValue].filter(Boolean).join(" / ");
-      const variantPrice =
-        variant.salePrice !== null && variant.salePrice !== undefined
-          ? Number(variant.salePrice)
-          : variant.price !== null && variant.price !== undefined
-            ? Number(variant.price)
-            : undefined;
+      const variantPrice = resolveStoreVariantPrice(variant);
       return {
         id: String(variant._id || ""),
         optionName,
@@ -133,7 +131,7 @@ function mapApiProduct(product: PublicStoreProduct): StoreCatalogProduct {
     id: String(product._id),
     name: String(product.name || "מוצר"),
     price,
-    compareAtPrice: compareAt > price ? compareAt : undefined,
+    compareAtPrice,
     image: productImage(product),
     shortDescription: String(product.shortDescription || product.description || ""),
     category: categoryLabel(product),
@@ -257,6 +255,8 @@ export function useStorePluginCatalog(options: {
   const [fromPlugin, setFromPlugin] = useState(false);
   const [storeName, setStoreName] = useState("");
   const [currency, setCurrency] = useState("ILS");
+  const [defaultShippingPrice, setDefaultShippingPrice] = useState(0);
+  const [freeShippingFrom, setFreeShippingFrom] = useState<number | null>(null);
   const [refreshToken, setRefreshToken] = useState(0);
   const fromPluginRef = useRef(false);
 
@@ -305,6 +305,18 @@ export function useStorePluginCatalog(options: {
 
         setStoreName(String(shop.settings?.storeName || ""));
         setCurrency(String(shop.settings?.currency || "ILS"));
+        setDefaultShippingPrice(
+          Number(shop.settings?.defaultShippingPrice ?? 0) || 0,
+        );
+        const freeFromRaw = shop.settings?.freeShippingFrom;
+        const freeFromNum = Number(freeFromRaw);
+        setFreeShippingFrom(
+          freeFromRaw == null ||
+            !Number.isFinite(freeFromNum) ||
+            freeFromNum <= 0
+            ? null
+            : freeFromNum,
+        );
 
         // Empty store → demos only after resolve (never as a pre-live flash).
         if (apiProducts.length === 0) {
@@ -361,6 +373,8 @@ export function useStorePluginCatalog(options: {
     fromPlugin,
     storeName,
     currency,
+    defaultShippingPrice,
+    freeShippingFrom,
     demoFallback: !fromPlugin,
   };
 }
