@@ -21,6 +21,8 @@ export type PaymentProviderCatalogItem = {
   badges?: string[];
   supportsInstallments?: boolean;
   supportsRecurring?: boolean;
+  /** When true, connect button shows בקרוב and credentials cannot be entered */
+  comingSoon?: boolean;
   createAccountUrl?: string;
   contactUrl?: string;
   learnMoreUrl?: string;
@@ -72,7 +74,7 @@ export const SITE_PAYMENT_PROVIDERS: PaymentProviderCatalogItem[] = [
   {
     key: "hyp",
     name: "Max by Hyp",
-    description: "קבלו תשלומים בכרטיס אשראי או חיוב דרך Max.",
+    description: "קבלו תשלומים בכרטיס אשראי או חיוב דרך Max (CardCom Low Profile).",
     accent: "#111827",
     logoText: "MAX",
     badges: ["תומך בתשלומים", "תומך בהוראות קבע"],
@@ -80,9 +82,11 @@ export const SITE_PAYMENT_PROVIDERS: PaymentProviderCatalogItem[] = [
     supportsRecurring: true,
     createAccountUrl: "https://www.max.co.il/",
     contactUrl: "https://www.max.co.il/",
+    learnMoreUrl: "https://cardcomapi.zendesk.com/",
     instructions: [
-      "הזינו את מספר המסוף (Masof) ואת מפתח ה-API מחשבון Max by Hyp.",
-      "לחצו חיבור כדי לשמור את הפרטים באתר.",
+      "הזינו את מספר המסוף (Masof / TerminalNumber) ואת שם המשתמש ל-API (UserName).",
+      "אופציונלי: סיסמת PassP אם נדרשת במסוף שלכם.",
+      "לאחר חיבור, תשלומי חנות יוצרים דף Low Profile; אישור תשלום מגיע ב-Webhook (Indicator) — לא מדף ההצלחה בדפדפן.",
       "ודאו שמטבע האתר תואם למטבע בחשבון Max (מומלץ ₪).",
     ],
     fields: [
@@ -94,9 +98,16 @@ export const SITE_PAYMENT_PROVIDERS: PaymentProviderCatalogItem[] = [
       },
       {
         key: "apiKey",
-        label: "API Key",
-        placeholder: "מפתח API",
+        label: "UserName / API Key",
+        placeholder: "שם משתמש API",
         required: true,
+      },
+      {
+        key: "apiSecret",
+        label: "PassP (אופציונלי)",
+        placeholder: "סיסמת API אם קיימת",
+        type: "password",
+        keepOnEmptyHint: "השאירו ריק כדי לשמור על הסיסמה הקיימת",
       },
     ],
   },
@@ -131,28 +142,14 @@ export const SITE_PAYMENT_PROVIDERS: PaymentProviderCatalogItem[] = [
     accent: "#E10600",
     logoText: "bit",
     supportsInstallments: true,
+    comingSoon: true,
     createAccountUrl: "https://payme.page/",
     contactUrl: "https://payme.page/",
     instructions: [
-      "הזינו את מפתח ה-API ואת האימייל מחשבון PayMe.",
-      "לחצו חיבור כדי לקשר את חשבון bit לאתר.",
-      "ודאו שמטבע האתר תואם למטבע בחשבון PayMe (מומלץ ₪).",
+      "חיבור bit / PayMe יושלם בקרוב.",
+      "לא ניתן להזין Credentials עד שהחיבור יהיה פעיל.",
     ],
-    fields: [
-      {
-        key: "apiKey",
-        label: "API Key",
-        placeholder: "מפתח API",
-        required: true,
-      },
-      {
-        key: "accountId",
-        label: "אימייל",
-        placeholder: "merchant@example.com",
-        type: "email",
-        required: true,
-      },
-    ],
+    fields: [],
   },
   {
     key: "grow",
@@ -161,33 +158,14 @@ export const SITE_PAYMENT_PROVIDERS: PaymentProviderCatalogItem[] = [
     accent: "#2563EB",
     logoText: "grow",
     supportsInstallments: true,
+    comingSoon: true,
     createAccountUrl: "https://grow.meshulam.co.il/",
     contactUrl: "https://grow.meshulam.co.il/",
     instructions: [
-      "הזינו את פרטי העסק המורשה ואת הסיסמה מחשבון Grow.",
-      "לחצו חיבור כדי לקשר את החשבון לאתר.",
-      "ודאו שמטבע האתר תואם למטבע בחשבון Grow (מומלץ ₪).",
+      "חיבור Grow יושלם בקרוב.",
+      "לא ניתן להזין Credentials עד שהחיבור יהיה פעיל.",
     ],
-    fields: [
-      {
-        key: "merchantId",
-        label: "עסק מורשה",
-        placeholder: "מזהה עסק / Licensed business",
-        required: true,
-      },
-      {
-        key: "apiSecret",
-        label: "סיסמה",
-        type: "password",
-        required: true,
-        keepOnEmptyHint: "השאירו ריק כדי לשמור על הסיסמה הקיימת",
-      },
-      {
-        key: "pageCode",
-        label: "מספר תשלומים מקסימלי (אופציונלי)",
-        placeholder: "לדוגמה 12",
-      },
-    ],
+    fields: [],
   },
   {
     key: "payplus",
@@ -196,27 +174,14 @@ export const SITE_PAYMENT_PROVIDERS: PaymentProviderCatalogItem[] = [
     accent: "#0F766E",
     logoText: "Pay+",
     supportsInstallments: true,
+    comingSoon: true,
     createAccountUrl: "https://www.payplus.co.il/",
     contactUrl: "https://www.payplus.co.il/",
     instructions: [
-      "הזינו את מפתח ה-API ואת מזהה דף התשלום (Payment Page UID).",
-      "לחצו חיבור כדי לקשר את חשבון PayPlus לאתר.",
-      "ודאו שמטבע האתר תואם למטבע בחשבון PayPlus (מומלץ ₪).",
+      "חיבור PayPlus יושלם בקרוב.",
+      "לא ניתן להזין Credentials עד שהחיבור יהיה פעיל.",
     ],
-    fields: [
-      {
-        key: "apiKey",
-        label: "API Key",
-        placeholder: "מפתח API",
-        required: true,
-      },
-      {
-        key: "pageCode",
-        label: "Payment Page UID",
-        placeholder: "מזהה דף תשלום",
-        required: true,
-      },
-    ],
+    fields: [],
   },
   {
     key: "tranzila",
@@ -225,28 +190,14 @@ export const SITE_PAYMENT_PROVIDERS: PaymentProviderCatalogItem[] = [
     accent: "#1D4ED8",
     logoText: "TZ",
     supportsInstallments: true,
+    comingSoon: true,
     createAccountUrl: "https://www.tranzila.com/",
     contactUrl: "https://www.tranzila.com/",
     instructions: [
-      "הזינו את מספר הטרמינל ואת האימייל הרשום בחשבון Tranzila.",
-      "לחצו חיבור כדי לקשר את החשבון לאתר.",
-      "ודאו שמטבע האתר תואם למטבע בחשבון Tranzila (מומלץ ₪).",
+      "חיבור Tranzila יושלם בקרוב.",
+      "לא ניתן להזין Credentials עד שהחיבור יהיה פעיל.",
     ],
-    fields: [
-      {
-        key: "terminalNumber",
-        label: "Terminal",
-        placeholder: "מספר טרמינל",
-        required: true,
-      },
-      {
-        key: "accountId",
-        label: "אימייל רשום",
-        placeholder: "merchant@example.com",
-        type: "email",
-        required: true,
-      },
-    ],
+    fields: [],
   },
   {
     key: "cal",
@@ -255,28 +206,14 @@ export const SITE_PAYMENT_PROVIDERS: PaymentProviderCatalogItem[] = [
     accent: "#DC2626",
     logoText: "Cal",
     supportsInstallments: true,
+    comingSoon: true,
     createAccountUrl: "https://www.cal-online.co.il/",
     contactUrl: "https://www.cal-online.co.il/",
     instructions: [
-      "הזינו את מפתח ה-API ואת האימייל מחשבון Cal.",
-      "לחצו חיבור כדי לקשר את החשבון לאתר.",
-      "ודאו שמטבע האתר תואם למטבע בחשבון Cal (מומלץ ₪).",
+      "חיבור Cal יושלם בקרוב — אין כרגע תיעוד API מסחרי ברור התואם לשדות במערכת.",
+      "לא ניתן להזין Credentials עד שהחיבור יהיה פעיל.",
     ],
-    fields: [
-      {
-        key: "apiKey",
-        label: "API Key",
-        placeholder: "מפתח API",
-        required: true,
-      },
-      {
-        key: "accountId",
-        label: "אימייל",
-        placeholder: "merchant@example.com",
-        type: "email",
-        required: true,
-      },
-    ],
+    fields: [],
   },
 ];
 

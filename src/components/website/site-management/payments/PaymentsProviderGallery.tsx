@@ -55,6 +55,7 @@ export default function PaymentsProviderGallery({
             saved?.connectionStatus,
             saved?.isEnabled
           );
+          const comingSoon = Boolean(item.comingSoon);
 
           return (
             <div
@@ -68,7 +69,12 @@ export default function PaymentsProviderGallery({
                     <h3 className="text-base font-bold text-slate-900">
                       {item.name}
                     </h3>
-                    {connected ? (
+                    {comingSoon ? (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-semibold text-slate-600 ring-1 ring-slate-200">
+                        בקרוב
+                      </span>
+                    ) : null}
+                    {!comingSoon && connected ? (
                       <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 ring-1 ring-emerald-100">
                         <CheckCircle2 size={12} />
                         מחובר
@@ -83,7 +89,7 @@ export default function PaymentsProviderGallery({
                   <p className="mt-1 text-sm text-slate-500">
                     {item.description}
                   </p>
-                  {item.badges?.length ? (
+                  {!comingSoon && item.badges?.length ? (
                     <div className="mt-2 flex flex-wrap justify-start gap-1.5">
                       {item.badges.map((badge) => (
                         <span
@@ -96,13 +102,23 @@ export default function PaymentsProviderGallery({
                     </div>
                   ) : null}
                   <p className="mt-2 text-[11px] text-slate-400">
-                    העמלות משתנות בהתאם למיקום העסק ולספק.
+                    {comingSoon
+                      ? "החיבור יופעל לאחר השלמת אימות תשלום בשרת."
+                      : "העמלות משתנות בהתאם למיקום העסק ולספק."}
                   </p>
                 </div>
               </div>
 
               <div className="flex shrink-0 items-center justify-start gap-2 sm:flex-col sm:items-stretch">
-                {connected ? (
+                {comingSoon ? (
+                  <button
+                    type="button"
+                    disabled
+                    className={`${btnSecondary} h-10 cursor-not-allowed px-4 text-xs opacity-60`}
+                  >
+                    בקרוב
+                  </button>
+                ) : connected ? (
                   <button
                     type="button"
                     onClick={() => onManage(item)}
