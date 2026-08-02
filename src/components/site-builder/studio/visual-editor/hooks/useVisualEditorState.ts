@@ -1576,20 +1576,42 @@ export function useVisualEditorState({
           nextData = syncTemplateMediaValue(nextData, targetId, finalPatch);
 
           /*
-            כל החלפת מדיה (תמונה או וידאו) ממלאת את מיקום הסלוט הקיים
-            ב-object-fit: cover — אלא אם המשתמש כבר שמר object-fit אחר.
+            החלפת מדיה שומרת את מצב ההתאמה (Fill/Cover/Contain/Fit) שהמשתמש בחר.
+            cover הוא ברירת מחדל רק כשעדיין לא נבחר מצב התאמה.
           */
+          const existingStyles = readVisualStyles(nextData)[
+            targetId
+          ] as StylePatch | undefined;
           const savedObjectFit = String(
-            (readVisualStyles(nextData)[targetId] as StylePatch | undefined)
-              ?.objectFit || "",
+            existingStyles?.objectFit ||
+              existingStyles?.["object-fit"] ||
+              "",
           ).trim();
+          const hasExplicitObjectFit = Boolean(
+            existingStyles &&
+              ("objectFit" in existingStyles ||
+                "object-fit" in existingStyles),
+          );
 
-          nextData = writeVisualStyleItem(nextData, targetId, {
-            objectFit: savedObjectFit || "cover",
+          const mediaStylePatch: StylePatch = {
             objectPosition: "center",
             display: "block",
             overflow: "hidden",
-          } as StylePatch);
+          };
+
+          if (hasExplicitObjectFit) {
+            if (savedObjectFit) {
+              mediaStylePatch.objectFit = savedObjectFit;
+            }
+          } else {
+            mediaStylePatch.objectFit = "cover";
+          }
+
+          nextData = writeVisualStyleItem(
+            nextData,
+            targetId,
+            mediaStylePatch,
+          );
 
           if (mediaType === "video") {
             const sourceWidth = Number(payload.width || 0);

@@ -3551,6 +3551,15 @@ export function applyAllVisualDataToDom(
   applySavedFormBuildersToDom(root, data);
   applySitePageNavSubmenusToDom(root, data);
   enhanceTemplateMobileNav(root);
+
+  if (!isPublicRuntime) {
+    root
+      .querySelectorAll<HTMLImageElement | HTMLVideoElement>("img, video")
+      .forEach((mediaNode) => {
+        if (isEditorOnlyNode(mediaNode)) return;
+        fitMediaElementToSlot(mediaNode);
+      });
+  }
 }
 
 export function collectVisualContentFromDom(

@@ -2,6 +2,19 @@ import { safeCssSelectorValue } from "./visualSelectors";
 import {
   readVisualInsertedSections,
   readVisualSectionOrder,
+  VISUAL_ANIMATION_KEY,
+  VISUAL_ATTRIBUTE_KEY,
+  VISUAL_CONTENT_KEY,
+  VISUAL_CUSTOM_CODE_KEY,
+  VISUAL_DELETED_KEY,
+  VISUAL_HIDDEN_KEY,
+  VISUAL_INSERTED_ELEMENTS_KEY,
+  VISUAL_INSERTED_SECTIONS_KEY,
+  VISUAL_LAYOUT_KEY,
+  VISUAL_LOCKED_KEY,
+  VISUAL_RESPONSIVE_KEY,
+  VISUAL_SECTION_ORDER_KEY,
+  VISUAL_STYLE_KEY,
 } from "./visualData";
 
 export type VisualSectionOrderMap = Record<string, string[]>;
@@ -664,15 +677,25 @@ export function reorderVisualSectionItems(
   return next;
 }
 
+/*
+  Visual data keys that applyAllVisualDataToDom can patch without remounting
+  the React template. Missing keys here caused text edits, image swaps, and
+  duplicate/paste (__insertedElements) to remount the template and wipe DOM state.
+*/
 const DOM_APPLIED_VISUAL_KEYS = new Set([
-  "__sectionOrder",
-  "__layout",
-  "__styles",
-  "__attributes",
-  "__responsive",
-  "__lockedElements",
-  "__hiddenElements",
-  "__animations",
+  VISUAL_SECTION_ORDER_KEY,
+  VISUAL_LAYOUT_KEY,
+  VISUAL_STYLE_KEY,
+  VISUAL_ATTRIBUTE_KEY,
+  VISUAL_RESPONSIVE_KEY,
+  VISUAL_LOCKED_KEY,
+  VISUAL_HIDDEN_KEY,
+  VISUAL_ANIMATION_KEY,
+  VISUAL_CONTENT_KEY,
+  VISUAL_INSERTED_ELEMENTS_KEY,
+  VISUAL_INSERTED_SECTIONS_KEY,
+  VISUAL_DELETED_KEY,
+  VISUAL_CUSTOM_CODE_KEY,
 ]);
 
 function collectChangedDomAppliedKeys(
