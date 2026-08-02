@@ -546,7 +546,12 @@ const BusinessDashboardRoutes = () => {
 
             <Route
               path="leads"
-              element={<CRMLeadsTab businessId={businessId} />}
+              element={<CRMLeadsTab businessId={businessId} mode="active" />}
+            />
+
+            <Route
+              path="old-leads"
+              element={<CRMLeadsTab businessId={businessId} mode="old" />}
             />
 
             <Route

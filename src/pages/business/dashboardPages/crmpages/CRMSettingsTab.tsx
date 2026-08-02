@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useMemo, useState } from "react";
+import React, { ChangeEvent, useEffect, useMemo, useState } from "react";
 import {
   Bell,
   Building2,
@@ -7,6 +7,7 @@ import {
   CheckCircle2,
   Clock,
   ExternalLink,
+  History,
   LockKeyhole,
   Mail,
   MapPin,
@@ -22,6 +23,7 @@ import {
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
+import API from "@api";
 import { useLocaleDir } from "@/hooks/useLocaleDir";
 import WorkHoursTab from "./WorkHoursTab";
 
@@ -41,9 +43,16 @@ type SettingsTabKey =
   | "working-hours"
   | "special-dates"
   | "booking-rules"
+  | "old-leads"
   | "notifications"
   | "branding"
   | "security";
+
+type OldLeadsSettingsState = {
+  enabled: boolean;
+  afterDays: string;
+  basedOn: "lastActivity" | "createdAt";
+};
 
 type SpecialDate = {
   id: string;
@@ -95,6 +104,12 @@ const initialNotifications: NotificationsState = {
   followUpAfterDays: "3",
 };
 
+const initialOldLeadsSettings: OldLeadsSettingsState = {
+  enabled: true,
+  afterDays: "30",
+  basedOn: "lastActivity",
+};
+
 const inputClass =
   "h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-sky-300 focus:bg-white focus:ring-4 focus:ring-sky-100 disabled:cursor-not-allowed disabled:opacity-50";
 
@@ -121,6 +136,11 @@ const settingsTabMeta: {
     key: "booking-rules",
     labelKey: "crm.settings.tabs.bookingRules.label",
     icon: SlidersHorizontal,
+  },
+  {
+    key: "old-leads",
+    labelKey: "crm.settings.tabs.oldLeads.label",
+    icon: History,
   },
   {
     key: "notifications",
@@ -152,6 +172,10 @@ export default function CRMSettingsTab() {
     useState<BookingRulesState>(initialBookingRules);
   const [notifications, setNotifications] =
     useState<NotificationsState>(initialNotifications);
+  const [oldLeadsSettings, setOldLeadsSettings] =
+    useState<OldLeadsSettingsState>(initialOldLeadsSettings);
+  const [oldLeadsLoading, setOldLeadsLoading] = useState(false);
+  const [oldLeadsNotice, setOldLeadsNotice] = useState("");
 
   const [specialDates, setSpecialDates] = useState<SpecialDate[]>([
     {
@@ -166,6 +190,45 @@ export default function CRMSettingsTab() {
 
   const [saving, setSaving] = useState(false);
   const [saved, setSaved] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadOldLeadsSettings = async () => {
+      try {
+        setOldLeadsLoading(true);
+        const { data } = await API.get<{
+          success?: boolean;
+          settings?: {
+            enabled?: boolean;
+            afterDays?: number;
+            basedOn?: "lastActivity" | "createdAt";
+          };
+        }>("/crm/leads/old-leads-settings");
+
+        if (cancelled || !data?.settings) return;
+
+        setOldLeadsSettings({
+          enabled: data.settings.enabled !== false,
+          afterDays: String(data.settings.afterDays ?? 30),
+          basedOn:
+            data.settings.basedOn === "createdAt"
+              ? "createdAt"
+              : "lastActivity",
+        });
+      } catch (error) {
+        console.error("Old leads settings load error:", error);
+      } finally {
+        if (!cancelled) setOldLeadsLoading(false);
+      }
+    };
+
+    loadOldLeadsSettings();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const completedFields = useMemo(() => {
     return Object.values(settings).filter((value) => String(value).trim())
@@ -207,6 +270,62 @@ export default function CRMSettingsTab() {
     } catch (error) {
       console.error("Settings save error:", error);
       alert(t("crm.settings.saveFailed"));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleSaveOldLeads = async () => {
+    try {
+      setSaving(true);
+      setSaved(false);
+      setOldLeadsNotice("");
+
+      const afterDays = Math.min(
+        365,
+        Math.max(1, Number.parseInt(oldLeadsSettings.afterDays, 10) || 30)
+      );
+
+      const { data } = await API.put<{
+        success?: boolean;
+        settings?: {
+          enabled?: boolean;
+          afterDays?: number;
+          basedOn?: "lastActivity" | "createdAt";
+        };
+        moved?: number;
+      }>("/crm/leads/old-leads-settings", {
+        settings: {
+          enabled: oldLeadsSettings.enabled,
+          afterDays,
+          basedOn: oldLeadsSettings.basedOn,
+        },
+      });
+
+      if (data?.settings) {
+        setOldLeadsSettings({
+          enabled: data.settings.enabled !== false,
+          afterDays: String(data.settings.afterDays ?? afterDays),
+          basedOn:
+            data.settings.basedOn === "createdAt"
+              ? "createdAt"
+              : "lastActivity",
+        });
+      }
+
+      setSaved(true);
+      if (typeof data?.moved === "number" && data.moved > 0) {
+        setOldLeadsNotice(
+          t("crm.settings.oldLeads.movedNotice", { count: data.moved })
+        );
+      }
+
+      window.setTimeout(() => {
+        setSaved(false);
+      }, 2500);
+    } catch (error) {
+      console.error("Old leads settings save error:", error);
+      alert(t("crm.settings.oldLeads.saveFailed"));
     } finally {
       setSaving(false);
     }
@@ -403,6 +522,17 @@ export default function CRMSettingsTab() {
               setBookingRules={setBookingRules}
               onSave={handleSave}
               saving={saving}
+            />
+          )}
+
+          {activeTab === "old-leads" && (
+            <OldLeadsSettingsPanel
+              settings={oldLeadsSettings}
+              setSettings={setOldLeadsSettings}
+              onSave={handleSaveOldLeads}
+              saving={saving}
+              loading={oldLeadsLoading}
+              notice={oldLeadsNotice}
             />
           )}
 
@@ -815,6 +945,113 @@ function BookingRulesSettings({
         icon={Sparkles}
         title={t("crm.settings.bookingRules.tipTitle")}
         text={t("crm.settings.bookingRules.tipText")}
+      />
+    </SettingsPanel>
+  );
+}
+
+function OldLeadsSettingsPanel({
+  settings,
+  setSettings,
+  onSave,
+  saving,
+  loading,
+  notice,
+}: {
+  settings: OldLeadsSettingsState;
+  setSettings: React.Dispatch<React.SetStateAction<OldLeadsSettingsState>>;
+  onSave: () => void;
+  saving: boolean;
+  loading: boolean;
+  notice: string;
+}) {
+  const { t } = useTranslation();
+
+  return (
+    <SettingsPanel
+      icon={History}
+      eyebrow={t("crm.settings.oldLeads.eyebrow")}
+      title={t("crm.settings.oldLeads.title")}
+      description={t("crm.settings.oldLeads.description")}
+      actionLabel={t("crm.settings.oldLeads.save")}
+      saving={saving || loading}
+      onSave={onSave}
+    >
+      <div className="grid gap-5 lg:grid-cols-2">
+        <div className="lg:col-span-2">
+          <ToggleBox
+            title={t("crm.settings.oldLeads.enabled")}
+            text={t("crm.settings.oldLeads.enabledText")}
+            checked={settings.enabled}
+            onClick={() =>
+              setSettings((prev) => ({
+                ...prev,
+                enabled: !prev.enabled,
+              }))
+            }
+          />
+        </div>
+
+        <FormField
+          label={t("crm.settings.oldLeads.afterDays")}
+          icon={Clock}
+          helper={t("crm.settings.oldLeads.afterDaysHelper")}
+        >
+          <input
+            type="number"
+            min={1}
+            max={365}
+            disabled={!settings.enabled}
+            value={settings.afterDays}
+            onChange={(event) =>
+              setSettings((prev) => ({
+                ...prev,
+                afterDays: event.target.value,
+              }))
+            }
+            className={inputClass}
+          />
+        </FormField>
+
+        <FormField
+          label={t("crm.settings.oldLeads.basedOn")}
+          icon={History}
+          helper={t("crm.settings.oldLeads.basedOnHelper")}
+        >
+          <select
+            disabled={!settings.enabled}
+            value={settings.basedOn}
+            onChange={(event) =>
+              setSettings((prev) => ({
+                ...prev,
+                basedOn:
+                  event.target.value === "createdAt"
+                    ? "createdAt"
+                    : "lastActivity",
+              }))
+            }
+            className={inputClass}
+          >
+            <option value="lastActivity">
+              {t("crm.settings.oldLeads.basedOnLastActivity")}
+            </option>
+            <option value="createdAt">
+              {t("crm.settings.oldLeads.basedOnCreatedAt")}
+            </option>
+          </select>
+        </FormField>
+      </div>
+
+      {notice ? (
+        <div className="rounded-2xl border border-orange-200 bg-orange-50 px-4 py-3 text-sm font-semibold text-orange-900">
+          {notice}
+        </div>
+      ) : null}
+
+      <SettingsTipCard
+        icon={History}
+        title={t("crm.settings.oldLeads.tipTitle")}
+        text={t("crm.settings.oldLeads.tipText")}
       />
     </SettingsPanel>
   );

@@ -138,6 +138,7 @@ export function formatLeadStatus(status?: string): string {
     interested: "Interested",
     converted: "Converted",
     lost: "Lost",
+    old: "Old lead",
   };
 
   return map[String(status || "new").toLowerCase()] || "New";
