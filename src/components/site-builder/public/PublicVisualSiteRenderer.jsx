@@ -2689,6 +2689,18 @@ export default function PublicVisualSiteRenderer({
           resolvedSeo={resolvedSeo}
           faviconUrl={site?.brand?.faviconUrl || ""}
         />
+        {fontUrls.length ? (
+          <Helmet>
+            {fontUrls.map((href) => (
+              <link
+                key={href}
+                rel="stylesheet"
+                href={href}
+                crossOrigin="anonymous"
+              />
+            ))}
+          </Helmet>
+        ) : null}
         {css ? <style>{css}</style> : null}
 
         <a href="#bizuply-main-content" className="bizuply-skip-link">
