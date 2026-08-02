@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 
 import {
@@ -22,7 +23,10 @@ export default function AnnouncementBarWidget({
   const [dismissed, setDismissed] = useState(false);
 
   useEffect(() => {
-    if (mode === "editor" || !cfg.dismissible) return;
+    if (mode === "editor" || !cfg.dismissible) {
+      setDismissed(false);
+      return;
+    }
     try {
       setDismissed(localStorage.getItem(announcementDismissKey(siteKey)) === "1");
     } catch {
@@ -39,13 +43,18 @@ export default function AnnouncementBarWidget({
   const linkUrl = String(cfg.linkUrl || "").trim();
   const linkLabel = String(cfg.linkLabel || "").trim();
 
-  return (
+  const ui = (
     <div
       dir="rtl"
       data-bizuply-widget="announcement-bar"
       data-bizuply-plugin-runtime="true"
-      className="fixed top-0 inset-x-0 z-[2147482900] w-full"
       style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 2147482900,
+        width: "100%",
         background: cfg.backgroundColor || "#0F172A",
         color: cfg.textColor || "#FFFFFF",
       }}
@@ -58,13 +67,13 @@ export default function AnnouncementBarWidget({
             className="underline underline-offset-2 opacity-95 hover:opacity-100"
             style={{ color: "inherit" }}
           >
-            {linkLabel || "לפרטים"}
+            {linkLabel || "Details"}
           </a>
         ) : null}
         {cfg.dismissible ? (
           <button
             type="button"
-            aria-label="סגירת הודעה"
+            aria-label="Close"
             className="absolute left-3 top-1/2 -translate-y-1/2 rounded p-1 opacity-80 hover:opacity-100"
             onClick={() => {
               setDismissed(true);
@@ -81,6 +90,14 @@ export default function AnnouncementBarWidget({
           </button>
         ) : null}
       </div>
+      {mode === "editor" ? (
+        <div className="border-t border-white/15 bg-black/20 px-3 py-1 text-center text-[10px] font-bold">
+          Announcement bar (editor preview)
+        </div>
+      ) : null}
     </div>
   );
+
+  if (typeof document === "undefined") return ui;
+  return createPortal(ui, document.body);
 }

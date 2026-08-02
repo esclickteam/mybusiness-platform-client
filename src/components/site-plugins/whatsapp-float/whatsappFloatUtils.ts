@@ -3,22 +3,29 @@ export type WhatsAppFloatSettings = {
   phone: string;
   message: string;
   showOnMobile: boolean;
+  triggerPosition: { x: number; y: number };
 };
 
 const DEFAULTS: WhatsAppFloatSettings = {
   isActive: true,
   phone: "",
-  message: "שלום, אשמח לפרטים",
+  message: "\u05e9\u05dc\u05d5\u05dd, \u05d0\u05e9\u05de\u05d7 \u05dc\u05e4\u05e8\u05d8\u05d9\u05dd",
   showOnMobile: true,
+  triggerPosition: { x: 8, y: 88 },
 };
 
 export function mergeWhatsAppFloatSettings(
   stored?: Partial<WhatsAppFloatSettings> | null
 ): WhatsAppFloatSettings {
-  return { ...DEFAULTS, ...(stored || {}) };
+  const merged = { ...DEFAULTS, ...(stored || {}) };
+  const pos = stored?.triggerPosition || DEFAULTS.triggerPosition;
+  merged.triggerPosition = {
+    x: Math.min(96, Math.max(4, Number(pos?.x) || DEFAULTS.triggerPosition.x)),
+    y: Math.min(96, Math.max(4, Number(pos?.y) || DEFAULTS.triggerPosition.y)),
+  };
+  return merged;
 }
 
-/** Normalize to international digits for wa.me (IL: 05x → 9725x). */
 export function normalizeWhatsAppPhone(value: unknown): string {
   const raw = String(value || "").trim();
   if (!raw) return "";
@@ -51,10 +58,6 @@ const OVERLAY_PLACEHOLDER_KEYS = [
   "accessibility",
 ];
 
-/**
- * Remove obsolete in-page placeholder boxes for floating overlay plugins.
- * Never touch live overlay widgets (runtime / position:fixed).
- */
 export function removeOverlayPluginPlaceholders(root?: ParentNode | null) {
   const scope = root || (typeof document !== "undefined" ? document : null);
   if (!scope) return 0;
@@ -70,14 +73,11 @@ export function removeOverlayPluginPlaceholders(root?: ParentNode | null) {
   markers.forEach((marker) => {
     if (marker.getAttribute("data-bizuply-plugin-runtime") === "true") return;
     if (marker.closest('[data-bizuply-plugin-runtime="true"]')) return;
-
     try {
-      const style = window.getComputedStyle(marker);
-      if (style.position === "fixed") return;
+      if (window.getComputedStyle(marker).position === "fixed") return;
     } catch {
       // ignore
     }
-
     const shell = marker.closest<HTMLElement>(
       '[data-bizuply-plugin-widget="true"], [data-visual-inserted-element="true"]'
     );

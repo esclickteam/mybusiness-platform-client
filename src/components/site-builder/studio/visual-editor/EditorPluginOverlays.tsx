@@ -311,6 +311,16 @@ export default function EditorPluginOverlays({
         <WhatsAppFloatWidget
           settings={whatsappSettings}
           mode="editor"
+          onPositionChange={async (pos) => {
+            if (!siteId || !whatsappSettings) return;
+            const next = { ...whatsappSettings, triggerPosition: pos };
+            setWhatsappSettings(next);
+            try {
+              await saveSitePluginSettings(siteId, "whatsapp-float", next as any);
+            } catch {
+              // keep local preview
+            }
+          }}
         />
       ) : null}
 

@@ -4,6 +4,7 @@ import { Puzzle } from "lucide-react";
 import { getMySite } from "../../../../api/mySitesApi";
 import type { SitePluginDefinition } from "../../../../api/sitePluginsApi";
 import { getPluginAccent, getPluginIcon } from "../../../../data/sitePluginNav";
+import { getPluginEditorAction } from "../../../../data/pluginEditorRegistry";
 import { useSitePluginSettings } from "./useSitePluginSettings";
 import {
   bool,
@@ -55,6 +56,13 @@ export default function SiteDynamicPluginPanel({
   const title = plugin?.name || pluginKey;
   const description =
     plugin?.description || "הגדרות התוסף וחיבור לעמודים באתר";
+  const editorAction = getPluginEditorAction(pluginKey);
+  const editorAddHref =
+    editorAction.kind === "section" && editorAction.sectionId
+      ? `${editorHref}?addSection=${encodeURIComponent(editorAction.sectionId)}&addPlugin=${encodeURIComponent(pluginKey)}`
+      : editorAction.kind === "page" && editorAction.pageTemplateId
+        ? `${editorHref}?addPage=${encodeURIComponent(editorAction.pageTemplateId)}&addPlugin=${encodeURIComponent(pluginKey)}`
+        : `${editorHref}?addPlugin=${encodeURIComponent(pluginKey)}`;
 
   const scope = str(settings.scope, "site-wide");
   const pageIds = useMemo(
@@ -87,30 +95,25 @@ export default function SiteDynamicPluginPanel({
       onSave={() => save()}
       extraActions={
         <a
-          href={`${editorHref}?addPlugin=${encodeURIComponent(pluginKey)}`}
+          href={editorAddHref}
           className="inline-flex h-10 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700 transition hover:bg-slate-50"
         >
           <Puzzle size={14} />
-          הוספה בעורך
+          {editorAction.kind === "overlay" ? "פתיחת עורך" : "הוספה בעורך"}
         </a>
       }
       sidebar={
         <InfoCallout>
-          {pluginKey === "whatsapp-float" ||
-          pluginKey === "announcement-bar" ||
-          pluginKey === "cookie-banner" ||
-          pluginKey === "exit-popup" ||
-          pluginKey === "smart-bot" ||
-          pluginKey === "benefits-wheel" ||
-          pluginKey === "accessibility" ? (
+          {editorAction.kind === "overlay" ? (
             <>
               <strong>תוסף צף:</strong> אחרי שמירה הוא מופיע אוטומטית באתר
               ובעורך — אין צורך להוסיף רכיב לעמוד.
             </>
           ) : (
             <>
-              <strong>חיבור לעמודים:</strong> לאחר שמירה, הוסיפו את התוסף דרך{" "}
-              <strong>עורך האתר → הוספה → תוספים</strong>.
+              <strong>סקשן בעמוד:</strong> ההתקנה שומרת את התוסף כאן. כדי
+              לראות יומן / ביקורות / טופס לידים בעמוד — לחצו{" "}
+              <strong>הוספה בעורך</strong>.
             </>
           )}
         </InfoCallout>
@@ -203,6 +206,51 @@ export default function SiteDynamicPluginPanel({
             checked={bool(settings.showOnMobile, true)}
             onChange={(v) => updateField("showOnMobile", v)}
           />
+          <Field
+            label="מיקום אופקי (%)"
+            hint="מימין · 5–95. אפשר גם לגרור את הכפתור בעורך"
+          >
+            <TextInput
+              type="number"
+              value={String(
+                num(
+                  (settings.triggerPosition as { x?: number } | undefined)?.x,
+                  8
+                )
+              )}
+              onChange={(v) =>
+                updateField("triggerPosition", {
+                  ...((settings.triggerPosition as object) || {}),
+                  x: Math.min(95, Math.max(5, Number(v) || 8)),
+                  y: num(
+                    (settings.triggerPosition as { y?: number } | undefined)?.y,
+                    88
+                  ),
+                })
+              }
+            />
+          </Field>
+          <Field label="מיקום אנכי (%)" hint="מלמעלה · 5–95">
+            <TextInput
+              type="number"
+              value={String(
+                num(
+                  (settings.triggerPosition as { y?: number } | undefined)?.y,
+                  88
+                )
+              )}
+              onChange={(v) =>
+                updateField("triggerPosition", {
+                  ...((settings.triggerPosition as object) || {}),
+                  x: num(
+                    (settings.triggerPosition as { x?: number } | undefined)?.x,
+                    8
+                  ),
+                  y: Math.min(95, Math.max(5, Number(v) || 88)),
+                })
+              }
+            />
+          </Field>
         </SettingsSection>
       ) : null}
 

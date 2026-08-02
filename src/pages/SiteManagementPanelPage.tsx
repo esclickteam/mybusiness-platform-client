@@ -160,61 +160,14 @@ export default function SiteManagementPanelPage() {
         handlePluginUninstalled(pluginKey);
       }
 
-      const hints = result.editorHints || [];
-      const storeHint = hints.find((h) => h.action === "add-products-page");
-      const bookingHint = hints.find((h) => h.action === "add-booking-section");
-      const reviewsHint = hints.find((h) => h.action === "add-reviews-section");
-      const leadsHint = hints.find((h) => h.action === "add-leads-section");
-      const overlayKeys = new Set([
-        "whatsapp-float",
-        "announcement-bar",
-        "cookie-banner",
-        "exit-popup",
-        "smart-bot",
-        "benefits-wheel",
-        "accessibility",
-      ]);
-
-      if (storeHint && enabled) {
-        // Never dump merchants into the blank Grapes page-builder for store setup.
-        // Product CRUD lives in the store management panel; template shops sync alone.
-        if (pluginKey === "store" || isTemplateSite) {
+      // Stay in plugin management after install — never bounce to the site editor.
+      if (enabled) {
+        if (pluginKey === "store") {
           setActiveSection("store");
-          window.alert(
-            "תוסף החנות פעיל.\n\nעריכת מוצרים, מלאי והזמנות נמצאת כאן בפאנל ניהול החנות — לא בעורך העיצוב.\nעמוד החנות בתבנית מסתנכרן אוטומטית עם המוצרים."
-          );
         } else {
-          const go = window.confirm(
-            `${storeHint.message || "להוסיף עמוד מוצרים?"}\n\nלחצו אישור לפתיחת עורך האתר עם עמוד חנות.`
-          );
-          if (go) {
-            navigate(
-              `${editorHref}?addPlugin=store&addPage=${encodeURIComponent(storeHint.pageTemplateId || "page-products-01")}`
-            );
-          }
+          const section = resolvePluginSection(pluginKey);
+          if (section) setActiveSection(section);
         }
-      } else if (bookingHint && enabled) {
-        setActiveSection("booking");
-        navigate(
-          `${editorHref}?addSection=${encodeURIComponent(
-            bookingHint.sectionId ||
-              "section-booking-showcase-month-centered",
-          )}&addPlugin=booking`,
-        );
-      } else if (reviewsHint && enabled) {
-        navigate(
-          `${editorHref}?addSection=${encodeURIComponent(
-            reviewsHint.sectionId || "section-testimonials",
-          )}&addPlugin=reviews`,
-        );
-      } else if (leadsHint && enabled) {
-        navigate(
-          `${editorHref}?addSection=${encodeURIComponent(
-            leadsHint.sectionId || "section-contact",
-          )}&addPlugin=leads`,
-        );
-      } else if (enabled && overlayKeys.has(pluginKey)) {
-        navigate(`${editorHref}?addPlugin=${encodeURIComponent(pluginKey)}`);
       }
     } catch (err: any) {
       const serverError =

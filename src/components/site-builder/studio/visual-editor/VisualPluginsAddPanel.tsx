@@ -165,7 +165,8 @@ export default function VisualPluginsAddPanel({
       );
 
       setOverlayActive(next);
-      if (activatedAny || overlays.length > 0) {
+      // Only refresh overlays when we actually changed settings — avoids remount loops.
+      if (activatedAny) {
         onOverlayInstalled?.();
       }
     },
@@ -178,35 +179,41 @@ export default function VisualPluginsAddPanel({
       return;
     }
 
+    let cancelled = false;
     setLoading(true);
     autoActivatedRef.current = false;
     getSitePlugins(siteId)
       .then(async (data) => {
+        if (cancelled) return;
         setCatalog(data.catalog);
         setEnabledPlugins(data.enabledPlugins);
         await loadAndActivateOverlays(data.catalog, data.enabledPlugins);
+        if (cancelled) return;
         refreshContentActive(data.enabledPlugins);
         autoActivatedRef.current = true;
       })
       .catch(() => {
+        if (cancelled) return;
         setCatalog([]);
         setEnabledPlugins([]);
         setOverlayActive({});
         setContentActive({});
       })
-      .finally(() => setLoading(false));
-  }, [siteId, loadAndActivateOverlays, refreshContentActive]);
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+    // Intentionally siteId-only: unstable callback identities were remount-looping the panel.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [siteId]);
 
   useEffect(() => {
     refreshContentActive(enabledPlugins);
-  }, [
-    enabledPlugins,
-    pageWidgetsEpoch,
-    editor?.data,
-    editor?.activePageId,
-    editor?.activePageID,
-    refreshContentActive,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [enabledPlugins, pageWidgetsEpoch, editor?.activePageId, editor?.activePageID]);
 
   const installed = useMemo(() => {
     const set = new Set(enabledPlugins);
