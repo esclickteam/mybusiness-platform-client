@@ -173,14 +173,28 @@ export const SITE_PAYMENT_PROVIDERS: PaymentProviderCatalogItem[] = [
     accent: "#2563EB",
     logoText: "grow",
     supportsInstallments: true,
-    comingSoon: true,
     createAccountUrl: "https://grow.meshulam.co.il/",
     contactUrl: "https://grow.meshulam.co.il/",
+    learnMoreUrl: "https://grow-il.readme.io/",
     instructions: [
-      "חיבור Grow יושלם בקרוב.",
-      "לא ניתן להזין Credentials עד שהחיבור יהיה פעיל.",
+      "הזינו userId (עסק מורשה) ו-pageCode מחשבון Grow.",
+      "לאחר חיבור, הזמנות יוצרות createPaymentProcess; אישור מגיע ב-notifyUrl + אימות getPaymentProcessInfo.",
+      "דף ההצלחה בדפדפן אינו מאשר תשלום.",
     ],
-    fields: [],
+    fields: [
+      {
+        key: "merchantId",
+        label: "userId (עסק מורשה)",
+        placeholder: "מזהה עסק Grow",
+        required: true,
+      },
+      {
+        key: "pageCode",
+        label: "pageCode",
+        placeholder: "קוד דף תשלום",
+        required: true,
+      },
+    ],
   },
   {
     key: "payplus",
