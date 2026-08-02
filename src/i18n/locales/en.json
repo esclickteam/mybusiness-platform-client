@@ -788,7 +788,7 @@
     "badge": "Service packages",
     "heroTitleTop": "Services that move",
     "heroTitleHighlight": "your business forward.",
-    "heroSubtitle": "Human agents, CRM & automation setup, marketing and growth — clear packages with pricing, details, and a fit for your business.",
+    "heroSubtitle": "Setup & implementation, marketing & growth, agents & human service, and monthly support — clear packages with pricing, details, and a fit for your business.",
     "heroCtaServices": "Explore services",
     "heroCtaPlatform": "Platform plans",
     "mostPopular": "Most Popular",
@@ -804,7 +804,7 @@
     "upsellsBadge": "Upsells",
     "upsellsTitle": "Upsells & extra services",
     "addonsTitle": "Choose your service packages",
-    "addonsSubtitle": "Leads & sales, business ops, setup & automations, marketing & growth — select what fits, open full details, and get a tailored quote.",
+    "addonsSubtitle": "Setup & implementation, marketing & growth, agents & human service, and monthly support — select what fits, open full details, and get a tailored quote.",
     "addonsSearch": "Search a service...",
     "addonsCount": "{{count}} services",
     "addonsFeatured": "Recommended",
@@ -1059,6 +1059,8 @@
     "nav": {
       "leads": "Leads",
       "leadsDesc": "New opportunities",
+      "oldLeads": "Old leads",
+      "oldLeadsDesc": "Follow-up and relevance check",
       "clients": "Clients",
       "clientsDesc": "Client database",
       "appointments": "Appointments",
@@ -1307,6 +1309,10 @@
           "label": "Booking Rules",
           "description": "Booking limits"
         },
+        "oldLeads": {
+          "label": "Old leads",
+          "description": "Automatic follow-up rules"
+        },
         "notifications": {
           "label": "Notifications",
           "description": "Reminders & messages"
@@ -1386,6 +1392,26 @@
         "manualApproval": "Manual approval",
         "tipTitle": "Booking logic",
         "tipText": "These rules should later control the public booking slots and appointment approval flow."
+      },
+      "oldLeads": {
+        "eyebrow": "Old leads",
+        "title": "Define old leads",
+        "description": "Choose when an open lead becomes old and moves automatically into the Old Leads tab for follow-up and relevance checks.",
+        "save": "Save settings",
+        "enabled": "Automatic move to Old Leads tab",
+        "enabledText": "When enabled — open leads (New / Contacted / Interested) that pass the threshold move automatically into the dedicated tab.",
+        "afterDays": "Days until a lead is considered old",
+        "afterDaysHelper": "Number of days after which an open lead moves to the Old Leads tab.",
+        "basedOn": "Measure from",
+        "basedOnHelper": "Choose whether to count from lead creation or from the last activity on the lead.",
+        "basedOnLastActivity": "Last activity on the lead",
+        "basedOnCreatedAt": "Lead creation date",
+        "tipTitle": "How it works",
+        "tipText": "Old leads appear in a separate tab. An agent contacts them, checks relevance, and returns them to the sales pipeline or marks them as lost.",
+        "saved": "Old leads settings saved",
+        "saveFailed": "Failed to save old leads settings",
+        "loadFailed": "Failed to load old leads settings",
+        "movedNotice": "{{count}} leads were moved to the Old Leads tab now"
       },
       "notifications": {
         "eyebrow": "Notifications",
@@ -1536,7 +1562,18 @@
         "contacted": "Contacted",
         "interested": "Interested",
         "converted": "Converted",
-        "lost": "Lost"
+        "lost": "Lost",
+        "old": "Old lead"
+      },
+      "oldLeads": {
+        "title": "Old leads",
+        "subtitle": "Leads moved here automatically based on your business rules — agents can follow up and verify relevance.",
+        "bannerTitle": "Follow up on old leads",
+        "bannerText": "Contact the leads here, check if they are still relevant, and move them back into the sales process or mark them as lost.",
+        "statsTotal": "Old leads",
+        "statusHint": "After contacting them — update to Contacted or Interested to return them to the active pipeline.",
+        "emptyTitle": "No old leads right now",
+        "emptyDescription": "When an open lead passes the days threshold set in CRM settings — it will appear here for follow-up."
       },
       "sources": {
         "metaLeadAds": "Meta Lead Ads",

@@ -6,6 +6,7 @@ import {
   CalendarDays,
   CreditCard,
   Flame,
+  History,
   Settings,
   Sparkles,
   UsersRound,
@@ -42,6 +43,12 @@ const crmTabs: CrmTab[] = [
     labelKey: "crm.nav.leads",
     descriptionKey: "crm.nav.leadsDesc",
     icon: Flame,
+  },
+  {
+    path: "old-leads",
+    labelKey: "crm.nav.oldLeads",
+    descriptionKey: "crm.nav.oldLeadsDesc",
+    icon: History,
   },
   {
     path: "clients",
