@@ -1,4 +1,4 @@
-import React, { Suspense, lazy } from "react";
+import React, { Suspense } from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -19,6 +19,8 @@ import { registerServiceWorkerNotificationBridge } from "./utils/notificationNav
 import BizuplyLoader from "./components/ui/BizuplyLoader";
 import PublicSiteLoader from "./components/ui/PublicSiteLoader";
 import { isPublicCustomerSiteHost } from "./utils/publicSiteHost";
+import { lazyWithRetry } from "./utils/lazyWithRetry";
+import LazyRouteBoundary from "./components/LazyRouteBoundary";
 
 /* ==========================================================
    Types
@@ -95,7 +97,7 @@ const queryClient = new QueryClient({
    Lazy App
 ========================================================== */
 
-const App = lazy(() => import("./App.jsx"));
+const App = lazyWithRetry(() => import("./App.jsx"));
 
 /* ==========================================================
    Fallback
@@ -130,9 +132,11 @@ ReactDOM.createRoot(rootElement).render(
         <QueryClientProvider client={queryClient}>
           <AuthProvider>
             <NotificationsProvider>
-              <Suspense fallback={<AppLoader />}>
-                <App />
-              </Suspense>
+              <LazyRouteBoundary>
+                <Suspense fallback={<AppLoader />}>
+                  <App />
+                </Suspense>
+              </LazyRouteBoundary>
             </NotificationsProvider>
           </AuthProvider>
         </QueryClientProvider>

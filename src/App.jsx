@@ -12,7 +12,7 @@ import StaffSoftphoneHost from "./components/staff/StaffSoftphoneHost";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
-const BusinessDashboardRoutes = lazy(() =>
+const BusinessDashboardRoutes = lazyWithRetry(() =>
   import("./pages/business/BusinessDashboardRoutes")
 );
 const BusinessChatPage = lazy(() => import("./components/BusinessChatPage"));
@@ -40,12 +40,14 @@ import Unsubscribe from "./pages/Unsubscribe";
 import EarlyBirdRedirect from "./components/EarlyBirdRedirect";
 import { resolveBusinessDashboardPath } from "./utils/dashboardRoutePersistence";
 import { lazyWithPreload } from "./utils/lazyWithPreload";
+import { clearChunkReloadFlag, lazyWithRetry } from "./utils/lazyWithRetry";
 import {
   getPublicSiteDomain,
   isPublicCustomerSiteHost,
 } from "./utils/publicSiteHost";
 import BizuplyLoader from "./components/ui/BizuplyLoader";
 import PublicSiteLoader from "./components/ui/PublicSiteLoader";
+import LazyRouteBoundary from "./components/LazyRouteBoundary";
 
 const StoreProductsPage = lazy(() =>
   import("./components/store/StoreProductsPage")
@@ -687,6 +689,10 @@ export default function App() {
   );
 
   useEffect(() => {
+    clearChunkReloadFlag();
+  }, []);
+
+  useEffect(() => {
     if (isMiniSiteHost) return;
     preloadDashboardComponents();
   }, [isMiniSiteHost]);
@@ -764,6 +770,7 @@ export default function App() {
             >
               <AiProvider>
                 <AnimatePresence mode="wait">
+                  <LazyRouteBoundary>
                   <Suspense
                     fallback={
                       // /login gets a layout-matched skeleton instead of the
@@ -1232,6 +1239,7 @@ export default function App() {
                       <AiModal />
                     </motion.div>
                   </Suspense>
+                  </LazyRouteBoundary>
                 </AnimatePresence>
               </AiProvider>
             </div>

@@ -1,15 +1,11 @@
 import React from "react";
 import { RefreshCw } from "lucide-react";
+import {
+  clearChunkReloadFlag,
+  isChunkLoadError,
+} from "../utils/lazyWithRetry";
 
-function isChunkLoadError(error) {
-  const message = String(error?.message || error || "");
-  return (
-    /Failed to fetch dynamically imported module/i.test(message) ||
-    /Importing a module script failed/i.test(message) ||
-    /Loading chunk [\d]+ failed/i.test(message) ||
-    /error loading dynamically imported module/i.test(message)
-  );
-}
+const RELOAD_KEY = "bizuply:chunk-reload";
 
 class LazyRouteBoundary extends React.Component {
   constructor(props) {
@@ -23,9 +19,23 @@ class LazyRouteBoundary extends React.Component {
 
   componentDidCatch(error, errorInfo) {
     console.error("LazyRouteBoundary:", error, errorInfo);
+
+    if (!isChunkLoadError(error)) return;
+
+    try {
+      if (sessionStorage.getItem(RELOAD_KEY) === "1") {
+        sessionStorage.removeItem(RELOAD_KEY);
+        return;
+      }
+      sessionStorage.setItem(RELOAD_KEY, "1");
+      window.location.reload();
+    } catch {
+      // fall through to manual reload UI
+    }
   }
 
   handleReload = () => {
+    clearChunkReloadFlag();
     window.location.reload();
   };
 
@@ -53,7 +63,7 @@ class LazyRouteBoundary extends React.Component {
           <button
             type="button"
             onClick={this.handleReload}
-            className="mt-5 inline-flex h-11 items-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800"
+            className="mt-5 inline-flex h-11 items-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-5 text-slate-800"
           >
             <RefreshCw size={16} />
             רענון הדף
