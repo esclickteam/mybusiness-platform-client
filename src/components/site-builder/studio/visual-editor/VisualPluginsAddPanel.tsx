@@ -29,29 +29,6 @@ type VisualPluginsAddPanelProps = {
 function pageHasPluginContent(root: ParentNode | null | undefined, pluginKey: string) {
   if (!root) return false;
   const el = root as HTMLElement;
-  // Only treat *plugin-inserted* markers as active — template copy like
-  // "128 ביקורות" or built-in Velmora lead forms must not fake "פעיל בעמוד".
-  if (pluginKey === "booking") {
-    return Boolean(
-      el.querySelector?.(
-        '[data-bizuply-booking-mount="true"], [data-bizuply-widget="booking"], [data-bizuply-plugin="booking"], [data-section-library-id*="booking-showcase"]',
-      ),
-    );
-  }
-  if (pluginKey === "reviews") {
-    return Boolean(
-      el.querySelector?.(
-        '[data-bizuply-reviews="true"], [data-bizuply-plugin="reviews"], [data-section-library-id*="testimonials"]',
-      ),
-    );
-  }
-  if (pluginKey === "leads") {
-    return Boolean(
-      el.querySelector?.(
-        '[data-bizuply-plugin="leads"], [data-section-library-id="section-contact"], [data-section-library-id="section-contact-split"]',
-      ),
-    );
-  }
   if (pluginKey === "store") {
     return /data-bizuply-block=["']products["']|bizuply-products|data-store-plugin|section-products/.test(
       el.innerHTML || "",
@@ -341,11 +318,7 @@ export default function VisualPluginsAddPanel({
       scrollPluginSectionIntoView(editor, action.sectionId);
       setContentActive((prev) => ({ ...prev, [plugin.key]: true }));
       setPageWidgetsEpoch((e) => e + 1);
-      onAdded?.(
-        plugin.key === "booking"
-          ? `«${plugin.name}» נוסף בתחתית העמוד — גללו לראות את היומן`
-          : `«${plugin.name}» נוסף בתחתית העמוד — גללו לראות את הסקשן`
-      );
+      onAdded?.(`«${plugin.name}» נוסף בתחתית העמוד — גללו לראות את הסקשן`);
       return;
     }
 

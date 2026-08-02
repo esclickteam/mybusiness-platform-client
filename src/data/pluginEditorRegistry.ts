@@ -1,5 +1,4 @@
 import { buildCountdownWidgetMarker } from "../components/site-plugins/countdown/mountCountdownWidgets";
-import { buildBookingWidgetMarker } from "../components/site-plugins/booking/mountBookingWidgets";
 
 /**
  * Maps installed plugins to editor actions — sections, pages, or widget placeholders.
@@ -56,38 +55,12 @@ export const PLUGIN_EDITOR_ACTIONS: Record<string, PluginEditorAction> = {
     label: "באנר עוגיות",
     description: "באנר הסכמה בתחתית האתר — לא רכיב בעמוד",
   },
-  "exit-popup": {
-    pluginKey: "exit-popup",
-    kind: "overlay",
-    label: "פופאפ לידים",
-    description: "חלון קופץ עם טופס — לא רכיב בעמוד",
-  },
   store: {
     pluginKey: "store",
     kind: "page",
     pageTemplateId: "page-products-01",
     label: "עמוד מוצרים / חנות",
     description: "מתסנכרן אוטומטית עם מוצרי החנות",
-  },
-  booking: {
-    pluginKey: "booking",
-    kind: "section",
-    sectionId: "section-booking-showcase-month-centered",
-    label: "יומן פגישות",
-    description: "מחובר אוטומטית ליומן, שירותים ושעות מה-CRM",
-  },
-  leads: {
-    pluginKey: "leads",
-    kind: "section",
-    sectionId: "section-contact",
-    label: "טופס לידים / צור קשר",
-    description: "מוסיף סקשן יצירת קשר שמחובר ל-CRM",
-  },
-  reviews: {
-    pluginKey: "reviews",
-    kind: "section",
-    sectionId: "section-testimonials-showcase-quote-cards",
-    label: "ביקורות והמלצות",
   },
   "testimonials-carousel": {
     pluginKey: "testimonials-carousel",
@@ -177,9 +150,6 @@ export function getPluginEditorAction(pluginKey: string): PluginEditorAction | n
 export function buildPluginWidgetMarker(pluginKey: string, label: string) {
   if (pluginKey === "countdown") {
     return buildCountdownWidgetMarker(label);
-  }
-  if (pluginKey === "booking") {
-    return buildBookingWidgetMarker(label || "יומן פגישות");
   }
 
   return `<div data-bizuply-plugin="${pluginKey}" data-bizuply-widget="${pluginKey}" style="padding:48px 24px;text-align:center;border:2px dashed #c4b5fd;border-radius:12px;background:linear-gradient(135deg,#f5f3ff,#eff6ff);font-family:system-ui,sans-serif;direction:rtl"><div style="font-size:13px;font-weight:700;color:#6d28d9;margin-bottom:6px">תוסף Bizuply</div><div style="font-size:18px;font-weight:800;color:#1e293b">${label}</div><div style="font-size:12px;color:#64748b;margin-top:8px">יופיע באתר החי לפי ההגדרות בפאנל</div></div>`;

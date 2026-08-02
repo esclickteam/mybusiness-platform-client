@@ -119,7 +119,7 @@ export default function WhatsAppFloatWidget({
   const triggerClassName = [
     "relative flex h-14 w-14 touch-none items-center justify-center rounded-full text-white shadow-lg transition hover:scale-105 select-none",
     missingPhone
-      ? "cursor-not-allowed bg-slate-400"
+      ? "cursor-not-allowed bg-[#25D366]"
       : "bg-[#25D366] hover:bg-[#1ebe57]",
     isEditor
       ? "cursor-grab active:cursor-grabbing ring-2 ring-emerald-300 ring-offset-2"
