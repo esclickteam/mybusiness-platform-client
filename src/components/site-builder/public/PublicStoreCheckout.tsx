@@ -18,6 +18,8 @@ import {
   startPublicPaypalCheckout,
   startPublicStripeCheckout,
   type PublicPaymentsInfo,
+  type PublicPickupOptions,
+  type PublicShippingAddress,
   type PublicStoreProduct,
 } from "../../../api/publicStoreApi";
 import {
@@ -37,6 +39,68 @@ type CartItem = {
   sku?: string;
   custom?: boolean;
 };
+
+type FulfillmentType = "shipping" | "pickup";
+
+const EMPTY_SHIPPING_ADDRESS: PublicShippingAddress = {
+  fullName: "",
+  phone: "",
+  country: "ישראל",
+  city: "",
+  street: "",
+  houseNumber: "",
+  apartment: "",
+  postalCode: "",
+  additionalInstructions: "",
+};
+
+function resolveProductKind(product?: PublicStoreProduct | null) {
+  const kind = String(product?.productKind || "").toLowerCase();
+  if (kind === "physical" || kind === "digital" || kind === "service") {
+    return kind;
+  }
+  if (product?.isDigital) return "digital";
+  return "physical";
+}
+
+function cartNeedsPhysicalFulfillment(
+  cart: CartItem[],
+  products: PublicStoreProduct[]
+) {
+  return cart.some((item) => {
+    if (item.custom) return true;
+    const product = products.find((entry) => entry._id === item.productId);
+    return resolveProductKind(product) === "physical";
+  });
+}
+
+function buildShippingRawText(address: PublicShippingAddress) {
+  return [
+    address.fullName,
+    address.phone,
+    [address.street, address.houseNumber].filter(Boolean).join(" "),
+    address.apartment ? `דירה ${address.apartment}` : "",
+    [address.city, address.postalCode].filter(Boolean).join(" "),
+    address.country,
+    address.additionalInstructions,
+  ]
+    .map((line) => String(line || "").trim())
+    .filter(Boolean)
+    .join("\n");
+}
+
+function validateShippingAddressForm(address: PublicShippingAddress) {
+  const required: Array<keyof PublicShippingAddress> = [
+    "fullName",
+    "phone",
+    "country",
+    "city",
+    "street",
+    "houseNumber",
+  ];
+  const missing = required.filter((key) => !String(address[key] || "").trim());
+  return { ok: missing.length === 0, missing };
+}
 
 function availableStockForProduct(
   product: PublicStoreProduct | undefined,
@@ -162,6 +226,12 @@ export default function PublicStoreCheckout({
   const [customerName, setCustomerName] = useState("");
   const [customerEmail, setCustomerEmail] = useState("");
   const [customerPhone, setCustomerPhone] = useState("");
+  const [fulfillmentType, setFulfillmentType] =
+    useState<FulfillmentType>("shipping");
+  const [shippingAddress, setShippingAddress] = useState<PublicShippingAddress>(
+    EMPTY_SHIPPING_ADDRESS
+  );
+  const [pickupOptions, setPickupOptions] = useState<PublicPickupOptions>({});
   const [hasTemplateCartUi, setHasTemplateCartUi] = useState(false);
   const [appearance, setAppearance] = useState<CheckoutAppearance>(
     normalizeCheckoutAppearance(null),
@@ -170,6 +240,17 @@ export default function PublicStoreCheckout({
     type: "success" | "error" | "info";
     text: string;
   } | null>(null);
+
+  const needsPhysicalFulfillment = useMemo(
+    () => cartNeedsPhysicalFulfillment(cart, products),
+    [cart, products]
+  );
+
+  const pickupConfigured = Boolean(
+    pickupOptions?.enabled !== false &&
+      (String(pickupOptions?.locationName || "").trim() ||
+        String(pickupOptions?.address || "").trim())
+  );
 
   const checkoutProvider = useMemo(
     () => resolveCheckoutProvider(payments),
@@ -337,6 +418,7 @@ export default function PublicStoreCheckout({
         setProducts(
           (shop.products || []).filter((item) => item.status !== "draft")
         );
+        setPickupOptions(shop.settings?.pickupOptions || {});
       } catch (err) {
         console.error("Public store load error:", err);
       } finally {
@@ -562,6 +644,36 @@ export default function PublicStoreCheckout({
       return;
     }
 
+    const effectiveShippingAddress: PublicShippingAddress = {
+      ...shippingAddress,
+      fullName: shippingAddress.fullName.trim() || customerName.trim(),
+      phone: shippingAddress.phone.trim() || customerPhone.trim(),
+    };
+
+    if (needsPhysicalFulfillment) {
+      if (fulfillmentType !== "shipping" && fulfillmentType !== "pickup") {
+        setMessage({ type: "error", text: "נא לבחור שיטת קבלה" });
+        return;
+      }
+      if (fulfillmentType === "shipping") {
+        const validated = validateShippingAddressForm(effectiveShippingAddress);
+        if (!validated.ok) {
+          setMessage({
+            type: "error",
+            text: "נא למלא את כל שדות המשלוח החובה לפני התשלום",
+          });
+          return;
+        }
+      }
+      if (fulfillmentType === "pickup" && !pickupConfigured) {
+        setMessage({
+          type: "error",
+          text: "איסוף עצמי עדיין לא הוגדר בחנות. בחרו משלוח או פנו לבעל החנות.",
+        });
+        return;
+      }
+    }
+
     setPaying(true);
     setMessage(null);
 
@@ -603,6 +715,18 @@ export default function PublicStoreCheckout({
           variantId: item.variantId || undefined,
           sku: item.sku,
         })),
+        fulfillmentType: needsPhysicalFulfillment ? fulfillmentType : "none",
+        shippingAddress:
+          needsPhysicalFulfillment && fulfillmentType === "shipping"
+            ? {
+                ...effectiveShippingAddress,
+                rawText: buildShippingRawText(effectiveShippingAddress),
+              }
+            : undefined,
+        pickupDetails:
+          needsPhysicalFulfillment && fulfillmentType === "pickup"
+            ? pickupOptions
+            : undefined,
         paymentProvider: checkoutProvider,
         startCheckout: false,
       });
@@ -949,6 +1073,136 @@ export default function PublicStoreCheckout({
                   onChange={(e) => setCustomerPhone(e.target.value)}
                 />
               </div>
+
+              {needsPhysicalFulfillment ? (
+                <div className="space-y-3">
+                  <h3
+                    className="text-sm font-bold"
+                    style={{ color: appearance.textColor }}
+                  >
+                    שיטת קבלה
+                  </h3>
+                  <div className="grid grid-cols-2 gap-2">
+                    {(
+                      [
+                        ["shipping", "משלוח"],
+                        ["pickup", "איסוף עצמי"],
+                      ] as const
+                    ).map(([value, label]) => {
+                      const selected = fulfillmentType === value;
+                      const disabled = value === "pickup" && !pickupConfigured;
+                      return (
+                        <button
+                          key={value}
+                          type="button"
+                          disabled={disabled}
+                          onClick={() => setFulfillmentType(value)}
+                          className="h-11 text-sm font-bold outline-none disabled:opacity-45"
+                          style={{
+                            borderRadius: Math.max(8, appearance.buttonRadius - 2),
+                            border: `1px solid ${
+                              selected
+                                ? appearance.accentColor || appearance.primaryColor
+                                : appearance.borderColor
+                            }`,
+                            backgroundColor: selected
+                              ? appearance.accentColor || appearance.primaryColor
+                              : appearance.panelBackground,
+                            color: selected
+                              ? appearance.buttonTextColor
+                              : appearance.textColor,
+                          }}
+                        >
+                          {label}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {fulfillmentType === "shipping" ? (
+                    <div className="space-y-2">
+                      {(
+                        [
+                          ["fullName", "שם מלא *"],
+                          ["phone", "טלפון *"],
+                          ["country", "מדינה *"],
+                          ["city", "עיר *"],
+                          ["street", "רחוב *"],
+                          ["houseNumber", "מספר בית *"],
+                          ["apartment", "דירה (אופציונלי)"],
+                          ["postalCode", "מיקוד (אופציונלי)"],
+                        ] as const
+                      ).map(([key, placeholder]) => (
+                        <input
+                          key={key}
+                          className="h-11 w-full px-3 text-sm outline-none"
+                          style={{
+                            borderRadius: Math.max(8, appearance.buttonRadius - 2),
+                            border: `1px solid ${appearance.borderColor}`,
+                            color: appearance.textColor,
+                            backgroundColor: appearance.panelBackground,
+                          }}
+                          placeholder={placeholder}
+                          value={shippingAddress[key] || ""}
+                          onChange={(e) =>
+                            setShippingAddress((prev) => ({
+                              ...prev,
+                              [key]: e.target.value,
+                            }))
+                          }
+                        />
+                      ))}
+                      <textarea
+                        className="min-h-[84px] w-full px-3 py-2 text-sm outline-none"
+                        style={{
+                          borderRadius: Math.max(8, appearance.buttonRadius - 2),
+                          border: `1px solid ${appearance.borderColor}`,
+                          color: appearance.textColor,
+                          backgroundColor: appearance.panelBackground,
+                        }}
+                        placeholder="הערות לשליח (אופציונלי)"
+                        value={shippingAddress.additionalInstructions || ""}
+                        onChange={(e) =>
+                          setShippingAddress((prev) => ({
+                            ...prev,
+                            additionalInstructions: e.target.value,
+                          }))
+                        }
+                      />
+                    </div>
+                  ) : null}
+
+                  {fulfillmentType === "pickup" && pickupConfigured ? (
+                    <div
+                      className="space-y-1 rounded-xl p-3 text-sm"
+                      style={{
+                        border: `1px solid ${appearance.borderColor}`,
+                        color: appearance.textColor,
+                        backgroundColor: appearance.panelBackground,
+                      }}
+                    >
+                      {pickupOptions.locationName ? (
+                        <p className="font-bold">{pickupOptions.locationName}</p>
+                      ) : null}
+                      {pickupOptions.address ? (
+                        <p style={{ color: appearance.mutedTextColor }}>
+                          {pickupOptions.address}
+                        </p>
+                      ) : null}
+                      {pickupOptions.hours ? (
+                        <p style={{ color: appearance.mutedTextColor }}>
+                          שעות פעילות: {pickupOptions.hours}
+                        </p>
+                      ) : null}
+                      {pickupOptions.instructions ? (
+                        <p style={{ color: appearance.mutedTextColor }}>
+                          הוראות איסוף: {pickupOptions.instructions}
+                        </p>
+                      ) : null}
+                    </div>
+                  ) : null}
+                </div>
+              ) : null}
             </div>
 
             <div
