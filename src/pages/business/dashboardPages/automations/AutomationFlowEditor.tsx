@@ -25,9 +25,11 @@ import {
   Trash2,
   Power,
   PowerOff,
+  Plus,
 } from "lucide-react";
 import {
   saveAutomationWorkflow,
+  type AutomationNodeType,
   type AutomationWorkflow,
 } from "../../../../api/automationWorkflowApi";
 import {
@@ -39,11 +41,16 @@ import {
   ACTION_OPTIONS,
   CONDITION_OPTIONS,
   DELAY_UNITS,
+  FILTER_CHIPS,
   PALETTE,
+  QUICK_ADD_AFTER,
   TRIGGER_OPTIONS,
   TYPE_META,
   clampRouteCount,
+  defaultSourceHandle,
   ensureRouterPaths,
+  listSourceHandles,
+  type PaletteFilter,
   type PaletteItem,
 } from "./automationFlowTypes";
 
@@ -117,11 +124,27 @@ function newId(prefix: string) {
   return `${prefix}_${Math.random().toString(36).slice(2, 9)}`;
 }
 
+function pickOutgoingHandle(
+  source: Node,
+  edges: Edge[]
+): string {
+  const type = (source.type || "action") as AutomationNodeType;
+  const data = (source.data || {}) as Record<string, unknown>;
+  const handles = listSourceHandles(type, data);
+  const used = new Set(
+    edges
+      .filter((e) => e.source === source.id)
+      .map((e) => e.sourceHandle || "out")
+  );
+  return handles.find((h) => !used.has(h)) || handles[0] || "out";
+}
+
 function EditorInner({ businessId, workflow, onBack, onSaved }: Props) {
-  const { screenToFlowPosition } = useReactFlow();
+  const { screenToFlowPosition, fitView } = useReactFlow();
   const [name, setName] = useState(workflow.name);
   const [enabled, setEnabled] = useState(Boolean(workflow.enabled));
   const [saving, setSaving] = useState(false);
+  const [filter, setFilter] = useState<PaletteFilter>("all");
   const [templates, setTemplates] = useState<WhatsAppTemplate[]>([]);
   const [nodes, setNodes, onNodesChange] = useNodesState(toFlowNodes(workflow));
   const [edges, setEdges, onEdgesChange] = useEdgesState(toFlowEdges(workflow));
@@ -146,13 +169,10 @@ function EditorInner({ businessId, workflow, onBack, onSaved }: Props) {
     [nodes, selectedId]
   );
 
-  const groupedPalette = useMemo(() => {
-    return {
-      triggers: PALETTE.filter((p) => p.group === "triggers"),
-      flow: PALETTE.filter((p) => p.group === "flow"),
-      actions: PALETTE.filter((p) => p.group === "actions"),
-    };
-  }, []);
+  const filteredPalette = useMemo(() => {
+    if (filter === "all") return PALETTE;
+    return PALETTE.filter((p) => p.filter === filter);
+  }, [filter]);
 
   const onConnect: OnConnect = useCallback(
     (connection: Connection) => {
@@ -167,6 +187,113 @@ function EditorInner({ businessId, workflow, onBack, onSaved }: Props) {
       );
     },
     [setEdges]
+  );
+
+  const insertModule = useCallback(
+    (
+      item: PaletteItem,
+      options?: {
+        position?: { x: number; y: number };
+        afterNodeId?: string | null;
+        autoConnect?: boolean;
+      }
+    ) => {
+      const afterId = options?.afterNodeId ?? selectedId;
+      const autoConnect = options?.autoConnect !== false;
+      const afterNode = afterId
+        ? nodes.find((n) => n.id === afterId) || null
+        : null;
+
+      const id = newId(item.type);
+      const position =
+        options?.position ||
+        (afterNode
+          ? {
+              x: afterNode.position.x + 280,
+              y: afterNode.position.y + (item.type === "router" ? -40 : 0),
+            }
+          : { x: 120 + nodes.length * 40, y: 160 + nodes.length * 24 });
+
+      const newNode: Node = {
+        id,
+        type: item.type,
+        position,
+        data: { ...item.defaults },
+      };
+
+      setNodes((prev) => [...prev, newNode]);
+
+      if (autoConnect && afterNode && item.type !== "trigger") {
+        const sourceHandle = pickOutgoingHandle(afterNode, edges);
+        const outgoing = edges.filter(
+          (e) =>
+            e.source === afterNode.id &&
+            (e.sourceHandle || "out") === sourceHandle
+        );
+        const newSourceHandle = defaultSourceHandle(
+          item.type,
+          item.defaults as Record<string, unknown>
+        );
+
+        setEdges((prev) => {
+          let next = prev.filter(
+            (e) =>
+              !(
+                e.source === afterNode.id &&
+                (e.sourceHandle || "out") === sourceHandle
+              )
+          );
+          next = [
+            ...next,
+            styleEdge({
+              id: newId("e"),
+              source: afterNode.id,
+              target: id,
+              sourceHandle,
+            }),
+          ];
+
+          // Insert: reconnect previous targets through the new module
+          outgoing.forEach((oldEdge, index) => {
+            const handles = listSourceHandles(
+              item.type,
+              item.defaults as Record<string, unknown>
+            );
+            const outHandle = handles[Math.min(index, handles.length - 1)];
+            next.push(
+              styleEdge({
+                id: newId("e"),
+                source: id,
+                target: oldEdge.target,
+                sourceHandle: outHandle || newSourceHandle,
+              })
+            );
+          });
+
+          return next;
+        });
+
+        toast.success(
+          outgoing.length
+            ? "נוסף וחובר אוטומטית (כולל המשך הזרימה)"
+            : "נוסף וחובר אוטומטית למודול שנבחר"
+        );
+      } else if (item.type === "trigger") {
+        toast.success("טריגר נוסף — אפשר לחבר ממנו כמה ניתובים");
+      } else {
+        toast.success("מודול נוסף ללוח");
+      }
+
+      setSelectedId(id);
+      window.setTimeout(() => {
+        try {
+          fitView({ padding: 0.2, duration: 280 });
+        } catch {
+          /* ignore */
+        }
+      }, 40);
+    },
+    [edges, fitView, nodes, selectedId, setEdges, setNodes]
   );
 
   const onDragStart = (event: React.DragEvent, item: PaletteItem) => {
@@ -198,17 +325,11 @@ function EditorInner({ businessId, workflow, onBack, onSaved }: Props) {
       x: event.clientX,
       y: event.clientY,
     });
-    const id = newId(item.type);
-    setNodes((prev) => [
-      ...prev,
-      {
-        id,
-        type: item.type,
-        position,
-        data: { ...item.defaults },
-      },
-    ]);
-    setSelectedId(id);
+    insertModule(item, {
+      position,
+      afterNodeId: selectedId,
+      autoConnect: true,
+    });
   };
 
   const updateSelectedData = (patch: Record<string, unknown>) => {
@@ -270,39 +391,65 @@ function EditorInner({ businessId, workflow, onBack, onSaved }: Props) {
     }
   };
 
-  const renderPaletteGroup = (title: string, items: PaletteItem[]) => (
-    <div className="af-palette__group" key={title}>
-      <div className="af-palette__title">{title}</div>
-      {items.map((item) => (
-        <button
-          key={`${item.type}-${item.key}`}
-          type="button"
-          className="af-palette__item"
-          draggable
-          onDragStart={(e) => onDragStart(e, item)}
-          style={{ borderInlineStart: `4px solid ${item.color}` }}
-        >
-          <strong>{item.label}</strong>
-          <span>{item.description}</span>
-        </button>
-      ))}
-    </div>
-  );
-
-  const selectedRouter = selectedNode?.type === "router"
-    ? ensureRouterPaths((selectedNode.data || {}) as Record<string, unknown>)
-    : null;
+  const selectedRouter =
+    selectedNode?.type === "router"
+      ? ensureRouterPaths((selectedNode.data || {}) as Record<string, unknown>)
+      : null;
 
   return (
     <div className="af-editor" dir="rtl">
       <aside className="af-palette">
         <div className="af-palette__head">
           <strong>מודולים</strong>
-          <p>גררו לבד · חברו כמה ניתובים מכל טריגר</p>
+          <p>
+            לחצו להוספה — אם בחרתם מודול על הבד, החדש יתחבר אליו אוטומטית
+          </p>
         </div>
-        {renderPaletteGroup("טריגרים", groupedPalette.triggers)}
-        {renderPaletteGroup("זרימה וניתוב", groupedPalette.flow)}
-        {renderPaletteGroup("פעולות", groupedPalette.actions)}
+
+        <div className="af-filter-row" role="tablist" aria-label="סינון מודולים">
+          {FILTER_CHIPS.map((chip) => (
+            <button
+              key={chip.key}
+              type="button"
+              role="tab"
+              aria-selected={filter === chip.key}
+              className={[
+                "af-filter-chip",
+                filter === chip.key ? "af-filter-chip--active" : "",
+              ].join(" ")}
+              onClick={() => setFilter(chip.key)}
+            >
+              {chip.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="af-palette__group">
+          {filteredPalette.map((item) => (
+            <button
+              key={`${item.type}-${item.key}`}
+              type="button"
+              className="af-palette__item"
+              draggable
+              onDragStart={(e) => onDragStart(e, item)}
+              onClick={() =>
+                insertModule(item, {
+                  afterNodeId: selectedId,
+                  autoConnect: true,
+                })
+              }
+              style={{ borderInlineStart: `4px solid ${item.color}` }}
+            >
+              <strong>{item.label}</strong>
+              <span>{item.description}</span>
+              <em className="af-palette__hint">
+                {selectedId && item.type !== "trigger"
+                  ? "לחיצה = הוספה + חיבור אוטומטי"
+                  : "לחיצה להוספה · אפשר גם לגרור"}
+              </em>
+            </button>
+          ))}
+        </div>
       </aside>
 
       <div className="af-canvas-wrap">
@@ -340,6 +487,67 @@ function EditorInner({ businessId, workflow, onBack, onSaved }: Props) {
             {enabled ? "כבה" : "הפעל"}
           </button>
         </div>
+
+        {selectedNode && selectedNode.type !== "trigger" ? (
+          <div className="af-quickbar">
+            <span>הוסף אחרי המודול שנבחר:</span>
+            {QUICK_ADD_AFTER.map((item) => (
+              <button
+                key={`quick-${item.key}`}
+                type="button"
+                className="af-quickbar__btn"
+                onClick={() =>
+                  insertModule(item, {
+                    afterNodeId: selectedNode.id,
+                    autoConnect: true,
+                  })
+                }
+              >
+                <Plus size={12} />
+                {item.filter === "router"
+                  ? "פיצול"
+                  : item.filter === "condition"
+                    ? "תנאי"
+                    : item.filter === "delay"
+                      ? "המתנה"
+                      : item.defaults.label
+                        ? String(item.defaults.label).slice(0, 12)
+                        : item.label}
+              </button>
+            ))}
+          </div>
+        ) : selectedNode?.type === "trigger" ? (
+          <div className="af-quickbar">
+            <span>הוסף אחרי הטריגר (יתחבר אוטומטית):</span>
+            {QUICK_ADD_AFTER.map((item) => (
+              <button
+                key={`quick-t-${item.key}`}
+                type="button"
+                className="af-quickbar__btn"
+                onClick={() =>
+                  insertModule(item, {
+                    afterNodeId: selectedNode.id,
+                    autoConnect: true,
+                  })
+                }
+              >
+                <Plus size={12} />
+                {item.filter === "router"
+                  ? "פיצול"
+                  : item.filter === "condition"
+                    ? "תנאי"
+                    : item.filter === "delay"
+                      ? "המתנה"
+                      : String(item.defaults.label || item.label).slice(0, 12)}
+              </button>
+            ))}
+          </div>
+        ) : (
+          <div className="af-quickbar af-quickbar--hint">
+            בחרו מודול על הבד (למשל המתנה) ואז לחצו ״פיצול״ / תנאי / פעולה —
+            זה יתחבר לבד
+          </div>
+        )}
 
         <ReactFlow
           nodes={nodes}
@@ -389,12 +597,14 @@ function EditorInner({ businessId, workflow, onBack, onSaved }: Props) {
         <h3>הגדרות מודול</h3>
         {!selectedNode ? (
           <div className="af-inspector__hint">
-            <p>בחרו מודול או גררו חדש מהפלטה.</p>
-            <ul>
-              <li>אפשר כמה טריגרים על אותו בד</li>
-              <li>מכל טריגר אפשר למשוך כמה ניתובים</li>
-              <li>מודול ״ניתוב״ מפצל ל־2–6 תוצאות</li>
-            </ul>
+            <p>
+              <strong>איך מוסיפים פיצול אחרי המתנה?</strong>
+            </p>
+            <ol>
+              <li>לוחצים על מודול ההמתנה על הבד</li>
+              <li>לוחצים למעלה על ״פיצול״ או על ״ניתוב״ בפלטה</li>
+              <li>זה מתווסף ומתחבר אוטומטית — כולל המשך הזרימה הקיימת</li>
+            </ol>
           </div>
         ) : (
           <>
