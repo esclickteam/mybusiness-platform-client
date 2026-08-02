@@ -15,34 +15,28 @@ import API from "@api";
 import { useLocaleDir } from "@/hooks/useLocaleDir";
 import {
   ArrowUp,
-  BarChart3,
   BrainCircuit,
-  CalendarDays,
-  Clock3,
-  FileText,
   History,
-  Loader2,
+  LineChart,
   Megaphone,
+  MessageSquareText,
   Plus,
   RefreshCw,
-  Search,
-  Sparkles,
   Target,
-  TrendingUp,
+  TrendingDown,
   Users,
+  Workflow,
+  Zap,
 } from "lucide-react";
 import BizuplyLoader from "../../../../components/ui/BizuplyLoader";
 import {
   AdvisorActionsPanel,
-  AdvisorExecutedStrip,
   AdvisorThinkingLoader,
   getCapabilityPills,
   extractWhatsAppFromAnswer,
-  getActionMeta,
   stripExecutedSummaryFromAnswer,
   WhatsAppPreparedCard,
   type AdvisorAction,
-  type ExecutedAction,
   type WhatsAppPrepared,
 } from "./AdvisorUxParts";
 
@@ -50,6 +44,13 @@ type ChatRole = "assistant" | "user";
 
 type AdvisorMode =
   | "general"
+  | "today_focus"
+  | "leads_attention"
+  | "sales_drop"
+  | "followup_message"
+  | "campaign_improve"
+  | "reps_performance"
+  | "build_automation"
   | "weekly_plan"
   | "monthly_plan"
   | "yearly_plan"
@@ -63,7 +64,6 @@ type ChatMessage = {
   role: ChatRole;
   content: string;
   actions?: AdvisorAction[];
-  executedActions?: ExecutedAction[];
   whatsappPrepared?: WhatsAppPrepared;
 };
 
@@ -86,6 +86,7 @@ type BusinessAdvisorTabProps = {
   conversationId?: string | null;
   userId?: string | null;
   businessDetails?: unknown;
+  onOpenAiAutomations?: () => void;
 };
 
 type BusinessResponse = {
@@ -102,7 +103,7 @@ type AdvisorResponse = {
   answer?: string;
   answerStyle?: "short" | "medium" | "full";
   actions?: AdvisorAction[];
-  executedActions?: ExecutedAction[];
+  adviceOnly?: boolean;
   agentMode?: boolean;
   conversation?: {
     id: string;
@@ -161,14 +162,13 @@ const QUICK_COMMAND_MODES: Array<{
   icon: React.ElementType;
   highlighted?: boolean;
 }> = [
-  { id: "find_business_partner", icon: Search, highlighted: true },
-  { id: "weekly_plan", icon: CalendarDays },
-  { id: "monthly_plan", icon: BarChart3 },
-  { id: "yearly_plan", icon: FileText },
-  { id: "marketing", icon: Megaphone },
-  { id: "actions", icon: Clock3 },
-  { id: "profitability", icon: TrendingUp },
-  { id: "customer_retention", icon: Users },
+  { id: "today_focus", icon: Target, highlighted: true },
+  { id: "leads_attention", icon: Users },
+  { id: "sales_drop", icon: TrendingDown },
+  { id: "followup_message", icon: MessageSquareText },
+  { id: "campaign_improve", icon: Megaphone },
+  { id: "reps_performance", icon: LineChart },
+  { id: "build_automation", icon: Workflow },
 ];
 
 type StarterQuestion = {
@@ -177,12 +177,21 @@ type StarterQuestion = {
   mode: AdvisorMode;
 };
 
-const STARTER_KEYS: Array<{ key: "partner" | "improveWeek" | "promoteService" | "closeLeads"; mode: AdvisorMode }> = [
-  { key: "partner", mode: "find_business_partner" },
-  { key: "improveWeek", mode: "actions" },
-  { key: "promoteService", mode: "marketing" },
-  { key: "closeLeads", mode: "customer_retention" },
+const STARTER_KEYS: Array<{
+  key:
+    | "today"
+    | "leads"
+    | "salesDrop"
+    | "followup";
+  mode: AdvisorMode;
+}> = [
+  { key: "today", mode: "today_focus" },
+  { key: "leads", mode: "leads_attention" },
+  { key: "salesDrop", mode: "sales_drop" },
+  { key: "followup", mode: "followup_message" },
 ];
+
+const isNavigationAction = (type: string) => type.startsWith("OPEN_");
 
 const isMongoObjectId = (value?: string | null) => {
   return typeof value === "string" && /^[a-fA-F0-9]{24}$/.test(value);
@@ -208,6 +217,7 @@ export default function BusinessAdvisorTab({
   conversationId,
   userId,
   businessDetails,
+  onOpenAiAutomations,
 }: BusinessAdvisorTabProps) {
   const { t, i18n } = useTranslation();
   const dir = useLocaleDir();
@@ -216,9 +226,6 @@ export default function BusinessAdvisorTab({
   const [userInput, setUserInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
-  const [pendingAction, setPendingAction] = useState<AdvisorAction | null>(
-    null
-  );
   const [lastAnswer, setLastAnswer] = useState("");
   const [historyLoading, setHistoryLoading] = useState(false);
   const [activeMode, setActiveMode] = useState<AdvisorMode>("general");
@@ -412,63 +419,42 @@ export default function BusinessAdvisorTab({
     startNewConversation();
   }, [validInitialConversationId, loadConversation, startNewConversation]);
 
-  const renderWhatsAppPrepared = useCallback(
-    (prepared: WhatsAppPrepared) => <WhatsAppPreparedCard prepared={prepared} />,
-    []
-  );
-
   const handleActionResult = useCallback(
-    (action: AdvisorAction, response: ActionResponse) => {
+    (response: ActionResponse) => {
       if (response.navigateTo) {
+        if (
+          response.navigateTo.includes("/dashboard/automations") &&
+          onOpenAiAutomations
+        ) {
+          onOpenAiAutomations();
+          return;
+        }
         navigate(response.navigateTo);
-        return;
       }
-
-      const whatsappUrl =
-        response.whatsappUrl || response.result?.whatsappUrl || null;
-      const content = response.result?.content || "";
-      const phone = response.result?.phone;
-
-      if (whatsappUrl && content) {
-        setMessages((prev) => [
-          ...prev,
-          {
-            role: "assistant",
-            content: `✅ ${response.message || t("advisor.whatsappReady")}`,
-            whatsappPrepared: {
-              content,
-              phone,
-              whatsappUrl,
-            },
-          },
-        ]);
-        scrollChatToBottom();
-        return;
-      }
-
-      const successMessage =
-        response.message || t("advisor.executedFallback", { label: action.label });
-
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "assistant",
-          content: `✅ ${successMessage}`,
-        },
-      ]);
-      scrollChatToBottom();
     },
-    [navigate, scrollChatToBottom, t]
+    [navigate, onOpenAiAutomations]
   );
 
   const executeAction = useCallback(
     async (action: AdvisorAction) => {
       if (!businessId || actionLoading) return;
 
-      const isNavigation = action.type.startsWith("OPEN_");
+      // Advice-only: navigation / deep-links. Write actions belong in Automations.
+      if (!isNavigationAction(action.type)) {
+        onOpenAiAutomations?.();
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: "assistant",
+            content: t("advisor.errors.actionsAreAutomations"),
+          },
+        ]);
+        scrollChatToBottom();
+        return;
+      }
 
-      if (action.requiresConfirmation !== false && !isNavigation) {
-        setPendingAction(action);
+      if (action.type === "OPEN_AUTOMATIONS" && onOpenAiAutomations) {
+        onOpenAiAutomations();
         return;
       }
 
@@ -485,8 +471,8 @@ export default function BusinessAdvisorTab({
           }
         );
 
-        if (response.data.success) {
-          handleActionResult(action, response.data);
+        if (response.data.success || response.data.navigateTo) {
+          handleActionResult(response.data);
         } else {
           setMessages((prev) => [
             ...prev,
@@ -497,18 +483,26 @@ export default function BusinessAdvisorTab({
           ]);
           scrollChatToBottom();
         }
-      } catch {
-        setMessages((prev) => [
-          ...prev,
-          {
-            role: "assistant",
-            content: `⚠️ ${t("advisor.errors.actionRetry")}`,
-          },
-        ]);
-        scrollChatToBottom();
+      } catch (error) {
+        const err = error as {
+          response?: { data?: ActionResponse & { error?: string } };
+        };
+        const data = err.response?.data;
+
+        if (data?.navigateTo) {
+          handleActionResult(data);
+        } else {
+          setMessages((prev) => [
+            ...prev,
+            {
+              role: "assistant",
+              content: `⚠️ ${data?.error || t("advisor.errors.actionRetry")}`,
+            },
+          ]);
+          scrollChatToBottom();
+        }
       } finally {
         setActionLoading(null);
-        setPendingAction(null);
       }
     },
     [
@@ -517,18 +511,11 @@ export default function BusinessAdvisorTab({
       activeMode,
       lastAnswer,
       handleActionResult,
+      onOpenAiAutomations,
       scrollChatToBottom,
       t,
     ]
   );
-
-  const confirmPendingAction = useCallback(() => {
-    if (pendingAction) {
-      const action = { ...pendingAction, requiresConfirmation: false };
-      setPendingAction(null);
-      void executeAction(action);
-    }
-  }, [pendingAction, executeAction]);
 
   const sendMessage = useCallback(
     async (
@@ -601,8 +588,9 @@ export default function BusinessAdvisorTab({
           {
             role: "assistant",
             content: answer,
-            actions: response.data.actions || [],
-            executedActions: response.data.executedActions || [],
+            actions: (response.data.actions || []).filter((action) =>
+              isNavigationAction(action.type)
+            ),
           },
         ]);
 
@@ -725,8 +713,8 @@ export default function BusinessAdvisorTab({
                     {t("advisor.title")}
                   </h1>
 
-                  <span className="rounded-full border border-violet-200 bg-violet-50 px-3 py-1 text-xs font-black text-violet-700">
-                    {t("advisor.activeAgent")}
+                  <span className="rounded-full border border-sky-200 bg-sky-50 px-3 py-1 text-xs font-black text-sky-700">
+                    {t("advisor.adviceOnlyBadge")}
                   </span>
                 </div>
 
@@ -929,14 +917,6 @@ export default function BusinessAdvisorTab({
                               </div>
                             ))}
 
-                            {msg.executedActions &&
-                              msg.executedActions.length > 0 && (
-                                <AdvisorExecutedStrip
-                                  items={msg.executedActions}
-                                  renderWhatsApp={renderWhatsAppPrepared}
-                                />
-                              )}
-
                             {msg.whatsappPrepared && (
                               <div className="mt-4">
                                 <WhatsAppPreparedCard
@@ -1079,10 +1059,10 @@ export default function BusinessAdvisorTab({
               })}
             </div>
 
-            <div className="mt-4 rounded-2xl border border-violet-100 bg-violet-50 p-3">
+            <div className="mt-4 rounded-2xl border border-sky-100 bg-sky-50 p-3">
               <div className="flex items-center gap-2">
-                <Target className="h-4 w-4 text-violet-700" />
-                <p className="text-xs font-black text-violet-800">
+                <Target className="h-4 w-4 text-sky-700" />
+                <p className="text-xs font-black text-sky-800">
                   {t("advisor.tipTitle")}
                 </p>
               </div>
@@ -1091,72 +1071,25 @@ export default function BusinessAdvisorTab({
                 {t("advisor.tipBody")}
               </p>
             </div>
+
+            <button
+              type="button"
+              onClick={() => onOpenAiAutomations?.()}
+              className="mt-3 flex w-full items-center justify-between gap-3 rounded-[22px] border border-amber-200 bg-amber-50 px-4 py-3 text-start transition hover:bg-amber-100"
+            >
+              <div>
+                <p className="text-sm font-black text-amber-900">
+                  {t("advisor.aiAutomations.ctaTitle")}
+                </p>
+                <p className="mt-1 text-xs font-bold text-amber-800/80">
+                  {t("advisor.aiAutomations.ctaBody")}
+                </p>
+              </div>
+              <Zap className="h-5 w-5 shrink-0 text-amber-700" />
+            </button>
           </aside>
         </main>
       </div>
-
-      {pendingAction && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-violet-900/10 p-4 backdrop-blur-sm">
-          <div
-            dir={dir}
-            className="w-full max-w-md overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-2xl"
-          >
-            <div className="border-b border-slate-100 bg-violet-50 px-6 py-4">
-              <div className="flex items-center gap-3">
-                {(() => {
-                  const MetaIcon = getActionMeta(pendingAction.type, t).icon;
-                  return (
-                    <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 text-slate-800">
-                      <MetaIcon className="h-5 w-5" />
-                    </span>
-                  );
-                })()}
-                <div>
-                  <h3 className="text-lg font-black text-slate-800">
-                    {t("advisor.confirmTitle")}
-                  </h3>
-                  <p className="text-xs font-bold text-slate-500">
-                    {t("advisor.confirmSubtitle")}
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            <div className="p-6">
-              <p className="text-base font-black text-violet-700">
-                {pendingAction.label}
-              </p>
-              <p className="mt-2 text-sm font-semibold leading-7 text-slate-600">
-                {pendingAction.description ||
-                  getActionMeta(pendingAction.type, t).hint}
-              </p>
-
-              <div className="mt-6 flex gap-3">
-                <button
-                  type="button"
-                  onClick={() => setPendingAction(null)}
-                  className="flex-1 rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-black text-slate-700 transition hover:bg-slate-100"
-                >
-                  {t("advisor.cancel")}
-                </button>
-                <button
-                  type="button"
-                  onClick={confirmPendingAction}
-                  disabled={!!actionLoading}
-                  className="flex flex-1 items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-4 py-3 text-sm font-black text-black shadow-lg shadow-violet-100 transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:opacity-60"
-                >
-                  {actionLoading ? (
-                    <BizuplyLoader size="xs" compact />
-                  ) : (
-                    <Sparkles className="h-4 w-4" />
-                  )}
-                  {t("advisor.confirmExecute")}
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </section>
   );
 }
