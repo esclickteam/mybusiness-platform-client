@@ -1874,6 +1874,7 @@
         "clientDataFields": "שדות נתוני לקוח",
         "portalAccess": "גישה לפורטל",
         "tabProfile": "פרופיל לקוח",
+        "tabDocumentation": "תיעוד",
         "tabCommunication": "תקשורת",
         "tabAppointments": "תורים",
         "tabPayments": "תשלומים",
@@ -1881,6 +1882,7 @@
         "tabFiles": "קבצים",
         "tabClientData": "נתוני לקוח",
         "tabPortalAccess": "גישה לפורטל",
+        "openDocumentation": "מעבר לתיעוד, משימות וקבצים",
         "profileSummaryTitle": "סיכום תיק",
         "profileSummaryText": "כל הפעילויות, התורים, התשלומים, המשימות והקבצים של הלקוח מרוכזים בתיק זה.",
         "quickFacts": "נתונים מהירים"
@@ -1920,8 +1922,9 @@
       },
       "filesPanel": {
         "title": "קבצים והסכמים",
-        "subtitle": "כל הקבצים שצורפו בתיעוד הלקוח.",
+        "subtitle": "כל הקבצים שצורפו בתיעוד הלקוח — עם חיפוש ותצוגת תמונות.",
         "addFromDocs": "העלאה מתיעוד",
+        "searchPlaceholder": "חיפוש קובץ...",
         "emptyTitle": "אין קבצים עדיין",
         "emptyDescription": "צרפו קבצים או הסכמים דרך אזור התיעוד בתיק."
       },
@@ -1970,12 +1973,22 @@
         "dueAt": "יעד לטיפול",
         "attachFiles": "צירוף קבצים / תמונות",
         "filesSelected": "{{count}} קבצים נבחרו",
+        "clearFiles": "ניקוי קבצים",
         "defaultNowHint": "ברירת מחדל לתאריך ושעה: עכשיו. אפשר לשנות לפני השמירה.",
         "saveActivity": "שמירת תיעוד",
         "saveTask": "שמירת משימה",
         "uploading": "מעלה קבצים...",
+        "viewTimeline": "ציר זמן",
+        "viewGallery": "גלריית קבצים",
+        "filtersTitle": "סינון וחיפוש",
+        "searchPlaceholder": "חיפוש בתיעוד, קבצים או שם...",
+        "filterAllTypes": "כל הסוגים",
+        "dateFrom": "מתאריך",
+        "dateTo": "עד תאריך",
         "emptyTitle": "עדיין אין תיעוד",
         "emptyDescription": "כאן תופיע היסטוריית השיחות, המשימות, סיכומי המפגש והקבצים של הלקוח.",
+        "emptyGalleryTitle": "אין קבצים בתצוגה",
+        "emptyGalleryDescription": "צרפו תמונות או קבצים לתיעוד, או שנו את הסינון לפי תאריך.",
         "markDone": "סמן כבוצע",
         "reopenTask": "פתיחה מחדש",
         "dueTimeLabel": "יעד: {{time}}",
@@ -2001,6 +2014,7 @@
         "errors": {
           "textOrFileRequired": "יש להזין טקסט או לצרף קובץ",
           "fileRequired": "יש לצרף קובץ או תמונה",
+          "uploadFailed": "העלאת הקובץ נכשלה",
           "saveFailed": "שמירת התיעוד נכשלה",
           "taskUpdateFailed": "עדכון המשימה נכשל"
         }

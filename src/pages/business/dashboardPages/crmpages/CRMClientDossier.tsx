@@ -3,6 +3,7 @@ import {
   ArrowLeft,
   CalendarDays,
   CheckSquare,
+  ClipboardList,
   CreditCard,
   Edit3,
   FileText,
@@ -14,6 +15,7 @@ import {
   MessagesSquare,
   Phone,
   Route,
+  Search,
   Tag,
   Trash2,
   UserRound,
@@ -34,6 +36,7 @@ import ClientDocumentationPanel, {
 
 export type ClientDetailTab =
   | "profile"
+  | "documentation"
   | "communication"
   | "appointments"
   | "payments"
@@ -430,6 +433,13 @@ export default function CRMClientDossier({
             onClick={() => setActiveTab("profile")}
           />
           <TabButton
+            active={resolvedTab === "documentation"}
+            icon={ClipboardList}
+            label={t("crm.clients.details.tabDocumentation")}
+            badge={activities.length || undefined}
+            onClick={() => setActiveTab("documentation")}
+          />
+          <TabButton
             active={resolvedTab === "communication"}
             icon={MessagesSquare}
             label={t("crm.clients.details.tabCommunication")}
@@ -606,13 +616,24 @@ export default function CRMClientDossier({
 
                 <JourneyPanel client={client} locale={locale} emDash={emDash} />
 
-                <ClientDocumentationPanel
-                  clientId={client._id}
-                  businessId={businessId}
-                  activities={client.activities || []}
-                  onActivitiesChange={onActivitiesChange}
-                />
+                <button
+                  type="button"
+                  onClick={() => setActiveTab("documentation")}
+                  className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl border border-violet-100 bg-violet-50 text-sm font-black text-violet-700 transition hover:bg-violet-100"
+                >
+                  <ClipboardList className="h-4 w-4" />
+                  {t("crm.clients.details.openDocumentation")}
+                </button>
               </>
+            )}
+
+            {resolvedTab === "documentation" && (
+              <ClientDocumentationPanel
+                clientId={client._id}
+                businessId={businessId}
+                activities={client.activities || []}
+                onActivitiesChange={onActivitiesChange}
+              />
             )}
 
             {resolvedTab === "communication" && (
@@ -654,7 +675,7 @@ export default function CRMClientDossier({
                 }
                 locale={locale}
                 emDash={emDash}
-                onGoDocument={() => setActiveTab("profile")}
+                onGoDocument={() => setActiveTab("documentation")}
               />
             )}
 
@@ -663,7 +684,7 @@ export default function CRMClientDossier({
                 files={files}
                 locale={locale}
                 emDash={emDash}
-                onGoDocument={() => setActiveTab("profile")}
+                onGoDocument={() => setActiveTab("documentation")}
               />
             )}
 
@@ -1440,12 +1461,33 @@ function FilesPanel({
   onGoDocument: () => void;
 }) {
   const { t } = useTranslation();
+  const [query, setQuery] = useState("");
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
+
+  const filtered = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return files.filter((file) => {
+      const day = file.createdAt
+        ? new Date(file.createdAt).toISOString().slice(0, 10)
+        : "";
+      if (dateFrom && day && day < dateFrom) return false;
+      if (dateTo && day && day > dateTo) return false;
+      if (!q) return true;
+      return `${file.name} ${file.activityText || ""}`.toLowerCase().includes(q);
+    });
+  }, [files, query, dateFrom, dateTo]);
+
+  const isImage = (file: { url: string; mimeType?: string }) => {
+    const mime = String(file.mimeType || "").toLowerCase();
+    return mime.startsWith("image/") || /\.(png|jpe?g|gif|webp|svg)(\?|$)/i.test(file.url);
+  };
 
   return (
-    <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
-      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+    <section className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
         <div>
-          <h3 className="text-lg font-black text-slate-800">
+          <h3 className="text-xl font-black text-slate-800">
             {t("crm.clients.filesPanel.title")}
           </h3>
           <p className="mt-1 text-sm font-bold text-slate-500">
@@ -1455,13 +1497,39 @@ function FilesPanel({
         <button
           type="button"
           onClick={onGoDocument}
-          className="inline-flex h-10 items-center rounded-xl border border-slate-200 bg-slate-50 px-3 text-xs font-black text-slate-700"
+          className="inline-flex h-10 items-center rounded-xl bg-[#6D28D9] px-3 text-xs font-black text-white"
         >
           {t("crm.clients.filesPanel.addFromDocs")}
         </button>
       </div>
 
-      {files.length === 0 ? (
+      <div className="mb-4 grid gap-2 md:grid-cols-3">
+        <label className="relative block md:col-span-1">
+          <Search className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+          <input
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            placeholder={t("crm.clients.filesPanel.searchPlaceholder")}
+            className="h-11 w-full rounded-2xl border border-slate-200 bg-slate-50 pe-3 ps-10 text-sm font-bold outline-none focus:bg-white focus:ring-4 focus:ring-violet-100"
+          />
+        </label>
+        <input
+          type="date"
+          value={dateFrom}
+          onChange={(event) => setDateFrom(event.target.value)}
+          className="h-11 rounded-2xl border border-slate-200 bg-slate-50 px-3 text-sm font-bold outline-none focus:bg-white focus:ring-4 focus:ring-violet-100"
+          aria-label={t("crm.clients.documentation.dateFrom")}
+        />
+        <input
+          type="date"
+          value={dateTo}
+          onChange={(event) => setDateTo(event.target.value)}
+          className="h-11 rounded-2xl border border-slate-200 bg-slate-50 px-3 text-sm font-bold outline-none focus:bg-white focus:ring-4 focus:ring-violet-100"
+          aria-label={t("crm.clients.documentation.dateTo")}
+        />
+      </div>
+
+      {filtered.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-10 text-center">
           <FileText className="mx-auto h-10 w-10 text-slate-300" />
           <h4 className="mt-3 text-xl font-black text-slate-800">
@@ -1472,26 +1540,39 @@ function FilesPanel({
           </p>
         </div>
       ) : (
-        <div className="grid gap-3 sm:grid-cols-2">
-          {files.map((file, index) => (
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+          {filtered.map((file, index) => (
             <a
               key={`${file.url}-${index}`}
               href={file.url}
               target="_blank"
               rel="noreferrer"
-              className="rounded-2xl border border-slate-100 bg-slate-50 p-4 transition hover:border-sky-100 hover:bg-white"
+              className="group overflow-hidden rounded-3xl border border-slate-100 bg-slate-50 transition hover:-translate-y-0.5 hover:border-violet-100 hover:bg-white hover:shadow-lg"
             >
-              <p className="truncate text-sm font-black text-slate-800">
-                {file.name}
-              </p>
-              <p className="mt-1 text-xs font-bold text-slate-400">
-                {formatShortDate(file.createdAt, locale, emDash)}
-              </p>
-              {file.activityText && (
-                <p className="mt-2 line-clamp-2 text-xs font-semibold text-slate-500">
-                  {file.activityText}
-                </p>
+              {isImage(file) ? (
+                <img
+                  src={file.url}
+                  alt={file.name}
+                  className="h-40 w-full object-cover transition group-hover:scale-[1.02]"
+                />
+              ) : (
+                <div className="flex h-40 items-center justify-center bg-white">
+                  <FileText className="h-10 w-10 text-slate-300" />
+                </div>
               )}
+              <div className="p-3">
+                <p className="truncate text-sm font-black text-slate-800">
+                  {file.name}
+                </p>
+                <p className="mt-1 text-xs font-bold text-slate-400">
+                  {formatShortDate(file.createdAt, locale, emDash)}
+                </p>
+                {file.activityText && (
+                  <p className="mt-2 line-clamp-2 text-xs font-semibold text-slate-500">
+                    {file.activityText}
+                  </p>
+                )}
+              </div>
             </a>
           ))}
         </div>

@@ -4,18 +4,21 @@ import {
   CheckCircle2,
   ClipboardList,
   FileText,
+  Filter,
   Image as ImageIcon,
   Loader2,
   Paperclip,
   Phone,
+  Search,
   ScrollText,
   StickyNote,
   Upload,
   UsersRound,
+  X,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
 import API from "@api";
-import { uploadMediaToCloudinary } from "../../../../components/site-builder/studio/utils/uploadMediaToCloudinary";
+import { uploadCrmDocumentationMedia } from "../../../../utils/crmMediaUpload";
 
 export type ClientActivityType =
   | "note"
@@ -56,6 +59,8 @@ type ClientDocumentationPanelProps = {
   onActivitiesChange: (activities: ClientActivity[]) => void;
 };
 
+type ViewMode = "timeline" | "gallery";
+
 function pad2(value: number) {
   return String(value).padStart(2, "0");
 }
@@ -64,7 +69,15 @@ function toDatetimeLocalValue(date = new Date()) {
   return `${date.getFullYear()}-${pad2(date.getMonth() + 1)}-${pad2(date.getDate())}T${pad2(date.getHours())}:${pad2(date.getMinutes())}`;
 }
 
-function formatDateTime(value: string | null | undefined, locale: string, fallback: string) {
+function toDateInputValue(date = new Date()) {
+  return `${date.getFullYear()}-${pad2(date.getMonth() + 1)}-${pad2(date.getDate())}`;
+}
+
+function formatDateTime(
+  value: string | null | undefined,
+  locale: string,
+  fallback: string
+) {
   if (!value) return fallback;
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return fallback;
@@ -80,7 +93,20 @@ function formatDateTime(value: string | null | undefined, locale: string, fallba
 function isImageAttachment(attachment: ClientActivityAttachment) {
   const mime = String(attachment.mimeType || "").toLowerCase();
   const url = String(attachment.url || "").toLowerCase();
-  return mime.startsWith("image/") || /\.(png|jpe?g|gif|webp|svg)(\?|$)/i.test(url);
+  const resource = String(attachment.resourceType || "").toLowerCase();
+  return (
+    resource === "image" ||
+    mime.startsWith("image/") ||
+    /\.(png|jpe?g|gif|webp|svg|avif)(\?|$)/i.test(url)
+  );
+}
+
+function activityDayKey(activity: ClientActivity) {
+  const raw = activity.occurredAt || activity.createdAt;
+  if (!raw) return "";
+  const date = new Date(raw);
+  if (Number.isNaN(date.getTime())) return "";
+  return toDateInputValue(date);
 }
 
 export default function ClientDocumentationPanel({
@@ -99,9 +125,17 @@ export default function ClientDocumentationPanel({
   const [occurredAt, setOccurredAt] = useState(toDatetimeLocalValue());
   const [taskDueAt, setTaskDueAt] = useState(toDatetimeLocalValue());
   const [pendingFiles, setPendingFiles] = useState<File[]>([]);
+  const [pendingPreviews, setPendingPreviews] = useState<string[]>([]);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
+  const [viewMode, setViewMode] = useState<ViewMode>("timeline");
+  const [searchQuery, setSearchQuery] = useState("");
+  const [dateFrom, setDateFrom] = useState("");
+  const [dateTo, setDateTo] = useState("");
+  const [typeFilter, setTypeFilter] = useState<"all" | ClientActivityType>(
+    "all"
+  );
 
   const sortedActivities = useMemo(() => {
     return [...activities].sort((a, b) => {
@@ -111,15 +145,60 @@ export default function ClientDocumentationPanel({
     });
   }, [activities]);
 
+  const filteredActivities = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
+
+    return sortedActivities.filter((activity) => {
+      if (typeFilter !== "all" && activity.type !== typeFilter) return false;
+
+      const day = activityDayKey(activity);
+      if (dateFrom && day && day < dateFrom) return false;
+      if (dateTo && day && day > dateTo) return false;
+
+      if (!query) return true;
+
+      const haystack = [
+        activity.text,
+        activity.createdBy,
+        ...(activity.attachments || []).map((item) => item.name || ""),
+      ]
+        .join(" ")
+        .toLowerCase();
+
+      return haystack.includes(query);
+    });
+  }, [sortedActivities, searchQuery, dateFrom, dateTo, typeFilter]);
+
+  const galleryItems = useMemo(() => {
+    const items: {
+      url: string;
+      name: string;
+      mimeType?: string;
+      createdAt?: string;
+      activityText?: string;
+      isImage: boolean;
+    }[] = [];
+
+    filteredActivities.forEach((activity) => {
+      (activity.attachments || []).forEach((attachment) => {
+        if (!attachment?.url) return;
+        items.push({
+          url: attachment.url,
+          name:
+            attachment.name || t("crm.clients.documentation.attachedFile"),
+          mimeType: attachment.mimeType,
+          createdAt: activity.occurredAt || activity.createdAt,
+          activityText: activity.text,
+          isImage: isImageAttachment(attachment),
+        });
+      });
+    });
+
+    return items;
+  }, [filteredActivities, t]);
+
   const needsAttachment =
     activityType === "file" || activityType === "agreement";
-  const showOccurredAt =
-    activityType === "meeting" ||
-    activityType === "note" ||
-    activityType === "call" ||
-    activityType === "whatsapp" ||
-    activityType === "file" ||
-    activityType === "agreement";
 
   const typeLabel = (type?: ClientActivityType) => {
     switch (type) {
@@ -160,6 +239,13 @@ export default function ClientDocumentationPanel({
     }
   };
 
+  const clearPendingFiles = () => {
+    pendingPreviews.forEach((url) => URL.revokeObjectURL(url));
+    setPendingFiles([]);
+    setPendingPreviews([]);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
   const resetComposerDates = () => {
     const now = toDatetimeLocalValue();
     setOccurredAt(now);
@@ -170,8 +256,18 @@ export default function ClientDocumentationPanel({
     setActivityType(next);
     resetComposerDates();
     setError("");
-    if (next !== "file" && next !== "agreement") {
-      setPendingFiles([]);
+  };
+
+  const handleSelectFiles = (files: File[]) => {
+    pendingPreviews.forEach((url) => URL.revokeObjectURL(url));
+    setPendingFiles(files);
+    setPendingPreviews(
+      files.map((file) =>
+        file.type.startsWith("image/") ? URL.createObjectURL(file) : ""
+      )
+    );
+    if (files.length > 0 && (activityType === "note" || activityType === "call")) {
+      /* keep current type — attachments allowed on notes */
     }
   };
 
@@ -189,6 +285,11 @@ export default function ClientDocumentationPanel({
       return;
     }
 
+    if (!businessId) {
+      setError(t("crm.clients.alerts.businessIdMissing"));
+      return;
+    }
+
     setSaving(true);
     setError("");
 
@@ -199,34 +300,46 @@ export default function ClientDocumentationPanel({
         setUploading(true);
         attachments = await Promise.all(
           pendingFiles.map(async (file) => {
-            const uploaded = await uploadMediaToCloudinary({
+            const uploaded = await uploadCrmDocumentationMedia({
               file,
               businessId,
-              source: "crm-client-documentation",
             });
+
+            if (!uploaded.secureUrl) {
+              throw new Error(t("crm.clients.documentation.errors.uploadFailed"));
+            }
 
             return {
               url: uploaded.secureUrl,
-              name: file.name,
-              mimeType: file.type || "",
+              name: uploaded.originalName || file.name,
+              mimeType: uploaded.mimeType || file.type || "",
               publicId: uploaded.publicId,
-              resourceType: file.type.startsWith("image/") ? "image" : "raw",
+              resourceType:
+                uploaded.resourceType ||
+                (file.type.startsWith("image/") ? "image" : "raw"),
             };
           })
         );
         setUploading(false);
       }
 
+      const resolvedType: ClientActivityType =
+        activityType === "note" &&
+        attachments.length > 0 &&
+        !trimmed
+          ? "file"
+          : activityType;
+
       const { data } = await API.post<{
         success?: boolean;
         activity?: ClientActivity;
         client?: { activities?: ClientActivity[] };
       }>(`/crm-clients/${clientId}/activities`, {
-        type: activityType,
+        type: resolvedType,
         text: trimmed,
         occurredAt: new Date(occurredAt || Date.now()).toISOString(),
         taskDueAt:
-          activityType === "task"
+          resolvedType === "task"
             ? new Date(taskDueAt || Date.now()).toISOString()
             : null,
         attachments,
@@ -236,12 +349,13 @@ export default function ClientDocumentationPanel({
         onActivitiesChange(data.client.activities);
       } else if (data?.activity) {
         onActivitiesChange([data.activity, ...activities]);
+      } else {
+        throw new Error(t("crm.clients.documentation.errors.saveFailed"));
       }
 
       setText("");
-      setPendingFiles([]);
+      clearPendingFiles();
       resetComposerDates();
-      if (fileInputRef.current) fileInputRef.current.value = "";
     } catch (err) {
       console.error("Add client activity error:", err);
       setError(
@@ -292,310 +406,486 @@ export default function ClientDocumentationPanel({
   };
 
   return (
-    <section className="rounded-2xl border border-white/80 bg-white p-5 shadow-[0_24px_80px_rgba(15,23,42,0.07)] sm:p-6">
-      <div className="mb-5 flex items-center gap-3">
-        <div className="grid h-12 w-12 place-items-center rounded-2xl bg-violet-50 text-violet-700">
-          <ClipboardList className="h-5 w-5" />
-        </div>
-        <div>
-          <h3 className="text-2xl font-black text-slate-800">
-            {t("crm.clients.documentation.title")}
-          </h3>
-          <p className="text-sm font-bold text-slate-500">
-            {t("crm.clients.documentation.subtitle")}
-          </p>
-        </div>
-      </div>
-
-      <div className="mb-5 rounded-2xl border border-slate-200 bg-slate-50 p-4">
-        <div className="mb-3 grid gap-2 sm:grid-cols-[180px_minmax(0,1fr)]">
-          <select
-            value={activityType}
-            onChange={(event) =>
-              handleTypeChange(event.target.value as ClientActivityType)
-            }
-            className="h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm font-black text-slate-700 outline-none focus:ring-4 focus:ring-violet-100"
-          >
-            <option value="note">{t("crm.clients.documentation.types.note")}</option>
-            <option value="call">{t("crm.clients.documentation.types.call")}</option>
-            <option value="whatsapp">
-              {t("crm.clients.documentation.types.whatsapp")}
-            </option>
-            <option value="task">{t("crm.clients.documentation.types.task")}</option>
-            <option value="meeting">
-              {t("crm.clients.documentation.types.meeting")}
-            </option>
-            <option value="file">{t("crm.clients.documentation.types.file")}</option>
-            <option value="agreement">
-              {t("crm.clients.documentation.types.agreement")}
-            </option>
-          </select>
-
-          <textarea
-            value={text}
-            onChange={(event) => setText(event.target.value)}
-            placeholder={placeholder()}
-            className="min-h-[96px] rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm font-bold leading-6 text-slate-700 outline-none placeholder:text-slate-400 focus:ring-4 focus:ring-violet-100"
-          />
-        </div>
-
-        {showOccurredAt && (
-          <div className="mb-3 grid gap-2 sm:grid-cols-[180px_minmax(0,1fr)]">
-            <div className="flex h-11 items-center gap-2 rounded-xl bg-violet-50 px-3 text-xs font-black text-violet-700 ring-1 ring-violet-100">
-              <CalendarClock className="h-3.5 w-3.5" />
-              {t("crm.clients.documentation.occurredAt")}
+    <section className="space-y-4">
+      <div className="overflow-hidden rounded-3xl border border-slate-200/80 bg-gradient-to-br from-white via-[#fbfaff] to-[#f3f7ff] shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
+        <div className="border-b border-slate-100 px-5 py-5 sm:px-6">
+          <div className="flex flex-wrap items-start justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="grid h-12 w-12 place-items-center rounded-2xl bg-[#6D28D9] text-white shadow-lg shadow-violet-200">
+                <ClipboardList className="h-5 w-5" />
+              </div>
+              <div>
+                <h3 className="text-2xl font-black tracking-tight text-slate-900">
+                  {t("crm.clients.documentation.title")}
+                </h3>
+                <p className="mt-1 text-sm font-bold text-slate-500">
+                  {t("crm.clients.documentation.subtitle")}
+                </p>
+              </div>
             </div>
-            <input
-              type="datetime-local"
-              value={occurredAt}
-              onChange={(event) => setOccurredAt(event.target.value)}
-              className="h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm font-bold text-slate-700 outline-none focus:ring-4 focus:ring-violet-100"
-            />
-          </div>
-        )}
 
-        {activityType === "task" && (
-          <div className="mb-3 grid gap-2 sm:grid-cols-[180px_minmax(0,1fr)]">
-            <div className="flex h-11 items-center gap-2 rounded-xl bg-amber-50 px-3 text-xs font-black text-amber-700 ring-1 ring-amber-100">
-              <CalendarClock className="h-3.5 w-3.5" />
-              {t("crm.clients.documentation.dueAt")}
-            </div>
-            <input
-              type="datetime-local"
-              value={taskDueAt}
-              onChange={(event) => setTaskDueAt(event.target.value)}
-              className="h-11 rounded-xl border border-slate-200 bg-white px-3 text-sm font-bold text-slate-700 outline-none focus:ring-4 focus:ring-violet-100"
-            />
-          </div>
-        )}
-
-        {(needsAttachment ||
-          activityType === "meeting" ||
-          activityType === "note") && (
-          <div className="mb-3 flex flex-wrap items-center gap-2">
-            <input
-              ref={fileInputRef}
-              type="file"
-              multiple
-              accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt"
-              className="hidden"
-              onChange={(event) => {
-                const files = Array.from(event.target.files || []);
-                setPendingFiles(files);
-              }}
-            />
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              className="inline-flex h-10 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-xs font-black text-slate-700 transition hover:bg-slate-50"
-            >
-              <Upload className="h-3.5 w-3.5" />
-              {t("crm.clients.documentation.attachFiles")}
-            </button>
-            {pendingFiles.length > 0 && (
-              <span className="text-xs font-bold text-slate-500">
-                {t("crm.clients.documentation.filesSelected", {
-                  count: pendingFiles.length,
-                })}
-              </span>
-            )}
-          </div>
-        )}
-
-        {error && (
-          <p className="mb-3 text-xs font-black text-rose-600">{error}</p>
-        )}
-
-        <div className="flex flex-wrap items-center justify-between gap-2">
-          <p className="text-[11px] font-bold text-slate-400">
-            {t("crm.clients.documentation.defaultNowHint")}
-          </p>
-
-          <button
-            type="button"
-            onClick={handleAddActivity}
-            disabled={
-              saving ||
-              uploading ||
-              (!text.trim() && pendingFiles.length === 0) ||
-              (needsAttachment && pendingFiles.length === 0)
-            }
-            className="inline-flex h-10 items-center gap-2 rounded-xl bg-[#6D28D9] px-4 text-xs font-black text-white transition hover:bg-[#5B21B6] disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            {(saving || uploading) && (
-              <Loader2 className="h-3.5 w-3.5 animate-spin" />
-            )}
-            {uploading
-              ? t("crm.clients.documentation.uploading")
-              : activityType === "task"
-                ? t("crm.clients.documentation.saveTask")
-                : t("crm.clients.documentation.saveActivity")}
-          </button>
-        </div>
-      </div>
-
-      {sortedActivities.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-10 text-center">
-          <StickyNote className="mx-auto h-10 w-10 text-slate-300" />
-          <h4 className="mt-3 text-xl font-black text-slate-800">
-            {t("crm.clients.documentation.emptyTitle")}
-          </h4>
-          <p className="mt-2 text-sm font-bold text-slate-500">
-            {t("crm.clients.documentation.emptyDescription")}
-          </p>
-        </div>
-      ) : (
-        <div className="relative space-y-2.5 pr-5">
-          <span className="absolute right-2 top-2 h-[calc(100%-12px)] w-px bg-slate-200" />
-
-          {sortedActivities.map((activity) => {
-            const isTask = activity.type === "task";
-            const TypeIcon =
-              activity.type === "call"
-                ? Phone
-                : activity.type === "meeting"
-                  ? UsersRound
-                  : activity.type === "file"
-                    ? Paperclip
-                    : activity.type === "agreement"
-                      ? ScrollText
-                      : activity.type === "task"
-                        ? CheckCircle2
-                        : activity.type === "whatsapp"
-                          ? StickyNote
-                          : FileText;
-
-            return (
-              <div
-                key={activity._id || activity.id}
+            <div className="inline-flex rounded-2xl border border-slate-200 bg-white p-1">
+              <button
+                type="button"
+                onClick={() => setViewMode("timeline")}
                 className={[
-                  "relative rounded-xl border p-3 transition",
-                  isTask
-                    ? activity.taskDone
-                      ? "border-sky-200 bg-sky-50/60"
-                      : "border-blue-200 bg-blue-50/60"
-                    : "border-slate-200 bg-slate-50",
+                  "rounded-xl px-3 py-1.5 text-xs font-black transition",
+                  viewMode === "timeline"
+                    ? "bg-slate-900 text-white"
+                    : "text-slate-500 hover:bg-slate-50",
                 ].join(" ")}
               >
-                <span
-                  className={[
-                    "absolute -right-[23px] top-3.5 h-3 w-3 rounded-full ring-4 ring-white",
-                    isTask
-                      ? activity.taskDone
-                        ? "bg-sky-500"
-                        : "bg-blue-500"
-                      : "bg-violet-500",
-                  ].join(" ")}
+                {t("crm.clients.documentation.viewTimeline")}
+              </button>
+              <button
+                type="button"
+                onClick={() => setViewMode("gallery")}
+                className={[
+                  "rounded-xl px-3 py-1.5 text-xs font-black transition",
+                  viewMode === "gallery"
+                    ? "bg-slate-900 text-white"
+                    : "text-slate-500 hover:bg-slate-50",
+                ].join(" ")}
+              >
+                {t("crm.clients.documentation.viewGallery")}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div className="space-y-4 px-5 py-5 sm:px-6">
+          <div className="rounded-3xl border border-slate-200 bg-white/90 p-4 shadow-sm backdrop-blur">
+            <div className="mb-3 grid gap-2 lg:grid-cols-[180px_minmax(0,1fr)]">
+              <select
+                value={activityType}
+                onChange={(event) =>
+                  handleTypeChange(event.target.value as ClientActivityType)
+                }
+                className="h-12 rounded-2xl border border-slate-200 bg-slate-50 px-3 text-sm font-black text-slate-700 outline-none focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-100"
+              >
+                <option value="note">{t("crm.clients.documentation.types.note")}</option>
+                <option value="call">{t("crm.clients.documentation.types.call")}</option>
+                <option value="whatsapp">
+                  {t("crm.clients.documentation.types.whatsapp")}
+                </option>
+                <option value="task">{t("crm.clients.documentation.types.task")}</option>
+                <option value="meeting">
+                  {t("crm.clients.documentation.types.meeting")}
+                </option>
+                <option value="file">{t("crm.clients.documentation.types.file")}</option>
+                <option value="agreement">
+                  {t("crm.clients.documentation.types.agreement")}
+                </option>
+              </select>
+
+              <textarea
+                value={text}
+                onChange={(event) => setText(event.target.value)}
+                placeholder={placeholder()}
+                className="min-h-[110px] rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-bold leading-6 text-slate-700 outline-none placeholder:text-slate-400 focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-100"
+              />
+            </div>
+
+            <div className="mb-3 grid gap-2 md:grid-cols-2">
+              <label className="block">
+                <span className="mb-1.5 flex items-center gap-1.5 text-[11px] font-black uppercase tracking-[0.12em] text-slate-400">
+                  <CalendarClock className="h-3.5 w-3.5" />
+                  {t("crm.clients.documentation.occurredAt")}
+                </span>
+                <input
+                  type="datetime-local"
+                  value={occurredAt}
+                  onChange={(event) => setOccurredAt(event.target.value)}
+                  className="h-11 w-full rounded-2xl border border-slate-200 bg-slate-50 px-3 text-sm font-bold text-slate-700 outline-none focus:bg-white focus:ring-4 focus:ring-violet-100"
                 />
+              </label>
 
-                <div className="flex flex-wrap items-start justify-between gap-2">
-                  <div className="flex flex-wrap items-center gap-2">
-                    {isTask && (
-                      <button
-                        type="button"
-                        onClick={() => handleToggleTask(activity)}
-                        className={[
-                          "rounded-lg border px-2 py-0.5 text-[10px] font-black transition",
-                          activity.taskDone
-                            ? "border-sky-400 bg-sky-100 text-sky-700"
-                            : "border-blue-300 bg-white text-blue-700 hover:bg-blue-50",
-                        ].join(" ")}
-                      >
-                        {activity.taskDone
-                          ? t("crm.clients.documentation.reopenTask")
-                          : t("crm.clients.documentation.markDone")}
-                      </button>
-                    )}
-
-                    <span className="inline-flex items-center gap-1 rounded-full bg-white px-2.5 py-0.5 text-[11px] font-black text-slate-600 ring-1 ring-slate-200">
-                      <TypeIcon className="h-3 w-3" />
-                      {typeLabel(activity.type)}
-                    </span>
-
-                    <span className="text-[11px] font-black text-slate-500">
-                      {activity.createdBy || t("crm.common.systemUser")}
-                    </span>
-                  </div>
-
-                  <span className="text-[11px] font-bold text-slate-400">
-                    {formatDateTime(
-                      activity.occurredAt || activity.createdAt,
-                      locale,
-                      emDash
-                    )}
+              {activityType === "task" ? (
+                <label className="block">
+                  <span className="mb-1.5 flex items-center gap-1.5 text-[11px] font-black uppercase tracking-[0.12em] text-amber-500">
+                    <CalendarClock className="h-3.5 w-3.5" />
+                    {t("crm.clients.documentation.dueAt")}
                   </span>
-                </div>
-
-                {activity.text && (
-                  <p
-                    className={[
-                      "mt-2 whitespace-pre-wrap text-sm font-semibold leading-6",
-                      activity.taskDone
-                        ? "text-slate-400 line-through"
-                        : "text-slate-700",
-                    ].join(" ")}
-                  >
-                    {activity.text}
+                  <input
+                    type="datetime-local"
+                    value={taskDueAt}
+                    onChange={(event) => setTaskDueAt(event.target.value)}
+                    className="h-11 w-full rounded-2xl border border-amber-100 bg-amber-50/50 px-3 text-sm font-bold text-slate-700 outline-none focus:bg-white focus:ring-4 focus:ring-amber-100"
+                  />
+                </label>
+              ) : (
+                <div className="flex items-end">
+                  <p className="pb-2 text-xs font-bold text-slate-400">
+                    {t("crm.clients.documentation.defaultNowHint")}
                   </p>
-                )}
+                </div>
+              )}
+            </div>
 
-                {isTask && (
-                  <div className="mt-2 flex flex-wrap items-center gap-2 text-[11px] font-black">
-                    <span className="rounded-full bg-white px-2.5 py-0.5 text-amber-700 ring-1 ring-amber-100">
-                      {t("crm.clients.documentation.dueTimeLabel", {
-                        time: formatDateTime(
-                          activity.taskDueAt,
-                          locale,
-                          emDash
-                        ),
+            <div className="mb-3 rounded-2xl border border-dashed border-violet-200 bg-violet-50/40 p-3">
+              <input
+                ref={fileInputRef}
+                type="file"
+                multiple
+                accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.txt,.csv"
+                className="hidden"
+                onChange={(event) => {
+                  const files = Array.from(event.target.files || []);
+                  handleSelectFiles(files);
+                }}
+              />
+
+              <div className="flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="inline-flex h-11 items-center gap-2 rounded-2xl bg-white px-4 text-sm font-black text-violet-700 shadow-sm ring-1 ring-violet-100 transition hover:bg-violet-50"
+                >
+                  <Upload className="h-4 w-4" />
+                  {t("crm.clients.documentation.attachFiles")}
+                </button>
+
+                {pendingFiles.length > 0 && (
+                  <>
+                    <span className="text-xs font-black text-violet-700">
+                      {t("crm.clients.documentation.filesSelected", {
+                        count: pendingFiles.length,
                       })}
                     </span>
-                  </div>
+                    <button
+                      type="button"
+                      onClick={clearPendingFiles}
+                      className="inline-flex h-9 items-center gap-1 rounded-xl px-2 text-xs font-black text-slate-500 hover:bg-white"
+                    >
+                      <X className="h-3.5 w-3.5" />
+                      {t("crm.clients.documentation.clearFiles")}
+                    </button>
+                  </>
                 )}
+              </div>
 
-                {Array.isArray(activity.attachments) &&
-                  activity.attachments.length > 0 && (
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      {activity.attachments.map((attachment) =>
-                        isImageAttachment(attachment) ? (
-                          <a
-                            key={`${attachment.url}-${attachment.name}`}
-                            href={attachment.url}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="block overflow-hidden rounded-xl border border-slate-200 bg-white"
-                          >
-                            <img
-                              src={attachment.url}
-                              alt={attachment.name || "attachment"}
-                              className="h-24 w-24 object-cover"
-                            />
-                          </a>
-                        ) : (
-                          <a
-                            key={`${attachment.url}-${attachment.name}`}
-                            href={attachment.url}
-                            target="_blank"
-                            rel="noreferrer"
-                            className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-black text-slate-700 transition hover:bg-slate-50"
-                          >
-                            {attachment.mimeType?.startsWith("image/") ? (
-                              <ImageIcon className="h-3.5 w-3.5" />
-                            ) : (
-                              <Paperclip className="h-3.5 w-3.5" />
-                            )}
-                            {attachment.name ||
-                              t("crm.clients.documentation.attachedFile")}
-                          </a>
-                        )
+              {pendingFiles.length > 0 && (
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {pendingFiles.map((file, index) => (
+                    <div
+                      key={`${file.name}-${index}`}
+                      className="overflow-hidden rounded-2xl border border-white bg-white shadow-sm"
+                    >
+                      {pendingPreviews[index] ? (
+                        <img
+                          src={pendingPreviews[index]}
+                          alt={file.name}
+                          className="h-20 w-20 object-cover"
+                        />
+                      ) : (
+                        <div className="flex h-20 w-36 items-center gap-2 px-3">
+                          <Paperclip className="h-4 w-4 text-slate-400" />
+                          <span className="truncate text-xs font-bold text-slate-600">
+                            {file.name}
+                          </span>
+                        </div>
                       )}
                     </div>
-                  )}
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {error && (
+              <p className="mb-3 rounded-2xl bg-rose-50 px-3 py-2 text-xs font-black text-rose-700 ring-1 ring-rose-100">
+                {error}
+              </p>
+            )}
+
+            <div className="flex justify-end">
+              <button
+                type="button"
+                onClick={() => void handleAddActivity()}
+                disabled={
+                  saving ||
+                  uploading ||
+                  (!text.trim() && pendingFiles.length === 0) ||
+                  (needsAttachment && pendingFiles.length === 0)
+                }
+                className="inline-flex h-12 items-center gap-2 rounded-2xl bg-[#6D28D9] px-6 text-sm font-black text-white shadow-lg shadow-violet-200 transition hover:bg-[#5B21B6] disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {(saving || uploading) && (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                )}
+                {uploading
+                  ? t("crm.clients.documentation.uploading")
+                  : activityType === "task"
+                    ? t("crm.clients.documentation.saveTask")
+                    : t("crm.clients.documentation.saveActivity")}
+              </button>
+            </div>
+          </div>
+
+          <div className="rounded-3xl border border-slate-200 bg-white/90 p-4 shadow-sm">
+            <div className="mb-3 flex items-center gap-2 text-xs font-black uppercase tracking-[0.14em] text-slate-400">
+              <Filter className="h-3.5 w-3.5" />
+              {t("crm.clients.documentation.filtersTitle")}
+            </div>
+
+            <div className="grid gap-2 md:grid-cols-2 xl:grid-cols-4">
+              <label className="relative block">
+                <Search className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                <input
+                  value={searchQuery}
+                  onChange={(event) => setSearchQuery(event.target.value)}
+                  placeholder={t("crm.clients.documentation.searchPlaceholder")}
+                  className="h-11 w-full rounded-2xl border border-slate-200 bg-slate-50 pe-3 ps-10 text-sm font-bold text-slate-700 outline-none focus:bg-white focus:ring-4 focus:ring-violet-100"
+                />
+              </label>
+
+              <select
+                value={typeFilter}
+                onChange={(event) =>
+                  setTypeFilter(event.target.value as "all" | ClientActivityType)
+                }
+                className="h-11 rounded-2xl border border-slate-200 bg-slate-50 px-3 text-sm font-black text-slate-700 outline-none focus:bg-white focus:ring-4 focus:ring-violet-100"
+              >
+                <option value="all">{t("crm.clients.documentation.filterAllTypes")}</option>
+                <option value="note">{t("crm.clients.documentation.types.note")}</option>
+                <option value="call">{t("crm.clients.documentation.types.call")}</option>
+                <option value="whatsapp">
+                  {t("crm.clients.documentation.types.whatsapp")}
+                </option>
+                <option value="task">{t("crm.clients.documentation.types.task")}</option>
+                <option value="meeting">
+                  {t("crm.clients.documentation.types.meeting")}
+                </option>
+                <option value="file">{t("crm.clients.documentation.types.file")}</option>
+                <option value="agreement">
+                  {t("crm.clients.documentation.types.agreement")}
+                </option>
+              </select>
+
+              <input
+                type="date"
+                value={dateFrom}
+                onChange={(event) => setDateFrom(event.target.value)}
+                className="h-11 rounded-2xl border border-slate-200 bg-slate-50 px-3 text-sm font-bold text-slate-700 outline-none focus:bg-white focus:ring-4 focus:ring-violet-100"
+                aria-label={t("crm.clients.documentation.dateFrom")}
+              />
+
+              <input
+                type="date"
+                value={dateTo}
+                onChange={(event) => setDateTo(event.target.value)}
+                className="h-11 rounded-2xl border border-slate-200 bg-slate-50 px-3 text-sm font-bold text-slate-700 outline-none focus:bg-white focus:ring-4 focus:ring-violet-100"
+                aria-label={t("crm.clients.documentation.dateTo")}
+              />
+            </div>
+          </div>
+
+          {viewMode === "gallery" ? (
+            galleryItems.length === 0 ? (
+              <EmptyDocsState
+                title={t("crm.clients.documentation.emptyGalleryTitle")}
+                description={t("crm.clients.documentation.emptyGalleryDescription")}
+              />
+            ) : (
+              <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                {galleryItems.map((item, index) => (
+                  <a
+                    key={`${item.url}-${index}`}
+                    href={item.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-0.5 hover:shadow-lg"
+                  >
+                    {item.isImage ? (
+                      <img
+                        src={item.url}
+                        alt={item.name}
+                        className="h-44 w-full object-cover transition duration-300 group-hover:scale-[1.02]"
+                      />
+                    ) : (
+                      <div className="flex h-44 items-center justify-center bg-slate-50">
+                        <FileText className="h-10 w-10 text-slate-300" />
+                      </div>
+                    )}
+                    <div className="p-3">
+                      <p className="truncate text-sm font-black text-slate-800">
+                        {item.name}
+                      </p>
+                      <p className="mt-1 text-xs font-bold text-slate-400">
+                        {formatDateTime(item.createdAt, locale, emDash)}
+                      </p>
+                    </div>
+                  </a>
+                ))}
               </div>
-            );
-          })}
+            )
+          ) : filteredActivities.length === 0 ? (
+            <EmptyDocsState
+              title={t("crm.clients.documentation.emptyTitle")}
+              description={t("crm.clients.documentation.emptyDescription")}
+            />
+          ) : (
+            <div className="relative space-y-3 pe-5">
+              <span className="absolute end-2 top-2 h-[calc(100%-12px)] w-px bg-gradient-to-b from-violet-300 via-slate-200 to-transparent" />
+
+              {filteredActivities.map((activity) => {
+                const isTask = activity.type === "task";
+                const TypeIcon =
+                  activity.type === "call"
+                    ? Phone
+                    : activity.type === "meeting"
+                      ? UsersRound
+                      : activity.type === "file"
+                        ? Paperclip
+                        : activity.type === "agreement"
+                          ? ScrollText
+                          : activity.type === "task"
+                            ? CheckCircle2
+                            : activity.type === "whatsapp"
+                              ? StickyNote
+                              : FileText;
+
+                return (
+                  <article
+                    key={activity._id || activity.id}
+                    className={[
+                      "relative rounded-3xl border p-4 shadow-sm transition",
+                      isTask
+                        ? activity.taskDone
+                          ? "border-emerald-100 bg-emerald-50/50"
+                          : "border-amber-100 bg-amber-50/40"
+                        : "border-slate-200 bg-white",
+                    ].join(" ")}
+                  >
+                    <span className="absolute -end-[21px] top-5 h-3 w-3 rounded-full bg-[#6D28D9] ring-4 ring-[#f7f8fc]" />
+
+                    <div className="flex flex-wrap items-start justify-between gap-2">
+                      <div className="flex flex-wrap items-center gap-2">
+                        {isTask && (
+                          <button
+                            type="button"
+                            onClick={() => void handleToggleTask(activity)}
+                            className={[
+                              "rounded-xl border px-2.5 py-1 text-[10px] font-black transition",
+                              activity.taskDone
+                                ? "border-emerald-300 bg-emerald-100 text-emerald-700"
+                                : "border-amber-300 bg-white text-amber-700 hover:bg-amber-50",
+                            ].join(" ")}
+                          >
+                            {activity.taskDone
+                              ? t("crm.clients.documentation.reopenTask")
+                              : t("crm.clients.documentation.markDone")}
+                          </button>
+                        )}
+
+                        <span className="inline-flex items-center gap-1 rounded-full bg-slate-50 px-2.5 py-1 text-[11px] font-black text-slate-600 ring-1 ring-slate-200">
+                          <TypeIcon className="h-3 w-3" />
+                          {typeLabel(activity.type)}
+                        </span>
+
+                        <span className="text-[11px] font-black text-slate-500">
+                          {activity.createdBy || t("crm.common.systemUser")}
+                        </span>
+                      </div>
+
+                      <span className="text-[11px] font-bold text-slate-400">
+                        {formatDateTime(
+                          activity.occurredAt || activity.createdAt,
+                          locale,
+                          emDash
+                        )}
+                      </span>
+                    </div>
+
+                    {activity.text && (
+                      <p
+                        className={[
+                          "mt-3 whitespace-pre-wrap text-sm font-semibold leading-7",
+                          activity.taskDone
+                            ? "text-slate-400 line-through"
+                            : "text-slate-700",
+                        ].join(" ")}
+                      >
+                        {activity.text}
+                      </p>
+                    )}
+
+                    {isTask && (
+                      <div className="mt-2">
+                        <span className="rounded-full bg-white px-2.5 py-1 text-[11px] font-black text-amber-700 ring-1 ring-amber-100">
+                          {t("crm.clients.documentation.dueTimeLabel", {
+                            time: formatDateTime(
+                              activity.taskDueAt,
+                              locale,
+                              emDash
+                            ),
+                          })}
+                        </span>
+                      </div>
+                    )}
+
+                    {Array.isArray(activity.attachments) &&
+                      activity.attachments.length > 0 && (
+                        <div className="mt-3 flex flex-wrap gap-2">
+                          {activity.attachments.map((attachment) =>
+                            isImageAttachment(attachment) ? (
+                              <a
+                                key={`${attachment.url}-${attachment.name}`}
+                                href={attachment.url}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="block overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 shadow-sm"
+                              >
+                                <img
+                                  src={attachment.url}
+                                  alt={attachment.name || "attachment"}
+                                  className="h-28 w-28 object-cover"
+                                />
+                              </a>
+                            ) : (
+                              <a
+                                key={`${attachment.url}-${attachment.name}`}
+                                href={attachment.url}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-black text-slate-700 transition hover:bg-white"
+                              >
+                                {attachment.mimeType?.startsWith("image/") ? (
+                                  <ImageIcon className="h-3.5 w-3.5" />
+                                ) : (
+                                  <Paperclip className="h-3.5 w-3.5" />
+                                )}
+                                {attachment.name ||
+                                  t("crm.clients.documentation.attachedFile")}
+                              </a>
+                            )
+                          )}
+                        </div>
+                      )}
+                  </article>
+                );
+              })}
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </section>
+  );
+}
+
+function EmptyDocsState({
+  title,
+  description,
+}: {
+  title: string;
+  description: string;
+}) {
+  return (
+    <div className="rounded-3xl border border-dashed border-slate-200 bg-slate-50/80 px-6 py-14 text-center">
+      <StickyNote className="mx-auto h-12 w-12 text-slate-300" />
+      <h4 className="mt-4 text-xl font-black text-slate-800">{title}</h4>
+      <p className="mx-auto mt-2 max-w-md text-sm font-bold leading-6 text-slate-500">
+        {description}
+      </p>
+    </div>
   );
 }
