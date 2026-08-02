@@ -452,8 +452,8 @@ export default function VelmoraHome({
   const productsStrip = getDataSection(visualData, "productsStrip");
   const contact = getDataSection(visualData, "contact");
 
-  // Hero fan stays on curated template art — never swaps when the store
-  // catalog finishes loading (demos → DEMO-FASH seeds caused a visible flash).
+  // Decorative hero fan stays curated (layout art). Product merchandising below
+  // follows the live store catalog — same replace-demos rule as other store templates.
   const curatedProducts: HomeProductCard[] = velmoraProducts.map((product) => ({
     id: product.id,
     ref: product.ref,
@@ -469,8 +469,10 @@ export default function VelmoraHome({
       : null;
 
   const heroProducts = curatedProducts.slice(0, 7);
-  // Keep home merchandising on curated art so store seed load never reshuffles cards.
-  const stripProducts = curatedProducts.slice(0, 3);
+  const stripProducts =
+    isLiveCatalog && catalogCards && catalogCards.length > 0
+      ? catalogCards.slice(0, 3)
+      : curatedProducts.slice(0, 3);
 
   function openProduct(productId: string) {
     const id = String(productId || "").trim();

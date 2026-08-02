@@ -17,12 +17,14 @@ import {
   Search,
   Sparkles,
   Trophy,
+  UserCheck,
+  UserPlus,
   UserRound,
   UsersRound,
   Webhook,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import type { TFunction } from "i18next";
 
 import MetaLeadAdsIntegration from "./MetaLeadAdsIntegration";
@@ -44,7 +46,10 @@ type LeadStatus =
   | "contacted"
   | "interested"
   | "converted"
-  | "lost";
+  | "lost"
+  | "old";
+
+type LeadsTabMode = "active" | "old";
 
 type LeadDetail = {
   label: string;
@@ -90,6 +95,12 @@ type Lead = {
   source?: string;
   provider?: string;
   status?: LeadStatus;
+
+  assignedToUserId?: string;
+  assignedToName?: string;
+  assignedAt?: string;
+  convertedClientId?: string;
+  convertedAt?: string;
 
   externalLeadId?: string;
   externalPageId?: string;
@@ -160,6 +171,7 @@ type Lead = {
 
 type CRMLeadsTabProps = {
   businessId?: string;
+  mode?: LeadsTabMode;
 };
 
 type OpenLeadNotificationDetail = {
@@ -178,6 +190,7 @@ const statusBadgeClasses: Record<LeadStatus, string> = {
   interested: "border-violet-200 bg-violet-100 text-violet-700",
   converted: "border-emerald-200 bg-emerald-100 text-emerald-700",
   lost: "border-rose-200 bg-rose-100 text-rose-700",
+  old: "border-orange-200 bg-orange-100 text-orange-800",
 };
 
 const statusDotClasses: Record<LeadStatus, string> = {
@@ -186,7 +199,17 @@ const statusDotClasses: Record<LeadStatus, string> = {
   interested: "bg-violet-500",
   converted: "bg-emerald-500",
   lost: "bg-rose-500",
+  old: "bg-orange-500",
 };
+
+const ACTIVE_STATUS_FILTERS = [
+  { id: "all" as const, dot: "bg-slate-800" },
+  { id: "new" as const, dot: "bg-sky-500" },
+  { id: "contacted" as const, dot: "bg-amber-400" },
+  { id: "interested" as const, dot: "bg-violet-500" },
+  { id: "converted" as const, dot: "bg-emerald-500" },
+  { id: "lost" as const, dot: "bg-rose-500" },
+];
 
 const AVATAR_TONES = [
   "bg-violet-100 text-violet-700",
@@ -764,7 +787,11 @@ function SourceBadge({ lead }: { lead: Lead }) {
   );
 }
 
-export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
+export default function CRMLeadsTab({
+  businessId,
+  mode = "active",
+}: CRMLeadsTabProps) {
+  const isOldLeadsMode = mode === "old";
   const { t, i18n } = useTranslation();
   const dir = useLocaleDir();
   const locale = i18n.language || "en";
@@ -781,10 +808,23 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
     searchParams.get("google_connected") === "1" ||
     Boolean(searchParams.get("google_error"));
   const deepLinkLeadId = searchParams.get("leadId") || "";
+  const navigate = useNavigate();
+
+  const AUTO_CONVERT_KEY = "bizuply_auto_convert_lead_on_take";
 
   const [leads, setLeads] = useState<Lead[]>([]);
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [leadDrawerView, setLeadDrawerView] = useState<"form" | "full">("form");
+  const [autoConvertOnTake, setAutoConvertOnTake] = useState(() => {
+    try {
+      const stored = localStorage.getItem(AUTO_CONVERT_KEY);
+      return stored === null ? true : stored === "1";
+    } catch {
+      return true;
+    }
+  });
+  const [takingLead, setTakingLead] = useState(false);
+  const [convertingLead, setConvertingLead] = useState(false);
   const [isDesktopLeads, setIsDesktopLeads] = useState(() =>
     typeof window !== "undefined"
       ? window.matchMedia("(min-width: 1280px)").matches
@@ -1154,10 +1194,17 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
 
     return leads
       .filter((lead) => {
+        const leadStatus = lead.status || "new";
+        const matchesMode = isOldLeadsMode
+          ? leadStatus === "old"
+          : leadStatus !== "old";
+
         const matchesSearch = !q || getLeadSearchText(lead, t).includes(q);
 
         const matchesStatus =
-          statusFilter === "all" || (lead.status || "new") === statusFilter;
+          isOldLeadsMode ||
+          statusFilter === "all" ||
+          leadStatus === statusFilter;
 
         const meta = isMetaLead(lead);
         const google = isGoogleLead(lead);
@@ -1169,10 +1216,12 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
           (sourceFilter === "website" && website) ||
           (sourceFilter === "other" && !meta && !google && !website);
 
-        return matchesSearch && matchesStatus && matchesSource;
+        return (
+          matchesMode && matchesSearch && matchesStatus && matchesSource
+        );
       })
       .sort(compareLeadsNewestFirst);
-  }, [leads, search, statusFilter, sourceFilter, t]);
+  }, [leads, search, statusFilter, sourceFilter, t, isOldLeadsMode]);
 
   const totalPages = Math.max(
     1,
@@ -1222,7 +1271,13 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
   }, [paginatedLeads, locale, emDash]);
 
   const stats = useMemo(() => {
-    const openTasks = leads.reduce(
+    const scopedLeads = leads.filter((lead) =>
+      isOldLeadsMode
+        ? (lead.status || "new") === "old"
+        : (lead.status || "new") !== "old"
+    );
+
+    const openTasks = scopedLeads.reduce(
       (sum, lead) =>
         sum +
         (lead.activities || []).filter(
@@ -1232,13 +1287,18 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
     );
 
     return {
-      total: leads.length,
-      new: leads.filter((lead) => lead.status === "new" || !lead.status).length,
-      contacted: leads.filter((lead) => lead.status === "contacted").length,
-      interested: leads.filter((lead) => lead.status === "interested").length,
-      converted: leads.filter((lead) => lead.status === "converted").length,
+      total: scopedLeads.length,
+      new: scopedLeads.filter(
+        (lead) => lead.status === "new" || !lead.status
+      ).length,
+      contacted: scopedLeads.filter((lead) => lead.status === "contacted")
+        .length,
+      interested: scopedLeads.filter((lead) => lead.status === "interested")
+        .length,
+      converted: scopedLeads.filter((lead) => lead.status === "converted")
+        .length,
       openTasks,
-      integration: leads.filter((lead) => {
+      integration: scopedLeads.filter((lead) => {
         const label = getLeadSourceLabel(lead, t).toLowerCase();
         return (
           label.includes("meta lead ads") ||
@@ -1248,7 +1308,7 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
         );
       }).length,
     };
-  }, [leads, t]);
+  }, [leads, t, isOldLeadsMode]);
 
   const selectedDetails = selectedLead ? getLeadDetails(selectedLead, t) : [];
   const selectedStatus = selectedLead?.status || "new";
@@ -1262,6 +1322,94 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
       ...(localActivitiesByLead[selectedLead._id] || []),
     ]);
   }, [selectedLead, localActivitiesByLead]);
+
+  const applyLeadUpdate = (leadId: string, nextLead: Lead) => {
+    setLeads((current) =>
+      current.map((lead) => (lead._id === leadId ? nextLead : lead))
+    );
+    setSelectedLead((current) =>
+      current && current._id === leadId ? nextLead : current
+    );
+  };
+
+  const openConvertedClient = (clientId?: string) => {
+    if (!clientId) return;
+    navigate(`../clients?clientId=${encodeURIComponent(clientId)}`);
+  };
+
+  const handleToggleAutoConvert = (enabled: boolean) => {
+    setAutoConvertOnTake(enabled);
+    try {
+      localStorage.setItem(AUTO_CONVERT_KEY, enabled ? "1" : "0");
+    } catch {
+      /* ignore */
+    }
+  };
+
+  const handleTakeLead = async () => {
+    if (!selectedLead || takingLead) return;
+    setTakingLead(true);
+    setError("");
+
+    try {
+      const { data } = await API.post<{
+        success: boolean;
+        lead?: Lead;
+        client?: { _id?: string };
+        converted?: boolean;
+        message?: string;
+      }>(`/crm/leads/${selectedLead._id}/take`, {
+        autoConvert: autoConvertOnTake,
+      });
+
+      if (data.lead) {
+        applyLeadUpdate(selectedLead._id, data.lead);
+      }
+
+      if (data.converted && data.client?._id) {
+        openConvertedClient(String(data.client._id));
+      }
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : t("crm.leads.errors.takeLeadFailed")
+      );
+    } finally {
+      setTakingLead(false);
+    }
+  };
+
+  const handleConvertLead = async () => {
+    if (!selectedLead || convertingLead) return;
+    setConvertingLead(true);
+    setError("");
+
+    try {
+      const { data } = await API.post<{
+        success: boolean;
+        lead?: Lead;
+        client?: { _id?: string };
+        message?: string;
+      }>(`/crm/leads/${selectedLead._id}/convert`);
+
+      if (data.lead) {
+        applyLeadUpdate(selectedLead._id, data.lead);
+      }
+
+      if (data.client?._id) {
+        openConvertedClient(String(data.client._id));
+      }
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : t("crm.leads.errors.convertLeadFailed")
+      );
+    } finally {
+      setConvertingLead(false);
+    }
+  };
 
   const handleStatusChange = async (leadId: string, status: LeadStatus) => {
     const previousLeads = leads;
@@ -1280,17 +1428,17 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
       const { data: saved } = await API.patch<{
         success: boolean;
         lead?: Lead;
+        client?: { _id?: string };
+        converted?: boolean;
         activity?: LeadActivity;
       }>(`/crm/leads/${leadId}/status`, { status });
 
       if (saved.lead) {
-        setLeads((current) =>
-          current.map((lead) => (lead._id === leadId ? saved.lead! : lead))
-        );
+        applyLeadUpdate(leadId, saved.lead);
+      }
 
-        setSelectedLead((current) =>
-          current && current._id === leadId ? saved.lead! : current
-        );
+      if (status === "converted" && saved.client?._id) {
+        openConvertedClient(String(saved.client._id));
       }
     } catch (err) {
       setLeads(previousLeads);
@@ -1474,10 +1622,14 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
             <div className="flex flex-col gap-3 lg:flex-row lg:items-start lg:justify-between">
               <div>
                 <h1 className="text-2xl font-black tracking-tight text-slate-900 sm:text-3xl xl:text-4xl">
-                  {t("crm.leads.title")}
+                  {isOldLeadsMode
+                    ? t("crm.leads.oldLeads.title")
+                    : t("crm.leads.title")}
                 </h1>
                 <p className="mt-2 hidden max-w-2xl text-sm font-semibold leading-6 text-slate-500 sm:block">
-                  {t("crm.leads.subtitle")}
+                  {isOldLeadsMode
+                    ? t("crm.leads.oldLeads.subtitle")
+                    : t("crm.leads.subtitle")}
                 </p>
               </div>
 
@@ -1513,12 +1665,35 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
               </div>
             </div>
 
-            <div className="hidden gap-3 xl:grid xl:grid-cols-5">
-              <div className="rounded-2xl border border-transparent bg-gradient-to-br from-[#6D28D9] to-[#2563EB] p-4 text-white shadow-[0_14px_34px_rgba(37,99,235,0.25)]">
+            {isOldLeadsMode && (
+              <div className="rounded-2xl border border-orange-200 bg-orange-50 px-4 py-3 text-sm font-semibold text-orange-900">
+                <p className="font-black">{t("crm.leads.oldLeads.bannerTitle")}</p>
+                <p className="mt-1 text-orange-800/90">
+                  {t("crm.leads.oldLeads.bannerText")}
+                </p>
+              </div>
+            )}
+
+            <div
+              className={[
+                "hidden gap-3 xl:grid",
+                isOldLeadsMode ? "xl:grid-cols-2" : "xl:grid-cols-5",
+              ].join(" ")}
+            >
+              <div
+                className={[
+                  "rounded-2xl border border-transparent p-4 text-white",
+                  isOldLeadsMode
+                    ? "bg-gradient-to-br from-orange-500 to-amber-600 shadow-[0_14px_34px_rgba(234,88,12,0.25)]"
+                    : "bg-gradient-to-br from-[#6D28D9] to-[#2563EB] shadow-[0_14px_34px_rgba(37,99,235,0.25)]",
+                ].join(" ")}
+              >
                 <div className="flex items-start justify-between gap-3">
                   <div>
                     <p className="text-xs font-bold text-white/80">
-                      {t("crm.leads.stats.total")}
+                      {isOldLeadsMode
+                        ? t("crm.leads.oldLeads.statsTotal")
+                        : t("crm.leads.stats.total")}
                     </p>
                     <p className="mt-2 text-3xl font-black tracking-tight">
                       {stats.total}
@@ -1530,36 +1705,47 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                 </div>
               </div>
 
-              {[
-                {
-                  key: "new",
-                  label: t("crm.leads.stats.new"),
-                  value: stats.new,
-                  icon: UserRound,
-                  iconWrap: "bg-sky-100 text-sky-600",
-                },
-                {
-                  key: "contacted",
-                  label: t("crm.leads.stats.contacted"),
-                  value: stats.contacted,
-                  icon: Clock3,
-                  iconWrap: "bg-amber-100 text-amber-600",
-                },
-                {
-                  key: "converted",
-                  label: t("crm.leads.stats.converted"),
-                  value: stats.converted,
-                  icon: Trophy,
-                  iconWrap: "bg-emerald-100 text-emerald-600",
-                },
-                {
-                  key: "openTasks",
-                  label: t("crm.leads.stats.openTasks"),
-                  value: stats.openTasks,
-                  icon: Sparkles,
-                  iconWrap: "bg-rose-100 text-rose-600",
-                },
-              ].map((item) => {
+              {(isOldLeadsMode
+                ? [
+                    {
+                      key: "openTasks",
+                      label: t("crm.leads.stats.openTasks"),
+                      value: stats.openTasks,
+                      icon: Sparkles,
+                      iconWrap: "bg-rose-100 text-rose-600",
+                    },
+                  ]
+                : [
+                    {
+                      key: "new",
+                      label: t("crm.leads.stats.new"),
+                      value: stats.new,
+                      icon: UserRound,
+                      iconWrap: "bg-sky-100 text-sky-600",
+                    },
+                    {
+                      key: "contacted",
+                      label: t("crm.leads.stats.contacted"),
+                      value: stats.contacted,
+                      icon: Clock3,
+                      iconWrap: "bg-amber-100 text-amber-600",
+                    },
+                    {
+                      key: "converted",
+                      label: t("crm.leads.stats.converted"),
+                      value: stats.converted,
+                      icon: Trophy,
+                      iconWrap: "bg-emerald-100 text-emerald-600",
+                    },
+                    {
+                      key: "openTasks",
+                      label: t("crm.leads.stats.openTasks"),
+                      value: stats.openTasks,
+                      icon: Sparkles,
+                      iconWrap: "bg-rose-100 text-rose-600",
+                    },
+                  ]
+              ).map((item) => {
                 const Icon = item.icon;
                 return (
                   <div
@@ -1623,31 +1809,35 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                     <option value="other">{t("crm.leads.filters.otherSources")}</option>
                   </select>
 
-                  <select
-                    value={statusFilter}
-                    onChange={(event) =>
-                      setStatusFilter(
-                        event.target.value as "all" | LeadStatus
-                      )
-                    }
-                    className="h-9 min-w-0 flex-1 rounded-lg border border-slate-200 bg-white px-2 text-[11px] font-black text-slate-700 outline-none"
-                  >
-                    <option value="all">{t("crm.common.all")}</option>
-                    <option value="new">{t("crm.leads.statuses.new")}</option>
-                    <option value="contacted">{t("crm.leads.statuses.contacted")}</option>
-                    <option value="interested">{t("crm.leads.statuses.interested")}</option>
-                    <option value="converted">{t("crm.leads.statuses.converted")}</option>
-                    <option value="lost">{t("crm.leads.statuses.lost")}</option>
-                  </select>
+                  {!isOldLeadsMode && (
+                    <select
+                      value={statusFilter}
+                      onChange={(event) =>
+                        setStatusFilter(
+                          event.target.value as "all" | LeadStatus
+                        )
+                      }
+                      className="h-9 min-w-0 flex-1 rounded-lg border border-slate-200 bg-white px-2 text-[11px] font-black text-slate-700 outline-none"
+                    >
+                      <option value="all">{t("crm.common.all")}</option>
+                      <option value="new">{t("crm.leads.statuses.new")}</option>
+                      <option value="contacted">{t("crm.leads.statuses.contacted")}</option>
+                      <option value="interested">{t("crm.leads.statuses.interested")}</option>
+                      <option value="converted">{t("crm.leads.statuses.converted")}</option>
+                      <option value="lost">{t("crm.leads.statuses.lost")}</option>
+                    </select>
+                  )}
 
-                  <button
-                    type="button"
-                    onClick={() => setShowAdNetworkPicker(true)}
-                    className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-[#6D28D9]"
-                    title={t("crm.leads.connectAdNetwork")}
-                  >
-                    <Plug className="h-4 w-4" />
-                  </button>
+                  {!isOldLeadsMode && (
+                    <button
+                      type="button"
+                      onClick={() => setShowAdNetworkPicker(true)}
+                      className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg border border-slate-200 bg-white text-[#6D28D9]"
+                      title={t("crm.leads.connectAdNetwork")}
+                    >
+                      <Plug className="h-4 w-4" />
+                    </button>
+                  )}
 
                   <button
                     type="button"
@@ -1724,31 +1914,35 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                     <option value="other">{t("crm.leads.filters.otherSources")}</option>
                   </select>
 
-                  <select
-                    value={statusFilter}
-                    onChange={(event) =>
-                      setStatusFilter(
-                        event.target.value as "all" | LeadStatus
-                      )
-                    }
-                    className="h-11 rounded-xl border border-slate-200 bg-white px-3 text-xs font-black text-slate-700 outline-none"
-                  >
-                    <option value="all">{t("crm.common.all")}</option>
-                    <option value="new">{t("crm.leads.statuses.new")}</option>
-                    <option value="contacted">{t("crm.leads.statuses.contacted")}</option>
-                    <option value="interested">{t("crm.leads.statuses.interested")}</option>
-                    <option value="converted">{t("crm.leads.statuses.converted")}</option>
-                    <option value="lost">{t("crm.leads.statuses.lost")}</option>
-                  </select>
+                  {!isOldLeadsMode && (
+                    <select
+                      value={statusFilter}
+                      onChange={(event) =>
+                        setStatusFilter(
+                          event.target.value as "all" | LeadStatus
+                        )
+                      }
+                      className="h-11 rounded-xl border border-slate-200 bg-white px-3 text-xs font-black text-slate-700 outline-none"
+                    >
+                      <option value="all">{t("crm.common.all")}</option>
+                      <option value="new">{t("crm.leads.statuses.new")}</option>
+                      <option value="contacted">{t("crm.leads.statuses.contacted")}</option>
+                      <option value="interested">{t("crm.leads.statuses.interested")}</option>
+                      <option value="converted">{t("crm.leads.statuses.converted")}</option>
+                      <option value="lost">{t("crm.leads.statuses.lost")}</option>
+                    </select>
+                  )}
 
-                  <button
-                    type="button"
-                    onClick={() => setShowAdNetworkPicker(true)}
-                    className="inline-flex h-11 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-xs font-black text-slate-700"
-                  >
-                    <Facebook className="h-3.5 w-3.5 text-[#6D28D9]" />
-                    {t("crm.leads.connectAdNetwork")}
-                  </button>
+                  {!isOldLeadsMode && (
+                    <button
+                      type="button"
+                      onClick={() => setShowAdNetworkPicker(true)}
+                      className="inline-flex h-11 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-xs font-black text-slate-700"
+                    >
+                      <Facebook className="h-3.5 w-3.5 text-[#6D28D9]" />
+                      {t("crm.leads.connectAdNetwork")}
+                    </button>
+                  )}
 
                   {(metaConnected || googleConnected) && (
                     <div className="flex flex-wrap items-center gap-1.5">
@@ -1781,43 +1975,36 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                 </div>
               </div>
 
-              <div className="hidden flex-wrap items-center gap-2 xl:flex">
-                <div className="inline-flex shrink-0 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-black text-slate-500">
-                  <Filter className="h-3.5 w-3.5" />
-                  {t("crm.common.filter")}
-                </div>
+              {!isOldLeadsMode && (
+                <div className="hidden flex-wrap items-center gap-2 xl:flex">
+                  <div className="inline-flex shrink-0 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-black text-slate-500">
+                    <Filter className="h-3.5 w-3.5" />
+                    {t("crm.common.filter")}
+                  </div>
 
-                {(
-                  [
-                    { id: "all", dot: "bg-slate-800" },
-                    { id: "new", dot: "bg-sky-500" },
-                    { id: "contacted", dot: "bg-amber-400" },
-                    { id: "interested", dot: "bg-violet-500" },
-                    { id: "converted", dot: "bg-emerald-500" },
-                    { id: "lost", dot: "bg-rose-500" },
-                  ] as const
-                ).map((item) => {
-                  const active = statusFilter === item.id;
-                  return (
-                    <button
-                      key={item.id}
-                      type="button"
-                      onClick={() => setStatusFilter(item.id)}
-                      className={[
-                        "inline-flex shrink-0 items-center gap-2 rounded-full px-3.5 py-1.5 text-xs font-black transition",
-                        active
-                          ? "bg-slate-900 text-white shadow-sm"
-                          : "border border-slate-200 bg-white text-slate-600 hover:border-violet-200",
-                      ].join(" ")}
-                    >
-                      <span className={`h-2 w-2 rounded-full ${item.dot}`} />
-                      {item.id === "all"
-                        ? t("crm.common.all")
-                        : getStatusLabel(item.id, t)}
-                    </button>
-                  );
-                })}
-              </div>
+                  {ACTIVE_STATUS_FILTERS.map((item) => {
+                    const active = statusFilter === item.id;
+                    return (
+                      <button
+                        key={item.id}
+                        type="button"
+                        onClick={() => setStatusFilter(item.id)}
+                        className={[
+                          "inline-flex shrink-0 items-center gap-2 rounded-full px-3.5 py-1.5 text-xs font-black transition",
+                          active
+                            ? "bg-slate-900 text-white shadow-sm"
+                            : "border border-slate-200 bg-white text-slate-600 hover:border-violet-200",
+                        ].join(" ")}
+                      >
+                        <span className={`h-2 w-2 rounded-full ${item.dot}`} />
+                        {item.id === "all"
+                          ? t("crm.common.all")
+                          : getStatusLabel(item.id, t)}
+                      </button>
+                    );
+                  })}
+                </div>
+              )}
             </div>
 
             {viewMode === "board" ? (
@@ -1869,14 +2056,25 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                     </div>
                   ) : paginatedLeads.length === 0 ? (
                     <div className="flex min-h-full flex-col items-center justify-center p-10 text-center">
-                      <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-violet-100 text-[#6D28D9]">
+                      <div
+                        className={[
+                          "mb-4 flex h-16 w-16 items-center justify-center rounded-2xl",
+                          isOldLeadsMode
+                            ? "bg-orange-100 text-orange-700"
+                            : "bg-violet-100 text-[#6D28D9]",
+                        ].join(" ")}
+                      >
                         <Webhook className="h-7 w-7" />
                       </div>
                       <h3 className="text-xl font-black text-slate-800">
-                        {t("crm.leads.emptyTitle")}
+                        {isOldLeadsMode
+                          ? t("crm.leads.oldLeads.emptyTitle")
+                          : t("crm.leads.emptyTitle")}
                       </h3>
                       <p className="mt-2 max-w-md text-sm font-semibold text-slate-500">
-                        {t("crm.leads.emptyDescription")}
+                        {isOldLeadsMode
+                          ? t("crm.leads.oldLeads.emptyDescription")
+                          : t("crm.leads.emptyDescription")}
                       </p>
                     </div>
                   ) : (
@@ -2005,7 +2203,8 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                                       <UserRound className="h-4 w-4" />
                                     </div>
                                     <span className="truncate text-xs font-bold text-slate-500">
-                                      {t("crm.leads.unassignedAgent")}
+                                      {lead.assignedToName ||
+                                        t("crm.leads.unassignedAgent")}
                                     </span>
                                   </div>
 
@@ -2124,24 +2323,10 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
 
       {selectedLead && (
         <div
-          className={[
-            "fixed inset-0 z-[90] bg-slate-900/40 backdrop-blur-sm",
-            isDesktopLeads
-              ? "flex items-start justify-center overflow-y-auto p-2 pt-3 sm:p-4 sm:pt-5"
-              : "flex flex-col",
-          ].join(" ")}
+          className="fixed inset-0 z-[90] flex flex-col bg-[#F4F5F8]"
           dir={dir}
         >
-          <div className="fixed inset-0" onClick={handleCloseLead} />
-
-          <section
-            className={[
-              "relative flex w-full flex-col overflow-hidden bg-[#F4F5F8]",
-              isDesktopLeads
-                ? "max-h-[min(90vh,860px)] max-w-[1180px] rounded-2xl border border-slate-200 shadow-[0_24px_80px_rgba(15,23,42,0.22)]"
-                : "h-[100dvh] max-h-[100dvh] rounded-none",
-            ].join(" ")}
-          >
+          <section className="relative flex h-[100dvh] max-h-[100dvh] w-full flex-col overflow-hidden bg-[#F4F5F8]">
             <div className="flex min-h-0 flex-1 flex-col">
               <header className="flex shrink-0 flex-wrap items-center justify-between gap-2 border-b border-slate-200 bg-white px-3 py-2.5 sm:px-4 sm:py-3">
                 <div className="flex min-w-0 flex-1 items-center gap-2 sm:gap-3">
@@ -2175,7 +2360,10 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                   </div>
 
                   <div className="min-w-0">
-                    <h2 className="truncate text-xl font-black text-slate-800">
+                    <p className="text-[11px] font-black uppercase tracking-[0.14em] text-violet-700">
+                      {t("crm.leads.drawer.dossierBadge")}
+                    </p>
+                    <h2 className="truncate text-xl font-black text-slate-800 sm:text-2xl">
                       {getLeadName(selectedLead, t)}
                     </h2>
 
@@ -2205,9 +2393,62 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   {(isDesktopLeads || leadDrawerView === "full") && (
                     <LeadStatusBadge status={selectedStatus} />
+                  )}
+
+                  {(isDesktopLeads || leadDrawerView === "full") && (
+                    <label className="inline-flex h-9 items-center gap-2 rounded-xl border border-violet-100 bg-violet-50 px-3 text-[11px] font-black text-violet-700">
+                      <input
+                        type="checkbox"
+                        checked={autoConvertOnTake}
+                        onChange={(event) =>
+                          handleToggleAutoConvert(event.target.checked)
+                        }
+                        className="h-3.5 w-3.5 accent-[#6D28D9]"
+                      />
+                      {t("crm.leads.drawer.autoConvertOnTake")}
+                    </label>
+                  )}
+
+                  {!selectedLead.convertedClientId && (
+                    <button
+                      type="button"
+                      onClick={() => void handleTakeLead()}
+                      disabled={takingLead}
+                      className="inline-flex h-9 items-center gap-1.5 rounded-xl bg-[#6D28D9] px-3 text-xs font-black text-white transition hover:bg-[#5B21B6] disabled:opacity-60"
+                    >
+                      <UserCheck className="h-3.5 w-3.5" />
+                      {takingLead
+                        ? t("crm.leads.drawer.takingLead")
+                        : t("crm.leads.drawer.takeLead")}
+                    </button>
+                  )}
+
+                  {selectedLead.convertedClientId ? (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        openConvertedClient(selectedLead.convertedClientId)
+                      }
+                      className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-emerald-200 bg-emerald-50 px-3 text-xs font-black text-emerald-700 transition hover:bg-emerald-100"
+                    >
+                      <UserPlus className="h-3.5 w-3.5" />
+                      {t("crm.leads.drawer.openClientFile")}
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => void handleConvertLead()}
+                      disabled={convertingLead}
+                      className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-sky-200 bg-sky-50 px-3 text-xs font-black text-sky-700 transition hover:bg-sky-100 disabled:opacity-60"
+                    >
+                      <UserPlus className="h-3.5 w-3.5" />
+                      {convertingLead
+                        ? t("crm.leads.drawer.convertingLead")
+                        : t("crm.leads.drawer.convertToClient")}
+                    </button>
                   )}
 
                   {(isDesktopLeads || leadDrawerView === "full") && (
@@ -2419,7 +2660,13 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                         <option value="interested">{t("crm.leads.statuses.interested")}</option>
                         <option value="converted">{t("crm.leads.statuses.converted")}</option>
                         <option value="lost">{t("crm.leads.statuses.lost")}</option>
+                        <option value="old">{t("crm.leads.statuses.old")}</option>
                       </select>
+                      {isOldLeadsMode && (
+                        <p className="mt-2 text-xs font-semibold text-slate-500">
+                          {t("crm.leads.oldLeads.statusHint")}
+                        </p>
+                      )}
                     </section>
                   </div>
                 </aside>
@@ -2453,7 +2700,10 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                             {t("crm.leads.drawer.clientStage")}
                           </p>
                           <p className="mt-1.5 text-sm font-black text-slate-900">
-                            {t("crm.leads.drawer.clientStageLead")}
+                            {selectedLead.convertedClientId ||
+                            selectedStatus === "converted"
+                              ? t("crm.leads.drawer.clientStageClient")
+                              : t("crm.leads.drawer.clientStageLead")}
                           </p>
                         </div>
 
@@ -2496,6 +2746,25 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                           </p>
                         </div>
                       )}
+                    </section>
+
+                    <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                      <div className="mb-3">
+                        <h3 className="text-base font-black text-slate-800">
+                          {t("crm.leads.drawer.paymentsTitle")}
+                        </h3>
+                        <p className="mt-1 text-[11px] font-bold text-slate-400">
+                          {t("crm.leads.drawer.paymentsSubtitle")}
+                        </p>
+                      </div>
+                      <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 p-5 text-center">
+                        <p className="text-sm font-bold text-slate-500">
+                          {t("crm.leads.drawer.paymentsEmpty")}
+                        </p>
+                        <p className="mt-2 text-lg font-black text-slate-800">
+                          ₪0
+                        </p>
+                      </div>
                     </section>
 
                     <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">

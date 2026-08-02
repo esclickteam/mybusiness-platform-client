@@ -49,7 +49,7 @@ const MODULE_OPTIONS = [
   { id: "collab", label: "שיתופי פעולה" },
   { id: "website", label: "בניית אתרים" },
   { id: "build", label: "עמוד עסקי" },
-  { id: "BizUply", label: "יועץ BizUply" },
+  { id: "BizUply", label: "היועץ העסקי" },
   { id: "billing", label: "חיוב ומנוי" },
   { id: "dashboard", label: "דשבורד" },
 ];

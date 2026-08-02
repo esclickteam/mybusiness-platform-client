@@ -217,7 +217,7 @@ export default function BusinessWorkspaceNav({
     },
     {
       labelKey: "businessNav.bizuplyAdvisor",
-      fallback: "BizUply Advisor",
+      fallback: "Business Advisor",
       to: `${basePath}/dashboard/BizUply`,
       icon: Sparkles,
       moduleKey: "BizUply",

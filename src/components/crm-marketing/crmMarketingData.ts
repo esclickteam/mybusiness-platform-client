@@ -7,25 +7,26 @@ import type { MarketingFaq, MarketingStat } from "../product-marketing";
  */
 
 export const crmHeroStats: MarketingStat[] = [
-  { value: 5, label: "סטטוסים בצינור הלידים" },
+  { value: 6, label: "סטטוסים בצינור הלידים" },
   { value: 3, label: "ערוצי לידים אוטומטיים" },
   { value: 7, label: "סוגי תיעוד בתיק הלקוח" },
   { value: 15, suffix: " דק׳", label: "רזולוציית יומן התורים" },
 ];
 
 export type PipelineStage = {
-  id: "new" | "contacted" | "interested" | "converted" | "lost";
+  id: "new" | "contacted" | "interested" | "converted" | "lost" | "old";
   label: string;
   accent: string;
 };
 
-/** The five statuses a lead can hold. */
+/** The statuses a lead can hold, including the Old Leads tab. */
 export const pipelineStages: PipelineStage[] = [
   { id: "new", label: "חדש", accent: "#7c3aed" },
   { id: "contacted", label: "נוצר קשר", accent: "#2563eb" },
   { id: "interested", label: "מעוניין", accent: "#0891b2" },
   { id: "converted", label: "הומר", accent: "#059669" },
   { id: "lost", label: "אבוד", accent: "#94a3b8" },
+  { id: "old", label: "ליד ישן", accent: "#ea580c" },
 ];
 
 export type IntegrationSpec = {

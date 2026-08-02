@@ -105,6 +105,16 @@ const ACTION_META: Record<string, Omit<ActionMeta, "hintKey"> & { hintKey: strin
     accent: "sky",
     hintKey: "advisor.actionHints.OPEN_APPOINTMENTS",
   },
+  OPEN_AUTOMATIONS: {
+    icon: Zap,
+    accent: "amber",
+    hintKey: "advisor.actionHints.OPEN_AUTOMATIONS",
+  },
+  OPEN_META_CAMPAIGNS: {
+    icon: Megaphone,
+    accent: "amber",
+    hintKey: "advisor.actionHints.OPEN_META_CAMPAIGNS",
+  },
   CUSTOM: {
     icon: Sparkles,
     accent: "violet",
@@ -118,18 +128,18 @@ const ACCENT_STYLES: Record<string, string> = {
   emerald:
     "border-emerald-200 bg-emerald-50 text-emerald-800 hover:bg-emerald-100",
   indigo: "border-indigo-200 bg-indigo-50 text-indigo-800 hover:bg-indigo-100",
-  amber: "border-amber-200 bg-amber-50 text-amber-800 hover:bg-amber-100",
+  amber: "border-amber-200 bg-amber-50 text-amber-900 hover:bg-amber-100",
   rose: "border-rose-200 bg-rose-50 text-rose-800 hover:bg-rose-100",
   cyan: "border-cyan-200 bg-cyan-50 text-cyan-800 hover:bg-cyan-100",
 };
 
 export function getCapabilityPills(t: TFunction) {
   return [
-    t("advisor.capabilityPills.meetings"),
-    t("advisor.capabilityPills.tasks"),
+    t("advisor.capabilityPills.advice"),
     t("advisor.capabilityPills.leads"),
-    t("advisor.capabilityPills.whatsapp"),
-    t("advisor.capabilityPills.partners"),
+    t("advisor.capabilityPills.drafts"),
+    t("advisor.capabilityPills.insights"),
+    t("advisor.capabilityPills.automations"),
   ];
 }
 

@@ -1,5 +1,5 @@
-import React, { useCallback, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useParams, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import {
@@ -9,6 +9,8 @@ import {
   Trash2,
   Workflow,
   PencilLine,
+  GitBranch,
+  Zap,
 } from "lucide-react";
 import { useAuth } from "../../../../context/AuthContext";
 import { useLocaleDir } from "../../../../hooks/useLocaleDir";
@@ -16,15 +18,19 @@ import { normalizeBusinessId } from "../../../../utils/notificationNavigation";
 import {
   createAutomationWorkflow,
   deleteAutomationWorkflow,
+  listAutomationRecipes,
   listAutomationWorkflows,
+  type AutomationRecipeSummary,
   type AutomationWorkflow,
 } from "../../../../api/automationWorkflowApi";
+import { FALLBACK_RECIPES } from "./automationFlowTypes";
 import AutomationFlowEditor from "./AutomationFlowEditor";
 import "./automationFlow.css";
 
 export default function AutomationsMain() {
   const { t } = useTranslation();
   const dir = useLocaleDir();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { businessId: urlBusinessId } = useParams<{ businessId: string }>();
   const { user } = useAuth() as {
     user?: { businessId?: string | null } | null;
@@ -35,16 +41,32 @@ export default function AutomationsMain() {
     null;
 
   const [loading, setLoading] = useState(true);
-  const [creating, setCreating] = useState(false);
+  const [creatingKey, setCreatingKey] = useState<string | null>(null);
   const [workflows, setWorkflows] = useState<AutomationWorkflow[]>([]);
+  const [recipes, setRecipes] = useState<AutomationRecipeSummary[]>(FALLBACK_RECIPES);
   const [active, setActive] = useState<AutomationWorkflow | null>(null);
+  const autoCreateHandled = useRef<string | null>(null);
+
+  const standardRecipes = useMemo(
+    () => recipes.filter((recipe) => (recipe.tier || "standard") !== "ai_paid"),
+    [recipes]
+  );
+  const aiRecipes = useMemo(
+    () => recipes.filter((recipe) => recipe.tier === "ai_paid"),
+    [recipes]
+  );
+  const highlightAi = searchParams.get("tier") === "ai";
 
   const load = useCallback(async () => {
     if (!businessId) return;
     setLoading(true);
     try {
-      const list = await listAutomationWorkflows(businessId);
+      const [list, recipeList] = await Promise.all([
+        listAutomationWorkflows(businessId),
+        listAutomationRecipes(businessId).catch(() => FALLBACK_RECIPES),
+      ]);
       setWorkflows(list);
+      if (recipeList?.length) setRecipes(recipeList);
     } catch (error: unknown) {
       const message =
         error && typeof error === "object" && "response" in error
@@ -63,30 +85,46 @@ export default function AutomationsMain() {
     void load();
   }, [load]);
 
-  const handleCreate = async () => {
-    if (!businessId) return;
-    setCreating(true);
-    try {
-      const created = await createAutomationWorkflow(businessId, {
-        name: "אוטומציה חדשה",
-        useStarter: true,
-      });
-      setWorkflows((prev) => [created, ...prev]);
-      setActive(created);
-      toast.success("נוצרה אוטומציה חדשה — גררו מודולים ובנו את הזרימה");
-    } catch (error: unknown) {
-      const message =
-        error && typeof error === "object" && "response" in error
-          ? String(
-              (error as { response?: { data?: { error?: string } } }).response
-                ?.data?.error || ""
-            )
-          : "";
-      toast.error(message || "שגיאה ביצירת אוטומציה");
-    } finally {
-      setCreating(false);
-    }
-  };
+  const handleCreate = useCallback(
+    async (recipe?: string) => {
+      if (!businessId) return;
+      setCreatingKey(recipe || "blank");
+      try {
+        const created = await createAutomationWorkflow(businessId, {
+          recipe,
+          useStarter: !recipe ? true : undefined,
+          name: recipe ? undefined : "אוטומציה חדשה",
+        });
+        setWorkflows((prev) => [created, ...prev]);
+        setActive(created);
+        toast.success("האוטומציה מוכנה לעריכה על הבד");
+      } catch (error: unknown) {
+        const message =
+          error && typeof error === "object" && "response" in error
+            ? String(
+                (error as { response?: { data?: { error?: string } } }).response
+                  ?.data?.error || ""
+              )
+            : "";
+        toast.error(message || "שגיאה ביצירת אוטומציה");
+      } finally {
+        setCreatingKey(null);
+      }
+    },
+    [businessId]
+  );
+
+  useEffect(() => {
+    const recipeKey = searchParams.get("recipe");
+    if (!businessId || !recipeKey || loading) return;
+    if (autoCreateHandled.current === recipeKey) return;
+    autoCreateHandled.current = recipeKey;
+    void handleCreate(recipeKey).finally(() => {
+      const next = new URLSearchParams(searchParams);
+      next.delete("recipe");
+      setSearchParams(next, { replace: true });
+    });
+  }, [businessId, handleCreate, loading, searchParams, setSearchParams]);
 
   const handleDelete = async (id: string) => {
     if (!businessId) return;
@@ -122,18 +160,18 @@ export default function AutomationsMain() {
                       {t("automations.shell.badge", "אוטומציות")}
                     </p>
                     <h1 className="mt-1 truncate text-xl font-black tracking-tight text-slate-900 sm:text-2xl">
-                      {t("automations.shell.title", "אוטומציות")}
+                      בונה אוטומציות מקצועי
                     </h1>
                     <p className="mt-0.5 max-w-2xl text-sm font-semibold text-slate-500">
-                      בונה תהליכים ויזואלי בסגנון Make / n8n — גררו מודולים,
-                      חברו ביניהם, והפעילו.
+                      כמה אוטומציות · כמה טריגרים בכל אוטומציה · כמה ניתובים ותוצאות
+                      מכל טריגר — בסגנון Make / n8n.
                     </p>
                   </div>
 
                   <div className="inline-flex w-fit items-center gap-2 rounded-lg border border-violet-100 bg-violet-50 px-3 py-1.5">
-                    <Workflow className="h-3.5 w-3.5 text-violet-600" />
+                    <GitBranch className="h-3.5 w-3.5 text-violet-600" />
                     <span className="text-xs font-black text-violet-700">
-                      Drag & Drop Builder
+                      Multi-trigger · Multi-route
                     </span>
                   </div>
                 </div>
@@ -143,31 +181,132 @@ export default function AutomationsMain() {
             <div className="af-list">
               <div className="af-list__toolbar">
                 <div>
-                  <strong style={{ fontSize: 15 }}>התהליכים שלי</strong>
-                  <p
-                    style={{
-                      margin: "4px 0 0",
-                      color: "#64748b",
-                      fontSize: 13,
-                      fontWeight: 600,
-                    }}
-                  >
-                    כל אוטומציה היא בד ציור עם טריגרים, תנאים ופעולות.
+                  <strong style={{ fontSize: 15 }}>
+                    {standardRecipes.length} מתכונים רגילים
+                  </strong>
+                  <p className="af-muted">
+                    בחרו תבנית מקצועית עם פיצולים, או התחילו בד ריק.
                   </p>
                 </div>
                 <button
                   type="button"
                   className="af-btn af-btn--primary"
-                  onClick={handleCreate}
-                  disabled={!businessId || creating}
+                  onClick={() => handleCreate()}
+                  disabled={!businessId || Boolean(creatingKey)}
                 >
-                  {creating ? (
+                  {creatingKey === "blank" ? (
                     <Loader2 size={14} className="animate-spin" />
                   ) : (
                     <Plus size={14} />
                   )}
-                  אוטומציה חדשה
+                  בד ריק + סטרטר
                 </button>
+              </div>
+
+              <div className="af-list__cards">
+                {standardRecipes.map((recipe) => (
+                  <article key={recipe.key} className="af-card af-card--recipe">
+                    <div className="af-card__icon">
+                      <Zap size={16} />
+                    </div>
+                    <div className="af-card__title">{recipe.name}</div>
+                    <p className="af-muted">{recipe.description}</p>
+                    <div className="af-card__meta">
+                      {recipe.triggerCount} טריגרים · {recipe.nodeCount} מודולים ·{" "}
+                      {recipe.pathCount} חיבורים
+                    </div>
+                    <button
+                      type="button"
+                      className="af-btn af-btn--primary"
+                      disabled={!businessId || Boolean(creatingKey)}
+                      onClick={() => handleCreate(recipe.key)}
+                    >
+                      {creatingKey === recipe.key ? (
+                        <Loader2 size={14} className="animate-spin" />
+                      ) : (
+                        <Plus size={14} />
+                      )}
+                      צור מהמתכון
+                    </button>
+                  </article>
+                ))}
+              </div>
+
+              {aiRecipes.length > 0 && (
+                <>
+                  <div
+                    className="af-list__toolbar"
+                    style={{
+                      marginTop: 12,
+                      border: highlightAi
+                        ? "1px solid #f59e0b"
+                        : undefined,
+                      borderRadius: 16,
+                      padding: highlightAi ? 12 : undefined,
+                      background: highlightAi ? "#fffbeb" : undefined,
+                    }}
+                  >
+                    <div>
+                      <strong style={{ fontSize: 15 }}>
+                        אוטומציות AI · בתשלום נוסף
+                      </strong>
+                      <p className="af-muted">
+                        היועץ ממליץ — כאן בונים ומריצים את הפעולות האוטומטיות
+                        המתקדמות.
+                      </p>
+                    </div>
+                    <span className="af-pill af-pill--on">AI Paid</span>
+                  </div>
+
+                  <div className="af-list__cards">
+                    {aiRecipes.map((recipe) => (
+                      <article
+                        key={recipe.key}
+                        className="af-card af-card--recipe"
+                        style={{
+                          borderColor: "#fbbf24",
+                          background:
+                            "linear-gradient(180deg,#fffbeb 0%,#ffffff 55%)",
+                        }}
+                      >
+                        <div
+                          className="af-card__icon"
+                          style={{ background: "#fef3c7", color: "#b45309" }}
+                        >
+                          <Sparkles size={16} />
+                        </div>
+                        <div className="af-card__title">{recipe.name}</div>
+                        <p className="af-muted">{recipe.description}</p>
+                        <div className="af-card__meta">
+                          {recipe.triggerCount} טריגרים · {recipe.nodeCount}{" "}
+                          מודולים · {recipe.pathCount} חיבורים
+                        </div>
+                        <button
+                          type="button"
+                          className="af-btn af-btn--primary"
+                          disabled={!businessId || Boolean(creatingKey)}
+                          onClick={() => handleCreate(recipe.key)}
+                        >
+                          {creatingKey === recipe.key ? (
+                            <Loader2 size={14} className="animate-spin" />
+                          ) : (
+                            <Plus size={14} />
+                          )}
+                          בנה אוטומציית AI
+                        </button>
+                      </article>
+                    ))}
+                  </div>
+                </>
+              )}
+
+              <div className="af-list__toolbar" style={{ marginTop: 8 }}>
+                <div>
+                  <strong style={{ fontSize: 15 }}>האוטומציות שלי</strong>
+                  <p className="af-muted">
+                    אפשר ליצור כמה אוטומציות נפרדות — כל אחת עם טריגרים וניתובים משלה.
+                  </p>
+                </div>
               </div>
 
               {loading ? (
@@ -181,44 +320,50 @@ export default function AutomationsMain() {
                   <strong style={{ display: "block", marginBottom: 6 }}>
                     עוד אין אוטומציות
                   </strong>
-                  צרו תהליך ראשון וגררו מודולים לבד הציור — כמו ב־Make וב־n8n.
+                  התחילו ממתכון רגיל או ממתכון AI למעלה.
                 </div>
               ) : (
                 <div className="af-list__cards">
-                  {workflows.map((wf) => (
-                    <article key={wf._id} className="af-card">
-                      <div className="af-card__title">{wf.name}</div>
-                      <div className="af-card__meta">
-                        {(wf.nodes || []).length} מודולים ·{" "}
-                        {(wf.edges || []).length} חיבורים
-                      </div>
-                      <span
-                        className={`af-pill ${
-                          wf.enabled ? "af-pill--on" : "af-pill--off"
-                        }`}
-                      >
-                        {wf.enabled ? "פעיל" : "כבוי"}
-                      </span>
-                      <div className="af-card__actions">
-                        <button
-                          type="button"
-                          className="af-btn af-btn--primary"
-                          onClick={() => setActive(wf)}
+                  {workflows.map((wf) => {
+                    const triggers = (wf.nodes || []).filter(
+                      (n) => n.type === "trigger"
+                    ).length;
+                    const routes = (wf.edges || []).length;
+                    return (
+                      <article key={wf._id} className="af-card">
+                        <div className="af-card__title">{wf.name}</div>
+                        <div className="af-card__meta">
+                          {triggers} טריגרים · {(wf.nodes || []).length} מודולים ·{" "}
+                          {routes} ניתובים
+                        </div>
+                        <span
+                          className={`af-pill ${
+                            wf.enabled ? "af-pill--on" : "af-pill--off"
+                          }`}
                         >
-                          <PencilLine size={14} />
-                          עריכת זרימה
-                        </button>
-                        <button
-                          type="button"
-                          className="af-btn af-btn--danger"
-                          onClick={() => handleDelete(wf._id)}
-                        >
-                          <Trash2 size={14} />
-                          מחיקה
-                        </button>
-                      </div>
-                    </article>
-                  ))}
+                          {wf.enabled ? "פעיל" : "כבוי"}
+                        </span>
+                        <div className="af-card__actions">
+                          <button
+                            type="button"
+                            className="af-btn af-btn--primary"
+                            onClick={() => setActive(wf)}
+                          >
+                            <PencilLine size={14} />
+                            עריכת זרימה
+                          </button>
+                          <button
+                            type="button"
+                            className="af-btn af-btn--danger"
+                            onClick={() => handleDelete(wf._id)}
+                          >
+                            <Trash2 size={14} />
+                            מחיקה
+                          </button>
+                        </div>
+                      </article>
+                    );
+                  })}
                 </div>
               )}
             </div>

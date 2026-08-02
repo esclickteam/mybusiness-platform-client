@@ -356,7 +356,7 @@ export default function CRMCustomerFile({
             />
             <CustomerMetric
               label="Revenue"
-              value={`$${totalRevenue.toLocaleString()}`}
+              value={`₪${totalRevenue.toLocaleString()}`}
               icon={DollarSign}
             />
             <CustomerMetric
@@ -533,7 +533,7 @@ function AppointmentHistoryCard({
 
         <div className="grid gap-2 sm:grid-cols-3 lg:min-w-[360px]">
           <SmallTile label="Duration" value={durationLabel} />
-          <SmallTile label="Price" value={`$${price}`} />
+          <SmallTile label="Price" value={`₪${price.toLocaleString()}`} />
           <SmallTile
             label="Payment"
             value={appointment.paid ? "Paid" : "Unpaid"}

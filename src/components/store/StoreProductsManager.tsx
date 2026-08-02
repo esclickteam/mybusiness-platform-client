@@ -84,10 +84,18 @@ type StoreProduct = {
   variants?: StoreProductVariant[];
   status?: "draft" | "active" | "hidden" | "out_of_stock";
   isFeatured?: boolean;
+  isDemo?: boolean;
   isDigital?: boolean;
   digitalFileUrl?: string;
   tags?: string[];
 };
+
+function isDemoStoreProduct(product: StoreProduct): boolean {
+  if (product.isDemo === false) return false;
+  if (product.isDemo === true) return true;
+  if (/^DEMO-/i.test(String(product.sku || ""))) return true;
+  return (product.tags || []).some((tag) => String(tag).trim() === "דמו");
+}
 
 type StoreSettingsData = {
   storeName?: string;
@@ -649,7 +657,7 @@ export default function StoreProductsManager({
       if (data?.seeded) {
         showMessage(
           "success",
-          `נוספו ${data.productCount || 0} מוצרי דמו — ניתן לערוך ולמחוק אותם כמו כל מוצר בחנות`,
+          `נוספו ${data.productCount || 0} מוצרי דמו לתצוגה — כשתוסיפו מוצר אמיתי הם יוחלפו אוטומטית`,
         );
       } else if (data?.reason === "already_has_products") {
         showMessage("success", "בחנות כבר יש מוצרים — לא הוספנו דמו מעל הנתונים שלך");
@@ -856,24 +864,30 @@ export default function StoreProductsManager({
       });
 
       // Do not force Content-Type — axios must set the multipart boundary.
-      const request = editingProductId
-        ? API.put(
+      const { data } = editingProductId
+        ? await API.put(
             `/store/${businessId}/products/${editingProductId}`,
             formData
           )
-        : API.post(`/store/${businessId}/products`, formData);
-
-      await request;
+        : await API.post(`/store/${businessId}/products`, formData);
 
       resetProductForm();
       await loadStoreData();
       emitStoreCatalogChanged(businessId);
       setView("products");
 
-      showMessage(
-        "success",
-        editingProductId ? "המוצר עודכן בהצלחה" : "המוצר נוסף ונכנס לגריד"
-      );
+      const clearedDemoCount = Number(data?.demoCleanup?.productCount || 0);
+      if (!editingProductId && clearedDemoCount > 0) {
+        showMessage(
+          "success",
+          `המוצר נוסף לחנות — ${clearedDemoCount} מוצרי דמו הוחלפו במוצרים שלך`
+        );
+      } else {
+        showMessage(
+          "success",
+          editingProductId ? "המוצר עודכן בהצלחה" : "המוצר נוסף ונכנס לגריד"
+        );
+      }
     } catch (err) {
       console.error("Submit product error:", err);
       showMessage("error", "שגיאה בשמירת המוצר");
@@ -1827,7 +1841,7 @@ function ProductsView({
       {products.length === 0 ? (
         <EmptyBox
           title="אין עדיין מוצרים"
-          text="הוסיפו מוצר ראשון — או טענו מוצרי דמו אמיתיים שניתן לערוך, למחוק ולהחליף תמונות מניהול החנות."
+          text="הוסיפו את המוצרים שלכם לחנות. אפשר גם לטעון מוצרי דמו לתצוגה — הם יוחלפו אוטומטית ברגע שתוסיפו מוצר אמיתי."
           action={
             <div className="flex flex-wrap items-center justify-center gap-3">
               <PrimaryButton type="button" onClick={onAddProduct}>
@@ -1845,7 +1859,7 @@ function ProductsView({
                 ) : (
                   <PackagePlus size={17} />
                 )}
-                {seedingDemo ? "טוען מוצרי דמו..." : "טעינת מוצרי דמו לעריכה"}
+                {seedingDemo ? "טוען מוצרי דמו..." : "טעינת מוצרי דמו לתצוגה"}
               </button>
             </div>
           }
@@ -1889,11 +1903,18 @@ function ProductsView({
                     />
                   </div>
 
-                  {product.isFeatured ? (
-                    <span className="absolute left-3 top-3 rounded-full bg-violet-700 px-3 py-1 text-[11px] font-black text-black">
-                      מומלץ
-                    </span>
-                  ) : null}
+                  <div className="absolute left-3 top-3 flex flex-col items-start gap-2">
+                    {isDemoStoreProduct(product) ? (
+                      <span className="rounded-full bg-amber-500 px-3 py-1 text-[11px] font-black text-white">
+                        דמו
+                      </span>
+                    ) : null}
+                    {product.isFeatured ? (
+                      <span className="rounded-full bg-violet-700 px-3 py-1 text-[11px] font-black text-black">
+                        מומלץ
+                      </span>
+                    ) : null}
+                  </div>
                 </div>
 
                 <div className="p-5">

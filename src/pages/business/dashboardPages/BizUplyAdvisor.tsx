@@ -2,8 +2,11 @@ import React, { useEffect, useState } from "react";
 import { useAuth } from "../../../context/AuthContext";
 import { useLocaleDir } from "../../../hooks/useLocaleDir";
 import API from "../../../api";
+import { useTranslation } from "react-i18next";
+import { BrainCircuit, Zap } from "lucide-react";
 
 import BusinessAdvisorTab from "./BizUplyTabs/BusinessAdvisorTab";
+import AiAutomationsTab from "./BizUplyTabs/AiAutomationsTab";
 import BizuplyLoader from "../../../components/ui/BizuplyLoader";
 
 type Appointment = {
@@ -36,6 +39,8 @@ type AuthUser = {
   [key: string]: unknown;
 };
 
+type AdvisorShellTab = "advisor" | "ai_automations";
+
 const getAppointmentsList = (
   data: AppointmentsApiResponse
 ): Appointment[] => {
@@ -50,6 +55,8 @@ const getAppointmentsList = (
 
 const BizUplyAdvisor: React.FC = () => {
   const dir = useLocaleDir();
+  const { t } = useTranslation();
+  const [activeTab, setActiveTab] = useState<AdvisorShellTab>("advisor");
   const [businessDetails, setBusinessDetails] =
     useState<BusinessDetails>(null);
 
@@ -125,7 +132,7 @@ const BizUplyAdvisor: React.FC = () => {
   }, [businessId]);
 
   if (loading) {
-    return <BizuplyLoader fullScreen label="טוען את יועץ BizUply..." />;
+    return <BizuplyLoader fullScreen label={t("advisor.loading")} />;
   }
 
   if (!businessId) {
@@ -136,11 +143,11 @@ const BizUplyAdvisor: React.FC = () => {
       >
         <div className="max-w-xl rounded-[28px] border border-amber-200 bg-amber-50 px-6 py-5 text-center shadow-sm">
           <h2 className="text-xl font-black text-slate-800">
-            לא נמצא עסק מחובר
+            {t("advisor.noBusinessTitle")}
           </h2>
 
           <p className="mt-2 text-sm font-semibold leading-7 text-slate-600">
-            כדי להשתמש ביועץ BizUply צריך להתחבר לעסק פעיל במערכת.
+            {t("advisor.noBusinessBody")}
           </p>
         </div>
       </div>
@@ -152,16 +159,48 @@ const BizUplyAdvisor: React.FC = () => {
       dir={dir}
       className="min-h-screen bg-slate-50 px-3 py-4 sm:px-5 lg:px-6"
     >
-      <BusinessAdvisorTab
-        businessId={businessId}
-        userId={userId}
-        conversationId={null}
-        businessDetails={{
-          business: businessDetails,
-          appointments,
-          selectedAppointmentId,
-        }}
-      />
+      <div className="mx-auto mb-4 flex w-full max-w-[1700px] flex-wrap gap-2 rounded-[22px] border border-slate-200 bg-white p-2 shadow-sm">
+        <button
+          type="button"
+          onClick={() => setActiveTab("advisor")}
+          className={`inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-2xl px-4 text-sm font-black transition sm:flex-none ${
+            activeTab === "advisor"
+              ? "bg-sky-100 text-sky-900 ring-1 ring-sky-200"
+              : "text-slate-600 hover:bg-slate-50"
+          }`}
+        >
+          <BrainCircuit className="h-4 w-4" />
+          {t("advisor.tabs.advisor")}
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab("ai_automations")}
+          className={`inline-flex min-h-11 flex-1 items-center justify-center gap-2 rounded-2xl px-4 text-sm font-black transition sm:flex-none ${
+            activeTab === "ai_automations"
+              ? "bg-amber-100 text-amber-900 ring-1 ring-amber-200"
+              : "text-slate-600 hover:bg-slate-50"
+          }`}
+        >
+          <Zap className="h-4 w-4" />
+          {t("advisor.tabs.aiAutomations")}
+        </button>
+      </div>
+
+      {activeTab === "advisor" ? (
+        <BusinessAdvisorTab
+          businessId={businessId}
+          userId={userId}
+          conversationId={null}
+          businessDetails={{
+            business: businessDetails,
+            appointments,
+            selectedAppointmentId,
+          }}
+          onOpenAiAutomations={() => setActiveTab("ai_automations")}
+        />
+      ) : (
+        <AiAutomationsTab businessId={businessId} />
+      )}
     </main>
   );
 };

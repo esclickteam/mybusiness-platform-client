@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Helmet } from "react-helmet-async";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import {
+  ArrowLeftRight,
   Bot,
   CalendarCheck2,
   Check,
@@ -15,6 +16,7 @@ import {
   Image as ImageIcon,
   Megaphone,
   MessageCircle,
+  Package,
   Plus,
   RefreshCw,
   Search,
@@ -53,6 +55,8 @@ const ICON_MAP = {
   clipboard: ClipboardList,
   settings: Settings2,
   image: ImageIcon,
+  migrate: ArrowLeftRight,
+  package: Package,
 };
 
 function AddonIcon({ name, accent }) {
@@ -237,15 +241,27 @@ export default function Plans() {
     });
   }, [activeCategory, query, localizedAddons]);
 
-  const featuredAddons = useMemo(
-    () => filteredAddons.filter((addon) => addon.featured),
-    [filteredAddons]
-  );
+  const addonsByCategory = useMemo(() => {
+    const visibleCategories =
+      activeCategory === "all"
+        ? [...PRICING_CATEGORY_ORDER]
+        : PRICING_CATEGORY_ORDER.filter((key) => key === activeCategory);
 
-  const regularAddons = useMemo(
-    () => filteredAddons.filter((addon) => !addon.featured),
-    [filteredAddons]
-  );
+    return visibleCategories
+      .map((category) => {
+        const items = filteredAddons
+          .filter((addon) => addon.category === category)
+          .slice()
+          .sort((a, b) => Number(Boolean(b.featured)) - Number(Boolean(a.featured)));
+        return {
+          category,
+          accent: PRICING_CATEGORY_ACCENTS[category] || "#4f46e5",
+          items,
+          total: items.length,
+        };
+      })
+      .filter((group) => group.total > 0);
+  }, [activeCategory, filteredAddons]);
 
   const selectedAddons = useMemo(
     () => localizedAddons.filter((a) => selectedKeys.has(a.key)),
@@ -685,22 +701,32 @@ export default function Plans() {
             {t("pricing.addonsCount", { count: filteredAddons.length })}
           </p>
 
-          {featuredAddons.length > 0 && (
-            <div className="mt-5 grid gap-4 lg:grid-cols-3">
-              <AnimatePresence mode="popLayout">
-                {featuredAddons.map((addon, index) =>
-                  renderServiceCard(addon, index, true)
-                )}
-              </AnimatePresence>
-            </div>
-          )}
+          <div className="mt-5 space-y-12">
+            {addonsByCategory.map((group) => (
+              <section key={group.category} className="space-y-4">
+                <div className="flex flex-wrap items-center gap-3">
+                  <span
+                    className="inline-flex h-2.5 w-2.5 rounded-full"
+                    style={{ background: group.accent }}
+                    aria-hidden="true"
+                  />
+                  <h3 className="text-xl font-black tracking-tight text-slate-900 sm:text-2xl">
+                    {catLabel(group.category)}
+                  </h3>
+                  <span className="rounded-full border border-slate-200 bg-white px-2.5 py-1 text-xs font-bold text-slate-500">
+                    {group.total}
+                  </span>
+                </div>
 
-          <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-            <AnimatePresence mode="popLayout">
-              {regularAddons.map((addon, index) =>
-                renderServiceCard(addon, index, false)
-              )}
-            </AnimatePresence>
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  <AnimatePresence mode="popLayout">
+                    {group.items.map((addon, index) =>
+                      renderServiceCard(addon, index, Boolean(addon.featured))
+                    )}
+                  </AnimatePresence>
+                </div>
+              </section>
+            ))}
           </div>
 
           {filteredAddons.length === 0 && (

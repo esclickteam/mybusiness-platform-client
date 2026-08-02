@@ -187,9 +187,21 @@ const packages = [
 export default function VelmoraCustom({
   onPageChange,
   onOpenProduct,
+  catalogProducts,
+  isLiveCatalog = false,
 }: Props) {
-  // Curated featured strip only — live catalog swaps caused visible card flashes.
-  const featuredProducts = velmoraProducts.slice(0, 4);
+  // Live store products replace curated demos (same behavior as shop / other store templates).
+  const featuredProducts =
+    isLiveCatalog && Array.isArray(catalogProducts) && catalogProducts.length > 0
+      ? catalogProducts.slice(0, 4).map((product) => ({
+          id: product.id,
+          ref: product.ref,
+          title: product.name,
+          subtitle: product.description || product.category || "",
+          price: `₪${Number(product.price || 0).toLocaleString("he-IL")}`,
+          image: product.image,
+        }))
+      : velmoraProducts.slice(0, 4);
 
   return (
     <main className="overflow-hidden bg-[#f6f2ea] text-[#27231f]">

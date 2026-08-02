@@ -1,6 +1,11 @@
 import API from "../api";
 
-export type AutomationNodeType = "trigger" | "delay" | "condition" | "action";
+export type AutomationNodeType =
+  | "trigger"
+  | "delay"
+  | "condition"
+  | "action"
+  | "router";
 
 export type AutomationFlowNode = {
   id: string;
@@ -50,12 +55,28 @@ export async function getAutomationWorkflow(
   return data?.workflow as AutomationWorkflow;
 }
 
+export type AutomationRecipeSummary = {
+  key: string;
+  name: string;
+  description: string;
+  tier?: "standard" | "ai_paid";
+  triggerCount: number;
+  pathCount: number;
+  nodeCount: number;
+};
+
+export async function listAutomationRecipes(businessId: string) {
+  const { data } = await API.get("/automations/recipes", withBusiness(businessId));
+  return (data?.recipes || []) as AutomationRecipeSummary[];
+}
+
 export async function createAutomationWorkflow(
   businessId: string,
   payload?: {
     name?: string;
     description?: string;
     useStarter?: boolean;
+    recipe?: string;
     nodes?: AutomationFlowNode[];
     edges?: AutomationFlowEdge[];
   }

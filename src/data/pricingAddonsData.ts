@@ -1,4 +1,4 @@
-/** BizUply managed service packages — human ops, setup, marketing */
+/** BizUply managed service packages — setup, marketing, agents, monthly support */
 
 export type PricingAddonTrack = {
   label: string;
@@ -7,13 +7,19 @@ export type PricingAddonTrack = {
   priceEn: string;
 };
 
+export type PricingAddonCategory =
+  | "setup"
+  | "growth"
+  | "agents"
+  | "support";
+
 export type PricingAddon = {
   key: string;
   name: string;
   nameEn: string;
   description: string;
   descriptionEn: string;
-  category: "leads" | "ops" | "setup" | "growth";
+  category: PricingAddonCategory;
   icon: string;
   priceLabel: string;
   priceLabelEn: string;
@@ -34,283 +40,28 @@ export const PRICING_CATEGORY_LABELS: Record<
   { he: string; en: string }
 > = {
   all: { he: "הכול", en: "All" },
-  leads: { he: "לידים ומכירות", en: "Leads & sales" },
-  ops: { he: "ניהול העסק", en: "Business ops" },
-  setup: { he: "הקמה ואוטומציות", en: "Setup & automations" },
+  setup: { he: "הקמה והטמעה", en: "Setup & implementation" },
   growth: { he: "שיווק וצמיחה", en: "Marketing & growth" },
+  agents: { he: "נציגים ושירות אנושי", en: "Agents & human service" },
+  support: { he: "תמיכה חודשית", en: "Monthly support" },
 };
 
 export const PRICING_CATEGORY_ORDER = [
-  "leads",
-  "ops",
   "setup",
   "growth",
+  "agents",
+  "support",
 ] as const;
 
 export const PRICING_CATEGORY_ACCENTS: Record<string, string> = {
-  leads: "#059669",
-  ops: "#2563EB",
   setup: "#7C3AED",
   growth: "#E11D8C",
+  agents: "#059669",
+  support: "#2563EB",
 };
 
 export const PRICING_ADDONS: PricingAddon[] = [
-  {
-    key: "lead-first-response",
-    name: "מענה ראשוני ללידים",
-    nameEn: "Initial lead response",
-    description:
-      "נציג אנושי חוזר ללידים חדשים, מבצע בירור ראשוני, מסנן את הפנייה ומעדכן את כל הפרטים ב-CRM.",
-    descriptionEn:
-      "A human agent calls new leads back, runs an initial discovery, filters the inquiry, and updates every detail in the CRM.",
-    category: "leads",
-    icon: "headset",
-    priceLabel: "החל מ־690 ₪ לחודש",
-    priceLabelEn: "From ₪690 / month",
-    accent: "#059669",
-    featured: true,
-    details: [
-      "עד 40 לידים בחודש",
-      "עד 3 ניסיונות התקשרות לכל ליד",
-      "שאלון ראשוני מותאם לעסק",
-      "סינון לידים",
-      "עדכון סטטוס וסיכום שיחה",
-      "דוח פעילות חודשי",
-      "ליד נוסף: 15 ₪",
-    ],
-    detailsEn: [
-      "Up to 40 leads per month",
-      "Up to 3 call attempts per lead",
-      "Business-tailored discovery questionnaire",
-      "Lead filtering",
-      "Status update and call summary",
-      "Monthly activity report",
-      "Extra lead: ₪15",
-    ],
-  },
-  {
-    key: "appointment-booking",
-    name: "תיאום פגישות",
-    nameEn: "Appointment booking",
-    description:
-      "נציג יוצר קשר עם הלידים, בודק התאמה ומתאם פגישה ישירות ביומן העסק.",
-    descriptionEn:
-      "An agent contacts leads, checks fit, and books a meeting directly on the business calendar.",
-    category: "leads",
-    icon: "calendar-check",
-    priceLabel: "החל מ־890 ₪ לחודש",
-    priceLabelEn: "From ₪890 / month",
-    accent: "#0D9488",
-    details: [
-      "עד 50 לידים בחודש",
-      "תיאום פגישות ביומן",
-      "שליחת אישור ותזכורת",
-      "מעקב אחר לידים שלא ענו",
-      "עדכון מלא ב-CRM",
-      "ליד נוסף: 18 ₪",
-    ],
-    detailsEn: [
-      "Up to 50 leads per month",
-      "Calendar appointment booking",
-      "Confirmation and reminder messages",
-      "Follow-up for unanswered leads",
-      "Full CRM updates",
-      "Extra lead: ₪18",
-    ],
-  },
-  {
-    key: "personal-sales-rep",
-    name: "נציג מכירות אישי",
-    nameEn: "Personal sales representative",
-    description:
-      "נציג שמבצע שיחות מכירה, שולח הצעות, מטפל בהתנגדויות ועוקב אחר הלקוחות עד לקבלת החלטה.",
-    descriptionEn:
-      "A rep who runs sales calls, sends proposals, handles objections, and follows clients through to a decision.",
-    category: "leads",
-    icon: "user-tie",
-    priceLabel: "1,490 ₪ לחודש + 5% הצלחה",
-    priceLabelEn: "₪1,490 / month + 5% success fee",
-    accent: "#047857",
-    details: [
-      "עד 40 לידים חמים בחודש",
-      "שיחות מכירה",
-      "פולואפים",
-      "שליחת הצעות מחיר מוכנות",
-      "עדכון תוצאות ב-CRM",
-      "דוח מכירות חודשי",
-      "ליד נוסף: 25 ₪",
-    ],
-    detailsEn: [
-      "Up to 40 hot leads per month",
-      "Sales calls",
-      "Follow-ups",
-      "Sending ready-made proposals",
-      "Results updated in CRM",
-      "Monthly sales report",
-      "Extra lead: ₪25",
-    ],
-  },
-  {
-    key: "old-leads-followup",
-    name: "פולואפים ללידים ישנים",
-    nameEn: "Old leads follow-up",
-    description:
-      "חזרה ללידים שלא נסגרו, פניות שנשארו ללא המשך ולקוחות שהתעניינו בעבר.",
-    descriptionEn:
-      "Re-engage unclosed leads, stalled inquiries, and past interested customers.",
-    category: "leads",
-    icon: "refresh",
-    priceLabel: "590 ₪ חד־פעמי",
-    priceLabelEn: "₪590 one-time",
-    accent: "#10B981",
-    details: [
-      "טיפול בעד 50 לידים",
-      "עד 2 ניסיונות התקשרות",
-      "הודעת המשך מותאמת",
-      "עדכון הסטטוס במערכת",
-      "החזרת לידים רלוונטיים לתהליך המכירה",
-    ],
-    detailsEn: [
-      "Handle up to 50 leads",
-      "Up to 2 call attempts",
-      "Tailored follow-up message",
-      "Status updated in the system",
-      "Bring relevant leads back into the sales process",
-    ],
-    tracks: [
-      {
-        label: "חבילת 50 לידים",
-        labelEn: "50-lead pack",
-        price: "590 ₪",
-        priceEn: "₪590",
-      },
-      {
-        label: "חבילת 100 לידים",
-        labelEn: "100-lead pack",
-        price: "990 ₪",
-        priceEn: "₪990",
-      },
-    ],
-  },
-  {
-    key: "external-support",
-    name: "שירות לקוחות חיצוני",
-    nameEn: "External customer support",
-    description:
-      "נציג מטפל בפניות של לקוחות קיימים דרך טלפון, WhatsApp או מערכת הפניות.",
-    descriptionEn:
-      "An agent handles existing-customer inquiries by phone, WhatsApp, or your ticket system.",
-    category: "ops",
-    icon: "message",
-    priceLabel: "החל מ־1,290 ₪ לחודש",
-    priceLabelEn: "From ₪1,290 / month",
-    accent: "#2563EB",
-    details: [
-      "עד 10 שעות טיפול בחודש",
-      "מענה לפי נהלי העסק",
-      "עדכון הפניות במערכת",
-      "העברת מקרים מורכבים לבעל העסק",
-      "דוח שירות חודשי",
-      "שעה נוספת: 75 ₪",
-    ],
-    detailsEn: [
-      "Up to 10 support hours per month",
-      "Responses according to business procedures",
-      "Tickets updated in the system",
-      "Complex cases escalated to the owner",
-      "Monthly service report",
-      "Extra hour: ₪75",
-    ],
-  },
-  {
-    key: "crm-manager",
-    name: "מנהל CRM אישי",
-    nameEn: "Personal CRM manager",
-    description:
-      "מנהל שעובר על הלידים, מסדר סטטוסים, פותח משימות ודואג שאף לקוח לא יישכח.",
-    descriptionEn:
-      "A manager who reviews leads, organizes statuses, opens tasks, and makes sure no client is forgotten.",
-    category: "ops",
-    icon: "clipboard",
-    priceLabel: "החל מ־490 ₪ לחודש",
-    priceLabelEn: "From ₪490 / month",
-    accent: "#3B82F6",
-    details: [
-      "בדיקת המערכת פעמיים בשבוע",
-      "סידור סטטוסים",
-      "איתור לידים ללא טיפול",
-      "פתיחת משימות ותזכורות",
-      "ניקוי כפילויות בסיסי",
-      "דוח חודשי",
-    ],
-    detailsEn: [
-      "System review twice a week",
-      "Status cleanup",
-      "Find untreated leads",
-      "Open tasks and reminders",
-      "Basic duplicate cleanup",
-      "Monthly report",
-    ],
-    tracks: [
-      {
-        label: "בדיקה פעמיים בשבוע",
-        labelEn: "Twice-weekly review",
-        price: "החל מ־490 ₪ לחודש",
-        priceEn: "From ₪490 / month",
-      },
-      {
-        label: "מסלול בדיקה יומית",
-        labelEn: "Daily review track",
-        price: "890 ₪ לחודש",
-        priceEn: "₪890 / month",
-      },
-    ],
-  },
-  {
-    key: "crm-setup",
-    name: "הקמת CRM לעסק",
-    nameEn: "CRM setup for your business",
-    description:
-      "מומחה Bizuply מגדיר את המערכת בהתאם לתהליך המכירה והעבודה של העסק.",
-    descriptionEn:
-      "A Bizuply expert configures the system around your sales process and daily workflow.",
-    category: "setup",
-    icon: "settings",
-    priceLabel: "590 ₪ חד־פעמי",
-    priceLabelEn: "₪590 one-time",
-    accent: "#7C3AED",
-    featured: true,
-    details: [
-      "הגדרת שלבי מכירה",
-      "התאמת שדות",
-      "הגדרת משתמשים והרשאות",
-      "יצירת משימות בסיסיות",
-      "ייבוא עד 500 אנשי קשר",
-      "הדרכה של עד 45 דקות",
-    ],
-    detailsEn: [
-      "Sales-stage setup",
-      "Field customization",
-      "Users and permissions setup",
-      "Basic task creation",
-      "Import up to 500 contacts",
-      "Training of up to 45 minutes",
-    ],
-    tracks: [
-      {
-        label: "הקמה בסיסית",
-        labelEn: "Basic setup",
-        price: "590 ₪",
-        priceEn: "₪590",
-      },
-      {
-        label: "הקמה מורחבת",
-        labelEn: "Extended setup",
-        price: "990 ₪",
-        priceEn: "₪990",
-      },
-    ],
-  },
+  /* ── הקמה והטמעה ── */
   {
     key: "automations-setup",
     name: "הקמת אוטומציות לעסק",
@@ -452,21 +203,110 @@ export const PRICING_ADDONS: PricingAddon[] = [
     ],
   },
   {
+    key: "crm-migration",
+    name: "מעבר ממערכת CRM אחרת",
+    nameEn: "Migration from another CRM",
+    description:
+      "שירות חשוב במיוחד ללקוחות שרוצים לעבור אליכם — מעבירים לקוחות, לידים וסטטוסים ומגדירים את השדות כך שהעסק ימשיך לעבוד בלי בלאגן.",
+    descriptionEn:
+      "Especially valuable for customers switching to you — we migrate clients, leads, and statuses, and map fields so the business keeps running smoothly.",
+    category: "setup",
+    icon: "migrate",
+    priceLabel: "החל מ־790 ₪ חד־פעמי",
+    priceLabelEn: "From ₪790 one-time",
+    accent: "#7C3AED",
+    featured: true,
+    details: [
+      "העברת לקוחות ולידים",
+      "העברת סטטוסים",
+      "התאמת שדות",
+      "בדיקת תקינות",
+      "הדרכה לאחר המעבר",
+    ],
+    detailsEn: [
+      "Transfer clients and leads",
+      "Transfer statuses",
+      "Field mapping",
+      "Validation check",
+      "Training after migration",
+    ],
+    tracks: [
+      {
+        label: "מעבר בסיסי",
+        labelEn: "Basic migration",
+        price: "החל מ־790 ₪",
+        priceEn: "From ₪790",
+      },
+    ],
+    note: "היקף המעבר ותמחור סופי נקבעים לפי כמות הרשומות ומורכבות המערכת הקיימת.",
+    noteEn:
+      "Scope and final pricing depend on record volume and the complexity of the existing system.",
+  },
+  {
+    key: "store-products-upload",
+    name: "העלאת מוצרים לחנות",
+    nameEn: "Store product upload",
+    description:
+      "ללקוחות שבונים דרככם חנות — אנחנו מעלים את המוצרים עם תמונות, תיאורים, קטגוריות, מחירים, וריאציות והגדרות משלוח.",
+    descriptionEn:
+      "For customers building a store with you — we upload products with images, descriptions, categories, prices, variations, and shipping settings.",
+    category: "setup",
+    icon: "package",
+    priceLabel: "החל מ־490 ₪ חד־פעמי",
+    priceLabelEn: "From ₪490 one-time",
+    accent: "#9333EA",
+    details: [
+      "העלאת מוצרים",
+      "תמונות ותיאורים",
+      "קטגוריות",
+      "מחירים ווריאציות",
+      "הגדרות משלוח",
+    ],
+    detailsEn: [
+      "Product upload",
+      "Images and descriptions",
+      "Categories",
+      "Prices and variations",
+      "Shipping settings",
+    ],
+    tracks: [
+      {
+        label: "עד 20 מוצרים",
+        labelEn: "Up to 20 products",
+        price: "490 ₪",
+        priceEn: "₪490",
+      },
+      {
+        label: "עד 50 מוצרים",
+        labelEn: "Up to 50 products",
+        price: "990 ₪",
+        priceEn: "₪990",
+      },
+      {
+        label: "מעבר לכך",
+        labelEn: "Beyond that",
+        price: "הצעה מותאמת",
+        priceEn: "Custom quote",
+      },
+    ],
+  },
+
+  /* ── שיווק וצמיחה ── */
+  {
     key: "paid-campaign-setup",
     name: "הקמת קמפיין ממומן",
     nameEn: "Paid campaign setup",
     description:
-      "מומחה מקים עבורכם קמפיין מקצועי במטא או בגוגל ומחבר את הלידים ישירות ל-Bizuply.",
+      "מומחה מקים עבורכם קמפיין מקצועי במטא ומחבר את הלידים ישירות ל-Bizuply.",
     descriptionEn:
-      "An expert launches a professional Meta or Google campaign and connects leads straight into Bizuply.",
+      "An expert launches a professional Meta campaign and connects leads straight into Bizuply.",
     category: "growth",
     icon: "megaphone",
     priceLabel: "החל מ־690 ₪ חד־פעמי",
     priceLabelEn: "From ₪690 one-time",
     accent: "#E11D8C",
     details: [
-      "הקמת קמפיין בפלטפורמה אחת",
-      "Meta או Google",
+      "הקמת קמפיין במטא",
       "הגדרת קהל יעד",
       "הקמת קבוצת מודעות",
       "עד 3 מודעות",
@@ -476,8 +316,7 @@ export const PRICING_ADDONS: PricingAddon[] = [
       "בדיקת תקינות לפני עלייה",
     ],
     detailsEn: [
-      "Campaign setup on one platform",
-      "Meta or Google",
+      "Meta campaign setup",
       "Audience definition",
       "Ad-set creation",
       "Up to 3 ads",
@@ -488,32 +327,26 @@ export const PRICING_ADDONS: PricingAddon[] = [
     ],
     tracks: [
       {
-        label: "הקמת קמפיין בפלטפורמה אחת",
-        labelEn: "One-platform campaign setup",
+        label: "הקמת קמפיין במטא",
+        labelEn: "Meta campaign setup",
         price: "690 ₪",
         priceEn: "₪690",
       },
       {
-        label: "הקמת קמפיין מתקדם",
-        labelEn: "Advanced campaign setup",
+        label: "הקמת קמפיין מתקדם במטא",
+        labelEn: "Advanced Meta campaign setup",
         price: "990 ₪",
         priceEn: "₪990",
       },
-      {
-        label: "הקמת קמפיין גם במטא וגם בגוגל",
-        labelEn: "Meta + Google campaign setup",
-        price: "1,490 ₪",
-        priceEn: "₪1,490",
-      },
     ],
-    note: "המחיר כולל הקמה בלבד ואינו כולל ניהול שוטף או תקציב פרסום.",
+    note: "המחיר כולל הקמה בלבד ואינו כולל ניהול שוטף או תקציב פרסום. כרגע השירות זמין למטא בלבד.",
     noteEn:
-      "Price covers setup only — ongoing management and ad budget are not included.",
+      "Price covers setup only — ongoing management and ad budget are not included. Currently available for Meta only.",
   },
   {
-    key: "content-scheduling",
-    name: "יצירת ותזמון תוכן",
-    nameEn: "Content creation & scheduling",
+    key: "content-creation",
+    name: "יצירת תוכן",
+    nameEn: "Content creation",
     description:
       "צוות Bizuply יוצר עבור העסק תוכן מעוצב ומוכן לפרסום בפייסבוק ובאינסטגרם.",
     descriptionEn:
@@ -527,7 +360,6 @@ export const PRICING_ADDONS: PricingAddon[] = [
       "8 פוסטים בחודש",
       "כתיבה ועיצוב",
       "התאמה לפייסבוק ולאינסטגרם",
-      "תזמון פרסומים",
       "לוח תוכן חודשי",
       "דוח בסיסי",
     ],
@@ -535,8 +367,7 @@ export const PRICING_ADDONS: PricingAddon[] = [
       "8 posts per month",
       "Copywriting and design",
       "Facebook and Instagram adaptation",
-      "Publishing schedule",
-      "Monthly content calendar",
+      "Monthly content plan",
       "Basic report",
     ],
     tracks: [
@@ -559,8 +390,8 @@ export const PRICING_ADDONS: PricingAddon[] = [
         priceEn: "₪1,790 / month",
       },
     ],
-    note: "צילום מקצועי אינו כלול.",
-    noteEn: "Professional photography is not included.",
+    note: "צילום מקצועי ותזמון פרסומים אינם כלולים כרגע.",
+    noteEn: "Professional photography and publishing scheduling are not included at this time.",
   },
   {
     key: "collab-manager",
@@ -608,5 +439,190 @@ export const PRICING_ADDONS: PricingAddon[] = [
     note: "השירות אינו מתחייב לסגירת מספר מסוים של שיתופי פעולה.",
     noteEn:
       "The service does not guarantee a specific number of closed collaborations.",
+  },
+
+  /* ── נציגים ושירות אנושי ── */
+  {
+    key: "lead-first-response",
+    name: "מענה ראשוני ללידים",
+    nameEn: "Initial lead response",
+    description:
+      "נציג אנושי חוזר ללידים חדשים, מבצע בירור ראשוני, מסנן את הפנייה ומעדכן את כל הפרטים ב-CRM.",
+    descriptionEn:
+      "A human agent calls new leads back, runs an initial discovery, filters the inquiry, and updates every detail in the CRM.",
+    category: "agents",
+    icon: "headset",
+    priceLabel: "החל מ־690 ₪ לחודש",
+    priceLabelEn: "From ₪690 / month",
+    accent: "#059669",
+    featured: true,
+    details: [
+      "עד 40 לידים בחודש",
+      "עד 3 ניסיונות התקשרות לכל ליד",
+      "שאלון ראשוני מותאם לעסק",
+      "סינון לידים",
+      "עדכון סטטוס וסיכום שיחה",
+      "דוח פעילות חודשי",
+      "ליד נוסף: 15 ₪",
+    ],
+    detailsEn: [
+      "Up to 40 leads per month",
+      "Up to 3 call attempts per lead",
+      "Business-tailored discovery questionnaire",
+      "Lead filtering",
+      "Status update and call summary",
+      "Monthly activity report",
+      "Extra lead: ₪15",
+    ],
+  },
+  {
+    key: "personal-sales-rep",
+    name: "נציג מכירות אישי",
+    nameEn: "Personal sales representative",
+    description:
+      "נציג שמבצע שיחות מכירה, שולח הצעות, מטפל בהתנגדויות ועוקב אחר הלקוחות עד לקבלת החלטה.",
+    descriptionEn:
+      "A rep who runs sales calls, sends proposals, handles objections, and follows clients through to a decision.",
+    category: "agents",
+    icon: "user-tie",
+    priceLabel: "1,490 ₪ לחודש + 5% הצלחה",
+    priceLabelEn: "₪1,490 / month + 5% success fee",
+    accent: "#047857",
+    details: [
+      "עד 40 לידים חמים בחודש",
+      "שיחות מכירה",
+      "פולואפים",
+      "שליחת הצעות מחיר מוכנות",
+      "עדכון תוצאות ב-CRM",
+      "דוח מכירות חודשי",
+      "ליד נוסף: 25 ₪",
+    ],
+    detailsEn: [
+      "Up to 40 hot leads per month",
+      "Sales calls",
+      "Follow-ups",
+      "Sending ready-made proposals",
+      "Results updated in CRM",
+      "Monthly sales report",
+      "Extra lead: ₪25",
+    ],
+  },
+  {
+    key: "old-leads-followup",
+    name: "פולואפים ללידים ישנים",
+    nameEn: "Old leads follow-up",
+    description:
+      "חזרה ללידים שלא נסגרו — ב-CRM מוגדר מה נחשב ליד ישן, והם עוברים אוטומטית לטאב ייעודי לפולואפ ובדיקת רלוונטיות.",
+    descriptionEn:
+      "Re-engage unclosed leads — define what counts as an old lead in the CRM, and they move automatically into a dedicated follow-up tab to verify relevance.",
+    category: "agents",
+    icon: "refresh",
+    priceLabel: "590 ₪ חד־פעמי",
+    priceLabelEn: "₪590 one-time",
+    accent: "#10B981",
+    details: [
+      "הגדרת ליד ישן לפי ימים ללא פעילות",
+      "העברה אוטומטית לטאב לידים ישנים ב-CRM",
+      "טיפול בעד 50 לידים",
+      "עד 2 ניסיונות התקשרות",
+      "בדיקת רלוונטיות והחזרה לתהליך המכירה",
+    ],
+    detailsEn: [
+      "Define old leads by days without activity",
+      "Automatic move to the CRM Old Leads tab",
+      "Handle up to 50 leads",
+      "Up to 2 call attempts",
+      "Relevance check and return to the sales process",
+    ],
+    tracks: [
+      {
+        label: "חבילת 50 לידים",
+        labelEn: "50-lead pack",
+        price: "590 ₪",
+        priceEn: "₪590",
+      },
+      {
+        label: "חבילת 100 לידים",
+        labelEn: "100-lead pack",
+        price: "990 ₪",
+        priceEn: "₪990",
+      },
+    ],
+  },
+
+  /* ── תמיכה חודשית ── */
+  {
+    key: "crm-manager",
+    name: "מנהל CRM אישי",
+    nameEn: "Personal CRM manager",
+    description:
+      "מנהל שעובר על הלידים, מסדר סטטוסים, פותח משימות ודואג שאף לקוח לא יישכח.",
+    descriptionEn:
+      "A manager who reviews leads, organizes statuses, opens tasks, and makes sure no client is forgotten.",
+    category: "support",
+    icon: "clipboard",
+    priceLabel: "החל מ־490 ₪ לחודש",
+    priceLabelEn: "From ₪490 / month",
+    accent: "#3B82F6",
+    details: [
+      "בדיקת המערכת פעמיים בשבוע",
+      "סידור סטטוסים",
+      "איתור לידים ללא טיפול",
+      "פתיחת משימות ותזכורות",
+      "ניקוי כפילויות בסיסי",
+      "דוח חודשי",
+    ],
+    detailsEn: [
+      "System review twice a week",
+      "Status cleanup",
+      "Find untreated leads",
+      "Open tasks and reminders",
+      "Basic duplicate cleanup",
+      "Monthly report",
+    ],
+    tracks: [
+      {
+        label: "בדיקה פעמיים בשבוע",
+        labelEn: "Twice-weekly review",
+        price: "החל מ־490 ₪ לחודש",
+        priceEn: "From ₪490 / month",
+      },
+      {
+        label: "מסלול בדיקה יומית",
+        labelEn: "Daily review track",
+        price: "890 ₪ לחודש",
+        priceEn: "₪890 / month",
+      },
+    ],
+  },
+  {
+    key: "external-support",
+    name: "שירות לקוחות חיצוני",
+    nameEn: "External customer support",
+    description:
+      "נציג מטפל בפניות של לקוחות קיימים דרך טלפון, WhatsApp או מערכת הפניות.",
+    descriptionEn:
+      "An agent handles existing-customer inquiries by phone, WhatsApp, or your ticket system.",
+    category: "support",
+    icon: "message",
+    priceLabel: "החל מ־1,290 ₪ לחודש",
+    priceLabelEn: "From ₪1,290 / month",
+    accent: "#2563EB",
+    details: [
+      "עד 10 שעות טיפול בחודש",
+      "מענה לפי נהלי העסק",
+      "עדכון הפניות במערכת",
+      "העברת מקרים מורכבים לבעל העסק",
+      "דוח שירות חודשי",
+      "שעה נוספת: 75 ₪",
+    ],
+    detailsEn: [
+      "Up to 10 support hours per month",
+      "Responses according to business procedures",
+      "Tickets updated in the system",
+      "Complex cases escalated to the owner",
+      "Monthly service report",
+      "Extra hour: ₪75",
+    ],
   },
 ];
