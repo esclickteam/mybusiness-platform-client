@@ -86,6 +86,7 @@ type StoreProduct = {
   isFeatured?: boolean;
   isDemo?: boolean;
   isDigital?: boolean;
+  productKind?: "physical" | "digital" | "service";
   digitalFileUrl?: string;
   tags?: string[];
 };
@@ -110,6 +111,13 @@ type StoreSettingsData = {
   defaultShippingPrice?: number;
   freeShippingFrom?: number | null;
   shippingPolicy?: string;
+  pickupOptions?: {
+    enabled?: boolean;
+    locationName?: string;
+    address?: string;
+    hours?: string;
+    instructions?: string;
+  };
   returnPolicy?: string;
   checkoutNote?: string;
   checkoutAppearance?: Partial<CheckoutAppearance>;
@@ -199,6 +207,21 @@ type StoreCoupon = {
   isActive?: boolean;
 };
 
+type StoreOrderShippingAddress =
+  | string
+  | {
+      fullName?: string;
+      phone?: string;
+      country?: string;
+      city?: string;
+      street?: string;
+      houseNumber?: string;
+      apartment?: string;
+      postalCode?: string;
+      additionalInstructions?: string;
+      rawText?: string;
+    };
+
 type StoreOrder = {
   _id: string;
   orderNumber: string;
@@ -214,6 +237,14 @@ type StoreOrder = {
   paymentStatus?: string;
   paymentMethod?: string;
   createdAt?: string;
+  fulfillmentType?: "shipping" | "pickup" | "none";
+  shippingAddress?: StoreOrderShippingAddress;
+  pickupDetails?: {
+    locationName?: string;
+    address?: string;
+    hours?: string;
+    instructions?: string;
+  };
   confirmationEmail?: {
     status?: "none" | "queued" | "sending" | "sent" | "failed" | "skipped";
     lastSentAt?: string | null;
@@ -227,6 +258,24 @@ type StoreOrder = {
     image?: string;
   }>;
 };
+
+function formatOrderShippingAddress(value?: StoreOrderShippingAddress) {
+  if (!value) return "";
+  if (typeof value === "string") return value.trim();
+  if (value.rawText) return String(value.rawText).trim();
+  return [
+    value.fullName,
+    value.phone,
+    [value.street, value.houseNumber].filter(Boolean).join(" "),
+    value.apartment ? `דירה ${value.apartment}` : "",
+    [value.city, value.postalCode].filter(Boolean).join(" "),
+    value.country,
+    value.additionalInstructions,
+  ]
+    .map((line) => String(line || "").trim())
+    .filter(Boolean)
+    .join("\n");
+}
 
 type AuthUserShape = {
   businessId?: string;
@@ -255,6 +304,13 @@ const emptySettings: StoreSettingsData = {
   defaultShippingPrice: 0,
   freeShippingFrom: null,
   shippingPolicy: "",
+  pickupOptions: {
+    enabled: true,
+    locationName: "",
+    address: "",
+    hours: "",
+    instructions: "",
+  },
   returnPolicy: "",
   checkoutNote: "",
   checkoutAppearance: { ...DEFAULT_CHECKOUT_APPEARANCE },
@@ -317,6 +373,7 @@ const emptyProductForm = {
   status: "active",
   isFeatured: false,
   isDigital: false,
+  productKind: "physical" as "physical" | "digital" | "service",
   digitalFileUrl: "",
 };
 
@@ -938,7 +995,15 @@ export default function StoreProductsManager({
       tags: Array.isArray(product.tags) ? product.tags.join(", ") : "",
       status: product.status || "active",
       isFeatured: Boolean(product.isFeatured),
-      isDigital: Boolean(product.isDigital),
+      isDigital: Boolean(product.isDigital) || product.productKind === "digital",
+      productKind:
+        product.productKind === "digital" ||
+        product.productKind === "service" ||
+        product.productKind === "physical"
+          ? product.productKind
+          : product.isDigital
+            ? "digital"
+            : "physical",
       digitalFileUrl: product.digitalFileUrl || "",
       images: JSON.stringify(product.images || []),
       imageIds: JSON.stringify(product.imageIds || []),
@@ -2425,22 +2490,30 @@ function ProductFormView({
                 מוצר מומלץ
               </label>
 
-              <label className="flex items-center gap-2 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm font-black text-slate-700">
-                <input
-                  type="checkbox"
-                  checked={productForm.isDigital}
-                  onChange={(e) =>
+              <div>
+                <FieldLabel>סוג מוצר</FieldLabel>
+                <SelectInput
+                  value={productForm.productKind || (productForm.isDigital ? "digital" : "physical")}
+                  onChange={(e) => {
+                    const productKind = e.target.value as
+                      | "physical"
+                      | "digital"
+                      | "service";
                     setProductForm((prev) => ({
                       ...prev,
-                      isDigital: e.target.checked,
-                    }))
-                  }
-                />
-                מוצר דיגיטלי
-              </label>
+                      productKind,
+                      isDigital: productKind === "digital",
+                    }));
+                  }}
+                >
+                  <option value="physical">מוצר פיזי</option>
+                  <option value="digital">מוצר דיגיטלי</option>
+                  <option value="service">שירות</option>
+                </SelectInput>
+              </div>
             </div>
 
-            {productForm.isDigital && (
+            {(productForm.productKind === "digital" || productForm.isDigital) && (
               <div>
                 <FieldLabel>קישור לקובץ דיגיטלי</FieldLabel>
                 <TextInput
@@ -2999,6 +3072,88 @@ function SettingsView({
                   }))
                 }
               />
+            </div>
+
+            <div className="rounded-[24px] border border-slate-200 bg-slate-50 p-4">
+              <p className="text-sm font-black text-slate-800">איסוף עצמי</p>
+              <label className="mt-3 flex items-center gap-2 text-sm font-bold text-slate-700">
+                <input
+                  type="checkbox"
+                  checked={settings.pickupOptions?.enabled !== false}
+                  onChange={(e) =>
+                    setSettings((prev) => ({
+                      ...prev,
+                      pickupOptions: {
+                        ...(prev.pickupOptions || {}),
+                        enabled: e.target.checked,
+                      },
+                    }))
+                  }
+                />
+                לאפשר איסוף עצמי בקופה
+              </label>
+              <div className="mt-3 grid gap-3">
+                <div>
+                  <FieldLabel>שם נקודת האיסוף</FieldLabel>
+                  <TextInput
+                    value={settings.pickupOptions?.locationName || ""}
+                    onChange={(e) =>
+                      setSettings((prev) => ({
+                        ...prev,
+                        pickupOptions: {
+                          ...(prev.pickupOptions || {}),
+                          locationName: e.target.value,
+                        },
+                      }))
+                    }
+                  />
+                </div>
+                <div>
+                  <FieldLabel>כתובת</FieldLabel>
+                  <TextInput
+                    value={settings.pickupOptions?.address || ""}
+                    onChange={(e) =>
+                      setSettings((prev) => ({
+                        ...prev,
+                        pickupOptions: {
+                          ...(prev.pickupOptions || {}),
+                          address: e.target.value,
+                        },
+                      }))
+                    }
+                  />
+                </div>
+                <div>
+                  <FieldLabel>שעות פעילות</FieldLabel>
+                  <TextInput
+                    value={settings.pickupOptions?.hours || ""}
+                    onChange={(e) =>
+                      setSettings((prev) => ({
+                        ...prev,
+                        pickupOptions: {
+                          ...(prev.pickupOptions || {}),
+                          hours: e.target.value,
+                        },
+                      }))
+                    }
+                  />
+                </div>
+                <div>
+                  <FieldLabel>הוראות איסוף</FieldLabel>
+                  <TextArea
+                    value={settings.pickupOptions?.instructions || ""}
+                    onChange={(e) =>
+                      setSettings((prev) => ({
+                        ...prev,
+                        pickupOptions: {
+                          ...(prev.pickupOptions || {}),
+                          instructions: e.target.value,
+                        },
+                      }))
+                    }
+                  />
+                </div>
+              </div>
             </div>
 
             <div>
@@ -3610,6 +3765,37 @@ function OrdersView({
                         </span>
                       </div>
                     ))}
+                  </div>
+                ) : null}
+
+                {order.fulfillmentType === "pickup" ||
+                order.pickupDetails?.locationName ||
+                order.pickupDetails?.address ? (
+                  <div className="mt-4 rounded-2xl bg-amber-50 px-4 py-3 text-sm font-bold text-amber-900 whitespace-pre-wrap">
+                    <p className="mb-1 text-xs font-black uppercase tracking-wide text-amber-700">
+                      איסוף עצמי
+                    </p>
+                    {[
+                      order.pickupDetails?.locationName,
+                      order.pickupDetails?.address,
+                      order.pickupDetails?.hours
+                        ? `שעות: ${order.pickupDetails.hours}`
+                        : "",
+                      order.pickupDetails?.instructions
+                        ? `הוראות: ${order.pickupDetails.instructions}`
+                        : "",
+                    ]
+                      .filter(Boolean)
+                      .join("\n")}
+                  </div>
+                ) : null}
+
+                {formatOrderShippingAddress(order.shippingAddress) ? (
+                  <div className="mt-4 rounded-2xl bg-slate-50 px-4 py-3 text-sm font-bold text-slate-700 whitespace-pre-wrap">
+                    <p className="mb-1 text-xs font-black uppercase tracking-wide text-slate-500">
+                      כתובת למשלוח
+                    </p>
+                    {formatOrderShippingAddress(order.shippingAddress)}
                   </div>
                 ) : null}
               </div>
