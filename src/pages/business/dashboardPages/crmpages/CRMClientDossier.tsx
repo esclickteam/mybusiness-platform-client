@@ -1,15 +1,20 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import {
   ArrowLeft,
   CalendarDays,
+  CheckSquare,
   CreditCard,
   Edit3,
+  FileText,
   Layers3,
   LockKeyhole,
   Mail,
   MapPin,
   MessageCircle,
+  MessagesSquare,
   Phone,
+  Route,
+  Tag,
   Trash2,
   UserRound,
   Wallet,
@@ -29,10 +34,26 @@ import ClientDocumentationPanel, {
 
 export type ClientDetailTab =
   | "profile"
+  | "communication"
   | "appointments"
   | "payments"
+  | "tasks"
+  | "files"
   | "client-data"
   | "portal-access";
+
+export type ClientSourceDetails = {
+  source?: string;
+  sourceLabel?: string;
+  provider?: string;
+  formName?: string;
+  formId?: string;
+  pageId?: string;
+  externalLeadId?: string;
+  campaignName?: string;
+  message?: string;
+  details?: { label?: string; value?: string }[];
+};
 
 export type CRMClientDossierClient = {
   _id: string;
@@ -40,6 +61,12 @@ export type CRMClientDossierClient = {
   phone: string;
   email: string;
   address: string;
+  tags?: string[];
+  notes?: string;
+  leadId?: string;
+  leadSource?: string;
+  sourceDetails?: ClientSourceDetails;
+  convertedAt?: string;
   appointments?: unknown[];
   appointmentsCount?: number;
   totalSpent?: number;
@@ -79,6 +106,7 @@ type CRMClientDossierProps = {
   onEdit: () => void;
   onDelete: (event?: React.MouseEvent<HTMLButtonElement>) => void;
   onActivitiesChange: (activities: ClientActivity[]) => void;
+  onTagsChange?: (tags: string[]) => Promise<void> | void;
   clientDataPanel: React.ReactNode;
   portalAccessPanel?: React.ReactNode;
 };
@@ -174,6 +202,7 @@ export default function CRMClientDossier({
   onEdit,
   onDelete,
   onActivitiesChange,
+  onTagsChange,
   clientDataPanel,
   portalAccessPanel,
 }: CRMClientDossierProps) {
@@ -182,6 +211,40 @@ export default function CRMClientDossier({
   const locale = i18n.language?.startsWith("he") ? "he-IL" : i18n.language || "he-IL";
   const emDash = t("crm.common.emDash");
   const whatsappPhone = cleanWhatsAppPhone(client.phone);
+  const activities = client.activities || [];
+
+  const openTasks = useMemo(
+    () =>
+      activities.filter(
+        (activity) => activity.type === "task" && !activity.taskDone
+      ),
+    [activities]
+  );
+
+  const files = useMemo(() => {
+    const items: {
+      url: string;
+      name: string;
+      mimeType?: string;
+      activityText?: string;
+      createdAt?: string;
+    }[] = [];
+
+    activities.forEach((activity) => {
+      (activity.attachments || []).forEach((file) => {
+        if (!file?.url) return;
+        items.push({
+          url: file.url,
+          name: file.name || t("crm.clients.documentation.attachedFile"),
+          mimeType: file.mimeType,
+          activityText: activity.text,
+          createdAt: activity.createdAt || activity.occurredAt,
+        });
+      });
+    });
+
+    return items;
+  }, [activities, t]);
 
   const { data: fetchedAppointments = [], isLoading: appointmentsLoading } =
     useQuery({
@@ -193,6 +256,35 @@ export default function CRMClientDossier({
         return Array.isArray(data) ? data : [];
       },
     });
+
+  const { data: waMessages = [], isLoading: waLoading } = useQuery({
+    queryKey: ["client-wa-messages", client._id, client.phone, client.leadId],
+    queryFn: async () => {
+      if (client.leadId) {
+        try {
+          const { data } = await API.get<{
+            success?: boolean;
+            messages?: unknown[];
+          }>(`/whatsapp/leads/${client.leadId}/messages`);
+          if (Array.isArray(data?.messages) && data.messages.length > 0) {
+            return data.messages;
+          }
+        } catch {
+          /* fall through to phone conversation */
+        }
+      }
+
+      const phone = cleanWhatsAppPhone(client.phone);
+      if (!phone) return [];
+
+      const { data } = await API.get<{
+        success?: boolean;
+        messages?: unknown[];
+      }>(`/whatsapp/conversations/${encodeURIComponent(phone)}`);
+      return Array.isArray(data?.messages) ? data.messages : [];
+    },
+    enabled: Boolean(client._id && (client.phone || client.leadId)),
+  });
 
   const appointments =
     fetchedAppointments.length > 0
@@ -338,6 +430,12 @@ export default function CRMClientDossier({
             onClick={() => setActiveTab("profile")}
           />
           <TabButton
+            active={resolvedTab === "communication"}
+            icon={MessagesSquare}
+            label={t("crm.clients.details.tabCommunication")}
+            onClick={() => setActiveTab("communication")}
+          />
+          <TabButton
             active={resolvedTab === "appointments"}
             icon={CalendarDays}
             label={t("crm.clients.details.tabAppointments")}
@@ -348,6 +446,20 @@ export default function CRMClientDossier({
             icon={Wallet}
             label={t("crm.clients.details.tabPayments")}
             onClick={() => setActiveTab("payments")}
+          />
+          <TabButton
+            active={resolvedTab === "tasks"}
+            icon={CheckSquare}
+            label={t("crm.clients.details.tabTasks")}
+            badge={openTasks.length || undefined}
+            onClick={() => setActiveTab("tasks")}
+          />
+          <TabButton
+            active={resolvedTab === "files"}
+            icon={FileText}
+            label={t("crm.clients.details.tabFiles")}
+            badge={files.length || undefined}
+            onClick={() => setActiveTab("files")}
           />
           <TabButton
             active={resolvedTab === "client-data"}
@@ -487,6 +599,13 @@ export default function CRMClientDossier({
                   </div>
                 </section>
 
+                <TagsPanel
+                  tags={client.tags || []}
+                  onTagsChange={onTagsChange}
+                />
+
+                <JourneyPanel client={client} locale={locale} emDash={emDash} />
+
                 <ClientDocumentationPanel
                   clientId={client._id}
                   businessId={businessId}
@@ -494,6 +613,17 @@ export default function CRMClientDossier({
                   onActivitiesChange={onActivitiesChange}
                 />
               </>
+            )}
+
+            {resolvedTab === "communication" && (
+              <CommunicationPanel
+                messages={waMessages}
+                loading={waLoading}
+                locale={locale}
+                emDash={emDash}
+                whatsappPhone={whatsappPhone}
+                phone={client.phone}
+              />
             )}
 
             {resolvedTab === "appointments" && (
@@ -512,6 +642,28 @@ export default function CRMClientDossier({
                 finance={finance}
                 locale={locale}
                 emDash={emDash}
+              />
+            )}
+
+            {resolvedTab === "tasks" && (
+              <TasksPanel
+                tasks={openTasks}
+                allTaskCount={
+                  activities.filter((activity) => activity.type === "task")
+                    .length
+                }
+                locale={locale}
+                emDash={emDash}
+                onGoDocument={() => setActiveTab("profile")}
+              />
+            )}
+
+            {resolvedTab === "files" && (
+              <FilesPanel
+                files={files}
+                locale={locale}
+                emDash={emDash}
+                onGoDocument={() => setActiveTab("profile")}
               />
             )}
 
@@ -592,11 +744,13 @@ function TabButton({
   active,
   icon: Icon,
   label,
+  badge,
   onClick,
 }: {
   active: boolean;
   icon: React.ElementType;
   label: string;
+  badge?: number;
   onClick: () => void;
 }) {
   return (
@@ -612,6 +766,11 @@ function TabButton({
     >
       <Icon className="h-4 w-4" />
       {label}
+      {typeof badge === "number" && badge > 0 && (
+        <span className="rounded-full bg-sky-100 px-1.5 py-0.5 text-[10px] font-black text-sky-700">
+          {badge}
+        </span>
+      )}
       <span
         className={[
           "absolute inset-x-2 bottom-0 h-0.5 rounded-full",
@@ -906,6 +1065,435 @@ function PaymentsPanel({
               })}
             </tbody>
           </table>
+        </div>
+      )}
+    </section>
+  );
+}
+
+function TagsPanel({
+  tags,
+  onTagsChange,
+}: {
+  tags: string[];
+  onTagsChange?: (tags: string[]) => Promise<void> | void;
+}) {
+  const { t } = useTranslation();
+  const [draft, setDraft] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  const addTag = async () => {
+    const value = draft.trim();
+    if (!value || !onTagsChange) return;
+    if (tags.includes(value)) {
+      setDraft("");
+      return;
+    }
+    setSaving(true);
+    try {
+      await onTagsChange([...tags, value]);
+      setDraft("");
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const removeTag = async (tag: string) => {
+    if (!onTagsChange) return;
+    setSaving(true);
+    try {
+      await onTagsChange(tags.filter((item) => item !== tag));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  return (
+    <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+      <div className="mb-3 flex items-center gap-2">
+        <Tag className="h-4 w-4 text-violet-700" />
+        <h3 className="text-lg font-black text-slate-800">
+          {t("crm.clients.tags.title")}
+        </h3>
+      </div>
+      <p className="mb-3 text-sm font-bold text-slate-500">
+        {t("crm.clients.tags.subtitle")}
+      </p>
+
+      <div className="mb-3 flex flex-wrap gap-2">
+        {tags.length === 0 ? (
+          <span className="text-sm font-bold text-slate-400">
+            {t("crm.clients.tags.empty")}
+          </span>
+        ) : (
+          tags.map((tag) => (
+            <button
+              key={tag}
+              type="button"
+              onClick={() => void removeTag(tag)}
+              disabled={saving || !onTagsChange}
+              className="inline-flex items-center gap-1 rounded-full bg-violet-50 px-3 py-1 text-xs font-black text-violet-700 ring-1 ring-violet-100 transition hover:bg-violet-100 disabled:opacity-60"
+            >
+              {tag}
+              {onTagsChange && <span aria-hidden>×</span>}
+            </button>
+          ))
+        )}
+      </div>
+
+      {onTagsChange && (
+        <div className="flex flex-col gap-2 sm:flex-row">
+          <input
+            value={draft}
+            onChange={(event) => setDraft(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key === "Enter") {
+                event.preventDefault();
+                void addTag();
+              }
+            }}
+            placeholder={t("crm.clients.tags.placeholder")}
+            className="h-10 flex-1 rounded-xl border border-slate-200 bg-slate-50 px-3 text-sm font-bold text-slate-700 outline-none focus:bg-white focus:ring-4 focus:ring-sky-100"
+          />
+          <button
+            type="button"
+            onClick={() => void addTag()}
+            disabled={saving || !draft.trim()}
+            className="inline-flex h-10 items-center justify-center rounded-xl bg-[#6D28D9] px-4 text-sm font-black text-white transition hover:bg-[#5B21B6] disabled:opacity-50"
+          >
+            {t("crm.clients.tags.add")}
+          </button>
+        </div>
+      )}
+    </section>
+  );
+}
+
+function JourneyPanel({
+  client,
+  locale,
+  emDash,
+}: {
+  client: CRMClientDossierClient;
+  locale: string;
+  emDash: string;
+}) {
+  const { t } = useTranslation();
+  const source = client.sourceDetails || {};
+  const hasJourney = Boolean(
+    client.leadId ||
+      client.leadSource ||
+      source.sourceLabel ||
+      source.formName ||
+      source.message
+  );
+
+  return (
+    <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+      <div className="mb-3 flex items-center gap-2">
+        <Route className="h-4 w-4 text-sky-700" />
+        <h3 className="text-lg font-black text-slate-800">
+          {t("crm.clients.journey.title")}
+        </h3>
+      </div>
+      <p className="mb-3 text-sm font-bold text-slate-500">
+        {t("crm.clients.journey.subtitle")}
+      </p>
+
+      {!hasJourney ? (
+        <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 p-5 text-center text-sm font-bold text-slate-400">
+          {t("crm.clients.journey.empty")}
+        </div>
+      ) : (
+        <div className="grid gap-3 sm:grid-cols-2">
+          <InfoCard
+            label={t("crm.clients.journey.source")}
+            value={
+              source.sourceLabel ||
+              client.leadSource ||
+              t("crm.clients.journey.fromLead")
+            }
+          />
+          <InfoCard
+            label={t("crm.clients.journey.convertedAt")}
+            value={formatDate(client.convertedAt, locale, emDash)}
+          />
+          <InfoCard
+            label={t("crm.clients.journey.form")}
+            value={source.formName || source.formId || emDash}
+          />
+          <InfoCard
+            label={t("crm.clients.journey.campaign")}
+            value={source.campaignName || emDash}
+          />
+          {source.message && (
+            <div className="sm:col-span-2">
+              <InfoCard
+                label={t("crm.clients.journey.originalMessage")}
+                value={source.message}
+              />
+            </div>
+          )}
+        </div>
+      )}
+    </section>
+  );
+}
+
+function CommunicationPanel({
+  messages,
+  loading,
+  locale,
+  emDash,
+  whatsappPhone,
+  phone,
+}: {
+  messages: unknown[];
+  loading: boolean;
+  locale: string;
+  emDash: string;
+  whatsappPhone: string;
+  phone?: string;
+}) {
+  const { t } = useTranslation();
+
+  return (
+    <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+        <div>
+          <h3 className="text-lg font-black text-slate-800">
+            {t("crm.clients.communication.title")}
+          </h3>
+          <p className="mt-1 text-sm font-bold text-slate-500">
+            {t("crm.clients.communication.subtitle")}
+          </p>
+        </div>
+        <div className="flex gap-2">
+          {whatsappPhone && (
+            <a
+              href={`https://wa.me/${whatsappPhone}`}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex h-10 items-center gap-2 rounded-xl bg-sky-50 px-3 text-sm font-black text-sky-700 ring-1 ring-sky-100"
+            >
+              <MessageCircle className="h-4 w-4" />
+              {t("crm.common.whatsapp")}
+            </a>
+          )}
+          {phone && (
+            <a
+              href={`tel:${phone}`}
+              className="inline-flex h-10 items-center gap-2 rounded-xl bg-sky-50 px-3 text-sm font-black text-sky-700 ring-1 ring-sky-100"
+            >
+              <Phone className="h-4 w-4" />
+              {t("crm.common.call")}
+            </a>
+          )}
+        </div>
+      </div>
+
+      {loading ? (
+        <div className="flex justify-center py-10">
+          <BizuplyLoader />
+        </div>
+      ) : messages.length === 0 ? (
+        <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-10 text-center">
+          <MessagesSquare className="mx-auto h-10 w-10 text-slate-300" />
+          <h4 className="mt-3 text-xl font-black text-slate-800">
+            {t("crm.clients.communication.emptyTitle")}
+          </h4>
+          <p className="mt-2 text-sm font-bold text-slate-500">
+            {t("crm.clients.communication.emptyDescription")}
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-2">
+          {messages.map((raw, index) => {
+            const item = raw as Record<string, any>;
+            const outbound =
+              item.direction === "outbound" ||
+              item.direction === "out" ||
+              item.fromMe === true;
+            const text =
+              item.body || item.text || item.message || item.content || "";
+            const at = item.createdAt || item.timestamp || item.sentAt;
+
+            return (
+              <div
+                key={String(item._id || item.id || index)}
+                className={[
+                  "rounded-2xl px-3 py-2.5 text-sm font-semibold",
+                  outbound
+                    ? "ms-8 bg-violet-50 text-violet-900"
+                    : "me-8 bg-slate-50 text-slate-800",
+                ].join(" ")}
+              >
+                <div className="mb-1 flex items-center justify-between gap-2 text-[11px] font-black text-slate-400">
+                  <span>
+                    {outbound
+                      ? t("crm.clients.communication.outbound")
+                      : t("crm.clients.communication.inbound")}
+                  </span>
+                  <span>{formatDate(at, locale, emDash)}</span>
+                </div>
+                <p className="whitespace-pre-wrap leading-6">{text || emDash}</p>
+              </div>
+            );
+          })}
+        </div>
+      )}
+    </section>
+  );
+}
+
+function TasksPanel({
+  tasks,
+  allTaskCount,
+  locale,
+  emDash,
+  onGoDocument,
+}: {
+  tasks: ClientActivity[];
+  allTaskCount: number;
+  locale: string;
+  emDash: string;
+  onGoDocument: () => void;
+}) {
+  const { t } = useTranslation();
+
+  return (
+    <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+        <div>
+          <h3 className="text-lg font-black text-slate-800">
+            {t("crm.clients.tasksPanel.title")}
+          </h3>
+          <p className="mt-1 text-sm font-bold text-slate-500">
+            {t("crm.clients.tasksPanel.subtitle", {
+              open: tasks.length,
+              total: allTaskCount,
+            })}
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={onGoDocument}
+          className="inline-flex h-10 items-center rounded-xl border border-slate-200 bg-slate-50 px-3 text-xs font-black text-slate-700"
+        >
+          {t("crm.clients.tasksPanel.addFromDocs")}
+        </button>
+      </div>
+
+      {tasks.length === 0 ? (
+        <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-10 text-center">
+          <CheckSquare className="mx-auto h-10 w-10 text-slate-300" />
+          <h4 className="mt-3 text-xl font-black text-slate-800">
+            {t("crm.clients.tasksPanel.emptyTitle")}
+          </h4>
+          <p className="mt-2 text-sm font-bold text-slate-500">
+            {t("crm.clients.tasksPanel.emptyDescription")}
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-2">
+          {tasks.map((task) => (
+            <article
+              key={task._id || task.id}
+              className="rounded-2xl border border-amber-100 bg-amber-50/50 p-4"
+            >
+              <div className="flex flex-wrap items-center justify-between gap-2">
+                <span className="rounded-full bg-white px-2.5 py-0.5 text-[11px] font-black text-amber-700 ring-1 ring-amber-100">
+                  {t("crm.common.task")}
+                </span>
+                <span className="text-[11px] font-bold text-slate-400">
+                  {t("crm.clients.documentation.dueTimeLabel", {
+                    time: formatDate(task.taskDueAt, locale, emDash),
+                  })}
+                </span>
+              </div>
+              <p className="mt-2 whitespace-pre-wrap text-sm font-semibold text-slate-800">
+                {task.text}
+              </p>
+            </article>
+          ))}
+        </div>
+      )}
+    </section>
+  );
+}
+
+function FilesPanel({
+  files,
+  locale,
+  emDash,
+  onGoDocument,
+}: {
+  files: {
+    url: string;
+    name: string;
+    mimeType?: string;
+    activityText?: string;
+    createdAt?: string;
+  }[];
+  locale: string;
+  emDash: string;
+  onGoDocument: () => void;
+}) {
+  const { t } = useTranslation();
+
+  return (
+    <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+        <div>
+          <h3 className="text-lg font-black text-slate-800">
+            {t("crm.clients.filesPanel.title")}
+          </h3>
+          <p className="mt-1 text-sm font-bold text-slate-500">
+            {t("crm.clients.filesPanel.subtitle")}
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={onGoDocument}
+          className="inline-flex h-10 items-center rounded-xl border border-slate-200 bg-slate-50 px-3 text-xs font-black text-slate-700"
+        >
+          {t("crm.clients.filesPanel.addFromDocs")}
+        </button>
+      </div>
+
+      {files.length === 0 ? (
+        <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-10 text-center">
+          <FileText className="mx-auto h-10 w-10 text-slate-300" />
+          <h4 className="mt-3 text-xl font-black text-slate-800">
+            {t("crm.clients.filesPanel.emptyTitle")}
+          </h4>
+          <p className="mt-2 text-sm font-bold text-slate-500">
+            {t("crm.clients.filesPanel.emptyDescription")}
+          </p>
+        </div>
+      ) : (
+        <div className="grid gap-3 sm:grid-cols-2">
+          {files.map((file, index) => (
+            <a
+              key={`${file.url}-${index}`}
+              href={file.url}
+              target="_blank"
+              rel="noreferrer"
+              className="rounded-2xl border border-slate-100 bg-slate-50 p-4 transition hover:border-sky-100 hover:bg-white"
+            >
+              <p className="truncate text-sm font-black text-slate-800">
+                {file.name}
+              </p>
+              <p className="mt-1 text-xs font-bold text-slate-400">
+                {formatShortDate(file.createdAt, locale, emDash)}
+              </p>
+              {file.activityText && (
+                <p className="mt-2 line-clamp-2 text-xs font-semibold text-slate-500">
+                  {file.activityText}
+                </p>
+              )}
+            </a>
+          ))}
         </div>
       )}
     </section>

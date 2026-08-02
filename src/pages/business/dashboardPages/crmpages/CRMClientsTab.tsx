@@ -97,6 +97,12 @@ type CRMClient = {
   phone: string;
   email: string;
   address: string;
+  tags?: string[];
+  notes?: string;
+  leadId?: string;
+  leadSource?: string;
+  sourceDetails?: Record<string, unknown>;
+  convertedAt?: string;
   appointments?: unknown[];
   appointmentsCount?: number;
   totalSpent?: number;
@@ -313,6 +319,12 @@ async function fetchClients(
     phone: String(client.phone || "").replace(/\s/g, ""),
     email: String(client.email || "").replace(/\s/g, ""),
     address: client.address || "",
+    tags: Array.isArray(client.tags) ? client.tags.map(String) : [],
+    notes: client.notes || "",
+    leadId: client.leadId ? String(client.leadId) : undefined,
+    leadSource: client.leadSource || "",
+    sourceDetails: client.sourceDetails || {},
+    convertedAt: client.convertedAt,
     appointments: Array.isArray(client.appointments) ? client.appointments : [],
     appointmentsCount: Number(
       client.appointmentsCount ??
@@ -918,6 +930,26 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
     });
   };
 
+  const handleClientTagsChange = async (tags: string[]) => {
+    if (!selectedClient) return;
+
+    await API.put(`/crm-clients/${selectedClient._id}`, { tags });
+
+    const nextClient: CRMClient = {
+      ...selectedClient,
+      tags,
+      updatedAt: new Date().toISOString(),
+    };
+
+    setSelectedClient(nextClient);
+    queryClient.setQueryData<CRMClient[]>(["clients", businessId], (old) => {
+      if (!old) return old;
+      return old.map((client) =>
+        client._id === selectedClient._id ? nextClient : client
+      );
+    });
+  };
+
   if (mode === "view" && selectedClient) {
     return (
       <CRMClientDossier
@@ -930,6 +962,7 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
         onEdit={() => setMode("edit")}
         onDelete={(event) => handleDelete(selectedClient, event)}
         onActivitiesChange={handleClientActivitiesChange}
+        onTagsChange={handleClientTagsChange}
         clientDataPanel={
           <ClientDataPanel
             client={selectedClient}

@@ -17,12 +17,14 @@ import {
   Search,
   Sparkles,
   Trophy,
+  UserCheck,
+  UserPlus,
   UserRound,
   UsersRound,
   Webhook,
 } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import type { TFunction } from "i18next";
 
 import MetaLeadAdsIntegration from "./MetaLeadAdsIntegration";
@@ -90,6 +92,12 @@ type Lead = {
   source?: string;
   provider?: string;
   status?: LeadStatus;
+
+  assignedToUserId?: string;
+  assignedToName?: string;
+  assignedAt?: string;
+  convertedClientId?: string;
+  convertedAt?: string;
 
   externalLeadId?: string;
   externalPageId?: string;
@@ -781,10 +789,23 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
     searchParams.get("google_connected") === "1" ||
     Boolean(searchParams.get("google_error"));
   const deepLinkLeadId = searchParams.get("leadId") || "";
+  const navigate = useNavigate();
+
+  const AUTO_CONVERT_KEY = "bizuply_auto_convert_lead_on_take";
 
   const [leads, setLeads] = useState<Lead[]>([]);
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null);
   const [leadDrawerView, setLeadDrawerView] = useState<"form" | "full">("form");
+  const [autoConvertOnTake, setAutoConvertOnTake] = useState(() => {
+    try {
+      const stored = localStorage.getItem(AUTO_CONVERT_KEY);
+      return stored === null ? true : stored === "1";
+    } catch {
+      return true;
+    }
+  });
+  const [takingLead, setTakingLead] = useState(false);
+  const [convertingLead, setConvertingLead] = useState(false);
   const [isDesktopLeads, setIsDesktopLeads] = useState(() =>
     typeof window !== "undefined"
       ? window.matchMedia("(min-width: 1280px)").matches
@@ -1263,6 +1284,94 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
     ]);
   }, [selectedLead, localActivitiesByLead]);
 
+  const applyLeadUpdate = (leadId: string, nextLead: Lead) => {
+    setLeads((current) =>
+      current.map((lead) => (lead._id === leadId ? nextLead : lead))
+    );
+    setSelectedLead((current) =>
+      current && current._id === leadId ? nextLead : current
+    );
+  };
+
+  const openConvertedClient = (clientId?: string) => {
+    if (!clientId) return;
+    navigate(`../clients?clientId=${encodeURIComponent(clientId)}`);
+  };
+
+  const handleToggleAutoConvert = (enabled: boolean) => {
+    setAutoConvertOnTake(enabled);
+    try {
+      localStorage.setItem(AUTO_CONVERT_KEY, enabled ? "1" : "0");
+    } catch {
+      /* ignore */
+    }
+  };
+
+  const handleTakeLead = async () => {
+    if (!selectedLead || takingLead) return;
+    setTakingLead(true);
+    setError("");
+
+    try {
+      const { data } = await API.post<{
+        success: boolean;
+        lead?: Lead;
+        client?: { _id?: string };
+        converted?: boolean;
+        message?: string;
+      }>(`/crm/leads/${selectedLead._id}/take`, {
+        autoConvert: autoConvertOnTake,
+      });
+
+      if (data.lead) {
+        applyLeadUpdate(selectedLead._id, data.lead);
+      }
+
+      if (data.converted && data.client?._id) {
+        openConvertedClient(String(data.client._id));
+      }
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : t("crm.leads.errors.takeLeadFailed")
+      );
+    } finally {
+      setTakingLead(false);
+    }
+  };
+
+  const handleConvertLead = async () => {
+    if (!selectedLead || convertingLead) return;
+    setConvertingLead(true);
+    setError("");
+
+    try {
+      const { data } = await API.post<{
+        success: boolean;
+        lead?: Lead;
+        client?: { _id?: string };
+        message?: string;
+      }>(`/crm/leads/${selectedLead._id}/convert`);
+
+      if (data.lead) {
+        applyLeadUpdate(selectedLead._id, data.lead);
+      }
+
+      if (data.client?._id) {
+        openConvertedClient(String(data.client._id));
+      }
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : t("crm.leads.errors.convertLeadFailed")
+      );
+    } finally {
+      setConvertingLead(false);
+    }
+  };
+
   const handleStatusChange = async (leadId: string, status: LeadStatus) => {
     const previousLeads = leads;
 
@@ -1280,17 +1389,17 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
       const { data: saved } = await API.patch<{
         success: boolean;
         lead?: Lead;
+        client?: { _id?: string };
+        converted?: boolean;
         activity?: LeadActivity;
       }>(`/crm/leads/${leadId}/status`, { status });
 
       if (saved.lead) {
-        setLeads((current) =>
-          current.map((lead) => (lead._id === leadId ? saved.lead! : lead))
-        );
+        applyLeadUpdate(leadId, saved.lead);
+      }
 
-        setSelectedLead((current) =>
-          current && current._id === leadId ? saved.lead! : current
-        );
+      if (status === "converted" && saved.client?._id) {
+        openConvertedClient(String(saved.client._id));
       }
     } catch (err) {
       setLeads(previousLeads);
@@ -2005,7 +2114,8 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                                       <UserRound className="h-4 w-4" />
                                     </div>
                                     <span className="truncate text-xs font-bold text-slate-500">
-                                      {t("crm.leads.unassignedAgent")}
+                                      {lead.assignedToName ||
+                                        t("crm.leads.unassignedAgent")}
                                     </span>
                                   </div>
 
@@ -2194,9 +2304,62 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   {(isDesktopLeads || leadDrawerView === "full") && (
                     <LeadStatusBadge status={selectedStatus} />
+                  )}
+
+                  {(isDesktopLeads || leadDrawerView === "full") && (
+                    <label className="inline-flex h-9 items-center gap-2 rounded-xl border border-violet-100 bg-violet-50 px-3 text-[11px] font-black text-violet-700">
+                      <input
+                        type="checkbox"
+                        checked={autoConvertOnTake}
+                        onChange={(event) =>
+                          handleToggleAutoConvert(event.target.checked)
+                        }
+                        className="h-3.5 w-3.5 accent-[#6D28D9]"
+                      />
+                      {t("crm.leads.drawer.autoConvertOnTake")}
+                    </label>
+                  )}
+
+                  {!selectedLead.convertedClientId && (
+                    <button
+                      type="button"
+                      onClick={() => void handleTakeLead()}
+                      disabled={takingLead}
+                      className="inline-flex h-9 items-center gap-1.5 rounded-xl bg-[#6D28D9] px-3 text-xs font-black text-white transition hover:bg-[#5B21B6] disabled:opacity-60"
+                    >
+                      <UserCheck className="h-3.5 w-3.5" />
+                      {takingLead
+                        ? t("crm.leads.drawer.takingLead")
+                        : t("crm.leads.drawer.takeLead")}
+                    </button>
+                  )}
+
+                  {selectedLead.convertedClientId ? (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        openConvertedClient(selectedLead.convertedClientId)
+                      }
+                      className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-emerald-200 bg-emerald-50 px-3 text-xs font-black text-emerald-700 transition hover:bg-emerald-100"
+                    >
+                      <UserPlus className="h-3.5 w-3.5" />
+                      {t("crm.leads.drawer.openClientFile")}
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => void handleConvertLead()}
+                      disabled={convertingLead}
+                      className="inline-flex h-9 items-center gap-1.5 rounded-xl border border-sky-200 bg-sky-50 px-3 text-xs font-black text-sky-700 transition hover:bg-sky-100 disabled:opacity-60"
+                    >
+                      <UserPlus className="h-3.5 w-3.5" />
+                      {convertingLead
+                        ? t("crm.leads.drawer.convertingLead")
+                        : t("crm.leads.drawer.convertToClient")}
+                    </button>
                   )}
 
                   {(isDesktopLeads || leadDrawerView === "full") && (
@@ -2442,7 +2605,10 @@ export default function CRMLeadsTab({ businessId }: CRMLeadsTabProps) {
                             {t("crm.leads.drawer.clientStage")}
                           </p>
                           <p className="mt-1.5 text-sm font-black text-slate-900">
-                            {t("crm.leads.drawer.clientStageLead")}
+                            {selectedLead.convertedClientId ||
+                            selectedStatus === "converted"
+                              ? t("crm.leads.drawer.clientStageClient")
+                              : t("crm.leads.drawer.clientStageLead")}
                           </p>
                         </div>
 
