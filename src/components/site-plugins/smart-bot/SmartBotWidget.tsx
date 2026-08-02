@@ -145,8 +145,8 @@ export default function SmartBotWidget({
     }
     // Keep labeled triggers fully on-screen on both edges.
     const triggerStyleNow = settings.triggerStyle || "both";
-    const padX = triggerStyleNow === "icon" ? 6 : 10;
-    const padY = 10;
+    const padX = triggerStyleNow === "icon" ? 8 : 16;
+    const padY = 12;
     const next = {
       x: Math.min(100 - padX, Math.max(padX, dragRef.current.origX - dx)),
       y: Math.min(100 - padY, Math.max(padY, dragRef.current.origY + dy)),
@@ -287,7 +287,12 @@ export default function SmartBotWidget({
     showContact || awaitingInput || !currentNode ? [] : currentNode.options || [];
 
   const ui = (
-    <div data-bizuply-smart-bot="true" dir="rtl">
+    <div
+      data-bizuply-smart-bot="true"
+      data-bizuply-widget="smart-bot"
+      data-bizuply-plugin-runtime="true"
+      dir="rtl"
+    >
       <button
         type="button"
         onClick={() => {
@@ -300,7 +305,7 @@ export default function SmartBotWidget({
         onPointerUp={onPointerUp}
         onPointerCancel={onPointerUp}
         aria-label={settings.triggerLabel || "צריכים עזרה?"}
-        className={`fixed z-[99990] flex items-center gap-2 shadow-lg transition hover:scale-105 ${
+        className={`fixed z-[2147483000] flex items-center gap-2 shadow-lg transition hover:scale-105 ${
           isEditor ? "cursor-grab active:cursor-grabbing ring-2 ring-teal-400 ring-offset-2" : ""
         } ${
           showLabel
@@ -308,12 +313,9 @@ export default function SmartBotWidget({
             : "h-14 w-14 justify-center rounded-full"
         }`}
         style={{
-          // Anchor to the nearest side so wide labels grow inward, not off-screen.
-          ...(dragPos.x > 50
-            ? { left: `${100 - dragPos.x}%`, right: "auto" }
-            : { right: `${dragPos.x}%`, left: "auto" }),
+          right: `${dragPos.x}%`,
           bottom: `${100 - dragPos.y}%`,
-          transform: "translateY(50%)",
+          transform: "translate(50%, 50%)",
           background: triggerColor,
           color: triggerTextColor,
           maxWidth: "calc(100vw - 1.5rem)",
@@ -327,10 +329,22 @@ export default function SmartBotWidget({
           </span>
         ) : null}
       </button>
+      {isEditor ? (
+        <div
+          className="fixed z-[2147483000] rounded-md bg-slate-900/80 px-2 py-0.5 text-center text-[10px] font-bold text-white pointer-events-none"
+          style={{
+            right: `${dragPos.x}%`,
+            bottom: `calc(${100 - dragPos.y}% - 28px)`,
+            transform: "translateX(50%)",
+          }}
+        >
+          בוט חכם · גררו
+        </div>
+      ) : null}
 
       {open ? (
         <div
-          className="fixed z-[99995] w-[min(100vw-1.5rem,380px)]"
+          className="fixed z-[2147483001] w-[min(100vw-1.5rem,380px)]"
           style={{
             ...(dragPos.x > 50
               ? { left: "0.75rem", right: "auto" }
@@ -517,5 +531,5 @@ export default function SmartBotWidget({
   );
 
   if (typeof document === "undefined") return ui;
-  return createPortal(ui, document.body);
+  return createPortal(ui, document.documentElement);
 }

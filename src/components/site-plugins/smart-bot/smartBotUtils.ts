@@ -208,11 +208,17 @@ export function mergeSmartBotSettings(
     if (merged.positionAnchor !== "right-bottom" && Number.isFinite(x) && x > 50) {
       x = 100 - x;
     }
+    // Keep the centered trigger (translate 50%/50%) fully on-screen.
+    const pad = merged.triggerStyle === "icon" ? 8 : 16;
     merged.triggerPosition = {
-      x: Math.min(96, Math.max(4, Number.isFinite(x) ? x : 8)),
-      y: Math.min(96, Math.max(4, Number.isFinite(y) ? y : 82)),
+      x: Math.min(100 - pad, Math.max(pad, Number.isFinite(x) ? x : 8)),
+      y: Math.min(100 - pad, Math.max(pad, Number.isFinite(y) ? y : 82)),
     };
     merged.positionAnchor = "right-bottom";
+  }
+
+  if (merged.isActive !== false) {
+    merged.isActive = true;
   }
 
   if (!merged.startNodeId || !merged.nodes.some((n) => n.id === merged.startNodeId)) {
