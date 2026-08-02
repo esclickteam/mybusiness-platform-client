@@ -23,6 +23,12 @@ export type PaymentProviderCatalogItem = {
   supportsRecurring?: boolean;
   /** When true, connect button shows בקרוב and credentials cannot be entered */
   comingSoon?: boolean;
+  /**
+   * Pilot readiness. Max by Hyp stays Beta until a real terminal transaction is verified.
+   * Matches server verificationStatus: implemented_unverified | production_verified
+   */
+  verificationStatus?: "implemented_unverified" | "production_verified";
+  betaMessage?: string;
   createAccountUrl?: string;
   contactUrl?: string;
   learnMoreUrl?: string;
@@ -80,28 +86,36 @@ export const SITE_PAYMENT_PROVIDERS: PaymentProviderCatalogItem[] = [
     badges: ["תומך בתשלומים", "תומך בהוראות קבע"],
     supportsInstallments: true,
     supportsRecurring: true,
+    verificationStatus: "implemented_unverified",
+    betaMessage: "Beta — החיבור יושלם לאחר בדיקת עסקה ראשונה",
     createAccountUrl: "https://lp.hyp.co.il/api/",
     contactUrl: "https://pay.hyp.co.il/",
     learnMoreUrl: "https://developers.hyp.co.il/pay/",
     instructions: [
-      "הזינו Masof (מספר מסוף), API Key ו-PassP מחשבון Hyp Pay (הגדרות → דף תשלום ו-API).",
-      "PassP נדרש לפי התיעוד הרשמי של Hyp Pay ל-APISign.",
+      "היכנסו לפורטל Hyp Pay (pay.hyp.co.il) → הגדרות → דף תשלום ו-API.",
+      "העתיקו את Masof — מספר המסוף הייחודי של העסק.",
+      "העתיקו את API Key (KEY) מאותו מסך.",
+      "העתיקו את PassP — סיסמת ה-API. נדרשת רשמית ל-APISign (SIGN + VERIFY).",
+      "ודאו שהמטבע בחשבון Hyp זהה למטבע החנות בביזאפלי (מומלץ ILS / ₪).",
+      "הגדירו Webhook/Notify לכתובת: /api/store/payments/hyp/webhook/{businessId}.",
       "אישור תשלום מתבצע רק אחרי VERIFY מול pay.hyp.co.il — לא מדף ההצלחה בדפדפן.",
-      "הגדירו בפורטל Hyp כתובת הצלחה ו-Webhook לכתובת api שלכם: /api/store/payments/hyp/webhook/{businessId}.",
-      "ודאו שמטבע האתר תואם למטבע בחשבון Max (מומלץ ₪).",
     ],
     fields: [
       {
         key: "terminalNumber",
         label: "Masof (מספר מסוף)",
-        placeholder: "לדוגמה 0010345518",
+        placeholder: "מספר מסוף מפורטל Hyp",
+        type: "password",
         required: true,
+        keepOnEmptyHint: "השאירו ריק כדי לשמור על ה-Masof הקיים",
       },
       {
         key: "apiKey",
         label: "API Key",
-        placeholder: "מפתח API (KEY)",
+        placeholder: "מפתח API (KEY) מפורטל Hyp",
+        type: "password",
         required: true,
+        keepOnEmptyHint: "השאירו ריק כדי לשמור על ה-API Key הקיים",
       },
       {
         key: "apiSecret",
@@ -109,7 +123,7 @@ export const SITE_PAYMENT_PROVIDERS: PaymentProviderCatalogItem[] = [
         placeholder: "סיסמת API מפורטל Hyp",
         type: "password",
         required: true,
-        keepOnEmptyHint: "השאירו ריק כדי לשמור על הסיסמה הקיימת",
+        keepOnEmptyHint: "השאירו ריק כדי לשמור על ה-PassP הקיים",
       },
     ],
   },

@@ -74,6 +74,12 @@ export default function PaymentsProviderGallery({
                         בקרוב
                       </span>
                     ) : null}
+                    {!comingSoon &&
+                    item.verificationStatus === "implemented_unverified" ? (
+                      <span className="inline-flex items-center gap-1 rounded-full bg-amber-50 px-2 py-0.5 text-[11px] font-semibold text-amber-800 ring-1 ring-amber-200">
+                        Beta
+                      </span>
+                    ) : null}
                     {!comingSoon && connected ? (
                       <span className="inline-flex items-center gap-1 rounded-full bg-emerald-50 px-2 py-0.5 text-[11px] font-semibold text-emerald-700 ring-1 ring-emerald-100">
                         <CheckCircle2 size={12} />
@@ -89,6 +95,11 @@ export default function PaymentsProviderGallery({
                   <p className="mt-1 text-sm text-slate-500">
                     {item.description}
                   </p>
+                  {!comingSoon && item.betaMessage ? (
+                    <p className="mt-1 text-xs font-medium text-amber-800">
+                      {item.betaMessage}
+                    </p>
+                  ) : null}
                   {!comingSoon && item.badges?.length ? (
                     <div className="mt-2 flex flex-wrap justify-start gap-1.5">
                       {item.badges.map((badge) => (
