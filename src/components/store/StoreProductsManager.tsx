@@ -529,6 +529,7 @@ export default function StoreProductsManager({
   const [products, setProducts] = useState<StoreProduct[]>([]);
   const [coupons, setCoupons] = useState<StoreCoupon[]>([]);
   const [orders, setOrders] = useState<StoreOrder[]>([]);
+  const [resendingOrderId, setResendingOrderId] = useState<string | null>(null);
 
   const [productForm, setProductForm] =
     useState<Record<string, any>>(emptyProductForm);
@@ -1137,15 +1138,21 @@ export default function StoreProductsManager({
   };
 
   const resendOrderConfirmationEmail = async (orderId: string) => {
-    if (!businessId) return;
+    if (!businessId || resendingOrderId) return;
 
+    setResendingOrderId(orderId);
     try {
       const { data } = await API.post(
         `/store/${businessId}/orders/${orderId}/resend-confirmation-email`
       );
       await loadStoreData();
       if (data?.skipped) {
-        showMessage("error", data?.reason || "המייל לא נשלח מחדש");
+        showMessage(
+          "error",
+          data?.reason === "resend_in_progress"
+            ? "שליחה מחדש כבר בתהליך"
+            : data?.reason || "המייל לא נשלח מחדש"
+        );
         return;
       }
       showMessage("success", "מייל אישור ההזמנה נכנס לתור שליחה");
@@ -1155,6 +1162,8 @@ export default function StoreProductsManager({
         "error",
         err?.response?.data?.error || "שגיאה בשליחה מחדש של מייל האישור"
       );
+    } finally {
+      setResendingOrderId(null);
     }
   };
 
@@ -1397,6 +1406,7 @@ export default function StoreProductsManager({
             settings={settings}
             onUpdateOrderStatus={updateOrderStatus}
             onResendConfirmationEmail={resendOrderConfirmationEmail}
+            resendingOrderId={resendingOrderId}
           />
         )}
       </div>
@@ -3448,6 +3458,7 @@ function OrdersView({
   settings,
   onUpdateOrderStatus,
   onResendConfirmationEmail,
+  resendingOrderId,
 }: {
   orders: StoreOrder[];
   settings: StoreSettingsData;
@@ -3457,6 +3468,7 @@ function OrdersView({
     options?: { sendConfirmationEmail?: boolean }
   ) => void;
   onResendConfirmationEmail: (orderId: string) => void;
+  resendingOrderId?: string | null;
 }) {
   return (
     <div className="rounded-[32px] border border-slate-200 bg-white p-5 shadow-sm">
@@ -3509,11 +3521,11 @@ function OrdersView({
                           order.paymentStatus !== "paid"
                         ) {
                           const markPaid = window.confirm(
-                            "לסמן את ההזמנה כשולמה?"
+                            "לסמן את ההזמנה כשולמה?\n\nפעולה זו תירשם עם המשתמש המבצע והזמן."
                           );
                           if (!markPaid) return;
                           const sendConfirmationEmail = window.confirm(
-                            "לשלוח מייל אישור הזמנה ללקוח?"
+                            "בחירה מפורשת: לשלוח עכשיו מייל אישור הזמנה ללקוח?\n\nאישור = לשלוח מייל\nביטול = לסמן כשולם בלי מייל\n\nשליחה נוספת אפשרית רק דרך ״שליחה מחדש״."
                           );
                           onUpdateOrderStatus(order._id, nextStatus, {
                             sendConfirmationEmail,
@@ -3549,10 +3561,13 @@ function OrdersView({
                   {canResend ? (
                     <button
                       type="button"
+                      disabled={resendingOrderId === order._id}
                       onClick={() => onResendConfirmationEmail(order._id)}
-                      className="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-black text-slate-700 hover:bg-slate-50"
+                      className="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-black text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50"
                     >
-                      שליחה מחדש של מייל אישור
+                      {resendingOrderId === order._id
+                        ? "שולח…"
+                        : "שליחה מחדש של מייל אישור"}
                     </button>
                   ) : null}
                 </div>
