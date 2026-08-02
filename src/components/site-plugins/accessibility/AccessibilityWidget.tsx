@@ -117,6 +117,39 @@ export default function AccessibilityWidget({
     dragPosRef.current = dragPos;
   }, [dragPos]);
 
+  function getEdgePads(el?: HTMLElement | null) {
+    const vw = Math.max(1, window.innerWidth);
+    const vh = Math.max(1, window.innerHeight);
+    const rect = el?.getBoundingClientRect();
+    const halfW = Math.max(28, (rect?.width || 56) / 2);
+    const halfH = Math.max(28, (rect?.height || 56) / 2);
+    // Allow the button to sit flush against the viewport edges.
+    return {
+      padX: Math.min(12, Math.max(1.2, (halfW / vw) * 100)),
+      padY: Math.min(12, Math.max(1.2, (halfH / vh) * 100)),
+    };
+  }
+
+  function clampPos(
+    x: number,
+    y: number,
+    el?: HTMLElement | null,
+    snap = false
+  ) {
+    const { padX, padY } = getEdgePads(el);
+    let nextX = Math.min(100 - padX, Math.max(padX, x));
+    let nextY = Math.min(100 - padY, Math.max(padY, y));
+    if (snap) {
+      const snapX = Math.max(4, padX * 2.2);
+      const snapY = Math.max(4, padY * 2.2);
+      if (nextX <= padX + snapX) nextX = padX;
+      if (nextX >= 100 - padX - snapX) nextX = 100 - padX;
+      if (nextY <= padY + snapY) nextY = padY;
+      if (nextY >= 100 - padY - snapY) nextY = 100 - padY;
+    }
+    return { x: nextX, y: nextY };
+  }
+
   function onPointerDown(e: React.PointerEvent) {
     if (!isEditor) return;
     e.preventDefault();
@@ -140,10 +173,11 @@ export default function AccessibilityWidget({
     const dx = ((e.clientX - dragRef.current.startX) / vw) * 100;
     const dy = ((e.clientY - dragRef.current.startY) / vh) * 100;
     if (Math.abs(dx) > 0.3 || Math.abs(dy) > 0.3) dragRef.current.moved = true;
-    const next = {
-      x: Math.min(94, Math.max(6, dragRef.current.origX - dx)),
-      y: Math.min(94, Math.max(6, dragRef.current.origY + dy)),
-    };
+    const next = clampPos(
+      dragRef.current.origX - dx,
+      dragRef.current.origY + dy,
+      e.currentTarget as HTMLElement
+    );
     dragPosRef.current = next;
     setDragPos(next);
   }
@@ -154,8 +188,16 @@ export default function AccessibilityWidget({
     const moved = dragRef.current.moved;
     dragRef.current = null;
     if (moved) {
+      const snapped = clampPos(
+        dragPosRef.current.x,
+        dragPosRef.current.y,
+        e.currentTarget as HTMLElement,
+        true
+      );
+      dragPosRef.current = snapped;
+      setDragPos(snapped);
       suppressClickRef.current = true;
-      onPositionChange?.(dragPosRef.current);
+      onPositionChange?.(snapped);
       e.preventDefault();
       e.stopPropagation();
       window.setTimeout(() => {
@@ -301,10 +343,9 @@ export default function AccessibilityWidget({
         style={
           useFreePos
             ? {
-                ...(dragPos.x > 50
-                  ? { left: `${100 - dragPos.x}%`, right: "auto" }
-                  : { right: `${dragPos.x}%`, left: "auto" }),
+                right: `${dragPos.x}%`,
                 bottom: `${100 - dragPos.y}%`,
+                left: "auto",
                 maxWidth: "calc(100vw - 1.5rem)",
               }
             : undefined

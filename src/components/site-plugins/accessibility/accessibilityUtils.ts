@@ -236,12 +236,12 @@ export function mergeAccessibilitySettings(
       stored?.widgetPosition === "bottom-right" ? "bottom-right" : "bottom-left",
     triggerPosition: {
       x: Number.isFinite(Number(stored?.triggerPosition?.x))
-        ? Number(stored?.triggerPosition?.x)
+        ? Math.min(98.8, Math.max(1.2, Number(stored?.triggerPosition?.x)))
         : stored?.widgetPosition === "bottom-right"
           ? 8
           : 88,
       y: Number.isFinite(Number(stored?.triggerPosition?.y))
-        ? Number(stored?.triggerPosition?.y)
+        ? Math.min(98.8, Math.max(1.2, Number(stored?.triggerPosition?.y)))
         : 88,
     },
     accentColor: String(stored?.accentColor || DEFAULT_ACCESSIBILITY_SETTINGS.accentColor),
