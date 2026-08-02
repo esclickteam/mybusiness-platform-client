@@ -9,6 +9,8 @@ type UseVisualKeyboardShortcutsOptions = {
   onUndo?: () => void;
   onRedo?: () => void;
   onDelete?: () => void;
+  onCopy?: () => void;
+  onPaste?: () => void;
   onDuplicate?: () => void;
   onSave?: () => void;
   onClearSelection?: () => void;
@@ -37,6 +39,8 @@ export function useVisualKeyboardShortcuts({
   onUndo,
   onRedo,
   onDelete,
+  onCopy,
+  onPaste,
   onDuplicate,
   onSave,
   onClearSelection,
@@ -77,6 +81,18 @@ export function useVisualKeyboardShortcuts({
 
       if (typing) return;
 
+      if (meta && key === "c" && selectedElementId) {
+        event.preventDefault();
+        onCopy?.();
+        return;
+      }
+
+      if (meta && key === "v") {
+        event.preventDefault();
+        onPaste?.();
+        return;
+      }
+
       if ((key === "delete" || key === "backspace") && selectedElementId) {
         event.preventDefault();
         onDelete?.();
@@ -103,6 +119,8 @@ export function useVisualKeyboardShortcuts({
     onUndo,
     onRedo,
     onDelete,
+    onCopy,
+    onPaste,
     onDuplicate,
     onSave,
     onClearSelection,
