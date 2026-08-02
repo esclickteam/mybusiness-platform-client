@@ -102,6 +102,8 @@ export default function AccessibilityWidget({
     startY: number;
     origX: number;
     origY: number;
+    padX: number;
+    padY: number;
     moved: boolean;
   } | null>(null);
   const dragPosRef = useRef(dragPos);
@@ -121,46 +123,36 @@ export default function AccessibilityWidget({
     const vw = Math.max(1, window.innerWidth);
     const vh = Math.max(1, window.innerHeight);
     const rect = el?.getBoundingClientRect();
-    const halfW = Math.max(28, (rect?.width || 56) / 2);
-    const halfH = Math.max(28, (rect?.height || 56) / 2);
-    // Allow the button to sit flush against the viewport edges.
+    const width = Math.max(40, el?.offsetWidth || rect?.width || 56);
+    const height = Math.max(40, el?.offsetHeight || rect?.height || 56);
     return {
-      padX: Math.min(12, Math.max(1.2, (halfW / vw) * 100)),
-      padY: Math.min(12, Math.max(1.2, (halfH / vh) * 100)),
+      padX: Math.min(10, Math.max(1, ((width / 2) / vw) * 100)),
+      padY: Math.min(10, Math.max(1, ((height / 2) / vh) * 100)),
     };
   }
 
-  function clampPos(
-    x: number,
-    y: number,
-    el?: HTMLElement | null,
-    snap = false
-  ) {
-    const { padX, padY } = getEdgePads(el);
-    let nextX = Math.min(100 - padX, Math.max(padX, x));
-    let nextY = Math.min(100 - padY, Math.max(padY, y));
-    if (snap) {
-      const snapX = Math.max(4, padX * 2.2);
-      const snapY = Math.max(4, padY * 2.2);
-      if (nextX <= padX + snapX) nextX = padX;
-      if (nextX >= 100 - padX - snapX) nextX = 100 - padX;
-      if (nextY <= padY + snapY) nextY = padY;
-      if (nextY >= 100 - padY - snapY) nextY = 100 - padY;
-    }
-    return { x: nextX, y: nextY };
+  function clampPos(x: number, y: number, padX: number, padY: number) {
+    return {
+      x: Math.min(100 - padX, Math.max(padX, x)),
+      y: Math.min(100 - padY, Math.max(padY, y)),
+    };
   }
 
   function onPointerDown(e: React.PointerEvent) {
     if (!isEditor) return;
     e.preventDefault();
     e.stopPropagation();
-    (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
+    const target = e.currentTarget as HTMLElement;
+    target.setPointerCapture?.(e.pointerId);
+    const pads = getEdgePads(target);
     dragRef.current = {
       pointerId: e.pointerId,
       startX: e.clientX,
       startY: e.clientY,
       origX: dragPosRef.current.x,
       origY: dragPosRef.current.y,
+      padX: pads.padX,
+      padY: pads.padY,
       moved: false,
     };
   }
@@ -176,7 +168,8 @@ export default function AccessibilityWidget({
     const next = clampPos(
       dragRef.current.origX - dx,
       dragRef.current.origY + dy,
-      e.currentTarget as HTMLElement
+      dragRef.current.padX,
+      dragRef.current.padY
     );
     dragPosRef.current = next;
     setDragPos(next);
@@ -186,18 +179,18 @@ export default function AccessibilityWidget({
     if (!dragRef.current || !isEditor) return;
     if (e.pointerId !== dragRef.current.pointerId) return;
     const moved = dragRef.current.moved;
+    const next = clampPos(
+      dragPosRef.current.x,
+      dragPosRef.current.y,
+      dragRef.current.padX,
+      dragRef.current.padY
+    );
     dragRef.current = null;
     if (moved) {
-      const snapped = clampPos(
-        dragPosRef.current.x,
-        dragPosRef.current.y,
-        e.currentTarget as HTMLElement,
-        true
-      );
-      dragPosRef.current = snapped;
-      setDragPos(snapped);
+      dragPosRef.current = next;
+      setDragPos(next);
       suppressClickRef.current = true;
-      onPositionChange?.(snapped);
+      onPositionChange?.(next);
       e.preventDefault();
       e.stopPropagation();
       window.setTimeout(() => {
