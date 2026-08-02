@@ -93,6 +93,27 @@ function categorySlugOf(product: PublicStoreProduct) {
   return slugify(categoryLabel(product));
 }
 
+/** Seeded sample rows from the store plugin (SKU DEMO-* / tag דמו). */
+export function isSeededDemoCatalogProduct(
+  product: Pick<StoreCatalogProduct, "sku" | "tags">,
+): boolean {
+  if (/^DEMO-/i.test(String(product.sku || "").trim())) return true;
+  const tags = Array.isArray(product.tags) ? product.tags : [];
+  return tags.some((tag) => String(tag).trim() === "דמו");
+}
+
+/**
+ * Once the merchant has real inventory, drop leftover sample rows so every
+ * store template (Velmora, Chanel, Rich/Store runtimes) shows the same catalog.
+ */
+export function preferRealStoreCatalogProducts(
+  products: StoreCatalogProduct[],
+): StoreCatalogProduct[] {
+  if (!Array.isArray(products) || products.length === 0) return [];
+  const real = products.filter((product) => !isSeededDemoCatalogProduct(product));
+  return real.length > 0 ? real : products;
+}
+
 function mapApiProduct(product: PublicStoreProduct): StoreCatalogProduct {
   const { price, compareAtPrice } = resolveStoreUnitPrice(product);
   const trackStock = product.trackStock !== false;
@@ -296,9 +317,9 @@ export function useStorePluginCatalog(options: {
     getPublicShop(businessId)
       .then((shop) => {
         if (cancelled) return;
-        const apiProducts = Array.isArray(shop.products)
-          ? shop.products.map(mapApiProduct)
-          : [];
+        const apiProducts = preferRealStoreCatalogProducts(
+          Array.isArray(shop.products) ? shop.products.map(mapApiProduct) : [],
+        );
         const apiCategories = Array.isArray(shop.categories)
           ? shop.categories.map(mapApiCategory)
           : [];
@@ -319,6 +340,7 @@ export function useStorePluginCatalog(options: {
         );
 
         // Empty store → demos only after resolve (never as a pre-live flash).
+        // Prefer-real already dropped leftover DEMO-* rows when merchant stock exists.
         if (apiProducts.length === 0) {
           setProducts(demo.products);
           setCategories(demo.categories);

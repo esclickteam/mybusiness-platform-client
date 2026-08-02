@@ -99,7 +99,8 @@ export function buildVelmoraShopCatalog(options: {
   storeProducts: StoreCatalogProduct[];
   storeCategories: StoreCatalogCategory[];
 }) {
-  // Live store wins only when it actually has products; empty → demos.
+  // Same contract as Chanel / StoreSiteRuntime / RichStoreSiteRuntime:
+  // live plugin catalog fully replaces template demos when it has products.
   if (options.fromPlugin && options.storeProducts.length > 0) {
     const products = options.storeProducts.map(mapStoreProductToVelmora);
     const categoryNames = Array.from(
@@ -117,6 +118,7 @@ export function buildVelmoraShopCatalog(options: {
     };
   }
 
+  // Preview / empty store only — never mixed with live inventory.
   const products = velmoraDemoProductSeeds.map(mapDemoSeedToVelmora);
   const categoryNames = Array.from(
     new Set(products.map((product) => product.category)),
