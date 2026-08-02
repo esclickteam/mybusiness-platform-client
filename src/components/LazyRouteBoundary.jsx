@@ -6,6 +6,17 @@ import {
 } from "../utils/lazyWithRetry";
 
 const RELOAD_KEY = "bizuply:chunk-reload";
+const DOM_RELOAD_KEY = "bizuply:dom-reconcile-reload";
+
+function isDomReconcileError(error) {
+  const message = String(error?.message || error || "");
+  return (
+    error?.name === "NotFoundError" ||
+    /removeChild/i.test(message) ||
+    /The node to be removed is not a child of this node/i.test(message) ||
+    /insertBefore/i.test(message)
+  );
+}
 
 class LazyRouteBoundary extends React.Component {
   constructor(props) {
@@ -20,14 +31,18 @@ class LazyRouteBoundary extends React.Component {
   componentDidCatch(error, errorInfo) {
     console.error("LazyRouteBoundary:", error, errorInfo);
 
-    if (!isChunkLoadError(error)) return;
+    const shouldAutoReload =
+      isChunkLoadError(error) || isDomReconcileError(error);
+    if (!shouldAutoReload) return;
+
+    const storageKey = isChunkLoadError(error) ? RELOAD_KEY : DOM_RELOAD_KEY;
 
     try {
-      if (sessionStorage.getItem(RELOAD_KEY) === "1") {
-        sessionStorage.removeItem(RELOAD_KEY);
+      if (sessionStorage.getItem(storageKey) === "1") {
+        sessionStorage.removeItem(storageKey);
         return;
       }
-      sessionStorage.setItem(RELOAD_KEY, "1");
+      sessionStorage.setItem(storageKey, "1");
       window.location.reload();
     } catch {
       // fall through to manual reload UI
@@ -36,6 +51,11 @@ class LazyRouteBoundary extends React.Component {
 
   handleReload = () => {
     clearChunkReloadFlag();
+    try {
+      sessionStorage.removeItem(DOM_RELOAD_KEY);
+    } catch {
+      // ignore
+    }
     window.location.reload();
   };
 
@@ -45,6 +65,7 @@ class LazyRouteBoundary extends React.Component {
     }
 
     const chunkError = isChunkLoadError(this.state.error);
+    const domError = isDomReconcileError(this.state.error);
 
     return (
       <div
@@ -53,12 +74,18 @@ class LazyRouteBoundary extends React.Component {
       >
         <div className="rounded-[24px] border border-slate-200 bg-white p-8 shadow-sm">
           <h2 className="text-lg font-black text-slate-800">
-            {chunkError ? "גרסה חדשה של האתר זמינה" : "שגיאה בטעינת העמוד"}
+            {chunkError
+              ? "גרסה חדשה של האתר זמינה"
+              : domError
+                ? "צריך לרענן את העורך"
+                : "שגיאה בטעינת העמוד"}
           </h2>
           <p className="mt-2 text-sm font-bold text-slate-500">
             {chunkError
               ? "הדפדפן ניסה לטעון קובץ ישן. רענון אחד יפתור את זה."
-              : this.state.error?.message || "נסה שוב בעוד רגע."}
+              : domError
+                ? "העורך התעדכן בזמן טעינת התבנית. רענון קצר יחזיר אותך לעריכה."
+                : this.state.error?.message || "נסה שוב בעוד רגע."}
           </p>
           <button
             type="button"

@@ -539,7 +539,13 @@ function isEditorOnlyNode(node: HTMLElement) {
 function hasNestedEditableTextChildren(node: HTMLElement) {
   return Array.from(
     node.querySelectorAll<HTMLElement>(
-      "[data-visual-edit-id][data-visual-edit-type='text'], [data-visual-edit-id][data-editable='text'], [data-visual-edit-id][data-visual-type='text']",
+      [
+        "[data-visual-edit-id][data-visual-edit-type='text']",
+        "[data-visual-edit-id][data-editable='text']",
+        "[data-visual-edit-id][data-visual-type='text']",
+        // Chanel/buttons wrap label text in unmarked editable spans.
+        "[data-editable='text']",
+      ].join(", "),
     ),
   ).some((child) => child !== node);
 }
@@ -596,7 +602,9 @@ function shouldApplyTextToNode(node: HTMLElement) {
 }
 
 function applyMultilineTextValue(node: HTMLElement, value: string) {
-  const normalized = String(value || "").replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+  const normalized = String(value || "")
+    .replace(/\r\n/g, "\n")
+    .replace(/\r/g, "\n");
 
   /*
     Preserve intentional line breaks from the editor (Enter) so publish +
@@ -604,18 +612,65 @@ function applyMultilineTextValue(node: HTMLElement, value: string) {
     single-line nav/CTA labels keep their original wrapping behavior.
   */
   if (normalized.includes("\n")) {
-    const current = String(
+    const currentWhiteSpace = String(
       node.style.whiteSpace || node.style.getPropertyValue("white-space") || "",
     )
       .trim()
       .toLowerCase();
 
-    if (!current || current === "normal" || current === "nowrap") {
+    if (
+      !currentWhiteSpace ||
+      currentWhiteSpace === "normal" ||
+      currentWhiteSpace === "nowrap"
+    ) {
       node.style.whiteSpace = "pre-wrap";
     }
   }
 
-  node.textContent = normalized;
+  const currentText = String(node.textContent || "")
+    .replace(/\r\n/g, "\n")
+    .replace(/\r/g, "\n");
+  if (currentText === normalized) return;
+
+  /*
+    React owns HostText fibers for `{string}` children. Assigning
+    `textContent` destroys those nodes and the next reconcile throws
+    removeChild NotFoundError (shown as <Text> in the stack). Prefer
+    in-place nodeValue updates whenever the leaf is a single text child.
+  */
+  const childNodes = Array.from(node.childNodes);
+  const elementChildren = childNodes.filter(
+    (child) => child.nodeType === Node.ELEMENT_NODE,
+  );
+  const textChildren = childNodes.filter(
+    (child) => child.nodeType === Node.TEXT_NODE,
+  );
+
+  if (elementChildren.length === 0 && textChildren.length === 1) {
+    textChildren[0].nodeValue = normalized;
+    return;
+  }
+
+  if (elementChildren.length === 0 && textChildren.length === 0) {
+    node.appendChild(document.createTextNode(normalized));
+    return;
+  }
+
+  if (elementChildren.length === 0) {
+    node.textContent = normalized;
+    return;
+  }
+
+  // Nested icons/spans: update a direct non-empty text node only — never wipe
+  // the subtree (that orphans React HostText and crashes the editor).
+  const directText = childNodes.find(
+    (child) =>
+      child.nodeType === Node.TEXT_NODE &&
+      String(child.nodeValue || "").replace(/\s+/g, " ").trim(),
+  );
+  if (directText) {
+    directText.nodeValue = normalized;
+  }
 }
 
 function applyTextContentToNode(node: HTMLElement, value: string) {
