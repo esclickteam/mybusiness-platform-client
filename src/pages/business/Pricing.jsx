@@ -249,16 +249,14 @@ export default function Plans() {
 
     return visibleCategories
       .map((category) => {
-        const items = filteredAddons.filter(
-          (addon) => addon.category === category
-        );
-        const featured = items.filter((addon) => addon.featured);
-        const regular = items.filter((addon) => !addon.featured);
+        const items = filteredAddons
+          .filter((addon) => addon.category === category)
+          .slice()
+          .sort((a, b) => Number(Boolean(b.featured)) - Number(Boolean(a.featured)));
         return {
           category,
           accent: PRICING_CATEGORY_ACCENTS[category] || "#4f46e5",
-          featured,
-          regular,
+          items,
           total: items.length,
         };
       })
@@ -720,25 +718,13 @@ export default function Plans() {
                   </span>
                 </div>
 
-                {group.featured.length > 0 && (
-                  <div className="grid gap-4 lg:grid-cols-3">
-                    <AnimatePresence mode="popLayout">
-                      {group.featured.map((addon, index) =>
-                        renderServiceCard(addon, index, true)
-                      )}
-                    </AnimatePresence>
-                  </div>
-                )}
-
-                {group.regular.length > 0 && (
-                  <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-                    <AnimatePresence mode="popLayout">
-                      {group.regular.map((addon, index) =>
-                        renderServiceCard(addon, index, false)
-                      )}
-                    </AnimatePresence>
-                  </div>
-                )}
+                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                  <AnimatePresence mode="popLayout">
+                    {group.items.map((addon, index) =>
+                      renderServiceCard(addon, index, Boolean(addon.featured))
+                    )}
+                  </AnimatePresence>
+                </div>
               </section>
             ))}
           </div>
