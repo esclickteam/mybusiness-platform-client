@@ -180,11 +180,19 @@ function isFreePositionedCanvasMedia(node: HTMLElement) {
 export function fitMediaElementToSlot(
   mediaNode: HTMLImageElement | HTMLVideoElement,
 ) {
-  applyMediaFitStyles(mediaNode, {
-    objectFit: "cover",
-    objectPosition: "center",
-    important: true,
-  });
+  /*
+    Slot sizing only — never force object-fit with !important here.
+    Saved __styles and the Fill/Cover/Contain toolbar must stay in control.
+  */
+  const currentFit = String(
+    mediaNode.style.objectFit ||
+      mediaNode.style.getPropertyValue("object-fit") ||
+      "",
+  ).trim();
+
+  if (!currentFit) {
+    applyMediaFitStyles(mediaNode, { important: false });
+  }
 
   mediaNode.style.display = "block";
   mediaNode.style.boxSizing = "border-box";
