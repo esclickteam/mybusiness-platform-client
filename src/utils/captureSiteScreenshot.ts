@@ -3,6 +3,7 @@ import { toBlob } from "html-to-image";
 import { uploadMediaToCloudinary } from "../components/site-builder/studio/utils/uploadMediaToCloudinary";
 import type { MySiteSummary } from "../api/mySitesApi";
 import API from "../api";
+import { prepareDocumentFontsForCapture } from "./prepareDocumentFontsForCapture";
 import { getTemplateFullPageScreenshotUrl } from "./templateScreenshot";
 
 const DESIGN_WIDTH = 1440;
@@ -122,6 +123,17 @@ async function captureSiteScreenshotBlob(siteId: string): Promise<Blob> {
     `;
     doc.head?.appendChild(style);
 
+    // Make Google Fonts stylesheets readable for html-to-image (CORS).
+    prepareDocumentFontsForCapture(doc);
+    try {
+      await Promise.race([
+        doc.fonts?.ready ?? Promise.resolve(),
+        sleep(1500),
+      ]);
+    } catch {
+      // Ignore font readiness failures — capture can still proceed.
+    }
+
     await sleep(250);
 
     const height = Math.max(
@@ -139,6 +151,8 @@ async function captureSiteScreenshotBlob(siteId: string): Promise<Blob> {
       pixelRatio: 1,
       cacheBust: true,
       backgroundColor: "#ffffff",
+      // Avoid SecurityError spam if a remote sheet still blocks cssRules.
+      skipFonts: true,
       filter: (node) => {
         const tag = String((node as HTMLElement)?.tagName || "").toLowerCase();
         return tag !== "script" && tag !== "noscript";

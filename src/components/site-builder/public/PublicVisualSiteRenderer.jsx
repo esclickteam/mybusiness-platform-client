@@ -977,6 +977,28 @@ function joinCssParts(...parts) {
   return output.join("\n\n");
 }
 
+const GOOGLE_FONT_IMPORT_RE =
+  /@import\s+(?:url\()?['"]?(https:\/\/fonts\.googleapis\.com\/css2?\?[^'")\s]+)['"]?\)?\s*;?/gi;
+
+/** Pull Google Font @imports out of CSS so we can load them with CORS. */
+function extractGoogleFontImports(cssText) {
+  const source = safeString(cssText);
+  const urls = [];
+  const seen = new Set();
+
+  source.replace(GOOGLE_FONT_IMPORT_RE, (_full, url) => {
+    const href = safeString(url).trim();
+    if (href && !seen.has(href)) {
+      seen.add(href);
+      urls.push(href);
+    }
+    return "";
+  });
+
+  const cssWithoutImports = source.replace(GOOGLE_FONT_IMPORT_RE, "").trim();
+  return { css: cssWithoutImports, fontUrls: urls };
+}
+
 function getRendererRuntimeCss(renderer) {
   const source = asPlainObject(renderer);
 
@@ -2175,16 +2197,15 @@ export default function PublicVisualSiteRenderer({
     [visualData],
   );
 
-  const css = useMemo(
-    () =>
-      joinCssParts(
-        getRendererRuntimeCss(renderer),
-        readSavedCss(site, activePage),
-        visualRuntimeCss,
-        customCode.enabled !== false ? safeString(customCode.css) : "",
-      ),
-    [renderer, site, activePage, visualRuntimeCss, customCode],
-  );
+  const { css, fontUrls } = useMemo(() => {
+    const joined = joinCssParts(
+      getRendererRuntimeCss(renderer),
+      readSavedCss(site, activePage),
+      visualRuntimeCss,
+      customCode.enabled !== false ? safeString(customCode.css) : "",
+    );
+    return extractGoogleFontImports(joined);
+  }, [renderer, site, activePage, visualRuntimeCss, customCode]);
 
   const hasSavedHtml = htmlResult.html.length > 20;
   const TemplateComponent = renderer?.Component || null;
@@ -2528,25 +2549,27 @@ export default function PublicVisualSiteRenderer({
       resizeObserver.observe(root);
     }
 
-    console.log("[BizUply Public Renderer]", {
-      templateKey,
-      activePageId: activePage?.id || "",
-      activePageSlug: activePage?.slug || "",
-      renderSource: preferTemplateRender
-        ? "template-render-parity"
-        : hasSavedHtml
-          ? htmlResult.source
-          : TemplateComponent
-            ? "template-fallback-with-saved-data"
-            : "missing-content",
-      selectedHtmlLength: htmlResult.html.length,
-      selectedHtmlScore: htmlResult.score,
-      visualDataKeys: Object.keys(visualData || {}),
-      insertedSections: Object.keys(
-        asPlainObject(visualData?.__insertedSections),
-      ).length,
-      candidates: htmlResult.candidates,
-    });
+    if (import.meta.env.DEV) {
+      console.log("[BizUply Public Renderer]", {
+        templateKey,
+        activePageId: activePage?.id || "",
+        activePageSlug: activePage?.slug || "",
+        renderSource: preferTemplateRender
+          ? "template-render-parity"
+          : hasSavedHtml
+            ? htmlResult.source
+            : TemplateComponent
+              ? "template-fallback-with-saved-data"
+              : "missing-content",
+        selectedHtmlLength: htmlResult.html.length,
+        selectedHtmlScore: htmlResult.score,
+        visualDataKeys: Object.keys(visualData || {}),
+        insertedSections: Object.keys(
+          asPlainObject(visualData?.__insertedSections),
+        ).length,
+        candidates: htmlResult.candidates,
+      });
+    }
 
     return () => {
       mutationObserver?.disconnect();
@@ -2594,6 +2617,18 @@ export default function PublicVisualSiteRenderer({
           resolvedSeo={resolvedSeo}
           faviconUrl={site?.brand?.faviconUrl || ""}
         />
+        {fontUrls.length ? (
+          <Helmet>
+            {fontUrls.map((href) => (
+              <link
+                key={href}
+                rel="stylesheet"
+                href={href}
+                crossOrigin="anonymous"
+              />
+            ))}
+          </Helmet>
+        ) : null}
         {css ? <style>{css}</style> : null}
 
         <a href="#bizuply-main-content" className="bizuply-skip-link">
@@ -2654,6 +2689,18 @@ export default function PublicVisualSiteRenderer({
           resolvedSeo={resolvedSeo}
           faviconUrl={site?.brand?.faviconUrl || ""}
         />
+        {fontUrls.length ? (
+          <Helmet>
+            {fontUrls.map((href) => (
+              <link
+                key={href}
+                rel="stylesheet"
+                href={href}
+                crossOrigin="anonymous"
+              />
+            ))}
+          </Helmet>
+        ) : null}
         {css ? <style>{css}</style> : null}
 
         <a href="#bizuply-main-content" className="bizuply-skip-link">

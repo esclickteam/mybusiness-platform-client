@@ -117,10 +117,14 @@
       })();
     </script>
 
-    <!-- Platform fonts — skipped on published sites (templates load their own) -->
+    <!-- Platform fonts — skipped on published sites + embed previews -->
     <script>
       (function () {
-        if (window.__BIZUPLY_PUBLIC_SITE__) return;
+        var isEmbed =
+          String(location.pathname || "").indexOf("/embed/") === 0;
+        // Embeds render customer templates; platform fonts only cause CORS noise
+        // during html-to-image card screenshots.
+        if (window.__BIZUPLY_PUBLIC_SITE__ || isEmbed) return;
         var pre1 = document.createElement("link");
         pre1.rel = "preconnect";
         pre1.href = "https://fonts.googleapis.com";
@@ -134,6 +138,8 @@
         css.rel = "stylesheet";
         css.href =
           "https://fonts.googleapis.com/css2?family=Assistant:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap";
+        // Required so cssRules can be read (html-to-image / capture tools).
+        css.setAttribute("crossorigin", "anonymous");
         document.head.appendChild(css);
       })();
     </script>
