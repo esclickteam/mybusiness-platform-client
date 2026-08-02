@@ -33,7 +33,8 @@ export default function WhatsAppFloatWidget({
   onPositionChange,
 }: WhatsAppFloatWidgetProps) {
   const cfg = mergeWhatsAppFloatSettings(settings);
-  const phone = String(cfg.phone || "").trim() || String(fallbackPhone || "").trim();
+  const phone =
+    String(cfg.phone || "").trim() || String(fallbackPhone || "").trim();
   const href = buildWhatsAppUrl(phone, cfg.message);
   const hideOnMobile = cfg.showOnMobile === false;
   const missingPhone = !href;
@@ -53,6 +54,8 @@ export default function WhatsAppFloatWidget({
   const suppressClickRef = useRef(false);
 
   useEffect(() => {
+    // Match Smart Bot: never clobber live drag with prop sync.
+    if (dragRef.current) return;
     setDragPos(position);
     dragPosRef.current = position;
   }, [position.x, position.y]);
@@ -63,7 +66,9 @@ export default function WhatsAppFloatWidget({
 
   function onPointerDown(e: React.PointerEvent) {
     if (!isEditor) return;
-    e.currentTarget.setPointerCapture(e.pointerId);
+    e.preventDefault();
+    e.stopPropagation();
+    (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
     dragRef.current = {
       pointerId: e.pointerId,
       startX: e.clientX,
@@ -77,11 +82,14 @@ export default function WhatsAppFloatWidget({
   function onPointerMove(e: React.PointerEvent) {
     if (!dragRef.current || !isEditor) return;
     if (e.pointerId !== dragRef.current.pointerId) return;
+    e.preventDefault();
     const vw = Math.max(1, window.innerWidth);
     const vh = Math.max(1, window.innerHeight);
     const dx = ((e.clientX - dragRef.current.startX) / vw) * 100;
     const dy = ((e.clientY - dragRef.current.startY) / vh) * 100;
-    if (Math.abs(dx) + Math.abs(dy) > 0.4) dragRef.current.moved = true;
+    if (Math.abs(dx) > 0.3 || Math.abs(dy) > 0.3) {
+      dragRef.current.moved = true;
+    }
     const next = {
       x: Math.min(96, Math.max(4, dragRef.current.origX - dx)),
       y: Math.min(96, Math.max(4, dragRef.current.origY + dy)),
@@ -98,13 +106,31 @@ export default function WhatsAppFloatWidget({
     if (moved) {
       suppressClickRef.current = true;
       onPositionChange?.(dragPosRef.current);
+      e.preventDefault();
+      e.stopPropagation();
       window.setTimeout(() => {
         suppressClickRef.current = false;
-      }, 120);
+      }, 0);
     }
   }
 
   if (cfg.isActive === false) return null;
+
+  const triggerClassName = [
+    "relative flex h-14 w-14 touch-none items-center justify-center rounded-full text-white shadow-lg transition hover:scale-105 select-none",
+    missingPhone
+      ? "cursor-not-allowed bg-slate-400"
+      : "bg-[#25D366] hover:bg-[#1ebe57]",
+    isEditor
+      ? "cursor-grab active:cursor-grabbing ring-2 ring-emerald-300 ring-offset-2"
+      : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
+
+  const triggerStyle = {
+    touchAction: "none" as const,
+  };
 
   const ui = (
     <div
@@ -119,33 +145,52 @@ export default function WhatsAppFloatWidget({
       data-bizuply-widget="whatsapp-float"
       data-bizuply-plugin-runtime="true"
     >
-      <a
-        href={href || undefined}
-        target="_blank"
-        rel="noopener noreferrer"
-        onClick={(e) => {
-          if (suppressClickRef.current || !href) e.preventDefault();
-        }}
-        onPointerDown={onPointerDown}
-        onPointerMove={onPointerMove}
-        onPointerUp={onPointerUp}
-        onPointerCancel={onPointerUp}
-        aria-label="WhatsApp"
-        className={`relative flex h-14 w-14 items-center justify-center rounded-full text-white shadow-lg transition hover:scale-105 ${
-          missingPhone
-            ? "cursor-not-allowed bg-slate-400"
-            : "bg-[#25D366] hover:bg-[#1ebe57]"
-        } ${isEditor ? "cursor-grab active:cursor-grabbing ring-2 ring-emerald-300 ring-offset-2" : ""}`}
-        title={missingPhone ? "Set WhatsApp number in settings" : "WhatsApp"}
-      >
-        {isEditor ? (
-          <GripVertical size={12} className="absolute -left-1 -top-1 opacity-80" />
-        ) : null}
-        <WhatsAppLogo size={30} />
-      </a>
+      {isEditor ? (
+        <button
+          type="button"
+          onPointerDown={onPointerDown}
+          onPointerMove={onPointerMove}
+          onPointerUp={onPointerUp}
+          onPointerCancel={onPointerUp}
+          onClick={(e) => {
+            if (suppressClickRef.current) {
+              e.preventDefault();
+              return;
+            }
+          }}
+          aria-label="WhatsApp"
+          title={
+            missingPhone
+              ? "הגדירו מספר WhatsApp בהגדרות התוסף"
+              : "גררו לכל מקום בעמוד"
+          }
+          className={triggerClassName}
+          style={triggerStyle}
+        >
+          <GripVertical
+            size={12}
+            className="absolute -left-1 -top-1 opacity-80"
+          />
+          <WhatsAppLogo size={30} />
+        </button>
+      ) : (
+        <a
+          href={href || undefined}
+          target="_blank"
+          rel="noopener noreferrer"
+          onClick={(e) => {
+            if (suppressClickRef.current || !href) e.preventDefault();
+          }}
+          aria-label="WhatsApp"
+          title={missingPhone ? "Set WhatsApp number in settings" : "WhatsApp"}
+          className={triggerClassName}
+        >
+          <WhatsAppLogo size={30} />
+        </a>
+      )}
       {isEditor ? (
         <div className="mt-1 rounded-md bg-slate-900/80 px-2 py-0.5 text-center text-[10px] font-bold text-white">
-          WhatsApp
+          WhatsApp · גררו
         </div>
       ) : null}
     </div>

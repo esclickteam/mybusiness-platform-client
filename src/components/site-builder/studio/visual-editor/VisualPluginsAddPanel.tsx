@@ -28,27 +28,62 @@ type VisualPluginsAddPanelProps = {
 
 function pageHasPluginContent(root: ParentNode | null | undefined, pluginKey: string) {
   if (!root) return false;
-  const hay = (root as HTMLElement).innerHTML || "";
+  const el = root as HTMLElement;
+  // Only treat *plugin-inserted* markers as active — template copy like
+  // "128 ביקורות" or built-in Velmora lead forms must not fake "פעיל בעמוד".
   if (pluginKey === "booking") {
-    return /data-bizuply-booking-mount|data-bizuply-widget=["']booking["']|section-booking-showcase/.test(hay);
+    return Boolean(
+      el.querySelector?.(
+        '[data-bizuply-booking-mount="true"], [data-bizuply-widget="booking"], [data-bizuply-plugin="booking"], [data-section-library-id*="booking-showcase"]',
+      ),
+    );
   }
   if (pluginKey === "reviews") {
-    return /section-testimonials|data-bizuply-reviews|ביקורות/.test(hay);
+    return Boolean(
+      el.querySelector?.(
+        '[data-bizuply-reviews="true"], [data-bizuply-plugin="reviews"], [data-section-library-id*="testimonials"]',
+      ),
+    );
   }
   if (pluginKey === "leads") {
-    return /data-bizuply-block=["']lead-form["']|data-bizuply-crm-lead|section-contact/.test(hay);
+    return Boolean(
+      el.querySelector?.(
+        '[data-bizuply-plugin="leads"], [data-section-library-id="section-contact"], [data-section-library-id="section-contact-split"]',
+      ),
+    );
   }
   if (pluginKey === "store") {
-    return /data-bizuply-block=["']products["']|bizuply-products|data-store-plugin|section-products/.test(hay);
+    return /data-bizuply-block=["']products["']|bizuply-products|data-store-plugin|section-products/.test(
+      el.innerHTML || "",
+    );
   }
   if (pluginKey === "countdown") {
-    return pageHasCountdownWidget(root as HTMLElement);
+    return pageHasCountdownWidget(el);
   }
   return Boolean(
-    (root as HTMLElement).querySelector?.(
-      `[data-bizuply-plugin="${pluginKey}"], [data-bizuply-widget="${pluginKey}"]`
-    )
+    el.querySelector?.(
+      `[data-bizuply-plugin="${pluginKey}"], [data-bizuply-widget="${pluginKey}"]`,
+    ),
   );
+}
+
+function scrollPluginSectionIntoView(editor: any, sectionId: string) {
+  const root = editor?.canvasRef?.current as HTMLElement | null;
+  if (!root || !sectionId) return;
+  const tryScroll = () => {
+    const node =
+      root.querySelector<HTMLElement>(
+        `[data-section-library-id="${sectionId}"]`,
+      ) ||
+      root.querySelector<HTMLElement>(
+        `[data-bizuply-plugin="reviews"], [data-bizuply-plugin="leads"], [data-bizuply-plugin="booking"]`,
+      );
+    node?.scrollIntoView({ behavior: "smooth", block: "center" });
+  };
+  window.requestAnimationFrame(() => {
+    window.requestAnimationFrame(tryScroll);
+  });
+  window.setTimeout(tryScroll, 280);
 }
 
 export default function VisualPluginsAddPanel({
@@ -111,6 +146,19 @@ export default function VisualPluginsAddPanel({
             if (phone) nextSettings.phone = phone;
           } catch {
             // keep empty
+          }
+        }
+
+        if (plugin.key === "announcement-bar") {
+          if (!String(nextSettings.message || "").trim()) {
+            nextSettings.message =
+              "משלוח חינם בהזמנות מעל 300 ₪ — לפרטים לחצו כאן";
+          }
+          if (!String(nextSettings.backgroundColor || "").trim()) {
+            nextSettings.backgroundColor = "#0F172A";
+          }
+          if (!String(nextSettings.textColor || "").trim()) {
+            nextSettings.textColor = "#FFFFFF";
           }
         }
 
@@ -290,12 +338,13 @@ export default function VisualPluginsAddPanel({
       } else {
         editor?.addSection?.("after", undefined, action.sectionId);
       }
+      scrollPluginSectionIntoView(editor, action.sectionId);
       setContentActive((prev) => ({ ...prev, [plugin.key]: true }));
       setPageWidgetsEpoch((e) => e + 1);
       onAdded?.(
         plugin.key === "booking"
-          ? `«${plugin.name}» נוסף ופעיל — מחובר ליומן ה-CRM`
-          : `«${plugin.name}» נוסף ופעיל בעמוד`
+          ? `«${plugin.name}» נוסף בתחתית העמוד — גללו לראות את היומן`
+          : `«${plugin.name}» נוסף בתחתית העמוד — גללו לראות את הסקשן`
       );
       return;
     }

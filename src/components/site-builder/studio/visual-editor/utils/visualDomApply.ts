@@ -2538,9 +2538,19 @@ function createInsertedSectionNode(
   else if (libraryId.includes("events")) sectionKind = "events";
   else if (libraryId.includes("contact")) sectionKind = "contact";
   else if (libraryId.includes("services")) sectionKind = "services";
+  else if (libraryId.includes("testimonial") || libraryId.includes("review"))
+    sectionKind = "testimonials";
   section.setAttribute("data-section-kind", sectionKind);
   if (sectionKind === "booking") {
     section.setAttribute("data-bizuply-plugin", "booking");
+  }
+  if (sectionKind === "testimonials") {
+    section.setAttribute("data-bizuply-plugin", "reviews");
+    section.setAttribute("data-bizuply-reviews", "true");
+  }
+  if (sectionKind === "contact") {
+    section.setAttribute("data-bizuply-plugin", "leads");
+    section.setAttribute("data-bizuply-crm-lead", "true");
   }
   if (item.libraryId) {
     section.setAttribute("data-section-library-id", String(item.libraryId));

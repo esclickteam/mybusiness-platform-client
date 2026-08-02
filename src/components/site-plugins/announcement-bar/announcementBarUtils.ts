@@ -10,9 +10,9 @@ export type AnnouncementBarSettings = {
 
 const DEFAULTS: AnnouncementBarSettings = {
   isActive: true,
-  message: "משלוח חינם בהזמנות מעל ₪200 · לפרטים לחצו כאן",
+  message: "משלוח חינם בהזמנות מעל 300 ₪ — לפרטים לחצו כאן",
   linkUrl: "",
-  linkLabel: "",
+  linkLabel: "לפרטים",
   backgroundColor: "#0F172A",
   textColor: "#FFFFFF",
   dismissible: true,
@@ -21,7 +21,12 @@ const DEFAULTS: AnnouncementBarSettings = {
 export function mergeAnnouncementBarSettings(
   stored?: Partial<AnnouncementBarSettings> | null
 ): AnnouncementBarSettings {
-  return { ...DEFAULTS, ...(stored || {}) };
+  const merged = { ...DEFAULTS, ...(stored || {}) };
+  if (!String(merged.message || "").trim()) {
+    merged.message = DEFAULTS.message;
+  }
+  if (merged.isActive == null) merged.isActive = true;
+  return merged;
 }
 
 export function announcementDismissKey(siteKey: string) {

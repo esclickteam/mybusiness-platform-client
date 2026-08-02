@@ -1204,6 +1204,7 @@ export default function VelmoraPages({
     <div
       dir="rtl"
       data-template-id="velmora"
+      data-bizuply-site="true"
       data-bizuply-template-cart="true"
       data-visual-editor={isVisualEditor ? "true" : "false"}
       className="velmora-template-root min-h-screen bg-[#f6f2ea] text-[#27231f]"

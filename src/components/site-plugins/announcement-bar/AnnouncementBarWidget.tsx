@@ -14,6 +14,8 @@ type AnnouncementBarWidgetProps = {
   mode?: "live" | "editor";
 };
 
+const EDITOR_CHROME_OFFSET_PX = 72;
+
 export default function AnnouncementBarWidget({
   siteKey = "site",
   settings,
@@ -42,6 +44,7 @@ export default function AnnouncementBarWidget({
 
   const linkUrl = String(cfg.linkUrl || "").trim();
   const linkLabel = String(cfg.linkLabel || "").trim();
+  const isEditor = mode === "editor";
 
   const ui = (
     <div
@@ -50,13 +53,15 @@ export default function AnnouncementBarWidget({
       data-bizuply-plugin-runtime="true"
       style={{
         position: "fixed",
-        top: 0,
+        // Sit under the editor chrome so the bar is visible (header z is higher).
+        top: isEditor ? EDITOR_CHROME_OFFSET_PX : 0,
         left: 0,
         right: 0,
-        zIndex: 2147482900,
+        zIndex: isEditor ? 2147483090 : 2147483640,
         width: "100%",
         background: cfg.backgroundColor || "#0F172A",
         color: cfg.textColor || "#FFFFFF",
+        boxShadow: "0 8px 24px rgba(15,23,42,0.18)",
       }}
     >
       <div className="relative mx-auto flex max-w-6xl items-center justify-center gap-3 px-10 py-2.5 text-center text-sm font-semibold leading-snug">
@@ -66,14 +71,17 @@ export default function AnnouncementBarWidget({
             href={linkUrl}
             className="underline underline-offset-2 opacity-95 hover:opacity-100"
             style={{ color: "inherit" }}
+            onClick={(e) => {
+              if (isEditor) e.preventDefault();
+            }}
           >
-            {linkLabel || "Details"}
+            {linkLabel || "לפרטים"}
           </a>
         ) : null}
         {cfg.dismissible ? (
           <button
             type="button"
-            aria-label="Close"
+            aria-label="סגור"
             className="absolute left-3 top-1/2 -translate-y-1/2 rounded p-1 opacity-80 hover:opacity-100"
             onClick={() => {
               setDismissed(true);
@@ -90,9 +98,9 @@ export default function AnnouncementBarWidget({
           </button>
         ) : null}
       </div>
-      {mode === "editor" ? (
+      {isEditor ? (
         <div className="border-t border-white/15 bg-black/20 px-3 py-1 text-center text-[10px] font-bold">
-          Announcement bar (editor preview)
+          פס הודעות · תצוגה בעורך
         </div>
       ) : null}
     </div>

@@ -86,13 +86,13 @@ export const PLUGIN_EDITOR_ACTIONS: Record<string, PluginEditorAction> = {
   reviews: {
     pluginKey: "reviews",
     kind: "section",
-    sectionId: "section-testimonials",
+    sectionId: "section-testimonials-showcase-quote-cards",
     label: "ביקורות והמלצות",
   },
   "testimonials-carousel": {
     pluginKey: "testimonials-carousel",
     kind: "section",
-    sectionId: "section-testimonials",
+    sectionId: "section-testimonials-showcase-quote-cards",
     label: "קרוסלת המלצות",
   },
   "pricing-table": {
