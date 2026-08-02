@@ -25,6 +25,7 @@ import {
   formatStorePrice,
   useStorePluginCatalog,
 } from "../shared/useStorePluginCatalog";
+import { resolveStoreShippingPrice } from "../../../../../../utils/storePricing";
 
 type TemplateMode = "preview" | "editor" | "public";
 
@@ -1028,17 +1029,26 @@ function CartPage({
   onNavigate,
   onUpdateQuantity,
   onRemoveItem,
+  defaultShippingPrice = 0,
+  freeShippingFrom = null,
 }: {
   cartItems: NovastraCartItem[];
   onNavigate: (pageId: string) => void;
   onUpdateQuantity: (product: NovastraProduct, quantity: number) => void;
   onRemoveItem: (product: NovastraProduct) => void;
+  defaultShippingPrice?: number;
+  freeShippingFrom?: number | null;
 }) {
   const subtotal = cartItems.reduce((sum, item) => {
     return sum + parsePrice(item.product.price) * item.quantity;
   }, 0);
 
-  const shipping = cartItems.length > 0 && subtotal < 500 ? 35 : 0;
+  const shipping = resolveStoreShippingPrice({
+    itemCount: cartItems.length,
+    subtotal,
+    defaultShippingPrice,
+    freeShippingFrom,
+  });
   const total = subtotal + shipping;
 
   return (
@@ -1862,6 +1872,8 @@ export function NovastraPages({
     fromPlugin,
     currency,
     loading: storeLoading,
+    defaultShippingPrice,
+    freeShippingFrom,
   } = useStorePluginCatalog({
     businessId,
     enabled: !isStudioStatic,
@@ -2045,6 +2057,8 @@ export function NovastraPages({
                   onNavigate={handleNavigate}
                   onUpdateQuantity={handleUpdateQuantity}
                   onRemoveItem={handleRemoveItem}
+                  defaultShippingPrice={defaultShippingPrice}
+                  freeShippingFrom={freeShippingFrom}
                 />
               ),
             },

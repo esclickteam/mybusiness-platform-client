@@ -24,6 +24,7 @@ import VelmoraProduct from "./template-pages/VelmoraProduct";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import VelmoraShell from "./components/VelmoraShell";
 import { useStorePluginCatalog } from "../shared/useStorePluginCatalog";
+import { resolveStoreShippingPrice } from "../../../../../../utils/storePricing";
 import {
   buildVelmoraShopCatalog,
   velmoraDemoProductSeeds,
@@ -407,6 +408,8 @@ function VelmoraCartPage({
   onDecrease,
   onRemove,
   onClearCart,
+  defaultShippingPrice = 0,
+  freeShippingFrom = null,
 }: {
   cartItems: VelmoraCartItem[];
   onPageChange: (page: VelmoraPageId) => void;
@@ -414,13 +417,20 @@ function VelmoraCartPage({
   onDecrease: (cartId: string) => void;
   onRemove: (cartId: string) => void;
   onClearCart: () => void;
+  defaultShippingPrice?: number;
+  freeShippingFrom?: number | null;
 }) {
   const subtotal = cartItems.reduce(
     (sum, item) => sum + item.price * item.quantity,
     0,
   );
 
-  const shipping = cartItems.length > 0 ? 29 : 0;
+  const shipping = resolveStoreShippingPrice({
+    itemCount: cartItems.length,
+    subtotal,
+    defaultShippingPrice,
+    freeShippingFrom,
+  });
   const total = subtotal + shipping;
 
   return (
@@ -1003,6 +1013,8 @@ export default function VelmoraPages({
     categories: storeCategories,
     fromPlugin,
     loading: storeCatalogLoading,
+    defaultShippingPrice,
+    freeShippingFrom,
   } = useStorePluginCatalog({
     businessId,
     demoProducts: velmoraDemoProductSeeds,
@@ -1296,6 +1308,8 @@ export default function VelmoraPages({
                     onDecrease={handleDecreaseCartItem}
                     onRemove={handleRemoveCartItem}
                     onClearCart={handleClearCart}
+                    defaultShippingPrice={defaultShippingPrice}
+                    freeShippingFrom={freeShippingFrom}
                   />
                 ),
               },

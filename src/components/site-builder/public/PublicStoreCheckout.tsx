@@ -24,6 +24,7 @@ import {
   normalizeCheckoutAppearance,
   type CheckoutAppearance,
 } from "../../store/checkoutAppearance";
+import { resolveStoreUnitPrice } from "../../../utils/storePricing";
 
 type CartItem = {
   productId: string;
@@ -270,7 +271,7 @@ export default function PublicStoreCheckout({
           {
             productId: product._id,
             name: product.name,
-            price: Number(product.salePrice ?? product.price) || 0,
+            price: resolveStoreUnitPrice(product).price,
             quantity,
             image:
               product.mainImage ||

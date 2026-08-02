@@ -104,7 +104,13 @@ export async function getPublicShop(
     },
   });
   return data as {
-    settings?: { currency?: string; storeName?: string; isStoreActive?: boolean };
+    settings?: {
+      currency?: string;
+      storeName?: string;
+      isStoreActive?: boolean;
+      defaultShippingPrice?: number;
+      freeShippingFrom?: number | null;
+    };
     categories?: PublicStoreCategory[];
     activeCategory?: PublicStoreCategory | null;
     products?: PublicStoreProduct[];
