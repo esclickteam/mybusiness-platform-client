@@ -147,6 +147,43 @@ ${typeForce("mobile", {
   padding-bottom: 3rem !important;
 }
 
+/* Form builder — icon clearance + full-width fields in mobile preview */
+[data-visual-device="mobile"] [data-bizuply-form-control="true"],
+[data-visual-device="mobile"] .bizuply-form-input {
+  width: 100% !important;
+  max-width: 100% !important;
+  padding-inline-end: 3rem !important;
+  padding-inline-start: 1rem !important;
+  font-size: max(16px, 1em) !important;
+}
+
+[data-visual-device="mobile"] [data-bizuply-form-field-wrapper="true"] .relative > span.pointer-events-none {
+  inset-inline-end: 1rem !important;
+  right: auto !important;
+  left: auto !important;
+}
+
+[data-visual-device="mobile"] [data-bizuply-form-fields="true"] > [class*='col-span'] {
+  grid-column: 1 / -1 !important;
+}
+
+[data-visual-device="mobile"] .bizuply-booking-widget-root,
+[data-visual-device="mobile"] [data-bizuply-booking-live="true"] {
+  flex-direction: column !important;
+}
+
+[data-visual-device="mobile"] .bizuply-booking-widget-root > aside,
+[data-visual-device="mobile"] .bizuply-booking-widget-root > div,
+[data-visual-device="mobile"] [data-bizuply-booking-live="true"] > aside,
+[data-visual-device="mobile"] [data-bizuply-booking-live="true"] > div {
+  flex: 1 1 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  width: 100% !important;
+  border-left: none !important;
+  padding-inline-start: 0 !important;
+}
+
 /* ===== TABLET preview (820px) ===== */
 ${gridForce("tablet", "repeat(2, minmax(0, 1fr))", [3, 4, 5, 6, 7, 8, 9, 10, 11, 12])}
 

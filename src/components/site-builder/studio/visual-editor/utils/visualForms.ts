@@ -494,13 +494,13 @@ export function buildFormFieldHtml(field: BizuplyFormField, index: number) {
   ].join(" ");
 
   const controlStyle =
-    "background:var(--biz-form-field-bg,#fff);border-color:var(--biz-form-field-border,#e2e8f0);color:var(--biz-form-field-text,#0f172a)";
+    "background:var(--biz-form-field-bg,#fff);border-color:var(--biz-form-field-border,#e2e8f0);color:var(--biz-form-field-text,#0f172a);padding-inline-start:1rem;padding-inline-end:3rem;box-sizing:border-box;width:100%;max-width:100%";
 
   const inputClass =
-    "peer h-14 w-full rounded-2xl border px-4 pr-12 text-right text-[15px] font-semibold outline-none transition";
+    "bizuply-form-input peer h-14 w-full max-w-full rounded-2xl border text-right text-[15px] font-semibold outline-none transition";
 
   const textareaClass =
-    "peer min-h-[148px] w-full resize-y rounded-2xl border px-4 py-4 pr-12 text-right text-[15px] font-semibold leading-7 outline-none transition";
+    "bizuply-form-input peer min-h-[148px] w-full max-w-full resize-y rounded-2xl border py-4 text-right text-[15px] font-semibold leading-7 outline-none transition";
 
   const labelHtml = `
     <label
@@ -519,7 +519,7 @@ export function buildFormFieldHtml(field: BizuplyFormField, index: number) {
   `;
 
   const iconHtml = `
-    <span class="pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 transition" style="color:var(--biz-form-accent,#0f766e)">
+    <span class="pointer-events-none absolute top-1/2 -translate-y-1/2 transition" style="inset-inline-end:1rem;color:var(--biz-form-accent,#0f766e)">
       ${icon}
     </span>
   `;
@@ -528,8 +528,8 @@ export function buildFormFieldHtml(field: BizuplyFormField, index: number) {
     return `
       ${labelHtml}
       <div class="relative">
-        <textarea id="${name}" name="${name}" placeholder="${placeholder}"${required} ${fieldAttrs} class="${textareaClass}" style="${controlStyle}"></textarea>
-        <span class="pointer-events-none absolute right-4 top-4 transition" style="color:var(--biz-form-accent,#0f766e)">
+        <textarea id="${name}" name="${name}" placeholder="${placeholder}"${required} ${fieldAttrs} class="${textareaClass}" style="${controlStyle};padding-block:1rem"></textarea>
+        <span class="pointer-events-none absolute top-4 transition" style="inset-inline-end:1rem;color:var(--biz-form-accent,#0f766e)">
           ${icon}
         </span>
       </div>
@@ -556,7 +556,7 @@ export function buildFormFieldHtml(field: BizuplyFormField, index: number) {
           ${options}
         </select>
         ${iconHtml}
-        <span class="pointer-events-none absolute left-4 top-1/2 -translate-y-1/2" style="color:var(--biz-form-accent,#0f766e)">
+        <span class="pointer-events-none absolute top-1/2 -translate-y-1/2" style="inset-inline-start:1rem;color:var(--biz-form-accent,#0f766e)">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m7 10 5 5 5-5"/></svg>
         </span>
       </div>

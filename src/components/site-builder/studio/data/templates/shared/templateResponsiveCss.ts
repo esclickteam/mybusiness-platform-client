@@ -148,8 +148,32 @@ const GRID_TABLET = [
   ".grid-cols-12",
 ];
 
+const MOBILE_PLUGIN_PAIRS: Array<{ selector: string; body: string }> = [
+  {
+    selector: "[data-bizuply-form-fields='true'] > [class*='col-span']",
+    body: "grid-column: 1 / -1 !important;",
+  },
+  {
+    selector: "[data-bizuply-form-control='true'], .bizuply-form-input",
+    body: "font-size: max(16px, 1em) !important;",
+  },
+  {
+    selector: ".bizuply-booking-widget-root, [data-bizuply-booking-live='true'], [data-bizuply-booking-preview='editor'] > .bizuply-booking-widget-root",
+    body: "flex-direction: column !important; flex-wrap: nowrap !important;",
+  },
+  {
+    selector: ".bizuply-booking-widget-root > aside, .bizuply-booking-widget-root > div, [data-bizuply-booking-live='true'] > aside, [data-bizuply-booking-live='true'] > div",
+    body: "flex: 1 1 100% !important; min-width: 0 !important; max-width: 100% !important; width: 100% !important; border-left: none !important; padding-left: 0 !important; padding-inline-start: 0 !important;",
+  },
+  {
+    selector: "[data-bizuply-booking-live='true'], [data-bizuply-booking-preview='editor']",
+    body: "width: 100% !important; max-width: 100% !important; min-width: 0 !important;",
+  },
+];
+
 const MOBILE_PAIRS: Array<{ selector: string; body: string }> = [
   ...MOBILE_DISPLAY_PAIRS,
+  ...MOBILE_PLUGIN_PAIRS,
   ...GRID_MOBILE.map((selector) => ({
     selector,
     body: "grid-template-columns: minmax(0, 1fr) !important;",
@@ -184,15 +208,17 @@ const MOBILE_PAIRS: Array<{ selector: string; body: string }> = [
   },
   {
     selector:
-      ".px-8, .px-10, .px-12, .px-14, .px-16, .px-20, .px-24, .px-28, .px-32",
+      ".px-8:not([data-bizuply-form-control='true']), .px-10:not([data-bizuply-form-control='true']), .px-12:not([data-bizuply-form-control='true']), .px-14:not([data-bizuply-form-control='true']), .px-16:not([data-bizuply-form-control='true']), .px-20:not([data-bizuply-form-control='true']), .px-24:not([data-bizuply-form-control='true']), .px-28:not([data-bizuply-form-control='true']), .px-32:not([data-bizuply-form-control='true'])",
     body: "padding-left: 1rem !important; padding-right: 1rem !important;",
   },
   {
-    selector: ".pl-8, .pl-10, .pl-12, .pl-14, .pl-16, .pl-20, .pl-24",
+    selector:
+      ".pl-8:not([data-bizuply-form-control='true']), .pl-10:not([data-bizuply-form-control='true']), .pl-12:not([data-bizuply-form-control='true']), .pl-14:not([data-bizuply-form-control='true']), .pl-16:not([data-bizuply-form-control='true']), .pl-20:not([data-bizuply-form-control='true']), .pl-24:not([data-bizuply-form-control='true'])",
     body: "padding-left: 1rem !important;",
   },
   {
-    selector: ".pr-8, .pr-10, .pr-12, .pr-14, .pr-16, .pr-20, .pr-24",
+    selector:
+      ".pr-8:not([data-bizuply-form-control='true']), .pr-10:not([data-bizuply-form-control='true']), .pr-12:not([data-bizuply-form-control='true']), .pr-14:not([data-bizuply-form-control='true']), .pr-16:not([data-bizuply-form-control='true']), .pr-20:not([data-bizuply-form-control='true']), .pr-24:not([data-bizuply-form-control='true'])",
     body: "padding-right: 1rem !important;",
   },
   {
@@ -255,6 +281,41 @@ const MOBILE_PAIRS: Array<{ selector: string; body: string }> = [
   {
     selector: "nav",
     body: "max-width: 100%; flex-wrap: wrap;",
+  },
+];
+
+const PLUGIN_ALWAYS_PAIRS: Array<{ selector: string; body: string }> = [
+  {
+    selector: "form[data-bizuply-form-builder='true']",
+    body: "width: 100% !important; max-width: 100% !important; min-width: 0 !important; box-sizing: border-box !important;",
+  },
+  {
+    selector: "[data-bizuply-form-fields='true'], [data-bizuply-form-field-wrapper='true']",
+    body: "width: 100% !important; max-width: 100% !important; min-width: 0 !important;",
+  },
+  {
+    selector: "[data-bizuply-form-control='true'], .bizuply-form-input",
+    body: "width: 100% !important; max-width: 100% !important; min-width: 0 !important; box-sizing: border-box !important; padding-inline-end: 3rem !important; padding-inline-start: 1rem !important;",
+  },
+  {
+    selector: "[data-bizuply-form-field-wrapper='true'] .relative > span.pointer-events-none",
+    body: "inset-inline-end: 1rem !important; right: auto !important; left: auto !important;",
+  },
+  {
+    selector: "[data-bizuply-booking-mount='true'], [data-bizuply-booking-host='true']",
+    body: "width: 100% !important; max-width: 100% !important; min-width: 0 !important; overflow-x: auto !important; -webkit-overflow-scrolling: touch !important;",
+  },
+  {
+    selector: ".store-card, .store-product-card, .store-header, [data-bizuply-store-root='true'], [data-bizuply-widget='products']",
+    body: "max-width: 100% !important; min-width: 0 !important;",
+  },
+  {
+    selector: ".store-media, .store-card .store-media, .store-product-card .store-media",
+    body: "width: 100% !important; max-width: 100% !important;",
+  },
+  {
+    selector: "[class*='overflow-x-auto']",
+    body: "-webkit-overflow-scrolling: touch; max-width: 100%;",
   },
 ];
 
@@ -464,6 +525,8 @@ overflow-wrap: anywhere;
 word-break: break-word;
 `,
 )}
+
+${PLUGIN_ALWAYS_PAIRS.map(({ selector, body }) => rule(underRoots(selector), body)).join("\n\n")}
 
 ${mediaRules(TEMPLATE_MEDIA.mobile, MOBILE_PAIRS)}
 
