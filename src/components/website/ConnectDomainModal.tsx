@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from "react";
 import { Globe2, X } from "lucide-react";
 
 import DomainSearch from "./DomainSearch";
+import DomainRenewalPanel from "./DomainRenewalPanel";
 import { connectSiteCustomDomain, getMySite } from "../../api/mySitesApi";
 
 type ConnectDomainModalProps = {
@@ -188,6 +189,7 @@ export default function ConnectDomainModal({
             </div>
           ) : null}
 
+          <DomainRenewalPanel />
           <DomainSearch onRegistered={handleRegistered} />
         </div>
       </div>
