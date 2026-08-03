@@ -1711,6 +1711,16 @@ function navigatePublicLink(href, target) {
     return;
   }
 
+  /*
+    Same-origin site pages navigate in-app. A full reload re-fetched the whole
+    site and made saved links feel broken/slow.
+  */
+  if (cleanHref.startsWith("/")) {
+    window.history.pushState({}, "", cleanHref);
+    window.dispatchEvent(new PopStateEvent("popstate"));
+    return;
+  }
+
   window.location.assign(cleanHref);
 }
 

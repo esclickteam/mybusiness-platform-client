@@ -3782,7 +3782,8 @@ export function collectVisualContentFromDom(
     if (finalHref || currentValue.href !== undefined) {
       nextValue.href = finalHref;
       nextValue.target =
-        (domTarget === "_blank" ? "_blank" : "") ||
+        // "_self" is a real choice — treating it as empty resurrected "_blank".
+        (domHref && domHref !== "#" ? domTarget : "") ||
         currentValue.target ||
         (finalHref.startsWith("http://") || finalHref.startsWith("https://")
           ? "_blank"

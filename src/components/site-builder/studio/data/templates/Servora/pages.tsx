@@ -724,7 +724,11 @@ function Header({
             <button
               type="button"
               className="servora-btn servora-btn-orange servora-header-cta"
-              onClick={() => onNavigate("contact")}
+              onClick={(event) => {
+                // A saved link on this CTA must win over the template default.
+                if (hasOverrideNavHref(event.currentTarget)) return;
+                onNavigate("contact");
+              }}
               data-editable="button"
               {...visualProps(
                 "global.header.primaryCta",

@@ -39,6 +39,57 @@ function resolveSiteId(site) {
   return String(site?._id || site?.id || "").trim();
 }
 
+function normalizeSitePagePath(value) {
+  const clean = String(value || "")
+    .split("?")[0]
+    .split("#")[0]
+    .replace(/^\/+|\/+$/g, "")
+    .trim()
+    .toLowerCase();
+
+  return clean ? `/${clean}` : "/";
+}
+
+/**
+ * Portal links must point at the pages the site actually published.
+ * Falling back to a hardcoded "/account" sent visitors to a missing page.
+ */
+function resolvePortalPaths(site) {
+  const pages = Array.isArray(site?.pages) ? site.pages : [];
+  const available = new Set(
+    pages.map((page) =>
+      normalizeSitePagePath(page?.slug || page?.id || ""),
+    ),
+  );
+
+  const pick = (candidates, fallback) => {
+    for (const candidate of candidates) {
+      if (available.has(candidate)) return candidate;
+    }
+    return fallback;
+  };
+
+  const account = pick(
+    ["/account", "/portal/account", "/my-account"],
+    "/portal/account",
+  );
+
+  return {
+    login: pick(["/login", "/portal/login"], "/portal/login"),
+    register: pick(["/register", "/signup", "/portal/register"], "/login"),
+    account,
+    orders: pick(["/orders", "/my-orders"], account),
+    cart: pick(["/cart", "/checkout"], account),
+  };
+}
+
+function navigateToSitePath(path) {
+  const target = String(path || "/") || "/";
+
+  window.history.pushState({}, "", target);
+  window.dispatchEvent(new PopStateEvent("popstate"));
+}
+
 function readPortalTheme(container) {
   const ds = container?.dataset || {};
   return {
@@ -75,7 +126,7 @@ function prepareMountShell(container) {
   });
 }
 
-function mountLogin(container, { siteId, host, siteName }) {
+function mountLogin(container, { siteId, host, siteName, paths }) {
   prepareMountShell(container);
   const theme = readPortalTheme(container);
 
@@ -177,8 +228,7 @@ function mountLogin(container, { siteId, host, siteName }) {
         siteId: siteId || undefined,
         host: host || window.location.host,
       });
-      window.history.pushState({}, "", "/account");
-      window.dispatchEvent(new PopStateEvent("popstate"));
+      navigateToSitePath(paths?.account || "/portal/account");
     } catch (err) {
       errorBox.textContent = err?.message || "ההתחברות נכשלה";
       errorBox.style.display = "block";
@@ -194,7 +244,7 @@ function mountLogin(container, { siteId, host, siteName }) {
   wrap.appendChild(submit);
 
   const registerLink = document.createElement("a");
-  registerLink.href = "/register";
+  registerLink.href = paths?.register || "/login";
   registerLink.textContent = "אין לכם חשבון? הרשמה";
   Object.assign(registerLink.style, {
     display: "inline-block",
@@ -209,7 +259,7 @@ function mountLogin(container, { siteId, host, siteName }) {
   container.appendChild(wrap);
 }
 
-function mountRegister(container, { siteId, host, siteName }) {
+function mountRegister(container, { siteId, host, siteName, paths }) {
   prepareMountShell(container);
   const theme = readPortalTheme(container);
 
@@ -326,8 +376,7 @@ function mountRegister(container, { siteId, host, siteName }) {
         siteId: siteId || undefined,
         host: host || window.location.host,
       });
-      window.history.pushState({}, "", "/account");
-      window.dispatchEvent(new PopStateEvent("popstate"));
+      navigateToSitePath(paths?.account || "/portal/account");
     } catch (err) {
       errorBox.textContent = err?.message || "ההרשמה נכשלה";
       errorBox.style.display = "block";
@@ -345,7 +394,7 @@ function mountRegister(container, { siteId, host, siteName }) {
   wrap.appendChild(submit);
 
   const loginLink = document.createElement("a");
-  loginLink.href = "/login";
+  loginLink.href = paths?.login || "/portal/login";
   loginLink.textContent = "כבר רשומים? התחברות";
   Object.assign(loginLink.style, {
     display: "inline-block",
@@ -360,7 +409,13 @@ function mountRegister(container, { siteId, host, siteName }) {
   container.appendChild(wrap);
 }
 
-function renderAccountPanel(container, theme, member, pages, { onLogout } = {}) {
+function renderAccountPanel(
+  container,
+  theme,
+  member,
+  pages,
+  { onLogout, paths } = {},
+) {
   prepareMountShell(container);
   const wrap = el("div", {
     padding: "24px",
@@ -389,9 +444,9 @@ function renderAccountPanel(container, theme, member, pages, { onLogout } = {}) 
   );
 
   const quickLinks = [
-    { href: "/orders", label: "ההזמנות שלי" },
-    { href: "/cart", label: "העגלה שלי" },
-    { href: "/account", label: "פרטי החשבון" },
+    { href: paths?.orders || "/orders", label: "ההזמנות שלי" },
+    { href: paths?.cart || "/cart", label: "העגלה שלי" },
+    { href: paths?.account || "/portal/account", label: "פרטי החשבון" },
   ];
   const quickRow = el("div", {
     display: "flex",
@@ -544,15 +599,18 @@ function renderOrdersPanel(container, theme, orders) {
   container.appendChild(wrap);
 }
 
-async function mountAccount(container, { siteId, editorMode = false }) {
+async function mountAccount(container, { siteId, editorMode = false, paths }) {
   const theme = readPortalTheme(container);
 
   // Studio edit/preview: always show open design sample — never ask to login.
   if (editorMode) {
-    renderAccountPanel(container, theme, {
-      fullName: "לקוח/ה לדוגמה",
-      email: "client@example.com",
-    }, []);
+    renderAccountPanel(
+      container,
+      theme,
+      { fullName: "לקוח/ה לדוגמה", email: "client@example.com" },
+      [],
+      { paths },
+    );
     return;
   }
 
@@ -570,10 +628,10 @@ async function mountAccount(container, { siteId, editorMode = false }) {
       ? data.portalPages.filter((page) => page.loginRequired !== false)
       : [];
     renderAccountPanel(container, theme, data.member, pages, {
+      paths,
       onLogout: async () => {
         await sitePortalLogout(siteId);
-        window.history.pushState({}, "", "/login");
-        window.dispatchEvent(new PopStateEvent("popstate"));
+        navigateToSitePath(paths?.login || "/portal/login");
       },
     });
   } catch (err) {
@@ -592,7 +650,7 @@ async function mountAccount(container, { siteId, editorMode = false }) {
       ),
     );
     const login = document.createElement("a");
-    login.href = "/login";
+    login.href = paths?.login || "/portal/login";
     login.textContent = "להתחברות";
     Object.assign(login.style, {
       display: "inline-flex",
@@ -608,7 +666,7 @@ async function mountAccount(container, { siteId, editorMode = false }) {
   }
 }
 
-async function mountOrders(container, { siteId, editorMode = false }) {
+async function mountOrders(container, { siteId, editorMode = false, paths }) {
   const theme = readPortalTheme(container);
 
   if (editorMode) {
@@ -665,7 +723,7 @@ async function mountOrders(container, { siteId, editorMode = false }) {
       ),
     );
     const login = document.createElement("a");
-    login.href = "/login";
+    login.href = paths?.login || "/portal/login";
     login.textContent = "להתחברות";
     Object.assign(login.style, {
       display: "inline-flex",
@@ -682,9 +740,15 @@ async function mountOrders(container, { siteId, editorMode = false }) {
 }
 
 function mountCart(container, { businessId }) {
-  clearMount(container);
-  container.dir = "rtl";
-  const wrap = el("div", { padding: "20px", fontFamily: "inherit" });
+  prepareMountShell(container);
+  // The cart must follow the same design tokens as the other portal widgets.
+  const theme = readPortalTheme(container);
+  const wrap = el("div", {
+    padding: "20px",
+    fontFamily: "inherit",
+    color: theme.ink,
+    boxSizing: "border-box",
+  });
   const items = readCart(businessId);
 
   if (!items.length) {
@@ -694,10 +758,10 @@ function mountCart(container, { businessId }) {
         {
           padding: "18px",
           borderRadius: "16px",
-          background: "#f8fafc",
-          border: "1px solid #e2e8f0",
+          background: theme.soft,
+          border: `1px solid ${theme.line}`,
           fontWeight: "700",
-          color: "#64748b",
+          color: theme.muted,
         },
         "העגלה ריקה כרגע.",
       ),
@@ -717,7 +781,7 @@ function mountCart(container, { businessId }) {
       gap: "12px",
       marginBottom: "10px",
       paddingBottom: "10px",
-      borderBottom: "1px solid #e2e8f0",
+      borderBottom: `1px solid ${theme.line}`,
       fontWeight: "700",
       fontSize: "13px",
     });
@@ -743,7 +807,7 @@ function mountCart(container, { businessId }) {
     {
       border: "0",
       borderRadius: "14px",
-      background: "#0284c7",
+      background: theme.accent,
       color: "#fff",
       padding: "12px 16px",
       fontWeight: "800",
@@ -802,12 +866,23 @@ export function mountPublicPortalWidgets(root, options = {}) {
     /* no-op: login will set it */
   }
 
+  const paths = resolvePortalPaths(site);
+
   const mounts = root.querySelectorAll(
     '[data-bizuply-portal-mount="true"], [data-bizuply-widget^="portal-"]',
   );
 
   mounts.forEach((node) => {
-    if (node.dataset.bizuplyPortalMounted === "1") return;
+    /*
+      A re-applied visual snapshot wipes the widget children while the
+      "mounted" flag stays behind, which left an empty portal card.
+      Treat an empty mount node as not mounted.
+    */
+    const alreadyMounted =
+      node.dataset.bizuplyPortalMounted === "1" &&
+      node.childElementCount > 0;
+
+    if (alreadyMounted) return;
     node.dataset.bizuplyPortalMounted = "1";
 
     const kind = String(
@@ -817,35 +892,35 @@ export function mountPublicPortalWidgets(root, options = {}) {
     );
 
     if (kind === "portal-login") {
-      mountLogin(node, { siteId, host, siteName });
+      mountLogin(node, { siteId, host, siteName, paths });
       return;
     }
     if (kind === "portal-register") {
-      mountRegister(node, { siteId, host, siteName });
+      mountRegister(node, { siteId, host, siteName, paths });
       return;
     }
     if (kind === "portal-account") {
       if (editorMode) {
-        void mountAccount(node, { siteId, editorMode: true });
+        void mountAccount(node, { siteId, editorMode: true, paths });
         return;
       }
       if (!siteId) {
-        mountLogin(node, { siteId, host, siteName });
+        mountLogin(node, { siteId, host, siteName, paths });
         return;
       }
-      void mountAccount(node, { siteId, editorMode: false });
+      void mountAccount(node, { siteId, editorMode: false, paths });
       return;
     }
     if (kind === "portal-orders") {
       if (editorMode) {
-        void mountOrders(node, { siteId, editorMode: true });
+        void mountOrders(node, { siteId, editorMode: true, paths });
         return;
       }
       if (!siteId) {
-        mountLogin(node, { siteId, host, siteName });
+        mountLogin(node, { siteId, host, siteName, paths });
         return;
       }
-      void mountOrders(node, { siteId, editorMode: false });
+      void mountOrders(node, { siteId, editorMode: false, paths });
       return;
     }
     if (kind === "portal-cart") {
