@@ -6,10 +6,12 @@ import "react-phone-input-2/lib/style.css";
 
 import API from "../api";
 import AuthShell, { AuthCard } from "../components/auth/AuthShell";
+import { useAuth } from "../context/AuthContext";
 import {
   detectPhoneCountry,
   detectPhoneCountrySync,
 } from "../utils/detectPhoneCountry";
+import { loadPendingPurchaseIntent } from "../utils/pendingPurchaseIntent";
 
 declare global {
   interface Window {
@@ -67,6 +69,8 @@ export default function Register() {
   });
 
   const [error, setError] = useState<string>("");
+  const [purchaseIntentValidationFailed, setPurchaseIntentValidationFailed] =
+    useState(false);
   const [phoneCountry, setPhoneCountry] = useState(detectPhoneCountrySync);
 
   useEffect(() => {
@@ -82,17 +86,27 @@ export default function Register() {
 
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
+  const { loginWithToken } = useAuth();
 
   const selectedPlan = parsePlan(searchParams.get("plan"));
+  const pendingPurchaseIntent = loadPendingPurchaseIntent();
+  const pendingPurchaseSignup =
+    searchParams.get("purchaseIntent") === "1" &&
+    searchParams.get("redirect") === "/pricing" &&
+    Boolean(pendingPurchaseIntent);
   const includeWebsiteAddon =
     searchParams.get("websiteAddon") === "1" &&
     (selectedPlan === "monthly" || selectedPlan === "yearly");
   const checkoutCancelled = searchParams.get("checkout") === "cancel";
   const isPaidSignupFlow = Boolean(selectedPlan);
 
-  // No free trial signup — guests must pick a package first.
+  // Normal registrations remain plan-first. The staged upsell flow is the
+  // only exception: create an unpaid business account, restore the
+  // identifier-only intent, and let the authenticated server build Checkout.
   useEffect(() => {
-    if (selectedPlan) return;
+    if (selectedPlan || pendingPurchaseSignup || purchaseIntentValidationFailed) {
+      return;
+    }
 
     const params = new URLSearchParams();
     const ref =
@@ -100,7 +114,13 @@ export default function Register() {
     if (ref) params.set("ref", ref);
     const qs = params.toString();
     navigate(qs ? `/pricing?${qs}` : "/pricing", { replace: true });
-  }, [navigate, searchParams, selectedPlan]);
+  }, [
+    navigate,
+    pendingPurchaseSignup,
+    purchaseIntentValidationFailed,
+    searchParams,
+    selectedPlan,
+  ]);
 
   useEffect(() => {
     const refFromUrl = searchParams.get("ref");
@@ -117,7 +137,11 @@ export default function Register() {
     }
   }, [searchParams]);
 
-  if (!selectedPlan) {
+  if (
+    !selectedPlan &&
+    !pendingPurchaseSignup &&
+    !purchaseIntentValidationFailed
+  ) {
     return null;
   }
 
@@ -205,7 +229,41 @@ export default function Register() {
         return;
       }
 
-      // Free/trial signup is disabled — send users to packages.
+      if (pendingPurchaseSignup) {
+        if (!loadPendingPurchaseIntent()) {
+          setPurchaseIntentValidationFailed(true);
+          setError(
+            "בקשת הרכישה חסרה או שפג תוקפה. חזרו לעמוד המחירים ובחרו את השירות מחדש."
+          );
+          return;
+        }
+        const { data } = await API.post<{
+          accessToken?: string;
+          user?: Record<string, unknown>;
+          error?: string;
+        }>("/auth/register", {
+          name: name.trim(),
+          email: email.trim().toLowerCase(),
+          phone: phone.trim(),
+          password,
+          userType: "business",
+          businessName: businessName.trim(),
+          referralCode:
+            referralCode ||
+            localStorage.getItem("affiliate_referral") ||
+            undefined,
+        });
+
+        if (!data?.accessToken || !data?.user) {
+          setError(data?.error || "ההרשמה נכשלה. נסו שוב.");
+          return;
+        }
+
+        loginWithToken(data.user, data.accessToken, { skipRedirect: true });
+        navigate("/pricing", { replace: true });
+        return;
+      }
+
       navigate("/pricing", { replace: true });
     } catch (err) {
       const apiError = err as ApiError;

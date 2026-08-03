@@ -1,54 +1,89 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { AlertCircle, Check, ChevronLeft, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
-import { AlertCircle, Check, Minus, Plus, ShieldCheck, X } from "lucide-react";
 import { lockPageScroll } from "../../utils/pageScrollLock";
 import { createServiceOrderCheckout } from "../../utils/serviceOrders";
+import {
+  createCheckoutLaunchSignature,
+  createServiceCheckoutAttempt,
+  getPurchaseModeNextStep,
+  shouldPreservePendingServicePurchase,
+} from "../../utils/servicePurchaseFlow";
+import {
+  clearPendingPurchaseIntent,
+  savePendingPurchaseIntent,
+} from "../../utils/pendingPurchaseIntent";
 
-function formatIls(amount) {
-  return `₪${Number(amount || 0).toLocaleString("he-IL")}`;
+const PLAN_OPTIONS = [
+  { key: "website", he: "אתר בלבד", en: "Website only", amount: 600, billing: "year" },
+  { key: "monthly", he: "חבילה חודשית", en: "Monthly plan", amount: 149, billing: "month" },
+  { key: "yearly", he: "חבילה שנתית", en: "Yearly plan", amount: 1490, billing: "year" },
+];
+const LAUNCH_MARKER_KEY = "bizuply_service_checkout_launch";
+
+function money(value, isHe) {
+  return new Intl.NumberFormat(isHe ? "he-IL" : "en-IL", {
+    style: "currency",
+    currency: "ILS",
+    maximumFractionDigits: 0,
+  }).format(Number(value || 0));
 }
 
-/**
- * Managed-service purchase / checkout panel.
- *
- * Renders the interactive purchase surface for a single managed service:
- *  - tier picker (e.g. automations 1 / 3 / 6),
- *  - expert-website-build add-ons with a page-quantity stepper,
- *  - a clear pre-checkout total with monthly vs one-time labelling,
- * then creates a Stripe Checkout session via the server and redirects.
- *
- * The client sends ONLY serviceKey + selectedAddOnKeys + quantities
- * (+ businessId / userId). Amounts shown here are display-only; the server
- * resolves the real Stripe Price.
- */
+function SelectionCard({ selected, onClick, title, text }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`w-full rounded-2xl border p-4 text-start transition ${
+        selected
+          ? "border-indigo-400 bg-indigo-50 ring-2 ring-indigo-100"
+          : "border-slate-200 bg-white hover:border-indigo-200"
+      }`}
+    >
+      <span className="flex items-start gap-3">
+        <span className={`mt-0.5 grid h-5 w-5 shrink-0 place-items-center rounded-full border ${selected ? "border-indigo-600 bg-indigo-600 text-white" : "border-slate-300"}`}>
+          {selected ? <Check size={12} strokeWidth={3} /> : null}
+        </span>
+        <span>
+          <span className="block text-sm font-black text-slate-900">{title}</span>
+          {text ? <span className="mt-1 block text-xs font-semibold leading-5 text-slate-500">{text}</span> : null}
+        </span>
+      </span>
+    </button>
+  );
+}
+
 export default function ServicePurchasePanel({
   service,
   purchase,
   open,
   onClose,
   user,
+  activePlan,
   isHe,
+  restoredIntent,
+  autoContinue = false,
 }) {
-  const reduceMotion = useReducedMotion();
   const navigate = useNavigate();
-
-  const trackOptions = purchase?.trackOptions || null;
-  const addOnOptions = purchase?.addOnOptions || null;
-
-  // Fresh state per service: parent remounts this panel via `key={service.key}`.
-  const [trackIndex, setTrackIndex] = useState(() => {
-    if (!trackOptions) return 0;
-    const idx = trackOptions.findIndex((o) => !o.contact);
-    return idx >= 0 ? idx : 0;
-  });
-  const [addOnState, setAddOnState] = useState({}); // { [addOnKey]: qty }
+  const restored = restoredIntent?.serviceKey;
+  const initialTrack = Math.max(
+    0,
+    purchase?.trackOptions?.findIndex((option) => option.serviceKey === restored) ?? 0
+  );
+  const [trackIndex, setTrackIndex] = useState(initialTrack);
+  const [selectedAddOns, setSelectedAddOns] = useState(
+    () => new Set(restoredIntent?.selectedAddOnKeys || [])
+  );
+  const [quantities, setQuantities] = useState(restoredIntent?.quantities || {});
+  const [purchaseMode, setPurchaseMode] = useState(restoredIntent?.purchaseMode || null);
+  const [selectedPlanKey, setSelectedPlanKey] = useState(
+    restoredIntent?.selectedPlanKey || (activePlan ? "existing" : null)
+  );
+  const [step, setStep] = useState(restoredIntent ? "summary" : "details");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
-  const userId = user?._id || user?.userId || user?.id || null;
-  const businessId = user?.businessId || user?.business?._id || null;
+  const autoStarted = useRef(false);
 
   useEffect(() => {
     if (!open) return undefined;
@@ -56,412 +91,489 @@ export default function ServicePurchasePanel({
   }, [open]);
 
   useEffect(() => {
+    if (open && !restoredIntent) {
+      sessionStorage.removeItem(LAUNCH_MARKER_KEY);
+    }
+  }, [open, restoredIntent]);
+
+  useEffect(() => {
     if (!open) return undefined;
-    const onKey = (event) => {
-      if (event.key === "Escape") onClose();
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [open, onClose]);
+    const closeOnEscape = (event) => event.key === "Escape" && onClose();
+    window.addEventListener("keydown", closeOnEscape);
+    return () => window.removeEventListener("keydown", closeOnEscape);
+  }, [onClose, open]);
 
-  if (typeof document === "undefined") return null;
+  const selectedTrack = purchase?.trackOptions?.[trackIndex] || null;
+  const serviceKey = selectedTrack?.serviceKey || purchase?.serviceKey || restored || "";
+  const contactOnly = Boolean(selectedTrack?.contact) || !serviceKey;
+  const serviceBilling = selectedTrack?.billing || purchase?.billing || "one_time";
+  const baseAmount = selectedTrack?.amountIls ?? purchase?.amountIls ?? 0;
+  const selectedAddOnOptions = useMemo(
+    () =>
+      (purchase?.addOnOptions || []).filter((option) =>
+        selectedAddOns.has(option.addOnKey)
+      ),
+    [purchase, selectedAddOns]
+  );
 
-  const activeTrack = trackOptions ? trackOptions[trackIndex] : null;
-  const isContactOnly = Boolean(activeTrack?.contact);
+  const intent = useMemo(
+    () => ({
+      serviceKey,
+      purchaseMode,
+      selectedPlanKey:
+        purchaseMode === "bundle"
+          ? activePlan
+            ? "existing"
+            : selectedPlanKey
+          : null,
+      selectedAddOnKeys: selectedAddOnOptions.map((option) => option.addOnKey),
+      quantities: Object.fromEntries(
+        selectedAddOnOptions
+          .filter((option) => option.allowQuantity)
+          .map((option) => [
+            option.addOnKey,
+            Math.max(1, Math.floor(Number(quantities[option.addOnKey]) || 1)),
+          ])
+      ),
+      returnPath: "/pricing",
+    }),
+    [
+      activePlan,
+      purchaseMode,
+      quantities,
+      selectedAddOnOptions,
+      selectedPlanKey,
+      serviceKey,
+    ]
+  );
 
-  const serviceKey = trackOptions
-    ? activeTrack?.serviceKey || null
-    : purchase?.serviceKey || null;
+  const addOnTotal = selectedAddOnOptions.reduce(
+    (sum, option) =>
+      sum + option.amountIls * (quantities[option.addOnKey] || 1),
+    0
+  );
+  const plan = PLAN_OPTIONS.find(
+    (option) => option.key === (activePlan?.key || selectedPlanKey)
+  );
+  const isNewPlan = purchaseMode === "bundle" && !activePlan;
+  const waitingForActivePlan = Boolean(
+    autoContinue &&
+      restoredIntent &&
+      purchaseMode === "bundle" &&
+      !activePlan
+  );
+  const paymentToday =
+    baseAmount +
+    addOnTotal +
+    (isNewPlan && plan?.key !== "monthly" ? plan?.amount || 0 : 0) +
+    (isNewPlan && plan?.key === "monthly" ? plan.amount : 0);
+  const monthlyTotal =
+    (serviceBilling === "recurring_month" ? baseAmount : 0) +
+    (isNewPlan && plan?.key === "monthly" ? plan.amount : 0);
+  const yearlyTotal =
+    isNewPlan && plan?.key === "yearly" ? plan.amount : 0;
+  const oneTimeTotal =
+    (serviceBilling === "one_time" ? baseAmount : 0) +
+    addOnTotal +
+    (isNewPlan && plan?.key === "website" ? plan.amount : 0);
 
-  const billing = trackOptions
-    ? activeTrack?.billing
-    : purchase?.billing;
-  const isMonthly = billing === "recurring_month";
-
-  const baseAmount = trackOptions
-    ? activeTrack?.amountIls
-    : purchase?.amountIls;
-
-  const toggleAddOn = (addOnKey) => {
-    setAddOnState((prev) => {
-      const next = { ...prev };
-      if (next[addOnKey] != null) delete next[addOnKey];
-      else next[addOnKey] = 1;
-      return next;
+  const goToContact = () => {
+    onClose();
+    navigate("/contact", {
+      state: {
+        prefillMessage: isHe
+          ? `אשמח לקבל הצעה עבור ${service?.displayName || "השירות"}`
+          : `I'd like a quote for ${service?.displayName || "this service"}`,
+      },
     });
   };
 
-  const setAddOnQty = (addOnKey, qty) => {
-    const clamped = Math.max(1, Math.round(Number(qty) || 1));
-    setAddOnState((prev) => ({ ...prev, [addOnKey]: clamped }));
-  };
-
-  const selectedAddOnKeys = Object.keys(addOnState);
-  const quantities = addOnState;
-
-  const addOnsTotal = (addOnOptions || []).reduce((sum, opt) => {
-    const qty = addOnState[opt.addOnKey];
-    if (!qty) return sum;
-    return sum + opt.amountIls * qty;
-  }, 0);
-
-  const total =
-    baseAmount != null ? Number(baseAmount) + addOnsTotal : null;
-
-  const canCheckout = Boolean(serviceKey) && !isContactOnly;
-
-  const billingLabel = isMonthly
-    ? isHe
-      ? "חיוב חודשי מתחדש"
-      : "Recurring monthly billing"
-    : isHe
-    ? "תשלום חד־פעמי"
-    : "One-time payment";
-
-  const goToContact = () => {
-    const name = service?.displayName || "";
-    const prefillMessage = isHe
-      ? `אשמח לקבל הצעת מחיר עבור: ${name}`
-      : `I'd like a quote for: ${name}`;
-    onClose();
-    navigate("/contact", { state: { prefillMessage } });
-  };
-
-  const goToLogin = () => {
-    onClose();
-    navigate("/login", { state: { from: "/pricing" } });
-  };
-
-  const handleSubmit = async () => {
-    setError("");
-
-    if (!userId) {
-      goToLogin();
-      return;
-    }
-    if (isContactOnly || !serviceKey) {
+  const proceedFromDetails = () => {
+    if (contactOnly) {
       goToContact();
       return;
     }
+    setStep("mode");
+  };
+
+  const selectMode = (mode) => {
+    setPurchaseMode(mode);
+    if (mode === "standalone") {
+      setSelectedPlanKey(null);
+    } else if (activePlan) {
+      setSelectedPlanKey("existing");
+    }
+    setStep(getPurchaseModeNextStep(mode, activePlan));
+  };
+
+  const persistIntent = () => savePendingPurchaseIntent(intent);
+
+  const registerAndContinue = () => {
+    persistIntent();
+    navigate("/register?purchaseIntent=1&redirect=%2Fpricing");
+  };
+
+  const launchCheckout = async ({ automatic = false } = {}) => {
+    if (!user) {
+      persistIntent();
+      navigate("/login?redirect=%2Fpricing");
+      return;
+    }
+    if (loading || waitingForActivePlan || !serviceKey || !purchaseMode) return;
+
+    const checkoutAttempt = createServiceCheckoutAttempt(intent, {
+      automatic,
+      activePlan,
+    });
+    const signature = createCheckoutLaunchSignature(checkoutAttempt.intent, {
+      automatic,
+    });
+    const previous = sessionStorage.getItem(LAUNCH_MARKER_KEY);
+    if (previous === signature) return;
 
     try {
       setLoading(true);
+      setError("");
+      sessionStorage.setItem(LAUNCH_MARKER_KEY, signature);
       const data = await createServiceOrderCheckout({
-        serviceKey,
-        selectedAddOnKeys: addOnOptions ? selectedAddOnKeys : [],
-        quantities: addOnOptions ? quantities : {},
-        businessId,
-        userId,
+        intent: checkoutAttempt.intent,
+        authenticatedUser: user,
       });
-      if (data?.url) {
-        window.location.href = data.url;
-        return;
-      }
+      if (!data?.url) throw new Error("Missing checkout URL");
+
+      const mustContinue = shouldPreservePendingServicePurchase({
+        response: data,
+        isSequentialContinuation:
+          checkoutAttempt.isSequentialContinuation,
+        isNewPlan,
+        serviceBilling,
+      });
+      if (mustContinue) persistIntent();
+      else clearPendingPurchaseIntent();
+      window.location.assign(data.url);
+    } catch (checkoutError) {
+      sessionStorage.removeItem(LAUNCH_MARKER_KEY);
+      setLoading(false);
       setError(
         isHe
-          ? "לא התקבל קישור לתשלום. נסו שוב או פנו לתמיכה."
-          : "No checkout link received. Please try again or contact support."
+          ? "לא הצלחנו לפתוח את התשלום המאובטח. נסו שוב."
+          : "We couldn't open secure checkout. Please try again."
       );
-      setLoading(false);
-    } catch (err) {
-      setError(
-        err?.message ||
-          (isHe ? "אירעה שגיאה. נסו שוב." : "Something went wrong. Please try again.")
-      );
-      setLoading(false);
+      console.error("Service checkout failed", checkoutError);
     }
   };
 
-  const ctaLabel = !userId
-    ? isHe
-      ? "התחברו כדי לרכוש"
-      : "Log in to purchase"
-    : isContactOnly
-    ? isHe
-      ? "לבקשת הצעה מותאמת"
-      : "Request a custom quote"
-    : loading
-    ? isHe
-      ? "מעבירים לתשלום..."
-      : "Redirecting to payment..."
-    : isHe
-    ? "המשך לתשלום מאובטח"
-    : "Continue to secure checkout";
+  useEffect(() => {
+    if (
+      !open ||
+      !autoContinue ||
+      !restoredIntent ||
+      !user ||
+      !activePlan ||
+      autoStarted.current
+    ) {
+      return;
+    }
+    autoStarted.current = true;
+    launchCheckout({ automatic: true });
+    // Intentional one-shot continuation after Stripe redirects back.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [activePlan, autoContinue, open, restoredIntent, user]);
+
+  if (typeof document === "undefined") return null;
+  if (!open || !service || !purchase) return null;
+
+  const title =
+    step === "mode"
+      ? isHe
+        ? "איך תרצו לרכוש את השירות?"
+        : "How would you like to purchase this service?"
+      : step === "plan"
+        ? isHe
+          ? "בחירת חבילה"
+          : "Choose a plan"
+        : step === "summary"
+          ? isHe
+            ? "סיכום הרכישה"
+            : "Purchase summary"
+          : service.displayName;
 
   return createPortal(
-    <AnimatePresence>
-      {open && service && (
-        <motion.div
-          className="fixed inset-0 z-[85] flex items-end justify-center sm:items-center sm:p-6"
-          initial={reduceMotion ? false : { opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={reduceMotion ? undefined : { opacity: 0 }}
-          role="presentation"
+    <div className="fixed inset-0 z-[90] flex items-end justify-center sm:items-center sm:p-6">
+      <button
+        type="button"
+        aria-label={isHe ? "סגירה" : "Close"}
+        className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm"
+        onClick={onClose}
+      />
+      <section
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="service-purchase-title"
+        className="relative z-10 flex max-h-[94vh] w-full max-w-2xl flex-col overflow-hidden rounded-t-[2rem] bg-white shadow-2xl sm:rounded-[2rem]"
+      >
+        <header
+          className="flex items-start justify-between gap-4 border-b border-slate-100 px-6 py-5 sm:px-8"
+          style={{ background: `linear-gradient(135deg, ${service.accent}16, white)` }}
         >
-          <button
-            type="button"
-            aria-label={isHe ? "סגירה" : "Close"}
-            className="absolute inset-0 bg-slate-950/55 backdrop-blur-sm"
-            onClick={onClose}
-          />
+          <div className="text-start">
+            <p className="text-xs font-black text-slate-500">{service.displayName}</p>
+            <h2 id="service-purchase-title" className="mt-1 text-2xl font-black text-slate-900">
+              {title}
+            </h2>
+          </div>
+          <button type="button" onClick={onClose} className="grid h-10 w-10 place-items-center rounded-full border border-slate-200 bg-white text-slate-600">
+            <X size={18} />
+          </button>
+        </header>
 
-          <motion.div
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="service-purchase-title"
-            initial={reduceMotion ? false : { opacity: 0, y: 40, scale: 0.97 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={reduceMotion ? undefined : { opacity: 0, y: 28, scale: 0.97 }}
-            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-            className="relative z-10 flex max-h-[92vh] w-full max-w-xl flex-col overflow-hidden rounded-t-[2rem] border border-white/70 bg-white shadow-[0_40px_120px_rgba(15,23,42,0.35)] sm:rounded-[2rem]"
-          >
-            {/* Header */}
-            <div
-              className="relative shrink-0 px-6 pb-5 pt-6 sm:px-8"
-              style={{
-                background: `linear-gradient(135deg, ${service.accent}18, #ffffff 55%, ${service.accent}10)`,
-              }}
-            >
-              <div className="flex items-start justify-between gap-4">
-                <div className="min-w-0 text-start">
-                  <p className="text-xs font-black uppercase tracking-[0.16em] text-slate-500">
-                    {isHe ? "רכישת שירות" : "Purchase service"}
-                  </p>
-                  <h2
-                    id="service-purchase-title"
-                    className="mt-1 text-2xl font-black tracking-[-0.03em] text-slate-900 sm:text-3xl"
-                  >
-                    {service.displayName}
-                  </h2>
-                </div>
-                <button
-                  type="button"
-                  onClick={onClose}
-                  className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-slate-200 bg-white text-slate-600 transition hover:bg-slate-50"
-                  aria-label={isHe ? "סגירה" : "Close"}
-                >
-                  <X size={18} />
-                </button>
-              </div>
-            </div>
-
-            {/* Body */}
-            <div className="min-h-0 flex-1 overflow-y-auto px-6 py-5 sm:px-8">
-              {/* Track / tier picker */}
-              {trackOptions && (
-                <div>
-                  <h3 className="text-start text-sm font-black uppercase tracking-[0.14em] text-slate-500">
-                    {isHe ? "בחרו מסלול" : "Choose an option"}
+        <div className="min-h-0 flex-1 overflow-y-auto px-6 py-6 sm:px-8">
+          {step === "details" ? (
+            <div className="space-y-5">
+              {purchase.trackOptions?.length ? (
+                <div className="space-y-2">
+                  <h3 className="text-start text-sm font-black text-slate-700">
+                    {isHe ? "בחירת מסלול" : "Choose a service track"}
                   </h3>
-                  <div className="mt-3 grid gap-2">
-                    {trackOptions.map((opt, index) => {
-                      const label =
-                        service.displayTracks?.[index]?.label ||
-                        (isHe ? `מסלול ${index + 1}` : `Option ${index + 1}`);
-                      const priceText =
-                        service.displayTracks?.[index]?.price ||
-                        (opt.amountIls != null ? formatIls(opt.amountIls) : "");
-                      const active = trackIndex === index;
-                      return (
-                        <button
-                          key={label}
-                          type="button"
-                          onClick={() => setTrackIndex(index)}
-                          className={`flex items-center justify-between gap-3 rounded-2xl border px-4 py-3 text-start transition ${
-                            active
-                              ? "border-indigo-300 bg-indigo-50/70 ring-2 ring-indigo-200"
-                              : "border-slate-200 bg-slate-50/80 hover:border-slate-300"
-                          }`}
-                        >
-                          <span className="flex items-center gap-2.5">
-                            <span
-                              className={`grid h-5 w-5 shrink-0 place-items-center rounded-full border ${
-                                active
-                                  ? "border-indigo-500 bg-indigo-500 text-white"
-                                  : "border-slate-300 bg-white"
-                              }`}
-                            >
-                              {active && <Check size={12} strokeWidth={3} />}
-                            </span>
-                            <span className="text-sm font-bold text-slate-700">
-                              {label}
-                            </span>
-                          </span>
-                          <span
-                            className="shrink-0 text-sm font-black"
-                            style={{ color: service.accent }}
-                          >
-                            {priceText}
-                          </span>
-                        </button>
-                      );
-                    })}
-                  </div>
+                  {purchase.trackOptions.map((option, index) => (
+                    <SelectionCard
+                      key={`${service.key}-${index}`}
+                      selected={trackIndex === index}
+                      onClick={() => setTrackIndex(index)}
+                      title={service.displayTracks?.[index]?.label || `${isHe ? "מסלול" : "Track"} ${index + 1}`}
+                      text={service.displayTracks?.[index]?.price}
+                    />
+                  ))}
                 </div>
-              )}
-
-              {/* Base line for single-option services */}
-              {!trackOptions && (
-                <div className="flex items-center justify-between gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-3">
-                  <span className="text-sm font-bold text-slate-700">
-                    {service.displayName}
-                  </span>
-                  <span
-                    className="shrink-0 text-sm font-black"
-                    style={{ color: service.accent }}
-                  >
-                    {baseAmount != null ? formatIls(baseAmount) : service.displayPrice}
-                  </span>
-                </div>
-              )}
-
-              {/* Expert-build add-ons */}
-              {addOnOptions && (
-                <div className="mt-7">
-                  <h3 className="text-start text-sm font-black uppercase tracking-[0.14em] text-slate-500">
-                    {isHe ? "תוספות (אופציונלי)" : "Add-ons (optional)"}
-                  </h3>
-                  <div className="mt-3 grid gap-2">
-                    {addOnOptions.map((opt, index) => {
-                      const label =
-                        service.displayExtras?.[index]?.label || opt.addOnKey;
-                      const checked = addOnState[opt.addOnKey] != null;
-                      const qty = addOnState[opt.addOnKey] || 1;
-                      return (
-                        <div
-                          key={opt.addOnKey}
-                          className={`rounded-2xl border px-4 py-3 transition ${
-                            checked
-                              ? "border-indigo-300 bg-indigo-50/60"
-                              : "border-slate-200 bg-slate-50/80"
-                          }`}
-                        >
-                          <label className="flex cursor-pointer items-center justify-between gap-3">
-                            <span className="flex items-center gap-2.5">
-                              <input
-                                type="checkbox"
-                                checked={checked}
-                                onChange={() => toggleAddOn(opt.addOnKey)}
-                                className="h-4 w-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500"
-                              />
-                              <span className="text-sm font-bold text-slate-700">
-                                {label}
-                              </span>
-                            </span>
-                            <span
-                              className="shrink-0 text-sm font-black"
-                              style={{ color: service.accent }}
-                            >
-                              {formatIls(opt.amountIls)}
-                            </span>
-                          </label>
-
-                          {checked && opt.allowQuantity && (
-                            <div className="mt-3 flex items-center justify-between gap-3 ps-6">
-                              <span className="text-xs font-bold text-slate-500">
-                                {isHe ? "כמות עמודים" : "Number of pages"}
-                              </span>
-                              <div className="inline-flex items-center gap-2">
-                                <button
-                                  type="button"
-                                  aria-label={isHe ? "הפחתה" : "Decrease"}
-                                  onClick={() =>
-                                    setAddOnQty(opt.addOnKey, qty - 1)
-                                  }
-                                  disabled={qty <= 1}
-                                  className="grid h-8 w-8 place-items-center rounded-full border border-slate-300 bg-white text-slate-700 transition hover:bg-slate-50 disabled:opacity-40"
-                                >
-                                  <Minus size={14} />
-                                </button>
-                                <span className="min-w-[2ch] text-center text-sm font-black text-slate-900">
-                                  {qty}
-                                </span>
-                                <button
-                                  type="button"
-                                  aria-label={isHe ? "הוספה" : "Increase"}
-                                  onClick={() =>
-                                    setAddOnQty(opt.addOnKey, qty + 1)
-                                  }
-                                  className="grid h-8 w-8 place-items-center rounded-full border border-slate-300 bg-white text-slate-700 transition hover:bg-slate-50"
-                                >
-                                  <Plus size={14} />
-                                </button>
-                              </div>
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              )}
-
-              {service.displayNote && (
-                <p className="mt-6 rounded-2xl border border-amber-200/80 bg-amber-50 px-4 py-3 text-start text-sm font-semibold leading-6 text-amber-900">
-                  {service.displayNote}
+              ) : (
+                <p className="rounded-2xl bg-slate-50 p-4 text-start text-sm font-bold text-slate-700">
+                  {service.displayDescription}
                 </p>
               )}
 
-              {error && (
-                <div className="mt-6 flex items-start gap-2 rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-start">
-                  <AlertCircle size={18} className="mt-0.5 shrink-0 text-rose-600" />
-                  <p className="text-sm font-bold leading-6 text-rose-700">
-                    {error}
-                  </p>
+              {purchase.addOnOptions?.length ? (
+                <div className="space-y-2">
+                  <h3 className="text-start text-sm font-black text-slate-700">
+                    {isHe ? "תוספות לבחירה" : "Optional add-ons"}
+                  </h3>
+                  {purchase.addOnOptions.map((option, index) => {
+                    const selected = selectedAddOns.has(option.addOnKey);
+                    return (
+                      <div key={option.addOnKey} className="rounded-2xl border border-slate-200 p-4">
+                        <label className="flex cursor-pointer items-start gap-3 text-start">
+                          <input
+                            type="checkbox"
+                            checked={selected}
+                            onChange={() =>
+                              setSelectedAddOns((previous) => {
+                                const next = new Set(previous);
+                                if (next.has(option.addOnKey)) next.delete(option.addOnKey);
+                                else next.add(option.addOnKey);
+                                return next;
+                              })
+                            }
+                            className="mt-1"
+                          />
+                          <span className="flex-1 text-sm font-black text-slate-800">
+                            {service.displayExtras?.[index]?.label || option.addOnKey}
+                            <span className="ms-2 text-slate-500">
+                              {service.displayExtras?.[index]?.price}
+                            </span>
+                          </span>
+                        </label>
+                        {selected && option.allowQuantity ? (
+                          <input
+                            aria-label={isHe ? "כמות" : "Quantity"}
+                            type="number"
+                            min="1"
+                            max="50"
+                            value={quantities[option.addOnKey] || 1}
+                            onChange={(event) =>
+                              setQuantities((previous) => ({
+                                ...previous,
+                                [option.addOnKey]: Math.max(1, Number(event.target.value) || 1),
+                              }))
+                            }
+                            className="mt-3 h-10 w-24 rounded-xl border border-slate-200 px-3"
+                          />
+                        ) : null}
+                      </div>
+                    );
+                  })}
                 </div>
-              )}
+              ) : null}
             </div>
+          ) : null}
 
-            {/* Footer: total + CTA */}
-            <div className="shrink-0 border-t border-slate-100 bg-white px-6 py-4 sm:px-8">
-              <div className="flex items-end justify-between gap-3">
-                <div className="text-start">
-                  <p className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">
-                    {isHe ? 'סה"כ' : "Total"}
-                  </p>
-                  <p className="text-2xl font-black tracking-tight text-slate-900">
-                    {isContactOnly || total == null
+          {step === "mode" ? (
+            <div className="grid gap-3">
+              <SelectionCard
+                selected={purchaseMode === "bundle"}
+                onClick={() => selectMode("bundle")}
+                title={activePlan ? (isHe ? "הוספה לחבילה הקיימת שלי" : "Add to my existing plan") : (isHe ? "הוספה לחבילה" : "Add to a plan")}
+                text={
+                  activePlan
+                    ? `${isHe ? "החבילה הפעילה" : "Active plan"}: ${activePlan.name}. ${isHe ? "החבילה לא תחויב מחדש." : "Your plan will not be charged again."}`
+                    : isHe
+                      ? "שלבו את השירות עם חבילת אתר, חבילה עסקית חודשית או חבילה עסקית שנתית."
+                      : "Combine the service with a website, monthly business, or yearly business plan."
+                }
+              />
+              <SelectionCard
+                selected={purchaseMode === "standalone"}
+                onClick={() => selectMode("standalone")}
+                title={isHe ? "רכישה נפרדת" : "Purchase separately"}
+                text={
+                  isHe
+                    ? "רכשו רק את השירות, בלי לשנות את החבילה שלכם."
+                    : "Purchase only the service without changing your plan."
+                }
+              />
+            </div>
+          ) : null}
+
+          {step === "plan" ? (
+            <div className="grid gap-3">
+              {PLAN_OPTIONS.map((option) => (
+                <SelectionCard
+                  key={option.key}
+                  selected={selectedPlanKey === option.key}
+                  onClick={() => setSelectedPlanKey(option.key)}
+                  title={`${isHe ? option.he : option.en} · ${money(option.amount, isHe)}${option.billing === "month" ? (isHe ? " לחודש" : "/month") : (isHe ? " לשנה" : "/year")}`}
+                  text={
+                    option.key === "website"
                       ? isHe
-                        ? "הצעה מותאמת"
-                        : "Custom quote"
-                      : formatIls(total)}
+                        ? "תשלום ידני חד־פעמי עבור שנת האתר."
+                        : "One manual payment for the website year."
+                      : undefined
+                  }
+                />
+              ))}
+            </div>
+          ) : null}
+
+          {step === "summary" ? (
+            <div className="space-y-4 text-start">
+              <div className="rounded-2xl bg-slate-900 p-5 text-white">
+                <p className="text-xs font-bold text-slate-300">{isHe ? "לתשלום היום" : "Payment today"}</p>
+                <p className="mt-1 text-3xl font-black">{money(paymentToday, isHe)}</p>
+                <p className="mt-2 text-xs font-semibold text-slate-300">
+                  {isHe ? "המחירים במסך זה לתצוגה בלבד. הסכום הסופי נקבע בשרת." : "Displayed prices are estimates. The server determines the final amount."}
+                </p>
+              </div>
+              <div className="grid gap-3 sm:grid-cols-3">
+                <div className="rounded-2xl border border-slate-200 p-4">
+                  <p className="text-xs font-bold text-slate-500">{isHe ? "חודשי חוזר" : "Monthly recurring"}</p>
+                  <p className="mt-1 font-black">{money(monthlyTotal, isHe)}</p>
+                </div>
+                <div className="rounded-2xl border border-slate-200 p-4">
+                  <p className="text-xs font-bold text-slate-500">{isHe ? "שנתי חוזר" : "Yearly recurring"}</p>
+                  <p className="mt-1 font-black">{money(yearlyTotal, isHe)}</p>
+                </div>
+                <div className="rounded-2xl border border-slate-200 p-4">
+                  <p className="text-xs font-bold text-slate-500">{isHe ? "פריטים חד־פעמיים" : "One-time items"}</p>
+                  <p className="mt-1 font-black">{money(oneTimeTotal, isHe)}</p>
+                </div>
+              </div>
+              <div className="rounded-2xl border border-slate-200 p-4 text-sm font-bold text-slate-700">
+                <p>{service.displayName}</p>
+                <p className="mt-1 text-xs text-slate-500">
+                  {purchaseMode === "bundle"
+                    ? `${isHe ? "בחבילה" : "Plan"}: ${activePlan?.name || (isHe ? plan?.he : plan?.en)}`
+                    : isHe
+                      ? "רכישה נפרדת"
+                      : "Standalone purchase"}
+                </p>
+                {activePlan?.nextRenewal ? (
+                  <p className="mt-2 text-xs text-slate-500">
+                    {isHe ? "החידוש הבא" : "Next renewal"}:{" "}
+                    {new Date(activePlan.nextRenewal).toLocaleDateString(isHe ? "he-IL" : "en-IL")}
+                  </p>
+                ) : null}
+              </div>
+              {isNewPlan && serviceBilling === "recurring_month" ? (
+                <div className="flex gap-3 rounded-2xl border border-amber-300 bg-amber-50 p-4 text-sm font-bold leading-6 text-amber-900">
+                  <AlertCircle className="mt-0.5 shrink-0" size={20} />
+                  <p>
+                    {isHe
+                      ? "חשוב: החבילה החודשית והשירות החודשי הם שני מנויים נפרדים. תעברו בשני תשלומי Stripe מאובטחים, אחד אחרי השני."
+                      : "Important: the monthly plan and monthly service are two separate subscriptions. You will complete two secure Stripe Checkouts, one after the other."}
                   </p>
                 </div>
-                <span
-                  className={`rounded-full px-3 py-1 text-xs font-black ${
-                    isMonthly
-                      ? "bg-sky-100 text-sky-700"
-                      : "bg-emerald-100 text-emerald-700"
-                  }`}
+              ) : null}
+              {waitingForActivePlan ? (
+                <p
+                  role="status"
+                  className="rounded-2xl border border-indigo-200 bg-indigo-50 p-4 text-sm font-bold text-indigo-800"
                 >
-                  {billingLabel}
-                </span>
-              </div>
+                  {isHe
+                    ? "ממתינים לאישור החבילה הפעילה. התשלום הבא ייפתח אוטומטית."
+                    : "Waiting for your active plan to be confirmed. The next checkout will open automatically."}
+                </p>
+              ) : null}
+              {error ? <p role="alert" className="rounded-2xl bg-rose-50 p-4 text-sm font-bold text-rose-700">{error}</p> : null}
+            </div>
+          ) : null}
+        </div>
 
+        <footer className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 px-6 py-4 sm:px-8">
+          {step !== "details" ? (
+            <button type="button" disabled={loading || waitingForActivePlan} onClick={() => setStep(step === "summary" ? (purchaseMode === "standalone" || activePlan ? "mode" : "plan") : step === "plan" ? "mode" : "details")} className="inline-flex items-center gap-1 text-sm font-black text-slate-600 disabled:opacity-50">
+              <ChevronLeft size={16} className="rtl:rotate-180" />
+              {isHe ? "חזרה" : "Back"}
+            </button>
+          ) : <span />}
+          {step === "details" ? (
+            <button type="button" onClick={proceedFromDetails} className="rounded-full bg-slate-900 px-6 py-3 text-sm font-black text-white">
+              {contactOnly ? (isHe ? "לקבלת הצעה" : "Request a quote") : (isHe ? "לבחירת רכישה" : "Choose purchase")}
+            </button>
+          ) : null}
+          {step === "plan" ? (
+            <button type="button" disabled={!selectedPlanKey} onClick={() => setStep("summary")} className="rounded-full bg-slate-900 px-6 py-3 text-sm font-black text-white disabled:opacity-40">
+              {isHe ? "המשך לסיכום" : "Continue to summary"}
+            </button>
+          ) : null}
+          {step === "summary" && user ? (
+            <button
+              type="button"
+              disabled={loading || waitingForActivePlan}
+              onClick={() =>
+                launchCheckout({
+                  automatic: Boolean(
+                    autoContinue && activePlan && restoredIntent
+                  ),
+                })
+              }
+              className="rounded-full bg-gradient-to-l from-indigo-600 to-violet-600 px-6 py-3 text-sm font-black text-white disabled:opacity-60"
+            >
+              {loading
+                ? isHe ? "פותחים תשלום..." : "Opening checkout..."
+                : isHe ? "המשך לתשלום מאובטח" : "Continue to secure payment"}
+            </button>
+          ) : null}
+          {step === "summary" && !user ? (
+            <div className="flex flex-wrap items-center gap-2">
               <button
                 type="button"
-                onClick={handleSubmit}
                 disabled={loading}
-                className="mt-4 inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-slate-900 px-6 text-sm font-black text-white shadow-lg transition hover:-translate-y-0.5 hover:bg-slate-800 disabled:cursor-not-allowed disabled:opacity-70"
+                onClick={() => launchCheckout()}
+                className="rounded-full bg-slate-900 px-6 py-3 text-sm font-black text-white disabled:opacity-50"
               >
-                {canCheckout && userId && !loading && (
-                  <ShieldCheck size={16} aria-hidden="true" />
-                )}
-                {ctaLabel}
+                {isHe ? "התחברות והמשך" : "Log in and continue"}
               </button>
-
-              {canCheckout && userId && (
-                <p className="mt-2 text-center text-xs font-semibold text-slate-400">
-                  {isHe
-                    ? "התשלום מתבצע באופן מאובטח דרך Stripe"
-                    : "Payment is processed securely via Stripe"}
-                </p>
-              )}
+              <button
+                type="button"
+                disabled={loading}
+                onClick={registerAndContinue}
+                className="rounded-full border border-slate-300 bg-white px-6 py-3 text-sm font-black text-slate-800 disabled:opacity-50"
+              >
+                {isHe ? "הרשמה והמשך" : "Register and continue"}
+              </button>
             </div>
-          </motion.div>
-        </motion.div>
-      )}
-    </AnimatePresence>,
+          ) : null}
+        </footer>
+      </section>
+    </div>,
     document.body
   );
 }

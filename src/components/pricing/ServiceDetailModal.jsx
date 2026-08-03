@@ -12,6 +12,7 @@ export default function ServiceDetailModal({
   catLabel,
   t,
   AddonIcon,
+  purchaseLabel,
 }) {
   const reduceMotion = useReducedMotion();
 
@@ -219,7 +220,7 @@ export default function ServiceDetailModal({
                 }}
               >
                 <Plus size={16} />
-                {t("pricing.addonsAdd")}
+                {purchaseLabel || t("pricing.addonsAdd")}
               </button>
               <button
                 type="button"

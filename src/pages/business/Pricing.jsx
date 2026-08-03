@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState, startTransition, useCallback } from "react";
+import React, { useEffect, useMemo, useState, startTransition, useCallback, useRef } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Helmet } from "react-helmet-async";
@@ -38,6 +38,10 @@ import {
 import ServiceDetailModal from "../../components/pricing/ServiceDetailModal";
 import ServicePurchasePanel from "../../components/pricing/ServicePurchasePanel";
 import { ScrollProgress } from "../../components/product-marketing";
+import {
+  loadPendingPurchaseIntent,
+} from "../../utils/pendingPurchaseIntent";
+import { getActivePricingPlan } from "../../utils/servicePurchaseFlow";
 import "../../components/product-marketing/marketingKit.css";
 import "../../styles/PricingServices.css";
 
@@ -98,13 +102,25 @@ function localizeService(addon, isHe) {
   };
 }
 
+function findServiceCatalogKey(serviceKey) {
+  return Object.entries(PRICING_SERVICE_PURCHASE).find(([, config]) => {
+    if (config.serviceKey === serviceKey) return true;
+    return config.trackOptions?.some((option) => option.serviceKey === serviceKey);
+  })?.[0] || null;
+}
+
 export default function Plans() {
   const { t, i18n } = useTranslation();
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const reduceMotion = useReducedMotion();
   const isHe = (i18n.language || "he").startsWith("he");
+  const initialPendingIntent = useMemo(() => loadPendingPurchaseIntent(), []);
+  const initialPurchaseKey = initialPendingIntent
+    ? findServiceCatalogKey(initialPendingIntent.serviceKey)
+    : null;
+  const continuationRefreshStarted = useRef(false);
 
   useEffect(() => {
     const ref = searchParams.get("ref");
@@ -113,9 +129,12 @@ export default function Plans() {
 
   const [loadingPlan, setLoadingPlan] = useState(null);
   const [activeCategory, setActiveCategory] = useState("all");
-  const [upsellsOpen, setUpsellsOpen] = useState(false);
+  const [upsellsOpen, setUpsellsOpen] = useState(Boolean(initialPurchaseKey));
   const [detailKey, setDetailKey] = useState(null);
-  const [purchaseKey, setPurchaseKey] = useState(null);
+  const [purchaseKey, setPurchaseKey] = useState(initialPurchaseKey);
+  const [restoredIntent] = useState(
+    initialPurchaseKey ? initialPendingIntent : null
+  );
   const [websiteAddonByPlan, setWebsiteAddonByPlan] = useState({
     monthly: false,
     yearly: false,
@@ -123,6 +142,7 @@ export default function Plans() {
 
   const API_BASE = import.meta.env.VITE_API_URL;
   const userId = user?._id || user?.userId || user?.id;
+  const activePlan = useMemo(() => getActivePricingPlan(user), [user]);
   const websiteAddonLabel = isHe ? WEBSITE_ADDON.labelHe : WEBSITE_ADDON.labelEn;
   const websiteAddonHint = isHe ? WEBSITE_ADDON.hintHe : WEBSITE_ADDON.hintEn;
 
@@ -268,6 +288,36 @@ export default function Plans() {
     [purchaseKey, localizedAddons]
   );
 
+  useEffect(() => {
+    if (
+      !restoredIntent ||
+      searchParams.get("bundle") !== "plan_done" ||
+      !userId ||
+      activePlan ||
+      continuationRefreshStarted.current
+    ) {
+      return undefined;
+    }
+
+    continuationRefreshStarted.current = true;
+    let cancelled = false;
+    let timeoutId;
+    const deadline = Date.now() + 30_000;
+
+    const refreshUntilActive = async () => {
+      await refreshUser?.(true);
+      if (!cancelled && Date.now() < deadline) {
+        timeoutId = window.setTimeout(refreshUntilActive, 1_500);
+      }
+    };
+
+    refreshUntilActive();
+    return () => {
+      cancelled = true;
+      if (timeoutId) window.clearTimeout(timeoutId);
+    };
+  }, [activePlan, refreshUser, restoredIntent, searchParams, userId]);
+
   const openPurchase = (addon) => {
     setDetailKey(null);
     setPurchaseKey(addon.key);
@@ -402,7 +452,7 @@ export default function Plans() {
               }}
             >
               <Plus size={15} />
-              {t("pricing.addonsAdd")}
+              {isHe ? "לבחירת רכישה" : "Choose purchase"}
             </button>
           </div>
         </div>
@@ -752,6 +802,7 @@ export default function Plans() {
         catLabel={catLabel}
         t={t}
         AddonIcon={AddonIcon}
+        purchaseLabel={isHe ? "לבחירת רכישה" : "Choose purchase"}
       />
 
       <ServicePurchasePanel
@@ -763,7 +814,16 @@ export default function Plans() {
         open={Boolean(purchaseService)}
         onClose={() => setPurchaseKey(null)}
         user={user}
+        activePlan={activePlan}
         isHe={isHe}
+        restoredIntent={
+          restoredIntent && purchaseService
+            ? restoredIntent
+            : null
+        }
+        autoContinue={
+          searchParams.get("bundle") === "plan_done"
+        }
       />
     </div>
   );
