@@ -28,6 +28,10 @@ import type { TFunction } from "i18next";
 import API from "@api";
 import BizuplyLoader from "../../../../components/ui/BizuplyLoader";
 import { useLocaleDir } from "../../../../hooks/useLocaleDir";
+import {
+  isImageAttachment,
+  openCrmAttachment,
+} from "../../../../utils/crmAttachmentUrl";
 import { formatCrmMoney } from "../../../../utils/crmCurrency";
 import { SHOW_BUSINESS_MINI_SAAS } from "./crmFeatureFlags";
 import ClientDocumentationPanel, {
@@ -44,6 +48,9 @@ export type ClientDetailTab =
   | "files"
   | "client-data"
   | "portal-access";
+
+/** Temporarily hide Communication until WhatsApp Business sync is the default path. */
+const SHOW_CLIENT_COMMUNICATION_TAB = false;
 
 export type ClientSourceDetails = {
   source?: string;
@@ -403,7 +410,8 @@ export default function CRMClientDossier({
   );
 
   const resolvedTab =
-    !SHOW_BUSINESS_MINI_SAAS && activeTab === "portal-access"
+    (!SHOW_BUSINESS_MINI_SAAS && activeTab === "portal-access") ||
+    (!SHOW_CLIENT_COMMUNICATION_TAB && activeTab === "communication")
       ? "profile"
       : activeTab;
 
@@ -543,12 +551,14 @@ export default function CRMClientDossier({
             badge={activities.length || undefined}
             onClick={() => setActiveTab("documentation")}
           />
-          <TabButton
-            active={resolvedTab === "communication"}
-            icon={MessagesSquare}
-            label={t("crm.clients.details.tabCommunication")}
-            onClick={() => setActiveTab("communication")}
-          />
+          {SHOW_CLIENT_COMMUNICATION_TAB && (
+            <TabButton
+              active={resolvedTab === "communication"}
+              icon={MessagesSquare}
+              label={t("crm.clients.details.tabCommunication")}
+              onClick={() => setActiveTab("communication")}
+            />
+          )}
           <TabButton
             active={resolvedTab === "appointments"}
             icon={CalendarDays}
@@ -728,7 +738,8 @@ export default function CRMClientDossier({
               />
             )}
 
-            {resolvedTab === "communication" && (
+            {SHOW_CLIENT_COMMUNICATION_TAB &&
+              resolvedTab === "communication" && (
               <CommunicationPanel
                 messages={waMessages}
                 loading={waLoading}
@@ -1807,11 +1818,6 @@ function FilesPanel({
     });
   }, [files, query, dateFrom, dateTo]);
 
-  const isImage = (file: { url: string; mimeType?: string }) => {
-    const mime = String(file.mimeType || "").toLowerCase();
-    return mime.startsWith("image/") || /\.(png|jpe?g|gif|webp|svg)(\?|$)/i.test(file.url);
-  };
-
   return (
     <section className="rounded-3xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
@@ -1871,14 +1877,20 @@ function FilesPanel({
       ) : (
         <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
           {filtered.map((file, index) => (
-            <a
+            <button
               key={`${file.url}-${index}`}
-              href={file.url}
-              target="_blank"
-              rel="noreferrer"
-              className="group overflow-hidden rounded-3xl border border-slate-100 bg-slate-50 transition hover:-translate-y-0.5 hover:border-violet-100 hover:bg-white hover:shadow-lg"
+              type="button"
+              onClick={() => {
+                openCrmAttachment(file).catch((err) => {
+                  console.error("Open file failed:", err);
+                  if (file.url) {
+                    window.open(file.url, "_blank", "noopener,noreferrer");
+                  }
+                });
+              }}
+              className="group overflow-hidden rounded-3xl border border-slate-100 bg-slate-50 text-start transition hover:-translate-y-0.5 hover:border-violet-100 hover:bg-white hover:shadow-lg"
             >
-              {isImage(file) ? (
+              {isImageAttachment(file) ? (
                 <img
                   src={file.url}
                   alt={file.name}
@@ -1902,7 +1914,7 @@ function FilesPanel({
                   </p>
                 )}
               </div>
-            </a>
+            </button>
           ))}
         </div>
       )}
