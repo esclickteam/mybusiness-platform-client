@@ -107,6 +107,54 @@ export function detectPortalPageKind(page: any): PortalWidgetKind | "" {
   return "";
 }
 
+const FRIENDLY_ALIASES: Record<string, PortalWidgetKind> = {
+  "/login": "portal-login",
+  "/register": "portal-register",
+  "/signup": "portal-register",
+  "/account": "portal-account",
+  "/my-account": "portal-account",
+  "/orders": "portal-orders",
+  "/my-orders": "portal-orders",
+  "/cart": "portal-cart",
+  "/checkout": "portal-cart",
+  "/forgot-password": "portal-forgot-password",
+  "/reset-request": "portal-forgot-password",
+  "/reset-password": "portal-reset-password",
+  "/new-password": "portal-reset-password",
+};
+
+/** Pages keyed by the portal widget they host (first match wins). */
+export function indexPortalPagesByKind(
+  site: any,
+): Partial<Record<PortalWidgetKind, any>> {
+  const pages = Array.isArray(site?.pages) ? site.pages : [];
+  const byKind: Partial<Record<PortalWidgetKind, any>> = {};
+
+  pages.forEach((page: any) => {
+    const path = normalizeSitePagePath(page?.slug || page?.id || "");
+    if (path === "/") return;
+
+    const kind = detectPortalPageKind(page);
+    if (kind && !byKind[kind]) {
+      byKind[kind] = page;
+    }
+  });
+
+  return byKind;
+}
+
+/**
+ * When /register (etc.) has no exact slug match, return the designed page that
+ * hosts that portal widget — e.g. register-03 for /register.
+ */
+export function findPortalPageForFriendlyPath(site: any, pathname: unknown) {
+  const path = normalizeSitePagePath(pathname);
+  const kind = FRIENDLY_ALIASES[path];
+  if (!kind) return null;
+
+  return indexPortalPagesByKind(site)[kind] || null;
+}
+
 export function resolvePortalPaths(site: any): PortalPaths {
   const pages = Array.isArray(site?.pages) ? site.pages : [];
 
@@ -152,9 +200,17 @@ export function resolvePortalPaths(site: any): PortalPaths {
     "/portal/account",
   );
 
+  /*
+    Register must never silently become login — that sent people who clicked
+    "הרשמה" straight to the login form and blocked sign-up.
+  */
   return {
     login,
-    register: pick("portal-register", ["/register", "/signup"], login),
+    register: pick(
+      "portal-register",
+      ["/register", "/signup", "/portal/register"],
+      "/portal/register",
+    ),
     account,
     orders: pick("portal-orders", ["/orders", "/my-orders"], account),
     cart: pick("portal-cart", ["/cart", "/checkout"], account),

@@ -5,7 +5,15 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { Check, Link2, PanelTop, RefreshCw, Settings2, Type, X } from "lucide-react";
+import {
+  Check,
+  Link2,
+  PanelTop,
+  RefreshCw,
+  Settings2,
+  Type,
+  X,
+} from "lucide-react";
 
 import { readVisualContent } from "./utils/visualData";
 import {
@@ -28,6 +36,19 @@ type ChromeItem = {
   href: string;
 };
 
+type PortalFormField = {
+  key: string;
+  label: string;
+};
+
+type PortalFormItem = {
+  elementId: string;
+  kind: "portal-login" | "portal-register";
+  title: string;
+  fields: PortalFormField[];
+  values: Record<string, string>;
+};
+
 const CHROME_SELECTOR = [
   "header",
   "footer",
@@ -36,6 +57,27 @@ const CHROME_SELECTOR = [
   '[data-template-section-type="header"]',
   '[data-template-section-type="footer"]',
 ].join(",");
+
+const LOGIN_FORM_FIELDS: PortalFormField[] = [
+  { key: "title", label: "כותרת" },
+  { key: "subtitle", label: "תיאור" },
+  { key: "email", label: "שדה אימייל" },
+  { key: "password", label: "שדה סיסמה" },
+  { key: "submit", label: "כפתור שליחה" },
+  { key: "switch", label: "קישור להרשמה" },
+  { key: "forgot", label: "קישור שכחתי סיסמה" },
+];
+
+const REGISTER_FORM_FIELDS: PortalFormField[] = [
+  { key: "title", label: "כותרת" },
+  { key: "subtitle", label: "תיאור" },
+  { key: "name", label: "שדה שם" },
+  { key: "email", label: "שדה אימייל" },
+  { key: "phone", label: "שדה טלפון" },
+  { key: "password", label: "שדה סיסמה" },
+  { key: "submit", label: "כפתור שליחה" },
+  { key: "switch", label: "קישור להתחברות" },
+];
 
 function asPlainObject(value: unknown): Record<string, any> {
   return value && typeof value === "object" && !Array.isArray(value)
@@ -60,6 +102,22 @@ function readNodeHref(node: HTMLElement) {
       (node instanceof HTMLAnchorElement ? node.getAttribute("href") : "") ||
       "",
   ).trim();
+}
+
+function isButtonLike(node: HTMLElement) {
+  const tagName = node.tagName.toLowerCase();
+  const type = String(
+    node.getAttribute("data-visual-edit-type") ||
+      node.getAttribute("data-visual-type") ||
+      "",
+  ).toLowerCase();
+
+  return (
+    tagName === "a" ||
+    tagName === "button" ||
+    type === "button" ||
+    type === "link"
+  );
 }
 
 /**
@@ -96,7 +154,15 @@ function collectChromeItems(
 
         if (!elementId || seen.has(elementId)) return;
         if (node.closest("[data-visual-editor-only='true']")) return;
-        if (node.querySelector("[data-visual-edit-id]")) return;
+
+        const hasNestedEdit = Boolean(node.querySelector("[data-visual-edit-id]"));
+        const buttonLike = isButtonLike(node);
+
+        /*
+          Nested labels inside a button used to hide the parent, so the panel
+          could not change the real clickable control (and its link).
+        */
+        if (hasNestedEdit && !buttonLike) return;
 
         const tagName = node.tagName.toLowerCase();
         const type = String(
@@ -105,14 +171,8 @@ function collectChromeItems(
             "",
         ).toLowerCase();
 
-        const isButton =
-          tagName === "a" ||
-          tagName === "button" ||
-          type === "button" ||
-          type === "link";
-
         const isText =
-          isButton ||
+          buttonLike ||
           type === "text" ||
           ["h1", "h2", "h3", "h4", "h5", "h6", "p", "span", "strong"].includes(
             tagName,
@@ -127,19 +187,20 @@ function collectChromeItems(
         );
 
         const text = String(saved.text ?? readNodeText(node));
-        if (!text) return;
+        const href = String(saved.href ?? readNodeHref(node));
+        if (!text && !href) return;
 
         seen.add(elementId);
 
         items.push({
           elementId,
           area,
-          kind: isButton ? "button" : "text",
+          kind: buttonLike ? "button" : "text",
           label:
             String(node.getAttribute("data-visual-edit-label") || "").trim() ||
-            (isButton ? "כפתור" : "טקסט"),
+            (buttonLike ? "כפתור" : "טקסט"),
           text,
-          href: String(saved.href ?? readNodeHref(node)),
+          href,
         });
       });
     },
@@ -148,16 +209,64 @@ function collectChromeItems(
   return items;
 }
 
+function collectPortalForms(root: HTMLElement | null): PortalFormItem[] {
+  if (!root) return [];
+
+  const items: PortalFormItem[] = [];
+  const seen = new Set<string>();
+
+  root
+    .querySelectorAll<HTMLElement>(
+      '[data-bizuply-portal-mount="true"], [data-bizuply-widget^="portal-"]',
+    )
+    .forEach((node) => {
+      const kind = String(
+        node.getAttribute("data-bizuply-portal-kind") ||
+          node.getAttribute("data-bizuply-widget") ||
+          "",
+      ).trim();
+
+      if (kind !== "portal-login" && kind !== "portal-register") return;
+
+      const elementId = String(
+        node.getAttribute("data-visual-edit-id") || "",
+      ).trim();
+      if (!elementId || seen.has(elementId)) return;
+      seen.add(elementId);
+
+      const fields =
+        kind === "portal-login" ? LOGIN_FORM_FIELDS : REGISTER_FORM_FIELDS;
+
+      const values: Record<string, string> = {};
+      fields.forEach((field) => {
+        values[field.key] = String(
+          node.getAttribute(`data-portal-copy-${field.key}`) || "",
+        ).trim();
+      });
+
+      items.push({
+        elementId,
+        kind,
+        title: kind === "portal-login" ? "טופס התחברות" : "טופס הרשמה",
+        fields,
+        values,
+      });
+    });
+
+  return items;
+}
+
 export default function VisualHeaderPanel({ open, editor, onClose }: Props) {
   const [items, setItems] = useState<ChromeItem[]>([]);
+  const [forms, setForms] = useState<PortalFormItem[]>([]);
   const [drafts, setDrafts] = useState<
     Record<string, { text: string; href: string }>
   >({});
-  const [area, setArea] = useState<"header" | "footer">("header");
+  const [formDrafts, setFormDrafts] = useState<
+    Record<string, Record<string, string>>
+  >({});
+  const [area, setArea] = useState<"header" | "footer" | "forms">("header");
   const [appliedId, setAppliedId] = useState("");
-
-  const canvasRoot: HTMLElement | null =
-    (editor?.canvasRef?.current as HTMLElement | null) || null;
 
   /** Site pages offered in the link dropdown, so nobody types a URL by hand. */
   const linkOptions = useMemo(() => {
@@ -201,8 +310,10 @@ export default function VisualHeaderPanel({ open, editor, onClose }: Props) {
       (currentEditor?.canvasRef?.current as HTMLElement | null) || null;
 
     const next = collectChromeItems(root, asPlainObject(currentEditor?.data));
+    const nextForms = collectPortalForms(root);
 
     setItems(next);
+    setForms(nextForms);
     setDrafts(
       next.reduce<Record<string, { text: string; href: string }>>(
         (acc, item) => {
@@ -211,6 +322,12 @@ export default function VisualHeaderPanel({ open, editor, onClose }: Props) {
         },
         {},
       ),
+    );
+    setFormDrafts(
+      nextForms.reduce<Record<string, Record<string, string>>>((acc, form) => {
+        acc[form.elementId] = { ...form.values };
+        return acc;
+      }, {}),
     );
   }, []);
 
@@ -230,6 +347,13 @@ export default function VisualHeaderPanel({ open, editor, onClose }: Props) {
   );
 
   if (!open) return null;
+
+  const markApplied = (id: string) => {
+    setAppliedId(id);
+    window.setTimeout(() => {
+      setAppliedId((current) => (current === id ? "" : current));
+    }, 1600);
+  };
 
   const applyItem = (item: ChromeItem) => {
     const draft = drafts[item.elementId];
@@ -270,12 +394,52 @@ export default function VisualHeaderPanel({ open, editor, onClose }: Props) {
       editorRef.current?.applyDataToDom?.();
     });
 
-    setAppliedId(item.elementId);
-    window.setTimeout(() => {
-      setAppliedId((current) =>
-        current === item.elementId ? "" : current,
-      );
-    }, 1600);
+    markApplied(item.elementId);
+  };
+
+  const applyForm = (form: PortalFormItem) => {
+    const draft = formDrafts[form.elementId];
+    if (!draft) return;
+
+    const patch: Record<string, string> = {};
+    form.fields.forEach((field) => {
+      patch[`data-portal-copy-${field.key}`] = String(
+        draft[field.key] || "",
+      ).trim();
+    });
+
+    editor?.updateAttributes?.(form.elementId, patch);
+
+    const root =
+      (editorRef.current?.canvasRef?.current as HTMLElement | null) || null;
+    const shell = root?.querySelector<HTMLElement>(
+      `[data-visual-edit-id="${CSS.escape(form.elementId)}"]`,
+    );
+
+    if (shell) {
+      Object.entries(patch).forEach(([attr, value]) => {
+        if (value) shell.setAttribute(attr, value);
+        else shell.removeAttribute(attr);
+      });
+      // Force the live form to remount with the new labels.
+      delete shell.dataset.bizuplyPortalMounted;
+      shell.removeAttribute("data-bizuply-portal-mounted");
+      while (shell.firstChild) shell.removeChild(shell.firstChild);
+    }
+
+    setForms((prev) =>
+      prev.map((entry) =>
+        entry.elementId === form.elementId
+          ? { ...entry, values: { ...draft } }
+          : entry,
+      ),
+    );
+
+    window.requestAnimationFrame(() => {
+      editorRef.current?.applyDataToDom?.();
+    });
+
+    markApplied(form.elementId);
   };
 
   const isDirty = (item: ChromeItem) => {
@@ -285,6 +449,17 @@ export default function VisualHeaderPanel({ open, editor, onClose }: Props) {
     return (
       draft.text !== item.text ||
       (item.kind === "button" && draft.href.trim() !== item.href.trim())
+    );
+  };
+
+  const isFormDirty = (form: PortalFormItem) => {
+    const draft = formDrafts[form.elementId];
+    if (!draft) return false;
+
+    return form.fields.some(
+      (field) =>
+        String(draft[field.key] || "").trim() !==
+        String(form.values[field.key] || "").trim(),
     );
   };
 
@@ -299,10 +474,10 @@ export default function VisualHeaderPanel({ open, editor, onClose }: Props) {
             <div className="min-w-0">
               <h2 className="flex items-center gap-2 text-sm font-black text-slate-800">
                 <PanelTop className="h-4 w-4 text-slate-500" />
-                עריכת הידר ופוטר
+                עריכת הידר, פוטר וטפסים
               </h2>
               <p className="mt-1 text-[11px] font-bold leading-5 text-slate-500">
-                שינוי כאן חל על כל העמודים שבהם ההידר מופיע.
+                שנו שם כפתור, קישור או כיתוב בטופס — ואז לחצו החל.
               </p>
             </div>
             <button
@@ -321,19 +496,24 @@ export default function VisualHeaderPanel({ open, editor, onClose }: Props) {
                 [
                   ["header", "הידר"],
                   ["footer", "פוטר"],
+                  ["forms", "טפסים"],
                 ] as const
               ).map(([value, label]) => (
                 <button
                   key={value}
                   type="button"
-                  disabled={value === "footer" && !hasFooterItems}
+                  disabled={
+                    (value === "footer" && !hasFooterItems) ||
+                    (value === "forms" && !forms.length)
+                  }
                   onClick={() => setArea(value)}
                   className={[
-                    "flex-1 rounded-lg px-3 py-2 text-xs font-black transition",
+                    "flex-1 rounded-lg px-2 py-2 text-[11px] font-black transition",
                     area === value
                       ? "bg-white text-slate-900 shadow-sm"
                       : "text-slate-500 hover:text-slate-800",
-                    value === "footer" && !hasFooterItems
+                    (value === "footer" && !hasFooterItems) ||
+                    (value === "forms" && !forms.length)
                       ? "cursor-not-allowed opacity-40"
                       : "",
                   ].join(" ")}
@@ -353,7 +533,78 @@ export default function VisualHeaderPanel({ open, editor, onClose }: Props) {
           </div>
         </div>
 
-        {!visibleItems.length ? (
+        {area === "forms" ? (
+          !forms.length ? (
+            <div className="rounded-2xl border border-dashed border-slate-200 bg-white/70 p-4 text-center text-[12px] font-bold leading-6 text-slate-500">
+              אין טופס התחברות/הרשמה בעמוד הזה. הוסיפי עמוד מאזור אישי
+              מהספרייה.
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {forms.map((form) => {
+                const draft = formDrafts[form.elementId] || form.values;
+
+                return (
+                  <div
+                    key={form.elementId}
+                    className="rounded-2xl border border-slate-200/80 bg-white/95 p-3 shadow-sm"
+                  >
+                    <div className="mb-3 text-sm font-black text-slate-800">
+                      {form.title}
+                    </div>
+
+                    <div className="space-y-2">
+                      {form.fields.map((field) => (
+                        <label
+                          key={field.key}
+                          className="block text-[11px] font-black text-slate-500"
+                        >
+                          {field.label}
+                          <input
+                            value={draft[field.key] || ""}
+                            onChange={(event) =>
+                              setFormDrafts((prev) => ({
+                                ...prev,
+                                [form.elementId]: {
+                                  ...draft,
+                                  [field.key]: event.target.value,
+                                },
+                              }))
+                            }
+                            className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-right text-sm font-bold text-slate-800 outline-none transition focus:border-slate-400 focus:ring-4 focus:ring-slate-100"
+                          />
+                        </label>
+                      ))}
+                    </div>
+
+                    <button
+                      type="button"
+                      onClick={() => applyForm(form)}
+                      disabled={!isFormDirty(form)}
+                      className={[
+                        "mt-3 flex h-10 w-full items-center justify-center gap-2 rounded-xl text-sm font-black transition",
+                        appliedId === form.elementId
+                          ? "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200"
+                          : isFormDirty(form)
+                            ? "bg-slate-900 text-white hover:bg-slate-800"
+                            : "cursor-not-allowed bg-slate-100 text-slate-400",
+                      ].join(" ")}
+                    >
+                      {appliedId === form.elementId ? (
+                        <>
+                          <Check className="h-4 w-4" />
+                          נשמר בטופס
+                        </>
+                      ) : (
+                        "החל על הטופס"
+                      )}
+                    </button>
+                  </div>
+                );
+              })}
+            </div>
+          )
+        ) : !visibleItems.length ? (
           <div className="rounded-2xl border border-dashed border-slate-200 bg-white/70 p-4 text-center text-[12px] font-bold leading-6 text-slate-500">
             לא נמצאו כפתורים או טקסטים ב{area === "header" ? "הידר" : "פוטר"}.
             נסי לרענן, או לבחור אלמנט בקנבס.
@@ -376,7 +627,7 @@ export default function VisualHeaderPanel({ open, editor, onClose }: Props) {
                       className={[
                         "grid h-6 w-6 place-items-center rounded-lg",
                         item.kind === "button"
-                          ? "bg-violet-50 text-violet-600"
+                          ? "bg-slate-900 text-white"
                           : "bg-slate-100 text-slate-500",
                       ].join(" ")}
                     >
@@ -409,7 +660,7 @@ export default function VisualHeaderPanel({ open, editor, onClose }: Props) {
                         event.preventDefault();
                         applyItem(item);
                       }}
-                      className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-right text-sm font-bold text-slate-800 outline-none transition focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
+                      className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-right text-sm font-bold text-slate-800 outline-none transition focus:border-slate-400 focus:ring-4 focus:ring-slate-100"
                       placeholder="לדוגמה: אזור אישי"
                     />
                   </label>
@@ -437,7 +688,7 @@ export default function VisualHeaderPanel({ open, editor, onClose }: Props) {
                               [item.elementId]: { ...draft, href: value },
                             }));
                           }}
-                          className="min-w-0 flex-1 rounded-xl border border-slate-200 bg-white px-3 py-2 text-right text-sm font-bold text-slate-800 outline-none transition focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
+                          className="min-w-0 flex-1 rounded-xl border border-slate-200 bg-white px-3 py-2 text-right text-sm font-bold text-slate-800 outline-none transition focus:border-slate-400 focus:ring-4 focus:ring-slate-100"
                         >
                           <option value="">בלי קישור</option>
                           {linkOptions.map((option) => (
@@ -477,7 +728,7 @@ export default function VisualHeaderPanel({ open, editor, onClose }: Props) {
                       appliedId === item.elementId
                         ? "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200"
                         : isDirty(item)
-                          ? "bg-violet-600 text-white hover:bg-violet-700"
+                          ? "bg-slate-900 text-white hover:bg-slate-800"
                           : "cursor-not-allowed bg-slate-100 text-slate-400",
                     ].join(" ")}
                   >
