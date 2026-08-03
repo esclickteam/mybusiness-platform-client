@@ -122,7 +122,7 @@ export default function VisualEditorIconRail({
         </RailButton>
 
         <RailButton
-          title="הידר ופוטר"
+          title="הידר, פוטר וקישורי טפסים"
           active={sidePanelMode === "header"}
           onClick={() => onTogglePanel("header")}
         >

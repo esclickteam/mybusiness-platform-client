@@ -99,6 +99,18 @@ function readPortalCopy(container, key, fallback) {
   return value || fallback;
 }
 
+/** Saved link targets for the form's text buttons (הרשמה / שכחתי סיסמה / …). */
+function readPortalLink(container, key, fallback) {
+  const value = String(
+    container?.getAttribute(`data-portal-link-${key}`) ||
+      container?.dataset?.[
+        `portalLink${key.charAt(0).toUpperCase()}${key.slice(1)}`
+      ] ||
+      "",
+  ).trim();
+  return value || fallback;
+}
+
 function bindEditorSafeLink(anchor, href, editorMode) {
   anchor.href = href || "#";
   if (!editorMode) return;
@@ -261,7 +273,7 @@ function mountLogin(container, { siteId, host, siteName, paths, editorMode }) {
   const registerLink = document.createElement("a");
   bindEditorSafeLink(
     registerLink,
-    paths?.register || "/register",
+    readPortalLink(container, "switch", paths?.register || "/register"),
     editorMode,
   );
   registerLink.textContent = copy.register;
@@ -276,7 +288,11 @@ function mountLogin(container, { siteId, host, siteName, paths, editorMode }) {
   const forgotLink = document.createElement("a");
   bindEditorSafeLink(
     forgotLink,
-    paths?.forgotPassword || "/portal/forgot-password",
+    readPortalLink(
+      container,
+      "forgot",
+      paths?.forgotPassword || "/portal/forgot-password",
+    ),
     editorMode,
   );
   forgotLink.textContent = copy.forgot;
@@ -454,7 +470,11 @@ function mountRegister(container, { siteId, host, siteName, paths, editorMode })
   wrap.appendChild(submit);
 
   const loginLink = document.createElement("a");
-  bindEditorSafeLink(loginLink, paths?.login || "/login", editorMode);
+  bindEditorSafeLink(
+    loginLink,
+    readPortalLink(container, "switch", paths?.login || "/login"),
+    editorMode,
+  );
   loginLink.textContent = copy.login;
   Object.assign(loginLink.style, {
     display: "inline-block",
