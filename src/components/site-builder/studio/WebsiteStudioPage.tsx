@@ -2709,10 +2709,14 @@ function extractVisualDataFromPayload(value: unknown) {
   );
   const projectData = asPlainObject(payload.projectData);
 
+  /*
+    Same priority as the server save path: the latest editor snapshot wins.
+    Never pick a fatter/older copy over the first meaningful revision.
+  */
   const candidates = [
+    asPlainObject(visualEditorPayload.data),
     asPlainObject(payload.data),
     asPlainObject(payload.templateData),
-    asPlainObject(visualEditorPayload.data),
     asPlainObject(visualEditorPayload.templateData),
     asPlainObject(projectData.data),
     asPlainObject(projectData.templateData),

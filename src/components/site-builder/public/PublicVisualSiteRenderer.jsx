@@ -455,10 +455,12 @@ function pickBestVisualCandidate(candidates) {
     })
     .sort(
       (left, right) =>
+        // Newest publish wins across every template. Richness is only a
+        // tie-breaker so an older fatter snapshot cannot hide the latest edit.
         right.libraryBoost - left.libraryBoost ||
-        right.richness - left.richness ||
         right.timestamp - left.timestamp ||
-        right.priority - left.priority,
+        right.priority - left.priority ||
+        right.richness - left.richness,
     );
 
   return asPlainObject(validCandidates[0]?.value);
@@ -620,13 +622,13 @@ function readTemplateData(site, activePage, explicitData) {
   const pageProjectData = asPlainObject(page.projectData);
   const sitePayload = asPlainObject(source.visualEditorPayload);
   const pagePayload = asPlainObject(page.visualEditorPayload);
-  const preferPageScoped =
-    !isHomeActivePage(page) && isLibraryOrBlankPage(page);
-
   /*
-    עמודי ספרייה/ריקים שומרים visual data משלהם. הנתונים ברמת האתר הם
-    בדרך כלל של דף הבית ולכן "עשירים" יותר — אסור שידרסו את העמוד הפעיל.
+    Any non-home page (library/blank OR regular template pages) must use its
+    own visual snapshot. Site-level data is usually the home page and must
+    never win just because it has more keys.
   */
+  const preferPageScoped = !isHomeActivePage(page);
+
   const pageCandidates = [
     {
       value: pagePayload.data,
@@ -697,10 +699,7 @@ function readTemplateData(site, activePage, explicitData) {
   ];
 
   if (preferPageScoped) {
-    if (
-      hasMeaningfulVisualData(explicit) &&
-      isLibraryOrBlankVisualData(explicit)
-    ) {
+    if (hasMeaningfulVisualData(explicit)) {
       return explicit;
     }
 
@@ -719,6 +718,7 @@ function readTemplateData(site, activePage, explicitData) {
     /*
       Library pages must never fall back to richer home/site data — that leaves
       /gallery-four with an empty insert host after template bodies are hidden.
+      Regular non-home pages without their own data also stay page-scoped.
     */
     const anyPageData = pageCandidates.find((candidate) => {
       const value = asPlainObject(candidate.value);
@@ -732,10 +732,15 @@ function readTemplateData(site, activePage, explicitData) {
       return explicit;
     }
 
-    return {
-      __blankVisualPage: true,
-      __libraryPage: true,
-    };
+    if (isLibraryOrBlankPage(page)) {
+      return {
+        __blankVisualPage: true,
+        __libraryPage: true,
+      };
+    }
+
+    // Non-home template page with no page data: newest site-level as fallback.
+    return pickBestVisualCandidate(siteCandidates);
   }
 
   if (hasMeaningfulVisualData(explicit)) {
@@ -743,12 +748,12 @@ function readTemplateData(site, activePage, explicitData) {
   }
 
   /*
-    /public/by-host כבר מנרמל site.data / site.projectData למקור האמת העדכני.
-    בוחרים מועמד עם תוכן ממשי (לא מפות ריקות), ואז לפי עדכניות/עדיפות.
+    Home page: newest meaningful snapshot wins across site/page copies so the
+    latest publish is what every template renders publicly.
   */
   return pickBestVisualCandidate([
-    ...siteCandidates,
     ...pageCandidates,
+    ...siteCandidates,
   ]);
 }
 

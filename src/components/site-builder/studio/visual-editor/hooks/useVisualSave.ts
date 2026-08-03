@@ -343,6 +343,13 @@ function mergeVisualContent(
       ...domItem,
     };
 
+    // Live canvas text is the publish source of truth (keeps typed spaces).
+    if (Object.prototype.hasOwnProperty.call(domItem, "text")) {
+      nextItem.text = domItem.text;
+    } else if (Object.prototype.hasOwnProperty.call(stateItem, "text")) {
+      nextItem.text = stateItem.text;
+    }
+
     const stateHref = String(stateItem.href || "").trim();
     const domHref = String(domItem.href || "").trim();
 
