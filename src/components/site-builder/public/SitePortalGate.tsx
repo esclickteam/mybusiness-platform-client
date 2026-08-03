@@ -2,6 +2,7 @@ import React, { useEffect, useMemo } from "react";
 import SitePortalLoginView from "./SitePortalLoginView";
 import SitePortalAcceptInviteView from "./SitePortalAcceptInviteView";
 import SitePortalAccountView from "./SitePortalAccountView";
+import { resolvePortalPaths } from "./portalSitePaths";
 
 type PortalGateInfo = {
   pluginEnabled?: boolean;
@@ -57,17 +58,14 @@ export default function SitePortalGate({
       ? site.enabledPlugins.includes("client-portal")
       : portalGate.pluginEnabled === true);
 
-  const pagePaths = useMemo(() => {
-    const pages = Array.isArray(site?.pages) ? site.pages : [];
-    return new Set(
-      pages.map((page: any) => {
-        const slug = String(page?.slug || page?.id || "")
-          .replace(/^\/+|\/+$/g, "")
-          .trim();
-        return slug ? `/${slug}` : "/";
-      }),
-    );
-  }, [site?.pages]);
+  /*
+    Designed portal pages are numbered by the library (login-02, account-03),
+    so resolve them by the widget they host instead of by a guessed slug.
+  */
+  const portalPaths = useMemo(() => resolvePortalPaths(site), [site]);
+
+  const hasDesignedPage = (path: string) =>
+    Boolean(path) && !path.startsWith("/portal/");
 
   if (portalRoute && !pluginEnabled) {
     return (
@@ -93,10 +91,10 @@ export default function SitePortalGate({
 
   if (portalRoute === "login") {
     // Legacy route: use the designed page inside the published site chrome.
-    if (pagePaths.has("/login")) {
+    if (hasDesignedPage(portalPaths.login)) {
       const search =
         typeof window !== "undefined" ? window.location.search || "" : "";
-      return <PortalRedirect to={`/login${search}`} />;
+      return <PortalRedirect to={`${portalPaths.login}${search}`} />;
     }
 
     const returnPath =
@@ -126,8 +124,8 @@ export default function SitePortalGate({
 
   if (portalRoute === "account") {
     // Legacy route: use the designed account page when it exists.
-    if (pagePaths.has("/account")) {
-      return <PortalRedirect to="/account" />;
+    if (hasDesignedPage(portalPaths.account)) {
+      return <PortalRedirect to={portalPaths.account} />;
     }
 
     if (!siteId) {
@@ -179,14 +177,9 @@ export default function SitePortalGate({
       );
     }
 
-    const configuredLoginPath = String(portalGate.loginPath || "/login")
-      .trim()
-      .replace(/\/+$/, "") || "/login";
-    const designedLoginPath = pagePaths.has(configuredLoginPath)
-      ? configuredLoginPath
-      : pagePaths.has("/login")
-        ? "/login"
-        : "";
+    const designedLoginPath = hasDesignedPage(portalPaths.login)
+      ? portalPaths.login
+      : "";
 
     if (designedLoginPath) {
       const separator = designedLoginPath.includes("?") ? "&" : "?";

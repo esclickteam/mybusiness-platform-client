@@ -13,7 +13,10 @@ export type SitePortalMember = {
   status: string;
   assignedPageIds?: string[];
   paymentStatus?: string;
+  /** "self" = registered through the published site, "owner"/"invite" = added by the business */
+  signupSource?: "self" | "owner" | "invite" | string;
   lastLoginAt?: string | null;
+  createdAt?: string | null;
 };
 
 const STORAGE_PREFIX = "bizuply_site_portal_";

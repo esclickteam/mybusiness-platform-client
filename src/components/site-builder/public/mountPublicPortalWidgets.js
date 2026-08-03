@@ -9,6 +9,7 @@ import {
   findStoredPortalTokenHint,
   getSitePortalToken,
 } from "../../../utils/sitePortalSession";
+import { resolvePortalPaths } from "./portalSitePaths";
 
 function clearMount(el) {
   if (typeof el.replaceChildren === "function") {
@@ -37,50 +38,6 @@ function readCart(businessId) {
 
 function resolveSiteId(site) {
   return String(site?._id || site?.id || "").trim();
-}
-
-function normalizeSitePagePath(value) {
-  const clean = String(value || "")
-    .split("?")[0]
-    .split("#")[0]
-    .replace(/^\/+|\/+$/g, "")
-    .trim()
-    .toLowerCase();
-
-  return clean ? `/${clean}` : "/";
-}
-
-/**
- * Portal links must point at the pages the site actually published.
- * Falling back to a hardcoded "/account" sent visitors to a missing page.
- */
-function resolvePortalPaths(site) {
-  const pages = Array.isArray(site?.pages) ? site.pages : [];
-  const available = new Set(
-    pages.map((page) =>
-      normalizeSitePagePath(page?.slug || page?.id || ""),
-    ),
-  );
-
-  const pick = (candidates, fallback) => {
-    for (const candidate of candidates) {
-      if (available.has(candidate)) return candidate;
-    }
-    return fallback;
-  };
-
-  const account = pick(
-    ["/account", "/portal/account", "/my-account"],
-    "/portal/account",
-  );
-
-  return {
-    login: pick(["/login", "/portal/login"], "/portal/login"),
-    register: pick(["/register", "/signup", "/portal/register"], "/login"),
-    account,
-    orders: pick(["/orders", "/my-orders"], account),
-    cart: pick(["/cart", "/checkout"], account),
-  };
 }
 
 function navigateToSitePath(path) {
