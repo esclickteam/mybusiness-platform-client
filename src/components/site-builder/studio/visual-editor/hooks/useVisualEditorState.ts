@@ -1421,15 +1421,21 @@ export function useVisualEditorState({
         ID ויזואלי אינו בהכרח נתיב בתוך ServoraData.
         לכן שומרים רק ב-__content ולא משנים hero/header/nav וכו'.
       */
-      setData((current) =>
-        writeVisualContentItem(current || {}, elementId, {
+      setData((current) => {
+        const next = writeVisualContentItem(current || {}, elementId, {
           text,
-        }),
-      );
+        });
+
+        // Keep the ref in sync like every other mutator, so a save right
+        // after a panel edit does not persist the previous text.
+        dataRef.current = next;
+
+        return next;
+      });
 
       return true;
     },
-    [setData],
+    [dataRef, setData],
   );
 
   const updateVisualContent = useCallback(

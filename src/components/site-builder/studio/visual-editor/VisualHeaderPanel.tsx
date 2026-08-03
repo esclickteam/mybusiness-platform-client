@@ -1,4 +1,10 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { Check, Link2, PanelTop, RefreshCw, Settings2, Type, X } from "lucide-react";
 
 import { readVisualContent } from "./utils/visualData";
@@ -182,10 +188,20 @@ export default function VisualHeaderPanel({ open, editor, onClose }: Props) {
     return options;
   }, [editor, open]);
 
-  const editorData = asPlainObject(editor?.data);
+  /*
+    Read through refs so a data change elsewhere in the editor cannot wipe the
+    values the user is currently typing in this panel.
+  */
+  const editorRef = useRef(editor);
+  editorRef.current = editor;
 
   const refresh = useCallback(() => {
-    const next = collectChromeItems(canvasRoot, editorData);
+    const currentEditor = editorRef.current;
+    const root =
+      (currentEditor?.canvasRef?.current as HTMLElement | null) || null;
+
+    const next = collectChromeItems(root, asPlainObject(currentEditor?.data));
+
     setItems(next);
     setDrafts(
       next.reduce<Record<string, { text: string; href: string }>>(
@@ -196,7 +212,7 @@ export default function VisualHeaderPanel({ open, editor, onClose }: Props) {
         {},
       ),
     );
-  }, [canvasRoot, editorData]);
+  }, []);
 
   useEffect(() => {
     if (!open) return;
@@ -245,6 +261,14 @@ export default function VisualHeaderPanel({ open, editor, onClose }: Props) {
           : entry,
       ),
     );
+
+    /*
+      Push the change onto the canvas. Without this the DOM keeps the old label
+      and publish collects that stale text back from the DOM.
+    */
+    window.requestAnimationFrame(() => {
+      editorRef.current?.applyDataToDom?.();
+    });
 
     setAppliedId(item.elementId);
     window.setTimeout(() => {
