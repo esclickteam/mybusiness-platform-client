@@ -45,9 +45,16 @@ import {
   getPublicSiteDomain,
   isPublicCustomerSiteHost,
 } from "./utils/publicSiteHost";
+import {
+  findStoredPortalTokenHint,
+  getSitePortalToken,
+} from "./utils/sitePortalSession";
 import BizuplyLoader from "./components/ui/BizuplyLoader";
 import PublicSiteLoader from "./components/ui/PublicSiteLoader";
 import LazyRouteBoundary from "./components/LazyRouteBoundary";
+const SitePortalGate = lazy(() =>
+  import("./components/site-builder/public/SitePortalGate")
+);
 
 const StoreProductsPage = lazy(() =>
   import("./components/store/StoreProductsPage")
@@ -322,20 +329,41 @@ function PublicMiniSitePage() {
 
       setSeoDocument(null);
 
+      // Portal routes need site metadata (name/id) but not a specific page.
+      const requestPath =
+        pathname === "/portal/login" ||
+        pathname === "/portal/account" ||
+        pathname === "/portal/accept-invite"
+          ? "/"
+          : pathname;
+
       const url = `${API_SITE_BUILDER_BASE_URL}/public/by-host?host=${encodeURIComponent(
         host
-      )}&path=${encodeURIComponent(pathname)}`;
+      )}&path=${encodeURIComponent(requestPath)}`;
 
       console.log("BIZUPLY PUBLIC MINI SITE API URL:", url, {
         host,
         pathname,
+        requestPath,
       });
+
+      const knownSiteId = String(siteRef.current?._id || siteRef.current?.id || "");
+      const portalToken =
+        (knownSiteId && getSitePortalToken(knownSiteId)) ||
+        findStoredPortalTokenHint()?.token ||
+        "";
 
       const res = await fetch(url, {
         method: "GET",
         credentials: "omit",
-        cache: "default",
+        cache: portalToken ? "no-store" : "default",
         signal: controller.signal,
+        headers: portalToken
+          ? {
+              Authorization: `Bearer ${portalToken}`,
+              "X-Site-Portal-Token": portalToken,
+            }
+          : undefined,
       });
 
       const data = await res.json().catch(() => null);
@@ -597,12 +625,18 @@ function PublicMiniSitePage() {
   }
 
   return (
-    <PublicMiniSiteContent site={site} location={location} />
+    <PublicMiniSiteContent
+      site={site}
+      location={location}
+      onPortalAuthChange={() => {
+        void loadSite(window.location.pathname || "/", { silent: false });
+      }}
+    />
   );
 
 }
 
-function PublicMiniSiteContent({ site, location }) {
+function PublicMiniSiteContent({ site, location, onPortalAuthChange }) {
   const pathname =
     typeof window !== "undefined"
       ? window.location.pathname
@@ -610,7 +644,13 @@ function PublicMiniSiteContent({ site, location }) {
 
   return (
     <Suspense fallback={<PublicSiteLoader fullScreen label="Loading" />}>
-      <PublicVisualSiteRenderer site={site} pathname={pathname} />
+      <SitePortalGate
+        site={site}
+        pathname={pathname}
+        onPortalAuthChange={onPortalAuthChange}
+      >
+        <PublicVisualSiteRenderer site={site} pathname={pathname} />
+      </SitePortalGate>
     </Suspense>
   );
 }

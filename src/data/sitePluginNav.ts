@@ -30,6 +30,7 @@ import {
 export type SitePanelSection =
   | "overview"
   | "plugins"
+  | "portal"
   | "store"
   | "booking"
   | "payments"
@@ -134,6 +135,10 @@ export const SECTION_META: Record<
   plugins: {
     label: "חנות תוספים",
     description: "התקנה והסרה של תוספים לאתר",
+  },
+  portal: {
+    label: "אזור אישי",
+    description: "התחברות נפרדת ללקוחות האתר — לא קשורה לחשבון BizUply",
   },
   store: {
     label: "ניהול חנות",
@@ -296,6 +301,7 @@ export function getPluginIcon(key: string) {
 export function getSectionIcon(section: SitePanelSection) {
   if (section === "overview") return LayoutGrid;
   if (section === "plugins") return Puzzle;
+  if (section === "portal") return LogIn;
   const meta = SECTION_META[section as keyof typeof SECTION_META];
   if (meta?.pluginKey) return getPluginIcon(meta.pluginKey);
   return getPluginIcon(String(section));
