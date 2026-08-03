@@ -60,7 +60,7 @@ export default function SitePortalLoginView({
           {siteName ? `התחברות ל${siteName}` : "התחברות לאזור האישי"}
         </h1>
         <p className="mt-2 text-sm font-medium leading-6 text-slate-500">
-          התחברות זו שייכת לאתר הזה בלבד ואינה קשורה לחשבון BizUply.
+          הזינו את הפרטים שלכם כדי להיכנס לחשבון באתר.
         </p>
 
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
