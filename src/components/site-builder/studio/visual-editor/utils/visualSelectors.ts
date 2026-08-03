@@ -70,19 +70,31 @@ export function selectorForVisualElement(elementId: string) {
 export function getNodeText(node: HTMLElement | null) {
   if (!node) return "";
 
+  const normalizeVisibleText = (value: string) =>
+    String(value || "")
+      .replace(/\u00a0/g, " ")
+      .replace(/\r\n/g, "\n")
+      .replace(/\r/g, "\n")
+      // Keep single spaces between words; only collapse runaway whitespace/newlines.
+      .replace(/[ \t\f\v]+/g, " ")
+      .replace(/\n{3,}/g, "\n\n");
+
   if (node instanceof HTMLInputElement) {
-    return String(node.value || node.placeholder || "")
-      .replace(/\s+/g, " ")
-      .trim();
+    return normalizeVisibleText(node.value || node.placeholder || "").trim();
   }
 
   if (node instanceof HTMLTextAreaElement) {
-    return String(node.value || node.placeholder || node.textContent || "")
-      .replace(/\s+/g, " ")
-      .trim();
+    return normalizeVisibleText(
+      node.value || node.placeholder || node.textContent || "",
+    ).trim();
   }
 
-  return String(node.textContent || "").replace(/\s+/g, " ").trim();
+  // Prefer innerText so contenteditable spaces (pre-wrap) survive save/publish.
+  const raw =
+    typeof node.innerText === "string" && node.innerText.length
+      ? node.innerText
+      : node.textContent || "";
+  return normalizeVisibleText(raw).trim();
 }
 
 const TEXT_SELECTOR = [

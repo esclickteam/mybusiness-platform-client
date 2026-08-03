@@ -2469,9 +2469,33 @@ export default function PublicVisualSiteRenderer({
       }
 
       /*
+        Capture-phase: saved button/link overrides must win over template
+        React onClick handlers (publish keeps the configured link).
+      */
+      const link = resolvePublicLinkFromEventTarget(
+        root,
+        event.target,
+        visualData,
+      );
+
+      if (link?.href && link.href !== "#") {
+        // Real <a href> — let the browser navigate naturally.
+        if (link.isNativeAnchor && link.node instanceof HTMLAnchorElement) {
+          return;
+        }
+
+        event.preventDefault();
+        event.stopPropagation();
+        if (typeof event.stopImmediatePropagation === "function") {
+          event.stopImmediatePropagation();
+        }
+        navigatePublicLink(link.href, link.target);
+        return;
+      }
+
+      /*
         Published HTML snapshots: buttons stamped with data-bizuply-page-id
-        (no React onClick). Template-fallback React trees already navigate via
-        onPageChange — skip them to avoid double navigation.
+        (no React onClick).
       */
       const target = event.target;
       if (
@@ -2487,26 +2511,9 @@ export default function PublicVisualSiteRenderer({
             event.preventDefault();
             event.stopPropagation();
             handleTemplatePageChange(pageAttr);
-            return;
           }
         }
       }
-
-      const link = resolvePublicLinkFromEventTarget(
-        root,
-        event.target,
-        visualData,
-      );
-
-      if (!link?.href || link.href === "#") return;
-
-      if (link.isNativeAnchor) {
-        return;
-      }
-
-      event.preventDefault();
-      event.stopPropagation();
-      navigatePublicLink(link.href, link.target);
     };
 
     const handleKeyDown = (event) => {
@@ -2527,11 +2534,11 @@ export default function PublicVisualSiteRenderer({
       navigatePublicLink(link.href, link.target);
     };
 
-    // Capture phase so nested menu links navigate even if a template
-    // onClick preventDefault + SPA normalizePage would otherwise swallow them.
+    // Capture phase so nested menu links / saved button hrefs win over
+    // template React onClick handlers.
     root.addEventListener("click", handleSubmenuNavigate, true);
-    root.addEventListener("click", handleClick);
-    root.addEventListener("keydown", handleKeyDown);
+    root.addEventListener("click", handleClick, true);
+    root.addEventListener("keydown", handleKeyDown, true);
 
     /*
       Re-detect device mode + re-apply per-element responsive overrides when
@@ -2587,8 +2594,8 @@ export default function PublicVisualSiteRenderer({
       window.removeEventListener("resize", handleViewportChange);
       window.removeEventListener("orientationchange", handleViewportChange);
       root.removeEventListener("click", handleSubmenuNavigate, true);
-      root.removeEventListener("click", handleClick);
-      root.removeEventListener("keydown", handleKeyDown);
+      root.removeEventListener("click", handleClick, true);
+      root.removeEventListener("keydown", handleKeyDown, true);
     };
   }, [
     activePage,

@@ -1289,6 +1289,8 @@ export default function VisualEditorCanvas({
       node.style.webkitUserSelect = "text";
       node.style.setProperty("user-select", "text", "important");
       node.style.setProperty("-webkit-user-select", "text", "important");
+      // Keep typed spaces visible (override header/flow nowrap while editing).
+      node.style.setProperty("white-space", "pre-wrap", "important");
 
       setInlineEditingElementId(elementId);
 
@@ -1755,6 +1757,30 @@ export default function VisualEditorCanvas({
       if (event.key === "Escape") {
         event.preventDefault();
         finishInlineEdit(false);
+        return;
+      }
+
+      /*
+        Space on <button> / role=button activates the control by default.
+        Force-insert a real space so labels like "אין לכם חשבון" can be typed.
+      */
+      if (event.key === " " || event.code === "Space") {
+        event.preventDefault();
+        const inserted =
+          document.execCommand("insertText", false, " ") ||
+          insertPlainTextAtSelection(" ");
+        if (!inserted) {
+          const sel = window.getSelection();
+          if (sel && sel.rangeCount > 0) {
+            const range = sel.getRangeAt(0);
+            range.deleteContents();
+            range.insertNode(document.createTextNode(" "));
+            range.collapse(false);
+            sel.removeAllRanges();
+            sel.addRange(range);
+          }
+        }
+        window.requestAnimationFrame(refreshSelectionBox);
         return;
       }
 
@@ -2478,19 +2504,10 @@ export default function VisualEditorCanvas({
             outline-offset: 4px !important;
           }
 
-          /* Keep single-line header/nav labels from reflowing siblings while typing */
-          [data-visual-template-canvas="true"] [data-visual-inline-editing="true"]:not(header *):not([data-section-kind="header"] *):not([data-visual-flow-lock="true"] *),
-          [data-visual-template-canvas="true"] [contenteditable="true"]:not(header *):not([data-section-kind="header"] *):not([data-visual-flow-lock="true"] *) {
+          /* Preserve typed spaces while editing (including buttons / header CTAs). */
+          [data-visual-template-canvas="true"] [data-visual-inline-editing="true"],
+          [data-visual-template-canvas="true"] [contenteditable="true"] {
             white-space: pre-wrap !important;
-          }
-
-          [data-visual-template-canvas="true"] header [data-visual-inline-editing="true"],
-          [data-visual-template-canvas="true"] header [contenteditable="true"],
-          [data-visual-template-canvas="true"] [data-section-kind="header"] [data-visual-inline-editing="true"],
-          [data-visual-template-canvas="true"] [data-section-kind="header"] [contenteditable="true"],
-          [data-visual-template-canvas="true"] [data-visual-flow-lock="true"] [data-visual-inline-editing="true"],
-          [data-visual-template-canvas="true"] [data-visual-flow-lock="true"] [contenteditable="true"] {
-            white-space: nowrap !important;
           }
 
           [data-visual-template-canvas="true"] [data-visual-inline-editing="true"] *,

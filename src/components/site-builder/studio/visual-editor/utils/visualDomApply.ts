@@ -3739,68 +3739,66 @@ export function collectVisualContentFromDom(
         : (node.closest("a") as HTMLAnchorElement | null) ||
           (node.querySelector("a") as HTMLAnchorElement | null);
 
-    if (linkNode) {
-      const domHref = String(
-        linkNode.getAttribute("href") ||
-          node.getAttribute("data-visual-link-href") ||
-          node.getAttribute("data-link-url") ||
-          "",
-      );
+    const domHref = String(
+      (linkNode instanceof HTMLAnchorElement
+        ? linkNode.getAttribute("href")
+        : "") ||
+        node.getAttribute("data-visual-link-href") ||
+        node.getAttribute("data-link-url") ||
+        node.getAttribute("data-href") ||
+        node.getAttribute("data-bizuply-public-href") ||
+        "",
+    ).trim();
 
-      const target = String(
-        linkNode.getAttribute("target") ||
-          node.getAttribute("data-visual-link-target") ||
-          "_self",
-      );
+    const domTarget = String(
+      (linkNode instanceof HTMLAnchorElement
+        ? linkNode.getAttribute("target")
+        : "") ||
+        node.getAttribute("data-visual-link-target") ||
+        node.getAttribute("data-bizuply-public-target") ||
+        "_self",
+    ).trim();
 
-      const stateHref = String(currentValue.href || "").trim();
-      const finalHref =
-        stateHref && stateHref !== "#" ? stateHref : domHref;
+    const stateHref = String(currentValue.href || "").trim();
+    // Live DOM link wins when present — publish must keep the link the user set.
+    const finalHref =
+      domHref && domHref !== "#"
+        ? domHref
+        : stateHref && stateHref !== "#"
+          ? stateHref
+          : domHref || stateHref;
 
-      if (finalHref || currentValue.href !== undefined) {
-        nextValue.href = finalHref;
-        nextValue.target =
-          currentValue.target || (target === "_blank" ? "_blank" : "_self");
-        nextValue.rel =
-          currentValue.rel ||
-          (nextValue.target === "_blank" ? "noopener noreferrer" : "");
-      }
+    if (finalHref || currentValue.href !== undefined) {
+      nextValue.href = finalHref;
+      nextValue.target =
+        (domTarget === "_blank" ? "_blank" : "") ||
+        currentValue.target ||
+        (finalHref.startsWith("http://") || finalHref.startsWith("https://")
+          ? "_blank"
+          : "_self");
+      nextValue.rel =
+        currentValue.rel ||
+        (nextValue.target === "_blank" ? "noopener noreferrer" : "");
+    }
 
-      if (currentValue.phoneNumber !== undefined) {
-        nextValue.phoneNumber = currentValue.phoneNumber;
-      }
+    if (currentValue.phoneNumber !== undefined) {
+      nextValue.phoneNumber = currentValue.phoneNumber;
+    }
 
-      if (currentValue.phone !== undefined) {
-        nextValue.phone = currentValue.phone;
-      }
+    if (currentValue.phone !== undefined) {
+      nextValue.phone = currentValue.phone;
+    }
 
-      if (currentValue.email !== undefined) {
-        nextValue.email = currentValue.email;
-      }
+    if (currentValue.email !== undefined) {
+      nextValue.email = currentValue.email;
+    }
 
-      if (currentValue.subject !== undefined) {
-        nextValue.subject = currentValue.subject;
-      }
+    if (currentValue.subject !== undefined) {
+      nextValue.subject = currentValue.subject;
+    }
 
-      if (currentValue.message !== undefined) {
-        nextValue.message = currentValue.message;
-      }
-    } else if (String(currentValue.href || "").trim()) {
-      nextValue.href = String(currentValue.href || "").trim();
-      nextValue.target = currentValue.target || "_self";
-      nextValue.rel = currentValue.rel || "";
-      if (currentValue.phoneNumber !== undefined) {
-        nextValue.phoneNumber = currentValue.phoneNumber;
-      }
-      if (currentValue.email !== undefined) {
-        nextValue.email = currentValue.email;
-      }
-      if (currentValue.subject !== undefined) {
-        nextValue.subject = currentValue.subject;
-      }
-      if (currentValue.message !== undefined) {
-        nextValue.message = currentValue.message;
-      }
+    if (currentValue.message !== undefined) {
+      nextValue.message = currentValue.message;
     }
 
     if (Object.keys(nextValue).length > 0) {
