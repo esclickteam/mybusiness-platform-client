@@ -79,6 +79,12 @@ import {
 import { buildVisualRuntimeCss } from "../utils/visualCssRuntime";
 import { applyAllVisualDataToDom, previewVisualStyleOnDom } from "../utils/visualDomApply";
 import {
+  applyPortalShellAttributePatch,
+  getPortalAuthShell,
+  parsePortalAuthControlId,
+  portalControlPatchForShell,
+} from "../utils/portalAuthControls";
+import {
   didSitePageNavSyncChange,
   syncSitePageTitlesIntoVisualData,
 } from "../utils/syncNavWithSitePages";
@@ -1376,6 +1382,38 @@ export function useVisualEditorState({
     selection,
   ]);
 
+  const persistPortalAuthControlShellPatch = useCallback(
+    (elementId: string, patch: { text?: string; href?: string }) => {
+      const parsed = parsePortalAuthControlId(elementId);
+      if (!parsed) return null;
+
+      const attrPatch = portalControlPatchForShell(parsed.kind, patch);
+      if (!Object.keys(attrPatch).length) {
+        return { shellId: parsed.shellId, attrPatch: {} as Record<string, string> };
+      }
+
+      const root = canvasRef.current;
+      let shell =
+        (root?.querySelector(
+          `[data-visual-edit-id="${CSS.escape(parsed.shellId)}"]`,
+        ) as HTMLElement | null) || null;
+
+      if (!shell && root) {
+        const control = root.querySelector(
+          `[data-visual-edit-id="${CSS.escape(elementId)}"]`,
+        ) as HTMLElement | null;
+        shell = getPortalAuthShell(control);
+      }
+
+      if (shell) {
+        applyPortalShellAttributePatch(shell, attrPatch);
+      }
+
+      return { shellId: parsed.shellId, attrPatch };
+    },
+    [canvasRef],
+  );
+
   const updateContent = useCallback(
     (elementId: string, patch: Record<string, any>) => {
       if (!elementId) return false;
@@ -1391,8 +1429,22 @@ export function useVisualEditorState({
         "message",
       ].some((key) => Object.prototype.hasOwnProperty.call(patch, key));
 
+      const portalShell = persistPortalAuthControlShellPatch(elementId, {
+        text: typeof patch.text === "string" ? patch.text : undefined,
+        href: typeof patch.href === "string" ? patch.href : undefined,
+      });
+
       setData((current) => {
-        const next = writeVisualContentItem(current, elementId, patch);
+        let next = writeVisualContentItem(current, elementId, patch);
+
+        if (portalShell?.attrPatch && Object.keys(portalShell.attrPatch).length) {
+          next = writeVisualAttributesItem(
+            next,
+            portalShell.shellId,
+            portalShell.attrPatch,
+          );
+        }
+
         dataRef.current = next;
 
         if (hasLinkPatch) {
@@ -1407,7 +1459,13 @@ export function useVisualEditorState({
 
       return true;
     },
-    [canvasRef, dataRef, selection, setData],
+    [
+      canvasRef,
+      dataRef,
+      persistPortalAuthControlShellPatch,
+      selection,
+      setData,
+    ],
   );
 
   const updateText = useCallback(
@@ -1421,10 +1479,23 @@ export function useVisualEditorState({
         ID ויזואלי אינו בהכרח נתיב בתוך ServoraData.
         לכן שומרים רק ב-__content ולא משנים hero/header/nav וכו'.
       */
+      const portalShell = persistPortalAuthControlShellPatch(elementId, {
+        text,
+      });
+
       setData((current) => {
-        const next = writeVisualContentItem(current || {}, elementId, {
+        let next = writeVisualContentItem(current || {}, elementId, {
           text,
         });
+
+        // Portal form buttons remount from shell attrs — persist there too.
+        if (portalShell?.attrPatch && Object.keys(portalShell.attrPatch).length) {
+          next = writeVisualAttributesItem(
+            next,
+            portalShell.shellId,
+            portalShell.attrPatch,
+          );
+        }
 
         // Keep the ref in sync like every other mutator, so a save right
         // after a panel edit does not persist the previous text.
@@ -1435,7 +1506,7 @@ export function useVisualEditorState({
 
       return true;
     },
-    [dataRef, setData],
+    [dataRef, persistPortalAuthControlShellPatch, setData],
   );
 
   const updateVisualContent = useCallback(

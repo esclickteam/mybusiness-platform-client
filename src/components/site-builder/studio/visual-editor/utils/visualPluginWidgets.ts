@@ -1,3 +1,8 @@
+import {
+  PORTAL_AUTH_CONTROL_ATTR,
+  isPortalAuthControl,
+} from "./portalAuthControls";
+
 const PLUGIN_WIDGET_SHELL_SELECTOR =
   '[data-bizuply-plugin-widget="true"][data-visual-inserted-element="true"]';
 
@@ -13,6 +18,15 @@ const PORTAL_MOUNT_SHELL_SELECTOR = [
 
 const PLUGIN_RUNTIME_ROOT_SELECTOR =
   '[data-bizuply-plugin-runtime="true"], [data-bizuply-booking-live="true"], [data-bizuply-booking-host="true"], .bizuply-countdown-widget, .bizuply-booking-widget-root';
+
+function resolvePortalAuthControl(
+  node: HTMLElement | null | undefined,
+): HTMLElement | null {
+  if (!node) return null;
+  if (isPortalAuthControl(node)) return node;
+  const nested = node.closest<HTMLElement>(`[${PORTAL_AUTH_CONTROL_ATTR}]`);
+  return isPortalAuthControl(nested) ? nested : null;
+}
 
 export function getPluginWidgetShell(
   node: HTMLElement | null | undefined,
@@ -35,8 +49,11 @@ export function isPluginWidgetShell(node: HTMLElement | null | undefined) {
 }
 
 export function isInsidePluginWidgetContent(node: HTMLElement | null | undefined) {
+  if (!node) return false;
+  // Login/register submit + switch/forgot links are real canvas controls.
+  if (resolvePortalAuthControl(node)) return false;
   const shell = getPluginWidgetShell(node);
-  if (!shell || !node) return false;
+  if (!shell) return false;
   return shell !== node;
 }
 
@@ -45,6 +62,7 @@ export function shouldSkipPluginWidgetRegistration(
 ) {
   if (!node) return false;
   if (isPluginWidgetShell(node)) return false;
+  if (resolvePortalAuthControl(node)) return false;
   if (isInsidePluginWidgetContent(node)) return true;
   return Boolean(node.closest(PLUGIN_RUNTIME_ROOT_SELECTOR));
 }
@@ -53,6 +71,12 @@ export function resolvePluginWidgetSelectionTarget(
   node: HTMLElement,
   canvas: HTMLElement,
 ): HTMLElement | null {
+  const portalControl = resolvePortalAuthControl(node);
+  if (portalControl && canvas.contains(portalControl)) {
+    // Keep the clicked button/link — do not bounce selection to the shell.
+    return portalControl === node ? null : portalControl;
+  }
+
   const shell = getPluginWidgetShell(node);
   if (shell && canvas.contains(shell) && shell !== node) {
     return shell;
@@ -103,6 +127,8 @@ export function sanitizePluginWidgetEditorNodes(root: HTMLElement | null) {
   root.querySelectorAll<HTMLElement>(shellSelector).forEach((shell) => {
     shell.querySelectorAll<HTMLElement>("[data-visual-edit-id]").forEach((node) => {
       if (node === shell) return;
+      // Keep stamped portal auth buttons/links selectable after re-apply.
+      if (isPortalAuthControl(node)) return;
 
       node.removeAttribute("data-visual-edit-id");
       node.removeAttribute("data-visual-editable");
@@ -117,6 +143,8 @@ export function sanitizePluginWidgetEditorNodes(root: HTMLElement | null) {
     shell.querySelectorAll<HTMLElement>(PLUGIN_RUNTIME_ROOT_SELECTOR).forEach((runtime) => {
       runtime.setAttribute("data-bizuply-plugin-runtime", "true");
       runtime.querySelectorAll<HTMLElement>("[data-visual-edit-id]").forEach((node) => {
+        if (isPortalAuthControl(node)) return;
+
         node.removeAttribute("data-visual-edit-id");
         node.removeAttribute("data-visual-editable");
         node.removeAttribute("data-visual-edit-type");
