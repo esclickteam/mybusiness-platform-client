@@ -90,8 +90,62 @@ export type DomainRegistrationStatus =
   | "registration_pending"
   | "registered"
   | "registration_failed"
-  | "cancelled";
+  | "cancelled"
+  | "expired"
+  | "payment_required";
 
+
+export type DomainRenewalStatus =
+  | "not_due"
+  | "awaiting_payment"
+  | "quote_required"
+  | "checkout_created"
+  | "paid"
+  | "renewal_in_progress"
+  | "renewed"
+  | "payment_failed"
+  | "renewal_failed"
+  | "expired"
+  | "none"
+  | "payment_received";
+
+export type DomainRenewalUiCta =
+  | "renew"
+  | "request_quote"
+  | "continue_payment"
+  | "in_progress"
+  | "retry"
+  | "renewed";
+
+export type DomainRenewalQuote = {
+  customerRenewalPrice?: number | null;
+  providerRenewalCost?: number | null;
+  currency?: string;
+  quoteExpiresAt?: string | null;
+  quoteCached?: boolean;
+  quoteRequired?: boolean;
+  message?: string | null;
+  pricingSource?: string | null;
+};
+
+export type DomainRenewalInfo = {
+  status?: DomainRenewalStatus;
+  autoRenew?: boolean;
+  lastRenewedAt?: string | null;
+  lastRenewalError?: string | null;
+  renewedUntil?: string | null;
+  renewalCheckoutSessionId?: string | null;
+  activeRenewalOrderId?: string | null;
+  providerRenewalCost?: number | null;
+  customerRenewalPrice?: number | null;
+  markupAmount?: number | null;
+  currency?: string | null;
+  tld?: string | null;
+  priceCalculatedAt?: string | null;
+  quoteExpiresAt?: string | null;
+  failureCode?: string | null;
+  remindersSent?: number[];
+};
 export type DomainRegistration = {
   _id: string;
 
@@ -140,6 +194,11 @@ export type DomainRegistration = {
   };
 
   metadata?: Record<string, unknown>;
+
+  renewal?: DomainRenewalInfo;
+  renewalQuote?: DomainRenewalQuote;
+  daysUntilExpiry?: number | null;
+  uiCta?: DomainRenewalUiCta;
 
   createdAt?: string;
   updatedAt?: string;
@@ -673,4 +732,96 @@ export async function getDomainRegistrations(): Promise<
       ? data.registrations
       : [],
   };
+}
+
+export type DomainRenewalCheckoutResult = {
+  success: boolean;
+  url?: string;
+  checkoutUrl?: string;
+  sessionId?: string;
+  orderId?: string;
+  orderNumber?: string;
+  resumed?: boolean;
+  customerRenewalPrice?: number;
+  currency?: string;
+  quoteExpiresAt?: string | null;
+  error?: string;
+  code?: string;
+  quote?: DomainRenewalQuote | null;
+};
+
+export type DomainRenewalRetryResult = {
+  success: boolean;
+  renewed?: boolean;
+  alreadyRenewed?: boolean;
+  orderId?: string;
+  fulfillmentStatus?: string | null;
+  registration?: DomainRegistration | null;
+  error?: string;
+  code?: string;
+};
+
+export async function createDomainRenewalCheckout(
+  domainId: string,
+): Promise<DomainRenewalCheckoutResult> {
+  const id = String(domainId || "").trim();
+  if (!id) {
+    throw new Error("חסר מזהה דומיין לחידוש");
+  }
+
+  const response = await fetch(
+    `${API_BASE}/api/domains/${encodeURIComponent(id)}/create-renewal-checkout`,
+    {
+      method: "POST",
+      credentials: "include",
+      headers: buildHeaders(true),
+      body: JSON.stringify({}),
+    },
+  );
+
+  const data = await readJson<DomainRenewalCheckoutResult>(response);
+
+  if (!response.ok || !data?.success) {
+    const err = new Error(
+      getApiErrorMessage(response, data, "יצירת תשלום לחידוש הדומיין נכשלה"),
+    ) as Error & { code?: string; quote?: DomainRenewalQuote | null };
+    err.code = data?.code || undefined;
+    err.quote = data?.quote || null;
+    throw err;
+  }
+
+  return {
+    ...data,
+    checkoutUrl: data.url || data.checkoutUrl,
+  };
+}
+
+export async function retryDomainRenewal(
+  domainId: string,
+  orderId?: string,
+): Promise<DomainRenewalRetryResult> {
+  const id = String(domainId || "").trim();
+  if (!id) {
+    throw new Error("חסר מזהה דומיין לניסיון חידוש מחדש");
+  }
+
+  const response = await fetch(
+    `${API_BASE}/api/domains/${encodeURIComponent(id)}/retry-renewal`,
+    {
+      method: "POST",
+      credentials: "include",
+      headers: buildHeaders(true),
+      body: JSON.stringify(orderId ? { orderId } : {}),
+    },
+  );
+
+  const data = await readJson<DomainRenewalRetryResult>(response);
+
+  if (!response.ok || !data?.success) {
+    throw new Error(
+      getApiErrorMessage(response, data, "ניסיון החידוש מחדש נכשל"),
+    );
+  }
+
+  return data;
 }
