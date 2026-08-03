@@ -988,16 +988,6 @@ export default function BillingPage() {
             </div>
           </SectionCard>
         ) : null}
-
-        <div className="rounded-[1.5rem] border border-slate-200 bg-white px-5 py-4 text-center text-sm font-bold text-slate-500 shadow-sm">
-          {t("billing.needHelp")}{" "}
-          <a
-            href="/contact"
-            className="font-black text-violet-700 underline-offset-4 hover:underline"
-          >
-            {t("billing.contactSupport")}
-          </a>
-        </div>
       </div>
     </main>
   );
