@@ -1,7 +1,6 @@
 import React, { ChangeEvent, useEffect, useMemo, useState } from "react";
 import {
   Clock3,
-  DollarSign,
   Edit3,
   ImageIcon,
   Plus,
@@ -21,6 +20,18 @@ import { useLocaleDir } from "../../../../hooks/useLocaleDir";
 
 const DURATION_STEP = 15;
 const MAX_DURATION = 12 * 60;
+
+/** Shekel mark used in place of DollarSign across the services CRM UI. */
+function ShekelIcon({ className = "" }: { className?: string }) {
+  return (
+    <span
+      aria-hidden="true"
+      className={`inline-flex items-center justify-center text-[1.05em] font-black leading-none ${className}`}
+    >
+      ₪
+    </span>
+  );
+}
 
 type ServiceItem = {
   _id: string;
@@ -303,7 +314,7 @@ export default function CRMServicesTab() {
           value={t("crm.services.catalogValue", {
             value: totalRevenuePotential.toLocaleString(),
           })}
-          icon={DollarSign}
+          icon={ShekelIcon}
           helper={t("crm.services.statCatalogValueHelper")}
           tone="emerald"
         />
@@ -450,7 +461,7 @@ function ServiceFormPanel({
 
           <FormField label={t("crm.services.priceLabel")} required>
             <div className="relative">
-              <DollarSign className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <ShekelIcon className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-sm text-slate-400" />
               <input
                 type="number"
                 placeholder={t("crm.services.pricePlaceholder")}
@@ -621,7 +632,7 @@ function ServiceCard({
           />
 
           <InfoTile
-            icon={DollarSign}
+            icon={ShekelIcon}
             label={t("crm.common.price")}
             value={t("crm.services.priceValue", {
               value: price.toLocaleString(),
