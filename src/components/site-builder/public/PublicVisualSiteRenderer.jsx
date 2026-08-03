@@ -1800,7 +1800,7 @@ function applyPublicVisualData(root, visualData, pathname, site) {
         '[data-bizuply-booking-mount="true"]',
         '[data-section-kind="booking"]',
         '[data-template-section-type="booking"]',
-        '[data-bizuply-block="booking"]',
+        'section[data-bizuply-block="booking"]',
         '[data-bizuply-widget="booking-calendar"]',
       ].join(", "),
     ),

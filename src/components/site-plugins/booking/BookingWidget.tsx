@@ -808,8 +808,7 @@ export default function BookingWidget({
       style={styles.root}
       dir="rtl"
       data-bizuply-booking-live="true"
-      data-bizuply-widget="booking"
-      data-bizuply-block="booking"
+      data-bizuply-plugin-runtime="true"
     >
       <aside style={styles.servicesCol}>
         <div style={styles.header}>

@@ -85,7 +85,7 @@ function bookingMount(
       "יומן פגישות — שירותים ויומן",
     ),
     attributes: {
-      "data-bizuply-block": "booking",
+      // Mounts are widgets, not page sections — never set data-bizuply-block.
       "data-bizuply-widget": "booking",
       "data-bizuply-booking-mount": "true",
       "data-bizuply-booking-variant": variant,

@@ -2173,6 +2173,19 @@ export function applyVisualAttributesToDom(
           return;
         }
 
+        // Booking mounts are widgets, not page sections. Strip legacy
+        // data-bizuply-block so delete/selection never treat them as sections.
+        if (
+          key === "data-bizuply-block" &&
+          String(value) === "booking" &&
+          (node.getAttribute("data-bizuply-booking-mount") === "true" ||
+            node.getAttribute("data-bizuply-widget") === "booking") &&
+          String(node.tagName || "").toLowerCase() !== "section"
+        ) {
+          node.removeAttribute("data-bizuply-block");
+          return;
+        }
+
         if (key === "className" || key === "class") {
           if (value === null || value === "") {
             node.removeAttribute("class");

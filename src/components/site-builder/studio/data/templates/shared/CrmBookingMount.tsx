@@ -24,7 +24,6 @@ export function CrmBookingMount({
       data-bizuply-crm-calendar="true"
       data-bizuply-booking-variant="month"
       data-bizuply-booking-chrome="embedded"
-      data-bizuply-block="booking"
       data-bizuply-booking-frame="true"
       {...(accent
         ? { "data-bizuply-booking-accent": accent }
