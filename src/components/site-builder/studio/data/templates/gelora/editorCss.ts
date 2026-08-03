@@ -21,6 +21,58 @@ export const geloraEditorCss = `
   font-family: "Fraunces", serif;
 }
 
+/* Keep hero/editor parity: columns follow canvas width, never image min-content. */
+[data-template-id="gelora"] .gelora-hero-grid,
+[data-template-id="gelora-preview"] .gelora-hero-grid {
+  width: 100%;
+  min-width: 0;
+}
+
+[data-template-id="gelora"] .gelora-hero-grid > *,
+[data-template-id="gelora-preview"] .gelora-hero-grid > * {
+  min-width: 0;
+  max-width: 100%;
+}
+
+[data-template-id="gelora"] .gelora-hero-grid img,
+[data-template-id="gelora-preview"] .gelora-hero-grid img {
+  min-width: 0;
+  max-width: 100%;
+  width: 100%;
+}
+
+[data-template-id="gelora"] .gelora-hero-grid h1,
+[data-template-id="gelora-preview"] .gelora-hero-grid h1,
+[data-template-id="gelora"] .gelora-hero-grid p,
+[data-template-id="gelora-preview"] .gelora-hero-grid p {
+  overflow-wrap: break-word;
+  word-break: normal;
+  max-width: 100%;
+}
+
+[data-template-id="gelora"] .gelora-hero-grid button,
+[data-template-id="gelora-preview"] .gelora-hero-grid button,
+[data-template-id="gelora"] [data-section-kind="header"] button,
+[data-template-id="gelora-preview"] [data-section-kind="header"] button {
+  white-space: nowrap;
+  width: auto;
+  max-width: 100%;
+}
+
+@container bizuply-template (max-width: 1023px) {
+  [data-template-id="gelora"] .gelora-hero-grid,
+  [data-template-id="gelora-preview"] .gelora-hero-grid {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+}
+
+@container bizuply-template (min-width: 1024px) {
+  [data-template-id="gelora"] .gelora-hero-grid,
+  [data-template-id="gelora-preview"] .gelora-hero-grid {
+    grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr) !important;
+  }
+}
+
 @keyframes gelora-ken {
   from { transform: scale(1); }
   to { transform: scale(1.12); }

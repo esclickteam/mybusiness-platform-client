@@ -3,7 +3,6 @@ import type { StudioTemplateDefinition } from "./types";
 
 import { idoTemplate } from "./ido/meta";
 import { spalcioTemplate } from "./spalcio/meta";
-import { velmoraTemplate } from "./velmora/meta";
 import { aelineTemplate } from "./aeline/meta";
 import { pulsecoreTemplate } from "./pulsecore/meta";
 import { wantravelTemplate } from "./wantravel/meta";
@@ -218,7 +217,6 @@ import { juicepressTemplate } from "./juicepress/meta";
 export const studioTemplateDefinitions: StudioTemplateDefinition[] = [
   idoTemplate,
   spalcioTemplate,
-  velmoraTemplate,
   aelineTemplate,
   pulsecoreTemplate,
   wantravelTemplate,
