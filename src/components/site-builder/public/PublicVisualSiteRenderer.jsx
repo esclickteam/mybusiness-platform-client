@@ -757,6 +757,49 @@ function readTemplateData(site, activePage, explicitData) {
   ]);
 }
 
+/**
+ * Header/footer are shared by the whole site. Older records only stored the
+ * chrome on the page that was open at publish time, so fall back to any page
+ * (or the site snapshot) that has it.
+ */
+function withResolvedSharedChrome(site, activePage, visualData) {
+  const data = asPlainObject(visualData);
+  if (Object.keys(asPlainObject(data.__sharedChrome)).length) return data;
+
+  const source = asPlainObject(site);
+  const page = asPlainObject(activePage);
+  const sitePages = Array.isArray(source.pages) ? source.pages : [];
+
+  const candidates = [
+    page.data,
+    page.templateData,
+    asPlainObject(page.projectData).data,
+    asPlainObject(page.visualEditorPayload).data,
+    source.data,
+    source.templateData,
+    asPlainObject(source.projectData).data,
+    asPlainObject(source.visualEditorPayload).data,
+    ...sitePages.flatMap((sitePage) => {
+      const entry = asPlainObject(sitePage);
+      return [
+        entry.data,
+        entry.templateData,
+        asPlainObject(entry.projectData).data,
+        asPlainObject(entry.visualEditorPayload).data,
+      ];
+    }),
+  ];
+
+  for (const candidate of candidates) {
+    const sharedChrome = asPlainObject(asPlainObject(candidate).__sharedChrome);
+    if (Object.keys(sharedChrome).length) {
+      return { ...data, __sharedChrome: sharedChrome };
+    }
+  }
+
+  return data;
+}
+
 function getHtmlCandidates(site, activePage) {
   const source = asPlainObject(site);
   const page = asPlainObject(activePage);
@@ -2185,7 +2228,10 @@ export default function PublicVisualSiteRenderer({
       ? asPlainObject(site).pages
       : [];
 
-    return syncSitePageTitlesIntoVisualData(raw, sitePages);
+    return syncSitePageTitlesIntoVisualData(
+      withResolvedSharedChrome(site, activePage, raw),
+      sitePages,
+    );
   }, [site, activePage, templateData]);
 
   const customCode = useMemo(

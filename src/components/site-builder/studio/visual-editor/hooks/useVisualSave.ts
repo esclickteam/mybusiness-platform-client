@@ -25,6 +25,10 @@ import {
 
 import { buildVisualSavePayload } from "../utils/visualSaveAdapter";
 import { buildVisualSaveDataFromDom } from "../utils/visualDomApply";
+import {
+  VISUAL_SHARED_CHROME_KEY,
+  writeSharedChromeIntoVisualData,
+} from "../utils/visualSharedChrome";
 
 type VisualSavePayload = ReturnType<typeof buildVisualSavePayload>;
 
@@ -433,6 +437,17 @@ function mergeVisualSnapshotData({
     ...(currentData || {}),
     ...(domSnapshotData || {}),
   };
+
+  // Shared chrome lives in state only; the DOM collector never produces it.
+  if (
+    Object.prototype.hasOwnProperty.call(
+      currentData || {},
+      VISUAL_SHARED_CHROME_KEY,
+    )
+  ) {
+    next[VISUAL_SHARED_CHROME_KEY] =
+      (currentData || {})[VISUAL_SHARED_CHROME_KEY];
+  }
 
   VISUAL_MAP_KEYS.forEach((key) => {
     const previousMap = readPlainObject(currentData, key);
@@ -1047,7 +1062,13 @@ export function useVisualSave({
       domSnapshotData: domSnapshot,
     });
 
-    const cleaned = cleanSerializableValue(merged) || {};
+    /*
+      Header/footer belong to the whole site. Lift their edits into the shared
+      chrome map so every other page publishes the same chrome.
+    */
+    const mergedWithChrome = writeSharedChromeIntoVisualData(root, merged);
+
+    const cleaned = cleanSerializableValue(mergedWithChrome) || {};
     const sanitized = sanitizeVisualDataForPersistence({
       ...normalizeVisualData(cleaned),
       __activePageId: activePageId || "home",

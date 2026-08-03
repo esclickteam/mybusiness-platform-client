@@ -59,6 +59,10 @@ import {
   syncSitePageTitlesIntoVisualData,
 } from "./visual-editor/utils/syncNavWithSitePages";
 import {
+  VISUAL_SHARED_CHROME_KEY,
+  readSharedChrome,
+} from "./visual-editor/utils/visualSharedChrome";
+import {
   applyDisplayRowsToPages,
   applyDragToDisplayRows,
   applyPageTreeMove,
@@ -2701,6 +2705,8 @@ function pickVisualCollectionsOnly(source: Record<string, any>) {
     "__blankVisualPage",
     "__libraryPage",
     "__libraryPageTemplateId",
+    // Shared header/footer edits must survive every save path.
+    VISUAL_SHARED_CHROME_KEY,
     "snapshotPageId",
   ].forEach((key) => {
     if (Object.prototype.hasOwnProperty.call(input, key)) {
@@ -4998,6 +5004,30 @@ export default function WebsiteStudioPage({
   const activePage = useMemo(() => {
     return pages.find((page) => page.id === activePageId) || pages[0];
   }, [pages, activePageId]);
+
+  /*
+    Header/footer edits are site-wide. Whichever page saved them last is the
+    source of truth for every page opened in the editor.
+  */
+  const latestSharedChrome = useMemo(() => {
+    const candidates = [
+      visualSessionData,
+      ...pages.flatMap((page) => [
+        (page as any)?.data,
+        (page as any)?.templateData,
+        asPlainObject((page as any)?.projectData).data,
+        asPlainObject((page as any)?.visualEditorPayload).data,
+      ]),
+      serverVisualTemplateData,
+    ];
+
+    for (const candidate of candidates) {
+      const sharedChrome = readSharedChrome(asPlainObject(candidate));
+      if (Object.keys(sharedChrome).length) return sharedChrome;
+    }
+
+    return {};
+  }, [pages, serverVisualTemplateData, visualSessionData]);
 
   useEffect(() => {
     if (!isVisualReactTemplate || !selectedTemplateRenderer) return;
@@ -7669,13 +7699,21 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       const canonicalHomeId =
         String(canonicalHomeSource?.id || "home").trim() || "home";
 
+      /*
+        Header/footer are site-wide. The page just edited holds the freshest
+        chrome, so every published page gets that same shared chrome map.
+      */
+      const publishedSharedChrome = readSharedChrome(cleanVisualData);
+      const hasPublishedSharedChrome =
+        Object.keys(publishedSharedChrome).length > 0;
+
       const pagesForSave = publishedPages.map((page) => {
         const isCanonicalHome = page.id === canonicalHomeId;
         const isActivePage =
           page.id === activeVisualPageId ||
           (activeVisualPageId === "home" && isCanonicalHome);
 
-        const pageVisual = isActivePage
+        const basePageVisual = isActivePage
           ? cleanVisualData
           : extractVisualDataFromPayload({
               data: (page as any)?.data,
@@ -7686,6 +7724,14 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
             (page as any)?.templateData ||
             (page as any)?.data ||
             {};
+
+        const pageVisual =
+          hasPublishedSharedChrome && !isActivePage
+            ? {
+                ...asPlainObject(basePageVisual),
+                [VISUAL_SHARED_CHROME_KEY]: publishedSharedChrome,
+              }
+            : basePageVisual;
 
         const isLibraryPage =
           Boolean((pageVisual as any)?.__libraryPage) ||
@@ -8395,6 +8441,8 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
           (activePage as any)?.visualEditorPayload,
       }),
     ),
+    // Header/footer come from the site-wide chrome, not from this page.
+    [VISUAL_SHARED_CHROME_KEY]: latestSharedChrome,
     __activePageId: activePageId || "home",
     __siteSlug: normalizePublicBusinessSlug(slug),
     __publicUrl: buildPublicSiteUrl(

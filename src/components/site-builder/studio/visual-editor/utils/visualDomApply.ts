@@ -41,6 +41,7 @@ import {
 } from "./visualSelectors";
 
 import { applySavedFormBuildersToDom } from "./visualForms";
+import { expandSharedChromeIntoVisualData } from "./visualSharedChrome";
 import { applySitePageNavSubmenusToDom } from "./applySitePageNavSubmenusToDom";
 import { enhanceTemplateMobileNav } from "./enhanceTemplateMobileNav";
 import { isStoreBoundVisualContentKey } from "../../data/templates/shared/storeCatalogSync";
@@ -3572,11 +3573,21 @@ function applyVisualInsertedElementsContentToDom(
 
 export function applyAllVisualDataToDom(
   root: HTMLElement | null,
-  data: Record<string, any>,
+  rawData: Record<string, any>,
 ) {
   if (!root) return;
 
   registerAllVisualElements(root);
+
+  /*
+    Header/footer are shared by every page. Expand the site-level chrome onto
+    the ids this page rendered so chrome edits show up everywhere.
+  */
+  const data = expandSharedChromeIntoVisualData(root, rawData) as Record<
+    string,
+    any
+  >;
+
   renderVisualInsertedSectionsToDom(root, data);
   renderVisualInsertedElementsToDom(root, data);
   applyVisualInsertedElementsContentToDom(root, data);
