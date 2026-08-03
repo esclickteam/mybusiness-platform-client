@@ -201,7 +201,16 @@ function resolvePublishedSiteDisplayUrl(options: {
       host !== BIZUPLY_PUBLIC_SITE_DOMAIN &&
       host !== BIZUPLY_LEGACY_PUBLIC_SITE_DOMAIN
     ) {
-      return candidate.startsWith("http") ? candidate : `https://${candidate}`;
+      const absolute = candidate.startsWith("http")
+        ? candidate
+        : `https://${candidate}`;
+      try {
+        // "View site" always enters through the homepage, never the page
+        // that happened to be open when Publish was clicked.
+        return new URL(absolute).origin;
+      } catch {
+        return absolute.split(/[?#]/)[0].replace(/\/+$/, "");
+      }
     }
   }
 
@@ -7694,6 +7703,15 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       const homePage =
         pagesForSave.find((page) => page.isHome || page.id === "home") ||
         pagesForSave[0];
+      const homePageId = String(homePage?.id || "home").trim() || "home";
+      const extractedHomeVisualData = extractVisualDataFromPayload(
+        homePage || {},
+      );
+      const homeVisualData = hasVisualRootSnapshot(extractedHomeVisualData)
+        ? extractedHomeVisualData
+        : activeVisualPageId === homePageId
+          ? cleanVisualData
+          : extractedHomeVisualData;
 
       studioDebug("handleVisualTemplateSave:publishedPages-ready", {
         homePage: homePage
@@ -7773,18 +7791,20 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
           שומרים את הדאטה פעם אחת בלבד.
           לא משכפלים אותו גם בתוך projectData וגם בתוך visualEditorPayload.
         */
-        templateData: cleanVisualData,
+        // Site-level compatibility fields always represent HOME. Each inner
+        // page (including login/account/orders) owns its snapshot in pages[].
+        templateData: homeVisualData,
         visualEditorPayload: {
           templateKey: visualPayload.templateKey,
           editorMode: "visual-react",
-          data: cleanVisualData,
-          templateData: cleanVisualData,
+          data: homeVisualData,
+          templateData: homeVisualData,
           updatedAt: visualPayload.updatedAt,
           published,
           status: published ? "published" : "draft",
-          snapshotPageId: activeVisualPageId,
+          snapshotPageId: homePageId,
           hasTemplateData: true,
-          dataKeys: Object.keys(cleanVisualData || {}),
+          dataKeys: Object.keys(homeVisualData || {}),
         },
 
         slug: cleanSlug,
@@ -7795,8 +7815,8 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         projectData: {
           editorMode: "visual-react",
           templateKey: visualPayload.templateKey,
-          templateData: cleanVisualData,
-          data: cleanVisualData,
+          templateData: homeVisualData,
+          data: homeVisualData,
           slug: cleanSlug,
           published,
           publicUrl: nextPublicUrl,
@@ -7818,7 +7838,9 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         seoSettings: siteSeoSettings,
         brand: siteBrandSettings,
         pages: pagesForSave,
-        activePageId: activeVisualPageId,
+        // Public root must always anchor to home, regardless of which page
+        // was open in the studio at publish time.
+        activePageId: published ? homePageId : activeVisualPageId,
         customCode: Object.keys(asPlainObject(visualPayload.customCode)).length
           ? asPlainObject(visualPayload.customCode)
           : siteCustomCode,

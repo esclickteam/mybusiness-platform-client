@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import SitePortalLoginView from "./SitePortalLoginView";
 import SitePortalAcceptInviteView from "./SitePortalAcceptInviteView";
 import SitePortalAccountView from "./SitePortalAccountView";
@@ -21,6 +21,16 @@ type Props = {
 
 function getSiteId(site: any): string {
   return String(site?._id || site?.id || "").trim();
+}
+
+function PortalRedirect({ to }: { to: string }) {
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      window.location.replace(to);
+    }
+  }, [to]);
+
+  return null;
 }
 
 export default function SitePortalGate({
@@ -47,6 +57,18 @@ export default function SitePortalGate({
       ? site.enabledPlugins.includes("client-portal")
       : portalGate.pluginEnabled === true);
 
+  const pagePaths = useMemo(() => {
+    const pages = Array.isArray(site?.pages) ? site.pages : [];
+    return new Set(
+      pages.map((page: any) => {
+        const slug = String(page?.slug || page?.id || "")
+          .replace(/^\/+|\/+$/g, "")
+          .trim();
+        return slug ? `/${slug}` : "/";
+      }),
+    );
+  }, [site?.pages]);
+
   if (portalRoute && !pluginEnabled) {
     return (
       <div
@@ -70,6 +92,13 @@ export default function SitePortalGate({
   }
 
   if (portalRoute === "login") {
+    // Legacy route: use the designed page inside the published site chrome.
+    if (pagePaths.has("/login")) {
+      const search =
+        typeof window !== "undefined" ? window.location.search || "" : "";
+      return <PortalRedirect to={`/login${search}`} />;
+    }
+
     const returnPath =
       typeof window !== "undefined"
         ? new URLSearchParams(window.location.search).get("return") ||
@@ -96,6 +125,11 @@ export default function SitePortalGate({
   }
 
   if (portalRoute === "account") {
+    // Legacy route: use the designed account page when it exists.
+    if (pagePaths.has("/account")) {
+      return <PortalRedirect to="/account" />;
+    }
+
     if (!siteId) {
       return (
         <SitePortalLoginView
@@ -142,6 +176,26 @@ export default function SitePortalGate({
             </div>
           </div>
         </div>
+      );
+    }
+
+    const configuredLoginPath = String(portalGate.loginPath || "/login")
+      .trim()
+      .replace(/\/+$/, "") || "/login";
+    const designedLoginPath = pagePaths.has(configuredLoginPath)
+      ? configuredLoginPath
+      : pagePaths.has("/login")
+        ? "/login"
+        : "";
+
+    if (designedLoginPath) {
+      const separator = designedLoginPath.includes("?") ? "&" : "?";
+      return (
+        <PortalRedirect
+          to={`${designedLoginPath}${separator}return=${encodeURIComponent(
+            returnPath,
+          )}`}
+        />
       );
     }
 
