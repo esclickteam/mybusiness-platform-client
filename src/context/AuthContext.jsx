@@ -691,9 +691,12 @@ export function AuthProvider({ children }) {
           }
 
           if (freshUser.role === "business" && freshUser.businessId) {
-            navigate(resolveBusinessDashboardPath(freshUser.businessId), {
-              replace: true,
-            });
+            navigate(
+              freshUser.hasAccess
+                ? resolveBusinessDashboardPath(freshUser.businessId)
+                : "/pricing",
+              { replace: true }
+            );
           } else {
             navigate("/dashboard", { replace: true });
           }
@@ -727,13 +730,23 @@ export function AuthProvider({ children }) {
         if (
           freshUser.role === "business" &&
           freshUser.businessId &&
-          !location.pathname.startsWith("/business/") &&
           !isMetaCallbackRoute &&
           !isCheckoutContinuationPath(location.pathname)
         ) {
-          navigate(resolveBusinessDashboardPath(freshUser.businessId), {
-            replace: true,
-          });
+          if (freshUser.hasAccess) {
+            if (!location.pathname.startsWith("/business/")) {
+              navigate(resolveBusinessDashboardPath(freshUser.businessId), {
+                replace: true,
+              });
+            }
+          } else if (
+            location.pathname === "/" ||
+            location.pathname.startsWith("/business/") ||
+            location.pathname === "/dashboard" ||
+            location.pathname.startsWith("/dashboard/")
+          ) {
+            navigate("/pricing", { replace: true });
+          }
         }
       } catch (err) {
         console.error("❌ Auth init failed:", err);

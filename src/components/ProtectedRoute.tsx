@@ -18,6 +18,7 @@ type AuthUser = {
   role?: UserRole;
   businessId?: string | null;
   hasPaid?: boolean;
+  hasAccess?: boolean;
   trialEndsAt?: string | Date | null;
   [key: string]: unknown;
 };
@@ -131,6 +132,17 @@ export default function ProtectedRoute({
   =========================== */
   if (isBusiness && !user.businessId) {
     return <Navigate to="/create-business" replace />;
+  }
+
+  /* ===========================
+     💳 Unpaid business – finish checkout first
+  =========================== */
+  const isImpersonating =
+    typeof window !== "undefined" &&
+    Boolean(window.localStorage.getItem("impersonatedBy"));
+
+  if (isBusiness && !user.hasAccess && !isImpersonating) {
+    return <Navigate to="/pricing" replace />;
   }
 
   /* ===========================

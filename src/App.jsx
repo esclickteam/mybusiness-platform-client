@@ -840,12 +840,16 @@ export default function App() {
                           element={
                             user ? (
                               user.role === "business" && user.businessId ? (
-                                <Navigate
-                                  to={resolveBusinessDashboardPath(
-                                    user.businessId
-                                  )}
-                                  replace
-                                />
+                                user.hasAccess ? (
+                                  <Navigate
+                                    to={resolveBusinessDashboardPath(
+                                      user.businessId
+                                    )}
+                                    replace
+                                  />
+                                ) : (
+                                  <Navigate to="/pricing" replace />
+                                )
                               ) : user.role === "admin" ? (
                                 <Navigate to="/admin/dashboard" replace />
                               ) : (

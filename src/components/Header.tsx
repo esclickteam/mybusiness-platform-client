@@ -38,6 +38,8 @@ export default function Header() {
 
   const currentLangCode = normalizeLanguage(i18n.language);
   const headerDir = getTextDirection(currentLangCode);
+  const accountPath =
+    user?.role === "business" && !user?.hasAccess ? "/pricing" : "/dashboard";
 
   const isDashboard =
     location.pathname.includes("/dashboard") ||
@@ -111,7 +113,7 @@ export default function Header() {
             ) : (
               <>
                 <Link
-                  to="/dashboard"
+                  to={accountPath}
                   className="site-header__icon-btn"
                   aria-label={t("common.myAccount")}
                   title={t("common.myAccount")}
