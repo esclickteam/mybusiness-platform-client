@@ -2697,6 +2697,25 @@ function hasVisualRootSnapshot(source: Record<string, any>) {
   );
 }
 
+/**
+ * The visual maps are always present but usually empty, so key presence alone
+ * means nothing. Publish needs at least one real entry, matching the server.
+ */
+function hasMeaningfulVisualCollections(source: Record<string, any>) {
+  const input = asPlainObject(source);
+
+  return Array.from(VISUAL_ROOT_COLLECTION_KEYS).some((key) => {
+    const value = input[key];
+
+    return Boolean(
+      value &&
+        typeof value === "object" &&
+        !Array.isArray(value) &&
+        Object.keys(value).length > 0,
+    );
+  });
+}
+
 function pickVisualCollectionsOnly(source: Record<string, any>) {
   const input = asPlainObject(source);
   const output: Record<string, any> = {};
@@ -7833,11 +7852,15 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       const extractedHomeVisualData = extractVisualDataFromPayload(
         homePage || {},
       );
-      const homeVisualData = hasVisualRootSnapshot(extractedHomeVisualData)
+      /*
+        Site-level fields represent home, but they must never end up empty:
+        the API rejects a publish that carries no editor data at all.
+      */
+      const homeVisualData = hasMeaningfulVisualCollections(
+        extractedHomeVisualData,
+      )
         ? extractedHomeVisualData
-        : activeVisualPageId === homePageId
-          ? cleanVisualData
-          : extractedHomeVisualData;
+        : cleanVisualData;
 
       studioDebug("handleVisualTemplateSave:publishedPages-ready", {
         homePage: homePage
