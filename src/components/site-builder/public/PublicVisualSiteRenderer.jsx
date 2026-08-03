@@ -29,6 +29,7 @@ import { mountCountdownWidgets } from "../../site-plugins/countdown/mountCountdo
 import { mountBookingWidgets } from "../../site-plugins/booking/mountBookingWidgets";
 import { mountPublicLeadForms } from "./mountPublicLeadForms";
 import { mountPublicPortalWidgets } from "./mountPublicPortalWidgets";
+import { findPortalPageForFriendlyPath } from "./portalSitePaths";
 import {
   applyAllVisualDataToDom,
   applyVisualResponsiveToDom,
@@ -552,6 +553,11 @@ function resolveActivePage(site, pathname) {
 
   if (exactPage) return exactPage;
 
+  const aliasedPortalPage = currentPath
+    ? findPortalPageForFriendlyPath(source, `/${currentPath}`)
+    : null;
+  if (aliasedPortalPage) return aliasedPortalPage;
+
   const activePageId = safeString(source.activePageId);
 
   const activeById = pages.find(
@@ -586,8 +592,12 @@ function resolveActivePage(site, pathname) {
     );
   });
 
+  /*
+    Unknown public paths fall back to HOME — never to the editor's last
+    active page (that used to open login/register when the slug was wrong).
+  */
   if (currentPath) {
-    return exactPage || responseActivePage || homePage || pages[0];
+    return homePage || pages[0] || responseActivePage;
   }
 
   return homePage || pages[0] || responseActivePage;

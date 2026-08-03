@@ -25,6 +25,7 @@ import {
 
 import { buildVisualSavePayload } from "../utils/visualSaveAdapter";
 import { buildVisualSaveDataFromDom } from "../utils/visualDomApply";
+import { sanitizePortalMountShells } from "../utils/visualPluginWidgets";
 import {
   VISUAL_SHARED_CHROME_KEY,
   writeSharedChromeIntoVisualData,
@@ -926,6 +927,37 @@ function normalizePublishedLibrarySections(root: HTMLElement) {
   root.appendChild(style);
 }
 
+/**
+ * Runtime portal form fields used to leak into __content (placeholders,
+ * submit labels, "כבר רשומים?" links). Those keys are not real canvas edits
+ * and caused dead forms / login redirects after publish.
+ */
+function stripPortalRuntimeVisualMaps(data: Record<string, any>) {
+  const next = { ...(data || {}) };
+  const runtimeKeyPattern =
+    /sec-portal-[^.]+\.button\.(input|button|a)\./i;
+
+  for (const mapKey of [
+    VISUAL_CONTENT_KEY,
+    VISUAL_ATTRIBUTE_KEY,
+    VISUAL_STYLE_KEY,
+    VISUAL_LAYOUT_KEY,
+  ]) {
+    const map = next[mapKey];
+    if (!map || typeof map !== "object" || Array.isArray(map)) continue;
+
+    const cleaned: Record<string, any> = { ...map };
+    Object.keys(cleaned).forEach((elementId) => {
+      if (runtimeKeyPattern.test(elementId)) {
+        delete cleaned[elementId];
+      }
+    });
+    next[mapKey] = cleaned;
+  }
+
+  return next;
+}
+
 function preparePublishedClone(
   sourceRoot: HTMLElement,
   snapshotData: Record<string, any>,
@@ -936,6 +968,8 @@ function preparePublishedClone(
   removeDeletedElementsFromClone(clone, snapshotData);
   applyPermanentMediaToClone(clone, snapshotData);
   normalizePublishedLibrarySections(clone);
+  // Empty mount shells so the public site remounts a live, fillable form.
+  sanitizePortalMountShells(clone);
 
   clone.setAttribute("data-bizuply-published-snapshot", "true");
   clone.setAttribute(
@@ -1069,15 +1103,17 @@ export function useVisualSave({
     const mergedWithChrome = writeSharedChromeIntoVisualData(root, merged);
 
     const cleaned = cleanSerializableValue(mergedWithChrome) || {};
-    const sanitized = sanitizeVisualDataForPersistence({
-      ...normalizeVisualData(cleaned),
-      __activePageId: activePageId || "home",
-      __siteSlug: slug || String(cleaned.__siteSlug || ""),
-      __publicUrl:
-        publicUrl || String(cleaned.__publicUrl || ""),
-      __siteDomain:
-        siteDomain || String(cleaned.__siteDomain || ""),
-    });
+    const sanitized = sanitizeVisualDataForPersistence(
+      stripPortalRuntimeVisualMaps({
+        ...normalizeVisualData(cleaned),
+        __activePageId: activePageId || "home",
+        __siteSlug: slug || String(cleaned.__siteSlug || ""),
+        __publicUrl:
+          publicUrl || String(cleaned.__publicUrl || ""),
+        __siteDomain:
+          siteDomain || String(cleaned.__siteDomain || ""),
+      }),
+    );
 
     assertNoTemporaryMedia("snapshot", sanitized);
 
