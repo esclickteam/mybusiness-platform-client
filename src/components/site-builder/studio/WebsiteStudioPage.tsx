@@ -73,6 +73,7 @@ import {
   normalizePageMenuOrders,
   resolvePageParentId,
 } from "./visual-editor/utils/pageHierarchyUtils";
+import { detectPortalPageKind } from "../public/portalSitePaths";
 
 export type StudioPageSection = {
   id: string;
@@ -429,6 +430,43 @@ function createDefaultClientPortalConfig(): ClientPortalPageConfig {
     currency: "USD",
     variables: [],
   };
+}
+
+/** Login/register/forgot/reset must stay public — otherwise the form redirects to login. */
+function createPortalConfigForLibraryPage(
+  pageTemplate: Record<string, any>,
+): ClientPortalPageConfig {
+  const portalConfig = createDefaultClientPortalConfig();
+  const isPortalLibraryPage =
+    pageTemplate.category === "portal" ||
+    String(pageTemplate.id || "").startsWith("page-portal-") ||
+    detectPortalPageKind({
+      data: { __libraryPageTemplateId: String(pageTemplate.id || "") },
+    });
+
+  if (!isPortalLibraryPage) return portalConfig;
+
+  portalConfig.enabled = true;
+  const slug = String(pageTemplate.slugSuggestion || "").toLowerCase();
+  const keywords = Array.isArray(pageTemplate.keywords)
+    ? pageTemplate.keywords.map(String)
+    : [];
+  const kind = detectPortalPageKind({
+    data: { __libraryPageTemplateId: String(pageTemplate.id || "") },
+  });
+  const isPublicAuthPage =
+    /^(login|register|forgot-password|reset-password)(-|$)/.test(slug) ||
+    keywords.includes("portal-login") ||
+    keywords.includes("portal-register") ||
+    keywords.includes("portal-forgot-password") ||
+    keywords.includes("portal-reset-password") ||
+    kind === "portal-login" ||
+    kind === "portal-register" ||
+    kind === "portal-forgot-password" ||
+    kind === "portal-reset-password";
+
+  portalConfig.loginRequired = !isPublicAuthPage;
+  return portalConfig;
 }
 
 function createInitialPages(): StudioSitePageWithPortal[] {
@@ -5949,23 +5987,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       selectedTemplateSeed?.id ||
       "";
 
-    const isPortalLibraryPage = pageTemplate.category === "portal";
-    const portalConfig = createDefaultClientPortalConfig();
-    if (isPortalLibraryPage) {
-      portalConfig.enabled = true;
-      const slug = String(pageTemplate.slugSuggestion || "").toLowerCase();
-      const keywords = Array.isArray(pageTemplate.keywords)
-        ? pageTemplate.keywords.map(String)
-        : [];
-      // Sign-in, sign-up and password recovery must stay reachable to guests.
-      const isPublicAuthPage =
-        /^(login|register|forgot-password|reset-password)(-|$)/.test(slug) ||
-        keywords.includes("portal-login") ||
-        keywords.includes("portal-register") ||
-        keywords.includes("portal-forgot-password") ||
-        keywords.includes("portal-reset-password");
-      portalConfig.loginRequired = !isPublicAuthPage;
-    }
+    const portalConfig = createPortalConfigForLibraryPage(pageTemplate);
 
     const nextPage: StudioSitePageWithPortal = {
       id,
@@ -6075,7 +6097,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         visualSnapshotVersion: 5,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        clientPortal: createDefaultClientPortalConfig(),
+        clientPortal: createPortalConfigForLibraryPage(pageTemplate),
       } as StudioSitePageWithPortal;
 
       setPages((previousPages) => {
@@ -7868,12 +7890,20 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       /*
         Site-level fields represent home, but they must never end up empty:
         the API rejects a publish that carries no editor data at all.
+
+        Never fall back to the active page when that page is a personal-area
+        form — that is how / became the register page on published sites.
       */
+      const activeIsPortalPage = Boolean(
+        detectPortalPageKind({ data: cleanVisualData }),
+      );
       const homeVisualData = hasMeaningfulVisualCollections(
         extractedHomeVisualData,
       )
         ? extractedHomeVisualData
-        : cleanVisualData;
+        : activeIsPortalPage
+          ? extractedHomeVisualData
+          : cleanVisualData;
 
       studioDebug("handleVisualTemplateSave:publishedPages-ready", {
         homePage: homePage

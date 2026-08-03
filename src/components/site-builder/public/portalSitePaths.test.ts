@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 
-import { detectPortalPageKind, resolvePortalPaths } from "./portalSitePaths";
+import {
+  detectPortalPageKind,
+  findPortalPageForFriendlyPath,
+  resolvePortalPaths,
+} from "./portalSitePaths";
 
 function pageWithAttributes(slug: string, kind: string) {
   return {
@@ -77,7 +81,8 @@ describe("resolvePortalPaths", () => {
 
     expect(paths.login).toBe("/portal/login");
     expect(paths.account).toBe("/portal/account");
-    expect(paths.register).toBe("/portal/login");
+    // Register must stay a register URL — never silently become login.
+    expect(paths.register).toBe("/portal/register");
   });
 
   it("finds the designed password recovery pages", () => {
@@ -121,5 +126,23 @@ describe("resolvePortalPaths", () => {
 
     expect(paths.login).toBe("/login");
     expect(paths.account).not.toBe("/");
+  });
+
+  it("maps friendly /register to the numbered register page", () => {
+    const site = {
+      pages: [
+        { id: "home", slug: "", isHome: true, data: {} },
+        pageWithAttributes("register-03", "portal-register"),
+        pageWithAttributes("login-05", "portal-login"),
+      ],
+    };
+
+    expect(findPortalPageForFriendlyPath(site, "/register")?.slug).toBe(
+      "register-03",
+    );
+    expect(findPortalPageForFriendlyPath(site, "/login")?.slug).toBe(
+      "login-05",
+    );
+    expect(resolvePortalPaths(site).register).toBe("/register-03");
   });
 });

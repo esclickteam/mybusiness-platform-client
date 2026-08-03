@@ -6,6 +6,11 @@ const BOOKING_WIDGET_SHELL_SELECTOR = [
   '[data-bizuply-widget="booking"]:not([data-bizuply-booking-live="true"])',
 ].join(", ");
 
+const PORTAL_MOUNT_SHELL_SELECTOR = [
+  '[data-bizuply-portal-mount="true"]',
+  '[data-bizuply-widget^="portal-"]',
+].join(", ");
+
 const PLUGIN_RUNTIME_ROOT_SELECTOR =
   '[data-bizuply-plugin-runtime="true"], [data-bizuply-booking-live="true"], [data-bizuply-booking-host="true"], .bizuply-countdown-widget, .bizuply-booking-widget-root';
 
@@ -15,7 +20,8 @@ export function getPluginWidgetShell(
   if (!node) return null;
   return (
     node.closest<HTMLElement>(PLUGIN_WIDGET_SHELL_SELECTOR) ||
-    node.closest<HTMLElement>(BOOKING_WIDGET_SHELL_SELECTOR)
+    node.closest<HTMLElement>(BOOKING_WIDGET_SHELL_SELECTOR) ||
+    node.closest<HTMLElement>(PORTAL_MOUNT_SHELL_SELECTOR)
   );
 }
 
@@ -23,7 +29,8 @@ export function isPluginWidgetShell(node: HTMLElement | null | undefined) {
   if (!node) return false;
   return (
     node.matches(PLUGIN_WIDGET_SHELL_SELECTOR) ||
-    node.matches(BOOKING_WIDGET_SHELL_SELECTOR)
+    node.matches(BOOKING_WIDGET_SHELL_SELECTOR) ||
+    node.matches(PORTAL_MOUNT_SHELL_SELECTOR)
   );
 }
 
@@ -62,12 +69,35 @@ export function isBookingWidgetMount(node: HTMLElement | null | undefined) {
   );
 }
 
+/**
+ * Portal widgets inject a live form at runtime. Before save we empty the shell
+ * and drop the mounted flag so publish never freezes a dead copy of the form
+ * (which looked fillable but sent people to login / did nothing on submit).
+ */
+export function sanitizePortalMountShells(root: HTMLElement | null) {
+  if (!root) return;
+
+  root
+    .querySelectorAll<HTMLElement>(PORTAL_MOUNT_SHELL_SELECTOR)
+    .forEach((shell) => {
+      delete shell.dataset.bizuplyPortalMounted;
+      delete shell.dataset.bizuplyPortalLive;
+      shell.removeAttribute("data-bizuply-portal-mounted");
+      shell.removeAttribute("data-bizuply-portal-live");
+
+      while (shell.firstChild) {
+        shell.removeChild(shell.firstChild);
+      }
+    });
+}
+
 export function sanitizePluginWidgetEditorNodes(root: HTMLElement | null) {
   if (!root) return;
 
   const shellSelector = [
     PLUGIN_WIDGET_SHELL_SELECTOR,
     BOOKING_WIDGET_SHELL_SELECTOR,
+    PORTAL_MOUNT_SHELL_SELECTOR,
   ].join(", ");
 
   root.querySelectorAll<HTMLElement>(shellSelector).forEach((shell) => {
@@ -98,6 +128,12 @@ export function sanitizePluginWidgetEditorNodes(root: HTMLElement | null) {
       });
     });
   });
+
+  /*
+    Do not empty portal mounts here — applyAllVisualDataToDom runs often
+    (device toggle, selection refresh) and would flash blank forms. Emptying
+    happens only when building the published HTML snapshot.
+  */
 }
 
 export function ensurePluginWidgetsLayering(root: HTMLElement) {

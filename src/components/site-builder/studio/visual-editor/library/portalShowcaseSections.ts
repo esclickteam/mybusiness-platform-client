@@ -178,6 +178,33 @@ function portalMount(
       "data-bizuply-portal-muted": theme.muted,
       "data-bizuply-portal-line": theme.line,
       "data-bizuply-portal-soft": theme.soft,
+      ...(widget === "portal-login"
+        ? {
+            "data-portal-copy-eyebrow": "אזור אישי",
+            "data-portal-copy-title": "התחברות",
+            "data-portal-copy-subtitle":
+              "הזינו את הפרטים שלכם כדי להיכנס לחשבון באתר.",
+            "data-portal-copy-email": "אימייל",
+            "data-portal-copy-password": "סיסמה",
+            "data-portal-copy-submit": "התחברות",
+            "data-portal-copy-switch": "אין לכם חשבון? הרשמה",
+            "data-portal-copy-forgot": "שכחתי סיסמה",
+          }
+        : {}),
+      ...(widget === "portal-register"
+        ? {
+            "data-portal-copy-eyebrow": "אזור אישי",
+            "data-portal-copy-title": "הרשמה",
+            "data-portal-copy-subtitle":
+              "מלאו את הפרטים כדי לפתוח חשבון ולהמשיך באתר.",
+            "data-portal-copy-name": "שם מלא",
+            "data-portal-copy-email": "אימייל",
+            "data-portal-copy-phone": "טלפון (אופציונלי)",
+            "data-portal-copy-password": "סיסמה (לפחות 6 תווים)",
+            "data-portal-copy-submit": "יצירת חשבון",
+            "data-portal-copy-switch": "כבר רשומים? התחברות",
+          }
+        : {}),
     },
   };
 }

@@ -892,9 +892,10 @@ export default function VisualEditorCanvas({
       if (!root || !pageHasPortalWidget(root)) return;
       // Allow remount after visual DOM re-apply.
       root
-        .querySelectorAll("[data-bizuply-portal-mounted]")
+        .querySelectorAll("[data-bizuply-portal-mounted], [data-bizuply-portal-live]")
         .forEach((node) => {
           delete (node as HTMLElement).dataset.bizuplyPortalMounted;
+          delete (node as HTMLElement).dataset.bizuplyPortalLive;
         });
       mountPublicPortalWidgets(root, {
         site: {
@@ -902,12 +903,23 @@ export default function VisualEditorCanvas({
           businessId: editorAny.businessId || undefined,
           name: editorAny.siteName || editorAny.businessName || "",
           enabledPlugins: pluginEnabled ? ["client-portal"] : [],
+          // Real page slugs so "הרשמה" / "התחברות" links point at the
+          // designed pages instead of falling back to /portal/login.
+          pages: Array.isArray(editorAny.sitePages)
+            ? editorAny.sitePages
+            : [],
         },
         preview: true,
         editorMode: true,
       });
     },
-    [editorAny.businessId, editorAny.businessName, editorAny.siteName, siteId],
+    [
+      editorAny.businessId,
+      editorAny.businessName,
+      editorAny.siteName,
+      editorAny.sitePages,
+      siteId,
+    ],
   );
 
   const TemplateComponent = useMemo(() => {

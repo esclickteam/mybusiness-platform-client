@@ -48,6 +48,7 @@ export default function SitePortalGate({
   const portalRoute = useMemo(() => {
     const path = String(pathname || "/").replace(/\/+$/, "") || "/";
     if (path === "/portal/login") return "login";
+    if (path === "/portal/register") return "register";
     if (path === "/portal/account") return "account";
     if (path === "/portal/accept-invite") return "accept-invite";
     if (path === "/portal/forgot-password") return "forgot-password";
@@ -111,6 +112,29 @@ export default function SitePortalGate({
         siteName={siteName}
         siteId={siteId}
         returnPath={returnPath}
+        onSuccess={() => onPortalAuthChange?.()}
+      />
+    );
+  }
+
+  if (portalRoute === "register") {
+    if (hasDesignedPage(portalPaths.register)) {
+      const search =
+        typeof window !== "undefined" ? window.location.search || "" : "";
+      return <PortalRedirect to={`${portalPaths.register}${search}`} />;
+    }
+
+    // No designed register page yet — keep guests on the login gate with a
+    // clear path rather than bouncing them through a fake /register alias.
+    if (hasDesignedPage(portalPaths.login)) {
+      return <PortalRedirect to={portalPaths.login} />;
+    }
+
+    return (
+      <SitePortalLoginView
+        siteName={siteName}
+        siteId={siteId}
+        returnPath={portalPaths.account || "/portal/account"}
         onSuccess={() => onPortalAuthChange?.()}
       />
     );
