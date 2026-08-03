@@ -5339,7 +5339,10 @@ export default function WebsiteStudioPage({
         }
 
         // Header/footer live in one global source. Prefer it over any per-page copy.
-        const globalChrome = readSharedChrome(
+        // globalSections.chrome IS the shared-chrome map ({ __content, __scalars, ... }),
+        // so use it directly — do NOT unwrap through readSharedChrome (that looks for a
+        // nested __sharedChrome key and would always yield an empty map).
+        const globalChrome = asPlainObject(
           asPlainObject((data.site as any)?.globalSections).chrome,
         );
         setServerGlobalChrome(
@@ -5752,7 +5755,9 @@ export default function WebsiteStudioPage({
         setPages(serverPages);
         setActivePageId(nextActivePageId);
 
-        const globalChrome = readSharedChrome(
+        // globalSections.chrome IS the shared-chrome map ({ __content, __scalars, ... }),
+        // so use it directly — do NOT unwrap through readSharedChrome.
+        const globalChrome = asPlainObject(
           asPlainObject((data.site as any)?.globalSections).chrome,
         );
         setServerGlobalChrome(
