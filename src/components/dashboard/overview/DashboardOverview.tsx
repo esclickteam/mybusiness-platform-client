@@ -322,9 +322,6 @@ export default function DashboardOverview({
     ].filter((item) => item.value > 0);
   }, [data?.collaborations.overview, t]);
 
-  const topTrafficMax = getMaxValue(
-    (data?.website.trafficSources || []).map((item) => item.visitors)
-  );
   const topPagesMax = getMaxValue(
     (data?.website.topPages || []).map((item) => item.views)
   );
@@ -796,7 +793,7 @@ export default function DashboardOverview({
         </Panel>
       </section>
 
-      <section className="grid gap-5 xl:grid-cols-3">
+      <section className="grid gap-5 xl:grid-cols-2">
         <Panel>
           <div className="mb-4 flex items-center justify-between gap-3">
             <div>
@@ -890,35 +887,6 @@ export default function DashboardOverview({
             <EmptyBlock
               title={t("overview.noPagesTitle")}
               description={t("overview.noPagesText")}
-            />
-          )}
-        </Panel>
-
-        <Panel>
-          <div className="mb-4">
-            <h3 className="text-lg font-black text-slate-800">
-              {t("overview.trafficSources")}
-            </h3>
-          </div>
-
-          {(data?.website.trafficSources || []).some((item) => item.visitors > 0) ? (
-            <div className="space-y-4">
-              {data?.website.trafficSources.map((source) => (
-                <div key={source.source}>
-                  <div className="mb-2 flex items-center justify-between gap-3">
-                    <p className="font-bold text-slate-900">{source.label}</p>
-                    <p className="text-sm font-medium text-slate-500">
-                      {formatNumber(source.visitors)} · {formatPercent(source.change)}
-                    </p>
-                  </div>
-                  <ProgressBar value={source.visitors} max={topTrafficMax} />
-                </div>
-              ))}
-            </div>
-          ) : (
-            <EmptyBlock
-              title={t("overview.noTrafficTitle")}
-              description={t("overview.noTrafficText")}
             />
           )}
         </Panel>
