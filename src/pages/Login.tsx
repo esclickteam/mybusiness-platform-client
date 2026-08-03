@@ -21,6 +21,7 @@ type LoginUser = {
   role?: string;
   businessId?: string;
   enabledModules?: string[] | null;
+  hasAccess?: boolean;
 };
 
 type LoginResponse = {
@@ -126,14 +127,18 @@ export default function Login() {
       } else if (role === "affiliate") {
         navigate("/affiliate/dashboard", { replace: true });
       } else if (role === "business") {
-        const limited = Array.isArray(loggedInUser?.enabledModules)
-          ? loggedInUser.enabledModules
-          : null;
-        const dest =
-          limited?.includes("crm")
-            ? `/business/${loggedInUser?.businessId}/dashboard/crm`
-            : `/business/${loggedInUser?.businessId}/dashboard`;
-        navigate(dest, { replace: true });
+        if (!loggedInUser?.hasAccess) {
+          navigate("/pricing", { replace: true });
+        } else {
+          const limited = Array.isArray(loggedInUser?.enabledModules)
+            ? loggedInUser.enabledModules
+            : null;
+          const dest =
+            limited?.includes("crm")
+              ? `/business/${loggedInUser?.businessId}/dashboard/crm`
+              : `/business/${loggedInUser?.businessId}/dashboard`;
+          navigate(dest, { replace: true });
+        }
       } else if (role === "customer") {
         navigate("/client/dashboard", { replace: true });
       } else {

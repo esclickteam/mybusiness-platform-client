@@ -10,6 +10,8 @@ export default function MobileMenu({ open, onClose, user, onLogout }) {
   const location = useLocation();
   const { t, i18n } = useTranslation();
   const menuDir = getTextDirection(normalizeLanguage(i18n.language));
+  const accountPath =
+    user?.role === "business" && !user?.hasAccess ? "/pricing" : "/dashboard";
 
   const navLinks = [
     { to: "/about", label: t("nav.about") },
@@ -94,7 +96,7 @@ export default function MobileMenu({ open, onClose, user, onLogout }) {
             </>
           ) : (
             <>
-              <Link to="/dashboard" onClick={onClose} className="site-mobile__cta">
+              <Link to={accountPath} onClick={onClose} className="site-mobile__cta">
                 {t("common.myAccount")}
               </Link>
               <button

@@ -120,6 +120,9 @@ export default function SubscriptionPlanCard() {
     if (planValue === "trial") return t("billing.plans.trial");
     if (planValue === "monthly") return t("billing.plans.monthly");
     if (planValue === "yearly") return t("billing.plans.yearly");
+    if (planValue === "website" || planValue === "website_only") {
+      return "בניית אתר בלבד";
+    }
     return planValue || "—";
   };
 
@@ -149,7 +152,9 @@ export default function SubscriptionPlanCard() {
       ? t("billing.planNames.yearly")
       : plan === "monthly"
         ? t("billing.planNames.monthly")
-        : t("billing.planNames.trial");
+        : plan === "website"
+          ? "בניית אתר בלבד"
+          : t("billing.planNames.trial");
 
   const billingType =
     plan === "monthly"
@@ -158,7 +163,9 @@ export default function SubscriptionPlanCard() {
         : t("billing.billingTypes.monthlyActive")
       : plan === "yearly"
         ? t("billing.billingTypes.yearly")
-        : t("billing.billingTypes.trial");
+        : plan === "website"
+          ? "אתר לשנה — תשלום חד־פעמי, ללא חידוש אוטומטי"
+          : t("billing.billingTypes.trial");
 
   const statusBadgeClass = isActive
     ? isCancelled
@@ -402,7 +409,8 @@ export default function SubscriptionPlanCard() {
 
                 <div className="rounded-[1.5rem] border border-slate-100 bg-white p-5 shadow-sm">
                   <p className="text-xs font-black uppercase tracking-wide text-slate-400">
-                    {plan === "monthly"
+                    {["monthly", "yearly", "website"].includes(plan) &&
+                    !isCancelled
                       ? t("billing.nextBilling")
                       : t("billing.validUntil")}
                   </p>
@@ -436,7 +444,9 @@ export default function SubscriptionPlanCard() {
               )}
 
               <div className="pt-2">
-                {isActive && plan === "monthly" && !isCancelled && (
+                {isActive &&
+                  ["monthly", "yearly", "website"].includes(plan) &&
+                  !isCancelled && (
                   <button
                     type="button"
                     onClick={handleCancel}

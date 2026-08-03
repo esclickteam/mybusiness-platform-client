@@ -44,9 +44,9 @@ type ApiError = {
 type PricingPlan = "monthly" | "yearly" | "website";
 
 const PLAN_LABELS: Record<PricingPlan, string> = {
-  monthly: "חבילה עסקית חודשית",
-  yearly: "חבילה עסקית שנתית",
-  website: "בניית אתר בלבד",
+  monthly: "חבילה עסקית חודשית — 149₪ לחודש, חיוב חודשי מתחדש",
+  yearly: "חבילה עסקית שנתית — 1,490₪ לשנה, חיוב שנתי מתחדש",
+  website: "בניית אתר בלבד — 600₪ לשנה, תשלום חד־פעמי ללא חידוש אוטומטי",
 };
 
 function parsePlan(value: string | null): PricingPlan | null {
