@@ -1170,6 +1170,38 @@ const CATEGORY_DEFS: CategoryDef[] = [
           sectionIds: [`section-portal-cart-${n}`, FOOTER],
         };
       }),
+      ...Array.from({ length: 10 }, (_, i) => {
+        const n = String(i + 1).padStart(2, "0");
+        return {
+          title: `שכחתי סיסמה ${i + 1}`,
+          description: "בקשת קישור לאיפוס סיסמה שנשלח במייל ללקוח",
+          slugSuggestion: i === 0 ? "forgot-password" : `forgot-password-${n}`,
+          keywords: [
+            "portal-forgot-password",
+            "שכחתי סיסמה",
+            "איפוס סיסמה",
+            "forgot",
+            "portal",
+          ],
+          sectionIds: [`section-portal-forgot-password-${n}`, FOOTER],
+        };
+      }),
+      ...Array.from({ length: 10 }, (_, i) => {
+        const n = String(i + 1).padStart(2, "0");
+        return {
+          title: `סיסמה חדשה ${i + 1}`,
+          description: "בחירת סיסמה חדשה מתוך הקישור שנשלח במייל",
+          slugSuggestion: i === 0 ? "reset-password" : `reset-password-${n}`,
+          keywords: [
+            "portal-reset-password",
+            "סיסמה חדשה",
+            "איפוס סיסמה",
+            "reset",
+            "portal",
+          ],
+          sectionIds: [`section-portal-reset-password-${n}`, FOOTER],
+        };
+      }),
     ],
   },
 ];
@@ -1260,6 +1292,16 @@ export const PORTAL_PAGE_KIND_NAV: Array<{
   { id: "account", label: "אזור אישי", keyword: "portal-account" },
   { id: "orders", label: "הזמנות", keyword: "portal-orders" },
   { id: "cart", label: "עגלה", keyword: "portal-cart" },
+  {
+    id: "forgot-password",
+    label: "שכחתי סיסמה",
+    keyword: "portal-forgot-password",
+  },
+  {
+    id: "reset-password",
+    label: "סיסמה חדשה",
+    keyword: "portal-reset-password",
+  },
 ];
 
 export function getPagesByCategory(

@@ -29,6 +29,7 @@ import { mountCountdownWidgets } from "../../site-plugins/countdown/mountCountdo
 import { mountBookingWidgets } from "../../site-plugins/booking/mountBookingWidgets";
 import { mountPublicLeadForms } from "./mountPublicLeadForms";
 import { mountPublicPortalWidgets } from "./mountPublicPortalWidgets";
+import { findPortalPageForFriendlyPath } from "./portalSitePaths";
 import {
   applyAllVisualDataToDom,
   applyVisualResponsiveToDom,
@@ -552,6 +553,11 @@ function resolveActivePage(site, pathname) {
 
   if (exactPage) return exactPage;
 
+  const aliasedPortalPage = currentPath
+    ? findPortalPageForFriendlyPath(source, `/${currentPath}`)
+    : null;
+  if (aliasedPortalPage) return aliasedPortalPage;
+
   const activePageId = safeString(source.activePageId);
 
   const activeById = pages.find(
@@ -586,8 +592,12 @@ function resolveActivePage(site, pathname) {
     );
   });
 
+  /*
+    Unknown public paths fall back to HOME — never to the editor's last
+    active page (that used to open login/register when the slug was wrong).
+  */
   if (currentPath) {
-    return exactPage || responseActivePage || homePage || pages[0];
+    return homePage || pages[0] || responseActivePage;
   }
 
   return homePage || pages[0] || responseActivePage;
@@ -755,6 +765,49 @@ function readTemplateData(site, activePage, explicitData) {
     ...pageCandidates,
     ...siteCandidates,
   ]);
+}
+
+/**
+ * Header/footer are shared by the whole site. Older records only stored the
+ * chrome on the page that was open at publish time, so fall back to any page
+ * (or the site snapshot) that has it.
+ */
+function withResolvedSharedChrome(site, activePage, visualData) {
+  const data = asPlainObject(visualData);
+  if (Object.keys(asPlainObject(data.__sharedChrome)).length) return data;
+
+  const source = asPlainObject(site);
+  const page = asPlainObject(activePage);
+  const sitePages = Array.isArray(source.pages) ? source.pages : [];
+
+  const candidates = [
+    page.data,
+    page.templateData,
+    asPlainObject(page.projectData).data,
+    asPlainObject(page.visualEditorPayload).data,
+    source.data,
+    source.templateData,
+    asPlainObject(source.projectData).data,
+    asPlainObject(source.visualEditorPayload).data,
+    ...sitePages.flatMap((sitePage) => {
+      const entry = asPlainObject(sitePage);
+      return [
+        entry.data,
+        entry.templateData,
+        asPlainObject(entry.projectData).data,
+        asPlainObject(entry.visualEditorPayload).data,
+      ];
+    }),
+  ];
+
+  for (const candidate of candidates) {
+    const sharedChrome = asPlainObject(asPlainObject(candidate).__sharedChrome);
+    if (Object.keys(sharedChrome).length) {
+      return { ...data, __sharedChrome: sharedChrome };
+    }
+  }
+
+  return data;
 }
 
 function getHtmlCandidates(site, activePage) {
@@ -1668,6 +1721,16 @@ function navigatePublicLink(href, target) {
     return;
   }
 
+  /*
+    Same-origin site pages navigate in-app. A full reload re-fetched the whole
+    site and made saved links feel broken/slow.
+  */
+  if (cleanHref.startsWith("/")) {
+    window.history.pushState({}, "", cleanHref);
+    window.dispatchEvent(new PopStateEvent("popstate"));
+    return;
+  }
+
   window.location.assign(cleanHref);
 }
 
@@ -2185,7 +2248,10 @@ export default function PublicVisualSiteRenderer({
       ? asPlainObject(site).pages
       : [];
 
-    return syncSitePageTitlesIntoVisualData(raw, sitePages);
+    return syncSitePageTitlesIntoVisualData(
+      withResolvedSharedChrome(site, activePage, raw),
+      sitePages,
+    );
   }, [site, activePage, templateData]);
 
   const customCode = useMemo(

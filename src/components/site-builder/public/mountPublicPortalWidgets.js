@@ -1,6 +1,8 @@
 import {
   sitePortalLogin,
   sitePortalRegister,
+  sitePortalForgotPassword,
+  sitePortalResetPassword,
   sitePortalMe,
   sitePortalMyOrders,
   sitePortalLogout,
@@ -9,6 +11,7 @@ import {
   findStoredPortalTokenHint,
   getSitePortalToken,
 } from "../../../utils/sitePortalSession";
+import { resolvePortalPaths } from "./portalSitePaths";
 
 function clearMount(el) {
   if (typeof el.replaceChildren === "function") {
@@ -37,6 +40,13 @@ function readCart(businessId) {
 
 function resolveSiteId(site) {
   return String(site?._id || site?.id || "").trim();
+}
+
+function navigateToSitePath(path) {
+  const target = String(path || "/") || "/";
+
+  window.history.pushState({}, "", target);
+  window.dispatchEvent(new PopStateEvent("popstate"));
 }
 
 function readPortalTheme(container) {
@@ -69,15 +79,69 @@ function styleInput(input, theme) {
 function prepareMountShell(container) {
   clearMount(container);
   container.dir = "rtl";
+  delete container.dataset.bizuplyPortalMounted;
+  delete container.dataset.bizuplyPortalLive;
   Object.assign(container.style, {
     overflow: "auto",
     boxSizing: "border-box",
   });
 }
 
-function mountLogin(container, { siteId, host, siteName }) {
+/** Saved copy on the mount shell (editable in the studio header/forms panel). */
+function readPortalCopy(container, key, fallback) {
+  const value = String(
+    container?.getAttribute(`data-portal-copy-${key}`) ||
+      container?.dataset?.[
+        `portalCopy${key.charAt(0).toUpperCase()}${key.slice(1)}`
+      ] ||
+      "",
+  ).trim();
+  return value || fallback;
+}
+
+/** Saved link targets for the form's text buttons (הרשמה / שכחתי סיסמה / …). */
+function readPortalLink(container, key, fallback) {
+  const value = String(
+    container?.getAttribute(`data-portal-link-${key}`) ||
+      container?.dataset?.[
+        `portalLink${key.charAt(0).toUpperCase()}${key.slice(1)}`
+      ] ||
+      "",
+  ).trim();
+  return value || fallback;
+}
+
+function bindEditorSafeLink(anchor, href, editorMode) {
+  anchor.href = href || "#";
+  if (!editorMode) return;
+
+  anchor.addEventListener("click", (event) => {
+    event.preventDefault();
+    event.stopPropagation();
+  });
+}
+
+function mountLogin(container, { siteId, host, siteName, paths, editorMode }) {
   prepareMountShell(container);
   const theme = readPortalTheme(container);
+  const copy = {
+    eyebrow: readPortalCopy(container, "eyebrow", "אזור אישי"),
+    title: readPortalCopy(
+      container,
+      "title",
+      siteName ? `התחברות ל${siteName}` : "התחברות",
+    ),
+    subtitle: readPortalCopy(
+      container,
+      "subtitle",
+      "הזינו את הפרטים שלכם כדי להיכנס לחשבון באתר.",
+    ),
+    email: readPortalCopy(container, "email", "אימייל"),
+    password: readPortalCopy(container, "password", "סיסמה"),
+    submit: readPortalCopy(container, "submit", "התחברות"),
+    register: readPortalCopy(container, "switch", "אין לכם חשבון? הרשמה"),
+    forgot: readPortalCopy(container, "forgot", "שכחתי סיסמה"),
+  };
 
   const wrap = el("div", {
     padding: "28px",
@@ -99,14 +163,14 @@ function mountLogin(container, { siteId, host, siteName }) {
         letterSpacing: "0.04em",
         marginBottom: "8px",
       },
-      "אזור אישי",
+      copy.eyebrow,
     ),
   );
   wrap.appendChild(
     el(
       "h3",
       { fontSize: "26px", fontWeight: "900", margin: "0 0 8px", lineHeight: "1.15" },
-      siteName ? `התחברות ל${siteName}` : "התחברות",
+      copy.title,
     ),
   );
   wrap.appendChild(
@@ -119,21 +183,21 @@ function mountLogin(container, { siteId, host, siteName }) {
         margin: "0 0 20px",
         lineHeight: "1.6",
       },
-      "הזינו את הפרטים שלכם כדי להיכנס לחשבון באתר.",
+      copy.subtitle,
     ),
   );
 
   const email = document.createElement("input");
   email.type = "email";
   email.required = true;
-  email.placeholder = "אימייל";
+  email.placeholder = copy.email;
   email.autocomplete = "username";
   styleInput(email, theme);
 
   const password = document.createElement("input");
   password.type = "password";
   password.required = true;
-  password.placeholder = "סיסמה";
+  password.placeholder = copy.password;
   password.autocomplete = "current-password";
   styleInput(password, theme);
 
@@ -162,12 +226,19 @@ function mountLogin(container, { siteId, host, siteName }) {
       cursor: "pointer",
       boxShadow: "0 14px 28px -18px rgba(15,23,42,0.55)",
     },
-    "התחברות",
+    copy.submit,
   );
   submit.type = "button";
 
   submit.addEventListener("click", async () => {
     errorBox.style.display = "none";
+
+    if (editorMode) {
+      errorBox.textContent = "בתצוגת עריכה לא מתבצעת התחברות אמיתית.";
+      errorBox.style.display = "block";
+      return;
+    }
+
     submit.disabled = true;
     submit.textContent = "מתחבר...";
     try {
@@ -177,14 +248,13 @@ function mountLogin(container, { siteId, host, siteName }) {
         siteId: siteId || undefined,
         host: host || window.location.host,
       });
-      window.history.pushState({}, "", "/account");
-      window.dispatchEvent(new PopStateEvent("popstate"));
+      navigateToSitePath(paths?.account || "/portal/account");
     } catch (err) {
       errorBox.textContent = err?.message || "ההתחברות נכשלה";
       errorBox.style.display = "block";
     } finally {
       submit.disabled = false;
-      submit.textContent = "התחברות";
+      submit.textContent = copy.submit;
     }
   });
 
@@ -193,25 +263,74 @@ function mountLogin(container, { siteId, host, siteName }) {
   wrap.appendChild(errorBox);
   wrap.appendChild(submit);
 
-  const registerLink = document.createElement("a");
-  registerLink.href = "/register";
-  registerLink.textContent = "אין לכם חשבון? הרשמה";
-  Object.assign(registerLink.style, {
-    display: "inline-block",
+  const linksRow = el("div", {
+    display: "flex",
+    flexWrap: "wrap",
+    gap: "14px",
     marginTop: "16px",
+  });
+
+  const registerLink = document.createElement("a");
+  bindEditorSafeLink(
+    registerLink,
+    readPortalLink(container, "switch", paths?.register || "/register"),
+    editorMode,
+  );
+  registerLink.textContent = copy.register;
+  Object.assign(registerLink.style, {
     color: theme.accent,
     fontSize: "13px",
     fontWeight: "800",
     textDecoration: "none",
   });
-  wrap.appendChild(registerLink);
+  linksRow.appendChild(registerLink);
+
+  const forgotLink = document.createElement("a");
+  bindEditorSafeLink(
+    forgotLink,
+    readPortalLink(
+      container,
+      "forgot",
+      paths?.forgotPassword || "/portal/forgot-password",
+    ),
+    editorMode,
+  );
+  forgotLink.textContent = copy.forgot;
+  Object.assign(forgotLink.style, {
+    color: theme.muted,
+    fontSize: "13px",
+    fontWeight: "800",
+    textDecoration: "none",
+  });
+  linksRow.appendChild(forgotLink);
+
+  wrap.appendChild(linksRow);
 
   container.appendChild(wrap);
 }
 
-function mountRegister(container, { siteId, host, siteName }) {
+function mountRegister(container, { siteId, host, siteName, paths, editorMode }) {
   prepareMountShell(container);
   const theme = readPortalTheme(container);
+  const copy = {
+    eyebrow: readPortalCopy(container, "eyebrow", "אזור אישי"),
+    title: readPortalCopy(
+      container,
+      "title",
+      siteName ? `הרשמה ל${siteName}` : "הרשמה",
+    ),
+    subtitle: readPortalCopy(
+      container,
+      "subtitle",
+      "מלאו את הפרטים כדי לפתוח חשבון ולהמשיך באתר.",
+    ),
+    name: readPortalCopy(container, "name", "שם מלא"),
+    email: readPortalCopy(container, "email", "אימייל"),
+    phone: readPortalCopy(container, "phone", "טלפון (אופציונלי)"),
+    password: readPortalCopy(container, "password", "סיסמה (לפחות 6 תווים)"),
+    submit: readPortalCopy(container, "submit", "יצירת חשבון"),
+    login: readPortalCopy(container, "switch", "כבר רשומים? התחברות"),
+  };
 
   const wrap = el("div", {
     padding: "28px",
@@ -233,14 +352,14 @@ function mountRegister(container, { siteId, host, siteName }) {
         letterSpacing: "0.04em",
         marginBottom: "8px",
       },
-      "אזור אישי",
+      copy.eyebrow,
     ),
   );
   wrap.appendChild(
     el(
       "h3",
       { fontSize: "26px", fontWeight: "900", margin: "0 0 8px", lineHeight: "1.15" },
-      siteName ? `הרשמה ל${siteName}` : "הרשמה",
+      copy.title,
     ),
   );
   wrap.appendChild(
@@ -253,34 +372,34 @@ function mountRegister(container, { siteId, host, siteName }) {
         margin: "0 0 18px",
         lineHeight: "1.6",
       },
-      "מלאו את הפרטים כדי לפתוח חשבון ולהמשיך באתר.",
+      copy.subtitle,
     ),
   );
 
   const fullName = document.createElement("input");
   fullName.type = "text";
   fullName.required = true;
-  fullName.placeholder = "שם מלא";
+  fullName.placeholder = copy.name;
   fullName.autocomplete = "name";
   styleInput(fullName, theme);
 
   const email = document.createElement("input");
   email.type = "email";
   email.required = true;
-  email.placeholder = "אימייל";
+  email.placeholder = copy.email;
   email.autocomplete = "username";
   styleInput(email, theme);
 
   const phone = document.createElement("input");
   phone.type = "tel";
-  phone.placeholder = "טלפון (אופציונלי)";
+  phone.placeholder = copy.phone;
   phone.autocomplete = "tel";
   styleInput(phone, theme);
 
   const password = document.createElement("input");
   password.type = "password";
   password.required = true;
-  password.placeholder = "סיסמה (לפחות 6 תווים)";
+  password.placeholder = copy.password;
   password.autocomplete = "new-password";
   styleInput(password, theme);
 
@@ -309,12 +428,19 @@ function mountRegister(container, { siteId, host, siteName }) {
       cursor: "pointer",
       boxShadow: "0 14px 28px -18px rgba(15,23,42,0.55)",
     },
-    "יצירת חשבון",
+    copy.submit,
   );
   submit.type = "button";
 
   submit.addEventListener("click", async () => {
     errorBox.style.display = "none";
+
+    if (editorMode) {
+      errorBox.textContent = "בתצוגת עריכה לא מתבצעת הרשמה אמיתית.";
+      errorBox.style.display = "block";
+      return;
+    }
+
     submit.disabled = true;
     submit.textContent = "נרשם...";
     try {
@@ -326,14 +452,13 @@ function mountRegister(container, { siteId, host, siteName }) {
         siteId: siteId || undefined,
         host: host || window.location.host,
       });
-      window.history.pushState({}, "", "/account");
-      window.dispatchEvent(new PopStateEvent("popstate"));
+      navigateToSitePath(paths?.account || "/portal/account");
     } catch (err) {
       errorBox.textContent = err?.message || "ההרשמה נכשלה";
       errorBox.style.display = "block";
     } finally {
       submit.disabled = false;
-      submit.textContent = "יצירת חשבון";
+      submit.textContent = copy.submit;
     }
   });
 
@@ -345,8 +470,12 @@ function mountRegister(container, { siteId, host, siteName }) {
   wrap.appendChild(submit);
 
   const loginLink = document.createElement("a");
-  loginLink.href = "/login";
-  loginLink.textContent = "כבר רשומים? התחברות";
+  bindEditorSafeLink(
+    loginLink,
+    readPortalLink(container, "switch", paths?.login || "/login"),
+    editorMode,
+  );
+  loginLink.textContent = copy.login;
   Object.assign(loginLink.style, {
     display: "inline-block",
     marginTop: "16px",
@@ -360,7 +489,290 @@ function mountRegister(container, { siteId, host, siteName }) {
   container.appendChild(wrap);
 }
 
-function renderAccountPanel(container, theme, member, pages, { onLogout } = {}) {
+function portalHeading(wrap, theme, { eyebrow, title, subtitle }) {
+  wrap.appendChild(
+    el(
+      "div",
+      {
+        fontSize: "12px",
+        fontWeight: "800",
+        color: theme.accent,
+        letterSpacing: "0.04em",
+        marginBottom: "8px",
+      },
+      eyebrow,
+    ),
+  );
+  wrap.appendChild(
+    el(
+      "h3",
+      {
+        fontSize: "26px",
+        fontWeight: "900",
+        margin: "0 0 8px",
+        lineHeight: "1.15",
+      },
+      title,
+    ),
+  );
+  wrap.appendChild(
+    el(
+      "p",
+      {
+        fontSize: "13px",
+        fontWeight: "600",
+        color: theme.muted,
+        margin: "0 0 20px",
+        lineHeight: "1.6",
+      },
+      subtitle,
+    ),
+  );
+}
+
+function portalNoticeBox(theme, tone = "error") {
+  const box = el("div", {
+    display: "none",
+    marginBottom: "12px",
+    padding: "12px 14px",
+    borderRadius: "12px",
+    fontSize: "13px",
+    fontWeight: "700",
+    lineHeight: "1.6",
+    background: tone === "success" ? "#ecfdf5" : "#fef2f2",
+    color: tone === "success" ? "#047857" : "#b91c1c",
+    border: `1px solid ${tone === "success" ? "#a7f3d0" : "#fecaca"}`,
+  });
+  return box;
+}
+
+function portalPrimaryButton(theme, label) {
+  const button = el(
+    "button",
+    {
+      width: "100%",
+      border: "0",
+      borderRadius: "16px",
+      background: theme.ink,
+      color: "#fff",
+      padding: "14px 16px",
+      fontSize: "14px",
+      fontWeight: "800",
+      cursor: "pointer",
+      boxShadow: "0 14px 28px -18px rgba(15,23,42,0.55)",
+    },
+    label,
+  );
+  button.type = "button";
+  return button;
+}
+
+/** "Forgot password" — asks for the email and sends the reset link by mail. */
+function mountForgotPassword(container, { siteId, host, siteName, paths, editorMode }) {
+  prepareMountShell(container);
+  const theme = readPortalTheme(container);
+
+  const wrap = el("div", {
+    padding: "28px",
+    fontFamily: "inherit",
+    color: theme.ink,
+    height: "100%",
+    boxSizing: "border-box",
+    display: "flex",
+    flexDirection: "column",
+  });
+
+  portalHeading(wrap, theme, {
+    eyebrow: "אזור אישי",
+    title: "שכחתי סיסמה",
+    subtitle:
+      "הזינו את האימייל שאיתו נרשמתם ונשלח אליכם קישור לבחירת סיסמה חדשה.",
+  });
+
+  const email = document.createElement("input");
+  email.type = "email";
+  email.required = true;
+  email.placeholder = "אימייל";
+  email.autocomplete = "email";
+  styleInput(email, theme);
+
+  const errorBox = portalNoticeBox(theme, "error");
+  const successBox = portalNoticeBox(theme, "success");
+  const submit = portalPrimaryButton(theme, "שליחת קישור לאיפוס");
+
+  submit.addEventListener("click", async () => {
+    errorBox.style.display = "none";
+    successBox.style.display = "none";
+
+    if (editorMode) {
+      successBox.textContent =
+        "בתצוגת עריכה לא נשלח מייל. באתר המפורסם הלקוח יקבל קישור לאיפוס.";
+      successBox.style.display = "block";
+      return;
+    }
+
+    submit.disabled = true;
+    submit.textContent = "שולח...";
+
+    try {
+      const result = await sitePortalForgotPassword({
+        email: email.value,
+        siteId: siteId || undefined,
+        host: host || window.location.host,
+        resetPath: paths?.resetPassword || "/portal/reset-password",
+      });
+
+      successBox.textContent =
+        result?.message ||
+        "אם קיים חשבון עם האימייל הזה, נשלח אליו קישור לאיפוס סיסמה.";
+      successBox.style.display = "block";
+    } catch (err) {
+      errorBox.textContent = err?.message || "שליחת הקישור נכשלה";
+      errorBox.style.display = "block";
+    } finally {
+      submit.disabled = false;
+      submit.textContent = "שליחת קישור לאיפוס";
+    }
+  });
+
+  wrap.appendChild(email);
+  wrap.appendChild(errorBox);
+  wrap.appendChild(successBox);
+  wrap.appendChild(submit);
+
+  const backLink = document.createElement("a");
+  backLink.href = paths?.login || "/portal/login";
+  backLink.textContent = "חזרה להתחברות";
+  Object.assign(backLink.style, {
+    display: "inline-block",
+    marginTop: "16px",
+    color: theme.accent,
+    fontSize: "13px",
+    fontWeight: "800",
+    textDecoration: "none",
+  });
+  wrap.appendChild(backLink);
+
+  container.appendChild(wrap);
+}
+
+/** "Choose a new password" — consumes the token from the emailed link. */
+function mountResetPassword(container, { siteId, paths, editorMode }) {
+  prepareMountShell(container);
+  const theme = readPortalTheme(container);
+
+  const token =
+    typeof window !== "undefined"
+      ? new URLSearchParams(window.location.search).get("token") || ""
+      : "";
+
+  const wrap = el("div", {
+    padding: "28px",
+    fontFamily: "inherit",
+    color: theme.ink,
+    height: "100%",
+    boxSizing: "border-box",
+    display: "flex",
+    flexDirection: "column",
+  });
+
+  portalHeading(wrap, theme, {
+    eyebrow: "אזור אישי",
+    title: "בחירת סיסמה חדשה",
+    subtitle: "בחרו סיסמה חדשה באורך 6 תווים לפחות.",
+  });
+
+  const password = document.createElement("input");
+  password.type = "password";
+  password.required = true;
+  password.placeholder = "סיסמה חדשה";
+  password.autocomplete = "new-password";
+  styleInput(password, theme);
+
+  const confirm = document.createElement("input");
+  confirm.type = "password";
+  confirm.required = true;
+  confirm.placeholder = "אימות סיסמה";
+  confirm.autocomplete = "new-password";
+  styleInput(confirm, theme);
+
+  const errorBox = portalNoticeBox(theme, "error");
+  const successBox = portalNoticeBox(theme, "success");
+  const submit = portalPrimaryButton(theme, "שמירת הסיסמה");
+
+  if (!token && !editorMode) {
+    errorBox.textContent =
+      "הקישור חסר או אינו תקין. בקשו קישור חדש בעמוד «שכחתי סיסמה».";
+    errorBox.style.display = "block";
+  }
+
+  submit.addEventListener("click", async () => {
+    errorBox.style.display = "none";
+    successBox.style.display = "none";
+
+    if (editorMode) {
+      successBox.textContent =
+        "בתצוגת עריכה לא מתבצע שינוי סיסמה. באתר המפורסם זה יעבוד מהקישור במייל.";
+      successBox.style.display = "block";
+      return;
+    }
+
+    if (password.value.length < 6) {
+      errorBox.textContent = "הסיסמה חייבת להיות באורך 6 תווים לפחות";
+      errorBox.style.display = "block";
+      return;
+    }
+
+    if (password.value !== confirm.value) {
+      errorBox.textContent = "הסיסמאות אינן זהות";
+      errorBox.style.display = "block";
+      return;
+    }
+
+    submit.disabled = true;
+    submit.textContent = "שומר...";
+
+    try {
+      await sitePortalResetPassword({ token, password: password.value });
+      navigateToSitePath(paths?.account || "/portal/account");
+    } catch (err) {
+      errorBox.textContent = err?.message || "איפוס הסיסמה נכשל";
+      errorBox.style.display = "block";
+    } finally {
+      submit.disabled = false;
+      submit.textContent = "שמירת הסיסמה";
+    }
+  });
+
+  wrap.appendChild(password);
+  wrap.appendChild(confirm);
+  wrap.appendChild(errorBox);
+  wrap.appendChild(successBox);
+  wrap.appendChild(submit);
+
+  const backLink = document.createElement("a");
+  backLink.href = paths?.login || "/portal/login";
+  backLink.textContent = "חזרה להתחברות";
+  Object.assign(backLink.style, {
+    display: "inline-block",
+    marginTop: "16px",
+    color: theme.accent,
+    fontSize: "13px",
+    fontWeight: "800",
+    textDecoration: "none",
+  });
+  wrap.appendChild(backLink);
+
+  container.appendChild(wrap);
+}
+
+function renderAccountPanel(
+  container,
+  theme,
+  member,
+  pages,
+  { onLogout, paths } = {},
+) {
   prepareMountShell(container);
   const wrap = el("div", {
     padding: "24px",
@@ -389,9 +801,9 @@ function renderAccountPanel(container, theme, member, pages, { onLogout } = {}) 
   );
 
   const quickLinks = [
-    { href: "/orders", label: "ההזמנות שלי" },
-    { href: "/cart", label: "העגלה שלי" },
-    { href: "/account", label: "פרטי החשבון" },
+    { href: paths?.orders || "/orders", label: "ההזמנות שלי" },
+    { href: paths?.cart || "/cart", label: "העגלה שלי" },
+    { href: paths?.account || "/portal/account", label: "פרטי החשבון" },
   ];
   const quickRow = el("div", {
     display: "flex",
@@ -544,15 +956,18 @@ function renderOrdersPanel(container, theme, orders) {
   container.appendChild(wrap);
 }
 
-async function mountAccount(container, { siteId, editorMode = false }) {
+async function mountAccount(container, { siteId, editorMode = false, paths }) {
   const theme = readPortalTheme(container);
 
   // Studio edit/preview: always show open design sample — never ask to login.
   if (editorMode) {
-    renderAccountPanel(container, theme, {
-      fullName: "לקוח/ה לדוגמה",
-      email: "client@example.com",
-    }, []);
+    renderAccountPanel(
+      container,
+      theme,
+      { fullName: "לקוח/ה לדוגמה", email: "client@example.com" },
+      [],
+      { paths },
+    );
     return;
   }
 
@@ -570,10 +985,10 @@ async function mountAccount(container, { siteId, editorMode = false }) {
       ? data.portalPages.filter((page) => page.loginRequired !== false)
       : [];
     renderAccountPanel(container, theme, data.member, pages, {
+      paths,
       onLogout: async () => {
         await sitePortalLogout(siteId);
-        window.history.pushState({}, "", "/login");
-        window.dispatchEvent(new PopStateEvent("popstate"));
+        navigateToSitePath(paths?.login || "/portal/login");
       },
     });
   } catch (err) {
@@ -592,7 +1007,7 @@ async function mountAccount(container, { siteId, editorMode = false }) {
       ),
     );
     const login = document.createElement("a");
-    login.href = "/login";
+    login.href = paths?.login || "/portal/login";
     login.textContent = "להתחברות";
     Object.assign(login.style, {
       display: "inline-flex",
@@ -608,7 +1023,7 @@ async function mountAccount(container, { siteId, editorMode = false }) {
   }
 }
 
-async function mountOrders(container, { siteId, editorMode = false }) {
+async function mountOrders(container, { siteId, editorMode = false, paths }) {
   const theme = readPortalTheme(container);
 
   if (editorMode) {
@@ -665,7 +1080,7 @@ async function mountOrders(container, { siteId, editorMode = false }) {
       ),
     );
     const login = document.createElement("a");
-    login.href = "/login";
+    login.href = paths?.login || "/portal/login";
     login.textContent = "להתחברות";
     Object.assign(login.style, {
       display: "inline-flex",
@@ -682,9 +1097,15 @@ async function mountOrders(container, { siteId, editorMode = false }) {
 }
 
 function mountCart(container, { businessId }) {
-  clearMount(container);
-  container.dir = "rtl";
-  const wrap = el("div", { padding: "20px", fontFamily: "inherit" });
+  prepareMountShell(container);
+  // The cart must follow the same design tokens as the other portal widgets.
+  const theme = readPortalTheme(container);
+  const wrap = el("div", {
+    padding: "20px",
+    fontFamily: "inherit",
+    color: theme.ink,
+    boxSizing: "border-box",
+  });
   const items = readCart(businessId);
 
   if (!items.length) {
@@ -694,10 +1115,10 @@ function mountCart(container, { businessId }) {
         {
           padding: "18px",
           borderRadius: "16px",
-          background: "#f8fafc",
-          border: "1px solid #e2e8f0",
+          background: theme.soft,
+          border: `1px solid ${theme.line}`,
           fontWeight: "700",
-          color: "#64748b",
+          color: theme.muted,
         },
         "העגלה ריקה כרגע.",
       ),
@@ -717,7 +1138,7 @@ function mountCart(container, { businessId }) {
       gap: "12px",
       marginBottom: "10px",
       paddingBottom: "10px",
-      borderBottom: "1px solid #e2e8f0",
+      borderBottom: `1px solid ${theme.line}`,
       fontWeight: "700",
       fontSize: "13px",
     });
@@ -743,7 +1164,7 @@ function mountCart(container, { businessId }) {
     {
       border: "0",
       borderRadius: "14px",
-      background: "#0284c7",
+      background: theme.accent,
       color: "#fff",
       padding: "12px 16px",
       fontWeight: "800",
@@ -802,13 +1223,27 @@ export function mountPublicPortalWidgets(root, options = {}) {
     /* no-op: login will set it */
   }
 
+  const paths = resolvePortalPaths(site);
+
   const mounts = root.querySelectorAll(
     '[data-bizuply-portal-mount="true"], [data-bizuply-widget^="portal-"]',
   );
 
   mounts.forEach((node) => {
-    if (node.dataset.bizuplyPortalMounted === "1") return;
+    /*
+      A re-applied visual snapshot wipes the widget children while the
+      "mounted" flag stays behind, which left an empty portal card.
+      Also ignore "mounted" copies frozen into an old HTML snapshot — those
+      look like forms but have no live submit handlers.
+    */
+    const alreadyMounted =
+      node.dataset.bizuplyPortalMounted === "1" &&
+      node.dataset.bizuplyPortalLive === "1" &&
+      node.childElementCount > 0;
+
+    if (alreadyMounted) return;
     node.dataset.bizuplyPortalMounted = "1";
+    node.dataset.bizuplyPortalLive = "1";
 
     const kind = String(
       node.getAttribute("data-bizuply-portal-kind") ||
@@ -817,35 +1252,49 @@ export function mountPublicPortalWidgets(root, options = {}) {
     );
 
     if (kind === "portal-login") {
-      mountLogin(node, { siteId, host, siteName });
+      mountLogin(node, { siteId, host, siteName, paths, editorMode });
       return;
     }
     if (kind === "portal-register") {
-      mountRegister(node, { siteId, host, siteName });
+      mountRegister(node, { siteId, host, siteName, paths, editorMode });
       return;
     }
     if (kind === "portal-account") {
       if (editorMode) {
-        void mountAccount(node, { siteId, editorMode: true });
+        void mountAccount(node, { siteId, editorMode: true, paths });
         return;
       }
       if (!siteId) {
-        mountLogin(node, { siteId, host, siteName });
+        mountLogin(node, { siteId, host, siteName, paths, editorMode });
         return;
       }
-      void mountAccount(node, { siteId, editorMode: false });
+      void mountAccount(node, { siteId, editorMode: false, paths });
       return;
     }
     if (kind === "portal-orders") {
       if (editorMode) {
-        void mountOrders(node, { siteId, editorMode: true });
+        void mountOrders(node, { siteId, editorMode: true, paths });
         return;
       }
       if (!siteId) {
-        mountLogin(node, { siteId, host, siteName });
+        mountLogin(node, { siteId, host, siteName, paths, editorMode });
         return;
       }
-      void mountOrders(node, { siteId, editorMode: false });
+      void mountOrders(node, { siteId, editorMode: false, paths });
+      return;
+    }
+    if (kind === "portal-forgot-password") {
+      mountForgotPassword(node, {
+        siteId,
+        host,
+        siteName,
+        paths,
+        editorMode,
+      });
+      return;
+    }
+    if (kind === "portal-reset-password") {
+      mountResetPassword(node, { siteId, paths, editorMode });
       return;
     }
     if (kind === "portal-cart") {

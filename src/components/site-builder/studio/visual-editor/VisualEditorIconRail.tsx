@@ -5,6 +5,7 @@ import {
   FileStack,
   Globe2,
   Layers3,
+  PanelTop,
   Plus,
   Puzzle,
   ShoppingBag,
@@ -15,6 +16,7 @@ export type VisualEditorSidePanelMode =
   | "layers"
   | "code"
   | "pages"
+  | "header"
   | "store"
   | "plugins"
   | null;
@@ -117,6 +119,14 @@ export default function VisualEditorIconRail({
               {pageCount > 99 ? "99+" : pageCount}
             </span>
           ) : null}
+        </RailButton>
+
+        <RailButton
+          title="הידר, פוטר וקישורי טפסים"
+          active={sidePanelMode === "header"}
+          onClick={() => onTogglePanel("header")}
+        >
+          <PanelTop className="h-5 w-5" />
         </RailButton>
 
         <RailButton

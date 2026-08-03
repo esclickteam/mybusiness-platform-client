@@ -59,6 +59,12 @@ import {
   syncSitePageTitlesIntoVisualData,
 } from "./visual-editor/utils/syncNavWithSitePages";
 import {
+  VISUAL_SHARED_CHROME_KEY,
+  extractSharedChromeFromVisualData,
+  readSharedChrome,
+  stripChromeFromVisualData,
+} from "./visual-editor/utils/visualSharedChrome";
+import {
   applyDisplayRowsToPages,
   applyDragToDisplayRows,
   applyPageTreeMove,
@@ -67,6 +73,7 @@ import {
   normalizePageMenuOrders,
   resolvePageParentId,
 } from "./visual-editor/utils/pageHierarchyUtils";
+import { detectPortalPageKind } from "../public/portalSitePaths";
 
 export type StudioPageSection = {
   id: string;
@@ -201,7 +208,16 @@ function resolvePublishedSiteDisplayUrl(options: {
       host !== BIZUPLY_PUBLIC_SITE_DOMAIN &&
       host !== BIZUPLY_LEGACY_PUBLIC_SITE_DOMAIN
     ) {
-      return candidate.startsWith("http") ? candidate : `https://${candidate}`;
+      const absolute = candidate.startsWith("http")
+        ? candidate
+        : `https://${candidate}`;
+      try {
+        // "View site" always enters through the homepage, never the page
+        // that happened to be open when Publish was clicked.
+        return new URL(absolute).origin;
+      } catch {
+        return absolute.split(/[?#]/)[0].replace(/\/+$/, "");
+      }
     }
   }
 
@@ -414,6 +430,43 @@ function createDefaultClientPortalConfig(): ClientPortalPageConfig {
     currency: "USD",
     variables: [],
   };
+}
+
+/** Login/register/forgot/reset must stay public — otherwise the form redirects to login. */
+function createPortalConfigForLibraryPage(
+  pageTemplate: Record<string, any>,
+): ClientPortalPageConfig {
+  const portalConfig = createDefaultClientPortalConfig();
+  const isPortalLibraryPage =
+    pageTemplate.category === "portal" ||
+    String(pageTemplate.id || "").startsWith("page-portal-") ||
+    detectPortalPageKind({
+      data: { __libraryPageTemplateId: String(pageTemplate.id || "") },
+    });
+
+  if (!isPortalLibraryPage) return portalConfig;
+
+  portalConfig.enabled = true;
+  const slug = String(pageTemplate.slugSuggestion || "").toLowerCase();
+  const keywords = Array.isArray(pageTemplate.keywords)
+    ? pageTemplate.keywords.map(String)
+    : [];
+  const kind = detectPortalPageKind({
+    data: { __libraryPageTemplateId: String(pageTemplate.id || "") },
+  });
+  const isPublicAuthPage =
+    /^(login|register|forgot-password|reset-password)(-|$)/.test(slug) ||
+    keywords.includes("portal-login") ||
+    keywords.includes("portal-register") ||
+    keywords.includes("portal-forgot-password") ||
+    keywords.includes("portal-reset-password") ||
+    kind === "portal-login" ||
+    kind === "portal-register" ||
+    kind === "portal-forgot-password" ||
+    kind === "portal-reset-password";
+
+  portalConfig.loginRequired = !isPublicAuthPage;
+  return portalConfig;
 }
 
 function createInitialPages(): StudioSitePageWithPortal[] {
@@ -2187,6 +2240,38 @@ function createPagesFromTemplateSeed(
  * saved one page. Overlay saved visual data onto matching ids, then append
  * extra library/custom pages that are not part of the template.
  */
+function enforceSingleCanonicalHome(
+  pages: StudioSitePageWithPortal[],
+): StudioSitePageWithPortal[] {
+  const list = Array.isArray(pages) ? pages : [];
+  if (!list.length) return list;
+
+  const canonical =
+    list.find((page) => String(page.id || "").trim() === "home") ||
+    list.find(
+      (page) => page.isHome && page.clientPortal?.enabled !== true,
+    ) ||
+    list.find((page) => page.isHome) ||
+    list[0];
+
+  return list.map((page) => {
+    const isHome = page.id === canonical.id;
+    return {
+      ...page,
+      isHome,
+      slug: isHome
+        ? ""
+        : String(page.slug || "").trim() ||
+          normalizePageSlug(page.title || page.id, list, page.id),
+      type: isHome
+        ? ("home" as StudioSitePageType)
+        : page.type === "home"
+          ? ("blank" as StudioSitePageType)
+          : page.type,
+    };
+  });
+}
+
 function mergeTemplateAndSavedPages(
   templatePages: StudioSitePageWithPortal[],
   savedPages: StudioSitePageWithPortal[],
@@ -2194,8 +2279,8 @@ function mergeTemplateAndSavedPages(
   const templateList = Array.isArray(templatePages) ? templatePages : [];
   const savedList = Array.isArray(savedPages) ? savedPages : [];
 
-  if (!templateList.length) return savedList;
-  if (!savedList.length) return templateList;
+  if (!templateList.length) return enforceSingleCanonicalHome(savedList);
+  if (!savedList.length) return enforceSingleCanonicalHome(templateList);
 
   const savedById = new Map(
     savedList.map((page) => [String(page.id || "").trim(), page]),
@@ -2224,12 +2309,14 @@ function mergeTemplateAndSavedPages(
       ...saved,
       id: templatePage.id,
       title: String(saved.title || templatePage.title || id),
-      slug:
-        templatePage.isHome || saved.isHome
-          ? templatePage.slug
-          : String(saved.slug ?? templatePage.slug ?? ""),
+      slug: String(saved.slug ?? templatePage.slug ?? ""),
       type: templatePage.type || saved.type,
-      isHome: Boolean(templatePage.isHome || saved.isHome),
+      // Saved state wins. The final canonicalization below removes legacy
+      // duplicate home flags and keeps portal pages away from `/`.
+      isHome:
+        typeof saved.isHome === "boolean"
+          ? saved.isHome
+          : Boolean(templatePage.isHome),
       html: saved.html || templatePage.html,
       css: saved.css || templatePage.css,
       clientPortal:
@@ -2265,11 +2352,13 @@ function mergeTemplateAndSavedPages(
     return true;
   });
 
-  return flattenPagesInTreeOrder(
-    normalizePageMenuOrders(
-      withResolvedHierarchyFields([...mergedTemplatePages, ...extraPages]),
-    ),
-  ) as StudioSitePageWithPortal[];
+  return enforceSingleCanonicalHome(
+    flattenPagesInTreeOrder(
+      normalizePageMenuOrders(
+        withResolvedHierarchyFields([...mergedTemplatePages, ...extraPages]),
+      ),
+    ) as StudioSitePageWithPortal[],
+  );
 }
 
 function withResolvedHierarchyFields(
@@ -2633,6 +2722,25 @@ function hasVisualRootSnapshot(source: Record<string, any>) {
   );
 }
 
+/**
+ * The visual maps are always present but usually empty, so key presence alone
+ * means nothing. Publish needs at least one real entry, matching the server.
+ */
+function hasMeaningfulVisualCollections(source: Record<string, any>) {
+  const input = asPlainObject(source);
+
+  return Array.from(VISUAL_ROOT_COLLECTION_KEYS).some((key) => {
+    const value = input[key];
+
+    return Boolean(
+      value &&
+        typeof value === "object" &&
+        !Array.isArray(value) &&
+        Object.keys(value).length > 0,
+    );
+  });
+}
+
 function pickVisualCollectionsOnly(source: Record<string, any>) {
   const input = asPlainObject(source);
   const output: Record<string, any> = {};
@@ -2656,6 +2764,8 @@ function pickVisualCollectionsOnly(source: Record<string, any>) {
     "__blankVisualPage",
     "__libraryPage",
     "__libraryPageTemplateId",
+    // Shared header/footer edits must survive every save path.
+    VISUAL_SHARED_CHROME_KEY,
     "snapshotPageId",
   ].forEach((key) => {
     if (Object.prototype.hasOwnProperty.call(input, key)) {
@@ -4954,6 +5064,42 @@ export default function WebsiteStudioPage({
     return pages.find((page) => page.id === activePageId) || pages[0];
   }, [pages, activePageId]);
 
+  /** Only a page with real edits may replace the running editor session. */
+  const activePageVisualData = useMemo(() => {
+    const extracted = extractVisualDataFromPayload({
+      data: (activePage as any)?.data,
+      templateData: (activePage as any)?.templateData,
+      projectData: (activePage as any)?.projectData,
+      visualEditorPayload: (activePage as any)?.visualEditorPayload,
+    });
+
+    return hasMeaningfulVisualCollections(extracted) ? extracted : {};
+  }, [activePage]);
+
+  /*
+    Header/footer edits are site-wide. Whichever page saved them last is the
+    source of truth for every page opened in the editor.
+  */
+  const latestSharedChrome = useMemo(() => {
+    const candidates = [
+      visualSessionData,
+      ...pages.flatMap((page) => [
+        (page as any)?.data,
+        (page as any)?.templateData,
+        asPlainObject((page as any)?.projectData).data,
+        asPlainObject((page as any)?.visualEditorPayload).data,
+      ]),
+      serverVisualTemplateData,
+    ];
+
+    for (const candidate of candidates) {
+      const sharedChrome = readSharedChrome(asPlainObject(candidate));
+      if (Object.keys(sharedChrome).length) return sharedChrome;
+    }
+
+    return {};
+  }, [pages, serverVisualTemplateData, visualSessionData]);
+
   useEffect(() => {
     if (!isVisualReactTemplate || !selectedTemplateRenderer) return;
     if (!serverVisualTemplateLoaded) return;
@@ -5841,20 +5987,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       selectedTemplateSeed?.id ||
       "";
 
-    const isPortalLibraryPage = pageTemplate.category === "portal";
-    const portalConfig = createDefaultClientPortalConfig();
-    if (isPortalLibraryPage) {
-      portalConfig.enabled = true;
-      const slug = String(pageTemplate.slugSuggestion || "").toLowerCase();
-      const keywords = Array.isArray(pageTemplate.keywords)
-        ? pageTemplate.keywords.map(String)
-        : [];
-      const isPublicAuthPage =
-        /^(login|register)(-|$)/.test(slug) ||
-        keywords.includes("portal-login") ||
-        keywords.includes("portal-register");
-      portalConfig.loginRequired = !isPublicAuthPage;
-    }
+    const portalConfig = createPortalConfigForLibraryPage(pageTemplate);
 
     const nextPage: StudioSitePageWithPortal = {
       id,
@@ -5964,7 +6097,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         visualSnapshotVersion: 5,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString(),
-        clientPortal: createDefaultClientPortalConfig(),
+        clientPortal: createPortalConfigForLibraryPage(pageTemplate),
       } as StudioSitePageWithPortal;
 
       setPages((previousPages) => {
@@ -6626,9 +6759,19 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       ),
     );
 
+    /*
+      Header/footer are site-wide, so lift them into the shared chrome as soon
+      as the page changes. That makes a header edit visible on the next page
+      immediately, without waiting for a publish.
+    */
+    const sharedChrome = Object.keys(snapshot).length
+      ? extractSharedChromeFromVisualData(null, snapshot)
+      : latestSharedChrome;
+
     if (!leavingLibrary && Object.keys(snapshot).length) {
       setVisualSessionData({
         ...snapshot,
+        [VISUAL_SHARED_CHROME_KEY]: sharedChrome,
         __activePageId: nextId,
         __blankVisualPage: false,
         __libraryPage: false,
@@ -6637,6 +6780,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     } else {
       setVisualSessionData((previous) => ({
         ...asPlainObject(previous),
+        [VISUAL_SHARED_CHROME_KEY]: sharedChrome,
         __activePageId: nextId,
         __blankVisualPage: false,
         __libraryPage: false,
@@ -7611,12 +7755,34 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         בדראפט של Visual React אין צורך לשלוח HTML/CSS מלא לכל הדפים.
         ה־data הקטן מספיק כדי לשחזר את העריכות. בפרסום כן שולחים HTML כדי שהאתר הציבורי יעבוד.
       */
+      const canonicalHomeSource =
+        publishedPages.find(
+          (page) => String(page.id || "").trim() === "home",
+        ) ||
+        publishedPages.find(
+          (page) =>
+            page.isHome && page.clientPortal?.enabled !== true,
+        ) ||
+        publishedPages.find((page) => page.isHome) ||
+        publishedPages[0];
+      const canonicalHomeId =
+        String(canonicalHomeSource?.id || "home").trim() || "home";
+
+      /*
+        Header/footer are site-wide. The page just edited holds the freshest
+        chrome, so every published page gets that same shared chrome map.
+      */
+      const publishedSharedChrome = readSharedChrome(cleanVisualData);
+      const hasPublishedSharedChrome =
+        Object.keys(publishedSharedChrome).length > 0;
+
       const pagesForSave = publishedPages.map((page) => {
+        const isCanonicalHome = page.id === canonicalHomeId;
         const isActivePage =
           page.id === activeVisualPageId ||
-          (activeVisualPageId === "home" && page.isHome);
+          (activeVisualPageId === "home" && isCanonicalHome);
 
-        const pageVisual = isActivePage
+        const basePageVisual = isActivePage
           ? cleanVisualData
           : extractVisualDataFromPayload({
               data: (page as any)?.data,
@@ -7628,6 +7794,18 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
             (page as any)?.data ||
             {};
 
+        /*
+          Other pages must not keep their own stale header/footer entries,
+          otherwise they would override the shared chrome after publish.
+        */
+        const pageVisual =
+          hasPublishedSharedChrome && !isActivePage
+            ? {
+                ...stripChromeFromVisualData(asPlainObject(basePageVisual)),
+                [VISUAL_SHARED_CHROME_KEY]: publishedSharedChrome,
+              }
+            : basePageVisual;
+
         const isLibraryPage =
           Boolean((pageVisual as any)?.__libraryPage) ||
           Boolean((pageVisual as any)?.__blankVisualPage) ||
@@ -7637,9 +7815,20 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         return {
           id: page.id,
           title: page.title,
-          slug: page.slug,
-          type: page.type,
-          isHome: Boolean(page.isHome),
+          slug: isCanonicalHome
+            ? ""
+            : String(page.slug || "").trim() ||
+              normalizePageSlug(
+                page.title || page.id,
+                publishedPages,
+                page.id,
+              ),
+          type: isCanonicalHome
+            ? ("home" as StudioSitePageType)
+            : page.type === "home"
+              ? ("blank" as StudioSitePageType)
+              : page.type,
+          isHome: isCanonicalHome,
           hiddenFromMenu: Boolean((page as any).hiddenFromMenu),
           parentPageId:
             String((page as any).parentPageId || "").trim() || undefined,
@@ -7692,8 +7881,29 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       });
 
       const homePage =
-        pagesForSave.find((page) => page.isHome || page.id === "home") ||
+        pagesForSave.find((page) => page.id === canonicalHomeId) ||
         pagesForSave[0];
+      const homePageId = String(homePage?.id || "home").trim() || "home";
+      const extractedHomeVisualData = extractVisualDataFromPayload(
+        homePage || {},
+      );
+      /*
+        Site-level fields represent home, but they must never end up empty:
+        the API rejects a publish that carries no editor data at all.
+
+        Never fall back to the active page when that page is a personal-area
+        form — that is how / became the register page on published sites.
+      */
+      const activeIsPortalPage = Boolean(
+        detectPortalPageKind({ data: cleanVisualData }),
+      );
+      const homeVisualData = hasMeaningfulVisualCollections(
+        extractedHomeVisualData,
+      )
+        ? extractedHomeVisualData
+        : activeIsPortalPage
+          ? extractedHomeVisualData
+          : cleanVisualData;
 
       studioDebug("handleVisualTemplateSave:publishedPages-ready", {
         homePage: homePage
@@ -7773,18 +7983,20 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
           שומרים את הדאטה פעם אחת בלבד.
           לא משכפלים אותו גם בתוך projectData וגם בתוך visualEditorPayload.
         */
-        templateData: cleanVisualData,
+        // Site-level compatibility fields always represent HOME. Each inner
+        // page (including login/account/orders) owns its snapshot in pages[].
+        templateData: homeVisualData,
         visualEditorPayload: {
           templateKey: visualPayload.templateKey,
           editorMode: "visual-react",
-          data: cleanVisualData,
-          templateData: cleanVisualData,
+          data: homeVisualData,
+          templateData: homeVisualData,
           updatedAt: visualPayload.updatedAt,
           published,
           status: published ? "published" : "draft",
-          snapshotPageId: activeVisualPageId,
+          snapshotPageId: homePageId,
           hasTemplateData: true,
-          dataKeys: Object.keys(cleanVisualData || {}),
+          dataKeys: Object.keys(homeVisualData || {}),
         },
 
         slug: cleanSlug,
@@ -7795,8 +8007,8 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         projectData: {
           editorMode: "visual-react",
           templateKey: visualPayload.templateKey,
-          templateData: cleanVisualData,
-          data: cleanVisualData,
+          templateData: homeVisualData,
+          data: homeVisualData,
           slug: cleanSlug,
           published,
           publicUrl: nextPublicUrl,
@@ -7818,7 +8030,9 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         seoSettings: siteSeoSettings,
         brand: siteBrandSettings,
         pages: pagesForSave,
-        activePageId: activeVisualPageId,
+        // Public root must always anchor to home, regardless of which page
+        // was open in the studio at publish time.
+        activePageId: published ? homePageId : activeVisualPageId,
         customCode: Object.keys(asPlainObject(visualPayload.customCode)).length
           ? asPlainObject(visualPayload.customCode)
           : siteCustomCode,
@@ -8296,6 +8510,12 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
   businessId={businessId}
   key={`${selectedTemplateRenderer.key || selectedTemplateSeed?.id || "visual"}-${businessId || "business"}-${activePageId || "home"}`}
   initialData={{
+    /*
+      Never strip this page's own header/footer edits here. Doing so replaced
+      the newest edit with an older shared copy, which looked like the editor
+      reverting every change. Pages that must follow the shared chrome are
+      cleaned at publish time instead.
+    */
     ...mergeVisualRootData(
       selectedTemplateRenderer.defaultData as Record<string, any>,
       extractVisualDataFromPayload({
@@ -8304,14 +8524,15 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       }),
       serverVisualTemplateData || {},
       visualSessionData,
-      extractVisualDataFromPayload({
-        data: (activePage as any)?.data,
-        templateData: (activePage as any)?.templateData,
-        projectData: (activePage as any)?.projectData,
-        visualEditorPayload:
-          (activePage as any)?.visualEditorPayload,
-      }),
+      /*
+        A later source replaces whole maps, even empty ones. A page that was
+        never edited therefore wiped everything done on the previous page while
+        switching pages, so only merge it when it really holds edits.
+      */
+      activePageVisualData,
     ),
+    // Header/footer come from the site-wide chrome, not from this page.
+    [VISUAL_SHARED_CHROME_KEY]: latestSharedChrome,
     __activePageId: activePageId || "home",
     __siteSlug: normalizePublicBusinessSlug(slug),
     __publicUrl: buildPublicSiteUrl(

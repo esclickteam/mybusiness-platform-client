@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState, startTransition, useCallback } from "react";
+import React, { useEffect, useMemo, useState, startTransition, useCallback, useRef } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { Helmet } from "react-helmet-async";
@@ -7,7 +7,6 @@ import {
   ArrowLeftRight,
   Bot,
   CalendarCheck2,
-  Check,
   ChevronDown,
   ChevronLeft,
   ClipboardList,
@@ -23,7 +22,6 @@ import {
   Settings2,
   Sparkles,
   UserRound,
-  X,
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import {
@@ -31,13 +29,19 @@ import {
   PRICING_CATEGORY_ACCENTS,
   PRICING_CATEGORY_LABELS,
   PRICING_CATEGORY_ORDER,
+  PRICING_SERVICE_PURCHASE,
 } from "../../data/pricingAddonsData";
 import {
   PRICING_PACKAGES,
   WEBSITE_ADDON,
 } from "../../data/pricingPackagesData";
 import ServiceDetailModal from "../../components/pricing/ServiceDetailModal";
+import ServicePurchasePanel from "../../components/pricing/ServicePurchasePanel";
 import { ScrollProgress } from "../../components/product-marketing";
+import {
+  loadPendingPurchaseIntent,
+} from "../../utils/pendingPurchaseIntent";
+import { getActivePricingPlan } from "../../utils/servicePurchaseFlow";
 import "../../components/product-marketing/marketingKit.css";
 import "../../styles/PricingServices.css";
 
@@ -98,13 +102,25 @@ function localizeService(addon, isHe) {
   };
 }
 
+function findServiceCatalogKey(serviceKey) {
+  return Object.entries(PRICING_SERVICE_PURCHASE).find(([, config]) => {
+    if (config.serviceKey === serviceKey) return true;
+    return config.trackOptions?.some((option) => option.serviceKey === serviceKey);
+  })?.[0] || null;
+}
+
 export default function Plans() {
   const { t, i18n } = useTranslation();
-  const { user } = useAuth();
+  const { user, refreshUser } = useAuth();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const reduceMotion = useReducedMotion();
   const isHe = (i18n.language || "he").startsWith("he");
+  const initialPendingIntent = useMemo(() => loadPendingPurchaseIntent(), []);
+  const initialPurchaseKey = initialPendingIntent
+    ? findServiceCatalogKey(initialPendingIntent.serviceKey)
+    : null;
+  const continuationRefreshStarted = useRef(false);
 
   useEffect(() => {
     const ref = searchParams.get("ref");
@@ -112,10 +128,13 @@ export default function Plans() {
   }, [searchParams]);
 
   const [loadingPlan, setLoadingPlan] = useState(null);
-  const [selectedKeys, setSelectedKeys] = useState(() => new Set());
   const [activeCategory, setActiveCategory] = useState("all");
-  const [upsellsOpen, setUpsellsOpen] = useState(false);
+  const [upsellsOpen, setUpsellsOpen] = useState(Boolean(initialPurchaseKey));
   const [detailKey, setDetailKey] = useState(null);
+  const [purchaseKey, setPurchaseKey] = useState(initialPurchaseKey);
+  const [restoredIntent] = useState(
+    initialPurchaseKey ? initialPendingIntent : null
+  );
   const [websiteAddonByPlan, setWebsiteAddonByPlan] = useState({
     monthly: false,
     yearly: false,
@@ -123,6 +142,7 @@ export default function Plans() {
 
   const API_BASE = import.meta.env.VITE_API_URL;
   const userId = user?._id || user?.userId || user?.id;
+  const activePlan = useMemo(() => getActivePricingPlan(user), [user]);
   const websiteAddonLabel = isHe ? WEBSITE_ADDON.labelHe : WEBSITE_ADDON.labelEn;
   const websiteAddonHint = isHe ? WEBSITE_ADDON.hintHe : WEBSITE_ADDON.hintEn;
 
@@ -258,35 +278,55 @@ export default function Plans() {
       .filter((group) => group.total > 0);
   }, [activeCategory, filteredAddons]);
 
-  const selectedAddons = useMemo(
-    () => localizedAddons.filter((a) => selectedKeys.has(a.key)),
-    [selectedKeys, localizedAddons]
-  );
-
   const detailService = useMemo(
     () => localizedAddons.find((a) => a.key === detailKey) || null,
     [detailKey, localizedAddons]
   );
 
-  const toggleAddon = (key) => {
-    startTransition(() => {
-      setSelectedKeys((prev) => {
-        const next = new Set(prev);
-        if (next.has(key)) next.delete(key);
-        else next.add(key);
-        return next;
-      });
-    });
+  const purchaseService = useMemo(
+    () => localizedAddons.find((a) => a.key === purchaseKey) || null,
+    [purchaseKey, localizedAddons]
+  );
+
+  useEffect(() => {
+    if (
+      !restoredIntent ||
+      searchParams.get("bundle") !== "plan_done" ||
+      !userId ||
+      activePlan ||
+      continuationRefreshStarted.current
+    ) {
+      return undefined;
+    }
+
+    continuationRefreshStarted.current = true;
+    let cancelled = false;
+    let timeoutId;
+    const deadline = Date.now() + 30_000;
+
+    const refreshUntilActive = async () => {
+      await refreshUser?.(true);
+      if (!cancelled && Date.now() < deadline) {
+        timeoutId = window.setTimeout(refreshUntilActive, 1_500);
+      }
+    };
+
+    refreshUntilActive();
+    return () => {
+      cancelled = true;
+      if (timeoutId) window.clearTimeout(timeoutId);
+    };
+  }, [activePlan, refreshUser, restoredIntent, searchParams, userId]);
+
+  const openPurchase = (addon) => {
+    setDetailKey(null);
+    setPurchaseKey(addon.key);
   };
 
-  const clearSelection = () => setSelectedKeys(new Set());
-
   const goToContactWithAddons = () => {
-    const names = selectedAddons.map((a) => a.displayName).join(", ");
-    const message = names
-      ? t("pricing.addonsContactMessage", { services: names })
-      : t("pricing.addonsContactMessageEmpty");
-    navigate("/contact", { state: { prefillMessage: message } });
+    navigate("/contact", {
+      state: { prefillMessage: t("pricing.addonsContactMessageEmpty") },
+    });
   };
 
   const onCardPointerMove = useCallback((event) => {
@@ -306,8 +346,6 @@ export default function Plans() {
       };
 
   const renderServiceCard = (addon, index, featured = false) => {
-    const selected = selectedKeys.has(addon.key);
-
     return (
       <motion.article
         layout={!reduceMotion}
@@ -320,11 +358,9 @@ export default function Plans() {
           delay: reduceMotion ? 0 : Math.min(index * 0.04, 0.24),
         }}
         onPointerMove={onCardPointerMove}
-        className={`pricing-wow__service group flex h-full flex-col rounded-[1.85rem] border bg-white/90 p-4 text-start shadow-[0_18px_50px_rgba(15,23,42,0.08)] backdrop-blur-xl sm:p-5 ${
-          selected
-            ? "is-selected border-indigo-300 ring-2 ring-indigo-200"
-            : "border-slate-200/90"
-        } ${featured ? "is-featured sm:p-5" : ""}`}
+        className={`pricing-wow__service group flex h-full flex-col rounded-[1.85rem] border border-slate-200/90 bg-white/90 p-4 text-start shadow-[0_18px_50px_rgba(15,23,42,0.08)] backdrop-blur-xl sm:p-5 ${
+          featured ? "is-featured sm:p-5" : ""
+        }`}
         style={{ "--pw-accent": addon.accent }}
       >
         <span className="pricing-wow__sheen" aria-hidden="true" />
@@ -409,31 +445,14 @@ export default function Plans() {
             </button>
             <button
               type="button"
-              onClick={() => toggleAddon(addon.key)}
-              className={`inline-flex h-11 flex-1 items-center justify-center gap-1.5 rounded-full px-4 text-sm font-black transition hover:-translate-y-0.5 ${
-                selected
-                  ? "bg-slate-900 text-white shadow-lg"
-                  : "text-white shadow-lg"
-              }`}
-              style={
-                selected
-                  ? undefined
-                  : {
-                      background: `linear-gradient(135deg, ${addon.accent}, ${addon.accent}cc)`,
-                    }
-              }
+              onClick={() => openPurchase(addon)}
+              className="inline-flex h-11 flex-1 items-center justify-center gap-1.5 rounded-full px-4 text-sm font-black text-white shadow-lg transition hover:-translate-y-0.5"
+              style={{
+                background: `linear-gradient(135deg, ${addon.accent}, ${addon.accent}cc)`,
+              }}
             >
-              {selected ? (
-                <>
-                  <Check size={15} />
-                  {t("pricing.addonsAdded")}
-                </>
-              ) : (
-                <>
-                  <Plus size={15} />
-                  {t("pricing.addonsAdd")}
-                </>
-              )}
+              <Plus size={15} />
+              {isHe ? "לבחירת רכישה" : "Choose purchase"}
             </button>
           </div>
         </div>
@@ -458,11 +477,7 @@ export default function Plans() {
         <div className="pricing-wow__grid" />
       </div>
 
-      <main
-        className={`relative mx-auto max-w-7xl px-5 pb-36 pt-16 sm:px-6 lg:px-8 lg:pt-20 ${
-          selectedKeys.size > 0 ? "pb-44" : ""
-        }`}
-      >
+      <main className="relative mx-auto max-w-7xl px-5 pb-36 pt-16 sm:px-6 lg:px-8 lg:pt-20">
         {/* Compact title — no fluff hero */}
         <motion.header
           className="mx-auto max-w-4xl text-center"
@@ -783,52 +798,33 @@ export default function Plans() {
         service={detailService}
         open={Boolean(detailService)}
         onClose={() => setDetailKey(null)}
-        selected={detailService ? selectedKeys.has(detailService.key) : false}
-        onToggle={toggleAddon}
+        onPurchase={() => detailService && openPurchase(detailService)}
         catLabel={catLabel}
         t={t}
         AddonIcon={AddonIcon}
+        purchaseLabel={isHe ? "לבחירת רכישה" : "Choose purchase"}
       />
 
-      <AnimatePresence>
-        {selectedKeys.size > 0 && (
-          <motion.div
-            initial={reduceMotion ? false : { y: 80, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            exit={reduceMotion ? undefined : { y: 80, opacity: 0 }}
-            className="fixed inset-x-0 bottom-0 z-40 border-t border-emerald-100 bg-white/95 px-4 py-4 shadow-[0_-16px_50px_rgba(15,23,42,0.12)] backdrop-blur-xl"
-          >
-            <div className="mx-auto flex max-w-6xl flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-              <div className="min-w-0">
-                <p className="text-sm font-black text-slate-900">
-                  {t("pricing.addonsSelected", { count: selectedKeys.size })}
-                </p>
-                <p className="mt-0.5 truncate text-xs font-semibold text-slate-500">
-                  {selectedAddons.map((a) => a.displayName).join(" · ")}
-                </p>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <button
-                  type="button"
-                  onClick={clearSelection}
-                  className="inline-flex h-11 items-center gap-1.5 rounded-full border border-slate-200 bg-white px-4 text-sm font-bold text-slate-600 transition hover:border-slate-300"
-                >
-                  <X size={14} />
-                  {t("pricing.addonsClear")}
-                </button>
-                <button
-                  type="button"
-                  onClick={goToContactWithAddons}
-                  className="inline-flex h-11 items-center rounded-full bg-slate-900 px-5 text-sm font-black text-white shadow-lg transition hover:bg-slate-800"
-                >
-                  {t("pricing.addonsRequestQuote")}
-                </button>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <ServicePurchasePanel
+        key={purchaseKey || "none"}
+        service={purchaseService}
+        purchase={
+          purchaseService ? PRICING_SERVICE_PURCHASE[purchaseService.key] : null
+        }
+        open={Boolean(purchaseService)}
+        onClose={() => setPurchaseKey(null)}
+        user={user}
+        activePlan={activePlan}
+        isHe={isHe}
+        restoredIntent={
+          restoredIntent && purchaseService
+            ? restoredIntent
+            : null
+        }
+        autoContinue={
+          searchParams.get("bundle") === "plan_done"
+        }
+      />
     </div>
   );
 }

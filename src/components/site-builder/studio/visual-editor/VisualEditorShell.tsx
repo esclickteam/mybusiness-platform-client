@@ -17,6 +17,7 @@ import EditorPluginOverlays from "./EditorPluginOverlays";
 import VisualSitePagesPanel, {
   type VisualSitePageItem,
 } from "./VisualSitePagesPanel";
+import VisualHeaderPanel from "./VisualHeaderPanel";
 import VisualStorePanel from "./VisualStorePanel";
 import VisualEditorIconRail from "./VisualEditorIconRail";
 import VisualEditorPluginStorePanel from "./VisualEditorPluginStorePanel";
@@ -126,7 +127,14 @@ export default function VisualEditorShell({
   const navigate = useNavigate();
   const [actionError, setActionError] = useState("");
   const [sidePanelMode, setSidePanelMode] = useState<
-    "add" | "layers" | "code" | "pages" | "store" | "plugins" | null
+    | "add"
+    | "layers"
+    | "code"
+    | "pages"
+    | "header"
+    | "store"
+    | "plugins"
+    | null
   >(null);
   const [preferredAddTab, setPreferredAddTab] = useState<
     "sections" | "pages" | "plugins"
@@ -246,6 +254,25 @@ export default function VisualEditorShell({
   }, [editor.saveError]);
 
   const autoAddedSectionRef = React.useRef("");
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const openFormLinksPanel = () => {
+      setSidePanelMode("header");
+    };
+
+    window.addEventListener(
+      "bizuply:open-visual-header-forms",
+      openFormLinksPanel as EventListener,
+    );
+    return () => {
+      window.removeEventListener(
+        "bizuply:open-visual-header-forms",
+        openFormLinksPanel as EventListener,
+      );
+    };
+  }, []);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -500,6 +527,14 @@ export default function VisualEditorShell({
             siteId={siteId}
             onClose={() => setSidePanelMode(null)}
             onInstalled={() => setOverlayRefreshKey((k) => k + 1)}
+          />
+        ) : null}
+
+        {!isPreviewMode ? (
+          <VisualHeaderPanel
+            open={sidePanelMode === "header"}
+            editor={editor as any}
+            onClose={() => setSidePanelMode(null)}
           />
         ) : null}
 

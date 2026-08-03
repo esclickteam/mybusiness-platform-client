@@ -848,6 +848,28 @@ export default function VisualFloatingToolbar({
     return Boolean(resolveFormContext(node, root));
   }, [element, editor?.canvasRef]);
 
+  /** Login/register portal widget — inner buttons are runtime, not selectable. */
+  const portalAuthFormKind = useMemo(() => {
+    const node = getElementNode(element);
+    if (!node) return "";
+    const shell =
+      node.closest<HTMLElement>(
+        '[data-bizuply-portal-mount="true"], [data-bizuply-widget^="portal-"]',
+      ) ||
+      (node.matches?.(
+        '[data-bizuply-portal-mount="true"], [data-bizuply-widget^="portal-"]',
+      )
+        ? node
+        : null);
+    if (!shell) return "";
+    const kind = String(
+      shell.getAttribute("data-bizuply-portal-kind") ||
+        shell.getAttribute("data-bizuply-widget") ||
+        "",
+    );
+    return kind === "portal-login" || kind === "portal-register" ? kind : "";
+  }, [element]);
+
   const selectedContent = useMemo(
     () =>
       elementId
@@ -1800,6 +1822,22 @@ export default function VisualFloatingToolbar({
               if (!elementId) return;
               editor?.openLinkSettings?.(elementId);
               setLinkOpen(false);
+            }}
+          >
+            <Link2 className="h-4 w-4" />
+          </ToolbarButton>
+        ) : null}
+
+        {portalAuthFormKind ? (
+          <ToolbarButton
+            title="קישורי כפתורים בטופס (הרשמה / שכחתי סיסמה)"
+            disabled={locked}
+            onClick={() => {
+              window.dispatchEvent(
+                new CustomEvent("bizuply:open-visual-header-forms", {
+                  detail: { formKind: portalAuthFormKind },
+                }),
+              );
             }}
           >
             <Link2 className="h-4 w-4" />

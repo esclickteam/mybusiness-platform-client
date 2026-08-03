@@ -8,11 +8,11 @@ export default function ServiceDetailModal({
   service,
   open,
   onClose,
-  selected,
-  onToggle,
+  onPurchase,
   catLabel,
   t,
   AddonIcon,
+  purchaseLabel,
 }) {
   const reduceMotion = useReducedMotion();
 
@@ -213,31 +213,14 @@ export default function ServiceDetailModal({
             <div className="flex shrink-0 flex-col gap-2 border-t border-slate-100 bg-white px-6 py-4 sm:flex-row sm:px-8">
               <button
                 type="button"
-                onClick={() => onToggle(service.key)}
-                className={`inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-full text-sm font-black shadow-lg transition hover:-translate-y-0.5 ${
-                  selected
-                    ? "bg-slate-900 text-white"
-                    : "text-white"
-                }`}
-                style={
-                  selected
-                    ? undefined
-                    : {
-                        background: `linear-gradient(135deg, ${service.accent}, ${service.accent}dd)`,
-                      }
-                }
+                onClick={() => onPurchase && onPurchase(service)}
+                className="inline-flex h-12 flex-1 items-center justify-center gap-2 rounded-full text-sm font-black text-white shadow-lg transition hover:-translate-y-0.5"
+                style={{
+                  background: `linear-gradient(135deg, ${service.accent}, ${service.accent}dd)`,
+                }}
               >
-                {selected ? (
-                  <>
-                    <Check size={16} />
-                    {t("pricing.addonsAdded")}
-                  </>
-                ) : (
-                  <>
-                    <Plus size={16} />
-                    {t("pricing.addonsAdd")}
-                  </>
-                )}
+                <Plus size={16} />
+                {purchaseLabel || t("pricing.addonsAdd")}
               </button>
               <button
                 type="button"
