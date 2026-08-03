@@ -28,6 +28,7 @@ import { mergeCountdownSettings } from "./countdownPublicUtils";
 import { mountCountdownWidgets } from "../../site-plugins/countdown/mountCountdownWidgets";
 import { mountBookingWidgets } from "../../site-plugins/booking/mountBookingWidgets";
 import { mountPublicLeadForms } from "./mountPublicLeadForms";
+import { mountPublicPortalWidgets } from "./mountPublicPortalWidgets";
 import {
   applyAllVisualDataToDom,
   applyVisualResponsiveToDom,
@@ -1822,6 +1823,14 @@ function applyPublicVisualData(root, visualData, pathname, site) {
       typeof window !== "undefined" ? safeString(window.location.host) : "",
     pagePath: normalizePublicPath(pathname || getCurrentPathname()),
   });
+
+  if (enabledPlugins.includes("client-portal")) {
+    mountPublicPortalWidgets(root, {
+      site,
+      host:
+        typeof window !== "undefined" ? safeString(window.location.host) : "",
+    });
+  }
 }
 
 function getFallbackPageId(activePage, pathname) {

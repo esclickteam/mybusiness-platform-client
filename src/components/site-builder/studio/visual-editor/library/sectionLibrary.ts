@@ -38,6 +38,7 @@ import { CTA_SHOWCASE_SECTIONS } from "./ctaShowcaseSections";
 import { TESTIMONIALS_SHOWCASE_SECTIONS } from "./testimonialsShowcaseSections";
 import { EVENTS_SHOWCASE_SECTIONS } from "./eventsShowcaseSections";
 import { BOOKING_SHOWCASE_SECTIONS } from "./bookingShowcaseSections";
+import { PORTAL_SHOWCASE_SECTIONS } from "./portalShowcaseSections";
 import { BLOG_SHOWCASE_SECTIONS } from "./blogShowcaseSections";
 import { PRICING_SHOWCASE_SECTIONS } from "./pricingShowcaseSections";
 import { RESUME_SHOWCASE_SECTIONS } from "./resumeShowcaseSections";
@@ -1309,6 +1310,7 @@ const _SECTION_LIBRARY_MERGED: VisualLibrarySectionTemplate[] = [
   ...TESTIMONIALS_SHOWCASE_SECTIONS,
   ...EVENTS_SHOWCASE_SECTIONS,
   ...BOOKING_SHOWCASE_SECTIONS,
+  ...PORTAL_SHOWCASE_SECTIONS,
   ...BLOG_SHOWCASE_SECTIONS,
   ...PRICING_SHOWCASE_SECTIONS,
   ...RESUME_SHOWCASE_SECTIONS,

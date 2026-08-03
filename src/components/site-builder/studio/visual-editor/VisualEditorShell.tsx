@@ -133,6 +133,8 @@ export default function VisualEditorShell({
   >("sections");
   const [overlayRefreshKey, setOverlayRefreshKey] = useState(0);
   const [storePluginEnabled, setStorePluginEnabled] = useState(false);
+  const [clientPortalPluginEnabled, setClientPortalPluginEnabled] =
+    useState(false);
   const [connectDomainOpen, setConnectDomainOpen] = useState(false);
   const [linkedCustomDomain, setLinkedCustomDomain] = useState(
     String(customDomain || "").trim().toLowerCase(),
@@ -151,6 +153,7 @@ export default function VisualEditorShell({
     const id = String(siteId || "").trim();
     if (!id) {
       setStorePluginEnabled(false);
+      setClientPortalPluginEnabled(false);
       return;
     }
 
@@ -166,9 +169,16 @@ export default function VisualEditorShell({
         setStorePluginEnabled(
           enabled.includes("store") || detected.includes("store"),
         );
+        setClientPortalPluginEnabled(
+          enabled.includes("client-portal") ||
+            detected.includes("client-portal"),
+        );
       })
       .catch(() => {
-        if (!cancelled) setStorePluginEnabled(false);
+        if (!cancelled) {
+          setStorePluginEnabled(false);
+          setClientPortalPluginEnabled(false);
+        }
       });
 
     return () => {
@@ -479,6 +489,7 @@ export default function VisualEditorShell({
             onAddLibraryPage={onAddLibraryPage}
             preferredAddTab={preferredAddTab}
             siteId={siteId}
+            clientPortalPluginEnabled={clientPortalPluginEnabled}
             onOverlayInstalled={() => setOverlayRefreshKey((k) => k + 1)}
           />
         ) : null}

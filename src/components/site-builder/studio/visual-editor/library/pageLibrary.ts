@@ -1084,7 +1084,45 @@ const CATEGORY_DEFS: CategoryDef[] = [
         sectionIds: ["section-resume-page-10", FOOTER],
       },
     ],
-  }
+  },
+  {
+    category: "portal",
+    idPrefix: "page-portal",
+    pages: [
+      {
+        title: "אזור אישי – התחברות",
+        description: "עמוד התחברות עם טופס מקושר לאתר ולעסק",
+        slugSuggestion: "login",
+        keywords: ["אזור אישי", "התחברות", "login", "portal"],
+        sectionIds: ["section-portal-login", FOOTER],
+      },
+      {
+        title: "אזור אישי – החשבון שלי",
+        description: "מרכז אישי אחרי התחברות עם קישורים לעמודים",
+        slugSuggestion: "account",
+        keywords: ["אזור אישי", "חשבון", "account", "portal"],
+        sectionIds: [
+          "section-portal-welcome-nav",
+          "section-portal-account",
+          FOOTER,
+        ],
+      },
+      {
+        title: "אזור אישי – הזמנות קודמות",
+        description: "רשימת הזמנות מהחנות של הלקוח המחובר",
+        slugSuggestion: "orders",
+        keywords: ["אזור אישי", "הזמנות", "orders", "portal", "חנות"],
+        sectionIds: ["section-portal-orders", FOOTER],
+      },
+      {
+        title: "אזור אישי – עגלת קניות",
+        description: "המשך רכישה מהעגלה הפעילה באתר",
+        slugSuggestion: "cart",
+        keywords: ["אזור אישי", "עגלה", "cart", "portal", "חנות"],
+        sectionIds: ["section-portal-cart", FOOTER],
+      },
+    ],
+  },
 ];
 
 function resolvePageThumbnail(sectionIds: string[]) {
@@ -1159,6 +1197,7 @@ export const PAGE_LIBRARY_NAV: Array<{
   { id: "faq", label: "שאלות נפוצות" },
   { id: "promote", label: "נחיתה" },
   { id: "resume", label: "קורות חיים" },
+  { id: "portal", label: "אזור אישי" },
 ];
 
 export function getPagesByCategory(

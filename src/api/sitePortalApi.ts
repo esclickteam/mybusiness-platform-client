@@ -131,6 +131,21 @@ export async function sitePortalLogout(siteId: string) {
   }
 }
 
+export async function sitePortalMyOrders(siteId: string) {
+  return portalFetch<{
+    success: true;
+    orders: Array<{
+      id?: string;
+      orderNumber?: string;
+      status?: string;
+      total?: number;
+      morningDocumentUrl?: string;
+      createdAt?: string;
+      items?: Array<{ name?: string; quantity?: number; price?: number }>;
+    }>;
+  }>("/public/portal/orders", { siteId });
+}
+
 export async function sitePortalAcceptInvite(input: {
   inviteToken: string;
   password: string;

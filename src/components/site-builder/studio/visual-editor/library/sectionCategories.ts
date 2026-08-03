@@ -23,6 +23,7 @@ export const SECTION_LIBRARY_NAV: Array<{
   { id: "testimonials", label: "ביקורות ואמון" },
   { id: "events", label: "אירועים" },
   { id: "booking", label: "יומן פגישות" },
+  { id: "portal", label: "אזור אישי" },
   { id: "blog", label: "בלוג ותוכן" },
   { id: "pricing", label: "תמחור" },
   { id: "resume", label: "קורות חיים" },

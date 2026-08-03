@@ -128,6 +128,8 @@ type VisualAddLayersPanelProps = {
   onAddLibraryPage?: (page: VisualLibraryPageTemplate) => void;
   preferredAddTab?: AddPanelTab;
   siteId?: string;
+  /** Show אזור אישי pages/sections only when the plugin is installed. */
+  clientPortalPluginEnabled?: boolean;
   onOverlayInstalled?: () => void;
 };
 
@@ -418,6 +420,7 @@ export default function VisualAddLayersPanel({
   onAddLibraryPage,
   preferredAddTab = "sections",
   siteId,
+  clientPortalPluginEnabled = false,
   onOverlayInstalled,
 }: VisualAddLayersPanelProps) {
   const [layers, setLayers] =
@@ -730,6 +733,22 @@ export default function VisualAddLayersPanel({
     searchQuery,
   ]);
 
+  const visibleSectionNav = useMemo(
+    () =>
+      SECTION_LIBRARY_NAV.filter(
+        (item) => item.id !== "portal" || clientPortalPluginEnabled,
+      ),
+    [clientPortalPluginEnabled],
+  );
+
+  const visiblePageNav = useMemo(
+    () =>
+      PAGE_LIBRARY_NAV.filter(
+        (item) => item.id !== "portal" || clientPortalPluginEnabled,
+      ),
+    [clientPortalPluginEnabled],
+  );
+
   const filteredSections = useMemo(() => {
     const normalizedSearch = searchQuery.trim().toLowerCase();
     let base =
@@ -738,6 +757,10 @@ export default function VisualAddLayersPanel({
         : sectionCategory === "all"
           ? SECTION_LIBRARY
           : getSectionsByCategory(sectionCategory);
+
+    if (!clientPortalPluginEnabled) {
+      base = base.filter((item) => item.category !== "portal");
+    }
 
     if (sectionQuickFilter === "favorites") {
       base = base.filter((item) => favoriteSectionIds.includes(item.id));
@@ -752,6 +775,7 @@ export default function VisualAddLayersPanel({
           item.category === "about" ||
           item.category === "services" ||
           item.category === "contact" ||
+          (clientPortalPluginEnabled && item.category === "portal") ||
           index < 18,
       ).slice(0, 36);
     }
@@ -763,6 +787,7 @@ export default function VisualAddLayersPanel({
         .includes(normalizedSearch);
     });
   }, [
+    clientPortalPluginEnabled,
     favoriteSectionIds,
     recentSectionIds,
     searchQuery,
@@ -772,7 +797,11 @@ export default function VisualAddLayersPanel({
 
   const filteredPages = useMemo(() => {
     const normalizedSearch = searchQuery.trim().toLowerCase();
-    const base = getPagesByCategory(pageCategory);
+    let base = getPagesByCategory(pageCategory);
+
+    if (!clientPortalPluginEnabled) {
+      base = base.filter((item) => item.category !== "portal");
+    }
 
     return base.filter((item) => {
       if (!normalizedSearch) return true;
@@ -780,7 +809,16 @@ export default function VisualAddLayersPanel({
         .toLowerCase()
         .includes(normalizedSearch);
     });
-  }, [searchQuery, pageCategory]);
+  }, [clientPortalPluginEnabled, searchQuery, pageCategory]);
+
+  useEffect(() => {
+    if (!clientPortalPluginEnabled && sectionCategory === "portal") {
+      setSectionCategory("all");
+    }
+    if (!clientPortalPluginEnabled && pageCategory === "portal") {
+      setPageCategory("all");
+    }
+  }, [clientPortalPluginEnabled, pageCategory, sectionCategory]);
 
   useEffect(() => {
     const node = sectionScrollerRef.current;
@@ -1169,7 +1207,7 @@ export default function VisualAddLayersPanel({
                     <p className="mb-3 px-2 text-[11px] font-black uppercase tracking-wide text-slate-400">
                       קטגוריות
                     </p>
-                    {PAGE_LIBRARY_NAV.map((categoryItem) => (
+                    {visiblePageNav.map((categoryItem) => (
                       <button
                         key={categoryItem.id}
                         type="button"
@@ -1412,7 +1450,7 @@ export default function VisualAddLayersPanel({
                             </button>
                           ))}
                         </div>
-                        {SECTION_LIBRARY_NAV.map((categoryItem) => (
+                        {visibleSectionNav.map((categoryItem) => (
                           <button
                             key={categoryItem.id}
                             type="button"
