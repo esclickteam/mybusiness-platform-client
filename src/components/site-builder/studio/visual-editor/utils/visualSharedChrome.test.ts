@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   canonicalChromeVisualKey,
   expandSharedChromeIntoVisualData,
+  stripChromeFromVisualData,
   writeSharedChromeIntoVisualData,
 } from "./visualSharedChrome";
 
@@ -124,6 +125,64 @@ describe("shared chrome round trip", () => {
     expect(expanded.__content["header.primaryCta"]).toEqual({
       text: "דברו איתנו",
       href: "/contact",
+    });
+  });
+
+  it("keeps a live page edit instead of reverting it to shared chrome", () => {
+    const root = buildPageRoot("home", "home.header.button.a.a-1");
+
+    const expanded = expandSharedChromeIntoVisualData(root, {
+      __content: {
+        "home.header.button.a.a-1": { text: "טקסט חדש שהמשתמש מקליד" },
+      },
+      __sharedChrome: {
+        __content: {
+          "chrome.header.button.a.a-1": { text: "ישן", href: "/login" },
+        },
+      },
+    });
+
+    expect(expanded.__content["home.header.button.a.a-1"]).toEqual({
+      href: "/login",
+      text: "טקסט חדש שהמשתמש מקליד",
+    });
+  });
+
+  it("strips page level chrome so shared chrome becomes the source of truth", () => {
+    const stripped = stripChromeFromVisualData({
+      __content: {
+        "home.header.button.a.a-1": { text: "ישן" },
+        "home.hero.text.h1.h1-1": { text: "גוף העמוד" },
+      },
+      __styles: { "global.footer.nav.about": { color: "red" } },
+    });
+
+    expect(stripped.__content).toEqual({
+      "home.hero.text.h1.h1-1": { text: "גוף העמוד" },
+    });
+    expect(stripped.__styles).toEqual({});
+  });
+
+  it("applies shared chrome after page level chrome was stripped", () => {
+    const root = buildPageRoot("about", "about.header.button.a.a-1");
+
+    const stripped = stripChromeFromVisualData({
+      __content: {
+        "about.header.button.a.a-1": { text: "ישן" },
+        "about.hero.text.h1.h1-1": { text: "אודות" },
+      },
+      __sharedChrome: {
+        __content: {
+          "chrome.header.button.a.a-1": { text: "חדש", href: "/login" },
+        },
+      },
+    });
+
+    const expanded = expandSharedChromeIntoVisualData(root, stripped);
+
+    expect(expanded.__content["about.header.button.a.a-1"]).toEqual({
+      text: "חדש",
+      href: "/login",
     });
   });
 

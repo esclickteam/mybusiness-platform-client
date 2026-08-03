@@ -194,6 +194,33 @@ export function writeSharedChromeIntoVisualData(
 }
 
 /**
+ * Drop page-level header/footer entries so the shared chrome is the single
+ * source of truth. Only safe once shared chrome actually holds those edits.
+ */
+export function stripChromeFromVisualData(
+  data: Record<string, any> | null | undefined,
+) {
+  const source = isPlainObject(data) ? data : {};
+  const next: Record<string, any> = { ...source };
+
+  SHARED_CHROME_MAP_KEYS.forEach((mapKey) => {
+    const pageMap = readMap(source, mapKey);
+    const entries = Object.entries(pageMap);
+    if (!entries.length) return;
+
+    const kept = entries.filter(
+      ([elementId]) => !canonicalChromeVisualKey(elementId),
+    );
+
+    if (kept.length !== entries.length) {
+      next[mapKey] = Object.fromEntries(kept);
+    }
+  });
+
+  return next;
+}
+
+/**
  * Re-apply the site-level chrome onto the element ids of the page being
  * rendered, so header/footer look identical on every page and in publish.
  */
@@ -226,11 +253,18 @@ export function expandSharedChromeIntoVisualData(
         const currentValue = pageMap[elementId];
         if (currentValue === value) return;
 
+        /*
+          A page-level chrome entry is the live edit in progress, so it wins.
+          Publish and page load strip stale page-level chrome (see
+          stripChromeFromVisualData) which lets the shared value through.
+        */
         if (!nextMap) nextMap = { ...pageMap };
         nextMap[elementId] =
           isPlainObject(value) && isPlainObject(currentValue)
-            ? { ...currentValue, ...value }
-            : value;
+            ? { ...value, ...currentValue }
+            : currentValue !== undefined
+              ? currentValue
+              : value;
       });
     });
 
