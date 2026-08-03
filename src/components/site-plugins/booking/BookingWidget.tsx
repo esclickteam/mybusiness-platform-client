@@ -629,6 +629,7 @@ function DemoBooking({
             </div>
             <input style={styles.input} placeholder="שם מלא" disabled />
             <input style={styles.input} placeholder="טלפון" disabled />
+            <input style={styles.input} placeholder="אימייל" disabled />
             <button type="button" style={styles.primaryBtn} disabled>
               אישור תור
             </button>
@@ -679,6 +680,7 @@ export default function BookingWidget({
   const [selectedSlot, setSelectedSlot] = useState("");
   const [clientName, setClientName] = useState("");
   const [clientPhone, setClientPhone] = useState("");
+  const [clientEmail, setClientEmail] = useState("");
   const [loadingServices, setLoadingServices] = useState(false);
   const [loadingSlots, setLoadingSlots] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -751,8 +753,12 @@ export default function BookingWidget({
   ) {
     event?.preventDefault?.();
     if (!live || !businessId || !selectedServiceId || !selectedSlot) return;
-    if (!clientName.trim() || !clientPhone.trim()) {
-      setError("נא למלא שם וטלפון");
+    if (!clientName.trim() || !clientPhone.trim() || !clientEmail.trim()) {
+      setError("נא למלא שם, טלפון ואימייל");
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(clientEmail.trim())) {
+      setError("כתובת האימייל אינה תקינה");
       return;
     }
     setSubmitting(true);
@@ -765,6 +771,7 @@ export default function BookingWidget({
         time: selectedSlot,
         guestName: clientName.trim(),
         guestPhone: clientPhone.trim(),
+        guestEmail: clientEmail.trim(),
       });
       setSuccess(true);
     } catch (err: any) {
@@ -794,9 +801,11 @@ export default function BookingWidget({
     return (
       <div style={{ ...styles.root, flexDirection: "column" }} dir="rtl">
         <p style={styles.eyebrow}>התור נשמר ביומן</p>
-        <h3 style={styles.title}>תודה! ניצור איתכם קשר לאישור</h3>
+        <h3 style={styles.title}>תודה! התור נקבע בהצלחה</h3>
         <p style={styles.copy}>
           {formatDateKey(selectedDate)} · {selectedSlot}
+          <br />
+          שלחנו אליכם מייל עם פרטי הפגישה
         </p>
       </div>
     );
@@ -1001,6 +1010,14 @@ export default function BookingWidget({
           value={clientPhone}
           onChange={(e) => setClientPhone(e.target.value)}
           autoComplete="tel"
+        />
+        <input
+          style={styles.input}
+          type="email"
+          placeholder="אימייל"
+          value={clientEmail}
+          onChange={(e) => setClientEmail(e.target.value)}
+          autoComplete="email"
         />
 
         {error ? <p style={styles.error}>{error}</p> : null}
