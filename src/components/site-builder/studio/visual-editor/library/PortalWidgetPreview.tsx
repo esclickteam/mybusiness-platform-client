@@ -109,7 +109,7 @@ export default function PortalWidgetPreview({
           הרשמה
         </div>
         <div style={{ fontSize: 13, fontWeight: 600, color: muted, lineHeight: 1.55, marginBottom: 4 }}>
-          ההרשמה נשמרת לאתר ולעסק הזה בלבד.
+          מלאו את הפרטים כדי לפתוח חשבון ולהמשיך באתר.
         </div>
         <Field placeholder="שם מלא" line={line} ink={ink} />
         <Field placeholder="אימייל" line={line} ink={ink} />
@@ -233,7 +233,7 @@ export default function PortalWidgetPreview({
         התחברות
       </div>
       <div style={{ fontSize: 13, fontWeight: 600, color: muted, lineHeight: 1.55, marginBottom: 4 }}>
-        התחברות לאתר זה בלבד — לא לחשבון BizUply.
+        הזינו את הפרטים שלכם כדי להיכנס לחשבון באתר.
       </div>
       <Field placeholder="אימייל" line={line} ink={ink} />
       <Field placeholder="סיסמה" line={line} ink={ink} />

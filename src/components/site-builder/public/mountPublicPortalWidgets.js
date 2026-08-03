@@ -119,7 +119,7 @@ function mountLogin(container, { siteId, host, siteName }) {
         margin: "0 0 20px",
         lineHeight: "1.6",
       },
-      "התחברות זו שייכת לאתר זה בלבד ואינה קשורה לחשבון BizUply.",
+      "הזינו את הפרטים שלכם כדי להיכנס לחשבון באתר.",
     ),
   );
 
@@ -253,7 +253,7 @@ function mountRegister(container, { siteId, host, siteName }) {
         margin: "0 0 18px",
         lineHeight: "1.6",
       },
-      "ההרשמה נשמרת לאתר ולעסק הזה בלבד — לא לחשבון BizUply.",
+      "מלאו את הפרטים כדי לפתוח חשבון ולהמשיך באתר.",
     ),
   );
 
@@ -360,9 +360,203 @@ function mountRegister(container, { siteId, host, siteName }) {
   container.appendChild(wrap);
 }
 
-async function mountAccount(container, { siteId }) {
+function renderAccountPanel(container, theme, member, pages, { onLogout } = {}) {
   prepareMountShell(container);
+  const wrap = el("div", {
+    padding: "24px",
+    fontFamily: "inherit",
+    color: theme.ink,
+    boxSizing: "border-box",
+  });
+  wrap.appendChild(
+    el(
+      "h3",
+      { margin: "0 0 6px", fontSize: "22px", fontWeight: "900", color: theme.ink },
+      `שלום ${member?.fullName || "לקוח/ה"}`,
+    ),
+  );
+  wrap.appendChild(
+    el(
+      "p",
+      {
+        margin: "0 0 16px",
+        color: theme.muted,
+        fontSize: "13px",
+        fontWeight: "600",
+      },
+      member?.email || "client@example.com",
+    ),
+  );
+
+  const quickLinks = [
+    { href: "/orders", label: "ההזמנות שלי" },
+    { href: "/cart", label: "העגלה שלי" },
+    { href: "/account", label: "פרטי החשבון" },
+  ];
+  const quickRow = el("div", {
+    display: "flex",
+    flexWrap: "wrap",
+    gap: "8px",
+    marginBottom: "16px",
+  });
+  quickLinks.forEach((item) => {
+    const link = document.createElement("a");
+    link.href = item.href;
+    link.textContent = item.label;
+    Object.assign(link.style, {
+      display: "inline-flex",
+      padding: "10px 14px",
+      borderRadius: "12px",
+      border: `1px solid ${theme.line}`,
+      background: theme.soft,
+      textDecoration: "none",
+      color: theme.ink,
+      fontWeight: "800",
+      fontSize: "13px",
+    });
+    quickRow.appendChild(link);
+  });
+  wrap.appendChild(quickRow);
+
+  const pageList = Array.isArray(pages) ? pages : [];
+  if (!pageList.length) {
+    ["הזמנות קודמות", "עמוד מוגן ללקוחות", "המשך רכישה"].forEach((label) => {
+      wrap.appendChild(
+        el(
+          "div",
+          {
+            marginBottom: "8px",
+            padding: "12px 14px",
+            borderRadius: "14px",
+            border: `1px solid ${theme.line}`,
+            background: "#fff",
+            fontWeight: "800",
+            fontSize: "14px",
+            color: theme.ink,
+          },
+          label,
+        ),
+      );
+    });
+  } else {
+    pageList.forEach((page) => {
+      const link = document.createElement("a");
+      link.href = page.path || `/${page.slug || page.id}`;
+      link.textContent = page.title || "עמוד";
+      Object.assign(link.style, {
+        display: "block",
+        marginBottom: "8px",
+        padding: "12px 14px",
+        borderRadius: "14px",
+        border: `1px solid ${theme.line}`,
+        textDecoration: "none",
+        color: theme.ink,
+        fontWeight: "800",
+        fontSize: "14px",
+        background: "#fff",
+      });
+      wrap.appendChild(link);
+    });
+  }
+
+  if (typeof onLogout === "function") {
+    const logout = el(
+      "button",
+      {
+        marginTop: "14px",
+        border: "0",
+        borderRadius: "12px",
+        background: theme.ink,
+        color: "#fff",
+        padding: "10px 14px",
+        fontWeight: "800",
+        cursor: "pointer",
+      },
+      "התנתקות",
+    );
+    logout.type = "button";
+    logout.addEventListener("click", onLogout);
+    wrap.appendChild(logout);
+  }
+
+  container.appendChild(wrap);
+}
+
+function renderOrdersPanel(container, theme, orders) {
+  prepareMountShell(container);
+  const wrap = el("div", {
+    padding: "20px",
+    fontFamily: "inherit",
+    boxSizing: "border-box",
+  });
+  const list = Array.isArray(orders) && orders.length
+    ? orders
+    : [
+        { orderNumber: "1042", status: "שולמה", total: 249 },
+        { orderNumber: "1038", status: "בטיפול", total: 128.5 },
+        { orderNumber: "1021", status: "נשלחה", total: 89 },
+      ];
+
+  list.forEach((order) => {
+    const card = el("div", {
+      marginBottom: "10px",
+      padding: "14px 16px",
+      borderRadius: "16px",
+      border: `1px solid ${theme.line}`,
+      background: "#fff",
+    });
+    card.appendChild(
+      el(
+        "div",
+        {
+          fontWeight: "900",
+          fontSize: "14px",
+          marginBottom: "4px",
+          color: theme.ink,
+        },
+        `הזמנה ${order.orderNumber || order.id || ""}`,
+      ),
+    );
+    card.appendChild(
+      el(
+        "div",
+        { fontSize: "12px", color: theme.muted, fontWeight: "600" },
+        `${order.status || "status"} · ₪${Number(order.total || 0).toFixed(2)}`,
+      ),
+    );
+    if (order.morningDocumentUrl) {
+      const invoice = document.createElement("a");
+      invoice.href = order.morningDocumentUrl;
+      invoice.target = "_blank";
+      invoice.rel = "noopener noreferrer";
+      invoice.textContent = "חשבונית";
+      Object.assign(invoice.style, {
+        display: "inline-block",
+        marginTop: "8px",
+        fontSize: "12px",
+        fontWeight: "800",
+        color: theme.accent,
+      });
+      card.appendChild(invoice);
+    }
+    wrap.appendChild(card);
+  });
+  container.appendChild(wrap);
+}
+
+async function mountAccount(container, { siteId, editorMode = false }) {
   const theme = readPortalTheme(container);
+
+  // Studio edit/preview: always show open design sample — never ask to login.
+  if (editorMode) {
+    renderAccountPanel(container, theme, {
+      fullName: "לקוח/ה לדוגמה",
+      email: "client@example.com",
+    }, []);
+    return;
+  }
+
+  prepareMountShell(container);
   const loading = el(
     "div",
     { padding: "24px", fontWeight: "700", color: theme.muted },
@@ -372,133 +566,29 @@ async function mountAccount(container, { siteId }) {
 
   try {
     const data = await sitePortalMe(siteId);
-    clearMount(container);
-    const wrap = el("div", { padding: "24px", fontFamily: "inherit" });
-    wrap.appendChild(
-      el(
-        "h3",
-        { margin: "0 0 6px", fontSize: "22px", fontWeight: "900" },
-        `שלום ${data.member?.fullName || ""}`,
-      ),
-    );
-    wrap.appendChild(
-      el(
-        "p",
-        { margin: "0 0 16px", color: "#64748b", fontSize: "13px", fontWeight: "600" },
-        data.member?.email || "",
-      ),
-    );
-
-    const quickLinks = [
-      { href: "/orders", label: "ההזמנות שלי" },
-      { href: "/cart", label: "העגלה שלי" },
-      { href: "/account", label: "פרטי החשבון" },
-    ];
-    const quickRow = el("div", {
-      display: "flex",
-      flexWrap: "wrap",
-      gap: "8px",
-      marginBottom: "16px",
-    });
-    quickLinks.forEach((item) => {
-      const link = document.createElement("a");
-      link.href = item.href;
-      link.textContent = item.label;
-      Object.assign(link.style, {
-        display: "inline-flex",
-        padding: "10px 14px",
-        borderRadius: "12px",
-        border: "1px solid #e2e8f0",
-        background: "#f8fafc",
-        textDecoration: "none",
-        color: "#0f172a",
-        fontWeight: "800",
-        fontSize: "13px",
-      });
-      quickRow.appendChild(link);
-    });
-    wrap.appendChild(quickRow);
-
-    const pages = Array.isArray(data.portalPages) ? data.portalPages : [];
-    const gatedPages = pages.filter((page) => page.loginRequired !== false);
-    if (!gatedPages.length) {
-      wrap.appendChild(
-        el(
-          "div",
-          {
-            padding: "12px",
-            borderRadius: "12px",
-            background: "#f8fafc",
-            color: "#64748b",
-            fontSize: "12px",
-            fontWeight: "700",
-            border: "1px solid #e2e8f0",
-          },
-          "אפשר להוסיף עוד עמודים מוגנים מספריית «עמודים אחרי התחברות».",
-        ),
-      );
-    } else {
-      wrap.appendChild(
-        el(
-          "div",
-          {
-            marginBottom: "8px",
-            fontSize: "12px",
-            fontWeight: "800",
-            color: "#64748b",
-          },
-          "עמודים זמינים",
-        ),
-      );
-      gatedPages.forEach((page) => {
-        const link = document.createElement("a");
-        link.href = page.path || `/${page.slug || page.id}`;
-        link.textContent = page.title || "עמוד";
-        Object.assign(link.style, {
-          display: "block",
-          marginBottom: "8px",
-          padding: "12px 14px",
-          borderRadius: "14px",
-          border: "1px solid #e2e8f0",
-          textDecoration: "none",
-          color: "#0f172a",
-          fontWeight: "800",
-          fontSize: "14px",
-        });
-        wrap.appendChild(link);
-      });
-    }
-
-    const logout = el(
-      "button",
-      {
-        marginTop: "14px",
-        border: "0",
-        borderRadius: "12px",
-        background: "#0f172a",
-        color: "#fff",
-        padding: "10px 14px",
-        fontWeight: "800",
-        cursor: "pointer",
+    const pages = Array.isArray(data.portalPages)
+      ? data.portalPages.filter((page) => page.loginRequired !== false)
+      : [];
+    renderAccountPanel(container, theme, data.member, pages, {
+      onLogout: async () => {
+        await sitePortalLogout(siteId);
+        window.history.pushState({}, "", "/login");
+        window.dispatchEvent(new PopStateEvent("popstate"));
       },
-      "התנתקות",
-    );
-    logout.type = "button";
-    logout.addEventListener("click", async () => {
-      await sitePortalLogout(siteId);
-      window.history.pushState({}, "", "/login");
-      window.dispatchEvent(new PopStateEvent("popstate"));
     });
-    wrap.appendChild(logout);
-    container.appendChild(wrap);
   } catch (err) {
-    clearMount(container);
-    const wrap = el("div", { padding: "24px" });
+    prepareMountShell(container);
+    const wrap = el("div", { padding: "24px", textAlign: "center" });
     wrap.appendChild(
       el(
         "p",
-        { fontWeight: "700", color: "#64748b", marginBottom: "12px" },
-        err?.message || "נדרשת התחברות",
+        {
+          fontWeight: "700",
+          color: theme.muted,
+          marginBottom: "12px",
+          fontSize: "14px",
+        },
+        "כדי לצפות בחשבון יש להתחבר.",
       ),
     );
     const login = document.createElement("a");
@@ -506,7 +596,7 @@ async function mountAccount(container, { siteId }) {
     login.textContent = "להתחברות";
     Object.assign(login.style, {
       display: "inline-flex",
-      background: "#0f172a",
+      background: theme.ink,
       color: "#fff",
       borderRadius: "12px",
       padding: "10px 14px",
@@ -518,34 +608,39 @@ async function mountAccount(container, { siteId }) {
   }
 }
 
-async function mountOrders(container, { siteId }) {
-  clearMount(container);
-  container.dir = "rtl";
+async function mountOrders(container, { siteId, editorMode = false }) {
+  const theme = readPortalTheme(container);
+
+  if (editorMode) {
+    renderOrdersPanel(container, theme, null);
+    return;
+  }
+
+  prepareMountShell(container);
   container.appendChild(
     el(
       "div",
-      { padding: "24px", fontWeight: "700", color: "#64748b" },
+      { padding: "24px", fontWeight: "700", color: theme.muted },
       "טוען הזמנות...",
     ),
   );
 
   try {
     const data = await sitePortalMyOrders(siteId);
-    clearMount(container);
-    const wrap = el("div", { padding: "20px", fontFamily: "inherit" });
     const orders = Array.isArray(data.orders) ? data.orders : [];
-
     if (!orders.length) {
+      prepareMountShell(container);
+      const wrap = el("div", { padding: "20px", fontFamily: "inherit" });
       wrap.appendChild(
         el(
           "div",
           {
             padding: "18px",
             borderRadius: "16px",
-            background: "#f8fafc",
-            border: "1px solid #e2e8f0",
+            background: theme.soft,
+            border: `1px solid ${theme.line}`,
             fontWeight: "700",
-            color: "#64748b",
+            color: theme.muted,
           },
           "אין עדיין הזמנות משויכות לחשבון זה.",
         ),
@@ -553,55 +648,20 @@ async function mountOrders(container, { siteId }) {
       container.appendChild(wrap);
       return;
     }
-
-    orders.forEach((order) => {
-      const card = el("div", {
-        marginBottom: "10px",
-        padding: "14px 16px",
-        borderRadius: "16px",
-        border: "1px solid #e2e8f0",
-        background: "#fff",
-      });
-      card.appendChild(
-        el(
-          "div",
-          { fontWeight: "900", fontSize: "14px", marginBottom: "4px" },
-          `הזמנה ${order.orderNumber || order.id || ""}`,
-        ),
-      );
-      card.appendChild(
-        el(
-          "div",
-          { fontSize: "12px", color: "#64748b", fontWeight: "600" },
-          `${order.status || "status"} · ₪${Number(order.total || 0).toFixed(2)}`,
-        ),
-      );
-      if (order.morningDocumentUrl) {
-        const invoice = document.createElement("a");
-        invoice.href = order.morningDocumentUrl;
-        invoice.target = "_blank";
-        invoice.rel = "noopener noreferrer";
-        invoice.textContent = "חשבונית";
-        Object.assign(invoice.style, {
-          display: "inline-block",
-          marginTop: "8px",
-          fontSize: "12px",
-          fontWeight: "800",
-          color: "#0284c7",
-        });
-        card.appendChild(invoice);
-      }
-      wrap.appendChild(card);
-    });
-    container.appendChild(wrap);
+    renderOrdersPanel(container, theme, orders);
   } catch (err) {
-    clearMount(container);
-    const wrap = el("div", { padding: "24px" });
+    prepareMountShell(container);
+    const wrap = el("div", { padding: "24px", textAlign: "center" });
     wrap.appendChild(
       el(
         "p",
-        { fontWeight: "700", color: "#e11d48", marginBottom: "12px" },
-        err?.message || "לא ניתן לטעון הזמנות",
+        {
+          fontWeight: "700",
+          color: theme.muted,
+          marginBottom: "12px",
+          fontSize: "14px",
+        },
+        "כדי לצפות בהזמנות יש להתחבר.",
       ),
     );
     const login = document.createElement("a");
@@ -609,7 +669,7 @@ async function mountOrders(container, { siteId }) {
     login.textContent = "להתחברות";
     Object.assign(login.style, {
       display: "inline-flex",
-      background: "#0f172a",
+      background: theme.ink,
       color: "#fff",
       borderRadius: "12px",
       padding: "10px 14px",
@@ -735,6 +795,7 @@ export function mountPublicPortalWidgets(root, options = {}) {
     options.host ||
     (typeof window !== "undefined" ? window.location.host : "");
   const siteName = String(site.name || site.brand?.name || "").trim();
+  const editorMode = Boolean(options.preview || options.editorMode);
 
   // Ensure token for known site id is discoverable for subsequent API calls.
   if (siteId && !getSitePortalToken(siteId)) {
@@ -764,19 +825,27 @@ export function mountPublicPortalWidgets(root, options = {}) {
       return;
     }
     if (kind === "portal-account") {
+      if (editorMode) {
+        void mountAccount(node, { siteId, editorMode: true });
+        return;
+      }
       if (!siteId) {
         mountLogin(node, { siteId, host, siteName });
         return;
       }
-      void mountAccount(node, { siteId });
+      void mountAccount(node, { siteId, editorMode: false });
       return;
     }
     if (kind === "portal-orders") {
+      if (editorMode) {
+        void mountOrders(node, { siteId, editorMode: true });
+        return;
+      }
       if (!siteId) {
         mountLogin(node, { siteId, host, siteName });
         return;
       }
-      void mountOrders(node, { siteId });
+      void mountOrders(node, { siteId, editorMode: false });
       return;
     }
     if (kind === "portal-cart") {
