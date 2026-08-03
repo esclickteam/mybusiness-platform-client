@@ -2,7 +2,7 @@ export const cosmellaDefaultData = {
   templateId: "cosmella",
   name: "Cosmella",
   brandName: "Cosmella",
-  logoImage: "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=1400&q=85",
+  logoImage: "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=200&h=200&q=85",
   navHome: "בית",
   navAbout: "אודות",
   navServices: "שירותים",

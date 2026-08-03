@@ -2,7 +2,7 @@ export const tipcraftDefaultData = {
   templateId: "tipcraft",
   name: "Tipcraft",
   brandName: "Tipcraft",
-  logoImage: "https://images.unsplash.com/photo-1583001931096-959e9a1a6223?auto=format&fit=crop&w=1400&q=85",
+  logoImage: "https://images.unsplash.com/photo-1583001931096-959e9a1a6223?auto=format&fit=crop&w=200&h=200&q=85",
   navHome: "בית",
   navAbout: "אודות",
   navServices: "שירותים",

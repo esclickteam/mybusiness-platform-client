@@ -2,7 +2,7 @@ export const spajadeDefaultData = {
   templateId: "spajade",
   name: "Spajade",
   brandName: "Spajade",
-  logoImage: "https://images.unsplash.com/photo-1512496015851-a90fb38ba796?auto=format&fit=crop&w=1400&q=85",
+  logoImage: "https://images.unsplash.com/photo-1512496015851-a90fb38ba796?auto=format&fit=crop&w=200&h=200&q=85",
   navHome: "בית",
   navAbout: "אודות",
   navServices: "שירותים",

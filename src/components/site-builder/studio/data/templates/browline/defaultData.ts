@@ -2,7 +2,7 @@ export const browlineDefaultData = {
   templateId: "browline",
   name: "Browline",
   brandName: "Browline",
-  logoImage: "https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?auto=format&fit=crop&w=1400&q=85",
+  logoImage: "https://images.unsplash.com/photo-1616394584738-fc6e612e71b9?auto=format&fit=crop&w=200&h=200&q=85",
   navHome: "בית",
   navAbout: "אודות",
   navServices: "שירותים",

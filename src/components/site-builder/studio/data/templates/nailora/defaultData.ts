@@ -2,7 +2,7 @@ export const nailoraDefaultData = {
   templateId: "nailora",
   name: "Nailora",
   brandName: "Nailora",
-  logoImage: "https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?auto=format&fit=crop&w=1400&q=85",
+  logoImage: "https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?auto=format&fit=crop&w=200&h=200&q=85",
   navHome: "בית",
   navAbout: "אודות",
   navServices: "שירותים",

@@ -2,7 +2,7 @@ export const silkbarDefaultData = {
   templateId: "silkbar",
   name: "Silkbar",
   brandName: "Silkbar",
-  logoImage: "https://images.unsplash.com/photo-1556228578-0d85b1a4d571?auto=format&fit=crop&w=1400&q=85",
+  logoImage: "https://images.unsplash.com/photo-1556228578-0d85b1a4d571?auto=format&fit=crop&w=200&h=200&q=85",
   navHome: "בית",
   navAbout: "אודות",
   navServices: "שירותים",

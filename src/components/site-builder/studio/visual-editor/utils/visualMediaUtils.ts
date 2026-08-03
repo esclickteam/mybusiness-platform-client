@@ -177,12 +177,54 @@ function getMediaClassName(node: HTMLElement) {
   return ` ${String(node.getAttribute("class") || node.className || "")} `;
 }
 
-/** True for Tailwind tracks like h-10 / w-[40px] / size-12 — not h-full / w-full. */
-function hasFixedTrackSize(className: string, axis: "w" | "h" | "size") {
-  const pattern = new RegExp(
-    `(?:^|\\s)(?:sm:|md:|lg:|xl:|2xl:)?${axis}-(?!full(?:\\s|$)|screen(?:\\s|$)|auto(?:\\s|$)|min(?:\\s|$)|max(?:\\s|$)|fit(?:\\s|$)|svh|svw|dvh|lvh|dvw|lvw)`,
-  );
-  return pattern.test(className);
+/** Normalize Tailwind tokens: strip important + responsive prefixes. */
+function tokenizeUtilityClasses(className: string) {
+  return className
+    .trim()
+    .split(/\s+/)
+    .filter(Boolean)
+    .map((token) => token.replace(/^!/, "").replace(/^(?:sm|md|lg|xl|2xl):/, ""));
+}
+
+const FLUID_TRACK = new Set([
+  "full",
+  "screen",
+  "auto",
+  "min",
+  "max",
+  "fit",
+  "svh",
+  "svw",
+  "dvh",
+  "lvh",
+  "dvw",
+  "lvw",
+]);
+
+/** True for authored tracks like h-10 / w-[40px] / size-12 / max-h-10 — not h-full. */
+function hasFixedTrackSize(className: string, axis: "w" | "h" | "size" | "max-w" | "max-h") {
+  const prefix = `${axis}-`;
+  return tokenizeUtilityClasses(className).some((token) => {
+    if (!token.startsWith(prefix)) return false;
+    const value = token.slice(prefix.length);
+    if (!value || FLUID_TRACK.has(value)) return false;
+    if (value === "none") return false;
+    return true;
+  });
+}
+
+function hasFullTrackSize(className: string, axis: "w" | "h") {
+  return tokenizeUtilityClasses(className).some((token) => token === `${axis}-full`);
+}
+
+function mediaHasFillIntent(className: string) {
+  const tokens = tokenizeUtilityClasses(className);
+  if (tokens.includes("w-full") || tokens.includes("h-full")) return true;
+  if (tokens.includes("inset-0")) return true;
+  if (tokens.includes("absolute") && tokens.some((token) => token.startsWith("inset"))) {
+    return true;
+  }
+  return false;
 }
 
 /**
@@ -195,14 +237,24 @@ export function shouldPreserveAuthoredMediaBox(mediaNode: HTMLElement) {
 
   if (hasFixedTrackSize(className, "size")) return true;
 
-  const fixedW = hasFixedTrackSize(className, "w");
-  const fixedH = hasFixedTrackSize(className, "h");
+  const fixedW =
+    hasFixedTrackSize(className, "w") || hasFixedTrackSize(className, "max-w");
+  const fixedH =
+    hasFixedTrackSize(className, "h") || hasFixedTrackSize(className, "max-h");
   if (fixedW && fixedH) return true;
 
   if (
     (fixedW || fixedH) &&
     mediaNode.closest(
-      '[data-visual-flow-lock="true"], [data-section-kind="header"], [data-template-section-type="header"], header',
+      [
+        '[data-visual-flow-lock="true"]',
+        '[data-section-kind="header"]',
+        '[data-template-section-type="header"]',
+        '[data-section-kind="footer"]',
+        '[data-template-section-type="footer"]',
+        "header",
+        "footer",
+      ].join(", "),
     )
   ) {
     return true;
@@ -211,9 +263,23 @@ export function shouldPreserveAuthoredMediaBox(mediaNode: HTMLElement) {
   return false;
 }
 
+function clearStaleFillOverrides(mediaNode: HTMLElement) {
+  if (mediaNode.style.width === "100%") mediaNode.style.removeProperty("width");
+  if (mediaNode.style.height === "100%") mediaNode.style.removeProperty("height");
+  if (mediaNode.style.maxWidth === "100%") {
+    mediaNode.style.removeProperty("max-width");
+  }
+  if (mediaNode.style.maxHeight === "100%") {
+    mediaNode.style.removeProperty("max-height");
+  }
+}
+
 /**
  * Force img/video to fill its slot (template card, orbit frame, hero box, etc.)
  * instead of rendering at the uploaded asset's natural pixel size.
+ *
+ * Opt-in only: never fill just because a parent happens to have a bounding box.
+ * That path blew up logos/avatars across beauty templates in the visual editor.
  */
 export function fitMediaElementToSlot(
   mediaNode: HTMLImageElement | HTMLVideoElement,
@@ -235,51 +301,10 @@ export function fitMediaElementToSlot(
   mediaNode.style.display = "block";
   mediaNode.style.boxSizing = "border-box";
 
+  const className = getMediaClassName(mediaNode);
+
   if (shouldPreserveAuthoredMediaBox(mediaNode)) {
-    // Clear stale fill overrides from earlier editor sessions.
-    if (mediaNode.style.width === "100%") mediaNode.style.removeProperty("width");
-    if (mediaNode.style.height === "100%") mediaNode.style.removeProperty("height");
-    if (mediaNode.style.maxWidth === "100%") {
-      mediaNode.style.removeProperty("max-width");
-    }
-    if (mediaNode.style.maxHeight === "100%") {
-      mediaNode.style.removeProperty("max-height");
-    }
-    return;
-  }
-
-  mediaNode.style.minWidth = "0";
-  mediaNode.style.minHeight = "0";
-  mediaNode.style.removeProperty("aspect-ratio");
-
-  const parent = mediaNode.parentElement;
-  const parentHasBox =
-    Boolean(parent) &&
-    (Boolean(parent?.style.width || parent?.style.height) ||
-      Boolean(
-        parent &&
-          typeof window !== "undefined" &&
-          (() => {
-            const rect = parent.getBoundingClientRect();
-            return rect.width > 8 && rect.height > 8;
-          })(),
-      ));
-
-  const isTemplateSlot =
-    mediaNode.getAttribute("data-editable") === "image" ||
-    mediaNode.hasAttribute("data-visual-image-field") ||
-    mediaNode.hasAttribute("data-image-field");
-
-  const shouldFillParent =
-    isTemplateSlot ||
-    parentHasBox ||
-    Boolean(parent?.classList.contains("overflow-hidden"));
-
-  if (shouldFillParent && !isFreePositionedCanvasMedia(mediaNode)) {
-    mediaNode.style.width = "100%";
-    mediaNode.style.height = "100%";
-    mediaNode.style.maxWidth = "100%";
-    mediaNode.style.maxHeight = "100%";
+    clearStaleFillOverrides(mediaNode);
     return;
   }
 
@@ -292,6 +317,44 @@ export function fitMediaElementToSlot(
     }
     mediaNode.style.maxWidth = "none";
     mediaNode.style.maxHeight = "none";
+    return;
+  }
+
+  const parent = mediaNode.parentElement;
+  const parentHasExplicitBox = Boolean(
+    parent && (parent.style.width || parent.style.height),
+  );
+  const fillIntent = mediaHasFillIntent(className);
+
+  // No authored fill intent and no editor-sized parent → keep Tailwind/CSS as-is.
+  if (!fillIntent && !parentHasExplicitBox) {
+    clearStaleFillOverrides(mediaNode);
+    return;
+  }
+
+  mediaNode.style.minWidth = "0";
+  mediaNode.style.minHeight = "0";
+  mediaNode.style.removeProperty("aspect-ratio");
+
+  const fillWidth = hasFullTrackSize(className, "w") || Boolean(parent?.style.width);
+  const fillHeight = hasFullTrackSize(className, "h") || Boolean(parent?.style.height);
+
+  // If only "fill intent" via inset/absolute, fill both axes.
+  if (fillIntent && !fillWidth && !fillHeight) {
+    mediaNode.style.width = "100%";
+    mediaNode.style.height = "100%";
+    mediaNode.style.maxWidth = "100%";
+    mediaNode.style.maxHeight = "100%";
+    return;
+  }
+
+  if (fillWidth) {
+    mediaNode.style.width = "100%";
+    mediaNode.style.maxWidth = "100%";
+  }
+  if (fillHeight) {
+    mediaNode.style.height = "100%";
+    mediaNode.style.maxHeight = "100%";
   }
 }
 

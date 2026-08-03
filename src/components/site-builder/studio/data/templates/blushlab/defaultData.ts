@@ -2,7 +2,7 @@ export const blushlabDefaultData = {
   templateId: "blushlab",
   name: "Blushlab",
   brandName: "Blushlab",
-  logoImage: "https://images.unsplash.com/photo-1519014816548-bf5fe059798b?auto=format&fit=crop&w=1400&q=85",
+  logoImage: "https://images.unsplash.com/photo-1519014816548-bf5fe059798b?auto=format&fit=crop&w=200&h=200&q=85",
   navHome: "בית",
   navAbout: "אודות",
   navServices: "שירותים",

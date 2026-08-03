@@ -780,7 +780,19 @@ function withAssignedImages(template, index) {
   return {
     ...template,
     images: Object.fromEntries(
-      Object.entries(fieldIds).map(([key, id]) => [key, unsplash(id, key === "heroImage" ? 2200 : key.startsWith("team") ? 900 : 1400)]),
+      Object.entries(fieldIds).map(([key, id]) => [
+        key,
+        unsplash(
+          id,
+          key === "heroImage"
+            ? 2200
+            : key === "logoImage"
+              ? 200
+              : key.startsWith("team")
+                ? 900
+                : 1400,
+        ),
+      ]),
     ),
   };
 }
@@ -1491,7 +1503,7 @@ function buildHeader(styleName, styleIndex) {
   if (headerVariant === 0) {
     return `<header data-visual-flow-lock="true" data-template-section-type="header" data-section-kind="header" className="${positions[headerVariant]} beauty-${styleName}-header-v${headerVariant} ${labels.nav}">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 lg:px-8">
-        <button type="button" onClick={() => goTo("home")} className="flex items-center gap-3">{getValue(data,"logoImage") ? (<img src={getValue(data,"logoImage")} alt="" className="h-10 w-10 object-cover" />) : null}<span className="t-display text-3xl text-[var(--p)]">{getValue(data,"brandName")}</span></button>
+        <button type="button" onClick={() => goTo("home")} className="flex shrink-0 items-center gap-3">{getValue(data,"logoImage") ? (<span className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full"><img src={getValue(data,"logoImage")} alt="" className="h-10 w-10 max-h-10 max-w-10 object-cover" /></span>) : null}<span className="t-display text-3xl text-[var(--p)]">{getValue(data,"brandName")}</span></button>
         <nav className="hidden gap-6 text-sm md:flex">{${nav}.map((p) => (<button key={p.id} type="button" onClick={() => goTo(p.id)} className={currentPage===p.id ? "font-bold text-[var(--p)]" : "text-[var(--muted)]"}>{p.label}</button>))}</nav>
         <button type="button" onClick={() => goTo("booking")} className="t-pulse px-5 py-2.5 text-sm font-bold ${labels.button}">{getValue(data,"heroPrimaryButton")}</button>
       </div>

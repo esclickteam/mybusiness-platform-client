@@ -411,6 +411,46 @@ max-width: 100%;
 `,
 )}
 
+/* Prevent fr-track / image min-content from crushing sibling text in editor + preview. */
+${rule(
+  underRoots(".grid > *"),
+  `
+min-width: 0;
+`,
+)}
+
+/* Badge logos: clamp to authored Tailwind box even if old inline fill styles linger. */
+${[
+  ["h-8", "2rem"],
+  ["h-9", "2.25rem"],
+  ["h-10", "2.5rem"],
+  ["h-12", "3rem"],
+  ["h-14", "3.5rem"],
+  ["h-16", "4rem"],
+]
+  .map(
+    ([cls, size]) =>
+      rule(
+        underRoots(
+          [
+            `header img.${cls}`,
+            `footer img.${cls}`,
+            `[data-section-kind="header"] img.${cls}`,
+            `[data-section-kind="footer"] img.${cls}`,
+            `[data-visual-flow-lock="true"] img.${cls}`,
+          ].join(", "),
+        ),
+        `
+width: ${size} !important;
+height: ${size} !important;
+max-width: ${size} !important;
+max-height: ${size} !important;
+object-fit: cover !important;
+`,
+      ),
+  )
+  .join("\n\n")}
+
 /*
   Intrinsic height ONLY for unconstrained flow media.
   A blanket height:auto on every img overrides Tailwind fill/fixed

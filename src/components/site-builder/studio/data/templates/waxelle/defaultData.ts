@@ -2,7 +2,7 @@ export const waxelleDefaultData = {
   templateId: "waxelle",
   name: "Waxelle",
   brandName: "Waxelle",
-  logoImage: "https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?auto=format&fit=crop&w=1400&q=85",
+  logoImage: "https://images.unsplash.com/photo-1487412947147-5cebf100ffc2?auto=format&fit=crop&w=200&h=200&q=85",
   navHome: "בית",
   navAbout: "אודות",
   navServices: "שירותים",

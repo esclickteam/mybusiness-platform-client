@@ -2,7 +2,7 @@ export const permanovaDefaultData = {
   templateId: "permanova",
   name: "Permanova",
   brandName: "Permanova",
-  logoImage: "https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&w=1400&q=85",
+  logoImage: "https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&w=200&h=200&q=85",
   navHome: "בית",
   navAbout: "אודות",
   navServices: "שירותים",

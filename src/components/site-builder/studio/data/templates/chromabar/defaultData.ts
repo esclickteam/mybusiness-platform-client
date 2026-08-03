@@ -2,7 +2,7 @@ export const chromabarDefaultData = {
   templateId: "chromabar",
   name: "Chromabar",
   brandName: "Chromabar",
-  logoImage: "https://images.unsplash.com/photo-1519823551278-64ac92734fb1?auto=format&fit=crop&w=1400&q=85",
+  logoImage: "https://images.unsplash.com/photo-1519823551278-64ac92734fb1?auto=format&fit=crop&w=200&h=200&q=85",
   navHome: "בית",
   navAbout: "אודות",
   navServices: "שירותים",

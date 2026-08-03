@@ -2,7 +2,7 @@ export const lashoraDefaultData = {
   templateId: "lashora",
   name: "Lashora",
   brandName: "Lashora",
-  logoImage: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=1400&q=85",
+  logoImage: "https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?auto=format&fit=crop&w=200&h=200&q=85",
   navHome: "בית",
   navAbout: "אודות",
   navServices: "שירותים",

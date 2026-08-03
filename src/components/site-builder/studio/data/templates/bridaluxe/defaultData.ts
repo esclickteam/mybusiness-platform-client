@@ -2,7 +2,7 @@ export const bridaluxeDefaultData = {
   templateId: "bridaluxe",
   name: "Bridaluxe",
   brandName: "Bridaluxe",
-  logoImage: "https://images.unsplash.com/photo-1515377905703-c4788e51af15?auto=format&fit=crop&w=1400&q=85",
+  logoImage: "https://images.unsplash.com/photo-1515377905703-c4788e51af15?auto=format&fit=crop&w=200&h=200&q=85",
   navHome: "בית",
   navAbout: "אודות",
   navServices: "שירותים",
