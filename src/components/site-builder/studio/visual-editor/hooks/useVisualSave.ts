@@ -24,10 +24,7 @@ import {
 } from "../utils/visualData";
 
 import { buildVisualSavePayload } from "../utils/visualSaveAdapter";
-import {
-  applyAllVisualDataToDom,
-  buildVisualSaveDataFromDom,
-} from "../utils/visualDomApply";
+import { buildVisualSaveDataFromDom } from "../utils/visualDomApply";
 
 type VisualSavePayload = ReturnType<typeof buildVisualSavePayload>;
 

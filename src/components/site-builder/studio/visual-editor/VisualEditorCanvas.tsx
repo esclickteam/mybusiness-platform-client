@@ -542,19 +542,39 @@ function insertPlainTextAtSelection(text: string) {
   if (!selection || selection.rangeCount === 0) return false;
 
   const normalized = normalizeText(text);
-  if (!normalized) return false;
+  // Allow inserting spaces (normalized " " must not be treated as empty).
+  if (normalized === "") return false;
 
   const range = selection.getRangeAt(0);
   range.deleteContents();
 
+  // Fast path: keep spaces/plain text as a single text node (critical for buttons).
+  if (!normalized.includes("\n")) {
+    const textNode = document.createTextNode(normalized);
+    range.insertNode(textNode);
+    range.setStartAfter(textNode);
+    range.collapse(true);
+    selection.removeAllRanges();
+    selection.addRange(range);
+    return true;
+  }
+
   const parts = normalized.split("\n");
+  let lastInserted: Node | null = null;
   parts.forEach((part, index) => {
-    if (part) {
-      range.insertNode(document.createTextNode(part));
+    // Keep intentional spaces; only skip truly empty segments between newlines.
+    if (part.length > 0) {
+      lastInserted = document.createTextNode(part);
+      range.insertNode(lastInserted);
+      range.setStartAfter(lastInserted);
+      range.collapse(true);
     }
 
     if (index < parts.length - 1) {
-      range.insertNode(document.createElement("br"));
+      lastInserted = document.createElement("br");
+      range.insertNode(lastInserted);
+      range.setStartAfter(lastInserted);
+      range.collapse(true);
     }
   });
 
@@ -1762,20 +1782,21 @@ export default function VisualEditorCanvas({
 
       /*
         Space on <button> / role=button activates the control by default.
-        Force-insert a real space so labels like "אין לכם חשבון" can be typed.
+        Also: execCommand("insertText") often returns true on buttons without
+        actually inserting — always write a real text node space ourselves.
       */
       if (event.key === " " || event.code === "Space") {
         event.preventDefault();
-        const inserted =
-          document.execCommand("insertText", false, " ") ||
-          insertPlainTextAtSelection(" ");
-        if (!inserted) {
+        event.stopPropagation();
+        if (!insertPlainTextAtSelection(" ")) {
           const sel = window.getSelection();
           if (sel && sel.rangeCount > 0) {
             const range = sel.getRangeAt(0);
             range.deleteContents();
-            range.insertNode(document.createTextNode(" "));
-            range.collapse(false);
+            const spaceNode = document.createTextNode(" ");
+            range.insertNode(spaceNode);
+            range.setStartAfter(spaceNode);
+            range.collapse(true);
             sel.removeAllRanges();
             sel.addRange(range);
           }
