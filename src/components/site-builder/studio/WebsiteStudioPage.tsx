@@ -64,6 +64,7 @@ import {
   readSharedChrome,
   stripChromeFromVisualData,
 } from "./visual-editor/utils/visualSharedChrome";
+import { buildVisualPageSwitchSession } from "./visual-editor/utils/visualPageSwitch";
 import {
   applyDisplayRowsToPages,
   applyDragToDisplayRows,
@@ -6747,46 +6748,36 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     if (!nextId || nextId === activePageId) return;
 
     const snapshot = asPlainObject(currentVisualData);
-    const leavingLibrary = Boolean(
-      snapshot.__libraryPage || snapshot.__blankVisualPage,
-    );
-
-    setPages((previousPages) =>
-      previousPages.map((page) =>
-        page.id === activePageId && Object.keys(snapshot).length
-          ? attachVisualDataToPage(page, snapshot)
-          : page,
-      ),
-    );
+    const hasSnapshot = Object.keys(snapshot).length > 0;
 
     /*
-      Header/footer are site-wide, so lift them into the shared chrome as soon
-      as the page changes. That makes a header edit visible on the next page
-      immediately, without waiting for a publish.
+      Persist the leaving page into pages[] so returning to it restores every
+      edit. Owners must not need a manual save between page switches.
     */
-    const sharedChrome = Object.keys(snapshot).length
-      ? extractSharedChromeFromVisualData(null, snapshot)
-      : latestSharedChrome;
-
-    if (!leavingLibrary && Object.keys(snapshot).length) {
-      setVisualSessionData({
-        ...snapshot,
-        [VISUAL_SHARED_CHROME_KEY]: sharedChrome,
-        __activePageId: nextId,
-        __blankVisualPage: false,
-        __libraryPage: false,
-        __libraryPageTemplateId: undefined,
-      });
-    } else {
-      setVisualSessionData((previous) => ({
-        ...asPlainObject(previous),
-        [VISUAL_SHARED_CHROME_KEY]: sharedChrome,
-        __activePageId: nextId,
-        __blankVisualPage: false,
-        __libraryPage: false,
-        __libraryPageTemplateId: undefined,
-      }));
+    if (hasSnapshot) {
+      setPages((previousPages) =>
+        previousPages.map((page) =>
+          page.id === activePageId
+            ? attachVisualDataToPage(page, snapshot)
+            : page,
+        ),
+      );
     }
+
+    /*
+      Do NOT copy the leaving page's body maps into the session. That made the
+      next page inherit (or overwrite) the previous page's content, and a later
+      switch wiped real edits. Session only carries site-wide chrome + meta;
+      each page body is loaded from pages[] via activePageVisualData.
+    */
+    setVisualSessionData((previous) =>
+      buildVisualPageSwitchSession({
+        snapshot,
+        previousSession: previous,
+        nextPageId: nextId,
+        fallbackSharedChrome: latestSharedChrome,
+      }),
+    );
 
     setActivePageId(nextId);
   };
@@ -7897,13 +7888,77 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       const activeIsPortalPage = Boolean(
         detectPortalPageKind({ data: cleanVisualData }),
       );
-      const homeVisualData = hasMeaningfulVisualCollections(
-        extractedHomeVisualData,
-      )
-        ? extractedHomeVisualData
-        : activeIsPortalPage
-          ? extractedHomeVisualData
-          : cleanVisualData;
+      const serverHomeVisualData = pickVisualCollectionsOnly(
+        asPlainObject(serverVisualTemplateData),
+      );
+      const templateHomeVisualData = pickVisualCollectionsOnly(
+        asPlainObject(
+          (selectedTemplateRenderer as any)?.defaultData ||
+            (selectedTemplateSeed as any)?.data ||
+            (selectedTemplateSeed as any)?.templateData ||
+            {},
+        ),
+      );
+      const publishChrome =
+        readSharedChrome(cleanVisualData) ||
+        readSharedChrome(extractedHomeVisualData) ||
+        latestSharedChrome;
+
+      const withPublishChrome = (data: Record<string, any>) => {
+        const next = asPlainObject(data);
+        if (!Object.keys(publishChrome).length) return next;
+        return {
+          ...next,
+          [VISUAL_SHARED_CHROME_KEY]: publishChrome,
+        };
+      };
+
+      /*
+        Shared chrome maps (__content etc. under __sharedChrome) are metadata
+        to the API. Expand them into root collections when home itself is empty
+        so publish is not rejected for "no editor data".
+      */
+      const chromeAsCollections = (() => {
+        const out: Record<string, any> = { __activePageId: homePageId };
+        [
+          "__content",
+          "__styles",
+          "__animations",
+          "__layout",
+          "__attributes",
+          "__responsive",
+          "__hiddenElements",
+          "__deletedElements",
+        ].forEach((key) => {
+          const map = asPlainObject((publishChrome as any)?.[key]);
+          if (Object.keys(map).length) out[key] = map;
+        });
+        return out;
+      })();
+
+      const homeVisualData = (() => {
+        if (hasMeaningfulVisualCollections(extractedHomeVisualData)) {
+          return withPublishChrome(extractedHomeVisualData);
+        }
+        if (hasMeaningfulVisualCollections(serverHomeVisualData)) {
+          return withPublishChrome(serverHomeVisualData);
+        }
+        if (
+          !activeIsPortalPage &&
+          hasMeaningfulVisualCollections(cleanVisualData)
+        ) {
+          return withPublishChrome(cleanVisualData);
+        }
+        if (hasMeaningfulVisualCollections(templateHomeVisualData)) {
+          return withPublishChrome(templateHomeVisualData);
+        }
+        if (hasMeaningfulVisualCollections(chromeAsCollections)) {
+          return withPublishChrome(chromeAsCollections);
+        }
+        return withPublishChrome({
+          __activePageId: homePageId,
+        });
+      })();
 
       studioDebug("handleVisualTemplateSave:publishedPages-ready", {
         homePage: homePage
@@ -7918,21 +7973,14 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         publishedPages: summarizeStudioPagesForDebug(pagesForSave),
       });
 
-      const hasMeaningfulVisualPublishData = [
-        "__content",
-        "__insertedSections",
-        "__insertedElements",
-        "__styles",
-        "__sectionOrder",
-      ].some((key) => {
-        const collection = (cleanVisualData as any)?.[key];
-        return (
-          collection &&
-          typeof collection === "object" &&
-          !Array.isArray(collection) &&
-          Object.keys(collection).length > 0
+      const hasMeaningfulVisualPublishData =
+        hasMeaningfulVisualCollections(homeVisualData) ||
+        hasMeaningfulVisualCollections(cleanVisualData) ||
+        pagesForSave.some((page) =>
+          hasMeaningfulVisualCollections(
+            extractVisualDataFromPayload(page || {}),
+          ),
         );
-      });
 
       /*
         visual-react מפורסם מ-template + data. HTML הוא אופציונלי —
@@ -7952,6 +8000,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
             published,
             snapshotPageId: activeVisualPageId,
             dataKeys: Object.keys(cleanVisualData || {}),
+            homeDataKeys: Object.keys(homeVisualData || {}),
           },
         });
 
