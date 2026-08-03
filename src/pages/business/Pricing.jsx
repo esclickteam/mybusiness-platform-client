@@ -8,6 +8,7 @@ import {
   Bot,
   CalendarCheck2,
   Check,
+  ChevronDown,
   ChevronLeft,
   ClipboardList,
   Globe,
@@ -113,6 +114,7 @@ export default function Plans() {
   const [loadingPlan, setLoadingPlan] = useState(null);
   const [selectedKeys, setSelectedKeys] = useState(() => new Set());
   const [activeCategory, setActiveCategory] = useState("all");
+  const [upsellsOpen, setUpsellsOpen] = useState(false);
   const [detailKey, setDetailKey] = useState(null);
   const [websiteAddonByPlan, setWebsiteAddonByPlan] = useState({
     monthly: false,
@@ -218,13 +220,12 @@ export default function Plans() {
 
   const categories = useMemo(() => ["all", ...PRICING_CATEGORY_ORDER], []);
 
-  const localizedAddons = useMemo(
-    () =>
-      PRICING_ADDONS.filter((addon) => !addon.hidden).map((addon) =>
-        localizeService(addon, isHe)
-      ),
-    [isHe]
-  );
+  const localizedAddons = useMemo(() => {
+    const publicCategories = new Set(PRICING_CATEGORY_ORDER);
+    return PRICING_ADDONS.filter(
+      (addon) => !addon.hidden && publicCategories.has(addon.category)
+    ).map((addon) => localizeService(addon, isHe));
+  }, [isHe]);
 
   const filteredAddons = useMemo(() => {
     return localizedAddons.filter((addon) => {
@@ -633,7 +634,38 @@ export default function Plans() {
           id="business-services"
           className="relative mx-auto mt-24 max-w-6xl scroll-mt-28 sm:mt-28"
         >
-          <motion.div className="mx-auto max-w-3xl text-center" {...fadeUp}>
+          <div className="flex justify-center">
+            <button
+              type="button"
+              onClick={() =>
+                startTransition(() => setUpsellsOpen((prev) => !prev))
+              }
+              aria-expanded={upsellsOpen}
+              aria-controls="pricing-upsells-panel"
+              className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-7 py-3.5 text-sm font-black text-slate-900 shadow-[0_14px_40px_rgba(15,23,42,0.1)] transition hover:-translate-y-0.5 hover:border-emerald-300 hover:shadow-emerald-100/80"
+            >
+              <Sparkles size={16} className="text-emerald-600" aria-hidden="true" />
+              {t("pricing.upsellsToggle")}
+              <ChevronDown
+                size={18}
+                className={`text-slate-500 transition ${upsellsOpen ? "rotate-180" : ""}`}
+                aria-hidden="true"
+              />
+            </button>
+          </div>
+
+          <AnimatePresence initial={false}>
+            {upsellsOpen ? (
+              <motion.div
+                id="pricing-upsells-panel"
+                key="upsells-panel"
+                initial={reduceMotion ? false : { opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={reduceMotion ? undefined : { opacity: 0, height: 0 }}
+                transition={{ duration: reduceMotion ? 0 : 0.28, ease: "easeOut" }}
+                className="overflow-hidden"
+              >
+          <motion.div className="mx-auto mt-10 max-w-3xl text-center" {...fadeUp}>
             <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-emerald-200/80 bg-white/90 px-4 py-1.5 text-sm font-black text-emerald-700 shadow-lg shadow-emerald-100/50">
               <Sparkles size={14} aria-hidden="true" />
               {t("pricing.upsellsBadge")}
@@ -741,6 +773,9 @@ export default function Plans() {
               </Link>
             </div>
           </motion.div>
+              </motion.div>
+            ) : null}
+          </AnimatePresence>
         </section>
       </main>
 
