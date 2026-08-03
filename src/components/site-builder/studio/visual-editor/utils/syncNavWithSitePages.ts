@@ -4,6 +4,7 @@ import {
   writeVisualContentItem,
 } from "./visualData";
 import { flattenPagesInTreeOrder } from "./pageHierarchyUtils";
+import { VISUAL_SHARED_CHROME_KEY } from "./visualSharedChrome";
 
 export type SitePageNavSource = {
   id?: string;
@@ -216,6 +217,71 @@ function isNavContentElementId(elementId: string) {
   return NAV_CONTENT_PREFIXES.some(
     (prefix) => id === prefix || id.startsWith(`${prefix}.`),
   );
+}
+
+/** True when this visual id is a header/footer menu label (not a CTA button). */
+export function isNavMenuLabelElementId(elementId: string) {
+  return isNavContentElementId(elementId);
+}
+
+/**
+ * Resolve which Site Page a nav menu label element points at.
+ * Used so inline header renames update the Site Menu / page title (Wix-like).
+ */
+export function resolveSitePageForNavContentElement(
+  data: Record<string, any> | null | undefined,
+  elementId: string,
+  sitePages: SitePageNavSource[] | null | undefined,
+  options?: FindNavPageOptions,
+) {
+  const id = String(elementId || "").trim();
+  if (!id || !isNavContentElementId(id)) return null;
+
+  const pages = slimSitePageNavSources(sitePages);
+  if (!pages.length) return null;
+
+  const content = readVisualContent(data || {});
+  const existing = (content[id] || {}) as Record<string, any>;
+  const href = hrefFromContentItem(existing);
+  const boundId = normalizeKey(
+    existing.sitePageId || existing.__sitePageId || "",
+  );
+
+  if (boundId) {
+    const bound =
+      pages.find((page) => normalizeKey(page.id) === boundId) || null;
+    if (bound) return bound;
+  }
+
+  if (href) {
+    const byHref = findSitePageByHref(href, pages);
+    if (byHref) return byHref;
+  }
+
+  const indexMatch = id.match(/\.(\d+)$/);
+  const index = indexMatch ? Number(indexMatch[1]) : -1;
+  const nav = Array.isArray((data as any)?.nav)
+    ? (data as any).nav
+    : Array.isArray((data as any)?.navigation)
+      ? (data as any).navigation
+      : [];
+
+  if (index >= 0 && nav[index]) {
+    const matched = findSitePageForNavItem(nav[index], pages, {
+      href,
+      previousTitleById: options?.previousTitleById,
+    });
+    if (matched) return matched;
+  }
+
+  const token = normalizeKey(id.split(".").pop());
+  if (token && !/^\d+$/.test(token)) {
+    return findSitePageForNavItem({ page: token }, pages, {
+      previousTitleById: options?.previousTitleById,
+    });
+  }
+
+  return null;
 }
 
 function hrefFromContentItem(item: Record<string, any> | null | undefined) {
@@ -827,6 +893,33 @@ export function syncSitePageTitlesIntoVisualData(
 
   next = syncAllNavLikeContent(next, pages, previousTitleById);
   next = syncLinkedPageNameContent(next, pages, previousTitleById);
+
+  /*
+    Keep site-global chrome nav labels in lockstep with Site Page titles.
+    Otherwise a page rename (or header rename → page rename) can leave
+    stale labels in `__sharedChrome` that briefly win on the next page mount.
+  */
+  const sharedChrome = next[VISUAL_SHARED_CHROME_KEY];
+  if (sharedChrome && typeof sharedChrome === "object") {
+    const sharedContentRoot = {
+      __content:
+        sharedChrome.__content && typeof sharedChrome.__content === "object"
+          ? sharedChrome.__content
+          : {},
+    };
+    const syncedShared = syncAllNavLikeContent(
+      sharedContentRoot,
+      pages,
+      previousTitleById,
+    );
+    next = {
+      ...next,
+      [VISUAL_SHARED_CHROME_KEY]: {
+        ...sharedChrome,
+        __content: syncedShared.__content,
+      },
+    };
+  }
 
   return next;
 }

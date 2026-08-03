@@ -8656,6 +8656,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
   activeSitePageId={activePageId}
   onSelectSitePage={handleSelectVisualSitePage}
   onSitePageAction={handleVisualSitePageAction}
+  onRenameSitePage={updatePageTitle}
 />
         <PageSettingsModal
           open={pageSettingsModal.open}

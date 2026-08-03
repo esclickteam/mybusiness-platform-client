@@ -56,6 +56,8 @@ type TemplateVisualEditorProps = {
     currentVisualData?: Record<string, any>,
   ) => void;
   onSitePageAction?: (action: string, pageId: string) => void;
+  /** Rename a Site Page when a header/footer menu label is edited inline. */
+  onRenameSitePage?: (pageId: string, title: string) => void;
   siteId?: string;
 };
 
@@ -255,6 +257,7 @@ export default function TemplateVisualEditor({
   activeSitePageId,
   onSelectSitePage,
   onSitePageAction,
+  onRenameSitePage,
   siteId,
 }: TemplateVisualEditorProps) {
   const baseData = React.useMemo(() => {
@@ -411,6 +414,7 @@ export default function TemplateVisualEditor({
     siteDomain: resolvedSiteDomain,
     activePageId,
     sitePages,
+    onRenameSitePage,
     onSave: handleVisualSave,
     onSiteCustomCodeChange,
   });

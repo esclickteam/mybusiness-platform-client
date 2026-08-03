@@ -90,6 +90,8 @@ import {
 } from "../utils/visualSharedChrome";
 import {
   didSitePageNavSyncChange,
+  isNavMenuLabelElementId,
+  resolveSitePageForNavContentElement,
   syncSitePageTitlesIntoVisualData,
 } from "../utils/syncNavWithSitePages";
 import {
@@ -161,6 +163,11 @@ type UseVisualEditorStateOptions = {
     slug?: string;
     isHome?: boolean;
   }>;
+  /**
+   * Wix-like: renaming a header/footer menu label renames the Site Page
+   * so the change persists across every page (nav sync uses page titles).
+   */
+  onRenameSitePage?: (pageId: string, title: string) => void;
   onSave?: (payload: any) => void | Promise<void>;
   onSiteCustomCodeChange?: (code: VisualCustomCode) => void;
 };
@@ -1114,6 +1121,7 @@ export function useVisualEditorState({
   siteDomain,
   activePageId = "home",
   sitePages = [],
+  onRenameSitePage,
   onSave,
   onSiteCustomCodeChange,
 }: UseVisualEditorStateOptions) {
@@ -1418,6 +1426,38 @@ export function useVisualEditorState({
     [canvasRef],
   );
 
+  const renameSitePageFromNavLabel = useCallback(
+    (elementId: string, nextLabel: string) => {
+      if (!onRenameSitePage || !isNavMenuLabelElementId(elementId)) return;
+
+      const cleanTitle = String(nextLabel || "").trim();
+      if (!cleanTitle) return;
+
+      const matched = resolveSitePageForNavContentElement(
+        dataRef.current || {},
+        elementId,
+        sitePages,
+        { previousTitleById: previousSitePageTitlesRef.current },
+      );
+      const pageId = String(matched?.id || "").trim();
+      if (!pageId) return;
+
+      const currentTitle = String(
+        matched?.title || matched?.name || "",
+      ).trim();
+      if (currentTitle === cleanTitle) return;
+
+      // Keep the sync matcher able to find the page while the rename lands.
+      previousSitePageTitlesRef.current = {
+        ...previousSitePageTitlesRef.current,
+        [pageId]: currentTitle || cleanTitle,
+      };
+
+      onRenameSitePage(pageId, cleanTitle);
+    },
+    [dataRef, onRenameSitePage, sitePages],
+  );
+
   const updateContent = useCallback(
     (elementId: string, patch: Record<string, any>) => {
       if (!elementId) return false;
@@ -1466,12 +1506,17 @@ export function useVisualEditorState({
         return next;
       });
 
+      if (typeof patch.text === "string") {
+        renameSitePageFromNavLabel(elementId, patch.text);
+      }
+
       return true;
     },
     [
       canvasRef,
       dataRef,
       persistPortalAuthControlShellPatch,
+      renameSitePageFromNavLabel,
       selection,
       setData,
     ],
@@ -1518,9 +1563,19 @@ export function useVisualEditorState({
         return next;
       });
 
+      // Menu labels mirror Site Page titles — rename the page so page-switch
+      // sync keeps "דף הבית" (etc.) instead of reverting the old title.
+      renameSitePageFromNavLabel(elementId, text);
+
       return true;
     },
-    [canvasRef, dataRef, persistPortalAuthControlShellPatch, setData],
+    [
+      canvasRef,
+      dataRef,
+      persistPortalAuthControlShellPatch,
+      renameSitePageFromNavLabel,
+      setData,
+    ],
   );
 
   const updateVisualContent = useCallback(
