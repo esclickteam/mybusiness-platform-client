@@ -16,7 +16,9 @@ type PortalKind =
   | "portal-register"
   | "portal-account"
   | "portal-orders"
-  | "portal-cart";
+  | "portal-cart"
+  | "portal-forgot-password"
+  | "portal-reset-password";
 
 type Theme = {
   name: string;
@@ -1526,6 +1528,170 @@ function cartNodes(theme: Theme, index: number): VisualLibraryNodeTemplate[] {
   return layouts[index % layouts.length]();
 }
 
+/**
+ * Password-recovery layouts. Deliberately calmer than the login designs:
+ * one reassuring column plus the form, so the visitor is not distracted.
+ */
+function passwordNodes(
+  theme: Theme,
+  index: number,
+  widget: Extract<
+    PortalKind,
+    "portal-forgot-password" | "portal-reset-password"
+  >,
+  copy: { kicker: string; body: string; formLabel: string },
+): VisualLibraryNodeTemplate[] {
+  const layouts: Array<() => VisualLibraryNodeTemplate[]> = [
+    // Centered card over a soft background
+    () => [
+      boxNode("bg", { backgroundColor: theme.bg }, absoluteLayout(0, 0, "100%", "100%", 1), "רקע"),
+      textNode(
+        "kicker",
+        copy.kicker,
+        {
+          color: theme.ink,
+          fontSize: "38px",
+          fontWeight: "900",
+          lineHeight: "1.15",
+          textAlign: "center",
+        },
+        absoluteLayout(220, 70, 680, 60, 3),
+      ),
+      textNode(
+        "copy",
+        copy.body,
+        {
+          color: theme.muted,
+          fontSize: "16px",
+          fontWeight: "600",
+          lineHeight: "1.7",
+          textAlign: "center",
+        },
+        absoluteLayout(260, 140, 600, 60, 3),
+      ),
+      portalMount(
+        "form",
+        widget,
+        copy.formLabel,
+        absoluteLayout(330, 220, 460, 420, 4),
+        theme,
+        { minHeight: "400px" },
+      ),
+    ],
+    // Photo banner on top, form under it
+    () => [
+      boxNode("bg", { backgroundColor: theme.bg }, absoluteLayout(0, 0, "100%", "100%", 1), "רקע"),
+      imageNode(
+        "photo",
+        theme.photo,
+        { objectFit: "cover", borderRadius: "0px" },
+        absoluteLayout(0, 0, "100%", 260, 2),
+        "אווירה",
+      ),
+      boxNode(
+        "photo-veil",
+        { background: "linear-gradient(180deg, rgba(15,23,42,0.45) 0%, rgba(15,23,42,0.1) 100%)" },
+        absoluteLayout(0, 0, "100%", 260, 3),
+        "שכבה",
+      ),
+      textNode(
+        "kicker",
+        copy.kicker,
+        { color: "#ffffff", fontSize: "40px", fontWeight: "900", lineHeight: "1.1" },
+        absoluteLayout(60, 100, 560, 70, 4),
+      ),
+      portalMount(
+        "form",
+        widget,
+        copy.formLabel,
+        absoluteLayout(300, 300, 520, 400, 5),
+        theme,
+        { minHeight: "380px" },
+      ),
+    ],
+    // Side-by-side: reassurance text left, form right
+    () => [
+      boxNode("bg", { backgroundColor: theme.bg }, absoluteLayout(0, 0, "100%", "100%", 1), "רקע"),
+      boxNode(
+        "panel",
+        { backgroundColor: theme.soft, borderRadius: "32px", border: `1px solid ${theme.line}` },
+        absoluteLayout(60, 80, 440, 480, 2),
+        "פאנל",
+      ),
+      textNode(
+        "kicker",
+        copy.kicker,
+        { color: theme.ink, fontSize: "34px", fontWeight: "900", lineHeight: "1.2" },
+        absoluteLayout(100, 140, 360, 90, 3),
+      ),
+      textNode(
+        "copy",
+        copy.body,
+        { color: theme.muted, fontSize: "15px", fontWeight: "600", lineHeight: "1.7" },
+        absoluteLayout(100, 250, 360, 120, 3),
+      ),
+      portalMount(
+        "form",
+        widget,
+        copy.formLabel,
+        absoluteLayout(560, 80, 480, 480, 4),
+        theme,
+        { minHeight: "460px" },
+      ),
+    ],
+  ];
+
+  return layouts[index % layouts.length]();
+}
+
+function buildForgotPasswordSections(): VisualLibrarySectionTemplate[] {
+  return THEMES.map((theme, index) =>
+    makeSection(
+      `section-portal-forgot-password-${String(index + 1).padStart(2, "0")}`,
+      `שכחתי סיסמה — ${theme.name}`,
+      "בקשת קישור לאיפוס סיסמה, נשלח במייל ללקוח האתר",
+      [
+        "forgot",
+        "שכחתי סיסמה",
+        "איפוס",
+        "password",
+        "portal-forgot-password",
+      ],
+      theme,
+      "660px",
+      passwordNodes(theme, index, "portal-forgot-password", {
+        kicker: "שכחתם סיסמה?",
+        body: "הזינו את האימייל שאיתו נרשמתם ונשלח קישור לבחירת סיסמה חדשה.",
+        formLabel: "טופס שכחתי סיסמה",
+      }),
+    ),
+  );
+}
+
+function buildResetPasswordSections(): VisualLibrarySectionTemplate[] {
+  return THEMES.map((theme, index) =>
+    makeSection(
+      `section-portal-reset-password-${String(index + 1).padStart(2, "0")}`,
+      `סיסמה חדשה — ${theme.name}`,
+      "עמוד בחירת סיסמה חדשה מתוך הקישור שנשלח במייל",
+      [
+        "reset",
+        "סיסמה חדשה",
+        "איפוס סיסמה",
+        "password",
+        "portal-reset-password",
+      ],
+      theme,
+      "660px",
+      passwordNodes(theme, index, "portal-reset-password", {
+        kicker: "בחירת סיסמה חדשה",
+        body: "בחרו סיסמה חדשה לאזור האישי. הקישור תקף לזמן מוגבל.",
+        formLabel: "טופס סיסמה חדשה",
+      }),
+    ),
+  );
+}
+
 function buildLoginSections(): VisualLibrarySectionTemplate[] {
   return THEMES.map((theme, index) =>
     makeSection(
@@ -1631,6 +1797,8 @@ export const PORTAL_SHOWCASE_SECTIONS: VisualLibrarySectionTemplate[] = [
   ...buildAccountSections(),
   ...buildOrdersSections(),
   ...buildCartSections(),
+  ...buildForgotPasswordSections(),
+  ...buildResetPasswordSections(),
   ...legacyAliases,
 ];
 
@@ -1640,4 +1808,6 @@ export const PORTAL_SECTION_KIND_PREFIX: Record<string, string> = {
   account: "section-portal-account-",
   orders: "section-portal-orders-",
   cart: "section-portal-cart-",
+  "forgot-password": "section-portal-forgot-password-",
+  "reset-password": "section-portal-reset-password-",
 };

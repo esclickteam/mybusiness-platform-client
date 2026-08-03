@@ -149,6 +149,56 @@ export async function sitePortalRegister(input: {
   return data;
 }
 
+export async function sitePortalForgotPassword(input: {
+  email: string;
+  host?: string;
+  siteId?: string;
+  slug?: string;
+  /** Path of the designed "choose a new password" page on this site. */
+  resetPath?: string;
+}): Promise<{ success: true; message?: string }> {
+  return portalFetch<{ success: true; message?: string }>(
+    "/public/portal/forgot-password",
+    {
+      method: "POST",
+      body: {
+        email: input.email,
+        host:
+          input.host ||
+          (typeof window !== "undefined" ? window.location.host : ""),
+        siteId: input.siteId,
+        slug: input.slug,
+        resetPath: input.resetPath,
+      },
+    }
+  );
+}
+
+export async function sitePortalResetPassword(input: {
+  token: string;
+  password: string;
+}): Promise<{
+  token: string;
+  member: SitePortalMember;
+  site: SitePortalSiteInfo | null;
+}> {
+  const data = await portalFetch<{
+    success: true;
+    token: string;
+    member: SitePortalMember;
+    site: SitePortalSiteInfo | null;
+  }>("/public/portal/reset-password", {
+    method: "POST",
+    body: { token: input.token, password: input.password },
+  });
+
+  if (data.site?.id && data.token) {
+    setSitePortalToken(data.site.id, data.token);
+  }
+
+  return data;
+}
+
 export async function sitePortalMe(siteId: string) {
   return portalFetch<{
     success: true;

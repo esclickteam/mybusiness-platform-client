@@ -5958,10 +5958,13 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       const keywords = Array.isArray(pageTemplate.keywords)
         ? pageTemplate.keywords.map(String)
         : [];
+      // Sign-in, sign-up and password recovery must stay reachable to guests.
       const isPublicAuthPage =
-        /^(login|register)(-|$)/.test(slug) ||
+        /^(login|register|forgot-password|reset-password)(-|$)/.test(slug) ||
         keywords.includes("portal-login") ||
-        keywords.includes("portal-register");
+        keywords.includes("portal-register") ||
+        keywords.includes("portal-forgot-password") ||
+        keywords.includes("portal-reset-password");
       portalConfig.loginRequired = !isPublicAuthPage;
     }
 
