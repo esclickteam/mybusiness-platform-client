@@ -1993,7 +1993,8 @@
       },
       "profile": {
         "title": "Client Profile",
-        "subtitle": "Basic contact details. Documentation, tasks, and files appear below.",
+        "subtitle": "Edit or add name, phone, email, and address directly in the client file.",
+        "editFields": "Edit details",
         "fullName": "Full Name",
         "phone": "Phone",
         "email": "Email",
