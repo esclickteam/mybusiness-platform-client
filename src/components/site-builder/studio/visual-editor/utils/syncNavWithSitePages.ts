@@ -225,6 +225,82 @@ export function isNavMenuLabelElementId(elementId: string) {
 }
 
 /**
+ * Beauty templates often auto-id header nav buttons without `.nav.` in the id.
+ * Resolve the Site Page from DOM position / previous label so renames stay global.
+ */
+export function resolveSitePageForHeaderNavDomEdit(
+  root: HTMLElement | null | undefined,
+  elementId: string,
+  sitePages: SitePageNavSource[] | null | undefined,
+  options?: FindNavPageOptions & { previousText?: string },
+) {
+  const id = String(elementId || "").trim();
+  if (!id || !root) return null;
+
+  const escapedId =
+    typeof CSS !== "undefined" && typeof CSS.escape === "function"
+      ? CSS.escape(id)
+      : id.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+  const node = root.querySelector(
+    `[data-visual-edit-id="${escapedId}"]`,
+  ) as HTMLElement | null;
+  if (!node) return null;
+
+  const nav = node.closest("nav");
+  if (!nav) return null;
+  if (!node.closest('header, [data-section-kind="header"], [data-template-section-type="header"]')) {
+    return null;
+  }
+
+  const pages = slimSitePageNavSources(sitePages).filter(
+    (page) => !page.hiddenFromMenu,
+  );
+  if (!pages.length) return null;
+
+  const previousText = String(options?.previousText || "").trim();
+  if (previousText) {
+    const byTitle = pages.filter((page) => {
+      const title = pageTitle(page);
+      const pageId = String(page.id || "");
+      return (
+        title === previousText ||
+        String(options?.previousTitleById?.[pageId] || "") === previousText
+      );
+    });
+    if (byTitle.length === 1) return byTitle[0];
+  }
+
+  const items = Array.from(
+    nav.querySelectorAll<HTMLElement>("a[data-visual-edit-id], button[data-visual-edit-id], a, button"),
+  ).filter((entry) => {
+    if (entry.closest("[data-bizuply-nav-submenu]")) return false;
+    return entry.closest("nav") === nav;
+  });
+
+  // Prefer only top-level direct-ish triggers (unique by edit id / node).
+  const unique: HTMLElement[] = [];
+  const seen = new Set<string>();
+  items.forEach((entry) => {
+    const key =
+      String(entry.getAttribute("data-visual-edit-id") || "").trim() ||
+      `node:${unique.length}`;
+    if (seen.has(key)) return;
+    seen.add(key);
+    unique.push(entry);
+  });
+
+  const index = unique.indexOf(node);
+  if (index < 0) return null;
+
+  const topLevel = pages.filter((page) => {
+    const parentId = pageParentId(page);
+    return !parentId || parentId === page.id || !pages.some((p) => p.id === parentId);
+  });
+
+  return topLevel[index] || null;
+}
+
+/**
  * Resolve which Site Page a nav menu label element points at.
  * Used so inline header renames update the Site Menu / page title (Wix-like).
  */

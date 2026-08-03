@@ -5,6 +5,7 @@ import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
 import { useCrmBookingServiceData } from "../shared/useCrmBookingServiceData";
 import { nailoraEditorCss } from "./editorCss";
 import { Reveal } from "../shared/Reveal";
+import { BeautyHeaderNav } from "../shared/BeautyHeaderNav";
 
 export const nailoraPages = [
   { id: "home", label: "בית", slug: "/" },
@@ -58,7 +59,18 @@ function Header({ data, currentPage, goTo }: { data: Record<string, any>; curren
     <header data-visual-flow-lock="true" data-template-section-type="header" data-section-kind="header" className="sticky top-0 z-50 rounded-b-[2rem] beauty-candyPop-header-v1 bg-[var(--bg)]/95 text-[var(--text)] shadow-[0_12px_40px_rgba(0,0,0,0.08)] backdrop-blur">
       <div className="mx-auto flex max-w-6xl flex-col gap-3 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
         <button type="button" onClick={() => goTo("home")} className="t-display text-3xl font-bold text-[var(--p)]">{getValue(data,"brandName")}</button>
-        <nav className="flex flex-wrap justify-center gap-2">{[{"id":"home","label":getValue(data,"navHome")||"בית"},{"id":"about","label":getValue(data,"navAbout")||"אודות"},{"id":"services","label":getValue(data,"navServices")||"שירותים"},{"id":"booking","label":getValue(data,"navBooking")||"תורים"}].map((p) => (<button key={p.id} type="button" onClick={() => goTo(p.id)} className={"rounded-full px-3 py-1.5 text-sm " + (currentPage===p.id ? "bg-[var(--p)] text-white" : "bg-[var(--surface)] text-[var(--muted)]")}>{p.label}</button>))}</nav>
+        <BeautyHeaderNav
+          data={data}
+          currentPage={currentPage}
+          goTo={goTo}
+          className="flex flex-wrap justify-center gap-2"
+          itemClassName={(_item, active) =>
+            "rounded-full px-3 py-1.5 text-sm " +
+            (active
+              ? "bg-[var(--p)] text-white"
+              : "bg-[var(--surface)] text-[var(--muted)]")
+          }
+        />
         <button type="button" onClick={() => goTo("booking")} className="px-6 py-2 text-sm font-bold rounded-full bg-[var(--p)] text-white">{getValue(data,"heroPrimaryButton")}</button>
       </div>
     </header>

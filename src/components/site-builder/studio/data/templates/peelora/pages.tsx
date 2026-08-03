@@ -5,6 +5,7 @@ import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
 import { useCrmBookingServiceData } from "../shared/useCrmBookingServiceData";
 import { peeloraEditorCss } from "./editorCss";
 import { Reveal } from "../shared/Reveal";
+import { BeautyHeaderNav } from "../shared/BeautyHeaderNav";
 
 export const peeloraPages = [
   { id: "home", label: "בית", slug: "/" },
@@ -59,7 +60,15 @@ function Header({ data, currentPage, goTo }: { data: Record<string, any>; curren
     <div className="mx-auto flex max-w-7xl items-center gap-5 px-5 py-4 lg:px-8">
       <button type="button" onClick={() => goTo("home")} className="t-display text-xl font-bold tracking-[0.18em] text-[var(--p)]">{getValue(data,"brandName")}</button>
       <div className="hidden h-px flex-1 bg-[var(--p)]/30 md:block" />
-      <nav className="hidden gap-4 text-xs font-bold uppercase tracking-[0.18em] md:flex">{[{"id":"home","label":getValue(data,"navHome")||"בית"},{"id":"about","label":getValue(data,"navAbout")||"אודות"},{"id":"services","label":getValue(data,"navServices")||"שירותים"},{"id":"booking","label":getValue(data,"navBooking")||"תורים"}].map((p) => (<button key={p.id} type="button" onClick={() => goTo(p.id)} className={currentPage===p.id ? "text-[var(--p)]" : "text-[var(--muted)]"}>{p.label}</button>))}</nav>
+      <BeautyHeaderNav
+        data={data}
+        currentPage={currentPage}
+        goTo={goTo}
+        className="hidden gap-4 text-xs font-bold uppercase tracking-[0.18em] md:flex"
+        itemClassName={(_item, active) =>
+          active ? "text-[var(--p)]" : "text-[var(--muted)]"
+        }
+      />
       <button type="button" onClick={() => goTo("booking")} className="mr-auto px-4 py-2 text-xs font-bold bg-[var(--p)] text-white">{getValue(data,"heroPrimaryButton")}</button>
     </div>
   </header>

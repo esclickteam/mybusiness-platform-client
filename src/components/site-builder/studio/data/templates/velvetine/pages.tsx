@@ -5,6 +5,7 @@ import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
 import { useCrmBookingServiceData } from "../shared/useCrmBookingServiceData";
 import { velvetineEditorCss } from "./editorCss";
 import { Reveal } from "../shared/Reveal";
+import { BeautyHeaderNav } from "../shared/BeautyHeaderNav";
 
 export const velvetinePages = [
   { id: "home", label: "בית", slug: "/" },
@@ -58,7 +59,15 @@ function Header({ data, currentPage, goTo }: { data: Record<string, any>; curren
     <header data-visual-flow-lock="true" data-template-section-type="header" data-section-kind="header" className="sticky top-0 z-50 beauty-noirGold-header-v0 border-b border-[var(--p)]/25 bg-[var(--dark)]/90 text-[var(--text)] backdrop-blur-xl">
       <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 lg:px-8">
         <button type="button" onClick={() => goTo("home")} className="flex shrink-0 items-center gap-3">{getValue(data,"logoImage") ? (<span className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full"><img src={getValue(data,"logoImage")} alt="" className="h-10 w-10 max-h-10 max-w-10 object-cover" /></span>) : null}<span className="t-display text-3xl text-[var(--p)]">{getValue(data,"brandName")}</span></button>
-        <nav className="hidden gap-6 text-sm md:flex">{[{"id":"home","label":getValue(data,"navHome")||"בית"},{"id":"about","label":getValue(data,"navAbout")||"אודות"},{"id":"services","label":getValue(data,"navServices")||"שירותים"},{"id":"booking","label":getValue(data,"navBooking")||"תורים"}].map((p) => (<button key={p.id} type="button" onClick={() => goTo(p.id)} className={currentPage===p.id ? "font-bold text-[var(--p)]" : "text-[var(--muted)]"}>{p.label}</button>))}</nav>
+        <BeautyHeaderNav
+        data={data}
+        currentPage={currentPage}
+        goTo={goTo}
+        className="hidden gap-6 text-sm md:flex"
+        itemClassName={(_item, active) =>
+          active ? "font-bold text-[var(--p)]" : "text-[var(--muted)]"
+        }
+      />
         <button type="button" onClick={() => goTo("booking")} className="t-pulse px-5 py-2.5 text-sm font-bold bg-[var(--p)] text-[var(--dark)]">{getValue(data,"heroPrimaryButton")}</button>
       </div>
     </header>

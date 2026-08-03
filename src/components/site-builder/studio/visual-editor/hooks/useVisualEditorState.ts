@@ -92,6 +92,7 @@ import {
 import {
   didSitePageNavSyncChange,
   isNavMenuLabelElementId,
+  resolveSitePageForHeaderNavDomEdit,
   resolveSitePageForNavContentElement,
   syncSitePageTitlesIntoVisualData,
 } from "../utils/syncNavWithSitePages";
@@ -1428,18 +1429,39 @@ export function useVisualEditorState({
   );
 
   const renameSitePageFromNavLabel = useCallback(
-    (elementId: string, nextLabel: string) => {
-      if (!onRenameSitePage || !isNavMenuLabelElementId(elementId)) return;
+    (elementId: string, nextLabel: string, previousText = "") => {
+      if (!onRenameSitePage || !elementId) return;
 
       const cleanTitle = String(nextLabel || "").trim();
       if (!cleanTitle) return;
 
-      const matched = resolveSitePageForNavContentElement(
-        dataRef.current || {},
-        elementId,
-        sitePages,
-        { previousTitleById: previousSitePageTitlesRef.current },
-      );
+      const previousTitleById = previousSitePageTitlesRef.current;
+      let matched = isNavMenuLabelElementId(elementId)
+        ? resolveSitePageForNavContentElement(
+            dataRef.current || {},
+            elementId,
+            sitePages,
+            { previousTitleById },
+          )
+        : null;
+
+      /*
+        Beauty templates (Petaluxe etc.) auto-id header nav buttons without
+        `.nav.` in the id. Fall back to DOM position / previous label so a
+        rename like "דף הבית" → "בית" stays global across every page.
+      */
+      if (!matched && isChromeVisualElementId(elementId)) {
+        matched = resolveSitePageForHeaderNavDomEdit(
+          canvasRef.current,
+          elementId,
+          sitePages,
+          {
+            previousTitleById,
+            previousText: String(previousText || "").trim(),
+          },
+        );
+      }
+
       const pageId = String(matched?.id || "").trim();
       if (!pageId) return;
 
@@ -1456,7 +1478,7 @@ export function useVisualEditorState({
 
       onRenameSitePage(pageId, cleanTitle);
     },
-    [dataRef, onRenameSitePage, sitePages],
+    [canvasRef, dataRef, onRenameSitePage, sitePages],
   );
 
   const updateContent = useCallback(
@@ -1520,7 +1542,7 @@ export function useVisualEditorState({
       });
 
       if (typeof patch.text === "string") {
-        renameSitePageFromNavLabel(elementId, patch.text);
+        renameSitePageFromNavLabel(elementId, patch.text, previousText);
       }
 
       return true;
@@ -1592,7 +1614,7 @@ export function useVisualEditorState({
 
       // Menu labels mirror Site Page titles — rename the page so page-switch
       // sync keeps "דף הבית" (etc.) instead of reverting the old title.
-      renameSitePageFromNavLabel(elementId, text);
+      renameSitePageFromNavLabel(elementId, text, previousText);
 
       return true;
     },

@@ -5,6 +5,7 @@ import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
 import { useCrmBookingServiceData } from "../shared/useCrmBookingServiceData";
 import { silkbarEditorCss } from "./editorCss";
 import { Reveal } from "../shared/Reveal";
+import { BeautyHeaderNav } from "../shared/BeautyHeaderNav";
 
 export const silkbarPages = [
   { id: "home", label: "בית", slug: "/" },
@@ -57,7 +58,15 @@ function Header({ data, currentPage, goTo }: { data: Record<string, any>; curren
   return (
     <header data-visual-flow-lock="true" data-template-section-type="header" data-section-kind="header" className="sticky top-0 z-50 beauty-shearInk-header-v3 border-b border-[var(--p)]/20 bg-[var(--surface)]/95 text-[var(--text)] backdrop-blur-xl">
       <div className="mx-auto grid max-w-7xl grid-cols-[1fr_auto_1fr] items-center gap-4 px-5 py-3 lg:px-8">
-        <nav className="hidden justify-self-start gap-5 text-sm md:flex">{[{"id":"home","label":getValue(data,"navHome")||"בית"},{"id":"about","label":getValue(data,"navAbout")||"אודות"},{"id":"services","label":getValue(data,"navServices")||"שירותים"},{"id":"booking","label":getValue(data,"navBooking")||"תורים"}].map((p) => (<button key={p.id} type="button" onClick={() => goTo(p.id)} className={currentPage===p.id ? "font-bold text-[var(--p)]" : "text-[var(--muted)]"}>{p.label}</button>))}</nav>
+        <BeautyHeaderNav
+        data={data}
+        currentPage={currentPage}
+        goTo={goTo}
+        className="hidden justify-self-start gap-5 text-sm md:flex"
+        itemClassName={(_item, active) =>
+          active ? "font-bold text-[var(--p)]" : "text-[var(--muted)]"
+        }
+      />
         <button type="button" onClick={() => goTo("home")} className="t-display justify-self-center text-2xl font-bold">{getValue(data,"brandName")}</button>
         <button type="button" onClick={() => goTo("booking")} className="justify-self-end px-4 py-2 text-sm font-bold bg-[var(--p)] text-white">{getValue(data,"heroPrimaryButton")}</button>
       </div>
