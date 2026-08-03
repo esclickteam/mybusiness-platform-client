@@ -1944,9 +1944,11 @@
       },
       "communication": {
         "title": "Communication history",
-        "subtitle": "WhatsApp messages and calls logged with this client.",
-        "emptyTitle": "No communication yet",
-        "emptyDescription": "WhatsApp messages and call summaries will appear here once they start.",
+        "subtitle": "Messages from BizUply WhatsApp Business (not personal WhatsApp on your phone).",
+        "emptyTitle": "No synced messages yet",
+        "emptyDescription": "Only messages sent or received through the WhatsApp Business account connected in BizUply appear here. Personal WhatsApp is not synced automatically — clicking WhatsApp logs a contact entry under Documentation.",
+        "loggedWhatsAppContact": "WhatsApp contact started (chat opened to send a message).",
+        "openDocumentation": "Open documentation",
         "outbound": "Sent by business",
         "inbound": "Received from client"
       },

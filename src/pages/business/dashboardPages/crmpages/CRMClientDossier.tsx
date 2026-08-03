@@ -158,6 +158,34 @@ function isolateLtr(value: string) {
   return `\u2066${value}\u2069`;
 }
 
+async function logClientWhatsAppContact({
+  clientId,
+  text,
+  previousActivities,
+  onActivitiesChange,
+}: {
+  clientId: string;
+  text: string;
+  previousActivities: ClientActivity[];
+  onActivitiesChange: (activities: ClientActivity[]) => void;
+}) {
+  const { data } = await API.post<{
+    success?: boolean;
+    activity?: ClientActivity;
+    client?: { activities?: ClientActivity[] };
+  }>(`/crm-clients/${clientId}/activities`, {
+    type: "whatsapp",
+    text,
+    occurredAt: new Date().toISOString(),
+  });
+
+  if (Array.isArray(data?.client?.activities)) {
+    onActivitiesChange(data.client.activities);
+  } else if (data?.activity) {
+    onActivitiesChange([data.activity, ...previousActivities]);
+  }
+}
+
 function getInitials(name: string) {
   return name
     .split(" ")
@@ -268,6 +296,25 @@ export default function CRMClientDossier({
       return;
     }
     onEdit?.();
+  };
+
+  const openWhatsAppAndLog = async () => {
+    if (!whatsappPhone) return;
+    window.open(
+      `https://wa.me/${whatsappPhone}`,
+      "_blank",
+      "noopener,noreferrer"
+    );
+    try {
+      await logClientWhatsAppContact({
+        clientId: client._id,
+        text: t("crm.clients.communication.loggedWhatsAppContact"),
+        previousActivities: client.activities || [],
+        onActivitiesChange,
+      });
+    } catch (err) {
+      console.error("Log WhatsApp contact error:", err);
+    }
   };
 
   const openTasks = useMemo(
@@ -411,15 +458,14 @@ export default function CRMClientDossier({
             </span>
 
             {whatsappPhone && (
-              <a
-                href={`https://wa.me/${whatsappPhone}`}
-                target="_blank"
-                rel="noreferrer"
+              <button
+                type="button"
+                onClick={openWhatsAppAndLog}
                 className="inline-flex h-10 items-center gap-2 rounded-xl bg-sky-50 px-3 text-sm font-black text-sky-700 ring-1 ring-sky-100 transition hover:bg-sky-100"
               >
                 <MessageCircle className="h-4 w-4" />
                 <span className="hidden sm:inline">{t("crm.common.whatsapp")}</span>
-              </a>
+              </button>
             )}
 
             {client.phone && (
@@ -690,6 +736,8 @@ export default function CRMClientDossier({
                 emDash={emDash}
                 whatsappPhone={whatsappPhone}
                 phone={client.phone}
+                onOpenWhatsApp={openWhatsAppAndLog}
+                onGoDocumentation={() => setActiveTab("documentation")}
               />
             )}
 
@@ -1537,6 +1585,8 @@ function CommunicationPanel({
   emDash,
   whatsappPhone,
   phone,
+  onOpenWhatsApp,
+  onGoDocumentation,
 }: {
   messages: unknown[];
   loading: boolean;
@@ -1544,6 +1594,8 @@ function CommunicationPanel({
   emDash: string;
   whatsappPhone: string;
   phone?: string;
+  onOpenWhatsApp?: () => void;
+  onGoDocumentation?: () => void;
 }) {
   const { t } = useTranslation();
 
@@ -1560,15 +1612,14 @@ function CommunicationPanel({
         </div>
         <div className="flex gap-2">
           {whatsappPhone && (
-            <a
-              href={`https://wa.me/${whatsappPhone}`}
-              target="_blank"
-              rel="noreferrer"
+            <button
+              type="button"
+              onClick={onOpenWhatsApp}
               className="inline-flex h-10 items-center gap-2 rounded-xl bg-sky-50 px-3 text-sm font-black text-sky-700 ring-1 ring-sky-100"
             >
               <MessageCircle className="h-4 w-4" />
               {t("crm.common.whatsapp")}
-            </a>
+            </button>
           )}
           {phone && (
             <a
@@ -1592,9 +1643,18 @@ function CommunicationPanel({
           <h4 className="mt-3 text-xl font-black text-slate-800">
             {t("crm.clients.communication.emptyTitle")}
           </h4>
-          <p className="mt-2 text-sm font-bold text-slate-500">
+          <p className="mx-auto mt-2 max-w-lg text-sm font-bold text-slate-500">
             {t("crm.clients.communication.emptyDescription")}
           </p>
+          {onGoDocumentation && (
+            <button
+              type="button"
+              onClick={onGoDocumentation}
+              className="mt-4 inline-flex h-10 items-center justify-center rounded-xl border border-violet-100 bg-violet-50 px-4 text-sm font-black text-violet-700 transition hover:bg-violet-100"
+            >
+              {t("crm.clients.communication.openDocumentation")}
+            </button>
+          )}
         </div>
       ) : (
         <div className="space-y-2">
