@@ -988,13 +988,11 @@ function ActivityTimeline({
                         onClick={() => {
                           openCrmAttachment(attachment).catch((err) => {
                             console.error("Open attachment failed:", err);
-                            if (attachment.url) {
-                              window.open(
-                                attachment.url,
-                                "_blank",
-                                "noopener,noreferrer"
-                              );
-                            }
+                            alert(
+                              err instanceof Error
+                                ? err.message
+                                : t("crm.clients.documentation.errors.uploadFailed")
+                            );
                           });
                         }}
                         className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-black text-slate-700 transition hover:bg-slate-50"

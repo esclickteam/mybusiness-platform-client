@@ -64,84 +64,86 @@ export function parseCloudinaryDeliveryUrl(url: string): {
     publicId = path.slice(0, lastDot);
   }
 
+  // Repair copies were stored as <original>_rawdoc.pdf
+  publicId = publicId.replace(/_rawdoc$/i, "");
+
   if (!publicId) return null;
   return { resourceType, publicId, format };
 }
 
-function preferredResourceType(attachment: CrmAttachmentLike) {
-  const explicit = String(attachment.resourceType || "").toLowerCase();
-  if (explicit === "raw" || explicit === "image" || explicit === "video") {
-    return explicit;
-  }
-  if (isDocumentAttachment(attachment)) return "raw";
-  if (isImageAttachment(attachment)) return "image";
-  return "raw";
-}
-
-/** Resolve a short-lived openable URL for CRM attachments (esp. PDFs). */
-export async function resolveCrmAttachmentOpenUrl(
-  attachment: CrmAttachmentLike
-): Promise<string> {
+/** Open CRM attachments; PDFs are streamed via API because Cloudinary delivery returns 401. */
+export async function openCrmAttachment(attachment: CrmAttachmentLike) {
   const direct = String(attachment.url || "").trim();
   if (!direct) throw new Error("חסר קישור לקובץ");
 
   if (isImageAttachment(attachment)) {
-    return direct;
+    window.open(direct, "_blank", "noopener,noreferrer");
+    return;
   }
 
   const parsed = parseCloudinaryDeliveryUrl(direct);
-  const publicId = String(attachment.publicId || parsed?.publicId || "").trim();
-  if (!publicId) return direct;
+  const publicId = String(attachment.publicId || parsed?.publicId || "")
+    .trim()
+    .replace(/_rawdoc$/i, "");
 
-  const resourceType = preferredResourceType({
-    ...attachment,
-    resourceType: attachment.resourceType || parsed?.resourceType,
-  });
+  if (!publicId) {
+    window.open(direct, "_blank", "noopener,noreferrer");
+    return;
+  }
 
   const format =
     parsed?.format ||
     String(attachment.name || "").match(/\.([a-z0-9]+)$/i)?.[1] ||
-    "";
+    "pdf";
 
-  // Existing PDFs were often stored as image/* and blocked by Cloudinary ACL.
-  // Ask the server for a signed/private URL, trying image first when URL says so.
-  const resourceCandidates = Array.from(
-    new Set(
-      [
-        parsed?.resourceType,
-        resourceType,
-        isDocumentAttachment(attachment) ? "image" : "",
-        "raw",
-      ].filter(Boolean)
-    )
-  );
+  // Prefer the original image-stored PDF; server also tries raw variants.
+  const resourceType = String(
+    attachment.resourceType || parsed?.resourceType || "image"
+  ).toLowerCase();
 
-  let lastError: unknown = null;
-  for (const candidate of resourceCandidates) {
+  const response = await API.get<Blob>("/media/file", {
+    params: {
+      publicId,
+      resourceType: resourceType === "raw" ? "image" : resourceType || "image",
+      format,
+      filename: attachment.name || undefined,
+    },
+    responseType: "blob",
+  });
+
+  const contentType =
+    String(response.headers?.["content-type"] || "").split(";")[0] ||
+    attachment.mimeType ||
+    "application/pdf";
+
+  // API error payloads can arrive as JSON blobs when responseType=blob.
+  if (contentType.includes("application/json")) {
+    const text = await response.data.text();
+    let message = "פתיחת הקובץ נכשלה";
     try {
-      const { data } = await API.get<{
-        ok?: boolean;
-        url?: string;
-        message?: string;
-      }>("/media/file-url", {
-        params: {
-          publicId,
-          resourceType: candidate,
-          format,
-          filename: attachment.name || undefined,
-        },
-      });
-      if (data?.url) return String(data.url);
-    } catch (err) {
-      lastError = err;
+      message = JSON.parse(text)?.message || message;
+    } catch {
+      /* keep default */
     }
+    throw new Error(message);
   }
 
-  if (lastError) throw lastError;
-  return direct;
-}
+  const blob = new Blob([response.data], { type: contentType });
+  const objectUrl = URL.createObjectURL(blob);
+  const opened = window.open(objectUrl, "_blank", "noopener,noreferrer");
 
-export async function openCrmAttachment(attachment: CrmAttachmentLike) {
-  const url = await resolveCrmAttachmentOpenUrl(attachment);
-  window.open(url, "_blank", "noopener,noreferrer");
+  // Revoke after the tab has a chance to load the blob.
+  window.setTimeout(() => URL.revokeObjectURL(objectUrl), 60_000);
+
+  if (!opened) {
+    // Popup blocked — fall back to download navigation in same tab context.
+    const anchor = document.createElement("a");
+    anchor.href = objectUrl;
+    anchor.target = "_blank";
+    anchor.rel = "noopener noreferrer";
+    anchor.download = attachment.name || `document.${format}`;
+    document.body.appendChild(anchor);
+    anchor.click();
+    anchor.remove();
+  }
 }

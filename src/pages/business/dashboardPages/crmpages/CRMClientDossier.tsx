@@ -1889,9 +1889,11 @@ function FilesPanel({
               onClick={() => {
                 openCrmAttachment(file).catch((err) => {
                   console.error("Open file failed:", err);
-                  if (file.url) {
-                    window.open(file.url, "_blank", "noopener,noreferrer");
-                  }
+                  alert(
+                    err instanceof Error
+                      ? err.message
+                      : t("crm.clients.documentation.errors.uploadFailed")
+                  );
                 });
               }}
               className="group overflow-hidden rounded-3xl border border-slate-100 bg-slate-50 text-start transition hover:-translate-y-0.5 hover:border-violet-100 hover:bg-white hover:shadow-lg"
