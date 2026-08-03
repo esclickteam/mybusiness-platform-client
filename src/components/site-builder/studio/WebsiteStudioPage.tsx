@@ -2201,20 +2201,6 @@ function createPagesFromTemplateSeed(
  * saved one page. Overlay saved visual data onto matching ids, then append
  * extra library/custom pages that are not part of the template.
  */
-/**
- * Header/footer render from the shared chrome. Stale page-level chrome would
- * shadow it, so it is dropped — but only once shared chrome exists, otherwise
- * a site that never re-published would lose its header edits.
- */
-function applySharedChromeToEditorData(
-  data: Record<string, any>,
-  sharedChrome: Record<string, any>,
-) {
-  if (!Object.keys(asPlainObject(sharedChrome)).length) return data;
-
-  return stripChromeFromVisualData(data);
-}
-
 function enforceSingleCanonicalHome(
   pages: StudioSitePageWithPortal[],
 ): StudioSitePageWithPortal[] {
@@ -8470,24 +8456,27 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
   businessId={businessId}
   key={`${selectedTemplateRenderer.key || selectedTemplateSeed?.id || "visual"}-${businessId || "business"}-${activePageId || "home"}`}
   initialData={{
-    ...applySharedChromeToEditorData(
-      mergeVisualRootData(
-        selectedTemplateRenderer.defaultData as Record<string, any>,
-        extractVisualDataFromPayload({
-          data: (selectedTemplateSeed as any)?.data,
-          templateData: (selectedTemplateSeed as any)?.templateData,
-        }),
-        serverVisualTemplateData || {},
-        visualSessionData,
-        extractVisualDataFromPayload({
-          data: (activePage as any)?.data,
-          templateData: (activePage as any)?.templateData,
-          projectData: (activePage as any)?.projectData,
-          visualEditorPayload:
-            (activePage as any)?.visualEditorPayload,
-        }),
-      ),
-      latestSharedChrome,
+    /*
+      Never strip this page's own header/footer edits here. Doing so replaced
+      the newest edit with an older shared copy, which looked like the editor
+      reverting every change. Pages that must follow the shared chrome are
+      cleaned at publish time instead.
+    */
+    ...mergeVisualRootData(
+      selectedTemplateRenderer.defaultData as Record<string, any>,
+      extractVisualDataFromPayload({
+        data: (selectedTemplateSeed as any)?.data,
+        templateData: (selectedTemplateSeed as any)?.templateData,
+      }),
+      serverVisualTemplateData || {},
+      visualSessionData,
+      extractVisualDataFromPayload({
+        data: (activePage as any)?.data,
+        templateData: (activePage as any)?.templateData,
+        projectData: (activePage as any)?.projectData,
+        visualEditorPayload:
+          (activePage as any)?.visualEditorPayload,
+      }),
     ),
     // Header/footer come from the site-wide chrome, not from this page.
     [VISUAL_SHARED_CHROME_KEY]: latestSharedChrome,
