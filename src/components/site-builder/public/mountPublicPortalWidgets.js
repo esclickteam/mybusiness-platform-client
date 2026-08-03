@@ -1,5 +1,6 @@
 import {
   sitePortalLogin,
+  sitePortalRegister,
   sitePortalMe,
   sitePortalMyOrders,
   sitePortalLogout,
@@ -163,6 +164,201 @@ function mountLogin(container, { siteId, host, siteName }) {
   wrap.appendChild(password);
   wrap.appendChild(errorBox);
   wrap.appendChild(submit);
+
+  const registerLink = document.createElement("a");
+  registerLink.href = "/register";
+  registerLink.textContent = "אין לכם חשבון? הרשמה";
+  Object.assign(registerLink.style, {
+    display: "inline-block",
+    marginTop: "14px",
+    color: "#0284c7",
+    fontSize: "13px",
+    fontWeight: "800",
+    textDecoration: "none",
+  });
+  wrap.appendChild(registerLink);
+
+  container.appendChild(wrap);
+}
+
+function mountRegister(container, { siteId, host, siteName }) {
+  clearMount(container);
+  container.dir = "rtl";
+
+  const wrap = el("div", {
+    padding: "28px",
+    fontFamily: "inherit",
+    color: "#0f172a",
+  });
+
+  wrap.appendChild(
+    el(
+      "div",
+      {
+        fontSize: "12px",
+        fontWeight: "800",
+        color: "#0284c7",
+        marginBottom: "8px",
+      },
+      "אזור אישי",
+    ),
+  );
+  wrap.appendChild(
+    el(
+      "h3",
+      { fontSize: "24px", fontWeight: "900", margin: "0 0 8px" },
+      siteName ? `הרשמה ל${siteName}` : "הרשמה",
+    ),
+  );
+  wrap.appendChild(
+    el(
+      "p",
+      {
+        fontSize: "13px",
+        fontWeight: "600",
+        color: "#64748b",
+        margin: "0 0 18px",
+        lineHeight: "1.6",
+      },
+      "ההרשמה נשמרת לאתר ולעסק הזה בלבד — לא לחשבון BizUply.",
+    ),
+  );
+
+  const fullName = document.createElement("input");
+  fullName.type = "text";
+  fullName.required = true;
+  fullName.placeholder = "שם מלא";
+  fullName.autocomplete = "name";
+  Object.assign(fullName.style, {
+    width: "100%",
+    boxSizing: "border-box",
+    marginBottom: "10px",
+    borderRadius: "14px",
+    border: "1px solid #e2e8f0",
+    padding: "12px 14px",
+    fontSize: "14px",
+    fontWeight: "600",
+  });
+
+  const email = document.createElement("input");
+  email.type = "email";
+  email.required = true;
+  email.placeholder = "אימייל";
+  email.autocomplete = "username";
+  Object.assign(email.style, {
+    width: "100%",
+    boxSizing: "border-box",
+    marginBottom: "10px",
+    borderRadius: "14px",
+    border: "1px solid #e2e8f0",
+    padding: "12px 14px",
+    fontSize: "14px",
+    fontWeight: "600",
+  });
+
+  const phone = document.createElement("input");
+  phone.type = "tel";
+  phone.placeholder = "טלפון (אופציונלי)";
+  phone.autocomplete = "tel";
+  Object.assign(phone.style, {
+    width: "100%",
+    boxSizing: "border-box",
+    marginBottom: "10px",
+    borderRadius: "14px",
+    border: "1px solid #e2e8f0",
+    padding: "12px 14px",
+    fontSize: "14px",
+    fontWeight: "600",
+  });
+
+  const password = document.createElement("input");
+  password.type = "password";
+  password.required = true;
+  password.placeholder = "סיסמה (לפחות 6 תווים)";
+  password.autocomplete = "new-password";
+  Object.assign(password.style, {
+    width: "100%",
+    boxSizing: "border-box",
+    marginBottom: "12px",
+    borderRadius: "14px",
+    border: "1px solid #e2e8f0",
+    padding: "12px 14px",
+    fontSize: "14px",
+    fontWeight: "600",
+  });
+
+  const errorBox = el("div", {
+    display: "none",
+    marginBottom: "10px",
+    borderRadius: "12px",
+    background: "#fff1f2",
+    color: "#e11d48",
+    fontSize: "12px",
+    fontWeight: "700",
+    padding: "10px 12px",
+  });
+
+  const submit = el(
+    "button",
+    {
+      width: "100%",
+      border: "0",
+      borderRadius: "14px",
+      background: "#0f172a",
+      color: "#fff",
+      padding: "13px 16px",
+      fontSize: "14px",
+      fontWeight: "800",
+      cursor: "pointer",
+    },
+    "יצירת חשבון",
+  );
+  submit.type = "button";
+
+  submit.addEventListener("click", async () => {
+    errorBox.style.display = "none";
+    submit.disabled = true;
+    submit.textContent = "נרשם...";
+    try {
+      await sitePortalRegister({
+        email: email.value,
+        password: password.value,
+        fullName: fullName.value,
+        phone: phone.value,
+        siteId: siteId || undefined,
+        host: host || window.location.host,
+      });
+      window.history.pushState({}, "", "/account");
+      window.dispatchEvent(new PopStateEvent("popstate"));
+    } catch (err) {
+      errorBox.textContent = err?.message || "ההרשמה נכשלה";
+      errorBox.style.display = "block";
+    } finally {
+      submit.disabled = false;
+      submit.textContent = "יצירת חשבון";
+    }
+  });
+
+  wrap.appendChild(fullName);
+  wrap.appendChild(email);
+  wrap.appendChild(phone);
+  wrap.appendChild(password);
+  wrap.appendChild(errorBox);
+  wrap.appendChild(submit);
+
+  const loginLink = document.createElement("a");
+  loginLink.href = "/login";
+  loginLink.textContent = "כבר רשומים? התחברות";
+  Object.assign(loginLink.style, {
+    display: "inline-block",
+    marginTop: "14px",
+    color: "#0284c7",
+    fontSize: "13px",
+    fontWeight: "800",
+    textDecoration: "none",
+  });
+  wrap.appendChild(loginLink);
+
   container.appendChild(wrap);
 }
 
@@ -195,24 +391,68 @@ async function mountAccount(container, { siteId }) {
       ),
     );
 
+    const quickLinks = [
+      { href: "/orders", label: "ההזמנות שלי" },
+      { href: "/cart", label: "העגלה שלי" },
+      { href: "/account", label: "פרטי החשבון" },
+    ];
+    const quickRow = el("div", {
+      display: "flex",
+      flexWrap: "wrap",
+      gap: "8px",
+      marginBottom: "16px",
+    });
+    quickLinks.forEach((item) => {
+      const link = document.createElement("a");
+      link.href = item.href;
+      link.textContent = item.label;
+      Object.assign(link.style, {
+        display: "inline-flex",
+        padding: "10px 14px",
+        borderRadius: "12px",
+        border: "1px solid #e2e8f0",
+        background: "#f8fafc",
+        textDecoration: "none",
+        color: "#0f172a",
+        fontWeight: "800",
+        fontSize: "13px",
+      });
+      quickRow.appendChild(link);
+    });
+    wrap.appendChild(quickRow);
+
     const pages = Array.isArray(data.portalPages) ? data.portalPages : [];
-    if (!pages.length) {
+    const gatedPages = pages.filter((page) => page.loginRequired !== false);
+    if (!gatedPages.length) {
       wrap.appendChild(
         el(
           "div",
           {
             padding: "12px",
             borderRadius: "12px",
-            background: "#fffbeb",
-            color: "#b45309",
+            background: "#f8fafc",
+            color: "#64748b",
             fontSize: "12px",
             fontWeight: "700",
+            border: "1px solid #e2e8f0",
           },
-          "עדיין לא שויכו עמודים לחשבון.",
+          "אפשר להוסיף עוד עמודים מוגנים מספריית «עמודים אחרי התחברות».",
         ),
       );
     } else {
-      pages.forEach((page) => {
+      wrap.appendChild(
+        el(
+          "div",
+          {
+            marginBottom: "8px",
+            fontSize: "12px",
+            fontWeight: "800",
+            color: "#64748b",
+          },
+          "עמודים זמינים",
+        ),
+      );
+      gatedPages.forEach((page) => {
         const link = document.createElement("a");
         link.href = page.path || `/${page.slug || page.id}`;
         link.textContent = page.title || "עמוד";
@@ -248,7 +488,7 @@ async function mountAccount(container, { siteId }) {
     logout.type = "button";
     logout.addEventListener("click", async () => {
       await sitePortalLogout(siteId);
-      window.history.pushState({}, "", "/portal/login");
+      window.history.pushState({}, "", "/login");
       window.dispatchEvent(new PopStateEvent("popstate"));
     });
     wrap.appendChild(logout);
@@ -264,7 +504,7 @@ async function mountAccount(container, { siteId }) {
       ),
     );
     const login = document.createElement("a");
-    login.href = "/portal/login";
+    login.href = "/login";
     login.textContent = "להתחברות";
     Object.assign(login.style, {
       display: "inline-flex",
@@ -367,7 +607,7 @@ async function mountOrders(container, { siteId }) {
       ),
     );
     const login = document.createElement("a");
-    login.href = "/portal/login";
+    login.href = "/login";
     login.textContent = "להתחברות";
     Object.assign(login.style, {
       display: "inline-flex",
@@ -509,6 +749,10 @@ export function mountPublicPortalWidgets(root, options = {}) {
 
     if (kind === "portal-login") {
       mountLogin(node, { siteId, host, siteName });
+      return;
+    }
+    if (kind === "portal-register") {
+      mountRegister(node, { siteId, host, siteName });
       return;
     }
     if (kind === "portal-account") {

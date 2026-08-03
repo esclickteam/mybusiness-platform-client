@@ -61,6 +61,7 @@ import {
   getSectionsByCategory,
 } from "./library/sectionLibrary";
 import {
+  PORTAL_SECTION_KIND_NAV,
   SECTION_LIBRARY_NAV,
   type SectionLibraryNavId,
 } from "./library/sectionCategories";
@@ -73,6 +74,7 @@ import {
 import {
   PAGE_LIBRARY,
   PAGE_LIBRARY_NAV,
+  PORTAL_PAGE_KIND_NAV,
   getPagesByCategory,
 } from "./library/pageLibrary";
 import type {
@@ -444,6 +446,15 @@ export default function VisualAddLayersPanel({
     useState<SectionLibraryNavId>("all");
   const [sectionQuickFilter, setSectionQuickFilter] =
     useState<SectionQuickFilter>("recommended");
+  /** Regular site library vs post-login personal-area library. */
+  const [pageLibraryMode, setPageLibraryMode] = useState<"site" | "portal">(
+    "site",
+  );
+  const [sectionLibraryMode, setSectionLibraryMode] = useState<
+    "site" | "portal"
+  >("site");
+  const [portalPageKind, setPortalPageKind] = useState("all");
+  const [portalSectionKind, setPortalSectionKind] = useState("all");
   const [favoriteSectionIds, setFavoriteSectionIds] = useState<string[]>(() =>
     readStoredSectionIds("bizuply-favorite-sections"),
   );
@@ -733,34 +744,39 @@ export default function VisualAddLayersPanel({
     searchQuery,
   ]);
 
-  const visibleSectionNav = useMemo(
-    () =>
-      SECTION_LIBRARY_NAV.filter(
-        (item) => item.id !== "portal" || clientPortalPluginEnabled,
-      ),
-    [clientPortalPluginEnabled],
-  );
-
-  const visiblePageNav = useMemo(
-    () =>
-      PAGE_LIBRARY_NAV.filter(
-        (item) => item.id !== "portal" || clientPortalPluginEnabled,
-      ),
-    [clientPortalPluginEnabled],
-  );
+  const visibleSectionNav = SECTION_LIBRARY_NAV;
+  const visiblePageNav = PAGE_LIBRARY_NAV;
 
   const filteredSections = useMemo(() => {
     const normalizedSearch = searchQuery.trim().toLowerCase();
+
+    if (sectionLibraryMode === "portal") {
+      if (!clientPortalPluginEnabled) return [];
+      let base = SECTION_LIBRARY.filter((item) => item.category === "portal");
+      if (portalSectionKind !== "all") {
+        const nav = PORTAL_SECTION_KIND_NAV.find(
+          (item) => item.id === portalSectionKind,
+        );
+        if (nav?.prefix) {
+          base = base.filter((item) => item.id.startsWith(nav.prefix));
+        }
+      }
+      return base.filter((item) => {
+        if (!normalizedSearch) return true;
+        return `${item.title} ${item.description} ${(item.keywords || []).join(" ")}`
+          .toLowerCase()
+          .includes(normalizedSearch);
+      });
+    }
+
     let base =
       sectionCategory === "blank"
         ? []
         : sectionCategory === "all"
-          ? SECTION_LIBRARY
-          : getSectionsByCategory(sectionCategory);
-
-    if (!clientPortalPluginEnabled) {
-      base = base.filter((item) => item.category !== "portal");
-    }
+          ? SECTION_LIBRARY.filter((item) => item.category !== "portal")
+          : getSectionsByCategory(sectionCategory).filter(
+              (item) => item.category !== "portal",
+            );
 
     if (sectionQuickFilter === "favorites") {
       base = base.filter((item) => favoriteSectionIds.includes(item.id));
@@ -769,15 +785,16 @@ export default function VisualAddLayersPanel({
         .map((id) => base.find((item) => item.id === id))
         .filter(Boolean) as VisualLibrarySectionTemplate[];
     } else if (sectionQuickFilter === "recommended") {
-      base = base.filter(
-        (item, index) =>
-          item.category === "hero" ||
-          item.category === "about" ||
-          item.category === "services" ||
-          item.category === "contact" ||
-          (clientPortalPluginEnabled && item.category === "portal") ||
-          index < 18,
-      ).slice(0, 36);
+      base = base
+        .filter(
+          (item, index) =>
+            item.category === "hero" ||
+            item.category === "about" ||
+            item.category === "services" ||
+            item.category === "contact" ||
+            index < 18,
+        )
+        .slice(0, 36);
     }
 
     return base.filter((item) => {
@@ -792,16 +809,38 @@ export default function VisualAddLayersPanel({
     recentSectionIds,
     searchQuery,
     sectionCategory,
+    sectionLibraryMode,
     sectionQuickFilter,
+    portalSectionKind,
   ]);
 
   const filteredPages = useMemo(() => {
     const normalizedSearch = searchQuery.trim().toLowerCase();
-    let base = getPagesByCategory(pageCategory);
 
-    if (!clientPortalPluginEnabled) {
-      base = base.filter((item) => item.category !== "portal");
+    if (pageLibraryMode === "portal") {
+      if (!clientPortalPluginEnabled) return [];
+      let base = getPagesByCategory("portal");
+      if (portalPageKind !== "all") {
+        const nav = PORTAL_PAGE_KIND_NAV.find(
+          (item) => item.id === portalPageKind,
+        );
+        if (nav?.keyword) {
+          base = base.filter((item) =>
+            (item.keywords || []).includes(nav.keyword),
+          );
+        }
+      }
+      return base.filter((item) => {
+        if (!normalizedSearch) return true;
+        return `${item.title} ${item.description} ${(item.keywords || []).join(" ")}`
+          .toLowerCase()
+          .includes(normalizedSearch);
+      });
     }
+
+    const base = getPagesByCategory(pageCategory).filter(
+      (item) => item.category !== "portal",
+    );
 
     return base.filter((item) => {
       if (!normalizedSearch) return true;
@@ -809,16 +848,22 @@ export default function VisualAddLayersPanel({
         .toLowerCase()
         .includes(normalizedSearch);
     });
-  }, [clientPortalPluginEnabled, searchQuery, pageCategory]);
+  }, [
+    clientPortalPluginEnabled,
+    searchQuery,
+    pageCategory,
+    pageLibraryMode,
+    portalPageKind,
+  ]);
 
   useEffect(() => {
-    if (!clientPortalPluginEnabled && sectionCategory === "portal") {
-      setSectionCategory("all");
+    if (!clientPortalPluginEnabled && pageLibraryMode === "portal") {
+      setPageLibraryMode("site");
     }
-    if (!clientPortalPluginEnabled && pageCategory === "portal") {
-      setPageCategory("all");
+    if (!clientPortalPluginEnabled && sectionLibraryMode === "portal") {
+      setSectionLibraryMode("site");
     }
-  }, [clientPortalPluginEnabled, pageCategory, sectionCategory]);
+  }, [clientPortalPluginEnabled, pageLibraryMode, sectionLibraryMode]);
 
   useEffect(() => {
     const node = sectionScrollerRef.current;
@@ -888,12 +933,18 @@ export default function VisualAddLayersPanel({
   }, [filteredSections, sectionViewport]);
 
   const activeSectionCategoryLabel =
-    SECTION_LIBRARY_NAV.find((item) => item.id === sectionCategory)
-      ?.label || "הכול";
+    sectionLibraryMode === "portal"
+      ? PORTAL_SECTION_KIND_NAV.find((item) => item.id === portalSectionKind)
+          ?.label || "עמודים אחרי התחברות"
+      : SECTION_LIBRARY_NAV.find((item) => item.id === sectionCategory)
+          ?.label || "הכול";
 
   const activePageCategoryLabel =
-    PAGE_LIBRARY_NAV.find((item) => item.id === pageCategory)?.label ||
-    "הכול";
+    pageLibraryMode === "portal"
+      ? PORTAL_PAGE_KIND_NAV.find((item) => item.id === portalPageKind)?.label ||
+        "עמודים אחרי התחברות"
+      : PAGE_LIBRARY_NAV.find((item) => item.id === pageCategory)?.label ||
+        "הכול";
 
   const handleAddLibraryPage = (page: VisualLibraryPageTemplate) => {
     closeAfter(() => {
@@ -988,7 +1039,7 @@ export default function VisualAddLayersPanel({
     <div
       className={
         mode === "add"
-          ? "fixed inset-0 z-[2147483200] flex items-center justify-center border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800/45 p-5 backdrop-blur-[2px]"
+          ? "fixed inset-0 z-[2147483200] flex items-center justify-center border border-slate-200/80 bg-gradient-to-l from-slate-200/90 via-slate-100 to-sky-50 text-slate-800/45 p-5 backdrop-blur-[2px]"
           : "contents"
       }
       onMouseDown={(event) => {
@@ -1010,7 +1061,7 @@ export default function VisualAddLayersPanel({
         <>
           <nav className="flex w-[96px] shrink-0 flex-col border-l border-slate-200 bg-white p-3">
             <div className="mb-3 flex h-11 items-center justify-center">
-              <Sparkles className="h-5 w-5 text-violet-600" />
+              <Sparkles className="h-5 w-5 text-slate-700" />
             </div>
 
             <div className="space-y-2">
@@ -1187,7 +1238,35 @@ export default function VisualAddLayersPanel({
             ) : addTab === "pages" ? (
               <div className="flex min-h-0 flex-1 flex-col">
                 <div className="shrink-0 border-b border-slate-200 bg-white px-6 py-4">
-                  <label className="flex h-12 items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 transition focus-within:border-violet-400 focus-within:bg-white focus-within:ring-4 focus-within:ring-violet-100">
+                  {clientPortalPluginEnabled ? (
+                    <div className="mb-3 inline-flex rounded-xl border border-slate-200 bg-slate-50 p-1">
+                      <button
+                        type="button"
+                        onClick={() => setPageLibraryMode("site")}
+                        className={[
+                          "rounded-lg px-3 py-1.5 text-xs font-black transition",
+                          pageLibraryMode === "site"
+                            ? "bg-white text-slate-900 shadow-sm"
+                            : "text-slate-500 hover:text-slate-700",
+                        ].join(" ")}
+                      >
+                        עמודי האתר
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setPageLibraryMode("portal")}
+                        className={[
+                          "rounded-lg px-3 py-1.5 text-xs font-black transition",
+                          pageLibraryMode === "portal"
+                            ? "bg-white text-slate-900 shadow-sm"
+                            : "text-slate-500 hover:text-slate-700",
+                        ].join(" ")}
+                      >
+                        עמודים אחרי התחברות
+                      </button>
+                    </div>
+                  ) : null}
+                  <label className="flex h-12 items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 transition focus-within:border-slate-400 focus-within:bg-white focus-within:ring-4 focus-within:ring-slate-100">
                     <Search className="h-5 w-5 shrink-0 text-slate-400" />
 
                     <input
@@ -1205,30 +1284,51 @@ export default function VisualAddLayersPanel({
                 <div className="flex min-h-0 flex-1 overflow-hidden">
                   <aside className="w-[220px] shrink-0 overflow-y-auto border-l border-slate-200 bg-white p-3">
                     <p className="mb-3 px-2 text-[11px] font-black uppercase tracking-wide text-slate-400">
-                      קטגוריות
+                      {pageLibraryMode === "portal"
+                        ? "סוג עמוד"
+                        : "קטגוריות"}
                     </p>
-                    {visiblePageNav.map((categoryItem) => (
+                    {(pageLibraryMode === "portal"
+                      ? PORTAL_PAGE_KIND_NAV
+                      : visiblePageNav
+                    ).map((categoryItem) => (
                       <button
                         key={categoryItem.id}
                         type="button"
-                        onClick={() => setPageCategory(categoryItem.id)}
+                        onClick={() => {
+                          if (pageLibraryMode === "portal") {
+                            setPortalPageKind(categoryItem.id);
+                          } else {
+                            setPageCategory(categoryItem.id);
+                          }
+                        }}
                         className={[
                           "mb-1 flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-right text-xs font-black transition",
-                          pageCategory === categoryItem.id
+                          (pageLibraryMode === "portal"
+                            ? portalPageKind
+                            : pageCategory) === categoryItem.id
                             ? "bg-slate-100 text-slate-800"
                             : "text-slate-600 hover:bg-slate-50",
                         ].join(" ")}
                       >
                         <span>{categoryItem.label}</span>
-                        {categoryItem.id === "all" ? (
-                          <span className="rounded-full bg-violet-100 px-1.5 py-0.5 text-[10px] font-black text-violet-700">
-                            {PAGE_LIBRARY.length}
-                          </span>
-                        ) : (
-                          <span className="rounded-full bg-slate-200/70 px-1.5 py-0.5 text-[10px] font-black text-slate-500">
-                            {getPagesByCategory(categoryItem.id).length}
-                          </span>
-                        )}
+                        <span className="rounded-full bg-slate-200/70 px-1.5 py-0.5 text-[10px] font-black text-slate-500">
+                          {pageLibraryMode === "portal"
+                            ? categoryItem.id === "all"
+                              ? getPagesByCategory("portal").length
+                              : getPagesByCategory("portal").filter((page) =>
+                                  (page.keywords || []).includes(
+                                    (categoryItem as any).keyword || "",
+                                  ),
+                                ).length
+                            : categoryItem.id === "all"
+                              ? PAGE_LIBRARY.filter(
+                                  (page) => page.category !== "portal",
+                                ).length
+                              : getPagesByCategory(categoryItem.id).filter(
+                                  (page) => page.category !== "portal",
+                                ).length}
+                        </span>
                       </button>
                     ))}
                   </aside>
@@ -1302,7 +1402,35 @@ export default function VisualAddLayersPanel({
             ) : (
               <div className="flex min-h-0 flex-1 flex-col">
                 <div className="shrink-0 border-b border-slate-200 bg-white px-6 py-4">
-                  <label className="flex h-12 items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 transition focus-within:border-violet-400 focus-within:bg-white focus-within:ring-4 focus-within:ring-violet-100">
+                  {addTab === "sections" && clientPortalPluginEnabled ? (
+                    <div className="mb-3 inline-flex rounded-xl border border-slate-200 bg-slate-50 p-1">
+                      <button
+                        type="button"
+                        onClick={() => setSectionLibraryMode("site")}
+                        className={[
+                          "rounded-lg px-3 py-1.5 text-xs font-black transition",
+                          sectionLibraryMode === "site"
+                            ? "bg-white text-slate-900 shadow-sm"
+                            : "text-slate-500 hover:text-slate-700",
+                        ].join(" ")}
+                      >
+                        סקשני האתר
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setSectionLibraryMode("portal")}
+                        className={[
+                          "rounded-lg px-3 py-1.5 text-xs font-black transition",
+                          sectionLibraryMode === "portal"
+                            ? "bg-white text-slate-900 shadow-sm"
+                            : "text-slate-500 hover:text-slate-700",
+                        ].join(" ")}
+                      >
+                        סקשנים אחרי התחברות
+                      </button>
+                    </div>
+                  ) : null}
+                  <label className="flex h-12 items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 transition focus-within:border-slate-400 focus-within:bg-white focus-within:ring-4 focus-within:ring-slate-100">
                     <Search className="h-5 w-5 shrink-0 text-slate-400" />
 
                     <input
@@ -1416,84 +1544,123 @@ export default function VisualAddLayersPanel({
                     <div className="flex min-h-0 flex-1 gap-0">
                       <aside className="w-[220px] shrink-0 overflow-y-auto border-l border-slate-200 bg-white p-3">
                         <p className="mb-3 px-2 text-[11px] font-black uppercase tracking-wide text-slate-400">
-                          קטגוריות
+                          {sectionLibraryMode === "portal"
+                            ? "סוג סקשן"
+                            : "קטגוריות"}
                         </p>
-                        <div className="mb-3 space-y-1 border-b border-slate-100 pb-3">
-                          {(
-                            [
-                              ["recommended", "מומלצים"],
-                              ["recent", "נוספו לאחרונה"],
-                              ["favorites", "מועדפים"],
-                              ["all", "כל העיצובים"],
-                            ] as Array<[SectionQuickFilter, string]>
-                          ).map(([id, label]) => (
+                        {sectionLibraryMode === "portal" ? (
+                          PORTAL_SECTION_KIND_NAV.map((kindItem) => (
                             <button
-                              key={id}
+                              key={kindItem.id}
                               type="button"
-                              onClick={() => {
-                                setSectionQuickFilter(id);
-                                setSectionCategory("all");
-                              }}
+                              onClick={() => setPortalSectionKind(kindItem.id)}
                               className={[
-                                "flex w-full items-center justify-between rounded-lg px-3 py-2 text-right text-xs font-bold transition",
-                                sectionQuickFilter === id
-                                  ? "border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800"
+                                "mb-1 flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-right text-xs font-black transition",
+                                portalSectionKind === kindItem.id
+                                  ? "bg-slate-100 text-slate-800"
                                   : "text-slate-600 hover:bg-slate-50",
                               ].join(" ")}
                             >
-                              <span>{label}</span>
-                              {id === "favorites" ? (
-                                <span>{favoriteSectionIds.length}</span>
-                              ) : id === "recent" ? (
-                                <span>{recentSectionIds.length}</span>
-                              ) : null}
-                            </button>
-                          ))}
-                        </div>
-                        {visibleSectionNav.map((categoryItem) => (
-                          <button
-                            key={categoryItem.id}
-                            type="button"
-                            onClick={() => {
-                              if (categoryItem.id === "blank") {
-                                editor?.addSection?.(
-                                  "after",
-                                  undefined,
-                                  "blank",
-                                );
-                                setLastAddedTitle("סקשן ריק נוסף לעמוד");
-                                return;
-                              }
-                              setSectionQuickFilter("all");
-                              setSectionCategory(categoryItem.id);
-                            }}
-                            className={[
-                              "mb-1 flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-right text-xs font-black transition",
-                              sectionCategory === categoryItem.id
-                                ? "bg-slate-100 text-slate-800"
-                                : "text-slate-600 hover:bg-slate-50",
-                              categoryItem.id === "blank"
-                                ? "text-violet-700"
-                                : "",
-                            ].join(" ")}
-                          >
-                            <span>{categoryItem.label}</span>
-                            {categoryItem.id === "all" ? (
-                              <span className="rounded-full bg-violet-100 px-1.5 py-0.5 text-[10px] font-black text-violet-700">
-                                {SECTION_LIBRARY.length}
-                              </span>
-                            ) : null}
-                            {categoryItem.id !== "blank" &&
-                            categoryItem.id !== "all" ? (
+                              <span>{kindItem.label}</span>
                               <span className="rounded-full bg-slate-200/70 px-1.5 py-0.5 text-[10px] font-black text-slate-500">
                                 {
-                                  getSectionsByCategory(categoryItem.id)
-                                    .length
+                                  SECTION_LIBRARY.filter((item) => {
+                                    if (item.category !== "portal") return false;
+                                    if (kindItem.id === "all") {
+                                      return item.id.startsWith("section-portal-");
+                                    }
+                                    return item.id.startsWith(kindItem.prefix);
+                                  }).length
                                 }
                               </span>
-                            ) : null}
-                          </button>
-                        ))}
+                            </button>
+                          ))
+                        ) : (
+                          <>
+                            <div className="mb-3 space-y-1 border-b border-slate-100 pb-3">
+                              {(
+                                [
+                                  ["recommended", "מומלצים"],
+                                  ["recent", "נוספו לאחרונה"],
+                                  ["favorites", "מועדפים"],
+                                  ["all", "כל העיצובים"],
+                                ] as Array<[SectionQuickFilter, string]>
+                              ).map(([id, label]) => (
+                                <button
+                                  key={id}
+                                  type="button"
+                                  onClick={() => {
+                                    setSectionQuickFilter(id);
+                                    setSectionCategory("all");
+                                  }}
+                                  className={[
+                                    "flex w-full items-center justify-between rounded-lg px-3 py-2 text-right text-xs font-bold transition",
+                                    sectionQuickFilter === id
+                                      ? "border border-slate-200 bg-slate-100 text-slate-800"
+                                      : "text-slate-600 hover:bg-slate-50",
+                                  ].join(" ")}
+                                >
+                                  <span>{label}</span>
+                                  {id === "favorites" ? (
+                                    <span>{favoriteSectionIds.length}</span>
+                                  ) : id === "recent" ? (
+                                    <span>{recentSectionIds.length}</span>
+                                  ) : null}
+                                </button>
+                              ))}
+                            </div>
+                            {visibleSectionNav.map((categoryItem) => (
+                              <button
+                                key={categoryItem.id}
+                                type="button"
+                                onClick={() => {
+                                  if (categoryItem.id === "blank") {
+                                    editor?.addSection?.(
+                                      "after",
+                                      undefined,
+                                      "blank",
+                                    );
+                                    setLastAddedTitle("סקשן ריק נוסף לעמוד");
+                                    return;
+                                  }
+                                  setSectionQuickFilter("all");
+                                  setSectionCategory(categoryItem.id);
+                                }}
+                                className={[
+                                  "mb-1 flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-right text-xs font-black transition",
+                                  sectionCategory === categoryItem.id
+                                    ? "bg-slate-100 text-slate-800"
+                                    : "text-slate-600 hover:bg-slate-50",
+                                  categoryItem.id === "blank"
+                                    ? "text-slate-700"
+                                    : "",
+                                ].join(" ")}
+                              >
+                                <span>{categoryItem.label}</span>
+                                {categoryItem.id === "all" ? (
+                                  <span className="rounded-full bg-slate-200 px-1.5 py-0.5 text-[10px] font-black text-slate-700">
+                                    {
+                                      SECTION_LIBRARY.filter(
+                                        (item) => item.category !== "portal",
+                                      ).length
+                                    }
+                                  </span>
+                                ) : null}
+                                {categoryItem.id !== "blank" &&
+                                categoryItem.id !== "all" ? (
+                                  <span className="rounded-full bg-slate-200/70 px-1.5 py-0.5 text-[10px] font-black text-slate-500">
+                                    {
+                                      getSectionsByCategory(categoryItem.id)
+                                        .filter(
+                                          (item) => item.category !== "portal",
+                                        ).length
+                                    }
+                                  </span>
+                                ) : null}
+                              </button>
+                            ))}
+                          </>
+                        )}
                       </aside>
 
                       <div
