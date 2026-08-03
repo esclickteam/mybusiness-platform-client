@@ -24,6 +24,10 @@ import {
   mountBookingWidgets,
   pageHasBookingWidget,
 } from "../../../site-plugins/booking/mountBookingWidgets";
+import {
+  mountPublicPortalWidgets,
+  pageHasPortalWidget,
+} from "../../public/mountPublicPortalWidgets";
 import { mergeCountdownSettings } from "../../public/countdownPublicUtils";
 import {
   applyCustomCodeToDocument,
@@ -863,6 +867,29 @@ export default function VisualEditorCanvas({
     [editorAny.businessId],
   );
 
+  const mountEditorPortalPreview = useCallback(
+    (root: HTMLElement | null, pluginEnabled = false) => {
+      if (!root || !pageHasPortalWidget(root)) return;
+      // Allow remount after visual DOM re-apply.
+      root
+        .querySelectorAll("[data-bizuply-portal-mounted]")
+        .forEach((node) => {
+          delete (node as HTMLElement).dataset.bizuplyPortalMounted;
+        });
+      mountPublicPortalWidgets(root, {
+        site: {
+          _id: siteId || undefined,
+          businessId: editorAny.businessId || undefined,
+          name: editorAny.siteName || editorAny.businessName || "",
+          enabledPlugins: pluginEnabled ? ["client-portal"] : [],
+        },
+        preview: true,
+        editorMode: true,
+      });
+    },
+    [editorAny.businessId, editorAny.businessName, editorAny.siteName, siteId],
+  );
+
   const TemplateComponent = useMemo(() => {
     const renderer = editorAny.renderer as any;
 
@@ -1326,6 +1353,7 @@ export default function VisualEditorCanvas({
     syncEditorMediaPreviewsInDom(root);
     disableNativeMediaDrag(root);
     mountEditorCountdownPreview(root);
+    mountEditorPortalPreview(root, true);
     window.requestAnimationFrame(refreshSelectionBox);
   }, [
     domPatchEpoch,
@@ -1334,6 +1362,7 @@ export default function VisualEditorCanvas({
     editorAny.isInlineEditing,
     inlineEditingElementId,
     mountEditorCountdownPreview,
+    mountEditorPortalPreview,
     refreshSelectionBox,
   ]);
 
@@ -1382,6 +1411,7 @@ export default function VisualEditorCanvas({
         const hasWidget = pageHasCountdownWidget(root);
         const pluginEnabled = plugins.enabledPlugins.includes("countdown");
         const bookingEnabled = plugins.enabledPlugins.includes("booking");
+        const portalEnabled = plugins.enabledPlugins.includes("client-portal");
 
         if (!hasWidget && !pluginEnabled) {
           countdownEditorMountRef.current.enabled = false;
@@ -1404,6 +1434,7 @@ export default function VisualEditorCanvas({
 
         if (!cancelled) {
           mountEditorBookingPreview(root, bookingEnabled);
+          mountEditorPortalPreview(root, portalEnabled);
         }
 
       } catch {
@@ -1417,6 +1448,7 @@ export default function VisualEditorCanvas({
         }
         if (!cancelled) {
           mountEditorBookingPreview(root, false);
+          mountEditorPortalPreview(root, true);
         }
       }
     })();
@@ -1434,6 +1466,7 @@ export default function VisualEditorCanvas({
     editorAny.data,
     mountEditorCountdownPreview,
     mountEditorBookingPreview,
+    mountEditorPortalPreview,
   ]);
 
   useEffect(() => {

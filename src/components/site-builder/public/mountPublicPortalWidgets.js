@@ -709,6 +709,15 @@ function mountCart(container, { businessId }) {
  * Mount interactive personal-area widgets inside published site HTML.
  * Only runs when the client-portal plugin is enabled.
  */
+export function pageHasPortalWidget(root) {
+  if (!root || typeof root.querySelector !== "function") return false;
+  return Boolean(
+    root.querySelector(
+      '[data-bizuply-portal-mount="true"], [data-bizuply-widget^="portal-"]',
+    ),
+  );
+}
+
 export function mountPublicPortalWidgets(root, options = {}) {
   if (!root || typeof document === "undefined") return;
 
@@ -716,7 +725,8 @@ export function mountPublicPortalWidgets(root, options = {}) {
   const enabledPlugins = Array.isArray(site.enabledPlugins)
     ? site.enabledPlugins
     : [];
-  if (!enabledPlugins.includes("client-portal")) return;
+  const allowWithoutPlugin = Boolean(options.preview || options.editorMode);
+  if (!allowWithoutPlugin && !enabledPlugins.includes("client-portal")) return;
 
   const siteId =
     resolveSiteId(site) ||
