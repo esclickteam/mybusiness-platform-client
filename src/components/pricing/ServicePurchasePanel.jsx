@@ -584,7 +584,7 @@ export default function ServicePurchasePanel({
           ) : <span />}
           {step === "details" ? (
             <button type="button" onClick={proceedFromDetails} className="rounded-full bg-slate-900 px-6 py-3 text-sm font-black text-white">
-              {contactOnly ? (isHe ? "לקבלת הצעה" : "Request a quote") : (isHe ? "לבחירת רכישה" : "Choose purchase")}
+              {isHe ? "לבחירת רכישה" : "Choose purchase"}
             </button>
           ) : null}
           {step === "plan" ? (
