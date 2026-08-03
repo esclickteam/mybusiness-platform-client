@@ -848,10 +848,14 @@ export default function VisualFloatingToolbar({
     return Boolean(resolveFormContext(node, root));
   }, [element, editor?.canvasRef]);
 
-  /** Login/register portal widget — inner buttons are runtime, not selectable. */
+  /**
+   * Whole login/register shell still opens the forms panel. Individual
+   * stamped controls use the normal link button instead.
+   */
   const portalAuthFormKind = useMemo(() => {
     const node = getElementNode(element);
     if (!node) return "";
+    if (node.getAttribute("data-bizuply-portal-control")) return "";
     const shell =
       node.closest<HTMLElement>(
         '[data-bizuply-portal-mount="true"], [data-bizuply-widget^="portal-"]',
@@ -861,7 +865,7 @@ export default function VisualFloatingToolbar({
       )
         ? node
         : null);
-    if (!shell) return "";
+    if (!shell || shell !== node) return "";
     const kind = String(
       shell.getAttribute("data-bizuply-portal-kind") ||
         shell.getAttribute("data-bizuply-widget") ||

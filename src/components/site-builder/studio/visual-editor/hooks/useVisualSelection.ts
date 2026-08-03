@@ -22,6 +22,10 @@ import {
   getVisualMediaTypeFromNode,
 } from "../utils/visualMediaUtils";
 import {
+  PORTAL_AUTH_CONTROL_ATTR,
+  isPortalAuthControl,
+} from "../utils/portalAuthControls";
+import {
   isBookingWidgetMount,
   isInsidePluginWidgetContent,
   isPluginWidgetShell,
@@ -724,7 +728,14 @@ function scoreCandidate(
 
   if (node.hasAttribute("data-visual-edit-id")) score += 120;
   if (node.hasAttribute("data-visual-editable")) score += 80;
-  if (isPluginWidgetShell(node)) score += 8000;
+  // Stamped login/register buttons must beat the portal shell (+8000).
+  if (isPortalAuthControl(node)) score += 12000;
+  if (isPluginWidgetShell(node)) {
+    const clickedPortalControl =
+      isPortalAuthControl(target) ||
+      Boolean(target.closest?.(`[${PORTAL_AUTH_CONTROL_ATTR}]`));
+    if (!clickedPortalControl) score += 8000;
+  }
 
   const childEditableCount = node.querySelectorAll(
     "[data-visual-edit-id], h1, h2, h3, h4, h5, h6, p, span, img, video, button, a",

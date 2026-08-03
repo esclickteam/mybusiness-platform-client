@@ -113,13 +113,46 @@ function readNodeText(node: HTMLElement) {
 }
 
 function readNodeHref(node: HTMLElement) {
-  return String(
+  const direct = String(
     node.getAttribute("data-visual-link-href") ||
       node.getAttribute("data-link-url") ||
       node.getAttribute("data-href") ||
       (node instanceof HTMLAnchorElement ? node.getAttribute("href") : "") ||
       "",
   ).trim();
+  if (direct) return direct;
+
+  // Nested CTA labels often sit inside the real <a>/linked control.
+  const linkHost =
+    (node.closest("a") as HTMLAnchorElement | null) ||
+    (node.closest(
+      "[data-visual-link-href], [data-link-url], [data-href]",
+    ) as HTMLElement | null);
+
+  if (!linkHost || linkHost === node) return "";
+
+  return String(
+    linkHost.getAttribute("data-visual-link-href") ||
+      linkHost.getAttribute("data-link-url") ||
+      linkHost.getAttribute("data-href") ||
+      (linkHost instanceof HTMLAnchorElement
+        ? linkHost.getAttribute("href")
+        : "") ||
+      "",
+  ).trim();
+}
+
+function getButtonLikeAncestor(node: HTMLElement) {
+  const host = node.parentElement?.closest<HTMLElement>(
+    [
+      "a[data-visual-edit-id]",
+      "button[data-visual-edit-id]",
+      '[data-visual-edit-type="button"][data-visual-edit-id]',
+      '[data-visual-type="button"][data-visual-edit-id]',
+      '[data-visual-edit-type="link"][data-visual-edit-id]',
+    ].join(", "),
+  );
+  return host && host !== node ? host : null;
 }
 
 function isButtonLike(node: HTMLElement) {
@@ -182,6 +215,15 @@ function collectChromeItems(
         */
         if (hasNestedEdit && !buttonLike) return;
 
+        /*
+          Prefer the real clickable control. Nested label spans used to show up
+          as separate text rows without a link field — which broke CTA editing.
+        */
+        const buttonAncestor = getButtonLikeAncestor(node);
+        if (buttonAncestor && isButtonLike(buttonAncestor) && !buttonLike) {
+          return;
+        }
+
         const tagName = node.tagName.toLowerCase();
         const type = String(
           node.getAttribute("data-visual-edit-type") ||
@@ -205,7 +247,9 @@ function collectChromeItems(
         );
 
         const text = String(saved.text ?? readNodeText(node));
-        const href = String(saved.href ?? readNodeHref(node));
+        // Empty saved.href must not hide the live DOM/link attributes.
+        const savedHref = String(saved.href ?? "").trim();
+        const href = savedHref || readNodeHref(node);
         if (!text && !href) return;
 
         seen.add(elementId);

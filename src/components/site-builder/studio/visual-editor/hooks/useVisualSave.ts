@@ -936,6 +936,8 @@ function stripPortalRuntimeVisualMaps(data: Record<string, any>) {
   const next = { ...(data || {}) };
   const runtimeKeyPattern =
     /sec-portal-[^.]+\.button\.(input|button|a)\./i;
+  // Canvas-stamped portal controls persist via shell data-portal-* attrs.
+  const portalControlKeyPattern = /__portal_(submit|switch|forgot)$/i;
 
   for (const mapKey of [
     VISUAL_CONTENT_KEY,
@@ -948,7 +950,10 @@ function stripPortalRuntimeVisualMaps(data: Record<string, any>) {
 
     const cleaned: Record<string, any> = { ...map };
     Object.keys(cleaned).forEach((elementId) => {
-      if (runtimeKeyPattern.test(elementId)) {
+      if (
+        runtimeKeyPattern.test(elementId) ||
+        portalControlKeyPattern.test(elementId)
+      ) {
         delete cleaned[elementId];
       }
     });

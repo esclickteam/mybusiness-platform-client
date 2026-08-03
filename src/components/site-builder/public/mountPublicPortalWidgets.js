@@ -115,10 +115,41 @@ function bindEditorSafeLink(anchor, href, editorMode) {
   anchor.href = href || "#";
   if (!editorMode) return;
 
+  // Block navigation in the studio, but let the click bubble so the
+  // visual editor can select this link like any other canvas button.
   anchor.addEventListener("click", (event) => {
     event.preventDefault();
-    event.stopPropagation();
   });
+}
+
+const PORTAL_AUTH_CONTROL_LABELS = {
+  submit: "כפתור שליחה",
+  switch: "קישור מעבר",
+  forgot: "שכחתי סיסמה",
+};
+
+/** Stamp login/register controls so owners can click + link them on canvas. */
+function stampPortalAuthControl(node, container, kind, editorMode) {
+  if (!editorMode || !node || !container) return;
+
+  const shellId = String(
+    container.getAttribute("data-visual-edit-id") ||
+      container.id ||
+      "portal",
+  ).trim() || "portal";
+  const controlId = `${shellId}__portal_${kind}`;
+
+  node.setAttribute("data-bizuply-portal-control", kind);
+  node.setAttribute("data-bizuply-portal-shell-id", shellId);
+  node.setAttribute("data-visual-edit-id", controlId);
+  node.setAttribute("data-visual-editable", "true");
+  node.setAttribute("data-visual-edit-type", "button");
+  node.setAttribute("data-visual-type", "button");
+  node.setAttribute(
+    "data-visual-edit-label",
+    PORTAL_AUTH_CONTROL_LABELS[kind] || "כפתור",
+  );
+  node.setAttribute("data-visual-link-href", node.getAttribute("href") || "");
 }
 
 function mountLogin(container, { siteId, host, siteName, paths, editorMode }) {
@@ -229,13 +260,13 @@ function mountLogin(container, { siteId, host, siteName, paths, editorMode }) {
     copy.submit,
   );
   submit.type = "button";
+  stampPortalAuthControl(submit, container, "submit", editorMode);
 
   submit.addEventListener("click", async () => {
     errorBox.style.display = "none";
 
     if (editorMode) {
-      errorBox.textContent = "בתצוגת עריכה לא מתבצעת התחברות אמיתית.";
-      errorBox.style.display = "block";
+      // Selection handles the click in the studio — no fake login noise.
       return;
     }
 
@@ -271,11 +302,12 @@ function mountLogin(container, { siteId, host, siteName, paths, editorMode }) {
   });
 
   const registerLink = document.createElement("a");
-  bindEditorSafeLink(
-    registerLink,
-    readPortalLink(container, "switch", paths?.register || "/register"),
-    editorMode,
+  const registerHref = readPortalLink(
+    container,
+    "switch",
+    paths?.register || "/register",
   );
+  bindEditorSafeLink(registerLink, registerHref, editorMode);
   registerLink.textContent = copy.register;
   Object.assign(registerLink.style, {
     color: theme.accent,
@@ -283,18 +315,17 @@ function mountLogin(container, { siteId, host, siteName, paths, editorMode }) {
     fontWeight: "800",
     textDecoration: "none",
   });
+  stampPortalAuthControl(registerLink, container, "switch", editorMode);
+  registerLink.setAttribute("data-visual-link-href", registerHref || "");
   linksRow.appendChild(registerLink);
 
   const forgotLink = document.createElement("a");
-  bindEditorSafeLink(
-    forgotLink,
-    readPortalLink(
-      container,
-      "forgot",
-      paths?.forgotPassword || "/portal/forgot-password",
-    ),
-    editorMode,
+  const forgotHref = readPortalLink(
+    container,
+    "forgot",
+    paths?.forgotPassword || "/portal/forgot-password",
   );
+  bindEditorSafeLink(forgotLink, forgotHref, editorMode);
   forgotLink.textContent = copy.forgot;
   Object.assign(forgotLink.style, {
     color: theme.muted,
@@ -302,6 +333,8 @@ function mountLogin(container, { siteId, host, siteName, paths, editorMode }) {
     fontWeight: "800",
     textDecoration: "none",
   });
+  stampPortalAuthControl(forgotLink, container, "forgot", editorMode);
+  forgotLink.setAttribute("data-visual-link-href", forgotHref || "");
   linksRow.appendChild(forgotLink);
 
   wrap.appendChild(linksRow);
@@ -431,13 +464,12 @@ function mountRegister(container, { siteId, host, siteName, paths, editorMode })
     copy.submit,
   );
   submit.type = "button";
+  stampPortalAuthControl(submit, container, "submit", editorMode);
 
   submit.addEventListener("click", async () => {
     errorBox.style.display = "none";
 
     if (editorMode) {
-      errorBox.textContent = "בתצוגת עריכה לא מתבצעת הרשמה אמיתית.";
-      errorBox.style.display = "block";
       return;
     }
 
@@ -470,11 +502,12 @@ function mountRegister(container, { siteId, host, siteName, paths, editorMode })
   wrap.appendChild(submit);
 
   const loginLink = document.createElement("a");
-  bindEditorSafeLink(
-    loginLink,
-    readPortalLink(container, "switch", paths?.login || "/login"),
-    editorMode,
+  const loginHref = readPortalLink(
+    container,
+    "switch",
+    paths?.login || "/login",
   );
+  bindEditorSafeLink(loginLink, loginHref, editorMode);
   loginLink.textContent = copy.login;
   Object.assign(loginLink.style, {
     display: "inline-block",
@@ -484,6 +517,8 @@ function mountRegister(container, { siteId, host, siteName, paths, editorMode })
     fontWeight: "800",
     textDecoration: "none",
   });
+  stampPortalAuthControl(loginLink, container, "switch", editorMode);
+  loginLink.setAttribute("data-visual-link-href", loginHref || "");
   wrap.appendChild(loginLink);
 
   container.appendChild(wrap);
