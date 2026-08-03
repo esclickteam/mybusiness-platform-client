@@ -48,11 +48,10 @@ export const PRICING_CATEGORY_LABELS: Record<
   support: { he: "תמיכה חודשית", en: "Monthly support" },
 };
 
-/** Public category chips/sections — growth is kept in data but not shown yet */
+/** Public category chips/sections — growth/support kept in data but not shown yet */
 export const PRICING_CATEGORY_ORDER = [
   "setup",
   "agents",
-  "support",
 ] as const;
 
 export const PRICING_CATEGORY_ACCENTS: Record<string, string> = {
@@ -553,7 +552,7 @@ export const PRICING_ADDONS: PricingAddon[] = [
     ],
   },
 
-  /* ── תמיכה חודשית ── */
+  /* ── תמיכה חודשית (מוסתר זמנית — עדיין לא פעיל) ── */
   {
     key: "crm-manager",
     name: "מנהל CRM אישי",
@@ -567,6 +566,7 @@ export const PRICING_ADDONS: PricingAddon[] = [
     priceLabel: "החל מ־490 ₪ לחודש",
     priceLabelEn: "From ₪490 / month",
     accent: "#3B82F6",
+    hidden: true,
     details: [
       "בדיקת המערכת פעמיים בשבוע",
       "סידור סטטוסים",
@@ -611,6 +611,7 @@ export const PRICING_ADDONS: PricingAddon[] = [
     priceLabel: "החל מ־1,290 ₪ לחודש",
     priceLabelEn: "From ₪1,290 / month",
     accent: "#2563EB",
+    hidden: true,
     details: [
       "עד 10 שעות טיפול בחודש",
       "מענה לפי נהלי העסק",
