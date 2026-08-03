@@ -35,6 +35,26 @@ const CHROME_NODE_SELECTOR = [
 
 const CHROME_SEGMENTS = new Set(["header", "footer"]);
 
+/**
+ * Template scalars that React headers still render from (beauty family etc.).
+ * Shared chrome `__content` alone is not enough — a later React render paints
+ * these fields and overwrites the DOM-applied CTA text after page switch.
+ */
+export const SHARED_CHROME_SCALAR_KEYS = [
+  "heroPrimaryButton",
+  "ctaButton",
+  "headerCta",
+  "headerButtonText",
+  "brandName",
+  "navHome",
+  "navAbout",
+  "navServices",
+  "navBooking",
+  "navContact",
+] as const;
+
+const SHARED_CHROME_SCALARS_KEY = "__scalars";
+
 function isPlainObject(value: unknown): value is Record<string, any> {
   return Boolean(value && typeof value === "object" && !Array.isArray(value));
 }
@@ -45,6 +65,176 @@ function readMap(
 ): Record<string, any> {
   const value = data?.[key];
   return isPlainObject(value) ? value : {};
+}
+
+function readSharedScalars(
+  sharedChrome: Record<string, any> | null | undefined,
+) {
+  return readMap(sharedChrome, SHARED_CHROME_SCALARS_KEY);
+}
+
+function isNavCanonicalChromeKey(key: string) {
+  return /\.nav(\.|$)/i.test(String(key || ""));
+}
+
+function resolveExplicitHeaderCtaText(
+  sharedContent: Record<string, any>,
+  data?: Record<string, any>,
+): string {
+  const explicitKeys = [
+    "chrome.header.primaryCta",
+    "chrome.header.cta",
+    "chrome.header.button",
+  ];
+
+  for (const key of explicitKeys) {
+    const text = String(sharedContent[key]?.text || "").trim();
+    if (text) return text;
+  }
+
+  for (const [key, value] of Object.entries(sharedContent)) {
+    if (isNavCanonicalChromeKey(key)) continue;
+    if (!/primaryCta|(^|\.)cta$/i.test(key)) continue;
+    const text = String(
+      isPlainObject(value) ? value.text || "" : "",
+    ).trim();
+    if (text) return text;
+  }
+
+  /*
+    Beauty templates historically auto-id the header CTA as
+    `chrome.header.button.button.*`. Prefer a single non-brand/non-nav
+    button label so older edits like "התחברות" still win after page switch.
+  */
+  const excluded = new Set(
+    [
+      data?.brandName,
+      data?.navHome,
+      data?.navAbout,
+      data?.navServices,
+      data?.navBooking,
+      data?.navContact,
+      data?.navPortfolio,
+      data?.navBlog,
+    ]
+      .map((value) => String(value || "").trim())
+      .filter(Boolean),
+  );
+
+  const buttonTexts = Object.entries(sharedContent)
+    .filter(
+      ([key]) =>
+        /^chrome\.header\.button\b/i.test(key) && !isNavCanonicalChromeKey(key),
+    )
+    .map(([, value]) =>
+      String(isPlainObject(value) ? value.text || "" : "").trim(),
+    )
+    .filter((text) => text && !excluded.has(text));
+
+  if (buttonTexts.length === 1) return buttonTexts[0];
+
+  const currentHero = String(data?.heroPrimaryButton || "").trim();
+  const overrides = buttonTexts.filter((text) => text !== currentHero);
+  if (overrides.length === 1) return overrides[0];
+  if (overrides.length > 1) return overrides[overrides.length - 1];
+
+  return "";
+}
+
+function collectChromeScalarSnapshot(
+  data: Record<string, any>,
+  previousScalars?: Record<string, any>,
+) {
+  const next: Record<string, string> = {};
+
+  Object.entries(readSharedScalars(previousScalars)).forEach(([key, value]) => {
+    const text = String(value ?? "").trim();
+    if (text) next[key] = text;
+  });
+
+  SHARED_CHROME_SCALAR_KEYS.forEach((key) => {
+    const text = String(data[key] ?? "").trim();
+    if (text) next[key] = text;
+  });
+
+  return next;
+}
+
+/**
+ * Push React-facing header scalars from `__sharedChrome` onto root visual data
+ * so templates that still render `{data.heroPrimaryButton}` keep the edited CTA
+ * after a page switch (instead of falling back to defaultData).
+ */
+export function applySharedChromeScalarsToVisualData(
+  data: Record<string, any> | null | undefined,
+) {
+  const source = isPlainObject(data) ? data : {};
+  const sharedChrome = readSharedChrome(source);
+  if (!Object.keys(sharedChrome).length) return source;
+
+  const scalars = readSharedScalars(sharedChrome);
+  const ctaFromContent = resolveExplicitHeaderCtaText(
+    readMap(sharedChrome, "__content"),
+    source,
+  );
+
+  let next: Record<string, any> | null = null;
+
+  Object.entries(scalars).forEach(([key, value]) => {
+    const text = String(value ?? "").trim();
+    if (!text || String(source[key] ?? "") === text) return;
+    if (!next) next = { ...source };
+    next[key] = text;
+  });
+
+  if (
+    ctaFromContent &&
+    String((next || source).heroPrimaryButton ?? "") !== ctaFromContent
+  ) {
+    if (!next) next = { ...source };
+    next.heroPrimaryButton = ctaFromContent;
+  }
+
+  return next || source;
+}
+
+/**
+ * When a header CTA label is edited, keep the template scalar in sync so React
+ * does not repaint the default "תאמו ניסיון" after remount / CRM re-render.
+ */
+export function syncHeaderCtaScalarFromChromeText(
+  data: Record<string, any> | null | undefined,
+  elementId: string,
+  nextText: string,
+  options?: { previousText?: string },
+) {
+  const source = isPlainObject(data) ? data : {};
+  const cleanId = String(elementId || "").trim();
+  const text = String(nextText ?? "").trim();
+  if (!cleanId || !text || !isChromeVisualElementId(cleanId)) return source;
+  if (/\.nav(\.|$)/i.test(cleanId) || /^nav\./i.test(cleanId)) return source;
+
+  const previousText = String(options?.previousText ?? "").trim();
+  const currentHero = String(source.heroPrimaryButton ?? "").trim();
+  const isExplicitCta = /primaryCta|(^|\.)header\.cta$/i.test(cleanId);
+  const matchesHero =
+    Boolean(currentHero) &&
+    (previousText === currentHero || (!previousText && isExplicitCta));
+
+  if (!isExplicitCta && !matchesHero) return source;
+
+  if (currentHero === text && !isExplicitCta) return source;
+
+  const next: Record<string, any> = {
+    ...source,
+    heroPrimaryButton: text,
+  };
+
+  if (typeof source.ctaButton === "string") {
+    next.ctaButton = text;
+  }
+
+  return next;
 }
 
 /**
@@ -203,6 +393,14 @@ export function writeSharedChromeIntoVisualData(
 ) {
   const source = isPlainObject(data) ? data : {};
   const sharedChrome = extractSharedChromeFromVisualData(root, source);
+  const scalars = collectChromeScalarSnapshot(
+    source,
+    readSharedChrome(source),
+  );
+
+  if (Object.keys(scalars).length) {
+    sharedChrome[SHARED_CHROME_SCALARS_KEY] = scalars;
+  }
 
   return {
     ...source,
@@ -290,5 +488,5 @@ export function expandSharedChromeIntoVisualData(
     }
   });
 
-  return next;
+  return applySharedChromeScalarsToVisualData(next);
 }

@@ -252,6 +252,7 @@ export type VisualEditorController = {
   updateText: (
     elementId: string,
     value: string,
+    options?: { previousText?: string },
   ) => boolean | void;
   updateInlineText?: (
     elementId: string,

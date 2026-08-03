@@ -60,6 +60,7 @@ import {
 } from "./visual-editor/utils/syncNavWithSitePages";
 import {
   VISUAL_SHARED_CHROME_KEY,
+  applySharedChromeScalarsToVisualData,
   extractSharedChromeFromVisualData,
   readSharedChrome,
   stripChromeFromVisualData,
@@ -8573,7 +8574,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
   renderer={selectedTemplateRenderer}
   businessId={businessId}
   key={`${selectedTemplateRenderer.key || selectedTemplateSeed?.id || "visual"}-${businessId || "business"}-${activePageId || "home"}`}
-  initialData={{
+  initialData={applySharedChromeScalarsToVisualData({
     /*
       Header/footer are site-global. Strip page-scoped chrome from every merge
       source so a stale "תאמו ניסיון" on page B cannot override the shared
@@ -8606,7 +8607,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       normalizePublicBusinessSlug(slug) || "your-business",
     ),
     __siteDomain: BIZUPLY_PUBLIC_SITE_DOMAIN,
-  }}
+  })}
   siteCustomCode={siteCustomCode}
   onSiteCustomCodeChange={setSiteCustomCode}
   slug={normalizePublicBusinessSlug(slug)}

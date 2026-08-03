@@ -696,6 +696,8 @@ const DOM_APPLIED_VISUAL_KEYS = new Set([
   VISUAL_INSERTED_SECTIONS_KEY,
   VISUAL_DELETED_KEY,
   VISUAL_CUSTOM_CODE_KEY,
+  // Site-global header/footer maps — patch DOM without remounting React.
+  "__sharedChrome",
 ]);
 
 function collectChangedDomAppliedKeys(

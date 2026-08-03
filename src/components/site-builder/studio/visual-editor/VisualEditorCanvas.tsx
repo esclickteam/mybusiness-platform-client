@@ -1259,7 +1259,9 @@ export default function VisualEditorCanvas({
         : originalTextRef.current;
 
       if (save && elementId) {
-        editorAny.updateText?.(elementId, nextText);
+        editorAny.updateText?.(elementId, nextText, {
+          previousText: originalTextRef.current,
+        });
       }
 
       if (!save) {

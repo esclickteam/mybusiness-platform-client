@@ -8,6 +8,7 @@ import type { VisualLibraryPageTemplate } from "./visual-editor/library/visualLi
 import type { VisualSitePageItem } from "./visual-editor/VisualSitePagesPanel";
 
 import type { VisualCustomCode } from "./visual-editor/utils/visualData";
+import { applySharedChromeScalarsToVisualData } from "./visual-editor/utils/visualSharedChrome";
 import { stripStoreBoundVisualImageOverrides } from "./data/templates/shared/storeCatalogSync";
 
 type VisualSavePayload = {
@@ -272,7 +273,12 @@ export default function TemplateVisualEditor({
     const merged = mergeVisualData(defaultData, savedVisualData);
 
     // Drop stale store-bound image overrides so live catalog matches public.
-    return stripStoreBoundVisualImageOverrides(merged) || merged;
+    const withoutStoreOverrides =
+      stripStoreBoundVisualImageOverrides(merged) || merged;
+
+    // Header CTA scalars (heroPrimaryButton) must win over defaultData before
+    // React paints, or page switches revert "התחברות" back to "תאמו ניסיון".
+    return applySharedChromeScalarsToVisualData(withoutStoreOverrides);
   }, [renderer.defaultData, renderer.key, initialData, businessId]);
 
   const activePageId = React.useMemo(() => {

@@ -86,6 +86,7 @@ import {
 } from "../utils/portalAuthControls";
 import {
   isChromeVisualElementId,
+  syncHeaderCtaScalarFromChromeText,
   writeSharedChromeIntoVisualData,
 } from "../utils/visualSharedChrome";
 import {
@@ -1473,6 +1474,10 @@ export function useVisualEditorState({
         "message",
       ].some((key) => Object.prototype.hasOwnProperty.call(patch, key));
 
+      const previousText = String(
+        readVisualContent(dataRef.current || {})?.[elementId]?.text ?? "",
+      );
+
       const portalShell = persistPortalAuthControlShellPatch(elementId, {
         text: typeof patch.text === "string" ? patch.text : undefined,
         href: typeof patch.href === "string" ? patch.href : undefined,
@@ -1491,6 +1496,14 @@ export function useVisualEditorState({
 
         // Header/footer edits are site-global — lift immediately.
         if (isChromeVisualElementId(elementId)) {
+          if (typeof patch.text === "string") {
+            next = syncHeaderCtaScalarFromChromeText(
+              next,
+              elementId,
+              patch.text,
+              { previousText },
+            );
+          }
           next = writeSharedChromeIntoVisualData(canvasRef.current, next);
         }
 
@@ -1523,15 +1536,26 @@ export function useVisualEditorState({
   );
 
   const updateText = useCallback(
-    (elementId: string, value: string) => {
+    (
+      elementId: string,
+      value: string,
+      options?: { previousText?: string },
+    ) => {
       if (!elementId) return false;
 
       const text = String(value ?? "");
+      const previousText = String(
+        options?.previousText ??
+          readVisualContent(dataRef.current || {})?.[elementId]?.text ??
+          "",
+      );
 
       /*
         קריטי:
         ID ויזואלי אינו בהכרח נתיב בתוך ServoraData.
         לכן שומרים רק ב-__content ולא משנים hero/header/nav וכו'.
+        חריג: כפתור CTA בהידר — templates כמו Petaluxe עדיין קוראים
+        heroPrimaryButton מ-React, ולכן צריך לסנכרן גם את השדה הזה.
       */
       const portalShell = persistPortalAuthControlShellPatch(elementId, {
         text,
@@ -1551,8 +1575,11 @@ export function useVisualEditorState({
           );
         }
 
-        // Header/footer button text is global for the whole site.
         if (isChromeVisualElementId(elementId)) {
+          next = syncHeaderCtaScalarFromChromeText(next, elementId, text, {
+            previousText,
+          });
+          // Header/footer button text is global for the whole site.
           next = writeSharedChromeIntoVisualData(canvasRef.current, next);
         }
 

@@ -17,6 +17,7 @@ import {
   readVisualStyles,
 } from "../studio/visual-editor/utils/visualData";
 import { syncSitePageTitlesIntoVisualData } from "../studio/visual-editor/utils/syncNavWithSitePages";
+import { applySharedChromeScalarsToVisualData } from "../studio/visual-editor/utils/visualSharedChrome";
 import {
   applyCustomCodeToDocument,
   injectHtmlIntoElement,
@@ -2248,9 +2249,11 @@ export default function PublicVisualSiteRenderer({
       ? asPlainObject(site).pages
       : [];
 
-    return syncSitePageTitlesIntoVisualData(
-      withResolvedSharedChrome(site, activePage, raw),
-      sitePages,
+    return applySharedChromeScalarsToVisualData(
+      syncSitePageTitlesIntoVisualData(
+        withResolvedSharedChrome(site, activePage, raw),
+        sitePages,
+      ),
     );
   }, [site, activePage, templateData]);
 

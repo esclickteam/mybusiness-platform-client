@@ -60,7 +60,7 @@ function Header({ data, currentPage, goTo }: { data: Record<string, any>; curren
       <button type="button" onClick={() => goTo("home")} className="t-display text-xl font-bold tracking-[0.18em] text-[var(--p)]">{getValue(data,"brandName")}</button>
       <div className="hidden h-px flex-1 bg-[var(--p)]/30 md:block" />
       <nav className="hidden gap-4 text-xs font-bold uppercase tracking-[0.18em] md:flex">{[{"id":"home","label":getValue(data,"navHome")||"בית"},{"id":"about","label":getValue(data,"navAbout")||"אודות"},{"id":"services","label":getValue(data,"navServices")||"שירותים"},{"id":"booking","label":getValue(data,"navBooking")||"תורים"}].map((p) => (<button key={p.id} type="button" onClick={() => goTo(p.id)} className={currentPage===p.id ? "text-[var(--p)]" : "text-[var(--muted)]"}>{p.label}</button>))}</nav>
-      <button type="button" onClick={() => goTo("booking")} className="mr-auto px-4 py-2 text-xs font-bold bg-[var(--p)] text-white">{getValue(data,"heroPrimaryButton")}</button>
+      <button type="button" onClick={() => goTo("booking")} className="mr-auto px-4 py-2 text-xs font-bold bg-[var(--p)] text-white" data-editable="button" data-visual-edit-id="global.header.primaryCta" data-visual-edit-type="button" data-visual-label="כפתור ראשי בכותרת">{getValue(data,"heroPrimaryButton")}</button>
     </div>
   </header>
   );
