@@ -55,6 +55,8 @@ type SystemNotification = {
   conversationId?: string;
   threadId?: string;
   type?: string;
+  clientId?: string;
+  extra?: Record<string, unknown>;
 
   agreementId?: string;
   proposalId?: string;
@@ -552,10 +554,43 @@ export default function FacebookStyleNotifications() {
       threadId: item.threadId || nested.threadId || item.conversationId,
       targetUrl: item.targetUrl || nested.targetUrl,
       type: item.type || nested.type,
+      clientId: item.clientId || nested.clientId,
+      extra: item.extra || nested.extra,
       reviewId:
         getReviewIdFromNotification(item) ||
         getReviewIdFromNotification(nested),
     };
+  }
+
+  function buildAppointmentTargetFromNotification(
+    notification: SystemNotification | UnifiedNotification
+  ) {
+    const raw =
+      notification && typeof notification === "object"
+        ? (notification as SystemNotification & {
+            extra?: Record<string, unknown>;
+            raw?: SystemNotification & { extra?: Record<string, unknown> };
+          })
+        : null;
+    const extra = (raw?.extra || raw?.raw?.extra || {}) as Record<
+      string,
+      unknown
+    >;
+    const crmClientId = String(
+      extra.crmClientId ||
+        raw?.clientId ||
+        (raw as SystemNotification)?.clientId ||
+        ""
+    ).trim();
+    const appointmentId = String(extra.appointmentId || "").trim();
+
+    if (!crmClientId) return "";
+
+    const params = new URLSearchParams();
+    params.set("clientId", crmClientId);
+    params.set("tab", "appointments");
+    if (appointmentId) params.set("appointmentId", appointmentId);
+    return `/business/${businessId}/dashboard/crm/clients?${params.toString()}`;
   }
 
   function getNotificationId(notification: SystemNotification) {
@@ -905,6 +940,12 @@ export default function FacebookStyleNotifications() {
       source.conversationId || source.threadId || ""
     );
 
+    const type = source.type || "";
+    const appointmentFallback =
+      type === "appointment"
+        ? buildAppointmentTargetFromNotification(source)
+        : "";
+
     return sanitizeUnifiedNotification({
       id: getNotificationId(source),
       kind,
@@ -916,10 +957,10 @@ export default function FacebookStyleNotifications() {
       leadId: source.leadId || "",
       activityId: source.activityId || "",
 
-      targetUrl: source.targetUrl || "",
+      targetUrl: source.targetUrl || appointmentFallback || "",
       conversationId,
       threadId: source.threadId || conversationId,
-      type: source.type || "",
+      type,
 
       agreementId: source.agreementId || "",
       proposalId: source.proposalId || "",
@@ -1237,9 +1278,15 @@ export default function FacebookStyleNotifications() {
       return;
     }
 
-    if (notification.targetUrl) {
+    const appointmentFallback =
+      notification.type === "appointment"
+        ? buildAppointmentTargetFromNotification(notification)
+        : "";
+    const resolvedTarget = notification.targetUrl || appointmentFallback;
+
+    if (resolvedTarget) {
       const targetPath = rewriteDashboardTargetForBusiness(
-        notification.targetUrl,
+        resolvedTarget,
         businessId
       );
 

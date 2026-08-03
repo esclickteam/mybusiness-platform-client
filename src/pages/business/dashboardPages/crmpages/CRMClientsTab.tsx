@@ -588,8 +588,24 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
     const match = clients.find((client) => client._id === clientId);
     if (!match) return;
 
+    const tabParam = String(searchParams.get("tab") || "").trim();
+    const allowedTabs: ClientDetailTab[] = [
+      "profile",
+      "documentation",
+      "communication",
+      "appointments",
+      "payments",
+      "tasks",
+      "files",
+      "client-data",
+      "portal-access",
+    ];
+    const nextTab = allowedTabs.includes(tabParam as ClientDetailTab)
+      ? (tabParam as ClientDetailTab)
+      : "profile";
+
     setSelectedClient(match);
-    setActiveClientTab("profile");
+    setActiveClientTab(nextTab);
     setMode("view");
   }, [clients, searchParams]);
 
@@ -957,6 +973,7 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
         businessId={businessId}
         activeTab={activeClientTab}
         setActiveTab={setActiveClientTab}
+        highlightAppointmentId={searchParams.get("appointmentId") || ""}
         statusLabel={getClientStatusLabel(getClientStatus(selectedClient), t)}
         onBack={closeClientDossier}
         onEdit={() => setMode("edit")}

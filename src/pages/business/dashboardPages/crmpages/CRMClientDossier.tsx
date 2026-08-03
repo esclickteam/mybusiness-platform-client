@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   ArrowLeft,
   CalendarDays,
@@ -104,6 +104,8 @@ type CRMClientDossierProps = {
   businessId: string;
   activeTab: ClientDetailTab;
   setActiveTab: (tab: ClientDetailTab) => void;
+  /** When opened from an appointment notification, highlight that booking. */
+  highlightAppointmentId?: string;
   statusLabel: string;
   onBack: () => void;
   onEdit: () => void;
@@ -200,6 +202,7 @@ export default function CRMClientDossier({
   businessId,
   activeTab,
   setActiveTab,
+  highlightAppointmentId = "",
   statusLabel,
   onBack,
   onEdit,
@@ -652,6 +655,7 @@ export default function CRMClientDossier({
               <AppointmentsPanel
                 appointments={appointments}
                 loading={appointmentsLoading}
+                highlightAppointmentId={highlightAppointmentId}
                 locale={locale}
                 emDash={emDash}
               />
@@ -858,15 +862,25 @@ function SummaryBox({
 function AppointmentsPanel({
   appointments,
   loading,
+  highlightAppointmentId = "",
   locale,
   emDash,
 }: {
   appointments: AppointmentRecord[];
   loading: boolean;
+  highlightAppointmentId?: string;
   locale: string;
   emDash: string;
 }) {
   const { t } = useTranslation();
+  const highlightId = String(highlightAppointmentId || "").trim();
+
+  useEffect(() => {
+    if (!highlightId || loading) return;
+    const node = document.getElementById(`crm-appointment-${highlightId}`);
+    if (!node) return;
+    node.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [highlightId, loading, appointments]);
 
   return (
     <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
@@ -896,6 +910,14 @@ function AppointmentsPanel({
       ) : (
         <div className="grid gap-3">
           {appointments.map((appointment, index) => {
+            const appointmentKey = String(
+              appointment._id || appointment.id || index
+            );
+            const isHighlighted =
+              Boolean(highlightId) &&
+              (appointmentKey === highlightId ||
+                String(appointment._id || "") === highlightId ||
+                String(appointment.id || "") === highlightId);
             const serviceName =
               appointment.serviceName ||
               appointment.service?.name ||
@@ -923,8 +945,17 @@ function AppointmentsPanel({
 
             return (
               <article
-                key={String(appointment._id || appointment.id || index)}
-                className="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm"
+                id={
+                  appointment._id || appointment.id
+                    ? `crm-appointment-${appointment._id || appointment.id}`
+                    : undefined
+                }
+                key={appointmentKey}
+                className={
+                  isHighlighted
+                    ? "rounded-2xl border border-violet-300 bg-violet-50/40 p-4 shadow-sm ring-2 ring-violet-200"
+                    : "rounded-2xl border border-slate-100 bg-white p-4 shadow-sm"
+                }
               >
                 <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                   <div className="min-w-0">
