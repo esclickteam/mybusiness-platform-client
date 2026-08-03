@@ -21,6 +21,18 @@ export const geloraEditorCss = `
   font-family: "Fraunces", serif;
 }
 
+/* Header logo must stay a badge — never fill the canvas in the visual editor. */
+[data-template-id="gelora"] [data-section-kind="header"] img.h-10,
+[data-template-id="gelora-preview"] [data-section-kind="header"] img.h-10,
+[data-template-id="gelora"] [data-section-kind="header"] .h-10.w-10 img,
+[data-template-id="gelora-preview"] [data-section-kind="header"] .h-10.w-10 img {
+  width: 2.5rem !important;
+  height: 2.5rem !important;
+  max-width: 2.5rem !important;
+  max-height: 2.5rem !important;
+  object-fit: cover !important;
+}
+
 /* Keep hero/editor parity: columns follow canvas width, never image min-content. */
 [data-template-id="gelora"] .gelora-hero-grid,
 [data-template-id="gelora-preview"] .gelora-hero-grid {

@@ -59,7 +59,13 @@ function Header({ data, currentPage, goTo }: { data: Record<string, any>; curren
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4 lg:px-8">
         <button type="button" onClick={() => goTo("home")} className="flex shrink-0 items-center gap-3">
           {getValue(data, "logoImage") ? (
-            <img src={getValue(data, "logoImage")} alt="" className="h-10 w-10 object-cover" />
+            <span className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full">
+              <img
+                src={getValue(data, "logoImage")}
+                alt=""
+                className="h-10 w-10 max-h-10 max-w-10 object-cover"
+              />
+            </span>
           ) : null}
           <span className="t-display text-3xl text-[var(--p)]">{getValue(data, "brandName")}</span>
         </button>

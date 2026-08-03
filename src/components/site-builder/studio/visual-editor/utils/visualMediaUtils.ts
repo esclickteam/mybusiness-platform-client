@@ -173,6 +173,44 @@ function isFreePositionedCanvasMedia(node: HTMLElement) {
   return position === "absolute" || position === "fixed";
 }
 
+function getMediaClassName(node: HTMLElement) {
+  return ` ${String(node.getAttribute("class") || node.className || "")} `;
+}
+
+/** True for Tailwind tracks like h-10 / w-[40px] / size-12 — not h-full / w-full. */
+function hasFixedTrackSize(className: string, axis: "w" | "h" | "size") {
+  const pattern = new RegExp(
+    `(?:^|\\s)(?:sm:|md:|lg:|xl:|2xl:)?${axis}-(?!full(?:\\s|$)|screen(?:\\s|$)|auto(?:\\s|$)|min(?:\\s|$)|max(?:\\s|$)|fit(?:\\s|$)|svh|svw|dvh|lvh|dvw|lvw)`,
+  );
+  return pattern.test(className);
+}
+
+/**
+ * Logos/avatars ship with authored boxes (h-10 w-10). Forcing width/height:100%
+ * against an auto-sized flex parent resolves to the asset's intrinsic size and
+ * blows the header apart in the visual editor (Gelora and similar templates).
+ */
+export function shouldPreserveAuthoredMediaBox(mediaNode: HTMLElement) {
+  const className = getMediaClassName(mediaNode);
+
+  if (hasFixedTrackSize(className, "size")) return true;
+
+  const fixedW = hasFixedTrackSize(className, "w");
+  const fixedH = hasFixedTrackSize(className, "h");
+  if (fixedW && fixedH) return true;
+
+  if (
+    (fixedW || fixedH) &&
+    mediaNode.closest(
+      '[data-visual-flow-lock="true"], [data-section-kind="header"], [data-template-section-type="header"], header',
+    )
+  ) {
+    return true;
+  }
+
+  return false;
+}
+
 /**
  * Force img/video to fill its slot (template card, orbit frame, hero box, etc.)
  * instead of rendering at the uploaded asset's natural pixel size.
@@ -196,6 +234,20 @@ export function fitMediaElementToSlot(
 
   mediaNode.style.display = "block";
   mediaNode.style.boxSizing = "border-box";
+
+  if (shouldPreserveAuthoredMediaBox(mediaNode)) {
+    // Clear stale fill overrides from earlier editor sessions.
+    if (mediaNode.style.width === "100%") mediaNode.style.removeProperty("width");
+    if (mediaNode.style.height === "100%") mediaNode.style.removeProperty("height");
+    if (mediaNode.style.maxWidth === "100%") {
+      mediaNode.style.removeProperty("max-width");
+    }
+    if (mediaNode.style.maxHeight === "100%") {
+      mediaNode.style.removeProperty("max-height");
+    }
+    return;
+  }
+
   mediaNode.style.minWidth = "0";
   mediaNode.style.minHeight = "0";
   mediaNode.style.removeProperty("aspect-ratio");
