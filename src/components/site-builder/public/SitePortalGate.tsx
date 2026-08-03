@@ -2,6 +2,7 @@ import React, { useEffect, useMemo } from "react";
 import SitePortalLoginView from "./SitePortalLoginView";
 import SitePortalAcceptInviteView from "./SitePortalAcceptInviteView";
 import SitePortalAccountView from "./SitePortalAccountView";
+import SitePortalPasswordView from "./SitePortalPasswordView";
 import { resolvePortalPaths } from "./portalSitePaths";
 
 type PortalGateInfo = {
@@ -49,6 +50,8 @@ export default function SitePortalGate({
     if (path === "/portal/login") return "login";
     if (path === "/portal/account") return "account";
     if (path === "/portal/accept-invite") return "accept-invite";
+    if (path === "/portal/forgot-password") return "forgot-password";
+    if (path === "/portal/reset-password") return "reset-password";
     return null;
   }, [pathname]);
 
@@ -109,6 +112,34 @@ export default function SitePortalGate({
         siteId={siteId}
         returnPath={returnPath}
         onSuccess={() => onPortalAuthChange?.()}
+      />
+    );
+  }
+
+  /*
+    Password recovery lives on the site's own designed pages. Keep the query
+    string so the reset token from the email survives the redirect.
+  */
+  if (portalRoute === "forgot-password" || portalRoute === "reset-password") {
+    const designedPath =
+      portalRoute === "forgot-password"
+        ? portalPaths.forgotPassword
+        : portalPaths.resetPassword;
+
+    if (hasDesignedPage(designedPath)) {
+      const search =
+        typeof window !== "undefined" ? window.location.search || "" : "";
+      return <PortalRedirect to={`${designedPath}${search}`} />;
+    }
+
+    return (
+      <SitePortalPasswordView
+        mode={portalRoute === "forgot-password" ? "forgot" : "reset"}
+        siteName={siteName}
+        siteId={siteId}
+        loginPath={portalPaths.login}
+        accountPath={portalPaths.account}
+        resetPath={portalPaths.resetPassword}
       />
     );
   }

@@ -11,7 +11,9 @@ export type PortalWidgetKind =
   | "portal-register"
   | "portal-account"
   | "portal-orders"
-  | "portal-cart";
+  | "portal-cart"
+  | "portal-forgot-password"
+  | "portal-reset-password";
 
 export type PortalPaths = {
   login: string;
@@ -19,6 +21,8 @@ export type PortalPaths = {
   account: string;
   orders: string;
   cart: string;
+  forgotPassword: string;
+  resetPassword: string;
 };
 
 const PORTAL_KINDS: PortalWidgetKind[] = [
@@ -27,6 +31,8 @@ const PORTAL_KINDS: PortalWidgetKind[] = [
   "portal-account",
   "portal-orders",
   "portal-cart",
+  "portal-forgot-password",
+  "portal-reset-password",
 ];
 
 function asPlainObject(value: unknown): Record<string, any> {
@@ -81,7 +87,7 @@ export function detectPortalPageKind(page: any): PortalWidgetKind | "" {
   for (const section of Object.values(insertedSections)) {
     const libraryId = String(asPlainObject(section).libraryId || "").trim();
     const match = libraryId.match(
-      /^section-(portal-(?:login|register|account|orders|cart))/,
+      /^section-(portal-(?:login|register|account|orders|cart|forgot-password|reset-password))/,
     );
     if (match) return match[1] as PortalWidgetKind;
   }
@@ -93,7 +99,7 @@ export function detectPortalPageKind(page: any): PortalWidgetKind | "" {
 
   if (templateMatch) {
     const index = Number(templateMatch[1]);
-    if (index >= 1 && index <= 50) {
+    if (index >= 1 && index <= PORTAL_KINDS.length * 10) {
       return PORTAL_KINDS[Math.floor((index - 1) / 10)];
     }
   }
@@ -152,5 +158,15 @@ export function resolvePortalPaths(site: any): PortalPaths {
     account,
     orders: pick("portal-orders", ["/orders", "/my-orders"], account),
     cart: pick("portal-cart", ["/cart", "/checkout"], account),
+    forgotPassword: pick(
+      "portal-forgot-password",
+      ["/forgot-password", "/reset-request"],
+      "/portal/forgot-password",
+    ),
+    resetPassword: pick(
+      "portal-reset-password",
+      ["/reset-password", "/new-password"],
+      "/portal/reset-password",
+    ),
   };
 }

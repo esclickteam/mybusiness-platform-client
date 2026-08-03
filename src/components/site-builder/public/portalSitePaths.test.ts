@@ -67,6 +67,8 @@ describe("resolvePortalPaths", () => {
       account: "/account-02",
       orders: "/account-02",
       cart: "/account-02",
+      forgotPassword: "/portal/forgot-password",
+      resetPassword: "/portal/reset-password",
     });
   });
 
@@ -76,6 +78,37 @@ describe("resolvePortalPaths", () => {
     expect(paths.login).toBe("/portal/login");
     expect(paths.account).toBe("/portal/account");
     expect(paths.register).toBe("/portal/login");
+  });
+
+  it("finds the designed password recovery pages", () => {
+    const paths = resolvePortalPaths({
+      pages: [
+        { id: "home", slug: "", isHome: true, data: {} },
+        pageWithAttributes("login", "portal-login"),
+        pageWithAttributes("forgot-password-03", "portal-forgot-password"),
+        pageWithAttributes("reset-password-03", "portal-reset-password"),
+      ],
+    });
+
+    expect(paths.forgotPassword).toBe("/forgot-password-03");
+    expect(paths.resetPassword).toBe("/reset-password-03");
+  });
+
+  it("maps the library template id blocks to the new kinds", () => {
+    // page-portal-51..60 = forgot password, 61..70 = reset password.
+    expect(
+      detectPortalPageKind({
+        slug: "x",
+        data: { __libraryPageTemplateId: "page-portal-53" },
+      }),
+    ).toBe("portal-forgot-password");
+
+    expect(
+      detectPortalPageKind({
+        slug: "y",
+        data: { __libraryPageTemplateId: "page-portal-65" },
+      }),
+    ).toBe("portal-reset-password");
   });
 
   it("never resolves a portal page to the home path", () => {

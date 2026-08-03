@@ -1170,6 +1170,38 @@ const CATEGORY_DEFS: CategoryDef[] = [
           sectionIds: [`section-portal-cart-${n}`, FOOTER],
         };
       }),
+      ...Array.from({ length: 10 }, (_, i) => {
+        const n = String(i + 1).padStart(2, "0");
+        return {
+          title: `שכחתי סיסמה ${i + 1}`,
+          description: "בקשת קישור לאיפוס סיסמה שנשלח במייל ללקוח",
+          slugSuggestion: i === 0 ? "forgot-password" : `forgot-password-${n}`,
+          keywords: [
+            "portal-forgot-password",
+            "שכחתי סיסמה",
+            "איפוס סיסמה",
+            "forgot",
+            "portal",
+          ],
+          sectionIds: [`section-portal-forgot-password-${n}`, FOOTER],
+        };
+      }),
+      ...Array.from({ length: 10 }, (_, i) => {
+        const n = String(i + 1).padStart(2, "0");
+        return {
+          title: `סיסמה חדשה ${i + 1}`,
+          description: "בחירת סיסמה חדשה מתוך הקישור שנשלח במייל",
+          slugSuggestion: i === 0 ? "reset-password" : `reset-password-${n}`,
+          keywords: [
+            "portal-reset-password",
+            "סיסמה חדשה",
+            "איפוס סיסמה",
+            "reset",
+            "portal",
+          ],
+          sectionIds: [`section-portal-reset-password-${n}`, FOOTER],
+        };
+      }),
     ],
   },
 ];

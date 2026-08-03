@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Link2, PanelTop, RefreshCw, Type, X } from "lucide-react";
+import { Check, Link2, PanelTop, RefreshCw, Settings2, Type, X } from "lucide-react";
 
 import { readVisualContent } from "./utils/visualData";
 import {
@@ -148,9 +148,39 @@ export default function VisualHeaderPanel({ open, editor, onClose }: Props) {
     Record<string, { text: string; href: string }>
   >({});
   const [area, setArea] = useState<"header" | "footer">("header");
+  const [appliedId, setAppliedId] = useState("");
 
   const canvasRoot: HTMLElement | null =
     (editor?.canvasRef?.current as HTMLElement | null) || null;
+
+  /** Site pages offered in the link dropdown, so nobody types a URL by hand. */
+  const linkOptions = useMemo(() => {
+    if (!open) return [] as Array<{ value: string; label: string }>;
+
+    const targets = editor?.getLinkTargets?.() as
+      | {
+          pages?: Array<{ label?: string; href?: string }>;
+          sections?: Array<{ label?: string; href?: string }>;
+        }
+      | undefined;
+
+    const options: Array<{ value: string; label: string }> = [];
+    const seen = new Set<string>();
+
+    const push = (href?: string, label?: string) => {
+      const value = String(href || "").trim();
+      if (!value || seen.has(value)) return;
+      seen.add(value);
+      options.push({ value, label: String(label || value) });
+    };
+
+    (targets?.pages || []).forEach((page) => push(page.href, page.label));
+    (targets?.sections || []).forEach((section) =>
+      push(section.href, `מקטע: ${section.label}`),
+    );
+
+    return options;
+  }, [editor, open]);
 
   const editorData = asPlainObject(editor?.data);
 
@@ -185,20 +215,53 @@ export default function VisualHeaderPanel({ open, editor, onClose }: Props) {
 
   if (!open) return null;
 
-  const commitText = (elementId: string, value: string) => {
-    editor?.updateText?.(elementId, value);
+  const applyItem = (item: ChromeItem) => {
+    const draft = drafts[item.elementId];
+    if (!draft) return;
+
+    const nextText = draft.text;
+    if (nextText !== item.text) {
+      editor?.updateText?.(item.elementId, nextText);
+    }
+
+    if (item.kind === "button") {
+      const href = draft.href.trim();
+
+      if (href !== item.href.trim()) {
+        editor?.updateLink?.(item.elementId, {
+          href,
+          target:
+            href.startsWith("http://") || href.startsWith("https://")
+              ? "_blank"
+              : "_self",
+        });
+      }
+    }
+
+    setItems((prev) =>
+      prev.map((entry) =>
+        entry.elementId === item.elementId
+          ? { ...entry, text: nextText, href: draft.href }
+          : entry,
+      ),
+    );
+
+    setAppliedId(item.elementId);
+    window.setTimeout(() => {
+      setAppliedId((current) =>
+        current === item.elementId ? "" : current,
+      );
+    }, 1600);
   };
 
-  const commitHref = (elementId: string, value: string) => {
-    const href = value.trim();
+  const isDirty = (item: ChromeItem) => {
+    const draft = drafts[item.elementId];
+    if (!draft) return false;
 
-    editor?.updateLink?.(elementId, {
-      href,
-      target:
-        href.startsWith("http://") || href.startsWith("https://")
-          ? "_blank"
-          : "_self",
-    });
+    return (
+      draft.text !== item.text ||
+      (item.kind === "button" && draft.href.trim() !== item.href.trim())
+    );
   };
 
   return (
@@ -317,13 +380,10 @@ export default function VisualHeaderPanel({ open, editor, onClose }: Props) {
                           },
                         }))
                       }
-                      onBlur={(event) =>
-                        commitText(item.elementId, event.target.value)
-                      }
                       onKeyDown={(event) => {
                         if (event.key !== "Enter") return;
                         event.preventDefault();
-                        commitText(item.elementId, draft.text);
+                        applyItem(item);
                       }}
                       className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-right text-sm font-bold text-slate-800 outline-none transition focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
                       placeholder="לדוגמה: אזור אישי"
@@ -331,33 +391,81 @@ export default function VisualHeaderPanel({ open, editor, onClose }: Props) {
                   </label>
 
                   {item.kind === "button" ? (
-                    <label className="mt-2 block text-[11px] font-black text-slate-500">
-                      קישור
-                      <input
-                        value={draft.href}
-                        dir="ltr"
-                        onChange={(event) =>
-                          setDrafts((prev) => ({
-                            ...prev,
-                            [item.elementId]: {
-                              ...draft,
-                              href: event.target.value,
-                            },
-                          }))
-                        }
-                        onBlur={(event) =>
-                          commitHref(item.elementId, event.target.value)
-                        }
-                        onKeyDown={(event) => {
-                          if (event.key !== "Enter") return;
-                          event.preventDefault();
-                          commitHref(item.elementId, draft.href);
-                        }}
-                        className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-left text-sm font-bold text-slate-800 outline-none transition focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
-                        placeholder="/login  ·  /account  ·  https://"
-                      />
-                    </label>
+                    <div className="mt-2">
+                      <span className="block text-[11px] font-black text-slate-500">
+                        לאן הכפתור מקשר
+                      </span>
+                      <div className="mt-1 flex gap-2">
+                        <select
+                          value={
+                            linkOptions.some(
+                              (option) => option.value === draft.href,
+                            ) || !draft.href
+                              ? draft.href
+                              : "__custom__"
+                          }
+                          onChange={(event) => {
+                            const value = event.target.value;
+                            if (value === "__custom__") return;
+
+                            setDrafts((prev) => ({
+                              ...prev,
+                              [item.elementId]: { ...draft, href: value },
+                            }));
+                          }}
+                          className="min-w-0 flex-1 rounded-xl border border-slate-200 bg-white px-3 py-2 text-right text-sm font-bold text-slate-800 outline-none transition focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
+                        >
+                          <option value="">בלי קישור</option>
+                          {linkOptions.map((option) => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
+                          {draft.href &&
+                          !linkOptions.some(
+                            (option) => option.value === draft.href,
+                          ) ? (
+                            <option value="__custom__">
+                              מותאם: {draft.href}
+                            </option>
+                          ) : null}
+                        </select>
+                        <button
+                          type="button"
+                          title="בחירה מתקדמת (טלפון, וואטסאפ, מייל, כתובת)"
+                          onClick={() =>
+                            editor?.openLinkSettings?.(item.elementId)
+                          }
+                          className="flex h-[38px] w-[38px] shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-500 transition hover:bg-white"
+                        >
+                          <Settings2 className="h-4 w-4" />
+                        </button>
+                      </div>
+                    </div>
                   ) : null}
+
+                  <button
+                    type="button"
+                    onClick={() => applyItem(item)}
+                    disabled={!isDirty(item)}
+                    className={[
+                      "mt-3 flex h-10 w-full items-center justify-center gap-2 rounded-xl text-sm font-black transition",
+                      appliedId === item.elementId
+                        ? "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200"
+                        : isDirty(item)
+                          ? "bg-violet-600 text-white hover:bg-violet-700"
+                          : "cursor-not-allowed bg-slate-100 text-slate-400",
+                    ].join(" ")}
+                  >
+                    {appliedId === item.elementId ? (
+                      <>
+                        <Check className="h-4 w-4" />
+                        הוחל על כל העמודים
+                      </>
+                    ) : (
+                      "החל"
+                    )}
+                  </button>
                 </div>
               );
             })}
