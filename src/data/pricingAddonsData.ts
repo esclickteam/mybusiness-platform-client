@@ -630,3 +630,105 @@ export const PRICING_ADDONS: PricingAddon[] = [
     ],
   },
 ];
+
+/* ============================================================================
+ * Managed-service purchase mapping.
+ *
+ * Maps the marketing catalog (kebab-case `key`) to the server's canonical
+ * Stripe Live SKUs (PricingCatalog). The client NEVER sends amount / currency /
+ * priceId — it sends only serviceKey + selectedAddOnKeys + quantities and the
+ * server (POST /api/service-orders/create-checkout) resolves the real Stripe
+ * Price. `amountIls` below is display-only for the pre-checkout summary.
+ *
+ *  - `trackOptions` align by index with the addon's `tracks[]`.
+ *  - `addOnOptions` align by index with the addon's `extras[]`.
+ *  - `contact: true` => custom scope, no Stripe SKU => routes to /contact.
+ * ==========================================================================*/
+
+export type ServicePurchaseTrack = {
+  /** Server-side managed_service SKU. Omitted for contact-only options. */
+  serviceKey?: string;
+  /** Display-only amount for the pre-checkout summary (server is source of truth). */
+  amountIls?: number;
+  billing?: "one_time" | "recurring_month";
+  /** Custom scope with no fixed Stripe price — routes to the contact form. */
+  contact?: boolean;
+};
+
+export type ServicePurchaseAddOn = {
+  /** Server-side managed_service_addon SKU (only for expert_website_build). */
+  addOnKey: string;
+  amountIls: number;
+  allowQuantity?: boolean;
+};
+
+export type ServicePurchaseConfig = {
+  /** Base service SKU for single-option services (no track picker). */
+  serviceKey?: string;
+  amountIls?: number;
+  billing?: "one_time" | "recurring_month";
+  /** Track choices (e.g. automations 1 / 3 / 6), aligned with `tracks[]`. */
+  trackOptions?: ServicePurchaseTrack[];
+  /** Optional add-ons for the expert website build, aligned with `extras[]`. */
+  addOnOptions?: ServicePurchaseAddOn[];
+};
+
+export const PRICING_SERVICE_PURCHASE: Record<string, ServicePurchaseConfig> = {
+  "automations-setup": {
+    trackOptions: [
+      { serviceKey: "automations_setup_1_390_ils", amountIls: 390, billing: "one_time" },
+      { serviceKey: "automations_setup_3_890_ils", amountIls: 890, billing: "one_time" },
+      { serviceKey: "automations_setup_6_1490_ils", amountIls: 1490, billing: "one_time" },
+      { contact: true },
+    ],
+  },
+  "website-build": {
+    serviceKey: "expert_website_build_1490_ils",
+    amountIls: 1490,
+    billing: "one_time",
+    addOnOptions: [
+      { addOnKey: "expert_website_extra_page_190_ils", amountIls: 190, allowQuantity: true },
+      { addOnKey: "expert_website_content_writing_590_ils", amountIls: 590 },
+      { addOnKey: "expert_website_basic_store_1490_ils", amountIls: 1490 },
+      { addOnKey: "expert_website_advanced_design_2990_ils", amountIls: 2990 },
+    ],
+  },
+  "crm-migration": {
+    trackOptions: [
+      { serviceKey: "crm_migration_790_ils", amountIls: 790, billing: "one_time" },
+    ],
+  },
+  "store-products-upload": {
+    trackOptions: [
+      { serviceKey: "store_products_upload_490_ils", amountIls: 490, billing: "one_time" },
+      { contact: true },
+      { contact: true },
+    ],
+  },
+  "collab-manager": {
+    trackOptions: [
+      {
+        serviceKey: "collaboration_manager_790_ils_monthly",
+        amountIls: 790,
+        billing: "recurring_month",
+      },
+      { contact: true },
+    ],
+  },
+  "lead-first-response": {
+    serviceKey: "lead_response_690_ils_monthly",
+    amountIls: 690,
+    billing: "recurring_month",
+  },
+  "personal-sales-rep": {
+    serviceKey: "personal_sales_rep_1490_ils_monthly",
+    amountIls: 1490,
+    billing: "recurring_month",
+  },
+  "old-leads-followup": {
+    trackOptions: [
+      { serviceKey: "old_leads_followup_590_ils", amountIls: 590, billing: "one_time" },
+      { contact: true },
+    ],
+  },
+};
