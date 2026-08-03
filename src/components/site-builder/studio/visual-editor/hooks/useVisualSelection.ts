@@ -22,6 +22,7 @@ import {
   getVisualMediaTypeFromNode,
 } from "../utils/visualMediaUtils";
 import {
+  isBookingWidgetMount,
   isInsidePluginWidgetContent,
   isPluginWidgetShell,
   resolvePluginWidgetSelectionTarget,
@@ -353,6 +354,17 @@ function getVisualTypeFromNode(
     return "image";
   }
 
+  // Booking calendar mounts are widgets — never page sections.
+  // Legacy mounts still carry data-bizuply-block="booking"; ignore it here.
+  if (node && isBookingWidgetMount(node)) {
+    return "box";
+  }
+
+  // Contact / lead forms are deletable elements, not page sections.
+  if (tagName === "form") {
+    return "box";
+  }
+
   const directType = getDirectVisualElementType(node);
 
   if (directType && directType !== "section") return directType;
@@ -378,6 +390,17 @@ function getVisualTypeFromNode(
       tagName === "div" ||
       tagName === "article")
   ) {
+    // Forms / cards with data-bizuply-block stay deletable as boxes when they
+    // are not real section shells (section/header/footer/main/article).
+    if (
+      tagName === "div" &&
+      !node.hasAttribute("data-template-section-id") &&
+      !node.hasAttribute("data-section-kind") &&
+      !node.hasAttribute("data-studio-section-id") &&
+      !node.matches("[data-visual-inserted-section='true']")
+    ) {
+      return "box";
+    }
     return "section";
   }
 
@@ -417,7 +440,22 @@ function getStableStructureNode(
   node: HTMLElement,
   canvas: HTMLElement | null,
 ) {
-  const structure = node.closest<HTMLElement>(STRUCTURE_SELECTOR);
+  let structure = node.closest<HTMLElement>(STRUCTURE_SELECTOR);
+
+  // Booking mounts / nested forms match STRUCTURE_SELECTOR but are not page
+  // sections. Walk past them so section ids stay unique to real sections.
+  while (
+    structure &&
+    canvas?.contains(structure) &&
+    (isBookingWidgetMount(structure) ||
+      (String(structure.tagName || "").toLowerCase() === "form" &&
+        !structure.hasAttribute("data-template-section-id") &&
+        !structure.hasAttribute("data-section-kind") &&
+        !structure.matches("[data-visual-inserted-section='true']")))
+  ) {
+    structure =
+      structure.parentElement?.closest<HTMLElement>(STRUCTURE_SELECTOR) || null;
+  }
 
   if (!structure || !canvas?.contains(structure)) return null;
 

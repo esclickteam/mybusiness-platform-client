@@ -923,7 +923,6 @@ function renderBooking(block: ReadyWebsiteBlock, preset: DesignPreset) {
       data-bizuply-crm-calendar="true"
       data-bizuply-booking-variant="month"
       data-bizuply-booking-chrome="embedded"
-      data-bizuply-block="booking"
       data-bizuply-booking-frame="true"
       style="min-height:480px"
       title="יומן פגישות מה-CRM"

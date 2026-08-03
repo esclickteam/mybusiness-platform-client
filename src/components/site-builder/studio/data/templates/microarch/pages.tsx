@@ -46,7 +46,6 @@ function BookingCalendarPanel({ pill, compact, bold, neon }: { pill?: boolean; c
       data-bizuply-crm-calendar="true"
       data-bizuply-booking-variant="month"
       data-bizuply-booking-chrome="embedded"
-      data-bizuply-block="booking"
       data-bizuply-booking-frame="true"
       style={{ position: "relative", minHeight: 420, background: "transparent" }}
       aria-label="יומן פגישות מה-CRM"
