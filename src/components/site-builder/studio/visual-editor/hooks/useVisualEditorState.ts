@@ -4680,6 +4680,42 @@ export function useVisualEditorState({
       },
       saveDraft: saveDraftWithPendingMedia,
       publish: publishWithPendingMedia,
+      /**
+       * Flush live canvas edits (inline text + DOM) into a full visual
+       * snapshot. Used before page switches so work is not lost on remount.
+       */
+      buildSnapshotData: save.buildSnapshotData,
+      capturePageSnapshot: () => {
+        const root = canvasRef.current;
+        if (root) {
+          root
+            .querySelectorAll<HTMLElement>(
+              '[data-visual-inline-editing="true"], [contenteditable="true"]',
+            )
+            .forEach((node) => {
+              if (!root.contains(node)) return;
+              const elementId = String(
+                node.getAttribute("data-visual-edit-id") || "",
+              ).trim();
+              if (!elementId) return;
+
+              const text = String(node.innerText || node.textContent || "")
+                .replace(/\u00a0/g, " ")
+                .replace(/\r\n/g, "\n");
+
+              updateText(elementId, text);
+
+              node.removeAttribute("contenteditable");
+              node.removeAttribute("spellcheck");
+              node.removeAttribute("data-visual-inline-editing");
+              node.classList.remove("is-visual-inline-editing");
+            });
+
+          setIsInlineEditing(false);
+        }
+
+        return save.buildSnapshotData();
+      },
       isSaving: save.isSaving || isUploadingMedia,
       isUploadingMedia,
       lastSavedAt: save.lastSavedAt,
@@ -4812,10 +4848,12 @@ export function useVisualEditorState({
       applyDataToDom,
       saveDraftWithPendingMedia,
       publishWithPendingMedia,
+      save.buildSnapshotData,
       save.isSaving,
       isUploadingMedia,
       save.lastSavedAt,
       save.saveError,
+      updateText,
       sitePagesSignature,
     ],
   );

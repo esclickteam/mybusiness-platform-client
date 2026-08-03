@@ -1220,10 +1220,15 @@ export default function VisualEditorCanvas({
             const id = String(nextPageId || "").trim();
             if (!id) return;
             if (typeof editorAny.onSelectSitePage === "function") {
-              editorAny.onSelectSitePage(
-                id,
-                (editorAny.data as Record<string, any>) || {},
-              );
+              // Commit inline text + DOM before remount so the leaving page
+              // keeps every button/link/text edit until publish.
+              const snapshot =
+                (typeof editorAny.capturePageSnapshot === "function"
+                  ? editorAny.capturePageSnapshot()
+                  : editorAny.buildSnapshotData?.()) ||
+                (editorAny.data as Record<string, any>) ||
+                {};
+              editorAny.onSelectSitePage(id, snapshot);
             }
           }}
         />

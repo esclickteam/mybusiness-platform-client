@@ -547,8 +547,13 @@ export default function VisualEditorShell({
             onClose={() => setSidePanelMode(null)}
             onSelectPage={(pageId) => {
               if (typeof onSelectSitePage !== "function") return;
+              const capture = (editor as any).capturePageSnapshot;
               const currentVisualData =
-                ((editor as any).data as Record<string, any>) || {};
+                (typeof capture === "function"
+                  ? capture()
+                  : (editor as any).buildSnapshotData?.()) ||
+                ((editor as any).data as Record<string, any>) ||
+                {};
               onSelectSitePage(pageId, currentVisualData);
             }}
             onAddPage={() => {
