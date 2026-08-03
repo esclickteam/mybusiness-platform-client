@@ -26,7 +26,7 @@ function ShekelIcon({ className = "" }: { className?: string }) {
   return (
     <span
       aria-hidden="true"
-      className={`inline-flex items-center justify-center font-black leading-none ${className}`}
+      className={`inline-flex items-center justify-center text-[1.05em] font-black leading-none ${className}`}
     >
       ₪
     </span>
