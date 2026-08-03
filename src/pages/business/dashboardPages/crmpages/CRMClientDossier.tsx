@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   ArrowLeft,
   CalendarDays,
@@ -99,6 +99,13 @@ type AppointmentRecord = {
   paymentMethod?: string;
 };
 
+export type ClientProfileFields = {
+  fullName: string;
+  phone: string;
+  email: string;
+  address: string;
+};
+
 type CRMClientDossierProps = {
   client: CRMClientDossierClient;
   businessId: string;
@@ -106,10 +113,11 @@ type CRMClientDossierProps = {
   setActiveTab: (tab: ClientDetailTab) => void;
   statusLabel: string;
   onBack: () => void;
-  onEdit: () => void;
+  onEdit?: () => void;
   onDelete: (event?: React.MouseEvent<HTMLButtonElement>) => void;
   onActivitiesChange: (activities: ClientActivity[]) => void;
   onTagsChange?: (tags: string[]) => Promise<void> | void;
+  onProfileSave?: (fields: ClientProfileFields) => Promise<void> | void;
   clientDataPanel: React.ReactNode;
   portalAccessPanel?: React.ReactNode;
 };
@@ -117,6 +125,65 @@ type CRMClientDossierProps = {
 function formatPhone(phone: string) {
   if (!phone) return "";
   return phone.replace(/(\d{3})(?=\d)/g, "$1 ").trim();
+}
+
+/** Keep phone/email digit order correct inside RTL layouts. */
+function LtrText({
+  children,
+  className = "",
+}: {
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <span
+      dir="ltr"
+      className={["inline-block [unicode-bidi:isolate]", className]
+        .filter(Boolean)
+        .join(" ")}
+    >
+      {children}
+    </span>
+  );
+}
+
+function formatPhoneDisplay(phone: string, fallback = "") {
+  const formatted = formatPhone(phone);
+  if (!formatted) return fallback;
+  return <LtrText>{formatted}</LtrText>;
+}
+
+function isolateLtr(value: string) {
+  if (!value) return value;
+  return `\u2066${value}\u2069`;
+}
+
+async function logClientWhatsAppContact({
+  clientId,
+  text,
+  previousActivities,
+  onActivitiesChange,
+}: {
+  clientId: string;
+  text: string;
+  previousActivities: ClientActivity[];
+  onActivitiesChange: (activities: ClientActivity[]) => void;
+}) {
+  const { data } = await API.post<{
+    success?: boolean;
+    activity?: ClientActivity;
+    client?: { activities?: ClientActivity[] };
+  }>(`/crm-clients/${clientId}/activities`, {
+    type: "whatsapp",
+    text,
+    occurredAt: new Date().toISOString(),
+  });
+
+  if (Array.isArray(data?.client?.activities)) {
+    onActivitiesChange(data.client.activities);
+  } else if (data?.activity) {
+    onActivitiesChange([data.activity, ...previousActivities]);
+  }
 }
 
 function getInitials(name: string) {
@@ -206,6 +273,7 @@ export default function CRMClientDossier({
   onDelete,
   onActivitiesChange,
   onTagsChange,
+  onProfileSave,
   clientDataPanel,
   portalAccessPanel,
 }: CRMClientDossierProps) {
@@ -215,6 +283,39 @@ export default function CRMClientDossier({
   const emDash = t("crm.common.emDash");
   const whatsappPhone = cleanWhatsAppPhone(client.phone);
   const activities = client.activities || [];
+  const [profileEditing, setProfileEditing] = useState(false);
+
+  useEffect(() => {
+    setProfileEditing(false);
+  }, [client._id]);
+
+  const startProfileEdit = () => {
+    setActiveTab("profile");
+    if (onProfileSave) {
+      setProfileEditing(true);
+      return;
+    }
+    onEdit?.();
+  };
+
+  const openWhatsAppAndLog = async () => {
+    if (!whatsappPhone) return;
+    window.open(
+      `https://wa.me/${whatsappPhone}`,
+      "_blank",
+      "noopener,noreferrer"
+    );
+    try {
+      await logClientWhatsAppContact({
+        clientId: client._id,
+        text: t("crm.clients.communication.loggedWhatsAppContact"),
+        previousActivities: client.activities || [],
+        onActivitiesChange,
+      });
+    } catch (err) {
+      console.error("Log WhatsApp contact error:", err);
+    }
+  };
 
   const openTasks = useMemo(
     () =>
@@ -340,8 +441,12 @@ export default function CRMClientDossier({
               </h1>
               <p className="mt-0.5 truncate text-xs font-bold text-slate-500 sm:text-sm">
                 {t("crm.clients.details.clientFile", {
-                  phone: formatPhone(client.phone) || t("crm.common.noPhone"),
-                  email: client.email || t("crm.common.noEmail"),
+                  phone: client.phone
+                    ? isolateLtr(formatPhone(client.phone))
+                    : t("crm.common.noPhone"),
+                  email: client.email
+                    ? isolateLtr(client.email)
+                    : t("crm.common.noEmail"),
                 })}
               </p>
             </div>
@@ -353,15 +458,14 @@ export default function CRMClientDossier({
             </span>
 
             {whatsappPhone && (
-              <a
-                href={`https://wa.me/${whatsappPhone}`}
-                target="_blank"
-                rel="noreferrer"
+              <button
+                type="button"
+                onClick={openWhatsAppAndLog}
                 className="inline-flex h-10 items-center gap-2 rounded-xl bg-sky-50 px-3 text-sm font-black text-sky-700 ring-1 ring-sky-100 transition hover:bg-sky-100"
               >
                 <MessageCircle className="h-4 w-4" />
                 <span className="hidden sm:inline">{t("crm.common.whatsapp")}</span>
-              </a>
+              </button>
             )}
 
             {client.phone && (
@@ -376,7 +480,7 @@ export default function CRMClientDossier({
 
             <button
               type="button"
-              onClick={onEdit}
+              onClick={startProfileEdit}
               className="inline-flex h-10 items-center gap-2 rounded-xl bg-[#6D28D9] px-4 text-sm font-black text-white transition hover:bg-[#5B21B6]"
             >
               <Edit3 className="h-4 w-4" />
@@ -508,12 +612,18 @@ export default function CRMClientDossier({
                 <DetailRow
                   icon={Phone}
                   label={t("crm.common.phone")}
-                  value={formatPhone(client.phone) || emDash}
+                  value={formatPhoneDisplay(client.phone, emDash)}
                 />
                 <DetailRow
                   icon={Mail}
                   label={t("crm.common.email")}
-                  value={client.email || emDash}
+                  value={
+                    client.email ? (
+                      <LtrText>{client.email}</LtrText>
+                    ) : (
+                      emDash
+                    )
+                  }
                 />
                 <DetailRow
                   icon={MapPin}
@@ -558,33 +668,14 @@ export default function CRMClientDossier({
             {resolvedTab === "profile" && (
               <>
                 <section className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
-                  <div className="mb-4">
-                    <h3 className="text-lg font-black text-slate-800">
-                      {t("crm.clients.profile.title")}
-                    </h3>
-                    <p className="mt-1 text-sm font-bold text-slate-500">
-                      {t("crm.clients.profile.subtitle")}
-                    </p>
-                  </div>
-
-                  <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                    <InfoCard
-                      label={t("crm.clients.profile.fullName")}
-                      value={client.fullName || emDash}
-                    />
-                    <InfoCard
-                      label={t("crm.clients.profile.phone")}
-                      value={formatPhone(client.phone) || emDash}
-                    />
-                    <InfoCard
-                      label={t("crm.clients.profile.email")}
-                      value={client.email || emDash}
-                    />
-                    <InfoCard
-                      label={t("crm.clients.profile.address")}
-                      value={client.address || emDash}
-                    />
-                  </div>
+                  <ProfileContactEditor
+                    client={client}
+                    emDash={emDash}
+                    editing={profileEditing}
+                    onEditingChange={setProfileEditing}
+                    onSave={onProfileSave}
+                    onLegacyEdit={onEdit}
+                  />
 
                   <div className="mt-4 rounded-2xl border border-slate-100 bg-slate-50 p-4">
                     <h4 className="text-sm font-black text-slate-800">
@@ -645,6 +736,8 @@ export default function CRMClientDossier({
                 emDash={emDash}
                 whatsappPhone={whatsappPhone}
                 phone={client.phone}
+                onOpenWhatsApp={openWhatsAppAndLog}
+                onGoDocumentation={() => setActiveTab("documentation")}
               />
             )}
 
@@ -837,6 +930,229 @@ function InfoCard({ label, value }: { label: string; value: React.ReactNode }) {
         {value}
       </p>
     </div>
+  );
+}
+
+function profileFieldsFromClient(client: CRMClientDossierClient): ClientProfileFields {
+  return {
+    fullName: client.fullName || "",
+    phone: client.phone || "",
+    email: client.email || "",
+    address: client.address || "",
+  };
+}
+
+function ProfileContactEditor({
+  client,
+  emDash,
+  editing,
+  onEditingChange,
+  onSave,
+  onLegacyEdit,
+}: {
+  client: CRMClientDossierClient;
+  emDash: string;
+  editing: boolean;
+  onEditingChange: (editing: boolean) => void;
+  onSave?: (fields: ClientProfileFields) => Promise<void> | void;
+  onLegacyEdit?: () => void;
+}) {
+  const { t } = useTranslation();
+  const [draft, setDraft] = useState<ClientProfileFields>(() =>
+    profileFieldsFromClient(client)
+  );
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    if (!editing) {
+      setDraft(profileFieldsFromClient(client));
+    }
+  }, [client, editing]);
+
+  const canEdit = Boolean(onSave) || Boolean(onLegacyEdit);
+
+  const beginEdit = () => {
+    if (onSave) {
+      setDraft(profileFieldsFromClient(client));
+      onEditingChange(true);
+      return;
+    }
+    onLegacyEdit?.();
+  };
+
+  const cancelEdit = () => {
+    setDraft(profileFieldsFromClient(client));
+    onEditingChange(false);
+  };
+
+  const handleSave = async () => {
+    if (!onSave || saving) return;
+
+    const next: ClientProfileFields = {
+      fullName: draft.fullName.trim(),
+      phone: draft.phone.trim(),
+      email: draft.email.trim(),
+      address: draft.address.trim(),
+    };
+
+    if (!next.fullName) {
+      alert(t("crm.clients.alerts.nameRequired"));
+      return;
+    }
+    if (!next.phone) {
+      alert(t("crm.clients.alerts.phoneRequired"));
+      return;
+    }
+
+    setSaving(true);
+    try {
+      await onSave(next);
+      onEditingChange(false);
+    } catch (err) {
+      console.error("Update client profile error:", err);
+      alert(t("crm.clients.alerts.updateFailed"));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const inputClassName =
+    "mt-1.5 h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm font-black text-slate-800 outline-none transition placeholder:font-semibold placeholder:text-slate-400 focus:border-violet-300 focus:ring-4 focus:ring-violet-100";
+
+  return (
+    <>
+      <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
+        <div className="min-w-0">
+          <h3 className="text-lg font-black text-slate-800">
+            {t("crm.clients.profile.title")}
+          </h3>
+          <p className="mt-1 text-sm font-bold text-slate-500">
+            {t("crm.clients.profile.subtitle")}
+          </p>
+        </div>
+
+        {canEdit && !editing && (
+          <button
+            type="button"
+            onClick={beginEdit}
+            className="inline-flex h-10 items-center gap-2 rounded-xl border border-violet-100 bg-violet-50 px-3 text-sm font-black text-violet-700 transition hover:bg-violet-100"
+          >
+            <Edit3 className="h-4 w-4" />
+            {t("crm.clients.profile.editFields")}
+          </button>
+        )}
+
+        {editing && onSave && (
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              onClick={cancelEdit}
+              disabled={saving}
+              className="inline-flex h-10 items-center rounded-xl border border-slate-200 bg-white px-3 text-sm font-black text-slate-600 transition hover:bg-slate-50 disabled:opacity-60"
+            >
+              {t("crm.common.cancel")}
+            </button>
+            <button
+              type="button"
+              onClick={handleSave}
+              disabled={saving}
+              className="inline-flex h-10 items-center rounded-xl bg-[#6D28D9] px-4 text-sm font-black text-white transition hover:bg-[#5B21B6] disabled:cursor-not-allowed disabled:opacity-60"
+            >
+              {saving ? t("crm.common.saving") : t("crm.common.saveChanges")}
+            </button>
+          </div>
+        )}
+      </div>
+
+      {editing && onSave ? (
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <label className="rounded-xl border border-violet-100 bg-violet-50/40 p-3">
+            <span className="text-[11px] font-black text-slate-400">
+              {t("crm.clients.profile.fullName")}
+            </span>
+            <input
+              value={draft.fullName}
+              onChange={(event) =>
+                setDraft((prev) => ({ ...prev, fullName: event.target.value }))
+              }
+              placeholder={t("crm.clients.form.fullName")}
+              className={inputClassName}
+              autoComplete="name"
+            />
+          </label>
+
+          <label className="rounded-xl border border-violet-100 bg-violet-50/40 p-3">
+            <span className="text-[11px] font-black text-slate-400">
+              {t("crm.clients.profile.phone")}
+            </span>
+            <input
+              dir="ltr"
+              value={draft.phone}
+              onChange={(event) =>
+                setDraft((prev) => ({ ...prev, phone: event.target.value }))
+              }
+              placeholder={t("crm.clients.form.phone")}
+              className={`${inputClassName} text-start`}
+              inputMode="tel"
+              autoComplete="tel"
+            />
+          </label>
+
+          <label className="rounded-xl border border-violet-100 bg-violet-50/40 p-3">
+            <span className="text-[11px] font-black text-slate-400">
+              {t("crm.clients.profile.email")}
+            </span>
+            <input
+              dir="ltr"
+              type="email"
+              value={draft.email}
+              onChange={(event) =>
+                setDraft((prev) => ({ ...prev, email: event.target.value }))
+              }
+              placeholder={t("crm.clients.form.email")}
+              className={`${inputClassName} text-start`}
+              autoComplete="email"
+            />
+          </label>
+
+          <label className="rounded-xl border border-violet-100 bg-violet-50/40 p-3">
+            <span className="text-[11px] font-black text-slate-400">
+              {t("crm.clients.profile.address")}
+            </span>
+            <input
+              value={draft.address}
+              onChange={(event) =>
+                setDraft((prev) => ({ ...prev, address: event.target.value }))
+              }
+              placeholder={t("crm.clients.form.address")}
+              className={inputClassName}
+              autoComplete="street-address"
+            />
+          </label>
+        </div>
+      ) : (
+        <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+          <InfoCard
+            label={t("crm.clients.profile.fullName")}
+            value={client.fullName || emDash}
+          />
+          <InfoCard
+            label={t("crm.clients.profile.phone")}
+            value={formatPhoneDisplay(client.phone, emDash)}
+          />
+          <InfoCard
+            label={t("crm.clients.profile.email")}
+            value={
+              client.email ? <LtrText>{client.email}</LtrText> : emDash
+            }
+          />
+          <InfoCard
+            label={t("crm.clients.profile.address")}
+            value={client.address || emDash}
+          />
+        </div>
+      )}
+    </>
   );
 }
 
@@ -1269,6 +1585,8 @@ function CommunicationPanel({
   emDash,
   whatsappPhone,
   phone,
+  onOpenWhatsApp,
+  onGoDocumentation,
 }: {
   messages: unknown[];
   loading: boolean;
@@ -1276,6 +1594,8 @@ function CommunicationPanel({
   emDash: string;
   whatsappPhone: string;
   phone?: string;
+  onOpenWhatsApp?: () => void;
+  onGoDocumentation?: () => void;
 }) {
   const { t } = useTranslation();
 
@@ -1292,15 +1612,14 @@ function CommunicationPanel({
         </div>
         <div className="flex gap-2">
           {whatsappPhone && (
-            <a
-              href={`https://wa.me/${whatsappPhone}`}
-              target="_blank"
-              rel="noreferrer"
+            <button
+              type="button"
+              onClick={onOpenWhatsApp}
               className="inline-flex h-10 items-center gap-2 rounded-xl bg-sky-50 px-3 text-sm font-black text-sky-700 ring-1 ring-sky-100"
             >
               <MessageCircle className="h-4 w-4" />
               {t("crm.common.whatsapp")}
-            </a>
+            </button>
           )}
           {phone && (
             <a
@@ -1324,9 +1643,18 @@ function CommunicationPanel({
           <h4 className="mt-3 text-xl font-black text-slate-800">
             {t("crm.clients.communication.emptyTitle")}
           </h4>
-          <p className="mt-2 text-sm font-bold text-slate-500">
+          <p className="mx-auto mt-2 max-w-lg text-sm font-bold text-slate-500">
             {t("crm.clients.communication.emptyDescription")}
           </p>
+          {onGoDocumentation && (
+            <button
+              type="button"
+              onClick={onGoDocumentation}
+              className="mt-4 inline-flex h-10 items-center justify-center rounded-xl border border-violet-100 bg-violet-50 px-4 text-sm font-black text-violet-700 transition hover:bg-violet-100"
+            >
+              {t("crm.clients.communication.openDocumentation")}
+            </button>
+          )}
         </div>
       ) : (
         <div className="space-y-2">

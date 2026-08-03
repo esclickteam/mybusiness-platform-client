@@ -950,6 +950,42 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
     });
   };
 
+  const handleProfileSave = async (fields: {
+    fullName: string;
+    phone: string;
+    email: string;
+    address: string;
+  }) => {
+    if (!selectedClient) return;
+
+    await API.put(`/crm-clients/${selectedClient._id}`, {
+      fullName: fields.fullName.trim(),
+      phone: fields.phone.trim(),
+      email: fields.email.trim(),
+      address: fields.address.trim(),
+    });
+
+    await invalidateClients();
+
+    const nextClient: CRMClient = {
+      ...selectedClient,
+      ...fields,
+      fullName: fields.fullName.trim(),
+      phone: fields.phone.trim(),
+      email: fields.email.trim(),
+      address: fields.address.trim(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    setSelectedClient(nextClient);
+    queryClient.setQueryData<CRMClient[]>(["clients", businessId], (old) => {
+      if (!old) return old;
+      return old.map((client) =>
+        client._id === selectedClient._id ? nextClient : client
+      );
+    });
+  };
+
   if (mode === "view" && selectedClient) {
     return (
       <CRMClientDossier
@@ -963,6 +999,7 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
         onDelete={(event) => handleDelete(selectedClient, event)}
         onActivitiesChange={handleClientActivitiesChange}
         onTagsChange={handleClientTagsChange}
+        onProfileSave={handleProfileSave}
         clientDataPanel={
           <ClientDataPanel
             client={selectedClient}
@@ -1764,13 +1801,23 @@ function ClientsTable({
                     {client.phone && (
                       <p className="flex items-center gap-2 text-xs font-semibold text-slate-600">
                         <Phone className="h-3.5 w-3.5 text-sky-800" />
-                        {formatPhone(client.phone)}
+                        <span
+                          dir="ltr"
+                          className="inline-block [unicode-bidi:isolate]"
+                        >
+                          {formatPhone(client.phone)}
+                        </span>
                       </p>
                     )}
                     {client.email && (
                       <p className="flex max-w-[170px] items-center gap-2 truncate text-xs font-semibold text-slate-600">
                         <Mail className="h-3.5 w-3.5 shrink-0 text-sky-800" />
-                        {client.email}
+                        <span
+                          dir="ltr"
+                          className="inline-block truncate [unicode-bidi:isolate]"
+                        >
+                          {client.email}
+                        </span>
                       </p>
                     )}
                   </div>
@@ -1923,6 +1970,9 @@ function ClientFormPanel({
 
         <FormField label={t("crm.clients.form.phone")} required>
           <input
+            dir="ltr"
+            inputMode="tel"
+            autoComplete="tel"
             placeholder={t("crm.clients.form.phone")}
             value={formClient.phone}
             onChange={(event) =>
@@ -1931,14 +1981,16 @@ function ClientFormPanel({
                 phone: event.target.value,
               }))
             }
-            className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-sky-300 focus:bg-white focus:ring-4 focus:ring-sky-100"
+            className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-start text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-sky-300 focus:bg-white focus:ring-4 focus:ring-sky-100"
           />
         </FormField>
 
         <FormField label={t("crm.clients.form.email")}>
           <input
+            dir="ltr"
             placeholder={t("crm.clients.form.email")}
             type="email"
+            autoComplete="email"
             value={formClient.email}
             onChange={(event) =>
               setFormClient((prev) => ({
@@ -1946,7 +1998,7 @@ function ClientFormPanel({
                 email: event.target.value,
               }))
             }
-            className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-sky-300 focus:bg-white focus:ring-4 focus:ring-sky-100"
+            className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-start text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-sky-300 focus:bg-white focus:ring-4 focus:ring-sky-100"
           />
         </FormField>
 
