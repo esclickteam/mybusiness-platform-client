@@ -14,6 +14,7 @@ import {
   clearPendingPurchaseIntent,
   savePendingPurchaseIntent,
 } from "../../utils/pendingPurchaseIntent";
+import { WEBSITE_ADDON } from "../../data/pricingPackagesData";
 
 const PLAN_OPTIONS = [
   { key: "website", he: "אתר בלבד", en: "Website only", amount: 600, billing: "year" },
@@ -80,6 +81,9 @@ export default function ServicePurchasePanel({
   const [selectedPlanKey, setSelectedPlanKey] = useState(
     restoredIntent?.selectedPlanKey || (activePlan ? "existing" : null)
   );
+  const [includeWebsiteAddon, setIncludeWebsiteAddon] = useState(
+    () => restoredIntent?.includeWebsiteAddon === true
+  );
   const [step, setStep] = useState(restoredIntent ? "summary" : "details");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -126,6 +130,11 @@ export default function ServicePurchasePanel({
             ? "existing"
             : selectedPlanKey
           : null,
+      includeWebsiteAddon:
+        purchaseMode === "bundle" &&
+        !activePlan &&
+        (selectedPlanKey === "monthly" || selectedPlanKey === "yearly") &&
+        includeWebsiteAddon,
       selectedAddOnKeys: selectedAddOnOptions.map((option) => option.addOnKey),
       quantities: Object.fromEntries(
         selectedAddOnOptions
@@ -139,6 +148,7 @@ export default function ServicePurchasePanel({
     }),
     [
       activePlan,
+      includeWebsiteAddon,
       purchaseMode,
       quantities,
       selectedAddOnOptions,
@@ -156,6 +166,12 @@ export default function ServicePurchasePanel({
     (option) => option.key === (activePlan?.key || selectedPlanKey)
   );
   const isNewPlan = purchaseMode === "bundle" && !activePlan;
+  const websiteAddonAmount =
+    isNewPlan &&
+    intent.includeWebsiteAddon &&
+    (plan?.key === "monthly" || plan?.key === "yearly")
+      ? WEBSITE_ADDON.price
+      : 0;
   const waitingForActivePlan = Boolean(
     autoContinue &&
       restoredIntent &&
@@ -165,6 +181,7 @@ export default function ServicePurchasePanel({
   const paymentToday =
     baseAmount +
     addOnTotal +
+    websiteAddonAmount +
     (isNewPlan && plan?.key !== "monthly" ? plan?.amount || 0 : 0) +
     (isNewPlan && plan?.key === "monthly" ? plan.amount : 0);
   const monthlyTotal =
@@ -175,6 +192,7 @@ export default function ServicePurchasePanel({
   const oneTimeTotal =
     (serviceBilling === "one_time" ? baseAmount : 0) +
     addOnTotal +
+    websiteAddonAmount +
     (isNewPlan && plan?.key === "website" ? plan.amount : 0);
 
   const goToContact = () => {
@@ -200,10 +218,19 @@ export default function ServicePurchasePanel({
     setPurchaseMode(mode);
     if (mode === "standalone") {
       setSelectedPlanKey(null);
+      setIncludeWebsiteAddon(false);
     } else if (activePlan) {
       setSelectedPlanKey("existing");
+      setIncludeWebsiteAddon(false);
     }
     setStep(getPurchaseModeNextStep(mode, activePlan));
+  };
+
+  const selectPlan = (key) => {
+    setSelectedPlanKey(key);
+    if (key !== "monthly" && key !== "yearly") {
+      setIncludeWebsiteAddon(false);
+    }
   };
 
   const persistIntent = () => savePendingPurchaseIntent(intent);
@@ -438,7 +465,7 @@ export default function ServicePurchasePanel({
                 <SelectionCard
                   key={option.key}
                   selected={selectedPlanKey === option.key}
-                  onClick={() => setSelectedPlanKey(option.key)}
+                  onClick={() => selectPlan(option.key)}
                   title={`${isHe ? option.he : option.en} · ${money(option.amount, isHe)}${option.billing === "month" ? (isHe ? " לחודש" : "/month") : (isHe ? " לשנה" : "/year")}`}
                   text={
                     option.key === "website"
@@ -449,6 +476,31 @@ export default function ServicePurchasePanel({
                   }
                 />
               ))}
+              {selectedPlanKey === "monthly" || selectedPlanKey === "yearly" ? (
+                <label
+                  data-testid="website-addon-toggle"
+                  className={`flex cursor-pointer items-start gap-3 rounded-2xl border px-4 py-3.5 transition ${
+                    includeWebsiteAddon
+                      ? "border-emerald-300 bg-emerald-50/80 shadow-sm"
+                      : "border-slate-200 bg-slate-50/70 hover:border-indigo-200"
+                  }`}
+                >
+                  <input
+                    type="checkbox"
+                    checked={includeWebsiteAddon}
+                    onChange={() => setIncludeWebsiteAddon((value) => !value)}
+                    className="mt-1 h-4 w-4 shrink-0 rounded border-slate-300 text-emerald-600 focus:ring-emerald-500"
+                  />
+                  <span className="min-w-0">
+                    <span className="block text-sm font-black leading-5 text-slate-900">
+                      {isHe ? WEBSITE_ADDON.labelHe : WEBSITE_ADDON.labelEn}
+                    </span>
+                    <span className="mt-1 block text-xs font-semibold leading-5 text-slate-500">
+                      {isHe ? WEBSITE_ADDON.hintHe : WEBSITE_ADDON.hintEn}
+                    </span>
+                  </span>
+                </label>
+              ) : null}
             </div>
           ) : null}
 
@@ -484,7 +536,14 @@ export default function ServicePurchasePanel({
                       ? "רכישה נפרדת"
                       : "Standalone purchase"}
                 </p>
-                {activePlan?.nextRenewal ? (
+                                {websiteAddonAmount > 0 ? (
+                  <p data-testid="website-addon-summary" className="mt-2 text-xs text-emerald-700">
+                    {isHe
+                      ? `כולל תוספת אתר ${money(WEBSITE_ADDON.price, isHe)} חד־פעמי`
+                      : `Includes website add-on ${money(WEBSITE_ADDON.price, isHe)} one-time`}
+                  </p>
+                ) : null}
+{activePlan?.nextRenewal ? (
                   <p className="mt-2 text-xs text-slate-500">
                     {isHe ? "החידוש הבא" : "Next renewal"}:{" "}
                     {new Date(activePlan.nextRenewal).toLocaleDateString(isHe ? "he-IL" : "en-IL")}

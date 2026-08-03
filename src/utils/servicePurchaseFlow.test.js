@@ -15,6 +15,7 @@ describe("service purchase payload", () => {
         serviceKey: "service",
         purchaseMode: "bundle",
         selectedPlanKey: "yearly",
+        includeWebsiteAddon: true,
         selectedAddOnKeys: ["addon"],
         quantities: { addon: 2 },
         userId: "stale",
@@ -30,6 +31,7 @@ describe("service purchase payload", () => {
       serviceKey: "service",
       purchaseMode: "bundle",
       selectedPlanKey: "yearly",
+      includeWebsiteAddon: true,
       selectedAddOnKeys: ["addon"],
       quantities: { addon: 2 },
       businessId: "business",
@@ -154,6 +156,7 @@ describe("sequential checkout continuation", () => {
       ...restoredIntent,
       purchaseMode: "bundle",
       selectedPlanKey: "existing",
+      includeWebsiteAddon: false,
     });
     expect(restoredIntent.selectedPlanKey).toBe("monthly");
 

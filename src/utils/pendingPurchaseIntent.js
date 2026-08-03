@@ -5,6 +5,7 @@ const ALLOWED_KEYS = [
   "serviceKey",
   "purchaseMode",
   "selectedPlanKey",
+  "includeWebsiteAddon",
   "selectedAddOnKeys",
   "quantities",
   "returnPath",
@@ -47,6 +48,7 @@ export function sanitizePendingPurchaseIntent(value, now = Date.now()) {
     selectedPlanKey: value.selectedPlanKey
       ? String(value.selectedPlanKey)
       : null,
+    includeWebsiteAddon: value.includeWebsiteAddon === true,
     selectedAddOnKeys,
     quantities,
     returnPath:
