@@ -34,6 +34,12 @@ export async function createPublicBooking(payload: {
   guestPhone: string;
   guestEmail?: string;
   guestNote?: string;
+  customFields?: Array<{
+    id: string;
+    label: string;
+    type?: string;
+    value: string;
+  }>;
 }) {
   const { data } = await API.post("/appointments/public", {
     ...payload,
@@ -41,6 +47,7 @@ export async function createPublicBooking(payload: {
     phone: payload.guestPhone,
     email: payload.guestEmail,
     note: payload.guestNote,
+    customFields: payload.customFields || [],
   });
   return data;
 }
