@@ -56,10 +56,37 @@ function BookingCalendarPanel({ pill, compact, bold, neon }: { pill?: boolean; c
 function Header({ data, currentPage, goTo }: { data: Record<string, any>; currentPage: string; goTo: (id: string) => void }) {
   return (
     <header data-visual-flow-lock="true" data-template-section-type="header" data-section-kind="header" className="sticky top-0 z-50 beauty-glassGel-header-v0 bg-[var(--surface)]/85 text-[var(--text)] shadow-[0_18px_45px_rgba(219,39,119,0.14)] backdrop-blur-xl">
-      <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-4 lg:px-8">
-        <button type="button" onClick={() => goTo("home")} className="flex items-center gap-3">{getValue(data,"logoImage") ? (<img src={getValue(data,"logoImage")} alt="" className="h-10 w-10 object-cover" />) : null}<span className="t-display text-3xl text-[var(--p)]">{getValue(data,"brandName")}</span></button>
-        <nav className="hidden gap-6 text-sm md:flex">{[{"id":"home","label":getValue(data,"navHome")||"בית"},{"id":"about","label":getValue(data,"navAbout")||"אודות"},{"id":"services","label":getValue(data,"navServices")||"שירותים"},{"id":"booking","label":getValue(data,"navBooking")||"תורים"}].map((p) => (<button key={p.id} type="button" onClick={() => goTo(p.id)} className={currentPage===p.id ? "font-bold text-[var(--p)]" : "text-[var(--muted)]"}>{p.label}</button>))}</nav>
-        <button type="button" onClick={() => goTo("booking")} className="t-pulse px-5 py-2.5 text-sm font-bold rounded-full bg-[var(--p)] text-white">{getValue(data,"heroPrimaryButton")}</button>
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4 lg:px-8">
+        <button type="button" onClick={() => goTo("home")} className="flex shrink-0 items-center gap-3">
+          {getValue(data, "logoImage") ? (
+            <img src={getValue(data, "logoImage")} alt="" className="h-10 w-10 object-cover" />
+          ) : null}
+          <span className="t-display text-3xl text-[var(--p)]">{getValue(data, "brandName")}</span>
+        </button>
+        <nav className="hidden min-w-0 flex-1 items-center justify-center gap-6 whitespace-nowrap text-sm md:flex">
+          {[
+            { id: "home", label: getValue(data, "navHome") || "בית" },
+            { id: "about", label: getValue(data, "navAbout") || "אודות" },
+            { id: "services", label: getValue(data, "navServices") || "שירותים" },
+            { id: "booking", label: getValue(data, "navBooking") || "תורים" },
+          ].map((p) => (
+            <button
+              key={p.id}
+              type="button"
+              onClick={() => goTo(p.id)}
+              className={currentPage === p.id ? "shrink-0 font-bold text-[var(--p)]" : "shrink-0 text-[var(--muted)]"}
+            >
+              {p.label}
+            </button>
+          ))}
+        </nav>
+        <button
+          type="button"
+          onClick={() => goTo("booking")}
+          className="t-pulse inline-flex shrink-0 whitespace-nowrap rounded-full bg-[var(--p)] px-5 py-2.5 text-sm font-bold text-white"
+        >
+          {getValue(data, "heroPrimaryButton")}
+        </button>
       </div>
     </header>
   );
@@ -68,7 +95,43 @@ function Header({ data, currentPage, goTo }: { data: Record<string, any>; curren
 function HomePage({ data, goTo }: { data: Record<string, any>; goTo: (id: string) => void }) {
   return (
     <>
-      <section data-template-section-type="hero" data-section-kind="hero" className="beauty-glassGel-hero-v10 overflow-hidden bg-[var(--bg)] px-5 py-14 lg:px-8"><div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-center"><Reveal><p className="text-xs font-bold uppercase tracking-[0.32em] text-[var(--p)]">GEL</p><h1 className="t-display t-anim mt-4 whitespace-pre-line text-5xl leading-tight md:text-7xl">{getValue(data,"heroTitle")}</h1><p className="mt-5 max-w-lg text-[var(--muted)]">{getValue(data,"heroSubtitle")}</p><button type="button" onClick={() => goTo("booking")} className="mt-8 rounded-full bg-[var(--p)] px-8 py-3.5 text-sm font-bold text-white">{getValue(data,"heroPrimaryButton")}</button></Reveal><Reveal variant="scale" delayMs={120}><div className="grid grid-cols-1 sm:grid-cols-2 gap-3"><img src={getValue(data,"heroImage")} alt="" className="t-ken row-span-2 h-full min-h-[520px] w-full rounded-[2rem] object-cover" /><img src={getValue(data,"itemOneImage")} alt="" className="h-64 rounded-[2rem] object-cover" /><img src={getValue(data,"galleryImage2")} alt="" className="h-64 rounded-[2rem] object-cover" /></div></Reveal></div></section>
+      <section data-template-section-type="hero" data-section-kind="hero" className="beauty-glassGel-hero-v10 overflow-hidden bg-[var(--bg)] px-5 py-14 lg:px-8">
+        <div className="gelora-hero-grid mx-auto grid max-w-7xl items-center gap-8 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]">
+          <Reveal className="min-w-0">
+            <p className="text-xs font-bold uppercase tracking-[0.32em] text-[var(--p)]">GEL</p>
+            <h1 className="t-display t-anim mt-4 whitespace-pre-line text-5xl leading-tight md:text-7xl">
+              {getValue(data, "heroTitle")}
+            </h1>
+            <p className="mt-5 max-w-lg text-[var(--muted)]">{getValue(data, "heroSubtitle")}</p>
+            <button
+              type="button"
+              onClick={() => goTo("booking")}
+              className="mt-8 inline-flex w-fit shrink-0 whitespace-nowrap rounded-full bg-[var(--p)] px-8 py-3.5 text-sm font-bold text-white"
+            >
+              {getValue(data, "heroPrimaryButton")}
+            </button>
+          </Reveal>
+          <Reveal variant="scale" delayMs={120} className="min-w-0">
+            <div className="grid grid-cols-2 gap-3">
+              <img
+                src={getValue(data, "heroImage")}
+                alt=""
+                className="t-ken row-span-2 h-full min-h-[420px] w-full min-w-0 rounded-[2rem] object-cover"
+              />
+              <img
+                src={getValue(data, "itemOneImage")}
+                alt=""
+                className="h-64 w-full min-w-0 rounded-[2rem] object-cover"
+              />
+              <img
+                src={getValue(data, "galleryImage2")}
+                alt=""
+                className="h-64 w-full min-w-0 rounded-[2rem] object-cover"
+              />
+            </div>
+          </Reveal>
+        </div>
+      </section>
       <section data-template-section-type="servicesPreview" data-section-kind="servicesPreview" className="beauty-glassGel-servicesPreview-frame-0 relative isolate overflow-hidden px-5 py-12 md:py-24 lg:px-8">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_15%,color-mix(in_srgb,var(--p)_28%,transparent),transparent_34%),linear-gradient(135deg,color-mix(in_srgb,var(--surface)_70%,transparent),transparent_58%)]" />
         <div className="relative mx-auto max-w-7xl">

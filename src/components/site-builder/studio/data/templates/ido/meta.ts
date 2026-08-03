@@ -76,9 +76,10 @@ const seed = {
   name: "IDO",
   title: "IDO",
   description:
-    "תבנית פרימיום לקוסמטיקה ותיאום תורים עם Hero דרמטי, תמונה נפתחת לצדדים, טיפולים, גלריה וטופס תור.",
-  category: "beauty",
-  niche: "beauty",
+    "תבנית פרימיום לעסקים ושירותים עם Hero דרמטי, תמונה נפתחת לצדדים, שירותים, גלריה וטופס יצירת קשר.",
+  category: "business",
+  categoryLabel: "עסקים ושירותים",
+  niche: "business",
   layout: "landing",
   image:
     "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=1600&q=90",
@@ -97,8 +98,9 @@ export const idoTemplate = {
   name: "IDO",
   title: "IDO",
   description:
-    "תבנית יוקרתית לקוסמטיקה, קליניקות ועסקי יופי עם חוויית תיאום תורים.",
-  category: "Beauty & Appointments",
+    "תבנית יוקרתית לעסקים ושירותים עם חוויית תיאום תורים ונוכחות מקצועית.",
+  category: "business",
+  categoryLabel: "עסקים ושירותים",
   thumbnail: IdoThumbnail as ComponentType,
   preview: IdoPreview as ComponentType,
   Component: IdoPages as ComponentType,
