@@ -16,6 +16,7 @@ import {
   normalizeEnabledModules,
 } from "../../utils/moduleAccess";
 import { isBizuplyTestUser } from "../../utils/bizuplyTestUser";
+import UpgradeRequired from "../../components/UpgradeRequired";
 
 /* Dashboard pages */
 const BuildBusinessPage = lazy(() => import("./dashboardPages/build/Build"));
@@ -241,7 +242,7 @@ function DashboardIndexRedirect({ businessId, enabledModules }) {
   return <Navigate to="dashboard" replace />;
 }
 
-function ModuleAccessGuard({ businessId, enabledModules, children }) {
+function ModuleAccessGuard({ businessId, enabledModules, planLimited, children }) {
   const location = useLocation();
   const limited = normalizeEnabledModules(enabledModules);
 
@@ -249,6 +250,11 @@ function ModuleAccessGuard({ businessId, enabledModules, children }) {
     limited &&
     !isDashboardPathAllowed(location.pathname, limited)
   ) {
+    // Plan-limited accounts (e.g. website-only buyers) see an upgrade screen
+    // instead of a silent redirect.
+    if (planLimited) {
+      return <UpgradeRequired businessId={businessId} />;
+    }
     const fallback = getDefaultDashboardPath(businessId, limited);
     return <Navigate to={fallback} replace />;
   }
@@ -352,7 +358,11 @@ const BusinessDashboardRoutes = () => {
   return (
     <LazyRouteBoundary>
       <Suspense fallback={<BizuplyLoader fullScreen label="Loading dashboard..." />}>
-        <ModuleAccessGuard businessId={businessId} enabledModules={enabledModules}>
+        <ModuleAccessGuard
+          businessId={businessId}
+          enabledModules={enabledModules}
+          planLimited={Boolean(user?.planLimited)}
+        >
         <Routes>
         <Route path="" element={<BusinessDashboardLayout />}>
           <Route
