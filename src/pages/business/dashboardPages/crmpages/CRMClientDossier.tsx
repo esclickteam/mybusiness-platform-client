@@ -337,6 +337,8 @@ export default function CRMClientDossier({
       url: string;
       name: string;
       mimeType?: string;
+      publicId?: string;
+      resourceType?: string;
       activityText?: string;
       createdAt?: string;
     }[] = [];
@@ -348,6 +350,8 @@ export default function CRMClientDossier({
           url: file.url,
           name: file.name || t("crm.clients.documentation.attachedFile"),
           mimeType: file.mimeType,
+          publicId: file.publicId,
+          resourceType: file.resourceType,
           activityText: activity.text,
           createdAt: activity.createdAt || activity.occurredAt,
         });
@@ -1793,6 +1797,8 @@ function FilesPanel({
     url: string;
     name: string;
     mimeType?: string;
+    publicId?: string;
+    resourceType?: string;
     activityText?: string;
     createdAt?: string;
   }[];
