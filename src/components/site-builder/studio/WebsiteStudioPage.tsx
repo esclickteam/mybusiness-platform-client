@@ -60,6 +60,7 @@ import {
 } from "./visual-editor/utils/syncNavWithSitePages";
 import {
   VISUAL_SHARED_CHROME_KEY,
+  extractSharedChromeFromVisualData,
   readSharedChrome,
   stripChromeFromVisualData,
 } from "./visual-editor/utils/visualSharedChrome";
@@ -5025,6 +5026,18 @@ export default function WebsiteStudioPage({
     return pages.find((page) => page.id === activePageId) || pages[0];
   }, [pages, activePageId]);
 
+  /** Only a page with real edits may replace the running editor session. */
+  const activePageVisualData = useMemo(() => {
+    const extracted = extractVisualDataFromPayload({
+      data: (activePage as any)?.data,
+      templateData: (activePage as any)?.templateData,
+      projectData: (activePage as any)?.projectData,
+      visualEditorPayload: (activePage as any)?.visualEditorPayload,
+    });
+
+    return hasMeaningfulVisualCollections(extracted) ? extracted : {};
+  }, [activePage]);
+
   /*
     Header/footer edits are site-wide. Whichever page saved them last is the
     source of truth for every page opened in the editor.
@@ -6724,9 +6737,19 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       ),
     );
 
+    /*
+      Header/footer are site-wide, so lift them into the shared chrome as soon
+      as the page changes. That makes a header edit visible on the next page
+      immediately, without waiting for a publish.
+    */
+    const sharedChrome = Object.keys(snapshot).length
+      ? extractSharedChromeFromVisualData(null, snapshot)
+      : latestSharedChrome;
+
     if (!leavingLibrary && Object.keys(snapshot).length) {
       setVisualSessionData({
         ...snapshot,
+        [VISUAL_SHARED_CHROME_KEY]: sharedChrome,
         __activePageId: nextId,
         __blankVisualPage: false,
         __libraryPage: false,
@@ -6735,6 +6758,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     } else {
       setVisualSessionData((previous) => ({
         ...asPlainObject(previous),
+        [VISUAL_SHARED_CHROME_KEY]: sharedChrome,
         __activePageId: nextId,
         __blankVisualPage: false,
         __libraryPage: false,
@@ -8470,13 +8494,12 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       }),
       serverVisualTemplateData || {},
       visualSessionData,
-      extractVisualDataFromPayload({
-        data: (activePage as any)?.data,
-        templateData: (activePage as any)?.templateData,
-        projectData: (activePage as any)?.projectData,
-        visualEditorPayload:
-          (activePage as any)?.visualEditorPayload,
-      }),
+      /*
+        A later source replaces whole maps, even empty ones. A page that was
+        never edited therefore wiped everything done on the previous page while
+        switching pages, so only merge it when it really holds edits.
+      */
+      activePageVisualData,
     ),
     // Header/footer come from the site-wide chrome, not from this page.
     [VISUAL_SHARED_CHROME_KEY]: latestSharedChrome,

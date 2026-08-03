@@ -1292,6 +1292,16 @@ export const PORTAL_PAGE_KIND_NAV: Array<{
   { id: "account", label: "אזור אישי", keyword: "portal-account" },
   { id: "orders", label: "הזמנות", keyword: "portal-orders" },
   { id: "cart", label: "עגלה", keyword: "portal-cart" },
+  {
+    id: "forgot-password",
+    label: "שכחתי סיסמה",
+    keyword: "portal-forgot-password",
+  },
+  {
+    id: "reset-password",
+    label: "סיסמה חדשה",
+    keyword: "portal-reset-password",
+  },
 ];
 
 export function getPagesByCategory(

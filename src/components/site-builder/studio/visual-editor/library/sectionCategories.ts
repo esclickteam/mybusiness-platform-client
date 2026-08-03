@@ -52,4 +52,14 @@ export const PORTAL_SECTION_KIND_NAV: Array<{
   { id: "account", label: "אזור אישי", prefix: "section-portal-account-" },
   { id: "orders", label: "הזמנות", prefix: "section-portal-orders-" },
   { id: "cart", label: "עגלה", prefix: "section-portal-cart-" },
+  {
+    id: "forgot-password",
+    label: "שכחתי סיסמה",
+    prefix: "section-portal-forgot-password-",
+  },
+  {
+    id: "reset-password",
+    label: "סיסמה חדשה",
+    prefix: "section-portal-reset-password-",
+  },
 ];
