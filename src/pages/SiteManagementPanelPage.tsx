@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import {
   ArrowRight,
-  ExternalLink,
   Globe2,
   Layers,
   Puzzle,
@@ -251,12 +250,8 @@ export default function SiteManagementPanelPage() {
             </div>
           </div>
 
-          <div className="flex shrink-0 items-center gap-2">
-            <Link to={editorHref} className={btnSecondary + " h-9 px-3 text-xs"}>
-              <ExternalLink size={14} />
-              עורך
-            </Link>
-            {sitePublished && publicUrl ? (
+          {sitePublished && publicUrl ? (
+            <div className="flex shrink-0 items-center gap-2">
               <a
                 href={publicUrl}
                 target="_blank"
@@ -266,8 +261,8 @@ export default function SiteManagementPanelPage() {
                 <Globe2 size={14} />
                 אתר חי
               </a>
-            ) : null}
-          </div>
+            </div>
+          ) : null}
         </div>
 
         <div className="mx-auto max-w-[1600px] overflow-x-auto px-4 md:px-6">
