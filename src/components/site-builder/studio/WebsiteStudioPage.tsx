@@ -5837,6 +5837,14 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       selectedTemplateSeed?.id ||
       "";
 
+    const isPortalLibraryPage = pageTemplate.category === "portal";
+    const portalConfig = createDefaultClientPortalConfig();
+    if (isPortalLibraryPage) {
+      portalConfig.enabled = true;
+      portalConfig.loginRequired =
+        String(pageTemplate.slugSuggestion || "").toLowerCase() !== "login";
+    }
+
     const nextPage: StudioSitePageWithPortal = {
       id,
       title,
@@ -5864,7 +5872,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       visualSnapshotVersion: 5,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      clientPortal: createDefaultClientPortalConfig(),
+      clientPortal: portalConfig,
     } as StudioSitePageWithPortal;
 
     setPages((previousPages) => [...previousPages, nextPage]);
