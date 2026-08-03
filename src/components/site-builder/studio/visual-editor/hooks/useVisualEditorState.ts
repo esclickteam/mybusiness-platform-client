@@ -85,6 +85,10 @@ import {
   portalControlPatchForShell,
 } from "../utils/portalAuthControls";
 import {
+  isChromeVisualElementId,
+  writeSharedChromeIntoVisualData,
+} from "../utils/visualSharedChrome";
+import {
   didSitePageNavSyncChange,
   syncSitePageTitlesIntoVisualData,
 } from "../utils/syncNavWithSitePages";
@@ -1445,6 +1449,11 @@ export function useVisualEditorState({
           );
         }
 
+        // Header/footer edits are site-global — lift immediately.
+        if (isChromeVisualElementId(elementId)) {
+          next = writeSharedChromeIntoVisualData(canvasRef.current, next);
+        }
+
         dataRef.current = next;
 
         if (hasLinkPatch) {
@@ -1497,6 +1506,11 @@ export function useVisualEditorState({
           );
         }
 
+        // Header/footer button text is global for the whole site.
+        if (isChromeVisualElementId(elementId)) {
+          next = writeSharedChromeIntoVisualData(canvasRef.current, next);
+        }
+
         // Keep the ref in sync like every other mutator, so a save right
         // after a panel edit does not persist the previous text.
         dataRef.current = next;
@@ -1506,7 +1520,7 @@ export function useVisualEditorState({
 
       return true;
     },
-    [dataRef, persistPortalAuthControlShellPatch, setData],
+    [canvasRef, dataRef, persistPortalAuthControlShellPatch, setData],
   );
 
   const updateVisualContent = useCallback(

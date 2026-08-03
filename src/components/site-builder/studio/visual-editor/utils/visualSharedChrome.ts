@@ -158,16 +158,33 @@ export function extractSharedChromeFromVisualData(
       nextMap[canonicalKey] = value;
     });
 
-    // Keys whose element is rendered here but has no edit anymore were reset.
+    /*
+      Only drop a shared chrome entry when this page explicitly cleared it
+      (key present, empty value). Missing keys usually mean a partial
+      snapshot — deleting them made header CTAs revert after page switches.
+    */
     Object.keys(previousMap).forEach((canonicalKey) => {
       const renderedIds = domChromeIds.get(canonicalKey);
       if (!renderedIds?.length) return;
 
-      const stillEdited = renderedIds.some((elementId) =>
+      const matchingPageKeys = renderedIds.filter((elementId) =>
         Object.prototype.hasOwnProperty.call(pageMap, elementId),
       );
+      if (!matchingPageKeys.length) return;
 
-      if (!stillEdited) {
+      const stillHasValue = matchingPageKeys.some((elementId) => {
+        const value = pageMap[elementId];
+        if (value == null) return false;
+        if (typeof value === "string") return value.trim().length > 0;
+        if (isPlainObject(value)) {
+          return Object.values(value).some(
+            (entry) => String(entry ?? "").trim().length > 0,
+          );
+        }
+        return true;
+      });
+
+      if (!stillHasValue) {
         delete nextMap[canonicalKey];
       }
     });

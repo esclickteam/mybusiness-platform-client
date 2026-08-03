@@ -5078,12 +5078,20 @@ export default function WebsiteStudioPage({
   }, [activePage]);
 
   /*
-    Header/footer edits are site-wide. Whichever page saved them last is the
-    source of truth for every page opened in the editor.
+    Header/footer edits are site-wide. Prefer the session (set on the latest
+    page switch), otherwise the richest chrome map found on any page.
   */
   const latestSharedChrome = useMemo(() => {
+    const scoreChrome = (chrome: Record<string, any>) =>
+      Object.values(chrome).reduce((total, value) => {
+        const map = asPlainObject(value);
+        return total + Object.keys(map).length;
+      }, 0);
+
+    const sessionChrome = readSharedChrome(asPlainObject(visualSessionData));
+    if (scoreChrome(sessionChrome) > 0) return sessionChrome;
+
     const candidates = [
-      visualSessionData,
       ...pages.flatMap((page) => [
         (page as any)?.data,
         (page as any)?.templateData,
@@ -5093,12 +5101,19 @@ export default function WebsiteStudioPage({
       serverVisualTemplateData,
     ];
 
+    let best: Record<string, any> = {};
+    let bestScore = 0;
+
     for (const candidate of candidates) {
       const sharedChrome = readSharedChrome(asPlainObject(candidate));
-      if (Object.keys(sharedChrome).length) return sharedChrome;
+      const score = scoreChrome(sharedChrome);
+      if (score > bestScore) {
+        best = sharedChrome;
+        bestScore = score;
+      }
     }
 
-    return {};
+    return best;
   }, [pages, serverVisualTemplateData, visualSessionData]);
 
   useEffect(() => {
@@ -8560,25 +8575,28 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
   key={`${selectedTemplateRenderer.key || selectedTemplateSeed?.id || "visual"}-${businessId || "business"}-${activePageId || "home"}`}
   initialData={{
     /*
-      Never strip this page's own header/footer edits here. Doing so replaced
-      the newest edit with an older shared copy, which looked like the editor
-      reverting every change. Pages that must follow the shared chrome are
-      cleaned at publish time instead.
+      Header/footer are site-global. Strip page-scoped chrome from every merge
+      source so a stale "תאמו ניסיון" on page B cannot override the shared
+      "התחברות" edited on page A. Live typing on the current page still wins
+      via expandSharedChrome (page-level over shared) until the next switch,
+      which lifts the edit back into __sharedChrome.
     */
-    ...mergeVisualRootData(
-      selectedTemplateRenderer.defaultData as Record<string, any>,
-      extractVisualDataFromPayload({
-        data: (selectedTemplateSeed as any)?.data,
-        templateData: (selectedTemplateSeed as any)?.templateData,
-      }),
-      serverVisualTemplateData || {},
-      visualSessionData,
-      /*
-        A later source replaces whole maps, even empty ones. A page that was
-        never edited therefore wiped everything done on the previous page while
-        switching pages, so only merge it when it really holds edits.
-      */
-      activePageVisualData,
+    ...stripChromeFromVisualData(
+      mergeVisualRootData(
+        selectedTemplateRenderer.defaultData as Record<string, any>,
+        extractVisualDataFromPayload({
+          data: (selectedTemplateSeed as any)?.data,
+          templateData: (selectedTemplateSeed as any)?.templateData,
+        }),
+        serverVisualTemplateData || {},
+        visualSessionData,
+        /*
+          A later source replaces whole maps, even empty ones. A page that was
+          never edited therefore wiped everything done on the previous page while
+          switching pages, so only merge it when it really holds edits.
+        */
+        activePageVisualData,
+      ),
     ),
     // Header/footer come from the site-wide chrome, not from this page.
     [VISUAL_SHARED_CHROME_KEY]: latestSharedChrome,
