@@ -217,7 +217,7 @@ export default function SitePortalMembersPanel({ siteId, publicUrl = "" }: Props
           </button>
         </div>
         <p className="mt-3 text-xs font-semibold text-slate-400">
-          ההתחברות שייכת לאתר הזה בלבד — לא לחשבון BizUply.
+          לקוחות נרשמים ומתחברים לאתר הזה בלבד.
         </p>
       </div>
 
