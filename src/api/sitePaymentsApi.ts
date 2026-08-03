@@ -39,6 +39,8 @@ export type SitePaymentProvider = {
   mode?: "test" | "live";
   installmentsEnabled?: boolean;
   credentials?: SitePaymentCredentials;
+  /** Server-side flags: which credential keys are stored (values themselves are masked). */
+  credentialsMeta?: Partial<Record<keyof SitePaymentCredentials, boolean>>;
   connectionStatus?: "not_connected" | "pending" | "connected" | "failed";
   lastConnectionCheckAt?: string | null;
   notes?: string;
@@ -52,12 +54,22 @@ export type SitePaymentProvidersResponse = {
 
 const MASKED = "••••••••";
 
+const MASKABLE_CREDENTIAL_KEYS: (keyof SitePaymentCredentials)[] = [
+  "terminalNumber",
+  "supplierId",
+  "apiKey",
+  "apiSecret",
+  "privateKey",
+  "webhookSecret",
+  "username",
+];
+
 function stripMaskedSecrets(
   credentials: SitePaymentCredentials = {}
 ): SitePaymentCredentials {
   const next: SitePaymentCredentials = { ...credentials };
 
-  (["apiSecret", "privateKey", "webhookSecret"] as const).forEach((key) => {
+  MASKABLE_CREDENTIAL_KEYS.forEach((key) => {
     const value = String(next[key] || "").trim();
     if (!value || value === MASKED) {
       delete next[key];
@@ -67,10 +79,27 @@ function stripMaskedSecrets(
   return next;
 }
 
+export function credentialFieldIsStored(
+  provider: SitePaymentProvider | null | undefined,
+  key: keyof SitePaymentCredentials
+): boolean {
+  if (provider?.credentialsMeta && typeof provider.credentialsMeta[key] === "boolean") {
+    return Boolean(provider.credentialsMeta[key]);
+  }
+  const value = String(provider?.credentials?.[key] || "").trim();
+  return Boolean(value);
+}
+
 export function providerHasStoredSecret(
   provider?: SitePaymentProvider | null
 ): boolean {
-  return Boolean(String(provider?.credentials?.apiSecret || "").trim());
+  return (
+    credentialFieldIsStored(provider, "apiSecret") ||
+    credentialFieldIsStored(provider, "apiKey") ||
+    credentialFieldIsStored(provider, "terminalNumber") ||
+    credentialFieldIsStored(provider, "privateKey") ||
+    credentialFieldIsStored(provider, "webhookSecret")
+  );
 }
 
 export async function getSitePaymentProviders(businessId: string) {

@@ -1,6 +1,10 @@
 import React, { useEffect, useMemo, useState } from "react";
 
 import {
+  getBookingFormFields,
+  type BookingFormField,
+} from "../../../api/bookingFormFieldsApi";
+import {
   createPublicBooking,
   getPublicBookingServices,
   getPublicBookingSlots,
@@ -629,6 +633,7 @@ function DemoBooking({
             </div>
             <input style={styles.input} placeholder="שם מלא" disabled />
             <input style={styles.input} placeholder="טלפון" disabled />
+            <input style={styles.input} placeholder="אימייל" disabled />
             <button type="button" style={styles.primaryBtn} disabled>
               אישור תור
             </button>
@@ -679,6 +684,9 @@ export default function BookingWidget({
   const [selectedSlot, setSelectedSlot] = useState("");
   const [clientName, setClientName] = useState("");
   const [clientPhone, setClientPhone] = useState("");
+  const [clientEmail, setClientEmail] = useState("");
+  const [extraFields, setExtraFields] = useState<BookingFormField[]>([]);
+  const [extraValues, setExtraValues] = useState<Record<string, string>>({});
   const [loadingServices, setLoadingServices] = useState(false);
   const [loadingSlots, setLoadingSlots] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -699,13 +707,26 @@ export default function BookingWidget({
     let cancelled = false;
     setLoadingServices(true);
     setError("");
-    getPublicBookingServices(businessId)
-      .then((list) => {
+    Promise.all([
+      getPublicBookingServices(businessId),
+      getBookingFormFields(businessId).catch(() => [] as BookingFormField[]),
+    ])
+      .then(([list, fields]) => {
         if (cancelled) return;
         setServices(list);
         const first = list[0];
         const id = first ? serviceIdOf(first) : "";
         if (id) setSelectedServiceId(id);
+        setExtraFields(fields);
+        setExtraValues((current) => {
+          const next: Record<string, string> = {};
+          fields.forEach((field) => {
+            next[field.id] =
+              current[field.id] ??
+              (field.type === "checkbox" ? "false" : "");
+          });
+          return next;
+        });
       })
       .catch(() => {
         if (!cancelled) {
@@ -755,6 +776,50 @@ export default function BookingWidget({
       setError("נא למלא שם וטלפון");
       return;
     }
+
+    const emailFromExtra = extraFields.find((field) => field.type === "email");
+    const resolvedEmail = (
+      clientEmail.trim() ||
+      (emailFromExtra ? String(extraValues[emailFromExtra.id] || "").trim() : "")
+    ).trim();
+
+    if (!resolvedEmail) {
+      setError("נא למלא אימייל לקבלת אישור התור");
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(resolvedEmail)) {
+      setError("כתובת האימייל אינה תקינה");
+      return;
+    }
+
+    for (const field of extraFields) {
+      if (!field.required) continue;
+      const value = String(extraValues[field.id] ?? "").trim();
+      if (
+        !value ||
+        (field.type === "checkbox" && (value === "false" || value === "לא"))
+      ) {
+        setError(`נא למלא את השדה: ${field.label}`);
+        return;
+      }
+    }
+
+    const customFields = extraFields.map((field) => {
+      const raw = String(extraValues[field.id] ?? "").trim();
+      const value =
+        field.type === "checkbox"
+          ? raw === "true" || raw === "1" || raw === "on" || raw === "כן"
+            ? "כן"
+            : "לא"
+          : raw;
+      return {
+        id: field.id,
+        label: field.label,
+        type: field.type,
+        value,
+      };
+    });
+
     setSubmitting(true);
     setError("");
     try {
@@ -765,6 +830,8 @@ export default function BookingWidget({
         time: selectedSlot,
         guestName: clientName.trim(),
         guestPhone: clientPhone.trim(),
+        guestEmail: resolvedEmail,
+        customFields,
       });
       setSuccess(true);
     } catch (err: any) {
@@ -794,9 +861,11 @@ export default function BookingWidget({
     return (
       <div style={{ ...styles.root, flexDirection: "column" }} dir="rtl">
         <p style={styles.eyebrow}>התור נשמר ביומן</p>
-        <h3 style={styles.title}>תודה! ניצור איתכם קשר לאישור</h3>
+        <h3 style={styles.title}>תודה! התור נקבע בהצלחה</h3>
         <p style={styles.copy}>
           {formatDateKey(selectedDate)} · {selectedSlot}
+          <br />
+          שלחנו אליכם מייל עם פרטי הפגישה
         </p>
       </div>
     );
@@ -1002,6 +1071,118 @@ export default function BookingWidget({
           onChange={(e) => setClientPhone(e.target.value)}
           autoComplete="tel"
         />
+        {!extraFields.some((field) => field.type === "email") ? (
+          <input
+            style={styles.input}
+            type="email"
+            placeholder="אימייל"
+            value={clientEmail}
+            onChange={(e) => setClientEmail(e.target.value)}
+            autoComplete="email"
+          />
+        ) : null}
+
+        {extraFields.map((field) => {
+          const value = extraValues[field.id] ?? "";
+          const setValue = (next: string) =>
+            setExtraValues((current) => ({ ...current, [field.id]: next }));
+
+          if (field.type === "textarea") {
+            return (
+              <textarea
+                key={field.id}
+                style={{ ...styles.input, minHeight: 84, resize: "vertical" }}
+                placeholder={
+                  field.placeholder ||
+                  `${field.label}${field.required ? " *" : ""}`
+                }
+                value={value}
+                onChange={(e) => setValue(e.target.value)}
+              />
+            );
+          }
+
+          if (field.type === "select") {
+            return (
+              <select
+                key={field.id}
+                style={styles.input}
+                value={value}
+                onChange={(e) => setValue(e.target.value)}
+              >
+                <option value="">
+                  {field.placeholder ||
+                    `${field.label}${field.required ? " *" : ""}`}
+                </option>
+                {(field.options || []).map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
+            );
+          }
+
+          if (field.type === "checkbox") {
+            const checked =
+              value === "true" || value === "1" || value === "on" || value === "כן";
+            return (
+              <label
+                key={field.id}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 8,
+                  fontSize: 14,
+                  color: t.ink,
+                  direction: "rtl",
+                }}
+              >
+                <input
+                  type="checkbox"
+                  checked={checked}
+                  onChange={(e) => setValue(e.target.checked ? "true" : "false")}
+                />
+                <span>
+                  {field.label}
+                  {field.required ? " *" : ""}
+                </span>
+              </label>
+            );
+          }
+
+          const inputType =
+            field.type === "email"
+              ? "email"
+              : field.type === "phone"
+                ? "tel"
+                : field.type === "number"
+                  ? "number"
+                  : field.type === "date"
+                    ? "date"
+                    : "text";
+
+          return (
+            <input
+              key={field.id}
+              style={styles.input}
+              type={inputType}
+              placeholder={
+                field.placeholder ||
+                `${field.label}${field.required ? " *" : ""}`
+              }
+              value={value}
+              onChange={(e) => setValue(e.target.value)}
+              autoComplete={
+                field.type === "email"
+                  ? "email"
+                  : field.type === "phone"
+                    ? "tel"
+                    : "off"
+              }
+            />
+          );
+        })}
 
         {error ? <p style={styles.error}>{error}</p> : null}
 

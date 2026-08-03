@@ -19,6 +19,8 @@ export type PublicStoreVariant = {
   stock?: number;
 };
 
+export type PublicStoreProductKind = "physical" | "digital" | "service";
+
 export type PublicStoreProduct = {
   _id: string;
   name: string;
@@ -42,6 +44,29 @@ export type PublicStoreProduct = {
   trackStock?: boolean;
   allowBackorder?: boolean;
   variants?: PublicStoreVariant[];
+  isDigital?: boolean;
+  productKind?: PublicStoreProductKind;
+};
+
+export type PublicShippingAddress = {
+  fullName: string;
+  phone: string;
+  country: string;
+  city: string;
+  street: string;
+  houseNumber: string;
+  apartment?: string;
+  postalCode?: string;
+  additionalInstructions?: string;
+  rawText?: string;
+};
+
+export type PublicPickupOptions = {
+  enabled?: boolean;
+  locationName?: string;
+  address?: string;
+  hours?: string;
+  instructions?: string;
 };
 
 export type PublicPaymentProvider = {
@@ -110,6 +135,7 @@ export async function getPublicShop(
       isStoreActive?: boolean;
       defaultShippingPrice?: number;
       freeShippingFrom?: number | null;
+      pickupOptions?: PublicPickupOptions;
     };
     categories?: PublicStoreCategory[];
     activeCategory?: PublicStoreCategory | null;
@@ -140,7 +166,9 @@ export async function createPublicStoreOrder(
       sku?: string;
       ref?: string;
     }>;
-    shippingAddress?: string;
+    fulfillmentType?: "shipping" | "pickup" | "none";
+    shippingAddress?: PublicShippingAddress | string;
+    pickupDetails?: PublicPickupOptions;
     notes?: string;
     paymentProvider?: string;
     successUrl?: string;
