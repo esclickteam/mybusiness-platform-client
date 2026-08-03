@@ -2,6 +2,13 @@ import React, { useEffect, useState } from "react";
 import { sitePortalLogout, sitePortalMe } from "../../../api/sitePortalApi";
 import type { SitePortalMember } from "../../../utils/sitePortalSession";
 
+type PortalPage = {
+  id: string;
+  title: string;
+  slug?: string;
+  path?: string;
+};
+
 type Props = {
   siteId: string;
   siteName?: string;
@@ -9,6 +16,7 @@ type Props = {
 
 export default function SitePortalAccountView({ siteId, siteName = "" }: Props) {
   const [member, setMember] = useState<SitePortalMember | null>(null);
+  const [portalPages, setPortalPages] = useState<PortalPage[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -18,7 +26,11 @@ export default function SitePortalAccountView({ siteId, siteName = "" }: Props) 
     (async () => {
       try {
         const data = await sitePortalMe(siteId);
-        if (!cancelled) setMember(data.member);
+        if (cancelled) return;
+        setMember(data.member);
+        setPortalPages(
+          Array.isArray((data as any).portalPages) ? (data as any).portalPages : []
+        );
       } catch (err: any) {
         if (!cancelled) setError(err?.message || "לא מחוברים לאזור האישי");
       } finally {
@@ -70,7 +82,7 @@ export default function SitePortalAccountView({ siteId, siteName = "" }: Props) 
       <div className="w-full max-w-lg rounded-[28px] border border-slate-200 bg-white p-8 shadow-sm">
         <p className="text-xs font-bold text-sky-700">החשבון שלי</p>
         <h1 className="mt-2 text-2xl font-black text-slate-900">
-          {member.fullName || "חבר באזור האישי"}
+          שלום {member.fullName || "אורח/ת"}
         </h1>
         {siteName ? (
           <p className="mt-1 text-sm font-medium text-slate-500">{siteName}</p>
@@ -87,10 +99,37 @@ export default function SitePortalAccountView({ siteId, siteName = "" }: Props) 
               <span className="font-semibold text-slate-800">{member.phone}</span>
             </div>
           ) : null}
-          <div className="flex justify-between gap-3">
-            <span className="font-bold text-slate-500">סטטוס</span>
-            <span className="font-semibold text-slate-800">{member.status}</span>
-          </div>
+        </div>
+
+        <div className="mt-6">
+          <h2 className="text-sm font-black text-slate-900">העמודים שלי</h2>
+          <p className="mt-1 text-xs font-medium text-slate-500">
+            אלה העמודים הפרטיים שהעסק בנה עבורכם באזור האישי.
+          </p>
+
+          {portalPages.length === 0 ? (
+            <p className="mt-3 rounded-2xl bg-amber-50 px-3 py-2 text-xs font-bold text-amber-700">
+              עדיין לא שויכו עמודים לחשבון זה.
+            </p>
+          ) : (
+            <div className="mt-3 space-y-2">
+              {portalPages.map((page) => {
+                const href =
+                  page.path ||
+                  `/${String(page.slug || page.id || "").replace(/^\/+/, "")}`;
+                return (
+                  <a
+                    key={page.id}
+                    href={href}
+                    className="flex items-center justify-between rounded-2xl border border-slate-200 px-4 py-3 text-sm font-bold text-slate-800 transition hover:border-sky-200 hover:bg-sky-50"
+                  >
+                    <span>{page.title}</span>
+                    <span className="text-xs text-sky-700">כניסה</span>
+                  </a>
+                );
+              })}
+            </div>
+          )}
         </div>
 
         <div className="mt-6 flex flex-wrap gap-2">

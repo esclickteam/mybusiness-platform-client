@@ -35,7 +35,11 @@ export default function SitePortalLoginView({
       const nextSiteId = result.site?.id || siteId;
       onSuccess?.(nextSiteId);
 
-      const target = returnPath && returnPath.startsWith("/") ? returnPath : "/";
+      // Default landing after login: personal account hub with portal page links.
+      const target =
+        returnPath && returnPath.startsWith("/") && returnPath !== "/portal/login"
+          ? returnPath
+          : "/portal/account";
       window.history.replaceState({}, "", target);
       window.dispatchEvent(new PopStateEvent("popstate"));
     } catch (err: any) {
