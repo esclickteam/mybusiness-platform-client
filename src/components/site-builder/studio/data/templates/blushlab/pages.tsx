@@ -68,7 +68,7 @@ function Header({ data, currentPage, goTo }: { data: Record<string, any>; curren
           active ? "font-bold text-[var(--p)]" : "text-white/75"
         }
       />
-        <button type="button" onClick={() => goTo("booking")} className="justify-self-end px-5 py-2 text-xs font-bold uppercase tracking-widest border border-white/50 text-white">{getValue(data,"heroPrimaryButton")}</button>
+        <button type="button" onClick={() => goTo("booking")} className="justify-self-end px-5 py-2 text-xs font-bold uppercase tracking-widest border border-white/50 text-white" data-editable="button" data-visual-edit-id="global.header.primaryCta" data-visual-edit-type="button" data-visual-label="כפתור ראשי בכותרת">{getValue(data,"heroPrimaryButton")}</button>
       </div>
     </header>
   );

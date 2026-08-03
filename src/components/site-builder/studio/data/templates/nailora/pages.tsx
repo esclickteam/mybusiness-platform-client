@@ -71,7 +71,7 @@ function Header({ data, currentPage, goTo }: { data: Record<string, any>; curren
               : "bg-[var(--surface)] text-[var(--muted)]")
           }
         />
-        <button type="button" onClick={() => goTo("booking")} className="px-6 py-2 text-sm font-bold rounded-full bg-[var(--p)] text-white">{getValue(data,"heroPrimaryButton")}</button>
+        <button type="button" onClick={() => goTo("booking")} className="px-6 py-2 text-sm font-bold rounded-full bg-[var(--p)] text-white" data-editable="button" data-visual-edit-id="global.header.primaryCta" data-visual-edit-type="button" data-visual-label="כפתור ראשי בכותרת">{getValue(data,"heroPrimaryButton")}</button>
       </div>
     </header>
   );

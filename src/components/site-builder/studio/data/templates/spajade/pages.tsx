@@ -69,7 +69,7 @@ function Header({ data, currentPage, goTo }: { data: Record<string, any>; curren
           active ? "text-[var(--p)]" : "text-[var(--muted)]"
         }
       />
-      <button type="button" onClick={() => goTo("booking")} className="mr-auto px-4 py-2 text-xs font-bold rounded-full bg-[var(--p)] text-[var(--dark)]">{getValue(data,"heroPrimaryButton")}</button>
+      <button type="button" onClick={() => goTo("booking")} className="mr-auto px-4 py-2 text-xs font-bold rounded-full bg-[var(--p)] text-[var(--dark)]" data-editable="button" data-visual-edit-id="global.header.primaryCta" data-visual-edit-type="button" data-visual-label="כפתור ראשי בכותרת">{getValue(data,"heroPrimaryButton")}</button>
     </div>
   </header>
   );
