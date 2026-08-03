@@ -1089,38 +1089,87 @@ const CATEGORY_DEFS: CategoryDef[] = [
     category: "portal",
     idPrefix: "page-portal",
     pages: [
-      {
-        title: "אזור אישי – התחברות",
-        description: "עמוד התחברות עם טופס מקושר לאתר ולעסק",
-        slugSuggestion: "login",
-        keywords: ["אזור אישי", "התחברות", "login", "portal"],
-        sectionIds: ["section-portal-login", FOOTER],
-      },
-      {
-        title: "אזור אישי – החשבון שלי",
-        description: "מרכז אישי אחרי התחברות עם קישורים לעמודים",
-        slugSuggestion: "account",
-        keywords: ["אזור אישי", "חשבון", "account", "portal"],
-        sectionIds: [
-          "section-portal-welcome-nav",
-          "section-portal-account",
-          FOOTER,
-        ],
-      },
-      {
-        title: "אזור אישי – הזמנות קודמות",
-        description: "רשימת הזמנות מהחנות של הלקוח המחובר",
-        slugSuggestion: "orders",
-        keywords: ["אזור אישי", "הזמנות", "orders", "portal", "חנות"],
-        sectionIds: ["section-portal-orders", FOOTER],
-      },
-      {
-        title: "אזור אישי – עגלת קניות",
-        description: "המשך רכישה מהעגלה הפעילה באתר",
-        slugSuggestion: "cart",
-        keywords: ["אזור אישי", "עגלה", "cart", "portal", "חנות"],
-        sectionIds: ["section-portal-cart", FOOTER],
-      },
+      ...Array.from({ length: 10 }, (_, i) => {
+        const n = String(i + 1).padStart(2, "0");
+        return {
+          title: `התחברות ${i + 1}`,
+          description: "טופס התחברות מקושר לאתר ולעסק",
+          slugSuggestion: i === 0 ? "login" : `login-${n}`,
+          keywords: [
+            "portal-login",
+            "התחברות",
+            "login",
+            "אחרי התחברות",
+            "portal",
+          ],
+          sectionIds: [`section-portal-login-${n}`, FOOTER],
+        };
+      }),
+      ...Array.from({ length: 10 }, (_, i) => {
+        const n = String(i + 1).padStart(2, "0");
+        return {
+          title: `הרשמה ${i + 1}`,
+          description: "טופס הרשמה שנקלט אוטומטית לאזור האישי",
+          slugSuggestion: i === 0 ? "register" : `register-${n}`,
+          keywords: [
+            "portal-register",
+            "הרשמה",
+            "register",
+            "אחרי התחברות",
+            "portal",
+          ],
+          sectionIds: [`section-portal-register-${n}`, FOOTER],
+        };
+      }),
+      ...Array.from({ length: 10 }, (_, i) => {
+        const n = String(i + 1).padStart(2, "0");
+        return {
+          title: `אזור אישי ${i + 1}`,
+          description: "עמוד אחרי התחברות — חשבון, הזמנות ועגלה",
+          slugSuggestion: i === 0 ? "account" : `account-${n}`,
+          keywords: [
+            "portal-account",
+            "אזור אישי",
+            "חשבון",
+            "account",
+            "אחרי התחברות",
+            "portal",
+          ],
+          sectionIds: [`section-portal-account-${n}`, FOOTER],
+        };
+      }),
+      ...Array.from({ length: 10 }, (_, i) => {
+        const n = String(i + 1).padStart(2, "0");
+        return {
+          title: `הזמנות קודמות ${i + 1}`,
+          description: "רשימת הזמנות ללקוח המחובר",
+          slugSuggestion: i === 0 ? "orders" : `orders-${n}`,
+          keywords: [
+            "portal-orders",
+            "הזמנות",
+            "orders",
+            "אחרי התחברות",
+            "portal",
+          ],
+          sectionIds: [`section-portal-orders-${n}`, FOOTER],
+        };
+      }),
+      ...Array.from({ length: 10 }, (_, i) => {
+        const n = String(i + 1).padStart(2, "0");
+        return {
+          title: `עגלת קניות ${i + 1}`,
+          description: "המשך רכישה מהעגלה הפעילה",
+          slugSuggestion: i === 0 ? "cart" : `cart-${n}`,
+          keywords: [
+            "portal-cart",
+            "עגלה",
+            "cart",
+            "אחרי התחברות",
+            "portal",
+          ],
+          sectionIds: [`section-portal-cart-${n}`, FOOTER],
+        };
+      }),
     ],
   },
 ];
@@ -1197,7 +1246,20 @@ export const PAGE_LIBRARY_NAV: Array<{
   { id: "faq", label: "שאלות נפוצות" },
   { id: "promote", label: "נחיתה" },
   { id: "resume", label: "קורות חיים" },
-  { id: "portal", label: "אזור אישי" },
+];
+
+/** Secondary filters inside the "עמודים אחרי התחברות" tab. */
+export const PORTAL_PAGE_KIND_NAV: Array<{
+  id: string;
+  label: string;
+  keyword: string;
+}> = [
+  { id: "all", label: "הכול", keyword: "portal" },
+  { id: "login", label: "התחברות", keyword: "portal-login" },
+  { id: "register", label: "הרשמה", keyword: "portal-register" },
+  { id: "account", label: "אזור אישי", keyword: "portal-account" },
+  { id: "orders", label: "הזמנות", keyword: "portal-orders" },
+  { id: "cart", label: "עגלה", keyword: "portal-cart" },
 ];
 
 export function getPagesByCategory(

@@ -5841,8 +5841,15 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     const portalConfig = createDefaultClientPortalConfig();
     if (isPortalLibraryPage) {
       portalConfig.enabled = true;
-      portalConfig.loginRequired =
-        String(pageTemplate.slugSuggestion || "").toLowerCase() !== "login";
+      const slug = String(pageTemplate.slugSuggestion || "").toLowerCase();
+      const keywords = Array.isArray(pageTemplate.keywords)
+        ? pageTemplate.keywords.map(String)
+        : [];
+      const isPublicAuthPage =
+        /^(login|register)(-|$)/.test(slug) ||
+        keywords.includes("portal-login") ||
+        keywords.includes("portal-register");
+      portalConfig.loginRequired = !isPublicAuthPage;
     }
 
     const nextPage: StudioSitePageWithPortal = {

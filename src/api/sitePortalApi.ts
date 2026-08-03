@@ -111,6 +111,44 @@ export async function sitePortalLogin(input: {
   return data;
 }
 
+export async function sitePortalRegister(input: {
+  email: string;
+  password: string;
+  fullName: string;
+  phone?: string;
+  host?: string;
+  siteId?: string;
+  slug?: string;
+}): Promise<{
+  token: string;
+  member: SitePortalMember;
+  site: SitePortalSiteInfo;
+}> {
+  const data = await portalFetch<{
+    success: true;
+    token: string;
+    member: SitePortalMember;
+    site: SitePortalSiteInfo;
+  }>("/public/portal/register", {
+    method: "POST",
+    body: {
+      email: input.email,
+      password: input.password,
+      fullName: input.fullName,
+      phone: input.phone || "",
+      host: input.host || (typeof window !== "undefined" ? window.location.host : ""),
+      siteId: input.siteId,
+      slug: input.slug,
+    },
+  });
+
+  if (data.site?.id && data.token) {
+    setSitePortalToken(data.site.id, data.token);
+  }
+
+  return data;
+}
+
 export async function sitePortalMe(siteId: string) {
   return portalFetch<{
     success: true;
