@@ -77,7 +77,6 @@ export const PRICING_ADDONS: PricingAddon[] = [
     priceLabelEn: "From ₪390 one-time",
     accent: "#8B5CF6",
     featured: true,
-    hidden: true,
     details: [
       "אוטומציה אחת פשוטה: 390 ₪",
       "חבילת 3 אוטומציות: 890 ₪",
