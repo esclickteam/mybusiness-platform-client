@@ -116,6 +116,7 @@ export async function sitePortalMe(siteId: string) {
     success: true;
     member: SitePortalMember;
     site: SitePortalSiteInfo | null;
+    portalPages?: SitePortalPageInfo[];
   }>("/public/portal/me", { siteId });
 }
 

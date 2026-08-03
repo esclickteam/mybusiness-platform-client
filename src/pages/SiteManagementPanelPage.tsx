@@ -34,7 +34,13 @@ import {
   type SitePanelSection,
 } from "../data/sitePluginNav";
 
-const CORE_PLUGIN_KEYS = new Set(["store", "booking", "payments", "invoices"]);
+const CORE_PLUGIN_KEYS = new Set([
+  "store",
+  "booking",
+  "payments",
+  "invoices",
+  "client-portal",
+]);
 
 export default function SiteManagementPanelPage() {
   const { businessId = "", siteId = "" } = useParams();
@@ -99,8 +105,7 @@ export default function SiteManagementPanelPage() {
     if (
       activeSection === "overview" ||
       activeSection === "plugins" ||
-      activeSection === "payments" ||
-      activeSection === "portal"
+      activeSection === "payments"
     ) {
       return;
     }
@@ -116,12 +121,8 @@ export default function SiteManagementPanelPage() {
   const enabledSet = useMemo(() => new Set(enabledPlugins), [enabledPlugins]);
 
   const navSections = useMemo(() => {
-    const items: SitePanelSection[] = [
-      "overview",
-      "plugins",
-      "portal",
-      "payments",
-    ];
+    // Portal tab appears only after installing the "client-portal" plugin.
+    const items: SitePanelSection[] = ["overview", "plugins", "payments"];
 
     enabledPlugins.forEach((key) => {
       const section = resolvePluginSection(key);
@@ -441,7 +442,7 @@ export default function SiteManagementPanelPage() {
           />
         ) : null}
 
-        {activeSection === "portal" ? (
+        {activeSection === "portal" && enabledSet.has("client-portal") ? (
           <SitePortalMembersPanel siteId={siteId} publicUrl={publicUrl} />
         ) : null}
 

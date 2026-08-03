@@ -179,12 +179,24 @@ export default function SitePortalMembersPanel({ siteId, publicUrl = "" }: Props
     <div className="space-y-5">
       <div className="rounded-md border border-sky-100 bg-gradient-to-l from-sky-50/80 to-white p-5">
         <h3 className="text-base font-bold text-slate-900">
-          אזור אישי של האתר הזה
+          איך בונים אזור אישי?
         </h3>
-        <p className="mt-1 text-sm text-slate-500">
-          התחברות נפרדת לגמרי מחשבון BizUply. כל אתר מנהל את החברים שלו בלבד.
-        </p>
-        <div className="mt-3 flex flex-wrap items-center gap-2">
+        <ol className="mt-3 list-decimal space-y-2 pr-5 text-sm font-medium leading-6 text-slate-600">
+          <li>
+            בעורך האתר — צרו עמוד חדש (למשל «הדשבורד שלי») ובנו אותו כמו כל עמוד
+            אחר.
+          </li>
+          <li>
+            על אותו עמוד לחצו <strong>אזור אישי</strong> והפעילו נעילת התחברות.
+          </li>
+          <li>פרסמו את האתר.</li>
+          <li>כאן למטה — הוסיפו לקוחות / שלחו הזמנה.</li>
+          <li>
+            הלקוח נכנס ב־<code className="rounded bg-white px-1.5 py-0.5 text-xs ring-1 ring-slate-200">{loginUrl}</code>{" "}
+            ואחרי התחברות רואה את העמודים שנפתחו לו.
+          </li>
+        </ol>
+        <div className="mt-4 flex flex-wrap items-center gap-2">
           <code className="rounded-md bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 ring-1 ring-slate-200">
             {loginUrl}
           </code>
@@ -204,6 +216,9 @@ export default function SitePortalMembersPanel({ siteId, publicUrl = "" }: Props
             העתק קישור
           </button>
         </div>
+        <p className="mt-3 text-xs font-semibold text-slate-400">
+          ההתחברות שייכת לאתר הזה בלבד — לא לחשבון BizUply.
+        </p>
       </div>
 
       {notice ? (
@@ -220,12 +235,14 @@ export default function SitePortalMembersPanel({ siteId, publicUrl = "" }: Props
 
       {portalPages.length === 0 ? (
         <div className="rounded-md border border-amber-100 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-800">
-          עדיין אין עמודי אזור אישי באתר. בסטודיו סמנו עמוד כ־&quot;אזור
-          אישי&quot; ופרסמו את האתר.
+          עדיין אין עמודי אזור אישי. היכנסו לעורך, צרו עמוד, סמנו אותו
+          כ־&quot;אזור אישי&quot; ופרסמו. זה התוכן שהלקוח יראה אחרי ההתחברות.
         </div>
       ) : (
         <div className="rounded-md border border-violet-100/70 bg-white p-4">
-          <p className="text-xs font-bold text-slate-500">עמודי אזור אישי</p>
+          <p className="text-xs font-bold text-slate-500">
+            עמודים פרטיים שנבנו בעורך (אחרי התחברות)
+          </p>
           <div className="mt-2 flex flex-wrap gap-2">
             {portalPages.map((page) => (
               <span

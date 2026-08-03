@@ -50,7 +50,7 @@ export default function SitePortalAcceptInviteView({
       });
 
       onSuccess?.(result.site?.id || result.member.siteId);
-      window.history.replaceState({}, "", "/");
+      window.history.replaceState({}, "", "/portal/account");
       window.dispatchEvent(new PopStateEvent("popstate"));
     } catch (err: any) {
       setError(err?.message || "אישור ההזמנה נכשל");

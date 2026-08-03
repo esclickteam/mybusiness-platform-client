@@ -4,6 +4,7 @@ import SitePortalAcceptInviteView from "./SitePortalAcceptInviteView";
 import SitePortalAccountView from "./SitePortalAccountView";
 
 type PortalGateInfo = {
+  pluginEnabled?: boolean;
   requiresLogin?: boolean;
   allowed?: boolean;
   authenticated?: boolean;
@@ -40,11 +41,40 @@ export default function SitePortalGate({
     return null;
   }, [pathname]);
 
+  const pluginEnabled =
+    portalGate.pluginEnabled !== false &&
+    (Array.isArray(site?.enabledPlugins)
+      ? site.enabledPlugins.includes("client-portal")
+      : portalGate.pluginEnabled === true);
+
+  if (portalRoute && !pluginEnabled) {
+    return (
+      <div
+        dir="rtl"
+        className="flex min-h-screen items-center justify-center bg-white px-4"
+      >
+        <div className="w-full max-w-md rounded-[28px] border border-slate-200 p-8 text-center">
+          <h1 className="text-2xl font-black text-slate-900">אין אזור אישי</h1>
+          <p className="mt-3 text-sm font-medium text-slate-500">
+            באתר זה לא מותקן התוסף «אזור אישי», ולכן אין התחברות ללקוחות.
+          </p>
+          <a
+            href="/"
+            className="mt-6 inline-flex rounded-2xl bg-slate-900 px-4 py-2.5 text-sm font-bold text-white"
+          >
+            חזרה לאתר
+          </a>
+        </div>
+      </div>
+    );
+  }
+
   if (portalRoute === "login") {
     const returnPath =
       typeof window !== "undefined"
-        ? new URLSearchParams(window.location.search).get("return") || "/"
-        : "/";
+        ? new URLSearchParams(window.location.search).get("return") ||
+          "/portal/account"
+        : "/portal/account";
 
     return (
       <SitePortalLoginView
