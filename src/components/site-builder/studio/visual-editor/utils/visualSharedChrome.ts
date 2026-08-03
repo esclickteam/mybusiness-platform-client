@@ -187,12 +187,16 @@ export function applySharedChromeScalarsToVisualData(
     next[key] = text;
   });
 
-  if (
-    ctaFromContent &&
-    String((next || source).heroPrimaryButton ?? "") !== ctaFromContent
-  ) {
-    if (!next) next = { ...source };
-    next.heroPrimaryButton = ctaFromContent;
+  if (ctaFromContent) {
+    const base = next || source;
+    if (String(base.heroPrimaryButton ?? "") !== ctaFromContent) {
+      if (!next) next = { ...source };
+      next.heroPrimaryButton = ctaFromContent;
+    }
+    if (String((next || source).headerCta ?? "") !== ctaFromContent) {
+      if (!next) next = { ...source };
+      next.headerCta = ctaFromContent;
+    }
   }
 
   return next || source;
@@ -223,11 +227,18 @@ export function syncHeaderCtaScalarFromChromeText(
 
   if (!isExplicitCta && !matchesHero) return source;
 
-  if (currentHero === text && !isExplicitCta) return source;
+  if (
+    !isExplicitCta &&
+    currentHero === text &&
+    String(source.headerCta || "") === text
+  ) {
+    return source;
+  }
 
   const next: Record<string, any> = {
     ...source,
     heroPrimaryButton: text,
+    headerCta: text,
   };
 
   if (typeof source.ctaButton === "string") {

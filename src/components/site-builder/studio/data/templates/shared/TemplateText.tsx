@@ -1,5 +1,8 @@
 import React from "react";
 
+import { useVisualLibraryPage } from "../../../../runtime/visualLibraryPage";
+import { resolveTemplateTextFromVisualData } from "./resolveTemplateText";
+
 type TemplateTextProps = {
   as?: React.ElementType;
   className?: string;
@@ -17,6 +20,12 @@ export function TemplateText({
   editLabel,
   ...props
 }: TemplateTextProps) {
+  const libraryPage = useVisualLibraryPage();
+  const resolved = resolveTemplateTextFromVisualData(
+    editId,
+    (libraryPage?.data as Record<string, any> | null) || null,
+  );
+
   return (
     <Tag
       className={className}
@@ -26,7 +35,7 @@ export function TemplateText({
       {...(editLabel ? { "data-visual-edit-label": editLabel } : {})}
       {...props}
     >
-      {children}
+      {resolved !== null ? resolved : children}
     </Tag>
   );
 }
