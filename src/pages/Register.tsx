@@ -259,6 +259,9 @@ export default function Register() {
           return;
         }
 
+        // Keep Auth bootstrap from yanking unpaid registrants to the dashboard
+        // before Pricing can restore the pending purchase intent.
+        sessionStorage.setItem("postLoginRedirect", "/pricing");
         loginWithToken(data.user, data.accessToken, { skipRedirect: true });
         navigate("/pricing", { replace: true });
         return;

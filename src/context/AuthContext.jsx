@@ -144,6 +144,19 @@ function isPublicRoute(pathname) {
   });
 }
 
+/** Routes where an authenticated business must stay to finish payment/signup. */
+function isCheckoutContinuationPath(pathname) {
+  const path = String(pathname || "");
+  return (
+    path === "/pricing" ||
+    path.startsWith("/pricing/") ||
+    path === "/checkout" ||
+    path.startsWith("/checkout/") ||
+    path === "/register" ||
+    path.startsWith("/register/")
+  );
+}
+
 /* ===========================
    🧹 Clear local auth only
 =========================== */
@@ -658,9 +671,24 @@ export function AuthProvider({ children }) {
         }
 
         const justRegistered = sessionStorage.getItem("justRegistered");
+        const savedRedirect = sessionStorage.getItem("postLoginRedirect");
 
         if (justRegistered) {
           sessionStorage.removeItem("justRegistered");
+
+          // Unpaid staged purchase / checkout-first return must not be
+          // overwritten by the legacy "just registered → dashboard" hop.
+          if (
+            savedRedirect === "/pricing" ||
+            savedRedirect === "/checkout" ||
+            isCheckoutContinuationPath(location.pathname)
+          ) {
+            if (savedRedirect) {
+              sessionStorage.removeItem("postLoginRedirect");
+              navigate(savedRedirect, { replace: true });
+            }
+            return;
+          }
 
           if (freshUser.role === "business" && freshUser.businessId) {
             navigate(resolveBusinessDashboardPath(freshUser.businessId), {
@@ -672,8 +700,6 @@ export function AuthProvider({ children }) {
 
           return;
         }
-
-        const savedRedirect = sessionStorage.getItem("postLoginRedirect");
 
         if (savedRedirect) {
           const isPricing = savedRedirect === "/pricing";
@@ -702,7 +728,8 @@ export function AuthProvider({ children }) {
           freshUser.role === "business" &&
           freshUser.businessId &&
           !location.pathname.startsWith("/business/") &&
-          !isMetaCallbackRoute
+          !isMetaCallbackRoute &&
+          !isCheckoutContinuationPath(location.pathname)
         ) {
           navigate(resolveBusinessDashboardPath(freshUser.businessId), {
             replace: true,
