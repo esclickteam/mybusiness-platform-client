@@ -21,6 +21,7 @@ export function createServiceCheckoutAttempt(
           ...intent,
           purchaseMode: "bundle",
           selectedPlanKey: "existing",
+          includeWebsiteAddon: false,
         }
       : { ...intent },
     isSequentialContinuation,
@@ -35,6 +36,7 @@ export function createCheckoutLaunchSignature(
     intent?.serviceKey || "",
     intent?.purchaseMode || null,
     intent?.selectedPlanKey || null,
+    Boolean(intent?.includeWebsiteAddon),
     intent?.selectedAddOnKeys || [],
     intent?.quantities || {},
     automatic ? "continuation" : "manual",
@@ -139,6 +141,7 @@ export function buildServiceOrderPayload(intent, authenticatedUser) {
     serviceKey: String(intent?.serviceKey || ""),
     purchaseMode: intent?.purchaseMode,
     selectedPlanKey: intent?.selectedPlanKey || null,
+    includeWebsiteAddon: Boolean(intent?.includeWebsiteAddon),
     selectedAddOnKeys,
     quantities,
     businessId:

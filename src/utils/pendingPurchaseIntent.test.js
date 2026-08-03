@@ -15,6 +15,7 @@ describe("pendingPurchaseIntent", () => {
         serviceKey: "managed_service",
         purchaseMode: "bundle",
         selectedPlanKey: "monthly",
+        includeWebsiteAddon: true,
         selectedAddOnKeys: ["addon"],
         quantities: { addon: 2 },
         returnPath: "/pricing",
@@ -33,6 +34,7 @@ describe("pendingPurchaseIntent", () => {
     expect(Object.keys(raw).sort()).toEqual(
       [
         "createdAt",
+        "includeWebsiteAddon",
         "purchaseMode",
         "quantities",
         "returnPath",
@@ -41,6 +43,7 @@ describe("pendingPurchaseIntent", () => {
         "serviceKey",
       ].sort()
     );
+    expect(raw.includeWebsiteAddon).toBe(true);
     expect(raw).not.toHaveProperty("userId");
     expect(raw).not.toHaveProperty("amount");
   });
