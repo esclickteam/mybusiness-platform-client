@@ -2196,6 +2196,38 @@ function createPagesFromTemplateSeed(
  * saved one page. Overlay saved visual data onto matching ids, then append
  * extra library/custom pages that are not part of the template.
  */
+function enforceSingleCanonicalHome(
+  pages: StudioSitePageWithPortal[],
+): StudioSitePageWithPortal[] {
+  const list = Array.isArray(pages) ? pages : [];
+  if (!list.length) return list;
+
+  const canonical =
+    list.find((page) => String(page.id || "").trim() === "home") ||
+    list.find(
+      (page) => page.isHome && page.clientPortal?.enabled !== true,
+    ) ||
+    list.find((page) => page.isHome) ||
+    list[0];
+
+  return list.map((page) => {
+    const isHome = page.id === canonical.id;
+    return {
+      ...page,
+      isHome,
+      slug: isHome
+        ? ""
+        : String(page.slug || "").trim() ||
+          normalizePageSlug(page.title || page.id, list, page.id),
+      type: isHome
+        ? ("home" as StudioSitePageType)
+        : page.type === "home"
+          ? ("blank" as StudioSitePageType)
+          : page.type,
+    };
+  });
+}
+
 function mergeTemplateAndSavedPages(
   templatePages: StudioSitePageWithPortal[],
   savedPages: StudioSitePageWithPortal[],
@@ -2203,8 +2235,8 @@ function mergeTemplateAndSavedPages(
   const templateList = Array.isArray(templatePages) ? templatePages : [];
   const savedList = Array.isArray(savedPages) ? savedPages : [];
 
-  if (!templateList.length) return savedList;
-  if (!savedList.length) return templateList;
+  if (!templateList.length) return enforceSingleCanonicalHome(savedList);
+  if (!savedList.length) return enforceSingleCanonicalHome(templateList);
 
   const savedById = new Map(
     savedList.map((page) => [String(page.id || "").trim(), page]),
@@ -2233,12 +2265,14 @@ function mergeTemplateAndSavedPages(
       ...saved,
       id: templatePage.id,
       title: String(saved.title || templatePage.title || id),
-      slug:
-        templatePage.isHome || saved.isHome
-          ? templatePage.slug
-          : String(saved.slug ?? templatePage.slug ?? ""),
+      slug: String(saved.slug ?? templatePage.slug ?? ""),
       type: templatePage.type || saved.type,
-      isHome: Boolean(templatePage.isHome || saved.isHome),
+      // Saved state wins. The final canonicalization below removes legacy
+      // duplicate home flags and keeps portal pages away from `/`.
+      isHome:
+        typeof saved.isHome === "boolean"
+          ? saved.isHome
+          : Boolean(templatePage.isHome),
       html: saved.html || templatePage.html,
       css: saved.css || templatePage.css,
       clientPortal:
@@ -2274,11 +2308,13 @@ function mergeTemplateAndSavedPages(
     return true;
   });
 
-  return flattenPagesInTreeOrder(
-    normalizePageMenuOrders(
-      withResolvedHierarchyFields([...mergedTemplatePages, ...extraPages]),
-    ),
-  ) as StudioSitePageWithPortal[];
+  return enforceSingleCanonicalHome(
+    flattenPagesInTreeOrder(
+      normalizePageMenuOrders(
+        withResolvedHierarchyFields([...mergedTemplatePages, ...extraPages]),
+      ),
+    ) as StudioSitePageWithPortal[],
+  );
 }
 
 function withResolvedHierarchyFields(
@@ -7620,10 +7656,24 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         בדראפט של Visual React אין צורך לשלוח HTML/CSS מלא לכל הדפים.
         ה־data הקטן מספיק כדי לשחזר את העריכות. בפרסום כן שולחים HTML כדי שהאתר הציבורי יעבוד.
       */
+      const canonicalHomeSource =
+        publishedPages.find(
+          (page) => String(page.id || "").trim() === "home",
+        ) ||
+        publishedPages.find(
+          (page) =>
+            page.isHome && page.clientPortal?.enabled !== true,
+        ) ||
+        publishedPages.find((page) => page.isHome) ||
+        publishedPages[0];
+      const canonicalHomeId =
+        String(canonicalHomeSource?.id || "home").trim() || "home";
+
       const pagesForSave = publishedPages.map((page) => {
+        const isCanonicalHome = page.id === canonicalHomeId;
         const isActivePage =
           page.id === activeVisualPageId ||
-          (activeVisualPageId === "home" && page.isHome);
+          (activeVisualPageId === "home" && isCanonicalHome);
 
         const pageVisual = isActivePage
           ? cleanVisualData
@@ -7646,9 +7696,20 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         return {
           id: page.id,
           title: page.title,
-          slug: page.slug,
-          type: page.type,
-          isHome: Boolean(page.isHome),
+          slug: isCanonicalHome
+            ? ""
+            : String(page.slug || "").trim() ||
+              normalizePageSlug(
+                page.title || page.id,
+                publishedPages,
+                page.id,
+              ),
+          type: isCanonicalHome
+            ? ("home" as StudioSitePageType)
+            : page.type === "home"
+              ? ("blank" as StudioSitePageType)
+              : page.type,
+          isHome: isCanonicalHome,
           hiddenFromMenu: Boolean((page as any).hiddenFromMenu),
           parentPageId:
             String((page as any).parentPageId || "").trim() || undefined,
@@ -7701,7 +7762,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       });
 
       const homePage =
-        pagesForSave.find((page) => page.isHome || page.id === "home") ||
+        pagesForSave.find((page) => page.id === canonicalHomeId) ||
         pagesForSave[0];
       const homePageId = String(homePage?.id || "home").trim() || "home";
       const extractedHomeVisualData = extractVisualDataFromPayload(
