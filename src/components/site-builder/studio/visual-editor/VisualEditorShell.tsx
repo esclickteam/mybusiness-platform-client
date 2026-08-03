@@ -257,6 +257,25 @@ export default function VisualEditorShell({
 
   useEffect(() => {
     if (typeof window === "undefined") return;
+
+    const openFormLinksPanel = () => {
+      setSidePanelMode("header");
+    };
+
+    window.addEventListener(
+      "bizuply:open-visual-header-forms",
+      openFormLinksPanel as EventListener,
+    );
+    return () => {
+      window.removeEventListener(
+        "bizuply:open-visual-header-forms",
+        openFormLinksPanel as EventListener,
+      );
+    };
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
     const params = new URLSearchParams(window.location.search);
     const addPlugin = params.get("addPlugin");
     const addPage = params.get("addPage");

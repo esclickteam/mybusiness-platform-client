@@ -39,6 +39,8 @@ type ChromeItem = {
 type PortalFormField = {
   key: string;
   label: string;
+  /** text = copy/label; link = destination page for a form text-button */
+  kind?: "text" | "link";
 };
 
 type PortalFormItem = {
@@ -47,6 +49,7 @@ type PortalFormItem = {
   title: string;
   fields: PortalFormField[];
   values: Record<string, string>;
+  links: Record<string, string>;
 };
 
 const CHROME_SELECTOR = [
@@ -63,9 +66,19 @@ const LOGIN_FORM_FIELDS: PortalFormField[] = [
   { key: "subtitle", label: "תיאור" },
   { key: "email", label: "שדה אימייל" },
   { key: "password", label: "שדה סיסמה" },
-  { key: "submit", label: "כפתור שליחה" },
-  { key: "switch", label: "קישור להרשמה" },
-  { key: "forgot", label: "קישור שכחתי סיסמה" },
+  { key: "submit", label: "טקסט כפתור התחברות" },
+  { key: "switch", label: "טקסט: אין לכם חשבון? הרשמה" },
+  { key: "forgot", label: "טקסט: שכחתי סיסמה" },
+  {
+    key: "switch",
+    label: "לאן מוביל «הרשמה»",
+    kind: "link",
+  },
+  {
+    key: "forgot",
+    label: "לאן מוביל «שכחתי סיסמה»",
+    kind: "link",
+  },
 ];
 
 const REGISTER_FORM_FIELDS: PortalFormField[] = [
@@ -75,8 +88,13 @@ const REGISTER_FORM_FIELDS: PortalFormField[] = [
   { key: "email", label: "שדה אימייל" },
   { key: "phone", label: "שדה טלפון" },
   { key: "password", label: "שדה סיסמה" },
-  { key: "submit", label: "כפתור שליחה" },
-  { key: "switch", label: "קישור להתחברות" },
+  { key: "submit", label: "טקסט כפתור יצירת חשבון" },
+  { key: "switch", label: "טקסט: כבר רשומים? התחברות" },
+  {
+    key: "switch",
+    label: "לאן מוביל «התחברות»",
+    kind: "link",
+  },
 ];
 
 function asPlainObject(value: unknown): Record<string, any> {
@@ -238,7 +256,14 @@ function collectPortalForms(root: HTMLElement | null): PortalFormItem[] {
         kind === "portal-login" ? LOGIN_FORM_FIELDS : REGISTER_FORM_FIELDS;
 
       const values: Record<string, string> = {};
+      const links: Record<string, string> = {};
       fields.forEach((field) => {
+        if (field.kind === "link") {
+          links[field.key] = String(
+            node.getAttribute(`data-portal-link-${field.key}`) || "",
+          ).trim();
+          return;
+        }
         values[field.key] = String(
           node.getAttribute(`data-portal-copy-${field.key}`) || "",
         ).trim();
@@ -250,6 +275,7 @@ function collectPortalForms(root: HTMLElement | null): PortalFormItem[] {
         title: kind === "portal-login" ? "טופס התחברות" : "טופס הרשמה",
         fields,
         values,
+        links,
       });
     });
 
@@ -263,7 +289,10 @@ export default function VisualHeaderPanel({ open, editor, onClose }: Props) {
     Record<string, { text: string; href: string }>
   >({});
   const [formDrafts, setFormDrafts] = useState<
-    Record<string, Record<string, string>>
+    Record<
+      string,
+      { values: Record<string, string>; links: Record<string, string> }
+    >
   >({});
   const [area, setArea] = useState<"header" | "footer" | "forms">("header");
   const [appliedId, setAppliedId] = useState("");
@@ -324,8 +353,16 @@ export default function VisualHeaderPanel({ open, editor, onClose }: Props) {
       ),
     );
     setFormDrafts(
-      nextForms.reduce<Record<string, Record<string, string>>>((acc, form) => {
-        acc[form.elementId] = { ...form.values };
+      nextForms.reduce<
+        Record<
+          string,
+          { values: Record<string, string>; links: Record<string, string> }
+        >
+      >((acc, form) => {
+        acc[form.elementId] = {
+          values: { ...form.values },
+          links: { ...form.links },
+        };
         return acc;
       }, {}),
     );
@@ -335,6 +372,34 @@ export default function VisualHeaderPanel({ open, editor, onClose }: Props) {
     if (!open) return;
     refresh();
   }, [open, refresh]);
+
+  /*
+    Selecting the portal form on the canvas should jump straight to form
+    links — owners cannot deep-select the inner runtime buttons.
+  */
+  useEffect(() => {
+    if (!open) return;
+
+    const selectedId = String(
+      editorRef.current?.selectedElement?.id || "",
+    ).trim();
+    if (!selectedId) return;
+
+    const root =
+      (editorRef.current?.canvasRef?.current as HTMLElement | null) || null;
+    const node = root?.querySelector<HTMLElement>(
+      `[data-visual-edit-id="${CSS.escape(selectedId)}"]`,
+    );
+    const kind = String(
+      node?.getAttribute("data-bizuply-portal-kind") ||
+        node?.getAttribute("data-bizuply-widget") ||
+        "",
+    );
+
+    if (kind === "portal-login" || kind === "portal-register") {
+      setArea("forms");
+    }
+  }, [open, editor?.selectedElement?.id]);
 
   const visibleItems = useMemo(
     () => items.filter((item) => item.area === area),
@@ -403,8 +468,14 @@ export default function VisualHeaderPanel({ open, editor, onClose }: Props) {
 
     const patch: Record<string, string> = {};
     form.fields.forEach((field) => {
+      if (field.kind === "link") {
+        patch[`data-portal-link-${field.key}`] = String(
+          draft.links[field.key] || "",
+        ).trim();
+        return;
+      }
       patch[`data-portal-copy-${field.key}`] = String(
-        draft[field.key] || "",
+        draft.values[field.key] || "",
       ).trim();
     });
 
@@ -421,16 +492,22 @@ export default function VisualHeaderPanel({ open, editor, onClose }: Props) {
         if (value) shell.setAttribute(attr, value);
         else shell.removeAttribute(attr);
       });
-      // Force the live form to remount with the new labels.
+      // Force the live form to remount with the new labels/links.
       delete shell.dataset.bizuplyPortalMounted;
+      delete shell.dataset.bizuplyPortalLive;
       shell.removeAttribute("data-bizuply-portal-mounted");
+      shell.removeAttribute("data-bizuply-portal-live");
       while (shell.firstChild) shell.removeChild(shell.firstChild);
     }
 
     setForms((prev) =>
       prev.map((entry) =>
         entry.elementId === form.elementId
-          ? { ...entry, values: { ...draft } }
+          ? {
+              ...entry,
+              values: { ...draft.values },
+              links: { ...draft.links },
+            }
           : entry,
       ),
     );
@@ -456,11 +533,18 @@ export default function VisualHeaderPanel({ open, editor, onClose }: Props) {
     const draft = formDrafts[form.elementId];
     if (!draft) return false;
 
-    return form.fields.some(
-      (field) =>
-        String(draft[field.key] || "").trim() !==
-        String(form.values[field.key] || "").trim(),
-    );
+    return form.fields.some((field) => {
+      if (field.kind === "link") {
+        return (
+          String(draft.links[field.key] || "").trim() !==
+          String(form.links[field.key] || "").trim()
+        );
+      }
+      return (
+        String(draft.values[field.key] || "").trim() !==
+        String(form.values[field.key] || "").trim()
+      );
+    });
   };
 
   return (
@@ -542,7 +626,16 @@ export default function VisualHeaderPanel({ open, editor, onClose }: Props) {
           ) : (
             <div className="space-y-3">
               {forms.map((form) => {
-                const draft = formDrafts[form.elementId] || form.values;
+                const draft = formDrafts[form.elementId] || {
+                  values: form.values,
+                  links: form.links,
+                };
+                const textFields = form.fields.filter(
+                  (field) => field.kind !== "link",
+                );
+                const linkFields = form.fields.filter(
+                  (field) => field.kind === "link",
+                );
 
                 return (
                   <div
@@ -553,21 +646,80 @@ export default function VisualHeaderPanel({ open, editor, onClose }: Props) {
                       {form.title}
                     </div>
 
+                    <div className="mb-3 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-[11px] font-bold leading-5 text-amber-900">
+                      כפתורי הטופס לא נבחרים בנפרד בקנבס. כאן מקשרים את
+                      «הרשמה» / «שכחתי סיסמה» / «התחברות».
+                    </div>
+
+                    {linkFields.length ? (
+                      <div className="mb-3 space-y-2 rounded-xl border border-slate-200 bg-slate-50 p-2.5">
+                        <div className="flex items-center gap-1.5 text-[11px] font-black text-slate-700">
+                          <Link2 className="h-3.5 w-3.5" />
+                          קישורי כפתורים בטופס
+                        </div>
+                        {linkFields.map((field) => (
+                          <label
+                            key={`link-${field.key}`}
+                            className="block text-[11px] font-black text-slate-500"
+                          >
+                            {field.label}
+                            <select
+                              value={draft.links[field.key] || ""}
+                              onChange={(event) =>
+                                setFormDrafts((prev) => ({
+                                  ...prev,
+                                  [form.elementId]: {
+                                    ...draft,
+                                    links: {
+                                      ...draft.links,
+                                      [field.key]: event.target.value,
+                                    },
+                                  },
+                                }))
+                              }
+                              className="mt-1 w-full rounded-xl border border-slate-200 bg-white px-3 py-2 text-right text-sm font-bold text-slate-800 outline-none transition focus:border-slate-400 focus:ring-4 focus:ring-slate-100"
+                            >
+                              <option value="">
+                                אוטומטי (עמוד האזור האישי המתאים)
+                              </option>
+                              {linkOptions.map((option) => (
+                                <option key={option.value} value={option.value}>
+                                  {option.label}
+                                </option>
+                              ))}
+                              {draft.links[field.key] &&
+                              !linkOptions.some(
+                                (option) =>
+                                  option.value === draft.links[field.key],
+                              ) ? (
+                                <option value={draft.links[field.key]}>
+                                  מותאם: {draft.links[field.key]}
+                                </option>
+                              ) : null}
+                            </select>
+                          </label>
+                        ))}
+                      </div>
+                    ) : null}
+
                     <div className="space-y-2">
-                      {form.fields.map((field) => (
+                      {textFields.map((field) => (
                         <label
-                          key={field.key}
+                          key={`text-${field.key}`}
                           className="block text-[11px] font-black text-slate-500"
                         >
                           {field.label}
                           <input
-                            value={draft[field.key] || ""}
+                            value={draft.values[field.key] || ""}
                             onChange={(event) =>
                               setFormDrafts((prev) => ({
                                 ...prev,
                                 [form.elementId]: {
                                   ...draft,
-                                  [field.key]: event.target.value,
+                                  values: {
+                                    ...draft.values,
+                                    [field.key]: event.target.value,
+                                  },
                                 },
                               }))
                             }
