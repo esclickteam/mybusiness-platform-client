@@ -8,6 +8,7 @@ import {
   Bot,
   CalendarCheck2,
   Check,
+  ChevronDown,
   ChevronLeft,
   ClipboardList,
   Globe,
@@ -19,7 +20,6 @@ import {
   Package,
   Plus,
   RefreshCw,
-  Search,
   Settings2,
   Sparkles,
   UserRound,
@@ -114,7 +114,7 @@ export default function Plans() {
   const [loadingPlan, setLoadingPlan] = useState(null);
   const [selectedKeys, setSelectedKeys] = useState(() => new Set());
   const [activeCategory, setActiveCategory] = useState("all");
-  const [query, setQuery] = useState("");
+  const [upsellsOpen, setUpsellsOpen] = useState(false);
   const [detailKey, setDetailKey] = useState(null);
   const [websiteAddonByPlan, setWebsiteAddonByPlan] = useState({
     monthly: false,
@@ -220,26 +220,21 @@ export default function Plans() {
 
   const categories = useMemo(() => ["all", ...PRICING_CATEGORY_ORDER], []);
 
-  const localizedAddons = useMemo(
-    () => PRICING_ADDONS.map((addon) => localizeService(addon, isHe)),
-    [isHe]
-  );
+  const localizedAddons = useMemo(() => {
+    const publicCategories = new Set(PRICING_CATEGORY_ORDER);
+    return PRICING_ADDONS.filter(
+      (addon) => !addon.hidden && publicCategories.has(addon.category)
+    ).map((addon) => localizeService(addon, isHe));
+  }, [isHe]);
 
   const filteredAddons = useMemo(() => {
-    const q = query.trim().toLowerCase();
     return localizedAddons.filter((addon) => {
       if (activeCategory !== "all" && addon.category !== activeCategory) {
         return false;
       }
-      if (!q) return true;
-      return (
-        addon.displayName.toLowerCase().includes(q) ||
-        addon.displayDescription.toLowerCase().includes(q) ||
-        addon.key.toLowerCase().includes(q) ||
-        addon.displayDetails.some((d) => d.toLowerCase().includes(q))
-      );
+      return true;
     });
-  }, [activeCategory, query, localizedAddons]);
+  }, [activeCategory, localizedAddons]);
 
   const addonsByCategory = useMemo(() => {
     const visibleCategories =
@@ -325,11 +320,11 @@ export default function Plans() {
           delay: reduceMotion ? 0 : Math.min(index * 0.04, 0.24),
         }}
         onPointerMove={onCardPointerMove}
-        className={`pricing-wow__service group flex h-full flex-col rounded-[1.85rem] border bg-white/90 p-5 text-start shadow-[0_18px_50px_rgba(15,23,42,0.08)] backdrop-blur-xl sm:p-6 ${
+        className={`pricing-wow__service group flex h-full flex-col rounded-[1.85rem] border bg-white/90 p-4 text-start shadow-[0_18px_50px_rgba(15,23,42,0.08)] backdrop-blur-xl sm:p-5 ${
           selected
             ? "is-selected border-indigo-300 ring-2 ring-indigo-200"
             : "border-slate-200/90"
-        } ${featured ? "is-featured sm:p-7" : ""}`}
+        } ${featured ? "is-featured sm:p-5" : ""}`}
         style={{ "--pw-accent": addon.accent }}
       >
         <span className="pricing-wow__sheen" aria-hidden="true" />
@@ -639,7 +634,38 @@ export default function Plans() {
           id="business-services"
           className="relative mx-auto mt-24 max-w-6xl scroll-mt-28 sm:mt-28"
         >
-          <motion.div className="mx-auto max-w-3xl text-center" {...fadeUp}>
+          <div className="flex justify-center">
+            <button
+              type="button"
+              onClick={() =>
+                startTransition(() => setUpsellsOpen((prev) => !prev))
+              }
+              aria-expanded={upsellsOpen}
+              aria-controls="pricing-upsells-panel"
+              className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-7 py-3.5 text-sm font-black text-slate-900 shadow-[0_14px_40px_rgba(15,23,42,0.1)] transition hover:-translate-y-0.5 hover:border-emerald-300 hover:shadow-emerald-100/80"
+            >
+              <Sparkles size={16} className="text-emerald-600" aria-hidden="true" />
+              {t("pricing.upsellsToggle")}
+              <ChevronDown
+                size={18}
+                className={`text-slate-500 transition ${upsellsOpen ? "rotate-180" : ""}`}
+                aria-hidden="true"
+              />
+            </button>
+          </div>
+
+          <AnimatePresence initial={false}>
+            {upsellsOpen ? (
+              <motion.div
+                id="pricing-upsells-panel"
+                key="upsells-panel"
+                initial={reduceMotion ? false : { opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={reduceMotion ? undefined : { opacity: 0, height: 0 }}
+                transition={{ duration: reduceMotion ? 0 : 0.28, ease: "easeOut" }}
+                className="overflow-hidden"
+              >
+          <motion.div className="mx-auto mt-10 max-w-3xl text-center" {...fadeUp}>
             <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-emerald-200/80 bg-white/90 px-4 py-1.5 text-sm font-black text-emerald-700 shadow-lg shadow-emerald-100/50">
               <Sparkles size={14} aria-hidden="true" />
               {t("pricing.upsellsBadge")}
@@ -654,23 +680,7 @@ export default function Plans() {
 
           <div className="pricing-wow__cat-sticky mt-10">
             <div className="rounded-[1.75rem] border border-white/80 bg-white/80 p-3 shadow-[0_18px_50px_rgba(15,23,42,0.1)] backdrop-blur-xl sm:p-4">
-              <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
-                <label className="relative min-w-0 flex-1">
-                  <Search
-                    size={16}
-                    className="pointer-events-none absolute start-4 top-1/2 -translate-y-1/2 text-slate-400"
-                  />
-                  <input
-                    type="search"
-                    value={query}
-                    onChange={(e) => setQuery(e.target.value)}
-                    placeholder={t("pricing.addonsSearch")}
-                    className="h-12 w-full rounded-2xl border border-slate-200 bg-white pe-4 ps-11 text-sm font-semibold text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-indigo-300 focus:ring-4 focus:ring-indigo-100"
-                  />
-                </label>
-              </div>
-
-              <div className="mt-3 flex gap-2 overflow-x-auto pb-0.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+              <div className="flex gap-2 overflow-x-auto pb-0.5 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                 {categories.map((key) => {
                   const active = activeCategory === key;
                   const accent =
@@ -718,7 +728,7 @@ export default function Plans() {
                   </span>
                 </div>
 
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
                   <AnimatePresence mode="popLayout">
                     {group.items.map((addon, index) =>
                       renderServiceCard(addon, index, Boolean(addon.featured))
@@ -763,6 +773,9 @@ export default function Plans() {
               </Link>
             </div>
           </motion.div>
+              </motion.div>
+            ) : null}
+          </AnimatePresence>
         </section>
       </main>
 

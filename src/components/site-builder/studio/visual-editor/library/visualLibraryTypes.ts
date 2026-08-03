@@ -44,7 +44,8 @@ export type VisualLibraryCategory =
   | "promote"
   | "events"
   | "booking"
-  | "resume";
+  | "resume"
+  | "portal";
 
 export type VisualLibraryNodeTemplate = {
   key: string;

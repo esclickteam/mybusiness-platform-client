@@ -24,10 +24,7 @@ import {
 } from "../utils/visualData";
 
 import { buildVisualSavePayload } from "../utils/visualSaveAdapter";
-import {
-  applyAllVisualDataToDom,
-  buildVisualSaveDataFromDom,
-} from "../utils/visualDomApply";
+import { buildVisualSaveDataFromDom } from "../utils/visualDomApply";
 
 type VisualSavePayload = ReturnType<typeof buildVisualSavePayload>;
 
@@ -346,10 +343,22 @@ function mergeVisualContent(
       ...domItem,
     };
 
+    // Live canvas text is the publish source of truth (keeps typed spaces).
+    if (Object.prototype.hasOwnProperty.call(domItem, "text")) {
+      nextItem.text = domItem.text;
+    } else if (Object.prototype.hasOwnProperty.call(stateItem, "text")) {
+      nextItem.text = stateItem.text;
+    }
+
     const stateHref = String(stateItem.href || "").trim();
     const domHref = String(domItem.href || "").trim();
 
-    if (stateHref && stateHref !== "#") {
+    // Prefer the live DOM link (what the user configured/sees) over stale state.
+    if (domHref && domHref !== "#") {
+      nextItem.href = domHref;
+      nextItem.target = domItem.target || stateItem.target || "_self";
+      nextItem.rel = domItem.rel || stateItem.rel || "";
+    } else if (stateHref && stateHref !== "#") {
       nextItem.href = stateHref;
       nextItem.target = stateItem.target || domItem.target || "_self";
       nextItem.rel = stateItem.rel || domItem.rel || "";
@@ -1021,10 +1030,11 @@ export function useVisualSave({
       (dataRef?.current || data || {}) as Record<string, any>,
     );
 
-    if (root) {
-      applyAllVisualDataToDom(root, currentData);
-    }
-
+    /*
+      Publish/save must capture the live canvas the user sees.
+      Re-applying state onto the DOM before collect wiped unsaved edits
+      (spaces, links, text) — like rebuilding instead of publishing.
+    */
     const domSnapshot = normalizeVisualData(
       (buildVisualSaveDataFromDom(root, currentData) || {}) as Record<
         string,

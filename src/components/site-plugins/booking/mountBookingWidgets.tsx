@@ -11,14 +11,14 @@ const roots = new WeakMap<Element, Root>();
 const HOST_ATTR = "data-bizuply-booking-host";
 
 const BOOKING_MOUNT_SELECTOR = [
-  '[data-bizuply-widget="booking"]',
   '[data-bizuply-booking-mount="true"]',
+  '[data-bizuply-widget="booking"]:not([data-bizuply-booking-live="true"])',
 ].join(", ");
 
 const TEMPLATE_BOOKING_SECTION_SELECTOR = [
   '[data-section-kind="booking"]',
   '[data-template-section-type="booking"]',
-  '[data-bizuply-block="booking"]',
+  'section[data-bizuply-block="booking"]',
   '[data-bizuply-widget="booking-calendar"]',
 ].join(", ");
 
@@ -28,8 +28,22 @@ const LIBRARY_INSERT_SELECTOR = [
   "[data-visual-inserted='true']",
 ].join(", ");
 
+const BOOKING_REMOVED_ATTR = "data-bizuply-booking-removed";
+
 export function buildBookingWidgetMarker(label = "יומן פגישות") {
-  return `<div data-bizuply-widget="booking" data-bizuply-block="booking" data-bizuply-booking-mount="true" data-bizuply-crm-calendar="true" data-bizuply-booking-chrome="card" data-bizuply-booking-variant="month" data-bizuply-booking-accent="#0f766e" data-bizuply-booking-ink="#111827" style="width:100%;height:100%;min-height:320px;direction:rtl;box-sizing:border-box;background:#ffffff;color:#111827;border:1px solid #e5e7eb;border-radius:20px" title="${label}"></div>`;
+  // Mounts must NOT use data-bizuply-block="booking" — that attr marks real
+  // <section> wrappers. Putting it on mounts makes the editor treat the
+  // calendar as a page section (shared delete id / whole-page delete).
+  return `<div data-bizuply-widget="booking" data-bizuply-booking-mount="true" data-bizuply-crm-calendar="true" data-bizuply-booking-chrome="card" data-bizuply-booking-variant="month" data-bizuply-booking-accent="#0f766e" data-bizuply-booking-ink="#111827" style="width:100%;height:100%;min-height:320px;direction:rtl;box-sizing:border-box;background:#ffffff;color:#111827;border:1px solid #e5e7eb;border-radius:20px" title="${label}"></div>`;
+}
+
+function isBookingNodeRemoved(node: HTMLElement) {
+  if (node.getAttribute(BOOKING_REMOVED_ATTR) === "true") return true;
+  if (node.getAttribute("data-visual-deleted") === "true") return true;
+  if (node.hasAttribute("hidden")) return true;
+  if (node.closest(`[${BOOKING_REMOVED_ATTR}="true"]`)) return true;
+  if (node.closest('[data-visual-deleted="true"]')) return true;
+  return false;
 }
 
 export function pageHasBookingWidget(root: ParentNode | null | undefined) {
@@ -54,8 +68,13 @@ function stampMountAttrs(
   if (!node.getAttribute("data-bizuply-booking-variant")) {
     node.setAttribute("data-bizuply-booking-variant", "month");
   }
-  if (!node.getAttribute("data-bizuply-block")) {
-    node.setAttribute("data-bizuply-block", "booking");
+  // Never stamp data-bizuply-block on mounts — reserved for real sections.
+  // Strip legacy copies so selection/delete treat the calendar as a widget.
+  if (
+    node.getAttribute("data-bizuply-block") === "booking" &&
+    String(node.tagName || "").toLowerCase() !== "section"
+  ) {
+    node.removeAttribute("data-bizuply-block");
   }
   // Template mounts sync CRM without replacing page design (no modal card).
   // Gallery/library sections keep card chrome and must not rewrite templates.
@@ -68,10 +87,12 @@ function stampMountAttrs(
  * Template booking sections (beauty calendars, ready-website booking blocks)
  * often lack an explicit mount. Promote them so CRM BookingWidget can hydrate.
  * Never mutates gallery/library inserts into embedded template chrome.
+ * Never re-injects a calendar after the user deleted it.
  */
 function ensureTemplateBookingMounts(root: ParentNode) {
   root.querySelectorAll(TEMPLATE_BOOKING_SECTION_SELECTOR).forEach((node) => {
     if (!(node instanceof HTMLElement)) return;
+    if (isBookingNodeRemoved(node)) return;
 
     const chrome: BookingWidgetChrome | undefined = isLibraryInsertContext(node)
       ? "card"
@@ -82,13 +103,21 @@ function ensureTemplateBookingMounts(root: ParentNode) {
       node.getAttribute("data-bizuply-booking-mount") === "true" ||
       node.getAttribute("data-bizuply-widget") === "booking"
     ) {
+      if (isBookingNodeRemoved(node)) return;
       stampMountAttrs(node, chrome);
       return;
     }
 
     const existingMount = node.querySelector<HTMLElement>(BOOKING_MOUNT_SELECTOR);
     if (existingMount) {
+      if (isBookingNodeRemoved(existingMount)) return;
       stampMountAttrs(existingMount, chrome);
+      return;
+    }
+
+    // Library/gallery inserts own their calendar as an inserted element.
+    // If the mount is gone, the user deleted it — do not spawn another.
+    if (isLibraryInsertContext(node)) {
       return;
     }
 
@@ -98,11 +127,10 @@ function ensureTemplateBookingMounts(root: ParentNode) {
     const frame =
       node.querySelector<HTMLElement>("[data-bizuply-booking-frame='true']") ||
       node.querySelector<HTMLElement>("[data-bizuply-widget='booking-calendar']") ||
-      (!isLibraryInsertContext(node)
-        ? node.querySelector<HTMLElement>(".t-glow")
-        : null);
+      node.querySelector<HTMLElement>(".t-glow");
 
     if (frame && frame !== node) {
+      if (isBookingNodeRemoved(frame)) return;
       // Hide static demo calendar chrome; keep geometry for the CRM widget.
       Array.from(frame.children).forEach((child) => {
         if (!(child instanceof HTMLElement)) return;
@@ -122,6 +150,9 @@ function ensureTemplateBookingMounts(root: ParentNode) {
 
     // Fallback: inject a mount host at the end of the section.
     // Additive only — does not replace existing template markup.
+    // Skip when the section was explicitly cleared of its booking widget.
+    if (node.getAttribute(BOOKING_REMOVED_ATTR) === "true") return;
+
     let injected = node.querySelector<HTMLElement>(
       '[data-bizuply-booking-mount="true"][data-bizuply-booking-injected="true"]',
     );
@@ -421,13 +452,18 @@ function collectBookingMountNodes(root: ParentNode): HTMLElement[] {
   ensureTemplateBookingMounts(root);
   const nodes = Array.from(
     root.querySelectorAll(BOOKING_MOUNT_SELECTOR),
-  ).filter((node): node is HTMLElement => node instanceof HTMLElement);
+  ).filter(
+    (node): node is HTMLElement =>
+      node instanceof HTMLElement && !isBookingNodeRemoved(node),
+  );
 
   // Prefer inner mounts over the wrapping section when both are stamped.
   return nodes.filter((node) => {
     const inner = Array.from(
       node.querySelectorAll<HTMLElement>(BOOKING_MOUNT_SELECTOR),
-    ).find((candidate) => candidate !== node);
+    ).find(
+      (candidate) => candidate !== node && !isBookingNodeRemoved(candidate),
+    );
     return !inner;
   });
 }

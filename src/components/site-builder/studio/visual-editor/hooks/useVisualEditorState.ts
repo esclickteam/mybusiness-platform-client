@@ -3656,41 +3656,95 @@ export function useVisualEditorState({
 
       if (!id) return false;
 
-      /*
-        המחיקה נרשמת ב-state כ-__deletedElements[id] = true.
-        useVisualSave שולח את המפה הזאת לשרת, והשרת שומר אותה במונגו.
-      */
-      setData((current) => {
-        if (readVisualInsertedElements(current || {})[id]) {
-          return removeVisualInsertedElement(current || {}, id);
-        }
-
-        if (readVisualInsertedSections(current || {})[id]) {
-          return removeVisualInsertedSection(current || {}, id);
-        }
-
-        return markVisualElementDeleted(current || {}, id);
-      });
-
-      /*
-        מסתירים מיד את אותו node כדי שהמשתמש יראה את התוצאה בלי לחכות ל-render.
-        זה רק UI מיידי; מקור האמת נשאר __deletedElements שנשמר בשרת.
-      */
       const selectedNode = getSelectedDomNode(selectedElement);
       const domNode =
         selectedNode?.getAttribute("data-visual-edit-id") === id
           ? selectedNode
           : findVisualNodeById(canvasRef.current, id);
 
+      const isBookingMount =
+        Boolean(domNode) &&
+        (domNode!.getAttribute("data-bizuply-booking-mount") === "true" ||
+          (domNode!.getAttribute("data-bizuply-widget") === "booking" &&
+            domNode!.getAttribute("data-bizuply-booking-live") !== "true"));
+
+      const bookingParentSection = isBookingMount
+        ? (domNode!.closest<HTMLElement>(
+            [
+              '[data-visual-inserted-section="true"]',
+              '[data-section-kind="booking"]',
+              '[data-template-section-type="booking"]',
+              'section[data-bizuply-block="booking"]',
+              "section",
+            ].join(", "),
+          ) ||
+            domNode!.parentElement)
+        : null;
+
+      const bookingParentSectionId = String(
+        bookingParentSection?.getAttribute("data-visual-edit-id") || "",
+      ).trim();
+
+      /*
+        המחיקה נרשמת ב-state כ-__deletedElements[id] = true.
+        useVisualSave שולח את המפה הזאת לשרת, והשרת שומר אותה במונגו.
+        למחיקת יומן: מסמנים את סקשן האב כדי ש-ensureTemplateBookingMounts
+        לא יזריק יומן חדש במקום זה שנמחק.
+      */
+      setData((current) => {
+        let next = current || {};
+
+        if (readVisualInsertedElements(next)[id]) {
+          next = removeVisualInsertedElement(next, id);
+        } else if (readVisualInsertedSections(next)[id]) {
+          next = removeVisualInsertedSection(next, id);
+        } else {
+          next = markVisualElementDeleted(next, id);
+        }
+
+        if (isBookingMount && bookingParentSectionId) {
+          next = writeVisualAttributesItem(next, bookingParentSectionId, {
+            "data-bizuply-booking-removed": "true",
+          });
+        }
+
+        return next;
+      });
+
+      /*
+        מסתירים מיד את אותו node כדי שהמשתמש יראה את התוצאה בלי לחכות ל-render.
+        זה רק UI מיידי; מקור האמת נשאר __deletedElements שנשמר בשרת.
+      */
       if (domNode) {
         domNode.setAttribute("data-visual-deleted", "true");
         domNode.setAttribute("hidden", "true");
+        domNode.setAttribute("data-bizuply-booking-removed", "true");
         domNode.style.setProperty("display", "none", "important");
+
+        // Remove injected mounts from the DOM so remount cannot revive them.
+        if (
+          isBookingMount &&
+          domNode.getAttribute("data-bizuply-booking-injected") === "true"
+        ) {
+          try {
+            domNode.remove();
+          } catch {
+            // ignore detach errors
+          }
+        }
+      }
+
+      if (bookingParentSection) {
+        bookingParentSection.setAttribute(
+          "data-bizuply-booking-removed",
+          "true",
+        );
       }
 
       console.log("[BizUply Visual Delete] marked for server save", {
         elementId: id,
         selectedType: selectedElement?.type,
+        bookingMount: isBookingMount,
         deletedCount: Object.keys(
           readVisualDeleted(dataRef.current || {}),
         ).length,

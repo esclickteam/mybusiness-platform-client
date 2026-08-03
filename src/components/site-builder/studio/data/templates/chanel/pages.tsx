@@ -1299,14 +1299,10 @@ export default function ChanelPages({
     const merged = mergeData(data);
     const curatedCategories = safeArray(merged.categories);
 
-    // While the live shop resolves, paint no product cards — curated demos used to
-    // flash then swap to seeded/live products.
-    if (storeLoading) {
-      return { ...merged, products: [] };
-    }
-
-    // Preview / empty store: keep curated demos until real products exist.
-    if (!fromPlugin || storeProducts.length === 0) {
+    // Keep curated demos while the shop resolves. Clearing products to [] here
+    // remounted grids mid visual-DOM text paint and crashed the editor with
+    // removeChild NotFoundError on React HostText (<Text>).
+    if (storeLoading || !fromPlugin || storeProducts.length === 0) {
       return merged;
     }
 

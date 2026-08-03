@@ -1,19 +1,30 @@
 const PLUGIN_WIDGET_SHELL_SELECTOR =
   '[data-bizuply-plugin-widget="true"][data-visual-inserted-element="true"]';
 
+const BOOKING_WIDGET_SHELL_SELECTOR = [
+  '[data-bizuply-booking-mount="true"]',
+  '[data-bizuply-widget="booking"]:not([data-bizuply-booking-live="true"])',
+].join(", ");
+
 const PLUGIN_RUNTIME_ROOT_SELECTOR =
-  '[data-bizuply-plugin-runtime="true"], [data-bizuply-widget], .bizuply-countdown-widget';
+  '[data-bizuply-plugin-runtime="true"], [data-bizuply-booking-live="true"], [data-bizuply-booking-host="true"], .bizuply-countdown-widget, .bizuply-booking-widget-root';
 
 export function getPluginWidgetShell(
   node: HTMLElement | null | undefined,
 ): HTMLElement | null {
   if (!node) return null;
-  return node.closest<HTMLElement>(PLUGIN_WIDGET_SHELL_SELECTOR);
+  return (
+    node.closest<HTMLElement>(PLUGIN_WIDGET_SHELL_SELECTOR) ||
+    node.closest<HTMLElement>(BOOKING_WIDGET_SHELL_SELECTOR)
+  );
 }
 
 export function isPluginWidgetShell(node: HTMLElement | null | undefined) {
   if (!node) return false;
-  return node.matches(PLUGIN_WIDGET_SHELL_SELECTOR);
+  return (
+    node.matches(PLUGIN_WIDGET_SHELL_SELECTOR) ||
+    node.matches(BOOKING_WIDGET_SHELL_SELECTOR)
+  );
 }
 
 export function isInsidePluginWidgetContent(node: HTMLElement | null | undefined) {
@@ -42,10 +53,24 @@ export function resolvePluginWidgetSelectionTarget(
   return null;
 }
 
+export function isBookingWidgetMount(node: HTMLElement | null | undefined) {
+  if (!node) return false;
+  return (
+    node.getAttribute("data-bizuply-booking-mount") === "true" ||
+    (node.getAttribute("data-bizuply-widget") === "booking" &&
+      node.getAttribute("data-bizuply-booking-live") !== "true")
+  );
+}
+
 export function sanitizePluginWidgetEditorNodes(root: HTMLElement | null) {
   if (!root) return;
 
-  root.querySelectorAll<HTMLElement>(PLUGIN_WIDGET_SHELL_SELECTOR).forEach((shell) => {
+  const shellSelector = [
+    PLUGIN_WIDGET_SHELL_SELECTOR,
+    BOOKING_WIDGET_SHELL_SELECTOR,
+  ].join(", ");
+
+  root.querySelectorAll<HTMLElement>(shellSelector).forEach((shell) => {
     shell.querySelectorAll<HTMLElement>("[data-visual-edit-id]").forEach((node) => {
       if (node === shell) return;
 

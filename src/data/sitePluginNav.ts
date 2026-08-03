@@ -30,6 +30,7 @@ import {
 export type SitePanelSection =
   | "overview"
   | "plugins"
+  | "portal"
   | "store"
   | "booking"
   | "payments"
@@ -84,6 +85,7 @@ export const PLUGIN_SECTION_MAP: Record<string, SitePanelSection> = {
   leads: "leads",
   reviews: "reviews",
   club: "club",
+  "client-portal": "portal",
   heatmap: "heatmap",
   "form-abandonment": "form-abandonment",
   "journey-recording": "journey-recording",
@@ -108,6 +110,7 @@ export const PLUGIN_ACCENTS: Record<string, string> = {
   leads: "#6366F1",
   reviews: "#F59E0B",
   club: "#8B5CF6",
+  "client-portal": "#0284C7",
   heatmap: "#EF4444",
   "form-abandonment": "#F97316",
   "journey-recording": "#EC4899",
@@ -134,6 +137,12 @@ export const SECTION_META: Record<
   plugins: {
     label: "חנות תוספים",
     description: "התקנה והסרה של תוספים לאתר",
+  },
+  portal: {
+    label: "אזור אישי",
+    description:
+      "התחברות ללקוחות האתר + עמודים פרטיים שנבנים בעורך — לא קשור לחשבון BizUply",
+    pluginKey: "client-portal",
   },
   store: {
     label: "ניהול חנות",
@@ -260,6 +269,7 @@ export function getPluginIcon(key: string) {
       return Star;
     case "club":
       return Users;
+    case "client-portal":
     case "site-auth":
       return LogIn;
     case "heatmap":
@@ -296,6 +306,7 @@ export function getPluginIcon(key: string) {
 export function getSectionIcon(section: SitePanelSection) {
   if (section === "overview") return LayoutGrid;
   if (section === "plugins") return Puzzle;
+  if (section === "portal") return LogIn;
   const meta = SECTION_META[section as keyof typeof SECTION_META];
   if (meta?.pluginKey) return getPluginIcon(meta.pluginKey);
   return getPluginIcon(String(section));

@@ -39,3 +39,17 @@ export const SECTION_CATEGORY_HEBREW: Partial<
     (item) => item.id !== "all" && item.id !== "blank",
   ).map((item) => [item.id, item.label]),
 );
+
+/** Secondary filters inside the "סקשנים לאזור אישי" tab. */
+export const PORTAL_SECTION_KIND_NAV: Array<{
+  id: string;
+  label: string;
+  prefix: string;
+}> = [
+  { id: "all", label: "הכול", prefix: "section-portal-" },
+  { id: "login", label: "התחברות", prefix: "section-portal-login-" },
+  { id: "register", label: "הרשמה", prefix: "section-portal-register-" },
+  { id: "account", label: "אזור אישי", prefix: "section-portal-account-" },
+  { id: "orders", label: "הזמנות", prefix: "section-portal-orders-" },
+  { id: "cart", label: "עגלה", prefix: "section-portal-cart-" },
+];

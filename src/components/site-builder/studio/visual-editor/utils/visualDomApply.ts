@@ -539,7 +539,13 @@ function isEditorOnlyNode(node: HTMLElement) {
 function hasNestedEditableTextChildren(node: HTMLElement) {
   return Array.from(
     node.querySelectorAll<HTMLElement>(
-      "[data-visual-edit-id][data-visual-edit-type='text'], [data-visual-edit-id][data-editable='text'], [data-visual-edit-id][data-visual-type='text']",
+      [
+        "[data-visual-edit-id][data-visual-edit-type='text']",
+        "[data-visual-edit-id][data-editable='text']",
+        "[data-visual-edit-id][data-visual-type='text']",
+        // Chanel/buttons wrap label text in unmarked editable spans.
+        "[data-editable='text']",
+      ].join(", "),
     ),
   ).some((child) => child !== node);
 }
@@ -596,7 +602,9 @@ function shouldApplyTextToNode(node: HTMLElement) {
 }
 
 function applyMultilineTextValue(node: HTMLElement, value: string) {
-  const normalized = String(value || "").replace(/\r\n/g, "\n").replace(/\r/g, "\n");
+  const normalized = String(value || "")
+    .replace(/\r\n/g, "\n")
+    .replace(/\r/g, "\n");
 
   /*
     Preserve intentional line breaks from the editor (Enter) so publish +
@@ -604,18 +612,65 @@ function applyMultilineTextValue(node: HTMLElement, value: string) {
     single-line nav/CTA labels keep their original wrapping behavior.
   */
   if (normalized.includes("\n")) {
-    const current = String(
+    const currentWhiteSpace = String(
       node.style.whiteSpace || node.style.getPropertyValue("white-space") || "",
     )
       .trim()
       .toLowerCase();
 
-    if (!current || current === "normal" || current === "nowrap") {
+    if (
+      !currentWhiteSpace ||
+      currentWhiteSpace === "normal" ||
+      currentWhiteSpace === "nowrap"
+    ) {
       node.style.whiteSpace = "pre-wrap";
     }
   }
 
-  node.textContent = normalized;
+  const currentText = String(node.textContent || "")
+    .replace(/\r\n/g, "\n")
+    .replace(/\r/g, "\n");
+  if (currentText === normalized) return;
+
+  /*
+    React owns HostText fibers for `{string}` children. Assigning
+    `textContent` destroys those nodes and the next reconcile throws
+    removeChild NotFoundError (shown as <Text> in the stack). Prefer
+    in-place nodeValue updates whenever the leaf is a single text child.
+  */
+  const childNodes = Array.from(node.childNodes);
+  const elementChildren = childNodes.filter(
+    (child) => child.nodeType === Node.ELEMENT_NODE,
+  );
+  const textChildren = childNodes.filter(
+    (child) => child.nodeType === Node.TEXT_NODE,
+  );
+
+  if (elementChildren.length === 0 && textChildren.length === 1) {
+    textChildren[0].nodeValue = normalized;
+    return;
+  }
+
+  if (elementChildren.length === 0 && textChildren.length === 0) {
+    node.appendChild(document.createTextNode(normalized));
+    return;
+  }
+
+  if (elementChildren.length === 0) {
+    node.textContent = normalized;
+    return;
+  }
+
+  // Nested icons/spans: update a direct non-empty text node only — never wipe
+  // the subtree (that orphans React HostText and crashes the editor).
+  const directText = childNodes.find(
+    (child) =>
+      child.nodeType === Node.TEXT_NODE &&
+      String(child.nodeValue || "").replace(/\s+/g, " ").trim(),
+  );
+  if (directText) {
+    directText.nodeValue = normalized;
+  }
 }
 
 function applyTextContentToNode(node: HTMLElement, value: string) {
@@ -2115,6 +2170,19 @@ export function applyVisualAttributesToDom(
           key === "data-visual-edit-type" ||
           key === "data-visual-type"
         ) {
+          return;
+        }
+
+        // Booking mounts are widgets, not page sections. Strip legacy
+        // data-bizuply-block so delete/selection never treat them as sections.
+        if (
+          key === "data-bizuply-block" &&
+          String(value) === "booking" &&
+          (node.getAttribute("data-bizuply-booking-mount") === "true" ||
+            node.getAttribute("data-bizuply-widget") === "booking") &&
+          String(node.tagName || "").toLowerCase() !== "section"
+        ) {
+          node.removeAttribute("data-bizuply-block");
           return;
         }
 
@@ -3671,68 +3739,66 @@ export function collectVisualContentFromDom(
         : (node.closest("a") as HTMLAnchorElement | null) ||
           (node.querySelector("a") as HTMLAnchorElement | null);
 
-    if (linkNode) {
-      const domHref = String(
-        linkNode.getAttribute("href") ||
-          node.getAttribute("data-visual-link-href") ||
-          node.getAttribute("data-link-url") ||
-          "",
-      );
+    const domHref = String(
+      (linkNode instanceof HTMLAnchorElement
+        ? linkNode.getAttribute("href")
+        : "") ||
+        node.getAttribute("data-visual-link-href") ||
+        node.getAttribute("data-link-url") ||
+        node.getAttribute("data-href") ||
+        node.getAttribute("data-bizuply-public-href") ||
+        "",
+    ).trim();
 
-      const target = String(
-        linkNode.getAttribute("target") ||
-          node.getAttribute("data-visual-link-target") ||
-          "_self",
-      );
+    const domTarget = String(
+      (linkNode instanceof HTMLAnchorElement
+        ? linkNode.getAttribute("target")
+        : "") ||
+        node.getAttribute("data-visual-link-target") ||
+        node.getAttribute("data-bizuply-public-target") ||
+        "_self",
+    ).trim();
 
-      const stateHref = String(currentValue.href || "").trim();
-      const finalHref =
-        stateHref && stateHref !== "#" ? stateHref : domHref;
+    const stateHref = String(currentValue.href || "").trim();
+    // Live DOM link wins when present — publish must keep the link the user set.
+    const finalHref =
+      domHref && domHref !== "#"
+        ? domHref
+        : stateHref && stateHref !== "#"
+          ? stateHref
+          : domHref || stateHref;
 
-      if (finalHref || currentValue.href !== undefined) {
-        nextValue.href = finalHref;
-        nextValue.target =
-          currentValue.target || (target === "_blank" ? "_blank" : "_self");
-        nextValue.rel =
-          currentValue.rel ||
-          (nextValue.target === "_blank" ? "noopener noreferrer" : "");
-      }
+    if (finalHref || currentValue.href !== undefined) {
+      nextValue.href = finalHref;
+      nextValue.target =
+        (domTarget === "_blank" ? "_blank" : "") ||
+        currentValue.target ||
+        (finalHref.startsWith("http://") || finalHref.startsWith("https://")
+          ? "_blank"
+          : "_self");
+      nextValue.rel =
+        currentValue.rel ||
+        (nextValue.target === "_blank" ? "noopener noreferrer" : "");
+    }
 
-      if (currentValue.phoneNumber !== undefined) {
-        nextValue.phoneNumber = currentValue.phoneNumber;
-      }
+    if (currentValue.phoneNumber !== undefined) {
+      nextValue.phoneNumber = currentValue.phoneNumber;
+    }
 
-      if (currentValue.phone !== undefined) {
-        nextValue.phone = currentValue.phone;
-      }
+    if (currentValue.phone !== undefined) {
+      nextValue.phone = currentValue.phone;
+    }
 
-      if (currentValue.email !== undefined) {
-        nextValue.email = currentValue.email;
-      }
+    if (currentValue.email !== undefined) {
+      nextValue.email = currentValue.email;
+    }
 
-      if (currentValue.subject !== undefined) {
-        nextValue.subject = currentValue.subject;
-      }
+    if (currentValue.subject !== undefined) {
+      nextValue.subject = currentValue.subject;
+    }
 
-      if (currentValue.message !== undefined) {
-        nextValue.message = currentValue.message;
-      }
-    } else if (String(currentValue.href || "").trim()) {
-      nextValue.href = String(currentValue.href || "").trim();
-      nextValue.target = currentValue.target || "_self";
-      nextValue.rel = currentValue.rel || "";
-      if (currentValue.phoneNumber !== undefined) {
-        nextValue.phoneNumber = currentValue.phoneNumber;
-      }
-      if (currentValue.email !== undefined) {
-        nextValue.email = currentValue.email;
-      }
-      if (currentValue.subject !== undefined) {
-        nextValue.subject = currentValue.subject;
-      }
-      if (currentValue.message !== undefined) {
-        nextValue.message = currentValue.message;
-      }
+    if (currentValue.message !== undefined) {
+      nextValue.message = currentValue.message;
     }
 
     if (Object.keys(nextValue).length > 0) {

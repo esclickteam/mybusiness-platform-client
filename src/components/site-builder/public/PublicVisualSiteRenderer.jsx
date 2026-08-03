@@ -28,6 +28,7 @@ import { mergeCountdownSettings } from "./countdownPublicUtils";
 import { mountCountdownWidgets } from "../../site-plugins/countdown/mountCountdownWidgets";
 import { mountBookingWidgets } from "../../site-plugins/booking/mountBookingWidgets";
 import { mountPublicLeadForms } from "./mountPublicLeadForms";
+import { mountPublicPortalWidgets } from "./mountPublicPortalWidgets";
 import {
   applyAllVisualDataToDom,
   applyVisualResponsiveToDom,
@@ -454,10 +455,12 @@ function pickBestVisualCandidate(candidates) {
     })
     .sort(
       (left, right) =>
+        // Newest publish wins across every template. Richness is only a
+        // tie-breaker so an older fatter snapshot cannot hide the latest edit.
         right.libraryBoost - left.libraryBoost ||
-        right.richness - left.richness ||
         right.timestamp - left.timestamp ||
-        right.priority - left.priority,
+        right.priority - left.priority ||
+        right.richness - left.richness,
     );
 
   return asPlainObject(validCandidates[0]?.value);
@@ -619,13 +622,13 @@ function readTemplateData(site, activePage, explicitData) {
   const pageProjectData = asPlainObject(page.projectData);
   const sitePayload = asPlainObject(source.visualEditorPayload);
   const pagePayload = asPlainObject(page.visualEditorPayload);
-  const preferPageScoped =
-    !isHomeActivePage(page) && isLibraryOrBlankPage(page);
-
   /*
-    עמודי ספרייה/ריקים שומרים visual data משלהם. הנתונים ברמת האתר הם
-    בדרך כלל של דף הבית ולכן "עשירים" יותר — אסור שידרסו את העמוד הפעיל.
+    Any non-home page (library/blank OR regular template pages) must use its
+    own visual snapshot. Site-level data is usually the home page and must
+    never win just because it has more keys.
   */
+  const preferPageScoped = !isHomeActivePage(page);
+
   const pageCandidates = [
     {
       value: pagePayload.data,
@@ -696,10 +699,7 @@ function readTemplateData(site, activePage, explicitData) {
   ];
 
   if (preferPageScoped) {
-    if (
-      hasMeaningfulVisualData(explicit) &&
-      isLibraryOrBlankVisualData(explicit)
-    ) {
+    if (hasMeaningfulVisualData(explicit)) {
       return explicit;
     }
 
@@ -718,6 +718,7 @@ function readTemplateData(site, activePage, explicitData) {
     /*
       Library pages must never fall back to richer home/site data — that leaves
       /gallery-four with an empty insert host after template bodies are hidden.
+      Regular non-home pages without their own data also stay page-scoped.
     */
     const anyPageData = pageCandidates.find((candidate) => {
       const value = asPlainObject(candidate.value);
@@ -731,10 +732,15 @@ function readTemplateData(site, activePage, explicitData) {
       return explicit;
     }
 
-    return {
-      __blankVisualPage: true,
-      __libraryPage: true,
-    };
+    if (isLibraryOrBlankPage(page)) {
+      return {
+        __blankVisualPage: true,
+        __libraryPage: true,
+      };
+    }
+
+    // Non-home template page with no page data: newest site-level as fallback.
+    return pickBestVisualCandidate(siteCandidates);
   }
 
   if (hasMeaningfulVisualData(explicit)) {
@@ -742,12 +748,12 @@ function readTemplateData(site, activePage, explicitData) {
   }
 
   /*
-    /public/by-host כבר מנרמל site.data / site.projectData למקור האמת העדכני.
-    בוחרים מועמד עם תוכן ממשי (לא מפות ריקות), ואז לפי עדכניות/עדיפות.
+    Home page: newest meaningful snapshot wins across site/page copies so the
+    latest publish is what every template renders publicly.
   */
   return pickBestVisualCandidate([
-    ...siteCandidates,
     ...pageCandidates,
+    ...siteCandidates,
   ]);
 }
 
@@ -1800,7 +1806,7 @@ function applyPublicVisualData(root, visualData, pathname, site) {
         '[data-bizuply-booking-mount="true"]',
         '[data-section-kind="booking"]',
         '[data-template-section-type="booking"]',
-        '[data-bizuply-block="booking"]',
+        'section[data-bizuply-block="booking"]',
         '[data-bizuply-widget="booking-calendar"]',
       ].join(", "),
     ),
@@ -1822,6 +1828,14 @@ function applyPublicVisualData(root, visualData, pathname, site) {
       typeof window !== "undefined" ? safeString(window.location.host) : "",
     pagePath: normalizePublicPath(pathname || getCurrentPathname()),
   });
+
+  if (enabledPlugins.includes("client-portal")) {
+    mountPublicPortalWidgets(root, {
+      site,
+      host:
+        typeof window !== "undefined" ? safeString(window.location.host) : "",
+    });
+  }
 }
 
 function getFallbackPageId(activePage, pathname) {
@@ -2460,9 +2474,33 @@ export default function PublicVisualSiteRenderer({
       }
 
       /*
+        Capture-phase: saved button/link overrides must win over template
+        React onClick handlers (publish keeps the configured link).
+      */
+      const link = resolvePublicLinkFromEventTarget(
+        root,
+        event.target,
+        visualData,
+      );
+
+      if (link?.href && link.href !== "#") {
+        // Real <a href> — let the browser navigate naturally.
+        if (link.isNativeAnchor && link.node instanceof HTMLAnchorElement) {
+          return;
+        }
+
+        event.preventDefault();
+        event.stopPropagation();
+        if (typeof event.stopImmediatePropagation === "function") {
+          event.stopImmediatePropagation();
+        }
+        navigatePublicLink(link.href, link.target);
+        return;
+      }
+
+      /*
         Published HTML snapshots: buttons stamped with data-bizuply-page-id
-        (no React onClick). Template-fallback React trees already navigate via
-        onPageChange — skip them to avoid double navigation.
+        (no React onClick).
       */
       const target = event.target;
       if (
@@ -2478,26 +2516,9 @@ export default function PublicVisualSiteRenderer({
             event.preventDefault();
             event.stopPropagation();
             handleTemplatePageChange(pageAttr);
-            return;
           }
         }
       }
-
-      const link = resolvePublicLinkFromEventTarget(
-        root,
-        event.target,
-        visualData,
-      );
-
-      if (!link?.href || link.href === "#") return;
-
-      if (link.isNativeAnchor) {
-        return;
-      }
-
-      event.preventDefault();
-      event.stopPropagation();
-      navigatePublicLink(link.href, link.target);
     };
 
     const handleKeyDown = (event) => {
@@ -2518,11 +2539,11 @@ export default function PublicVisualSiteRenderer({
       navigatePublicLink(link.href, link.target);
     };
 
-    // Capture phase so nested menu links navigate even if a template
-    // onClick preventDefault + SPA normalizePage would otherwise swallow them.
+    // Capture phase so nested menu links / saved button hrefs win over
+    // template React onClick handlers.
     root.addEventListener("click", handleSubmenuNavigate, true);
-    root.addEventListener("click", handleClick);
-    root.addEventListener("keydown", handleKeyDown);
+    root.addEventListener("click", handleClick, true);
+    root.addEventListener("keydown", handleKeyDown, true);
 
     /*
       Re-detect device mode + re-apply per-element responsive overrides when
@@ -2578,8 +2599,8 @@ export default function PublicVisualSiteRenderer({
       window.removeEventListener("resize", handleViewportChange);
       window.removeEventListener("orientationchange", handleViewportChange);
       root.removeEventListener("click", handleSubmenuNavigate, true);
-      root.removeEventListener("click", handleClick);
-      root.removeEventListener("keydown", handleKeyDown);
+      root.removeEventListener("click", handleClick, true);
+      root.removeEventListener("keydown", handleKeyDown, true);
     };
   }, [
     activePage,

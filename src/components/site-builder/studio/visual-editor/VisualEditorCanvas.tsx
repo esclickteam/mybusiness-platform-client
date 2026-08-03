@@ -24,6 +24,10 @@ import {
   mountBookingWidgets,
   pageHasBookingWidget,
 } from "../../../site-plugins/booking/mountBookingWidgets";
+import {
+  mountPublicPortalWidgets,
+  pageHasPortalWidget,
+} from "../../public/mountPublicPortalWidgets";
 import { mergeCountdownSettings } from "../../public/countdownPublicUtils";
 import {
   applyCustomCodeToDocument,
@@ -538,19 +542,39 @@ function insertPlainTextAtSelection(text: string) {
   if (!selection || selection.rangeCount === 0) return false;
 
   const normalized = normalizeText(text);
-  if (!normalized) return false;
+  // Allow inserting spaces (normalized " " must not be treated as empty).
+  if (normalized === "") return false;
 
   const range = selection.getRangeAt(0);
   range.deleteContents();
 
+  // Fast path: keep spaces/plain text as a single text node (critical for buttons).
+  if (!normalized.includes("\n")) {
+    const textNode = document.createTextNode(normalized);
+    range.insertNode(textNode);
+    range.setStartAfter(textNode);
+    range.collapse(true);
+    selection.removeAllRanges();
+    selection.addRange(range);
+    return true;
+  }
+
   const parts = normalized.split("\n");
+  let lastInserted: Node | null = null;
   parts.forEach((part, index) => {
-    if (part) {
-      range.insertNode(document.createTextNode(part));
+    // Keep intentional spaces; only skip truly empty segments between newlines.
+    if (part.length > 0) {
+      lastInserted = document.createTextNode(part);
+      range.insertNode(lastInserted);
+      range.setStartAfter(lastInserted);
+      range.collapse(true);
     }
 
     if (index < parts.length - 1) {
-      range.insertNode(document.createElement("br"));
+      lastInserted = document.createElement("br");
+      range.insertNode(lastInserted);
+      range.setStartAfter(lastInserted);
+      range.collapse(true);
     }
   });
 
@@ -861,6 +885,29 @@ export default function VisualEditorCanvas({
       });
     },
     [editorAny.businessId],
+  );
+
+  const mountEditorPortalPreview = useCallback(
+    (root: HTMLElement | null, pluginEnabled = false) => {
+      if (!root || !pageHasPortalWidget(root)) return;
+      // Allow remount after visual DOM re-apply.
+      root
+        .querySelectorAll("[data-bizuply-portal-mounted]")
+        .forEach((node) => {
+          delete (node as HTMLElement).dataset.bizuplyPortalMounted;
+        });
+      mountPublicPortalWidgets(root, {
+        site: {
+          _id: siteId || undefined,
+          businessId: editorAny.businessId || undefined,
+          name: editorAny.siteName || editorAny.businessName || "",
+          enabledPlugins: pluginEnabled ? ["client-portal"] : [],
+        },
+        preview: true,
+        editorMode: true,
+      });
+    },
+    [editorAny.businessId, editorAny.businessName, editorAny.siteName, siteId],
   );
 
   const TemplateComponent = useMemo(() => {
@@ -1262,6 +1309,8 @@ export default function VisualEditorCanvas({
       node.style.webkitUserSelect = "text";
       node.style.setProperty("user-select", "text", "important");
       node.style.setProperty("-webkit-user-select", "text", "important");
+      // Keep typed spaces visible (override header/flow nowrap while editing).
+      node.style.setProperty("white-space", "pre-wrap", "important");
 
       setInlineEditingElementId(elementId);
 
@@ -1326,6 +1375,7 @@ export default function VisualEditorCanvas({
     syncEditorMediaPreviewsInDom(root);
     disableNativeMediaDrag(root);
     mountEditorCountdownPreview(root);
+    mountEditorPortalPreview(root, true);
     window.requestAnimationFrame(refreshSelectionBox);
   }, [
     domPatchEpoch,
@@ -1334,6 +1384,7 @@ export default function VisualEditorCanvas({
     editorAny.isInlineEditing,
     inlineEditingElementId,
     mountEditorCountdownPreview,
+    mountEditorPortalPreview,
     refreshSelectionBox,
   ]);
 
@@ -1382,6 +1433,7 @@ export default function VisualEditorCanvas({
         const hasWidget = pageHasCountdownWidget(root);
         const pluginEnabled = plugins.enabledPlugins.includes("countdown");
         const bookingEnabled = plugins.enabledPlugins.includes("booking");
+        const portalEnabled = plugins.enabledPlugins.includes("client-portal");
 
         if (!hasWidget && !pluginEnabled) {
           countdownEditorMountRef.current.enabled = false;
@@ -1404,6 +1456,7 @@ export default function VisualEditorCanvas({
 
         if (!cancelled) {
           mountEditorBookingPreview(root, bookingEnabled);
+          mountEditorPortalPreview(root, portalEnabled);
         }
 
       } catch {
@@ -1417,6 +1470,7 @@ export default function VisualEditorCanvas({
         }
         if (!cancelled) {
           mountEditorBookingPreview(root, false);
+          mountEditorPortalPreview(root, true);
         }
       }
     })();
@@ -1434,6 +1488,7 @@ export default function VisualEditorCanvas({
     editorAny.data,
     mountEditorCountdownPreview,
     mountEditorBookingPreview,
+    mountEditorPortalPreview,
   ]);
 
   useEffect(() => {
@@ -1722,6 +1777,31 @@ export default function VisualEditorCanvas({
       if (event.key === "Escape") {
         event.preventDefault();
         finishInlineEdit(false);
+        return;
+      }
+
+      /*
+        Space on <button> / role=button activates the control by default.
+        Also: execCommand("insertText") often returns true on buttons without
+        actually inserting — always write a real text node space ourselves.
+      */
+      if (event.key === " " || event.code === "Space") {
+        event.preventDefault();
+        event.stopPropagation();
+        if (!insertPlainTextAtSelection(" ")) {
+          const sel = window.getSelection();
+          if (sel && sel.rangeCount > 0) {
+            const range = sel.getRangeAt(0);
+            range.deleteContents();
+            const spaceNode = document.createTextNode(" ");
+            range.insertNode(spaceNode);
+            range.setStartAfter(spaceNode);
+            range.collapse(true);
+            sel.removeAllRanges();
+            sel.addRange(range);
+          }
+        }
+        window.requestAnimationFrame(refreshSelectionBox);
         return;
       }
 
@@ -2445,19 +2525,10 @@ export default function VisualEditorCanvas({
             outline-offset: 4px !important;
           }
 
-          /* Keep single-line header/nav labels from reflowing siblings while typing */
-          [data-visual-template-canvas="true"] [data-visual-inline-editing="true"]:not(header *):not([data-section-kind="header"] *):not([data-visual-flow-lock="true"] *),
-          [data-visual-template-canvas="true"] [contenteditable="true"]:not(header *):not([data-section-kind="header"] *):not([data-visual-flow-lock="true"] *) {
+          /* Preserve typed spaces while editing (including buttons / header CTAs). */
+          [data-visual-template-canvas="true"] [data-visual-inline-editing="true"],
+          [data-visual-template-canvas="true"] [contenteditable="true"] {
             white-space: pre-wrap !important;
-          }
-
-          [data-visual-template-canvas="true"] header [data-visual-inline-editing="true"],
-          [data-visual-template-canvas="true"] header [contenteditable="true"],
-          [data-visual-template-canvas="true"] [data-section-kind="header"] [data-visual-inline-editing="true"],
-          [data-visual-template-canvas="true"] [data-section-kind="header"] [contenteditable="true"],
-          [data-visual-template-canvas="true"] [data-visual-flow-lock="true"] [data-visual-inline-editing="true"],
-          [data-visual-template-canvas="true"] [data-visual-flow-lock="true"] [contenteditable="true"] {
-            white-space: nowrap !important;
           }
 
           [data-visual-template-canvas="true"] [data-visual-inline-editing="true"] *,

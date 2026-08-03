@@ -230,19 +230,16 @@ export default function VelmoraShop({
   isLiveCatalog = false,
   catalogLoading = false,
 }: Props) {
-  // Match shared store templates: while resolving → empty; live catalog → only
-  // merchant products; preview/empty store → demos. Never override a live resolve
-  // with local FALLBACK when the parent already decided the catalog.
-  const products = catalogLoading
-    ? []
-    : Array.isArray(productsProp)
-      ? productsProp
-      : isLiveCatalog
-        ? []
-        : PREVIEW_DEMO_PRODUCTS;
-  const categories = catalogLoading
-    ? ["הכל"]
-    : Array.isArray(categoriesProp) && categoriesProp.length > 0
+  // Trust the parent catalog. Parent keeps demos while loading and swaps to
+  // live products when ready — local empty override remounted the grid and
+  // raced visual DOM text paint (removeChild crash).
+  const products = Array.isArray(productsProp)
+    ? productsProp
+    : isLiveCatalog
+      ? []
+      : PREVIEW_DEMO_PRODUCTS;
+  const categories =
+    Array.isArray(categoriesProp) && categoriesProp.length > 0
       ? categoriesProp
       : isLiveCatalog
         ? ["הכל"]

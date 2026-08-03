@@ -19,6 +19,7 @@ import SitePluginStore from "../components/website/site-management/SitePluginSto
 import SiteBookingPanel from "../components/website/site-management/SiteBookingPanel";
 import SitePaymentsPanel from "../components/website/site-management/SitePaymentsPanel";
 import SiteMorningInvoicePanel from "../components/website/site-management/SiteMorningInvoicePanel";
+import SitePortalMembersPanel from "../components/website/site-management/SitePortalMembersPanel";
 import StoreProductsManager from "../components/store/StoreProductsManager";
 import BizuplyLoader from "../components/ui/BizuplyLoader";
 import { PLUGIN_PANEL_MAP } from "../components/website/site-management/plugins/pluginPanels";
@@ -33,7 +34,13 @@ import {
   type SitePanelSection,
 } from "../data/sitePluginNav";
 
-const CORE_PLUGIN_KEYS = new Set(["store", "booking", "payments", "invoices"]);
+const CORE_PLUGIN_KEYS = new Set([
+  "store",
+  "booking",
+  "payments",
+  "invoices",
+  "client-portal",
+]);
 
 export default function SiteManagementPanelPage() {
   const { businessId = "", siteId = "" } = useParams();
@@ -114,6 +121,7 @@ export default function SiteManagementPanelPage() {
   const enabledSet = useMemo(() => new Set(enabledPlugins), [enabledPlugins]);
 
   const navSections = useMemo(() => {
+    // Portal tab appears only after installing the "client-portal" plugin.
     const items: SitePanelSection[] = ["overview", "plugins", "payments"];
 
     enabledPlugins.forEach((key) => {
@@ -432,6 +440,10 @@ export default function SiteManagementPanelPage() {
             saving={savingPlugins}
             onToggle={handleTogglePlugin}
           />
+        ) : null}
+
+        {activeSection === "portal" && enabledSet.has("client-portal") ? (
+          <SitePortalMembersPanel siteId={siteId} publicUrl={publicUrl} />
         ) : null}
 
         {activeSection === "store" && enabledSet.has("store") ? (

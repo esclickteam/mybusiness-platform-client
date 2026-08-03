@@ -18,6 +18,7 @@ import {
   type VisualSectionTheme,
 } from "./sectionTheme";
 import BookingWidget from "../../../../site-plugins/booking/BookingWidget";
+import PortalWidgetPreview from "./PortalWidgetPreview";
 
 const CANVAS_WIDTH = 1100;
 
@@ -41,6 +42,20 @@ function isBookingMount(node: VisualLibraryNodeTemplate) {
     attrs["data-bizuply-booking-mount"] === "true" ||
     attrs["data-bizuply-widget"] === "booking"
   );
+}
+
+function portalMountKind(node: VisualLibraryNodeTemplate): string {
+  const attrs = node.attributes || {};
+  const kind = String(
+    attrs["data-bizuply-portal-kind"] || attrs["data-bizuply-widget"] || "",
+  );
+  if (
+    attrs["data-bizuply-portal-mount"] === "true" ||
+    kind.startsWith("portal-")
+  ) {
+    return kind || "portal-login";
+  }
+  return "";
 }
 
 function nodeLayoutStyle(
@@ -143,6 +158,44 @@ function NodePreview({
     return (
       <div style={{ ...style, overflow: "hidden", padding: 0 }}>
         <BookingWidget preview editorMode variant={variant} theme={theme} />
+      </div>
+    );
+  }
+
+  const portalKind = portalMountKind(node);
+  if (portalKind) {
+    const attrs = node.attributes || {};
+    const nodeStyle = (node.style || {}) as Record<string, string>;
+    return (
+      <div style={{ ...style, overflow: "hidden", padding: 0 }}>
+        <PortalWidgetPreview
+          kind={portalKind}
+          accent={
+            attrToThemeString(attrs["data-bizuply-portal-accent"]) ||
+            theme?.accent ||
+            "#0284c7"
+          }
+          ink={
+            attrToThemeString(attrs["data-bizuply-portal-ink"]) ||
+            theme?.text ||
+            "#0f172a"
+          }
+          muted={
+            attrToThemeString(attrs["data-bizuply-portal-muted"]) ||
+            theme?.muted ||
+            "#64748b"
+          }
+          line={
+            attrToThemeString(attrs["data-bizuply-portal-line"]) ||
+            nodeStyle.borderColor ||
+            "#e2e8f0"
+          }
+          soft={
+            attrToThemeString(attrs["data-bizuply-portal-soft"]) ||
+            theme?.surface ||
+            "#f8fafc"
+          }
+        />
       </div>
     );
   }

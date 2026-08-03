@@ -2709,10 +2709,14 @@ function extractVisualDataFromPayload(value: unknown) {
   );
   const projectData = asPlainObject(payload.projectData);
 
+  /*
+    Same priority as the server save path: the latest editor snapshot wins.
+    Never pick a fatter/older copy over the first meaningful revision.
+  */
   const candidates = [
+    asPlainObject(visualEditorPayload.data),
     asPlainObject(payload.data),
     asPlainObject(payload.templateData),
-    asPlainObject(visualEditorPayload.data),
     asPlainObject(visualEditorPayload.templateData),
     asPlainObject(projectData.data),
     asPlainObject(projectData.templateData),
@@ -5837,6 +5841,21 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       selectedTemplateSeed?.id ||
       "";
 
+    const isPortalLibraryPage = pageTemplate.category === "portal";
+    const portalConfig = createDefaultClientPortalConfig();
+    if (isPortalLibraryPage) {
+      portalConfig.enabled = true;
+      const slug = String(pageTemplate.slugSuggestion || "").toLowerCase();
+      const keywords = Array.isArray(pageTemplate.keywords)
+        ? pageTemplate.keywords.map(String)
+        : [];
+      const isPublicAuthPage =
+        /^(login|register)(-|$)/.test(slug) ||
+        keywords.includes("portal-login") ||
+        keywords.includes("portal-register");
+      portalConfig.loginRequired = !isPublicAuthPage;
+    }
+
     const nextPage: StudioSitePageWithPortal = {
       id,
       title,
@@ -5864,7 +5883,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       visualSnapshotVersion: 5,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
-      clientPortal: createDefaultClientPortalConfig(),
+      clientPortal: portalConfig,
     } as StudioSitePageWithPortal;
 
     setPages((previousPages) => [...previousPages, nextPage]);

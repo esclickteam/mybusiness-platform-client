@@ -62,6 +62,13 @@ export const PLUGIN_EDITOR_ACTIONS: Record<string, PluginEditorAction> = {
     label: "עמוד מוצרים / חנות",
     description: "מתסנכרן אוטומטית עם מוצרי החנות",
   },
+  "client-portal": {
+    pluginKey: "client-portal",
+    kind: "page",
+    pageTemplateId: "page-portal-01",
+    label: "עמוד התחברות לאזור אישי",
+    description: "טופס התחברות + עמודי הזמנות/עגלה/חשבון",
+  },
   "testimonials-carousel": {
     pluginKey: "testimonials-carousel",
     kind: "section",

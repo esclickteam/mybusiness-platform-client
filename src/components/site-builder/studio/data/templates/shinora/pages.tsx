@@ -1500,10 +1500,10 @@ function ProductsSection({
     enabled: true,
   });
 
-  // Hold empty while fetching so demo cards never paint then swap to live.
-  const displayProducts = storeLoading
-    ? []
-    : products.length > 0
+  // Keep template demos while fetching — empty arrays remount cards under the
+  // visual editor text painter and can crash with removeChild NotFoundError.
+  const displayProducts =
+    !storeLoading && products.length > 0
       ? products.map((product) => ({
           name: product.name,
           price: `₪${Math.round(product.price)}`,

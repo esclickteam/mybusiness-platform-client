@@ -1880,12 +1880,9 @@ export function NovastraPages({
   });
   const mergedData = useMemo(() => {
     const base = mergeTemplateData(data);
-    // Avoid curated→live flash: hold empty product cards while the shop resolves.
-    if (storeLoading) {
-      return { ...base, products: [] };
-    }
-    // Demo/curated defaults until the live store has real products.
-    if (!fromPlugin || storeProducts.length === 0) return base;
+    // Keep curated demos while the shop resolves. Clearing to [] remounts grids
+    // mid visual-DOM text paint and can crash the editor (removeChild / HostText).
+    if (storeLoading || !fromPlugin || storeProducts.length === 0) return base;
     return {
       ...base,
       products: storeProducts.map((product) => ({

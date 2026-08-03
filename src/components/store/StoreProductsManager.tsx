@@ -234,7 +234,7 @@ type StoreProductsManagerProps = {
 const emptySettings: StoreSettingsData = {
   storeName: "",
   storeDescription: "",
-  currency: "USD",
+  currency: "ILS",
   isStoreActive: true,
   showPrices: true,
   allowCart: true,
@@ -290,7 +290,7 @@ const emptyProductForm = {
   description: "",
   price: "",
   salePrice: "",
-  currency: "USD",
+  currency: "ILS",
   categoryId: "",
   sku: "",
   stock: "0",
@@ -335,17 +335,18 @@ const emptyCouponForm = {
   isActive: true,
 };
 
-function formatMoney(value?: number | string | null, currency = "USD") {
+function formatMoney(value?: number | string | null, currency = "ILS") {
   const amount = Number(value || 0);
+  const code = String(currency || "ILS").trim().toUpperCase() || "ILS";
 
   try {
-    return new Intl.NumberFormat("en-US", {
+    return new Intl.NumberFormat("he-IL", {
       style: "currency",
-      currency,
+      currency: code,
       maximumFractionDigits: 2,
     }).format(amount);
   } catch {
-    return `${amount} ${currency}`;
+    return `${amount} ${code}`;
   }
 }
 
@@ -654,7 +655,10 @@ export default function StoreProductsManager({
   }, [businessId, loadStoreData, seedingDemo, showMessage]);
 
   const resetProductForm = () => {
-    setProductForm(emptyProductForm);
+    setProductForm({
+      ...emptyProductForm,
+      currency: settings.currency || "ILS",
+    });
     setProductImages([]);
     setEditingProductId(null);
   };
@@ -805,6 +809,13 @@ export default function StoreProductsManager({
         )
       );
       formData.set("status", String(productForm.status || "active"));
+      // Always use the store currency from settings (never per-product USD default).
+      formData.set(
+        "currency",
+        String(settings.currency || productForm.currency || "ILS")
+          .trim()
+          .toUpperCase() || "ILS"
+      );
       formData.set(
         "trackStock",
         productForm.trackStock === false ? "false" : "true"
@@ -895,7 +906,7 @@ export default function StoreProductsManager({
       price: String(product.price ?? ""),
       salePrice:
         product.salePrice === null ? "" : String(product.salePrice ?? ""),
-      currency: product.currency || settings.currency || "USD",
+      currency: settings.currency || product.currency || "ILS",
       categoryId,
       sku: product.sku || "",
       stock: String(product.stock ?? 0),
@@ -1875,14 +1886,17 @@ function ProductsView({
                     <div>
                       {product.salePrice ? (
                         <p className="text-xs font-black text-slate-400 line-through">
-                          {formatMoney(product.price, product.currency)}
+                          {formatMoney(
+                            product.price,
+                            settings.currency || product.currency || "ILS"
+                          )}
                         </p>
                       ) : null}
 
                       <p className="text-2xl font-black text-violet-700">
                         {formatMoney(
                           product.salePrice || product.price,
-                          product.currency || settings.currency
+                          settings.currency || product.currency || "ILS"
                         )}
                       </p>
                     </div>
@@ -2847,7 +2861,7 @@ function SettingsView({
             <div>
               <FieldLabel>מטבע</FieldLabel>
               <SelectInput
-                value={settings.currency || "USD"}
+                value={settings.currency || "ILS"}
                 onChange={(e) =>
                   setSettings((prev) => ({ ...prev, currency: e.target.value }))
                 }
