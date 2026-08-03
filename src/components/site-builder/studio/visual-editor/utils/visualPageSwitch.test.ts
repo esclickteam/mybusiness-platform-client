@@ -27,7 +27,7 @@ describe("buildVisualPageSwitchSession", () => {
 
     expect(session.__activePageId).toBe("register");
     expect(session.__siteSlug).toBe("lala");
-    expect(session.__content).toBeUndefined();
+    expect((session as Record<string, any>).__content).toBeUndefined();
     expect(session[VISUAL_SHARED_CHROME_KEY]).toEqual({
       __content: {
         "chrome.header.button.cta": { text: "התחברות", href: "/login" },

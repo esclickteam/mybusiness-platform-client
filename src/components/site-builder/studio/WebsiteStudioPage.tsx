@@ -4974,6 +4974,14 @@ export default function WebsiteStudioPage({
 
   const [serverVisualTemplateData, setServerVisualTemplateData] =
     useState<Record<string, any> | null>(null);
+  /*
+    Single global source of truth for header/footer (site.globalSections.chrome),
+    resolved by the server and shared across every page.
+  */
+  const [serverGlobalChrome, setServerGlobalChrome] = useState<Record<
+    string,
+    any
+  > | null>(null);
   const [serverVisualTemplateLoaded, setServerVisualTemplateLoaded] =
     useState(false);
   const [siteCustomCode, setSiteCustomCode] = useState<Record<string, any>>(
@@ -5092,6 +5100,13 @@ export default function WebsiteStudioPage({
     const sessionChrome = readSharedChrome(asPlainObject(visualSessionData));
     if (scoreChrome(sessionChrome) > 0) return sessionChrome;
 
+    /*
+      Single global source of truth (site.globalSections.chrome). Used whenever
+      there is no in-progress session edit, so every page loads the same chrome.
+    */
+    const globalChrome = asPlainObject(serverGlobalChrome);
+    if (scoreChrome(globalChrome) > 0) return globalChrome;
+
     const candidates = [
       ...pages.flatMap((page) => [
         (page as any)?.data,
@@ -5115,7 +5130,7 @@ export default function WebsiteStudioPage({
     }
 
     return best;
-  }, [pages, serverVisualTemplateData, visualSessionData]);
+  }, [pages, serverGlobalChrome, serverVisualTemplateData, visualSessionData]);
 
   useEffect(() => {
     if (!isVisualReactTemplate || !selectedTemplateRenderer) return;
@@ -5322,6 +5337,14 @@ export default function WebsiteStudioPage({
         } else {
           setServerVisualTemplateData(null);
         }
+
+        // Header/footer live in one global source. Prefer it over any per-page copy.
+        const globalChrome = readSharedChrome(
+          asPlainObject((data.site as any)?.globalSections).chrome,
+        );
+        setServerGlobalChrome(
+          Object.keys(globalChrome).length ? globalChrome : null,
+        );
 
         // Hydrate studio pages from saved payloads, but never drop template pages
         // (server often persists only the active page — e.g. home only).
@@ -5728,6 +5751,13 @@ export default function WebsiteStudioPage({
         );
         setPages(serverPages);
         setActivePageId(nextActivePageId);
+
+        const globalChrome = readSharedChrome(
+          asPlainObject((data.site as any)?.globalSections).chrome,
+        );
+        setServerGlobalChrome(
+          Object.keys(globalChrome).length ? globalChrome : null,
+        );
 
         const pageToLoad =
           serverPages.find((page) => page.id === nextActivePageId) ||
