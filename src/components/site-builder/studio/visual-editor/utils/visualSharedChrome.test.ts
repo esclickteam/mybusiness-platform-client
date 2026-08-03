@@ -186,11 +186,32 @@ describe("shared chrome round trip", () => {
     });
   });
 
-  it("removes shared chrome when the edit is cleared on a page that renders it", () => {
+  it("keeps shared chrome when a partial snapshot omits the header key", () => {
     const root = buildPageRoot("home", "home.header.button.a.a-1");
 
     const saved = writeSharedChromeIntoVisualData(root, {
       __content: {},
+      __sharedChrome: {
+        __content: {
+          "chrome.header.button.a.a-1": { text: "התחברות", href: "/login" },
+        },
+      },
+    });
+
+    expect(saved.__sharedChrome).toEqual({
+      __content: {
+        "chrome.header.button.a.a-1": { text: "התחברות", href: "/login" },
+      },
+    });
+  });
+
+  it("removes shared chrome when the edit is explicitly cleared", () => {
+    const root = buildPageRoot("home", "home.header.button.a.a-1");
+
+    const saved = writeSharedChromeIntoVisualData(root, {
+      __content: {
+        "home.header.button.a.a-1": { text: "", href: "" },
+      },
       __sharedChrome: {
         __content: {
           "chrome.header.button.a.a-1": { text: "ישן" },
@@ -199,5 +220,35 @@ describe("shared chrome round trip", () => {
     });
 
     expect(saved.__sharedChrome).toEqual({});
+  });
+
+  it("lets shared chrome win after stale page-level chrome is stripped", () => {
+    const aboutRoot = buildPageRoot("about", "about.header.button.a.a-1");
+
+    const staleAboutPage = {
+      __content: {
+        "about.header.button.a.a-1": { text: "תאמו ניסיון", href: "/booking" },
+        "about.hero.text.h1.h1-1": { text: "אודות" },
+      },
+      __sharedChrome: {
+        __content: {
+          "chrome.header.button.a.a-1": {
+            text: "התחברות",
+            href: "/login",
+          },
+        },
+      },
+    };
+
+    const stripped = stripChromeFromVisualData(staleAboutPage);
+    const expanded = expandSharedChromeIntoVisualData(aboutRoot, {
+      ...stripped,
+      __sharedChrome: staleAboutPage.__sharedChrome,
+    });
+
+    expect(expanded.__content["about.header.button.a.a-1"]).toEqual({
+      text: "התחברות",
+      href: "/login",
+    });
   });
 });
