@@ -11,6 +11,10 @@ import {
 } from "../../../utils/sitePortalSession";
 
 function clearMount(el) {
+  if (typeof el.replaceChildren === "function") {
+    el.replaceChildren();
+    return;
+  }
   while (el.firstChild) el.removeChild(el.firstChild);
 }
 
@@ -35,14 +39,54 @@ function resolveSiteId(site) {
   return String(site?._id || site?.id || "").trim();
 }
 
-function mountLogin(container, { siteId, host, siteName }) {
+function readPortalTheme(container) {
+  const ds = container?.dataset || {};
+  return {
+    accent: ds.bizuplyPortalAccent || "#0e7490",
+    ink: ds.bizuplyPortalInk || "#0f172a",
+    muted: ds.bizuplyPortalMuted || "#64748b",
+    line: ds.bizuplyPortalLine || "#e2e8f0",
+    soft: ds.bizuplyPortalSoft || "#f8fafc",
+  };
+}
+
+function styleInput(input, theme) {
+  Object.assign(input.style, {
+    width: "100%",
+    boxSizing: "border-box",
+    marginBottom: "12px",
+    borderRadius: "16px",
+    border: `1px solid ${theme.line}`,
+    padding: "14px 16px",
+    fontSize: "14px",
+    fontWeight: "600",
+    color: theme.ink,
+    background: "#fff",
+    outline: "none",
+  });
+}
+
+function prepareMountShell(container) {
   clearMount(container);
   container.dir = "rtl";
+  Object.assign(container.style, {
+    overflow: "auto",
+    boxSizing: "border-box",
+  });
+}
+
+function mountLogin(container, { siteId, host, siteName }) {
+  prepareMountShell(container);
+  const theme = readPortalTheme(container);
 
   const wrap = el("div", {
     padding: "28px",
     fontFamily: "inherit",
-    color: "#0f172a",
+    color: theme.ink,
+    height: "100%",
+    boxSizing: "border-box",
+    display: "flex",
+    flexDirection: "column",
   });
 
   wrap.appendChild(
@@ -51,7 +95,8 @@ function mountLogin(container, { siteId, host, siteName }) {
       {
         fontSize: "12px",
         fontWeight: "800",
-        color: "#0284c7",
+        color: theme.accent,
+        letterSpacing: "0.04em",
         marginBottom: "8px",
       },
       "אזור אישי",
@@ -60,7 +105,7 @@ function mountLogin(container, { siteId, host, siteName }) {
   wrap.appendChild(
     el(
       "h3",
-      { fontSize: "24px", fontWeight: "900", margin: "0 0 8px" },
+      { fontSize: "26px", fontWeight: "900", margin: "0 0 8px", lineHeight: "1.15" },
       siteName ? `התחברות ל${siteName}` : "התחברות",
     ),
   );
@@ -70,8 +115,8 @@ function mountLogin(container, { siteId, host, siteName }) {
       {
         fontSize: "13px",
         fontWeight: "600",
-        color: "#64748b",
-        margin: "0 0 18px",
+        color: theme.muted,
+        margin: "0 0 20px",
         lineHeight: "1.6",
       },
       "התחברות זו שייכת לאתר זה בלבד ואינה קשורה לחשבון BizUply.",
@@ -83,32 +128,14 @@ function mountLogin(container, { siteId, host, siteName }) {
   email.required = true;
   email.placeholder = "אימייל";
   email.autocomplete = "username";
-  Object.assign(email.style, {
-    width: "100%",
-    boxSizing: "border-box",
-    marginBottom: "10px",
-    borderRadius: "14px",
-    border: "1px solid #e2e8f0",
-    padding: "12px 14px",
-    fontSize: "14px",
-    fontWeight: "600",
-  });
+  styleInput(email, theme);
 
   const password = document.createElement("input");
   password.type = "password";
   password.required = true;
   password.placeholder = "סיסמה";
   password.autocomplete = "current-password";
-  Object.assign(password.style, {
-    width: "100%",
-    boxSizing: "border-box",
-    marginBottom: "12px",
-    borderRadius: "14px",
-    border: "1px solid #e2e8f0",
-    padding: "12px 14px",
-    fontSize: "14px",
-    fontWeight: "600",
-  });
+  styleInput(password, theme);
 
   const errorBox = el("div", {
     display: "none",
@@ -126,13 +153,14 @@ function mountLogin(container, { siteId, host, siteName }) {
     {
       width: "100%",
       border: "0",
-      borderRadius: "14px",
-      background: "#0f172a",
+      borderRadius: "16px",
+      background: theme.ink,
       color: "#fff",
-      padding: "13px 16px",
+      padding: "14px 16px",
       fontSize: "14px",
       fontWeight: "800",
       cursor: "pointer",
+      boxShadow: "0 14px 28px -18px rgba(15,23,42,0.55)",
     },
     "התחברות",
   );
@@ -170,8 +198,8 @@ function mountLogin(container, { siteId, host, siteName }) {
   registerLink.textContent = "אין לכם חשבון? הרשמה";
   Object.assign(registerLink.style, {
     display: "inline-block",
-    marginTop: "14px",
-    color: "#0284c7",
+    marginTop: "16px",
+    color: theme.accent,
     fontSize: "13px",
     fontWeight: "800",
     textDecoration: "none",
@@ -182,13 +210,17 @@ function mountLogin(container, { siteId, host, siteName }) {
 }
 
 function mountRegister(container, { siteId, host, siteName }) {
-  clearMount(container);
-  container.dir = "rtl";
+  prepareMountShell(container);
+  const theme = readPortalTheme(container);
 
   const wrap = el("div", {
     padding: "28px",
     fontFamily: "inherit",
-    color: "#0f172a",
+    color: theme.ink,
+    height: "100%",
+    boxSizing: "border-box",
+    display: "flex",
+    flexDirection: "column",
   });
 
   wrap.appendChild(
@@ -197,7 +229,8 @@ function mountRegister(container, { siteId, host, siteName }) {
       {
         fontSize: "12px",
         fontWeight: "800",
-        color: "#0284c7",
+        color: theme.accent,
+        letterSpacing: "0.04em",
         marginBottom: "8px",
       },
       "אזור אישי",
@@ -206,7 +239,7 @@ function mountRegister(container, { siteId, host, siteName }) {
   wrap.appendChild(
     el(
       "h3",
-      { fontSize: "24px", fontWeight: "900", margin: "0 0 8px" },
+      { fontSize: "26px", fontWeight: "900", margin: "0 0 8px", lineHeight: "1.15" },
       siteName ? `הרשמה ל${siteName}` : "הרשמה",
     ),
   );
@@ -216,7 +249,7 @@ function mountRegister(container, { siteId, host, siteName }) {
       {
         fontSize: "13px",
         fontWeight: "600",
-        color: "#64748b",
+        color: theme.muted,
         margin: "0 0 18px",
         lineHeight: "1.6",
       },
@@ -229,63 +262,27 @@ function mountRegister(container, { siteId, host, siteName }) {
   fullName.required = true;
   fullName.placeholder = "שם מלא";
   fullName.autocomplete = "name";
-  Object.assign(fullName.style, {
-    width: "100%",
-    boxSizing: "border-box",
-    marginBottom: "10px",
-    borderRadius: "14px",
-    border: "1px solid #e2e8f0",
-    padding: "12px 14px",
-    fontSize: "14px",
-    fontWeight: "600",
-  });
+  styleInput(fullName, theme);
 
   const email = document.createElement("input");
   email.type = "email";
   email.required = true;
   email.placeholder = "אימייל";
   email.autocomplete = "username";
-  Object.assign(email.style, {
-    width: "100%",
-    boxSizing: "border-box",
-    marginBottom: "10px",
-    borderRadius: "14px",
-    border: "1px solid #e2e8f0",
-    padding: "12px 14px",
-    fontSize: "14px",
-    fontWeight: "600",
-  });
+  styleInput(email, theme);
 
   const phone = document.createElement("input");
   phone.type = "tel";
   phone.placeholder = "טלפון (אופציונלי)";
   phone.autocomplete = "tel";
-  Object.assign(phone.style, {
-    width: "100%",
-    boxSizing: "border-box",
-    marginBottom: "10px",
-    borderRadius: "14px",
-    border: "1px solid #e2e8f0",
-    padding: "12px 14px",
-    fontSize: "14px",
-    fontWeight: "600",
-  });
+  styleInput(phone, theme);
 
   const password = document.createElement("input");
   password.type = "password";
   password.required = true;
   password.placeholder = "סיסמה (לפחות 6 תווים)";
   password.autocomplete = "new-password";
-  Object.assign(password.style, {
-    width: "100%",
-    boxSizing: "border-box",
-    marginBottom: "12px",
-    borderRadius: "14px",
-    border: "1px solid #e2e8f0",
-    padding: "12px 14px",
-    fontSize: "14px",
-    fontWeight: "600",
-  });
+  styleInput(password, theme);
 
   const errorBox = el("div", {
     display: "none",
@@ -303,13 +300,14 @@ function mountRegister(container, { siteId, host, siteName }) {
     {
       width: "100%",
       border: "0",
-      borderRadius: "14px",
-      background: "#0f172a",
+      borderRadius: "16px",
+      background: theme.ink,
       color: "#fff",
-      padding: "13px 16px",
+      padding: "14px 16px",
       fontSize: "14px",
       fontWeight: "800",
       cursor: "pointer",
+      boxShadow: "0 14px 28px -18px rgba(15,23,42,0.55)",
     },
     "יצירת חשבון",
   );
@@ -351,8 +349,8 @@ function mountRegister(container, { siteId, host, siteName }) {
   loginLink.textContent = "כבר רשומים? התחברות";
   Object.assign(loginLink.style, {
     display: "inline-block",
-    marginTop: "14px",
-    color: "#0284c7",
+    marginTop: "16px",
+    color: theme.accent,
     fontSize: "13px",
     fontWeight: "800",
     textDecoration: "none",
@@ -363,11 +361,11 @@ function mountRegister(container, { siteId, host, siteName }) {
 }
 
 async function mountAccount(container, { siteId }) {
-  clearMount(container);
-  container.dir = "rtl";
+  prepareMountShell(container);
+  const theme = readPortalTheme(container);
   const loading = el(
     "div",
-    { padding: "24px", fontWeight: "700", color: "#64748b" },
+    { padding: "24px", fontWeight: "700", color: theme.muted },
     "טוען חשבון...",
   );
   container.appendChild(loading);

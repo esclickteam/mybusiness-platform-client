@@ -20,35 +20,10 @@ type Props = {
 function Field({
   placeholder,
   line,
+  ink,
 }: {
   placeholder: string;
   line: string;
-}) {
-  return (
-    <div
-      style={{
-        width: "100%",
-        boxSizing: "border-box",
-        borderRadius: 14,
-        border: `1px solid ${line}`,
-        padding: "12px 14px",
-        fontSize: 14,
-        fontWeight: 600,
-        color: "#94a3b8",
-        background: "#fff",
-        textAlign: "right",
-      }}
-    >
-      {placeholder}
-    </div>
-  );
-}
-
-function PrimaryButton({
-  label,
-  ink,
-}: {
-  label: string;
   ink: string;
 }) {
   return (
@@ -56,13 +31,42 @@ function PrimaryButton({
       style={{
         width: "100%",
         boxSizing: "border-box",
-        borderRadius: 14,
-        background: ink,
+        borderRadius: 16,
+        border: `1px solid ${line}`,
+        padding: "14px 16px",
+        fontSize: 14,
+        fontWeight: 600,
+        color: "#94a3b8",
+        background: "#fff",
+        textAlign: "right",
+        boxShadow: "inset 0 1px 0 rgba(255,255,255,0.8)",
+      }}
+    >
+      <span style={{ color: ink, opacity: 0.35 }}>{placeholder}</span>
+    </div>
+  );
+}
+
+function PrimaryButton({
+  label,
+  background,
+}: {
+  label: string;
+  background: string;
+}) {
+  return (
+    <div
+      style={{
+        width: "100%",
+        boxSizing: "border-box",
+        borderRadius: 16,
+        background,
         color: "#fff",
-        padding: "13px 16px",
+        padding: "14px 16px",
         fontSize: 14,
         fontWeight: 800,
         textAlign: "center",
+        boxShadow: "0 14px 28px -18px rgba(15,23,42,0.55)",
       }}
     >
       {label}
@@ -72,7 +76,7 @@ function PrimaryButton({
 
 export default function PortalWidgetPreview({
   kind,
-  accent = "#0284c7",
+  accent = "#0e7490",
   ink = "#0f172a",
   muted = "#64748b",
   line = "#e2e8f0",
@@ -82,30 +86,36 @@ export default function PortalWidgetPreview({
     height: "100%",
     width: "100%",
     boxSizing: "border-box",
-    padding: 24,
+    padding: 28,
     display: "flex",
     flexDirection: "column",
-    gap: 10,
+    gap: 12,
     direction: "rtl",
     fontFamily: "inherit",
     overflow: "hidden",
+    background:
+      kind === "portal-account" || kind === "portal-orders" || kind === "portal-cart"
+        ? soft
+        : "#fff",
   };
 
   if (kind === "portal-register") {
     return (
-      <div style={wrap}>
-        <div style={{ fontSize: 12, fontWeight: 800, color: accent }}>אזור אישי</div>
-        <div style={{ fontSize: 22, fontWeight: 900, color: ink, marginBottom: 2 }}>
+      <div style={{ ...wrap, background: "#fff" }}>
+        <div style={{ fontSize: 12, fontWeight: 800, color: accent, letterSpacing: "0.04em" }}>
+          אזור אישי
+        </div>
+        <div style={{ fontSize: 26, fontWeight: 900, color: ink, lineHeight: 1.15 }}>
           הרשמה
         </div>
-        <div style={{ fontSize: 12, fontWeight: 600, color: muted, lineHeight: 1.5, marginBottom: 6 }}>
+        <div style={{ fontSize: 13, fontWeight: 600, color: muted, lineHeight: 1.55, marginBottom: 4 }}>
           ההרשמה נשמרת לאתר ולעסק הזה בלבד.
         </div>
-        <Field placeholder="שם מלא" line={line} />
-        <Field placeholder="אימייל" line={line} />
-        <Field placeholder="טלפון (אופציונלי)" line={line} />
-        <Field placeholder="סיסמה" line={line} />
-        <PrimaryButton label="יצירת חשבון" ink={ink} />
+        <Field placeholder="שם מלא" line={line} ink={ink} />
+        <Field placeholder="אימייל" line={line} ink={ink} />
+        <Field placeholder="טלפון (אופציונלי)" line={line} ink={ink} />
+        <Field placeholder="סיסמה" line={line} ink={ink} />
+        <PrimaryButton label="יצירת חשבון" background={ink} />
       </div>
     );
   }
@@ -113,19 +123,19 @@ export default function PortalWidgetPreview({
   if (kind === "portal-account") {
     return (
       <div style={wrap}>
-        <div style={{ fontSize: 22, fontWeight: 900, color: ink }}>שלום לקוח/ה</div>
-        <div style={{ fontSize: 13, fontWeight: 600, color: muted, marginBottom: 8 }}>
+        <div style={{ fontSize: 24, fontWeight: 900, color: ink }}>שלום לקוח/ה</div>
+        <div style={{ fontSize: 13, fontWeight: 600, color: muted, marginBottom: 4 }}>
           client@example.com
         </div>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 8 }}>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 4 }}>
           {["ההזמנות שלי", "העגלה שלי", "פרטי החשבון"].map((label) => (
             <div
               key={label}
               style={{
                 padding: "10px 14px",
-                borderRadius: 12,
+                borderRadius: 14,
                 border: `1px solid ${line}`,
-                background: soft,
+                background: "#fff",
                 fontWeight: 800,
                 fontSize: 13,
                 color: ink,
@@ -139,8 +149,8 @@ export default function PortalWidgetPreview({
           <div
             key={label}
             style={{
-              padding: "12px 14px",
-              borderRadius: 14,
+              padding: "14px 16px",
+              borderRadius: 16,
               border: `1px solid ${line}`,
               fontWeight: 800,
               fontSize: 14,
@@ -157,7 +167,7 @@ export default function PortalWidgetPreview({
 
   if (kind === "portal-orders") {
     return (
-      <div style={wrap}>
+      <div style={{ ...wrap, background: "#fff", gap: 10 }}>
         {[
           { title: "הזמנה #1042", meta: "שולמה · ₪249.00" },
           { title: "הזמנה #1038", meta: "בטיפול · ₪128.50" },
@@ -166,10 +176,10 @@ export default function PortalWidgetPreview({
           <div
             key={order.title}
             style={{
-              padding: "14px 16px",
-              borderRadius: 16,
+              padding: "16px 18px",
+              borderRadius: 18,
               border: `1px solid ${line}`,
-              background: "#fff",
+              background: soft,
             }}
           >
             <div style={{ fontWeight: 900, fontSize: 14, color: ink, marginBottom: 4 }}>
@@ -184,7 +194,7 @@ export default function PortalWidgetPreview({
 
   if (kind === "portal-cart") {
     return (
-      <div style={wrap}>
+      <div style={{ ...wrap, background: "#fff" }}>
         {[
           { name: "מוצר לדוגמה × 1", price: "₪120.00" },
           { name: "תוספת × 2", price: "₪60.00" },
@@ -195,10 +205,10 @@ export default function PortalWidgetPreview({
               display: "flex",
               justifyContent: "space-between",
               gap: 12,
-              paddingBottom: 10,
+              paddingBottom: 12,
               borderBottom: `1px solid ${line}`,
               fontWeight: 700,
-              fontSize: 13,
+              fontSize: 14,
               color: ink,
             }}
           >
@@ -206,28 +216,29 @@ export default function PortalWidgetPreview({
             <span>{item.price}</span>
           </div>
         ))}
-        <div style={{ fontWeight: 900, fontSize: 16, color: ink, marginTop: 4 }}>
+        <div style={{ fontWeight: 900, fontSize: 18, color: ink, marginTop: 4 }}>
           סה״כ: ₪180.00
         </div>
-        <PrimaryButton label="המשך לתשלום" ink={accent} />
+        <PrimaryButton label="המשך לתשלום" background={accent} />
       </div>
     );
   }
 
-  // portal-login (default)
   return (
-    <div style={wrap}>
-      <div style={{ fontSize: 12, fontWeight: 800, color: accent }}>אזור אישי</div>
-      <div style={{ fontSize: 22, fontWeight: 900, color: ink, marginBottom: 2 }}>
+    <div style={{ ...wrap, background: "#fff" }}>
+      <div style={{ fontSize: 12, fontWeight: 800, color: accent, letterSpacing: "0.04em" }}>
+        אזור אישי
+      </div>
+      <div style={{ fontSize: 26, fontWeight: 900, color: ink, lineHeight: 1.15 }}>
         התחברות
       </div>
-      <div style={{ fontSize: 12, fontWeight: 600, color: muted, lineHeight: 1.5, marginBottom: 6 }}>
+      <div style={{ fontSize: 13, fontWeight: 600, color: muted, lineHeight: 1.55, marginBottom: 4 }}>
         התחברות לאתר זה בלבד — לא לחשבון BizUply.
       </div>
-      <Field placeholder="אימייל" line={line} />
-      <Field placeholder="סיסמה" line={line} />
-      <PrimaryButton label="התחברות" ink={ink} />
-      <div style={{ fontSize: 13, fontWeight: 800, color: accent, marginTop: 4 }}>
+      <Field placeholder="אימייל" line={line} ink={ink} />
+      <Field placeholder="סיסמה" line={line} ink={ink} />
+      <PrimaryButton label="התחברות" background={ink} />
+      <div style={{ fontSize: 13, fontWeight: 800, color: accent, marginTop: 2 }}>
         אין לכם חשבון? הרשמה
       </div>
     </div>

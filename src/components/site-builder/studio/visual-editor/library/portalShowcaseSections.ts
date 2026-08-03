@@ -2,6 +2,7 @@ import {
   absoluteLayout,
   boxNode,
   buttonNode,
+  imageNode,
   textNode,
 } from "./libraryFactories";
 import { VISUAL_LIBRARY_IMAGES as IMG } from "./libraryAssets";
@@ -26,29 +27,32 @@ type Theme = {
   card: string;
   line: string;
   soft: string;
+  photo: string;
 };
 
-/** No pink / purple — clear, brand-ready palettes. */
+/** No pink / purple — brand-ready palettes with photography. */
 const THEMES: Theme[] = [
   {
     name: "ענבר",
-    bg: "#f7f4ef",
+    bg: "#f4efe6",
     ink: "#1c1917",
     muted: "#78716c",
     accent: "#b45309",
     card: "#ffffff",
     line: "#e7e5e4",
-    soft: "#fafaf9",
+    soft: "#faf7f2",
+    photo: IMG.workspace,
   },
   {
     name: "ים",
-    bg: "#f1f5f9",
+    bg: "#e8f1f5",
     ink: "#0f172a",
     muted: "#64748b",
     accent: "#0e7490",
     card: "#ffffff",
-    line: "#e2e8f0",
-    soft: "#f8fafc",
+    line: "#d6e4ea",
+    soft: "#f4f9fb",
+    photo: IMG.hospitality,
   },
   {
     name: "יער",
@@ -59,6 +63,7 @@ const THEMES: Theme[] = [
     card: "#ffffff",
     line: "#d6e0d6",
     soft: "#f4f7f4",
+    photo: IMG.nature,
   },
   {
     name: "פחם",
@@ -69,36 +74,40 @@ const THEMES: Theme[] = [
     card: "#1f2937",
     line: "#374151",
     soft: "#0b1220",
+    photo: IMG.city,
   },
   {
     name: "חול",
-    bg: "#faf7f2",
+    bg: "#f7f3ec",
     ink: "#292524",
     muted: "#78716c",
     accent: "#0f766e",
     card: "#ffffff",
     line: "#e7e5e4",
     soft: "#fffdf8",
+    photo: IMG.interior,
   },
   {
     name: "נייבי",
-    bg: "#e8eef7",
+    bg: "#e7eef8",
     ink: "#0a1628",
     muted: "#5b6b7c",
     accent: "#1d4ed8",
     card: "#ffffff",
     line: "#d5dee9",
     soft: "#f3f6fb",
+    photo: IMG.laptop,
   },
   {
     name: "זית",
-    bg: "#f3f4ea",
+    bg: "#f1f3e8",
     ink: "#1f2a14",
     muted: "#6b7280",
     accent: "#4d7c0f",
     card: "#ffffff",
     line: "#dde3c9",
     soft: "#f8f9f2",
+    photo: IMG.cafe,
   },
   {
     name: "נחושת",
@@ -109,6 +118,7 @@ const THEMES: Theme[] = [
     card: "#ffffff",
     line: "#e7e0d8",
     soft: "#fffaf5",
+    photo: IMG.architecture,
   },
   {
     name: "גרפיט",
@@ -119,6 +129,7 @@ const THEMES: Theme[] = [
     card: "#ffffff",
     line: "#cfd8dc",
     soft: "#f5f7f8",
+    photo: IMG.meeting,
   },
   {
     name: "לילה",
@@ -129,481 +140,27 @@ const THEMES: Theme[] = [
     card: "#152033",
     line: "#243044",
     soft: "#09101a",
+    photo: IMG.studio,
   },
 ];
 
-const THUMBS = [
-  IMG.workspace,
-  IMG.studio,
-  IMG.ecommerce,
-  IMG.product,
-  IMG.architecture,
-  IMG.finance,
-  IMG.hospitality,
-  IMG.education,
-  IMG.team,
-  IMG.tech,
-];
-
-function fieldNode(
-  key: string,
-  parentKey: string,
-  placeholder: string,
-  type: string,
-  layout: ReturnType<typeof absoluteLayout>,
-  theme: Theme,
-): VisualLibraryNodeTemplate {
-  return {
-    key,
-    type: "form-field",
-    label: placeholder,
-    tagName: "input",
-    parentKey,
-    content: { value: "", placeholder },
-    style: {
-      width: "100%",
-      boxSizing: "border-box",
-      borderRadius: "14px",
-      border: `1px solid ${theme.line}`,
-      backgroundColor: "#ffffff",
-      color: theme.ink,
-      fontSize: "14px",
-      fontWeight: "600",
-      padding: "12px 14px",
-      outline: "none",
-      direction: "rtl",
-    },
-    layout,
-    attributes: {
-      type,
-      name: key,
-      placeholder,
-      "aria-label": placeholder,
-    },
-  };
-}
-
-function withParent(
-  node: VisualLibraryNodeTemplate,
-  parentKey: string,
-): VisualLibraryNodeTemplate {
-  return { ...node, parentKey };
-}
-
-function loginFormChildren(
-  parentKey: string,
-  theme: Theme,
-  width = 420,
-): VisualLibraryNodeTemplate[] {
-  return [
-    withParent(
-      textNode(
-        `${parentKey}-eyebrow`,
-        "אזור אישי",
-        { color: theme.accent, fontSize: "12px", fontWeight: "800" },
-        absoluteLayout(28, 28, width, 22, 5),
-      ),
-      parentKey,
-    ),
-    withParent(
-      textNode(
-        `${parentKey}-heading`,
-        "התחברות",
-        { color: theme.ink, fontSize: "24px", fontWeight: "900" },
-        absoluteLayout(28, 54, width, 34, 5),
-      ),
-      parentKey,
-    ),
-    withParent(
-      textNode(
-        `${parentKey}-copy`,
-        "התחברות לאתר זה בלבד — לא לחשבון BizUply.",
-        { color: theme.muted, fontSize: "13px", fontWeight: "600", lineHeight: "1.5" },
-        absoluteLayout(28, 96, width, 40, 5),
-      ),
-      parentKey,
-    ),
-    fieldNode(
-      `${parentKey}-email`,
-      parentKey,
-      "אימייל",
-      "email",
-      absoluteLayout(28, 150, width, 48, 5),
-      theme,
-    ),
-    fieldNode(
-      `${parentKey}-password`,
-      parentKey,
-      "סיסמה",
-      "password",
-      absoluteLayout(28, 210, width, 48, 5),
-      theme,
-    ),
-    withParent(
-      buttonNode(
-        `${parentKey}-submit`,
-        "התחברות",
-        {
-          color: "#fff",
-          backgroundColor: theme.ink,
-          borderRadius: "14px",
-          fontWeight: "800",
-          fontSize: "14px",
-          textAlign: "center",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        },
-        absoluteLayout(28, 280, width, 48, 5),
-      ),
-      parentKey,
-    ),
-    withParent(
-      textNode(
-        `${parentKey}-register-link`,
-        "אין לכם חשבון? הרשמה",
-        { color: theme.accent, fontSize: "13px", fontWeight: "800" },
-        absoluteLayout(28, 344, width, 24, 5),
-      ),
-      parentKey,
-    ),
-  ];
-}
-
-function registerFormChildren(
-  parentKey: string,
-  theme: Theme,
-  width = 420,
-): VisualLibraryNodeTemplate[] {
-  return [
-    withParent(
-      textNode(
-        `${parentKey}-eyebrow`,
-        "אזור אישי",
-        { color: theme.accent, fontSize: "12px", fontWeight: "800" },
-        absoluteLayout(28, 24, width, 22, 5),
-      ),
-      parentKey,
-    ),
-    withParent(
-      textNode(
-        `${parentKey}-heading`,
-        "הרשמה",
-        { color: theme.ink, fontSize: "24px", fontWeight: "900" },
-        absoluteLayout(28, 50, width, 34, 5),
-      ),
-      parentKey,
-    ),
-    withParent(
-      textNode(
-        `${parentKey}-copy`,
-        "ההרשמה נשמרת לאתר ולעסק הזה בלבד.",
-        { color: theme.muted, fontSize: "13px", fontWeight: "600", lineHeight: "1.5" },
-        absoluteLayout(28, 92, width, 36, 5),
-      ),
-      parentKey,
-    ),
-    fieldNode(
-      `${parentKey}-name`,
-      parentKey,
-      "שם מלא",
-      "text",
-      absoluteLayout(28, 140, width, 48, 5),
-      theme,
-    ),
-    fieldNode(
-      `${parentKey}-email`,
-      parentKey,
-      "אימייל",
-      "email",
-      absoluteLayout(28, 198, width, 48, 5),
-      theme,
-    ),
-    fieldNode(
-      `${parentKey}-phone`,
-      parentKey,
-      "טלפון (אופציונלי)",
-      "tel",
-      absoluteLayout(28, 256, width, 48, 5),
-      theme,
-    ),
-    fieldNode(
-      `${parentKey}-password`,
-      parentKey,
-      "סיסמה",
-      "password",
-      absoluteLayout(28, 314, width, 48, 5),
-      theme,
-    ),
-    withParent(
-      buttonNode(
-        `${parentKey}-submit`,
-        "יצירת חשבון",
-        {
-          color: "#fff",
-          backgroundColor: theme.ink,
-          borderRadius: "14px",
-          fontWeight: "800",
-          fontSize: "14px",
-          textAlign: "center",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        },
-        absoluteLayout(28, 380, width, 48, 5),
-      ),
-      parentKey,
-    ),
-  ];
-}
-
-function accountPanelChildren(
-  parentKey: string,
-  theme: Theme,
-  width = 440,
-): VisualLibraryNodeTemplate[] {
-  return [
-    withParent(
-      textNode(
-        `${parentKey}-heading`,
-        "שלום לקוח/ה",
-        { color: theme.ink, fontSize: "22px", fontWeight: "900" },
-        absoluteLayout(24, 24, width, 32, 5),
-      ),
-      parentKey,
-    ),
-    withParent(
-      textNode(
-        `${parentKey}-email`,
-        "client@example.com",
-        { color: theme.muted, fontSize: "13px", fontWeight: "600" },
-        absoluteLayout(24, 60, width, 24, 5),
-      ),
-      parentKey,
-    ),
-    withParent(
-      buttonNode(
-        `${parentKey}-orders`,
-        "ההזמנות שלי",
-        {
-          color: "#fff",
-          backgroundColor: theme.ink,
-          borderRadius: "12px",
-          fontWeight: "800",
-          fontSize: "13px",
-          textAlign: "center",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        },
-        absoluteLayout(24, 110, 140, 42, 5),
-        "/orders",
-      ),
-      parentKey,
-    ),
-    withParent(
-      buttonNode(
-        `${parentKey}-cart`,
-        "העגלה שלי",
-        {
-          color: theme.ink,
-          backgroundColor: theme.soft,
-          border: `1px solid ${theme.line}`,
-          borderRadius: "12px",
-          fontWeight: "800",
-          fontSize: "13px",
-          textAlign: "center",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        },
-        absoluteLayout(176, 110, 130, 42, 5),
-        "/cart",
-      ),
-      parentKey,
-    ),
-    withParent(
-      boxNode(
-        `${parentKey}-row1`,
-        {
-          backgroundColor: theme.soft,
-          border: `1px solid ${theme.line}`,
-          borderRadius: "14px",
-        },
-        absoluteLayout(24, 170, width, 52, 5),
-        "עמוד",
-      ),
-      parentKey,
-    ),
-    withParent(
-      textNode(
-        `${parentKey}-row1-text`,
-        "הזמנות קודמות",
-        { color: theme.ink, fontSize: "14px", fontWeight: "800" },
-        absoluteLayout(40, 184, width - 40, 24, 6),
-      ),
-      parentKey,
-    ),
-    withParent(
-      boxNode(
-        `${parentKey}-row2`,
-        {
-          backgroundColor: theme.soft,
-          border: `1px solid ${theme.line}`,
-          borderRadius: "14px",
-        },
-        absoluteLayout(24, 234, width, 52, 5),
-        "עמוד",
-      ),
-      parentKey,
-    ),
-    withParent(
-      textNode(
-        `${parentKey}-row2-text`,
-        "עמוד מוגן ללקוחות",
-        { color: theme.ink, fontSize: "14px", fontWeight: "800" },
-        absoluteLayout(40, 248, width - 40, 24, 6),
-      ),
-      parentKey,
-    ),
-  ];
-}
-
-function ordersPanelChildren(
-  parentKey: string,
-  theme: Theme,
-  width = 920,
-): VisualLibraryNodeTemplate[] {
-  const rows = [
-    { key: "a", title: "הזמנה #1042", meta: "שולמה · ₪249.00", y: 24 },
-    { key: "b", title: "הזמנה #1038", meta: "בטיפול · ₪128.50", y: 110 },
-    { key: "c", title: "הזמנה #1021", meta: "נשלחה · ₪89.00", y: 196 },
-  ];
-  return rows.flatMap((row) => [
-    withParent(
-      boxNode(
-        `${parentKey}-${row.key}`,
-        {
-          backgroundColor: "#ffffff",
-          border: `1px solid ${theme.line}`,
-          borderRadius: "16px",
-        },
-        absoluteLayout(20, row.y, width, 72, 5),
-        "הזמנה",
-      ),
-      parentKey,
-    ),
-    withParent(
-      textNode(
-        `${parentKey}-${row.key}-title`,
-        row.title,
-        { color: theme.ink, fontSize: "14px", fontWeight: "900" },
-        absoluteLayout(40, row.y + 14, width - 40, 24, 6),
-      ),
-      parentKey,
-    ),
-    withParent(
-      textNode(
-        `${parentKey}-${row.key}-meta`,
-        row.meta,
-        { color: theme.muted, fontSize: "12px", fontWeight: "600" },
-        absoluteLayout(40, row.y + 40, width - 40, 20, 6),
-      ),
-      parentKey,
-    ),
-  ]);
-}
-
-function cartPanelChildren(
-  parentKey: string,
-  theme: Theme,
-  width = 920,
-): VisualLibraryNodeTemplate[] {
-  return [
-    withParent(
-      textNode(
-        `${parentKey}-item1`,
-        "מוצר לדוגמה × 1",
-        { color: theme.ink, fontSize: "14px", fontWeight: "700" },
-        absoluteLayout(28, 28, width * 0.6, 24, 5),
-      ),
-      parentKey,
-    ),
-    withParent(
-      textNode(
-        `${parentKey}-price1`,
-        "₪120.00",
-        { color: theme.ink, fontSize: "14px", fontWeight: "700", textAlign: "left" },
-        absoluteLayout(width - 80, 28, 100, 24, 5),
-      ),
-      parentKey,
-    ),
-    withParent(
-      textNode(
-        `${parentKey}-item2`,
-        "תוספת × 2",
-        { color: theme.ink, fontSize: "14px", fontWeight: "700" },
-        absoluteLayout(28, 70, width * 0.6, 24, 5),
-      ),
-      parentKey,
-    ),
-    withParent(
-      textNode(
-        `${parentKey}-price2`,
-        "₪60.00",
-        { color: theme.ink, fontSize: "14px", fontWeight: "700", textAlign: "left" },
-        absoluteLayout(width - 80, 70, 100, 24, 5),
-      ),
-      parentKey,
-    ),
-    withParent(
-      textNode(
-        `${parentKey}-total`,
-        "סה״כ: ₪180.00",
-        { color: theme.ink, fontSize: "16px", fontWeight: "900" },
-        absoluteLayout(28, 130, 220, 28, 5),
-      ),
-      parentKey,
-    ),
-    withParent(
-      buttonNode(
-        `${parentKey}-checkout`,
-        "המשך לתשלום",
-        {
-          color: "#fff",
-          backgroundColor: theme.accent,
-          borderRadius: "14px",
-          fontWeight: "800",
-          fontSize: "14px",
-          textAlign: "center",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        },
-        absoluteLayout(28, 180, 180, 48, 5),
-      ),
-      parentKey,
-    ),
-  ];
-}
-
-function portalWidget(
+/** Empty mount shell — live form is injected by mountPublicPortalWidgets / PortalWidgetPreview. */
+function portalMount(
   key: string,
   widget: PortalKind,
   label: string,
   layout: ReturnType<typeof absoluteLayout>,
   theme: Theme,
-  children: VisualLibraryNodeTemplate[],
   style: Record<string, any> = {},
-): VisualLibraryNodeTemplate[] {
-  const mount: VisualLibraryNodeTemplate = {
+): VisualLibraryNodeTemplate {
+  return {
     ...boxNode(
       key,
       {
         backgroundColor: theme.card,
-        borderRadius: "22px",
+        borderRadius: "28px",
         border: `1px solid ${theme.line}`,
-        boxShadow: "0 22px 50px -34px rgba(15,23,42,0.35)",
+        boxShadow: "0 28px 70px -40px rgba(15,23,42,0.45)",
         overflow: "hidden",
         ...style,
       },
@@ -621,7 +178,6 @@ function portalWidget(
       "data-bizuply-portal-soft": theme.soft,
     },
   };
-  return [mount, ...children];
 }
 
 function makeSection(
@@ -630,7 +186,6 @@ function makeSection(
   description: string,
   keywords: string[],
   theme: Theme,
-  thumbnail: string,
   minHeight: string,
   nodes: VisualLibraryNodeTemplate[],
 ): VisualLibrarySectionTemplate {
@@ -645,73 +200,340 @@ function makeSection(
     previewLayout: id,
     backgroundColor: theme.bg,
     minHeight,
-    thumbnail,
+    thumbnail: theme.photo,
     lockPalette: false,
     nodes,
   };
 }
 
 function loginNodes(theme: Theme, index: number): VisualLibraryNodeTemplate[] {
-  const layouts = [
-    // form right
+  const lightOnDark = theme.bg === "#111827" || theme.bg === "#0b1220";
+  const layouts: Array<() => VisualLibraryNodeTemplate[]> = [
+    // Photo left + form right
     () => [
       boxNode("bg", { backgroundColor: theme.bg }, absoluteLayout(0, 0, "100%", "100%", 1), "רקע"),
-      textNode("eyebrow", "התחברות לקוחות", { color: theme.accent, fontSize: "13px", fontWeight: "800" }, absoluteLayout(72, 90, 260, 28, 3)),
-      textNode("title", "ברוכים השבים", { color: theme.ink, fontSize: "46px", fontWeight: "900", lineHeight: "1.1" }, absoluteLayout(72, 130, 420, 70, 3)),
-      textNode("subtitle", "התחברו כדי לראות הזמנות, פרטים ותוכן אישי של האתר הזה.", { color: theme.muted, fontSize: "15px", fontWeight: "600", lineHeight: "1.7" }, absoluteLayout(72, 220, 400, 80, 3)),
-      ...portalWidget(
+      imageNode(
+        "photo",
+        theme.photo,
+        { objectFit: "cover", borderRadius: "0px" },
+        absoluteLayout(0, 0, 520, "100%", 2),
+        "אווירה",
+      ),
+      boxNode(
+        "photo-veil",
+        {
+          background:
+            "linear-gradient(90deg, rgba(15,23,42,0.35) 0%, rgba(15,23,42,0.05) 100%)",
+        },
+        absoluteLayout(0, 0, 520, "100%", 3),
+        "שכבה",
+      ),
+      textNode(
+        "photo-kicker",
+        "ברוכים השבים",
+        { color: "#ffffff", fontSize: "42px", fontWeight: "900", lineHeight: "1.1" },
+        absoluteLayout(48, 250, 400, 80, 4),
+      ),
+      textNode(
+        "photo-copy",
+        "התחברות מאובטחת לאזור האישי של האתר.",
+        { color: "rgba(255,255,255,0.85)", fontSize: "16px", fontWeight: "600", lineHeight: "1.6" },
+        absoluteLayout(48, 340, 360, 60, 4),
+      ),
+      portalMount(
         "form",
         "portal-login",
         "טופס התחברות",
-        absoluteLayout(560, 80, 480, 520, 4),
+        absoluteLayout(580, 90, 460, 540, 5),
         theme,
-        loginFormChildren("form", theme, 420),
+        { minHeight: "520px" },
+      ),
+    ],
+    // Form left + editorial text
+    () => [
+      boxNode("bg", { backgroundColor: theme.bg }, absoluteLayout(0, 0, "100%", "100%", 1), "רקע"),
+      portalMount(
+        "form",
+        "portal-login",
+        "טופס התחברות",
+        absoluteLayout(72, 80, 460, 560, 4),
+        theme,
+        { minHeight: "540px" },
+      ),
+      textNode(
+        "eyebrow",
+        "אזור לקוחות",
+        { color: theme.accent, fontSize: "13px", fontWeight: "800", letterSpacing: "0.04em" },
+        absoluteLayout(600, 160, 420, 28, 3),
+      ),
+      textNode(
+        "title",
+        "כניסה לאזור האישי",
+        { color: theme.ink, fontSize: "48px", fontWeight: "900", lineHeight: "1.05" },
+        absoluteLayout(600, 200, 420, 110, 3),
+      ),
+      textNode(
+        "subtitle",
+        "הזמנות, פרטים אישיים והמשך רכישה — הכל במקום אחד.",
+        { color: theme.muted, fontSize: "17px", fontWeight: "600", lineHeight: "1.7" },
+        absoluteLayout(600, 330, 380, 90, 3),
+      ),
+      boxNode(
+        "accent-bar",
+        { backgroundColor: theme.accent, borderRadius: "999px" },
+        absoluteLayout(600, 440, 72, 6, 3),
+        "פס",
+      ),
+    ],
+    // Centered card over soft photo wash
+    () => [
+      imageNode(
+        "photo",
+        theme.photo,
+        { objectFit: "cover", filter: "saturate(0.9) brightness(0.92)" },
+        absoluteLayout(0, 0, "100%", "100%", 1),
+        "רקע",
+      ),
+      boxNode(
+        "veil",
+        {
+          background: lightOnDark
+            ? "rgba(8,12,20,0.72)"
+            : "rgba(248,250,252,0.82)",
+        },
+        absoluteLayout(0, 0, "100%", "100%", 2),
+        "שכבה",
+      ),
+      textNode(
+        "title",
+        "התחברות",
+        {
+          color: lightOnDark ? "#f8fafc" : theme.ink,
+          fontSize: "40px",
+          fontWeight: "900",
+          textAlign: "center",
+        },
+        absoluteLayout(300, 48, 500, 50, 3),
+      ),
+      portalMount(
+        "form",
+        "portal-login",
+        "טופס התחברות",
+        absoluteLayout(310, 120, 480, 520, 4),
+        theme,
+        { minHeight: "500px" },
+      ),
+    ],
+    // Split ink band
+    () => [
+      boxNode(
+        "left",
+        { backgroundColor: theme.ink },
+        absoluteLayout(0, 0, "44%", "100%", 1),
+        "פס",
+      ),
+      boxNode(
+        "right",
+        { backgroundColor: theme.soft },
+        absoluteLayout(460, 0, "56%", "100%", 1),
+        "רקע",
+      ),
+      textNode(
+        "title",
+        "שלום שוב",
+        { color: "#f8fafc", fontSize: "46px", fontWeight: "900", lineHeight: "1.05" },
+        absoluteLayout(56, 200, 340, 90, 3),
+      ),
+      textNode(
+        "subtitle",
+        "המשיכו מהמקום שבו עצרתם — הזמנות, עגלה ותוכן אישי.",
+        { color: "#cbd5e1", fontSize: "16px", fontWeight: "600", lineHeight: "1.7" },
+        absoluteLayout(56, 310, 320, 90, 3),
+      ),
+      portalMount(
+        "form",
+        "portal-login",
+        "טופס התחברות",
+        absoluteLayout(560, 90, 460, 540, 4),
+        theme,
+        { minHeight: "520px" },
+      ),
+    ],
+    // Floating card + side photo strip
+    () => [
+      boxNode("bg", { backgroundColor: theme.bg }, absoluteLayout(0, 0, "100%", "100%", 1), "רקע"),
+      imageNode(
+        "strip",
+        theme.photo,
+        { objectFit: "cover", borderRadius: "32px" },
+        absoluteLayout(72, 72, 380, 576, 2),
+        "תמונה",
+      ),
+      portalMount(
+        "form",
+        "portal-login",
+        "טופס התחברות",
+        absoluteLayout(520, 110, 500, 500, 4),
+        theme,
         { minHeight: "480px" },
       ),
     ],
-    // form left
+    // Compact editorial
+    () => [
+      boxNode("bg", { backgroundColor: theme.soft }, absoluteLayout(0, 0, "100%", "100%", 1), "רקע"),
+      boxNode(
+        "frame",
+        {
+          backgroundColor: theme.card,
+          borderRadius: "36px",
+          border: `1px solid ${theme.line}`,
+          boxShadow: "0 40px 90px -50px rgba(15,23,42,0.35)",
+        },
+        absoluteLayout(90, 70, 920, 580, 2),
+        "מסגרת",
+      ),
+      imageNode(
+        "photo",
+        theme.photo,
+        { objectFit: "cover", borderRadius: "28px" },
+        absoluteLayout(120, 110, 360, 500, 3),
+        "תמונה",
+      ),
+      portalMount(
+        "form",
+        "portal-login",
+        "טופס התחברות",
+        absoluteLayout(530, 120, 440, 480, 4),
+        theme,
+        { minHeight: "460px", boxShadow: "none", border: "0" },
+      ),
+    ],
+    // Wide hero title + form
     () => [
       boxNode("bg", { backgroundColor: theme.bg }, absoluteLayout(0, 0, "100%", "100%", 1), "רקע"),
-      ...portalWidget(
+      textNode(
+        "eyebrow",
+        "CLIENT PORTAL",
+        { color: theme.accent, fontSize: "12px", fontWeight: "800", letterSpacing: "0.12em" },
+        absoluteLayout(80, 70, 400, 24, 2),
+      ),
+      textNode(
+        "title",
+        "התחברות ללקוחות",
+        { color: theme.ink, fontSize: "54px", fontWeight: "900", lineHeight: "1" },
+        absoluteLayout(80, 110, 620, 70, 2),
+      ),
+      portalMount(
         "form",
         "portal-login",
         "טופס התחברות",
-        absoluteLayout(80, 80, 460, 520, 4),
+        absoluteLayout(80, 220, 520, 420, 3),
         theme,
-        loginFormChildren("form", theme, 400),
-        { minHeight: "480px" },
+        { minHeight: "400px" },
       ),
-      textNode("title", "כניסה לאזור האישי", { color: theme.ink, fontSize: "44px", fontWeight: "900" }, absoluteLayout(600, 160, 420, 90, 3)),
-      textNode("subtitle", "טופס מוכן ומקושר לעסק ולאתר הספציפי.", { color: theme.muted, fontSize: "16px", fontWeight: "600", lineHeight: "1.7" }, absoluteLayout(600, 270, 380, 80, 3)),
+      imageNode(
+        "photo",
+        theme.photo,
+        { objectFit: "cover", borderRadius: "28px" },
+        absoluteLayout(660, 160, 360, 480, 2),
+        "תמונה",
+      ),
     ],
-    // centered card
+    // Soft stacked center
     () => [
       boxNode("bg", { backgroundColor: theme.bg }, absoluteLayout(0, 0, "100%", "100%", 1), "רקע"),
-      textNode("title", "התחברות", { color: theme.ink, fontSize: "40px", fontWeight: "900", textAlign: "center" }, absoluteLayout(320, 50, 400, 50, 3)),
-      ...portalWidget(
+      boxNode(
+        "glow",
+        { backgroundColor: theme.accent, opacity: 0.12, borderRadius: "999px" },
+        absoluteLayout(340, 40, 420, 180, 1),
+        "הילה",
+      ),
+      textNode(
+        "title",
+        "ברוכים השבים",
+        { color: theme.ink, fontSize: "42px", fontWeight: "900", textAlign: "center" },
+        absoluteLayout(300, 70, 500, 56, 2),
+      ),
+      textNode(
+        "subtitle",
+        "הזינו פרטים כדי להיכנס לאזור האישי של האתר.",
+        { color: theme.muted, fontSize: "15px", fontWeight: "600", textAlign: "center" },
+        absoluteLayout(300, 130, 500, 40, 2),
+      ),
+      portalMount(
         "form",
         "portal-login",
         "טופס התחברות",
-        absoluteLayout(300, 120, 440, 500, 4),
+        absoluteLayout(300, 190, 500, 460, 3),
         theme,
-        loginFormChildren("form", theme, 380),
-        { minHeight: "460px" },
+        { minHeight: "440px" },
       ),
     ],
-    // split band
+    // Asymmetric magazine
     () => [
-      boxNode("left", { backgroundColor: theme.ink }, absoluteLayout(0, 0, "46%", "100%", 1), "פס"),
-      boxNode("right", { backgroundColor: theme.soft }, absoluteLayout(480, 0, "54%", "100%", 1), "רקע"),
-      textNode("title", "שלום שוב", { color: "#f8fafc", fontSize: "42px", fontWeight: "900" }, absoluteLayout(70, 180, 340, 80, 3)),
-      textNode("subtitle", "התחברות מאובטחת לאזור האישי של האתר.", { color: "#cbd5e1", fontSize: "15px", fontWeight: "600", lineHeight: "1.7" }, absoluteLayout(70, 280, 320, 80, 3)),
-      ...portalWidget(
+      boxNode("bg", { backgroundColor: theme.bg }, absoluteLayout(0, 0, "100%", "100%", 1), "רקע"),
+      imageNode(
+        "photo",
+        theme.photo,
+        { objectFit: "cover", borderRadius: "0 40px 40px 0" },
+        absoluteLayout(0, 40, 480, 640, 2),
+        "תמונה",
+      ),
+      textNode(
+        "title",
+        "כניסה מהירה",
+        { color: theme.ink, fontSize: "44px", fontWeight: "900" },
+        absoluteLayout(560, 90, 440, 60, 3),
+      ),
+      textNode(
+        "subtitle",
+        "טופס מקושר אוטומטית לעסק ולאתר הזה.",
+        { color: theme.muted, fontSize: "16px", fontWeight: "600", lineHeight: "1.7" },
+        absoluteLayout(560, 160, 400, 60, 3),
+      ),
+      portalMount(
         "form",
         "portal-login",
         "טופס התחברות",
-        absoluteLayout(560, 90, 460, 500, 4),
+        absoluteLayout(560, 240, 460, 420, 4),
         theme,
-        loginFormChildren("form", theme, 400),
-        { minHeight: "460px" },
+        { minHeight: "400px" },
+      ),
+    ],
+    // Full-bleed dark with card
+    () => [
+      imageNode(
+        "photo",
+        theme.photo,
+        { objectFit: "cover" },
+        absoluteLayout(0, 0, "100%", "100%", 1),
+        "רקע",
+      ),
+      boxNode(
+        "veil",
+        { background: "linear-gradient(120deg, rgba(8,12,20,0.88) 20%, rgba(8,12,20,0.45) 100%)" },
+        absoluteLayout(0, 0, "100%", "100%", 2),
+        "שכבה",
+      ),
+      textNode(
+        "title",
+        "האזור האישי שלכם",
+        { color: "#f8fafc", fontSize: "46px", fontWeight: "900", lineHeight: "1.05" },
+        absoluteLayout(72, 180, 420, 100, 3),
+      ),
+      textNode(
+        "subtitle",
+        "התחברות ללקוחות האתר בלבד.",
+        { color: "#cbd5e1", fontSize: "16px", fontWeight: "600" },
+        absoluteLayout(72, 300, 360, 50, 3),
+      ),
+      portalMount(
+        "form",
+        "portal-login",
+        "טופס התחברות",
+        absoluteLayout(560, 100, 460, 520, 4),
+        theme,
+        { minHeight: "500px" },
       ),
     ],
   ];
@@ -719,61 +541,256 @@ function loginNodes(theme: Theme, index: number): VisualLibraryNodeTemplate[] {
 }
 
 function registerNodes(theme: Theme, index: number): VisualLibraryNodeTemplate[] {
-  const layouts = [
+  const layouts: Array<() => VisualLibraryNodeTemplate[]> = [
     () => [
       boxNode("bg", { backgroundColor: theme.bg }, absoluteLayout(0, 0, "100%", "100%", 1), "רקע"),
-      textNode("eyebrow", "הרשמה", { color: theme.accent, fontSize: "13px", fontWeight: "800" }, absoluteLayout(72, 80, 200, 28, 3)),
-      textNode("title", "צרו חשבון אישי", { color: theme.ink, fontSize: "44px", fontWeight: "900" }, absoluteLayout(72, 120, 420, 70, 3)),
-      textNode("subtitle", "ההרשמה נקלטת אוטומטית לאתר ולעסק הזה בלבד.", { color: theme.muted, fontSize: "15px", fontWeight: "600", lineHeight: "1.7" }, absoluteLayout(72, 210, 400, 70, 3)),
-      ...portalWidget(
+      imageNode(
+        "photo",
+        theme.photo,
+        { objectFit: "cover" },
+        absoluteLayout(0, 0, 500, "100%", 2),
+        "תמונה",
+      ),
+      boxNode(
+        "veil",
+        { background: "linear-gradient(90deg, rgba(15,23,42,0.4), transparent)" },
+        absoluteLayout(0, 0, 500, "100%", 3),
+        "שכבה",
+      ),
+      textNode(
+        "photo-title",
+        "הצטרפו אלינו",
+        { color: "#fff", fontSize: "42px", fontWeight: "900" },
+        absoluteLayout(48, 260, 380, 70, 4),
+      ),
+      portalMount(
         "form",
         "portal-register",
         "טופס הרשמה",
-        absoluteLayout(560, 70, 480, 560, 4),
+        absoluteLayout(560, 60, 480, 600, 5),
         theme,
-        registerFormChildren("form", theme, 420),
-        { minHeight: "520px" },
+        { minHeight: "580px" },
       ),
     ],
     () => [
       boxNode("bg", { backgroundColor: theme.bg }, absoluteLayout(0, 0, "100%", "100%", 1), "רקע"),
-      ...portalWidget(
+      portalMount(
         "form",
         "portal-register",
         "טופס הרשמה",
-        absoluteLayout(80, 70, 480, 560, 4),
+        absoluteLayout(72, 60, 480, 600, 4),
         theme,
-        registerFormChildren("form", theme, 420),
-        { minHeight: "520px" },
+        { minHeight: "580px" },
       ),
-      textNode("title", "הצטרפות לאזור האישי", { color: theme.ink, fontSize: "40px", fontWeight: "900" }, absoluteLayout(620, 180, 400, 90, 3)),
-      textNode("subtitle", "שם, אימייל וסיסמה — והלקוח נשמר אצלכם.", { color: theme.muted, fontSize: "16px", fontWeight: "600", lineHeight: "1.7" }, absoluteLayout(620, 290, 360, 80, 3)),
+      textNode(
+        "eyebrow",
+        "הרשמה מהירה",
+        { color: theme.accent, fontSize: "13px", fontWeight: "800" },
+        absoluteLayout(620, 180, 400, 28, 3),
+      ),
+      textNode(
+        "title",
+        "צרו חשבון אישי",
+        { color: theme.ink, fontSize: "46px", fontWeight: "900", lineHeight: "1.05" },
+        absoluteLayout(620, 220, 400, 100, 3),
+      ),
+      textNode(
+        "subtitle",
+        "הפרטים נקלטים אוטומטית לאתר ולעסק הזה בלבד.",
+        { color: theme.muted, fontSize: "16px", fontWeight: "600", lineHeight: "1.7" },
+        absoluteLayout(620, 340, 360, 80, 3),
+      ),
+    ],
+    () => [
+      boxNode("bg", { backgroundColor: theme.soft }, absoluteLayout(0, 0, "100%", "100%", 1), "רקע"),
+      textNode(
+        "title",
+        "פתיחת חשבון",
+        { color: theme.ink, fontSize: "40px", fontWeight: "900", textAlign: "center" },
+        absoluteLayout(300, 40, 500, 50, 2),
+      ),
+      portalMount(
+        "form",
+        "portal-register",
+        "טופס הרשמה",
+        absoluteLayout(300, 110, 500, 560, 3),
+        theme,
+        { minHeight: "540px" },
+      ),
+    ],
+    () => [
+      boxNode(
+        "band",
+        { backgroundColor: theme.accent },
+        absoluteLayout(0, 0, "100%", 200, 1),
+        "פס",
+      ),
+      boxNode(
+        "body",
+        { backgroundColor: theme.soft },
+        absoluteLayout(0, 200, "100%", "100%", 1),
+        "רקע",
+      ),
+      textNode(
+        "title",
+        "הרשמה לאזור האישי",
+        { color: "#ffffff", fontSize: "40px", fontWeight: "900" },
+        absoluteLayout(80, 70, 520, 60, 3),
+      ),
+      portalMount(
+        "form",
+        "portal-register",
+        "טופס הרשמה",
+        absoluteLayout(300, 120, 500, 560, 4),
+        theme,
+        { minHeight: "540px" },
+      ),
     ],
     () => [
       boxNode("bg", { backgroundColor: theme.bg }, absoluteLayout(0, 0, "100%", "100%", 1), "רקע"),
-      textNode("title", "הרשמה מהירה", { color: theme.ink, fontSize: "38px", fontWeight: "900", textAlign: "center" }, absoluteLayout(300, 40, 440, 50, 3)),
-      ...portalWidget(
+      imageNode(
+        "photo",
+        theme.photo,
+        { objectFit: "cover", borderRadius: "32px" },
+        absoluteLayout(620, 80, 400, 560, 2),
+        "תמונה",
+      ),
+      portalMount(
         "form",
         "portal-register",
         "טופס הרשמה",
-        absoluteLayout(290, 110, 460, 540, 4),
+        absoluteLayout(80, 70, 480, 580, 3),
         theme,
-        registerFormChildren("form", theme, 400),
-        { minHeight: "500px" },
+        { minHeight: "560px" },
       ),
     ],
     () => [
-      boxNode("band", { backgroundColor: theme.accent }, absoluteLayout(0, 0, "100%", 180, 1), "פס"),
-      boxNode("body", { backgroundColor: theme.soft }, absoluteLayout(0, 180, "100%", "100%", 1), "רקע"),
-      textNode("title", "פתיחת חשבון", { color: "#ffffff", fontSize: "40px", fontWeight: "900" }, absoluteLayout(80, 60, 420, 60, 3)),
-      ...portalWidget(
+      imageNode(
+        "photo",
+        theme.photo,
+        { objectFit: "cover" },
+        absoluteLayout(0, 0, "100%", "100%", 1),
+        "רקע",
+      ),
+      boxNode(
+        "veil",
+        { background: "rgba(248,250,252,0.88)" },
+        absoluteLayout(0, 0, "100%", "100%", 2),
+        "שכבה",
+      ),
+      portalMount(
         "form",
         "portal-register",
         "טופס הרשמה",
-        absoluteLayout(300, 120, 460, 540, 4),
+        absoluteLayout(300, 70, 500, 580, 3),
         theme,
-        registerFormChildren("form", theme, 400),
-        { minHeight: "500px" },
+        { minHeight: "560px" },
+      ),
+    ],
+    () => [
+      boxNode("bg", { backgroundColor: theme.ink }, absoluteLayout(0, 0, "100%", "100%", 1), "רקע"),
+      textNode(
+        "title",
+        "הצטרפות",
+        { color: "#f8fafc", fontSize: "48px", fontWeight: "900" },
+        absoluteLayout(72, 80, 400, 60, 2),
+      ),
+      textNode(
+        "subtitle",
+        "שם, אימייל וסיסמה — והלקוח נשמר אצלכם.",
+        { color: "#cbd5e1", fontSize: "16px", fontWeight: "600", lineHeight: "1.7" },
+        absoluteLayout(72, 150, 360, 70, 2),
+      ),
+      portalMount(
+        "form",
+        "portal-register",
+        "טופס הרשמה",
+        absoluteLayout(520, 60, 500, 600, 3),
+        theme,
+        { minHeight: "580px" },
+      ),
+    ],
+    () => [
+      boxNode("bg", { backgroundColor: theme.bg }, absoluteLayout(0, 0, "100%", "100%", 1), "רקע"),
+      boxNode(
+        "card",
+        {
+          backgroundColor: theme.card,
+          borderRadius: "36px",
+          border: `1px solid ${theme.line}`,
+          boxShadow: "0 36px 80px -48px rgba(15,23,42,0.4)",
+        },
+        absoluteLayout(100, 50, 900, 640, 2),
+        "כרטיס",
+      ),
+      textNode(
+        "title",
+        "יצירת חשבון",
+        { color: theme.ink, fontSize: "36px", fontWeight: "900" },
+        absoluteLayout(140, 90, 360, 50, 3),
+      ),
+      portalMount(
+        "form",
+        "portal-register",
+        "טופס הרשמה",
+        absoluteLayout(140, 150, 420, 500, 4),
+        theme,
+        { minHeight: "480px", boxShadow: "none", border: `1px solid ${theme.line}` },
+      ),
+      imageNode(
+        "photo",
+        theme.photo,
+        { objectFit: "cover", borderRadius: "28px" },
+        absoluteLayout(620, 120, 340, 520, 3),
+        "תמונה",
+      ),
+    ],
+    () => [
+      boxNode("bg", { backgroundColor: theme.soft }, absoluteLayout(0, 0, "100%", "100%", 1), "רקע"),
+      textNode(
+        "eyebrow",
+        "NEW MEMBER",
+        { color: theme.accent, fontSize: "12px", fontWeight: "800", letterSpacing: "0.12em" },
+        absoluteLayout(80, 70, 300, 24, 2),
+      ),
+      textNode(
+        "title",
+        "הרשמה לאתר",
+        { color: theme.ink, fontSize: "50px", fontWeight: "900" },
+        absoluteLayout(80, 110, 500, 70, 2),
+      ),
+      portalMount(
+        "form",
+        "portal-register",
+        "טופס הרשמה",
+        absoluteLayout(80, 220, 500, 460, 3),
+        theme,
+        { minHeight: "440px" },
+      ),
+      imageNode(
+        "photo",
+        theme.photo,
+        { objectFit: "cover", borderRadius: "28px" },
+        absoluteLayout(640, 140, 380, 500, 2),
+        "תמונה",
+      ),
+    ],
+    () => [
+      boxNode("bg", { backgroundColor: theme.bg }, absoluteLayout(0, 0, "100%", "100%", 1), "רקע"),
+      imageNode(
+        "photo",
+        theme.photo,
+        { objectFit: "cover", borderRadius: "40px" },
+        absoluteLayout(60, 60, 980, 220, 2),
+        "באנר",
+      ),
+      portalMount(
+        "form",
+        "portal-register",
+        "טופס הרשמה",
+        absoluteLayout(300, 200, 500, 500, 3),
+        theme,
+        { minHeight: "480px" },
       ),
     ],
   ];
@@ -781,66 +798,283 @@ function registerNodes(theme: Theme, index: number): VisualLibraryNodeTemplate[]
 }
 
 function accountNodes(theme: Theme, index: number): VisualLibraryNodeTemplate[] {
-  const layouts = [
+  const layouts: Array<() => VisualLibraryNodeTemplate[]> = [
     () => [
       boxNode("bg", { backgroundColor: theme.bg }, absoluteLayout(0, 0, "100%", "100%", 1), "רקע"),
-      textNode("title", "האזור האישי שלי", { color: theme.ink, fontSize: "42px", fontWeight: "900" }, absoluteLayout(72, 70, 480, 60, 2)),
-      textNode("subtitle", "חשבון, הזמנות ועגלה — לפי מה שפתחתם ללקוח.", { color: theme.muted, fontSize: "15px", fontWeight: "600", lineHeight: "1.7" }, absoluteLayout(72, 145, 460, 60, 2)),
-      ...portalWidget(
+      textNode(
+        "title",
+        "האזור האישי שלי",
+        { color: theme.ink, fontSize: "44px", fontWeight: "900" },
+        absoluteLayout(72, 60, 480, 60, 2),
+      ),
+      textNode(
+        "subtitle",
+        "חשבון, הזמנות ועגלה — לפי מה שפתחתם ללקוח.",
+        { color: theme.muted, fontSize: "16px", fontWeight: "600", lineHeight: "1.7" },
+        absoluteLayout(72, 130, 460, 60, 2),
+      ),
+      buttonNode(
+        "btn-orders",
+        "הזמנות",
+        {
+          color: "#fff",
+          backgroundColor: theme.ink,
+          borderRadius: "14px",
+          fontWeight: "800",
+          fontSize: "13px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        },
+        absoluteLayout(72, 220, 130, 46, 3),
+        "/orders",
+      ),
+      buttonNode(
+        "btn-cart",
+        "עגלה",
+        {
+          color: theme.ink,
+          backgroundColor: theme.card,
+          border: `1px solid ${theme.line}`,
+          borderRadius: "14px",
+          fontWeight: "800",
+          fontSize: "13px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        },
+        absoluteLayout(220, 220, 120, 46, 3),
+        "/cart",
+      ),
+      portalMount(
         "account",
         "portal-account",
         "פאנל חשבון",
-        absoluteLayout(560, 60, 500, 420, 3),
+        absoluteLayout(560, 60, 480, 520, 3),
         theme,
-        accountPanelChildren("account", theme, 440),
-        { minHeight: "380px" },
+        { minHeight: "500px" },
       ),
-      buttonNode("btn-orders", "הזמנות", { color: "#fff", backgroundColor: theme.ink, borderRadius: "12px", padding: "12px 18px", fontWeight: "800", fontSize: "13px" }, absoluteLayout(72, 250, 130, 44, 3), "/orders"),
-      buttonNode("btn-cart", "עגלה", { color: theme.ink, backgroundColor: theme.card, border: `1px solid ${theme.line}`, borderRadius: "12px", padding: "12px 18px", fontWeight: "800", fontSize: "13px" }, absoluteLayout(220, 250, 120, 44, 3), "/cart"),
     ],
     () => [
       boxNode("bg", { backgroundColor: theme.bg }, absoluteLayout(0, 0, "100%", "100%", 1), "רקע"),
-      ...portalWidget(
+      portalMount(
         "account",
         "portal-account",
         "פאנל חשבון",
-        absoluteLayout(80, 70, 500, 480, 3),
+        absoluteLayout(72, 70, 520, 540, 3),
         theme,
-        accountPanelChildren("account", theme, 440),
+        { minHeight: "520px" },
+      ),
+      imageNode(
+        "photo",
+        theme.photo,
+        { objectFit: "cover", borderRadius: "28px" },
+        absoluteLayout(640, 120, 380, 440, 2),
+        "תמונה",
+      ),
+    ],
+    () => [
+      boxNode(
+        "top",
+        { backgroundColor: theme.ink },
+        absoluteLayout(0, 0, "100%", 220, 1),
+        "פס",
+      ),
+      boxNode(
+        "body",
+        { backgroundColor: theme.soft },
+        absoluteLayout(0, 220, "100%", "100%", 1),
+        "רקע",
+      ),
+      textNode(
+        "title",
+        "אזור אישי",
+        { color: "#ffffff", fontSize: "42px", fontWeight: "900" },
+        absoluteLayout(80, 70, 420, 60, 2),
+      ),
+      textNode(
+        "subtitle",
+        "הזמנות · עגלה · פרטים אישיים",
+        { color: "#cbd5e1", fontSize: "15px", fontWeight: "600" },
+        absoluteLayout(80, 145, 420, 40, 2),
+      ),
+      portalMount(
+        "account",
+        "portal-account",
+        "פאנל חשבון",
+        absoluteLayout(80, 160, 940, 420, 3),
+        theme,
+        { minHeight: "400px" },
+      ),
+    ],
+    () => [
+      boxNode("bg", { backgroundColor: theme.bg }, absoluteLayout(0, 0, "100%", "100%", 1), "רקע"),
+      textNode(
+        "title",
+        "החשבון שלי",
+        { color: theme.ink, fontSize: "40px", fontWeight: "900", textAlign: "center" },
+        absoluteLayout(300, 40, 500, 50, 2),
+      ),
+      portalMount(
+        "account",
+        "portal-account",
+        "פאנל חשבון",
+        absoluteLayout(280, 120, 540, 460, 3),
+        theme,
         { minHeight: "440px" },
       ),
-      textNode("title", "ברוכים הבאים", { color: theme.ink, fontSize: "40px", fontWeight: "900" }, absoluteLayout(640, 120, 360, 70, 2)),
-      textNode("subtitle", "כאן הלקוח ממשיך אחרי התחברות.", { color: theme.muted, fontSize: "15px", fontWeight: "600", lineHeight: "1.7" }, absoluteLayout(640, 210, 340, 70, 2)),
-      buttonNode("btn-orders", "ההזמנות שלי", { color: "#fff", backgroundColor: theme.accent, borderRadius: "12px", padding: "12px 18px", fontWeight: "800", fontSize: "13px" }, absoluteLayout(640, 320, 170, 44, 3), "/orders"),
+    ],
+    () => [
+      imageNode(
+        "photo",
+        theme.photo,
+        { objectFit: "cover" },
+        absoluteLayout(0, 0, "100%", "100%", 1),
+        "רקע",
+      ),
+      boxNode(
+        "veil",
+        { background: "rgba(15,23,42,0.55)" },
+        absoluteLayout(0, 0, "100%", "100%", 2),
+        "שכבה",
+      ),
+      portalMount(
+        "account",
+        "portal-account",
+        "פאנל חשבון",
+        absoluteLayout(280, 100, 540, 500, 3),
+        theme,
+        { minHeight: "480px" },
+      ),
+    ],
+    () => [
+      boxNode("bg", { backgroundColor: theme.soft }, absoluteLayout(0, 0, "100%", "100%", 1), "רקע"),
+      textNode(
+        "eyebrow",
+        "MY ACCOUNT",
+        { color: theme.accent, fontSize: "12px", fontWeight: "800", letterSpacing: "0.12em" },
+        absoluteLayout(72, 60, 300, 24, 2),
+      ),
+      textNode(
+        "title",
+        "ברוכים הבאים",
+        { color: theme.ink, fontSize: "48px", fontWeight: "900" },
+        absoluteLayout(72, 100, 480, 60, 2),
+      ),
+      portalMount(
+        "account",
+        "portal-account",
+        "פאנל חשבון",
+        absoluteLayout(72, 200, 600, 420, 3),
+        theme,
+        { minHeight: "400px" },
+      ),
+      buttonNode(
+        "btn-orders",
+        "ההזמנות שלי",
+        {
+          color: "#fff",
+          backgroundColor: theme.accent,
+          borderRadius: "14px",
+          fontWeight: "800",
+          fontSize: "13px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        },
+        absoluteLayout(720, 220, 180, 48, 3),
+        "/orders",
+      ),
+      buttonNode(
+        "btn-cart",
+        "לעגלה",
+        {
+          color: theme.ink,
+          backgroundColor: theme.card,
+          border: `1px solid ${theme.line}`,
+          borderRadius: "14px",
+          fontWeight: "800",
+          fontSize: "13px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        },
+        absoluteLayout(720, 286, 180, 48, 3),
+        "/cart",
+      ),
     ],
     () => [
       boxNode("bg", { backgroundColor: theme.bg }, absoluteLayout(0, 0, "100%", "100%", 1), "רקע"),
-      textNode("title", "החשבון שלי", { color: theme.ink, fontSize: "38px", fontWeight: "900", textAlign: "center" }, absoluteLayout(300, 40, 440, 50, 2)),
-      ...portalWidget(
+      imageNode(
+        "photo",
+        theme.photo,
+        { objectFit: "cover", borderRadius: "28px" },
+        absoluteLayout(72, 80, 420, 520, 2),
+        "תמונה",
+      ),
+      portalMount(
         "account",
         "portal-account",
         "פאנל חשבון",
-        absoluteLayout(280, 110, 480, 420, 3),
+        absoluteLayout(540, 80, 500, 520, 3),
         theme,
-        accountPanelChildren("account", theme, 420),
-        { minHeight: "380px" },
+        { minHeight: "500px" },
       ),
-      buttonNode("btn-orders", "הזמנות", { color: "#fff", backgroundColor: theme.ink, borderRadius: "12px", padding: "12px 18px", fontWeight: "800", fontSize: "13px" }, absoluteLayout(340, 560, 140, 44, 3), "/orders"),
-      buttonNode("btn-cart", "עגלה", { color: theme.ink, backgroundColor: theme.card, border: `1px solid ${theme.line}`, borderRadius: "12px", padding: "12px 18px", fontWeight: "800", fontSize: "13px" }, absoluteLayout(500, 560, 120, 44, 3), "/cart"),
     ],
     () => [
-      boxNode("top", { backgroundColor: theme.ink }, absoluteLayout(0, 0, "100%", 220, 1), "פס"),
-      boxNode("body", { backgroundColor: theme.soft }, absoluteLayout(0, 220, "100%", "100%", 1), "רקע"),
-      textNode("title", "אזור אישי", { color: "#ffffff", fontSize: "40px", fontWeight: "900" }, absoluteLayout(80, 70, 420, 60, 2)),
-      textNode("subtitle", "הזמנות · עגלה · פרטים אישיים", { color: "#cbd5e1", fontSize: "15px", fontWeight: "600" }, absoluteLayout(80, 145, 420, 40, 2)),
-      ...portalWidget(
+      boxNode("bg", { backgroundColor: theme.ink }, absoluteLayout(0, 0, "100%", "100%", 1), "רקע"),
+      textNode(
+        "title",
+        "החשבון שלכם",
+        { color: "#f8fafc", fontSize: "44px", fontWeight: "900" },
+        absoluteLayout(72, 80, 480, 60, 2),
+      ),
+      portalMount(
         "account",
         "portal-account",
         "פאנל חשבון",
-        absoluteLayout(80, 170, 980, 380, 3),
+        absoluteLayout(72, 180, 960, 420, 3),
         theme,
-        accountPanelChildren("account", theme, 900),
-        { minHeight: "340px" },
+        { minHeight: "400px" },
+      ),
+    ],
+    () => [
+      boxNode("bg", { backgroundColor: theme.bg }, absoluteLayout(0, 0, "100%", "100%", 1), "רקע"),
+      boxNode(
+        "frame",
+        {
+          backgroundColor: theme.card,
+          borderRadius: "36px",
+          border: `1px solid ${theme.line}`,
+          boxShadow: "0 36px 80px -48px rgba(15,23,42,0.35)",
+        },
+        absoluteLayout(80, 60, 940, 580, 2),
+        "מסגרת",
+      ),
+      textNode(
+        "title",
+        "אזור אישי",
+        { color: theme.ink, fontSize: "36px", fontWeight: "900" },
+        absoluteLayout(120, 100, 400, 50, 3),
+      ),
+      portalMount(
+        "account",
+        "portal-account",
+        "פאנל חשבון",
+        absoluteLayout(120, 170, 860, 420, 4),
+        theme,
+        { minHeight: "400px", boxShadow: "none" },
+      ),
+    ],
+    () => [
+      boxNode("bg", { backgroundColor: theme.soft }, absoluteLayout(0, 0, "100%", "100%", 1), "רקע"),
+      portalMount(
+        "account",
+        "portal-account",
+        "פאנל חשבון",
+        absoluteLayout(240, 80, 620, 540, 3),
+        theme,
+        { minHeight: "520px" },
       ),
     ],
   ];
@@ -848,60 +1082,227 @@ function accountNodes(theme: Theme, index: number): VisualLibraryNodeTemplate[] 
 }
 
 function ordersNodes(theme: Theme, index: number): VisualLibraryNodeTemplate[] {
-  const layouts = [
+  const layouts: Array<() => VisualLibraryNodeTemplate[]> = [
     () => [
       boxNode("bg", { backgroundColor: theme.bg }, absoluteLayout(0, 0, "100%", "100%", 1), "רקע"),
-      textNode("title", "ההזמנות שלי", { color: theme.ink, fontSize: "40px", fontWeight: "900" }, absoluteLayout(72, 60, 420, 56, 2)),
-      textNode("subtitle", "הזמנות מהחנות של האתר הזה, לפי הלקוח המחובר.", { color: theme.muted, fontSize: "15px", fontWeight: "600", lineHeight: "1.7" }, absoluteLayout(72, 130, 520, 60, 2)),
-      ...portalWidget(
-        "orders",
-        "portal-orders",
-        "רשימת הזמנות",
-        absoluteLayout(72, 210, 980, 400, 3),
-        theme,
-        ordersPanelChildren("orders", theme, 920),
-        { minHeight: "360px" },
+      textNode(
+        "title",
+        "ההזמנות שלי",
+        { color: theme.ink, fontSize: "44px", fontWeight: "900" },
+        absoluteLayout(72, 50, 480, 56, 2),
       ),
-    ],
-    () => [
-      boxNode("bg", { backgroundColor: theme.bg }, absoluteLayout(0, 0, "100%", "100%", 1), "רקע"),
-      textNode("eyebrow", "היסטוריית רכישות", { color: theme.accent, fontSize: "13px", fontWeight: "800" }, absoluteLayout(72, 70, 260, 28, 2)),
-      textNode("title", "הזמנות קודמות", { color: theme.ink, fontSize: "42px", fontWeight: "900" }, absoluteLayout(72, 110, 480, 60, 2)),
-      ...portalWidget(
-        "orders",
-        "portal-orders",
-        "רשימת הזמנות",
-        absoluteLayout(72, 200, 980, 420, 3),
-        theme,
-        ordersPanelChildren("orders", theme, 920),
-        { minHeight: "380px" },
+      textNode(
+        "subtitle",
+        "הזמנות מהחנות של האתר הזה, לפי הלקוח המחובר.",
+        { color: theme.muted, fontSize: "16px", fontWeight: "600", lineHeight: "1.7" },
+        absoluteLayout(72, 120, 560, 50, 2),
       ),
-    ],
-    () => [
-      boxNode("top", { backgroundColor: theme.ink }, absoluteLayout(0, 0, "100%", 160, 1), "פס"),
-      boxNode("body", { backgroundColor: theme.soft }, absoluteLayout(0, 160, "100%", "100%", 1), "רקע"),
-      textNode("title", "ההזמנות שלי", { color: "#ffffff", fontSize: "38px", fontWeight: "900" }, absoluteLayout(72, 55, 420, 50, 2)),
-      ...portalWidget(
+      portalMount(
         "orders",
         "portal-orders",
         "רשימת הזמנות",
-        absoluteLayout(72, 130, 980, 420, 3),
+        absoluteLayout(72, 200, 960, 420, 3),
         theme,
-        ordersPanelChildren("orders", theme, 920),
-        { minHeight: "380px" },
-      ),
-    ],
-    () => [
-      boxNode("bg", { backgroundColor: theme.bg }, absoluteLayout(0, 0, "100%", "100%", 1), "רקע"),
-      textNode("title", "הזמנות", { color: theme.ink, fontSize: "36px", fontWeight: "900", textAlign: "center" }, absoluteLayout(300, 40, 440, 50, 2)),
-      ...portalWidget(
-        "orders",
-        "portal-orders",
-        "רשימת הזמנות",
-        absoluteLayout(140, 120, 760, 440, 3),
-        theme,
-        ordersPanelChildren("orders", theme, 700),
         { minHeight: "400px" },
+      ),
+    ],
+    () => [
+      boxNode(
+        "top",
+        { backgroundColor: theme.ink },
+        absoluteLayout(0, 0, "100%", 160, 1),
+        "פס",
+      ),
+      boxNode(
+        "body",
+        { backgroundColor: theme.soft },
+        absoluteLayout(0, 160, "100%", "100%", 1),
+        "רקע",
+      ),
+      textNode(
+        "title",
+        "הזמנות קודמות",
+        { color: "#ffffff", fontSize: "38px", fontWeight: "900" },
+        absoluteLayout(72, 55, 480, 50, 2),
+      ),
+      portalMount(
+        "orders",
+        "portal-orders",
+        "רשימת הזמנות",
+        absoluteLayout(72, 120, 960, 460, 3),
+        theme,
+        { minHeight: "440px" },
+      ),
+    ],
+    () => [
+      boxNode("bg", { backgroundColor: theme.bg }, absoluteLayout(0, 0, "100%", "100%", 1), "רקע"),
+      imageNode(
+        "photo",
+        IMG.ecommerce,
+        { objectFit: "cover", borderRadius: "28px" },
+        absoluteLayout(72, 80, 360, 520, 2),
+        "חנות",
+      ),
+      textNode(
+        "title",
+        "היסטוריית רכישות",
+        { color: theme.ink, fontSize: "40px", fontWeight: "900" },
+        absoluteLayout(480, 80, 520, 56, 2),
+      ),
+      portalMount(
+        "orders",
+        "portal-orders",
+        "רשימת הזמנות",
+        absoluteLayout(480, 160, 540, 440, 3),
+        theme,
+        { minHeight: "420px" },
+      ),
+    ],
+    () => [
+      boxNode("bg", { backgroundColor: theme.soft }, absoluteLayout(0, 0, "100%", "100%", 1), "רקע"),
+      textNode(
+        "title",
+        "הזמנות",
+        { color: theme.ink, fontSize: "40px", fontWeight: "900", textAlign: "center" },
+        absoluteLayout(300, 40, 500, 50, 2),
+      ),
+      portalMount(
+        "orders",
+        "portal-orders",
+        "רשימת הזמנות",
+        absoluteLayout(160, 120, 780, 480, 3),
+        theme,
+        { minHeight: "460px" },
+      ),
+    ],
+    () => [
+      boxNode("bg", { backgroundColor: theme.bg }, absoluteLayout(0, 0, "100%", "100%", 1), "רקע"),
+      textNode(
+        "eyebrow",
+        "ORDERS",
+        { color: theme.accent, fontSize: "12px", fontWeight: "800", letterSpacing: "0.12em" },
+        absoluteLayout(72, 50, 200, 24, 2),
+      ),
+      textNode(
+        "title",
+        "כל ההזמנות במקום אחד",
+        { color: theme.ink, fontSize: "42px", fontWeight: "900" },
+        absoluteLayout(72, 90, 700, 56, 2),
+      ),
+      portalMount(
+        "orders",
+        "portal-orders",
+        "רשימת הזמנות",
+        absoluteLayout(72, 180, 960, 440, 3),
+        theme,
+        { minHeight: "420px" },
+      ),
+    ],
+    () => [
+      imageNode(
+        "photo",
+        IMG.product,
+        { objectFit: "cover" },
+        absoluteLayout(0, 0, "100%", "100%", 1),
+        "רקע",
+      ),
+      boxNode(
+        "veil",
+        { background: "rgba(248,250,252,0.9)" },
+        absoluteLayout(0, 0, "100%", "100%", 2),
+        "שכבה",
+      ),
+      portalMount(
+        "orders",
+        "portal-orders",
+        "רשימת הזמנות",
+        absoluteLayout(140, 100, 820, 480, 3),
+        theme,
+        { minHeight: "460px" },
+      ),
+    ],
+    () => [
+      boxNode("bg", { backgroundColor: theme.ink }, absoluteLayout(0, 0, "100%", "100%", 1), "רקע"),
+      textNode(
+        "title",
+        "ההזמנות שלי",
+        { color: "#f8fafc", fontSize: "42px", fontWeight: "900" },
+        absoluteLayout(72, 60, 480, 56, 2),
+      ),
+      portalMount(
+        "orders",
+        "portal-orders",
+        "רשימת הזמנות",
+        absoluteLayout(72, 150, 960, 460, 3),
+        theme,
+        { minHeight: "440px" },
+      ),
+    ],
+    () => [
+      boxNode("bg", { backgroundColor: theme.bg }, absoluteLayout(0, 0, "100%", "100%", 1), "רקע"),
+      boxNode(
+        "frame",
+        {
+          backgroundColor: theme.card,
+          borderRadius: "36px",
+          border: `1px solid ${theme.line}`,
+          boxShadow: "0 36px 80px -48px rgba(15,23,42,0.3)",
+        },
+        absoluteLayout(70, 50, 960, 600, 2),
+        "מסגרת",
+      ),
+      textNode(
+        "title",
+        "הזמנות קודמות",
+        { color: theme.ink, fontSize: "34px", fontWeight: "900" },
+        absoluteLayout(110, 90, 480, 48, 3),
+      ),
+      portalMount(
+        "orders",
+        "portal-orders",
+        "רשימת הזמנות",
+        absoluteLayout(110, 160, 880, 440, 4),
+        theme,
+        { minHeight: "420px", boxShadow: "none" },
+      ),
+    ],
+    () => [
+      boxNode("bg", { backgroundColor: theme.soft }, absoluteLayout(0, 0, "100%", "100%", 1), "רקע"),
+      portalMount(
+        "orders",
+        "portal-orders",
+        "רשימת הזמנות",
+        absoluteLayout(200, 80, 700, 520, 3),
+        theme,
+        { minHeight: "500px" },
+      ),
+    ],
+    () => [
+      boxNode(
+        "band",
+        { backgroundColor: theme.accent },
+        absoluteLayout(0, 0, "100%", 140, 1),
+        "פס",
+      ),
+      boxNode(
+        "body",
+        { backgroundColor: theme.bg },
+        absoluteLayout(0, 140, "100%", "100%", 1),
+        "רקע",
+      ),
+      textNode(
+        "title",
+        "הזמנות",
+        { color: "#ffffff", fontSize: "36px", fontWeight: "900" },
+        absoluteLayout(72, 48, 400, 48, 2),
+      ),
+      portalMount(
+        "orders",
+        "portal-orders",
+        "רשימת הזמנות",
+        absoluteLayout(72, 110, 960, 480, 3),
+        theme,
+        { minHeight: "460px" },
       ),
     ],
   ];
@@ -909,60 +1310,216 @@ function ordersNodes(theme: Theme, index: number): VisualLibraryNodeTemplate[] {
 }
 
 function cartNodes(theme: Theme, index: number): VisualLibraryNodeTemplate[] {
-  const layouts = [
+  const layouts: Array<() => VisualLibraryNodeTemplate[]> = [
     () => [
       boxNode("bg", { backgroundColor: theme.bg }, absoluteLayout(0, 0, "100%", "100%", 1), "רקע"),
-      textNode("title", "העגלה שלי", { color: theme.ink, fontSize: "40px", fontWeight: "900" }, absoluteLayout(72, 60, 420, 56, 2)),
-      textNode("subtitle", "המשך רכישה מהעגלה הפעילה באתר.", { color: theme.muted, fontSize: "15px", fontWeight: "600", lineHeight: "1.7" }, absoluteLayout(72, 130, 520, 60, 2)),
-      ...portalWidget(
-        "cart",
-        "portal-cart",
-        "עגלת קניות",
-        absoluteLayout(72, 210, 980, 360, 3),
-        theme,
-        cartPanelChildren("cart", theme, 920),
-        { minHeight: "320px" },
+      textNode(
+        "title",
+        "העגלה שלי",
+        { color: theme.ink, fontSize: "44px", fontWeight: "900" },
+        absoluteLayout(72, 50, 420, 56, 2),
       ),
-    ],
-    () => [
-      boxNode("bg", { backgroundColor: theme.bg }, absoluteLayout(0, 0, "100%", "100%", 1), "רקע"),
-      ...portalWidget(
+      textNode(
+        "subtitle",
+        "המשך רכישה מהעגלה הפעילה באתר.",
+        { color: theme.muted, fontSize: "16px", fontWeight: "600", lineHeight: "1.7" },
+        absoluteLayout(72, 120, 520, 50, 2),
+      ),
+      portalMount(
         "cart",
         "portal-cart",
         "עגלת קניות",
-        absoluteLayout(80, 80, 520, 420, 3),
+        absoluteLayout(72, 200, 960, 400, 3),
         theme,
-        cartPanelChildren("cart", theme, 460),
         { minHeight: "380px" },
       ),
-      textNode("title", "סיכום רכישה", { color: theme.ink, fontSize: "38px", fontWeight: "900" }, absoluteLayout(660, 140, 360, 60, 2)),
-      textNode("subtitle", "העגלה נשמרת לאתר הזה וממשיכה לתשלום.", { color: theme.muted, fontSize: "15px", fontWeight: "600", lineHeight: "1.7" }, absoluteLayout(660, 220, 340, 80, 2)),
     ],
     () => [
-      boxNode("band", { backgroundColor: theme.accent }, absoluteLayout(0, 0, "100%", 140, 1), "פס"),
-      boxNode("body", { backgroundColor: theme.soft }, absoluteLayout(0, 140, "100%", "100%", 1), "רקע"),
-      textNode("title", "עגלת קניות", { color: "#ffffff", fontSize: "36px", fontWeight: "900" }, absoluteLayout(72, 48, 420, 50, 2)),
-      ...portalWidget(
+      boxNode("bg", { backgroundColor: theme.bg }, absoluteLayout(0, 0, "100%", "100%", 1), "רקע"),
+      portalMount(
         "cart",
         "portal-cart",
         "עגלת קניות",
-        absoluteLayout(72, 110, 980, 400, 3),
+        absoluteLayout(72, 80, 560, 520, 3),
         theme,
-        cartPanelChildren("cart", theme, 920),
-        { minHeight: "360px" },
+        { minHeight: "500px" },
+      ),
+      textNode(
+        "title",
+        "סיכום רכישה",
+        { color: theme.ink, fontSize: "40px", fontWeight: "900" },
+        absoluteLayout(700, 160, 320, 60, 2),
+      ),
+      textNode(
+        "subtitle",
+        "העגלה נשמרת לאתר הזה וממשיכה לתשלום.",
+        { color: theme.muted, fontSize: "16px", fontWeight: "600", lineHeight: "1.7" },
+        absoluteLayout(700, 240, 300, 80, 2),
+      ),
+    ],
+    () => [
+      boxNode(
+        "band",
+        { backgroundColor: theme.accent },
+        absoluteLayout(0, 0, "100%", 140, 1),
+        "פס",
+      ),
+      boxNode(
+        "body",
+        { backgroundColor: theme.soft },
+        absoluteLayout(0, 140, "100%", "100%", 1),
+        "רקע",
+      ),
+      textNode(
+        "title",
+        "עגלת קניות",
+        { color: "#ffffff", fontSize: "36px", fontWeight: "900" },
+        absoluteLayout(72, 48, 420, 48, 2),
+      ),
+      portalMount(
+        "cart",
+        "portal-cart",
+        "עגלת קניות",
+        absoluteLayout(72, 110, 960, 460, 3),
+        theme,
+        { minHeight: "440px" },
+      ),
+    ],
+    () => [
+      boxNode("bg", { backgroundColor: theme.soft }, absoluteLayout(0, 0, "100%", "100%", 1), "רקע"),
+      textNode(
+        "title",
+        "העגלה",
+        { color: theme.ink, fontSize: "40px", fontWeight: "900", textAlign: "center" },
+        absoluteLayout(300, 40, 500, 50, 2),
+      ),
+      portalMount(
+        "cart",
+        "portal-cart",
+        "עגלת קניות",
+        absoluteLayout(200, 120, 700, 460, 3),
+        theme,
+        { minHeight: "440px" },
       ),
     ],
     () => [
       boxNode("bg", { backgroundColor: theme.bg }, absoluteLayout(0, 0, "100%", "100%", 1), "רקע"),
-      textNode("title", "העגלה", { color: theme.ink, fontSize: "36px", fontWeight: "900", textAlign: "center" }, absoluteLayout(300, 40, 440, 50, 2)),
-      ...portalWidget(
+      imageNode(
+        "photo",
+        IMG.product,
+        { objectFit: "cover", borderRadius: "28px" },
+        absoluteLayout(660, 80, 360, 520, 2),
+        "מוצר",
+      ),
+      portalMount(
         "cart",
         "portal-cart",
         "עגלת קניות",
-        absoluteLayout(180, 120, 680, 400, 3),
+        absoluteLayout(72, 80, 540, 520, 3),
         theme,
-        cartPanelChildren("cart", theme, 620),
-        { minHeight: "360px" },
+        { minHeight: "500px" },
+      ),
+    ],
+    () => [
+      imageNode(
+        "photo",
+        IMG.ecommerce,
+        { objectFit: "cover" },
+        absoluteLayout(0, 0, "100%", "100%", 1),
+        "רקע",
+      ),
+      boxNode(
+        "veil",
+        { background: "rgba(15,23,42,0.55)" },
+        absoluteLayout(0, 0, "100%", "100%", 2),
+        "שכבה",
+      ),
+      portalMount(
+        "cart",
+        "portal-cart",
+        "עגלת קניות",
+        absoluteLayout(240, 100, 620, 480, 3),
+        theme,
+        { minHeight: "460px" },
+      ),
+    ],
+    () => [
+      boxNode("bg", { backgroundColor: theme.ink }, absoluteLayout(0, 0, "100%", "100%", 1), "רקע"),
+      textNode(
+        "title",
+        "העגלה שלכם",
+        { color: "#f8fafc", fontSize: "42px", fontWeight: "900" },
+        absoluteLayout(72, 60, 480, 56, 2),
+      ),
+      portalMount(
+        "cart",
+        "portal-cart",
+        "עגלת קניות",
+        absoluteLayout(72, 150, 960, 440, 3),
+        theme,
+        { minHeight: "420px" },
+      ),
+    ],
+    () => [
+      boxNode("bg", { backgroundColor: theme.bg }, absoluteLayout(0, 0, "100%", "100%", 1), "רקע"),
+      boxNode(
+        "frame",
+        {
+          backgroundColor: theme.card,
+          borderRadius: "36px",
+          border: `1px solid ${theme.line}`,
+          boxShadow: "0 36px 80px -48px rgba(15,23,42,0.3)",
+        },
+        absoluteLayout(80, 50, 940, 580, 2),
+        "מסגרת",
+      ),
+      textNode(
+        "title",
+        "עגלת קניות",
+        { color: theme.ink, fontSize: "34px", fontWeight: "900" },
+        absoluteLayout(120, 90, 400, 48, 3),
+      ),
+      portalMount(
+        "cart",
+        "portal-cart",
+        "עגלת קניות",
+        absoluteLayout(120, 160, 860, 420, 4),
+        theme,
+        { minHeight: "400px", boxShadow: "none" },
+      ),
+    ],
+    () => [
+      boxNode("bg", { backgroundColor: theme.soft }, absoluteLayout(0, 0, "100%", "100%", 1), "רקע"),
+      textNode(
+        "eyebrow",
+        "CHECKOUT",
+        { color: theme.accent, fontSize: "12px", fontWeight: "800", letterSpacing: "0.12em" },
+        absoluteLayout(72, 50, 240, 24, 2),
+      ),
+      textNode(
+        "title",
+        "מוכנים לתשלום?",
+        { color: theme.ink, fontSize: "42px", fontWeight: "900" },
+        absoluteLayout(72, 90, 560, 56, 2),
+      ),
+      portalMount(
+        "cart",
+        "portal-cart",
+        "עגלת קניות",
+        absoluteLayout(72, 180, 960, 420, 3),
+        theme,
+        { minHeight: "400px" },
+      ),
+    ],
+    () => [
+      boxNode("bg", { backgroundColor: theme.bg }, absoluteLayout(0, 0, "100%", "100%", 1), "רקע"),
+      portalMount(
+        "cart",
+        "portal-cart",
+        "עגלת קניות",
+        absoluteLayout(220, 80, 660, 520, 3),
+        theme,
+        { minHeight: "500px" },
       ),
     ],
   ];
@@ -975,9 +1532,8 @@ function buildLoginSections(): VisualLibrarySectionTemplate[] {
       `section-portal-login-${String(index + 1).padStart(2, "0")}`,
       `התחברות — ${theme.name}`,
       "טופס התחברות מקושר לאתר ולעסק",
-      ["login", "התחברות", "טופס"],
+      ["login", "התחברות", "טופס", "portal-login"],
       theme,
-      THUMBS[index % THUMBS.length],
       "720px",
       loginNodes(theme, index),
     ),
@@ -990,10 +1546,9 @@ function buildRegisterSections(): VisualLibrarySectionTemplate[] {
       `section-portal-register-${String(index + 1).padStart(2, "0")}`,
       `הרשמה — ${theme.name}`,
       "טופס הרשמה שנקלט אוטומטית לאזור האישי של האתר",
-      ["register", "הרשמה", "טופס"],
+      ["register", "הרשמה", "טופס", "portal-register"],
       theme,
-      THUMBS[(index + 3) % THUMBS.length],
-      "740px",
+      "760px",
       registerNodes(theme, index),
     ),
   );
@@ -1005,10 +1560,9 @@ function buildAccountSections(): VisualLibrarySectionTemplate[] {
       `section-portal-account-${String(index + 1).padStart(2, "0")}`,
       `אזור אישי — ${theme.name}`,
       "עמוד אחרי התחברות עם חשבון, הזמנות ועגלה",
-      ["account", "אזור אישי", "חשבון"],
+      ["account", "אזור אישי", "חשבון", "portal-account"],
       theme,
-      THUMBS[(index + 5) % THUMBS.length],
-      "680px",
+      "700px",
       accountNodes(theme, index),
     ),
   );
@@ -1020,10 +1574,9 @@ function buildOrdersSections(): VisualLibrarySectionTemplate[] {
       `section-portal-orders-${String(index + 1).padStart(2, "0")}`,
       `הזמנות — ${theme.name}`,
       "רשימת הזמנות קודמות ללקוח המחובר",
-      ["orders", "הזמנות"],
+      ["orders", "הזמנות", "portal-orders"],
       theme,
-      IMG.ecommerce,
-      "680px",
+      "700px",
       ordersNodes(theme, index),
     ),
   );
@@ -1035,10 +1588,9 @@ function buildCartSections(): VisualLibrarySectionTemplate[] {
       `section-portal-cart-${String(index + 1).padStart(2, "0")}`,
       `עגלה — ${theme.name}`,
       "עגלת קניות באמצע רכישה",
-      ["cart", "עגלה"],
+      ["cart", "עגלה", "portal-cart"],
       theme,
-      IMG.product,
-      "640px",
+      "680px",
       cartNodes(theme, index),
     ),
   );
