@@ -352,8 +352,21 @@ function uid(prefix: string) {
   return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
 }
 
-function normalizeBusinessSlug(value: string) {
-  return String(value || "")
+function coerceSlugInput(value: unknown): string {
+  if (typeof value === "string" || typeof value === "number") {
+    return String(value);
+  }
+  if (value && typeof value === "object" && !Array.isArray(value)) {
+    const nested = (value as { slug?: unknown }).slug;
+    if (typeof nested === "string" || typeof nested === "number") {
+      return String(nested);
+    }
+  }
+  return "";
+}
+
+function normalizeBusinessSlug(value: unknown) {
+  const clean = coerceSlugInput(value)
     .trim()
     .toLowerCase()
     .replace(/[\u0590-\u05FF]+/g, "")
@@ -361,6 +374,10 @@ function normalizeBusinessSlug(value: string) {
     .replace(/-+/g, "-")
     .replace(/^-|-$/g, "")
     .slice(0, 60);
+
+  // Guard against String({}) → "[object Object]" → "object-object"
+  if (!clean || clean === "object-object") return "";
+  return clean;
 }
 
 function buildPublicSiteUrl(value: string) {
@@ -5489,10 +5506,14 @@ export default function WebsiteStudioPage({
       setSlugError("");
 
       try {
+        const params = new URLSearchParams({
+          slug,
+          businessId,
+        });
+        if (siteId) params.set("siteId", siteId);
+
         const res = await fetch(
-          `/api/site-builder/slug/check?slug=${encodeURIComponent(
-            slug,
-          )}&businessId=${encodeURIComponent(businessId)}`,
+          `/api/site-builder/slug/check?${params.toString()}`,
           {
             method: "GET",
             credentials: "include",
@@ -5523,7 +5544,7 @@ export default function WebsiteStudioPage({
     }, 450);
 
     return () => window.clearTimeout(timeout);
-  }, [businessId, slug, slugValid]);
+  }, [businessId, siteId, slug, slugValid]);
 
   const syncSections = (editor: Editor | null | undefined) => {
     window.setTimeout(() => {
@@ -7487,8 +7508,14 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     }
 
     try {
+      const params = new URLSearchParams({
+        slug: clean,
+        businessId,
+      });
+      if (siteId) params.set("siteId", siteId);
+
       const res = await fetch(
-        `/api/site-builder/slug/check?slug=${encodeURIComponent(clean)}&businessId=${encodeURIComponent(businessId)}`,
+        `/api/site-builder/slug/check?${params.toString()}`,
         {
           method: "GET",
           credentials: "include",
