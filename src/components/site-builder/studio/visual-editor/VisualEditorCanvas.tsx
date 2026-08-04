@@ -2537,7 +2537,14 @@ export default function VisualEditorCanvas({
           /* Portal login/register controls stay selectable (title, buttons, links). */
           [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] [data-bizuply-portal-mount="true"],
           [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] [data-bizuply-widget^="portal-"],
-          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] [data-bizuply-portal-control] {
+          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] [data-bizuply-portal-control],
+          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] [data-bizuply-portal-control] * {
+            pointer-events: auto !important;
+          }
+
+          /* Do not disable pointer events on portal mount shells via plugin rules. */
+          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] [data-bizuply-plugin-widget="true"][data-bizuply-portal-mount="true"],
+          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] [data-bizuply-plugin-widget="true"][data-bizuply-widget^="portal-"] {
             pointer-events: auto !important;
           }
 

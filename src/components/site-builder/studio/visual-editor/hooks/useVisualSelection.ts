@@ -24,6 +24,7 @@ import {
 import {
   PORTAL_AUTH_CONTROL_ATTR,
   isPortalAuthControl,
+  isPortalMountShell,
 } from "../utils/portalAuthControls";
 import {
   isBookingWidgetMount,
@@ -826,11 +827,16 @@ function findBestEditableNode(
 function getNodeLinkHref(node: HTMLElement | null) {
   if (!node) return "";
 
+  // Portal shells contain switch/forgot anchors — never treat the form as linked.
+  if (isPortalMountShell(node)) return "";
+
   const linkNode =
     node instanceof HTMLAnchorElement
       ? node
       : (node.closest("a") as HTMLAnchorElement | null) ||
-        (node.querySelector("a") as HTMLAnchorElement | null);
+        (isPortalMountShell(node)
+          ? null
+          : (node.querySelector("a") as HTMLAnchorElement | null));
 
   return String(
     linkNode?.getAttribute("href") ||
@@ -844,12 +850,15 @@ function getNodeLinkHref(node: HTMLElement | null) {
 
 function getNodeLinkTarget(node: HTMLElement | null) {
   if (!node) return "_self";
+  if (isPortalMountShell(node)) return "_self";
 
   const linkNode =
     node instanceof HTMLAnchorElement
       ? node
       : (node.closest("a") as HTMLAnchorElement | null) ||
-        (node.querySelector("a") as HTMLAnchorElement | null);
+        (isPortalMountShell(node)
+          ? null
+          : (node.querySelector("a") as HTMLAnchorElement | null));
 
   const target = String(
     linkNode?.getAttribute("target") ||

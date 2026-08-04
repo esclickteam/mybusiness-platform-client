@@ -896,9 +896,33 @@ export function normalizeVisualData(
     const looksLikePortalShell =
       attrs["data-bizuply-portal-mount"] === "true" ||
       attrs["data-bizuply-portal-mount"] === true ||
-      String(attrs["data-bizuply-widget"] || "").startsWith("portal-");
-    if (looksLikePortalShell && content[elementId]) {
-      content[elementId] = stripPortalShellLinkFields(content[elementId]);
+      String(attrs["data-bizuply-widget"] || "").startsWith("portal-") ||
+      /^sec-portal-/i.test(elementId) ||
+      /portal-(login|register|account|orders|cart|forgot|reset)/i.test(
+        elementId,
+      );
+    if (looksLikePortalShell) {
+      if (content[elementId]) {
+        content[elementId] = stripPortalShellLinkFields(content[elementId]);
+      }
+      if (attributes[elementId]) {
+        const nextAttrs = { ...attributes[elementId] };
+        [
+          "href",
+          "target",
+          "rel",
+          "data-bizuply-public-href",
+          "data-bizuply-public-target",
+          "data-bizuply-public-link",
+          "data-visual-link-href",
+          "data-visual-link-target",
+          "data-href",
+          "data-link-url",
+        ].forEach((key) => {
+          delete nextAttrs[key];
+        });
+        attributes[elementId] = nextAttrs;
+      }
     }
   });
 

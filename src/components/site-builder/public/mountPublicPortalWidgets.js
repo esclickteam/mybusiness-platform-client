@@ -1310,7 +1310,26 @@ export function mountPublicPortalWidgets(root, options = {}) {
       node.dataset.bizuplyPortalLive === "1" &&
       node.childElementCount > 0;
 
-    if (alreadyMounted) return;
+    if (alreadyMounted) {
+      // Visual re-apply can restore legacy shell link attrs after first mount.
+      [
+        "data-bizuply-public-href",
+        "data-bizuply-public-target",
+        "data-bizuply-public-link",
+        "data-visual-link-href",
+        "data-visual-link-target",
+        "data-href",
+        "data-link-url",
+        "href",
+      ].forEach((attr) => node.removeAttribute(attr));
+      if (node.getAttribute("role") === "link") {
+        node.removeAttribute("role");
+      }
+      if (node.getAttribute("tabindex") === "0") {
+        node.removeAttribute("tabindex");
+      }
+      return;
+    }
     node.dataset.bizuplyPortalMounted = "1";
     node.dataset.bizuplyPortalLive = "1";
 

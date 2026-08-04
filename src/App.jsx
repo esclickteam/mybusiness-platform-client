@@ -452,19 +452,54 @@ function PublicMiniSitePage() {
   }, []);
 
   useEffect(() => {
+    const isPortalMountShell = (node) => {
+      if (!(node instanceof Element)) return false;
+      return (
+        node.getAttribute("data-bizuply-portal-mount") === "true" ||
+        String(node.getAttribute("data-bizuply-widget") || "").startsWith(
+          "portal-",
+        )
+      );
+    };
+
     const handlePublicSiteClick = (event) => {
       // Template SPA handlers (Justora etc.) already handled this click.
       if (event.defaultPrevented) return;
 
       const target = event.target;
 
-      if (!target) return;
+      if (!(target instanceof Element)) return;
+
+      /*
+        Portal login/register forms used to inherit a saved button href on the
+        whole shell. Inside those widgets only a real inner <a> may navigate.
+      */
+      const portalShell = target.closest(
+        '[data-bizuply-portal-mount="true"], [data-bizuply-widget^="portal-"]',
+      );
+      if (portalShell) {
+        const tag = String(target.tagName || "").toLowerCase();
+        if (["input", "textarea", "select", "button", "label"].includes(tag)) {
+          return;
+        }
+        const portalAnchor = target.closest("a[href]");
+        if (
+          !portalAnchor ||
+          !portalShell.contains(portalAnchor) ||
+          isPortalMountShell(portalAnchor)
+        ) {
+          return;
+        }
+      }
 
       const link = target.closest(
         "a[href], button[data-visual-link-href], [data-link-url], [data-href], [data-visual-link-href], [data-bizuply-public-href]"
       );
 
       if (!link) return;
+
+      // Never navigate from the portal form shell itself.
+      if (isPortalMountShell(link)) return;
 
       /*
         Template SPA nav (Velmora etc.) owns its own page state. Let the
