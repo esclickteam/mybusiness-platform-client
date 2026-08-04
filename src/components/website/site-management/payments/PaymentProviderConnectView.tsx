@@ -11,7 +11,7 @@ import type {
   SitePaymentCredentials,
   SitePaymentProvider,
 } from "../../../../api/sitePaymentsApi";
-import { providerHasStoredSecret } from "../../../../api/sitePaymentsApi";
+import { credentialFieldIsStored } from "../../../../api/sitePaymentsApi";
 import { btnGhost, btnPrimary, btnSecondary, inputBase } from "../siteManagementUi";
 import { SitePanelCard } from "../SitePanelShell";
 import type { PaymentProviderCatalogItem } from "./paymentProvidersCatalog";
@@ -66,7 +66,6 @@ export default function PaymentProviderConnectView({
   );
   const [showPassword, setShowPassword] = useState(false);
 
-  const hasStoredSecret = providerHasStoredSecret(existing);
   const isEditing = Boolean(
     existing &&
       existing.connectionStatus === "connected" &&
@@ -77,10 +76,16 @@ export default function PaymentProviderConnectView({
     return catalogItem.fields.every((field) => {
       if (!field.required) return true;
       const value = String(credentials[field.key] || "").trim();
-      if (field.type === "password" && !value && hasStoredSecret) return true;
+      if (
+        field.type === "password" &&
+        !value &&
+        credentialFieldIsStored(existing, field.key)
+      ) {
+        return true;
+      }
       return Boolean(value);
     });
-  }, [catalogItem.fields, credentials, hasStoredSecret]);
+  }, [catalogItem.fields, credentials, existing]);
 
   function updateField(key: keyof SitePaymentCredentials, value: string) {
     setCredentials((prev) => ({ ...prev, [key]: value }));
@@ -116,6 +121,11 @@ export default function PaymentProviderConnectView({
           <p className="mt-0.5 text-sm text-slate-500">
             {catalogItem.description}
           </p>
+          {catalogItem.betaMessage ? (
+            <p className="mt-2 inline-flex rounded-md bg-amber-50 px-2 py-1 text-xs font-semibold text-amber-800 ring-1 ring-amber-200">
+              {catalogItem.betaMessage}
+            </p>
+          ) : null}
         </div>
       </div>
 
@@ -193,7 +203,8 @@ export default function PaymentProviderConnectView({
                     value={String(credentials[field.key] || "")}
                     onChange={(e) => updateField(field.key, e.target.value)}
                     placeholder={
-                      isPassword && hasStoredSecret
+                      isPassword &&
+                      credentialFieldIsStored(existing, field.key)
                         ? field.keepOnEmptyHint || "••••••••"
                         : field.placeholder
                     }
