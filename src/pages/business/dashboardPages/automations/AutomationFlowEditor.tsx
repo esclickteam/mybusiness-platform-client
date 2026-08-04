@@ -23,12 +23,18 @@ import {
   Loader2,
   Save,
   Trash2,
-  Power,
-  PowerOff,
+  Play,
+  Pause,
+  FlaskConical,
   Plus,
 } from "lucide-react";
 import {
   saveAutomationWorkflow,
+  publishAutomationWorkflow,
+  pauseAutomationWorkflow,
+  resumeAutomationWorkflow,
+  dryRunAutomationWorkflow,
+  fetchDryRunExample,
   type AutomationNodeType,
   type AutomationWorkflow,
 } from "../../../../api/automationWorkflowApi";
@@ -142,13 +148,21 @@ function pickOutgoingHandle(
 function EditorInner({ businessId, workflow, onBack, onSaved }: Props) {
   const { screenToFlowPosition, fitView } = useReactFlow();
   const [name, setName] = useState(workflow.name);
-  const [enabled, setEnabled] = useState(Boolean(workflow.enabled));
   const [saving, setSaving] = useState(false);
+  const [publishing, setPublishing] = useState(false);
+  const [saveState, setSaveState] = useState<"idle" | "saving" | "saved">("idle");
+  const [testOpen, setTestOpen] = useState(false);
+  const [testResult, setTestResult] = useState<Record<string, unknown> | null>(null);
+  const [testing, setTesting] = useState(false);
   const [filter, setFilter] = useState<PaletteFilter>("all");
   const [templates, setTemplates] = useState<WhatsAppTemplate[]>([]);
   const [nodes, setNodes, onNodesChange] = useNodesState(toFlowNodes(workflow));
   const [edges, setEdges, onEdgesChange] = useEdgesState(toFlowEdges(workflow));
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const dirty =
+    name !== workflow.name ||
+    JSON.stringify(nodes.map((node) => ({ id: node.id, type: node.type, position: node.position, data: node.data }))) !== JSON.stringify(workflow.nodes) ||
+    JSON.stringify(edges.map((edge) => ({ id: edge.id, source: edge.source, target: edge.target, sourceHandle: edge.sourceHandle || null, targetHandle: edge.targetHandle || null, label: typeof edge.label === "string" ? edge.label : "" }))) !== JSON.stringify(workflow.edges);
 
   useEffect(() => {
     let cancelled = false;
@@ -198,6 +212,10 @@ function EditorInner({ businessId, workflow, onBack, onSaved }: Props) {
         autoConnect?: boolean;
       }
     ) => {
+      if (item.supported === false) {
+        toast.info("אפשרות זו תתווסף בקרוב");
+        return;
+      }
       const afterId = options?.afterNodeId ?? selectedId;
       const autoConnect = options?.autoConnect !== false;
       const afterNode = afterId
@@ -352,12 +370,12 @@ function EditorInner({ businessId, workflow, onBack, onSaved }: Props) {
     setSelectedId(null);
   };
 
-  const handleSave = async (nextEnabled = enabled) => {
+  const handleSave = async (quiet = false) => {
     setSaving(true);
+    setSaveState("saving");
     try {
       const saved = await saveAutomationWorkflow(businessId, workflow._id, {
         name: name.trim() || workflow.name,
-        enabled: nextEnabled,
         nodes: nodes.map((n) => ({
           id: n.id,
           type: (n.type ||
@@ -374,9 +392,9 @@ function EditorInner({ businessId, workflow, onBack, onSaved }: Props) {
           label: typeof e.label === "string" ? e.label : "",
         })),
       });
-      setEnabled(Boolean(saved.enabled));
       onSaved(saved);
-      toast.success("האוטומציה נשמרה");
+      setSaveState("saved");
+      if (!quiet) toast.success("הטיוטה נשמרה");
     } catch (error: unknown) {
       const message =
         error && typeof error === "object" && "response" in error
@@ -388,6 +406,56 @@ function EditorInner({ businessId, workflow, onBack, onSaved }: Props) {
       toast.error(message || "שגיאה בשמירת האוטומציה");
     } finally {
       setSaving(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!dirty || saving) return;
+    const timer = window.setTimeout(() => void handleSave(true), 1000);
+    return () => window.clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dirty, name, nodes, edges]);
+
+  const handlePublish = async () => {
+    setPublishing(true);
+    try {
+      if (dirty) await handleSave(true);
+      const result = await publishAutomationWorkflow(businessId, workflow._id);
+      if (result.errors?.length) {
+        toast.error(result.errors.join(" · "));
+        const nodeId = result.errors
+          .join(" ")
+          .match(/(?:node|מודול)[\s:]+([A-Za-z0-9_-]+)/i)?.[1];
+        if (nodeId && nodes.some((node) => node.id === nodeId)) {
+          setSelectedId(nodeId);
+        }
+        return;
+      }
+      onSaved(result.workflow);
+      toast.success("האוטומציה פורסמה");
+    } catch (error: unknown) {
+      const response = (error as { response?: { data?: { errors?: string[]; error?: string } } })?.response?.data;
+      toast.error(response?.errors?.join(" · ") || response?.error || "לא ניתן לפרסם את האוטומציה");
+    } finally {
+      setPublishing(false);
+    }
+  };
+
+  const handleTest = async () => {
+    setTesting(true);
+    try {
+      const trigger = nodes.find((node) => node.type === "trigger");
+      const eventType = String(trigger?.data?.triggerKey || "manual");
+      const example = await fetchDryRunExample(businessId, workflow._id, eventType);
+      const result = await dryRunAutomationWorkflow(businessId, workflow._id, {
+        eventType,
+        payload: (example || {}) as Record<string, unknown>,
+      });
+      setTestResult((result || {}) as Record<string, unknown>);
+    } catch {
+      toast.error("בדיקת האוטומציה נכשלה");
+    } finally {
+      setTesting(false);
     }
   };
 
@@ -430,7 +498,8 @@ function EditorInner({ businessId, workflow, onBack, onSaved }: Props) {
               key={`${item.type}-${item.key}`}
               type="button"
               className="af-palette__item"
-              draggable
+              draggable={item.supported !== false}
+              disabled={item.supported === false}
               onDragStart={(e) => onDragStart(e, item)}
               onClick={() =>
                 insertModule(item, {
@@ -442,6 +511,7 @@ function EditorInner({ businessId, workflow, onBack, onSaved }: Props) {
             >
               <strong>{item.label}</strong>
               <span>{item.description}</span>
+              {item.supported === false ? <em className="af-palette__hint">בקרוב</em> : null}
               <em className="af-palette__hint">
                 {selectedId && item.type !== "trigger"
                   ? "לחיצה = הוספה + חיבור אוטומטי"
@@ -479,14 +549,19 @@ function EditorInner({ businessId, workflow, onBack, onSaved }: Props) {
           </button>
           <button
             type="button"
-            className="af-toolbar__btn"
-            disabled={saving}
-            onClick={() => handleSave(!enabled)}
+            className="af-btn af-btn--primary"
+            disabled={publishing || saving || workflow.status === "archived"}
+            onClick={() => void handlePublish()}
           >
-            {enabled ? <PowerOff size={14} /> : <Power size={14} />}
-            {enabled ? "כבה" : "הפעל"}
+            <Play size={14} />
+            פרסום
           </button>
+          {workflow.status === "active" ? <button type="button" className="af-toolbar__btn" onClick={async () => onSaved(await pauseAutomationWorkflow(businessId, workflow._id))}><Pause size={14} />השהיה</button> : workflow.status === "paused" ? <button type="button" className="af-toolbar__btn" onClick={async () => onSaved(await resumeAutomationWorkflow(businessId, workflow._id))}><Play size={14} />המשך</button> : null}
+          <button type="button" className="af-toolbar__btn" onClick={() => setTestOpen((open) => !open)}><FlaskConical size={14} />בדיקה</button>
+          <span className="af-toolbar__state">{dirty ? "יש שינויים שלא פורסמו" : saveState === "saved" ? "נשמר" : workflow.publishedVersionId ? "פורסם" : "טיוטה"}{workflow.publishedAt ? ` · ${new Date(workflow.publishedAt).toLocaleDateString("he-IL")}` : ""}</span>
         </div>
+
+        {testOpen ? <div className="af-test-panel"><strong>מצב בדיקה — לא יישלחו הודעות ולא יתבצעו שינויים</strong><button type="button" className="af-btn af-btn--primary" disabled={testing} onClick={() => void handleTest()}>{testing ? <Loader2 size={14} className="animate-spin" /> : <FlaskConical size={14} />}הריצו בדיקה</button>{testResult ? <ol>{((testResult.steps || testResult.nodes || []) as Array<Record<string, unknown>>).map((step, index) => <li key={index}>{String(step.label || step.nodeId || step.type || `שלב ${index + 1}`)} · {String(step.status || "")}</li>)}</ol> : null}</div> : null}
 
         {selectedNode && selectedNode.type !== "trigger" ? (
           <div className="af-quickbar">
@@ -647,8 +722,8 @@ function EditorInner({ businessId, workflow, onBack, onSaved }: Props) {
                     }}
                   >
                     {TRIGGER_OPTIONS.map((o) => (
-                      <option key={o.value} value={o.value}>
-                        {o.label}
+                      <option key={o.value} value={o.value} disabled={o.supported === false}>
+                        {o.label}{o.supported === false ? " · בקרוב" : ""}
                       </option>
                     ))}
                   </select>
@@ -786,8 +861,8 @@ function EditorInner({ businessId, workflow, onBack, onSaved }: Props) {
                     }}
                   >
                     {ACTION_OPTIONS.map((o) => (
-                      <option key={o.value} value={o.value}>
-                        {o.label}
+                      <option key={o.value} value={o.value} disabled={o.supported === false}>
+                        {o.label}{o.supported === false ? " · בקרוב" : ""}
                       </option>
                     ))}
                   </select>
