@@ -659,6 +659,75 @@
   color: #1e3a8a;
 }
 
+.af-gmail-preview {
+  display: grid;
+  gap: 8px;
+  border: 1px solid #dbeafe;
+  background: #eff6ff;
+  border-radius: 12px;
+  padding: 10px 12px;
+  font-size: 12px;
+  color: #1e3a8a;
+}
+
+.af-gmail-preview > strong {
+  font-size: 12px;
+  font-weight: 900;
+  color: #1e3a8a;
+}
+
+.af-gmail-preview__headers {
+  display: grid;
+  gap: 3px;
+}
+
+.af-gmail-preview__body {
+  border: 1px solid #dbeafe;
+  background: #fff;
+  border-radius: 10px;
+  padding: 12px;
+  color: #0f172a;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.55;
+  overflow: auto;
+  max-height: 280px;
+  word-break: break-word;
+}
+
+.af-gmail-preview__body p {
+  margin: 0 0 0.75em;
+}
+
+.af-gmail-preview__body p:last-child {
+  margin-bottom: 0;
+}
+
+.af-gmail-preview__text {
+  margin: 0;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  border-radius: 10px;
+  padding: 10px 12px;
+  color: #334155;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow: auto;
+  max-height: 140px;
+}
+
+.af-gmail-preview__empty {
+  border: 1px dashed #bfdbfe;
+  background: #fff;
+  border-radius: 10px;
+  padding: 12px;
+  color: #64748b;
+  font-weight: 700;
+}
+
 .af-wa-template__meta code {
   font-size: 12px;
   font-weight: 700;
