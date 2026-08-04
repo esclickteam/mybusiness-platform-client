@@ -41,10 +41,57 @@ import {
   type AutomationNodeType,
   type AutomationWorkflow,
 } from "../../../../api/automationWorkflowApi";
+import { Link } from "react-router-dom";
 import {
-  listWhatsAppTemplates,
-  type WhatsAppTemplate,
+  getWhatsAppIntegrationStatus,
+  listApprovedWhatsAppTemplates,
+  syncWhatsAppTemplates,
+  type ApprovedWhatsAppTemplate,
+  type WhatsAppVariableMapping,
 } from "../../../../api/whatsappApi";
+
+const WA_MAPPING_PRESETS = [
+  { key: "lead:name", source: "lead", field: "name", label: "שם הליד" },
+  { key: "lead:phone", source: "lead", field: "phone", label: "טלפון הליד" },
+  { key: "lead:email", source: "lead", field: "email", label: "אימייל הליד" },
+  { key: "lead:source", source: "lead", field: "source", label: "מקור הליד" },
+  {
+    key: "business:businessName",
+    source: "business",
+    field: "businessName",
+    label: "שם העסק",
+  },
+  {
+    key: "appointment:date",
+    source: "appointment",
+    field: "date",
+    label: "תאריך",
+  },
+  {
+    key: "appointment:time",
+    source: "appointment",
+    field: "time",
+    label: "שעה",
+  },
+  { key: "constant", source: "constant", field: "", label: "ערך קבוע" },
+  {
+    key: "manual",
+    source: "manual",
+    field: "",
+    label: "שדה מותאם אישית / ערך ידני",
+  },
+] as const;
+
+function isWhatsAppActionKey(actionKey: unknown) {
+  const key = String(actionKey || "");
+  return key === "whatsapp_template" || key === "send_whatsapp";
+}
+
+function mappingPresetKey(row: WhatsAppVariableMapping) {
+  const source = String(row.source || "");
+  if (source === "constant" || source === "manual") return source;
+  return `${source}:${String(row.field || "")}`;
+}
 import { automationNodeTypes } from "./FlowNodes";
 import {
   ACTION_OPTIONS,
@@ -180,7 +227,12 @@ function EditorInner({
   const [testResult, setTestResult] = useState<Record<string, unknown> | null>(null);
   const [testing, setTesting] = useState(false);
   const [filter, setFilter] = useState<PaletteFilter>("all");
-  const [templates, setTemplates] = useState<WhatsAppTemplate[]>([]);
+  const [waConnected, setWaConnected] = useState(false);
+  const [waTemplates, setWaTemplates] = useState<ApprovedWhatsAppTemplate[]>([]);
+  const [waLoading, setWaLoading] = useState(false);
+  const [waSyncing, setWaSyncing] = useState(false);
+  const [waSyncError, setWaSyncError] = useState("");
+  const [waLastSyncAt, setWaLastSyncAt] = useState<string | null>(null);
   const [nodes, setNodes, onNodesChange] = useNodesState(toFlowNodes(workflow));
   const [edges, setEdges, onEdgesChange] = useEdgesState(toFlowEdges(workflow));
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -189,19 +241,105 @@ function EditorInner({
     JSON.stringify(nodes.map((node) => ({ id: node.id, type: node.type, position: node.position, data: node.data }))) !== JSON.stringify(workflow.nodes) ||
     JSON.stringify(edges.map((edge) => ({ id: edge.id, source: edge.source, target: edge.target, sourceHandle: edge.sourceHandle || null, targetHandle: edge.targetHandle || null, label: typeof edge.label === "string" ? edge.label : "" }))) !== JSON.stringify(workflow.edges);
 
-  useEffect(() => {
-    let cancelled = false;
-    listWhatsAppTemplates(businessId)
-      .then((list) => {
-        if (!cancelled) setTemplates(list || []);
-      })
-      .catch(() => {
-        if (!cancelled) setTemplates([]);
-      });
-    return () => {
-      cancelled = true;
-    };
+  const loadApprovedWhatsAppTemplates = useCallback(async () => {
+    setWaLoading(true);
+    setWaSyncError("");
+    try {
+      const [status, approved] = await Promise.all([
+        getWhatsAppIntegrationStatus(businessId),
+        listApprovedWhatsAppTemplates(businessId),
+      ]);
+      setWaConnected(Boolean(status.connected || approved.connected));
+      setWaLastSyncAt(
+        approved.lastTemplatesSyncAt || status.lastTemplatesSyncAt || null
+      );
+      setWaTemplates(approved.templates || []);
+    } catch (error: unknown) {
+      setWaTemplates([]);
+      setWaSyncError(readErrorMessage(error, "לא הצלחנו לטעון תבניות WhatsApp"));
+    } finally {
+      setWaLoading(false);
+    }
   }, [businessId]);
+
+  useEffect(() => {
+    void loadApprovedWhatsAppTemplates();
+  }, [loadApprovedWhatsAppTemplates]);
+
+  const handleSyncWhatsAppTemplates = async () => {
+    setWaSyncing(true);
+    setWaSyncError("");
+    try {
+      const synced = await syncWhatsAppTemplates(businessId);
+      setWaLastSyncAt(synced.lastTemplatesSyncAt || new Date().toISOString());
+      await loadApprovedWhatsAppTemplates();
+      toast.success("התבניות סונכרנו מ-Meta");
+    } catch (error: unknown) {
+      setWaSyncError(
+        readErrorMessage(error, "לא הצלחנו לסנכרן את התבניות. נסו שוב")
+      );
+    } finally {
+      setWaSyncing(false);
+    }
+  };
+
+  // Hydrate component mappings when a saved WhatsApp node is opened.
+  useEffect(() => {
+    if (!selectedId || !waTemplates.length) return;
+    setNodes((prev) => {
+      const node = prev.find((n) => n.id === selectedId);
+      if (!node || node.type !== "action") return prev;
+      if (!isWhatsAppActionKey(node.data?.actionKey || "whatsapp_template")) {
+        return prev;
+      }
+      const templateId = String(node.data?.templateId || "");
+      if (!templateId) return prev;
+      const tpl = waTemplates.find((row) => row._id === templateId);
+      if (!tpl) return prev;
+      const variables = Array.isArray(tpl.variables) ? tpl.variables : [];
+      const existing = Array.isArray(node.data?.componentMappings)
+        ? (node.data.componentMappings as WhatsAppVariableMapping[])
+        : [];
+      const needsHydrate =
+        !node.data?.metaTemplateName ||
+        existing.length !== variables.length ||
+        variables.some(
+          (variable) =>
+            !existing.some((row) => String(row.variable) === String(variable))
+        );
+      if (!needsHydrate) return prev;
+      const componentMappings = variables.map((variable) => {
+        const prevRow = existing.find(
+          (row) => String(row.variable) === String(variable)
+        );
+        return (
+          prevRow || {
+            variable: String(variable),
+            component: "body" as const,
+            source: "",
+            field: "",
+            constantValue: "",
+            required: true,
+          }
+        );
+      });
+      return prev.map((n) =>
+        n.id === selectedId
+          ? {
+              ...n,
+              data: {
+                ...(n.data || {}),
+                metaTemplateId: tpl.metaTemplateId || "",
+                metaTemplateName: tpl.metaTemplateName || "",
+                language: tpl.language || "",
+                wabaId: tpl.wabaId || "",
+                componentMappings,
+              },
+            }
+          : n
+      );
+    });
+  }, [selectedId, waTemplates, setNodes]);
 
   const selectedNode = useMemo(
     () => nodes.find((n) => n.id === selectedId) || null,
@@ -983,24 +1121,272 @@ function EditorInner({
                     ))}
                   </select>
                 </label>
-                {String(selectedNode.data?.actionKey || "whatsapp_template") ===
-                "whatsapp_template" ? (
-                  <label>
-                    תבנית וואטסאפ
-                    <select
-                      value={String(selectedNode.data?.templateId || "")}
-                      onChange={(e) =>
-                        updateSelectedData({ templateId: e.target.value })
-                      }
-                    >
-                      <option value="">בחרו תבנית</option>
-                      {templates.map((tpl) => (
-                        <option key={tpl._id} value={tpl._id}>
-                          {tpl.name}
-                        </option>
-                      ))}
-                    </select>
-                  </label>
+                {isWhatsAppActionKey(
+                  selectedNode.data?.actionKey || "whatsapp_template"
+                ) ? (
+                  <div className="af-wa-template">
+                    <div className="af-wa-template__head">
+                      <span>תבנית WhatsApp</span>
+                      {waConnected ? (
+                        <button
+                          type="button"
+                          className="af-toolbar__btn"
+                          disabled={waSyncing || waLoading || readOnly}
+                          onClick={() => void handleSyncWhatsAppTemplates()}
+                        >
+                          {waSyncing ? (
+                            <>
+                              <Loader2 size={14} className="af-spin" />
+                              טוען תבניות מ-Meta...
+                            </>
+                          ) : (
+                            "רענון תבניות מ-Meta"
+                          )}
+                        </button>
+                      ) : null}
+                    </div>
+
+                    {!waConnected ? (
+                      <div className="af-wa-template__state">
+                        <p>יש לחבר חשבון WhatsApp לפני בחירת תבנית</p>
+                        <Link
+                          className="af-btn af-btn--primary"
+                          to="../whatsapp/settings"
+                        >
+                          חיבור WhatsApp
+                        </Link>
+                      </div>
+                    ) : waSyncing ? (
+                      <p className="af-wa-template__state">
+                        טוען תבניות מ-Meta...
+                      </p>
+                    ) : waSyncError ? (
+                      <div className="af-wa-template__state af-wa-template__state--error">
+                        <p>{waSyncError}</p>
+                        <button
+                          type="button"
+                          className="af-toolbar__btn"
+                          onClick={() => void handleSyncWhatsAppTemplates()}
+                        >
+                          נסיון חוזר
+                        </button>
+                      </div>
+                    ) : !waLastSyncAt && waTemplates.length === 0 ? (
+                      <div className="af-wa-template__state">
+                        <p>יש לסנכרן את התבניות המאושרות מ-Meta</p>
+                        <button
+                          type="button"
+                          className="af-btn af-btn--primary"
+                          disabled={waSyncing || readOnly}
+                          onClick={() => void handleSyncWhatsAppTemplates()}
+                        >
+                          רענון תבניות מ-Meta
+                        </button>
+                      </div>
+                    ) : waTemplates.length === 0 ? (
+                      <p className="af-wa-template__state">
+                        לא נמצאו תבניות מאושרות בחשבון Meta של העסק
+                      </p>
+                    ) : (
+                      <>
+                        <label>
+                          בחירת תבנית
+                          <select
+                            value={String(selectedNode.data?.templateId || "")}
+                            disabled={readOnly}
+                            onChange={(e) => {
+                              const tpl =
+                                waTemplates.find(
+                                  (row) => row._id === e.target.value
+                                ) || null;
+                              if (!tpl) {
+                                updateSelectedData({
+                                  templateId: "",
+                                  metaTemplateId: "",
+                                  metaTemplateName: "",
+                                  language: "",
+                                  componentMappings: [],
+                                });
+                                return;
+                              }
+                              const variables = Array.isArray(tpl.variables)
+                                ? tpl.variables
+                                : [];
+                              const existing = Array.isArray(
+                                selectedNode.data?.componentMappings
+                              )
+                                ? (selectedNode.data
+                                    .componentMappings as WhatsAppVariableMapping[])
+                                : [];
+                              const componentMappings = variables.map(
+                                (variable) => {
+                                  const prev = existing.find(
+                                    (row) =>
+                                      String(row.variable) === String(variable)
+                                  );
+                                  return (
+                                    prev || {
+                                      variable: String(variable),
+                                      component: "body" as const,
+                                      source: "",
+                                      field: "",
+                                      constantValue: "",
+                                      required: true,
+                                    }
+                                  );
+                                }
+                              );
+                              updateSelectedData({
+                                templateId: tpl._id,
+                                metaTemplateId: tpl.metaTemplateId || "",
+                                metaTemplateName: tpl.metaTemplateName || "",
+                                language: tpl.language || "",
+                                wabaId: tpl.wabaId || "",
+                                componentMappings,
+                              });
+                            }}
+                          >
+                            <option value="">בחרו תבנית</option>
+                            {waTemplates.map((tpl) => (
+                              <option key={tpl._id} value={tpl._id}>
+                                {(tpl.friendlyName || tpl.name) +
+                                  (tpl.isTestTemplate
+                                    ? " · תבנית בדיקה"
+                                    : "") +
+                                  ` · ${tpl.metaTemplateName} · ${
+                                    tpl.displaySecondary ||
+                                    `${tpl.languageLabelHe || tpl.language} · ${
+                                      tpl.categoryLabelHe || ""
+                                    } · מאושרת`
+                                  }`}
+                              </option>
+                            ))}
+                          </select>
+                        </label>
+
+                        {(() => {
+                          const selectedTpl =
+                            waTemplates.find(
+                              (tpl) =>
+                                tpl._id ===
+                                String(selectedNode.data?.templateId || "")
+                            ) || null;
+                          if (!selectedTpl) return null;
+                          return (
+                            <div className="af-wa-template__meta" dir="rtl">
+                              <strong>
+                                {selectedTpl.friendlyName || selectedTpl.name}
+                              </strong>
+                              <code dir="ltr">
+                                {selectedTpl.metaTemplateName}
+                              </code>
+                              <span>
+                                {selectedTpl.displaySecondary ||
+                                  `${selectedTpl.languageLabelHe || selectedTpl.language} · ${
+                                    selectedTpl.categoryLabelHe || ""
+                                  } · מאושרת`}
+                              </span>
+                              {selectedTpl.isTestTemplate ? (
+                                <em>תבנית בדיקה</em>
+                              ) : null}
+                            </div>
+                          );
+                        })()}
+
+                        {Array.isArray(selectedNode.data?.componentMappings) &&
+                        (selectedNode.data.componentMappings as WhatsAppVariableMapping[])
+                          .length > 0 ? (
+                          <div className="af-wa-template__mappings">
+                            <p>מיפוי משתנים</p>
+                            {(
+                              selectedNode.data
+                                .componentMappings as WhatsAppVariableMapping[]
+                            ).map((row, index) => (
+                              <div
+                                key={`${row.variable}-${index}`}
+                                className="af-wa-template__map-row"
+                              >
+                                <label>
+                                  <span dir="ltr">{`{{${row.variable}}}`}</span>
+                                  <select
+                                    value={mappingPresetKey(row)}
+                                    disabled={readOnly}
+                                    onChange={(e) => {
+                                      const preset = WA_MAPPING_PRESETS.find(
+                                        (p) => p.key === e.target.value
+                                      );
+                                      const next = (
+                                        selectedNode.data
+                                          .componentMappings as WhatsAppVariableMapping[]
+                                      ).map((item, i) =>
+                                        i === index
+                                          ? {
+                                              ...item,
+                                              source: preset?.source || "",
+                                              field: preset?.field || "",
+                                              constantValue:
+                                                preset?.source === "constant" ||
+                                                preset?.source === "manual"
+                                                  ? item.constantValue || ""
+                                                  : "",
+                                            }
+                                          : item
+                                      );
+                                      updateSelectedData({
+                                        componentMappings: next,
+                                      });
+                                    }}
+                                  >
+                                    <option value="">בחרו מיפוי</option>
+                                    {WA_MAPPING_PRESETS.map((preset) => (
+                                      <option
+                                        key={preset.key}
+                                        value={preset.key}
+                                      >
+                                        {preset.label}
+                                      </option>
+                                    ))}
+                                  </select>
+                                </label>
+                                {row.source === "constant" ||
+                                row.source === "manual" ? (
+                                  <input
+                                    type="text"
+                                    placeholder="ערך"
+                                    disabled={readOnly}
+                                    value={String(row.constantValue || "")}
+                                    onChange={(e) => {
+                                      const next = (
+                                        selectedNode.data
+                                          .componentMappings as WhatsAppVariableMapping[]
+                                      ).map((item, i) =>
+                                        i === index
+                                          ? {
+                                              ...item,
+                                              constantValue: e.target.value,
+                                            }
+                                          : item
+                                      );
+                                      updateSelectedData({
+                                        componentMappings: next,
+                                      });
+                                    }}
+                                  />
+                                ) : null}
+                              </div>
+                            ))}
+                          </div>
+                        ) : null}
+                      </>
+                    )}
+
+                    {waLastSyncAt ? (
+                      <p className="af-wa-template__sync">
+                        סנכרון אחרון:{" "}
+                        {new Date(waLastSyncAt).toLocaleString("he-IL")}
+                      </p>
+                    ) : null}
+                  </div>
                 ) : null}
               </>
             ) : null}

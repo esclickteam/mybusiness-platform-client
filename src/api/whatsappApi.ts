@@ -51,6 +51,8 @@ export type WhatsAppWabaBillingHealth = {
 export type WhatsAppConnection = {
   connected: boolean;
   readyToSend?: boolean;
+  integrationId?: string;
+  lastTemplatesSyncAt?: string | null;
   readiness?: WhatsAppReadiness;
   readinessLabel?: string;
   registrationStatus?: WhatsAppRegistrationStatus;
@@ -413,6 +415,57 @@ export async function getWhatsAppStatus(
   return data as { success: boolean } & WhatsAppConnection;
 }
 
+/** Lightweight integration status (no tokens, no live Meta billing calls). */
+export async function getWhatsAppIntegrationStatus(businessId: string) {
+  const { data } = await API.get(
+    "/whatsapp/integration/status",
+    withBusiness(businessId)
+  );
+  return data as {
+    success: boolean;
+    connected: boolean;
+    readyToSend?: boolean;
+    status?: string;
+    integrationId?: string;
+    phoneNumberId?: string;
+    wabaId?: string;
+    displayPhoneNumber?: string;
+    lastTemplatesSyncAt?: string | null;
+    hasAccessToken?: boolean;
+  };
+}
+
+export type ApprovedWhatsAppTemplate = WhatsAppTemplate & {
+  friendlyName?: string;
+  languageLabelHe?: string;
+  categoryLabelHe?: string;
+  statusLabelHe?: string;
+  variableCount?: number;
+  displaySecondary?: string;
+  isTestTemplate?: boolean;
+  testLabelHe?: string;
+  wabaId?: string;
+};
+
+/** Approved Meta templates for the authorized business WABA only. */
+export async function listApprovedWhatsAppTemplates(businessId: string) {
+  const { data } = await API.get("/whatsapp/templates/approved", {
+    params: { businessId },
+  });
+  return data as {
+    success: boolean;
+    connected: boolean;
+    integrationId?: string;
+    phoneNumberId?: string;
+    wabaId?: string;
+    displayPhoneNumber?: string;
+    lastTemplatesSyncAt?: string | null;
+    templates: ApprovedWhatsAppTemplate[];
+    code?: string;
+    message?: string;
+  };
+}
+
 export async function getWhatsAppEmbeddedSignupConfig(businessId: string) {
   const { data } = await API.get(
     "/whatsapp/embedded-signup/config",
@@ -629,6 +682,7 @@ export async function syncWhatsAppTemplates(businessId: string) {
     success: boolean;
     synced: number;
     totalFromMeta: number;
+    lastTemplatesSyncAt?: string | null;
     templates: WhatsAppTemplate[];
     rawStatuses?: Array<{
       name: string;
