@@ -8,7 +8,11 @@ import type { VisualLibraryPageTemplate } from "./visual-editor/library/visualLi
 import type { VisualSitePageItem } from "./visual-editor/VisualSitePagesPanel";
 
 import type { VisualCustomCode } from "./visual-editor/utils/visualData";
-import { applySharedChromeScalarsToVisualData } from "./visual-editor/utils/visualSharedChrome";
+import {
+  SHARED_CHROME_SCALAR_KEYS,
+  VISUAL_SHARED_CHROME_KEY,
+  applySharedChromeScalarsToVisualData,
+} from "./visual-editor/utils/visualSharedChrome";
 import { stripStoreBoundVisualImageOverrides } from "./data/templates/shared/storeCatalogSync";
 
 type VisualSavePayload = {
@@ -153,7 +157,12 @@ function mergeVisualData(
   return merged;
 }
 
-function pickPersistedVisualSnapshot(source: Record<string, any>) {
+/**
+ * Keep the site-global header/footer map and React CTA scalars across remount.
+ * Dropping them made every page switch repaint defaultData ("תאמו ניסיון")
+ * even though WebsiteStudioPage had already injected the edited chrome.
+ */
+export function pickPersistedVisualSnapshot(source: Record<string, any>) {
   const result: Record<string, any> = {};
 
   VISUAL_COLLECTION_KEYS.forEach((key) => {
@@ -171,7 +180,14 @@ function pickPersistedVisualSnapshot(source: Record<string, any>) {
     "__libraryPage",
     "__libraryPageTemplateId",
     "snapshotPageId",
+    VISUAL_SHARED_CHROME_KEY,
   ].forEach((key) => {
+    if (hasOwnKey(source, key)) {
+      result[key] = cloneData(source[key]);
+    }
+  });
+
+  SHARED_CHROME_SCALAR_KEYS.forEach((key) => {
     if (hasOwnKey(source, key)) {
       result[key] = source[key];
     }
