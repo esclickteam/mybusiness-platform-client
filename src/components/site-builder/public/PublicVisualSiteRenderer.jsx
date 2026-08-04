@@ -1565,8 +1565,35 @@ function isPortalMountShellNode(node) {
   );
 }
 
+function clearPortalShellPublicLinkAttrs(node) {
+  if (!(node instanceof Element)) return;
+  [
+    "data-bizuply-public-href",
+    "data-bizuply-public-target",
+    "data-bizuply-public-link",
+    "data-visual-link-href",
+    "data-visual-link-target",
+    "data-href",
+    "data-link-url",
+    "href",
+  ].forEach((attr) => node.removeAttribute(attr));
+  if (node.getAttribute("role") === "link") {
+    node.removeAttribute("role");
+  }
+  if (node.getAttribute("tabindex") === "0") {
+    node.removeAttribute("tabindex");
+  }
+}
+
 function applyPublicLinksToDom(root, visualData) {
   if (!root) return;
+
+  // Always strip legacy whole-form links, even when __content no longer has href.
+  root
+    .querySelectorAll(
+      '[data-bizuply-portal-mount="true"], [data-bizuply-widget^="portal-"]',
+    )
+    .forEach((shell) => clearPortalShellPublicLinkAttrs(shell));
 
   const data = asPlainObject(visualData);
   const attributesCollection = asPlainObject(data.__attributes);
@@ -1589,24 +1616,8 @@ function applyPublicLinksToDom(root, visualData) {
     if (!selectedNode) return;
 
     // Never turn a login/register/account widget into a page link.
-    // Also clear legacy attrs baked into published HTML from older saves.
     if (isPortalMountShellNode(selectedNode)) {
-      [
-        "data-bizuply-public-href",
-        "data-bizuply-public-target",
-        "data-bizuply-public-link",
-        "data-visual-link-href",
-        "data-visual-link-target",
-        "data-href",
-        "data-link-url",
-        "href",
-      ].forEach((attr) => selectedNode.removeAttribute(attr));
-      if (selectedNode.getAttribute("role") === "link") {
-        selectedNode.removeAttribute("role");
-      }
-      if (selectedNode.getAttribute("tabindex") === "0") {
-        selectedNode.removeAttribute("tabindex");
-      }
+      clearPortalShellPublicLinkAttrs(selectedNode);
       return;
     }
 

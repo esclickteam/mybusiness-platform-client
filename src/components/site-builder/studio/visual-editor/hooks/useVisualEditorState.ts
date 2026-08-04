@@ -81,6 +81,7 @@ import { applyAllVisualDataToDom, previewVisualStyleOnDom } from "../utils/visua
 import {
   applyPortalShellAttributePatch,
   getPortalAuthShell,
+  isPortalMountShell,
   parsePortalAuthControlId,
   portalControlPatchForShell,
 } from "../utils/portalAuthControls";
@@ -1520,8 +1521,49 @@ export function useVisualEditorState({
         href: typeof patch.href === "string" ? patch.href : undefined,
       });
 
+      /*
+        Portal mount shells are never page links. If the shell id is selected
+        (click on inputs/empty space), drop href so the whole form stays fillable.
+      */
+      const root = canvasRef.current;
+      const shellNode = root?.querySelector(
+        `[data-visual-edit-id="${CSS.escape(elementId)}"]`,
+      ) as HTMLElement | null;
+      const attrs = readVisualAttributes(dataRef.current || {})?.[elementId] || {};
+      const patchingPortalShell =
+        !parsePortalAuthControlId(elementId) &&
+        (Boolean(shellNode && isPortalMountShell(shellNode)) ||
+          attrs["data-bizuply-portal-mount"] === "true" ||
+          attrs["data-bizuply-portal-mount"] === true ||
+          String(attrs["data-bizuply-widget"] || "").startsWith("portal-"));
+
+      const safePatch = patchingPortalShell
+        ? (() => {
+            const nextPatch = { ...patch };
+            delete nextPatch.href;
+            delete nextPatch.target;
+            delete nextPatch.rel;
+            delete nextPatch.linkValue;
+            delete nextPatch.linkTarget;
+            return nextPatch;
+          })()
+        : patch;
+
+      const safeHasLinkPatch =
+        !patchingPortalShell &&
+        [
+          "href",
+          "target",
+          "rel",
+          "phoneNumber",
+          "phone",
+          "email",
+          "subject",
+          "message",
+        ].some((key) => Object.prototype.hasOwnProperty.call(safePatch, key));
+
       setData((current) => {
-        let next = writeVisualContentItem(current, elementId, patch);
+        let next = writeVisualContentItem(current, elementId, safePatch);
 
         if (portalShell?.attrPatch && Object.keys(portalShell.attrPatch).length) {
           next = writeVisualAttributesItem(
@@ -1533,11 +1575,11 @@ export function useVisualEditorState({
 
         // Header/footer edits are site-global — lift immediately.
         if (isChromeVisualElementId(elementId)) {
-          if (typeof patch.text === "string") {
+          if (typeof safePatch.text === "string") {
             next = syncHeaderCtaScalarFromChromeText(
               next,
               elementId,
-              patch.text,
+              safePatch.text,
               { previousText },
             );
           }
@@ -1546,7 +1588,7 @@ export function useVisualEditorState({
 
         dataRef.current = next;
 
-        if (hasLinkPatch) {
+        if (safeHasLinkPatch || hasLinkPatch) {
           window.requestAnimationFrame(() => {
             applyAllVisualDataToDom(canvasRef.current, dataRef.current || {});
             selection.refreshSelectedElement?.();
@@ -1556,8 +1598,8 @@ export function useVisualEditorState({
         return next;
       });
 
-      if (typeof patch.text === "string") {
-        renameSitePageFromNavLabel(elementId, patch.text, previousText);
+      if (typeof safePatch.text === "string") {
+        renameSitePageFromNavLabel(elementId, safePatch.text, previousText);
       }
 
       return true;
@@ -2731,21 +2773,11 @@ export function useVisualEditorState({
         message: payload.message || "",
       };
 
-      setData((current) => {
-        const next = writeVisualContentItem(current, elementId, linkPatch);
-        dataRef.current = next;
-
-        window.requestAnimationFrame(() => {
-          applyAllVisualDataToDom(canvasRef.current, dataRef.current || {});
-          selection.refreshSelectedElement?.();
-        });
-
-        return next;
-      });
-
-      return true;
+      // Portal switch/forgot links must land on shell data-portal-link-* attrs.
+      // Portal shells themselves must never become page links.
+      return updateContent(elementId, linkPatch);
     },
-    [canvasRef, dataRef, linkModal.elementId, selection, setData],
+    [linkModal.elementId, updateContent],
   );
 
   const applyStyle = useCallback(

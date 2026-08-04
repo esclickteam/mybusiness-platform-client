@@ -839,6 +839,10 @@ export default function VisualFloatingToolbar({
 
   const elementId = getElementId(element);
   const kind = useMemo(() => getElementKind(element), [element]);
+  const portalControlKind = useMemo(() => {
+    const node = getElementNode(element);
+    return String(node?.getAttribute("data-bizuply-portal-control") || "").trim();
+  }, [element]);
 
   const canEditForm = useMemo(() => {
     const node = getElementNode(element);
@@ -1053,7 +1057,10 @@ export default function VisualFloatingToolbar({
 
   if (!element || !elementId) return null;
 
-  const isTextEditable = kind === "text" || kind === "button";
+  const isTextEditable =
+    kind === "text" ||
+    kind === "button" ||
+    Boolean(portalControlKind);
   const selectedNode = getElementNode(element);
   const blocksBackground =
     selectedNode?.getAttribute("data-visual-no-background") === "true";
@@ -1825,12 +1832,16 @@ export default function VisualFloatingToolbar({
           </>
         ) : null}
 
-        {kind === "button" || kind === "text" ? (
+        {kind === "button" ||
+        kind === "text" ||
+        portalControlKind === "switch" ||
+        portalControlKind === "forgot" ||
+        portalControlKind === "submit" ? (
           <ToolbarButton
             title="קישור"
-            disabled={locked}
+            disabled={locked || portalControlKind === "submit"}
             onClick={() => {
-              if (!elementId) return;
+              if (!elementId || portalControlKind === "submit") return;
               editor?.openLinkSettings?.(elementId);
               setLinkOpen(false);
             }}

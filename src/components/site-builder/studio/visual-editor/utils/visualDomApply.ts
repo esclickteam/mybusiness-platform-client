@@ -52,6 +52,7 @@ import {
   shouldSkipPluginWidgetRegistration,
 } from "./visualPluginWidgets";
 import {
+  PORTAL_MOUNT_SHELL_SELECTOR,
   clearPortalShellLinkDomAttrs,
   isPortalMountShell,
 } from "./portalAuthControls";
@@ -2161,6 +2162,19 @@ export function applyVisualLayoutToDom(
   });
 }
 
+const PORTAL_SHELL_LINK_ATTR_KEYS = new Set([
+  "href",
+  "target",
+  "rel",
+  "data-bizuply-public-href",
+  "data-bizuply-public-target",
+  "data-bizuply-public-link",
+  "data-visual-link-href",
+  "data-visual-link-target",
+  "data-href",
+  "data-link-url",
+]);
+
 export function applyVisualAttributesToDom(
   root: HTMLElement | null,
   data: Record<string, any>,
@@ -2176,6 +2190,7 @@ export function applyVisualAttributesToDom(
 
     nodes.forEach((node) => {
       if (isEditorOnlyNode(node)) return;
+      const portalShell = isPortalMountShell(node);
 
       Object.entries(item || {}).forEach(([key, value]) => {
         if (
@@ -2183,6 +2198,12 @@ export function applyVisualAttributesToDom(
           key === "data-visual-edit-type" ||
           key === "data-visual-type"
         ) {
+          return;
+        }
+
+        // Never re-apply whole-form link attrs onto portal widgets.
+        if (portalShell && PORTAL_SHELL_LINK_ATTR_KEYS.has(key)) {
+          node.removeAttribute(key);
           return;
         }
 
@@ -2221,6 +2242,10 @@ export function applyVisualAttributesToDom(
 
         node.setAttribute(key, String(value));
       });
+
+      if (portalShell) {
+        clearPortalShellLinkDomAttrs(node);
+      }
     });
   });
 }
@@ -3640,6 +3665,11 @@ export function applyAllVisualDataToDom(
   applySavedFormBuildersToDom(root, data);
   applySitePageNavSubmenusToDom(root, data);
   enhanceTemplateMobileNav(root);
+
+  // Final pass: legacy saves / attribute maps must never leave the form linked.
+  root
+    .querySelectorAll<HTMLElement>(PORTAL_MOUNT_SHELL_SELECTOR)
+    .forEach((shell) => clearPortalShellLinkDomAttrs(shell));
 
   if (!isPublicRuntime) {
     root

@@ -970,15 +970,38 @@ function stripPortalRuntimeVisualMaps(data: Record<string, any>) {
         return;
       }
 
+      const attrs = attributesMap[elementId] || {};
+      const looksLikePortalShell =
+        attrs["data-bizuply-portal-mount"] === "true" ||
+        attrs["data-bizuply-portal-mount"] === true ||
+        String(attrs["data-bizuply-widget"] || "").startsWith("portal-") ||
+        /^sec-portal-/i.test(elementId) ||
+        /portal-(login|register|account|orders|cart|forgot|reset)/i.test(
+          elementId,
+        );
+
       // Drop harvested hrefs from portal shells (whole-form navigation bug).
-      if (mapKey === VISUAL_CONTENT_KEY) {
-        const attrs = attributesMap[elementId] || {};
-        const looksLikePortalShell =
-          attrs["data-bizuply-portal-mount"] === "true" ||
-          attrs["data-bizuply-portal-mount"] === true ||
-          String(attrs["data-bizuply-widget"] || "").startsWith("portal-");
-        if (looksLikePortalShell && cleaned[elementId]) {
+      if (looksLikePortalShell && cleaned[elementId]) {
+        if (mapKey === VISUAL_CONTENT_KEY) {
           cleaned[elementId] = stripPortalShellLinkFields(cleaned[elementId]);
+        }
+        if (mapKey === VISUAL_ATTRIBUTE_KEY) {
+          const nextAttrs = { ...cleaned[elementId] };
+          [
+            "href",
+            "target",
+            "rel",
+            "data-bizuply-public-href",
+            "data-bizuply-public-target",
+            "data-bizuply-public-link",
+            "data-visual-link-href",
+            "data-visual-link-target",
+            "data-href",
+            "data-link-url",
+          ].forEach((key) => {
+            delete nextAttrs[key];
+          });
+          cleaned[elementId] = nextAttrs;
         }
       }
     });
