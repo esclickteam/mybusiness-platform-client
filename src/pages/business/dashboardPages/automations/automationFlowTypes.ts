@@ -342,6 +342,22 @@ export function nodeSummary(
   }
   if (type === "action") {
     const key = String(data.actionKey || "");
+    if (key === "send_gmail") {
+      const sender = String(data.senderEmail || "Gmail").trim() || "Gmail";
+      const recipientType = String(data.recipientType || "lead_email");
+      const recipientLabels: Record<string, string> = {
+        lead_email: "אימייל הליד",
+        appointment_customer_email: "הלקוח שקבע תור",
+        business_owner: "בעל העסק",
+        lead_owner: "אחראי הליד",
+        fixed_email: "כתובת קבועה",
+        custom_field: "שדה מותאם אישית",
+      };
+      const recipient =
+        recipientLabels[recipientType] ||
+        recipientLabels.lead_email;
+      return `${sender} → ${recipient}`;
+    }
     return (
       ACTION_OPTIONS.find((o) => o.value === key)?.label ||
       String(data.label || "")
