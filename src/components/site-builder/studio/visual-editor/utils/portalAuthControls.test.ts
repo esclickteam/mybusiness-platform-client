@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  applyPortalShellAttributePatch,
   buildPortalAuthControlId,
   clearPortalShellLinkDomAttrs,
   isPortalAuthControlId,
@@ -77,5 +78,24 @@ describe("portalAuthControls", () => {
     expect(shell.getAttribute("data-visual-link-href")).toBeNull();
     expect(shell.getAttribute("role")).toBeNull();
     expect(shell.getAttribute("tabindex")).toBeNull();
+  });
+
+  it("does not remount portal shell on text-only copy patches", () => {
+    const shell = document.createElement("div");
+    shell.dataset.bizuplyPortalMounted = "1";
+    applyPortalShellAttributePatch(shell, {
+      "data-portal-copy-submit": "כניסה עכשיו",
+    });
+    expect(shell.dataset.bizuplyPortalMounted).toBe("1");
+    expect(shell.getAttribute("data-portal-copy-submit")).toBe("כניסה עכשיו");
+  });
+
+  it("remounts portal shell when link target patches", () => {
+    const shell = document.createElement("div");
+    shell.dataset.bizuplyPortalMounted = "1";
+    applyPortalShellAttributePatch(shell, {
+      "data-portal-link-switch": "/register",
+    });
+    expect(shell.dataset.bizuplyPortalMounted).toBeUndefined();
   });
 });
