@@ -80,6 +80,26 @@ const WA_MAPPING_PRESETS = [
   },
 ] as const;
 
+/** Labels for Meta positional variables (not injected system fields). */
+const WA_VARIABLE_LABELS: Record<string, Record<string, string>> = {
+  new_lead_received: {
+    "1": "שם הליד",
+    "2": "טלפון הליד",
+    "3": "מקור הליד",
+  },
+};
+
+const WA_DEFAULT_MAPPINGS: Record<
+  string,
+  Record<string, { source: string; field: string }>
+> = {
+  new_lead_received: {
+    "1": { source: "lead", field: "name" },
+    "2": { source: "lead", field: "phone" },
+    "3": { source: "lead", field: "source" },
+  },
+};
+
 function isWhatsAppActionKey(actionKey: unknown) {
   const key = String(actionKey || "");
   return key === "whatsapp_template" || key === "send_whatsapp";
@@ -89,6 +109,43 @@ function mappingPresetKey(row: WhatsAppVariableMapping) {
   const source = String(row.source || "");
   if (source === "constant" || source === "manual") return source;
   return `${source}:${String(row.field || "")}`;
+}
+
+function templateVariableLabel(
+  metaTemplateName: string,
+  variable: string
+): string {
+  const tpl = String(metaTemplateName || "").toLowerCase();
+  const key = String(variable || "");
+  return WA_VARIABLE_LABELS[tpl]?.[key] || "";
+}
+
+function buildMappingsFromTemplate(
+  tpl: ApprovedWhatsAppTemplate,
+  existing: WhatsAppVariableMapping[] = []
+): WhatsAppVariableMapping[] {
+  const variables = Array.isArray(tpl.variables) ? tpl.variables : [];
+  const metaName = String(tpl.metaTemplateName || "").toLowerCase();
+  const defaults = WA_DEFAULT_MAPPINGS[metaName] || {};
+  return variables.map((variable) => {
+    const key = String(variable);
+    const prev = existing.find((row) => String(row.variable) === key);
+    if (prev) {
+      return {
+        ...prev,
+        variable: key,
+      };
+    }
+    const fallback = defaults[key];
+    return {
+      variable: key,
+      component: "body" as const,
+      source: fallback?.source || "",
+      field: fallback?.field || "",
+      constantValue: "",
+      required: true,
+    };
+  });
 }
 import { automationNodeTypes } from "./FlowNodes";
 import {
@@ -290,29 +347,20 @@ function EditorInner({
       const existing = Array.isArray(node.data?.componentMappings)
         ? (node.data.componentMappings as WhatsAppVariableMapping[])
         : [];
+      const hasExtraMappings = existing.some(
+        (row) =>
+          !variables.some((variable) => String(row.variable) === String(variable))
+      );
       const needsHydrate =
         !node.data?.metaTemplateName ||
         existing.length !== variables.length ||
+        hasExtraMappings ||
         variables.some(
           (variable) =>
             !existing.some((row) => String(row.variable) === String(variable))
         );
       if (!needsHydrate) return prev;
-      const componentMappings = variables.map((variable) => {
-        const prevRow = existing.find(
-          (row) => String(row.variable) === String(variable)
-        );
-        return (
-          prevRow || {
-            variable: String(variable),
-            component: "body" as const,
-            source: "",
-            field: "",
-            constantValue: "",
-            required: true,
-          }
-        );
-      });
+      const componentMappings = buildMappingsFromTemplate(tpl, existing);
       return prev.map((n) =>
         n.id === selectedId
           ? {
@@ -322,7 +370,9 @@ function EditorInner({
                 metaTemplateId: tpl.metaTemplateId || "",
                 metaTemplateName: tpl.metaTemplateName || "",
                 language: tpl.language || "",
-                wabaId: tpl.wabaId || "",
+                wabaId: "",
+                phoneNumberId: "",
+                integrationId: "",
                 componentMappings,
               },
             }
@@ -1288,54 +1338,9 @@ function EditorInner({
                                 });
                                 return;
                               }
-                              const variables = Array.isArray(tpl.variables)
-                                ? tpl.variables
-                                : [];
-                              const existing = Array.isArray(
-                                selectedNode.data?.componentMappings
-                              )
-                                ? (selectedNode.data
-                                    .componentMappings as WhatsAppVariableMapping[])
-                                : [];
-                              const componentMappings = variables.map(
-                                (variable) => {
-                                  const prev = existing.find(
-                                    (row) =>
-                                      String(row.variable) === String(variable)
-                                  );
-                                  return (
-                                    prev || {
-                                      variable: String(variable),
-                                      component: "body" as const,
-                                      source: "",
-                                      field: "",
-                                      constantValue: "",
-                                      required: true,
-                                    }
-                                  );
-                                }
-                              );
-                              const withBusinessName = [
-                                ...componentMappings,
-                              ];
-                              const hasBusinessName = withBusinessName.some(
-                                (row) =>
-                                  String(row.variable || "").toLowerCase() ===
-                                    "businessname" ||
-                                  String(row.field || "")
-                                    .toLowerCase()
-                                    .includes("businessname")
-                              );
-                              if (!hasBusinessName) {
-                                withBusinessName.push({
-                                  variable: "businessName",
-                                  component: "body",
-                                  source: "business",
-                                  field: "businessName",
-                                  constantValue: "",
-                                  required: true,
-                                });
-                              }
+                              // Rebuild strictly from Meta template variables.
+                              const componentMappings =
+                                buildMappingsFromTemplate(tpl, []);
                               const isBusinessAlert =
                                 String(tpl.metaTemplateName || "")
                                   .toLowerCase() === "new_lead_received";
@@ -1348,7 +1353,7 @@ function EditorInner({
                                 wabaId: "",
                                 phoneNumberId: "",
                                 integrationId: "",
-                                componentMappings: withBusinessName,
+                                componentMappings,
                                 recipientType: isBusinessAlert
                                   ? "business_owner"
                                   : String(
@@ -1410,21 +1415,47 @@ function EditorInner({
                           );
                         })()}
 
-                        {Array.isArray(selectedNode.data?.componentMappings) &&
-                        (selectedNode.data.componentMappings as WhatsAppVariableMapping[])
-                          .length > 0 ? (
+                        {(() => {
+                          const selectedTpl =
+                            waTemplates.find(
+                              (tpl) =>
+                                tpl._id ===
+                                String(selectedNode.data?.templateId || "")
+                            ) || null;
+                          const templateVars = Array.isArray(
+                            selectedTpl?.variables
+                          )
+                            ? selectedTpl!.variables.map(String)
+                            : [];
+                          const mappingRows = (
+                            Array.isArray(selectedNode.data?.componentMappings)
+                              ? (selectedNode.data
+                                  .componentMappings as WhatsAppVariableMapping[])
+                              : []
+                          ).filter((row) =>
+                            templateVars.includes(String(row.variable))
+                          );
+                          if (!selectedTpl || mappingRows.length === 0) {
+                            return null;
+                          }
+                          return (
                           <div className="af-wa-template__mappings">
                             <p>מיפוי משתנים</p>
-                            {(
-                              selectedNode.data
-                                .componentMappings as WhatsAppVariableMapping[]
-                            ).map((row, index) => (
+                            {mappingRows.map((row, index) => {
+                              const label = templateVariableLabel(
+                                String(selectedTpl.metaTemplateName || ""),
+                                String(row.variable)
+                              );
+                              return (
                               <div
                                 key={`${row.variable}-${index}`}
                                 className="af-wa-template__map-row"
                               >
                                 <label>
-                                  <span dir="ltr">{`{{${row.variable}}}`}</span>
+                                  <span dir="ltr">
+                                    {`{{${row.variable}}}`}
+                                    {label ? ` ${label}` : ""}
+                                  </span>
                                   <select
                                     value={mappingPresetKey(row)}
                                     disabled={readOnly}
@@ -1432,10 +1463,8 @@ function EditorInner({
                                       const preset = WA_MAPPING_PRESETS.find(
                                         (p) => p.key === e.target.value
                                       );
-                                      const next = (
-                                        selectedNode.data
-                                          .componentMappings as WhatsAppVariableMapping[]
-                                      ).map((item, i) =>
+                                      const next = mappingRows.map(
+                                        (item, i) =>
                                         i === index
                                           ? {
                                               ...item,
@@ -1473,10 +1502,8 @@ function EditorInner({
                                     disabled={readOnly}
                                     value={String(row.constantValue || "")}
                                     onChange={(e) => {
-                                      const next = (
-                                        selectedNode.data
-                                          .componentMappings as WhatsAppVariableMapping[]
-                                      ).map((item, i) =>
+                                      const next = mappingRows.map(
+                                        (item, i) =>
                                         i === index
                                           ? {
                                               ...item,
@@ -1491,9 +1518,11 @@ function EditorInner({
                                   />
                                 ) : null}
                               </div>
-                            ))}
+                              );
+                            })}
                           </div>
-                        ) : null}
+                          );
+                          })()}
                       </>
                     )}
 
