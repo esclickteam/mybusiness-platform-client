@@ -2009,40 +2009,79 @@ function EditorInner({
                           />
                         </label>
 
-                        <div className="af-wa-template__meta" dir="rtl">
-                          <strong>תצוגה מקדימה</strong>
-                          <span>
-                            מ: Gmail —{" "}
-                            {String(
-                              selectedNode.data?.senderEmail ||
-                                gmailAccount.email ||
-                                "—"
-                            )}
-                          </span>
-                          <span>
-                            אל:{" "}
-                            {GMAIL_RECIPIENT_LABELS[
-                              String(
-                                selectedNode.data?.recipientType || "lead_email"
-                              )
-                            ] || "—"}
-                            {String(selectedNode.data?.recipientType || "") ===
-                              "fixed_email" &&
-                            selectedNode.data?.fixedEmail
-                              ? ` (${String(selectedNode.data.fixedEmail)})`
-                              : ""}
-                            {String(selectedNode.data?.recipientType || "") ===
-                              "custom_field" &&
-                            selectedNode.data?.customField
-                              ? ` (${String(selectedNode.data.customField)})`
-                              : ""}
-                          </span>
-                          <span>
-                            נושא:{" "}
-                            {String(selectedNode.data?.subject || "").trim() ||
-                              "—"}
-                          </span>
-                        </div>
+                        {(() => {
+                          const previewHtml = String(
+                            selectedNode.data?.html ||
+                              selectedNode.data?.body ||
+                              ""
+                          ).trim();
+                          const previewText = String(
+                            selectedNode.data?.text || ""
+                          ).trim();
+                          return (
+                            <div className="af-gmail-preview" dir="rtl">
+                              <strong>תצוגה מקדימה</strong>
+                              <div className="af-gmail-preview__headers">
+                                <span>
+                                  מ: Gmail —{" "}
+                                  {String(
+                                    selectedNode.data?.senderEmail ||
+                                      gmailAccount.email ||
+                                      "—"
+                                  )}
+                                </span>
+                                <span>
+                                  אל:{" "}
+                                  {GMAIL_RECIPIENT_LABELS[
+                                    String(
+                                      selectedNode.data?.recipientType ||
+                                        "lead_email"
+                                    )
+                                  ] || "—"}
+                                  {String(
+                                    selectedNode.data?.recipientType || ""
+                                  ) === "fixed_email" &&
+                                  selectedNode.data?.fixedEmail
+                                    ? ` (${String(selectedNode.data.fixedEmail)})`
+                                    : ""}
+                                  {String(
+                                    selectedNode.data?.recipientType || ""
+                                  ) === "custom_field" &&
+                                  selectedNode.data?.customField
+                                    ? ` (${String(selectedNode.data.customField)})`
+                                    : ""}
+                                </span>
+                                <span>
+                                  נושא:{" "}
+                                  {String(
+                                    selectedNode.data?.subject || ""
+                                  ).trim() || "—"}
+                                </span>
+                              </div>
+                              {!previewHtml && !previewText ? (
+                                <div className="af-gmail-preview__empty">
+                                  אין עדיין תוכן להצגה
+                                </div>
+                              ) : (
+                                <>
+                                  {previewHtml ? (
+                                    <div
+                                      className="af-gmail-preview__body"
+                                      dangerouslySetInnerHTML={{
+                                        __html: previewHtml,
+                                      }}
+                                    />
+                                  ) : null}
+                                  {previewText ? (
+                                    <pre className="af-gmail-preview__text">
+                                      {previewText}
+                                    </pre>
+                                  ) : null}
+                                </>
+                              )}
+                            </div>
+                          );
+                        })()}
                       </>
                     )}
                   </div>
