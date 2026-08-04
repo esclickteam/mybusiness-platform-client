@@ -37,6 +37,7 @@ import {
   resumeAutomationWorkflow,
   dryRunAutomationWorkflow,
   fetchDryRunExample,
+  fetchAutomationTriggerCatalog,
   isAutomationsReadOnly,
   type AutomationNodeType,
   type AutomationWorkflow,
@@ -153,14 +154,18 @@ import {
   CONDITION_OPTIONS,
   DELAY_UNITS,
   FILTER_CHIPS,
-  PALETTE,
+  FLOW_ACTION_PALETTE,
   QUICK_ADD_AFTER,
-  TRIGGER_OPTIONS,
+  TRIGGER_CATEGORY_LABELS,
   TYPE_META,
+  buildPaletteWithTriggers,
   clampRouteCount,
   defaultSourceHandle,
   ensureRouterPaths,
+  findTriggerOption,
   listSourceHandles,
+  triggerOptionFromCatalog,
+  type AutomationTriggerOption,
   type PaletteFilter,
   type PaletteItem,
 } from "./automationFlowTypes";
@@ -287,6 +292,11 @@ function EditorInner({
   const [waLoading, setWaLoading] = useState(false);
   const [waSyncError, setWaSyncError] = useState("");
   const [waLastSyncAt, setWaLastSyncAt] = useState<string | null>(null);
+  const [triggerCatalog, setTriggerCatalog] = useState<
+    AutomationTriggerOption[]
+  >([]);
+  const [triggerCatalogLoading, setTriggerCatalogLoading] = useState(true);
+  const [triggerCatalogError, setTriggerCatalogError] = useState("");
   const [nodes, setNodes, onNodesChange] = useNodesState(toFlowNodes(workflow));
   const [edges, setEdges, onEdgesChange] = useEdgesState(toFlowEdges(workflow));
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -329,6 +339,31 @@ function EditorInner({
   useEffect(() => {
     void loadApprovedWhatsAppTemplates();
   }, [loadApprovedWhatsAppTemplates]);
+
+  const loadTriggerCatalog = useCallback(async () => {
+    setTriggerCatalogLoading(true);
+    setTriggerCatalogError("");
+    try {
+      const { triggers } = await fetchAutomationTriggerCatalog(businessId);
+      const unique = new Map<string, AutomationTriggerOption>();
+      for (const row of triggers) {
+        const option = triggerOptionFromCatalog(row);
+        if (!unique.has(option.key)) unique.set(option.key, option);
+      }
+      setTriggerCatalog(Array.from(unique.values()));
+    } catch (error: unknown) {
+      setTriggerCatalog([]);
+      setTriggerCatalogError(
+        readErrorMessage(error, "לא הצלחנו לטעון את קטלוג הטריגרים")
+      );
+    } finally {
+      setTriggerCatalogLoading(false);
+    }
+  }, [businessId]);
+
+  useEffect(() => {
+    void loadTriggerCatalog();
+  }, [loadTriggerCatalog]);
 
   // Hydrate component mappings when a saved WhatsApp node is opened.
   useEffect(() => {
@@ -386,10 +421,39 @@ function EditorInner({
     [nodes, selectedId]
   );
 
+  const palette = useMemo(
+    () =>
+      triggerCatalog.length
+        ? buildPaletteWithTriggers(triggerCatalog)
+        : FLOW_ACTION_PALETTE,
+    [triggerCatalog]
+  );
+
   const filteredPalette = useMemo(() => {
-    if (filter === "all") return PALETTE;
-    return PALETTE.filter((p) => p.filter === filter);
-  }, [filter]);
+    if (filter === "all") return palette;
+    return palette.filter((p) => p.filter === filter);
+  }, [filter, palette]);
+
+  const selectedTriggerKey = useMemo(() => {
+    const triggerNode = nodes.find((node) => node.type === "trigger");
+    return String(triggerNode?.data?.triggerKey || "");
+  }, [nodes]);
+
+  const selectedTriggerOption = useMemo(
+    () => findTriggerOption(triggerCatalog, selectedTriggerKey),
+    [triggerCatalog, selectedTriggerKey]
+  );
+
+  const hasUnsupportedTrigger = useMemo(() => {
+    if (!selectedTriggerKey) return true;
+    if (triggerCatalogLoading || triggerCatalogError) return true;
+    return !selectedTriggerOption?.isPublishable;
+  }, [
+    selectedTriggerKey,
+    selectedTriggerOption,
+    triggerCatalogLoading,
+    triggerCatalogError,
+  ]);
 
   const onConnect: OnConnect = useCallback(
     (connection: Connection) => {
@@ -621,6 +685,18 @@ function EditorInner({
       toast.error(AUTOMATION_PREVIEW_WRITE_BLOCKED_MESSAGE);
       return;
     }
+    if (triggerCatalogLoading || triggerCatalogError || !triggerCatalog.length) {
+      toast.error("יש לטעון את קטלוג הטריגרים לפני פרסום");
+      return;
+    }
+    if (hasUnsupportedTrigger) {
+      toast.error(
+        selectedTriggerOption
+          ? "הטריגר שנבחר עדיין לא נתמך לפרסום"
+          : "טריגר ישן או לא נתמך — יש לבחור טריגר נתמך לפני פרסום"
+      );
+      return;
+    }
     setPublishing(true);
     try {
       if (dirty) await handleSave(true);
@@ -704,6 +780,22 @@ function EditorInner({
           ))}
         </div>
 
+        {triggerCatalogLoading ? (
+          <p className="af-palette__hint">טוען טריגרים מהשרת...</p>
+        ) : null}
+        {triggerCatalogError ? (
+          <div className="af-wa-template__state af-wa-template__state--error">
+            <p>{triggerCatalogError}</p>
+            <button
+              type="button"
+              className="af-toolbar__btn"
+              onClick={() => void loadTriggerCatalog()}
+            >
+              נסיון חוזר
+            </button>
+          </div>
+        ) : null}
+
         <div className="af-palette__group">
           {filteredPalette.map((item) => (
             <button
@@ -767,9 +859,22 @@ function EditorInner({
             type="button"
             className="af-btn af-btn--primary"
             disabled={
-              publishing || saving || workflow.status === "archived" || readOnly
+              publishing ||
+              saving ||
+              workflow.status === "archived" ||
+              readOnly ||
+              triggerCatalogLoading ||
+              Boolean(triggerCatalogError) ||
+              hasUnsupportedTrigger
             }
-            title={writeBlockedTitle}
+            title={
+              writeBlockedTitle ||
+              (triggerCatalogError
+                ? "יש לטעון מחדש את קטלוג הטריגרים"
+                : hasUnsupportedTrigger
+                  ? "טריגר ישן או לא נתמך"
+                  : undefined)
+            }
             onClick={() => void handlePublish()}
           >
             <Play size={14} />
@@ -1003,25 +1108,93 @@ function EditorInner({
               <>
                 <label>
                   סוג טריגר
-                  <select
-                    value={String(selectedNode.data?.triggerKey || "new_lead")}
-                    onChange={(e) => {
-                      const opt = TRIGGER_OPTIONS.find(
-                        (o) => o.value === e.target.value
-                      );
-                      updateSelectedData({
-                        triggerKey: e.target.value,
-                        label: opt?.label || selectedNode.data?.label,
-                      });
-                    }}
-                  >
-                    {TRIGGER_OPTIONS.map((o) => (
-                      <option key={o.value} value={o.value} disabled={o.supported === false}>
-                        {o.label}{o.supported === false ? " · בקרוב" : ""}
-                      </option>
-                    ))}
-                  </select>
+                  {triggerCatalogLoading ? (
+                    <p className="af-wa-template__state">טוען קטלוג טריגרים...</p>
+                  ) : triggerCatalogError ? (
+                    <div className="af-wa-template__state af-wa-template__state--error">
+                      <p>{triggerCatalogError}</p>
+                      <button
+                        type="button"
+                        className="af-toolbar__btn"
+                        onClick={() => void loadTriggerCatalog()}
+                      >
+                        נסיון חוזר
+                      </button>
+                    </div>
+                  ) : (
+                    <select
+                      value={String(selectedNode.data?.triggerKey || "")}
+                      disabled={readOnly}
+                      onChange={(e) => {
+                        const opt = findTriggerOption(
+                          triggerCatalog,
+                          e.target.value
+                        );
+                        if (!opt?.isPublishable) return;
+                        updateSelectedData({
+                          triggerKey: opt.key,
+                          label: opt.label,
+                        });
+                      }}
+                    >
+                      {!findTriggerOption(
+                        triggerCatalog,
+                        String(selectedNode.data?.triggerKey || "")
+                      ) && selectedNode.data?.triggerKey ? (
+                        <option
+                          value={String(selectedNode.data.triggerKey)}
+                          disabled
+                        >
+                          {String(selectedNode.data.triggerKey)} · טריגר ישן או
+                          לא נתמך
+                        </option>
+                      ) : null}
+                      {!selectedNode.data?.triggerKey ? (
+                        <option value="" disabled>
+                          בחרו טריגר
+                        </option>
+                      ) : null}
+                      {triggerCatalog.map((o) => (
+                        <option
+                          key={o.key}
+                          value={o.key}
+                          disabled={!o.isPublishable}
+                        >
+                          {(TRIGGER_CATEGORY_LABELS[o.category || ""]
+                            ? `${TRIGGER_CATEGORY_LABELS[o.category || ""]} · `
+                            : "") +
+                            o.label}
+                          {!o.isPublishable ? " · בקרוב" : ""}
+                        </option>
+                      ))}
+                    </select>
+                  )}
                 </label>
+                {selectedNode.data?.triggerKey &&
+                !triggerCatalogLoading &&
+                !triggerCatalogError &&
+                !findTriggerOption(
+                  triggerCatalog,
+                  String(selectedNode.data.triggerKey)
+                ) ? (
+                  <p className="af-wa-template__state af-wa-template__state--error">
+                    טריגר ישן או לא נתמך
+                  </p>
+                ) : null}
+                {findTriggerOption(
+                  triggerCatalog,
+                  String(selectedNode.data?.triggerKey || "")
+                )?.requiredConnection ? (
+                  <p className="af-wa-template__state af-wa-template__state--error">
+                    חסר חיבור:{" "}
+                    {
+                      findTriggerOption(
+                        triggerCatalog,
+                        String(selectedNode.data?.triggerKey || "")
+                      )?.requiredConnection
+                    }
+                  </p>
+                ) : null}
                 <label>
                   מספר ניתובים מהטריגר
                   <input

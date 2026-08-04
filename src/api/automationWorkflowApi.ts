@@ -170,6 +170,32 @@ export async function listAutomationRecipes(businessId: string) {
   };
 }
 
+export type AutomationTriggerCatalogItem = {
+  key: string;
+  label: string;
+  description: string;
+  category: string;
+  status: string;
+  isSupported: boolean;
+  isPublishable: boolean;
+  requiredEntitlement?: string | null;
+  requiredConnection?: string | null;
+  availableFields?: string[];
+  version?: number;
+  sortOrder?: number;
+};
+
+export async function fetchAutomationTriggerCatalog(businessId: string) {
+  const { data } = await API.get(
+    "/automations/catalog/triggers",
+    withBusiness(businessId)
+  );
+  const triggers = Array.isArray(data?.triggers)
+    ? (data.triggers as AutomationTriggerCatalogItem[])
+    : [];
+  return { triggers };
+}
+
 export async function createAutomationWorkflow(
   businessId: string,
   payload?: {

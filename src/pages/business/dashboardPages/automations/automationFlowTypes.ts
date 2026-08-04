@@ -23,21 +23,51 @@ export type PaletteItem = {
   comingSoon?: boolean;
 };
 
-export const TRIGGER_OPTIONS = [
-  { value: "new_lead", label: "ליד חדש ב-CRM", supported: true },
-  { value: "lead_status_changed", label: "שינוי סטטוס ליד", supported: true },
-  { value: "status_changed", label: "שינוי סטטוס ליד", supported: true },
-  { value: "form_submitted", label: "נשלח טופס באתר", supported: true },
-  { value: "appointment_created", label: "נקבעה פגישה", supported: true },
-  { value: "appointment_reminder", label: "תזכורת לפני פגישה", supported: true },
-  { value: "order_created", label: "נוצרה הזמנה", supported: true },
-  { value: "payment_succeeded", label: "תשלום התקבל", supported: true },
-  { value: "payment_received", label: "תשלום התקבל", supported: true },
-  { value: "manual", label: "הפעלה ידנית", supported: true },
-  { value: "lead_no_response", label: "ליד שלא נענה", supported: false, comingSoon: true },
-  { value: "whatsapp_received", label: "התקבלה הודעת וואטסאפ", supported: false, comingSoon: true },
-  { value: "appointment_cancelled", label: "פגישה בוטלה", supported: false, comingSoon: true },
-] as const;
+export type AutomationTriggerOption = {
+  key: string;
+  label: string;
+  description?: string;
+  category?: string;
+  status?: string;
+  isSupported: boolean;
+  isPublishable: boolean;
+  requiredConnection?: string | null;
+  comingSoon?: boolean;
+};
+
+export const TRIGGER_CATEGORY_LABELS: Record<string, string> = {
+  crm: "CRM ולידים",
+  appointments: "פגישות",
+  website: "אתר וטפסים",
+  store: "חנות ותשלומים",
+  manual: "ידני",
+  coming_soon: "בקרוב",
+};
+
+export function triggerOptionFromCatalog(row: {
+  key: string;
+  label: string;
+  description?: string;
+  category?: string;
+  status?: string;
+  isSupported?: boolean;
+  isPublishable?: boolean;
+  requiredConnection?: string | null;
+}): AutomationTriggerOption {
+  const isSupported = Boolean(row.isSupported);
+  const isPublishable = Boolean(row.isPublishable);
+  return {
+    key: String(row.key),
+    label: String(row.label || row.key),
+    description: String(row.description || ""),
+    category: String(row.category || "crm"),
+    status: String(row.status || (isPublishable ? "active" : "coming_soon")),
+    isSupported,
+    isPublishable,
+    requiredConnection: row.requiredConnection || null,
+    comingSoon: !isPublishable,
+  };
+}
 
 export const ACTION_OPTIONS = [
   { value: "create_task", label: "יצירת משימה ב-CRM", supported: true },
@@ -137,22 +167,8 @@ function conditionItem(
   };
 }
 
-const RAW_PALETTE: PaletteItem[] = [
-  triggerItem("new_lead", "ליד חדש", "כשליד נכנס ל-CRM", 3),
-  triggerItem("lead_no_response", "ליד שלא נענה", "אחרי זמן בלי מענה", 2),
-  triggerItem("lead_followup", "פולואפ לליד", "מועד מעקב לליד", 2),
-  triggerItem("appointment_created", "נקבעה פגישה", "כשקובעים תור", 2),
-  triggerItem("appointment_reminder", "תזכורת פגישה", "לפני מועד הפגישה", 2),
-  triggerItem("appointment_cancelled", "פגישה בוטלה", "כשלקוח מבטל", 2),
-  triggerItem("appointment_completed", "פגישה הסתיימה", "אחרי סיום הפגישה", 2),
-  triggerItem("new_client", "לקוח חדש", "כשלקוח נוצר ב-CRM", 2),
-  triggerItem("inactive_client", "לקוח לא פעיל", "אחרי תקופה בלי פעילות", 2),
-  triggerItem("status_changed", "שינוי סטטוס", "כשמזיזים סטטוס ליד", 2),
-  triggerItem("form_submitted", "טופס באתר", "כשנשלח טופס", 2),
-  triggerItem("whatsapp_received", "וואטסאפ נכנס", "כשמתקבלת הודעה", 2),
-  triggerItem("payment_received", "תשלום התקבל", "אחרי תשלום מוצלח", 2),
-  triggerItem("birthday", "יום הולדת", "ביום ההולדת של הלקוח", 1),
-
+/** Flow + action modules only. Triggers are loaded from the server catalog. */
+const RAW_FLOW_ACTION_PALETTE: PaletteItem[] = [
   {
     type: "router",
     key: "router",
@@ -207,16 +223,51 @@ const RAW_PALETTE: PaletteItem[] = [
   actionItem("ai_tasks_from_chat", "AI משימות משיחה", "יוצר משימות מתוכן שיחה"),
 ];
 
-export const PALETTE: PaletteItem[] = RAW_PALETTE.map((item) => {
-  const option =
-    item.type === "trigger"
-      ? TRIGGER_OPTIONS.find((entry) => entry.value === item.key)
-      : item.type === "action"
-        ? ACTION_OPTIONS.find((entry) => entry.value === item.key)
-        : undefined;
+function applyActionSupport(item: PaletteItem): PaletteItem {
+  if (item.type !== "action") {
+    return {
+      ...item,
+      supported: item.supported !== false,
+      comingSoon: item.supported === false,
+    };
+  }
+  const option = ACTION_OPTIONS.find((entry) => entry.value === item.key);
   const supported = option ? option.supported : item.supported !== false;
   return { ...item, supported, comingSoon: !supported };
-});
+}
+
+export const FLOW_ACTION_PALETTE: PaletteItem[] =
+  RAW_FLOW_ACTION_PALETTE.map(applyActionSupport);
+
+/** Non-trigger palette (flow/actions). Use buildPaletteWithTriggers for full list. */
+export const PALETTE: PaletteItem[] = FLOW_ACTION_PALETTE;
+
+export function buildTriggerPaletteItems(
+  triggers: AutomationTriggerOption[]
+): PaletteItem[] {
+  return triggers.map((trigger) =>
+    triggerItem(
+      trigger.key,
+      trigger.label,
+      trigger.description || "",
+      2,
+      trigger.isPublishable
+    )
+  );
+}
+
+export function buildPaletteWithTriggers(
+  triggers: AutomationTriggerOption[]
+): PaletteItem[] {
+  return [...buildTriggerPaletteItems(triggers), ...FLOW_ACTION_PALETTE];
+}
+
+export function findTriggerOption(
+  triggers: AutomationTriggerOption[],
+  key: string
+): AutomationTriggerOption | undefined {
+  return triggers.find((row) => row.key === String(key || ""));
+}
 
 export const TYPE_META: Record<
   AutomationNodeType,
@@ -273,9 +324,7 @@ export function nodeSummary(
   if (type === "trigger") {
     const key = String(data.triggerKey || "");
     const routes = clampRouteCount(data.routeCount, 2);
-    const base =
-      TRIGGER_OPTIONS.find((o) => o.value === key)?.label ||
-      String(data.label || "");
+    const base = String(data.label || key || "");
     return `${base} · ${routes} ניתובים`;
   }
   if (type === "condition") {
@@ -301,8 +350,9 @@ export function nodeSummary(
 
 export function defaultSourceHandle(
   type: AutomationNodeType,
-  data: Record<string, unknown>
+  _data: Record<string, unknown>
 ) {
+  void _data;
   if (type === "trigger") return "route_1";
   if (type === "router") return "path_1";
   if (type === "condition") return "yes";
