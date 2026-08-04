@@ -48,6 +48,11 @@ import {
   type ApprovedWhatsAppTemplate,
   type WhatsAppVariableMapping,
 } from "../../../../api/whatsappApi";
+import {
+  getGmailConnectUrl,
+  getGmailStatus,
+  type GmailPublicAccount,
+} from "../../../../api/gmailApi";
 
 const WA_MAPPING_PRESETS = [
   { key: "lead:name", source: "lead", field: "name", label: "שם הליד" },
@@ -105,6 +110,18 @@ function isWhatsAppActionKey(actionKey: unknown) {
   const key = String(actionKey || "");
   return key === "whatsapp_template" || key === "send_whatsapp";
 }
+
+function isGmailActionKey(actionKey: unknown) {
+  return String(actionKey || "") === "send_gmail";
+}
+
+const GMAIL_RECIPIENT_LABELS: Record<string, string> = {
+  lead_email: "אימייל הליד",
+  business_owner: "בעל העסק",
+  lead_owner: "אחראי הליד",
+  fixed_email: "כתובת קבועה",
+  custom_field: "שדה מותאם אישית",
+};
 
 function mappingPresetKey(row: WhatsAppVariableMapping) {
   const source = String(row.source || "");
@@ -292,6 +309,12 @@ function EditorInner({
   const [waLoading, setWaLoading] = useState(false);
   const [waSyncError, setWaSyncError] = useState("");
   const [waLastSyncAt, setWaLastSyncAt] = useState<string | null>(null);
+  const [gmailAvailable, setGmailAvailable] = useState(false);
+  const [gmailAccount, setGmailAccount] = useState<GmailPublicAccount | null>(
+    null
+  );
+  const [gmailMessage, setGmailMessage] = useState("");
+  const [gmailLoading, setGmailLoading] = useState(false);
   const [triggerCatalog, setTriggerCatalog] = useState<
     AutomationTriggerOption[]
   >([]);
@@ -339,6 +362,23 @@ function EditorInner({
   useEffect(() => {
     void loadApprovedWhatsAppTemplates();
   }, [loadApprovedWhatsAppTemplates]);
+
+  const loadGmailStatus = useCallback(async () => {
+    setGmailLoading(true);
+    setGmailMessage("");
+    try {
+      const status = await getGmailStatus(businessId);
+      setGmailAvailable(Boolean(status.available));
+      setGmailAccount(status.account);
+      if (status.message) setGmailMessage(status.message);
+    } catch (error: unknown) {
+      setGmailAvailable(false);
+      setGmailAccount(null);
+      setGmailMessage(readErrorMessage(error, "לא הצלחנו לטעון את סטטוס Gmail"));
+    } finally {
+      setGmailLoading(false);
+    }
+  }, [businessId]);
 
   const loadTriggerCatalog = useCallback(async () => {
     setTriggerCatalogLoading(true);
@@ -420,6 +460,39 @@ function EditorInner({
     () => nodes.find((n) => n.id === selectedId) || null,
     [nodes, selectedId]
   );
+
+  useEffect(() => {
+    if (!selectedNode || selectedNode.type !== "action") return;
+    if (!isGmailActionKey(selectedNode.data?.actionKey)) return;
+    void loadGmailStatus();
+  }, [selectedNode, loadGmailStatus]);
+
+  useEffect(() => {
+    if (!selectedId || !gmailAccount) return;
+    if (gmailAccount.connectionStatus !== "connected") return;
+    setNodes((prev) => {
+      const node = prev.find((n) => n.id === selectedId);
+      if (!node || !isGmailActionKey(node.data?.actionKey)) return prev;
+      if (
+        node.data?.connectedAccountId === gmailAccount.id &&
+        node.data?.senderEmail === gmailAccount.email
+      ) {
+        return prev;
+      }
+      return prev.map((n) =>
+        n.id === selectedId
+          ? {
+              ...n,
+              data: {
+                ...(n.data || {}),
+                connectedAccountId: gmailAccount.id,
+                senderEmail: gmailAccount.email,
+              },
+            }
+          : n
+      );
+    });
+  }, [selectedId, gmailAccount, setNodes]);
 
   const palette = useMemo(
     () =>
@@ -1705,6 +1778,247 @@ function EditorInner({
                         {new Date(waLastSyncAt).toLocaleString("he-IL")}
                       </p>
                     ) : null}
+                  </div>
+                ) : null}
+                {isGmailActionKey(selectedNode.data?.actionKey) ? (
+                  <div className="af-wa-template">
+                    <div className="af-wa-banner" dir="rtl">
+                      <strong>שליחה דרך Gmail המחובר</strong>
+                      <p>
+                        המייל יישלח מחשבון Gmail שחיברתם לעסק. אין שימוש ב-SMTP
+                        ואין שליחה דרך BizUply.
+                      </p>
+                    </div>
+
+                    {gmailLoading ? (
+                      <p className="af-wa-template__state">טוען סטטוס Gmail...</p>
+                    ) : !gmailAvailable ? (
+                      <div className="af-wa-template__state af-wa-template__state--error">
+                        <p>
+                          {gmailMessage ||
+                            "Gmail נמצא כרגע בתהליך אישור מול Google"}
+                        </p>
+                      </div>
+                    ) : gmailAccount?.connectionStatus !== "connected" ? (
+                      <div className="af-wa-template__state af-wa-template__state--error">
+                        <p>
+                          {gmailMessage ||
+                            "יש לחבר חשבון Gmail לפני פרסום האוטומציה"}
+                        </p>
+                        <button
+                          type="button"
+                          className="af-toolbar__btn"
+                          disabled={readOnly}
+                          title={writeBlockedTitle}
+                          onClick={async () => {
+                            try {
+                              const data = await getGmailConnectUrl(
+                                businessId,
+                                window.location.pathname
+                              );
+                              if (!data?.url) {
+                                throw new Error("לא התקבל קישור התחברות");
+                              }
+                              window.location.href = data.url;
+                            } catch (error: unknown) {
+                              toast.error(
+                                readErrorMessage(error, "התחברות Gmail נכשלה")
+                              );
+                            }
+                          }}
+                        >
+                          חיבור Gmail
+                        </button>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="af-wa-sender" dir="rtl">
+                          <label>
+                            שולח
+                            <input
+                              type="text"
+                              dir="ltr"
+                              disabled
+                              value={`Gmail — ${String(
+                                selectedNode.data?.senderEmail ||
+                                  gmailAccount.email ||
+                                  ""
+                              )}`}
+                              readOnly
+                            />
+                          </label>
+                        </div>
+
+                        <div className="af-wa-recipient" dir="rtl">
+                          <label>
+                            למי לשלוח את המייל?
+                            <select
+                              value={String(
+                                selectedNode.data?.recipientType || "lead_email"
+                              )}
+                              disabled={readOnly}
+                              onChange={(e) => {
+                                const recipientType = e.target.value;
+                                updateSelectedData({
+                                  recipientType,
+                                  fixedEmail:
+                                    recipientType === "fixed_email"
+                                      ? String(
+                                          selectedNode.data?.fixedEmail || ""
+                                        )
+                                      : "",
+                                  customField:
+                                    recipientType === "custom_field"
+                                      ? String(
+                                          selectedNode.data?.customField || ""
+                                        )
+                                      : "",
+                                });
+                              }}
+                            >
+                              <option value="lead_email">אימייל הליד</option>
+                              <option value="business_owner">בעל העסק</option>
+                              <option value="lead_owner">אחראי הליד</option>
+                              <option value="fixed_email">כתובת קבועה</option>
+                              <option value="custom_field">
+                                שדה מותאם אישית
+                              </option>
+                            </select>
+                          </label>
+                          <p className="af-wa-recipient__hint">
+                            נמען:{" "}
+                            {GMAIL_RECIPIENT_LABELS[
+                              String(
+                                selectedNode.data?.recipientType || "lead_email"
+                              )
+                            ] || "—"}
+                          </p>
+                          {String(selectedNode.data?.recipientType || "") ===
+                          "fixed_email" ? (
+                            <label>
+                              כתובת קבועה
+                              <input
+                                type="email"
+                                dir="ltr"
+                                placeholder="name@example.com"
+                                disabled={readOnly}
+                                value={String(
+                                  selectedNode.data?.fixedEmail || ""
+                                )}
+                                onChange={(e) =>
+                                  updateSelectedData({
+                                    recipientType: "fixed_email",
+                                    fixedEmail: e.target.value,
+                                  })
+                                }
+                              />
+                            </label>
+                          ) : null}
+                          {String(selectedNode.data?.recipientType || "") ===
+                          "custom_field" ? (
+                            <label>
+                              שדה מותאם (מפתח)
+                              <input
+                                type="text"
+                                dir="ltr"
+                                placeholder="emailField"
+                                disabled={readOnly}
+                                value={String(
+                                  selectedNode.data?.customField || ""
+                                )}
+                                onChange={(e) =>
+                                  updateSelectedData({
+                                    recipientType: "custom_field",
+                                    customField: e.target.value,
+                                  })
+                                }
+                              />
+                            </label>
+                          ) : null}
+                        </div>
+
+                        <label>
+                          נושא
+                          <input
+                            type="text"
+                            disabled={readOnly}
+                            value={String(selectedNode.data?.subject || "")}
+                            placeholder="הודעה מ{{business.name}}"
+                            onChange={(e) =>
+                              updateSelectedData({ subject: e.target.value })
+                            }
+                          />
+                        </label>
+
+                        <label>
+                          תוכן (HTML)
+                          <textarea
+                            rows={6}
+                            disabled={readOnly}
+                            value={String(
+                              selectedNode.data?.html ||
+                                selectedNode.data?.body ||
+                                ""
+                            )}
+                            placeholder="<p>שלום {{lead.name}}</p>"
+                            onChange={(e) =>
+                              updateSelectedData({
+                                html: e.target.value,
+                                body: e.target.value,
+                              })
+                            }
+                          />
+                        </label>
+
+                        <label>
+                          טקסט פשוט (אופציונלי)
+                          <textarea
+                            rows={3}
+                            disabled={readOnly}
+                            value={String(selectedNode.data?.text || "")}
+                            placeholder="גרסת טקסט ללא HTML"
+                            onChange={(e) =>
+                              updateSelectedData({ text: e.target.value })
+                            }
+                          />
+                        </label>
+
+                        <div className="af-wa-template__meta" dir="rtl">
+                          <strong>תצוגה מקדימה</strong>
+                          <span>
+                            מ: Gmail —{" "}
+                            {String(
+                              selectedNode.data?.senderEmail ||
+                                gmailAccount.email ||
+                                "—"
+                            )}
+                          </span>
+                          <span>
+                            אל:{" "}
+                            {GMAIL_RECIPIENT_LABELS[
+                              String(
+                                selectedNode.data?.recipientType || "lead_email"
+                              )
+                            ] || "—"}
+                            {String(selectedNode.data?.recipientType || "") ===
+                              "fixed_email" &&
+                            selectedNode.data?.fixedEmail
+                              ? ` (${String(selectedNode.data.fixedEmail)})`
+                              : ""}
+                            {String(selectedNode.data?.recipientType || "") ===
+                              "custom_field" &&
+                            selectedNode.data?.customField
+                              ? ` (${String(selectedNode.data.customField)})`
+                              : ""}
+                          </span>
+                          <span>
+                            נושא:{" "}
+                            {String(selectedNode.data?.subject || "").trim() ||
+                              "—"}
+                          </span>
+                        </div>
+                      </>
+                    )}
                   </div>
                 ) : null}
               </>

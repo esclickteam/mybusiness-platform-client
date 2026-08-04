@@ -491,6 +491,7 @@ const BusinessDashboardRoutes = () => {
 
           {/* Automations — visible to all business users */}
           <Route path="automations" element={<AutomationsMain />} />
+          <Route path="integrations" element={<IntegrationsMain />} />
 
           {/* WhatsApp messaging — test user only */}
           <Route
