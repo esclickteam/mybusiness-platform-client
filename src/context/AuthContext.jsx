@@ -513,6 +513,16 @@ export function AuthProvider({ children }) {
   const logout = async ({ callServer = true, redirect = true } = {}) => {
     setLoading(true);
 
+    // Tear down Telnyx/Twilio softphone before/while server revoke runs.
+    try {
+      const { disconnectSoftphoneVoip } = await import(
+        "../components/AdminSoftphone"
+      );
+      disconnectSoftphoneVoip();
+    } catch {
+      /* softphone module optional */
+    }
+
     if (callServer) {
       try {
         await API.post("/auth/logout", {}, { withCredentials: true });
