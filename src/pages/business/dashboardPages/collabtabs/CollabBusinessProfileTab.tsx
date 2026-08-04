@@ -45,6 +45,7 @@ type BusinessProfile = {
   collabPref?: string;
   contact?: string;
   phone?: string;
+  whatsappNotificationPhone?: string;
   email?: string;
   logo?: string | { preview?: string };
 };
@@ -68,6 +69,7 @@ type EditProfilePayload = {
   collabPref: FormDataEntryValue | null;
   contact: FormDataEntryValue | null;
   phone: string;
+  whatsappNotificationPhone: string;
   email: FormDataEntryValue | null;
   logo?: string;
 };
@@ -100,6 +102,8 @@ export default function CollabBusinessProfileTab(_props: CollabBusinessProfileTa
   const [loading, setLoading] = useState(true);
   const [isDeletingLogo, setIsDeletingLogo] = useState(false);
   const [phone, setPhone] = useState("");
+  const [whatsappNotificationPhone, setWhatsappNotificationPhone] =
+    useState("");
 
   const [myBusinessId, setMyBusinessId] = useState<string | null>(null);
   const [myBusinessName, setMyBusinessName] = useState("");
@@ -131,6 +135,9 @@ export default function CollabBusinessProfileTab(_props: CollabBusinessProfileTa
         if (businessData.phone) {
           setPhone(businessData.phone);
         }
+        setWhatsappNotificationPhone(
+          businessData.whatsappNotificationPhone || ""
+        );
 
         if (typeof businessData.logo === "string") {
           setLogoPreview(businessData.logo);
@@ -241,6 +248,7 @@ export default function CollabBusinessProfileTab(_props: CollabBusinessProfileTa
         collabPref: formData.get("collabPref"),
         contact: formData.get("contact"),
         phone,
+        whatsappNotificationPhone,
         email: formData.get("email"),
       };
 
@@ -277,7 +285,7 @@ export default function CollabBusinessProfileTab(_props: CollabBusinessProfileTa
         setSaving(false);
       }
     },
-    [logoFile, fetchData, phone]
+    [logoFile, fetchData, phone, whatsappNotificationPhone]
   );
 
   const collabPrefLines = useMemo(() => {
@@ -370,6 +378,9 @@ export default function CollabBusinessProfileTab(_props: CollabBusinessProfileTa
                 type="button"
                 onClick={() => {
                   setPhone(profileData?.phone || "");
+                  setWhatsappNotificationPhone(
+                    profileData?.whatsappNotificationPhone || ""
+                  );
                   setShowEditProfile(true);
                 }}
                 className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-5 text-sm font-black text-slate-800 shadow-[0_14px_30px_rgba(124,58,237,0.22)] transition hover:-translate-y-0.5"
@@ -642,6 +653,25 @@ export default function CollabBusinessProfileTab(_props: CollabBusinessProfileTa
                     onChange={(value) => setPhone(value)}
                     inputProps={{
                       required: true,
+                      dir: "ltr",
+                    }}
+                    containerClass="!w-full !text-left"
+                    inputClass={phoneInputClass}
+                    buttonClass={phoneButtonClass}
+                    dropdownClass="!text-left"
+                    searchClass="!text-left"
+                    enableSearch
+                  />
+                </div>
+              </FormField>
+
+              <FormField label="מספר התראות WhatsApp (E.164)">
+                <div dir="ltr" className="text-left">
+                  <PhoneInput
+                    country="il"
+                    value={whatsappNotificationPhone}
+                    onChange={(value) => setWhatsappNotificationPhone(value)}
+                    inputProps={{
                       dir: "ltr",
                     }}
                     containerClass="!w-full !text-left"
