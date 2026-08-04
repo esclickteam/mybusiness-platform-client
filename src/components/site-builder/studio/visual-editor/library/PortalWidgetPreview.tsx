@@ -6,6 +6,8 @@ type PortalPreviewKind =
   | "portal-account"
   | "portal-orders"
   | "portal-cart"
+  | "portal-forgot-password"
+  | "portal-reset-password"
   | string;
 
 type Props = {
@@ -31,7 +33,7 @@ function Field({
       style={{
         width: "100%",
         boxSizing: "border-box",
-        borderRadius: 16,
+        borderRadius: 14,
         border: `1px solid ${line}`,
         padding: "14px 16px",
         fontSize: 14,
@@ -39,7 +41,6 @@ function Field({
         color: "#94a3b8",
         background: "#fff",
         textAlign: "right",
-        boxShadow: "inset 0 1px 0 rgba(255,255,255,0.8)",
       }}
     >
       <span style={{ color: ink, opacity: 0.35 }}>{placeholder}</span>
@@ -59,7 +60,7 @@ function PrimaryButton({
       style={{
         width: "100%",
         boxSizing: "border-box",
-        borderRadius: 16,
+        borderRadius: 14,
         background,
         color: "#fff",
         padding: "14px 16px",
@@ -86,17 +87,14 @@ export default function PortalWidgetPreview({
     height: "100%",
     width: "100%",
     boxSizing: "border-box",
-    padding: 28,
+    padding: 22,
     display: "flex",
     flexDirection: "column",
     gap: 12,
     direction: "rtl",
     fontFamily: "inherit",
     overflow: "hidden",
-    background:
-      kind === "portal-account" || kind === "portal-orders" || kind === "portal-cart"
-        ? soft
-        : "#fff",
+    background: soft,
   };
 
   if (kind === "portal-register") {
@@ -120,42 +118,93 @@ export default function PortalWidgetPreview({
     );
   }
 
+  if (kind === "portal-forgot-password" || kind === "portal-reset-password") {
+    const isReset = kind === "portal-reset-password";
+    return (
+      <div style={{ ...wrap, background: "#fff" }}>
+        <div style={{ fontSize: 12, fontWeight: 800, color: accent, letterSpacing: "0.04em" }}>
+          אזור אישי
+        </div>
+        <div style={{ fontSize: 24, fontWeight: 900, color: ink, lineHeight: 1.15 }}>
+          {isReset ? "סיסמה חדשה" : "שכחתי סיסמה"}
+        </div>
+        <div style={{ fontSize: 13, fontWeight: 600, color: muted, lineHeight: 1.55 }}>
+          {isReset
+            ? "בחרו סיסמה חדשה לאזור האישי."
+            : "נשלח קישור לאיפוס סיסמה לאימייל שלכם."}
+        </div>
+        <Field
+          placeholder={isReset ? "סיסמה חדשה" : "אימייל"}
+          line={line}
+          ink={ink}
+        />
+        {isReset ? <Field placeholder="אימות סיסמה" line={line} ink={ink} /> : null}
+        <PrimaryButton
+          label={isReset ? "שמירת סיסמה" : "שליחת קישור"}
+          background={ink}
+        />
+      </div>
+    );
+  }
+
   if (kind === "portal-account") {
     return (
       <div style={wrap}>
-        <div style={{ fontSize: 24, fontWeight: 900, color: ink }}>שלום לקוח/ה</div>
-        <div style={{ fontSize: 13, fontWeight: 600, color: muted, marginBottom: 4 }}>
-          client@example.com
+        <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+          <div
+            style={{
+              width: 48,
+              height: 48,
+              borderRadius: 16,
+              background: ink,
+              color: "#fff",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontWeight: 900,
+            }}
+          >
+            ל
+          </div>
+          <div>
+            <div style={{ fontSize: 20, fontWeight: 900, color: ink }}>שלום לקוח/ה</div>
+            <div style={{ fontSize: 13, fontWeight: 600, color: muted }}>
+              client@example.com
+            </div>
+          </div>
         </div>
-        <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginBottom: 4 }}>
-          {["ההזמנות שלי", "העגלה שלי", "פרטי החשבון"].map((label) => (
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 8 }}>
+          {[
+            ["הזמנות", "3"],
+            ["קורסים", "2"],
+            ["הודעות", "0"],
+          ].map(([label, value]) => (
             <div
               key={label}
               style={{
-                padding: "10px 14px",
+                padding: "12px 8px",
                 borderRadius: 14,
                 border: `1px solid ${line}`,
                 background: "#fff",
-                fontWeight: 800,
-                fontSize: 13,
-                color: ink,
+                textAlign: "center",
               }}
             >
-              {label}
+              <div style={{ fontSize: 11, fontWeight: 800, color: muted }}>{label}</div>
+              <div style={{ fontSize: 20, fontWeight: 900, color: ink }}>{value}</div>
             </div>
           ))}
         </div>
-        {["הזמנות קודמות", "עמוד מוגן", "המשך רכישה"].map((label) => (
+        {["ההזמנות שלי", "העגלה שלי", "פרטי החשבון"].map((label) => (
           <div
             key={label}
             style={{
-              padding: "14px 16px",
-              borderRadius: 16,
+              padding: "12px 14px",
+              borderRadius: 14,
               border: `1px solid ${line}`,
-              fontWeight: 800,
-              fontSize: 14,
-              color: ink,
               background: "#fff",
+              fontWeight: 800,
+              fontSize: 13,
+              color: ink,
             }}
           >
             {label}
@@ -167,27 +216,72 @@ export default function PortalWidgetPreview({
 
   if (kind === "portal-orders") {
     return (
-      <div style={{ ...wrap, background: "#fff", gap: 10 }}>
-        {[
-          { title: "הזמנה #1042", meta: "שולמה · ₪249.00" },
-          { title: "הזמנה #1038", meta: "בטיפול · ₪128.50" },
-          { title: "הזמנה #1021", meta: "נשלחה · ₪89.00" },
-        ].map((order) => (
+      <div style={wrap}>
+        <div style={{ fontSize: 12, fontWeight: 800, color: muted, letterSpacing: "0.04em" }}>
+          היסטוריית הזמנות
+        </div>
+        <div
+          style={{
+            borderRadius: 16,
+            border: `1px solid ${line}`,
+            overflow: "hidden",
+            background: "#fff",
+          }}
+        >
           <div
-            key={order.title}
             style={{
-              padding: "16px 18px",
-              borderRadius: 18,
-              border: `1px solid ${line}`,
+              display: "grid",
+              gridTemplateColumns: "1.2fr 1fr 0.8fr",
+              gap: 8,
+              padding: "12px 14px",
               background: soft,
+              borderBottom: `1px solid ${line}`,
+              fontSize: 11,
+              fontWeight: 800,
+              color: muted,
             }}
           >
-            <div style={{ fontWeight: 900, fontSize: 14, color: ink, marginBottom: 4 }}>
-              {order.title}
-            </div>
-            <div style={{ fontSize: 12, fontWeight: 600, color: muted }}>{order.meta}</div>
+            <div>הזמנה</div>
+            <div>סטטוס</div>
+            <div>סכום</div>
           </div>
-        ))}
+          {[
+            ["#1042", "שולמה", "₪249"],
+            ["#1038", "בטיפול", "₪128"],
+            ["#1021", "נשלחה", "₪89"],
+          ].map(([order, status, total], index, arr) => (
+            <div
+              key={order}
+              style={{
+                display: "grid",
+                gridTemplateColumns: "1.2fr 1fr 0.8fr",
+                gap: 8,
+                padding: 14,
+                borderBottom: index === arr.length - 1 ? "0" : `1px solid ${line}`,
+                fontSize: 13,
+                fontWeight: 800,
+                color: ink,
+                alignItems: "center",
+              }}
+            >
+              <div>{order}</div>
+              <div
+                style={{
+                  width: "fit-content",
+                  padding: "4px 10px",
+                  borderRadius: 999,
+                  background: soft,
+                  border: `1px solid ${line}`,
+                  fontSize: 11,
+                  color: accent,
+                }}
+              >
+                {status}
+              </div>
+              <div>{total}</div>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }
@@ -238,8 +332,13 @@ export default function PortalWidgetPreview({
       <Field placeholder="אימייל" line={line} ink={ink} />
       <Field placeholder="סיסמה" line={line} ink={ink} />
       <PrimaryButton label="התחברות" background={ink} />
-      <div style={{ fontSize: 13, fontWeight: 800, color: accent, marginTop: 2 }}>
-        אין לכם חשבון? הרשמה
+      <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
+        <div style={{ fontSize: 13, fontWeight: 800, color: accent }}>
+          אין לכם חשבון? הרשמה
+        </div>
+        <div style={{ fontSize: 13, fontWeight: 800, color: muted }}>
+          שכחתי סיסמה
+        </div>
       </div>
     </div>
   );

@@ -1173,6 +1173,40 @@ const CATEGORY_DEFS: CategoryDef[] = [
       ...Array.from({ length: 10 }, (_, i) => {
         const n = String(i + 1).padStart(2, "0");
         return {
+          title: `קורסים דיגיטליים ${i + 1}`,
+          description: "עמוד אחרי התחברות עם כרטיסיות קורסים, התקדמות וטבלאות",
+          slugSuggestion: i === 0 ? "courses" : `courses-${n}`,
+          keywords: [
+            "portal-courses",
+            "קורסים",
+            "דיגיטלי",
+            "למידה",
+            "אחרי התחברות",
+            "portal",
+          ],
+          sectionIds: [`section-portal-courses-${n}`, FOOTER],
+        };
+      }),
+      ...Array.from({ length: 10 }, (_, i) => {
+        const n = String(i + 1).padStart(2, "0");
+        return {
+          title: `נתונים אישיים ${i + 1}`,
+          description: "עמוד פרטים אישיים מקצועי עם כרטיסיות וטבלאות",
+          slugSuggestion: i === 0 ? "profile" : `profile-${n}`,
+          keywords: [
+            "portal-profile",
+            "נתונים אישיים",
+            "פרופיל",
+            "פרטים",
+            "אחרי התחברות",
+            "portal",
+          ],
+          sectionIds: [`section-portal-profile-${n}`, FOOTER],
+        };
+      }),
+      ...Array.from({ length: 10 }, (_, i) => {
+        const n = String(i + 1).padStart(2, "0");
+        return {
           title: `שכחתי סיסמה ${i + 1}`,
           description: "בקשת קישור לאיפוס סיסמה שנשלח במייל ללקוח",
           slugSuggestion: i === 0 ? "forgot-password" : `forgot-password-${n}`,
@@ -1292,6 +1326,8 @@ export const PORTAL_PAGE_KIND_NAV: Array<{
   { id: "account", label: "אזור אישי", keyword: "portal-account" },
   { id: "orders", label: "הזמנות", keyword: "portal-orders" },
   { id: "cart", label: "עגלה", keyword: "portal-cart" },
+  { id: "courses", label: "קורסים", keyword: "portal-courses" },
+  { id: "profile", label: "נתונים אישיים", keyword: "portal-profile" },
   {
     id: "forgot-password",
     label: "שכחתי סיסמה",

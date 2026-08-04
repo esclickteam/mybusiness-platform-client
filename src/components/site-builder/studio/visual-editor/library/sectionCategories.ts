@@ -52,6 +52,8 @@ export const PORTAL_SECTION_KIND_NAV: Array<{
   { id: "account", label: "אזור אישי", prefix: "section-portal-account-" },
   { id: "orders", label: "הזמנות", prefix: "section-portal-orders-" },
   { id: "cart", label: "עגלה", prefix: "section-portal-cart-" },
+  { id: "courses", label: "קורסים", prefix: "section-portal-courses-" },
+  { id: "profile", label: "נתונים אישיים", prefix: "section-portal-profile-" },
   {
     id: "forgot-password",
     label: "שכחתי סיסמה",
