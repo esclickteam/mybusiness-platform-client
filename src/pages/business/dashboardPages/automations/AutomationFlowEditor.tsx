@@ -23,12 +23,21 @@ import {
   Loader2,
   Save,
   Trash2,
-  Power,
-  PowerOff,
+  Play,
+  Pause,
+  FlaskConical,
   Plus,
 } from "lucide-react";
 import {
+  AUTOMATION_PREVIEW_ACTION_TOOLTIP,
+  AUTOMATION_PREVIEW_WRITE_BLOCKED_MESSAGE,
   saveAutomationWorkflow,
+  publishAutomationWorkflow,
+  pauseAutomationWorkflow,
+  resumeAutomationWorkflow,
+  dryRunAutomationWorkflow,
+  fetchDryRunExample,
+  isAutomationsReadOnly,
   type AutomationNodeType,
   type AutomationWorkflow,
 } from "../../../../api/automationWorkflowApi";
@@ -57,9 +66,21 @@ import {
 type Props = {
   businessId: string;
   workflow: AutomationWorkflow;
+  readOnly?: boolean;
   onBack: () => void;
   onSaved: (workflow: AutomationWorkflow) => void;
 };
+
+function readErrorMessage(error: unknown, fallback: string) {
+  if (error instanceof Error && error.message) return error.message;
+  if (error && typeof error === "object" && "response" in error) {
+    return String(
+      (error as { response?: { data?: { error?: string } } }).response?.data
+        ?.error || fallback
+    );
+  }
+  return fallback;
+}
 
 function edgeLabelFromHandle(handle?: string | null) {
   if (!handle) return "";
@@ -139,16 +160,34 @@ function pickOutgoingHandle(
   return handles.find((h) => !used.has(h)) || handles[0] || "out";
 }
 
-function EditorInner({ businessId, workflow, onBack, onSaved }: Props) {
+function EditorInner({
+  businessId,
+  workflow,
+  readOnly: readOnlyProp = false,
+  onBack,
+  onSaved,
+}: Props) {
+  const readOnly = readOnlyProp || isAutomationsReadOnly();
+  const writeBlockedTitle = readOnly
+    ? AUTOMATION_PREVIEW_ACTION_TOOLTIP
+    : undefined;
   const { screenToFlowPosition, fitView } = useReactFlow();
   const [name, setName] = useState(workflow.name);
-  const [enabled, setEnabled] = useState(Boolean(workflow.enabled));
   const [saving, setSaving] = useState(false);
+  const [publishing, setPublishing] = useState(false);
+  const [saveState, setSaveState] = useState<"idle" | "saving" | "saved">("idle");
+  const [testOpen, setTestOpen] = useState(false);
+  const [testResult, setTestResult] = useState<Record<string, unknown> | null>(null);
+  const [testing, setTesting] = useState(false);
   const [filter, setFilter] = useState<PaletteFilter>("all");
   const [templates, setTemplates] = useState<WhatsAppTemplate[]>([]);
   const [nodes, setNodes, onNodesChange] = useNodesState(toFlowNodes(workflow));
   const [edges, setEdges, onEdgesChange] = useEdgesState(toFlowEdges(workflow));
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const dirty =
+    name !== workflow.name ||
+    JSON.stringify(nodes.map((node) => ({ id: node.id, type: node.type, position: node.position, data: node.data }))) !== JSON.stringify(workflow.nodes) ||
+    JSON.stringify(edges.map((edge) => ({ id: edge.id, source: edge.source, target: edge.target, sourceHandle: edge.sourceHandle || null, targetHandle: edge.targetHandle || null, label: typeof edge.label === "string" ? edge.label : "" }))) !== JSON.stringify(workflow.edges);
 
   useEffect(() => {
     let cancelled = false;
@@ -198,6 +237,10 @@ function EditorInner({ businessId, workflow, onBack, onSaved }: Props) {
         autoConnect?: boolean;
       }
     ) => {
+      if (item.supported === false) {
+        toast.info("אפשרות זו תתווסף בקרוב");
+        return;
+      }
       const afterId = options?.afterNodeId ?? selectedId;
       const autoConnect = options?.autoConnect !== false;
       const afterNode = afterId
@@ -352,12 +395,16 @@ function EditorInner({ businessId, workflow, onBack, onSaved }: Props) {
     setSelectedId(null);
   };
 
-  const handleSave = async (nextEnabled = enabled) => {
+  const handleSave = async (quiet = false) => {
+    if (readOnly) {
+      if (!quiet) toast.error(AUTOMATION_PREVIEW_WRITE_BLOCKED_MESSAGE);
+      return;
+    }
     setSaving(true);
+    setSaveState("saving");
     try {
       const saved = await saveAutomationWorkflow(businessId, workflow._id, {
         name: name.trim() || workflow.name,
-        enabled: nextEnabled,
         nodes: nodes.map((n) => ({
           id: n.id,
           type: (n.type ||
@@ -374,20 +421,75 @@ function EditorInner({ businessId, workflow, onBack, onSaved }: Props) {
           label: typeof e.label === "string" ? e.label : "",
         })),
       });
-      setEnabled(Boolean(saved.enabled));
       onSaved(saved);
-      toast.success("האוטומציה נשמרה");
+      setSaveState("saved");
+      if (!quiet) toast.success("הטיוטה נשמרה");
     } catch (error: unknown) {
-      const message =
-        error && typeof error === "object" && "response" in error
-          ? String(
-              (error as { response?: { data?: { error?: string } } }).response
-                ?.data?.error || ""
-            )
-          : "";
-      toast.error(message || "שגיאה בשמירת האוטומציה");
+      toast.error(readErrorMessage(error, "שגיאה בשמירת האוטומציה"));
     } finally {
       setSaving(false);
+    }
+  };
+
+  useEffect(() => {
+    if (readOnly || !dirty || saving) return;
+    const timer = window.setTimeout(() => void handleSave(true), 1000);
+    return () => window.clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dirty, name, nodes, edges, readOnly]);
+
+  const handlePublish = async () => {
+    if (readOnly) {
+      toast.error(AUTOMATION_PREVIEW_WRITE_BLOCKED_MESSAGE);
+      return;
+    }
+    setPublishing(true);
+    try {
+      if (dirty) await handleSave(true);
+      const result = await publishAutomationWorkflow(businessId, workflow._id);
+      if (result.errors?.length) {
+        toast.error(result.errors.join(" · "));
+        const nodeId = result.errors
+          .join(" ")
+          .match(/(?:node|מודול)[\s:]+([A-Za-z0-9_-]+)/i)?.[1];
+        if (nodeId && nodes.some((node) => node.id === nodeId)) {
+          setSelectedId(nodeId);
+        }
+        return;
+      }
+      onSaved(result.workflow);
+      toast.success("האוטומציה פורסמה");
+    } catch (error: unknown) {
+      const response = (error as { response?: { data?: { errors?: string[]; error?: string } } })?.response?.data;
+      toast.error(
+        response?.errors?.join(" · ") ||
+          response?.error ||
+          readErrorMessage(error, "לא ניתן לפרסם את האוטומציה")
+      );
+    } finally {
+      setPublishing(false);
+    }
+  };
+
+  const handleTest = async () => {
+    if (readOnly) {
+      toast.error(AUTOMATION_PREVIEW_WRITE_BLOCKED_MESSAGE);
+      return;
+    }
+    setTesting(true);
+    try {
+      const trigger = nodes.find((node) => node.type === "trigger");
+      const eventType = String(trigger?.data?.triggerKey || "manual");
+      const example = await fetchDryRunExample(businessId, workflow._id, eventType);
+      const result = await dryRunAutomationWorkflow(businessId, workflow._id, {
+        eventType,
+        payload: (example || {}) as Record<string, unknown>,
+      });
+      setTestResult((result || {}) as Record<string, unknown>);
+    } catch (error: unknown) {
+      toast.error(readErrorMessage(error, "בדיקת האוטומציה נכשלה"));
+    } finally {
+      setTesting(false);
     }
   };
 
@@ -430,7 +532,9 @@ function EditorInner({ businessId, workflow, onBack, onSaved }: Props) {
               key={`${item.type}-${item.key}`}
               type="button"
               className="af-palette__item"
-              draggable
+              draggable={!readOnly && item.supported !== false}
+              disabled={readOnly || item.supported === false}
+              title={writeBlockedTitle}
               onDragStart={(e) => onDragStart(e, item)}
               onClick={() =>
                 insertModule(item, {
@@ -442,6 +546,7 @@ function EditorInner({ businessId, workflow, onBack, onSaved }: Props) {
             >
               <strong>{item.label}</strong>
               <span>{item.description}</span>
+              {item.supported === false ? <em className="af-palette__hint">בקרוב</em> : null}
               <em className="af-palette__hint">
                 {selectedId && item.type !== "trigger"
                   ? "לחיצה = הוספה + חיבור אוטומטי"
@@ -463,11 +568,14 @@ function EditorInner({ businessId, workflow, onBack, onSaved }: Props) {
             onChange={(e) => setName(e.target.value)}
             className="af-toolbar__btn af-toolbar__name"
             aria-label="שם האוטומציה"
+            disabled={readOnly}
+            title={writeBlockedTitle}
           />
           <button
             type="button"
             className="af-btn af-btn--primary"
-            disabled={saving}
+            disabled={saving || readOnly}
+            title={writeBlockedTitle}
             onClick={() => handleSave()}
           >
             {saving ? (
@@ -479,14 +587,94 @@ function EditorInner({ businessId, workflow, onBack, onSaved }: Props) {
           </button>
           <button
             type="button"
-            className="af-toolbar__btn"
-            disabled={saving}
-            onClick={() => handleSave(!enabled)}
+            className="af-btn af-btn--primary"
+            disabled={
+              publishing || saving || workflow.status === "archived" || readOnly
+            }
+            title={writeBlockedTitle}
+            onClick={() => void handlePublish()}
           >
-            {enabled ? <PowerOff size={14} /> : <Power size={14} />}
-            {enabled ? "כבה" : "הפעל"}
+            <Play size={14} />
+            פרסום
           </button>
+          {workflow.status === "active" ? (
+            <button
+              type="button"
+              className="af-toolbar__btn"
+              disabled={readOnly}
+              title={writeBlockedTitle}
+              onClick={async () =>
+                onSaved(await pauseAutomationWorkflow(businessId, workflow._id))
+              }
+            >
+              <Pause size={14} />
+              השהיה
+            </button>
+          ) : workflow.status === "paused" ? (
+            <button
+              type="button"
+              className="af-toolbar__btn"
+              disabled={readOnly}
+              title={writeBlockedTitle}
+              onClick={async () =>
+                onSaved(await resumeAutomationWorkflow(businessId, workflow._id))
+              }
+            >
+              <Play size={14} />
+              המשך
+            </button>
+          ) : null}
+          <button
+            type="button"
+            className="af-toolbar__btn"
+            disabled={readOnly}
+            title={writeBlockedTitle}
+            onClick={() => setTestOpen((open) => !open)}
+          >
+            <FlaskConical size={14} />
+            בדיקה
+          </button>
+          <span className="af-toolbar__state">{dirty ? "יש שינויים שלא פורסמו" : saveState === "saved" ? "נשמר" : workflow.publishedVersionId ? "פורסם" : "טיוטה"}{workflow.publishedAt ? ` · ${new Date(workflow.publishedAt).toLocaleDateString("he-IL")}` : ""}</span>
         </div>
+
+        {testOpen ? (
+          <div className="af-test-panel">
+            <strong>מצב בדיקה — לא יישלחו הודעות ולא יתבצעו שינויים</strong>
+            <button
+              type="button"
+              className="af-btn af-btn--primary"
+              disabled={testing || readOnly}
+              title={writeBlockedTitle}
+              onClick={() => void handleTest()}
+            >
+              {testing ? (
+                <Loader2 size={14} className="animate-spin" />
+              ) : (
+                <FlaskConical size={14} />
+              )}
+              הריצו בדיקה
+            </button>
+            {testResult ? (
+              <ol>
+                {(
+                  (testResult.steps || testResult.nodes || []) as Array<
+                    Record<string, unknown>
+                  >
+                ).map((step, index) => (
+                  <li key={index}>
+                    {String(
+                      step.label ||
+                        step.nodeId ||
+                        step.type ||
+                        `שלב ${index + 1}`
+                    )}{" "}
+                    · {String(step.status || "")}
+                  </li>
+                ))}
+              </ol>
+            ) : null}
+          </div>
+        ) : null}
 
         {selectedNode && selectedNode.type !== "trigger" ? (
           <div className="af-quickbar">
@@ -552,17 +740,20 @@ function EditorInner({ businessId, workflow, onBack, onSaved }: Props) {
         <ReactFlow
           nodes={nodes}
           edges={edges}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          onConnect={onConnect}
+          onNodesChange={readOnly ? undefined : onNodesChange}
+          onEdgesChange={readOnly ? undefined : onEdgesChange}
+          onConnect={readOnly ? undefined : onConnect}
           nodeTypes={automationNodeTypes}
-          onDrop={onDrop}
-          onDragOver={onDragOver}
+          onDrop={readOnly ? undefined : onDrop}
+          onDragOver={readOnly ? undefined : onDragOver}
           onSelectionChange={({ nodes: selected }) => {
             setSelectedId(selected[0]?.id || null);
           }}
+          nodesDraggable={!readOnly}
+          nodesConnectable={!readOnly}
+          elementsSelectable
           fitView
-          deleteKeyCode={["Backspace", "Delete"]}
+          deleteKeyCode={readOnly ? null : ["Backspace", "Delete"]}
           proOptions={{ hideAttribution: true }}
           connectionLineStyle={{ stroke: "#7c3aed", strokeWidth: 2 }}
           defaultEdgeOptions={{
@@ -647,8 +838,8 @@ function EditorInner({ businessId, workflow, onBack, onSaved }: Props) {
                     }}
                   >
                     {TRIGGER_OPTIONS.map((o) => (
-                      <option key={o.value} value={o.value}>
-                        {o.label}
+                      <option key={o.value} value={o.value} disabled={o.supported === false}>
+                        {o.label}{o.supported === false ? " · בקרוב" : ""}
                       </option>
                     ))}
                   </select>
@@ -786,8 +977,8 @@ function EditorInner({ businessId, workflow, onBack, onSaved }: Props) {
                     }}
                   >
                     {ACTION_OPTIONS.map((o) => (
-                      <option key={o.value} value={o.value}>
-                        {o.label}
+                      <option key={o.value} value={o.value} disabled={o.supported === false}>
+                        {o.label}{o.supported === false ? " · בקרוב" : ""}
                       </option>
                     ))}
                   </select>

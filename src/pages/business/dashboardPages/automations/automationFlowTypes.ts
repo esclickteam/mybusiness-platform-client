@@ -19,52 +19,43 @@ export type PaletteItem = {
   defaults: Record<string, unknown>;
   group: "triggers" | "flow" | "actions";
   filter: Exclude<PaletteFilter, "all">;
-};
-
-export type RecipeSummary = {
-  key: string;
-  name: string;
-  description: string;
-  tier?: "standard" | "ai_paid";
-  triggerCount: number;
-  pathCount: number;
-  nodeCount: number;
+  supported?: boolean;
+  comingSoon?: boolean;
 };
 
 export const TRIGGER_OPTIONS = [
-  { value: "new_lead", label: "ליד חדש ב-CRM" },
-  { value: "lead_no_response", label: "ליד שלא נענה" },
-  { value: "lead_followup", label: "פולואפ לליד" },
-  { value: "appointment_created", label: "נקבעה פגישה" },
-  { value: "appointment_reminder", label: "תזכורת לפני פגישה" },
-  { value: "appointment_cancelled", label: "פגישה בוטלה" },
-  { value: "appointment_completed", label: "פגישה הסתיימה" },
-  { value: "new_client", label: "לקוח חדש" },
-  { value: "inactive_client", label: "לקוח לא פעיל" },
-  { value: "status_changed", label: "שינוי סטטוס ליד" },
-  { value: "form_submitted", label: "נשלח טופס באתר" },
-  { value: "whatsapp_received", label: "התקבלה הודעת וואטסאפ" },
-  { value: "payment_received", label: "התקבל תשלום" },
-  { value: "birthday", label: "יום הולדת לקוח" },
+  { value: "new_lead", label: "ליד חדש ב-CRM", supported: true },
+  { value: "lead_status_changed", label: "שינוי סטטוס ליד", supported: true },
+  { value: "status_changed", label: "שינוי סטטוס ליד", supported: true },
+  { value: "form_submitted", label: "נשלח טופס באתר", supported: true },
+  { value: "appointment_created", label: "נקבעה פגישה", supported: true },
+  { value: "appointment_reminder", label: "תזכורת לפני פגישה", supported: true },
+  { value: "order_created", label: "נוצרה הזמנה", supported: true },
+  { value: "payment_succeeded", label: "תשלום התקבל", supported: true },
+  { value: "payment_received", label: "תשלום התקבל", supported: true },
+  { value: "manual", label: "הפעלה ידנית", supported: true },
+  { value: "lead_no_response", label: "ליד שלא נענה", supported: false, comingSoon: true },
+  { value: "whatsapp_received", label: "התקבלה הודעת וואטסאפ", supported: false, comingSoon: true },
+  { value: "appointment_cancelled", label: "פגישה בוטלה", supported: false, comingSoon: true },
 ] as const;
 
 export const ACTION_OPTIONS = [
-  { value: "whatsapp_template", label: "שליחת תבנית וואטסאפ" },
-  { value: "create_task", label: "יצירת משימה ב-CRM" },
-  { value: "notify", label: "התראה לבעל העסק" },
-  { value: "update_status", label: "עדכון סטטוס ליד" },
-  { value: "assign_owner", label: "שיוך לנציג" },
-  { value: "add_tag", label: "הוספת תגית" },
-  { value: "send_email", label: "שליחת אימייל" },
-  { value: "create_appointment", label: "יצירת פגישה" },
-  { value: "webhook", label: "קריאת Webhook" },
-  { value: "wait_until", label: "המתנה עד תאריך/שעה" },
-  { value: "ai_rank_lead", label: "AI · דירוג ליד" },
-  { value: "ai_summarize_call", label: "AI · סיכום שיחה" },
-  { value: "ai_draft_reply", label: "AI · ניסוח תשובה" },
-  { value: "ai_detect_risk_lead", label: "AI · ליד בסיכון" },
-  { value: "ai_campaign_recommend", label: "AI · המלצת קמפיין" },
-  { value: "ai_tasks_from_chat", label: "AI · משימות משיחה" },
+  { value: "create_task", label: "יצירת משימה ב-CRM", supported: true },
+  { value: "update_lead_status", label: "עדכון סטטוס ליד", supported: true },
+  { value: "update_status", label: "עדכון סטטוס ליד", supported: true },
+  { value: "assign_owner", label: "שיוך לנציג", supported: true },
+  { value: "add_tag", label: "הוספת תגית", supported: true },
+  { value: "create_crm_note", label: "יצירת הערה ב-CRM", supported: true },
+  { value: "send_whatsapp", label: "שליחת תבנית וואטסאפ", supported: true },
+  { value: "whatsapp_template", label: "שליחת תבנית וואטסאפ", supported: true },
+  { value: "send_email", label: "שליחת אימייל", supported: true },
+  { value: "internal_notification", label: "התראה פנימית", supported: true },
+  { value: "notify", label: "התראה פנימית", supported: true },
+  { value: "delay", label: "המתנה", supported: true },
+  { value: "webhook", label: "קריאת Webhook", supported: true },
+  { value: "stop", label: "עצירת זרימה", supported: true },
+  { value: "create_appointment", label: "יצירת פגישה", supported: false, comingSoon: true },
+  { value: "ai_rank_lead", label: "AI · דירוג ליד", supported: false, comingSoon: true },
 ] as const;
 
 export const CONDITION_OPTIONS = [
@@ -93,104 +84,12 @@ export const FILTER_CHIPS: Array<{ key: PaletteFilter; label: string }> = [
   { key: "action", label: "פעולה" },
 ];
 
-export const FALLBACK_RECIPES: RecipeSummary[] = [
-  {
-    key: "lead_multi_route",
-    name: "ליד חדש · כמה ניתובים",
-    description: "טריגר אחד מתפצל ל־3 מסלולים במקביל.",
-    tier: "standard",
-    triggerCount: 1,
-    pathCount: 4,
-    nodeCount: 5,
-  },
-  {
-    key: "lead_no_response",
-    name: "ליד שלא נענה · פולואפ חכם",
-    description: "תנאי כן/לא עם שני תוצאות שונות.",
-    tier: "standard",
-    triggerCount: 1,
-    pathCount: 4,
-    nodeCount: 5,
-  },
-  {
-    key: "appointment_duo",
-    name: "פגישה · תזכורת + תודה",
-    description: "שני טריגרים באותה אוטומציה עם ניתובים.",
-    tier: "standard",
-    triggerCount: 2,
-    pathCount: 4,
-    nodeCount: 6,
-  },
-  {
-    key: "new_client_welcome",
-    name: "לקוח חדש · ברוכים הבאים",
-    description: "טריגר לקוח חדש עם שני מסלולים.",
-    tier: "standard",
-    triggerCount: 1,
-    pathCount: 3,
-    nodeCount: 4,
-  },
-  {
-    key: "ai_rank_leads",
-    name: "AI · דירוג לידים אוטומטי",
-    description: "דירוג ליד חדש לפי סיכוי סגירה ודחיפות.",
-    tier: "ai_paid",
-    triggerCount: 1,
-    pathCount: 2,
-    nodeCount: 3,
-  },
-  {
-    key: "ai_summarize_calls",
-    name: "AI · סיכום שיחות",
-    description: "סיכום אוטומטי אחרי פגישה.",
-    tier: "ai_paid",
-    triggerCount: 1,
-    pathCount: 2,
-    nodeCount: 3,
-  },
-  {
-    key: "ai_auto_reply",
-    name: "AI · ניסוח תשובה אוטומטית",
-    description: "ניסוח תשובה כשמתקבלת הודעת וואטסאפ.",
-    tier: "ai_paid",
-    triggerCount: 1,
-    pathCount: 2,
-    nodeCount: 3,
-  },
-  {
-    key: "ai_risk_lead",
-    name: "AI · זיהוי ליד בסיכון",
-    description: "התראה כשליד עלול ליפול בין הכיסאות.",
-    tier: "ai_paid",
-    triggerCount: 1,
-    pathCount: 2,
-    nodeCount: 3,
-  },
-  {
-    key: "ai_campaign_change",
-    name: "AI · המלצה ושינוי בקמפיין",
-    description: "המלצת שינוי קמפיין לפי תנועת לידים.",
-    tier: "ai_paid",
-    triggerCount: 1,
-    pathCount: 2,
-    nodeCount: 3,
-  },
-  {
-    key: "ai_tasks_from_chat",
-    name: "AI · משימות לפי תוכן שיחה",
-    description: "יצירת משימות אוטומטית מתוכן השיחה.",
-    tier: "ai_paid",
-    triggerCount: 1,
-    pathCount: 2,
-    nodeCount: 3,
-  },
-];
-
 function triggerItem(
   key: string,
   label: string,
   description: string,
-  routeCount = 2
+  routeCount = 2,
+  supported = true
 ): PaletteItem {
   return {
     type: "trigger",
@@ -201,10 +100,12 @@ function triggerItem(
     description,
     color: "#7c3aed",
     defaults: { label, triggerKey: key, routeCount },
+    supported,
+    comingSoon: !supported,
   };
 }
 
-function actionItem(key: string, label: string, description: string): PaletteItem {
+function actionItem(key: string, label: string, description: string, supported = true): PaletteItem {
   return {
     type: "action",
     key,
@@ -214,6 +115,8 @@ function actionItem(key: string, label: string, description: string): PaletteIte
     description,
     color: "#059669",
     defaults: { label, actionKey: key, templateId: "" },
+    supported,
+    comingSoon: !supported,
   };
 }
 
@@ -234,7 +137,7 @@ function conditionItem(
   };
 }
 
-export const PALETTE: PaletteItem[] = [
+const RAW_PALETTE: PaletteItem[] = [
   triggerItem("new_lead", "ליד חדש", "כשליד נכנס ל-CRM", 3),
   triggerItem("lead_no_response", "ליד שלא נענה", "אחרי זמן בלי מענה", 2),
   triggerItem("lead_followup", "פולואפ לליד", "מועד מעקב לליד", 2),
@@ -303,6 +206,17 @@ export const PALETTE: PaletteItem[] = [
   actionItem("ai_campaign_recommend", "AI קמפיין", "ממליץ על שינוי קמפיין"),
   actionItem("ai_tasks_from_chat", "AI משימות משיחה", "יוצר משימות מתוכן שיחה"),
 ];
+
+export const PALETTE: PaletteItem[] = RAW_PALETTE.map((item) => {
+  const option =
+    item.type === "trigger"
+      ? TRIGGER_OPTIONS.find((entry) => entry.value === item.key)
+      : item.type === "action"
+        ? ACTION_OPTIONS.find((entry) => entry.value === item.key)
+        : undefined;
+  const supported = option ? option.supported : item.supported !== false;
+  return { ...item, supported, comingSoon: !supported };
+});
 
 export const TYPE_META: Record<
   AutomationNodeType,
