@@ -98,14 +98,14 @@ type SoftphoneStatus = {
 type SoftphoneAuthPayload = {
   provider?: SoftphoneProvider;
   authType?: string;
+  /** Telnyx short-lived JWT — never persist to localStorage/sessionStorage. */
+  login_token?: string;
+  /** Twilio Voice JWT (legacy fallback). */
   token?: string;
-  login?: string;
-  username?: string;
-  password?: string;
-  connectionId?: string;
+  expiresIn?: number;
+  callerId?: string;
   callerNumber?: string;
   fromNumber?: string;
-  callerId?: string;
 };
 
 /** Normalize Israeli / international dial input to E.164 for Telnyx. */
@@ -259,6 +259,95 @@ let mutedBeforeHold = false;
 let userAcceptedIncoming = false;
 let softphonePrepareInFlight: Promise<void> | null = null;
 let remoteAudioEl: HTMLAudioElement | null = null;
+/** In-memory only — never written to localStorage/sessionStorage. */
+let telnyxLoginToken: string | null = null;
+let telnyxTokenExpiresAt = 0;
+let telnyxRefreshTimer: number | null = null;
+let telnyxHostMountCount = 0;
+
+function clearTelnyxRefreshTimer() {
+  if (telnyxRefreshTimer != null) {
+    window.clearTimeout(telnyxRefreshTimer);
+    telnyxRefreshTimer = null;
+  }
+}
+
+function scheduleTelnyxTokenRefresh(expiresInSec: number) {
+  clearTelnyxRefreshTimer();
+  const ttlMs = Math.max(30, Number(expiresInSec) || 3600) * 1000;
+  // Refresh at 80% of TTL (or 2 minutes before expiry, whichever is sooner for long TTLs).
+  const refreshIn = Math.max(
+    15_000,
+    Math.min(ttlMs * 0.8, ttlMs - 120_000)
+  );
+  telnyxRefreshTimer = window.setTimeout(() => {
+    void refreshTelnyxLoginToken().catch(() => {
+      /* next dial/register will retry */
+    });
+  }, refreshIn);
+}
+
+async function refreshTelnyxLoginToken() {
+  const auth = await fetchSoftphoneAuth();
+  const token = String(auth.login_token || "").trim();
+  if (!token) {
+    throw new Error("Telnyx login_token missing on refresh");
+  }
+  telnyxLoginToken = token;
+  const expiresIn = Number(auth.expiresIn) || 60 * 60;
+  telnyxTokenExpiresAt = Date.now() + expiresIn * 1000;
+
+  if (telnyxClient) {
+    try {
+      if (typeof telnyxClient.updateToken === "function") {
+        await telnyxClient.updateToken(token);
+      } else if (typeof telnyxClient.login === "function") {
+        await telnyxClient.login({ login_token: token });
+      }
+    } catch {
+      // Force reconnect with the new token.
+      try {
+        telnyxClient.disconnect?.();
+      } catch {
+        /* ignore */
+      }
+      telnyxClient = null;
+      telnyxReady = false;
+      telnyxIncomingBound = false;
+      await ensureTelnyxClient(auth);
+      return;
+    }
+  }
+
+  scheduleTelnyxTokenRefresh(expiresIn);
+}
+
+/** Hang up calls and disconnect Telnyx/Twilio clients (logout / host unmount). */
+export function disconnectSoftphoneVoip() {
+  clearTelnyxRefreshTimer();
+  hangupActiveVoipCall();
+  telnyxLoginToken = null;
+  telnyxTokenExpiresAt = 0;
+
+  try {
+    telnyxClient?.disconnect?.();
+  } catch {
+    /* ignore */
+  }
+  telnyxClient = null;
+  telnyxReady = false;
+  telnyxIncomingBound = false;
+
+  try {
+    twilioDevice?.unregister?.();
+    twilioDevice?.destroy?.();
+  } catch {
+    /* ignore */
+  }
+  twilioDevice = null;
+  twilioIncomingBound = false;
+  voipProvider = "none";
+}
 
 function ensureRemoteAudioElement() {
   if (typeof document === "undefined") return null;
@@ -506,7 +595,20 @@ async function ensureTwilioDevice(token: string) {
 }
 
 async function ensureTelnyxClient(auth: SoftphoneAuthPayload) {
-  if (telnyxClient && telnyxReady) return telnyxClient;
+  const loginToken = String(auth.login_token || telnyxLoginToken || "").trim();
+  if (!loginToken) {
+    throw new Error("Telnyx WebRTC login_token missing");
+  }
+
+  // Reuse ready client when token is still valid.
+  if (
+    telnyxClient &&
+    telnyxReady &&
+    telnyxLoginToken === loginToken &&
+    telnyxTokenExpiresAt > Date.now() + 30_000
+  ) {
+    return telnyxClient;
+  }
 
   const telnyxModule = await import("@telnyx/webrtc");
   const TelnyxRTC =
@@ -526,13 +628,11 @@ async function ensureTelnyxClient(auth: SoftphoneAuthPayload) {
     telnyxIncomingBound = false;
   }
 
-  const login = auth.login || auth.username;
-  const password = auth.password;
-  if (!login || !password) {
-    throw new Error("Telnyx WebRTC credentials missing");
-  }
+  telnyxLoginToken = loginToken;
+  const expiresIn = Number(auth.expiresIn) || 60 * 60;
+  telnyxTokenExpiresAt = Date.now() + expiresIn * 1000;
 
-  const client = new TelnyxRTC({ login, password });
+  const client = new TelnyxRTC({ login_token: loginToken });
 
   await new Promise<void>((resolve, reject) => {
     const timeout = window.setTimeout(() => {
@@ -549,13 +649,21 @@ async function ensureTelnyxClient(auth: SoftphoneAuthPayload) {
       } catch {
         /* ignore */
       }
+      scheduleTelnyxTokenRefresh(expiresIn);
       resolve();
     });
 
     client.on?.("telnyx.error", (...args: any[]) => {
+      const err = args?.[0];
+      const code = Number(err?.code || err?.error?.code || 0);
+      // TOKEN_EXPIRING_SOON (34001) — refresh without rejecting the session.
+      if (code === 34001) {
+        void refreshTelnyxLoginToken().catch(() => {});
+        return;
+      }
       window.clearTimeout(timeout);
       telnyxReady = false;
-      reject(args?.[0] || new Error("Telnyx WebRTC error"));
+      reject(err || new Error("Telnyx WebRTC error"));
     });
 
     client.on?.("telnyx.socket.close", () => {
@@ -1417,10 +1525,11 @@ export default function AdminSoftphone({
     };
   }, [socket]);
 
-  // Keep VoIP client registered for inbound when ready (Telnyx preferred).
-  // Intentionally does NOT hang up on unmount — calls survive navigation.
+  // Keep VoIP client registered for inbound when ready (Telnyx JWT preferred).
+  // Disconnect on host unmount / logout — never leave a shared credential session alive.
   useEffect(() => {
     let cancelled = false;
+    telnyxHostMountCount += 1;
 
     (async () => {
       const voip = await loadStatus();
@@ -1432,10 +1541,12 @@ export default function AdminSoftphone({
         const provider =
           auth.provider === "telnyx" || auth.provider === "twilio"
             ? auth.provider
-            : "twilio";
+            : null;
+        if (!provider) return;
         voipProvider = provider;
 
         if (provider === "telnyx") {
+          if (!auth.login_token) return;
           if (
             typeof Notification !== "undefined" &&
             Notification.permission === "default"
@@ -1474,12 +1585,16 @@ export default function AdminSoftphone({
           });
         }
       } catch {
-        /* device mode */
+        /* device mode / softphone disabled */
       }
     })();
 
     return () => {
       cancelled = true;
+      telnyxHostMountCount = Math.max(0, telnyxHostMountCount - 1);
+      if (telnyxHostMountCount === 0) {
+        disconnectSoftphoneVoip();
+      }
     };
   }, [loadStatus]);
 
