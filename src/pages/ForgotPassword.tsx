@@ -13,6 +13,7 @@ type ApiError = {
   response?: {
     data?: {
       error?: string;
+      message?: string;
     };
   };
   message?: string;
@@ -49,7 +50,9 @@ export default function ForgotPassword({ closePopup }: ForgotPasswordProps) {
       console.error("Error sending reset link:", apiError);
       setSuccess(false);
       setMessage(
-        apiError.response?.data?.error || "אירעה שגיאה. נסו שוב מאוחר יותר."
+        apiError.response?.data?.error ||
+          apiError.response?.data?.message ||
+          "אירעה שגיאה. נסו שוב מאוחר יותר."
       );
     } finally {
       setLoading(false);
