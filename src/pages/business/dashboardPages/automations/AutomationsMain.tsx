@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { toast } from "react-toastify";
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import {
   Loader2,
   Plus,
@@ -269,6 +270,14 @@ export default function AutomationsMain() {
       dir={dir}
       className="min-h-[calc(100vh-72px)] bg-[#F7F8FC] px-3 py-4 text-start text-slate-900 sm:px-5 sm:py-5 lg:px-6"
     >
+      <ToastContainer
+        position="top-center"
+        autoClose={4000}
+        newestOnTop
+        closeOnClick
+        pauseOnHover
+        theme="colored"
+      />
       <div className="af-shell mx-auto w-full max-w-[1920px]">
         {readOnly ? (
           <div
