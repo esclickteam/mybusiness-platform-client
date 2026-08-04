@@ -415,14 +415,21 @@ export async function getWhatsAppStatus(
   return data as { success: boolean } & WhatsAppConnection;
 }
 
+export type WhatsAppSenderMode = "bizuply_managed" | "business_connected";
+
 /** Lightweight integration status (no tokens, no live Meta billing calls). */
-export async function getWhatsAppIntegrationStatus(businessId: string) {
+export async function getWhatsAppIntegrationStatus(
+  businessId: string,
+  opts?: { senderMode?: WhatsAppSenderMode }
+) {
+  const senderMode = opts?.senderMode || "bizuply_managed";
   const { data } = await API.get(
     "/whatsapp/integration/status",
-    withBusiness(businessId)
+    withBusiness(businessId, { senderMode })
   );
   return data as {
     success: boolean;
+    senderMode?: WhatsAppSenderMode;
     connected: boolean;
     readyToSend?: boolean;
     status?: string;
@@ -430,8 +437,16 @@ export async function getWhatsAppIntegrationStatus(businessId: string) {
     phoneNumberId?: string;
     wabaId?: string;
     displayPhoneNumber?: string;
+    displayPhoneMasked?: string;
     lastTemplatesSyncAt?: string | null;
     hasAccessToken?: boolean;
+    managedStatus?: {
+      configured?: boolean;
+      ready?: boolean;
+      reason?: string;
+      displayPhoneMasked?: string;
+      lastTemplatesSyncAt?: string | null;
+    };
   };
 }
 
@@ -447,22 +462,34 @@ export type ApprovedWhatsAppTemplate = WhatsAppTemplate & {
   wabaId?: string;
 };
 
-/** Approved Meta templates for the authorized business WABA only. */
-export async function listApprovedWhatsAppTemplates(businessId: string) {
+/** Approved Meta templates. Default senderMode=bizuply_managed (BizUply catalog). */
+export async function listApprovedWhatsAppTemplates(
+  businessId: string,
+  opts?: { senderMode?: WhatsAppSenderMode }
+) {
+  const senderMode = opts?.senderMode || "bizuply_managed";
   const { data } = await API.get("/whatsapp/templates/approved", {
-    params: { businessId },
+    params: { businessId, senderMode },
   });
   return data as {
     success: boolean;
+    senderMode?: WhatsAppSenderMode;
     connected: boolean;
     integrationId?: string;
     phoneNumberId?: string;
     wabaId?: string;
     displayPhoneNumber?: string;
+    displayPhoneMasked?: string;
     lastTemplatesSyncAt?: string | null;
     templates: ApprovedWhatsAppTemplate[];
     code?: string;
     message?: string;
+    managedStatus?: {
+      configured?: boolean;
+      ready?: boolean;
+      reason?: string;
+      displayPhoneMasked?: string;
+    };
   };
 }
 
