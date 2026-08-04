@@ -6,6 +6,7 @@
 export const MODULE_ROUTE_PREFIXES = {
   crm: "crm",
   automations: "automations",
+  integrations: "integrations",
   "meta-campaigns": "meta-campaigns",
   whatsapp: "whatsapp",
   "social-schedule": "social-schedule",
@@ -22,6 +23,8 @@ export const NAV_PATH_MODULE_MAP = {
   dashboard: "dashboard",
   crm: "crm",
   automations: "automations",
+  // Gmail/integrations belong to the automations module ACL
+  integrations: "automations",
   whatsapp: "whatsapp",
   "meta-campaigns": "meta-campaigns",
   "social-schedule": "social-schedule",
