@@ -27,6 +27,11 @@ import { buildVisualSavePayload } from "../utils/visualSaveAdapter";
 import { buildVisualSaveDataFromDom } from "../utils/visualDomApply";
 import { sanitizePortalMountShells } from "../utils/visualPluginWidgets";
 import {
+  clearPortalShellLinkDomAttrs,
+  isPortalMountShell,
+  stripPortalShellLinkFields,
+} from "../utils/portalAuthControls";
+import {
   VISUAL_SHARED_CHROME_KEY,
   writeSharedChromeIntoVisualData,
 } from "../utils/visualSharedChrome";
@@ -937,7 +942,14 @@ function stripPortalRuntimeVisualMaps(data: Record<string, any>) {
   const runtimeKeyPattern =
     /sec-portal-[^.]+\.button\.(input|button|a)\./i;
   // Canvas-stamped portal controls persist via shell data-portal-* attrs.
-  const portalControlKeyPattern = /__portal_(submit|switch|forgot)$/i;
+  const portalControlKeyPattern =
+    /__portal_(submit|switch|forgot|title|subtitle|eyebrow)$/i;
+  const attributesMap =
+    next[VISUAL_ATTRIBUTE_KEY] &&
+    typeof next[VISUAL_ATTRIBUTE_KEY] === "object" &&
+    !Array.isArray(next[VISUAL_ATTRIBUTE_KEY])
+      ? (next[VISUAL_ATTRIBUTE_KEY] as Record<string, any>)
+      : {};
 
   for (const mapKey of [
     VISUAL_CONTENT_KEY,
@@ -955,11 +967,57 @@ function stripPortalRuntimeVisualMaps(data: Record<string, any>) {
         portalControlKeyPattern.test(elementId)
       ) {
         delete cleaned[elementId];
+        return;
+      }
+
+      // Drop harvested hrefs from portal shells (whole-form navigation bug).
+      if (mapKey === VISUAL_CONTENT_KEY) {
+        const attrs = attributesMap[elementId] || {};
+        const looksLikePortalShell =
+          attrs["data-bizuply-portal-mount"] === "true" ||
+          attrs["data-bizuply-portal-mount"] === true ||
+          String(attrs["data-bizuply-widget"] || "").startsWith("portal-");
+        if (looksLikePortalShell && cleaned[elementId]) {
+          cleaned[elementId] = stripPortalShellLinkFields(cleaned[elementId]);
+        }
       }
     });
     next[mapKey] = cleaned;
   }
 
+  return next;
+}
+
+/** Clear bad shell hrefs using the live canvas portal mounts. */
+function stripPortalShellLinksFromDomSnapshot(
+  root: HTMLElement | null,
+  data: Record<string, any>,
+) {
+  if (!root) return data;
+  const next = { ...(data || {}) };
+  const content = {
+    ...((next[VISUAL_CONTENT_KEY] &&
+    typeof next[VISUAL_CONTENT_KEY] === "object" &&
+    !Array.isArray(next[VISUAL_CONTENT_KEY])
+      ? next[VISUAL_CONTENT_KEY]
+      : {}) as Record<string, any>),
+  };
+
+  root
+    .querySelectorAll<HTMLElement>(
+      '[data-bizuply-portal-mount="true"], [data-bizuply-widget^="portal-"]',
+    )
+    .forEach((shell) => {
+      if (!isPortalMountShell(shell)) return;
+      const elementId = String(
+        shell.getAttribute("data-visual-edit-id") || "",
+      ).trim();
+      if (!elementId || !content[elementId]) return;
+      content[elementId] = stripPortalShellLinkFields(content[elementId]);
+      clearPortalShellLinkDomAttrs(shell);
+    });
+
+  next[VISUAL_CONTENT_KEY] = content;
   return next;
 }
 
@@ -1109,15 +1167,18 @@ export function useVisualSave({
 
     const cleaned = cleanSerializableValue(mergedWithChrome) || {};
     const sanitized = sanitizeVisualDataForPersistence(
-      stripPortalRuntimeVisualMaps({
-        ...normalizeVisualData(cleaned),
-        __activePageId: activePageId || "home",
-        __siteSlug: slug || String(cleaned.__siteSlug || ""),
-        __publicUrl:
-          publicUrl || String(cleaned.__publicUrl || ""),
-        __siteDomain:
-          siteDomain || String(cleaned.__siteDomain || ""),
-      }),
+      stripPortalShellLinksFromDomSnapshot(
+        root,
+        stripPortalRuntimeVisualMaps({
+          ...normalizeVisualData(cleaned),
+          __activePageId: activePageId || "home",
+          __siteSlug: slug || String(cleaned.__siteSlug || ""),
+          __publicUrl:
+            publicUrl || String(cleaned.__publicUrl || ""),
+          __siteDomain:
+            siteDomain || String(cleaned.__siteDomain || ""),
+        }),
+      ),
     );
 
     assertNoTemporaryMedia("snapshot", sanitized);

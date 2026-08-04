@@ -1555,6 +1555,16 @@ function normalizePublicHref(value) {
   return href;
 }
 
+function isPortalMountShellNode(node) {
+  if (!(node instanceof Element)) return false;
+  return (
+    node.getAttribute("data-bizuply-portal-mount") === "true" ||
+    String(node.getAttribute("data-bizuply-widget") || "").startsWith(
+      "portal-",
+    )
+  );
+}
+
 function applyPublicLinksToDom(root, visualData) {
   if (!root) return;
 
@@ -1577,6 +1587,28 @@ function applyPublicLinksToDom(root, visualData) {
 
     const selectedNode = root.querySelector(selector);
     if (!selectedNode) return;
+
+    // Never turn a login/register/account widget into a page link.
+    // Also clear legacy attrs baked into published HTML from older saves.
+    if (isPortalMountShellNode(selectedNode)) {
+      [
+        "data-bizuply-public-href",
+        "data-bizuply-public-target",
+        "data-bizuply-public-link",
+        "data-visual-link-href",
+        "data-visual-link-target",
+        "data-href",
+        "data-link-url",
+        "href",
+      ].forEach((attr) => selectedNode.removeAttribute(attr));
+      if (selectedNode.getAttribute("role") === "link") {
+        selectedNode.removeAttribute("role");
+      }
+      if (selectedNode.getAttribute("tabindex") === "0") {
+        selectedNode.removeAttribute("tabindex");
+      }
+      return;
+    }
 
     const linkNode =
       selectedNode.matches("a")
@@ -1635,6 +1667,39 @@ function resolvePublicLinkFromEventTarget(root, target, visualData) {
     return null;
   }
 
+  const portalShell = target.closest(
+    '[data-bizuply-portal-mount="true"], [data-bizuply-widget^="portal-"]',
+  );
+
+  /*
+    Inside portal forms, only real switch/forgot anchors navigate.
+    Inputs / submit / the shell itself must never steal clicks as a page link.
+  */
+  if (portalShell && root.contains(portalShell)) {
+    const tag = String(target.tagName || "").toLowerCase();
+    if (["input", "textarea", "select", "button", "label"].includes(tag)) {
+      return null;
+    }
+
+    const portalAnchor = target.closest("a[href]");
+    if (
+      portalAnchor &&
+      portalShell.contains(portalAnchor) &&
+      root.contains(portalAnchor) &&
+      !isPortalMountShellNode(portalAnchor)
+    ) {
+      return {
+        node: portalAnchor,
+        href: normalizePublicHref(portalAnchor.getAttribute("href")),
+        target:
+          safeString(portalAnchor.getAttribute("target")).trim() || "_self",
+        isNativeAnchor: true,
+      };
+    }
+
+    return null;
+  }
+
   const anchor = target.closest("a[href]");
   if (anchor && root.contains(anchor)) {
     return {
@@ -1647,6 +1712,7 @@ function resolvePublicLinkFromEventTarget(root, target, visualData) {
 
   const explicitNode = target.closest("[data-bizuply-public-href]");
   if (explicitNode && root.contains(explicitNode)) {
+    if (isPortalMountShellNode(explicitNode)) return null;
     return {
       node: explicitNode,
       href: normalizePublicHref(
@@ -1664,6 +1730,8 @@ function resolvePublicLinkFromEventTarget(root, target, visualData) {
   if (!visualNode || !root.contains(visualNode)) {
     return null;
   }
+
+  if (isPortalMountShellNode(visualNode)) return null;
 
   const elementId = safeString(
     visualNode.getAttribute("data-visual-edit-id"),
