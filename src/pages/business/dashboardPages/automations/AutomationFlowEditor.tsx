@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   ReactFlow,
   Background,
@@ -271,6 +271,49 @@ function toFlowEdges(workflow: AutomationWorkflow): Edge[] {
   );
 }
 
+function serializeFlowNodes(
+  nodes: Array<{
+    id?: string;
+    type?: string;
+    position?: { x?: number; y?: number };
+    data?: Record<string, unknown>;
+  }>
+) {
+  return JSON.stringify(
+    (nodes || []).map((node) => ({
+      id: node.id,
+      type: node.type,
+      position: {
+        x: Math.round(Number(node.position?.x) || 0),
+        y: Math.round(Number(node.position?.y) || 0),
+      },
+      data: node.data || {},
+    }))
+  );
+}
+
+function serializeFlowEdges(
+  edges: Array<{
+    id?: string;
+    source?: string;
+    target?: string;
+    sourceHandle?: string | null;
+    targetHandle?: string | null;
+    label?: unknown;
+  }>
+) {
+  return JSON.stringify(
+    (edges || []).map((edge) => ({
+      id: edge.id,
+      source: edge.source,
+      target: edge.target,
+      sourceHandle: edge.sourceHandle || null,
+      targetHandle: edge.targetHandle || null,
+      label: typeof edge.label === "string" ? edge.label : "",
+    }))
+  );
+}
+
 function newId(prefix: string) {
   return `${prefix}_${Math.random().toString(36).slice(2, 9)}`;
 }
@@ -329,10 +372,15 @@ function EditorInner({
   const [nodes, setNodes, onNodesChange] = useNodesState(toFlowNodes(workflow));
   const [edges, setEdges, onEdgesChange] = useEdgesState(toFlowEdges(workflow));
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const savingRef = useRef(false);
   const dirty =
     name !== workflow.name ||
-    JSON.stringify(nodes.map((node) => ({ id: node.id, type: node.type, position: node.position, data: node.data }))) !== JSON.stringify(workflow.nodes) ||
-    JSON.stringify(edges.map((edge) => ({ id: edge.id, source: edge.source, target: edge.target, sourceHandle: edge.sourceHandle || null, targetHandle: edge.targetHandle || null, label: typeof edge.label === "string" ? edge.label : "" }))) !== JSON.stringify(workflow.edges);
+    serializeFlowNodes(nodes) !== serializeFlowNodes(workflow.nodes || []) ||
+    serializeFlowEdges(edges) !== serializeFlowEdges(workflow.edges || []);
+
+  useEffect(() => {
+    savingRef.current = saving;
+  }, [saving]);
 
   const loadApprovedWhatsAppTemplates = useCallback(async () => {
     setWaLoading(true);
@@ -780,10 +828,7 @@ function EditorInner({
       toast.error("לא ניתן לפרסם אוטומציה בארכיון");
       return;
     }
-    if (saving || publishing) {
-      toast.info("ממתינים לסיום שמירה — נסו שוב בעוד רגע");
-      return;
-    }
+    if (publishing) return;
     if (triggerCatalogLoading || triggerCatalogError || !triggerCatalog.length) {
       toast.error("יש לטעון את קטלוג הטריגרים לפני פרסום");
       return;
@@ -798,7 +843,15 @@ function EditorInner({
     }
     setPublishing(true);
     try {
-      // Always persist draft first so publish uses the latest subject/body/Gmail fields.
+      // Wait out an in-flight autosave, then always persist latest draft.
+      const waitStarted = Date.now();
+      while (savingRef.current && Date.now() - waitStarted < 15000) {
+        await new Promise((resolve) => window.setTimeout(resolve, 50));
+      }
+      if (savingRef.current) {
+        toast.error("השמירה לוקחת יותר מדי זמן — נסו שוב");
+        return;
+      }
       const savedOk = await handleSave(true);
       if (!savedOk) return;
       const result = await publishAutomationWorkflow(businessId, workflow._id);
@@ -821,7 +874,11 @@ function EditorInner({
       setNodes(toFlowNodes(result.workflow));
       setEdges(toFlowEdges(result.workflow));
       setSaveState("saved");
-      toast.success("האוטומציה פורסמה");
+      toast.success(
+        result.workflow.status === "active"
+          ? "האוטומציה פורסמה ועדכנה"
+          : "האוטומציה פורסמה"
+      );
       if (result.warnings?.length) {
         toast.warn(result.warnings.join(" · "));
       }
@@ -973,13 +1030,15 @@ function EditorInner({
             disabled={publishing || readOnly || workflow.status === "archived"}
             title={
               writeBlockedTitle ||
-              (triggerCatalogError
-                ? "יש לטעון מחדש את קטלוג הטריגרים"
-                : hasUnsupportedTrigger
-                  ? "טריגר ישן או לא נתמך"
-                  : saving
-                    ? "שומר טיוטה…"
-                    : undefined)
+              (workflow.status === "archived"
+                ? "לא ניתן לפרסם אוטומציה בארכיון"
+                : triggerCatalogError
+                  ? "יש לטעון מחדש את קטלוג הטריגרים"
+                  : hasUnsupportedTrigger
+                    ? "טריגר ישן או לא נתמך"
+                    : workflow.status === "active"
+                      ? "עדכון הגרסה המפורסמת לפי הטיוטה הנוכחית"
+                      : "פרסום האוטומציה")
             }
             onClick={() => void handlePublish()}
           >
@@ -988,7 +1047,11 @@ function EditorInner({
             ) : (
               <Play size={14} />
             )}
-            {publishing ? "מפרסם…" : "פרסום"}
+            {publishing
+              ? "מפרסם…"
+              : workflow.status === "active" || workflow.publishedVersionId
+                ? "עדכון פרסום"
+                : "פרסום"}
           </button>
           {workflow.status === "active" ? (
             <button
