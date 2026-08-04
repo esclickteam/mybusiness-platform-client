@@ -888,15 +888,26 @@ export default function VisualEditorCanvas({
   );
 
   const mountEditorPortalPreview = useCallback(
-    (root: HTMLElement | null, pluginEnabled = false) => {
+    (
+      root: HTMLElement | null,
+      pluginEnabled = false,
+      options: { force?: boolean } = {},
+    ) => {
       if (!root || !pageHasPortalWidget(root)) return;
-      // Allow remount after visual DOM re-apply.
-      root
-        .querySelectorAll("[data-bizuply-portal-mounted], [data-bizuply-portal-live]")
-        .forEach((node) => {
-          delete (node as HTMLElement).dataset.bizuplyPortalMounted;
-          delete (node as HTMLElement).dataset.bizuplyPortalLive;
-        });
+      /*
+        Force remount only on page/template changes. Clearing mounts on every
+        editor.data keystroke destroyed portal buttons mid-edit.
+      */
+      if (options.force) {
+        root
+          .querySelectorAll(
+            "[data-bizuply-portal-mounted], [data-bizuply-portal-live]",
+          )
+          .forEach((node) => {
+            delete (node as HTMLElement).dataset.bizuplyPortalMounted;
+            delete (node as HTMLElement).dataset.bizuplyPortalLive;
+          });
+      }
       mountPublicPortalWidgets(root, {
         site: {
           _id: siteId || undefined,
@@ -1394,6 +1405,7 @@ export default function VisualEditorCanvas({
     syncEditorMediaPreviewsInDom(root);
     disableNativeMediaDrag(root);
     mountEditorCountdownPreview(root);
+    // Soft mount — keep already-mounted portal forms while editing copy.
     mountEditorPortalPreview(root, true);
     window.requestAnimationFrame(refreshSelectionBox);
   }, [
@@ -1475,7 +1487,7 @@ export default function VisualEditorCanvas({
 
         if (!cancelled) {
           mountEditorBookingPreview(root, bookingEnabled);
-          mountEditorPortalPreview(root, portalEnabled);
+          mountEditorPortalPreview(root, portalEnabled, { force: true });
         }
 
       } catch {
@@ -1489,7 +1501,7 @@ export default function VisualEditorCanvas({
         }
         if (!cancelled) {
           mountEditorBookingPreview(root, false);
-          mountEditorPortalPreview(root, true);
+          mountEditorPortalPreview(root, true, { force: true });
         }
       }
     })();
@@ -1504,7 +1516,7 @@ export default function VisualEditorCanvas({
     sectionOrderEpoch,
     editorAny.activePageId,
     editorAny.activePageID,
-    editorAny.data,
+    // Intentionally omit editorAny.data — text edits must not remount portals.
     mountEditorCountdownPreview,
     mountEditorBookingPreview,
     mountEditorPortalPreview,
@@ -1676,7 +1688,13 @@ export default function VisualEditorCanvas({
       const formRoot = editorAny.canvasRef?.current || null;
       const formContext = resolveFormContext(selectedNode, formRoot);
 
-      if (formContext) {
+      // Portal login/register widgets are not contact Form Builder forms.
+      if (
+        formContext &&
+        !selectedNode.closest(
+          '[data-bizuply-portal-mount="true"], [data-bizuply-widget^="portal-"], [data-bizuply-portal-control]',
+        )
+      ) {
         editorAny.openFormBuilder?.(selectedNode);
         return;
       }
@@ -2151,7 +2169,16 @@ export default function VisualEditorCanvas({
         disableNativeMediaDrag(root);
       }
 
-      if (isButtonDragTarget(event.target) || isButtonDragTarget(node)) {
+      // Portal auth controls need click/dblclick for text edit selection.
+      const isPortalControl = Boolean(
+        (event.target instanceof HTMLElement &&
+          event.target.closest("[data-bizuply-portal-control]")) ||
+          node.getAttribute("data-bizuply-portal-control"),
+      );
+      if (
+        !isPortalControl &&
+        (isButtonDragTarget(event.target) || isButtonDragTarget(node))
+      ) {
         event.preventDefault();
       }
 

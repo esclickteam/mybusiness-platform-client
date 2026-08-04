@@ -155,12 +155,25 @@ export function clearPortalShellLinkDomAttrs(shell: HTMLElement | null) {
 export function applyPortalShellAttributePatch(
   shell: HTMLElement,
   patch: Record<string, string>,
+  options?: { remount?: boolean },
 ) {
   Object.entries(patch).forEach(([attr, value]) => {
     const clean = String(value ?? "").trim();
     if (clean) shell.setAttribute(attr, clean);
     else shell.removeAttribute(attr);
   });
+
+  /*
+    Text-label edits must not remount the live form (that kills selection and
+    fights the floating toolbar). Remount only when a link target changes, or
+    when the caller explicitly asks (Forms panel Apply).
+  */
+  const needsRemount =
+    options?.remount === true ||
+    (options?.remount !== false &&
+      Object.keys(patch).some((key) => key.startsWith("data-portal-link-")));
+
+  if (!needsRemount) return;
 
   delete shell.dataset.bizuplyPortalMounted;
   delete shell.dataset.bizuplyPortalLive;

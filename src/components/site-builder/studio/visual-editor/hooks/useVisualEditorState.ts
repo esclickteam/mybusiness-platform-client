@@ -1412,15 +1412,30 @@ export function useVisualEditorState({
           `[data-visual-edit-id="${CSS.escape(parsed.shellId)}"]`,
         ) as HTMLElement | null) || null;
 
-      if (!shell && root) {
-        const control = root.querySelector(
+      const control =
+        (root?.querySelector(
           `[data-visual-edit-id="${CSS.escape(elementId)}"]`,
-        ) as HTMLElement | null;
+        ) as HTMLElement | null) || null;
+
+      if (!shell && control) {
         shell = getPortalAuthShell(control);
       }
 
       if (shell) {
-        applyPortalShellAttributePatch(shell, attrPatch);
+        applyPortalShellAttributePatch(shell, attrPatch, {
+          remount: typeof patch.href === "string",
+        });
+      }
+
+      // Keep the live stamped control in sync without remounting the form.
+      if (control && typeof patch.text === "string") {
+        control.textContent = patch.text;
+      }
+      if (control && typeof patch.href === "string") {
+        if (control instanceof HTMLAnchorElement) {
+          control.href = patch.href || "#";
+        }
+        control.setAttribute("data-visual-link-href", patch.href || "");
       }
 
       return { shellId: parsed.shellId, attrPatch };
@@ -1616,6 +1631,12 @@ export function useVisualEditorState({
       // sync keeps "דף הבית" (etc.) instead of reverting the old title.
       renameSitePageFromNavLabel(elementId, text, previousText);
 
+      if (parsePortalAuthControlId(elementId)) {
+        window.requestAnimationFrame(() => {
+          selection.refreshSelectedElement?.();
+        });
+      }
+
       return true;
     },
     [
@@ -1623,6 +1644,7 @@ export function useVisualEditorState({
       dataRef,
       persistPortalAuthControlShellPatch,
       renameSitePageFromNavLabel,
+      selection,
       setData,
     ],
   );

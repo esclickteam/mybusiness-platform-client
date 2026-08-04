@@ -49,6 +49,15 @@ export function resolveFormContext(
 ): FormContext | null {
   if (!node) return null;
 
+  // Client-portal login/register mounts are not contact/lead form builders.
+  if (
+    node.closest(
+      '[data-bizuply-portal-mount="true"], [data-bizuply-widget^="portal-"], [data-bizuply-portal-control]',
+    )
+  ) {
+    return null;
+  }
+
   if (node.tagName.toLowerCase() === "form") {
     const elementId =
       node.getAttribute("data-visual-edit-id") ||

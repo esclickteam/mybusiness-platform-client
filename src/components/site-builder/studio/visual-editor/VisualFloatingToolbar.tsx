@@ -981,7 +981,14 @@ export default function VisualFloatingToolbar({
   useEffect(() => {
     if (!element) return;
 
-    setTextValue(getElementText(element));
+    // Prefer live __content text — selection snapshots go stale after portal
+    // button edits (shell attrs / remount), and resetting to element.text
+    // undoes typing in the toolbar.
+    setTextValue(
+      typeof selectedContent?.text === "string"
+        ? selectedContent.text
+        : getElementText(element),
+    );
     setHrefValue(
       String(
         selectedContent?.href ||
