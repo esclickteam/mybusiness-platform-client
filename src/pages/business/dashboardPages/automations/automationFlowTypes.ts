@@ -137,6 +137,14 @@ function triggerItem(
 }
 
 function actionItem(key: string, label: string, description: string, supported = true): PaletteItem {
+  const defaults: Record<string, unknown> = { label, actionKey: key, templateId: "" };
+  if (key === "send_gmail") {
+    defaults.recipientType = "lead_email";
+    defaults.subject = "";
+    defaults.html = "";
+    defaults.body = "";
+    defaults.text = "";
+  }
   return {
     type: "action",
     key,
@@ -145,7 +153,7 @@ function actionItem(key: string, label: string, description: string, supported =
     label: `פעולה · ${label}`,
     description,
     color: "#059669",
-    defaults: { label, actionKey: key, templateId: "" },
+    defaults,
     supported,
     comingSoon: !supported,
   };
