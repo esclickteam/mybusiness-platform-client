@@ -364,6 +364,12 @@
   color: #fff;
 }
 
+.af-toolbar__btn:disabled,
+.af-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
 .af-btn--danger {
   color: #b91c1c;
   border-color: #fecaca;

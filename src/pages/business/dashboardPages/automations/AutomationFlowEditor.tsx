@@ -723,10 +723,10 @@ function EditorInner({
     setSelectedId(null);
   };
 
-  const handleSave = async (quiet = false) => {
+  const handleSave = async (quiet = false): Promise<boolean> => {
     if (readOnly) {
       if (!quiet) toast.error(AUTOMATION_PREVIEW_WRITE_BLOCKED_MESSAGE);
-      return;
+      return false;
     }
     setSaving(true);
     setSaveState("saving");
@@ -750,10 +750,15 @@ function EditorInner({
         })),
       });
       onSaved(saved);
+      setName(saved.name || name);
+      setNodes(toFlowNodes(saved));
+      setEdges(toFlowEdges(saved));
       setSaveState("saved");
       if (!quiet) toast.success("הטיוטה נשמרה");
+      return true;
     } catch (error: unknown) {
       toast.error(readErrorMessage(error, "שגיאה בשמירת האוטומציה"));
+      return false;
     } finally {
       setSaving(false);
     }
@@ -771,6 +776,14 @@ function EditorInner({
       toast.error(AUTOMATION_PREVIEW_WRITE_BLOCKED_MESSAGE);
       return;
     }
+    if (workflow.status === "archived") {
+      toast.error("לא ניתן לפרסם אוטומציה בארכיון");
+      return;
+    }
+    if (saving || publishing) {
+      toast.info("ממתינים לסיום שמירה — נסו שוב בעוד רגע");
+      return;
+    }
     if (triggerCatalogLoading || triggerCatalogError || !triggerCatalog.length) {
       toast.error("יש לטעון את קטלוג הטריגרים לפני פרסום");
       return;
@@ -785,19 +798,29 @@ function EditorInner({
     }
     setPublishing(true);
     try {
-      if (dirty) await handleSave(true);
+      // Always persist draft first so publish uses the latest subject/body/Gmail fields.
+      const savedOk = await handleSave(true);
+      if (!savedOk) return;
       const result = await publishAutomationWorkflow(businessId, workflow._id);
       if (result.errors?.length) {
         toast.error(result.errors.join(" · "));
         const nodeId = result.errors
           .join(" ")
-          .match(/(?:node|מודול)[\s:]+([A-Za-z0-9_-]+)/i)?.[1];
+          .match(/(?:node|מודול|פעולה)[\s:]+([A-Za-z0-9_-]+)/i)?.[1];
         if (nodeId && nodes.some((node) => node.id === nodeId)) {
           setSelectedId(nodeId);
         }
         return;
       }
+      if (!result.workflow) {
+        toast.error("הפרסום הצליח אך לא התקבלה תשובה תקינה מהשרת");
+        return;
+      }
       onSaved(result.workflow);
+      setName(result.workflow.name || name);
+      setNodes(toFlowNodes(result.workflow));
+      setEdges(toFlowEdges(result.workflow));
+      setSaveState("saved");
       toast.success("האוטומציה פורסמה");
       if (result.warnings?.length) {
         toast.warn(result.warnings.join(" · "));
@@ -947,27 +970,25 @@ function EditorInner({
           <button
             type="button"
             className="af-btn af-btn--primary"
-            disabled={
-              publishing ||
-              saving ||
-              workflow.status === "archived" ||
-              readOnly ||
-              triggerCatalogLoading ||
-              Boolean(triggerCatalogError) ||
-              hasUnsupportedTrigger
-            }
+            disabled={publishing || readOnly || workflow.status === "archived"}
             title={
               writeBlockedTitle ||
               (triggerCatalogError
                 ? "יש לטעון מחדש את קטלוג הטריגרים"
                 : hasUnsupportedTrigger
                   ? "טריגר ישן או לא נתמך"
-                  : undefined)
+                  : saving
+                    ? "שומר טיוטה…"
+                    : undefined)
             }
             onClick={() => void handlePublish()}
           >
-            <Play size={14} />
-            פרסום
+            {publishing ? (
+              <Loader2 size={14} className="animate-spin" />
+            ) : (
+              <Play size={14} />
+            )}
+            {publishing ? "מפרסם…" : "פרסום"}
           </button>
           {workflow.status === "active" ? (
             <button
