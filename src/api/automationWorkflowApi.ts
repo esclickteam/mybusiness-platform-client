@@ -1,4 +1,12 @@
 import API from "../api";
+import { assertAutomationWritesAllowed } from "./automationPreviewGuard";
+
+export {
+  AUTOMATION_PREVIEW_ACTION_TOOLTIP,
+  AUTOMATION_PREVIEW_WRITE_BLOCKED_MESSAGE,
+  assertAutomationWritesAllowed,
+  isAutomationsReadOnly,
+} from "./automationPreviewGuard";
 
 export type AutomationNodeType =
   | "trigger"
@@ -173,6 +181,7 @@ export async function createAutomationWorkflow(
     edges?: AutomationFlowEdge[];
   }
 ) {
+  assertAutomationWritesAllowed();
   const { data } = await API.post("/automations", {
     businessId,
     ...payload,
@@ -191,6 +200,7 @@ export async function saveAutomationWorkflow(
     viewport: { x: number; y: number; zoom: number };
   }>
 ) {
+  assertAutomationWritesAllowed();
   const { data } = await API.put(`/automations/${id}`, {
     businessId,
     ...payload,
@@ -202,6 +212,7 @@ export async function publishAutomationWorkflow(
   businessId: string,
   id: string
 ) {
+  assertAutomationWritesAllowed();
   const { data } = await API.post(`/automations/${id}/publish`, { businessId });
   return {
     workflow: data?.workflow as AutomationWorkflow,
@@ -211,11 +222,13 @@ export async function publishAutomationWorkflow(
 }
 
 export async function pauseAutomationWorkflow(businessId: string, id: string) {
+  assertAutomationWritesAllowed();
   const { data } = await API.post(`/automations/${id}/pause`, { businessId });
   return data?.workflow as AutomationWorkflow;
 }
 
 export async function resumeAutomationWorkflow(businessId: string, id: string) {
+  assertAutomationWritesAllowed();
   const { data } = await API.post(`/automations/${id}/resume`, { businessId });
   return data?.workflow as AutomationWorkflow;
 }
@@ -224,6 +237,7 @@ export async function archiveAutomationWorkflow(
   businessId: string,
   id: string
 ) {
+  assertAutomationWritesAllowed();
   const { data } = await API.post(`/automations/${id}/archive`, { businessId });
   return data?.workflow as AutomationWorkflow;
 }
@@ -232,6 +246,7 @@ export async function duplicateAutomationWorkflow(
   businessId: string,
   id: string
 ) {
+  assertAutomationWritesAllowed();
   const { data } = await API.post(`/automations/${id}/duplicate`, {
     businessId,
   });
@@ -242,6 +257,7 @@ export async function validateAutomationWorkflow(
   businessId: string,
   id: string
 ) {
+  // Read-only validation against server graph — does not mutate workflow data.
   const { data } = await API.post(`/automations/${id}/validate`, {
     businessId,
   });
@@ -259,6 +275,8 @@ export async function dryRunAutomationWorkflow(
     usePublishedVersion?: boolean;
   }
 ) {
+  // Dry-run hits Production API from Preview and can read real business data.
+  assertAutomationWritesAllowed();
   const { data } = await API.post(`/automations/${id}/dry-run`, {
     businessId,
     ...payload,
@@ -302,6 +320,7 @@ export async function retryAutomationExecution(
   businessId: string,
   executionId: string
 ) {
+  assertAutomationWritesAllowed();
   const { data } = await API.post(
     `/automations/executions/${executionId}/retry`,
     { businessId }
@@ -313,6 +332,7 @@ export async function cancelAutomationExecution(
   businessId: string,
   executionId: string
 ) {
+  assertAutomationWritesAllowed();
   const { data } = await API.post(
     `/automations/executions/${executionId}/cancel`,
     { businessId }
@@ -324,6 +344,7 @@ export async function deleteAutomationWorkflow(
   businessId: string,
   id: string
 ) {
+  assertAutomationWritesAllowed();
   const { data } = await API.delete(`/automations/${id}`, {
     params: { businessId },
   });

@@ -5,6 +5,17 @@
   min-height: calc(100vh - 120px);
 }
 
+.af-preview-banner {
+  border: 1px solid #f59e0b;
+  border-radius: 14px;
+  background: #fffbeb;
+  color: #92400e;
+  font-size: 13px;
+  font-weight: 800;
+  padding: 12px 14px;
+  text-align: start;
+}
+
 .af-muted {
   margin: 4px 0 0;
   color: #64748b;

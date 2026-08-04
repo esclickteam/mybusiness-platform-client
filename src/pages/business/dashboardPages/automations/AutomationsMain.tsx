@@ -23,6 +23,8 @@ import { useAuth } from "../../../../context/AuthContext";
 import { useLocaleDir } from "../../../../hooks/useLocaleDir";
 import { normalizeBusinessId } from "../../../../utils/notificationNavigation";
 import {
+  AUTOMATION_PREVIEW_ACTION_TOOLTIP,
+  AUTOMATION_PREVIEW_WRITE_BLOCKED_MESSAGE,
   createAutomationWorkflow,
   deleteAutomationWorkflow,
   duplicateAutomationWorkflow,
@@ -30,6 +32,7 @@ import {
   pauseAutomationWorkflow,
   resumeAutomationWorkflow,
   getAutomationStats,
+  isAutomationsReadOnly,
   listAutomationRecipes,
   listAutomationExecutions,
   listAutomationWorkflows,
@@ -40,6 +43,17 @@ import {
 } from "../../../../api/automationWorkflowApi";
 import AutomationFlowEditor from "./AutomationFlowEditor";
 import "./automationFlow.css";
+
+function readErrorMessage(error: unknown, fallback: string) {
+  if (error instanceof Error && error.message) return error.message;
+  if (error && typeof error === "object" && "response" in error) {
+    return String(
+      (error as { response?: { data?: { error?: string } } }).response?.data
+        ?.error || fallback
+    );
+  }
+  return fallback;
+}
 
 export default function AutomationsMain() {
   const { t } = useTranslation();
@@ -79,6 +93,10 @@ export default function AutomationsMain() {
     [recipes]
   );
   const highlightAi = searchParams.get("tier") === "ai";
+  const readOnly = isAutomationsReadOnly();
+  const writeBlockedTitle = readOnly
+    ? AUTOMATION_PREVIEW_ACTION_TOOLTIP
+    : undefined;
 
   const load = useCallback(async () => {
     if (!businessId) return;
@@ -135,6 +153,10 @@ export default function AutomationsMain() {
   const handleCreate = useCallback(
     async (recipe?: string) => {
       if (!businessId) return;
+      if (isAutomationsReadOnly()) {
+        toast.error(AUTOMATION_PREVIEW_WRITE_BLOCKED_MESSAGE);
+        return;
+      }
       setCreatingKey(recipe || "blank");
       try {
         const created = await createAutomationWorkflow(businessId, {
@@ -146,14 +168,7 @@ export default function AutomationsMain() {
         setActive(created);
         toast.success("האוטומציה מוכנה לעריכה על הבד");
       } catch (error: unknown) {
-        const message =
-          error && typeof error === "object" && "response" in error
-            ? String(
-                (error as { response?: { data?: { error?: string } } }).response
-                  ?.data?.error || ""
-              )
-            : "";
-        toast.error(message || "שגיאה ביצירת אוטומציה");
+        toast.error(readErrorMessage(error, "שגיאה ביצירת אוטומציה"));
       } finally {
         setCreatingKey(null);
       }
@@ -181,6 +196,10 @@ export default function AutomationsMain() {
     action: "pause" | "resume" | "archive" | "duplicate"
   ) => {
     if (!businessId) return;
+    if (isAutomationsReadOnly()) {
+      toast.error(AUTOMATION_PREVIEW_WRITE_BLOCKED_MESSAGE);
+      return;
+    }
     try {
       if (action === "duplicate") {
         const copy = await duplicateAutomationWorkflow(businessId, workflow._id);
@@ -196,8 +215,8 @@ export default function AutomationsMain() {
             : await archiveAutomationWorkflow(businessId, workflow._id);
       updateWorkflow(saved);
       toast.success(action === "archive" ? "האוטומציה הועברה לארכיון" : "סטטוס האוטומציה עודכן");
-    } catch {
-      toast.error("לא ניתן לעדכן את האוטומציה");
+    } catch (error: unknown) {
+      toast.error(readErrorMessage(error, "לא ניתן לעדכן את האוטומציה"));
     }
   };
 
@@ -218,6 +237,7 @@ export default function AutomationsMain() {
   useEffect(() => {
     const recipeKey = searchParams.get("recipe");
     if (!businessId || !recipeKey || loading) return;
+    if (isAutomationsReadOnly()) return;
     if (autoCreateHandled.current === recipeKey) return;
     autoCreateHandled.current = recipeKey;
     void handleCreate(recipeKey).finally(() => {
@@ -229,14 +249,18 @@ export default function AutomationsMain() {
 
   const handleDelete = async (id: string) => {
     if (!businessId) return;
+    if (isAutomationsReadOnly()) {
+      toast.error(AUTOMATION_PREVIEW_WRITE_BLOCKED_MESSAGE);
+      return;
+    }
     if (!window.confirm("למחוק את האוטומציה?")) return;
     try {
       await deleteAutomationWorkflow(businessId, id);
       setWorkflows((prev) => prev.filter((w) => w._id !== id));
       if (active?._id === id) setActive(null);
       toast.success("האוטומציה נמחקה");
-    } catch {
-      toast.error("שגיאה במחיקה");
+    } catch (error: unknown) {
+      toast.error(readErrorMessage(error, "שגיאה במחיקה"));
     }
   };
 
@@ -246,6 +270,15 @@ export default function AutomationsMain() {
       className="min-h-[calc(100vh-72px)] bg-[#F7F8FC] px-3 py-4 text-start text-slate-900 sm:px-5 sm:py-5 lg:px-6"
     >
       <div className="af-shell mx-auto w-full max-w-[1920px]">
+        {readOnly ? (
+          <div
+            className="af-preview-banner"
+            role="status"
+            data-testid="automations-preview-banner"
+          >
+            סביבת תצוגה מקדימה — פעולות עריכה והפעלה חסומות
+          </div>
+        ) : null}
         {!active ? (
           <>
             <header className="overflow-hidden rounded-2xl border border-slate-200/80 bg-white shadow-[0_10px_28px_rgba(15,23,42,0.05)]">
@@ -301,7 +334,8 @@ export default function AutomationsMain() {
                   type="button"
                   className="af-btn af-btn--primary"
                   onClick={() => handleCreate()}
-                  disabled={!businessId || Boolean(creatingKey)}
+                  disabled={!businessId || Boolean(creatingKey) || readOnly}
+                  title={writeBlockedTitle}
                 >
                   {creatingKey === "blank" ? (
                     <Loader2 size={14} className="animate-spin" />
@@ -337,7 +371,13 @@ export default function AutomationsMain() {
                     <button
                       type="button"
                       className="af-btn af-btn--primary"
-                      disabled={!businessId || Boolean(creatingKey) || Boolean(recipe.comingSoon)}
+                      disabled={
+                        !businessId ||
+                        Boolean(creatingKey) ||
+                        Boolean(recipe.comingSoon) ||
+                        readOnly
+                      }
+                      title={writeBlockedTitle}
                       onClick={() => handleRecipeCreate(recipe)}
                     >
                       {creatingKey === recipe.key ? (
@@ -403,7 +443,17 @@ export default function AutomationsMain() {
                         <button
                           type="button"
                           className="af-btn af-btn--primary"
-                          disabled={!businessId || Boolean(creatingKey) || Boolean(recipe.comingSoon && !recipe.isAiRecipe && recipe.tier !== "ai_paid")}
+                          disabled={
+                            !businessId ||
+                            Boolean(creatingKey) ||
+                            Boolean(
+                              recipe.comingSoon &&
+                                !recipe.isAiRecipe &&
+                                recipe.tier !== "ai_paid"
+                            ) ||
+                            readOnly
+                          }
+                          title={writeBlockedTitle}
                           onClick={() => handleRecipeCreate(recipe)}
                         >
                           {creatingKey === recipe.key ? (
@@ -483,15 +533,68 @@ export default function AutomationsMain() {
                             <PencilLine size={14} />
                             עריכת זרימה
                           </button>
-                          {status === "active" ? <button type="button" className="af-btn" onClick={() => void handleLifecycle(wf, "pause")}><Pause size={14} />השהיה</button> : status === "paused" ? <button type="button" className="af-btn" onClick={() => void handleLifecycle(wf, "resume")}><Play size={14} />המשך</button> : null}
-                          <button type="button" className="af-btn" onClick={() => void handleLifecycle(wf, "duplicate")}><Copy size={14} />שכפול</button>
-                          <button type="button" className="af-btn" onClick={() => setActive(wf)}><Play size={14} />בדיקה</button>
+                          {status === "active" ? (
+                            <button
+                              type="button"
+                              className="af-btn"
+                              disabled={readOnly}
+                              title={writeBlockedTitle}
+                              onClick={() => void handleLifecycle(wf, "pause")}
+                            >
+                              <Pause size={14} />
+                              השהיה
+                            </button>
+                          ) : status === "paused" ? (
+                            <button
+                              type="button"
+                              className="af-btn"
+                              disabled={readOnly}
+                              title={writeBlockedTitle}
+                              onClick={() => void handleLifecycle(wf, "resume")}
+                            >
+                              <Play size={14} />
+                              המשך
+                            </button>
+                          ) : null}
+                          <button
+                            type="button"
+                            className="af-btn"
+                            disabled={readOnly}
+                            title={writeBlockedTitle}
+                            onClick={() => void handleLifecycle(wf, "duplicate")}
+                          >
+                            <Copy size={14} />
+                            שכפול
+                          </button>
+                          <button
+                            type="button"
+                            className="af-btn"
+                            disabled={readOnly}
+                            title={writeBlockedTitle}
+                            onClick={() => setActive(wf)}
+                          >
+                            <Play size={14} />
+                            בדיקה
+                          </button>
                           <button type="button" className="af-btn" onClick={() => void openHistory(wf)}><History size={14} />היסטוריה</button>
-                          {status !== "archived" ? <button type="button" className="af-btn" onClick={() => void handleLifecycle(wf, "archive")}><Archive size={14} />ארכוב</button> : null}
+                          {status !== "archived" ? (
+                            <button
+                              type="button"
+                              className="af-btn"
+                              disabled={readOnly}
+                              title={writeBlockedTitle}
+                              onClick={() => void handleLifecycle(wf, "archive")}
+                            >
+                              <Archive size={14} />
+                              ארכוב
+                            </button>
+                          ) : null}
                           {status === "draft" ? (
                           <button
                             type="button"
                             className="af-btn af-btn--danger"
+                            disabled={readOnly}
+                            title={writeBlockedTitle}
                             onClick={() => handleDelete(wf._id)}
                           >
                             <Trash2 size={14} />
@@ -510,6 +613,7 @@ export default function AutomationsMain() {
           <AutomationFlowEditor
             businessId={businessId}
             workflow={active}
+            readOnly={readOnly}
             onBack={() => {
               setActive(null);
               void load();

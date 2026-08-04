@@ -29,12 +29,15 @@ import {
   Plus,
 } from "lucide-react";
 import {
+  AUTOMATION_PREVIEW_ACTION_TOOLTIP,
+  AUTOMATION_PREVIEW_WRITE_BLOCKED_MESSAGE,
   saveAutomationWorkflow,
   publishAutomationWorkflow,
   pauseAutomationWorkflow,
   resumeAutomationWorkflow,
   dryRunAutomationWorkflow,
   fetchDryRunExample,
+  isAutomationsReadOnly,
   type AutomationNodeType,
   type AutomationWorkflow,
 } from "../../../../api/automationWorkflowApi";
@@ -63,9 +66,21 @@ import {
 type Props = {
   businessId: string;
   workflow: AutomationWorkflow;
+  readOnly?: boolean;
   onBack: () => void;
   onSaved: (workflow: AutomationWorkflow) => void;
 };
+
+function readErrorMessage(error: unknown, fallback: string) {
+  if (error instanceof Error && error.message) return error.message;
+  if (error && typeof error === "object" && "response" in error) {
+    return String(
+      (error as { response?: { data?: { error?: string } } }).response?.data
+        ?.error || fallback
+    );
+  }
+  return fallback;
+}
 
 function edgeLabelFromHandle(handle?: string | null) {
   if (!handle) return "";
@@ -145,7 +160,17 @@ function pickOutgoingHandle(
   return handles.find((h) => !used.has(h)) || handles[0] || "out";
 }
 
-function EditorInner({ businessId, workflow, onBack, onSaved }: Props) {
+function EditorInner({
+  businessId,
+  workflow,
+  readOnly: readOnlyProp = false,
+  onBack,
+  onSaved,
+}: Props) {
+  const readOnly = readOnlyProp || isAutomationsReadOnly();
+  const writeBlockedTitle = readOnly
+    ? AUTOMATION_PREVIEW_ACTION_TOOLTIP
+    : undefined;
   const { screenToFlowPosition, fitView } = useReactFlow();
   const [name, setName] = useState(workflow.name);
   const [saving, setSaving] = useState(false);
@@ -371,6 +396,10 @@ function EditorInner({ businessId, workflow, onBack, onSaved }: Props) {
   };
 
   const handleSave = async (quiet = false) => {
+    if (readOnly) {
+      if (!quiet) toast.error(AUTOMATION_PREVIEW_WRITE_BLOCKED_MESSAGE);
+      return;
+    }
     setSaving(true);
     setSaveState("saving");
     try {
@@ -396,27 +425,24 @@ function EditorInner({ businessId, workflow, onBack, onSaved }: Props) {
       setSaveState("saved");
       if (!quiet) toast.success("הטיוטה נשמרה");
     } catch (error: unknown) {
-      const message =
-        error && typeof error === "object" && "response" in error
-          ? String(
-              (error as { response?: { data?: { error?: string } } }).response
-                ?.data?.error || ""
-            )
-          : "";
-      toast.error(message || "שגיאה בשמירת האוטומציה");
+      toast.error(readErrorMessage(error, "שגיאה בשמירת האוטומציה"));
     } finally {
       setSaving(false);
     }
   };
 
   useEffect(() => {
-    if (!dirty || saving) return;
+    if (readOnly || !dirty || saving) return;
     const timer = window.setTimeout(() => void handleSave(true), 1000);
     return () => window.clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dirty, name, nodes, edges]);
+  }, [dirty, name, nodes, edges, readOnly]);
 
   const handlePublish = async () => {
+    if (readOnly) {
+      toast.error(AUTOMATION_PREVIEW_WRITE_BLOCKED_MESSAGE);
+      return;
+    }
     setPublishing(true);
     try {
       if (dirty) await handleSave(true);
@@ -435,13 +461,21 @@ function EditorInner({ businessId, workflow, onBack, onSaved }: Props) {
       toast.success("האוטומציה פורסמה");
     } catch (error: unknown) {
       const response = (error as { response?: { data?: { errors?: string[]; error?: string } } })?.response?.data;
-      toast.error(response?.errors?.join(" · ") || response?.error || "לא ניתן לפרסם את האוטומציה");
+      toast.error(
+        response?.errors?.join(" · ") ||
+          response?.error ||
+          readErrorMessage(error, "לא ניתן לפרסם את האוטומציה")
+      );
     } finally {
       setPublishing(false);
     }
   };
 
   const handleTest = async () => {
+    if (readOnly) {
+      toast.error(AUTOMATION_PREVIEW_WRITE_BLOCKED_MESSAGE);
+      return;
+    }
     setTesting(true);
     try {
       const trigger = nodes.find((node) => node.type === "trigger");
@@ -452,8 +486,8 @@ function EditorInner({ businessId, workflow, onBack, onSaved }: Props) {
         payload: (example || {}) as Record<string, unknown>,
       });
       setTestResult((result || {}) as Record<string, unknown>);
-    } catch {
-      toast.error("בדיקת האוטומציה נכשלה");
+    } catch (error: unknown) {
+      toast.error(readErrorMessage(error, "בדיקת האוטומציה נכשלה"));
     } finally {
       setTesting(false);
     }
@@ -498,8 +532,9 @@ function EditorInner({ businessId, workflow, onBack, onSaved }: Props) {
               key={`${item.type}-${item.key}`}
               type="button"
               className="af-palette__item"
-              draggable={item.supported !== false}
-              disabled={item.supported === false}
+              draggable={!readOnly && item.supported !== false}
+              disabled={readOnly || item.supported === false}
+              title={writeBlockedTitle}
               onDragStart={(e) => onDragStart(e, item)}
               onClick={() =>
                 insertModule(item, {
@@ -533,11 +568,14 @@ function EditorInner({ businessId, workflow, onBack, onSaved }: Props) {
             onChange={(e) => setName(e.target.value)}
             className="af-toolbar__btn af-toolbar__name"
             aria-label="שם האוטומציה"
+            disabled={readOnly}
+            title={writeBlockedTitle}
           />
           <button
             type="button"
             className="af-btn af-btn--primary"
-            disabled={saving}
+            disabled={saving || readOnly}
+            title={writeBlockedTitle}
             onClick={() => handleSave()}
           >
             {saving ? (
@@ -550,18 +588,93 @@ function EditorInner({ businessId, workflow, onBack, onSaved }: Props) {
           <button
             type="button"
             className="af-btn af-btn--primary"
-            disabled={publishing || saving || workflow.status === "archived"}
+            disabled={
+              publishing || saving || workflow.status === "archived" || readOnly
+            }
+            title={writeBlockedTitle}
             onClick={() => void handlePublish()}
           >
             <Play size={14} />
             פרסום
           </button>
-          {workflow.status === "active" ? <button type="button" className="af-toolbar__btn" onClick={async () => onSaved(await pauseAutomationWorkflow(businessId, workflow._id))}><Pause size={14} />השהיה</button> : workflow.status === "paused" ? <button type="button" className="af-toolbar__btn" onClick={async () => onSaved(await resumeAutomationWorkflow(businessId, workflow._id))}><Play size={14} />המשך</button> : null}
-          <button type="button" className="af-toolbar__btn" onClick={() => setTestOpen((open) => !open)}><FlaskConical size={14} />בדיקה</button>
+          {workflow.status === "active" ? (
+            <button
+              type="button"
+              className="af-toolbar__btn"
+              disabled={readOnly}
+              title={writeBlockedTitle}
+              onClick={async () =>
+                onSaved(await pauseAutomationWorkflow(businessId, workflow._id))
+              }
+            >
+              <Pause size={14} />
+              השהיה
+            </button>
+          ) : workflow.status === "paused" ? (
+            <button
+              type="button"
+              className="af-toolbar__btn"
+              disabled={readOnly}
+              title={writeBlockedTitle}
+              onClick={async () =>
+                onSaved(await resumeAutomationWorkflow(businessId, workflow._id))
+              }
+            >
+              <Play size={14} />
+              המשך
+            </button>
+          ) : null}
+          <button
+            type="button"
+            className="af-toolbar__btn"
+            disabled={readOnly}
+            title={writeBlockedTitle}
+            onClick={() => setTestOpen((open) => !open)}
+          >
+            <FlaskConical size={14} />
+            בדיקה
+          </button>
           <span className="af-toolbar__state">{dirty ? "יש שינויים שלא פורסמו" : saveState === "saved" ? "נשמר" : workflow.publishedVersionId ? "פורסם" : "טיוטה"}{workflow.publishedAt ? ` · ${new Date(workflow.publishedAt).toLocaleDateString("he-IL")}` : ""}</span>
         </div>
 
-        {testOpen ? <div className="af-test-panel"><strong>מצב בדיקה — לא יישלחו הודעות ולא יתבצעו שינויים</strong><button type="button" className="af-btn af-btn--primary" disabled={testing} onClick={() => void handleTest()}>{testing ? <Loader2 size={14} className="animate-spin" /> : <FlaskConical size={14} />}הריצו בדיקה</button>{testResult ? <ol>{((testResult.steps || testResult.nodes || []) as Array<Record<string, unknown>>).map((step, index) => <li key={index}>{String(step.label || step.nodeId || step.type || `שלב ${index + 1}`)} · {String(step.status || "")}</li>)}</ol> : null}</div> : null}
+        {testOpen ? (
+          <div className="af-test-panel">
+            <strong>מצב בדיקה — לא יישלחו הודעות ולא יתבצעו שינויים</strong>
+            <button
+              type="button"
+              className="af-btn af-btn--primary"
+              disabled={testing || readOnly}
+              title={writeBlockedTitle}
+              onClick={() => void handleTest()}
+            >
+              {testing ? (
+                <Loader2 size={14} className="animate-spin" />
+              ) : (
+                <FlaskConical size={14} />
+              )}
+              הריצו בדיקה
+            </button>
+            {testResult ? (
+              <ol>
+                {(
+                  (testResult.steps || testResult.nodes || []) as Array<
+                    Record<string, unknown>
+                  >
+                ).map((step, index) => (
+                  <li key={index}>
+                    {String(
+                      step.label ||
+                        step.nodeId ||
+                        step.type ||
+                        `שלב ${index + 1}`
+                    )}{" "}
+                    · {String(step.status || "")}
+                  </li>
+                ))}
+              </ol>
+            ) : null}
+          </div>
+        ) : null}
 
         {selectedNode && selectedNode.type !== "trigger" ? (
           <div className="af-quickbar">
@@ -627,17 +740,20 @@ function EditorInner({ businessId, workflow, onBack, onSaved }: Props) {
         <ReactFlow
           nodes={nodes}
           edges={edges}
-          onNodesChange={onNodesChange}
-          onEdgesChange={onEdgesChange}
-          onConnect={onConnect}
+          onNodesChange={readOnly ? undefined : onNodesChange}
+          onEdgesChange={readOnly ? undefined : onEdgesChange}
+          onConnect={readOnly ? undefined : onConnect}
           nodeTypes={automationNodeTypes}
-          onDrop={onDrop}
-          onDragOver={onDragOver}
+          onDrop={readOnly ? undefined : onDrop}
+          onDragOver={readOnly ? undefined : onDragOver}
           onSelectionChange={({ nodes: selected }) => {
             setSelectedId(selected[0]?.id || null);
           }}
+          nodesDraggable={!readOnly}
+          nodesConnectable={!readOnly}
+          elementsSelectable
           fitView
-          deleteKeyCode={["Backspace", "Delete"]}
+          deleteKeyCode={readOnly ? null : ["Backspace", "Delete"]}
           proOptions={{ hideAttribution: true }}
           connectionLineStyle={{ stroke: "#7c3aed", strokeWidth: 2 }}
           defaultEdgeOptions={{
