@@ -34,6 +34,10 @@ import {
 import type { StylePatch } from "../types";
 import StudioFontPicker from "../StudioFontPicker";
 import { resolveFormContext } from "./utils/visualForms";
+import {
+  fetchConfiguredClientFields,
+  type ConfiguredClientField,
+} from "../../../../pages/business/dashboardPages/crmpages/clientCustomFieldsApi";
 
 type ElementKind = "text" | "image" | "button" | "section" | "general";
 
@@ -836,8 +840,13 @@ export default function VisualFloatingToolbar({
     "#ff7a00",
   ]);
   const [gradientAngle, setGradientAngle] = useState(90);
+  const [crmFields, setCrmFields] = useState<ConfiguredClientField[]>([]);
+  const [crmFieldPart, setCrmFieldPart] = useState<"value" | "label" | "both">(
+    "value",
+  );
 
   const elementId = getElementId(element);
+  const businessId = String((editor as any)?.businessId || "").trim();
   const kind = useMemo(() => getElementKind(element), [element]);
   const portalControlKind = useMemo(() => {
     const node = getElementNode(element);
@@ -885,6 +894,49 @@ export default function VisualFloatingToolbar({
         : {},
     [editor?.content, elementId],
   );
+
+  useEffect(() => {
+    let cancelled = false;
+    if (!businessId) {
+      setCrmFields([]);
+      return;
+    }
+
+    void fetchConfiguredClientFields(businessId)
+      .then((fields) => {
+        if (!cancelled) {
+          setCrmFields(fields.filter((field) => field.active !== false));
+        }
+      })
+      .catch(() => {
+        if (!cancelled) setCrmFields([]);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [businessId]);
+
+  const boundCrmFieldKey = useMemo(() => {
+    const node = getElementNode(element);
+    return String(
+      node?.getAttribute("data-bizuply-crm-field") ||
+        node?.getAttribute("data-client-variable-key") ||
+        "",
+    ).trim();
+  }, [element]);
+
+  useEffect(() => {
+    const node = getElementNode(element);
+    const part = String(
+      node?.getAttribute("data-bizuply-crm-field-part") || "value",
+    )
+      .trim()
+      .toLowerCase();
+    if (part === "label" || part === "both" || part === "value") {
+      setCrmFieldPart(part);
+    }
+  }, [element, boundCrmFieldKey]);
 
   const linkTargets = useMemo(
     () => editor?.getLinkTargets?.() || { pages: [], sections: [] },
@@ -1181,6 +1233,47 @@ export default function VisualFloatingToolbar({
     }
 
     editor?.updateInlineText?.(elementId, nextValue);
+  }
+
+  function bindCrmField(fieldKey: string, part: "value" | "label" | "both" = crmFieldPart) {
+    if (!elementId || locked) return;
+
+    const node = getElementNode(element);
+    if (!fieldKey) {
+      editor?.updateAttributes?.(elementId, {
+        "data-bizuply-crm-field": "",
+        "data-bizuply-crm-field-part": "",
+        "data-client-variable-key": "",
+        "data-client-variable": "",
+      });
+      node?.removeAttribute("data-bizuply-crm-field");
+      node?.removeAttribute("data-bizuply-crm-field-part");
+      node?.removeAttribute("data-client-variable-key");
+      node?.removeAttribute("data-client-variable");
+      return;
+    }
+
+    const field = crmFields.find((item) => item.key === fieldKey);
+    const sample =
+      part === "label"
+        ? field?.label || fieldKey
+        : part === "both"
+          ? `${field?.label || fieldKey}: ${field?.placeholder || "—"}`
+          : field?.placeholder || field?.label || fieldKey;
+
+    editor?.updateAttributes?.(elementId, {
+      "data-bizuply-crm-field": fieldKey,
+      "data-bizuply-crm-field-part": part,
+      "data-client-variable": "true",
+      "data-client-variable-key": fieldKey,
+    });
+    node?.setAttribute("data-bizuply-crm-field", fieldKey);
+    node?.setAttribute("data-bizuply-crm-field-part", part);
+    node?.setAttribute("data-client-variable", "true");
+    node?.setAttribute("data-client-variable-key", fieldKey);
+
+    setTextValue(sample);
+    submitText(sample);
   }
 
   function submitHref() {
@@ -1481,6 +1574,40 @@ export default function VisualFloatingToolbar({
                 className="h-9 w-full rounded-xl bg-transparent px-8 pl-2 text-sm font-bold text-slate-900 outline-none transition hover:bg-slate-100 focus:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
               />
             </div>
+
+            {businessId ? (
+              <>
+                <SelectControl
+                  value={boundCrmFieldKey}
+                  onChange={(value) => bindCrmField(value)}
+                  className="w-[150px]"
+                  title="קישור לנתון CRM"
+                >
+                  <option value="">נתון CRM</option>
+                  {crmFields.map((field) => (
+                    <option key={field.id || field.key} value={field.key}>
+                      {field.label || field.key}
+                    </option>
+                  ))}
+                </SelectControl>
+                {boundCrmFieldKey ? (
+                  <SelectControl
+                    value={crmFieldPart}
+                    onChange={(value) => {
+                      const part = value as "value" | "label" | "both";
+                      setCrmFieldPart(part);
+                      bindCrmField(boundCrmFieldKey, part);
+                    }}
+                    className="w-[110px]"
+                    title="מה להציג מהנתון"
+                  >
+                    <option value="value">ערך</option>
+                    <option value="label">תווית</option>
+                    <option value="both">תווית+ערך</option>
+                  </SelectControl>
+                ) : null}
+              </>
+            ) : null}
 
             <StudioFontPicker
               value={currentFont}

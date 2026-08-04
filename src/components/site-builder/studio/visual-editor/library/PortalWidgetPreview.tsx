@@ -198,7 +198,7 @@ export default function PortalWidgetPreview({
         <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 8 }}>
           {[
             ["משקל", "72"],
-            ["עמות טיפולים", "4"],
+            ["כמות טיפולים", "4"],
             ["יתרה", "250"],
             ["מפגשים", "8"],
           ].map(([label, value]) => (
@@ -246,7 +246,7 @@ export default function PortalWidgetPreview({
         <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 10 }}>
           {[
             ["משקל", "72"],
-            ["עמות טיפולים", "4"],
+            ["כמות טיפולים", "4"],
             ["יתרה", "₪250"],
             ["מפגשים שבוצעו", "8"],
           ].map(([label, value]) => (

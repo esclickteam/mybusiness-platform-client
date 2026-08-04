@@ -34,6 +34,7 @@ export function textNode(
   style: Record<string, any>,
   layout: Record<string, any>,
   label = "טקסט",
+  attributes?: Record<string, string>,
 ): VisualLibraryNodeTemplate {
   return {
     key,
@@ -47,6 +48,9 @@ export function textNode(
       ...style,
     },
     layout,
+    ...(attributes && Object.keys(attributes).length
+      ? { attributes }
+      : {}),
   };
 }
 
