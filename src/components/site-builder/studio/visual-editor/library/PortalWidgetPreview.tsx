@@ -4,6 +4,7 @@ type PortalPreviewKind =
   | "portal-login"
   | "portal-register"
   | "portal-account"
+  | "portal-custom-data"
   | "portal-orders"
   | "portal-cart"
   | "portal-forgot-password"
@@ -194,6 +195,27 @@ export default function PortalWidgetPreview({
             </div>
           ))}
         </div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 8 }}>
+          {[
+            ["משקל", "72"],
+            ["עמות טיפולים", "4"],
+            ["יתרה", "250"],
+            ["מפגשים", "8"],
+          ].map(([label, value]) => (
+            <div
+              key={label}
+              style={{
+                padding: "12px",
+                borderRadius: 14,
+                border: `1px solid ${line}`,
+                background: "#fff",
+              }}
+            >
+              <div style={{ fontSize: 11, fontWeight: 800, color: muted }}>{label}</div>
+              <div style={{ fontSize: 16, fontWeight: 900, color: ink }}>{value}</div>
+            </div>
+          ))}
+        </div>
         {["ההזמנות שלי", "העגלה שלי", "פרטי החשבון"].map((label) => (
           <div
             key={label}
@@ -210,6 +232,41 @@ export default function PortalWidgetPreview({
             {label}
           </div>
         ))}
+      </div>
+    );
+  }
+
+  if (kind === "portal-custom-data") {
+    return (
+      <div style={wrap}>
+        <div style={{ fontSize: 22, fontWeight: 900, color: ink }}>הנתונים שלי</div>
+        <div style={{ fontSize: 13, fontWeight: 600, color: muted, lineHeight: 1.55 }}>
+          ערכים מעודכנים מתיק הלקוח ב-CRM.
+        </div>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 10 }}>
+          {[
+            ["משקל", "72"],
+            ["עמות טיפולים", "4"],
+            ["יתרה", "₪250"],
+            ["מפגשים שבוצעו", "8"],
+          ].map(([label, value]) => (
+            <div
+              key={label}
+              style={{
+                padding: "14px 16px",
+                borderRadius: 16,
+                border: `1px solid ${line}`,
+                background: "#fff",
+                minHeight: 84,
+              }}
+            >
+              <div style={{ fontSize: 11, fontWeight: 800, color: muted, marginBottom: 8 }}>
+                {label}
+              </div>
+              <div style={{ fontSize: 22, fontWeight: 900, color: ink }}>{value}</div>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }

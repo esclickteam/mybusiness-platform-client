@@ -199,12 +199,26 @@ export async function sitePortalResetPassword(input: {
   return data;
 }
 
+export type SitePortalCustomDataField = {
+  id: string;
+  key: string;
+  label: string;
+  type: string;
+  description?: string;
+  placeholder?: string;
+  options?: string[];
+  required?: boolean;
+  editableByClient?: boolean;
+  value?: unknown;
+};
+
 export async function sitePortalMe(siteId: string) {
   return portalFetch<{
     success: true;
     member: SitePortalMember;
     site: SitePortalSiteInfo | null;
     portalPages?: SitePortalPageInfo[];
+    customData?: SitePortalCustomDataField[];
   }>("/public/portal/me", { siteId });
 }
 

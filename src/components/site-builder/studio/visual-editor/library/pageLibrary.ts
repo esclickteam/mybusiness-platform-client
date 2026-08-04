@@ -1191,7 +1191,7 @@ const CATEGORY_DEFS: CategoryDef[] = [
         const n = String(i + 1).padStart(2, "0");
         return {
           title: `נתונים אישיים ${i + 1}`,
-          description: "עמוד פרטים אישיים מקצועי עם כרטיסיות וטבלאות",
+          description: "עמוד פרטים אישיים מקצועי עם נתונים משתנים מחוברים ל-CRM",
           slugSuggestion: i === 0 ? "profile" : `profile-${n}`,
           keywords: [
             "portal-profile",
@@ -1202,6 +1202,23 @@ const CATEGORY_DEFS: CategoryDef[] = [
             "portal",
           ],
           sectionIds: [`section-portal-profile-${n}`, FOOTER],
+        };
+      }),
+      ...Array.from({ length: 10 }, (_, i) => {
+        const n = String(i + 1).padStart(2, "0");
+        return {
+          title: `נתונים משתנים ${i + 1}`,
+          description: "עמוד אחרי התחברות עם ווידג׳ט חי לנתונים מה-CRM",
+          slugSuggestion: i === 0 ? "my-data" : `my-data-${n}`,
+          keywords: [
+            "portal-custom-data",
+            "נתונים משתנים",
+            "CRM",
+            "מדדים",
+            "אחרי התחברות",
+            "portal",
+          ],
+          sectionIds: [`section-portal-custom-data-${n}`, FOOTER],
         };
       }),
       ...Array.from({ length: 10 }, (_, i) => {
@@ -1328,6 +1345,7 @@ export const PORTAL_PAGE_KIND_NAV: Array<{
   { id: "cart", label: "עגלה", keyword: "portal-cart" },
   { id: "courses", label: "קורסים", keyword: "portal-courses" },
   { id: "profile", label: "נתונים אישיים", keyword: "portal-profile" },
+  { id: "custom-data", label: "נתונים משתנים", keyword: "portal-custom-data" },
   {
     id: "forgot-password",
     label: "שכחתי סיסמה",
