@@ -41,11 +41,9 @@ import {
   type AutomationNodeType,
   type AutomationWorkflow,
 } from "../../../../api/automationWorkflowApi";
-import { Link } from "react-router-dom";
 import {
   getWhatsAppIntegrationStatus,
   listApprovedWhatsAppTemplates,
-  syncWhatsAppTemplates,
   type ApprovedWhatsAppTemplate,
   type WhatsAppVariableMapping,
 } from "../../../../api/whatsappApi";
@@ -230,7 +228,6 @@ function EditorInner({
   const [waConnected, setWaConnected] = useState(false);
   const [waTemplates, setWaTemplates] = useState<ApprovedWhatsAppTemplate[]>([]);
   const [waLoading, setWaLoading] = useState(false);
-  const [waSyncing, setWaSyncing] = useState(false);
   const [waSyncError, setWaSyncError] = useState("");
   const [waLastSyncAt, setWaLastSyncAt] = useState<string | null>(null);
   const [nodes, setNodes, onNodesChange] = useNodesState(toFlowNodes(workflow));
@@ -246,14 +243,24 @@ function EditorInner({
     setWaSyncError("");
     try {
       const [status, approved] = await Promise.all([
-        getWhatsAppIntegrationStatus(businessId),
-        listApprovedWhatsAppTemplates(businessId),
+        getWhatsAppIntegrationStatus(businessId, {
+          senderMode: "bizuply_managed",
+        }),
+        listApprovedWhatsAppTemplates(businessId, {
+          senderMode: "bizuply_managed",
+        }),
       ]);
       setWaConnected(Boolean(status.connected || approved.connected));
       setWaLastSyncAt(
-        approved.lastTemplatesSyncAt || status.lastTemplatesSyncAt || null
+        approved.lastTemplatesSyncAt ||
+          status.lastTemplatesSyncAt ||
+          status.managedStatus?.lastTemplatesSyncAt ||
+          null
       );
       setWaTemplates(approved.templates || []);
+      if (!approved.connected && approved.message) {
+        setWaSyncError(approved.message);
+      }
     } catch (error: unknown) {
       setWaTemplates([]);
       setWaSyncError(readErrorMessage(error, "לא הצלחנו לטעון תבניות WhatsApp"));
@@ -265,23 +272,6 @@ function EditorInner({
   useEffect(() => {
     void loadApprovedWhatsAppTemplates();
   }, [loadApprovedWhatsAppTemplates]);
-
-  const handleSyncWhatsAppTemplates = async () => {
-    setWaSyncing(true);
-    setWaSyncError("");
-    try {
-      const synced = await syncWhatsAppTemplates(businessId);
-      setWaLastSyncAt(synced.lastTemplatesSyncAt || new Date().toISOString());
-      await loadApprovedWhatsAppTemplates();
-      toast.success("התבניות סונכרנו מ-Meta");
-    } catch (error: unknown) {
-      setWaSyncError(
-        readErrorMessage(error, "לא הצלחנו לסנכרן את התבניות. נסו שוב")
-      );
-    } finally {
-      setWaSyncing(false);
-    }
-  };
 
   // Hydrate component mappings when a saved WhatsApp node is opened.
   useEffect(() => {
@@ -1125,67 +1115,83 @@ function EditorInner({
                   selectedNode.data?.actionKey || "whatsapp_template"
                 ) ? (
                   <div className="af-wa-template">
+                    <div className="af-wa-banner" dir="rtl">
+                      <strong>שליחה באמצעות מספר BizUply</strong>
+                      <p>
+                        עד להפעלת חיבור WhatsApp אישי לעסק, ההודעות יישלחו מהמספר
+                        המרכזי של BizUply בשם העסק שלך.
+                      </p>
+                    </div>
+
+                    <div className="af-wa-sender" dir="rtl">
+                      <label>
+                        מצב שולח
+                        <select
+                          value="bizuply_managed"
+                          disabled
+                          onChange={() => undefined}
+                        >
+                          <option value="bizuply_managed">
+                            מספר BizUply (מנוהל)
+                          </option>
+                          <option value="business_connected" disabled>
+                            חיבור מספר WhatsApp של העסק — בקרוב
+                          </option>
+                        </select>
+                      </label>
+                    </div>
+
                     <div className="af-wa-template__head">
                       <span>תבנית WhatsApp</span>
-                      {waConnected ? (
+                      <button
+                        type="button"
+                        className="af-toolbar__btn"
+                        disabled={waLoading || readOnly}
+                        onClick={() => void loadApprovedWhatsAppTemplates()}
+                      >
+                        {waLoading ? (
+                          <>
+                            <Loader2 size={14} className="af-spin" />
+                            טוען תבניות...
+                          </>
+                        ) : (
+                          "רענון תבניות"
+                        )}
+                      </button>
+                    </div>
+
+                    {waLoading ? (
+                      <p className="af-wa-template__state">
+                        טוען תבניות מאושרות...
+                      </p>
+                    ) : !waConnected ? (
+                      <div className="af-wa-template__state af-wa-template__state--error">
+                        <p>
+                          {waSyncError ||
+                            "חיבור WhatsApp המנוהל של BizUply אינו מוכן כרגע"}
+                        </p>
                         <button
                           type="button"
                           className="af-toolbar__btn"
-                          disabled={waSyncing || waLoading || readOnly}
-                          onClick={() => void handleSyncWhatsAppTemplates()}
+                          onClick={() => void loadApprovedWhatsAppTemplates()}
                         >
-                          {waSyncing ? (
-                            <>
-                              <Loader2 size={14} className="af-spin" />
-                              טוען תבניות מ-Meta...
-                            </>
-                          ) : (
-                            "רענון תבניות מ-Meta"
-                          )}
+                          נסיון חוזר
                         </button>
-                      ) : null}
-                    </div>
-
-                    {!waConnected ? (
-                      <div className="af-wa-template__state">
-                        <p>יש לחבר חשבון WhatsApp לפני בחירת תבנית</p>
-                        <Link
-                          className="af-btn af-btn--primary"
-                          to="../whatsapp/settings"
-                        >
-                          חיבור WhatsApp
-                        </Link>
                       </div>
-                    ) : waSyncing ? (
-                      <p className="af-wa-template__state">
-                        טוען תבניות מ-Meta...
-                      </p>
-                    ) : waSyncError ? (
+                    ) : waSyncError && waTemplates.length === 0 ? (
                       <div className="af-wa-template__state af-wa-template__state--error">
                         <p>{waSyncError}</p>
                         <button
                           type="button"
                           className="af-toolbar__btn"
-                          onClick={() => void handleSyncWhatsAppTemplates()}
+                          onClick={() => void loadApprovedWhatsAppTemplates()}
                         >
                           נסיון חוזר
                         </button>
                       </div>
-                    ) : !waLastSyncAt && waTemplates.length === 0 ? (
-                      <div className="af-wa-template__state">
-                        <p>יש לסנכרן את התבניות המאושרות מ-Meta</p>
-                        <button
-                          type="button"
-                          className="af-btn af-btn--primary"
-                          disabled={waSyncing || readOnly}
-                          onClick={() => void handleSyncWhatsAppTemplates()}
-                        >
-                          רענון תבניות מ-Meta
-                        </button>
-                      </div>
                     ) : waTemplates.length === 0 ? (
                       <p className="af-wa-template__state">
-                        לא נמצאו תבניות מאושרות בחשבון Meta של העסק
+                        לא נמצאו תבניות מאושרות בקטלוג המנוהל של BizUply
                       </p>
                     ) : (
                       <>
@@ -1236,13 +1242,37 @@ function EditorInner({
                                   );
                                 }
                               );
+                              const withBusinessName = [
+                                ...componentMappings,
+                              ];
+                              const hasBusinessName = withBusinessName.some(
+                                (row) =>
+                                  String(row.variable || "").toLowerCase() ===
+                                    "businessname" ||
+                                  String(row.field || "")
+                                    .toLowerCase()
+                                    .includes("businessname")
+                              );
+                              if (!hasBusinessName) {
+                                withBusinessName.push({
+                                  variable: "businessName",
+                                  component: "body",
+                                  source: "business",
+                                  field: "businessName",
+                                  constantValue: "",
+                                  required: true,
+                                });
+                              }
                               updateSelectedData({
+                                senderMode: "bizuply_managed",
                                 templateId: tpl._id,
                                 metaTemplateId: tpl.metaTemplateId || "",
                                 metaTemplateName: tpl.metaTemplateName || "",
                                 language: tpl.language || "",
-                                wabaId: tpl.wabaId || "",
-                                componentMappings,
+                                wabaId: "",
+                                phoneNumberId: "",
+                                integrationId: "",
+                                componentMappings: withBusinessName,
                               });
                             }}
                           >
