@@ -1125,20 +1125,93 @@ function EditorInner({
 
                     <div className="af-wa-sender" dir="rtl">
                       <label>
-                        מצב שולח
+                        שולח
                         <select
                           value="bizuply_managed"
                           disabled
                           onChange={() => undefined}
                         >
                           <option value="bizuply_managed">
-                            מספר BizUply (מנוהל)
+                            מספר BizUply המנוהל
                           </option>
                           <option value="business_connected" disabled>
                             חיבור מספר WhatsApp של העסק — בקרוב
                           </option>
                         </select>
                       </label>
+                    </div>
+
+                    <div className="af-wa-recipient" dir="rtl">
+                      <label>
+                        למי לשלוח את ההודעה?
+                        <select
+                          value={String(
+                            selectedNode.data?.recipientType ||
+                              (String(
+                                selectedNode.data?.metaTemplateName || ""
+                              ).toLowerCase() === "new_lead_received"
+                                ? "business_owner"
+                                : "lead_phone")
+                          )}
+                          disabled={readOnly}
+                          onChange={(e) => {
+                            const recipientType = e.target.value;
+                            updateSelectedData({
+                              recipientType,
+                              fixedPhone:
+                                recipientType === "fixed_phone"
+                                  ? String(selectedNode.data?.fixedPhone || "")
+                                  : "",
+                            });
+                          }}
+                        >
+                          <option value="lead_phone">טלפון הליד</option>
+                          <option value="business_owner">בעל העסק</option>
+                          <option value="lead_owner">אחראי הליד</option>
+                          <option value="fixed_phone">מספר קבוע</option>
+                        </select>
+                      </label>
+                      <p className="af-wa-recipient__hint">
+                        נמען:{" "}
+                        {{
+                          lead_phone: "טלפון הליד",
+                          business_owner: "בעל העסק",
+                          lead_owner: "אחראי הליד",
+                          fixed_phone: "מספר קבוע",
+                        }[
+                          String(
+                            selectedNode.data?.recipientType ||
+                              (String(
+                                selectedNode.data?.metaTemplateName || ""
+                              ).toLowerCase() === "new_lead_received"
+                                ? "business_owner"
+                                : "lead_phone")
+                          ) as
+                            | "lead_phone"
+                            | "business_owner"
+                            | "lead_owner"
+                            | "fixed_phone"
+                        ] || "—"}
+                      </p>
+                      {String(selectedNode.data?.recipientType || "") ===
+                      "fixed_phone" ? (
+                        <label>
+                          מספר קבוע (E.164)
+                          <input
+                            type="tel"
+                            dir="ltr"
+                            placeholder="+9725..."
+                            disabled={readOnly}
+                            value={String(selectedNode.data?.fixedPhone || "")}
+                            onChange={(e) =>
+                              updateSelectedData({
+                                recipientType: "fixed_phone",
+                                fixedPhone: e.target.value,
+                              })
+                            }
+                          />
+                        </label>
+                      ) : null}
                     </div>
 
                     <div className="af-wa-template__head">
@@ -1263,6 +1336,9 @@ function EditorInner({
                                   required: true,
                                 });
                               }
+                              const isBusinessAlert =
+                                String(tpl.metaTemplateName || "")
+                                  .toLowerCase() === "new_lead_received";
                               updateSelectedData({
                                 senderMode: "bizuply_managed",
                                 templateId: tpl._id,
@@ -1273,6 +1349,17 @@ function EditorInner({
                                 phoneNumberId: "",
                                 integrationId: "",
                                 componentMappings: withBusinessName,
+                                recipientType: isBusinessAlert
+                                  ? "business_owner"
+                                  : String(
+                                      selectedNode.data?.recipientType ||
+                                        "lead_phone"
+                                    ),
+                                fixedPhone: isBusinessAlert
+                                  ? ""
+                                  : String(
+                                      selectedNode.data?.fixedPhone || ""
+                                    ),
                               });
                             }}
                           >
