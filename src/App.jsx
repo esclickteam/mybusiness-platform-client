@@ -118,7 +118,7 @@ const BusinessProfileView = lazy(() =>
   import("./components/shared/BusinessProfileView")
 );
 
-const BookingPage = lazy(() => import("./pages/BookingPage"));
+const ClientBookingPage = lazy(() => import("./pages/ClientBookingPage"));
 const ClientDashboard = lazy(() => import("./pages/client/ClientDashboard"));
 const OrdersPage = lazy(() => import("./pages/client/OrdersPage"));
 
@@ -972,7 +972,7 @@ export default function App() {
 
                         <Route
                           path="/book/:businessId"
-                          element={<BookingPage />}
+                          element={<ClientBookingPage />}
                         />
 
                         <Route

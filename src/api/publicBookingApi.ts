@@ -9,10 +9,22 @@ export type PublicBookingService = {
   description?: string;
 };
 
+/**
+ * Public booking services — same endpoint BookingWidget uses.
+ * GET /business/:businessId (no auth). Returns [] when the business has none.
+ * Throws on missing business (404) / network errors for the caller to handle.
+ */
 export async function getPublicBookingServices(businessId: string) {
   const { data } = await API.get(`/business/${businessId}`);
-  const list = (data?.business?.services || data?.services || []) as PublicBookingService[];
-  return Array.isArray(list) ? list : [];
+  const list = (data?.business?.services ||
+    data?.services ||
+    []) as PublicBookingService[];
+  if (!Array.isArray(list)) return [];
+  return list.filter((service) => {
+    const id = String(service?._id || service?.id || "").trim();
+    const name = String(service?.name || "").trim();
+    return Boolean(id && name);
+  });
 }
 
 export async function getPublicBookingSlots(params: {

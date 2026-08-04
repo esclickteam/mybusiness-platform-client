@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import api from "../api";
+import { getPublicBookingServices } from "../api/publicBookingApi";
 import AppointmentBooking from "./AppointmentBooking";
 
 export default function BookingPage() {
@@ -13,13 +13,15 @@ export default function BookingPage() {
   useEffect(() => {
     if (!businessId) return;
     setLoading(true);
-    api
-      .get(`/business/${businessId}/services`)
-      .then(res => {
-        setServices(res.data);
+    getPublicBookingServices(businessId)
+      .then((list) => {
+        setServices(Array.isArray(list) ? list : []);
         setError("");
       })
-      .catch(() => setError("Error loading services"))
+      .catch((err) => {
+        const status = err?.response?.status;
+        setError(status === 404 ? "Business not found" : "Error loading services");
+      })
       .finally(() => setLoading(false));
   }, [businessId]);
 
@@ -33,17 +35,17 @@ export default function BookingPage() {
       {!loading && !error && services.length > 0 && (
         <select
           value={serviceId}
-          onChange={e => setServiceId(e.target.value)}
+          onChange={(e) => setServiceId(e.target.value)}
           style={{
             width: "100%",
             padding: "8px",
             borderRadius: "8px",
-            marginBottom: "20px"
+            marginBottom: "20px",
           }}
         >
           <option value="">– Select a service –</option>
-          {services.map(s => (
-            <option key={s._id} value={s._id}>
+          {services.map((s) => (
+            <option key={s._id || s.id} value={s._id || s.id}>
               {s.name}
             </option>
           ))}
@@ -51,10 +53,7 @@ export default function BookingPage() {
       )}
 
       {serviceId && (
-        <AppointmentBooking
-          businessId={businessId}
-          serviceId={serviceId}
-        />
+        <AppointmentBooking businessId={businessId} serviceId={serviceId} />
       )}
     </div>
   );
