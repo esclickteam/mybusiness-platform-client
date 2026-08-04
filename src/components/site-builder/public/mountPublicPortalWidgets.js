@@ -81,6 +81,24 @@ function prepareMountShell(container) {
   container.dir = "rtl";
   delete container.dataset.bizuplyPortalMounted;
   delete container.dataset.bizuplyPortalLive;
+  // Legacy saves put switch/forgot href on the whole form shell — strip so
+  // fills/submit work and only real inner anchors navigate.
+  [
+    "data-bizuply-public-href",
+    "data-bizuply-public-target",
+    "data-bizuply-public-link",
+    "data-visual-link-href",
+    "data-visual-link-target",
+    "data-href",
+    "data-link-url",
+    "href",
+  ].forEach((attr) => container.removeAttribute(attr));
+  if (container.getAttribute("role") === "link") {
+    container.removeAttribute("role");
+  }
+  if (container.getAttribute("tabindex") === "0") {
+    container.removeAttribute("tabindex");
+  }
   Object.assign(container.style, {
     overflow: "auto",
     boxSizing: "border-box",
@@ -126,7 +144,12 @@ const PORTAL_AUTH_CONTROL_LABELS = {
   submit: "כפתור שליחה",
   switch: "קישור מעבר",
   forgot: "שכחתי סיסמה",
+  title: "כותרת טופס",
+  subtitle: "תיאור טופס",
+  eyebrow: "כותרת עליונה",
 };
+
+const PORTAL_TEXT_CONTROL_KINDS = new Set(["title", "subtitle", "eyebrow"]);
 
 /** Stamp login/register controls so owners can click + link them on canvas. */
 function stampPortalAuthControl(node, container, kind, editorMode) {
@@ -138,18 +161,21 @@ function stampPortalAuthControl(node, container, kind, editorMode) {
       "portal",
   ).trim() || "portal";
   const controlId = `${shellId}__portal_${kind}`;
+  const isText = PORTAL_TEXT_CONTROL_KINDS.has(kind);
 
   node.setAttribute("data-bizuply-portal-control", kind);
   node.setAttribute("data-bizuply-portal-shell-id", shellId);
   node.setAttribute("data-visual-edit-id", controlId);
   node.setAttribute("data-visual-editable", "true");
-  node.setAttribute("data-visual-edit-type", "button");
-  node.setAttribute("data-visual-type", "button");
+  node.setAttribute("data-visual-edit-type", isText ? "text" : "button");
+  node.setAttribute("data-visual-type", isText ? "text" : "button");
   node.setAttribute(
     "data-visual-edit-label",
-    PORTAL_AUTH_CONTROL_LABELS[kind] || "כפתור",
+    PORTAL_AUTH_CONTROL_LABELS[kind] || (isText ? "טקסט" : "כפתור"),
   );
-  node.setAttribute("data-visual-link-href", node.getAttribute("href") || "");
+  if (!isText) {
+    node.setAttribute("data-visual-link-href", node.getAttribute("href") || "");
+  }
 }
 
 function mountLogin(container, { siteId, host, siteName, paths, editorMode }) {
@@ -184,39 +210,41 @@ function mountLogin(container, { siteId, host, siteName, paths, editorMode }) {
     flexDirection: "column",
   });
 
-  wrap.appendChild(
-    el(
-      "div",
-      {
-        fontSize: "12px",
-        fontWeight: "800",
-        color: theme.accent,
-        letterSpacing: "0.04em",
-        marginBottom: "8px",
-      },
-      copy.eyebrow,
-    ),
+  const eyebrowNode = el(
+    "div",
+    {
+      fontSize: "12px",
+      fontWeight: "800",
+      color: theme.accent,
+      letterSpacing: "0.04em",
+      marginBottom: "8px",
+    },
+    copy.eyebrow,
   );
-  wrap.appendChild(
-    el(
-      "h3",
-      { fontSize: "26px", fontWeight: "900", margin: "0 0 8px", lineHeight: "1.15" },
-      copy.title,
-    ),
+  stampPortalAuthControl(eyebrowNode, container, "eyebrow", editorMode);
+  wrap.appendChild(eyebrowNode);
+
+  const titleNode = el(
+    "h3",
+    { fontSize: "26px", fontWeight: "900", margin: "0 0 8px", lineHeight: "1.15" },
+    copy.title,
   );
-  wrap.appendChild(
-    el(
-      "p",
-      {
-        fontSize: "13px",
-        fontWeight: "600",
-        color: theme.muted,
-        margin: "0 0 20px",
-        lineHeight: "1.6",
-      },
-      copy.subtitle,
-    ),
+  stampPortalAuthControl(titleNode, container, "title", editorMode);
+  wrap.appendChild(titleNode);
+
+  const subtitleNode = el(
+    "p",
+    {
+      fontSize: "13px",
+      fontWeight: "600",
+      color: theme.muted,
+      margin: "0 0 20px",
+      lineHeight: "1.6",
+    },
+    copy.subtitle,
   );
+  stampPortalAuthControl(subtitleNode, container, "subtitle", editorMode);
+  wrap.appendChild(subtitleNode);
 
   const email = document.createElement("input");
   email.type = "email";
@@ -375,39 +403,41 @@ function mountRegister(container, { siteId, host, siteName, paths, editorMode })
     flexDirection: "column",
   });
 
-  wrap.appendChild(
-    el(
-      "div",
-      {
-        fontSize: "12px",
-        fontWeight: "800",
-        color: theme.accent,
-        letterSpacing: "0.04em",
-        marginBottom: "8px",
-      },
-      copy.eyebrow,
-    ),
+  const eyebrowNode = el(
+    "div",
+    {
+      fontSize: "12px",
+      fontWeight: "800",
+      color: theme.accent,
+      letterSpacing: "0.04em",
+      marginBottom: "8px",
+    },
+    copy.eyebrow,
   );
-  wrap.appendChild(
-    el(
-      "h3",
-      { fontSize: "26px", fontWeight: "900", margin: "0 0 8px", lineHeight: "1.15" },
-      copy.title,
-    ),
+  stampPortalAuthControl(eyebrowNode, container, "eyebrow", editorMode);
+  wrap.appendChild(eyebrowNode);
+
+  const titleNode = el(
+    "h3",
+    { fontSize: "26px", fontWeight: "900", margin: "0 0 8px", lineHeight: "1.15" },
+    copy.title,
   );
-  wrap.appendChild(
-    el(
-      "p",
-      {
-        fontSize: "13px",
-        fontWeight: "600",
-        color: theme.muted,
-        margin: "0 0 18px",
-        lineHeight: "1.6",
-      },
-      copy.subtitle,
-    ),
+  stampPortalAuthControl(titleNode, container, "title", editorMode);
+  wrap.appendChild(titleNode);
+
+  const subtitleNode = el(
+    "p",
+    {
+      fontSize: "13px",
+      fontWeight: "600",
+      color: theme.muted,
+      margin: "0 0 18px",
+      lineHeight: "1.6",
+    },
+    copy.subtitle,
   );
+  stampPortalAuthControl(subtitleNode, container, "subtitle", editorMode);
+  wrap.appendChild(subtitleNode);
 
   const fullName = document.createElement("input");
   fullName.type = "text";
@@ -806,7 +836,7 @@ function renderAccountPanel(
   theme,
   member,
   pages,
-  { onLogout, paths } = {},
+  { onLogout, paths, editorMode = false } = {},
 ) {
   prepareMountShell(container);
   const wrap = el("div", {
@@ -815,25 +845,25 @@ function renderAccountPanel(
     color: theme.ink,
     boxSizing: "border-box",
   });
-  wrap.appendChild(
-    el(
-      "h3",
-      { margin: "0 0 6px", fontSize: "22px", fontWeight: "900", color: theme.ink },
-      `שלום ${member?.fullName || "לקוח/ה"}`,
-    ),
+  const greeting = el(
+    "h3",
+    { margin: "0 0 6px", fontSize: "22px", fontWeight: "900", color: theme.ink },
+    `שלום ${member?.fullName || "לקוח/ה"}`,
   );
-  wrap.appendChild(
-    el(
-      "p",
-      {
-        margin: "0 0 16px",
-        color: theme.muted,
-        fontSize: "13px",
-        fontWeight: "600",
-      },
-      member?.email || "client@example.com",
-    ),
+  stampPortalAuthControl(greeting, container, "title", editorMode);
+  wrap.appendChild(greeting);
+  const emailLine = el(
+    "p",
+    {
+      margin: "0 0 16px",
+      color: theme.muted,
+      fontSize: "13px",
+      fontWeight: "600",
+    },
+    member?.email || "client@example.com",
   );
+  stampPortalAuthControl(emailLine, container, "subtitle", editorMode);
+  wrap.appendChild(emailLine);
 
   const quickLinks = [
     { href: paths?.orders || "/orders", label: "ההזמנות שלי" },
@@ -848,7 +878,7 @@ function renderAccountPanel(
   });
   quickLinks.forEach((item) => {
     const link = document.createElement("a");
-    link.href = item.href;
+    bindEditorSafeLink(link, item.href, editorMode);
     link.textContent = item.label;
     Object.assign(link.style, {
       display: "inline-flex",
@@ -888,7 +918,11 @@ function renderAccountPanel(
   } else {
     pageList.forEach((page) => {
       const link = document.createElement("a");
-      link.href = page.path || `/${page.slug || page.id}`;
+      bindEditorSafeLink(
+        link,
+        page.path || `/${page.slug || page.id}`,
+        editorMode,
+      );
       link.textContent = page.title || "עמוד";
       Object.assign(link.style, {
         display: "block",
@@ -1001,7 +1035,7 @@ async function mountAccount(container, { siteId, editorMode = false, paths }) {
       theme,
       { fullName: "לקוח/ה לדוגמה", email: "client@example.com" },
       [],
-      { paths },
+      { paths, editorMode: true },
     );
     return;
   }

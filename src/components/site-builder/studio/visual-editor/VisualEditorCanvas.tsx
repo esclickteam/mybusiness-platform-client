@@ -2507,6 +2507,13 @@ export default function VisualEditorCanvas({
             pointer-events: none !important;
           }
 
+          /* Portal login/register controls stay selectable (title, buttons, links). */
+          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] [data-bizuply-portal-mount="true"],
+          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] [data-bizuply-widget^="portal-"],
+          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] [data-bizuply-portal-control] {
+            pointer-events: auto !important;
+          }
+
           /*
             Form controls stay non-interactive in edit mode so the field slot /
             wrapper receives selection + drag (same pattern as Ido FormFieldSlot).

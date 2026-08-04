@@ -51,6 +51,10 @@ import {
   sanitizePluginWidgetEditorNodes,
   shouldSkipPluginWidgetRegistration,
 } from "./visualPluginWidgets";
+import {
+  clearPortalShellLinkDomAttrs,
+  isPortalMountShell,
+} from "./portalAuthControls";
 
 type FindVisualNodesOptions = {
   allowFallback?: boolean;
@@ -724,6 +728,11 @@ function applyLinkContentToNode(
   rel?: string,
 ) {
   if (isEditorOnlyNode(node)) return;
+  // Portal forms are widgets — never turn the whole shell into a link.
+  if (isPortalMountShell(node)) {
+    clearPortalShellLinkDomAttrs(node);
+    return;
+  }
 
   const cleanHref = href || "#";
   const cleanTarget = target === "_blank" ? "_blank" : "_self";
@@ -734,7 +743,10 @@ function applyLinkContentToNode(
     node instanceof HTMLAnchorElement
       ? node
       : (node.closest("a") as HTMLAnchorElement | null) ||
-        (node.querySelector("a") as HTMLAnchorElement | null);
+        // Do not reach into portal mounts and retarget switch/forgot anchors.
+        (isPortalMountShell(node)
+          ? null
+          : (node.querySelector("a") as HTMLAnchorElement | null));
 
   if (link) {
     link.setAttribute("href", cleanHref);
@@ -3744,53 +3756,66 @@ export function collectVisualContentFromDom(
       }
     }
 
-    const linkNode =
-      node instanceof HTMLAnchorElement
-        ? node
-        : (node.closest("a") as HTMLAnchorElement | null) ||
-          (node.querySelector("a") as HTMLAnchorElement | null);
+    /*
+      Portal mount shells contain switch/forgot <a> children. Harvesting those
+      hrefs onto the shell made the whole login/register form navigate on click.
+    */
+    const portalShell = isPortalMountShell(node);
+    if (portalShell) {
+      delete nextValue.href;
+      delete nextValue.target;
+      delete nextValue.rel;
+      delete nextValue.linkValue;
+      delete nextValue.linkTarget;
+    } else {
+      const linkNode =
+        node instanceof HTMLAnchorElement
+          ? node
+          : (node.closest("a") as HTMLAnchorElement | null) ||
+            (node.querySelector("a") as HTMLAnchorElement | null);
 
-    const domHref = String(
-      (linkNode instanceof HTMLAnchorElement
-        ? linkNode.getAttribute("href")
-        : "") ||
-        node.getAttribute("data-visual-link-href") ||
-        node.getAttribute("data-link-url") ||
-        node.getAttribute("data-href") ||
-        node.getAttribute("data-bizuply-public-href") ||
-        "",
-    ).trim();
+      const domHref = String(
+        (linkNode instanceof HTMLAnchorElement
+          ? linkNode.getAttribute("href")
+          : "") ||
+          node.getAttribute("data-visual-link-href") ||
+          node.getAttribute("data-link-url") ||
+          node.getAttribute("data-href") ||
+          node.getAttribute("data-bizuply-public-href") ||
+          "",
+      ).trim();
 
-    const domTarget = String(
-      (linkNode instanceof HTMLAnchorElement
-        ? linkNode.getAttribute("target")
-        : "") ||
-        node.getAttribute("data-visual-link-target") ||
-        node.getAttribute("data-bizuply-public-target") ||
-        "_self",
-    ).trim();
+      const domTarget = String(
+        (linkNode instanceof HTMLAnchorElement
+          ? linkNode.getAttribute("target")
+          : "") ||
+          node.getAttribute("data-visual-link-target") ||
+          node.getAttribute("data-bizuply-public-target") ||
+          "_self",
+      ).trim();
 
-    const stateHref = String(currentValue.href || "").trim();
-    // Live DOM link wins when present — publish must keep the link the user set.
-    const finalHref =
-      domHref && domHref !== "#"
-        ? domHref
-        : stateHref && stateHref !== "#"
-          ? stateHref
-          : domHref || stateHref;
+      const stateHref = String(currentValue.href || "").trim();
+      // Live DOM link wins when present — publish must keep the link the user set.
+      const finalHref =
+        domHref && domHref !== "#"
+          ? domHref
+          : stateHref && stateHref !== "#"
+            ? stateHref
+            : domHref || stateHref;
 
-    if (finalHref || currentValue.href !== undefined) {
-      nextValue.href = finalHref;
-      nextValue.target =
-        // "_self" is a real choice — treating it as empty resurrected "_blank".
-        (domHref && domHref !== "#" ? domTarget : "") ||
-        currentValue.target ||
-        (finalHref.startsWith("http://") || finalHref.startsWith("https://")
-          ? "_blank"
-          : "_self");
-      nextValue.rel =
-        currentValue.rel ||
-        (nextValue.target === "_blank" ? "noopener noreferrer" : "");
+      if (finalHref || currentValue.href !== undefined) {
+        nextValue.href = finalHref;
+        nextValue.target =
+          // "_self" is a real choice — treating it as empty resurrected "_blank".
+          (domHref && domHref !== "#" ? domTarget : "") ||
+          currentValue.target ||
+          (finalHref.startsWith("http://") || finalHref.startsWith("https://")
+            ? "_blank"
+            : "_self");
+        nextValue.rel =
+          currentValue.rel ||
+          (nextValue.target === "_blank" ? "noopener noreferrer" : "");
+      }
     }
 
     if (currentValue.phoneNumber !== undefined) {
@@ -3813,7 +3838,9 @@ export function collectVisualContentFromDom(
       nextValue.message = currentValue.message;
     }
 
-    if (Object.keys(nextValue).length > 0) {
+    // Always write portal shells so legacy href entries are cleared even when
+    // the shell itself has no other content fields.
+    if (portalShell || Object.keys(nextValue).length > 0) {
       nextContent[elementId] = nextValue as VisualContentMap[string];
     }
   });

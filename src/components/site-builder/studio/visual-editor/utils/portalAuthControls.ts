@@ -7,14 +7,46 @@
 export const PORTAL_AUTH_CONTROL_ATTR = "data-bizuply-portal-control";
 export const PORTAL_AUTH_SHELL_ID_ATTR = "data-bizuply-portal-shell-id";
 
-export type PortalAuthControlKind = "submit" | "switch" | "forgot";
+export const PORTAL_MOUNT_SHELL_SELECTOR = [
+  '[data-bizuply-portal-mount="true"]',
+  '[data-bizuply-widget^="portal-"]',
+].join(", ");
+
+export type PortalAuthControlKind =
+  | "submit"
+  | "switch"
+  | "forgot"
+  | "title"
+  | "subtitle"
+  | "eyebrow";
+
+const PORTAL_AUTH_CONTROL_KINDS = new Set<PortalAuthControlKind>([
+  "submit",
+  "switch",
+  "forgot",
+  "title",
+  "subtitle",
+  "eyebrow",
+]);
+
+export function isPortalMountShell(
+  node: HTMLElement | null | undefined,
+): boolean {
+  if (!node) return false;
+  return (
+    node.getAttribute("data-bizuply-portal-mount") === "true" ||
+    String(node.getAttribute("data-bizuply-widget") || "").startsWith(
+      "portal-",
+    )
+  );
+}
 
 export function isPortalAuthControl(
   node: HTMLElement | null | undefined,
 ): boolean {
   if (!node) return false;
   const kind = String(node.getAttribute(PORTAL_AUTH_CONTROL_ATTR) || "").trim();
-  return kind === "submit" || kind === "switch" || kind === "forgot";
+  return PORTAL_AUTH_CONTROL_KINDS.has(kind as PortalAuthControlKind);
 }
 
 export function getPortalAuthControlKind(
@@ -28,11 +60,7 @@ export function getPortalAuthControlKind(
 
 export function getPortalAuthShell(node: HTMLElement | null | undefined) {
   if (!node) return null;
-  return (
-    node.closest<HTMLElement>(
-      '[data-bizuply-portal-mount="true"], [data-bizuply-widget^="portal-"]',
-    ) || null
-  );
+  return node.closest<HTMLElement>(PORTAL_MOUNT_SHELL_SELECTOR) || null;
 }
 
 export function buildPortalAuthControlId(
@@ -44,7 +72,9 @@ export function buildPortalAuthControlId(
 }
 
 export function isPortalAuthControlId(elementId: string) {
-  return /__portal_(submit|switch|forgot)$/.test(String(elementId || ""));
+  return /__portal_(submit|switch|forgot|title|subtitle|eyebrow)$/.test(
+    String(elementId || ""),
+  );
 }
 
 export function parsePortalAuthControlId(elementId: string): {
@@ -52,7 +82,7 @@ export function parsePortalAuthControlId(elementId: string): {
   kind: PortalAuthControlKind;
 } | null {
   const match = String(elementId || "").match(
-    /^(.*)__portal_(submit|switch|forgot)$/,
+    /^(.*)__portal_(submit|switch|forgot|title|subtitle|eyebrow)$/,
   );
   if (!match?.[1] || !match[2]) return null;
   return {
@@ -72,13 +102,54 @@ export function portalControlPatchForShell(
     if (kind === "submit") next["data-portal-copy-submit"] = patch.text;
     if (kind === "switch") next["data-portal-copy-switch"] = patch.text;
     if (kind === "forgot") next["data-portal-copy-forgot"] = patch.text;
+    if (kind === "title") next["data-portal-copy-title"] = patch.text;
+    if (kind === "subtitle") next["data-portal-copy-subtitle"] = patch.text;
+    if (kind === "eyebrow") next["data-portal-copy-eyebrow"] = patch.text;
   }
 
-  if (typeof patch.href === "string" && kind !== "submit") {
+  // Only switch/forgot are navigational links. Never put href on the form shell
+  // or on the submit action button.
+  if (
+    typeof patch.href === "string" &&
+    (kind === "switch" || kind === "forgot")
+  ) {
     next[`data-portal-link-${kind}`] = patch.href;
   }
 
   return next;
+}
+
+/** Portal mount shells are widgets, never site-wide links. */
+export function stripPortalShellLinkFields(item: Record<string, any> | null) {
+  if (!item || typeof item !== "object") return item;
+  const next = { ...item };
+  delete next.href;
+  delete next.target;
+  delete next.rel;
+  delete next.linkValue;
+  delete next.linkTarget;
+  return next;
+}
+
+/** Clear baked-in link attrs so clicks reach inputs / submit, not navigation. */
+export function clearPortalShellLinkDomAttrs(shell: HTMLElement | null) {
+  if (!shell) return;
+  [
+    "data-bizuply-public-href",
+    "data-bizuply-public-target",
+    "data-bizuply-public-link",
+    "data-visual-link-href",
+    "data-visual-link-target",
+    "data-href",
+    "data-link-url",
+    "href",
+  ].forEach((attr) => shell.removeAttribute(attr));
+  if (shell.getAttribute("role") === "link") {
+    shell.removeAttribute("role");
+  }
+  if (shell.getAttribute("tabindex") === "0") {
+    shell.removeAttribute("tabindex");
+  }
 }
 
 export function applyPortalShellAttributePatch(

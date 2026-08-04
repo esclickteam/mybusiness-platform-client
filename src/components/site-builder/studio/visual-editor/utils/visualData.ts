@@ -4,6 +4,7 @@ import {
   isStoreBoundVisualContentKey,
   stripStoreBoundVisualImageOverrides,
 } from "../../data/templates/shared/storeCatalogSync";
+import { stripPortalShellLinkFields } from "./portalAuthControls";
 
 export type VisualDeviceMode = "desktop" | "tablet" | "mobile";
 
@@ -880,15 +881,35 @@ export function normalizeVisualData(
   data: Record<string, any> | undefined | null,
 ): Record<string, any> {
   const source = asPlainObject(data);
+  const attributes = cloneVisualData(readVisualAttributes(source)) as Record<
+    string,
+    any
+  >;
+  const content = cloneVisualData(readVisualContent(source)) as Record<
+    string,
+    any
+  >;
+
+  // Drop legacy whole-form hrefs harvested from switch/forgot anchors.
+  Object.keys(content).forEach((elementId) => {
+    const attrs = attributes[elementId] || {};
+    const looksLikePortalShell =
+      attrs["data-bizuply-portal-mount"] === "true" ||
+      attrs["data-bizuply-portal-mount"] === true ||
+      String(attrs["data-bizuply-widget"] || "").startsWith("portal-");
+    if (looksLikePortalShell && content[elementId]) {
+      content[elementId] = stripPortalShellLinkFields(content[elementId]);
+    }
+  });
 
   return {
     ...source,
     [VISUAL_STYLE_KEY]: cloneVisualData(readVisualStyles(source)),
     [VISUAL_ANIMATION_KEY]: cloneVisualData(readVisualAnimations(source)),
-    [VISUAL_CONTENT_KEY]: cloneVisualData(readVisualContent(source)),
+    [VISUAL_CONTENT_KEY]: content,
     [VISUAL_DELETED_KEY]: cloneVisualData(readVisualDeleted(source)),
     [VISUAL_LAYOUT_KEY]: cloneVisualData(readVisualLayout(source)),
-    [VISUAL_ATTRIBUTE_KEY]: cloneVisualData(readVisualAttributes(source)),
+    [VISUAL_ATTRIBUTE_KEY]: attributes,
     [VISUAL_RESPONSIVE_KEY]: cloneVisualData(readVisualResponsive(source)),
     [VISUAL_LOCKED_KEY]: cloneVisualData(readVisualLocked(source)),
     [VISUAL_HIDDEN_KEY]: cloneVisualData(readVisualHidden(source)),
