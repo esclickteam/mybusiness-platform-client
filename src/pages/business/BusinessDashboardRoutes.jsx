@@ -104,6 +104,11 @@ const AutomationsMain = lazy(() =>
   import("./dashboardPages/automations/AutomationsMain")
 );
 
+/* Integrations (Gmail OAuth, etc.) */
+const IntegrationsMain = lazy(() =>
+  import("./dashboardPages/integrations/IntegrationsMain")
+);
+
 /* WhatsApp messaging */
 const WhatsAppMain = lazy(() =>
   import("./dashboardPages/whatsapp/WhatsAppMain")
