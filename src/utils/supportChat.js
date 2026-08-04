@@ -1,11 +1,11 @@
 import { io } from "socket.io-client";
+import { getApiBaseUrl, getSocketUrl } from "./apiBaseUrl";
 
 const VISITOR_KEY = "bizuply_support_visitor_id";
 const SESSION_KEY = "bizuply_support_session";
 
-const isProd = import.meta.env.MODE === "production";
-const API_BASE = isProd ? "https://api.bizuply.com/api" : "/api";
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.bizuply.com";
+const API_BASE = getApiBaseUrl();
+const SOCKET_URL = getSocketUrl();
 
 export function getSupportVisitorId() {
   try {

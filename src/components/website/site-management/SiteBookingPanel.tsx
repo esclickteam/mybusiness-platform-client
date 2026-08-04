@@ -3,6 +3,7 @@ import { CalendarDays, ExternalLink, Users } from "lucide-react";
 import { Link } from "react-router-dom";
 
 import WorkHoursTab from "../../../pages/business/dashboardPages/crmpages/WorkHoursTab";
+import BookingFormFieldsEditor from "./booking/BookingFormFieldsEditor";
 import { SitePanelCard, SitePanelHero } from "./SitePanelShell";
 import { btnSecondary } from "./siteManagementUi";
 
@@ -49,6 +50,10 @@ export default function SiteBookingPanel({
       <SitePanelCard>
         <h3 className="mb-4 text-base font-bold text-slate-900">שעות פעילות</h3>
         <WorkHoursTab variant="settings" />
+      </SitePanelCard>
+
+      <SitePanelCard>
+        <BookingFormFieldsEditor businessId={businessId} />
       </SitePanelCard>
 
       <div className="rounded-2xl border border-dashed border-teal-200 bg-teal-50/40 p-4 text-sm leading-relaxed text-slate-600">
