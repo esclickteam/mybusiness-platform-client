@@ -348,6 +348,7 @@ function EditorInner({
   const [name, setName] = useState(workflow.name);
   const [saving, setSaving] = useState(false);
   const [publishing, setPublishing] = useState(false);
+  const [publishError, setPublishError] = useState("");
   const [saveState, setSaveState] = useState<"idle" | "saving" | "saved">("idle");
   const [testOpen, setTestOpen] = useState(false);
   const [testResult, setTestResult] = useState<Record<string, unknown> | null>(null);
@@ -529,25 +530,31 @@ function EditorInner({
   }, [selectedId, selectedGmailActionKey, loadGmailStatus]);
 
   useEffect(() => {
-    if (!selectedId || !gmailAccount) return;
-    if (gmailAccount.connectionStatus !== "connected") return;
+    if (!selectedId) return;
     setNodes((prev) => {
       const node = prev.find((n) => n.id === selectedId);
       if (!node || !isGmailActionKey(node.data?.actionKey)) return prev;
-      if (
-        node.data?.connectedAccountId === gmailAccount.id &&
-        node.data?.senderEmail === gmailAccount.email
-      ) {
-        return prev;
-      }
+      const recipientType = String(node.data?.recipientType || "").trim();
+      const needsRecipientDefault = !recipientType;
+      const needsAccount =
+        Boolean(gmailAccount) &&
+        gmailAccount?.connectionStatus === "connected" &&
+        (node.data?.connectedAccountId !== gmailAccount.id ||
+          node.data?.senderEmail !== gmailAccount.email);
+      if (!needsRecipientDefault && !needsAccount) return prev;
       return prev.map((n) =>
         n.id === selectedId
           ? {
               ...n,
               data: {
                 ...(n.data || {}),
-                connectedAccountId: gmailAccount.id,
-                senderEmail: gmailAccount.email,
+                ...(needsRecipientDefault ? { recipientType: "lead_email" } : {}),
+                ...(needsAccount && gmailAccount
+                  ? {
+                      connectedAccountId: gmailAccount.id,
+                      senderEmail: gmailAccount.email,
+                    }
+                  : {}),
               },
             }
           : n
@@ -771,17 +778,31 @@ function EditorInner({
     setSelectedId(null);
   };
 
-  const handleSave = async (quiet = false): Promise<boolean> => {
+  const applyGmailPublishDefaults = (list: Node[]) =>
+    list.map((n) => {
+      if (!isGmailActionKey(n.data?.actionKey)) return n;
+      if (String(n.data?.recipientType || "").trim()) return n;
+      return {
+        ...n,
+        data: { ...(n.data || {}), recipientType: "lead_email" },
+      };
+    });
+
+  const handleSave = async (
+    quiet = false,
+    nodesOverride?: Node[]
+  ): Promise<boolean> => {
     if (readOnly) {
       if (!quiet) toast.error(AUTOMATION_PREVIEW_WRITE_BLOCKED_MESSAGE);
       return false;
     }
+    const nodesToPersist = applyGmailPublishDefaults(nodesOverride || nodes);
     setSaving(true);
     setSaveState("saving");
     try {
       const saved = await saveAutomationWorkflow(businessId, workflow._id, {
         name: name.trim() || workflow.name,
-        nodes: nodes.map((n) => ({
+        nodes: nodesToPersist.map((n) => ({
           id: n.id,
           type: (n.type ||
             "action") as AutomationWorkflow["nodes"][number]["type"],
@@ -819,6 +840,16 @@ function EditorInner({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [dirty, name, nodes, edges, readOnly]);
 
+  const selectNodeFromPublishErrors = (errors: string[]) => {
+    const joined = errors.join(" ");
+    const nodeId = joined.match(
+      /(?:node|מודול|פעולה)[\s:]+([A-Za-z0-9_-]+)/i
+    )?.[1];
+    if (nodeId && nodes.some((node) => node.id === nodeId)) {
+      setSelectedId(nodeId);
+    }
+  };
+
   const handlePublish = async () => {
     if (readOnly) {
       toast.error(AUTOMATION_PREVIEW_WRITE_BLOCKED_MESSAGE);
@@ -830,18 +861,21 @@ function EditorInner({
     }
     if (publishing) return;
     if (triggerCatalogLoading || triggerCatalogError || !triggerCatalog.length) {
-      toast.error("יש לטעון את קטלוג הטריגרים לפני פרסום");
+      const msg = "יש לטעון את קטלוג הטריגרים לפני פרסום";
+      setPublishError(msg);
+      toast.error(msg);
       return;
     }
     if (hasUnsupportedTrigger) {
-      toast.error(
-        selectedTriggerOption
-          ? "הטריגר שנבחר עדיין לא נתמך לפרסום"
-          : "טריגר ישן או לא נתמך — יש לבחור טריגר נתמך לפני פרסום"
-      );
+      const msg = selectedTriggerOption
+        ? "הטריגר שנבחר עדיין לא נתמך לפרסום"
+        : "טריגר ישן או לא נתמך — יש לבחור טריגר נתמך לפני פרסום";
+      setPublishError(msg);
+      toast.error(msg);
       return;
     }
     setPublishing(true);
+    setPublishError("");
     try {
       // Wait out an in-flight autosave, then always persist latest draft.
       const waitStarted = Date.now();
@@ -849,24 +883,30 @@ function EditorInner({
         await new Promise((resolve) => window.setTimeout(resolve, 50));
       }
       if (savingRef.current) {
-        toast.error("השמירה לוקחת יותר מדי זמן — נסו שוב");
+        const msg = "השמירה לוקחת יותר מדי זמן — נסו שוב";
+        setPublishError(msg);
+        toast.error(msg);
         return;
       }
-      const savedOk = await handleSave(true);
-      if (!savedOk) return;
+      const nodesForPublish = applyGmailPublishDefaults(nodes);
+      setNodes(nodesForPublish);
+      const savedOk = await handleSave(true, nodesForPublish);
+      if (!savedOk) {
+        setPublishError("לא ניתן לשמור את הטיוטה לפני פרסום");
+        return;
+      }
       const result = await publishAutomationWorkflow(businessId, workflow._id);
       if (result.errors?.length) {
-        toast.error(result.errors.join(" · "));
-        const nodeId = result.errors
-          .join(" ")
-          .match(/(?:node|מודול|פעולה)[\s:]+([A-Za-z0-9_-]+)/i)?.[1];
-        if (nodeId && nodes.some((node) => node.id === nodeId)) {
-          setSelectedId(nodeId);
-        }
+        const msg = result.errors.join(" · ");
+        setPublishError(msg);
+        toast.error(msg);
+        selectNodeFromPublishErrors(result.errors);
         return;
       }
       if (!result.workflow) {
-        toast.error("הפרסום הצליח אך לא התקבלה תשובה תקינה מהשרת");
+        const msg = "הפרסום הצליח אך לא התקבלה תשובה תקינה מהשרת";
+        setPublishError(msg);
+        toast.error(msg);
         return;
       }
       onSaved(result.workflow);
@@ -874,6 +914,7 @@ function EditorInner({
       setNodes(toFlowNodes(result.workflow));
       setEdges(toFlowEdges(result.workflow));
       setSaveState("saved");
+      setPublishError("");
       toast.success(
         result.workflow.status === "active"
           ? "האוטומציה פורסמה ועדכנה"
@@ -883,12 +924,18 @@ function EditorInner({
         toast.warn(result.warnings.join(" · "));
       }
     } catch (error: unknown) {
-      const response = (error as { response?: { data?: { errors?: string[]; error?: string } } })?.response?.data;
-      toast.error(
+      const response = (
+        error as {
+          response?: { data?: { errors?: string[]; error?: string } };
+        }
+      )?.response?.data;
+      const msg =
         response?.errors?.join(" · ") ||
-          response?.error ||
-          readErrorMessage(error, "לא ניתן לפרסם את האוטומציה")
-      );
+        response?.error ||
+        readErrorMessage(error, "לא ניתן לפרסם את האוטומציה");
+      setPublishError(msg);
+      toast.error(msg);
+      selectNodeFromPublishErrors([msg]);
     } finally {
       setPublishing(false);
     }
@@ -1092,6 +1139,13 @@ function EditorInner({
           </button>
           <span className="af-toolbar__state">{dirty ? "יש שינויים שלא פורסמו" : saveState === "saved" ? "נשמר" : workflow.publishedVersionId ? "פורסם" : "טיוטה"}{workflow.publishedAt ? ` · ${new Date(workflow.publishedAt).toLocaleDateString("he-IL")}` : ""}</span>
         </div>
+
+        {publishError ? (
+          <div className="af-publish-error" role="alert">
+            <strong>הפרסום נכשל</strong>
+            <span>{publishError}</span>
+          </div>
+        ) : null}
 
         {testOpen ? (
           <div className="af-test-panel">
@@ -1494,9 +1548,17 @@ function EditorInner({
                       const opt = ACTION_OPTIONS.find(
                         (o) => o.value === e.target.value
                       );
+                      const nextKey = e.target.value;
                       updateSelectedData({
-                        actionKey: e.target.value,
+                        actionKey: nextKey,
                         label: opt?.label || selectedNode.data?.label,
+                        ...(nextKey === "send_gmail"
+                          ? {
+                              recipientType:
+                                selectedNode.data?.recipientType ||
+                                "lead_email",
+                            }
+                          : {}),
                       });
                     }}
                   >
