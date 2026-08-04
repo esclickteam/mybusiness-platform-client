@@ -15,6 +15,7 @@ type PortalKind =
   | "portal-login"
   | "portal-register"
   | "portal-account"
+  | "portal-custom-data"
   | "portal-orders"
   | "portal-cart"
   | "portal-forgot-password"
@@ -2187,9 +2188,9 @@ function profileNodes(theme: Theme, index: number): VisualLibraryNodeTemplate[] 
       ),
       textNode(
         "subtitle",
-        "כרטיס פרטים מסודר לעדכון שם, יצירת קשר והעדפות.",
+        "פרופיל מחובר ל-CRM: פרטי קשר + נתונים משתנים מהתיק.",
         { color: theme.muted, fontSize: "15px", fontWeight: "600" },
-        absoluteLayout(64, 110, 520, 40, 2),
+        absoluteLayout(64, 110, 560, 40, 2),
       ),
       boxNode(
         "card",
@@ -2199,7 +2200,7 @@ function profileNodes(theme: Theme, index: number): VisualLibraryNodeTemplate[] 
           border: `1px solid ${theme.line}`,
           boxShadow: "0 18px 40px -30px rgba(15,23,42,0.3)",
         },
-        absoluteLayout(64, 170, 640, 460, 2),
+        absoluteLayout(64, 170, 520, 460, 2),
         "כרטיס פרטים",
       ),
       textNode("f1l", "שם מלא", { color: theme.muted, fontSize: "12px", fontWeight: "800" }, absoluteLayout(96, 210, 200, 20, 3)),
@@ -2226,9 +2227,14 @@ function profileNodes(theme: Theme, index: number): VisualLibraryNodeTemplate[] 
         absoluteLayout(96, 540, 180, 46, 3),
         "/account",
       ),
-      ...metricCard("m1", 740, 170, 320, theme, "חברות מ־", "מרץ 2025"),
-      ...metricCard("m2", 740, 310, 320, theme, "שפת ממשק", "עברית"),
-      ...metricCard("m3", 740, 450, 320, theme, "התראות", "מייל + SMS"),
+      portalMount(
+        "custom-data",
+        "portal-custom-data",
+        "נתונים משתנים מה-CRM",
+        absoluteLayout(620, 170, 420, 460, 3),
+        theme,
+        { minHeight: "440px" },
+      ),
     ],
     () => [
       boxNode("bg", { backgroundColor: theme.soft }, absoluteLayout(0, 0, "100%", "100%", 1), "רקע"),
@@ -2242,64 +2248,132 @@ function profileNodes(theme: Theme, index: number): VisualLibraryNodeTemplate[] 
       ),
       textNode(
         "title",
-        "פרופיל לקוח",
+        "מדדים מהתיק",
         { color: theme.ink, fontSize: "38px", fontWeight: "900" },
         absoluteLayout(460, 64, 560, 48, 2),
       ),
-      boxNode(
-        "table-shell",
-        {
-          backgroundColor: theme.card,
-          borderRadius: "20px",
-          border: `1px solid ${theme.line}`,
-          overflow: "hidden",
-        },
-        absoluteLayout(460, 140, 600, 340, 2),
-        "טבלת שדות",
+      textNode(
+        "subtitle",
+        "הערכים מתעדכנים אוטומטית לפי מה שמולא בתיק הלקוח ב-CRM.",
+        { color: theme.muted, fontSize: "14px", fontWeight: "600" },
+        absoluteLayout(460, 118, 560, 36, 2),
       ),
-      ...tableRow("th", 460, 140, 600, theme, ["שדה", "ערך", "עריכה", "סטטוס"], true),
-      ...tableRow("r1", 460, 188, 600, theme, ["שם", "לקוח/ה", "פתוח", "מאומת"]),
-      ...tableRow("r2", 460, 236, 600, theme, ["אימייל", "client@…", "פתוח", "מאומת"]),
-      ...tableRow("r3", 460, 284, 600, theme, ["טלפון", "050-…", "פתוח", "ממתין"]),
-      ...tableRow("r4", 460, 332, 600, theme, ["עיר", "תל אביב", "פתוח", "מעודכן"]),
-      ...metricCard("m1", 460, 510, 290, theme, "אבטחה", "סיסמה חזקה"),
-      ...metricCard("m2", 770, 510, 290, theme, "פרטיות", "הגדרות ברירת מחדל"),
+      portalMount(
+        "custom-data",
+        "portal-custom-data",
+        "נתונים משתנים",
+        absoluteLayout(460, 170, 600, 300, 3),
+        theme,
+        { minHeight: "280px" },
+      ),
+      ...metricCard("m1", 460, 500, 290, theme, "סנכרון", "CRM חי"),
+      ...metricCard("m2", 770, 500, 290, theme, "עדכון", "בזמן אמת"),
+    ],
+    () => [
+      boxNode(
+        "bg",
+        {
+          backgroundImage: `linear-gradient(145deg, ${theme.ink} 0%, ${theme.accent}55 55%, ${theme.soft} 100%)`,
+        },
+        absoluteLayout(0, 0, "100%", "100%", 1),
+        "רקע",
+      ),
+      textNode(
+        "title",
+        "לוח נתונים אישי",
+        { color: "#f8fafc", fontSize: "40px", fontWeight: "900" },
+        absoluteLayout(64, 48, 640, 50, 2),
+      ),
+      textNode(
+        "subtitle",
+        "משקל · טיפולים · יתרה · מפגשים — כל מה שהעסק הגדיר.",
+        { color: "#e2e8f0", fontSize: "15px", fontWeight: "600" },
+        absoluteLayout(64, 108, 700, 36, 2),
+      ),
+      portalMount(
+        "custom-data",
+        "portal-custom-data",
+        "נתונים משתנים",
+        absoluteLayout(64, 170, 700, 420, 3),
+        theme,
+        { minHeight: "400px" },
+      ),
+      ...metricCard("m1", 800, 170, 240, theme, "סטטוס", "פעיל"),
+      ...metricCard("m2", 800, 320, 240, theme, "חבילה", "Premium"),
+      ...metricCard("m3", 800, 470, 240, theme, "עדכון אחרון", "היום"),
+    ],
+  ];
+  return layouts[index % layouts.length]();
+}
+
+function customDataNodes(theme: Theme, index: number): VisualLibraryNodeTemplate[] {
+  const layouts: Array<() => VisualLibraryNodeTemplate[]> = [
+    () => [
+      boxNode("bg", { backgroundColor: theme.bg }, absoluteLayout(0, 0, "100%", "100%", 1), "רקע"),
+      textNode(
+        "eyebrow",
+        "CRM · נתונים משתנים",
+        { color: theme.accent, fontSize: "13px", fontWeight: "800", letterSpacing: "0.08em" },
+        absoluteLayout(64, 48, 400, 24, 2),
+      ),
+      textNode(
+        "title",
+        "הנתונים שלי",
+        { color: theme.ink, fontSize: "44px", fontWeight: "900" },
+        absoluteLayout(64, 84, 560, 56, 2),
+      ),
+      textNode(
+        "subtitle",
+        "ווידג׳ט חי שמציג את הערכים מתיק הלקוח — בדיוק איפה שתשימו אותו בעמוד.",
+        { color: theme.muted, fontSize: "15px", fontWeight: "600", lineHeight: "1.7" },
+        absoluteLayout(64, 150, 520, 56, 2),
+      ),
+      portalMount(
+        "custom-data",
+        "portal-custom-data",
+        "נתונים משתנים",
+        absoluteLayout(64, 230, 640, 380, 3),
+        theme,
+        { minHeight: "360px" },
+      ),
+      ...metricCard("m1", 740, 230, 300, theme, "מקור", "תיק לקוח"),
+      ...metricCard("m2", 740, 370, 300, theme, "הגדרה", "ב-CRM"),
+      ...metricCard("m3", 740, 510, 300, theme, "תצוגה", "אזור אישי"),
+    ],
+    () => [
+      boxNode("bg", { backgroundColor: theme.soft }, absoluteLayout(0, 0, "100%", "100%", 1), "רקע"),
+      portalMount(
+        "custom-data",
+        "portal-custom-data",
+        "נתונים משתנים",
+        absoluteLayout(120, 80, 880, 520, 3),
+        theme,
+        { minHeight: "500px" },
+      ),
     ],
     () => [
       boxNode("bg", { backgroundColor: theme.ink }, absoluteLayout(0, 0, "100%", "100%", 1), "רקע"),
       textNode(
         "title",
-        "פרטים אישיים",
+        "מעקב אישי",
         { color: "#f8fafc", fontSize: "40px", fontWeight: "900" },
-        absoluteLayout(64, 56, 520, 50, 2),
+        absoluteLayout(64, 56, 480, 50, 2),
       ),
-      ...metricCard("m1", 64, 140, 320, theme, "שם מלא", "לקוח/ה לדוגמה"),
-      ...metricCard("m2", 404, 140, 320, theme, "אימייל", "client@example.com"),
-      ...metricCard("m3", 744, 140, 300, theme, "טלפון", "050-0000000"),
-      ...metricCard("m4", 64, 300, 320, theme, "עיר", "תל אביב"),
-      ...metricCard("m5", 404, 300, 320, theme, "חבילה", "Premium"),
-      ...metricCard("m6", 744, 300, 300, theme, "סטטוס", "פעיל"),
-      boxNode(
-        "note",
-        {
-          backgroundColor: theme.card,
-          borderRadius: "20px",
-          border: `1px solid ${theme.line}`,
-        },
-        absoluteLayout(64, 460, 980, 180, 2),
-        "הערה",
+      portalMount(
+        "custom-data",
+        "portal-custom-data",
+        "נתונים משתנים",
+        absoluteLayout(64, 140, 560, 460, 3),
+        theme,
+        { minHeight: "440px" },
       ),
-      textNode(
-        "note-t",
-        "עמוד נתונים אישיים מקצועי",
-        { color: theme.ink, fontSize: "22px", fontWeight: "900" },
-        absoluteLayout(96, 500, 600, 32, 3),
-      ),
-      textNode(
-        "note-b",
-        "כאן הלקוח רואה ומעדכן את הפרטים שלו — בלי מראה של טופס גנרי.",
-        { color: theme.muted, fontSize: "15px", fontWeight: "600", lineHeight: "1.7" },
-        absoluteLayout(96, 548, 700, 50, 3),
+      portalMount(
+        "account",
+        "portal-account",
+        "חשבון",
+        absoluteLayout(660, 140, 380, 460, 3),
+        theme,
+        { minHeight: "440px" },
       ),
     ],
   ];
@@ -2325,11 +2399,32 @@ function buildProfileSections(): VisualLibrarySectionTemplate[] {
     makeSection(
       `section-portal-profile-${String(index + 1).padStart(2, "0")}`,
       `נתונים אישיים — ${theme.name}`,
-      "עמוד פרטים אישיים מקצועי עם כרטיסיות וטבלאות",
-      ["profile", "נתונים אישיים", "פרטים", "portal-profile", "פרופיל"],
+      "עמוד פרטים אישיים מקצועי עם נתונים משתנים מחוברים ל-CRM",
+      ["profile", "נתונים אישיים", "פרטים", "portal-profile", "פרופיל", "portal-custom-data"],
       theme,
       "700px",
       profileNodes(theme, index),
+    ),
+  );
+}
+
+function buildCustomDataSections(): VisualLibrarySectionTemplate[] {
+  return THEMES.map((theme, index) =>
+    makeSection(
+      `section-portal-custom-data-${String(index + 1).padStart(2, "0")}`,
+      `נתונים משתנים — ${theme.name}`,
+      "ווידג׳ט חי לנתונים משתנים מה-CRM באזור האישי",
+      [
+        "custom-data",
+        "נתונים משתנים",
+        "portal-custom-data",
+        "CRM",
+        "מדדים",
+        "תיק לקוח",
+      ],
+      theme,
+      "720px",
+      customDataNodes(theme, index),
     ),
   );
 }
@@ -2371,6 +2466,7 @@ export const PORTAL_SHOWCASE_SECTIONS: VisualLibrarySectionTemplate[] = [
   ...buildCartSections(),
   ...buildCoursesSections(),
   ...buildProfileSections(),
+  ...buildCustomDataSections(),
   ...buildForgotPasswordSections(),
   ...buildResetPasswordSections(),
   ...legacyAliases,
@@ -2384,6 +2480,7 @@ export const PORTAL_SECTION_KIND_PREFIX: Record<string, string> = {
   cart: "section-portal-cart-",
   courses: "section-portal-courses-",
   profile: "section-portal-profile-",
+  "custom-data": "section-portal-custom-data-",
   "forgot-password": "section-portal-forgot-password-",
   "reset-password": "section-portal-reset-password-",
 };

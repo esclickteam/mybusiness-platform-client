@@ -55,6 +55,11 @@ export const PORTAL_SECTION_KIND_NAV: Array<{
   { id: "courses", label: "קורסים", prefix: "section-portal-courses-" },
   { id: "profile", label: "נתונים אישיים", prefix: "section-portal-profile-" },
   {
+    id: "custom-data",
+    label: "נתונים משתנים",
+    prefix: "section-portal-custom-data-",
+  },
+  {
     id: "forgot-password",
     label: "שכחתי סיסמה",
     prefix: "section-portal-forgot-password-",

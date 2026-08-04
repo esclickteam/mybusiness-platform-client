@@ -2079,10 +2079,10 @@
       },
       "clientDataPanel": {
         "title": "Client data",
-        "subtitle": "Only data fields already configured in the CRM are filled here. Fields are not configured here new.",
+        "subtitle": "Fill personal values for the variable data fields defined for this business.",
         "savingData": "Saving data",
         "emptyTitle": "No client data fields have been configured yet",
-        "emptyDescription": "Fields are configured in the central CRM / Mini SaaS settings. After configuration they will automatically appear here for each client.",
+        "emptyDescription": "Define variable fields (weight, remaining treatments, balance, sessions, and more), then fill a value per client. With the personal area enabled, fields marked «show in portal» appear there in real time.",
         "savedAlert": "Client data saved",
         "tabTitle": "Client data",
         "tabDescription": "Personal values based on the fields configured in the CRM"
@@ -2164,6 +2164,27 @@
         "businessIdMissing": "Business ID is missing",
         "createFailed": "Client creation failed",
         "updateFailed": "Client update failed"
+      },
+      "customFields": {
+        "manageButton": "Manage variable fields",
+        "defineNow": "Define fields now",
+        "title": "Client variable fields",
+        "subtitle": "Define which data types appear in every client dossier. Then fill a value per client. Fields marked for the personal area update automatically for the logged-in client.",
+        "addField": "Add field",
+        "addExamples": "Add examples (weight / treatments / balance)",
+        "empty": "No variable fields yet. Add a field or load examples.",
+        "fieldN": "Field {{n}}",
+        "label": "Field label",
+        "key": "Key",
+        "type": "Type",
+        "placeholder": "Placeholder",
+        "options": "Options (comma separated)",
+        "optionsPlaceholder": "New, In progress, Done",
+        "showInPortal": "Show in personal area",
+        "required": "Required",
+        "save": "Save definitions",
+        "savedAlert": "Variable field definitions saved",
+        "saveFailed": "Failed to save definitions"
       }
     }
   },

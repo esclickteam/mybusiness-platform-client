@@ -39,23 +39,17 @@ import CRMClientDossier, {
 import {
   type ClientActivity,
 } from "./ClientDocumentationPanel";
-
-type CustomFieldType =
-  | "text"
-  | "textarea"
-  | "summary"
-  | "number"
-  | "date"
-  | "status"
-  | "checkbox"
-  | "boolean"
-  | "select"
-  | "checklist"
-  | "link"
-  | "email"
-  | "phone"
-  | "file"
-  | "image";
+import {
+  type ConfiguredClientField,
+  type CustomFieldType,
+  cleanKey,
+  createEmptyClientField,
+  createExampleClientFields,
+  fetchConfiguredClientFields,
+  normalizeConfiguredClientField,
+  saveConfiguredClientFields,
+  uid,
+} from "./clientCustomFieldsApi";
 
 type CustomFieldSource =
   | "business_input"
@@ -124,23 +118,6 @@ type ClientFormState = {
   address: string;
 };
 
-type ConfiguredClientField = {
-  id: string;
-  key: string;
-  label: string;
-  type: CustomFieldType;
-  description?: string;
-  placeholder?: string;
-  options?: string[];
-  required?: boolean;
-  showInClientProfile?: boolean;
-  showInClientPortal?: boolean;
-  clientCanEdit?: boolean;
-  editableByClient?: boolean;
-  active?: boolean;
-  order?: number;
-};
-
 type ClientDataDraft = Record<string, unknown>;
 
 type PortalAccessSettings = {
@@ -163,27 +140,11 @@ const emptyClientForm: ClientFormState = {
   address: "",
 };
 
-const CUSTOM_FIELDS_STORAGE_KEY = "bizuply_custom_client_fields";
 const CLIENT_DATA_TAB_ID = "client_data_values";
 const PORTAL_ACCESS_TAB_ID = "client_portal_access";
 
 function getFieldTypeLabel(type: CustomFieldType, t: TFunction) {
   return t(`crm.clients.fieldTypes.${type}`);
-}
-
-function uid(prefix: string) {
-  return `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
-}
-
-function cleanKey(value: string) {
-  return String(value || "")
-    .trim()
-    .toLowerCase()
-    .replace(/[{}]/g, "")
-    .replace(/\s+/g, "_")
-    .replace(/[^\p{L}\p{N}_-]/gu, "")
-    .replace(/^_+|_+$/g, "")
-    .slice(0, 50);
 }
 
 function normalizeClientFieldType(value: unknown): CustomFieldType {
@@ -208,57 +169,6 @@ function normalizeClientFieldType(value: unknown): CustomFieldType {
   return allowed.includes(value as CustomFieldType)
     ? (value as CustomFieldType)
     : "text";
-}
-
-function normalizeConfiguredClientField(
-  value: Partial<ConfiguredClientField>,
-  index: number,
-  t: TFunction,
-): ConfiguredClientField {
-  const label =
-    String(value.label || "").trim() ||
-    t("crm.clients.defaults.customField", { index: index + 1 });
-  const key =
-    cleanKey(String(value.key || label)) ||
-    t("crm.clients.defaults.customFieldKey", { index: index + 1 });
-
-  return {
-    id: String(value.id || key || uid("client_field")),
-    key,
-    label,
-    type: normalizeClientFieldType(value.type),
-    description: String(value.description || ""),
-    placeholder: String(value.placeholder || ""),
-    options: Array.isArray(value.options) ? value.options.map(String) : [],
-    required: Boolean(value.required),
-    showInClientProfile: value.showInClientProfile !== false,
-    showInClientPortal: Boolean(value.showInClientPortal),
-    clientCanEdit: Boolean(value.clientCanEdit ?? value.editableByClient),
-    editableByClient: Boolean(value.editableByClient ?? value.clientCanEdit),
-    active: value.active !== false,
-    order: Number(value.order) || index + 1,
-  };
-}
-
-function loadConfiguredClientFields(t: TFunction): ConfiguredClientField[] {
-  if (typeof window === "undefined") return [];
-
-  try {
-    const raw = window.localStorage.getItem(CUSTOM_FIELDS_STORAGE_KEY);
-    const parsed = raw ? JSON.parse(raw) : [];
-
-    if (!Array.isArray(parsed)) return [];
-
-    return parsed
-      .map((field, index) => normalizeConfiguredClientField(field, index, t))
-      .filter(
-        (field) =>
-          field.active !== false && field.showInClientProfile !== false,
-      )
-      .sort((a, b) => Number(a.order || 0) - Number(b.order || 0));
-  } catch {
-    return [];
-  }
 }
 
 function normalizeCustomTabs(value: unknown, t: TFunction): CustomClientTab[] {
@@ -560,6 +470,8 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
   const [configuredClientFields, setConfiguredClientFields] = useState<
     ConfiguredClientField[]
   >([]);
+  const [fieldsManagerOpen, setFieldsManagerOpen] = useState(false);
+  const [fieldsLoading, setFieldsLoading] = useState(false);
 
   const {
     data: clients = [],
@@ -572,14 +484,45 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
   });
 
   useEffect(() => {
-    const loadFields = () =>
-      setConfiguredClientFields(loadConfiguredClientFields(t));
+    let cancelled = false;
 
-    loadFields();
-    window.addEventListener("storage", loadFields);
+    const loadFields = async () => {
+      if (!businessId) {
+        setConfiguredClientFields([]);
+        return;
+      }
 
-    return () => window.removeEventListener("storage", loadFields);
-  }, [t]);
+      setFieldsLoading(true);
+      try {
+        const fields = await fetchConfiguredClientFields(businessId, t);
+        if (!cancelled) {
+          setConfiguredClientFields(
+            fields.filter((field) => field.showInClientProfile !== false),
+          );
+        }
+      } catch (err) {
+        console.error("Load client custom fields failed:", err);
+        if (!cancelled) setConfiguredClientFields([]);
+      } finally {
+        if (!cancelled) setFieldsLoading(false);
+      }
+    };
+
+    void loadFields();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [businessId, t]);
+
+  const handleSaveFieldDefinitions = async (
+    nextFields: ConfiguredClientField[],
+  ) => {
+    const saved = await saveConfiguredClientFields(businessId, nextFields);
+    setConfiguredClientFields(
+      saved.filter((field) => field.showInClientProfile !== false),
+    );
+  };
 
   useEffect(() => {
     const clientId = searchParams.get("clientId");
@@ -964,11 +907,25 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
         onActivitiesChange={handleClientActivitiesChange}
         onTagsChange={handleClientTagsChange}
         clientDataPanel={
-          <ClientDataPanel
-            client={selectedClient}
-            fields={configuredClientFields}
-            onSave={handleSaveClientData}
-          />
+          <>
+            <ClientDataPanel
+              client={selectedClient}
+              fields={configuredClientFields}
+              onSave={handleSaveClientData}
+              onManageFields={() => setFieldsManagerOpen(true)}
+              loading={fieldsLoading}
+            />
+            {fieldsManagerOpen ? (
+              <ClientCustomFieldsManager
+                fields={configuredClientFields}
+                onClose={() => setFieldsManagerOpen(false)}
+                onSave={async (next) => {
+                  await handleSaveFieldDefinitions(next);
+                  setFieldsManagerOpen(false);
+                }}
+              />
+            ) : null}
+          </>
         }
         portalAccessPanel={
           SHOW_BUSINESS_MINI_SAAS ? (
@@ -1012,6 +969,15 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
         <div className="flex flex-col gap-2 sm:flex-row">
           <button
             type="button"
+            onClick={() => setFieldsManagerOpen(true)}
+            className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-violet-200 bg-violet-50 px-4 text-sm font-black text-violet-800 shadow-sm transition hover:bg-violet-100"
+          >
+            <Layers3 className="h-4 w-4" />
+            {t("crm.clients.customFields.manageButton")}
+          </button>
+
+          <button
+            type="button"
             onClick={openCreate}
             className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-[#6D28D9] px-4 text-sm font-black text-white transition hover:bg-[#5B21B6]"
           >
@@ -1028,6 +994,17 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
           </button>
         </div>
       </section>
+
+      {fieldsManagerOpen ? (
+        <ClientCustomFieldsManager
+          fields={configuredClientFields}
+          onClose={() => setFieldsManagerOpen(false)}
+          onSave={async (next) => {
+            await handleSaveFieldDefinitions(next);
+            setFieldsManagerOpen(false);
+          }}
+        />
+      ) : null}
 
       <section
         className={[
@@ -1182,10 +1159,14 @@ function ClientDataPanel({
   client,
   fields,
   onSave,
+  onManageFields,
+  loading = false,
 }: {
   client: CRMClient;
   fields: ConfiguredClientField[];
   onSave: (values: ClientDataDraft) => Promise<void>;
+  onManageFields?: () => void;
+  loading?: boolean;
 }) {
   const { t } = useTranslation();
   const dir = useLocaleDir();
@@ -1230,18 +1211,34 @@ function ClientDataPanel({
           </div>
         </div>
 
-        <button
-          type="button"
-          onClick={save}
-          disabled={saving || fields.length === 0}
-          className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-[#6D28D9] text-white shadow-lg shadow-slate-200 transition hover:-translate-y-0.5 hover:bg-[#5B21B6] disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          <Save className="h-4 w-4" />
-          {saving ? t("crm.common.saving") : t("crm.clients.clientDataPanel.savingData")}
-        </button>
+        <div className="flex flex-col gap-2 sm:flex-row">
+          {onManageFields ? (
+            <button
+              type="button"
+              onClick={onManageFields}
+              className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl border border-violet-200 bg-violet-50 px-4 text-sm font-black text-violet-800 transition hover:bg-violet-100"
+            >
+              <Layers3 className="h-4 w-4" />
+              {t("crm.clients.customFields.manageButton")}
+            </button>
+          ) : null}
+          <button
+            type="button"
+            onClick={save}
+            disabled={saving || fields.length === 0}
+            className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-[#6D28D9] px-4 text-white shadow-lg shadow-slate-200 transition hover:-translate-y-0.5 hover:bg-[#5B21B6] disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            <Save className="h-4 w-4" />
+            {saving ? t("crm.common.saving") : t("crm.clients.clientDataPanel.savingData")}
+          </button>
+        </div>
       </div>
 
-      {fields.length === 0 ? (
+      {loading ? (
+        <div className="rounded-2xl border border-slate-100 bg-slate-50 p-10 text-center text-sm font-bold text-slate-500">
+          {t("crm.common.loading")}
+        </div>
+      ) : fields.length === 0 ? (
         <div className="rounded-2xl border border-dashed border-violet-200 bg-violet-50/40 p-10 text-center">
           <Sparkles className="mx-auto h-10 w-10 text-violet-600" />
           <h4 className="mt-3 text-xl font-black text-slate-800">
@@ -1250,6 +1247,16 @@ function ClientDataPanel({
           <p className="mx-auto mt-2 max-w-2xl text-sm font-bold leading-7 text-slate-500">
             {t("crm.clients.clientDataPanel.emptyDescription")}
           </p>
+          {onManageFields ? (
+            <button
+              type="button"
+              onClick={onManageFields}
+              className="mt-5 inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-[#6D28D9] px-5 text-sm font-black text-white transition hover:bg-[#5B21B6]"
+            >
+              <Plus className="h-4 w-4" />
+              {t("crm.clients.customFields.defineNow")}
+            </button>
+          ) : null}
         </div>
       ) : (
         <div className="grid gap-4 lg:grid-cols-2">
@@ -1264,6 +1271,317 @@ function ClientDataPanel({
         </div>
       )}
     </section>
+  );
+}
+
+function ClientCustomFieldsManager({
+  fields,
+  onClose,
+  onSave,
+}: {
+  fields: ConfiguredClientField[];
+  onClose: () => void;
+  onSave: (fields: ConfiguredClientField[]) => Promise<void>;
+}) {
+  const { t } = useTranslation();
+  const dir = useLocaleDir();
+  const [draft, setDraft] = useState<ConfiguredClientField[]>(() =>
+    fields.map((field, index) => normalizeConfiguredClientField(field, index, t)),
+  );
+  const [saving, setSaving] = useState(false);
+
+  const updateField = (
+    id: string,
+    patch: Partial<ConfiguredClientField>,
+  ) => {
+    setDraft((prev) =>
+      prev.map((field) => {
+        if (field.id !== id) return field;
+        const next = { ...field, ...patch };
+        if (patch.label && !patch.key) {
+          next.key = cleanKey(patch.label) || field.key;
+        }
+        if (patch.key) {
+          next.key = cleanKey(patch.key) || field.key;
+        }
+        return next;
+      }),
+    );
+  };
+
+  const addField = () => {
+    setDraft((prev) => [...prev, createEmptyClientField(prev.length)]);
+  };
+
+  const addExamples = () => {
+    setDraft((prev) => {
+      const existingKeys = new Set(prev.map((field) => field.key));
+      const extras = createExampleClientFields().filter(
+        (field) => !existingKeys.has(field.key),
+      );
+      return [...prev, ...extras].map((field, index) => ({
+        ...field,
+        order: index + 1,
+      }));
+    });
+  };
+
+  const removeField = (id: string) => {
+    setDraft((prev) => prev.filter((field) => field.id !== id));
+  };
+
+  const save = async () => {
+    setSaving(true);
+    try {
+      const normalized = draft.map((field, index) =>
+        normalizeConfiguredClientField(field, index, t),
+      );
+      await onSave(normalized);
+      alert(t("crm.clients.customFields.savedAlert"));
+    } catch (err) {
+      console.error(err);
+      alert(t("crm.clients.customFields.saveFailed"));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const typeOptions: CustomFieldType[] = [
+    "text",
+    "textarea",
+    "number",
+    "date",
+    "select",
+    "status",
+    "checkbox",
+    "boolean",
+    "checklist",
+    "summary",
+    "link",
+    "email",
+    "phone",
+  ];
+
+  return (
+    <div
+      className="fixed inset-0 z-[80] flex items-center justify-center bg-slate-950/45 p-4"
+      role="dialog"
+      aria-modal="true"
+    >
+      <div
+        dir={dir}
+        className="flex max-h-[90vh] w-full max-w-4xl flex-col overflow-hidden rounded-3xl bg-white shadow-2xl"
+      >
+        <div className="flex items-start justify-between gap-3 border-b border-slate-100 px-5 py-4 sm:px-6">
+          <div>
+            <h3 className="text-xl font-black text-slate-900 sm:text-2xl">
+              {t("crm.clients.customFields.title")}
+            </h3>
+            <p className="mt-1 max-w-2xl text-sm font-semibold text-slate-500">
+              {t("crm.clients.customFields.subtitle")}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            className="grid h-10 w-10 place-items-center rounded-xl border border-slate-200 text-slate-500 transition hover:bg-slate-50"
+            aria-label={t("crm.common.close")}
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+
+        <div className="flex-1 space-y-3 overflow-y-auto px-5 py-4 sm:px-6">
+          <div className="flex flex-wrap gap-2">
+            <button
+              type="button"
+              onClick={addField}
+              className="inline-flex h-10 items-center gap-2 rounded-xl bg-[#6D28D9] px-4 text-sm font-black text-white transition hover:bg-[#5B21B6]"
+            >
+              <Plus className="h-4 w-4" />
+              {t("crm.clients.customFields.addField")}
+            </button>
+            <button
+              type="button"
+              onClick={addExamples}
+              className="inline-flex h-10 items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-4 text-sm font-black text-slate-700 transition hover:bg-white"
+            >
+              <Sparkles className="h-4 w-4" />
+              {t("crm.clients.customFields.addExamples")}
+            </button>
+          </div>
+
+          {draft.length === 0 ? (
+            <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-8 text-center">
+              <p className="text-sm font-bold text-slate-500">
+                {t("crm.clients.customFields.empty")}
+              </p>
+            </div>
+          ) : (
+            draft.map((field, index) => (
+              <div
+                key={field.id}
+                className="rounded-2xl border border-slate-200 bg-slate-50/70 p-4"
+              >
+                <div className="mb-3 flex items-center justify-between gap-2">
+                  <span className="text-xs font-black uppercase tracking-wide text-slate-400">
+                    {t("crm.clients.customFields.fieldN", { n: index + 1 })}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => removeField(field.id)}
+                    className="inline-flex items-center gap-1 rounded-lg px-2 py-1 text-xs font-black text-rose-600 transition hover:bg-rose-50"
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                    {t("crm.common.delete")}
+                  </button>
+                </div>
+
+                <div className="grid gap-3 sm:grid-cols-2">
+                  <label className="block text-start">
+                    <span className="mb-1 block text-xs font-black text-slate-500">
+                      {t("crm.clients.customFields.label")}
+                    </span>
+                    <input
+                      value={field.label}
+                      onChange={(event) =>
+                        updateField(field.id, { label: event.target.value })
+                      }
+                      className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm font-bold text-slate-800 outline-none focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
+                    />
+                  </label>
+
+                  <label className="block text-start">
+                    <span className="mb-1 block text-xs font-black text-slate-500">
+                      {t("crm.clients.customFields.key")}
+                    </span>
+                    <input
+                      value={field.key}
+                      onChange={(event) =>
+                        updateField(field.id, { key: event.target.value })
+                      }
+                      className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm font-bold text-slate-800 outline-none focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
+                      dir="ltr"
+                    />
+                  </label>
+
+                  <label className="block text-start">
+                    <span className="mb-1 block text-xs font-black text-slate-500">
+                      {t("crm.clients.customFields.type")}
+                    </span>
+                    <select
+                      value={field.type}
+                      onChange={(event) =>
+                        updateField(field.id, {
+                          type: event.target.value as CustomFieldType,
+                        })
+                      }
+                      className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm font-bold text-slate-800 outline-none focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
+                    >
+                      {typeOptions.map((type) => (
+                        <option key={type} value={type}>
+                          {getFieldTypeLabel(type, t)}
+                        </option>
+                      ))}
+                    </select>
+                  </label>
+
+                  <label className="block text-start">
+                    <span className="mb-1 block text-xs font-black text-slate-500">
+                      {t("crm.clients.customFields.placeholder")}
+                    </span>
+                    <input
+                      value={field.placeholder || ""}
+                      onChange={(event) =>
+                        updateField(field.id, {
+                          placeholder: event.target.value,
+                        })
+                      }
+                      className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm font-bold text-slate-800 outline-none focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
+                    />
+                  </label>
+                </div>
+
+                {(field.type === "select" ||
+                  field.type === "status" ||
+                  field.type === "checklist") && (
+                  <label className="mt-3 block text-start">
+                    <span className="mb-1 block text-xs font-black text-slate-500">
+                      {t("crm.clients.customFields.options")}
+                    </span>
+                    <input
+                      value={(field.options || []).join(", ")}
+                      onChange={(event) =>
+                        updateField(field.id, {
+                          options: event.target.value
+                            .split(",")
+                            .map((item) => item.trim())
+                            .filter(Boolean),
+                        })
+                      }
+                      placeholder={t(
+                        "crm.clients.customFields.optionsPlaceholder",
+                      )}
+                      className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm font-bold text-slate-800 outline-none focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
+                    />
+                  </label>
+                )}
+
+                <div className="mt-3 flex flex-wrap gap-4">
+                  <label className="inline-flex items-center gap-2 text-sm font-bold text-slate-700">
+                    <input
+                      type="checkbox"
+                      checked={Boolean(field.showInClientPortal)}
+                      onChange={(event) =>
+                        updateField(field.id, {
+                          showInClientPortal: event.target.checked,
+                        })
+                      }
+                      className="h-4 w-4 rounded border-slate-300 text-violet-700"
+                    />
+                    {t("crm.clients.customFields.showInPortal")}
+                  </label>
+                  <label className="inline-flex items-center gap-2 text-sm font-bold text-slate-700">
+                    <input
+                      type="checkbox"
+                      checked={Boolean(field.required)}
+                      onChange={(event) =>
+                        updateField(field.id, {
+                          required: event.target.checked,
+                        })
+                      }
+                      className="h-4 w-4 rounded border-slate-300 text-violet-700"
+                    />
+                    {t("crm.clients.customFields.required")}
+                  </label>
+                </div>
+              </div>
+            ))
+          )}
+        </div>
+
+        <div className="flex flex-col-reverse gap-2 border-t border-slate-100 px-5 py-4 sm:flex-row sm:justify-end sm:px-6">
+          <button
+            type="button"
+            onClick={onClose}
+            className="inline-flex h-11 items-center justify-center rounded-xl border border-slate-200 px-5 text-sm font-black text-slate-700 transition hover:bg-slate-50"
+          >
+            {t("crm.common.cancel")}
+          </button>
+          <button
+            type="button"
+            onClick={save}
+            disabled={saving}
+            className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-[#6D28D9] px-5 text-sm font-black text-white transition hover:bg-[#5B21B6] disabled:opacity-50"
+          >
+            <Save className="h-4 w-4" />
+            {saving
+              ? t("crm.common.saving")
+              : t("crm.clients.customFields.save")}
+          </button>
+        </div>
+      </div>
+    </div>
   );
 }
 

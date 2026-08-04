@@ -831,12 +831,210 @@ function mountResetPassword(container, { siteId, paths, editorMode }) {
   container.appendChild(wrap);
 }
 
+function formatCustomDataDisplay(field) {
+  const type = String(field?.type || "text");
+  const value = field?.value;
+
+  if (type === "checkbox" || type === "boolean") {
+    return value ? "כן" : "לא";
+  }
+  if (type === "checklist") {
+    return Array.isArray(value) && value.length ? value.join(" · ") : "—";
+  }
+  if (value == null || value === "") return "—";
+  return String(value);
+}
+
+function renderCustomDataPanel(container, theme, fields, { editorMode = false } = {}) {
+  prepareMountShell(container);
+  const wrap = el("div", {
+    padding: "22px",
+    fontFamily: "inherit",
+    color: theme.ink,
+    boxSizing: "border-box",
+    background: theme.soft,
+    minHeight: "100%",
+  });
+
+  const title = el(
+    "h3",
+    {
+      margin: "0 0 6px",
+      fontSize: "22px",
+      fontWeight: "900",
+      color: theme.ink,
+    },
+    "הנתונים שלי",
+  );
+  stampPortalAuthControl(title, container, "title", editorMode);
+  wrap.appendChild(title);
+
+  const subtitle = el(
+    "p",
+    {
+      margin: "0 0 18px",
+      fontSize: "13px",
+      fontWeight: "600",
+      color: theme.muted,
+      lineHeight: "1.6",
+    },
+    "ערכים מעודכנים מתיק הלקוח ב-CRM — לפי סוגי הנתונים שהעסק הגדיר.",
+  );
+  stampPortalAuthControl(subtitle, container, "subtitle", editorMode);
+  wrap.appendChild(subtitle);
+
+  const list = Array.isArray(fields) && fields.length
+    ? fields
+    : editorMode
+      ? [
+          { key: "weight", label: "משקל", type: "number", value: 72 },
+          {
+            key: "treatments_left",
+            label: "עמות טיפולים",
+            type: "number",
+            value: 4,
+          },
+          { key: "balance", label: "יתרה", type: "number", value: 250 },
+          {
+            key: "sessions_done",
+            label: "מפגשים שבוצעו",
+            type: "number",
+            value: 8,
+          },
+        ]
+      : [];
+
+  if (!list.length) {
+    wrap.appendChild(
+      el(
+        "div",
+        {
+          padding: "18px",
+          borderRadius: "16px",
+          border: `1px solid ${theme.line}`,
+          background: theme.card || "#fff",
+          fontWeight: "700",
+          color: theme.muted,
+          fontSize: "14px",
+        },
+        "אין עדיין נתונים משתנים מוצגים לחשבון זה.",
+      ),
+    );
+    container.appendChild(wrap);
+    return;
+  }
+
+  const grid = el("div", {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
+    gap: "10px",
+  });
+
+  list.forEach((field) => {
+    const card = el("div", {
+      padding: "14px 16px",
+      borderRadius: "16px",
+      border: `1px solid ${theme.line}`,
+      background: theme.card || "#fff",
+      boxShadow: "0 12px 28px -24px rgba(15,23,42,0.45)",
+      minHeight: "92px",
+    });
+    card.appendChild(
+      el(
+        "div",
+        {
+          fontSize: "11px",
+          fontWeight: "800",
+          color: theme.muted,
+          letterSpacing: "0.04em",
+          marginBottom: "8px",
+        },
+        field.label || field.key || "נתון",
+      ),
+    );
+    card.appendChild(
+      el(
+        "div",
+        {
+          fontSize: "22px",
+          fontWeight: "900",
+          color: theme.ink,
+          lineHeight: "1.2",
+          wordBreak: "break-word",
+        },
+        formatCustomDataDisplay(field),
+      ),
+    );
+    grid.appendChild(card);
+  });
+
+  wrap.appendChild(grid);
+  container.appendChild(wrap);
+}
+
+function appendCustomDataSummary(wrap, theme, fields) {
+  const list = Array.isArray(fields) ? fields.filter(Boolean) : [];
+  if (!list.length) return;
+
+  wrap.appendChild(
+    el(
+      "div",
+      {
+        fontSize: "12px",
+        fontWeight: "800",
+        color: theme.muted,
+        letterSpacing: "0.04em",
+        margin: "4px 0 8px",
+      },
+      "נתונים מהתיק",
+    ),
+  );
+
+  const row = el("div", {
+    display: "grid",
+    gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+    gap: "8px",
+    marginBottom: "14px",
+  });
+
+  list.slice(0, 4).forEach((field) => {
+    const card = el("div", {
+      padding: "12px",
+      borderRadius: "14px",
+      border: `1px solid ${theme.line}`,
+      background: theme.card || "#fff",
+    });
+    card.appendChild(
+      el(
+        "div",
+        {
+          fontSize: "11px",
+          fontWeight: "800",
+          color: theme.muted,
+          marginBottom: "4px",
+        },
+        field.label || field.key,
+      ),
+    );
+    card.appendChild(
+      el(
+        "div",
+        { fontSize: "16px", fontWeight: "900", color: theme.ink },
+        formatCustomDataDisplay(field),
+      ),
+    );
+    row.appendChild(card);
+  });
+
+  wrap.appendChild(row);
+}
+
 function renderAccountPanel(
   container,
   theme,
   member,
   pages,
-  { onLogout, paths, editorMode = false } = {},
+  { onLogout, paths, editorMode = false, customData = [] } = {},
 ) {
   prepareMountShell(container);
   const wrap = el("div", {
@@ -932,6 +1130,19 @@ function renderAccountPanel(
     stats.appendChild(card);
   });
   wrap.appendChild(stats);
+
+  appendCustomDataSummary(
+    wrap,
+    theme,
+    editorMode && (!customData || !customData.length)
+      ? [
+          { label: "משקל", value: 72, type: "number" },
+          { label: "עמות טיפולים", value: 4, type: "number" },
+          { label: "יתרה", value: 250, type: "number" },
+          { label: "מפגשים", value: 8, type: "number" },
+        ]
+      : customData,
+  );
 
   const quickLinks = [
     { href: paths?.orders || "/orders", label: "ההזמנות שלי" },
@@ -1164,6 +1375,69 @@ function renderOrdersPanel(container, theme, orders) {
   container.appendChild(wrap);
 }
 
+async function mountCustomData(container, { siteId, editorMode = false }) {
+  const theme = readPortalTheme(container);
+
+  if (editorMode) {
+    renderCustomDataPanel(container, theme, [], { editorMode: true });
+    return;
+  }
+
+  prepareMountShell(container);
+  container.appendChild(
+    el(
+      "div",
+      { padding: "24px", fontWeight: "700", color: theme.muted },
+      "טוען נתונים...",
+    ),
+  );
+
+  const refresh = async () => {
+    try {
+      const data = await sitePortalMe(siteId);
+      renderCustomDataPanel(container, theme, data.customData || [], {
+        editorMode: false,
+      });
+    } catch {
+      prepareMountShell(container);
+      const wrap = el("div", { padding: "24px", textAlign: "center" });
+      wrap.appendChild(
+        el(
+          "p",
+          {
+            fontWeight: "700",
+            color: theme.muted,
+            marginBottom: "12px",
+            fontSize: "14px",
+          },
+          "כדי לצפות בנתונים יש להתחבר לאזור האישי.",
+        ),
+      );
+      container.appendChild(wrap);
+    }
+  };
+
+  await refresh();
+
+  // Soft real-time: refresh when the tab becomes visible again.
+  if (typeof document !== "undefined" && !container.__bizuplyCustomDataBound) {
+    container.__bizuplyCustomDataBound = true;
+    const onVisible = () => {
+      if (document.visibilityState === "visible") {
+        void refresh();
+      }
+    };
+    document.addEventListener("visibilitychange", onVisible);
+    const intervalId = window.setInterval(() => {
+      if (document.visibilityState === "visible") void refresh();
+    }, 20000);
+    container.__bizuplyCustomDataCleanup = () => {
+      document.removeEventListener("visibilitychange", onVisible);
+      window.clearInterval(intervalId);
+    };
+  }
+}
+
 async function mountAccount(container, { siteId, editorMode = false, paths }) {
   const theme = readPortalTheme(container);
 
@@ -1194,6 +1468,7 @@ async function mountAccount(container, { siteId, editorMode = false, paths }) {
       : [];
     renderAccountPanel(container, theme, data.member, pages, {
       paths,
+      customData: data.customData || [],
       onLogout: async () => {
         await sitePortalLogout(siteId);
         navigateToSitePath(paths?.login || "/portal/login");
@@ -1496,6 +1771,18 @@ export function mountPublicPortalWidgets(root, options = {}) {
         return;
       }
       void mountAccount(node, { siteId, editorMode: false, paths });
+      return;
+    }
+    if (kind === "portal-custom-data") {
+      if (editorMode) {
+        void mountCustomData(node, { siteId, editorMode: true });
+        return;
+      }
+      if (!siteId) {
+        mountLogin(node, { siteId, host, siteName, paths, editorMode });
+        return;
+      }
+      void mountCustomData(node, { siteId, editorMode: false });
       return;
     }
     if (kind === "portal-orders") {
