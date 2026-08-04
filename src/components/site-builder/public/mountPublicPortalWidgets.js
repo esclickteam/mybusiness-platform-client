@@ -1506,6 +1506,213 @@ async function mountAccount(container, { siteId, editorMode = false, paths }) {
   }
 }
 
+function readPackagesConfig(container) {
+  const paymentUrl = String(
+    container?.getAttribute?.("data-bizuply-portal-payment-url") || "",
+  ).trim();
+
+  let packages = null;
+  try {
+    const raw = container?.getAttribute?.("data-bizuply-portal-packages") || "";
+    const parsed = raw ? JSON.parse(raw) : null;
+    if (Array.isArray(parsed) && parsed.length) packages = parsed;
+  } catch {
+    packages = null;
+  }
+
+  if (!packages) {
+    packages = [
+      {
+        name: "בסיס",
+        price: "₪290",
+        period: "לחודש",
+        features: ["גישה לאזור אישי", "תמיכה במייל"],
+        featured: false,
+      },
+      {
+        name: "עסקי",
+        price: "₪590",
+        period: "לחודש",
+        features: ["הכול בבסיס", "עמודים מוגנים", "עדיפות בתמיכה"],
+        featured: true,
+      },
+      {
+        name: "פרימיום",
+        price: "₪990",
+        period: "לחודש",
+        features: ["הכול בעסקי", "ליווי אישי"],
+        featured: false,
+      },
+    ];
+  }
+
+  return { paymentUrl, packages };
+}
+
+function renderPackagesPanel(container, theme, { editorMode = false } = {}) {
+  prepareMountShell(container);
+  const { paymentUrl, packages } = readPackagesConfig(container);
+  const title =
+    container.getAttribute("data-portal-copy-title") || "בחרו חבילה";
+  const subtitle =
+    container.getAttribute("data-portal-copy-subtitle") ||
+    "לאחר התשלום בסליקה תיפתח הגישה לאזור האישי.";
+  const ctaLabel =
+    container.getAttribute("data-portal-copy-submit") || "לתשלום בסליקה";
+
+  const wrap = el("div", {
+    padding: "22px",
+    fontFamily: "inherit",
+    color: theme.ink,
+    boxSizing: "border-box",
+    background: theme.soft,
+    minHeight: "100%",
+  });
+
+  const heading = el(
+    "h3",
+    { margin: "0 0 6px", fontSize: "22px", fontWeight: "900", color: theme.ink },
+    title,
+  );
+  stampPortalAuthControl(heading, container, "title", editorMode);
+  wrap.appendChild(heading);
+
+  const sub = el(
+    "p",
+    {
+      margin: "0 0 16px",
+      fontSize: "13px",
+      fontWeight: "600",
+      color: theme.muted,
+      lineHeight: "1.6",
+    },
+    subtitle,
+  );
+  stampPortalAuthControl(sub, container, "subtitle", editorMode);
+  wrap.appendChild(sub);
+
+  if (!paymentUrl && editorMode) {
+    wrap.appendChild(
+      el(
+        "div",
+        {
+          marginBottom: "14px",
+          padding: "12px 14px",
+          borderRadius: "14px",
+          border: `1px dashed ${theme.line}`,
+          background: "#fff",
+          fontSize: "12px",
+          fontWeight: "700",
+          color: theme.muted,
+        },
+        "הדביקו קישור סליקה במאפיין data-bizuply-portal-payment-url על הווידג׳ט (או על כפתורי החבילות בעמוד).",
+      ),
+    );
+  }
+
+  packages.forEach((pkg) => {
+    const featured = Boolean(pkg.featured);
+    const card = el("div", {
+      marginBottom: "10px",
+      padding: "16px",
+      borderRadius: "16px",
+      border: featured ? "0" : `1px solid ${theme.line}`,
+      background: featured ? theme.ink : theme.card || "#fff",
+      color: featured ? "#f8fafc" : theme.ink,
+      boxShadow: "0 12px 28px -22px rgba(15,23,42,0.45)",
+    });
+
+    card.appendChild(
+      el(
+        "div",
+        {
+          fontSize: "12px",
+          fontWeight: "800",
+          color: featured ? "rgba(248,250,252,0.7)" : theme.muted,
+          marginBottom: "6px",
+        },
+        featured ? "הכי פופולרי" : "חבילה",
+      ),
+    );
+    card.appendChild(
+      el(
+        "div",
+        { fontSize: "18px", fontWeight: "900", marginBottom: "4px" },
+        pkg.name || "חבילה",
+      ),
+    );
+    card.appendChild(
+      el(
+        "div",
+        { fontSize: "28px", fontWeight: "900", marginBottom: "4px" },
+        pkg.price || "",
+      ),
+    );
+    card.appendChild(
+      el(
+        "div",
+        {
+          fontSize: "12px",
+          fontWeight: "600",
+          color: featured ? "rgba(248,250,252,0.7)" : theme.muted,
+          marginBottom: "10px",
+        },
+        pkg.period || "",
+      ),
+    );
+
+    (Array.isArray(pkg.features) ? pkg.features : []).forEach((feature) => {
+      card.appendChild(
+        el(
+          "div",
+          {
+            fontSize: "13px",
+            fontWeight: "600",
+            color: featured ? "rgba(248,250,252,0.8)" : theme.muted,
+            marginBottom: "4px",
+          },
+          `✓  ${feature}`,
+        ),
+      );
+    });
+
+    const href = String(pkg.paymentUrl || paymentUrl || "#").trim() || "#";
+    const cta = document.createElement("a");
+    cta.href = href;
+    if (href.startsWith("http")) {
+      cta.target = "_blank";
+      cta.rel = "noopener noreferrer";
+    }
+    cta.textContent = ctaLabel;
+    if (editorMode && href === "#") {
+      cta.addEventListener("click", (event) => event.preventDefault());
+    }
+    Object.assign(cta.style, {
+      display: "flex",
+      marginTop: "12px",
+      alignItems: "center",
+      justifyContent: "center",
+      padding: "12px 14px",
+      borderRadius: "12px",
+      textDecoration: "none",
+      fontWeight: "800",
+      fontSize: "13px",
+      background: featured ? "#fff" : theme.accent,
+      color: featured ? theme.ink : "#fff",
+    });
+    stampPortalAuthControl(cta, container, "submit", editorMode);
+    card.appendChild(cta);
+    wrap.appendChild(card);
+  });
+
+  container.appendChild(wrap);
+}
+
+function mountPackages(container, { editorMode = false } = {}) {
+  const theme = readPortalTheme(container);
+  renderPackagesPanel(container, theme, { editorMode });
+}
+
 async function mountOrders(container, { siteId, editorMode = false, paths }) {
   const theme = readPortalTheme(container);
 
@@ -1783,6 +1990,10 @@ export function mountPublicPortalWidgets(root, options = {}) {
         return;
       }
       void mountCustomData(node, { siteId, editorMode: false });
+      return;
+    }
+    if (kind === "portal-packages") {
+      mountPackages(node, { editorMode });
       return;
     }
     if (kind === "portal-orders") {

@@ -1224,6 +1224,24 @@ const CATEGORY_DEFS: CategoryDef[] = [
       ...Array.from({ length: 10 }, (_, i) => {
         const n = String(i + 1).padStart(2, "0");
         return {
+          title: `חבילות ותשלום ${i + 1}`,
+          description: "עמוד חבילות עם קישור לסליקה לפני גישה לאזור האישי",
+          slugSuggestion: i === 0 ? "packages" : `packages-${n}`,
+          keywords: [
+            "portal-packages",
+            "חבילות",
+            "תשלום",
+            "סליקה",
+            "מנוי",
+            "אחרי התחברות",
+            "portal",
+          ],
+          sectionIds: [`section-portal-packages-${n}`, FOOTER],
+        };
+      }),
+      ...Array.from({ length: 10 }, (_, i) => {
+        const n = String(i + 1).padStart(2, "0");
+        return {
           title: `שכחתי סיסמה ${i + 1}`,
           description: "בקשת קישור לאיפוס סיסמה שנשלח במייל ללקוח",
           slugSuggestion: i === 0 ? "forgot-password" : `forgot-password-${n}`,
@@ -1346,6 +1364,7 @@ export const PORTAL_PAGE_KIND_NAV: Array<{
   { id: "courses", label: "קורסים", keyword: "portal-courses" },
   { id: "profile", label: "נתונים אישיים", keyword: "portal-profile" },
   { id: "custom-data", label: "נתונים משתנים", keyword: "portal-custom-data" },
+  { id: "packages", label: "חבילות ותשלום", keyword: "portal-packages" },
   {
     id: "forgot-password",
     label: "שכחתי סיסמה",

@@ -69,6 +69,7 @@ describe("resolvePortalPaths", () => {
       login: "/login-02",
       register: "/register",
       account: "/account-02",
+      packages: "/packages",
       orders: "/account-02",
       cart: "/account-02",
       forgotPassword: "/portal/forgot-password",
@@ -76,11 +77,25 @@ describe("resolvePortalPaths", () => {
     });
   });
 
+  it("resolves a designed packages page for payment links", () => {
+    const site = {
+      pages: [
+        pageWithAttributes("packages-02", "portal-packages"),
+        pageWithAttributes("account", "portal-account"),
+      ],
+    };
+    expect(resolvePortalPaths(site).packages).toBe("/packages-02");
+    expect(detectPortalPageKind(pageWithAttributes("packages", "portal-packages"))).toBe(
+      "portal-packages",
+    );
+  });
+
   it("falls back to the portal gate routes when no page exists", () => {
     const paths = resolvePortalPaths({ pages: [{ id: "home", slug: "" }] });
 
     expect(paths.login).toBe("/portal/login");
     expect(paths.account).toBe("/portal/account");
+    expect(paths.packages).toBe("/packages");
     // Register must stay a register URL — never silently become login.
     expect(paths.register).toBe("/portal/register");
   });

@@ -10,6 +10,7 @@ export type PortalWidgetKind =
   | "portal-login"
   | "portal-register"
   | "portal-account"
+  | "portal-packages"
   | "portal-orders"
   | "portal-cart"
   | "portal-forgot-password"
@@ -19,6 +20,7 @@ export type PortalPaths = {
   login: string;
   register: string;
   account: string;
+  packages: string;
   orders: string;
   cart: string;
   forgotPassword: string;
@@ -33,6 +35,8 @@ const PORTAL_KINDS: PortalWidgetKind[] = [
   "portal-cart",
   "portal-forgot-password",
   "portal-reset-password",
+  // Keep new kinds at the end so page-portal-NN template mapping stays stable.
+  "portal-packages",
 ];
 
 function asPlainObject(value: unknown): Record<string, any> {
@@ -87,7 +91,7 @@ export function detectPortalPageKind(page: any): PortalWidgetKind | "" {
   for (const section of Object.values(insertedSections)) {
     const libraryId = String(asPlainObject(section).libraryId || "").trim();
     const match = libraryId.match(
-      /^section-(portal-(?:login|register|account|orders|cart|forgot-password|reset-password))/,
+      /^section-(portal-(?:login|register|account|packages|orders|cart|forgot-password|reset-password))/,
     );
     if (match) return match[1] as PortalWidgetKind;
   }
@@ -113,6 +117,9 @@ const FRIENDLY_ALIASES: Record<string, PortalWidgetKind> = {
   "/signup": "portal-register",
   "/account": "portal-account",
   "/my-account": "portal-account",
+  "/packages": "portal-packages",
+  "/pricing": "portal-packages",
+  "/plans": "portal-packages",
   "/orders": "portal-orders",
   "/my-orders": "portal-orders",
   "/cart": "portal-cart",
@@ -212,6 +219,11 @@ export function resolvePortalPaths(site: any): PortalPaths {
       "/portal/register",
     ),
     account,
+    packages: pick(
+      "portal-packages",
+      ["/packages", "/pricing", "/plans", "/portal/packages"],
+      "/packages",
+    ),
     orders: pick("portal-orders", ["/orders", "/my-orders"], account),
     cart: pick("portal-cart", ["/cart", "/checkout"], account),
     forgotPassword: pick(

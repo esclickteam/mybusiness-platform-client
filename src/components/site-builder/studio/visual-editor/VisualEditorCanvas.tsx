@@ -1523,6 +1523,18 @@ export default function VisualEditorCanvas({
   ]);
 
   useEffect(() => {
+    const onRemount = () => {
+      const root = rootRef.current;
+      if (!root) return;
+      mountEditorPortalPreview(root, true, { force: true });
+    };
+    window.addEventListener("bizuply:remount-portal-widgets", onRemount);
+    return () => {
+      window.removeEventListener("bizuply:remount-portal-widgets", onRemount);
+    };
+  }, [mountEditorPortalPreview]);
+
+  useEffect(() => {
     const root = rootRef.current;
     if (!root) return;
 

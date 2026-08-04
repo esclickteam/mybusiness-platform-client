@@ -60,6 +60,11 @@ export const PORTAL_SECTION_KIND_NAV: Array<{
     prefix: "section-portal-custom-data-",
   },
   {
+    id: "packages",
+    label: "חבילות ותשלום",
+    prefix: "section-portal-packages-",
+  },
+  {
     id: "forgot-password",
     label: "שכחתי סיסמה",
     prefix: "section-portal-forgot-password-",
