@@ -467,11 +467,18 @@ function EditorInner({
     [nodes, selectedId]
   );
 
+  const selectedGmailActionKey =
+    selectedNode?.type === "action" &&
+    isGmailActionKey(selectedNode.data?.actionKey)
+      ? String(selectedNode.data?.actionKey || "")
+      : "";
+
+  // Only reload Gmail status when the selected Gmail action node changes —
+  // not on every subject/body keystroke (that remounted the form and jumped focus).
   useEffect(() => {
-    if (!selectedNode || selectedNode.type !== "action") return;
-    if (!isGmailActionKey(selectedNode.data?.actionKey)) return;
+    if (!selectedId || !selectedGmailActionKey) return;
     void loadGmailStatus();
-  }, [selectedNode, loadGmailStatus]);
+  }, [selectedId, selectedGmailActionKey, loadGmailStatus]);
 
   useEffect(() => {
     if (!selectedId || !gmailAccount) return;
