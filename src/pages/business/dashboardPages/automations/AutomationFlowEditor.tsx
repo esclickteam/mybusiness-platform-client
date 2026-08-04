@@ -117,11 +117,17 @@ function isGmailActionKey(actionKey: unknown) {
 
 const GMAIL_RECIPIENT_LABELS: Record<string, string> = {
   lead_email: "אימייל הליד",
+  appointment_customer_email: "הלקוח שקבע תור",
   business_owner: "בעל העסק",
   lead_owner: "אחראי הליד",
   fixed_email: "כתובת קבועה",
   custom_field: "שדה מותאם אישית",
 };
+
+function triggerSupportsAppointmentCustomerEmail(triggerKey: string) {
+  const key = String(triggerKey || "");
+  return key === "appointment_created" || key === "appointment_reminder";
+}
 
 function mappingPresetKey(row: WhatsAppVariableMapping) {
   const source = String(row.source || "");
@@ -786,6 +792,9 @@ function EditorInner({
       }
       onSaved(result.workflow);
       toast.success("האוטומציה פורסמה");
+      if (result.warnings?.length) {
+        toast.warn(result.warnings.join(" · "));
+      }
     } catch (error: unknown) {
       const response = (error as { response?: { data?: { errors?: string[]; error?: string } } })?.response?.data;
       toast.error(
@@ -1877,6 +1886,16 @@ function EditorInner({
                               }}
                             >
                               <option value="lead_email">אימייל הליד</option>
+                              {triggerSupportsAppointmentCustomerEmail(
+                                selectedTriggerKey
+                              ) ||
+                              String(
+                                selectedNode.data?.recipientType || ""
+                              ) === "appointment_customer_email" ? (
+                                <option value="appointment_customer_email">
+                                  אימייל הלקוח שקבע תור
+                                </option>
+                              ) : null}
                               <option value="business_owner">בעל העסק</option>
                               <option value="lead_owner">אחראי הליד</option>
                               <option value="fixed_email">כתובת קבועה</option>

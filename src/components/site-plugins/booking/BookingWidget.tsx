@@ -6,6 +6,7 @@ import {
   getPublicBookingSlots,
   type PublicBookingService,
 } from "../../../api/publicBookingApi";
+import { parseRequiredBookingEmail } from "../../../utils/bookingEmail";
 
 export type BookingWidgetVariant = "week" | "month";
 
@@ -629,6 +630,16 @@ function DemoBooking({
             </div>
             <input style={styles.input} placeholder="שם מלא" disabled />
             <input style={styles.input} placeholder="טלפון" disabled />
+            <input
+              style={styles.input}
+              placeholder="אימייל"
+              name="email"
+              type="email"
+              autoComplete="email"
+              inputMode="email"
+              disabled
+              aria-label="אימייל"
+            />
             <button type="button" style={styles.primaryBtn} disabled>
               אישור תור
             </button>
@@ -679,6 +690,7 @@ export default function BookingWidget({
   const [selectedSlot, setSelectedSlot] = useState("");
   const [clientName, setClientName] = useState("");
   const [clientPhone, setClientPhone] = useState("");
+  const [clientEmail, setClientEmail] = useState("");
   const [loadingServices, setLoadingServices] = useState(false);
   const [loadingSlots, setLoadingSlots] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -755,6 +767,11 @@ export default function BookingWidget({
       setError("נא למלא שם וטלפון");
       return;
     }
+    const emailParsed = parseRequiredBookingEmail(clientEmail);
+    if (!emailParsed.ok) {
+      setError(emailParsed.error);
+      return;
+    }
     setSubmitting(true);
     setError("");
     try {
@@ -765,6 +782,7 @@ export default function BookingWidget({
         time: selectedSlot,
         guestName: clientName.trim(),
         guestPhone: clientPhone.trim(),
+        guestEmail: emailParsed.email,
       });
       setSuccess(true);
     } catch (err: any) {
@@ -991,16 +1009,34 @@ export default function BookingWidget({
         <input
           style={styles.input}
           placeholder="שם מלא"
+          name="name"
           value={clientName}
           onChange={(e) => setClientName(e.target.value)}
           autoComplete="name"
+          aria-label="שם מלא"
         />
         <input
           style={styles.input}
           placeholder="טלפון"
+          name="phone"
           value={clientPhone}
           onChange={(e) => setClientPhone(e.target.value)}
           autoComplete="tel"
+          inputMode="tel"
+          aria-label="טלפון"
+        />
+        <input
+          style={styles.input}
+          placeholder="אימייל"
+          name="email"
+          type="email"
+          value={clientEmail}
+          onChange={(e) => setClientEmail(e.target.value)}
+          autoComplete="email"
+          inputMode="email"
+          required
+          aria-label="אימייל"
+          dir="ltr"
         />
 
         {error ? <p style={styles.error}>{error}</p> : null}

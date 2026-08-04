@@ -32,7 +32,7 @@ export async function createPublicBooking(payload: {
   time: string;
   guestName: string;
   guestPhone: string;
-  guestEmail?: string;
+  guestEmail: string;
   guestNote?: string;
 }) {
   const { data } = await API.post("/appointments/public", {

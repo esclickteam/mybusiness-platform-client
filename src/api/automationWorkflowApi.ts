@@ -244,6 +244,7 @@ export async function publishAutomationWorkflow(
     workflow: data?.workflow as AutomationWorkflow,
     version: data?.version,
     errors: data?.errors as string[] | undefined,
+    warnings: data?.warnings as string[] | undefined,
   };
 }
 

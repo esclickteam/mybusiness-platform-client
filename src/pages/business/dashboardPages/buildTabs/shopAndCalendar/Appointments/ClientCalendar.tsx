@@ -3,6 +3,7 @@ import API from "../../../../../../api";
 import MonthCalendar from "../../../../../../components/MonthCalendar";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
+import { parseRequiredBookingEmail } from "../../../../../../utils/bookingEmail";
 
 type AnyObject = Record<string, any>;
 
@@ -287,6 +288,12 @@ export default function ClientCalendar({
       return false;
     }
 
+    const emailParsed = parseRequiredBookingEmail(clientEmail);
+    if (!emailParsed.ok) {
+      alert(emailParsed.error);
+      return false;
+    }
+
     if (!clientAddress.trim()) {
       alert("Please enter your address.");
       return false;
@@ -313,6 +320,12 @@ export default function ClientCalendar({
   const handleSubmitBooking = async () => {
     if (!validateBookingForm() || !selectedSlot) return;
 
+    const emailParsed = parseRequiredBookingEmail(clientEmail);
+    if (!emailParsed.ok) {
+      alert(emailParsed.error);
+      return;
+    }
+
     setSubmittingBooking(true);
 
     try {
@@ -324,13 +337,13 @@ export default function ClientCalendar({
 
         guestName: clientName.trim(),
         guestPhone: clientPhone.trim(),
-        guestEmail: clientEmail.trim(),
+        guestEmail: emailParsed.email,
         guestAddress: clientAddress.trim(),
         guestNote: clientNote.trim(),
 
         name: clientName.trim(),
         phone: clientPhone.trim(),
-        email: clientEmail.trim(),
+        email: emailParsed.email,
         address: clientAddress.trim(),
         note: clientNote.trim(),
 
@@ -592,12 +605,18 @@ export default function ClientCalendar({
                     />
                   </FormField>
 
-                  <FormField label="Email">
+                  <FormField label="אימייל" required>
                     <input
                       type="email"
+                      name="email"
                       value={clientEmail}
                       onChange={(event) => setClientEmail(event.target.value)}
-                      placeholder="Enter email for confirmation"
+                      placeholder="אימייל"
+                      autoComplete="email"
+                      inputMode="email"
+                      required
+                      dir="ltr"
+                      aria-label="אימייל"
                       className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-100"
                     />
                   </FormField>
