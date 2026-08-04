@@ -480,17 +480,16 @@ export function expandSharedChromeIntoVisualData(
         if (currentValue === value) return;
 
         /*
-          A page-level chrome entry is the live edit in progress, so it wins.
-          Publish and page load strip stale page-level chrome (see
-          stripChromeFromVisualData) which lets the shared value through.
+          Site chrome is global. Shared values win over stale page-level
+          copies left on other pages (e.g. old "תאמו ניסיון"). Live typing on
+          the current page is lifted into __sharedChrome immediately, so the
+          shared map already holds the in-progress edit.
         */
         if (!nextMap) nextMap = { ...pageMap };
         nextMap[elementId] =
           isPlainObject(value) && isPlainObject(currentValue)
-            ? { ...value, ...currentValue }
-            : currentValue !== undefined
-              ? currentValue
-              : value;
+            ? { ...currentValue, ...value }
+            : value;
       });
     });
 

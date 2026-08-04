@@ -128,23 +128,23 @@ describe("shared chrome round trip", () => {
     });
   });
 
-  it("keeps a live page edit instead of reverting it to shared chrome", () => {
+  it("lets shared chrome win over stale page-level header content", () => {
     const root = buildPageRoot("home", "home.header.button.a.a-1");
 
     const expanded = expandSharedChromeIntoVisualData(root, {
       __content: {
-        "home.header.button.a.a-1": { text: "טקסט חדש שהמשתמש מקליד" },
+        "home.header.button.a.a-1": { text: "תאמו ניסיון" },
       },
       __sharedChrome: {
         __content: {
-          "chrome.header.button.a.a-1": { text: "ישן", href: "/login" },
+          "chrome.header.button.a.a-1": { text: "התחברות", href: "/login" },
         },
       },
     });
 
     expect(expanded.__content["home.header.button.a.a-1"]).toEqual({
+      text: "התחברות",
       href: "/login",
-      text: "טקסט חדש שהמשתמש מקליד",
     });
   });
 
