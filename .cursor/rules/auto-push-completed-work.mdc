@@ -1,12 +1,14 @@
 ---
-description: Commit and push completed code changes automatically
+description: Commit, push, and deploy completed work to production
 alwaysApply: true
 ---
 
-# Commit And Push Completed Work
+# Commit, Push, And Deploy To Production
 
 - After completing and verifying a user-requested code change, commit the intended changes and push the current branch to its configured remote.
+- Open a PR if one does not already exist for the branch, then merge it to the production base branch (`main`) once checks are green (or immediately if the repo reports no required checks).
+- Prefer merge commits (`gh pr merge --merge`) and delete the remote feature branch after merge.
 - Include the rule file itself when it has changed.
 - Never discard, overwrite, or silently include unrelated user changes.
-- Do not push known broken or incomplete work; report any verification or Git blocker clearly.
-- Report the branch and short commit hash after a successful push.
+- Do not push or merge known broken or incomplete work; report any verification or Git blocker clearly.
+- After a successful production merge, report the PR URL, branch, short commit/merge hash, and deployment status when available.
