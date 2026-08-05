@@ -32,7 +32,7 @@ const genericConfig: BizuplyFormConfig = {
   id: "contact-form",
   title: "טופס יצירת קשר",
   submitText: "שליחת הודעה",
-  successMessage: "ההודעה נשלחה בהצלחה",
+  successMessage: "תודה! קיבלנו את הפנייה ונחזור אליך בהקדם.",
   fields: [
     { id: "name", label: "שם מלא", type: "text", placeholder: "שם מלא", required: true, options: [] },
     { id: "phone", label: "טלפון", type: "phone", placeholder: "טלפון", required: true, options: [] },

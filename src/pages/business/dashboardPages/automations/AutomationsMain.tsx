@@ -37,6 +37,7 @@ import {
   listAutomationRecipes,
   listAutomationExecutions,
   listAutomationWorkflows,
+  retryAutomationExecution,
   type AutomationExecution,
   type AutomationRecipeSummary,
   type AutomationStats,
@@ -175,6 +176,31 @@ export default function AutomationsMain() {
       }
     },
     [businessId]
+  );
+
+  const handleRetryExecution = useCallback(
+    async (executionId?: string) => {
+      if (!businessId || !executionId) return;
+      if (isAutomationsReadOnly()) {
+        toast.error(AUTOMATION_PREVIEW_WRITE_BLOCKED_MESSAGE);
+        return;
+      }
+      try {
+        await retryAutomationExecution(businessId, executionId);
+        toast.success("ההרצה נשלחה לניסיון חוזר");
+        await load();
+        if (historyWorkflow) {
+          const rows = await listAutomationExecutions(
+            businessId,
+            historyWorkflow._id
+          );
+          setExecutions(rows);
+        }
+      } catch (error: unknown) {
+        toast.error(readErrorMessage(error, "שגיאה בניסיון חוזר"));
+      }
+    },
+    [businessId, historyWorkflow, load]
   );
 
   const handleRecipeCreate = (recipe: AutomationRecipeSummary) => {
@@ -532,7 +558,15 @@ export default function AutomationsMain() {
                           עודכנה: {wf.updatedAt ? new Date(wf.updatedAt).toLocaleDateString("he-IL") : "—"} · הרצה אחרונה: {wf.lastRunAt ? new Date(wf.lastRunAt).toLocaleString("he-IL") : "אין"}
                         </div>
                         {wf.stats ? <div className="af-card__meta">הרצות {wf.stats.runs} · הצליחו {wf.stats.success} · נכשלו {wf.stats.failed}</div> : null}
-                        {wf.lastExecution ? <div className={`af-execution af-execution--${wf.lastExecution.status}`}>הרצה אחרונה: {wf.lastExecution.status}{wf.lastExecution.error ? ` · ${wf.lastExecution.error}` : ""}</div> : null}
+                        {wf.lastExecution ? (
+                          <div className={`af-execution af-execution--${wf.lastExecution.status}`}>
+                            הרצה אחרונה: {wf.lastExecution.status}
+                            {wf.lastExecution.error ? ` · ${wf.lastExecution.error}` : ""}
+                            {wf.lastExecution.errorCode
+                              ? ` (${wf.lastExecution.errorCode})`
+                              : ""}
+                          </div>
+                        ) : null}
                         <div className="af-card__actions">
                           <button
                             type="button"
@@ -542,6 +576,23 @@ export default function AutomationsMain() {
                             <PencilLine size={14} />
                             עריכת זרימה
                           </button>
+                          {wf.lastExecution?.status === "failed" &&
+                          wf.lastExecution.executionId ? (
+                            <button
+                              type="button"
+                              className="af-btn"
+                              disabled={readOnly}
+                              title={writeBlockedTitle}
+                              onClick={() =>
+                                void handleRetryExecution(
+                                  wf.lastExecution?.executionId
+                                )
+                              }
+                            >
+                              <Play size={14} />
+                              נסה שוב
+                            </button>
+                          ) : null}
                           {status === "active" ? (
                             <button
                               type="button"
@@ -651,7 +702,38 @@ export default function AutomationsMain() {
               <button type="button" className="af-modal__close" onClick={() => setHistoryWorkflow(null)}><X size={16} /></button>
               <h2>היסטוריית הרצות · {historyWorkflow.name}</h2>
               {historyLoading ? <Loader2 className="animate-spin" /> : executions.length ? (
-                <div className="af-history-list">{executions.map((execution) => <div key={execution.executionId} className={`af-execution af-execution--${execution.status}`}><strong>{execution.status}</strong> · {execution.createdAt ? new Date(execution.createdAt).toLocaleString("he-IL") : "—"}{execution.error ? ` · ${execution.error}` : ""}</div>)}</div>
+                <div className="af-history-list">
+                  {executions.map((execution) => (
+                    <div
+                      key={execution.executionId}
+                      className={`af-execution af-execution--${execution.status}`}
+                    >
+                      <strong>{execution.status}</strong>
+                      {" · "}
+                      {execution.createdAt
+                        ? new Date(execution.createdAt).toLocaleString("he-IL")
+                        : "—"}
+                      {execution.error ? ` · ${execution.error}` : ""}
+                      {execution.errorCode ? ` (${execution.errorCode})` : ""}
+                      {execution.status === "failed" ? (
+                        <>
+                          {" "}
+                          <button
+                            type="button"
+                            className="af-btn"
+                            disabled={readOnly}
+                            title={writeBlockedTitle}
+                            onClick={() =>
+                              void handleRetryExecution(execution.executionId)
+                            }
+                          >
+                            נסה שוב
+                          </button>
+                        </>
+                      ) : null}
+                    </div>
+                  ))}
+                </div>
               ) : <div className="af-empty">עדיין אין היסטוריית הרצות לאוטומציה זו.</div>}
             </div>
           </div>

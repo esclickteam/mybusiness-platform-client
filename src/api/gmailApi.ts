@@ -3,6 +3,7 @@ import API from "../api";
 export type GmailConnectionStatus =
   | "connected"
   | "expired"
+  | "needs_reconnect"
   | "revoked"
   | "error"
   | "disconnected";

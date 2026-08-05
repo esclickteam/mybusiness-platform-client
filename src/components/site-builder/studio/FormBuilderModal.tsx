@@ -231,7 +231,9 @@ function normalizeForm(form: BizuplyFormConfig): BizuplyFormConfig {
     id: String(form?.id || "contact-form"),
     title: String(form?.title || "טופס יצירת קשר"),
     submitText: String(form?.submitText || "שליחת הודעה"),
-    successMessage: String(form?.successMessage || "ההודעה נשלחה בהצלחה"),
+    successMessage: String(
+      form?.successMessage || "תודה! קיבלנו את הפנייה ונחזור אליך בהקדם."
+    ),
     colors: normalizeFormColors(form?.colors),
     fields: Array.isArray(form?.fields)
       ? form.fields.map((field, index) => ({

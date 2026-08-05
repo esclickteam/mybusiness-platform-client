@@ -90,6 +90,10 @@ export default function IntegrationsMain() {
   const account: GmailPublicAccount | null = status?.account || null;
   const available = Boolean(status?.available);
   const connected = account?.connectionStatus === "connected";
+  const needsReconnect =
+    account?.connectionStatus === "needs_reconnect" ||
+    account?.connectionStatus === "expired" ||
+    account?.connectionStatus === "revoked";
 
   return (
     <div className="p-4 md:p-6 max-w-3xl mx-auto" dir="rtl">
@@ -123,14 +127,18 @@ export default function IntegrationsMain() {
                 ? "bg-amber-100 text-amber-800"
                 : connected
                   ? "bg-emerald-100 text-emerald-800"
-                  : "bg-slate-100 text-slate-700"
+                  : needsReconnect
+                    ? "bg-amber-100 text-amber-800"
+                    : "bg-slate-100 text-slate-700"
             }`}
           >
             {!available
               ? "בתהליך אישור"
               : connected
                 ? "מחובר"
-                : "לא מחובר"}
+                : needsReconnect
+                  ? "נדרש חיבור מחדש"
+                  : "לא מחובר"}
           </span>
         </div>
 
@@ -140,8 +148,13 @@ export default function IntegrationsMain() {
           <p className="mt-4 text-sm text-amber-800 bg-amber-50 border border-amber-100 rounded-xl px-3 py-2">
             Gmail נמצא כרגע בתהליך אישור מול Google
           </p>
-        ) : connected && account ? (
+        ) : account && (connected || needsReconnect) ? (
           <div className="mt-4 space-y-2 text-sm">
+            {needsReconnect ? (
+              <p className="text-amber-800 bg-amber-50 border border-amber-100 rounded-xl px-3 py-2">
+                חיבור Gmail פג תוקף — יש להתחבר מחדש
+              </p>
+            ) : null}
             <div>
               <span className="text-slate-500">חשבון: </span>
               <span dir="ltr">{account.email}</span>
@@ -167,14 +180,16 @@ export default function IntegrationsMain() {
               >
                 חיבור מחדש
               </button>
-              <button
-                type="button"
-                disabled={busy}
-                onClick={() => void disconnect()}
-                className="px-3 py-2 rounded-lg border border-slate-300 text-sm"
-              >
-                ניתוק
-              </button>
+              {connected ? (
+                <button
+                  type="button"
+                  disabled={busy}
+                  onClick={() => void disconnect()}
+                  className="px-3 py-2 rounded-lg border border-slate-300 text-sm"
+                >
+                  ניתוק
+                </button>
+              ) : null}
             </div>
           </div>
         ) : (
