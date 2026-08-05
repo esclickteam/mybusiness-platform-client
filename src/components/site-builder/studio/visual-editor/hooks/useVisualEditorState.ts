@@ -3173,6 +3173,103 @@ export function useVisualEditorState({
     [addElement],
   );
 
+  /**
+   * Insert a free-placed CRM variable text node anywhere on the canvas.
+   * Displays as "שם הנתון - ערך" and updates live from the client CRM file.
+   */
+  const addCrmField = useCallback(
+    async (options?: {
+      fieldKey?: string;
+      label?: string;
+      sampleValue?: string;
+      part?: "value" | "label" | "both";
+    }) => {
+      const part = options?.part || "both";
+      const fieldKey = String(options?.fieldKey || "").trim();
+      const label = String(options?.label || "נתון").trim() || "נתון";
+      const sampleValue =
+        String(options?.sampleValue || "X").trim() || "X";
+      const sampleText =
+        part === "label"
+          ? label
+          : part === "both"
+            ? `${label} - ${sampleValue}`
+            : sampleValue;
+
+      const root = canvasRef.current;
+      if (!root) return "";
+
+      const selectedNode = getSelectedDomNode(selection.selectedElement);
+      const sectionNode = getClosestVisualSectionNode(root, selectedNode);
+      const sectionId = getDirectVisualId(sectionNode) || "visual-root";
+      const parentId = sectionId;
+      const id = createVisualCustomId("custom-crm-field");
+      const now = new Date().toISOString();
+
+      const attributes: Record<string, string> = fieldKey
+        ? {
+            "data-bizuply-crm-field": fieldKey,
+            "data-bizuply-crm-field-part": part,
+            "data-client-variable": "true",
+            "data-client-variable-key": fieldKey,
+          }
+        : {};
+
+      setData((current) => {
+        let next = writeVisualInsertedElement(current || {}, {
+          id,
+          type: "text",
+          parentId,
+          sectionId,
+          label: fieldKey ? `נתון CRM · ${label}` : "נתון CRM",
+          tagName: "div",
+          createdAt: now,
+          updatedAt: now,
+        });
+
+        next = writeVisualContentItem(next, id, { text: sampleText });
+        next = writeVisualStyleItem(next, id, {
+          color: "#111827",
+          fontSize: "22px",
+          fontWeight: "800",
+          lineHeight: "1.35",
+          textAlign: "right",
+          direction: "rtl",
+        } as StylePatch);
+        next = writeVisualLayoutItem(next, id, {
+          position: "absolute",
+          x: 40,
+          y: 40,
+          translateX: 40,
+          translateY: 40,
+          width: "320px",
+          minHeight: "40px",
+          zIndex: 22,
+          freePosition: true,
+        });
+
+        if (Object.keys(attributes).length) {
+          next = writeVisualAttributesItem(next, id, attributes);
+        }
+
+        dataRef.current = next;
+        return next;
+      });
+
+      window.requestAnimationFrame(() => {
+        applyAllVisualDataToDom(canvasRef.current, dataRef.current || {});
+        window.requestAnimationFrame(() => {
+          selection.selectByElementId(id, {
+            keepPreviousOnMissing: true,
+          });
+        });
+      });
+
+      return id;
+    },
+    [canvasRef, selection, setData],
+  );
+
   const addLibrarySection = useCallback(
     (
       libraryId: string,
@@ -4802,6 +4899,7 @@ export function useVisualEditorState({
       addVideo,
       addBox,
       addDivider,
+      addCrmField,
       addSection,
       insertHtmlWidget,
       addLibrarySection,
@@ -4982,6 +5080,7 @@ export function useVisualEditorState({
       addVideo,
       addBox,
       addDivider,
+      addCrmField,
       addSection,
       insertHtmlWidget,
       addLibrarySection,
