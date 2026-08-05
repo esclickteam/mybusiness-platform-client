@@ -865,7 +865,7 @@ export default function VisualFloatingToolbar({
    * Whole login/register shell still opens the forms panel. Individual
    * stamped controls use the normal link button instead.
    */
-  const portalAuthFormKind = useMemo(() => {
+  const portalShellKind = useMemo(() => {
     const node = getElementNode(element);
     if (!node) return "";
     if (node.getAttribute("data-bizuply-portal-control")) return "";
@@ -879,13 +879,26 @@ export default function VisualFloatingToolbar({
         ? node
         : null);
     if (!shell || shell !== node) return "";
-    const kind = String(
+    return String(
       shell.getAttribute("data-bizuply-portal-kind") ||
         shell.getAttribute("data-bizuply-widget") ||
         "",
     );
-    return kind === "portal-login" || kind === "portal-register" ? kind : "";
   }, [element]);
+
+  const portalAuthFormKind =
+    portalShellKind === "portal-login" || portalShellKind === "portal-register"
+      ? portalShellKind
+      : "";
+
+  const portalPackagesShell = portalShellKind === "portal-packages";
+  const packagesPaymentUrl = useMemo(() => {
+    if (!portalPackagesShell) return "";
+    const node = getElementNode(element);
+    return String(
+      node?.getAttribute("data-bizuply-portal-payment-url") || "",
+    ).trim();
+  }, [element, portalPackagesShell]);
 
   const selectedContent = useMemo(
     () =>
@@ -1991,6 +2004,41 @@ export default function VisualFloatingToolbar({
           >
             <Link2 className="h-4 w-4" />
           </ToolbarButton>
+        ) : null}
+
+        {portalPackagesShell ? (
+          <div className="relative h-9 w-[min(280px,28vw)] min-w-[180px] shrink">
+            <Link2 className="pointer-events-none absolute right-2 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
+            <input
+              value={packagesPaymentUrl}
+              disabled={locked}
+              dir="ltr"
+              placeholder="קישור סליקה (https://…)"
+              onMouseDown={(event) => event.stopPropagation()}
+              onClick={(event) => event.stopPropagation()}
+              onChange={(event) => {
+                const value = event.target.value.trim();
+                if (!elementId) return;
+                editor?.updateAttributes?.(elementId, {
+                  "data-bizuply-portal-payment-url": value,
+                });
+                const node = getElementNode(element);
+                if (value) {
+                  node?.setAttribute("data-bizuply-portal-payment-url", value);
+                } else {
+                  node?.removeAttribute("data-bizuply-portal-payment-url");
+                }
+                // Remount preview with the new payment URL.
+                node &&
+                  delete (node as HTMLElement).dataset.bizuplyPortalMounted;
+                node && delete (node as HTMLElement).dataset.bizuplyPortalLive;
+                window.dispatchEvent(
+                  new CustomEvent("bizuply:remount-portal-widgets"),
+                );
+              }}
+              className="h-9 w-full rounded-xl bg-transparent px-8 pl-2 text-sm font-bold text-slate-900 outline-none transition hover:bg-slate-100 focus:bg-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
+            />
+          </div>
         ) : null}
 
         <SelectControl

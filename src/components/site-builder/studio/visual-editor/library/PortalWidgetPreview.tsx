@@ -5,6 +5,7 @@ type PortalPreviewKind =
   | "portal-register"
   | "portal-account"
   | "portal-custom-data"
+  | "portal-packages"
   | "portal-orders"
   | "portal-cart"
   | "portal-forgot-password"
@@ -267,6 +268,53 @@ export default function PortalWidgetPreview({
             </div>
           ))}
         </div>
+      </div>
+    );
+  }
+
+  if (kind === "portal-packages") {
+    return (
+      <div style={wrap}>
+        <div style={{ fontSize: 22, fontWeight: 900, color: ink }}>בחרו חבילה</div>
+        <div style={{ fontSize: 13, fontWeight: 600, color: muted, lineHeight: 1.55 }}>
+          לאחר התשלום בסליקה תיפתח הגישה לאזור האישי.
+        </div>
+        {[
+          ["בסיס", "₪290", false],
+          ["עסקי", "₪590", true],
+          ["פרימיום", "₪990", false],
+        ].map(([name, price, featured]) => (
+          <div
+            key={String(name)}
+            style={{
+              padding: 14,
+              borderRadius: 16,
+              border: featured ? "0" : `1px solid ${line}`,
+              background: featured ? ink : "#fff",
+              color: featured ? "#f8fafc" : ink,
+            }}
+          >
+            <div style={{ fontSize: 12, fontWeight: 800, opacity: 0.7 }}>
+              {featured ? "הכי פופולרי" : "חבילה"}
+            </div>
+            <div style={{ fontSize: 16, fontWeight: 900 }}>{name}</div>
+            <div style={{ fontSize: 24, fontWeight: 900 }}>{price}</div>
+            <div
+              style={{
+                marginTop: 10,
+                padding: "10px 12px",
+                borderRadius: 12,
+                background: featured ? "#fff" : accent,
+                color: featured ? ink : "#fff",
+                fontWeight: 800,
+                fontSize: 13,
+                textAlign: "center",
+              }}
+            >
+              לתשלום בסליקה
+            </div>
+          </div>
+        ))}
       </div>
     );
   }

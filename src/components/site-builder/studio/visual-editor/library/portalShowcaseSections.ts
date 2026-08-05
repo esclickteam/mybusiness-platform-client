@@ -16,6 +16,7 @@ type PortalKind =
   | "portal-register"
   | "portal-account"
   | "portal-custom-data"
+  | "portal-packages"
   | "portal-orders"
   | "portal-cart"
   | "portal-forgot-password"
@@ -204,6 +205,17 @@ function portalMount(
             "data-portal-copy-password": "סיסמה (לפחות 6 תווים)",
             "data-portal-copy-submit": "יצירת חשבון",
             "data-portal-copy-switch": "כבר רשומים? התחברות",
+          }
+        : {}),
+      ...(widget === "portal-packages"
+        ? {
+            "data-portal-copy-eyebrow": "חבילות",
+            "data-portal-copy-title": "בחרו חבילה",
+            "data-portal-copy-subtitle":
+              "לאחר התשלום בסליקה תיפתח הגישה לאזור האישי.",
+            "data-portal-copy-submit": "לתשלום בסליקה",
+            // Paste the business payment-page URL here (Cardcom / provider link).
+            "data-bizuply-portal-payment-url": "",
           }
         : {}),
     },
@@ -2501,6 +2513,248 @@ function customDataNodes(theme: Theme, index: number): VisualLibraryNodeTemplate
   return layouts[index % layouts.length]();
 }
 
+
+function packageTierCard(
+  key: string,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  theme: Theme,
+  name: string,
+  price: string,
+  period: string,
+  features: string[],
+  featured: boolean,
+  paymentHref: string,
+): VisualLibraryNodeTemplate[] {
+  const bg = featured ? theme.ink : theme.card;
+  const fg = featured ? "#f8fafc" : theme.ink;
+  const muted = featured ? "rgba(248,250,252,0.7)" : theme.muted;
+  const nodes: VisualLibraryNodeTemplate[] = [
+    boxNode(
+      `${key}-bg`,
+      {
+        backgroundColor: bg,
+        borderRadius: "22px",
+        border: featured ? "0" : `1px solid ${theme.line}`,
+        boxShadow: featured
+          ? "0 28px 50px -30px rgba(15,23,42,0.55)"
+          : "0 14px 28px -24px rgba(15,23,42,0.3)",
+      },
+      absoluteLayout(x, y, w, h, 3),
+      name,
+    ),
+  ];
+  if (featured) {
+    nodes.push(
+      textNode(
+        `${key}-badge`,
+        "הכי פופולרי",
+        {
+          color: theme.accent,
+          fontSize: "12px",
+          fontWeight: "800",
+          letterSpacing: "0.04em",
+        },
+        absoluteLayout(x + 24, y + 22, w - 48, 20, 4),
+      ),
+    );
+  }
+  nodes.push(
+    textNode(
+      `${key}-name`,
+      name,
+      { color: fg, fontSize: "20px", fontWeight: "900" },
+      absoluteLayout(x + 24, y + (featured ? 48 : 28), w - 48, 28, 4),
+    ),
+    textNode(
+      `${key}-price`,
+      price,
+      { color: fg, fontSize: "40px", fontWeight: "900", letterSpacing: "-0.03em" },
+      absoluteLayout(x + 24, y + (featured ? 88 : 68), w - 48, 48, 4),
+    ),
+    textNode(
+      `${key}-period`,
+      period,
+      { color: muted, fontSize: "13px", fontWeight: "600" },
+      absoluteLayout(x + 24, y + (featured ? 140 : 120), w - 48, 22, 4),
+    ),
+  );
+  features.forEach((feature, index) => {
+    nodes.push(
+      textNode(
+        `${key}-f${index}`,
+        `✓  ${feature}`,
+        { color: muted, fontSize: "14px", fontWeight: "600" },
+        absoluteLayout(x + 24, y + (featured ? 178 : 158) + index * 28, w - 48, 24, 4),
+      ),
+    );
+  });
+  nodes.push(
+    buttonNode(
+      `${key}-cta`,
+      "לתשלום בסליקה",
+      {
+        color: featured ? theme.ink : "#fff",
+        backgroundColor: featured ? "#fff" : theme.accent,
+        borderRadius: "14px",
+        fontWeight: "800",
+        fontSize: "14px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+      },
+      absoluteLayout(x + 24, y + h - 70, w - 48, 46, 4),
+      paymentHref,
+    ),
+  );
+  return nodes;
+}
+
+function packagesNodes(theme: Theme, index: number): VisualLibraryNodeTemplate[] {
+  const paymentHref = "#";
+  const layouts: Array<() => VisualLibraryNodeTemplate[]> = [
+    () => [
+      boxNode("bg", { backgroundColor: theme.bg }, absoluteLayout(0, 0, "100%", "100%", 1), "רקע"),
+      textNode(
+        "eyebrow",
+        "חבילות · תשלום לפני גישה",
+        { color: theme.accent, fontSize: "13px", fontWeight: "800", letterSpacing: "0.06em" },
+        absoluteLayout(64, 40, 520, 24, 2),
+      ),
+      textNode(
+        "title",
+        "בחרו חבילה והמשיכו לתשלום",
+        { color: theme.ink, fontSize: "40px", fontWeight: "900" },
+        absoluteLayout(64, 72, 720, 52, 2),
+      ),
+      textNode(
+        "subtitle",
+        "לאחר התשלום בסליקה שלכם — עדכנו את הלקוח ל־paid והעמודים המוגנים ייפתחו.",
+        { color: theme.muted, fontSize: "15px", fontWeight: "600", lineHeight: "1.65" },
+        absoluteLayout(64, 132, 700, 48, 2),
+      ),
+      ...packageTierCard("t1", 64, 200, 300, 460, theme, "בסיס", "₪290", "לחודש", ["גישה לאזור אישי", "תמיכה במייל", "עדכון נתונים"], false, paymentHref),
+      ...packageTierCard("t2", 396, 200, 300, 460, theme, "עסקי", "₪590", "לחודש", ["הכול בבסיס", "עמודים מוגנים", "עדיפות בתמיכה", "דוחות בסיסיים"], true, paymentHref),
+      ...packageTierCard("t3", 728, 200, 300, 460, theme, "פרימיום", "₪990", "לחודש", ["הכול בעסקי", "ליווי אישי", "התאמות מתקדמות"], false, paymentHref),
+      textNode(
+        "hint",
+        "טיפ: לחצו על «לתשלום בסליקה» בעורך והדביקו את קישור התשלום של העסק (Cardcom / ספק אחר).",
+        { color: theme.muted, fontSize: "13px", fontWeight: "600" },
+        absoluteLayout(64, 680, 960, 28, 2),
+      ),
+    ],
+    () => [
+      boxNode("bg", { backgroundColor: theme.soft }, absoluteLayout(0, 0, "100%", "100%", 1), "רקע"),
+      portalMount(
+        "packages",
+        "portal-packages",
+        "חבילות ותשלום",
+        absoluteLayout(64, 64, 520, 560, 3),
+        theme,
+        { minHeight: "540px" },
+      ),
+      textNode(
+        "title",
+        "גישה בתשלום",
+        { color: theme.ink, fontSize: "38px", fontWeight: "900" },
+        absoluteLayout(620, 80, 420, 48, 2),
+      ),
+      textNode(
+        "body",
+        "ווידג׳ט חי לחבילות. הגדירו קישור סליקה במאפיין העיצוב — והכפתור מוביל ישירות לתשלום.",
+        { color: theme.muted, fontSize: "15px", fontWeight: "600", lineHeight: "1.7" },
+        absoluteLayout(620, 140, 400, 80, 2),
+      ),
+      ...metricCard("m1", 620, 250, 400, theme, "גישה", "לקוחות משלמים"),
+      ...metricCard("m2", 620, 380, 400, theme, "סליקה", "קישור חיצוני"),
+      ...metricCard("m3", 620, 510, 400, theme, "אחרי תשלום", "סטטוס paid ב-CRM"),
+    ],
+    () => [
+      boxNode(
+        "bg",
+        {
+          backgroundImage: `linear-gradient(150deg, ${theme.ink} 0%, ${theme.accent}66 45%, ${theme.soft} 100%)`,
+        },
+        absoluteLayout(0, 0, "100%", "100%", 1),
+        "רקע",
+      ),
+      textNode(
+        "title",
+        "חבילה אחת · תשלום אחד",
+        { color: "#f8fafc", fontSize: "42px", fontWeight: "900" },
+        absoluteLayout(64, 56, 700, 56, 2),
+      ),
+      textNode(
+        "subtitle",
+        "מתאים כשאין כמה מסלולים — רק דף תשלום ברור לפני פתיחת האזור האישי.",
+        { color: "#e2e8f0", fontSize: "15px", fontWeight: "600" },
+        absoluteLayout(64, 124, 640, 48, 2),
+      ),
+      boxNode(
+        "hero-card",
+        {
+          backgroundColor: theme.card,
+          borderRadius: "24px",
+          border: `1px solid ${theme.line}`,
+          boxShadow: "0 30px 60px -36px rgba(15,23,42,0.55)",
+        },
+        absoluteLayout(64, 200, 640, 420, 2),
+        "חבילה",
+      ),
+      textNode("hn", "מנוי חודשי", { color: theme.ink, fontSize: "22px", fontWeight: "900" }, absoluteLayout(104, 240, 400, 32, 3)),
+      textNode("hp", "₪490", { color: theme.ink, fontSize: "56px", fontWeight: "900" }, absoluteLayout(104, 290, 400, 64, 3)),
+      textNode("hper", "לחודש · כולל גישה מלאה לאזור האישי", { color: theme.muted, fontSize: "14px", fontWeight: "600" }, absoluteLayout(104, 360, 480, 28, 3)),
+      textNode("hf1", "✓  כל העמודים אחרי התחברות", { color: theme.muted, fontSize: "15px", fontWeight: "600" }, absoluteLayout(104, 410, 480, 26, 3)),
+      textNode("hf2", "✓  נתונים אישיים מה-CRM", { color: theme.muted, fontSize: "15px", fontWeight: "600" }, absoluteLayout(104, 444, 480, 26, 3)),
+      textNode("hf3", "✓  ביטול בכל עת", { color: theme.muted, fontSize: "15px", fontWeight: "600" }, absoluteLayout(104, 478, 480, 26, 3)),
+      buttonNode(
+        "hcta",
+        "מעבר לסליקה לתשלום",
+        {
+          color: "#fff",
+          backgroundColor: theme.accent,
+          borderRadius: "14px",
+          fontWeight: "800",
+          fontSize: "15px",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        },
+        absoluteLayout(104, 530, 280, 50, 3),
+        paymentHref,
+      ),
+      ...metricCard("side1", 740, 200, 300, theme, "סטטוס נדרש", "paid"),
+      ...metricCard("side2", 740, 340, 300, theme, "קישור", "הדביקו בסליקה"),
+      ...metricCard("side3", 740, 480, 300, theme, "שער גישה", "לקוחות משלמים"),
+    ],
+  ];
+  return layouts[index % layouts.length]();
+}
+
+function buildPackagesSections(): VisualLibrarySectionTemplate[] {
+  return THEMES.map((theme, index) =>
+    makeSection(
+      `section-portal-packages-${String(index + 1).padStart(2, "0")}`,
+      `חבילות ותשלום — ${theme.name}`,
+      "עמוד חבילות עם קישור לסליקה לפני גישה לאזור האישי",
+      [
+        "packages",
+        "חבילות",
+        "תשלום",
+        "סליקה",
+        "portal-packages",
+        "מנוי",
+        "pricing",
+      ],
+      theme,
+      "760px",
+      packagesNodes(theme, index),
+    ),
+  );
+}
+
 function buildCoursesSections(): VisualLibrarySectionTemplate[] {
   return THEMES.map((theme, index) =>
     makeSection(
@@ -2588,6 +2842,7 @@ export const PORTAL_SHOWCASE_SECTIONS: VisualLibrarySectionTemplate[] = [
   ...buildCoursesSections(),
   ...buildProfileSections(),
   ...buildCustomDataSections(),
+  ...buildPackagesSections(),
   ...buildForgotPasswordSections(),
   ...buildResetPasswordSections(),
   ...legacyAliases,
@@ -2602,6 +2857,7 @@ export const PORTAL_SECTION_KIND_PREFIX: Record<string, string> = {
   courses: "section-portal-courses-",
   profile: "section-portal-profile-",
   "custom-data": "section-portal-custom-data-",
+  packages: "section-portal-packages-",
   "forgot-password": "section-portal-forgot-password-",
   "reset-password": "section-portal-reset-password-",
 };

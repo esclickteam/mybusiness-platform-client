@@ -203,26 +203,34 @@ export default function SitePortalGate({
         : pathname || "/";
 
     if (portalGate.authenticated && portalGate.reason === "forbidden") {
+      const packagesPath = hasDesignedPage(portalPaths.packages)
+        ? portalPaths.packages
+        : "/packages";
+      const accountPath = hasDesignedPage(portalPaths.account)
+        ? portalPaths.account
+        : "/portal/account";
+
       return (
         <div
           dir="rtl"
           className="flex min-h-screen items-center justify-center bg-white px-4"
         >
           <div className="w-full max-w-md rounded-[28px] border border-slate-200 p-8 text-center">
-            <h1 className="text-2xl font-black text-slate-900">אין הרשאה</h1>
+            <h1 className="text-2xl font-black text-slate-900">נדרש תשלום</h1>
             <p className="mt-3 text-sm font-medium text-slate-500">
-              החשבון שלכם באזור האישי אינו מורשה לצפות בעמוד זה.
+              העמוד הזה פתוח ללקוחות משלמים. בחרו חבילה והשלימו תשלום בסליקה כדי
+              לפתוח גישה.
             </p>
             <div className="mt-6 flex flex-wrap justify-center gap-2">
               <a
-                href="/"
-                className="rounded-2xl border border-slate-200 px-4 py-2.5 text-sm font-bold text-slate-700"
+                href={packagesPath}
+                className="rounded-2xl bg-slate-900 px-4 py-2.5 text-sm font-bold text-white"
               >
-                חזרה לדף הבית
+                לחבילות ותשלום
               </a>
               <a
-                href="/portal/account"
-                className="rounded-2xl bg-slate-900 px-4 py-2.5 text-sm font-bold text-white"
+                href={accountPath}
+                className="rounded-2xl border border-slate-200 px-4 py-2.5 text-sm font-bold text-slate-700"
               >
                 החשבון שלי
               </a>
