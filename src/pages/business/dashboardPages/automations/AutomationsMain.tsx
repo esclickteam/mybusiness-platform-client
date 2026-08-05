@@ -274,17 +274,30 @@ export default function AutomationsMain() {
     });
   }, [businessId, handleCreate, loading, searchParams, setSearchParams]);
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (workflow: AutomationWorkflow) => {
     if (!businessId) return;
     if (isAutomationsReadOnly()) {
       toast.error(AUTOMATION_PREVIEW_WRITE_BLOCKED_MESSAGE);
       return;
     }
-    if (!window.confirm("למחוק את האוטומציה?")) return;
+    const name = String(workflow.name || "האוטומציה").trim() || "האוטומציה";
+    const statusHint =
+      workflow.status === "active"
+        ? "האוטומציה פעילה ותיפסק מיד. "
+        : workflow.status === "paused"
+          ? "האוטומציה מושהית. "
+          : "";
+    if (
+      !window.confirm(
+        `${statusHint}למחוק לצמיתות את "${name}"? הפעולה כוללת גם את היסטוריית ההרצות ולא ניתן לשחזר.`
+      )
+    ) {
+      return;
+    }
     try {
-      await deleteAutomationWorkflow(businessId, id);
-      setWorkflows((prev) => prev.filter((w) => w._id !== id));
-      if (active?._id === id) setActive(null);
+      await deleteAutomationWorkflow(businessId, workflow._id);
+      setWorkflows((prev) => prev.filter((w) => w._id !== workflow._id));
+      if (active?._id === workflow._id) setActive(null);
       toast.success("האוטומציה נמחקה");
     } catch (error: unknown) {
       toast.error(readErrorMessage(error, "שגיאה במחיקה"));
@@ -649,18 +662,16 @@ export default function AutomationsMain() {
                               ארכוב
                             </button>
                           ) : null}
-                          {status === "draft" ? (
                           <button
                             type="button"
                             className="af-btn af-btn--danger"
                             disabled={readOnly}
-                            title={writeBlockedTitle}
-                            onClick={() => handleDelete(wf._id)}
+                            title={writeBlockedTitle || "מחיקה לצמיתות"}
+                            onClick={() => void handleDelete(wf)}
                           >
                             <Trash2 size={14} />
                             מחיקה
                           </button>
-                          ) : null}
                         </div>
                       </article>
                     );
