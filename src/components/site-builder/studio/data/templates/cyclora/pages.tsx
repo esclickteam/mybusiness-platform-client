@@ -652,7 +652,8 @@ type HeroSectionProps = SharedProps & {
 
 const HeroSection = React.forwardRef<HTMLElement, HeroSectionProps>(
   function HeroSection({ data, mode, progress }, ref) {
-    const displayProgress = isEditorMode(mode) ? 0.38 : progress;
+    // Edit mode must not invent a different scroll progress — only interaction differs.
+    const displayProgress = progress;
     const contentOpacity = Math.max(0, 1 - displayProgress * 1.35);
     const orbitOpacity = Math.max(
       0,
@@ -714,7 +715,7 @@ const HeroSection = React.forwardRef<HTMLElement, HeroSectionProps>(
                 <div
                   key={`hero-orbit-${index}`}
                   className={`absolute overflow-hidden rounded-[1.75rem] border border-white/15 bg-white/5 p-1 shadow-[0_24px_80px_rgba(0,0,0,0.45)] backdrop-blur-sm ${layout.className} ${
-                    isEditorMode(mode) ? "pointer-events-auto z-[35]" : "pointer-events-none"
+                    isEditorMode(mode) ? "pointer-events-auto" : "pointer-events-none"
                   }`}
                   style={{
                     transform: `translate3d(0, ${verticalShift}px, 0) rotate(${rotate}deg) scale(${scale})`,
@@ -862,23 +863,17 @@ const HeroSection = React.forwardRef<HTMLElement, HeroSectionProps>(
           </div>
 
           <div
-            className={`pointer-events-none absolute left-1/2 top-1/2 z-20 flex h-[52vmin] w-[52vmin] items-center justify-center rounded-full bg-[#f2efe7] text-[10px] font-black uppercase tracking-[0.22em] text-black shadow-[0_0_120px_rgba(242,239,231,0.35)] ${
-              isEditorMode(mode) ? "opacity-100" : ""
-            }`}
+            className="pointer-events-none absolute left-1/2 top-1/2 z-20 flex h-[52vmin] w-[52vmin] items-center justify-center rounded-full bg-[#f2efe7] text-[10px] font-black uppercase tracking-[0.22em] text-black shadow-[0_0_120px_rgba(242,239,231,0.35)]"
             style={{
-              opacity: isEditorMode(mode)
-                ? Math.max(0.88, wipeOpacity)
-                : wipeOpacity,
+              opacity: wipeOpacity,
               transform: `translate(-50%, -50%) scale(${wipeScale})`,
               willChange: "transform, opacity",
             }}
-            aria-hidden={!isEditorMode(mode)}
+            aria-hidden="true"
           >
             <span
               style={{
-                opacity: isEditorMode(mode)
-                  ? 1
-                  : Math.max(0, 1 - displayProgress * 2.4),
+                opacity: Math.max(0, 1 - displayProgress * 2.4),
               }}
             >
               {data.hero.scrollLabel}
@@ -1160,11 +1155,7 @@ function WorkSection({ data, mode }: SharedProps) {
       <div className="relative mt-20">
         {active ? (
           <div
-            className={
-              isEditorMode(mode)
-                ? "relative z-10 mx-auto mb-16 flex h-[24rem] w-[min(88vw,30rem)] flex-col overflow-hidden rounded-[2rem] border border-white/15 bg-black/65 p-3 shadow-[0_40px_120px_rgba(0,0,0,0.65)] backdrop-blur-xl sm:h-[30rem] sm:w-[min(74vw,38rem)]"
-                : `${editorPointerClass(mode)}sticky top-[20vh] z-20 mx-auto mb-8 flex h-[24rem] w-[min(88vw,30rem)] flex-col overflow-hidden rounded-[2rem] border border-white/15 bg-black/65 p-3 shadow-[0_40px_120px_rgba(0,0,0,0.65)] backdrop-blur-xl sm:h-[30rem] sm:w-[min(74vw,38rem)]`
-            }
+            className={`${editorPointerClass(mode)}sticky top-[20vh] z-20 mx-auto mb-8 flex h-[24rem] w-[min(88vw,30rem)] flex-col overflow-hidden rounded-[2rem] border border-white/15 bg-black/65 p-3 shadow-[0_40px_120px_rgba(0,0,0,0.65)] backdrop-blur-xl sm:h-[30rem] sm:w-[min(74vw,38rem)]`}
           >
             <div className="mb-3 flex items-center justify-between px-2 text-[10px] font-black uppercase tracking-[0.18em] text-white/50">
               <span

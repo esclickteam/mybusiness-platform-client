@@ -41,7 +41,7 @@ function parseArgs(argv) {
     limit: 0,
     concurrency: 2,
     skipScreenshots: false,
-    threshold: 0.18,
+    threshold: 0.12,
   };
   for (const arg of argv) {
     if (arg.startsWith("--base=")) opts.base = arg.slice(7);
@@ -191,6 +191,67 @@ function comparePngBuffers(aBuf, bBuf, diffPath, threshold) {
     fs.writeFileSync(diffPath, PNG.sync.write(diff));
   }
   return { ok: ratio <= threshold, mismatchRatio: ratio };
+}
+
+
+async function stabilizePageForScreenshot(page) {
+  await page.addStyleTag({
+    content: `
+      *, *::before, *::after {
+        animation: none !important;
+        animation-delay: 0s !important;
+        animation-duration: 0s !important;
+        transition: none !important;
+        transition-delay: 0s !important;
+        transition-duration: 0s !important;
+        scroll-behavior: auto !important;
+        caret-color: transparent !important;
+      }
+      [data-visual-selection-outline],
+      [data-visual-hover-outline],
+      [data-visual-resize-handle],
+      [data-bizuply-editor-overlay],
+      [data-visual-editor-chrome],
+      .visual-editor-overlay,
+      [data-visual-floating-toolbar] {
+        display: none !important;
+        opacity: 0 !important;
+        visibility: hidden !important;
+      }
+    `,
+  });
+
+  await page.evaluate(async () => {
+    const root = document.scrollingElement || document.documentElement;
+    root.scrollTop = 0;
+    window.scrollTo(0, 0);
+
+    // Force reveal states open so preview/edit don't diverge mid-animation.
+    document.querySelectorAll("[data-revealed], .cyclora-reveal, [data-reveal], [data-animate]").forEach((node) => {
+      if (node instanceof HTMLElement) {
+        node.dataset.revealed = "true";
+        node.style.opacity = "1";
+        node.style.transform = "none";
+        node.style.visibility = "visible";
+        node.style.filter = "none";
+      }
+    });
+
+    // Pause videos / gifs-like media for stable frames.
+    document.querySelectorAll("video").forEach((video) => {
+      try {
+        video.pause();
+        video.currentTime = 0;
+      } catch {}
+    });
+
+    // Drain pending animation frames once so layout settles at scroll=0.
+    await new Promise((resolve) => {
+      requestAnimationFrame(() => requestAnimationFrame(resolve));
+    });
+  });
+
+  await page.waitForTimeout(150);
 }
 
 async function captureSurface(browser, url, viewport, screenshotPath, skipShot) {
