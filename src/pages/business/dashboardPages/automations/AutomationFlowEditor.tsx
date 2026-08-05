@@ -258,6 +258,15 @@ function toFlowNodes(workflow: AutomationWorkflow): Node[] {
   }));
 }
 
+/** Keep the inspector open across autosave / node remounts. */
+function withSelectedNode(nodes: Node[], selectedId: string | null): Node[] {
+  if (!selectedId) return nodes.map((n) => ({ ...n, selected: false }));
+  return nodes.map((n) => ({
+    ...n,
+    selected: n.id === selectedId,
+  }));
+}
+
 function toFlowEdges(workflow: AutomationWorkflow): Edge[] {
   return (workflow.edges || []).map((e) =>
     styleEdge({
@@ -373,6 +382,7 @@ function EditorInner({
   const [nodes, setNodes, onNodesChange] = useNodesState(toFlowNodes(workflow));
   const [edges, setEdges, onEdgesChange] = useEdgesState(toFlowEdges(workflow));
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const selectedIdRef = useRef<string | null>(null);
   const savingRef = useRef(false);
   const dirty =
     name !== workflow.name ||
@@ -382,6 +392,20 @@ function EditorInner({
   useEffect(() => {
     savingRef.current = saving;
   }, [saving]);
+
+  useEffect(() => {
+    selectedIdRef.current = selectedId;
+  }, [selectedId]);
+
+  // If the selected module was removed, clear selection; otherwise keep the
+  // inspector pinned even when React Flow briefly reports an empty selection
+  // (pane click, remount after autosave, hydrate effects).
+  useEffect(() => {
+    if (!selectedId) return;
+    if (!nodes.some((n) => n.id === selectedId)) {
+      setSelectedId(null);
+    }
+  }, [nodes, selectedId]);
 
   const loadApprovedWhatsAppTemplates = useCallback(async () => {
     setWaLoading(true);
@@ -820,7 +844,7 @@ function EditorInner({
       });
       onSaved(saved);
       setName(saved.name || name);
-      setNodes(toFlowNodes(saved));
+      setNodes(withSelectedNode(toFlowNodes(saved), selectedIdRef.current));
       setEdges(toFlowEdges(saved));
       setSaveState("saved");
       if (!quiet) toast.success("הטיוטה נשמרה");
@@ -911,7 +935,9 @@ function EditorInner({
       }
       onSaved(result.workflow);
       setName(result.workflow.name || name);
-      setNodes(toFlowNodes(result.workflow));
+      setNodes(
+        withSelectedNode(toFlowNodes(result.workflow), selectedIdRef.current)
+      );
       setEdges(toFlowEdges(result.workflow));
       setSaveState("saved");
       setPublishError("");
@@ -1256,8 +1282,14 @@ function EditorInner({
           nodeTypes={automationNodeTypes}
           onDrop={readOnly ? undefined : onDrop}
           onDragOver={readOnly ? undefined : onDragOver}
+          onNodeClick={(_, node) => {
+            setSelectedId(node.id);
+          }}
           onSelectionChange={({ nodes: selected }) => {
-            setSelectedId(selected[0]?.id || null);
+            // Keep the last selected module when the canvas selection clears
+            // (empty pane click / remount). Only switch when a node is chosen.
+            const nextId = selected[0]?.id;
+            if (nextId) setSelectedId(nextId);
           }}
           nodesDraggable={!readOnly}
           nodesConnectable={!readOnly}
