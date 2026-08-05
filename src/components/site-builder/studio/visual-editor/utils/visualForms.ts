@@ -405,7 +405,7 @@ export function createDefaultFormBuilderConfig(): BizuplyFormConfig {
     id: "contact-form",
     title: "טופס יצירת קשר",
     submitText: "שליחת הודעה",
-    successMessage: "ההודעה נשלחה בהצלחה",
+    successMessage: "תודה! קיבלנו את הפנייה ונחזור אליך בהקדם.",
     colors: { ...DEFAULT_FORM_COLORS },
     fields: [
       {

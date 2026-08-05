@@ -45,6 +45,9 @@ export type AutomationLastExecution = {
   completedAt?: string | null;
   failedAt?: string | null;
   error?: string;
+  errorCode?: string;
+  providerMessage?: string;
+  retryable?: boolean;
 } | null;
 
 export type AutomationWorkflow = {
@@ -94,6 +97,9 @@ export type AutomationExecution = {
     output?: unknown;
   }>;
   error?: string;
+  errorCode?: string;
+  providerMessage?: string;
+  retryable?: boolean;
   retryCount?: number;
   startedAt?: string | null;
   completedAt?: string | null;
