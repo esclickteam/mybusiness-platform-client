@@ -7,6 +7,11 @@ import {
   DEFAULT_FORM_COLORS,
   normalizeFormColors,
 } from "../../FormBuilderModal";
+import {
+  isTemplateSkinnedForm,
+  TEMPLATE_FORM_SKIN_ATTR,
+  TEMPLATE_FORM_SKIN_VALUE,
+} from "../../data/templates/shared/templateLeadForm";
 
 import {
   FORM_BUILDER_KEY,
@@ -168,6 +173,61 @@ export function findFormNodeByElementId(
   return null;
 }
 
+function formLooksSingleColumn(formNode: HTMLFormElement) {
+  if (formNode.querySelector("[data-bizuply-form-field-width='half']")) {
+    return false;
+  }
+
+  const fieldsGrid = formNode.querySelector<HTMLElement>(
+    "[data-bizuply-form-fields='true']",
+  );
+  const gridClass = String(
+    fieldsGrid?.className || formNode.className || "",
+  ).toLowerCase();
+
+  if (
+    gridClass.includes("grid-cols-2") ||
+    gridClass.includes("md:grid-cols-2") ||
+    gridClass.includes("sm:grid-cols-2")
+  ) {
+    return false;
+  }
+
+  return true;
+}
+
+function collectFormColorsFromDom(
+  formNode: HTMLFormElement,
+): BizuplyFormConfig["colors"] | undefined {
+  if (typeof window === "undefined" || typeof window.getComputedStyle !== "function") {
+    return undefined;
+  }
+
+  const submitButton = formNode.querySelector<HTMLElement>(
+    'button[type="submit"], input[type="submit"]',
+  );
+  const sampleField = formNode.querySelector<HTMLElement>(
+    "input:not([type='hidden']):not([type='submit']):not([type='button']), textarea, select",
+  );
+
+  const formStyles = window.getComputedStyle(formNode);
+  const buttonStyles = submitButton
+    ? window.getComputedStyle(submitButton)
+    : null;
+  const fieldStyles = sampleField ? window.getComputedStyle(sampleField) : null;
+
+  return normalizeFormColors({
+    formBg: formStyles.backgroundColor || undefined,
+    formBorder: formStyles.borderColor || undefined,
+    fieldBg: fieldStyles?.backgroundColor || undefined,
+    fieldBorder: fieldStyles?.borderColor || undefined,
+    fieldText: fieldStyles?.color || undefined,
+    buttonBg: buttonStyles?.backgroundColor || undefined,
+    buttonText: buttonStyles?.color || undefined,
+    buttonBorder: buttonStyles?.borderColor || undefined,
+  });
+}
+
 export function collectFormConfigFromDom(
   formNode: HTMLFormElement | null,
   elementId = "contact-form",
@@ -181,6 +241,8 @@ export function collectFormConfigFromDom(
     };
   }
 
+  const preserveTemplateSkin = isTemplateSkinnedForm(formNode);
+  const singleColumn = formLooksSingleColumn(formNode);
   const fields: BizuplyFormField[] = [];
 
   Array.from(
@@ -217,6 +279,13 @@ export function collectFormConfigFromDom(
       .closest("[data-bizuply-form-field-wrapper]")
       ?.getAttribute("data-bizuply-form-field-width");
 
+    const explicitWidth =
+      widthAttr === "full" || wrapperWidth === "full"
+        ? "full"
+        : widthAttr === "half" || wrapperWidth === "half"
+          ? "half"
+          : undefined;
+
     fields.push({
       id: fieldId,
       label: getInputLabel(fieldNode, `שדה ${index + 1}`),
@@ -231,31 +300,34 @@ export function collectFormConfigFromDom(
               .map((option) => option.textContent?.trim() || "")
               .filter(Boolean)
           : [],
-      width:
-        widthAttr === "full" || wrapperWidth === "full"
-          ? "full"
-          : widthAttr === "half" || wrapperWidth === "half"
-            ? "half"
-            : undefined,
+      width: explicitWidth || (preserveTemplateSkin || singleColumn ? "full" : undefined),
     });
   });
 
   const submitButton = formNode.querySelector(
     'button[type="submit"], input[type="submit"]',
   );
+  const titleNode = formNode.querySelector<HTMLElement>(
+    "[data-bizuply-form-title='true'], [data-bizuply-form-header] h2",
+  );
+  const title = preserveTemplateSkin
+    ? String(titleNode?.textContent || "").trim()
+    : String(titleNode?.textContent || "").trim() || fallback.title;
 
   return normalizeFormBuilderConfig({
     id:
       formNode.getAttribute("data-bizuply-form-id") ||
       elementId ||
       fallback.id,
-    title: fallback.title,
+    title,
     submitText:
       String(submitButton?.textContent || "").trim() || fallback.submitText,
     successMessage:
       formNode.getAttribute("data-bizuply-success-message") ||
       fallback.successMessage,
     fields: fields.length ? fields : fallback.fields,
+    colors: collectFormColorsFromDom(formNode) || fallback.colors,
+    preserveTemplateSkin,
   });
 }
 
@@ -372,14 +444,21 @@ export function normalizeFormBuilderConfig(value: unknown): BizuplyFormConfig {
 
   const source = value as Partial<BizuplyFormConfig>;
 
+  const preserveTemplateSkin = Boolean(source.preserveTemplateSkin);
+  const rawTitle =
+    source.title === undefined || source.title === null
+      ? fallback.title
+      : String(source.title);
+
   return {
     ...fallback,
     ...source,
     id: String(source.id || fallback.id),
-    title: String(source.title || fallback.title),
+    title: preserveTemplateSkin ? rawTitle : rawTitle || fallback.title,
     submitText: String(source.submitText || fallback.submitText),
     successMessage: String(source.successMessage || fallback.successMessage),
     colors: normalizeFormColors(source.colors),
+    preserveTemplateSkin,
     fields: Array.isArray(source.fields)
       ? source.fields.map((field, index) => ({
           id: String(field?.id || `field-${index + 1}`),
@@ -739,6 +818,8 @@ export function applyFormBuilderConfigToFormNode(
   if (isBookingWidgetForm(formNode)) return;
 
   const safeForm = normalizeFormBuilderConfig(form);
+  const templateSkin =
+    isTemplateSkinnedForm(formNode) || Boolean(safeForm.preserveTemplateSkin);
 
   formNode.setAttribute("data-bizuply-form-builder", "true");
   formNode.setAttribute(
@@ -750,6 +831,28 @@ export function applyFormBuilderConfigToFormNode(
     safeForm.successMessage || "",
   );
   formNode.setAttribute("novalidate", "false");
+
+  /*
+    Template-native forms keep their React/Tailwind markup.
+    Only sync metadata so editor/preview/public stay visually identical.
+  */
+  if (templateSkin) {
+    formNode.setAttribute(TEMPLATE_FORM_SKIN_ATTR, TEMPLATE_FORM_SKIN_VALUE);
+    const submitButton = formNode.querySelector(
+      'button[type="submit"], input[type="submit"]',
+    );
+    if (submitButton && safeForm.submitText) {
+      const labelNode =
+        submitButton.querySelector("[data-visual-ignore-select='true']") ||
+        submitButton;
+      if (labelNode === submitButton) {
+        submitButton.textContent = safeForm.submitText;
+      } else {
+        labelNode.textContent = safeForm.submitText;
+      }
+    }
+    return;
+  }
 
   /*
     שומרים classes מקוריים של התבנית, אבל מוסיפים מעטפת אחידה ויוקרתית.

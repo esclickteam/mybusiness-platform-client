@@ -76,6 +76,7 @@ import {
   normalizeFormBuilderConfig,
   resolveFormContext,
 } from "../utils/visualForms";
+import { isGenericDefaultFormConfig } from "../../data/templates/shared/templateLeadForm";
 import { buildVisualRuntimeCss } from "../utils/visualCssRuntime";
 import { applyAllVisualDataToDom, previewVisualStyleOnDom } from "../utils/visualDomApply";
 import {
@@ -2568,7 +2569,19 @@ export function useVisualEditorState({
         readFormBuilderByElement(dataRef.current || {})[elementId];
 
       const parsed = collectFormConfigFromDom(formNode, elementId);
-      const nextForm = normalizeFormBuilderConfig(saved || parsed);
+      const templateSkin =
+        formNode.getAttribute("data-bizuply-form-skin") === "template" ||
+        Boolean(parsed.preserveTemplateSkin);
+      /*
+        Template forms must stay on their native markup. Prefer the live DOM
+        whenever a stale generic Form Builder default was previously saved.
+      */
+      const useParsed =
+        templateSkin ||
+        !saved ||
+        isGenericDefaultFormConfig(saved) ||
+        (parsed.preserveTemplateSkin && !saved.preserveTemplateSkin);
+      const nextForm = normalizeFormBuilderConfig(useParsed ? parsed : saved);
 
       setData((current) => {
         const next = writeFormBuilderForElement(
@@ -2586,9 +2599,12 @@ export function useVisualEditorState({
         elementId,
       });
 
-      window.requestAnimationFrame(() => {
-        applyFormBuilderToDom(dataRef.current || {});
-      });
+      // Template-skinned forms: metadata only — never rewrite markup on open.
+      if (!templateSkin && !nextForm.preserveTemplateSkin) {
+        window.requestAnimationFrame(() => {
+          applyFormBuilderToDom(dataRef.current || {});
+        });
+      }
 
       return true;
     },

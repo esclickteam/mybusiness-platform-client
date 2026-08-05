@@ -2,6 +2,11 @@ import React, { useMemo, useState } from "react";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { serenovaDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
+import {
+  resolveTemplateLeadForm,
+  TEMPLATE_FORM_SKIN_VALUE,
+} from "../shared/templateLeadForm";
+import type { BizuplyFormField } from "../../../FormBuilderModal";
 
 export const serenovaPages = [
   { id: "home", label: "בית", slug: "/" },
@@ -36,6 +41,236 @@ function getValue(data: Record<string, any>, key: string) {
 
 function cx(...classes: Array<string | false | null | undefined>) {
   return classes.filter(Boolean).join(" ");
+}
+
+const SERENOVA_CONTACT_FIELDS: BizuplyFormField[] = [
+  {
+    id: "name",
+    label: "שם מלא",
+    type: "text",
+    placeholder: "שם מלא",
+    required: false,
+    options: [],
+    width: "full",
+  },
+  {
+    id: "phone",
+    label: "טלפון",
+    type: "phone",
+    placeholder: "טלפון",
+    required: false,
+    options: [],
+    width: "full",
+  },
+  {
+    id: "email",
+    label: "אימייל",
+    type: "email",
+    placeholder: "אימייל",
+    required: false,
+    options: [],
+    width: "full",
+  },
+  {
+    id: "other",
+    label: "הודעה",
+    type: "textarea",
+    placeholder: "מה תרצו לשאול?",
+    required: false,
+    options: [],
+    width: "full",
+  },
+];
+
+const SERENOVA_MODAL_FIELDS: BizuplyFormField[] = [
+  {
+    id: "name",
+    label: "שם מלא",
+    type: "text",
+    placeholder: "שם מלא",
+    required: false,
+    options: [],
+    width: "full",
+  },
+  {
+    id: "phone",
+    label: "טלפון",
+    type: "phone",
+    placeholder: "טלפון",
+    required: false,
+    options: [],
+    width: "full",
+  },
+  {
+    id: "email",
+    label: "אימייל",
+    type: "email",
+    placeholder: "אימייל",
+    required: false,
+    options: [],
+    width: "full",
+  },
+  {
+    id: "interest",
+    label: "מה מעניין אותך?",
+    type: "select",
+    placeholder: "מה מעניין אותך?",
+    required: false,
+    options: [
+      "מה מעניין אותך?",
+      "טיפול אישי",
+      "ייעוץ רגשי",
+      "ליווי זוגי",
+      "סדנה / הרצאה",
+    ],
+    width: "full",
+  },
+  {
+    id: "other",
+    label: "הודעה",
+    type: "textarea",
+    placeholder: "כמה מילים על הצורך",
+    required: false,
+    options: [],
+    width: "full",
+  },
+];
+
+const fieldClassByTone = {
+  section:
+    "rounded-2xl border border-[#244236]/10 bg-white px-5 py-4 text-right outline-none transition duration-300 focus:border-[#b99067]",
+  modal:
+    "rounded-2xl border border-[#244236]/10 bg-white/80 px-5 py-4 text-right outline-none transition focus:border-[#b99067]",
+} as const;
+
+function renderSerenovaField(
+  field: BizuplyFormField,
+  tone: keyof typeof fieldClassByTone,
+  textareaClassName = "min-h-36",
+) {
+  const baseClass = fieldClassByTone[tone];
+  const name = field.id;
+  const placeholder = field.placeholder || field.label;
+  const className =
+    field.type === "textarea" ? cx(baseClass, textareaClassName) : baseClass;
+
+  if (field.type === "textarea") {
+    return (
+      <textarea
+        key={name}
+        name={name}
+        data-bizuply-form-field-id={name}
+        data-bizuply-form-field-width="full"
+        placeholder={placeholder}
+        required={Boolean(field.required)}
+        className={className}
+      />
+    );
+  }
+
+  if (field.type === "select") {
+    const options = field.options?.length
+      ? field.options
+      : [placeholder || "בחרו אפשרות"];
+    return (
+      <select
+        key={name}
+        name={name}
+        data-bizuply-form-field-id={name}
+        data-bizuply-form-field-width="full"
+        required={Boolean(field.required)}
+        className={className}
+        defaultValue={options[0]}
+      >
+        {options.map((option) => (
+          <option key={option} value={option}>
+            {option}
+          </option>
+        ))}
+      </select>
+    );
+  }
+
+  const htmlType =
+    field.type === "phone"
+      ? "tel"
+      : field.type === "email" || field.type === "number" || field.type === "date"
+        ? field.type
+        : "text";
+
+  return (
+    <input
+      key={name}
+      name={name}
+      data-bizuply-form-field-id={name}
+      data-bizuply-form-field-width="full"
+      placeholder={placeholder}
+      required={Boolean(field.required)}
+      className={className}
+      type={htmlType}
+      autoComplete={
+        field.type === "email"
+          ? "email"
+          : field.type === "phone"
+            ? "tel"
+            : field.id === "name"
+              ? "name"
+              : undefined
+      }
+    />
+  );
+}
+
+function SerenovaLeadForm({
+  data,
+  formId,
+  className,
+  tone,
+  fallbackFields,
+  textareaClassName = "min-h-36",
+}: {
+  data: Record<string, any>;
+  formId: string;
+  className: string;
+  tone: keyof typeof fieldClassByTone;
+  fallbackFields: BizuplyFormField[];
+  textareaClassName?: string;
+}) {
+  const resolved = resolveTemplateLeadForm(data, formId, {
+    fields: fallbackFields,
+    submitText: String(getValue(data, "contactButton") || "שליחת פרטים"),
+    title: "",
+    successMessage: "תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.",
+  });
+
+  return (
+    <form
+      className={className}
+      data-bizuply-block="lead-form"
+      data-bizuply-crm-lead="true"
+      data-bizuply-form-builder="true"
+      data-bizuply-form-id={formId}
+      data-bizuply-form-skin={TEMPLATE_FORM_SKIN_VALUE}
+      data-bizuply-success-message={resolved.successMessage}
+    >
+      <div className="grid gap-4">
+        {resolved.title ? (
+          <h3 className="text-2xl font-semibold tracking-[-0.04em] text-[#20342a]">
+            {resolved.title}
+          </h3>
+        ) : null}
+        {resolved.fields.map((field) =>
+          renderSerenovaField(field, tone, textareaClassName),
+        )}
+        <button
+          type="submit"
+          className="rounded-full bg-[#b99067] px-7 py-4 text-base font-semibold text-white shadow-lg shadow-[#b99067]/20 transition duration-300 hover:-translate-y-0.5"
+        >
+          {resolved.submitText}
+        </button>
+      </div>
+    </form>
+  );
 }
 
 function mediaProps(id: string, label?: string) {
@@ -297,40 +532,14 @@ function BookingModal({
             </div>
           </div>
 
-          <form className="p-6 lg:p-10" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="serenova-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-            <div className="grid gap-4">
-              <input
-                className="rounded-2xl border border-[#244236]/10 bg-white/80 px-5 py-4 text-right outline-none transition focus:border-[#b99067]"
-                placeholder="שם מלא"
-               name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-              <input
-                className="rounded-2xl border border-[#244236]/10 bg-white/80 px-5 py-4 text-right outline-none transition focus:border-[#b99067]"
-                placeholder="טלפון"
-               name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-              <input
-                className="rounded-2xl border border-[#244236]/10 bg-white/80 px-5 py-4 text-right outline-none transition focus:border-[#b99067]"
-                placeholder="אימייל"
-               name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
-              <select className="rounded-2xl border border-[#244236]/10 bg-white/80 px-5 py-4 text-right outline-none transition focus:border-[#b99067]">
-                <option>מה מעניין אותך?</option>
-                <option>טיפול אישי</option>
-                <option>ייעוץ רגשי</option>
-                <option>ליווי זוגי</option>
-                <option>סדנה / הרצאה</option>
-              </select>
-              <textarea
-                className="min-h-28 rounded-2xl border border-[#244236]/10 bg-white/80 px-5 py-4 text-right outline-none transition focus:border-[#b99067]"
-                placeholder="כמה מילים על הצורך"
-               name="other" data-bizuply-form-field-id="other"></textarea>
-
-              <button
-                type="submit"
-                className="rounded-full bg-[#b99067] px-7 py-4 text-base font-semibold text-white shadow-lg shadow-[#b99067]/20 transition hover:-translate-y-0.5"
-              >
-                {getValue(data, "contactButton")}
-              </button>
-            </div>
-          </form>
+          <SerenovaLeadForm
+            data={data}
+            formId="serenova-contact"
+            className="p-6 lg:p-10"
+            tone="modal"
+            fallbackFields={SERENOVA_MODAL_FIELDS}
+            textareaClassName="min-h-28"
+          />
         </div>
       </div>
     </div>
@@ -1189,33 +1398,14 @@ function ContactSection({
           </div>
         </div>
 
-        <form className="m-4 rounded-[42px] bg-[#f7efe3] p-5 text-[#20342a] shadow-inner lg:m-6 lg:p-7" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="serenova-contact-2" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-          <div className="grid gap-4">
-            <input
-              className="rounded-2xl border border-[#244236]/10 bg-white px-5 py-4 text-right outline-none transition duration-300 focus:border-[#b99067]"
-              placeholder="שם מלא"
-             name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-            <input
-              className="rounded-2xl border border-[#244236]/10 bg-white px-5 py-4 text-right outline-none transition duration-300 focus:border-[#b99067]"
-              placeholder="טלפון"
-             name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-            <input
-              className="rounded-2xl border border-[#244236]/10 bg-white px-5 py-4 text-right outline-none transition duration-300 focus:border-[#b99067]"
-              placeholder="אימייל"
-             name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
-            <textarea
-              className="min-h-36 rounded-2xl border border-[#244236]/10 bg-white px-5 py-4 text-right outline-none transition duration-300 focus:border-[#b99067]"
-              placeholder="מה תרצו לשאול?"
-             name="other" data-bizuply-form-field-id="other"></textarea>
-
-            <button
-              type="submit"
-              className="rounded-full bg-[#b99067] px-7 py-4 text-base font-semibold text-white shadow-lg shadow-[#b99067]/20 transition duration-300 hover:-translate-y-0.5"
-            >
-              {getValue(data, "contactButton")}
-            </button>
-          </div>
-        </form>
+        <SerenovaLeadForm
+          data={data}
+          formId="serenova-contact-2"
+          className="m-4 rounded-[42px] bg-[#f7efe3] p-5 text-[#20342a] shadow-inner lg:m-6 lg:p-7"
+          tone="section"
+          fallbackFields={SERENOVA_CONTACT_FIELDS}
+          textareaClassName="min-h-36"
+        />
       </div>
     </section>
   );
@@ -1410,7 +1600,7 @@ export default function SerenovaPages({
   return (
     <div
       dir="rtl"
-      data-template-id={mode === "preview" ? "serenova-preview" : "serenova"}
+      data-template-id="serenova"
       className="min-h-screen w-full overflow-x-hidden bg-[radial-gradient(circle_at_12%_8%,rgba(184,207,174,0.38),transparent_28%),radial-gradient(circle_at_88%_18%,rgba(215,191,151,0.32),transparent_28%),radial-gradient(circle_at_82%_78%,rgba(184,207,174,0.20),transparent_24%),linear-gradient(180deg,#f7efe3_0%,#f2eadc_48%,#edf2ea_100%)] font-sans text-[#20342a]"
     >
       <Header
