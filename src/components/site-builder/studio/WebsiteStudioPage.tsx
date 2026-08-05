@@ -6325,9 +6325,11 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
 <span
   data-client-variable="true"
   data-client-variable-key="${variable.key}"
+  data-bizuply-crm-field="${variable.key}"
+  data-bizuply-crm-field-part="value"
   class="inline-flex items-center rounded-full bg-violet-50 px-3 py-1 text-sm font-black text-violet-700 ring-1 ring-violet-100"
 >
-  {{${variable.key}}}
+  ${variable.label || variable.key}
 </span>`;
 
       const target: any = getSafeAppendTarget(editor);

@@ -890,7 +890,7 @@ function renderCustomDataPanel(container, theme, fields, { editorMode = false } 
           { key: "weight", label: "משקל", type: "number", value: 72 },
           {
             key: "treatments_left",
-            label: "עמות טיפולים",
+            label: "כמות טיפולים",
             type: "number",
             value: 4,
           },
@@ -1137,7 +1137,7 @@ function renderAccountPanel(
     editorMode && (!customData || !customData.length)
       ? [
           { label: "משקל", value: 72, type: "number" },
-          { label: "עמות טיפולים", value: 4, type: "number" },
+          { label: "כמות טיפולים", value: 4, type: "number" },
           { label: "יתרה", value: 250, type: "number" },
           { label: "מפגשים", value: 8, type: "number" },
         ]
@@ -1680,6 +1680,125 @@ export function pageHasPortalWidget(root) {
   );
 }
 
+const SAMPLE_CRM_FIELDS = [
+  { key: "weight", label: "משקל", type: "number", value: 72 },
+  {
+    key: "treatments_left",
+    label: "כמות טיפולים",
+    type: "number",
+    value: 4,
+  },
+  { key: "balance", label: "יתרה", type: "number", value: 250 },
+  {
+    key: "sessions_done",
+    label: "מפגשים שבוצעו",
+    type: "number",
+    value: 8,
+  },
+];
+
+function buildCustomDataMap(fields) {
+  const map = new Map();
+  (Array.isArray(fields) ? fields : []).forEach((field) => {
+    const key = String(field?.key || "").trim();
+    if (key) map.set(key, field);
+  });
+  return map;
+}
+
+function resolveBoundFieldText(field, part, key) {
+  if (!field) {
+    if (part === "label") return key || "נתון";
+    if (part === "both") return `${key || "נתון"}: —`;
+    return "—";
+  }
+  const label = field.label || key || "נתון";
+  const value = formatCustomDataDisplay(field);
+  if (part === "label") return label;
+  if (part === "both") return `${label}: ${value}`;
+  return value;
+}
+
+/**
+ * Fill any designer-placed node that is bound to a CRM custom field.
+ * Supports:
+ * - data-bizuply-crm-field="weight"
+ * - data-bizuply-crm-field-part="value|label|both"
+ * - legacy data-client-variable-key
+ */
+export function applyPortalCrmFieldBindings(root, customData, options = {}) {
+  if (!root || typeof root.querySelectorAll !== "function") return 0;
+
+  const editorMode = Boolean(options.editorMode);
+  const map = buildCustomDataMap(
+    Array.isArray(customData) && customData.length
+      ? customData
+      : editorMode
+        ? SAMPLE_CRM_FIELDS
+        : [],
+  );
+
+  const nodes = root.querySelectorAll(
+    "[data-bizuply-crm-field], [data-client-variable-key]",
+  );
+
+  let count = 0;
+  nodes.forEach((node) => {
+    const key = String(
+      node.getAttribute("data-bizuply-crm-field") ||
+        node.getAttribute("data-client-variable-key") ||
+        "",
+    ).trim();
+    if (!key) return;
+
+    const part = String(
+      node.getAttribute("data-bizuply-crm-field-part") || "value",
+    )
+      .trim()
+      .toLowerCase();
+
+    const field = map.get(key);
+    const nextText = resolveBoundFieldText(field, part, key);
+    if (node.textContent !== nextText) {
+      node.textContent = nextText;
+    }
+    node.setAttribute("data-bizuply-crm-field-bound", "1");
+    count += 1;
+  });
+
+  return count;
+}
+
+async function refreshPortalCrmFieldBindings(root, { siteId, editorMode }) {
+  if (!root) return;
+
+  const hasBoundNodes = Boolean(
+    root.querySelector(
+      "[data-bizuply-crm-field], [data-client-variable-key]",
+    ),
+  );
+  if (!hasBoundNodes) return;
+
+  if (editorMode) {
+    applyPortalCrmFieldBindings(root, SAMPLE_CRM_FIELDS, { editorMode: true });
+    return;
+  }
+
+  if (!siteId) {
+    applyPortalCrmFieldBindings(root, [], { editorMode: false });
+    return;
+  }
+
+  try {
+    const data = await sitePortalMe(siteId);
+    applyPortalCrmFieldBindings(root, data.customData || [], {
+      editorMode: false,
+    });
+  } catch {
+    applyPortalCrmFieldBindings(root, [], { editorMode: false });
+  }
+}
+
 export function mountPublicPortalWidgets(root, options = {}) {
   if (!root || typeof document === "undefined") return;
 
@@ -1815,4 +1934,30 @@ export function mountPublicPortalWidgets(root, options = {}) {
       mountCart(node, { businessId });
     }
   });
+
+  // Bind individual CRM fields placed anywhere in the page design.
+  void refreshPortalCrmFieldBindings(root, { siteId, editorMode });
+
+  if (
+    typeof document !== "undefined" &&
+    !root.__bizuplyCrmFieldsBound &&
+    !editorMode
+  ) {
+    root.__bizuplyCrmFieldsBound = true;
+    const onVisible = () => {
+      if (document.visibilityState === "visible") {
+        void refreshPortalCrmFieldBindings(root, { siteId, editorMode: false });
+      }
+    };
+    document.addEventListener("visibilitychange", onVisible);
+    const intervalId = window.setInterval(() => {
+      if (document.visibilityState === "visible") {
+        void refreshPortalCrmFieldBindings(root, { siteId, editorMode: false });
+      }
+    }, 20000);
+    root.__bizuplyCrmFieldsCleanup = () => {
+      document.removeEventListener("visibilitychange", onVisible);
+      window.clearInterval(intervalId);
+    };
+  }
 }

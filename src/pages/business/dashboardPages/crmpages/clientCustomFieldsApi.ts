@@ -220,7 +220,7 @@ export function createExampleClientFields(): ConfiguredClientField[] {
     {
       id: uid("client_field"),
       key: "treatments_left",
-      label: "עמות טיפולים",
+      label: "כמות טיפולים",
       type: "number",
       description: "כמה טיפולים נותרו בחבילה",
       placeholder: "לדוגמה: 4",

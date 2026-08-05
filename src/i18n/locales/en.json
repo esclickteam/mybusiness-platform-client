@@ -2171,7 +2171,7 @@
         "title": "Client variable fields",
         "subtitle": "Define which data types appear in every client dossier. Then fill a value per client. Fields marked for the personal area update automatically for the logged-in client.",
         "addField": "Add field",
-        "addExamples": "Add examples (weight / treatments / balance)",
+        "addExamples": "Add examples (weight / treatment count / balance)",
         "empty": "No variable fields yet. Add a field or load examples.",
         "fieldN": "Field {{n}}",
         "label": "Field label",
