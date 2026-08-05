@@ -2132,7 +2132,7 @@ function EditorInner({
                                 selectedNode.data?.body ||
                                 ""
                             )}
-                            placeholder="<p>שלום {{lead.name}}</p>"
+                            placeholder='<div dir="rtl"><p>שלום {{lead.name}}</p></div>'
                             onChange={(e) =>
                               updateSelectedData({
                                 html: e.target.value,
