@@ -842,7 +842,7 @@ export default function VisualFloatingToolbar({
   const [gradientAngle, setGradientAngle] = useState(90);
   const [crmFields, setCrmFields] = useState<ConfiguredClientField[]>([]);
   const [crmFieldPart, setCrmFieldPart] = useState<"value" | "label" | "both">(
-    "value",
+    "both",
   );
 
   const elementId = getElementId(element);
@@ -1267,12 +1267,15 @@ export default function VisualFloatingToolbar({
     }
 
     const field = crmFields.find((item) => item.key === fieldKey);
+    const sampleValue = String(field?.placeholder || "")
+      .replace(/^לדוגמה:\s*/i, "")
+      .trim() || "X";
     const sample =
       part === "label"
         ? field?.label || fieldKey
         : part === "both"
-          ? `${field?.label || fieldKey}: ${field?.placeholder || "—"}`
-          : field?.placeholder || field?.label || fieldKey;
+          ? `${field?.label || fieldKey} - ${sampleValue}`
+          : sampleValue || field?.label || fieldKey;
 
     editor?.updateAttributes?.(elementId, {
       "data-bizuply-crm-field": fieldKey,
@@ -1616,7 +1619,7 @@ export default function VisualFloatingToolbar({
                   >
                     <option value="value">ערך</option>
                     <option value="label">תווית</option>
-                    <option value="both">תווית+ערך</option>
+                    <option value="both">שם - ערך</option>
                   </SelectControl>
                 ) : null}
               </>

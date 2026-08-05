@@ -83,6 +83,11 @@ import type {
 } from "./library/visualLibraryTypes";
 
 import VisualPluginsAddPanel from "./VisualPluginsAddPanel";
+import {
+  createExampleClientFields,
+  fetchConfiguredClientFields,
+  type ConfiguredClientField,
+} from "../../../../pages/business/dashboardPages/crmpages/clientCustomFieldsApi";
 
 type PanelMode = "add" | "layers" | "code" | null;
 type AddPanelTab =
@@ -99,7 +104,23 @@ type ElementCategory =
   | "text"
   | "buttons"
   | "media"
-  | "shapes";
+  | "shapes"
+  | "crm";
+
+function sampleCrmFieldValue(field: ConfiguredClientField) {
+  const fromPlaceholder = String(field.placeholder || "")
+    .replace(/^לדוגמה:\s*/i, "")
+    .trim();
+  if (fromPlaceholder) return fromPlaceholder;
+
+  const defaults: Record<string, string> = {
+    weight: "72",
+    treatments_left: "4",
+    balance: "250",
+    sessions_done: "8",
+  };
+  return defaults[field.key] || "X";
+}
 
 type SectionQuickFilter = "all" | "recommended" | "recent" | "favorites";
 
@@ -254,7 +275,8 @@ type LibraryElement = {
     | "image"
     | "video"
     | "box"
-    | "divider";
+    | "divider"
+    | "crm";
   action: () => void | Promise<any>;
 };
 
@@ -267,6 +289,7 @@ const ELEMENT_CATEGORY_LABELS: Array<{
   { id: "buttons", label: "כפתורים" },
   { id: "media", label: "מדיה" },
   { id: "shapes", label: "קופסאות וצורות" },
+  { id: "crm", label: "נתונים משתנים" },
 ];
 
 function CodeField({
@@ -370,6 +393,21 @@ function ElementPreview({
     );
   }
 
+  if (kind === "crm") {
+    return (
+      <div className="flex h-full items-center justify-center bg-gradient-to-br from-slate-50 via-white to-cyan-50 px-4">
+        <div className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-center shadow-sm">
+          <div className="text-[13px] font-black text-slate-800">
+            כמות טיפולים - 4
+          </div>
+          <div className="mt-1 text-[10px] font-bold text-slate-400">
+            מתעדכן מה-CRM
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="flex h-full items-center justify-center bg-white px-8">
       <div className="h-1 w-full rounded-full bg-gradient-to-l from-violet-50 via-sky-50 to-cyan-50 border border-violet-100/80 text-slate-800" />
@@ -442,8 +480,10 @@ export default function VisualAddLayersPanel({
   sectionsRef.current = sections;
   const [elementCategory, setElementCategory] =
     useState<ElementCategory>("all");
+  const [crmFields, setCrmFields] = useState<ConfiguredClientField[]>([]);
   const [sectionCategory, setSectionCategory] =
     useState<SectionLibraryNavId>("all");
+  const businessId = String((editor as any)?.businessId || "").trim();
   const [sectionQuickFilter, setSectionQuickFilter] =
     useState<SectionQuickFilter>("recommended");
   /** Regular site library vs post-login personal-area library. */
@@ -634,6 +674,28 @@ export default function VisualAddLayersPanel({
   }, [mode, preferredAddTab]);
 
   useEffect(() => {
+    let cancelled = false;
+    if (!businessId) {
+      setCrmFields(createExampleClientFields());
+      return;
+    }
+
+    void fetchConfiguredClientFields(businessId)
+      .then((fields) => {
+        if (cancelled) return;
+        const active = fields.filter((field) => field.active !== false);
+        setCrmFields(active.length ? active : createExampleClientFields());
+      })
+      .catch(() => {
+        if (!cancelled) setCrmFields(createExampleClientFields());
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [businessId]);
+
+  useEffect(() => {
     if (mode !== "add") return;
 
     const handleKeyDown = (event: KeyboardEvent) => {
@@ -716,8 +778,39 @@ export default function VisualAddLayersPanel({
         preview: "divider",
         action: () => editor?.addDivider?.(),
       },
+      {
+        id: "crm-field-generic",
+        title: "נתון משתנה מה-CRM",
+        description: 'מוסיף טקסט בפורמט "שם - ערך" בכל מקום בעמוד',
+        category: "crm",
+        preview: "crm",
+        action: () =>
+          editor?.addCrmField?.({
+            label: "שם הנתון",
+            sampleValue: "X",
+            part: "both",
+          }),
+      },
+      ...crmFields.map((field) => {
+        const sampleValue = sampleCrmFieldValue(field);
+        const label = field.label || field.key;
+        return {
+          id: `crm-field-${field.key}`,
+          title: label,
+          description: `${label} - ${sampleValue} · מתעדכן אוטומטית מה-CRM`,
+          category: "crm" as const,
+          preview: "crm" as const,
+          action: () =>
+            editor?.addCrmField?.({
+              fieldKey: field.key,
+              label,
+              sampleValue,
+              part: "both",
+            }),
+        };
+      }),
     ],
-    [editor],
+    [crmFields, editor],
   );
 
   const filteredElements = useMemo(() => {

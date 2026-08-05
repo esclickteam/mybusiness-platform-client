@@ -1916,13 +1916,13 @@ function buildCustomDataMap(fields) {
 function resolveBoundFieldText(field, part, key) {
   if (!field) {
     if (part === "label") return key || "נתון";
-    if (part === "both") return `${key || "נתון"}: —`;
+    if (part === "both") return `${key || "נתון"} - —`;
     return "—";
   }
   const label = field.label || key || "נתון";
   const value = formatCustomDataDisplay(field);
   if (part === "label") return label;
-  if (part === "both") return `${label}: ${value}`;
+  if (part === "both") return `${label} - ${value}`;
   return value;
 }
 
