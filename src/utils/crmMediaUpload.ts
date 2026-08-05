@@ -1,4 +1,5 @@
 import API from "@api";
+import { isDocumentAttachment } from "./crmAttachmentUrl";
 
 export type CrmUploadedMedia = {
   secureUrl: string;
@@ -7,6 +8,24 @@ export type CrmUploadedMedia = {
   resourceType?: string;
   originalName?: string;
 };
+
+function resolveUploadResourceType(file: File) {
+  if (file.type.startsWith("image/") && file.type !== "application/pdf") {
+    return "image";
+  }
+  if (file.type.startsWith("video/")) return "video";
+  if (
+    isDocumentAttachment({
+      name: file.name,
+      mimeType: file.type,
+      url: file.name,
+    })
+  ) {
+    return "raw";
+  }
+  if (file.type.startsWith("image/")) return "image";
+  return "raw";
+}
 
 function getApiOrigin() {
   const isProd = import.meta.env.MODE === "production";
@@ -27,6 +46,8 @@ async function signAndUploadDirect(
   const token = localStorage.getItem("token") || "";
   const origin = getApiOrigin();
 
+  const resourceType = resolveUploadResourceType(file);
+
   const signResponse = await fetch(`${origin}/api/media/sign-upload`, {
     method: "POST",
     credentials: "include",
@@ -35,7 +56,7 @@ async function signAndUploadDirect(
       Accept: "application/json",
       ...(token ? { Authorization: `Bearer ${token}` } : {}),
     },
-    body: JSON.stringify({ businessId }),
+    body: JSON.stringify({ businessId, resourceType }),
   });
 
   const signData = await signResponse.json().catch(() => null);
@@ -90,9 +111,8 @@ async function signAndUploadDirect(
 
   const secureUrl = String(cloudinaryResult.secure_url || "");
   const publicId = String(cloudinaryResult.public_id || "");
-  const resourceType = String(
-    cloudinaryResult.resource_type ||
-      (file.type.startsWith("image/") ? "image" : "raw")
+  const uploadedResourceType = String(
+    cloudinaryResult.resource_type || resourceType || "raw"
   );
 
   try {
@@ -102,9 +122,9 @@ async function signAndUploadDirect(
       url: secureUrl,
       publicId,
       public_id: publicId,
-      resourceType,
-      resource_type: resourceType,
-      mediaType: file.type.startsWith("image/") ? "image" : "file",
+      resourceType: uploadedResourceType,
+      resource_type: uploadedResourceType,
+      mediaType: uploadedResourceType === "image" ? "image" : "file",
       format: cloudinaryResult.format || "",
       bytes: file.size,
       originalName: file.name,
@@ -119,7 +139,7 @@ async function signAndUploadDirect(
     secureUrl,
     publicId,
     mimeType: file.type,
-    resourceType,
+    resourceType: uploadedResourceType,
     originalName: file.name,
   };
 }
@@ -128,9 +148,11 @@ async function uploadViaServer(
   file: File,
   businessId: string
 ): Promise<CrmUploadedMedia> {
+  const resourceType = resolveUploadResourceType(file);
   const formData = new FormData();
   formData.append("file", file);
   formData.append("businessId", businessId);
+  formData.append("resourceType", resourceType);
 
   const { data } = await API.post("/media/upload", formData, {
     headers: { "Content-Type": "multipart/form-data" },
@@ -145,9 +167,7 @@ async function uploadViaServer(
     secureUrl: String(data.secureUrl || data.url || ""),
     publicId: String(data.publicId || ""),
     mimeType: String(data.mimeType || file.type || ""),
-    resourceType: String(
-      data.resourceType || (file.type.startsWith("image/") ? "image" : "raw")
-    ),
+    resourceType: String(data.resourceType || resourceType),
     originalName: String(data.originalName || file.name),
   };
 }

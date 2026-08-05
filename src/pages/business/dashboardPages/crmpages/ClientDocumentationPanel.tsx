@@ -17,6 +17,10 @@ import {
 import { useTranslation } from "react-i18next";
 import API from "@api";
 import { useLocaleDir } from "../../../../hooks/useLocaleDir";
+import {
+  isImageAttachment,
+  openCrmAttachment,
+} from "../../../../utils/crmAttachmentUrl";
 import { uploadCrmDocumentationMedia } from "../../../../utils/crmMediaUpload";
 
 export type ClientActivityType =
@@ -86,17 +90,6 @@ function formatDateTime(
     hour: "2-digit",
     minute: "2-digit",
   });
-}
-
-function isImageAttachment(attachment: ClientActivityAttachment) {
-  const mime = String(attachment.mimeType || "").toLowerCase();
-  const url = String(attachment.url || "").toLowerCase();
-  const resource = String(attachment.resourceType || "").toLowerCase();
-  return (
-    resource === "image" ||
-    mime.startsWith("image/") ||
-    /\.(png|jpe?g|gif|webp|svg|avif)(\?|$)/i.test(url)
-  );
 }
 
 function activityDayKey(activity: ClientActivity) {
@@ -989,11 +982,19 @@ function ActivityTimeline({
                         />
                       </a>
                     ) : (
-                      <a
+                      <button
                         key={`${attachment.url}-${attachment.name}`}
-                        href={attachment.url}
-                        target="_blank"
-                        rel="noreferrer"
+                        type="button"
+                        onClick={() => {
+                          openCrmAttachment(attachment).catch((err) => {
+                            console.error("Open attachment failed:", err);
+                            alert(
+                              err instanceof Error
+                                ? err.message
+                                : t("crm.clients.documentation.errors.uploadFailed")
+                            );
+                          });
+                        }}
                         className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-black text-slate-700 transition hover:bg-slate-50"
                       >
                         {attachment.mimeType?.startsWith("image/") ? (
@@ -1003,7 +1004,7 @@ function ActivityTimeline({
                         )}
                         {attachment.name ||
                           t("crm.clients.documentation.attachedFile")}
-                      </a>
+                      </button>
                     )
                   )}
                 </div>
