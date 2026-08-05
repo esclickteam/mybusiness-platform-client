@@ -2,7 +2,7 @@ export const clearskinEditorCss = `
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Serif:wght@500;600;700&family=IBM+Plex+Sans+Hebrew:wght@400;500;700&display=swap');
 
 [data-template-id="clearskin"],
-[data-template-id="clearskin-preview"] {
+[data-template-id="clearskin"] {
   --p: #0891B2;
   --s: #ECFEFF;
   --a: #67E8F9;
@@ -17,7 +17,7 @@ export const clearskinEditorCss = `
 }
 
 [data-template-id="clearskin"] .t-display,
-[data-template-id="clearskin-preview"] .t-display {
+[data-template-id="clearskin"] .t-display {
   font-family: "IBM Plex Serif", serif;
 }
 
@@ -59,58 +59,58 @@ export const clearskinEditorCss = `
 }
 
 [data-template-id="clearskin"] .t-ken,
-[data-template-id="clearskin-preview"] .t-ken { animation: clearskin-ken 18s ease-in-out infinite alternate; }
+[data-template-id="clearskin"] .t-ken { animation: clearskin-ken 18s ease-in-out infinite alternate; }
 [data-template-id="clearskin"] .t-anim,
-[data-template-id="clearskin-preview"] .t-anim { animation: clearskin-up 0.9s cubic-bezier(0.22,1,0.36,1) both; }
+[data-template-id="clearskin"] .t-anim { animation: clearskin-up 0.9s cubic-bezier(0.22,1,0.36,1) both; }
 [data-template-id="clearskin"] .t-d1,
-[data-template-id="clearskin-preview"] .t-d1 { animation-delay: .12s; }
+[data-template-id="clearskin"] .t-d1 { animation-delay: .12s; }
 [data-template-id="clearskin"] .t-d2,
-[data-template-id="clearskin-preview"] .t-d2 { animation-delay: .24s; }
+[data-template-id="clearskin"] .t-d2 { animation-delay: .24s; }
 [data-template-id="clearskin"] .t-d3,
-[data-template-id="clearskin-preview"] .t-d3 { animation-delay: .36s; }
+[data-template-id="clearskin"] .t-d3 { animation-delay: .36s; }
 [data-template-id="clearskin"] .t-fade,
-[data-template-id="clearskin-preview"] .t-fade { animation: clearskin-fade 1s ease both; }
+[data-template-id="clearskin"] .t-fade { animation: clearskin-fade 1s ease both; }
 [data-template-id="clearskin"] .t-marquee,
-[data-template-id="clearskin-preview"] .t-marquee { animation: clearskin-marquee 30s linear infinite; width: max-content; }
+[data-template-id="clearskin"] .t-marquee { animation: clearskin-marquee 30s linear infinite; width: max-content; }
 [data-template-id="clearskin"] .t-float,
-[data-template-id="clearskin-preview"] .t-float { animation: clearskin-float 6s ease-in-out infinite; }
+[data-template-id="clearskin"] .t-float { animation: clearskin-float 6s ease-in-out infinite; }
 [data-template-id="clearskin"] .t-pulse,
-[data-template-id="clearskin-preview"] .t-pulse { animation: clearskin-pulse 2.8s ease-in-out infinite; }
+[data-template-id="clearskin"] .t-pulse { animation: clearskin-pulse 2.8s ease-in-out infinite; }
 [data-template-id="clearskin"] .t-shimmer,
-[data-template-id="clearskin-preview"] .t-shimmer {
+[data-template-id="clearskin"] .t-shimmer {
   background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--a) 35%, transparent), transparent);
   background-size: 200% 100%;
   animation: clearskin-shimmer 2.8s linear infinite;
 }
 [data-template-id="clearskin"] .t-glow,
-[data-template-id="clearskin-preview"] .t-glow { animation: clearskin-glow 3.2s ease-in-out infinite; }
+[data-template-id="clearskin"] .t-glow { animation: clearskin-glow 3.2s ease-in-out infinite; }
 [data-template-id="clearskin"] .t-scalein,
-[data-template-id="clearskin-preview"] .t-scalein { animation: clearskin-scalein 0.8s cubic-bezier(0.22,1,0.36,1) both; }
+[data-template-id="clearskin"] .t-scalein { animation: clearskin-scalein 0.8s cubic-bezier(0.22,1,0.36,1) both; }
 [data-template-id="clearskin"] .t-hover,
-[data-template-id="clearskin-preview"] .t-hover {
+[data-template-id="clearskin"] .t-hover {
   transition: transform .45s cubic-bezier(0.22,1,0.36,1), border-color .3s ease, background .3s ease;
 }
 [data-template-id="clearskin"] .t-hover:hover,
-[data-template-id="clearskin-preview"] .t-hover:hover { transform: translateY(-5px); }
+[data-template-id="clearskin"] .t-hover:hover { transform: translateY(-5px); }
 
 @media (prefers-reduced-motion: reduce) {
   [data-template-id="clearskin"] .t-ken,
-  [data-template-id="clearskin-preview"] .t-ken,
+  [data-template-id="clearskin"] .t-ken,
   [data-template-id="clearskin"] .t-anim,
-  [data-template-id="clearskin-preview"] .t-anim,
+  [data-template-id="clearskin"] .t-anim,
   [data-template-id="clearskin"] .t-marquee,
-  [data-template-id="clearskin-preview"] .t-marquee,
+  [data-template-id="clearskin"] .t-marquee,
   [data-template-id="clearskin"] .t-float,
-  [data-template-id="clearskin-preview"] .t-float,
+  [data-template-id="clearskin"] .t-float,
   [data-template-id="clearskin"] .t-pulse,
-  [data-template-id="clearskin-preview"] .t-pulse,
+  [data-template-id="clearskin"] .t-pulse,
   [data-template-id="clearskin"] .t-shimmer,
-  [data-template-id="clearskin-preview"] .t-shimmer,
+  [data-template-id="clearskin"] .t-shimmer,
   [data-template-id="clearskin"] .t-glow,
-  [data-template-id="clearskin-preview"] .t-glow,
+  [data-template-id="clearskin"] .t-glow,
   [data-template-id="clearskin"] .t-scalein,
-  [data-template-id="clearskin-preview"] .t-scalein,
+  [data-template-id="clearskin"] .t-scalein,
   [data-template-id="clearskin"] .t-fade,
-  [data-template-id="clearskin-preview"] .t-fade { animation: none !important; }
+  [data-template-id="clearskin"] .t-fade { animation: none !important; }
 }
 `;

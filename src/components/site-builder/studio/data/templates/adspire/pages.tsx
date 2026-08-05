@@ -309,7 +309,7 @@ function Contact({ data }: { data: Record<string, any> }) {
           </div>
         </Reveal>
         <Reveal variant="left" delayMs={100}>
-          <form className="grid gap-3 border border-white/25 bg-white/10 p-5 backdrop-blur-xl" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="adspire-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+          <form className="grid gap-3 border border-white/25 bg-white/10 p-5 backdrop-blur-xl" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="adspire-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
             <input className="border border-white/25 bg-black/20 px-4 py-4 text-right text-white outline-none placeholder:text-white/65" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
             <input className="border border-white/25 bg-black/20 px-4 py-4 text-right text-white outline-none placeholder:text-white/65" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
             <input className="border border-white/25 bg-black/20 px-4 py-4 text-right text-white outline-none placeholder:text-white/65" placeholder="חברה / תחום"  name="company" data-bizuply-form-field-id="company" />
@@ -463,7 +463,7 @@ export default function AdspirePages({
     { allowedPages, fallbackPage: "home" },
   );
   return (
-    <div dir="rtl" data-template-id={mode === "preview" ? "adspire-preview" : "adspire"} className="min-h-screen w-full overflow-x-hidden">
+    <div dir="rtl" data-template-id="adspire" className="min-h-screen w-full overflow-x-hidden">
       <style dangerouslySetInnerHTML={{ __html: adspireEditorCss }} />
       <Header data={mergedData} currentPage={currentPage} goTo={goTo} />
       <VisualPageStack

@@ -751,7 +751,7 @@ function ContactSection({ data }: { data: TemplateData }) {
         </div>
 
         <form
-          data-bizuply-form-builder="true"
+          data-bizuply-form-builder="true" data-bizuply-form-skin="template"
           data-visual-editable="true"
           data-visual-edit-id="contact.form"
           data-visual-edit-type="box"
@@ -1039,7 +1039,7 @@ export default function CitadelPages({
   return (
     <div
       dir="rtl"
-      data-template-id={mode === "preview" ? "citadel-preview" : "citadel"}
+      data-template-id="citadel"
       className="min-h-screen w-full overflow-x-hidden"
       style={{
         background: citadelTheme.bg,

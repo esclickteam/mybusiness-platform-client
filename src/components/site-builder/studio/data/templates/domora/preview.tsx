@@ -7,7 +7,7 @@ export default function DomoraPreview() {
   return (
     <div
       dir="rtl"
-      data-template-id="domora-preview"
+      data-template-id="domora"
       className="h-screen min-h-screen w-full overflow-hidden bg-[#f5f5f2] text-[#151d20]"
     >
       <DomoraPages

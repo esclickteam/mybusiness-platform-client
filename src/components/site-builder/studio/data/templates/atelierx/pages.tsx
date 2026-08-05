@@ -288,7 +288,7 @@ function Contact({ data }: { data: Record<string, any> }) {
           </div>
         </Reveal>
         <Reveal variant="left" delayMs={120}>
-          <form className="border border-black p-6 md:p-8" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="atelierx-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+          <form className="border border-black p-6 md:p-8" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="atelierx-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
             <div className="grid gap-4 md:grid-cols-2">
               <input aria-label="שם מלא" className="border-b border-black bg-transparent px-0 py-4 text-sm font-bold outline-none focus:border-[var(--a)]" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
               <input aria-label="טלפון" className="border-b border-black bg-transparent px-0 py-4 text-sm font-bold outline-none focus:border-[var(--a)]" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
@@ -332,7 +332,7 @@ export default function AtelierxPages({ initialPage = "home", mode = "preview", 
     { allowedPages: ["home"], fallbackPage: "home" },
   );
   return (
-    <div dir="rtl" data-template-id={mode === "preview" ? "atelierx-preview" : "atelierx"} className="min-h-screen w-full overflow-x-hidden">
+    <div dir="rtl" data-template-id="atelierx" className="min-h-screen w-full overflow-x-hidden">
       <style dangerouslySetInnerHTML={{ __html: atelierxEditorCss }} />
       <VisualPageStack activePageId={currentPage} pages={[{ id: "home", content: (
         <>

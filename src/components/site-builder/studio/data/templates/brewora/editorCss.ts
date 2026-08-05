@@ -1,6 +1,6 @@
 export const breworaEditorCss = `
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700;800&family=Heebo:wght@400;500;600;700;800;900&display=swap');
-[data-template-id="brewora"], [data-template-id="brewora-preview"] {
+[data-template-id="brewora"], [data-template-id="brewora"] {
   --p: #8B4513;
   --accent: #D97706;
   --on-p: #FFF7ED;
@@ -20,21 +20,21 @@ export const breworaEditorCss = `
   text-align: right;
 }
 [data-template-id="brewora"] .store-display,
-[data-template-id="brewora-preview"] .store-display {
+[data-template-id="brewora"] .store-display {
   font-family: "Fraunces", "Heebo", serif;
 }
 [data-template-id="brewora"] .store-card,
-[data-template-id="brewora-preview"] .store-card {
+[data-template-id="brewora"] .store-card {
   transition: transform 420ms cubic-bezier(0.22,1,0.36,1), box-shadow 420ms ease, border-color 420ms ease;
 }
 [data-template-id="brewora"] .store-card:hover,
-[data-template-id="brewora-preview"] .store-card:hover {
+[data-template-id="brewora"] .store-card:hover {
   transform: translateY(-8px);
   box-shadow: 0 24px 60px rgba(0,0,0,0.18);
   border-color: var(--p);
 }
 [data-template-id="brewora"] .store-marquee,
-[data-template-id="brewora-preview"] .store-marquee {
+[data-template-id="brewora"] .store-marquee {
   animation: brewora-marquee 22s linear infinite;
 }
 @keyframes brewora-marquee {
@@ -43,7 +43,7 @@ export const breworaEditorCss = `
 }
 @media (prefers-reduced-motion: reduce) {
   [data-template-id="brewora"] .store-marquee,
-  [data-template-id="brewora-preview"] .store-marquee {
+  [data-template-id="brewora"] .store-marquee {
     animation: none !important;
   }
 }

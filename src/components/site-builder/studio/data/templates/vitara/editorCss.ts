@@ -1,6 +1,6 @@
 export const vitaraEditorCss = `
 @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Heebo:wght@400;500;600;700;800;900&display=swap');
-[data-template-id="vitara"], [data-template-id="vitara-preview"] {
+[data-template-id="vitara"], [data-template-id="vitara"] {
   --p: #15803D;
   --accent: #A3E635;
   --on-p: #F0FDF4;
@@ -20,21 +20,21 @@ export const vitaraEditorCss = `
   text-align: right;
 }
 [data-template-id="vitara"] .store-display,
-[data-template-id="vitara-preview"] .store-display {
+[data-template-id="vitara"] .store-display {
   font-family: "Manrope", "Heebo", serif;
 }
 [data-template-id="vitara"] .store-card,
-[data-template-id="vitara-preview"] .store-card {
+[data-template-id="vitara"] .store-card {
   transition: transform 420ms cubic-bezier(0.22,1,0.36,1), box-shadow 420ms ease, border-color 420ms ease;
 }
 [data-template-id="vitara"] .store-card:hover,
-[data-template-id="vitara-preview"] .store-card:hover {
+[data-template-id="vitara"] .store-card:hover {
   transform: translateY(-8px);
   box-shadow: 0 24px 60px rgba(0,0,0,0.18);
   border-color: var(--p);
 }
 [data-template-id="vitara"] .store-marquee,
-[data-template-id="vitara-preview"] .store-marquee {
+[data-template-id="vitara"] .store-marquee {
   animation: vitara-marquee 22s linear infinite;
 }
 @keyframes vitara-marquee {
@@ -43,7 +43,7 @@ export const vitaraEditorCss = `
 }
 @media (prefers-reduced-motion: reduce) {
   [data-template-id="vitara"] .store-marquee,
-  [data-template-id="vitara-preview"] .store-marquee {
+  [data-template-id="vitara"] .store-marquee {
     animation: none !important;
   }
 }

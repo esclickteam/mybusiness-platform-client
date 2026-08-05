@@ -2,7 +2,7 @@ export const glowhausEditorCss = `
 @import url('https://fonts.googleapis.com/css2?family=Archivo:wght@600;700;800&family=DM+Sans:opsz,wght@9..40,400;9..40,600;9..40,700&display=swap');
 
 [data-template-id="glowhaus"],
-[data-template-id="glowhaus-preview"] {
+[data-template-id="glowhaus"] {
   --p: #22D3EE;
   --s: #071521;
   --a: #67E8F9;
@@ -17,7 +17,7 @@ export const glowhausEditorCss = `
 }
 
 [data-template-id="glowhaus"] .t-display,
-[data-template-id="glowhaus-preview"] .t-display {
+[data-template-id="glowhaus"] .t-display {
   font-family: "Archivo", serif;
 }
 
@@ -59,58 +59,58 @@ export const glowhausEditorCss = `
 }
 
 [data-template-id="glowhaus"] .t-ken,
-[data-template-id="glowhaus-preview"] .t-ken { animation: glowhaus-ken 18s ease-in-out infinite alternate; }
+[data-template-id="glowhaus"] .t-ken { animation: glowhaus-ken 18s ease-in-out infinite alternate; }
 [data-template-id="glowhaus"] .t-anim,
-[data-template-id="glowhaus-preview"] .t-anim { animation: glowhaus-up 0.9s cubic-bezier(0.22,1,0.36,1) both; }
+[data-template-id="glowhaus"] .t-anim { animation: glowhaus-up 0.9s cubic-bezier(0.22,1,0.36,1) both; }
 [data-template-id="glowhaus"] .t-d1,
-[data-template-id="glowhaus-preview"] .t-d1 { animation-delay: .12s; }
+[data-template-id="glowhaus"] .t-d1 { animation-delay: .12s; }
 [data-template-id="glowhaus"] .t-d2,
-[data-template-id="glowhaus-preview"] .t-d2 { animation-delay: .24s; }
+[data-template-id="glowhaus"] .t-d2 { animation-delay: .24s; }
 [data-template-id="glowhaus"] .t-d3,
-[data-template-id="glowhaus-preview"] .t-d3 { animation-delay: .36s; }
+[data-template-id="glowhaus"] .t-d3 { animation-delay: .36s; }
 [data-template-id="glowhaus"] .t-fade,
-[data-template-id="glowhaus-preview"] .t-fade { animation: glowhaus-fade 1s ease both; }
+[data-template-id="glowhaus"] .t-fade { animation: glowhaus-fade 1s ease both; }
 [data-template-id="glowhaus"] .t-marquee,
-[data-template-id="glowhaus-preview"] .t-marquee { animation: glowhaus-marquee 30s linear infinite; width: max-content; }
+[data-template-id="glowhaus"] .t-marquee { animation: glowhaus-marquee 30s linear infinite; width: max-content; }
 [data-template-id="glowhaus"] .t-float,
-[data-template-id="glowhaus-preview"] .t-float { animation: glowhaus-float 6s ease-in-out infinite; }
+[data-template-id="glowhaus"] .t-float { animation: glowhaus-float 6s ease-in-out infinite; }
 [data-template-id="glowhaus"] .t-pulse,
-[data-template-id="glowhaus-preview"] .t-pulse { animation: glowhaus-pulse 2.8s ease-in-out infinite; }
+[data-template-id="glowhaus"] .t-pulse { animation: glowhaus-pulse 2.8s ease-in-out infinite; }
 [data-template-id="glowhaus"] .t-shimmer,
-[data-template-id="glowhaus-preview"] .t-shimmer {
+[data-template-id="glowhaus"] .t-shimmer {
   background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--a) 35%, transparent), transparent);
   background-size: 200% 100%;
   animation: glowhaus-shimmer 2.8s linear infinite;
 }
 [data-template-id="glowhaus"] .t-glow,
-[data-template-id="glowhaus-preview"] .t-glow { animation: glowhaus-glow 3.2s ease-in-out infinite; }
+[data-template-id="glowhaus"] .t-glow { animation: glowhaus-glow 3.2s ease-in-out infinite; }
 [data-template-id="glowhaus"] .t-scalein,
-[data-template-id="glowhaus-preview"] .t-scalein { animation: glowhaus-scalein 0.8s cubic-bezier(0.22,1,0.36,1) both; }
+[data-template-id="glowhaus"] .t-scalein { animation: glowhaus-scalein 0.8s cubic-bezier(0.22,1,0.36,1) both; }
 [data-template-id="glowhaus"] .t-hover,
-[data-template-id="glowhaus-preview"] .t-hover {
+[data-template-id="glowhaus"] .t-hover {
   transition: transform .45s cubic-bezier(0.22,1,0.36,1), border-color .3s ease, background .3s ease;
 }
 [data-template-id="glowhaus"] .t-hover:hover,
-[data-template-id="glowhaus-preview"] .t-hover:hover { transform: translateY(-5px); }
+[data-template-id="glowhaus"] .t-hover:hover { transform: translateY(-5px); }
 
 @media (prefers-reduced-motion: reduce) {
   [data-template-id="glowhaus"] .t-ken,
-  [data-template-id="glowhaus-preview"] .t-ken,
+  [data-template-id="glowhaus"] .t-ken,
   [data-template-id="glowhaus"] .t-anim,
-  [data-template-id="glowhaus-preview"] .t-anim,
+  [data-template-id="glowhaus"] .t-anim,
   [data-template-id="glowhaus"] .t-marquee,
-  [data-template-id="glowhaus-preview"] .t-marquee,
+  [data-template-id="glowhaus"] .t-marquee,
   [data-template-id="glowhaus"] .t-float,
-  [data-template-id="glowhaus-preview"] .t-float,
+  [data-template-id="glowhaus"] .t-float,
   [data-template-id="glowhaus"] .t-pulse,
-  [data-template-id="glowhaus-preview"] .t-pulse,
+  [data-template-id="glowhaus"] .t-pulse,
   [data-template-id="glowhaus"] .t-shimmer,
-  [data-template-id="glowhaus-preview"] .t-shimmer,
+  [data-template-id="glowhaus"] .t-shimmer,
   [data-template-id="glowhaus"] .t-glow,
-  [data-template-id="glowhaus-preview"] .t-glow,
+  [data-template-id="glowhaus"] .t-glow,
   [data-template-id="glowhaus"] .t-scalein,
-  [data-template-id="glowhaus-preview"] .t-scalein,
+  [data-template-id="glowhaus"] .t-scalein,
   [data-template-id="glowhaus"] .t-fade,
-  [data-template-id="glowhaus-preview"] .t-fade { animation: none !important; }
+  [data-template-id="glowhaus"] .t-fade { animation: none !important; }
 }
 `;

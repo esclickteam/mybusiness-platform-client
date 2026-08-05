@@ -2,7 +2,7 @@ export const campuslyEditorCss = `
 @import url('https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,600;7..72,700&family=Source+Sans+3:wght@400;500;600;700&display=swap');
 
 [data-template-id="campusly"],
-[data-template-id="campusly-preview"] {
+[data-template-id="campusly"] {
   --p: #1D4ED8;
   --s: #EFF6FF;
   --a: #3B82F6;
@@ -17,7 +17,7 @@ export const campuslyEditorCss = `
 }
 
 [data-template-id="campusly"] .t-display,
-[data-template-id="campusly-preview"] .t-display {
+[data-template-id="campusly"] .t-display {
   font-family: "Literata", sans-serif;
 }
 
@@ -55,46 +55,46 @@ export const campuslyEditorCss = `
 }
 
 [data-template-id="campusly"] .t-ken,
-[data-template-id="campusly-preview"] .t-ken { animation: campusly-ken 16s ease-in-out infinite alternate; }
+[data-template-id="campusly"] .t-ken { animation: campusly-ken 16s ease-in-out infinite alternate; }
 [data-template-id="campusly"] .t-anim,
-[data-template-id="campusly-preview"] .t-anim { animation: campusly-up 0.9s cubic-bezier(0.22,1,0.36,1) both; }
+[data-template-id="campusly"] .t-anim { animation: campusly-up 0.9s cubic-bezier(0.22,1,0.36,1) both; }
 [data-template-id="campusly"] .t-d1,
-[data-template-id="campusly-preview"] .t-d1 { animation-delay: .12s; }
+[data-template-id="campusly"] .t-d1 { animation-delay: .12s; }
 [data-template-id="campusly"] .t-d2,
-[data-template-id="campusly-preview"] .t-d2 { animation-delay: .24s; }
+[data-template-id="campusly"] .t-d2 { animation-delay: .24s; }
 [data-template-id="campusly"] .t-d3,
-[data-template-id="campusly-preview"] .t-d3 { animation-delay: .36s; }
+[data-template-id="campusly"] .t-d3 { animation-delay: .36s; }
 [data-template-id="campusly"] .t-fade,
-[data-template-id="campusly-preview"] .t-fade { animation: campusly-fade 1s ease both; }
+[data-template-id="campusly"] .t-fade { animation: campusly-fade 1s ease both; }
 [data-template-id="campusly"] .t-marquee,
-[data-template-id="campusly-preview"] .t-marquee { animation: campusly-marquee 28s linear infinite; width: max-content; }
+[data-template-id="campusly"] .t-marquee { animation: campusly-marquee 28s linear infinite; width: max-content; }
 [data-template-id="campusly"] .t-float,
-[data-template-id="campusly-preview"] .t-float { animation: campusly-float 6.5s ease-in-out infinite; }
+[data-template-id="campusly"] .t-float { animation: campusly-float 6.5s ease-in-out infinite; }
 [data-template-id="campusly"] .t-pulse,
-[data-template-id="campusly-preview"] .t-pulse { animation: campusly-pulse 2.6s ease-in-out infinite; }
+[data-template-id="campusly"] .t-pulse { animation: campusly-pulse 2.6s ease-in-out infinite; }
 [data-template-id="campusly"] .t-wave,
-[data-template-id="campusly-preview"] .t-wave { animation: campusly-wave 2.2s ease-in-out infinite; }
+[data-template-id="campusly"] .t-wave { animation: campusly-wave 2.2s ease-in-out infinite; }
 [data-template-id="campusly"] .t-hover,
-[data-template-id="campusly-preview"] .t-hover {
+[data-template-id="campusly"] .t-hover {
   transition: transform .45s cubic-bezier(0.22,1,0.36,1), border-color .3s ease, background .3s ease;
 }
 [data-template-id="campusly"] .t-hover:hover,
-[data-template-id="campusly-preview"] .t-hover:hover { transform: translateY(-6px); }
+[data-template-id="campusly"] .t-hover:hover { transform: translateY(-6px); }
 
 @media (prefers-reduced-motion: reduce) {
   [data-template-id="campusly"] .t-ken,
-  [data-template-id="campusly-preview"] .t-ken,
+  [data-template-id="campusly"] .t-ken,
   [data-template-id="campusly"] .t-anim,
-  [data-template-id="campusly-preview"] .t-anim,
+  [data-template-id="campusly"] .t-anim,
   [data-template-id="campusly"] .t-marquee,
-  [data-template-id="campusly-preview"] .t-marquee,
+  [data-template-id="campusly"] .t-marquee,
   [data-template-id="campusly"] .t-float,
-  [data-template-id="campusly-preview"] .t-float,
+  [data-template-id="campusly"] .t-float,
   [data-template-id="campusly"] .t-pulse,
-  [data-template-id="campusly-preview"] .t-pulse,
+  [data-template-id="campusly"] .t-pulse,
   [data-template-id="campusly"] .t-wave,
-  [data-template-id="campusly-preview"] .t-wave,
+  [data-template-id="campusly"] .t-wave,
   [data-template-id="campusly"] .t-fade,
-  [data-template-id="campusly-preview"] .t-fade { animation: none !important; }
+  [data-template-id="campusly"] .t-fade { animation: none !important; }
 }
 `;

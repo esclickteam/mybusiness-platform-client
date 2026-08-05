@@ -2,7 +2,7 @@ export const formaraEditorCss = `
 @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif&family=Manrope:wght@400;500;600;700;800&display=swap');
 
 [data-template-id="formara"],
-[data-template-id="formara-preview"] {
+[data-template-id="formara"] {
   --p: #8B5E3C;
   --s: #1E1C1A;
   --a: #C4A484;
@@ -17,12 +17,12 @@ export const formaraEditorCss = `
 }
 
 [data-template-id="formara"] *,
-[data-template-id="formara-preview"] * {
+[data-template-id="formara"] * {
   border-radius: 0 !important;
 }
 
 [data-template-id="formara"] .t-display,
-[data-template-id="formara-preview"] .t-display {
+[data-template-id="formara"] .t-display {
   font-family: "Instrument Serif", serif;
   font-weight: 400;
   letter-spacing: -0.035em;
@@ -49,27 +49,27 @@ export const formaraEditorCss = `
 }
 
 [data-template-id="formara"] .t-hero-zoom,
-[data-template-id="formara-preview"] .t-hero-zoom {
+[data-template-id="formara"] .t-hero-zoom {
   animation: formara-hero-zoom 18s ease-out both;
 }
 
 [data-template-id="formara"] .t-hero-bar,
-[data-template-id="formara-preview"] .t-hero-bar {
+[data-template-id="formara"] .t-hero-bar {
   animation: formara-bar-rise .9s .1s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 [data-template-id="formara"] .t-hero-copy,
-[data-template-id="formara-preview"] .t-hero-copy {
+[data-template-id="formara"] .t-hero-copy {
   animation: formara-copy-in .9s .28s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 [data-template-id="formara"] .t-material-card,
-[data-template-id="formara-preview"] .t-material-card {
+[data-template-id="formara"] .t-material-card {
   transition: transform .45s ease, border-color .35s ease, background .35s ease;
 }
 
 [data-template-id="formara"] .t-material-card:hover,
-[data-template-id="formara-preview"] .t-material-card:hover {
+[data-template-id="formara"] .t-material-card:hover {
   border-color: rgba(139, 94, 60, .72);
   transform: translateY(-6px);
   animation: formara-clay-pulse 1.8s ease-in-out infinite;
@@ -77,8 +77,8 @@ export const formaraEditorCss = `
 
 [data-template-id="formara"] input,
 [data-template-id="formara"] textarea,
-[data-template-id="formara-preview"] input,
-[data-template-id="formara-preview"] textarea {
+[data-template-id="formara"] input,
+[data-template-id="formara"] textarea {
   font-family: "Manrope", sans-serif;
 }
 `;

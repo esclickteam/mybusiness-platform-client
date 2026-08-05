@@ -317,7 +317,7 @@ function Contact({ data }: { data: Record<string, any> }) {
           </div>
         </Reveal>
         <Reveal variant="left" delayMs={120}>
-          <form className="grid gap-4 border border-[var(--espresso)]/15 bg-white p-6 shadow-[0_24px_80px_rgba(26,20,16,0.1)] lg:p-10" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="brewline-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+          <form className="grid gap-4 border border-[var(--espresso)]/15 bg-white p-6 shadow-[0_24px_80px_rgba(26,20,16,0.1)] lg:p-10" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="brewline-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
             <input className="border border-[var(--espresso)]/18 bg-[var(--cream)] px-5 py-4 text-right outline-none transition placeholder:text-[#7D6758]/65 focus:border-[var(--clay)]" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
             <input className="border border-[var(--espresso)]/18 bg-[var(--cream)] px-5 py-4 text-right outline-none transition placeholder:text-[#7D6758]/65 focus:border-[var(--clay)]" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
             <input className="border border-[var(--espresso)]/18 bg-[var(--cream)] px-5 py-4 text-right outline-none transition placeholder:text-[#7D6758]/65 focus:border-[var(--clay)]" placeholder="אירוע / כמות אורחים"  name="guests" data-bizuply-form-field-id="guests" />
@@ -371,7 +371,7 @@ export default function BrewlinePages({ initialPage = "home", mode = "preview", 
   );
 
   return (
-    <div dir="rtl" data-template-id={mode === "preview" ? "brewline-preview" : "brewline"} className="min-h-screen w-full overflow-x-hidden bg-[var(--espresso)]">
+    <div dir="rtl" data-template-id="brewline" className="min-h-screen w-full overflow-x-hidden bg-[var(--espresso)]">
       <style dangerouslySetInnerHTML={{ __html: brewlineEditorCss }} />
       <VisualPageStack activePageId={currentPage} pages={[{ id: "home", content }]} />
     </div>

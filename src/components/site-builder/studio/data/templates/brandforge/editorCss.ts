@@ -1,6 +1,6 @@
 export const brandforgeEditorCss = `
 @import url('https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=Heebo:wght@400;500;600;700;800&display=swap');
-[data-template-id="brandforge"], [data-template-id="brandforge-preview"] {
+[data-template-id="brandforge"], [data-template-id="brandforge"] {
   --p: #111827;
   --accent: #F59E0B;
   --bg: #FFFBEB;
@@ -14,31 +14,31 @@ export const brandforgeEditorCss = `
   text-align: right;
 }
 [data-template-id="brandforge"] .text-center,
-[data-template-id="brandforge-preview"] .text-center { text-align: center; }
+[data-template-id="brandforge"] .text-center { text-align: center; }
 [data-template-id="brandforge"] .ag-display,
-[data-template-id="brandforge-preview"] .ag-display {
+[data-template-id="brandforge"] .ag-display {
   font-family: "Syne", "Heebo", sans-serif;
 }
 [data-template-id="brandforge"] .ag-float,
-[data-template-id="brandforge-preview"] .ag-float {
+[data-template-id="brandforge"] .ag-float {
   animation: brandforgeFloat 7s ease-in-out infinite;
 }
 [data-template-id="brandforge"] .ag-pulse,
-[data-template-id="brandforge-preview"] .ag-pulse {
+[data-template-id="brandforge"] .ag-pulse {
   animation: brandforgePulse 2.8s ease-in-out infinite;
 }
 [data-template-id="brandforge"] .ag-card,
-[data-template-id="brandforge-preview"] .ag-card {
+[data-template-id="brandforge"] .ag-card {
   transition: transform 420ms cubic-bezier(0.22,1,0.36,1), border-color 420ms ease, box-shadow 420ms ease;
 }
 [data-template-id="brandforge"] .ag-card:hover,
-[data-template-id="brandforge-preview"] .ag-card:hover {
+[data-template-id="brandforge"] .ag-card:hover {
   transform: translateY(-8px);
   border-color: var(--p);
   box-shadow: 0 24px 60px rgba(0,0,0,0.18);
 }
 [data-template-id="brandforge"] .ag-ken,
-[data-template-id="brandforge-preview"] .ag-ken {
+[data-template-id="brandforge"] .ag-ken {
   animation: brandforgeKen 18s ease-in-out infinite alternate;
 }
 @keyframes brandforgeFloat {
@@ -55,10 +55,10 @@ export const brandforgeEditorCss = `
 }
 @media (prefers-reduced-motion: reduce) {
     [data-template-id="brandforge"] .ag-float,
-  [data-template-id="brandforge-preview"] .ag-float,
+  [data-template-id="brandforge"] .ag-float,
   [data-template-id="brandforge"] .ag-ken,
-  [data-template-id="brandforge-preview"] .ag-ken,
+  [data-template-id="brandforge"] .ag-ken,
   [data-template-id="brandforge"] .ag-pulse,
-  [data-template-id="brandforge-preview"] .ag-pulse { animation: none; }
+  [data-template-id="brandforge"] .ag-pulse { animation: none; }
 }
 `;

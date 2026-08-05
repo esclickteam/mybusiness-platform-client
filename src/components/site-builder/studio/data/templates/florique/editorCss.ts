@@ -1,6 +1,6 @@
 export const floriqueEditorCss = `
 @import url('https://fonts.googleapis.com/css2?family=Great+Vibes&family=Outfit:wght@400;500;600;700;800&display=swap');
-[data-template-id="florique"], [data-template-id="florique-preview"] {
+[data-template-id="florique"], [data-template-id="florique"] {
   /* wow-rtl-align */
   text-align: right;
 
@@ -21,42 +21,42 @@ export const floriqueEditorCss = `
     var(--bg);
 }
 [data-template-id="florique"] .florique-script,
-[data-template-id="florique-preview"] .florique-script {
+[data-template-id="florique"] .florique-script {
   font-family: "Great Vibes", cursive;
   letter-spacing: 0;
 }
 [data-template-id="florique"] .florique-petal,
-[data-template-id="florique-preview"] .florique-petal {
+[data-template-id="florique"] .florique-petal {
   animation: floriquePetal 10s ease-in-out infinite;
 }
 [data-template-id="florique"] .florique-petal:nth-child(2),
-[data-template-id="florique-preview"] .florique-petal:nth-child(2) {
+[data-template-id="florique"] .florique-petal:nth-child(2) {
   animation-delay: -3s;
   animation-duration: 12s;
 }
 [data-template-id="florique"] .florique-petal:nth-child(3),
-[data-template-id="florique-preview"] .florique-petal:nth-child(3) {
+[data-template-id="florique"] .florique-petal:nth-child(3) {
   animation-delay: -6s;
   animation-duration: 14s;
 }
 [data-template-id="florique"] .florique-card,
-[data-template-id="florique-preview"] .florique-card {
+[data-template-id="florique"] .florique-card {
   box-shadow: 0 24px 70px rgba(225, 29, 140, 0.11);
 }
 [data-template-id="florique"] .florique-card img,
-[data-template-id="florique-preview"] .florique-card img {
+[data-template-id="florique"] .florique-card img {
   transition: transform 700ms ease;
 }
 [data-template-id="florique"] .florique-card:hover img,
-[data-template-id="florique-preview"] .florique-card:hover img {
+[data-template-id="florique"] .florique-card:hover img {
   transform: scale(1.055);
 }
 [data-template-id="florique"] .florique-line,
-[data-template-id="florique-preview"] .florique-line {
+[data-template-id="florique"] .florique-line {
   background: linear-gradient(90deg, transparent, rgba(225, 29, 140, 0.45), transparent);
 }
 [data-template-id="florique"] .florique-soft-float,
-[data-template-id="florique-preview"] .florique-soft-float {
+[data-template-id="florique"] .florique-soft-float {
   animation: floriqueSoftFloat 8s ease-in-out infinite;
 }
 @keyframes floriquePetal {
@@ -70,15 +70,15 @@ export const floriqueEditorCss = `
 }
 @media (prefers-reduced-motion: reduce) {
   [data-template-id="florique"] .florique-petal,
-  [data-template-id="florique-preview"] .florique-petal,
+  [data-template-id="florique"] .florique-petal,
   [data-template-id="florique"] .florique-soft-float,
-  [data-template-id="florique-preview"] .florique-soft-float {
+  [data-template-id="florique"] .florique-soft-float {
     animation: none;
   }
 }
 
 [data-template-id="florique"] .text-center,
-[data-template-id="florique-preview"] .text-center {
+[data-template-id="florique"] .text-center {
   text-align: center;
 }
 `;

@@ -18,7 +18,7 @@ const framehausAllowedPages = framehausPages.map((page) => page.id);
 const scopedFramehausEditorCss = framehausEditorCss
   .split('[data-template-id="framehaus"]')
   .join(
-    '[data-template-id="framehaus"], [data-template-id="framehaus-preview"]',
+    '[data-template-id="framehaus"], [data-template-id="framehaus"]',
   );
 
 type FramehausPagesProps = {
@@ -279,7 +279,7 @@ function InquiryModal({
         <TemplateText as="p" className="mt-3 max-w-xl text-sm leading-7 text-[#5e5e5e]">
           {getValue(data, "contactText")}
         </TemplateText>
-        <form className="mt-8 grid gap-0 border-2 border-black" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="framehaus-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+        <form className="mt-8 grid gap-0 border-2 border-black" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="framehaus-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
           {[
             "שם מלא",
             "אימייל",
@@ -714,7 +714,7 @@ function ContactSection({
             ))}
           </div>
         </div>
-        <form className="grid gap-0 bg-white" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="framehaus-contact-2" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+        <form className="grid gap-0 bg-white" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="framehaus-contact-2" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
           {[
             "שם מלא",
             "אימייל",
@@ -927,7 +927,7 @@ export default function FramehausPages({
   return (
     <div
       dir="rtl"
-      data-template-id={mode === "preview" ? "framehaus-preview" : "framehaus"}
+      data-template-id="framehaus"
       className="min-h-screen w-full overflow-x-hidden bg-[#fafafa] text-[#111111] rounded-none"
       style={{ fontFamily: '"Helvetica Neue", Arial, sans-serif' }}
     >

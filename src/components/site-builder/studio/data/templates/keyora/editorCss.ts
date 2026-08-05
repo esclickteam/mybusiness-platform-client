@@ -1,7 +1,7 @@
 export const keyoraEditorCss = `
 @import url("https://fonts.googleapis.com/css2?family=Rubik:wght@600;700;800;900&family=Heebo:wght@400;500;700&display=swap");
 
-[data-template-id="keyora"], [data-template-id="keyora-preview"] {
+[data-template-id="keyora"], [data-template-id="keyora"] {
   direction: rtl; text-align: right;
   font-family: "Heebo", Heebo, sans-serif;
   --tpl-bg: #f5f8fc; --tpl-surface: #ffffff; --tpl-text: #0f1b2d;
@@ -10,14 +10,14 @@ export const keyoraEditorCss = `
 }
 
 [data-template-id="keyora"] .tpl-display,
-[data-template-id="keyora-preview"] .tpl-display {
+[data-template-id="keyora"] .tpl-display {
   font-family: "Rubik", "Heebo", sans-serif;
 }
 
 [data-template-id="keyora"] input::placeholder,
 [data-template-id="keyora"] textarea::placeholder,
-[data-template-id="keyora-preview"] input::placeholder,
-[data-template-id="keyora-preview"] textarea::placeholder {
+[data-template-id="keyora"] input::placeholder,
+[data-template-id="keyora"] textarea::placeholder {
   color: rgba(15,27,45,.48);
 }
 
@@ -33,33 +33,33 @@ export const keyoraEditorCss = `
 @keyframes keyora-pulse { 0%,100% { opacity: .35; } 50% { opacity: 1; } }
 @keyframes keyora-sweep { 0% { transform: translateX(-130%); } 100% { transform: translateX(130%); } }
 
-[data-template-id="keyora"] .tpl-ken, [data-template-id="keyora-preview"] .tpl-ken {
+[data-template-id="keyora"] .tpl-ken, [data-template-id="keyora"] .tpl-ken {
   animation: keyora-ken 18s ease-in-out infinite alternate; transform-origin: center;
 }
-[data-template-id="keyora"] .tpl-rise, [data-template-id="keyora-preview"] .tpl-rise {
+[data-template-id="keyora"] .tpl-rise, [data-template-id="keyora"] .tpl-rise {
   animation: keyora-rise .85s cubic-bezier(.22,1,.36,1) both;
 }
-[data-template-id="keyora"] .tpl-rise-2, [data-template-id="keyora-preview"] .tpl-rise-2 {
+[data-template-id="keyora"] .tpl-rise-2, [data-template-id="keyora"] .tpl-rise-2 {
   animation: keyora-rise .85s cubic-bezier(.22,1,.36,1) .1s both;
 }
-[data-template-id="keyora"] .tpl-rise-3, [data-template-id="keyora-preview"] .tpl-rise-3 {
+[data-template-id="keyora"] .tpl-rise-3, [data-template-id="keyora"] .tpl-rise-3 {
   animation: keyora-rise .85s cubic-bezier(.22,1,.36,1) .2s both;
 }
-[data-template-id="keyora"] .tpl-draw, [data-template-id="keyora-preview"] .tpl-draw {
+[data-template-id="keyora"] .tpl-draw, [data-template-id="keyora"] .tpl-draw {
   transform-origin: right center;
   animation: keyora-draw 1s cubic-bezier(.22,1,.36,1) both;
 }
-[data-template-id="keyora"] .tpl-marquee-track, [data-template-id="keyora-preview"] .tpl-marquee-track {
+[data-template-id="keyora"] .tpl-marquee-track, [data-template-id="keyora"] .tpl-marquee-track {
   display: flex; width: max-content; animation: keyora-marquee 26s linear infinite;
 }
-[data-template-id="keyora"] .tpl-float, [data-template-id="keyora-preview"] .tpl-float {
+[data-template-id="keyora"] .tpl-float, [data-template-id="keyora"] .tpl-float {
   animation: keyora-float 5s ease-in-out infinite;
 }
-[data-template-id="keyora"] .tpl-pulse-line, [data-template-id="keyora-preview"] .tpl-pulse-line {
+[data-template-id="keyora"] .tpl-pulse-line, [data-template-id="keyora"] .tpl-pulse-line {
   animation: keyora-pulse 2.2s ease-in-out infinite;
 }
-[data-template-id="keyora"] .tpl-sweep, [data-template-id="keyora-preview"] .tpl-sweep { position: relative; overflow: hidden; }
-[data-template-id="keyora"] .tpl-sweep::after, [data-template-id="keyora-preview"] .tpl-sweep::after {
+[data-template-id="keyora"] .tpl-sweep, [data-template-id="keyora"] .tpl-sweep { position: relative; overflow: hidden; }
+[data-template-id="keyora"] .tpl-sweep::after, [data-template-id="keyora"] .tpl-sweep::after {
   content: ""; position: absolute; inset: 0 auto 0 0; width: 34%; pointer-events: none;
   background: linear-gradient(90deg, transparent, rgba(255,255,255,.28), transparent);
   animation: keyora-sweep 4s ease-in-out infinite;

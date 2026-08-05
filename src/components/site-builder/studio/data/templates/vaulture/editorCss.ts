@@ -1,7 +1,7 @@
 export const vaultureEditorCss = `
 @import url("https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Heebo:wght@400;500;700&display=swap");
 
-[data-template-id="vaulture"], [data-template-id="vaulture-preview"] {
+[data-template-id="vaulture"], [data-template-id="vaulture"] {
   direction: rtl; text-align: right;
   font-family: "Heebo", Heebo, sans-serif;
   --tpl-bg: #0c0a08; --tpl-surface: #1a1612; --tpl-text: #f5f0e8;
@@ -10,7 +10,7 @@ export const vaultureEditorCss = `
 }
 
 [data-template-id="vaulture"] .tpl-display,
-[data-template-id="vaulture-preview"] .tpl-display {
+[data-template-id="vaulture"] .tpl-display {
   font-family: "Cormorant Garamond", "Heebo", serif;
 }
 
@@ -25,39 +25,39 @@ export const vaultureEditorCss = `
 @keyframes vaulture-sweep { 0% { transform: translateX(-120%); } 100% { transform: translateX(120%); } }
 @keyframes vaulture-climb { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-[data-template-id="vaulture"] .tpl-ken, [data-template-id="vaulture-preview"] .tpl-ken {
+[data-template-id="vaulture"] .tpl-ken, [data-template-id="vaulture"] .tpl-ken {
   animation: vaulture-ken 18s ease-in-out infinite alternate; transform-origin: center;
 }
-[data-template-id="vaulture"] .tpl-rise, [data-template-id="vaulture-preview"] .tpl-rise {
+[data-template-id="vaulture"] .tpl-rise, [data-template-id="vaulture"] .tpl-rise {
   animation: vaulture-rise .9s cubic-bezier(.22,1,.36,1) both;
 }
-[data-template-id="vaulture"] .tpl-rise-2, [data-template-id="vaulture-preview"] .tpl-rise-2 {
+[data-template-id="vaulture"] .tpl-rise-2, [data-template-id="vaulture"] .tpl-rise-2 {
   animation: vaulture-rise .9s cubic-bezier(.22,1,.36,1) .12s both;
 }
-[data-template-id="vaulture"] .tpl-rise-3, [data-template-id="vaulture-preview"] .tpl-rise-3 {
+[data-template-id="vaulture"] .tpl-rise-3, [data-template-id="vaulture"] .tpl-rise-3 {
   animation: vaulture-rise .9s cubic-bezier(.22,1,.36,1) .24s both;
 }
-[data-template-id="vaulture"] .tpl-marquee-track, [data-template-id="vaulture-preview"] .tpl-marquee-track {
+[data-template-id="vaulture"] .tpl-marquee-track, [data-template-id="vaulture"] .tpl-marquee-track {
   display: flex; width: max-content; animation: vaulture-marquee 28s linear infinite;
 }
-[data-template-id="vaulture"] .tpl-float, [data-template-id="vaulture-preview"] .tpl-float {
+[data-template-id="vaulture"] .tpl-float, [data-template-id="vaulture"] .tpl-float {
   animation: vaulture-float 5s ease-in-out infinite;
 }
-[data-template-id="vaulture"] .tpl-sweep, [data-template-id="vaulture-preview"] .tpl-sweep { position: relative; overflow: hidden; }
-[data-template-id="vaulture"] .tpl-sweep::after, [data-template-id="vaulture-preview"] .tpl-sweep::after {
+[data-template-id="vaulture"] .tpl-sweep, [data-template-id="vaulture"] .tpl-sweep { position: relative; overflow: hidden; }
+[data-template-id="vaulture"] .tpl-sweep::after, [data-template-id="vaulture"] .tpl-sweep::after {
   content: ""; position: absolute; inset: 0 auto 0 0; width: 35%; pointer-events: none;
   background: linear-gradient(90deg, transparent, rgba(255,255,255,.16), transparent);
   animation: vaulture-sweep 4.5s ease-in-out infinite;
 }
-[data-template-id="vaulture"] .tpl-climb, [data-template-id="vaulture-preview"] .tpl-climb {
+[data-template-id="vaulture"] .tpl-climb, [data-template-id="vaulture"] .tpl-climb {
   animation: vaulture-climb .85s cubic-bezier(.22,1,.36,1) both;
 }
 @keyframes vaulture-curtain { 0%{clip-path:inset(0 100% 0 0)} 100%{clip-path:inset(0)} }
-[data-template-id="vaulture"] .tpl-curtain img, [data-template-id="vaulture-preview"] .tpl-curtain img { animation:vaulture-curtain 1.8s both; }
+[data-template-id="vaulture"] .tpl-curtain img, [data-template-id="vaulture"] .tpl-curtain img { animation:vaulture-curtain 1.8s both; }
 @keyframes vaulture-testi { to { transform:translateX(-50%); } }
-[data-template-id="vaulture"] .tpl-testi-track, [data-template-id="vaulture-preview"] .tpl-testi-track { display:flex;width:max-content;animation:vaulture-testi 24s linear infinite; }
+[data-template-id="vaulture"] .tpl-testi-track, [data-template-id="vaulture"] .tpl-testi-track { display:flex;width:max-content;animation:vaulture-testi 24s linear infinite; }
 @keyframes vaulture-testi { to { transform:translateX(-50%); } }
-[data-template-id="vaulture"] .tpl-testi-track, [data-template-id="vaulture-preview"] .tpl-testi-track {
+[data-template-id="vaulture"] .tpl-testi-track, [data-template-id="vaulture"] .tpl-testi-track {
   display:flex;width:max-content;animation:vaulture-testi 28s linear infinite;
 }
 `;

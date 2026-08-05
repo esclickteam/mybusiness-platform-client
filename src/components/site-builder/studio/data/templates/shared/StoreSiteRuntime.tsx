@@ -1654,7 +1654,7 @@ export default function StoreSiteRuntime({
             </div>
           </Reveal>
           <Reveal variant="left">
-            <form className="grid gap-3 border border-[var(--line)] bg-[var(--surface)] p-6" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="store-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+            <form className="grid gap-3 border border-[var(--line)] bg-[var(--surface)] p-6" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="store-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
               <input className="border border-[var(--line)] px-4 py-3 text-sm" placeholder="שם מלא" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
               <input className="border border-[var(--line)] px-4 py-3 text-sm" placeholder="טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
               <input className="border border-[var(--line)] px-4 py-3 text-sm" placeholder="אימייל" name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />

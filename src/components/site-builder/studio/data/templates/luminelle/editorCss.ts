@@ -2,7 +2,7 @@ export const luminelleEditorCss = `
 @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Outfit:wght@300;400;500;600;700&display=swap');
 
 [data-template-id="luminelle"],
-[data-template-id="luminelle-preview"] {
+[data-template-id="luminelle"] {
   --l-bg: #E8E4DF;
   --l-ink: #2A2430;
   --l-sage: #7A8B76;
@@ -20,18 +20,18 @@ export const luminelleEditorCss = `
 }
 
 [data-template-id="luminelle"] *,
-[data-template-id="luminelle-preview"] * {
+[data-template-id="luminelle"] * {
   box-sizing: border-box;
 }
 
 [data-template-id="luminelle"] .l-display,
-[data-template-id="luminelle-preview"] .l-display {
+[data-template-id="luminelle"] .l-display {
   font-family: "Libre Baskerville", serif;
   letter-spacing: -0.035em;
 }
 
 [data-template-id="luminelle"] .l-kicker,
-[data-template-id="luminelle-preview"] .l-kicker {
+[data-template-id="luminelle"] .l-kicker {
   color: var(--l-sage);
   font-size: 0.72rem;
   font-weight: 700;
@@ -40,14 +40,14 @@ export const luminelleEditorCss = `
 }
 
 [data-template-id="luminelle"] .l-rule,
-[data-template-id="luminelle-preview"] .l-rule {
+[data-template-id="luminelle"] .l-rule {
   background: var(--l-line);
   height: 1px;
   width: 100%;
 }
 
 [data-template-id="luminelle"] .l-button,
-[data-template-id="luminelle-preview"] .l-button {
+[data-template-id="luminelle"] .l-button {
   align-items: center;
   background: var(--l-ink);
   color: var(--l-surface);
@@ -62,26 +62,26 @@ export const luminelleEditorCss = `
 }
 
 [data-template-id="luminelle"] .l-button:hover,
-[data-template-id="luminelle-preview"] .l-button:hover {
+[data-template-id="luminelle"] .l-button:hover {
   background: var(--l-sage);
   color: var(--l-dark);
   transform: translateY(-2px);
 }
 
 [data-template-id="luminelle"] .l-button-outline,
-[data-template-id="luminelle-preview"] .l-button-outline {
+[data-template-id="luminelle"] .l-button-outline {
   background: transparent;
   border: 1px solid var(--l-line-strong);
   color: var(--l-ink);
 }
 
 [data-template-id="luminelle"] .l-button-outline:hover,
-[data-template-id="luminelle-preview"] .l-button-outline:hover {
+[data-template-id="luminelle"] .l-button-outline:hover {
   border-color: var(--l-sage);
 }
 
 [data-template-id="luminelle"] .l-input,
-[data-template-id="luminelle-preview"] .l-input {
+[data-template-id="luminelle"] .l-input {
   background: rgba(244, 241, 236, 0.74);
   border: 1px solid var(--l-line);
   color: var(--l-ink);
@@ -94,13 +94,13 @@ export const luminelleEditorCss = `
 }
 
 [data-template-id="luminelle"] .l-input:focus,
-[data-template-id="luminelle-preview"] .l-input:focus {
+[data-template-id="luminelle"] .l-input:focus {
   background: var(--l-surface);
   border-color: var(--l-sage);
 }
 
 [data-template-id="luminelle"] .l-input::placeholder,
-[data-template-id="luminelle-preview"] .l-input::placeholder {
+[data-template-id="luminelle"] .l-input::placeholder {
   color: rgba(122, 115, 108, 0.72);
 }
 
@@ -137,38 +137,38 @@ export const luminelleEditorCss = `
 }
 
 [data-template-id="luminelle"] .l-anim,
-[data-template-id="luminelle-preview"] .l-anim {
+[data-template-id="luminelle"] .l-anim {
   animation: l-fade-up 0.82s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 [data-template-id="luminelle"] .l-anim-soft,
-[data-template-id="luminelle-preview"] .l-anim-soft {
+[data-template-id="luminelle"] .l-anim-soft {
   animation: l-soft-rise 0.9s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 [data-template-id="luminelle"] .l-anim-d1,
-[data-template-id="luminelle-preview"] .l-anim-d1 {
+[data-template-id="luminelle"] .l-anim-d1 {
   animation-delay: 0.12s;
 }
 
 [data-template-id="luminelle"] .l-anim-d2,
-[data-template-id="luminelle-preview"] .l-anim-d2 {
+[data-template-id="luminelle"] .l-anim-d2 {
   animation-delay: 0.24s;
 }
 
 [data-template-id="luminelle"] .l-anim-d3,
-[data-template-id="luminelle-preview"] .l-anim-d3 {
+[data-template-id="luminelle"] .l-anim-d3 {
   animation-delay: 0.36s;
 }
 
 [data-template-id="luminelle"] .l-line-anim,
-[data-template-id="luminelle-preview"] .l-line-anim {
+[data-template-id="luminelle"] .l-line-anim {
   transform-origin: right center;
   animation: l-line-draw 0.9s 0.18s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 [data-template-id="luminelle"] .l-media,
-[data-template-id="luminelle-preview"] .l-media {
+[data-template-id="luminelle"] .l-media {
   background: var(--l-surface);
   box-shadow: var(--l-shadow);
 }
@@ -177,9 +177,9 @@ export const luminelleEditorCss = `
   [data-template-id="luminelle"] .l-anim,
   [data-template-id="luminelle"] .l-anim-soft,
   [data-template-id="luminelle"] .l-line-anim,
-  [data-template-id="luminelle-preview"] .l-anim,
-  [data-template-id="luminelle-preview"] .l-anim-soft,
-  [data-template-id="luminelle-preview"] .l-line-anim {
+  [data-template-id="luminelle"] .l-anim,
+  [data-template-id="luminelle"] .l-anim-soft,
+  [data-template-id="luminelle"] .l-line-anim {
     animation: none;
   }
 }

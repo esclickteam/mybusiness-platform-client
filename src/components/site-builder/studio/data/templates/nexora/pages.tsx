@@ -234,7 +234,7 @@ function BookingModal({
           <p className="mt-3 text-sm leading-6 text-slate-400">
             {getValue(data, "contactText")}
           </p>
-          <form className="mt-7 grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="nexora-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+          <form className="mt-7 grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="nexora-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
             <input
               className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-slate-500 focus:border-indigo-400"
               placeholder="שם מלא"
@@ -644,7 +644,7 @@ function ContactSection({
             ))}
           </div>
         </div>
-        <form className="m-4 rounded-[30px] border border-white/8 bg-[#0b1020]/70 p-6 lg:m-6 lg:p-8" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="nexora-contact-2" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+        <form className="m-4 rounded-[30px] border border-white/8 bg-[#0b1020]/70 p-6 lg:m-6 lg:p-8" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="nexora-contact-2" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
           <div className="grid gap-4">
             <input
               className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-slate-500 focus:border-indigo-400"
@@ -840,7 +840,7 @@ export default function NexoraPages({
   return (
     <div
       dir="rtl"
-      data-template-id={mode === "preview" ? "nexora-preview" : "nexora"}
+      data-template-id="nexora"
       className="min-h-screen w-full overflow-x-hidden bg-[#0b1020] font-sans text-white"
     >
       <Header

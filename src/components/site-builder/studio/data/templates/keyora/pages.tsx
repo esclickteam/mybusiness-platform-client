@@ -175,7 +175,7 @@ function KeyoraBluePanelContact({ data, onCta }: { data: Record<string, any>; on
             <p>{v(data, "address")}</p>
           </div>
         </aside>
-        <form className="grid gap-4 p-8 lg:p-12" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="keyora-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+        <form className="grid gap-4 p-8 lg:p-12" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="keyora-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
           <div className="grid gap-4 md:grid-cols-2">
             <input className={field} style={{ borderColor: "rgba(15,27,45,0.14)", color: "#0f1b2d", background: "#ffffff" }} placeholder="שם מלא" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
             <input className={field} style={{ borderColor: "rgba(15,27,45,0.14)", color: "#0f1b2d", background: "#ffffff" }} placeholder="טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
@@ -256,7 +256,7 @@ export default function KeyoraPages({
     );
   }
   return (
-    <div dir="rtl" data-template-id={mode === "preview" ? "keyora-preview" : "keyora"} className="min-h-screen w-full overflow-x-hidden"
+    <div dir="rtl" data-template-id="keyora" className="min-h-screen w-full overflow-x-hidden"
       style={{ background: "#f5f8fc", color: "#0f1b2d" }}>
       <KeyoraUnderlineHeader data={merged} currentPage={currentPage} goTo={goTo} onCta={() => goTo("contact")} />
       <VisualPageStack activePageId={currentPage} pages={Object.entries(pageContent).map(([id, content]) => ({ id, content }))} />

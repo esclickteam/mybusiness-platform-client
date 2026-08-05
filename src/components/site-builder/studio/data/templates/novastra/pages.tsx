@@ -1567,7 +1567,7 @@ function FaqNewsletter({
             {data.newsletterText}
           </p>
 
-          <form className="mt-8 flex flex-col gap-3 sm:flex-row" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="novastra-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+          <form className="mt-8 flex flex-col gap-3 sm:flex-row" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="novastra-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
             <input
               type="email"
               placeholder={data.newsletterPlaceholder}

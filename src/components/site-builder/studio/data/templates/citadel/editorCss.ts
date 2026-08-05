@@ -1,6 +1,6 @@
 export const citadelEditorCss = `
 [data-template-id="citadel"],
-[data-template-id="citadel-preview"] {
+[data-template-id="citadel"] {
   --citadel-bg: #030a06;
   --citadel-surface: #071510;
   --citadel-panel: rgba(7, 21, 16, 0.9);
@@ -11,7 +11,7 @@ export const citadelEditorCss = `
 }
 
 [data-template-id="citadel"] [data-rect-reveal],
-[data-template-id="citadel-preview"] [data-rect-reveal] {
+[data-template-id="citadel"] [data-rect-reveal] {
   will-change: transform, opacity;
 }
 
@@ -110,8 +110,8 @@ export const citadelEditorCss = `
 
 [data-template-id="citadel"] input::placeholder,
 [data-template-id="citadel"] textarea::placeholder,
-[data-template-id="citadel-preview"] input::placeholder,
-[data-template-id="citadel-preview"] textarea::placeholder {
+[data-template-id="citadel"] input::placeholder,
+[data-template-id="citadel"] textarea::placeholder {
   color: rgba(215, 255, 217, 0.46);
 }
 `;

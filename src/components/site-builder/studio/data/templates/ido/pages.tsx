@@ -1030,7 +1030,7 @@ function Booking({
         <form
           data-ido-reveal="booking-form"
           data-bizuply-form-id="ido-booking"
-          data-bizuply-form-builder="true"
+          data-bizuply-form-builder="true" data-bizuply-form-skin="template"
           data-visual-editable="true"
           data-visual-edit-id="booking.formBox"
           data-visual-edit-type="box"

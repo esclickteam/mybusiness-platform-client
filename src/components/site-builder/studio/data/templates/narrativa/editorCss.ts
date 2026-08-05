@@ -1,6 +1,6 @@
 export const narrativaEditorCss = `
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700;800&family=Heebo:wght@400;500;600;700;800&display=swap');
-[data-template-id="narrativa"], [data-template-id="narrativa-preview"] {
+[data-template-id="narrativa"], [data-template-id="narrativa"] {
   --p: #BE123C;
   --accent: #FB7185;
   --bg: #FFF1F2;
@@ -14,31 +14,31 @@ export const narrativaEditorCss = `
   text-align: right;
 }
 [data-template-id="narrativa"] .text-center,
-[data-template-id="narrativa-preview"] .text-center { text-align: center; }
+[data-template-id="narrativa"] .text-center { text-align: center; }
 [data-template-id="narrativa"] .ag-display,
-[data-template-id="narrativa-preview"] .ag-display {
+[data-template-id="narrativa"] .ag-display {
   font-family: "Playfair Display", "Heebo", sans-serif;
 }
 [data-template-id="narrativa"] .ag-float,
-[data-template-id="narrativa-preview"] .ag-float {
+[data-template-id="narrativa"] .ag-float {
   animation: narrativaFloat 7s ease-in-out infinite;
 }
 [data-template-id="narrativa"] .ag-pulse,
-[data-template-id="narrativa-preview"] .ag-pulse {
+[data-template-id="narrativa"] .ag-pulse {
   animation: narrativaPulse 2.8s ease-in-out infinite;
 }
 [data-template-id="narrativa"] .ag-card,
-[data-template-id="narrativa-preview"] .ag-card {
+[data-template-id="narrativa"] .ag-card {
   transition: transform 420ms cubic-bezier(0.22,1,0.36,1), border-color 420ms ease, box-shadow 420ms ease;
 }
 [data-template-id="narrativa"] .ag-card:hover,
-[data-template-id="narrativa-preview"] .ag-card:hover {
+[data-template-id="narrativa"] .ag-card:hover {
   transform: translateY(-8px);
   border-color: var(--p);
   box-shadow: 0 24px 60px rgba(0,0,0,0.18);
 }
 [data-template-id="narrativa"] .ag-ken,
-[data-template-id="narrativa-preview"] .ag-ken {
+[data-template-id="narrativa"] .ag-ken {
   animation: narrativaKen 18s ease-in-out infinite alternate;
 }
 @keyframes narrativaFloat {
@@ -55,10 +55,10 @@ export const narrativaEditorCss = `
 }
 @media (prefers-reduced-motion: reduce) {
     [data-template-id="narrativa"] .ag-float,
-  [data-template-id="narrativa-preview"] .ag-float,
+  [data-template-id="narrativa"] .ag-float,
   [data-template-id="narrativa"] .ag-ken,
-  [data-template-id="narrativa-preview"] .ag-ken,
+  [data-template-id="narrativa"] .ag-ken,
   [data-template-id="narrativa"] .ag-pulse,
-  [data-template-id="narrativa-preview"] .ag-pulse { animation: none; }
+  [data-template-id="narrativa"] .ag-pulse { animation: none; }
 }
 `;

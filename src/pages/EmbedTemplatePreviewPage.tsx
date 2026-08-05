@@ -1,5 +1,5 @@
 import React, { useMemo } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 
 import { getStudioTemplateRenderer } from "../components/site-builder/studio/data/templates/templateRendererRegistry";
 
@@ -10,6 +10,9 @@ import { getStudioTemplateRenderer } from "../components/site-builder/studio/dat
  */
 export default function EmbedTemplatePreviewPage() {
   const { templateKey = "" } = useParams<{ templateKey: string }>();
+  const [searchParams] = useSearchParams();
+  const modeParam = String(searchParams.get("mode") || "preview").toLowerCase();
+  const mode = modeParam === "edit" ? "edit" : "preview";
 
   const renderer = useMemo(
     () => getStudioTemplateRenderer(templateKey),
@@ -31,6 +34,7 @@ export default function EmbedTemplatePreviewPage() {
     <div
       dir="rtl"
       data-template-card-embed="true"
+      data-parity-surface={mode}
       style={{
         minHeight: "100vh",
         background: "#fff",
@@ -74,7 +78,7 @@ export default function EmbedTemplatePreviewPage() {
           activePageSlug={pageSlug}
           currentPageSlug={pageSlug}
           pageSlug={pageSlug}
-          mode="preview"
+          mode={mode}
           data={data}
           templateData={data}
           isStudioStatic

@@ -5,7 +5,7 @@ export default function StudioraPreview() {
   return (
     <div
       dir="rtl"
-      data-template-id="studiora-preview"
+      data-template-id="studiora"
       className="min-h-screen w-full bg-[#0a0a0a] text-white"
       style={{
         overflowX: "hidden",

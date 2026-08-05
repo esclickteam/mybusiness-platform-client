@@ -2,7 +2,7 @@ export const dermaraEditorCss = `
 @import url('https://fonts.googleapis.com/css2?family=Literata:opsz,wght@7..72,500;7..72,700&family=Source+Sans+3:wght@400;500;600;700&display=swap');
 
 [data-template-id="dermara"],
-[data-template-id="dermara-preview"] {
+[data-template-id="dermara"] {
   --p: #0D9488;
   --s: #F0FDFA;
   --a: #2DD4BF;
@@ -17,7 +17,7 @@ export const dermaraEditorCss = `
 }
 
 [data-template-id="dermara"] .t-display,
-[data-template-id="dermara-preview"] .t-display {
+[data-template-id="dermara"] .t-display {
   font-family: "Literata", serif;
 }
 
@@ -59,58 +59,58 @@ export const dermaraEditorCss = `
 }
 
 [data-template-id="dermara"] .t-ken,
-[data-template-id="dermara-preview"] .t-ken { animation: dermara-ken 18s ease-in-out infinite alternate; }
+[data-template-id="dermara"] .t-ken { animation: dermara-ken 18s ease-in-out infinite alternate; }
 [data-template-id="dermara"] .t-anim,
-[data-template-id="dermara-preview"] .t-anim { animation: dermara-up 0.9s cubic-bezier(0.22,1,0.36,1) both; }
+[data-template-id="dermara"] .t-anim { animation: dermara-up 0.9s cubic-bezier(0.22,1,0.36,1) both; }
 [data-template-id="dermara"] .t-d1,
-[data-template-id="dermara-preview"] .t-d1 { animation-delay: .12s; }
+[data-template-id="dermara"] .t-d1 { animation-delay: .12s; }
 [data-template-id="dermara"] .t-d2,
-[data-template-id="dermara-preview"] .t-d2 { animation-delay: .24s; }
+[data-template-id="dermara"] .t-d2 { animation-delay: .24s; }
 [data-template-id="dermara"] .t-d3,
-[data-template-id="dermara-preview"] .t-d3 { animation-delay: .36s; }
+[data-template-id="dermara"] .t-d3 { animation-delay: .36s; }
 [data-template-id="dermara"] .t-fade,
-[data-template-id="dermara-preview"] .t-fade { animation: dermara-fade 1s ease both; }
+[data-template-id="dermara"] .t-fade { animation: dermara-fade 1s ease both; }
 [data-template-id="dermara"] .t-marquee,
-[data-template-id="dermara-preview"] .t-marquee { animation: dermara-marquee 30s linear infinite; width: max-content; }
+[data-template-id="dermara"] .t-marquee { animation: dermara-marquee 30s linear infinite; width: max-content; }
 [data-template-id="dermara"] .t-float,
-[data-template-id="dermara-preview"] .t-float { animation: dermara-float 6s ease-in-out infinite; }
+[data-template-id="dermara"] .t-float { animation: dermara-float 6s ease-in-out infinite; }
 [data-template-id="dermara"] .t-pulse,
-[data-template-id="dermara-preview"] .t-pulse { animation: dermara-pulse 2.8s ease-in-out infinite; }
+[data-template-id="dermara"] .t-pulse { animation: dermara-pulse 2.8s ease-in-out infinite; }
 [data-template-id="dermara"] .t-shimmer,
-[data-template-id="dermara-preview"] .t-shimmer {
+[data-template-id="dermara"] .t-shimmer {
   background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--a) 35%, transparent), transparent);
   background-size: 200% 100%;
   animation: dermara-shimmer 2.8s linear infinite;
 }
 [data-template-id="dermara"] .t-glow,
-[data-template-id="dermara-preview"] .t-glow { animation: dermara-glow 3.2s ease-in-out infinite; }
+[data-template-id="dermara"] .t-glow { animation: dermara-glow 3.2s ease-in-out infinite; }
 [data-template-id="dermara"] .t-scalein,
-[data-template-id="dermara-preview"] .t-scalein { animation: dermara-scalein 0.8s cubic-bezier(0.22,1,0.36,1) both; }
+[data-template-id="dermara"] .t-scalein { animation: dermara-scalein 0.8s cubic-bezier(0.22,1,0.36,1) both; }
 [data-template-id="dermara"] .t-hover,
-[data-template-id="dermara-preview"] .t-hover {
+[data-template-id="dermara"] .t-hover {
   transition: transform .45s cubic-bezier(0.22,1,0.36,1), border-color .3s ease, background .3s ease;
 }
 [data-template-id="dermara"] .t-hover:hover,
-[data-template-id="dermara-preview"] .t-hover:hover { transform: translateY(-5px); }
+[data-template-id="dermara"] .t-hover:hover { transform: translateY(-5px); }
 
 @media (prefers-reduced-motion: reduce) {
   [data-template-id="dermara"] .t-ken,
-  [data-template-id="dermara-preview"] .t-ken,
+  [data-template-id="dermara"] .t-ken,
   [data-template-id="dermara"] .t-anim,
-  [data-template-id="dermara-preview"] .t-anim,
+  [data-template-id="dermara"] .t-anim,
   [data-template-id="dermara"] .t-marquee,
-  [data-template-id="dermara-preview"] .t-marquee,
+  [data-template-id="dermara"] .t-marquee,
   [data-template-id="dermara"] .t-float,
-  [data-template-id="dermara-preview"] .t-float,
+  [data-template-id="dermara"] .t-float,
   [data-template-id="dermara"] .t-pulse,
-  [data-template-id="dermara-preview"] .t-pulse,
+  [data-template-id="dermara"] .t-pulse,
   [data-template-id="dermara"] .t-shimmer,
-  [data-template-id="dermara-preview"] .t-shimmer,
+  [data-template-id="dermara"] .t-shimmer,
   [data-template-id="dermara"] .t-glow,
-  [data-template-id="dermara-preview"] .t-glow,
+  [data-template-id="dermara"] .t-glow,
   [data-template-id="dermara"] .t-scalein,
-  [data-template-id="dermara-preview"] .t-scalein,
+  [data-template-id="dermara"] .t-scalein,
   [data-template-id="dermara"] .t-fade,
-  [data-template-id="dermara-preview"] .t-fade { animation: none !important; }
+  [data-template-id="dermara"] .t-fade { animation: none !important; }
 }
 `;

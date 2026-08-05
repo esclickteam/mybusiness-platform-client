@@ -45,7 +45,7 @@ function cx(...classes: Array<string | false | null | undefined>) {
 
 function extendEditorCss(templateId: string, css: string) {
   const liveSelector = `[data-template-id="${templateId}"]`;
-  const previewSelector = `[data-template-id="${templateId}-preview"]`;
+  const previewSelector = `[data-template-id="${templateId}"]`;
   return css.split(liveSelector).join(`${liveSelector}, ${previewSelector}`);
 }
 
@@ -743,7 +743,7 @@ function PrismContactBand({ data }: { data: Record<string, any> }) {
           </div>
         </div>
 
-        <form className="grid gap-4 border-t border-black bg-[#fffef8] px-6 py-10 md:px-10 lg:border-r lg:border-t-0" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="prism-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+        <form className="grid gap-4 border-t border-black bg-[#fffef8] px-6 py-10 md:px-10 lg:border-r lg:border-t-0" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="prism-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
           <input
             className="border border-black bg-white px-4 py-4 text-right text-sm text-black outline-none placeholder:text-black/45 focus:bg-[#fffdf2]"
             placeholder="שם מלא"
@@ -975,7 +975,7 @@ export default function PrismPages({
   return (
     <div
       dir="rtl"
-      data-template-id={mode === "preview" ? "prism-preview" : "prism"}
+      data-template-id="prism"
       className="min-h-screen w-full overflow-x-hidden bg-[#fffef8] text-[#0a0a0a]"
       style={{ fontFamily: '"Arial Black", "Helvetica Neue", Arial, sans-serif' }}
     >

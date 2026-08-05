@@ -1,6 +1,6 @@
 export const fluxoraEditorCss = `
 [data-template-id="fluxora"],
-[data-template-id="fluxora-preview"] {
+[data-template-id="fluxora"] {
   position: relative;
   direction: rtl;
   text-align: right;
@@ -9,9 +9,9 @@ export const fluxoraEditorCss = `
 [data-template-id="fluxora"] input,
 [data-template-id="fluxora"] textarea,
 [data-template-id="fluxora"] select,
-[data-template-id="fluxora-preview"] input,
-[data-template-id="fluxora-preview"] textarea,
-[data-template-id="fluxora-preview"] select {
+[data-template-id="fluxora"] input,
+[data-template-id="fluxora"] textarea,
+[data-template-id="fluxora"] select {
   text-align: right;
   direction: rtl;
 }

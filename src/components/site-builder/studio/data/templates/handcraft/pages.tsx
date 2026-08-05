@@ -526,7 +526,7 @@ function ContactModal({ data, open, onClose }: { data: Record<string, any>; open
         </p>
         <h3 className="mt-4 text-3xl font-extrabold leading-tight">{getValue(data, "contactTitle")}</h3>
         <p className="mt-3 text-sm leading-7 text-white/60">{getValue(data, "contactText")}</p>
-        <form className="mt-7 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="handcraft-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+        <form className="mt-7 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="handcraft-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
           <input className="h-input px-5 py-4 text-right" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
           <input className="h-input px-5 py-4 text-right" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
           <input className="h-input px-5 py-4 text-right" placeholder="מה התקלה?"  name="other" data-bizuply-form-field-id="other" />
@@ -582,7 +582,7 @@ export default function HandcraftPages({
   return (
     <div
       dir="rtl"
-      data-template-id={mode === "preview" ? "handcraft-preview" : "handcraft"}
+      data-template-id="handcraft"
       className="min-h-screen w-full overflow-x-hidden bg-[var(--h-background)] text-[var(--h-text)]"
     >
       <style dangerouslySetInnerHTML={{ __html: handcraftEditorCss }} />

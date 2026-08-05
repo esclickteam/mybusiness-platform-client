@@ -64,7 +64,7 @@ function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>;
 function ContactForm({ data, onCta }: { data: Record<string, any>; onCta: () => void }) {
   const field = "w-full border bg-transparent px-4 py-3.5 text-right outline-none";
   return (
-    <form className="grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="tidehaus-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+    <form className="grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="tidehaus-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
       <input className={field} style={{ borderColor: "rgba(12,42,58,0.12)", color: "#0c2a3a" }} placeholder="שם מלא" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
       <input className={field} style={{ borderColor: "rgba(12,42,58,0.12)", color: "#0c2a3a" }} placeholder="טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
       <input className={field} style={{ borderColor: "rgba(12,42,58,0.12)", color: "#0c2a3a" }} placeholder="אימייל" name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
@@ -235,7 +235,7 @@ export default function TidehausPages({
     );
   }
   return (
-    <div dir="rtl" data-template-id={mode === "preview" ? "tidehaus-preview" : "tidehaus"} className="min-h-screen w-full overflow-x-hidden"
+    <div dir="rtl" data-template-id="tidehaus" className="min-h-screen w-full overflow-x-hidden"
       style={{ background: "#eef6fb", color: "#0c2a3a" }}>
       <Header data={merged} currentPage={currentPage} goTo={goTo} onCta={() => goTo("contact")} />
       <VisualPageStack activePageId={currentPage} pages={Object.entries(pageContent).map(([id, content]) => ({ id, content }))} />

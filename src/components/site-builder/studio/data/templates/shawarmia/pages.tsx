@@ -445,7 +445,7 @@ function SpitReserveForm({ data, onCta }: { data: Record<string, any>; onCta: ()
           <p className="mt-4 leading-8" style={{ color: "#b9a08a" }}>{v(data, "contactText")}</p>
           <div className="mt-8 space-y-2 text-sm" style={{ color: "#b9a08a" }}><p>{v(data, "phone")}</p><p>{v(data, "email")}</p><p>{v(data, "address")}</p></div>
         </div>
-        <form className="grid gap-3 border p-6" style={{ borderColor: "#d97706" }} data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="shawarmia-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+        <form className="grid gap-3 border p-6" style={{ borderColor: "#d97706" }} data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="shawarmia-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
           <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(245,235,224,0.12)", color: "#f5ebe0" }} placeholder="שם מלא" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
           <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(245,235,224,0.12)", color: "#f5ebe0" }} placeholder="טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
           <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(245,235,224,0.12)", color: "#f5ebe0" }} placeholder="תאריך" name="date" data-bizuply-form-field-id="date" />
@@ -586,7 +586,7 @@ export default function ShawarmiaPages({
     contact: <ContactPage data={merged} goTo={goTo} onCta={() => goTo("contact")} />,
   };
   return (
-    <div dir="rtl" data-template-id={mode === "preview" ? "shawarmia-preview" : "shawarmia"} className="min-h-screen w-full overflow-x-hidden"
+    <div dir="rtl" data-template-id="shawarmia" className="min-h-screen w-full overflow-x-hidden"
       style={{ background: "#14110e", color: "#f5ebe0" }}>
       <style dangerouslySetInnerHTML={{ __html: shawarmiaEditorCss }} />
       <Header data={merged} currentPage={currentPage} goTo={goTo} onCta={() => goTo("contact")} />

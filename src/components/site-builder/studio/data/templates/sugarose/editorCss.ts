@@ -2,7 +2,7 @@ export const sugaroseEditorCss = `
 @import url('https://fonts.googleapis.com/css2?family=Cooper+Black&family=Plus+Jakarta+Sans:wght@400;500;700&display=swap');
 
 [data-template-id="sugarose"],
-[data-template-id="sugarose-preview"] {
+[data-template-id="sugarose"] {
   --p: #D97706;
   --s: #FFFBEB;
   --a: #FDE68A;
@@ -17,7 +17,7 @@ export const sugaroseEditorCss = `
 }
 
 [data-template-id="sugarose"] .t-display,
-[data-template-id="sugarose-preview"] .t-display {
+[data-template-id="sugarose"] .t-display {
   font-family: "Cooper Black", serif;
 }
 
@@ -59,58 +59,58 @@ export const sugaroseEditorCss = `
 }
 
 [data-template-id="sugarose"] .t-ken,
-[data-template-id="sugarose-preview"] .t-ken { animation: sugarose-ken 18s ease-in-out infinite alternate; }
+[data-template-id="sugarose"] .t-ken { animation: sugarose-ken 18s ease-in-out infinite alternate; }
 [data-template-id="sugarose"] .t-anim,
-[data-template-id="sugarose-preview"] .t-anim { animation: sugarose-up 0.9s cubic-bezier(0.22,1,0.36,1) both; }
+[data-template-id="sugarose"] .t-anim { animation: sugarose-up 0.9s cubic-bezier(0.22,1,0.36,1) both; }
 [data-template-id="sugarose"] .t-d1,
-[data-template-id="sugarose-preview"] .t-d1 { animation-delay: .12s; }
+[data-template-id="sugarose"] .t-d1 { animation-delay: .12s; }
 [data-template-id="sugarose"] .t-d2,
-[data-template-id="sugarose-preview"] .t-d2 { animation-delay: .24s; }
+[data-template-id="sugarose"] .t-d2 { animation-delay: .24s; }
 [data-template-id="sugarose"] .t-d3,
-[data-template-id="sugarose-preview"] .t-d3 { animation-delay: .36s; }
+[data-template-id="sugarose"] .t-d3 { animation-delay: .36s; }
 [data-template-id="sugarose"] .t-fade,
-[data-template-id="sugarose-preview"] .t-fade { animation: sugarose-fade 1s ease both; }
+[data-template-id="sugarose"] .t-fade { animation: sugarose-fade 1s ease both; }
 [data-template-id="sugarose"] .t-marquee,
-[data-template-id="sugarose-preview"] .t-marquee { animation: sugarose-marquee 30s linear infinite; width: max-content; }
+[data-template-id="sugarose"] .t-marquee { animation: sugarose-marquee 30s linear infinite; width: max-content; }
 [data-template-id="sugarose"] .t-float,
-[data-template-id="sugarose-preview"] .t-float { animation: sugarose-float 6s ease-in-out infinite; }
+[data-template-id="sugarose"] .t-float { animation: sugarose-float 6s ease-in-out infinite; }
 [data-template-id="sugarose"] .t-pulse,
-[data-template-id="sugarose-preview"] .t-pulse { animation: sugarose-pulse 2.8s ease-in-out infinite; }
+[data-template-id="sugarose"] .t-pulse { animation: sugarose-pulse 2.8s ease-in-out infinite; }
 [data-template-id="sugarose"] .t-shimmer,
-[data-template-id="sugarose-preview"] .t-shimmer {
+[data-template-id="sugarose"] .t-shimmer {
   background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--a) 35%, transparent), transparent);
   background-size: 200% 100%;
   animation: sugarose-shimmer 2.8s linear infinite;
 }
 [data-template-id="sugarose"] .t-glow,
-[data-template-id="sugarose-preview"] .t-glow { animation: sugarose-glow 3.2s ease-in-out infinite; }
+[data-template-id="sugarose"] .t-glow { animation: sugarose-glow 3.2s ease-in-out infinite; }
 [data-template-id="sugarose"] .t-scalein,
-[data-template-id="sugarose-preview"] .t-scalein { animation: sugarose-scalein 0.8s cubic-bezier(0.22,1,0.36,1) both; }
+[data-template-id="sugarose"] .t-scalein { animation: sugarose-scalein 0.8s cubic-bezier(0.22,1,0.36,1) both; }
 [data-template-id="sugarose"] .t-hover,
-[data-template-id="sugarose-preview"] .t-hover {
+[data-template-id="sugarose"] .t-hover {
   transition: transform .45s cubic-bezier(0.22,1,0.36,1), border-color .3s ease, background .3s ease;
 }
 [data-template-id="sugarose"] .t-hover:hover,
-[data-template-id="sugarose-preview"] .t-hover:hover { transform: translateY(-5px); }
+[data-template-id="sugarose"] .t-hover:hover { transform: translateY(-5px); }
 
 @media (prefers-reduced-motion: reduce) {
   [data-template-id="sugarose"] .t-ken,
-  [data-template-id="sugarose-preview"] .t-ken,
+  [data-template-id="sugarose"] .t-ken,
   [data-template-id="sugarose"] .t-anim,
-  [data-template-id="sugarose-preview"] .t-anim,
+  [data-template-id="sugarose"] .t-anim,
   [data-template-id="sugarose"] .t-marquee,
-  [data-template-id="sugarose-preview"] .t-marquee,
+  [data-template-id="sugarose"] .t-marquee,
   [data-template-id="sugarose"] .t-float,
-  [data-template-id="sugarose-preview"] .t-float,
+  [data-template-id="sugarose"] .t-float,
   [data-template-id="sugarose"] .t-pulse,
-  [data-template-id="sugarose-preview"] .t-pulse,
+  [data-template-id="sugarose"] .t-pulse,
   [data-template-id="sugarose"] .t-shimmer,
-  [data-template-id="sugarose-preview"] .t-shimmer,
+  [data-template-id="sugarose"] .t-shimmer,
   [data-template-id="sugarose"] .t-glow,
-  [data-template-id="sugarose-preview"] .t-glow,
+  [data-template-id="sugarose"] .t-glow,
   [data-template-id="sugarose"] .t-scalein,
-  [data-template-id="sugarose-preview"] .t-scalein,
+  [data-template-id="sugarose"] .t-scalein,
   [data-template-id="sugarose"] .t-fade,
-  [data-template-id="sugarose-preview"] .t-fade { animation: none !important; }
+  [data-template-id="sugarose"] .t-fade { animation: none !important; }
 }
 `;

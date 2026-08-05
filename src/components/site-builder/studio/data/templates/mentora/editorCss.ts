@@ -2,7 +2,7 @@ export const mentoraEditorCss = `
 @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Source+Sans+3:wght@400;500;600;700&display=swap');
 
 [data-template-id="mentora"],
-[data-template-id="mentora-preview"] {
+[data-template-id="mentora"] {
   --p: #F59E0B;
   --s: #111827;
   --a: #FBBF24;
@@ -17,7 +17,7 @@ export const mentoraEditorCss = `
 }
 
 [data-template-id="mentora"] .t-display,
-[data-template-id="mentora-preview"] .t-display {
+[data-template-id="mentora"] .t-display {
   font-family: "Fraunces", sans-serif;
 }
 
@@ -55,46 +55,46 @@ export const mentoraEditorCss = `
 }
 
 [data-template-id="mentora"] .t-ken,
-[data-template-id="mentora-preview"] .t-ken { animation: mentora-ken 16s ease-in-out infinite alternate; }
+[data-template-id="mentora"] .t-ken { animation: mentora-ken 16s ease-in-out infinite alternate; }
 [data-template-id="mentora"] .t-anim,
-[data-template-id="mentora-preview"] .t-anim { animation: mentora-up 0.9s cubic-bezier(0.22,1,0.36,1) both; }
+[data-template-id="mentora"] .t-anim { animation: mentora-up 0.9s cubic-bezier(0.22,1,0.36,1) both; }
 [data-template-id="mentora"] .t-d1,
-[data-template-id="mentora-preview"] .t-d1 { animation-delay: .12s; }
+[data-template-id="mentora"] .t-d1 { animation-delay: .12s; }
 [data-template-id="mentora"] .t-d2,
-[data-template-id="mentora-preview"] .t-d2 { animation-delay: .24s; }
+[data-template-id="mentora"] .t-d2 { animation-delay: .24s; }
 [data-template-id="mentora"] .t-d3,
-[data-template-id="mentora-preview"] .t-d3 { animation-delay: .36s; }
+[data-template-id="mentora"] .t-d3 { animation-delay: .36s; }
 [data-template-id="mentora"] .t-fade,
-[data-template-id="mentora-preview"] .t-fade { animation: mentora-fade 1s ease both; }
+[data-template-id="mentora"] .t-fade { animation: mentora-fade 1s ease both; }
 [data-template-id="mentora"] .t-marquee,
-[data-template-id="mentora-preview"] .t-marquee { animation: mentora-marquee 28s linear infinite; width: max-content; }
+[data-template-id="mentora"] .t-marquee { animation: mentora-marquee 28s linear infinite; width: max-content; }
 [data-template-id="mentora"] .t-float,
-[data-template-id="mentora-preview"] .t-float { animation: mentora-float 6.5s ease-in-out infinite; }
+[data-template-id="mentora"] .t-float { animation: mentora-float 6.5s ease-in-out infinite; }
 [data-template-id="mentora"] .t-pulse,
-[data-template-id="mentora-preview"] .t-pulse { animation: mentora-pulse 2.6s ease-in-out infinite; }
+[data-template-id="mentora"] .t-pulse { animation: mentora-pulse 2.6s ease-in-out infinite; }
 [data-template-id="mentora"] .t-wave,
-[data-template-id="mentora-preview"] .t-wave { animation: mentora-wave 2.2s ease-in-out infinite; }
+[data-template-id="mentora"] .t-wave { animation: mentora-wave 2.2s ease-in-out infinite; }
 [data-template-id="mentora"] .t-hover,
-[data-template-id="mentora-preview"] .t-hover {
+[data-template-id="mentora"] .t-hover {
   transition: transform .45s cubic-bezier(0.22,1,0.36,1), border-color .3s ease, background .3s ease;
 }
 [data-template-id="mentora"] .t-hover:hover,
-[data-template-id="mentora-preview"] .t-hover:hover { transform: translateY(-6px); }
+[data-template-id="mentora"] .t-hover:hover { transform: translateY(-6px); }
 
 @media (prefers-reduced-motion: reduce) {
   [data-template-id="mentora"] .t-ken,
-  [data-template-id="mentora-preview"] .t-ken,
+  [data-template-id="mentora"] .t-ken,
   [data-template-id="mentora"] .t-anim,
-  [data-template-id="mentora-preview"] .t-anim,
+  [data-template-id="mentora"] .t-anim,
   [data-template-id="mentora"] .t-marquee,
-  [data-template-id="mentora-preview"] .t-marquee,
+  [data-template-id="mentora"] .t-marquee,
   [data-template-id="mentora"] .t-float,
-  [data-template-id="mentora-preview"] .t-float,
+  [data-template-id="mentora"] .t-float,
   [data-template-id="mentora"] .t-pulse,
-  [data-template-id="mentora-preview"] .t-pulse,
+  [data-template-id="mentora"] .t-pulse,
   [data-template-id="mentora"] .t-wave,
-  [data-template-id="mentora-preview"] .t-wave,
+  [data-template-id="mentora"] .t-wave,
   [data-template-id="mentora"] .t-fade,
-  [data-template-id="mentora-preview"] .t-fade { animation: none !important; }
+  [data-template-id="mentora"] .t-fade { animation: none !important; }
 }
 `;

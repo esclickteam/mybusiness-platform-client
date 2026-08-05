@@ -1,6 +1,6 @@
 export const neuralisEditorCss = `
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Hebrew:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap');
-[data-template-id="neuralis"], [data-template-id="neuralis-preview"] {
+[data-template-id="neuralis"], [data-template-id="neuralis"] {
   /* wow-rtl-align */
   text-align: right;
 
@@ -21,12 +21,12 @@ export const neuralisEditorCss = `
     var(--bg);
 }
 [data-template-id="neuralis"] .neuralis-display,
-[data-template-id="neuralis-preview"] .neuralis-display {
+[data-template-id="neuralis"] .neuralis-display {
   font-family: "Space Grotesk", "IBM Plex Sans Hebrew", sans-serif;
   letter-spacing: -0.06em;
 }
 [data-template-id="neuralis"] .neuralis-grid,
-[data-template-id="neuralis-preview"] .neuralis-grid {
+[data-template-id="neuralis"] .neuralis-grid {
   background-image:
     linear-gradient(rgba(34, 211, 238, 0.055) 1px, transparent 1px),
     linear-gradient(90deg, rgba(34, 211, 238, 0.055) 1px, transparent 1px);
@@ -34,30 +34,30 @@ export const neuralisEditorCss = `
   mask-image: linear-gradient(to bottom, rgba(0,0,0,0.95), rgba(0,0,0,0.2), transparent);
 }
 [data-template-id="neuralis"] .neuralis-orb,
-[data-template-id="neuralis-preview"] .neuralis-orb {
+[data-template-id="neuralis"] .neuralis-orb {
   animation: neuralisFloat 9s ease-in-out infinite;
   filter: blur(1px);
 }
 [data-template-id="neuralis"] .neuralis-orb:nth-child(2),
-[data-template-id="neuralis-preview"] .neuralis-orb:nth-child(2) {
+[data-template-id="neuralis"] .neuralis-orb:nth-child(2) {
   animation-delay: -3.4s;
   animation-duration: 11s;
 }
 [data-template-id="neuralis"] .neuralis-orb:nth-child(3),
-[data-template-id="neuralis-preview"] .neuralis-orb:nth-child(3) {
+[data-template-id="neuralis"] .neuralis-orb:nth-child(3) {
   animation-delay: -6s;
   animation-duration: 13s;
 }
 [data-template-id="neuralis"] .neuralis-marquee,
-[data-template-id="neuralis-preview"] .neuralis-marquee {
+[data-template-id="neuralis"] .neuralis-marquee {
   animation: neuralisMarquee 28s linear infinite;
 }
 [data-template-id="neuralis"] .neuralis-card,
-[data-template-id="neuralis-preview"] .neuralis-card {
+[data-template-id="neuralis"] .neuralis-card {
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.08), 0 24px 80px rgba(0,0,0,0.28);
 }
 [data-template-id="neuralis"] .neuralis-card::before,
-[data-template-id="neuralis-preview"] .neuralis-card::before {
+[data-template-id="neuralis"] .neuralis-card::before {
   content: "";
   position: absolute;
   inset: 0;
@@ -66,16 +66,16 @@ export const neuralisEditorCss = `
   transition: opacity 420ms ease;
 }
 [data-template-id="neuralis"] .neuralis-card:hover::before,
-[data-template-id="neuralis-preview"] .neuralis-card:hover::before {
+[data-template-id="neuralis"] .neuralis-card:hover::before {
   opacity: 1;
 }
 [data-template-id="neuralis"] .neuralis-scan,
-[data-template-id="neuralis-preview"] .neuralis-scan {
+[data-template-id="neuralis"] .neuralis-scan {
   position: relative;
   overflow: hidden;
 }
 [data-template-id="neuralis"] .neuralis-scan::after,
-[data-template-id="neuralis-preview"] .neuralis-scan::after {
+[data-template-id="neuralis"] .neuralis-scan::after {
   content: "";
   position: absolute;
   inset: -35% 0 auto 0;
@@ -84,7 +84,7 @@ export const neuralisEditorCss = `
   animation: neuralisScan 4.8s ease-in-out infinite;
 }
 [data-template-id="neuralis"] .neuralis-footer-glow,
-[data-template-id="neuralis-preview"] .neuralis-footer-glow {
+[data-template-id="neuralis"] .neuralis-footer-glow {
   box-shadow: 0 -28px 120px rgba(34, 211, 238, 0.18);
 }
 @keyframes neuralisFloat {
@@ -103,17 +103,17 @@ export const neuralisEditorCss = `
 }
 @media (prefers-reduced-motion: reduce) {
   [data-template-id="neuralis"] .neuralis-orb,
-  [data-template-id="neuralis-preview"] .neuralis-orb,
+  [data-template-id="neuralis"] .neuralis-orb,
   [data-template-id="neuralis"] .neuralis-marquee,
-  [data-template-id="neuralis-preview"] .neuralis-marquee,
+  [data-template-id="neuralis"] .neuralis-marquee,
   [data-template-id="neuralis"] .neuralis-scan::after,
-  [data-template-id="neuralis-preview"] .neuralis-scan::after {
+  [data-template-id="neuralis"] .neuralis-scan::after {
     animation: none;
   }
 }
 
 [data-template-id="neuralis"] .text-center,
-[data-template-id="neuralis-preview"] .text-center {
+[data-template-id="neuralis"] .text-center {
   text-align: center;
 }
 `;

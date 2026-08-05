@@ -2,14 +2,14 @@ export const vesperaEditorCss = `
 @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Heebo:wght@400;500;700&display=swap");
 
 [data-template-id="vespera"],
-[data-template-id="vespera-preview"] {
+[data-template-id="vespera"] {
   direction: rtl;
   text-align: right;
   font-family: "Heebo", Heebo, sans-serif;
 }
 
 [data-template-id="vespera"] .tpl-display,
-[data-template-id="vespera-preview"] .tpl-display {
+[data-template-id="vespera"] .tpl-display {
   font-family: "Playfair Display", "Heebo", serif;
 }
 

@@ -1,6 +1,6 @@
 export const gleamoraEditorCss = `
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700;800&family=Heebo:wght@400;500;600;700;800;900&display=swap');
-[data-template-id="gleamora"], [data-template-id="gleamora-preview"] {
+[data-template-id="gleamora"], [data-template-id="gleamora"] {
   --p: #A16207;
   --accent: #FDE68A;
   --on-p: #1C1917;
@@ -20,21 +20,21 @@ export const gleamoraEditorCss = `
   text-align: right;
 }
 [data-template-id="gleamora"] .store-display,
-[data-template-id="gleamora-preview"] .store-display {
+[data-template-id="gleamora"] .store-display {
   font-family: "Cormorant Garamond", "Heebo", serif;
 }
 [data-template-id="gleamora"] .store-card,
-[data-template-id="gleamora-preview"] .store-card {
+[data-template-id="gleamora"] .store-card {
   transition: transform 420ms cubic-bezier(0.22,1,0.36,1), box-shadow 420ms ease, border-color 420ms ease;
 }
 [data-template-id="gleamora"] .store-card:hover,
-[data-template-id="gleamora-preview"] .store-card:hover {
+[data-template-id="gleamora"] .store-card:hover {
   transform: translateY(-8px);
   box-shadow: 0 24px 60px rgba(0,0,0,0.18);
   border-color: var(--p);
 }
 [data-template-id="gleamora"] .store-marquee,
-[data-template-id="gleamora-preview"] .store-marquee {
+[data-template-id="gleamora"] .store-marquee {
   animation: gleamora-marquee 22s linear infinite;
 }
 @keyframes gleamora-marquee {
@@ -43,7 +43,7 @@ export const gleamoraEditorCss = `
 }
 @media (prefers-reduced-motion: reduce) {
   [data-template-id="gleamora"] .store-marquee,
-  [data-template-id="gleamora-preview"] .store-marquee {
+  [data-template-id="gleamora"] .store-marquee {
     animation: none !important;
   }
 }

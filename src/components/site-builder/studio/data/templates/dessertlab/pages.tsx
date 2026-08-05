@@ -423,7 +423,7 @@ function SugarReserveForm({ data, onCta }: { data: Record<string, any>; onCta: (
         <p className="mt-3 text-sm" style={{ color: "#b89bb8" }}>{v(data, "contactText")}</p>
         <div className="mt-8 space-y-3">
           <div className="mr-8 border p-3 text-sm" style={{ borderColor: "rgba(248,238,248,0.12)", background: "#1a1220" }}>היי! מתי נוח לכם?</div>
-          <form className="ml-8 grid gap-2 border p-3" style={{ borderColor: "#e879f9" }} data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="dessertlab-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+          <form className="ml-8 grid gap-2 border p-3" style={{ borderColor: "#e879f9" }} data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="dessertlab-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
             <input className="w-full border bg-transparent px-3 py-2.5 text-right text-sm outline-none" style={{ borderColor: "rgba(248,238,248,0.12)", color: "#f8eef8" }} placeholder="שם + טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
             <input className="w-full border bg-transparent px-3 py-2.5 text-right text-sm outline-none" style={{ borderColor: "rgba(248,238,248,0.12)", color: "#f8eef8" }} placeholder="תאריך ושעה" name="date" data-bizuply-form-field-id="date" />
             <button type="submit" className="px-4 py-3 text-sm font-bold" style={{ background: "#e879f9", color: "#e879f9Text" }}>{v(data, "cta")}</button>
@@ -564,7 +564,7 @@ export default function DessertlabPages({
     contact: <ContactPage data={merged} goTo={goTo} onCta={() => goTo("contact")} />,
   };
   return (
-    <div dir="rtl" data-template-id={mode === "preview" ? "dessertlab-preview" : "dessertlab"} className="min-h-screen w-full overflow-x-hidden"
+    <div dir="rtl" data-template-id="dessertlab" className="min-h-screen w-full overflow-x-hidden"
       style={{ background: "#1a1220", color: "#f8eef8" }}>
       <style dangerouslySetInnerHTML={{ __html: dessertlabEditorCss }} />
       <Header data={merged} currentPage={currentPage} goTo={goTo} onCta={() => goTo("contact")} />

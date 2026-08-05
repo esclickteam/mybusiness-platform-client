@@ -392,7 +392,7 @@ export function BookingSection({ data }: { data: WantravelSeed }) {
               className="wan-form"
               data-bizuply-block="lead-form"
               data-bizuply-crm-lead="true"
-              data-bizuply-form-builder="true"
+              data-bizuply-form-builder="true" data-bizuply-form-skin="template"
               data-bizuply-form-id="wantravel-contact"
               data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם."
             >

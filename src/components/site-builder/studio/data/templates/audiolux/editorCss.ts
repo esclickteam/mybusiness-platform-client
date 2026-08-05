@@ -1,6 +1,6 @@
 export const audioluxEditorCss = `
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@600;700;800&family=Heebo:wght@400;500;600;700;800;900&display=swap');
-[data-template-id="audiolux"], [data-template-id="audiolux-preview"] {
+[data-template-id="audiolux"], [data-template-id="audiolux"] {
   --p: #06B6D4;
   --accent: #A78BFA;
   --on-p: #041016;
@@ -20,21 +20,21 @@ export const audioluxEditorCss = `
   text-align: right;
 }
 [data-template-id="audiolux"] .store-display,
-[data-template-id="audiolux-preview"] .store-display {
+[data-template-id="audiolux"] .store-display {
   font-family: "Space Grotesk", "Heebo", serif;
 }
 [data-template-id="audiolux"] .store-card,
-[data-template-id="audiolux-preview"] .store-card {
+[data-template-id="audiolux"] .store-card {
   transition: transform 420ms cubic-bezier(0.22,1,0.36,1), box-shadow 420ms ease, border-color 420ms ease;
 }
 [data-template-id="audiolux"] .store-card:hover,
-[data-template-id="audiolux-preview"] .store-card:hover {
+[data-template-id="audiolux"] .store-card:hover {
   transform: translateY(-8px);
   box-shadow: 0 24px 60px rgba(0,0,0,0.18);
   border-color: var(--p);
 }
 [data-template-id="audiolux"] .store-marquee,
-[data-template-id="audiolux-preview"] .store-marquee {
+[data-template-id="audiolux"] .store-marquee {
   animation: audiolux-marquee 22s linear infinite;
 }
 @keyframes audiolux-marquee {
@@ -43,7 +43,7 @@ export const audioluxEditorCss = `
 }
 @media (prefers-reduced-motion: reduce) {
   [data-template-id="audiolux"] .store-marquee,
-  [data-template-id="audiolux-preview"] .store-marquee {
+  [data-template-id="audiolux"] .store-marquee {
     animation: none !important;
   }
 }

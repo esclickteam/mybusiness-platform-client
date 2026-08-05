@@ -437,7 +437,7 @@ function CitrusReserveForm({ data, onCta }: { data: Record<string, any>; onCta: 
           <p className="mt-4 leading-8" style={{ color: "#78716c" }}>{v(data, "contactText")}</p>
           <div className="mt-8 space-y-2 text-sm" style={{ color: "#78716c" }}><p>{v(data, "phone")}</p><p>{v(data, "email")}</p><p>{v(data, "address")}</p></div>
         </div>
-        <form className="grid gap-3 border p-6" style={{ borderColor: "#f59e0b" }} data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="juicepress-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+        <form className="grid gap-3 border p-6" style={{ borderColor: "#f59e0b" }} data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="juicepress-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
           <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(28,25,23,0.1)", color: "#1c1917" }} placeholder="שם מלא" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
           <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(28,25,23,0.1)", color: "#1c1917" }} placeholder="טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
           <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(28,25,23,0.1)", color: "#1c1917" }} placeholder="תאריך" name="date" data-bizuply-form-field-id="date" />
@@ -579,7 +579,7 @@ export default function JuicepressPages({
     contact: <ContactPage data={merged} goTo={goTo} onCta={() => goTo("contact")} />,
   };
   return (
-    <div dir="rtl" data-template-id={mode === "preview" ? "juicepress-preview" : "juicepress"} className="min-h-screen w-full overflow-x-hidden"
+    <div dir="rtl" data-template-id="juicepress" className="min-h-screen w-full overflow-x-hidden"
       style={{ background: "#fffbeb", color: "#1c1917" }}>
       <style dangerouslySetInnerHTML={{ __html: juicepressEditorCss }} />
       <Header data={merged} currentPage={currentPage} goTo={goTo} onCta={() => goTo("contact")} />

@@ -2,7 +2,7 @@ export const velvetineEditorCss = `
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap');
 
 [data-template-id="velvetine"],
-[data-template-id="velvetine-preview"] {
+[data-template-id="velvetine"] {
   --p: #C9A227;
   --s: #1A1210;
   --a: #E8D5A3;
@@ -17,7 +17,7 @@ export const velvetineEditorCss = `
 }
 
 [data-template-id="velvetine"] .t-display,
-[data-template-id="velvetine-preview"] .t-display {
+[data-template-id="velvetine"] .t-display {
   font-family: "Cormorant Garamond", serif;
 }
 
@@ -59,58 +59,58 @@ export const velvetineEditorCss = `
 }
 
 [data-template-id="velvetine"] .t-ken,
-[data-template-id="velvetine-preview"] .t-ken { animation: velvetine-ken 18s ease-in-out infinite alternate; }
+[data-template-id="velvetine"] .t-ken { animation: velvetine-ken 18s ease-in-out infinite alternate; }
 [data-template-id="velvetine"] .t-anim,
-[data-template-id="velvetine-preview"] .t-anim { animation: velvetine-up 0.9s cubic-bezier(0.22,1,0.36,1) both; }
+[data-template-id="velvetine"] .t-anim { animation: velvetine-up 0.9s cubic-bezier(0.22,1,0.36,1) both; }
 [data-template-id="velvetine"] .t-d1,
-[data-template-id="velvetine-preview"] .t-d1 { animation-delay: .12s; }
+[data-template-id="velvetine"] .t-d1 { animation-delay: .12s; }
 [data-template-id="velvetine"] .t-d2,
-[data-template-id="velvetine-preview"] .t-d2 { animation-delay: .24s; }
+[data-template-id="velvetine"] .t-d2 { animation-delay: .24s; }
 [data-template-id="velvetine"] .t-d3,
-[data-template-id="velvetine-preview"] .t-d3 { animation-delay: .36s; }
+[data-template-id="velvetine"] .t-d3 { animation-delay: .36s; }
 [data-template-id="velvetine"] .t-fade,
-[data-template-id="velvetine-preview"] .t-fade { animation: velvetine-fade 1s ease both; }
+[data-template-id="velvetine"] .t-fade { animation: velvetine-fade 1s ease both; }
 [data-template-id="velvetine"] .t-marquee,
-[data-template-id="velvetine-preview"] .t-marquee { animation: velvetine-marquee 30s linear infinite; width: max-content; }
+[data-template-id="velvetine"] .t-marquee { animation: velvetine-marquee 30s linear infinite; width: max-content; }
 [data-template-id="velvetine"] .t-float,
-[data-template-id="velvetine-preview"] .t-float { animation: velvetine-float 6s ease-in-out infinite; }
+[data-template-id="velvetine"] .t-float { animation: velvetine-float 6s ease-in-out infinite; }
 [data-template-id="velvetine"] .t-pulse,
-[data-template-id="velvetine-preview"] .t-pulse { animation: velvetine-pulse 2.8s ease-in-out infinite; }
+[data-template-id="velvetine"] .t-pulse { animation: velvetine-pulse 2.8s ease-in-out infinite; }
 [data-template-id="velvetine"] .t-shimmer,
-[data-template-id="velvetine-preview"] .t-shimmer {
+[data-template-id="velvetine"] .t-shimmer {
   background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--a) 35%, transparent), transparent);
   background-size: 200% 100%;
   animation: velvetine-shimmer 2.8s linear infinite;
 }
 [data-template-id="velvetine"] .t-glow,
-[data-template-id="velvetine-preview"] .t-glow { animation: velvetine-glow 3.2s ease-in-out infinite; }
+[data-template-id="velvetine"] .t-glow { animation: velvetine-glow 3.2s ease-in-out infinite; }
 [data-template-id="velvetine"] .t-scalein,
-[data-template-id="velvetine-preview"] .t-scalein { animation: velvetine-scalein 0.8s cubic-bezier(0.22,1,0.36,1) both; }
+[data-template-id="velvetine"] .t-scalein { animation: velvetine-scalein 0.8s cubic-bezier(0.22,1,0.36,1) both; }
 [data-template-id="velvetine"] .t-hover,
-[data-template-id="velvetine-preview"] .t-hover {
+[data-template-id="velvetine"] .t-hover {
   transition: transform .45s cubic-bezier(0.22,1,0.36,1), border-color .3s ease, background .3s ease;
 }
 [data-template-id="velvetine"] .t-hover:hover,
-[data-template-id="velvetine-preview"] .t-hover:hover { transform: translateY(-5px); }
+[data-template-id="velvetine"] .t-hover:hover { transform: translateY(-5px); }
 
 @media (prefers-reduced-motion: reduce) {
   [data-template-id="velvetine"] .t-ken,
-  [data-template-id="velvetine-preview"] .t-ken,
+  [data-template-id="velvetine"] .t-ken,
   [data-template-id="velvetine"] .t-anim,
-  [data-template-id="velvetine-preview"] .t-anim,
+  [data-template-id="velvetine"] .t-anim,
   [data-template-id="velvetine"] .t-marquee,
-  [data-template-id="velvetine-preview"] .t-marquee,
+  [data-template-id="velvetine"] .t-marquee,
   [data-template-id="velvetine"] .t-float,
-  [data-template-id="velvetine-preview"] .t-float,
+  [data-template-id="velvetine"] .t-float,
   [data-template-id="velvetine"] .t-pulse,
-  [data-template-id="velvetine-preview"] .t-pulse,
+  [data-template-id="velvetine"] .t-pulse,
   [data-template-id="velvetine"] .t-shimmer,
-  [data-template-id="velvetine-preview"] .t-shimmer,
+  [data-template-id="velvetine"] .t-shimmer,
   [data-template-id="velvetine"] .t-glow,
-  [data-template-id="velvetine-preview"] .t-glow,
+  [data-template-id="velvetine"] .t-glow,
   [data-template-id="velvetine"] .t-scalein,
-  [data-template-id="velvetine-preview"] .t-scalein,
+  [data-template-id="velvetine"] .t-scalein,
   [data-template-id="velvetine"] .t-fade,
-  [data-template-id="velvetine-preview"] .t-fade { animation: none !important; }
+  [data-template-id="velvetine"] .t-fade { animation: none !important; }
 }
 `;

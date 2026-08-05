@@ -332,7 +332,7 @@ function Contact({ data }: { data: Record<string, any> }) {
             </div>
           </Reveal>
           <Reveal variant="left" delayMs={100}>
-            <form className="grid gap-0" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="brandforge-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+            <form className="grid gap-0" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="brandforge-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
               <input className="border-b border-black/10 bg-[var(--bg)] px-5 py-5 text-right text-sm font-bold outline-none" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
               <input className="border-b border-black/10 bg-[var(--bg)] px-5 py-5 text-right text-sm font-bold outline-none" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
               <input className="border-b border-black/10 bg-[var(--bg)] px-5 py-5 text-right text-sm font-bold outline-none" placeholder="חברה / תחום"  name="company" data-bizuply-form-field-id="company" />
@@ -491,7 +491,7 @@ export default function BrandforgePages({
     { allowedPages, fallbackPage: "home" },
   );
   return (
-    <div dir="rtl" data-template-id={mode === "preview" ? "brandforge-preview" : "brandforge"} className="min-h-screen w-full overflow-x-hidden">
+    <div dir="rtl" data-template-id="brandforge" className="min-h-screen w-full overflow-x-hidden">
       <style dangerouslySetInnerHTML={{ __html: brandforgeEditorCss }} />
       <Header data={mergedData} currentPage={currentPage} goTo={goTo} />
       <VisualPageStack

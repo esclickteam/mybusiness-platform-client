@@ -139,7 +139,7 @@ function NarrowInquiry({ data }: { data: Record<string, any> }) {
         <p className="text-xs font-bold tracking-[0.38em]" style={{ color: "#e2c7a0" }}>PRIVATE REQUEST</p>
         <h2 className="tpl-display mt-5 text-5xl font-bold md:text-6xl" style={{ color: "#f4efe6" }}>{v(data, "contactTitle")}</h2>
         <p className="mx-auto mt-5 max-w-md text-base leading-7" style={{ color: "#a89a86" }}>{v(data, "contactText")}</p>
-        <form className="mt-10 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="villaire-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+        <form className="mt-10 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="villaire-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
           <input className={field} style={{ borderColor: "rgba(226,199,160,0.26)", color: "#f4efe6" }} placeholder="שם" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
           <input className={field} style={{ borderColor: "rgba(226,199,160,0.26)", color: "#f4efe6" }} placeholder="טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
           <textarea className={`${field} min-h-28`} style={{ borderColor: "rgba(226,199,160,0.26)", color: "#f4efe6" }} placeholder="איזו וילה אתם מדמיינים?"  name="other" data-bizuply-form-field-id="other"></textarea>
@@ -205,7 +205,7 @@ export default function VillairePages({
     contact: <InnerPage data={merged} title="יצירת קשר"><NarrowInquiry data={merged} /></InnerPage>,
   };
   return (
-    <div dir="rtl" data-template-id={mode === "preview" ? "villaire-preview" : "villaire"} className="min-h-screen w-full overflow-x-hidden" style={{ background: "#0a0a0a", color: "#f4efe6" }}>
+    <div dir="rtl" data-template-id="villaire" className="min-h-screen w-full overflow-x-hidden" style={{ background: "#0a0a0a", color: "#f4efe6" }}>
       <Header data={merged} goTo={goTo} />
       <VisualPageStack activePageId={currentPage} pages={Object.entries(pageContent).map(([id, content]) => ({ id, content }))} />
     </div>

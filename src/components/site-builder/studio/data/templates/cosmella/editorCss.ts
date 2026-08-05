@@ -2,7 +2,7 @@ export const cosmellaEditorCss = `
 @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Noto+Sans+Hebrew:wght@400;500;700&display=swap');
 
 [data-template-id="cosmella"],
-[data-template-id="cosmella-preview"] {
+[data-template-id="cosmella"] {
   --p: #059669;
   --s: #ECFDF5;
   --a: #A7F3D0;
@@ -17,7 +17,7 @@ export const cosmellaEditorCss = `
 }
 
 [data-template-id="cosmella"] .t-display,
-[data-template-id="cosmella-preview"] .t-display {
+[data-template-id="cosmella"] .t-display {
   font-family: "DM Serif Display", serif;
 }
 
@@ -59,58 +59,58 @@ export const cosmellaEditorCss = `
 }
 
 [data-template-id="cosmella"] .t-ken,
-[data-template-id="cosmella-preview"] .t-ken { animation: cosmella-ken 18s ease-in-out infinite alternate; }
+[data-template-id="cosmella"] .t-ken { animation: cosmella-ken 18s ease-in-out infinite alternate; }
 [data-template-id="cosmella"] .t-anim,
-[data-template-id="cosmella-preview"] .t-anim { animation: cosmella-up 0.9s cubic-bezier(0.22,1,0.36,1) both; }
+[data-template-id="cosmella"] .t-anim { animation: cosmella-up 0.9s cubic-bezier(0.22,1,0.36,1) both; }
 [data-template-id="cosmella"] .t-d1,
-[data-template-id="cosmella-preview"] .t-d1 { animation-delay: .12s; }
+[data-template-id="cosmella"] .t-d1 { animation-delay: .12s; }
 [data-template-id="cosmella"] .t-d2,
-[data-template-id="cosmella-preview"] .t-d2 { animation-delay: .24s; }
+[data-template-id="cosmella"] .t-d2 { animation-delay: .24s; }
 [data-template-id="cosmella"] .t-d3,
-[data-template-id="cosmella-preview"] .t-d3 { animation-delay: .36s; }
+[data-template-id="cosmella"] .t-d3 { animation-delay: .36s; }
 [data-template-id="cosmella"] .t-fade,
-[data-template-id="cosmella-preview"] .t-fade { animation: cosmella-fade 1s ease both; }
+[data-template-id="cosmella"] .t-fade { animation: cosmella-fade 1s ease both; }
 [data-template-id="cosmella"] .t-marquee,
-[data-template-id="cosmella-preview"] .t-marquee { animation: cosmella-marquee 30s linear infinite; width: max-content; }
+[data-template-id="cosmella"] .t-marquee { animation: cosmella-marquee 30s linear infinite; width: max-content; }
 [data-template-id="cosmella"] .t-float,
-[data-template-id="cosmella-preview"] .t-float { animation: cosmella-float 6s ease-in-out infinite; }
+[data-template-id="cosmella"] .t-float { animation: cosmella-float 6s ease-in-out infinite; }
 [data-template-id="cosmella"] .t-pulse,
-[data-template-id="cosmella-preview"] .t-pulse { animation: cosmella-pulse 2.8s ease-in-out infinite; }
+[data-template-id="cosmella"] .t-pulse { animation: cosmella-pulse 2.8s ease-in-out infinite; }
 [data-template-id="cosmella"] .t-shimmer,
-[data-template-id="cosmella-preview"] .t-shimmer {
+[data-template-id="cosmella"] .t-shimmer {
   background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--a) 35%, transparent), transparent);
   background-size: 200% 100%;
   animation: cosmella-shimmer 2.8s linear infinite;
 }
 [data-template-id="cosmella"] .t-glow,
-[data-template-id="cosmella-preview"] .t-glow { animation: cosmella-glow 3.2s ease-in-out infinite; }
+[data-template-id="cosmella"] .t-glow { animation: cosmella-glow 3.2s ease-in-out infinite; }
 [data-template-id="cosmella"] .t-scalein,
-[data-template-id="cosmella-preview"] .t-scalein { animation: cosmella-scalein 0.8s cubic-bezier(0.22,1,0.36,1) both; }
+[data-template-id="cosmella"] .t-scalein { animation: cosmella-scalein 0.8s cubic-bezier(0.22,1,0.36,1) both; }
 [data-template-id="cosmella"] .t-hover,
-[data-template-id="cosmella-preview"] .t-hover {
+[data-template-id="cosmella"] .t-hover {
   transition: transform .45s cubic-bezier(0.22,1,0.36,1), border-color .3s ease, background .3s ease;
 }
 [data-template-id="cosmella"] .t-hover:hover,
-[data-template-id="cosmella-preview"] .t-hover:hover { transform: translateY(-5px); }
+[data-template-id="cosmella"] .t-hover:hover { transform: translateY(-5px); }
 
 @media (prefers-reduced-motion: reduce) {
   [data-template-id="cosmella"] .t-ken,
-  [data-template-id="cosmella-preview"] .t-ken,
+  [data-template-id="cosmella"] .t-ken,
   [data-template-id="cosmella"] .t-anim,
-  [data-template-id="cosmella-preview"] .t-anim,
+  [data-template-id="cosmella"] .t-anim,
   [data-template-id="cosmella"] .t-marquee,
-  [data-template-id="cosmella-preview"] .t-marquee,
+  [data-template-id="cosmella"] .t-marquee,
   [data-template-id="cosmella"] .t-float,
-  [data-template-id="cosmella-preview"] .t-float,
+  [data-template-id="cosmella"] .t-float,
   [data-template-id="cosmella"] .t-pulse,
-  [data-template-id="cosmella-preview"] .t-pulse,
+  [data-template-id="cosmella"] .t-pulse,
   [data-template-id="cosmella"] .t-shimmer,
-  [data-template-id="cosmella-preview"] .t-shimmer,
+  [data-template-id="cosmella"] .t-shimmer,
   [data-template-id="cosmella"] .t-glow,
-  [data-template-id="cosmella-preview"] .t-glow,
+  [data-template-id="cosmella"] .t-glow,
   [data-template-id="cosmella"] .t-scalein,
-  [data-template-id="cosmella-preview"] .t-scalein,
+  [data-template-id="cosmella"] .t-scalein,
   [data-template-id="cosmella"] .t-fade,
-  [data-template-id="cosmella-preview"] .t-fade { animation: none !important; }
+  [data-template-id="cosmella"] .t-fade { animation: none !important; }
 }
 `;

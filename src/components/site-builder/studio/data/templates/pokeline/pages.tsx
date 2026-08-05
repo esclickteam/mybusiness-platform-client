@@ -437,7 +437,7 @@ function OrbitReserveForm({ data, onCta }: { data: Record<string, any>; onCta: (
       <div className="mx-auto max-w-xl text-center">
         <h2 className="tpl-display text-3xl font-bold">{v(data, "contactTitle")}</h2>
         <p className="mt-4 leading-8" style={{ color: "#7eb8b4" }}>{v(data, "contactText")}</p>
-        <form className="mt-8 grid gap-3 rounded-[2rem] border p-6 text-right" style={{ borderColor: "#2dd4bf", background: "#0d262c" }} data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="pokeline-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+        <form className="mt-8 grid gap-3 rounded-[2rem] border p-6 text-right" style={{ borderColor: "#2dd4bf", background: "#0d262c" }} data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="pokeline-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
           <input className="w-full rounded-full border bg-transparent px-4 py-3.5 outline-none" style={{ borderColor: "rgba(232,247,246,0.12)", color: "#e8f7f6" }} placeholder="שם מלא" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
           <input className="w-full rounded-full border bg-transparent px-4 py-3.5 outline-none" style={{ borderColor: "rgba(232,247,246,0.12)", color: "#e8f7f6" }} placeholder="טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
           <input className="w-full rounded-full border bg-transparent px-4 py-3.5 outline-none" style={{ borderColor: "rgba(232,247,246,0.12)", color: "#e8f7f6" }} placeholder="תאריך" name="date" data-bizuply-form-field-id="date" />
@@ -579,7 +579,7 @@ export default function PokelinePages({
     contact: <ContactPage data={merged} goTo={goTo} onCta={() => goTo("contact")} />,
   };
   return (
-    <div dir="rtl" data-template-id={mode === "preview" ? "pokeline-preview" : "pokeline"} className="min-h-screen w-full overflow-x-hidden"
+    <div dir="rtl" data-template-id="pokeline" className="min-h-screen w-full overflow-x-hidden"
       style={{ background: "#071a1f", color: "#e8f7f6" }}>
       <style dangerouslySetInnerHTML={{ __html: pokelineEditorCss }} />
       <Header data={merged} currentPage={currentPage} goTo={goTo} onCta={() => goTo("contact")} />

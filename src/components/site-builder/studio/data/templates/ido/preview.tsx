@@ -5,7 +5,7 @@ export default function IdoPreview() {
   return (
     <div
       dir="rtl"
-      data-template-id="ido-preview"
+      data-template-id="ido"
       className="min-h-screen w-full bg-[#07100e] text-white"
       style={{
         position: "relative",

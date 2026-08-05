@@ -1226,7 +1226,7 @@ function ContactPage() {
           <VisualText id="contact.description" fallback={base.contact.description} as="p" className="mt-8 max-w-xl text-xl font-bold leading-9 text-[#301b12]/62" />
         </div>
 
-        <form data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="virello-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם." className="rounded-[3rem] border border-[#301b12]/10 bg-white/80 p-6 shadow-[0_25px_80px_rgba(48,27,18,.09)] md:p-10">
+        <form data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="virello-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם." className="rounded-[3rem] border border-[#301b12]/10 bg-white/80 p-6 shadow-[0_25px_80px_rgba(48,27,18,.09)] md:p-10">
           <div className="grid gap-4 md:grid-cols-2">
             <input placeholder="שם מלא" className="rounded-full border border-[#301b12]/10 bg-[#fff8f0] px-5 py-4 text-sm font-bold outline-none"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
             <input placeholder="טלפון" className="rounded-full border border-[#301b12]/10 bg-[#fff8f0] px-5 py-4 text-sm font-bold outline-none"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />

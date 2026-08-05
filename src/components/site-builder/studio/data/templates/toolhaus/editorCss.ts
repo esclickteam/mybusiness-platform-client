@@ -1,6 +1,6 @@
 export const toolhausEditorCss = `
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@500;600;700&family=Heebo:wght@400;500;600;700;800;900&display=swap');
-[data-template-id="toolhaus"], [data-template-id="toolhaus-preview"] {
+[data-template-id="toolhaus"], [data-template-id="toolhaus"] {
   --p: #CA8A04;
   --accent: #FACC15;
   --on-p: #1C1917;
@@ -20,35 +20,35 @@ export const toolhausEditorCss = `
   text-align: right;
 }
 [data-template-id="toolhaus"] .store-display,
-[data-template-id="toolhaus-preview"] .store-display {
+[data-template-id="toolhaus"] .store-display {
   font-family: "IBM Plex Sans", "Heebo", serif;
 }
 [data-template-id="toolhaus"] .store-card,
-[data-template-id="toolhaus-preview"] .store-card {
+[data-template-id="toolhaus"] .store-card {
   transition: transform 420ms cubic-bezier(0.22,1,0.36,1), box-shadow 420ms ease, border-color 420ms ease;
 }
 [data-template-id="toolhaus"] .store-card:hover,
-[data-template-id="toolhaus-preview"] .store-card:hover {
+[data-template-id="toolhaus"] .store-card:hover {
   transform: translateY(-8px);
   box-shadow: 0 24px 60px rgba(0,0,0,0.18);
   border-color: var(--p);
 }
 [data-template-id="toolhaus"] .store-marquee,
-[data-template-id="toolhaus-preview"] .store-marquee {
+[data-template-id="toolhaus"] .store-marquee {
   animation: toolhaus-marquee 22s linear infinite;
 }
 [data-template-id="toolhaus"] .store-kenburns,
-[data-template-id="toolhaus-preview"] .store-kenburns {
+[data-template-id="toolhaus"] .store-kenburns {
   animation: toolhaus-kenburns 18s ease-in-out infinite alternate;
 }
 [data-template-id="toolhaus"] .store-float-a,
-[data-template-id="toolhaus-preview"] .store-float-a { animation: toolhaus-float 7s ease-in-out infinite; }
+[data-template-id="toolhaus"] .store-float-a { animation: toolhaus-float 7s ease-in-out infinite; }
 [data-template-id="toolhaus"] .store-float-b,
-[data-template-id="toolhaus-preview"] .store-float-b { animation: toolhaus-float 8.5s ease-in-out infinite reverse; }
+[data-template-id="toolhaus"] .store-float-b { animation: toolhaus-float 8.5s ease-in-out infinite reverse; }
 [data-template-id="toolhaus"] .store-float-c,
-[data-template-id="toolhaus-preview"] .store-float-c { animation: toolhaus-float 6.5s ease-in-out infinite 0.4s; }
+[data-template-id="toolhaus"] .store-float-c { animation: toolhaus-float 6.5s ease-in-out infinite 0.4s; }
 [data-template-id="toolhaus"] .store-logo,
-[data-template-id="toolhaus-preview"] .store-logo {
+[data-template-id="toolhaus"] .store-logo {
   box-shadow: 0 0 0 0 #CA8A0466;
   animation: toolhaus-pulse 2.8s ease-out infinite;
 }
@@ -76,23 +76,23 @@ export const toolhausEditorCss = `
   [data-template-id="toolhaus"] .store-float-b,
   [data-template-id="toolhaus"] .store-float-c,
   [data-template-id="toolhaus"] .store-logo,
-  [data-template-id="toolhaus-preview"] .store-marquee,
-  [data-template-id="toolhaus-preview"] .store-kenburns,
-  [data-template-id="toolhaus-preview"] .store-float-a,
-  [data-template-id="toolhaus-preview"] .store-float-b,
-  [data-template-id="toolhaus-preview"] .store-float-c,
-  [data-template-id="toolhaus-preview"] .store-logo {
+  [data-template-id="toolhaus"] .store-marquee,
+  [data-template-id="toolhaus"] .store-kenburns,
+  [data-template-id="toolhaus"] .store-float-a,
+  [data-template-id="toolhaus"] .store-float-b,
+  [data-template-id="toolhaus"] .store-float-c,
+  [data-template-id="toolhaus"] .store-logo {
     animation: none !important;
   }
 }
 [data-template-id="toolhaus"] .store-blueprint-grid,
-[data-template-id="toolhaus-preview"] .store-blueprint-grid {
+[data-template-id="toolhaus"] .store-blueprint-grid {
   background-image: linear-gradient(rgba(250,204,21,0.14) 1px, transparent 1px), linear-gradient(90deg, rgba(250,204,21,0.14) 1px, transparent 1px);
   background-size: 48px 48px;
   animation: toolhaus-blueprint-pan 18s linear infinite;
 }
 [data-template-id="toolhaus"] .store-product-card,
-[data-template-id="toolhaus-preview"] .store-product-card {
+[data-template-id="toolhaus"] .store-product-card {
   animation: toolhaus-bench-clank 5.2s steps(2, end) infinite;
 }
 @keyframes toolhaus-blueprint-pan {
@@ -106,8 +106,8 @@ export const toolhausEditorCss = `
 @media (prefers-reduced-motion: reduce) {
   [data-template-id="toolhaus"] .store-blueprint-grid,
   [data-template-id="toolhaus"] .store-product-card,
-  [data-template-id="toolhaus-preview"] .store-blueprint-grid,
-  [data-template-id="toolhaus-preview"] .store-product-card {
+  [data-template-id="toolhaus"] .store-blueprint-grid,
+  [data-template-id="toolhaus"] .store-product-card {
     animation: none !important;
   }
 }

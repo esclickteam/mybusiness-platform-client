@@ -5,7 +5,7 @@ export default function NovastraPreview() {
   return (
     <div
       dir="ltr"
-      data-template-id="novastra-preview"
+      data-template-id="novastra"
       className="min-h-screen w-full bg-zinc-950 text-white"
       style={{
         position: "relative",

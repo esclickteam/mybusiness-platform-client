@@ -1,6 +1,6 @@
 export const sportifyaEditorCss = `
 @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Heebo:wght@400;500;600;700;800;900&display=swap');
-[data-template-id="sportifya"], [data-template-id="sportifya-preview"] {
+[data-template-id="sportifya"], [data-template-id="sportifya"] {
   --p: #EF4444;
   --accent: #FCA5A5;
   --on-p: #FFFFFF;
@@ -20,35 +20,35 @@ export const sportifyaEditorCss = `
   text-align: right;
 }
 [data-template-id="sportifya"] .store-display,
-[data-template-id="sportifya-preview"] .store-display {
+[data-template-id="sportifya"] .store-display {
   font-family: "Oswald", "Heebo", serif;
 }
 [data-template-id="sportifya"] .store-card,
-[data-template-id="sportifya-preview"] .store-card {
+[data-template-id="sportifya"] .store-card {
   transition: transform 420ms cubic-bezier(0.22,1,0.36,1), box-shadow 420ms ease, border-color 420ms ease;
 }
 [data-template-id="sportifya"] .store-card:hover,
-[data-template-id="sportifya-preview"] .store-card:hover {
+[data-template-id="sportifya"] .store-card:hover {
   transform: translateY(-8px);
   box-shadow: 0 24px 60px rgba(0,0,0,0.18);
   border-color: var(--p);
 }
 [data-template-id="sportifya"] .store-marquee,
-[data-template-id="sportifya-preview"] .store-marquee {
+[data-template-id="sportifya"] .store-marquee {
   animation: sportifya-marquee 22s linear infinite;
 }
 [data-template-id="sportifya"] .store-kenburns,
-[data-template-id="sportifya-preview"] .store-kenburns {
+[data-template-id="sportifya"] .store-kenburns {
   animation: sportifya-kenburns 18s ease-in-out infinite alternate;
 }
 [data-template-id="sportifya"] .store-float-a,
-[data-template-id="sportifya-preview"] .store-float-a { animation: sportifya-float 7s ease-in-out infinite; }
+[data-template-id="sportifya"] .store-float-a { animation: sportifya-float 7s ease-in-out infinite; }
 [data-template-id="sportifya"] .store-float-b,
-[data-template-id="sportifya-preview"] .store-float-b { animation: sportifya-float 8.5s ease-in-out infinite reverse; }
+[data-template-id="sportifya"] .store-float-b { animation: sportifya-float 8.5s ease-in-out infinite reverse; }
 [data-template-id="sportifya"] .store-float-c,
-[data-template-id="sportifya-preview"] .store-float-c { animation: sportifya-float 6.5s ease-in-out infinite 0.4s; }
+[data-template-id="sportifya"] .store-float-c { animation: sportifya-float 6.5s ease-in-out infinite 0.4s; }
 [data-template-id="sportifya"] .store-logo,
-[data-template-id="sportifya-preview"] .store-logo {
+[data-template-id="sportifya"] .store-logo {
   box-shadow: 0 0 0 0 #EF444466;
   animation: sportifya-pulse 2.8s ease-out infinite;
 }
@@ -76,22 +76,22 @@ export const sportifyaEditorCss = `
   [data-template-id="sportifya"] .store-float-b,
   [data-template-id="sportifya"] .store-float-c,
   [data-template-id="sportifya"] .store-logo,
-  [data-template-id="sportifya-preview"] .store-marquee,
-  [data-template-id="sportifya-preview"] .store-kenburns,
-  [data-template-id="sportifya-preview"] .store-float-a,
-  [data-template-id="sportifya-preview"] .store-float-b,
-  [data-template-id="sportifya-preview"] .store-float-c,
-  [data-template-id="sportifya-preview"] .store-logo {
+  [data-template-id="sportifya"] .store-marquee,
+  [data-template-id="sportifya"] .store-kenburns,
+  [data-template-id="sportifya"] .store-float-a,
+  [data-template-id="sportifya"] .store-float-b,
+  [data-template-id="sportifya"] .store-float-c,
+  [data-template-id="sportifya"] .store-logo {
     animation: none !important;
   }
 }
 [data-template-id="sportifya"] .store-athletic-panel,
-[data-template-id="sportifya-preview"] .store-athletic-panel {
+[data-template-id="sportifya"] .store-athletic-panel {
   animation: sportifya-stack-hit 4.8s cubic-bezier(0.22,1,0.36,1) infinite;
   transform-origin: 100% 50%;
 }
 [data-template-id="sportifya"] .store-athletic-panel:nth-child(2),
-[data-template-id="sportifya-preview"] .store-athletic-panel:nth-child(2) {
+[data-template-id="sportifya"] .store-athletic-panel:nth-child(2) {
   animation-delay: 0.35s;
 }
 @keyframes sportifya-stack-hit {
@@ -101,7 +101,7 @@ export const sportifyaEditorCss = `
 }
 @media (prefers-reduced-motion: reduce) {
   [data-template-id="sportifya"] .store-athletic-panel,
-  [data-template-id="sportifya-preview"] .store-athletic-panel {
+  [data-template-id="sportifya"] .store-athletic-panel {
     animation: none !important;
   }
 }

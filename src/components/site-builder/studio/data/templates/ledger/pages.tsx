@@ -495,7 +495,7 @@ function ContactBoard({ data }: { data: Record<string, any> }) {
             ))}
           </div>
         </div>
-        <form className="border border-r-0 border-[#102018]/10 bg-[#fffdf8] p-8 lg:p-12" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="ledger-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+        <form className="border border-r-0 border-[#102018]/10 bg-[#fffdf8] p-8 lg:p-12" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="ledger-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
           <div className="grid gap-4 md:grid-cols-2">
             <input className="border border-[#102018]/12 bg-white px-4 py-4 text-right outline-none" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
             <input className="border border-[#102018]/12 bg-white px-4 py-4 text-right outline-none" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
@@ -707,7 +707,7 @@ export default function LedgerPages({
   return (
     <div
       dir="rtl"
-      data-template-id={mode === "preview" ? "ledger-preview" : "ledger"}
+      data-template-id="ledger"
       className="min-h-screen w-full overflow-x-hidden bg-[#f6f3ea] text-[#102018]"
       style={{ fontFamily: '"IBM Plex Mono", "SFMono-Regular", Menlo, monospace' }}
     >

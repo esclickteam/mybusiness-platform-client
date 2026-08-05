@@ -1,6 +1,6 @@
 export const petoraEditorCss = `
 @import url('https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Heebo:wght@400;500;600;700;800;900&display=swap');
-[data-template-id="petora"], [data-template-id="petora-preview"] {
+[data-template-id="petora"], [data-template-id="petora"] {
   --p: #EA580C;
   --accent: #FB923C;
   --on-p: #FFF7ED;
@@ -20,35 +20,35 @@ export const petoraEditorCss = `
   text-align: right;
 }
 [data-template-id="petora"] .store-display,
-[data-template-id="petora-preview"] .store-display {
+[data-template-id="petora"] .store-display {
   font-family: "Sora", "Heebo", serif;
 }
 [data-template-id="petora"] .store-card,
-[data-template-id="petora-preview"] .store-card {
+[data-template-id="petora"] .store-card {
   transition: transform 420ms cubic-bezier(0.22,1,0.36,1), box-shadow 420ms ease, border-color 420ms ease;
 }
 [data-template-id="petora"] .store-card:hover,
-[data-template-id="petora-preview"] .store-card:hover {
+[data-template-id="petora"] .store-card:hover {
   transform: translateY(-8px);
   box-shadow: 0 24px 60px rgba(0,0,0,0.18);
   border-color: var(--p);
 }
 [data-template-id="petora"] .store-marquee,
-[data-template-id="petora-preview"] .store-marquee {
+[data-template-id="petora"] .store-marquee {
   animation: petora-marquee 22s linear infinite;
 }
 [data-template-id="petora"] .store-kenburns,
-[data-template-id="petora-preview"] .store-kenburns {
+[data-template-id="petora"] .store-kenburns {
   animation: petora-kenburns 18s ease-in-out infinite alternate;
 }
 [data-template-id="petora"] .store-float-a,
-[data-template-id="petora-preview"] .store-float-a { animation: petora-float 7s ease-in-out infinite; }
+[data-template-id="petora"] .store-float-a { animation: petora-float 7s ease-in-out infinite; }
 [data-template-id="petora"] .store-float-b,
-[data-template-id="petora-preview"] .store-float-b { animation: petora-float 8.5s ease-in-out infinite reverse; }
+[data-template-id="petora"] .store-float-b { animation: petora-float 8.5s ease-in-out infinite reverse; }
 [data-template-id="petora"] .store-float-c,
-[data-template-id="petora-preview"] .store-float-c { animation: petora-float 6.5s ease-in-out infinite 0.4s; }
+[data-template-id="petora"] .store-float-c { animation: petora-float 6.5s ease-in-out infinite 0.4s; }
 [data-template-id="petora"] .store-logo,
-[data-template-id="petora-preview"] .store-logo {
+[data-template-id="petora"] .store-logo {
   box-shadow: 0 0 0 0 #EA580C66;
   animation: petora-pulse 2.8s ease-out infinite;
 }
@@ -76,31 +76,31 @@ export const petoraEditorCss = `
   [data-template-id="petora"] .store-float-b,
   [data-template-id="petora"] .store-float-c,
   [data-template-id="petora"] .store-logo,
-  [data-template-id="petora-preview"] .store-marquee,
-  [data-template-id="petora-preview"] .store-kenburns,
-  [data-template-id="petora-preview"] .store-float-a,
-  [data-template-id="petora-preview"] .store-float-b,
-  [data-template-id="petora-preview"] .store-float-c,
-  [data-template-id="petora-preview"] .store-logo {
+  [data-template-id="petora"] .store-marquee,
+  [data-template-id="petora"] .store-kenburns,
+  [data-template-id="petora"] .store-float-a,
+  [data-template-id="petora"] .store-float-b,
+  [data-template-id="petora"] .store-float-c,
+  [data-template-id="petora"] .store-logo {
     animation: none !important;
   }
 }
 [data-template-id="petora"] .store-diagonal-band,
-[data-template-id="petora-preview"] .store-diagonal-band {
+[data-template-id="petora"] .store-diagonal-band {
   transform: skewY(-2deg);
 }
 [data-template-id="petora"] .store-diagonal-band > *,
-[data-template-id="petora-preview"] .store-diagonal-band > * {
+[data-template-id="petora"] .store-diagonal-band > * {
   transform: skewY(2deg);
 }
 [data-template-id="petora"] .store-paw-pattern,
-[data-template-id="petora-preview"] .store-paw-pattern {
+[data-template-id="petora"] .store-paw-pattern {
   background-image: radial-gradient(circle at 20px 20px, var(--p) 0 6px, transparent 7px), radial-gradient(circle at 44px 34px, var(--accent) 0 5px, transparent 6px);
   background-size: 96px 96px;
   animation: petora-paw-parade 16s linear infinite;
 }
 [data-template-id="petora"] .store-wiggle,
-[data-template-id="petora-preview"] .store-wiggle {
+[data-template-id="petora"] .store-wiggle {
   animation: petora-tail-wag 4.5s ease-in-out infinite;
 }
 @keyframes petora-paw-parade {
@@ -115,8 +115,8 @@ export const petoraEditorCss = `
 @media (prefers-reduced-motion: reduce) {
   [data-template-id="petora"] .store-paw-pattern,
   [data-template-id="petora"] .store-wiggle,
-  [data-template-id="petora-preview"] .store-paw-pattern,
-  [data-template-id="petora-preview"] .store-wiggle {
+  [data-template-id="petora"] .store-paw-pattern,
+  [data-template-id="petora"] .store-wiggle {
     animation: none !important;
   }
 }

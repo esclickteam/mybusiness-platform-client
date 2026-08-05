@@ -17,7 +17,7 @@ export const vertexPages = [
 const vertexAllowedPages = vertexPages.map((page) => page.id);
 const scopedVertexEditorCss = vertexEditorCss
   .split('[data-template-id="vertex"]')
-  .join('[data-template-id="vertex"], [data-template-id="vertex-preview"]');
+  .join('[data-template-id="vertex"], [data-template-id="vertex"]');
 
 const vertexTheme = {
   bg: "#050505",
@@ -283,7 +283,7 @@ function InquiryModal({
         <TemplateText as="p" className="mt-3 max-w-xl text-sm leading-7 text-[#9a9a9a]">
           {getValue(data, "contactText")}
         </TemplateText>
-        <form className="mt-8 grid gap-0 border border-[#00ff8833]" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="vertex-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+        <form className="mt-8 grid gap-0 border border-[#00ff8833]" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="vertex-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
           {[
             "שם מלא / חברה",
             "אימייל עבודה",
@@ -728,7 +728,7 @@ function ContactSection({
             ))}
           </div>
         </div>
-        <form className="grid gap-0 bg-[#0b0b0b]" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="vertex-contact-2" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+        <form className="grid gap-0 bg-[#0b0b0b]" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="vertex-contact-2" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
           {[
             "שם מלא",
             "אימייל",
@@ -926,7 +926,7 @@ export default function VertexPages({
   return (
     <div
       dir="rtl"
-      data-template-id={mode === "preview" ? "vertex-preview" : "vertex"}
+      data-template-id="vertex"
       className="min-h-screen w-full overflow-x-hidden bg-[#050505] text-[#f5f5f5] rounded-none"
       style={{ fontFamily: "ui-monospace, SFMono-Regular, Menlo, monospace" }}
     >

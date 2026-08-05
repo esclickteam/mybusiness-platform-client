@@ -65,7 +65,7 @@ function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>;
 function ContactForm({ data, onCta }: { data: Record<string, any>; onCta: () => void }) {
   const field = "w-full border bg-transparent px-4 py-3.5 text-right outline-none";
   return (
-    <form className="grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="nestiq-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+    <form className="grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="nestiq-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
       <input className={field} style={{ borderColor: "rgba(30,27,75,0.1)", color: "#1e1b4b" }} placeholder="שם מלא" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
       <input className={field} style={{ borderColor: "rgba(30,27,75,0.1)", color: "#1e1b4b" }} placeholder="טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
       <input className={field} style={{ borderColor: "rgba(30,27,75,0.1)", color: "#1e1b4b" }} placeholder="אימייל" name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
@@ -457,7 +457,7 @@ export default function NestiqPages({
       </InnerPage>
     );
   return (
-    <div dir="rtl" data-template-id={mode === "preview" ? "nestiq-preview" : "nestiq"} className="min-h-screen w-full overflow-x-hidden"
+    <div dir="rtl" data-template-id="nestiq" className="min-h-screen w-full overflow-x-hidden"
       style={{ background: "#faf5ff", color: "#1e1b4b" }}>
       <Header data={merged} currentPage={currentPage} goTo={goTo} onCta={() => goTo("contact")} />
       <VisualPageStack activePageId={currentPage} pages={Object.entries(pageContent).map(([id, content]) => ({ id, content }))} />

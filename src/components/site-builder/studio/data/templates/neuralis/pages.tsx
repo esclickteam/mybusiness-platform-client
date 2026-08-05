@@ -382,7 +382,7 @@ function DemoForm({ data }: { data: Record<string, any> }) {
           </div>
         </Reveal>
         <Reveal variant="left" delayMs={120}>
-          <form className="grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="neuralis-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+          <form className="grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="neuralis-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
             <div className="grid gap-4 sm:grid-cols-2">
               <input className="border border-cyan-300/16 bg-white/[0.045] px-5 py-4 text-right text-white outline-none placeholder:text-cyan-50/28 focus:border-cyan-300" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
               <input className="border border-cyan-300/16 bg-white/[0.045] px-5 py-4 text-right text-white outline-none placeholder:text-cyan-50/28 focus:border-cyan-300" placeholder="אימייל עבודה"  name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
@@ -445,7 +445,7 @@ export default function NeuralisPages(props: NeuralisPagesProps) {
   );
 
   return (
-    <div dir="rtl" data-template-id={mode === "preview" ? "neuralis-preview" : "neuralis"} className="min-h-screen w-full overflow-x-hidden">
+    <div dir="rtl" data-template-id="neuralis" className="min-h-screen w-full overflow-x-hidden">
       <style dangerouslySetInnerHTML={{ __html: neuralisEditorCss }} />
       <Header data={mergedData} />
       <VisualPageStack activePageId={currentPage} pages={[{ id: "home", content: <HomePage data={mergedData} /> }]} />

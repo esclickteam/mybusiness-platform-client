@@ -308,7 +308,7 @@ function Contact({ data, openModal }: { data: Record<string, any>; openModal: ()
           </div>
         </Reveal>
         <Reveal variant="left" delayMs={120}>
-          <form className="grid gap-4 bg-[#F8F4F0] p-6 lg:p-8" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="vowline-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+          <form className="grid gap-4 bg-[#F8F4F0] p-6 lg:p-8" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="vowline-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
             <input className="border border-[var(--p)]/18 bg-white px-5 py-4 text-right outline-none transition placeholder:text-[var(--muted)]/65 focus:border-[var(--p)]" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
             <input className="border border-[var(--p)]/18 bg-white px-5 py-4 text-right outline-none transition placeholder:text-[var(--muted)]/65 focus:border-[var(--p)]" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
             <input className="border border-[var(--p)]/18 bg-white px-5 py-4 text-right outline-none transition placeholder:text-[var(--muted)]/65 focus:border-[var(--p)]" placeholder="תאריך משוער"  name="date" data-bizuply-form-field-id="date" />
@@ -348,7 +348,7 @@ function ContactModal({ data, open, onClose }: { data: Record<string, any>; open
         <button type="button" onClick={onClose} className="absolute left-4 top-4 text-2xl text-[var(--muted)]">×</button>
         <h3 className="t-script text-3xl md:text-6xl leading-none text-[var(--p)]">{getValue(data, "brandName")}</h3>
         <p className="mt-3 text-lg font-semibold text-[var(--dark)]">{getValue(data, "contactTitle")}</p>
-        <form className="mt-6 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="vowline-contact-2" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+        <form className="mt-6 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="vowline-contact-2" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
           <input className="border border-[var(--p)]/20 bg-white px-5 py-4 text-right outline-none" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
           <input className="border border-[var(--p)]/20 bg-white px-5 py-4 text-right outline-none" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
           <button type="submit" className="bg-[var(--p)] py-4 text-sm font-bold text-white">{getValue(data, "contactButton")}</button>
@@ -384,7 +384,7 @@ export default function VowlinePages(props: VowlinePagesProps) {
   const [modalOpen, setModalOpen] = useState(false);
 
   return (
-    <div dir="rtl" data-template-id={mode === "preview" ? "vowline-preview" : "vowline"} className="min-h-screen w-full overflow-x-hidden bg-[#F8F4F0]">
+    <div dir="rtl" data-template-id="vowline" className="min-h-screen w-full overflow-x-hidden bg-[#F8F4F0]">
       <style dangerouslySetInnerHTML={{ __html: vowlineEditorCss }} />
       <Header data={mergedData} openModal={() => setModalOpen(true)} />
       <VisualPageStack

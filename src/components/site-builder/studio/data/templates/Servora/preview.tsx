@@ -6,7 +6,7 @@ export default function ServoraPreview() {
   return (
     <div
       dir="rtl"
-      data-template-id="servora-preview"
+      data-template-id="servora"
       className="h-screen min-h-screen w-full bg-[#fff7ed] text-[#111827]"
       style={{
         overflow: "hidden",

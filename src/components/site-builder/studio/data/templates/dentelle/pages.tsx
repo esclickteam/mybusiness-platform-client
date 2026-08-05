@@ -367,7 +367,7 @@ function Appointment({ data }: { data: Record<string, any> }) {
           </div>
         </Reveal>
         <Reveal variant="left" delayMs={140}>
-          <form className="de-teal-glow flex min-h-[560px] flex-col justify-between border border-[var(--p)]/30 bg-white p-6 shadow-[0_24px_80px_rgba(15,23,42,0.08)] lg:aspect-square lg:p-10" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="dentelle-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+          <form className="de-teal-glow flex min-h-[560px] flex-col justify-between border border-[var(--p)]/30 bg-white p-6 shadow-[0_24px_80px_rgba(15,23,42,0.08)] lg:aspect-square lg:p-10" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="dentelle-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
             <div>
               <h3 className="text-3xl font-extrabold tracking-[-0.04em] text-[var(--dark)]">{getValue(data, "contactText")}</h3>
               <div className="mt-8 grid gap-4">
@@ -413,7 +413,7 @@ export default function DentellePages({ initialPage = "home", mode = "preview", 
     { allowedPages: ["home"], fallbackPage: "home" },
   );
   return (
-    <div dir="rtl" data-template-id={mode === "preview" ? "dentelle-preview" : "dentelle"} className="min-h-screen w-full overflow-x-hidden">
+    <div dir="rtl" data-template-id="dentelle" className="min-h-screen w-full overflow-x-hidden">
       <style dangerouslySetInnerHTML={{ __html: dentelleEditorCss }} />
       <VisualPageStack activePageId={currentPage} pages={[{ id: "home", content: (
         <>

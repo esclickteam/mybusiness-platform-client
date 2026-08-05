@@ -11,7 +11,9 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "generate-sitemap": "node generate-sitemap.js",
-    "generate-template-screenshots": "node scripts/generate-template-screenshots.mjs"
+    "generate-template-screenshots": "node scripts/generate-template-screenshots.mjs",
+    "test:template-parity": "vitest run src/components/site-builder/studio/data/templates/shared/templateLeadForm.test.ts src/components/site-builder/studio/visual-editor/utils/visualForms.templateSkin.test.ts src/components/site-builder/public/mountPublicLeadForms.templateSkin.test.js",
+    "audit:template-parity": "node scripts/template-parity-visual.mjs"
   },
   "dependencies": {
     "@animateicons/react": "^0.3.4",
@@ -128,7 +130,9 @@
     "html-webpack-plugin": "^5.6.3",
     "jsdom": "^30.0.1",
     "lighthouse": "^13.4.1",
+    "pixelmatch": "^7.2.0",
     "playwright": "^1.62.1",
+    "pngjs": "^7.0.0",
     "sharp": "^0.35.3",
     "sitemap-generator": "^8.5.1",
     "style-loader": "^3.3.4",

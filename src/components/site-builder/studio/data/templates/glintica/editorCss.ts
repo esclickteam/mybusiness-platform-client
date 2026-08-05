@@ -2,7 +2,7 @@ export const glinticaEditorCss = `
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Infant:wght@500;600;700&family=Mulish:wght@400;500;600;700;800&display=swap');
 
 [data-template-id="glintica"],
-[data-template-id="glintica-preview"] {
+[data-template-id="glintica"] {
   --p: #D4A0A7;
   --s: #1F1A1C;
   --a: #F0CDD2;
@@ -19,25 +19,25 @@ export const glinticaEditorCss = `
 }
 
 [data-template-id="glintica"] .t-display,
-[data-template-id="glintica-preview"] .t-display {
+[data-template-id="glintica"] .t-display {
   font-family: "Cormorant Infant", serif;
 }
 
 [data-template-id="glintica"] .t-card,
-[data-template-id="glintica-preview"] .t-card,
+[data-template-id="glintica"] .t-card,
 [data-template-id="glintica"] .gl-button,
-[data-template-id="glintica-preview"] .gl-button,
+[data-template-id="glintica"] .gl-button,
 [data-template-id="glintica"] input,
-[data-template-id="glintica-preview"] input,
+[data-template-id="glintica"] input,
 [data-template-id="glintica"] textarea,
-[data-template-id="glintica-preview"] textarea,
+[data-template-id="glintica"] textarea,
 [data-template-id="glintica"] button,
-[data-template-id="glintica-preview"] button {
+[data-template-id="glintica"] button {
   border-radius: 0;
 }
 
 [data-template-id="glintica"] .gl-mark,
-[data-template-id="glintica-preview"] .gl-mark {
+[data-template-id="glintica"] .gl-mark {
   border: 1px solid rgba(212, 160, 167, 0.7);
   background: rgba(212, 160, 167, 0.12);
   color: var(--p);
@@ -45,7 +45,7 @@ export const glinticaEditorCss = `
 }
 
 [data-template-id="glintica"] .gl-button,
-[data-template-id="glintica-preview"] .gl-button {
+[data-template-id="glintica"] .gl-button {
   border: 1px solid var(--p);
   background: var(--p);
   color: var(--dark);
@@ -54,7 +54,7 @@ export const glinticaEditorCss = `
 }
 
 [data-template-id="glintica"] .gl-button:hover,
-[data-template-id="glintica-preview"] .gl-button:hover {
+[data-template-id="glintica"] .gl-button:hover {
   transform: translateY(-3px);
   background: transparent;
   color: var(--p);
@@ -83,25 +83,25 @@ export const glinticaEditorCss = `
 }
 
 [data-template-id="glintica"] .gl-hero-image,
-[data-template-id="glintica-preview"] .gl-hero-image {
+[data-template-id="glintica"] .gl-hero-image {
   animation: gl-hero-breathe 13s ease-out both;
 }
 
 [data-template-id="glintica"] .gl-hero-title,
-[data-template-id="glintica-preview"] .gl-hero-title {
+[data-template-id="glintica"] .gl-hero-title {
   letter-spacing: -0.07em;
   text-shadow: 0 30px 70px rgba(0,0,0,0.45);
 }
 
 [data-template-id="glintica"] .gl-rose-underline,
-[data-template-id="glintica-preview"] .gl-rose-underline {
+[data-template-id="glintica"] .gl-rose-underline {
   transform-origin: center;
   background: linear-gradient(90deg, transparent, var(--p), transparent);
   animation: gl-underline 1.25s .35s cubic-bezier(.22,1,.36,1) both;
 }
 
 [data-template-id="glintica"] .gl-petal,
-[data-template-id="glintica-preview"] .gl-petal {
+[data-template-id="glintica"] .gl-petal {
   position: absolute;
   z-index: 1;
   border: 1px solid rgba(212,160,167,.24);
@@ -110,7 +110,7 @@ export const glinticaEditorCss = `
 }
 
 [data-template-id="glintica"] .gl-petal-one,
-[data-template-id="glintica-preview"] .gl-petal-one {
+[data-template-id="glintica"] .gl-petal-one {
   top: 23%;
   right: 11%;
   width: 9rem;
@@ -118,7 +118,7 @@ export const glinticaEditorCss = `
 }
 
 [data-template-id="glintica"] .gl-petal-two,
-[data-template-id="glintica-preview"] .gl-petal-two {
+[data-template-id="glintica"] .gl-petal-two {
   left: 8%;
   bottom: 18%;
   width: 6rem;
@@ -127,18 +127,18 @@ export const glinticaEditorCss = `
 }
 
 [data-template-id="glintica"] .gl-price-row,
-[data-template-id="glintica-preview"] .gl-price-row {
+[data-template-id="glintica"] .gl-price-row {
   transition: padding .35s ease, background .35s ease;
 }
 
 [data-template-id="glintica"] .gl-price-row:hover,
-[data-template-id="glintica-preview"] .gl-price-row:hover {
+[data-template-id="glintica"] .gl-price-row:hover {
   background: rgba(212,160,167,.055);
   padding-right: 1rem;
 }
 
 [data-template-id="glintica"] .gl-dots,
-[data-template-id="glintica-preview"] .gl-dots {
+[data-template-id="glintica"] .gl-dots {
   height: 1px;
   margin-bottom: 1.05rem;
   background-image: radial-gradient(circle, rgba(212,160,167,.55) 1.2px, transparent 1.2px);
@@ -146,32 +146,32 @@ export const glinticaEditorCss = `
 }
 
 [data-template-id="glintica"] .gl-compare,
-[data-template-id="glintica-preview"] .gl-compare {
+[data-template-id="glintica"] .gl-compare {
   box-shadow: 0 35px 90px rgba(0,0,0,.28);
 }
 
 [data-template-id="glintica"] .gl-range,
-[data-template-id="glintica-preview"] .gl-range {
+[data-template-id="glintica"] .gl-range {
   accent-color: var(--p);
 }
 
 [data-template-id="glintica"] .gl-tier,
-[data-template-id="glintica-preview"] .gl-tier,
+[data-template-id="glintica"] .gl-tier,
 [data-template-id="glintica"] .gl-masonry,
-[data-template-id="glintica-preview"] .gl-masonry {
+[data-template-id="glintica"] .gl-masonry {
   border-radius: 0;
   transition: transform .45s ease, border-color .35s ease, box-shadow .35s ease;
 }
 
 [data-template-id="glintica"] .gl-tier:hover,
-[data-template-id="glintica-preview"] .gl-tier:hover {
+[data-template-id="glintica"] .gl-tier:hover {
   transform: translateY(-8px);
   border-color: rgba(212,160,167,.78);
   box-shadow: 0 28px 70px rgba(0,0,0,.28);
 }
 
 [data-template-id="glintica"] .gl-tier-bar::after,
-[data-template-id="glintica-preview"] .gl-tier-bar::after {
+[data-template-id="glintica"] .gl-tier-bar::after {
   content: "";
   position: absolute;
   inset: 0;
@@ -180,7 +180,7 @@ export const glinticaEditorCss = `
 }
 
 [data-template-id="glintica"] .gl-masonry:hover,
-[data-template-id="glintica-preview"] .gl-masonry:hover {
+[data-template-id="glintica"] .gl-masonry:hover {
   transform: translateY(-6px) scale(.99);
   border-color: rgba(212,160,167,.7);
 }

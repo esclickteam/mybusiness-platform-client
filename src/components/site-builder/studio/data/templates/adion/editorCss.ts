@@ -1,6 +1,6 @@
 export const adionEditorCss = `
   [data-template-id="adion-framion-inspired"],
-  [data-template-id="adion-preview"] {
+  [data-template-id="adion"] {
     font-family:
       Inter,
       ui-sans-serif,
@@ -12,7 +12,7 @@ export const adionEditorCss = `
   }
 
   [data-template-id="adion-framion-inspired"] img,
-  [data-template-id="adion-preview"] img {
+  [data-template-id="adion"] img {
     max-width: 100%;
   }
 `;

@@ -2,7 +2,7 @@ export const nailmuseEditorCss = `
 @import url('https://fonts.googleapis.com/css2?family=Shrikhand&family=Secular+One&display=swap');
 
 [data-template-id="nailmuse"],
-[data-template-id="nailmuse-preview"] {
+[data-template-id="nailmuse"] {
   --p: #F97316;
   --s: #FFF7ED;
   --a: #FDE68A;
@@ -17,7 +17,7 @@ export const nailmuseEditorCss = `
 }
 
 [data-template-id="nailmuse"] .t-display,
-[data-template-id="nailmuse-preview"] .t-display {
+[data-template-id="nailmuse"] .t-display {
   font-family: "Shrikhand", serif;
 }
 
@@ -59,58 +59,58 @@ export const nailmuseEditorCss = `
 }
 
 [data-template-id="nailmuse"] .t-ken,
-[data-template-id="nailmuse-preview"] .t-ken { animation: nailmuse-ken 18s ease-in-out infinite alternate; }
+[data-template-id="nailmuse"] .t-ken { animation: nailmuse-ken 18s ease-in-out infinite alternate; }
 [data-template-id="nailmuse"] .t-anim,
-[data-template-id="nailmuse-preview"] .t-anim { animation: nailmuse-up 0.9s cubic-bezier(0.22,1,0.36,1) both; }
+[data-template-id="nailmuse"] .t-anim { animation: nailmuse-up 0.9s cubic-bezier(0.22,1,0.36,1) both; }
 [data-template-id="nailmuse"] .t-d1,
-[data-template-id="nailmuse-preview"] .t-d1 { animation-delay: .12s; }
+[data-template-id="nailmuse"] .t-d1 { animation-delay: .12s; }
 [data-template-id="nailmuse"] .t-d2,
-[data-template-id="nailmuse-preview"] .t-d2 { animation-delay: .24s; }
+[data-template-id="nailmuse"] .t-d2 { animation-delay: .24s; }
 [data-template-id="nailmuse"] .t-d3,
-[data-template-id="nailmuse-preview"] .t-d3 { animation-delay: .36s; }
+[data-template-id="nailmuse"] .t-d3 { animation-delay: .36s; }
 [data-template-id="nailmuse"] .t-fade,
-[data-template-id="nailmuse-preview"] .t-fade { animation: nailmuse-fade 1s ease both; }
+[data-template-id="nailmuse"] .t-fade { animation: nailmuse-fade 1s ease both; }
 [data-template-id="nailmuse"] .t-marquee,
-[data-template-id="nailmuse-preview"] .t-marquee { animation: nailmuse-marquee 30s linear infinite; width: max-content; }
+[data-template-id="nailmuse"] .t-marquee { animation: nailmuse-marquee 30s linear infinite; width: max-content; }
 [data-template-id="nailmuse"] .t-float,
-[data-template-id="nailmuse-preview"] .t-float { animation: nailmuse-float 6s ease-in-out infinite; }
+[data-template-id="nailmuse"] .t-float { animation: nailmuse-float 6s ease-in-out infinite; }
 [data-template-id="nailmuse"] .t-pulse,
-[data-template-id="nailmuse-preview"] .t-pulse { animation: nailmuse-pulse 2.8s ease-in-out infinite; }
+[data-template-id="nailmuse"] .t-pulse { animation: nailmuse-pulse 2.8s ease-in-out infinite; }
 [data-template-id="nailmuse"] .t-shimmer,
-[data-template-id="nailmuse-preview"] .t-shimmer {
+[data-template-id="nailmuse"] .t-shimmer {
   background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--a) 35%, transparent), transparent);
   background-size: 200% 100%;
   animation: nailmuse-shimmer 2.8s linear infinite;
 }
 [data-template-id="nailmuse"] .t-glow,
-[data-template-id="nailmuse-preview"] .t-glow { animation: nailmuse-glow 3.2s ease-in-out infinite; }
+[data-template-id="nailmuse"] .t-glow { animation: nailmuse-glow 3.2s ease-in-out infinite; }
 [data-template-id="nailmuse"] .t-scalein,
-[data-template-id="nailmuse-preview"] .t-scalein { animation: nailmuse-scalein 0.8s cubic-bezier(0.22,1,0.36,1) both; }
+[data-template-id="nailmuse"] .t-scalein { animation: nailmuse-scalein 0.8s cubic-bezier(0.22,1,0.36,1) both; }
 [data-template-id="nailmuse"] .t-hover,
-[data-template-id="nailmuse-preview"] .t-hover {
+[data-template-id="nailmuse"] .t-hover {
   transition: transform .45s cubic-bezier(0.22,1,0.36,1), border-color .3s ease, background .3s ease;
 }
 [data-template-id="nailmuse"] .t-hover:hover,
-[data-template-id="nailmuse-preview"] .t-hover:hover { transform: translateY(-5px); }
+[data-template-id="nailmuse"] .t-hover:hover { transform: translateY(-5px); }
 
 @media (prefers-reduced-motion: reduce) {
   [data-template-id="nailmuse"] .t-ken,
-  [data-template-id="nailmuse-preview"] .t-ken,
+  [data-template-id="nailmuse"] .t-ken,
   [data-template-id="nailmuse"] .t-anim,
-  [data-template-id="nailmuse-preview"] .t-anim,
+  [data-template-id="nailmuse"] .t-anim,
   [data-template-id="nailmuse"] .t-marquee,
-  [data-template-id="nailmuse-preview"] .t-marquee,
+  [data-template-id="nailmuse"] .t-marquee,
   [data-template-id="nailmuse"] .t-float,
-  [data-template-id="nailmuse-preview"] .t-float,
+  [data-template-id="nailmuse"] .t-float,
   [data-template-id="nailmuse"] .t-pulse,
-  [data-template-id="nailmuse-preview"] .t-pulse,
+  [data-template-id="nailmuse"] .t-pulse,
   [data-template-id="nailmuse"] .t-shimmer,
-  [data-template-id="nailmuse-preview"] .t-shimmer,
+  [data-template-id="nailmuse"] .t-shimmer,
   [data-template-id="nailmuse"] .t-glow,
-  [data-template-id="nailmuse-preview"] .t-glow,
+  [data-template-id="nailmuse"] .t-glow,
   [data-template-id="nailmuse"] .t-scalein,
-  [data-template-id="nailmuse-preview"] .t-scalein,
+  [data-template-id="nailmuse"] .t-scalein,
   [data-template-id="nailmuse"] .t-fade,
-  [data-template-id="nailmuse-preview"] .t-fade { animation: none !important; }
+  [data-template-id="nailmuse"] .t-fade { animation: none !important; }
 }
 `;

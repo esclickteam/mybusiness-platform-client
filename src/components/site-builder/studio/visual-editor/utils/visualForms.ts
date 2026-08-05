@@ -8,6 +8,7 @@ import {
   normalizeFormColors,
 } from "../../FormBuilderModal";
 import {
+  isGenericDefaultFormConfig,
   isTemplateSkinnedForm,
   TEMPLATE_FORM_SKIN_ATTR,
   TEMPLATE_FORM_SKIN_VALUE,
@@ -810,6 +811,196 @@ export function buildFormBuilderDomHtml(form: BizuplyFormConfig) {
   `;
 }
 
+
+function listTemplateFormControls(formNode: HTMLFormElement) {
+  return Array.from(
+    formNode.querySelectorAll<HTMLElement>("input, textarea, select"),
+  ).filter((node) => {
+    if (!(node instanceof HTMLInputElement)) return true;
+    const type = String(node.type || "text").toLowerCase();
+    return !["submit", "button", "hidden", "reset", "image"].includes(type);
+  });
+}
+
+function getTemplateFieldKey(node: HTMLElement, index: number) {
+  return normalizeFormFieldDomId(
+    node.getAttribute("data-bizuply-form-field-id") ||
+      node.getAttribute("name") ||
+      node.getAttribute("id") ||
+      getInputLabel(node, `field-${index + 1}`),
+    index,
+  );
+}
+
+function createTemplateFieldControl(
+  field: BizuplyFormField,
+  sample: HTMLElement | null,
+) {
+  const tag =
+    field.type === "textarea"
+      ? "textarea"
+      : field.type === "select"
+        ? "select"
+        : "input";
+  const node = document.createElement(tag) as HTMLElement;
+  if (sample?.className) node.className = sample.className;
+  if (sample) {
+    const styleAttr = sample.getAttribute("style");
+    if (styleAttr) node.setAttribute("style", styleAttr);
+  }
+
+  const name = normalizeFormFieldDomId(field.id || field.label, 0);
+  node.setAttribute("name", name);
+  node.setAttribute("data-bizuply-form-field-id", name);
+  node.setAttribute("data-bizuply-form-field-width", field.width || "full");
+  if (field.placeholder) node.setAttribute("placeholder", field.placeholder);
+  if (field.required) node.setAttribute("required", "true");
+
+  if (node instanceof HTMLInputElement) {
+    node.type =
+      field.type === "phone"
+        ? "tel"
+        : field.type === "email" ||
+            field.type === "number" ||
+            field.type === "date"
+          ? field.type
+          : "text";
+  }
+
+  if (node instanceof HTMLSelectElement) {
+    const options = field.options?.length
+      ? field.options
+      : [field.placeholder || field.label || "בחרו אפשרות"];
+    options.forEach((option, index) => {
+      const opt = document.createElement("option");
+      opt.value = option;
+      opt.textContent = option;
+      if (index === 0) opt.selected = true;
+      node.appendChild(opt);
+    });
+  }
+
+  return node;
+}
+
+/**
+ * Keep template markup/classes/colors. Only sync metadata + optional field list.
+ * Never replaces innerHTML / never injects generic Form Builder chrome.
+ */
+export function syncTemplateSkinnedFormFromConfig(
+  formNode: HTMLFormElement,
+  form: BizuplyFormConfig,
+) {
+  const safeForm = normalizeFormBuilderConfig(form);
+  formNode.setAttribute(TEMPLATE_FORM_SKIN_ATTR, TEMPLATE_FORM_SKIN_VALUE);
+  formNode.setAttribute("data-bizuply-form-builder", "true");
+  formNode.setAttribute(
+    "data-bizuply-form-id",
+    safeForm.id || formNode.getAttribute("data-bizuply-form-id") || "contact-form",
+  );
+  formNode.setAttribute(
+    "data-bizuply-success-message",
+    safeForm.successMessage ||
+      formNode.getAttribute("data-bizuply-success-message") ||
+      "",
+  );
+
+  // Stale generic defaults must never mutate a template-designed form.
+  if (isGenericDefaultFormConfig(safeForm) || isGenericDefaultFormConfig(form)) {
+    return;
+  }
+
+  const submitButton = formNode.querySelector<HTMLElement>(
+    'button[type="submit"], input[type="submit"]',
+  );
+  if (submitButton && safeForm.submitText) {
+    const labelNode =
+      submitButton.querySelector("[data-visual-ignore-select='true']") ||
+      submitButton;
+    if (labelNode === submitButton) {
+      submitButton.textContent = safeForm.submitText;
+    } else {
+      labelNode.textContent = safeForm.submitText;
+    }
+  }
+
+  // Field list sync only for explicit template-skin configs (real edits).
+  if (!safeForm.preserveTemplateSkin) return;
+
+  const desired = safeForm.fields || [];
+  if (!desired.length) return;
+
+  const existing = listTemplateFormControls(formNode);
+  const existingIds = existing.map((node, index) => getTemplateFieldKey(node, index));
+  const desiredIds = desired.map((field, index) =>
+    normalizeFormFieldDomId(field.id || field.label, index),
+  );
+  const sameFieldSet =
+    existingIds.length === desiredIds.length &&
+    existingIds.every((id, index) => id === desiredIds[index]);
+  if (sameFieldSet) return;
+  const existingByKey = new Map<string, HTMLElement>();
+  existing.forEach((node, index) => {
+    existingByKey.set(getTemplateFieldKey(node, index), node);
+  });
+
+  const sample = existing[0] || null;
+  const sampleTextarea =
+    existing.find((node) => node instanceof HTMLTextAreaElement) || sample;
+  const host =
+    (existing[0]?.parentElement &&
+    existing[0].parentElement !== formNode &&
+    !existing[0].parentElement.matches("label")
+      ? existing[0].parentElement
+      : null) || formNode;
+
+  const keep = new Set<string>();
+  const fragment = document.createDocumentFragment();
+  let usedFragment = false;
+
+  desired.forEach((field, index) => {
+    const key = normalizeFormFieldDomId(field.id || field.label, index);
+    keep.add(key);
+    let node = existingByKey.get(key) || null;
+
+    if (!node) {
+      node = createTemplateFieldControl(
+        field,
+        field.type === "textarea" ? sampleTextarea : sample,
+      );
+      if (host === formNode && submitButton && submitButton.parentElement === formNode) {
+        formNode.insertBefore(node, submitButton);
+      } else if (host !== formNode) {
+        host.appendChild(node);
+      } else {
+        fragment.appendChild(node);
+        usedFragment = true;
+      }
+    } else {
+      node.setAttribute("name", key);
+      node.setAttribute("data-bizuply-form-field-id", key);
+      node.setAttribute("data-bizuply-form-field-width", field.width || "full");
+      if (field.placeholder) node.setAttribute("placeholder", field.placeholder);
+      if (field.required) node.setAttribute("required", "true");
+      else node.removeAttribute("required");
+    }
+  });
+
+  existing.forEach((node, index) => {
+    const key = getTemplateFieldKey(node, index);
+    if (!keep.has(key)) node.remove();
+  });
+
+  if (usedFragment) {
+    if (submitButton && submitButton.parentElement === formNode) {
+      formNode.insertBefore(fragment, submitButton);
+    } else {
+      formNode.appendChild(fragment);
+    }
+  }
+}
+
+
 export function applyFormBuilderConfigToFormNode(
   formNode: HTMLFormElement | null,
   form: BizuplyFormConfig,
@@ -837,20 +1028,7 @@ export function applyFormBuilderConfigToFormNode(
     Only sync metadata so editor/preview/public stay visually identical.
   */
   if (templateSkin) {
-    formNode.setAttribute(TEMPLATE_FORM_SKIN_ATTR, TEMPLATE_FORM_SKIN_VALUE);
-    const submitButton = formNode.querySelector(
-      'button[type="submit"], input[type="submit"]',
-    );
-    if (submitButton && safeForm.submitText) {
-      const labelNode =
-        submitButton.querySelector("[data-visual-ignore-select='true']") ||
-        submitButton;
-      if (labelNode === submitButton) {
-        submitButton.textContent = safeForm.submitText;
-      } else {
-        labelNode.textContent = safeForm.submitText;
-      }
-    }
+    syncTemplateSkinnedFormFromConfig(formNode, safeForm);
     return;
   }
 
@@ -946,6 +1124,14 @@ export function applySavedFormBuildersToDom(
   const byElement = readFormBuilderByElement(data);
 
   Object.entries(byElement).forEach(([formElementId, form]) => {
+    const formNode = findFormNodeByElementId(root, formElementId);
+    if (
+      (isTemplateSkinnedForm(formNode) ||
+        Boolean((form as BizuplyFormConfig)?.preserveTemplateSkin)) &&
+      isGenericDefaultFormConfig(form as BizuplyFormConfig)
+    ) {
+      return;
+    }
     applyFormBuilderConfigForElement(
       root,
       formElementId,

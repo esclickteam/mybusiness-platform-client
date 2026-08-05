@@ -1,7 +1,7 @@
 export const azurelineEditorCss = `
 @import url("https://fonts.googleapis.com/css2?family=Manrope:wght@600;700;800&family=Heebo:wght@400;500;700&display=swap");
 
-[data-template-id="azureline"], [data-template-id="azureline-preview"] {
+[data-template-id="azureline"], [data-template-id="azureline"] {
   direction: rtl; text-align: right;
   font-family: "Heebo", Heebo, sans-serif;
   --tpl-bg: #f8fcff; --tpl-surface: #ffffff; --tpl-text: #0a2540;
@@ -10,7 +10,7 @@ export const azurelineEditorCss = `
 }
 
 [data-template-id="azureline"] .tpl-display,
-[data-template-id="azureline-preview"] .tpl-display {
+[data-template-id="azureline"] .tpl-display {
   font-family: "Manrope", "Heebo", serif;
 }
 
@@ -25,39 +25,39 @@ export const azurelineEditorCss = `
 @keyframes azureline-sweep { 0% { transform: translateX(-120%); } 100% { transform: translateX(120%); } }
 @keyframes azureline-climb { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-[data-template-id="azureline"] .tpl-ken, [data-template-id="azureline-preview"] .tpl-ken {
+[data-template-id="azureline"] .tpl-ken, [data-template-id="azureline"] .tpl-ken {
   animation: azureline-ken 18s ease-in-out infinite alternate; transform-origin: center;
 }
-[data-template-id="azureline"] .tpl-rise, [data-template-id="azureline-preview"] .tpl-rise {
+[data-template-id="azureline"] .tpl-rise, [data-template-id="azureline"] .tpl-rise {
   animation: azureline-rise .9s cubic-bezier(.22,1,.36,1) both;
 }
-[data-template-id="azureline"] .tpl-rise-2, [data-template-id="azureline-preview"] .tpl-rise-2 {
+[data-template-id="azureline"] .tpl-rise-2, [data-template-id="azureline"] .tpl-rise-2 {
   animation: azureline-rise .9s cubic-bezier(.22,1,.36,1) .12s both;
 }
-[data-template-id="azureline"] .tpl-rise-3, [data-template-id="azureline-preview"] .tpl-rise-3 {
+[data-template-id="azureline"] .tpl-rise-3, [data-template-id="azureline"] .tpl-rise-3 {
   animation: azureline-rise .9s cubic-bezier(.22,1,.36,1) .24s both;
 }
-[data-template-id="azureline"] .tpl-marquee-track, [data-template-id="azureline-preview"] .tpl-marquee-track {
+[data-template-id="azureline"] .tpl-marquee-track, [data-template-id="azureline"] .tpl-marquee-track {
   display: flex; width: max-content; animation: azureline-marquee 28s linear infinite;
 }
-[data-template-id="azureline"] .tpl-float, [data-template-id="azureline-preview"] .tpl-float {
+[data-template-id="azureline"] .tpl-float, [data-template-id="azureline"] .tpl-float {
   animation: azureline-float 5s ease-in-out infinite;
 }
-[data-template-id="azureline"] .tpl-sweep, [data-template-id="azureline-preview"] .tpl-sweep { position: relative; overflow: hidden; }
-[data-template-id="azureline"] .tpl-sweep::after, [data-template-id="azureline-preview"] .tpl-sweep::after {
+[data-template-id="azureline"] .tpl-sweep, [data-template-id="azureline"] .tpl-sweep { position: relative; overflow: hidden; }
+[data-template-id="azureline"] .tpl-sweep::after, [data-template-id="azureline"] .tpl-sweep::after {
   content: ""; position: absolute; inset: 0 auto 0 0; width: 35%; pointer-events: none;
   background: linear-gradient(90deg, transparent, rgba(255,255,255,.16), transparent);
   animation: azureline-sweep 4.5s ease-in-out infinite;
 }
-[data-template-id="azureline"] .tpl-climb, [data-template-id="azureline-preview"] .tpl-climb {
+[data-template-id="azureline"] .tpl-climb, [data-template-id="azureline"] .tpl-climb {
   animation: azureline-climb .85s cubic-bezier(.22,1,.36,1) both;
 }
 
 @keyframes azureline-ripple { 0% { transform: scale(.6); opacity: .7; } 100% { transform: scale(2.4); opacity: 0; } }
-[data-template-id="azureline"] .tpl-ripple, [data-template-id="azureline-preview"] .tpl-ripple {
+[data-template-id="azureline"] .tpl-ripple, [data-template-id="azureline"] .tpl-ripple {
   animation: azureline-ripple 3.5s ease-out infinite;
 }
-[data-template-id="azureline"] .tpl-horizon, [data-template-id="azureline-preview"] .tpl-horizon {
+[data-template-id="azureline"] .tpl-horizon, [data-template-id="azureline"] .tpl-horizon {
   height: 1px; width: 100%;
 }
 `;

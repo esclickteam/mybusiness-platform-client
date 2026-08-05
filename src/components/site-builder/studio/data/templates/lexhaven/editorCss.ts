@@ -2,7 +2,7 @@ export const lexhavenEditorCss = `
 @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Karla:wght@400;500;600;700;800&display=swap');
 
 [data-template-id="lexhaven"],
-[data-template-id="lexhaven-preview"] {
+[data-template-id="lexhaven"] {
   --p: #7A1F2B;
   --s: #F7F3EE;
   --a: #9F3341;
@@ -17,42 +17,42 @@ export const lexhavenEditorCss = `
 }
 
 [data-template-id="lexhaven"] *,
-[data-template-id="lexhaven-preview"] * {
+[data-template-id="lexhaven"] * {
   border-radius: 0 !important;
 }
 
 [data-template-id="lexhaven"] .t-display,
-[data-template-id="lexhaven-preview"] .t-display {
+[data-template-id="lexhaven"] .t-display {
   font-family: "Libre Baskerville", serif;
 }
 
 [data-template-id="lexhaven"] a,
-[data-template-id="lexhaven-preview"] a,
+[data-template-id="lexhaven"] a,
 [data-template-id="lexhaven"] button,
-[data-template-id="lexhaven-preview"] button {
+[data-template-id="lexhaven"] button {
   transition: background .25s ease, color .25s ease, border-color .25s ease, transform .25s ease;
 }
 
 [data-template-id="lexhaven"] button:hover,
-[data-template-id="lexhaven-preview"] button:hover,
+[data-template-id="lexhaven"] button:hover,
 [data-template-id="lexhaven"] a:hover,
-[data-template-id="lexhaven-preview"] a:hover {
+[data-template-id="lexhaven"] a:hover {
   transform: translateY(-2px);
 }
 
 [data-template-id="lexhaven"] .lexhaven-practice-row,
-[data-template-id="lexhaven-preview"] .lexhaven-practice-row {
+[data-template-id="lexhaven"] .lexhaven-practice-row {
   transition: background .35s ease, padding-inline .35s ease;
 }
 
 [data-template-id="lexhaven"] .lexhaven-practice-row:hover,
-[data-template-id="lexhaven-preview"] .lexhaven-practice-row:hover {
+[data-template-id="lexhaven"] .lexhaven-practice-row:hover {
   background: rgba(122, 31, 43, 0.06);
   padding-inline: 1.25rem;
 }
 
 [data-template-id="lexhaven"] .lexhaven-process-track::before,
-[data-template-id="lexhaven-preview"] .lexhaven-process-track::before {
+[data-template-id="lexhaven"] .lexhaven-process-track::before {
   content: "";
   position: absolute;
   inset-inline: 0;
@@ -70,7 +70,7 @@ export const lexhavenEditorCss = `
 
 @media (max-width: 767px) {
   [data-template-id="lexhaven"] .lexhaven-process-track::before,
-  [data-template-id="lexhaven-preview"] .lexhaven-process-track::before {
+  [data-template-id="lexhaven"] .lexhaven-process-track::before {
     inset-inline: auto;
     right: 2rem;
     top: 0;
@@ -88,9 +88,9 @@ export const lexhavenEditorCss = `
 }
 
 [data-template-id="lexhaven"] input,
-[data-template-id="lexhaven-preview"] input,
+[data-template-id="lexhaven"] input,
 [data-template-id="lexhaven"] textarea,
-[data-template-id="lexhaven-preview"] textarea {
+[data-template-id="lexhaven"] textarea {
   font-family: "Karla", sans-serif;
 }
 `;

@@ -336,7 +336,7 @@ function JoinForm({ data }: { data: Record<string, any> }) {
           </div>
         </Reveal>
         <Reveal variant="left" delayMs={120}>
-          <form className="grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="aurayoga-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+          <form className="grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="aurayoga-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
             <input aria-label="שם מלא" placeholder="שם מלא" className="aura-input border border-white/12 bg-[var(--dark)] px-5 py-4 text-white outline-none focus:border-[var(--p)]"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
             <input aria-label="טלפון" placeholder="טלפון" className="aura-input border border-white/12 bg-[var(--dark)] px-5 py-4 text-white outline-none focus:border-[var(--p)]"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
             <input aria-label="אימייל" placeholder="אימייל" className="aura-input border border-white/12 bg-[var(--dark)] px-5 py-4 text-white outline-none focus:border-[var(--p)]"  name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
@@ -399,7 +399,7 @@ export default function AurayogaPages({
   );
 
   return (
-    <div dir="rtl" data-template-id={mode === "preview" ? "aurayoga-preview" : "aurayoga"} className="min-h-screen w-full overflow-x-hidden bg-[var(--bg)] text-[var(--text)]">
+    <div dir="rtl" data-template-id="aurayoga" className="min-h-screen w-full overflow-x-hidden bg-[var(--bg)] text-[var(--text)]">
       <style dangerouslySetInnerHTML={{ __html: aurayogaEditorCss }} />
       <VisualPageStack activePageId={currentPage} pages={[{ id: "home", content: pageContent }]} />
     </div>

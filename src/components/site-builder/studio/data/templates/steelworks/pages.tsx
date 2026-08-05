@@ -42,7 +42,7 @@ function cx(...classes: Array<string | false | null | undefined>) {
 
 function extendEditorCss(templateId: string, css: string) {
   const liveSelector = `[data-template-id="${templateId}"]`;
-  const previewSelector = `[data-template-id="${templateId}-preview"]`;
+  const previewSelector = `[data-template-id="${templateId}"]`;
   return css.split(liveSelector).join(`${liveSelector}, ${previewSelector}`);
 }
 
@@ -746,7 +746,7 @@ function SteelContactBand({ data }: { data: Record<string, any> }) {
             ))}
           </div>
         </div>
-        <form className="grid gap-4 bg-[#111111] px-6 py-10 md:px-10" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="steelworks-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+        <form className="grid gap-4 bg-[#111111] px-6 py-10 md:px-10" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="steelworks-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
           <input
             className="border border-white/10 bg-[#1a1a1a] px-4 py-4 text-right text-sm text-[#f3f0ea] outline-none placeholder:text-[#8f8578] focus:border-[#ff6b2c]"
             placeholder="שם מלא"
@@ -981,7 +981,7 @@ export default function SteelworksPages({
   return (
     <div
       dir="rtl"
-      data-template-id={mode === "preview" ? "steelworks-preview" : "steelworks"}
+      data-template-id="steelworks"
       className="min-h-screen w-full overflow-x-hidden bg-[#1a1a1a] text-[#f3f0ea]"
       style={{ fontFamily: '"Inter", "Arial", sans-serif' }}
     >

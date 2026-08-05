@@ -65,7 +65,7 @@ function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>;
 function ContactForm({ data, onCta }: { data: Record<string, any>; onCta: () => void }) {
   const field = "w-full border bg-transparent px-4 py-3.5 text-right outline-none";
   return (
-    <form className="grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="dwellist-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+    <form className="grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="dwellist-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
       <input className={field} style={{ borderColor: "rgba(44,36,25,0.12)", color: "#2c2419" }} placeholder="שם מלא" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
       <input className={field} style={{ borderColor: "rgba(44,36,25,0.12)", color: "#2c2419" }} placeholder="טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
       <input className={field} style={{ borderColor: "rgba(44,36,25,0.12)", color: "#2c2419" }} placeholder="אימייל" name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
@@ -470,7 +470,7 @@ export default function DwellistPages({
       </InnerPage>
     );
   return (
-    <div dir="rtl" data-template-id={mode === "preview" ? "dwellist-preview" : "dwellist"} className="min-h-screen w-full overflow-x-hidden"
+    <div dir="rtl" data-template-id="dwellist" className="min-h-screen w-full overflow-x-hidden"
       style={{ background: "#faf8f5", color: "#2c2419" }}>
       <Header data={merged} currentPage={currentPage} goTo={goTo} onCta={() => goTo("contact")} />
       <VisualPageStack activePageId={currentPage} pages={Object.entries(pageContent).map(([id, content]) => ({ id, content }))} />

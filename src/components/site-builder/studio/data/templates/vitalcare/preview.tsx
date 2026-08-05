@@ -5,7 +5,7 @@ export default function VitalcarePreview() {
   return (
     <div
       dir="rtl"
-      data-template-id="vitalcare-preview"
+      data-template-id="vitalcare"
       className="min-h-screen w-full"
       style={{ background: "#F0F9FF", overflowX: "hidden" }}
     >

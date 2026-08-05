@@ -139,7 +139,7 @@ function EstateoInvitationContact({ data, onCta }: { data: Record<string, any>; 
         <p className="text-xs font-semibold tracking-[0.34em]" style={{ color: "#d4af6a" }}>INVITATION</p>
         <h2 className="tpl-display mt-5 text-5xl font-bold leading-tight md:text-7xl">{v(data, "contactTitle")}</h2>
         <p className="mx-auto mt-6 max-w-xl text-lg leading-8" style={{ color: "#a89880" }}>{v(data, "contactText")}</p>
-        <form className="mt-10 grid gap-5" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="estateo-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+        <form className="mt-10 grid gap-5" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="estateo-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
           <input className={field} style={{ borderColor: "rgba(244,236,223,0.2)", color: "#f4ecdf" }} placeholder="שם מלא" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
           <input className={field} style={{ borderColor: "rgba(244,236,223,0.2)", color: "#f4ecdf" }} placeholder="טלפון פרטי" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
           <input className={field} style={{ borderColor: "rgba(244,236,223,0.2)", color: "#f4ecdf" }} placeholder="טווח רכישה" name="other" data-bizuply-form-field-id="other" />
@@ -210,7 +210,7 @@ export default function EstateoPages({
     );
   }
   return (
-    <div dir="rtl" data-template-id={mode === "preview" ? "estateo-preview" : "estateo"} className="min-h-screen w-full overflow-x-hidden"
+    <div dir="rtl" data-template-id="estateo" className="min-h-screen w-full overflow-x-hidden"
       style={{ background: "#100e0c", color: "#f4ecdf" }}>
       <EstateoCenteredHeader data={merged} currentPage={currentPage} goTo={goTo} onCta={() => goTo("contact")} />
       <VisualPageStack activePageId={currentPage} pages={Object.entries(pageContent).map(([id, content]) => ({ id, content }))} />

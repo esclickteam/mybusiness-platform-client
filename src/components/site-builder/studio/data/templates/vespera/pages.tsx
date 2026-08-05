@@ -120,7 +120,7 @@ function ContactForm({ data, onCta }: { data: Record<string, any>; onCta: () => 
   const field =
     "w-full border bg-transparent px-4 py-3.5 text-right outline-none";
   return (
-    <form className="grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="vespera-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+    <form className="grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="vespera-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
       <input className={field} style={{ borderColor: "rgba(243,235,225,0.14)", color: "#f4ebe4" }} placeholder="שם מלא" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
       <input className={field} style={{ borderColor: "rgba(243,235,225,0.14)", color: "#f4ebe4" }} placeholder="טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
       <input className={field} style={{ borderColor: "rgba(243,235,225,0.14)", color: "#f4ebe4" }} placeholder="אימייל" name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
@@ -394,7 +394,7 @@ export default function VesperaPages({
   return (
     <div
       dir="rtl"
-      data-template-id={mode === "preview" ? "vespera-preview" : "vespera"}
+      data-template-id="vespera"
       className="min-h-screen w-full overflow-x-hidden"
       style={{ background: "#1a0f14", color: "#f4ebe4" }}
     >

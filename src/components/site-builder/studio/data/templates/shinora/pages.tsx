@@ -714,7 +714,7 @@ function ConsultationSection({ data }: { data: any }) {
 
             <form
               className="mt-8 grid gap-3 md:grid-cols-2"
-              data-bizuply-form-builder="true"
+              data-bizuply-form-builder="true" data-bizuply-form-skin="template"
               data-visual-editable="true"
               data-visual-edit-id="consultation.form"
               data-visual-edit-type="box"
