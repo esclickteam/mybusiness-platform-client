@@ -1,6 +1,6 @@
 export const booknookEditorCss = `
 @import url('https://fonts.googleapis.com/css2?family=Literata:wght@500;600;700&family=Heebo:wght@400;500;600;700;800;900&display=swap');
-[data-template-id="booknook"], [data-template-id="booknook-preview"] {
+[data-template-id="booknook"], [data-template-id="booknook"] {
   --p: #1D4ED8;
   --accent: #93C5FD;
   --on-p: #EFF6FF;
@@ -20,35 +20,35 @@ export const booknookEditorCss = `
   text-align: right;
 }
 [data-template-id="booknook"] .store-display,
-[data-template-id="booknook-preview"] .store-display {
+[data-template-id="booknook"] .store-display {
   font-family: "Literata", "Heebo", serif;
 }
 [data-template-id="booknook"] .store-card,
-[data-template-id="booknook-preview"] .store-card {
+[data-template-id="booknook"] .store-card {
   transition: transform 420ms cubic-bezier(0.22,1,0.36,1), box-shadow 420ms ease, border-color 420ms ease;
 }
 [data-template-id="booknook"] .store-card:hover,
-[data-template-id="booknook-preview"] .store-card:hover {
+[data-template-id="booknook"] .store-card:hover {
   transform: translateY(-8px);
   box-shadow: 0 24px 60px rgba(0,0,0,0.18);
   border-color: var(--p);
 }
 [data-template-id="booknook"] .store-marquee,
-[data-template-id="booknook-preview"] .store-marquee {
+[data-template-id="booknook"] .store-marquee {
   animation: booknook-marquee 22s linear infinite;
 }
 [data-template-id="booknook"] .store-kenburns,
-[data-template-id="booknook-preview"] .store-kenburns {
+[data-template-id="booknook"] .store-kenburns {
   animation: booknook-kenburns 18s ease-in-out infinite alternate;
 }
 [data-template-id="booknook"] .store-float-a,
-[data-template-id="booknook-preview"] .store-float-a { animation: booknook-float 7s ease-in-out infinite; }
+[data-template-id="booknook"] .store-float-a { animation: booknook-float 7s ease-in-out infinite; }
 [data-template-id="booknook"] .store-float-b,
-[data-template-id="booknook-preview"] .store-float-b { animation: booknook-float 8.5s ease-in-out infinite reverse; }
+[data-template-id="booknook"] .store-float-b { animation: booknook-float 8.5s ease-in-out infinite reverse; }
 [data-template-id="booknook"] .store-float-c,
-[data-template-id="booknook-preview"] .store-float-c { animation: booknook-float 6.5s ease-in-out infinite 0.4s; }
+[data-template-id="booknook"] .store-float-c { animation: booknook-float 6.5s ease-in-out infinite 0.4s; }
 [data-template-id="booknook"] .store-logo,
-[data-template-id="booknook-preview"] .store-logo {
+[data-template-id="booknook"] .store-logo {
   box-shadow: 0 0 0 0 #1D4ED866;
   animation: booknook-pulse 2.8s ease-out infinite;
 }
@@ -76,22 +76,22 @@ export const booknookEditorCss = `
   [data-template-id="booknook"] .store-float-b,
   [data-template-id="booknook"] .store-float-c,
   [data-template-id="booknook"] .store-logo,
-  [data-template-id="booknook-preview"] .store-marquee,
-  [data-template-id="booknook-preview"] .store-kenburns,
-  [data-template-id="booknook-preview"] .store-float-a,
-  [data-template-id="booknook-preview"] .store-float-b,
-  [data-template-id="booknook-preview"] .store-float-c,
-  [data-template-id="booknook-preview"] .store-logo {
+  [data-template-id="booknook"] .store-marquee,
+  [data-template-id="booknook"] .store-kenburns,
+  [data-template-id="booknook"] .store-float-a,
+  [data-template-id="booknook"] .store-float-b,
+  [data-template-id="booknook"] .store-float-c,
+  [data-template-id="booknook"] .store-logo {
     animation: none !important;
   }
 }
 [data-template-id="booknook"] .store-product-card,
-[data-template-id="booknook-preview"] .store-product-card {
+[data-template-id="booknook"] .store-product-card {
   animation: booknook-page-breathe 7.2s ease-in-out infinite;
   transform-origin: 50% 100%;
 }
 [data-template-id="booknook"] .store-product-card:nth-child(even),
-[data-template-id="booknook-preview"] .store-product-card:nth-child(even) {
+[data-template-id="booknook"] .store-product-card:nth-child(even) {
   animation-delay: 0.7s;
 }
 @keyframes booknook-page-breathe {
@@ -100,7 +100,7 @@ export const booknookEditorCss = `
 }
 @media (prefers-reduced-motion: reduce) {
   [data-template-id="booknook"] .store-product-card,
-  [data-template-id="booknook-preview"] .store-product-card {
+  [data-template-id="booknook"] .store-product-card {
     animation: none !important;
   }
 }

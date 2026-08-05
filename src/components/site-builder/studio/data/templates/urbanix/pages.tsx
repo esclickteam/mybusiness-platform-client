@@ -167,7 +167,7 @@ function UrbanixLimeContact({ data, onCta }: { data: Record<string, any>; onCta:
               <p>{v(data, "address")}</p>
             </div>
           </div>
-          <form className="grid gap-4 md:grid-cols-2" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="urbanix-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+          <form className="grid gap-4 md:grid-cols-2" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="urbanix-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
             <input className={field} style={{ borderColor: "rgba(242,242,240,0.14)", color: "#f2f2f0" }} placeholder="שם" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
             <input className={field} style={{ borderColor: "rgba(242,242,240,0.14)", color: "#f2f2f0" }} placeholder="טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
             <input className={field} style={{ borderColor: "rgba(242,242,240,0.14)", color: "#f2f2f0" }} placeholder="שכונה" name="other" data-bizuply-form-field-id="other" />
@@ -240,7 +240,7 @@ export default function UrbanixPages({
     );
   }
   return (
-    <div dir="rtl" data-template-id={mode === "preview" ? "urbanix-preview" : "urbanix"} className="min-h-screen w-full overflow-x-hidden"
+    <div dir="rtl" data-template-id="urbanix" className="min-h-screen w-full overflow-x-hidden"
       style={{ background: "#141516", color: "#f2f2f0" }}>
       <UrbanixAccentHeader data={merged} currentPage={currentPage} goTo={goTo} onCta={() => goTo("contact")} />
       <VisualPageStack activePageId={currentPage} pages={Object.entries(pageContent).map(([id, content]) => ({ id, content }))} />

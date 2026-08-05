@@ -158,7 +158,7 @@ function HomaraPhoneContact({ data, onCta }: { data: Record<string, any>; onCta:
           <a href={`tel:${v(data, "phone")}`} className="tpl-display mt-8 block text-6xl font-bold leading-none md:text-8xl" style={{ color: "#3f6f5a" }}>{v(data, "phone")}</a>
           <p className="mt-6 max-w-xl text-lg leading-8" style={{ color: "#6d7568" }}>{v(data, "contactText")}</p>
         </div>
-        <form className="grid gap-4 border p-6" style={{ borderColor: "rgba(36,48,40,0.14)", background: "#f3f0e8" }} data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="homara-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+        <form className="grid gap-4 border p-6" style={{ borderColor: "rgba(36,48,40,0.14)", background: "#f3f0e8" }} data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="homara-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
           <input className={field} style={{ borderColor: "rgba(36,48,40,0.14)", color: "#243028" }} placeholder="שם" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
           <input className={field} style={{ borderColor: "rgba(36,48,40,0.14)", color: "#243028" }} placeholder="אזור ושכונה" name="other" data-bizuply-form-field-id="other" />
           <input className={field} style={{ borderColor: "rgba(36,48,40,0.14)", color: "#243028" }} placeholder="כמה חדרים?" name="other_2" data-bizuply-form-field-id="other_2" />
@@ -231,7 +231,7 @@ export default function HomaraPages({
     );
   }
   return (
-    <div dir="rtl" data-template-id={mode === "preview" ? "homara-preview" : "homara"} className="min-h-screen w-full overflow-x-hidden"
+    <div dir="rtl" data-template-id="homara" className="min-h-screen w-full overflow-x-hidden"
       style={{ background: "#f3f0e8", color: "#243028" }}>
       <HomaraSoftHeader data={merged} currentPage={currentPage} goTo={goTo} onCta={() => goTo("contact")} />
       <VisualPageStack activePageId={currentPage} pages={Object.entries(pageContent).map(([id, content]) => ({ id, content }))} />

@@ -120,7 +120,7 @@ function ContactForm({ data, onCta }: { data: Record<string, any>; onCta: () => 
   const field =
     "w-full border bg-transparent px-4 py-3.5 text-right outline-none";
   return (
-    <form className="grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="solenne-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+    <form className="grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="solenne-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
       <input className={field} style={{ borderColor: "rgba(28,38,24,0.15)", color: "#1d1a17" }} placeholder="שם מלא" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
       <input className={field} style={{ borderColor: "rgba(28,38,24,0.15)", color: "#1d1a17" }} placeholder="טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
       <input className={field} style={{ borderColor: "rgba(28,38,24,0.15)", color: "#1d1a17" }} placeholder="אימייל" name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
@@ -394,7 +394,7 @@ export default function SolennePages({
   return (
     <div
       dir="rtl"
-      data-template-id={mode === "preview" ? "solenne-preview" : "solenne"}
+      data-template-id="solenne"
       className="min-h-screen w-full overflow-x-hidden"
       style={{ background: "#f7f3ee", color: "#1d1a17" }}
     >

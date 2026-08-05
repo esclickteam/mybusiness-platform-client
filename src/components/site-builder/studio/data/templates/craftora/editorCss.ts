@@ -2,7 +2,7 @@ export const craftoraEditorCss = `
 @import url('https://fonts.googleapis.com/css2?family=Bitter:wght@500;600;700&family=Karla:wght@400;500;600;700&display=swap');
 
 [data-template-id="craftora"],
-[data-template-id="craftora-preview"] {
+[data-template-id="craftora"] {
   --p: #4D7C0F;
   --s: #F5F5F4;
   --a: #78716C;
@@ -17,7 +17,7 @@ export const craftoraEditorCss = `
 }
 
 [data-template-id="craftora"] .t-display,
-[data-template-id="craftora-preview"] .t-display {
+[data-template-id="craftora"] .t-display {
   font-family: "Bitter", sans-serif;
 }
 
@@ -55,46 +55,46 @@ export const craftoraEditorCss = `
 }
 
 [data-template-id="craftora"] .t-ken,
-[data-template-id="craftora-preview"] .t-ken { animation: craftora-ken 16s ease-in-out infinite alternate; }
+[data-template-id="craftora"] .t-ken { animation: craftora-ken 16s ease-in-out infinite alternate; }
 [data-template-id="craftora"] .t-anim,
-[data-template-id="craftora-preview"] .t-anim { animation: craftora-up 0.9s cubic-bezier(0.22,1,0.36,1) both; }
+[data-template-id="craftora"] .t-anim { animation: craftora-up 0.9s cubic-bezier(0.22,1,0.36,1) both; }
 [data-template-id="craftora"] .t-d1,
-[data-template-id="craftora-preview"] .t-d1 { animation-delay: .12s; }
+[data-template-id="craftora"] .t-d1 { animation-delay: .12s; }
 [data-template-id="craftora"] .t-d2,
-[data-template-id="craftora-preview"] .t-d2 { animation-delay: .24s; }
+[data-template-id="craftora"] .t-d2 { animation-delay: .24s; }
 [data-template-id="craftora"] .t-d3,
-[data-template-id="craftora-preview"] .t-d3 { animation-delay: .36s; }
+[data-template-id="craftora"] .t-d3 { animation-delay: .36s; }
 [data-template-id="craftora"] .t-fade,
-[data-template-id="craftora-preview"] .t-fade { animation: craftora-fade 1s ease both; }
+[data-template-id="craftora"] .t-fade { animation: craftora-fade 1s ease both; }
 [data-template-id="craftora"] .t-marquee,
-[data-template-id="craftora-preview"] .t-marquee { animation: craftora-marquee 28s linear infinite; width: max-content; }
+[data-template-id="craftora"] .t-marquee { animation: craftora-marquee 28s linear infinite; width: max-content; }
 [data-template-id="craftora"] .t-float,
-[data-template-id="craftora-preview"] .t-float { animation: craftora-float 6.5s ease-in-out infinite; }
+[data-template-id="craftora"] .t-float { animation: craftora-float 6.5s ease-in-out infinite; }
 [data-template-id="craftora"] .t-pulse,
-[data-template-id="craftora-preview"] .t-pulse { animation: craftora-pulse 2.6s ease-in-out infinite; }
+[data-template-id="craftora"] .t-pulse { animation: craftora-pulse 2.6s ease-in-out infinite; }
 [data-template-id="craftora"] .t-wave,
-[data-template-id="craftora-preview"] .t-wave { animation: craftora-wave 2.2s ease-in-out infinite; }
+[data-template-id="craftora"] .t-wave { animation: craftora-wave 2.2s ease-in-out infinite; }
 [data-template-id="craftora"] .t-hover,
-[data-template-id="craftora-preview"] .t-hover {
+[data-template-id="craftora"] .t-hover {
   transition: transform .45s cubic-bezier(0.22,1,0.36,1), border-color .3s ease, background .3s ease;
 }
 [data-template-id="craftora"] .t-hover:hover,
-[data-template-id="craftora-preview"] .t-hover:hover { transform: translateY(-6px); }
+[data-template-id="craftora"] .t-hover:hover { transform: translateY(-6px); }
 
 @media (prefers-reduced-motion: reduce) {
   [data-template-id="craftora"] .t-ken,
-  [data-template-id="craftora-preview"] .t-ken,
+  [data-template-id="craftora"] .t-ken,
   [data-template-id="craftora"] .t-anim,
-  [data-template-id="craftora-preview"] .t-anim,
+  [data-template-id="craftora"] .t-anim,
   [data-template-id="craftora"] .t-marquee,
-  [data-template-id="craftora-preview"] .t-marquee,
+  [data-template-id="craftora"] .t-marquee,
   [data-template-id="craftora"] .t-float,
-  [data-template-id="craftora-preview"] .t-float,
+  [data-template-id="craftora"] .t-float,
   [data-template-id="craftora"] .t-pulse,
-  [data-template-id="craftora-preview"] .t-pulse,
+  [data-template-id="craftora"] .t-pulse,
   [data-template-id="craftora"] .t-wave,
-  [data-template-id="craftora-preview"] .t-wave,
+  [data-template-id="craftora"] .t-wave,
   [data-template-id="craftora"] .t-fade,
-  [data-template-id="craftora-preview"] .t-fade { animation: none !important; }
+  [data-template-id="craftora"] .t-fade { animation: none !important; }
 }
 `;

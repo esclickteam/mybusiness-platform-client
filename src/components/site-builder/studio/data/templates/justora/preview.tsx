@@ -5,7 +5,7 @@ export default function JustoraPreview() {
   return (
     <div
       dir="rtl"
-      data-template-id="justora-preview"
+      data-template-id="justora"
       className="min-h-screen w-full bg-[#f6efe3] text-[#172433]"
       style={{
         overflowX: "hidden",

@@ -199,7 +199,7 @@ function SereneInquiry({ data }: { data: Record<string, any> }) {
             <p>{v(data, "address")}</p>
           </div>
         </div>
-        <form className="grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="rivara-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+        <form className="grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="rivara-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
           <input className={field} style={{ borderColor: "rgba(31,122,120,0.22)", color: "#12343a" }} placeholder="שם מלא" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
           <input className={field} style={{ borderColor: "rgba(31,122,120,0.22)", color: "#12343a" }} placeholder="טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
           <textarea className={`${field} min-h-32`} style={{ borderColor: "rgba(31,122,120,0.22)", color: "#12343a" }} placeholder="מים, פארק, פרטיות - מה חשוב לכם?"  name="other" data-bizuply-form-field-id="other"></textarea>
@@ -266,7 +266,7 @@ export default function RivaraPages({
     contact: <InnerPage data={merged} title="יצירת קשר"><SereneInquiry data={merged} /></InnerPage>,
   };
   return (
-    <div dir="rtl" data-template-id={mode === "preview" ? "rivara-preview" : "rivara"} className="min-h-screen w-full overflow-x-hidden" style={{ background: "#e8f3f2", color: "#12343a" }}>
+    <div dir="rtl" data-template-id="rivara" className="min-h-screen w-full overflow-x-hidden" style={{ background: "#e8f3f2", color: "#12343a" }}>
       <Header data={merged} currentPage={currentPage} goTo={goTo} />
       <VisualPageStack activePageId={currentPage} pages={Object.entries(pageContent).map(([id, content]) => ({ id, content }))} />
     </div>

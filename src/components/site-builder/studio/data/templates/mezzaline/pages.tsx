@@ -430,7 +430,7 @@ function ContactBlock({ data, onCta }: { data: Record<string, any>; onCta: () =>
             <p>{v(data, "phone")}</p><p>{v(data, "email")}</p><p>{v(data, "address")}</p>
           </div>
         </div>
-        <form className="grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="mezzaline-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+        <form className="grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="mezzaline-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
           <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(44,42,34,0.12)" }} placeholder="שם מלא" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
           <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(44,42,34,0.12)" }} placeholder="טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
           <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(44,42,34,0.12)" }} placeholder="מספר סועדים" name="guests" data-bizuply-form-field-id="guests" />
@@ -566,7 +566,7 @@ export default function MezzalinePages({
     );
   }
   return (
-    <div dir="rtl" data-template-id={mode === "preview" ? "mezzaline-preview" : "mezzaline"} className="min-h-screen w-full overflow-x-hidden"
+    <div dir="rtl" data-template-id="mezzaline" className="min-h-screen w-full overflow-x-hidden"
       style={{ background: "#f7f1e6", color: "#2c2a22" }}>
       <style dangerouslySetInnerHTML={{ __html: mezzalineEditorCss }} />
       <Header data={merged} currentPage={currentPage} goTo={goTo} onCta={() => goTo("contact")} />

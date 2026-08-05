@@ -2,7 +2,7 @@ export const lashoraEditorCss = `
 @import url('https://fonts.googleapis.com/css2?family=Italiana&family=Mulish:wght@400;500;600;700&display=swap');
 
 [data-template-id="lashora"],
-[data-template-id="lashora-preview"] {
+[data-template-id="lashora"] {
   --p: #A78BFA;
   --s: #0B0A12;
   --a: #DDD6FE;
@@ -17,7 +17,7 @@ export const lashoraEditorCss = `
 }
 
 [data-template-id="lashora"] .t-display,
-[data-template-id="lashora-preview"] .t-display {
+[data-template-id="lashora"] .t-display {
   font-family: "Italiana", serif;
 }
 
@@ -59,58 +59,58 @@ export const lashoraEditorCss = `
 }
 
 [data-template-id="lashora"] .t-ken,
-[data-template-id="lashora-preview"] .t-ken { animation: lashora-ken 18s ease-in-out infinite alternate; }
+[data-template-id="lashora"] .t-ken { animation: lashora-ken 18s ease-in-out infinite alternate; }
 [data-template-id="lashora"] .t-anim,
-[data-template-id="lashora-preview"] .t-anim { animation: lashora-up 0.9s cubic-bezier(0.22,1,0.36,1) both; }
+[data-template-id="lashora"] .t-anim { animation: lashora-up 0.9s cubic-bezier(0.22,1,0.36,1) both; }
 [data-template-id="lashora"] .t-d1,
-[data-template-id="lashora-preview"] .t-d1 { animation-delay: .12s; }
+[data-template-id="lashora"] .t-d1 { animation-delay: .12s; }
 [data-template-id="lashora"] .t-d2,
-[data-template-id="lashora-preview"] .t-d2 { animation-delay: .24s; }
+[data-template-id="lashora"] .t-d2 { animation-delay: .24s; }
 [data-template-id="lashora"] .t-d3,
-[data-template-id="lashora-preview"] .t-d3 { animation-delay: .36s; }
+[data-template-id="lashora"] .t-d3 { animation-delay: .36s; }
 [data-template-id="lashora"] .t-fade,
-[data-template-id="lashora-preview"] .t-fade { animation: lashora-fade 1s ease both; }
+[data-template-id="lashora"] .t-fade { animation: lashora-fade 1s ease both; }
 [data-template-id="lashora"] .t-marquee,
-[data-template-id="lashora-preview"] .t-marquee { animation: lashora-marquee 30s linear infinite; width: max-content; }
+[data-template-id="lashora"] .t-marquee { animation: lashora-marquee 30s linear infinite; width: max-content; }
 [data-template-id="lashora"] .t-float,
-[data-template-id="lashora-preview"] .t-float { animation: lashora-float 6s ease-in-out infinite; }
+[data-template-id="lashora"] .t-float { animation: lashora-float 6s ease-in-out infinite; }
 [data-template-id="lashora"] .t-pulse,
-[data-template-id="lashora-preview"] .t-pulse { animation: lashora-pulse 2.8s ease-in-out infinite; }
+[data-template-id="lashora"] .t-pulse { animation: lashora-pulse 2.8s ease-in-out infinite; }
 [data-template-id="lashora"] .t-shimmer,
-[data-template-id="lashora-preview"] .t-shimmer {
+[data-template-id="lashora"] .t-shimmer {
   background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--a) 35%, transparent), transparent);
   background-size: 200% 100%;
   animation: lashora-shimmer 2.8s linear infinite;
 }
 [data-template-id="lashora"] .t-glow,
-[data-template-id="lashora-preview"] .t-glow { animation: lashora-glow 3.2s ease-in-out infinite; }
+[data-template-id="lashora"] .t-glow { animation: lashora-glow 3.2s ease-in-out infinite; }
 [data-template-id="lashora"] .t-scalein,
-[data-template-id="lashora-preview"] .t-scalein { animation: lashora-scalein 0.8s cubic-bezier(0.22,1,0.36,1) both; }
+[data-template-id="lashora"] .t-scalein { animation: lashora-scalein 0.8s cubic-bezier(0.22,1,0.36,1) both; }
 [data-template-id="lashora"] .t-hover,
-[data-template-id="lashora-preview"] .t-hover {
+[data-template-id="lashora"] .t-hover {
   transition: transform .45s cubic-bezier(0.22,1,0.36,1), border-color .3s ease, background .3s ease;
 }
 [data-template-id="lashora"] .t-hover:hover,
-[data-template-id="lashora-preview"] .t-hover:hover { transform: translateY(-5px); }
+[data-template-id="lashora"] .t-hover:hover { transform: translateY(-5px); }
 
 @media (prefers-reduced-motion: reduce) {
   [data-template-id="lashora"] .t-ken,
-  [data-template-id="lashora-preview"] .t-ken,
+  [data-template-id="lashora"] .t-ken,
   [data-template-id="lashora"] .t-anim,
-  [data-template-id="lashora-preview"] .t-anim,
+  [data-template-id="lashora"] .t-anim,
   [data-template-id="lashora"] .t-marquee,
-  [data-template-id="lashora-preview"] .t-marquee,
+  [data-template-id="lashora"] .t-marquee,
   [data-template-id="lashora"] .t-float,
-  [data-template-id="lashora-preview"] .t-float,
+  [data-template-id="lashora"] .t-float,
   [data-template-id="lashora"] .t-pulse,
-  [data-template-id="lashora-preview"] .t-pulse,
+  [data-template-id="lashora"] .t-pulse,
   [data-template-id="lashora"] .t-shimmer,
-  [data-template-id="lashora-preview"] .t-shimmer,
+  [data-template-id="lashora"] .t-shimmer,
   [data-template-id="lashora"] .t-glow,
-  [data-template-id="lashora-preview"] .t-glow,
+  [data-template-id="lashora"] .t-glow,
   [data-template-id="lashora"] .t-scalein,
-  [data-template-id="lashora-preview"] .t-scalein,
+  [data-template-id="lashora"] .t-scalein,
   [data-template-id="lashora"] .t-fade,
-  [data-template-id="lashora-preview"] .t-fade { animation: none !important; }
+  [data-template-id="lashora"] .t-fade { animation: none !important; }
 }
 `;

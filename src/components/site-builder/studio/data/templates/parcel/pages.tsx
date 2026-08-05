@@ -169,7 +169,7 @@ function SurveyRequest({ data }: { data: Record<string, any> }) {
           <p className="mt-5 text-lg leading-8" style={{ color: "#6e684f" }}>{v(data, "contactText")}</p>
           <p className="mt-10 border-t pt-4 text-sm font-bold tracking-[0.18em]" style={{ borderColor: "rgba(107,90,46,0.28)", color: "#6b5a2e" }}>{v(data, "phone")} · {v(data, "email")}</p>
         </div>
-        <form className="grid gap-3 self-start" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="parcel-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+        <form className="grid gap-3 self-start" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="parcel-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
           <input className={field} style={{ borderColor: "rgba(107,90,46,0.28)", color: "#243018" }} placeholder="שם מלא" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
           <input className={field} style={{ borderColor: "rgba(107,90,46,0.28)", color: "#243018" }} placeholder="אזור מבוקש" name="other" data-bizuply-form-field-id="other" />
           <input className={field} style={{ borderColor: "rgba(107,90,46,0.28)", color: "#243018" }} placeholder="גודל רצוי במ״ר" name="other_2" data-bizuply-form-field-id="other_2" />
@@ -237,7 +237,7 @@ export default function ParcelPages({
     contact: <InnerPage data={merged} title="יצירת קשר"><SurveyRequest data={merged} /></InnerPage>,
   };
   return (
-    <div dir="rtl" data-template-id={mode === "preview" ? "parcel-preview" : "parcel"} className="min-h-screen w-full overflow-x-hidden" style={{ background: "#efe9da", color: "#243018" }}>
+    <div dir="rtl" data-template-id="parcel" className="min-h-screen w-full overflow-x-hidden" style={{ background: "#efe9da", color: "#243018" }}>
       <Header data={merged} currentPage={currentPage} goTo={goTo} />
       <VisualPageStack activePageId={currentPage} pages={Object.entries(pageContent).map(([id, content]) => ({ id, content }))} />
     </div>

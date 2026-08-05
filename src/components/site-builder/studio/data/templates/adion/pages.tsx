@@ -1344,7 +1344,7 @@ function ContactPage() {
           </p>
         </div>
 
-        <form className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-6 sm:p-8" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="adion-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+        <form className="rounded-[2rem] border border-white/10 bg-white/[0.04] p-6 sm:p-8" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="adion-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
           {[
             ["שם", "השם שלכם"],
             ["אימייל", "hello@email.com"],

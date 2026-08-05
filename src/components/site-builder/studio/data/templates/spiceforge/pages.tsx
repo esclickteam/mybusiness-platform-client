@@ -415,7 +415,7 @@ function ContactBlock({ data, onCta }: { data: Record<string, any>; onCta: () =>
         <div className="relative flex h-80 w-80 flex-col items-center justify-center rounded-full border-4 p-8 text-center" style={{ borderColor: "#e76f51", background: "#2a1810" }}>
           <h2 className="tpl-display text-2xl font-bold">{v(data, "contactTitle")}</h2>
           <p className="mt-2 text-xs" style={{ color: "#c4a08a" }}>{v(data, "contactText")}</p>
-          <form className="mt-4 grid w-full gap-2" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="spiceforge-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+          <form className="mt-4 grid w-full gap-2" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="spiceforge-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
             <input className="w-full rounded-full border bg-transparent px-3 py-2 text-center text-sm outline-none" style={{ borderColor: "rgba(255,241,224,0.14)" }} placeholder="שם" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
             <input className="w-full rounded-full border bg-transparent px-3 py-2 text-center text-sm outline-none" style={{ borderColor: "rgba(255,241,224,0.14)" }} placeholder="טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
             <button type="submit" className="rounded-full px-4 py-2 text-sm font-bold" style={{ background: "#e76f51", color: "#1a0f0a" }}>{v(data, "cta")}</button>
@@ -551,7 +551,7 @@ export default function SpiceforgePages({
     );
   }
   return (
-    <div dir="rtl" data-template-id={mode === "preview" ? "spiceforge-preview" : "spiceforge"} className="min-h-screen w-full overflow-x-hidden"
+    <div dir="rtl" data-template-id="spiceforge" className="min-h-screen w-full overflow-x-hidden"
       style={{ background: "#1a0f0a", color: "#fff1e0" }}>
       <style dangerouslySetInnerHTML={{ __html: spiceforgeEditorCss }} />
       <Header data={merged} currentPage={currentPage} goTo={goTo} onCta={() => goTo("contact")} />

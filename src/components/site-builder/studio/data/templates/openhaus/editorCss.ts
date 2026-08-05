@@ -1,7 +1,7 @@
 export const openhausEditorCss = `
 @import url("https://fonts.googleapis.com/css2?family=Manrope:wght@700;800&family=Heebo:wght@400;500;700&display=swap");
 
-[data-template-id="openhaus"], [data-template-id="openhaus-preview"] {
+[data-template-id="openhaus"], [data-template-id="openhaus"] {
   direction: rtl; text-align: right;
   font-family: "Heebo", Heebo, sans-serif;
   --tpl-bg: #fffbf7; --tpl-surface: #ffffff; --tpl-text: #292524;
@@ -10,7 +10,7 @@ export const openhausEditorCss = `
 }
 
 [data-template-id="openhaus"] .tpl-display,
-[data-template-id="openhaus-preview"] .tpl-display {
+[data-template-id="openhaus"] .tpl-display {
   font-family: "Manrope", "Heebo", serif;
 }
 
@@ -25,39 +25,39 @@ export const openhausEditorCss = `
 @keyframes openhaus-sweep { 0% { transform: translateX(-120%); } 100% { transform: translateX(120%); } }
 @keyframes openhaus-climb { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-[data-template-id="openhaus"] .tpl-ken, [data-template-id="openhaus-preview"] .tpl-ken {
+[data-template-id="openhaus"] .tpl-ken, [data-template-id="openhaus"] .tpl-ken {
   animation: openhaus-ken 18s ease-in-out infinite alternate; transform-origin: center;
 }
-[data-template-id="openhaus"] .tpl-rise, [data-template-id="openhaus-preview"] .tpl-rise {
+[data-template-id="openhaus"] .tpl-rise, [data-template-id="openhaus"] .tpl-rise {
   animation: openhaus-rise .9s cubic-bezier(.22,1,.36,1) both;
 }
-[data-template-id="openhaus"] .tpl-rise-2, [data-template-id="openhaus-preview"] .tpl-rise-2 {
+[data-template-id="openhaus"] .tpl-rise-2, [data-template-id="openhaus"] .tpl-rise-2 {
   animation: openhaus-rise .9s cubic-bezier(.22,1,.36,1) .12s both;
 }
-[data-template-id="openhaus"] .tpl-rise-3, [data-template-id="openhaus-preview"] .tpl-rise-3 {
+[data-template-id="openhaus"] .tpl-rise-3, [data-template-id="openhaus"] .tpl-rise-3 {
   animation: openhaus-rise .9s cubic-bezier(.22,1,.36,1) .24s both;
 }
-[data-template-id="openhaus"] .tpl-marquee-track, [data-template-id="openhaus-preview"] .tpl-marquee-track {
+[data-template-id="openhaus"] .tpl-marquee-track, [data-template-id="openhaus"] .tpl-marquee-track {
   display: flex; width: max-content; animation: openhaus-marquee 28s linear infinite;
 }
-[data-template-id="openhaus"] .tpl-float, [data-template-id="openhaus-preview"] .tpl-float {
+[data-template-id="openhaus"] .tpl-float, [data-template-id="openhaus"] .tpl-float {
   animation: openhaus-float 5s ease-in-out infinite;
 }
-[data-template-id="openhaus"] .tpl-sweep, [data-template-id="openhaus-preview"] .tpl-sweep { position: relative; overflow: hidden; }
-[data-template-id="openhaus"] .tpl-sweep::after, [data-template-id="openhaus-preview"] .tpl-sweep::after {
+[data-template-id="openhaus"] .tpl-sweep, [data-template-id="openhaus"] .tpl-sweep { position: relative; overflow: hidden; }
+[data-template-id="openhaus"] .tpl-sweep::after, [data-template-id="openhaus"] .tpl-sweep::after {
   content: ""; position: absolute; inset: 0 auto 0 0; width: 35%; pointer-events: none;
   background: linear-gradient(90deg, transparent, rgba(255,255,255,.16), transparent);
   animation: openhaus-sweep 4.5s ease-in-out infinite;
 }
-[data-template-id="openhaus"] .tpl-climb, [data-template-id="openhaus-preview"] .tpl-climb {
+[data-template-id="openhaus"] .tpl-climb, [data-template-id="openhaus"] .tpl-climb {
   animation: openhaus-climb .85s cubic-bezier(.22,1,.36,1) both;
 }
 @keyframes openhaus-rotate { 0%,30%{transform:rotateY(0)} 33%,63%{transform:rotateY(-120deg)} 66%,96%{transform:rotateY(-240deg)} 100%{transform:rotateY(-360deg)} }
-[data-template-id="openhaus"] .tpl-rotate-stage, [data-template-id="openhaus-preview"] .tpl-rotate-stage { perspective:1200px; }
-[data-template-id="openhaus"] .tpl-rotate-track, [data-template-id="openhaus-preview"] .tpl-rotate-track { transform-style:preserve-3d;animation:openhaus-rotate 18s infinite; }
-[data-template-id="openhaus"] .tpl-masonry, [data-template-id="openhaus-preview"] .tpl-masonry { columns:2;column-gap:1rem; }
+[data-template-id="openhaus"] .tpl-rotate-stage, [data-template-id="openhaus"] .tpl-rotate-stage { perspective:1200px; }
+[data-template-id="openhaus"] .tpl-rotate-track, [data-template-id="openhaus"] .tpl-rotate-track { transform-style:preserve-3d;animation:openhaus-rotate 18s infinite; }
+[data-template-id="openhaus"] .tpl-masonry, [data-template-id="openhaus"] .tpl-masonry { columns:2;column-gap:1rem; }
 @keyframes openhaus-testi { to { transform:translateX(-50%); } }
-[data-template-id="openhaus"] .tpl-testi-track, [data-template-id="openhaus-preview"] .tpl-testi-track {
+[data-template-id="openhaus"] .tpl-testi-track, [data-template-id="openhaus"] .tpl-testi-track {
   display:flex;width:max-content;animation:openhaus-testi 28s linear infinite;
 }
 `;

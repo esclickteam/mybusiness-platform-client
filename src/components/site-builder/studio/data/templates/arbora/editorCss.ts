@@ -2,14 +2,14 @@ export const arboraEditorCss = `
 @import url("https://fonts.googleapis.com/css2?family=Assistant:wght@400;600;700&family=Frank+Ruhl+Libre:wght@500;700&display=swap");
 
 [data-template-id="arbora"],
-[data-template-id="arbora-preview"] {
+[data-template-id="arbora"] {
   direction: rtl;
   text-align: right;
   font-family: "Assistant", Heebo, sans-serif;
 }
 
 [data-template-id="arbora"] .tpl-display,
-[data-template-id="arbora-preview"] .tpl-display {
+[data-template-id="arbora"] .tpl-display {
   font-family: "Assistant", "Assistant", serif;
 }
 

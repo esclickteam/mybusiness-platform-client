@@ -1,6 +1,6 @@
 export const homecraftEditorCss = `
 @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Heebo:wght@400;500;600;700;800;900&display=swap');
-[data-template-id="homecraft"], [data-template-id="homecraft-preview"] {
+[data-template-id="homecraft"], [data-template-id="homecraft"] {
   --p: #B45309;
   --accent: #F59E0B;
   --on-p: #FFFBEB;
@@ -20,35 +20,35 @@ export const homecraftEditorCss = `
   text-align: right;
 }
 [data-template-id="homecraft"] .store-display,
-[data-template-id="homecraft-preview"] .store-display {
+[data-template-id="homecraft"] .store-display {
   font-family: "Libre Baskerville", "Heebo", serif;
 }
 [data-template-id="homecraft"] .store-card,
-[data-template-id="homecraft-preview"] .store-card {
+[data-template-id="homecraft"] .store-card {
   transition: transform 420ms cubic-bezier(0.22,1,0.36,1), box-shadow 420ms ease, border-color 420ms ease;
 }
 [data-template-id="homecraft"] .store-card:hover,
-[data-template-id="homecraft-preview"] .store-card:hover {
+[data-template-id="homecraft"] .store-card:hover {
   transform: translateY(-8px);
   box-shadow: 0 24px 60px rgba(0,0,0,0.18);
   border-color: var(--p);
 }
 [data-template-id="homecraft"] .store-marquee,
-[data-template-id="homecraft-preview"] .store-marquee {
+[data-template-id="homecraft"] .store-marquee {
   animation: homecraft-marquee 22s linear infinite;
 }
 [data-template-id="homecraft"] .store-kenburns,
-[data-template-id="homecraft-preview"] .store-kenburns {
+[data-template-id="homecraft"] .store-kenburns {
   animation: homecraft-kenburns 18s ease-in-out infinite alternate;
 }
 [data-template-id="homecraft"] .store-float-a,
-[data-template-id="homecraft-preview"] .store-float-a { animation: homecraft-float 7s ease-in-out infinite; }
+[data-template-id="homecraft"] .store-float-a { animation: homecraft-float 7s ease-in-out infinite; }
 [data-template-id="homecraft"] .store-float-b,
-[data-template-id="homecraft-preview"] .store-float-b { animation: homecraft-float 8.5s ease-in-out infinite reverse; }
+[data-template-id="homecraft"] .store-float-b { animation: homecraft-float 8.5s ease-in-out infinite reverse; }
 [data-template-id="homecraft"] .store-float-c,
-[data-template-id="homecraft-preview"] .store-float-c { animation: homecraft-float 6.5s ease-in-out infinite 0.4s; }
+[data-template-id="homecraft"] .store-float-c { animation: homecraft-float 6.5s ease-in-out infinite 0.4s; }
 [data-template-id="homecraft"] .store-logo,
-[data-template-id="homecraft-preview"] .store-logo {
+[data-template-id="homecraft"] .store-logo {
   box-shadow: 0 0 0 0 #B4530966;
   animation: homecraft-pulse 2.8s ease-out infinite;
 }
@@ -76,22 +76,22 @@ export const homecraftEditorCss = `
   [data-template-id="homecraft"] .store-float-b,
   [data-template-id="homecraft"] .store-float-c,
   [data-template-id="homecraft"] .store-logo,
-  [data-template-id="homecraft-preview"] .store-marquee,
-  [data-template-id="homecraft-preview"] .store-kenburns,
-  [data-template-id="homecraft-preview"] .store-float-a,
-  [data-template-id="homecraft-preview"] .store-float-b,
-  [data-template-id="homecraft-preview"] .store-float-c,
-  [data-template-id="homecraft-preview"] .store-logo {
+  [data-template-id="homecraft"] .store-marquee,
+  [data-template-id="homecraft"] .store-kenburns,
+  [data-template-id="homecraft"] .store-float-a,
+  [data-template-id="homecraft"] .store-float-b,
+  [data-template-id="homecraft"] .store-float-c,
+  [data-template-id="homecraft"] .store-logo {
     animation: none !important;
   }
 }
 [data-template-id="homecraft"] .store-product-card,
-[data-template-id="homecraft-preview"] .store-product-card {
+[data-template-id="homecraft"] .store-product-card {
   animation: homecraft-page-turn 8s ease-in-out infinite;
   transform-origin: 100% 50%;
 }
 [data-template-id="homecraft"] .store-product-card:nth-child(3n),
-[data-template-id="homecraft-preview"] .store-product-card:nth-child(3n) {
+[data-template-id="homecraft"] .store-product-card:nth-child(3n) {
   animation-delay: 1.2s;
 }
 @keyframes homecraft-page-turn {
@@ -100,7 +100,7 @@ export const homecraftEditorCss = `
 }
 @media (prefers-reduced-motion: reduce) {
   [data-template-id="homecraft"] .store-product-card,
-  [data-template-id="homecraft-preview"] .store-product-card {
+  [data-template-id="homecraft"] .store-product-card {
     animation: none !important;
   }
 }

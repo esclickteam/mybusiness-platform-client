@@ -67,6 +67,11 @@ export type BizuplyFormConfig = {
   successMessage: string;
   fields: BizuplyFormField[];
   colors?: BizuplyFormColors;
+  /**
+   * Template-native lead forms keep their own markup/CSS.
+   * Form Builder may edit fields/copy, but must not inject the generic chrome.
+   */
+  preserveTemplateSkin?: boolean;
 };
 
 export const DEFAULT_FORM_COLORS: BizuplyFormColors = {

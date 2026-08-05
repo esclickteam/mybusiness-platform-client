@@ -3,7 +3,7 @@ import BridaluxePages from "./pages";
 
 export default function BridaluxePreview() {
   return (
-    <div dir="rtl" data-template-id="bridaluxe-preview" className="min-h-screen w-full" style={{ background: "#FFF7F8", overflowX: "hidden" }}>
+    <div dir="rtl" data-template-id="bridaluxe" className="min-h-screen w-full" style={{ background: "#FFF7F8", overflowX: "hidden" }}>
       <BridaluxePages initialPage="home" mode="preview" />
     </div>
   );

@@ -550,7 +550,7 @@ function ContactIntake({ data }: { data: Record<string, any> }) {
             ))}
           </div>
         </div>
-        <form className="border border-r-0 border-white/10 bg-[#111111] p-8 lg:p-12" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="kinetic-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+        <form className="border border-r-0 border-white/10 bg-[#111111] p-8 lg:p-12" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="kinetic-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
           <div className="grid gap-4 md:grid-cols-2">
             <input className="border border-white/12 bg-black px-4 py-4 text-right text-white outline-none" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
             <input className="border border-white/12 bg-black px-4 py-4 text-right text-white outline-none" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
@@ -763,7 +763,7 @@ export default function KineticPages({
   return (
     <div
       dir="rtl"
-      data-template-id={mode === "preview" ? "kinetic-preview" : "kinetic"}
+      data-template-id="kinetic"
       className="min-h-screen w-full overflow-x-hidden bg-black text-white"
       style={{ fontFamily: '"Inter", "Helvetica Neue", Arial, sans-serif' }}
     >

@@ -354,7 +354,7 @@ function Reservation({ data, openModal }: { data: Record<string, any>; openModal
             </p>
           </div>
         </div>
-        <form className="grid gap-4 bg-[var(--s-surface)] p-6 md:grid-cols-2 md:p-9" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="savory-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+        <form className="grid gap-4 bg-[var(--s-surface)] p-6 md:grid-cols-2 md:p-9" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="savory-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
           <input
             className="border border-white/10 bg-transparent px-5 py-4 text-right text-[var(--s-text)] outline-none transition placeholder:text-[var(--s-muted)] focus:border-[var(--s-primary)]"
             placeholder="שם מלא"
@@ -422,7 +422,7 @@ function ContactModal({ data, open, onClose }: { data: Record<string, any>; open
         <p className="s-section-kicker">הזמנה</p>
         <h3 className="s-display mt-3 text-3xl font-bold">{getValue(data, "contactTitle")}</h3>
         <p className="mt-3 text-sm leading-7 text-[var(--s-muted)]">{getValue(data, "contactText")}</p>
-        <form className="mt-7 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="savory-contact-2" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+        <form className="mt-7 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="savory-contact-2" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
           <input
             className="border border-white/10 bg-transparent px-5 py-4 text-right outline-none transition placeholder:text-[var(--s-muted)] focus:border-[var(--s-primary)]"
             placeholder="שם מלא"
@@ -480,7 +480,7 @@ export default function SavoryPages({
   return (
     <div
       dir="rtl"
-      data-template-id={mode === "preview" ? "savory-preview" : "savory"}
+      data-template-id="savory"
       className="min-h-screen w-full overflow-x-hidden bg-[var(--s-bg)] text-[var(--s-text)]"
     >
       <style dangerouslySetInnerHTML={{ __html: savoryEditorCss }} />

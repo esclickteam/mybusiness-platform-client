@@ -318,7 +318,7 @@ function Booking({ data }: { data: Record<string, any> }) {
           <a href={`tel:${getValue(data, "phone")}`} className="t-display mt-10 block text-6xl font-bold uppercase leading-none text-[var(--blue)] md:text-7xl">{getValue(data, "phone")}</a>
         </Reveal>
         <Reveal variant="left" delayMs={120}>
-          <form className="grid gap-4 border border-white/14 bg-[#0A0F14] p-6 shadow-[0_30px_90px_rgba(56,189,248,0.12)] lg:p-10" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="autovolt-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+          <form className="grid gap-4 border border-white/14 bg-[#0A0F14] p-6 shadow-[0_30px_90px_rgba(56,189,248,0.12)] lg:p-10" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="autovolt-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
             <div className="grid gap-4 md:grid-cols-2">
               <input className="border border-white/14 bg-[var(--surface)] px-5 py-4 text-right font-bold text-white outline-none transition placeholder:text-white/34 focus:border-[var(--blue)]" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
               <input className="border border-white/14 bg-[var(--surface)] px-5 py-4 text-right font-bold text-white outline-none transition placeholder:text-white/34 focus:border-[var(--blue)]" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
@@ -379,7 +379,7 @@ export default function AutovoltPages({ initialPage = "home", mode = "preview", 
   );
 
   return (
-    <div dir="rtl" data-template-id={mode === "preview" ? "autovolt-preview" : "autovolt"} className="min-h-screen w-full overflow-x-hidden bg-[var(--dark)]">
+    <div dir="rtl" data-template-id="autovolt" className="min-h-screen w-full overflow-x-hidden bg-[var(--dark)]">
       <style dangerouslySetInnerHTML={{ __html: autovoltEditorCss }} />
       <VisualPageStack activePageId={currentPage} pages={[{ id: "home", content }]} />
     </div>

@@ -2,7 +2,7 @@ export const codehausEditorCss = `
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap');
 
 [data-template-id="codehaus"],
-[data-template-id="codehaus-preview"] {
+[data-template-id="codehaus"] {
   --p: #22C55E;
   --s: #020617;
   --a: #4ADE80;
@@ -17,7 +17,7 @@ export const codehausEditorCss = `
 }
 
 [data-template-id="codehaus"] .t-display,
-[data-template-id="codehaus-preview"] .t-display {
+[data-template-id="codehaus"] .t-display {
   font-family: "JetBrains Mono", sans-serif;
 }
 
@@ -55,46 +55,46 @@ export const codehausEditorCss = `
 }
 
 [data-template-id="codehaus"] .t-ken,
-[data-template-id="codehaus-preview"] .t-ken { animation: codehaus-ken 16s ease-in-out infinite alternate; }
+[data-template-id="codehaus"] .t-ken { animation: codehaus-ken 16s ease-in-out infinite alternate; }
 [data-template-id="codehaus"] .t-anim,
-[data-template-id="codehaus-preview"] .t-anim { animation: codehaus-up 0.9s cubic-bezier(0.22,1,0.36,1) both; }
+[data-template-id="codehaus"] .t-anim { animation: codehaus-up 0.9s cubic-bezier(0.22,1,0.36,1) both; }
 [data-template-id="codehaus"] .t-d1,
-[data-template-id="codehaus-preview"] .t-d1 { animation-delay: .12s; }
+[data-template-id="codehaus"] .t-d1 { animation-delay: .12s; }
 [data-template-id="codehaus"] .t-d2,
-[data-template-id="codehaus-preview"] .t-d2 { animation-delay: .24s; }
+[data-template-id="codehaus"] .t-d2 { animation-delay: .24s; }
 [data-template-id="codehaus"] .t-d3,
-[data-template-id="codehaus-preview"] .t-d3 { animation-delay: .36s; }
+[data-template-id="codehaus"] .t-d3 { animation-delay: .36s; }
 [data-template-id="codehaus"] .t-fade,
-[data-template-id="codehaus-preview"] .t-fade { animation: codehaus-fade 1s ease both; }
+[data-template-id="codehaus"] .t-fade { animation: codehaus-fade 1s ease both; }
 [data-template-id="codehaus"] .t-marquee,
-[data-template-id="codehaus-preview"] .t-marquee { animation: codehaus-marquee 28s linear infinite; width: max-content; }
+[data-template-id="codehaus"] .t-marquee { animation: codehaus-marquee 28s linear infinite; width: max-content; }
 [data-template-id="codehaus"] .t-float,
-[data-template-id="codehaus-preview"] .t-float { animation: codehaus-float 6.5s ease-in-out infinite; }
+[data-template-id="codehaus"] .t-float { animation: codehaus-float 6.5s ease-in-out infinite; }
 [data-template-id="codehaus"] .t-pulse,
-[data-template-id="codehaus-preview"] .t-pulse { animation: codehaus-pulse 2.6s ease-in-out infinite; }
+[data-template-id="codehaus"] .t-pulse { animation: codehaus-pulse 2.6s ease-in-out infinite; }
 [data-template-id="codehaus"] .t-wave,
-[data-template-id="codehaus-preview"] .t-wave { animation: codehaus-wave 2.2s ease-in-out infinite; }
+[data-template-id="codehaus"] .t-wave { animation: codehaus-wave 2.2s ease-in-out infinite; }
 [data-template-id="codehaus"] .t-hover,
-[data-template-id="codehaus-preview"] .t-hover {
+[data-template-id="codehaus"] .t-hover {
   transition: transform .45s cubic-bezier(0.22,1,0.36,1), border-color .3s ease, background .3s ease;
 }
 [data-template-id="codehaus"] .t-hover:hover,
-[data-template-id="codehaus-preview"] .t-hover:hover { transform: translateY(-6px); }
+[data-template-id="codehaus"] .t-hover:hover { transform: translateY(-6px); }
 
 @media (prefers-reduced-motion: reduce) {
   [data-template-id="codehaus"] .t-ken,
-  [data-template-id="codehaus-preview"] .t-ken,
+  [data-template-id="codehaus"] .t-ken,
   [data-template-id="codehaus"] .t-anim,
-  [data-template-id="codehaus-preview"] .t-anim,
+  [data-template-id="codehaus"] .t-anim,
   [data-template-id="codehaus"] .t-marquee,
-  [data-template-id="codehaus-preview"] .t-marquee,
+  [data-template-id="codehaus"] .t-marquee,
   [data-template-id="codehaus"] .t-float,
-  [data-template-id="codehaus-preview"] .t-float,
+  [data-template-id="codehaus"] .t-float,
   [data-template-id="codehaus"] .t-pulse,
-  [data-template-id="codehaus-preview"] .t-pulse,
+  [data-template-id="codehaus"] .t-pulse,
   [data-template-id="codehaus"] .t-wave,
-  [data-template-id="codehaus-preview"] .t-wave,
+  [data-template-id="codehaus"] .t-wave,
   [data-template-id="codehaus"] .t-fade,
-  [data-template-id="codehaus-preview"] .t-fade { animation: none !important; }
+  [data-template-id="codehaus"] .t-fade { animation: none !important; }
 }
 `;

@@ -2,7 +2,7 @@ export const formellaEditorCss = `
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap');
 
 [data-template-id="formella"],
-[data-template-id="formella-preview"] {
+[data-template-id="formella"] {
   --p: #84CC16;
   --s: #0A0F08;
   --a: #A3E635;
@@ -17,7 +17,7 @@ export const formellaEditorCss = `
 }
 
 [data-template-id="formella"] .t-display,
-[data-template-id="formella-preview"] .t-display {
+[data-template-id="formella"] .t-display {
   font-family: "Space Grotesk", serif;
 }
 
@@ -59,58 +59,58 @@ export const formellaEditorCss = `
 }
 
 [data-template-id="formella"] .t-ken,
-[data-template-id="formella-preview"] .t-ken { animation: formella-ken 18s ease-in-out infinite alternate; }
+[data-template-id="formella"] .t-ken { animation: formella-ken 18s ease-in-out infinite alternate; }
 [data-template-id="formella"] .t-anim,
-[data-template-id="formella-preview"] .t-anim { animation: formella-up 0.9s cubic-bezier(0.22,1,0.36,1) both; }
+[data-template-id="formella"] .t-anim { animation: formella-up 0.9s cubic-bezier(0.22,1,0.36,1) both; }
 [data-template-id="formella"] .t-d1,
-[data-template-id="formella-preview"] .t-d1 { animation-delay: .12s; }
+[data-template-id="formella"] .t-d1 { animation-delay: .12s; }
 [data-template-id="formella"] .t-d2,
-[data-template-id="formella-preview"] .t-d2 { animation-delay: .24s; }
+[data-template-id="formella"] .t-d2 { animation-delay: .24s; }
 [data-template-id="formella"] .t-d3,
-[data-template-id="formella-preview"] .t-d3 { animation-delay: .36s; }
+[data-template-id="formella"] .t-d3 { animation-delay: .36s; }
 [data-template-id="formella"] .t-fade,
-[data-template-id="formella-preview"] .t-fade { animation: formella-fade 1s ease both; }
+[data-template-id="formella"] .t-fade { animation: formella-fade 1s ease both; }
 [data-template-id="formella"] .t-marquee,
-[data-template-id="formella-preview"] .t-marquee { animation: formella-marquee 30s linear infinite; width: max-content; }
+[data-template-id="formella"] .t-marquee { animation: formella-marquee 30s linear infinite; width: max-content; }
 [data-template-id="formella"] .t-float,
-[data-template-id="formella-preview"] .t-float { animation: formella-float 6s ease-in-out infinite; }
+[data-template-id="formella"] .t-float { animation: formella-float 6s ease-in-out infinite; }
 [data-template-id="formella"] .t-pulse,
-[data-template-id="formella-preview"] .t-pulse { animation: formella-pulse 2.8s ease-in-out infinite; }
+[data-template-id="formella"] .t-pulse { animation: formella-pulse 2.8s ease-in-out infinite; }
 [data-template-id="formella"] .t-shimmer,
-[data-template-id="formella-preview"] .t-shimmer {
+[data-template-id="formella"] .t-shimmer {
   background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--a) 35%, transparent), transparent);
   background-size: 200% 100%;
   animation: formella-shimmer 2.8s linear infinite;
 }
 [data-template-id="formella"] .t-glow,
-[data-template-id="formella-preview"] .t-glow { animation: formella-glow 3.2s ease-in-out infinite; }
+[data-template-id="formella"] .t-glow { animation: formella-glow 3.2s ease-in-out infinite; }
 [data-template-id="formella"] .t-scalein,
-[data-template-id="formella-preview"] .t-scalein { animation: formella-scalein 0.8s cubic-bezier(0.22,1,0.36,1) both; }
+[data-template-id="formella"] .t-scalein { animation: formella-scalein 0.8s cubic-bezier(0.22,1,0.36,1) both; }
 [data-template-id="formella"] .t-hover,
-[data-template-id="formella-preview"] .t-hover {
+[data-template-id="formella"] .t-hover {
   transition: transform .45s cubic-bezier(0.22,1,0.36,1), border-color .3s ease, background .3s ease;
 }
 [data-template-id="formella"] .t-hover:hover,
-[data-template-id="formella-preview"] .t-hover:hover { transform: translateY(-5px); }
+[data-template-id="formella"] .t-hover:hover { transform: translateY(-5px); }
 
 @media (prefers-reduced-motion: reduce) {
   [data-template-id="formella"] .t-ken,
-  [data-template-id="formella-preview"] .t-ken,
+  [data-template-id="formella"] .t-ken,
   [data-template-id="formella"] .t-anim,
-  [data-template-id="formella-preview"] .t-anim,
+  [data-template-id="formella"] .t-anim,
   [data-template-id="formella"] .t-marquee,
-  [data-template-id="formella-preview"] .t-marquee,
+  [data-template-id="formella"] .t-marquee,
   [data-template-id="formella"] .t-float,
-  [data-template-id="formella-preview"] .t-float,
+  [data-template-id="formella"] .t-float,
   [data-template-id="formella"] .t-pulse,
-  [data-template-id="formella-preview"] .t-pulse,
+  [data-template-id="formella"] .t-pulse,
   [data-template-id="formella"] .t-shimmer,
-  [data-template-id="formella-preview"] .t-shimmer,
+  [data-template-id="formella"] .t-shimmer,
   [data-template-id="formella"] .t-glow,
-  [data-template-id="formella-preview"] .t-glow,
+  [data-template-id="formella"] .t-glow,
   [data-template-id="formella"] .t-scalein,
-  [data-template-id="formella-preview"] .t-scalein,
+  [data-template-id="formella"] .t-scalein,
   [data-template-id="formella"] .t-fade,
-  [data-template-id="formella-preview"] .t-fade { animation: none !important; }
+  [data-template-id="formella"] .t-fade { animation: none !important; }
 }
 `;

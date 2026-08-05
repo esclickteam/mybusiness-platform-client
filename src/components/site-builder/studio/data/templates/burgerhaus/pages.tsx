@@ -435,7 +435,7 @@ function SmashReserveForm({ data, onCta }: { data: Record<string, any>; onCta: (
           <p className="mt-4 leading-8" style={{ color: "#a3a3a3" }}>{v(data, "contactText")}</p>
           <div className="mt-8 space-y-2 text-sm" style={{ color: "#a3a3a3" }}><p>{v(data, "phone")}</p><p>{v(data, "email")}</p><p>{v(data, "address")}</p></div>
         </div>
-        <form className="grid gap-3 border p-6" style={{ borderColor: "#f59e0b" }} data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="burgerhaus-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+        <form className="grid gap-3 border p-6" style={{ borderColor: "#f59e0b" }} data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="burgerhaus-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
           <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(245,245,245,0.12)", color: "#f5f5f5" }} placeholder="שם מלא" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
           <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(245,245,245,0.12)", color: "#f5f5f5" }} placeholder="טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
           <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(245,245,245,0.12)", color: "#f5f5f5" }} placeholder="תאריך" name="date" data-bizuply-form-field-id="date" />
@@ -576,7 +576,7 @@ export default function BurgerhausPages({
     contact: <ContactPage data={merged} goTo={goTo} onCta={() => goTo("contact")} />,
   };
   return (
-    <div dir="rtl" data-template-id={mode === "preview" ? "burgerhaus-preview" : "burgerhaus"} className="min-h-screen w-full overflow-x-hidden"
+    <div dir="rtl" data-template-id="burgerhaus" className="min-h-screen w-full overflow-x-hidden"
       style={{ background: "#111111", color: "#f5f5f5" }}>
       <style dangerouslySetInnerHTML={{ __html: burgerhausEditorCss }} />
       <Header data={merged} currentPage={currentPage} goTo={goTo} onCta={() => goTo("contact")} />

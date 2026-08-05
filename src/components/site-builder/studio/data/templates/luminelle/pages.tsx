@@ -396,7 +396,7 @@ function Booking({ data, openModal }: { data: Record<string, any>; openModal: ()
           className="grid gap-4 border border-white/12 bg-[#211c25] p-6 md:grid-cols-2 md:p-8"
           data-bizuply-block="lead-form"
           data-bizuply-crm-lead="true"
-          data-bizuply-form-builder="true"
+          data-bizuply-form-builder="true" data-bizuply-form-skin="template"
           data-bizuply-form-id="luminelle-booking"
           data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם."
         >
@@ -476,7 +476,7 @@ function ContactModal({ data, open, onClose }: { data: Record<string, any>; open
           className="mt-7 grid gap-3"
           data-bizuply-block="lead-form"
           data-bizuply-crm-lead="true"
-          data-bizuply-form-builder="true"
+          data-bizuply-form-builder="true" data-bizuply-form-skin="template"
           data-bizuply-form-id="luminelle-contact"
           data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם."
         >
@@ -544,7 +544,7 @@ export default function LuminellePages({
   return (
     <div
       dir="rtl"
-      data-template-id={mode === "preview" ? "luminelle-preview" : "luminelle"}
+      data-template-id="luminelle"
       className="min-h-screen w-full overflow-x-hidden bg-[var(--l-bg)] text-[var(--l-ink)]"
     >
       <style dangerouslySetInnerHTML={{ __html: luminelleEditorCss }} />

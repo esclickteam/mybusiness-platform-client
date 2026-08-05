@@ -425,7 +425,7 @@ function ContactBlock({ data, onCta }: { data: Record<string, any>; onCta: () =>
             <p>{v(data, "phone")}</p><p>{v(data, "email")}</p><p>{v(data, "address")}</p>
           </div>
         </div>
-        <form className="tpl-ember-pulse grid gap-3 border p-6" style={{ borderColor: "#e85d04" }} data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="emberplate-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+        <form className="tpl-ember-pulse grid gap-3 border p-6" style={{ borderColor: "#e85d04" }} data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="emberplate-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
           <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(246,235,224,0.12)", color: "#f6ebe0" }} placeholder="שם מלא" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
           <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(246,235,224,0.12)", color: "#f6ebe0" }} placeholder="טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
           <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(246,235,224,0.12)", color: "#f6ebe0" }} placeholder="תאריך" name="date" data-bizuply-form-field-id="date" />
@@ -561,7 +561,7 @@ export default function EmberplatePages({
     );
   }
   return (
-    <div dir="rtl" data-template-id={mode === "preview" ? "emberplate-preview" : "emberplate"} className="min-h-screen w-full overflow-x-hidden"
+    <div dir="rtl" data-template-id="emberplate" className="min-h-screen w-full overflow-x-hidden"
       style={{ background: "#140c08", color: "#f6ebe0" }}>
       <style dangerouslySetInnerHTML={{ __html: emberplateEditorCss }} />
       <Header data={merged} currentPage={currentPage} goTo={goTo} onCta={() => goTo("contact")} />

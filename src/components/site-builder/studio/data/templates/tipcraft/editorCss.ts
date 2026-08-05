@@ -2,7 +2,7 @@ export const tipcraftEditorCss = `
 @import url('https://fonts.googleapis.com/css2?family=Unbounded:wght@500;600;700&family=Heebo:wght@400;500;700&display=swap');
 
 [data-template-id="tipcraft"],
-[data-template-id="tipcraft-preview"] {
+[data-template-id="tipcraft"] {
   --p: #7C3AED;
   --s: #F5F3FF;
   --a: #C4B5FD;
@@ -17,7 +17,7 @@ export const tipcraftEditorCss = `
 }
 
 [data-template-id="tipcraft"] .t-display,
-[data-template-id="tipcraft-preview"] .t-display {
+[data-template-id="tipcraft"] .t-display {
   font-family: "Unbounded", serif;
 }
 
@@ -59,58 +59,58 @@ export const tipcraftEditorCss = `
 }
 
 [data-template-id="tipcraft"] .t-ken,
-[data-template-id="tipcraft-preview"] .t-ken { animation: tipcraft-ken 18s ease-in-out infinite alternate; }
+[data-template-id="tipcraft"] .t-ken { animation: tipcraft-ken 18s ease-in-out infinite alternate; }
 [data-template-id="tipcraft"] .t-anim,
-[data-template-id="tipcraft-preview"] .t-anim { animation: tipcraft-up 0.9s cubic-bezier(0.22,1,0.36,1) both; }
+[data-template-id="tipcraft"] .t-anim { animation: tipcraft-up 0.9s cubic-bezier(0.22,1,0.36,1) both; }
 [data-template-id="tipcraft"] .t-d1,
-[data-template-id="tipcraft-preview"] .t-d1 { animation-delay: .12s; }
+[data-template-id="tipcraft"] .t-d1 { animation-delay: .12s; }
 [data-template-id="tipcraft"] .t-d2,
-[data-template-id="tipcraft-preview"] .t-d2 { animation-delay: .24s; }
+[data-template-id="tipcraft"] .t-d2 { animation-delay: .24s; }
 [data-template-id="tipcraft"] .t-d3,
-[data-template-id="tipcraft-preview"] .t-d3 { animation-delay: .36s; }
+[data-template-id="tipcraft"] .t-d3 { animation-delay: .36s; }
 [data-template-id="tipcraft"] .t-fade,
-[data-template-id="tipcraft-preview"] .t-fade { animation: tipcraft-fade 1s ease both; }
+[data-template-id="tipcraft"] .t-fade { animation: tipcraft-fade 1s ease both; }
 [data-template-id="tipcraft"] .t-marquee,
-[data-template-id="tipcraft-preview"] .t-marquee { animation: tipcraft-marquee 30s linear infinite; width: max-content; }
+[data-template-id="tipcraft"] .t-marquee { animation: tipcraft-marquee 30s linear infinite; width: max-content; }
 [data-template-id="tipcraft"] .t-float,
-[data-template-id="tipcraft-preview"] .t-float { animation: tipcraft-float 6s ease-in-out infinite; }
+[data-template-id="tipcraft"] .t-float { animation: tipcraft-float 6s ease-in-out infinite; }
 [data-template-id="tipcraft"] .t-pulse,
-[data-template-id="tipcraft-preview"] .t-pulse { animation: tipcraft-pulse 2.8s ease-in-out infinite; }
+[data-template-id="tipcraft"] .t-pulse { animation: tipcraft-pulse 2.8s ease-in-out infinite; }
 [data-template-id="tipcraft"] .t-shimmer,
-[data-template-id="tipcraft-preview"] .t-shimmer {
+[data-template-id="tipcraft"] .t-shimmer {
   background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--a) 35%, transparent), transparent);
   background-size: 200% 100%;
   animation: tipcraft-shimmer 2.8s linear infinite;
 }
 [data-template-id="tipcraft"] .t-glow,
-[data-template-id="tipcraft-preview"] .t-glow { animation: tipcraft-glow 3.2s ease-in-out infinite; }
+[data-template-id="tipcraft"] .t-glow { animation: tipcraft-glow 3.2s ease-in-out infinite; }
 [data-template-id="tipcraft"] .t-scalein,
-[data-template-id="tipcraft-preview"] .t-scalein { animation: tipcraft-scalein 0.8s cubic-bezier(0.22,1,0.36,1) both; }
+[data-template-id="tipcraft"] .t-scalein { animation: tipcraft-scalein 0.8s cubic-bezier(0.22,1,0.36,1) both; }
 [data-template-id="tipcraft"] .t-hover,
-[data-template-id="tipcraft-preview"] .t-hover {
+[data-template-id="tipcraft"] .t-hover {
   transition: transform .45s cubic-bezier(0.22,1,0.36,1), border-color .3s ease, background .3s ease;
 }
 [data-template-id="tipcraft"] .t-hover:hover,
-[data-template-id="tipcraft-preview"] .t-hover:hover { transform: translateY(-5px); }
+[data-template-id="tipcraft"] .t-hover:hover { transform: translateY(-5px); }
 
 @media (prefers-reduced-motion: reduce) {
   [data-template-id="tipcraft"] .t-ken,
-  [data-template-id="tipcraft-preview"] .t-ken,
+  [data-template-id="tipcraft"] .t-ken,
   [data-template-id="tipcraft"] .t-anim,
-  [data-template-id="tipcraft-preview"] .t-anim,
+  [data-template-id="tipcraft"] .t-anim,
   [data-template-id="tipcraft"] .t-marquee,
-  [data-template-id="tipcraft-preview"] .t-marquee,
+  [data-template-id="tipcraft"] .t-marquee,
   [data-template-id="tipcraft"] .t-float,
-  [data-template-id="tipcraft-preview"] .t-float,
+  [data-template-id="tipcraft"] .t-float,
   [data-template-id="tipcraft"] .t-pulse,
-  [data-template-id="tipcraft-preview"] .t-pulse,
+  [data-template-id="tipcraft"] .t-pulse,
   [data-template-id="tipcraft"] .t-shimmer,
-  [data-template-id="tipcraft-preview"] .t-shimmer,
+  [data-template-id="tipcraft"] .t-shimmer,
   [data-template-id="tipcraft"] .t-glow,
-  [data-template-id="tipcraft-preview"] .t-glow,
+  [data-template-id="tipcraft"] .t-glow,
   [data-template-id="tipcraft"] .t-scalein,
-  [data-template-id="tipcraft-preview"] .t-scalein,
+  [data-template-id="tipcraft"] .t-scalein,
   [data-template-id="tipcraft"] .t-fade,
-  [data-template-id="tipcraft-preview"] .t-fade { animation: none !important; }
+  [data-template-id="tipcraft"] .t-fade { animation: none !important; }
 }
 `;

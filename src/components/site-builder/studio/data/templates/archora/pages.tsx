@@ -353,7 +353,7 @@ function Contact({ data }: { data: Record<string, any> }) {
           <p className="text-xs font-bold uppercase tracking-[0.34em] text-[var(--p)]">brief intake</p>
           <h2 className="ar-display mt-4 text-3xl font-extrabold leading-tight text-white md:text-5xl">{getValue(data, "contactTitle")}</h2>
           <p className="mt-5 text-base leading-8 text-white/72">{getValue(data, "contactText")}</p>
-          <form className="mt-8 grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="archora-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+          <form className="mt-8 grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="archora-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
             <input className="ar-field px-4 py-4" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
             <input className="ar-field px-4 py-4" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
             <input className="ar-field px-4 py-4" placeholder="סוג הנכס / מיקום"  name="other" data-bizuply-form-field-id="other" />
@@ -395,7 +395,7 @@ export default function ArchoraPages({ initialPage = "home", mode = "preview", d
     { allowedPages: ["home"], fallbackPage: "home" },
   );
   return (
-    <div dir="rtl" data-template-id={mode === "preview" ? "archora-preview" : "archora"} className="min-h-screen w-full overflow-x-hidden">
+    <div dir="rtl" data-template-id="archora" className="min-h-screen w-full overflow-x-hidden">
       <style dangerouslySetInnerHTML={{ __html: archoraEditorCss }} />
       <VisualPageStack activePageId={currentPage} pages={[{ id: "home", content: (
         <>

@@ -2,7 +2,7 @@ export const groomoraEditorCss = `
 @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Barlow:wght@400;500;700&display=swap');
 
 [data-template-id="groomora"],
-[data-template-id="groomora-preview"] {
+[data-template-id="groomora"] {
   --p: #65A30D;
   --s: #F7FEE7;
   --a: #BEF264;
@@ -17,7 +17,7 @@ export const groomoraEditorCss = `
 }
 
 [data-template-id="groomora"] .t-display,
-[data-template-id="groomora-preview"] .t-display {
+[data-template-id="groomora"] .t-display {
   font-family: "Oswald", serif;
 }
 
@@ -59,58 +59,58 @@ export const groomoraEditorCss = `
 }
 
 [data-template-id="groomora"] .t-ken,
-[data-template-id="groomora-preview"] .t-ken { animation: groomora-ken 18s ease-in-out infinite alternate; }
+[data-template-id="groomora"] .t-ken { animation: groomora-ken 18s ease-in-out infinite alternate; }
 [data-template-id="groomora"] .t-anim,
-[data-template-id="groomora-preview"] .t-anim { animation: groomora-up 0.9s cubic-bezier(0.22,1,0.36,1) both; }
+[data-template-id="groomora"] .t-anim { animation: groomora-up 0.9s cubic-bezier(0.22,1,0.36,1) both; }
 [data-template-id="groomora"] .t-d1,
-[data-template-id="groomora-preview"] .t-d1 { animation-delay: .12s; }
+[data-template-id="groomora"] .t-d1 { animation-delay: .12s; }
 [data-template-id="groomora"] .t-d2,
-[data-template-id="groomora-preview"] .t-d2 { animation-delay: .24s; }
+[data-template-id="groomora"] .t-d2 { animation-delay: .24s; }
 [data-template-id="groomora"] .t-d3,
-[data-template-id="groomora-preview"] .t-d3 { animation-delay: .36s; }
+[data-template-id="groomora"] .t-d3 { animation-delay: .36s; }
 [data-template-id="groomora"] .t-fade,
-[data-template-id="groomora-preview"] .t-fade { animation: groomora-fade 1s ease both; }
+[data-template-id="groomora"] .t-fade { animation: groomora-fade 1s ease both; }
 [data-template-id="groomora"] .t-marquee,
-[data-template-id="groomora-preview"] .t-marquee { animation: groomora-marquee 30s linear infinite; width: max-content; }
+[data-template-id="groomora"] .t-marquee { animation: groomora-marquee 30s linear infinite; width: max-content; }
 [data-template-id="groomora"] .t-float,
-[data-template-id="groomora-preview"] .t-float { animation: groomora-float 6s ease-in-out infinite; }
+[data-template-id="groomora"] .t-float { animation: groomora-float 6s ease-in-out infinite; }
 [data-template-id="groomora"] .t-pulse,
-[data-template-id="groomora-preview"] .t-pulse { animation: groomora-pulse 2.8s ease-in-out infinite; }
+[data-template-id="groomora"] .t-pulse { animation: groomora-pulse 2.8s ease-in-out infinite; }
 [data-template-id="groomora"] .t-shimmer,
-[data-template-id="groomora-preview"] .t-shimmer {
+[data-template-id="groomora"] .t-shimmer {
   background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--a) 35%, transparent), transparent);
   background-size: 200% 100%;
   animation: groomora-shimmer 2.8s linear infinite;
 }
 [data-template-id="groomora"] .t-glow,
-[data-template-id="groomora-preview"] .t-glow { animation: groomora-glow 3.2s ease-in-out infinite; }
+[data-template-id="groomora"] .t-glow { animation: groomora-glow 3.2s ease-in-out infinite; }
 [data-template-id="groomora"] .t-scalein,
-[data-template-id="groomora-preview"] .t-scalein { animation: groomora-scalein 0.8s cubic-bezier(0.22,1,0.36,1) both; }
+[data-template-id="groomora"] .t-scalein { animation: groomora-scalein 0.8s cubic-bezier(0.22,1,0.36,1) both; }
 [data-template-id="groomora"] .t-hover,
-[data-template-id="groomora-preview"] .t-hover {
+[data-template-id="groomora"] .t-hover {
   transition: transform .45s cubic-bezier(0.22,1,0.36,1), border-color .3s ease, background .3s ease;
 }
 [data-template-id="groomora"] .t-hover:hover,
-[data-template-id="groomora-preview"] .t-hover:hover { transform: translateY(-5px); }
+[data-template-id="groomora"] .t-hover:hover { transform: translateY(-5px); }
 
 @media (prefers-reduced-motion: reduce) {
   [data-template-id="groomora"] .t-ken,
-  [data-template-id="groomora-preview"] .t-ken,
+  [data-template-id="groomora"] .t-ken,
   [data-template-id="groomora"] .t-anim,
-  [data-template-id="groomora-preview"] .t-anim,
+  [data-template-id="groomora"] .t-anim,
   [data-template-id="groomora"] .t-marquee,
-  [data-template-id="groomora-preview"] .t-marquee,
+  [data-template-id="groomora"] .t-marquee,
   [data-template-id="groomora"] .t-float,
-  [data-template-id="groomora-preview"] .t-float,
+  [data-template-id="groomora"] .t-float,
   [data-template-id="groomora"] .t-pulse,
-  [data-template-id="groomora-preview"] .t-pulse,
+  [data-template-id="groomora"] .t-pulse,
   [data-template-id="groomora"] .t-shimmer,
-  [data-template-id="groomora-preview"] .t-shimmer,
+  [data-template-id="groomora"] .t-shimmer,
   [data-template-id="groomora"] .t-glow,
-  [data-template-id="groomora-preview"] .t-glow,
+  [data-template-id="groomora"] .t-glow,
   [data-template-id="groomora"] .t-scalein,
-  [data-template-id="groomora-preview"] .t-scalein,
+  [data-template-id="groomora"] .t-scalein,
   [data-template-id="groomora"] .t-fade,
-  [data-template-id="groomora-preview"] .t-fade { animation: none !important; }
+  [data-template-id="groomora"] .t-fade { animation: none !important; }
 }
 `;

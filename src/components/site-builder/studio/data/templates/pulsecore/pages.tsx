@@ -788,7 +788,7 @@ function ContactLeadForm() {
   return (
     <form
       className="grid gap-4 rounded-[40px] bg-white p-8 lg:p-12"
-      data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="pulsecore-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם."
+      data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="pulsecore-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם."
     >
       <input
         name="name"

@@ -344,7 +344,7 @@ function Contact({ data }: { data: Record<string, any> }) {
       </Reveal>
       <div className="mx-auto max-w-3xl px-5 lg:px-8">
         <Reveal variant="scale" delayMs={100} className="-mt-10 border border-white/15 bg-[var(--surface)] p-5 md:p-8">
-          <form className="grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="growthly-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+          <form className="grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="growthly-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
             <input className="border border-white/15 bg-[var(--bg)] px-4 py-4 text-right outline-none" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
             <div className="grid gap-3 md:grid-cols-2">
               <input className="border border-white/15 bg-[var(--bg)] px-4 py-4 text-right outline-none" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
@@ -494,7 +494,7 @@ export default function GrowthlyPages({
     { allowedPages, fallbackPage: "home" },
   );
   return (
-    <div dir="rtl" data-template-id={mode === "preview" ? "growthly-preview" : "growthly"} className="min-h-screen w-full overflow-x-hidden">
+    <div dir="rtl" data-template-id="growthly" className="min-h-screen w-full overflow-x-hidden">
       <style dangerouslySetInnerHTML={{ __html: growthlyEditorCss }} />
       <Header data={mergedData} currentPage={currentPage} goTo={goTo} />
       <VisualPageStack

@@ -5,7 +5,7 @@ export default function VitalisPreview() {
   return (
     <div
       dir="rtl"
-      data-template-id="vitalis-preview"
+      data-template-id="vitalis"
       className="min-h-screen w-full bg-[#f7fcfc] text-[#0f2a36]"
       style={{
         overflowX: "hidden",

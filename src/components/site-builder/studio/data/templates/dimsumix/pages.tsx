@@ -431,7 +431,7 @@ function BasketReserveForm({ data, onCta }: { data: Record<string, any>; onCta: 
         <p className="mt-3 text-sm" style={{ color: "#8aa89a" }}>{v(data, "contactText")}</p>
         <div className="mt-8 space-y-3">
           <div className="mr-8 border p-3 text-sm" style={{ borderColor: "rgba(240,245,242,0.12)", background: "#0f1412" }}>היי! מתי נוח לכם?</div>
-          <form className="ml-8 grid gap-2 border p-3" style={{ borderColor: "#86efac" }} data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="dimsumix-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+          <form className="ml-8 grid gap-2 border p-3" style={{ borderColor: "#86efac" }} data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="dimsumix-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
             <input className="w-full border bg-transparent px-3 py-2.5 text-right text-sm outline-none" style={{ borderColor: "rgba(240,245,242,0.12)", color: "#f0f5f2" }} placeholder="שם + טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
             <input className="w-full border bg-transparent px-3 py-2.5 text-right text-sm outline-none" style={{ borderColor: "rgba(240,245,242,0.12)", color: "#f0f5f2" }} placeholder="תאריך ושעה" name="date" data-bizuply-form-field-id="date" />
             <button type="submit" className="px-4 py-3 text-sm font-bold" style={{ background: "#86efac", color: "#86efacText" }}>{v(data, "cta")}</button>
@@ -572,7 +572,7 @@ export default function DimsumixPages({
     contact: <ContactPage data={merged} goTo={goTo} onCta={() => goTo("contact")} />,
   };
   return (
-    <div dir="rtl" data-template-id={mode === "preview" ? "dimsumix-preview" : "dimsumix"} className="min-h-screen w-full overflow-x-hidden"
+    <div dir="rtl" data-template-id="dimsumix" className="min-h-screen w-full overflow-x-hidden"
       style={{ background: "#0f1412", color: "#f0f5f2" }}>
       <style dangerouslySetInnerHTML={{ __html: dimsumixEditorCss }} />
       <Header data={merged} currentPage={currentPage} goTo={goTo} onCta={() => goTo("contact")} />

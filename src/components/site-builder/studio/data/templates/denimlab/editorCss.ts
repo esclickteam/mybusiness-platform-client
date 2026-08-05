@@ -1,6 +1,6 @@
 export const denimlabEditorCss = `
 @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@600;700;800&family=Heebo:wght@400;500;600;700;800;900&display=swap');
-[data-template-id="denimlab"], [data-template-id="denimlab-preview"] {
+[data-template-id="denimlab"], [data-template-id="denimlab"] {
   --p: #1E3A8A;
   --accent: #F59E0B;
   --on-p: #EFF6FF;
@@ -20,21 +20,21 @@ export const denimlabEditorCss = `
   text-align: right;
 }
 [data-template-id="denimlab"] .store-display,
-[data-template-id="denimlab-preview"] .store-display {
+[data-template-id="denimlab"] .store-display {
   font-family: "Oswald", "Heebo", serif;
 }
 [data-template-id="denimlab"] .store-card,
-[data-template-id="denimlab-preview"] .store-card {
+[data-template-id="denimlab"] .store-card {
   transition: transform 420ms cubic-bezier(0.22,1,0.36,1), box-shadow 420ms ease, border-color 420ms ease;
 }
 [data-template-id="denimlab"] .store-card:hover,
-[data-template-id="denimlab-preview"] .store-card:hover {
+[data-template-id="denimlab"] .store-card:hover {
   transform: translateY(-8px);
   box-shadow: 0 24px 60px rgba(0,0,0,0.18);
   border-color: var(--p);
 }
 [data-template-id="denimlab"] .store-marquee,
-[data-template-id="denimlab-preview"] .store-marquee {
+[data-template-id="denimlab"] .store-marquee {
   animation: denimlab-marquee 22s linear infinite;
 }
 @keyframes denimlab-marquee {
@@ -43,7 +43,7 @@ export const denimlabEditorCss = `
 }
 @media (prefers-reduced-motion: reduce) {
   [data-template-id="denimlab"] .store-marquee,
-  [data-template-id="denimlab-preview"] .store-marquee {
+  [data-template-id="denimlab"] .store-marquee {
     animation: none !important;
   }
 }

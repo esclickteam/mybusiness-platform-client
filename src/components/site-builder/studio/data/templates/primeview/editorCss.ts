@@ -1,7 +1,7 @@
 export const primeviewEditorCss = `
 @import url("https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@700&family=Heebo:wght@400;500;700&display=swap");
 
-[data-template-id="primeview"], [data-template-id="primeview-preview"] {
+[data-template-id="primeview"], [data-template-id="primeview"] {
   direction: rtl; text-align: right;
   font-family: "Heebo", Heebo, sans-serif;
   --tpl-bg: #f8fafc; --tpl-surface: #ffffff; --tpl-text: #0f172a;
@@ -10,7 +10,7 @@ export const primeviewEditorCss = `
 }
 
 [data-template-id="primeview"] .tpl-display,
-[data-template-id="primeview-preview"] .tpl-display {
+[data-template-id="primeview"] .tpl-display {
   font-family: "Libre Baskerville", "Heebo", serif;
 }
 
@@ -25,37 +25,37 @@ export const primeviewEditorCss = `
 @keyframes primeview-sweep { 0% { transform: translateX(-120%); } 100% { transform: translateX(120%); } }
 @keyframes primeview-climb { from { transform: translateY(40px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 
-[data-template-id="primeview"] .tpl-ken, [data-template-id="primeview-preview"] .tpl-ken {
+[data-template-id="primeview"] .tpl-ken, [data-template-id="primeview"] .tpl-ken {
   animation: primeview-ken 18s ease-in-out infinite alternate; transform-origin: center;
 }
-[data-template-id="primeview"] .tpl-rise, [data-template-id="primeview-preview"] .tpl-rise {
+[data-template-id="primeview"] .tpl-rise, [data-template-id="primeview"] .tpl-rise {
   animation: primeview-rise .9s cubic-bezier(.22,1,.36,1) both;
 }
-[data-template-id="primeview"] .tpl-rise-2, [data-template-id="primeview-preview"] .tpl-rise-2 {
+[data-template-id="primeview"] .tpl-rise-2, [data-template-id="primeview"] .tpl-rise-2 {
   animation: primeview-rise .9s cubic-bezier(.22,1,.36,1) .12s both;
 }
-[data-template-id="primeview"] .tpl-rise-3, [data-template-id="primeview-preview"] .tpl-rise-3 {
+[data-template-id="primeview"] .tpl-rise-3, [data-template-id="primeview"] .tpl-rise-3 {
   animation: primeview-rise .9s cubic-bezier(.22,1,.36,1) .24s both;
 }
-[data-template-id="primeview"] .tpl-marquee-track, [data-template-id="primeview-preview"] .tpl-marquee-track {
+[data-template-id="primeview"] .tpl-marquee-track, [data-template-id="primeview"] .tpl-marquee-track {
   display: flex; width: max-content; animation: primeview-marquee 28s linear infinite;
 }
-[data-template-id="primeview"] .tpl-float, [data-template-id="primeview-preview"] .tpl-float {
+[data-template-id="primeview"] .tpl-float, [data-template-id="primeview"] .tpl-float {
   animation: primeview-float 5s ease-in-out infinite;
 }
-[data-template-id="primeview"] .tpl-sweep, [data-template-id="primeview-preview"] .tpl-sweep { position: relative; overflow: hidden; }
-[data-template-id="primeview"] .tpl-sweep::after, [data-template-id="primeview-preview"] .tpl-sweep::after {
+[data-template-id="primeview"] .tpl-sweep, [data-template-id="primeview"] .tpl-sweep { position: relative; overflow: hidden; }
+[data-template-id="primeview"] .tpl-sweep::after, [data-template-id="primeview"] .tpl-sweep::after {
   content: ""; position: absolute; inset: 0 auto 0 0; width: 35%; pointer-events: none;
   background: linear-gradient(90deg, transparent, rgba(255,255,255,.16), transparent);
   animation: primeview-sweep 4.5s ease-in-out infinite;
 }
-[data-template-id="primeview"] .tpl-climb, [data-template-id="primeview-preview"] .tpl-climb {
+[data-template-id="primeview"] .tpl-climb, [data-template-id="primeview"] .tpl-climb {
   animation: primeview-climb .85s cubic-bezier(.22,1,.36,1) both;
 }
 @keyframes primeview-handle { 0%,100%{left:35%} 50%{left:65%} }
-[data-template-id="primeview"] .tpl-compare-handle, [data-template-id="primeview-preview"] .tpl-compare-handle { animation:primeview-handle 5s infinite; }
+[data-template-id="primeview"] .tpl-compare-handle, [data-template-id="primeview"] .tpl-compare-handle { animation:primeview-handle 5s infinite; }
 @keyframes primeview-testi { to { transform:translateX(-50%); } }
-[data-template-id="primeview"] .tpl-testi-track, [data-template-id="primeview-preview"] .tpl-testi-track {
+[data-template-id="primeview"] .tpl-testi-track, [data-template-id="primeview"] .tpl-testi-track {
   display:flex;width:max-content;animation:primeview-testi 28s linear infinite;
 }
 `;

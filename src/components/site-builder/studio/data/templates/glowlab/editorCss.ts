@@ -1,6 +1,6 @@
 export const glowlabEditorCss = `
 @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Heebo:wght@400;500;600;700;800;900&display=swap');
-[data-template-id="glowlab"], [data-template-id="glowlab-preview"] {
+[data-template-id="glowlab"], [data-template-id="glowlab"] {
   --p: #BE185D;
   --accent: #F9A8D4;
   --on-p: #FFF1F5;
@@ -20,35 +20,35 @@ export const glowlabEditorCss = `
   text-align: right;
 }
 [data-template-id="glowlab"] .store-display,
-[data-template-id="glowlab-preview"] .store-display {
+[data-template-id="glowlab"] .store-display {
   font-family: "Cormorant Garamond", "Heebo", serif;
 }
 [data-template-id="glowlab"] .store-card,
-[data-template-id="glowlab-preview"] .store-card {
+[data-template-id="glowlab"] .store-card {
   transition: transform 420ms cubic-bezier(0.22,1,0.36,1), box-shadow 420ms ease, border-color 420ms ease;
 }
 [data-template-id="glowlab"] .store-card:hover,
-[data-template-id="glowlab-preview"] .store-card:hover {
+[data-template-id="glowlab"] .store-card:hover {
   transform: translateY(-8px);
   box-shadow: 0 24px 60px rgba(0,0,0,0.18);
   border-color: var(--p);
 }
 [data-template-id="glowlab"] .store-marquee,
-[data-template-id="glowlab-preview"] .store-marquee {
+[data-template-id="glowlab"] .store-marquee {
   animation: glowlab-marquee 22s linear infinite;
 }
 [data-template-id="glowlab"] .store-kenburns,
-[data-template-id="glowlab-preview"] .store-kenburns {
+[data-template-id="glowlab"] .store-kenburns {
   animation: glowlab-kenburns 18s ease-in-out infinite alternate;
 }
 [data-template-id="glowlab"] .store-float-a,
-[data-template-id="glowlab-preview"] .store-float-a { animation: glowlab-float 7s ease-in-out infinite; }
+[data-template-id="glowlab"] .store-float-a { animation: glowlab-float 7s ease-in-out infinite; }
 [data-template-id="glowlab"] .store-float-b,
-[data-template-id="glowlab-preview"] .store-float-b { animation: glowlab-float 8.5s ease-in-out infinite reverse; }
+[data-template-id="glowlab"] .store-float-b { animation: glowlab-float 8.5s ease-in-out infinite reverse; }
 [data-template-id="glowlab"] .store-float-c,
-[data-template-id="glowlab-preview"] .store-float-c { animation: glowlab-float 6.5s ease-in-out infinite 0.4s; }
+[data-template-id="glowlab"] .store-float-c { animation: glowlab-float 6.5s ease-in-out infinite 0.4s; }
 [data-template-id="glowlab"] .store-logo,
-[data-template-id="glowlab-preview"] .store-logo {
+[data-template-id="glowlab"] .store-logo {
   box-shadow: 0 0 0 0 #BE185D66;
   animation: glowlab-pulse 2.8s ease-out infinite;
 }
@@ -76,22 +76,22 @@ export const glowlabEditorCss = `
   [data-template-id="glowlab"] .store-float-b,
   [data-template-id="glowlab"] .store-float-c,
   [data-template-id="glowlab"] .store-logo,
-  [data-template-id="glowlab-preview"] .store-marquee,
-  [data-template-id="glowlab-preview"] .store-kenburns,
-  [data-template-id="glowlab-preview"] .store-float-a,
-  [data-template-id="glowlab-preview"] .store-float-b,
-  [data-template-id="glowlab-preview"] .store-float-c,
-  [data-template-id="glowlab-preview"] .store-logo {
+  [data-template-id="glowlab"] .store-marquee,
+  [data-template-id="glowlab"] .store-kenburns,
+  [data-template-id="glowlab"] .store-float-a,
+  [data-template-id="glowlab"] .store-float-b,
+  [data-template-id="glowlab"] .store-float-c,
+  [data-template-id="glowlab"] .store-logo {
     animation: none !important;
   }
 }
 [data-template-id="glowlab"] .store-shimmer-strip,
-[data-template-id="glowlab-preview"] .store-shimmer-strip {
+[data-template-id="glowlab"] .store-shimmer-strip {
   background: linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent);
   animation: glowlab-shimmer-sweep 5.8s ease-in-out infinite;
 }
 [data-template-id="glowlab"] .store-product-card,
-[data-template-id="glowlab-preview"] .store-product-card {
+[data-template-id="glowlab"] .store-product-card {
   animation: glowlab-gloss-lift 7s ease-in-out infinite;
 }
 @keyframes glowlab-shimmer-sweep {
@@ -105,8 +105,8 @@ export const glowlabEditorCss = `
 @media (prefers-reduced-motion: reduce) {
   [data-template-id="glowlab"] .store-shimmer-strip,
   [data-template-id="glowlab"] .store-product-card,
-  [data-template-id="glowlab-preview"] .store-shimmer-strip,
-  [data-template-id="glowlab-preview"] .store-product-card {
+  [data-template-id="glowlab"] .store-shimmer-strip,
+  [data-template-id="glowlab"] .store-product-card {
     animation: none !important;
   }
 }

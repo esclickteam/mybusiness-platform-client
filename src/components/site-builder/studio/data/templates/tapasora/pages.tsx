@@ -424,7 +424,7 @@ function ContactBlock({ data, onCta }: { data: Record<string, any>; onCta: () =>
           <div className="flex justify-between text-xs" style={{ color: "#b89bc4" }}><span>TAB #042</span><span>OPEN</span></div>
           <h2 className="tpl-display mt-4 text-3xl font-bold">{v(data, "contactTitle")}</h2>
           <p className="mt-2 text-sm" style={{ color: "#b89bc4" }}>{v(data, "contactText")}</p>
-          <form className="mt-6 grid gap-2" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="tapasora-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+          <form className="mt-6 grid gap-2" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="tapasora-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
             <input className="w-full border bg-transparent px-3 py-2 text-right text-sm outline-none" style={{ borderColor: "rgba(248,238,248,0.14)" }} placeholder="שם" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
             <input className="w-full border bg-transparent px-3 py-2 text-right text-sm outline-none" style={{ borderColor: "rgba(248,238,248,0.14)" }} placeholder="טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
             <div className="mt-2 flex justify-between border-t pt-3 text-sm" style={{ borderColor: "rgba(248,238,248,0.14)" }}><span>TOTAL</span><span style={{ color: "#ff2d95" }}>שמירת מקום</span></div>
@@ -562,7 +562,7 @@ export default function TapasoraPages({
     );
   }
   return (
-    <div dir="rtl" data-template-id={mode === "preview" ? "tapasora-preview" : "tapasora"} className="min-h-screen w-full overflow-x-hidden"
+    <div dir="rtl" data-template-id="tapasora" className="min-h-screen w-full overflow-x-hidden"
       style={{ background: "#12081a", color: "#f8eef8" }}>
       <style dangerouslySetInnerHTML={{ __html: tapasoraEditorCss }} />
       <Header data={merged} currentPage={currentPage} goTo={goTo} onCta={() => goTo("contact")} />

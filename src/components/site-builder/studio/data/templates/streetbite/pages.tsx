@@ -419,7 +419,7 @@ function ContactBlock({ data, onCta }: { data: Record<string, any>; onCta: () =>
           <p className="mb-4 text-center text-xs font-bold" style={{ color: "#8b949e" }}>SMS · Streetbite</p>
           <div className="mb-3 mr-8 rounded-2xl rounded-tr-sm px-4 py-2 text-sm" style={{ background: "#39d353", color: "#0d1117" }}>{v(data, "contactTitle")}</div>
           <div className="mb-4 ml-8 rounded-2xl rounded-tl-sm border px-4 py-2 text-sm" style={{ borderColor: "rgba(230,237,243,0.12)" }}>{v(data, "contactText")}</div>
-          <form className="grid gap-2" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="streetbite-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+          <form className="grid gap-2" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="streetbite-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
             <input className="w-full rounded-full border bg-transparent px-4 py-3 text-right text-sm outline-none" style={{ borderColor: "rgba(230,237,243,0.12)" }} placeholder="הקלידו הודעה..." name="message" data-bizuply-form-field-id="message" />
             <button type="submit" className="rounded-full px-4 py-3 text-sm font-black" style={{ background: "#39d353", color: "#0d1117" }}>{v(data, "cta")}</button>
           </form>
@@ -553,7 +553,7 @@ export default function StreetbitePages({
     );
   }
   return (
-    <div dir="rtl" data-template-id={mode === "preview" ? "streetbite-preview" : "streetbite"} className="min-h-screen w-full overflow-x-hidden"
+    <div dir="rtl" data-template-id="streetbite" className="min-h-screen w-full overflow-x-hidden"
       style={{ background: "#0d1117", color: "#e6edf3" }}>
       <style dangerouslySetInnerHTML={{ __html: streetbiteEditorCss }} />
       <Header data={merged} currentPage={currentPage} goTo={goTo} onCta={() => goTo("contact")} />

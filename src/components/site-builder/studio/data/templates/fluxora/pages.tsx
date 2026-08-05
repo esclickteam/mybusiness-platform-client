@@ -222,7 +222,7 @@ function BookingModal({
           </p>
           <h3 className="mt-5 text-3xl font-bold text-white">בואו נפתח לכם את Fluxora.</h3>
           <p className="mt-3 text-sm leading-6 text-slate-400">{getValue(data, "contactText")}</p>
-          <form className="mt-7 grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="fluxora-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+          <form className="mt-7 grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="fluxora-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
             <input
               className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none placeholder:text-slate-500 focus:border-[#3dffa8]/50"
               placeholder="שם מלא"
@@ -717,7 +717,7 @@ function ContactSection({
           data-bizuply-form-id="fluxora-contact"
           data-bizuply-crm-lead="true"
           data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם."
-        >
+         data-bizuply-form-skin="template">
           <div className="grid gap-4">
             <input
               name="name"
@@ -931,7 +931,7 @@ export default function FluxoraPages({
   return (
     <div
       dir="rtl"
-      data-template-id={mode === "preview" ? "fluxora-preview" : "fluxora"}
+      data-template-id="fluxora"
       className="min-h-screen w-full overflow-x-hidden bg-[#070b10] font-sans text-[#e8eef5]"
     >
       <Header

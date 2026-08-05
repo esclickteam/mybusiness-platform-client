@@ -376,7 +376,7 @@ function Contact({ data }: { data: Record<string, any> }) {
             </div>
           </Reveal>
           <Reveal variant="left" delayMs={100}>
-            <form className="grid gap-0" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="mediavault-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+            <form className="grid gap-0" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="mediavault-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
               <label className="grid gap-2 border-b border-white/15 p-4 text-[10px] font-black uppercase tracking-[0.18em] text-[var(--muted)]">
                 Requester name
                 <input className="bg-[var(--bg)] px-4 py-4 text-right text-sm text-white outline-none" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
@@ -561,7 +561,7 @@ export default function MediavaultPages({
     { allowedPages, fallbackPage: "home" },
   );
   return (
-    <div dir="rtl" data-template-id={mode === "preview" ? "mediavault-preview" : "mediavault"} className="min-h-screen w-full overflow-x-hidden">
+    <div dir="rtl" data-template-id="mediavault" className="min-h-screen w-full overflow-x-hidden">
       <style dangerouslySetInnerHTML={{ __html: mediavaultEditorCss }} />
       <Header data={mergedData} currentPage={currentPage} goTo={goTo} />
       <VisualPageStack

@@ -1,6 +1,6 @@
 export const soleoraEditorCss = `
 @import url('https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@600;700;800&family=Heebo:wght@400;500;600;700;800;900&display=swap');
-[data-template-id="soleora"], [data-template-id="soleora-preview"] {
+[data-template-id="soleora"], [data-template-id="soleora"] {
   --p: #78350F;
   --accent: #CA8A04;
   --on-p: #FFFBEB;
@@ -20,21 +20,21 @@ export const soleoraEditorCss = `
   text-align: right;
 }
 [data-template-id="soleora"] .store-display,
-[data-template-id="soleora-preview"] .store-display {
+[data-template-id="soleora"] .store-display {
   font-family: "Libre Baskerville", "Heebo", serif;
 }
 [data-template-id="soleora"] .store-card,
-[data-template-id="soleora-preview"] .store-card {
+[data-template-id="soleora"] .store-card {
   transition: transform 420ms cubic-bezier(0.22,1,0.36,1), box-shadow 420ms ease, border-color 420ms ease;
 }
 [data-template-id="soleora"] .store-card:hover,
-[data-template-id="soleora-preview"] .store-card:hover {
+[data-template-id="soleora"] .store-card:hover {
   transform: translateY(-8px);
   box-shadow: 0 24px 60px rgba(0,0,0,0.18);
   border-color: var(--p);
 }
 [data-template-id="soleora"] .store-marquee,
-[data-template-id="soleora-preview"] .store-marquee {
+[data-template-id="soleora"] .store-marquee {
   animation: soleora-marquee 22s linear infinite;
 }
 @keyframes soleora-marquee {
@@ -43,7 +43,7 @@ export const soleoraEditorCss = `
 }
 @media (prefers-reduced-motion: reduce) {
   [data-template-id="soleora"] .store-marquee,
-  [data-template-id="soleora-preview"] .store-marquee {
+  [data-template-id="soleora"] .store-marquee {
     animation: none !important;
   }
 }

@@ -1,6 +1,6 @@
 export const nestwareEditorCss = `
 @import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:wght@600;700;800&family=Heebo:wght@400;500;600;700;800;900&display=swap');
-[data-template-id="nestware"], [data-template-id="nestware-preview"] {
+[data-template-id="nestware"], [data-template-id="nestware"] {
   --p: #0F766E;
   --accent: #F59E0B;
   --on-p: #F0FDFA;
@@ -20,21 +20,21 @@ export const nestwareEditorCss = `
   text-align: right;
 }
 [data-template-id="nestware"] .store-display,
-[data-template-id="nestware-preview"] .store-display {
+[data-template-id="nestware"] .store-display {
   font-family: "DM Serif Display", "Heebo", serif;
 }
 [data-template-id="nestware"] .store-card,
-[data-template-id="nestware-preview"] .store-card {
+[data-template-id="nestware"] .store-card {
   transition: transform 420ms cubic-bezier(0.22,1,0.36,1), box-shadow 420ms ease, border-color 420ms ease;
 }
 [data-template-id="nestware"] .store-card:hover,
-[data-template-id="nestware-preview"] .store-card:hover {
+[data-template-id="nestware"] .store-card:hover {
   transform: translateY(-8px);
   box-shadow: 0 24px 60px rgba(0,0,0,0.18);
   border-color: var(--p);
 }
 [data-template-id="nestware"] .store-marquee,
-[data-template-id="nestware-preview"] .store-marquee {
+[data-template-id="nestware"] .store-marquee {
   animation: nestware-marquee 22s linear infinite;
 }
 @keyframes nestware-marquee {
@@ -43,7 +43,7 @@ export const nestwareEditorCss = `
 }
 @media (prefers-reduced-motion: reduce) {
   [data-template-id="nestware"] .store-marquee,
-  [data-template-id="nestware-preview"] .store-marquee {
+  [data-template-id="nestware"] .store-marquee {
     animation: none !important;
   }
 }

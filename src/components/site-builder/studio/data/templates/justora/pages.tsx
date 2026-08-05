@@ -703,7 +703,7 @@ function ConsultationModal({
 
           <form
             className="p-6 lg:p-10"
-            data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="justora-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם."
+            data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="justora-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם."
           >
             <div className="grid gap-4">
               <input
@@ -1746,7 +1746,7 @@ function ContactSection({
 
         <form
           className="m-4 rounded-[40px] bg-[#fbf3e8] p-5 !text-[#2b1b1d] shadow-inner lg:m-6 lg:p-7"
-          data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="justora-contact-2" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם."
+          data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="justora-contact-2" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם."
         >
           <div className="grid gap-4">
             <input
@@ -2108,7 +2108,7 @@ export default function JustoraPages({
   return (
     <div
       dir="rtl"
-      data-template-id={mode === "preview" ? "justora-preview" : "justora"}
+      data-template-id="justora"
       data-template-page-id={
         isLibraryPage ? libraryPage?.rawPageId || currentPage : currentPage
       }

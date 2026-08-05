@@ -1,6 +1,6 @@
 export const mediavaultEditorCss = `
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Hebrew:wght@400;500;600;700&family=Heebo:wght@400;500;600;700;800&display=swap');
-[data-template-id="mediavault"], [data-template-id="mediavault-preview"] {
+[data-template-id="mediavault"], [data-template-id="mediavault"] {
   --p: #2563EB;
   --accent: #38BDF8;
   --bg: #0B1220;
@@ -14,31 +14,31 @@ export const mediavaultEditorCss = `
   text-align: right;
 }
 [data-template-id="mediavault"] .text-center,
-[data-template-id="mediavault-preview"] .text-center { text-align: center; }
+[data-template-id="mediavault"] .text-center { text-align: center; }
 [data-template-id="mediavault"] .ag-display,
-[data-template-id="mediavault-preview"] .ag-display {
+[data-template-id="mediavault"] .ag-display {
   font-family: "IBM Plex Sans Hebrew", "Heebo", sans-serif;
 }
 [data-template-id="mediavault"] .ag-float,
-[data-template-id="mediavault-preview"] .ag-float {
+[data-template-id="mediavault"] .ag-float {
   animation: mediavaultFloat 7s ease-in-out infinite;
 }
 [data-template-id="mediavault"] .ag-pulse,
-[data-template-id="mediavault-preview"] .ag-pulse {
+[data-template-id="mediavault"] .ag-pulse {
   animation: mediavaultPulse 2.8s ease-in-out infinite;
 }
 [data-template-id="mediavault"] .ag-card,
-[data-template-id="mediavault-preview"] .ag-card {
+[data-template-id="mediavault"] .ag-card {
   transition: transform 420ms cubic-bezier(0.22,1,0.36,1), border-color 420ms ease, box-shadow 420ms ease;
 }
 [data-template-id="mediavault"] .ag-card:hover,
-[data-template-id="mediavault-preview"] .ag-card:hover {
+[data-template-id="mediavault"] .ag-card:hover {
   transform: translateY(-8px);
   border-color: var(--p);
   box-shadow: 0 24px 60px rgba(0,0,0,0.18);
 }
 [data-template-id="mediavault"] .ag-ken,
-[data-template-id="mediavault-preview"] .ag-ken {
+[data-template-id="mediavault"] .ag-ken {
   animation: mediavaultKen 18s ease-in-out infinite alternate;
 }
 @keyframes mediavaultFloat {
@@ -55,10 +55,10 @@ export const mediavaultEditorCss = `
 }
 @media (prefers-reduced-motion: reduce) {
     [data-template-id="mediavault"] .ag-float,
-  [data-template-id="mediavault-preview"] .ag-float,
+  [data-template-id="mediavault"] .ag-float,
   [data-template-id="mediavault"] .ag-ken,
-  [data-template-id="mediavault-preview"] .ag-ken,
+  [data-template-id="mediavault"] .ag-ken,
   [data-template-id="mediavault"] .ag-pulse,
-  [data-template-id="mediavault-preview"] .ag-pulse { animation: none; }
+  [data-template-id="mediavault"] .ag-pulse { animation: none; }
 }
 `;

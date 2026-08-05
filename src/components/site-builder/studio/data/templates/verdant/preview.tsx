@@ -5,7 +5,7 @@ export default function VerdantPreview() {
   return (
     <div
       dir="rtl"
-      data-template-id="verdant-preview"
+      data-template-id="verdant"
       className="min-h-screen w-full"
       style={{ background: "#0e1210", overflowX: "hidden" }}
     >

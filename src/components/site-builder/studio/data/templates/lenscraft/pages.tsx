@@ -282,7 +282,7 @@ function Contact({ data, openModal }: { data: Record<string, any>; openModal: ()
           <p className="text-xs font-bold uppercase tracking-[0.28em] text-[var(--p)]">book a shoot</p>
           <h2 className="mt-3 text-4xl font-bold tracking-[-0.06em] md:text-5xl">{getValue(data, "contactTitle")}</h2>
           <p className="mt-4 text-sm leading-7 text-white/62">{getValue(data, "contactText")}</p>
-          <form className="mt-8 grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="lenscraft-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+          <form className="mt-8 grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="lenscraft-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
             <input className="border border-white/14 bg-black px-5 py-4 text-right text-white outline-none transition placeholder:text-white/32 focus:border-[var(--p)]" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
             <input className="border border-white/14 bg-black px-5 py-4 text-right text-white outline-none transition placeholder:text-white/32 focus:border-[var(--p)]" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
             <input className="border border-white/14 bg-black px-5 py-4 text-right text-white outline-none transition placeholder:text-white/32 focus:border-[var(--p)]" placeholder="אימייל"  name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
@@ -324,7 +324,7 @@ function ContactModal({ data, open, onClose }: { data: Record<string, any>; open
       <div className="relative w-full max-w-md border border-[var(--p)]/40 bg-[var(--surface)] p-8 text-white">
         <button type="button" onClick={onClose} className="absolute left-4 top-4 text-2xl text-white/70 transition hover:text-[var(--p)]">×</button>
         <h3 className="text-3xl font-bold tracking-[-0.05em]">{getValue(data, "contactTitle")}</h3>
-        <form className="mt-6 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="lenscraft-contact-2" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+        <form className="mt-6 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="lenscraft-contact-2" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
           <input className="border border-white/14 bg-black px-5 py-4 text-right text-white outline-none focus:border-[var(--p)]" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
           <input className="border border-white/14 bg-black px-5 py-4 text-right text-white outline-none focus:border-[var(--p)]" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
           <button type="submit" className="bg-[var(--p)] py-4 text-sm font-bold text-white">{getValue(data, "contactButton")}</button>
@@ -360,7 +360,7 @@ export default function LenscraftPages(props: LenscraftPagesProps) {
   const [modalOpen, setModalOpen] = useState(false);
 
   return (
-    <div dir="rtl" data-template-id={mode === "preview" ? "lenscraft-preview" : "lenscraft"} className="min-h-screen w-full overflow-x-hidden bg-[var(--bg)] text-[var(--text)]">
+    <div dir="rtl" data-template-id="lenscraft" className="min-h-screen w-full overflow-x-hidden bg-[var(--bg)] text-[var(--text)]">
       <style dangerouslySetInnerHTML={{ __html: lenscraftEditorCss }} />
       <Header data={mergedData} openModal={() => setModalOpen(true)} />
       <VisualPageStack

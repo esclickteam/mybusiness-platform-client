@@ -2,7 +2,7 @@ export const masterlyEditorCss = `
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Montserrat:wght@400;500;600;700&display=swap');
 
 [data-template-id="masterly"],
-[data-template-id="masterly-preview"] {
+[data-template-id="masterly"] {
   --p: #D4AF37;
   --s: #0A0A0A;
   --a: #F5E6C8;
@@ -17,7 +17,7 @@ export const masterlyEditorCss = `
 }
 
 [data-template-id="masterly"] .t-display,
-[data-template-id="masterly-preview"] .t-display {
+[data-template-id="masterly"] .t-display {
   font-family: "Cinzel", sans-serif;
 }
 
@@ -55,46 +55,46 @@ export const masterlyEditorCss = `
 }
 
 [data-template-id="masterly"] .t-ken,
-[data-template-id="masterly-preview"] .t-ken { animation: masterly-ken 16s ease-in-out infinite alternate; }
+[data-template-id="masterly"] .t-ken { animation: masterly-ken 16s ease-in-out infinite alternate; }
 [data-template-id="masterly"] .t-anim,
-[data-template-id="masterly-preview"] .t-anim { animation: masterly-up 0.9s cubic-bezier(0.22,1,0.36,1) both; }
+[data-template-id="masterly"] .t-anim { animation: masterly-up 0.9s cubic-bezier(0.22,1,0.36,1) both; }
 [data-template-id="masterly"] .t-d1,
-[data-template-id="masterly-preview"] .t-d1 { animation-delay: .12s; }
+[data-template-id="masterly"] .t-d1 { animation-delay: .12s; }
 [data-template-id="masterly"] .t-d2,
-[data-template-id="masterly-preview"] .t-d2 { animation-delay: .24s; }
+[data-template-id="masterly"] .t-d2 { animation-delay: .24s; }
 [data-template-id="masterly"] .t-d3,
-[data-template-id="masterly-preview"] .t-d3 { animation-delay: .36s; }
+[data-template-id="masterly"] .t-d3 { animation-delay: .36s; }
 [data-template-id="masterly"] .t-fade,
-[data-template-id="masterly-preview"] .t-fade { animation: masterly-fade 1s ease both; }
+[data-template-id="masterly"] .t-fade { animation: masterly-fade 1s ease both; }
 [data-template-id="masterly"] .t-marquee,
-[data-template-id="masterly-preview"] .t-marquee { animation: masterly-marquee 28s linear infinite; width: max-content; }
+[data-template-id="masterly"] .t-marquee { animation: masterly-marquee 28s linear infinite; width: max-content; }
 [data-template-id="masterly"] .t-float,
-[data-template-id="masterly-preview"] .t-float { animation: masterly-float 6.5s ease-in-out infinite; }
+[data-template-id="masterly"] .t-float { animation: masterly-float 6.5s ease-in-out infinite; }
 [data-template-id="masterly"] .t-pulse,
-[data-template-id="masterly-preview"] .t-pulse { animation: masterly-pulse 2.6s ease-in-out infinite; }
+[data-template-id="masterly"] .t-pulse { animation: masterly-pulse 2.6s ease-in-out infinite; }
 [data-template-id="masterly"] .t-wave,
-[data-template-id="masterly-preview"] .t-wave { animation: masterly-wave 2.2s ease-in-out infinite; }
+[data-template-id="masterly"] .t-wave { animation: masterly-wave 2.2s ease-in-out infinite; }
 [data-template-id="masterly"] .t-hover,
-[data-template-id="masterly-preview"] .t-hover {
+[data-template-id="masterly"] .t-hover {
   transition: transform .45s cubic-bezier(0.22,1,0.36,1), border-color .3s ease, background .3s ease;
 }
 [data-template-id="masterly"] .t-hover:hover,
-[data-template-id="masterly-preview"] .t-hover:hover { transform: translateY(-6px); }
+[data-template-id="masterly"] .t-hover:hover { transform: translateY(-6px); }
 
 @media (prefers-reduced-motion: reduce) {
   [data-template-id="masterly"] .t-ken,
-  [data-template-id="masterly-preview"] .t-ken,
+  [data-template-id="masterly"] .t-ken,
   [data-template-id="masterly"] .t-anim,
-  [data-template-id="masterly-preview"] .t-anim,
+  [data-template-id="masterly"] .t-anim,
   [data-template-id="masterly"] .t-marquee,
-  [data-template-id="masterly-preview"] .t-marquee,
+  [data-template-id="masterly"] .t-marquee,
   [data-template-id="masterly"] .t-float,
-  [data-template-id="masterly-preview"] .t-float,
+  [data-template-id="masterly"] .t-float,
   [data-template-id="masterly"] .t-pulse,
-  [data-template-id="masterly-preview"] .t-pulse,
+  [data-template-id="masterly"] .t-pulse,
   [data-template-id="masterly"] .t-wave,
-  [data-template-id="masterly-preview"] .t-wave,
+  [data-template-id="masterly"] .t-wave,
   [data-template-id="masterly"] .t-fade,
-  [data-template-id="masterly-preview"] .t-fade { animation: none !important; }
+  [data-template-id="masterly"] .t-fade { animation: none !important; }
 }
 `;

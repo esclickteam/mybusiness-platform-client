@@ -7,7 +7,7 @@ export default function ElevoraPreview() {
   return (
     <div
       dir="rtl"
-      data-template-id="elevora-preview"
+      data-template-id="elevora"
       className="h-screen min-h-screen w-full bg-[#f6f1e7] text-[#13231b]"
       style={{
         overflow: "hidden",

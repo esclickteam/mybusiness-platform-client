@@ -5,7 +5,7 @@ export default function FluxoraPreview() {
   return (
     <div
       dir="rtl"
-      data-template-id="fluxora-preview"
+      data-template-id="fluxora"
       className="min-h-screen w-full bg-[#070b10] text-[#e8eef5]"
     >
       <FluxoraPages initialPage="home" mode="preview" />

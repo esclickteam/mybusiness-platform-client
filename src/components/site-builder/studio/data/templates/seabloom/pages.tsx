@@ -64,7 +64,7 @@ function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>;
 function ContactForm({ data, onCta }: { data: Record<string, any>; onCta: () => void }) {
   const field = "w-full border bg-transparent px-4 py-3.5 text-right outline-none";
   return (
-    <form className="grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="seabloom-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+    <form className="grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="seabloom-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
       <input className={field} style={{ borderColor: "rgba(26,61,46,0.12)", color: "#1a3d2e" }} placeholder="שם מלא" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
       <input className={field} style={{ borderColor: "rgba(26,61,46,0.12)", color: "#1a3d2e" }} placeholder="טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
       <input className={field} style={{ borderColor: "rgba(26,61,46,0.12)", color: "#1a3d2e" }} placeholder="אימייל" name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
@@ -216,7 +216,7 @@ export default function SeabloomPages({
     );
   }
   return (
-    <div dir="rtl" data-template-id={mode === "preview" ? "seabloom-preview" : "seabloom"} className="min-h-screen w-full overflow-x-hidden"
+    <div dir="rtl" data-template-id="seabloom" className="min-h-screen w-full overflow-x-hidden"
       style={{ background: "#f5faf5", color: "#1a3d2e" }}>
       <Header data={merged} currentPage={currentPage} goTo={goTo} onCta={() => goTo("contact")} />
       <VisualPageStack activePageId={currentPage} pages={Object.entries(pageContent).map(([id, content]) => ({ id, content }))} />

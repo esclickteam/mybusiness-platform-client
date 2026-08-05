@@ -1,6 +1,6 @@
 export const babynestEditorCss = `
 @import url('https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800&family=Heebo:wght@400;500;600;700;800;900&display=swap');
-[data-template-id="babynest"], [data-template-id="babynest-preview"] {
+[data-template-id="babynest"], [data-template-id="babynest"] {
   --p: #F472B6;
   --accent: #FBCFE8;
   --on-p: #3B0A22;
@@ -20,35 +20,35 @@ export const babynestEditorCss = `
   text-align: right;
 }
 [data-template-id="babynest"] .store-display,
-[data-template-id="babynest-preview"] .store-display {
+[data-template-id="babynest"] .store-display {
   font-family: "Nunito", "Heebo", serif;
 }
 [data-template-id="babynest"] .store-card,
-[data-template-id="babynest-preview"] .store-card {
+[data-template-id="babynest"] .store-card {
   transition: transform 420ms cubic-bezier(0.22,1,0.36,1), box-shadow 420ms ease, border-color 420ms ease;
 }
 [data-template-id="babynest"] .store-card:hover,
-[data-template-id="babynest-preview"] .store-card:hover {
+[data-template-id="babynest"] .store-card:hover {
   transform: translateY(-8px);
   box-shadow: 0 24px 60px rgba(0,0,0,0.18);
   border-color: var(--p);
 }
 [data-template-id="babynest"] .store-marquee,
-[data-template-id="babynest-preview"] .store-marquee {
+[data-template-id="babynest"] .store-marquee {
   animation: babynest-marquee 22s linear infinite;
 }
 [data-template-id="babynest"] .store-kenburns,
-[data-template-id="babynest-preview"] .store-kenburns {
+[data-template-id="babynest"] .store-kenburns {
   animation: babynest-kenburns 18s ease-in-out infinite alternate;
 }
 [data-template-id="babynest"] .store-float-a,
-[data-template-id="babynest-preview"] .store-float-a { animation: babynest-float 7s ease-in-out infinite; }
+[data-template-id="babynest"] .store-float-a { animation: babynest-float 7s ease-in-out infinite; }
 [data-template-id="babynest"] .store-float-b,
-[data-template-id="babynest-preview"] .store-float-b { animation: babynest-float 8.5s ease-in-out infinite reverse; }
+[data-template-id="babynest"] .store-float-b { animation: babynest-float 8.5s ease-in-out infinite reverse; }
 [data-template-id="babynest"] .store-float-c,
-[data-template-id="babynest-preview"] .store-float-c { animation: babynest-float 6.5s ease-in-out infinite 0.4s; }
+[data-template-id="babynest"] .store-float-c { animation: babynest-float 6.5s ease-in-out infinite 0.4s; }
 [data-template-id="babynest"] .store-logo,
-[data-template-id="babynest-preview"] .store-logo {
+[data-template-id="babynest"] .store-logo {
   box-shadow: 0 0 0 0 #F472B666;
   animation: babynest-pulse 2.8s ease-out infinite;
 }
@@ -76,21 +76,21 @@ export const babynestEditorCss = `
   [data-template-id="babynest"] .store-float-b,
   [data-template-id="babynest"] .store-float-c,
   [data-template-id="babynest"] .store-logo,
-  [data-template-id="babynest-preview"] .store-marquee,
-  [data-template-id="babynest-preview"] .store-kenburns,
-  [data-template-id="babynest-preview"] .store-float-a,
-  [data-template-id="babynest-preview"] .store-float-b,
-  [data-template-id="babynest-preview"] .store-float-c,
-  [data-template-id="babynest-preview"] .store-logo {
+  [data-template-id="babynest"] .store-marquee,
+  [data-template-id="babynest"] .store-kenburns,
+  [data-template-id="babynest"] .store-float-a,
+  [data-template-id="babynest"] .store-float-b,
+  [data-template-id="babynest"] .store-float-c,
+  [data-template-id="babynest"] .store-logo {
     animation: none !important;
   }
 }
 [data-template-id="babynest"] .store-cloud-drift,
-[data-template-id="babynest-preview"] .store-cloud-drift {
+[data-template-id="babynest"] .store-cloud-drift {
   animation: babynest-cloud-drift 9s ease-in-out infinite;
 }
 [data-template-id="babynest"] .store-product-card,
-[data-template-id="babynest-preview"] .store-product-card {
+[data-template-id="babynest"] .store-product-card {
   animation: babynest-lullaby-bob 7.5s ease-in-out infinite;
 }
 @keyframes babynest-cloud-drift {
@@ -104,8 +104,8 @@ export const babynestEditorCss = `
 @media (prefers-reduced-motion: reduce) {
   [data-template-id="babynest"] .store-cloud-drift,
   [data-template-id="babynest"] .store-product-card,
-  [data-template-id="babynest-preview"] .store-cloud-drift,
-  [data-template-id="babynest-preview"] .store-product-card {
+  [data-template-id="babynest"] .store-cloud-drift,
+  [data-template-id="babynest"] .store-product-card {
     animation: none !important;
   }
 }

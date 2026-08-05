@@ -1,6 +1,6 @@
 export const lumenwareEditorCss = `
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Heebo:wght@400;500;600;700;800;900&display=swap');
-[data-template-id="lumenware"], [data-template-id="lumenware-preview"] {
+[data-template-id="lumenware"], [data-template-id="lumenware"] {
   --p: #0EA5E9;
   --accent: #38BDF8;
   --on-p: #041018;
@@ -20,35 +20,35 @@ export const lumenwareEditorCss = `
   text-align: right;
 }
 [data-template-id="lumenware"] .store-display,
-[data-template-id="lumenware-preview"] .store-display {
+[data-template-id="lumenware"] .store-display {
   font-family: "Space Grotesk", "Heebo", serif;
 }
 [data-template-id="lumenware"] .store-card,
-[data-template-id="lumenware-preview"] .store-card {
+[data-template-id="lumenware"] .store-card {
   transition: transform 420ms cubic-bezier(0.22,1,0.36,1), box-shadow 420ms ease, border-color 420ms ease;
 }
 [data-template-id="lumenware"] .store-card:hover,
-[data-template-id="lumenware-preview"] .store-card:hover {
+[data-template-id="lumenware"] .store-card:hover {
   transform: translateY(-8px);
   box-shadow: 0 24px 60px rgba(0,0,0,0.18);
   border-color: var(--p);
 }
 [data-template-id="lumenware"] .store-marquee,
-[data-template-id="lumenware-preview"] .store-marquee {
+[data-template-id="lumenware"] .store-marquee {
   animation: lumenware-marquee 22s linear infinite;
 }
 [data-template-id="lumenware"] .store-kenburns,
-[data-template-id="lumenware-preview"] .store-kenburns {
+[data-template-id="lumenware"] .store-kenburns {
   animation: lumenware-kenburns 18s ease-in-out infinite alternate;
 }
 [data-template-id="lumenware"] .store-float-a,
-[data-template-id="lumenware-preview"] .store-float-a { animation: lumenware-float 7s ease-in-out infinite; }
+[data-template-id="lumenware"] .store-float-a { animation: lumenware-float 7s ease-in-out infinite; }
 [data-template-id="lumenware"] .store-float-b,
-[data-template-id="lumenware-preview"] .store-float-b { animation: lumenware-float 8.5s ease-in-out infinite reverse; }
+[data-template-id="lumenware"] .store-float-b { animation: lumenware-float 8.5s ease-in-out infinite reverse; }
 [data-template-id="lumenware"] .store-float-c,
-[data-template-id="lumenware-preview"] .store-float-c { animation: lumenware-float 6.5s ease-in-out infinite 0.4s; }
+[data-template-id="lumenware"] .store-float-c { animation: lumenware-float 6.5s ease-in-out infinite 0.4s; }
 [data-template-id="lumenware"] .store-logo,
-[data-template-id="lumenware-preview"] .store-logo {
+[data-template-id="lumenware"] .store-logo {
   box-shadow: 0 0 0 0 #0EA5E966;
   animation: lumenware-pulse 2.8s ease-out infinite;
 }
@@ -76,21 +76,21 @@ export const lumenwareEditorCss = `
   [data-template-id="lumenware"] .store-float-b,
   [data-template-id="lumenware"] .store-float-c,
   [data-template-id="lumenware"] .store-logo,
-  [data-template-id="lumenware-preview"] .store-marquee,
-  [data-template-id="lumenware-preview"] .store-kenburns,
-  [data-template-id="lumenware-preview"] .store-float-a,
-  [data-template-id="lumenware-preview"] .store-float-b,
-  [data-template-id="lumenware-preview"] .store-float-c,
-  [data-template-id="lumenware-preview"] .store-logo {
+  [data-template-id="lumenware"] .store-marquee,
+  [data-template-id="lumenware"] .store-kenburns,
+  [data-template-id="lumenware"] .store-float-a,
+  [data-template-id="lumenware"] .store-float-b,
+  [data-template-id="lumenware"] .store-float-c,
+  [data-template-id="lumenware"] .store-logo {
     animation: none !important;
   }
 }
 [data-template-id="lumenware"] .store-header-techCinema,
-[data-template-id="lumenware-preview"] .store-header-techCinema {
+[data-template-id="lumenware"] .store-header-techCinema {
   box-shadow: 0 1px 0 rgba(56,189,248,0.28), 0 0 40px rgba(14,165,233,0.16);
 }
 [data-template-id="lumenware"] .store-product-card,
-[data-template-id="lumenware-preview"] .store-product-card {
+[data-template-id="lumenware"] .store-product-card {
   animation: lumenware-neon-rail 5.5s ease-in-out infinite;
 }
 @keyframes lumenware-neon-rail {
@@ -99,7 +99,7 @@ export const lumenwareEditorCss = `
 }
 @media (prefers-reduced-motion: reduce) {
   [data-template-id="lumenware"] .store-product-card,
-  [data-template-id="lumenware-preview"] .store-product-card {
+  [data-template-id="lumenware"] .store-product-card {
     animation: none !important;
   }
 }

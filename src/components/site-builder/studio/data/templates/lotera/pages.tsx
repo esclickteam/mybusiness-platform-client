@@ -168,7 +168,7 @@ function LoteraHarborContact({ data, onCta }: { data: Record<string, any>; onCta
             <span>{v(data, "address")}</span>
           </div>
         </div>
-        <form className="grid gap-5 md:grid-cols-2" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="lotera-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+        <form className="grid gap-5 md:grid-cols-2" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="lotera-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
           <input className={field} style={{ borderColor: "rgba(238,245,251,0.22)", color: "#eef5fb" }} placeholder="שם מלא" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
           <input className={field} style={{ borderColor: "rgba(238,245,251,0.22)", color: "#eef5fb" }} placeholder="טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
           <input className={field} style={{ borderColor: "rgba(238,245,251,0.22)", color: "#eef5fb" }} placeholder="אזור מבוקש" name="other" data-bizuply-form-field-id="other" />
@@ -242,7 +242,7 @@ export default function LoteraPages({
     );
   }
   return (
-    <div dir="rtl" data-template-id={mode === "preview" ? "lotera-preview" : "lotera"} className="min-h-screen w-full overflow-x-hidden"
+    <div dir="rtl" data-template-id="lotera" className="min-h-screen w-full overflow-x-hidden"
       style={{ background: "#07131f", color: "#eef5fb" }}>
       <LoteraSeaHeader data={merged} currentPage={currentPage} goTo={goTo} onCta={() => goTo("contact")} />
       <VisualPageStack activePageId={currentPage} pages={Object.entries(pageContent).map(([id, content]) => ({ id, content }))} />

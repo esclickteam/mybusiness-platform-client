@@ -839,7 +839,7 @@ function Contact() {
           </div>
         </div>
 
-        <form className="spalcio-form rounded-[2rem] bg-white p-7 shadow-sm" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="spalcio-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+        <form className="spalcio-form rounded-[2rem] bg-white p-7 shadow-sm" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="spalcio-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
           <div className="grid gap-4 md:grid-cols-2">
             <input
               placeholder={spalcioData.contact.form.firstName}

@@ -2,7 +2,7 @@ export const atelierxEditorCss = `
 @import url('https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800;900&family=Playfair+Display:wght@700;800;900&display=swap');
 
 [data-template-id="atelierx"],
-[data-template-id="atelierx-preview"] {
+[data-template-id="atelierx"] {
   /* wow-rtl-align */
   text-align: right;
 
@@ -19,7 +19,7 @@ export const atelierxEditorCss = `
 }
 
 [data-template-id="atelierx"] *,
-[data-template-id="atelierx-preview"] * {
+[data-template-id="atelierx"] * {
   scroll-behavior: smooth;
 }
 
@@ -30,18 +30,18 @@ export const atelierxEditorCss = `
 [data-template-id="atelierx"] button,
 [data-template-id="atelierx"] img,
 [data-template-id="atelierx"] a,
-[data-template-id="atelierx-preview"] article,
-[data-template-id="atelierx-preview"] form,
-[data-template-id="atelierx-preview"] input,
-[data-template-id="atelierx-preview"] textarea,
-[data-template-id="atelierx-preview"] button,
-[data-template-id="atelierx-preview"] img,
-[data-template-id="atelierx-preview"] a {
+[data-template-id="atelierx"] article,
+[data-template-id="atelierx"] form,
+[data-template-id="atelierx"] input,
+[data-template-id="atelierx"] textarea,
+[data-template-id="atelierx"] button,
+[data-template-id="atelierx"] img,
+[data-template-id="atelierx"] a {
   border-radius: 0;
 }
 
 [data-template-id="atelierx"] .t-display,
-[data-template-id="atelierx-preview"] .t-display {
+[data-template-id="atelierx"] .t-display {
   font-family: "Playfair Display", serif;
 }
 
@@ -72,39 +72,39 @@ export const atelierxEditorCss = `
 }
 
 [data-template-id="atelierx"] .atelierx-hero-image,
-[data-template-id="atelierx-preview"] .atelierx-hero-image {
+[data-template-id="atelierx"] .atelierx-hero-image {
   animation: atelierx-hero-zoom 14s ease-out both;
 }
 
 [data-template-id="atelierx"] .atelierx-title,
-[data-template-id="atelierx-preview"] .atelierx-title {
+[data-template-id="atelierx"] .atelierx-title {
   animation: atelierx-title-in 1s .1s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 [data-template-id="atelierx"] .atelierx-red-rule,
-[data-template-id="atelierx-preview"] .atelierx-red-rule {
+[data-template-id="atelierx"] .atelierx-red-rule {
   animation: atelierx-rule-grow .95s .55s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 [data-template-id="atelierx"] .atelierx-film-track,
-[data-template-id="atelierx-preview"] .atelierx-film-track {
+[data-template-id="atelierx"] .atelierx-film-track {
   animation: atelierx-film-drift 5.5s ease-in-out infinite;
 }
 
 [data-template-id="atelierx"] .atelierx-marquee-track,
-[data-template-id="atelierx-preview"] .atelierx-marquee-track {
+[data-template-id="atelierx"] .atelierx-marquee-track {
   animation: atelierx-marquee 22s linear infinite;
 }
 
 [data-template-id="atelierx"] input,
 [data-template-id="atelierx"] textarea,
-[data-template-id="atelierx-preview"] input,
-[data-template-id="atelierx-preview"] textarea {
+[data-template-id="atelierx"] input,
+[data-template-id="atelierx"] textarea {
   font-family: "Inter Tight", sans-serif;
 }
 
 [data-template-id="atelierx"] .text-center,
-[data-template-id="atelierx-preview"] .text-center {
+[data-template-id="atelierx"] .text-center {
   text-align: center;
 }
 `;

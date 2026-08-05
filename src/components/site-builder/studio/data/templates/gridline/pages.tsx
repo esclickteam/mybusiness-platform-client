@@ -992,7 +992,7 @@ function ContactSection({
 
         <Reveal className="bg-[#ecece6] p-6 lg:p-10" delay={120}>
           <form
-            data-bizuply-form-builder="true"
+            data-bizuply-form-builder="true" data-bizuply-form-skin="template"
             data-visual-editable="true"
             data-visual-edit-id="contact.form"
             data-visual-edit-type="box"

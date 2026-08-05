@@ -408,7 +408,7 @@ function ContactBlock({ data, onCta }: { data: Record<string, any>; onCta: () =>
           <p className="text-center text-xs font-black tracking-[0.3em]">ORDER TICKET</p>
           <h2 className="tpl-display mt-3 text-center text-3xl font-black">{v(data, "contactTitle")}</h2>
           <p className="mt-3 text-center text-sm" style={{ color: "#8b6b52" }}>{v(data, "contactText")}</p>
-          <form className="mt-6 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="crustora-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+          <form className="mt-6 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="crustora-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
             <input className="border-b bg-transparent px-2 py-3 text-right outline-none" style={{ borderColor: "rgba(42,24,16,0.12)" }} placeholder="שם" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
             <input className="border-b bg-transparent px-2 py-3 text-right outline-none" style={{ borderColor: "rgba(42,24,16,0.12)" }} placeholder="כתובת" name="other" data-bizuply-form-field-id="other" />
             <input className="border-b bg-transparent px-2 py-3 text-right outline-none" style={{ borderColor: "rgba(42,24,16,0.12)" }} placeholder="טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
@@ -546,7 +546,7 @@ export default function CrustoraPages({
     );
   }
   return (
-    <div dir="rtl" data-template-id={mode === "preview" ? "crustora-preview" : "crustora"} className="min-h-screen w-full overflow-x-hidden"
+    <div dir="rtl" data-template-id="crustora" className="min-h-screen w-full overflow-x-hidden"
       style={{ background: "#faf4eb", color: "#2a1810" }}>
       <style dangerouslySetInnerHTML={{ __html: crustoraEditorCss }} />
       <Header data={merged} currentPage={currentPage} goTo={goTo} onCta={() => goTo("contact")} />

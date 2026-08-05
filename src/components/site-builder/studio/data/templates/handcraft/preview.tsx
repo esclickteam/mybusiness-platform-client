@@ -5,7 +5,7 @@ export default function HandcraftPreview() {
   return (
     <div
       dir="rtl"
-      data-template-id="handcraft-preview"
+      data-template-id="handcraft"
       className="min-h-screen w-full"
       style={{ background: "#FAFAF9", overflowX: "hidden" }}
     >

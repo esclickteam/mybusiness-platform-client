@@ -2,7 +2,7 @@ export const lashatelierEditorCss = `
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Urbanist:wght@400;500;700&display=swap');
 
 [data-template-id="lashatelier"],
-[data-template-id="lashatelier-preview"] {
+[data-template-id="lashatelier"] {
   --p: #C084FC;
   --s: #FAF5FF;
   --a: #E9D5FF;
@@ -17,7 +17,7 @@ export const lashatelierEditorCss = `
 }
 
 [data-template-id="lashatelier"] .t-display,
-[data-template-id="lashatelier-preview"] .t-display {
+[data-template-id="lashatelier"] .t-display {
   font-family: "Cinzel", serif;
 }
 
@@ -59,58 +59,58 @@ export const lashatelierEditorCss = `
 }
 
 [data-template-id="lashatelier"] .t-ken,
-[data-template-id="lashatelier-preview"] .t-ken { animation: lashatelier-ken 18s ease-in-out infinite alternate; }
+[data-template-id="lashatelier"] .t-ken { animation: lashatelier-ken 18s ease-in-out infinite alternate; }
 [data-template-id="lashatelier"] .t-anim,
-[data-template-id="lashatelier-preview"] .t-anim { animation: lashatelier-up 0.9s cubic-bezier(0.22,1,0.36,1) both; }
+[data-template-id="lashatelier"] .t-anim { animation: lashatelier-up 0.9s cubic-bezier(0.22,1,0.36,1) both; }
 [data-template-id="lashatelier"] .t-d1,
-[data-template-id="lashatelier-preview"] .t-d1 { animation-delay: .12s; }
+[data-template-id="lashatelier"] .t-d1 { animation-delay: .12s; }
 [data-template-id="lashatelier"] .t-d2,
-[data-template-id="lashatelier-preview"] .t-d2 { animation-delay: .24s; }
+[data-template-id="lashatelier"] .t-d2 { animation-delay: .24s; }
 [data-template-id="lashatelier"] .t-d3,
-[data-template-id="lashatelier-preview"] .t-d3 { animation-delay: .36s; }
+[data-template-id="lashatelier"] .t-d3 { animation-delay: .36s; }
 [data-template-id="lashatelier"] .t-fade,
-[data-template-id="lashatelier-preview"] .t-fade { animation: lashatelier-fade 1s ease both; }
+[data-template-id="lashatelier"] .t-fade { animation: lashatelier-fade 1s ease both; }
 [data-template-id="lashatelier"] .t-marquee,
-[data-template-id="lashatelier-preview"] .t-marquee { animation: lashatelier-marquee 30s linear infinite; width: max-content; }
+[data-template-id="lashatelier"] .t-marquee { animation: lashatelier-marquee 30s linear infinite; width: max-content; }
 [data-template-id="lashatelier"] .t-float,
-[data-template-id="lashatelier-preview"] .t-float { animation: lashatelier-float 6s ease-in-out infinite; }
+[data-template-id="lashatelier"] .t-float { animation: lashatelier-float 6s ease-in-out infinite; }
 [data-template-id="lashatelier"] .t-pulse,
-[data-template-id="lashatelier-preview"] .t-pulse { animation: lashatelier-pulse 2.8s ease-in-out infinite; }
+[data-template-id="lashatelier"] .t-pulse { animation: lashatelier-pulse 2.8s ease-in-out infinite; }
 [data-template-id="lashatelier"] .t-shimmer,
-[data-template-id="lashatelier-preview"] .t-shimmer {
+[data-template-id="lashatelier"] .t-shimmer {
   background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--a) 35%, transparent), transparent);
   background-size: 200% 100%;
   animation: lashatelier-shimmer 2.8s linear infinite;
 }
 [data-template-id="lashatelier"] .t-glow,
-[data-template-id="lashatelier-preview"] .t-glow { animation: lashatelier-glow 3.2s ease-in-out infinite; }
+[data-template-id="lashatelier"] .t-glow { animation: lashatelier-glow 3.2s ease-in-out infinite; }
 [data-template-id="lashatelier"] .t-scalein,
-[data-template-id="lashatelier-preview"] .t-scalein { animation: lashatelier-scalein 0.8s cubic-bezier(0.22,1,0.36,1) both; }
+[data-template-id="lashatelier"] .t-scalein { animation: lashatelier-scalein 0.8s cubic-bezier(0.22,1,0.36,1) both; }
 [data-template-id="lashatelier"] .t-hover,
-[data-template-id="lashatelier-preview"] .t-hover {
+[data-template-id="lashatelier"] .t-hover {
   transition: transform .45s cubic-bezier(0.22,1,0.36,1), border-color .3s ease, background .3s ease;
 }
 [data-template-id="lashatelier"] .t-hover:hover,
-[data-template-id="lashatelier-preview"] .t-hover:hover { transform: translateY(-5px); }
+[data-template-id="lashatelier"] .t-hover:hover { transform: translateY(-5px); }
 
 @media (prefers-reduced-motion: reduce) {
   [data-template-id="lashatelier"] .t-ken,
-  [data-template-id="lashatelier-preview"] .t-ken,
+  [data-template-id="lashatelier"] .t-ken,
   [data-template-id="lashatelier"] .t-anim,
-  [data-template-id="lashatelier-preview"] .t-anim,
+  [data-template-id="lashatelier"] .t-anim,
   [data-template-id="lashatelier"] .t-marquee,
-  [data-template-id="lashatelier-preview"] .t-marquee,
+  [data-template-id="lashatelier"] .t-marquee,
   [data-template-id="lashatelier"] .t-float,
-  [data-template-id="lashatelier-preview"] .t-float,
+  [data-template-id="lashatelier"] .t-float,
   [data-template-id="lashatelier"] .t-pulse,
-  [data-template-id="lashatelier-preview"] .t-pulse,
+  [data-template-id="lashatelier"] .t-pulse,
   [data-template-id="lashatelier"] .t-shimmer,
-  [data-template-id="lashatelier-preview"] .t-shimmer,
+  [data-template-id="lashatelier"] .t-shimmer,
   [data-template-id="lashatelier"] .t-glow,
-  [data-template-id="lashatelier-preview"] .t-glow,
+  [data-template-id="lashatelier"] .t-glow,
   [data-template-id="lashatelier"] .t-scalein,
-  [data-template-id="lashatelier-preview"] .t-scalein,
+  [data-template-id="lashatelier"] .t-scalein,
   [data-template-id="lashatelier"] .t-fade,
-  [data-template-id="lashatelier-preview"] .t-fade { animation: none !important; }
+  [data-template-id="lashatelier"] .t-fade { animation: none !important; }
 }
 `;

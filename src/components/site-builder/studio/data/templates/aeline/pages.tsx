@@ -1412,7 +1412,7 @@ export default function AelinePages({
                       </p>
                     </div>
 
-                    <form className="grid gap-4 rounded-[34px] bg-[#f4efff] p-8" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="aeline-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+                    <form className="grid gap-4 rounded-[34px] bg-[#f4efff] p-8" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="aeline-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
                       <input
                         placeholder="שם מלא"
                         className="h-12 rounded-2xl border border-[#160f2e]/10 px-4 text-sm font-bold outline-none"

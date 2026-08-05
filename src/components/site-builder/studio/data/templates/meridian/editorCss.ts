@@ -2,14 +2,14 @@ export const meridianEditorCss = `
 @import url("https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;500;700&family=Heebo:wght@400;500;700&display=swap");
 
 [data-template-id="meridian"],
-[data-template-id="meridian-preview"] {
+[data-template-id="meridian"] {
   direction: rtl;
   text-align: right;
   font-family: "Heebo", Heebo, sans-serif;
 }
 
 [data-template-id="meridian"] .tpl-display,
-[data-template-id="meridian-preview"] .tpl-display {
+[data-template-id="meridian"] .tpl-display {
   font-family: "Frank Ruhl Libre", "Heebo", serif;
 }
 

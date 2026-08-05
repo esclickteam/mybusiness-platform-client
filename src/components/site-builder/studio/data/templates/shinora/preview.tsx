@@ -6,7 +6,7 @@ export default function ShinoraPreview() {
   return (
     <div
       dir="rtl"
-      data-template-id="shinora-preview"
+      data-template-id="shinora"
       className="min-h-screen w-full bg-[#fff8f2] text-[#241612]"
       style={{
         overflowX: "hidden",

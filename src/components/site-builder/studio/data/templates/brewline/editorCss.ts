@@ -1,6 +1,6 @@
 export const brewlineEditorCss = `
 @import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;600;700;800&display=swap');
-[data-template-id="brewline"], [data-template-id="brewline-preview"] {
+[data-template-id="brewline"], [data-template-id="brewline"] {
   /* wow-rtl-align */
   text-align: right;
 
@@ -19,26 +19,26 @@ export const brewlineEditorCss = `
   scroll-behavior: smooth;
 }
 [data-template-id="brewline"] .t-serif,
-[data-template-id="brewline-preview"] .t-serif {
+[data-template-id="brewline"] .t-serif {
   font-family: "Instrument Serif", serif;
   font-weight: 400;
 }
 [data-template-id="brewline"] .bl-ken,
-[data-template-id="brewline-preview"] .bl-ken {
+[data-template-id="brewline"] .bl-ken {
   animation: brewline-ken 18s ease-in-out infinite alternate;
   transform-origin: center;
 }
 [data-template-id="brewline"] .bl-bean-orbit,
-[data-template-id="brewline-preview"] .bl-bean-orbit {
+[data-template-id="brewline"] .bl-bean-orbit {
   animation: brewline-orbit 9s linear infinite;
   box-shadow: 0 0 80px rgba(139, 94, 60, 0.28);
 }
 [data-template-id="brewline"] .bl-nav-link,
-[data-template-id="brewline-preview"] .bl-nav-link {
+[data-template-id="brewline"] .bl-nav-link {
   position: relative;
 }
 [data-template-id="brewline"] .bl-nav-link::after,
-[data-template-id="brewline-preview"] .bl-nav-link::after {
+[data-template-id="brewline"] .bl-nav-link::after {
   background: var(--clay);
   bottom: -8px;
   content: "";
@@ -51,24 +51,24 @@ export const brewlineEditorCss = `
   width: 100%;
 }
 [data-template-id="brewline"] .bl-nav-link:hover::after,
-[data-template-id="brewline-preview"] .bl-nav-link:hover::after {
+[data-template-id="brewline"] .bl-nav-link:hover::after {
   transform: scaleX(1);
 }
 [data-template-id="brewline"] .bl-menu-row,
-[data-template-id="brewline-preview"] .bl-menu-row {
+[data-template-id="brewline"] .bl-menu-row {
   transition: background 300ms ease, padding-inline 300ms ease;
 }
 [data-template-id="brewline"] .bl-menu-row:hover,
-[data-template-id="brewline-preview"] .bl-menu-row:hover {
+[data-template-id="brewline"] .bl-menu-row:hover {
   background: rgba(139, 94, 60, 0.1);
   padding-inline: 1rem;
 }
 [data-template-id="brewline"] .bl-step-card,
-[data-template-id="brewline-preview"] .bl-step-card {
+[data-template-id="brewline"] .bl-step-card {
   overflow: hidden;
 }
 [data-template-id="brewline"] .bl-step-card::before,
-[data-template-id="brewline-preview"] .bl-step-card::before {
+[data-template-id="brewline"] .bl-step-card::before {
   background: linear-gradient(90deg, transparent, rgba(246, 239, 230, 0.12), transparent);
   content: "";
   height: 100%;
@@ -80,11 +80,11 @@ export const brewlineEditorCss = `
   width: 55%;
 }
 [data-template-id="brewline"] .bl-step-card:hover::before,
-[data-template-id="brewline-preview"] .bl-step-card:hover::before {
+[data-template-id="brewline"] .bl-step-card:hover::before {
   right: 130%;
 }
 [data-template-id="brewline"] .bl-count-card,
-[data-template-id="brewline-preview"] .bl-count-card {
+[data-template-id="brewline"] .bl-count-card {
   align-items: center;
   display: flex;
   flex-direction: column;
@@ -100,7 +100,7 @@ export const brewlineEditorCss = `
 }
 
 [data-template-id="brewline"] .text-center,
-[data-template-id="brewline-preview"] .text-center {
+[data-template-id="brewline"] .text-center {
   text-align: center;
 }
 `;

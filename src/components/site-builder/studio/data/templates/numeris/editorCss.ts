@@ -2,7 +2,7 @@ export const numerisEditorCss = `
 @import url('https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700;800&family=Literata:opsz,wght@7..72,600;7..72,700&display=swap');
 
 [data-template-id="numeris"],
-[data-template-id="numeris-preview"] {
+[data-template-id="numeris"] {
   --p: #0F6E56;
   --s: #F3F6F4;
   --a: #158765;
@@ -18,12 +18,12 @@ export const numerisEditorCss = `
 }
 
 [data-template-id="numeris"] *,
-[data-template-id="numeris-preview"] * {
+[data-template-id="numeris"] * {
   border-radius: 0 !important;
 }
 
 [data-template-id="numeris"] .t-display,
-[data-template-id="numeris-preview"] .t-display {
+[data-template-id="numeris"] .t-display {
   font-family: "Literata", serif;
 }
 
@@ -43,7 +43,7 @@ export const numerisEditorCss = `
 }
 
 [data-template-id="numeris"] .nu-ledger-bg,
-[data-template-id="numeris-preview"] .nu-ledger-bg {
+[data-template-id="numeris"] .nu-ledger-bg {
   background-image:
     linear-gradient(rgba(15,110,86,.095) 1px, transparent 1px),
     linear-gradient(90deg, rgba(15,110,86,.095) 1px, transparent 1px),
@@ -53,25 +53,25 @@ export const numerisEditorCss = `
 }
 
 [data-template-id="numeris"] .nu-stat-tile,
-[data-template-id="numeris-preview"] .nu-stat-tile {
+[data-template-id="numeris"] .nu-stat-tile {
   animation: nu-tile-glow 3.8s ease-in-out infinite;
 }
 
 [data-template-id="numeris"] .nu-stat-tile:nth-child(2n),
-[data-template-id="numeris-preview"] .nu-stat-tile:nth-child(2n) {
+[data-template-id="numeris"] .nu-stat-tile:nth-child(2n) {
   animation-delay: .5s;
 }
 
 [data-template-id="numeris"] table,
-[data-template-id="numeris-preview"] table {
+[data-template-id="numeris"] table {
   border-collapse: collapse;
 }
 
 @media (prefers-reduced-motion: reduce) {
   [data-template-id="numeris"] .nu-ledger-bg,
-  [data-template-id="numeris-preview"] .nu-ledger-bg,
+  [data-template-id="numeris"] .nu-ledger-bg,
   [data-template-id="numeris"] .nu-stat-tile,
-  [data-template-id="numeris-preview"] .nu-stat-tile {
+  [data-template-id="numeris"] .nu-stat-tile {
     animation: none;
   }
 }

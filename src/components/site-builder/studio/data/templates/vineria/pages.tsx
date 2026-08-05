@@ -406,7 +406,7 @@ function ContactBlock({ data, onCta }: { data: Record<string, any>; onCta: () =>
           <p className="mt-4 leading-8" style={{ color: "#a8959a" }}>{v(data, "contactText")}</p>
           <p className="mt-6 text-sm" style={{ color: "#a8959a" }}>{v(data, "phone")} · {v(data, "email")}</p>
         </div>
-        <form className="grid gap-4 border p-6" style={{ borderColor: "rgba(245,235,224,0.12)" }} data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="vineria-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+        <form className="grid gap-4 border p-6" style={{ borderColor: "rgba(245,235,224,0.12)" }} data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="vineria-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
           <input className="w-full border-b bg-transparent px-2 py-3 text-right outline-none" style={{ borderColor: "rgba(245,235,224,0.12)" }} placeholder="שם מלא" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
           <input className="w-full border-b bg-transparent px-2 py-3 text-right outline-none" style={{ borderColor: "rgba(245,235,224,0.12)" }} placeholder="טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
           <input className="w-full border-b bg-transparent px-2 py-3 text-right outline-none" style={{ borderColor: "rgba(245,235,224,0.12)" }} placeholder="תאריך מועדף" name="date" data-bizuply-form-field-id="date" />
@@ -542,7 +542,7 @@ export default function VineriaPages({
     );
   }
   return (
-    <div dir="rtl" data-template-id={mode === "preview" ? "vineria-preview" : "vineria"} className="min-h-screen w-full overflow-x-hidden"
+    <div dir="rtl" data-template-id="vineria" className="min-h-screen w-full overflow-x-hidden"
       style={{ background: "#1a1218", color: "#f5ebe0" }}>
       <style dangerouslySetInnerHTML={{ __html: vineriaEditorCss }} />
       <Header data={merged} currentPage={currentPage} goTo={goTo} onCta={() => goTo("contact")} />

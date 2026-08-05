@@ -481,7 +481,7 @@ function createElevoraEditorHtml(page: ElevoraPageId) {
         </div>
 
         <div class="elevora-form-card">
-          <form class="elevora-form" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="elevora-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+          <form class="elevora-form" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="elevora-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
             <div class="elevora-field">
               <label>שם מלא</label>
               <input type="text" placeholder="השם שלך"  name="name" data-bizuply-form-field-id="name" autoComplete="name" />

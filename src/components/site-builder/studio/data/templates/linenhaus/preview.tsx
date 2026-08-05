@@ -3,7 +3,7 @@ import LinenhausPages from "./pages";
 
 export default function LinenhausPreview() {
   return (
-    <div dir="rtl" data-template-id="linenhaus-preview" className="min-h-screen w-full overflow-x-hidden">
+    <div dir="rtl" data-template-id="linenhaus" className="min-h-screen w-full overflow-x-hidden">
       <LinenhausPages initialPage="home" mode="preview" />
     </div>
   );

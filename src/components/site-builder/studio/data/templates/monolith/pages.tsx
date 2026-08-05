@@ -1004,7 +1004,7 @@ function ContactSection({
 
         <Reveal className="bg-[#f6f1e7] p-6 lg:p-10" delay={130}>
           <form
-            data-bizuply-form-builder="true"
+            data-bizuply-form-builder="true" data-bizuply-form-skin="template"
             data-visual-editable="true"
             data-visual-edit-id="contact.form"
             data-visual-edit-type="box"

@@ -1,7 +1,7 @@
 export const estateoEditorCss = `
 @import url("https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700;900&family=Heebo:wght@400;500;700&display=swap");
 
-[data-template-id="estateo"], [data-template-id="estateo-preview"] {
+[data-template-id="estateo"], [data-template-id="estateo"] {
   direction: rtl; text-align: right;
   font-family: "Heebo", Heebo, sans-serif;
   --tpl-bg: #100e0c; --tpl-surface: #1a1612; --tpl-text: #f4ecdf;
@@ -10,14 +10,14 @@ export const estateoEditorCss = `
 }
 
 [data-template-id="estateo"] .tpl-display,
-[data-template-id="estateo-preview"] .tpl-display {
+[data-template-id="estateo"] .tpl-display {
   font-family: "Playfair Display", "Heebo", serif;
 }
 
 [data-template-id="estateo"] input::placeholder,
 [data-template-id="estateo"] textarea::placeholder,
-[data-template-id="estateo-preview"] input::placeholder,
-[data-template-id="estateo-preview"] textarea::placeholder {
+[data-template-id="estateo"] input::placeholder,
+[data-template-id="estateo"] textarea::placeholder {
   color: rgba(244,236,223,.52);
 }
 
@@ -33,33 +33,33 @@ export const estateoEditorCss = `
 @keyframes estateo-pulse { 0%,100% { opacity: .34; } 50% { opacity: 1; } }
 @keyframes estateo-sweep { 0% { transform: translateX(-130%); } 100% { transform: translateX(130%); } }
 
-[data-template-id="estateo"] .tpl-ken, [data-template-id="estateo-preview"] .tpl-ken {
+[data-template-id="estateo"] .tpl-ken, [data-template-id="estateo"] .tpl-ken {
   animation: estateo-ken 20s ease-in-out infinite alternate; transform-origin: center;
 }
-[data-template-id="estateo"] .tpl-rise, [data-template-id="estateo-preview"] .tpl-rise {
+[data-template-id="estateo"] .tpl-rise, [data-template-id="estateo"] .tpl-rise {
   animation: estateo-rise .95s cubic-bezier(.22,1,.36,1) both;
 }
-[data-template-id="estateo"] .tpl-rise-2, [data-template-id="estateo-preview"] .tpl-rise-2 {
+[data-template-id="estateo"] .tpl-rise-2, [data-template-id="estateo"] .tpl-rise-2 {
   animation: estateo-rise .95s cubic-bezier(.22,1,.36,1) .14s both;
 }
-[data-template-id="estateo"] .tpl-rise-3, [data-template-id="estateo-preview"] .tpl-rise-3 {
+[data-template-id="estateo"] .tpl-rise-3, [data-template-id="estateo"] .tpl-rise-3 {
   animation: estateo-rise .95s cubic-bezier(.22,1,.36,1) .28s both;
 }
-[data-template-id="estateo"] .tpl-draw, [data-template-id="estateo-preview"] .tpl-draw {
+[data-template-id="estateo"] .tpl-draw, [data-template-id="estateo"] .tpl-draw {
   transform-origin: right center;
   animation: estateo-draw 1.2s cubic-bezier(.22,1,.36,1) both;
 }
-[data-template-id="estateo"] .tpl-marquee-track, [data-template-id="estateo-preview"] .tpl-marquee-track {
+[data-template-id="estateo"] .tpl-marquee-track, [data-template-id="estateo"] .tpl-marquee-track {
   display: flex; width: max-content; animation: estateo-marquee 32s linear infinite;
 }
-[data-template-id="estateo"] .tpl-float, [data-template-id="estateo-preview"] .tpl-float {
+[data-template-id="estateo"] .tpl-float, [data-template-id="estateo"] .tpl-float {
   animation: estateo-float 5.8s ease-in-out infinite;
 }
-[data-template-id="estateo"] .tpl-pulse-line, [data-template-id="estateo-preview"] .tpl-pulse-line {
+[data-template-id="estateo"] .tpl-pulse-line, [data-template-id="estateo"] .tpl-pulse-line {
   animation: estateo-pulse 2.5s ease-in-out infinite;
 }
-[data-template-id="estateo"] .tpl-sweep, [data-template-id="estateo-preview"] .tpl-sweep { position: relative; overflow: hidden; }
-[data-template-id="estateo"] .tpl-sweep::after, [data-template-id="estateo-preview"] .tpl-sweep::after {
+[data-template-id="estateo"] .tpl-sweep, [data-template-id="estateo"] .tpl-sweep { position: relative; overflow: hidden; }
+[data-template-id="estateo"] .tpl-sweep::after, [data-template-id="estateo"] .tpl-sweep::after {
   content: ""; position: absolute; inset: 0 auto 0 0; width: 36%; pointer-events: none;
   background: linear-gradient(90deg, transparent, rgba(255,255,255,.2), transparent);
   animation: estateo-sweep 4.6s ease-in-out infinite;

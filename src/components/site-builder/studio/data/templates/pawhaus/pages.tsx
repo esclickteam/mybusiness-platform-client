@@ -353,7 +353,7 @@ function BookingForm({ data }: { data: Record<string, any> }) {
           </div>
         </Reveal>
         <Reveal variant="left" delayMs={120}>
-          <form className="grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="pawhaus-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+          <form className="grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="pawhaus-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
             <div className="grid gap-4 md:grid-cols-2">
               <input aria-label="שם מלא" className="border border-[var(--p)]/20 bg-[var(--bg)] px-4 py-4 text-sm outline-none focus:border-[var(--p)]" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
               <input aria-label="טלפון" className="border border-[var(--p)]/20 bg-[var(--bg)] px-4 py-4 text-sm outline-none focus:border-[var(--p)]" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
@@ -397,7 +397,7 @@ export default function PawhausPages({ initialPage = "home", mode = "preview", d
     { allowedPages: ["home"], fallbackPage: "home" },
   );
   return (
-    <div dir="rtl" data-template-id={mode === "preview" ? "pawhaus-preview" : "pawhaus"} className="min-h-screen w-full overflow-x-hidden">
+    <div dir="rtl" data-template-id="pawhaus" className="min-h-screen w-full overflow-x-hidden">
       <style dangerouslySetInnerHTML={{ __html: pawhausEditorCss }} />
       <VisualPageStack activePageId={currentPage} pages={[{ id: "home", content: (
         <>

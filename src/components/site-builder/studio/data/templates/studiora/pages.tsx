@@ -216,7 +216,7 @@ function BookingModal({
           </p>
           <h3 className="mt-5 text-3xl font-black uppercase text-white">בואו נבנה משהו גדול.</h3>
           <p className="mt-3 text-sm leading-6 text-white/55">{getValue(data, "contactText")}</p>
-          <form className="mt-7 grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="studiora-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+          <form className="mt-7 grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="studiora-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
             <input
               className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-white/40 focus:border-[#c3ff00]"
               placeholder="שם / חברה"
@@ -577,7 +577,7 @@ function ContactSection({
             ))}
           </div>
         </div>
-        <form className="m-4 rounded-[28px] border border-white/8 bg-[#0a0a0a] p-6 lg:m-6 lg:p-8" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="studiora-contact-2" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+        <form className="m-4 rounded-[28px] border border-white/8 bg-[#0a0a0a] p-6 lg:m-6 lg:p-8" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="studiora-contact-2" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
           <div className="grid gap-4">
             <input
               className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-white/40 focus:border-[#c3ff00]"
@@ -783,7 +783,7 @@ export default function StudioraPages({
   return (
     <div
       dir="rtl"
-      data-template-id={mode === "preview" ? "studiora-preview" : "studiora"}
+      data-template-id="studiora"
       className="min-h-screen w-full overflow-x-hidden bg-[#0a0a0a] font-sans text-white"
     >
       <Header

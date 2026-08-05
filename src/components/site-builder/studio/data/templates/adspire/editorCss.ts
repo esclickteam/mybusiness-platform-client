@@ -1,6 +1,6 @@
 export const adspireEditorCss = `
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Heebo:wght@400;500;600;700;800&display=swap');
-[data-template-id="adspire"], [data-template-id="adspire-preview"] {
+[data-template-id="adspire"], [data-template-id="adspire"] {
   --p: #A855F7;
   --accent: #E879F9;
   --bg: #09020F;
@@ -14,31 +14,31 @@ export const adspireEditorCss = `
   text-align: right;
 }
 [data-template-id="adspire"] .text-center,
-[data-template-id="adspire-preview"] .text-center { text-align: center; }
+[data-template-id="adspire"] .text-center { text-align: center; }
 [data-template-id="adspire"] .ag-display,
-[data-template-id="adspire-preview"] .ag-display {
+[data-template-id="adspire"] .ag-display {
   font-family: "Space Grotesk", "Heebo", sans-serif;
 }
 [data-template-id="adspire"] .ag-float,
-[data-template-id="adspire-preview"] .ag-float {
+[data-template-id="adspire"] .ag-float {
   animation: adspireFloat 7s ease-in-out infinite;
 }
 [data-template-id="adspire"] .ag-pulse,
-[data-template-id="adspire-preview"] .ag-pulse {
+[data-template-id="adspire"] .ag-pulse {
   animation: adspirePulse 2.8s ease-in-out infinite;
 }
 [data-template-id="adspire"] .ag-card,
-[data-template-id="adspire-preview"] .ag-card {
+[data-template-id="adspire"] .ag-card {
   transition: transform 420ms cubic-bezier(0.22,1,0.36,1), border-color 420ms ease, box-shadow 420ms ease;
 }
 [data-template-id="adspire"] .ag-card:hover,
-[data-template-id="adspire-preview"] .ag-card:hover {
+[data-template-id="adspire"] .ag-card:hover {
   transform: translateY(-8px);
   border-color: var(--p);
   box-shadow: 0 24px 60px rgba(0,0,0,0.18);
 }
 [data-template-id="adspire"] .ag-ken,
-[data-template-id="adspire-preview"] .ag-ken {
+[data-template-id="adspire"] .ag-ken {
   animation: adspireKen 18s ease-in-out infinite alternate;
 }
 @keyframes adspireFloat {
@@ -55,10 +55,10 @@ export const adspireEditorCss = `
 }
 @media (prefers-reduced-motion: reduce) {
     [data-template-id="adspire"] .ag-float,
-  [data-template-id="adspire-preview"] .ag-float,
+  [data-template-id="adspire"] .ag-float,
   [data-template-id="adspire"] .ag-ken,
-  [data-template-id="adspire-preview"] .ag-ken,
+  [data-template-id="adspire"] .ag-ken,
   [data-template-id="adspire"] .ag-pulse,
-  [data-template-id="adspire-preview"] .ag-pulse { animation: none; }
+  [data-template-id="adspire"] .ag-pulse { animation: none; }
 }
 `;

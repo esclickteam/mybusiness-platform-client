@@ -1021,7 +1021,7 @@ function ContactPage({ data }: SharedProps) {
             <div className="elevora-form-card elevora-reveal elevora-delay-2">
               <form
                 className="elevora-form"
-                data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-id="elevora-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם."
+                data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="elevora-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם."
               >
                 <div className="elevora-field">
                   <label htmlFor="elevora-name">שם מלא</label>

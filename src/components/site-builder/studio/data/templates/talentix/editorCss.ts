@@ -1,6 +1,6 @@
 export const talentixEditorCss = `
 @import url('https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Heebo:wght@400;500;600;700;800&display=swap');
-[data-template-id="talentix"], [data-template-id="talentix-preview"] {
+[data-template-id="talentix"], [data-template-id="talentix"] {
   --p: #0891B2;
   --accent: #22D3EE;
   --bg: #ECFEFF;
@@ -14,31 +14,31 @@ export const talentixEditorCss = `
   text-align: right;
 }
 [data-template-id="talentix"] .text-center,
-[data-template-id="talentix-preview"] .text-center { text-align: center; }
+[data-template-id="talentix"] .text-center { text-align: center; }
 [data-template-id="talentix"] .ag-display,
-[data-template-id="talentix-preview"] .ag-display {
+[data-template-id="talentix"] .ag-display {
   font-family: "Sora", "Heebo", sans-serif;
 }
 [data-template-id="talentix"] .ag-float,
-[data-template-id="talentix-preview"] .ag-float {
+[data-template-id="talentix"] .ag-float {
   animation: talentixFloat 7s ease-in-out infinite;
 }
 [data-template-id="talentix"] .ag-pulse,
-[data-template-id="talentix-preview"] .ag-pulse {
+[data-template-id="talentix"] .ag-pulse {
   animation: talentixPulse 2.8s ease-in-out infinite;
 }
 [data-template-id="talentix"] .ag-card,
-[data-template-id="talentix-preview"] .ag-card {
+[data-template-id="talentix"] .ag-card {
   transition: transform 420ms cubic-bezier(0.22,1,0.36,1), border-color 420ms ease, box-shadow 420ms ease;
 }
 [data-template-id="talentix"] .ag-card:hover,
-[data-template-id="talentix-preview"] .ag-card:hover {
+[data-template-id="talentix"] .ag-card:hover {
   transform: translateY(-8px);
   border-color: var(--p);
   box-shadow: 0 24px 60px rgba(0,0,0,0.18);
 }
 [data-template-id="talentix"] .ag-ken,
-[data-template-id="talentix-preview"] .ag-ken {
+[data-template-id="talentix"] .ag-ken {
   animation: talentixKen 18s ease-in-out infinite alternate;
 }
 @keyframes talentixFloat {
@@ -55,10 +55,10 @@ export const talentixEditorCss = `
 }
 @media (prefers-reduced-motion: reduce) {
     [data-template-id="talentix"] .ag-float,
-  [data-template-id="talentix-preview"] .ag-float,
+  [data-template-id="talentix"] .ag-float,
   [data-template-id="talentix"] .ag-ken,
-  [data-template-id="talentix-preview"] .ag-ken,
+  [data-template-id="talentix"] .ag-ken,
   [data-template-id="talentix"] .ag-pulse,
-  [data-template-id="talentix-preview"] .ag-pulse { animation: none; }
+  [data-template-id="talentix"] .ag-pulse { animation: none; }
 }
 `;
