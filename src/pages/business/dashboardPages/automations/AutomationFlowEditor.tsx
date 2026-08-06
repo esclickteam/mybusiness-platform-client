@@ -53,6 +53,11 @@ import {
   getGmailStatus,
   type GmailPublicAccount,
 } from "../../../../api/gmailApi";
+import {
+  getOutlookConnectUrl,
+  getOutlookStatus,
+  type OutlookPublicAccount,
+} from "../../../../api/outlookApi";
 
 const WA_MAPPING_PRESETS = [
   { key: "lead:name", source: "lead", field: "name", label: "שם הליד" },
@@ -113,6 +118,10 @@ function isWhatsAppActionKey(actionKey: unknown) {
 
 function isGmailActionKey(actionKey: unknown) {
   return String(actionKey || "") === "send_gmail";
+}
+
+function isOutlookActionKey(actionKey: unknown) {
+  return String(actionKey || "") === "send_outlook";
 }
 
 const GMAIL_RECIPIENT_LABELS: Record<string, string> = {
@@ -374,6 +383,11 @@ function EditorInner({
   );
   const [gmailMessage, setGmailMessage] = useState("");
   const [gmailLoading, setGmailLoading] = useState(false);
+  const [outlookAvailable, setOutlookAvailable] = useState(false);
+  const [outlookAccount, setOutlookAccount] =
+    useState<OutlookPublicAccount | null>(null);
+  const [outlookMessage, setOutlookMessage] = useState("");
+  const [outlookLoading, setOutlookLoading] = useState(false);
   const [triggerCatalog, setTriggerCatalog] = useState<
     AutomationTriggerOption[]
   >([]);
@@ -456,6 +470,25 @@ function EditorInner({
       setGmailMessage(readErrorMessage(error, "לא הצלחנו לטעון את סטטוס Gmail"));
     } finally {
       setGmailLoading(false);
+    }
+  }, [businessId]);
+
+  const loadOutlookStatus = useCallback(async () => {
+    setOutlookLoading(true);
+    setOutlookMessage("");
+    try {
+      const status = await getOutlookStatus(businessId);
+      setOutlookAvailable(Boolean(status.available));
+      setOutlookAccount(status.account);
+      if (status.message) setOutlookMessage(status.message);
+    } catch (error: unknown) {
+      setOutlookAvailable(false);
+      setOutlookAccount(null);
+      setOutlookMessage(
+        readErrorMessage(error, "לא הצלחנו לטעון את סטטוס Outlook")
+      );
+    } finally {
+      setOutlookLoading(false);
     }
   }, [businessId]);
 
@@ -546,12 +579,23 @@ function EditorInner({
       ? String(selectedNode.data?.actionKey || "")
       : "";
 
+  const selectedOutlookActionKey =
+    selectedNode?.type === "action" &&
+    isOutlookActionKey(selectedNode.data?.actionKey)
+      ? String(selectedNode.data?.actionKey || "")
+      : "";
+
   // Only reload Gmail status when the selected Gmail action node changes —
   // not on every subject/body keystroke (that remounted the form and jumped focus).
   useEffect(() => {
     if (!selectedId || !selectedGmailActionKey) return;
     void loadGmailStatus();
   }, [selectedId, selectedGmailActionKey, loadGmailStatus]);
+
+  useEffect(() => {
+    if (!selectedId || !selectedOutlookActionKey) return;
+    void loadOutlookStatus();
+  }, [selectedId, selectedOutlookActionKey, loadOutlookStatus]);
 
   useEffect(() => {
     if (!selectedId) return;
@@ -585,6 +629,40 @@ function EditorInner({
       );
     });
   }, [selectedId, gmailAccount, setNodes]);
+
+  useEffect(() => {
+    if (!selectedId) return;
+    setNodes((prev) => {
+      const node = prev.find((n) => n.id === selectedId);
+      if (!node || !isOutlookActionKey(node.data?.actionKey)) return prev;
+      const recipientType = String(node.data?.recipientType || "").trim();
+      const needsRecipientDefault = !recipientType;
+      const needsAccount =
+        Boolean(outlookAccount) &&
+        outlookAccount?.connectionStatus === "connected" &&
+        (node.data?.connectedAccountId !== outlookAccount.id ||
+          node.data?.senderEmail !== outlookAccount.email);
+      if (!needsRecipientDefault && !needsAccount) return prev;
+      return prev.map((n) =>
+        n.id === selectedId
+          ? {
+              ...n,
+              data: {
+                ...(n.data || {}),
+                emailProvider: "microsoft",
+                ...(needsRecipientDefault ? { recipientType: "lead_email" } : {}),
+                ...(needsAccount && outlookAccount
+                  ? {
+                      connectedAccountId: outlookAccount.id,
+                      senderEmail: outlookAccount.email,
+                    }
+                  : {}),
+              },
+            }
+          : n
+      );
+    });
+  }, [selectedId, outlookAccount, setNodes]);
 
   const palette = useMemo(
     () =>
@@ -804,11 +882,22 @@ function EditorInner({
 
   const applyGmailPublishDefaults = (list: Node[]) =>
     list.map((n) => {
-      if (!isGmailActionKey(n.data?.actionKey)) return n;
-      if (String(n.data?.recipientType || "").trim()) return n;
+      if (
+        !isGmailActionKey(n.data?.actionKey) &&
+        !isOutlookActionKey(n.data?.actionKey)
+      ) {
+        return n;
+      }
+      const recipientType = String(n.data?.recipientType || "").trim();
       return {
         ...n,
-        data: { ...(n.data || {}), recipientType: "lead_email" },
+        data: {
+          ...(n.data || {}),
+          ...(recipientType ? {} : { recipientType: "lead_email" }),
+          emailProvider: isOutlookActionKey(n.data?.actionKey)
+            ? "microsoft"
+            : "gmail",
+        },
       };
     });
 
@@ -1584,11 +1673,16 @@ function EditorInner({
                       updateSelectedData({
                         actionKey: nextKey,
                         label: opt?.label || selectedNode.data?.label,
-                        ...(nextKey === "send_gmail"
+                        ...(nextKey === "send_gmail" ||
+                        nextKey === "send_outlook"
                           ? {
                               recipientType:
                                 selectedNode.data?.recipientType ||
                                 "lead_email",
+                              emailProvider:
+                                nextKey === "send_outlook"
+                                  ? "microsoft"
+                                  : "gmail",
                             }
                           : {}),
                       });
@@ -2228,6 +2322,287 @@ function EditorInner({
                                   selectedNode.data?.customField
                                     ? ` (${String(selectedNode.data.customField)})`
                                     : ""}
+                                </span>
+                                <span>
+                                  נושא:{" "}
+                                  {String(
+                                    selectedNode.data?.subject || ""
+                                  ).trim() || "—"}
+                                </span>
+                              </div>
+                              {!previewHtml && !previewText ? (
+                                <div className="af-gmail-preview__empty">
+                                  אין עדיין תוכן להצגה
+                                </div>
+                              ) : (
+                                <>
+                                  {previewHtml ? (
+                                    <div
+                                      className="af-gmail-preview__body"
+                                      dangerouslySetInnerHTML={{
+                                        __html: previewHtml,
+                                      }}
+                                    />
+                                  ) : null}
+                                  {previewText ? (
+                                    <pre className="af-gmail-preview__text">
+                                      {previewText}
+                                    </pre>
+                                  ) : null}
+                                </>
+                              )}
+                            </div>
+                          );
+                        })()}
+                      </>
+                    )}
+                  </div>
+                ) : null}
+                {isOutlookActionKey(selectedNode.data?.actionKey) ? (
+                  <div className="af-wa-template">
+                    <div className="af-wa-banner" dir="rtl">
+                      <strong>שליחה דרך Outlook / Microsoft 365 המחובר</strong>
+                      <p>
+                        המייל יישלח מחשבון Outlook שחיברתם לעסק. אין שימוש ב-SMTP
+                        ואין fallback לספק אחר.
+                      </p>
+                    </div>
+
+                    {outlookLoading ? (
+                      <p className="af-wa-template__state">טוען סטטוס Outlook...</p>
+                    ) : !outlookAvailable ? (
+                      <div className="af-wa-template__state af-wa-template__state--error">
+                        <p>
+                          {outlookMessage ||
+                            "Outlook / Microsoft 365 יהיה זמין בקרוב"}
+                        </p>
+                      </div>
+                    ) : outlookAccount?.connectionStatus !== "connected" ? (
+                      <div className="af-wa-template__state af-wa-template__state--error">
+                        <p>
+                          {outlookMessage ||
+                            "יש לחבר חשבון Outlook לפני פרסום האוטומציה"}
+                        </p>
+                        <button
+                          type="button"
+                          className="af-toolbar__btn"
+                          disabled={readOnly}
+                          title={writeBlockedTitle}
+                          onClick={async () => {
+                            try {
+                              const data = await getOutlookConnectUrl(
+                                businessId,
+                                window.location.pathname
+                              );
+                              if (!data?.url) {
+                                throw new Error("לא התקבל קישור התחברות");
+                              }
+                              window.location.href = data.url;
+                            } catch (error: unknown) {
+                              toast.error(
+                                readErrorMessage(error, "התחברות Outlook נכשלה")
+                              );
+                            }
+                          }}
+                        >
+                          חיבור Outlook
+                        </button>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="af-wa-sender" dir="rtl">
+                          <label>
+                            שולח
+                            <input
+                              type="text"
+                              dir="ltr"
+                              disabled
+                              value={`Outlook — ${String(
+                                selectedNode.data?.senderEmail ||
+                                  outlookAccount.email ||
+                                  ""
+                              )}`}
+                              readOnly
+                            />
+                          </label>
+                        </div>
+
+                        <div className="af-wa-recipient" dir="rtl">
+                          <label>
+                            למי לשלוח את המייל?
+                            <select
+                              value={String(
+                                selectedNode.data?.recipientType || "lead_email"
+                              )}
+                              disabled={readOnly}
+                              onChange={(e) => {
+                                const recipientType = e.target.value;
+                                updateSelectedData({
+                                  recipientType,
+                                  emailProvider: "microsoft",
+                                  fixedEmail:
+                                    recipientType === "fixed_email"
+                                      ? String(
+                                          selectedNode.data?.fixedEmail || ""
+                                        )
+                                      : "",
+                                  customField:
+                                    recipientType === "custom_field"
+                                      ? String(
+                                          selectedNode.data?.customField || ""
+                                        )
+                                      : "",
+                                });
+                              }}
+                            >
+                              <option value="lead_email">אימייל הליד</option>
+                              {triggerSupportsAppointmentCustomerEmail(
+                                selectedTriggerKey
+                              ) ||
+                              String(
+                                selectedNode.data?.recipientType || ""
+                              ) === "appointment_customer_email" ? (
+                                <option value="appointment_customer_email">
+                                  אימייל הלקוח שקבע תור
+                                </option>
+                              ) : null}
+                              <option value="business_owner">בעל העסק</option>
+                              <option value="lead_owner">אחראי הליד</option>
+                              <option value="fixed_email">כתובת קבועה</option>
+                              <option value="custom_field">
+                                שדה מותאם אישית
+                              </option>
+                            </select>
+                          </label>
+                          <p className="af-wa-recipient__hint">
+                            נמען:{" "}
+                            {GMAIL_RECIPIENT_LABELS[
+                              String(
+                                selectedNode.data?.recipientType || "lead_email"
+                              )
+                            ] || "—"}
+                          </p>
+                          {String(selectedNode.data?.recipientType || "") ===
+                          "fixed_email" ? (
+                            <label>
+                              כתובת קבועה
+                              <input
+                                type="email"
+                                dir="ltr"
+                                placeholder="name@example.com"
+                                disabled={readOnly}
+                                value={String(
+                                  selectedNode.data?.fixedEmail || ""
+                                )}
+                                onChange={(e) =>
+                                  updateSelectedData({
+                                    recipientType: "fixed_email",
+                                    fixedEmail: e.target.value,
+                                    emailProvider: "microsoft",
+                                  })
+                                }
+                              />
+                            </label>
+                          ) : null}
+                          {String(selectedNode.data?.recipientType || "") ===
+                          "custom_field" ? (
+                            <label>
+                              שדה מותאם (מפתח)
+                              <input
+                                type="text"
+                                dir="ltr"
+                                placeholder="emailField"
+                                disabled={readOnly}
+                                value={String(
+                                  selectedNode.data?.customField || ""
+                                )}
+                                onChange={(e) =>
+                                  updateSelectedData({
+                                    recipientType: "custom_field",
+                                    customField: e.target.value,
+                                    emailProvider: "microsoft",
+                                  })
+                                }
+                              />
+                            </label>
+                          ) : null}
+                        </div>
+
+                        <label>
+                          נושא
+                          <input
+                            type="text"
+                            disabled={readOnly}
+                            value={String(selectedNode.data?.subject || "")}
+                            placeholder="הודעה מ{{business.name}}"
+                            onChange={(e) =>
+                              updateSelectedData({ subject: e.target.value })
+                            }
+                          />
+                        </label>
+
+                        <label>
+                          תוכן (HTML)
+                          <textarea
+                            rows={6}
+                            disabled={readOnly}
+                            value={String(
+                              selectedNode.data?.html ||
+                                selectedNode.data?.body ||
+                                ""
+                            )}
+                            placeholder='<div dir="rtl"><p>שלום {{lead.name}}</p></div>'
+                            onChange={(e) =>
+                              updateSelectedData({
+                                html: e.target.value,
+                                body: e.target.value,
+                              })
+                            }
+                          />
+                        </label>
+
+                        <label>
+                          טקסט פשוט (אופציונלי)
+                          <textarea
+                            rows={3}
+                            disabled={readOnly}
+                            value={String(selectedNode.data?.text || "")}
+                            placeholder="גרסת טקסט ללא HTML"
+                            onChange={(e) =>
+                              updateSelectedData({ text: e.target.value })
+                            }
+                          />
+                        </label>
+
+                        {(() => {
+                          const previewHtml = String(
+                            selectedNode.data?.html ||
+                              selectedNode.data?.body ||
+                              ""
+                          ).trim();
+                          const previewText = String(
+                            selectedNode.data?.text || ""
+                          ).trim();
+                          return (
+                            <div className="af-gmail-preview" dir="rtl">
+                              <strong>תצוגה מקדימה</strong>
+                              <div className="af-gmail-preview__headers">
+                                <span>
+                                  מ: Outlook —{" "}
+                                  {String(
+                                    selectedNode.data?.senderEmail ||
+                                      outlookAccount.email ||
+                                      "—"
+                                  )}
+                                </span>
+                                <span>
+                                  אל:{" "}
+                                  {GMAIL_RECIPIENT_LABELS[
+                                    String(
+                                      selectedNode.data?.recipientType ||
+                                        "lead_email"
+                                    )
+                                  ] || "—"}
                                 </span>
                                 <span>
                                   נושא:{" "}
