@@ -79,6 +79,7 @@ import type {
   VisualLibraryPageTemplate,
   VisualLibrarySectionTemplate,
 } from "./library/visualLibraryTypes";
+import { ELEMENT_LIBRARY } from "./library/elementLibrary";
 
 import VisualPluginsAddPanel from "./VisualPluginsAddPanel";
 
@@ -97,7 +98,40 @@ type ElementCategory =
   | "text"
   | "buttons"
   | "media"
-  | "shapes";
+  | "shapes"
+  | "dynamic"
+  | "cards"
+  | "tables"
+  | "forms"
+  | "lists"
+  | "more";
+
+function mapLibraryCategoryToPanel(
+  category: string,
+): Exclude<ElementCategory, "all"> {
+  if (category === "text") return "text";
+  if (category === "buttons") return "buttons";
+  if (category === "images" || category === "video" || category === "gallery") {
+    return "media";
+  }
+  if (
+    category === "shapes" ||
+    category === "graphics" ||
+    category === "social" ||
+    category === "menu"
+  ) {
+    return category === "shapes" || category === "graphics" ? "shapes" : "more";
+  }
+  if (category === "dynamic") return "dynamic";
+  if (category === "cards") return "cards";
+  if (category === "tables") return "tables";
+  if (category === "forms") return "forms";
+  if (category === "lists") return "lists";
+  if (category === "embed" || category === "contact" || category === "apps") {
+    return "more";
+  }
+  return "more";
+}
 
 type SectionQuickFilter = "all" | "recommended" | "recent" | "favorites";
 
@@ -230,8 +264,8 @@ function SortableSectionRow({
           {item.pinned
             ? "קבוע"
             : item.inserted
-              ? "בלוק שנוסף"
-              : "בלוק בתבנית"}
+              ? "סקשן לעריכה"
+              : "תבנית · ניתן לעריכה"}
         </span>
       </button>
     </div>
@@ -250,7 +284,12 @@ type LibraryElement = {
     | "image"
     | "video"
     | "box"
-    | "divider";
+    | "divider"
+    | "raw"
+    | "html";
+  previewHtml?: string;
+  thumbnail?: string;
+  barePreview?: boolean;
   action: () => void | Promise<any>;
 };
 
@@ -263,6 +302,12 @@ const ELEMENT_CATEGORY_LABELS: Array<{
   { id: "buttons", label: "כפתורים" },
   { id: "media", label: "מדיה" },
   { id: "shapes", label: "קופסאות וצורות" },
+  { id: "dynamic", label: "נתונים משתנים" },
+  { id: "cards", label: "כרטיסיות" },
+  { id: "tables", label: "טבלאות" },
+  { id: "forms", label: "טפסים" },
+  { id: "lists", label: "רשימות" },
+  { id: "more", label: "עוד" },
 ];
 
 function CodeField({
@@ -301,9 +346,58 @@ function CodeField({
 
 function ElementPreview({
   kind,
+  previewHtml,
+  thumbnail,
+  barePreview,
 }: {
   kind: LibraryElement["preview"];
+  previewHtml?: string;
+  thumbnail?: string;
+  barePreview?: boolean;
 }) {
+  if (barePreview || kind === "raw") {
+    return (
+      <div className="flex h-full items-center justify-center bg-transparent px-4">
+        {previewHtml ? (
+          <div
+            className="w-full"
+            dangerouslySetInnerHTML={{ __html: previewHtml }}
+          />
+        ) : (
+          <span className="text-3xl font-black tracking-tight text-slate-900">
+            72
+          </span>
+        )}
+      </div>
+    );
+  }
+
+  if (thumbnail) {
+    return (
+      <div className="h-full w-full overflow-hidden bg-slate-100">
+        <img
+          src={thumbnail}
+          alt=""
+          className="h-full w-full object-cover"
+          loading="lazy"
+        />
+      </div>
+    );
+  }
+
+  if (previewHtml || kind === "html") {
+    return (
+      <div className="flex h-full items-center justify-center bg-[#f8fafc] px-3 py-2">
+        <div
+          className="w-full max-h-full overflow-hidden"
+          dangerouslySetInnerHTML={{
+            __html: previewHtml || "",
+          }}
+        />
+      </div>
+    );
+  }
+
   if (kind === "heading") {
     return (
       <div className="flex h-full items-center justify-center bg-white px-6">
@@ -644,8 +738,8 @@ export default function VisualAddLayersPanel({
     });
   };
 
-  const elements = useMemo<LibraryElement[]>(
-    () => [
+  const elements = useMemo<LibraryElement[]>(() => {
+    const quickPrimitives: LibraryElement[] = [
       {
         id: "heading",
         title: "כותרת",
@@ -702,9 +796,45 @@ export default function VisualAddLayersPanel({
         preview: "divider",
         action: () => editor?.addDivider?.(),
       },
-    ],
-    [editor],
-  );
+    ];
+
+    // Prefer curated library entries (skip the huge generated button/lottie dumps
+    // in the main grid — those remain available via Icons / Animations tabs).
+    const libraryItems: LibraryElement[] = ELEMENT_LIBRARY.filter((item) => {
+      const id = String(item.id || "");
+      if (id.startsWith("button-lib-") || id.startsWith("lottie-")) return false;
+      return true;
+    }).map((item) => {
+      const category = mapLibraryCategoryToPanel(item.category);
+      const isDynamic = category === "dynamic";
+      return {
+        id: item.id,
+        title: item.title,
+        description: item.description,
+        category,
+        preview: isDynamic
+          ? ("raw" as const)
+          : item.previewHtml
+            ? ("html" as const)
+            : item.thumbnail
+              ? ("image" as const)
+              : ("box" as const),
+        previewHtml: item.previewHtml,
+        thumbnail: item.thumbnail,
+        barePreview: isDynamic,
+        action: () => editor?.addLibraryElement?.(item.id),
+      };
+    });
+
+    const seen = new Set<string>();
+    const merged: LibraryElement[] = [];
+    [...quickPrimitives, ...libraryItems].forEach((item) => {
+      if (seen.has(item.id)) return;
+      seen.add(item.id);
+      merged.push(item);
+    });
+    return merged;
+  }, [editor]);
 
   const filteredElements = useMemo(() => {
     const normalizedSearch = searchQuery
@@ -1076,9 +1206,9 @@ export default function VisualAddLayersPanel({
                     : addTab === "animations"
                       ? "בחרו אנימציית Lottie מקצועית והוסיפו לעמוד"
                       : addTab === "sections"
-                        ? `ספריית סקשנים · ${SECTION_LIBRARY.length} עיצובים בעברית`
+                        ? `${SECTION_LIBRARY.length} סקשנים · כל אחד נפתח לעריכה מלאה אחרי ההוספה`
                         : addTab === "pages"
-                          ? `ספריית עמודים · ${PAGE_LIBRARY.length} תבניות בעברית`
+                          ? `${PAGE_LIBRARY.length} תבניות עמוד · כל עמוד ניתן לעריכה חופשית`
                           : "בחרו אלמנט, סקשן או מדיה והוסיפו לעמוד"}
                 </p>
               </div>
@@ -1202,7 +1332,7 @@ export default function VisualAddLayersPanel({
                           ספריית עמודים · {activePageCategoryLabel}
                         </h3>
                         <p className="mt-1 text-xs font-bold text-slate-400">
-                          תצוגה מקדימה חיה של העמוד — לחיצה מוסיפה אותו לאתר
+                          תבנית מקצועית שתיפתח לעריכה מלאה — כל סקשן ואלמנט ניתנים לשינוי
                         </p>
                       </div>
 
@@ -1210,6 +1340,43 @@ export default function VisualAddLayersPanel({
                         {filteredPages.length} עמודים
                       </span>
                     </div>
+
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const title =
+                          window.prompt("שם העמוד החדש", "עמוד חדש") ||
+                          "עמוד חדש";
+                        handleAddLibraryPage({
+                          id: "blank-editable-page",
+                          kind: "page",
+                          tab: "pages",
+                          category: "hero",
+                          title,
+                          description: "עמוד ריק לעריכה מלאה",
+                          slugSuggestion: "new-page",
+                          keywords: ["ריק", "עריכה", "blank"],
+                          sectionIds: [],
+                        });
+                      }}
+                      className="mb-5 flex w-full items-center justify-between gap-4 overflow-hidden rounded-[22px] border border-dashed border-slate-300 bg-white px-5 py-4 text-right shadow-sm transition hover:-translate-y-0.5 hover:border-slate-500 hover:shadow-md"
+                    >
+                      <div>
+                        <p className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">
+                          Start blank
+                        </p>
+                        <h4 className="mt-1 text-base font-black text-slate-900">
+                          עמוד ריק לעריכה מלאה
+                        </h4>
+                        <p className="mt-1 text-xs font-bold text-slate-500">
+                          בלי טבלה מובנית — מוסיפים סקשנים ואלמנטים כמו שרוצים
+                        </p>
+                      </div>
+                      <span className="inline-flex h-11 items-center gap-2 rounded-2xl bg-slate-900 px-4 text-xs font-black text-white">
+                        <Plus className="h-4 w-4" />
+                        יצירה
+                      </span>
+                    </button>
 
                     <div className="grid grid-cols-2 gap-5 xl:grid-cols-3">
                       {filteredPages.map((page) => (
@@ -1321,14 +1488,17 @@ export default function VisualAddLayersPanel({
                 >
                   {addTab === "elements" ? (
                     <>
-                      <div className="mb-4 flex items-center justify-between">
+                      <div className="mb-4 flex items-center justify-between gap-3">
                         <div>
                           <h3 className="text-base font-black text-slate-800">
-                            אלמנטים
+                            {elementCategory === "dynamic"
+                              ? "נתונים משתנים מה-CRM"
+                              : "אלמנטים לאתר"}
                           </h3>
                           <p className="mt-1 text-xs font-bold text-slate-400">
-                            לחיצה מוסיפה את האלמנט
-                            לקנבס
+                            {elementCategory === "dynamic"
+                              ? "הנתון עצמו בלבד — בלי כרטיסייה מאחורה. מתעדכן מה-CRM."
+                              : "לחיצה מוסיפה אלמנט לעריכה חופשית על הקנבס"}
                           </p>
                         </div>
 
@@ -1349,24 +1519,39 @@ export default function VisualAddLayersPanel({
                                   item.action,
                                 )
                               }
-                              className="group overflow-hidden rounded-[22px] border border-slate-200 bg-white text-right shadow-sm transition duration-200 hover:-translate-y-1 hover:border-violet-300 hover:shadow-[0_18px_40px_rgba(91,33,182,0.12)]"
+                              className={[
+                                "group overflow-hidden text-right transition duration-200 hover:-translate-y-1",
+                                item.barePreview
+                                  ? "rounded-2xl border border-transparent bg-transparent shadow-none hover:border-slate-200 hover:bg-white/70"
+                                  : "rounded-[22px] border border-slate-200 bg-white shadow-sm hover:border-violet-300 hover:shadow-[0_18px_40px_rgba(91,33,182,0.12)]",
+                              ].join(" ")}
                             >
-                              <div className="h-[132px] overflow-hidden border-b border-slate-100 bg-white">
+                              <div
+                                className={[
+                                  "h-[132px] overflow-hidden",
+                                  item.barePreview
+                                    ? "bg-transparent"
+                                    : "border-b border-slate-100 bg-white",
+                                ].join(" ")}
+                              >
                                 <ElementPreview
-                                  kind={
-                                    item.preview
-                                  }
+                                  kind={item.preview}
+                                  previewHtml={item.previewHtml}
+                                  thumbnail={item.thumbnail}
+                                  barePreview={item.barePreview}
                                 />
                               </div>
 
-                              <div className="p-4">
+                              <div
+                                className={
+                                  item.barePreview ? "px-1 pb-2 pt-1" : "p-4"
+                                }
+                              >
                                 <h4 className="text-sm font-black text-slate-800">
                                   {item.title}
                                 </h4>
                                 <p className="mt-1 text-xs font-bold leading-5 text-slate-400">
-                                  {
-                                    item.description
-                                  }
+                                  {item.description}
                                 </p>
                               </div>
                             </button>
@@ -1476,7 +1661,7 @@ export default function VisualAddLayersPanel({
                               ספריית סקשנים · {activeSectionCategoryLabel}
                             </h3>
                             <p className="mt-1 text-xs font-bold text-slate-400">
-                              בחרו עיצוב — התצוגה הקטנה מראה את מבנה הסקשן
+                              תבנית לפתיחה — אחרי ההוספה כל טקסט, תמונה ואלמנט ניתנים לעריכה
                             </p>
                           </div>
 

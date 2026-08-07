@@ -167,10 +167,9 @@ function buildMenuItems(page: VisualSitePageItem): MenuItem[] {
     },
     {
       action: "dynamic",
-      label: "המרה לעמוד דינמי",
-      hint: "עמוד שנבנה ממאגר נתונים (בקרוב)",
+      label: "עמוד דינמי / אזור אישי",
+      hint: "חיבור משתנים מה-CRM והצגת נתונים אישיים ללקוח",
       icon: <ArrowRightLeft className="h-4 w-4" />,
-      disabled: true,
       dividerAfter: true,
     },
     {
@@ -326,7 +325,11 @@ function SectionListItem({
           {section.label}
         </span>
         <span className="block truncate text-[10px] font-bold text-slate-400">
-          {section.pinned ? "קבוע" : section.inserted ? "נוסף" : "בתבנית"}
+          {section.pinned
+            ? "קבוע"
+            : section.inserted
+              ? "סקשן לעריכה"
+              : "תבנית · ניתן לעריכה"}
         </span>
       </span>
     </button>
@@ -1068,37 +1071,60 @@ export default function VisualSitePagesPanel({
       {menuPortal}
       {parentPickerPortal}
       <aside
-        className="absolute inset-y-0 right-0 z-[2147483000] flex w-[320px] max-w-[92vw] flex-col border-l border-slate-200/80 bg-gradient-to-b from-slate-50 via-white to-white shadow-[-18px_0_50px_rgba(15,23,42,0.12)]"
+        className="absolute inset-y-0 right-0 z-[2147483000] flex w-[340px] max-w-[92vw] flex-col border-l border-slate-200/80 bg-[#f4f6fb] shadow-[-22px_0_60px_rgba(15,23,42,0.14)]"
         dir="rtl"
       >
         <div className="min-h-0 flex-1 overflow-y-auto p-3">
-          <div className="mb-3 rounded-2xl border border-slate-200/80 bg-white/95 p-3 shadow-sm">
-            <div className="flex items-start justify-between gap-3">
-              <div className="min-w-0">
-                <h2 className="text-sm font-black text-slate-800">תפריט האתר</h2>
-                <p className="mt-1 text-[11px] font-bold leading-5 text-slate-500">
-                  {singlePageMode
-                    ? "העמוד והסקשנים שלו"
-                    : `${pages.length} עמודים · גרירה למרכז השורה = עמוד משנה`}
-                </p>
+          <div className="mb-3 overflow-hidden rounded-[22px] border border-slate-200/80 bg-white shadow-[0_12px_40px_rgba(15,23,42,0.08)]">
+            <div className="relative border-b border-slate-100 bg-[radial-gradient(120%_140%_at_100%_0%,#dbeafe_0%,#ffffff_55%,#f8fafc_100%)] px-4 pb-4 pt-3">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">
+                    Site Architecture
+                  </p>
+                  <h2 className="mt-1 text-lg font-black tracking-tight text-slate-900">
+                    מבנה האתר
+                  </h2>
+                  <p className="mt-1.5 text-[11px] font-bold leading-5 text-slate-500">
+                    {singlePageMode
+                      ? "כל סקשן ניתן לעריכה מלאה — לא טבלה קבועה"
+                      : `${pages.length} עמודים · כל עמוד וסקשן נפתחים לעריכה חופשית`}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-slate-200/80 bg-white/80 text-slate-500 backdrop-blur transition hover:bg-white"
+                  aria-label="סגירה"
+                >
+                  <X className="h-4 w-4" />
+                </button>
               </div>
+              <div className="mt-3 flex flex-wrap gap-1.5">
+                <span className="rounded-full bg-white/90 px-2.5 py-1 text-[10px] font-black text-slate-600 shadow-sm ring-1 ring-slate-200/80">
+                  עריכה חופשית
+                </span>
+                <span className="rounded-full bg-white/90 px-2.5 py-1 text-[10px] font-black text-slate-600 shadow-sm ring-1 ring-slate-200/80">
+                  נתונים מה-CRM
+                </span>
+                <span className="rounded-full bg-white/90 px-2.5 py-1 text-[10px] font-black text-slate-600 shadow-sm ring-1 ring-slate-200/80">
+                  גרירה להיררכיה
+                </span>
+              </div>
+            </div>
+            <div className="p-3">
               <button
                 type="button"
-                onClick={onClose}
-                className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-500 transition hover:bg-white"
-                aria-label="סגירה"
+                onClick={onAddPage}
+                className="flex h-11 w-full items-center justify-center gap-2 rounded-2xl bg-slate-900 text-sm font-black text-white shadow-[0_10px_28px_rgba(15,23,42,0.22)] transition hover:bg-slate-800"
               >
-                <X className="h-4 w-4" />
+                <Plus className="h-4 w-4" />
+                עמוד חדש ריק לעריכה
               </button>
+              <p className="mt-2 text-center text-[10px] font-bold text-slate-400">
+                או הוסיפו תבנית מספריית העמודים — ואז ערכו הכל
+              </p>
             </div>
-            <button
-              type="button"
-              onClick={onAddPage}
-              className="mt-3 flex h-10 w-full items-center justify-center gap-2 rounded-xl border border-violet-200 bg-violet-50 text-sm font-black text-violet-700 transition hover:border-violet-300 hover:bg-violet-100"
-            >
-              <Plus className="h-4 w-4" />
-              הוספת עמוד ראשי
-            </button>
           </div>
 
           <DndContext
