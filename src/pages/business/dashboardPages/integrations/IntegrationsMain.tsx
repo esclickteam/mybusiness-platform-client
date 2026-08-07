@@ -269,10 +269,13 @@ export default function IntegrationsMain() {
   const account: GmailPublicAccount | null = status?.account || null;
   const available = Boolean(status?.available);
   const connected = account?.connectionStatus === "connected";
+  const needsGmailGrant =
+    connected && account?.hasGmailSend === false;
   const needsReconnect =
     account?.connectionStatus === "needs_reconnect" ||
     account?.connectionStatus === "expired" ||
-    account?.connectionStatus === "revoked";
+    account?.connectionStatus === "revoked" ||
+    needsGmailGrant;
 
   const outlookAccount: OutlookPublicAccount | null =
     outlookStatus?.account || null;
@@ -347,20 +350,22 @@ export default function IntegrationsMain() {
               className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
                 !available
                   ? "bg-amber-100 text-amber-800"
-                  : connected
-                    ? "bg-emerald-100 text-emerald-800"
-                    : needsReconnect
-                      ? "bg-amber-100 text-amber-800"
+                  : needsGmailGrant || needsReconnect
+                    ? "bg-amber-100 text-amber-800"
+                    : connected
+                      ? "bg-emerald-100 text-emerald-800"
                       : "bg-slate-100 text-slate-700"
               }`}
             >
               {!available
                 ? "בתהליך אישור"
-                : connected
-                  ? "מחובר"
-                  : needsReconnect
-                    ? "נדרש חיבור מחדש"
-                    : "לא מחובר"}
+                : needsGmailGrant
+                  ? "נדרשת הרשאת שליחה"
+                  : connected
+                    ? "מחובר"
+                    : needsReconnect
+                      ? "נדרש חיבור מחדש"
+                      : "לא מחובר"}
             </span>
           </div>
 
@@ -372,7 +377,12 @@ export default function IntegrationsMain() {
             </p>
           ) : account && (connected || needsReconnect) ? (
             <div className="mt-4 space-y-2 text-sm">
-              {needsReconnect ? (
+              {needsGmailGrant ? (
+                <p className="text-amber-800 bg-amber-50 border border-amber-100 rounded-xl px-3 py-2">
+                  חסרה הרשאת שליחה של Gmail — יש לאשר מחדש (החיבור ל-Google
+                  עדיין פעיל)
+                </p>
+              ) : needsReconnect ? (
                 <p className="text-amber-800 bg-amber-50 border border-amber-100 rounded-xl px-3 py-2">
                   חיבור Gmail פג תוקף — יש להתחבר מחדש
                 </p>
