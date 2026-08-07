@@ -6,6 +6,7 @@ import {
   CalendarDays,
   CircleDollarSign,
   CreditCard,
+  FlaskConical,
   HeartHandshake,
   Sparkles,
   Users,
@@ -432,6 +433,22 @@ function AdminDashboard() {
                 title="ניהול לקוחות"
                 description="חיפוש עסקים, יצירת לקוח, בחירת חבילה ותשלום Stripe"
                 onClick={() => navigate("/admin/customers")}
+              />
+
+              <QuickAction
+                icon={<CircleDollarSign className="h-5 w-5" />}
+                iconClassName="bg-violet-100 text-[#7C4DFF]"
+                title="תמחור חבילות"
+                description="עדכון מחירים לחבילות ואפסיילים בקטלוג"
+                onClick={() => navigate("/admin/plans")}
+              />
+
+              <QuickAction
+                icon={<FlaskConical className="h-5 w-5" />}
+                iconClassName="bg-amber-100 text-amber-700"
+                title="מטריצת בדיקות Billing"
+                description="Stripe Test Checkout ואימות PASS/FAIL ללא חיוב אמיתי"
+                onClick={() => navigate("/admin/billing-test")}
               />
 
               <QuickAction
