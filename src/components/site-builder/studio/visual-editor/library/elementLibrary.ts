@@ -12,6 +12,7 @@ import { LOTTIE_LIBRARY } from "./lottieLibrary";
 import { BUTTON_LIBRARY } from "./buttonLibrary";
 import { CRM_DYNAMIC_ELEMENT_LIBRARY } from "./crmDynamicElementLibrary";
 import { EXTRA_WEBSITE_ELEMENTS } from "./extraWebsiteElements";
+import { CARD_VARIANT_ELEMENTS } from "./cardVariants";
 import type { VisualLibraryElementItem } from "./visualLibraryTypes";
 
 const headingBase = {
@@ -1071,6 +1072,7 @@ export const ELEMENT_LIBRARY: VisualLibraryElementItem[] = [
     ],
   },
   ...EXTRA_WEBSITE_ELEMENTS,
+  ...CARD_VARIANT_ELEMENTS,
   ...CRM_DYNAMIC_ELEMENT_LIBRARY,
   ...BUTTON_LIBRARY,
   ...LOTTIE_LIBRARY,

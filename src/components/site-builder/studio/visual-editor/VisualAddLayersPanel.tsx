@@ -124,8 +124,23 @@ function sampleCrmFieldValue(field: ConfiguredClientField) {
     treatments_left: "4",
     balance: "250",
     sessions_done: "8",
+    summary: "התקדמות טובה — ממשיכים לפי התוכנית",
+    treatment_plan: "מפגש שבועי · תרגילים · יעד לחודש",
+    continuation_plan: "4 מפגשים נוספים + מעקב",
+    follow_up_plan: "בדיקה כל שבועיים · מדידת מדדים",
   };
   return defaults[field.key] || "X";
+}
+
+function isPlanLikeCrmField(field: ConfiguredClientField) {
+  const type = String(field.type || "");
+  const key = String(field.key || "");
+  return (
+    type === "textarea" ||
+    type === "summary" ||
+    type === "text" ||
+    /plan|summary|follow|continuation|treatment/i.test(key)
+  );
 }
 
 function mapLibraryCategoryToPanel(
@@ -577,6 +592,8 @@ export default function VisualAddLayersPanel({
   sectionsRef.current = sections;
   const [elementCategory, setElementCategory] =
     useState<ElementCategory>("all");
+  const [tableRows, setTableRows] = useState(3);
+  const [tableCols, setTableCols] = useState(3);
   const [crmFields, setCrmFields] = useState<ConfiguredClientField[]>([]);
   const [sectionCategory, setSectionCategory] =
     useState<SectionLibraryNavId>("all");
@@ -894,26 +911,48 @@ export default function VisualAddLayersPanel({
             part: "both",
           }),
       },
-      ...crmFields.map((field) => {
+      ...crmFields.flatMap((field) => {
         const sampleValue = sampleCrmFieldValue(field);
         const label = field.label || field.key;
-        return {
+        const preferBoth = isPlanLikeCrmField(field);
+        const valueItem: LibraryElement = {
           id: `crm-field-${field.key}`,
           title: label,
-          description: `${sampleValue} · מתעדכן אוטומטית מה-CRM (הנתון בלבד)`,
-          category: "crm" as const,
-          preview: "crm" as const,
+          description: preferBoth
+            ? `${label} - ${sampleValue} · שם + ערך מה-CRM`
+            : `${sampleValue} · מתעדכן אוטומטית מה-CRM (הנתון בלבד)`,
+          category: "crm",
+          preview: "crm",
           barePreview: true,
-          previewHtml: `<div style="font-size:34px;font-weight:900;color:#0f172a">${sampleValue}</div>`,
+          previewHtml: preferBoth
+            ? `<div style="font-size:16px;font-weight:800;color:#0f172a;text-align:center">${label} - ${sampleValue}</div>`
+            : `<div style="font-size:34px;font-weight:900;color:#0f172a">${sampleValue}</div>`,
           action: () =>
             editor?.addCrmField?.({
               fieldKey: field.key,
               label,
               sampleValue,
-              // Value only — no card wrapper, just the CRM datum.
-              part: "value",
+              part: preferBoth ? "both" : "value",
             }),
         };
+        if (preferBoth) return [valueItem];
+        const bothItem: LibraryElement = {
+          id: `crm-field-both-${field.key}`,
+          title: `${label} (שם וערך)`,
+          description: `${label} - ${sampleValue} · מתעדכן מה-CRM`,
+          category: "crm",
+          preview: "crm",
+          barePreview: true,
+          previewHtml: `<div style="font-size:16px;font-weight:800;color:#0f172a;text-align:center">${label} - ${sampleValue}</div>`,
+          action: () =>
+            editor?.addCrmField?.({
+              fieldKey: field.key,
+              label,
+              sampleValue,
+              part: "both",
+            }),
+        };
+        return [valueItem, bothItem];
       }),
     ];
 
@@ -923,7 +962,12 @@ export default function VisualAddLayersPanel({
     const libraryItems: LibraryElement[] = ELEMENT_LIBRARY.filter((item) => {
       const id = String(item.id || "");
       if (id.startsWith("button-lib-") || id.startsWith("lottie-")) return false;
-      if (id.startsWith("crm-raw-") || id.startsWith("crm-label-") || id.startsWith("crm-generic")) {
+      if (
+        id.startsWith("crm-raw-") ||
+        id.startsWith("crm-label-") ||
+        id.startsWith("crm-generic") ||
+        id.startsWith("crm-field-")
+      ) {
         return false;
       }
       return true;
@@ -1772,7 +1816,9 @@ export default function VisualAddLayersPanel({
                           </h3>
                           <p className="mt-1 text-xs font-bold text-slate-400">
                             {elementCategory === "crm"
-                              ? "הנתון עצמו בלבד — בלי כרטיסייה מאחורה. מתעדכן מה-CRM."
+                              ? "שם + ערך או ערך בלבד — בלי כרטיסייה. אחרי התחברות נמשך מתיק ה-CRM."
+                              : elementCategory === "tables"
+                                ? "בחרו כמה שורות ועמודות ואז הוסיפו טבלה לעמוד"
                               : "לחיצה מוסיפה אלמנט לעריכה חופשית על הקנבס"}
                           </p>
                         </div>
@@ -1782,6 +1828,70 @@ export default function VisualAddLayersPanel({
                           פריטים
                         </span>
                       </div>
+
+                      {elementCategory === "tables" ? (
+                        <div className="mb-5 flex flex-wrap items-end gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                          <label className="min-w-[120px]">
+                            <span className="mb-1 block text-[11px] font-black text-slate-500">
+                              שורות
+                            </span>
+                            <input
+                              type="number"
+                              min={1}
+                              max={20}
+                              value={tableRows}
+                              onChange={(event) =>
+                                setTableRows(
+                                  Math.max(
+                                    1,
+                                    Math.min(20, Number(event.target.value) || 1),
+                                  ),
+                                )
+                              }
+                              className="h-10 w-full rounded-xl border border-slate-200 px-3 text-sm font-black text-slate-800 outline-none focus:border-violet-400"
+                            />
+                          </label>
+                          <label className="min-w-[120px]">
+                            <span className="mb-1 block text-[11px] font-black text-slate-500">
+                              עמודות
+                            </span>
+                            <input
+                              type="number"
+                              min={1}
+                              max={12}
+                              value={tableCols}
+                              onChange={(event) =>
+                                setTableCols(
+                                  Math.max(
+                                    1,
+                                    Math.min(12, Number(event.target.value) || 1),
+                                  ),
+                                )
+                              }
+                              className="h-10 w-full rounded-xl border border-slate-200 px-3 text-sm font-black text-slate-800 outline-none focus:border-violet-400"
+                            />
+                          </label>
+                          <button
+                            type="button"
+                            onClick={() =>
+                              closeAfter(() =>
+                                editor?.addTable?.({
+                                  rows: tableRows,
+                                  cols: tableCols,
+                                  withHeader: true,
+                                  variant: "dark-header",
+                                }),
+                              )
+                            }
+                            className="inline-flex h-10 items-center justify-center rounded-xl bg-slate-900 px-4 text-sm font-black text-white transition hover:bg-slate-800"
+                          >
+                            הוספת טבלה {tableRows}×{tableCols}
+                          </button>
+                          <p className="w-full text-[11px] font-bold text-slate-400">
+                            אפשר גם לבחור תבנית מוכנה מהרשימה למטה
+                          </p>
+                        </div>
+                      ) : null}
 
                       <div className="grid grid-cols-3 gap-4">
                         {filteredElements.map(

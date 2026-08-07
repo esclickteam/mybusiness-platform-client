@@ -143,36 +143,60 @@ export function writeLegacyLocalCustomFields(fields: ConfiguredClientField[]) {
   }
 }
 
+function mergeWithExampleCareFields(
+  fields: ConfiguredClientField[],
+): ConfiguredClientField[] {
+  const examples = createExampleClientFields();
+  const byKey = new Map(fields.map((field) => [field.key, field]));
+  examples.forEach((example) => {
+    if (!byKey.has(example.key)) {
+      byKey.set(example.key, {
+        ...example,
+        order: byKey.size + 1,
+      });
+    }
+  });
+  return Array.from(byKey.values()).sort(
+    (a, b) => Number(a.order || 0) - Number(b.order || 0),
+  );
+}
+
 export async function fetchConfiguredClientFields(
   businessId: string,
   t?: TFunction,
 ): Promise<ConfiguredClientField[]> {
-  if (!businessId) return [];
+  if (!businessId) return createExampleClientFields();
 
-  const res = await API.get<{
-    success?: boolean;
-    fields?: Partial<ConfiguredClientField>[];
-  }>(`/crm-clients/${businessId}/custom-field-definitions`);
+  try {
+    const res = await API.get<{
+      success?: boolean;
+      fields?: Partial<ConfiguredClientField>[];
+    }>(`/crm-clients/${businessId}/custom-field-definitions`);
 
-  const fromApi = Array.isArray(res.data?.fields) ? res.data.fields : [];
-  if (fromApi.length) {
-    return fromApi
-      .map((field, index) => normalizeConfiguredClientField(field, index, t))
-      .filter((field) => field.active !== false)
-      .sort((a, b) => Number(a.order || 0) - Number(b.order || 0));
+    const fromApi = Array.isArray(res.data?.fields) ? res.data.fields : [];
+    if (fromApi.length) {
+      return mergeWithExampleCareFields(
+        fromApi
+          .map((field, index) => normalizeConfiguredClientField(field, index, t))
+          .filter((field) => field.active !== false),
+      );
+    }
+  } catch {
+    /* fall through to legacy / examples */
   }
 
   // One-time migration from legacy localStorage definitions.
   const legacy = readLegacyLocalCustomFields(t);
-  if (!legacy.length) return [];
-
-  try {
-    await saveConfiguredClientFields(businessId, legacy);
-  } catch {
-    /* keep using migrated local copy even if save fails once */
+  if (legacy.length) {
+    try {
+      await saveConfiguredClientFields(businessId, legacy);
+    } catch {
+      /* keep using migrated local copy even if save fails once */
+    }
+    return mergeWithExampleCareFields(legacy);
   }
 
-  return legacy;
+  return createExampleClientFields();
 }
 
 export async function saveConfiguredClientFields(
@@ -261,6 +285,66 @@ export function createExampleClientFields(): ConfiguredClientField[] {
       clientCanEdit: false,
       active: true,
       order: 4,
+    },
+    {
+      id: uid("client_field"),
+      key: "summary",
+      label: "סיכום",
+      type: "summary",
+      description: "סיכום מצב הלקוח מהתיק",
+      placeholder: "לדוגמה: התקדמות טובה, ממשיכים לפי התוכנית",
+      options: [],
+      required: false,
+      showInClientProfile: true,
+      showInClientPortal: true,
+      clientCanEdit: false,
+      active: true,
+      order: 5,
+    },
+    {
+      id: uid("client_field"),
+      key: "treatment_plan",
+      label: "תכנית טיפול",
+      type: "textarea",
+      description: "תכנית הטיפול המלאה שמוצגת ללקוח באזור האישי",
+      placeholder: "לדוגמה: מפגש שבועי · תרגילים ביתיים · יעד לחודש",
+      options: [],
+      required: false,
+      showInClientProfile: true,
+      showInClientPortal: true,
+      clientCanEdit: false,
+      active: true,
+      order: 6,
+    },
+    {
+      id: uid("client_field"),
+      key: "continuation_plan",
+      label: "תוכנית המשך",
+      type: "textarea",
+      description: "מה ממשיכים בשלב הבא",
+      placeholder: "לדוגמה: 4 מפגשים נוספים + מעקב משקל",
+      options: [],
+      required: false,
+      showInClientProfile: true,
+      showInClientPortal: true,
+      clientCanEdit: false,
+      active: true,
+      order: 7,
+    },
+    {
+      id: uid("client_field"),
+      key: "follow_up_plan",
+      label: "תכנית מעקב",
+      type: "textarea",
+      description: "נקודות מעקב ותזכורות לאורך זמן",
+      placeholder: "לדוגמה: בדיקה כל שבועיים · מדידת מדדים",
+      options: [],
+      required: false,
+      showInClientProfile: true,
+      showInClientPortal: true,
+      clientCanEdit: false,
+      active: true,
+      order: 8,
     },
   ];
 }

@@ -1271,6 +1271,59 @@ const CATEGORY_DEFS: CategoryDef[] = [
           sectionIds: [`section-portal-reset-password-${n}`, FOOTER],
         };
       }),
+      // Appended after legacy portal pages so existing page-portal-NN ids stay stable.
+      ...Array.from({ length: 3 }, (_, i) => {
+        const n = String(i + 1).padStart(2, "0");
+        return {
+          title: `תוכנית המשך טיפול ${i + 1}`,
+          description:
+            "עמוד אחרי התחברות: סיכום, תכנית טיפול, תוכנית המשך ומעקב מה-CRM",
+          slugSuggestion: i === 0 ? "treatment-plan" : `treatment-plan-${n}`,
+          keywords: [
+            "portal-treatment-plan",
+            "תוכנית טיפול",
+            "המשך טיפול",
+            "סיכום",
+            "אחרי התחברות",
+            "portal",
+          ],
+          sectionIds: [`section-portal-treatment-plan-${n}`, FOOTER],
+        };
+      }),
+      ...Array.from({ length: 3 }, (_, i) => {
+        const n = String(i + 1).padStart(2, "0");
+        return {
+          title: `תכנית מעקב ${i + 1}`,
+          description: "עמוד מעקב עם ערכים שנמדדים לאורך זמן מה-CRM",
+          slugSuggestion: i === 0 ? "follow-up" : `follow-up-${n}`,
+          keywords: [
+            "portal-follow-up",
+            "מעקב",
+            "תכנית מעקב",
+            "מדדים",
+            "אחרי התחברות",
+            "portal",
+          ],
+          sectionIds: [`section-portal-follow-up-${n}`, FOOTER],
+        };
+      }),
+      ...Array.from({ length: 3 }, (_, i) => {
+        const n = String(i + 1).padStart(2, "0");
+        return {
+          title: `תפריט אזור אישי ${i + 1}`,
+          description: "תפריט ניווט כללי לאזור האישי — מתאים לכל עסק",
+          slugSuggestion: i === 0 ? "portal-menu" : `portal-menu-${n}`,
+          keywords: [
+            "portal-menu",
+            "תפריט",
+            "ניווט",
+            "menu",
+            "אחרי התחברות",
+            "portal",
+          ],
+          sectionIds: [`section-portal-menu-${n}`, FOOTER],
+        };
+      }),
     ],
   },
 ];
@@ -1364,6 +1417,13 @@ export const PORTAL_PAGE_KIND_NAV: Array<{
   { id: "courses", label: "קורסים", keyword: "portal-courses" },
   { id: "profile", label: "נתונים אישיים", keyword: "portal-profile" },
   { id: "custom-data", label: "נתונים משתנים", keyword: "portal-custom-data" },
+  {
+    id: "treatment-plan",
+    label: "תוכנית טיפול",
+    keyword: "portal-treatment-plan",
+  },
+  { id: "follow-up", label: "תכנית מעקב", keyword: "portal-follow-up" },
+  { id: "menu", label: "תפריט", keyword: "portal-menu" },
   { id: "packages", label: "חבילות ותשלום", keyword: "portal-packages" },
   {
     id: "forgot-password",

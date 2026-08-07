@@ -1902,7 +1902,42 @@ const SAMPLE_CRM_FIELDS = [
     type: "number",
     value: 8,
   },
+  {
+    key: "summary",
+    label: "סיכום",
+    type: "summary",
+    value: "התקדמות טובה — ממשיכים לפי התוכנית",
+  },
+  {
+    key: "treatment_plan",
+    label: "תכנית טיפול",
+    type: "textarea",
+    value: "מפגש שבועי · תרגילים · יעד לחודש",
+  },
+  {
+    key: "continuation_plan",
+    label: "תוכנית המשך",
+    type: "textarea",
+    value: "4 מפגשים נוספים + מעקב משקל",
+  },
+  {
+    key: "follow_up_plan",
+    label: "תכנית מעקב",
+    type: "textarea",
+    value: "בדיקה כל שבועיים · מדידת מדדים",
+  },
 ];
+
+function syncPortalDataToWindow(customData) {
+  if (typeof window === "undefined") return;
+  const flat = {};
+  (Array.isArray(customData) ? customData : []).forEach((field) => {
+    const key = String(field?.key || "").trim();
+    if (!key) return;
+    flat[key] = field?.value;
+  });
+  window.__BIZUPLY_CLIENT_PORTAL_DATA__ = flat;
+}
 
 function buildCustomDataMap(fields) {
   const map = new Map();
@@ -1987,21 +2022,26 @@ async function refreshPortalCrmFieldBindings(root, { siteId, editorMode }) {
   if (!hasBoundNodes) return;
 
   if (editorMode) {
+    syncPortalDataToWindow(SAMPLE_CRM_FIELDS);
     applyPortalCrmFieldBindings(root, SAMPLE_CRM_FIELDS, { editorMode: true });
     return;
   }
 
   if (!siteId) {
+    syncPortalDataToWindow([]);
     applyPortalCrmFieldBindings(root, [], { editorMode: false });
     return;
   }
 
   try {
     const data = await sitePortalMe(siteId);
-    applyPortalCrmFieldBindings(root, data.customData || [], {
+    const customData = data.customData || [];
+    syncPortalDataToWindow(customData);
+    applyPortalCrmFieldBindings(root, customData, {
       editorMode: false,
     });
   } catch {
+    syncPortalDataToWindow([]);
     applyPortalCrmFieldBindings(root, [], { editorMode: false });
   }
 }
