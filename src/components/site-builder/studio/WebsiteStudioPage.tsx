@@ -6321,15 +6321,19 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     variable: ClientPortalVariable,
   ) => {
     runEditor((editor) => {
+      // Raw value only — no chip/card chrome behind the CRM data.
       const html = `
 <span
   data-client-variable="true"
   data-client-variable-key="${variable.key}"
+  data-client-variable-label="${variable.label || variable.key}"
+  data-client-variable-display="raw"
+  data-client-variable-source="${variable.source || "crm_client"}"
   data-bizuply-crm-field="${variable.key}"
   data-bizuply-crm-field-part="value"
-  class="inline-flex items-center rounded-full bg-violet-50 px-3 py-1 text-sm font-black text-violet-700 ring-1 ring-violet-100"
+  style="background:transparent;border:none;box-shadow:none;padding:0;margin:0;border-radius:0;display:inline;color:inherit;font:inherit"
 >
-  ${variable.label || variable.key}
+  {{${variable.key}}}
 </span>`;
 
       const target: any = getSafeAppendTarget(editor);
@@ -6803,13 +6807,17 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       return;
     }
 
-    if (
-      action === "background" ||
-      action === "copy" ||
-      action === "dynamic"
-    ) {
+    if (action === "dynamic") {
+      if (id && id !== activePageId) {
+        handleSelectPage(id);
+      }
+      setClientPortalModalOpen(true);
+      return;
+    }
+
+    if (action === "background" || action === "copy") {
       window.alert(
-        "הפעולה הזו בתפריט העמודים תהיה זמינה בשלב הבא. כרגע אפשר להשתמש בהגדרות, SEO, שיתוף, שינוי שם, שכפול, דף בית, הסתרה מתפריט, עמוד משנה ומחיקה.",
+        "הפעולה הזו בתפריט העמודים תהיה זמינה בשלב הבא. כרגע אפשר להשתמש בהגדרות, SEO, שיתוף, דינמי/אזור אישי, שינוי שם, שכפול, דף בית, הסתרה מתפריט, עמוד משנה ומחיקה.",
       );
     }
   };

@@ -36,6 +36,10 @@ import {
   applyVisualResponsiveToDom,
   prepareAllVideosInDom,
 } from "../studio/visual-editor/utils/visualDomApply";
+import {
+  bindClientPortalVariables,
+  readClientPortalRuntimeValues,
+} from "../studio/visual-editor/utils/bindClientPortalVariables";
 import { applySitePageNavSubmenusToDom } from "../studio/visual-editor/utils/applySitePageNavSubmenusToDom";
 import { enhanceTemplateMobileNav } from "../studio/visual-editor/utils/enhanceTemplateMobileNav";
 import {
@@ -1932,6 +1936,19 @@ function applyPublicVisualData(root, visualData, pathname, site) {
   enhanceTemplateMobileNav(root);
   prepareAllVideosInDom(root);
   revealRuntimeAnimatedElements(root);
+
+  const activePage =
+    Array.isArray(site?.pages)
+      ? site.pages.find(
+          (page) =>
+            safeString(page?.id) === safeString(site?.activePageId) ||
+            safeString(page?.slug) === safeString(pathname).replace(/^\//, ""),
+        )
+      : null;
+  bindClientPortalVariables(
+    root,
+    readClientPortalRuntimeValues(site, activePage),
+  );
 
   const enabledPlugins = Array.isArray(site?.enabledPlugins) ? site.enabledPlugins : [];
   if (enabledPlugins.includes("countdown")) {

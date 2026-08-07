@@ -3246,11 +3246,17 @@ export function useVisualEditorState({
         next = writeVisualContentItem(next, id, { text: sampleText });
         next = writeVisualStyleItem(next, id, {
           color: "#111827",
-          fontSize: "22px",
+          fontSize: part === "value" ? "36px" : "22px",
           fontWeight: "800",
           lineHeight: "1.35",
           textAlign: "right",
           direction: "rtl",
+          backgroundColor: "transparent",
+          backgroundImage: "none",
+          border: "none",
+          borderRadius: "0",
+          boxShadow: "none",
+          padding: "0",
         } as StylePatch);
         next = writeVisualLayoutItem(next, id, {
           position: "absolute",
