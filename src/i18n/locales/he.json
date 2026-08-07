@@ -3238,6 +3238,7 @@
     "validUntil": "בתוקף עד",
     "billingType": "סוג חיוב",
     "cancelRenewal": "ביטול חידוש",
+    "cancelRenewalConfirm": "לבטל את החידוש האוטומטי? הגישה תישאר פעילה עד סוף תקופת החיוב, ואפשר יהיה להפעיל מחדש בכל רגע.",
     "cancelling": "מבטל...",
     "resumeSubscription": "חידוש / הפעלה מחדש",
     "resuming": "מפעיל מחדש...",
