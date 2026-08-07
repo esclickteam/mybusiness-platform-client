@@ -53,6 +53,16 @@ import {
   getGmailStatus,
   type GmailPublicAccount,
 } from "../../../../api/gmailApi";
+import {
+  getOutlookConnectUrl,
+  getOutlookStatus,
+  type OutlookPublicAccount,
+} from "../../../../api/outlookApi";
+import {
+  getGoogleCalendarConnectUrl,
+  getGoogleCalendarStatus,
+  type GoogleCalendarStatusResponse,
+} from "../../../../api/googleCalendarApi";
 
 const WA_MAPPING_PRESETS = [
   { key: "lead:name", source: "lead", field: "name", label: "שם הליד" },
@@ -113,6 +123,19 @@ function isWhatsAppActionKey(actionKey: unknown) {
 
 function isGmailActionKey(actionKey: unknown) {
   return String(actionKey || "") === "send_gmail";
+}
+
+function isOutlookActionKey(actionKey: unknown) {
+  return String(actionKey || "") === "send_outlook";
+}
+
+function isGoogleCalendarActionKey(actionKey: unknown) {
+  const key = String(actionKey || "");
+  return (
+    key === "google_calendar_create_event" ||
+    key === "google_calendar_update_event" ||
+    key === "google_calendar_delete_event"
+  );
 }
 
 const GMAIL_RECIPIENT_LABELS: Record<string, string> = {
@@ -374,6 +397,15 @@ function EditorInner({
   );
   const [gmailMessage, setGmailMessage] = useState("");
   const [gmailLoading, setGmailLoading] = useState(false);
+  const [outlookAvailable, setOutlookAvailable] = useState(false);
+  const [outlookAccount, setOutlookAccount] =
+    useState<OutlookPublicAccount | null>(null);
+  const [outlookMessage, setOutlookMessage] = useState("");
+  const [outlookLoading, setOutlookLoading] = useState(false);
+  const [calendarStatus, setCalendarStatus] =
+    useState<GoogleCalendarStatusResponse | null>(null);
+  const [calendarMessage, setCalendarMessage] = useState("");
+  const [calendarLoading, setCalendarLoading] = useState(false);
   const [triggerCatalog, setTriggerCatalog] = useState<
     AutomationTriggerOption[]
   >([]);
@@ -456,6 +488,42 @@ function EditorInner({
       setGmailMessage(readErrorMessage(error, "לא הצלחנו לטעון את סטטוס Gmail"));
     } finally {
       setGmailLoading(false);
+    }
+  }, [businessId]);
+
+  const loadOutlookStatus = useCallback(async () => {
+    setOutlookLoading(true);
+    setOutlookMessage("");
+    try {
+      const status = await getOutlookStatus(businessId);
+      setOutlookAvailable(Boolean(status.available));
+      setOutlookAccount(status.account);
+      if (status.message) setOutlookMessage(status.message);
+    } catch (error: unknown) {
+      setOutlookAvailable(false);
+      setOutlookAccount(null);
+      setOutlookMessage(
+        readErrorMessage(error, "לא הצלחנו לטעון את סטטוס Outlook")
+      );
+    } finally {
+      setOutlookLoading(false);
+    }
+  }, [businessId]);
+
+  const loadCalendarStatus = useCallback(async () => {
+    setCalendarLoading(true);
+    setCalendarMessage("");
+    try {
+      const status = await getGoogleCalendarStatus(businessId);
+      setCalendarStatus(status);
+      if (status.message) setCalendarMessage(status.message);
+    } catch (error: unknown) {
+      setCalendarStatus(null);
+      setCalendarMessage(
+        readErrorMessage(error, "לא הצלחנו לטעון את סטטוס Google Calendar")
+      );
+    } finally {
+      setCalendarLoading(false);
     }
   }, [businessId]);
 
@@ -546,6 +614,18 @@ function EditorInner({
       ? String(selectedNode.data?.actionKey || "")
       : "";
 
+  const selectedOutlookActionKey =
+    selectedNode?.type === "action" &&
+    isOutlookActionKey(selectedNode.data?.actionKey)
+      ? String(selectedNode.data?.actionKey || "")
+      : "";
+
+  const selectedCalendarActionKey =
+    selectedNode?.type === "action" &&
+    isGoogleCalendarActionKey(selectedNode.data?.actionKey)
+      ? String(selectedNode.data?.actionKey || "")
+      : "";
+
   // Only reload Gmail status when the selected Gmail action node changes —
   // not on every subject/body keystroke (that remounted the form and jumped focus).
   useEffect(() => {
@@ -554,37 +634,77 @@ function EditorInner({
   }, [selectedId, selectedGmailActionKey, loadGmailStatus]);
 
   useEffect(() => {
+    if (!selectedId || !selectedOutlookActionKey) return;
+    void loadOutlookStatus();
+  }, [selectedId, selectedOutlookActionKey, loadOutlookStatus]);
+
+  useEffect(() => {
+    if (!selectedId || !selectedCalendarActionKey) return;
+    void loadCalendarStatus();
+  }, [selectedId, selectedCalendarActionKey, loadCalendarStatus]);
+
+  useEffect(() => {
     if (!selectedId) return;
     setNodes((prev) => {
       const node = prev.find((n) => n.id === selectedId);
       if (!node || !isGmailActionKey(node.data?.actionKey)) return prev;
       const recipientType = String(node.data?.recipientType || "").trim();
       const needsRecipientDefault = !recipientType;
-      const needsAccount =
-        Boolean(gmailAccount) &&
-        gmailAccount?.connectionStatus === "connected" &&
-        (node.data?.connectedAccountId !== gmailAccount.id ||
-          node.data?.senderEmail !== gmailAccount.email);
-      if (!needsRecipientDefault && !needsAccount) return prev;
-      return prev.map((n) =>
-        n.id === selectedId
-          ? {
-              ...n,
-              data: {
-                ...(n.data || {}),
-                ...(needsRecipientDefault ? { recipientType: "lead_email" } : {}),
-                ...(needsAccount && gmailAccount
-                  ? {
-                      connectedAccountId: gmailAccount.id,
-                      senderEmail: gmailAccount.email,
-                    }
-                  : {}),
-              },
-            }
-          : n
-      );
+      const liveSender =
+        gmailAccount?.connectionStatus === "connected"
+          ? String(gmailAccount.email || "")
+          : "";
+      const needsSenderDisplay =
+        Boolean(liveSender) && node.data?.senderEmail !== liveSender;
+      const hasStalePin = Boolean(node.data?.connectedAccountId);
+      if (!needsRecipientDefault && !needsSenderDisplay && !hasStalePin) {
+        return prev;
+      }
+      return prev.map((n) => {
+        if (n.id !== selectedId) return n;
+        const nextData = {
+          ...(n.data || {}),
+          ...(needsRecipientDefault ? { recipientType: "lead_email" } : {}),
+          ...(liveSender ? { senderEmail: liveSender } : {}),
+        };
+        // Runtime resolve — do not pin ConnectedAccountId into workflow nodes.
+        delete nextData.connectedAccountId;
+        return { ...n, data: nextData };
+      });
     });
   }, [selectedId, gmailAccount, setNodes]);
+
+  useEffect(() => {
+    if (!selectedId) return;
+    setNodes((prev) => {
+      const node = prev.find((n) => n.id === selectedId);
+      if (!node || !isOutlookActionKey(node.data?.actionKey)) return prev;
+      const recipientType = String(node.data?.recipientType || "").trim();
+      const needsRecipientDefault = !recipientType;
+      const liveSender =
+        outlookAccount?.connectionStatus === "connected"
+          ? String(outlookAccount.email || "")
+          : "";
+      const needsSenderDisplay =
+        Boolean(liveSender) && node.data?.senderEmail !== liveSender;
+      const hasStalePin = Boolean(node.data?.connectedAccountId);
+      if (!needsRecipientDefault && !needsSenderDisplay && !hasStalePin) {
+        return prev;
+      }
+      return prev.map((n) => {
+        if (n.id !== selectedId) return n;
+        const nextData = {
+          ...(n.data || {}),
+          emailProvider: "microsoft",
+          ...(needsRecipientDefault ? { recipientType: "lead_email" } : {}),
+          ...(liveSender ? { senderEmail: liveSender } : {}),
+        };
+        // Runtime resolve — do not pin ConnectedAccountId into workflow nodes.
+        delete nextData.connectedAccountId;
+        return { ...n, data: nextData };
+      });
+    });
+  }, [selectedId, outlookAccount, setNodes]);
 
   const palette = useMemo(
     () =>
@@ -804,11 +924,22 @@ function EditorInner({
 
   const applyGmailPublishDefaults = (list: Node[]) =>
     list.map((n) => {
-      if (!isGmailActionKey(n.data?.actionKey)) return n;
-      if (String(n.data?.recipientType || "").trim()) return n;
+      if (
+        !isGmailActionKey(n.data?.actionKey) &&
+        !isOutlookActionKey(n.data?.actionKey)
+      ) {
+        return n;
+      }
+      const recipientType = String(n.data?.recipientType || "").trim();
       return {
         ...n,
-        data: { ...(n.data || {}), recipientType: "lead_email" },
+        data: {
+          ...(n.data || {}),
+          ...(recipientType ? {} : { recipientType: "lead_email" }),
+          emailProvider: isOutlookActionKey(n.data?.actionKey)
+            ? "microsoft"
+            : "gmail",
+        },
       };
     });
 
@@ -1584,11 +1715,40 @@ function EditorInner({
                       updateSelectedData({
                         actionKey: nextKey,
                         label: opt?.label || selectedNode.data?.label,
-                        ...(nextKey === "send_gmail"
+                        ...(nextKey === "send_gmail" ||
+                        nextKey === "send_outlook"
                           ? {
                               recipientType:
                                 selectedNode.data?.recipientType ||
                                 "lead_email",
+                              emailProvider:
+                                nextKey === "send_outlook"
+                                  ? "microsoft"
+                                  : "gmail",
+                            }
+                          : {}),
+                        ...(nextKey === "google_calendar_create_event"
+                          ? {
+                              title:
+                                selectedNode.data?.title ||
+                                "פגישה עם {{appointment.clientName}}",
+                              attendeeEmail:
+                                selectedNode.data?.attendeeEmail ||
+                                "{{appointment.clientEmail}}",
+                              calendarId:
+                                selectedNode.data?.calendarId || "primary",
+                              durationMinutes:
+                                selectedNode.data?.durationMinutes ?? 60,
+                            }
+                          : {}),
+                        ...(nextKey === "google_calendar_update_event" ||
+                        nextKey === "google_calendar_delete_event"
+                          ? {
+                              eventId:
+                                selectedNode.data?.eventId ||
+                                "{{appointment.googleEventId}}",
+                              calendarId:
+                                selectedNode.data?.calendarId || "primary",
                             }
                           : {}),
                       });
@@ -2034,8 +2194,8 @@ function EditorInner({
                               dir="ltr"
                               disabled
                               value={`Gmail — ${String(
-                                selectedNode.data?.senderEmail ||
-                                  gmailAccount.email ||
+                                gmailAccount.email ||
+                                  selectedNode.data?.senderEmail ||
                                   ""
                               )}`}
                               readOnly
@@ -2203,8 +2363,8 @@ function EditorInner({
                                 <span>
                                   מ: Gmail —{" "}
                                   {String(
-                                    selectedNode.data?.senderEmail ||
-                                      gmailAccount.email ||
+                                    gmailAccount.email ||
+                                      selectedNode.data?.senderEmail ||
                                       "—"
                                   )}
                                 </span>
@@ -2228,6 +2388,515 @@ function EditorInner({
                                   selectedNode.data?.customField
                                     ? ` (${String(selectedNode.data.customField)})`
                                     : ""}
+                                </span>
+                                <span>
+                                  נושא:{" "}
+                                  {String(
+                                    selectedNode.data?.subject || ""
+                                  ).trim() || "—"}
+                                </span>
+                              </div>
+                              {!previewHtml && !previewText ? (
+                                <div className="af-gmail-preview__empty">
+                                  אין עדיין תוכן להצגה
+                                </div>
+                              ) : (
+                                <>
+                                  {previewHtml ? (
+                                    <div
+                                      className="af-gmail-preview__body"
+                                      dangerouslySetInnerHTML={{
+                                        __html: previewHtml,
+                                      }}
+                                    />
+                                  ) : null}
+                                  {previewText ? (
+                                    <pre className="af-gmail-preview__text">
+                                      {previewText}
+                                    </pre>
+                                  ) : null}
+                                </>
+                              )}
+                            </div>
+                          );
+                        })()}
+                      </>
+                    )}
+                  </div>
+                ) : null}
+                {isGoogleCalendarActionKey(selectedNode.data?.actionKey) ? (
+                  <div className="af-wa-template">
+                    <div className="af-wa-banner" dir="rtl">
+                      <strong>Google Calendar</strong>
+                      <p>
+                        האירוע נוצר ביומן Google של העסק. זמני הפגישה נגזרים
+                        אוטומטית מ-appointment.date / appointment.time כאשר
+                        השדות ריקים.
+                      </p>
+                    </div>
+                    {calendarLoading ? (
+                      <p className="af-wa-template__state">
+                        טוען סטטוס Google Calendar...
+                      </p>
+                    ) : !calendarStatus?.available ? (
+                      <div className="af-wa-template__state af-wa-template__state--error">
+                        <p>
+                          {calendarMessage ||
+                            "Google Calendar אינו זמין לעסק זה כרגע"}
+                        </p>
+                      </div>
+                    ) : !calendarStatus?.calendar?.connected ? (
+                      <div className="af-wa-template__state af-wa-template__state--error">
+                        <p>
+                          {calendarStatus?.calendar?.needsGrant
+                            ? "יש לאשר הרשאת Calendar (Gmail כבר מחובר)"
+                            : "יש לחבר Google Calendar לפני פרסום האוטומציה"}
+                        </p>
+                        <button
+                          type="button"
+                          className="af-toolbar__btn"
+                          disabled={readOnly}
+                          title={writeBlockedTitle}
+                          onClick={async () => {
+                            try {
+                              const data = await getGoogleCalendarConnectUrl(
+                                businessId,
+                                window.location.pathname
+                              );
+                              if (data?.enabledLocally) {
+                                await loadCalendarStatus();
+                                return;
+                              }
+                              if (!data?.url) {
+                                throw new Error("לא התקבל קישור התחברות");
+                              }
+                              window.location.href = data.url;
+                            } catch (error: unknown) {
+                              toast.error(
+                                readErrorMessage(
+                                  error,
+                                  "התחברות Google Calendar נכשלה"
+                                )
+                              );
+                            }
+                          }}
+                        >
+                          {calendarStatus?.calendar?.needsGrant
+                            ? "Grant Calendar access"
+                            : "חיבור Google Calendar"}
+                        </button>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="af-wa-sender" dir="rtl">
+                          <label>
+                            חשבון Google
+                            <input
+                              type="text"
+                              dir="ltr"
+                              disabled
+                              value={String(
+                                calendarStatus.calendar?.googleEmail ||
+                                  calendarStatus.account?.email ||
+                                  ""
+                              )}
+                              readOnly
+                            />
+                          </label>
+                        </div>
+                        {String(selectedNode.data?.actionKey) !==
+                        "google_calendar_delete_event" ? (
+                          <>
+                            <label>
+                              כותרת
+                              <input
+                                type="text"
+                                disabled={readOnly}
+                                value={String(
+                                  selectedNode.data?.title ||
+                                    selectedNode.data?.summary ||
+                                    ""
+                                )}
+                                placeholder="פגישה עם {{appointment.clientName}}"
+                                onChange={(e) =>
+                                  updateSelectedData({ title: e.target.value })
+                                }
+                              />
+                            </label>
+                            <label>
+                              תיאור
+                              <textarea
+                                rows={3}
+                                disabled={readOnly}
+                                value={String(
+                                  selectedNode.data?.description || ""
+                                )}
+                                onChange={(e) =>
+                                  updateSelectedData({
+                                    description: e.target.value,
+                                  })
+                                }
+                              />
+                            </label>
+                            <label>
+                              התחלה (אופציונלי — ברירת מחדל מפגישה)
+                              <input
+                                type="text"
+                                dir="ltr"
+                                disabled={readOnly}
+                                value={String(selectedNode.data?.start || "")}
+                                placeholder="YYYY-MM-DD HH:mm או ריק"
+                                onChange={(e) =>
+                                  updateSelectedData({ start: e.target.value })
+                                }
+                              />
+                            </label>
+                            <label>
+                              סיום (אופציונלי)
+                              <input
+                                type="text"
+                                dir="ltr"
+                                disabled={readOnly}
+                                value={String(selectedNode.data?.end || "")}
+                                placeholder="YYYY-MM-DD HH:mm או ריק"
+                                onChange={(e) =>
+                                  updateSelectedData({ end: e.target.value })
+                                }
+                              />
+                            </label>
+                            <label>
+                              משך בדקות (אם אין סיום)
+                              <input
+                                type="number"
+                                min={5}
+                                disabled={readOnly}
+                                value={Number(
+                                  selectedNode.data?.durationMinutes ?? 60
+                                )}
+                                onChange={(e) =>
+                                  updateSelectedData({
+                                    durationMinutes: Number(e.target.value),
+                                  })
+                                }
+                              />
+                            </label>
+                            <label>
+                              משתתף (אימייל)
+                              <input
+                                type="text"
+                                dir="ltr"
+                                disabled={readOnly}
+                                value={String(
+                                  selectedNode.data?.attendeeEmail || ""
+                                )}
+                                placeholder="{{appointment.clientEmail}}"
+                                onChange={(e) =>
+                                  updateSelectedData({
+                                    attendeeEmail: e.target.value,
+                                  })
+                                }
+                              />
+                            </label>
+                            <label>
+                              מיקום
+                              <input
+                                type="text"
+                                disabled={readOnly}
+                                value={String(
+                                  selectedNode.data?.location || ""
+                                )}
+                                placeholder="{{appointment.address}}"
+                                onChange={(e) =>
+                                  updateSelectedData({
+                                    location: e.target.value,
+                                  })
+                                }
+                              />
+                            </label>
+                          </>
+                        ) : null}
+                        {String(selectedNode.data?.actionKey) !==
+                        "google_calendar_create_event" ? (
+                          <label>
+                            Event ID
+                            <input
+                              type="text"
+                              dir="ltr"
+                              disabled={readOnly}
+                              value={String(selectedNode.data?.eventId || "")}
+                              placeholder="{{appointment.googleEventId}}"
+                              onChange={(e) =>
+                                updateSelectedData({ eventId: e.target.value })
+                              }
+                            />
+                          </label>
+                        ) : null}
+                        <label>
+                          Calendar ID
+                          <input
+                            type="text"
+                            dir="ltr"
+                            disabled={readOnly}
+                            value={String(
+                              selectedNode.data?.calendarId || "primary"
+                            )}
+                            placeholder="primary"
+                            onChange={(e) =>
+                              updateSelectedData({
+                                calendarId: e.target.value || "primary",
+                              })
+                            }
+                          />
+                        </label>
+                      </>
+                    )}
+                  </div>
+                ) : null}
+                {isOutlookActionKey(selectedNode.data?.actionKey) ? (
+                  <div className="af-wa-template">
+                    <div className="af-wa-banner" dir="rtl">
+                      <strong>שליחה דרך Outlook / Microsoft 365 המחובר</strong>
+                      <p>
+                        המייל יישלח מחשבון Outlook שחיברתם לעסק. אין שימוש ב-SMTP
+                        ואין fallback לספק אחר.
+                      </p>
+                    </div>
+
+                    {outlookLoading ? (
+                      <p className="af-wa-template__state">טוען סטטוס Outlook...</p>
+                    ) : !outlookAvailable ? (
+                      <div className="af-wa-template__state af-wa-template__state--error">
+                        <p>
+                          {outlookMessage ||
+                            "Outlook / Microsoft 365 יהיה זמין בקרוב"}
+                        </p>
+                      </div>
+                    ) : outlookAccount?.connectionStatus !== "connected" ? (
+                      <div className="af-wa-template__state af-wa-template__state--error">
+                        <p>
+                          {outlookMessage ||
+                            "יש לחבר חשבון Outlook לפני פרסום האוטומציה"}
+                        </p>
+                        <button
+                          type="button"
+                          className="af-toolbar__btn"
+                          disabled={readOnly}
+                          title={writeBlockedTitle}
+                          onClick={async () => {
+                            try {
+                              const data = await getOutlookConnectUrl(
+                                businessId,
+                                window.location.pathname
+                              );
+                              if (!data?.url) {
+                                throw new Error("לא התקבל קישור התחברות");
+                              }
+                              window.location.href = data.url;
+                            } catch (error: unknown) {
+                              toast.error(
+                                readErrorMessage(error, "התחברות Outlook נכשלה")
+                              );
+                            }
+                          }}
+                        >
+                          חיבור Outlook
+                        </button>
+                      </div>
+                    ) : (
+                      <>
+                        <div className="af-wa-sender" dir="rtl">
+                          <label>
+                            שולח
+                            <input
+                              type="text"
+                              dir="ltr"
+                              disabled
+                              value={`Outlook — ${String(
+                                outlookAccount.email ||
+                                  selectedNode.data?.senderEmail ||
+                                  ""
+                              )}`}
+                              readOnly
+                            />
+                          </label>
+                        </div>
+
+                        <div className="af-wa-recipient" dir="rtl">
+                          <label>
+                            למי לשלוח את המייל?
+                            <select
+                              value={String(
+                                selectedNode.data?.recipientType || "lead_email"
+                              )}
+                              disabled={readOnly}
+                              onChange={(e) => {
+                                const recipientType = e.target.value;
+                                updateSelectedData({
+                                  recipientType,
+                                  emailProvider: "microsoft",
+                                  fixedEmail:
+                                    recipientType === "fixed_email"
+                                      ? String(
+                                          selectedNode.data?.fixedEmail || ""
+                                        )
+                                      : "",
+                                  customField:
+                                    recipientType === "custom_field"
+                                      ? String(
+                                          selectedNode.data?.customField || ""
+                                        )
+                                      : "",
+                                });
+                              }}
+                            >
+                              <option value="lead_email">אימייל הליד</option>
+                              {triggerSupportsAppointmentCustomerEmail(
+                                selectedTriggerKey
+                              ) ||
+                              String(
+                                selectedNode.data?.recipientType || ""
+                              ) === "appointment_customer_email" ? (
+                                <option value="appointment_customer_email">
+                                  אימייל הלקוח שקבע תור
+                                </option>
+                              ) : null}
+                              <option value="business_owner">בעל העסק</option>
+                              <option value="lead_owner">אחראי הליד</option>
+                              <option value="fixed_email">כתובת קבועה</option>
+                              <option value="custom_field">
+                                שדה מותאם אישית
+                              </option>
+                            </select>
+                          </label>
+                          <p className="af-wa-recipient__hint">
+                            נמען:{" "}
+                            {GMAIL_RECIPIENT_LABELS[
+                              String(
+                                selectedNode.data?.recipientType || "lead_email"
+                              )
+                            ] || "—"}
+                          </p>
+                          {String(selectedNode.data?.recipientType || "") ===
+                          "fixed_email" ? (
+                            <label>
+                              כתובת קבועה
+                              <input
+                                type="email"
+                                dir="ltr"
+                                placeholder="name@example.com"
+                                disabled={readOnly}
+                                value={String(
+                                  selectedNode.data?.fixedEmail || ""
+                                )}
+                                onChange={(e) =>
+                                  updateSelectedData({
+                                    recipientType: "fixed_email",
+                                    fixedEmail: e.target.value,
+                                    emailProvider: "microsoft",
+                                  })
+                                }
+                              />
+                            </label>
+                          ) : null}
+                          {String(selectedNode.data?.recipientType || "") ===
+                          "custom_field" ? (
+                            <label>
+                              שדה מותאם (מפתח)
+                              <input
+                                type="text"
+                                dir="ltr"
+                                placeholder="emailField"
+                                disabled={readOnly}
+                                value={String(
+                                  selectedNode.data?.customField || ""
+                                )}
+                                onChange={(e) =>
+                                  updateSelectedData({
+                                    recipientType: "custom_field",
+                                    customField: e.target.value,
+                                    emailProvider: "microsoft",
+                                  })
+                                }
+                              />
+                            </label>
+                          ) : null}
+                        </div>
+
+                        <label>
+                          נושא
+                          <input
+                            type="text"
+                            disabled={readOnly}
+                            value={String(selectedNode.data?.subject || "")}
+                            placeholder="הודעה מ{{business.name}}"
+                            onChange={(e) =>
+                              updateSelectedData({ subject: e.target.value })
+                            }
+                          />
+                        </label>
+
+                        <label>
+                          תוכן (HTML)
+                          <textarea
+                            rows={6}
+                            disabled={readOnly}
+                            value={String(
+                              selectedNode.data?.html ||
+                                selectedNode.data?.body ||
+                                ""
+                            )}
+                            placeholder='<div dir="rtl"><p>שלום {{lead.name}}</p></div>'
+                            onChange={(e) =>
+                              updateSelectedData({
+                                html: e.target.value,
+                                body: e.target.value,
+                              })
+                            }
+                          />
+                        </label>
+
+                        <label>
+                          טקסט פשוט (אופציונלי)
+                          <textarea
+                            rows={3}
+                            disabled={readOnly}
+                            value={String(selectedNode.data?.text || "")}
+                            placeholder="גרסת טקסט ללא HTML"
+                            onChange={(e) =>
+                              updateSelectedData({ text: e.target.value })
+                            }
+                          />
+                        </label>
+
+                        {(() => {
+                          const previewHtml = String(
+                            selectedNode.data?.html ||
+                              selectedNode.data?.body ||
+                              ""
+                          ).trim();
+                          const previewText = String(
+                            selectedNode.data?.text || ""
+                          ).trim();
+                          return (
+                            <div className="af-gmail-preview" dir="rtl">
+                              <strong>תצוגה מקדימה</strong>
+                              <div className="af-gmail-preview__headers">
+                                <span>
+                                  מ: Outlook —{" "}
+                                  {String(
+                                    outlookAccount.email ||
+                                      selectedNode.data?.senderEmail ||
+                                      "—"
+                                  )}
+                                </span>
+                                <span>
+                                  אל:{" "}
+                                  {GMAIL_RECIPIENT_LABELS[
+                                    String(
+                                      selectedNode.data?.recipientType ||
+                                        "lead_email"
+                                    )
+                                  ] || "—"}
                                 </span>
                                 <span>
                                   נושא:{" "}

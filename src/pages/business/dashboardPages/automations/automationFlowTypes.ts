@@ -78,8 +78,28 @@ export const ACTION_OPTIONS = [
   { value: "create_crm_note", label: "יצירת הערה ב-CRM", supported: true },
   { value: "send_whatsapp", label: "שליחת תבנית וואטסאפ", supported: true },
   { value: "whatsapp_template", label: "שליחת תבנית וואטסאפ", supported: true },
-  { value: "send_email", label: "שליחת אימייל", supported: true },
+  { value: "send_email", label: "שליחת אימייל (Bizuply)", supported: true },
   { value: "send_gmail", label: "שליחת מייל דרך Gmail", supported: true },
+  {
+    value: "send_outlook",
+    label: "שליחת מייל דרך Outlook / Microsoft 365",
+    supported: true,
+  },
+  {
+    value: "google_calendar_create_event",
+    label: "Google Calendar — יצירת אירוע",
+    supported: true,
+  },
+  {
+    value: "google_calendar_update_event",
+    label: "Google Calendar — עדכון אירוע",
+    supported: true,
+  },
+  {
+    value: "google_calendar_delete_event",
+    label: "Google Calendar — מחיקת אירוע",
+    supported: true,
+  },
   { value: "internal_notification", label: "התראה פנימית", supported: true },
   { value: "notify", label: "התראה פנימית", supported: true },
   { value: "delay", label: "המתנה", supported: true },
@@ -138,12 +158,33 @@ function triggerItem(
 
 function actionItem(key: string, label: string, description: string, supported = true): PaletteItem {
   const defaults: Record<string, unknown> = { label, actionKey: key, templateId: "" };
-  if (key === "send_gmail") {
+  if (key === "send_gmail" || key === "send_outlook") {
     defaults.recipientType = "lead_email";
     defaults.subject = "";
     defaults.html = "";
     defaults.body = "";
     defaults.text = "";
+    defaults.emailProvider = key === "send_outlook" ? "microsoft" : "gmail";
+  }
+  if (key === "google_calendar_create_event") {
+    defaults.title = "פגישה עם {{appointment.clientName}}";
+    defaults.description = "";
+    defaults.start = "";
+    defaults.end = "";
+    defaults.durationMinutes = 60;
+    defaults.attendeeEmail = "{{appointment.clientEmail}}";
+    defaults.location = "{{appointment.address}}";
+    defaults.calendarId = "primary";
+  }
+  if (key === "google_calendar_update_event") {
+    defaults.eventId = "{{appointment.googleEventId}}";
+    defaults.title = "פגישה עם {{appointment.clientName}}";
+    defaults.calendarId = "primary";
+    defaults.durationMinutes = 60;
+  }
+  if (key === "google_calendar_delete_event") {
+    defaults.eventId = "{{appointment.googleEventId}}";
+    defaults.calendarId = "primary";
   }
   return {
     type: "action",
@@ -221,8 +262,24 @@ const RAW_FLOW_ACTION_PALETTE: PaletteItem[] = [
   actionItem("update_status", "סטטוס", "מעדכן סטטוס ליד"),
   actionItem("assign_owner", "שיוך נציג", "משייך לאיש צוות"),
   actionItem("add_tag", "תגית", "מוסיף תגית לליד/לקוח"),
-  actionItem("send_email", "אימייל", "שולח מייל ללקוח"),
+  actionItem("send_email", "אימייל Bizuply", "שולח מייל טרנזקציונלי"),
   actionItem("send_gmail", "Gmail", "Gmail — שליחת מייל"),
+  actionItem("send_outlook", "Outlook", "Outlook / Microsoft 365 — שליחת מייל"),
+  actionItem(
+    "google_calendar_create_event",
+    "Google Calendar · יצירה",
+    "יוצר אירוע ביומן Google"
+  ),
+  actionItem(
+    "google_calendar_update_event",
+    "Google Calendar · עדכון",
+    "מעדכן אירוע ביומן Google"
+  ),
+  actionItem(
+    "google_calendar_delete_event",
+    "Google Calendar · מחיקה",
+    "מוחק אירוע מיומן Google"
+  ),
   actionItem("create_appointment", "קביעת פגישה", "יוצר תור ביומן"),
   actionItem("webhook", "Webhook", "שולח נתונים למערכת חיצונית"),
   actionItem("ai_rank_lead", "AI דירוג ליד", "מדרג ליד לפי סיכוי ודחיפות"),
@@ -350,8 +407,10 @@ export function nodeSummary(
   }
   if (type === "action") {
     const key = String(data.actionKey || "");
-    if (key === "send_gmail") {
-      const sender = String(data.senderEmail || "Gmail").trim() || "Gmail";
+    if (key === "send_gmail" || key === "send_outlook") {
+      const providerLabel = key === "send_outlook" ? "Outlook" : "Gmail";
+      const sender =
+        String(data.senderEmail || providerLabel).trim() || providerLabel;
       const recipientType = String(data.recipientType || "lead_email");
       const recipientLabels: Record<string, string> = {
         lead_email: "אימייל הליד",
@@ -364,7 +423,20 @@ export function nodeSummary(
       const recipient =
         recipientLabels[recipientType] ||
         recipientLabels.lead_email;
-      return `${sender} → ${recipient}`;
+      return `${providerLabel} · ${sender} → ${recipient}`;
+    }
+    if (
+      key === "google_calendar_create_event" ||
+      key === "google_calendar_update_event" ||
+      key === "google_calendar_delete_event"
+    ) {
+      const title = String(data.title || data.summary || "").trim();
+      if (key === "google_calendar_delete_event") {
+        return `Calendar · מחיקה ${String(data.eventId || "").trim() || ""}`.trim();
+      }
+      return title
+        ? `Calendar · ${title}`
+        : ACTION_OPTIONS.find((o) => o.value === key)?.label || "Google Calendar";
     }
     return (
       ACTION_OPTIONS.find((o) => o.value === key)?.label ||
