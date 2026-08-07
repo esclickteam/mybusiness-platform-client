@@ -103,6 +103,8 @@ function AdminBillingTestMatrix() {
   const [error, setError] = useState("");
   const [banner, setBanner] = useState("");
 
+  const [targetUserId, setTargetUserId] = useState("");
+  const [targetEmail, setTargetEmail] = useState("");
   const [packageSku, setPackageSku] = useState<PackageSku>("monthly");
   const [selectedUpsells, setSelectedUpsells] = useState<string[]>([]);
   const [selectedAddons, setSelectedAddons] = useState<string[]>([]);
@@ -204,6 +206,8 @@ function AdminBillingTestMatrix() {
     setBanner("");
     try {
       const result = await createBillingTestCheckout({
+        userId: targetUserId.trim() || undefined,
+        email: targetEmail.trim() || undefined,
         packageSku,
         upsellSkus: selectedUpsells,
         addonSkus: selectedAddons,
@@ -315,6 +319,29 @@ function AdminBillingTestMatrix() {
                 בדיקת רכישות Stripe Test מקצה לקצה — חבילות, אפסיילים, ווובהוקים
                 ואימות DB — ללא חיוב אמיתי.
               </p>
+              <div className="mt-4 grid max-w-xl gap-2 rounded-2xl border border-slate-200 bg-white p-4">
+                <label className="grid gap-1 text-sm font-bold text-slate-700">
+                  <span>מזהה משתמש לבדיקה (userId)</span>
+                  <input
+                    value={targetUserId}
+                    onChange={(e) => setTargetUserId(e.target.value)}
+                    placeholder="Mongo User _id"
+                    className="rounded-xl border border-slate-200 px-3 py-2 text-sm font-semibold"
+                  />
+                </label>
+                <label className="grid gap-1 text-sm font-bold text-slate-700">
+                  <span>או אימייל משתמש קיים</span>
+                  <input
+                    value={targetEmail}
+                    onChange={(e) => setTargetEmail(e.target.value)}
+                    placeholder="customer@example.com"
+                    className="rounded-xl border border-slate-200 px-3 py-2 text-sm font-semibold"
+                  />
+                </label>
+                <p className="m-0 text-xs font-semibold text-slate-500">
+                  חובה לבחור לקוח קיים ב-Staging/Local שאליו ישויך ה-Checkout.
+                </p>
+              </div>
             </div>
 
             <button

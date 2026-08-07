@@ -29,6 +29,8 @@ export type BillingTestMatrixResponse = {
 };
 
 export type BillingTestCheckoutPayload = {
+  userId?: string;
+  email?: string;
   packageSku: "monthly" | "yearly" | "website_only" | string;
   upsellSkus?: string[];
   addonSkus?: string[];
