@@ -3249,6 +3249,7 @@
     "validUntil": "Valid until",
     "billingType": "Billing type",
     "cancelRenewal": "Cancel renewal",
+    "cancelRenewalConfirm": "Cancel automatic renewal? You will keep access until the end of the current billing period, and you can resume anytime.",
     "cancelling": "Cancelling...",
     "resumeSubscription": "Resume / reactivate",
     "resuming": "Resuming...",

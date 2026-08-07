@@ -254,6 +254,7 @@ export default function BillingPage() {
   }, [overview?.serviceOrders, monthlyServices]);
 
   const handleCancel = async () => {
+    if (!window.confirm(t("billing.cancelRenewalConfirm"))) return;
     setMessage({ type: null, text: "" });
     setLoadingCancel(true);
     try {
