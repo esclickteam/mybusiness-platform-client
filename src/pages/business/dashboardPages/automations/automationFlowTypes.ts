@@ -169,11 +169,12 @@ function actionItem(key: string, label: string, description: string, supported =
   if (key === "google_calendar_create_event") {
     defaults.title = "פגישה עם {{appointment.clientName}}";
     defaults.description = "";
+    defaults.manualEventDetails = false;
     defaults.start = "";
     defaults.end = "";
-    defaults.durationMinutes = 60;
-    defaults.attendeeEmail = "{{appointment.clientEmail}}";
-    defaults.location = "{{appointment.address}}";
+    defaults.durationMinutes = "";
+    defaults.attendeeEmail = "";
+    defaults.location = "";
     defaults.calendarId = "primary";
   }
   if (key === "google_calendar_update_event") {

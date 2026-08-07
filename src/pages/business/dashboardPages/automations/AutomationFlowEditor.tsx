@@ -1732,13 +1732,17 @@ function EditorInner({
                               title:
                                 selectedNode.data?.title ||
                                 "פגישה עם {{appointment.clientName}}",
+                              manualEventDetails:
+                                selectedNode.data?.manualEventDetails === true,
                               attendeeEmail:
-                                selectedNode.data?.attendeeEmail ||
-                                "{{appointment.clientEmail}}",
+                                selectedNode.data?.attendeeEmail || "",
+                              location: selectedNode.data?.location || "",
+                              start: selectedNode.data?.start || "",
+                              end: selectedNode.data?.end || "",
+                              durationMinutes:
+                                selectedNode.data?.durationMinutes ?? "",
                               calendarId:
                                 selectedNode.data?.calendarId || "primary",
-                              durationMinutes:
-                                selectedNode.data?.durationMinutes ?? 60,
                             }
                           : {}),
                         ...(nextKey === "google_calendar_update_event" ||
@@ -2429,9 +2433,11 @@ function EditorInner({
                     <div className="af-wa-banner" dir="rtl">
                       <strong>Google Calendar</strong>
                       <p>
-                        האירוע נוצר ביומן Google של העסק. זמני הפגישה נגזרים
-                        אוטומטית מ-appointment.date / appointment.time כאשר
-                        השדות ריקים.
+                        {triggerSupportsAppointmentCustomerEmail(
+                          selectedTriggerKey
+                        )
+                          ? "פרטי האירוע יילקחו מהפגישה (תאריך, שעה, משך, משתתף ומיקום)."
+                          : "האירוע נוצר ביומן Google של העסק. ניתן להזין זמנים ידנית או להשאיר ריק כאשר יש פגישה בהקשר."}
                       </p>
                     </div>
                     {calendarLoading ? (
@@ -2538,81 +2544,147 @@ function EditorInner({
                                 }
                               />
                             </label>
-                            <label>
-                              התחלה (אופציונלי — ברירת מחדל מפגישה)
-                              <input
-                                type="text"
-                                dir="ltr"
-                                disabled={readOnly}
-                                value={String(selectedNode.data?.start || "")}
-                                placeholder="YYYY-MM-DD HH:mm או ריק"
-                                onChange={(e) =>
-                                  updateSelectedData({ start: e.target.value })
-                                }
-                              />
-                            </label>
-                            <label>
-                              סיום (אופציונלי)
-                              <input
-                                type="text"
-                                dir="ltr"
-                                disabled={readOnly}
-                                value={String(selectedNode.data?.end || "")}
-                                placeholder="YYYY-MM-DD HH:mm או ריק"
-                                onChange={(e) =>
-                                  updateSelectedData({ end: e.target.value })
-                                }
-                              />
-                            </label>
-                            <label>
-                              משך בדקות (אם אין סיום)
-                              <input
-                                type="number"
-                                min={5}
-                                disabled={readOnly}
-                                value={Number(
-                                  selectedNode.data?.durationMinutes ?? 60
-                                )}
-                                onChange={(e) =>
-                                  updateSelectedData({
-                                    durationMinutes: Number(e.target.value),
-                                  })
-                                }
-                              />
-                            </label>
-                            <label>
-                              משתתף (אימייל)
-                              <input
-                                type="text"
-                                dir="ltr"
-                                disabled={readOnly}
-                                value={String(
-                                  selectedNode.data?.attendeeEmail || ""
-                                )}
-                                placeholder="{{appointment.clientEmail}}"
-                                onChange={(e) =>
-                                  updateSelectedData({
-                                    attendeeEmail: e.target.value,
-                                  })
-                                }
-                              />
-                            </label>
-                            <label>
-                              מיקום
-                              <input
-                                type="text"
-                                disabled={readOnly}
-                                value={String(
-                                  selectedNode.data?.location || ""
-                                )}
-                                placeholder="{{appointment.address}}"
-                                onChange={(e) =>
-                                  updateSelectedData({
-                                    location: e.target.value,
-                                  })
-                                }
-                              />
-                            </label>
+                            {String(selectedNode.data?.actionKey) ===
+                            "google_calendar_create_event" ? (
+                              <>
+                                {triggerSupportsAppointmentCustomerEmail(
+                                  selectedTriggerKey
+                                ) ? (
+                                  <div
+                                    className="af-wa-banner"
+                                    dir="rtl"
+                                    style={{ marginTop: 8 }}
+                                  >
+                                    <p style={{ margin: 0 }}>
+                                      פרטי האירוע יילקחו מהפגישה
+                                    </p>
+                                  </div>
+                                ) : null}
+                                <label
+                                  className="af-checkbox"
+                                  dir="rtl"
+                                  style={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    gap: 8,
+                                    marginTop: 8,
+                                  }}
+                                >
+                                  <input
+                                    type="checkbox"
+                                    disabled={readOnly}
+                                    checked={
+                                      selectedNode.data?.manualEventDetails ===
+                                      true
+                                    }
+                                    onChange={(e) =>
+                                      updateSelectedData({
+                                        manualEventDetails: e.target.checked,
+                                      })
+                                    }
+                                  />
+                                  הגדר פרטי אירוע ידנית
+                                </label>
+                              </>
+                            ) : null}
+                            {(String(selectedNode.data?.actionKey) !==
+                              "google_calendar_create_event" ||
+                              selectedNode.data?.manualEventDetails ===
+                                true) && (
+                              <>
+                                <label>
+                                  התחלה (אופציונלי — ברירת מחדל מפגישה)
+                                  <input
+                                    type="text"
+                                    dir="ltr"
+                                    disabled={readOnly}
+                                    value={String(
+                                      selectedNode.data?.start || ""
+                                    )}
+                                    placeholder="YYYY-MM-DD HH:mm או ריק"
+                                    onChange={(e) =>
+                                      updateSelectedData({
+                                        start: e.target.value,
+                                      })
+                                    }
+                                  />
+                                </label>
+                                <label>
+                                  סיום (אופציונלי)
+                                  <input
+                                    type="text"
+                                    dir="ltr"
+                                    disabled={readOnly}
+                                    value={String(selectedNode.data?.end || "")}
+                                    placeholder="YYYY-MM-DD HH:mm או ריק"
+                                    onChange={(e) =>
+                                      updateSelectedData({
+                                        end: e.target.value,
+                                      })
+                                    }
+                                  />
+                                </label>
+                                <label>
+                                  משך בדקות (אם אין סיום)
+                                  <input
+                                    type="number"
+                                    min={5}
+                                    disabled={readOnly}
+                                    value={
+                                      selectedNode.data?.durationMinutes ===
+                                        "" ||
+                                      selectedNode.data?.durationMinutes ==
+                                        null
+                                        ? ""
+                                        : Number(
+                                            selectedNode.data?.durationMinutes
+                                          )
+                                    }
+                                    onChange={(e) =>
+                                      updateSelectedData({
+                                        durationMinutes:
+                                          e.target.value === ""
+                                            ? ""
+                                            : Number(e.target.value),
+                                      })
+                                    }
+                                  />
+                                </label>
+                                <label>
+                                  משתתף (אימייל)
+                                  <input
+                                    type="text"
+                                    dir="ltr"
+                                    disabled={readOnly}
+                                    value={String(
+                                      selectedNode.data?.attendeeEmail || ""
+                                    )}
+                                    placeholder="{{appointment.clientEmail}}"
+                                    onChange={(e) =>
+                                      updateSelectedData({
+                                        attendeeEmail: e.target.value,
+                                      })
+                                    }
+                                  />
+                                </label>
+                                <label>
+                                  מיקום
+                                  <input
+                                    type="text"
+                                    disabled={readOnly}
+                                    value={String(
+                                      selectedNode.data?.location || ""
+                                    )}
+                                    placeholder="{{appointment.address}}"
+                                    onChange={(e) =>
+                                      updateSelectedData({
+                                        location: e.target.value,
+                                      })
+                                    }
+                                  />
+                                </label>
+                              </>
+                            )}
                           </>
                         ) : null}
                         {String(selectedNode.data?.actionKey) !==
