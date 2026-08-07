@@ -85,6 +85,21 @@ export const ACTION_OPTIONS = [
     label: "שליחת מייל דרך Outlook / Microsoft 365",
     supported: true,
   },
+  {
+    value: "google_calendar_create_event",
+    label: "Google Calendar — יצירת אירוע",
+    supported: true,
+  },
+  {
+    value: "google_calendar_update_event",
+    label: "Google Calendar — עדכון אירוע",
+    supported: true,
+  },
+  {
+    value: "google_calendar_delete_event",
+    label: "Google Calendar — מחיקת אירוע",
+    supported: true,
+  },
   { value: "internal_notification", label: "התראה פנימית", supported: true },
   { value: "notify", label: "התראה פנימית", supported: true },
   { value: "delay", label: "המתנה", supported: true },
@@ -150,6 +165,26 @@ function actionItem(key: string, label: string, description: string, supported =
     defaults.body = "";
     defaults.text = "";
     defaults.emailProvider = key === "send_outlook" ? "microsoft" : "gmail";
+  }
+  if (key === "google_calendar_create_event") {
+    defaults.title = "פגישה עם {{appointment.clientName}}";
+    defaults.description = "";
+    defaults.start = "";
+    defaults.end = "";
+    defaults.durationMinutes = 60;
+    defaults.attendeeEmail = "{{appointment.clientEmail}}";
+    defaults.location = "{{appointment.address}}";
+    defaults.calendarId = "primary";
+  }
+  if (key === "google_calendar_update_event") {
+    defaults.eventId = "{{appointment.googleEventId}}";
+    defaults.title = "פגישה עם {{appointment.clientName}}";
+    defaults.calendarId = "primary";
+    defaults.durationMinutes = 60;
+  }
+  if (key === "google_calendar_delete_event") {
+    defaults.eventId = "{{appointment.googleEventId}}";
+    defaults.calendarId = "primary";
   }
   return {
     type: "action",
@@ -230,6 +265,21 @@ const RAW_FLOW_ACTION_PALETTE: PaletteItem[] = [
   actionItem("send_email", "אימייל Bizuply", "שולח מייל טרנזקציונלי"),
   actionItem("send_gmail", "Gmail", "Gmail — שליחת מייל"),
   actionItem("send_outlook", "Outlook", "Outlook / Microsoft 365 — שליחת מייל"),
+  actionItem(
+    "google_calendar_create_event",
+    "Google Calendar · יצירה",
+    "יוצר אירוע ביומן Google"
+  ),
+  actionItem(
+    "google_calendar_update_event",
+    "Google Calendar · עדכון",
+    "מעדכן אירוע ביומן Google"
+  ),
+  actionItem(
+    "google_calendar_delete_event",
+    "Google Calendar · מחיקה",
+    "מוחק אירוע מיומן Google"
+  ),
   actionItem("create_appointment", "קביעת פגישה", "יוצר תור ביומן"),
   actionItem("webhook", "Webhook", "שולח נתונים למערכת חיצונית"),
   actionItem("ai_rank_lead", "AI דירוג ליד", "מדרג ליד לפי סיכוי ודחיפות"),
@@ -374,6 +424,19 @@ export function nodeSummary(
         recipientLabels[recipientType] ||
         recipientLabels.lead_email;
       return `${providerLabel} · ${sender} → ${recipient}`;
+    }
+    if (
+      key === "google_calendar_create_event" ||
+      key === "google_calendar_update_event" ||
+      key === "google_calendar_delete_event"
+    ) {
+      const title = String(data.title || data.summary || "").trim();
+      if (key === "google_calendar_delete_event") {
+        return `Calendar · מחיקה ${String(data.eventId || "").trim() || ""}`.trim();
+      }
+      return title
+        ? `Calendar · ${title}`
+        : ACTION_OPTIONS.find((o) => o.value === key)?.label || "Google Calendar";
     }
     return (
       ACTION_OPTIONS.find((o) => o.value === key)?.label ||

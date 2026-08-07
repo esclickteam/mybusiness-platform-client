@@ -8,6 +8,12 @@ import {
   type GmailStatusResponse,
 } from "../../../../api/gmailApi";
 import {
+  disconnectGoogleCalendar,
+  getGoogleCalendarConnectUrl,
+  getGoogleCalendarStatus,
+  type GoogleCalendarStatusResponse,
+} from "../../../../api/googleCalendarApi";
+import {
   disconnectOutlook,
   getOutlookConnectUrl,
   getOutlookStatus,
@@ -22,12 +28,17 @@ export default function IntegrationsMain() {
   const [status, setStatus] = useState<GmailStatusResponse | null>(null);
   const [outlookStatus, setOutlookStatus] =
     useState<OutlookStatusResponse | null>(null);
+  const [calendarStatus, setCalendarStatus] =
+    useState<GoogleCalendarStatusResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [outlookLoading, setOutlookLoading] = useState(true);
+  const [calendarLoading, setCalendarLoading] = useState(true);
   const [busy, setBusy] = useState(false);
   const [outlookBusy, setOutlookBusy] = useState(false);
+  const [calendarBusy, setCalendarBusy] = useState(false);
   const [error, setError] = useState("");
   const [outlookError, setOutlookError] = useState("");
+  const [calendarError, setCalendarError] = useState("");
   const [testEmail, setTestEmail] = useState("");
   const [testMessage, setTestMessage] = useState("");
 
@@ -41,6 +52,16 @@ export default function IntegrationsMain() {
     }
     if (searchParams.get("gmail_error")) {
       return String(searchParams.get("gmail_error"));
+    }
+    if (searchParams.get("gcal_connected") === "1") {
+      return `Google Calendar חובר בהצלחה${
+        searchParams.get("gcal_email")
+          ? `: ${searchParams.get("gcal_email")}`
+          : ""
+      }`;
+    }
+    if (searchParams.get("gcal_error")) {
+      return String(searchParams.get("gcal_error"));
     }
     if (searchParams.get("outlook_connected") === "1") {
       return `Outlook חובר בהצלחה${
@@ -85,9 +106,26 @@ export default function IntegrationsMain() {
     }
   }
 
+  async function loadCalendar() {
+    if (!businessId) return;
+    setCalendarLoading(true);
+    setCalendarError("");
+    try {
+      const data = await getGoogleCalendarStatus(businessId);
+      setCalendarStatus(data);
+    } catch (e) {
+      setCalendarError(
+        e instanceof Error ? e.message : "שגיאה בטעינת Google Calendar"
+      );
+    } finally {
+      setCalendarLoading(false);
+    }
+  }
+
   useEffect(() => {
     void load();
     void loadOutlook();
+    void loadCalendar();
   }, [businessId]);
 
   useEffect(() => {
@@ -97,6 +135,10 @@ export default function IntegrationsMain() {
     next.delete("gmail_email");
     next.delete("gmail_error");
     next.delete("gmail_error_code");
+    next.delete("gcal_connected");
+    next.delete("gcal_email");
+    next.delete("gcal_error");
+    next.delete("gcal_error_code");
     next.delete("outlook_connected");
     next.delete("outlook_email");
     next.delete("outlook_error");
@@ -126,10 +168,46 @@ export default function IntegrationsMain() {
     try {
       await disconnectGmail(businessId);
       await load();
+      await loadCalendar();
     } catch (e) {
       setError(e instanceof Error ? e.message : "ניתוק נכשל");
     } finally {
       setBusy(false);
+    }
+  }
+
+  async function connectCalendar() {
+    if (!businessId) return;
+    setCalendarBusy(true);
+    setCalendarError("");
+    try {
+      const returnUrl = `/business/${businessId}/dashboard/integrations`;
+      const data = await getGoogleCalendarConnectUrl(businessId, returnUrl);
+      if (data?.enabledLocally) {
+        await loadCalendar();
+        setCalendarBusy(false);
+        return;
+      }
+      if (!data?.url) throw new Error("לא התקבל קישור התחברות");
+      window.location.href = data.url;
+    } catch (e) {
+      setCalendarError(e instanceof Error ? e.message : "התחברות נכשלה");
+      setCalendarBusy(false);
+    }
+  }
+
+  async function disconnectCalendar() {
+    if (!businessId) return;
+    setCalendarBusy(true);
+    setCalendarError("");
+    try {
+      await disconnectGoogleCalendar(businessId);
+      await loadCalendar();
+      await load();
+    } catch (e) {
+      setCalendarError(e instanceof Error ? e.message : "ניתוק Calendar נכשל");
+    } finally {
+      setCalendarBusy(false);
     }
   }
 
@@ -205,11 +283,34 @@ export default function IntegrationsMain() {
     outlookAccount?.connectionStatus === "expired" ||
     outlookAccount?.connectionStatus === "revoked";
 
+  const calendarAvailable = Boolean(calendarStatus?.available);
+  const calendarInfo = calendarStatus?.calendar;
+  const calendarConnected = Boolean(calendarInfo?.connected);
+  const calendarNeedsGrant = Boolean(calendarInfo?.needsGrant);
+  const calendarNeedsReconnect = Boolean(calendarInfo?.needsReconnect);
+  const calendarEmail =
+    calendarInfo?.googleEmail || calendarStatus?.account?.email || "";
+
+  function calendarBadgeLabel() {
+    if (!calendarAvailable) return "לא זמין";
+    if (calendarConnected) return "מחובר";
+    if (calendarNeedsReconnect) return "נדרש חיבור מחדש";
+    if (calendarNeedsGrant) return "נדרשת הרשאת יומן";
+    return "לא מחובר";
+  }
+
+  function calendarPrimaryCta() {
+    if (calendarNeedsReconnect) return "חיבור מחדש";
+    if (calendarNeedsGrant) return "Grant Calendar access";
+    if (calendarConnected) return "חיבור מחדש";
+    return "Connect Google Calendar";
+  }
+
   return (
     <div className="p-4 md:p-6 max-w-3xl mx-auto" dir="rtl">
       <h1 className="text-2xl font-bold mb-2">אינטגרציות</h1>
       <p className="text-slate-600 mb-6">
-        חיבורי שירותים חיצוניים לעסק — Gmail ו-Outlook לשליחת מיילים מאוטומציות.
+        חיבורי שירותים חיצוניים לעסק — Gmail, Google Calendar ו-Outlook.
       </p>
 
       {banner ? (
@@ -220,6 +321,11 @@ export default function IntegrationsMain() {
       {error ? (
         <div className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
           {error}
+        </div>
+      ) : null}
+      {calendarError ? (
+        <div className="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+          {calendarError}
         </div>
       ) : null}
       {outlookError ? (
@@ -322,6 +428,79 @@ export default function IntegrationsMain() {
           )}
         </section>
 
+        {calendarAvailable ? (
+          <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h2 className="text-lg font-semibold">Google Calendar</h2>
+                <p className="text-sm text-slate-600 mt-1">
+                  יצירת אירועי יומן מאוטומציות דרך חשבון Google של העסק
+                </p>
+              </div>
+              <span
+                className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
+                  calendarConnected
+                    ? "bg-emerald-100 text-emerald-800"
+                    : calendarNeedsGrant || calendarNeedsReconnect
+                      ? "bg-amber-100 text-amber-800"
+                      : "bg-slate-100 text-slate-700"
+                }`}
+              >
+                {calendarBadgeLabel()}
+              </span>
+            </div>
+
+            {calendarLoading ? (
+              <p className="mt-4 text-sm text-slate-500">טוען...</p>
+            ) : (
+              <div className="mt-4 space-y-2 text-sm">
+                {calendarNeedsReconnect ? (
+                  <p className="text-amber-800 bg-amber-50 border border-amber-100 rounded-xl px-3 py-2">
+                    חיבור Google פג תוקף — יש להתחבר מחדש ליומן
+                  </p>
+                ) : null}
+                {calendarNeedsGrant ? (
+                  <p className="text-amber-800 bg-amber-50 border border-amber-100 rounded-xl px-3 py-2">
+                    Gmail מחובר, אך חסרה הרשאת Google Calendar. אישור ההרשאה לא
+                    מנתק את Gmail.
+                  </p>
+                ) : null}
+                {calendarEmail ? (
+                  <div>
+                    <span className="text-slate-500">חשבון Google: </span>
+                    <span dir="ltr">{calendarEmail}</span>
+                  </div>
+                ) : null}
+                <div className="flex flex-wrap gap-2 pt-3">
+                  <button
+                    type="button"
+                    disabled={calendarBusy}
+                    onClick={() => void connectCalendar()}
+                    className="px-3 py-2 rounded-lg bg-slate-900 text-white text-sm"
+                  >
+                    {calendarPrimaryCta()}
+                  </button>
+                  {calendarConnected ? (
+                    <button
+                      type="button"
+                      disabled={calendarBusy}
+                      onClick={() => void disconnectCalendar()}
+                      className="px-3 py-2 rounded-lg border border-slate-300 text-sm"
+                    >
+                      ניתוק Calendar
+                    </button>
+                  ) : null}
+                </div>
+                {calendarConnected ? (
+                  <p className="text-xs text-slate-500 pt-1">
+                    ניתוק Calendar אינו מנתק את Gmail.
+                  </p>
+                ) : null}
+              </div>
+            )}
+          </section>
+        ) : null}
+
         <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           <div className="flex items-start justify-between gap-4">
             <div>
@@ -356,8 +535,7 @@ export default function IntegrationsMain() {
             <p className="mt-4 text-sm text-slate-500">טוען...</p>
           ) : !outlookAvailable ? (
             <p className="mt-4 text-sm text-amber-800 bg-amber-50 border border-amber-100 rounded-xl px-3 py-2">
-              {outlookStatus?.message ||
-                "Outlook / Microsoft 365 יהיה זמין בקרוב"}
+              Outlook נמצא כרגע בתהליך הכנה
             </p>
           ) : outlookAccount && (outlookConnected || outlookNeedsReconnect) ? (
             <div className="mt-4 space-y-2 text-sm">
@@ -365,37 +543,19 @@ export default function IntegrationsMain() {
                 <p className="text-amber-800 bg-amber-50 border border-amber-100 rounded-xl px-3 py-2">
                   חיבור Outlook פג תוקף — יש להתחבר מחדש
                 </p>
-              ) : (
-                <p>
-                  מחובר כ-
-                  <span dir="ltr" className="mx-1">
-                    {outlookAccount.email}
-                  </span>
-                </p>
-              )}
-              {outlookAccount.displayName ? (
-                <div>
-                  <span className="text-slate-500">שם: </span>
-                  {outlookAccount.displayName}
-                </div>
               ) : null}
               <div>
-                <span className="text-slate-500">אימות אחרון: </span>
-                {outlookAccount.lastVerifiedAt
-                  ? new Date(outlookAccount.lastVerifiedAt).toLocaleString(
-                      "he-IL"
-                    )
-                  : "—"}
+                <span className="text-slate-500">חשבון: </span>
+                <span dir="ltr">{outlookAccount.email}</span>
               </div>
               {outlookConnected ? (
-                <div className="pt-2 space-y-2">
+                <div className="space-y-2 pt-2">
                   <label className="block text-sm">
-                    כתובת לשליחת מייל בדיקה
+                    <span className="text-slate-500">מייל בדיקה</span>
                     <input
                       type="email"
+                      className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2"
                       dir="ltr"
-                      className="mt-1 w-full rounded-lg border border-slate-300 px-3 py-2 text-sm"
-                      placeholder="name@example.com"
                       value={testEmail}
                       onChange={(e) => setTestEmail(e.target.value)}
                     />
