@@ -122,6 +122,7 @@ import type {
 } from "../components/VisualMediaModal";
 import type { PexelsMediaItem } from "../library/pexelsMediaService";
 import { ELEMENT_LIBRARY } from "../library/elementLibrary";
+import { buildTableHtml } from "../library/tableBuilder";
 import {
   getSectionTemplateById,
 } from "../library/sectionLibrary";
@@ -3193,6 +3194,83 @@ export function useVisualEditorState({
    * Insert a free-placed CRM variable text node anywhere on the canvas.
    * Displays as "שם הנתון - ערך" and updates live from the client CRM file.
    */
+  const addTable = useCallback(
+    async (options?: {
+      rows?: number;
+      cols?: number;
+      withHeader?: boolean;
+      variant?: "simple" | "striped" | "dark-header" | "bordered";
+    }) => {
+      const rows = Math.max(1, Math.min(20, Number(options?.rows) || 3));
+      const cols = Math.max(1, Math.min(12, Number(options?.cols) || 3));
+      const html = buildTableHtml({
+        rows,
+        cols,
+        withHeader: options?.withHeader !== false,
+        variant: options?.variant || "dark-header",
+      });
+
+      const root = canvasRef.current;
+      if (!root) return "";
+
+      const selectedNode = getSelectedDomNode(selection.selectedElement);
+      const sectionNode = getClosestVisualSectionNode(root, selectedNode);
+      const sectionId = getDirectVisualId(sectionNode) || "visual-root";
+      const id = createVisualCustomId("custom-table");
+      const now = new Date().toISOString();
+      const width = Math.min(920, Math.max(320, cols * 140));
+      const height = Math.min(520, Math.max(140, 56 + rows * 48));
+
+      setData((current) => {
+        let next = writeVisualInsertedElement(current || {}, {
+          id,
+          type: "embed",
+          parentId: sectionId,
+          sectionId,
+          label: `טבלה ${rows}×${cols}`,
+          tagName: "div",
+          createdAt: now,
+          updatedAt: now,
+        });
+        next = writeVisualContentItem(next, id, {
+          html,
+          embedType: "table",
+        });
+        next = writeVisualStyleItem(next, id, {
+          backgroundColor: "#ffffff",
+          borderRadius: "18px",
+          overflow: "hidden",
+          boxShadow: "0 18px 40px rgba(15,23,42,.1)",
+        } as StylePatch);
+        next = writeVisualLayoutItem(next, id, {
+          position: "absolute",
+          x: 40,
+          y: 40,
+          translateX: 40,
+          translateY: 40,
+          width: `${width}px`,
+          height: `${height}px`,
+          zIndex: 18,
+          freePosition: true,
+        });
+        dataRef.current = next;
+        return next;
+      });
+
+      window.requestAnimationFrame(() => {
+        applyAllVisualDataToDom(canvasRef.current, dataRef.current || {});
+        window.requestAnimationFrame(() => {
+          selection.selectByElementId(id, {
+            keepPreviousOnMissing: true,
+          });
+        });
+      });
+
+      return id;
+    },
+    [canvasRef, selection, setData],
+  );
+
   const addCrmField = useCallback(
     async (options?: {
       fieldKey?: string;
@@ -3226,10 +3304,20 @@ export function useVisualEditorState({
         ? {
             "data-bizuply-crm-field": fieldKey,
             "data-bizuply-crm-field-part": part,
+            "data-bizuply-crm-field-label": label,
             "data-client-variable": "true",
             "data-client-variable-key": fieldKey,
+            "data-client-variable-label": label,
+            "data-client-variable-display":
+              part === "both" ? "label-value" : part === "label" ? "label" : "raw",
+            "data-client-variable-source": "crm_client",
           }
-        : {};
+        : {
+            "data-bizuply-crm-field-part": part,
+            "data-client-variable-label": label,
+            "data-client-variable-display":
+              part === "both" ? "label-value" : "raw",
+          };
 
       setData((current) => {
         let next = writeVisualInsertedElement(current || {}, {
@@ -4922,6 +5010,7 @@ export function useVisualEditorState({
       addBox,
       addDivider,
       addCrmField,
+      addTable,
       addSection,
       insertHtmlWidget,
       addLibrarySection,
@@ -5103,6 +5192,7 @@ export function useVisualEditorState({
       addBox,
       addDivider,
       addCrmField,
+      addTable,
       addSection,
       insertHtmlWidget,
       addLibrarySection,

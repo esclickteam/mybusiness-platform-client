@@ -60,6 +60,21 @@ export const PORTAL_SECTION_KIND_NAV: Array<{
     prefix: "section-portal-custom-data-",
   },
   {
+    id: "treatment-plan",
+    label: "תוכנית טיפול",
+    prefix: "section-portal-treatment-plan-",
+  },
+  {
+    id: "follow-up",
+    label: "תכנית מעקב",
+    prefix: "section-portal-follow-up-",
+  },
+  {
+    id: "menu",
+    label: "תפריט",
+    prefix: "section-portal-menu-",
+  },
+  {
     id: "packages",
     label: "חבילות ותשלום",
     prefix: "section-portal-packages-",

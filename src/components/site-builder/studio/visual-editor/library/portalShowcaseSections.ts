@@ -10,6 +10,7 @@ import type {
   VisualLibraryNodeTemplate,
   VisualLibrarySectionTemplate,
 } from "./visualLibraryTypes";
+import { buildCarePlanPortalSections } from "./carePlanPortalSections";
 
 type PortalKind =
   | "portal-login"
@@ -2845,6 +2846,7 @@ export const PORTAL_SHOWCASE_SECTIONS: VisualLibrarySectionTemplate[] = [
   ...buildPackagesSections(),
   ...buildForgotPasswordSections(),
   ...buildResetPasswordSections(),
+  ...buildCarePlanPortalSections(),
   ...legacyAliases,
 ];
 
@@ -2860,4 +2862,7 @@ export const PORTAL_SECTION_KIND_PREFIX: Record<string, string> = {
   packages: "section-portal-packages-",
   "forgot-password": "section-portal-forgot-password-",
   "reset-password": "section-portal-reset-password-",
+  "treatment-plan": "section-portal-treatment-plan-",
+  "follow-up": "section-portal-follow-up-",
+  menu: "section-portal-menu-",
 };
