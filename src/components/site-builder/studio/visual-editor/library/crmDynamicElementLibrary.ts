@@ -22,8 +22,8 @@ const CRM_RAW_FIELDS: CrmRawField[] = [
     key: "weight",
     label: "משקל",
     sample: "72",
-    description: "משקל - ערך מה-CRM של הלקוח המחובר",
-    keywords: ["משקל", "weight", "crm"],
+    description: "משקל אחרון ממעקב CRM (תאריך/שעה/ערך) של הלקוח המחובר",
+    keywords: ["משקל", "weight", "מעקב", "crm"],
   },
   {
     key: "sessions_done",
