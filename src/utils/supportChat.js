@@ -3,8 +3,14 @@ import { io } from "socket.io-client";
 const VISITOR_KEY = "bizuply_support_visitor_id";
 const SESSION_KEY = "bizuply_support_session";
 
-const isProd = import.meta.env.MODE === "production";
-const API_BASE = isProd ? "https://api.bizuply.com/api" : "/api";
+const envApiUrl = String(import.meta.env.VITE_API_URL || "")
+  .trim()
+  .replace(/\/+$/, "");
+const API_BASE =
+  envApiUrl ||
+  (import.meta.env.MODE === "production"
+    ? "https://api.bizuply.com/api"
+    : "/api");
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.bizuply.com";
 
 export function getSupportVisitorId() {

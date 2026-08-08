@@ -10,10 +10,14 @@ import {
 } from "./utils/tokenRefresh";
 import { getAdminActiveBusinessId, getBusinessIdFromPath } from "./utils/adminTenant";
 
-const isProd = import.meta.env.MODE === "production";
-const BASE_URL = isProd
-  ? "https://api.bizuply.com/api"
-  : "/api";
+const envApiUrl = String(import.meta.env.VITE_API_URL || "")
+  .trim()
+  .replace(/\/+$/, "");
+const BASE_URL =
+  envApiUrl ||
+  (import.meta.env.MODE === "production"
+    ? "https://api.bizuply.com/api"
+    : "/api");
 
 const API = axios.create({
   baseURL: BASE_URL,

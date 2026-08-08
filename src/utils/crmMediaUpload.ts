@@ -10,14 +10,14 @@ export type CrmUploadedMedia = {
 
 function getApiOrigin() {
   const isProd = import.meta.env.MODE === "production";
-  if (isProd) return "https://api.bizuply.com";
-
   const raw = String(
     import.meta.env?.VITE_API_BASE_URL || import.meta.env?.VITE_API_URL || ""
   ).trim();
-
-  if (!raw) return "";
-  return raw.replace(/\/api\/?$/, "").replace(/\/$/, "");
+  if (raw) {
+    return raw.replace(/\/api\/?$/, "").replace(/\/$/, "");
+  }
+  if (isProd) return "https://api.bizuply.com";
+  return "";
 }
 
 async function signAndUploadDirect(

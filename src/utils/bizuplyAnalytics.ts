@@ -48,7 +48,13 @@ export function getBizuplySessionId(): string {
 
 function getApiBaseUrl() {
   const isProd = import.meta.env.MODE === "production";
-  return isProd ? "https://api.bizuply.com/api" : "/api";
+  const envApiUrl = String(import.meta.env.VITE_API_URL || "")
+    .trim()
+    .replace(/\/+$/, "");
+  return (
+    envApiUrl ||
+    (isProd ? "https://api.bizuply.com/api" : "/api")
+  );
 }
 
 function shouldSkipDedup(visitorId: string, pageId: string) {
