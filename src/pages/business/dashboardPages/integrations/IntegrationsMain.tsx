@@ -29,6 +29,11 @@ type IntegrationsMainProps = {
   description?: string;
   /** Compact wrapper styles when embedded inside Automations. */
   embedded?: boolean;
+  /**
+   * Optional businessId override for nested routes (e.g. Automations → Connections).
+   * Falls back to the `:businessId` route param — same data path either way.
+   */
+  businessId?: string;
 };
 
 export default function IntegrationsMain({
@@ -36,8 +41,10 @@ export default function IntegrationsMain({
   title = "אינטגרציות",
   description = "חיבורי שירותים חיצוניים לעסק — Gmail, Google Calendar ו-Outlook.",
   embedded = false,
+  businessId: businessIdProp,
 }: IntegrationsMainProps) {
-  const { businessId = "" } = useParams();
+  const { businessId: businessIdParam = "" } = useParams();
+  const businessId = String(businessIdProp || businessIdParam || "");
   const [searchParams, setSearchParams] = useSearchParams();
   const oauthReturnPath =
     returnPath || `/business/${businessId}/dashboard/integrations`;
@@ -459,78 +466,83 @@ export default function IntegrationsMain({
           )}
         </section>
 
-        {calendarAvailable ? (
-          <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-            <div className="flex items-start justify-between gap-4">
-              <div>
-                <h2 className="text-lg font-semibold">Google Calendar</h2>
-                <p className="text-sm text-slate-600 mt-1">
-                  יצירת אירועי יומן מאוטומציות דרך חשבון Google של העסק
-                </p>
-              </div>
-              <span
-                className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
-                  calendarConnected
+        <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <h2 className="text-lg font-semibold">Google Calendar</h2>
+              <p className="text-sm text-slate-600 mt-1">
+                יצירת אירועי יומן מאוטומציות דרך חשבון Google של העסק
+              </p>
+            </div>
+            <span
+              className={`text-xs font-semibold px-2.5 py-1 rounded-full ${
+                !calendarAvailable
+                  ? "bg-amber-100 text-amber-800"
+                  : calendarConnected
                     ? "bg-emerald-100 text-emerald-800"
                     : calendarNeedsGrant || calendarNeedsReconnect
                       ? "bg-amber-100 text-amber-800"
                       : "bg-slate-100 text-slate-700"
-                }`}
-              >
-                {calendarBadgeLabel()}
-              </span>
-            </div>
+              }`}
+            >
+              {calendarBadgeLabel()}
+            </span>
+          </div>
 
-            {calendarLoading ? (
-              <p className="mt-4 text-sm text-slate-500">טוען...</p>
-            ) : (
-              <div className="mt-4 space-y-2 text-sm">
-                {calendarNeedsReconnect ? (
-                  <p className="text-amber-800 bg-amber-50 border border-amber-100 rounded-xl px-3 py-2">
-                    חיבור Google פג תוקף — יש להתחבר מחדש ליומן
-                  </p>
-                ) : null}
-                {calendarNeedsGrant ? (
-                  <p className="text-amber-800 bg-amber-50 border border-amber-100 rounded-xl px-3 py-2">
-                    Gmail מחובר, אך חסרה הרשאת Google Calendar. אישור ההרשאה לא
-                    מנתק את Gmail.
-                  </p>
-                ) : null}
-                {calendarEmail ? (
-                  <div>
-                    <span className="text-slate-500">חשבון Google: </span>
-                    <span dir="ltr">{calendarEmail}</span>
-                  </div>
-                ) : null}
-                <div className="flex flex-wrap gap-2 pt-3">
+          {calendarLoading ? (
+            <p className="mt-4 text-sm text-slate-500">טוען...</p>
+          ) : !calendarAvailable ? (
+            <p className="mt-4 text-sm text-amber-800 bg-amber-50 border border-amber-100 rounded-xl px-3 py-2">
+              {calendarStatus?.message ||
+                "Google Calendar אינו זמין לעסק זה כרגע"}
+            </p>
+          ) : (
+            <div className="mt-4 space-y-2 text-sm">
+              {calendarNeedsReconnect ? (
+                <p className="text-amber-800 bg-amber-50 border border-amber-100 rounded-xl px-3 py-2">
+                  חיבור Google פג תוקף — יש להתחבר מחדש ליומן
+                </p>
+              ) : null}
+              {calendarNeedsGrant ? (
+                <p className="text-amber-800 bg-amber-50 border border-amber-100 rounded-xl px-3 py-2">
+                  Gmail מחובר, אך חסרה הרשאת Google Calendar. אישור ההרשאה לא
+                  מנתק את Gmail.
+                </p>
+              ) : null}
+              {calendarEmail ? (
+                <div>
+                  <span className="text-slate-500">חשבון Google: </span>
+                  <span dir="ltr">{calendarEmail}</span>
+                </div>
+              ) : null}
+              <div className="flex flex-wrap gap-2 pt-3">
+                <button
+                  type="button"
+                  disabled={calendarBusy}
+                  onClick={() => void connectCalendar()}
+                  className="px-3 py-2 rounded-lg bg-slate-900 text-white text-sm"
+                >
+                  {calendarPrimaryCta()}
+                </button>
+                {calendarConnected ? (
                   <button
                     type="button"
                     disabled={calendarBusy}
-                    onClick={() => void connectCalendar()}
-                    className="px-3 py-2 rounded-lg bg-slate-900 text-white text-sm"
+                    onClick={() => void disconnectCalendar()}
+                    className="px-3 py-2 rounded-lg border border-slate-300 text-sm"
                   >
-                    {calendarPrimaryCta()}
+                    ניתוק Calendar
                   </button>
-                  {calendarConnected ? (
-                    <button
-                      type="button"
-                      disabled={calendarBusy}
-                      onClick={() => void disconnectCalendar()}
-                      className="px-3 py-2 rounded-lg border border-slate-300 text-sm"
-                    >
-                      ניתוק Calendar
-                    </button>
-                  ) : null}
-                </div>
-                {calendarConnected ? (
-                  <p className="text-xs text-slate-500 pt-1">
-                    ניתוק Calendar אינו מנתק את Gmail.
-                  </p>
                 ) : null}
               </div>
-            )}
-          </section>
-        ) : null}
+              {calendarConnected ? (
+                <p className="text-xs text-slate-500 pt-1">
+                  ניתוק Calendar אינו מנתק את Gmail.
+                </p>
+              ) : null}
+            </div>
+          )}
+        </section>
 
         <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
           <div className="flex items-start justify-between gap-4">
@@ -553,7 +565,7 @@ export default function IntegrationsMain({
               }`}
             >
               {!outlookAvailable
-                ? "בקרוב"
+                ? "לא זמין"
                 : outlookConnected
                   ? "מחובר"
                   : outlookNeedsReconnect
@@ -566,7 +578,8 @@ export default function IntegrationsMain({
             <p className="mt-4 text-sm text-slate-500">טוען...</p>
           ) : !outlookAvailable ? (
             <p className="mt-4 text-sm text-amber-800 bg-amber-50 border border-amber-100 rounded-xl px-3 py-2">
-              Outlook נמצא כרגע בתהליך הכנה
+              {outlookStatus?.message ||
+                "Outlook / Microsoft 365 אינו זמין לעסק זה כרגע"}
             </p>
           ) : outlookAccount && (outlookConnected || outlookNeedsReconnect) ? (
             <div className="mt-4 space-y-2 text-sm">
