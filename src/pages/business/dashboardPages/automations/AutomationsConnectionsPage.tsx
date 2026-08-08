@@ -23,6 +23,7 @@ export default function AutomationsConnectionsPage() {
   return (
     <div className="ax-page">
       <IntegrationsMain
+        businessId={businessId || undefined}
         returnPath={returnPath}
         title="חיבורים"
         description="חיבורי שירותים שמשמשים את האוטומציות — Gmail, Outlook ו-Google Calendar."
