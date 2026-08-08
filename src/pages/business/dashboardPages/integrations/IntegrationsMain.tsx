@@ -22,9 +22,25 @@ import {
   type OutlookStatusResponse,
 } from "../../../../api/outlookApi";
 
-export default function IntegrationsMain() {
+type IntegrationsMainProps = {
+  /** OAuth return path override (defaults to dashboard integrations). */
+  returnPath?: string;
+  title?: string;
+  description?: string;
+  /** Compact wrapper styles when embedded inside Automations. */
+  embedded?: boolean;
+};
+
+export default function IntegrationsMain({
+  returnPath,
+  title = "אינטגרציות",
+  description = "חיבורי שירותים חיצוניים לעסק — Gmail, Google Calendar ו-Outlook.",
+  embedded = false,
+}: IntegrationsMainProps) {
   const { businessId = "" } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
+  const oauthReturnPath =
+    returnPath || `/business/${businessId}/dashboard/integrations`;
   const [status, setStatus] = useState<GmailStatusResponse | null>(null);
   const [outlookStatus, setOutlookStatus] =
     useState<OutlookStatusResponse | null>(null);
@@ -151,8 +167,7 @@ export default function IntegrationsMain() {
     setBusy(true);
     setError("");
     try {
-      const returnUrl = `/business/${businessId}/dashboard/integrations`;
-      const data = await getGmailConnectUrl(businessId, returnUrl);
+      const data = await getGmailConnectUrl(businessId, oauthReturnPath);
       if (!data?.url) throw new Error("לא התקבל קישור התחברות");
       window.location.href = data.url;
     } catch (e) {
@@ -181,8 +196,10 @@ export default function IntegrationsMain() {
     setCalendarBusy(true);
     setCalendarError("");
     try {
-      const returnUrl = `/business/${businessId}/dashboard/integrations`;
-      const data = await getGoogleCalendarConnectUrl(businessId, returnUrl);
+      const data = await getGoogleCalendarConnectUrl(
+        businessId,
+        oauthReturnPath
+      );
       if (data?.enabledLocally) {
         await loadCalendar();
         setCalendarBusy(false);
@@ -216,8 +233,7 @@ export default function IntegrationsMain() {
     setOutlookBusy(true);
     setOutlookError("");
     try {
-      const returnUrl = `/business/${businessId}/dashboard/integrations`;
-      const data = await getOutlookConnectUrl(businessId, returnUrl);
+      const data = await getOutlookConnectUrl(businessId, oauthReturnPath);
       if (!data?.url) throw new Error("לא התקבל קישור התחברות");
       window.location.href = data.url;
     } catch (e) {
@@ -310,11 +326,16 @@ export default function IntegrationsMain() {
   }
 
   return (
-    <div className="p-4 md:p-6 max-w-3xl mx-auto" dir="rtl">
-      <h1 className="text-2xl font-bold mb-2">אינטגרציות</h1>
-      <p className="text-slate-600 mb-6">
-        חיבורי שירותים חיצוניים לעסק — Gmail, Google Calendar ו-Outlook.
-      </p>
+    <div
+      className={
+        embedded
+          ? "ax-integrations-embedded"
+          : "p-4 md:p-6 max-w-3xl mx-auto"
+      }
+      dir="rtl"
+    >
+      <h1 className="text-2xl font-bold mb-2">{title}</h1>
+      <p className="text-slate-600 mb-6">{description}</p>
 
       {banner ? (
         <div className="mb-4 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm">
