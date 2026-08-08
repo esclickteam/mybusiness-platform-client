@@ -462,7 +462,7 @@ function AdminDashboard() {
                 icon={<Building2 className="h-5 w-5" />}
                 iconClassName="bg-sky-100 text-sky-600"
                 title="כניסה לעסקים"
-                description="רשימת כל העסקים וכניסה עם הרשאות מלאות"
+                description="רשימת כל העסקים וכניסה לפי הרשאות החבילה של העסק"
                 onClick={() => navigate("/admin/businesses")}
               />
 

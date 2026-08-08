@@ -57,7 +57,7 @@ function actionButtonClass(extra = "") {
 }
 
 function AdminUsers() {
-  const { user, loginWithToken } = useAuth();
+  const { user, loginWithToken, refreshUser } = useAuth();
   const navigate = useNavigate();
 
   const [search, setSearch] = useState("");
@@ -175,6 +175,12 @@ function AdminUsers() {
       loginWithToken(res.data.user, res.data.token, {
         skipRedirect: true,
       });
+
+      try {
+        await refreshUser?.(true);
+      } catch {
+        /* keep impersonation payload */
+      }
 
       if (res.data.user.role === "business" && res.data.user.businessId) {
         navigate(`/business/${res.data.user.businessId}/dashboard`, {

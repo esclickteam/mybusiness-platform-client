@@ -42,13 +42,14 @@ function formatDate(value?: string) {
 
 function AdminBusinesses() {
   const navigate = useNavigate();
-  const { user, loginWithToken } = useAuth() as {
+  const { user, loginWithToken, refreshUser } = useAuth() as {
     user: { role?: string } | null;
     loginWithToken: (
       userFromServer: unknown,
       accessToken: string,
       options?: { skipRedirect?: boolean }
     ) => void;
+    refreshUser?: (force?: boolean) => Promise<unknown>;
   };
 
   const [businesses, setBusinesses] = useState<AdminBusiness[]>([]);
@@ -115,7 +116,13 @@ function AdminBusinesses() {
 
   async function handleEnterBusiness(business: AdminBusiness) {
     const label = business.businessName || "העסק";
-    if (!window.confirm(`להיכנס לעסק "${label}" עם הרשאות מלאות?`)) return;
+    if (
+      !window.confirm(
+        `להיכנס לעסק "${label}" כבעלים? הגישה למודולים תהיה לפי החבילה של העסק.`
+      )
+    ) {
+      return;
+    }
 
     setEnteringId(business._id);
     setError("");
@@ -126,6 +133,14 @@ function AdminBusinesses() {
       });
 
       loginWithToken(data.user, data.token, { skipRedirect: true });
+
+      // Prefer fresh /auth/me ACL (entitlements + enabledModules) over the
+      // immediate impersonation payload — keeps UI aligned with API gates.
+      try {
+        await refreshUser?.(true);
+      } catch {
+        /* keep impersonation payload */
+      }
 
       const businessId = data?.user?.businessId || business._id;
       navigate(`/business/${businessId}/dashboard`, { replace: true });
