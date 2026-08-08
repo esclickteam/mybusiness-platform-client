@@ -14,6 +14,8 @@ const REFRESH_DEAD_KEY = "bizuply:refreshDead";
 
 let ongoingRefresh = null;
 let authHeaderSetter = null;
+/** Bumped to discard in-flight refresh results after session invalidation. */
+let refreshGeneration = 0;
 
 /**
  * Lets api.js register setAuthToken without a circular import.
@@ -49,13 +51,28 @@ export function isHardRefreshFailure(err) {
   if (
     code === "NO_REFRESH_TOKEN" ||
     code === "REFRESH_TOKEN_NOT_FOUND" ||
-    code === "REFRESH_TOKEN_INVALID"
+    code === "REFRESH_TOKEN_INVALID" ||
+    code === "SESSION_REVOKED" ||
+    code === "AUTH_VERSION_MISMATCH"
   ) {
     return true;
   }
   if (message === "NO_REFRESH_TOKEN" || message === "REFRESH_REVOKED") return true;
   if (message === "No refresh token") return true;
+  if (message === "SESSION_REVOKED" || message === "AUTH_VERSION_MISMATCH") {
+    return true;
+  }
   return false;
+}
+
+/**
+ * Abort any in-flight refresh and prevent applying a late success.
+ * Used by atomic session-invalid logout.
+ */
+export function abortAuthRefreshPipeline() {
+  refreshGeneration += 1;
+  ongoingRefresh = null;
+  clearAccessToken();
 }
 
 /** True when a prior refresh already proved there is no usable session cookie. */
@@ -89,6 +106,8 @@ export function clearRefreshDead() {
  */
 export function shouldAttemptRefresh() {
   if (isRefreshDead()) return false;
+  // Lazy import avoided — session gate is checked by api.js via isSessionInvalidated().
+  // Keep this function free of a circular dependency on sessionInvalidation.
   if (localStorage.getItem("impersonatedBy")) return false;
   if (localStorage.getItem("token")) return true;
   if (localStorage.getItem("businessDetails")) return true;
@@ -117,11 +136,17 @@ export async function refreshAccessTokenOnce() {
   }
 
   if (!ongoingRefresh) {
+    const generation = refreshGeneration;
+
     ongoingRefresh = axios
       .post(`${BASE_URL}/auth/refresh-token`, null, {
         withCredentials: true,
       })
       .then((res) => {
+        if (generation !== refreshGeneration) {
+          throwHardRefreshError("SESSION_REVOKED");
+        }
+
         const { accessToken } = res.data || {};
 
         if (!accessToken) {
@@ -132,6 +157,10 @@ export async function refreshAccessTokenOnce() {
         return accessToken;
       })
       .catch((err) => {
+        if (generation !== refreshGeneration) {
+          throwHardRefreshError("SESSION_REVOKED");
+        }
+
         const status = err.response?.status;
         const code = err.response?.data?.code;
         const message = err.response?.data?.message;
@@ -153,7 +182,9 @@ export async function refreshAccessTokenOnce() {
         if (
           status === 401 &&
           (code === "REFRESH_TOKEN_NOT_FOUND" ||
-            code === "REFRESH_TOKEN_INVALID")
+            code === "REFRESH_TOKEN_INVALID" ||
+            code === "SESSION_REVOKED" ||
+            code === "AUTH_VERSION_MISMATCH")
         ) {
           markRefreshDead();
           clearAccessToken();
@@ -162,13 +193,15 @@ export async function refreshAccessTokenOnce() {
           } catch {
             /* ignore */
           }
-          throwHardRefreshError(code);
+          throwHardRefreshError(code || "REFRESH_TOKEN_INVALID");
         }
 
         throw err;
       })
       .finally(() => {
-        ongoingRefresh = null;
+        if (generation === refreshGeneration) {
+          ongoingRefresh = null;
+        }
       });
   }
 

@@ -6,15 +6,17 @@ import {
   getValidAccessToken,
   refreshAccessTokenOnce,
   isAccessTokenExpired,
-  clearAccessToken,
   shouldAttemptRefresh,
   clearRefreshDead,
   markRefreshDead,
 } from "../utils/tokenRefresh";
 import {
-  clearLastDashboardRoute,
-  resolveBusinessDashboardPath,
-} from "../utils/dashboardRoutePersistence";
+  bindSessionInvalidationListeners,
+  clearPersistedAuthState,
+  isSessionInvalidated,
+  resetSessionInvalidationGuard,
+} from "../utils/sessionInvalidation";
+import { resolveBusinessDashboardPath } from "../utils/dashboardRoutePersistence";
 import { consumePendingNotificationUrl } from "../utils/notificationNavigation";
 import BizuplyLoader from "../components/ui/BizuplyLoader";
 import { isPublicCustomerSiteHost } from "../utils/publicSiteHost";
@@ -161,15 +163,7 @@ function isCheckoutContinuationPath(pathname) {
    🧹 Clear local auth only
 =========================== */
 function clearLocalAuth({ clearDashboardRoute = false } = {}) {
-  clearAccessToken();
-  localStorage.removeItem("businessDetails");
-  localStorage.removeItem("dashboardStats");
-  localStorage.removeItem("impersonatedBy");
-  localStorage.removeItem("impersonatorRole");
-
-  if (clearDashboardRoute) {
-    clearLastDashboardRoute();
-  }
+  clearPersistedAuthState({ clearDashboardRoute });
 }
 
 async function tryRefreshWithRetries(maxAttempts = 3) {
@@ -275,6 +269,7 @@ export function AuthProvider({ children }) {
     accessToken,
     { skipRedirect = false } = {}
   ) => {
+    resetSessionInvalidationGuard();
     clearRefreshDead();
     localStorage.setItem("token", accessToken);
     setAuthToken(accessToken);
@@ -353,6 +348,7 @@ export function AuthProvider({ children }) {
 
       const { accessToken, user: loggedInUser, redirectUrl } = data;
 
+      resetSessionInvalidationGuard();
       clearRefreshDead();
       localStorage.setItem("token", accessToken);
       setAuthToken(accessToken);
@@ -459,6 +455,7 @@ export function AuthProvider({ children }) {
 
       const { accessToken, user: staffUser } = data;
 
+      resetSessionInvalidationGuard();
       clearRefreshDead();
       localStorage.setItem("token", accessToken);
       setAuthToken(accessToken);
@@ -559,12 +556,42 @@ export function AuthProvider({ children }) {
   };
 
   /* ===========================
+     🛑 Session revoked / authVersion mismatch → clear React auth state
+  =========================== */
+  useEffect(() => {
+    return bindSessionInvalidationListeners(() => {
+      setToken(null);
+      setUser(null);
+      setError(null);
+
+      if (socket) {
+        socket.disconnect();
+        setSocket(null);
+      }
+    });
+  }, [socket]);
+
+  /* ===========================
      🔥 Initialize
   =========================== */
   useEffect(() => {
     let cancelled = false;
 
     if (initialized) return;
+
+    // Another tab / interceptor already invalidated the session.
+    if (isSessionInvalidated()) {
+      clearLocalAuth();
+      markRefreshDead();
+      setToken(null);
+      setUser(null);
+      setLoading(false);
+      setInitialized(true);
+      if (!isPublicRoute(location.pathname)) {
+        navigate("/login", { replace: true });
+      }
+      return;
+    }
 
     const finishLoggedOut = () => {
       if (socket) {
@@ -761,18 +788,11 @@ export function AuthProvider({ children }) {
       } catch (err) {
         console.error("❌ Auth init failed:", err);
 
-        const cachedRaw = localStorage.getItem("businessDetails");
-
-        if (cachedRaw && !cancelled) {
-          try {
-            setUser(normalizeUser(JSON.parse(cachedRaw)));
-          } catch {
-            clearLocalAuth();
-            setToken(null);
-            setUser(null);
-          }
-        } else if (!cancelled) {
+        // Never restore a cached profile after bootstrap failure — that left a
+        // zombie "logged in" UI that kept hammering APIs with a revoked session.
+        if (!cancelled) {
           clearLocalAuth();
+          markRefreshDead();
           setToken(null);
           setUser(null);
 
@@ -781,7 +801,7 @@ export function AuthProvider({ children }) {
             setSocket(null);
           }
 
-          if (!isPublicRoute(location.pathname)) {
+          if (!isPublicRoute(location.pathname) && !isSessionInvalidated()) {
             navigate("/login", { replace: true });
           }
         }
