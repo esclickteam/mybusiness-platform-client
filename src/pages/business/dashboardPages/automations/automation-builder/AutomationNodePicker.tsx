@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import { Search, X } from "lucide-react";
 import type { PaletteItem } from "../automationFlowTypes";
 
@@ -107,7 +108,7 @@ export default function AutomationNodePicker({
 
   if (!open) return null;
 
-  return (
+  return createPortal(
     <div className="af-drawer-backdrop" onClick={onClose} role="presentation">
       <aside
         className="af-drawer af-drawer--picker"
@@ -214,7 +215,8 @@ export default function AutomationNodePicker({
           )}
         </div>
       </aside>
-    </div>
+    </div>,
+    document.body
   );
 }
 
