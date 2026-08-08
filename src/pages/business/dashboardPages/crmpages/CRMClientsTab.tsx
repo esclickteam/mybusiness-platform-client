@@ -40,13 +40,16 @@ import {
   type ClientActivity,
 } from "./ClientDocumentationPanel";
 import {
+  type ClientTableFieldValue,
   type ConfiguredClientField,
   type CustomFieldType,
   cleanKey,
   createEmptyClientField,
   createExampleClientFields,
+  defaultTableFieldValue,
   fetchConfiguredClientFields,
   normalizeConfiguredClientField,
+  normalizeTableFieldValue,
   saveConfiguredClientFields,
   uid,
 } from "./clientCustomFieldsApi";
@@ -152,6 +155,7 @@ function normalizeClientFieldType(value: unknown): CustomFieldType {
     "text",
     "textarea",
     "summary",
+    "table",
     "number",
     "date",
     "status",
@@ -317,6 +321,7 @@ function getFieldsValueMap(fields: CustomField[]) {
 function defaultFieldValue(type: CustomFieldType) {
   if (type === "checkbox" || type === "boolean") return false;
   if (type === "checklist") return [];
+  if (type === "table") return defaultTableFieldValue();
   return "";
 }
 
@@ -1208,6 +1213,9 @@ function ClientDataPanel({
             <p className="text-sm font-bold text-slate-500">
               {t("crm.clients.clientDataPanel.subtitle")}
             </p>
+            <p className="mt-1 text-xs font-bold text-violet-700">
+              {t("crm.clients.clientDataPanel.perClientHint")}
+            </p>
           </div>
         </div>
 
@@ -1349,6 +1357,8 @@ function ClientCustomFieldsManager({
   const typeOptions: CustomFieldType[] = [
     "text",
     "textarea",
+    "summary",
+    "table",
     "number",
     "date",
     "select",
@@ -1356,7 +1366,6 @@ function ClientCustomFieldsManager({
     "checkbox",
     "boolean",
     "checklist",
-    "summary",
     "link",
     "email",
     "phone",
@@ -1504,10 +1513,13 @@ function ClientCustomFieldsManager({
 
                 {(field.type === "select" ||
                   field.type === "status" ||
-                  field.type === "checklist") && (
+                  field.type === "checklist" ||
+                  field.type === "table") && (
                   <label className="mt-3 block text-start">
                     <span className="mb-1 block text-xs font-black text-slate-500">
-                      {t("crm.clients.customFields.options")}
+                      {field.type === "table"
+                        ? t("crm.clients.customFields.tableColumns")
+                        : t("crm.clients.customFields.options")}
                     </span>
                     <input
                       value={(field.options || []).join(", ")}
@@ -1519,9 +1531,11 @@ function ClientCustomFieldsManager({
                             .filter(Boolean),
                         })
                       }
-                      placeholder={t(
-                        "crm.clients.customFields.optionsPlaceholder",
-                      )}
+                      placeholder={
+                        field.type === "table"
+                          ? t("crm.clients.customFields.tableColumnsPlaceholder")
+                          : t("crm.clients.customFields.optionsPlaceholder")
+                      }
                       className="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm font-bold text-slate-800 outline-none focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
                     />
                   </label>
@@ -1595,9 +1609,115 @@ function ConfiguredFieldInput({
   onChange: (value: unknown) => void;
 }) {
   const { t } = useTranslation();
+  const dir = useLocaleDir();
   const stringValue = value == null ? "" : String(value);
+  const [summaryOpen, setSummaryOpen] = useState(false);
+  const [summaryDraft, setSummaryDraft] = useState(stringValue);
 
-  if (field.type === "textarea" || field.type === "summary") {
+  useEffect(() => {
+    if (!summaryOpen) setSummaryDraft(stringValue);
+  }, [stringValue, summaryOpen]);
+
+  if (field.type === "summary") {
+    const preview = stringValue.trim();
+    return (
+      <DataFieldShell field={field} wide>
+        <button
+          type="button"
+          onClick={() => {
+            setSummaryDraft(stringValue);
+            setSummaryOpen(true);
+          }}
+          className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-start transition hover:border-violet-300 hover:bg-white hover:ring-4 hover:ring-violet-100"
+        >
+          <p className="text-sm font-bold leading-6 text-slate-800">
+            {preview ||
+              field.placeholder ||
+              t("crm.clients.clientDataPanel.summaryEmpty")}
+          </p>
+          <span className="mt-2 inline-flex text-xs font-black text-violet-700">
+            {t("crm.clients.clientDataPanel.openSummaryModal")}
+          </span>
+        </button>
+
+        {summaryOpen ? (
+          <div
+            className="fixed inset-0 z-[90] flex items-center justify-center bg-slate-950/45 p-4"
+            role="dialog"
+            aria-modal="true"
+          >
+            <div
+              dir={dir}
+              className="flex w-full max-w-2xl flex-col overflow-hidden rounded-3xl bg-white shadow-2xl"
+            >
+              <div className="flex items-start justify-between gap-3 border-b border-slate-100 px-5 py-4">
+                <div>
+                  <h4 className="text-xl font-black text-slate-800">
+                    {field.label}
+                  </h4>
+                  <p className="mt-1 text-sm font-bold text-slate-500">
+                    {t("crm.clients.clientDataPanel.summaryModalHint")}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setSummaryOpen(false)}
+                  className="grid h-10 w-10 place-items-center rounded-xl border border-slate-200 text-slate-500 transition hover:bg-slate-50"
+                  aria-label={t("crm.common.close")}
+                >
+                  <X className="h-4 w-4" />
+                </button>
+              </div>
+              <div className="p-5">
+                <textarea
+                  value={summaryDraft}
+                  onChange={(event) => setSummaryDraft(event.target.value)}
+                  placeholder={field.placeholder || field.description || ""}
+                  rows={10}
+                  className="w-full resize-none rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-bold text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-100"
+                  autoFocus
+                />
+              </div>
+              <div className="flex flex-col-reverse gap-2 border-t border-slate-100 px-5 py-4 sm:flex-row sm:justify-end">
+                <button
+                  type="button"
+                  onClick={() => setSummaryOpen(false)}
+                  className="inline-flex h-11 items-center justify-center rounded-xl border border-slate-200 px-5 text-sm font-black text-slate-700 transition hover:bg-slate-50"
+                >
+                  {t("crm.common.cancel")}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    onChange(summaryDraft);
+                    setSummaryOpen(false);
+                  }}
+                  className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-[#6D28D9] px-5 text-sm font-black text-white transition hover:bg-[#5B21B6]"
+                >
+                  <Save className="h-4 w-4" />
+                  {t("crm.clients.clientDataPanel.saveSummary")}
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : null}
+      </DataFieldShell>
+    );
+  }
+
+  if (field.type === "table") {
+    return (
+      <DataFieldShell field={field} wide>
+        <ClientTableFieldEditor
+          field={field}
+          value={value}
+          onChange={onChange}
+        />
+      </DataFieldShell>
+    );
+  }
+
+  if (field.type === "textarea") {
     return (
       <DataFieldShell field={field} wide>
         <textarea
@@ -1703,6 +1823,110 @@ function ConfiguredFieldInput({
         className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-black text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-100"
       />
     </DataFieldShell>
+  );
+}
+
+function ClientTableFieldEditor({
+  field,
+  value,
+  onChange,
+}: {
+  field: ConfiguredClientField;
+  value: unknown;
+  onChange: (value: unknown) => void;
+}) {
+  const { t } = useTranslation();
+  const table = normalizeTableFieldValue(
+    value,
+    field.options?.length ? field.options : undefined,
+  );
+
+  const commit = (next: ClientTableFieldValue) => onChange(next);
+
+  return (
+    <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white">
+      <table className="min-w-full border-collapse text-sm">
+        <thead>
+          <tr className="bg-slate-50">
+            {table.columns.map((column, columnIndex) => (
+              <th
+                key={`${column}-${columnIndex}`}
+                className="border-b border-slate-200 px-3 py-2 text-start text-xs font-black text-slate-600"
+              >
+                {column}
+              </th>
+            ))}
+            <th className="border-b border-slate-200 px-2 py-2" />
+          </tr>
+        </thead>
+        <tbody>
+          {table.rows.map((row, rowIndex) => (
+            <tr key={`row-${rowIndex}`}>
+              {table.columns.map((_, columnIndex) => (
+                <td
+                  key={`cell-${rowIndex}-${columnIndex}`}
+                  className="border-b border-slate-100 px-2 py-1.5"
+                >
+                  <input
+                    value={row[columnIndex] || ""}
+                    onChange={(event) => {
+                      const rows = table.rows.map((item, index) =>
+                        index === rowIndex
+                          ? item.map((cell, cellIndex) =>
+                              cellIndex === columnIndex
+                                ? event.target.value
+                                : cell,
+                            )
+                          : item,
+                      );
+                      commit({ ...table, rows });
+                    }}
+                    className="h-10 w-full min-w-[110px] rounded-xl border border-transparent bg-slate-50 px-2 text-sm font-bold text-slate-800 outline-none transition focus:border-violet-300 focus:bg-white focus:ring-2 focus:ring-violet-100"
+                  />
+                </td>
+              ))}
+              <td className="border-b border-slate-100 px-2 py-1.5">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (table.rows.length <= 1) {
+                      commit({
+                        ...table,
+                        rows: [table.columns.map(() => "")],
+                      });
+                      return;
+                    }
+                    commit({
+                      ...table,
+                      rows: table.rows.filter((_, index) => index !== rowIndex),
+                    });
+                  }}
+                  className="grid h-9 w-9 place-items-center rounded-lg text-rose-600 transition hover:bg-rose-50"
+                  aria-label={t("crm.common.delete")}
+                >
+                  <Trash2 className="h-3.5 w-3.5" />
+                </button>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <div className="border-t border-slate-100 p-2">
+        <button
+          type="button"
+          onClick={() =>
+            commit({
+              ...table,
+              rows: [...table.rows, table.columns.map(() => "")],
+            })
+          }
+          className="inline-flex h-10 items-center gap-2 rounded-xl px-3 text-sm font-black text-violet-700 transition hover:bg-violet-50"
+        >
+          <Plus className="h-4 w-4" />
+          {t("crm.clients.clientDataPanel.addTableRow")}
+        </button>
+      </div>
+    </div>
   );
 }
 

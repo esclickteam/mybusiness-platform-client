@@ -841,6 +841,18 @@ function formatCustomDataDisplay(field) {
   if (type === "checklist") {
     return Array.isArray(value) && value.length ? value.join(" · ") : "—";
   }
+  if (type === "table") {
+    if (!value || typeof value !== "object") return "—";
+    const rows = Array.isArray(value.rows) ? value.rows : [];
+    const filled = rows
+      .map((row) =>
+        Array.isArray(row)
+          ? row.map((cell) => String(cell || "").trim()).filter(Boolean).join(" · ")
+          : "",
+      )
+      .filter(Boolean);
+    return filled.length ? filled.join(" | ") : "—";
+  }
   if (value == null || value === "") return "—";
   return String(value);
 }
@@ -1892,51 +1904,54 @@ const SAMPLE_CRM_FIELDS = [
     key: "client_name",
     label: "שם לקוח",
     type: "text",
-    value: "ישראל ישראלי",
+    value: "[שם לקוח]",
   },
   {
     key: "fullName",
     label: "שם לקוח",
     type: "text",
-    value: "ישראל ישראלי",
+    value: "[שם לקוח]",
   },
-  { key: "weight", label: "משקל", type: "number", value: 72 },
+  { key: "weight", label: "משקל", type: "number", value: "[משקל]" },
   {
     key: "treatments_left",
     label: "כמות טיפולים",
     type: "number",
-    value: 4,
+    value: "[כמות]",
   },
-  { key: "balance", label: "יתרה", type: "number", value: 250 },
+  { key: "balance", label: "יתרה", type: "number", value: "[יתרה]" },
   {
     key: "sessions_done",
     label: "מפגשים שבוצעו",
     type: "number",
-    value: 8,
+    value: "[מפגשים]",
   },
   {
     key: "summary",
     label: "סיכום",
     type: "summary",
-    value: "התקדמות טובה — ממשיכים לפי התוכנית",
+    value: "[סיכום מהתיק]",
   },
   {
     key: "treatment_plan",
     label: "תכנית טיפול",
     type: "textarea",
-    value: "מפגש שבועי · תרגילים · יעד לחודש",
+    value: "[תכנית מהתיק]",
   },
   {
     key: "continuation_plan",
     label: "תוכנית המשך",
     type: "textarea",
-    value: "4 מפגשים נוספים + מעקב משקל",
+    value: "[תוכנית המשך מהתיק]",
   },
   {
     key: "follow_up_plan",
     label: "תכנית מעקב",
-    type: "textarea",
-    value: "בדיקה כל שבועיים · מדידת מדדים",
+    type: "table",
+    value: {
+      columns: ["תאריך", "פעולה", "סטטוס"],
+      rows: [["[תאריך]", "[פעולה]", "[סטטוס]"]],
+    },
   },
 ];
 
