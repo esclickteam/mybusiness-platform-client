@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   CalendarDays,
@@ -38,6 +38,10 @@ import {
 } from "../../../../hooks/useBusinessWorkHours";
 import { useLocaleDir } from "../../../../hooks/useLocaleDir";
 import { WORK_HOURS_UPDATED_EVENT } from "../../../../utils/workHoursEvents";
+import {
+  applyClientSessionConsumption,
+  isAppointmentTreatmentCompleted,
+} from "./clientSessionConsumption";
 
 const DURATION_STEP = 15;
 const MAX_DURATION = 12 * 60;
@@ -85,6 +89,9 @@ type AppointmentItem = {
   note?: string;
   address?: string;
   createdAt?: string;
+  /** Treatment was fulfilled / used for this visit */
+  completed?: boolean;
+  status?: string;
 };
 
 type AppointmentFormState = {
@@ -100,6 +107,8 @@ type AppointmentFormState = {
   time: string;
   price: string | number;
   paid: boolean;
+  /** When true, one package treatment is consumed for the linked CRM client */
+  completed: boolean;
   duration: number;
 };
 
@@ -158,6 +167,7 @@ const emptyAppointmentForm: AppointmentFormState = {
   duration: 30,
   price: "",
   paid: false,
+  completed: false,
 };
 
 function getTodayIso() {
@@ -629,6 +639,8 @@ export default function CRMAppointmentsTab() {
 
   const [newAppointment, setNewAppointment] =
     useState<AppointmentFormState>(emptyAppointmentForm);
+  /** Previous "treatment completed" flag when editing — used to consume/restore package counters once. */
+  const previousCompletedRef = useRef(false);
 
   const [services, setServices] = useState<ServiceItem[]>([]);
   const [clients, setClients] = useState<CRMClient[]>([]);
@@ -870,6 +882,7 @@ export default function CRMAppointmentsTab() {
 
   const resetForm = () => {
     setEditId(null);
+    previousCompletedRef.current = false;
     setNewAppointment({
       ...emptyAppointmentForm,
       date: selectedDate || getTodayIso(),
@@ -894,6 +907,7 @@ export default function CRMAppointmentsTab() {
   const closeModal = () => {
     setShowAddForm(false);
     setEditId(null);
+    previousCompletedRef.current = false;
     setNewAppointment(emptyAppointmentForm);
   };
 
@@ -962,6 +976,9 @@ export default function CRMAppointmentsTab() {
     setEditId(appointment._id);
     setShowAddForm(true);
 
+    const wasCompleted = isAppointmentTreatmentCompleted(appointment);
+    previousCompletedRef.current = wasCompleted;
+
     setNewAppointment({
       crmClientId: clientId,
       clientName:
@@ -982,6 +999,7 @@ export default function CRMAppointmentsTab() {
       duration: Number(appointment.duration) || 30,
       price: appointment.price ?? "",
       paid: Boolean(appointment.paid),
+      completed: wasCompleted,
     });
   };
 
@@ -1054,6 +1072,8 @@ export default function CRMAppointmentsTab() {
       time: newAppointment.time,
       duration: Number(newAppointment.duration) || minDuration,
       crmClientId: newAppointment.crmClientId || null,
+      completed: Boolean(newAppointment.completed),
+      status: newAppointment.completed ? "completed" : "scheduled",
     };
 
     setIsSaving(true);
@@ -1063,6 +1083,39 @@ export default function CRMAppointmentsTab() {
         await API.patch(`/appointments/${editId}`, payload);
       } else {
         await API.post("/appointments", payload);
+      }
+
+      const clientId = String(newAppointment.crmClientId || "").trim();
+      const wasCompleted = previousCompletedRef.current;
+      const nowCompleted = Boolean(newAppointment.completed);
+
+      if (clientId && businessId && wasCompleted !== nowCompleted) {
+        try {
+          const result = await applyClientSessionConsumption(
+            businessId,
+            clientId,
+            { delta: nowCompleted ? 1 : -1 },
+          );
+          if (result?.updated && nowCompleted) {
+            const left =
+              result.treatmentsLeft == null
+                ? ""
+                : String(result.treatmentsLeft);
+            alert(
+              left === ""
+                ? t("crm.appointments.treatmentConsumed")
+                : t("crm.appointments.treatmentConsumedWithLeft", {
+                    count: left,
+                  }),
+            );
+          }
+          await queryClient.invalidateQueries({
+            queryKey: ["clients", businessId],
+          });
+        } catch (consumeErr) {
+          console.error("Session consumption failed:", consumeErr);
+          alert(t("crm.appointments.treatmentConsumeFailed"));
+        }
       }
 
       await queryClient.invalidateQueries({
@@ -1610,9 +1663,18 @@ function AppointmentCard({
     <article className="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm transition hover:border-sky-100 hover:shadow-[0_16px_40px_rgba(15,23,42,0.07)]">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
-          <div className="inline-flex items-center gap-1 rounded-full bg-sky-50 px-2.5 py-1 text-[11px] font-black text-sky-700 ring-1 ring-sky-100">
+          <div
+            className={[
+              "inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-[11px] font-black ring-1",
+              isAppointmentTreatmentCompleted(appointment)
+                ? "bg-violet-50 text-violet-800 ring-violet-100"
+                : "bg-sky-50 text-sky-700 ring-sky-100",
+            ].join(" ")}
+          >
             <CheckCircle2 className="h-3 w-3" />
-            {t("crm.appointments.scheduled")}
+            {isAppointmentTreatmentCompleted(appointment)
+              ? t("crm.appointments.treatmentCompleted")
+              : t("crm.appointments.scheduled")}
           </div>
 
           <h3 className="mt-2 truncate text-lg font-black text-slate-800">
@@ -2108,6 +2170,44 @@ function AppointmentModal({
                         ✓
                       </span>
                     </button>
+                  </FormBlock>
+
+                  <FormBlock label={t("crm.appointments.treatmentFulfillment")}>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setAppointment((prev) => ({
+                          ...prev,
+                          completed: !prev.completed,
+                        }))
+                      }
+                      className={[
+                        "flex h-12 w-full items-center justify-between rounded-2xl border px-4 text-sm font-black transition",
+                        appointment.completed
+                          ? "border-violet-300 bg-violet-50 text-violet-800"
+                          : "border-slate-200 bg-slate-50 text-slate-600",
+                      ].join(" ")}
+                      title={t("crm.appointments.treatmentFulfillmentHint")}
+                    >
+                      <span>
+                        {appointment.completed
+                          ? t("crm.appointments.treatmentCompleted")
+                          : t("crm.appointments.treatmentNotCompleted")}
+                      </span>
+                      <span
+                        className={[
+                          "grid h-6 w-6 place-items-center rounded-full text-xs",
+                          appointment.completed
+                            ? "bg-[#6D28D9] text-white"
+                            : "bg-white text-transparent ring-1 ring-slate-300",
+                        ].join(" ")}
+                      >
+                        ✓
+                      </span>
+                    </button>
+                    <p className="mt-2 text-xs font-bold text-slate-400">
+                      {t("crm.appointments.treatmentFulfillmentHint")}
+                    </p>
                   </FormBlock>
 
                   <div className="md:col-span-2">
