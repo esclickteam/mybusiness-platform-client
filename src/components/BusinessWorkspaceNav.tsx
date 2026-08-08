@@ -17,7 +17,6 @@ import {
 } from "lucide-react";
 import { getTextDirection } from "../i18n/localeUtils";
 import { useAuth } from "../context/AuthContext";
-import { isBizuplyTestUser } from "../utils/bizuplyTestUser";
 import {
   isModuleEnabled,
   normalizeEnabledModules,
@@ -164,7 +163,15 @@ export default function BusinessWorkspaceNav({
   const t = tProp || ((key: string) => tI18n(key));
   const dir = getTextDirection(i18n.language);
   const enabledModules = normalizeEnabledModules(user?.enabledModules);
-  const showWhatsappAndMeta = isBizuplyTestUser(user);
+  const hasBusinessModules =
+    !enabledModules ||
+    isModuleEnabled(enabledModules, "crm") ||
+    isModuleEnabled(enabledModules, "automations");
+  // Website Builder upsell: show entry for business-plan users without the add-on.
+  const showWebsiteUpsell =
+    Boolean(enabledModules) &&
+    hasBusinessModules &&
+    !isModuleEnabled(enabledModules, "website");
 
   const basePath = businessId ? `/business/${businessId}` : "/business";
 
@@ -190,24 +197,20 @@ export default function BusinessWorkspaceNav({
       icon: Workflow,
       moduleKey: "automations",
     },
-    ...(showWhatsappAndMeta
-      ? ([
-          {
-            labelKey: "businessNav.whatsapp",
-            fallback: "WhatsApp Messages",
-            to: `${basePath}/dashboard/whatsapp`,
-            icon: MessageCircle,
-            moduleKey: "whatsapp",
-          },
-          {
-            labelKey: "businessNav.metaCampaigns",
-            fallback: "Meta Campaigns",
-            to: `${basePath}/dashboard/meta-campaigns`,
-            icon: Megaphone,
-            moduleKey: "meta-campaigns",
-          },
-        ] as NavItemConfig[])
-      : []),
+    {
+      labelKey: "businessNav.whatsapp",
+      fallback: "WhatsApp Messages",
+      to: `${basePath}/dashboard/whatsapp`,
+      icon: MessageCircle,
+      moduleKey: "whatsapp",
+    },
+    {
+      labelKey: "businessNav.metaCampaigns",
+      fallback: "Meta Campaigns",
+      to: `${basePath}/dashboard/meta-campaigns`,
+      icon: Megaphone,
+      moduleKey: "meta-campaigns",
+    },
     {
       labelKey: "businessNav.collaborations",
       fallback: "Collaborations",
@@ -235,8 +238,8 @@ export default function BusinessWorkspaceNav({
       to: basePath,
       icon: UserRound,
       exact: true,
-      // Hide public profile for limited marketer-client accounts
-      moduleKey: enabledModules ? "__hidden__" : null,
+      // Hide only for tightly ACL-limited marketer clients (no business modules).
+      moduleKey: enabledModules && !hasBusinessModules ? "__hidden__" : null,
     },
     {
       labelKey: "businessNav.buildWebsite",
@@ -257,13 +260,14 @@ export default function BusinessWorkspaceNav({
       fallback: "Help Center",
       to: `${basePath}/dashboard/help-center`,
       icon: HelpCircle,
-      moduleKey: enabledModules ? "__hidden__" : null,
+      moduleKey: null,
     },
   ];
 
   const visibleItems = items.filter((item) => {
     if (!item.moduleKey) return true;
     if (item.moduleKey === "__hidden__") return false;
+    if (item.moduleKey === "website" && showWebsiteUpsell) return true;
     return isModuleEnabled(enabledModules, item.moduleKey);
   });
 
