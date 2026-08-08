@@ -863,7 +863,28 @@ export default function WebsiteTemplatesPage() {
     }
   } catch (err: any) {
     console.error("Create site from template failed:", err);
-    // fallback לזרימה הישנה אם יצירת האתר נכשלה
+    const status = Number(err?.response?.status || 0);
+    const apiMessage = String(
+      err?.response?.data?.error ||
+        err?.response?.data?.message ||
+        err?.message ||
+        "",
+    ).trim();
+    const looksLikeLimit =
+      status === 402 ||
+      status === 403 ||
+      /limit|quota|מכס|חבילה|plan|upgrade|אתר נוסף/i.test(apiMessage);
+
+    if (looksLikeLimit) {
+      alert(apiMessage || t("mySites.createLimitError"));
+      return;
+    }
+
+    if (apiMessage) {
+      alert(apiMessage);
+      return;
+    }
+    // fallback לזרימה הישנה אם יצירת האתר נכשלה בלי הודעה ברורה
   }
 
   navigate(`${basePath}/dashboard/website/templates/${cleanTemplateKey}/edit`);

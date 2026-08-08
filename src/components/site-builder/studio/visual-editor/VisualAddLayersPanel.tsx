@@ -114,22 +114,11 @@ type ElementCategory =
   | "more";
 
 function sampleCrmFieldValue(field: ConfiguredClientField) {
-  const fromPlaceholder = String(field.placeholder || "")
-    .replace(/^לדוגמה:\s*/i, "")
-    .trim();
-  if (fromPlaceholder) return fromPlaceholder;
-
-  const defaults: Record<string, string> = {
-    weight: "72",
-    treatments_left: "4",
-    balance: "250",
-    sessions_done: "8",
-    summary: "התקדמות טובה — ממשיכים לפי התוכנית",
-    treatment_plan: "מפגש שבועי · תרגילים · יעד לחודש",
-    continuation_plan: "4 מפגשים נוספים + מעקב",
-    follow_up_plan: "בדיקה כל שבועיים · מדידת מדדים",
-  };
-  return defaults[field.key] || "X";
+  // Editor samples must look like placeholders — not real shared client values.
+  if (field.type === "table") return "[טבלה מהתיק]";
+  if (field.type === "summary") return "[סיכום מהתיק]";
+  if (field.type === "number") return "[מספר]";
+  return `[${field.label || "ערך מהתיק"}]`;
 }
 
 function mapLibraryCategoryToPanel(
@@ -894,7 +883,7 @@ export default function VisualAddLayersPanel({
     ];
 
     // Personal-area only: CRM dynamic fields require the client-portal plugin.
-    // Every CRM datum is placed as "שם - ערך" so owners can position both together.
+    // Each field inserts TWO nodes (name + value) so they can be positioned separately.
     const liveCrmItems: LibraryElement[] = !clientPortalPluginEnabled
       ? []
       : [
@@ -907,47 +896,49 @@ export default function VisualAddLayersPanel({
             preview: "crm",
             barePreview: true,
             previewHtml:
-              '<div style="font-size:20px;font-weight:800;color:#0f172a;white-space:nowrap">שלום, ישראל ישראלי</div>',
+              '<div style="font-size:20px;font-weight:800;color:#0f172a;white-space:nowrap">שלום, [שם לקוח]</div>',
             action: () =>
               editor?.addCrmField?.({
                 fieldKey: "client_name",
                 label: "שם לקוח",
-                sampleValue: "ישראל ישראלי",
+                sampleValue: "[שם לקוח]",
                 format: "greeting",
+                asPair: false,
               }),
           },
           {
             id: "crm-field-client-name",
             title: "שם לקוח",
-            description: "שם לקוח - ישראל ישראלי · אישי לפי לקוח מחובר",
+            description:
+              "שני שדות נפרדים: שם + ערך · הערך משתנה לפי הלקוח המחובר",
             category: "crm",
             preview: "crm",
             barePreview: true,
             previewHtml:
-              '<div style="font-size:16px;font-weight:800;color:#0f172a;white-space:nowrap">שם לקוח - ישראל ישראלי</div>',
+              '<div style="font-size:14px;font-weight:800;color:#64748b">שם לקוח</div><div style="font-size:22px;font-weight:800;color:#0f172a">[שם לקוח]</div>',
             action: () =>
               editor?.addCrmField?.({
                 fieldKey: "client_name",
                 label: "שם לקוח",
-                sampleValue: "ישראל ישראלי",
-                part: "both",
+                sampleValue: "[שם לקוח]",
+                asPair: true,
               }),
           },
           {
             id: "crm-field-generic",
             title: "נתון משתנה מה-CRM",
             description:
-              'מוסיף טקסט בפורמט "שם - ערך" בלי כרטיסייה — אחרי התחברות כל לקוח רואה רק את הנתונים שלו',
+              "מוסיף שני שדות נפרדים (שם + ערך) — השם זהה לכל הלקוחות, הערך אישי מהתיק",
             category: "crm",
             preview: "crm",
             barePreview: true,
             previewHtml:
-              '<div style="font-size:20px;font-weight:800;color:#0f172a;white-space:nowrap">שם הנתון - X</div>',
+              '<div style="font-size:14px;font-weight:800;color:#64748b">שם הנתון</div><div style="font-size:22px;font-weight:800;color:#0f172a">[ערך מהתיק]</div>',
             action: () =>
               editor?.addCrmField?.({
                 label: "שם הנתון",
-                sampleValue: "X",
-                part: "both",
+                sampleValue: "[ערך מהתיק]",
+                asPair: true,
               }),
           },
           ...crmFields
@@ -962,17 +953,17 @@ export default function VisualAddLayersPanel({
               return {
                 id: `crm-field-${field.key}`,
                 title: label,
-                description: `${label} - ${sampleValue} · אישי לפי לקוח מחובר`,
+                description: `שני שדות: ${label} + ערך אישי מהתיק`,
                 category: "crm" as const,
                 preview: "crm" as const,
                 barePreview: true,
-                previewHtml: `<div style="font-size:16px;font-weight:800;color:#0f172a;white-space:nowrap;text-align:right">${label} - ${sampleValue}</div>`,
+                previewHtml: `<div style="font-size:14px;font-weight:800;color:#64748b;text-align:right">${label}</div><div style="font-size:22px;font-weight:800;color:#0f172a;text-align:right">${sampleValue}</div>`,
                 action: () =>
                   editor?.addCrmField?.({
                     fieldKey: field.key,
                     label,
                     sampleValue,
-                    part: "both",
+                    asPair: true,
                   }),
               };
             }),
@@ -1848,7 +1839,7 @@ export default function VisualAddLayersPanel({
                           </h3>
                           <p className="mt-1 text-xs font-bold text-slate-400">
                             {elementCategory === "crm"
-                              ? "כל נתון מתווסף כ״שם - ערך״ מה-CRM. אחרי התחברות כל לקוח רואה רק את הערכים שלו באזור האישי."
+                              ? "כל נתון מוסיף שני שדות נפרדים (שם + ערך) שאפשר למקם בנפרד. השם זהה לכל לקוחות העסק — הערך משתנה לפי תיק הלקוח המחובר."
                               : elementCategory === "tables"
                                 ? "בחרו כמה שורות ועמודות ואז הוסיפו טבלה לעמוד"
                               : "לחיצה מוסיפה אלמנט לעריכה חופשית על הקנבס"}
