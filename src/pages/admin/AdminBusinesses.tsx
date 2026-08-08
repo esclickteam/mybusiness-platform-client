@@ -169,7 +169,7 @@ function AdminBusinesses() {
                 עסקים במערכת
               </h1>
               <p className="mt-2 text-sm font-bold text-purple-950/55">
-                כניסה לכל עסק עם הרשאות מלאות לביצוע כל הפעולות.
+                כניסה לכל עסק כבעלים — הגישה למודולים לפי החבילה של העסק.
               </p>
             </div>
 
