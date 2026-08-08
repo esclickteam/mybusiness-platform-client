@@ -43,6 +43,8 @@ type ElementKind = "text" | "image" | "button" | "section" | "general";
 
 type VisualFloatingToolbarProps = {
   editor: any;
+  /** CRM field binding is part of the personal-area (client-portal) plugin. */
+  clientPortalPluginEnabled?: boolean;
 };
 
 const FONT_SIZES = [
@@ -814,6 +816,7 @@ function GradientColorPicker({
 
 export default function VisualFloatingToolbar({
   editor,
+  clientPortalPluginEnabled = false,
 }: VisualFloatingToolbarProps) {
   const element = editor?.selectedElement || null;
 
@@ -910,7 +913,7 @@ export default function VisualFloatingToolbar({
 
   useEffect(() => {
     let cancelled = false;
-    if (!businessId) {
+    if (!clientPortalPluginEnabled || !businessId) {
       setCrmFields([]);
       return;
     }
@@ -928,7 +931,7 @@ export default function VisualFloatingToolbar({
     return () => {
       cancelled = true;
     };
-  }, [businessId]);
+  }, [businessId, clientPortalPluginEnabled]);
 
   const boundCrmFieldKey = useMemo(() => {
     const node = getElementNode(element);
@@ -1591,15 +1594,15 @@ export default function VisualFloatingToolbar({
               />
             </div>
 
-            {businessId ? (
+            {clientPortalPluginEnabled && businessId ? (
               <>
                 <SelectControl
                   value={boundCrmFieldKey}
                   onChange={(value) => bindCrmField(value)}
                   className="w-[150px]"
-                  title="קישור לנתון CRM"
+                  title="קישור לנתון אישי מה-CRM (לפי לקוח מחובר)"
                 >
-                  <option value="">נתון CRM</option>
+                  <option value="">נתון אישי</option>
                   {crmFields.map((field) => (
                     <option key={field.id || field.key} value={field.key}>
                       {field.label || field.key}

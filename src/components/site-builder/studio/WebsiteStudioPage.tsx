@@ -76,6 +76,7 @@ import {
   resolvePageParentId,
 } from "./visual-editor/utils/pageHierarchyUtils";
 import { detectPortalPageKind } from "../public/portalSitePaths";
+import { getSitePlugins } from "../../../api/sitePluginsApi";
 
 export type StudioPageSection = {
   id: string;
@@ -5086,6 +5087,39 @@ export default function WebsiteStudioPage({
     StudioPageSection[]
   >([]);
   const [clientPortalModalOpen, setClientPortalModalOpen] = useState(false);
+  const [clientPortalPluginEnabled, setClientPortalPluginEnabled] =
+    useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    const id = String(siteId || "").trim();
+    if (!id) {
+      setClientPortalPluginEnabled(false);
+      return;
+    }
+
+    getSitePlugins(id)
+      .then((plugins) => {
+        if (cancelled) return;
+        const enabled = Array.isArray(plugins.enabledPlugins)
+          ? plugins.enabledPlugins
+          : [];
+        const detected = Array.isArray(plugins.detectedFromSite)
+          ? plugins.detectedFromSite
+          : [];
+        setClientPortalPluginEnabled(
+          enabled.includes("client-portal") ||
+            detected.includes("client-portal"),
+        );
+      })
+      .catch(() => {
+        if (!cancelled) setClientPortalPluginEnabled(false);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [siteId]);
 
   const activePage = useMemo(() => {
     return pages.find((page) => page.id === activePageId) || pages[0];
@@ -6808,6 +6842,12 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     }
 
     if (action === "dynamic") {
+      if (!clientPortalPluginEnabled) {
+        window.alert(
+          "עמודי אזור אישי ונתונים משתנים זמינים רק אחרי התקנת תוסף האזור האישי.",
+        );
+        return;
+      }
       if (id && id !== activePageId) {
         handleSelectPage(id);
       }
@@ -8771,6 +8811,21 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
           }
           onSave={handlePageSettingsModalSave}
         />
+
+        {clientPortalModalOpen &&
+        clientPortalPluginEnabled &&
+        activePage ? (
+          <ClientPortalSettingsModal
+            pageTitle={activePage.title}
+            config={activePageClientPortal}
+            onClose={() => setClientPortalModalOpen(false)}
+            onUpdateConfig={updateActivePageClientPortal}
+            onAddVariable={addClientPortalVariable}
+            onUpdateVariable={updateClientPortalVariable}
+            onDeleteVariable={deleteClientPortalVariable}
+            onInsertVariable={insertVariablePlaceholderToEditor}
+          />
+        ) : null}
       </div>
     );
   }
@@ -8860,11 +8915,20 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
             activePanel={activePanel}
             activePageTitle={activePage?.title || "עמוד"}
             clientPortalEnabled={activePageClientPortal.enabled}
+            clientPortalPluginEnabled={clientPortalPluginEnabled}
             onOpenAdd={() => setActivePanel("sections")}
             onOpenPages={() => setActivePanel("pages")}
             onOpenSections={() => setActivePanel("sections")}
             onOpenMedia={handleOpenMedia}
-            onOpenClientPortal={() => setClientPortalModalOpen(true)}
+            onOpenClientPortal={() => {
+              if (!clientPortalPluginEnabled) {
+                window.alert(
+                  "עמודי אזור אישי ונתונים משתנים זמינים רק אחרי התקנת תוסף האזור האישי.",
+                );
+                return;
+              }
+              setClientPortalModalOpen(true);
+            }}
           />
 
           {activePanel && (
@@ -8942,7 +9006,9 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         </div>
       </div>
 
-      {clientPortalModalOpen && activePage && (
+      {clientPortalModalOpen &&
+      clientPortalPluginEnabled &&
+      activePage && (
         <ClientPortalSettingsModal
           pageTitle={activePage.title}
           config={activePageClientPortal}
@@ -8963,6 +9029,7 @@ function StudioWixRail({
   activePanel,
   activePageTitle,
   clientPortalEnabled,
+  clientPortalPluginEnabled = false,
   onOpenAdd,
   onOpenPages,
   onOpenSections,
@@ -8972,6 +9039,7 @@ function StudioWixRail({
   activePanel: ActiveStudioPanel;
   activePageTitle: string;
   clientPortalEnabled: boolean;
+  clientPortalPluginEnabled?: boolean;
   onOpenAdd: () => void;
   onOpenPages: () => void;
   onOpenSections: () => void;
@@ -8995,12 +9063,16 @@ function StudioWixRail({
       active: activePanel === "sections",
     },
     { id: "media", label: "מדיה", icon: "◐", onClick: onOpenMedia },
-    {
-      id: "portal",
-      label: clientPortalEnabled ? "אזור אישי" : "דינמי",
-      icon: "⚙",
-      onClick: onOpenClientPortal,
-    },
+    ...(clientPortalPluginEnabled
+      ? [
+          {
+            id: "portal",
+            label: clientPortalEnabled ? "אזור אישי" : "דינמי",
+            icon: "⚙",
+            onClick: onOpenClientPortal,
+          },
+        ]
+      : []),
   ];
 
   return (
@@ -9106,7 +9178,8 @@ function ClientPortalSettingsModal({
                 הגדרת עמוד דינמי ללקוחות
               </h2>
               <p className="mt-2 text-sm font-bold leading-7 text-slate-500">
-                העסק מגדיר לבד משתנים, שדות ומקורות נתונים — בלי הגבלה לתחום.
+                אחרי התחברות כל לקוח רואה רק את הנתונים האישיים שלו מתיק ה-CRM —
+                לא אותו ערך לכולם.
               </p>
             </div>
 

@@ -789,6 +789,10 @@ export default function VisualAddLayersPanel({
 
   useEffect(() => {
     let cancelled = false;
+    if (!clientPortalPluginEnabled) {
+      setCrmFields([]);
+      return;
+    }
     if (!businessId) {
       setCrmFields(createExampleClientFields());
       return;
@@ -807,7 +811,13 @@ export default function VisualAddLayersPanel({
     return () => {
       cancelled = true;
     };
-  }, [businessId]);
+  }, [businessId, clientPortalPluginEnabled]);
+
+  useEffect(() => {
+    if (!clientPortalPluginEnabled && elementCategory === "crm") {
+      setElementCategory("all");
+    }
+  }, [clientPortalPluginEnabled, elementCategory]);
 
   useEffect(() => {
     if (mode !== "add") return;
@@ -894,67 +904,71 @@ export default function VisualAddLayersPanel({
       },
     ];
 
-    const liveCrmItems: LibraryElement[] = [
-      {
-        id: "crm-field-generic",
-        title: "נתון משתנה מה-CRM",
-        description: 'מוסיף טקסט בפורמט "שם - ערך" בלי כרטיסייה מאחורה',
-        category: "crm",
-        preview: "crm",
-        barePreview: true,
-        previewHtml:
-          '<div style="font-size:20px;font-weight:800;color:#0f172a">שם הנתון - X</div>',
-        action: () =>
-          editor?.addCrmField?.({
-            label: "שם הנתון",
-            sampleValue: "X",
-            part: "both",
+    // Personal-area only: CRM dynamic fields require the client-portal plugin.
+    const liveCrmItems: LibraryElement[] = !clientPortalPluginEnabled
+      ? []
+      : [
+          {
+            id: "crm-field-generic",
+            title: "נתון משתנה מה-CRM",
+            description:
+              'מוסיף טקסט בפורמט "שם - ערך" בלי כרטיסייה — אחרי התחברות כל לקוח רואה רק את הנתונים שלו',
+            category: "crm",
+            preview: "crm",
+            barePreview: true,
+            previewHtml:
+              '<div style="font-size:20px;font-weight:800;color:#0f172a">שם הנתון - X</div>',
+            action: () =>
+              editor?.addCrmField?.({
+                label: "שם הנתון",
+                sampleValue: "X",
+                part: "both",
+              }),
+          },
+          ...crmFields.flatMap((field) => {
+            const sampleValue = sampleCrmFieldValue(field);
+            const label = field.label || field.key;
+            const preferBoth = isPlanLikeCrmField(field);
+            const valueItem: LibraryElement = {
+              id: `crm-field-${field.key}`,
+              title: label,
+              description: preferBoth
+                ? `${label} - ${sampleValue} · אישי לפי לקוח מחובר`
+                : `${sampleValue} · אישי לפי לקוח מחובר (הנתון בלבד)`,
+              category: "crm",
+              preview: "crm",
+              barePreview: true,
+              previewHtml: preferBoth
+                ? `<div style="font-size:16px;font-weight:800;color:#0f172a;text-align:center">${label} - ${sampleValue}</div>`
+                : `<div style="font-size:34px;font-weight:900;color:#0f172a">${sampleValue}</div>`,
+              action: () =>
+                editor?.addCrmField?.({
+                  fieldKey: field.key,
+                  label,
+                  sampleValue,
+                  part: preferBoth ? "both" : "value",
+                }),
+            };
+            if (preferBoth) return [valueItem];
+            const bothItem: LibraryElement = {
+              id: `crm-field-both-${field.key}`,
+              title: `${label} (שם וערך)`,
+              description: `${label} - ${sampleValue} · אישי לפי לקוח מחובר`,
+              category: "crm",
+              preview: "crm",
+              barePreview: true,
+              previewHtml: `<div style="font-size:16px;font-weight:800;color:#0f172a;text-align:center">${label} - ${sampleValue}</div>`,
+              action: () =>
+                editor?.addCrmField?.({
+                  fieldKey: field.key,
+                  label,
+                  sampleValue,
+                  part: "both",
+                }),
+            };
+            return [valueItem, bothItem];
           }),
-      },
-      ...crmFields.flatMap((field) => {
-        const sampleValue = sampleCrmFieldValue(field);
-        const label = field.label || field.key;
-        const preferBoth = isPlanLikeCrmField(field);
-        const valueItem: LibraryElement = {
-          id: `crm-field-${field.key}`,
-          title: label,
-          description: preferBoth
-            ? `${label} - ${sampleValue} · שם + ערך מה-CRM`
-            : `${sampleValue} · מתעדכן אוטומטית מה-CRM (הנתון בלבד)`,
-          category: "crm",
-          preview: "crm",
-          barePreview: true,
-          previewHtml: preferBoth
-            ? `<div style="font-size:16px;font-weight:800;color:#0f172a;text-align:center">${label} - ${sampleValue}</div>`
-            : `<div style="font-size:34px;font-weight:900;color:#0f172a">${sampleValue}</div>`,
-          action: () =>
-            editor?.addCrmField?.({
-              fieldKey: field.key,
-              label,
-              sampleValue,
-              part: preferBoth ? "both" : "value",
-            }),
-        };
-        if (preferBoth) return [valueItem];
-        const bothItem: LibraryElement = {
-          id: `crm-field-both-${field.key}`,
-          title: `${label} (שם וערך)`,
-          description: `${label} - ${sampleValue} · מתעדכן מה-CRM`,
-          category: "crm",
-          preview: "crm",
-          barePreview: true,
-          previewHtml: `<div style="font-size:16px;font-weight:800;color:#0f172a;text-align:center">${label} - ${sampleValue}</div>`,
-          action: () =>
-            editor?.addCrmField?.({
-              fieldKey: field.key,
-              label,
-              sampleValue,
-              part: "both",
-            }),
-        };
-        return [valueItem, bothItem];
-      }),
-    ];
+        ];
 
     // Prefer curated library entries (skip the huge generated button/lottie dumps
     // in the main grid — those remain available via Icons / Animations tabs).
@@ -970,6 +984,8 @@ export default function VisualAddLayersPanel({
       ) {
         return false;
       }
+      const category = mapLibraryCategoryToPanel(item.category);
+      if (category === "crm" && !clientPortalPluginEnabled) return false;
       return true;
     }).map((item) => {
       const category = mapLibraryCategoryToPanel(item.category);
@@ -1001,7 +1017,15 @@ export default function VisualAddLayersPanel({
       merged.push(item);
     });
     return merged;
-  }, [crmFields, editor]);
+  }, [clientPortalPluginEnabled, crmFields, editor]);
+
+  const visibleElementCategories = useMemo(
+    () =>
+      ELEMENT_CATEGORY_LABELS.filter(
+        (item) => item.id !== "crm" || clientPortalPluginEnabled,
+      ),
+    [clientPortalPluginEnabled],
+  );
 
   const filteredElements = useMemo(() => {
     const normalizedSearch = searchQuery
@@ -1772,7 +1796,7 @@ export default function VisualAddLayersPanel({
 
                   {addTab === "elements" ? (
                     <div className="mt-4 flex gap-2 overflow-x-auto pb-1">
-                      {ELEMENT_CATEGORY_LABELS.map(
+                      {visibleElementCategories.map(
                         (categoryItem) => (
                           <button
                             key={categoryItem.id}
@@ -1816,7 +1840,7 @@ export default function VisualAddLayersPanel({
                           </h3>
                           <p className="mt-1 text-xs font-bold text-slate-400">
                             {elementCategory === "crm"
-                              ? "שם + ערך או ערך בלבד — בלי כרטיסייה. אחרי התחברות נמשך מתיק ה-CRM."
+                              ? "שם + ערך או ערך בלבד — בלי כרטיסייה. אחרי התחברות כל לקוח רואה רק את הנתונים האישיים שלו מתיק ה-CRM."
                               : elementCategory === "tables"
                                 ? "בחרו כמה שורות ועמודות ואז הוסיפו טבלה לעמוד"
                               : "לחיצה מוסיפה אלמנט לעריכה חופשית על הקנבס"}
