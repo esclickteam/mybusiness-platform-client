@@ -5,7 +5,6 @@ import { Loader2, Plus, Search, Workflow } from "lucide-react";
 import {
   AUTOMATION_PREVIEW_ACTION_TOOLTIP,
   AUTOMATION_PREVIEW_WRITE_BLOCKED_MESSAGE,
-  createAutomationWorkflow,
   deleteAutomationWorkflow,
   duplicateAutomationWorkflow,
   isAutomationsReadOnly,
@@ -17,6 +16,7 @@ import {
   type AutomationWorkflow,
 } from "../../../../api/automationWorkflowApi";
 import AutomationsWorkflowList from "./AutomationsWorkflowList";
+import CreateAutomationModal from "./CreateAutomationModal";
 import {
   matchesStatusFilter,
   readAutomationErrorMessage,
@@ -48,7 +48,7 @@ export default function AutomationsHomePage() {
   const navigate = useNavigate();
   const { businessId, readOnly } = useOutletContext<OutletCtx>();
   const [loading, setLoading] = useState(true);
-  const [creating, setCreating] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
   const [workflows, setWorkflows] = useState<AutomationWorkflow[]>([]);
   const [stats, setStats] = useState<AutomationStats | null>(null);
   const [query, setQuery] = useState("");
@@ -90,25 +90,12 @@ export default function AutomationsHomePage() {
     return sortWorkflows(filtered, sort);
   }, [query, sort, statusFilter, workflows]);
 
-  const handleCreate = async () => {
-    if (!businessId) return;
+  const openCreateModal = () => {
     if (isAutomationsReadOnly()) {
       toast.error(AUTOMATION_PREVIEW_WRITE_BLOCKED_MESSAGE);
       return;
     }
-    setCreating(true);
-    try {
-      const created = await createAutomationWorkflow(businessId, {
-        useStarter: true,
-        name: "אוטומציה חדשה",
-      });
-      toast.success("האוטומציה מוכנה לעריכה על הבד");
-      navigate(created._id);
-    } catch (error: unknown) {
-      toast.error(readAutomationErrorMessage(error, "שגיאה ביצירת אוטומציה"));
-    } finally {
-      setCreating(false);
-    }
+    setShowCreateModal(true);
   };
 
   const handleDuplicate = async (workflow: AutomationWorkflow) => {
@@ -201,15 +188,11 @@ export default function AutomationsHomePage() {
           <button
             type="button"
             className="ax-btn ax-btn--primary"
-            onClick={() => void handleCreate()}
-            disabled={!businessId || creating || readOnly}
+            onClick={openCreateModal}
+            disabled={!businessId || readOnly}
             title={writeBlockedTitle}
           >
-            {creating ? (
-              <Loader2 size={15} className="animate-spin" />
-            ) : (
-              <Plus size={15} />
-            )}
+            <Plus size={15} />
             אוטומציה חדשה
           </button>
           <Link to="templates" className="ax-btn ax-btn--secondary">
@@ -291,8 +274,8 @@ export default function AutomationsHomePage() {
             <button
               type="button"
               className="ax-btn ax-btn--primary"
-              onClick={() => void handleCreate()}
-              disabled={!businessId || creating || readOnly}
+              onClick={openCreateModal}
+              disabled={!businessId || readOnly}
               title={writeBlockedTitle}
             >
               <Plus size={15} />
@@ -319,6 +302,13 @@ export default function AutomationsHomePage() {
           onDelete={(workflow) => void handleDelete(workflow)}
         />
       )}
+
+      <CreateAutomationModal
+        open={showCreateModal}
+        businessId={businessId}
+        readOnly={readOnly}
+        onClose={() => setShowCreateModal(false)}
+      />
     </div>
   );
 }
