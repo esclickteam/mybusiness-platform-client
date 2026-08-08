@@ -14,6 +14,8 @@ import {
   getDefaultDashboardPath,
   isDashboardPathAllowed,
   normalizeEnabledModules,
+  resolveDashboardModules,
+  isPlanLimitedUser,
 } from "../../utils/moduleAccess";
 import { isBizuplyTestUser } from "../../utils/bizuplyTestUser";
 import UpgradeRequired from "../../components/UpgradeRequired";
@@ -247,16 +249,18 @@ function DashboardIndexRedirect({ businessId, enabledModules }) {
   return <Navigate to="dashboard" replace />;
 }
 
-function ModuleAccessGuard({ businessId, enabledModules, planLimited, children }) {
+function ModuleAccessGuard({
+  businessId,
+  enabledModules,
+  planLimited,
+  children,
+}) {
   const location = useLocation();
   const limited = normalizeEnabledModules(enabledModules);
 
-  if (
-    limited &&
-    !isDashboardPathAllowed(location.pathname, limited)
-  ) {
-    // Plan-limited accounts (e.g. website-only buyers) see an upgrade screen
-    // instead of a silent redirect.
+  if (limited && !isDashboardPathAllowed(location.pathname, limited)) {
+    // Plan-limited accounts (website-only / business without website) see
+    // an upgrade screen instead of a silent redirect.
     if (planLimited) {
       return <UpgradeRequired businessId={businessId} />;
     }
@@ -293,7 +297,8 @@ const BusinessDashboardRoutes = () => {
   const queryClient = useQueryClient();
   const lastBusinessRedirectRef = useRef("");
   const isAdmin = user?.role === "admin";
-  const enabledModules = user?.enabledModules || null;
+  const enabledModules = resolveDashboardModules(user);
+  const planLimited = isPlanLimitedUser(user);
 
   // Admin uses URL tenant; business owners use their own businessId
   const businessId =
@@ -366,7 +371,7 @@ const BusinessDashboardRoutes = () => {
         <ModuleAccessGuard
           businessId={businessId}
           enabledModules={enabledModules}
-          planLimited={Boolean(user?.planLimited)}
+          planLimited={planLimited}
         >
         <Routes>
         <Route path="" element={<BusinessDashboardLayout />}>

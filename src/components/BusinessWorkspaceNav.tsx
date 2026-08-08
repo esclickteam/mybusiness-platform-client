@@ -21,7 +21,7 @@ import { useAuth } from "../context/AuthContext";
 import { isBizuplyTestUser } from "../utils/bizuplyTestUser";
 import {
   isModuleEnabled,
-  normalizeEnabledModules,
+  resolveDashboardModules,
 } from "../utils/moduleAccess";
 
 /* =========================
@@ -156,6 +156,8 @@ export default function BusinessWorkspaceNav({
   const { user } = useAuth() as {
     user?: {
       enabledModules?: string[] | null;
+      entitlements?: Record<string, unknown> | null;
+      planLimited?: boolean;
       email?: string | null;
       _id?: string | null;
       id?: string | null;
@@ -164,7 +166,7 @@ export default function BusinessWorkspaceNav({
   };
   const t = tProp || ((key: string) => tI18n(key));
   const dir = getTextDirection(i18n.language);
-  const enabledModules = normalizeEnabledModules(user?.enabledModules);
+  const enabledModules = resolveDashboardModules(user);
   const showWhatsappAndMeta = isBizuplyTestUser(user);
 
   const basePath = businessId ? `/business/${businessId}` : "/business";
