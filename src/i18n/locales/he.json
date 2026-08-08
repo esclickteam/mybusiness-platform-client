@@ -448,6 +448,8 @@
     "subtitle": "הנה סקירת ביצועי העסק שלך.",
     "customDomainConnected": "דומיין מותאם מחובר",
     "customizeDashboard": "התאמת דשבורד",
+    "compareToPrevious": "השוואה לתקופה קודמת",
+    "noComparison": "ללא השוואה",
     "loadError": "חלק מנתוני הדשבורד לא נטענו.",
     "websiteViews": "צפיות באתר",
     "loadingVisitors": "טוען מבקרים...",
