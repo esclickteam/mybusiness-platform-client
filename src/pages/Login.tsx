@@ -87,7 +87,13 @@ export default function Login() {
     e.preventDefault();
     setLoginError("");
 
-    if (!form.email.trim() || !form.password) {
+    // Prefer live DOM values so browser autofill (dots in the field without
+    // a React onChange) still submits email/password correctly.
+    const formData = new FormData(e.currentTarget);
+    const emailValue = String(formData.get("email") || form.email || "");
+    const passwordValue = String(formData.get("password") || form.password || "");
+
+    if (!emailValue.trim() || !passwordValue) {
       setLoginError("אנא הזינו אימייל וסיסמה");
       return;
     }
@@ -95,7 +101,7 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const cleanEmail = form.email.trim().toLowerCase();
+      const cleanEmail = emailValue.trim().toLowerCase();
 
       if (rememberMe) {
         localStorage.setItem("bizuply_remember_email", cleanEmail);
@@ -103,7 +109,7 @@ export default function Login() {
         localStorage.removeItem("bizuply_remember_email");
       }
 
-      const loginResult = (await login(cleanEmail, form.password, {
+      const loginResult = (await login(cleanEmail, passwordValue, {
         skipRedirect: true,
       })) as LoginResponse;
 
@@ -166,7 +172,9 @@ export default function Login() {
     }
   };
 
-  if (!dashPreloadDone || loading) {
+  // Keep the form mounted while submitting so API errors stay visible.
+  // Skeleton is only for the initial dashboard-chunk preload.
+  if (!dashPreloadDone) {
     return <LoginFormSkeleton />;
   }
 
