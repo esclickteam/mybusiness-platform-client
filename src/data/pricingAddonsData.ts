@@ -544,8 +544,8 @@ export const PRICING_ADDONS: PricingAddon[] = [
         priceEn: "₪590",
       },
       {
-        label: "חבילת 100 לידים",
-        labelEn: "100-lead pack",
+        label: "עד 100 לידים",
+        labelEn: "Up to 100 leads",
         price: "990 ₪",
         priceEn: "₪990",
       },
@@ -701,7 +701,11 @@ export const PRICING_SERVICE_PURCHASE: Record<string, ServicePurchaseConfig> = {
   "store-products-upload": {
     trackOptions: [
       { serviceKey: "store_products_upload_490_ils", amountIls: 490, billing: "one_time" },
-      { contact: true },
+      {
+        serviceKey: "store_products_upload_50_990_ils",
+        amountIls: 990,
+        billing: "one_time",
+      },
       { contact: true },
     ],
   },
@@ -728,7 +732,11 @@ export const PRICING_SERVICE_PURCHASE: Record<string, ServicePurchaseConfig> = {
   "old-leads-followup": {
     trackOptions: [
       { serviceKey: "old_leads_followup_590_ils", amountIls: 590, billing: "one_time" },
-      { contact: true },
+      {
+        serviceKey: "old_leads_followup_100_990_ils",
+        amountIls: 990,
+        billing: "one_time",
+      },
     ],
   },
 };
