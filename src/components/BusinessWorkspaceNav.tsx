@@ -14,7 +14,6 @@ import {
   Megaphone,
   MessageCircle,
   Workflow,
-  Plug,
 } from "lucide-react";
 import { getTextDirection } from "../i18n/localeUtils";
 import { useAuth } from "../context/AuthContext";
@@ -189,13 +188,6 @@ export default function BusinessWorkspaceNav({
       fallback: "Automations",
       to: `${basePath}/dashboard/automations`,
       icon: Workflow,
-      moduleKey: "automations",
-    },
-    {
-      labelKey: "businessNav.integrations",
-      fallback: "אינטגרציות",
-      to: `${basePath}/dashboard/integrations`,
-      icon: Plug,
       moduleKey: "automations",
     },
     ...(showWhatsappAndMeta
