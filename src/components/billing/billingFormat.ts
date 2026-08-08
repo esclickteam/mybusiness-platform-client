@@ -48,7 +48,7 @@ export const ONE_TIME_SERVICE_KEYS = new Set([
   "store_products_upload_490_ils",
   "store_products_upload_50_990_ils",
   "old_leads_followup_590_ils",
-  "old_leads_followup_50_990_ils",
+  "old_leads_followup_100_990_ils",
 ]);
 
 export const MONTHLY_SERVICE_KEYS = new Set([

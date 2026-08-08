@@ -544,8 +544,8 @@ export const PRICING_ADDONS: PricingAddon[] = [
         priceEn: "₪590",
       },
       {
-        label: "עד 50 לידים",
-        labelEn: "Up to 50 leads",
+        label: "עד 100 לידים",
+        labelEn: "Up to 100 leads",
         price: "990 ₪",
         priceEn: "₪990",
       },
@@ -733,7 +733,7 @@ export const PRICING_SERVICE_PURCHASE: Record<string, ServicePurchaseConfig> = {
     trackOptions: [
       { serviceKey: "old_leads_followup_590_ils", amountIls: 590, billing: "one_time" },
       {
-        serviceKey: "old_leads_followup_50_990_ils",
+        serviceKey: "old_leads_followup_100_990_ils",
         amountIls: 990,
         billing: "one_time",
       },
