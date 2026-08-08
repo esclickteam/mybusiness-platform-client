@@ -15,7 +15,7 @@ import {
 
 describe("runsUiHelpers", () => {
   it("maps execution status labels and tones", () => {
-    expect(getExecutionStatusLabel("completed")).toBe("?????");
+    expect(getExecutionStatusLabel("completed")).toBe("הצלחה");
     expect(getExecutionStatusTone("failed")).toBe("failed");
     expect(getExecutionStatusTone("running")).toBe("running");
     expect(getExecutionStatusTone("cancelled")).toBe("cancelled");

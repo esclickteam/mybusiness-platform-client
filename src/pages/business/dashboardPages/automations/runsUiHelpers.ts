@@ -26,20 +26,20 @@ export function getExecutionStatusLabel(status?: string | null): string {
   switch (String(status || "").toLowerCase()) {
     case "completed":
     case "success":
-      return "?????";
+      return "הצלחה";
     case "failed":
     case "error":
-      return "?????";
+      return "נכשלה";
     case "running":
-      return "??????";
+      return "בתהליך";
     case "waiting":
     case "pending":
-      return "??????";
+      return "ממתינה";
     case "cancelled":
     case "canceled":
-      return "?????";
+      return "בוטלה";
     default:
-      return status ? String(status) : "?";
+      return status ? String(status) : "—";
   }
 }
 
@@ -92,27 +92,27 @@ export function getNodeStatusSymbol(status?: string | null): string {
   switch (String(status || "").toLowerCase()) {
     case "completed":
     case "success":
-      return "?";
+      return "✓";
     case "failed":
     case "error":
-      return "?";
+      return "✕";
     case "running":
-      return "?";
+      return "●";
     case "waiting":
-      return "?";
+      return "…";
     case "skipped":
     case "cancelled":
     case "canceled":
-      return "?";
+      return "—";
     default:
-      return "?";
+      return "○";
   }
 }
 
 export function formatExecutionDateTime(value?: string | null): string {
-  if (!value) return "?";
+  if (!value) return "—";
   const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "?";
+  if (Number.isNaN(date.getTime())) return "—";
   return date.toLocaleString("he-IL", {
     day: "2-digit",
     month: "2-digit",
@@ -129,7 +129,7 @@ export function getExecutionEndAt(
 }
 
 export function formatDurationMs(ms: number | null | undefined): string {
-  if (ms == null || !Number.isFinite(ms) || ms < 0) return "?";
+  if (ms == null || !Number.isFinite(ms) || ms < 0) return "—";
   if (ms < 1000) return `${Math.round(ms)}ms`;
   const seconds = ms / 1000;
   if (seconds < 60) return `${seconds.toFixed(seconds < 10 ? 1 : 0)}s`;
@@ -168,7 +168,7 @@ export function getStepsSummary(
     if (typeof execution.stepsExecuted === "number") {
       return String(execution.stepsExecuted);
     }
-    return "?";
+    return "—";
   }
   const done = nodes.filter((node) =>
     ["completed", "failed", "skipped", "cancelled", "canceled"].includes(
@@ -182,7 +182,7 @@ export function getTriggerSummary(
   execution: Pick<AutomationExecution, "eventType" | "entityType" | "entityId">
 ): string {
   const event = String(execution.eventType || "").trim();
-  if (!event) return "?";
+  if (!event) return "—";
   return event
     .replace(/[_-]+/g, " ")
     .replace(/\b\w/g, (ch) => ch.toUpperCase());
@@ -260,15 +260,15 @@ export function redactSensitiveData<T>(value: T, depth = 0): T {
 }
 
 export function summarizeJson(value: unknown, maxLen = 280): string {
-  if (value == null) return "?";
+  if (value == null) return "—";
   try {
     const redacted = redactSensitiveData(value);
     const text =
       typeof redacted === "string" ? redacted : JSON.stringify(redacted, null, 2);
-    if (!text) return "?";
-    return text.length > maxLen ? `${text.slice(0, maxLen)}?` : text;
+    if (!text) return "—";
+    return text.length > maxLen ? `${text.slice(0, maxLen)}…` : text;
   } catch {
-    return "?";
+    return "—";
   }
 }
 
