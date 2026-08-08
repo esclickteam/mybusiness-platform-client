@@ -831,6 +831,122 @@ function mountResetPassword(container, { siteId, paths, editorMode }) {
   container.appendChild(wrap);
 }
 
+function pad2(value) {
+  return String(value).padStart(2, "0");
+}
+
+function nowTrackingDateParts(date = new Date()) {
+  return {
+    date: `${date.getFullYear()}-${pad2(date.getMonth() + 1)}-${pad2(date.getDate())}`,
+    time: `${pad2(date.getHours())}:${pad2(date.getMinutes())}`,
+  };
+}
+
+function normalizeTrackingEntries(value) {
+  if (value && typeof value === "object" && !Array.isArray(value)) {
+    const raw = value;
+    if (Array.isArray(raw.entries)) {
+      return raw.entries
+        .filter((entry) => entry && typeof entry === "object")
+        .map((entry, index) => ({
+          id: String(entry.id || `track_${index}`),
+          date: String(entry.date || ""),
+          time: String(entry.time || ""),
+          value: String(entry.value ?? ""),
+        }))
+        .sort((a, b) =>
+          `${a.date}T${a.time || "00:00"}`.localeCompare(
+            `${b.date}T${b.time || "00:00"}`,
+          ),
+        );
+    }
+
+    if (Array.isArray(raw.rows)) {
+      const columns = Array.isArray(raw.columns)
+        ? raw.columns.map((column) => String(column || "").toLowerCase())
+        : [];
+      const dateIndex = Math.max(
+        0,
+        columns.findIndex((column) => /תאריך|date/.test(column)),
+      );
+      const timeIndex = columns.findIndex((column) => /שעה|time/.test(column));
+      const valueIndex = columns.findIndex((column) =>
+        /ערך|value|משקל|weight|מדד/.test(column),
+      );
+      const resolvedValueIndex =
+        valueIndex >= 0
+          ? valueIndex
+          : Math.max(
+              0,
+              ...[0, 1, 2].filter(
+                (index) => index !== dateIndex && index !== timeIndex,
+              ),
+            );
+      return raw.rows
+        .filter((row) => Array.isArray(row))
+        .map((row, index) => ({
+          id: `track_${index}`,
+          date: String(row[dateIndex] ?? ""),
+          time:
+            timeIndex >= 0
+              ? String(row[timeIndex] ?? "")
+              : nowTrackingDateParts().time,
+          value: String(row[resolvedValueIndex] ?? ""),
+        }))
+        .filter(
+          (entry) => entry.date.trim() || entry.time.trim() || entry.value.trim(),
+        );
+    }
+  }
+
+  if (typeof value === "number" && Number.isFinite(value)) {
+    const now = nowTrackingDateParts();
+    return [{ id: "track_0", date: now.date, time: now.time, value: String(value) }];
+  }
+  if (typeof value === "string" && value.trim()) {
+    const now = nowTrackingDateParts();
+    return [
+      { id: "track_0", date: now.date, time: now.time, value: value.trim() },
+    ];
+  }
+  return [];
+}
+
+function latestTrackingDisplay(value) {
+  const entries = normalizeTrackingEntries(value);
+  for (let index = entries.length - 1; index >= 0; index -= 1) {
+    const item = String(entries[index]?.value || "").trim();
+    if (item) return item;
+  }
+  return "";
+}
+
+function flattenCustomDataValue(field) {
+  const type = String(field?.type || "text");
+  const value = field?.value;
+  if (type === "tracking") return latestTrackingDisplay(value) || "";
+  if (type === "table") {
+    if (!value || typeof value !== "object") return "";
+    const rows = Array.isArray(value.rows) ? value.rows : [];
+    return rows
+      .map((row) =>
+        Array.isArray(row)
+          ? row.map((cell) => String(cell || "").trim()).filter(Boolean).join(" · ")
+          : "",
+      )
+      .filter(Boolean)
+      .join(" | ");
+  }
+  if (type === "checklist") {
+    return Array.isArray(value) ? value.join(" · ") : "";
+  }
+  if (type === "checkbox" || type === "boolean") {
+    return value ? "כן" : "לא";
+  }
+  if (value == null) return "";
+  return String(value);
+}
+
 function formatCustomDataDisplay(field) {
   const type = String(field?.type || "text");
   const value = field?.value;
@@ -840,6 +956,9 @@ function formatCustomDataDisplay(field) {
   }
   if (type === "checklist") {
     return Array.isArray(value) && value.length ? value.join(" · ") : "—";
+  }
+  if (type === "tracking") {
+    return latestTrackingDisplay(value) || "—";
   }
   if (type === "table") {
     if (!value || typeof value !== "object") return "—";
@@ -855,6 +974,162 @@ function formatCustomDataDisplay(field) {
   }
   if (value == null || value === "") return "—";
   return String(value);
+}
+
+function renderTrackingHistoryTable(theme, field) {
+  const entries = normalizeTrackingEntries(field?.value).filter(
+    (entry) => entry.date.trim() || entry.time.trim() || entry.value.trim(),
+  );
+  const wrap = el("div", {
+    marginTop: "10px",
+    overflowX: "auto",
+    borderRadius: "14px",
+    border: `1px solid ${theme.line}`,
+    background: theme.card || "#fff",
+  });
+  const table = document.createElement("table");
+  Object.assign(table.style, {
+    width: "100%",
+    borderCollapse: "collapse",
+    fontSize: "13px",
+  });
+
+  const head = document.createElement("thead");
+  const headRow = document.createElement("tr");
+  ["תאריך", "שעה", field?.label || "ערך"].forEach((label) => {
+    const th = document.createElement("th");
+    th.textContent = label;
+    Object.assign(th.style, {
+      textAlign: "start",
+      padding: "10px 12px",
+      borderBottom: `1px solid ${theme.line}`,
+      color: theme.muted,
+      fontWeight: "800",
+      background: theme.soft || "#f8fafc",
+      whiteSpace: "nowrap",
+    });
+    headRow.appendChild(th);
+  });
+  head.appendChild(headRow);
+  table.appendChild(head);
+
+  const body = document.createElement("tbody");
+  if (!entries.length) {
+    const emptyRow = document.createElement("tr");
+    const emptyCell = document.createElement("td");
+    emptyCell.colSpan = 3;
+    emptyCell.textContent = "אין מדידות עדיין";
+    Object.assign(emptyCell.style, {
+      padding: "14px 12px",
+      color: theme.muted,
+      fontWeight: "700",
+    });
+    emptyRow.appendChild(emptyCell);
+    body.appendChild(emptyRow);
+  } else {
+    entries.forEach((entry) => {
+      const row = document.createElement("tr");
+      [entry.date || "—", entry.time || "—", entry.value || "—"].forEach(
+        (cellValue) => {
+          const td = document.createElement("td");
+          td.textContent = cellValue;
+          Object.assign(td.style, {
+            padding: "10px 12px",
+            borderBottom: `1px solid ${theme.line}`,
+            color: theme.ink,
+            fontWeight: "800",
+            whiteSpace: "nowrap",
+          });
+          row.appendChild(td);
+        },
+      );
+      body.appendChild(row);
+    });
+  }
+  table.appendChild(body);
+  wrap.appendChild(table);
+  return wrap;
+}
+
+function renderPlainTableHistory(theme, field) {
+  const value = field?.value;
+  if (!value || typeof value !== "object") return null;
+  const columns = Array.isArray(value.columns) ? value.columns.map(String) : [];
+  const rows = Array.isArray(value.rows) ? value.rows : [];
+  if (!columns.length) return null;
+
+  const wrap = el("div", {
+    marginTop: "10px",
+    overflowX: "auto",
+    borderRadius: "14px",
+    border: `1px solid ${theme.line}`,
+    background: theme.card || "#fff",
+  });
+  const table = document.createElement("table");
+  Object.assign(table.style, {
+    width: "100%",
+    borderCollapse: "collapse",
+    fontSize: "13px",
+  });
+
+  const head = document.createElement("thead");
+  const headRow = document.createElement("tr");
+  columns.forEach((label) => {
+    const th = document.createElement("th");
+    th.textContent = label;
+    Object.assign(th.style, {
+      textAlign: "start",
+      padding: "10px 12px",
+      borderBottom: `1px solid ${theme.line}`,
+      color: theme.muted,
+      fontWeight: "800",
+      background: theme.soft || "#f8fafc",
+      whiteSpace: "nowrap",
+    });
+    headRow.appendChild(th);
+  });
+  head.appendChild(headRow);
+  table.appendChild(head);
+
+  const body = document.createElement("tbody");
+  const visibleRows = rows.filter(
+    (row) =>
+      Array.isArray(row) &&
+      row.some((cell) => String(cell || "").trim()),
+  );
+  if (!visibleRows.length) {
+    const emptyRow = document.createElement("tr");
+    const emptyCell = document.createElement("td");
+    emptyCell.colSpan = columns.length;
+    emptyCell.textContent = "אין נתונים בטבלה";
+    Object.assign(emptyCell.style, {
+      padding: "14px 12px",
+      color: theme.muted,
+      fontWeight: "700",
+    });
+    emptyRow.appendChild(emptyCell);
+    body.appendChild(emptyRow);
+  } else {
+    visibleRows.forEach((row) => {
+      const tr = document.createElement("tr");
+      columns.forEach((_, index) => {
+        const td = document.createElement("td");
+        td.textContent = String(row[index] ?? "—") || "—";
+        Object.assign(td.style, {
+          padding: "10px 12px",
+          borderBottom: `1px solid ${theme.line}`,
+          color: theme.ink,
+          fontWeight: "800",
+          whiteSpace: "nowrap",
+        });
+        tr.appendChild(td);
+      });
+      body.appendChild(tr);
+    });
+  }
+  table.appendChild(body);
+  wrap.appendChild(table);
+  return wrap;
 }
 
 function renderCustomDataPanel(container, theme, fields, { editorMode = false } = {}) {
@@ -899,7 +1174,17 @@ function renderCustomDataPanel(container, theme, fields, { editorMode = false } 
     ? fields
     : editorMode
       ? [
-          { key: "weight", label: "משקל", type: "number", value: 72 },
+          {
+            key: "weight",
+            label: "משקל",
+            type: "tracking",
+            value: {
+              entries: [
+                { id: "w1", date: "2026-08-01", time: "09:00", value: "74" },
+                { id: "w2", date: "2026-08-08", time: "09:15", value: "72" },
+              ],
+            },
+          },
           {
             key: "treatments_left",
             label: "כמות טיפולים",
@@ -936,20 +1221,73 @@ function renderCustomDataPanel(container, theme, fields, { editorMode = false } 
     return;
   }
 
-  const grid = el("div", {
-    display: "grid",
-    gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
-    gap: "10px",
-  });
+  const simpleFields = list.filter(
+    (field) =>
+      String(field?.type || "") !== "tracking" &&
+      String(field?.type || "") !== "table",
+  );
+  const historyFields = list.filter(
+    (field) =>
+      String(field?.type || "") === "tracking" ||
+      String(field?.type || "") === "table",
+  );
 
-  list.forEach((field) => {
+  if (simpleFields.length) {
+    const grid = el("div", {
+      display: "grid",
+      gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
+      gap: "10px",
+    });
+
+    simpleFields.forEach((field) => {
+      const card = el("div", {
+        padding: "14px 16px",
+        borderRadius: "16px",
+        border: `1px solid ${theme.line}`,
+        background: theme.card || "#fff",
+        boxShadow: "0 12px 28px -24px rgba(15,23,42,0.45)",
+        minHeight: "92px",
+      });
+      card.appendChild(
+        el(
+          "div",
+          {
+            fontSize: "11px",
+            fontWeight: "800",
+            color: theme.muted,
+            letterSpacing: "0.04em",
+            marginBottom: "8px",
+          },
+          field.label || field.key || "נתון",
+        ),
+      );
+      card.appendChild(
+        el(
+          "div",
+          {
+            fontSize: "22px",
+            fontWeight: "900",
+            color: theme.ink,
+            lineHeight: "1.2",
+            wordBreak: "break-word",
+          },
+          formatCustomDataDisplay(field),
+        ),
+      );
+      grid.appendChild(card);
+    });
+
+    wrap.appendChild(grid);
+  }
+
+  historyFields.forEach((field) => {
     const card = el("div", {
+      marginTop: simpleFields.length || historyFields.indexOf(field) ? "14px" : "0",
       padding: "14px 16px",
       borderRadius: "16px",
       border: `1px solid ${theme.line}`,
       background: theme.card || "#fff",
       boxShadow: "0 12px 28px -24px rgba(15,23,42,0.45)",
-      minHeight: "92px",
     });
     card.appendChild(
       el(
@@ -959,28 +1297,61 @@ function renderCustomDataPanel(container, theme, fields, { editorMode = false } 
           fontWeight: "800",
           color: theme.muted,
           letterSpacing: "0.04em",
-          marginBottom: "8px",
+          marginBottom: "4px",
         },
         field.label || field.key || "נתון",
       ),
     );
-    card.appendChild(
-      el(
-        "div",
-        {
-          fontSize: "22px",
-          fontWeight: "900",
-          color: theme.ink,
-          lineHeight: "1.2",
-          wordBreak: "break-word",
-        },
-        formatCustomDataDisplay(field),
-      ),
-    );
-    grid.appendChild(card);
+
+    if (String(field?.type || "") === "tracking") {
+      const latest = latestTrackingDisplay(field?.value);
+      card.appendChild(
+        el(
+          "div",
+          {
+            fontSize: "22px",
+            fontWeight: "900",
+            color: theme.ink,
+            lineHeight: "1.2",
+            marginBottom: "2px",
+          },
+          latest || "—",
+        ),
+      );
+      card.appendChild(
+        el(
+          "div",
+          {
+            fontSize: "12px",
+            fontWeight: "700",
+            color: theme.muted,
+          },
+          "היסטוריית מעקב",
+        ),
+      );
+      card.appendChild(renderTrackingHistoryTable(theme, field));
+    } else {
+      const tableNode = renderPlainTableHistory(theme, field);
+      if (tableNode) card.appendChild(tableNode);
+      else {
+        card.appendChild(
+          el(
+            "div",
+            {
+              fontSize: "16px",
+              fontWeight: "900",
+              color: theme.ink,
+              marginTop: "8px",
+            },
+            formatCustomDataDisplay(field),
+          ),
+        );
+      }
+    }
+
+    wrap.appendChild(card);
   });
 
-  wrap.appendChild(grid);
   container.appendChild(wrap);
 }
 
@@ -1912,7 +2283,16 @@ const SAMPLE_CRM_FIELDS = [
     type: "text",
     value: "[שם לקוח]",
   },
-  { key: "weight", label: "משקל", type: "number", value: "[משקל]" },
+  {
+    key: "weight",
+    label: "משקל",
+    type: "tracking",
+    value: {
+      entries: [
+        { id: "sample_1", date: "[תאריך]", time: "[שעה]", value: "[משקל]" },
+      ],
+    },
+  },
   {
     key: "treatments_left",
     label: "כמות טיפולים",
@@ -1995,7 +2375,8 @@ function syncPortalDataToWindow(customData) {
   (Array.isArray(customData) ? customData : []).forEach((field) => {
     const key = String(field?.key || "").trim();
     if (!key) return;
-    flat[key] = field?.value;
+    // Flatten structured types so {{weight}} / bindings show the latest value.
+    flat[key] = flattenCustomDataValue(field);
   });
   window.__BIZUPLY_CLIENT_PORTAL_DATA__ = flat;
 }

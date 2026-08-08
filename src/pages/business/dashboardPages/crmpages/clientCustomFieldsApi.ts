@@ -1,11 +1,24 @@
 import API from "@api";
 import type { TFunction } from "i18next";
 
+export type {
+  ClientTrackingEntry,
+  ClientTrackingFieldValue,
+} from "./clientTrackingField";
+export {
+  createTrackingEntry,
+  defaultTrackingFieldValue,
+  latestTrackingValue,
+  normalizeTrackingFieldValue,
+  nowTrackingDateParts,
+} from "./clientTrackingField";
+
 export type CustomFieldType =
   | "text"
   | "textarea"
   | "summary"
   | "table"
+  | "tracking"
   | "number"
   | "date"
   | "status"
@@ -101,6 +114,7 @@ const ALLOWED_TYPES: CustomFieldType[] = [
   "textarea",
   "summary",
   "table",
+  "tracking",
   "number",
   "date",
   "status",
@@ -290,8 +304,8 @@ export function createExampleClientFields(): ConfiguredClientField[] {
       id: uid("client_field"),
       key: "weight",
       label: "משקל",
-      type: "number",
-      description: "משקל נוכחי בק״ג",
+      type: "tracking",
+      description: "טבלת מעקב משקל — תאריך, שעה וערך לכל מדידה",
       placeholder: "לדוגמה: 72",
       options: [],
       required: false,

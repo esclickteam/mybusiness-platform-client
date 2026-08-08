@@ -41,15 +41,21 @@ import {
 } from "./ClientDocumentationPanel";
 import {
   type ClientTableFieldValue,
+  type ClientTrackingEntry,
+  type ClientTrackingFieldValue,
   type ConfiguredClientField,
   type CustomFieldType,
   cleanKey,
   createEmptyClientField,
   createExampleClientFields,
+  createTrackingEntry,
   defaultTableFieldValue,
+  defaultTrackingFieldValue,
   fetchConfiguredClientFields,
+  latestTrackingValue,
   normalizeConfiguredClientField,
   normalizeTableFieldValue,
+  normalizeTrackingFieldValue,
   saveConfiguredClientFields,
   uid,
 } from "./clientCustomFieldsApi";
@@ -156,6 +162,7 @@ function normalizeClientFieldType(value: unknown): CustomFieldType {
     "textarea",
     "summary",
     "table",
+    "tracking",
     "number",
     "date",
     "status",
@@ -322,6 +329,7 @@ function defaultFieldValue(type: CustomFieldType) {
   if (type === "checkbox" || type === "boolean") return false;
   if (type === "checklist") return [];
   if (type === "table") return defaultTableFieldValue();
+  if (type === "tracking") return defaultTrackingFieldValue();
   return "";
 }
 
@@ -1359,6 +1367,7 @@ function ClientCustomFieldsManager({
     "textarea",
     "summary",
     "table",
+    "tracking",
     "number",
     "date",
     "select",
@@ -1717,6 +1726,18 @@ function ConfiguredFieldInput({
     );
   }
 
+  if (field.type === "tracking") {
+    return (
+      <DataFieldShell field={field} wide>
+        <ClientTrackingFieldEditor
+          field={field}
+          value={value}
+          onChange={onChange}
+        />
+      </DataFieldShell>
+    );
+  }
+
   if (field.type === "textarea") {
     return (
       <DataFieldShell field={field} wide>
@@ -1927,6 +1948,223 @@ function ClientTableFieldEditor({
         </button>
       </div>
     </div>
+  );
+}
+
+function ClientTrackingFieldEditor({
+  field,
+  value,
+  onChange,
+}: {
+  field: ConfiguredClientField;
+  value: unknown;
+  onChange: (value: unknown) => void;
+}) {
+  const { t } = useTranslation();
+  const dir = useLocaleDir();
+  const tracking = normalizeTrackingFieldValue(value);
+  const latest = latestTrackingValue(tracking);
+  const [open, setOpen] = useState(false);
+  const [draft, setDraft] = useState<ClientTrackingFieldValue>(tracking);
+
+  useEffect(() => {
+    if (!open) setDraft(normalizeTrackingFieldValue(value));
+  }, [value, open]);
+
+  const updateEntry = (
+    entryId: string,
+    key: keyof ClientTrackingEntry,
+    nextValue: string,
+  ) => {
+    setDraft((prev) => ({
+      entries: prev.entries.map((entry) =>
+        entry.id === entryId ? { ...entry, [key]: nextValue } : entry,
+      ),
+    }));
+  };
+
+  const filledCount = tracking.entries.filter(
+    (entry) => String(entry.value || "").trim(),
+  ).length;
+
+  return (
+    <>
+      <button
+        type="button"
+        onClick={() => {
+          setDraft(normalizeTrackingFieldValue(value));
+          setOpen(true);
+        }}
+        className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-start transition hover:border-violet-300 hover:bg-white hover:ring-4 hover:ring-violet-100"
+      >
+        <div className="flex items-end justify-between gap-3">
+          <div>
+            <p className="text-2xl font-black tracking-tight text-slate-900">
+              {latest ||
+                field.placeholder ||
+                t("crm.clients.clientDataPanel.trackingEmpty")}
+            </p>
+            <p className="mt-1 text-xs font-bold text-slate-500">
+              {filledCount
+                ? t("crm.clients.clientDataPanel.trackingEntriesCount", {
+                    count: filledCount,
+                  })
+                : t("crm.clients.clientDataPanel.trackingEmptyHint")}
+            </p>
+          </div>
+          <span className="inline-flex text-xs font-black text-violet-700">
+            {t("crm.clients.clientDataPanel.openTrackingModal")}
+          </span>
+        </div>
+      </button>
+
+      {open ? (
+        <div
+          className="fixed inset-0 z-[90] flex items-center justify-center bg-slate-950/45 p-4"
+          role="dialog"
+          aria-modal="true"
+        >
+          <div
+            dir={dir}
+            className="flex w-full max-w-3xl flex-col overflow-hidden rounded-3xl bg-white shadow-2xl"
+          >
+            <div className="flex items-start justify-between gap-3 border-b border-slate-100 px-5 py-4">
+              <div>
+                <h4 className="text-xl font-black text-slate-800">
+                  {field.label}
+                </h4>
+                <p className="mt-1 text-sm font-bold text-slate-500">
+                  {t("crm.clients.clientDataPanel.trackingModalHint")}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setOpen(false)}
+                className="grid h-10 w-10 place-items-center rounded-xl border border-slate-200 text-slate-500 transition hover:bg-slate-50"
+                aria-label={t("crm.common.close")}
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+
+            <div className="max-h-[60vh] overflow-auto p-5">
+              <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white">
+                <table className="min-w-full border-collapse text-sm">
+                  <thead>
+                    <tr className="bg-slate-50">
+                      <th className="border-b border-slate-200 px-3 py-2 text-start text-xs font-black text-slate-600">
+                        {t("crm.clients.clientDataPanel.trackingDate")}
+                      </th>
+                      <th className="border-b border-slate-200 px-3 py-2 text-start text-xs font-black text-slate-600">
+                        {t("crm.clients.clientDataPanel.trackingTime")}
+                      </th>
+                      <th className="border-b border-slate-200 px-3 py-2 text-start text-xs font-black text-slate-600">
+                        {field.label}
+                      </th>
+                      <th className="border-b border-slate-200 px-2 py-2" />
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {draft.entries.map((entry) => (
+                      <tr key={entry.id}>
+                        <td className="border-b border-slate-100 px-2 py-1.5">
+                          <input
+                            type="date"
+                            value={entry.date}
+                            onChange={(event) =>
+                              updateEntry(entry.id, "date", event.target.value)
+                            }
+                            className="h-10 w-full min-w-[140px] rounded-xl border border-transparent bg-slate-50 px-2 text-sm font-bold text-slate-800 outline-none transition focus:border-violet-300 focus:bg-white focus:ring-2 focus:ring-violet-100"
+                          />
+                        </td>
+                        <td className="border-b border-slate-100 px-2 py-1.5">
+                          <input
+                            type="time"
+                            value={entry.time}
+                            onChange={(event) =>
+                              updateEntry(entry.id, "time", event.target.value)
+                            }
+                            className="h-10 w-full min-w-[110px] rounded-xl border border-transparent bg-slate-50 px-2 text-sm font-bold text-slate-800 outline-none transition focus:border-violet-300 focus:bg-white focus:ring-2 focus:ring-violet-100"
+                          />
+                        </td>
+                        <td className="border-b border-slate-100 px-2 py-1.5">
+                          <input
+                            type="number"
+                            inputMode="decimal"
+                            value={entry.value}
+                            onChange={(event) =>
+                              updateEntry(entry.id, "value", event.target.value)
+                            }
+                            placeholder={field.placeholder || ""}
+                            className="h-10 w-full min-w-[110px] rounded-xl border border-transparent bg-slate-50 px-2 text-sm font-bold text-slate-800 outline-none transition focus:border-violet-300 focus:bg-white focus:ring-2 focus:ring-violet-100"
+                          />
+                        </td>
+                        <td className="border-b border-slate-100 px-2 py-1.5">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setDraft((prev) => {
+                                if (prev.entries.length <= 1) {
+                                  return { entries: [createTrackingEntry()] };
+                                }
+                                return {
+                                  entries: prev.entries.filter(
+                                    (item) => item.id !== entry.id,
+                                  ),
+                                };
+                              });
+                            }}
+                            className="grid h-9 w-9 place-items-center rounded-lg text-rose-600 transition hover:bg-rose-50"
+                            aria-label={t("crm.common.delete")}
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                <div className="border-t border-slate-100 p-2">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setDraft((prev) => ({
+                        entries: [...prev.entries, createTrackingEntry()],
+                      }))
+                    }
+                    className="inline-flex h-10 items-center gap-2 rounded-xl px-3 text-sm font-black text-violet-700 transition hover:bg-violet-50"
+                  >
+                    <Plus className="h-4 w-4" />
+                    {t("crm.clients.clientDataPanel.addTrackingRow")}
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex flex-col-reverse gap-2 border-t border-slate-100 px-5 py-4 sm:flex-row sm:justify-end">
+              <button
+                type="button"
+                onClick={() => setOpen(false)}
+                className="inline-flex h-11 items-center justify-center rounded-xl border border-slate-200 px-5 text-sm font-black text-slate-700 transition hover:bg-slate-50"
+              >
+                {t("crm.common.cancel")}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  onChange(normalizeTrackingFieldValue(draft));
+                  setOpen(false);
+                }}
+                className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-[#6D28D9] px-5 text-sm font-black text-white transition hover:bg-[#5B21B6]"
+              >
+                <Save className="h-4 w-4" />
+                {t("crm.clients.clientDataPanel.saveTracking")}
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+    </>
   );
 }
 
