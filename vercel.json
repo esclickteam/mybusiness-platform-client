@@ -10,7 +10,43 @@
     },
     {
       "source": "/api/((?!google-html$|geo$).*)",
-      "destination": "https://api.bizuply.com/api/$1"
+      "destination": "https://api.bizuply.com/api/$1",
+      "has": [
+        {
+          "type": "host",
+          "value": "bizuply.com"
+        }
+      ]
+    },
+    {
+      "source": "/api/((?!google-html$|geo$).*)",
+      "destination": "https://api.bizuply.com/api/$1",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.bizuply.com"
+        }
+      ]
+    },
+    {
+      "source": "/api/((?!google-html$|geo$).*)",
+      "destination": "https://api.bizuply.com/api/$1",
+      "has": [
+        {
+          "type": "host",
+          "value": "app.bizuply.com"
+        }
+      ]
+    },
+    {
+      "source": "/api/((?!google-html$|geo$).*)",
+      "destination": "https://api.bizuply.com/api/$1",
+      "has": [
+        {
+          "type": "host",
+          "value": "mybusiness-platform-client.vercel.app"
+        }
+      ]
     },
     {
       "source": "/((?!api/|assets/|service-worker\\.js$|site\\.webmanifest$|manifest\\.json$|manifest\\.webmanifest$|favicon[^/]*|android-chrome[^/]*|apple-touch-icon[^/]*|robots\\.txt$|sitemap\\.xml$|softphone-hold\\.mp3$|.*\\.mp3$|.*\\.wav$).*)",

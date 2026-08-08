@@ -25,7 +25,9 @@ import API from "../../../../api";
 import BizuplyLoader from "../../../../components/ui/BizuplyLoader";
 import { useAuth } from "../../../../context/AuthContext";
 
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.bizuply.com";
+import { getSocketUrl } from "../../../../config/runtimeUrls";
+
+const SOCKET_URL = getSocketUrl();
 
 /* =========================================================
    DEBUG LOGS

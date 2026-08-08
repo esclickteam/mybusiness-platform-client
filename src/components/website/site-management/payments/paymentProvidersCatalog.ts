@@ -43,7 +43,7 @@ export const SITE_PAYMENT_PROVIDERS: PaymentProviderCatalogItem[] = [
     instructions: [
       "היכנסו ל-Stripe Dashboard והעתיקו את Publishable key ואת Secret key.",
       "הזינו את המפתחות בטופס ולחצו חיבור.",
-      "אופציונלי: הגדירו Webhook ב-Stripe לכתובת api.bizuply.com/api/store/stripe/webhook/{businessId} והדביקו את ה-Webhook secret.",
+      "אופציונלי: הגדירו Webhook ב-Stripe לכתובת {API_BASE}/store/stripe/webhook/{businessId} והדביקו את ה-Webhook secret.",
     ],
     fields: [
       {

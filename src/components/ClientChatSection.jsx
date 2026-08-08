@@ -5,6 +5,7 @@ import styles from "./ClientChatSection.module.css";
 import { useAuth } from "../context/AuthContext";
 import { io } from "socket.io-client";
 import BizuplyLoader from "./ui/BizuplyLoader";
+import { getApiOrigin, getSocketUrl } from "../config/runtimeUrls";
 
 export default function ClientChatSection() {
   const { businessId: businessIdFromParams, clientId, threadId } = useParams();
@@ -27,7 +28,7 @@ export default function ClientChatSection() {
     if (!initialized || !userId) return;
     if (socketRef.current) return;
 
-    const socketUrl = import.meta.env.VITE_SOCKET_URL;
+    const socketUrl = getSocketUrl();
     const token = localStorage.getItem("token");
 
     console.log("🌐 Connecting to socket:", socketUrl);
@@ -160,7 +161,7 @@ export default function ClientChatSection() {
   useEffect(() => {
     if (!businessId || businessName) return;
 
-    const baseUrl = import.meta.env.VITE_API_URL.replace(/\/api\/?$/, "");
+    const baseUrl = getApiOrigin();
     const token = localStorage.getItem("token");
 
     fetch(`${baseUrl}/api/business/${businessId}`, {

@@ -10,6 +10,7 @@ import type {
   SiteSeoSettings,
   StudioSitePage,
 } from "../types";
+import { getPublicSiteDomain } from "../../../../config/runtimeUrls";
 
 const ROBOTS_DIRECTIVES: SeoRobotsDirective[] = [
   "nofollow",
@@ -33,8 +34,7 @@ export function createSeoId(prefix = "seo") {
   return `${prefix}_${Date.now().toString(36)}_${seoIdCounter.toString(36)}`;
 }
 
-const PUBLIC_SITE_DOMAIN =
-  import.meta.env.VITE_BIZUPLY_PUBLIC_SITE_DOMAIN || "sites.bizuply.com";
+const PUBLIC_SITE_DOMAIN = getPublicSiteDomain();
 
 function safeString(value: unknown) {
   return String(value ?? "").trim();

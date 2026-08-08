@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { io } from "socket.io-client";
 
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.bizuply.com";
+import { getSocketUrl } from "../../../../config/runtimeUrls";
+
+const SOCKET_URL = getSocketUrl();
 const RECOMMEND_LIMIT = 60; // Approval limit threshold
 
 const AiRecommendations = ({ businessId, token, onTokenExpired }) => {

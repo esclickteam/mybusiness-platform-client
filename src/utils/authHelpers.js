@@ -3,9 +3,9 @@ import {
   getValidAccessToken as sharedGetValidAccessToken,
   isAccessTokenExpired,
 } from "./tokenRefresh";
+import { getApiBaseUrl } from "../config/runtimeUrls";
 
-const BASE_URL =
-  import.meta.env.VITE_API_URL || "https://api.bizuply.com/api";
+const BASE_URL = getApiBaseUrl();
 
 // Checks if the token is expired
 export function isTokenExpired(token) {

@@ -1,3 +1,5 @@
+import { getApiBaseUrl as resolveApiBaseUrl } from "../config/runtimeUrls";
+
 const VISITOR_KEY = "bizuply_vid";
 const SESSION_KEY = "bizuply_sid";
 const DEDUP_MS = 30_000;
@@ -47,8 +49,7 @@ export function getBizuplySessionId(): string {
 }
 
 function getApiBaseUrl() {
-  const isProd = import.meta.env.MODE === "production";
-  return isProd ? "https://api.bizuply.com/api" : "/api";
+  return resolveApiBaseUrl();
 }
 
 function shouldSkipDedup(visitorId: string, pageId: string) {

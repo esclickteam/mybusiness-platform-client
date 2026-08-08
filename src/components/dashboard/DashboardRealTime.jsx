@@ -3,7 +3,9 @@ import { io } from "socket.io-client";
 import LineChart from "./LineChart";  // שנה לנתיב שלך
 import { useAuth } from "../context/AuthContext";
 
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.bizuply.com";
+import { getSocketUrl } from "../../config/runtimeUrls";
+
+const SOCKET_URL = getSocketUrl();
 
 const DashboardRealTime = ({ businessId }) => {
   const { refreshAccessToken } = useAuth();

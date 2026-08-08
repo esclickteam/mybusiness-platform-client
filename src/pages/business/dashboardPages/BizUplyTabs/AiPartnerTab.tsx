@@ -9,9 +9,9 @@ import React, {
 } from "react";
 import { io, Socket } from "socket.io-client";
 import { useNavigate } from "react-router-dom";
+import { getSocketUrl } from "../../../../config/runtimeUrls";
 
-const SOCKET_URL =
-  import.meta.env.VITE_SOCKET_URL || "https://api.bizuply.com";
+const SOCKET_URL = getSocketUrl();
 
 type Nullable<T> = T | null;
 

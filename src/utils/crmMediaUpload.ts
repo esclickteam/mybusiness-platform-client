@@ -1,4 +1,5 @@
 import API from "@api";
+import { getApiOrigin as resolveApiOrigin } from "../config/runtimeUrls";
 
 export type CrmUploadedMedia = {
   secureUrl: string;
@@ -9,15 +10,7 @@ export type CrmUploadedMedia = {
 };
 
 function getApiOrigin() {
-  const isProd = import.meta.env.MODE === "production";
-  if (isProd) return "https://api.bizuply.com";
-
-  const raw = String(
-    import.meta.env?.VITE_API_BASE_URL || import.meta.env?.VITE_API_URL || ""
-  ).trim();
-
-  if (!raw) return "";
-  return raw.replace(/\/api\/?$/, "").replace(/\/$/, "");
+  return resolveApiOrigin();
 }
 
 async function signAndUploadDirect(

@@ -45,6 +45,7 @@ import {
   getPublicSiteDomain,
   isPublicCustomerSiteHost,
 } from "./utils/publicSiteHost";
+import { getApiBaseUrl } from "./config/runtimeUrls";
 import {
   findStoredPortalTokenHint,
   getSitePortalToken,
@@ -172,12 +173,7 @@ const noopResetSearchFilters = () => {};
 
 const PUBLIC_SITE_DOMAIN = getPublicSiteDomain();
 
-const RAW_API_BASE_URL = String(
-  import.meta.env.VITE_API_URL ||
-    import.meta.env.VITE_API_BASE_URL ||
-    import.meta.env.VITE_BACKEND_URL ||
-    ""
-).replace(/\/+$/, "");
+const RAW_API_BASE_URL = String(getApiBaseUrl() || "").replace(/\/+$/, "");
 
 const API_SITE_BUILDER_BASE_URL = RAW_API_BASE_URL.endsWith("/api")
   ? `${RAW_API_BASE_URL}/site-builder`

@@ -1,12 +1,6 @@
-const RAW_API_URL = String(
-  import.meta.env.VITE_API_URL ||
-    import.meta.env.VITE_API_BASE_URL ||
-    "https://api.bizuply.com",
-).trim();
+import { getApiOrigin } from "../config/runtimeUrls";
 
-const API_BASE = RAW_API_URL
-  .replace(/\/api\/?$/i, "")
-  .replace(/\/+$/, "");
+const API_BASE = getApiOrigin();
 
 export type DomainEnvironment = "ote" | "production";
 

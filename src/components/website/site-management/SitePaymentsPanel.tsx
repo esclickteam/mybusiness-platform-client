@@ -18,6 +18,7 @@ import {
   type PaymentProviderCatalogItem,
 } from "./payments/paymentProvidersCatalog";
 import { SitePanelCard } from "./SitePanelShell";
+import { getApiBaseUrl } from "../../../config/runtimeUrls";
 
 type SitePaymentsPanelProps = {
   businessId: string;
@@ -242,7 +243,7 @@ export default function SitePaymentsPanel({ businessId }: SitePaymentsPanelProps
                 <p className="mt-3 text-xs text-slate-400">
                   Webhook (אופציונלי):{" "}
                   <span className="font-mono text-[11px] text-slate-600" dir="ltr">
-                    https://api.bizuply.com/api/store/stripe/webhook/{businessId}
+                    {getApiBaseUrl()}/store/stripe/webhook/{businessId}
                   </span>
                 </p>
               ) : null}
