@@ -3279,10 +3279,19 @@ export function useVisualEditorState({
       part?: "value" | "label" | "both";
       /** "greeting" → "שלום, {שם}" for the logged-in portal client */
       format?: "greeting" | "";
+      /**
+       * Insert two separate nodes (label + value) so each can be positioned.
+       * Default true for regular CRM fields from the add panel.
+       */
+      asPair?: boolean;
     }) => {
       const format = String(options?.format || "").trim();
       const isGreeting = format === "greeting";
-      const part = isGreeting ? "value" : options?.part || "both";
+      const asPair =
+        !isGreeting &&
+        options?.asPair !== false &&
+        (options?.part === "both" || options?.part == null);
+      const part = isGreeting ? "value" : asPair ? "value" : options?.part || "both";
       const fieldKey = String(
         options?.fieldKey || (isGreeting ? "client_name" : ""),
       ).trim();
@@ -3290,16 +3299,10 @@ export function useVisualEditorState({
         options?.label || (isGreeting ? "שם לקוח" : "נתון"),
       ).trim() || "נתון";
       const sampleValue =
-        String(options?.sampleValue || (isGreeting ? "ישראל ישראלי" : "X")).trim() ||
-        "X";
-      const sampleText = isGreeting
-        ? `שלום, ${sampleValue}`
-        : part === "label"
-          ? label
-          : part === "both"
-            ? `${label} - ${sampleValue}`
-            : sampleValue;
-      const isLongText = sampleText.length > 42;
+        String(
+          options?.sampleValue ||
+            (isGreeting ? "ישראל ישראלי" : "[ערך מהתיק]"),
+        ).trim() || "[ערך מהתיק]";
 
       const root = canvasRef.current;
       if (!root) return "";
@@ -3308,87 +3311,185 @@ export function useVisualEditorState({
       const sectionNode = getClosestVisualSectionNode(root, selectedNode);
       const sectionId = getDirectVisualId(sectionNode) || "visual-root";
       const parentId = sectionId;
-      const id = createVisualCustomId("custom-crm-field");
       const now = new Date().toISOString();
+      const labelId = createVisualCustomId("custom-crm-label");
+      const valueId = createVisualCustomId("custom-crm-field");
+      const selectId = asPair ? valueId : valueId;
 
-      const attributes: Record<string, string> = fieldKey
-        ? {
-            "data-bizuply-crm-field": fieldKey,
-            "data-bizuply-crm-field-part": part,
-            "data-bizuply-crm-field-label": label,
-            ...(isGreeting
-              ? { "data-bizuply-crm-field-format": "greeting" }
-              : {}),
-            "data-client-variable": "true",
-            "data-client-variable-key": fieldKey,
-            "data-client-variable-label": label,
-            "data-client-variable-display": isGreeting
-              ? "greeting"
-              : part === "both"
-                ? "label-value"
-                : part === "label"
-                  ? "label"
-                  : "raw",
-            "data-client-variable-source": "crm_client",
-          }
-        : {
-            "data-bizuply-crm-field-part": part,
-            "data-client-variable-label": label,
-            "data-client-variable-display":
-              part === "both" ? "label-value" : "raw",
-          };
+      const buildAttrs = (
+        fieldPart: "value" | "label" | "both",
+      ): Record<string, string> =>
+        fieldKey
+          ? {
+              "data-bizuply-crm-field": fieldKey,
+              "data-bizuply-crm-field-part": fieldPart,
+              "data-bizuply-crm-field-label": label,
+              ...(isGreeting
+                ? { "data-bizuply-crm-field-format": "greeting" }
+                : {}),
+              "data-client-variable": "true",
+              "data-client-variable-key": fieldKey,
+              "data-client-variable-label": label,
+              "data-client-variable-display": isGreeting
+                ? "greeting"
+                : fieldPart === "both"
+                  ? "label-value"
+                  : fieldPart === "label"
+                    ? "label"
+                    : "raw",
+              "data-client-variable-source": "crm_client",
+            }
+          : {
+              "data-bizuply-crm-field-part": fieldPart,
+              "data-client-variable-label": label,
+              "data-client-variable-display":
+                fieldPart === "both" ? "label-value" : "raw",
+            };
 
-      setData((current) => {
-        let next = writeVisualInsertedElement(current || {}, {
+      const insertOne = (
+        next: Record<string, any>,
+        id: string,
+        text: string,
+        fieldPart: "value" | "label" | "both",
+        layout: Record<string, any>,
+        style: StylePatch,
+        editLabel: string,
+      ) => {
+        let out = writeVisualInsertedElement(next, {
           id,
           type: "text",
           parentId,
           sectionId,
-          label: isGreeting
-            ? "שלום, שם לקוח"
-            : fieldKey
-              ? `נתון CRM · ${label}`
-              : "נתון CRM",
+          label: editLabel,
           tagName: "div",
           createdAt: now,
           updatedAt: now,
         });
+        out = writeVisualContentItem(out, id, { text });
+        out = writeVisualStyleItem(out, id, style);
+        out = writeVisualLayoutItem(out, id, layout);
+        out = writeVisualAttributesItem(out, id, buildAttrs(fieldPart));
+        return out;
+      };
 
-        next = writeVisualContentItem(next, id, { text: sampleText });
-        next = writeVisualStyleItem(next, id, {
-          color: "#111827",
-          fontSize: isGreeting || part === "both" ? "22px" : "36px",
-          fontWeight: "800",
-          lineHeight: "1.35",
-          textAlign: "right",
-          direction: "rtl",
-          whiteSpace: isLongText ? "normal" : "nowrap",
-          display: "inline-block",
-          backgroundColor: "transparent",
-          backgroundImage: "none",
-          border: "none",
-          borderRadius: "0",
-          boxShadow: "none",
-          padding: "0",
-        } as StylePatch);
-        next = writeVisualLayoutItem(next, id, {
-          position: "absolute",
-          x: 40,
-          y: 40,
-          translateX: 40,
-          translateY: 40,
-          // Hug the "שם - ערך" text so the purple selection box isn't oversized.
-          width: "fit-content",
-          height: "auto",
-          minWidth: 0,
-          minHeight: "auto",
-          maxWidth: isLongText ? "520px" : "none",
-          zIndex: 22,
-          freePosition: true,
-        });
+      setData((current) => {
+        let next = current || {};
 
-        if (Object.keys(attributes).length) {
-          next = writeVisualAttributesItem(next, id, attributes);
+        if (asPair) {
+          next = insertOne(
+            next,
+            labelId,
+            label,
+            "label",
+            {
+              position: "absolute",
+              x: 40,
+              y: 40,
+              translateX: 40,
+              translateY: 40,
+              width: "fit-content",
+              height: "auto",
+              minWidth: 0,
+              minHeight: "auto",
+              zIndex: 22,
+              freePosition: true,
+            },
+            {
+              color: "#64748b",
+              fontSize: "14px",
+              fontWeight: "800",
+              lineHeight: "1.2",
+              textAlign: "right",
+              direction: "rtl",
+              whiteSpace: "nowrap",
+              display: "inline-block",
+              backgroundColor: "transparent",
+              border: "none",
+              padding: "0",
+            } as StylePatch,
+            `תווית CRM · ${label}`,
+          );
+          next = insertOne(
+            next,
+            valueId,
+            sampleValue,
+            "value",
+            {
+              position: "absolute",
+              x: 40,
+              y: 66,
+              translateX: 40,
+              translateY: 66,
+              width: "fit-content",
+              height: "auto",
+              minWidth: 0,
+              minHeight: "auto",
+              maxWidth: sampleValue.length > 42 ? "520px" : "none",
+              zIndex: 23,
+              freePosition: true,
+            },
+            {
+              color: "#111827",
+              fontSize: "28px",
+              fontWeight: "800",
+              lineHeight: "1.25",
+              textAlign: "right",
+              direction: "rtl",
+              whiteSpace: sampleValue.length > 42 ? "normal" : "nowrap",
+              display: "inline-block",
+              backgroundColor: "transparent",
+              border: "none",
+              padding: "0",
+            } as StylePatch,
+            `נתון CRM · ${label}`,
+          );
+        } else {
+          const sampleText = isGreeting
+            ? `שלום, ${sampleValue}`
+            : part === "label"
+              ? label
+              : part === "both"
+                ? `${label} - ${sampleValue}`
+                : sampleValue;
+          const isLongText = sampleText.length > 42;
+          next = insertOne(
+            next,
+            valueId,
+            sampleText,
+            part,
+            {
+              position: "absolute",
+              x: 40,
+              y: 40,
+              translateX: 40,
+              translateY: 40,
+              width: "fit-content",
+              height: "auto",
+              minWidth: 0,
+              minHeight: "auto",
+              maxWidth: isLongText ? "520px" : "none",
+              zIndex: 22,
+              freePosition: true,
+            },
+            {
+              color: "#111827",
+              fontSize: isGreeting || part === "both" ? "22px" : "32px",
+              fontWeight: "800",
+              lineHeight: "1.35",
+              textAlign: "right",
+              direction: "rtl",
+              whiteSpace: isLongText ? "normal" : "nowrap",
+              display: "inline-block",
+              backgroundColor: "transparent",
+              border: "none",
+              padding: "0",
+            } as StylePatch,
+            isGreeting
+              ? "שלום, שם לקוח"
+              : fieldKey
+                ? `נתון CRM · ${label}`
+                : "נתון CRM",
+          );
         }
 
         dataRef.current = next;
@@ -3398,13 +3499,13 @@ export function useVisualEditorState({
       window.requestAnimationFrame(() => {
         applyAllVisualDataToDom(canvasRef.current, dataRef.current || {});
         window.requestAnimationFrame(() => {
-          selection.selectByElementId(id, {
+          selection.selectByElementId(selectId, {
             keepPreviousOnMissing: true,
           });
         });
       });
 
-      return id;
+      return selectId;
     },
     [canvasRef, selection, setData],
   );

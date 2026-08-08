@@ -5,11 +5,8 @@ import {
   Area,
   AreaChart,
   CartesianGrid,
-  Cell,
   Line,
   LineChart,
-  Pie,
-  PieChart,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -22,7 +19,6 @@ import {
   Handshake,
   MoreHorizontal,
   Pencil,
-  Settings2,
   Sparkles,
   Star,
   TrendingUp,
@@ -41,16 +37,14 @@ import type {
   PerformanceMetric,
 } from "./dashboardOverviewTypes";
 import {
-  buildBusinessGreeting,
   buildUpcomingAppointmentsFromCalendar,
   formatAppointmentBadge,
   formatDateRangeLabel,
   formatLeadSource,
   formatLeadStatus,
+  formatLeadDate,
   formatNumber,
   formatPercent,
-  formatRelativeTime,
-  getMaxValue,
   type CalendarAppointment,
 } from "./dashboardOverviewUtils";
 
@@ -81,7 +75,6 @@ const PERFORMANCE_TABS: PerformanceMetric[] = [
 ];
 
 const RESOLUTIONS = ["day", "week", "month", "year"] as const;
-const COLLAB_COLORS = ["#7c3aed", "#a78bfa", "#c4b5fd", "#ddd6fe"];
 
 const KPI_ACCENTS = {
   violet: {
@@ -259,19 +252,6 @@ function StatusBadge({ label, tone = "neutral" }: { label: string; tone?: string
   );
 }
 
-function ProgressBar({ value, max }: { value: number; max: number }) {
-  const width = Math.max(6, Math.round((value / Math.max(max, 1)) * 100));
-
-  return (
-    <div className="h-2 rounded-full bg-slate-100">
-      <div
-        className="h-2 rounded-full bg-violet-500"
-        style={{ width: `${width}%` }}
-      />
-    </div>
-  );
-}
-
 export default function DashboardOverview({
   businessName,
   calendarAppointments = [],
@@ -309,25 +289,6 @@ export default function DashboardOverview({
       previous: previous[index]?.value ?? 0,
     }));
   }, [data?.performance]);
-
-  const collabDonut = useMemo(() => {
-    const overview = data?.collaborations.overview;
-    if (!overview) return [];
-
-    return [
-      { name: t("overview.activeCollaborations"), value: overview.activeCollaborations },
-      { name: t("overview.incomingReferrals"), value: overview.incomingReferrals },
-      { name: t("overview.outgoingReferrals"), value: overview.outgoingReferrals },
-      { name: t("overview.pendingRequests"), value: overview.pendingRequests },
-    ].filter((item) => item.value > 0);
-  }, [data?.collaborations.overview, t]);
-
-  const topTrafficMax = getMaxValue(
-    (data?.website.trafficSources || []).map((item) => item.visitors)
-  );
-  const topPagesMax = getMaxValue(
-    (data?.website.topPages || []).map((item) => item.views)
-  );
 
   if (loading && !data) {
     return <BizuplyLoader fullScreen label="Loading dashboard..." />;
@@ -394,19 +355,11 @@ export default function DashboardOverview({
                     })
                   }
                 >
-                  <option value="compare">Compare to previous period</option>
-                  <option value="none">No comparison</option>
+                  <option value="compare">{t("overview.compareToPrevious")}</option>
+                  <option value="none">{t("overview.noComparison")}</option>
                 </select>
                 <ChevronDown size={14} className="text-slate-400" />
               </label>
-
-              <button
-                type="button"
-                className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 shadow-sm"
-              >
-                <Settings2 size={16} />
-                {t("overview.customizeDashboard")}
-              </button>
             </div>
           </div>
 
@@ -705,7 +658,7 @@ export default function DashboardOverview({
                         />
                       </td>
                       <td className="py-3 text-slate-500">
-                        {formatRelativeTime(lead.createdAt)}
+                        {formatLeadDate(lead.createdAt)}
                       </td>
                     </tr>
                   ))}
@@ -791,134 +744,6 @@ export default function DashboardOverview({
             <EmptyBlock
               title={t("overview.noAppointmentsTitle")}
               description={t("overview.noAppointmentsText")}
-            />
-          )}
-        </Panel>
-      </section>
-
-      <section className="grid gap-5 xl:grid-cols-3">
-        <Panel>
-          <div className="mb-4 flex items-center justify-between gap-3">
-            <div>
-              <h3 className="text-lg font-black text-slate-800">
-                {t("overview.collabOverview")}
-              </h3>
-            </div>
-            <button
-              type="button"
-              onClick={() => navigate(`${basePath}/collab/profile`)}
-              className="text-sm font-bold text-violet-700"
-            >
-              {t("common.viewAll")}
-            </button>
-          </div>
-
-          {collabDonut.length ? (
-            <>
-              <div className="h-[180px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={collabDonut}
-                      innerRadius={58}
-                      outerRadius={82}
-                      paddingAngle={3}
-                      dataKey="value"
-                    >
-                      {collabDonut.map((entry, index) => (
-                        <Cell
-                          key={entry.name}
-                          fill={COLLAB_COLORS[index % COLLAB_COLORS.length]}
-                        />
-                      ))}
-                    </Pie>
-                    <Tooltip />
-                  </PieChart>
-                </ResponsiveContainer>
-              </div>
-              <div className="mt-3 space-y-2">
-                {collabDonut.map((item, index) => (
-                  <div
-                    key={item.name}
-                    className="flex items-center justify-between text-sm"
-                  >
-                    <span className="flex items-center gap-2 font-medium text-slate-600">
-                      <span
-                        className="h-2.5 w-2.5 rounded-full"
-                        style={{
-                          backgroundColor:
-                            COLLAB_COLORS[index % COLLAB_COLORS.length],
-                        }}
-                      />
-                      {item.name}
-                    </span>
-                    <span className="font-black text-slate-900">{item.value}</span>
-                  </div>
-                ))}
-              </div>
-            </>
-          ) : (
-            <EmptyBlock
-              title={t("overview.noCollabTitle")}
-              description={t("overview.noCollabText")}
-            />
-          )}
-        </Panel>
-
-        <Panel>
-          <div className="mb-4">
-            <h3 className="text-lg font-black text-slate-800">
-              {t("overview.topPages")}
-            </h3>
-          </div>
-
-          {(data?.website.topPages || []).length ? (
-            <div className="space-y-4">
-              {data?.website.topPages.map((page) => (
-                <div key={`${page.pageId}-${page.pageSlug}`}>
-                  <div className="mb-2 flex items-center justify-between gap-3">
-                    <p className="truncate font-bold text-slate-900">{page.page}</p>
-                    <p className="text-sm font-medium text-slate-500">
-                      {formatNumber(page.views)} · {formatPercent(page.change)}
-                    </p>
-                  </div>
-                  <ProgressBar value={page.views} max={topPagesMax} />
-                </div>
-              ))}
-            </div>
-          ) : (
-            <EmptyBlock
-              title={t("overview.noPagesTitle")}
-              description={t("overview.noPagesText")}
-            />
-          )}
-        </Panel>
-
-        <Panel>
-          <div className="mb-4">
-            <h3 className="text-lg font-black text-slate-800">
-              {t("overview.trafficSources")}
-            </h3>
-          </div>
-
-          {(data?.website.trafficSources || []).some((item) => item.visitors > 0) ? (
-            <div className="space-y-4">
-              {data?.website.trafficSources.map((source) => (
-                <div key={source.source}>
-                  <div className="mb-2 flex items-center justify-between gap-3">
-                    <p className="font-bold text-slate-900">{source.label}</p>
-                    <p className="text-sm font-medium text-slate-500">
-                      {formatNumber(source.visitors)} · {formatPercent(source.change)}
-                    </p>
-                  </div>
-                  <ProgressBar value={source.visitors} max={topTrafficMax} />
-                </div>
-              ))}
-            </div>
-          ) : (
-            <EmptyBlock
-              title={t("overview.noTrafficTitle")}
-              description={t("overview.noTrafficText")}
             />
           )}
         </Panel>

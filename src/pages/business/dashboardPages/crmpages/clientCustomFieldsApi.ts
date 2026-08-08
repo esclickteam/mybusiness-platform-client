@@ -1,10 +1,24 @@
 import API from "@api";
 import type { TFunction } from "i18next";
 
+export type {
+  ClientTrackingEntry,
+  ClientTrackingFieldValue,
+} from "./clientTrackingField";
+export {
+  createTrackingEntry,
+  defaultTrackingFieldValue,
+  latestTrackingValue,
+  normalizeTrackingFieldValue,
+  nowTrackingDateParts,
+} from "./clientTrackingField";
+
 export type CustomFieldType =
   | "text"
   | "textarea"
   | "summary"
+  | "table"
+  | "tracking"
   | "number"
   | "date"
   | "status"
@@ -17,6 +31,64 @@ export type CustomFieldType =
   | "phone"
   | "file"
   | "image";
+
+/** Structured value for `type: "table"` custom fields (e.g. follow-up plan). */
+export type ClientTableFieldValue = {
+  columns: string[];
+  rows: string[][];
+};
+
+export function defaultTableFieldValue(
+  columns?: string[],
+): ClientTableFieldValue {
+  const cols =
+    Array.isArray(columns) && columns.length
+      ? columns.map(String)
+      : ["תאריך", "פעולה", "סטטוס"];
+  return {
+    columns: cols,
+    rows: [cols.map(() => "")],
+  };
+}
+
+export function normalizeTableFieldValue(
+  value: unknown,
+  fallbackColumns?: string[],
+): ClientTableFieldValue {
+  if (value && typeof value === "object" && !Array.isArray(value)) {
+    const raw = value as { columns?: unknown; rows?: unknown };
+    const columns = Array.isArray(raw.columns)
+      ? raw.columns.map(String)
+      : [];
+    const rows = Array.isArray(raw.rows)
+      ? raw.rows.map((row) =>
+          Array.isArray(row) ? row.map((cell) => String(cell ?? "")) : [],
+        )
+      : [];
+    if (columns.length) {
+      const width = columns.length;
+      return {
+        columns,
+        rows: rows.length
+          ? rows.map((row) => {
+              const next = [...row];
+              while (next.length < width) next.push("");
+              return next.slice(0, width);
+            })
+          : [columns.map(() => "")],
+      };
+    }
+  }
+
+  if (typeof value === "string" && value.trim()) {
+    return {
+      columns: ["תוכן"],
+      rows: [[value.trim()]],
+    };
+  }
+
+  return defaultTableFieldValue(fallbackColumns);
+}
 
 export type ConfiguredClientField = {
   id: string;
@@ -41,6 +113,8 @@ const ALLOWED_TYPES: CustomFieldType[] = [
   "text",
   "textarea",
   "summary",
+  "table",
+  "tracking",
   "number",
   "date",
   "status",
@@ -230,8 +304,8 @@ export function createExampleClientFields(): ConfiguredClientField[] {
       id: uid("client_field"),
       key: "weight",
       label: "משקל",
-      type: "number",
-      description: "משקל נוכחי בק״ג",
+      type: "tracking",
+      description: "טבלת מעקב משקל — תאריך, שעה וערך לכל מדידה",
       placeholder: "לדוגמה: 72",
       options: [],
       required: false,
@@ -335,10 +409,10 @@ export function createExampleClientFields(): ConfiguredClientField[] {
       id: uid("client_field"),
       key: "follow_up_plan",
       label: "תכנית מעקב",
-      type: "textarea",
-      description: "נקודות מעקב ותזכורות לאורך זמן",
-      placeholder: "לדוגמה: בדיקה כל שבועיים · מדידת מדדים",
-      options: [],
+      type: "table",
+      description: "טבלת מעקב אישית לכל לקוח — תאריך, פעולה וסטטוס",
+      placeholder: "",
+      options: ["תאריך", "פעולה", "סטטוס"],
       required: false,
       showInClientProfile: true,
       showInClientPortal: true,
