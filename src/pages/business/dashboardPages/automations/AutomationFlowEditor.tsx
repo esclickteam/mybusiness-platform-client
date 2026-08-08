@@ -1379,6 +1379,15 @@ function EditorInner({
               </button>
               <button
                 type="button"
+                className="af-btn af-btn--secondary"
+                disabled={readOnly || saving}
+                title={writeBlockedTitle}
+                onClick={() => void handleSave()}
+              >
+                שמור
+              </button>
+              <button
+                type="button"
                 className="af-btn af-btn--primary"
                 onClick={() => setSelectedId(null)}
               >
