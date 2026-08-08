@@ -114,14 +114,22 @@ function AdminBusinesses() {
     });
   }, [businesses, search]);
 
-  async function handleEnterBusiness(business: AdminBusiness) {
+  async function handleEnterBusiness(
+    business: AdminBusiness,
+    mode: "business" | "admin_full" = "business"
+  ) {
     const label = business.businessName || "העסק";
-    if (
-      !window.confirm(
-        `להיכנס לעסק "${label}" כבעלים? הגישה למודולים תהיה לפי החבילה של העסק.`
-      )
-    ) {
-      return;
+
+    // Default "כניסה לעסק" = VIEW AS BUSINESS (no confirm).
+    // Separate support path requires an explicit confirm.
+    if (mode === "admin_full") {
+      if (
+        !window.confirm(
+          `להיכנס לעסק "${label}" עם הרשאות אדמין מלאות?\n\nזה עוקף את חבילת העסק — לשימוש תמיכה בלבד.`
+        )
+      ) {
+        return;
+      }
     }
 
     setEnteringId(business._id);
@@ -130,12 +138,14 @@ function AdminBusinesses() {
     try {
       const { data } = await API.post("/admin/impersonate-business", {
         businessId: business._id,
+        mode,
       });
 
       loginWithToken(data.user, data.token, { skipRedirect: true });
 
       // Prefer fresh /auth/me ACL (entitlements + enabledModules) over the
       // immediate impersonation payload — keeps UI aligned with API gates.
+      // admin_full also goes through /auth/me (server preserves full ACL).
       try {
         await refreshUser?.(true);
       } catch {
@@ -169,7 +179,7 @@ function AdminBusinesses() {
                 עסקים במערכת
               </h1>
               <p className="mt-2 text-sm font-bold text-purple-950/55">
-                כניסה לכל עסק כבעלים — הגישה למודולים לפי החבילה של העסק.
+                כניסה לעסק = מצב צפייה כעסק — ההרשאות משקפות את החבילה של העסק.
               </p>
             </div>
 
@@ -260,10 +270,18 @@ function AdminBusinesses() {
                         <button
                           type="button"
                           disabled={enteringId === biz._id}
-                          onClick={() => handleEnterBusiness(biz)}
+                          onClick={() => handleEnterBusiness(biz, "business")}
                           className="mt-3 inline-flex min-h-11 w-full items-center justify-center rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-4 text-xs font-black text-black shadow-lg shadow-purple-700/20 transition hover:-translate-y-0.5 disabled:cursor-wait disabled:opacity-60"
                         >
                           {enteringId === biz._id ? "נכנס..." : "כניסה לעסק"}
+                        </button>
+                        <button
+                          type="button"
+                          disabled={enteringId === biz._id}
+                          onClick={() => handleEnterBusiness(biz, "admin_full")}
+                          className="mt-2 inline-flex min-h-9 w-full items-center justify-center rounded-xl border border-amber-200 bg-amber-50 px-3 text-[11px] font-bold text-amber-950 transition hover:bg-amber-100 disabled:cursor-wait disabled:opacity-60"
+                        >
+                          כניסה עם הרשאות אדמין
                         </button>
                       </article>
                     );
@@ -345,16 +363,30 @@ function AdminBusinesses() {
                             {formatDate(biz.createdAt)}
                           </td>
                           <td className="px-4 py-4">
-                            <button
-                              type="button"
-                              disabled={enteringId === biz._id}
-                              onClick={() => handleEnterBusiness(biz)}
-                              className="rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-4 py-2.5 text-xs font-black text-black shadow-lg shadow-purple-700/20 transition hover:-translate-y-0.5 disabled:cursor-wait disabled:opacity-60"
-                            >
-                              {enteringId === biz._id
-                                ? "נכנס..."
-                                : "כניסה לעסק"}
-                            </button>
+                            <div className="flex flex-col items-stretch gap-2">
+                              <button
+                                type="button"
+                                disabled={enteringId === biz._id}
+                                onClick={() =>
+                                  handleEnterBusiness(biz, "business")
+                                }
+                                className="rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-4 py-2.5 text-xs font-black text-black shadow-lg shadow-purple-700/20 transition hover:-translate-y-0.5 disabled:cursor-wait disabled:opacity-60"
+                              >
+                                {enteringId === biz._id
+                                  ? "נכנס..."
+                                  : "כניסה לעסק"}
+                              </button>
+                              <button
+                                type="button"
+                                disabled={enteringId === biz._id}
+                                onClick={() =>
+                                  handleEnterBusiness(biz, "admin_full")
+                                }
+                                className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-[11px] font-bold text-amber-950 transition hover:bg-amber-100 disabled:cursor-wait disabled:opacity-60"
+                              >
+                                כניסה עם הרשאות אדמין
+                              </button>
+                            </div>
                           </td>
                         </tr>
                       ))}

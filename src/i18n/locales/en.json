@@ -431,8 +431,10 @@
     }
   },
   "layout": {
-    "adminImpersonationTitle": "Admin mode — business access",
-    "adminImpersonationText": "You are viewing {{name}} with that business plan's module access. All actions are saved to this business.",
+    "adminImpersonationTitle": "View as business — permissions match this business plan",
+    "adminImpersonationText": "Viewing {{name}}. All actions are saved to this business.",
+    "adminFullImpersonationTitle": "Admin mode — full access (support)",
+    "adminFullImpersonationText": "You entered {{name}} with full admin permissions. This bypasses the business plan.",
     "marketerImpersonationTitle": "Marketer mode — client access",
     "marketerImpersonationText": "You are managing {{name}}'s account. Campaign management and CRM are available.",
     "backToAdmin": "Back to admin panel",

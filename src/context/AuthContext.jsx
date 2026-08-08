@@ -166,6 +166,7 @@ function clearLocalAuth({ clearDashboardRoute = false } = {}) {
   localStorage.removeItem("dashboardStats");
   localStorage.removeItem("impersonatedBy");
   localStorage.removeItem("impersonatorRole");
+  localStorage.removeItem("impersonationMode");
 
   if (clearDashboardRoute) {
     clearLastDashboardRoute();
@@ -297,13 +298,20 @@ export function AuthProvider({ children }) {
             userFromServer.impersonatorRole
           );
         }
+        const mode =
+          payload.impersonationMode ||
+          userFromServer?.impersonationMode ||
+          "business";
+        localStorage.setItem("impersonationMode", mode);
       } else {
         localStorage.removeItem("impersonatedBy");
         localStorage.removeItem("impersonatorRole");
+        localStorage.removeItem("impersonationMode");
       }
     } catch {
       localStorage.removeItem("impersonatedBy");
       localStorage.removeItem("impersonatorRole");
+      localStorage.removeItem("impersonationMode");
     }
 
     const isImpersonating = Boolean(localStorage.getItem("impersonatedBy"));

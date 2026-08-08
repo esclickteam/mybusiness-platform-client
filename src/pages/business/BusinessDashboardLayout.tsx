@@ -58,6 +58,7 @@ type AuthUser = {
   earlyBirdExpiresAt?: string | Date | null;
 
   impersonatorRole?: "admin" | "marketer" | string | null;
+  impersonationMode?: "business" | "admin_full" | string | null;
   enabledModules?: string[] | null;
 };
 
@@ -384,6 +385,14 @@ export default function BusinessDashboardLayout() {
       : null) ||
     "admin";
   const isMarketerImpersonation = impersonatorRole === "marketer";
+  const impersonationMode =
+    user?.impersonationMode ||
+    (typeof localStorage !== "undefined"
+      ? localStorage.getItem("impersonationMode")
+      : null) ||
+    "business";
+  const isAdminFullImpersonation =
+    !isMarketerImpersonation && impersonationMode === "admin_full";
 
   const handleExitImpersonation = async () => {
     if (exitingImpersonation) return;
@@ -397,6 +406,7 @@ export default function BusinessDashboardLayout() {
       loginWithToken?.(data.user, data.token, { skipRedirect: true });
       localStorage.removeItem("impersonatedBy");
       localStorage.removeItem("impersonatorRole");
+      localStorage.removeItem("impersonationMode");
       const redirectTo =
         data.user?.redirectUrl ||
         (isMarketerImpersonation ? "/marketer/dashboard" : "/admin/dashboard");
@@ -427,20 +437,36 @@ export default function BusinessDashboardLayout() {
           className="min-h-screen w-full bg-[#f5f6fb] text-slate-800"
         >
           {isImpersonating ? (
-            <div className="fixed inset-x-0 top-0 z-[60] flex flex-wrap items-center justify-between gap-3 border-b border-amber-300 bg-amber-50 px-4 py-3 text-amber-950 md:px-6">
+            <div
+              className={`fixed inset-x-0 top-0 z-[60] flex flex-wrap items-center justify-between gap-3 border-b px-4 py-3 md:px-6 ${
+                isAdminFullImpersonation
+                  ? "border-rose-300 bg-rose-50 text-rose-950"
+                  : "border-amber-300 bg-amber-50 text-amber-950"
+              }`}
+            >
               <div className="text-start">
                 <strong className="block text-sm font-black">
                   {t(
                     isMarketerImpersonation
                       ? "layout.marketerImpersonationTitle"
-                      : "layout.adminImpersonationTitle"
+                      : isAdminFullImpersonation
+                        ? "layout.adminFullImpersonationTitle"
+                        : "layout.adminImpersonationTitle"
                   )}
                 </strong>
-                <span className="block text-xs font-bold text-amber-900/70">
+                <span
+                  className={`block text-xs font-bold ${
+                    isAdminFullImpersonation
+                      ? "text-rose-900/70"
+                      : "text-amber-900/70"
+                  }`}
+                >
                   {t(
                     isMarketerImpersonation
                       ? "layout.marketerImpersonationText"
-                      : "layout.adminImpersonationText",
+                      : isAdminFullImpersonation
+                        ? "layout.adminFullImpersonationText"
+                        : "layout.adminImpersonationText",
                     {
                       name: user?.businessName || user?.name || "",
                     }
