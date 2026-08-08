@@ -1888,6 +1888,18 @@ export function pageHasPortalWidget(root) {
 }
 
 const SAMPLE_CRM_FIELDS = [
+  {
+    key: "client_name",
+    label: "שם לקוח",
+    type: "text",
+    value: "ישראל ישראלי",
+  },
+  {
+    key: "fullName",
+    label: "שם לקוח",
+    type: "text",
+    value: "ישראל ישראלי",
+  },
   { key: "weight", label: "משקל", type: "number", value: 72 },
   {
     key: "treatments_left",
@@ -1928,6 +1940,40 @@ const SAMPLE_CRM_FIELDS = [
   },
 ];
 
+function mergeMemberIntoCustomData(customData, member) {
+  const list = Array.isArray(customData) ? [...customData] : [];
+  const fullName = String(member?.fullName || "").trim();
+  const email = String(member?.email || "").trim();
+  const phone = String(member?.phone || "").trim();
+
+  const upsert = (key, label, value, { force = false } = {}) => {
+    if (!key || !value) return;
+    const index = list.findIndex(
+      (field) => String(field?.key || "").trim() === key,
+    );
+    if (index >= 0) {
+      const current = list[index];
+      const currentValue = current?.value;
+      if (
+        force ||
+        currentValue == null ||
+        currentValue === ""
+      ) {
+        list[index] = { ...current, key, label, value };
+      }
+      return;
+    }
+    list.push({ key, label, type: "text", value });
+  };
+
+  // Logged-in portal member identity wins for greeting / name widgets.
+  upsert("client_name", "שם לקוח", fullName, { force: true });
+  upsert("fullName", "שם לקוח", fullName, { force: true });
+  upsert("client_email", "מייל לקוח", email);
+  upsert("client_phone", "טלפון לקוח", phone);
+  return list;
+}
+
 function syncPortalDataToWindow(customData) {
   if (typeof window === "undefined") return;
   const flat = {};
@@ -1948,13 +1994,24 @@ function buildCustomDataMap(fields) {
   return map;
 }
 
-function resolveBoundFieldText(field, part, key) {
+function resolveBoundFieldText(field, part, key, options = {}) {
+  const format = String(options.format || "").trim().toLowerCase();
+  const nodeLabel = String(options.nodeLabel || "").trim();
+
+  if (format === "greeting") {
+    if (!field) {
+      return options.editorMode ? "שלום, ישראל ישראלי" : "שלום, לקוח/ה";
+    }
+    const value = formatCustomDataDisplay(field) || "לקוח/ה";
+    return `שלום, ${value}`;
+  }
+
   if (!field) {
-    if (part === "label") return key || "נתון";
-    if (part === "both") return `${key || "נתון"} - —`;
+    if (part === "label") return nodeLabel || key || "נתון";
+    if (part === "both") return `${nodeLabel || key || "נתון"} - —`;
     return "—";
   }
-  const label = field.label || key || "נתון";
+  const label = nodeLabel || field.label || key || "נתון";
   const value = formatCustomDataDisplay(field);
   if (part === "label") return label;
   if (part === "both") return `${label} - ${value}`;
@@ -1965,7 +2022,8 @@ function resolveBoundFieldText(field, part, key) {
  * Fill any designer-placed node that is bound to a CRM custom field.
  * Supports:
  * - data-bizuply-crm-field="weight"
- * - data-bizuply-crm-field-part="value|label|both"
+ * - data-bizuply-crm-field-part="value|label|both" (default: both = שם - ערך)
+ * - data-bizuply-crm-field-format="greeting" → "שלום, {שם}"
  * - legacy data-client-variable-key
  */
 export function applyPortalCrmFieldBindings(root, customData, options = {}) {
@@ -1994,13 +2052,29 @@ export function applyPortalCrmFieldBindings(root, customData, options = {}) {
     if (!key) return;
 
     const part = String(
-      node.getAttribute("data-bizuply-crm-field-part") || "value",
+      node.getAttribute("data-bizuply-crm-field-part") || "both",
     )
       .trim()
       .toLowerCase();
+    const format = String(
+      node.getAttribute("data-bizuply-crm-field-format") ||
+        node.getAttribute("data-client-variable-display") ||
+        "",
+    )
+      .trim()
+      .toLowerCase();
+    const nodeLabel = String(
+      node.getAttribute("data-bizuply-crm-field-label") ||
+        node.getAttribute("data-client-variable-label") ||
+        "",
+    ).trim();
 
     const field = map.get(key);
-    const nextText = resolveBoundFieldText(field, part, key);
+    const nextText = resolveBoundFieldText(field, part, key, {
+      format,
+      nodeLabel,
+      editorMode,
+    });
     if (node.textContent !== nextText) {
       node.textContent = nextText;
     }
@@ -2035,7 +2109,10 @@ async function refreshPortalCrmFieldBindings(root, { siteId, editorMode }) {
 
   try {
     const data = await sitePortalMe(siteId);
-    const customData = data.customData || [];
+    const customData = mergeMemberIntoCustomData(
+      data.customData || [],
+      data.member,
+    );
     syncPortalDataToWindow(customData);
     applyPortalCrmFieldBindings(root, customData, {
       editorMode: false,

@@ -132,17 +132,6 @@ function sampleCrmFieldValue(field: ConfiguredClientField) {
   return defaults[field.key] || "X";
 }
 
-function isPlanLikeCrmField(field: ConfiguredClientField) {
-  const type = String(field.type || "");
-  const key = String(field.key || "");
-  return (
-    type === "textarea" ||
-    type === "summary" ||
-    type === "text" ||
-    /plan|summary|follow|continuation|treatment/i.test(key)
-  );
-}
-
 function mapLibraryCategoryToPanel(
   category: string,
 ): Exclude<ElementCategory, "all"> {
@@ -905,9 +894,45 @@ export default function VisualAddLayersPanel({
     ];
 
     // Personal-area only: CRM dynamic fields require the client-portal plugin.
+    // Every CRM datum is placed as "שם - ערך" so owners can position both together.
     const liveCrmItems: LibraryElement[] = !clientPortalPluginEnabled
       ? []
       : [
+          {
+            id: "crm-field-greeting",
+            title: "שלום, שם לקוח",
+            description:
+              "ברכה אישית — אחרי התחברות מוצג שם הלקוח מהאזור האישי / CRM",
+            category: "crm",
+            preview: "crm",
+            barePreview: true,
+            previewHtml:
+              '<div style="font-size:20px;font-weight:800;color:#0f172a;white-space:nowrap">שלום, ישראל ישראלי</div>',
+            action: () =>
+              editor?.addCrmField?.({
+                fieldKey: "client_name",
+                label: "שם לקוח",
+                sampleValue: "ישראל ישראלי",
+                format: "greeting",
+              }),
+          },
+          {
+            id: "crm-field-client-name",
+            title: "שם לקוח",
+            description: "שם לקוח - ישראל ישראלי · אישי לפי לקוח מחובר",
+            category: "crm",
+            preview: "crm",
+            barePreview: true,
+            previewHtml:
+              '<div style="font-size:16px;font-weight:800;color:#0f172a;white-space:nowrap">שם לקוח - ישראל ישראלי</div>',
+            action: () =>
+              editor?.addCrmField?.({
+                fieldKey: "client_name",
+                label: "שם לקוח",
+                sampleValue: "ישראל ישראלי",
+                part: "both",
+              }),
+          },
           {
             id: "crm-field-generic",
             title: "נתון משתנה מה-CRM",
@@ -917,7 +942,7 @@ export default function VisualAddLayersPanel({
             preview: "crm",
             barePreview: true,
             previewHtml:
-              '<div style="font-size:20px;font-weight:800;color:#0f172a">שם הנתון - X</div>',
+              '<div style="font-size:20px;font-weight:800;color:#0f172a;white-space:nowrap">שם הנתון - X</div>',
             action: () =>
               editor?.addCrmField?.({
                 label: "שם הנתון",
@@ -925,49 +950,32 @@ export default function VisualAddLayersPanel({
                 part: "both",
               }),
           },
-          ...crmFields.flatMap((field) => {
-            const sampleValue = sampleCrmFieldValue(field);
-            const label = field.label || field.key;
-            const preferBoth = isPlanLikeCrmField(field);
-            const valueItem: LibraryElement = {
-              id: `crm-field-${field.key}`,
-              title: label,
-              description: preferBoth
-                ? `${label} - ${sampleValue} · אישי לפי לקוח מחובר`
-                : `${sampleValue} · אישי לפי לקוח מחובר (הנתון בלבד)`,
-              category: "crm",
-              preview: "crm",
-              barePreview: true,
-              previewHtml: preferBoth
-                ? `<div style="font-size:16px;font-weight:800;color:#0f172a;text-align:center">${label} - ${sampleValue}</div>`
-                : `<div style="font-size:34px;font-weight:900;color:#0f172a">${sampleValue}</div>`,
-              action: () =>
-                editor?.addCrmField?.({
-                  fieldKey: field.key,
-                  label,
-                  sampleValue,
-                  part: preferBoth ? "both" : "value",
-                }),
-            };
-            if (preferBoth) return [valueItem];
-            const bothItem: LibraryElement = {
-              id: `crm-field-both-${field.key}`,
-              title: `${label} (שם וערך)`,
-              description: `${label} - ${sampleValue} · אישי לפי לקוח מחובר`,
-              category: "crm",
-              preview: "crm",
-              barePreview: true,
-              previewHtml: `<div style="font-size:16px;font-weight:800;color:#0f172a;text-align:center">${label} - ${sampleValue}</div>`,
-              action: () =>
-                editor?.addCrmField?.({
-                  fieldKey: field.key,
-                  label,
-                  sampleValue,
-                  part: "both",
-                }),
-            };
-            return [valueItem, bothItem];
-          }),
+          ...crmFields
+            .filter((field) => {
+              const key = String(field.key || "").trim();
+              // Built-in greeting / name entries cover these portal member fields.
+              return key !== "client_name" && key !== "fullName";
+            })
+            .map((field) => {
+              const sampleValue = sampleCrmFieldValue(field);
+              const label = field.label || field.key;
+              return {
+                id: `crm-field-${field.key}`,
+                title: label,
+                description: `${label} - ${sampleValue} · אישי לפי לקוח מחובר`,
+                category: "crm" as const,
+                preview: "crm" as const,
+                barePreview: true,
+                previewHtml: `<div style="font-size:16px;font-weight:800;color:#0f172a;white-space:nowrap;text-align:right">${label} - ${sampleValue}</div>`,
+                action: () =>
+                  editor?.addCrmField?.({
+                    fieldKey: field.key,
+                    label,
+                    sampleValue,
+                    part: "both",
+                  }),
+              };
+            }),
         ];
 
     // Prefer curated library entries (skip the huge generated button/lottie dumps
@@ -1840,7 +1848,7 @@ export default function VisualAddLayersPanel({
                           </h3>
                           <p className="mt-1 text-xs font-bold text-slate-400">
                             {elementCategory === "crm"
-                              ? "שם + ערך או ערך בלבד — בלי כרטיסייה. אחרי התחברות כל לקוח רואה רק את הנתונים האישיים שלו מתיק ה-CRM."
+                              ? "כל נתון מתווסף כ״שם - ערך״ מה-CRM. אחרי התחברות כל לקוח רואה רק את הערכים שלו באזור האישי."
                               : elementCategory === "tables"
                                 ? "בחרו כמה שורות ועמודות ואז הוסיפו טבלה לעמוד"
                               : "לחיצה מוסיפה אלמנט לעריכה חופשית על הקנבס"}
