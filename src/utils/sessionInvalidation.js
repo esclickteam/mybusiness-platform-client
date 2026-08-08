@@ -156,8 +156,18 @@ function clearRefreshCookieBestEffort() {
   serverLogoutStarted = true;
 
   const base = getApiBaseUrl();
+  // Soft logout only: revoke/clear the refresh cookie without bumping authVersion
+  // or writing authdeny for the live version (that loop extended SESSION_REVOKED).
   axios
-    .post(`${base}/auth/logout`, null, { withCredentials: true })
+    .post(
+      `${base}/auth/logout`,
+      { soft: true },
+      {
+        withCredentials: true,
+        headers: { "X-Logout-Soft": "1" },
+        params: { soft: "1" },
+      }
+    )
     .catch(() => {
       /* cookie may already be gone */
     });

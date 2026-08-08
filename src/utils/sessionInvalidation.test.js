@@ -81,8 +81,12 @@ describe("sessionInvalidation", () => {
     expect(window.location.replace).toHaveBeenCalledWith("/login");
     expect(axios.post).toHaveBeenCalledWith(
       expect.stringMatching(/\/auth\/logout$/),
-      null,
-      { withCredentials: true }
+      { soft: true },
+      expect.objectContaining({
+        withCredentials: true,
+        headers: { "X-Logout-Soft": "1" },
+        params: { soft: "1" },
+      })
     );
   });
 
