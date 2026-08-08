@@ -1,8 +1,14 @@
 import axios from "axios";
 import jwtDecode from "jwt-decode";
 
-const isProd = import.meta.env.MODE === "production";
-const BASE_URL = isProd ? "https://api.bizuply.com/api" : "/api";
+const envApiUrl = String(import.meta.env.VITE_API_URL || "")
+  .trim()
+  .replace(/\/+$/, "");
+const BASE_URL =
+  envApiUrl ||
+  (import.meta.env.MODE === "production"
+    ? "https://api.bizuply.com/api"
+    : "/api");
 
 const REFRESH_DEAD_KEY = "bizuply:refreshDead";
 

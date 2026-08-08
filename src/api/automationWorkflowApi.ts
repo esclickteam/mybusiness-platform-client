@@ -83,6 +83,8 @@ export type AutomationExecution = {
   entityId?: string;
   status: string;
   mode?: string;
+  stepsExecuted?: number;
+  failedNodeId?: string;
   nodes?: Array<{
     nodeId: string;
     type?: string;

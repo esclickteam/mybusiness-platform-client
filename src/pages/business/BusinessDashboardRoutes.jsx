@@ -99,9 +99,24 @@ const MiniSaaSManager = lazy(() =>
 
 const HelpCenter = lazy(() => import("../HelpCenter"));
 
-/* Automations — top-level business dashboard tab */
-const AutomationsMain = lazy(() =>
-  import("./dashboardPages/automations/AutomationsMain")
+/* Automations — nested routes (home / templates / runs / connections / editor) */
+const AutomationsLayout = lazy(() =>
+  import("./dashboardPages/automations/AutomationsLayout")
+);
+const AutomationsHomePage = lazy(() =>
+  import("./dashboardPages/automations/AutomationsHomePage")
+);
+const AutomationsTemplatesPage = lazy(() =>
+  import("./dashboardPages/automations/AutomationsTemplatesPage")
+);
+const AutomationsRunsPage = lazy(() =>
+  import("./dashboardPages/automations/AutomationsRunsPage")
+);
+const AutomationsConnectionsPage = lazy(() =>
+  import("./dashboardPages/automations/AutomationsConnectionsPage")
+);
+const AutomationsEditorPage = lazy(() =>
+  import("./dashboardPages/automations/AutomationsEditorPage")
 );
 
 /* Integrations (Gmail OAuth, etc.) */
@@ -495,7 +510,16 @@ const BusinessDashboardRoutes = () => {
           <Route path="billing" element={<BillingPage />} />
 
           {/* Automations — visible to all business users */}
-          <Route path="automations" element={<AutomationsMain />} />
+          <Route path="automations" element={<AutomationsLayout />}>
+            <Route index element={<AutomationsHomePage />} />
+            <Route path="templates" element={<AutomationsTemplatesPage />} />
+            <Route path="runs" element={<AutomationsRunsPage />} />
+            <Route
+              path="connections"
+              element={<AutomationsConnectionsPage />}
+            />
+            <Route path=":workflowId" element={<AutomationsEditorPage />} />
+          </Route>
           <Route path="integrations" element={<IntegrationsMain />} />
 
           {/* WhatsApp messaging — test user only */}
