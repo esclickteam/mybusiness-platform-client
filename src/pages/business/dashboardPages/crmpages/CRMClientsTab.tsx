@@ -112,6 +112,14 @@ type CRMClient = {
   unpaidBalance?: number;
   customTabs?: CustomClientTab[];
   activities?: ClientActivity[];
+  activityCount?: number;
+  lastActivityAt?: string | null;
+  customDataValuesCount?: number;
+  portalAccessEnabled?: boolean;
+  portalAccessStatus?: "not_invited" | "invited" | "active" | "paused";
+  hasClientPortal?: boolean;
+  miniSaasAccessCount?: number;
+  lastAppointmentDate?: string | null;
   createdAt?: string;
   updatedAt?: string;
 };
@@ -234,7 +242,11 @@ async function fetchClients(
   const res = await API.get(`/crm-clients/${businessId}`);
   const rawClients = Array.isArray(res.data) ? res.data : [];
 
-  return rawClients.map((client: any) => ({
+  return rawClients.map((client: any) => mapApiClient(client, t));
+}
+
+function mapApiClient(client: any, t: TFunction): CRMClient {
+  return {
     _id: client._id,
     fullName: client.fullName || "",
     phone: String(client.phone || "").replace(/\s/g, ""),
@@ -255,9 +267,35 @@ async function fetchClients(
     unpaidBalance: Number(client.unpaidBalance) || 0,
     customTabs: normalizeCustomTabs(client.customTabs, t),
     activities: Array.isArray(client.activities) ? client.activities : [],
+    activityCount: Number(
+      client.activityCount ??
+        (Array.isArray(client.activities) ? client.activities.length : 0)
+    ),
+    lastActivityAt: client.lastActivityAt ?? null,
+    customDataValuesCount:
+      client.customDataValuesCount !== undefined
+        ? Number(client.customDataValuesCount) || 0
+        : undefined,
+    portalAccessEnabled:
+      client.portalAccessEnabled !== undefined
+        ? Boolean(client.portalAccessEnabled)
+        : undefined,
+    portalAccessStatus: client.portalAccessStatus,
+    hasClientPortal: Boolean(client.hasClientPortal),
+    miniSaasAccessCount: Number(client.miniSaasAccessCount) || 0,
+    lastAppointmentDate: client.lastAppointmentDate ?? null,
     createdAt: client.createdAt,
     updatedAt: client.updatedAt,
-  }));
+  };
+}
+
+async function fetchClientDetail(
+  clientId: string,
+  t: TFunction,
+): Promise<CRMClient | null> {
+  if (!clientId) return null;
+  const res = await API.get(`/crm-clients/item/${clientId}`);
+  return mapApiClient(res.data, t);
 }
 
 function getClientDataValues(client: CRMClient, t: TFunction): ClientDataDraft {
@@ -340,6 +378,21 @@ function getPortalAccessSettings(
   const tabs = normalizeCustomTabs(client.customTabs, t);
   const portalTab = tabs.find((tab) => tab.id === PORTAL_ACCESS_TAB_ID);
   const values = getFieldsValueMap(portalTab?.fields || []);
+  const hasPortalTab = Boolean(portalTab);
+
+  // List responses may only include portal summary fields (no customTabs).
+  if (!hasPortalTab && client.portalAccessEnabled !== undefined) {
+    return {
+      enabled: Boolean(client.portalAccessEnabled),
+      status: (client.portalAccessStatus ||
+        "not_invited") as PortalAccessSettings["status"],
+      loginEmail: client.email || "",
+      paymentStatus: "included",
+      monthlyPrice: "0",
+      pages: "",
+      lastInviteSentAt: "",
+    };
+  }
 
   return {
     enabled: Boolean(values.portal_enabled),
@@ -547,7 +600,21 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
     setSelectedClient(match);
     setActiveClientTab("profile");
     setMode("view");
-  }, [clients, searchParams]);
+
+    let cancelled = false;
+    fetchClientDetail(clientId, t)
+      .then((detail) => {
+        if (cancelled || !detail) return;
+        setSelectedClient(detail);
+      })
+      .catch((err) => {
+        console.error("Failed loading client detail:", err);
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [clients, searchParams, t]);
 
   const filteredClients = useMemo(() => {
     const query = search.trim().toLowerCase();
@@ -636,6 +703,7 @@ export default function CRMClientsTab({ businessId }: CRMClientsTabProps) {
     setMode("view");
     const next = new URLSearchParams(searchParams);
     next.set("clientId", client._id);
+    // Detail is loaded by the clientId searchParams effect.
     setSearchParams(next, { replace: true });
   };
 
@@ -2504,7 +2572,10 @@ function ClientsTable({
             const status = getClientStatus(client);
             const initials = getInitials(client.fullName);
             const portalAccess = getPortalAccessSettings(client, t);
-            const dataValues = Object.keys(getClientDataValues(client, t)).length;
+            const dataValues =
+              client.customDataValuesCount !== undefined
+                ? Number(client.customDataValuesCount) || 0
+                : Object.keys(getClientDataValues(client, t)).length;
 
             return (
               <tr
@@ -2569,7 +2640,9 @@ function ClientsTable({
 
                 <td className="px-4 py-4 text-center">
                   <p className="text-sm font-black text-slate-900">
-                    {client.appointments?.length || 0}
+                    {client.appointmentsCount ??
+                      client.appointments?.length ??
+                      0}
                   </p>
                   <p className="text-xs font-semibold text-slate-400">
                     {t("crm.clients.table.customerOnly")}
