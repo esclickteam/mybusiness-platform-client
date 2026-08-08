@@ -448,6 +448,8 @@
     "subtitle": "Here's your business performance overview.",
     "customDomainConnected": "Custom domain connected",
     "customizeDashboard": "Customize Dashboard",
+    "compareToPrevious": "Compare to previous period",
+    "noComparison": "No comparison",
     "loadError": "Some dashboard data could not be loaded.",
     "websiteViews": "Website Views",
     "loadingVisitors": "Loading visitors...",
