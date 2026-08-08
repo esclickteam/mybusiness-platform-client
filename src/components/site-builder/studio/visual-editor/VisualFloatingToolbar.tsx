@@ -1270,26 +1270,63 @@ export default function VisualFloatingToolbar({
     }
 
     const field = crmFields.find((item) => item.key === fieldKey);
+    const fieldLabel = String(field?.label || fieldKey).trim() || fieldKey;
     const sampleValue = String(field?.placeholder || "")
       .replace(/^לדוגמה:\s*/i, "")
       .trim() || "X";
     const sample =
       part === "label"
-        ? field?.label || fieldKey
+        ? fieldLabel
         : part === "both"
-          ? `${field?.label || fieldKey} - ${sampleValue}`
-          : sampleValue || field?.label || fieldKey;
+          ? `${fieldLabel} - ${sampleValue}`
+          : sampleValue || fieldLabel;
 
     editor?.updateAttributes?.(elementId, {
       "data-bizuply-crm-field": fieldKey,
       "data-bizuply-crm-field-part": part,
+      "data-bizuply-crm-field-label": fieldLabel,
+      "data-bizuply-crm-field-format": "",
       "data-client-variable": "true",
       "data-client-variable-key": fieldKey,
+      "data-client-variable-label": fieldLabel,
+      "data-client-variable-display":
+        part === "both" ? "label-value" : part === "label" ? "label" : "raw",
     });
     node?.setAttribute("data-bizuply-crm-field", fieldKey);
     node?.setAttribute("data-bizuply-crm-field-part", part);
+    node?.setAttribute("data-bizuply-crm-field-label", fieldLabel);
+    node?.removeAttribute("data-bizuply-crm-field-format");
     node?.setAttribute("data-client-variable", "true");
     node?.setAttribute("data-client-variable-key", fieldKey);
+    node?.setAttribute("data-client-variable-label", fieldLabel);
+    node?.setAttribute(
+      "data-client-variable-display",
+      part === "both" ? "label-value" : part === "label" ? "label" : "raw",
+    );
+
+    // Keep the purple selection box tight around "שם - ערך".
+    const hugContent = sample.length <= 42;
+    editor?.updateLayout?.(elementId, {
+      width: "fit-content",
+      height: "auto",
+      minWidth: 0,
+      minHeight: "auto",
+      maxWidth: hugContent ? "none" : "520px",
+    });
+    editor?.applyStyle?.(elementId, {
+      whiteSpace: hugContent ? "nowrap" : "normal",
+      display: "inline-block",
+      padding: "0",
+    });
+    if (node) {
+      node.style.width = "fit-content";
+      node.style.height = "auto";
+      node.style.minWidth = "0";
+      node.style.maxWidth = hugContent ? "none" : "520px";
+      node.style.whiteSpace = hugContent ? "nowrap" : "normal";
+      node.style.display = "inline-block";
+      node.style.padding = "0";
+    }
 
     setTextValue(sample);
     submitText(sample);

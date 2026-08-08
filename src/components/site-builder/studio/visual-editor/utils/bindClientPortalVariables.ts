@@ -52,6 +52,7 @@ export function bindClientPortalVariables(
       ).trim();
       const display = String(
         node.getAttribute("data-client-variable-display") ||
+          node.getAttribute("data-bizuply-crm-field-format") ||
           (part === "both" ? "label-value" : "raw"),
       ).trim();
       const label = String(
@@ -60,7 +61,9 @@ export function bindClientPortalVariables(
           "",
       ).trim();
 
-      if ((display === "label-value" || part === "both") && label) {
+      if (display === "greeting") {
+        node.textContent = `שלום, ${nextValue || "לקוח/ה"}`;
+      } else if ((display === "label-value" || part === "both") && label) {
         node.textContent = `${label} - ${nextValue}`;
       } else if (part === "label" && label) {
         node.textContent = label;

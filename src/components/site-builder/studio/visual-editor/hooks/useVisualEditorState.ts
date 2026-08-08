@@ -3277,18 +3277,29 @@ export function useVisualEditorState({
       label?: string;
       sampleValue?: string;
       part?: "value" | "label" | "both";
+      /** "greeting" → "שלום, {שם}" for the logged-in portal client */
+      format?: "greeting" | "";
     }) => {
-      const part = options?.part || "both";
-      const fieldKey = String(options?.fieldKey || "").trim();
-      const label = String(options?.label || "נתון").trim() || "נתון";
+      const format = String(options?.format || "").trim();
+      const isGreeting = format === "greeting";
+      const part = isGreeting ? "value" : options?.part || "both";
+      const fieldKey = String(
+        options?.fieldKey || (isGreeting ? "client_name" : ""),
+      ).trim();
+      const label = String(
+        options?.label || (isGreeting ? "שם לקוח" : "נתון"),
+      ).trim() || "נתון";
       const sampleValue =
-        String(options?.sampleValue || "X").trim() || "X";
-      const sampleText =
-        part === "label"
+        String(options?.sampleValue || (isGreeting ? "ישראל ישראלי" : "X")).trim() ||
+        "X";
+      const sampleText = isGreeting
+        ? `שלום, ${sampleValue}`
+        : part === "label"
           ? label
           : part === "both"
             ? `${label} - ${sampleValue}`
             : sampleValue;
+      const isLongText = sampleText.length > 42;
 
       const root = canvasRef.current;
       if (!root) return "";
@@ -3305,11 +3316,19 @@ export function useVisualEditorState({
             "data-bizuply-crm-field": fieldKey,
             "data-bizuply-crm-field-part": part,
             "data-bizuply-crm-field-label": label,
+            ...(isGreeting
+              ? { "data-bizuply-crm-field-format": "greeting" }
+              : {}),
             "data-client-variable": "true",
             "data-client-variable-key": fieldKey,
             "data-client-variable-label": label,
-            "data-client-variable-display":
-              part === "both" ? "label-value" : part === "label" ? "label" : "raw",
+            "data-client-variable-display": isGreeting
+              ? "greeting"
+              : part === "both"
+                ? "label-value"
+                : part === "label"
+                  ? "label"
+                  : "raw",
             "data-client-variable-source": "crm_client",
           }
         : {
@@ -3325,7 +3344,11 @@ export function useVisualEditorState({
           type: "text",
           parentId,
           sectionId,
-          label: fieldKey ? `נתון CRM · ${label}` : "נתון CRM",
+          label: isGreeting
+            ? "שלום, שם לקוח"
+            : fieldKey
+              ? `נתון CRM · ${label}`
+              : "נתון CRM",
           tagName: "div",
           createdAt: now,
           updatedAt: now,
@@ -3334,11 +3357,13 @@ export function useVisualEditorState({
         next = writeVisualContentItem(next, id, { text: sampleText });
         next = writeVisualStyleItem(next, id, {
           color: "#111827",
-          fontSize: part === "value" ? "36px" : "22px",
+          fontSize: isGreeting || part === "both" ? "22px" : "36px",
           fontWeight: "800",
           lineHeight: "1.35",
           textAlign: "right",
           direction: "rtl",
+          whiteSpace: isLongText ? "normal" : "nowrap",
+          display: "inline-block",
           backgroundColor: "transparent",
           backgroundImage: "none",
           border: "none",
@@ -3352,8 +3377,12 @@ export function useVisualEditorState({
           y: 40,
           translateX: 40,
           translateY: 40,
-          width: "320px",
-          minHeight: "40px",
+          // Hug the "שם - ערך" text so the purple selection box isn't oversized.
+          width: "fit-content",
+          height: "auto",
+          minWidth: 0,
+          minHeight: "auto",
+          maxWidth: isLongText ? "520px" : "none",
           zIndex: 22,
           freePosition: true,
         });
