@@ -76,24 +76,14 @@ export function formatPercent(value: number): string {
   return `${sign}${Number(value || 0).toFixed(1)}%`;
 }
 
-export function formatRelativeTime(value?: string | Date | null): string {
+/** Lead created-at label for the overview table — calendar date (DD/MM/YYYY). */
+export function formatLeadDate(value?: string | Date | null): string {
   if (!value) return "—";
 
   const date = dayjs(value);
   if (!date.isValid()) return "—";
 
-  const now = dayjs();
-  const diffMinutes = now.diff(date, "minute");
-
-  if (diffMinutes < 1) return "Just now";
-  if (diffMinutes < 60) return `${diffMinutes}m ago`;
-
-  const diffHours = now.diff(date, "hour");
-  if (diffHours < 24) return `${diffHours}h ago`;
-
-  if (now.subtract(1, "day").isSame(date, "day")) return "Yesterday";
-
-  return date.format("MMM D");
+  return date.format("DD/MM/YYYY");
 }
 
 export function formatNextAppointmentLabel(

@@ -42,9 +42,9 @@ import {
   formatDateRangeLabel,
   formatLeadSource,
   formatLeadStatus,
+  formatLeadDate,
   formatNumber,
   formatPercent,
-  formatRelativeTime,
   type CalendarAppointment,
 } from "./dashboardOverviewUtils";
 
@@ -658,7 +658,7 @@ export default function DashboardOverview({
                         />
                       </td>
                       <td className="py-3 text-slate-500">
-                        {formatRelativeTime(lead.createdAt)}
+                        {formatLeadDate(lead.createdAt)}
                       </td>
                     </tr>
                   ))}
