@@ -4,19 +4,13 @@ import {
   setSitePortalToken,
   type SitePortalMember,
 } from "../utils/sitePortalSession";
+import { getApiBaseUrl } from "../config/runtimeUrls";
 
-const RAW_API_BASE_URL = String(
-  import.meta.env.VITE_API_URL ||
-    import.meta.env.VITE_API_BASE_URL ||
-    import.meta.env.VITE_BACKEND_URL ||
-    ""
-).replace(/\/+$/, "");
+const RAW_API_BASE_URL = String(getApiBaseUrl() || "").replace(/\/+$/, "");
 
 const API_SITE_BUILDER_BASE_URL = RAW_API_BASE_URL.endsWith("/api")
   ? `${RAW_API_BASE_URL}/site-builder`
-  : RAW_API_BASE_URL
-    ? `${RAW_API_BASE_URL}/api/site-builder`
-    : "/api/site-builder";
+  : `${RAW_API_BASE_URL}/api/site-builder`;
 
 export type SitePortalSiteInfo = {
   id: string;

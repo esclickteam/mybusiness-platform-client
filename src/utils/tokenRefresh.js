@@ -1,8 +1,8 @@
 import axios from "axios";
 import jwtDecode from "jwt-decode";
+import { getApiBaseUrl } from "../config/runtimeUrls";
 
-const isProd = import.meta.env.MODE === "production";
-const BASE_URL = isProd ? "https://api.bizuply.com/api" : "/api";
+const BASE_URL = getApiBaseUrl();
 
 const REFRESH_DEAD_KEY = "bizuply:refreshDead";
 

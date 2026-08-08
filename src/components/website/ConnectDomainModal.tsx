@@ -4,6 +4,7 @@ import { Globe2, X } from "lucide-react";
 import DomainSearch from "./DomainSearch";
 import DomainRenewalPanel from "./DomainRenewalPanel";
 import { connectSiteCustomDomain, getMySite } from "../../api/mySitesApi";
+import { getPublicSiteDomain } from "../../config/runtimeUrls";
 
 type ConnectDomainModalProps = {
   open: boolean;
@@ -17,8 +18,7 @@ type ConnectDomainModalProps = {
   }) => void;
 };
 
-const PUBLIC_SITE_DOMAIN =
-  import.meta.env.VITE_BIZUPLY_PUBLIC_SITE_DOMAIN || "sites.bizuply.com";
+const PUBLIC_SITE_DOMAIN = getPublicSiteDomain();
 
 function normalizeDomain(value: string) {
   const clean = String(value || "")

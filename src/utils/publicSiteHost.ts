@@ -3,10 +3,9 @@
  * Keep in sync with middleware.js `isCustomerSiteHost`.
  */
 
-const PUBLIC_SITE_DOMAIN =
-  (typeof import.meta !== "undefined" &&
-    (import.meta as any)?.env?.VITE_BIZUPLY_PUBLIC_SITE_DOMAIN) ||
-  "sites.bizuply.com";
+import { getPublicSiteDomain as resolvePublicSiteDomain } from "../config/runtimeUrls";
+
+const PUBLIC_SITE_DOMAIN = resolvePublicSiteDomain();
 
 const MARKETING_HOSTS = new Set([
   "bizuply.com",
@@ -35,7 +34,7 @@ export function isPublicCustomerSiteHost(hostname?: string | null): boolean {
   const host = normalizeHostname(hostname ?? getBrowserHostname());
   if (!host) return false;
 
-  const publicDomain = String(PUBLIC_SITE_DOMAIN || "sites.bizuply.com")
+  const publicDomain = String(PUBLIC_SITE_DOMAIN || resolvePublicSiteDomain())
     .toLowerCase()
     .trim();
 
@@ -56,7 +55,7 @@ export function isPublicCustomerSiteHost(hostname?: string | null): boolean {
 }
 
 export function getPublicSiteDomain(): string {
-  return String(PUBLIC_SITE_DOMAIN || "sites.bizuply.com")
+  return String(PUBLIC_SITE_DOMAIN || resolvePublicSiteDomain())
     .toLowerCase()
     .trim();
 }

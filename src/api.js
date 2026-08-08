@@ -9,11 +9,9 @@ import {
   shouldAttemptRefresh,
 } from "./utils/tokenRefresh";
 import { getAdminActiveBusinessId, getBusinessIdFromPath } from "./utils/adminTenant";
+import { getApiBaseUrl } from "./config/runtimeUrls";
 
-const isProd = import.meta.env.MODE === "production";
-const BASE_URL = isProd
-  ? "https://api.bizuply.com/api"
-  : "/api";
+const BASE_URL = getApiBaseUrl();
 
 const API = axios.create({
   baseURL: BASE_URL,

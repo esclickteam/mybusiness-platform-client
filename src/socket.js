@@ -1,8 +1,9 @@
 // src/socket.js — Singleton WebSocket helper (v4 stable)
 import { io } from "socket.io-client";
 import { getUserRole } from "./utils/authHelpers";
+import { getSocketUrl } from "./config/runtimeUrls";
 
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.bizuply.com";
+const SOCKET_URL = getSocketUrl();
 
 let socketInstance = null;
 let currentToken = null;

@@ -4,6 +4,7 @@ import { NavLink, Outlet, useLocation } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { io, Socket } from "socket.io-client";
 import API from "@api";
+import { getSocketUrl } from "../../../config/runtimeUrls";
 import { useAuth } from "../../../context/AuthContext";
 import UpgradeBanner from "../../../components/UpgradeBanner";
 import { AiProvider } from "../../../context/AiContext";
@@ -132,8 +133,7 @@ export default function Collab() {
   }, []);
 
   useEffect(() => {
-    const socketUrl =
-      import.meta.env.VITE_SOCKET_URL || "https://api.bizuply.com";
+    const socketUrl = getSocketUrl();
 
     const newSocket = io(socketUrl, {
       auth: {

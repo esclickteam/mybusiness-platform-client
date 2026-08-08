@@ -2,7 +2,9 @@ import React, { createContext, useContext, useEffect, useRef, useState } from "r
 import { io } from "socket.io-client";
 import { useAuth } from "./AuthContext"; // Update the path as needed
 
-const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || "https://api.bizuply.com";
+import { getSocketUrl } from "../config/runtimeUrls";
+
+const SOCKET_URL = getSocketUrl();
 const DashboardSocketContext = createContext(null);
 
 export function DashboardSocketProvider({ businessId, children }) {

@@ -34,6 +34,7 @@ import {
 import type { VisualDeviceMode } from "./visualEditorTypes";
 import type { useVisualEditorState } from "./hooks/useVisualEditorState";
 import type { VisualLibraryPageTemplate } from "./library/visualLibraryTypes";
+import { getPublicSiteDomain } from "../../../../config/runtimeUrls";
 
 const DEVICE_OPTIONS: Array<{
   value: VisualDeviceMode;
@@ -45,8 +46,7 @@ const DEVICE_OPTIONS: Array<{
   { value: "mobile", label: "מובייל", icon: <Smartphone className="h-4 w-4" /> },
 ];
 
-const PUBLIC_SITE_DOMAIN =
-  import.meta.env.VITE_BIZUPLY_PUBLIC_SITE_DOMAIN || "sites.bizuply.com";
+const PUBLIC_SITE_DOMAIN = getPublicSiteDomain();
 
 type VisualEditorRuntime = ReturnType<typeof useVisualEditorState> & {
   templateName?: string;

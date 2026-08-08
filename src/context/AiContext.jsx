@@ -7,6 +7,7 @@ import React, {
 } from "react";
 import { useAuth } from "./AuthContext";
 import { useSocket } from "./socketContext";
+import { getApiOrigin } from "../config/runtimeUrls";
 
 const AiContext = createContext(null);
 
@@ -77,7 +78,7 @@ export function AiProvider({ children }) {
     setLoading(true);
     try {
       const res = await fetch(
-        `${process.env.REACT_APP_API_URL || "https://api.bizuply.com"}/chat/send-approved`,
+        `${getApiOrigin()}/api/chat/send-approved`,
         {
           method: "POST",
           headers: {
