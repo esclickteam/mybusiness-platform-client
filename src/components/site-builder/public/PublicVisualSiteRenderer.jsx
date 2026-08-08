@@ -1945,10 +1945,6 @@ function applyPublicVisualData(root, visualData, pathname, site) {
             safeString(page?.slug) === safeString(pathname).replace(/^\//, ""),
         )
       : null;
-  bindClientPortalVariables(
-    root,
-    readClientPortalRuntimeValues(site, activePage),
-  );
 
   const enabledPlugins = Array.isArray(site?.enabledPlugins) ? site.enabledPlugins : [];
   if (enabledPlugins.includes("countdown")) {
@@ -1989,7 +1985,13 @@ function applyPublicVisualData(root, visualData, pathname, site) {
     pagePath: normalizePublicPath(pathname || getCurrentPathname()),
   });
 
+  // Personal-area CRM bindings: only with client-portal plugin, and only from
+  // the logged-in member (no shared site-wide clientPortalData fallback).
   if (enabledPlugins.includes("client-portal")) {
+    bindClientPortalVariables(
+      root,
+      readClientPortalRuntimeValues(site, activePage),
+    );
     mountPublicPortalWidgets(root, {
       site,
       host:

@@ -95,6 +95,8 @@ type VisualSitePagesPanelProps = {
   editor?: VisualEditorPagesPanelRuntime | null;
   pages: VisualSitePageItem[];
   activePageId: string;
+  /** Post-login / dynamic personal-area page settings require client-portal. */
+  clientPortalPluginEnabled?: boolean;
   onClose: () => void;
   onSelectPage: (pageId: string) => void;
   onAddPage?: () => void;
@@ -133,10 +135,14 @@ type MenuAnchor = {
 const MENU_WIDTH = 240;
 const MENU_GAP = 10;
 
-function buildMenuItems(page: VisualSitePageItem): MenuItem[] {
+function buildMenuItems(
+  page: VisualSitePageItem,
+  options: { clientPortalPluginEnabled?: boolean } = {},
+): MenuItem[] {
   const isHome = Boolean(page.isHome);
   const hidden = Boolean(page.hiddenFromMenu);
   const isSubpage = Boolean(resolvePageParentId(page));
+  const clientPortalPluginEnabled = Boolean(options.clientPortalPluginEnabled);
 
   return [
     {
@@ -163,15 +169,19 @@ function buildMenuItems(page: VisualSitePageItem): MenuItem[] {
       label: "רקע העמוד",
       hint: "צבע, תמונה או וידאו ברקע העמוד",
       icon: <SquareDashed className="h-4 w-4" />,
-      dividerAfter: true,
+      dividerAfter: !clientPortalPluginEnabled,
     },
-    {
-      action: "dynamic",
-      label: "עמוד דינמי / אזור אישי",
-      hint: "חיבור משתנים מה-CRM והצגת נתונים אישיים ללקוח",
-      icon: <ArrowRightLeft className="h-4 w-4" />,
-      dividerAfter: true,
-    },
+    ...(clientPortalPluginEnabled
+      ? [
+          {
+            action: "dynamic" as const,
+            label: "עמוד דינמי / אזור אישי",
+            hint: "נתונים אישיים לפי לקוח מחובר — מתיק ה-CRM שלו בלבד",
+            icon: <ArrowRightLeft className="h-4 w-4" />,
+            dividerAfter: true,
+          },
+        ]
+      : []),
     {
       action: "addSubpage",
       label: "הוספת עמוד משנה",
@@ -615,6 +625,7 @@ export default function VisualSitePagesPanel({
   editor,
   pages,
   activePageId,
+  clientPortalPluginEnabled = false,
   onClose,
   onSelectPage,
   onAddPage,
@@ -1026,7 +1037,7 @@ export default function VisualSitePagesPanel({
             role="menu"
             aria-label={`פעולות עבור ${menuPage.title || "עמוד"}`}
           >
-            {buildMenuItems(menuPage).map((item) => (
+            {buildMenuItems(menuPage, { clientPortalPluginEnabled }).map((item) => (
               <React.Fragment key={item.action}>
                 <button
                   type="button"

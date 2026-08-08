@@ -495,7 +495,10 @@ export default function VisualEditorShell({
         </section>
 
         {shouldShowFloatingToolbar ? (
-          <VisualFloatingToolbar editor={editor as any} />
+          <VisualFloatingToolbar
+            editor={editor as any}
+            clientPortalPluginEnabled={clientPortalPluginEnabled}
+          />
         ) : null}
 
         {shouldShowContextMenu ? (
@@ -544,6 +547,7 @@ export default function VisualEditorShell({
             editor={editor as any}
             pages={sitePages}
             activePageId={activeSitePageId}
+            clientPortalPluginEnabled={clientPortalPluginEnabled}
             onClose={() => setSidePanelMode(null)}
             onSelectPage={(pageId) => {
               if (typeof onSelectSitePage !== "function") return;

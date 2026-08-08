@@ -110,15 +110,28 @@ export function bindClientPortalVariables(
   });
 }
 
+/**
+ * Resolve portal/CRM values for binding.
+ *
+ * Personal CRM data must come from the logged-in portal member
+ * (`sitePortalMe` → `window.__BIZUPLY_CLIENT_PORTAL_DATA__`).
+ * Site/page-level `clientPortalData` is shared across visitors — only use it
+ * when `allowSharedFallback` is explicitly enabled (editor/global demos).
+ */
 export function readClientPortalRuntimeValues(
   site: Record<string, any> | null | undefined,
   page: Record<string, any> | null | undefined,
+  options: { allowSharedFallback?: boolean } = {},
 ): ClientPortalRuntimeValues {
   if (typeof window !== "undefined") {
     const fromWindow = (window as any).__BIZUPLY_CLIENT_PORTAL_DATA__;
     if (fromWindow && typeof fromWindow === "object") {
       return fromWindow as ClientPortalRuntimeValues;
     }
+  }
+
+  if (!options.allowSharedFallback) {
+    return {};
   }
 
   const fromSite = site?.clientPortalData || site?.portalData;
