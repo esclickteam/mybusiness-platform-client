@@ -147,6 +147,9 @@ const AdminPayoutPage = lazy(() => import("./pages/admin/AdminPayoutPage"));
 const AdminAffiliates = lazy(() => import("./pages/admin/AdminAffiliates"));
 const AdminMarketers = lazy(() => import("./pages/admin/AdminMarketers"));
 const AdminSupportChat = lazy(() => import("./pages/admin/AdminSupportChat"));
+const AdminBillingTestMatrix = lazy(() =>
+  import("./pages/admin/AdminBillingTestMatrix")
+);
 const MarketerDashboardPage = lazy(() =>
   import("./pages/marketer/MarketerDashboardPage")
 );
@@ -1186,6 +1189,15 @@ export default function App() {
                           element={
                             <ProtectedRoute roles={["admin"]}>
                               <AdminPlans />
+                            </ProtectedRoute>
+                          }
+                        />
+
+                        <Route
+                          path="/admin/billing-test"
+                          element={
+                            <ProtectedRoute roles={["admin"]}>
+                              <AdminBillingTestMatrix />
                             </ProtectedRoute>
                           }
                         />
