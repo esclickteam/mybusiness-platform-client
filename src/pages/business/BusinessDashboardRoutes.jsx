@@ -15,7 +15,6 @@ import {
   isDashboardPathAllowed,
   normalizeEnabledModules,
 } from "../../utils/moduleAccess";
-import { isBizuplyTestUser } from "../../utils/bizuplyTestUser";
 import UpgradeRequired from "../../components/UpgradeRequired";
 
 /* Dashboard pages */
@@ -242,7 +241,7 @@ function DashboardIndexRedirect({ businessId, enabledModules }) {
     const marker = `/business/${businessId}/dashboard/`;
     const relative = defaultPath.startsWith(marker)
       ? defaultPath.slice(marker.length)
-      : "crm";
+      : "dashboard";
     return <Navigate to={relative} replace />;
   }
 
@@ -282,18 +281,11 @@ function ModuleAccessGuard({ businessId, enabledModules, planLimited, children }
   return children;
 }
 
-/** WhatsApp + Meta Ads: test user only. Social schedule: hidden for everyone. */
+/** Social schedule stays hidden. WhatsApp / Meta use module + plan ACL. */
 function FeatureAccessGuard({ user, businessId, feature, children }) {
   const fallback = `/business/${businessId}/dashboard/dashboard`;
 
   if (feature === "social-schedule") {
-    return <Navigate to={fallback} replace />;
-  }
-
-  if (
-    (feature === "whatsapp" || feature === "meta-campaigns") &&
-    !isBizuplyTestUser(user)
-  ) {
     return <Navigate to={fallback} replace />;
   }
 

@@ -69,9 +69,9 @@ export function isDashboardPathAllowed(pathname, enabledModules) {
   const segment = getDashboardModuleFromPath(pathname);
   if (!segment) return true;
 
-  // Always allow help-center as a soft landing is not required; block it for limited accounts
   const moduleKey = NAV_PATH_MODULE_MAP[segment] || segment;
-  const alwaysAllowed = new Set([]); // keep strict: only enabled modules
+  // Soft utility pages stay reachable for plan-limited business accounts.
+  const alwaysAllowed = new Set(["help-center"]);
   if (alwaysAllowed.has(segment)) return true;
 
   return isModuleEnabled(enabledModules, moduleKey);
@@ -81,8 +81,13 @@ export function getDefaultDashboardPath(businessId, enabledModules) {
   const base = `/business/${businessId}/dashboard`;
   const normalized = normalizeEnabledModules(enabledModules);
 
-  if (!normalized) return base;
+  if (!normalized) return `${base}/dashboard`;
 
+  // Prefer overview after login / bare /dashboard entry.
+  if (normalized.includes("dashboard")) return `${base}/dashboard`;
+  if (normalized.includes("website") && !normalized.includes("crm")) {
+    return `${base}/website`;
+  }
   if (normalized.includes("crm")) return `${base}/crm`;
   if (normalized.includes("meta-campaigns")) return `${base}/meta-campaigns`;
   return `${base}/${normalized[0]}`;

@@ -103,10 +103,9 @@ export default function Login() {
         localStorage.removeItem("bizuply_remember_email");
       }
 
-      const loginResult = (await login(
-        cleanEmail,
-        form.password
-      )) as LoginResponse;
+      const loginResult = (await login(cleanEmail, form.password, {
+        skipRedirect: true,
+      })) as LoginResponse;
 
       const loggedInUser = loginResult?.user;
       const role = String(loggedInUser?.role || "").toLowerCase();
@@ -118,6 +117,28 @@ export default function Login() {
         navigate("/admin/dashboard", { replace: true });
       } else if (role === "marketer") {
         navigate("/marketer/dashboard", { replace: true });
+      } else if (role === "business") {
+        if (!loggedInUser?.hasAccess) {
+          navigate("/pricing", { replace: true });
+        } else if (
+          urlRedirect &&
+          urlRedirect.startsWith("/") &&
+          !urlRedirect.startsWith("/client/dashboard")
+        ) {
+          navigate(urlRedirect, { replace: true });
+        } else {
+          const limited = Array.isArray(loggedInUser?.enabledModules)
+            ? loggedInUser.enabledModules
+            : null;
+          const isWebsiteOnly =
+            Boolean(limited?.includes("website")) &&
+            !limited?.includes("crm") &&
+            !limited?.includes("dashboard");
+          const dest = isWebsiteOnly
+            ? `/business/${loggedInUser?.businessId}/dashboard/website`
+            : `/business/${loggedInUser?.businessId}/dashboard/dashboard`;
+          navigate(dest, { replace: true });
+        }
       } else if (
         finalRedirect &&
         finalRedirect.startsWith("/") &&
@@ -126,19 +147,6 @@ export default function Login() {
         navigate(finalRedirect, { replace: true });
       } else if (role === "affiliate") {
         navigate("/affiliate/dashboard", { replace: true });
-      } else if (role === "business") {
-        if (!loggedInUser?.hasAccess) {
-          navigate("/pricing", { replace: true });
-        } else {
-          const limited = Array.isArray(loggedInUser?.enabledModules)
-            ? loggedInUser.enabledModules
-            : null;
-          const dest =
-            limited?.includes("crm")
-              ? `/business/${loggedInUser?.businessId}/dashboard/crm`
-              : `/business/${loggedInUser?.businessId}/dashboard`;
-          navigate(dest, { replace: true });
-        }
       } else if (role === "customer") {
         navigate("/client/dashboard", { replace: true });
       } else {

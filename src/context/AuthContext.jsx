@@ -16,7 +16,10 @@ import {
   isSessionInvalidated,
   resetSessionInvalidationGuard,
 } from "../utils/sessionInvalidation";
-import { resolveBusinessDashboardPath } from "../utils/dashboardRoutePersistence";
+import {
+  clearLastDashboardRoute,
+  resolveBusinessDashboardPath,
+} from "../utils/dashboardRoutePersistence";
 import { consumePendingNotificationUrl } from "../utils/notificationNavigation";
 import BizuplyLoader from "../components/ui/BizuplyLoader";
 import { isPublicCustomerSiteHost } from "../utils/publicSiteHost";
@@ -311,14 +314,9 @@ export function AuthProvider({ children }) {
     }
 
     if (normalizedUser.role === "business" && normalizedUser.businessId) {
-      const limitedModules = Array.isArray(normalizedUser.enabledModules)
-        ? normalizedUser.enabledModules
-        : null;
-      const fallback = limitedModules?.includes("crm")
-        ? `/business/${normalizedUser.businessId}/dashboard/crm`
-        : undefined;
+      clearLastDashboardRoute(normalizedUser.businessId);
       navigate(
-        resolveBusinessDashboardPath(normalizedUser.businessId, fallback),
+        `/business/${normalizedUser.businessId}/dashboard/dashboard`,
         { replace: true }
       );
       return;
@@ -399,17 +397,9 @@ export function AuthProvider({ children }) {
           sessionStorage.setItem("justRegistered", "true");
 
           if (normalizedUser.role === "business" && normalizedUser.businessId) {
-            const limitedModules = Array.isArray(normalizedUser.enabledModules)
-              ? normalizedUser.enabledModules
-              : null;
-            const fallback = limitedModules?.includes("crm")
-              ? `/business/${normalizedUser.businessId}/dashboard/crm`
-              : undefined;
+            clearLastDashboardRoute(normalizedUser.businessId);
             navigate(
-              resolveBusinessDashboardPath(
-                normalizedUser.businessId,
-                fallback
-              ),
+              `/business/${normalizedUser.businessId}/dashboard/dashboard`,
               { replace: true }
             );
           } else {
