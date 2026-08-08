@@ -1,5 +1,9 @@
 import { describe, it, expect } from "vitest";
-import { isAccessTokenExpired } from "./tokenRefresh";
+import {
+  abortAuthRefreshPipeline,
+  isAccessTokenExpired,
+  isHardRefreshFailure,
+} from "./tokenRefresh";
 
 function makeToken(expInSeconds) {
   const payload = { exp: expInSeconds };
@@ -26,5 +30,21 @@ describe("isAccessTokenExpired", () => {
 
   it("returns true for a malformed token", () => {
     expect(isAccessTokenExpired("not-a-real-token")).toBe(true);
+  });
+});
+
+describe("session-invalid hard refresh failures", () => {
+  it("treats SESSION_REVOKED and AUTH_VERSION_MISMATCH as hard failures", () => {
+    expect(isHardRefreshFailure({ code: "SESSION_REVOKED" })).toBe(true);
+    expect(isHardRefreshFailure({ code: "AUTH_VERSION_MISMATCH" })).toBe(true);
+    expect(
+      isHardRefreshFailure({ response: { data: { code: "TOKEN_EXPIRED" } } })
+    ).toBe(false);
+  });
+
+  it("abortAuthRefreshPipeline clears the access token", () => {
+    localStorage.setItem("token", "abc");
+    abortAuthRefreshPipeline();
+    expect(localStorage.getItem("token")).toBeNull();
   });
 });

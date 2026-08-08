@@ -8,6 +8,12 @@ import {
   refreshAccessTokenOnce,
   shouldAttemptRefresh,
 } from "./utils/tokenRefresh";
+import {
+  handleSessionInvalidated,
+  isSessionInvalidAuthCode,
+  isSessionInvalidated,
+  registerAuthRetryAbort,
+} from "./utils/sessionInvalidation";
 import { getAdminActiveBusinessId, getBusinessIdFromPath } from "./utils/adminTenant";
 
 const envApiUrl = String(import.meta.env.VITE_API_URL || "")
@@ -69,6 +75,39 @@ function addRefreshSubscriber(callback) {
   refreshSubscribers.push(callback);
 }
 
+function cancelPendingAuthRetries() {
+  onRefreshed(null);
+  refreshSubscribers = [];
+  isRefreshing = false;
+}
+
+registerAuthRetryAbort(cancelPendingAuthRetries);
+
+function rejectWithApiMessage(response) {
+  const contentType = response.headers["content-type"] || "";
+  let message;
+
+  if (!contentType.includes("application/json")) {
+    message =
+      typeof response.data === "string"
+        ? response.data
+        : JSON.stringify(response.data);
+  } else {
+    message =
+      response.data?.error ||
+      response.data?.message ||
+      (typeof response.data === "string"
+        ? response.data
+        : JSON.stringify(response.data));
+  }
+
+  console.error(`API Error ${response.status}:`, message);
+  const err = new Error(message);
+  err.code = response.data?.code;
+  err.status = response.status;
+  return Promise.reject(err);
+}
+
 // Request interceptor
 API.interceptors.request.use(
   (config) => {
@@ -113,8 +152,18 @@ API.interceptors.response.use(
       return Promise.reject(new Error("Network error"));
     }
 
-    // Handle unauthorized — refresh cookie then retry (including /auth/me)
     const authErrorCode = response.data?.code;
+
+    // Irrevocable session invalidation ג€” atomic logout, never refresh/retry.
+    if (
+      response.status === 401 &&
+      isSessionInvalidAuthCode(authErrorCode)
+    ) {
+      handleSessionInvalidated({ code: authErrorCode });
+      return rejectWithApiMessage(response);
+    }
+
+    // Handle unauthorized ג€” refresh cookie then retry (including /auth/me)
     const shouldTryRefresh =
       response.status === 401 ||
       (response.status === 403 && authErrorCode === "TOKEN_EXPIRED");
@@ -126,6 +175,7 @@ API.interceptors.response.use(
       !isLoginOrRegisterEndpoint(config.url) &&
       !config._retry &&
       !isRefreshDead() &&
+      !isSessionInvalidated() &&
       shouldAttemptRefresh()
     ) {
       config._retry = true;
@@ -134,6 +184,9 @@ API.interceptors.response.use(
         return new Promise((resolve, reject) => {
           addRefreshSubscriber((token) => {
             if (!token) return reject(new Error("Failed to refresh token"));
+            if (isSessionInvalidated()) {
+              return reject(new Error("SESSION_REVOKED"));
+            }
             config.headers["Authorization"] = `Bearer ${token}`;
             resolve(API(config));
           });
@@ -145,7 +198,7 @@ API.interceptors.response.use(
       try {
         const newToken = await refreshAccessTokenOnce();
 
-        if (newToken) {
+        if (newToken && !isSessionInvalidated()) {
           config.headers["Authorization"] = `Bearer ${newToken}`;
           onRefreshed(newToken);
           return API(config);
@@ -155,8 +208,20 @@ API.interceptors.response.use(
       } catch (err) {
         onRefreshed(null);
 
+        // Never re-send a non-expired but revoked/mismatched access token.
+        if (
+          isHardRefreshFailure(err) ||
+          isSessionInvalidAuthCode(err?.code) ||
+          isSessionInvalidated()
+        ) {
+          if (isSessionInvalidAuthCode(err?.code)) {
+            handleSessionInvalidated({ code: err.code });
+          }
+          return Promise.reject(err);
+        }
+
         const existing = localStorage.getItem("token");
-        if (existing && !isAccessTokenExpired(existing)) {
+        if (existing && !isAccessTokenExpired(existing) && !isSessionInvalidated()) {
           config.headers["Authorization"] = `Bearer ${existing}`;
           return API(config);
         }
@@ -171,26 +236,7 @@ API.interceptors.response.use(
       }
     }
 
-    // Handle standard errors
-    const contentType = response.headers["content-type"] || "";
-    let message;
-
-    if (!contentType.includes("application/json")) {
-      message =
-        typeof response.data === "string"
-          ? response.data
-          : JSON.stringify(response.data);
-    } else {
-      message =
-        response.data?.error ||
-        response.data?.message ||
-        (typeof response.data === "string"
-          ? response.data
-          : JSON.stringify(response.data));
-    }
-
-    console.error(`API Error ${response.status}:`, message);
-    return Promise.reject(new Error(message));
+    return rejectWithApiMessage(response);
   }
 );
 
