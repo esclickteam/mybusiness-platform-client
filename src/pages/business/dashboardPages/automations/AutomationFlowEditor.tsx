@@ -17,16 +17,15 @@ import {
   BackgroundVariant,
 } from "@xyflow/react";
 import "@xyflow/react/dist/style.css";
+import AutomationBuilderToolbar from "./automation-builder/AutomationBuilderToolbar";
+import AutomationNodePicker from "./automation-builder/AutomationNodePicker";
+import AutomationConfigDrawer from "./automation-builder/AutomationConfigDrawer";
+import AutomationEmptyState from "./automation-builder/AutomationEmptyState";
+import AutomationInsertEdge from "./automation-builder/AutomationInsertEdge";
 import { toast } from "react-toastify";
 import {
-  ArrowRight,
   Loader2,
-  Save,
-  Trash2,
-  Play,
-  Pause,
   FlaskConical,
-  Plus,
 } from "lucide-react";
 import {
   AUTOMATION_PREVIEW_ACTION_TOOLTIP,
@@ -199,9 +198,7 @@ import {
   ACTION_OPTIONS,
   CONDITION_OPTIONS,
   DELAY_UNITS,
-  FILTER_CHIPS,
   FLOW_ACTION_PALETTE,
-  QUICK_ADD_AFTER,
   TRIGGER_CATEGORY_LABELS,
   TYPE_META,
   buildPaletteWithTriggers,
@@ -252,6 +249,7 @@ function styleEdge(edge: Partial<Edge>): Edge {
   const stroke = isYes ? "#059669" : isNo ? "#dc2626" : "#64748b";
   return {
     id: String(edge.id),
+    type: "default",
     source: String(edge.source),
     target: String(edge.target),
     sourceHandle: edge.sourceHandle || undefined,
@@ -365,6 +363,11 @@ function pickOutgoingHandle(
   return handles.find((h) => !used.has(h)) || handles[0] || "out";
 }
 
+const builderEdgeTypes = {
+  default: AutomationInsertEdge,
+  smoothstep: AutomationInsertEdge,
+};
+
 function EditorInner({
   businessId,
   workflow,
@@ -381,11 +384,11 @@ function EditorInner({
   const [saving, setSaving] = useState(false);
   const [publishing, setPublishing] = useState(false);
   const [publishError, setPublishError] = useState("");
-  const [saveState, setSaveState] = useState<"idle" | "saving" | "saved">("idle");
+  const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const [testOpen, setTestOpen] = useState(false);
   const [testResult, setTestResult] = useState<Record<string, unknown> | null>(null);
   const [testing, setTesting] = useState(false);
-  const [filter, setFilter] = useState<PaletteFilter>("all");
+  const [filter] = useState<PaletteFilter>("all");
   const [waConnected, setWaConnected] = useState(false);
   const [waTemplates, setWaTemplates] = useState<ApprovedWhatsAppTemplate[]>([]);
   const [waLoading, setWaLoading] = useState(false);
@@ -414,6 +417,9 @@ function EditorInner({
   const [nodes, setNodes, onNodesChange] = useNodesState(toFlowNodes(workflow));
   const [edges, setEdges, onEdgesChange] = useEdgesState(toFlowEdges(workflow));
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [pickerOpen, setPickerOpen] = useState(false);
+  const [pickerEdgeId, setPickerEdgeId] = useState<string | null>(null);
+  const [pickerPreferTriggers, setPickerPreferTriggers] = useState(false);
   const selectedIdRef = useRef<string | null>(null);
   const savingRef = useRef(false);
   const dirty =
@@ -762,13 +768,18 @@ function EditorInner({
         position?: { x: number; y: number };
         afterNodeId?: string | null;
         autoConnect?: boolean;
+        edgeId?: string | null;
       }
     ) => {
       if (item.supported === false) {
         toast.info("אפשרות זו תתווסף בקרוב");
         return;
       }
-      const afterId = options?.afterNodeId ?? selectedId;
+      const edgeForInsert = options?.edgeId
+        ? edges.find((edge) => edge.id === options.edgeId) || null
+        : null;
+      const afterId =
+        edgeForInsert?.source || options?.afterNodeId || selectedId;
       const autoConnect = options?.autoConnect !== false;
       const afterNode = afterId
         ? nodes.find((n) => n.id === afterId) || null
@@ -794,12 +805,16 @@ function EditorInner({
       setNodes((prev) => [...prev, newNode]);
 
       if (autoConnect && afterNode && item.type !== "trigger") {
-        const sourceHandle = pickOutgoingHandle(afterNode, edges);
-        const outgoing = edges.filter(
-          (e) =>
-            e.source === afterNode.id &&
-            (e.sourceHandle || "out") === sourceHandle
-        );
+        const sourceHandle = edgeForInsert
+          ? edgeForInsert.sourceHandle || "out"
+          : pickOutgoingHandle(afterNode, edges);
+        const outgoing = edgeForInsert
+          ? [edgeForInsert]
+          : edges.filter(
+              (e) =>
+                e.source === afterNode.id &&
+                (e.sourceHandle || "out") === sourceHandle
+            );
         const newSourceHandle = defaultSourceHandle(
           item.type,
           item.defaults as Record<string, unknown>
@@ -855,6 +870,9 @@ function EditorInner({
       }
 
       setSelectedId(id);
+      setPickerOpen(false);
+      setPickerEdgeId(null);
+      setPickerPreferTriggers(false);
       window.setTimeout(() => {
         try {
           fitView({ padding: 0.2, duration: 280 });
@@ -865,14 +883,6 @@ function EditorInner({
     },
     [edges, fitView, nodes, selectedId, setEdges, setNodes]
   );
-
-  const onDragStart = (event: React.DragEvent, item: PaletteItem) => {
-    event.dataTransfer.setData(
-      "application/bizuply-automation-node",
-      JSON.stringify(item)
-    );
-    event.dataTransfer.effectAllowed = "move";
-  };
 
   const onDragOver = (event: React.DragEvent) => {
     event.preventDefault();
@@ -981,6 +991,7 @@ function EditorInner({
       if (!quiet) toast.success("הטיוטה נשמרה");
       return true;
     } catch (error: unknown) {
+      setSaveState("error");
       toast.error(readErrorMessage(error, "שגיאה בשמירת האוטומציה"));
       return false;
     } finally {
@@ -1120,182 +1131,79 @@ function EditorInner({
     }
   };
 
+  const edgesForCanvas = useMemo(
+    () =>
+      edges.map((edge) => ({
+        ...edge,
+        type: edge.type || "default",
+        data: {
+          ...(edge.data || {}),
+          readOnly,
+          onInsert: (edgeId: string) => {
+            setSelectedId(null);
+            setPickerPreferTriggers(false);
+            setPickerEdgeId(edgeId);
+            setPickerOpen(true);
+          },
+        },
+      })),
+    [edges, readOnly]
+  );
+
+  const openPicker = useCallback(
+    (opts?: {
+      edgeId?: string | null;
+      preferTriggers?: boolean;
+      clearSelection?: boolean;
+    }) => {
+      if (opts?.clearSelection) setSelectedId(null);
+      setPickerEdgeId(opts?.edgeId || null);
+      setPickerPreferTriggers(Boolean(opts?.preferTriggers));
+      setPickerOpen(true);
+    },
+    []
+  );
+
+  const pickerItems = useMemo(() => {
+    if (!pickerPreferTriggers) return filteredPalette;
+    return filteredPalette.filter((item) => item.filter === "trigger");
+  }, [filteredPalette, pickerPreferTriggers]);
+
   const selectedRouter =
     selectedNode?.type === "router"
       ? ensureRouterPaths((selectedNode.data || {}) as Record<string, unknown>)
       : null;
 
   return (
-    <div className="af-editor" dir="rtl">
-      <aside className="af-palette">
-        <div className="af-palette__head">
-          <strong>מודולים</strong>
-          <p>
-            לחצו להוספה — אם בחרתם מודול על הבד, החדש יתחבר אליו אוטומטית
-          </p>
-        </div>
-
-        <div className="af-filter-row" role="tablist" aria-label="סינון מודולים">
-          {FILTER_CHIPS.map((chip) => (
-            <button
-              key={chip.key}
-              type="button"
-              role="tab"
-              aria-selected={filter === chip.key}
-              className={[
-                "af-filter-chip",
-                filter === chip.key ? "af-filter-chip--active" : "",
-              ].join(" ")}
-              onClick={() => setFilter(chip.key)}
-            >
-              {chip.label}
-            </button>
-          ))}
-        </div>
-
-        {triggerCatalogLoading ? (
-          <p className="af-palette__hint">טוען טריגרים מהשרת...</p>
-        ) : null}
-        {triggerCatalogError ? (
-          <div className="af-wa-template__state af-wa-template__state--error">
-            <p>{triggerCatalogError}</p>
-            <button
-              type="button"
-              className="af-toolbar__btn"
-              onClick={() => void loadTriggerCatalog()}
-            >
-              נסיון חוזר
-            </button>
-          </div>
-        ) : null}
-
-        <div className="af-palette__group">
-          {filteredPalette.map((item) => (
-            <button
-              key={`${item.type}-${item.key}`}
-              type="button"
-              className="af-palette__item"
-              draggable={!readOnly && item.supported !== false}
-              disabled={readOnly || item.supported === false}
-              title={writeBlockedTitle}
-              onDragStart={(e) => onDragStart(e, item)}
-              onClick={() =>
-                insertModule(item, {
-                  afterNodeId: selectedId,
-                  autoConnect: true,
-                })
-              }
-              style={{ borderInlineStart: `4px solid ${item.color}` }}
-            >
-              <strong>{item.label}</strong>
-              <span>{item.description}</span>
-              {item.supported === false ? <em className="af-palette__hint">בקרוב</em> : null}
-              <em className="af-palette__hint">
-                {selectedId && item.type !== "trigger"
-                  ? "לחיצה = הוספה + חיבור אוטומטי"
-                  : "לחיצה להוספה · אפשר גם לגרור"}
-              </em>
-            </button>
-          ))}
-        </div>
-      </aside>
+    <div className="af-builder" dir="rtl">
+      <AutomationBuilderToolbar
+        name={name}
+        onNameChange={setName}
+        onBack={onBack}
+        readOnly={readOnly}
+        writeBlockedTitle={writeBlockedTitle}
+        dirty={dirty}
+        saveState={saveState}
+        saving={saving}
+        publishing={publishing}
+        workflow={workflow}
+        onSave={() => void handleSave()}
+        onPublish={() => void handlePublish()}
+        onPause={async () =>
+          onSaved(await pauseAutomationWorkflow(businessId, workflow._id))
+        }
+        onResume={async () =>
+          onSaved(await resumeAutomationWorkflow(businessId, workflow._id))
+        }
+        onToggleTest={() => setTestOpen((open) => !open)}
+        onOpenPicker={() => openPicker({ clearSelection: true })}
+        hasUnsupportedTrigger={hasUnsupportedTrigger}
+        triggerCatalogError={triggerCatalogError}
+      />
+      
 
       <div className="af-canvas-wrap">
-        <div className="af-toolbar">
-          <button type="button" className="af-toolbar__btn" onClick={onBack}>
-            <ArrowRight size={14} />
-            חזרה לרשימה
-          </button>
-          <input
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            className="af-toolbar__btn af-toolbar__name"
-            aria-label="שם האוטומציה"
-            disabled={readOnly}
-            title={writeBlockedTitle}
-          />
-          <button
-            type="button"
-            className="af-btn af-btn--primary"
-            disabled={saving || readOnly}
-            title={writeBlockedTitle}
-            onClick={() => handleSave()}
-          >
-            {saving ? (
-              <Loader2 size={14} className="animate-spin" />
-            ) : (
-              <Save size={14} />
-            )}
-            שמירה
-          </button>
-          <button
-            type="button"
-            className="af-btn af-btn--primary"
-            disabled={publishing || readOnly || workflow.status === "archived"}
-            title={
-              writeBlockedTitle ||
-              (workflow.status === "archived"
-                ? "לא ניתן לפרסם אוטומציה בארכיון"
-                : triggerCatalogError
-                  ? "יש לטעון מחדש את קטלוג הטריגרים"
-                  : hasUnsupportedTrigger
-                    ? "טריגר ישן או לא נתמך"
-                    : workflow.status === "active"
-                      ? "עדכון הגרסה המפורסמת לפי הטיוטה הנוכחית"
-                      : "פרסום האוטומציה")
-            }
-            onClick={() => void handlePublish()}
-          >
-            {publishing ? (
-              <Loader2 size={14} className="animate-spin" />
-            ) : (
-              <Play size={14} />
-            )}
-            {publishing
-              ? "מפרסם…"
-              : workflow.status === "active" || workflow.publishedVersionId
-                ? "עדכון פרסום"
-                : "פרסום"}
-          </button>
-          {workflow.status === "active" ? (
-            <button
-              type="button"
-              className="af-toolbar__btn"
-              disabled={readOnly}
-              title={writeBlockedTitle}
-              onClick={async () =>
-                onSaved(await pauseAutomationWorkflow(businessId, workflow._id))
-              }
-            >
-              <Pause size={14} />
-              השהיה
-            </button>
-          ) : workflow.status === "paused" ? (
-            <button
-              type="button"
-              className="af-toolbar__btn"
-              disabled={readOnly}
-              title={writeBlockedTitle}
-              onClick={async () =>
-                onSaved(await resumeAutomationWorkflow(businessId, workflow._id))
-              }
-            >
-              <Play size={14} />
-              המשך
-            </button>
-          ) : null}
-          <button
-            type="button"
-            className="af-toolbar__btn"
-            disabled={readOnly}
-            title={writeBlockedTitle}
-            onClick={() => setTestOpen((open) => !open)}
-          >
-            <FlaskConical size={14} />
-            בדיקה
-          </button>
-          <span className="af-toolbar__state">{dirty ? "יש שינויים שלא פורסמו" : saveState === "saved" ? "נשמר" : workflow.publishedVersionId ? "פורסם" : "טיוטה"}{workflow.publishedAt ? ` · ${new Date(workflow.publishedAt).toLocaleDateString("he-IL")}` : ""}</span>
-        </div>
+        
 
         {publishError ? (
           <div className="af-publish-error" role="alert">
@@ -1343,84 +1251,40 @@ function EditorInner({
           </div>
         ) : null}
 
-        {selectedNode && selectedNode.type !== "trigger" ? (
-          <div className="af-quickbar">
-            <span>הוסף אחרי המודול שנבחר:</span>
-            {QUICK_ADD_AFTER.map((item) => (
-              <button
-                key={`quick-${item.key}`}
-                type="button"
-                className="af-quickbar__btn"
-                onClick={() =>
-                  insertModule(item, {
-                    afterNodeId: selectedNode.id,
-                    autoConnect: true,
-                  })
-                }
-              >
-                <Plus size={12} />
-                {item.filter === "router"
-                  ? "פיצול"
-                  : item.filter === "condition"
-                    ? "תנאי"
-                    : item.filter === "delay"
-                      ? "המתנה"
-                      : item.defaults.label
-                        ? String(item.defaults.label).slice(0, 12)
-                        : item.label}
-              </button>
-            ))}
-          </div>
-        ) : selectedNode?.type === "trigger" ? (
-          <div className="af-quickbar">
-            <span>הוסף אחרי הטריגר (יתחבר אוטומטית):</span>
-            {QUICK_ADD_AFTER.map((item) => (
-              <button
-                key={`quick-t-${item.key}`}
-                type="button"
-                className="af-quickbar__btn"
-                onClick={() =>
-                  insertModule(item, {
-                    afterNodeId: selectedNode.id,
-                    autoConnect: true,
-                  })
-                }
-              >
-                <Plus size={12} />
-                {item.filter === "router"
-                  ? "פיצול"
-                  : item.filter === "condition"
-                    ? "תנאי"
-                    : item.filter === "delay"
-                      ? "המתנה"
-                      : String(item.defaults.label || item.label).slice(0, 12)}
-              </button>
-            ))}
-          </div>
-        ) : (
-          <div className="af-quickbar af-quickbar--hint">
-            בחרו מודול על הבד (למשל המתנה) ואז לחצו ״פיצול״ / תנאי / פעולה —
-            זה יתחבר לבד
-          </div>
-        )}
+        {nodes.length === 0 ? (
+          <AutomationEmptyState
+            readOnly={readOnly}
+            onAddTrigger={() =>
+              openPicker({ preferTriggers: true, clearSelection: true })
+            }
+          />
+        ) : null}
 
         <ReactFlow
           nodes={nodes}
-          edges={edges}
+          edges={edgesForCanvas}
           onNodesChange={readOnly ? undefined : onNodesChange}
           onEdgesChange={readOnly ? undefined : onEdgesChange}
           onConnect={readOnly ? undefined : onConnect}
           nodeTypes={automationNodeTypes}
+          edgeTypes={builderEdgeTypes}
           onDrop={readOnly ? undefined : onDrop}
           onDragOver={readOnly ? undefined : onDragOver}
           onNodeClick={(_, node) => {
+            setPickerOpen(false);
+            setPickerEdgeId(null);
             setSelectedId(node.id);
           }}
+          onPaneClick={() => {
+            setPickerOpen(false);
+            setSelectedId(null);
+          }}
           onSelectionChange={({ nodes: selected }) => {
-            // Keep the last selected module when the canvas selection clears
-            // (empty pane click / remount). Only switch when a node is chosen.
             const nextId = selected[0]?.id;
-            if (nextId) setSelectedId(nextId);
+            if (nextId) {
+              setPickerOpen(false);
+              setSelectedId(nextId);
+            }
           }}
           nodesDraggable={!readOnly}
           nodesConnectable={!readOnly}
@@ -1428,10 +1292,12 @@ function EditorInner({
           fitView
           deleteKeyCode={readOnly ? null : ["Backspace", "Delete"]}
           proOptions={{ hideAttribution: true }}
-          connectionLineStyle={{ stroke: "#7c3aed", strokeWidth: 2 }}
+          connectionLineStyle={{ stroke: "#64748b", strokeWidth: 2 }}
           defaultEdgeOptions={{
-            animated: true,
-            markerEnd: { type: MarkerType.ArrowClosed },
+            type: "default",
+            animated: false,
+            markerEnd: { type: MarkerType.ArrowClosed, color: "#94a3b8" },
+            style: { stroke: "#94a3b8", strokeWidth: 2 },
           }}
         >
           <Background
@@ -1457,16 +1323,87 @@ function EditorInner({
         </ReactFlow>
       </div>
 
-      <aside className="af-inspector">
-        <h3>הגדרות מודול</h3>
-        {!selectedNode ? (
+      
+      <AutomationNodePicker
+        open={pickerOpen}
+        items={pickerItems}
+        loading={triggerCatalogLoading}
+        error={triggerCatalogError}
+        readOnly={readOnly}
+        writeBlockedTitle={writeBlockedTitle}
+        onRetryCatalog={() => void loadTriggerCatalog()}
+        onClose={() => {
+          setPickerOpen(false);
+          setPickerEdgeId(null);
+          setPickerPreferTriggers(false);
+        }}
+        onPick={(item) => {
+          const edge = pickerEdgeId
+            ? edges.find((row) => row.id === pickerEdgeId)
+            : null;
+          insertModule(item, {
+            afterNodeId: edge?.source || selectedId,
+            edgeId: pickerEdgeId,
+            autoConnect: true,
+          });
+        }}
+      />
+
+      <AutomationConfigDrawer
+        open={Boolean(selectedNode)}
+        title={
+          selectedNode
+            ? String(
+                selectedNode.data?.label ||
+                  TYPE_META[selectedNode.type as keyof typeof TYPE_META]
+                    ?.title ||
+                  "הגדרות"
+              )
+            : "הגדרות"
+        }
+        subtitle={
+          selectedNode
+            ? TYPE_META[selectedNode.type as keyof typeof TYPE_META]?.title
+            : undefined
+        }
+        onClose={() => setSelectedId(null)}
+        footer={
+          selectedNode ? (
+            <div className="af-drawer__footer-row">
+              <button
+                type="button"
+                className="af-btn"
+                onClick={() => setSelectedId(null)}
+              >
+                ביטול
+              </button>
+              <button
+                type="button"
+                className="af-btn af-btn--primary"
+                onClick={() => setSelectedId(null)}
+              >
+                סיום
+              </button>
+              <button
+                type="button"
+                className="af-btn af-btn--danger"
+                onClick={deleteSelected}
+              >
+                מחק מודול
+              </button>
+            </div>
+          ) : null
+        }
+      >
+        <div className="af-inspector af-inspector--drawer">
+{!selectedNode ? (
           <div className="af-inspector__hint">
             <p>
               <strong>איך מוסיפים פיצול אחרי המתנה?</strong>
             </p>
             <ol>
               <li>לוחצים על מודול ההמתנה על הבד</li>
-              <li>לוחצים למעלה על ״פיצול״ או על ״ניתוב״ בפלטה</li>
+              <li>לוחצים על ״הוסף שלב״ ובוחרים פיצול או ניתוב</li>
               <li>זה מתווסף ומתחבר אוטומטית — כולל המשך הזרימה הקיימת</li>
             </ol>
           </div>
@@ -3008,17 +2945,11 @@ function EditorInner({
               </>
             ) : null}
 
-            <button
-              type="button"
-              className="af-btn af-btn--danger"
-              onClick={deleteSelected}
-            >
-              <Trash2 size={14} />
-              מחק מודול
-            </button>
           </>
         )}
-      </aside>
+      
+        </div>
+      </AutomationConfigDrawer>
     </div>
   );
 }

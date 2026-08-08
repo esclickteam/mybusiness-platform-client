@@ -23,6 +23,20 @@ const ICONS = {
   router: Split,
 } as const;
 
+function providerLabel(type: AutomationNodeType, data: Record<string, unknown>) {
+  if (type === "trigger") return "טריגר";
+  if (type === "delay") return "Delay";
+  if (type === "condition") return "Logic";
+  if (type === "router") return "Router";
+  const key = String(data.actionKey || "");
+  if (key.includes("gmail")) return "Gmail";
+  if (key.includes("outlook")) return "Outlook";
+  if (key.includes("calendar")) return "Calendar";
+  if (key.includes("whatsapp") || key === "send_whatsapp") return "WhatsApp";
+  if (key.startsWith("ai_")) return "AI";
+  return "Action";
+}
+
 function RouteHandles({
   count,
   prefix,
@@ -46,10 +60,7 @@ function RouteHandles({
               style={{ top: `${top}%` }}
             />
             {labels?.[index] ? (
-              <span
-                className="af-route-label"
-                style={{ top: `${top}%` }}
-              >
+              <span className="af-route-label" style={{ top: `${top}%` }}>
                 {labels[index]}
               </span>
             ) : null}
@@ -75,6 +86,7 @@ function FlowNodeShell({
   const summary = nodeSummary(data, type);
   const routeCount = clampRouteCount(data.routeCount, 2);
   const router = type === "router" ? ensureRouterPaths(data) : null;
+  const provider = providerLabel(type, data);
 
   return (
     <div
@@ -95,11 +107,11 @@ function FlowNodeShell({
       ) : null}
 
       <div className="af-node__badge">
-        <Icon size={12} />
-        <span>{meta.title}</span>
+        <Icon size={11} />
+        <span>{provider}</span>
       </div>
       <strong className="af-node__title">{title}</strong>
-      <p className="af-node__summary">{summary}</p>
+      {summary ? <p className="af-node__summary">{summary}</p> : null}
 
       {type === "trigger" ? (
         <RouteHandles count={routeCount} prefix="route" />
@@ -158,16 +170,10 @@ function makeNode(type: AutomationNodeType) {
   });
 }
 
-export const TriggerNode = makeNode("trigger");
-export const DelayNode = makeNode("delay");
-export const ConditionNode = makeNode("condition");
-export const ActionNode = makeNode("action");
-export const RouterNode = makeNode("router");
-
 export const automationNodeTypes = {
-  trigger: TriggerNode,
-  delay: DelayNode,
-  condition: ConditionNode,
-  action: ActionNode,
-  router: RouterNode,
+  trigger: makeNode("trigger"),
+  delay: makeNode("delay"),
+  condition: makeNode("condition"),
+  action: makeNode("action"),
+  router: makeNode("router"),
 };
