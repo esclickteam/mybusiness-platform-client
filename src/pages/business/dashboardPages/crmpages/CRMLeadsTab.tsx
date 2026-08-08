@@ -124,6 +124,9 @@ type Lead = {
   rawData?: any;
 
   activities?: LeadActivity[];
+  activityCount?: number;
+  openTaskCount?: number;
+  nextOpenTask?: LeadActivity | null;
 
   detail1Label?: string;
   detail1Value?: string;
@@ -301,6 +304,9 @@ function formatDateKeyLabel(key: string, locale = "he-IL", fallback = "—") {
 }
 
 function getNextOpenTask(lead: Lead) {
+  // Slim list API may already provide nextOpenTask summary.
+  if (lead.nextOpenTask) return lead.nextOpenTask;
+
   const tasks = (lead.activities || []).filter(
     (activity) => activity.type === "task" && !activity.taskDone
   );
@@ -868,6 +874,32 @@ export default function CRMLeadsTab({
   const openLeadDrawer = (lead: Lead, view?: "form" | "full") => {
     setSelectedLead(lead);
     setLeadDrawerView(view ?? (isDesktopLeads ? "full" : "form"));
+
+    // List is slim (no full activities); load detail for drawer timeline/form.
+    void API.get<{ success: boolean; lead: Lead }>(`/crm/leads/${lead._id}`)
+      .then(({ data }) => {
+        if (!data?.lead) return;
+        setSelectedLead(data.lead);
+        setLeads((prev) =>
+          prev.map((item) =>
+            item._id === data.lead._id
+              ? {
+                  ...item,
+                  ...data.lead,
+                  openTaskCount:
+                    item.openTaskCount ??
+                    (data.lead.activities || []).filter(
+                      (a) => a.type === "task" && !a.taskDone
+                    ).length,
+                  nextOpenTask: item.nextOpenTask ?? getNextOpenTask(data.lead),
+                }
+              : item
+          )
+        );
+      })
+      .catch((err) => {
+        console.error("Failed loading lead detail:", err);
+      });
   };
 
   const handleCloseLead = () => {
@@ -1277,14 +1309,17 @@ export default function CRMLeadsTab({
         : (lead.status || "new") !== "old"
     );
 
-    const openTasks = scopedLeads.reduce(
-      (sum, lead) =>
+    const openTasks = scopedLeads.reduce((sum, lead) => {
+      if (typeof lead.openTaskCount === "number") {
+        return sum + lead.openTaskCount;
+      }
+      return (
         sum +
         (lead.activities || []).filter(
           (activity) => activity.type === "task" && !activity.taskDone
-        ).length,
-      0
-    );
+        ).length
+      );
+    }, 0);
 
     return {
       total: scopedLeads.length,
