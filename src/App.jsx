@@ -738,7 +738,7 @@ function PageLoader() {
 }
 
 export default function App() {
-  const { user, loading } = useAuth();
+  const { user, loading, initialized } = useAuth();
   const location = useLocation();
   const { i18n } = useTranslation();
   const appDir = getTextDirection(i18n.language);
@@ -795,7 +795,10 @@ export default function App() {
     );
   }
 
-  if (loading) {
+  // Only block the tree during the initial auth boot. Login/staffLogin also
+  // flip `loading`, and unmounting /login mid-submit drops the form error
+  // state and makes it look like "nothing happened".
+  if (loading && !initialized) {
     // The /login route has its own layout-matched skeleton to avoid a large
     // layout shift when this app-level auth check resolves and the real
     // page mounts. Every other route keeps the original full-screen loader.

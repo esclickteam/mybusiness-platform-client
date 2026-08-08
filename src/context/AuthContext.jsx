@@ -334,7 +334,8 @@ export function AuthProvider({ children }) {
      🔐 Login
   =========================== */
   const login = async (email, password, { skipRedirect = false } = {}) => {
-    setLoading(true);
+    // Do not flip the global `loading` boot flag here — App.jsx treats that as
+    // "unmount the whole tree", which drops /login mid-submit and hides errors.
     setError(null);
 
     try {
@@ -374,7 +375,6 @@ export function AuthProvider({ children }) {
 
       if (urlRedirect) {
         navigate(urlRedirect, { replace: true });
-        setLoading(false);
         return { user: normalizedUser, redirectUrl: urlRedirect };
       }
 
@@ -383,13 +383,11 @@ export function AuthProvider({ children }) {
 
         if (normalizedUser.role === "admin" && !isImpersonating) {
           navigate("/admin/dashboard", { replace: true });
-          setLoading(false);
           return { user: normalizedUser, redirectUrl: "/admin/dashboard" };
         }
 
         if (normalizedUser.role === "marketer" && !isImpersonating) {
           navigate("/marketer/dashboard", { replace: true });
-          setLoading(false);
           return { user: normalizedUser, redirectUrl: "/marketer/dashboard" };
         }
 
@@ -415,7 +413,6 @@ export function AuthProvider({ children }) {
             ? "/marketer/dashboard"
             : redirectUrl;
 
-      setLoading(false);
       return { user: normalizedUser, redirectUrl: safeRedirectUrl };
     } catch (err) {
       setError(
@@ -424,7 +421,6 @@ export function AuthProvider({ children }) {
           : "❌ שגיאת שרת"
       );
 
-      setLoading(false);
       throw err;
     }
   };
