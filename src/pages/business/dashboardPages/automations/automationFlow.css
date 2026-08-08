@@ -154,6 +154,8 @@
 }
 
 .af-builder-toolbar {
+  position: relative;
+  z-index: 5;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -163,6 +165,7 @@
   padding: 8px 12px;
   border-bottom: 1px solid #e5e7eb;
   background: #fff;
+  flex-shrink: 0;
 }
 
 .af-builder-toolbar__start,
@@ -203,11 +206,15 @@
 .af-badge--paused { background: #fffbeb; color: #92400e; }
 .af-badge--draft { background: #f1f5f9; color: #475569; }
 
+/*
+ * Drawers live inside .af-canvas-wrap (below the builder toolbar).
+ * Absolute (not fixed/portaled) so the toolbar stays clickable and the
+ * panel only covers canvas — never the full viewport / sidebar.
+ */
 .af-drawer-backdrop {
-  position: fixed;
+  position: absolute;
   inset: 0;
-  /* Above dashboard sidebar (z-50) so RTL picker is clickable */
-  z-index: 80;
+  z-index: 20;
   background: rgba(15, 23, 42, 0.28);
 }
 
@@ -217,10 +224,10 @@
 }
 
 .af-drawer {
-  position: fixed;
+  position: absolute;
   top: 0;
   bottom: 0;
-  z-index: 81;
+  z-index: 21;
   display: flex;
   flex-direction: column;
   width: min(400px, 100%);

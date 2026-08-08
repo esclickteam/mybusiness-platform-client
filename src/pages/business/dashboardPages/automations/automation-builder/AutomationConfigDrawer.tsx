@@ -1,5 +1,4 @@
 import React, { useEffect } from "react";
-import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 
 type Props = {
@@ -33,7 +32,7 @@ export default function AutomationConfigDrawer({
 
   if (!open) return null;
 
-  return createPortal(
+  return (
     <div className="af-drawer-backdrop af-drawer-backdrop--config" role="presentation">
       <aside
         className="af-drawer af-drawer--config"
@@ -59,7 +58,6 @@ export default function AutomationConfigDrawer({
         <div className="af-drawer__body af-drawer__body--config">{children}</div>
         {footer ? <footer className="af-drawer__footer">{footer}</footer> : null}
       </aside>
-    </div>,
-    document.body
+    </div>
   );
 }

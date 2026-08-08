@@ -22,6 +22,10 @@ import AutomationNodePicker from "./automation-builder/AutomationNodePicker";
 import AutomationConfigDrawer from "./automation-builder/AutomationConfigDrawer";
 import AutomationEmptyState from "./automation-builder/AutomationEmptyState";
 import AutomationInsertEdge from "./automation-builder/AutomationInsertEdge";
+import {
+  reconnectInsertOnEdge,
+  spliceNodeAfterHandle,
+} from "./automation-builder/insertNodeBetweenEdge";
 import { toast } from "react-toastify";
 import {
   Loader2,
@@ -421,6 +425,8 @@ function EditorInner({
   const [pickerEdgeId, setPickerEdgeId] = useState<string | null>(null);
   const [pickerPreferTriggers, setPickerPreferTriggers] = useState(false);
   const selectedIdRef = useRef<string | null>(null);
+  const nodesRef = useRef(nodes);
+  const edgesRef = useRef(edges);
   const savingRef = useRef(false);
   const dirty =
     name !== workflow.name ||
@@ -434,6 +440,14 @@ function EditorInner({
   useEffect(() => {
     selectedIdRef.current = selectedId;
   }, [selectedId]);
+
+  useEffect(() => {
+    nodesRef.current = nodes;
+  }, [nodes]);
+
+  useEffect(() => {
+    edgesRef.current = edges;
+  }, [edges]);
 
   // If the selected module was removed, clear selection; otherwise keep the
   // inspector pinned even when React Flow briefly reports an empty selection
@@ -775,17 +789,25 @@ function EditorInner({
         toast.info("אפשרות זו תתווסף בקרוב");
         return;
       }
-      const edgeForInsert = options?.edgeId
-        ? edges.find((edge) => edge.id === options.edgeId) || null
+
+      const edgeId = options?.edgeId || null;
+      const autoConnect = options?.autoConnect !== false;
+      const newSourceHandle = defaultSourceHandle(
+        item.type,
+        item.defaults as Record<string, unknown>
+      );
+      const id = newId(item.type);
+
+      // Resolve anchor from the latest graph snapshot (avoid stale picker closures).
+      const edgeForInsert = edgeId
+        ? edges.find((edge) => edge.id === edgeId) || null
         : null;
       const afterId =
         edgeForInsert?.source || options?.afterNodeId || selectedId;
-      const autoConnect = options?.autoConnect !== false;
       const afterNode = afterId
         ? nodes.find((n) => n.id === afterId) || null
         : null;
 
-      const id = newId(item.type);
       const position =
         options?.position ||
         (afterNode
@@ -804,62 +826,42 @@ function EditorInner({
 
       setNodes((prev) => [...prev, newNode]);
 
-      if (autoConnect && afterNode && item.type !== "trigger") {
-        const sourceHandle = edgeForInsert
-          ? edgeForInsert.sourceHandle || "out"
-          : pickOutgoingHandle(afterNode, edges);
-        const outgoing = edgeForInsert
-          ? [edgeForInsert]
-          : edges.filter(
-              (e) =>
-                e.source === afterNode.id &&
-                (e.sourceHandle || "out") === sourceHandle
-            );
-        const newSourceHandle = defaultSourceHandle(
-          item.type,
-          item.defaults as Record<string, unknown>
-        );
-
+      // Edge "+" insert: A→B becomes A→C→B. Resolve the edge inside setEdges(prev)
+      // so a stale React closure cannot delete the wrong connections.
+      if (edgeId && item.type !== "trigger") {
+        let insertedOk = false;
         setEdges((prev) => {
-          let next = prev.filter(
-            (e) =>
-              !(
-                e.source === afterNode.id &&
-                (e.sourceHandle || "out") === sourceHandle
-              )
-          );
-          next = [
-            ...next,
-            styleEdge({
-              id: newId("e"),
-              source: afterNode.id,
-              target: id,
-              sourceHandle,
-            }),
-          ];
-
-          // Insert: reconnect previous targets through the new module
-          outgoing.forEach((oldEdge, index) => {
-            const handles = listSourceHandles(
-              item.type,
-              item.defaults as Record<string, unknown>
-            );
-            const outHandle = handles[Math.min(index, handles.length - 1)];
-            next.push(
-              styleEdge({
-                id: newId("e"),
-                source: id,
-                target: oldEdge.target,
-                sourceHandle: outHandle || newSourceHandle,
-              })
-            );
+          const result = reconnectInsertOnEdge(prev, {
+            edgeId,
+            newNodeId: id,
+            newNodeSourceHandle: newSourceHandle,
+            createEdgeId: () => newId("e"),
           });
-
-          return next;
+          insertedOk = result.ok;
+          if (!result.ok) return prev;
+          return result.edges.map((edge) => styleEdge(edge));
         });
-
         toast.success(
-          outgoing.length
+          insertedOk
+            ? "נוסף וחובר אוטומטית (כולל המשך הזרימה)"
+            : "מודול נוסף ללוח"
+        );
+      } else if (autoConnect && afterNode && item.type !== "trigger") {
+        let replacedCount = 0;
+        setEdges((prev) => {
+          const afterSourceHandle = pickOutgoingHandle(afterNode, prev);
+          const spliced = spliceNodeAfterHandle(prev, {
+            afterNodeId: afterNode.id,
+            newNodeId: id,
+            newNodeSourceHandle: newSourceHandle,
+            afterSourceHandle,
+            createEdgeId: () => newId("e"),
+          });
+          replacedCount = spliced.replaced.length;
+          return spliced.edges.map((edge) => styleEdge(edge));
+        });
+        toast.success(
+          replacedCount
             ? "נוסף וחובר אוטומטית (כולל המשך הזרימה)"
             : "נוסף וחובר אוטומטית למודול שנבחר"
         );
@@ -961,7 +963,12 @@ function EditorInner({
       if (!quiet) toast.error(AUTOMATION_PREVIEW_WRITE_BLOCKED_MESSAGE);
       return false;
     }
-    const nodesToPersist = applyGmailPublishDefaults(nodesOverride || nodes);
+    // Prefer refs so toolbar/drawer Save always persist the latest graph,
+    // even if the callback closed over a slightly older render.
+    const nodesToPersist = applyGmailPublishDefaults(
+      nodesOverride || nodesRef.current
+    );
+    const edgesToPersist = edgesRef.current;
     setSaving(true);
     setSaveState("saving");
     try {
@@ -974,7 +981,7 @@ function EditorInner({
           position: n.position,
           data: (n.data || {}) as Record<string, unknown>,
         })),
-        edges: edges.map((e) => ({
+        edges: edgesToPersist.map((e) => ({
           id: e.id,
           source: e.source,
           target: e.target,
@@ -1321,9 +1328,7 @@ function EditorInner({
             }
           />
         </ReactFlow>
-      </div>
 
-      
       <AutomationNodePicker
         open={pickerOpen}
         items={pickerItems}
@@ -1338,12 +1343,9 @@ function EditorInner({
           setPickerPreferTriggers(false);
         }}
         onPick={(item) => {
-          const edge = pickerEdgeId
-            ? edges.find((row) => row.id === pickerEdgeId)
-            : null;
           insertModule(item, {
-            afterNodeId: edge?.source || selectedId,
             edgeId: pickerEdgeId,
+            afterNodeId: selectedId,
             autoConnect: true,
           });
         }}
@@ -2959,6 +2961,7 @@ function EditorInner({
       
         </div>
       </AutomationConfigDrawer>
+      </div>
     </div>
   );
 }
