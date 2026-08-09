@@ -37,6 +37,9 @@ const removedTabPaths = new Set([
   "automations",
 ]);
 
+/** Deep-link routes that exist under CRM but are not primary nav tabs. */
+const allowedNonNavTabPaths = new Set(["work-hours"]);
+
 const crmTabs: CrmTab[] = [
   {
     path: "leads",
@@ -132,7 +135,8 @@ export default function CRMMain() {
     const isHiddenTab = crmTabs.some(
       (tab) => tab.path === currentTab && tab.hidden
     );
-    const isUnknownTab = !isKnownVisibleTab;
+    const isUnknownTab =
+      !isKnownVisibleTab && !allowedNonNavTabPaths.has(currentTab);
 
     if (!isCrmRoot && !isRemovedTab && !isHiddenTab && !isUnknownTab) return;
 
