@@ -45,7 +45,7 @@ export function PushEmptyStateUpsell({
         data-testid="push-empty-upsell-cta"
       >
         <Smartphone className="h-4 w-4" aria-hidden />
-        {trialEligible ? "נסו התראות Push" : "הפעלת התראות Push"}
+        {trialEligible ? "נסו התראות Push" : "גילוי Push למכשיר"}
       </button>
 
       <p className="mt-2 text-[10px] font-semibold text-slate-400">
@@ -99,7 +99,7 @@ export function PushCompactUpsellCard({
         className="inline-flex h-9 shrink-0 items-center justify-center rounded-2xl bg-sky-600 px-3 text-[11px] font-black text-white transition hover:bg-sky-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300 focus-visible:ring-offset-2"
         data-testid="push-compact-upsell-cta"
       >
-        {trialEligible ? "הפעלת Push" : "הפעלת התראות Push"}
+        {trialEligible ? "הפעלת Push" : "גילוי Push למכשיר"}
       </button>
     </div>
   );
@@ -118,13 +118,13 @@ export function PushBellDiscoverChip({
       }}
       aria-label={
         trialEligible
-          ? "הפעלת התראות Push — 7 ימים חינם"
-          : "הפעלת התראות Push"
+          ? "גילוי Push למכשיר — 7 ימים חינם"
+          : "גילוי Push למכשיר"
       }
       title={
         trialEligible
-          ? "הפעלת התראות Push — 7 ימים חינם"
-          : "הפעלת התראות Push"
+          ? "גילוי Push למכשיר — 7 ימים חינם"
+          : "גילוי Push למכשיר"
       }
       className={[
         "absolute -bottom-1 z-[1] inline-flex max-w-[5.5rem] items-center justify-center truncate rounded-full",
