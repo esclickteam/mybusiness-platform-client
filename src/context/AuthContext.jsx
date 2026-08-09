@@ -139,6 +139,7 @@ function isPublicRoute(pathname) {
     "/about",
     "/contact",
     "/privacy",
+    "/privacy-policy",
     "/terms",
     "/accessibility",
   ];

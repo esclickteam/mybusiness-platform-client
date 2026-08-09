@@ -23,6 +23,7 @@ function PrivacyPolicy() {
     "נתונים שאנו אוספים",
     "כיצד אנו משתמשים בנתונים שלכם",
     "שיתוף נתונים",
+    "Google Workspace API Data",
     "קובצי Cookie",
     "שמירת נתונים",
     "זכויות משתמשים",
@@ -71,7 +72,7 @@ function PrivacyPolicy() {
         </p>
 
         <div className="mx-auto mt-8 inline-flex rounded-2xl border border-white/80 bg-white/70 px-5 py-3 text-sm font-black text-slate-700 shadow-sm backdrop-blur">
-          עודכן לאחרונה: 14 באוקטובר 2025
+          עודכן לאחרונה: 9 באוגוסט 2026
         </div>
       </section>
 
@@ -253,13 +254,22 @@ function PrivacyPolicy() {
             <ul className={ulBase}>
               <li>כדי לספק ולתחזק את השירותים שלנו ואת חשבונות הלקוחות</li>
               <li>כדי לעבד תשלומים, חשבוניות ומחזורי חיוב</li>
-              <li>כדי לשפר את ביצועי המוצר, UX ודיוק הבינה המלאכותית</li>
+              <li>
+                כדי לשפר את ביצועי המוצר, UX ודיוק הבינה המלאכותית — למעט
+                נתוני משתמש שהתקבלו דרך Google Workspace APIs, כמפורט בסעיף 7
+              </li>
               <li>כדי לשלוח עדכוני שירות, התראות או הצעות שיווקיות</li>
               <li>כדי להבטיח עמידה בדרישות משפטיות ורגולטוריות</li>
               <li>כדי למנוע הונאה, שימוש לרעה או גישה בלתי מורשית</li>
               <li>כדי לתמוך בשירות לקוחות ובפתרון תקלות טכניות</li>
               <li>כדי לנתח התנהגות משתמשים למטרות סטטיסטיות ואבטחה</li>
             </ul>
+
+            <p className={pBase} dir="ltr" style={{ textAlign: "left" }}>
+              For clarity, data received through Google Workspace APIs is
+              excluded from any use for training, developing, or improving
+              generalized AI or machine learning models.
+            </p>
 
             <p className={pBase}>
               כל העיבוד מתבצע לפי פרוטוקולי ניהול נתונים מאובטחים ועומד בתקני
@@ -293,7 +303,11 @@ function PrivacyPolicy() {
               <li>
                 אנליטיקה, אבטחה וניטור ביצועים, למשל Cloudflare
               </li>
-              <li>מודולי בינה מלאכותית ואוטומציה לאנליטיקה או תחזיות</li>
+              <li>
+                מודולי בינה מלאכותית ואוטומציה לאנליטיקה או תחזיות — ללא
+                שימוש בנתוני Google Workspace APIs לאימון או שיפור מודלי AI
+                כלליים, כמפורט בסעיף 7
+              </li>
             </ul>
 
             <p className={pBase}>
@@ -320,7 +334,34 @@ function PrivacyPolicy() {
           </section>
 
           <section id="section-7" className={sectionBase}>
-            <h2 className={h2Base}>7. קובצי Cookie וטכנולוגיות מעקב</h2>
+            <h2 className={h2Base} dir="ltr" style={{ textAlign: "left" }}>
+              7. Google Workspace API Data
+            </h2>
+
+            <div dir="ltr" style={{ textAlign: "left" }}>
+              <p className={pBase}>
+                Bizuply&apos;s use and transfer of information received from
+                Google APIs to any other app will adhere to the Google API
+                Services User Data Policy, including the Limited Use
+                requirements.
+              </p>
+
+              <p className={pBase}>
+                Bizuply does not use Google Workspace API user data to develop,
+                improve, or train generalized artificial intelligence or
+                machine learning models.
+              </p>
+
+              <p className={pBase}>
+                Google Workspace API user data is not transferred to
+                third-party AI or machine learning providers for the purpose of
+                training or improving generalized AI/ML models.
+              </p>
+            </div>
+          </section>
+
+          <section id="section-8" className={sectionBase}>
+            <h2 className={h2Base}>8. קובצי Cookie וטכנולוגיות מעקב</h2>
 
             <p className={pBase}>
               BizUply משתמשת בקובצי Cookie, פיקסלים וטכנולוגיות מעקב כדי לשפר
@@ -329,7 +370,7 @@ function PrivacyPolicy() {
               הפלטפורמה.
             </p>
 
-            <h3 className={h3Base}>7.1. סוגי קובצי Cookie שבהם נעשה שימוש</h3>
+            <h3 className={h3Base}>8.1. סוגי קובצי Cookie שבהם נעשה שימוש</h3>
 
             <ul className={ulBase}>
               <li>קובצי Cookie חיוניים – נדרשים להפעלת המערכת ולהתחברות</li>
@@ -342,7 +383,7 @@ function PrivacyPolicy() {
               </li>
             </ul>
 
-            <h3 className={h3Base}>7.2. ניהול קובצי Cookie</h3>
+            <h3 className={h3Base}>8.2. ניהול קובצי Cookie</h3>
 
             <p className={pBase}>
               משתמשים רשאים להשבית קובצי Cookie דרך הגדרות הדפדפן שלהם. עם
@@ -356,8 +397,8 @@ function PrivacyPolicy() {
             </p>
           </section>
 
-          <section id="section-8" className={sectionBase}>
-            <h2 className={h2Base}>8. שמירת נתונים ואבטחה</h2>
+          <section id="section-9" className={sectionBase}>
+            <h2 className={h2Base}>9. שמירת נתונים ואבטחה</h2>
 
             <p className={pBase}>
               BizUply שומרת נתונים אישיים ועסקיים רק כל עוד הדבר נחוץ לאספקת
@@ -380,8 +421,8 @@ function PrivacyPolicy() {
             </p>
           </section>
 
-          <section id="section-9" className={sectionBase}>
-            <h2 className={h2Base}>9. זכויות משתמשים</h2>
+          <section id="section-10" className={sectionBase}>
+            <h2 className={h2Base}>10. זכויות משתמשים</h2>
 
             <p className={pBase}>
               לפי תקנות פרטיות חלות, לרבות הדין הפדרלי של ארצות הברית ודין ניו
@@ -403,8 +444,8 @@ function PrivacyPolicy() {
             </p>
           </section>
 
-          <section id="section-10" className={sectionBase}>
-            <h2 className={h2Base}>10. החזרים, תשלומים וויתור משפטי</h2>
+          <section id="section-11" className={sectionBase}>
+            <h2 className={h2Base}>11. החזרים, תשלומים וויתור משפטי</h2>
 
             <p className={pBase}>
               כל התשלומים, המנויים ודמי השירות ששולמו ל-BizUply הם סופיים
@@ -440,8 +481,8 @@ function PrivacyPolicy() {
             </p>
           </section>
 
-          <section id="section-11" className={sectionBase}>
-            <h2 className={h2Base}>11. הגבלת אחריות</h2>
+          <section id="section-12" className={sectionBase}>
+            <h2 className={h2Base}>12. הגבלת אחריות</h2>
 
             <p className={pBase}>
               BizUply מספקת את שירותיה “כמות שהם” ו-“כפי שהם זמינים”. איננו
@@ -460,9 +501,9 @@ function PrivacyPolicy() {
             </p>
           </section>
 
-          <section id="section-12" className={sectionBase}>
+          <section id="section-13" className={sectionBase}>
             <h2 className={h2Base}>
-              12. מיקום נתונים והעברות בינלאומיות
+              13. מיקום נתונים והעברות בינלאומיות
             </h2>
 
             <p className={pBase}>
@@ -486,8 +527,8 @@ function PrivacyPolicy() {
             </p>
           </section>
 
-          <section id="section-13" className={sectionBase}>
-            <h2 className={h2Base}>13. עדכוני מדיניות והודעות</h2>
+          <section id="section-14" className={sectionBase}>
+            <h2 className={h2Base}>14. עדכוני מדיניות והודעות</h2>
 
             <p className={pBase}>
               BizUply שומרת לעצמה את הזכות לשנות, לעדכן או לתקן מדיניות פרטיות
@@ -507,8 +548,8 @@ function PrivacyPolicy() {
             </p>
           </section>
 
-          <section id="section-14" className={sectionBase}>
-            <h2 className={h2Base}>14. ציות משפטי ושיתוף פעולה</h2>
+          <section id="section-15" className={sectionBase}>
+            <h2 className={h2Base}>15. ציות משפטי ושיתוף פעולה</h2>
 
             <p className={pBase}>
               BizUply פועלת לפי דיני ארצות הברית ומדינת ניו יורק. החברה תשתף
@@ -528,8 +569,8 @@ function PrivacyPolicy() {
             </p>
           </section>
 
-          <section id="section-15" className={sectionBase}>
-            <h2 className={h2Base}>15. כתב ויתור משפטי והיעדר אחריות</h2>
+          <section id="section-16" className={sectionBase}>
+            <h2 className={h2Base}>16. כתב ויתור משפטי והיעדר אחריות</h2>
 
             <p className={pBase}>
               המשתמש מאשר במפורש כי השימוש בפלטפורמת BizUply, בשירותים ובחומרים
@@ -561,8 +602,8 @@ function PrivacyPolicy() {
             </p>
           </section>
 
-          <section id="section-16" className={sectionBase}>
-            <h2 className={h2Base}>16. הדין החל וסמכות שיפוט</h2>
+          <section id="section-17" className={sectionBase}>
+            <h2 className={h2Base}>17. הדין החל וסמכות שיפוט</h2>
 
             <p className={pBase}>
               מדיניות פרטיות זו, יחד עם כל מחלוקת הנובעת מכוחה, תהיה כפופה
@@ -581,9 +622,9 @@ function PrivacyPolicy() {
             </p>
           </section>
 
-          <section id="section-17" className={sectionBase}>
+          <section id="section-18" className={sectionBase}>
             <h2 className={h2Base}>
-              17. פרטי התקשרות וממונה הגנת מידע
+              18. פרטי התקשרות וממונה הגנת מידע
             </h2>
 
             <p className={pBase}>
@@ -611,8 +652,8 @@ function PrivacyPolicy() {
             </p>
           </section>
 
-          <section id="section-18" className={sectionBase}>
-            <h2 className={h2Base}>18. סעיף סופי</h2>
+          <section id="section-19" className={sectionBase}>
+            <h2 className={h2Base}>19. סעיף סופי</h2>
 
             <p className={pBase}>
               בגישה לפלטפורמת BizUply או בשימוש בה, אתם מאשרים שקראתם, הבנתם
@@ -635,7 +676,7 @@ function PrivacyPolicy() {
               <p className="text-sm font-black uppercase tracking-[0.18em] text-amber-300">
                 עודכן לאחרונה
               </p>
-              <p className="mt-2 text-xl font-black">14 באוקטובר 2025</p>
+              <p className="mt-2 text-xl font-black">9 באוגוסט 2026</p>
             </div>
           </section>
         </div>
