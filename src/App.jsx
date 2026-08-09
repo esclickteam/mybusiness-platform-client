@@ -134,6 +134,9 @@ const ManagerDashboard = lazy(() => import("./pages/manager/ManagerDashboard"));
 /* Admin Pages */
 const AdminDashboard = lazy(() => import("./pages/admin/AdminDashboard"));
 const AdminEarlyAccess = lazy(() => import("./pages/admin/AdminEarlyAccess"));
+const AdminManagedWhatsApp = lazy(
+  () => import("./pages/admin/AdminManagedWhatsApp")
+);
 const AdminLogs = lazy(() => import("./pages/admin/AdminLogs"));
 const AdminPlans = lazy(() => import("./pages/admin/AdminPlans"));
 const AdminSettings = lazy(() => import("./pages/admin/AdminSettings"));
@@ -1163,6 +1166,15 @@ export default function App() {
                           element={
                             <ProtectedRoute roles={["admin"]}>
                               <AdminEarlyAccess />
+                            </ProtectedRoute>
+                          }
+                        />
+
+                        <Route
+                          path="/admin/managed-whatsapp"
+                          element={
+                            <ProtectedRoute roles={["admin"]}>
+                              <AdminManagedWhatsApp />
                             </ProtectedRoute>
                           }
                         />

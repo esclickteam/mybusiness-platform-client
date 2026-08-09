@@ -440,12 +440,16 @@ export async function getWhatsAppIntegrationStatus(
     displayPhoneMasked?: string;
     lastTemplatesSyncAt?: string | null;
     hasAccessToken?: boolean;
+    managedModeEnabled?: boolean;
+    customerUnavailableMessage?: string | null;
     managedStatus?: {
       configured?: boolean;
       ready?: boolean;
       reason?: string;
       displayPhoneMasked?: string;
       lastTemplatesSyncAt?: string | null;
+      managedModeEnabled?: boolean;
+      customerUnavailableMessage?: string | null;
     };
   };
 }

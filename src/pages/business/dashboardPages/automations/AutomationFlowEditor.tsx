@@ -394,6 +394,7 @@ function EditorInner({
   const [testing, setTesting] = useState(false);
   const [filter] = useState<PaletteFilter>("all");
   const [waConnected, setWaConnected] = useState(false);
+  const [waManagedModeEnabled, setWaManagedModeEnabled] = useState(true);
   const [waTemplates, setWaTemplates] = useState<ApprovedWhatsAppTemplate[]>([]);
   const [waLoading, setWaLoading] = useState(false);
   const [waSyncError, setWaSyncError] = useState("");
@@ -477,6 +478,13 @@ function EditorInner({
         }),
       ]);
       setWaConnected(Boolean(status.connected || approved.connected));
+      setWaManagedModeEnabled(
+        Boolean(
+          status.managedModeEnabled ??
+            status.managedStatus?.managedModeEnabled ??
+            true
+        )
+      );
       setWaLastSyncAt(
         approved.lastTemplatesSyncAt ||
           status.lastTemplatesSyncAt ||
@@ -484,7 +492,19 @@ function EditorInner({
           null
       );
       setWaTemplates(approved.templates || []);
-      if (!approved.connected && approved.message) {
+      const unavailable =
+        status.customerUnavailableMessage ||
+        status.managedStatus?.customerUnavailableMessage ||
+        (approved as { customerUnavailableMessage?: string })
+          .customerUnavailableMessage ||
+        "";
+      if (!approved.connected) {
+        setWaSyncError(
+          unavailable ||
+            approved.message ||
+            "שירות WhatsApp אינו זמין כרגע. יש לפנות לתמיכה."
+        );
+      } else if (approved.message) {
         setWaSyncError(approved.message);
       }
     } catch (error: unknown) {
@@ -1999,16 +2019,27 @@ function EditorInner({
                     ) : !waConnected ? (
                       <div className="af-wa-template__state af-wa-template__state--error">
                         <p>
-                          {waSyncError ||
-                            "חיבור WhatsApp המנוהל של BizUply אינו מוכן כרגע"}
+                          {waManagedModeEnabled
+                            ? waSyncError ||
+                              "שירות WhatsApp אינו זמין כרגע. יש לפנות לתמיכה."
+                            : "יש לחבר WhatsApp Business של העסק — המצב המנוהל כבוי כרגע."}
                         </p>
-                        <button
-                          type="button"
-                          className="af-toolbar__btn"
-                          onClick={() => void loadApprovedWhatsAppTemplates()}
-                        >
-                          נסיון חוזר
-                        </button>
+                        {waManagedModeEnabled ? (
+                          <button
+                            type="button"
+                            className="af-toolbar__btn"
+                            onClick={() => void loadApprovedWhatsAppTemplates()}
+                          >
+                            נסיון חוזר
+                          </button>
+                        ) : (
+                          <a
+                            className="af-toolbar__btn"
+                            href={`/business/${businessId}/dashboard/whatsapp`}
+                          >
+                            לחיבור WhatsApp Business
+                          </a>
+                        )}
                       </div>
                     ) : waSyncError && waTemplates.length === 0 ? (
                       <div className="af-wa-template__state af-wa-template__state--error">

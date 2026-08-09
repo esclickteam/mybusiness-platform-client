@@ -88,6 +88,10 @@ export default function AutomationsTemplatesPage() {
   >([]);
   const [calendarConnected, setCalendarConnected] = useState(false);
   const [managedWaReady, setManagedWaReady] = useState(false);
+  const [managedModeEnabled, setManagedModeEnabled] = useState(true);
+  const [waUnavailableMessage, setWaUnavailableMessage] = useState<string | null>(
+    null
+  );
   const [aiEntitled, setAiEntitled] = useState(false);
   const [query, setQuery] = useState("");
   const [creatingKey, setCreatingKey] = useState<string | null>(null);
@@ -155,6 +159,18 @@ export default function AutomationsTemplatesPage() {
             (approved.connected && (approved.templates || []).length > 0)
         )
       );
+      const modeOn =
+        waStatus?.managedModeEnabled ??
+        waStatus?.managedStatus?.managedModeEnabled ??
+        true;
+      setManagedModeEnabled(Boolean(modeOn));
+      setWaUnavailableMessage(
+        waStatus?.customerUnavailableMessage ||
+          waStatus?.managedStatus?.customerUnavailableMessage ||
+          (approved as { customerUnavailableMessage?: string })
+            .customerUnavailableMessage ||
+          null
+      );
       setCalendarConnected(
         Boolean(
           calendar?.calendar?.connected ||
@@ -166,6 +182,8 @@ export default function AutomationsTemplatesPage() {
       setTriggers([]);
       setWaTemplates([]);
       setManagedWaReady(false);
+      setManagedModeEnabled(false);
+      setWaUnavailableMessage(null);
     } finally {
       setLoading(false);
     }
@@ -393,6 +411,13 @@ export default function AutomationsTemplatesPage() {
         !managedWaReady &&
         businessId
       ) {
+        if (managedModeEnabled) {
+          toast.error(
+            waUnavailableMessage ||
+              "שירות WhatsApp אינו זמין כרגע. יש לפנות לתמיכה."
+          );
+          return;
+        }
         toast.error("חברו WhatsApp Business לפני הפעלה");
         navigate(`/business/${businessId}/dashboard/whatsapp`);
         return;
@@ -407,6 +432,13 @@ export default function AutomationsTemplatesPage() {
 
     if (needsWaPick) {
       if (!managedWaReady) {
+        if (managedModeEnabled) {
+          toast.error(
+            waUnavailableMessage ||
+              "שירות WhatsApp אינו זמין כרגע. יש לפנות לתמיכה."
+          );
+          return;
+        }
         toast.error("חברו WhatsApp Business לפני הפעלה");
         navigate(`/business/${businessId}/dashboard/whatsapp`);
         return;
@@ -520,17 +552,28 @@ export default function AutomationsTemplatesPage() {
               כל כרטיס אוטומציה הוא blueprint בלבד — בהפעלה בוחרים תבנית Meta
               מאושרת מהקטלוג של העסק. מאושרות כרגע: {waTemplates.length}.
               {!managedWaReady
-                ? " WhatsApp Business עדיין לא מוכן לשליחה."
+                ? managedModeEnabled
+                  ? " שירות WhatsApp אינו זמין כרגע."
+                  : " WhatsApp Business עדיין לא מוכן לשליחה."
                 : ""}
             </p>
           </div>
-          {!managedWaReady && businessId ? (
+          {!managedWaReady && businessId && !managedModeEnabled ? (
             <Link
               className="ax-btn ax-btn--primary"
               to={`/business/${businessId}/dashboard/whatsapp`}
             >
               לחיבור WhatsApp Business
             </Link>
+          ) : null}
+          {!managedWaReady && managedModeEnabled ? (
+            <div className="ax-empty ax-empty--card" style={{ marginBottom: 12 }}>
+              <strong>WhatsApp אינו זמין</strong>
+              <p>
+                {waUnavailableMessage ||
+                  "שירות WhatsApp אינו זמין כרגע. יש לפנות לתמיכה."}
+              </p>
+            </div>
           ) : null}
           {managedWaReady && waTemplates.length === 0 ? (
             <div className="ax-empty ax-empty--card" style={{ marginBottom: 12 }}>
