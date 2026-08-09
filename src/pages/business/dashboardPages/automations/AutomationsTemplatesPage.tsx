@@ -26,101 +26,46 @@ import {
   fetchAutomationTriggerCatalog,
   isAutomationsReadOnly,
   listAutomationRecipes,
+  publishAutomationWorkflow,
   type AutomationRecipeSummary,
   type AutomationTriggerCatalogItem,
 } from "../../../../api/automationWorkflowApi";
-import { readAutomationErrorMessage } from "./automationUiHelpers";
+import { getGoogleCalendarStatus } from "../../../../api/googleCalendarApi";
 import {
-  TEMPLATE_CATEGORIES,
-  getRecipeDisplayDescription,
-  getRecipeDisplayName,
-  getRecipeResultCount,
-  getRecipeResultLabel,
-  getRecipeTriggerLabel,
-  recipeMatchesCategory,
-  type TemplateCategoryId,
-} from "./templateCategoryMapping";
-import {
-  findMissingMessageTemplates,
-  type MessageTemplateGap,
-} from "./systemAutomationCatalog";
-import {
-  LOCAL_SYSTEM_TEMPLATES,
-  buildLocalAutomationGraph,
-  isActiveSystemRecipeKey,
-  resolveTriggerKeyFromCatalog,
-  type LocalAutomationTemplate,
-} from "./localTemplateGraphs";
-import {
+  createWhatsAppAutomation,
+  listApprovedWhatsAppTemplates,
   listWhatsAppTemplates,
+  type ApprovedWhatsAppTemplate,
   type WhatsAppTemplate,
 } from "../../../../api/whatsappApi";
+import { readAutomationErrorMessage } from "./automationUiHelpers";
+import { TEMPLATE_CATEGORIES, type TemplateCategoryId } from "./templateCategoryMapping";
+import {
+  WORKING_TEMPLATES,
+  getTemplateReadiness,
+  listUsableWaTemplates,
+  type TemplateReadiness,
+  type WorkingTemplate,
+} from "./workingTemplates";
 
 type OutletCtx = {
   businessId: string | null;
   readOnly: boolean;
 };
 
-type TemplateCard =
-  | {
-      kind: "recipe";
-      key: string;
-      name: string;
-      description: string;
-      triggerLabel: string;
-      resultLabel: string;
-      nodeCount: number;
-      resultCount: number;
-      categories: TemplateCategoryId[];
-      isAi: boolean;
-      locked: boolean;
-      hardComingSoon: boolean;
-      showComingSoonBadge: boolean;
-      recipe: AutomationRecipeSummary;
-      localFallback?: LocalAutomationTemplate;
-    }
-  | {
-      kind: "local";
-      key: string;
-      name: string;
-      description: string;
-      triggerLabel: string;
-      resultLabel: string;
-      nodeCount: number;
-      resultCount: number;
-      categories: TemplateCategoryId[];
-      isAi: boolean;
-      locked: boolean;
-      hardComingSoon: boolean;
-      showComingSoonBadge: boolean;
-      local: LocalAutomationTemplate;
-    };
+type CardModel = {
+  template: WorkingTemplate;
+  readiness: TemplateReadiness;
+};
 
-function recipeIcon(card: TemplateCard) {
-  if (card.isAi) return Sparkles;
-  const key = card.key;
-  if (key.includes("appointment") || key.includes("reminder") || key.includes("gcal")) {
-    return CalendarDays;
-  }
-  if (key.includes("whatsapp") || key.includes("auto_reply")) return MessageCircle;
-  if (key.includes("client") || key.includes("crm")) return Users;
-  if (key.includes("mail") || key.includes("email")) return Mail;
-  if (key.includes("lead")) return Zap;
+function cardIcon(template: WorkingTemplate) {
+  if (template.categories.includes("ai")) return Sparkles;
+  if (template.categories.includes("appointments")) return CalendarDays;
+  if (template.categories.includes("whatsapp")) return MessageCircle;
+  if (template.categories.includes("email")) return Mail;
+  if (template.categories.includes("crm")) return Users;
+  if (template.categories.includes("leads")) return Zap;
   return Workflow;
-}
-
-function matchesQuery(card: TemplateCard, query: string) {
-  const q = query.trim().toLowerCase();
-  if (!q) return true;
-  return [card.name, card.description, card.triggerLabel, card.resultLabel, card.key]
-    .join(" ")
-    .toLowerCase()
-    .includes(q);
-}
-
-function matchesCategory(card: TemplateCard, category: TemplateCategoryId) {
-  if (category === "all") return true;
-  return card.categories.includes(category);
 }
 
 export default function AutomationsTemplatesPage() {
@@ -129,15 +74,20 @@ export default function AutomationsTemplatesPage() {
   const { businessId, readOnly } = useOutletContext<OutletCtx>();
   const [loading, setLoading] = useState(true);
   const [recipes, setRecipes] = useState<AutomationRecipeSummary[]>([]);
-  const [triggerCatalog, setTriggerCatalog] = useState<
-    AutomationTriggerCatalogItem[]
+  const [triggers, setTriggers] = useState<AutomationTriggerCatalogItem[]>([]);
+  const [waTemplates, setWaTemplates] = useState<
+    Array<WhatsAppTemplate | ApprovedWhatsAppTemplate>
   >([]);
-  const [recipesError, setRecipesError] = useState(false);
-  const [creatingKey, setCreatingKey] = useState<string | null>(null);
-  const [showAiUpgrade, setShowAiUpgrade] = useState(false);
+  const [calendarConnected, setCalendarConnected] = useState(false);
+  const [aiEntitled, setAiEntitled] = useState(false);
   const [query, setQuery] = useState("");
-  const [templateGaps, setTemplateGaps] = useState<MessageTemplateGap[]>([]);
-  const [waTemplates, setWaTemplates] = useState<WhatsAppTemplate[]>([]);
+  const [creatingKey, setCreatingKey] = useState<string | null>(null);
+  const [showBlockedOnly, setShowBlockedOnly] = useState(false);
+  const [picker, setPicker] = useState<{
+    template: WorkingTemplate;
+    readiness: TemplateReadiness;
+    templateId: string;
+  } | null>(null);
 
   const initialCategory = (searchParams.get("focus") === "ai" ||
   searchParams.get("tier") === "ai"
@@ -153,22 +103,46 @@ export default function AutomationsTemplatesPage() {
     if (!businessId) return;
     setLoading(true);
     try {
-      const [result, templates, catalog] = await Promise.all([
-        listAutomationRecipes(businessId),
-        listWhatsAppTemplates(businessId).catch(() => [] as WhatsAppTemplate[]),
-        fetchAutomationTriggerCatalog(businessId).catch(() => ({
-          triggers: [] as AutomationTriggerCatalogItem[],
-        })),
-      ]);
-      setRecipes(result?.recipes || []);
-      setWaTemplates(templates || []);
-      setTriggerCatalog(catalog?.triggers || []);
-      setTemplateGaps(findMissingMessageTemplates(templates || []));
-      setRecipesError(false);
+      const [recipeResult, catalog, approved, allTpl, calendar] =
+        await Promise.all([
+          listAutomationRecipes(businessId),
+          fetchAutomationTriggerCatalog(businessId).catch(() => ({
+            triggers: [] as AutomationTriggerCatalogItem[],
+          })),
+          listApprovedWhatsAppTemplates(businessId).catch(() => ({
+            templates: [] as ApprovedWhatsAppTemplate[],
+          })),
+          listWhatsAppTemplates(businessId, { approvedOnly: true }).catch(
+            () => [] as WhatsAppTemplate[]
+          ),
+          getGoogleCalendarStatus(businessId).catch(() => null),
+        ]);
+
+      const wa = [
+        ...(approved.templates || []),
+        ...(allTpl || []),
+      ];
+      // de-dupe by id
+      const byId = new Map<string, WhatsAppTemplate | ApprovedWhatsAppTemplate>();
+      for (const tpl of wa) {
+        const id = String((tpl as { _id?: string })._id || "");
+        if (id && !byId.has(id)) byId.set(id, tpl);
+      }
+
+      setRecipes(recipeResult?.recipes || []);
+      setAiEntitled(Boolean(recipeResult?.aiAutomationsEntitled));
+      setTriggers(catalog.triggers || []);
+      setWaTemplates(listUsableWaTemplates(Array.from(byId.values())));
+      setCalendarConnected(
+        Boolean(
+          calendar?.calendar?.connected ||
+            calendar?.account?.connectionStatus === "connected"
+        )
+      );
     } catch {
       setRecipes([]);
-      setRecipesError(true);
-      setTemplateGaps(findMissingMessageTemplates([]));
+      setTriggers([]);
+      setWaTemplates([]);
     } finally {
       setLoading(false);
     }
@@ -188,177 +162,198 @@ export default function AutomationsTemplatesPage() {
     }
   }, [searchParams, setSearchParams]);
 
-  const localByCatalogId = useMemo(() => {
-    const map = new Map<string, LocalAutomationTemplate>();
-    for (const local of LOCAL_SYSTEM_TEMPLATES) {
-      map.set(local.catalogId, local);
-      if (local.recipeKey) map.set(local.recipeKey, local);
-    }
-    return map;
-  }, []);
-
-  const cards = useMemo<TemplateCard[]>(() => {
-    const recipeKeys = new Set(recipes.map((r) => r.key));
-
-    const recipeCards: TemplateCard[] = recipes.map((recipe) => {
-      const isAi = recipe.tier === "ai_paid" || Boolean(recipe.isAiRecipe);
-      // Entitlement lock only — do not treat live system recipes as Coming Soon.
-      const locked = Boolean(recipe.aiLocked);
-      const backendComingSoon = Boolean(recipe.comingSoon);
-      const activeService = isActiveSystemRecipeKey(recipe.key) || isAi;
-      const hardComingSoon =
-        backendComingSoon && !activeService && !isAi;
-      const localFallback = localByCatalogId.get(recipe.key);
-
-      return {
-        kind: "recipe",
-        key: recipe.key,
-        name: getRecipeDisplayName(recipe),
-        description: getRecipeDisplayDescription(recipe),
-        triggerLabel: getRecipeTriggerLabel(recipe),
-        resultLabel: getRecipeResultLabel(recipe),
-        nodeCount: recipe.nodeCount,
-        resultCount: getRecipeResultCount(recipe),
-        categories: TEMPLATE_CATEGORIES.map((c) => c.id).filter(
-          (id) => id !== "all" && recipeMatchesCategory(recipe, id)
-        ),
-        isAi,
-        locked,
-        hardComingSoon,
-        // Never show Coming Soon on AI / active system services — only Premium if locked.
-        showComingSoonBadge: hardComingSoon,
-        recipe,
-        localFallback,
-      };
-    });
-
-    const localCards: TemplateCard[] = LOCAL_SYSTEM_TEMPLATES.filter((local) => {
-      // Prefer backend recipe card when the same flow already exists.
-      if (local.recipeKey && recipeKeys.has(local.recipeKey)) return false;
-      if (recipeKeys.has(local.catalogId)) return false;
-      return true;
-    }).map((local) => ({
-      kind: "local" as const,
-      key: local.key,
-      name: local.name,
-      description: local.description,
-      triggerLabel: local.triggerLabel,
-      resultLabel: local.resultLabels.join(" · "),
-      nodeCount: local.nodeCount,
-      resultCount: local.resultCount,
-      categories: local.categories as TemplateCategoryId[],
-      isAi: Boolean(local.isAi),
-      locked: false,
-      hardComingSoon: false,
-      showComingSoonBadge: false,
-      local,
-    }));
-
-    // Local first (reminders/system gaps), then recipes — AI locals fill if recipes missing.
-    return [...localCards, ...recipeCards];
-  }, [localByCatalogId, recipes]);
-
-  const visibleCards = useMemo(
-    () =>
-      cards.filter(
-        (card) => matchesCategory(card, category) && matchesQuery(card, query)
-      ),
-    [cards, category, query]
+  const ctx = useMemo(
+    () => ({
+      recipes,
+      triggers,
+      waTemplates,
+      calendarConnected,
+      aiEntitled,
+    }),
+    [aiEntitled, calendarConnected, recipes, triggers, waTemplates]
   );
 
-  const createFromLocal = async (local: LocalAutomationTemplate) => {
+  const cards = useMemo<CardModel[]>(() => {
+    return WORKING_TEMPLATES.map((template) => ({
+      template,
+      readiness: getTemplateReadiness(template, ctx),
+    })).sort((a, b) => a.template.rank - b.template.rank);
+  }, [ctx]);
+
+  const visibleCards = useMemo(() => {
+    const q = query.trim().toLowerCase();
+    return cards.filter(({ template, readiness }) => {
+      if (category !== "all" && !template.categories.includes(category)) {
+        return false;
+      }
+      if (!showBlockedOnly && !readiness.ready) return false;
+      if (showBlockedOnly && readiness.ready) return false;
+      if (!q) return true;
+      return [
+        template.name,
+        template.description,
+        template.triggerLabel,
+        template.resultLabels.join(" "),
+      ]
+        .join(" ")
+        .toLowerCase()
+        .includes(q);
+    });
+  }, [cards, category, query, showBlockedOnly]);
+
+  const readyCount = cards.filter((c) => c.readiness.ready).length;
+
+  const activateWhatsApp = async (
+    template: WorkingTemplate,
+    templateId: string
+  ) => {
+    if (!businessId || !template.whatsappTrigger) return;
+    await createWhatsAppAutomation(businessId, {
+      name: template.name,
+      trigger: template.whatsappTrigger,
+      templateId,
+      hoursBefore: template.hoursBefore,
+      delayMinutes: template.delayMinutes,
+      delayHours: template.delayHours,
+      delayDays: template.delayDays,
+      enabled: true,
+    });
+    toast.success("האוטומציה הופעלה ופועלת");
+    navigate(`/business/${businessId}/dashboard/whatsapp/automations`);
+  };
+
+  const activateWorkflow = async (
+    template: WorkingTemplate,
+    readiness: TemplateReadiness,
+    waTemplateId?: string
+  ) => {
     if (!businessId) return;
-    const resolvedTriggerKey =
-      resolveTriggerKeyFromCatalog(local, triggerCatalog) || local.triggerKey;
-    const graph = buildLocalAutomationGraph(local, { resolvedTriggerKey });
+
+    const preferGraph =
+      Boolean(template.buildGraph) &&
+      (template.requiresWaTemplate ||
+        template.engine === "workflow_graph" ||
+        !readiness.recipe ||
+        readiness.recipe.canCreate === false ||
+        readiness.recipe.aiLocked ||
+        readiness.recipe.comingSoon);
+
+    // Backend recipe only when it can create AND we don't need to inject WA template
+    if (
+      !preferGraph &&
+      template.engine === "workflow_recipe" &&
+      readiness.recipe &&
+      readiness.recipe.canCreate !== false &&
+      !readiness.recipe.aiLocked &&
+      !readiness.recipe.comingSoon
+    ) {
+      const created = await createAutomationWorkflow(businessId, {
+        recipe: readiness.recipe.key,
+        name: template.name,
+      });
+      try {
+        await publishAutomationWorkflow(businessId, created._id);
+        toast.success("האוטומציה נוצרה והופעלה");
+      } catch (error: unknown) {
+        toast.error(
+          readAutomationErrorMessage(
+            error,
+            "נוצרה אבל לא הופעלה — השלימו הגדרות ופרסמו בבונה"
+          )
+        );
+      }
+      navigate(`/business/${businessId}/dashboard/automations/${created._id}`);
+      return;
+    }
+
+    if (!template.buildGraph) {
+      throw new Error("אין גרף הפעלה לתבנית זו");
+    }
+    const triggerKey = readiness.resolvedTriggerKey || "";
+    if (!triggerKey) throw new Error("חסר טריגר מאושר");
+
+    const graph = template.buildGraph({
+      triggerKey,
+      waTemplateId: waTemplateId || readiness.suggestedWaTemplateId,
+    });
     const created = await createAutomationWorkflow(businessId, {
       useStarter: false,
-      name: local.name,
-      description: local.description,
+      name: template.name,
+      description: template.description,
       nodes: graph.nodes,
       edges: graph.edges,
     });
-    toast.success("נוצרה אוטומציה פעילה: טריגר ← תוצאה");
+    try {
+      await publishAutomationWorkflow(businessId, created._id);
+      toast.success("האוטומציה נוצרה והופעלה");
+    } catch (error: unknown) {
+      toast.error(
+        readAutomationErrorMessage(
+          error,
+          "נוצרה אבל לא הופעלה — בדקו תבנית הודעה/חיבור ופרסמו"
+        )
+      );
+    }
     navigate(`/business/${businessId}/dashboard/automations/${created._id}`);
   };
 
-  const handleCreateRecipe = async (
-    recipe: AutomationRecipeSummary,
-    localFallback?: LocalAutomationTemplate
-  ) => {
+  const handleActivate = async (card: CardModel) => {
     if (!businessId) return;
-    if (recipe.aiLocked) {
-      setShowAiUpgrade(true);
-      return;
-    }
     if (isAutomationsReadOnly()) {
       toast.error(AUTOMATION_PREVIEW_WRITE_BLOCKED_MESSAGE);
       return;
     }
-    setCreatingKey(recipe.key);
+    if (!card.readiness.ready) {
+      toast.error(card.readiness.blocker || "לא ניתן להפעיל כרגע");
+      return;
+    }
+
+    const needsWaPick =
+      card.template.engine === "whatsapp_simple" ||
+      card.template.requiresWaTemplate;
+
+    if (needsWaPick) {
+      setPicker({
+        template: card.template,
+        readiness: card.readiness,
+        templateId: card.readiness.suggestedWaTemplateId || "",
+      });
+      return;
+    }
+
+    setCreatingKey(card.template.key);
     try {
-      // Prefer backend recipe graph when available.
-      try {
-        const created = await createAutomationWorkflow(businessId, {
-          recipe: recipe.key,
-        });
-        toast.success("האוטומציה נוצרה מהתבנית");
-        navigate(
-          `/business/${businessId}/dashboard/automations/${created._id}`
+      await activateWorkflow(card.template, card.readiness);
+    } catch (error: unknown) {
+      toast.error(readAutomationErrorMessage(error, "שגיאה בהפעלת האוטומציה"));
+    } finally {
+      setCreatingKey(null);
+    }
+  };
+
+  const confirmPicker = async () => {
+    if (!picker || !businessId) return;
+    if (!picker.templateId) {
+      toast.error("בחרו תבנית הודעת WhatsApp");
+      return;
+    }
+    setCreatingKey(picker.template.key);
+    try {
+      if (picker.template.engine === "whatsapp_simple") {
+        await activateWhatsApp(picker.template, picker.templateId);
+      } else {
+        await activateWorkflow(
+          picker.template,
+          picker.readiness,
+          picker.templateId
         );
-        return;
-      } catch (recipeError: unknown) {
-        if (localFallback) {
-          await createFromLocal(localFallback);
-          return;
-        }
-        throw recipeError;
       }
+      setPicker(null);
     } catch (error: unknown) {
-      toast.error(readAutomationErrorMessage(error, "שגיאה ביצירת אוטומציה"));
+      toast.error(readAutomationErrorMessage(error, "שגיאה בהפעלת האוטומציה"));
     } finally {
       setCreatingKey(null);
     }
-  };
-
-  const handleCreateLocal = async (local: LocalAutomationTemplate) => {
-    if (!businessId) return;
-    if (isAutomationsReadOnly()) {
-      toast.error(AUTOMATION_PREVIEW_WRITE_BLOCKED_MESSAGE);
-      return;
-    }
-    setCreatingKey(local.key);
-    try {
-      // If linked recipe exists and isn't entitlement-locked, try it first.
-      const linked = recipes.find((r) => r.key === local.recipeKey);
-      if (linked && !linked.aiLocked) {
-        try {
-          const created = await createAutomationWorkflow(businessId, {
-            recipe: linked.key,
-          });
-          toast.success("האוטומציה נוצרה מהתבנית");
-          navigate(
-            `/business/${businessId}/dashboard/automations/${created._id}`
-          );
-          return;
-        } catch {
-          // fall through to local graph
-        }
-      }
-      await createFromLocal(local);
-    } catch (error: unknown) {
-      toast.error(readAutomationErrorMessage(error, "שגיאה ביצירת אוטומציה"));
-    } finally {
-      setCreatingKey(null);
-    }
-  };
-
-  const handleCreate = (card: TemplateCard) => {
-    if (card.kind === "local") {
-      void handleCreateLocal(card.local);
-      return;
-    }
-    void handleCreateRecipe(card.recipe, card.localFallback);
   };
 
   return (
@@ -367,36 +362,14 @@ export default function AutomationsTemplatesPage() {
         <div>
           <h1 className="ax-home__title">תבניות אוטומציה</h1>
           <p className="ax-home__subtitle">
-            תבניות פעילות לפי השירותים במערכת — CRM, פגישות, WhatsApp, אימייל,
-            יומן ו־AI. כל תבנית: טריגר ← תוצאה.
+            רק אוטומציות שאפשר להפעיל באמת במערכת — טריגר ← תוצאה, בלי טיוטות.
           </p>
+        </div>
+        <div className="ax-templates__stats">
+          <strong>{readyCount}</strong>
+          <span>מוכנות להפעלה עכשיו</span>
         </div>
       </header>
-
-      {templateGaps.length > 0 ? (
-        <div className="ax-template-gaps" role="status">
-          <strong>חסרות תבניות הודעת WhatsApp</strong>
-          <p>
-            האוטומציות יווצרו, אבל לשליחה צריך לאשר תבניות Meta (
-            {waTemplates.length} קיימות בעסק):
-          </p>
-          <ul>
-            {templateGaps.map((gap) => (
-              <li key={gap.id}>
-                <em>{gap.title}</em> — {gap.reason}
-              </li>
-            ))}
-          </ul>
-          {businessId ? (
-            <Link
-              className="ax-btn ax-btn--secondary"
-              to={`/business/${businessId}/dashboard/whatsapp/templates`}
-            >
-              לניהול תבניות WhatsApp
-            </Link>
-          ) : null}
-        </div>
-      ) : null}
 
       <div className="ax-templates__toolbar">
         <label className="ax-search">
@@ -404,10 +377,10 @@ export default function AutomationsTemplatesPage() {
           <input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="חפש תבנית"
+            placeholder="חפש תבנית שעובדת"
           />
         </label>
-        <div className="ax-filters" role="tablist" aria-label="קטגוריות תבניות">
+        <div className="ax-filters" role="tablist" aria-label="קטגוריות">
           {TEMPLATE_CATEGORIES.map((item) => (
             <button
               key={item.id}
@@ -421,76 +394,96 @@ export default function AutomationsTemplatesPage() {
             </button>
           ))}
         </div>
+        <label className="ax-templates__toggle">
+          <input
+            type="checkbox"
+            checked={showBlockedOnly}
+            onChange={(e) => setShowBlockedOnly(e.target.checked)}
+          />
+          הצג מה שחסר חיבור/תבנית הודעה
+        </label>
       </div>
 
       {loading ? (
         <div className="ax-empty">
           <Loader2 className="mx-auto mb-2 h-5 w-5 animate-spin" />
-          טוען תבניות מהמערכת...
-        </div>
-      ) : recipesError && visibleCards.length === 0 ? (
-        <div className="ax-empty ax-empty--card">
-          לא ניתן לטעון את התבניות כרגע.
+          בודק מה באמת אפשר להפעיל בעסק שלכם...
         </div>
       ) : visibleCards.length === 0 ? (
         <div className="ax-empty ax-empty--card">
-          <strong>לא נמצאו תבניות</strong>
-          <p>נסו קטגוריה אחרת או שנו את החיפוש.</p>
+          <strong>
+            {showBlockedOnly
+              ? "אין תבניות חסומות בקטגוריה הזו"
+              : "אין כרגע תבניות מוכנות להפעלה"}
+          </strong>
+          <p>
+            {showBlockedOnly
+              ? "נסו קטגוריה אחרת."
+              : "אשרו תבנית WhatsApp או חברו יומן/AI — ואז התבניות יופיעו כאן להפעלה מיידית."}
+          </p>
+          {businessId ? (
+            <Link
+              className="ax-btn ax-btn--primary"
+              to={`/business/${businessId}/dashboard/whatsapp/templates`}
+            >
+              לתבניות WhatsApp
+            </Link>
+          ) : null}
         </div>
       ) : (
         <div className="ax-template-grid">
-          {visibleCards.map((card) => {
-            const Icon = recipeIcon(card);
-            const busy = creatingKey === card.key;
+          {visibleCards.map(({ template, readiness }) => {
+            const Icon = cardIcon(template);
+            const busy = creatingKey === template.key;
+            const isAi = template.categories.includes("ai");
 
             return (
-              <article key={card.key} className="ax-template-card">
+              <article key={template.key} className="ax-template-card">
                 <div className="ax-template-card__top">
                   <span className="ax-template-card__icon" aria-hidden>
-                    {card.isAi ? <Bot size={18} /> : <Icon size={18} />}
+                    {isAi ? <Bot size={18} /> : <Icon size={18} />}
                   </span>
                   <div className="ax-template-card__badges">
-                    {card.isAi ? (
+                    {isAi ? (
                       <span className="ax-badge ax-badge--draft">AI</span>
                     ) : null}
-                    {!card.hardComingSoon && !card.locked ? (
-                      <span className="ax-badge ax-badge--active">פעיל</span>
-                    ) : null}
-                    {card.showComingSoonBadge ? (
-                      <span className="ax-badge ax-badge--paused">בקרוב</span>
-                    ) : null}
-                    {card.locked ? (
-                      <span className="ax-badge ax-badge--draft">Premium</span>
-                    ) : null}
+                    {template.engine === "whatsapp_simple" ? (
+                      <span className="ax-badge ax-badge--active">WhatsApp</span>
+                    ) : (
+                      <span className="ax-badge ax-badge--active">זרימה</span>
+                    )}
+                    {readiness.ready ? (
+                      <span className="ax-badge ax-badge--active">מוכן</span>
+                    ) : (
+                      <span className="ax-badge ax-badge--paused">חסר משהו</span>
+                    )}
                   </div>
                 </div>
 
-                <h3 className="ax-template-card__title">{card.name}</h3>
-                <p className="ax-template-card__desc">{card.description}</p>
+                <h3 className="ax-template-card__title">{template.name}</h3>
+                <p className="ax-template-card__desc">{template.description}</p>
 
                 <div className="ax-template-card__flow">
                   <span className="ax-flow-chip">
                     <em>טריגר</em>
-                    {card.triggerLabel}
+                    {template.triggerLabel}
                   </span>
                   <span className="ax-flow-arrow" aria-hidden>
                     →
                   </span>
                   <span className="ax-flow-chip ax-flow-chip--result">
                     <em>תוצאה</em>
-                    {card.resultLabel}
+                    {template.resultLabels.join(" · ")}
                   </span>
                 </div>
 
-                <div className="ax-template-card__meta">
-                  <span>{card.nodeCount} שלבים</span>
-                  {card.resultCount > 1 ? (
-                    <>
-                      <span>·</span>
-                      <span>{card.resultCount} תוצאות יחד</span>
-                    </>
-                  ) : null}
-                </div>
+                {!readiness.ready && readiness.blocker ? (
+                  <p className="ax-template-card__blocker">{readiness.blocker}</p>
+                ) : readiness.suggestedWaTemplateName ? (
+                  <p className="ax-template-card__hint">
+                    תבנית הודעה מוצעת: {readiness.suggestedWaTemplateName}
+                  </p>
+                ) : null}
 
                 <button
                   type="button"
@@ -498,24 +491,20 @@ export default function AutomationsTemplatesPage() {
                   disabled={
                     !businessId ||
                     Boolean(creatingKey) ||
-                    card.hardComingSoon ||
-                    (readOnly && !card.locked)
+                    !readiness.ready ||
+                    readOnly
                   }
                   title={
-                    card.hardComingSoon
-                      ? "תבנית זו תהיה זמינה בקרוב"
+                    !readiness.ready
+                      ? readiness.blocker
                       : writeBlockedTitle
                   }
-                  onClick={() => handleCreate(card)}
+                  onClick={() => void handleActivate({ template, readiness })}
                 >
                   {busy ? (
                     <Loader2 size={14} className="animate-spin" />
                   ) : null}
-                  {card.hardComingSoon
-                    ? "בקרוב"
-                    : card.locked
-                      ? "למידע על התוסף"
-                      : "השתמש בתבנית"}
+                  {readiness.ready ? "הפעל עכשיו" : "לא מוכן"}
                 </button>
               </article>
             );
@@ -523,28 +512,59 @@ export default function AutomationsTemplatesPage() {
         </div>
       )}
 
-      {showAiUpgrade ? (
+      {picker ? (
         <div className="af-modal-backdrop" role="dialog" aria-modal="true">
-          <div className="af-modal">
+          <div className="af-modal ax-activate-modal">
             <button
               type="button"
               className="af-modal__close"
-              onClick={() => setShowAiUpgrade(false)}
+              onClick={() => setPicker(null)}
             >
               <X size={16} />
             </button>
-            <h2>אוטומציות AI · בתשלום נוסף</h2>
-            <p>
-              תבנית זו דורשת תוסף אוטומציות AI פעיל. אחרי ההפעלה אפשר ליצור
-              ולהריץ אותה במערכת.
-            </p>
-            <button
-              type="button"
-              className="af-btn af-btn--primary"
-              onClick={() => setShowAiUpgrade(false)}
-            >
-              הבנתי
-            </button>
+            <h2>הפעלת «{picker.template.name}»</h2>
+            <p>בחרו תבנית WhatsApp מאושרת — האוטומציה תופעל מיד, בלי טיוטה.</p>
+            <label>
+              תבנית הודעה
+              <select
+                value={picker.templateId}
+                onChange={(e) =>
+                  setPicker((prev) =>
+                    prev ? { ...prev, templateId: e.target.value } : prev
+                  )
+                }
+              >
+                <option value="">בחרו תבנית</option>
+                {waTemplates.map((tpl) => {
+                  const id = String((tpl as { _id?: string })._id || "");
+                  return (
+                    <option key={id} value={id}>
+                      {tpl.name || tpl.key || id}
+                    </option>
+                  );
+                })}
+              </select>
+            </label>
+            <div className="ax-activate-modal__actions">
+              <button
+                type="button"
+                className="af-btn"
+                onClick={() => setPicker(null)}
+              >
+                ביטול
+              </button>
+              <button
+                type="button"
+                className="af-btn af-btn--primary"
+                disabled={!picker.templateId || Boolean(creatingKey)}
+                onClick={() => void confirmPicker()}
+              >
+                {creatingKey ? (
+                  <Loader2 size={14} className="animate-spin" />
+                ) : null}
+                הפעל עכשיו
+              </button>
+            </div>
           </div>
         </div>
       ) : null}
