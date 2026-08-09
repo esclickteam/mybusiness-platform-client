@@ -1,0 +1,12 @@
+[
+  {
+    "templateId": "cyclora",
+    "passed": false,
+    "structuralIssues": [],
+    "visualIssues": [
+      "[desktop] screenshot mismatch ratio=0.7796",
+      "[tablet] screenshot mismatch ratio=0.8050",
+      "[mobile] screenshot mismatch ratio=0.6312"
+    ]
+  }
+]

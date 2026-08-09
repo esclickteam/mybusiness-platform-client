@@ -1,0 +1,12 @@
+{
+  "assets": 1,
+  "BUNDLE_PROD_API_HITS": 0,
+  "PROD_URL_HITS": 0,
+  "STAGING_URL_HITS": 4,
+  "filesWithProd": [],
+  "stagingFilesSample": [
+    "/assets/index-cgS3GA-R.js"
+  ],
+  "htmlProd": 0,
+  "htmlStaging": 0
+}

@@ -1,0 +1,250 @@
+{
+  "startedAt": "2026-08-09T10:06:23.945Z",
+  "finishedAt": "2026-08-09T10:11:49.593Z",
+  "environment": "staging",
+  "businessId": "6a7747f28d40afd18bb35cdb",
+  "email": "e2e-addon@bizuply.test",
+  "overall": "FAIL",
+  "sections": {
+    "A": {
+      "status": "FAIL",
+      "findings": [
+        {
+          "severity": "BLOCKER",
+          "step": "publish without custom domain (API PUT /api/site-builder/site)",
+          "request": "PUT /api/site-builder/site {published:true,slug}",
+          "httpStatus": 403,
+          "response": {
+            "success": false,
+            "error": "Public site mutations blocked on this runtime: STAGING_PUBLIC_SITE_MUTATIONS disabled",
+            "code": "STAGING_SITE_DOMAIN_BLOCKED"
+          },
+          "dbState": {
+            "siteId": "6a785126c957ea89a0292f18",
+            "published": false,
+            "status": "draft",
+            "publicUrl": "",
+            "slug": "draft-msln15iz-q2cyua",
+            "siteDomain": "sites-staging.invalid"
+          },
+          "rootCause": "Staging server refuses publish mutations: STAGING_PUBLIC_SITE_MUTATIONS=0 and no STAGING_PUBLIC_SITE_DOMAIN. assertPublicSiteMutationsAllowed blocks wantsPublish path. Product does NOT require custom domain to publish; staging env policy blocks ALL public publishes."
+        },
+        {
+          "severity": "BLOCKER",
+          "step": "public URL HTTP access",
+          "request": "https://audit-e2e-addon-a1.sites-staging.invalid (and slug check URL)",
+          "httpStatus": 0,
+          "response": {
+            "error": "ENOTFOUND",
+            "note": "TLD .invalid is non-routable by design"
+          },
+          "rootCause": "No real staging public site host configured; client/server fall back to sites-staging.invalid"
+        },
+        {
+          "severity": "HIGH",
+          "step": "UI publish after slug check",
+          "request": "UI modal בדיקת זמינות ופרסום for slug audit-e2e-addon-a1",
+          "httpStatus": 403,
+          "response": "Modal closed; header showed https://audit-e2e-addon-a1.sites-staging.invalid but DB remained draft/unpublished",
+          "rootCause": "Optimistic/local slug UI update despite failed publish (server 403). False sense of successful publish."
+        },
+        {
+          "severity": "HIGH",
+          "step": "publish modal shows production domain on staging",
+          "request": "UI publish modal",
+          "httpStatus": null,
+          "response": "sites.bizuply.com shown as host suffix while staging client VITE_BIZUPLY_PUBLIC_SITE_DOMAIN=sites-staging.invalid",
+          "rootCause": "WebsiteStudioPage uses process.env.NEXT_PUBLIC_BIZUPLY_PUBLIC_SITE_DOMAIN || sites.bizuply.com (wrong env key for Vite), so staging UI advertises production host"
+        },
+        {
+          "severity": "MEDIUM",
+          "step": "editor header URL object-object",
+          "request": "editor header before slug pick",
+          "httpStatus": null,
+          "response": "https://object-object.sites-staging.invalid",
+          "rootCause": "Slug/object stringification bug when draft slug/domain object rendered into URL"
+        }
+      ]
+    },
+    "B": {
+      "status": "BLOCKED_BY_DNS",
+      "findings": [
+        {
+          "severity": "BLOCKER",
+          "step": "connect custom domain API",
+          "request": "PUT /api/site-builder/sites/6a785127c957ea89a0292f2d/custom-domain",
+          "httpStatus": 403,
+          "response": {
+            "code": "STAGING_SITE_DOMAIN_BLOCKED",
+            "error": "Public site mutations blocked on this runtime: STAGING_PUBLIC_SITE_MUTATIONS disabled"
+          },
+          "rootCause": "Same staging public-site mutation gate blocks domain bind before DNS records can be used live"
+        },
+        {
+          "severity": "MEDIUM",
+          "step": "domain UI opens purchase flow",
+          "request": "editor חיבור דומיין",
+          "httpStatus": null,
+          "response": "Panel title: רכישת דומיין חדש לאתר (buy new domain), not connect-existing DNS instructions",
+          "rootCause": "Primary editor entry currently purchase-oriented; connect-existing also available from publish modal link"
+        }
+      ],
+      "requiredToUnblock": {
+        "env": [
+          "STAGING_PUBLIC_SITE_DOMAIN=<dedicated non-prod host e.g. sites-staging.bizuply.com>",
+          "STAGING_PUBLIC_SITE_MUTATIONS=1",
+          "Align client VITE_BIZUPLY_PUBLIC_SITE_DOMAIN to same host (not .invalid)"
+        ],
+        "dnsOnceHostExists": [
+          "Provide an approved staging test domain/subdomain you control",
+          "System will return CNAME records targeting {slug}.{STAGING_PUBLIC_SITE_DOMAIN}",
+          "Do not point staging custom domains at sites.bizuply.com"
+        ],
+        "note": "No external DNS was changed. Stopped before live connect."
+      }
+    },
+    "C": {
+      "status": "FAIL",
+      "findings": [
+        {
+          "severity": "BLOCKER",
+          "step": "domain lifecycle end-to-end",
+          "request": "publish -> connect domain -> disconnect -> republish",
+          "httpStatus": 403,
+          "response": "publish, connect, and disconnect all return STAGING_SITE_DOMAIN_BLOCKED",
+          "rootCause": "Cannot validate coupling between isPublished/customDomain/publicUrl/slug on staging while public mutations are disabled"
+        },
+        {
+          "severity": "HIGH",
+          "step": "disconnect also blocked",
+          "request": "PUT .../custom-domain {disconnect:true}",
+          "httpStatus": 403,
+          "response": {
+            "code": "STAGING_SITE_DOMAIN_BLOCKED"
+          },
+          "rootCause": "ensureSiteMutationsAllowed gates disconnect too"
+        }
+      ]
+    },
+    "D": {
+      "status": "PASS",
+      "findings": [
+        {
+          "severity": "LOW",
+          "step": "empty state UI (pre-create)",
+          "request": "/business/6a7747f28d40afd18bb35cdb/dashboard/website",
+          "httpStatus": 200,
+          "response": "Empty state + צור אתר ראשון visible (user screenshot + prior API sites:[])",
+          "rootCause": "n/a"
+        },
+        {
+          "severity": "LOW",
+          "step": "create site without domain",
+          "request": "POST /api/site-builder/sites",
+          "httpStatus": 201,
+          "response": {
+            "siteId": "6a785126c957ea89a0292f18",
+            "templateKey": "adion"
+          },
+          "rootCause": "n/a"
+        },
+        {
+          "severity": "LOW",
+          "step": "editor opens; publish CTA without requiring domain first",
+          "request": "/website/sites/.../edit",
+          "httpStatus": 200,
+          "response": "Editor loaded Adion template; Publish opens slug modal; draft save allowed without domain",
+          "rootCause": "n/a"
+        },
+        {
+          "severity": "LOW",
+          "step": "entitlements",
+          "request": "GET /api/auth/me",
+          "httpStatus": 200,
+          "response": {
+            "websiteBuilder": "active",
+            "customDomain": "active",
+            "sourceAddOn": "website_addon"
+          },
+          "rootCause": "n/a"
+        }
+      ]
+    },
+    "Security": {
+      "status": "PASS",
+      "findings": [
+        {
+          "severity": "LOW",
+          "step": "unauthenticated publish",
+          "request": "PUT /api/site-builder/site no auth",
+          "httpStatus": 401,
+          "response": {
+            "error": "אין טוקן גישה, אנא התחבר מחדש"
+          },
+          "rootCause": "n/a"
+        },
+        {
+          "severity": "LOW",
+          "step": "monthly plan without websiteBuilder",
+          "request": "GET /api/site-builder/sites as e2e-monthly",
+          "httpStatus": 403,
+          "response": {
+            "code": "FEATURE_NOT_INCLUDED",
+            "feature": "websiteBuilder"
+          },
+          "rootCause": "n/a"
+        },
+        {
+          "severity": "LOW",
+          "step": "IDOR read/edit by other website-entitled business",
+          "request": "GET/PATCH/PUT site A as e2e-website business",
+          "httpStatus": "403/404",
+          "response": {
+            "get": "אין הרשאה לאתר זה",
+            "patch": "האתר לא נמצא",
+            "put": "האתר לא נמצא"
+          },
+          "rootCause": "n/a — isolated"
+        },
+        {
+          "severity": "LOW",
+          "step": "site name unchanged after foreign edit attempts",
+          "request": "GET site A as owner after IDOR attempts",
+          "httpStatus": 200,
+          "response": {
+            "name": "Audit Site A AUDIT-V1-...",
+            "published": false
+          },
+          "rootCause": "n/a"
+        }
+      ]
+    }
+  },
+  "meta": {
+    "siteIds": [
+      "6a785126c957ea89a0292f18",
+      "6a785127c957ea89a0292f2d"
+    ],
+    "urlsChecked": [
+      "https://mybusiness-platform-client-staging.vercel.app/business/6a7747f28d40afd18bb35cdb/dashboard/website",
+      "https://mybusiness-platform-client-staging.vercel.app/business/6a7747f28d40afd18bb35cdb/dashboard/website/sites/6a785126c957ea89a0292f18/edit?template=adion",
+      "https://audit-e2e-addon-a1.sites-staging.invalid",
+      "https://server-staging-15bb.up.railway.app/api/site-builder/public/audit-e2e-addon-a1"
+    ],
+    "domainStatus": "blocked_by_staging_public_site_policy_before_dns",
+    "firstPublishWorked": false,
+    "republishWorked": null,
+    "draftSaveWorked": true,
+    "stagingEnvObserved": {
+      "BIZUPLY_PUBLIC_SITE_DOMAIN": "sites.bizuply.com",
+      "STAGING_PUBLIC_SITE_MUTATIONS": "0",
+      "STAGING_PUBLIC_SITE_DOMAIN": null,
+      "clientVITE_BIZUPLY_PUBLIC_SITE_DOMAIN": "sites-staging.invalid"
+    }
+  },
+  "statements": {
+    "WEBSITE_PUBLISHING_WITHOUT_DOMAIN": "FAIL",
+    "WEBSITE_PUBLISHING_WITH_CUSTOM_DOMAIN": "BLOCKED_BY_DNS",
+    "READY_FOR_PRODUCTION": "NO"
+  }
+}

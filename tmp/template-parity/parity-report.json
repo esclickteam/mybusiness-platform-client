@@ -1,0 +1,1290 @@
+{
+  "base": "http://127.0.0.1:4173",
+  "generatedAt": "2026-08-05T15:26:54.655Z",
+  "templateCount": 212,
+  "viewports": [
+    "desktop",
+    "tablet",
+    "mobile"
+  ],
+  "results": [
+    {
+      "templateId": "adion",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "adspire",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "advisora",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "aeline",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "arbora",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "archora",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "atelierx",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "audiolux",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "aurayoga",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "aurelia",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "autovolt",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "axispoint",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "azureline",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "babynest",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "bagora",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "bakora",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "bladehaus",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "blockwise",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "blushlab",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "booknook",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "brandforge",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "brewline",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "brewora",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "bridaluxe",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "brokeria",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "browline",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "brunchhaus",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "burgerhaus",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "campusly",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "chanel",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "chromabar",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "cinder",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "citadel",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "clearskin",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "closora",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "clothora",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "codehaus",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "contentra",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "coraline",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "cosmella",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "craftora",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "crisisdesk",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "crustora",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "cyclora",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "denimlab",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "dentelle",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "dermara",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "dessertlab",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "dimsumix",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "domora",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "driftwood",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "dunewave",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "dwellist",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "elevora",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "emberplate",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "estateo",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "eventide",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "fernora",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "florique",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "fluxora",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "formara",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "formella",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "fortiva",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "framehaus",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "franchora",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "gelatix",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "gelora",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "gleamora",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "glintica",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "glowhaus",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "glowlab",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "greenbite",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "gridline",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "groomora",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "growthly",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "handcraft",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "homara",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "homecraft",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "horizon",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "horizonix",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "ido",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "influencix",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "insightix",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "insureva",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "jewelis",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "juicepress",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "justora",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "keyora",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "kickora",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "kidwise",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "kinetic",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "landmark",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "lashatelier",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "lashora",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "launchora",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "lectora",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "ledger",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "lenscraft",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "lexhaven",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "lexora",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "linenhaus",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "lobbyhaus",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "lotera",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "loungora",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "lumenware",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "luminelle",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "markora",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "masterly",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "mediavault",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "mentora",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "meridian",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "mezzaline",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "microarch",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "mirage",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "monolith",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "nadlanist",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "nailmuse",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "nailora",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "narrativa",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "nestiq",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "nestora",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "nestware",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "neuralis",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "nexora",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "noodlix",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "noteline",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "novastra",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "numeris",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "openhaus",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "panora",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "parcel",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "partnerly",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "pastafora",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "pawhaus",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "peelora",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "permanova",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "petaluxe",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "petora",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "pharmora",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "pitchora",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "plantora",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "playora",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "podcastix",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "pokeline",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "polyglota",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "primeview",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "prism",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "productix",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "propnex",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "pulsecore",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "pulsefit",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "reelhaus",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "rivara",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "saltforge",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "savory",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "scentora",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "seabloom",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "seafoodix",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "seora",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "serenova",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "servora",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "shawarmia",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "shinora",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "signet",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "silkbar",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "skillforge",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "skyhold",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "skylara",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "smokepit",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "sneakhaus",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "socialux",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "solenne",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "soleora",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "soundline",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "spajade",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "spalcio",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "spiceforge",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "sportifya",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "steelworks",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "streetbite",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "studiora",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "sugarose",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "summitops",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "sunrift",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "sushisen",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "tacoflare",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "talentix",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "tapasora",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "tidehaus",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "tipcraft",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "toolhaus",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "trailhaus",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "urbanix",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "uxforge",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "vaulture",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "velmora",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "velvetine",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "verdant",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "vertex",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "vespera",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "villaire",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "vineria",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "vinora",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "virello",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "vitalcare",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "vitalis",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "vitara",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "vowline",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "wantravel",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "watchora",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "waxelle",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    },
+    {
+      "templateId": "wheelora",
+      "passed": true,
+      "structuralIssues": [],
+      "visualIssues": []
+    }
+  ],
+  "summary": {
+    "checked": 212,
+    "passed": 212,
+    "failed": 0,
+    "visualFailed": 0
+  }
+}

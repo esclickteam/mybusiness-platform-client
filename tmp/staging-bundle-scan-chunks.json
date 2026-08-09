@@ -1,0 +1,76 @@
+{
+  "BUNDLE_PROD_API_HITS": 0,
+  "STAGING_URL_HITS": 7,
+  "details": [
+    {
+      "a": "/assets/index-cgS3GA-R.js",
+      "status": 200,
+      "len": 932356,
+      "prod": 0,
+      "staging": 4
+    },
+    {
+      "a": "/assets/App-Cyfjk5HI.js",
+      "status": 200,
+      "len": 589208,
+      "prod": 0,
+      "staging": 0
+    },
+    {
+      "a": "/assets/AutomationsMain-BoICCfCH.js",
+      "status": 200,
+      "len": 245437,
+      "prod": 0,
+      "staging": 0
+    },
+    {
+      "a": "/assets/WebsiteStudioPage-CAx5BtoT.js",
+      "status": 200,
+      "len": 6895844,
+      "prod": 0,
+      "staging": 3
+    },
+    {
+      "a": "/assets/BusinessDashboardRoutes-Bn7eqd3J.js",
+      "status": 200,
+      "len": 110890,
+      "prod": 0,
+      "staging": 0
+    },
+    {
+      "a": "/assets/CRMLeadsTab-C-ENYPk_.js",
+      "status": 200,
+      "len": 94193,
+      "prod": 0,
+      "staging": 0
+    },
+    {
+      "a": "/assets/CRMClientsTab-D2gu6rcf.js",
+      "status": 200,
+      "len": 112081,
+      "prod": 0,
+      "staging": 0
+    },
+    {
+      "a": "/assets/SiteManagementPanelPage-DNtvZjff.js",
+      "status": 200,
+      "len": 106355,
+      "prod": 0,
+      "staging": 0
+    },
+    {
+      "a": "/assets/AdminSoftphone-BETU5ReG.js",
+      "status": 200,
+      "len": 182672,
+      "prod": 0,
+      "staging": 0
+    },
+    {
+      "a": "/assets/CollabMessagesTab-BWIa8E_v.js",
+      "status": 200,
+      "len": 716717,
+      "prod": 0,
+      "staging": 0
+    }
+  ]
+}

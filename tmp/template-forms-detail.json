@@ -1,0 +1,1730 @@
+[
+  {
+    "file": "src/components/site-builder/studio/data/templates/adion/pages.tsx",
+    "formId": "adion-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"rounded-[2rem] border border-white/10 bg-white/[0.04] p-6 sm:p-8\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/adspire/pages.tsx",
+    "formId": "adspire-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3 border border-white/25 bg-white/10 p-5 backdrop-blur-xl\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" da"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/advisora/pages.tsx",
+    "formId": "advisora-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-4\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"advisora-contact\" data-bizuply-succe"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/advisora/pages.tsx",
+    "formId": "advisora-contact-2",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"mt-6 grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"advisora-contact-2\" data-bizupl"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/aeline/pages.tsx",
+    "formId": "aeline-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-4 rounded-[34px] bg-[#f4efff] p-8\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"aeli"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/arbora/pages.tsx",
+    "formId": "arbora-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"arbora-contact\" data-bizuply-success"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/archora/pages.tsx",
+    "formId": "archora-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"mt-8 grid gap-4\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"archora-contact\" data-bizuply-s"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/atelierx/pages.tsx",
+    "formId": "atelierx-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"border border-black p-6 md:p-8\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"atelierx-contact"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/aurayoga/pages.tsx",
+    "formId": "aurayoga-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-4\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"aurayoga-contact\" data-bizuply-succe"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/aurelia/pages.tsx",
+    "formId": "aurelia-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"p-6 lg:p-10\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"aurelia-contact\" data-bizuply-succe"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/aurelia/pages.tsx",
+    "formId": "aurelia-contact-2",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"m-4 rounded-[42px] border border-[#c9a24b]/12 bg-[#14100d] p-5 lg:m-6 lg:p-7\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/autovolt/pages.tsx",
+    "formId": "autovolt-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-4 border border-white/14 bg-[#0A0F14] p-6 shadow-[0_30px_90px_rgba(56,189,248,0.12)] lg:p-10\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" "
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/axispoint/pages.tsx",
+    "formId": "axispoint-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"axispoint-contact\" data-bizuply-succ"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/azureline/pages.tsx",
+    "formId": "azureline-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"azureline-contact\" data-bizuply-succ"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/bakora/pages.tsx",
+    "formId": "bakora-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3 border p-6\" style={{ borderColor: \"#c4784a\" }} data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/bladehaus/pages.tsx",
+    "formId": "bladehaus-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-4 border-2 border-[var(--a)] bg-black p-6 md:p-9\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizupl"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/bladehaus/pages.tsx",
+    "formId": "bladehaus-contact-2",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"mt-6 grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"bladehaus-contact-2\" data-bizup"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/blockwise/pages.tsx",
+    "formId": "blockwise-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"blockwise-contact\" data-bizuply-succ"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/blushlab/pages.tsx",
+    "formId": "beauty-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3 bg-[var(--surface)]/70 p-6\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"beauty-co"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/brandforge/pages.tsx",
+    "formId": "brandforge-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-0\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"brandforge-contact\" data-bizuply-suc"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/brewline/pages.tsx",
+    "formId": "brewline-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-4 border border-[var(--espresso)]/15 bg-white p-6 shadow-[0_24px_80px_rgba(26,20,16,0.1)] lg:p-10\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"t"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/bridaluxe/pages.tsx",
+    "formId": "beauty-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3 bg-[var(--surface)]/70 p-6\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"beauty-co"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/brokeria/pages.tsx",
+    "formId": "brokeria-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"brokeria-contact\" data-bizuply-succe"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/browline/pages.tsx",
+    "formId": "beauty-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3 bg-[var(--surface)]/70 p-6\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"beauty-co"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/brunchhaus/pages.tsx",
+    "formId": "brunchhaus-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"mt-6 grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"brunchhaus-contact\" data-bizupl"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/burgerhaus/pages.tsx",
+    "formId": "burgerhaus-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3 border p-6\" style={{ borderColor: \"#f59e0b\" }} data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/campusly/pages.tsx",
+    "formId": "campusly-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"mt-6 grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"campusly-contact\" data-bizuply-"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/campusly/pages.tsx",
+    "formId": "campusly-contact-2",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"mt-6 grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"campusly-contact-2\" data-bizupl"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/chanel/pages.tsx",
+    "formId": "chanel-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form\r\n          className=\"mt-8 flex flex-col gap-3 sm:flex-row\"\r\n          onSubmit={handleSubmit}\r\n          data-visual-edit-id=\"home.newsletter.form\"\r\n          data-visual-ed"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/chromabar/pages.tsx",
+    "formId": "beauty-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3 bg-[var(--surface)]/70 p-6\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"beauty-co"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/cinder/pages.tsx",
+    "formId": "cinder-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"cinder-contact\" data-bizuply-success"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/citadel/pages.tsx",
+    "formId": "",
+    "hasBuilder": true,
+    "hasLead": false,
+    "hasSkin": false,
+    "tag": "<form\r\n          data-bizuply-form-builder=\"true\"\r\n          data-visual-editable=\"true\"\r\n          data-visual-edit-id=\"contact.form\"\r\n          data-visual-edit-type=\"box\"\r\n     "
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/clearskin/pages.tsx",
+    "formId": "beauty-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3 bg-[var(--surface)]/70 p-6\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"beauty-co"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/closora/pages.tsx",
+    "formId": "closora-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3 border border-white/15 bg-[var(--bg)] p-4\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-for"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/codehaus/pages.tsx",
+    "formId": "codehaus-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"mt-6 grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"codehaus-contact\" data-bizuply-"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/codehaus/pages.tsx",
+    "formId": "codehaus-contact-2",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"mt-6 grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"codehaus-contact-2\" data-bizupl"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/contentra/pages.tsx",
+    "formId": "contentra-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"contentra-contact\" data-bizuply-succ"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/coraline/pages.tsx",
+    "formId": "coraline-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"coraline-contact\" data-bizuply-succe"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/cosmella/pages.tsx",
+    "formId": "beauty-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3 bg-[var(--surface)]/70 p-6\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"beauty-co"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/craftora/pages.tsx",
+    "formId": "craftora-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"craftora-contact\" data-bizuply-succe"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/craftora/pages.tsx",
+    "formId": "craftora-contact-2",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"mt-6 grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"craftora-contact-2\" data-bizupl"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/crisisdesk/pages.tsx",
+    "formId": "crisisdesk-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"crisisdesk-contact\" data-bizuply-suc"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/crustora/pages.tsx",
+    "formId": "crustora-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"mt-6 grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"crustora-contact\" data-bizuply-"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/dentelle/pages.tsx",
+    "formId": "dentelle-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"de-teal-glow flex min-h-[560px] flex-col justify-between border border-[var(--p)]/30 bg-white p-6 shadow-[0_24px_80px_rgba(15,23,42,0.08)] lg:aspect-square lg:p-10"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/dermara/pages.tsx",
+    "formId": "beauty-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3 bg-[var(--surface)]/70 p-6\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"beauty-co"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/dessertlab/pages.tsx",
+    "formId": "dessertlab-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"ml-8 grid gap-2 border p-3\" style={{ borderColor: \"#e879f9\" }} data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bi"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/dimsumix/pages.tsx",
+    "formId": "dimsumix-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"ml-8 grid gap-2 border p-3\" style={{ borderColor: \"#86efac\" }} data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bi"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/domora/pages.tsx",
+    "formId": "domora-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form\r\n          dir=\"rtl\"\r\n          className=\"rounded-[2rem] bg-white p-6 text-right shadow-xl shadow-black/[0.04]\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" d"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/driftwood/pages.tsx",
+    "formId": "driftwood-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"driftwood-contact\" data-bizuply-succ"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/dunewave/pages.tsx",
+    "formId": "dunewave-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"dunewave-contact\" data-bizuply-succe"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/dwellist/pages.tsx",
+    "formId": "dwellist-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"dwellist-contact\" data-bizuply-succe"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/elevora/elevoraData.ts",
+    "formId": "elevora-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form class=\"elevora-form\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"elevora-contact\" data-bizuply-success-"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/elevora/pages.tsx",
+    "formId": "elevora-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form\r\n                className=\"elevora-form\"\r\n                data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\""
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/emberplate/pages.tsx",
+    "formId": "emberplate-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"tpl-ember-pulse grid gap-3 border p-6\" style={{ borderColor: \"#e85d04\" }} data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"tr"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/estateo/pages.tsx",
+    "formId": "estateo-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"mt-10 grid gap-5\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"estateo-contact\" data-bizuply-"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/eventide/pages.tsx",
+    "formId": "eventide-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"eventide-contact\" data-bizuply-succe"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/florique/pages.tsx",
+    "formId": "florique-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-4\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"florique-contact\" data-bizuply-succe"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/fluxora/pages.tsx",
+    "formId": "fluxora-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"mt-7 grid gap-4\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"fluxora-contact\" data-bizuply-s"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/fluxora/pages.tsx",
+    "formId": "fluxora-contact",
+    "hasBuilder": false,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form\r\n          className=\"m-4 rounded-[30px] border border-white/8 bg-[#070b10]/70 p-6 lg:m-6 lg:p-8\"\r\n          data-bizuply-block=\"lead-form\"\r\n          data-bizuply-form-id=\"f"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/formara/pages.tsx",
+    "formId": "formara-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-4 bg-[#1E1C1A] p-6 lg:p-8\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"formara-cont"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/formara/pages.tsx",
+    "formId": "formara-contact-2",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"mt-6 grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"formara-contact-2\" data-bizuply"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/formella/pages.tsx",
+    "formId": "beauty-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3 bg-[var(--surface)]/70 p-6\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"beauty-co"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/fortiva/pages.tsx",
+    "formId": "fortiva-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"mt-7 grid gap-4\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"fortiva-contact\" data-bizuply-s"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/fortiva/pages.tsx",
+    "formId": "fortiva-contact-2",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"m-4 rounded-2xl bg-[#f6f5f1] p-6 lg:m-6 lg:p-8\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\""
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/framehaus/pages.tsx",
+    "formId": "framehaus-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"mt-8 grid gap-0 border-2 border-black\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"framehaus"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/framehaus/pages.tsx",
+    "formId": "framehaus-contact-2",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-0 bg-white\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"framehaus-contact-2\" data-b"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/franchora/pages.tsx",
+    "formId": "franchora-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"franchora-contact\" data-bizuply-succ"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/gelatix/pages.tsx",
+    "formId": "gelatix-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"ml-8 grid gap-2 border p-3\" style={{ borderColor: \"#e85a8c\" }} data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bi"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/gelora/pages.tsx",
+    "formId": "beauty-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3 bg-[var(--surface)]/70 p-6\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"beauty-co"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/glintica/pages.tsx",
+    "formId": "glintica-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"mt-6 grid gap-4 border border-[var(--p)]/25 bg-[#251F22]/70 p-6 text-right md:p-9\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-bu"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/glintica/pages.tsx",
+    "formId": "glintica-contact-2",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"mt-6 grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"glintica-contact-2\" data-bizupl"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/glowhaus/pages.tsx",
+    "formId": "beauty-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3 bg-[var(--surface)]/70 p-6\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"beauty-co"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/gridline/pages.tsx",
+    "formId": "",
+    "hasBuilder": true,
+    "hasLead": false,
+    "hasSkin": false,
+    "tag": "<form\r\n            data-bizuply-form-builder=\"true\"\r\n            data-visual-editable=\"true\"\r\n            data-visual-edit-id=\"contact.form\"\r\n            data-visual-edit-type=\"box"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/groomora/pages.tsx",
+    "formId": "beauty-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3 bg-[var(--surface)]/70 p-6\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"beauty-co"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/growthly/pages.tsx",
+    "formId": "growthly-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"growthly-contact\" data-bizuply-succe"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/handcraft/pages.tsx",
+    "formId": "handcraft-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"mt-7 grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"handcraft-contact\" data-bizuply"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/homara/pages.tsx",
+    "formId": "homara-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-4 border p-6\" style={{ borderColor: \"rgba(36,48,40,0.14)\", background: \"#f3f0e8\" }} data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizup"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/horizon/pages.tsx",
+    "formId": "horizon-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"border border-r-0 border-[#1c1c1c]/10 bg-[#f7f3ed] p-8 lg:p-12\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-b"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/horizonix/pages.tsx",
+    "formId": "horizonix-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"horizonix-contact\" data-bizuply-succ"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/ido/pages.tsx",
+    "formId": "ido-booking",
+    "hasBuilder": true,
+    "hasLead": false,
+    "hasSkin": false,
+    "tag": "<form\r\n          data-ido-reveal=\"booking-form\"\r\n          data-bizuply-form-id=\"ido-booking\"\r\n          data-bizuply-form-builder=\"true\"\r\n          data-visual-editable=\"true\"\r\n  "
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/influencix/pages.tsx",
+    "formId": "influencix-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"influencix-contact\" data-bizuply-suc"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/insightix/pages.tsx",
+    "formId": "insightix-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"insightix-contact\" data-bizuply-succ"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/insureva/pages.tsx",
+    "formId": "insureva-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3 border border-black/10 bg-[var(--surface)] p-5 md:p-7\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/juicepress/pages.tsx",
+    "formId": "juicepress-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3 border p-6\" style={{ borderColor: \"#f59e0b\" }} data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/justora/pages.tsx",
+    "formId": "justora-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form\r\n            className=\"p-6 lg:p-10\"\r\n            data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"justora-c"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/justora/pages.tsx",
+    "formId": "justora-contact-2",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form\r\n          className=\"m-4 rounded-[40px] bg-[#fbf3e8] p-5 !text-[#2b1b1d] shadow-inner lg:m-6 lg:p-7\"\r\n          data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" d"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/keyora/pages.tsx",
+    "formId": "keyora-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-4 p-8 lg:p-12\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"keyora-contact\" data-biz"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/kidwise/pages.tsx",
+    "formId": "kidwise-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"mt-6 grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"kidwise-contact\" data-bizuply-s"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/kidwise/pages.tsx",
+    "formId": "kidwise-contact-2",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"mt-6 grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"kidwise-contact-2\" data-bizuply"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/kinetic/pages.tsx",
+    "formId": "kinetic-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"border border-r-0 border-white/10 bg-[#111111] p-8 lg:p-12\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizup"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/landmark/pages.tsx",
+    "formId": "landmark-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"landmark-contact\" data-bizuply-succe"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/lashatelier/pages.tsx",
+    "formId": "beauty-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3 bg-[var(--surface)]/70 p-6\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"beauty-co"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/lashora/pages.tsx",
+    "formId": "beauty-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3 bg-[var(--surface)]/70 p-6\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"beauty-co"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/launchora/pages.tsx",
+    "formId": "launchora-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"launchora-contact\" data-bizuply-succ"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/lectora/pages.tsx",
+    "formId": "lectora-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-4 bg-[var(--surface)] p-10 lg:p-14\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"lec"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/lectora/pages.tsx",
+    "formId": "lectora-contact-2",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"mt-6 grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"lectora-contact-2\" data-bizuply"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/ledger/pages.tsx",
+    "formId": "ledger-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"border border-r-0 border-[#102018]/10 bg-[#fffdf8] p-8 lg:p-12\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-b"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/lenscraft/pages.tsx",
+    "formId": "lenscraft-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"mt-8 grid gap-4\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"lenscraft-contact\" data-bizuply"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/lenscraft/pages.tsx",
+    "formId": "lenscraft-contact-2",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"mt-6 grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"lenscraft-contact-2\" data-bizup"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/lexhaven/pages.tsx",
+    "formId": "lexhaven-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-4\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"lexhaven-contact\" data-bizuply-succe"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/lexhaven/pages.tsx",
+    "formId": "lexhaven-contact-2",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"mt-6 grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"lexhaven-contact-2\" data-bizupl"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/lexora/shared.tsx",
+    "formId": "lexora-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form\r\n              className=\"lex-form\"\r\n              data-bizuply-block=\"lead-form\"\r\n              data-bizuply-crm-lead=\"true\"\r\n              data-bizuply-form-builder=\"true\"\r"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/lobbyhaus/pages.tsx",
+    "formId": "lobbyhaus-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"lobbyhaus-contact\" data-bizuply-succ"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/lotera/pages.tsx",
+    "formId": "lotera-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-5 md:grid-cols-2\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"lotera-contact\" data-"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/luminelle/pages.tsx",
+    "formId": "luminelle-booking",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form\r\n          className=\"grid gap-4 border border-white/12 bg-[#211c25] p-6 md:grid-cols-2 md:p-8\"\r\n          data-bizuply-block=\"lead-form\"\r\n          data-bizuply-crm-lead=\"tr"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/luminelle/pages.tsx",
+    "formId": "luminelle-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form\r\n          className=\"mt-7 grid gap-3\"\r\n          data-bizuply-block=\"lead-form\"\r\n          data-bizuply-crm-lead=\"true\"\r\n          data-bizuply-form-builder=\"true\"\r\n        "
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/markora/pages.tsx",
+    "formId": "markora-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-4\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"markora-contact\" data-bizuply-succes"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/markora/pages.tsx",
+    "formId": "markora-contact-2",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"mt-6 grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"markora-contact-2\" data-bizuply"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/masterly/pages.tsx",
+    "formId": "masterly-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"mt-8 grid gap-3 text-right\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"masterly-contact\" da"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/masterly/pages.tsx",
+    "formId": "masterly-contact-2",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"mt-6 grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"masterly-contact-2\" data-bizupl"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/mediavault/pages.tsx",
+    "formId": "mediavault-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-0\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"mediavault-contact\" data-bizuply-suc"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/mentora/pages.tsx",
+    "formId": "mentora-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"mx-auto mt-10 grid max-w-xl gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"mentora-conta"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/mentora/pages.tsx",
+    "formId": "mentora-contact-2",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"mt-6 grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"mentora-contact-2\" data-bizuply"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/meridian/pages.tsx",
+    "formId": "meridian-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"meridian-contact\" data-bizuply-succe"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/mezzaline/pages.tsx",
+    "formId": "mezzaline-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"mezzaline-contact\" data-bizuply-succ"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/microarch/pages.tsx",
+    "formId": "beauty-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3 bg-[var(--surface)]/70 p-6\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"beauty-co"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/mirage/pages.tsx",
+    "formId": "mirage-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"mirage-contact\" data-bizuply-success"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/monolith/pages.tsx",
+    "formId": "",
+    "hasBuilder": true,
+    "hasLead": false,
+    "hasSkin": false,
+    "tag": "<form\r\n            data-bizuply-form-builder=\"true\"\r\n            data-visual-editable=\"true\"\r\n            data-visual-edit-id=\"contact.form\"\r\n            data-visual-edit-type=\"box"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/nadlanist/pages.tsx",
+    "formId": "nadlanist-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form\r\n          dir=\"rtl\"\r\n          className=\"rounded-[2rem] border border-white/10 bg-[#0a182c] p-6 text-right shadow-xl shadow-black/20 sm:p-8\" data-bizuply-block=\"lead-form\" "
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/nailmuse/pages.tsx",
+    "formId": "beauty-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3 bg-[var(--surface)]/70 p-6\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"beauty-co"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/nailora/pages.tsx",
+    "formId": "beauty-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3 bg-[var(--surface)]/70 p-6\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"beauty-co"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/narrativa/pages.tsx",
+    "formId": "narrativa-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"narrativa-contact\" data-bizuply-succ"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/nestiq/pages.tsx",
+    "formId": "nestiq-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"nestiq-contact\" data-bizuply-success"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/nestora/pages.tsx",
+    "formId": "nestora-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3 self-start\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"nestora-contact\" data-biz"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/neuralis/pages.tsx",
+    "formId": "neuralis-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-4\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"neuralis-contact\" data-bizuply-succe"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/nexora/pages.tsx",
+    "formId": "nexora-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"mt-7 grid gap-4\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"nexora-contact\" data-bizuply-su"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/nexora/pages.tsx",
+    "formId": "nexora-contact-2",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"m-4 rounded-[30px] border border-white/8 bg-[#0b1020]/70 p-6 lg:m-6 lg:p-8\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\""
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/noodlix/pages.tsx",
+    "formId": "noodlix-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"tpl-steam-card mt-8 grid w-full max-w-md gap-3 rounded-full border p-8\" style={{ borderColor: \"#3dd6c6\" }} data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"tr"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/noteline/pages.tsx",
+    "formId": "noteline-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"border border-[var(--a)]/40 bg-[var(--surface)] p-8\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/noteline/pages.tsx",
+    "formId": "noteline-contact-2",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"mt-6 grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"noteline-contact-2\" data-bizupl"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/novastra/pages.tsx",
+    "formId": "novastra-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"mt-8 flex flex-col gap-3 sm:flex-row\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"novastra-c"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/numeris/pages.tsx",
+    "formId": "numeris-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-4 border border-[var(--p)]/14 bg-white p-6 shadow-[0_24px_70px_rgba(15,110,86,0.08)] md:p-8\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" d"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/numeris/pages.tsx",
+    "formId": "numeris-contact-2",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"mt-6 grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"numeris-contact-2\" data-bizuply"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/openhaus/pages.tsx",
+    "formId": "openhaus-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"openhaus-contact\" data-bizuply-succe"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/parcel/pages.tsx",
+    "formId": "parcel-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3 self-start\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"parcel-contact\" data-bizu"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/partnerly/pages.tsx",
+    "formId": "partnerly-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"partnerly-contact\" data-bizuply-succ"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/pastafora/pages.tsx",
+    "formId": "pastafora-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"mt-8 grid gap-3 rounded-[2rem] border p-6 text-right\" style={{ borderColor: \"#b91c1c\", background: \"#ffffff\" }} data-bizuply-block=\"lead-form\" data-bizuply-crm-lea"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/pawhaus/pages.tsx",
+    "formId": "pawhaus-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-4\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"pawhaus-contact\" data-bizuply-succes"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/peelora/pages.tsx",
+    "formId": "beauty-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3 bg-[var(--surface)]/70 p-6\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"beauty-co"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/permanova/pages.tsx",
+    "formId": "beauty-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3 bg-[var(--surface)]/70 p-6\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"beauty-co"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/petaluxe/pages.tsx",
+    "formId": "beauty-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3 bg-[var(--surface)]/70 p-6\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"beauty-co"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/pitchora/pages.tsx",
+    "formId": "pitchora-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"pitchora-contact\" data-bizuply-succe"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/plantora/pages.tsx",
+    "formId": "plantora-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"ml-8 grid gap-2 border p-3\" style={{ borderColor: \"#65a30d\" }} data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bi"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/podcastix/pages.tsx",
+    "formId": "podcastix-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"podcastix-contact\" data-bizuply-succ"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/pokeline/pages.tsx",
+    "formId": "pokeline-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"mt-8 grid gap-3 rounded-[2rem] border p-6 text-right\" style={{ borderColor: \"#2dd4bf\", background: \"#0d262c\" }} data-bizuply-block=\"lead-form\" data-bizuply-crm-lea"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/polyglota/pages.tsx",
+    "formId": "polyglota-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"mt-6 grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"polyglota-contact\" data-bizuply"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/polyglota/pages.tsx",
+    "formId": "polyglota-contact-2",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"mt-6 grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"polyglota-contact-2\" data-bizup"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/primeview/pages.tsx",
+    "formId": "primeview-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"primeview-contact\" data-bizuply-succ"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/prism/pages.tsx",
+    "formId": "prism-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-4 border-t border-black bg-[#fffef8] px-6 py-10 md:px-10 lg:border-r lg:border-t-0\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizup"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/productix/pages.tsx",
+    "formId": "productix-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"productix-contact\" data-bizuply-succ"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/propnex/pages.tsx",
+    "formId": "propnex-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"propnex-contact\" data-bizuply-succes"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/pulsecore/pages.tsx",
+    "formId": "pulsecore-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form\r\n      className=\"grid gap-4 rounded-[40px] bg-white p-8 lg:p-12\"\r\n      data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-biz"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/pulsefit/pages.tsx",
+    "formId": "pulsefit-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-4\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"pulsefit-contact\" data-bizuply-succe"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/pulsefit/pages.tsx",
+    "formId": "pulsefit-contact-2",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"mt-6 grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"pulsefit-contact-2\" data-bizupl"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/reelhaus/pages.tsx",
+    "formId": "reelhaus-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"reelhaus-contact\" data-bizuply-succe"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/rivara/pages.tsx",
+    "formId": "rivara-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"rivara-contact\" data-bizuply-success"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/saltforge/pages.tsx",
+    "formId": "saltforge-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"saltforge-contact\" data-bizuply-succ"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/savory/pages.tsx",
+    "formId": "savory-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-4 bg-[var(--s-surface)] p-6 md:grid-cols-2 md:p-9\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizup"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/savory/pages.tsx",
+    "formId": "savory-contact-2",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"mt-7 grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"savory-contact-2\" data-bizuply-"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/seabloom/pages.tsx",
+    "formId": "seabloom-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"seabloom-contact\" data-bizuply-succe"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/seafoodix/pages.tsx",
+    "formId": "seafoodix-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"mt-8 grid gap-3 rounded-[2rem] border p-6 text-right\" style={{ borderColor: \"#38bdf8\", background: \"#0a2430\" }} data-bizuply-block=\"lead-form\" data-bizuply-crm-lea"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/seora/pages.tsx",
+    "formId": "seora-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"seora-contact\" data-bizuply-success-"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/Serenova/pages.tsx",
+    "formId": "",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": true,
+    "tag": "<form\r\n      className={className}\r\n      data-bizuply-block=\"lead-form\"\r\n      data-bizuply-crm-lead=\"true\"\r\n      data-bizuply-form-builder=\"true\"\r\n      data-bizuply-form-id={fo"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/Servora/pages.tsx",
+    "formId": "servora-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form\r\n        className=\"servora-request-form\"\r\n        data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"servora-"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/Servora/servoraData.ts",
+    "formId": "servora-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form class=\"servora-request-form\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"servora-contact\" data-bizuply-"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/shared/RichStoreSiteRuntime.tsx",
+    "formId": "store-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className={cx(\"mx-auto grid max-w-3xl gap-3 border p-6\", skin.card)} data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/shared/StoreSiteRuntime.tsx",
+    "formId": "store-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3 border border-[var(--line)] bg-[var(--surface)] p-6\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-b"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/shawarmia/pages.tsx",
+    "formId": "shawarmia-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3 border p-6\" style={{ borderColor: \"#d97706\" }} data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/shinora/pages.tsx",
+    "formId": "",
+    "hasBuilder": true,
+    "hasLead": false,
+    "hasSkin": false,
+    "tag": "<form\r\n              className=\"mt-8 grid gap-3 md:grid-cols-2\"\r\n              data-bizuply-form-builder=\"true\"\r\n              data-visual-editable=\"true\"\r\n              data-visua"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/signet/pages.tsx",
+    "formId": "signet-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"signet-contact\" data-bizuply-success"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/silkbar/pages.tsx",
+    "formId": "beauty-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3 bg-[var(--surface)]/70 p-6\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"beauty-co"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/skillforge/pages.tsx",
+    "formId": "skillforge-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"mt-6 grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"skillforge-contact\" data-bizupl"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/skyhold/pages.tsx",
+    "formId": "skyhold-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"skyhold-contact\" data-bizuply-succes"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/skylara/pages.tsx",
+    "formId": "skylara-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"skylara-contact\" data-bizuply-succes"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/smokepit/pages.tsx",
+    "formId": "smokepit-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3 border p-6\" style={{ borderColor: \"#ea580c\" }} data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/socialux/pages.tsx",
+    "formId": "socialux-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"socialux-contact\" data-bizuply-succe"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/solenne/pages.tsx",
+    "formId": "solenne-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"solenne-contact\" data-bizuply-succes"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/soundline/pages.tsx",
+    "formId": "soundline-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-4\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"soundline-contact\" data-bizuply-succ"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/spajade/pages.tsx",
+    "formId": "beauty-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3 bg-[var(--surface)]/70 p-6\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"beauty-co"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/spalcio/pages.tsx",
+    "formId": "spalcio-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"spalcio-form rounded-[2rem] bg-white p-7 shadow-sm\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/spiceforge/pages.tsx",
+    "formId": "spiceforge-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"mt-4 grid w-full gap-2\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"spiceforge-contact\" data"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/steelworks/pages.tsx",
+    "formId": "steelworks-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-4 bg-[#111111] px-6 py-10 md:px-10\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"ste"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/streetbite/pages.tsx",
+    "formId": "streetbite-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-2\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"streetbite-contact\" data-bizuply-suc"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/studiora/pages.tsx",
+    "formId": "studiora-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"mt-7 grid gap-4\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"studiora-contact\" data-bizuply-"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/studiora/pages.tsx",
+    "formId": "studiora-contact-2",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"m-4 rounded-[28px] border border-white/8 bg-[#0a0a0a] p-6 lg:m-6 lg:p-8\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"tru"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/sugarose/pages.tsx",
+    "formId": "beauty-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3 bg-[var(--surface)]/70 p-6\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"beauty-co"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/summitops/pages.tsx",
+    "formId": "summitops-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"summitops-contact\" data-bizuply-succ"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/sunrift/pages.tsx",
+    "formId": "sunrift-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"sunrift-contact\" data-bizuply-succes"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/sushisen/pages.tsx",
+    "formId": "sushisen-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"mt-8 grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"sushisen-contact\" data-bizuply-"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/tacoflare/pages.tsx",
+    "formId": "tacoflare-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"mt-8 grid gap-3 rounded-[2rem] border p-6 text-right\" style={{ borderColor: \"#e85d04\", background: \"#251610\" }} data-bizuply-block=\"lead-form\" data-bizuply-crm-lea"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/talentix/pages.tsx",
+    "formId": "talentix-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"talentix-contact\" data-bizuply-succe"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/tapasora/pages.tsx",
+    "formId": "tapasora-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"mt-6 grid gap-2\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"tapasora-contact\" data-bizuply-"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/tidehaus/pages.tsx",
+    "formId": "tidehaus-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"tidehaus-contact\" data-bizuply-succe"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/tipcraft/pages.tsx",
+    "formId": "beauty-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3 bg-[var(--surface)]/70 p-6\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"beauty-co"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/urbanix/pages.tsx",
+    "formId": "urbanix-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-4 md:grid-cols-2\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"urbanix-contact\" data"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/uxforge/pages.tsx",
+    "formId": "uxforge-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"uxforge-contact\" data-bizuply-succes"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/vaulture/pages.tsx",
+    "formId": "vaulture-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"vaulture-contact\" data-bizuply-succe"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/velmora/template-pages/VelmoraContact.tsx",
+    "formId": "velmora-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"rounded-[8px] border border-black/10 bg-white p-7 shadow-[0_24px_90px_rgba(0,0,0,0.09)]\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-f"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/velmora/template-pages/VelmoraHome.tsx",
+    "formId": "velmora-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"velmora-contact\" data-bizuply-succes"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/velvetine/pages.tsx",
+    "formId": "beauty-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3 bg-[var(--surface)]/70 p-6\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"beauty-co"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/verdant/pages.tsx",
+    "formId": "verdant-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-4 bg-[var(--v-surface)] p-8\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"verdant-co"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/verdant/pages.tsx",
+    "formId": "verdant-contact-2",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"mt-6 grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"verdant-contact-2\" data-bizuply"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/vertex/pages.tsx",
+    "formId": "vertex-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"mt-8 grid gap-0 border border-[#00ff8833]\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"verte"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/vertex/pages.tsx",
+    "formId": "vertex-contact-2",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-0 bg-[#0b0b0b]\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"vertex-contact-2\" data-"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/vespera/pages.tsx",
+    "formId": "vespera-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"vespera-contact\" data-bizuply-succes"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/villaire/pages.tsx",
+    "formId": "villaire-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"mt-10 grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"villaire-contact\" data-bizuply"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/vineria/pages.tsx",
+    "formId": "vineria-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-4 border p-6\" style={{ borderColor: \"rgba(245,235,224,0.12)\" }} data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"tru"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/Virello/pages.tsx",
+    "formId": "virello-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"virello-contact\" data-bizuply-success-message=\"תודה! קיבלנו"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/vitalcare/pages.tsx",
+    "formId": "vitalcare-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid content-center gap-4 p-8 md:p-12\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"vitalcare"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/vitalcare/pages.tsx",
+    "formId": "vitalcare-contact-2",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"mt-6 grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"vitalcare-contact-2\" data-bizup"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/vitalis/pages.tsx",
+    "formId": "vitalis-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"mt-7 grid gap-4\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"vitalis-contact\" data-bizuply-s"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/vitalis/pages.tsx",
+    "formId": "vitalis-contact-2",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"m-4 rounded-[30px] bg-white p-6 lg:m-6 lg:p-8\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"v"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/vowline/pages.tsx",
+    "formId": "vowline-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-4 bg-[#F8F4F0] p-6 lg:p-8\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"vowline-cont"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/vowline/pages.tsx",
+    "formId": "vowline-contact-2",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"mt-6 grid gap-3\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"vowline-contact-2\" data-bizuply"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/wantravel/shared.tsx",
+    "formId": "wantravel-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form\r\n              className=\"wan-form\"\r\n              data-bizuply-block=\"lead-form\"\r\n              data-bizuply-crm-lead=\"true\"\r\n              data-bizuply-form-builder=\"true\"\r"
+  },
+  {
+    "file": "src/components/site-builder/studio/data/templates/waxelle/pages.tsx",
+    "formId": "beauty-contact",
+    "hasBuilder": true,
+    "hasLead": true,
+    "hasSkin": false,
+    "tag": "<form className=\"grid gap-3 bg-[var(--surface)]/70 p-6\" data-bizuply-block=\"lead-form\" data-bizuply-crm-lead=\"true\" data-bizuply-form-builder=\"true\" data-bizuply-form-id=\"beauty-co"
+  }
+]

@@ -1,0 +1,88 @@
+{
+  "businessId": "6a77425ce87097243e0a1676",
+  "workflowId": "6a7755e7c4e0ef9e66573eea",
+  "results": [
+    {
+      "id": "auth",
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "id": "create-workflow",
+      "status": "PASS",
+      "note": "6a7755e7c4e0ef9e66573eea"
+    },
+    {
+      "id": "graph-before-insert",
+      "status": "PASS",
+      "note": "nodes=2 edges=1"
+    },
+    {
+      "id": "insert-A-C-B",
+      "status": "FAIL",
+      "note": "locator.waitFor: Timeout 15000ms exceeded.\nCall log:\n  - waiting for locator('.af-edge-add').first() to be visible\n"
+    },
+    {
+      "id": "insert-in-large-flow",
+      "status": "FAIL",
+      "note": "locator.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('.af-edge-add').first()\n"
+    },
+    {
+      "id": "add-end-node",
+      "status": "FAIL",
+      "note": "locator.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for getByRole('button', { name: /הוסף שלב/i }).first()\n"
+    },
+    {
+      "id": "config-drawer",
+      "status": "FAIL",
+      "note": "locator.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('.react-flow__node').first()\n"
+    },
+    {
+      "id": "dirty-true",
+      "status": "FAIL",
+      "note": ""
+    },
+    {
+      "id": "toolbar-save-with-drawer-open",
+      "status": "FAIL",
+      "note": "locator.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('.react-flow__node').first()\n"
+    },
+    {
+      "id": "drawer-save",
+      "status": "FAIL",
+      "note": ""
+    },
+    {
+      "id": "refresh-persistence",
+      "status": "PASS",
+      "note": "A.label=Trigger A"
+    },
+    {
+      "id": "publish-with-drawer-open",
+      "status": "FAIL",
+      "note": "locator.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('.react-flow__node').first()\n"
+    },
+    {
+      "id": "dry-run-with-drawer-open",
+      "status": "FAIL",
+      "note": "locator.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator('.react-flow__node').first()\n"
+    },
+    {
+      "id": "console",
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "id": "network-loops",
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "id": "prod-writes",
+      "status": "PASS",
+      "note": ""
+    }
+  ],
+  "consoleErrors": [],
+  "prodWrites": []
+}

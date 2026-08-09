@@ -1,0 +1,270 @@
+﻿{
+  "id": "dpl_EziTETcnmGRr3PdAFSsqcV4tHPSo",
+  "name": "mybusiness-platform-client-staging",
+  "url": "mybusiness-platform-client-staging-bxc5kwwxn-esclicks-projects.vercel.app",
+  "target": "production",
+  "readyState": "READY",
+  "createdAt": 1786205272518,
+  "aliases": [
+    "mybusiness-platform-client-staging.vercel.app",
+    "mybusiness-platform-client-staging-esclicks-projects.vercel.app"
+  ],
+  "builds": [
+    {
+      "id": "bld_8uedb7efr",
+      "deploymentId": "dpl_EziTETcnmGRr3PdAFSsqcV4tHPSo",
+      "entrypoint": ".",
+      "readyState": "READY",
+      "readyStateAt": 1786205272210,
+      "createdAt": 1786205272210,
+      "createdIn": "sfo1",
+      "use": "@vercel/vc-build",
+      "config": {
+        "nodeVersion": "24.x",
+        "projectCreatedAt": 1786199867732,
+        "vercelConfig": {
+          "rewrites": [
+            {
+              "source": "/:file(google[a-z0-9]+\\.html)",
+              "destination": "/api/google-html?file=:file"
+            },
+            {
+              "source": "/:file(google[a-z0-9]+)",
+              "destination": "/api/google-html?file=:file.html"
+            },
+            {
+              "source": "/api/((?!google-html$|geo$).*)",
+              "destination": "https://server-staging-15bb.up.railway.app/api/$1"
+            },
+            {
+              "source": "/((?!api/|assets/|service-worker\\.js$|site\\.webmanifest$|manifest\\.json$|manifest\\.webmanifest$|favicon[^/]*|android-chrome[^/]*|apple-touch-icon[^/]*|robots\\.txt$|sitemap\\.xml$|softphone-hold\\.mp3$|.*\\.mp3$|.*\\.wav$).*)",
+              "destination": "/index.html"
+            }
+          ],
+          "headers": [
+            {
+              "source": "/service-worker.js",
+              "headers": [
+                {
+                  "key": "Cache-Control",
+                  "value": "no-cache, no-store, must-revalidate"
+                },
+                {
+                  "key": "Service-Worker-Allowed",
+                  "value": "/"
+                },
+                {
+                  "key": "Content-Type",
+                  "value": "application/javascript; charset=utf-8"
+                }
+              ]
+            },
+            {
+              "source": "/softphone-hold.mp3",
+              "headers": [
+                {
+                  "key": "Content-Type",
+                  "value": "audio/mpeg"
+                },
+                {
+                  "key": "Cache-Control",
+                  "value": "public, max-age=86400"
+                },
+                {
+                  "key": "Access-Control-Allow-Origin",
+                  "value": "*"
+                }
+              ]
+            },
+            {
+              "source": "/site.webmanifest",
+              "headers": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/manifest+json; charset=utf-8"
+                },
+                {
+                  "key": "Cache-Control",
+                  "value": "public, max-age=0, must-revalidate"
+                }
+              ]
+            },
+            {
+              "source": "/manifest.json",
+              "headers": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/manifest+json; charset=utf-8"
+                },
+                {
+                  "key": "Cache-Control",
+                  "value": "public, max-age=0, must-revalidate"
+                }
+              ]
+            },
+            {
+              "source": "/sitemap.xml",
+              "headers": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/xml; charset=utf-8"
+                },
+                {
+                  "key": "Cache-Control",
+                  "value": "public, max-age=0, must-revalidate, no-transform"
+                },
+                {
+                  "key": "Vary",
+                  "value": "Accept-Encoding"
+                }
+              ]
+            },
+            {
+              "source": "/robots.txt",
+              "headers": [
+                {
+                  "key": "Content-Type",
+                  "value": "text/plain; charset=utf-8"
+                },
+                {
+                  "key": "Cache-Control",
+                  "value": "public, max-age=0, must-revalidate"
+                }
+              ]
+            },
+            {
+              "source": "/favicon.ico",
+              "headers": [
+                {
+                  "key": "Content-Type",
+                  "value": "image/x-icon"
+                },
+                {
+                  "key": "Cache-Control",
+                  "value": "public, max-age=86400"
+                }
+              ]
+            },
+            {
+              "source": "/index.html",
+              "headers": [
+                {
+                  "key": "Cache-Control",
+                  "value": "no-cache, no-store, must-revalidate"
+                }
+              ]
+            },
+            {
+              "source": "/((?!api/|assets/)[^.]*)",
+              "headers": [
+                {
+                  "key": "Cache-Control",
+                  "value": "no-cache, no-store, must-revalidate"
+                }
+              ]
+            },
+            {
+              "source": "/assets/(.*)",
+              "headers": [
+                {
+                  "key": "Cache-Control",
+                  "value": "public, max-age=31536000, immutable"
+                }
+              ]
+            }
+          ],
+          "cleanUrls": false,
+          "trailingSlash": false,
+          "name": "mybusiness-platform-client-staging",
+          "version": 2
+        }
+      },
+      "middleware": [],
+      "output": [
+        {
+          "prerender": null,
+          "type": "lambda",
+          "path": "api/geo",
+          "digest": "prj_gY61HWt9nR988Qng3Lz7GiymDAMe/389ede1cd05de0b25d500795499a80f80a19c4411cafb095611bd43f3b444dac",
+          "mode": 49590,
+          "size": 3630,
+          "lambda": {
+            "functionName": "team_6it1ChlISyI4bM8KnJ7L6b12-b97433f117524984197df5f6051ea8b135",
+            "deployedTo": [
+              "iad1"
+            ],
+            "runtime": "nodejs24.x",
+            "memorySize": 2048,
+            "timeout": 300,
+            "layers": [
+              "arn:aws:lambda:AWS_REGION_PLACEHOLDER:977805900156:layer:vercel-rusty-runtime-nodejs-1_49_0-production-06a3c7d2da-AWS_ARCH_PLACEHOLDER:1"
+            ]
+          },
+          "edge": null
+        },
+        {
+          "prerender": null,
+          "type": "lambda",
+          "path": "api/google-html",
+          "digest": "prj_gY61HWt9nR988Qng3Lz7GiymDAMe/abd978e53567e133ed36209ee0e887eb7c2ac35a264d4969803cca9d274340e0",
+          "mode": 49590,
+          "size": 4111,
+          "lambda": {
+            "functionName": "team_6it1ChlISyI4bM8KnJ7L6b12-48a84fe75b9ef976c9b30e1bcec4098716",
+            "deployedTo": [
+              "iad1"
+            ],
+            "runtime": "nodejs24.x",
+            "memorySize": 2048,
+            "timeout": 300,
+            "layers": [
+              "arn:aws:lambda:AWS_REGION_PLACEHOLDER:977805900156:layer:vercel-rusty-runtime-nodejs-1_49_0-production-06a3c7d2da-AWS_ARCH_PLACEHOLDER:1"
+            ]
+          },
+          "edge": null
+        },
+        {
+          "prerender": null,
+          "type": "lambda",
+          "path": "middleware",
+          "digest": "prj_gY61HWt9nR988Qng3Lz7GiymDAMe/6dafa9db17fa2ffcf19a82d34a99803be949a975f64bfcf7db089f1ecd86b68e",
+          "mode": 49590,
+          "size": 20151,
+          "lambda": {
+            "functionName": "team_6it1ChlISyI4bM8KnJ7L6b12-4a9c0f2ba377db0307a86eb0e76162516a",
+            "deployedTo": [
+              "arn1",
+              "bom1",
+              "cdg1",
+              "cle1",
+              "cpt1",
+              "dub1",
+              "fra1",
+              "gru1",
+              "hkg1",
+              "hnd1",
+              "iad1",
+              "icn1",
+              "kix1",
+              "lhr1",
+              "pdx1",
+              "sfo1",
+              "sin1",
+              "syd1",
+              "yul1"
+            ],
+            "runtime": "nodejs24.x",
+            "memorySize": 2048,
+            "timeout": 60,
+            "layers": [
+              "arn:aws:lambda:AWS_REGION_PLACEHOLDER:977805900156:layer:vercel-rusty-runtime-edge-1_49_0-production-06a3c7d2da-AWS_ARCH_PLACEHOLDER:1"
+            ]
+          },
+          "edge": null
+        }
+      ],
+      "fingerprint": null
+    }
+  ],
+  "contextName": "esclicks-projects"
+}

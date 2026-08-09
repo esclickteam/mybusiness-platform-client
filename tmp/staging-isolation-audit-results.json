@@ -1,0 +1,85 @@
+{
+  "STAGING_FRONTEND_ISOLATION": "PASS",
+  "productionRequestsObserved": 0,
+  "stagingRequestsObserved": 115,
+  "prodSample": [],
+  "stagingSample": [
+    "POST https://server-staging-15bb.up.railway.app/api/auth/login",
+    "GET https://server-staging-15bb.up.railway.app/api/auth/me?forceRefresh=1",
+    "GET https://server-staging-15bb.up.railway.app/api/business/my/notifications",
+    "GET https://server-staging-15bb.up.railway.app/api/business/my/notifications",
+    "GET https://server-staging-15bb.up.railway.app/api/business/my/notifications",
+    "GET https://server-staging-15bb.up.railway.app/api/crm/leads/reminders/due",
+    "GET https://server-staging-15bb.up.railway.app/api/crm/leads/my",
+    "GET https://server-staging-15bb.up.railway.app/api/business/6a77425ce87097243e0a1676",
+    "GET https://server-staging-15bb.up.railway.app/api/business/my/services",
+    "GET https://server-staging-15bb.up.railway.app/api/appointments?businessId=6a77425ce87097243e0a1676",
+    "GET https://server-staging-15bb.up.railway.app/api/business/my/notifications",
+    "GET https://server-staging-15bb.up.railway.app/api/crm/leads/reminders/due",
+    "GET https://server-staging-15bb.up.railway.app/api/crm/leads/my",
+    "GET https://server-staging-15bb.up.railway.app/api/analytics/dashboard?businessId=6a77425ce87097243e0a1676&startDate=2026-08-02&endDate=2026-08-08&comparisonStartDate=2026-07-26&comparisonEndDate=2026-08-01&resolution=auto&performanceMetric=views",
+    "GET https://server-staging-15bb.up.railway.app/api/business/6a77425ce87097243e0a1676/stats"
+  ],
+  "results": [
+    {
+      "id": "login-api",
+      "status": "PASS",
+      "note": "accessToken issued on staging"
+    },
+    {
+      "id": "auth-refresh-api",
+      "status": "WARN",
+      "note": "refresh=401 refreshAuth=401"
+    },
+    {
+      "id": "login-ui",
+      "status": "PASS",
+      "note": "https://mybusiness-platform-client-staging.vercel.app/business/6a77425ce87097243e0a1676/dashboard/dashboard"
+    },
+    {
+      "id": "auth-refresh-ui",
+      "status": "PASS",
+      "note": "session survived reload"
+    },
+    {
+      "id": "dashboard",
+      "status": "PASS",
+      "note": "url=https://mybusiness-platform-client-staging.vercel.app/business/6a77425ce87097243e0a1676/dashboard/dashboard stagingDelta=20 prodDelta=0 staged=true"
+    },
+    {
+      "id": "crm",
+      "status": "PASS",
+      "note": "url=https://mybusiness-platform-client-staging.vercel.app/business/6a77425ce87097243e0a1676/dashboard/crm/leads stagingDelta=21 prodDelta=0 staged=true"
+    },
+    {
+      "id": "automations",
+      "status": "PASS",
+      "note": "url=https://mybusiness-platform-client-staging.vercel.app/business/6a77425ce87097243e0a1676/dashboard/automations stagingDelta=14 prodDelta=0 staged=true"
+    },
+    {
+      "id": "website-builder",
+      "status": "PASS",
+      "note": "url=https://mybusiness-platform-client-staging.vercel.app/business/6a77425ce87097243e0a1676/dashboard/website stagingDelta=13 prodDelta=0 staged=true"
+    },
+    {
+      "id": "admin",
+      "status": "PASS",
+      "note": "https://mybusiness-platform-client-staging.vercel.app/business/6a77425ce87097243e0a1676/dashboard/website prodDelta=0"
+    },
+    {
+      "id": "business-impersonation",
+      "status": "PASS",
+      "note": "status=403 (staging host only)"
+    },
+    {
+      "id": "socket.io",
+      "status": "PASS",
+      "note": "status=200 body=0{\"sid\":\"lbX0JSgsbz6mZdw4AABj\",\"upgrades\":[\"websocket\"],\"pingInterval\":25000,\"pingTimeout\":20000,\"maxPayload\":1000000}"
+    },
+    {
+      "id": "socket.io-browser",
+      "status": "PASS",
+      "note": "stagingSocketReqs=0 prodSocketReqs=0"
+    }
+  ]
+}

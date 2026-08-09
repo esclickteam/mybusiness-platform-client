@@ -1,0 +1,238 @@
+{
+  "businessId": "6a77425ce87097243e0a1676",
+  "workflowId": "6a774e95319d91150fdd9193",
+  "createVia": "ui",
+  "results": [
+    {
+      "id": "auth-api-login",
+      "status": "PASS",
+      "note": "token issued"
+    },
+    {
+      "id": "sse-probe",
+      "status": "FAIL",
+      "note": "noApi=404 withApi=404 (route file exists; not mounted in server.js)"
+    },
+    {
+      "id": "1-login-ui",
+      "status": "PASS",
+      "note": "/business/6a77425ce87097243e0a1676/dashboard/dashboard"
+    },
+    {
+      "id": "prod-write-guard",
+      "status": "PASS",
+      "note": "no write to api.bizuply.com"
+    },
+    {
+      "id": "2-session-refresh",
+      "status": "PASS",
+      "note": "/business/6a77425ce87097243e0a1676/dashboard/dashboard"
+    },
+    {
+      "id": "3-dashboard",
+      "status": "PASS",
+      "note": "/business/6a77425ce87097243e0a1676/dashboard/dashboard"
+    },
+    {
+      "id": "4-automations-home",
+      "status": "PASS",
+      "note": "/business/6a77425ce87097243e0a1676/dashboard/automations"
+    },
+    {
+      "id": "5-network-staging-api",
+      "status": "PASS",
+      "note": "stagingPaths=16; prodPaths=0"
+    },
+    {
+      "id": "6-no-prod-writes",
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "id": "3-create-blank",
+      "status": "PASS",
+      "note": "viaUI"
+    },
+    {
+      "id": "1-open-by-url",
+      "status": "PASS",
+      "note": "/business/6a77425ce87097243e0a1676/dashboard/automations/6a774e95319d91150fdd9193"
+    },
+    {
+      "id": "2-refresh-editor",
+      "status": "PASS",
+      "note": "/business/6a77425ce87097243e0a1676/dashboard/automations/6a774e95319d91150fdd9193"
+    },
+    {
+      "id": "4-add-trigger",
+      "status": "PASS",
+      "note": "טריגר · ליד חדש ב־CRM"
+    },
+    {
+      "id": "5-add-action",
+      "status": "PASS",
+      "note": "פעולה · משימה"
+    },
+    {
+      "id": "6-insert-between",
+      "status": "FAIL",
+      "note": "nodes=5 edges=1"
+    },
+    {
+      "id": "7-add-end-node",
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "id": "8-config-drawer",
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "id": "9-edit-config",
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "id": "10-close-reopen-persist",
+      "status": "PASS",
+      "note": "Smoke Config Title"
+    },
+    {
+      "id": "11-save",
+      "status": "FAIL",
+      "note": "locator.click: Timeout 15000ms exceeded.\nCall log:\n  - waiting for getByRole('button', { name: /^שמור$/ }).first()\n    - locator resolved to <button type=\"button\" class=\"af-btn af-btn--secondary\">…</button>\n  - attempting click action\n    - waiting for element to be visible, enabled and stable\n    - element is visible, enabled and stable\n    - scrolling into view if needed\n    - done scrolling\n    - <div class=\"af-inspector af-inspector--drawer\">…</div> from <div role=\"presentation\" class=\"af-drawer-backdrop af-drawer-backdrop--config\">…</div> subtree intercepts pointer events\n  - retrying click action\n    - waiting for element to be visible, enabled and stable\n    - element is not enabled\n  - retrying click action\n    - waiting 20ms\n    2 × waiting for element to be visible, enabled and stable\n      - element is not enabled\n    - retrying click action\n      - waiting 100ms\n    28 × waiting for element to be visible, enabled and stable\n       - element is visible, enabled and stable\n       - scrolling into view if needed\n       - done scrolling\n       - <div class=\"af-inspector af-inspector--drawer\">…</div> from <div role=\"presentation\" class=\"af-drawer-backdrop af-drawer-backdrop--config\">…</div> subtree intercepts pointer events\n     - retrying click action\n       - waiting 500ms\n"
+    },
+    {
+      "id": "12-refresh-persist",
+      "status": "PASS",
+      "note": "nodes=5"
+    },
+    {
+      "id": "13-dirty",
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "id": "13-dirty",
+      "status": "FAIL",
+      "note": "locator.click: Timeout 30000ms exceeded.\nCall log:\n  - waiting for getByRole('button', { name: /^שמור$/ }).first()\n    - locator resolved to <button type=\"button\" class=\"af-btn af-btn--secondary\">…</button>\n  - attempting click action\n    2 × waiting for element to be visible, enabled and stable\n      - element is visible, enabled and stable\n      - scrolling into view if needed\n      - done scrolling\n      - <div class=\"af-inspector af-inspector--drawer\">…</div> from <div role=\"presentation\" class=\"af-drawer-backdrop af-drawer-backdrop--config\">…</div> subtree intercepts pointer events\n    - retrying click action\n    - waiting 20ms\n    - waiting for element to be visible, enabled and stable\n    - element is visible, enabled and stable\n    - scrolling into view if needed\n    - done scrolling\n    - <div class=\"af-inspector af-inspector--drawer\">…</div> from <div role=\"presentation\" class=\"af-drawer-backdrop af-drawer-backdrop--config\">…</div> subtree intercepts pointer events\n  2 × retrying click action\n      - waiting 100ms\n      - waiting for element to be visible, enabled and stable\n      - element is not enabled\n  55 × retrying click action\n       - waiting 500ms\n       - waiting for element to be visible, enabled and stable\n       - element is visible, enabled and stable\n       - scrolling into view if needed\n       - done scrolling\n       - <div class=\"af-inspector af-inspector--drawer\">…</div> from <div role=\"presentation\" class=\"af-drawer-backdrop af-drawer-backdrop--config\">…</div> subtree intercepts pointer events\n  - retrying click action\n    - waiting 500ms\n"
+    },
+    {
+      "id": "14-publish",
+      "status": "PASS",
+      "note": "ui"
+    },
+    {
+      "id": "15-pause",
+      "status": "PASS",
+      "note": "ui"
+    },
+    {
+      "id": "16-resume",
+      "status": "PASS",
+      "note": "ui"
+    },
+    {
+      "id": "17-dry-run",
+      "status": "PASS",
+      "note": "status=200"
+    },
+    {
+      "id": "18-validation",
+      "status": "PASS",
+      "note": "publishStatus=400"
+    },
+    {
+      "id": "19-delete-node",
+      "status": "PASS",
+      "note": "2->1"
+    },
+    {
+      "id": "20-canvas-ops",
+      "status": "PASS",
+      "note": "pan/zoom/drag attempted"
+    },
+    {
+      "id": "21-gmail",
+      "status": "PASS",
+      "note": "config fields visible"
+    },
+    {
+      "id": "22-outlook",
+      "status": "PASS",
+      "note": "config fields visible"
+    },
+    {
+      "id": "23-calendar",
+      "status": "PASS",
+      "note": "config fields visible"
+    },
+    {
+      "id": "24-whatsapp",
+      "status": "PASS",
+      "note": "config fields visible"
+    },
+    {
+      "id": "25-delay",
+      "status": "PASS",
+      "note": "config opened"
+    },
+    {
+      "id": "26-condition",
+      "status": "PASS",
+      "note": "config opened"
+    },
+    {
+      "id": "27-router",
+      "status": "PASS",
+      "note": "config opened"
+    },
+    {
+      "id": "28-staging-writable",
+      "status": "PASS",
+      "note": "addDisabled=false"
+    },
+    {
+      "id": "29-console",
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "id": "30-network-loops",
+      "status": "PASS",
+      "note": ""
+    },
+    {
+      "id": "prod-write-final",
+      "status": "PASS",
+      "note": ""
+    }
+  ],
+  "consoleErrors": [],
+  "pageErrors": [],
+  "prodWrites": [],
+  "prodHosts": [],
+  "stagingSample": [
+    "POST /api/auth/login",
+    "GET /api/auth/me",
+    "GET /api/business/my/notifications",
+    "GET /api/crm/leads/reminders/due",
+    "GET /api/crm/leads/my",
+    "GET /api/business/6a77425ce87097243e0a1676",
+    "GET /api/business/my/services",
+    "GET /api/appointments",
+    "GET /api/analytics/dashboard",
+    "GET /api/business/6a77425ce87097243e0a1676/stats",
+    "GET /api/appointments/all-with-services",
+    "GET /api/crm-clients/6a77425ce87097243e0a1676",
+    "POST /api/ai/insights",
+    "GET /api/chat/unread-count",
+    "GET /api/automations",
+    "GET /api/automations/stats",
+    "POST /api/automations",
+    "GET /api/automations/6a774e95319d91150fdd9193",
+    "GET /api/whatsapp/integration/status",
+    "GET /api/whatsapp/templates/approved"
+  ]
+}

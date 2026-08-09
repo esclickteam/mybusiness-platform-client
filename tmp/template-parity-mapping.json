@@ -1,0 +1,2720 @@
+{
+  "generatedAt": "2026-08-05T14:41:29.273Z",
+  "templateCount": 212,
+  "formsSkinnedGlobally": true,
+  "templateIdUnified": true,
+  "sharedRendererPaths": {
+    "catalogPreview": "WebsiteTemplatePreviewPage -> getStudioTemplateRenderer(key).Component",
+    "embedPreview": "EmbedTemplatePreviewPage -> same Component (mode=preview|edit)",
+    "editor": "VisualEditorCanvas -> same Component",
+    "published": "PublicVisualSiteRenderer -> same Component"
+  },
+  "templates": [
+    {
+      "templateId": "adion",
+      "component": "src/components/site-builder/studio/data/templates/adion/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "adion-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "adspire",
+      "component": "src/components/site-builder/studio/data/templates/adspire/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "adspire-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "advisora",
+      "component": "src/components/site-builder/studio/data/templates/advisora/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "advisora-contact",
+        "advisora-contact-2"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "aeline",
+      "component": "src/components/site-builder/studio/data/templates/aeline/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "aeline-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "arbora",
+      "component": "src/components/site-builder/studio/data/templates/arbora/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "arbora-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "archora",
+      "component": "src/components/site-builder/studio/data/templates/archora/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "archora-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "atelierx",
+      "component": "src/components/site-builder/studio/data/templates/atelierx/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "atelierx-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "audiolux",
+      "component": "src/components/site-builder/studio/data/templates/audiolux/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [],
+      "formSkin": "none",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "aurayoga",
+      "component": "src/components/site-builder/studio/data/templates/aurayoga/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "aurayoga-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "aurelia",
+      "component": "src/components/site-builder/studio/data/templates/aurelia/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "aurelia-contact",
+        "aurelia-contact-2"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "autovolt",
+      "component": "src/components/site-builder/studio/data/templates/autovolt/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "autovolt-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "axispoint",
+      "component": "src/components/site-builder/studio/data/templates/axispoint/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "axispoint-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "azureline",
+      "component": "src/components/site-builder/studio/data/templates/azureline/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "azureline-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "babynest",
+      "component": "src/components/site-builder/studio/data/templates/babynest/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [],
+      "formSkin": "none",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "bagora",
+      "component": "src/components/site-builder/studio/data/templates/bagora/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [],
+      "formSkin": "none",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "bakora",
+      "component": "src/components/site-builder/studio/data/templates/bakora/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "bakora-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "bladehaus",
+      "component": "src/components/site-builder/studio/data/templates/bladehaus/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "bladehaus-contact",
+        "bladehaus-contact-2"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "blockwise",
+      "component": "src/components/site-builder/studio/data/templates/blockwise/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "blockwise-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "blushlab",
+      "component": "src/components/site-builder/studio/data/templates/blushlab/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "beauty-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "booknook",
+      "component": "src/components/site-builder/studio/data/templates/booknook/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [],
+      "formSkin": "none",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "brandforge",
+      "component": "src/components/site-builder/studio/data/templates/brandforge/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "brandforge-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "brewline",
+      "component": "src/components/site-builder/studio/data/templates/brewline/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "brewline-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "brewora",
+      "component": "src/components/site-builder/studio/data/templates/brewora/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [],
+      "formSkin": "none",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "bridaluxe",
+      "component": "src/components/site-builder/studio/data/templates/bridaluxe/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "beauty-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "brokeria",
+      "component": "src/components/site-builder/studio/data/templates/brokeria/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "brokeria-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "browline",
+      "component": "src/components/site-builder/studio/data/templates/browline/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "beauty-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "brunchhaus",
+      "component": "src/components/site-builder/studio/data/templates/brunchhaus/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "brunchhaus-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "burgerhaus",
+      "component": "src/components/site-builder/studio/data/templates/burgerhaus/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "burgerhaus-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "campusly",
+      "component": "src/components/site-builder/studio/data/templates/campusly/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "campusly-contact",
+        "campusly-contact-2"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "chanel",
+      "component": "src/components/site-builder/studio/data/templates/chanel/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "chanel-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "chromabar",
+      "component": "src/components/site-builder/studio/data/templates/chromabar/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "beauty-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "cinder",
+      "component": "src/components/site-builder/studio/data/templates/cinder/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "cinder-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "citadel",
+      "component": "src/components/site-builder/studio/data/templates/citadel/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "clearskin",
+      "component": "src/components/site-builder/studio/data/templates/clearskin/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "beauty-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "closora",
+      "component": "src/components/site-builder/studio/data/templates/closora/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "closora-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "clothora",
+      "component": "src/components/site-builder/studio/data/templates/clothora/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [],
+      "formSkin": "none",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "codehaus",
+      "component": "src/components/site-builder/studio/data/templates/codehaus/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "codehaus-contact",
+        "codehaus-contact-2"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "contentra",
+      "component": "src/components/site-builder/studio/data/templates/contentra/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "contentra-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "coraline",
+      "component": "src/components/site-builder/studio/data/templates/coraline/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "coraline-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "cosmella",
+      "component": "src/components/site-builder/studio/data/templates/cosmella/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "beauty-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "craftora",
+      "component": "src/components/site-builder/studio/data/templates/craftora/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "craftora-contact",
+        "craftora-contact-2"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "crisisdesk",
+      "component": "src/components/site-builder/studio/data/templates/crisisdesk/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "crisisdesk-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "crustora",
+      "component": "src/components/site-builder/studio/data/templates/crustora/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "crustora-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "cyclora",
+      "component": "src/components/site-builder/studio/data/templates/cyclora/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [],
+      "formSkin": "none",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "denimlab",
+      "component": "src/components/site-builder/studio/data/templates/denimlab/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [],
+      "formSkin": "none",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "dentelle",
+      "component": "src/components/site-builder/studio/data/templates/dentelle/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "dentelle-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "dermara",
+      "component": "src/components/site-builder/studio/data/templates/dermara/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "beauty-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "dessertlab",
+      "component": "src/components/site-builder/studio/data/templates/dessertlab/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "dessertlab-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "dimsumix",
+      "component": "src/components/site-builder/studio/data/templates/dimsumix/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "dimsumix-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "domora",
+      "component": "src/components/site-builder/studio/data/templates/domora/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "domora-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "driftwood",
+      "component": "src/components/site-builder/studio/data/templates/driftwood/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "driftwood-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "dunewave",
+      "component": "src/components/site-builder/studio/data/templates/dunewave/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "dunewave-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "dwellist",
+      "component": "src/components/site-builder/studio/data/templates/dwellist/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "dwellist-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "elevora",
+      "component": "src/components/site-builder/studio/data/templates/elevora/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "elevora-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "emberplate",
+      "component": "src/components/site-builder/studio/data/templates/emberplate/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "emberplate-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "estateo",
+      "component": "src/components/site-builder/studio/data/templates/estateo/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "estateo-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "eventide",
+      "component": "src/components/site-builder/studio/data/templates/eventide/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "eventide-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "fernora",
+      "component": "src/components/site-builder/studio/data/templates/fernora/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [],
+      "formSkin": "none",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "florique",
+      "component": "src/components/site-builder/studio/data/templates/florique/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "florique-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "fluxora",
+      "component": "src/components/site-builder/studio/data/templates/fluxora/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "fluxora-contact",
+        "fluxora-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "formara",
+      "component": "src/components/site-builder/studio/data/templates/formara/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "formara-contact",
+        "formara-contact-2"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "formella",
+      "component": "src/components/site-builder/studio/data/templates/formella/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "beauty-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "fortiva",
+      "component": "src/components/site-builder/studio/data/templates/fortiva/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "fortiva-contact",
+        "fortiva-contact-2"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "framehaus",
+      "component": "src/components/site-builder/studio/data/templates/framehaus/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "framehaus-contact",
+        "framehaus-contact-2"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "franchora",
+      "component": "src/components/site-builder/studio/data/templates/franchora/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "franchora-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "gelatix",
+      "component": "src/components/site-builder/studio/data/templates/gelatix/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "gelatix-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "gelora",
+      "component": "src/components/site-builder/studio/data/templates/gelora/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "beauty-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "gleamora",
+      "component": "src/components/site-builder/studio/data/templates/gleamora/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [],
+      "formSkin": "none",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "glintica",
+      "component": "src/components/site-builder/studio/data/templates/glintica/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "glintica-contact",
+        "glintica-contact-2"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "glowhaus",
+      "component": "src/components/site-builder/studio/data/templates/glowhaus/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "beauty-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "glowlab",
+      "component": "src/components/site-builder/studio/data/templates/glowlab/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [],
+      "formSkin": "none",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "greenbite",
+      "component": "src/components/site-builder/studio/data/templates/greenbite/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [],
+      "formSkin": "none",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "gridline",
+      "component": "src/components/site-builder/studio/data/templates/gridline/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "groomora",
+      "component": "src/components/site-builder/studio/data/templates/groomora/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "beauty-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "growthly",
+      "component": "src/components/site-builder/studio/data/templates/growthly/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "growthly-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "handcraft",
+      "component": "src/components/site-builder/studio/data/templates/handcraft/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "handcraft-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "homara",
+      "component": "src/components/site-builder/studio/data/templates/homara/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "homara-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "homecraft",
+      "component": "src/components/site-builder/studio/data/templates/homecraft/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [],
+      "formSkin": "none",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "horizon",
+      "component": "src/components/site-builder/studio/data/templates/horizon/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "horizon-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "horizonix",
+      "component": "src/components/site-builder/studio/data/templates/horizonix/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "horizonix-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "ido",
+      "component": "src/components/site-builder/studio/data/templates/ido/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "ido-booking"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "influencix",
+      "component": "src/components/site-builder/studio/data/templates/influencix/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "influencix-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "insightix",
+      "component": "src/components/site-builder/studio/data/templates/insightix/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "insightix-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "insureva",
+      "component": "src/components/site-builder/studio/data/templates/insureva/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "insureva-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "jewelis",
+      "component": "src/components/site-builder/studio/data/templates/jewelis/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [],
+      "formSkin": "none",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "juicepress",
+      "component": "src/components/site-builder/studio/data/templates/juicepress/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "juicepress-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "justora",
+      "component": "src/components/site-builder/studio/data/templates/justora/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "justora-contact",
+        "justora-contact-2"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "keyora",
+      "component": "src/components/site-builder/studio/data/templates/keyora/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "keyora-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "kickora",
+      "component": "src/components/site-builder/studio/data/templates/kickora/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [],
+      "formSkin": "none",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "kidwise",
+      "component": "src/components/site-builder/studio/data/templates/kidwise/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "kidwise-contact",
+        "kidwise-contact-2"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "kinetic",
+      "component": "src/components/site-builder/studio/data/templates/kinetic/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "kinetic-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "landmark",
+      "component": "src/components/site-builder/studio/data/templates/landmark/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "landmark-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "lashatelier",
+      "component": "src/components/site-builder/studio/data/templates/lashatelier/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "beauty-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "lashora",
+      "component": "src/components/site-builder/studio/data/templates/lashora/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "beauty-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "launchora",
+      "component": "src/components/site-builder/studio/data/templates/launchora/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "launchora-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "lectora",
+      "component": "src/components/site-builder/studio/data/templates/lectora/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "lectora-contact",
+        "lectora-contact-2"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "ledger",
+      "component": "src/components/site-builder/studio/data/templates/ledger/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "ledger-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "lenscraft",
+      "component": "src/components/site-builder/studio/data/templates/lenscraft/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "lenscraft-contact",
+        "lenscraft-contact-2"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "lexhaven",
+      "component": "src/components/site-builder/studio/data/templates/lexhaven/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "lexhaven-contact",
+        "lexhaven-contact-2"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "lexora",
+      "component": "src/components/site-builder/studio/data/templates/lexora/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [],
+      "formSkin": "none",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "linenhaus",
+      "component": "src/components/site-builder/studio/data/templates/linenhaus/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [],
+      "formSkin": "none",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "lobbyhaus",
+      "component": "src/components/site-builder/studio/data/templates/lobbyhaus/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "lobbyhaus-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "lotera",
+      "component": "src/components/site-builder/studio/data/templates/lotera/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "lotera-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "loungora",
+      "component": "src/components/site-builder/studio/data/templates/loungora/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [],
+      "formSkin": "none",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "lumenware",
+      "component": "src/components/site-builder/studio/data/templates/lumenware/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [],
+      "formSkin": "none",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "luminelle",
+      "component": "src/components/site-builder/studio/data/templates/luminelle/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "luminelle-booking",
+        "luminelle-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "markora",
+      "component": "src/components/site-builder/studio/data/templates/markora/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "markora-contact",
+        "markora-contact-2"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "masterly",
+      "component": "src/components/site-builder/studio/data/templates/masterly/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "masterly-contact",
+        "masterly-contact-2"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "mediavault",
+      "component": "src/components/site-builder/studio/data/templates/mediavault/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "mediavault-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "mentora",
+      "component": "src/components/site-builder/studio/data/templates/mentora/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "mentora-contact",
+        "mentora-contact-2"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "meridian",
+      "component": "src/components/site-builder/studio/data/templates/meridian/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "meridian-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "mezzaline",
+      "component": "src/components/site-builder/studio/data/templates/mezzaline/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "mezzaline-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "microarch",
+      "component": "src/components/site-builder/studio/data/templates/microarch/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "beauty-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "mirage",
+      "component": "src/components/site-builder/studio/data/templates/mirage/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "mirage-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "monolith",
+      "component": "src/components/site-builder/studio/data/templates/monolith/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "nadlanist",
+      "component": "src/components/site-builder/studio/data/templates/nadlanist/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "nadlanist-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "nailmuse",
+      "component": "src/components/site-builder/studio/data/templates/nailmuse/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "beauty-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "nailora",
+      "component": "src/components/site-builder/studio/data/templates/nailora/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "beauty-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "narrativa",
+      "component": "src/components/site-builder/studio/data/templates/narrativa/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "narrativa-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "nestiq",
+      "component": "src/components/site-builder/studio/data/templates/nestiq/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "nestiq-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "nestora",
+      "component": "src/components/site-builder/studio/data/templates/nestora/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "nestora-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "nestware",
+      "component": "src/components/site-builder/studio/data/templates/nestware/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [],
+      "formSkin": "none",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "neuralis",
+      "component": "src/components/site-builder/studio/data/templates/neuralis/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "neuralis-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "nexora",
+      "component": "src/components/site-builder/studio/data/templates/nexora/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "nexora-contact",
+        "nexora-contact-2"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "noodlix",
+      "component": "src/components/site-builder/studio/data/templates/noodlix/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "noodlix-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "noteline",
+      "component": "src/components/site-builder/studio/data/templates/noteline/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "noteline-contact",
+        "noteline-contact-2"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "novastra",
+      "component": "src/components/site-builder/studio/data/templates/novastra/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "novastra-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "numeris",
+      "component": "src/components/site-builder/studio/data/templates/numeris/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "numeris-contact",
+        "numeris-contact-2"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "openhaus",
+      "component": "src/components/site-builder/studio/data/templates/openhaus/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "openhaus-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "panora",
+      "component": "src/components/site-builder/studio/data/templates/panora/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [],
+      "formSkin": "none",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "parcel",
+      "component": "src/components/site-builder/studio/data/templates/parcel/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "parcel-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "partnerly",
+      "component": "src/components/site-builder/studio/data/templates/partnerly/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "partnerly-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "pastafora",
+      "component": "src/components/site-builder/studio/data/templates/pastafora/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "pastafora-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "pawhaus",
+      "component": "src/components/site-builder/studio/data/templates/pawhaus/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "pawhaus-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "peelora",
+      "component": "src/components/site-builder/studio/data/templates/peelora/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "beauty-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "permanova",
+      "component": "src/components/site-builder/studio/data/templates/permanova/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "beauty-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "petaluxe",
+      "component": "src/components/site-builder/studio/data/templates/petaluxe/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "beauty-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "petora",
+      "component": "src/components/site-builder/studio/data/templates/petora/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [],
+      "formSkin": "none",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "pharmora",
+      "component": "src/components/site-builder/studio/data/templates/pharmora/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [],
+      "formSkin": "none",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "pitchora",
+      "component": "src/components/site-builder/studio/data/templates/pitchora/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "pitchora-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "plantora",
+      "component": "src/components/site-builder/studio/data/templates/plantora/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "plantora-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "playora",
+      "component": "src/components/site-builder/studio/data/templates/playora/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [],
+      "formSkin": "none",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "podcastix",
+      "component": "src/components/site-builder/studio/data/templates/podcastix/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "podcastix-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "pokeline",
+      "component": "src/components/site-builder/studio/data/templates/pokeline/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "pokeline-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "polyglota",
+      "component": "src/components/site-builder/studio/data/templates/polyglota/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "polyglota-contact",
+        "polyglota-contact-2"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "primeview",
+      "component": "src/components/site-builder/studio/data/templates/primeview/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "primeview-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "prism",
+      "component": "src/components/site-builder/studio/data/templates/prism/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "prism-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "productix",
+      "component": "src/components/site-builder/studio/data/templates/productix/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "productix-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "propnex",
+      "component": "src/components/site-builder/studio/data/templates/propnex/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "propnex-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "pulsecore",
+      "component": "src/components/site-builder/studio/data/templates/pulsecore/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "pulsecore-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "pulsefit",
+      "component": "src/components/site-builder/studio/data/templates/pulsefit/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "pulsefit-contact",
+        "pulsefit-contact-2"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "reelhaus",
+      "component": "src/components/site-builder/studio/data/templates/reelhaus/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "reelhaus-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "rivara",
+      "component": "src/components/site-builder/studio/data/templates/rivara/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "rivara-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "saltforge",
+      "component": "src/components/site-builder/studio/data/templates/saltforge/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "saltforge-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "savory",
+      "component": "src/components/site-builder/studio/data/templates/savory/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "savory-contact",
+        "savory-contact-2"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "scentora",
+      "component": "src/components/site-builder/studio/data/templates/scentora/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [],
+      "formSkin": "none",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "seabloom",
+      "component": "src/components/site-builder/studio/data/templates/seabloom/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "seabloom-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "seafoodix",
+      "component": "src/components/site-builder/studio/data/templates/seafoodix/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "seafoodix-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "seora",
+      "component": "src/components/site-builder/studio/data/templates/seora/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "seora-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "serenova",
+      "component": "src/components/site-builder/studio/data/templates/Serenova/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "servora",
+      "component": "src/components/site-builder/studio/data/templates/Servora/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "servora-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "shawarmia",
+      "component": "src/components/site-builder/studio/data/templates/shawarmia/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "shawarmia-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "shinora",
+      "component": "src/components/site-builder/studio/data/templates/shinora/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "signet",
+      "component": "src/components/site-builder/studio/data/templates/signet/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "signet-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "silkbar",
+      "component": "src/components/site-builder/studio/data/templates/silkbar/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "beauty-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "skillforge",
+      "component": "src/components/site-builder/studio/data/templates/skillforge/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "skillforge-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "skyhold",
+      "component": "src/components/site-builder/studio/data/templates/skyhold/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "skyhold-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "skylara",
+      "component": "src/components/site-builder/studio/data/templates/skylara/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "skylara-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "smokepit",
+      "component": "src/components/site-builder/studio/data/templates/smokepit/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "smokepit-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "sneakhaus",
+      "component": "src/components/site-builder/studio/data/templates/sneakhaus/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [],
+      "formSkin": "none",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "socialux",
+      "component": "src/components/site-builder/studio/data/templates/socialux/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "socialux-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "solenne",
+      "component": "src/components/site-builder/studio/data/templates/solenne/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "solenne-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "soleora",
+      "component": "src/components/site-builder/studio/data/templates/soleora/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [],
+      "formSkin": "none",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "soundline",
+      "component": "src/components/site-builder/studio/data/templates/soundline/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "soundline-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "spajade",
+      "component": "src/components/site-builder/studio/data/templates/spajade/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "beauty-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "spalcio",
+      "component": "src/components/site-builder/studio/data/templates/spalcio/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "spalcio-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "spiceforge",
+      "component": "src/components/site-builder/studio/data/templates/spiceforge/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "spiceforge-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "sportifya",
+      "component": "src/components/site-builder/studio/data/templates/sportifya/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [],
+      "formSkin": "none",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "steelworks",
+      "component": "src/components/site-builder/studio/data/templates/steelworks/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "steelworks-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "streetbite",
+      "component": "src/components/site-builder/studio/data/templates/streetbite/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "streetbite-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "studiora",
+      "component": "src/components/site-builder/studio/data/templates/studiora/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "studiora-contact",
+        "studiora-contact-2"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "sugarose",
+      "component": "src/components/site-builder/studio/data/templates/sugarose/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "beauty-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "summitops",
+      "component": "src/components/site-builder/studio/data/templates/summitops/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "summitops-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "sunrift",
+      "component": "src/components/site-builder/studio/data/templates/sunrift/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "sunrift-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "sushisen",
+      "component": "src/components/site-builder/studio/data/templates/sushisen/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "sushisen-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "tacoflare",
+      "component": "src/components/site-builder/studio/data/templates/tacoflare/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "tacoflare-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "talentix",
+      "component": "src/components/site-builder/studio/data/templates/talentix/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "talentix-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "tapasora",
+      "component": "src/components/site-builder/studio/data/templates/tapasora/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "tapasora-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "tidehaus",
+      "component": "src/components/site-builder/studio/data/templates/tidehaus/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "tidehaus-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "tipcraft",
+      "component": "src/components/site-builder/studio/data/templates/tipcraft/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "beauty-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "toolhaus",
+      "component": "src/components/site-builder/studio/data/templates/toolhaus/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [],
+      "formSkin": "none",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "trailhaus",
+      "component": "src/components/site-builder/studio/data/templates/trailhaus/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [],
+      "formSkin": "none",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "urbanix",
+      "component": "src/components/site-builder/studio/data/templates/urbanix/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "urbanix-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "uxforge",
+      "component": "src/components/site-builder/studio/data/templates/uxforge/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "uxforge-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "vaulture",
+      "component": "src/components/site-builder/studio/data/templates/vaulture/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "vaulture-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "velmora",
+      "component": "src/components/site-builder/studio/data/templates/velmora/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [],
+      "formSkin": "none",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "velvetine",
+      "component": "src/components/site-builder/studio/data/templates/velvetine/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "beauty-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "verdant",
+      "component": "src/components/site-builder/studio/data/templates/verdant/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "verdant-contact",
+        "verdant-contact-2"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "vertex",
+      "component": "src/components/site-builder/studio/data/templates/vertex/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "vertex-contact",
+        "vertex-contact-2"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "vespera",
+      "component": "src/components/site-builder/studio/data/templates/vespera/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "vespera-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "villaire",
+      "component": "src/components/site-builder/studio/data/templates/villaire/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "villaire-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "vineria",
+      "component": "src/components/site-builder/studio/data/templates/vineria/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "vineria-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "vinora",
+      "component": "src/components/site-builder/studio/data/templates/vinora/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [],
+      "formSkin": "none",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "virello",
+      "component": "src/components/site-builder/studio/data/templates/Virello/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "virello-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "vitalcare",
+      "component": "src/components/site-builder/studio/data/templates/vitalcare/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "vitalcare-contact",
+        "vitalcare-contact-2"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "vitalis",
+      "component": "src/components/site-builder/studio/data/templates/vitalis/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "vitalis-contact",
+        "vitalis-contact-2"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "vitara",
+      "component": "src/components/site-builder/studio/data/templates/vitara/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [],
+      "formSkin": "none",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "vowline",
+      "component": "src/components/site-builder/studio/data/templates/vowline/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "vowline-contact",
+        "vowline-contact-2"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "wantravel",
+      "component": "src/components/site-builder/studio/data/templates/wantravel/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [],
+      "formSkin": "none",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "watchora",
+      "component": "src/components/site-builder/studio/data/templates/watchora/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [],
+      "formSkin": "none",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "waxelle",
+      "component": "src/components/site-builder/studio/data/templates/waxelle/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [
+        "beauty-contact"
+      ],
+      "formSkin": "template",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    },
+    {
+      "templateId": "wheelora",
+      "component": "src/components/site-builder/studio/data/templates/wheelora/pages.tsx",
+      "dataPreview": "renderer.defaultData via WebsiteTemplatePreviewPage / EmbedTemplatePreviewPage",
+      "dataEditor": "live editor.data (seeded from renderer.defaultData)",
+      "dataPublished": "saved visual snapshot via PublicVisualSiteRenderer",
+      "forms": [],
+      "formSkin": "none",
+      "templateIdSplit": false,
+      "innerHtmlRewriteRisk": "mitigated by data-bizuply-form-skin=template + syncTemplateSkinnedFormFromConfig"
+    }
+  ]
+}
