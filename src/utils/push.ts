@@ -100,8 +100,11 @@ export type SubscribeResult = {
     | "no-sw"
     | "no-key"
     | "ios-install"
+    | "entitlement-required"
     | "error";
   detail?: string;
+  code?: string;
+  status?: number;
 };
 
 async function createPushSubscription(
@@ -174,10 +177,33 @@ export async function subscribeToPush(): Promise<SubscribeResult> {
     return { ok: true };
   } catch (err) {
     console.error("subscribeToPush failed:", err);
+    const anyErr = err as {
+      status?: number;
+      code?: string;
+      message?: string;
+      response?: { status?: number; data?: { code?: string; error?: string } };
+    };
+    const status = anyErr.response?.status ?? anyErr.status;
+    const code = anyErr.response?.data?.code || anyErr.code;
+    if (status === 402 || code === "PUSH_ENTITLEMENT_REQUIRED") {
+      return {
+        ok: false,
+        reason: "entitlement-required",
+        detail:
+          anyErr.response?.data?.error ||
+          anyErr.message ||
+          "entitlement required",
+        code:
+          typeof code === "string" ? code : "PUSH_ENTITLEMENT_REQUIRED",
+        status: 402,
+      };
+    }
     return {
       ok: false,
       reason: "error",
       detail: err instanceof Error ? err.message : "subscribe failed",
+      code: typeof code === "string" ? code : undefined,
+      status: typeof status === "number" ? status : undefined,
     };
   }
 }
