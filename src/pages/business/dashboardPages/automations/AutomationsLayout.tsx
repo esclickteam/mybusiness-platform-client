@@ -16,12 +16,14 @@ import {
   AUTOMATION_PREVIEW_WRITE_BLOCKED_MESSAGE,
   createAutomationWorkflow,
   isAutomationsReadOnly,
+  publishAutomationWorkflow,
 } from "../../../../api/automationWorkflowApi";
 import { readAutomationErrorMessage } from "./automationUiHelpers";
 import {
   LOCAL_SYSTEM_TEMPLATES,
   buildLocalAutomationGraph,
 } from "./localTemplateGraphs";
+import { WORKING_TEMPLATES } from "./workingTemplates";
 import "./automationFlow.css";
 import "./automationsHome.css";
 
@@ -82,18 +84,52 @@ export default function AutomationsLayout() {
         setSearchParams(next, { replace: true });
       };
       try {
+        const openCreated = async (
+          createdId: string,
+          successMessage: string
+        ) => {
+          try {
+            await publishAutomationWorkflow(businessId, createdId);
+            toast.success(successMessage);
+          } catch (error: unknown) {
+            toast.error(
+              readAutomationErrorMessage(
+                error,
+                "נוצרה אבל לא הופעלה — השלימו הגדרות ופרסמו בבונה"
+              )
+            );
+          }
+          clearRecipeParam();
+          navigate(`${basePath}/${createdId}`, { replace: true });
+        };
+
         try {
           const created = await createAutomationWorkflow(businessId, {
             recipe: recipeKey,
           });
-          clearRecipeParam();
-          navigate(`${basePath}/${created._id}`, { replace: true });
-          toast.success("האוטומציה מוכנה לעריכה על הבד");
+          await openCreated(created._id, "האוטומציה נוצרה והופעלה");
           return;
         } catch {
+          const working = WORKING_TEMPLATES.find(
+            (row) => row.recipeKey === recipeKey
+          );
           const local = LOCAL_SYSTEM_TEMPLATES.find(
             (row) => row.recipeKey === recipeKey || row.catalogId === recipeKey
           );
+          if (working?.buildGraph && working.requiredTriggerKeys?.[0]) {
+            const graph = working.buildGraph({
+              triggerKey: working.requiredTriggerKeys[0],
+            });
+            const created = await createAutomationWorkflow(businessId, {
+              useStarter: false,
+              name: working.name,
+              description: working.description,
+              nodes: graph.nodes,
+              edges: graph.edges,
+            });
+            await openCreated(created._id, "האוטומציה נוצרה מהתבנית העובדת");
+            return;
+          }
           if (!local) throw new Error("no_local_fallback");
           const graph = buildLocalAutomationGraph(local);
           const created = await createAutomationWorkflow(businessId, {
@@ -103,9 +139,10 @@ export default function AutomationsLayout() {
             nodes: graph.nodes,
             edges: graph.edges,
           });
-          clearRecipeParam();
-          navigate(`${basePath}/${created._id}`, { replace: true });
-          toast.success("נוצרה אוטומציה מהתבנית המערכתית (טריגר ← תוצאה)");
+          await openCreated(
+            created._id,
+            "האוטומציה נוצרה מהתבנית המערכתית (טריגר ← תוצאה)"
+          );
         }
       } catch (error: unknown) {
         toast.error(readAutomationErrorMessage(error, "שגיאה ביצירת אוטומציה"));

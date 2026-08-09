@@ -82,9 +82,7 @@ export default function AiAutomationsTab({
   const automationsPath = businessId
     ? `/business/${businessId}/dashboard/automations`
     : "/";
-
-  const recipePath = (recipeKey: string) =>
-    `${automationsPath}?recipe=${encodeURIComponent(recipeKey)}`;
+  const templatesAiPath = `${automationsPath}/templates?focus=ai`;
 
   return (
     <section
@@ -180,22 +178,18 @@ export default function AiAutomationsTab({
               </p>
               <p className="mt-3 text-[11px] font-black uppercase tracking-wide text-emerald-700">
                 {t("advisor.aiAutomations.activeInTemplates", {
-                  defaultValue: "פעיל בתבניות",
+                  defaultValue: "מוצג בתבניות רק כשאפשר להפעיל באמת",
                 })}
               </p>
               <div className="mt-3 grid gap-2">
                 <Link
-                  to={recipePath(card.recipeKey)}
+                  to={templatesAiPath}
                   className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-amber-200 bg-amber-50 px-3 text-xs font-black text-amber-900 transition hover:bg-amber-100"
                 >
-                  {t("advisor.aiAutomations.buildInAutomations")}
+                  {t("advisor.aiAutomations.buildInAutomations", {
+                    defaultValue: "להפעלה בתבניות העובדות",
+                  })}
                   <ArrowLeft className="h-3.5 w-3.5" />
-                </Link>
-                <Link
-                  to={`${automationsPath}/templates?focus=ai`}
-                  className="inline-flex h-9 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-[11px] font-black text-slate-700 transition hover:bg-slate-50"
-                >
-                  לכל תבניות ה-AI
                 </Link>
               </div>
             </article>
