@@ -1,4 +1,4 @@
-import API from "./axios";
+import API from "../api";
 
 export type ManagedWhatsAppAllowlistMode = "all_entitled" | "allowlist";
 
