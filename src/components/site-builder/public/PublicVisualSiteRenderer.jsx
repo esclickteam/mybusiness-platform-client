@@ -32,6 +32,13 @@ import { mountPublicLeadForms } from "./mountPublicLeadForms";
 import { mountPublicPortalWidgets } from "./mountPublicPortalWidgets";
 import { findPortalPageForFriendlyPath } from "./portalSitePaths";
 import {
+  getCurrentPathname,
+  getFallbackPageId,
+  getPagePath,
+  normalizePublicPath,
+  resolvePublicPathForPageId,
+} from "./publicTemplatePagePath";
+import {
   applyAllVisualDataToDom,
   applyVisualResponsiveToDom,
   prepareAllVideosInDom,
@@ -478,39 +485,6 @@ function safeString(value) {
 
 function normalizeTemplateKey(value) {
   return safeString(value).trim().toLowerCase();
-}
-
-function normalizePublicPath(value) {
-  const clean = safeString(value)
-    .split("?")[0]
-    .split("#")[0]
-    .trim();
-
-  if (!clean || clean === "/") return "";
-
-  return clean.replace(/^\/+/, "").replace(/\/+$/, "");
-}
-
-function getCurrentPathname(pathname) {
-  if (typeof pathname === "string") return pathname;
-
-  if (typeof window !== "undefined") {
-    return window.location.pathname || "/";
-  }
-
-  return "/";
-}
-
-function getPagePath(page) {
-  const source = asPlainObject(page);
-
-  if (source.isHome || source.id === "home") return "";
-
-  return normalizePublicPath(
-    safeString(source.slug) ||
-      safeString(source.path) ||
-      safeString(source.id),
-  );
 }
 
 function resolveActivePage(site, pathname) {
@@ -2000,57 +1974,6 @@ function applyPublicVisualData(root, visualData, pathname, site) {
   }
 }
 
-function getFallbackPageId(activePage, pathname) {
-  const page = asPlainObject(activePage);
-
-  if (safeString(page.id)) return safeString(page.id);
-
-  return (
-    normalizePublicPath(getCurrentPathname(pathname)) ||
-    "home"
-  );
-}
-
-/** Map a template/site page id to a public pathname for SPA nav buttons. */
-function resolvePublicPathForPageId(site, renderer, pageId) {
-  const nextId = safeString(pageId).trim();
-  if (!nextId || nextId === "home" || nextId === "index") return "/";
-
-  const sitePages = Array.isArray(asPlainObject(site).pages)
-    ? asPlainObject(site).pages
-    : [];
-  const rendererPages = Array.isArray(renderer?.pages) ? renderer.pages : [];
-
-  const siteMatch = sitePages.find((page) => {
-    const source = asPlainObject(page);
-    return (
-      safeString(source.id) === nextId ||
-      normalizePublicPath(source.slug) === normalizePublicPath(nextId) ||
-      normalizePublicPath(source.path) === normalizePublicPath(nextId)
-    );
-  });
-
-  if (siteMatch) {
-    const path = getPagePath(siteMatch);
-    return path ? `/${path}` : "/";
-  }
-
-  const templateMatch = rendererPages.find(
-    (page) => safeString(asPlainObject(page).id) === nextId,
-  );
-
-  if (templateMatch) {
-    const source = asPlainObject(templateMatch);
-    if (source.id === "home" || source.isHome) return "/";
-    const path = normalizePublicPath(
-      safeString(source.slug) || safeString(source.path) || safeString(source.id),
-    );
-    return path ? `/${path}` : "/";
-  }
-
-  return `/${normalizePublicPath(nextId)}`;
-}
-
 function readPublicRevision(site, activePage) {
   const source = asPlainObject(site);
   const page = asPlainObject(activePage);
@@ -2390,7 +2313,7 @@ export default function PublicVisualSiteRenderer({
 
   const hasSavedHtml = htmlResult.html.length > 20;
   const TemplateComponent = renderer?.Component || null;
-  const pageId = getFallbackPageId(activePage, pathname);
+  const pageId = getFallbackPageId(activePage, pathname, renderer);
   const publicBusinessId = String(
     site?.businessId || site?.business?._id || "",
   ).trim();
