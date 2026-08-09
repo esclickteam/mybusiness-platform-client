@@ -136,3 +136,11 @@ export function readAutomationErrorMessage(
   }
   return fallback;
 }
+
+export function readAutomationErrorCode(error: unknown): string | null {
+  if (!error || typeof error !== "object") return null;
+  const data = (error as { response?: { data?: { code?: string } } }).response
+    ?.data;
+  const code = data?.code;
+  return typeof code === "string" && code.trim() ? code.trim() : null;
+}

@@ -46,6 +46,16 @@ import {
   type AutomationWorkflow,
 } from "../../../../api/automationWorkflowApi";
 import {
+  AUTOMATION_BILLING_API_CODES,
+  getAutomationBillingUsage,
+  type AutomationBillingUsageOverview,
+} from "../../../../api/automationBillingApi";
+import {
+  readAutomationErrorCode,
+} from "./automationUiHelpers";
+import AutomationPlanModal from "./billing/AutomationPlanModal";
+import AutomationCancelConfirmModal from "./billing/AutomationCancelConfirmModal";
+import {
   getWhatsAppIntegrationStatus,
   listApprovedWhatsAppTemplates,
   type ApprovedWhatsAppTemplate,
@@ -388,6 +398,11 @@ function EditorInner({
   const [saving, setSaving] = useState(false);
   const [publishing, setPublishing] = useState(false);
   const [publishError, setPublishError] = useState("");
+  const [showBillingModal, setShowBillingModal] = useState(false);
+  const [billingModalMode, setBillingModalMode] = useState<"pick" | "manage">("pick");
+  const [showBillingCancelModal, setShowBillingCancelModal] = useState(false);
+  const [billingUsage, setBillingUsage] =
+    useState<AutomationBillingUsageOverview | null>(null);
   const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const [testOpen, setTestOpen] = useState(false);
   const [testResult, setTestResult] = useState<Record<string, unknown> | null>(null);
@@ -1115,6 +1130,49 @@ function EditorInner({
     }
   };
 
+  const refreshBillingUsage = async () => {
+    if (!businessId) return null;
+    try {
+      const usage = await getAutomationBillingUsage(businessId);
+      setBillingUsage(usage);
+      return usage;
+    } catch {
+      return null;
+    }
+  };
+
+  const openBillingGateModal = (mode: "pick" | "manage") => {
+    setBillingModalMode(mode);
+    setShowBillingModal(true);
+    void refreshBillingUsage();
+  };
+
+  const applyBillingGateCode = (code: string | null | undefined): boolean => {
+    if (!code) return false;
+    if (code === AUTOMATION_BILLING_API_CODES.PLAN_REQUIRED) {
+      const msg = "כדי להפעיל אוטומציה יש לבחור חבילת הרצות";
+      setPublishError(msg);
+      toast.error(msg);
+      openBillingGateModal("pick");
+      return true;
+    }
+    if (code === AUTOMATION_BILLING_API_CODES.QUOTA_EXHAUSTED) {
+      const msg = "מכסת ההרצות החודשית נוצלה — יש לשדרג את החבילה";
+      setPublishError(msg);
+      toast.error(msg);
+      openBillingGateModal("manage");
+      return true;
+    }
+    if (code === AUTOMATION_BILLING_API_CODES.BILLING_BLOCKED) {
+      const msg = "לא ניתן להפעיל אוטומציות עקב מצב התשלום של החבילה";
+      setPublishError(msg);
+      toast.error(msg);
+      openBillingGateModal("manage");
+      return true;
+    }
+    return false;
+  };
+
   const handlePublish = async () => {
     if (readOnly) {
       toast.error(AUTOMATION_PREVIEW_WRITE_BLOCKED_MESSAGE);
@@ -1162,10 +1220,16 @@ function EditorInner({
       }
       const result = await publishAutomationWorkflow(businessId, workflow._id);
       if (result.errors?.length) {
+        if (applyBillingGateCode(result.code)) {
+          return;
+        }
         const msg = result.errors.join(" · ");
         setPublishError(msg);
         toast.error(msg);
         selectNodeFromPublishErrors(result.errors);
+        return;
+      }
+      if (applyBillingGateCode(result.code)) {
         return;
       }
       if (!result.workflow) {
@@ -1193,9 +1257,15 @@ function EditorInner({
     } catch (error: unknown) {
       const response = (
         error as {
-          response?: { data?: { errors?: string[]; error?: string } };
+          response?: {
+            data?: { errors?: string[]; error?: string; code?: string };
+          };
         }
       )?.response?.data;
+      const code = readAutomationErrorCode(error) || response?.code || null;
+      if (applyBillingGateCode(code)) {
+        return;
+      }
       const msg =
         response?.errors?.join(" · ") ||
         response?.error ||
@@ -1296,9 +1366,17 @@ function EditorInner({
         onPause={async () =>
           onSaved(await pauseAutomationWorkflow(businessId, workflow._id))
         }
-        onResume={async () =>
-          onSaved(await resumeAutomationWorkflow(businessId, workflow._id))
-        }
+        onResume={async () => {
+          try {
+            onSaved(await resumeAutomationWorkflow(businessId, workflow._id));
+          } catch (error: unknown) {
+            const code = readAutomationErrorCode(error);
+            if (applyBillingGateCode(code)) return;
+            toast.error(
+              readErrorMessage(error, "לא ניתן להפעיל מחדש את האוטומציה")
+            );
+          }
+        }}
         onToggleTest={() => setTestOpen((open) => !open)}
         onOpenPicker={() => openPicker({ clearSelection: true })}
         hasUnsupportedTrigger={hasUnsupportedTrigger}
@@ -3150,6 +3228,33 @@ function EditorInner({
         </div>
       </AutomationConfigDrawer>
       </div>
+
+      {businessId ? (
+        <>
+          <AutomationPlanModal
+            open={showBillingModal}
+            businessId={businessId}
+            usage={billingUsage}
+            initialMode={billingModalMode}
+            onClose={() => setShowBillingModal(false)}
+            onUsageUpdated={() => refreshBillingUsage()}
+            onOpenCancel={() => {
+              setShowBillingModal(false);
+              setShowBillingCancelModal(true);
+            }}
+          />
+          <AutomationCancelConfirmModal
+            open={showBillingCancelModal}
+            businessId={businessId}
+            usage={billingUsage}
+            onClose={() => setShowBillingCancelModal(false)}
+            onCancelled={() => {
+              setShowBillingCancelModal(false);
+              void refreshBillingUsage();
+            }}
+          />
+        </>
+      ) : null}
     </div>
   );
 }
