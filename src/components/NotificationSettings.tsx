@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import API from "@api";
 import {
@@ -18,6 +19,17 @@ import {
   UserPlus,
 } from "lucide-react";
 import BizuplyLoader from "../components/ui/BizuplyLoader";
+import {
+  cancelPushBilling,
+  createPushBillingCheckout,
+  getPushBillingStatus,
+  normalizePushPlan,
+  pushPlanAmountIls,
+  pushPlanLabelHe,
+  reactivatePushBilling,
+  type PushBillingPlan,
+  type PushBillingStatus,
+} from "../api/pushBillingApi";
 import {
   getPermission,
   isIos,
@@ -135,6 +147,24 @@ function Toggle({
   );
 }
 
+function formatDdMmYyyy(iso: string | Date | null | undefined): string | null {
+  if (!iso) return null;
+  const date = iso instanceof Date ? iso : new Date(iso);
+  if (Number.isNaN(date.getTime())) return null;
+  const dd = String(date.getDate()).padStart(2, "0");
+  const mm = String(date.getMonth() + 1).padStart(2, "0");
+  const yyyy = date.getFullYear();
+  return `${dd}/${mm}/${yyyy}`;
+}
+
+function daysRemaining(iso: string | Date | null | undefined): number | null {
+  if (!iso) return null;
+  const end = iso instanceof Date ? iso : new Date(iso);
+  if (Number.isNaN(end.getTime())) return null;
+  const ms = end.getTime() - Date.now();
+  return Math.max(0, Math.ceil(ms / (1000 * 60 * 60 * 24)));
+}
+
 type NotificationSettingsPanelProps = {
   active: boolean;
   onBack: () => void;
@@ -147,6 +177,7 @@ export function NotificationSettingsPanel({
 }: NotificationSettingsPanelProps) {
   const [loading, setLoading] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [billingBusy, setBillingBusy] = useState(false);
   const [saved, setSaved] = useState(false);
   const [settings, setSettings] =
     useState<NotificationSettingsState>(DEFAULT_SETTINGS);
@@ -157,9 +188,15 @@ export function NotificationSettingsPanel({
   const [serverReady, setServerReady] = useState(false);
   const [deviceCount, setDeviceCount] = useState(0);
   const [testMessage, setTestMessage] = useState("");
+  const [billingMessage, setBillingMessage] = useState("");
   const [installEvent, setInstallEvent] =
     useState<BeforeInstallPromptEvent | null>(null);
   const [showGuide, setShowGuide] = useState(false);
+
+  const [billingStatus, setBillingStatus] = useState<PushBillingStatus | null>(
+    null
+  );
+  const [selectedPlan, setSelectedPlan] = useState<PushBillingPlan>("annual");
 
   useEffect(() => {
     const handler = (event: Event) => {
@@ -170,6 +207,17 @@ export function NotificationSettingsPanel({
     window.addEventListener("beforeinstallprompt", handler);
     return () => window.removeEventListener("beforeinstallprompt", handler);
   }, []);
+
+  async function refreshBillingStatus() {
+    try {
+      const status = await getPushBillingStatus();
+      setBillingStatus(status);
+      return status;
+    } catch (err) {
+      console.error("Failed to load push billing status:", err);
+      return null;
+    }
+  }
 
   useEffect(() => {
     if (!active) return;
@@ -182,16 +230,20 @@ export function NotificationSettingsPanel({
         setSupported(isPushSupported());
         setPermission(getPermission());
         setTestMessage("");
+        setBillingMessage("");
 
-        // Re-bind this device to the current business before reading status.
         if (getPermission() === "granted") {
-          await ensurePushSubscription();
+          const ensure = await ensurePushSubscription();
+          if (ensure.reason === "entitlement-required") {
+            setBillingMessage("נדרש מנוי Push כדי להפעיל התראות במכשיר");
+          }
         }
 
-        const [subscribedNow, res, statusRes] = await Promise.all([
+        const [subscribedNow, res, statusRes, billing] = await Promise.all([
           isSubscribed(),
           API.get("/business/my/notification-settings"),
           API.get("/push/status").catch(() => null),
+          getPushBillingStatus().catch(() => null),
         ]);
 
         if (cancelled) return;
@@ -199,6 +251,9 @@ export function NotificationSettingsPanel({
         setSubscribed(subscribedNow);
         setServerReady(Boolean(statusRes?.data?.ready));
         setDeviceCount(Number(statusRes?.data?.deviceCount || 0));
+        if (billing) {
+          setBillingStatus(billing);
+        }
 
         if (res.data?.ok && res.data.settings) {
           setSettings({ ...DEFAULT_SETTINGS, ...res.data.settings });
@@ -215,7 +270,22 @@ export function NotificationSettingsPanel({
     };
   }, [active]);
 
-  const pushOn = subscribed && settings.master;
+  const billingEnabled = Boolean(billingStatus?.billingEnabled);
+  const entitled = Boolean(billingStatus?.entitled);
+  const subscription = billingStatus?.subscription || null;
+  const plan = normalizePushPlan(subscription?.planKey);
+  const subStatus = String(subscription?.status || "").toLowerCase();
+  const cancelAtPeriodEnd = Boolean(subscription?.cancelAtPeriodEnd);
+  const periodEndLabel = formatDdMmYyyy(subscription?.currentPeriodEnd);
+  const trialDaysLeft = daysRemaining(subscription?.currentPeriodEnd);
+  const firstChargeAmount = pushPlanAmountIls(plan);
+
+  const showPaywall = billingEnabled && !entitled;
+  const showSubscriberPanel = billingEnabled && entitled;
+  const showFreePushToggle = !billingEnabled;
+
+  const pushOn =
+    subscribed && settings.master && (!billingEnabled || entitled);
 
   async function persist(next: NotificationSettingsState) {
     try {
@@ -236,6 +306,11 @@ export function NotificationSettingsPanel({
 
   async function handleMasterToggle() {
     if (busy) return;
+
+    if (billingEnabled && !entitled) {
+      setBillingMessage("נדרש מנוי Push כדי להפעיל התראות במכשיר");
+      return;
+    }
 
     if (pushOn) {
       setBusy(true);
@@ -265,6 +340,9 @@ export function NotificationSettingsPanel({
         const statusRes = await API.get("/push/status").catch(() => null);
         setServerReady(Boolean(statusRes?.data?.ready));
         setDeviceCount(Number(statusRes?.data?.deviceCount || 0));
+      } else if (result.reason === "entitlement-required") {
+        setBillingMessage("נדרש מנוי Push כדי להפעיל התראות במכשיר");
+        await refreshBillingStatus();
       } else if (result.reason === "unsupported") {
         setSupported(false);
       } else if (result.reason === "ios-install") {
@@ -281,13 +359,86 @@ export function NotificationSettingsPanel({
     persist(next);
   }
 
+  async function handleCheckout() {
+    if (billingBusy) return;
+    setBillingBusy(true);
+    setBillingMessage("");
+    try {
+      const result = await createPushBillingCheckout(selectedPlan);
+      if (!result?.url) {
+        setBillingMessage("לא הצלחנו להתחיל את התשלום. נסו שוב.");
+        return;
+      }
+      window.location.assign(result.url);
+    } catch (err) {
+      setBillingMessage(
+        err instanceof Error ? err.message : "לא הצלחנו להתחיל את התשלום"
+      );
+    } finally {
+      setBillingBusy(false);
+    }
+  }
+
+  async function handleCancelSubscription() {
+    if (billingBusy) return;
+    setBillingBusy(true);
+    setBillingMessage("");
+    try {
+      const result = await cancelPushBilling();
+      await refreshBillingStatus();
+      if (result.canceledImmediately) {
+        setBillingMessage("המנוי בוטל. התראות Push במכשיר הופסקו.");
+      } else {
+        const end = formatDdMmYyyy(result.currentPeriodEnd) || periodEndLabel;
+        setBillingMessage(
+          end
+            ? `המנוי בוטל ויישאר פעיל עד ${end}`
+            : "המנוי בוטל ויישאר פעיל עד סוף התקופה"
+        );
+      }
+    } catch (err) {
+      setBillingMessage(
+        err instanceof Error ? err.message : "ביטול המנוי נכשל"
+      );
+    } finally {
+      setBillingBusy(false);
+    }
+  }
+
+  async function handleReactivateSubscription() {
+    if (billingBusy) return;
+    setBillingBusy(true);
+    setBillingMessage("");
+    try {
+      await reactivatePushBilling();
+      await refreshBillingStatus();
+      setBillingMessage("המנוי חודש בהצלחה");
+    } catch (err) {
+      setBillingMessage(
+        err instanceof Error ? err.message : "חידוש המנוי נכשל"
+      );
+    } finally {
+      setBillingBusy(false);
+    }
+  }
+
   async function handleTestPush() {
     if (busy) return;
     setBusy(true);
     setTestMessage("");
 
     try {
+      if (billingEnabled && !entitled) {
+        setTestMessage("נדרש מנוי Push כדי לשלוח התראת בדיקה");
+        return;
+      }
+
       const ensure = await ensurePushSubscription();
+      if (ensure.reason === "entitlement-required") {
+        setTestMessage("נדרש מנוי Push כדי לשלוח התראת בדיקה");
+        await refreshBillingStatus();
+        return;
+      }
       if (!ensure.ok && ensure.reason === "ios-install") {
         setShowGuide(true);
         setTestMessage(
@@ -298,12 +449,23 @@ export function NotificationSettingsPanel({
 
       const res = await API.post("/push/test");
       setServerReady(Boolean(res.data?.ok || res.data?.sent > 0));
-      setDeviceCount(Number(res.data?.deviceCount || res.data?.sent || deviceCount));
+      setDeviceCount(
+        Number(res.data?.deviceCount || res.data?.sent || deviceCount)
+      );
       setTestMessage(res.data?.message || "נשלחה התראת בדיקה");
     } catch (err) {
-      setTestMessage(
-        err instanceof Error ? err.message : "שליחת בדיקה נכשלה"
-      );
+      const anyErr = err as { status?: number; code?: string; message?: string };
+      if (
+        anyErr.status === 402 ||
+        anyErr.code === "PUSH_ENTITLEMENT_REQUIRED"
+      ) {
+        setTestMessage("נדרש מנוי Push כדי לשלוח התראת בדיקה");
+        await refreshBillingStatus();
+      } else {
+        setTestMessage(
+          err instanceof Error ? err.message : "שליחת בדיקה נכשלה"
+        );
+      }
     } finally {
       setBusy(false);
     }
@@ -325,6 +487,14 @@ export function NotificationSettingsPanel({
   }
 
   const iosNeedsInstall = isIos() && !isStandalone();
+
+  const paywallDisclaimerExtra = useMemo(() => {
+    if (selectedPlan === "annual") {
+      return "לאחר 7 ימי ניסיון תחויבו 228 ₪ עבור שנה מלאה. לאחר מכן המנוי יתחדש אחת לשנה עד לביטול.";
+    }
+    return "לאחר 7 ימי ניסיון תחויבו 29 ₪. לאחר מכן המנוי יתחדש מדי חודש עד לביטול.";
+  }, [selectedPlan]);
+
 
   return (
     <div dir="rtl" className="flex min-h-0 flex-1 flex-col text-right">
@@ -389,35 +559,256 @@ export function NotificationSettingsPanel({
             </div>
           )}
 
-          <div className="mb-2 flex items-center justify-between gap-2 rounded-2xl border border-amber-100 bg-gradient-to-l from-amber-50/70 to-white p-3">
-            <div className="flex min-w-0 items-center gap-2">
-              <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white text-red-500 shadow-sm ring-1 ring-amber-100">
-                {busy ? (
-                  <BizuplyLoader size="xs" compact />
-                ) : (
+          {showPaywall && (
+            <div className="mb-2 rounded-2xl border border-amber-100 bg-gradient-to-l from-amber-50/80 to-white p-3">
+              <div className="mb-3 flex items-start gap-2">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white text-red-500 shadow-sm ring-1 ring-amber-100">
                   <Bell className="h-4 w-4" />
-                )}
-              </span>
-              <div className="min-w-0">
-                <p className="text-sm font-black text-slate-900">
-                  התראות Push במכשיר
-                </p>
-                <p className="text-[11px] font-semibold text-slate-500">
-                  {pushOn
-                    ? serverReady
-                      ? `מופעל · ${deviceCount} מכשיר רשום`
-                      : "מופעל במכשיר, אבל עדיין לא רשום בשרת — לחץ בדיקה"
-                    : "כבוי — לחץ להפעלה לקבלת התראות לטלפון"}
-                </p>
+                </span>
+                <div className="min-w-0">
+                  <p className="text-sm font-black text-slate-900">
+                    התראות Push בזמן אמת
+                  </p>
+                  <p className="text-[11px] font-semibold leading-4 text-slate-500">
+                    קבלו עדכונים חשובים למכשיר גם כש-Bizuply לא פתוחה.
+                  </p>
+                </div>
               </div>
-            </div>
 
-            <Toggle
-              checked={pushOn}
-              disabled={busy || !supported || permission === "denied"}
-              onChange={handleMasterToggle}
-            />
-          </div>
+              <div className="mb-2 grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => setSelectedPlan("monthly")}
+                  className={[
+                    "rounded-2xl border p-2.5 text-right transition",
+                    selectedPlan === "monthly"
+                      ? "border-amber-300 bg-white ring-2 ring-amber-200"
+                      : "border-slate-200 bg-slate-50/80 hover:bg-white",
+                  ].join(" ")}
+                >
+                  <p className="text-[11px] font-black text-slate-800">חודשי</p>
+                  <p className="mt-0.5 text-sm font-black text-slate-900">
+                    29 ₪{" "}
+                    <span className="text-[10px] font-bold text-slate-500">
+                      / חודש
+                    </span>
+                  </p>
+                  <p className="mt-1 text-[10px] font-bold text-emerald-600">
+                    7 ימים חינם
+                  </p>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setSelectedPlan("annual")}
+                  className={[
+                    "relative rounded-2xl border p-2.5 text-right transition",
+                    selectedPlan === "annual"
+                      ? "border-amber-300 bg-white ring-2 ring-amber-200"
+                      : "border-slate-200 bg-slate-50/80 hover:bg-white",
+                  ].join(" ")}
+                >
+                  <span className="absolute -top-2 left-2 rounded-full bg-gradient-to-l from-amber-400 to-red-500 px-2 py-0.5 text-[9px] font-black text-white">
+                    מומלץ
+                  </span>
+                  <p className="text-[11px] font-black text-slate-800">שנתי</p>
+                  <p className="mt-0.5 text-sm font-black text-slate-900">
+                    19 ₪{" "}
+                    <span className="text-[10px] font-bold text-slate-500">
+                      / חודש
+                    </span>
+                  </p>
+                  <p className="text-[10px] font-semibold text-slate-500">
+                    228 ₪ בחיוב שנתי
+                  </p>
+                  <p className="mt-1 text-[10px] font-bold text-emerald-600">
+                    7 ימים חינם
+                  </p>
+                  <p className="mt-1 inline-flex rounded-full bg-emerald-50 px-1.5 py-0.5 text-[9px] font-black text-emerald-700">
+                    חיסכון של 120 ₪ בשנה
+                  </p>
+                </button>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => void handleCheckout()}
+                disabled={billingBusy}
+                className="inline-flex h-10 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-l from-amber-400 to-red-500 px-3 text-xs font-black text-white shadow-sm transition hover:brightness-105 disabled:opacity-60"
+              >
+                {billingBusy ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : null}
+                התחילו 7 ימים חינם
+              </button>
+
+              <p className="mt-2 text-[10px] font-semibold leading-4 text-slate-500">
+                לא תחויבו היום. בתום 7 ימי הניסיון המנוי יתחדש אוטומטית לפי
+                המסלול שבחרתם, אלא אם תבטלו לפני כן.
+              </p>
+              <p className="mt-1 text-[10px] font-semibold leading-4 text-slate-500">
+                {paywallDisclaimerExtra}
+              </p>
+              {billingMessage ? (
+                <p className="mt-2 text-[11px] font-bold text-amber-800">
+                  {billingMessage}
+                </p>
+              ) : null}
+            </div>
+          )}
+
+          {showSubscriberPanel && (
+            <div className="mb-2 rounded-2xl border border-amber-100 bg-gradient-to-l from-amber-50/70 to-white p-3">
+              {subStatus === "past_due" ? (
+                <div className="mb-2 rounded-xl border border-red-200 bg-red-50 p-2.5">
+                  <p className="text-xs font-black text-red-700">
+                    התשלום נכשל — יש לטפל בחיוב כדי להמשיך לקבל Push למכשיר
+                  </p>
+                  <Link
+                    to="/contact"
+                    className="mt-2 inline-flex h-9 items-center justify-center rounded-xl bg-white px-3 text-[11px] font-black text-red-700 ring-1 ring-red-100 transition hover:bg-red-100"
+                  >
+                    פנו אלינו לטיפול בחיוב
+                  </Link>
+                </div>
+              ) : null}
+
+              {subStatus === "trialing" ? (
+                <div className="mb-2">
+                  <p className="text-sm font-black text-slate-900">
+                    תקופת ניסיון פעילה
+                  </p>
+                  <p className="text-[11px] font-semibold text-slate-500">
+                    {trialDaysLeft != null
+                      ? `נשארו ${trialDaysLeft} ימים`
+                      : "הניסיון פעיל"}
+                    {periodEndLabel && firstChargeAmount != null
+                      ? ` · החיוב הראשון: ${periodEndLabel} · ${firstChargeAmount} ₪`
+                      : periodEndLabel
+                        ? ` · החיוב הראשון: ${periodEndLabel}`
+                        : ""}
+                  </p>
+                </div>
+              ) : (
+                <div className="mb-2">
+                  <p className="text-sm font-black text-slate-900">
+                    מנוי {pushPlanLabelHe(plan)} פעיל
+                  </p>
+                  <p className="text-[11px] font-semibold text-slate-500">
+                    {plan === "annual"
+                      ? "228 ₪ לשנה"
+                      : plan === "monthly"
+                        ? "29 ₪ לחודש"
+                        : "מנוי Push"}
+                    {periodEndLabel && !cancelAtPeriodEnd
+                      ? ` · חידוש הבא: ${periodEndLabel}`
+                      : ""}
+                  </p>
+                </div>
+              )}
+
+              {cancelAtPeriodEnd && periodEndLabel ? (
+                <div className="mb-2 rounded-xl border border-amber-200 bg-amber-50 p-2.5 text-[11px] font-bold text-amber-800">
+                  המנוי בוטל ויישאר פעיל עד {periodEndLabel}
+                </div>
+              ) : null}
+
+              <div className="mb-2 flex items-center justify-between gap-2 rounded-xl border border-white/80 bg-white/80 p-2.5">
+                <div className="flex min-w-0 items-center gap-2">
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-red-500 ring-1 ring-amber-100">
+                    {busy ? (
+                      <BizuplyLoader size="xs" compact />
+                    ) : (
+                      <Bell className="h-4 w-4" />
+                    )}
+                  </span>
+                  <div className="min-w-0">
+                    <p className="text-xs font-black text-slate-900">
+                      התראות Push במכשיר
+                    </p>
+                    <p className="text-[10px] font-semibold text-slate-500">
+                      {pushOn
+                        ? serverReady
+                          ? `מופעל · ${deviceCount} מכשיר רשום`
+                          : "מופעל במכשיר, אבל עדיין לא רשום בשרת — לחץ בדיקה"
+                        : "כבוי — לחץ להפעלה לקבלת התראות לטלפון"}
+                    </p>
+                  </div>
+                </div>
+                <Toggle
+                  checked={pushOn}
+                  disabled={busy || !supported || permission === "denied"}
+                  onChange={handleMasterToggle}
+                />
+              </div>
+
+              <div className="flex flex-wrap gap-2">
+                {cancelAtPeriodEnd ? (
+                  <button
+                    type="button"
+                    onClick={() => void handleReactivateSubscription()}
+                    disabled={billingBusy}
+                    className="inline-flex h-9 items-center justify-center rounded-xl bg-white px-3 text-[11px] font-black text-emerald-700 ring-1 ring-emerald-100 transition hover:bg-emerald-50 disabled:opacity-60"
+                  >
+                    {billingBusy ? (
+                      <Loader2 className="me-1 h-3.5 w-3.5 animate-spin" />
+                    ) : null}
+                    חידוש המנוי
+                  </button>
+                ) : subStatus !== "past_due" ? (
+                  <button
+                    type="button"
+                    onClick={() => void handleCancelSubscription()}
+                    disabled={billingBusy}
+                    className="inline-flex h-9 items-center justify-center rounded-xl bg-white px-3 text-[11px] font-black text-slate-600 ring-1 ring-slate-200 transition hover:bg-slate-50 disabled:opacity-60"
+                  >
+                    {billingBusy ? (
+                      <Loader2 className="me-1 h-3.5 w-3.5 animate-spin" />
+                    ) : null}
+                    ביטול מנוי
+                  </button>
+                ) : null}
+              </div>
+
+              {billingMessage ? (
+                <p className="mt-2 text-[11px] font-bold text-slate-600">
+                  {billingMessage}
+                </p>
+              ) : null}
+            </div>
+          )}
+
+          {showFreePushToggle && (
+            <div className="mb-2 flex items-center justify-between gap-2 rounded-2xl border border-amber-100 bg-gradient-to-l from-amber-50/70 to-white p-3">
+              <div className="flex min-w-0 items-center gap-2">
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-white text-red-500 shadow-sm ring-1 ring-amber-100">
+                  {busy ? (
+                    <BizuplyLoader size="xs" compact />
+                  ) : (
+                    <Bell className="h-4 w-4" />
+                  )}
+                </span>
+                <div className="min-w-0">
+                  <p className="text-sm font-black text-slate-900">
+                    התראות Push במכשיר
+                  </p>
+                  <p className="text-[11px] font-semibold text-slate-500">
+                    {pushOn
+                      ? serverReady
+                        ? `מופעל · ${deviceCount} מכשיר רשום`
+                        : "מופעל במכשיר, אבל עדיין לא רשום בשרת — לחץ בדיקה"
+                      : "כבוי — לחץ להפעלה לקבלת התראות לטלפון"}
+                  </p>
+                </div>
+              </div>
+
+              <Toggle
+                checked={pushOn}
+                disabled={busy || !supported || permission === "denied"}
+                onChange={handleMasterToggle}
+              />
+            </div>
+          )}
 
           {pushOn && (
             <div className="mb-2 rounded-2xl border border-sky-100 bg-sky-50 p-3">
@@ -430,11 +821,11 @@ export function NotificationSettingsPanel({
                 <Smartphone className="h-4 w-4" />
                 שלח התראת בדיקה לטלפון
               </button>
-              {testMessage && (
+              {testMessage ? (
                 <p className="mt-2 text-[11px] font-bold text-sky-800">
                   {testMessage}
                 </p>
-              )}
+              ) : null}
             </div>
           )}
 
@@ -442,18 +833,13 @@ export function NotificationSettingsPanel({
             {CATEGORIES.map((category) => (
               <div
                 key={category.key}
-                className={[
-                  "flex items-center justify-between gap-2 rounded-2xl border p-3 transition",
-                  pushOn
-                    ? "border-slate-100 bg-white"
-                    : "border-slate-100 bg-slate-50/60",
-                ].join(" ")}
+                className="flex items-center justify-between gap-2 rounded-2xl border border-slate-100 bg-white p-3 transition"
               >
                 <div className="flex min-w-0 items-center gap-2">
                   <span
                     className={[
                       "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ring-1",
-                      pushOn && settings[category.key]
+                      settings[category.key]
                         ? "bg-amber-50 text-red-500 ring-amber-100"
                         : "bg-slate-100 text-slate-400 ring-slate-100",
                     ].join(" ")}
@@ -471,8 +857,7 @@ export function NotificationSettingsPanel({
                 </div>
 
                 <Toggle
-                  checked={pushOn && settings[category.key]}
-                  disabled={!pushOn}
+                  checked={settings[category.key]}
                   onChange={() => handleCategoryToggle(category.key)}
                 />
               </div>
