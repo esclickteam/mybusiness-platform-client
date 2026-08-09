@@ -9,8 +9,8 @@ import {
 } from "./workingTemplates";
 
 describe("workingTemplates", () => {
-  it("ships only curated activatable engines with trigger→result labels", () => {
-    expect(WORKING_TEMPLATES.length).toBeGreaterThanOrEqual(10);
+  it("ships curated common-case templates across WhatsApp, email and AI", () => {
+    expect(WORKING_TEMPLATES.length).toBeGreaterThanOrEqual(30);
     for (const row of WORKING_TEMPLATES) {
       expect(row.triggerLabel.trim().length).toBeGreaterThan(0);
       expect(row.resultLabels.length).toBeGreaterThan(0);
@@ -20,10 +20,22 @@ describe("workingTemplates", () => {
     }
     expect(
       WORKING_TEMPLATES.filter((t) => t.engine === "whatsapp_simple").length
-    ).toBeGreaterThanOrEqual(8);
+    ).toBeGreaterThanOrEqual(10);
+    expect(
+      WORKING_TEMPLATES.some((t) => t.categories.includes("email"))
+    ).toBe(true);
+    expect(WORKING_TEMPLATES.some((t) => t.categories.includes("ai"))).toBe(
+      true
+    );
+    expect(
+      WORKING_TEMPLATES.some((t) => t.key === "wf_lead_wa_email")
+    ).toBe(true);
+    expect(
+      WORKING_TEMPLATES.some((t) => t.key === "wf_lead_full_onboarding")
+    ).toBe(true);
   });
 
-  it("includes 1-day / 2-day / 2-hour meeting reminders on WhatsApp simple", () => {
+  it("includes common meeting reminder timings on WhatsApp simple", () => {
     const reminders = WORKING_TEMPLATES.filter((t) =>
       t.key.startsWith("wa_appointment_reminder")
     );
@@ -31,13 +43,19 @@ describe("workingTemplates", () => {
       expect.arrayContaining([
         "wa_appointment_reminder_1_day",
         "wa_appointment_reminder_2_days",
+        "wa_appointment_reminder_3_days",
         "wa_appointment_reminder_2_hours",
+        "wa_appointment_reminder_1_hour",
       ])
     );
     expect(
       reminders.find((r) => r.key === "wa_appointment_reminder_2_days")
         ?.hoursBefore
     ).toBe(48);
+    expect(
+      reminders.find((r) => r.key === "wa_appointment_reminder_3_days")
+        ?.hoursBefore
+    ).toBe(72);
     expect(
       reminders.find((r) => r.key === "wa_appointment_reminder_2_hours")
         ?.hoursBefore
@@ -191,7 +209,7 @@ describe("workingTemplates", () => {
     expect(ready.resolvedTriggerKey).toBe("appointment_created");
   });
 
-  it("requires AI entitlement + creatable recipe for AI templates", () => {
+  it("requires AI entitlement and recipe or publishable trigger graph", () => {
     const template = WORKING_TEMPLATES.find((t) => t.key === "wf_ai_rank_leads")!;
     const recipe: AutomationRecipeSummary = {
       key: "ai_rank_leads",
@@ -202,6 +220,15 @@ describe("workingTemplates", () => {
       nodeCount: 2,
       canCreate: true,
       aiLocked: false,
+    };
+    const leadTrigger = {
+      key: "lead_created",
+      label: "Lead",
+      description: "",
+      category: "crm",
+      status: "active",
+      isSupported: true,
+      isPublishable: true,
     };
 
     expect(
@@ -216,16 +243,6 @@ describe("workingTemplates", () => {
 
     expect(
       getTemplateReadiness(template, {
-        recipes: [{ ...recipe, aiLocked: true }],
-        triggers: [],
-        waTemplates: [],
-        calendarConnected: false,
-        aiEntitled: true,
-      }).ready
-    ).toBe(false);
-
-    expect(
-      getTemplateReadiness(template, {
         recipes: [recipe],
         triggers: [],
         waTemplates: [],
@@ -233,6 +250,17 @@ describe("workingTemplates", () => {
         aiEntitled: true,
       }).ready
     ).toBe(true);
+
+    // Locked recipe can still activate via local AI graph + publishable trigger
+    const viaGraph = getTemplateReadiness(template, {
+      recipes: [{ ...recipe, aiLocked: true }],
+      triggers: [leadTrigger],
+      waTemplates: [],
+      calendarConnected: false,
+      aiEntitled: true,
+    });
+    expect(viaGraph.ready).toBe(true);
+    expect(viaGraph.resolvedTriggerKey).toBe("lead_created");
   });
 
   it("bakes WhatsApp template id into multi-result lead graph", () => {
@@ -284,5 +312,21 @@ describe("workingTemplates", () => {
     );
     expect((waNode?.data as { templateId?: string }).templateId).toBe("wa-lead");
     expect(graph.edges.length).toBe(3);
+  });
+
+  it("builds WhatsApp + email dual-channel lead graph", () => {
+    const template = WORKING_TEMPLATES.find((t) => t.key === "wf_lead_wa_email")!;
+    const graph = template.buildGraph!({
+      triggerKey: "lead_created",
+      waTemplateId: "wa-123",
+    });
+    const keys = graph.nodes
+      .filter((n) => n.type === "action")
+      .map((n) => (n.data as { actionKey?: string }).actionKey);
+    expect(keys).toEqual(["whatsapp_template", "send_email"]);
+    expect(
+      (graph.nodes.find((n) => n.id === "action_1")?.data as { templateId?: string })
+        .templateId
+    ).toBe("wa-123");
   });
 });
