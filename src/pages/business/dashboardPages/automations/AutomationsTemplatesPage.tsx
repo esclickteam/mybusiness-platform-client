@@ -23,9 +23,11 @@ import {
   AUTOMATION_PREVIEW_ACTION_TOOLTIP,
   AUTOMATION_PREVIEW_WRITE_BLOCKED_MESSAGE,
   createAutomationWorkflow,
+  fetchAutomationTriggerCatalog,
   isAutomationsReadOnly,
   listAutomationRecipes,
   type AutomationRecipeSummary,
+  type AutomationTriggerCatalogItem,
 } from "../../../../api/automationWorkflowApi";
 import { readAutomationErrorMessage } from "./automationUiHelpers";
 import {
@@ -43,8 +45,10 @@ import {
   type MessageTemplateGap,
 } from "./systemAutomationCatalog";
 import {
-  LOCAL_REMINDER_TEMPLATES,
-  buildReminderAutomationGraph,
+  LOCAL_SYSTEM_TEMPLATES,
+  buildLocalAutomationGraph,
+  isActiveSystemRecipeKey,
+  resolveTriggerKeyFromCatalog,
   type LocalAutomationTemplate,
 } from "./localTemplateGraphs";
 import {
@@ -73,6 +77,7 @@ type TemplateCard =
       hardComingSoon: boolean;
       showComingSoonBadge: boolean;
       recipe: AutomationRecipeSummary;
+      localFallback?: LocalAutomationTemplate;
     }
   | {
       kind: "local";
@@ -94,7 +99,7 @@ type TemplateCard =
 function recipeIcon(card: TemplateCard) {
   if (card.isAi) return Sparkles;
   const key = card.key;
-  if (key.includes("appointment") || key.includes("reminder")) {
+  if (key.includes("appointment") || key.includes("reminder") || key.includes("gcal")) {
     return CalendarDays;
   }
   if (key.includes("whatsapp") || key.includes("auto_reply")) return MessageCircle;
@@ -124,6 +129,9 @@ export default function AutomationsTemplatesPage() {
   const { businessId, readOnly } = useOutletContext<OutletCtx>();
   const [loading, setLoading] = useState(true);
   const [recipes, setRecipes] = useState<AutomationRecipeSummary[]>([]);
+  const [triggerCatalog, setTriggerCatalog] = useState<
+    AutomationTriggerCatalogItem[]
+  >([]);
   const [recipesError, setRecipesError] = useState(false);
   const [creatingKey, setCreatingKey] = useState<string | null>(null);
   const [showAiUpgrade, setShowAiUpgrade] = useState(false);
@@ -145,12 +153,16 @@ export default function AutomationsTemplatesPage() {
     if (!businessId) return;
     setLoading(true);
     try {
-      const [result, templates] = await Promise.all([
+      const [result, templates, catalog] = await Promise.all([
         listAutomationRecipes(businessId),
         listWhatsAppTemplates(businessId).catch(() => [] as WhatsAppTemplate[]),
+        fetchAutomationTriggerCatalog(businessId).catch(() => ({
+          triggers: [] as AutomationTriggerCatalogItem[],
+        })),
       ]);
       setRecipes(result?.recipes || []);
       setWaTemplates(templates || []);
+      setTriggerCatalog(catalog?.triggers || []);
       setTemplateGaps(findMissingMessageTemplates(templates || []));
       setRecipesError(false);
     } catch {
@@ -176,13 +188,28 @@ export default function AutomationsTemplatesPage() {
     }
   }, [searchParams, setSearchParams]);
 
+  const localByCatalogId = useMemo(() => {
+    const map = new Map<string, LocalAutomationTemplate>();
+    for (const local of LOCAL_SYSTEM_TEMPLATES) {
+      map.set(local.catalogId, local);
+      if (local.recipeKey) map.set(local.recipeKey, local);
+    }
+    return map;
+  }, []);
+
   const cards = useMemo<TemplateCard[]>(() => {
+    const recipeKeys = new Set(recipes.map((r) => r.key));
+
     const recipeCards: TemplateCard[] = recipes.map((recipe) => {
       const isAi = recipe.tier === "ai_paid" || Boolean(recipe.isAiRecipe);
-      const locked = Boolean(recipe.aiLocked || recipe.canCreate === false);
-      const hardComingSoon = Boolean(
-        recipe.comingSoon && !recipe.isAiRecipe && recipe.tier !== "ai_paid"
-      );
+      // Entitlement lock only — do not treat live system recipes as Coming Soon.
+      const locked = Boolean(recipe.aiLocked);
+      const backendComingSoon = Boolean(recipe.comingSoon);
+      const activeService = isActiveSystemRecipeKey(recipe.key) || isAi;
+      const hardComingSoon =
+        backendComingSoon && !activeService && !isAi;
+      const localFallback = localByCatalogId.get(recipe.key);
+
       return {
         kind: "recipe",
         key: recipe.key,
@@ -192,23 +219,26 @@ export default function AutomationsTemplatesPage() {
         resultLabel: getRecipeResultLabel(recipe),
         nodeCount: recipe.nodeCount,
         resultCount: getRecipeResultCount(recipe),
-        categories: (() => {
-          // Use mapping helper without importing private list — filter via recipeMatchesCategory.
-          return TEMPLATE_CATEGORIES.map((c) => c.id).filter(
-            (id) => id !== "all" && recipeMatchesCategory(recipe, id)
-          );
-        })(),
+        categories: TEMPLATE_CATEGORIES.map((c) => c.id).filter(
+          (id) => id !== "all" && recipeMatchesCategory(recipe, id)
+        ),
         isAi,
         locked,
         hardComingSoon,
-        showComingSoonBadge:
-          hardComingSoon || (isAi && Boolean(recipe.comingSoon)),
+        // Never show Coming Soon on AI / active system services — only Premium if locked.
+        showComingSoonBadge: hardComingSoon,
         recipe,
+        localFallback,
       };
     });
 
-    const localCards: TemplateCard[] = LOCAL_REMINDER_TEMPLATES.map((local) => ({
-      kind: "local",
+    const localCards: TemplateCard[] = LOCAL_SYSTEM_TEMPLATES.filter((local) => {
+      // Prefer backend recipe card when the same flow already exists.
+      if (local.recipeKey && recipeKeys.has(local.recipeKey)) return false;
+      if (recipeKeys.has(local.catalogId)) return false;
+      return true;
+    }).map((local) => ({
+      kind: "local" as const,
       key: local.key,
       name: local.name,
       description: local.description,
@@ -217,16 +247,16 @@ export default function AutomationsTemplatesPage() {
       nodeCount: local.nodeCount,
       resultCount: local.resultCount,
       categories: local.categories as TemplateCategoryId[],
-      isAi: false,
+      isAi: Boolean(local.isAi),
       locked: false,
       hardComingSoon: false,
       showComingSoonBadge: false,
       local,
     }));
 
-    // Local reminders first in appointments view; otherwise after standard recipes.
+    // Local first (reminders/system gaps), then recipes — AI locals fill if recipes missing.
     return [...localCards, ...recipeCards];
-  }, [recipes]);
+  }, [localByCatalogId, recipes]);
 
   const visibleCards = useMemo(
     () =>
@@ -236,13 +266,28 @@ export default function AutomationsTemplatesPage() {
     [cards, category, query]
   );
 
-  const handleCreateRecipe = async (recipe: AutomationRecipeSummary) => {
+  const createFromLocal = async (local: LocalAutomationTemplate) => {
     if (!businessId) return;
-    const hardComingSoon = Boolean(
-      recipe.comingSoon && !recipe.isAiRecipe && recipe.tier !== "ai_paid"
-    );
-    if (hardComingSoon) return;
-    if (recipe.aiLocked || recipe.canCreate === false) {
+    const resolvedTriggerKey =
+      resolveTriggerKeyFromCatalog(local, triggerCatalog) || local.triggerKey;
+    const graph = buildLocalAutomationGraph(local, { resolvedTriggerKey });
+    const created = await createAutomationWorkflow(businessId, {
+      useStarter: false,
+      name: local.name,
+      description: local.description,
+      nodes: graph.nodes,
+      edges: graph.edges,
+    });
+    toast.success("נוצרה אוטומציה פעילה: טריגר ← תוצאה");
+    navigate(`/business/${businessId}/dashboard/automations/${created._id}`);
+  };
+
+  const handleCreateRecipe = async (
+    recipe: AutomationRecipeSummary,
+    localFallback?: LocalAutomationTemplate
+  ) => {
+    if (!businessId) return;
+    if (recipe.aiLocked) {
       setShowAiUpgrade(true);
       return;
     }
@@ -252,11 +297,23 @@ export default function AutomationsTemplatesPage() {
     }
     setCreatingKey(recipe.key);
     try {
-      const created = await createAutomationWorkflow(businessId, {
-        recipe: recipe.key,
-      });
-      toast.success("האוטומציה נוצרה מהתבנית");
-      navigate(`/business/${businessId}/dashboard/automations/${created._id}`);
+      // Prefer backend recipe graph when available.
+      try {
+        const created = await createAutomationWorkflow(businessId, {
+          recipe: recipe.key,
+        });
+        toast.success("האוטומציה נוצרה מהתבנית");
+        navigate(
+          `/business/${businessId}/dashboard/automations/${created._id}`
+        );
+        return;
+      } catch (recipeError: unknown) {
+        if (localFallback) {
+          await createFromLocal(localFallback);
+          return;
+        }
+        throw recipeError;
+      }
     } catch (error: unknown) {
       toast.error(readAutomationErrorMessage(error, "שגיאה ביצירת אוטומציה"));
     } finally {
@@ -272,16 +329,23 @@ export default function AutomationsTemplatesPage() {
     }
     setCreatingKey(local.key);
     try {
-      const graph = buildReminderAutomationGraph(local);
-      const created = await createAutomationWorkflow(businessId, {
-        useStarter: false,
-        name: local.name,
-        description: local.description,
-        nodes: graph.nodes,
-        edges: graph.edges,
-      });
-      toast.success("נוצרה אוטומציה: טריגר ← תוצאה");
-      navigate(`/business/${businessId}/dashboard/automations/${created._id}`);
+      // If linked recipe exists and isn't entitlement-locked, try it first.
+      const linked = recipes.find((r) => r.key === local.recipeKey);
+      if (linked && !linked.aiLocked) {
+        try {
+          const created = await createAutomationWorkflow(businessId, {
+            recipe: linked.key,
+          });
+          toast.success("האוטומציה נוצרה מהתבנית");
+          navigate(
+            `/business/${businessId}/dashboard/automations/${created._id}`
+          );
+          return;
+        } catch {
+          // fall through to local graph
+        }
+      }
+      await createFromLocal(local);
     } catch (error: unknown) {
       toast.error(readAutomationErrorMessage(error, "שגיאה ביצירת אוטומציה"));
     } finally {
@@ -294,7 +358,7 @@ export default function AutomationsTemplatesPage() {
       void handleCreateLocal(card.local);
       return;
     }
-    void handleCreateRecipe(card.recipe);
+    void handleCreateRecipe(card.recipe, card.localFallback);
   };
 
   return (
@@ -303,16 +367,17 @@ export default function AutomationsTemplatesPage() {
         <div>
           <h1 className="ax-home__title">תבניות אוטומציה</h1>
           <p className="ax-home__subtitle">
-            כל תבנית היא טריגר ← תוצאה. בחרו תבנית והמשיכו לערוך בבונה.
+            תבניות פעילות לפי השירותים במערכת — CRM, פגישות, WhatsApp, אימייל,
+            יומן ו־AI. כל תבנית: טריגר ← תוצאה.
           </p>
         </div>
       </header>
 
       {templateGaps.length > 0 ? (
         <div className="ax-template-gaps" role="status">
-          <strong>חסרות תבניות הודעה מומלצות</strong>
+          <strong>חסרות תבניות הודעת WhatsApp</strong>
           <p>
-            כדי שהאוטומציות ישלחו WhatsApp, כדאי ליצור/לאשר את התבניות הבאות (
+            האוטומציות יווצרו, אבל לשליחה צריך לאשר תבניות Meta (
             {waTemplates.length} קיימות בעסק):
           </p>
           <ul>
@@ -361,7 +426,7 @@ export default function AutomationsTemplatesPage() {
       {loading ? (
         <div className="ax-empty">
           <Loader2 className="mx-auto mb-2 h-5 w-5 animate-spin" />
-          טוען תבניות...
+          טוען תבניות מהמערכת...
         </div>
       ) : recipesError && visibleCards.length === 0 ? (
         <div className="ax-empty ax-empty--card">
@@ -385,11 +450,11 @@ export default function AutomationsTemplatesPage() {
                     {card.isAi ? <Bot size={18} /> : <Icon size={18} />}
                   </span>
                   <div className="ax-template-card__badges">
-                    {card.kind === "local" ? (
-                      <span className="ax-badge ax-badge--draft">מוכן</span>
-                    ) : null}
                     {card.isAi ? (
                       <span className="ax-badge ax-badge--draft">AI</span>
+                    ) : null}
+                    {!card.hardComingSoon && !card.locked ? (
+                      <span className="ax-badge ax-badge--active">פעיל</span>
                     ) : null}
                     {card.showComingSoonBadge ? (
                       <span className="ax-badge ax-badge--paused">בקרוב</span>
@@ -470,8 +535,8 @@ export default function AutomationsTemplatesPage() {
             </button>
             <h2>אוטומציות AI · בתשלום נוסף</h2>
             <p>
-              מתכון זה דורש תוסף אוטומציות AI פעיל. לאחר הפעלת התוסף תוכלו ליצור
-              ולערוך אותו.
+              תבנית זו דורשת תוסף אוטומציות AI פעיל. אחרי ההפעלה אפשר ליצור
+              ולהריץ אותה במערכת.
             </p>
             <button
               type="button"

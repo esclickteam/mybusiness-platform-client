@@ -18,6 +18,10 @@ import {
   isAutomationsReadOnly,
 } from "../../../../api/automationWorkflowApi";
 import { readAutomationErrorMessage } from "./automationUiHelpers";
+import {
+  LOCAL_SYSTEM_TEMPLATES,
+  buildLocalAutomationGraph,
+} from "./localTemplateGraphs";
 import "./automationFlow.css";
 import "./automationsHome.css";
 

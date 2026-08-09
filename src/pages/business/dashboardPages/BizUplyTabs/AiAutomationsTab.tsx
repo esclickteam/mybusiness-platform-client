@@ -175,19 +175,29 @@ export default function AiAutomationsTab({
               </p>
               <p className="mt-2 text-[11px] font-bold text-slate-500">
                 {t("advisor.aiAutomations.triggerResultHint", {
-                  defaultValue: "טריגר → תוצאת AI במערכת האוטומציות",
+                  defaultValue: "טריגר → תוצאת AI · זמין בתבניות האוטומציה",
                 })}
               </p>
-              <p className="mt-3 text-[11px] font-black uppercase tracking-wide text-amber-700">
-                {t("advisor.aiAutomations.paidTag")}
+              <p className="mt-3 text-[11px] font-black uppercase tracking-wide text-emerald-700">
+                {t("advisor.aiAutomations.activeInTemplates", {
+                  defaultValue: "פעיל בתבניות",
+                })}
               </p>
-              <Link
-                to={recipePath(card.recipeKey)}
-                className="mt-3 inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-amber-200 bg-amber-50 px-3 text-xs font-black text-amber-900 transition hover:bg-amber-100"
-              >
-                {t("advisor.aiAutomations.buildInAutomations")}
-                <ArrowLeft className="h-3.5 w-3.5" />
-              </Link>
+              <div className="mt-3 grid gap-2">
+                <Link
+                  to={recipePath(card.recipeKey)}
+                  className="inline-flex h-10 items-center justify-center gap-2 rounded-xl border border-amber-200 bg-amber-50 px-3 text-xs font-black text-amber-900 transition hover:bg-amber-100"
+                >
+                  {t("advisor.aiAutomations.buildInAutomations")}
+                  <ArrowLeft className="h-3.5 w-3.5" />
+                </Link>
+                <Link
+                  to={`${automationsPath}/templates?focus=ai`}
+                  className="inline-flex h-9 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-[11px] font-black text-slate-700 transition hover:bg-slate-50"
+                >
+                  לכל תבניות ה-AI
+                </Link>
+              </div>
             </article>
           );
         })}
