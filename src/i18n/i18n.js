@@ -11,9 +11,10 @@ import nl from "./locales/nl.json";
 import it from "./locales/it.json";
 import {
   applyDocumentLocale,
-  clearStoredLanguageOverrides,
   detectLanguageFromBrowserSignals,
   fetchGeoLanguage,
+  getManualLanguageChoice,
+  hasManualLanguageChoice,
   normalizeLanguage,
 } from "./localeUtils";
 
@@ -22,6 +23,10 @@ const supportedLanguages = ["en", "he", "fr", "de", "es", "nl", "it"];
 const browserGeoDetector = {
   name: "browserGeo",
   lookup() {
+    // An explicit user choice always wins, even across reloads.
+    const manual = getManualLanguageChoice();
+    if (manual && supportedLanguages.includes(manual)) return manual;
+
     const detected = normalizeLanguage(detectLanguageFromBrowserSignals());
     return detected === "he" || detected === "en" ? detected : "en";
   },
@@ -70,9 +75,13 @@ applyDocumentLocale(i18n.language);
 async function syncLanguageFromGeo() {
   if (typeof window === "undefined") return;
 
-  // Every full page load re-detects from location (IL → he, else → en).
-  clearStoredLanguageOverrides();
+  // Respect an explicit user choice — never override it with geo detection.
+  if (hasManualLanguageChoice()) {
+    applyDocumentLocale(i18n.language);
+    return;
+  }
 
+  // First-time visitors (no explicit choice): detect from location (IL → he, else → en).
   const geoLanguage = await fetchGeoLanguage();
   if (!geoLanguage) return;
 
