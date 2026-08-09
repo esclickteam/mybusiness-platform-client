@@ -58,17 +58,71 @@ const RECIPE_TRIGGER_LABEL: Record<string, string> = {
 };
 
 const RECIPE_RESULT_LABEL: Record<string, string> = {
-  lead_multi_route: "WhatsApp + משימה + התראה",
-  lead_no_response: "מעקב WhatsApp / עדכון סטטוס",
-  appointment_duo: "תזכורת + הודעת תודה",
-  new_client_welcome: "הודעת פתיחה + משימת שימור",
-  ai_rank_leads: "דירוג AI + התראה",
+  lead_multi_route: "WhatsApp מיידי · משימה לנציג · התראה לבעל העסק",
+  lead_no_response: "WhatsApp מעקב · עדכון סטטוס",
+  appointment_duo: "תזכורת לפני פגישה · הודעת תודה",
+  new_client_welcome: "הודעת פתיחה · משימת שימור",
+  ai_rank_leads: "דירוג AI · התראה",
   ai_summarize_calls: "סיכום AI ל-CRM",
   ai_auto_reply: "טיוטת תשובה AI",
   ai_risk_lead: "התראת ליד בסיכון",
   ai_campaign_change: "המלצת קמפיין AI",
   ai_tasks_from_chat: "משימות AI מתוך שיחה",
 };
+
+/** Override backend recipe copy that still talks about "paths/routes". */
+const RECIPE_DISPLAY_NAME: Record<string, string> = {
+  lead_multi_route: "ליד חדש — כמה תוצאות יחד",
+  lead_no_response: "ליד שלא נענה — מעקב חכם",
+  appointment_duo: "פגישה — תזכורת + תודה",
+  new_client_welcome: "לקוח חדש — ברוכים הבאים",
+  ai_rank_leads: "AI — דירוג ליד",
+  ai_summarize_calls: "AI — סיכום שיחה",
+  ai_auto_reply: "AI — טיוטת תשובה ל-WhatsApp",
+  ai_risk_lead: "AI — ליד בסיכון",
+  ai_campaign_change: "AI — המלצת קמפיין",
+  ai_tasks_from_chat: "AI — משימות משיחה",
+};
+
+const RECIPE_DISPLAY_DESCRIPTION: Record<string, string> = {
+  lead_multi_route:
+    "טריגר ליד חדש ב-CRM. תוצאות יחד: WhatsApp מיידי, משימה לנציג והתראה לבעל העסק.",
+  lead_no_response:
+    "טריגר ליד שלא נענה. תוצאה: מעקב WhatsApp או עדכון סטטוס לפי המצב.",
+  appointment_duo:
+    "טריגר פגישה חדשה / תזכורת. תוצאות: תזכורת לפני הפגישה והודעת תודה אחרי.",
+  new_client_welcome:
+    "טריגר לקוח חדש. תוצאות: הודעת פתיחה ומשימת שימור.",
+  ai_rank_leads:
+    "טריגר ליד חדש. תוצאה: דירוג AI לפי סיכוי ודחיפות + התראה.",
+  ai_summarize_calls:
+    "טריגר פגישה שהסתיימה. תוצאה: סיכום AI ותיעוד ב-CRM.",
+  ai_auto_reply:
+    "טריגר הודעת WhatsApp נכנסת. תוצאה: טיוטת תשובה AI מוכנה לשליחה.",
+  ai_risk_lead:
+    "טריגר פולואפ לליד. תוצאה: זיהוי ליד בסיכון והתראה מיידית.",
+  ai_campaign_change:
+    "טריגר שינוי סטטוס ליד. תוצאה: המלצת שינוי קמפיין מ-AI.",
+  ai_tasks_from_chat:
+    "טריגר פגישה שהסתיימה. תוצאה: משימות מעקב שנוצרו מתוך השיחה.",
+};
+
+export function getRecipeDisplayName(recipe: AutomationRecipeSummary): string {
+  return RECIPE_DISPLAY_NAME[recipe.key] || recipe.name;
+}
+
+export function getRecipeDisplayDescription(
+  recipe: AutomationRecipeSummary
+): string {
+  return RECIPE_DISPLAY_DESCRIPTION[recipe.key] || recipe.description;
+}
+
+export function getRecipeResultCount(recipe: AutomationRecipeSummary): number {
+  const fromCatalog = getCatalogByRecipeKey(recipe.key)?.resultLabels?.length;
+  if (fromCatalog && fromCatalog > 0) return fromCatalog;
+  if (recipe.pathCount > 1) return recipe.pathCount;
+  return 1;
+}
 
 export function getRecipeCategories(
   recipe: AutomationRecipeSummary

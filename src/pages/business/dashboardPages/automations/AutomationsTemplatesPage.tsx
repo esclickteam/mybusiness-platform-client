@@ -30,19 +30,23 @@ import {
 import { readAutomationErrorMessage } from "./automationUiHelpers";
 import {
   TEMPLATE_CATEGORIES,
+  getRecipeDisplayDescription,
+  getRecipeDisplayName,
+  getRecipeResultCount,
   getRecipeResultLabel,
   getRecipeTriggerLabel,
   recipeMatchesCategory,
-  recipeMatchesQuery,
-  truncateDescription,
   type TemplateCategoryId,
 } from "./templateCategoryMapping";
 import {
-  SYSTEM_AUTOMATION_CATALOG,
   findMissingMessageTemplates,
-  listReminderAutomations,
   type MessageTemplateGap,
 } from "./systemAutomationCatalog";
+import {
+  LOCAL_REMINDER_TEMPLATES,
+  buildReminderAutomationGraph,
+  type LocalAutomationTemplate,
+} from "./localTemplateGraphs";
 import {
   listWhatsAppTemplates,
   type WhatsAppTemplate,
@@ -53,15 +57,65 @@ type OutletCtx = {
   readOnly: boolean;
 };
 
-function recipeIcon(recipe: AutomationRecipeSummary) {
-  if (recipe.tier === "ai_paid" || recipe.isAiRecipe) return Sparkles;
-  const key = recipe.key;
-  if (key.includes("appointment")) return CalendarDays;
+type TemplateCard =
+  | {
+      kind: "recipe";
+      key: string;
+      name: string;
+      description: string;
+      triggerLabel: string;
+      resultLabel: string;
+      nodeCount: number;
+      resultCount: number;
+      categories: TemplateCategoryId[];
+      isAi: boolean;
+      locked: boolean;
+      hardComingSoon: boolean;
+      showComingSoonBadge: boolean;
+      recipe: AutomationRecipeSummary;
+    }
+  | {
+      kind: "local";
+      key: string;
+      name: string;
+      description: string;
+      triggerLabel: string;
+      resultLabel: string;
+      nodeCount: number;
+      resultCount: number;
+      categories: TemplateCategoryId[];
+      isAi: boolean;
+      locked: boolean;
+      hardComingSoon: boolean;
+      showComingSoonBadge: boolean;
+      local: LocalAutomationTemplate;
+    };
+
+function recipeIcon(card: TemplateCard) {
+  if (card.isAi) return Sparkles;
+  const key = card.key;
+  if (key.includes("appointment") || key.includes("reminder")) {
+    return CalendarDays;
+  }
   if (key.includes("whatsapp") || key.includes("auto_reply")) return MessageCircle;
   if (key.includes("client") || key.includes("crm")) return Users;
   if (key.includes("mail") || key.includes("email")) return Mail;
   if (key.includes("lead")) return Zap;
   return Workflow;
+}
+
+function matchesQuery(card: TemplateCard, query: string) {
+  const q = query.trim().toLowerCase();
+  if (!q) return true;
+  return [card.name, card.description, card.triggerLabel, card.resultLabel, card.key]
+    .join(" ")
+    .toLowerCase()
+    .includes(q);
+}
+
+function matchesCategory(card: TemplateCard, category: TemplateCategoryId) {
+  if (category === "all") return true;
+  return card.categories.includes(category);
 }
 
 export default function AutomationsTemplatesPage() {
@@ -122,28 +176,72 @@ export default function AutomationsTemplatesPage() {
     }
   }, [searchParams, setSearchParams]);
 
-  const visibleRecipes = useMemo(
+  const cards = useMemo<TemplateCard[]>(() => {
+    const recipeCards: TemplateCard[] = recipes.map((recipe) => {
+      const isAi = recipe.tier === "ai_paid" || Boolean(recipe.isAiRecipe);
+      const locked = Boolean(recipe.aiLocked || recipe.canCreate === false);
+      const hardComingSoon = Boolean(
+        recipe.comingSoon && !recipe.isAiRecipe && recipe.tier !== "ai_paid"
+      );
+      return {
+        kind: "recipe",
+        key: recipe.key,
+        name: getRecipeDisplayName(recipe),
+        description: getRecipeDisplayDescription(recipe),
+        triggerLabel: getRecipeTriggerLabel(recipe),
+        resultLabel: getRecipeResultLabel(recipe),
+        nodeCount: recipe.nodeCount,
+        resultCount: getRecipeResultCount(recipe),
+        categories: (() => {
+          // Use mapping helper without importing private list — filter via recipeMatchesCategory.
+          return TEMPLATE_CATEGORIES.map((c) => c.id).filter(
+            (id) => id !== "all" && recipeMatchesCategory(recipe, id)
+          );
+        })(),
+        isAi,
+        locked,
+        hardComingSoon,
+        showComingSoonBadge:
+          hardComingSoon || (isAi && Boolean(recipe.comingSoon)),
+        recipe,
+      };
+    });
+
+    const localCards: TemplateCard[] = LOCAL_REMINDER_TEMPLATES.map((local) => ({
+      kind: "local",
+      key: local.key,
+      name: local.name,
+      description: local.description,
+      triggerLabel: local.triggerLabel,
+      resultLabel: local.resultLabels.join(" · "),
+      nodeCount: local.nodeCount,
+      resultCount: local.resultCount,
+      categories: local.categories as TemplateCategoryId[],
+      isAi: false,
+      locked: false,
+      hardComingSoon: false,
+      showComingSoonBadge: false,
+      local,
+    }));
+
+    // Local reminders first in appointments view; otherwise after standard recipes.
+    return [...localCards, ...recipeCards];
+  }, [recipes]);
+
+  const visibleCards = useMemo(
     () =>
-      recipes.filter(
-        (recipe) =>
-          recipeMatchesCategory(recipe, category) &&
-          recipeMatchesQuery(recipe, query)
+      cards.filter(
+        (card) => matchesCategory(card, category) && matchesQuery(card, query)
       ),
-    [category, query, recipes]
+    [cards, category, query]
   );
 
-  const isHardComingSoon = (recipe: AutomationRecipeSummary) =>
-    Boolean(
-      recipe.comingSoon &&
-        !recipe.isAiRecipe &&
-        recipe.tier !== "ai_paid"
-    );
-
-  const handleCreate = async (recipe: AutomationRecipeSummary) => {
+  const handleCreateRecipe = async (recipe: AutomationRecipeSummary) => {
     if (!businessId) return;
-    // Preserve existing gating: AI recipes may be marked comingSoon but still
-    // open the entitlement upgrade flow / create when allowed.
-    if (isHardComingSoon(recipe)) return;
+    const hardComingSoon = Boolean(
+      recipe.comingSoon && !recipe.isAiRecipe && recipe.tier !== "ai_paid"
+    );
+    if (hardComingSoon) return;
     if (recipe.aiLocked || recipe.canCreate === false) {
       setShowAiUpgrade(true);
       return;
@@ -166,14 +264,46 @@ export default function AutomationsTemplatesPage() {
     }
   };
 
+  const handleCreateLocal = async (local: LocalAutomationTemplate) => {
+    if (!businessId) return;
+    if (isAutomationsReadOnly()) {
+      toast.error(AUTOMATION_PREVIEW_WRITE_BLOCKED_MESSAGE);
+      return;
+    }
+    setCreatingKey(local.key);
+    try {
+      const graph = buildReminderAutomationGraph(local);
+      const created = await createAutomationWorkflow(businessId, {
+        useStarter: false,
+        name: local.name,
+        description: local.description,
+        nodes: graph.nodes,
+        edges: graph.edges,
+      });
+      toast.success("נוצרה אוטומציה: טריגר ← תוצאה");
+      navigate(`/business/${businessId}/dashboard/automations/${created._id}`);
+    } catch (error: unknown) {
+      toast.error(readAutomationErrorMessage(error, "שגיאה ביצירת אוטומציה"));
+    } finally {
+      setCreatingKey(null);
+    }
+  };
+
+  const handleCreate = (card: TemplateCard) => {
+    if (card.kind === "local") {
+      void handleCreateLocal(card.local);
+      return;
+    }
+    void handleCreateRecipe(card.recipe);
+  };
+
   return (
     <div className="ax-page ax-templates">
       <header className="ax-page__header">
         <div>
           <h1 className="ax-home__title">תבניות אוטומציה</h1>
           <p className="ax-home__subtitle">
-            כל תבנית בנויה כ־טריגר ← תוצאה, מחוברת ל־CRM, פגישות, WhatsApp ו־AI
-            במערכת
+            כל תבנית היא טריגר ← תוצאה. בחרו תבנית והמשיכו לערוך בבונה.
           </p>
         </div>
       </header>
@@ -182,8 +312,8 @@ export default function AutomationsTemplatesPage() {
         <div className="ax-template-gaps" role="status">
           <strong>חסרות תבניות הודעה מומלצות</strong>
           <p>
-            כדי שהאוטומציות יעבדו חלק, כדאי ליצור/לאשר את תבניות ה־WhatsApp
-            הבאות ({waTemplates.length} תבניות קיימות בעסק):
+            כדי שהאוטומציות ישלחו WhatsApp, כדאי ליצור/לאשר את התבניות הבאות (
+            {waTemplates.length} קיימות בעסק):
           </p>
           <ul>
             {templateGaps.map((gap) => (
@@ -201,49 +331,6 @@ export default function AutomationsTemplatesPage() {
             </Link>
           ) : null}
         </div>
-      ) : null}
-
-      <section className="ax-system-reminders">
-        <h2>תזכורות פגישה במערכת</h2>
-        <p>יום לפני, יומיים לפני, או מספר שעות לפני — מחובר ליומן ול־WhatsApp.</p>
-        <div className="ax-reminder-grid">
-          {listReminderAutomations().map((item) => (
-            <article key={item.id} className="ax-reminder-card">
-              <strong>{item.title}</strong>
-              <span className="ax-flow-chip">
-                <em>טריגר</em> {item.triggerLabel}
-              </span>
-              <span className="ax-flow-chip ax-flow-chip--result">
-                <em>תוצאה</em> {item.resultLabels.join(" · ")}
-              </span>
-              {item.timingHint ? (
-                <span className="ax-reminder-card__timing">{item.timingHint}</span>
-              ) : null}
-            </article>
-          ))}
-        </div>
-      </section>
-
-      {category === "ai" ? (
-        <section className="ax-ai-catalog">
-          <h2>אוטומציות AI שאפשר להפעיל במערכת</h2>
-          <p>
-            אלה הפעולות ש־AI יודע לבצע אצלכם — דירוג לידים, סיכום שיחה, טיוטת
-            תשובה, זיהוי סיכון, המלצת קמפיין ומשימות משיחה.
-          </p>
-          <div className="ax-ai-catalog__list">
-            {SYSTEM_AUTOMATION_CATALOG.filter((row) => row.kind === "ai").map(
-              (row) => (
-                <div key={row.id} className="ax-ai-catalog__item">
-                  <strong>{row.title}</strong>
-                  <span>
-                    {row.triggerLabel} → {row.resultLabels.join(" · ")}
-                  </span>
-                </div>
-              )
-            )}
-          </div>
-        </section>
       ) : null}
 
       <div className="ax-templates__toolbar">
@@ -276,68 +363,66 @@ export default function AutomationsTemplatesPage() {
           <Loader2 className="mx-auto mb-2 h-5 w-5 animate-spin" />
           טוען תבניות...
         </div>
-      ) : recipesError ? (
+      ) : recipesError && visibleCards.length === 0 ? (
         <div className="ax-empty ax-empty--card">
           לא ניתן לטעון את התבניות כרגע.
         </div>
-      ) : visibleRecipes.length === 0 ? (
+      ) : visibleCards.length === 0 ? (
         <div className="ax-empty ax-empty--card">
           <strong>לא נמצאו תבניות</strong>
           <p>נסו קטגוריה אחרת או שנו את החיפוש.</p>
         </div>
       ) : (
         <div className="ax-template-grid">
-          {visibleRecipes.map((recipe) => {
-            const Icon = recipeIcon(recipe);
-            const isAi = recipe.tier === "ai_paid" || Boolean(recipe.isAiRecipe);
-            const locked = Boolean(recipe.aiLocked || recipe.canCreate === false);
-            const hardComingSoon = isHardComingSoon(recipe);
-            const showComingSoonBadge =
-              hardComingSoon || (isAi && Boolean(recipe.comingSoon));
-            const busy = creatingKey === recipe.key;
+          {visibleCards.map((card) => {
+            const Icon = recipeIcon(card);
+            const busy = creatingKey === card.key;
 
             return (
-              <article key={recipe.key} className="ax-template-card">
+              <article key={card.key} className="ax-template-card">
                 <div className="ax-template-card__top">
                   <span className="ax-template-card__icon" aria-hidden>
-                    {isAi ? <Bot size={18} /> : <Icon size={18} />}
+                    {card.isAi ? <Bot size={18} /> : <Icon size={18} />}
                   </span>
                   <div className="ax-template-card__badges">
-                    {isAi ? <span className="ax-badge ax-badge--draft">AI</span> : null}
-                    {showComingSoonBadge ? (
+                    {card.kind === "local" ? (
+                      <span className="ax-badge ax-badge--draft">מוכן</span>
+                    ) : null}
+                    {card.isAi ? (
+                      <span className="ax-badge ax-badge--draft">AI</span>
+                    ) : null}
+                    {card.showComingSoonBadge ? (
                       <span className="ax-badge ax-badge--paused">בקרוב</span>
                     ) : null}
-                    {locked ? (
+                    {card.locked ? (
                       <span className="ax-badge ax-badge--draft">Premium</span>
                     ) : null}
                   </div>
                 </div>
 
-                <h3 className="ax-template-card__title">{recipe.name}</h3>
-                <p className="ax-template-card__desc">
-                  {truncateDescription(recipe.description)}
-                </p>
+                <h3 className="ax-template-card__title">{card.name}</h3>
+                <p className="ax-template-card__desc">{card.description}</p>
 
                 <div className="ax-template-card__flow">
                   <span className="ax-flow-chip">
                     <em>טריגר</em>
-                    {getRecipeTriggerLabel(recipe)}
+                    {card.triggerLabel}
                   </span>
                   <span className="ax-flow-arrow" aria-hidden>
                     →
                   </span>
                   <span className="ax-flow-chip ax-flow-chip--result">
                     <em>תוצאה</em>
-                    {getRecipeResultLabel(recipe)}
+                    {card.resultLabel}
                   </span>
                 </div>
 
                 <div className="ax-template-card__meta">
-                  <span>{recipe.nodeCount} שלבים</span>
-                  {recipe.pathCount > 1 ? (
+                  <span>{card.nodeCount} שלבים</span>
+                  {card.resultCount > 1 ? (
                     <>
                       <span>·</span>
-                      <span>{recipe.pathCount} תוצאות יחד</span>
+                      <span>{card.resultCount} תוצאות יחד</span>
                     </>
                   ) : null}
                 </div>
@@ -348,22 +433,22 @@ export default function AutomationsTemplatesPage() {
                   disabled={
                     !businessId ||
                     Boolean(creatingKey) ||
-                    hardComingSoon ||
-                    (readOnly && !locked)
+                    card.hardComingSoon ||
+                    (readOnly && !card.locked)
                   }
                   title={
-                    hardComingSoon
+                    card.hardComingSoon
                       ? "תבנית זו תהיה זמינה בקרוב"
                       : writeBlockedTitle
                   }
-                  onClick={() => void handleCreate(recipe)}
+                  onClick={() => handleCreate(card)}
                 >
                   {busy ? (
                     <Loader2 size={14} className="animate-spin" />
                   ) : null}
-                  {hardComingSoon
+                  {card.hardComingSoon
                     ? "בקרוב"
-                    : locked
+                    : card.locked
                       ? "למידע על התוסף"
                       : "השתמש בתבנית"}
                 </button>

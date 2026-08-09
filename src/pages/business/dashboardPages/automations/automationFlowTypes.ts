@@ -148,15 +148,28 @@ function triggerItem(
   routeCount = 1,
   supported = true
 ): PaletteItem {
+  const defaults: Record<string, unknown> = {
+    label,
+    triggerKey: key,
+    routeCount,
+  };
+  // Reminder trigger → result timing lives on the trigger node.
+  if (key === "appointment_reminder" || key.includes("appointment_reminder")) {
+    defaults.hoursBefore = 24;
+    defaults.label = label || "תזכורת פגישה — יום לפני";
+  }
   return {
     type: "trigger",
     key,
     group: "triggers",
     filter: "trigger",
     label: `טריגר · ${label}`,
-    description,
+    description:
+      key === "appointment_reminder"
+        ? "מתי לשלוח תזכורת לפגישה — אחר כך בוחרים את התוצאה (WhatsApp וכו׳)"
+        : description,
     color: "#7c3aed",
-    defaults: { label, triggerKey: key, routeCount },
+    defaults,
     supported,
     comingSoon: !supported,
   };

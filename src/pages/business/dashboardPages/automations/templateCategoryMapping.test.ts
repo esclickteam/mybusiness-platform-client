@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import type { AutomationRecipeSummary } from "../../../../api/automationWorkflowApi";
 import {
+  getRecipeDisplayDescription,
+  getRecipeDisplayName,
   getRecipeResultLabel,
   getRecipeTriggerLabel,
 } from "./templateCategoryMapping";
@@ -8,8 +10,8 @@ import {
 function recipe(partial: Partial<AutomationRecipeSummary>): AutomationRecipeSummary {
   return {
     key: "lead_multi_route",
-    name: "test",
-    description: "desc",
+    name: "ליד חדש — ריבוי מסלולים",
+    description: "טריגר אחד מתפצל ל־3 מסלולים",
     triggerCount: 1,
     pathCount: 3,
     nodeCount: 5,
@@ -22,6 +24,14 @@ describe("templateCategoryMapping trigger/result labels", () => {
     const row = recipe({ key: "lead_multi_route" });
     expect(getRecipeTriggerLabel(row)).toContain("ליד");
     expect(getRecipeResultLabel(row)).toMatch(/WhatsApp|משימה|התראה/);
+  });
+
+  it("overrides path-language names and descriptions", () => {
+    const row = recipe({ key: "lead_multi_route" });
+    expect(getRecipeDisplayName(row)).not.toMatch(/מסלול/);
+    expect(getRecipeDisplayDescription(row)).not.toMatch(/מסלול/);
+    expect(getRecipeDisplayDescription(row)).toMatch(/טריגר/);
+    expect(getRecipeDisplayDescription(row)).toMatch(/תוצא/);
   });
 
   it("exposes AI recipe trigger→result", () => {
