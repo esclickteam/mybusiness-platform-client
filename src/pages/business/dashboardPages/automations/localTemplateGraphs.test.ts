@@ -1,31 +1,62 @@
 import { describe, expect, it } from "vitest";
 import {
-  LOCAL_REMINDER_TEMPLATES,
-  buildReminderAutomationGraph,
+  LOCAL_SYSTEM_TEMPLATES,
+  buildLocalAutomationGraph,
+  isActiveSystemRecipeKey,
+  listLocalAiTemplates,
+  resolveTriggerKeyFromCatalog,
 } from "./localTemplateGraphs";
 
-describe("local reminder template graphs", () => {
-  it("builds trigger → WhatsApp result with hoursBefore", () => {
-    for (const template of LOCAL_REMINDER_TEMPLATES) {
-      const { nodes, edges } = buildReminderAutomationGraph(template);
-      expect(nodes).toHaveLength(2);
-      expect(nodes[0].type).toBe("trigger");
-      expect(nodes[0].data.triggerKey).toBe("appointment_reminder");
-      expect(nodes[0].data.hoursBefore).toBe(template.hoursBefore);
-      expect(nodes[1].type).toBe("action");
-      expect(nodes[1].data.actionKey).toBe("whatsapp_template");
-      expect(edges).toHaveLength(1);
-      expect(edges[0].sourceHandle).toBe("route_1");
-      expect(edges[0].label).toBe("תוצאה");
+describe("local system templates", () => {
+  it("covers CRM, appointments, email, calendar and AI", () => {
+    const cats = new Set(
+      LOCAL_SYSTEM_TEMPLATES.flatMap((t) => t.categories)
+    );
+    expect(cats.has("leads")).toBe(true);
+    expect(cats.has("appointments")).toBe(true);
+    expect(cats.has("whatsapp")).toBe(true);
+    expect(cats.has("email")).toBe(true);
+    expect(cats.has("ai")).toBe(true);
+  });
+
+  it("builds trigger → parallel results graphs", () => {
+    const multi = LOCAL_SYSTEM_TEMPLATES.find(
+      (t) => t.key === "local_lead_multi_results"
+    )!;
+    const { nodes, edges } = buildLocalAutomationGraph(multi);
+    expect(nodes[0].type).toBe("trigger");
+    expect(nodes[0].data.routeCount).toBe(3);
+    expect(nodes.filter((n) => n.type === "action")).toHaveLength(3);
+    expect(edges).toHaveLength(3);
+  });
+
+  it("includes active AI templates with AI action keys", () => {
+    const ai = listLocalAiTemplates();
+    expect(ai.length).toBeGreaterThanOrEqual(6);
+    for (const row of ai) {
+      expect(row.actions.some((a) => a.actionKey.startsWith("ai_"))).toBe(true);
+      expect(isActiveSystemRecipeKey(row.recipeKey || "")).toBe(true);
     }
   });
 
-  it("includes 1-day and 2-day reminder templates", () => {
-    expect(
-      LOCAL_REMINDER_TEMPLATES.some((t) => t.hoursBefore === 24)
-    ).toBe(true);
-    expect(
-      LOCAL_REMINDER_TEMPLATES.some((t) => t.hoursBefore === 48)
-    ).toBe(true);
+  it("resolves trigger keys from live catalog aliases", () => {
+    const tpl = LOCAL_SYSTEM_TEMPLATES.find(
+      (t) => t.key === "local_ai_rank_leads"
+    )!;
+    const resolved = resolveTriggerKeyFromCatalog(tpl, [
+      {
+        key: "lead_created",
+        label: "ליד חדש",
+        category: "crm",
+        isPublishable: true,
+      },
+    ]);
+    expect(resolved).toBe("lead_created");
+  });
+
+  it("marks known system recipes as active", () => {
+    expect(isActiveSystemRecipeKey("lead_multi_route")).toBe(true);
+    expect(isActiveSystemRecipeKey("ai_auto_reply")).toBe(true);
+    expect(isActiveSystemRecipeKey("unknown_thing")).toBe(false);
   });
 });

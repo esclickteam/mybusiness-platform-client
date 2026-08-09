@@ -277,6 +277,7 @@ const RAW_FLOW_ACTION_PALETTE: PaletteItem[] = [
 
   actionItem("whatsapp_template", "וואטסאפ", "שולח תבנית הודעה"),
   actionItem("create_task", "משימה", "יוצר משימת מעקב ב-CRM"),
+  actionItem("create_crm_note", "הערה ב-CRM", "מתעד הערה בכרטיס ליד/לקוח"),
   actionItem("notify", "התראה", "התראה לבעל העסק"),
   actionItem("update_status", "סטטוס", "מעדכן סטטוס ליד"),
   actionItem("assign_owner", "שיוך נציג", "משייך לאיש צוות"),

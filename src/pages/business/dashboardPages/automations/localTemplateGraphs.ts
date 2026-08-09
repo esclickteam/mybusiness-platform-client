@@ -4,36 +4,73 @@ import type {
 } from "../../../../api/automationWorkflowApi";
 import type { SystemAutomationSuggestion } from "./systemAutomationCatalog";
 
+export type LocalTemplateAction = {
+  actionKey: string;
+  label: string;
+  defaults?: Record<string, unknown>;
+};
+
 export type LocalAutomationTemplate = {
   key: string;
+  /** Dedup against backend recipe keys / catalog ids */
   catalogId: string;
+  recipeKey?: string;
   name: string;
   description: string;
   triggerLabel: string;
   resultLabels: string[];
   categories: SystemAutomationSuggestion["categories"];
-  hoursBefore?: number;
+  /** Preferred trigger key; may be remapped from live catalog */
   triggerKey: string;
-  actionKey: string;
-  actionLabel: string;
+  /** Alternate trigger keys to accept from server catalog */
+  triggerKeyAliases?: string[];
+  hoursBefore?: number;
+  actions: LocalTemplateAction[];
+  isAi?: boolean;
   nodeCount: number;
   resultCount: number;
 };
 
-/** Reminder templates that become real builder graphs (trigger → result). */
-export const LOCAL_REMINDER_TEMPLATES: LocalAutomationTemplate[] = [
+type GraphBuildOptions = {
+  /** Override trigger key from live server catalog */
+  resolvedTriggerKey?: string;
+};
+
+function actionNode(
+  id: string,
+  action: LocalTemplateAction,
+  position: { x: number; y: number }
+): AutomationFlowNode {
+  return {
+    id,
+    type: "action",
+    position,
+    data: {
+      label: action.label,
+      actionKey: action.actionKey,
+      templateId: "",
+      ...(action.defaults || {}),
+    },
+  };
+}
+
+/** Full system-linked templates: CRM, appointments, WhatsApp, email, calendar, AI. */
+export const LOCAL_SYSTEM_TEMPLATES: LocalAutomationTemplate[] = [
+  // —— Appointments / reminders ——
   {
     key: "local_appointment_reminder_1_day",
     catalogId: "appointment_reminder_1_day",
     name: "תזכורת פגישה — יום לפני",
-    description: "טריגר: פגישה קרובה יום לפני. תוצאה: שליחת הודעת תזכורת ב-WhatsApp.",
+    description: "טריגר: פגישה קרובה יום לפני. תוצאה: הודעת תזכורת WhatsApp.",
     triggerLabel: "פגישה קרובה (יום לפני)",
     resultLabels: ["הודעת תזכורת WhatsApp"],
     categories: ["appointments", "whatsapp"],
     hoursBefore: 24,
     triggerKey: "appointment_reminder",
-    actionKey: "whatsapp_template",
-    actionLabel: "הודעת תזכורת WhatsApp",
+    triggerKeyAliases: ["appointment_reminder", "appointment_reminder_1_day"],
+    actions: [
+      { actionKey: "whatsapp_template", label: "הודעת תזכורת WhatsApp" },
+    ],
     nodeCount: 2,
     resultCount: 1,
   },
@@ -41,15 +78,16 @@ export const LOCAL_REMINDER_TEMPLATES: LocalAutomationTemplate[] = [
     key: "local_appointment_reminder_2_days",
     catalogId: "appointment_reminder_2_days",
     name: "תזכורת פגישה — יומיים לפני",
-    description:
-      "טריגר: פגישה קרובה יומיים לפני. תוצאה: שליחת הודעת תזכורת ב-WhatsApp.",
+    description: "טריגר: פגישה קרובה יומיים לפני. תוצאה: הודעת תזכורת WhatsApp.",
     triggerLabel: "פגישה קרובה (יומיים לפני)",
     resultLabels: ["הודעת תזכורת WhatsApp"],
     categories: ["appointments", "whatsapp"],
     hoursBefore: 48,
     triggerKey: "appointment_reminder",
-    actionKey: "whatsapp_template",
-    actionLabel: "הודעת תזכורת WhatsApp",
+    triggerKeyAliases: ["appointment_reminder"],
+    actions: [
+      { actionKey: "whatsapp_template", label: "הודעת תזכורת WhatsApp" },
+    ],
     nodeCount: 2,
     resultCount: 1,
   },
@@ -58,69 +96,497 @@ export const LOCAL_REMINDER_TEMPLATES: LocalAutomationTemplate[] = [
     catalogId: "appointment_reminder_hours",
     name: "תזכורת פגישה — שעתיים לפני",
     description:
-      "טריגר: פגישה קרובה שעתיים לפני. תוצאה: שליחת הודעת תזכורת ב-WhatsApp. אפשר לשנות את מספר השעות בבונה.",
+      "טריגר: פגישה קרובה שעתיים לפני. תוצאה: הודעת תזכורת WhatsApp. ניתן לשנות שעות בבונה.",
     triggerLabel: "פגישה קרובה (שעתיים לפני)",
     resultLabels: ["הודעת תזכורת WhatsApp"],
     categories: ["appointments", "whatsapp"],
     hoursBefore: 2,
     triggerKey: "appointment_reminder",
-    actionKey: "whatsapp_template",
-    actionLabel: "הודעת תזכורת WhatsApp",
+    actions: [
+      { actionKey: "whatsapp_template", label: "הודעת תזכורת WhatsApp" },
+    ],
+    nodeCount: 2,
+    resultCount: 1,
+  },
+  {
+    key: "local_appointment_thanks",
+    catalogId: "appointment_thanks",
+    name: "תודה אחרי פגישה",
+    description: "טריגר: פגישה חדשה/הסתיימה. תוצאה: הודעת תודה ב-WhatsApp.",
+    triggerLabel: "פגישה",
+    resultLabels: ["הודעת תודה WhatsApp"],
+    categories: ["appointments", "whatsapp"],
+    triggerKey: "appointment_created",
+    triggerKeyAliases: [
+      "appointment_created",
+      "appointment_completed",
+      "appointment_ended",
+    ],
+    actions: [{ actionKey: "whatsapp_template", label: "הודעת תודה WhatsApp" }],
+    nodeCount: 2,
+    resultCount: 1,
+  },
+  {
+    key: "local_appointment_review",
+    catalogId: "appointment_review",
+    name: "בקשת ביקורת אחרי פגישה",
+    description: "טריגר: פגישה. תוצאה: בקשת ביקורת ב-WhatsApp.",
+    triggerLabel: "פגישה",
+    resultLabels: ["בקשת ביקורת WhatsApp"],
+    categories: ["appointments", "whatsapp"],
+    triggerKey: "appointment_created",
+    triggerKeyAliases: [
+      "appointment_created",
+      "appointment_completed",
+      "appointment_ended",
+    ],
+    actions: [
+      { actionKey: "whatsapp_template", label: "בקשת ביקורת WhatsApp" },
+    ],
+    nodeCount: 2,
+    resultCount: 1,
+  },
+  {
+    key: "local_appointment_gcal",
+    catalogId: "appointment_gcal_sync",
+    name: "פגישה → Google Calendar",
+    description:
+      "טריגר: פגישה חדשה. תוצאה: יצירת אירוע ביומן Google (חיבור Calendar).",
+    triggerLabel: "פגישה חדשה",
+    resultLabels: ["אירוע ב-Google Calendar"],
+    categories: ["appointments"],
+    triggerKey: "appointment_created",
+    triggerKeyAliases: ["appointment_created"],
+    actions: [
+      {
+        actionKey: "google_calendar_create_event",
+        label: "יצירת אירוע ביומן",
+        defaults: {
+          title: "פגישה עם {{appointment.clientName}}",
+          calendarId: "primary",
+        },
+      },
+    ],
+    nodeCount: 2,
+    resultCount: 1,
+  },
+  {
+    key: "local_appointment_email",
+    catalogId: "appointment_email_confirm",
+    name: "פגישה → אימייל אישור",
+    description: "טריגר: פגישה חדשה. תוצאה: שליחת אימייל אישור ללקוח.",
+    triggerLabel: "פגישה חדשה",
+    resultLabels: ["אימייל אישור"],
+    categories: ["appointments", "email"],
+    triggerKey: "appointment_created",
+    actions: [
+      {
+        actionKey: "send_email",
+        label: "אימייל אישור פגישה",
+        defaults: {
+          subject: "אישור פגישה",
+          recipientType: "appointment_customer_email",
+        },
+      },
+    ],
+    nodeCount: 2,
+    resultCount: 1,
+  },
+
+  // —— CRM / Leads / Clients ——
+  {
+    key: "local_lead_multi_results",
+    catalogId: "lead_multi_route",
+    recipeKey: "lead_multi_route",
+    name: "ליד חדש — כמה תוצאות יחד",
+    description:
+      "טריגר: ליד חדש ב-CRM. תוצאות יחד: WhatsApp, משימה לנציג והתראה לבעל העסק.",
+    triggerLabel: "ליד חדש ב-CRM",
+    resultLabels: ["WhatsApp מיידי", "משימה לנציג", "התראה לבעל העסק"],
+    categories: ["leads", "crm", "whatsapp"],
+    triggerKey: "crm_lead_created",
+    triggerKeyAliases: [
+      "crm_lead_created",
+      "lead_created",
+      "new_lead",
+      "lead_new",
+    ],
+    actions: [
+      { actionKey: "whatsapp_template", label: "WhatsApp מיידי" },
+      { actionKey: "create_task", label: "משימה לנציג" },
+      { actionKey: "notify", label: "התראה לבעל העסק" },
+    ],
+    nodeCount: 4,
+    resultCount: 3,
+  },
+  {
+    key: "local_lead_email_welcome",
+    catalogId: "lead_email_welcome",
+    name: "ליד חדש → אימייל + משימה",
+    description: "טריגר: ליד חדש. תוצאות: אימייל ומשימת מעקב ב-CRM.",
+    triggerLabel: "ליד חדש ב-CRM",
+    resultLabels: ["אימייל", "משימת מעקב"],
+    categories: ["leads", "email", "crm"],
+    triggerKey: "crm_lead_created",
+    triggerKeyAliases: [
+      "crm_lead_created",
+      "lead_created",
+      "new_lead",
+      "lead_new",
+    ],
+    actions: [
+      {
+        actionKey: "send_email",
+        label: "אימייל לליד",
+        defaults: { recipientType: "lead_email", subject: "שמחים שפנית אלינו" },
+      },
+      { actionKey: "create_task", label: "משימת מעקב" },
+    ],
+    nodeCount: 3,
+    resultCount: 2,
+  },
+  {
+    key: "local_lead_no_response",
+    catalogId: "lead_no_response",
+    recipeKey: "lead_no_response",
+    name: "ליד שלא נענה — מעקב",
+    description: "טריגר: ליד שלא נענה. תוצאה: WhatsApp מעקב + עדכון סטטוס.",
+    triggerLabel: "ליד שלא נענה",
+    resultLabels: ["WhatsApp מעקב", "עדכון סטטוס"],
+    categories: ["leads", "whatsapp"],
+    triggerKey: "lead_no_response",
+    triggerKeyAliases: ["lead_no_response", "crm_lead_no_response"],
+    actions: [
+      { actionKey: "whatsapp_template", label: "WhatsApp מעקב" },
+      { actionKey: "update_status", label: "עדכון סטטוס" },
+    ],
+    nodeCount: 3,
+    resultCount: 2,
+  },
+  {
+    key: "local_lead_followup_2",
+    catalogId: "lead_followup_2",
+    name: "פולואפ שני לליד",
+    description: "טריגר: ליד ללא המרה. תוצאה: WhatsApp פולואפ שני.",
+    triggerLabel: "ליד ללא המרה",
+    resultLabels: ["WhatsApp פולואפ שני"],
+    categories: ["leads", "whatsapp"],
+    triggerKey: "lead_no_response",
+    triggerKeyAliases: ["lead_no_response", "lead_followup", "crm_lead_created"],
+    actions: [
+      { actionKey: "whatsapp_template", label: "WhatsApp פולואפ שני" },
+    ],
+    nodeCount: 2,
+    resultCount: 1,
+  },
+  {
+    key: "local_new_client_welcome",
+    catalogId: "new_client_welcome",
+    recipeKey: "new_client_welcome",
+    name: "לקוח חדש — ברוכים הבאים",
+    description: "טריגר: לקוח חדש. תוצאות: הודעת פתיחה ומשימת שימור.",
+    triggerLabel: "לקוח חדש",
+    resultLabels: ["הודעת פתיחה", "משימת שימור"],
+    categories: ["crm", "whatsapp"],
+    triggerKey: "crm_client_created",
+    triggerKeyAliases: [
+      "crm_client_created",
+      "client_created",
+      "new_client",
+      "customer_created",
+    ],
+    actions: [
+      { actionKey: "whatsapp_template", label: "הודעת פתיחה" },
+      { actionKey: "create_task", label: "משימת שימור" },
+    ],
+    nodeCount: 3,
+    resultCount: 2,
+  },
+  {
+    key: "local_inactive_client",
+    catalogId: "inactive_client",
+    name: "לקוח לא פעיל — נגיעה",
+    description: "טריגר: לקוח לא פעיל. תוצאה: הודעת נגיעה ב-WhatsApp.",
+    triggerLabel: "לקוח לא פעיל",
+    resultLabels: ["הודעת נגיעה WhatsApp"],
+    categories: ["crm", "whatsapp"],
+    triggerKey: "crm_client_inactive",
+    triggerKeyAliases: [
+      "crm_client_inactive",
+      "inactive_client",
+      "client_inactive",
+    ],
+    actions: [
+      { actionKey: "whatsapp_template", label: "הודעת נגיעה WhatsApp" },
+    ],
+    nodeCount: 2,
+    resultCount: 1,
+  },
+
+  // —— AI (actions supported in builder) ——
+  {
+    key: "local_ai_rank_leads",
+    catalogId: "ai_rank_leads",
+    recipeKey: "ai_rank_leads",
+    name: "AI — דירוג ליד",
+    description:
+      "טריגר: ליד חדש. תוצאה: דירוג AI לפי סיכוי/דחיפות + התראה.",
+    triggerLabel: "ליד חדש ב-CRM",
+    resultLabels: ["דירוג AI", "התראה"],
+    categories: ["ai", "leads"],
+    triggerKey: "crm_lead_created",
+    triggerKeyAliases: [
+      "crm_lead_created",
+      "lead_created",
+      "new_lead",
+      "lead_new",
+    ],
+    isAi: true,
+    actions: [
+      { actionKey: "ai_rank_lead", label: "דירוג ליד AI" },
+      { actionKey: "notify", label: "התראה לפי דחיפות" },
+    ],
+    nodeCount: 3,
+    resultCount: 2,
+  },
+  {
+    key: "local_ai_summarize_calls",
+    catalogId: "ai_summarize_calls",
+    recipeKey: "ai_summarize_calls",
+    name: "AI — סיכום שיחה/פגישה",
+    description: "טריגר: פגישה. תוצאה: סיכום AI ותיעוד ב-CRM.",
+    triggerLabel: "פגישה הסתיימה",
+    resultLabels: ["סיכום AI", "הערה ב-CRM"],
+    categories: ["ai", "appointments"],
+    triggerKey: "appointment_created",
+    triggerKeyAliases: [
+      "appointment_completed",
+      "appointment_ended",
+      "appointment_created",
+    ],
+    isAi: true,
+    actions: [
+      { actionKey: "ai_summarize_call", label: "סיכום שיחה AI" },
+      { actionKey: "create_crm_note", label: "תיעוד ב-CRM" },
+    ],
+    nodeCount: 3,
+    resultCount: 2,
+  },
+  {
+    key: "local_ai_auto_reply",
+    catalogId: "ai_auto_reply",
+    recipeKey: "ai_auto_reply",
+    name: "AI — טיוטת תשובה ל-WhatsApp",
+    description:
+      "טריגר: הודעת WhatsApp נכנסת. תוצאה: טיוטת תשובה AI מוכנה להמשך.",
+    triggerLabel: "הודעת WhatsApp נכנסת",
+    resultLabels: ["טיוטת תשובה AI"],
+    categories: ["ai", "whatsapp"],
+    triggerKey: "whatsapp_message_received",
+    triggerKeyAliases: [
+      "whatsapp_message_received",
+      "whatsapp_inbound",
+      "wa_message_received",
+    ],
+    isAi: true,
+    actions: [{ actionKey: "ai_draft_reply", label: "טיוטת תשובה AI" }],
+    nodeCount: 2,
+    resultCount: 1,
+  },
+  {
+    key: "local_ai_risk_lead",
+    catalogId: "ai_risk_lead",
+    recipeKey: "ai_risk_lead",
+    name: "AI — ליד בסיכון",
+    description: "טריגר: פולואפ לליד. תוצאה: זיהוי סיכון AI + התראה.",
+    triggerLabel: "פולואפ לליד",
+    resultLabels: ["זיהוי סיכון AI", "התראה"],
+    categories: ["ai", "leads"],
+    triggerKey: "lead_no_response",
+    triggerKeyAliases: [
+      "lead_no_response",
+      "crm_lead_followup",
+      "lead_followup",
+    ],
+    isAi: true,
+    actions: [
+      { actionKey: "ai_detect_risk_lead", label: "זיהוי ליד בסיכון" },
+      { actionKey: "notify", label: "התראה מיידית" },
+    ],
+    nodeCount: 3,
+    resultCount: 2,
+  },
+  {
+    key: "local_ai_campaign_change",
+    catalogId: "ai_campaign_change",
+    recipeKey: "ai_campaign_change",
+    name: "AI — המלצת קמפיין",
+    description: "טריגר: שינוי סטטוס ליד. תוצאה: המלצת שינוי קמפיין מ-AI.",
+    triggerLabel: "שינוי סטטוס ליד",
+    resultLabels: ["המלצת קמפיין AI"],
+    categories: ["ai", "leads", "sales"],
+    triggerKey: "crm_lead_status_changed",
+    triggerKeyAliases: [
+      "crm_lead_status_changed",
+      "lead_status_changed",
+      "lead_status_updated",
+    ],
+    isAi: true,
+    actions: [
+      { actionKey: "ai_campaign_recommend", label: "המלצת קמפיין AI" },
+    ],
+    nodeCount: 2,
+    resultCount: 1,
+  },
+  {
+    key: "local_ai_tasks_from_chat",
+    catalogId: "ai_tasks_from_chat",
+    recipeKey: "ai_tasks_from_chat",
+    name: "AI — משימות מתוך שיחה",
+    description: "טריגר: פגישה. תוצאה: משימות CRM שנוצרו מתוכן השיחה.",
+    triggerLabel: "פגישה הסתיימה",
+    resultLabels: ["משימות AI מתוך שיחה"],
+    categories: ["ai", "crm", "appointments"],
+    triggerKey: "appointment_created",
+    triggerKeyAliases: [
+      "appointment_completed",
+      "appointment_ended",
+      "appointment_created",
+    ],
+    isAi: true,
+    actions: [
+      { actionKey: "ai_tasks_from_chat", label: "משימות משיחה AI" },
+    ],
     nodeCount: 2,
     resultCount: 1,
   },
 ];
 
-export function buildReminderAutomationGraph(template: LocalAutomationTemplate): {
+/** @deprecated use LOCAL_SYSTEM_TEMPLATES */
+export const LOCAL_REMINDER_TEMPLATES = LOCAL_SYSTEM_TEMPLATES.filter((t) =>
+  t.key.includes("appointment_reminder")
+);
+
+export function buildLocalAutomationGraph(
+  template: LocalAutomationTemplate,
+  options?: GraphBuildOptions
+): {
   nodes: AutomationFlowNode[];
   edges: AutomationFlowEdge[];
 } {
   const triggerId = "trigger_1";
-  const actionId = "action_1";
-  const hours = template.hoursBefore ?? 24;
+  const actions = template.actions;
+  const routeCount = Math.max(1, Math.min(6, actions.length));
+  const triggerKey = options?.resolvedTriggerKey || template.triggerKey;
 
   const nodes: AutomationFlowNode[] = [
     {
       id: triggerId,
       type: "trigger",
-      position: { x: 80, y: 180 },
+      position: { x: 80, y: 160 },
       data: {
         label: template.triggerLabel,
-        triggerKey: template.triggerKey,
-        routeCount: 1,
-        hoursBefore: hours,
-      },
-    },
-    {
-      id: actionId,
-      type: "action",
-      position: { x: 420, y: 180 },
-      data: {
-        label: template.actionLabel,
-        actionKey: template.actionKey,
-        templateId: "",
+        triggerKey,
+        routeCount,
+        ...(template.hoursBefore != null
+          ? { hoursBefore: template.hoursBefore }
+          : {}),
       },
     },
   ];
 
-  const edges: AutomationFlowEdge[] = [
-    {
-      id: "e_trigger_action",
+  const edges: AutomationFlowEdge[] = [];
+
+  actions.forEach((action, index) => {
+    const id = `action_${index + 1}`;
+    const y = 80 + index * 140;
+    nodes.push(actionNode(id, action, { x: 420, y }));
+    edges.push({
+      id: `e_${triggerId}_${id}`,
       source: triggerId,
-      target: actionId,
-      sourceHandle: "route_1",
+      target: id,
+      sourceHandle: `route_${index + 1}`,
       targetHandle: null,
-      label: "תוצאה",
-    },
-  ];
+      label: `תוצאה ${index + 1}`,
+    });
+  });
 
   return { nodes, edges };
 }
 
-export function isLocalReminderTemplateKey(key: string) {
-  return LOCAL_REMINDER_TEMPLATES.some((row) => row.key === key);
+/** Back-compat alias */
+export function buildReminderAutomationGraph(
+  template: LocalAutomationTemplate,
+  options?: GraphBuildOptions
+) {
+  return buildLocalAutomationGraph(template, options);
 }
 
-export function getLocalReminderTemplate(key: string) {
-  return LOCAL_REMINDER_TEMPLATES.find((row) => row.key === key);
+export type CatalogTriggerLike = {
+  key: string;
+  label?: string;
+  category?: string;
+  isPublishable?: boolean;
+};
+
+/**
+ * Pick the best live trigger key for a local template from the server catalog.
+ */
+export function resolveTriggerKeyFromCatalog(
+  template: LocalAutomationTemplate,
+  catalog: CatalogTriggerLike[]
+): string | null {
+  if (!catalog?.length) return template.triggerKey;
+  const aliases = [
+    template.triggerKey,
+    ...(template.triggerKeyAliases || []),
+  ].map((k) => k.toLowerCase());
+
+  const publishable = catalog.filter((t) => t.isPublishable !== false);
+  const pool = publishable.length ? publishable : catalog;
+
+  const exact = pool.find((t) => aliases.includes(String(t.key).toLowerCase()));
+  if (exact) return exact.key;
+
+  // Fuzzy: label/key contains distinctive tokens from preferred key.
+  const tokens = aliases
+    .flatMap((a) => a.split("_"))
+    .filter((t) => t.length > 3);
+  const fuzzy = pool.find((t) => {
+    const hay = `${t.key} ${t.label || ""}`.toLowerCase();
+    return tokens.some((token) => hay.includes(token));
+  });
+  return fuzzy?.key || template.triggerKey;
+}
+
+export function getLocalSystemTemplate(key: string) {
+  return LOCAL_SYSTEM_TEMPLATES.find((row) => row.key === key);
+}
+
+export function listLocalAiTemplates() {
+  return LOCAL_SYSTEM_TEMPLATES.filter((t) => t.isAi);
+}
+
+/** Recipe keys whose services are live in BizUply — never hard-block as Coming Soon. */
+export const ACTIVE_SYSTEM_RECIPE_KEYS = new Set(
+  LOCAL_SYSTEM_TEMPLATES.map((t) => t.recipeKey).filter(Boolean) as string[]
+);
+
+export const ACTIVE_SYSTEM_RECIPE_KEYS_EXTRA = new Set([
+  "lead_multi_route",
+  "lead_no_response",
+  "appointment_duo",
+  "new_client_welcome",
+  "ai_rank_leads",
+  "ai_summarize_calls",
+  "ai_auto_reply",
+  "ai_risk_lead",
+  "ai_campaign_change",
+  "ai_tasks_from_chat",
+]);
+
+export function isActiveSystemRecipeKey(key: string) {
+  return (
+    ACTIVE_SYSTEM_RECIPE_KEYS.has(key) || ACTIVE_SYSTEM_RECIPE_KEYS_EXTRA.has(key)
+  );
 }
