@@ -106,13 +106,13 @@ export const ACTION_OPTIONS = [
   { value: "webhook", label: "קריאת Webhook", supported: true },
   { value: "stop", label: "עצירת זרימה", supported: true },
   { value: "create_appointment", label: "יצירת פגישה", supported: false, comingSoon: true },
-  // AI actions — backend recipes already ship these keys; keep them selectable.
-  { value: "ai_rank_lead", label: "AI · דירוג ליד", supported: true },
-  { value: "ai_summarize_call", label: "AI · סיכום שיחה", supported: true },
-  { value: "ai_draft_reply", label: "AI · ניסוח תשובה", supported: true },
-  { value: "ai_detect_risk_lead", label: "AI · ליד בסיכון", supported: true },
-  { value: "ai_campaign_recommend", label: "AI · המלצת קמפיין", supported: true },
-  { value: "ai_tasks_from_chat", label: "AI · משימות משיחה", supported: true },
+  // AI actions — not in server SUPPORTED_ACTIONS / executor yet.
+  { value: "ai_rank_lead", label: "AI · דירוג ליד", supported: false, comingSoon: true },
+  { value: "ai_summarize_call", label: "AI · סיכום שיחה", supported: false, comingSoon: true },
+  { value: "ai_draft_reply", label: "AI · ניסוח תשובה", supported: false, comingSoon: true },
+  { value: "ai_detect_risk_lead", label: "AI · ליד בסיכון", supported: false, comingSoon: true },
+  { value: "ai_campaign_recommend", label: "AI · המלצת קמפיין", supported: false, comingSoon: true },
+  { value: "ai_tasks_from_chat", label: "AI · משימות משיחה", supported: false, comingSoon: true },
 ] as const;
 
 export const CONDITION_OPTIONS = [

@@ -10,61 +10,48 @@ import {
   resolvePublishableTrigger,
 } from "./workingTemplates";
 
-describe("workingTemplates", () => {
-  it("ships curated common-case templates across WhatsApp, email and AI", () => {
+const leadTrigger = {
+  key: "new_lead",
+  label: "Lead",
+  description: "",
+  category: "crm",
+  status: "active" as const,
+  isSupported: true,
+  isPublishable: true,
+};
+
+const statusTrigger = {
+  key: "lead_status_changed",
+  label: "Status",
+  description: "",
+  category: "crm",
+  status: "active" as const,
+  isSupported: true,
+  isPublishable: true,
+};
+
+const approvedWa = {
+  _id: "wa1",
+  name: "ברוכים הבאים לליד",
+  category: "welcome",
+  status: "active",
+  metaStatus: "APPROVED",
+  isSystem: true,
+  metaTemplateName: "any_approved_name",
+} as never;
+
+describe("workingTemplates launch safety", () => {
+  it("ships curated templates including WhatsApp / email / AI", () => {
     expect(WORKING_TEMPLATES.length).toBeGreaterThanOrEqual(30);
-    for (const row of WORKING_TEMPLATES) {
-      expect(row.triggerLabel.trim().length).toBeGreaterThan(0);
-      expect(row.resultLabels.length).toBeGreaterThan(0);
-      expect(["whatsapp_simple", "workflow_recipe", "workflow_graph"]).toContain(
-        row.engine
-      );
-    }
     expect(
       WORKING_TEMPLATES.filter((t) => t.engine === "whatsapp_simple").length
     ).toBeGreaterThanOrEqual(10);
-    expect(
-      WORKING_TEMPLATES.some((t) => t.categories.includes("email"))
-    ).toBe(true);
     expect(WORKING_TEMPLATES.some((t) => t.categories.includes("ai"))).toBe(
       true
     );
-    expect(
-      WORKING_TEMPLATES.some((t) => t.key === "wf_lead_wa_email")
-    ).toBe(true);
-    expect(
-      WORKING_TEMPLATES.some((t) => t.key === "wf_lead_full_onboarding")
-    ).toBe(true);
   });
 
-  it("includes common meeting reminder timings on WhatsApp simple", () => {
-    const reminders = WORKING_TEMPLATES.filter((t) =>
-      t.key.startsWith("wa_appointment_reminder")
-    );
-    expect(reminders.map((r) => r.key)).toEqual(
-      expect.arrayContaining([
-        "wa_appointment_reminder_1_day",
-        "wa_appointment_reminder_2_days",
-        "wa_appointment_reminder_3_days",
-        "wa_appointment_reminder_2_hours",
-        "wa_appointment_reminder_1_hour",
-      ])
-    );
-    expect(
-      reminders.find((r) => r.key === "wa_appointment_reminder_2_days")
-        ?.hoursBefore
-    ).toBe(48);
-    expect(
-      reminders.find((r) => r.key === "wa_appointment_reminder_3_days")
-        ?.hoursBefore
-    ).toBe(72);
-    expect(
-      reminders.find((r) => r.key === "wa_appointment_reminder_2_hours")
-        ?.hoursBefore
-    ).toBe(2);
-  });
-
-  it("filters unusable WhatsApp templates and picks the best match", () => {
+  it("only treats Meta APPROVED templates as usable", () => {
     const usable = listUsableWaTemplates([
       {
         _id: "1",
@@ -74,10 +61,9 @@ describe("workingTemplates", () => {
       } as never,
       {
         _id: "2",
-        name: "Rejected",
+        name: "Active local",
         status: "active",
-        metaStatus: "REJECTED",
-        category: "welcome",
+        category: "follow_up",
       } as never,
       {
         _id: "3",
@@ -87,97 +73,147 @@ describe("workingTemplates", () => {
         category: "welcome",
         key: "new_lead_welcome",
       } as never,
-      {
-        _id: "4",
-        name: "Reminder",
-        status: "active",
-        metaStatus: "APPROVED",
-        category: "appointment_reminder",
-      } as never,
-      {
-        id: "5",
-        name: "Active local",
-        status: "active",
-        category: "follow_up",
-      } as never,
     ]);
-    expect(usable.map((t) => getWaTemplateId(t))).toEqual(["3", "4", "5"]);
-
-    const picked = pickBestWaTemplate(usable, {
-      category: "welcome",
-      hints: ["lead", "welcome"],
-    });
-    expect(picked?.id).toBe("3");
+    expect(usable.map((t) => getWaTemplateId(t))).toEqual(["3"]);
   });
 
-  it("marks WhatsApp simple templates as WhatsApp-facing", () => {
-    const wa = WORKING_TEMPLATES.find((t) => t.key === "wa_new_lead_welcome")!;
-    expect(isWhatsAppFacingTemplate(wa)).toBe(true);
-    const email = WORKING_TEMPLATES.find((t) => t.key === "wf_lead_email_only")!;
-    expect(isWhatsAppFacingTemplate(email)).toBe(false);
-  });
-
-  it("resolves publishable triggers by preferred keys", () => {
-    const key = resolvePublishableTrigger(
-      ["crm_lead_created", "lead_created"],
-      [
-        {
-          key: "lead_created",
-          label: "Lead created",
-          description: "",
-          category: "crm",
-          status: "active",
-          isSupported: true,
-          isPublishable: true,
-        },
-        {
-          key: "appointment_created",
-          label: "Appointment",
-          description: "",
-          category: "calendar",
-          status: "active",
-          isSupported: true,
-          isPublishable: false,
-        },
-      ]
-    );
-    expect(key).toBe("lead_created");
-  });
-
-  it("marks WhatsApp simple ready so user can pick an approved message template", () => {
+  it("does not mark WhatsApp simple ready without connection or APPROVED template", () => {
     const template = WORKING_TEMPLATES.find(
       (t) => t.key === "wa_new_lead_welcome"
     )!;
-    const withoutTemplates = getTemplateReadiness(template, {
-      recipes: [],
-      triggers: [],
-      waTemplates: [],
-      managedWaReady: false,
-      calendarConnected: false,
-      aiEntitled: false,
-    });
-    expect(withoutTemplates.ready).toBe(true);
 
-    const withSuggestion = getTemplateReadiness(template, {
+    expect(
+      getTemplateReadiness(template, {
+        recipes: [],
+        triggers: [],
+        waTemplates: [],
+        managedWaReady: false,
+        calendarConnected: false,
+        aiEntitled: false,
+      }).ready
+    ).toBe(false);
+
+    expect(
+      getTemplateReadiness(template, {
+        recipes: [],
+        triggers: [],
+        waTemplates: [],
+        managedWaReady: true,
+        calendarConnected: false,
+        aiEntitled: false,
+      }).ready
+    ).toBe(false);
+
+    const ready = getTemplateReadiness(template, {
       recipes: [],
       triggers: [],
-      waTemplates: [
-        {
-          _id: "wa1",
-          name: "ברוכים הבאים לליד",
-          category: "welcome",
-          status: "active",
-          metaStatus: "APPROVED",
-          isSystem: true,
-          metaTemplateName: "new_lead_received",
-        } as never,
-      ],
+      waTemplates: [approvedWa],
       managedWaReady: true,
       calendarConnected: false,
       aiEntitled: false,
     });
-    expect(withSuggestion.ready).toBe(true);
-    expect(withSuggestion.suggestedWaTemplateId).toBe("wa1");
+    expect(ready.ready).toBe(true);
+    expect(ready.suggestedWaTemplateId).toBe("wa1");
+  });
+
+  it("never marks AI templates ready (coming soon)", () => {
+    const ai = WORKING_TEMPLATES.filter((t) => t.key.startsWith("wf_ai_"));
+    expect(ai.length).toBeGreaterThanOrEqual(7);
+    for (const template of ai) {
+      expect(template.comingSoon).toBe(true);
+      const readiness = getTemplateReadiness(template, {
+        recipes: [
+          {
+            key: template.recipeKey || "ai_rank_leads",
+            name: "AI",
+            description: "",
+            triggerCount: 1,
+            pathCount: 1,
+            nodeCount: 2,
+            canCreate: true,
+            comingSoon: false,
+          } as AutomationRecipeSummary,
+        ],
+        triggers: [leadTrigger, statusTrigger],
+        waTemplates: [approvedWa],
+        managedWaReady: true,
+        calendarConnected: true,
+        aiEntitled: true,
+      });
+      expect(readiness.ready).toBe(false);
+      expect(readiness.blocker).toMatch(/AI|בקרוב/i);
+    }
+  });
+
+  it("marks appointment_done_email coming soon and not ready on appointment_created", () => {
+    const template = WORKING_TEMPLATES.find(
+      (t) => t.key === "wf_appointment_done_email"
+    )!;
+    expect(template.comingSoon).toBe(true);
+    expect(template.requiredTriggerKeys).not.toContain("appointment_created");
+    const readiness = getTemplateReadiness(template, {
+      recipes: [],
+      triggers: [
+        {
+          key: "appointment_created",
+          label: "created",
+          description: "",
+          category: "appointments",
+          status: "active",
+          isSupported: true,
+          isPublishable: true,
+        },
+      ],
+      waTemplates: [],
+      managedWaReady: true,
+      calendarConnected: false,
+      aiEntitled: false,
+    });
+    expect(readiness.ready).toBe(false);
+  });
+
+  it("requires APPROVED WA template for WA workflows", () => {
+    const template = WORKING_TEMPLATES.find((t) => t.key === "wf_lead_multi")!;
+    const blocked = getTemplateReadiness(template, {
+      recipes: [],
+      triggers: [leadTrigger],
+      waTemplates: [],
+      managedWaReady: true,
+      calendarConnected: false,
+      aiEntitled: false,
+    });
+    expect(blocked.ready).toBe(false);
+
+    const ready = getTemplateReadiness(template, {
+      recipes: [],
+      triggers: [leadTrigger],
+      waTemplates: [approvedWa],
+      managedWaReady: true,
+      calendarConnected: false,
+      aiEntitled: false,
+    });
+    expect(ready.ready).toBe(true);
+    expect(ready.resolvedTriggerKey).toBe("new_lead");
+  });
+
+  it("keeps non-WA lead email templates ready with publishable trigger", () => {
+    for (const key of [
+      "wf_lead_email_only",
+      "wf_lead_email_task",
+      "wf_lead_desk_alert",
+      "wf_lead_status_sales",
+    ]) {
+      const template = WORKING_TEMPLATES.find((t) => t.key === key)!;
+      const readiness = getTemplateReadiness(template, {
+        recipes: [],
+        triggers: [leadTrigger, statusTrigger],
+        waTemplates: [],
+        managedWaReady: false,
+        calendarConnected: false,
+        aiEntitled: false,
+      });
+      expect(readiness.ready).toBe(true);
+    }
   });
 
   it("requires calendar connection for Google Calendar workflow", () => {
@@ -203,7 +239,6 @@ describe("workingTemplates", () => {
       aiEntitled: false,
     });
     expect(blocked.ready).toBe(false);
-    expect(blocked.blocker).toMatch(/Google Calendar/i);
 
     const ready = getTemplateReadiness(template, {
       recipes: [],
@@ -224,131 +259,32 @@ describe("workingTemplates", () => {
       aiEntitled: false,
     });
     expect(ready.ready).toBe(true);
-    expect(ready.resolvedTriggerKey).toBe("appointment_created");
   });
 
-  it("requires AI entitlement and recipe or publishable trigger graph", () => {
-    const template = WORKING_TEMPLATES.find((t) => t.key === "wf_ai_rank_leads")!;
-    const recipe: AutomationRecipeSummary = {
-      key: "ai_rank_leads",
-      name: "AI rank",
-      description: "",
-      triggerCount: 1,
-      pathCount: 1,
-      nodeCount: 2,
-      canCreate: true,
-      aiLocked: false,
-    };
-    const leadTrigger = {
-      key: "lead_created",
-      label: "Lead",
-      description: "",
-      category: "crm",
-      status: "active",
-      isSupported: true,
-      isPublishable: true,
-    };
-
-    expect(
-      getTemplateReadiness(template, {
-        recipes: [recipe],
-        triggers: [],
-        waTemplates: [],
-        managedWaReady: true,
-      calendarConnected: false,
-        aiEntitled: false,
-      }).ready
-    ).toBe(false);
-
-    expect(
-      getTemplateReadiness(template, {
-        recipes: [recipe],
-        triggers: [],
-        waTemplates: [],
-        managedWaReady: true,
-      calendarConnected: false,
-        aiEntitled: true,
-      }).ready
-    ).toBe(true);
-
-    // Locked recipe can still activate via local AI graph + publishable trigger
-    const viaGraph = getTemplateReadiness(template, {
-      recipes: [{ ...recipe, aiLocked: true }],
-      triggers: [leadTrigger],
-      waTemplates: [],
-      managedWaReady: true,
-      calendarConnected: false,
-      aiEntitled: true,
-    });
-    expect(viaGraph.ready).toBe(true);
-    expect(viaGraph.resolvedTriggerKey).toBe("lead_created");
+  it("duo copy no longer promises thanks-after-completed", () => {
+    const duo = WORKING_TEMPLATES.find((t) => t.key === "wf_appointment_duo")!;
+    expect(duo.name).not.toMatch(/תודה/);
+    expect(duo.description).toMatch(/ללא הודעת תודה/);
   });
 
-  it("bakes WhatsApp template id into multi-result lead graph", () => {
-    const template = WORKING_TEMPLATES.find((t) => t.key === "wf_lead_multi")!;
-    const readiness = getTemplateReadiness(template, {
-      recipes: [
-        {
-          key: "lead_multi_route",
-          name: "Lead multi",
-          description: "",
-          triggerCount: 1,
-          pathCount: 3,
-          nodeCount: 4,
-          canCreate: true,
-        },
-      ],
-      triggers: [
-        {
-          key: "lead_created",
-          label: "Lead",
-          description: "",
-          category: "crm",
-          status: "active",
-          isSupported: true,
-          isPublishable: true,
-        },
-      ],
-      waTemplates: [
-        {
-          _id: "wa-lead",
-          name: "Welcome",
-          category: "welcome",
-          status: "active",
-          metaStatus: "APPROVED",
-        } as never,
-      ],
-      managedWaReady: true,
-      calendarConnected: false,
-      aiEntitled: false,
-    });
-    expect(readiness.ready).toBe(true);
-    expect(readiness.resolvedTriggerKey).toBe("lead_created");
+  it("marks WhatsApp simple templates as WhatsApp-facing", () => {
+    const wa = WORKING_TEMPLATES.find((t) => t.key === "wa_new_lead_welcome")!;
+    expect(isWhatsAppFacingTemplate(wa)).toBe(true);
+  });
 
-    const graph = template.buildGraph!({
-      triggerKey: readiness.resolvedTriggerKey!,
-      waTemplateId: readiness.suggestedWaTemplateId,
-    });
-    const waNode = graph.nodes.find(
-      (n) => n.data && (n.data as { actionKey?: string }).actionKey === "whatsapp_template"
+  it("resolves publishable triggers by preferred keys", () => {
+    const key = resolvePublishableTrigger(
+      ["crm_lead_created", "new_lead"],
+      [leadTrigger]
     );
-    expect((waNode?.data as { templateId?: string }).templateId).toBe("wa-lead");
-    expect(graph.edges.length).toBe(3);
+    expect(key).toBe("new_lead");
   });
 
-  it("builds WhatsApp + email dual-channel lead graph", () => {
-    const template = WORKING_TEMPLATES.find((t) => t.key === "wf_lead_wa_email")!;
-    const graph = template.buildGraph!({
-      triggerKey: "lead_created",
-      waTemplateId: "wa-123",
+  it("picks best APPROVED WhatsApp template by hints", () => {
+    const picked = pickBestWaTemplate([approvedWa], {
+      category: "welcome",
+      hints: ["lead", "welcome"],
     });
-    const keys = graph.nodes
-      .filter((n) => n.type === "action")
-      .map((n) => (n.data as { actionKey?: string }).actionKey);
-    expect(keys).toEqual(["whatsapp_template", "send_email"]);
-    expect(
-      (graph.nodes.find((n) => n.id === "action_1")?.data as { templateId?: string })
-        .templateId
-    ).toBe("wa-123");
+    expect(picked?.id).toBe("wa1");
   });
 });

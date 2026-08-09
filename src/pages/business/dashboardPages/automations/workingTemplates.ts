@@ -23,6 +23,8 @@ export type WorkingTemplate = {
   engine: WorkingEngine;
   /** Business value rank — lower is better / shown first */
   rank: number;
+  /** Launch-safety: not activatable; hide from default "ready" list */
+  comingSoon?: boolean;
   // WhatsApp simple engine
   whatsappTrigger?: WhatsAppAutomationTrigger;
   hoursBefore?: number;
@@ -55,11 +57,11 @@ const APPOINTMENT_TRIGGER_KEYS = [
   "crm_appointment_created",
   "booking_created",
 ];
+/** Real "after meeting" triggers only — never fall back to appointment_created. */
 const APPOINTMENT_DONE_TRIGGER_KEYS = [
   "appointment_completed",
   "appointment_ended",
   "appointment_done",
-  "appointment_created",
 ];
 const CLIENT_TRIGGER_KEYS = [
   "crm_client_created",
@@ -502,6 +504,7 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
     categories: ["leads", "whatsapp", "sales"],
     engine: "workflow_recipe",
     recipeKey: "lead_no_response",
+    comingSoon: true,
     requiresWaTemplate: true,
     waCategory: "follow_up",
     waHints: ["follow", "מעקב"],
@@ -552,6 +555,7 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
     categories: ["crm", "whatsapp", "email"],
     engine: "workflow_recipe",
     recipeKey: "new_client_welcome",
+    comingSoon: true,
     requiresWaTemplate: true,
     waCategory: "welcome",
     waHints: ["welcome", "client", "לקוח"],
@@ -727,6 +731,7 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
     resultLabels: ["אימייל תודה"],
     categories: ["appointments", "email"],
     engine: "workflow_graph",
+    comingSoon: true,
     requiredTriggerKeys: APPOINTMENT_DONE_TRIGGER_KEYS,
     buildGraph: ({ triggerKey }) =>
       resultGraph({
@@ -747,22 +752,23 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
   {
     key: "wf_appointment_duo",
     rank: 28,
-    name: "פגישה → תזכורת + תודה (מתכון)",
-    description: "מתכון שרת: תזכורת לפני הפגישה והודעת תודה אחרי.",
-    triggerLabel: "פגישה חדשה / תזכורת",
-    resultLabels: ["תזכורת", "הודעת תודה"],
+    name: "פגישה חדשה → אישור WhatsApp + תזכורת + משימה",
+    description:
+      "כשנוצרת פגישה: אישור WhatsApp ללקוח, משימת הכנה, ותזכורת לפני המועד (ללא הודעת תודה אחרי סיום).",
+    triggerLabel: "פגישה חדשה / תזכורת לפני",
+    resultLabels: ["אישור WhatsApp", "תזכורת לפני", "משימה"],
     categories: ["appointments", "whatsapp"],
     engine: "workflow_recipe",
     recipeKey: "appointment_duo",
     requiresWaTemplate: true,
     waCategory: "appointment_reminder",
-    waHints: ["reminder", "thanks", "תזכורת"],
+    waHints: ["reminder", "appointment", "תזכורת", "confirm"],
     requiredTriggerKeys: APPOINTMENT_TRIGGER_KEYS,
     buildGraph: ({ triggerKey, waTemplateId }) =>
       waEdgeGraph({
         triggerKey,
         triggerLabel: "פגישה חדשה",
-        actionLabel: "תזכורת/תודה WhatsApp",
+        actionLabel: "אישור / תזכורת WhatsApp",
         waTemplateId,
         hoursBefore: 24,
         extraActions: [
@@ -778,7 +784,7 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
       }),
   },
 
-  // ── AI (recipe when creatable, else graph if entitled + publishable trigger) ──
+  // ── AI (coming soon — executors not in SUPPORTED_ACTIONS yet) ──
   {
     key: "wf_ai_rank_leads",
     rank: 29,
@@ -789,6 +795,7 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
     categories: ["ai", "leads", "sales"],
     engine: "workflow_recipe",
     recipeKey: "ai_rank_leads",
+    comingSoon: true,
     requiresAiEntitlement: true,
     requiredTriggerKeys: LEAD_TRIGGER_KEYS,
     buildGraph: ({ triggerKey }) =>
@@ -810,6 +817,7 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
     resultLabels: ["דירוג AI", "משימה"],
     categories: ["ai", "leads", "crm"],
     engine: "workflow_graph",
+    comingSoon: true,
     requiresAiEntitlement: true,
     requiredTriggerKeys: LEAD_TRIGGER_KEYS,
     buildGraph: ({ triggerKey }) =>
@@ -832,6 +840,7 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
     categories: ["ai", "appointments", "crm"],
     engine: "workflow_recipe",
     recipeKey: "ai_summarize_calls",
+    comingSoon: true,
     requiresAiEntitlement: true,
     requiredTriggerKeys: APPOINTMENT_DONE_TRIGGER_KEYS,
     buildGraph: ({ triggerKey }) =>
@@ -854,6 +863,7 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
     categories: ["ai", "whatsapp"],
     engine: "workflow_recipe",
     recipeKey: "ai_auto_reply",
+    comingSoon: true,
     requiresAiEntitlement: true,
     requiredTriggerKeys: WHATSAPP_INBOUND_KEYS,
     buildGraph: ({ triggerKey }) =>
@@ -875,6 +885,7 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
     categories: ["ai", "leads", "sales"],
     engine: "workflow_recipe",
     recipeKey: "ai_risk_lead",
+    comingSoon: true,
     requiresAiEntitlement: true,
     requiredTriggerKeys: [...LEAD_NO_RESPONSE_KEYS, ...LEAD_TRIGGER_KEYS],
     buildGraph: ({ triggerKey }) =>
@@ -897,6 +908,7 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
     categories: ["ai", "leads", "sales"],
     engine: "workflow_recipe",
     recipeKey: "ai_campaign_change",
+    comingSoon: true,
     requiresAiEntitlement: true,
     requiredTriggerKeys: LEAD_STATUS_KEYS,
     buildGraph: ({ triggerKey }) =>
@@ -919,6 +931,7 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
     categories: ["ai", "crm", "appointments"],
     engine: "workflow_recipe",
     recipeKey: "ai_tasks_from_chat",
+    comingSoon: true,
     requiresAiEntitlement: true,
     requiredTriggerKeys: APPOINTMENT_DONE_TRIGGER_KEYS,
     buildGraph: ({ triggerKey }) =>
@@ -940,6 +953,7 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
     resultLabels: ["סיכום AI", "משימות", "התראה"],
     categories: ["ai", "appointments", "crm"],
     engine: "workflow_graph",
+    comingSoon: true,
     requiresAiEntitlement: true,
     requiredTriggerKeys: APPOINTMENT_DONE_TRIGGER_KEYS,
     buildGraph: ({ triggerKey }) =>
@@ -995,7 +1009,7 @@ export function getWaTemplateId(
   );
 }
 
-/** Templates that can be selected for an automation send. */
+/** Meta APPROVED templates only — local/active drafts are not sendable. */
 export function listUsableWaTemplates(
   templates: Array<WhatsAppTemplate | ApprovedWhatsAppTemplate>
 ): Array<WhatsAppTemplate | ApprovedWhatsAppTemplate> {
@@ -1009,21 +1023,7 @@ export function listUsableWaTemplates(
         ""
     ).toLowerCase();
     if (status === "archived" || status === "draft") return false;
-    // Hard-blocked Meta states — cannot send
-    if (
-      meta === "rejected" ||
-      meta === "paused" ||
-      meta === "disabled" ||
-      meta === "pending" ||
-      meta === "in_appeal"
-    ) {
-      return false;
-    }
-    // Accept APPROVED Meta templates, or active local/BizUply templates
-    // (meta may be empty before sync).
-    if (meta === "approved") return true;
-    if (!status || status === "active") return true;
-    return false;
+    return meta === "approved";
   });
 }
 
@@ -1107,16 +1107,57 @@ export function getTemplateReadiness(
   template: WorkingTemplate,
   ctx: WorkingContext
 ): TemplateReadiness {
+  const recipe = ctx.recipes.find((r) => r.key === template.recipeKey);
+
+  // Launch safety: AI / unfinished product surfaces are never READY.
+  if (template.comingSoon || template.requiresAiEntitlement) {
+    return {
+      ready: false,
+      blocker: template.requiresAiEntitlement
+        ? "אוטומציות AI — בקרוב"
+        : "בקרוב — עדיין לא זמין להפעלה",
+      recipe,
+    };
+  }
+
+  const needsWa =
+    template.engine === "whatsapp_simple" ||
+    Boolean(template.requiresWaTemplate);
+
+  if (needsWa) {
+    if (!ctx.managedWaReady) {
+      return {
+        ready: false,
+        blocker: "חברו WhatsApp Business (Bizuply) כדי להפעיל",
+        recipe,
+      };
+    }
+    const approved = listUsableWaTemplates(ctx.waTemplates);
+    if (!approved.length) {
+      return {
+        ready: false,
+        blocker: "אין תבניות WhatsApp מאושרות (APPROVED) לבחירה",
+        recipe,
+      };
+    }
+  }
+
   if (template.engine === "whatsapp_simple") {
-    // Always activatable: user picks from approved WhatsApp message templates.
     const picked = pickBestWaTemplate(ctx.waTemplates, {
       category: template.waCategory,
       hints: template.waHints,
     });
+    if (!picked) {
+      return {
+        ready: false,
+        blocker: "בחרו תבנית Meta מאושרת בעת ההפעלה — אין כרגע תבנית מתאימה",
+        recipe,
+      };
+    }
     return {
       ready: true,
-      suggestedWaTemplateId: picked?.id,
-      suggestedWaTemplateName: picked?.name,
+      suggestedWaTemplateId: picked.id,
+      suggestedWaTemplateName: picked.name,
     };
   }
 
@@ -1124,38 +1165,12 @@ export function getTemplateReadiness(
     return {
       ready: false,
       blocker: "חברו Google Calendar במסך החיבורים כדי להפעיל",
+      recipe,
     };
   }
 
-  if (template.requiresAiEntitlement) {
-    const recipe = ctx.recipes.find((r) => r.key === template.recipeKey);
-    if (!ctx.aiEntitled) {
-      return {
-        ready: false,
-        blocker: "דורש תוסף אוטומציות AI פעיל",
-        recipe,
-      };
-    }
-    const recipeOk =
-      Boolean(recipe) &&
-      recipe?.canCreate !== false &&
-      !recipe?.aiLocked &&
-      !recipe?.comingSoon;
-    // Prefer creatable recipe; otherwise fall through to local AI graph + publishable trigger
-    if (!recipeOk && !template.buildGraph) {
-      return {
-        ready: false,
-        blocker: "דורש מתכון AI זמין בשרת",
-        recipe,
-      };
-    }
-  }
-
-  // WhatsApp-bearing workflows must use a publishable trigger + WA template
-  // so activation can bake templateId into the graph (recipe-only create
-  // cannot inject the chosen template reliably).
+  // WhatsApp-bearing workflows require publishable trigger + APPROVED template.
   if (template.requiresWaTemplate && template.buildGraph) {
-    const recipe = ctx.recipes.find((r) => r.key === template.recipeKey);
     const triggerKey = resolvePublishableTrigger(
       template.requiredTriggerKeys,
       ctx.triggers
@@ -1171,18 +1186,24 @@ export function getTemplateReadiness(
       category: template.waCategory,
       hints: template.waHints,
     });
-    // Trigger is enough to show as ready — WA template is chosen on activate.
+    if (!picked) {
+      return {
+        ready: false,
+        blocker: "אין תבנית WhatsApp מאושרת לבחירה עבור האוטומציה",
+        recipe,
+        resolvedTriggerKey: triggerKey,
+      };
+    }
     return {
       ready: true,
       recipe,
       resolvedTriggerKey: triggerKey,
-      suggestedWaTemplateId: picked?.id,
-      suggestedWaTemplateName: picked?.name,
+      suggestedWaTemplateId: picked.id,
+      suggestedWaTemplateName: picked.name,
     };
   }
 
   if (template.engine === "workflow_recipe") {
-    const recipe = ctx.recipes.find((r) => r.key === template.recipeKey);
     if (
       recipe &&
       recipe.canCreate !== false &&
@@ -1203,7 +1224,6 @@ export function getTemplateReadiness(
   }
 
   if (template.buildGraph || template.engine === "workflow_graph") {
-    const recipe = ctx.recipes.find((r) => r.key === template.recipeKey);
     const triggerKey = resolvePublishableTrigger(
       template.requiredTriggerKeys,
       ctx.triggers
@@ -1218,5 +1238,5 @@ export function getTemplateReadiness(
     return { ready: true, recipe, resolvedTriggerKey: triggerKey };
   }
 
-  return { ready: false, blocker: "לא ניתן להפעיל תבנית זו" };
+  return { ready: false, blocker: "לא ניתן להפעיל תבנית זו", recipe };
 }
