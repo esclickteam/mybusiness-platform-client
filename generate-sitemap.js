@@ -12,7 +12,8 @@ const staticPages = [
   { url: 'about', lastmod: '2025-07-01', changefreq: 'monthly', priority: 0.8 },     // About
   { url: 'contact', lastmod: '2025-07-01', changefreq: 'monthly', priority: 0.7 },   // Contact
   { url: 'terms', lastmod: '2025-06-25', changefreq: 'yearly', priority: 0.5 },      // Terms of Use
-  { url: 'privacy', lastmod: '2025-06-25', changefreq: 'yearly', priority: 0.5 },    // Privacy Policy
+  { url: 'privacy', lastmod: '2026-08-09', changefreq: 'yearly', priority: 0.5 },    // Privacy Policy
+  { url: 'privacy-policy', lastmod: '2026-08-09', changefreq: 'yearly', priority: 0.5 },
   { url: 'faq', lastmod: '2025-07-01', changefreq: 'monthly', priority: 0.6 },       // FAQ
   { url: 'how-it-works', lastmod: '2025-07-01', changefreq: 'monthly', priority: 0.7 }, // How It Works
   { url: 'join', lastmod: '2025-07-01', changefreq: 'monthly', priority: 0.6 },      // Join

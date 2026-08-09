@@ -923,6 +923,7 @@ export default function App() {
                           element={<AutomationsProductPage />}
                         />
                         <Route path="/agents" element={<AgentsProductPage />} />
+                        <Route path="/privacy" element={<PrivacyPolicy />} />
                         <Route path="/privacy-policy" element={<PrivacyPolicy />} />
 
                         <Route
