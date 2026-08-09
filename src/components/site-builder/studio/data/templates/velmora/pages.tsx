@@ -381,21 +381,26 @@ function openVelmoraStripeCheckout(cartItems: VelmoraCartItem[]) {
   window.dispatchEvent(
     new CustomEvent("bizuply:open-checkout", {
       detail: {
-        items: cartItems.map((item) => ({
-          productId: item.productId,
-          cartId: item.cartId,
-          name: item.title,
-          title: item.title,
-          price: item.price,
-          quantity: item.quantity,
-          image: item.image,
-          ref: item.ref,
-          sku: item.ref,
-          variantLabel: [item.size, item.color].filter(Boolean).join(" / "),
-          size: item.size,
-          color: item.color,
-          custom: true,
-        })),
+        items: cartItems.map((item) => {
+          const productId = String(item.productId || "").trim();
+          const isMongoId = /^[a-f\d]{24}$/i.test(productId);
+          return {
+            productId,
+            cartId: item.cartId,
+            name: item.title,
+            title: item.title,
+            price: item.price,
+            quantity: item.quantity,
+            image: item.image,
+            ref: item.ref,
+            sku: item.ref,
+            variantLabel: [item.size, item.color].filter(Boolean).join(" / "),
+            size: item.size,
+            color: item.color,
+            // Demo/template SKUs are custom; live catalog Mongo ids must reserve stock.
+            custom: !isMongoId,
+          };
+        }),
       },
     }),
   );

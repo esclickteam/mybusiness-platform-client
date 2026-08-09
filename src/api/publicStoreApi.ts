@@ -72,6 +72,7 @@ export type PublicPaymentsInfo = {
   checkoutReady?: boolean;
   stripeReady: boolean;
   paypalReady?: boolean;
+  manualReady?: boolean;
   currency: string;
   storeName: string;
   isStoreActive: boolean;
@@ -143,9 +144,12 @@ export async function createPublicStoreOrder(
     shippingAddress?: string;
     notes?: string;
     paymentProvider?: string;
+    paymentMethod?: string;
     successUrl?: string;
     cancelUrl?: string;
     startCheckout?: boolean;
+    idempotencyKey?: string;
+    siteId?: string;
   }
 ) {
   const { data } = await API.post(`/store/${businessId}/orders`, payload);
@@ -153,6 +157,7 @@ export async function createPublicStoreOrder(
     success: boolean;
     order: PublicStoreOrder;
     checkoutUrl?: string;
+    reused?: boolean;
   };
 }
 
@@ -227,9 +232,14 @@ export function resolveCheckoutProvider(payments: PublicPaymentsInfo | null) {
   const primary = String(payments.primaryProvider || "").trim();
   if (primary === "paypal" && payments.paypalReady) return "paypal";
   if (primary === "stripe" && payments.stripeReady) return "stripe";
+  if (primary === "manual" || primary === "whatsapp") return primary;
 
   if (payments.paypalReady) return "paypal";
   if (payments.stripeReady) return "stripe";
+  if (payments.manualReady || payments.checkoutReady) {
+    if (primary === "whatsapp") return "whatsapp";
+    return "manual";
+  }
 
   return primary || "";
 }

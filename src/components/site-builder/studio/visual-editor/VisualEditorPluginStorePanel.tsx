@@ -76,6 +76,13 @@ export default function VisualEditorPluginStorePanel({
       if (Array.isArray(result.catalog) && result.catalog.length) {
         setCatalog(result.catalog);
       }
+      const warningText = (result.warnings || [])
+        .map((warning) => warning?.message)
+        .filter(Boolean)
+        .join(" ");
+      if (warningText) {
+        setError(warningText);
+      }
       onInstalled?.();
     } catch (err) {
       setError(
