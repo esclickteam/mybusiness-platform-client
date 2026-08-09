@@ -3,10 +3,9 @@
  * Keep in sync with middleware.js `isCustomerSiteHost`.
  */
 
-const PUBLIC_SITE_DOMAIN =
-  (typeof import.meta !== "undefined" &&
-    (import.meta as any)?.env?.VITE_BIZUPLY_PUBLIC_SITE_DOMAIN) ||
-  "sites.bizuply.com";
+import { resolveVitePublicSiteDomain } from "./studioPublicSiteUrl";
+
+const PUBLIC_SITE_DOMAIN = resolveVitePublicSiteDomain();
 
 const MARKETING_HOSTS = new Set([
   "bizuply.com",

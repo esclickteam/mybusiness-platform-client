@@ -11,6 +11,10 @@ import type {
   StudioSitePage,
 } from "../types";
 
+import { resolveVitePublicSiteDomain } from "../../../../utils/studioPublicSiteUrl";
+
+const PUBLIC_SITE_DOMAIN = resolveVitePublicSiteDomain();
+
 const ROBOTS_DIRECTIVES: SeoRobotsDirective[] = [
   "nofollow",
   "noarchive",
@@ -32,9 +36,6 @@ export function createSeoId(prefix = "seo") {
   seoIdCounter += 1;
   return `${prefix}_${Date.now().toString(36)}_${seoIdCounter.toString(36)}`;
 }
-
-const PUBLIC_SITE_DOMAIN =
-  import.meta.env.VITE_BIZUPLY_PUBLIC_SITE_DOMAIN || "sites.bizuply.com";
 
 function safeString(value: unknown) {
   return String(value ?? "").trim();

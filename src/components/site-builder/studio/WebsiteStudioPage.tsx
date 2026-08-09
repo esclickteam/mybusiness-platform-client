@@ -151,11 +151,22 @@ type StudioSitePageWithPortal = StudioSitePage & {
   visualSnapshotVersion?: number;
 };
 
-const BIZUPLY_PUBLIC_SITE_DOMAIN =
-  process.env.NEXT_PUBLIC_BIZUPLY_PUBLIC_SITE_DOMAIN || "sites.bizuply.com";
+import {
+  buildStudioPublicSiteUrl,
+  normalizeStudioPublicSlug,
+  resolveVitePublicSiteDomain,
+  shouldCommitPublishUi,
+} from "../../../utils/studioPublicSiteUrl";
+
+const BIZUPLY_PUBLIC_SITE_DOMAIN = resolveVitePublicSiteDomain();
 
 const BIZUPLY_LEGACY_PUBLIC_SITE_DOMAIN =
-  process.env.NEXT_PUBLIC_BIZUPLY_LEGACY_PUBLIC_SITE_DOMAIN || "bizuply.com";
+  String(
+    (import.meta as any)?.env?.VITE_BIZUPLY_LEGACY_PUBLIC_SITE_DOMAIN ||
+      "bizuply.com",
+  )
+    .trim()
+    .toLowerCase() || "bizuply.com";
 
 function normalizeLinkedCustomDomain(value: string) {
   const clean = String(value || "")
@@ -367,23 +378,12 @@ function coerceSlugInput(value: unknown): string {
 }
 
 function normalizeBusinessSlug(value: unknown) {
-  const clean = coerceSlugInput(value)
-    .trim()
-    .toLowerCase()
-    .replace(/[\u0590-\u05FF]+/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/-+/g, "-")
-    .replace(/^-|-$/g, "")
-    .slice(0, 60);
-
-  // Guard against String({}) → "[object Object]" → "object-object"
-  if (!clean || clean === "object-object") return "";
-  return clean;
+  return normalizeStudioPublicSlug(value);
 }
 
 function buildPublicSiteUrl(value: string) {
-  const clean = normalizeBusinessSlug(value) || "your-business";
-  return `https://${clean}.${BIZUPLY_PUBLIC_SITE_DOMAIN}`;
+  // Never invent fake URLs (your-business / object-object).
+  return buildStudioPublicSiteUrl(value, BIZUPLY_PUBLIC_SITE_DOMAIN);
 }
 
 function isObjectIdLikeSlug(value: string) {
@@ -5232,18 +5232,23 @@ export default function WebsiteStudioPage({
   const publicUrl = useMemo(() => {
     /*
       Prefer the real published URL that came back from the server (custom
-      domain or live slug). Fall back to the current slug, and only use the
-      generic placeholder when the site was never published/saved.
+      domain or live slug). Never invent object-object / your-business URLs.
     */
     const fromSession = String(
       (visualSessionData as any)?.__publicUrl || "",
     ).trim();
-    if (fromSession) return fromSession.replace(/\/+$/, "");
+    if (
+      fromSession &&
+      !/object-object|your-business/i.test(fromSession) &&
+      /^https?:\/\//i.test(fromSession)
+    ) {
+      return fromSession.replace(/\/+$/, "");
+    }
 
     const cleanSlug = normalizePublicBusinessSlug(slug);
     if (cleanSlug) return buildPublicSiteUrl(cleanSlug);
 
-    return buildPublicSiteUrl("your-business");
+    return "";
   }, [slug, visualSessionData]);
 
   const publicUrlIsPlaceholder =
@@ -7647,11 +7652,6 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
 
     const nextPublicUrl = buildPublicSiteUrl(result.slug);
 
-    setSlug(result.slug);
-    setSlugAvailable(true);
-    setSlugError("");
-    setPublishSlugModalOpen(false);
-
     const payloadToPublish: VisualTemplateSavePayload = {
       ...pendingVisualPublishPayload,
       slug: result.slug,
@@ -7665,13 +7665,26 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       },
     };
 
-    setPendingVisualPublishPayload(null);
+    // Do NOT close modal / set slug / clear pending until API success.
+    const saved = await handleVisualTemplateSave(payloadToPublish);
+    if (!shouldCommitPublishUi(Boolean(saved))) {
+      setPublishSlugError(
+        "הפרסום נכשל. האתר נשאר כטיוטה — בדקי את השגיאה ונסי שוב.",
+      );
+      return;
+    }
 
-    await handleVisualTemplateSave(payloadToPublish);
+    setSlug(result.slug);
+    setSlugAvailable(true);
+    setSlugError("");
+    setPublishSlugModalOpen(false);
+    setPendingVisualPublishPayload(null);
   };
 
-  const handleVisualTemplateSave = async (visualPayload: VisualTemplateSavePayload) => {
-    if (saving) return;
+  const handleVisualTemplateSave = async (
+    visualPayload: VisualTemplateSavePayload,
+  ): Promise<boolean> => {
+    if (saving) return false;
 
     const published = Boolean(
       visualPayload.published || visualPayload.status === "published",
@@ -7709,7 +7722,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
           published: true,
           status: "published",
         });
-        return;
+        return false;
       }
     }
 
@@ -7719,9 +7732,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         : visualPayload.publicUrl ||
           (cleanSlug ? buildPublicSiteUrl(cleanSlug) : publicUrl);
 
-    if (cleanSlug) {
-      setSlug(cleanSlug);
-    }
+    // Do not mutate local slug/public URL before the API confirms save/publish.
 
     setSaving(true);
 
@@ -8382,8 +8393,17 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
             getPublicSlugFromSavedSite(responseData?.site || responseData || {}),
         });
 
+        if (cleanSlug) {
+          setSlug(cleanSlug);
+          setSlugAvailable(true);
+          setSlugError("");
+        }
+
         setPublishedSiteUrl(finalPublishedUrl);
         setPublishSuccessOpen(true);
+      } else if (cleanSlug && !cleanSlug.startsWith("draft-")) {
+        // Draft save with a real slug: commit only after API success.
+        setSlug(cleanSlug);
       }
 
       studioDebug("handleVisualTemplateSave:success", {
@@ -8392,6 +8412,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         published,
         requestSizeMb: requestSizeMb.toFixed(2),
       });
+      return true;
     } catch (error: any) {
       studioError("handleVisualTemplateSave:error", {
         message: error?.message,
@@ -8405,7 +8426,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       });
 
       alert(error?.message || "אירעה שגיאה בשמירת האתר. נסי שוב.");
-      throw error;
+      return false;
     } finally {
       setSaving(false);
       studioGroupEnd();
@@ -8715,17 +8736,13 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     [VISUAL_SHARED_CHROME_KEY]: latestSharedChrome,
     __activePageId: activePageId || "home",
     __siteSlug: normalizePublicBusinessSlug(slug),
-    __publicUrl: buildPublicSiteUrl(
-      normalizePublicBusinessSlug(slug) || "your-business",
-    ),
+    __publicUrl: publicUrl || "",
     __siteDomain: BIZUPLY_PUBLIC_SITE_DOMAIN,
   })}
   siteCustomCode={siteCustomCode}
   onSiteCustomCodeChange={setSiteCustomCode}
   slug={normalizePublicBusinessSlug(slug)}
-  publicUrl={buildPublicSiteUrl(
-    normalizePublicBusinessSlug(slug) || "your-business",
-  )}
+  publicUrl={publicUrl || ""}
   siteDomain={BIZUPLY_PUBLIC_SITE_DOMAIN}
   customDomain={customDomain}
   isSaving={saving}
