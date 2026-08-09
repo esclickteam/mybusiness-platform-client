@@ -10,6 +10,7 @@ const NAV_ITEMS = [
   { path: "/admin/dashboard", label: "דשבורד" },
   { path: "/admin/customers", label: "לקוחות" },
   { path: "/admin/early-access", label: "הרשמה מוקדמת" },
+  { path: "/admin/managed-whatsapp", label: "WhatsApp Managed" },
   { path: "/admin/users", label: "משתמשים" },
   { path: "/admin/create-user", label: "יצירת משתמש" },
   { path: "/admin/businesses", label: "עסקים" },
