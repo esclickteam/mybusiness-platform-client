@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Helmet } from "react-helmet-async";
 import {
   CalendarCheck2,
@@ -25,20 +26,16 @@ import {
   StaggerItem,
 } from "../../components/product-marketing";
 import {
-  agentsFaq,
-  agentsHeroStats,
-  agentsModules,
-  agentsRail,
-  agentsServices,
-  agentsSteps,
+  getAgentsFaq,
+  getAgentsHeroStats,
+  getAgentsModules,
+  getAgentsRail,
+  getAgentsServices,
+  getAgentsSteps,
 } from "../../components/agents-marketing/agentsMarketingData";
 import AgentsWorkspacePreview from "../../components/agents-marketing/AgentsWorkspacePreview";
 import "../../components/product-marketing/marketingKit.css";
 import "../../components/product-marketing/CenteredProductHero.css";
-
-const SEO_TITLE = "נציגים אנושיים לעסק | BizUply";
-const SEO_DESCRIPTION =
-  "שכבת שירות אנושית שמטפלת בלידים, מתאמת פגישות, ממלאת פרטים ומנהלת שיתופים — מתוך ה־CRM שלכם ב־BizUply.";
 
 const MODULE_ICONS = [
   Headset,
@@ -50,15 +47,27 @@ const MODULE_ICONS = [
 ];
 
 export default function AgentsProductPage() {
+  const { t, i18n } = useTranslation();
+
+  const agentsHeroStats = getAgentsHeroStats(t);
+  const agentsSteps = getAgentsSteps(t);
+  const agentsRail = getAgentsRail(t);
+  const agentsServices = getAgentsServices(t);
+  const agentsModules = getAgentsModules(t);
+  const agentsFaq = getAgentsFaq(t);
+
+  const seoTitle = t("agentsPage.seo.title");
+  const seoDescription = t("agentsPage.seo.description");
+
   return (
-    <div className="pm pm-hero-page" dir="rtl">
+    <div className="pm pm-hero-page" dir={i18n.language === "he" ? "rtl" : "ltr"}>
       <Helmet>
-        <title>{SEO_TITLE}</title>
-        <meta name="description" content={SEO_DESCRIPTION} />
+        <title>{seoTitle}</title>
+        <meta name="description" content={seoDescription} />
         <link rel="canonical" href="https://bizuply.com/agents" />
         <meta name="robots" content="index, follow" />
-        <meta property="og:title" content={SEO_TITLE} />
-        <meta property="og:description" content={SEO_DESCRIPTION} />
+        <meta property="og:title" content={seoTitle} />
+        <meta property="og:description" content={seoDescription} />
         <meta property="og:type" content="website" />
         <meta property="og:site_name" content="BizUply" />
       </Helmet>
@@ -66,25 +75,25 @@ export default function AgentsProductPage() {
       <ScrollProgress />
 
       <CenteredProductHero
-        ariaLabel="נציגים אנושיים לעסק"
+        ariaLabel={t("agentsPage.hero.ariaLabel")}
         accent="emerald"
         badges={[
-          { label: "שירות אנושי מחובר", live: true },
+          { label: t("agentsPage.hero.badges.service"), live: true },
           {
-            label: "עובדים מתוך ה־CRM",
+            label: t("agentsPage.hero.badges.crm"),
             icon: <UsersRound size={13} aria-hidden="true" />,
           },
           {
-            label: "שקיפות מלאה",
+            label: t("agentsPage.hero.badges.transparency"),
             icon: <Eye size={13} aria-hidden="true" />,
           },
         ]}
-        title="נציגים אנושיים"
-        titleHighlight="שמזיזים תוצאות"
-        lead="שכבת שירות אנושית שמטפלת בלידים, מתאמת המשך, ממלאת פרטים ומנהלת שיתופי פעולה — לא במוקד מנותק, אלא מתוך המערכת שבה כבר רץ העסק שלכם."
+        title={t("agentsPage.hero.title")}
+        titleHighlight={t("agentsPage.hero.titleHighlight")}
+        lead={t("agentsPage.hero.lead")}
         note={{
           icon: <ShieldCheck size={17} aria-hidden="true" />,
-          text: "כל שיחה, סטטוס ומשימה מתועדים ב־CRM — כדי שתראו בדיוק מה קרה עם כל פנייה, בלי שיחות אבודות מחוץ לצינור.",
+          text: t("agentsPage.hero.note"),
         }}
         stats={agentsHeroStats}
       />
@@ -96,16 +105,18 @@ export default function AgentsProductPage() {
             eyebrow={
               <>
                 <Headset size={14} aria-hidden="true" />
-                איך זה עובד
+                {t("agentsPage.howItWorks.eyebrow")}
               </>
             }
             title={
               <>
-                מחיבור מהיר עד{" "}
-                <span className="pm-grad">טיפול שמביא תוצאות</span>
+                {t("agentsPage.howItWorks.titlePre")}{" "}
+                <span className="pm-grad">
+                  {t("agentsPage.howItWorks.titleHighlight")}
+                </span>
               </>
             }
-            lead="מגדירים צורך, מחברים נציג למערכת, מתחילים לטפל בפניות — ומודדים סטטוסים ופגישות בזמן אמת."
+            lead={t("agentsPage.howItWorks.lead")}
           />
 
           <div className="pmx-flow">
@@ -131,7 +142,7 @@ export default function AgentsProductPage() {
           </div>
 
           <Reveal from="up" delay={0.12}>
-            <ol className="pmx-rail" aria-label="זרימת טיפול נציג">
+            <ol className="pmx-rail" aria-label={t("agentsPage.rail.ariaLabel")}>
               {agentsRail.map((item, index) => (
                 <React.Fragment key={item}>
                   <li>{item}</li>
@@ -159,16 +170,18 @@ export default function AgentsProductPage() {
             eyebrow={
               <>
                 <Sparkles size={14} aria-hidden="true" />
-                מה הנציגים עושים
+                {t("agentsPage.services.eyebrow")}
               </>
             }
             title={
               <>
-                שלוש שכבות שירות{" "}
-                <span className="pm-grad">שמתחברות לעסק</span>
+                {t("agentsPage.services.titlePre")}{" "}
+                <span className="pm-grad">
+                  {t("agentsPage.services.titleHighlight")}
+                </span>
               </>
             }
-            lead="אפשר להתחיל מטיפול בלידים, מתיאום פגישות, או ממנהל שיתופים אנושי — לפי העומס והיעד."
+            lead={t("agentsPage.services.lead")}
           />
 
           <div className="pmx-recipe">
@@ -199,16 +212,18 @@ export default function AgentsProductPage() {
             eyebrow={
               <>
                 <UsersRound size={14} aria-hidden="true" />
-                למה זה אחרת
+                {t("agentsPage.modules.eyebrow")}
               </>
             }
             title={
               <>
-                נציגים שעובדים{" "}
-                <span className="pm-grad">עם המערכת שלכם</span>
+                {t("agentsPage.modules.titlePre")}{" "}
+                <span className="pm-grad">
+                  {t("agentsPage.modules.titleHighlight")}
+                </span>
               </>
             }
-            lead="מענה, תיאום, מילוי פרטים, שקיפות ושיתופים — שכבה אנושית שמחוברת לצינור האמיתי של העסק."
+            lead={t("agentsPage.modules.lead")}
           />
 
           <Stagger className="pm-grid pm-grid--3" gap={0.07}>
@@ -239,17 +254,17 @@ export default function AgentsProductPage() {
       <section className="pm-section pm-section--tight">
         <div className="pm-shell">
           <SectionHeading
-            eyebrow="שאלות נפוצות"
-            title="מה שחשוב לדעת על נציגים אנושיים"
+            eyebrow={t("agentsPage.faq.eyebrow")}
+            title={t("agentsPage.faq.title")}
           />
           <FaqAccordion items={agentsFaq} />
 
           <div className="pmx-final">
             <FinalCta
-              eyebrow="צריכים שכבה אנושית"
-              title="חברו נציגים שמביאים תוצאות — בלי לאבד שליטה"
-              text="טיפול בלידים, תיאום פגישות וניהול שיתופים מתוך BizUply. כל פעילות מתועדת, כל סטטוס גלוי, והעומס יורד מהיום הראשון."
-              primaryLabel="הירשמו עכשיו"
+              eyebrow={t("agentsPage.finalCta.eyebrow")}
+              title={t("agentsPage.finalCta.title")}
+              text={t("agentsPage.finalCta.text")}
+              primaryLabel={t("agentsPage.finalCta.primaryLabel")}
               primaryTo="/pricing"
             />
           </div>

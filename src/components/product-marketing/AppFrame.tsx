@@ -2,7 +2,7 @@ import React from "react";
 import "./appFrame.css";
 
 export type AppFrameProps = {
-  /** Path shown in the window bar, e.g. "CRM · טיפול נציג". */
+  /** Path shown in the window bar, e.g. "CRM / Agent handling". */
   crumb: string;
   /** Short line under the frame explaining what the screen shows. */
   caption?: string;

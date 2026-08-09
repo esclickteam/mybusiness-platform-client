@@ -1,5 +1,6 @@
 import React from "react";
 import { Helmet } from "react-helmet-async";
+import { useTranslation } from "react-i18next";
 import {
   Code2,
   History,
@@ -16,7 +17,7 @@ import WebsiteTemplateLibrary from "../../components/website-builder-marketing/W
 import WebsiteSeoSection from "../../components/website-builder-marketing/WebsiteSeoSection";
 import WebsiteEcosystem from "../../components/website-builder-marketing/WebsiteEcosystem";
 import WebsiteLaunchFlow from "../../components/website-builder-marketing/WebsiteLaunchFlow";
-import { websiteFaq } from "../../components/website-builder-marketing/websiteMarketingData";
+import { getWebsiteFaq } from "../../components/website-builder-marketing/websiteMarketingData";
 import {
   AuroraBackdrop,
   FaqAccordion,
@@ -30,79 +31,80 @@ import {
 import "../../components/product-marketing/marketingKit.css";
 import "./websiteProductPage.css";
 
-const SEO_TITLE = "בניית אתרים מקצועיים | BizUply";
-const SEO_DESCRIPTION =
-  "בונים אתר, חנות או אתר עם זימון תורים מתוך 205 תבניות, עורכים בעורך ויזואלי ומפרסמים לדומיין שלכם — כשכל פנייה מהאתר נכנסת ל־CRM.";
-
-const EDITOR_CARDS = [
-  {
-    icon: MousePointerClick,
-    accent: "#e11d8c",
-    title: "עריכה במקום",
-    text: "לוחצים על כותרת, טקסט או תמונה ומשנים אותם ישר על הקנבס, עם סרגל עריכה צף ותפריט הקשר.",
-    tags: ["טקסט", "תמונות", "כפתורים"],
-  },
-  {
-    icon: Palette,
-    accent: "#7c3aed",
-    title: "פאנל עיצוב מלא",
-    text: "שש לשוניות שליטה — תוכן, עיצוב, פריסה, מדיה, תנועה ומתקדם: צבעים, טיפוגרפיה, מרווחים ואנימציות.",
-    tags: ["צבעים", "טיפוגרפיה", "אנימציות"],
-  },
-  {
-    icon: Layers,
-    accent: "#4f46e5",
-    title: "מבנה שאתם קובעים",
-    text: "פאנל שכבות עם גרירה לסידור הסקשנים, הוספת עמודים ותתי־עמודים, קביעת עמוד בית ותפריט שמתעדכן לבד.",
-    tags: ["גרירת סקשנים", "עמודים", "תפריט"],
-  },
-  {
-    icon: Library,
-    accent: "#0891b2",
-    title: "ספריות תוכן",
-    text: "140 עמודים מוכנים וקטלוג סקשנים לפי קטגוריה, בונה טפסים וספריית מדיה עם חיפוש תמונות — הכל בתוך העורך.",
-    tags: ["140 עמודים", "סקשנים", "מדיה"],
-  },
-  {
-    icon: MonitorSmartphone,
-    accent: "#059669",
-    title: "דסקטופ, טאבלט ומובייל",
-    text: "עוברים בין מצבי תצוגה ומכוונים את העיצוב לכל מכשיר, כולל תפריט מובייל שמותאם באתר שפורסם.",
-    tags: ["רספונסיבי", "תפריט מובייל"],
-  },
-  {
-    icon: History,
-    accent: "#f59e0b",
-    title: "80 צעדי ביטול",
-    text: "היסטוריית עריכה עמוקה עם ביטול וחזרה בקיצורי מקלדת, כדי להתנסות בלי לפחד לשבור.",
-    tags: ["ביטול", "חזרה", "קיצורי מקלדת"],
-  },
-  {
-    icon: Code2,
-    accent: "#2563eb",
-    title: "קוד משלכם כשצריך",
-    text: "CSS ברמת אתר או עמוד, ותגיות HTML ל־head ול־body — לפיקסלים, לסקריפטים ולהתאמות מדויקות.",
-    tags: ["CSS", "HTML", "סקריפטים"],
-  },
-  {
-    icon: Share2,
-    accent: "#db2777",
-    title: "עבודה עם שותפים",
-    text: "מזמינים מעצב או שותף לאתר בהרשאת עריכה או צפייה, רואים מי מחובר, מסירים גישה או מעבירים בעלות.",
-    tags: ["עריכה", "צפייה", "העברת בעלות"],
-  },
-  {
-    icon: Sparkles,
-    accent: "#6d28d9",
-    title: "פרסום בלחיצה",
-    text: "האתר עולה לאוויר לכתובת שלכם תחת sites.bizuply.com, ואפשר לחזור לטיוטה ולפרסם שוב בכל שלב.",
-    tags: ["טיוטה", "פרסום", "דומיין"],
-  },
-];
-
 export default function WebsiteProductPage() {
+  const { t, i18n } = useTranslation();
+
+  const SEO_TITLE = t("websitePage.seo.title");
+  const SEO_DESCRIPTION = t("websitePage.seo.description");
+
+  const EDITOR_CARDS = [
+    {
+      icon: MousePointerClick,
+      accent: "#e11d8c",
+      title: t("websitePage.editor.cards.edit.title"),
+      text: t("websitePage.editor.cards.edit.text"),
+      tags: t("websitePage.editor.cards.edit.tags", { returnObjects: true }),
+    },
+    {
+      icon: Palette,
+      accent: "#7c3aed",
+      title: t("websitePage.editor.cards.design.title"),
+      text: t("websitePage.editor.cards.design.text"),
+      tags: t("websitePage.editor.cards.design.tags", { returnObjects: true }),
+    },
+    {
+      icon: Layers,
+      accent: "#4f46e5",
+      title: t("websitePage.editor.cards.structure.title"),
+      text: t("websitePage.editor.cards.structure.text"),
+      tags: t("websitePage.editor.cards.structure.tags", { returnObjects: true }),
+    },
+    {
+      icon: Library,
+      accent: "#0891b2",
+      title: t("websitePage.editor.cards.content.title"),
+      text: t("websitePage.editor.cards.content.text"),
+      tags: t("websitePage.editor.cards.content.tags", { returnObjects: true }),
+    },
+    {
+      icon: MonitorSmartphone,
+      accent: "#059669",
+      title: t("websitePage.editor.cards.responsive.title"),
+      text: t("websitePage.editor.cards.responsive.text"),
+      tags: t("websitePage.editor.cards.responsive.tags", { returnObjects: true }),
+    },
+    {
+      icon: History,
+      accent: "#f59e0b",
+      title: t("websitePage.editor.cards.history.title"),
+      text: t("websitePage.editor.cards.history.text"),
+      tags: t("websitePage.editor.cards.history.tags", { returnObjects: true }),
+    },
+    {
+      icon: Code2,
+      accent: "#2563eb",
+      title: t("websitePage.editor.cards.code.title"),
+      text: t("websitePage.editor.cards.code.text"),
+      tags: t("websitePage.editor.cards.code.tags", { returnObjects: true }),
+    },
+    {
+      icon: Share2,
+      accent: "#db2777",
+      title: t("websitePage.editor.cards.collaborate.title"),
+      text: t("websitePage.editor.cards.collaborate.text"),
+      tags: t("websitePage.editor.cards.collaborate.tags", { returnObjects: true }),
+    },
+    {
+      icon: Sparkles,
+      accent: "#6d28d9",
+      title: t("websitePage.editor.cards.publish.title"),
+      text: t("websitePage.editor.cards.publish.text"),
+      tags: t("websitePage.editor.cards.publish.tags", { returnObjects: true }),
+    },
+  ];
+
   return (
-    <div dir="rtl" className="pm wbp">
+    <div dir={i18n.language === "he" ? "rtl" : "ltr"} className="pm wbp">
       <Helmet>
         <title>{SEO_TITLE}</title>
         <meta name="description" content={SEO_DESCRIPTION} />
@@ -131,15 +133,16 @@ export default function WebsiteProductPage() {
             eyebrow={
               <>
                 <Palette size={14} aria-hidden="true" />
-                העורך הוויזואלי
+                {t("websitePage.editor.eyebrow")}
               </>
             }
             title={
               <>
-                עורכים את האתר <span className="pm-grad">בלי שורת קוד</span>
+                {t("websitePage.editor.titleLead")}{" "}
+                <span className="pm-grad">{t("websitePage.editor.titleHighlight")}</span>
               </>
             }
-            lead="לוחצים על אלמנט ומשנים אותו במקום, מסדרים סקשנים בגרירה, בודקים במובייל ומפרסמים — הכל מאותו מסך, בלי מתווכים."
+            lead={t("websitePage.editor.lead")}
           />
 
           <Stagger className="pm-grid pm-grid--3" gap={0.07}>
@@ -176,17 +179,17 @@ export default function WebsiteProductPage() {
       <section className="pm-section pm-section--tight wbp__faq">
         <div className="pm-shell">
           <SectionHeading
-            eyebrow="שאלות נפוצות"
-            title="מה שחשוב לדעת לפני שמתחילים"
+            eyebrow={t("websitePage.faqSection.eyebrow")}
+            title={t("websitePage.faqSection.title")}
           />
-          <FaqAccordion items={websiteFaq} />
+          <FaqAccordion items={getWebsiteFaq(t)} />
 
           <div className="wbp__final">
             <FinalCta
-              eyebrow="מוכנים לעלות לאוויר"
-              title="האתר הבא שלכם מתחיל מתבנית — ונגמר בפניות"
-              text="בוחרים תבנית, עורכים אותה בעורך הוויזואלי, מוסיפים תוספים ומפרסמים. הפניות מהאתר מחכות לכם בצינור הלידים ב־CRM."
-              primaryLabel="הירשמו עכשיו"
+              eyebrow={t("websitePage.finalCta.eyebrow")}
+              title={t("websitePage.finalCta.title")}
+              text={t("websitePage.finalCta.text")}
+              primaryLabel={t("websitePage.finalCta.primaryLabel")}
               primaryTo="/pricing"
             />
           </div>

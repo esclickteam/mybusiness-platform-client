@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Reveal } from "../product-marketing";
 import "./crmSections.css";
 
@@ -19,74 +20,72 @@ type Block = {
   extras: Shot[];
 };
 
+type TFn = (key: string, options?: Record<string, unknown>) => any;
+
 /** Real captures from the business dashboard — no mock-ups. */
-const BLOCKS: Block[] = [
-  {
-    id: "leads",
-    eyebrow: "לידים",
-    title: "ניהול לידים מקצה לקצה",
-    lead: "רשימת הלידים עם מדדים למעלה, סינון לפי סטטוס ולפי מקור, וחיפוש חופשי על שם, טלפון, אימייל, מקור ושדות הטופס.",
-    main: {
-      src: "/leads1.jpeg",
-      crumb: "CRM · ניהול לידים",
-      caption:
-        "מסך הלידים: עורך לידים, לידים חדשים, נוצר קשר, הומרו ומשימות פתוחות — עם סינון לפי סטטוס ולפי מקור",
+function getBlocks(t: TFn): Block[] {
+  return [
+    {
+      id: "leads",
+      eyebrow: t("crmPage.tour.leads.eyebrow"),
+      title: t("crmPage.tour.leads.title"),
+      lead: t("crmPage.tour.leads.lead"),
+      main: {
+        src: "/leads1.jpeg",
+        crumb: t("crmPage.tour.leads.main.crumb"),
+        caption: t("crmPage.tour.leads.main.caption"),
+      },
+      extras: [
+        {
+          src: "/leads2.jpeg",
+          crumb: t("crmPage.tour.leads.extra1.crumb"),
+          caption: t("crmPage.tour.leads.extra1.caption"),
+        },
+        {
+          src: "/leads3.jpeg",
+          portrait: true,
+          crumb: t("crmPage.tour.leads.extra2.crumb"),
+          caption: t("crmPage.tour.leads.extra2.caption"),
+        },
+      ],
     },
-    extras: [
-      {
-        src: "/leads2.jpeg",
-        crumb: "CRM · כרטיס ליד",
-        caption:
-          "כרטיס הליד: סיכום פרופיל, פרטי המקור, כל שדות הטופס, ותיעוד עם הערות ומשימות בעלות תאריך",
+    {
+      id: "clients",
+      eyebrow: t("crmPage.tour.clients.eyebrow"),
+      title: t("crmPage.tour.clients.title"),
+      lead: t("crmPage.tour.clients.lead"),
+      main: {
+        src: "/leads4.jpeg",
+        crumb: t("crmPage.tour.clients.main.crumb"),
+        caption: t("crmPage.tour.clients.main.caption"),
       },
-      {
-        src: "/leads3.jpeg",
-        portrait: true,
-        crumb: "מרכז התראות",
-        caption: "מרכז ההתראות: לידים חדשים ומשימות שעבר זמנן, גם במובייל",
-      },
-    ],
-  },
-  {
-    id: "clients",
-    eyebrow: "לקוחות",
-    title: "תיק לקוח שממשיך אחרי הסגירה",
-    lead: "מאגר הלקוחות עם מדדי תורים והכנסות, ובתוך כל לקוח פרופיל מלא, תיעוד עם קבצים והיסטוריית תורים.",
-    main: {
-      src: "/leads4.jpeg",
-      crumb: "CRM · ניהול לקוחות",
-      caption:
-        "מסך הלקוחות: סך הלקוחות, לקוחות פעילים, תורים והכנסות — עם חיפוש וסינון",
+      extras: [
+        {
+          src: "/leads5.jpeg",
+          crumb: t("crmPage.tour.clients.extra1.crumb"),
+          caption: t("crmPage.tour.clients.extra1.caption"),
+        },
+        {
+          src: "/leads6.jpeg",
+          crumb: t("crmPage.tour.clients.extra2.crumb"),
+          caption: t("crmPage.tour.clients.extra2.caption"),
+        },
+      ],
     },
-    extras: [
-      {
-        src: "/leads5.jpeg",
-        crumb: "CRM · פרופיל לקוח",
-        caption:
-          "פרופיל הלקוח: פרטי קשר, סיכום CRM, ותיעוד עם משימות, תאריך ושעה וצירוף קבצים",
+    {
+      id: "appointments",
+      eyebrow: t("crmPage.tour.appointments.eyebrow"),
+      title: t("crmPage.tour.appointments.title"),
+      lead: t("crmPage.tour.appointments.lead"),
+      main: {
+        src: "/leads7.jpeg",
+        crumb: t("crmPage.tour.appointments.main.crumb"),
+        caption: t("crmPage.tour.appointments.main.caption"),
       },
-      {
-        src: "/leads6.jpeg",
-        crumb: "CRM · תורי הלקוח",
-        caption:
-          "תורי הלקוח: היסטוריית התורים עם משך, מחיר וסטטוס תשלום לכל תור",
-      },
-    ],
-  },
-  {
-    id: "appointments",
-    eyebrow: "פגישות",
-    title: "יומן פגישות מסונכרן",
-    lead: "לוח חודשי לצד רשימה מסונכרנת, כרטיס פגישה עם שירות, משך, מחיר וסטטוס תשלום, ושעות פעילות שמגדירות את החלונות הפנויים.",
-    main: {
-      src: "/leads7.jpeg",
-      crumb: "CRM · יומן פגישות",
-      caption:
-        "יומן הפגישות: פגישות היום, פגישות קרובות, פגישות שלא שולמו וסך ההכנסות",
+      extras: [],
     },
-    extras: [],
-  },
-];
+  ];
+}
 
 function ShotFrame({ shot, eager }: { shot: Shot; eager?: boolean }) {
   return (
@@ -112,6 +111,9 @@ function ShotFrame({ shot, eager }: { shot: Shot; eager?: boolean }) {
 }
 
 export default function CrmScreenshotTour() {
+  const { t } = useTranslation();
+  const BLOCKS = getBlocks(t);
+
   return (
     <div className="crx-tour">
       {BLOCKS.map((block, index) => (

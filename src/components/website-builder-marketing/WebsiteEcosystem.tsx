@@ -1,14 +1,18 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Puzzle } from "lucide-react";
 import { Marquee, Reveal, SectionHeading } from "../product-marketing";
 import {
-  livePlugins,
+  getLivePlugins,
   paymentProviders,
-  pluginChips,
+  getPluginChips,
 } from "./websiteMarketingData";
 import "./websiteSections.css";
 
 export default function WebsiteEcosystem() {
+  const { t } = useTranslation();
+  const pluginChips = getPluginChips(t);
+  const livePlugins = getLivePlugins(t);
   const half = Math.ceil(pluginChips.length / 2);
   const rows = [pluginChips.slice(0, half), pluginChips.slice(half)];
 
@@ -19,15 +23,16 @@ export default function WebsiteEcosystem() {
           eyebrow={
             <>
               <Puzzle size={14} aria-hidden="true" />
-              חנות התוספים
+              {t("websitePage.ecosystem.eyebrow")}
             </>
           }
           title={
             <>
-              האתר מתחיל בעיצוב — וממשיך <span className="pm-grad">בתוספים</span>
+              {t("websitePage.ecosystem.titleLead")}{" "}
+              <span className="pm-grad">{t("websitePage.ecosystem.titleHighlight")}</span>
             </>
           }
-          lead="חנות התוספים מוסיפה לאתר יכולות שלמות: חנות ומכירה, יומן ותורים, טפסים, ביקורות, מועדון לקוחות, חשבוניות וכלי אנליטיקה. מתקינים בלחיצה ומנהלים מפאנל האתר."
+          lead={t("websitePage.ecosystem.lead")}
         />
 
         <div className="wbx-plugins">
@@ -62,7 +67,7 @@ export default function WebsiteEcosystem() {
               <li key={plugin.name}>
                 <span className="pm-badge">
                   <span className="pm-badge__dot" />
-                  רץ באתר החי
+                  {t("websitePage.ecosystem.liveBadge")}
                 </span>
                 <b>{plugin.name}</b>
                 <i>{plugin.text}</i>
@@ -73,7 +78,7 @@ export default function WebsiteEcosystem() {
 
         <Reveal from="up" delay={0.16}>
           <p className="pm-eyebrow wbx-providers__title">
-            ספקי תשלום לחיבור בחנות
+            {t("websitePage.ecosystem.providersTitle")}
           </p>
           <ul className="wbx-providers">
             {paymentProviders.map((provider) => (

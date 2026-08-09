@@ -1,21 +1,23 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowLeft, CalendarClock, LayoutTemplate } from "lucide-react";
 import TemplateShowcase from "./TemplateShowcase";
 import WebsiteTypesReveal from "./WebsiteTypesReveal";
 import { StatStrip, WordReveal } from "../product-marketing";
-import { websiteHeroStats } from "./websiteMarketingData";
+import { getWebsiteHeroStats } from "./websiteMarketingData";
 import "./WebsiteBuilderHero.css";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
 export default function WebsiteBuilderHero() {
   const reduceMotion = useReducedMotion();
+  const { t } = useTranslation();
 
   return (
     <>
-      <section className="wb-hero" aria-label="בניית אתרים">
+      <section className="wb-hero" aria-label={t("websitePage.hero.aria")}>
         <div className="wb-hero__glow" aria-hidden="true">
           <span className="g1" />
           <span className="g2" />
@@ -33,22 +35,22 @@ export default function WebsiteBuilderHero() {
             >
               <span className="pm-badge">
                 <span className="pm-badge__dot" />
-                205 תבניות מוכנות
+                {t("websitePage.hero.badgeTemplates")}
               </span>
               <span className="pm-badge">
                 <LayoutTemplate size={13} aria-hidden="true" />
-                עורך ויזואלי
+                {t("websitePage.hero.badgeEditor")}
               </span>
               <span className="pm-badge">
                 <CalendarClock size={13} aria-hidden="true" />
-                חנות ותורים
+                {t("websitePage.hero.badgeStore")}
               </span>
             </motion.div>
 
             <h1 className="wb-hero__title">
-              <WordReveal text="בונים אתר מקצועי" delay={0.15} />{" "}
+              <WordReveal text={t("websitePage.hero.titleLead")} delay={0.15} />{" "}
               <span className="wb-hero__title-grad">
-                <WordReveal text="שמביא לקוחות" delay={0.42} />
+                <WordReveal text={t("websitePage.hero.titleHighlight")} delay={0.42} />
               </span>
             </h1>
 
@@ -58,9 +60,7 @@ export default function WebsiteBuilderHero() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.55, duration: 0.7, ease: EASE }}
             >
-              בוחרים תבנית מתוך 205 תבניות לפי תחום, עורכים כל אלמנט במקום,
-              מוסיפים חנות, יומן ותוספים — ומפרסמים לכתובת שלכם. כל פנייה מהאתר
-              נכנסת ישר לצינור הלידים ב־CRM.
+              {t("websitePage.hero.lead")}
             </motion.p>
 
             <motion.div
@@ -70,7 +70,7 @@ export default function WebsiteBuilderHero() {
               transition={{ delay: 0.68, duration: 0.7, ease: EASE }}
             >
               <Link to="/pricing" className="pm-cta pm-cta--primary">
-                לצפייה בחבילות
+                {t("websitePage.hero.ctaPackages")}
                 <ArrowLeft size={17} aria-hidden="true" />
               </Link>
             </motion.div>
@@ -86,7 +86,7 @@ export default function WebsiteBuilderHero() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.85, duration: 0.7, ease: EASE }}
           >
-            <StatStrip stats={websiteHeroStats} />
+            <StatStrip stats={getWebsiteHeroStats(t)} />
           </motion.div>
         </div>
       </section>

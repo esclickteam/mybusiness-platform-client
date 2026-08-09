@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Helmet } from "react-helmet-async";
 import {
   BellRing,
@@ -25,34 +26,43 @@ import {
   StaggerItem,
 } from "../../components/product-marketing";
 import {
-  automationRecipes,
-  automationsFaq,
-  automationsHeroStats,
-  automationsModules,
-  automationsRail,
-  automationsSteps,
+  getAutomationRecipes,
+  getAutomationsFaq,
+  getAutomationsHeroStats,
+  getAutomationsModules,
+  getAutomationsRail,
+  getAutomationsSteps,
 } from "../../components/automations-marketing/automationsMarketingData";
 import AutomationsNotificationsDemo from "../../components/automations-marketing/AutomationsNotificationsDemo";
 import AutomationsBuilderPreview from "../../components/automations-marketing/AutomationsBuilderPreview";
 import "../../components/product-marketing/marketingKit.css";
 import "../../components/product-marketing/CenteredProductHero.css";
 
-const SEO_TITLE = "אוטומציות לעסק | BizUply";
-const SEO_DESCRIPTION =
-  "תזכורות, פולואפים, משימות והתראות שרצות ברקע ומחוברות ל־CRM — כדי שפחות פניות ייפלו בין הכיסאות.";
-
 const MODULE_ICONS = [BellRing, RefreshCw, CheckCircle2, Zap, Bot, Clock3];
 
 export default function AutomationsProductPage() {
+  const { t, i18n } = useTranslation();
+  const dir = i18n.language === "he" ? "rtl" : "ltr";
+
+  const seoTitle = t("automationsPage.seoTitle");
+  const seoDescription = t("automationsPage.seoDescription");
+
+  const automationsHeroStats = getAutomationsHeroStats(t);
+  const automationsSteps = getAutomationsSteps(t);
+  const automationsRail = getAutomationsRail(t);
+  const automationRecipes = getAutomationRecipes(t);
+  const automationsModules = getAutomationsModules(t);
+  const automationsFaq = getAutomationsFaq(t);
+
   return (
-    <div className="pm pm-hero-page" dir="rtl">
+    <div className="pm pm-hero-page" dir={dir}>
       <Helmet>
-        <title>{SEO_TITLE}</title>
-        <meta name="description" content={SEO_DESCRIPTION} />
+        <title>{seoTitle}</title>
+        <meta name="description" content={seoDescription} />
         <link rel="canonical" href="https://bizuply.com/automations" />
         <meta name="robots" content="index, follow" />
-        <meta property="og:title" content={SEO_TITLE} />
-        <meta property="og:description" content={SEO_DESCRIPTION} />
+        <meta property="og:title" content={seoTitle} />
+        <meta property="og:description" content={seoDescription} />
         <meta property="og:type" content="website" />
         <meta property="og:site_name" content="BizUply" />
       </Helmet>
@@ -60,25 +70,25 @@ export default function AutomationsProductPage() {
       <ScrollProgress />
 
       <CenteredProductHero
-        ariaLabel="אוטומציות לעסק"
+        ariaLabel={t("automationsPage.hero.ariaLabel")}
         accent="cyan"
         badges={[
-          { label: "רץ ברקע בשבילכם", live: true },
+          { label: t("automationsPage.hero.badgeBackground"), live: true },
           {
-            label: "מחובר ל־CRM",
+            label: t("automationsPage.hero.badgeCrm"),
             icon: <Workflow size={13} aria-hidden="true" />,
           },
           {
-            label: "בלי סיבוך טכני",
+            label: t("automationsPage.hero.badgeSimple"),
             icon: <Sparkles size={13} aria-hidden="true" />,
           },
         ]}
-        title="אוטומציות"
-        titleHighlight="שעובדות בשבילכם"
-        lead="תזכורות, פולואפים, משימות עם דד־ליין והתראות על לידים חדשים — תהליכים פרקטיים שרצים ברקע ומחוברים לצינור הלידים, כדי שפחות דברים ייפלו בין הכיסאות."
+        title={t("automationsPage.hero.title")}
+        titleHighlight={t("automationsPage.hero.titleHighlight")}
+        lead={t("automationsPage.hero.lead")}
         note={{
           icon: <Zap size={17} aria-hidden="true" />,
-          text: "לא בונים תרשימי זרימה מסובכים — בוחרים תהליך, מגדירים תנאים, מפעילים, ורואים מה הושלם ומה ממתין.",
+          text: t("automationsPage.hero.noteText"),
         }}
         stats={automationsHeroStats}
       />
@@ -90,16 +100,18 @@ export default function AutomationsProductPage() {
             eyebrow={
               <>
                 <Workflow size={14} aria-hidden="true" />
-                איך זה עובד
+                {t("automationsPage.howItWorks.eyebrow")}
               </>
             }
             title={
               <>
-                מטריגר פשוט עד{" "}
-                <span className="pm-grad">תוצאה מתועדת</span>
+                {t("automationsPage.howItWorks.titleLead")}{" "}
+                <span className="pm-grad">
+                  {t("automationsPage.howItWorks.titleHighlight")}
+                </span>
               </>
             }
-            lead="ארבעה שלבים ברורים: בוחרים מה ירוץ, מגדירים מתי ולמי, מפעילים ברקע, ומשפרים לפי מה שבאמת קורה בעסק."
+            lead={t("automationsPage.howItWorks.lead")}
           />
 
           <div className="pmx-flow">
@@ -125,7 +137,10 @@ export default function AutomationsProductPage() {
           </div>
 
           <Reveal from="up" delay={0.12}>
-            <ol className="pmx-rail" aria-label="זרימת אוטומציה">
+            <ol
+              className="pmx-rail"
+              aria-label={t("automationsPage.howItWorks.railAriaLabel")}
+            >
               {automationsRail.map((item, index) => (
                 <React.Fragment key={item}>
                   <li>{item}</li>
@@ -155,16 +170,18 @@ export default function AutomationsProductPage() {
             eyebrow={
               <>
                 <ListTodo size={14} aria-hidden="true" />
-                מתכונים מוכנים
+                {t("automationsPage.recipesSection.eyebrow")}
               </>
             }
             title={
               <>
-                אוטומציות שמתחילות{" "}
-                <span className="pm-grad">לעבוד מהיום</span>
+                {t("automationsPage.recipesSection.titleLead")}{" "}
+                <span className="pm-grad">
+                  {t("automationsPage.recipesSection.titleHighlight")}
+                </span>
               </>
             }
-            lead="שלושה תהליכים נפוצים שכבר מחוברים לעבודה האמיתית עם לידים ומשימות — בלי הגדרות מסובכות."
+            lead={t("automationsPage.recipesSection.lead")}
           />
 
           <div className="pmx-recipe">
@@ -194,16 +211,18 @@ export default function AutomationsProductPage() {
             eyebrow={
               <>
                 <Bot size={14} aria-hidden="true" />
-                מה רץ בשבילכם
+                {t("automationsPage.modulesSection.eyebrow")}
               </>
             }
             title={
               <>
-                פחות ידני,{" "}
-                <span className="pm-grad">יותר שליטה</span>
+                {t("automationsPage.modulesSection.titleLead")}{" "}
+                <span className="pm-grad">
+                  {t("automationsPage.modulesSection.titleHighlight")}
+                </span>
               </>
             }
-            lead="תזכורות, פולואפים, סטטוסים, התראות ו־AI — שכבות שחוסכות זמן בלי לאבד את התמונה המלאה."
+            lead={t("automationsPage.modulesSection.lead")}
           />
 
           <Stagger className="pm-grid pm-grid--3" gap={0.07}>
@@ -234,17 +253,17 @@ export default function AutomationsProductPage() {
       <section className="pm-section pm-section--tight">
         <div className="pm-shell">
           <SectionHeading
-            eyebrow="שאלות נפוצות"
-            title="מה שחשוב לדעת על אוטומציות"
+            eyebrow={t("automationsPage.faqSection.eyebrow")}
+            title={t("automationsPage.faqSection.title")}
           />
           <FaqAccordion items={automationsFaq} />
 
           <div className="pmx-final">
             <FinalCta
-              eyebrow="תנו לעסק לרוץ גם בליכם"
-              title="הפעילו תהליכים ששומרים על כל פנייה בתנועה"
-              text="תזכורות, פולואפים והתראות שמחוברים ל־CRM — כדי שתתמקדו בלקוחות, והמערכת תשמור שהמשך לא יישכח."
-              primaryLabel="הירשמו עכשיו"
+              eyebrow={t("automationsPage.finalCta.eyebrow")}
+              title={t("automationsPage.finalCta.title")}
+              text={t("automationsPage.finalCta.text")}
+              primaryLabel={t("automationsPage.finalCta.primaryLabel")}
               primaryTo="/pricing"
             />
           </div>

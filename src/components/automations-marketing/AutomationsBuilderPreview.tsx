@@ -1,21 +1,53 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Workflow } from "lucide-react";
 import { AppFrame, Reveal, SectionHeading } from "../product-marketing";
 
-const RULE = [
-  { tag: "טריגר", text: "ליד חדש נכנס מ־Facebook Lead Ads" },
-  { tag: "תנאי", text: "לא נוצר קשר בתוך 60 דקות" },
-  { tag: "פעולה", text: "תזכורת לנציג + משימה עם דד־ליין להיום" },
-];
-
-const RUNS = [
-  { name: "פולואפ ליד שלא נענה", when: "לפני 4 דקות", state: "הושלם", tone: "ok" },
-  { name: "תזכורת לפני פגישה", when: "מתוזמן ל־08:30", state: "ממתין", tone: "warn" },
-  { name: "עדכון סטטוס להומר", when: "רץ עכשיו", state: "פעיל", tone: "live" },
-  { name: "משימה לליד חדש", when: "לפני 22 דקות", state: "הושלם", tone: "ok" },
-];
-
 export default function AutomationsBuilderPreview() {
+  const { t } = useTranslation();
+
+  const RULE = [
+    {
+      tag: t("automationsPage.builder.rule1Tag"),
+      text: t("automationsPage.builder.rule1Text"),
+    },
+    {
+      tag: t("automationsPage.builder.rule2Tag"),
+      text: t("automationsPage.builder.rule2Text"),
+    },
+    {
+      tag: t("automationsPage.builder.rule3Tag"),
+      text: t("automationsPage.builder.rule3Text"),
+    },
+  ];
+
+  const RUNS = [
+    {
+      name: t("automationsPage.builder.run1Name"),
+      when: t("automationsPage.builder.run1When"),
+      state: t("automationsPage.builder.run1State"),
+      tone: "ok",
+    },
+    {
+      name: t("automationsPage.builder.run2Name"),
+      when: t("automationsPage.builder.run2When"),
+      state: t("automationsPage.builder.run2State"),
+      tone: "warn",
+    },
+    {
+      name: t("automationsPage.builder.run3Name"),
+      when: t("automationsPage.builder.run3When"),
+      state: t("automationsPage.builder.run3State"),
+      tone: "live",
+    },
+    {
+      name: t("automationsPage.builder.run4Name"),
+      when: t("automationsPage.builder.run4When"),
+      state: t("automationsPage.builder.run4State"),
+      tone: "ok",
+    },
+  ];
+
   return (
     <section className="pm-section pm-section--tight">
       <div className="pm-shell">
@@ -23,40 +55,48 @@ export default function AutomationsBuilderPreview() {
           eyebrow={
             <>
               <Workflow size={14} aria-hidden="true" />
-              ככה זה נראה במערכת
+              {t("automationsPage.builder.eyebrow")}
             </>
           }
           title={
             <>
-              בונים תהליך בשלוש שורות —{" "}
-              <span className="pm-grad">ורואים מה רץ</span>
+              {t("automationsPage.builder.titleLead")}{" "}
+              <span className="pm-grad">
+                {t("automationsPage.builder.titleHighlight")}
+              </span>
             </>
           }
-          lead="טריגר, תנאי ופעולה בצד אחד, יומן הריצות בצד השני. אין תרשימי זרימה ואין קוד."
+          lead={t("automationsPage.builder.lead")}
         />
 
         <Reveal from="up" distance={26} duration={0.7}>
           <AppFrame
-            crumb="אוטומציות · בונה תהליכים"
-            rail={["לידים", "אוטומציות", "משימות", "התראות", "הגדרות"]}
+            crumb={t("automationsPage.builder.crumb")}
+            rail={[
+              t("automationsPage.builder.rail1"),
+              t("automationsPage.builder.rail2"),
+              t("automationsPage.builder.rail3"),
+              t("automationsPage.builder.rail4"),
+              t("automationsPage.builder.rail5"),
+            ]}
             railActive={1}
-            caption="בונה התהליכים: טריגר מ־Lead Ads, תנאי זמן ופעולה כפולה — וכל ריצה נשמרת ביומן עם סטטוס."
+            caption={t("automationsPage.builder.caption")}
           >
             <div className="pmk-kpis">
               <div className="pmk-kpi">
-                <span>תהליכים פעילים</span>
+                <span>{t("automationsPage.builder.kpiActiveLabel")}</span>
                 <strong>7</strong>
               </div>
               <div className="pmk-kpi">
-                <span>ריצות היום</span>
+                <span>{t("automationsPage.builder.kpiRunsLabel")}</span>
                 <strong>184</strong>
               </div>
               <div className="pmk-kpi">
-                <span>משימות שנפתחו</span>
+                <span>{t("automationsPage.builder.kpiTasksLabel")}</span>
                 <strong>32</strong>
               </div>
               <div className="pmk-kpi">
-                <span>ממתינות להמשך</span>
+                <span>{t("automationsPage.builder.kpiPendingLabel")}</span>
                 <strong>5</strong>
               </div>
             </div>
@@ -64,8 +104,8 @@ export default function AutomationsBuilderPreview() {
             <div className="pmk-cols pmk-cols--wide">
               <div className="pmk-card">
                 <div className="pmk-card__head">
-                  <h4>פולואפ ליד שלא נענה</h4>
-                  <span>פעיל</span>
+                  <h4>{t("automationsPage.builder.card1Title")}</h4>
+                  <span>{t("automationsPage.builder.card1Status")}</span>
                 </div>
 
                 <div className="pmk-flow">
@@ -83,14 +123,14 @@ export default function AutomationsBuilderPreview() {
                 </div>
 
                 <p className="pmk-note">
-                  כל שינוי נשמר על הליד עצמו — אותו סטטוס שרואים בכרטיס ב־CRM.
+                  {t("automationsPage.builder.note")}
                 </p>
               </div>
 
               <div className="pmk-card">
                 <div className="pmk-card__head">
-                  <h4>יומן ריצות</h4>
-                  <span>24 שעות</span>
+                  <h4>{t("automationsPage.builder.card2Title")}</h4>
+                  <span>{t("automationsPage.builder.card2Range")}</span>
                 </div>
 
                 <ul className="pmk-list">

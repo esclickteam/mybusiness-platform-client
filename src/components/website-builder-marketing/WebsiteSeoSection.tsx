@@ -1,10 +1,14 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Check, Globe, Search } from "lucide-react";
 import { ProgressRing, Reveal, SectionHeading } from "../product-marketing";
-import { schemaTypes, seoControls } from "./websiteMarketingData";
+import { schemaTypes, getSeoControls } from "./websiteMarketingData";
 import "./websiteSections.css";
 
 export default function WebsiteSeoSection() {
+  const { t } = useTranslation();
+  const seoControls = getSeoControls(t);
+
   return (
     <section className="pm-section wbx">
       <div className="pm-shell">
@@ -12,15 +16,16 @@ export default function WebsiteSeoSection() {
           eyebrow={
             <>
               <Search size={14} aria-hidden="true" />
-              SEO ופרסום
+              {t("websitePage.seoSection.eyebrow")}
             </>
           }
           title={
             <>
-              SEO ברמת עמוד, <span className="pm-grad">לא ברמת סיסמה</span>
+              {t("websitePage.seoSection.titleLead")}{" "}
+              <span className="pm-grad">{t("websitePage.seoSection.titleHighlight")}</span>
             </>
           }
-          lead="לכל עמוד באתר יש כותרת, תיאור, canonical, הנחיות robots, תצוגת שיתוף, hreflang ו־JSON‑LD. ה־sitemap.xml וה־robots.txt נבנים אוטומטית לאתר שפורסם."
+          lead={t("websitePage.seoSection.lead")}
         />
 
         <Reveal from="up" delay={0.1}>
@@ -41,11 +46,10 @@ export default function WebsiteSeoSection() {
                 studio-demo.sites.bizuply.com › services
               </span>
               <span className="wbx-serp__title">
-                סטודיו לעיצוב שיער בתל אביב | תורים אונליין
+                {t("websitePage.seoSection.serpTitle")}
               </span>
               <span className="wbx-serp__desc">
-                מחירון מלא, גלריית עבודות וזימון תור בלחיצה. פתוח ראשון–שישי,
-                חניה בשפע.
+                {t("websitePage.seoSection.serpDesc")}
               </span>
             </div>
 
@@ -57,8 +61,7 @@ export default function WebsiteSeoSection() {
 
             <p className="wbx-note">
               <Globe size={16} aria-hidden="true" />
-              כל אתר מקבל כתובת תחת sites.bizuply.com — ואפשר לרכוש דומיין מתוך
-              המערכת ולחבר אותו לאתר, או לחבר דומיין קיים.
+              {t("websitePage.seoSection.note")}
             </p>
           </div>
         </Reveal>

@@ -1,7 +1,14 @@
-import React, { useCallback, useEffect, useRef, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import { useTranslation } from "react-i18next";
 import TemplateBrowserMockup from "./TemplateBrowserMockup";
 import {
-  websiteHeroTemplates,
+  getWebsiteHeroTemplates,
   type WebsiteHeroTemplate,
 } from "./websiteHeroTemplates";
 
@@ -40,8 +47,13 @@ type Props = {
 };
 
 export default function TemplateShowcase({
-  templates = websiteHeroTemplates,
+  templates: templatesProp,
 }: Props) {
+  const { t, i18n } = useTranslation();
+  const templates = useMemo(
+    () => templatesProp ?? getWebsiteHeroTemplates(t),
+    [templatesProp, t, i18n.language],
+  );
   const count = templates.length;
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
@@ -132,7 +144,7 @@ export default function TemplateShowcase({
         }}
         role="region"
         aria-roledescription="carousel"
-        aria-label="תצוגת תבניות אתרים"
+        aria-label={t("websitePage.showcase.carouselAria")}
       >
         {templates.map((template, index) => {
           const offset = shortestOffset(active, index, count);
@@ -143,7 +155,10 @@ export default function TemplateShowcase({
               type="button"
               className="wb-template"
               data-slot={slot}
-              aria-label={`תבנית ${template.title} — ${template.category}`}
+              aria-label={t("websitePage.templateAlt", {
+                title: template.title,
+                category: template.category,
+              })}
               aria-current={slot === "center" ? "true" : undefined}
               tabIndex={slot === "hidden" ? -1 : 0}
               onClick={() => goTo(index)}
@@ -161,7 +176,11 @@ export default function TemplateShowcase({
         })}
       </div>
 
-      <div className="wb-hero__dots-nav" role="tablist" aria-label="בחירת תבנית">
+      <div
+        className="wb-hero__dots-nav"
+        role="tablist"
+        aria-label={t("websitePage.showcase.dotsAria")}
+      >
         {templates.map((template, index) => (
           <button
             key={template.id}

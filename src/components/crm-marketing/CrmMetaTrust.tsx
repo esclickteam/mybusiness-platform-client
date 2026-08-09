@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { CheckCircle2, Facebook, ShieldCheck } from "lucide-react";
 import { Reveal } from "../product-marketing";
 import "./crmSections.css";
@@ -12,13 +13,12 @@ const SCOPES = [
   "leads_retrieval",
 ];
 
-const POINTS = [
-  "חיבור Facebook Lead Ads בצורה מאובטחת ומאושרת",
-  "העסק מחבר את הדף שלו ומאשר הרשאות בעצמו",
-  "הלידים נכנסים אוטומטית לצינור ה־CRM עם מקור וסטטוס",
-];
-
 export default function CrmMetaTrust() {
+  const { t } = useTranslation();
+  const POINTS = t("crmPage.metaTrust.points", {
+    returnObjects: true,
+  }) as string[];
+
   return (
     <section className="pm-section pm-section--tight crx">
       <div className="pm-shell">
@@ -26,14 +26,10 @@ export default function CrmMetaTrust() {
           <div className="crx-meta">
             <p className="pm-eyebrow" style={{ color: "#1877f2" }}>
               <Facebook size={14} aria-hidden="true" />
-              Meta App Review
+              {t("crmPage.metaTrust.eyebrow")}
             </p>
-            <h2 className="pm-title">מפתחי Meta שעברו App Review</h2>
-            <p className="pm-lead">
-              BizUply היא אפליקציית Meta שמאפשרת לעסקים לחבר את דף הפייסבוק שלהם
-              ולקבל Lead Ads ישירות ל־CRM — אחרי שעברנו את תהליך ה־App Review של
-              Meta.
-            </p>
+            <h2 className="pm-title">{t("crmPage.metaTrust.title")}</h2>
+            <p className="pm-lead">{t("crmPage.metaTrust.lead")}</p>
 
             <ul className="crx-meta__points">
               {POINTS.map((point, index) => (
@@ -53,7 +49,7 @@ export default function CrmMetaTrust() {
 
             <p className="pm-eyebrow" style={{ marginTop: "2rem" }}>
               <ShieldCheck size={14} aria-hidden="true" />
-              ההרשאות שהעסק מאשר
+              {t("crmPage.metaTrust.permissionsLabel")}
             </p>
             <div className="crx-scopes">
               {SCOPES.map((scope) => (

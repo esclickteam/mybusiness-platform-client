@@ -1,20 +1,47 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Handshake } from "lucide-react";
 import { AppFrame, Reveal, SectionHeading } from "../product-marketing";
 
-const MATCHES = [
-  { name: "סטודיו לצילום אירועים", area: "תל אביב · משלים", score: 92 },
-  { name: "מעצבת פנים עצמאית", area: "מרכז · קהל חופף", score: 84 },
-  { name: "חברת הפקות קטנה", area: "שרון · ערוץ הפניות", score: 71 },
-];
-
-const PROPOSALS = [
-  { name: "הפניות הדדיות · סטודיו צילום", state: "נשלחה", tone: "info" },
-  { name: "חבילה משותפת · מעצבת פנים", state: "בהתמחרות", tone: "warn" },
-  { name: "אירוע משותף · חברת הפקות", state: "אושרה", tone: "ok" },
-];
-
 export default function CollabWorkspacePreview() {
+  const { t } = useTranslation();
+
+  const MATCHES = [
+    {
+      name: t("collabPage.preview.match1Name"),
+      area: t("collabPage.preview.match1Area"),
+      score: 92,
+    },
+    {
+      name: t("collabPage.preview.match2Name"),
+      area: t("collabPage.preview.match2Area"),
+      score: 84,
+    },
+    {
+      name: t("collabPage.preview.match3Name"),
+      area: t("collabPage.preview.match3Area"),
+      score: 71,
+    },
+  ];
+
+  const PROPOSALS = [
+    {
+      name: t("collabPage.preview.proposal1Name"),
+      state: t("collabPage.preview.proposal1State"),
+      tone: "info",
+    },
+    {
+      name: t("collabPage.preview.proposal2Name"),
+      state: t("collabPage.preview.proposal2State"),
+      tone: "warn",
+    },
+    {
+      name: t("collabPage.preview.proposal3Name"),
+      state: t("collabPage.preview.proposal3State"),
+      tone: "ok",
+    },
+  ];
+
   return (
     <section className="pm-section pm-section--tight">
       <div className="pm-shell">
@@ -22,39 +49,46 @@ export default function CollabWorkspacePreview() {
           eyebrow={
             <>
               <Handshake size={14} aria-hidden="true" />
-              ככה זה נראה במערכת
+              {t("collabPage.preview.eyebrow")}
             </>
           }
           title={
             <>
-              מהתאמה להצעה — <span className="pm-grad">ולשיחה אחת</span>
+              {t("collabPage.preview.titlePrefix")}{" "}
+              <span className="pm-grad">{t("collabPage.preview.titleHighlight")}</span>
             </>
           }
-          lead="התאמות מדורגות לפי רלוונטיות, צינור הצעות עם סטטוס, וצ׳אט עסקי שנשמר על ההזדמנות עצמה."
+          lead={t("collabPage.preview.lead")}
         />
 
         <Reveal from="up" distance={26} duration={0.7}>
           <AppFrame
-            crumb="שיתופי פעולה · שוק והצעות"
-            rail={["פרופיל שיתוף", "גילוי שותפים", "שוק הזדמנויות", "הצעות", "צ׳אט"]}
+            crumb={t("collabPage.preview.crumb")}
+            rail={[
+              t("collabPage.preview.rail1"),
+              t("collabPage.preview.rail2"),
+              t("collabPage.preview.rail3"),
+              t("collabPage.preview.rail4"),
+              t("collabPage.preview.rail5"),
+            ]}
             railActive={2}
-            caption="שוק ההזדמנויות: התאמות עם ציון רלוונטיות, סטטוס לכל הצעה, והשיחה שממשיכה באותו מקום."
+            caption={t("collabPage.preview.caption")}
           >
             <div className="pmk-kpis">
               <div className="pmk-kpi">
-                <span>התאמות פתוחות</span>
+                <span>{t("collabPage.preview.kpiMatches")}</span>
                 <strong>26</strong>
               </div>
               <div className="pmk-kpi">
-                <span>הצעות בתהליך</span>
+                <span>{t("collabPage.preview.kpiProposals")}</span>
                 <strong>9</strong>
               </div>
               <div className="pmk-kpi">
-                <span>שיתופים שנסגרו</span>
+                <span>{t("collabPage.preview.kpiClosed")}</span>
                 <strong>4</strong>
               </div>
               <div className="pmk-kpi">
-                <span>הפניות שהתקבלו</span>
+                <span>{t("collabPage.preview.kpiReferrals")}</span>
                 <strong>37</strong>
               </div>
             </div>
@@ -62,8 +96,8 @@ export default function CollabWorkspacePreview() {
             <div className="pmk-cols pmk-cols--wide">
               <div className="pmk-card">
                 <div className="pmk-card__head">
-                  <h4>שותפים מתאימים</h4>
-                  <span>לפי תחום ואזור</span>
+                  <h4>{t("collabPage.preview.matchesTitle")}</h4>
+                  <span>{t("collabPage.preview.matchesSub")}</span>
                 </div>
 
                 <ul className="pmk-list">
@@ -82,7 +116,7 @@ export default function CollabWorkspacePreview() {
                 </ul>
 
                 <div className="pmk-card__head" style={{ marginTop: "0.9rem" }}>
-                  <h4>צינור הצעות</h4>
+                  <h4>{t("collabPage.preview.pipelineTitle")}</h4>
                 </div>
 
                 <ul className="pmk-list">
@@ -101,27 +135,27 @@ export default function CollabWorkspacePreview() {
 
               <div className="pmk-card">
                 <div className="pmk-card__head">
-                  <h4>צ׳אט עסקי</h4>
-                  <span>סטודיו צילום אירועים</span>
+                  <h4>{t("collabPage.preview.chatTitle")}</h4>
+                  <span>{t("collabPage.preview.chatSub")}</span>
                 </div>
 
                 <div className="pmk-chat">
                   <p className="pmk-bubble pmk-bubble--them">
-                    היי, ראיתי את ההצעה להפניות הדדיות — מעניין אותנו.
+                    {t("collabPage.preview.chatBubble1")}
                   </p>
                   <p className="pmk-bubble">
-                    מעולה. אני מציע שנתחיל בחודש ניסיון עם עמלה על כל הפנייה שנסגרת.
+                    {t("collabPage.preview.chatBubble2")}
                   </p>
                   <p className="pmk-bubble pmk-bubble--them">
-                    מסכימים. אפשר לקבוע שיחה לסגירת הפרטים?
+                    {t("collabPage.preview.chatBubble3")}
                   </p>
                   <p className="pmk-bubble">
-                    שלחתי הזמנה ליומן לחמישי ב־11:00 — מופיעה גם אצלכם בפגישות.
+                    {t("collabPage.preview.chatBubble4")}
                   </p>
                 </div>
 
                 <p className="pmk-note">
-                  השיחה נשמרת על ההזדמנות, כך שגם מי שיצטרף אחר כך רואה את ההקשר.
+                  {t("collabPage.preview.chatNote")}
                 </p>
               </div>
             </div>

@@ -1,14 +1,18 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { motion } from "framer-motion";
 import { LayoutTemplate } from "lucide-react";
 import { Reveal, SectionHeading } from "../product-marketing";
-import { websiteHeroTemplates } from "./websiteHeroTemplates";
-import { templateCategories } from "./websiteMarketingData";
+import { getWebsiteHeroTemplates } from "./websiteHeroTemplates";
+import { getTemplateCategories } from "./websiteMarketingData";
 import "./websiteSections.css";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
 export default function WebsiteTemplateLibrary() {
+  const { t } = useTranslation();
+  const templateCategories = getTemplateCategories(t);
+  const websiteHeroTemplates = getWebsiteHeroTemplates(t);
   const max = Math.max(...templateCategories.map((c) => c.count));
 
   return (
@@ -18,15 +22,16 @@ export default function WebsiteTemplateLibrary() {
           eyebrow={
             <>
               <LayoutTemplate size={14} aria-hidden="true" />
-              ספריית התבניות
+              {t("websitePage.library.eyebrow")}
             </>
           }
           title={
             <>
-              205 תבניות שנבנו <span className="pm-grad">לפי תחומים</span>
+              {t("websitePage.library.titleLead")}{" "}
+              <span className="pm-grad">{t("websitePage.library.titleHighlight")}</span>
             </>
           }
-          lead="כל תבנית מגיעה עם עמודים מוכנים, פלטת צבעים ותוכן לדוגמה בעברית — ומשם עורכים כל אלמנט במקום עד שהאתר מדבר בשם העסק שלכם."
+          lead={t("websitePage.library.lead")}
         />
 
         <Reveal from="up" delay={0.1}>
@@ -35,7 +40,10 @@ export default function WebsiteTemplateLibrary() {
               <figure className="wbx-template" key={template.id}>
                 <img
                   src={template.desktopImage}
-                  alt={`תבנית ${template.title} — ${template.category}`}
+                  alt={t("websitePage.templateAlt", {
+                    title: template.title,
+                    category: template.category,
+                  })}
                   loading="lazy"
                   decoding="async"
                 />

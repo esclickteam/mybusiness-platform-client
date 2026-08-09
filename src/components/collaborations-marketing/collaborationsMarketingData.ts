@@ -1,11 +1,14 @@
+import type { TFunction } from "i18next";
 import type { MarketingFaq, MarketingStat } from "../product-marketing";
 
-export const collaborationsHeroStats: MarketingStat[] = [
-  { value: 4, label: "טאבים לניהול שיתופים" },
-  { value: 1, label: "שוק הזדמנויות מובנה" },
-  { value: 3, label: "סטטוסי הצעות שיתוף" },
-  { value: 24, suffix: "/7", label: "צ׳אט עסקי בזמן אמת" },
-];
+export function getCollaborationsHeroStats(t: TFunction): MarketingStat[] {
+  return [
+    { value: 4, label: t("collabPage.heroStats.tabs") },
+    { value: 1, label: t("collabPage.heroStats.marketplace") },
+    { value: 3, label: t("collabPage.heroStats.statuses") },
+    { value: 24, suffix: "/7", label: t("collabPage.heroStats.chat") },
+  ];
+}
 
 export type FlowStep = {
   title: string;
@@ -13,99 +16,136 @@ export type FlowStep = {
   tags: string[];
 };
 
-export const collaborationsSteps: FlowStep[] = [
-  {
-    title: "בונים פרופיל שיתוף",
-    text: "מגדירים תחום, אזור, במה אתם חזקים ומה אתם מחפשים בשותף — כולל לוגו ופרטי קשר.",
-    tags: ["קטגוריה", "אזור", "העדפות"],
-  },
-  {
-    title: "מגלים שותפים",
-    text: "המערכת מציגה עסקים רלוונטיים לפי התאמה, עם חיפוש חופשי ותגיות קטגוריות משלימות.",
-    tags: ["התאמה", "חיפוש", "כרטיסי עסק"],
-  },
-  {
-    title: "שולחים הצעה או צ׳אט",
-    text: "פותחים שיחה עסקית בזמן אמת או שולחים הצעת שיתוף מסודרת עם מעקב סטטוס.",
-    tags: ["הצעה", "צ׳אט", "מעקב"],
-  },
-  {
-    title: "מנהלים בשוק",
-    text: "מפרסמים הזדמנות בשוק השיתופים — תקציב, תוקף, מה מציעים ומה מחפשים — ומקבלים פניות.",
-    tags: ["שוק", "תקציב", "תוקף"],
-  },
-];
+export function getCollaborationsSteps(t: TFunction): FlowStep[] {
+  return [
+    {
+      title: t("collabPage.steps.step1.title"),
+      text: t("collabPage.steps.step1.text"),
+      tags: [
+        t("collabPage.steps.step1.tag1"),
+        t("collabPage.steps.step1.tag2"),
+        t("collabPage.steps.step1.tag3"),
+      ],
+    },
+    {
+      title: t("collabPage.steps.step2.title"),
+      text: t("collabPage.steps.step2.text"),
+      tags: [
+        t("collabPage.steps.step2.tag1"),
+        t("collabPage.steps.step2.tag2"),
+        t("collabPage.steps.step2.tag3"),
+      ],
+    },
+    {
+      title: t("collabPage.steps.step3.title"),
+      text: t("collabPage.steps.step3.text"),
+      tags: [
+        t("collabPage.steps.step3.tag1"),
+        t("collabPage.steps.step3.tag2"),
+        t("collabPage.steps.step3.tag3"),
+      ],
+    },
+    {
+      title: t("collabPage.steps.step4.title"),
+      text: t("collabPage.steps.step4.text"),
+      tags: [
+        t("collabPage.steps.step4.tag1"),
+        t("collabPage.steps.step4.tag2"),
+        t("collabPage.steps.step4.tag3"),
+      ],
+    },
+  ];
+}
 
-export const collaborationsModules = [
-  {
-    accent: "#7c3aed",
-    title: "פרופיל שיתוף מקצועי",
-    text: "שם, קטגוריה, אזור גיאוגרפי, אודות, לוגו, איש קשר וטלפון בינלאומי — והעדפות שיתוף בשורות ברורות.",
-    tags: ["לוגו", "אזור", "העדפות"],
-  },
-  {
-    accent: "#2563eb",
-    title: "מציאת שותפים חכמה",
-    text: "רשימת עסקים רלוונטיים מהשרת, תגיות קטגוריות משלימות, סינון לפי שם/תיאור/עיר, ופעולות שליחה וצ׳אט.",
-    tags: ["התאמה", "תגיות", "כרטיסים"],
-  },
-  {
-    accent: "#0891b2",
-    title: "שוק שיתופי פעולה",
-    text: "הזדמנויות עם כותרת, תיאור, תגיות needs/offers, תקציב בש״ח ותאריך תוקף — לחיפוש ולפרסום.",
-    tags: ["needs", "offers", "תקציב"],
-  },
-  {
-    accent: "#059669",
-    title: "צינור הצעות",
-    text: "פעילות / נשלחו / התקבלו — עם אישור, דחייה או ביטול, כדי ששום הצעה לא תיעלם בשיחות מפוזרות.",
-    tags: ["פעיל", "נשלח", "התקבל"],
-  },
-  {
-    accent: "#e11d8c",
-    title: "צ׳אט עסקי בזמן אמת",
-    text: "שיחות B2B עם Socket.IO מתוך הפרופיל או מכרטיס השותף — בלי לעבור לוואטסאפ פרטי.",
-    tags: ["Realtime", "הודעות", "שותפים"],
-  },
-  {
-    accent: "#f59e0b",
-    title: "המלצות AI חיות",
-    text: "המלצות שותפים מגיעות בזמן אמת דרך הסוקט — כדי לגלות הזדמנויות בלי לסרוק ידנית.",
-    tags: ["AI", "המלצות", "Live"],
-  },
-];
+export type CollaborationModule = {
+  accent: string;
+  title: string;
+  text: string;
+  tags: string[];
+};
 
-export const collaborationsRail = [
-  "פרופיל",
-  "מציאת שותף",
-  "הודעות",
-  "שוק",
-  "הצעות",
-];
+export function getCollaborationsModules(t: TFunction): CollaborationModule[] {
+  return [
+    {
+      accent: "#7c3aed",
+      title: t("collabPage.modules.card1.title"),
+      text: t("collabPage.modules.card1.text"),
+      tags: [
+        t("collabPage.modules.card1.tag1"),
+        t("collabPage.modules.card1.tag2"),
+        t("collabPage.modules.card1.tag3"),
+      ],
+    },
+    {
+      accent: "#2563eb",
+      title: t("collabPage.modules.card2.title"),
+      text: t("collabPage.modules.card2.text"),
+      tags: [
+        t("collabPage.modules.card2.tag1"),
+        t("collabPage.modules.card2.tag2"),
+        t("collabPage.modules.card2.tag3"),
+      ],
+    },
+    {
+      accent: "#0891b2",
+      title: t("collabPage.modules.card3.title"),
+      text: t("collabPage.modules.card3.text"),
+      tags: [
+        t("collabPage.modules.card3.tag1"),
+        t("collabPage.modules.card3.tag2"),
+        t("collabPage.modules.card3.tag3"),
+      ],
+    },
+    {
+      accent: "#059669",
+      title: t("collabPage.modules.card4.title"),
+      text: t("collabPage.modules.card4.text"),
+      tags: [
+        t("collabPage.modules.card4.tag1"),
+        t("collabPage.modules.card4.tag2"),
+        t("collabPage.modules.card4.tag3"),
+      ],
+    },
+    {
+      accent: "#e11d8c",
+      title: t("collabPage.modules.card5.title"),
+      text: t("collabPage.modules.card5.text"),
+      tags: [
+        t("collabPage.modules.card5.tag1"),
+        t("collabPage.modules.card5.tag2"),
+        t("collabPage.modules.card5.tag3"),
+      ],
+    },
+    {
+      accent: "#f59e0b",
+      title: t("collabPage.modules.card6.title"),
+      text: t("collabPage.modules.card6.text"),
+      tags: [
+        t("collabPage.modules.card6.tag1"),
+        t("collabPage.modules.card6.tag2"),
+        t("collabPage.modules.card6.tag3"),
+      ],
+    },
+  ];
+}
 
-export const collaborationsFaq: MarketingFaq[] = [
-  {
-    q: "מה כולל מודול שיתופי הפעולה?",
-    a: "ארבעה טאבים מרכזיים: פרופיל שיתוף, מציאת שותף, הודעות ושוק הזדמנויות — בנוסף לצינור הצעות פעילות/נשלחו/התקבלו.",
-  },
-  {
-    q: "איך מוצאים שותף מתאים?",
-    a: "המערכת מחזירה עסקים רלוונטיים לפי התאמה, עם קטגוריות משלימות. אפשר גם לחפש לפי שם, תיאור, קטגוריה או אזור, ואז לשלוח הצעה או לפתוח צ׳אט.",
-  },
-  {
-    q: "מה זה שוק שיתופי הפעולה?",
-    a: "לוח הזדמנויות שבו עסקים מפרסמים מה הם מחפשים ומה הם מציעים, כולל תקציב ותאריך תוקף. אפשר להגיב בהצעה, בצ׳אט או בצפייה בפרופיל.",
-  },
-  {
-    q: "האם יש צ׳אט בין עסקים?",
-    a: "כן. יש צ׳אט עסקי בזמן אמת בין עסקים — אפשר להתחיל אותו מכרטיס שותף או מתוך פרופיל השיתוף.",
-  },
-  {
-    q: "אפשר שמנהל אנושי ינהל את השיתופים בשבילנו?",
-    a: "כן. אפשר לחבר נציג BizUply שיאתר שותפים, ייצור קשר, יעקוב אחרי תגובות וינהל את תהליך השיתוף — מתוך המערכת.",
-  },
-  {
-    q: "מה קורה אחרי ששולחים הצעה?",
-    a: "ההצעה נכנסת לצינור עם סטטוס ברור. הצד השני יכול לאשר או לדחות, ואתם יכולים לבטל הצעה שנשלחה — הכל מתועד במקום אחד.",
-  },
-];
+export function getCollaborationsRail(t: TFunction): string[] {
+  return [
+    t("collabPage.rail.profile"),
+    t("collabPage.rail.findPartner"),
+    t("collabPage.rail.messages"),
+    t("collabPage.rail.market"),
+    t("collabPage.rail.proposals"),
+  ];
+}
+
+export function getCollaborationsFaq(t: TFunction): MarketingFaq[] {
+  return [
+    { q: t("collabPage.faq.q1"), a: t("collabPage.faq.a1") },
+    { q: t("collabPage.faq.q2"), a: t("collabPage.faq.a2") },
+    { q: t("collabPage.faq.q3"), a: t("collabPage.faq.a3") },
+    { q: t("collabPage.faq.q4"), a: t("collabPage.faq.a4") },
+    { q: t("collabPage.faq.q5"), a: t("collabPage.faq.a5") },
+    { q: t("collabPage.faq.q6"), a: t("collabPage.faq.a6") },
+  ];
+}

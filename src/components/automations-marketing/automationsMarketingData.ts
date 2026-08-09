@@ -1,11 +1,22 @@
+import type { TFunction } from "i18next";
 import type { MarketingFaq, MarketingStat } from "../product-marketing";
 
-export const automationsHeroStats: MarketingStat[] = [
-  { value: 4, label: "סוגי תהליכים ברקע" },
-  { value: 1, label: "צינור לידים שמזיז סטטוסים" },
-  { value: 15, suffix: " דק׳", label: "רזולוציית תזמון משימות" },
-  { value: 24, suffix: "/7", label: "מעקב שלא נרדם" },
-];
+export function getAutomationsHeroStats(t: TFunction): MarketingStat[] {
+  return [
+    { value: 4, label: t("automationsPage.stats.processTypesLabel") },
+    { value: 1, label: t("automationsPage.stats.leadPipelineLabel") },
+    {
+      value: 15,
+      suffix: t("automationsPage.stats.schedulingSuffix"),
+      label: t("automationsPage.stats.schedulingLabel"),
+    },
+    {
+      value: 24,
+      suffix: t("automationsPage.stats.monitoringSuffix"),
+      label: t("automationsPage.stats.monitoringLabel"),
+    },
+  ];
+}
 
 export type FlowStep = {
   title: string;
@@ -13,119 +24,165 @@ export type FlowStep = {
   tags: string[];
 };
 
-export const automationsSteps: FlowStep[] = [
-  {
-    title: "בוחרים תהליך",
-    text: "תזכורת, פולואפ, משימה עם דד־ליין או התראה על ליד חדש — מה שהעסק באמת צריך שירוץ לבד.",
-    tags: ["תזכורת", "משימה", "התראה"],
-  },
-  {
-    title: "מגדירים תנאים",
-    text: "מתי זה קורה, למי זה מיועד, ואיזה סטטוס או אירוע מפעיל את ההמשך — בלי סיבוך טכני.",
-    tags: ["מתי", "למי", "טריגר"],
-  },
-  {
-    title: "מפעילים ברקע",
-    text: "המערכת מזיזה את התהליך בזמן שאתם עובדים עם לקוחות — והכל מתועד ב־CRM.",
-    tags: ["רקע", "CRM", "תיעוד"],
-  },
-  {
-    title: "משפרים לפי תוצאה",
-    text: "רואים מה הושלם, מה ממתין ומה שעבר זמנו — ומשדרגים את התהליך לפי מה שעובד.",
-    tags: ["מעקב", "שיפור", "תוצאות"],
-  },
-];
+export function getAutomationsSteps(t: TFunction): FlowStep[] {
+  return [
+    {
+      title: t("automationsPage.steps.step1.title"),
+      text: t("automationsPage.steps.step1.text"),
+      tags: [
+        t("automationsPage.steps.step1.tag1"),
+        t("automationsPage.steps.step1.tag2"),
+        t("automationsPage.steps.step1.tag3"),
+      ],
+    },
+    {
+      title: t("automationsPage.steps.step2.title"),
+      text: t("automationsPage.steps.step2.text"),
+      tags: [
+        t("automationsPage.steps.step2.tag1"),
+        t("automationsPage.steps.step2.tag2"),
+        t("automationsPage.steps.step2.tag3"),
+      ],
+    },
+    {
+      title: t("automationsPage.steps.step3.title"),
+      text: t("automationsPage.steps.step3.text"),
+      tags: [
+        t("automationsPage.steps.step3.tag1"),
+        t("automationsPage.steps.step3.tag2"),
+        t("automationsPage.steps.step3.tag3"),
+      ],
+    },
+    {
+      title: t("automationsPage.steps.step4.title"),
+      text: t("automationsPage.steps.step4.text"),
+      tags: [
+        t("automationsPage.steps.step4.tag1"),
+        t("automationsPage.steps.step4.tag2"),
+        t("automationsPage.steps.step4.tag3"),
+      ],
+    },
+  ];
+}
 
-export const automationsModules = [
-  {
-    accent: "#7c3aed",
-    title: "תזכורות שלא נרדמות",
-    text: "משימה עם תאריך ושעה עולה למרכז ההתראות ברגע שעבר זמנה — עד שמסמנים אותה כבוצעה.",
-    tags: ["דד־ליין", "התראות", "סיום"],
-  },
-  {
-    accent: "#2563eb",
-    title: "פולואפים אחרי כל פנייה",
-    text: "אחרי ליד חדש או שיחה — נפתחת משימת המשך ברורה, כדי שהלקוח לא יישאר בלי מענה.",
-    tags: ["ליד חדש", "המשך טיפול"],
-  },
-  {
-    accent: "#0891b2",
-    title: "סטטוסים שנרשמים לבד",
-    text: "כל שינוי סטטוס בליד נכנס אוטומטית לציר הזמן — כך רואים מתי הוא זז ולאן, בלי תיעוד ידני.",
-    tags: ["ציר זמן", "סטטוס"],
-  },
-  {
-    accent: "#059669",
-    title: "התראות בזמן אמת",
-    text: "ליד חדש נכנס ומופיע בהתראות מיד — מ־Meta, מ־Google או מהאתר — בלי לרענן מסכים.",
-    tags: ["Realtime", "לידים", "Meta"],
-  },
-  {
-    accent: "#e11d8c",
-    title: "AI שממליץ — אוטומציות שמבצעות",
-    text: "היועץ העסקי מנתח וממליץ. אוטומציות AI מבצעות פעולות מתקדמות כמו דירוג לידים, סיכום שיחות ויצירת משימות.",
-    tags: ["Business Advisor", "AI Automations"],
-  },
-  {
-    accent: "#f59e0b",
-    title: "פחות עבודה ידנית",
-    text: "במקום לרדוף אחרי פולואפים בוואטסאפ ובפתקים — התהליך רץ במערכת אחת עם סטטוס ברור.",
-    tags: ["חיסכון זמן", "סדר"],
-  },
-];
+export function getAutomationsModules(t: TFunction) {
+  return [
+    {
+      accent: "#7c3aed",
+      title: t("automationsPage.modules.module1.title"),
+      text: t("automationsPage.modules.module1.text"),
+      tags: [
+        t("automationsPage.modules.module1.tag1"),
+        t("automationsPage.modules.module1.tag2"),
+        t("automationsPage.modules.module1.tag3"),
+      ],
+    },
+    {
+      accent: "#2563eb",
+      title: t("automationsPage.modules.module2.title"),
+      text: t("automationsPage.modules.module2.text"),
+      tags: [
+        t("automationsPage.modules.module2.tag1"),
+        t("automationsPage.modules.module2.tag2"),
+      ],
+    },
+    {
+      accent: "#0891b2",
+      title: t("automationsPage.modules.module3.title"),
+      text: t("automationsPage.modules.module3.text"),
+      tags: [
+        t("automationsPage.modules.module3.tag1"),
+        t("automationsPage.modules.module3.tag2"),
+      ],
+    },
+    {
+      accent: "#059669",
+      title: t("automationsPage.modules.module4.title"),
+      text: t("automationsPage.modules.module4.text"),
+      tags: [
+        t("automationsPage.modules.module4.tag1"),
+        t("automationsPage.modules.module4.tag2"),
+        t("automationsPage.modules.module4.tag3"),
+      ],
+    },
+    {
+      accent: "#e11d8c",
+      title: t("automationsPage.modules.module5.title"),
+      text: t("automationsPage.modules.module5.text"),
+      tags: [
+        t("automationsPage.modules.module5.tag1"),
+        t("automationsPage.modules.module5.tag2"),
+      ],
+    },
+    {
+      accent: "#f59e0b",
+      title: t("automationsPage.modules.module6.title"),
+      text: t("automationsPage.modules.module6.text"),
+      tags: [
+        t("automationsPage.modules.module6.tag1"),
+        t("automationsPage.modules.module6.tag2"),
+      ],
+    },
+  ];
+}
 
-export const automationRecipes = [
-  {
-    title: "ליד חדש → משימת חזרה",
-    text: "כל ליד שנכנס מקבל משימת מעקב עם תאריך, כדי שהפנייה הראשונה תהיה בזמן.",
-    trigger: "טריגר: ליד חדש",
-    action: "פעולה: משימה + התראה",
-  },
-  {
-    title: "משימה שעבר זמנה",
-    text: "משימה שלא טופלה עולה למרכז ההתראות ונשארת שם עד שמסמנים סיום.",
-    trigger: "טריגר: דד־ליין עבר",
-    action: "פעולה: התראה דחופה",
-  },
-  {
-    title: "שינוי סטטוס → תיעוד",
-    text: "כשמזיזים ליד ל״נוצר קשר״ או ״מעוניין״ — השינוי נרשם אוטומטית בציר הזמן.",
-    trigger: "טריגר: שינוי סטטוס",
-    action: "פעולה: רשומה בציר זמן",
-  },
-];
+export function getAutomationRecipes(t: TFunction) {
+  return [
+    {
+      title: t("automationsPage.recipes.recipe1.title"),
+      text: t("automationsPage.recipes.recipe1.text"),
+      trigger: t("automationsPage.recipes.recipe1.trigger"),
+      action: t("automationsPage.recipes.recipe1.action"),
+    },
+    {
+      title: t("automationsPage.recipes.recipe2.title"),
+      text: t("automationsPage.recipes.recipe2.text"),
+      trigger: t("automationsPage.recipes.recipe2.trigger"),
+      action: t("automationsPage.recipes.recipe2.action"),
+    },
+    {
+      title: t("automationsPage.recipes.recipe3.title"),
+      text: t("automationsPage.recipes.recipe3.text"),
+      trigger: t("automationsPage.recipes.recipe3.trigger"),
+      action: t("automationsPage.recipes.recipe3.action"),
+    },
+  ];
+}
 
-export const automationsRail = [
-  "טריגר",
-  "תנאי",
-  "פעולה",
-  "תיעוד ב־CRM",
-];
+export function getAutomationsRail(t: TFunction): string[] {
+  return [
+    t("automationsPage.rail.item1"),
+    t("automationsPage.rail.item2"),
+    t("automationsPage.rail.item3"),
+    t("automationsPage.rail.item4"),
+  ];
+}
 
-export const automationsFaq: MarketingFaq[] = [
-  {
-    q: "מה האוטומציות עושות בפועל?",
-    a: "הן מריצות ברקע תזכורות, פולואפים, משימות עם דד־ליין והתראות על לידים חדשים — כדי שפחות דברים ייפלו בין הכיסאות.",
-  },
-  {
-    q: "האם צריך ידע טכני כדי להפעיל?",
-    a: "לא. בוחרים סוג תהליך, מגדירים מתי ולמי, ומפעילים. אין צורך לבנות זרימות מורכבות או לכתוב קוד.",
-  },
-  {
-    q: "איך יודעים שמשימה לא טופלה?",
-    a: "משימה שעבר זמנה מופיעה במרכז ההתראות של המערכת ונשארת שם עד שמסמנים אותה כבוצעה.",
-  },
-  {
-    q: "האם האוטומציות מחוברות ל־CRM?",
-    a: "כן. לידים, שינויי סטטוס, משימות ותיעוד חיים באותה מערכת — כך שהאוטומציה לא רצה בנפרד מהעבודה היומיומית.",
-  },
-  {
-    q: "מה הקשר ליועץ ה־AI?",
-    a: "היועץ העסקי ממליץ מה לעשות לפי נתוני המערכת. הביצוע האוטומטי — דירוג לידים, סיכום שיחות, משימות מתקדמות ועוד — שייך לאוטומציות AI.",
-  },
-  {
-    q: "אפשר להתחיל בקטן?",
-    a: "בהחלט. מתחילים מתזכורת אחת או מפולואפ אחרי ליד חדש, רואים תוצאות, ואז מוסיפים תהליכים נוספים.",
-  },
-];
+export function getAutomationsFaq(t: TFunction): MarketingFaq[] {
+  return [
+    {
+      q: t("automationsPage.faq.faq1.q"),
+      a: t("automationsPage.faq.faq1.a"),
+    },
+    {
+      q: t("automationsPage.faq.faq2.q"),
+      a: t("automationsPage.faq.faq2.a"),
+    },
+    {
+      q: t("automationsPage.faq.faq3.q"),
+      a: t("automationsPage.faq.faq3.a"),
+    },
+    {
+      q: t("automationsPage.faq.faq4.q"),
+      a: t("automationsPage.faq.faq4.a"),
+    },
+    {
+      q: t("automationsPage.faq.faq5.q"),
+      a: t("automationsPage.faq.faq5.a"),
+    },
+    {
+      q: t("automationsPage.faq.faq6.q"),
+      a: t("automationsPage.faq.faq6.a"),
+    },
+  ];
+}

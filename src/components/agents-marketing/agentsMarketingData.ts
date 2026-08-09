@@ -1,11 +1,15 @@
 import type { MarketingFaq, MarketingStat } from "../product-marketing";
 
-export const agentsHeroStats: MarketingStat[] = [
-  { value: 1, label: "נציג שמחובר ל־CRM שלכם" },
-  { value: 3, label: "שכבות טיפול בלידים" },
-  { value: 100, suffix: "%", label: "תיעוד בתוך המערכת" },
-  { value: 1, label: "צינור שקוף בלי שיחות אבודות" },
-];
+type TFunc = (key: string) => string;
+
+export function getAgentsHeroStats(t: TFunc): MarketingStat[] {
+  return [
+    { value: 1, label: t("agentsPage.heroStats.crm") },
+    { value: 3, label: t("agentsPage.heroStats.layers") },
+    { value: 100, suffix: "%", label: t("agentsPage.heroStats.docs") },
+    { value: 1, label: t("agentsPage.heroStats.pipeline") },
+  ];
+}
 
 export type FlowStep = {
   title: string;
@@ -13,116 +17,191 @@ export type FlowStep = {
   tags: string[];
 };
 
-export const agentsSteps: FlowStep[] = [
-  {
-    title: "מגדירים את הצורך",
-    text: "טיפול בלידים, תיאום פגישות, מילוי פרטים או ניהול שיתופי פעולה — לפי מה שהעסק צריך עכשיו.",
-    tags: ["לידים", "תיאום", "שיתופים"],
-  },
-  {
-    title: "מחברים למערכת",
-    text: "הנציגים עובדים מתוך BizUply — לא במוקד מנותק — עם גישה לצינור הלידים ולתהליך העסקי.",
-    tags: ["CRM", "חיבור", "הרשאות"],
-  },
-  {
-    title: "מתחילים טיפול",
-    text: "מענה לפניות, בירור צורך, תיאום המשך ומילוי פרטים — כדי שהליד יגיע אליכם מוכן.",
-    tags: ["מענה", "כימות", "תיאום"],
-  },
-  {
-    title: "מודדים תוצאות",
-    text: "רואים סטטוסים, פגישות שנקבעו והתקדמות בזמן אמת — הכל מתועד במערכת שלכם.",
-    tags: ["שקיפות", "סטטוס", "דוחות"],
-  },
-];
+export function getAgentsSteps(t: TFunc): FlowStep[] {
+  return [
+    {
+      title: t("agentsPage.steps.define.title"),
+      text: t("agentsPage.steps.define.text"),
+      tags: [
+        t("agentsPage.steps.define.tags.0"),
+        t("agentsPage.steps.define.tags.1"),
+        t("agentsPage.steps.define.tags.2"),
+      ],
+    },
+    {
+      title: t("agentsPage.steps.connect.title"),
+      text: t("agentsPage.steps.connect.text"),
+      tags: [
+        t("agentsPage.steps.connect.tags.0"),
+        t("agentsPage.steps.connect.tags.1"),
+        t("agentsPage.steps.connect.tags.2"),
+      ],
+    },
+    {
+      title: t("agentsPage.steps.handle.title"),
+      text: t("agentsPage.steps.handle.text"),
+      tags: [
+        t("agentsPage.steps.handle.tags.0"),
+        t("agentsPage.steps.handle.tags.1"),
+        t("agentsPage.steps.handle.tags.2"),
+      ],
+    },
+    {
+      title: t("agentsPage.steps.measure.title"),
+      text: t("agentsPage.steps.measure.text"),
+      tags: [
+        t("agentsPage.steps.measure.tags.0"),
+        t("agentsPage.steps.measure.tags.1"),
+        t("agentsPage.steps.measure.tags.2"),
+      ],
+    },
+  ];
+}
 
-export const agentsModules = [
-  {
-    accent: "#7c3aed",
-    title: "טיפול בלידים בזמן אמת",
-    text: "מענה מהיר לפניות, בירור צורך והובלה לשלב הבא — בלי שהליד יתקרר בין הטלפון ליומן.",
-    tags: ["מענה", "כימות", "המשך"],
-  },
-  {
-    accent: "#2563eb",
-    title: "תיאום פגישות",
-    text: "הנציג מתאם המשך ומקטין נשירה — הפגישה נכנסת ליומן עם סטטוס ברור.",
-    tags: ["יומן", "תיאום", "פחות נשירה"],
-  },
-  {
-    accent: "#0891b2",
-    title: "מילוי פרטים מושלם",
-    text: "הליד מגיע אליכם עם פרטים מסודרים, הערות והקשר — מוכן לסגירה ולא לבירורים חוזרים.",
-    tags: ["פרטים", "הערות", "מוכן"],
-  },
-  {
-    accent: "#059669",
-    title: "שקיפות מלאה ב־CRM",
-    text: "כל שיחה, סטטוס ומשימה מתועדים במערכת — לא בוואטסאפ פרטי ולא בפתקים שנעלמים.",
-    tags: ["תיעוד", "סטטוס", "היסטוריה"],
-  },
-  {
-    accent: "#e11d8c",
-    title: "ניהול שיתופי פעולה",
-    text: "נציג יכול לאתר שותפים, ליצור קשר, לעקוב אחרי תגובות ולנהל את תהליך השיתוף עבור העסק.",
-    tags: ["שותפים", "פולואפ", "דוח חודשי"],
-  },
-  {
-    accent: "#f59e0b",
-    title: "חיזוק מכירתי בלי גיוס",
-    text: "שכבת שירות אנושית שמתחברת לעומס הקיים — בלי להקים מוקד פנימי מהיום הראשון.",
-    tags: ["עומס", "גמישות", "תוצאות"],
-  },
-];
+export type AgentModule = {
+  accent: string;
+  title: string;
+  text: string;
+  tags: string[];
+};
 
-export const agentsServices = [
-  {
-    title: "מענה וכימות לידים",
-    text: "הנציג עונה, מברר צורך ומעדכן סטטוס — כדי שתטפלו רק במה שבאמת בשל.",
-    tags: ["מענה", "כימות", "סטטוס"],
-  },
-  {
-    title: "תיאום וסגירת המשך",
-    text: "קובעים פגישה, שולחים תזכורת וממלאים פרטים — פחות נשירה בין ״מעניין״ ל״נקבעה פגישה״.",
-    tags: ["פגישה", "תזכורת", "סגירה"],
-  },
-  {
-    title: "מנהל שיתופים אנושי",
-    text: "איתור שותפים, יצירת קשר, מעקב אחרי הצעות ודוח חודשי על התקדמות השיתופים.",
-    tags: ["מחקר", "פולואפ", "דוח"],
-  },
-];
+export function getAgentsModules(t: TFunc): AgentModule[] {
+  return [
+    {
+      accent: "#7c3aed",
+      title: t("agentsPage.modules.leads.title"),
+      text: t("agentsPage.modules.leads.text"),
+      tags: [
+        t("agentsPage.modules.leads.tags.0"),
+        t("agentsPage.modules.leads.tags.1"),
+        t("agentsPage.modules.leads.tags.2"),
+      ],
+    },
+    {
+      accent: "#2563eb",
+      title: t("agentsPage.modules.meetings.title"),
+      text: t("agentsPage.modules.meetings.text"),
+      tags: [
+        t("agentsPage.modules.meetings.tags.0"),
+        t("agentsPage.modules.meetings.tags.1"),
+        t("agentsPage.modules.meetings.tags.2"),
+      ],
+    },
+    {
+      accent: "#0891b2",
+      title: t("agentsPage.modules.details.title"),
+      text: t("agentsPage.modules.details.text"),
+      tags: [
+        t("agentsPage.modules.details.tags.0"),
+        t("agentsPage.modules.details.tags.1"),
+        t("agentsPage.modules.details.tags.2"),
+      ],
+    },
+    {
+      accent: "#059669",
+      title: t("agentsPage.modules.transparency.title"),
+      text: t("agentsPage.modules.transparency.text"),
+      tags: [
+        t("agentsPage.modules.transparency.tags.0"),
+        t("agentsPage.modules.transparency.tags.1"),
+        t("agentsPage.modules.transparency.tags.2"),
+      ],
+    },
+    {
+      accent: "#e11d8c",
+      title: t("agentsPage.modules.partnerships.title"),
+      text: t("agentsPage.modules.partnerships.text"),
+      tags: [
+        t("agentsPage.modules.partnerships.tags.0"),
+        t("agentsPage.modules.partnerships.tags.1"),
+        t("agentsPage.modules.partnerships.tags.2"),
+      ],
+    },
+    {
+      accent: "#f59e0b",
+      title: t("agentsPage.modules.boost.title"),
+      text: t("agentsPage.modules.boost.text"),
+      tags: [
+        t("agentsPage.modules.boost.tags.0"),
+        t("agentsPage.modules.boost.tags.1"),
+        t("agentsPage.modules.boost.tags.2"),
+      ],
+    },
+  ];
+}
 
-export const agentsRail = [
-  "ליד נכנס",
-  "נציג מטפל",
-  "פרטים מתמלאים",
-  "פגישה / שיתוף",
-];
+export type AgentService = {
+  title: string;
+  text: string;
+  tags: string[];
+};
 
-export const agentsFaq: MarketingFaq[] = [
-  {
-    q: "מה ההבדל בין נציג BizUply למוקד חיצוני?",
-    a: "הנציגים עובדים מתוך המערכת שלכם — עם גישה ל־CRM, לסטטוסים ולתיעוד. זה לא מוקד מנותק ששולח לכם סיכום במייל בסוף היום.",
-  },
-  {
-    q: "באילו משימות הנציגים יכולים לעזור?",
-    a: "טיפול בלידים, בירור צורך, תיאום פגישות, מילוי פרטים, ומעקב אחרי שיתופי פעולה — כולל איתור שותפים ופולואפים.",
-  },
-  {
-    q: "האם הפעילות מתועדת?",
-    a: "כן. כל טיפול נשאר בצינור הלידים ובתיק הלקוח — עם סטטוס, הערות ומשימות — כדי שתראו בדיוק מה קרה.",
-  },
-  {
-    q: "למי זה מתאים?",
-    a: "לעסקים עם עומס פניות, למי שרוצה מענה מהיר יותר, ולצוותים שצריכים חיזוק מכירתי בלי לגייס מוקד מלא.",
-  },
-  {
-    q: "אפשר להתחיל רק עם שיתופי פעולה?",
-    a: "כן. יש שירות ממוקד של מנהל שיתופים אנושי שמוצא שותפים, יוצר קשר, עוקב ומדווח — מתוך מודול השיתופים.",
-  },
-  {
-    q: "איך מתחילים?",
-    a: "מגדירים את הצורך, מחברים את הנציג למערכת, ומתחילים לטפל בפניות מהיום הראשון — עם שקיפות מלאה על התוצאות.",
-  },
-];
+export function getAgentsServices(t: TFunc): AgentService[] {
+  return [
+    {
+      title: t("agentsPage.services.qualify.title"),
+      text: t("agentsPage.services.qualify.text"),
+      tags: [
+        t("agentsPage.services.qualify.tags.0"),
+        t("agentsPage.services.qualify.tags.1"),
+        t("agentsPage.services.qualify.tags.2"),
+      ],
+    },
+    {
+      title: t("agentsPage.services.followup.title"),
+      text: t("agentsPage.services.followup.text"),
+      tags: [
+        t("agentsPage.services.followup.tags.0"),
+        t("agentsPage.services.followup.tags.1"),
+        t("agentsPage.services.followup.tags.2"),
+      ],
+    },
+    {
+      title: t("agentsPage.services.partnerships.title"),
+      text: t("agentsPage.services.partnerships.text"),
+      tags: [
+        t("agentsPage.services.partnerships.tags.0"),
+        t("agentsPage.services.partnerships.tags.1"),
+        t("agentsPage.services.partnerships.tags.2"),
+      ],
+    },
+  ];
+}
+
+export function getAgentsRail(t: TFunc): string[] {
+  return [
+    t("agentsPage.rail.items.0"),
+    t("agentsPage.rail.items.1"),
+    t("agentsPage.rail.items.2"),
+    t("agentsPage.rail.items.3"),
+  ];
+}
+
+export function getAgentsFaq(t: TFunc): MarketingFaq[] {
+  return [
+    {
+      q: t("agentsPage.faq.items.0.q"),
+      a: t("agentsPage.faq.items.0.a"),
+    },
+    {
+      q: t("agentsPage.faq.items.1.q"),
+      a: t("agentsPage.faq.items.1.a"),
+    },
+    {
+      q: t("agentsPage.faq.items.2.q"),
+      a: t("agentsPage.faq.items.2.a"),
+    },
+    {
+      q: t("agentsPage.faq.items.3.q"),
+      a: t("agentsPage.faq.items.3.a"),
+    },
+    {
+      q: t("agentsPage.faq.items.4.q"),
+      a: t("agentsPage.faq.items.4.a"),
+    },
+    {
+      q: t("agentsPage.faq.items.5.q"),
+      a: t("agentsPage.faq.items.5.a"),
+    },
+  ];
+}

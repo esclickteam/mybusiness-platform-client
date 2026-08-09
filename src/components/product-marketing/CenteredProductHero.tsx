@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { motion, useReducedMotion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import StatStrip from "./StatStrip";
 import type { MarketingStat } from "./StatStrip";
 import { WordReveal } from "./Reveal";
@@ -39,18 +40,20 @@ export default function CenteredProductHero({
   titleHighlight,
   lead,
   note,
-  primaryLabel = "לצפייה בחבילות",
+  primaryLabel,
   primaryTo = "/pricing",
   stats,
 }: Props) {
   const reduceMotion = useReducedMotion();
+  const { t, i18n } = useTranslation();
+  const primaryText = primaryLabel ?? t("product.viewPlans");
 
   return (
     <section
       className="pm-hero"
       data-accent={accent === "violet" ? undefined : accent}
       aria-label={ariaLabel}
-      dir="rtl"
+      dir={i18n.language === "he" ? "rtl" : "ltr"}
     >
       <div className="pm-hero__atmosphere" aria-hidden="true">
         <span className="pm-hero__orb pm-hero__orb--a" />
@@ -110,7 +113,7 @@ export default function CenteredProductHero({
           transition={{ delay: 0.76, duration: 0.65, ease }}
         >
           <Link to={primaryTo} className="pm-cta pm-cta--primary">
-            {primaryLabel}
+            {primaryText}
             <ArrowLeft size={17} aria-hidden="true" />
           </Link>
         </motion.div>

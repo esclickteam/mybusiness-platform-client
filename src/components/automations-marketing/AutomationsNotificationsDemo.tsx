@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Bell, CheckCheck, Clock3, Flame, RefreshCw, Settings } from "lucide-react";
 import { Reveal, SectionHeading } from "../product-marketing";
 import "./automationsNotificationsDemo.css";
@@ -16,58 +17,6 @@ type DemoNotification = {
   meta?: string;
 };
 
-const DEMO_NOTIFICATIONS: DemoNotification[] = [
-  {
-    id: "1",
-    kind: "new_lead",
-    typeLabel: "ליד חדש",
-    title: "ליד חדש: נועה כהן",
-    text: "נכנס ליד חדש מ־Facebook Lead Ads — מעוניינת בייעוץ ראשוני.",
-    time: "עכשיו",
-    unread: true,
-    meta: "מקור: Meta",
-  },
-  {
-    id: "2",
-    kind: "task_due",
-    typeLabel: "משימה ללקוח",
-    title: "משימה ללקוח: אורי לוי",
-    text: "לחזור עם הצעת מחיר לחבילת אתר + CRM. זמן הטיפול הגיע.",
-    time: "לפני 12 דק׳",
-    unread: true,
-    meta: "זמן טיפול: היום 16:30",
-  },
-  {
-    id: "3",
-    kind: "new_lead",
-    typeLabel: "ליד חדש",
-    title: "ליד חדש: דנה אברהם",
-    text: "פנייה מהאתר — ביקשה לקבוע תור להדגמה בשבוע הבא.",
-    time: "לפני שעה",
-    unread: true,
-    meta: "מקור: אתר",
-  },
-  {
-    id: "4",
-    kind: "task_due",
-    typeLabel: "משימה ללקוח",
-    title: "משימה ללקוח: סטודיו ברק",
-    text: "פולואפ אחרי שיחת היכרות — לשלוח סיכום וקישור לזימון.",
-    time: "לפני 3 שעות",
-    unread: false,
-    meta: "זמן טיפול: היום 11:00",
-  },
-  {
-    id: "5",
-    kind: "regular",
-    typeLabel: "התראה",
-    title: "תזכורת פגישה",
-    text: "פגישת ייעוץ עם יעל שמעוני מתחילה בעוד שעתיים.",
-    time: "לפני 5 שעות",
-    unread: false,
-  },
-];
-
 function KindIcon({ kind }: { kind: DemoKind }) {
   if (kind === "task_due") return <Clock3 size={18} aria-hidden="true" />;
   if (kind === "new_lead") return <Flame size={18} aria-hidden="true" />;
@@ -75,25 +24,85 @@ function KindIcon({ kind }: { kind: DemoKind }) {
 }
 
 export default function AutomationsNotificationsDemo() {
+  const { t, i18n } = useTranslation();
+  const dir = i18n.language === "he" ? "rtl" : "ltr";
+
+  const DEMO_NOTIFICATIONS: DemoNotification[] = [
+    {
+      id: "1",
+      kind: "new_lead",
+      typeLabel: t("automationsPage.notif.item1.typeLabel"),
+      title: t("automationsPage.notif.item1.title"),
+      text: t("automationsPage.notif.item1.text"),
+      time: t("automationsPage.notif.item1.time"),
+      unread: true,
+      meta: t("automationsPage.notif.item1.meta"),
+    },
+    {
+      id: "2",
+      kind: "task_due",
+      typeLabel: t("automationsPage.notif.item2.typeLabel"),
+      title: t("automationsPage.notif.item2.title"),
+      text: t("automationsPage.notif.item2.text"),
+      time: t("automationsPage.notif.item2.time"),
+      unread: true,
+      meta: t("automationsPage.notif.item2.meta"),
+    },
+    {
+      id: "3",
+      kind: "new_lead",
+      typeLabel: t("automationsPage.notif.item3.typeLabel"),
+      title: t("automationsPage.notif.item3.title"),
+      text: t("automationsPage.notif.item3.text"),
+      time: t("automationsPage.notif.item3.time"),
+      unread: true,
+      meta: t("automationsPage.notif.item3.meta"),
+    },
+    {
+      id: "4",
+      kind: "task_due",
+      typeLabel: t("automationsPage.notif.item4.typeLabel"),
+      title: t("automationsPage.notif.item4.title"),
+      text: t("automationsPage.notif.item4.text"),
+      time: t("automationsPage.notif.item4.time"),
+      unread: false,
+      meta: t("automationsPage.notif.item4.meta"),
+    },
+    {
+      id: "5",
+      kind: "regular",
+      typeLabel: t("automationsPage.notif.item5.typeLabel"),
+      title: t("automationsPage.notif.item5.title"),
+      text: t("automationsPage.notif.item5.text"),
+      time: t("automationsPage.notif.item5.time"),
+      unread: false,
+    },
+  ];
+
   const unreadCount = DEMO_NOTIFICATIONS.filter((n) => n.unread).length;
 
   return (
-    <section className="pm-section amx-notif" aria-label="דוגמת התראות">
+    <section
+      className="pm-section amx-notif"
+      aria-label={t("automationsPage.notif.sectionAriaLabel")}
+    >
       <div className="pm-shell">
         <SectionHeading
           eyebrow={
             <>
               <Bell size={14} aria-hidden="true" />
-              התראות חכמות
+              {t("automationsPage.notif.eyebrow")}
             </>
           }
           title={
             <>
-              האוטומציה לא רצה בשקט —{" "}
-              <span className="pm-grad">היא מודיעה בזמן</span>
+              {t("automationsPage.notif.titleLead")}{" "}
+              <span className="pm-grad">
+                {t("automationsPage.notif.titleHighlight")}
+              </span>
             </>
           }
-          lead="ליד חדש, משימה שעבר זמנה או תזכורת לפגישה — הכל עולה למרכז ההתראות, עם סימון למה שעוד לא נקרא."
+          lead={t("automationsPage.notif.lead")}
         />
 
         <Reveal from="up" delay={0.08}>
@@ -107,13 +116,15 @@ export default function AutomationsNotificationsDemo() {
               </span>
             </div>
 
-            <div className="amx-notif__panel" dir="rtl">
+            <div className="amx-notif__panel" dir={dir}>
               <header className="amx-notif__head">
                 <div>
-                  <p className="amx-notif__badge">מרכז התראות</p>
-                  <h3>התראות</h3>
+                  <p className="amx-notif__badge">
+                    {t("automationsPage.notif.badge")}
+                  </p>
+                  <h3>{t("automationsPage.notif.title")}</h3>
                   <p className="amx-notif__sub">
-                    לידים חדשים, משימות לטיפול ועדכונים מהמערכת
+                    {t("automationsPage.notif.sub")}
                   </p>
                 </div>
                 <div className="amx-notif__head-actions">
@@ -127,15 +138,23 @@ export default function AutomationsNotificationsDemo() {
               </header>
 
               <div className="amx-notif__tabs" aria-hidden="true">
-                <span className="is-active">הכל</span>
-                <span>לא נקראו · {unreadCount}</span>
+                <span className="is-active">
+                  {t("automationsPage.notif.tabAll")}
+                </span>
+                <span>
+                  {t("automationsPage.notif.tabUnread", { count: unreadCount })}
+                </span>
               </div>
 
               <div className="amx-notif__toolbar" aria-hidden="true">
-                <span>{unreadCount} התראות שלא נקראו</span>
+                <span>
+                  {t("automationsPage.notif.toolbarUnread", {
+                    count: unreadCount,
+                  })}
+                </span>
                 <span className="amx-notif__mark">
                   <CheckCheck size={14} />
-                  סמן הכל
+                  {t("automationsPage.notif.markAll")}
                 </span>
               </div>
 

@@ -1,5 +1,6 @@
 import React from "react";
 import { Helmet } from "react-helmet-async";
+import { useTranslation } from "react-i18next";
 import {
   Bot,
   ChevronLeft,
@@ -25,32 +26,39 @@ import {
   StaggerItem,
 } from "../../components/product-marketing";
 import {
-  collaborationsFaq,
-  collaborationsModules,
-  collaborationsRail,
-  collaborationsHeroStats,
-  collaborationsSteps,
+  getCollaborationsFaq,
+  getCollaborationsModules,
+  getCollaborationsRail,
+  getCollaborationsHeroStats,
+  getCollaborationsSteps,
 } from "../../components/collaborations-marketing/collaborationsMarketingData";
 import CollabWorkspacePreview from "../../components/collaborations-marketing/CollabWorkspacePreview";
 import "../../components/product-marketing/marketingKit.css";
 import "../../components/product-marketing/CenteredProductHero.css";
 
-const SEO_TITLE = "שיתופי פעולה עסקיים | BizUply";
-const SEO_DESCRIPTION =
-  "מצאו שותפים עסקיים, נהלו הצעות וצ׳אט בזמן אמת, פרסמו בשוק הזדמנויות וצמחו יחד — הכל במקום אחד ב־BizUply.";
-
 const MODULE_ICONS = [UserRound, Search, Store, Handshake, MessageSquare, Bot];
 
 export default function CollaborationsProductPage() {
+  const { t, i18n } = useTranslation();
+
+  const seoTitle = t("collabPage.seoTitle");
+  const seoDescription = t("collabPage.seoDescription");
+
+  const collaborationsHeroStats = getCollaborationsHeroStats(t);
+  const collaborationsSteps = getCollaborationsSteps(t);
+  const collaborationsRail = getCollaborationsRail(t);
+  const collaborationsModules = getCollaborationsModules(t);
+  const collaborationsFaq = getCollaborationsFaq(t);
+
   return (
-    <div className="pm pm-hero-page" dir="rtl">
+    <div className="pm pm-hero-page" dir={i18n.language === "he" ? "rtl" : "ltr"}>
       <Helmet>
-        <title>{SEO_TITLE}</title>
-        <meta name="description" content={SEO_DESCRIPTION} />
+        <title>{seoTitle}</title>
+        <meta name="description" content={seoDescription} />
         <link rel="canonical" href="https://bizuply.com/collaborations" />
         <meta name="robots" content="index, follow" />
-        <meta property="og:title" content={SEO_TITLE} />
-        <meta property="og:description" content={SEO_DESCRIPTION} />
+        <meta property="og:title" content={seoTitle} />
+        <meta property="og:description" content={seoDescription} />
         <meta property="og:type" content="website" />
         <meta property="og:site_name" content="BizUply" />
       </Helmet>
@@ -58,25 +66,25 @@ export default function CollaborationsProductPage() {
       <ScrollProgress />
 
       <CenteredProductHero
-        ariaLabel="שיתופי פעולה עסקיים"
+        ariaLabel={t("collabPage.hero.ariaLabel")}
         accent="pink"
         badges={[
-          { label: "רשת שותפים חכמה", live: true },
+          { label: t("collabPage.hero.badgeNetwork"), live: true },
           {
-            label: "שוק הזדמנויות",
+            label: t("collabPage.hero.badgeMarketplace"),
             icon: <Store size={13} aria-hidden="true" />,
           },
           {
-            label: "צ׳אט עסקי חי",
+            label: t("collabPage.hero.badgeChat"),
             icon: <MessageSquare size={13} aria-hidden="true" />,
           },
         ]}
-        title="מצאו שותפים עסקיים"
-        titleHighlight="וצמחו יחד"
-        lead="פרופיל שיתוף, מציאת שותפים לפי התאמה, שוק הזדמנויות, הצעות עם סטטוס וצ׳אט עסקי בזמן אמת — תהליך ברור שמחבר עסקים משלימים בלי שיחות מפוזרות."
+        title={t("collabPage.hero.title")}
+        titleHighlight={t("collabPage.hero.titleHighlight")}
+        lead={t("collabPage.hero.lead")}
         note={{
           icon: <Network size={17} aria-hidden="true" />,
-          text: "מגלים שותף, שולחים הצעה, מנהלים שיחה ומודדים תוצאות — הכל באותה מערכת שבה כבר רצים הלידים והלקוחות.",
+          text: t("collabPage.hero.note"),
         }}
         stats={collaborationsHeroStats}
       />
@@ -88,16 +96,16 @@ export default function CollaborationsProductPage() {
             eyebrow={
               <>
                 <Handshake size={14} aria-hidden="true" />
-                איך זה עובד
+                {t("collabPage.how.eyebrow")}
               </>
             }
             title={
               <>
-                מפרופיל שיתוף עד{" "}
-                <span className="pm-grad">עבודה משותפת</span>
+                {t("collabPage.how.titlePrefix")}{" "}
+                <span className="pm-grad">{t("collabPage.how.titleHighlight")}</span>
               </>
             }
-            lead="ארבעה שלבים ברורים: בונים נוכחות, מגלים התאמות, יוצרים קשר, ומנהלים את ההזדמנות בשוק ובצינור ההצעות."
+            lead={t("collabPage.how.lead")}
           />
 
           <div className="pmx-flow">
@@ -123,7 +131,7 @@ export default function CollaborationsProductPage() {
           </div>
 
           <Reveal from="up" delay={0.12}>
-            <ol className="pmx-rail" aria-label="טאבי מודול השיתופים">
+            <ol className="pmx-rail" aria-label={t("collabPage.how.railAria")}>
               {collaborationsRail.map((item, index) => (
                 <React.Fragment key={item}>
                   <li>{item}</li>
@@ -151,16 +159,16 @@ export default function CollaborationsProductPage() {
             eyebrow={
               <>
                 <Sparkles size={14} aria-hidden="true" />
-                מה יש במודול
+                {t("collabPage.modules.eyebrow")}
               </>
             }
             title={
               <>
-                כל מה שצריך כדי{" "}
-                <span className="pm-grad">לבנות שיתופים אמיתיים</span>
+                {t("collabPage.modules.titlePrefix")}{" "}
+                <span className="pm-grad">{t("collabPage.modules.titleHighlight")}</span>
               </>
             }
-            lead="לא רק רשימת אנשי קשר — פרופיל, גילוי, שוק, הצעות, צ׳אט והמלצות AI שעובדים יחד."
+            lead={t("collabPage.modules.lead")}
           />
 
           <Stagger className="pm-grid pm-grid--3" gap={0.07}>
@@ -191,17 +199,17 @@ export default function CollaborationsProductPage() {
       <section className="pm-section pm-section--tight">
         <div className="pm-shell">
           <SectionHeading
-            eyebrow="שאלות נפוצות"
-            title="מה שחשוב לדעת על שיתופי פעולה"
+            eyebrow={t("collabPage.faq.eyebrow")}
+            title={t("collabPage.faq.title")}
           />
           <FaqAccordion items={collaborationsFaq} />
 
           <div className="pmx-final">
             <FinalCta
-              eyebrow="מוכנים לפתוח ערוץ צמיחה"
-              title="חברו שותפים רלוונטיים — ותנו לצמיחה לרוץ בשני כיוונים"
-              text="בונים פרופיל שיתוף, מגלים עסקים משלימים, שולחים הצעה ומנהלים הכל בשוק ובצ׳אט. אפשר גם לחבר נציג אנושי שינהל את התהליך בשבילכם."
-              primaryLabel="הירשמו עכשיו"
+              eyebrow={t("collabPage.cta.eyebrow")}
+              title={t("collabPage.cta.title")}
+              text={t("collabPage.cta.text")}
+              primaryLabel={t("collabPage.cta.primaryLabel")}
               primaryTo="/pricing"
             />
           </div>

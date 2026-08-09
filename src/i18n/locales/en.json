@@ -6181,5 +6181,1940 @@
       "cancel": "Failed to cancel schedule",
       "mediaUpload": "Media upload failed"
     }
+  },
+  "product": {
+    "registerNow": "Register now",
+    "viewPlans": "View plans"
+  },
+  "faqPage": {
+    "seoTitle": "FAQ - Bizuply | Everything you need to know",
+    "seoDesc": "Answers to common questions about Bizuply — leads, Meta integration, website building, security and support.",
+    "badge": "Bizuply Help Center",
+    "title": "Frequently asked questions",
+    "subtitle": "Everything worth knowing about Bizuply — leads, Meta, website building, security, and how to get started.",
+    "asideTitle": "Looking for a quick answer?",
+    "asideText": "Here are the topics that come up most often. Open a question to read a clear explanation.",
+    "topics": [
+      {
+        "title": "Leads",
+        "text": "Organized CRM"
+      },
+      {
+        "title": "Meta",
+        "text": "App Review"
+      },
+      {
+        "title": "Website",
+        "text": "Templates & forms"
+      }
+    ],
+    "items": [
+      {
+        "q": "What is Bizuply?",
+        "a": "Bizuply is a single platform for managing your business: website building, CRM and leads, appointments, collaborations, and automations — so you can manage inquiries and customers in one place."
+      },
+      {
+        "q": "How do leads work in Bizuply?",
+        "a": "Every inquiry enters the lead pipeline in the CRM: inquiry source, customer details, status, notes, and tasks. You can track each lead from the moment it arrives until it closes — without losing inquiries between tools."
+      },
+      {
+        "q": "What is the Meta approval and how do I connect to Lead Ads?",
+        "a": "The Bizuply app passed Meta's App Review for connecting Lead Ads for businesses. The business connects its own Facebook page and approves permissions itself, and new leads from the ad forms flow automatically into the CRM with source and status."
+      },
+      {
+        "q": "How does website building work in Bizuply?",
+        "a": "Choose a ready-made template by industry, edit text and images in the visual editor, and publish. Forms from the website flow straight into the lead pipeline in the CRM — so the site generates inquiries in the same system where you manage them."
+      },
+      {
+        "q": "How do I join as a business?",
+        "a": "Click \"Register now\", complete your business profile, and start managing leads, appointments, and a website from a single dashboard."
+      },
+      {
+        "q": "Is my information secure?",
+        "a": "Yes. Bizuply uses encryption and accepted security practices to protect your data."
+      },
+      {
+        "q": "Where do I get support?",
+        "a": "You can reach us anytime through the Contact page — and we'll get back to you shortly."
+      }
+    ],
+    "ctaEyebrow": "Still have questions?",
+    "ctaTitle": "Let's talk — and see how Bizuply fits your business.",
+    "ctaText": "Lead management, a website, appointments, and smart growth — all in one place.",
+    "ctaPrimary": "Register now",
+    "ctaSecondary": "Contact us"
+  },
+  "accessibilityPage": {
+    "seoTitle": "Accessibility Statement - Bizuply",
+    "seoDesc": "Bizuply's accessibility statement — commitment to digital accessibility, WCAG standards, and support options.",
+    "badge": "Accessibility Center",
+    "title": "Accessibility Statement",
+    "intro": "Bizuply is committed to creating an inclusive, accessible, and easy-to-use digital experience for everyone.",
+    "lastUpdatedChip": "Last updated: September 29, 2025",
+    "asideTitle": "Our commitment to accessibility",
+    "asideText": "We continuously improve accessibility at Bizuply and support users who need assistance.",
+    "chips": [
+      {
+        "title": "WCAG",
+        "text": "Level AA 2.1"
+      },
+      {
+        "title": "Standard",
+        "text": "In line with accessibility requirements"
+      },
+      {
+        "title": "Support",
+        "text": "Help available"
+      }
+    ],
+    "needHelp": "Need help?",
+    "commitmentTitle": "Our commitment",
+    "commitmentP1": "Bizuply is committed to ensuring digital accessibility for people with disabilities. We work continuously to improve the user experience for everyone and to implement relevant accessibility standards, in accordance with the principles of the Equal Rights for Persons with Disabilities Law and the accessibility regulations in Israel, and in line with the ADA principles as well.",
+    "commitmentP2": "We strive to meet the Web Content Accessibility Guidelines (WCAG) 2.1 at Level AA, to provide an inclusive and comfortable digital experience for all visitors.",
+    "featuresTitle": "Accessibility features",
+    "featuresP": "Bizuply is designed according to accessibility principles, including a clear structure, readable content, and support for common assistive technologies.",
+    "featuresList": [
+      "Support for keyboard navigation.",
+      "Readable text with adjustable contrast and size.",
+      "Alternative text for images and icons.",
+      "Consistent structure and clear labels for forms and buttons."
+    ],
+    "limitationsTitle": "Limitations",
+    "limitationsP": "Although we strive to make all content fully accessible, some third-party integrations or certain media may not yet meet the full accessibility requirements. We are actively working on solutions and improvements.",
+    "feedbackTitle": "Feedback and contact",
+    "feedbackP": "If you encountered a barrier while using Bizuply or you need assistance, please contact us. We welcome feedback and use it to improve the platform.",
+    "emailLabel": "Email",
+    "lastUpdateTitle": "Last update",
+    "lastUpdateBefore": "This statement was last updated on ",
+    "lastUpdateDate": "September 29, 2025",
+    "lastUpdateAfter": ".",
+    "statementLabel": "Accessibility Statement"
+  },
+  "agentsPage": {
+    "seo": {
+      "title": "Human Agents for Your Business | BizUply",
+      "description": "A human service layer that handles leads, schedules meetings, fills in details and manages partnerships — right inside your BizUply CRM."
+    },
+    "hero": {
+      "ariaLabel": "Human agents for your business",
+      "badges": {
+        "service": "Connected human service",
+        "crm": "Working inside your CRM",
+        "transparency": "Full transparency"
+      },
+      "title": "Human agents",
+      "titleHighlight": "who move results",
+      "lead": "A human service layer that handles leads, coordinates follow-ups, fills in details and manages partnerships — not from a disconnected call center, but inside the system your business already runs on.",
+      "note": "Every call, status and task is logged in the CRM — so you see exactly what happened with each inquiry, with no lost conversations outside the pipeline."
+    },
+    "heroStats": {
+      "crm": "Agent connected to your CRM",
+      "layers": "Layers of lead handling",
+      "docs": "Documented inside the system",
+      "pipeline": "Transparent pipeline with no lost calls"
+    },
+    "howItWorks": {
+      "eyebrow": "How it works",
+      "titlePre": "From a quick connection to",
+      "titleHighlight": "handling that drives results",
+      "lead": "Define the need, connect an agent to the system, start handling inquiries — and measure statuses and meetings in real time."
+    },
+    "steps": {
+      "define": {
+        "title": "Define the need",
+        "text": "Lead handling, meeting scheduling, detail filling or partnership management — based on what the business needs right now.",
+        "tags": {
+          "0": "Leads",
+          "1": "Scheduling",
+          "2": "Partnerships"
+        }
+      },
+      "connect": {
+        "title": "Connect to the system",
+        "text": "Agents work inside BizUply — not from a disconnected call center — with access to the lead pipeline and your business process.",
+        "tags": {
+          "0": "CRM",
+          "1": "Connection",
+          "2": "Permissions"
+        }
+      },
+      "handle": {
+        "title": "Start handling",
+        "text": "Responding to inquiries, clarifying needs, coordinating follow-ups and filling in details — so the lead reaches you ready.",
+        "tags": {
+          "0": "Response",
+          "1": "Qualification",
+          "2": "Scheduling"
+        }
+      },
+      "measure": {
+        "title": "Measure results",
+        "text": "See statuses, scheduled meetings and progress in real time — all documented inside your system.",
+        "tags": {
+          "0": "Transparency",
+          "1": "Status",
+          "2": "Reports"
+        }
+      }
+    },
+    "rail": {
+      "ariaLabel": "Agent handling flow",
+      "items": {
+        "0": "Lead comes in",
+        "1": "Agent handles it",
+        "2": "Details get filled",
+        "3": "Meeting / partnership"
+      }
+    },
+    "services": {
+      "eyebrow": "What the agents do",
+      "titlePre": "Three service layers",
+      "titleHighlight": "that connect to the business",
+      "lead": "You can start with lead handling, meeting scheduling, or a human partnerships manager — based on the load and the goal.",
+      "qualify": {
+        "title": "Lead response & qualification",
+        "text": "The agent responds, clarifies the need and updates the status — so you only handle what is truly ready.",
+        "tags": {
+          "0": "Response",
+          "1": "Qualification",
+          "2": "Status"
+        }
+      },
+      "followup": {
+        "title": "Scheduling & follow-up closing",
+        "text": "Set a meeting, send a reminder and fill in the details — less drop-off between “interested” and “meeting scheduled”.",
+        "tags": {
+          "0": "Meeting",
+          "1": "Reminder",
+          "2": "Closing"
+        }
+      },
+      "partnerships": {
+        "title": "Human partnerships manager",
+        "text": "Finding partners, making contact, tracking proposals and a monthly report on partnership progress.",
+        "tags": {
+          "0": "Research",
+          "1": "Follow-up",
+          "2": "Report"
+        }
+      }
+    },
+    "modules": {
+      "eyebrow": "Why it's different",
+      "titlePre": "Agents who work",
+      "titleHighlight": "with your system",
+      "lead": "Response, scheduling, detail filling, transparency and partnerships — a human layer connected to the real pipeline of the business.",
+      "leads": {
+        "title": "Real-time lead handling",
+        "text": "Fast response to inquiries, clarifying the need and driving to the next stage — so the lead doesn't go cold between the phone and the calendar.",
+        "tags": {
+          "0": "Response",
+          "1": "Qualification",
+          "2": "Follow-up"
+        }
+      },
+      "meetings": {
+        "title": "Meeting scheduling",
+        "text": "The agent coordinates follow-ups and reduces drop-off — the meeting enters the calendar with a clear status.",
+        "tags": {
+          "0": "Calendar",
+          "1": "Scheduling",
+          "2": "Less drop-off"
+        }
+      },
+      "details": {
+        "title": "Perfect detail filling",
+        "text": "The lead reaches you with organized details, notes and context — ready to close and not for repeated clarifications.",
+        "tags": {
+          "0": "Details",
+          "1": "Notes",
+          "2": "Ready"
+        }
+      },
+      "transparency": {
+        "title": "Full transparency in the CRM",
+        "text": "Every call, status and task is documented in the system — not in private WhatsApp and not on notes that disappear.",
+        "tags": {
+          "0": "Documentation",
+          "1": "Status",
+          "2": "History"
+        }
+      },
+      "partnerships": {
+        "title": "Partnership management",
+        "text": "An agent can find partners, make contact, track responses and manage the partnership process on behalf of the business.",
+        "tags": {
+          "0": "Partners",
+          "1": "Follow-up",
+          "2": "Monthly report"
+        }
+      },
+      "boost": {
+        "title": "Sales boost without hiring",
+        "text": "A human service layer that plugs into your existing load — without setting up an in-house call center from day one.",
+        "tags": {
+          "0": "Load",
+          "1": "Flexibility",
+          "2": "Results"
+        }
+      }
+    },
+    "faq": {
+      "eyebrow": "Frequently asked questions",
+      "title": "What's important to know about human agents",
+      "items": {
+        "0": {
+          "q": "What's the difference between a BizUply agent and an external call center?",
+          "a": "The agents work inside your system — with access to the CRM, statuses and documentation. It's not a disconnected call center that emails you a summary at the end of the day."
+        },
+        "1": {
+          "q": "Which tasks can the agents help with?",
+          "a": "Lead handling, need clarification, meeting scheduling, detail filling, and tracking partnerships — including finding partners and follow-ups."
+        },
+        "2": {
+          "q": "Is the activity documented?",
+          "a": "Yes. Every interaction stays in the lead pipeline and the client file — with status, notes and tasks — so you see exactly what happened."
+        },
+        "3": {
+          "q": "Who is it for?",
+          "a": "For businesses with a heavy inquiry load, for those who want faster response, and for teams that need a sales boost without hiring a full call center."
+        },
+        "4": {
+          "q": "Can I start with partnerships only?",
+          "a": "Yes. There is a focused service of a human partnerships manager who finds partners, makes contact, tracks and reports — from within the partnerships module."
+        },
+        "5": {
+          "q": "How do I get started?",
+          "a": "Define the need, connect the agent to the system, and start handling inquiries from day one — with full transparency on the results."
+        }
+      }
+    },
+    "finalCta": {
+      "eyebrow": "Need a human layer",
+      "title": "Connect agents that drive results — without losing control",
+      "text": "Lead handling, meeting scheduling and partnership management from inside BizUply. Every activity is documented, every status is visible, and the load drops from day one.",
+      "primaryLabel": "Sign up now"
+    },
+    "workspace": {
+      "eyebrow": "This is how it looks in the system",
+      "titlePre": "The agent works inside the CRM —",
+      "titleHighlight": "and you see everything",
+      "lead": "An inquiry queue with status and who's handling it, alongside an activity log that documents every call, meeting and task opened.",
+      "crumb": "CRM · Agent handling",
+      "frameRail": {
+        "0": "Leads",
+        "1": "Clients",
+        "2": "Meetings",
+        "3": "Agents",
+        "4": "Reports"
+      },
+      "caption": "The handling queue: every inquiry with its source, status and the handling agent — alongside a record of the actions taken on your behalf.",
+      "kpis": {
+        "inProgress": "Inquiries in progress",
+        "avgResponse": "Average response time",
+        "avgResponseValue": "8 min",
+        "meetings": "Meetings scheduled",
+        "missed": "Missed calls"
+      },
+      "queueTitle": "Inquiry queue",
+      "queueSubtitle": "Updates in real time",
+      "activityTitle": "Agent activity log",
+      "activitySubtitle": "Today",
+      "note": "The same record appears in the lead card — nothing happens outside the system.",
+      "queue": {
+        "0": {
+          "initials": "DL",
+          "name": "Dana Levi · Kitchen renovation",
+          "meta": "Facebook · Arrived 12 minutes ago",
+          "state": "Agent handling"
+        },
+        "1": {
+          "initials": "AC",
+          "name": "Amir Cohen · Price quote",
+          "meta": "Website · Contacted",
+          "state": "Meeting scheduled"
+        },
+        "2": {
+          "initials": "RB",
+          "name": "Ronit Bar · Initial consultation",
+          "meta": "Google Ads · Awaiting documents",
+          "state": "Waiting on client"
+        },
+        "3": {
+          "initials": "YS",
+          "name": "Yuval Sadeh · Re-engagement",
+          "meta": "Instagram · New lead",
+          "state": "In queue"
+        }
+      },
+      "activity": {
+        "0": {
+          "strong": "Outgoing call",
+          "rest": "to Dana Levi — 3 minutes, agreed on a follow-up call tomorrow at 10:00"
+        },
+        "1": {
+          "strong": "Details filled",
+          "rest": "in the lead card: budget, location and timeline"
+        },
+        "2": {
+          "strong": "Meeting scheduled",
+          "rest": "for Amir Cohen in the calendar — Sunday, 09:30"
+        },
+        "3": {
+          "strong": "Task opened",
+          "rest": "for the business owner: approve the price quote by end of day"
+        }
+      }
+    }
+  },
+  "automationsPage": {
+    "seoTitle": "Automations for Your Business | BizUply",
+    "seoDescription": "Reminders, follow-ups, tasks, and alerts that run in the background and stay connected to your CRM — so fewer leads slip through the cracks.",
+    "hero": {
+      "ariaLabel": "Automations for your business",
+      "badgeBackground": "Runs in the background for you",
+      "badgeCrm": "Connected to your CRM",
+      "badgeSimple": "No technical hassle",
+      "title": "Automations",
+      "titleHighlight": "that work for you",
+      "lead": "Reminders, follow-ups, tasks with deadlines, and alerts on new leads — practical workflows that run in the background and stay connected to your lead pipeline, so fewer things slip through the cracks.",
+      "noteText": "No complex flowcharts — pick a workflow, set the conditions, turn it on, and see what's done and what's pending."
+    },
+    "stats": {
+      "processTypesLabel": "Types of background workflows",
+      "leadPipelineLabel": "Lead pipeline that moves statuses",
+      "schedulingSuffix": " min",
+      "schedulingLabel": "Task scheduling resolution",
+      "monitoringSuffix": "/7",
+      "monitoringLabel": "Monitoring that never sleeps"
+    },
+    "howItWorks": {
+      "eyebrow": "How it works",
+      "titleLead": "From a simple trigger to a",
+      "titleHighlight": "documented result",
+      "lead": "Four clear steps: choose what runs, define when and for whom, run it in the background, and improve based on what actually happens in your business.",
+      "railAriaLabel": "Automation flow"
+    },
+    "steps": {
+      "step1": {
+        "title": "Choose a workflow",
+        "text": "A reminder, follow-up, task with a deadline, or a new-lead alert — whatever your business truly needs to run on its own.",
+        "tag1": "Reminder",
+        "tag2": "Task",
+        "tag3": "Alert"
+      },
+      "step2": {
+        "title": "Set the conditions",
+        "text": "When it happens, who it's for, and which status or event triggers the next step — with no technical hassle.",
+        "tag1": "When",
+        "tag2": "For whom",
+        "tag3": "Trigger"
+      },
+      "step3": {
+        "title": "Run it in the background",
+        "text": "The system moves the workflow forward while you work with customers — and everything is logged in the CRM.",
+        "tag1": "Background",
+        "tag2": "CRM",
+        "tag3": "Logging"
+      },
+      "step4": {
+        "title": "Improve by results",
+        "text": "See what's done, what's pending, and what's overdue — and upgrade the workflow based on what works.",
+        "tag1": "Tracking",
+        "tag2": "Improvement",
+        "tag3": "Results"
+      }
+    },
+    "rail": {
+      "item1": "Trigger",
+      "item2": "Condition",
+      "item3": "Action",
+      "item4": "Logged in CRM"
+    },
+    "builder": {
+      "eyebrow": "This is how it looks in the system",
+      "titleLead": "Build a workflow in three lines —",
+      "titleHighlight": "and see what's running",
+      "lead": "Trigger, condition, and action on one side; the run log on the other. No flowcharts and no code.",
+      "crumb": "Automations · Workflow builder",
+      "rail1": "Leads",
+      "rail2": "Automations",
+      "rail3": "Tasks",
+      "rail4": "Alerts",
+      "rail5": "Settings",
+      "caption": "The workflow builder: a trigger from Lead Ads, a time condition, and a double action — and every run is saved to the log with a status.",
+      "kpiActiveLabel": "Active workflows",
+      "kpiRunsLabel": "Runs today",
+      "kpiTasksLabel": "Tasks opened",
+      "kpiPendingLabel": "Awaiting follow-up",
+      "card1Title": "Follow-up for an unanswered lead",
+      "card1Status": "Active",
+      "note": "Every change is saved on the lead itself — the same status you see on the card in the CRM.",
+      "card2Title": "Run log",
+      "card2Range": "24 hours",
+      "rule1Tag": "Trigger",
+      "rule1Text": "A new lead comes in from Facebook Lead Ads",
+      "rule2Tag": "Condition",
+      "rule2Text": "No contact was made within 60 minutes",
+      "rule3Tag": "Action",
+      "rule3Text": "A reminder for the rep + a task with a deadline for today",
+      "run1Name": "Follow-up for an unanswered lead",
+      "run1When": "4 minutes ago",
+      "run1State": "Completed",
+      "run2Name": "Reminder before a meeting",
+      "run2When": "Scheduled for 08:30",
+      "run2State": "Pending",
+      "run3Name": "Status update for Homer",
+      "run3When": "Running now",
+      "run3State": "Active",
+      "run4Name": "Task for a new lead",
+      "run4When": "22 minutes ago",
+      "run4State": "Completed"
+    },
+    "notif": {
+      "sectionAriaLabel": "Notifications example",
+      "eyebrow": "Smart notifications",
+      "titleLead": "The automation doesn't run silently —",
+      "titleHighlight": "it notifies you in time",
+      "lead": "A new lead, an overdue task, or a meeting reminder — it all shows up in the notification center, with a marker for what hasn't been read yet.",
+      "badge": "Notification center",
+      "title": "Notifications",
+      "sub": "New leads, tasks to handle, and system updates",
+      "tabAll": "All",
+      "tabUnread": "Unread · {{count}}",
+      "toolbarUnread": "{{count}} unread notifications",
+      "markAll": "Mark all",
+      "item1": {
+        "typeLabel": "New lead",
+        "title": "New lead: Noa Cohen",
+        "text": "A new lead came in from Facebook Lead Ads — interested in an initial consultation.",
+        "time": "Now",
+        "meta": "Source: Meta"
+      },
+      "item2": {
+        "typeLabel": "Client task",
+        "title": "Client task: Ori Levi",
+        "text": "Get back with a quote for the website + CRM package. It's time to handle it.",
+        "time": "12 min ago",
+        "meta": "Handle by: today 16:30"
+      },
+      "item3": {
+        "typeLabel": "New lead",
+        "title": "New lead: Dana Abraham",
+        "text": "An inquiry from the website — she asked to book a demo for next week.",
+        "time": "An hour ago",
+        "meta": "Source: Website"
+      },
+      "item4": {
+        "typeLabel": "Client task",
+        "title": "Client task: Studio Barak",
+        "text": "Follow-up after an intro call — send a summary and a booking link.",
+        "time": "3 hours ago",
+        "meta": "Handle by: today 11:00"
+      },
+      "item5": {
+        "typeLabel": "Alert",
+        "title": "Meeting reminder",
+        "text": "A consultation meeting with Yael Shimoni starts in two hours.",
+        "time": "5 hours ago"
+      }
+    },
+    "recipesSection": {
+      "eyebrow": "Ready-made recipes",
+      "titleLead": "Automations that start",
+      "titleHighlight": "working from day one",
+      "lead": "Three common workflows already connected to real work with leads and tasks — with no complicated setup."
+    },
+    "recipes": {
+      "recipe1": {
+        "title": "New lead → callback task",
+        "text": "Every incoming lead gets a follow-up task with a date, so the first outreach happens on time.",
+        "trigger": "Trigger: new lead",
+        "action": "Action: task + alert"
+      },
+      "recipe2": {
+        "title": "Overdue task",
+        "text": "A task that wasn't handled shows up in the notification center and stays there until it's marked done.",
+        "trigger": "Trigger: deadline passed",
+        "action": "Action: urgent alert"
+      },
+      "recipe3": {
+        "title": "Status change → logging",
+        "text": "When you move a lead to \"Contacted\" or \"Interested,\" the change is logged automatically on the timeline.",
+        "trigger": "Trigger: status change",
+        "action": "Action: timeline entry"
+      }
+    },
+    "modulesSection": {
+      "eyebrow": "What runs for you",
+      "titleLead": "Less manual,",
+      "titleHighlight": "more control",
+      "lead": "Reminders, follow-ups, statuses, alerts, and AI — layers that save time without losing the full picture."
+    },
+    "modules": {
+      "module1": {
+        "title": "Reminders that never sleep",
+        "text": "A task with a date and time shows up in the notification center the moment it's overdue — until you mark it done.",
+        "tag1": "Deadline",
+        "tag2": "Alerts",
+        "tag3": "Completion"
+      },
+      "module2": {
+        "title": "Follow-ups after every inquiry",
+        "text": "After a new lead or a call, a clear follow-up task opens so the customer isn't left without a response.",
+        "tag1": "New lead",
+        "tag2": "Follow-up"
+      },
+      "module3": {
+        "title": "Statuses that log themselves",
+        "text": "Every status change on a lead is added to the timeline automatically — so you see when it moved and where, without manual logging.",
+        "tag1": "Timeline",
+        "tag2": "Status"
+      },
+      "module4": {
+        "title": "Real-time alerts",
+        "text": "A new lead comes in and appears in alerts instantly — from Meta, Google, or your website — with no need to refresh screens.",
+        "tag1": "Realtime",
+        "tag2": "Leads",
+        "tag3": "Meta"
+      },
+      "module5": {
+        "title": "AI that recommends — automations that act",
+        "text": "The business advisor analyzes and recommends. AI automations perform advanced actions like lead scoring, call summaries, and task creation.",
+        "tag1": "Business Advisor",
+        "tag2": "AI Automations"
+      },
+      "module6": {
+        "title": "Less manual work",
+        "text": "Instead of chasing follow-ups on WhatsApp and sticky notes, the workflow runs in one system with a clear status.",
+        "tag1": "Time savings",
+        "tag2": "Order"
+      }
+    },
+    "faqSection": {
+      "eyebrow": "FAQ",
+      "title": "What's important to know about automations"
+    },
+    "faq": {
+      "faq1": {
+        "q": "What do the automations actually do?",
+        "a": "They run reminders, follow-ups, tasks with deadlines, and new-lead alerts in the background — so fewer things slip through the cracks."
+      },
+      "faq2": {
+        "q": "Do you need technical knowledge to set them up?",
+        "a": "No. Choose a workflow type, define when and for whom, and turn it on. There's no need to build complex flows or write code."
+      },
+      "faq3": {
+        "q": "How do you know a task wasn't handled?",
+        "a": "An overdue task appears in the system's notification center and stays there until it's marked done."
+      },
+      "faq4": {
+        "q": "Are the automations connected to the CRM?",
+        "a": "Yes. Leads, status changes, tasks, and logging all live in the same system — so the automation doesn't run separately from your day-to-day work."
+      },
+      "faq5": {
+        "q": "How does this relate to the AI advisor?",
+        "a": "The business advisor recommends what to do based on your system data. The automatic execution — lead scoring, call summaries, advanced tasks, and more — belongs to AI automations."
+      },
+      "faq6": {
+        "q": "Can you start small?",
+        "a": "Absolutely. Start with a single reminder or a follow-up after a new lead, see results, and then add more workflows."
+      }
+    },
+    "finalCta": {
+      "eyebrow": "Let your business run even without you",
+      "title": "Turn on workflows that keep every inquiry moving",
+      "text": "Reminders, follow-ups, and alerts connected to your CRM — so you can focus on customers while the system makes sure the next step isn't forgotten.",
+      "primaryLabel": "Sign up now"
+    }
+  },
+  "collabPage": {
+    "seoTitle": "Business Collaborations | BizUply",
+    "seoDescription": "Find business partners, manage proposals and real-time chat, post to the opportunities marketplace, and grow together — all in one place with BizUply.",
+    "hero": {
+      "ariaLabel": "Business Collaborations",
+      "badgeNetwork": "Smart partner network",
+      "badgeMarketplace": "Opportunities marketplace",
+      "badgeChat": "Live business chat",
+      "title": "Find business partners",
+      "titleHighlight": "and grow together",
+      "lead": "A collaboration profile, match-based partner discovery, an opportunities marketplace, proposals with status tracking, and real-time business chat — a clear process that connects complementary businesses without scattered conversations.",
+      "note": "Discover a partner, send a proposal, manage the conversation and measure results — all in the same system that already runs your leads and clients."
+    },
+    "heroStats": {
+      "tabs": "tabs to manage collaborations",
+      "marketplace": "built-in opportunities marketplace",
+      "statuses": "collaboration proposal statuses",
+      "chat": "real-time business chat"
+    },
+    "how": {
+      "eyebrow": "How it works",
+      "titlePrefix": "From a collaboration profile to",
+      "titleHighlight": "working together",
+      "lead": "Four clear steps: build your presence, discover matches, make contact, and manage the opportunity across the marketplace and proposal pipeline.",
+      "railAria": "Collaborations module tabs"
+    },
+    "steps": {
+      "step1": {
+        "title": "Build a collaboration profile",
+        "text": "Define your field, area, your strengths and what you're looking for in a partner — including a logo and contact details.",
+        "tag1": "Category",
+        "tag2": "Area",
+        "tag3": "Preferences"
+      },
+      "step2": {
+        "title": "Discover partners",
+        "text": "The system surfaces relevant businesses by match, with free-text search and complementary category tags.",
+        "tag1": "Match",
+        "tag2": "Search",
+        "tag3": "Business cards"
+      },
+      "step3": {
+        "title": "Send a proposal or chat",
+        "text": "Start a real-time business conversation or send a structured collaboration proposal with status tracking.",
+        "tag1": "Proposal",
+        "tag2": "Chat",
+        "tag3": "Tracking"
+      },
+      "step4": {
+        "title": "Manage in the marketplace",
+        "text": "Post an opportunity to the collaborations marketplace — budget, validity, what you offer and what you seek — and receive inquiries.",
+        "tag1": "Marketplace",
+        "tag2": "Budget",
+        "tag3": "Validity"
+      }
+    },
+    "rail": {
+      "profile": "Profile",
+      "findPartner": "Find a partner",
+      "messages": "Messages",
+      "market": "Marketplace",
+      "proposals": "Proposals"
+    },
+    "modules": {
+      "eyebrow": "What's in the module",
+      "titlePrefix": "Everything you need to",
+      "titleHighlight": "build real collaborations",
+      "lead": "Not just a contact list — a profile, discovery, marketplace, proposals, chat and AI recommendations that work together.",
+      "card1": {
+        "title": "Professional collaboration profile",
+        "text": "Name, category, geographic area, about, logo, contact person and international phone — plus collaboration preferences laid out clearly.",
+        "tag1": "Logo",
+        "tag2": "Area",
+        "tag3": "Preferences"
+      },
+      "card2": {
+        "title": "Smart partner discovery",
+        "text": "A server-driven list of relevant businesses, complementary category tags, filtering by name/description/city, and send and chat actions.",
+        "tag1": "Match",
+        "tag2": "Tags",
+        "tag3": "Cards"
+      },
+      "card3": {
+        "title": "Collaborations marketplace",
+        "text": "Opportunities with a title, description, needs/offers tags, a budget in ILS and an expiry date — to browse and to post.",
+        "tag1": "needs",
+        "tag2": "offers",
+        "tag3": "Budget"
+      },
+      "card4": {
+        "title": "Proposal pipeline",
+        "text": "Active / sent / received — with approve, decline or cancel, so no proposal gets lost in scattered conversations.",
+        "tag1": "Active",
+        "tag2": "Sent",
+        "tag3": "Received"
+      },
+      "card5": {
+        "title": "Real-time business chat",
+        "text": "B2B conversations powered by Socket.IO from the profile or a partner card — without switching to personal WhatsApp.",
+        "tag1": "Realtime",
+        "tag2": "Messages",
+        "tag3": "Partners"
+      },
+      "card6": {
+        "title": "Live AI recommendations",
+        "text": "Partner recommendations arrive in real time over the socket — so you discover opportunities without manual scanning.",
+        "tag1": "AI",
+        "tag2": "Recommendations",
+        "tag3": "Live"
+      }
+    },
+    "faq": {
+      "eyebrow": "FAQ",
+      "title": "What you should know about collaborations",
+      "q1": "What does the collaborations module include?",
+      "a1": "Four core tabs: collaboration profile, find a partner, messages and the opportunities marketplace — plus an active/sent/received proposal pipeline.",
+      "q2": "How do you find the right partner?",
+      "a2": "The system returns relevant businesses by match, with complementary categories. You can also search by name, description, category or area, then send a proposal or open a chat.",
+      "q3": "What is the collaborations marketplace?",
+      "a3": "An opportunities board where businesses post what they're looking for and what they offer, including budget and expiry date. You can respond with a proposal, a chat or by viewing the profile.",
+      "q4": "Is there chat between businesses?",
+      "a4": "Yes. There's real-time business chat between businesses — you can start it from a partner card or from within the collaboration profile.",
+      "q5": "Can a human manager run collaborations for us?",
+      "a5": "Yes. You can bring on a BizUply representative to find partners, make contact, follow up on responses and manage the collaboration process — all from within the system.",
+      "q6": "What happens after you send a proposal?",
+      "a6": "The proposal enters the pipeline with a clear status. The other side can approve or decline, and you can cancel a sent proposal — all documented in one place."
+    },
+    "cta": {
+      "eyebrow": "Ready to open a growth channel",
+      "title": "Connect relevant partners — and let growth run both ways",
+      "text": "Build a collaboration profile, discover complementary businesses, send a proposal and manage everything in the marketplace and chat. You can also bring on a human representative to run the process for you.",
+      "primaryLabel": "Sign up now"
+    },
+    "preview": {
+      "eyebrow": "Here's how it looks in the system",
+      "titlePrefix": "From a match to a proposal —",
+      "titleHighlight": "to a single conversation",
+      "lead": "Matches ranked by relevance, a proposal pipeline with status, and a business chat saved to the opportunity itself.",
+      "crumb": "Collaborations · Marketplace & proposals",
+      "rail1": "Collaboration profile",
+      "rail2": "Partner discovery",
+      "rail3": "Opportunities marketplace",
+      "rail4": "Proposals",
+      "rail5": "Chat",
+      "caption": "The opportunities marketplace: matches with a relevance score, a status for every proposal, and the conversation that continues in the same place.",
+      "kpiMatches": "Open matches",
+      "kpiProposals": "Proposals in progress",
+      "kpiClosed": "Collaborations closed",
+      "kpiReferrals": "Referrals received",
+      "matchesTitle": "Matching partners",
+      "matchesSub": "By field and area",
+      "pipelineTitle": "Proposal pipeline",
+      "match1Name": "Event photography studio",
+      "match1Area": "Tel Aviv · Complementary",
+      "match2Name": "Independent interior designer",
+      "match2Area": "Center · Overlapping audience",
+      "match3Name": "Small production company",
+      "match3Area": "Sharon · Referral channel",
+      "proposal1Name": "Mutual referrals · Photo studio",
+      "proposal1State": "Sent",
+      "proposal2Name": "Joint package · Interior designer",
+      "proposal2State": "In negotiation",
+      "proposal3Name": "Joint event · Production company",
+      "proposal3State": "Approved",
+      "chatTitle": "Business chat",
+      "chatSub": "Event photography studio",
+      "chatBubble1": "Hi, I saw the mutual referrals proposal — we're interested.",
+      "chatBubble2": "Great. I suggest we start with a trial month with a commission on every referral that closes.",
+      "chatBubble3": "Agreed. Can we set up a call to finalize the details?",
+      "chatBubble4": "I sent a calendar invite for Thursday at 11:00 — it also appears in your meetings.",
+      "chatNote": "The conversation is saved to the opportunity, so anyone who joins later sees the context."
+    }
+  },
+  "crmPage": {
+    "seo": {
+      "title": "CRM & Meta Leads | BizUply — Meta App Review Developers",
+      "description": "BizUply are Meta App Review–approved developers. Connect Facebook Lead Ads to your CRM and manage leads, clients and appointments in one place."
+    },
+    "hero": {
+      "ariaLabel": "CRM & Leads",
+      "badgeMeta": "Meta App Review Developers",
+      "badgeRealtime": "Real-time leads",
+      "badgeCalendar": "Synced appointment calendar",
+      "titleLine1": "Every lead, every client, every appointment",
+      "titleLine2": "in one place",
+      "lead": "Inquiries from Facebook, Instagram, Google Ads and your own website flow automatically into a single pipeline with status, notes and tasks. From there you continue to the client file, the appointment calendar and the service catalog — all in the same system.",
+      "trust": "We are Meta App Review Developers — the BizUply app has passed Meta's App Review process for connecting Lead Ads to businesses.",
+      "ctaAutomations": "Automations",
+      "ctaStartFree": "Start for free"
+    },
+    "stats": {
+      "pipelineStatuses": "statuses in the lead pipeline",
+      "autoChannels": "automated lead channels",
+      "docTypes": "record types in the client file",
+      "calendarResolution": "appointment calendar resolution",
+      "minSuffix": " min"
+    },
+    "pipeline": {
+      "new": "New",
+      "contacted": "Contacted",
+      "interested": "Interested",
+      "converted": "Converted",
+      "lost": "Lost",
+      "old": "Old lead"
+    },
+    "pipelineSection": {
+      "eyebrow": "Lead pipeline",
+      "titleA": "Five statuses, ",
+      "titleHighlight": "one clear picture",
+      "lead": "Every lead holds a single status, and every status change is logged automatically on its timeline — so you can see when it moved and where to."
+    },
+    "listCards": {
+      "search": {
+        "title": "Search that finds every inquiry",
+        "text": "Free-text search across name, phone, email, source and even the fields that came from the form itself.",
+        "tags": [
+          "Name",
+          "Phone",
+          "Email",
+          "Form fields"
+        ]
+      },
+      "filter": {
+        "title": "Filter by status and source",
+        "text": "Narrow the list to a single status or a single channel — Meta, Google or your own website.",
+        "tags": [
+          "5 statuses",
+          "Meta",
+          "Google",
+          "Website"
+        ]
+      },
+      "list": {
+        "title": "A list that handles volume",
+        "text": "50 leads per page with pagination, grouped by inquiry date — so you can see what came in today and what's waiting from yesterday.",
+        "tags": [
+          "50 per page",
+          "Grouped by date"
+        ]
+      }
+    },
+    "shotsSection": {
+      "eyebrow": "From the system",
+      "titleA": "Not a mock-up — ",
+      "titleHighlight": "the real screens",
+      "lead": "Leads, clients and appointments: the three modules you actually work with, exactly as they appear in the business dashboard."
+    },
+    "tour": {
+      "leads": {
+        "eyebrow": "Leads",
+        "title": "End-to-end lead management",
+        "lead": "The leads list with metrics up top, filtering by status and by source, and free-text search across name, phone, email, source and form fields.",
+        "main": {
+          "crumb": "CRM · Lead management",
+          "caption": "The leads screen: lead editor, new leads, contacted, converted and open tasks — with filtering by status and by source"
+        },
+        "extra1": {
+          "crumb": "CRM · Lead card",
+          "caption": "The lead card: profile summary, source details, all form fields, and a log with notes and dated tasks"
+        },
+        "extra2": {
+          "crumb": "Notification center",
+          "caption": "The notification center: new leads and overdue tasks, on mobile too"
+        }
+      },
+      "clients": {
+        "eyebrow": "Clients",
+        "title": "A client file that keeps working after the close",
+        "lead": "The client database with appointment and revenue metrics, and inside each client a full profile, a log with files and appointment history.",
+        "main": {
+          "crumb": "CRM · Client management",
+          "caption": "The clients screen: total clients, active clients, appointments and revenue — with search and filtering"
+        },
+        "extra1": {
+          "crumb": "CRM · Client profile",
+          "caption": "The client profile: contact details, CRM summary, and a log with tasks, date and time and file attachments"
+        },
+        "extra2": {
+          "crumb": "CRM · Client appointments",
+          "caption": "The client's appointments: appointment history with duration, price and payment status for each appointment"
+        }
+      },
+      "appointments": {
+        "eyebrow": "Appointments",
+        "title": "A synced appointment calendar",
+        "lead": "A monthly calendar alongside a synced list, an appointment card with service, duration, price and payment status, and business hours that define the available windows.",
+        "main": {
+          "crumb": "CRM · Appointment calendar",
+          "caption": "The appointment calendar: today's appointments, upcoming appointments, unpaid appointments and total revenue"
+        }
+      }
+    },
+    "integrations": {
+      "eyebrow": "Lead sources",
+      "titleA": "Three channels, ",
+      "titleHighlight": "one pipeline",
+      "lead": "No more copying from spreadsheets and inboxes. Each channel connects once through a short wizard, and from that moment leads flow into the pipeline with their source, fields and status."
+    },
+    "integrationSources": {
+      "meta": {
+        "name": "Facebook & Instagram Lead Ads",
+        "badge": "Meta App Review",
+        "steps": [
+          "Sign in with your Facebook account and approve permissions",
+          "Choose the business page to sync",
+          "Choose the campaign's active lead form"
+        ],
+        "note": "Once connected, every new lead from the campaign enters the pipeline automatically via Meta's Webhook."
+      },
+      "google": {
+        "name": "Google Ads Lead Forms",
+        "badge": "Google Ads API",
+        "steps": [
+          "Sign in with your Google account",
+          "Choose a Google Ads account and a lead form asset",
+          "The system sets the Webhook URL and sends a test lead"
+        ],
+        "note": "Leads arrive in real time with the campaign details, including gclid, alongside the rest of your leads."
+      },
+      "website": {
+        "name": "Forms on the site you built",
+        "badge": "Website Forms",
+        "steps": [
+          "Add a lead form section to your site in the visual editor",
+          "Set fields, phone requirement and an auto-reply message",
+          "Publish — and every inquiry is saved with the \"Website\" source"
+        ],
+        "note": "The same form sends you an email alert and returns a thank-you message to the person who submitted the inquiry."
+      }
+    },
+    "modulesSection": {
+      "eyebrow": "What's in each module",
+      "titleA": "From the first inquiry all the way to ",
+      "titleHighlight": "the next slot on the calendar",
+      "lead": "Lead card, client file, appointment calendar and service catalog — modules that talk to each other, with no exporting or importing anything."
+    },
+    "moduleCards": {
+      "leadCard": {
+        "title": "A lead card that tells the whole story",
+        "text": "Inquiry details and all form fields, a log of notes, calls and WhatsApp, automatic status changes, and a task with a date and time.",
+        "tags": [
+          "Note",
+          "Call",
+          "WhatsApp",
+          "Task"
+        ]
+      },
+      "clientFile": {
+        "title": "A complete client file",
+        "text": "Contact details, a status derived from the appointment history, total revenue, a log with seven record types and document uploads.",
+        "tags": [
+          "Appointment",
+          "File",
+          "Agreement",
+          "Custom fields"
+        ]
+      },
+      "calendar": {
+        "title": "A calendar that figures out what's free on its own",
+        "text": "Available windows are derived from business hours and service duration in 15-minute steps, and the appointment is saved with a price and payment status.",
+        "tags": [
+          "Monthly view",
+          "Today",
+          "Upcoming"
+        ]
+      },
+      "services": {
+        "title": "Services and business hours",
+        "text": "A service catalog with name, description, duration, price and image, and a weekly schedule of business hours — feeding both the calendar and the customer booking page.",
+        "tags": [
+          "Service catalog",
+          "Business hours"
+        ]
+      },
+      "alerts": {
+        "title": "Alerts that won't let you miss a thing",
+        "text": "A new lead comes in and appears in alerts immediately, and an overdue task rises to the notification center until you mark it as done.",
+        "tags": [
+          "New leads",
+          "Overdue tasks"
+        ]
+      },
+      "dashboard": {
+        "title": "A snapshot on the dashboard",
+        "text": "New leads, untreated leads, change versus the previous period, the table of recent leads and upcoming appointments.",
+        "tags": [
+          "KPI",
+          "Recent leads",
+          "Upcoming appointments"
+        ]
+      }
+    },
+    "metaTrust": {
+      "eyebrow": "Meta App Review",
+      "title": "Meta developers who passed App Review",
+      "lead": "BizUply is a Meta app that lets businesses connect their Facebook page and receive Lead Ads directly into the CRM — after passing Meta's App Review process.",
+      "points": [
+        "Secure and approved Facebook Lead Ads connection",
+        "The business connects its own page and approves permissions itself",
+        "Leads enter the CRM pipeline automatically with source and status"
+      ],
+      "permissionsLabel": "The permissions the business approves"
+    },
+    "faqSection": {
+      "eyebrow": "FAQ",
+      "title": "What matters to know about the CRM"
+    },
+    "faq": {
+      "statuses": {
+        "q": "What statuses can a lead have?",
+        "a": "Five: New, Contacted, Interested, Converted and Lost. Every status change is logged automatically on the lead's timeline, so you can see when it moved and where to."
+      },
+      "sources": {
+        "q": "Where do the leads come from?",
+        "a": "From three automated channels: Facebook and Instagram Lead Ads via an approved Meta connection, Google Ads lead forms, and forms on the site you built in BizUply. Each lead keeps its source alongside its details."
+      },
+      "approved": {
+        "q": "Is BizUply really approved by Meta?",
+        "a": "Yes. The BizUply app has passed Meta's App Review process for connecting Lead Ads. The business connects its own Facebook page and approves the permissions, and from that moment the leads flow directly into the CRM."
+      },
+      "followup": {
+        "q": "How do you avoid missing follow-ups?",
+        "a": "On every lead you can log a note, a call or a WhatsApp, and open a task with a date and time. Overdue tasks appear in the system's notification center, and new leads also enter the alerts in real time."
+      },
+      "clientFile": {
+        "q": "What's kept in the client file?",
+        "a": "Contact details and address, a documentation timeline that includes notes, calls, WhatsApp, tasks, appointments, files and agreements — with document uploads (images, PDF, Word, Excel, PowerPoint), appointment history and custom data fields."
+      },
+      "calendar": {
+        "q": "How does the appointment calendar work?",
+        "a": "You set business hours for each day of the week and a service catalog with duration and price. The system computes the available windows from them in 15-minute steps, and the appointment is saved with a service, price, payment status and a note."
+      },
+      "selfBooking": {
+        "q": "Can the client book an appointment themselves?",
+        "a": "Yes. There's a customer booking page where they choose a service and date from those same available windows. When the appointment is booked, a confirmation email is sent to the client and the business, and the appointment appears on the calendar immediately."
+      },
+      "dashboard": {
+        "q": "Can I see a snapshot without opening the CRM?",
+        "a": "Yes. The business dashboard shows new leads, untreated leads, the change versus the previous period, a table of the most recent leads with source and status, and the upcoming appointments."
+      }
+    },
+    "finalCta": {
+      "eyebrow": "Start organizing your pipeline",
+      "title": "Organize your lead pipeline — and never miss an inquiry",
+      "text": "Connect your lead sources, work with statuses and tasks, and continue to the client file and appointment calendar. All in a Meta app that passed App Review.",
+      "primaryLabel": "Sign up now"
+    }
+  },
+  "privacyPage": {
+    "metaTitle": "Privacy Policy - BizUply",
+    "metaDescription": "Read BizUply's Privacy Policy, including how we collect, use, store, protect, and share user and business data.",
+    "badge": "Privacy Center",
+    "title": "Privacy Policy",
+    "intro": "This Privacy Policy explains how BizUply collects, stores, uses, and protects personal and business information across the platform.",
+    "lastUpdatedLabel": "Last updated:",
+    "lastUpdatedDate": "August 9, 2026",
+    "overviewTitle": "Policy Overview",
+    "overviewText": "Quickly navigate between the sections on privacy, data, security, user rights, and legal terms.",
+    "contactPrivacy": "Privacy Contact",
+    "lastUpdatedBoxLabel": "Last Updated",
+    "sections": [
+      "Introduction",
+      "Scope and Applicability",
+      "Definitions",
+      "Data We Collect",
+      "How We Use Your Data",
+      "Data Sharing",
+      "Google Workspace API Data",
+      "Cookies",
+      "Data Retention",
+      "User Rights",
+      "Refunds and Payments",
+      "Limitation of Liability",
+      "Data Location",
+      "Policy Updates",
+      "Legal Compliance",
+      "Legal Disclaimer",
+      "Governing Law",
+      "Contact and Data Protection Officer",
+      "Final Provision"
+    ],
+    "s1": {
+      "h": "1. Introduction",
+      "p1": "This Privacy Policy explains how <strong>BizUply</strong>, privately owned and operated under the laws of the United States, collects, stores, uses, and protects the personal information of its users and business customers (“Users,” “Businesses,” or “you”). By using the BizUply platform, you agree to the terms described in this document.",
+      "p2": "BizUply is a cloud-based SaaS platform headquartered in New York, USA, designed to provide business management, customer communication, and AI-powered automation tools for small and medium-sized businesses (“SMBs”).",
+      "p3": "This Privacy Policy applies to all of our products, services, websites, and applications (the “Platform”) and describes in detail how we process data, what information we collect, and what rights you have with respect to your information.",
+      "p4": "By accessing or using our Platform, you acknowledge that you have read and understood this Privacy Policy. If you do not agree, please do not use BizUply or any of its services."
+    },
+    "s2": {
+      "h": "2. Scope and Applicability",
+      "p1": "This Privacy Policy applies to all users, including businesses, employees, administrators, affiliates, and website visitors who interact with BizUply in any manner, whether through desktop, mobile applications, API integrations, or third-party add-ons.",
+      "p2": "It governs BizUply's processing of personal and non-personal information and explains our data-handling practices in accordance with United States federal law, New York State privacy regulations, and international standards such as the GDPR and CCPA for reference purposes only.",
+      "p3": "This policy does not apply to third-party services, links, or integrations that are not owned or operated by BizUply. We encourage you to review their privacy policies before engaging with them."
+    },
+    "s3": {
+      "h": "3. Definitions",
+      "p1": "<strong>“BizUply”</strong> – refers to the privately owned SaaS company registered and operated under the laws of the United States, with its seat in New York, USA.",
+      "p2": "<strong>“The Platform”</strong> – includes all BizUply products, websites, systems, servers, applications, APIs, AI modules, CRM dashboards, automation tools, and related software infrastructure.",
+      "p3": "<strong>“User”</strong> – any natural or legal person who uses BizUply's services, including business owners, employees, customers, or website visitors.",
+      "p4": "<strong>“Personal Information”</strong> – data that identifies or can reasonably identify an individual, including but not limited to name, email, phone number, address, payment details, business profile data, and digital identifiers such as IP addresses or cookies.",
+      "p5": "<strong>“Third Parties”</strong> – external entities engaged by BizUply for hosting, payment processing, analytics, or communication purposes, subject to binding confidentiality and data protection agreements."
+    },
+    "s4": {
+      "h": "4. Data We Collect",
+      "p1": "BizUply collects both personal and non-personal data necessary to provide, improve, and secure its services. Data collection may occur directly from you, automatically through your device, or from verified business integrations.",
+      "h1": "4.1. Personal Data You Provide",
+      "list1": [
+        "Full name, email, and phone number",
+        "Business name, registration number, and address",
+        "Payment and billing information",
+        "Encrypted login credentials",
+        "Communications, reviews, and feedback submitted through the Platform"
+      ],
+      "h2": "4.2. Data Collected Automatically",
+      "list2": [
+        "IP address and approximate geographic location",
+        "Device type, browser version, and operating system",
+        "Session activity, interaction history, and timestamps",
+        "Cookies and tracking pixels for analytics and performance"
+      ],
+      "h3": "4.3. Business and Analytical Data",
+      "list3": [
+        "Customer records and appointments",
+        "Business messages and chat logs",
+        "AI analysis of performance metrics and recommendations",
+        "Aggregated insights generated from anonymized usage data"
+      ]
+    },
+    "s5": {
+      "h": "5. How We Use Your Data",
+      "p1": "BizUply uses the information collected solely for legitimate business purposes related to operating and improving its Platform. We do not sell or rent personal data under any circumstances.",
+      "list": [
+        "To provide and maintain our services and customer accounts",
+        "To process payments, invoices, and billing cycles",
+        "To improve product performance, UX, and AI accuracy — excluding user data received through Google Workspace APIs, as set out in Section 7",
+        "To send service updates, notifications, or marketing offers",
+        "To ensure compliance with legal and regulatory requirements",
+        "To prevent fraud, misuse, or unauthorized access",
+        "To support customer service and resolve technical issues",
+        "To analyze user behavior for statistical and security purposes"
+      ],
+      "p2": "All processing is carried out under secure data-management protocols and complies with New York privacy standards and international best practices."
+    },
+    "s6": {
+      "h": "6. Data Sharing and Third Parties",
+      "p1": "BizUply does not sell or trade personal data. However, we may share limited information with verified third parties only where necessary to operate the Platform, fulfill our legal obligations, or provide core services, under strict confidentiality and security standards.",
+      "h1": "6.1. Authorized Service Providers",
+      "p2": "We may share data with carefully selected third-party service providers who assist us with:",
+      "list": [
+        "Hosting and server infrastructure, e.g., AWS, Google Cloud",
+        "Payment processing and billing, e.g., Stripe, PayPal",
+        "Customer communication and notifications, e.g., Twilio, SendGrid",
+        "Analytics, security, and performance monitoring, e.g., Cloudflare",
+        "AI and automation modules for analytics or predictions — without using Google Workspace API data to train or improve generalized AI models, as set out in Section 7"
+      ],
+      "p3": "All providers are bound by confidentiality agreements and may use the information only to provide the agreed services to BizUply, in accordance with this policy and applicable law.",
+      "h2": "6.2. Legal Requirements",
+      "p4": "We may disclose information to law enforcement, government agencies, or legal advisors if required to comply with applicable laws, court orders, or to protect our rights, security, or property, including fraud prevention and dispute resolution.",
+      "h3": "6.3. Business Transfers",
+      "p5": "In the event of a merger, acquisition, reorganization, or asset sale, personal data may be transferred to the acquiring entity, provided that the same data protection obligations continue to apply."
+    },
+    "s8": {
+      "h": "8. Cookies and Tracking Technologies",
+      "p1": "BizUply uses cookies, pixels, and tracking technologies to enhance the user experience, improve system functionality, and analyze usage data. These tools help us understand performance, measure traffic, and ensure the security of the Platform.",
+      "h1": "8.1. Types of Cookies Used",
+      "list": [
+        "Essential cookies – required for system operation and login",
+        "Functional cookies – store user preferences and settings",
+        "Analytical cookies – help monitor usage patterns and performance",
+        "Security cookies – protect accounts and prevent unauthorized access",
+        "Marketing cookies – used only with consent, for internal campaign analysis"
+      ],
+      "h2": "8.2. Managing Cookies",
+      "p2": "Users may disable cookies through their browser settings. However, disabling essential cookies may affect functionality or access to certain system features.",
+      "p3": "BizUply does not respond to browser “Do Not Track” signals. For more information, contact us at <strong>support@bizuply.com</strong>."
+    },
+    "s9": {
+      "h": "9. Data Retention and Security",
+      "p1": "BizUply retains personal and business data only for as long as necessary to provide its services, comply with legal obligations, and prevent misuse or fraud. When data is no longer needed, it is securely deleted or anonymized.",
+      "p2": "We use industry-standard security measures, including encryption, firewalls, intrusion detection, two-factor authentication, and restricted access to protect all stored data. However, no online system is entirely immune to breaches. By using BizUply, you acknowledge and accept the inherent risks of transmitting data over the internet.",
+      "p3": "In the event of a data breach, BizUply will notify affected users as required by law."
+    },
+    "s10": {
+      "h": "10. User Rights",
+      "p1": "Under applicable privacy regulations, including United States federal law and New York law, users have the following rights:",
+      "list": [
+        "The right to access personal data stored by BizUply",
+        "The right to correct or update inaccurate information",
+        "The right to request deletion (“the right to be forgotten”)",
+        "The right to receive a copy of personal data (“data portability”)",
+        "The right to object to processing or marketing use"
+      ],
+      "p2": "Requests must be submitted in writing to <strong>privacy@bizuply.com</strong>. BizUply will verify the requester's identity and respond within 30 business days, in accordance with United States law."
+    },
+    "s11": {
+      "h": "11. Refunds, Payments, and Legal Waiver",
+      "p1": "All payments, subscriptions, and service fees paid to BizUply are final and non-refundable under any circumstances, including but not limited to account closure, user dissatisfaction, technical issues, downtime, or business suspension.",
+      "p2": "By using BizUply, the user expressly agrees and acknowledges that:",
+      "list": [
+        "No refund, credit, or compensation will be granted for any reason whatsoever.",
+        "The user waives any right to claim damages, initiate legal proceedings, or demand monetary relief against BizUply, its owners, employees, partners, or affiliates.",
+        "BizUply shall not be liable for any indirect, consequential, or incidental losses, including loss of profits, loss of data, or reputational harm."
+      ],
+      "p3": "The user acknowledges full understanding that use of the BizUply platform is entirely at their own discretion and risk.",
+      "p4": "No oral or written communication shall override this provision. This provision is final and binding under the laws of the State of New York."
+    },
+    "s12": {
+      "h": "12. Limitation of Liability",
+      "p1": "BizUply provides its services “as is” and “as available.” We make no warranty as to continuous operation, accuracy, completeness, or fitness for any purpose.",
+      "p2": "To the maximum extent permitted by law, BizUply and its affiliates disclaim all liability for any direct, indirect, incidental, consequential, or punitive damages arising from the use of, or inability to use, the Platform.",
+      "p3": "In any event, BizUply's total liability shall not exceed the amount paid by the user in the thirty (30) days preceding the event giving rise to the claim."
+    },
+    "s13": {
+      "h": "13. Data Location and International Transfers",
+      "p1": "All personal and business data collected by BizUply is processed and stored solely in the United States of America, primarily on secure servers located in New York and other United States jurisdictions that meet federal data protection standards.",
+      "p2": "BizUply does not knowingly transfer or store user data outside the United States. In the rare event that data is processed through third-party services located abroad, such transfer will be carried out only where necessary to operate the Platform, and always under contractual clauses ensuring equivalent security, confidentiality, and lawful handling.",
+      "p3": "By using BizUply, you consent to the processing of your personal data within the United States and acknowledge that your information will be subject solely to the laws of the United States and the State of New York."
+    },
+    "s14": {
+      "h": "14. Policy Updates and Notices",
+      "p1": "BizUply reserves the right to change, update, or amend this Privacy Policy at any time, at its sole discretion. The latest version will be published on our official website at <strong>www.bizuply.com/privacy</strong>.",
+      "p2": "Material changes will be communicated by email or through in-platform notifications where relevant. Continued use of the Platform after such updates constitutes full acceptance of the revised policy.",
+      "p3": "Users are responsible for reviewing this policy periodically to stay informed of any changes."
+    },
+    "s15": {
+      "h": "15. Legal Compliance and Cooperation",
+      "p1": "BizUply operates under the laws of the United States and the State of New York. The company will cooperate with legal authorities, regulators, and compliance bodies as required by applicable law.",
+      "p2": "We may retain or disclose certain records if required by subpoena, court order, or governmental request, provided that such disclosure complies with United States law and due process requirements.",
+      "p3": "BizUply is committed to preventing illegal activity, fraud, money laundering, or misuse of its systems. Any suspected violation will be reported to the relevant authorities."
+    },
+    "s16": {
+      "h": "16. Legal Disclaimer and No Liability",
+      "p1": "The user expressly acknowledges that use of the BizUply platform, its services, and related materials is entirely at their own risk. All content and data are provided “as is” without warranty, express or implied, including but not limited to fitness for a particular purpose, merchantability, accuracy, or reliability.",
+      "p2": "BizUply, its owners, affiliates, employees, contractors, and partners shall not be liable for any direct, indirect, special, consequential, punitive, or incidental damages arising from the use of, or inability to use, the Platform.",
+      "p3": "This includes, without limitation, loss of profits, data, goodwill, business disruption, or third-party claims.",
+      "p4": "The user hereby releases and waives any right to initiate legal proceedings, arbitration, or class action against BizUply on any cause related to the use of the service, fees, or data handling.",
+      "p5": "This waiver applies worldwide and in perpetuity, and is binding upon the user, their affiliates, successors, and representatives."
+    },
+    "s17": {
+      "h": "17. Governing Law and Jurisdiction",
+      "p1": "This Privacy Policy, together with any dispute arising from it, shall be governed exclusively by the laws of the State of New York, United States, without regard to conflict-of-laws principles.",
+      "p2": "Any dispute, claim, or proceeding shall be brought exclusively before the competent courts of the City of New York, New York, USA.",
+      "p3": "Users agree to submit to the personal jurisdiction of these courts and waive any objection to venue or forum."
+    },
+    "s18": {
+      "h": "18. Contact Details and Data Protection Officer",
+      "p1": "If you have any questions, concerns, or requests regarding this Privacy Policy or your personal data, please contact:",
+      "cardTitle": "<strong>BizUply – Data Protection Office</strong>",
+      "cardEmail": "Email: <strong>privacy@bizuply.com</strong>",
+      "cardSupport": "General support: <strong>support@bizuply.com</strong>",
+      "cardHq": "Headquarters: New York, NY, United States",
+      "p2": "The Data Protection Officer (DPO) appointed by BizUply is responsible for monitoring compliance, responding to user inquiries, and ensuring that all internal data-handling practices meet industry and legal standards."
+    },
+    "s19": {
+      "h": "19. Final Provision",
+      "p1": "By accessing or using the BizUply platform, you confirm that you have read, understood, and agreed to all the terms set out in this Privacy Policy. You further acknowledge that this policy constitutes the complete and exclusive statement of the understanding between you and BizUply regarding privacy, and supersedes any prior agreement or representation.",
+      "p2": "If any part of this policy is deemed unenforceable, the remaining provisions shall continue in full force and effect to the maximum extent permitted by law.",
+      "p3": "Use of BizUply signifies express and irrevocable consent to all the provisions contained in this document."
+    }
+  },
+  "termsPage": {
+    "sections": [
+      "General",
+      "Definitions",
+      "Services Offered",
+      "Registration & Use",
+      "Privacy & Data Protection",
+      "User-Generated Content",
+      "Payments & Refunds",
+      "Limitation of Liability",
+      "Force Majeure",
+      "Intellectual Property",
+      "Accessibility",
+      "Changes & Termination",
+      "Waiver of Claims",
+      "Governing Law",
+      "Contact Details"
+    ],
+    "seoTitle": "Terms of Service - BizUply",
+    "seoDesc": "Read BizUply's Terms of Service, including use of the platform, payments, privacy, user content, limitations of liability, and dispute resolution.",
+    "badge": "Legal Center",
+    "title": "Terms of Service",
+    "intro": "Please read these terms carefully before using BizUply's website, app, platform, tools, and services.",
+    "lastUpdatedChip": "Last updated: October 14, 2025",
+    "asideTitle": "Terms overview",
+    "asideText": "Quick navigation between the main legal sections.",
+    "contactLabel": "Contact",
+    "s1": {
+      "h": "1. General",
+      "p1": "1.1. The BizUply website and/or mobile application, hereinafter: “the Company,” “BizUply,” “the Site,” “the System,” or “the App,” operate as a <strong>Software-as-a-Service (SaaS)</strong> platform intended for professional business management, customer communication, appointment scheduling, collaboration, and automation. The platform connects service providers and customers in order to streamline day-to-day operations and improve digital business efficiency.",
+      "p2": "1.2. Use of the Site, the App, and the System is subject to these Terms of Use, as well as any applicable law and regulation in the United States. Accessing or using BizUply's services constitutes your full and binding consent to comply with all provisions of this Agreement. If you do not agree to these terms, you must not use the Site, the App, or any of the Company's services.",
+      "p3": "1.3. The Company reserves the right, at its sole discretion, to change, amend, update, or remove parts of these terms at any time, with or without prior notice. Any update takes effect immediately upon posting on the Site. Continued use of the platform after such a change constitutes full acceptance of the updated terms.",
+      "p4": "1.4. These terms are written in English and may from time to time be translated for convenience into other languages. In the event of any conflict or inconsistency between translations, <strong>the English version shall prevail</strong>.",
+      "p5": "1.5. These terms are drafted in the masculine form for grammatical convenience only and apply equally to all genders, individuals, and entities.",
+      "p6": "1.6. BizUply operates under the laws of the United States. Unless otherwise stated, the law governing all matters relating to the platform, its use, and any dispute arising therefrom shall be the <strong>laws of the State of Delaware</strong>, United States, without regard to its conflict-of-laws principles.",
+      "p7": "1.7. Users accessing BizUply from outside the United States acknowledge that the platform is operated from within the jurisdiction of the United States and agree that the collection, processing, and storage of their data are subject to the data protection laws and standards of the United States, including any applicable international framework."
+    },
+    "s2": {
+      "h": "2. Definitions",
+      "intro": "For the purposes of this Agreement, the following definitions shall apply:",
+      "defs": "<strong>“The Company”</strong> – BizUply LLC, the operator and owner of the platform, including its affiliates, employees, partners, and contractors.<br /><strong>“The Site” / “The App”</strong> – BizUply's digital system, including all websites, domains, databases, APIs, code, infrastructure, interfaces, and related digital assets owned or managed by BizUply.<br /><strong>“The User”</strong> – any person, professional, business, organization, or other legal entity that accesses or uses the services for business management, communication, or collaboration purposes.<br /><strong>“Service Provider” / “Business”</strong> – any registered business or independent professional using the platform to create a business profile, manage appointments, customers, tasks, or communication through BizUply.<br /><strong>“Customer”</strong> – any person or entity that interacts with a business or service provider through the BizUply platform.<br /><strong>“The Services”</strong> – all features and functions provided by BizUply, including but not limited to CRM tools, messaging, appointment scheduling, automation, AI-driven insights, analytics, reputation management, collaboration tools, reviews, ratings, and business-page creation.<br /><strong>“Content”</strong> – any data, media, or material submitted, uploaded, transmitted, or displayed on the platform, including text, images, videos, logos, reviews, reports, analytics, or other user-generated material.<br /><strong>“Agreement”</strong> – this Terms of Use document, which constitutes a legally binding agreement between the User and BizUply."
+    },
+    "s3": {
+      "h": "3. Services Offered",
+      "p1": "3.1. BizUply provides an advanced <strong>Software-as-a-Service (SaaS)</strong> platform for the comprehensive management of small and medium-sized businesses (“SMBs”). The services are designed to help business owners organize, track, and automate their day-to-day operations through a unified, cloud-based system. Available features include, among others:",
+      "list": [
+        "Customer relationship management (CRM) for customers and leads",
+        "Internal messaging and communication between businesses and customers",
+        "Calendar, booking, and appointment-scheduling tools",
+        "A verified reviews system and star ratings for customer feedback",
+        "Customizable business pages with descriptions, service lists, images, and FAQs",
+        "Features for task management, reminders, and follow-ups",
+        "Collaboration tools between businesses for shared growth opportunities",
+        "An AI-powered business advisor for recommendations and smart automation",
+        "Analytics dashboards and performance reports for optimization"
+      ],
+      "p2": "3.2. The Company may, from time to time, expand, modify, limit, or discontinue certain features or services. BizUply reserves the right to make such changes at its sole discretion and without prior notice.",
+      "p3": "3.3. All services, content, and tools provided through the platform are offered <strong>“as is” and “as available”</strong>, without any warranty of any kind, express or implied, including but not limited to merchantability, fitness for a particular purpose, accuracy, or reliability. The Company does not guarantee continuous availability or error-free operation of the platform.",
+      "p4": "3.4. Certain services or features may be subject to additional terms, pricing, or subscription tiers. By activating such services, the User agrees to any relevant supplemental terms or pricing structure provided at the time of use."
+    },
+    "s4": {
+      "h": "4. Registration & Use of the System",
+      "p1": "4.1. To access the full range of BizUply services, users are required to create an account by providing accurate and complete information, including but not limited to their full name, a valid email address, phone number, business name, and payment details where relevant.",
+      "p2": "4.2. The User agrees to keep their login credentials confidential and is solely responsible for all activity that occurs under their account, whether authorized or not. The Company shall not be liable for any damage, loss, or unauthorized access resulting from failure to maintain proper account security.",
+      "p3": "4.3. The User agrees to notify the Company immediately of any suspected unauthorized access or security breach related to their account. Failure to do so may result in suspension or termination of access to the platform.",
+      "p4": "4.4. The Company reserves the right to suspend, restrict, or permanently delete any account that violates these terms, infringes intellectual property rights, distributes harmful or unlawful content, or engages in activity that may harm the integrity of the platform or other users.",
+      "p5": "4.5. The Company further reserves the right to remove any business, profile, content, or uploaded material that, in its sole discretion, is deemed inappropriate, misleading, fraudulent, offensive, or inconsistent with BizUply's brand values or its legal obligations, without any obligation to provide prior notice or justification.",
+      "p6": "4.6. Creating multiple or duplicate accounts to abuse trial periods, referral programs, or promotions is strictly prohibited. The Company may terminate or merge such accounts and cancel any related benefits without a refund.",
+      "p7": "4.7. Upon registration, the User grants BizUply a limited, non-exclusive, worldwide, royalty-free license to store, process, and display the information provided, solely for the purpose of providing and improving the services in accordance with the Company's <strong>Privacy Policy</strong>."
+    },
+    "s5": {
+      "h": "5. Privacy & Data Protection",
+      "p1": "5.1. The Company respects the privacy of all users and is committed to protecting their personal information in accordance with applicable data protection laws, including the <strong>General Data Protection Regulation (GDPR)</strong>, the <strong>California Consumer Privacy Act (CCPA)</strong>, and the <strong>California Privacy Rights Act (CPRA)</strong>, where applicable. BizUply implements reasonable administrative, technical, and organizational measures to protect user data.",
+      "p2": "5.2. In the course of using the platform, the Company may collect, process, and store the following categories of data:",
+      "list1": [
+        "<strong>Personally Identifiable Information (PII):</strong> such as full name, email address, phone number, business name, billing address, and payment information, as provided during registration or the use of premium features.",
+        "<strong>Technical data:</strong> including IP address, device identifiers, browser type, operating system, connection logs, session duration, geographic location where permitted, and other diagnostic data.",
+        "<strong>Business data:</strong> such as CRM records, appointments, communications, notes, tasks, and statistical usage information generated by the User within the BizUply system."
+      ],
+      "p3": "5.3. The purposes for which data is collected and processed include:",
+      "list2": [
+        "Providing, maintaining, and improving the Company's services",
+        "Personalizing the user experience and optimizing system performance",
+        "Ensuring legal compliance, preventing fraud, and maintaining security",
+        "Sending service-related updates, notices, and offers relevant to the User",
+        "Performing analytics to improve the platform's functionality and reliability"
+      ],
+      "p4": "5.4. The Company does not sell or rent personal information. Personal data will be shared with third parties only in the following limited circumstances:",
+      "list3": [
+        "With authorized service providers such as secure cloud hosting, analytics, billing, email, or customer support systems, solely for operational purposes and subject to confidentiality obligations.",
+        "As required by law, subpoena, or a lawful government request.",
+        "In the event of a merger, acquisition, or asset transfer, provided that the receiving entity maintains equivalent privacy protections."
+      ],
+      "rightsTitle": "User Rights (GDPR / CCPA / CPRA)",
+      "rightsList": [
+        "The right to access the personal data collected about them.",
+        "The right to correct inaccurate or incomplete personal information.",
+        "The right to request deletion (“the right to be forgotten”).",
+        "The right to receive a copy of their data (“data portability”).",
+        "The right to opt out of the sale or sharing of personal data.",
+        "The right to restrict or object to certain types of data processing.",
+        "The right to lodge a complaint with a relevant data protection authority or privacy regulator."
+      ],
+      "p6": "5.6. The Company will respond to verified privacy-related requests within a reasonable time frame, not exceeding <strong>30 business days</strong>, in accordance with applicable law and subject to proper identity verification.",
+      "cookiesTitle": "Cookies & Tracking Technologies",
+      "p7": "5.7. The Site and the App use cookies, web beacons, and similar technologies to ensure basic functionality, analyze usage trends, strengthen security, and improve the user experience.",
+      "p8": "5.8. Users may disable or restrict cookies through their browser settings; however, as a result, certain features of the platform may not function properly.",
+      "p9": "5.9. The Company may use third-party analytics and tracking tools such as <strong>Google Analytics</strong> to collect anonymous usage data, and security tools such as reCAPTCHA to detect and prevent fraudulent activity. These services may set their own cookies in accordance with their privacy policies.",
+      "p10": "For more information about how BizUply collects, uses, and protects data, please review our detailed <strong>Privacy Policy</strong>, which forms an integral part of these Terms of Use."
+    },
+    "s6": {
+      "h": "6. User-Generated Content",
+      "p1": "6.1. Users may upload, post, or share content including text, images, reviews, comments, or business-related data through the platform. All such content remains the sole responsibility of the user who created or uploaded it.",
+      "p2": "6.2. By submitting any content to the platform, users represent that:",
+      "list": [
+        "They own or have obtained all rights and licenses necessary to use and share such content.",
+        "The content does not infringe the intellectual property, privacy, publicity, or other legal rights of any third party.",
+        "The content is not defamatory, fraudulent, obscene, hateful, harassing, discriminatory, or otherwise unlawful."
+      ],
+      "p3": "6.3. The Company reserves the right, but not the obligation, to monitor, edit, or remove any content that violates these terms or applicable law, without prior notice and at its sole discretion.",
+      "p4": "6.4. By uploading or submitting content to the platform, users grant the Company a worldwide, royalty-free, non-exclusive, perpetual, and irrevocable license to store, reproduce, modify, distribute, and publicly display such content for the purpose of operating, promoting, and improving the services, including marketing and analytical use. This license shall survive the termination of the user's account.",
+      "p5": "6.5. The Company is not responsible for, and does not endorse, user-generated content. Users acknowledge that they may be exposed to content they consider inappropriate or inaccurate, and they assume all risks associated with such exposure."
+    },
+    "s7": {
+      "h": "7. Payments, Pricing & Refund Policy",
+      "notice": "<strong>⚖️ Legal notice:</strong> This section must be read together with Section 13 “Waiver of Claims, Refunds, and Limitation of Actions,” which further clarifies the User's waiver of any right to claim, dispute, or request refunds for any reason.",
+      "p1": "7.1. Access to BizUply's premium features or paid plans requires an active subscription. All payments must be made through approved payment processors, such as Stripe and PayPal, and are subject to their respective terms and fees.",
+      "p2": "7.2. Unless otherwise stated, <strong>all payments are final and non-refundable</strong>. This includes early cancellations, unused service periods, account deactivation, or dissatisfaction with the service. Once a subscription is purchased, it will remain active for the entire purchased period and <strong>cannot be shortened, paused, or refunded</strong>, even if the User decides to stop using the platform or terminates their account.",
+      "p3": "7.3. The User acknowledges and agrees that any refund, credit, or adjustment shall be determined solely at the <strong>Company's sole discretion</strong>. BizUply has no legal or financial obligation to issue refunds under any circumstances. The User expressly waives any right to request chargebacks, open refund claims through payment providers, or demand restitution by any means.",
+      "p4": "7.4. In cases of account suspension, restriction, or removal due to a violation of these terms, improper use, abusive conduct, or unlawful activity, the Company reserves the right to <strong>terminate the User's subscription immediately</strong> without prior notice. In such cases, <strong>no refund, credit, or compensation</strong> will be provided for the remainder of the subscription period.",
+      "p5": "7.5. The Company may modify, suspend, or discontinue paid features or services at any time and without liability, provided that such actions do not violate active billing obligations under applicable U.S. consumer protection laws.",
+      "trialsTitle": "Trial Periods, Renewals & Cancellations",
+      "p6": "7.6. New users may be eligible for a free trial period, as indicated on the Site. Upon expiration of the trial period, subscriptions will automatically renew to a paid plan unless cancelled before the renewal date.",
+      "p7": "7.7. Users may cancel their subscriptions at any time from their account dashboard. Cancellations take effect at the end of the current billing period, and no partial refunds or credits will be provided for the remaining days in the period.",
+      "p8": "7.8. Users are solely responsible for keeping their billing and payment information up to date. Failed or declined payments may result in temporary suspension or termination of access without a refund.",
+      "priceTitle": "Price Changes",
+      "p9": "7.9. The Company reserves the right to change subscription fees, package rates, or service prices at any time, in accordance with applicable U.S. consumer protection laws.",
+      "p10": "7.10. Any updated pricing will be posted on the Site and communicated to active subscribers by email at least <strong>14 days</strong> before renewal. Continued use of the platform after a price change constitutes full acceptance of the new rates.",
+      "p11": "7.11. If a user does not agree to a price change, they may cancel their subscription before the next billing date to avoid additional charges."
+    },
+    "s8": {
+      "h": "8. Limitation of Liability",
+      "p1": "8.1. The services provided by BizUply are offered solely <strong>“as is” and “as available”</strong>. The Company makes no representations or warranties of any kind, express or implied, including but not limited to warranties of merchantability, fitness for a particular purpose, accuracy, reliability, or non-infringement.",
+      "p2": "8.2. The Company does not warrant that the platform or its services will be uninterrupted, secure, error-free, or continuously available. Access may be affected by factors beyond the Company's reasonable control, including but not limited to maintenance, updates, third-party system failures, or network disruptions.",
+      "p3": "8.3. To the maximum extent permitted by law, the Company, its officers, employees, partners, and affiliates shall not be liable for any indirect, incidental, special, consequential, punitive, or exemplary damages arising out of or related to:",
+      "list": [
+        "The use of, or inability to use, the platform or its services;",
+        "Any loss of data, corruption, or unauthorized access;",
+        "Errors, omissions, or inaccuracies in any displayed content;",
+        "Business interruption, loss of profits, or damage to reputation;",
+        "Any act, omission, or negligence of third-party service providers."
+      ],
+      "p4": "8.4. In any event, the Company's total aggregate liability, whether in contract, tort, negligence, or otherwise, shall not exceed the total amount paid by the User to the Company during the <strong>thirty (30) days</strong> preceding the event giving rise to the claim.",
+      "p5": "8.5. The User acknowledges that BizUply does not provide legal, financial, or tax advice. Any business decision made through the platform is the sole responsibility of the User.",
+      "p6": "8.6. The Company shall not be liable for disruptions or damages caused by external factors, including but not limited to cyberattacks, hardware or software failures, internet service provider outages, data-center failures, or third-party integrations.",
+      "p7": "8.7. Certain jurisdictions do not allow the exclusion or limitation of certain damages or liability. In such cases, the Company's liability shall be limited to the minimum extent permitted by applicable law."
+    },
+    "s9": {
+      "h": "9. Force Majeure",
+      "p1": "9.1. The Company shall not be liable or deemed to be in breach of these terms for any delay, failure, or interruption in performance resulting from causes beyond its reasonable control, including but not limited to acts of God, natural disasters, war, terrorism, riots, strikes, labor disputes, governmental actions, cyberattacks, data breaches, power or internet outages, pandemics, or other emergencies.",
+      "p2": "9.2. During any force majeure period, the Company's obligations shall be suspended to the extent that performance is prevented or delayed. The Company will make reasonable efforts to resume normal operations after the event has ceased.",
+      "p3": "9.3. Users acknowledge that such events may cause temporary disruptions to platform access or delays in service delivery, and the Company shall not be liable for this."
+    },
+    "s10": {
+      "h": "10. Intellectual Property",
+      "p1": "10.1. All intellectual property rights in and related to the platform, including but not limited to software code, architecture, algorithms, databases, user interfaces, designs, text, graphics, trademarks, trade names, service marks, videos, and other content, collectively “BizUply Materials,” are and shall remain the sole property of BizUply or its licensors.",
+      "p2": "10.2. Except as expressly permitted in writing by the Company, no part of the Site, the App, or the System may be copied, modified, distributed, republished, displayed, transmitted, reverse-engineered, decompiled, or otherwise exploited for any commercial or non-commercial purpose.",
+      "p3": "10.3. Users are granted a limited, non-exclusive, non-transferable, and revocable license to access and use the platform solely for lawful business purposes, in accordance with these terms.",
+      "p4": "10.4. All third-party logos, brands, and trademarks appearing within the platform are the property of their respective owners. Their inclusion does not imply endorsement or affiliation.",
+      "p5": "10.5. Businesses or users who upload or provide content to the platform represent that they own or have obtained all rights, licenses, and permissions necessary for such content, and that it does not infringe the intellectual property or proprietary rights of any third party.",
+      "p6": "10.6. Any feedback, ideas, or suggestions provided by users to the Company may be used freely by BizUply for product improvement, without obligation or compensation to the User."
+    },
+    "s11": {
+      "h": "11. Accessibility",
+      "p1": "11.1. The Company is committed to ensuring that the BizUply platform is accessible and usable by everyone, including people with disabilities, in accordance with the <strong>Americans with Disabilities Act (ADA)</strong> and other relevant accessibility standards such as <strong>WCAG 2.1 Level AA</strong>.",
+      "p2": "11.2. The Company works continuously to improve accessibility features and the user experience across all supported devices and browsers.",
+      "p3": "11.3. If users encounter any accessibility barriers or need assistance, they may contact <strong>support@bizuply.com</strong>. The Company will make reasonable efforts to review and address the request within a commercially reasonable time frame, subject to technological feasibility.",
+      "p4": "11.4. BizUply may offer accessibility accommodations such as text enlargement, color-contrast changes, screen-reader compatibility, and simplified navigation modes where relevant."
+    },
+    "s12": {
+      "h": "12. Changes, Termination & Suspension",
+      "p1": "12.1. The Company reserves the right to modify, update, or amend these Terms of Use, the Privacy Policy, or any other platform policy at any time and at its sole discretion. Updated versions will be posted on the Site with an updated “Last updated” date.",
+      "p2": "12.2. Continued use of the platform after any change is posted shall constitute full and binding acceptance of the updated terms.",
+      "p3": "12.3. The Company may suspend, restrict, or terminate the User's account or access to the platform, in whole or in part, without prior notice and without liability, if:",
+      "list": [
+        "The User violates these terms or any applicable law.",
+        "The User engages in activity that may harm the platform, its users, or the Company's reputation.",
+        "The User fails to make required payments or engages in fraud.",
+        "Technical or security issues require immediate suspension."
+      ],
+      "p4": "12.4. Upon termination, all rights granted to the User under these terms shall immediately cease, and the User must discontinue all access to and use of the platform. Any outstanding payment obligation shall survive termination.",
+      "p5": "12.5. The Company reserves the right to discontinue or modify the platform or any of its features at any time, temporarily or permanently, without prior notice."
+    },
+    "s13": {
+      "h": "13. Waiver of Claims, Refunds & Limitation of Actions",
+      "p1": "13.1. The User hereby irrevocably waives, to the maximum extent permitted by applicable law, any claim, demand, legal proceeding, refund request, chargeback, or cause of action against BizUply, its parent company, subsidiaries, affiliates, officers, directors, employees, agents, and licensors, arising out of or related to the use of the platform, the services, payments, billing, or any other engagement with the Company.",
+      "p2": "13.2. The User acknowledges and agrees that <strong>all payments made to BizUply are final and non-refundable</strong>. No refund, credit, or compensation will be provided for early cancellation, dissatisfaction, downtime, technical issues, or discontinuation of use of the services. Any refund or credit, in whole or in part, as a matter of goodwill, shall be determined solely at the <strong>Company's sole discretion</strong>, and the Company shall have no obligation of any kind to provide such refunds under any circumstances.",
+      "p3": "13.3. The User expressly and irrevocably waives the right to initiate, participate in, or assist in any <strong>class action, collective action, representative proceeding, or group claim</strong> against BizUply, its affiliates, or representatives. Any dispute or claim shall be handled <strong>on an individual basis only</strong>.",
+      "p4": "13.4. This waiver includes, without limitation, any claim for negligence, breach of contract, misrepresentation, loss of profits, business interruption, damage to reputation, or any other alleged direct, indirect, or consequential damage. The User fully understands and agrees that by using the platform they release BizUply from any liability or responsibility for financial or business outcomes arising from the use or misuse of the services.",
+      "p5": "13.5. To the extent permitted by law, any claim or cause of action arising out of or related to these terms must be filed within <strong>one (1) year</strong> after the claim arose; otherwise, it shall be permanently barred. After this period, the User shall have no right to take any legal or financial action against the Company."
+    },
+    "s14": {
+      "h": "14. Governing Law & Dispute Resolution",
+      "p1": "14.1. These terms and any dispute or claim arising out of or related to them shall be governed exclusively by the laws of the <strong>State of New York, USA</strong>, without regard to conflict-of-laws principles.",
+      "p2": "14.2. Any dispute, controversy, or claim between the User and the Company shall first be attempted to be resolved through <strong>good-faith negotiation</strong>. If no resolution is reached within thirty (30) days, the dispute shall be submitted to <strong>binding arbitration</strong> under the rules of the <strong>American Arbitration Association (AAA)</strong>, conducted in English, in New York City, USA.",
+      "p3": "14.3. The arbitration decision shall be final and binding, and judgment on the award rendered by the arbitrator may be entered in any court of competent jurisdiction.",
+      "p4": "14.4. Notwithstanding the foregoing, the Company reserves the right to seek injunctive or equitable relief in a court of competent jurisdiction to protect its intellectual property or confidential information.",
+      "p5": "14.5. The User expressly waives any objection to venue or jurisdiction and consents to the exclusive jurisdiction of the state and federal courts located in <strong>New York County, New York, USA</strong>."
+    },
+    "s15": {
+      "h": "15. Contact Details",
+      "intro": "For questions, inquiries, legal notices, or privacy-related requests, please contact BizUply at:",
+      "list": [
+        "<strong>Email:</strong> support@bizuply.com",
+        "<strong>Business address:</strong> BizUply, New York, NY, USA"
+      ],
+      "p1": "The Company strives to respond to all inquiries within a reasonable time frame, typically within <strong>5–10 business days</strong>.",
+      "p2": "These terms constitute the entire agreement between the User and BizUply regarding the use of the platform, and supersede any prior oral or written understanding. If any provision is found unenforceable, the remaining provisions shall remain in full force and effect.",
+      "lastUpdatedLabel": "Last updated",
+      "lastUpdatedValue": "October 2025"
+    }
+  },
+  "websitePage": {
+    "seo": {
+      "title": "Professional Website Builder | BizUply",
+      "description": "Build a website, store, or booking-enabled site from 205 templates, edit in a visual editor, and publish to your own domain — with every inquiry from the site flowing straight into your CRM."
+    },
+    "hero": {
+      "aria": "Website builder",
+      "badgeTemplates": "205 ready-made templates",
+      "badgeEditor": "Visual editor",
+      "badgeStore": "Store & booking",
+      "titleLead": "Build a professional website",
+      "titleHighlight": "that brings in customers",
+      "lead": "Pick a template from 205 designs by industry, edit every element in place, add a store, calendar, and plugins — then publish to your own address. Every inquiry from the site flows straight into your CRM lead pipeline.",
+      "ctaPackages": "View plans"
+    },
+    "heroActions": {
+      "signUp": "Sign up now"
+    },
+    "heroStats": {
+      "templates": "templates ready to edit",
+      "pages": "pages in the page library",
+      "plugins": "plugins in the plugin store",
+      "undo": "undo steps in the editor"
+    },
+    "heroTemplates": {
+      "florique": "Beauty & cosmetics",
+      "velmora": "Online store",
+      "adion": "Modern business site",
+      "pulsecore": "Site with booking",
+      "aeline": "Professional services",
+      "talentix": "Real estate",
+      "aurayoga": "Restaurant / lifestyle"
+    },
+    "templateAlt": "{{title}} template — {{category}}",
+    "showcase": {
+      "carouselAria": "Website template showcase",
+      "dotsAria": "Choose a template"
+    },
+    "library": {
+      "eyebrow": "Template library",
+      "titleLead": "205 templates built",
+      "titleHighlight": "for your industry",
+      "lead": "Every template ships with ready-made pages, a color palette, and sample content — from there you edit each element in place until the site speaks in your business's voice."
+    },
+    "categories": {
+      "commerce": "Stores & commerce",
+      "landing": "Landing pages",
+      "portfolio": "Portfolio & agency",
+      "beauty": "Beauty & grooming",
+      "realEstate": "Real estate",
+      "food": "Food & restaurants",
+      "tourism": "Travel & beach",
+      "education": "Education & courses"
+    },
+    "editor": {
+      "eyebrow": "The visual editor",
+      "titleLead": "Edit your site",
+      "titleHighlight": "without a line of code",
+      "lead": "Click an element and change it in place, reorder sections by dragging, check it on mobile, and publish — all from one screen, with no middlemen.",
+      "cards": {
+        "edit": {
+          "title": "Edit in place",
+          "text": "Click a heading, text, or image and change it right on the canvas, with a floating toolbar and a context menu.",
+          "tags": [
+            "Text",
+            "Images",
+            "Buttons"
+          ]
+        },
+        "design": {
+          "title": "Full design panel",
+          "text": "Six control tabs — content, design, layout, media, motion, and advanced: colors, typography, spacing, and animations.",
+          "tags": [
+            "Colors",
+            "Typography",
+            "Animations"
+          ]
+        },
+        "structure": {
+          "title": "A structure you define",
+          "text": "A layers panel with drag-and-drop to arrange sections, add pages and sub-pages, set a home page, and a menu that updates on its own.",
+          "tags": [
+            "Drag sections",
+            "Pages",
+            "Menu"
+          ]
+        },
+        "content": {
+          "title": "Content libraries",
+          "text": "140 ready-made pages and a section catalog by category, a form builder, and a media library with image search — all inside the editor.",
+          "tags": [
+            "140 pages",
+            "Sections",
+            "Media"
+          ]
+        },
+        "responsive": {
+          "title": "Desktop, tablet, and mobile",
+          "text": "Switch between view modes and tune the design for every device, including a mobile menu adapted for the published site.",
+          "tags": [
+            "Responsive",
+            "Mobile menu"
+          ]
+        },
+        "history": {
+          "title": "80 undo steps",
+          "text": "Deep edit history with undo and redo via keyboard shortcuts, so you can experiment without fear of breaking anything.",
+          "tags": [
+            "Undo",
+            "Redo",
+            "Keyboard shortcuts"
+          ]
+        },
+        "code": {
+          "title": "Your own code when needed",
+          "text": "Site- or page-level CSS, and HTML tags for the head and body — for pixels, scripts, and precise tweaks.",
+          "tags": [
+            "CSS",
+            "HTML",
+            "Scripts"
+          ]
+        },
+        "collaborate": {
+          "title": "Work with partners",
+          "text": "Invite a designer or partner to the site with edit or view permissions, see who's connected, remove access, or transfer ownership.",
+          "tags": [
+            "Editing",
+            "Viewing",
+            "Ownership transfer"
+          ]
+        },
+        "publish": {
+          "title": "Publish in one click",
+          "text": "Your site goes live at your address under sites.bizuply.com, and you can return to a draft and republish at any time.",
+          "tags": [
+            "Draft",
+            "Publish",
+            "Domain"
+          ]
+        }
+      }
+    },
+    "seoSection": {
+      "eyebrow": "SEO & publishing",
+      "titleLead": "SEO at the page level,",
+      "titleHighlight": "not just a slogan",
+      "lead": "Every page has a title, description, canonical, robots directives, share preview, hreflang, and JSON‑LD. The sitemap.xml and robots.txt are generated automatically for the published site.",
+      "serpTitle": "Hair design studio in Tel Aviv | Online booking",
+      "serpDesc": "Full price list, work gallery, and one-click booking. Open Sunday–Friday, plenty of parking.",
+      "note": "Every site gets an address under sites.bizuply.com — and you can buy a domain from within the system and connect it to the site, or connect an existing domain."
+    },
+    "seoControls": {
+      "titleDesc": "Title and description per page",
+      "canonical": "Canonical and index control",
+      "robots": "Full Robots directives",
+      "openGraph": "Open Graph and Twitter preview",
+      "searchConsole": "Google Search Console verification",
+      "hreflang": "hreflang and custom Meta tags",
+      "schema": "Schema.org JSON-LD builder",
+      "sitemap": "Automatic sitemap.xml and robots.txt"
+    },
+    "ecosystem": {
+      "eyebrow": "The plugin store",
+      "titleLead": "The site starts with design — and continues",
+      "titleHighlight": "with plugins",
+      "lead": "The plugin store adds complete capabilities to your site: store and selling, calendar and booking, forms, reviews, a loyalty club, invoices, and analytics tools. Install in one click and manage from the site panel.",
+      "liveBadge": "Live on the site",
+      "providersTitle": "Payment providers to connect in the store"
+    },
+    "plugins": {
+      "accessibility": {
+        "name": "BizUply Accessibility",
+        "category": "Accessibility"
+      },
+      "countdown": {
+        "name": "Countdown timer",
+        "category": "Conversions"
+      },
+      "rewardsWheel": {
+        "name": "Rewards wheel",
+        "category": "Loyalty"
+      },
+      "smartSearch": {
+        "name": "Smart search",
+        "category": "User experience"
+      },
+      "onlineStore": {
+        "name": "Online store",
+        "category": "Commerce"
+      },
+      "booking": {
+        "name": "Calendar & booking",
+        "category": "Booking"
+      },
+      "payments": {
+        "name": "Payments",
+        "category": "Finance"
+      },
+      "invoices": {
+        "name": "Morning invoices",
+        "category": "Finance"
+      },
+      "leadForm": {
+        "name": "Lead form",
+        "category": "Marketing"
+      },
+      "reviews": {
+        "name": "Reviews",
+        "category": "Marketing"
+      },
+      "loyalty": {
+        "name": "Loyalty club",
+        "category": "Loyalty"
+      },
+      "heatmap": {
+        "name": "Heatmap",
+        "category": "Analytics"
+      },
+      "formAnalytics": {
+        "name": "Form abandonment analyzer",
+        "category": "Analytics"
+      },
+      "sessionRecording": {
+        "name": "Session recording",
+        "category": "Analytics"
+      },
+      "whatsapp": {
+        "name": "Floating WhatsApp button",
+        "category": "Communication"
+      },
+      "digitalMenu": {
+        "name": "Digital menu",
+        "category": "Restaurants"
+      },
+      "exitPopup": {
+        "name": "Exit popup",
+        "category": "Conversions"
+      },
+      "languageSwitch": {
+        "name": "Language switcher",
+        "category": "International"
+      }
+    },
+    "livePlugins": {
+      "accessibility": "An accessibility widget that appears on the published site — contrast, font adjustments, and more.",
+      "countdown": "A live promo timer embedded in a section, running for site visitors.",
+      "rewardsWheel": "An interactive rewards wheel to collect inquiries and drive conversions.",
+      "smartSearch": "On-site internal search shown as a layer over the published content."
+    },
+    "launch": {
+      "eyebrow": "From site to business",
+      "titleLead": "A site that doesn't just look good — it",
+      "titleHighlight": "returns inquiries",
+      "lead": "Forms on the site don't get stuck in an inbox. Every inquiry enters the CRM lead pipeline with source and status, so you know exactly what happened with everyone who reached out.",
+      "analyticsTitle": "Measurement in the dashboard",
+      "nodes": {
+        "visitor": {
+          "title": "A visitor leaves an inquiry",
+          "text": "The lead form on the published site collects the details — including custom fields you defined in the form builder.",
+          "tags": [
+            "Name",
+            "Phone",
+            "Message",
+            "Custom fields"
+          ]
+        },
+        "handle": {
+          "title": "BizUply handles the inquiry",
+          "text": "The inquiry is saved, an email alert is sent to you, and whoever left their details receives an automatic reply.",
+          "tags": [
+            "Email alert",
+            "Auto reply",
+            "Require phone field"
+          ]
+        },
+        "crm": {
+          "title": "A new lead in the CRM",
+          "text": "The lead appears in the lead pipeline with the source \"Website\" and status \"New\", ready for a task, a call, and follow-up.",
+          "tags": [
+            "Source: Website",
+            "Status: New",
+            "Tasks & follow-up"
+          ]
+        }
+      },
+      "kpis": {
+        "views": {
+          "title": "Views",
+          "text": "Total page views"
+        },
+        "visitors": {
+          "title": "Visitors",
+          "text": "Unique visitors"
+        },
+        "pages": {
+          "title": "Pages",
+          "text": "Top pages"
+        },
+        "sources": {
+          "title": "Sources",
+          "text": "Traffic including UTM"
+        }
+      }
+    },
+    "typeBlocks": {
+      "branding": {
+        "label": "Branding site",
+        "teaser": "A professional presence that tells your business's story and builds trust at first glance.",
+        "points": [
+          "Ready-made home, about, services, and contact pages",
+          "A contact form that flows straight into the CRM",
+          "SEO and a share card for every page"
+        ]
+      },
+      "store": {
+        "label": "Store site",
+        "teaser": "An online store with a catalog, product page, and shopping cart — ready to sell.",
+        "points": [
+          "Manage products from the site panel",
+          "Cart and checkout for visitors",
+          "Connect Stripe, PayPal, Tranzila, and more"
+        ]
+      },
+      "booking": {
+        "label": "Appointment booking site",
+        "teaser": "Bookings, services, and prices in one place — the customer books on their own.",
+        "points": [
+          "A service catalog with duration and price",
+          "Business hours that define the available slots",
+          "The appointment is saved in the CRM calendar with email confirmation"
+        ]
+      },
+      "realEstate": {
+        "label": "Real estate site",
+        "teaser": "Properties, agents, and inquiries — a premium display that leads to leads.",
+        "points": [
+          "Property pages with galleries and specs",
+          "Forms tailored to each property",
+          "Schema.org for rich results on Google"
+        ]
+      },
+      "restaurant": {
+        "label": "Restaurant site",
+        "teaser": "Menu, atmosphere, and table reservations — an experience that invites people in.",
+        "points": [
+          "A digital menu and dish gallery",
+          "Floating WhatsApp button and a reviews plugin",
+          "Update content and prices without a developer"
+        ]
+      },
+      "courses": {
+        "label": "Courses site",
+        "teaser": "Courses, syllabus, and instructors — a platform that sells learning.",
+        "points": [
+          "Course page, syllabus, and instructor pages",
+          "Registration that creates a lead or a store sale",
+          "Loyalty club and perks for participants"
+        ]
+      }
+    },
+    "typesReveal": {
+      "aria": "Website types"
+    },
+    "preview": {
+      "homeFallback": "Home"
+    },
+    "faqSection": {
+      "eyebrow": "FAQ",
+      "title": "What's important to know before you start"
+    },
+    "faq": {
+      "code": {
+        "q": "Do I need to know how to code to build a site on BizUply?",
+        "a": "No. Choose one of the 205 templates, click any element, and change it in place — text, color, image, and spacing. Anyone who does want to go deeper can add their own CSS and HTML tags to the site's head and body."
+      },
+      "structure": {
+        "q": "Can I change the site's structure and not just the content?",
+        "a": "Yes. The layers panel lets you drag sections and reorder them, add and delete pages and sub-pages, set a home page, and hide pages from the menu — and the menu updates accordingly."
+      },
+      "domain": {
+        "q": "Where is the site published, and can I connect a private domain?",
+        "a": "Every site gets its own address under sites.bizuply.com. You can also search for and buy a domain directly from within the system and connect it to the site, or connect an existing domain and disconnect it at any time."
+      },
+      "crm": {
+        "q": "Do inquiries from the site reach the CRM?",
+        "a": "Yes. The site's lead forms are set to send every inquiry directly to the CRM lead pipeline with the source \"Website\", including an email alert, an automatic reply to whoever left the inquiry, and the option to require a phone field."
+      },
+      "sell": {
+        "q": "Can I sell from the site?",
+        "a": "Yes. Enable the store plugin, manage the products from the site panel, and visitors get a shopping cart and checkout. Payments go through a provider you connect — Stripe, PayPal, Tranzila, Max/Hyp, Grow, or Morning."
+      },
+      "collaborate": {
+        "q": "Can I give a designer or partner access to the site?",
+        "a": "Yes. You can invite people to the site with edit or view permissions, see who's connected, and remove access — and also transfer full ownership of the site to another user."
+      },
+      "analytics": {
+        "q": "How do I know if the site is working?",
+        "a": "The dashboard shows page views, unique visitors, top pages, and traffic sources (including UTM), so you can see where visitors come from and where they land."
+      }
+    },
+    "finalCta": {
+      "eyebrow": "Ready to go live",
+      "title": "Your next site starts with a template — and ends with inquiries",
+      "text": "Choose a template, edit it in the visual editor, add plugins, and publish. Inquiries from the site are waiting for you in the CRM lead pipeline.",
+      "primaryLabel": "Sign up now"
+    }
   }
 }

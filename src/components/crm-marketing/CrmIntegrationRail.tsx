@@ -1,7 +1,8 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Facebook, Globe, Info, PlugZap, Zap } from "lucide-react";
 import { Reveal, SectionHeading } from "../product-marketing";
-import { crmIntegrations } from "./crmMarketingData";
+import { getCrmIntegrations } from "./crmMarketingData";
 import "./crmSections.css";
 
 const ICONS = {
@@ -11,6 +12,9 @@ const ICONS = {
 } as const;
 
 export default function CrmIntegrationRail() {
+  const { t } = useTranslation();
+  const crmIntegrations = getCrmIntegrations(t);
+
   return (
     <section className="pm-section crx">
       <div className="pm-shell">
@@ -18,15 +22,18 @@ export default function CrmIntegrationRail() {
           eyebrow={
             <>
               <PlugZap size={14} aria-hidden="true" />
-              מקורות הלידים
+              {t("crmPage.integrations.eyebrow")}
             </>
           }
           title={
             <>
-              שלושה ערוצים, <span className="pm-grad">צינור אחד</span>
+              {t("crmPage.integrations.titleA")}
+              <span className="pm-grad">
+                {t("crmPage.integrations.titleHighlight")}
+              </span>
             </>
           }
-          lead="אין יותר העתקה מטבלאות ומתיבות מייל. כל ערוץ מתחבר פעם אחת דרך אשף קצר, ומאותו רגע הלידים נכנסים לצינור עם המקור, השדות והסטטוס שלהם."
+          lead={t("crmPage.integrations.lead")}
         />
 
         <div className="crx-sources">

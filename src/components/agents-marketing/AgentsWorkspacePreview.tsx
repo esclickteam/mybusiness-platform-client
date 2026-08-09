@@ -1,54 +1,61 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { Headset } from "lucide-react";
 import { AppFrame, Reveal, SectionHeading } from "../product-marketing";
 
-const QUEUE = [
-  {
-    initials: "דנ",
-    name: "דנה לוי · שיפוץ מטבח",
-    meta: "Facebook · נכנס לפני 12 דקות",
-    state: "בטיפול נציג",
-    tone: "live",
-  },
-  {
-    initials: "אמ",
-    name: "אמיר כהן · הצעת מחיר",
-    meta: "אתר · נוצר קשר",
-    state: "נקבעה פגישה",
-    tone: "ok",
-  },
-  {
-    initials: "רו",
-    name: "רונית בר · ייעוץ ראשוני",
-    meta: "Google Ads · ממתין למסמכים",
-    state: "ממתין ללקוח",
-    tone: "warn",
-  },
-  {
-    initials: "יו",
-    name: "יובל שדה · חידוש התקשרות",
-    meta: "Instagram · ליד חדש",
-    state: "בתור",
-    tone: "info",
-  },
-];
-
-const ACTIVITY = [
-  <>
-    <strong>שיחה יוצאת</strong> לדנה לוי — 3 דקות, סוכם על שיחת המשך מחר ב־10:00
-  </>,
-  <>
-    <strong>מולאו פרטים</strong> בכרטיס הליד: תקציב, מיקום ולוח זמנים
-  </>,
-  <>
-    <strong>נקבעה פגישה</strong> לאמיר כהן ביומן — ראשון, 09:30
-  </>,
-  <>
-    <strong>נפתחה משימה</strong> לבעל העסק: לאשר הצעת מחיר עד סוף היום
-  </>,
-];
-
 export default function AgentsWorkspacePreview() {
+  const { t } = useTranslation();
+
+  const QUEUE = [
+    {
+      initials: t("agentsPage.workspace.queue.0.initials"),
+      name: t("agentsPage.workspace.queue.0.name"),
+      meta: t("agentsPage.workspace.queue.0.meta"),
+      state: t("agentsPage.workspace.queue.0.state"),
+      tone: "live",
+    },
+    {
+      initials: t("agentsPage.workspace.queue.1.initials"),
+      name: t("agentsPage.workspace.queue.1.name"),
+      meta: t("agentsPage.workspace.queue.1.meta"),
+      state: t("agentsPage.workspace.queue.1.state"),
+      tone: "ok",
+    },
+    {
+      initials: t("agentsPage.workspace.queue.2.initials"),
+      name: t("agentsPage.workspace.queue.2.name"),
+      meta: t("agentsPage.workspace.queue.2.meta"),
+      state: t("agentsPage.workspace.queue.2.state"),
+      tone: "warn",
+    },
+    {
+      initials: t("agentsPage.workspace.queue.3.initials"),
+      name: t("agentsPage.workspace.queue.3.name"),
+      meta: t("agentsPage.workspace.queue.3.meta"),
+      state: t("agentsPage.workspace.queue.3.state"),
+      tone: "info",
+    },
+  ];
+
+  const ACTIVITY = [
+    <>
+      <strong>{t("agentsPage.workspace.activity.0.strong")}</strong>{" "}
+      {t("agentsPage.workspace.activity.0.rest")}
+    </>,
+    <>
+      <strong>{t("agentsPage.workspace.activity.1.strong")}</strong>{" "}
+      {t("agentsPage.workspace.activity.1.rest")}
+    </>,
+    <>
+      <strong>{t("agentsPage.workspace.activity.2.strong")}</strong>{" "}
+      {t("agentsPage.workspace.activity.2.rest")}
+    </>,
+    <>
+      <strong>{t("agentsPage.workspace.activity.3.strong")}</strong>{" "}
+      {t("agentsPage.workspace.activity.3.rest")}
+    </>,
+  ];
+
   return (
     <section className="pm-section pm-section--tight">
       <div className="pm-shell">
@@ -56,40 +63,48 @@ export default function AgentsWorkspacePreview() {
           eyebrow={
             <>
               <Headset size={14} aria-hidden="true" />
-              ככה זה נראה במערכת
+              {t("agentsPage.workspace.eyebrow")}
             </>
           }
           title={
             <>
-              הנציג עובד בתוך ה־CRM —{" "}
-              <span className="pm-grad">ואתם רואים הכל</span>
+              {t("agentsPage.workspace.titlePre")}{" "}
+              <span className="pm-grad">
+                {t("agentsPage.workspace.titleHighlight")}
+              </span>
             </>
           }
-          lead="תור הפניות עם סטטוס ומי מטפל, ולידו יומן פעילות שמתעד כל שיחה, פגישה ומשימה שנפתחה."
+          lead={t("agentsPage.workspace.lead")}
         />
 
         <Reveal from="up" distance={26} duration={0.7}>
           <AppFrame
-            crumb="CRM · טיפול נציג"
-            rail={["לידים", "לקוחות", "פגישות", "נציגים", "דוחות"]}
+            crumb={t("agentsPage.workspace.crumb")}
+            rail={[
+              t("agentsPage.workspace.frameRail.0"),
+              t("agentsPage.workspace.frameRail.1"),
+              t("agentsPage.workspace.frameRail.2"),
+              t("agentsPage.workspace.frameRail.3"),
+              t("agentsPage.workspace.frameRail.4"),
+            ]}
             railActive={3}
-            caption="תור הטיפול: כל פנייה עם המקור, הסטטוס והנציג המטפל — ולידו תיעוד הפעולות שבוצעו בשמכם."
+            caption={t("agentsPage.workspace.caption")}
           >
             <div className="pmk-kpis">
               <div className="pmk-kpi">
-                <span>פניות בטיפול</span>
+                <span>{t("agentsPage.workspace.kpis.inProgress")}</span>
                 <strong>18</strong>
               </div>
               <div className="pmk-kpi">
-                <span>זמן תגובה ממוצע</span>
-                <strong>8 דק׳</strong>
+                <span>{t("agentsPage.workspace.kpis.avgResponse")}</span>
+                <strong>{t("agentsPage.workspace.kpis.avgResponseValue")}</strong>
               </div>
               <div className="pmk-kpi">
-                <span>פגישות שנקבעו</span>
+                <span>{t("agentsPage.workspace.kpis.meetings")}</span>
                 <strong>11</strong>
               </div>
               <div className="pmk-kpi">
-                <span>שיחות שלא נענו</span>
+                <span>{t("agentsPage.workspace.kpis.missed")}</span>
                 <strong>0</strong>
               </div>
             </div>
@@ -97,8 +112,8 @@ export default function AgentsWorkspacePreview() {
             <div className="pmk-cols pmk-cols--wide">
               <div className="pmk-card">
                 <div className="pmk-card__head">
-                  <h4>תור פניות</h4>
-                  <span>מתעדכן בזמן אמת</span>
+                  <h4>{t("agentsPage.workspace.queueTitle")}</h4>
+                  <span>{t("agentsPage.workspace.queueSubtitle")}</span>
                 </div>
 
                 <ul className="pmk-list">
@@ -121,8 +136,8 @@ export default function AgentsWorkspacePreview() {
 
               <div className="pmk-card">
                 <div className="pmk-card__head">
-                  <h4>יומן פעילות הנציג</h4>
-                  <span>היום</span>
+                  <h4>{t("agentsPage.workspace.activityTitle")}</h4>
+                  <span>{t("agentsPage.workspace.activitySubtitle")}</span>
                 </div>
 
                 <ul className="pmk-time">
@@ -132,7 +147,7 @@ export default function AgentsWorkspacePreview() {
                 </ul>
 
                 <p className="pmk-note">
-                  אותו תיעוד מופיע בכרטיס הליד — אין פעולה שקורית מחוץ למערכת.
+                  {t("agentsPage.workspace.note")}
                 </p>
               </div>
             </div>

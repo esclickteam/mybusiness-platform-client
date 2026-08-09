@@ -1,7 +1,10 @@
 import React from "react";
 import { Helmet } from "react-helmet-async";
+import { useTranslation, Trans } from "react-i18next";
 
 function Terms() {
+  const { t, i18n } = useTranslation();
+
   const sectionBase =
     "scroll-mt-28 rounded-[2rem] border border-white/80 bg-white/75 p-6 shadow-xl shadow-slate-900/5 backdrop-blur sm:p-8";
 
@@ -16,32 +19,34 @@ function Terms() {
   const ulBase =
     "mb-5 ms-5 list-disc space-y-2 text-base font-medium leading-8 text-slate-600";
 
-  const sections = [
-    "כללי",
-    "הגדרות",
-    "השירותים המוצעים",
-    "רישום ושימוש",
-    "פרטיות והגנת מידע",
-    "תוכן שנוצר על ידי משתמשים",
-    "תשלומים והחזרים",
-    "הגבלת אחריות",
-    "כוח עליון",
-    "קניין רוחני",
-    "נגישות",
-    "שינויים וסיום",
-    "ויתור על תביעות",
-    "הדין החל",
-    "פרטי התקשרות",
-  ];
+  const strongComponents = { strong: <strong />, br: <br /> };
+
+  const sectionsRaw = t("termsPage.sections", { returnObjects: true });
+  const sections = Array.isArray(sectionsRaw) ? sectionsRaw : [];
+
+  const asArray = (key) => {
+    const value = t(key, { returnObjects: true });
+    return Array.isArray(value) ? value : [];
+  };
+
+  const s3List = asArray("termsPage.s3.list");
+  const s5List1 = asArray("termsPage.s5.list1");
+  const s5List2 = asArray("termsPage.s5.list2");
+  const s5List3 = asArray("termsPage.s5.list3");
+  const s5Rights = asArray("termsPage.s5.rightsList");
+  const s6List = asArray("termsPage.s6.list");
+  const s8List = asArray("termsPage.s8.list");
+  const s12List = asArray("termsPage.s12.list");
+  const s15List = asArray("termsPage.s15.list");
 
   return (
-    <main dir="rtl" className="relative min-h-screen overflow-hidden bg-[#F7F4EE] text-start text-slate-800">
+    <main
+      dir={i18n.language === "he" ? "rtl" : "ltr"}
+      className="relative min-h-screen overflow-hidden bg-[#F7F4EE] text-start text-slate-800"
+    >
       <Helmet>
-        <title>תנאי השירות - BizUply</title>
-        <meta
-          name="description"
-          content="קראו את תנאי השירות של BizUply, לרבות שימוש בפלטפורמה, תשלומים, פרטיות, תוכן משתמשים, הגבלות אחריות ויישוב מחלוקות."
-        />
+        <title>{t("termsPage.seoTitle")}</title>
+        <meta name="description" content={t("termsPage.seoDesc")} />
         <link rel="canonical" href="https://bizuply.com/terms" />
         <meta name="robots" content="index, follow" />
       </Helmet>
@@ -55,20 +60,19 @@ function Terms() {
       <section className="relative mx-auto max-w-7xl px-5 pb-10 pt-20 text-center sm:px-8 lg:px-10 lg:pt-24">
         <div className="mx-auto mb-6 inline-flex items-center gap-2 rounded-full border border-amber-200 bg-white/70 px-4 py-2 text-sm font-black text-amber-800 shadow-sm backdrop-blur">
           <span className="h-2 w-2 rounded-full bg-emerald-500" />
-          מרכז משפטי
+          {t("termsPage.badge")}
         </div>
 
         <h1 className="mx-auto max-w-5xl text-5xl font-black leading-[1.03] tracking-[-0.05em] text-slate-800 sm:text-6xl lg:text-7xl">
-          תנאי השירות
+          {t("termsPage.title")}
         </h1>
 
         <p className="mx-auto mt-6 max-w-2xl text-lg font-medium leading-8 text-slate-600 sm:text-xl">
-          אנא קראו תנאים אלה בעיון לפני השימוש באתר, באפליקציה, בפלטפורמה,
-          בכלים ובשירותים של BizUply.
+          {t("termsPage.intro")}
         </p>
 
         <div className="mx-auto mt-8 inline-flex rounded-2xl border border-white/80 bg-white/70 px-5 py-3 text-sm font-black text-slate-700 shadow-sm backdrop-blur">
-          עודכן לאחרונה: 14 באוקטובר 2025
+          {t("termsPage.lastUpdatedChip")}
         </div>
       </section>
 
@@ -80,11 +84,11 @@ function Terms() {
           </div>
 
           <h2 className="text-2xl font-black tracking-[-0.03em] text-slate-800">
-            סקירת התנאים
+            {t("termsPage.asideTitle")}
           </h2>
 
           <p className="mt-3 text-sm font-medium leading-6 text-slate-500">
-            ניווט מהיר בין הסעיפים המשפטיים העיקריים.
+            {t("termsPage.asideText")}
           </p>
 
           <nav className="mt-6 max-h-[55vh] space-y-2 overflow-auto pr-1">
@@ -103,7 +107,9 @@ function Terms() {
           </nav>
 
           <div className="mt-6 rounded-3xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-5 py-4 text-start text-slate-800">
-            <p className="text-sm font-black text-amber-300">יצירת קשר</p>
+            <p className="text-sm font-black text-amber-300">
+              {t("termsPage.contactLabel")}
+            </p>
             <p className="mt-2 break-all text-sm font-bold text-black/80">
               support@bizuply.com
             </p>
@@ -113,780 +119,340 @@ function Terms() {
         {/* Content */}
         <div className="space-y-6">
           <section id="section-1" className={sectionBase}>
-            <h2 className={h2Base}>1. כללי</h2>
+            <h2 className={h2Base}>{t("termsPage.s1.h")}</h2>
 
             <p className={pBase}>
-              1.1. אתר BizUply ו/או האפליקציה הניידת, להלן: “החברה,”
-              “BizUply,” “האתר,” “המערכת,” או “האפליקציה”, פועלים כפלטפורמת{" "}
-              <strong>תוכנה כשירות (SaaS)</strong> המיועדת לניהול עסקי מקצועי,
-              תקשורת עם לקוחות, תיאום פגישות, שיתוף פעולה ואוטומציה.
-              הפלטפורמה מחברת בין נותני שירותים ולקוחות כדי לייעל פעולות
-              יומיומיות ולשפר את היעילות העסקית הדיגיטלית.
+              <Trans i18nKey="termsPage.s1.p1" components={strongComponents} />
             </p>
 
-            <p className={pBase}>
-              1.2. השימוש באתר, באפליקציה ובמערכת כפוף לתנאי שימוש אלה, וכן
-              לכל דין ותקנה החלים בארצות הברית. גישה לשירותי BizUply או שימוש
-              בהם מהווים את הסכמתכם המלאה והמחייבת לקיים את כל הוראות הסכם זה.
-              אם אינכם מסכימים לתנאים אלה, אין להשתמש באתר, באפליקציה או בכל
-              אחד משירותי החברה.
-            </p>
+            <p className={pBase}>{t("termsPage.s1.p2")}</p>
+
+            <p className={pBase}>{t("termsPage.s1.p3")}</p>
 
             <p className={pBase}>
-              1.3. החברה שומרת לעצמה את הזכות, לפי שיקול דעתה הבלעדי, לשנות,
-              לתקן, לעדכן או להסיר חלקים מתנאים אלה בכל עת, עם או ללא הודעה
-              מוקדמת. כל עדכון ייכנס לתוקף מיד עם פרסומו באתר. המשך השימוש
-              בפלטפורמה לאחר שינוי כאמור ייחשב כהסכמה מלאה לתנאים המעודכנים.
+              <Trans i18nKey="termsPage.s1.p4" components={strongComponents} />
             </p>
 
-            <p className={pBase}>
-              1.4. תנאים אלה כתובים באנגלית ועשויים מעת לעת להיות מתורגמים
-              מטעמי נוחות לשפות אחרות. במקרה של סתירה או אי-עקביות בין
-              תרגומים, <strong>הגרסה האנגלית תגבר</strong>.
-            </p>
+            <p className={pBase}>{t("termsPage.s1.p5")}</p>
 
             <p className={pBase}>
-              1.5. תנאים אלה מנוסחים בלשון זכר מטעמי נוחות דקדוקית בלבד וחלים
-              באופן שווה על כל המגדרים, יחידים וישויות.
+              <Trans i18nKey="termsPage.s1.p6" components={strongComponents} />
             </p>
 
-            <p className={pBase}>
-              1.6. BizUply מופעלת לפי דיני ארצות הברית. אלא אם צוין אחרת, הדין
-              החל על כל העניינים הקשורים לפלטפורמה, לשימוש בה ולכל מחלוקת
-              הנובעת מכך יהיה <strong>דיני מדינת דלאוור</strong>, ארצות הברית,
-              ללא התחשבות בעקרונות ברירת הדין שלה.
-            </p>
-
-            <p className={pBase}>
-              1.7. משתמשים הניגשים ל-BizUply מחוץ לארצות הברית מאשרים כי
-              הפלטפורמה מופעלת מתוך תחום השיפוט של ארצות הברית ומסכימים כי
-              איסוף, עיבוד ואחסון הנתונים שלהם כפופים לדיני ותקני הגנת המידע
-              של ארצות הברית, לרבות כל מסגרת בינלאומית החלה.
-            </p>
+            <p className={pBase}>{t("termsPage.s1.p7")}</p>
           </section>
 
           <section id="section-2" className={sectionBase}>
-            <h2 className={h2Base}>2. הגדרות</h2>
+            <h2 className={h2Base}>{t("termsPage.s2.h")}</h2>
+
+            <p className={pBase}>{t("termsPage.s2.intro")}</p>
 
             <p className={pBase}>
-              לצורכי הסכם זה, יחולו ההגדרות הבאות:
-            </p>
-
-            <p className={pBase}>
-              <strong>“החברה”</strong> – BizUply LLC, מפעילת ובעלת הפלטפורמה,
-              לרבות חברות קשורות, עובדים, שותפים וקבלנים שלה.
-              <br />
-              <strong>“האתר” / “האפליקציה”</strong> – המערכת הדיגיטלית של
-              BizUply, לרבות כל האתרים, הדומיינים, מסדי הנתונים, ה-APIs, הקוד,
-              התשתית, הממשקים והנכסים הדיגיטליים הקשורים שבבעלות BizUply או
-              בניהולה.
-              <br />
-              <strong>“המשתמש”</strong> – כל אדם, בעל מקצוע, עסק, ארגון או
-              ישות משפטית אחרת הניגשים לשירותים או משתמשים בהם למטרות ניהול
-              עסקי, תקשורת או שיתוף פעולה.
-              <br />
-              <strong>“נותן שירות” / “עסק”</strong> – כל עסק רשום או בעל מקצוע
-              עצמאי המשתמש בפלטפורמה כדי ליצור פרופיל עסקי, לנהל פגישות,
-              לקוחות, משימות או תקשורת באמצעות BizUply.
-              <br />
-              <strong>“לקוח”</strong> – כל אדם או ישות המקיימים אינטראקציה עם
-              עסק או נותן שירות דרך פלטפורמת BizUply.
-              <br />
-              <strong>“השירותים”</strong> – כל התכונות והפונקציות המסופקות על
-              ידי BizUply, לרבות אך לא רק כלי CRM, הודעות, תיאום פגישות,
-              אוטומציה, תובנות מונעות בינה מלאכותית, אנליטיקה, ניהול מוניטין,
-              כלי שיתוף פעולה, ביקורות, דירוגים ויצירת עמוד עסקי.
-              <br />
-              <strong>“תוכן”</strong> – כל נתון, מדיה או חומר שנמסרו, הועלו,
-              הועברו או הוצגו בפלטפורמה, לרבות טקסט, תמונות, סרטונים, לוגואים,
-              ביקורות, דוחות, אנליטיקה או חומרים אחרים שנוצרו על ידי משתמשים.
-              <br />
-              <strong>“הסכם”</strong> – מסמך תנאי שימוש זה, המהווה הסכם מחייב
-              מבחינה משפטית בין המשתמש לבין BizUply.
+              <Trans i18nKey="termsPage.s2.defs" components={strongComponents} />
             </p>
           </section>
 
           <section id="section-3" className={sectionBase}>
-            <h2 className={h2Base}>3. השירותים המוצעים</h2>
+            <h2 className={h2Base}>{t("termsPage.s3.h")}</h2>
 
             <p className={pBase}>
-              3.1. BizUply מספקת פלטפורמת{" "}
-              <strong>תוכנה כשירות (SaaS)</strong> מתקדמת לניהול מקיף של עסקים
-              קטנים ובינוניים (“SMBs”). השירותים מיועדים לסייע לבעלי עסקים
-              לארגן, לעקוב אחר פעולותיהם היומיומיות ולבצע להן אוטומציה באמצעות
-              מערכת מאוחדת מבוססת ענן. התכונות הזמינות כוללות, בין היתר:
+              <Trans i18nKey="termsPage.s3.p1" components={strongComponents} />
             </p>
 
             <ul className={ulBase}>
-              <li>ניהול קשרי לקוחות (CRM) עבור לקוחות ולידים</li>
-              <li>
-                הודעות פנימיות ותקשורת בין עסקים לבין לקוחות
-              </li>
-              <li>כלי לוח שנה, הזמנות ותיאום פגישות</li>
-              <li>מערכת ביקורות מאומתות ודירוג כוכבים למשוב לקוחות</li>
-              <li>
-                עמודים עסקיים מותאמים אישית עם תיאורים, רשימות שירותים,
-                תמונות ושאלות נפוצות
-              </li>
-              <li>תכונות לניהול משימות, תזכורות ומעקב המשך</li>
-              <li>
-                כלי שיתוף פעולה בין עסקים להזדמנויות צמיחה משותפות
-              </li>
-              <li>
-                יועץ עסקי מבוסס בינה מלאכותית להמלצות ולאוטומציה חכמה
-              </li>
-              <li>לוחות מחוונים אנליטיים ודוחות ביצועים לצורך אופטימיזציה</li>
+              {s3List.map((item, index) => (
+                <li key={index}>{item}</li>
+              ))}
             </ul>
 
-            <p className={pBase}>
-              3.2. החברה רשאית, מעת לעת, להרחיב, לשנות, להגביל או להפסיק
-              תכונות או שירותים מסוימים. BizUply שומרת לעצמה את הזכות לבצע
-              שינויים כאמור לפי שיקול דעתה הבלעדי וללא הודעה מוקדמת.
-            </p>
+            <p className={pBase}>{t("termsPage.s3.p2")}</p>
 
             <p className={pBase}>
-              3.3. כל השירותים, התוכן והכלים המסופקים דרך הפלטפורמה מוצעים{" "}
-              <strong>“כמות שהם” ו-“כפי שהם זמינים”</strong>, ללא אחריות מכל
-              סוג שהוא, מפורשת או משתמעת, לרבות אך לא רק סחירות, התאמה למטרה
-              מסוימת, דיוק או מהימנות. החברה אינה מבטיחה זמינות רציפה או פעולה
-              ללא שגיאות של הפלטפורמה.
+              <Trans i18nKey="termsPage.s3.p3" components={strongComponents} />
             </p>
 
-            <p className={pBase}>
-              3.4. שירותים או תכונות מסוימים עשויים להיות כפופים לתנאים
-              נוספים, לתמחור או לרמות מנוי. בהפעלת שירותים כאמור, המשתמש מסכים
-              לכל תנאי משלים או מבנה תמחור רלוונטיים שנמסרו בעת השימוש.
-            </p>
+            <p className={pBase}>{t("termsPage.s3.p4")}</p>
           </section>
 
           <section id="section-4" className={sectionBase}>
-            <h2 className={h2Base}>4. רישום ושימוש במערכת</h2>
+            <h2 className={h2Base}>{t("termsPage.s4.h")}</h2>
+
+            <p className={pBase}>{t("termsPage.s4.p1")}</p>
+            <p className={pBase}>{t("termsPage.s4.p2")}</p>
+            <p className={pBase}>{t("termsPage.s4.p3")}</p>
+            <p className={pBase}>{t("termsPage.s4.p4")}</p>
+            <p className={pBase}>{t("termsPage.s4.p5")}</p>
+            <p className={pBase}>{t("termsPage.s4.p6")}</p>
 
             <p className={pBase}>
-              4.1. כדי לקבל גישה למלוא מגוון שירותי BizUply, משתמשים נדרשים
-              ליצור חשבון באמצעות מסירת מידע מדויק ומלא, לרבות אך לא רק שמם
-              המלא, כתובת דוא"ל תקפה, מספר טלפון, שם העסק ופרטי תשלום כאשר
-              הדבר רלוונטי.
-            </p>
-
-            <p className={pBase}>
-              4.2. המשתמש מסכים לשמור על סודיות פרטי ההתחברות שלו והוא אחראי
-              באופן בלעדי לכל פעילות המתרחשת בחשבונו, בין אם אושרה ובין אם לא.
-              החברה לא תישא באחריות לכל נזק, אובדן או גישה בלתי מורשית הנובעים
-              מאי-שמירה על אבטחת חשבון נאותה.
-            </p>
-
-            <p className={pBase}>
-              4.3. המשתמש מסכים להודיע לחברה מיד על כל חשד לגישה בלתי מורשית
-              או להפרת אבטחה הקשורה לחשבונו. אי-עשייה כן עלולה להביא להשעיה או
-              לסיום הגישה לפלטפורמה.
-            </p>
-
-            <p className={pBase}>
-              4.4. החברה שומרת לעצמה את הזכות להשעות, להגביל או למחוק לצמיתות
-              כל חשבון המפר תנאים אלה, פוגע בזכויות קניין רוחני, מפיץ תוכן
-              מזיק או בלתי חוקי, או עוסק בפעילות העלולה לפגוע בשלמות הפלטפורמה
-              או במשתמשים אחרים.
-            </p>
-
-            <p className={pBase}>
-              4.5. החברה שומרת לעצמה עוד את הזכות להסיר כל עסק, פרופיל, תוכן
-              או חומר שהועלה אשר, לפי שיקול דעתה הבלעדי, נחשב בלתי הולם, מטעה,
-              תרמיתי, פוגעני או בלתי עקבי עם ערכי המותג של BizUply או עם
-              חובותיה המשפטיות, ללא כל חובה למסור הודעה מוקדמת או נימוק.
-            </p>
-
-            <p className={pBase}>
-              4.6. יצירת חשבונות מרובים או כפולים לצורך ניצול לרעה של תקופות
-              ניסיון, תוכניות הפניה או מבצעים אסורה בהחלט. החברה רשאית לסיים או
-              למזג חשבונות כאלה ולבטל כל הטבה קשורה ללא החזר.
-            </p>
-
-            <p className={pBase}>
-              4.7. בהרשמה, המשתמש מעניק ל-BizUply רישיון מוגבל, לא בלעדי,
-              כלל-עולמי וללא תמלוגים לאחסן, לעבד ולהציג את המידע שנמסר, אך ורק
-              לצורך אספקת השירותים ושיפורם בהתאם ל<strong>מדיניות הפרטיות</strong>{" "}
-              של החברה.
+              <Trans i18nKey="termsPage.s4.p7" components={strongComponents} />
             </p>
           </section>
 
           <section id="section-5" className={sectionBase}>
-            <h2 className={h2Base}>5. פרטיות והגנת מידע</h2>
+            <h2 className={h2Base}>{t("termsPage.s5.h")}</h2>
 
             <p className={pBase}>
-              5.1. החברה מכבדת את פרטיות כל המשתמשים ומחויבת להגן על המידע
-              האישי שלהם בהתאם לדיני הגנת מידע החלים, לרבות{" "}
-              <strong>תקנת הגנת המידע הכללית של האיחוד האירופי (GDPR)</strong>,{" "}
-              <strong>חוק פרטיות הצרכן של קליפורניה (CCPA)</strong>, ו{" "}
-              <strong>חוק זכויות הפרטיות של קליפורניה (CPRA)</strong>, כאשר הם
-              חלים. BizUply מיישמת אמצעים מנהליים, טכניים וארגוניים סבירים כדי
-              להגן על נתוני המשתמשים.
+              <Trans i18nKey="termsPage.s5.p1" components={strongComponents} />
             </p>
 
-            <p className={pBase}>
-              5.2. במהלך השימוש בפלטפורמה, החברה רשאית לאסוף, לעבד ולאחסן את
-              קטגוריות הנתונים הבאות:
-            </p>
+            <p className={pBase}>{t("termsPage.s5.p2")}</p>
 
             <ul className={ulBase}>
-              <li>
-                <strong>מידע אישי מזהה (PII):</strong> כגון שם מלא, כתובת
-                דוא"ל, מספר טלפון, שם העסק, כתובת לחיוב ומידע תשלום, כפי שנמסר
-                במהלך ההרשמה או השימוש בתכונות פרימיום.
-              </li>
-              <li>
-                <strong>נתונים טכניים:</strong> לרבות כתובת IP, מזהי מכשיר,
-                סוג דפדפן, מערכת הפעלה, יומני חיבור, משך הפעלה, מיקום גיאוגרפי
-                כאשר הדבר מותר ונתוני אבחון אחרים.
-              </li>
-              <li>
-                <strong>נתונים עסקיים:</strong> כגון רשומות CRM, פגישות,
-                תקשורת, הערות, משימות ומידע סטטיסטי על שימוש שנוצר על ידי
-                המשתמש בתוך מערכת BizUply.
-              </li>
+              {s5List1.map((item, index) => (
+                <li key={index}>
+                  <Trans
+                    i18nKey={`termsPage.s5.list1.${index}`}
+                    components={strongComponents}
+                  />
+                </li>
+              ))}
+            </ul>
+
+            <p className={pBase}>{t("termsPage.s5.p3")}</p>
+
+            <ul className={ulBase}>
+              {s5List2.map((item, index) => (
+                <li key={index}>{item}</li>
+              ))}
+            </ul>
+
+            <p className={pBase}>{t("termsPage.s5.p4")}</p>
+
+            <ul className={ulBase}>
+              {s5List3.map((item, index) => (
+                <li key={index}>{item}</li>
+              ))}
+            </ul>
+
+            <h3 className={h3Base}>{t("termsPage.s5.rightsTitle")}</h3>
+
+            <ul className={ulBase}>
+              {s5Rights.map((item, index) => (
+                <li key={index}>{item}</li>
+              ))}
             </ul>
 
             <p className={pBase}>
-              5.3. המטרות שלשמן נאספים ומעובדים נתונים כוללות:
+              <Trans i18nKey="termsPage.s5.p6" components={strongComponents} />
             </p>
 
-            <ul className={ulBase}>
-              <li>אספקה, תחזוקה ושיפור של שירותי החברה</li>
-              <li>התאמה אישית של חוויית המשתמש ואופטימיזציה של ביצועי המערכת</li>
-              <li>
-                הבטחת עמידה בדין, מניעת הונאה ושמירה על אבטחה
-              </li>
-              <li>
-                שליחת עדכונים הקשורים לשירות, הודעות והצעות הרלוונטיות למשתמש
-              </li>
-              <li>ביצוע אנליטיקה לשיפור פונקציונליות הפלטפורמה ומהימנותה</li>
-            </ul>
+            <h3 className={h3Base}>{t("termsPage.s5.cookiesTitle")}</h3>
+
+            <p className={pBase}>{t("termsPage.s5.p7")}</p>
+            <p className={pBase}>{t("termsPage.s5.p8")}</p>
 
             <p className={pBase}>
-              5.4. החברה אינה מוכרת או משכירה מידע אישי. נתונים אישיים ישותפו
-              עם צדדים שלישיים רק בנסיבות המוגבלות הבאות:
-            </p>
-
-            <ul className={ulBase}>
-              <li>
-                לספקי שירות מורשים כגון מערכות אירוח ענן מאובטח, אנליטיקה,
-                חיוב, דוא"ל או תמיכת לקוחות, אך ורק למטרות תפעוליות ובכפוף
-                לחובות סודיות.
-              </li>
-              <li>כפי שנדרש לפי דין, זימון לבית משפט או בקשה ממשלתית כדין.</li>
-              <li>
-                במקרה של מיזוג, רכישה או העברת נכסים, ובלבד שהישות המקבלת
-                תשמור על הגנות פרטיות שוות ערך.
-              </li>
-            </ul>
-
-            <h3 className={h3Base}>זכויות משתמשים (GDPR / CCPA / CPRA)</h3>
-
-            <ul className={ulBase}>
-              <li>הזכות לגשת לנתונים אישיים שנאספו עליהם.</li>
-              <li>הזכות לתקן מידע אישי לא מדויק או לא שלם.</li>
-              <li>הזכות לבקש מחיקה “הזכות להישכח”.</li>
-              <li>הזכות לקבל עותק של נתוניהם “ניידות נתונים”.</li>
-              <li>הזכות לבטל הסכמה למכירה או לשיתוף של נתונים אישיים.</li>
-              <li>
-                הזכות להגביל או להתנגד לסוגים מסוימים של עיבוד נתונים.
-              </li>
-              <li>
-                הזכות להגיש תלונה לרשות הגנת מידע רלוונטית או לרגולטור פרטיות.
-              </li>
-            </ul>
-
-            <p className={pBase}>
-              5.6. החברה תגיב לבקשות מאומתות הקשורות לפרטיות בתוך פרק זמן
-              סביר, שלא יעלה על <strong>30 ימי עסקים</strong>, בהתאם לדין החל
-              ובכפוף לאימות זהות נאות.
-            </p>
-
-            <h3 className={h3Base}>קובצי Cookie וטכנולוגיות מעקב</h3>
-
-            <p className={pBase}>
-              5.7. האתר והאפליקציה משתמשים בקובצי Cookie, משואות אינטרנט
-              וטכנולוגיות דומות כדי להבטיח פונקציונליות בסיסית, לנתח מגמות
-              שימוש, לחזק את האבטחה ולשפר את חוויית המשתמש.
+              <Trans i18nKey="termsPage.s5.p9" components={strongComponents} />
             </p>
 
             <p className={pBase}>
-              5.8. משתמשים רשאים להשבית או להגביל קובצי Cookie דרך הגדרות
-              הדפדפן שלהם; עם זאת, כתוצאה מכך ייתכן שתכונות מסוימות של
-              הפלטפורמה לא יפעלו כראוי.
-            </p>
-
-            <p className={pBase}>
-              5.9. החברה רשאית להשתמש בכלי אנליטיקה ומעקב של צד שלישי כגון{" "}
-              <strong>Google Analytics</strong> לאיסוף נתוני שימוש אנונימיים,
-              ובכלי אבטחה כגון reCAPTCHA לזיהוי ומניעת פעילויות תרמית. שירותים
-              אלה עשויים להגדיר קובצי Cookie משלהם בהתאם למדיניות הפרטיות
-              שלהם.
-            </p>
-
-            <p className={pBase}>
-              למידע נוסף על האופן שבו BizUply אוספת, משתמשת ומגינה על נתונים,
-              אנא עיינו ב<strong>מדיניות הפרטיות</strong> המפורטת שלנו, המהווה
-              חלק בלתי נפרד מתנאי שימוש אלה.
+              <Trans i18nKey="termsPage.s5.p10" components={strongComponents} />
             </p>
           </section>
 
           <section id="section-6" className={sectionBase}>
-            <h2 className={h2Base}>6. תוכן שנוצר על ידי משתמשים</h2>
+            <h2 className={h2Base}>{t("termsPage.s6.h")}</h2>
 
-            <p className={pBase}>
-              6.1. משתמשים רשאים להעלות, לפרסם או לשתף תוכן הכולל טקסט,
-              תמונות, ביקורות, תגובות או נתונים הקשורים לעסק דרך הפלטפורמה. כל
-              תוכן כאמור נשאר באחריותו הבלעדית של המשתמש שיצר או העלה אותו.
-            </p>
-
-            <p className={pBase}>
-              6.2. במסירת כל תוכן לפלטפורמה, משתמשים מצהירים כי:
-            </p>
+            <p className={pBase}>{t("termsPage.s6.p1")}</p>
+            <p className={pBase}>{t("termsPage.s6.p2")}</p>
 
             <ul className={ulBase}>
-              <li>
-                הם בעלי כל הזכויות והרישיונות הנחוצים להשתמש בתוכן כאמור ולשתף
-                אותו, או שקיבלו אותם.
-              </li>
-              <li>
-                התוכן אינו מפר זכויות קניין רוחני, פרטיות, פרסום או זכויות
-                משפטיות אחרות של צד שלישי כלשהו.
-              </li>
-              <li>
-                התוכן אינו משמיץ, תרמיתי, מגונה, מסית לשנאה, מטריד, מפלה או
-                בלתי חוקי בדרך אחרת.
-              </li>
+              {s6List.map((item, index) => (
+                <li key={index}>{item}</li>
+              ))}
             </ul>
 
-            <p className={pBase}>
-              6.3. החברה שומרת לעצמה את הזכות, אך לא את החובה, לנטר, לערוך או
-              להסיר כל תוכן המפר תנאים אלה או דין חל, ללא הודעה מוקדמת ולפי
-              שיקול דעתה הבלעדי.
-            </p>
-
-            <p className={pBase}>
-              6.4. בהעלאה או במסירת תוכן לפלטפורמה, משתמשים מעניקים לחברה
-              רישיון כלל-עולמי, ללא תמלוגים, לא בלעדי, תמידי ובלתי חוזר
-              לאחסן, לשכפל, לשנות, להפיץ ולהציג בפומבי תוכן כאמור לצורך הפעלת
-              השירותים, קידומם ושיפורם, לרבות שימוש שיווקי ואנליטי. רישיון זה
-              יישאר בתוקף לאחר סיום חשבון המשתמש.
-            </p>
-
-            <p className={pBase}>
-              6.5. החברה אינה אחראית לתוכן שנוצר על ידי משתמשים ואינה תומכת בו.
-              משתמשים מאשרים כי הם עשויים להיחשף לתוכן שהם רואים כבלתי הולם או
-              לא מדויק, והם נוטלים על עצמם את כל הסיכונים הקשורים לחשיפה זו.
-            </p>
+            <p className={pBase}>{t("termsPage.s6.p3")}</p>
+            <p className={pBase}>{t("termsPage.s6.p4")}</p>
+            <p className={pBase}>{t("termsPage.s6.p5")}</p>
           </section>
 
           <section id="section-7" className={sectionBase}>
-            <h2 className={h2Base}>7. תשלומים, תמחור ומדיניות החזרים</h2>
+            <h2 className={h2Base}>{t("termsPage.s7.h")}</h2>
 
             <div className="mb-6 rounded-3xl border border-amber-200 bg-amber-50 px-5 py-4 text-base font-bold leading-7 text-amber-900">
-              <strong>⚖️ הודעה משפטית:</strong> יש לקרוא סעיף זה יחד עם סעיף
-              13 “ויתור על תביעות, החזרים והגבלת פעולות”, המבהיר עוד את ויתור
-              המשתמש על כל זכות לטעון, לערער או לבקש החזרים מכל סיבה.
+              <Trans i18nKey="termsPage.s7.notice" components={strongComponents} />
             </div>
 
+            <p className={pBase}>{t("termsPage.s7.p1")}</p>
+
             <p className={pBase}>
-              7.1. גישה לתכונות הפרימיום או לתוכניות בתשלום של BizUply דורשת
-              מנוי פעיל. כל התשלומים חייבים להתבצע באמצעות מעבדי תשלום מאושרים,
-              כגון Stripe, PayPal, וכפופים לתנאים ולעמלות שלהם בהתאמה.
+              <Trans i18nKey="termsPage.s7.p2" components={strongComponents} />
             </p>
 
             <p className={pBase}>
-              7.2. אלא אם צוין אחרת,{" "}
-              <strong>כל התשלומים הם סופיים ואינם ניתנים להחזר</strong>. הדבר
-              כולל ביטולים מוקדמים, תקופות שירות שלא נוצלו, השבתת חשבון או אי
-              שביעות רצון מהשירות. לאחר רכישת מנוי, הוא יישאר פעיל למשך כל
-              התקופה שנרכשה ו<strong>לא ניתן לקצרו, להשהותו או לקבל בגינו החזר</strong>,
-              גם אם המשתמש מחליט להפסיק להשתמש בפלטפורמה או לסיים את חשבונו.
+              <Trans i18nKey="termsPage.s7.p3" components={strongComponents} />
             </p>
 
             <p className={pBase}>
-              7.3. המשתמש מאשר ומסכים כי כל החזר, זיכוי או התאמה ייקבעו אך ורק
-              לפי <strong>שיקול דעתה הבלעדי של החברה</strong>. ל-BizUply אין
-              כל חובה משפטית או כספית להנפיק החזרים בכל נסיבה שהיא. המשתמש
-              מוותר במפורש על כל זכות לבקש ביטולי חיוב, לפתוח תביעות החזר דרך
-              ספקי תשלום או לדרוש השבה בכל אמצעי.
+              <Trans i18nKey="termsPage.s7.p4" components={strongComponents} />
             </p>
+
+            <p className={pBase}>{t("termsPage.s7.p5")}</p>
+
+            <h3 className={h3Base}>{t("termsPage.s7.trialsTitle")}</h3>
+
+            <p className={pBase}>{t("termsPage.s7.p6")}</p>
+            <p className={pBase}>{t("termsPage.s7.p7")}</p>
+            <p className={pBase}>{t("termsPage.s7.p8")}</p>
+
+            <h3 className={h3Base}>{t("termsPage.s7.priceTitle")}</h3>
+
+            <p className={pBase}>{t("termsPage.s7.p9")}</p>
 
             <p className={pBase}>
-              7.4. במקרים של השעיית חשבון, הגבלה או הסרה עקב הפרת תנאים אלה,
-              שימוש בלתי הולם, התנהגות פוגענית או פעילות בלתי חוקית, החברה
-              שומרת לעצמה את הזכות{" "}
-              <strong>לסיים את מנוי המשתמש באופן מיידי</strong> ללא הודעה
-              מוקדמת. במקרים כאלה, <strong>לא יינתנו החזר, זיכוי או פיצוי</strong>{" "}
-              עבור יתרת תקופת המנוי.
+              <Trans i18nKey="termsPage.s7.p10" components={strongComponents} />
             </p>
 
-            <p className={pBase}>
-              7.5. החברה רשאית לשנות, להשעות או להפסיק תכונות או שירותים
-              בתשלום בכל עת וללא אחריות, ובלבד שפעולות כאמור אינן מפרות חובות
-              חיוב פעילות לפי דיני הגנת הצרכן החלים בארצות הברית.
-            </p>
-
-            <h3 className={h3Base}>תקופות ניסיון, חידושים וביטולים</h3>
-
-            <p className={pBase}>
-              7.6. משתמשים חדשים עשויים להיות זכאים לתקופת ניסיון חינם, כפי
-              שמצוין באתר. עם תום תקופת הניסיון, מנויים יתחדשו אוטומטית לתוכנית
-              בתשלום אלא אם בוטלו לפני מועד החידוש.
-            </p>
-
-            <p className={pBase}>
-              7.7. משתמשים רשאים לבטל את המנויים שלהם בכל עת מלוח המחוונים של
-              חשבונם. ביטולים נכנסים לתוקף בסוף תקופת החיוב הנוכחית, ולא יינתנו
-              החזרים חלקיים או זיכויים עבור הימים שנותרו בתקופה.
-            </p>
-
-            <p className={pBase}>
-              7.8. המשתמשים אחראים באופן בלעדי לשמור מידע חיוב ותשלום מעודכן.
-              תשלומים שנכשלו או נדחו עלולים להביא להשעיה זמנית או לסיום הגישה
-              ללא החזר.
-            </p>
-
-            <h3 className={h3Base}>שינויי מחירים</h3>
-
-            <p className={pBase}>
-              7.9. החברה שומרת לעצמה את הזכות לשנות דמי מנוי, תעריפי חבילות או
-              מחירי שירותים בכל עת, בהתאם לדיני הגנת הצרכן החלים בארצות הברית.
-            </p>
-
-            <p className={pBase}>
-              7.10. כל תמחור מעודכן יפורסם באתר ויימסר למנויים פעילים בדוא"ל
-              לפחות <strong>14 ימים</strong> לפני החידוש. המשך השימוש
-              בפלטפורמה לאחר שינוי מחיר מהווה הסכמה מלאה לתעריפים החדשים.
-            </p>
-
-            <p className={pBase}>
-              7.11. אם משתמש אינו מסכים לשינוי מחיר, הוא רשאי לבטל את המנוי
-              לפני מועד החיוב הבא כדי להימנע מחיובים נוספים.
-            </p>
+            <p className={pBase}>{t("termsPage.s7.p11")}</p>
           </section>
 
           <section id="section-8" className={sectionBase}>
-            <h2 className={h2Base}>8. הגבלת אחריות</h2>
+            <h2 className={h2Base}>{t("termsPage.s8.h")}</h2>
 
             <p className={pBase}>
-              8.1. השירותים המסופקים על ידי BizUply מוצעים אך ורק{" "}
-              <strong>“כמות שהם” ו-“כפי שהם זמינים”</strong>. החברה אינה מציגה
-              כל מצג או אחריות מכל סוג שהוא, מפורשים או משתמעים, לרבות אך לא רק
-              אחריות לסחירות, התאמה למטרה מסוימת, דיוק, מהימנות או אי-הפרה.
+              <Trans i18nKey="termsPage.s8.p1" components={strongComponents} />
             </p>
 
-            <p className={pBase}>
-              8.2. החברה אינה מתחייבת כי הפלטפורמה או שירותיה יהיו ללא הפרעה,
-              מאובטחים, נטולי שגיאות או זמינים באופן רציף. הגישה עשויה להיות
-              מושפעת מגורמים שמעבר לשליטתה הסבירה של החברה, לרבות אך לא רק
-              תחזוקה, עדכונים, כשלים במערכות צד שלישי או שיבושי רשת.
-            </p>
-
-            <p className={pBase}>
-              8.3. במידה המרבית המותרת לפי דין, החברה, נושאי המשרה שלה, עובדיה,
-              שותפיה וחברותיה הקשורות לא יהיו אחראים לכל נזק עקיף, מקרי, מיוחד,
-              תוצאתי, עונשי או לדוגמה הנובע מ-או קשור ל:
-            </p>
+            <p className={pBase}>{t("termsPage.s8.p2")}</p>
+            <p className={pBase}>{t("termsPage.s8.p3")}</p>
 
             <ul className={ulBase}>
-              <li>השימוש בפלטפורמה או בשירותיה, או אי-היכולת להשתמש בהם;</li>
-              <li>כל אובדן נתונים, השחתה או גישה בלתי מורשית;</li>
-              <li>שגיאות, השמטות או אי-דיוקים בכל תוכן מוצג;</li>
-              <li>שיבוש עסקי, אובדן רווחים או פגיעה במוניטין;</li>
-              <li>
-                כל מעשה, מחדל או רשלנות של ספקי שירות צד שלישי.
-              </li>
+              {s8List.map((item, index) => (
+                <li key={index}>{item}</li>
+              ))}
             </ul>
 
             <p className={pBase}>
-              8.4. בכל מקרה, אחריותה המצטברת הכוללת של החברה, בין בחוזה,
-              בנזיקין, ברשלנות או אחרת, לא תעלה על הסכום הכולל ששולם על ידי
-              המשתמש לחברה במהלך <strong>שלושים (30) הימים</strong> שקדמו לאירוע
-              שהוליד את התביעה.
+              <Trans i18nKey="termsPage.s8.p4" components={strongComponents} />
             </p>
 
-            <p className={pBase}>
-              8.5. המשתמש מאשר כי BizUply אינה מספקת ייעוץ משפטי, פיננסי או
-              מס. כל החלטה עסקית המתקבלת באמצעות הפלטפורמה היא באחריותו הבלעדית
-              של המשתמש.
-            </p>
-
-            <p className={pBase}>
-              8.6. החברה לא תישא באחריות לשיבושים או לנזקים שנגרמו על ידי
-              גורמים חיצוניים, לרבות אך לא רק מתקפות סייבר, תקלות חומרה או
-              תוכנה, השבתות של ספקי שירות אינטרנט, כשלים במרכזי נתונים או
-              אינטגרציות צד שלישי.
-            </p>
-
-            <p className={pBase}>
-              8.7. תחומי שיפוט מסוימים אינם מתירים החרגה או הגבלה של נזקים או
-              אחריות מסוימים. במקרים כאלה, אחריות החברה תוגבל למידה המזערית
-              המותרת לפי הדין החל.
-            </p>
+            <p className={pBase}>{t("termsPage.s8.p5")}</p>
+            <p className={pBase}>{t("termsPage.s8.p6")}</p>
+            <p className={pBase}>{t("termsPage.s8.p7")}</p>
           </section>
 
           <section id="section-9" className={sectionBase}>
-            <h2 className={h2Base}>9. כוח עליון</h2>
+            <h2 className={h2Base}>{t("termsPage.s9.h")}</h2>
 
-            <p className={pBase}>
-              9.1. החברה לא תהיה אחראית ולא תיחשב כמי שהפרה תנאים אלה בשל כל
-              עיכוב, כשל או הפסקה בביצוע הנובעים מסיבות שמעבר לשליטתה הסבירה,
-              לרבות אך לא רק מעשי שמים, אסונות טבע, מלחמה, טרור, מהומות,
-              שביתות, סכסוכי עבודה, פעולות ממשלתיות, מתקפות סייבר, פרצות מידע,
-              הפסקות חשמל או אינטרנט, מגפות או מצבי חירום אחרים.
-            </p>
-
-            <p className={pBase}>
-              9.2. במהלך כל תקופת כוח עליון, חובות החברה יושעו במידה שבה
-              הביצוע נמנע או מתעכב. החברה תעשה מאמצים סבירים לחדש פעילות רגילה
-              לאחר שהאירוע פסק.
-            </p>
-
-            <p className={pBase}>
-              9.3. משתמשים מאשרים כי אירועים כאמור עשויים לגרום לשיבושים זמניים
-              בגישה לפלטפורמה או לעיכוב באספקת השירות, והחברה לא תישא באחריות
-              לכך.
-            </p>
+            <p className={pBase}>{t("termsPage.s9.p1")}</p>
+            <p className={pBase}>{t("termsPage.s9.p2")}</p>
+            <p className={pBase}>{t("termsPage.s9.p3")}</p>
           </section>
 
           <section id="section-10" className={sectionBase}>
-            <h2 className={h2Base}>10. קניין רוחני</h2>
+            <h2 className={h2Base}>{t("termsPage.s10.h")}</h2>
 
-            <p className={pBase}>
-              10.1. כל זכויות הקניין הרוחני בפלטפורמה ובקשר אליה, לרבות אך לא
-              רק קוד תוכנה, ארכיטקטורה, אלגוריתמים, מסדי נתונים, ממשקי משתמש,
-              עיצובים, טקסט, גרפיקה, סימני מסחר, שמות מסחריים, סימני שירות,
-              סרטונים ותוכן אחר, יחד “חומרי BizUply”, הן ויישארו קניינה הבלעדי
-              של BizUply או של מעניקי הרישיון שלה.
-            </p>
-
-            <p className={pBase}>
-              10.2. למעט כפי שהותר במפורש בכתב על ידי החברה, אין להעתיק, לשנות,
-              להפיץ, לפרסם מחדש, להציג, להעביר, לבצע הנדסה לאחור, לפרק או לנצל
-              בכל דרך אחרת כל חלק מן האתר, האפליקציה או המערכת לכל מטרה מסחרית
-              או לא מסחרית.
-            </p>
-
-            <p className={pBase}>
-              10.3. למשתמשים מוענק רישיון מוגבל, לא בלעדי, בלתי ניתן להעברה
-              ובר-ביטול לגשת לפלטפורמה ולהשתמש בה אך ורק למטרות עסקיות חוקיות,
-              בהתאם לתנאים אלה.
-            </p>
-
-            <p className={pBase}>
-              10.4. כל הלוגואים, המותגים וסימני המסחר של צדדים שלישיים המופיעים
-              בתוך הפלטפורמה הם רכוש בעליהם בהתאמה. הכללתם אינה מרמזת על תמיכה
-              או שיוך.
-            </p>
-
-            <p className={pBase}>
-              10.5. עסקים או משתמשים המעלים או מספקים תוכן לפלטפורמה מצהירים כי
-              הם בעלי כל הזכויות, הרישיונות וההרשאות הנחוצים לתוכן כאמור, או
-              שקיבלו אותם, וכי הוא אינו מפר קניין רוחני או זכויות קנייניות של
-              צד שלישי כלשהו.
-            </p>
-
-            <p className={pBase}>
-              10.6. כל משוב, רעיונות או הצעות שיסופקו על ידי משתמשים לחברה
-              עשויים לשמש את BizUply בחופשיות לשיפור מוצר, ללא חובה או פיצוי
-              למשתמש.
-            </p>
+            <p className={pBase}>{t("termsPage.s10.p1")}</p>
+            <p className={pBase}>{t("termsPage.s10.p2")}</p>
+            <p className={pBase}>{t("termsPage.s10.p3")}</p>
+            <p className={pBase}>{t("termsPage.s10.p4")}</p>
+            <p className={pBase}>{t("termsPage.s10.p5")}</p>
+            <p className={pBase}>{t("termsPage.s10.p6")}</p>
           </section>
 
           <section id="section-11" className={sectionBase}>
-            <h2 className={h2Base}>11. נגישות</h2>
+            <h2 className={h2Base}>{t("termsPage.s11.h")}</h2>
 
             <p className={pBase}>
-              11.1. החברה מחויבת להבטיח שפלטפורמת BizUply תהיה נגישה ושמישה
-              לכל אדם, לרבות אנשים עם מוגבלויות, בהתאם ל{" "}
-              <strong>Americans with Disabilities Act (ADA)</strong> ולתקני
-              נגישות רלוונטיים אחרים כגון <strong>WCAG 2.1 Level AA</strong>.
+              <Trans i18nKey="termsPage.s11.p1" components={strongComponents} />
             </p>
 
-            <p className={pBase}>
-              11.2. החברה פועלת באופן מתמשך לשיפור תכונות הנגישות וחוויית
-              המשתמש בכל המכשירים והדפדפנים הנתמכים.
-            </p>
+            <p className={pBase}>{t("termsPage.s11.p2")}</p>
 
             <p className={pBase}>
-              11.3. אם משתמשים נתקלים במחסומי נגישות כלשהם או זקוקים לסיוע, הם
-              רשאים לפנות ל-<strong>support@bizuply.com</strong>. החברה תעשה
-              מאמצים סבירים לבחון את הבקשה ולטפל בה בתוך פרק זמן סביר מבחינה
-              מסחרית, בכפוף להיתכנות טכנולוגית.
+              <Trans i18nKey="termsPage.s11.p3" components={strongComponents} />
             </p>
 
-            <p className={pBase}>
-              11.4. BizUply עשויה להציע התאמות נגישות כגון הגדלת טקסט, שינויי
-              ניגודיות צבעים, תאימות לקוראי מסך ומצבי ניווט מפושטים כאשר הדבר
-              רלוונטי.
-            </p>
+            <p className={pBase}>{t("termsPage.s11.p4")}</p>
           </section>
 
           <section id="section-12" className={sectionBase}>
-            <h2 className={h2Base}>12. שינויים, סיום והשעיה</h2>
+            <h2 className={h2Base}>{t("termsPage.s12.h")}</h2>
 
-            <p className={pBase}>
-              12.1. החברה שומרת לעצמה את הזכות לשנות, לעדכן או לתקן תנאי שימוש
-              אלה, את מדיניות הפרטיות או כל מדיניות אחרת של הפלטפורמה בכל עת
-              ולפי שיקול דעתה הבלעדי. גרסאות מעודכנות יפורסמו באתר עם תאריך
-              “עודכן לאחרונה” מעודכן.
-            </p>
-
-            <p className={pBase}>
-              12.2. המשך השימוש בפלטפורמה לאחר פרסום כל שינוי יהווה הסכמה מלאה
-              ומחייבת לתנאים המעודכנים.
-            </p>
-
-            <p className={pBase}>
-              12.3. החברה רשאית להשעות, להגביל או לסיים את חשבון המשתמש או את
-              גישתו לפלטפורמה, במלואם או בחלקם, ללא הודעה מוקדמת וללא אחריות,
-              אם:
-            </p>
+            <p className={pBase}>{t("termsPage.s12.p1")}</p>
+            <p className={pBase}>{t("termsPage.s12.p2")}</p>
+            <p className={pBase}>{t("termsPage.s12.p3")}</p>
 
             <ul className={ulBase}>
-              <li>המשתמש מפר תנאים אלה או כל דין חל.</li>
-              <li>
-                המשתמש עוסק בפעילות שעלולה לפגוע בפלטפורמה, במשתמשיה או
-                במוניטין החברה.
-              </li>
-              <li>המשתמש אינו מבצע תשלומים נדרשים או עוסק בהונאה.</li>
-              <li>בעיות טכניות או אבטחתיות מחייבות השעיה מיידית.</li>
+              {s12List.map((item, index) => (
+                <li key={index}>{item}</li>
+              ))}
             </ul>
 
-            <p className={pBase}>
-              12.4. עם הסיום, כל הזכויות שהוענקו למשתמש לפי תנאים אלה יפקעו
-              מיד, והמשתמש חייב להפסיק כל גישה ושימוש בפלטפורמה. כל חובת תשלום
-              פתוחה תשרוד את הסיום.
-            </p>
-
-            <p className={pBase}>
-              12.5. החברה שומרת לעצמה את הזכות להפסיק או לשנות את הפלטפורמה או
-              כל אחת מתכונותיה בכל עת, באופן זמני או קבוע, ללא הודעה מוקדמת.
-            </p>
+            <p className={pBase}>{t("termsPage.s12.p4")}</p>
+            <p className={pBase}>{t("termsPage.s12.p5")}</p>
           </section>
 
           <section id="section-13" className={sectionBase}>
-            <h2 className={h2Base}>
-              13. ויתור על תביעות, החזרים והגבלת פעולות
-            </h2>
+            <h2 className={h2Base}>{t("termsPage.s13.h")}</h2>
+
+            <p className={pBase}>{t("termsPage.s13.p1")}</p>
 
             <p className={pBase}>
-              13.1. המשתמש מוותר בזאת באופן בלתי חוזר, במידה המרבית המותרת לפי
-              הדין החל, על כל תביעה, דרישה, הליך משפטי, בקשת החזר, ביטול חיוב
-              או עילת תביעה נגד BizUply, חברת האם שלה, חברות בנות, חברות קשורות,
-              נושאי משרה, דירקטורים, עובדים, סוכנים ומעניקי רישיון, הנובעים
-              מהשימוש בפלטפורמה, בשירותים, בתשלומים, בחיוב או בכל התקשרות אחרת
-              עם החברה או קשורים אליהם.
+              <Trans i18nKey="termsPage.s13.p2" components={strongComponents} />
             </p>
 
             <p className={pBase}>
-              13.2. המשתמש מאשר ומסכים כי{" "}
-              <strong>כל התשלומים שבוצעו ל-BizUply הם סופיים ואינם ניתנים להחזר</strong>.
-              לא יינתנו החזר, זיכוי או פיצוי בגין ביטול מוקדם, אי שביעות רצון,
-              זמן השבתה, בעיות טכניות או הפסקת שימוש בשירותים. כל החזר או זיכוי
-              מטעמי רצון טוב, במלואו או בחלקו, ייקבעו אך ורק לפי{" "}
-              <strong>שיקול דעתה הבלעדי של החברה</strong>, ולחברה לא תהיה כל
-              חובה מכל סוג לספק החזרים כאמור בכל נסיבה.
+              <Trans i18nKey="termsPage.s13.p3" components={strongComponents} />
             </p>
 
-            <p className={pBase}>
-              13.3. המשתמש מוותר במפורש ובאופן בלתי חוזר על הזכות ליזום,
-              להשתתף או לסייע בכל{" "}
-              <strong>
-                תובענה ייצוגית, פעולה קולקטיבית, הליך ייצוגי או תביעה קבוצתית
-              </strong>{" "}
-              נגד BizUply, חברותיה הקשורות או נציגיה. כל מחלוקת או תביעה תטופל{" "}
-              <strong>על בסיס אישי בלבד</strong>.
-            </p>
+            <p className={pBase}>{t("termsPage.s13.p4")}</p>
 
             <p className={pBase}>
-              13.4. ויתור זה כולל, ללא הגבלה, כל תביעה בגין רשלנות, הפרת חוזה,
-              מצג שווא, אובדן רווחים, שיבוש עסקי, פגיעה במוניטין או כל נזק
-              ישיר, עקיף או תוצאתי נטען אחר. המשתמש מבין ומסכים באופן מלא כי
-              בשימוש בפלטפורמה הוא משחרר את BizUply מכל אחריות או חבות לתוצאות
-              פיננסיות או עסקיות הנובעות משימוש בשירותים או משימוש לרעה בהם.
-            </p>
-
-            <p className={pBase}>
-              13.5. במידה המותרת לפי דין, כל תביעה או עילת תביעה הנובעת
-              מתנאים אלה או קשורה אליהם חייבת להיות מוגשת בתוך{" "}
-              <strong>שנה אחת (1)</strong> לאחר שהתביעה נוצרה, אחרת היא תיחסם
-              לצמיתות. לאחר תקופה זו, למשתמש לא תהיה זכות לנקוט כל פעולה משפטית
-              או כספית נגד החברה.
+              <Trans i18nKey="termsPage.s13.p5" components={strongComponents} />
             </p>
           </section>
 
           <section id="section-14" className={sectionBase}>
-            <h2 className={h2Base}>14. הדין החל ויישוב מחלוקות</h2>
+            <h2 className={h2Base}>{t("termsPage.s14.h")}</h2>
 
             <p className={pBase}>
-              14.1. תנאים אלה וכל מחלוקת או תביעה הנובעת מהם או הקשורה אליהם
-              יהיו כפופים באופן בלעדי לדיני{" "}
-              <strong>מדינת ניו יורק, ארה"ב</strong>, ללא התחשבות בעקרונות
-              ברירת דין.
+              <Trans i18nKey="termsPage.s14.p1" components={strongComponents} />
             </p>
 
             <p className={pBase}>
-              14.2. כל מחלוקת, סכסוך או תביעה בין המשתמש לבין החברה ייעשה
-              תחילה ניסיון ליישבם באמצעות <strong>משא ומתן בתום לב</strong>. אם
-              לא יושג פתרון בתוך שלושים (30) ימים, המחלוקת תועבר ל{" "}
-              <strong>בוררות מחייבת</strong> לפי כללי ה{" "}
-              <strong>American Arbitration Association (AAA)</strong>, שתתנהל
-              באנגלית, בעיר ניו יורק, ארה"ב.
+              <Trans i18nKey="termsPage.s14.p2" components={strongComponents} />
             </p>
 
-            <p className={pBase}>
-              14.3. החלטת הבוררות תהיה סופית ומחייבת, ופסק דין על הפסק שניתן
-              על ידי הבורר ניתן יהיה לרשום בכל בית משפט בעל סמכות.
-            </p>
+            <p className={pBase}>{t("termsPage.s14.p3")}</p>
+            <p className={pBase}>{t("termsPage.s14.p4")}</p>
 
             <p className={pBase}>
-              14.4. על אף האמור לעיל, החברה שומרת לעצמה את הזכות לבקש סעד
-              מניעתי או סעד מן היושר בבית משפט בעל סמכות כדי להגן על הקניין
-              הרוחני או המידע הסודי שלה.
-            </p>
-
-            <p className={pBase}>
-              14.5. המשתמש מוותר במפורש על כל התנגדות למקום השיפוט או לסמכות
-              השיפוט ומסכים לסמכות השיפוט הבלעדית של בתי המשפט המדינתיים
-              והפדרליים הנמצאים ב<strong>מחוז ניו יורק, ניו יורק, ארה"ב</strong>.
+              <Trans i18nKey="termsPage.s14.p5" components={strongComponents} />
             </p>
           </section>
 
           <section id="section-15" className={sectionBase}>
-            <h2 className={h2Base}>15. פרטי התקשרות</h2>
+            <h2 className={h2Base}>{t("termsPage.s15.h")}</h2>
 
-            <p className={pBase}>
-              לשאלות, פניות, הודעות משפטיות או בקשות הקשורות לפרטיות, אנא צרו
-              קשר עם BizUply בכתובת:
-            </p>
+            <p className={pBase}>{t("termsPage.s15.intro")}</p>
 
             <ul className={ulBase}>
-              <li>
-                <strong>דוא"ל:</strong> support@bizuply.com
-              </li>
-              <li>
-                <strong>כתובת עסקית:</strong> BizUply, New York, NY, USA
-              </li>
+              {s15List.map((item, index) => (
+                <li key={index}>
+                  <Trans
+                    i18nKey={`termsPage.s15.list.${index}`}
+                    components={strongComponents}
+                  />
+                </li>
+              ))}
             </ul>
 
             <p className={pBase}>
-              החברה משתדלת להשיב לכל הפניות בתוך פרק זמן סביר, בדרך כלל בתוך{" "}
-              <strong>5–10 ימי עסקים</strong>.
+              <Trans i18nKey="termsPage.s15.p1" components={strongComponents} />
             </p>
 
-            <p className={pBase}>
-              תנאים אלה מהווים את מלוא ההסכם בין המשתמש לבין BizUply בנוגע
-              לשימוש בפלטפורמה, ומחליפים כל הבנה קודמת בעל פה או בכתב. אם הוראה
-              כלשהי תימצא בלתי אכיפה, יתר ההוראות יישארו בתוקף מלא.
-            </p>
+            <p className={pBase}>{t("termsPage.s15.p2")}</p>
 
             <div className="mt-6 rounded-3xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-5 py-4 text-start text-slate-800">
               <p className="text-sm font-black uppercase tracking-[0.18em] text-amber-300">
-                עודכן לאחרונה
+                {t("termsPage.s15.lastUpdatedLabel")}
               </p>
-              <p className="mt-2 text-xl font-black">אוקטובר 2025</p>
+              <p className="mt-2 text-xl font-black">
+                {t("termsPage.s15.lastUpdatedValue")}
+              </p>
             </div>
           </section>
         </div>

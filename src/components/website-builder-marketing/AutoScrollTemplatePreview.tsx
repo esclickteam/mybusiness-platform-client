@@ -6,6 +6,7 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { useTranslation } from "react-i18next";
 import { VisualPageStackKeepAliveProvider } from "../site-builder/runtime/VisualPageStack";
 import { getStudioTemplateRenderer } from "../site-builder/studio/data/templates/templateRendererRegistry";
 import {
@@ -81,6 +82,7 @@ export default function AutoScrollTemplatePreview({
   accent,
   accentSoft,
 }: Props) {
+  const { t, i18n } = useTranslation();
   const instanceId = useId();
   const frameRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -115,7 +117,7 @@ export default function AutoScrollTemplatePreview({
 
   const activePage = pages[pageIndex] || pages[0] || {
     id: "home",
-    name: "בית",
+    name: t("websitePage.preview.homeFallback"),
     slug: "/",
   };
 
@@ -370,7 +372,7 @@ export default function AutoScrollTemplatePreview({
                   key={`${templateId}:${activePage.id}`}
                   data-wb-tour={templateId}
                   data-template-id={templateId}
-                  dir="rtl"
+                  dir={i18n.language === "he" ? "rtl" : "ltr"}
                   style={{
                     width: DESIGN_WIDTH,
                     minHeight: DESIGN_MIN_HEIGHT,

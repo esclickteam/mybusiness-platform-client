@@ -1,16 +1,19 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { motion, useReducedMotion } from "framer-motion";
 import { Check } from "lucide-react";
 import AutoScrollTemplatePreview from "./AutoScrollTemplatePreview";
-import { websiteTypeBlocks } from "./websiteTypeBlocks";
+import { getWebsiteTypeBlocks } from "./websiteTypeBlocks";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
 export default function WebsiteTypesReveal() {
   const reduceMotion = useReducedMotion();
+  const { t } = useTranslation();
+  const websiteTypeBlocks = getWebsiteTypeBlocks(t);
 
   return (
-    <section className="wb-types" aria-label="סוגי אתרים">
+    <section className="wb-types" aria-label={t("websitePage.typesReveal.aria")}>
       <div className="wb-types__inner">
         {websiteTypeBlocks.map((block, index) => (
           <motion.article

@@ -1,6 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeft, Sparkles } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { Reveal } from "./Reveal";
 
 type Props = {
@@ -18,11 +19,13 @@ export default function FinalCta({
   eyebrow,
   title,
   text,
-  primaryLabel = "הירשמו עכשיו",
+  primaryLabel,
   primaryTo = "/pricing",
   secondaryLabel,
   secondaryTo = "/contact",
 }: Props) {
+  const { t } = useTranslation();
+  const primaryText = primaryLabel ?? t("product.registerNow");
   return (
     <Reveal from="scale" duration={0.9} amount={0.2}>
       <section className="pm-final">
@@ -37,7 +40,7 @@ export default function FinalCta({
 
           <div className="pm-cta-row">
             <Link to={primaryTo} className="pm-cta pm-cta--light">
-              {primaryLabel}
+              {primaryText}
               <ArrowLeft size={17} aria-hidden="true" />
             </Link>
             {secondaryLabel ? (
