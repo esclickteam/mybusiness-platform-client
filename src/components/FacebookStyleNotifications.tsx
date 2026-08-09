@@ -29,6 +29,16 @@ import {
   X,
 } from "lucide-react";
 import { NotificationSettingsPanel } from "./NotificationSettings";
+import {
+  getPushBillingStatus,
+  type PushBillingStatus,
+} from "../api/pushBillingApi";
+import { getPushDiscoverabilityState } from "./notifications/pushDiscoverability";
+import {
+  PushBellDiscoverChip,
+  PushCompactUpsellCard,
+  PushEmptyStateUpsell,
+} from "./notifications/PushDiscoverabilityCards";
 
 type NotificationTab = "all" | "unread";
 
@@ -188,6 +198,8 @@ export default function FacebookStyleNotifications() {
   const [notifications, setNotifications] = useState<UnifiedNotification[]>([]);
   const [open, setOpen] = useState(false);
   const [panelView, setPanelView] = useState<"list" | "settings">("list");
+  const [pushBillingStatus, setPushBillingStatus] =
+    useState<PushBillingStatus | null>(null);
   const [loading, setLoading] = useState(false);
   const [toasts, setToasts] = useState<UnifiedNotification[]>([]);
 
@@ -220,6 +232,38 @@ export default function FacebookStyleNotifications() {
 
     return () => window.clearInterval(interval);
   }, [businessId, i18n.language]);
+
+  useEffect(() => {
+    if (!businessId) {
+      setPushBillingStatus(null);
+      return;
+    }
+
+    let cancelled = false;
+
+    (async () => {
+      try {
+        const status = await getPushBillingStatus();
+        if (!cancelled) setPushBillingStatus(status);
+      } catch {
+        if (!cancelled) setPushBillingStatus(null);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [businessId, open]);
+
+  const pushDiscoverability = useMemo(
+    () => getPushDiscoverabilityState(pushBillingStatus),
+    [pushBillingStatus]
+  );
+
+  function openPushSettings() {
+    setOpen(true);
+    setPanelView("settings");
+  }
 
   // Bulk Meta sync should import quietly — mark synced leads as already seen
   // so polling does not create a toast/alert for every imported lead.
@@ -1366,7 +1410,7 @@ export default function FacebookStyleNotifications() {
 
   return (
     <NotificationPanelErrorBoundary>
-      <div className="inline-flex">
+      <div className="relative inline-flex">
       <button
         type="button"
         onClick={toggleOpen}
@@ -1413,12 +1457,20 @@ export default function FacebookStyleNotifications() {
               animate={{ scale: [1.6, 1], opacity: 1 }}
               transition={{ duration: 0.45, ease: "easeOut" }}
               className="absolute -right-1.5 -top-1.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-gradient-to-br from-red-500 to-rose-600 px-1.5 text-[11px] font-black text-black shadow-sm ring-2 ring-white"
+              data-testid="notifications-unread-badge"
             >
               {unreadCount > 99 ? "99+" : unreadCount}
             </motion.span>
           </>
         )}
       </button>
+
+      {pushDiscoverability.showUpsell ? (
+        <PushBellDiscoverChip
+          trialEligible={pushDiscoverability.trialEligible}
+          onOpenPushSettings={openPushSettings}
+        />
+      ) : null}
 
       {toasts.length > 0 && (
         <div
@@ -1552,12 +1604,24 @@ export default function FacebookStyleNotifications() {
                       </div>
 
                       <div className="flex shrink-0 items-center gap-1.5">
+                        {pushDiscoverability.showUpsell ? (
+                          <button
+                            type="button"
+                            onClick={openPushSettings}
+                            className="hidden h-9 items-center rounded-2xl bg-sky-50 px-2.5 text-[10px] font-black text-sky-700 ring-1 ring-sky-100 transition hover:bg-sky-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300 sm:inline-flex"
+                            data-testid="push-header-chip"
+                          >
+                            {pushDiscoverability.trialEligible
+                              ? "7 ימים חינם"
+                              : "Push"}
+                          </button>
+                        ) : null}
                         <button
                           type="button"
                           onClick={() => setPanelView("settings")}
                           aria-label={t("notifications.settingsAria")}
                           title={t("notifications.settingsAria")}
-                          className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-slate-50 text-slate-500 transition hover:bg-amber-50 hover:text-amber-600"
+                          className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-slate-50 text-slate-500 transition hover:bg-amber-50 hover:text-amber-600 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300"
                         >
                           <Settings className="h-4 w-4" />
                         </button>
@@ -1645,7 +1709,7 @@ export default function FacebookStyleNotifications() {
 
               <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-3">
                 {filtered.length === 0 ? (
-                  <div className="flex min-h-[230px] flex-col items-center justify-center rounded-3xl border border-dashed border-slate-200 bg-slate-50 px-8 py-10 text-center">
+                  <div className="flex min-h-[230px] flex-col items-center justify-center rounded-3xl border border-dashed border-slate-200 bg-slate-50 px-6 py-10 text-center sm:px-8">
                     <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-3xl bg-white text-slate-400 shadow-sm ring-1 ring-slate-100">
                       <ListChecks className="h-7 w-7" />
                     </div>
@@ -1654,12 +1718,25 @@ export default function FacebookStyleNotifications() {
                       {t("notifications.emptyTitle")}
                     </p>
 
-                    <p className="mt-2 max-w-xs text-sm font-semibold leading-6 text-slate-400">
-                      {t("notifications.emptySubtitle")}
-                    </p>
+                    {pushDiscoverability.showUpsell ? (
+                      <PushEmptyStateUpsell
+                        trialEligible={pushDiscoverability.trialEligible}
+                        onOpenPushSettings={openPushSettings}
+                      />
+                    ) : (
+                      <p className="mt-2 max-w-xs text-sm font-semibold leading-6 text-slate-400">
+                        {t("notifications.emptySubtitle")}
+                      </p>
+                    )}
                   </div>
                 ) : (
                   <div className="space-y-2">
+                    {pushDiscoverability.showUpsell ? (
+                      <PushCompactUpsellCard
+                        trialEligible={pushDiscoverability.trialEligible}
+                        onOpenPushSettings={openPushSettings}
+                      />
+                    ) : null}
                     {filtered.map((notification) => {
                       const kindClasses = getKindClasses(notification.kind);
 
