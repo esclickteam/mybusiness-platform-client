@@ -144,11 +144,11 @@ describe("workingTemplates", () => {
     expect(key).toBe("lead_created");
   });
 
-  it("marks WhatsApp simple ready from BizUply managed catalog automatically", () => {
+  it("marks WhatsApp simple ready so user can pick an approved message template", () => {
     const template = WORKING_TEMPLATES.find(
       (t) => t.key === "wa_new_lead_welcome"
     )!;
-    const blocked = getTemplateReadiness(template, {
+    const withoutTemplates = getTemplateReadiness(template, {
       recipes: [],
       triggers: [],
       waTemplates: [],
@@ -156,10 +156,9 @@ describe("workingTemplates", () => {
       calendarConnected: false,
       aiEntitled: false,
     });
-    expect(blocked.ready).toBe(false);
-    expect(blocked.blocker).toMatch(/BizUply|מנוהל/);
+    expect(withoutTemplates.ready).toBe(true);
 
-    const ready = getTemplateReadiness(template, {
+    const withSuggestion = getTemplateReadiness(template, {
       recipes: [],
       triggers: [],
       waTemplates: [
@@ -177,8 +176,8 @@ describe("workingTemplates", () => {
       calendarConnected: false,
       aiEntitled: false,
     });
-    expect(ready.ready).toBe(true);
-    expect(ready.suggestedWaTemplateId).toBe("wa1");
+    expect(withSuggestion.ready).toBe(true);
+    expect(withSuggestion.suggestedWaTemplateId).toBe("wa1");
   });
 
   it("requires calendar connection for Google Calendar workflow", () => {

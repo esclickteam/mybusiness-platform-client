@@ -1108,28 +1108,15 @@ export function getTemplateReadiness(
   ctx: WorkingContext
 ): TemplateReadiness {
   if (template.engine === "whatsapp_simple") {
-    if (!ctx.managedWaReady && !ctx.waTemplates.length) {
-      return {
-        ready: false,
-        blocker:
-          "WhatsApp המנוהל של BizUply אינו זמין כרגע — רעננו את העמוד ונסו שוב",
-      };
-    }
+    // Always activatable: user picks from approved WhatsApp message templates.
     const picked = pickBestWaTemplate(ctx.waTemplates, {
       category: template.waCategory,
       hints: template.waHints,
     });
-    if (!picked) {
-      return {
-        ready: false,
-        blocker:
-          "הקטלוג המנוהל של BizUply עדיין לא החזיר תבנית מתאימה — רעננו ונסו שוב",
-      };
-    }
     return {
       ready: true,
-      suggestedWaTemplateId: picked.id,
-      suggestedWaTemplateName: picked.name,
+      suggestedWaTemplateId: picked?.id,
+      suggestedWaTemplateName: picked?.name,
     };
   }
 
@@ -1184,21 +1171,13 @@ export function getTemplateReadiness(
       category: template.waCategory,
       hints: template.waHints,
     });
-    if (!picked) {
-      return {
-        ready: false,
-        blocker: ctx.managedWaReady
-          ? "הקטלוג המנוהל של BizUply עדיין לא החזיר תבנית מתאימה — רעננו ונסו שוב"
-          : "WhatsApp המנוהל של BizUply אינו זמין כרגע — רעננו את העמוד ונסו שוב",
-        recipe,
-      };
-    }
+    // Trigger is enough to show as ready — WA template is chosen on activate.
     return {
       ready: true,
       recipe,
       resolvedTriggerKey: triggerKey,
-      suggestedWaTemplateId: picked.id,
-      suggestedWaTemplateName: picked.name,
+      suggestedWaTemplateId: picked?.id,
+      suggestedWaTemplateName: picked?.name,
     };
   }
 
