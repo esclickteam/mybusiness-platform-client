@@ -433,7 +433,7 @@
   },
   "layout": {
     "adminImpersonationTitle": "Admin mode — business access",
-    "adminImpersonationText": "You are acting with full permissions in {{name}}. All actions are saved to this business.",
+    "adminImpersonationText": "You are acting with this business's package permissions in {{name}}. All actions are saved to this business.",
     "marketerImpersonationTitle": "Marketer mode — client access",
     "marketerImpersonationText": "You are managing {{name}}'s account. Campaign management and CRM are available.",
     "backToAdmin": "Back to admin panel",

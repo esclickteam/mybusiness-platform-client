@@ -6,6 +6,7 @@ import AdminDialButton from "../../components/AdminDialButton";
 import { useAuth } from "../../context/AuthContext";
 import AdminHeader from "./AdminsHeader";
 import BizuplyLoader from "../../components/ui/BizuplyLoader";
+import { getDefaultDashboardPath } from "../../utils/moduleAccess";
 
 type BusinessOwner = {
   _id?: string;
@@ -115,7 +116,12 @@ function AdminBusinesses() {
 
   async function handleEnterBusiness(business: AdminBusiness) {
     const label = business.businessName || "העסק";
-    if (!window.confirm(`להיכנס לעסק "${label}" עם הרשאות מלאות?`)) return;
+    if (
+      !window.confirm(
+        `להיכנס לעסק "${label}" עם הרשאות החבילה של העסק?`
+      )
+    )
+      return;
 
     setEnteringId(business._id);
     setError("");
@@ -128,7 +134,10 @@ function AdminBusinesses() {
       loginWithToken(data.user, data.token, { skipRedirect: true });
 
       const businessId = data?.user?.businessId || business._id;
-      navigate(`/business/${businessId}/dashboard`, { replace: true });
+      navigate(
+        getDefaultDashboardPath(businessId, data?.user?.enabledModules),
+        { replace: true }
+      );
     } catch (err: any) {
       console.error("Enter business failed:", err);
       setError(
@@ -154,7 +163,8 @@ function AdminBusinesses() {
                 עסקים במערכת
               </h1>
               <p className="mt-2 text-sm font-bold text-purple-950/55">
-                כניסה לכל עסק עם הרשאות מלאות לביצוע כל הפעולות.
+                כניסה לכל עסק לפי הרשאות החבילה שלו (חודשי/שנתי או בניית אתר
+                בלבד).
               </p>
             </div>
 
