@@ -106,7 +106,7 @@ describe("workingTemplates launch safety", () => {
 
     const ready = getTemplateReadiness(template, {
       recipes: [],
-      triggers: [],
+      triggers: [leadTrigger],
       waTemplates: [approvedWa],
       managedWaReady: true,
       calendarConnected: false,
@@ -114,6 +114,7 @@ describe("workingTemplates launch safety", () => {
     });
     expect(ready.ready).toBe(true);
     expect(ready.suggestedWaTemplateId).toBe("wa1");
+    expect(ready.resolvedTriggerKey).toBe("new_lead");
   });
 
   it("never marks AI templates ready (coming soon)", () => {
