@@ -76,20 +76,40 @@ export default function AutomationsLayout() {
     autoCreateHandled.current = recipeKey;
 
     void (async () => {
-      try {
-        const created = await createAutomationWorkflow(businessId, {
-          recipe: recipeKey,
-        });
+      const clearRecipeParam = () => {
         const next = new URLSearchParams(searchParams);
         next.delete("recipe");
         setSearchParams(next, { replace: true });
-        navigate(`${basePath}/${created._id}`, { replace: true });
-        toast.success("האוטומציה מוכנה לעריכה על הבד");
+      };
+      try {
+        try {
+          const created = await createAutomationWorkflow(businessId, {
+            recipe: recipeKey,
+          });
+          clearRecipeParam();
+          navigate(`${basePath}/${created._id}`, { replace: true });
+          toast.success("האוטומציה מוכנה לעריכה על הבד");
+          return;
+        } catch {
+          const local = LOCAL_SYSTEM_TEMPLATES.find(
+            (row) => row.recipeKey === recipeKey || row.catalogId === recipeKey
+          );
+          if (!local) throw new Error("no_local_fallback");
+          const graph = buildLocalAutomationGraph(local);
+          const created = await createAutomationWorkflow(businessId, {
+            useStarter: false,
+            name: local.name,
+            description: local.description,
+            nodes: graph.nodes,
+            edges: graph.edges,
+          });
+          clearRecipeParam();
+          navigate(`${basePath}/${created._id}`, { replace: true });
+          toast.success("נוצרה אוטומציה מהתבנית המערכתית (טריגר ← תוצאה)");
+        }
       } catch (error: unknown) {
         toast.error(readAutomationErrorMessage(error, "שגיאה ביצירת אוטומציה"));
-        const next = new URLSearchParams(searchParams);
-        next.delete("recipe");
-        setSearchParams(next, { replace: true });
+        clearRecipeParam();
       }
     })();
   }, [
