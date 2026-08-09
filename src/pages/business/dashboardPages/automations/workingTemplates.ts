@@ -984,11 +984,20 @@ function templateHaystack(tpl: {
     .toLowerCase();
 }
 
+export function getWaTemplateId(
+  tpl: WhatsAppTemplate | ApprovedWhatsAppTemplate | { _id?: string; id?: string }
+): string {
+  return String(
+    (tpl as { _id?: string })._id || (tpl as { id?: string }).id || ""
+  );
+}
+
+/** Templates that can be selected for an automation send. */
 export function listUsableWaTemplates(
   templates: Array<WhatsAppTemplate | ApprovedWhatsAppTemplate>
 ): Array<WhatsAppTemplate | ApprovedWhatsAppTemplate> {
   return (templates || []).filter((tpl) => {
-    const id = String((tpl as { _id?: string })._id || "");
+    const id = getWaTemplateId(tpl);
     if (!id) return false;
     const status = String((tpl as WhatsAppTemplate).status || "").toLowerCase();
     const meta = String(
@@ -997,6 +1006,7 @@ export function listUsableWaTemplates(
         ""
     ).toLowerCase();
     if (status === "archived" || status === "draft") return false;
+    // Hard-blocked Meta states — cannot send
     if (
       meta === "rejected" ||
       meta === "paused" ||
@@ -1006,7 +1016,11 @@ export function listUsableWaTemplates(
     ) {
       return false;
     }
-    return true;
+    // Accept APPROVED Meta templates, or active local/BizUply templates
+    // (meta may be empty before sync).
+    if (meta === "approved") return true;
+    if (!status || status === "active") return true;
+    return false;
   });
 }
 
@@ -1038,12 +1052,20 @@ export function pickBestWaTemplate(
 
   const ranked = [...usable].sort((a, b) => score(b) - score(a));
   const chosen = ranked[0];
-  const id = String((chosen as { _id?: string })._id || "");
+  const id = getWaTemplateId(chosen);
   if (!id) return null;
   return {
     id,
     name: String(chosen.name || chosen.key || "תבנית"),
   };
+}
+
+export function isWhatsAppFacingTemplate(template: WorkingTemplate): boolean {
+  return (
+    template.engine === "whatsapp_simple" ||
+    Boolean(template.requiresWaTemplate) ||
+    template.categories.includes("whatsapp")
+  );
 }
 
 export function resolvePublishableTrigger(

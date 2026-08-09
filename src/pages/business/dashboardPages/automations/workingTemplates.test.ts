@@ -3,6 +3,8 @@ import type { AutomationRecipeSummary } from "../../../../api/automationWorkflow
 import {
   WORKING_TEMPLATES,
   getTemplateReadiness,
+  getWaTemplateId,
+  isWhatsAppFacingTemplate,
   listUsableWaTemplates,
   pickBestWaTemplate,
   resolvePublishableTrigger,
@@ -92,17 +94,27 @@ describe("workingTemplates", () => {
         metaStatus: "APPROVED",
         category: "appointment_reminder",
       } as never,
+      {
+        id: "5",
+        name: "Active local",
+        status: "active",
+        category: "follow_up",
+      } as never,
     ]);
-    expect(usable.map((t) => String((t as { _id: string })._id))).toEqual([
-      "3",
-      "4",
-    ]);
+    expect(usable.map((t) => getWaTemplateId(t))).toEqual(["3", "4", "5"]);
 
     const picked = pickBestWaTemplate(usable, {
       category: "welcome",
       hints: ["lead", "welcome"],
     });
     expect(picked?.id).toBe("3");
+  });
+
+  it("marks WhatsApp simple templates as WhatsApp-facing", () => {
+    const wa = WORKING_TEMPLATES.find((t) => t.key === "wa_new_lead_welcome")!;
+    expect(isWhatsAppFacingTemplate(wa)).toBe(true);
+    const email = WORKING_TEMPLATES.find((t) => t.key === "wf_lead_email_only")!;
+    expect(isWhatsAppFacingTemplate(email)).toBe(false);
   });
 
   it("resolves publishable triggers by preferred keys", () => {
