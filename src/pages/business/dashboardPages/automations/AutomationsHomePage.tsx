@@ -403,7 +403,7 @@ export default function AutomationsHomePage() {
             usage={billingUsage}
             initialMode={planModalMode}
             onClose={() => setPlanModalOpen(false)}
-            onUsageUpdated={() => refreshBilling()}
+            onUsageUpdated={async () => { await refreshBilling(); }}
             onOpenCancel={() => {
               setPlanModalOpen(false);
               setCancelModalOpen(true);

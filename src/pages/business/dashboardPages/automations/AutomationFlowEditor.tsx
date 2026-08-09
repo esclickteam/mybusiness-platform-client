@@ -3237,7 +3237,7 @@ function EditorInner({
             usage={billingUsage}
             initialMode={billingModalMode}
             onClose={() => setShowBillingModal(false)}
-            onUsageUpdated={() => refreshBillingUsage()}
+            onUsageUpdated={async () => { await refreshBillingUsage(); }}
             onOpenCancel={() => {
               setShowBillingModal(false);
               setShowBillingCancelModal(true);
