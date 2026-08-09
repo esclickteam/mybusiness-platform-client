@@ -45,7 +45,7 @@ export function PushEmptyStateUpsell({
         data-testid="push-empty-upsell-cta"
       >
         <Smartphone className="h-4 w-4" aria-hidden />
-        {trialEligible ? "נסו התראות Push" : "גילוי Push למכשיר"}
+        {trialEligible ? "נסו התראות Push" : "הפעלת התראות Push"}
       </button>
 
       <p className="mt-2 text-[10px] font-semibold text-slate-400">
@@ -99,7 +99,7 @@ export function PushCompactUpsellCard({
         className="inline-flex h-9 shrink-0 items-center justify-center rounded-2xl bg-sky-600 px-3 text-[11px] font-black text-white transition hover:bg-sky-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300 focus-visible:ring-offset-2"
         data-testid="push-compact-upsell-cta"
       >
-        {trialEligible ? "הפעלת Push" : "גילוי Push למכשיר"}
+        {trialEligible ? "הפעלת Push" : "הפעלת התראות Push"}
       </button>
     </div>
   );
