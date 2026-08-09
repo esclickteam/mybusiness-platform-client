@@ -967,7 +967,10 @@ export type TemplateReadiness = {
 export type WorkingContext = {
   recipes: AutomationRecipeSummary[];
   triggers: AutomationTriggerCatalogItem[];
+  /** BizUply-managed approved catalog templates (senderMode=bizuply_managed). */
   waTemplates: Array<WhatsAppTemplate | ApprovedWhatsAppTemplate>;
+  /** Platform-managed WhatsApp API is ready — businesses do not connect Meta themselves. */
+  managedWaReady: boolean;
   calendarConnected: boolean;
   aiEntitled: boolean;
 };
@@ -1041,11 +1044,17 @@ export function pickBestWaTemplate(
         ""
     ).toLowerCase();
     if (meta === "approved") points += 5;
+    if ((tpl as WhatsAppTemplate).isSystem) points += 4;
+    if ((tpl as ApprovedWhatsAppTemplate).isTestTemplate) points -= 2;
     if (opts.category && String(tpl.category || "") === opts.category) {
       points += 4;
     }
+    const metaName = String(
+      (tpl as WhatsAppTemplate).metaTemplateName || ""
+    ).toLowerCase();
     for (const hint of hints) {
       if (hay.includes(hint)) points += 3;
+      if (metaName && metaName.includes(hint)) points += 4;
     }
     return points;
   };
@@ -1099,6 +1108,13 @@ export function getTemplateReadiness(
   ctx: WorkingContext
 ): TemplateReadiness {
   if (template.engine === "whatsapp_simple") {
+    if (!ctx.managedWaReady && !ctx.waTemplates.length) {
+      return {
+        ready: false,
+        blocker:
+          "WhatsApp המנוהל של BizUply אינו זמין כרגע — רעננו את העמוד ונסו שוב",
+      };
+    }
     const picked = pickBestWaTemplate(ctx.waTemplates, {
       category: template.waCategory,
       hints: template.waHints,
@@ -1106,7 +1122,8 @@ export function getTemplateReadiness(
     if (!picked) {
       return {
         ready: false,
-        blocker: "חסרה תבנית WhatsApp מאושרת — צרו/אשרו תבנית ואז הפעילו",
+        blocker:
+          "הקטלוג המנוהל של BizUply עדיין לא החזיר תבנית מתאימה — רעננו ונסו שוב",
       };
     }
     return {
@@ -1170,7 +1187,9 @@ export function getTemplateReadiness(
     if (!picked) {
       return {
         ready: false,
-        blocker: "חסרה תבנית WhatsApp מאושרת לתוצאת ההודעה",
+        blocker: ctx.managedWaReady
+          ? "הקטלוג המנוהל של BizUply עדיין לא החזיר תבנית מתאימה — רעננו ונסו שוב"
+          : "WhatsApp המנוהל של BizUply אינו זמין כרגע — רעננו את העמוד ונסו שוב",
         recipe,
       };
     }

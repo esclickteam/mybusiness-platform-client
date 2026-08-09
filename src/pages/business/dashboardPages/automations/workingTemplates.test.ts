@@ -144,7 +144,7 @@ describe("workingTemplates", () => {
     expect(key).toBe("lead_created");
   });
 
-  it("marks WhatsApp simple ready only when an approved template exists", () => {
+  it("marks WhatsApp simple ready from BizUply managed catalog automatically", () => {
     const template = WORKING_TEMPLATES.find(
       (t) => t.key === "wa_new_lead_welcome"
     )!;
@@ -152,10 +152,12 @@ describe("workingTemplates", () => {
       recipes: [],
       triggers: [],
       waTemplates: [],
+      managedWaReady: false,
       calendarConnected: false,
       aiEntitled: false,
     });
     expect(blocked.ready).toBe(false);
+    expect(blocked.blocker).toMatch(/BizUply|מנוהל/);
 
     const ready = getTemplateReadiness(template, {
       recipes: [],
@@ -167,8 +169,11 @@ describe("workingTemplates", () => {
           category: "welcome",
           status: "active",
           metaStatus: "APPROVED",
+          isSystem: true,
+          metaTemplateName: "new_lead_received",
         } as never,
       ],
+      managedWaReady: true,
       calendarConnected: false,
       aiEntitled: false,
     });
@@ -194,6 +199,7 @@ describe("workingTemplates", () => {
         },
       ],
       waTemplates: [],
+      managedWaReady: true,
       calendarConnected: false,
       aiEntitled: false,
     });
@@ -214,6 +220,7 @@ describe("workingTemplates", () => {
         },
       ],
       waTemplates: [],
+      managedWaReady: true,
       calendarConnected: true,
       aiEntitled: false,
     });
@@ -248,7 +255,8 @@ describe("workingTemplates", () => {
         recipes: [recipe],
         triggers: [],
         waTemplates: [],
-        calendarConnected: false,
+        managedWaReady: true,
+      calendarConnected: false,
         aiEntitled: false,
       }).ready
     ).toBe(false);
@@ -258,7 +266,8 @@ describe("workingTemplates", () => {
         recipes: [recipe],
         triggers: [],
         waTemplates: [],
-        calendarConnected: false,
+        managedWaReady: true,
+      calendarConnected: false,
         aiEntitled: true,
       }).ready
     ).toBe(true);
@@ -268,6 +277,7 @@ describe("workingTemplates", () => {
       recipes: [{ ...recipe, aiLocked: true }],
       triggers: [leadTrigger],
       waTemplates: [],
+      managedWaReady: true,
       calendarConnected: false,
       aiEntitled: true,
     });
@@ -309,6 +319,7 @@ describe("workingTemplates", () => {
           metaStatus: "APPROVED",
         } as never,
       ],
+      managedWaReady: true,
       calendarConnected: false,
       aiEntitled: false,
     });
