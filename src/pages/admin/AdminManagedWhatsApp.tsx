@@ -1,9 +1,10 @@
 import React, { useCallback, useEffect, useState } from "react";
-import { MessageSquare, RefreshCw, Shield } from "lucide-react";
+import { Link2, MessageSquare, RefreshCw, Shield } from "lucide-react";
 
 import {
   getAdminManagedWhatsAppStatus,
   listAdminManagedWhatsAppAudit,
+  saveAndVerifyAdminManagedWhatsAppConnection,
   syncAdminManagedWhatsAppTemplates,
   updateAdminManagedWhatsAppSettings,
   type AdminManagedWhatsAppAuditItem,
@@ -62,18 +63,42 @@ function StatusPill({
   );
 }
 
+const fieldStyle: React.CSSProperties = {
+  width: "100%",
+  borderRadius: 10,
+  border: "1px solid #e2e8f0",
+  padding: "10px 12px",
+  fontSize: 14,
+  boxSizing: "border-box",
+};
+
 export default function AdminManagedWhatsApp() {
   const { user } = useAuth() as { user: { role?: string } | null };
   const [status, setStatus] = useState<AdminManagedWhatsAppStatus | null>(null);
   const [audit, setAudit] = useState<AdminManagedWhatsAppAuditItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [verifying, setVerifying] = useState(false);
   const [syncing, setSyncing] = useState(false);
   const [error, setError] = useState("");
   const [syncFlash, setSyncFlash] = useState("");
   const [allowlistText, setAllowlistText] = useState("");
+  const [wabaId, setWabaId] = useState("");
+  const [phoneNumberId, setPhoneNumberId] = useState("");
+  const [displayPhoneNumber, setDisplayPhoneNumber] = useState("");
+  const [accessToken, setAccessToken] = useState("");
 
   const isAdmin = String(user?.role || "").toLowerCase() === "admin";
+
+  const applyStatus = useCallback((st: AdminManagedWhatsAppStatus) => {
+    setStatus(st);
+    setAllowlistText((st.allowlistBusinessIds || []).join("\n"));
+    setWabaId(st.configForm?.wabaId || "");
+    setPhoneNumberId(st.configForm?.phoneNumberId || "");
+    setDisplayPhoneNumber(st.configForm?.displayPhoneNumber || "");
+    // Never prefill token — leave blank; existing token stays server-side.
+    setAccessToken("");
+  }, []);
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -83,15 +108,14 @@ export default function AdminManagedWhatsApp() {
         getAdminManagedWhatsAppStatus(),
         listAdminManagedWhatsAppAudit(30).catch(() => ({ items: [] })),
       ]);
-      setStatus(st);
-      setAllowlistText((st.allowlistBusinessIds || []).join("\n"));
+      applyStatus(st);
       setAudit(aud.items || []);
     } catch (err: any) {
       setError(err?.message || "טעינת הסטטוס נכשלה");
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [applyStatus]);
 
   useEffect(() => {
     void load();
@@ -105,8 +129,7 @@ export default function AdminManagedWhatsApp() {
       const data = await updateAdminManagedWhatsAppSettings({
         managedModeEnabled: next,
       });
-      setStatus(data);
-      setAllowlistText((data.allowlistBusinessIds || []).join("\n"));
+      applyStatus(data);
     } catch (err: any) {
       setError(err?.message || "שמירת ההגדרה נכשלה");
     } finally {
@@ -127,12 +150,40 @@ export default function AdminManagedWhatsApp() {
         allowlistMode: mode,
         allowlistBusinessIds: mode === "allowlist" ? ids : [],
       });
-      setStatus(data);
-      setAllowlistText((data.allowlistBusinessIds || []).join("\n"));
+      applyStatus(data);
     } catch (err: any) {
       setError(err?.message || "שמירת allowlist נכשלה");
     } finally {
       setSaving(false);
+    }
+  }
+
+  async function saveAndVerifyConnection() {
+    if (!isAdmin || verifying) return;
+    setVerifying(true);
+    setError("");
+    setSyncFlash("");
+    try {
+      const data = await saveAndVerifyAdminManagedWhatsAppConnection({
+        wabaId: wabaId.trim(),
+        phoneNumberId: phoneNumberId.trim(),
+        displayPhoneNumber: displayPhoneNumber.trim(),
+        accessToken: accessToken.trim() || undefined,
+      });
+      applyStatus(data);
+      setSyncFlash(
+        data.connection?.connectionReady
+          ? "החיבור נשמר ואומת מול Meta — Connection status: READY"
+          : "נשמר, אך החיבור עדיין לא READY — בדקו את הסטטוס"
+      );
+      const aud = await listAdminManagedWhatsAppAudit(30).catch(() => ({
+        items: [],
+      }));
+      setAudit(aud.items || []);
+    } catch (err: any) {
+      setError(err?.message || "שמירה ובדיקת חיבור נכשלו");
+    } finally {
+      setVerifying(false);
     }
   }
 
@@ -143,7 +194,7 @@ export default function AdminManagedWhatsApp() {
     setSyncFlash("");
     try {
       const data = await syncAdminManagedWhatsAppTemplates();
-      setStatus(data);
+      applyStatus(data);
       const c = data.sync?.counts || data.templates;
       setSyncFlash(
         `סנכרון הושלם: APPROVED ${c?.APPROVED ?? 0} · PENDING ${c?.PENDING ?? 0} · REJECTED ${c?.REJECTED ?? 0}`
@@ -174,6 +225,8 @@ export default function AdminManagedWhatsApp() {
   const wabaOk = Boolean(status?.connection?.wabaConnected);
   const phoneOk = Boolean(status?.connection?.phoneNumberConnected);
   const tokenOk = status?.connection?.accessToken === "configured";
+  const connectionReady = Boolean(status?.connection?.connectionReady);
+  const tokenConfigured = Boolean(status?.configForm?.accessTokenConfigured);
 
   return (
     <div dir="rtl" style={{ minHeight: "100vh", background: "#f6f7fb" }}>
@@ -186,7 +239,7 @@ export default function AdminManagedWhatsApp() {
           </div>
           <p style={{ margin: "8px 0 0", color: "#64748b", maxWidth: 640 }}>
             חיבור WhatsApp מרכזי של Bizuply לעסקים מורשים — עד ש-Meta יאשרו WABA
-            נפרד לכל לקוח. ההגדרה נשמרת בשרת בלבד.
+            נפרד לכל לקוח. ההגדרה וה-token נשמרים בשרת בלבד (מוצפנים).
           </p>
         </header>
 
@@ -241,15 +294,22 @@ export default function AdminManagedWhatsApp() {
               >
                 <div>
                   <strong style={{ fontSize: 16 }}>סטטוס מערכת</strong>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 10 }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexWrap: "wrap",
+                      gap: 8,
+                      marginTop: 10,
+                    }}
+                  >
                     <StatusPill ok={modeOn} labelOk="פעיל" labelBad="כבוי" />
                     <StatusPill
-                      ok={wabaOk}
+                      ok={wabaOk && connectionReady}
                       labelOk="WABA מחובר"
                       labelBad="WABA לא מחובר"
                     />
                     <StatusPill
-                      ok={phoneOk}
+                      ok={phoneOk && connectionReady}
                       labelOk="Phone Number מחובר"
                       labelBad="Phone Number לא מחובר"
                     />
@@ -257,6 +317,11 @@ export default function AdminManagedWhatsApp() {
                       ok={tokenOk}
                       labelOk="Access Token: Configured"
                       labelBad="Access Token: Missing"
+                    />
+                    <StatusPill
+                      ok={connectionReady}
+                      labelOk="Connection: READY"
+                      labelBad="Connection: NOT READY"
                     />
                   </div>
                 </div>
@@ -288,9 +353,28 @@ export default function AdminManagedWhatsApp() {
                 }}
               >
                 <div>
-                  <div style={{ color: "#64748b", fontSize: 12 }}>מספר תבניות APPROVED</div>
+                  <div style={{ color: "#64748b", fontSize: 12 }}>
+                    תבניות APPROVED (Meta)
+                  </div>
                   <div style={{ fontSize: 22, fontWeight: 700 }}>
-                    {status.templates?.APPROVED ?? 0}
+                    {connectionReady ? status.templates?.APPROVED ?? 0 : 0}
+                  </div>
+                  {!connectionReady ? (
+                    <div style={{ color: "#94a3b8", fontSize: 12, marginTop: 4 }}>
+                      יוצג רק אחרי חיבור READY + סנכרון
+                    </div>
+                  ) : null}
+                </div>
+                <div>
+                  <div style={{ color: "#64748b", fontSize: 12 }}>PENDING</div>
+                  <div style={{ fontSize: 18, fontWeight: 600 }}>
+                    {connectionReady ? status.templates?.PENDING ?? 0 : 0}
+                  </div>
+                </div>
+                <div>
+                  <div style={{ color: "#64748b", fontSize: 12 }}>REJECTED</div>
+                  <div style={{ fontSize: 18, fontWeight: 600 }}>
+                    {connectionReady ? status.templates?.REJECTED ?? 0 : 0}
                   </div>
                 </div>
                 <div>
@@ -306,9 +390,18 @@ export default function AdminManagedWhatsApp() {
                   </div>
                 </div>
                 <div>
-                  <div style={{ color: "#64748b", fontSize: 12 }}>שגיאת חיבור אחרונה</div>
-                  <div style={{ fontSize: 14, color: status.lastError ? "#b91c1c" : "#64748b" }}>
-                    {status.lastError || status.connection?.connectionReason || "אין"}
+                  <div style={{ color: "#64748b", fontSize: 12 }}>
+                    שגיאת חיבור אחרונה
+                  </div>
+                  <div
+                    style={{
+                      fontSize: 14,
+                      color: status.lastError ? "#b91c1c" : "#64748b",
+                    }}
+                  >
+                    {status.lastError ||
+                      status.connection?.connectionReason ||
+                      "אין"}
                   </div>
                 </div>
               </div>
@@ -322,7 +415,12 @@ export default function AdminManagedWhatsApp() {
               <button
                 type="button"
                 onClick={() => void runSync()}
-                disabled={syncing}
+                disabled={syncing || !connectionReady}
+                title={
+                  connectionReady
+                    ? undefined
+                    : "יש לשמור ולבדוק חיבור לפני סנכרון תבניות"
+                }
                 style={{
                   marginTop: 8,
                   display: "inline-flex",
@@ -331,14 +429,144 @@ export default function AdminManagedWhatsApp() {
                   border: "none",
                   borderRadius: 10,
                   padding: "10px 14px",
-                  background: "#0f172a",
+                  background: connectionReady ? "#0f172a" : "#94a3b8",
                   color: "#fff",
                   fontWeight: 600,
-                  cursor: syncing ? "wait" : "pointer",
+                  cursor: syncing || !connectionReady ? "not-allowed" : "pointer",
                 }}
               >
                 <RefreshCw size={16} />
                 {syncing ? "מסנכרן…" : "סנכרון תבניות Meta"}
+              </button>
+            </section>
+
+            <section
+              style={{
+                background: "#fff",
+                borderRadius: 14,
+                padding: 20,
+                boxShadow: "0 1px 3px rgba(15,23,42,0.06)",
+                marginBottom: 16,
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                <Link2 size={18} />
+                <strong>חיבור WhatsApp מרכזי</strong>
+              </div>
+              <p style={{ color: "#64748b", fontSize: 14 }}>
+                הגדרה ידנית של WABA הפלטפורמה (ללא OAuth). ה-Access Token נשמר
+                מוצפן בשרת בלבד ולא מוחזר ללקוח.
+              </p>
+              {!status.connection?.managedBusinessIdConfigured ? (
+                <div
+                  style={{
+                    padding: 12,
+                    borderRadius: 10,
+                    background: "#fff7ed",
+                    color: "#9a3412",
+                    marginBottom: 12,
+                    fontSize: 14,
+                  }}
+                >
+                  חסר{" "}
+                  <code>BIZUPLY_MANAGED_WHATSAPP_BUSINESS_ID</code> בשרת — לא
+                  ניתן לשמור חיבור בלי מזהה עסק מרכזי.
+                </div>
+              ) : null}
+
+              <div
+                style={{
+                  display: "grid",
+                  gap: 14,
+                  gridTemplateColumns: "1fr",
+                }}
+              >
+                <label style={{ display: "grid", gap: 6 }}>
+                  <span style={{ fontWeight: 600, fontSize: 13 }}>WABA ID</span>
+                  <input
+                    style={fieldStyle}
+                    dir="ltr"
+                    value={wabaId}
+                    onChange={(e) => setWabaId(e.target.value)}
+                    placeholder="WhatsApp Business Account ID"
+                    autoComplete="off"
+                  />
+                </label>
+                <label style={{ display: "grid", gap: 6 }}>
+                  <span style={{ fontWeight: 600, fontSize: 13 }}>
+                    WhatsApp Phone Number ID
+                  </span>
+                  <input
+                    style={fieldStyle}
+                    dir="ltr"
+                    value={phoneNumberId}
+                    onChange={(e) => setPhoneNumberId(e.target.value)}
+                    placeholder="Phone Number ID"
+                    autoComplete="off"
+                  />
+                </label>
+                <label style={{ display: "grid", gap: 6 }}>
+                  <span style={{ fontWeight: 600, fontSize: 13 }}>
+                    Display Phone Number / מספר לתצוגה
+                  </span>
+                  <input
+                    style={fieldStyle}
+                    dir="ltr"
+                    value={displayPhoneNumber}
+                    onChange={(e) => setDisplayPhoneNumber(e.target.value)}
+                    placeholder="+9725..."
+                    autoComplete="off"
+                  />
+                </label>
+                <label style={{ display: "grid", gap: 6 }}>
+                  <span style={{ fontWeight: 600, fontSize: 13 }}>
+                    Meta Access Token
+                  </span>
+                  <input
+                    style={fieldStyle}
+                    dir="ltr"
+                    type="password"
+                    value={accessToken}
+                    onChange={(e) => setAccessToken(e.target.value)}
+                    placeholder={
+                      tokenConfigured
+                        ? "Configured — הזינו token חדש רק לעדכון"
+                        : "הדביקו Access Token"
+                    }
+                    autoComplete="new-password"
+                  />
+                  <span style={{ color: "#64748b", fontSize: 12 }}>
+                    סטטוס שמור:{" "}
+                    {tokenConfigured ? "Configured" : "Not configured"}
+                    {tokenConfigured
+                      ? " (לא מוצג מלא; השאירו ריק כדי לשמור את הקיים)"
+                      : ""}
+                  </span>
+                </label>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => void saveAndVerifyConnection()}
+                disabled={
+                  verifying || !status.connection?.managedBusinessIdConfigured
+                }
+                style={{
+                  marginTop: 16,
+                  display: "inline-flex",
+                  alignItems: "center",
+                  gap: 8,
+                  border: "none",
+                  borderRadius: 10,
+                  padding: "10px 14px",
+                  background: "#0369a1",
+                  color: "#fff",
+                  fontWeight: 600,
+                  cursor: verifying ? "wait" : "pointer",
+                }}
+              >
+                <Link2 size={16} />
+                {verifying ? "מאמת מול Meta…" : "שמור ובדוק חיבור"}
               </button>
             </section>
 
@@ -359,7 +587,14 @@ export default function AdminManagedWhatsApp() {
                 All entitled משתמש ב-entitlement / allowlist הקיימים. Allowlist
                 מגביל לרשימת מזהי עסקים בלבד.
               </p>
-              <div style={{ display: "flex", gap: 16, flexWrap: "wrap", marginBottom: 12 }}>
+              <div
+                style={{
+                  display: "flex",
+                  gap: 16,
+                  flexWrap: "wrap",
+                  marginBottom: 12,
+                }}
+              >
                 <label style={{ display: "flex", gap: 8, alignItems: "center" }}>
                   <input
                     type="radio"

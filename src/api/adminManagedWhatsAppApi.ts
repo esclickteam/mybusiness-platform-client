@@ -28,6 +28,13 @@ export type AdminManagedWhatsAppStatus = {
     connectionReady: boolean;
     connectionCode?: string;
     connectionReason?: string;
+    connectionStatus?: "READY" | "NOT_READY" | string;
+  };
+  configForm?: {
+    wabaId?: string;
+    phoneNumberId?: string;
+    displayPhoneNumber?: string;
+    accessTokenConfigured?: boolean;
   };
   templates: {
     APPROVED: number;
@@ -35,6 +42,7 @@ export type AdminManagedWhatsAppStatus = {
     REJECTED: number;
     OTHER?: number;
   };
+  templatesSource?: string;
 };
 
 export type AdminManagedWhatsAppAuditItem = {
@@ -58,6 +66,16 @@ export async function updateAdminManagedWhatsAppSettings(payload: {
 }) {
   const { data } = await API.put("/admin/managed-whatsapp", payload);
   return data as AdminManagedWhatsAppStatus & { settings?: unknown };
+}
+
+export async function saveAndVerifyAdminManagedWhatsAppConnection(payload: {
+  wabaId: string;
+  phoneNumberId: string;
+  displayPhoneNumber: string;
+  accessToken?: string;
+}) {
+  const { data } = await API.post("/admin/managed-whatsapp/connection", payload);
+  return data as AdminManagedWhatsAppStatus;
 }
 
 export async function syncAdminManagedWhatsAppTemplates() {
