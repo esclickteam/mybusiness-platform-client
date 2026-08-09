@@ -1,6 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Search, X } from "lucide-react";
-import type { PaletteItem } from "../automationFlowTypes";
+import type { PaletteFilter, PaletteItem } from "../automationFlowTypes";
+
+export type PickerMode = "all" | "trigger" | "result";
 
 export type PickerCategory =
   | "all"
@@ -14,7 +16,7 @@ export type PickerCategory =
 const CATEGORIES: Array<{ id: PickerCategory; label: string }> = [
   { id: "all", label: "הכל" },
   { id: "trigger", label: "טריגרים" },
-  { id: "action", label: "פעולות" },
+  { id: "action", label: "תוצאות" },
   { id: "logic", label: "לוגיקה" },
   { id: "delay", label: "המתנה" },
   { id: "ai", label: "AI" },
@@ -55,9 +57,18 @@ function matchesCategory(item: PaletteItem, category: PickerCategory) {
   return true;
 }
 
+function matchesMode(item: PaletteItem, mode: PickerMode) {
+  if (mode === "trigger") return item.filter === "trigger";
+  if (mode === "result") {
+    return item.filter !== "trigger";
+  }
+  return true;
+}
+
 type Props = {
   open: boolean;
   items: PaletteItem[];
+  mode?: PickerMode;
   loading?: boolean;
   error?: string;
   readOnly?: boolean;
@@ -70,6 +81,7 @@ type Props = {
 export default function AutomationNodePicker({
   open,
   items,
+  mode = "all",
   loading,
   error,
   readOnly,
@@ -87,25 +99,50 @@ export default function AutomationNodePicker({
       setCategory("all");
       return;
     }
+    setCategory(mode === "trigger" ? "trigger" : mode === "result" ? "action" : "all");
     const onKey = (event: KeyboardEvent) => {
       if (event.key === "Escape") onClose();
     };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
-  }, [open, onClose]);
+  }, [open, onClose, mode]);
+
+  const visibleCategories = useMemo(() => {
+    if (mode === "trigger") {
+      return CATEGORIES.filter((c) => c.id === "all" || c.id === "trigger");
+    }
+    if (mode === "result") {
+      return CATEGORIES.filter((c) => c.id !== "trigger");
+    }
+    return CATEGORIES;
+  }, [mode]);
 
   const visible = useMemo(() => {
     const q = query.trim().toLowerCase();
     return items.filter((item) => {
+      if (!matchesMode(item, mode)) return false;
       if (!matchesCategory(item, category)) return false;
       if (!q) return true;
       return `${item.label} ${item.description} ${item.key}`
         .toLowerCase()
         .includes(q);
     });
-  }, [category, items, query]);
+  }, [category, items, mode, query]);
 
   if (!open) return null;
+
+  const title =
+    mode === "trigger"
+      ? "בחרו טריגר"
+      : mode === "result"
+        ? "מה יקרה אוטומטית?"
+        : "הוסף שלב";
+  const subtitle =
+    mode === "trigger"
+      ? "הטריגר הוא נקודת ההתחלה — מתי האוטומציה רצה"
+      : mode === "result"
+        ? "התוצאה היא מה שקורה אחרי הטריגר. אפשר להוסיף כמה תוצאות יחד."
+        : "בחרו טריגר, תוצאה או לוגיקה להוספה לזרימה";
 
   return (
     <div className="af-drawer-backdrop" onClick={onClose} role="presentation">
@@ -113,13 +150,13 @@ export default function AutomationNodePicker({
         className="af-drawer af-drawer--picker"
         role="dialog"
         aria-modal="true"
-        aria-label="הוסף שלב"
+        aria-label={title}
         onClick={(event) => event.stopPropagation()}
       >
         <header className="af-drawer__header">
           <div>
-            <h2>הוסף שלב</h2>
-            <p>בחרו טריגר, פעולה או לוגיקה להוספה לזרימה</p>
+            <h2>{title}</h2>
+            <p>{subtitle}</p>
           </div>
           <button
             type="button"
@@ -136,13 +173,19 @@ export default function AutomationNodePicker({
           <input
             value={query}
             onChange={(event) => setQuery(event.target.value)}
-            placeholder="חפש טריגר או פעולה"
+            placeholder={
+              mode === "trigger"
+                ? "חפש טריגר (למשל ליד חדש)"
+                : mode === "result"
+                  ? "חפש תוצאה (וואטסאפ, משימה, AI…)"
+                  : "חפש טריגר או תוצאה"
+            }
             autoFocus
           />
         </label>
 
         <div className="af-drawer__chips">
-          {CATEGORIES.map((chip) => (
+          {visibleCategories.map((chip) => (
             <button
               key={chip.id}
               type="button"
@@ -218,5 +261,4 @@ export default function AutomationNodePicker({
   );
 }
 
-// re-export for typing convenience
 export type { PaletteFilter };

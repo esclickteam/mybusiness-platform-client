@@ -1,4 +1,5 @@
 import type { AutomationRecipeSummary } from "../../../../api/automationWorkflowApi";
+import { getCatalogByRecipeKey } from "./systemAutomationCatalog";
 
 export type TemplateCategoryId =
   | "all"
@@ -33,8 +34,8 @@ export const TEMPLATE_CATEGORIES: TemplateCategory[] = [
 const RECIPE_CATEGORY_MAP: Record<string, TemplateCategoryId[]> = {
   lead_multi_route: ["leads", "crm", "whatsapp"],
   lead_no_response: ["leads", "whatsapp"],
-  appointment_duo: ["appointments"],
-  new_client_welcome: ["crm"],
+  appointment_duo: ["appointments", "whatsapp"],
+  new_client_welcome: ["crm", "whatsapp"],
   ai_rank_leads: ["ai", "leads"],
   ai_summarize_calls: ["ai", "appointments"],
   ai_auto_reply: ["ai", "whatsapp"],
@@ -56,9 +57,24 @@ const RECIPE_TRIGGER_LABEL: Record<string, string> = {
   ai_tasks_from_chat: "פגישה הסתיימה",
 };
 
+const RECIPE_RESULT_LABEL: Record<string, string> = {
+  lead_multi_route: "WhatsApp + משימה + התראה",
+  lead_no_response: "מעקב WhatsApp / עדכון סטטוס",
+  appointment_duo: "תזכורת + הודעת תודה",
+  new_client_welcome: "הודעת פתיחה + משימת שימור",
+  ai_rank_leads: "דירוג AI + התראה",
+  ai_summarize_calls: "סיכום AI ל-CRM",
+  ai_auto_reply: "טיוטת תשובה AI",
+  ai_risk_lead: "התראת ליד בסיכון",
+  ai_campaign_change: "המלצת קמפיין AI",
+  ai_tasks_from_chat: "משימות AI מתוך שיחה",
+};
+
 export function getRecipeCategories(
   recipe: AutomationRecipeSummary
 ): TemplateCategoryId[] {
+  const fromCatalog = getCatalogByRecipeKey(recipe.key)?.categories;
+  if (fromCatalog?.length) return fromCatalog as TemplateCategoryId[];
   const mapped = RECIPE_CATEGORY_MAP[recipe.key];
   if (mapped?.length) return mapped;
   if (recipe.tier === "ai_paid" || recipe.isAiRecipe) return ["ai"];
@@ -66,9 +82,19 @@ export function getRecipeCategories(
 }
 
 export function getRecipeTriggerLabel(recipe: AutomationRecipeSummary): string {
+  const fromCatalog = getCatalogByRecipeKey(recipe.key)?.triggerLabel;
+  if (fromCatalog) return fromCatalog;
   if (RECIPE_TRIGGER_LABEL[recipe.key]) return RECIPE_TRIGGER_LABEL[recipe.key];
   if (recipe.triggerCount > 1) return `${recipe.triggerCount} טריגרים`;
   return "טריגר";
+}
+
+export function getRecipeResultLabel(recipe: AutomationRecipeSummary): string {
+  const fromCatalog = getCatalogByRecipeKey(recipe.key)?.resultLabels;
+  if (fromCatalog?.length) return fromCatalog.join(" · ");
+  if (RECIPE_RESULT_LABEL[recipe.key]) return RECIPE_RESULT_LABEL[recipe.key];
+  if (recipe.pathCount > 1) return `${recipe.pathCount} תוצאות יחד`;
+  return "תוצאה";
 }
 
 export function recipeMatchesCategory(

@@ -173,6 +173,11 @@ export default function AiAutomationsTab({
               <p className="mt-1.5 flex-1 text-xs font-semibold leading-6 text-slate-600">
                 {t(card.descKey)}
               </p>
+              <p className="mt-2 text-[11px] font-bold text-slate-500">
+                {t("advisor.aiAutomations.triggerResultHint", {
+                  defaultValue: "טריגר → תוצאת AI במערכת האוטומציות",
+                })}
+              </p>
               <p className="mt-3 text-[11px] font-black uppercase tracking-wide text-amber-700">
                 {t("advisor.aiAutomations.paidTag")}
               </p>

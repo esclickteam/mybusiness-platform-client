@@ -230,8 +230,24 @@ export default function WhatsAppAutomationsTab({
 
   const timingLabel = (auto: WhatsAppAutomation) => {
     if (auto.trigger === "appointment_reminder_hours") {
+      const hours = auto.hoursBefore ?? 24;
+      if (hours === 24) {
+        return t("whatsapp.automations.presets.day1", {
+          defaultValue: "יום לפני",
+        });
+      }
+      if (hours === 48) {
+        return t("whatsapp.automations.presets.day2", {
+          defaultValue: "יומיים לפני",
+        });
+      }
+      if (hours === 72) {
+        return t("whatsapp.automations.presets.day3", {
+          defaultValue: "3 ימים לפני",
+        });
+      }
       return t("whatsapp.automations.timing.hoursBefore", {
-        count: auto.hoursBefore ?? 24,
+        count: hours,
       });
     }
     if (
@@ -343,19 +359,69 @@ export default function WhatsAppAutomationsTab({
           </label>
 
           {showHoursBefore && (
-            <label className="grid gap-1.5">
+            <div className="grid gap-2 md:col-span-2">
               <span className="text-xs font-black text-slate-600">
                 {t("whatsapp.automations.hoursBefore")}
               </span>
-              <input
-                type="number"
-                min={1}
-                max={168}
-                className={inputBase}
-                value={hoursBefore}
-                onChange={(e) => setHoursBefore(Number(e.target.value) || 24)}
-              />
-            </label>
+              <div className="flex flex-wrap gap-2">
+                {[
+                  { hours: 2, labelKey: "whatsapp.automations.presets.hours2" },
+                  { hours: 24, labelKey: "whatsapp.automations.presets.day1" },
+                  { hours: 48, labelKey: "whatsapp.automations.presets.day2" },
+                  { hours: 72, labelKey: "whatsapp.automations.presets.day3" },
+                ].map((preset) => (
+                  <button
+                    key={preset.hours}
+                    type="button"
+                    className={`${btnSecondary} !h-9 !px-3 !text-xs ${
+                      hoursBefore === preset.hours
+                        ? "!border-emerald-400 !bg-emerald-50 !text-emerald-900"
+                        : ""
+                    }`}
+                    onClick={() => {
+                      setHoursBefore(preset.hours);
+                      setName(
+                        t("whatsapp.automations.defaults.appointment_reminder_hours_named", {
+                          count: preset.hours,
+                          defaultValue:
+                            preset.hours === 24
+                              ? "תזכורת פגישה — יום לפני"
+                              : preset.hours === 48
+                                ? "תזכורת פגישה — יומיים לפני"
+                                : `תזכורת פגישה — ${preset.hours} שעות לפני`,
+                        })
+                      );
+                    }}
+                  >
+                    {t(preset.labelKey, {
+                      defaultValue:
+                        preset.hours === 2
+                          ? "שעתיים לפני"
+                          : preset.hours === 24
+                            ? "יום לפני"
+                            : preset.hours === 48
+                              ? "יומיים לפני"
+                              : "3 ימים לפני",
+                    })}
+                  </button>
+                ))}
+              </div>
+              <label className="grid gap-1.5 max-w-xs">
+                <span className="text-xs font-semibold text-slate-500">
+                  {t("whatsapp.automations.customHours", {
+                    defaultValue: "או הזינו מספר שעות",
+                  })}
+                </span>
+                <input
+                  type="number"
+                  min={1}
+                  max={168}
+                  className={inputBase}
+                  value={hoursBefore}
+                  onChange={(e) => setHoursBefore(Number(e.target.value) || 24)}
+                />
+              </label>
+            </div>
           )}
 
           {showDelayMinutes && (

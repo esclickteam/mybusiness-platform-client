@@ -25,16 +25,16 @@ const ICONS = {
 
 function providerLabel(type: AutomationNodeType, data: Record<string, unknown>) {
   if (type === "trigger") return "טריגר";
-  if (type === "delay") return "Delay";
-  if (type === "condition") return "Logic";
-  if (type === "router") return "Router";
+  if (type === "delay") return "המתנה";
+  if (type === "condition") return "תנאי";
+  if (type === "router") return "פיצול";
   const key = String(data.actionKey || "");
-  if (key.includes("gmail")) return "Gmail";
-  if (key.includes("outlook")) return "Outlook";
-  if (key.includes("calendar")) return "Calendar";
-  if (key.includes("whatsapp") || key === "send_whatsapp") return "WhatsApp";
-  if (key.startsWith("ai_")) return "AI";
-  return "Action";
+  if (key.includes("gmail")) return "תוצאה · Gmail";
+  if (key.includes("outlook")) return "תוצאה · Outlook";
+  if (key.includes("calendar")) return "תוצאה · Calendar";
+  if (key.includes("whatsapp") || key === "send_whatsapp") return "תוצאה · WhatsApp";
+  if (key.startsWith("ai_")) return "תוצאה · AI";
+  return "תוצאה";
 }
 
 function RouteHandles({
@@ -84,15 +84,21 @@ function FlowNodeShell({
   const Icon = ICONS[type];
   const title = String(data.label || meta.title);
   const summary = nodeSummary(data, type);
-  const routeCount = clampRouteCount(data.routeCount, 2);
+  const routeCount = clampRouteCount(data.routeCount, 1);
   const router = type === "router" ? ensureRouterPaths(data) : null;
   const provider = providerLabel(type, data);
+  const triggerRouteLabels =
+    type === "trigger" && routeCount > 1
+      ? Array.from({ length: routeCount }, (_, i) => `תוצאה ${i + 1}`)
+      : undefined;
 
   return (
     <div
       className={[
         "af-node",
         `af-node--${type}`,
+        type === "trigger" ? "af-node--role-trigger" : "",
+        type === "action" ? "af-node--role-result" : "",
         selected ? "af-node--selected" : "",
       ].join(" ")}
       style={
@@ -114,7 +120,11 @@ function FlowNodeShell({
       {summary ? <p className="af-node__summary">{summary}</p> : null}
 
       {type === "trigger" ? (
-        <RouteHandles count={routeCount} prefix="route" />
+        <RouteHandles
+          count={routeCount}
+          prefix="route"
+          labels={triggerRouteLabels}
+        />
       ) : null}
 
       {type === "router" && router ? (

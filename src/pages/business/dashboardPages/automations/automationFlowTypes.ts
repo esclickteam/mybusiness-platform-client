@@ -106,7 +106,13 @@ export const ACTION_OPTIONS = [
   { value: "webhook", label: "קריאת Webhook", supported: true },
   { value: "stop", label: "עצירת זרימה", supported: true },
   { value: "create_appointment", label: "יצירת פגישה", supported: false, comingSoon: true },
-  { value: "ai_rank_lead", label: "AI · דירוג ליד", supported: false, comingSoon: true },
+  // AI actions — backend recipes already ship these keys; keep them selectable.
+  { value: "ai_rank_lead", label: "AI · דירוג ליד", supported: true },
+  { value: "ai_summarize_call", label: "AI · סיכום שיחה", supported: true },
+  { value: "ai_draft_reply", label: "AI · ניסוח תשובה", supported: true },
+  { value: "ai_detect_risk_lead", label: "AI · ליד בסיכון", supported: true },
+  { value: "ai_campaign_recommend", label: "AI · המלצת קמפיין", supported: true },
+  { value: "ai_tasks_from_chat", label: "AI · משימות משיחה", supported: true },
 ] as const;
 
 export const CONDITION_OPTIONS = [
@@ -130,16 +136,16 @@ export const FILTER_CHIPS: Array<{ key: PaletteFilter; label: string }> = [
   { key: "all", label: "הכל" },
   { key: "trigger", label: "טריגר" },
   { key: "condition", label: "תנאי" },
-  { key: "router", label: "ניתוב" },
+  { key: "router", label: "פיצול" },
   { key: "delay", label: "המתנה" },
-  { key: "action", label: "פעולה" },
+  { key: "action", label: "תוצאה" },
 ];
 
 function triggerItem(
   key: string,
   label: string,
   description: string,
-  routeCount = 2,
+  routeCount = 1,
   supported = true
 ): PaletteItem {
   return {
@@ -192,7 +198,7 @@ function actionItem(key: string, label: string, description: string, supported =
     key,
     group: "actions",
     filter: "action",
-    label: `פעולה · ${label}`,
+    label: `תוצאה · ${label}`,
     description,
     color: "#059669",
     defaults,
@@ -225,16 +231,15 @@ const RAW_FLOW_ACTION_PALETTE: PaletteItem[] = [
     key: "router",
     group: "flow",
     filter: "router",
-    label: "ניתוב · פיצול מסלולים",
-    description: "מפצל ל־2–6 תוצאות במקביל",
+    label: "פיצול · כמה תוצאות יחד",
+    description: "מפצל ל־2–6 תוצאות שרצות יחד — בלי מסלולים מורכבים",
     color: "#db2777",
     defaults: {
-      label: "פיצול מסלולים",
-      pathCount: 3,
+      label: "פיצול לכמה תוצאות",
+      pathCount: 2,
       paths: [
-        { id: "path_1", label: "מסלול 1" },
-        { id: "path_2", label: "מסלול 2" },
-        { id: "path_3", label: "מסלול 3" },
+        { id: "path_1", label: "תוצאה 1" },
+        { id: "path_2", label: "תוצאה 2" },
       ],
     },
   },
@@ -344,8 +349,8 @@ export const TYPE_META: Record<
   trigger: { title: "טריגר", color: "#7c3aed", accent: "#ede9fe" },
   delay: { title: "המתנה", color: "#0891b2", accent: "#cffafe" },
   condition: { title: "תנאי", color: "#d97706", accent: "#fef3c7" },
-  action: { title: "פעולה", color: "#059669", accent: "#d1fae5" },
-  router: { title: "ניתוב", color: "#db2777", accent: "#fce7f3" },
+  action: { title: "תוצאה", color: "#059669", accent: "#d1fae5" },
+  router: { title: "פיצול", color: "#db2777", accent: "#fce7f3" },
 };
 
 export const QUICK_ADD_AFTER: PaletteItem[] = [
@@ -357,14 +362,14 @@ export const QUICK_ADD_AFTER: PaletteItem[] = [
   PALETTE.find((p) => p.key === "notify")!,
 ].filter(Boolean);
 
-export function clampRouteCount(value: unknown, fallback = 2) {
+export function clampRouteCount(value: unknown, fallback = 1) {
   const n = Number(value);
   if (!Number.isFinite(n)) return fallback;
   return Math.min(6, Math.max(1, Math.round(n)));
 }
 
 export function ensureRouterPaths(data: Record<string, unknown>) {
-  const pathCount = clampRouteCount(data.pathCount, 3);
+  const pathCount = Math.max(2, clampRouteCount(data.pathCount, 2));
   const existing = Array.isArray(data.paths)
     ? (data.paths as Array<{ id?: string; label?: string }>)
     : [];
@@ -372,7 +377,7 @@ export function ensureRouterPaths(data: Record<string, unknown>) {
     const prev = existing[index];
     return {
       id: prev?.id || `path_${index + 1}`,
-      label: prev?.label || `מסלול ${index + 1}`,
+      label: prev?.label || `תוצאה ${index + 1}`,
     };
   });
   return { pathCount, paths };
@@ -391,9 +396,10 @@ export function nodeSummary(
   }
   if (type === "trigger") {
     const key = String(data.triggerKey || "");
-    const routes = clampRouteCount(data.routeCount, 2);
+    const routes = clampRouteCount(data.routeCount, 1);
     const base = String(data.label || key || "");
-    return `${base} · ${routes} ניתובים`;
+    if (routes <= 1) return base || "טריגר";
+    return `${base} · ${routes} תוצאות יחד`;
   }
   if (type === "condition") {
     const key = String(data.conditionKey || "");
@@ -404,7 +410,7 @@ export function nodeSummary(
   }
   if (type === "router") {
     const { pathCount } = ensureRouterPaths(data);
-    return `${pathCount} מסלולים במקביל`;
+    return `${pathCount} תוצאות יחד`;
   }
   if (type === "action") {
     const key = String(data.actionKey || "");
@@ -463,7 +469,7 @@ export function listSourceHandles(
   data: Record<string, unknown>
 ): string[] {
   if (type === "trigger") {
-    const count = clampRouteCount(data.routeCount, 2);
+    const count = clampRouteCount(data.routeCount, 1);
     return Array.from({ length: count }, (_, i) => `route_${i + 1}`);
   }
   if (type === "router") {
