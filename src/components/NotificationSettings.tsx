@@ -11,6 +11,7 @@ import {
   Download,
   Handshake,
   ListChecks,
+  Lock,
   Loader2,
   MessageCircle,
   Share,
@@ -283,6 +284,7 @@ export function NotificationSettingsPanel({
   const showPaywall = billingEnabled && !entitled;
   const showSubscriberPanel = billingEnabled && entitled;
   const showFreePushToggle = !billingEnabled;
+  const categoriesLocked = showPaywall;
 
   const pushOn =
     subscribed && settings.master && (!billingEnabled || entitled);
@@ -354,6 +356,10 @@ export function NotificationSettingsPanel({
   }
 
   function handleCategoryToggle(key: CategoryKey) {
+    if (categoriesLocked) {
+      setBillingMessage("זמין לאחר הפעלת 7 ימי הניסיון");
+      return;
+    }
     const next = { ...settings, [key]: !settings[key] };
     setSettings(next);
     persist(next);
@@ -830,38 +836,73 @@ export function NotificationSettingsPanel({
           )}
 
           <div className="space-y-1.5">
-            {CATEGORIES.map((category) => (
-              <div
-                key={category.key}
-                className="flex items-center justify-between gap-2 rounded-2xl border border-slate-100 bg-white p-3 transition"
-              >
-                <div className="flex min-w-0 items-center gap-2">
-                  <span
-                    className={[
-                      "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ring-1",
-                      settings[category.key]
-                        ? "bg-amber-50 text-red-500 ring-amber-100"
-                        : "bg-slate-100 text-slate-400 ring-slate-100",
-                    ].join(" ")}
-                  >
-                    {category.icon}
-                  </span>
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-black text-slate-800">
-                      {category.label}
-                    </p>
-                    <p className="truncate text-[11px] font-semibold text-slate-500">
-                      {category.description}
-                    </p>
+            {categoriesLocked ? (
+              <div className="mb-1 flex items-start gap-2 rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2.5">
+                <Lock className="mt-0.5 h-3.5 w-3.5 shrink-0 text-slate-500" />
+                <p className="text-[11px] font-bold leading-4 text-slate-600">
+                  קטגוריות ההתראות מוצגות לתצוגה מקדימה בלבד. זמין לאחר הפעלת 7
+                  ימי הניסיון.
+                </p>
+              </div>
+            ) : null}
+            {CATEGORIES.map((category) => {
+              const categoryOn = categoriesLocked
+                ? false
+                : Boolean(settings[category.key]);
+              return (
+                <div
+                  key={category.key}
+                  className={[
+                    "flex items-center justify-between gap-2 rounded-2xl border p-3 transition",
+                    categoriesLocked
+                      ? "border-slate-100 bg-slate-50/70"
+                      : "border-slate-100 bg-white",
+                  ].join(" ")}
+                >
+                  <div className="flex min-w-0 items-center gap-2">
+                    <span
+                      className={[
+                        "flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ring-1",
+                        categoryOn
+                          ? "bg-amber-50 text-red-500 ring-amber-100"
+                          : "bg-slate-100 text-slate-400 ring-slate-100",
+                      ].join(" ")}
+                    >
+                      {category.icon}
+                    </span>
+                    <div className="min-w-0">
+                      <p
+                        className={[
+                          "truncate text-sm font-black",
+                          categoriesLocked ? "text-slate-500" : "text-slate-800",
+                        ].join(" ")}
+                      >
+                        {category.label}
+                      </p>
+                      <p className="truncate text-[11px] font-semibold text-slate-500">
+                        {categoriesLocked
+                          ? "זמין לאחר הפעלת 7 ימי הניסיון"
+                          : category.description}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="flex shrink-0 items-center gap-1.5">
+                    {categoriesLocked ? (
+                      <Lock
+                        className="h-3.5 w-3.5 text-slate-400"
+                        aria-hidden
+                      />
+                    ) : null}
+                    <Toggle
+                      checked={categoryOn}
+                      disabled={categoriesLocked}
+                      onChange={() => handleCategoryToggle(category.key)}
+                    />
                   </div>
                 </div>
-
-                <Toggle
-                  checked={settings[category.key]}
-                  onChange={() => handleCategoryToggle(category.key)}
-                />
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           <div className="mt-3 rounded-2xl border border-slate-200 bg-slate-50 p-3">
