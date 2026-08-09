@@ -88,6 +88,18 @@ const PROVIDER_UI: Record<
     button: "לתשלום מאובטח ב-Stripe",
     accent: "#635BFF",
   },
+  manual: {
+    title: "סל והזמנה",
+    subtitle: "שליחת הזמנה לעסק (תשלום ידני / תיאום)",
+    button: "שליחת הזמנה",
+    accent: "#0f172a",
+  },
+  whatsapp: {
+    title: "סל והזמנה",
+    subtitle: "שליחת הזמנה לעסק דרך WhatsApp",
+    button: "שליחת הזמנה",
+    accent: "#128C7E",
+  },
 };
 
 function formatMoney(amount: number, currency = "ILS") {
@@ -179,7 +191,9 @@ export default function PublicStoreCheckout({
   const checkoutReady = Boolean(
     payments?.checkoutReady ||
       checkoutProvider === "paypal" ||
-      checkoutProvider === "stripe"
+      checkoutProvider === "stripe" ||
+      checkoutProvider === "manual" ||
+      checkoutProvider === "whatsapp"
   );
 
   const providerUi = PROVIDER_UI[checkoutProvider] || {
@@ -561,9 +575,15 @@ export default function PublicStoreCheckout({
       });
       return;
     }
+    if (paying) return;
 
     setPaying(true);
     setMessage(null);
+
+    const idempotencyKey =
+      typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
+        ? crypto.randomUUID()
+        : `order-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
 
     try {
       const returnBase = `${window.location.origin}${window.location.pathname}`;
@@ -604,12 +624,26 @@ export default function PublicStoreCheckout({
           sku: item.sku,
         })),
         paymentProvider: checkoutProvider,
+        paymentMethod: checkoutProvider,
         startCheckout: false,
+        idempotencyKey,
       });
 
       const orderId = draft.order?._id;
       if (!orderId) {
         throw new Error("לא נוצרה הזמנה");
+      }
+
+      if (checkoutProvider === "manual" || checkoutProvider === "whatsapp") {
+        syncCart([]);
+        setMessage({
+          type: "success",
+          text: `ההזמנה התקבלה בהצלחה${
+            draft.order?.orderNumber ? ` (מס׳ ${draft.order.orderNumber})` : ""
+          }. ניצור איתכם קשר להשלמת התשלום.`,
+        });
+        setPaying(false);
+        return;
       }
 
       const successUrl =

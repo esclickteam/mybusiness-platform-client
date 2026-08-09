@@ -9,6 +9,8 @@ export type PublicSiteLeadPayload = {
   message?: string;
   fields?: Array<{ label: string; value: string }>;
   host?: string;
+  idempotencyKey?: string;
+  submissionId?: string;
 };
 
 export type PublicSiteLeadResponse = {
@@ -16,6 +18,7 @@ export type PublicSiteLeadResponse = {
   leadId?: string;
   message?: string;
   error?: string;
+  reused?: boolean;
 };
 
 export async function submitPublicSiteLead(

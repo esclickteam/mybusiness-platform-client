@@ -19,6 +19,13 @@ function looksLike(value, needles) {
   return needles.some((needle) => text.includes(needle));
 }
 
+function createIdempotencyKey() {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID();
+  }
+  return `lead-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
+}
+
 function classifyField({ name, id, label, placeholder, type, tagName }) {
   const blob = [name, id, label, placeholder, type].join(" ");
 
@@ -167,26 +174,59 @@ function setFormStatus(form, message, tone) {
     status = document.createElement("div");
     status.setAttribute("data-bizuply-lead-status", "true");
     status.setAttribute("role", "status");
+    status.setAttribute("aria-live", "polite");
     status.className = "mt-3 text-sm font-bold";
     form.appendChild(status);
   }
 
   status.textContent = message || "";
+  status.dataset.tone = tone || "info";
   status.style.color =
     tone === "error" ? "#be123c" : tone === "success" ? "#047857" : "#475569";
 }
 
-function setFormBusy(form, busy) {
+function setFormBusy(form, busy, label) {
   form.setAttribute("aria-busy", busy ? "true" : "false");
   form.querySelectorAll("button, input[type='submit']").forEach((node) => {
     if (node instanceof HTMLButtonElement || node instanceof HTMLInputElement) {
-      node.disabled = busy;
+      if (busy) {
+        if (!node.dataset.bizuplyLeadOriginalLabel) {
+          node.dataset.bizuplyLeadOriginalLabel =
+            node instanceof HTMLInputElement
+              ? String(node.value || "")
+              : String(node.textContent || "");
+        }
+        node.disabled = true;
+        if (label) {
+          if (node instanceof HTMLInputElement) node.value = label;
+          else node.textContent = label;
+        }
+      } else if (form.getAttribute("data-bizuply-lead-submitted") !== "true") {
+        node.disabled = false;
+        const original = node.dataset.bizuplyLeadOriginalLabel;
+        if (original != null) {
+          if (node instanceof HTMLInputElement) node.value = original;
+          else node.textContent = original;
+          delete node.dataset.bizuplyLeadOriginalLabel;
+        }
+      } else {
+        node.disabled = true;
+      }
     }
   });
 }
 
+function getOrCreateSubmitKey(form) {
+  const existing = form.getAttribute("data-bizuply-lead-idempotency-key");
+  if (existing) return existing;
+  const key = createIdempotencyKey();
+  form.setAttribute("data-bizuply-lead-idempotency-key", key);
+  return key;
+}
+
 async function handleLeadFormSubmit(form, options) {
   if (form.getAttribute("data-bizuply-lead-submitting") === "true") return;
+  if (form.getAttribute("data-bizuply-lead-submitted") === "true") return;
 
   const collected = collectLeadFormPayload(form);
   if (!collected.name && !collected.phone && !collected.email && !collected.message) {
@@ -194,8 +234,10 @@ async function handleLeadFormSubmit(form, options) {
     return;
   }
 
+  const idempotencyKey = getOrCreateSubmitKey(form);
+
   form.setAttribute("data-bizuply-lead-submitting", "true");
-  setFormBusy(form, true);
+  setFormBusy(form, true, "שולחים...");
   setFormStatus(form, "שולחים את הפנייה...", "info");
 
   try {
@@ -211,6 +253,7 @@ async function handleLeadFormSubmit(form, options) {
       email: collected.email,
       message: collected.message,
       fields: collected.fields,
+      idempotencyKey,
     });
 
     const successMessage =
@@ -218,17 +261,28 @@ async function handleLeadFormSubmit(form, options) {
       safeText(form.getAttribute("data-bizuply-success-message")) ||
       "תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם.";
 
+    form.setAttribute("data-bizuply-lead-submitted", "true");
     setFormStatus(form, successMessage, "success");
     form.reset();
+    setFormBusy(form, false);
+    // Keep submit locked briefly so double-click after success cannot resubmit
+    // until the user intentionally starts a new attempt (new idempotency key).
+    window.setTimeout(() => {
+      form.removeAttribute("data-bizuply-lead-submitted");
+      form.removeAttribute("data-bizuply-lead-idempotency-key");
+      setFormBusy(form, false);
+    }, 2500);
   } catch (error) {
     const apiError =
       error?.response?.data?.error ||
       error?.message ||
       "שגיאה בשליחת הטופס. נסו שוב בעוד רגע.";
     setFormStatus(form, apiError, "error");
+    // Keep the same idempotency key so an immediate retry of the SAME attempt
+    // cannot create a duplicate if the first request already succeeded server-side.
+    setFormBusy(form, false);
   } finally {
     form.removeAttribute("data-bizuply-lead-submitting");
-    setFormBusy(form, false);
   }
 }
 
