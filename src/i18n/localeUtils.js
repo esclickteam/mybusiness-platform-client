@@ -1,5 +1,5 @@
 export const GEO_LANG_COOKIE = "bizuply_geo_lang";
-/** @deprecated permanent override — cleared on load */
+/** Durable, user-selected language. Persists across reloads and wins over geo. */
 export const MANUAL_LANG_FLAG = "bizuply_lang_manual";
 export const SESSION_LANG_KEY = "bizuply_lang_session";
 export const I18N_STORAGE_KEY = "i18nextLng";
@@ -64,8 +64,9 @@ export function clearLegacyManualLanguageChoice() {
 }
 
 /**
- * Soft override for in-app language switching (SPA only).
- * Cleared again on the next full page load when geo sync runs.
+ * Persist an explicit user language choice.
+ * Stored durably (localStorage) so it survives reloads and full navigations,
+ * and takes precedence over geo detection until the user picks another language.
  */
 export function setSessionLanguageOverride(lng) {
   const language = normalizeLanguage(lng);
@@ -74,14 +75,22 @@ export function setSessionLanguageOverride(lng) {
   }
   if (typeof localStorage !== "undefined") {
     localStorage.setItem(I18N_STORAGE_KEY, language);
-    localStorage.removeItem(MANUAL_LANG_FLAG);
+    localStorage.setItem(MANUAL_LANG_FLAG, language);
   }
   applyDocumentLocale(language);
 }
 
-/** @deprecated */
+/** Persist an explicit user language choice (alias of setSessionLanguageOverride). */
 export function markManualLanguageChoice(lng) {
   setSessionLanguageOverride(lng);
+}
+
+/** Read the durable, user-selected language, or null if the user never chose one. */
+export function getManualLanguageChoice() {
+  if (typeof localStorage === "undefined") return null;
+  const raw = localStorage.getItem(MANUAL_LANG_FLAG);
+  if (!raw) return null;
+  return normalizeLanguage(raw);
 }
 
 export function getSessionLanguageOverride() {
@@ -94,9 +103,8 @@ export function hasSessionLanguageOverride() {
   return Boolean(getSessionLanguageOverride());
 }
 
-/** @deprecated */
 export function hasManualLanguageChoice() {
-  return hasSessionLanguageOverride();
+  return Boolean(getManualLanguageChoice());
 }
 
 export function detectLanguageFromTimezone() {
