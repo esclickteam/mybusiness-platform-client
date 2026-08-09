@@ -7,6 +7,11 @@ import { useNotifications } from "../context/NotificationsContext";
 import { lazyWithPreload } from "../utils/lazyWithPreload";
 import AuthShell, { AuthCard } from "../components/auth/AuthShell";
 import { LoginFormSkeleton } from "../components/auth/LoginFormSkeleton";
+import {
+  rememberPostLoginRedirect,
+  resolvePostLoginDestination,
+  sanitizeInternalRedirect,
+} from "../utils/safeInternalRedirect";
 
 const DashboardPage = lazyWithPreload(() =>
   import("./business/dashboardPages/DashboardPage")
@@ -63,6 +68,16 @@ export default function Login() {
   );
   const checkoutSuccess = searchParams.get("checkout") === "success";
   const checkoutEmail = searchParams.get("email") || "";
+  const queryRedirect = useMemo(
+    () => sanitizeInternalRedirect(searchParams.get("redirect")),
+    [searchParams]
+  );
+
+  useEffect(() => {
+    if (queryRedirect) {
+      rememberPostLoginRedirect(queryRedirect);
+    }
+  }, [queryRedirect]);
 
   useEffect(() => {
     const remembered = localStorage.getItem("bizuply_remember_email");
@@ -115,48 +130,34 @@ export default function Login() {
 
       const loggedInUser = loginResult?.user;
       const role = String(loggedInUser?.role || "").toLowerCase();
-      const redirectUrl = loginResult?.redirectUrl;
-      const urlRedirect = new URLSearchParams(location.search).get("redirect");
-      const finalRedirect = urlRedirect || redirectUrl;
 
-      if (role === "admin") {
+      const finalRedirect = resolvePostLoginDestination({
+        role: loggedInUser?.role,
+        businessId: loggedInUser?.businessId,
+        hasAccess: loggedInUser?.hasAccess !== false,
+        enabledModules: loggedInUser?.enabledModules ?? null,
+        queryRedirect,
+        storedRedirect: loginResult?.redirectUrl || null,
+      });
+
+      // Keep sessionStorage redirect until auth bootstrap acknowledges the
+      // destination — prevents a race that snaps back to the generic dashboard.
+      if (queryRedirect) {
+        rememberPostLoginRedirect(queryRedirect);
+      }
+
+      if (role === "admin" && !queryRedirect) {
         navigate("/admin/dashboard", { replace: true });
-      } else if (role === "marketer") {
+      } else if (role === "marketer" && !queryRedirect) {
         navigate("/marketer/dashboard", { replace: true });
-      } else if (role === "business") {
-        if (!loggedInUser?.hasAccess) {
-          navigate("/pricing", { replace: true });
-        } else if (
-          urlRedirect &&
-          urlRedirect.startsWith("/") &&
-          !urlRedirect.startsWith("/client/dashboard")
-        ) {
-          navigate(urlRedirect, { replace: true });
-        } else {
-          const limited = Array.isArray(loggedInUser?.enabledModules)
-            ? loggedInUser.enabledModules
-            : null;
-          const isWebsiteOnly =
-            Boolean(limited?.includes("website")) &&
-            !limited?.includes("crm") &&
-            !limited?.includes("dashboard");
-          const dest = isWebsiteOnly
-            ? `/business/${loggedInUser?.businessId}/dashboard/website`
-            : `/business/${loggedInUser?.businessId}/dashboard/dashboard`;
-          navigate(dest, { replace: true });
-        }
       } else if (
-        finalRedirect &&
-        finalRedirect.startsWith("/") &&
-        !finalRedirect.startsWith("/client/dashboard")
+        role === "business" &&
+        !loggedInUser?.hasAccess &&
+        !queryRedirect
       ) {
-        navigate(finalRedirect, { replace: true });
-      } else if (role === "affiliate") {
-        navigate("/affiliate/dashboard", { replace: true });
-      } else if (role === "customer") {
-        navigate("/client/dashboard", { replace: true });
+        navigate("/pricing", { replace: true });
       } else {
-        navigate("/dashboard", { replace: true });
+        navigate(finalRedirect, { replace: true });
       }
 
       setTimeout(() => {

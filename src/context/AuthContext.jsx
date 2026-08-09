@@ -21,6 +21,14 @@ import {
   resolveBusinessDashboardPath,
 } from "../utils/dashboardRoutePersistence";
 import { consumePendingNotificationUrl } from "../utils/notificationNavigation";
+import {
+  alignRedirectBusinessId,
+  consumePostLoginRedirect,
+  peekPostLoginRedirect,
+  rememberPostLoginRedirect,
+  resolvePostLoginDestination,
+  sanitizeInternalRedirect,
+} from "../utils/safeInternalRedirect";
 import BizuplyLoader from "../components/ui/BizuplyLoader";
 import { isPublicCustomerSiteHost } from "../utils/publicSiteHost";
 
@@ -370,51 +378,53 @@ export function AuthProvider({ children }) {
         })
         .catch(() => {});
 
-      const urlRedirect = new URLSearchParams(window.location.search).get(
-        "redirect"
+      const urlRedirect = sanitizeInternalRedirect(
+        new URLSearchParams(window.location.search).get("redirect")
       );
-
       if (urlRedirect) {
-        navigate(urlRedirect, { replace: true });
-        return { user: normalizedUser, redirectUrl: urlRedirect };
+        rememberPostLoginRedirect(urlRedirect);
       }
 
+      const destination = resolvePostLoginDestination({
+        role: normalizedUser.role,
+        businessId: normalizedUser.businessId,
+        hasAccess: normalizedUser.hasAccess,
+        enabledModules: normalizedUser.enabledModules,
+        queryRedirect: urlRedirect,
+        storedRedirect: peekPostLoginRedirect(),
+      });
+
+      // Login.tsx owns navigation when skipRedirect=true so auth bootstrap
+      // cannot race and overwrite a deep-link CTA with the generic dashboard.
       if (!skipRedirect) {
         const isImpersonating = Boolean(localStorage.getItem("impersonatedBy"));
 
-        if (normalizedUser.role === "admin" && !isImpersonating) {
+        if (normalizedUser.role === "admin" && !isImpersonating && !urlRedirect) {
           navigate("/admin/dashboard", { replace: true });
           return { user: normalizedUser, redirectUrl: "/admin/dashboard" };
         }
 
-        if (normalizedUser.role === "marketer" && !isImpersonating) {
+        if (
+          normalizedUser.role === "marketer" &&
+          !isImpersonating &&
+          !urlRedirect
+        ) {
           navigate("/marketer/dashboard", { replace: true });
           return { user: normalizedUser, redirectUrl: "/marketer/dashboard" };
         }
 
-        if (normalizedUser.role !== "admin" && normalizedUser.hasAccess) {
-          sessionStorage.setItem("justRegistered", "true");
-
-          if (normalizedUser.role === "business" && normalizedUser.businessId) {
-            clearLastDashboardRoute(normalizedUser.businessId);
-            navigate(
-              `/business/${normalizedUser.businessId}/dashboard/dashboard`,
-              { replace: true }
-            );
-          } else {
-            navigate("/dashboard", { replace: true });
-          }
+        consumePostLoginRedirect();
+        if (normalizedUser.role === "business" && normalizedUser.businessId) {
+          clearLastDashboardRoute(normalizedUser.businessId);
         }
+        navigate(destination, { replace: true });
+        return { user: normalizedUser, redirectUrl: destination };
       }
 
-      const safeRedirectUrl =
-        normalizedUser.role === "admin"
-          ? "/admin/dashboard"
-          : normalizedUser.role === "marketer"
-            ? "/marketer/dashboard"
-            : redirectUrl;
-
-      return { user: normalizedUser, redirectUrl: safeRedirectUrl };
+      return {
+        user: normalizedUser,
+        redirectUrl: destination || redirectUrl || null,
+      };
     } catch (err) {
       setError(
         err.response?.status >= 400 && err.response?.status < 500
@@ -695,7 +705,23 @@ export function AuthProvider({ children }) {
         }
 
         const justRegistered = sessionStorage.getItem("justRegistered");
-        const savedRedirect = sessionStorage.getItem("postLoginRedirect");
+        const queryRedirect =
+          location.pathname === "/login"
+            ? sanitizeInternalRedirect(
+                new URLSearchParams(location.search).get("redirect")
+              )
+            : null;
+        if (queryRedirect) {
+          rememberPostLoginRedirect(queryRedirect);
+        }
+
+        // Prefer an explicit post-login deep link (email CTAs, pricing, etc.)
+        // over the generic dashboard hop — including when justRegistered is set.
+        const pendingDeepLink =
+          peekPostLoginRedirect() ||
+          sanitizeInternalRedirect(
+            sessionStorage.getItem("postLoginRedirect")
+          );
 
         if (justRegistered) {
           sessionStorage.removeItem("justRegistered");
@@ -703,15 +729,26 @@ export function AuthProvider({ children }) {
           // Unpaid staged purchase / checkout-first return must not be
           // overwritten by the legacy "just registered → dashboard" hop.
           if (
-            savedRedirect === "/pricing" ||
-            savedRedirect === "/checkout" ||
+            pendingDeepLink === "/pricing" ||
+            pendingDeepLink === "/checkout" ||
             isCheckoutContinuationPath(location.pathname)
           ) {
-            if (savedRedirect) {
-              sessionStorage.removeItem("postLoginRedirect");
-              navigate(savedRedirect, { replace: true });
+            const dest = consumePostLoginRedirect() || pendingDeepLink;
+            if (dest) {
+              navigate(dest, { replace: true });
             }
             return;
+          }
+
+          if (pendingDeepLink) {
+            const dest = alignRedirectBusinessId(
+              consumePostLoginRedirect() || pendingDeepLink,
+              freshUser.businessId
+            );
+            if (dest) {
+              navigate(dest, { replace: true });
+              return;
+            }
           }
 
           if (freshUser.role === "business" && freshUser.businessId) {
@@ -728,15 +765,19 @@ export function AuthProvider({ children }) {
           return;
         }
 
-        if (savedRedirect) {
+        if (pendingDeepLink) {
+          const savedRedirect = consumePostLoginRedirect() || pendingDeepLink;
           const isPricing = savedRedirect === "/pricing";
           const shouldSkip = isPricing && freshUser.hasAccess;
 
           if (!shouldSkip) {
-            navigate(savedRedirect, { replace: true });
+            navigate(
+              alignRedirectBusinessId(savedRedirect, freshUser.businessId) ||
+                savedRedirect,
+              { replace: true }
+            );
           }
 
-          sessionStorage.removeItem("postLoginRedirect");
           return;
         }
 
@@ -758,11 +799,31 @@ export function AuthProvider({ children }) {
           !isCheckoutContinuationPath(location.pathname)
         ) {
           if (freshUser.hasAccess) {
-            if (!location.pathname.startsWith("/business/")) {
-              navigate(resolveBusinessDashboardPath(freshUser.businessId), {
-                replace: true,
-              });
+            // Already inside the business app (including after a CTA navigate) —
+            // never snap back to the generic dashboard.
+            if (location.pathname.startsWith("/business/")) {
+              return;
             }
+
+            if (location.pathname === "/login") {
+              const dest = resolvePostLoginDestination({
+                role: freshUser.role,
+                businessId: freshUser.businessId,
+                hasAccess: freshUser.hasAccess,
+                enabledModules: freshUser.enabledModules,
+                queryRedirect: sanitizeInternalRedirect(
+                  new URLSearchParams(location.search).get("redirect")
+                ),
+                storedRedirect: peekPostLoginRedirect(),
+              });
+              consumePostLoginRedirect();
+              navigate(dest, { replace: true });
+              return;
+            }
+
+            navigate(resolveBusinessDashboardPath(freshUser.businessId), {
+              replace: true,
+            });
           } else if (
             location.pathname === "/" ||
             location.pathname.startsWith("/business/") ||
