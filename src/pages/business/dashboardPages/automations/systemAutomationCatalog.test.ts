@@ -4,6 +4,7 @@ import {
   findMissingMessageTemplates,
   listAiAutomations,
   listReminderAutomations,
+  listRequiredWhatsAppMessageTemplates,
 } from "./systemAutomationCatalog";
 
 describe("systemAutomationCatalog", () => {
@@ -39,18 +40,26 @@ describe("systemAutomationCatalog", () => {
     );
   });
 
-  it("reports missing WhatsApp message templates", () => {
-    const gaps = findMissingMessageTemplates([]);
-    expect(gaps.map((g) => g.id)).toEqual(
+  it("lists all WhatsApp message templates businesses should prepare", () => {
+    const required = listRequiredWhatsAppMessageTemplates([]);
+    expect(required.map((g) => g.id)).toEqual(
       expect.arrayContaining([
         "wa_appointment_reminder",
         "wa_welcome_lead",
+        "wa_welcome_client",
         "wa_follow_up",
-        "wa_thanks_review",
+        "wa_follow_up_2",
+        "wa_appointment_thanks",
+        "wa_appointment_review",
+        "wa_inactive_client",
       ])
     );
+    expect(required.every((row) => !row.prepared)).toBe(true);
 
-    const covered = findMissingMessageTemplates([
+    const gaps = findMissingMessageTemplates([]);
+    expect(gaps.length).toBe(required.length);
+
+    const status = listRequiredWhatsAppMessageTemplates([
       {
         name: "תזכורת פגישה",
         category: "appointment_reminder",
@@ -60,12 +69,13 @@ describe("systemAutomationCatalog", () => {
       },
       {
         name: "ליד חדש",
-        key: "new_lead_received",
+        key: "new_lead_welcome",
         category: "welcome",
         status: "active",
       },
       {
-        name: "מעקב",
+        name: "מעקב לליד",
+        key: "lead_follow_up",
         category: "follow_up",
         status: "active",
       },
@@ -76,6 +86,15 @@ describe("systemAutomationCatalog", () => {
         status: "active",
       },
     ]);
-    expect(covered).toEqual([]);
+    expect(status.find((r) => r.id === "wa_appointment_reminder")?.prepared).toBe(
+      true
+    );
+    expect(status.find((r) => r.id === "wa_welcome_lead")?.prepared).toBe(true);
+    expect(status.find((r) => r.id === "wa_appointment_thanks")?.prepared).toBe(
+      true
+    );
+    expect(status.find((r) => r.id === "wa_appointment_review")?.prepared).toBe(
+      false
+    );
   });
 });

@@ -288,57 +288,97 @@ export type MessageTemplateGap = {
   hintNames: string[];
 };
 
-const REQUIRED_TEMPLATE_GROUPS: Array<{
+/** Full checklist of WhatsApp message templates businesses should prepare. */
+export const REQUIRED_WHATSAPP_MESSAGE_TEMPLATES: Array<{
   id: string;
   category: MessageTemplateGap["category"];
   title: string;
   reason: string;
   hintNames: string[];
   relatedAutomationIds: string[];
+  suggestedMetaName: string;
 }> = [
+  {
+    id: "wa_welcome_lead",
+    category: "welcome",
+    title: "ברוכים הבאים לליד חדש",
+    reason: "נשלחת כשנכנס ליד חדש ל-CRM.",
+    hintNames: ["welcome", "new_lead", "new_lead_received", "ליד"],
+    relatedAutomationIds: ["lead_multi_route", "wa_new_lead_welcome"],
+    suggestedMetaName: "new_lead_welcome",
+  },
+  {
+    id: "wa_welcome_client",
+    category: "welcome",
+    title: "ברוכים הבאים ללקוח חדש",
+    reason: "נשלחת כשנוצר לקוח חדש ב-CRM.",
+    hintNames: ["welcome", "new_client", "client", "לקוח"],
+    relatedAutomationIds: ["new_client_welcome", "wa_new_client_welcome"],
+    suggestedMetaName: "new_client_welcome",
+  },
   {
     id: "wa_appointment_reminder",
     category: "appointment_reminder",
-    title: "תבנית תזכורת לפגישה",
-    reason:
-      "נדרשת לתזכורות יום/יומיים/שעות לפני פגישה באוטומציות ובוואטסאפ.",
-    hintNames: ["appointment_reminder", "reminder"],
+    title: "תזכורת פגישה",
+    reason: "נשלחת לפני פגישה (שעה / שעתיים / יום / יומיים / 3 ימים).",
+    hintNames: ["appointment_reminder", "reminder", "תזכורת", "פגישה"],
     relatedAutomationIds: [
       "appointment_duo",
       "appointment_reminder_1_day",
       "appointment_reminder_2_days",
       "appointment_reminder_hours",
     ],
+    suggestedMetaName: "appointment_reminder",
   },
   {
-    id: "wa_welcome_lead",
-    category: "welcome",
-    title: "תבנית ברוכים הבאים / ליד חדש",
-    reason: "נדרשת לאוטומציית ליד חדש ולקוח חדש.",
-    hintNames: ["welcome", "new_lead_received", "new_client"],
-    relatedAutomationIds: ["lead_multi_route", "new_client_welcome"],
+    id: "wa_appointment_thanks",
+    category: "custom",
+    title: "תודה אחרי פגישה",
+    reason: "נשלחת אחרי שפגישה מסומנת כהושלמה.",
+    hintNames: ["thanks", "thank_you", "תודה"],
+    relatedAutomationIds: ["appointment_thanks", "wa_appointment_thanks"],
+    suggestedMetaName: "appointment_thanks",
+  },
+  {
+    id: "wa_appointment_review",
+    category: "custom",
+    title: "בקשת ביקורת אחרי פגישה",
+    reason: "נשלחת לבקשת ביקורת/פידבק אחרי פגישה.",
+    hintNames: ["review", "feedback", "ביקורת"],
+    relatedAutomationIds: ["appointment_review", "wa_appointment_review"],
+    suggestedMetaName: "appointment_review",
   },
   {
     id: "wa_follow_up",
     category: "follow_up",
-    title: "תבנית מעקב לליד",
-    reason: "נדרשת לליד שלא נענה, פולואפ שני ולקוח לא פעיל.",
-    hintNames: ["follow_up", "lead_followup"],
-    relatedAutomationIds: [
-      "lead_no_response",
-      "lead_followup_2",
-      "inactive_client",
-    ],
+    title: "מעקב לליד שלא נענה",
+    reason: "נשלחת כפולואפ ראשון לליד בלי מענה.",
+    hintNames: ["follow_up", "lead_followup", "מעקב", "פולואפ"],
+    relatedAutomationIds: ["lead_no_response", "wa_lead_no_response"],
+    suggestedMetaName: "lead_follow_up",
   },
   {
-    id: "wa_thanks_review",
-    category: "custom",
-    title: "תבנית תודה / בקשת ביקורת",
-    reason: "מומלצת להודעת תודה ובקשת ביקורת אחרי פגישה.",
-    hintNames: ["thanks", "thank_you", "review", "feedback"],
-    relatedAutomationIds: ["appointment_thanks", "appointment_review"],
+    id: "wa_follow_up_2",
+    category: "follow_up",
+    title: "פולואפ שני לליד",
+    reason: "נשלחת כמעקב נוסף ללידים שלא הומרו.",
+    hintNames: ["follow_up", "lead_followup_2", "פולואפ"],
+    relatedAutomationIds: ["lead_followup_2", "wa_lead_followup_2"],
+    suggestedMetaName: "lead_follow_up_2",
+  },
+  {
+    id: "wa_inactive_client",
+    category: "follow_up",
+    title: "נגיעה ללקוח לא פעיל",
+    reason: "נשלחת ללקוחות ללא פעילות לאחרונה.",
+    hintNames: ["inactive", "follow_up", "נגיעה"],
+    relatedAutomationIds: ["inactive_client", "wa_inactive_client"],
+    suggestedMetaName: "inactive_client",
   },
 ];
+
+/** @deprecated use REQUIRED_WHATSAPP_MESSAGE_TEMPLATES */
+const REQUIRED_TEMPLATE_GROUPS = REQUIRED_WHATSAPP_MESSAGE_TEMPLATES;
 
 export type WaTemplateLike = {
   name?: string;
@@ -378,31 +418,56 @@ function isUsableTemplate(tpl: WaTemplateLike) {
 /**
  * Compare business WhatsApp templates against automations the product supports.
  */
-export function findMissingMessageTemplates(
-  templates: WaTemplateLike[]
-): MessageTemplateGap[] {
-  const usable = (templates || []).filter(isUsableTemplate);
-  const gaps: MessageTemplateGap[] = [];
+export type RequiredWhatsAppMessageTemplateStatus = {
+  id: string;
+  category: MessageTemplateGap["category"];
+  title: string;
+  reason: string;
+  suggestedMetaName: string;
+  hintNames: string[];
+  relatedAutomationIds: string[];
+  prepared: boolean;
+  matchedTemplateName?: string;
+};
 
-  for (const group of REQUIRED_TEMPLATE_GROUPS) {
-    const byCategory = usable.some(
-      (tpl) => String(tpl.category || "") === group.category
-    );
-    const byHint = usable.some((tpl) =>
-      templateMatchesHints(tpl, group.hintNames)
-    );
-    if (byCategory || byHint) continue;
-    gaps.push({
+/** Full required WhatsApp message-template checklist with prepared status. */
+export function listRequiredWhatsAppMessageTemplates(
+  templates: WaTemplateLike[] = []
+): RequiredWhatsAppMessageTemplateStatus[] {
+  const usable = (templates || []).filter(isUsableTemplate);
+  return REQUIRED_WHATSAPP_MESSAGE_TEMPLATES.map((group) => {
+    // Prefer name/key hints so each checklist row is independently prepared.
+    const match =
+      usable.find((tpl) => templateMatchesHints(tpl, group.hintNames)) || null;
+    return {
       id: group.id,
       category: group.category,
       title: group.title,
       reason: group.reason,
-      relatedAutomationIds: group.relatedAutomationIds,
+      suggestedMetaName: group.suggestedMetaName,
       hintNames: group.hintNames,
-    });
-  }
+      relatedAutomationIds: group.relatedAutomationIds,
+      prepared: Boolean(match),
+      matchedTemplateName: match
+        ? String(match.name || match.key || match.metaTemplateName || "")
+        : undefined,
+    };
+  });
+}
 
-  return gaps;
+export function findMissingMessageTemplates(
+  templates: WaTemplateLike[]
+): MessageTemplateGap[] {
+  return listRequiredWhatsAppMessageTemplates(templates)
+    .filter((row) => !row.prepared)
+    .map((row) => ({
+      id: row.id,
+      category: row.category,
+      title: row.title,
+      reason: row.reason,
+      relatedAutomationIds: row.relatedAutomationIds,
+      hintNames: row.hintNames,
+    }));
 }
 
 export function getCatalogByRecipeKey(recipeKey: string) {

@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
+  Link,
   useNavigate,
   useOutletContext,
   useSearchParams,
@@ -15,8 +16,10 @@ import {
   Sparkles,
   Users,
   Workflow,
+  X,
   Zap,
 } from "lucide-react";
+// MessageCircle used by cardIcon for whatsapp category
 import {
   AUTOMATION_PREVIEW_ACTION_TOOLTIP,
   AUTOMATION_PREVIEW_WRITE_BLOCKED_MESSAGE,
@@ -31,12 +34,16 @@ import {
 import { getGoogleCalendarStatus } from "../../../../api/googleCalendarApi";
 import {
   createWhatsAppAutomation,
-  getWhatsAppIntegrationStatus,
   listApprovedWhatsAppTemplates,
+  listWhatsAppTemplates,
   type ApprovedWhatsAppTemplate,
   type WhatsAppTemplate,
 } from "../../../../api/whatsappApi";
 import { readAutomationErrorMessage } from "./automationUiHelpers";
+import {
+  listRequiredWhatsAppMessageTemplates,
+  type RequiredWhatsAppMessageTemplateStatus,
+} from "./systemAutomationCatalog";
 import { TEMPLATE_CATEGORIES, type TemplateCategoryId } from "./templateCategoryMapping";
 import {
   WORKING_TEMPLATES,
@@ -78,13 +85,16 @@ export default function AutomationsTemplatesPage() {
   const [waTemplates, setWaTemplates] = useState<
     Array<WhatsAppTemplate | ApprovedWhatsAppTemplate>
   >([]);
-  const [managedWaReady, setManagedWaReady] = useState(false);
-  const [managedWaMessage, setManagedWaMessage] = useState("");
   const [calendarConnected, setCalendarConnected] = useState(false);
   const [aiEntitled, setAiEntitled] = useState(false);
   const [query, setQuery] = useState("");
   const [creatingKey, setCreatingKey] = useState<string | null>(null);
   const [showBlockedOnly, setShowBlockedOnly] = useState(false);
+  const [picker, setPicker] = useState<{
+    template: WorkingTemplate;
+    readiness: TemplateReadiness;
+    templateId: string;
+  } | null>(null);
 
   const initialCategory = (searchParams.get("focus") === "ai" ||
   searchParams.get("tier") === "ai"
@@ -100,53 +110,36 @@ export default function AutomationsTemplatesPage() {
     if (!businessId) return;
     setLoading(true);
     try {
-      const [recipeResult, catalog, managedStatus, approved, calendar] =
+      const [recipeResult, catalog, approved, allTpl, calendar] =
         await Promise.all([
           listAutomationRecipes(businessId),
           fetchAutomationTriggerCatalog(businessId).catch(() => ({
             triggers: [] as AutomationTriggerCatalogItem[],
           })),
-          getWhatsAppIntegrationStatus(businessId, {
-            senderMode: "bizuply_managed",
-          }).catch(() => null),
           listApprovedWhatsAppTemplates(businessId, {
             senderMode: "bizuply_managed",
           }).catch(() => ({
             templates: [] as ApprovedWhatsAppTemplate[],
-            connected: false,
-            message: "",
           })),
+          listWhatsAppTemplates(businessId, { approvedOnly: true }).catch(
+            () => [] as WhatsAppTemplate[]
+          ),
           getGoogleCalendarStatus(businessId).catch(() => null),
         ]);
 
       const byId = new Map<string, WhatsAppTemplate | ApprovedWhatsAppTemplate>();
-      for (const tpl of approved.templates || []) {
+      for (const tpl of [
+        ...(approved.templates || []),
+        ...(allTpl || []),
+      ]) {
         const id = getWaTemplateId(tpl);
         if (id && !byId.has(id)) byId.set(id, tpl);
       }
-      const usable = listUsableWaTemplates(Array.from(byId.values()));
-
-      const ready = Boolean(
-        managedStatus?.readyToSend ||
-          managedStatus?.connected ||
-          managedStatus?.managedStatus?.ready ||
-          managedStatus?.managedStatus?.configured ||
-          approved.connected ||
-          usable.length > 0
-      );
 
       setRecipes(recipeResult?.recipes || []);
       setAiEntitled(Boolean(recipeResult?.aiAutomationsEntitled));
       setTriggers(catalog.triggers || []);
-      setWaTemplates(usable);
-      setManagedWaReady(ready);
-      setManagedWaMessage(
-        String(
-          approved.message ||
-            managedStatus?.managedStatus?.reason ||
-            ""
-        )
-      );
+      setWaTemplates(listUsableWaTemplates(Array.from(byId.values())));
       setCalendarConnected(
         Boolean(
           calendar?.calendar?.connected ||
@@ -157,7 +150,6 @@ export default function AutomationsTemplatesPage() {
       setRecipes([]);
       setTriggers([]);
       setWaTemplates([]);
-      setManagedWaReady(false);
     } finally {
       setLoading(false);
     }
@@ -182,18 +174,11 @@ export default function AutomationsTemplatesPage() {
       recipes,
       triggers,
       waTemplates,
-      managedWaReady,
+      managedWaReady: true,
       calendarConnected,
       aiEntitled,
     }),
-    [
-      aiEntitled,
-      calendarConnected,
-      managedWaReady,
-      recipes,
-      triggers,
-      waTemplates,
-    ]
+    [aiEntitled, calendarConnected, recipes, triggers, waTemplates]
   );
 
   const cards = useMemo<CardModel[]>(() => {
@@ -203,21 +188,24 @@ export default function AutomationsTemplatesPage() {
     })).sort((a, b) => a.template.rank - b.template.rank);
   }, [ctx]);
 
+  const requiredWaMessages = useMemo<RequiredWhatsAppMessageTemplateStatus[]>(
+    () => listRequiredWhatsAppMessageTemplates(waTemplates),
+    [waTemplates]
+  );
+  const missingWaMessages = requiredWaMessages.filter((row) => !row.prepared);
+
   const visibleCards = useMemo(() => {
     const q = query.trim().toLowerCase();
     return cards.filter(({ template, readiness }) => {
       if (category !== "all" && !template.categories.includes(category)) {
         return false;
       }
-      const showBlockedWaInCategory =
-        category === "whatsapp" &&
-        isWhatsAppFacingTemplate(template) &&
-        !readiness.ready;
-
-      if (showBlockedOnly) {
-        if (readiness.ready) return false;
-      } else if (!readiness.ready && !showBlockedWaInCategory) {
-        return false;
+      if (showBlockedOnly && readiness.ready) return false;
+      if (!showBlockedOnly && !readiness.ready) {
+        // Keep WhatsApp automations visible even when other engines are blocked
+        if (!(category === "whatsapp" && isWhatsAppFacingTemplate(template))) {
+          return false;
+        }
       }
       if (!q) return true;
       return [
@@ -241,9 +229,8 @@ export default function AutomationsTemplatesPage() {
     [cards, category]
   );
   const readyCount = categoryCards.filter((c) => c.readiness.ready).length;
-  const blockedWaCount = cards.filter(
-    (c) => isWhatsAppFacingTemplate(c.template) && !c.readiness.ready
-  ).length;
+  const showWaChecklist =
+    category === "all" || category === "whatsapp" || category === "appointments";
 
   const activateWhatsApp = async (
     template: WorkingTemplate,
@@ -260,7 +247,7 @@ export default function AutomationsTemplatesPage() {
       delayDays: template.delayDays,
       enabled: true,
     });
-    toast.success("האוטומציה הופעלה אוטומטית ופועלת");
+    toast.success("האוטומציה הופעלה ופועלת");
     navigate(`/business/${businessId}/dashboard/automations`);
   };
 
@@ -317,7 +304,6 @@ export default function AutomationsTemplatesPage() {
       triggerKey,
       waTemplateId: waTemplateId || readiness.suggestedWaTemplateId,
     });
-    // Bake managed sender mode into WhatsApp action nodes
     const nodes = graph.nodes.map((node) => {
       if (
         node.type === "action" &&
@@ -372,28 +358,53 @@ export default function AutomationsTemplatesPage() {
       return;
     }
 
-    setCreatingKey(card.template.key);
-    try {
-      // WhatsApp: auto-pick BizUply managed catalog template — no picker, no WA page
-      if (
-        card.template.engine === "whatsapp_simple" ||
-        card.template.requiresWaTemplate
-      ) {
-        const templateId = card.readiness.suggestedWaTemplateId || "";
-        if (!templateId) {
-          throw new Error(
-            "לא נמצאה תבנית בקטלוג המנוהל של BizUply — רעננו ונסו שוב"
-          );
-        }
-        if (card.template.engine === "whatsapp_simple") {
-          await activateWhatsApp(card.template, templateId);
-        } else {
-          await activateWorkflow(card.template, card.readiness, templateId);
-        }
+    const needsWaPick =
+      card.template.engine === "whatsapp_simple" ||
+      card.template.requiresWaTemplate;
+
+    if (needsWaPick) {
+      if (!waTemplates.length) {
+        toast.error(
+          "אין עדיין תבניות WhatsApp מאושרות לבחירה — הכינו תבנית מהרשימה למטה ואשרו אותה"
+        );
         return;
       }
+      setPicker({
+        template: card.template,
+        readiness: card.readiness,
+        templateId: card.readiness.suggestedWaTemplateId || "",
+      });
+      return;
+    }
 
+    setCreatingKey(card.template.key);
+    try {
       await activateWorkflow(card.template, card.readiness);
+    } catch (error: unknown) {
+      toast.error(readAutomationErrorMessage(error, "שגיאה בהפעלת האוטומציה"));
+    } finally {
+      setCreatingKey(null);
+    }
+  };
+
+  const confirmPicker = async () => {
+    if (!picker || !businessId) return;
+    if (!picker.templateId) {
+      toast.error("בחרו תבנית WhatsApp מאושרת");
+      return;
+    }
+    setCreatingKey(picker.template.key);
+    try {
+      if (picker.template.engine === "whatsapp_simple") {
+        await activateWhatsApp(picker.template, picker.templateId);
+      } else {
+        await activateWorkflow(
+          picker.template,
+          picker.readiness,
+          picker.templateId
+        );
+      }
+      setPicker(null);
     } catch (error: unknown) {
       toast.error(readAutomationErrorMessage(error, "שגיאה בהפעלת האוטומציה"));
     } finally {
@@ -407,8 +418,7 @@ export default function AutomationsTemplatesPage() {
         <div>
           <h1 className="ax-home__title">תבניות אוטומציה</h1>
           <p className="ax-home__subtitle">
-            הפעלה אוטומטית דרך WhatsApp המנוהל של BizUply — טריגר ← תוצאה, בלי
-            חיבור ידני ובלי טיוטות.
+            בחרו אוטומציה ← בחרו תבנית WhatsApp מאושרת ← הפעלה מיידית.
           </p>
         </div>
         <div className="ax-templates__stats">
@@ -454,54 +464,55 @@ export default function AutomationsTemplatesPage() {
         </label>
       </div>
 
-      {!loading && managedWaReady ? (
-        <div className="ax-managed-wa" role="status">
-          <MessageCircle size={16} aria-hidden />
-          <div>
-            <strong>WhatsApp BizUply מחובר אוטומטית</strong>
+      {showWaChecklist ? (
+        <div className="ax-wa-checklist" role="region" aria-label="תבניות WhatsApp להכנה">
+          <div className="ax-wa-checklist__head">
+            <strong>תבניות WhatsApp שצריך להכין</strong>
             <p>
-              הקטלוג המנוהל פעיל
-              {waTemplates.length
-                ? ` · ${waTemplates.length} תבניות הודעה מוכנות`
-                : ""}
-              . לחיצה על «הפעל עכשיו» מפעילה את האוטומציה מיד.
+              אלה תבניות ההודעה לכל האוטומציות. אחרי אישור Meta — בוחרים אותן
+              בהפעלה. מאושרות כרגע: {waTemplates.length}.
             </p>
           </div>
-        </div>
-      ) : null}
-
-      {!loading && !managedWaReady && blockedWaCount > 0 ? (
-        <div className="ax-template-gaps" role="status">
-          <strong>WhatsApp המנוהל של BizUply אינו זמין כרגע</strong>
-          <p>
-            {managedWaMessage ||
-              "אין צורך לחבר WhatsApp ידנית — זה חיבור קבוע של BizUply. רעננו את הקטלוג ונסו שוב."}
-          </p>
-          <div className="ax-template-gaps__actions">
-            <button
-              type="button"
-              className="ax-btn ax-btn--primary"
-              onClick={() => void load()}
-            >
-              רענון קטלוג מנוהל
-            </button>
-            {category !== "whatsapp" ? (
-              <button
-                type="button"
-                className="ax-btn"
-                onClick={() => setCategory("whatsapp")}
+          <ul className="ax-wa-checklist__list">
+            {requiredWaMessages.map((row) => (
+              <li
+                key={row.id}
+                className={
+                  row.prepared
+                    ? "ax-wa-checklist__item ax-wa-checklist__item--ready"
+                    : "ax-wa-checklist__item"
+                }
               >
-                הצג אוטומציות WhatsApp
-              </button>
-            ) : null}
-          </div>
+                <span className="ax-wa-checklist__status">
+                  {row.prepared ? "מוכנה" : "להכין"}
+                </span>
+                <div>
+                  <em>{row.title}</em>
+                  <small>
+                    {row.reason} · שם מומלץ: <code>{row.suggestedMetaName}</code>
+                    {row.matchedTemplateName
+                      ? ` · מחוברת: ${row.matchedTemplateName}`
+                      : ""}
+                  </small>
+                </div>
+              </li>
+            ))}
+          </ul>
+          {businessId && missingWaMessages.length > 0 ? (
+            <Link
+              className="ax-btn ax-btn--primary"
+              to={`/business/${businessId}/dashboard/whatsapp/templates`}
+            >
+              להכנת תבניות ההודעה ({missingWaMessages.length} חסרות)
+            </Link>
+          ) : null}
         </div>
       ) : null}
 
       {loading ? (
         <div className="ax-empty">
           <Loader2 className="mx-auto mb-2 h-5 w-5 animate-spin" />
-          טוען קטלוג WhatsApp המנוהל של BizUply...
+          טוען תבניות אוטומציה ותבניות WhatsApp מאושרות...
         </div>
       ) : visibleCards.length === 0 ? (
         <div className="ax-empty ax-empty--card">
@@ -510,11 +521,7 @@ export default function AutomationsTemplatesPage() {
               ? "אין תבניות חסומות בקטגוריה הזו"
               : "אין כרגע תבניות מוכנות להפעלה"}
           </strong>
-          <p>
-            {showBlockedOnly
-              ? "נסו קטגוריה אחרת."
-              : "רעננו את הקטלוג המנוהל או בחרו קטגוריה אחרת."}
-          </p>
+          <p>נסו קטגוריה אחרת או רעננו את העמוד.</p>
           <button
             type="button"
             className="ax-btn ax-btn--primary"
@@ -529,6 +536,7 @@ export default function AutomationsTemplatesPage() {
             const Icon = cardIcon(template);
             const busy = creatingKey === template.key;
             const isAi = template.categories.includes("ai");
+            const isWa = isWhatsAppFacingTemplate(template);
 
             return (
               <article key={template.key} className="ax-template-card">
@@ -540,8 +548,7 @@ export default function AutomationsTemplatesPage() {
                     {isAi ? (
                       <span className="ax-badge ax-badge--draft">AI</span>
                     ) : null}
-                    {template.engine === "whatsapp_simple" ||
-                    template.categories.includes("whatsapp") ? (
+                    {isWa ? (
                       <span className="ax-badge ax-badge--active">WhatsApp</span>
                     ) : (
                       <span className="ax-badge ax-badge--active">זרימה</span>
@@ -549,7 +556,7 @@ export default function AutomationsTemplatesPage() {
                     {readiness.ready ? (
                       <span className="ax-badge ax-badge--active">מוכן</span>
                     ) : (
-                      <span className="ax-badge ax-badge--paused">ממתין</span>
+                      <span className="ax-badge ax-badge--paused">חסר משהו</span>
                     )}
                   </div>
                 </div>
@@ -573,9 +580,11 @@ export default function AutomationsTemplatesPage() {
 
                 {!readiness.ready && readiness.blocker ? (
                   <p className="ax-template-card__blocker">{readiness.blocker}</p>
-                ) : readiness.suggestedWaTemplateName ? (
+                ) : isWa ? (
                   <p className="ax-template-card__hint">
-                    נבחר אוטומטית מהקטלוג: {readiness.suggestedWaTemplateName}
+                    {readiness.suggestedWaTemplateName
+                      ? `תבנית מוצעת: ${readiness.suggestedWaTemplateName}`
+                      : "בהפעלה תבחרו תבנית WhatsApp מאושרת"}
                   </p>
                 ) : null}
 
@@ -596,13 +605,81 @@ export default function AutomationsTemplatesPage() {
                   {busy ? (
                     <Loader2 size={14} className="animate-spin" />
                   ) : null}
-                  {readiness.ready ? "הפעל עכשיו" : "ממתין לקטלוג"}
+                  {isWa ? "הפעל — בחר תבנית הודעה" : "הפעל עכשיו"}
                 </button>
               </article>
             );
           })}
         </div>
       )}
+
+      {picker ? (
+        <div className="af-modal-backdrop" role="dialog" aria-modal="true">
+          <div className="af-modal ax-activate-modal">
+            <button
+              type="button"
+              className="af-modal__close"
+              onClick={() => setPicker(null)}
+            >
+              <X size={16} />
+            </button>
+            <h2>הפעלת «{picker.template.name}»</h2>
+            <p>
+              בחרו תבנית WhatsApp מאושרת מהרשימה שלכם — האוטומציה תופעל מיד.
+            </p>
+            <label>
+              תבנית הודעה מאושרת
+              <select
+                value={picker.templateId}
+                onChange={(e) =>
+                  setPicker((prev) =>
+                    prev ? { ...prev, templateId: e.target.value } : prev
+                  )
+                }
+              >
+                <option value="">בחרו תבנית</option>
+                {waTemplates.map((tpl) => {
+                  const id = getWaTemplateId(tpl);
+                  return (
+                    <option key={id} value={id}>
+                      {(tpl as ApprovedWhatsAppTemplate).friendlyName ||
+                        tpl.name ||
+                        tpl.key ||
+                        id}
+                      {tpl.metaTemplateName ? ` · ${tpl.metaTemplateName}` : ""}
+                    </option>
+                  );
+                })}
+              </select>
+            </label>
+            {!waTemplates.length ? (
+              <p className="ax-template-card__blocker">
+                אין תבניות מאושרות עדיין — הכינו מהרשימה למעלה ואשרו ב-Meta.
+              </p>
+            ) : null}
+            <div className="ax-activate-modal__actions">
+              <button
+                type="button"
+                className="af-btn"
+                onClick={() => setPicker(null)}
+              >
+                ביטול
+              </button>
+              <button
+                type="button"
+                className="af-btn af-btn--primary"
+                disabled={!picker.templateId || Boolean(creatingKey)}
+                onClick={() => void confirmPicker()}
+              >
+                {creatingKey ? (
+                  <Loader2 size={14} className="animate-spin" />
+                ) : null}
+                הפעל עכשיו
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
     </div>
   );
 }
