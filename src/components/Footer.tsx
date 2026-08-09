@@ -52,7 +52,7 @@ export default function Footer() {
         <Link
           to="/"
           className="inline-flex items-center justify-center"
-          aria-label="BizUply"
+          aria-label={t("footer.logoAria")}
         >
           <img
             src={logo}

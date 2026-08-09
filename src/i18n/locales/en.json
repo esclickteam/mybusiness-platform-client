@@ -385,7 +385,7 @@
     "aboutUs": "About Us",
     "joinBusiness": "Join as a Business",
     "faq": "FAQ",
-    "contact": "Contact us",
+    "contact": "Contact Us",
     "terms": "Terms of Use",
     "privacy": "Privacy Policy",
     "accessibility": "Accessibility",
@@ -398,7 +398,8 @@
     "website": "Website & Store",
     "appointments": "Appointments",
     "automations": "Automations",
-    "agents": "Business Agents"
+    "agents": "Business Agents",
+    "logoAria": "Bizuply — home"
   },
   "businessNav": {
     "dashboard": "Dashboard",
