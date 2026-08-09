@@ -433,7 +433,7 @@
   },
   "layout": {
     "adminImpersonationTitle": "מצב אדמין — כניסה לעסק",
-    "adminImpersonationText": "אתם פועלים עם הרשאות מלאות בעסק {{name}}. כל הפעולות נשמרות בעסק זה.",
+    "adminImpersonationText": "אתם פועלים עם הרשאות החבילה של העסק {{name}}. כל הפעולות נשמרות בעסק זה.",
     "marketerImpersonationTitle": "מצב משווק — כניסה ללקוח",
     "marketerImpersonationText": "אתם מנהלים את חשבון הלקוח {{name}}. פתוחים ניהול קמפיינים ו-CRM.",
     "backToAdmin": "חזרה לפאנל אדמין",

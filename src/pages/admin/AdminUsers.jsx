@@ -6,6 +6,7 @@ import AdminDialButton from "../../components/AdminDialButton";
 import { useAuth } from "../../context/AuthContext";
 import BizuplyLoader from "../../components/ui/BizuplyLoader";
 import { setAdminActiveBusinessId } from "../../utils/adminTenant";
+import { getDefaultDashboardPath } from "../../utils/moduleAccess";
 import AdminHeader from "./AdminsHeader";
 
 const ROLE_LABELS = {
@@ -177,9 +178,13 @@ function AdminUsers() {
       });
 
       if (res.data.user.role === "business" && res.data.user.businessId) {
-        navigate(`/business/${res.data.user.businessId}/dashboard`, {
-          replace: true,
-        });
+        navigate(
+          getDefaultDashboardPath(
+            res.data.user.businessId,
+            res.data.user.enabledModules
+          ),
+          { replace: true }
+        );
       } else {
         navigate("/dashboard", { replace: true });
       }
