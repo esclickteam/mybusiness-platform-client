@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
+  Link,
   useNavigate,
   useOutletContext,
   useSearchParams,
@@ -29,12 +30,23 @@ import {
 import { readAutomationErrorMessage } from "./automationUiHelpers";
 import {
   TEMPLATE_CATEGORIES,
+  getRecipeResultLabel,
   getRecipeTriggerLabel,
   recipeMatchesCategory,
   recipeMatchesQuery,
   truncateDescription,
   type TemplateCategoryId,
 } from "./templateCategoryMapping";
+import {
+  SYSTEM_AUTOMATION_CATALOG,
+  findMissingMessageTemplates,
+  listReminderAutomations,
+  type MessageTemplateGap,
+} from "./systemAutomationCatalog";
+import {
+  listWhatsAppTemplates,
+  type WhatsAppTemplate,
+} from "../../../../api/whatsappApi";
 
 type OutletCtx = {
   businessId: string | null;
@@ -62,6 +74,8 @@ export default function AutomationsTemplatesPage() {
   const [creatingKey, setCreatingKey] = useState<string | null>(null);
   const [showAiUpgrade, setShowAiUpgrade] = useState(false);
   const [query, setQuery] = useState("");
+  const [templateGaps, setTemplateGaps] = useState<MessageTemplateGap[]>([]);
+  const [waTemplates, setWaTemplates] = useState<WhatsAppTemplate[]>([]);
 
   const initialCategory = (searchParams.get("focus") === "ai" ||
   searchParams.get("tier") === "ai"
@@ -77,12 +91,18 @@ export default function AutomationsTemplatesPage() {
     if (!businessId) return;
     setLoading(true);
     try {
-      const result = await listAutomationRecipes(businessId);
+      const [result, templates] = await Promise.all([
+        listAutomationRecipes(businessId),
+        listWhatsAppTemplates(businessId).catch(() => [] as WhatsAppTemplate[]),
+      ]);
       setRecipes(result?.recipes || []);
+      setWaTemplates(templates || []);
+      setTemplateGaps(findMissingMessageTemplates(templates || []));
       setRecipesError(false);
     } catch {
       setRecipes([]);
       setRecipesError(true);
+      setTemplateGaps(findMissingMessageTemplates([]));
     } finally {
       setLoading(false);
     }
@@ -152,10 +172,79 @@ export default function AutomationsTemplatesPage() {
         <div>
           <h1 className="ax-home__title">תבניות אוטומציה</h1>
           <p className="ax-home__subtitle">
-            התחל מתהליך מוכן והתאם אותו לעסק שלך
+            כל תבנית בנויה כ־טריגר ← תוצאה, מחוברת ל־CRM, פגישות, WhatsApp ו־AI
+            במערכת
           </p>
         </div>
       </header>
+
+      {templateGaps.length > 0 ? (
+        <div className="ax-template-gaps" role="status">
+          <strong>חסרות תבניות הודעה מומלצות</strong>
+          <p>
+            כדי שהאוטומציות יעבדו חלק, כדאי ליצור/לאשר את תבניות ה־WhatsApp
+            הבאות ({waTemplates.length} תבניות קיימות בעסק):
+          </p>
+          <ul>
+            {templateGaps.map((gap) => (
+              <li key={gap.id}>
+                <em>{gap.title}</em> — {gap.reason}
+              </li>
+            ))}
+          </ul>
+          {businessId ? (
+            <Link
+              className="ax-btn ax-btn--secondary"
+              to={`/business/${businessId}/dashboard/whatsapp/templates`}
+            >
+              לניהול תבניות WhatsApp
+            </Link>
+          ) : null}
+        </div>
+      ) : null}
+
+      <section className="ax-system-reminders">
+        <h2>תזכורות פגישה במערכת</h2>
+        <p>יום לפני, יומיים לפני, או מספר שעות לפני — מחובר ליומן ול־WhatsApp.</p>
+        <div className="ax-reminder-grid">
+          {listReminderAutomations().map((item) => (
+            <article key={item.id} className="ax-reminder-card">
+              <strong>{item.title}</strong>
+              <span className="ax-flow-chip">
+                <em>טריגר</em> {item.triggerLabel}
+              </span>
+              <span className="ax-flow-chip ax-flow-chip--result">
+                <em>תוצאה</em> {item.resultLabels.join(" · ")}
+              </span>
+              {item.timingHint ? (
+                <span className="ax-reminder-card__timing">{item.timingHint}</span>
+              ) : null}
+            </article>
+          ))}
+        </div>
+      </section>
+
+      {category === "ai" ? (
+        <section className="ax-ai-catalog">
+          <h2>אוטומציות AI שאפשר להפעיל במערכת</h2>
+          <p>
+            אלה הפעולות ש־AI יודע לבצע אצלכם — דירוג לידים, סיכום שיחה, טיוטת
+            תשובה, זיהוי סיכון, המלצת קמפיין ומשימות משיחה.
+          </p>
+          <div className="ax-ai-catalog__list">
+            {SYSTEM_AUTOMATION_CATALOG.filter((row) => row.kind === "ai").map(
+              (row) => (
+                <div key={row.id} className="ax-ai-catalog__item">
+                  <strong>{row.title}</strong>
+                  <span>
+                    {row.triggerLabel} → {row.resultLabels.join(" · ")}
+                  </span>
+                </div>
+              )
+            )}
+          </div>
+        </section>
+      ) : null}
 
       <div className="ax-templates__toolbar">
         <label className="ax-search">
@@ -229,10 +318,28 @@ export default function AutomationsTemplatesPage() {
                   {truncateDescription(recipe.description)}
                 </p>
 
+                <div className="ax-template-card__flow">
+                  <span className="ax-flow-chip">
+                    <em>טריגר</em>
+                    {getRecipeTriggerLabel(recipe)}
+                  </span>
+                  <span className="ax-flow-arrow" aria-hidden>
+                    →
+                  </span>
+                  <span className="ax-flow-chip ax-flow-chip--result">
+                    <em>תוצאה</em>
+                    {getRecipeResultLabel(recipe)}
+                  </span>
+                </div>
+
                 <div className="ax-template-card__meta">
-                  <span>{getRecipeTriggerLabel(recipe)}</span>
-                  <span>·</span>
                   <span>{recipe.nodeCount} שלבים</span>
+                  {recipe.pathCount > 1 ? (
+                    <>
+                      <span>·</span>
+                      <span>{recipe.pathCount} תוצאות יחד</span>
+                    </>
+                  ) : null}
                 </div>
 
                 <button

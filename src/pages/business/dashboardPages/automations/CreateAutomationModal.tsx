@@ -62,11 +62,14 @@ export default function CreateAutomationModal({
     }
     setCreatingBlank(true);
     try {
+      // Empty canvas only — never seed a starter/template graph.
       const created = await createAutomationWorkflow(businessId, {
-        useStarter: true,
+        useStarter: false,
         name: "אוטומציה חדשה",
+        nodes: [],
+        edges: [],
       });
-      toast.success("האוטומציה מוכנה לעריכה על הבד");
+      toast.success("בד ריק מוכן — בחרו טריגר כדי להתחיל");
       onClose();
       navigate(
         `/business/${businessId}/dashboard/automations/${created._id}`

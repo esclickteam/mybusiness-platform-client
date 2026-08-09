@@ -240,8 +240,8 @@ function edgeLabelFromHandle(handle?: string | null) {
   if (!handle) return "";
   if (handle === "yes") return "כן";
   if (handle === "no") return "לא";
-  if (handle.startsWith("route_")) return `ניתוב ${handle.split("_")[1]}`;
-  if (handle.startsWith("path_")) return `מסלול ${handle.split("_")[1]}`;
+  if (handle.startsWith("route_")) return `תוצאה ${handle.split("_")[1]}`;
+  if (handle.startsWith("path_")) return `תוצאה ${handle.split("_")[1]}`;
   return "";
 }
 
@@ -423,7 +423,12 @@ function EditorInner({
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [pickerEdgeId, setPickerEdgeId] = useState<string | null>(null);
-  const [pickerPreferTriggers, setPickerPreferTriggers] = useState(false);
+  const [pickerMode, setPickerMode] = useState<"all" | "trigger" | "result">(
+    "all"
+  );
+  const [pickerAfterNodeId, setPickerAfterNodeId] = useState<string | null>(
+    null
+  );
   const selectedIdRef = useRef<string | null>(null);
   const nodesRef = useRef(nodes);
   const edgesRef = useRef(edges);
@@ -803,17 +808,49 @@ function EditorInner({
         ? edges.find((edge) => edge.id === edgeId) || null
         : null;
       const afterId =
-        edgeForInsert?.source || options?.afterNodeId || selectedId;
+        edgeForInsert?.source ||
+        options?.afterNodeId ||
+        pickerAfterNodeId ||
+        selectedId;
       const afterNode = afterId
         ? nodes.find((n) => n.id === afterId) || null
         : null;
+
+      // Parallel results from a trigger: grow routeCount instead of forcing "paths".
+      if (
+        autoConnect &&
+        afterNode?.type === "trigger" &&
+        item.type !== "trigger" &&
+        !edgeId
+      ) {
+        const used = edges.filter((e) => e.source === afterNode.id).length;
+        const current = clampRouteCount(afterNode.data?.routeCount, 1);
+        const needed = Math.min(6, Math.max(current, used + 1));
+        if (needed !== current) {
+          setNodes((prev) =>
+            prev.map((n) =>
+              n.id === afterNode.id
+                ? { ...n, data: { ...(n.data || {}), routeCount: needed } }
+                : n
+            )
+          );
+          afterNode.data = { ...(afterNode.data || {}), routeCount: needed };
+        }
+      }
+
+      const siblingIndex =
+        afterNode && item.type !== "trigger"
+          ? edges.filter((e) => e.source === afterNode.id).length
+          : 0;
 
       const position =
         options?.position ||
         (afterNode
           ? {
               x: afterNode.position.x + 280,
-              y: afterNode.position.y + (item.type === "router" ? -40 : 0),
+              y:
+                afterNode.position.y +
+                (item.type === "router" ? -40 : siblingIndex * 110),
             }
           : { x: 120 + nodes.length * 40, y: 160 + nodes.length * 24 });
 
@@ -849,7 +886,27 @@ function EditorInner({
       } else if (autoConnect && afterNode && item.type !== "trigger") {
         let replacedCount = 0;
         setEdges((prev) => {
-          const afterSourceHandle = pickOutgoingHandle(afterNode, prev);
+          const liveAfter =
+            prev.length >= 0
+              ? {
+                  ...afterNode,
+                  data:
+                    nodes.find((n) => n.id === afterNode.id)?.data ||
+                    afterNode.data,
+                }
+              : afterNode;
+          // Re-read routeCount after possible bump above.
+          const afterWithRoutes = {
+            ...liveAfter,
+            data: {
+              ...(liveAfter.data || {}),
+              routeCount: clampRouteCount(
+                afterNode.data?.routeCount,
+                1
+              ),
+            },
+          };
+          const afterSourceHandle = pickOutgoingHandle(afterWithRoutes, prev);
           const spliced = spliceNodeAfterHandle(prev, {
             afterNodeId: afterNode.id,
             newNodeId: id,
@@ -863,10 +920,12 @@ function EditorInner({
         toast.success(
           replacedCount
             ? "נוסף וחובר אוטומטית (כולל המשך הזרימה)"
-            : "נוסף וחובר אוטומטית למודול שנבחר"
+            : afterNode.type === "trigger"
+              ? "תוצאה נוספה לטריגר"
+              : "נוסף וחובר אוטומטית למודול שנבחר"
         );
       } else if (item.type === "trigger") {
-        toast.success("טריגר נוסף — אפשר לחבר ממנו כמה ניתובים");
+        toast.success("טריגר נוסף — בחרו מה יקרה אוטומטית");
       } else {
         toast.success("מודול נוסף ללוח");
       }
@@ -874,7 +933,20 @@ function EditorInner({
       setSelectedId(id);
       setPickerOpen(false);
       setPickerEdgeId(null);
-      setPickerPreferTriggers(false);
+      setPickerAfterNodeId(null);
+      setPickerMode("all");
+
+      // After choosing a trigger on a blank canvas, immediately offer results.
+      if (item.type === "trigger") {
+        window.setTimeout(() => {
+          setSelectedId(id);
+          setPickerAfterNodeId(id);
+          setPickerEdgeId(null);
+          setPickerMode("result");
+          setPickerOpen(true);
+        }, 180);
+      }
+
       window.setTimeout(() => {
         try {
           fitView({ padding: 0.2, duration: 280 });
@@ -883,7 +955,7 @@ function EditorInner({
         }
       }, 40);
     },
-    [edges, fitView, nodes, selectedId, setEdges, setNodes]
+    [edges, fitView, nodes, pickerAfterNodeId, selectedId, setEdges, setNodes]
   );
 
   const onDragOver = (event: React.DragEvent) => {
@@ -1148,7 +1220,8 @@ function EditorInner({
           readOnly,
           onInsert: (edgeId: string) => {
             setSelectedId(null);
-            setPickerPreferTriggers(false);
+            setPickerMode("result");
+            setPickerAfterNodeId(null);
             setPickerEdgeId(edgeId);
             setPickerOpen(true);
           },
@@ -1160,21 +1233,25 @@ function EditorInner({
   const openPicker = useCallback(
     (opts?: {
       edgeId?: string | null;
-      preferTriggers?: boolean;
+      mode?: "all" | "trigger" | "result";
+      afterNodeId?: string | null;
       clearSelection?: boolean;
+      /** @deprecated use mode: "trigger" */
+      preferTriggers?: boolean;
     }) => {
       if (opts?.clearSelection) setSelectedId(null);
       setPickerEdgeId(opts?.edgeId || null);
-      setPickerPreferTriggers(Boolean(opts?.preferTriggers));
+      setPickerAfterNodeId(opts?.afterNodeId || null);
+      const mode =
+        opts?.mode ||
+        (opts?.preferTriggers ? "trigger" : "all");
+      setPickerMode(mode);
       setPickerOpen(true);
     },
     []
   );
 
-  const pickerItems = useMemo(() => {
-    if (!pickerPreferTriggers) return filteredPalette;
-    return filteredPalette.filter((item) => item.filter === "trigger");
-  }, [filteredPalette, pickerPreferTriggers]);
+  const pickerItems = filteredPalette;
 
   const selectedRouter =
     selectedNode?.type === "router"
@@ -1262,7 +1339,7 @@ function EditorInner({
           <AutomationEmptyState
             readOnly={readOnly}
             onAddTrigger={() =>
-              openPicker({ preferTriggers: true, clearSelection: true })
+              openPicker({ mode: "trigger", clearSelection: true })
             }
           />
         ) : null}
@@ -1332,6 +1409,7 @@ function EditorInner({
       <AutomationNodePicker
         open={pickerOpen}
         items={pickerItems}
+        mode={pickerMode}
         loading={triggerCatalogLoading}
         error={triggerCatalogError}
         readOnly={readOnly}
@@ -1340,12 +1418,13 @@ function EditorInner({
         onClose={() => {
           setPickerOpen(false);
           setPickerEdgeId(null);
-          setPickerPreferTriggers(false);
+          setPickerAfterNodeId(null);
+          setPickerMode("all");
         }}
         onPick={(item) => {
           insertModule(item, {
             edgeId: pickerEdgeId,
-            afterNodeId: selectedId,
+            afterNodeId: pickerAfterNodeId || selectedId,
             autoConnect: true,
           });
         }}
@@ -1410,12 +1489,12 @@ function EditorInner({
 {!selectedNode ? (
           <div className="af-inspector__hint">
             <p>
-              <strong>איך מוסיפים פיצול אחרי המתנה?</strong>
+              <strong>איך בונים אוטומציה?</strong>
             </p>
             <ol>
-              <li>לוחצים על מודול ההמתנה על הבד</li>
-              <li>לוחצים על ״הוסף שלב״ ובוחרים פיצול או ניתוב</li>
-              <li>זה מתווסף ומתחבר אוטומטית — כולל המשך הזרימה הקיימת</li>
+              <li>בוחרים טריגר (מתי זה קורה)</li>
+              <li>מוסיפים תוצאה — מה יקרה אוטומטית</li>
+              <li>רוצים כמה תוצאות יחד? הוסיפו עוד תוצאה מהטריגר — בלי מסלולים</li>
             </ol>
           </div>
         ) : (
@@ -1534,26 +1613,101 @@ function EditorInner({
                   </p>
                 ) : null}
                 <label>
-                  מספר ניתובים מהטריגר
+                  כמה תוצאות יחד מהטריגר
                   <input
                     type="number"
                     min={1}
                     max={6}
-                    value={clampRouteCount(selectedNode.data?.routeCount, 2)}
+                    value={clampRouteCount(selectedNode.data?.routeCount, 1)}
                     onChange={(e) =>
                       updateSelectedData({
-                        routeCount: clampRouteCount(e.target.value, 2),
+                        routeCount: clampRouteCount(e.target.value, 1),
                       })
                     }
                   />
                 </label>
+                <p className="af-inspector__hint-inline">
+                  כל תוצאה רצה במקביל — בלי מסלולים נפרדים.
+                </p>
+                <button
+                  type="button"
+                  className="af-btn af-btn--primary"
+                  disabled={readOnly}
+                  title={writeBlockedTitle}
+                  onClick={() =>
+                    openPicker({
+                      mode: "result",
+                      afterNodeId: selectedNode.id,
+                    })
+                  }
+                >
+                  הוסף תוצאה לטריגר
+                </button>
+                {String(selectedNode.data?.triggerKey || "") ===
+                  "appointment_reminder" ||
+                String(selectedNode.data?.triggerKey || "").includes(
+                  "appointment_reminder"
+                ) ? (
+                  <>
+                    <label>
+                      מתי לשלוח תזכורת (שעות לפני)
+                      <input
+                        type="number"
+                        min={1}
+                        max={168}
+                        value={Number(selectedNode.data?.hoursBefore) || 24}
+                        onChange={(e) =>
+                          updateSelectedData({
+                            hoursBefore: Math.max(
+                              1,
+                              Number(e.target.value) || 24
+                            ),
+                          })
+                        }
+                      />
+                    </label>
+                    <div className="af-reminder-presets">
+                      {[
+                        { hours: 2, label: "שעתיים לפני" },
+                        { hours: 24, label: "יום לפני" },
+                        { hours: 48, label: "יומיים לפני" },
+                        { hours: 72, label: "3 ימים לפני" },
+                      ].map((preset) => (
+                        <button
+                          key={preset.hours}
+                          type="button"
+                          className={`af-filter-chip${
+                            Number(selectedNode.data?.hoursBefore) ===
+                            preset.hours
+                              ? " af-filter-chip--active"
+                              : ""
+                          }`}
+                          disabled={readOnly}
+                          onClick={() =>
+                            updateSelectedData({
+                              hoursBefore: preset.hours,
+                              label:
+                                preset.hours === 24
+                                  ? "תזכורת פגישה — יום לפני"
+                                  : preset.hours === 48
+                                    ? "תזכורת פגישה — יומיים לפני"
+                                    : `תזכורת פגישה — ${preset.hours} שעות לפני`,
+                            })
+                          }
+                        >
+                          {preset.label}
+                        </button>
+                      ))}
+                    </div>
+                  </>
+                ) : null}
               </>
             ) : null}
 
             {selectedNode.type === "router" && selectedRouter ? (
               <>
                 <label>
-                  מספר מסלולים
+                  כמה תוצאות יחד
                   <input
                     type="number"
                     min={2}
@@ -1562,7 +1716,10 @@ function EditorInner({
                     onChange={(e) => {
                       const next = ensureRouterPaths({
                         ...selectedNode.data,
-                        pathCount: clampRouteCount(e.target.value, 3),
+                        pathCount: Math.max(
+                          2,
+                          clampRouteCount(e.target.value, 2)
+                        ),
                       });
                       updateSelectedData(next);
                     }}
@@ -1570,7 +1727,7 @@ function EditorInner({
                 </label>
                 {selectedRouter.paths.map((path, index) => (
                   <label key={path.id}>
-                    שם מסלול {index + 1}
+                    שם תוצאה {index + 1}
                     <input
                       value={path.label}
                       onChange={(e) => {

@@ -5130,6 +5130,13 @@
       "name": "Automation name",
       "trigger": "Trigger",
       "hoursBefore": "Hours before appointment",
+      "customHours": "Or enter custom hours",
+      "presets": {
+        "hours2": "2 hours before",
+        "day1": "1 day before",
+        "day2": "2 days before",
+        "day3": "3 days before"
+      },
       "template": "Message template",
       "save": "Save automation",
       "empty": "No automations yet",
@@ -5164,6 +5171,7 @@
         "lead_followup_2": "Second lead follow-up after 3 days",
         "appointment_reminder_1_day": "Appointment reminder – 1 day before",
         "appointment_reminder_hours": "Appointment reminder – 2 hours before",
+        "appointment_reminder_hours_named": "Appointment reminder – {{count}} hours before",
         "appointment_thanks": "Thank-you after appointment",
         "appointment_review_request": "Review request after 24 hours",
         "new_client_welcome": "Welcome new client",
