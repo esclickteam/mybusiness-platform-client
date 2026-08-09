@@ -6,44 +6,58 @@
     <script>
       (function () {
         try {
-          // Always re-detect from location on load (not a sticky manual choice).
-          localStorage.removeItem("bizuply_lang_manual");
-          sessionStorage.removeItem("bizuply_lang_session");
+          var SUPPORTED = { en: 1, he: 1, fr: 1, de: 1, es: 1, nl: 1, it: 1 };
 
-          var lang = "en";
-          var tzHe = false;
-          var navHe = false;
-
+          // An explicit user choice persists across reloads and wins over geo.
+          var manual = null;
           try {
-            tzHe =
-              Intl.DateTimeFormat().resolvedOptions().timeZone ===
-              "Asia/Jerusalem";
-          } catch (e1) {}
+            manual = localStorage.getItem("bizuply_lang_manual");
+          } catch (e0) {}
+          if (!manual || !SUPPORTED[manual]) manual = null;
 
-          try {
-            var langs = [navigator.language].concat(navigator.languages || []);
-            navHe = langs.some(function (value) {
-              return String(value || "")
-                .toLowerCase()
-                .indexOf("he") === 0;
-            });
-          } catch (e2) {}
+          var lang;
 
-          // Israel signals win over a stale English geo cookie from earlier tests.
-          if (tzHe || navHe) {
-            lang = "he";
+          if (manual) {
+            lang = manual;
           } else {
-            var match = document.cookie.match(
-              /(?:^|; )bizuply_geo_lang=([^;]+)/
-            );
-            if (match) lang = decodeURIComponent(match[1]);
+            lang = "en";
+            var tzHe = false;
+            var navHe = false;
+
+            try {
+              tzHe =
+                Intl.DateTimeFormat().resolvedOptions().timeZone ===
+                "Asia/Jerusalem";
+            } catch (e1) {}
+
+            try {
+              var langs = [navigator.language].concat(
+                navigator.languages || []
+              );
+              navHe = langs.some(function (value) {
+                return String(value || "")
+                  .toLowerCase()
+                  .indexOf("he") === 0;
+              });
+            } catch (e2) {}
+
+            // Israel signals win over a stale English geo cookie from earlier tests.
+            if (tzHe || navHe) {
+              lang = "he";
+            } else {
+              var match = document.cookie.match(
+                /(?:^|; )bizuply_geo_lang=([^;]+)/
+              );
+              if (match) lang = decodeURIComponent(match[1]);
+            }
+
+            if (!SUPPORTED[lang]) lang = "en";
+            document.cookie =
+              "bizuply_geo_lang=" +
+              lang +
+              "; Path=/; Max-Age=2592000; SameSite=Lax";
           }
 
-          if (lang !== "he" && lang !== "en") lang = "en";
-          document.cookie =
-            "bizuply_geo_lang=" +
-            lang +
-            "; Path=/; Max-Age=2592000; SameSite=Lax";
           document.documentElement.lang = lang;
           document.documentElement.dir = lang === "he" ? "rtl" : "ltr";
         } catch (e) {}
