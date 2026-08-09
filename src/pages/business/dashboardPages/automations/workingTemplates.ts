@@ -44,52 +44,80 @@ export type WorkingTemplate = {
   requiresAiEntitlement?: boolean;
 };
 
-function waEdgeGraph(opts: {
+const LEAD_TRIGGER_KEYS = [
+  "crm_lead_created",
+  "lead_created",
+  "new_lead",
+  "lead_new",
+];
+const APPOINTMENT_TRIGGER_KEYS = [
+  "appointment_created",
+  "crm_appointment_created",
+  "booking_created",
+];
+const APPOINTMENT_DONE_TRIGGER_KEYS = [
+  "appointment_completed",
+  "appointment_ended",
+  "appointment_done",
+  "appointment_created",
+];
+const CLIENT_TRIGGER_KEYS = [
+  "crm_client_created",
+  "client_created",
+  "new_client",
+  "customer_created",
+];
+const LEAD_NO_RESPONSE_KEYS = [
+  "lead_no_response",
+  "crm_lead_no_response",
+  "lead_followup",
+];
+const LEAD_STATUS_KEYS = [
+  "lead_status_changed",
+  "crm_lead_status_changed",
+  "lead_updated",
+];
+const WHATSAPP_INBOUND_KEYS = [
+  "whatsapp_message_received",
+  "whatsapp_inbound",
+  "wa_message_received",
+];
+
+type GraphAction = {
+  actionKey: string;
+  label: string;
+  defaults?: Record<string, unknown>;
+};
+
+function resultGraph(opts: {
   triggerKey: string;
   triggerLabel: string;
-  actionLabel: string;
-  waTemplateId?: string;
   hoursBefore?: number;
-  routeCount?: number;
-  extraActions?: Array<{
-    actionKey: string;
-    label: string;
-    defaults?: Record<string, unknown>;
-  }>;
+  actions: GraphAction[];
 }) {
-  const actions = [
-    {
-      actionKey: "whatsapp_template",
-      label: opts.actionLabel,
-      defaults: { templateId: opts.waTemplateId || "" },
-    },
-    ...(opts.extraActions || []),
-  ];
-  const routeCount = actions.length;
   const nodes: AutomationFlowNode[] = [
     {
       id: "trigger_1",
       type: "trigger",
-      position: { x: 80, y: 160 },
+      position: { x: 80, y: Math.max(120, 40 + opts.actions.length * 70) },
       data: {
         label: opts.triggerLabel,
         triggerKey: opts.triggerKey,
-        routeCount,
+        routeCount: opts.actions.length,
         ...(opts.hoursBefore != null ? { hoursBefore: opts.hoursBefore } : {}),
       },
     },
   ];
   const edges: AutomationFlowEdge[] = [];
-  actions.forEach((action, index) => {
+  opts.actions.forEach((action, index) => {
     const id = `action_${index + 1}`;
     nodes.push({
       id,
       type: "action",
-      position: { x: 420, y: 80 + index * 140 },
+      position: { x: 420, y: 40 + index * 140 },
       data: {
         label: action.label,
         actionKey: action.actionKey,
-        templateId: "",
         ...(action.defaults || {}),
       },
     });
@@ -104,17 +132,40 @@ function waEdgeGraph(opts: {
   return { nodes, edges };
 }
 
+function waEdgeGraph(opts: {
+  triggerKey: string;
+  triggerLabel: string;
+  actionLabel: string;
+  waTemplateId?: string;
+  hoursBefore?: number;
+  extraActions?: GraphAction[];
+}) {
+  return resultGraph({
+    triggerKey: opts.triggerKey,
+    triggerLabel: opts.triggerLabel,
+    hoursBefore: opts.hoursBefore,
+    actions: [
+      {
+        actionKey: "whatsapp_template",
+        label: opts.actionLabel,
+        defaults: { templateId: opts.waTemplateId || "" },
+      },
+      ...(opts.extraActions || []),
+    ],
+  });
+}
+
 /**
- * Best working templates only — engines that can actually activate in BizUply.
- * WhatsApp simple = proven production path. Workflow = only with publishable triggers.
+ * Best working templates — common business cases that can actually activate.
+ * WhatsApp simple = proven production path. Workflow/AI = gated by live readiness.
  */
 export const WORKING_TEMPLATES: WorkingTemplate[] = [
+  // ── WhatsApp simple (activate immediately when WA template exists) ──
   {
     key: "wa_new_lead_welcome",
     rank: 1,
-    name: "ליד חדש → הודעת פתיחה",
-    description:
-      "כשנכנס ליד ל-CRM נשלחת הודעת WhatsApp אוטומטית (מופעל מיד).",
+    name: "ליד חדש → WhatsApp פתיחה",
+    description: "ליד נכנס ל-CRM → הודעת פתיחה ב-WhatsApp תוך דקות (מופעל מיד).",
     triggerLabel: "ליד חדש ב-CRM",
     resultLabels: ["הודעת WhatsApp"],
     categories: ["leads", "whatsapp", "crm"],
@@ -128,7 +179,7 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
     key: "wa_appointment_reminder_1_day",
     rank: 2,
     name: "תזכורת פגישה — יום לפני",
-    description: "יום לפני הפגישה נשלחת תזכורת WhatsApp ללקוח (מופעל מיד).",
+    description: "יום לפני הפגישה → תזכורת WhatsApp ללקוח (מופעל מיד).",
     triggerLabel: "פגישה קרובה (יום לפני)",
     resultLabels: ["תזכורת WhatsApp"],
     categories: ["appointments", "whatsapp"],
@@ -141,7 +192,7 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
     key: "wa_appointment_reminder_2_days",
     rank: 3,
     name: "תזכורת פגישה — יומיים לפני",
-    description: "48 שעות לפני הפגישה נשלחת תזכורת WhatsApp (מופעל מיד).",
+    description: "48 שעות לפני הפגישה → תזכורת WhatsApp (מופעל מיד).",
     triggerLabel: "פגישה קרובה (יומיים לפני)",
     resultLabels: ["תזכורת WhatsApp"],
     categories: ["appointments", "whatsapp"],
@@ -152,10 +203,24 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
     waHints: ["reminder", "appointment", "תזכורת"],
   },
   {
-    key: "wa_appointment_reminder_2_hours",
+    key: "wa_appointment_reminder_3_days",
     rank: 4,
+    name: "תזכורת פגישה — 3 ימים לפני",
+    description: "72 שעות לפני הפגישה → תזכורת WhatsApp מוקדמת (מופעל מיד).",
+    triggerLabel: "פגישה קרובה (3 ימים לפני)",
+    resultLabels: ["תזכורת WhatsApp"],
+    categories: ["appointments", "whatsapp"],
+    engine: "whatsapp_simple",
+    whatsappTrigger: "appointment_reminder_hours",
+    hoursBefore: 72,
+    waCategory: "appointment_reminder",
+    waHints: ["reminder", "appointment", "תזכורת"],
+  },
+  {
+    key: "wa_appointment_reminder_2_hours",
+    rank: 5,
     name: "תזכורת פגישה — שעתיים לפני",
-    description: "שעתיים לפני הפגישה נשלחת תזכורת WhatsApp (מופעל מיד).",
+    description: "שעתיים לפני הפגישה → תזכורת WhatsApp (מופעל מיד).",
     triggerLabel: "פגישה קרובה (שעתיים לפני)",
     resultLabels: ["תזכורת WhatsApp"],
     categories: ["appointments", "whatsapp"],
@@ -166,10 +231,24 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
     waHints: ["reminder", "appointment", "תזכורת"],
   },
   {
+    key: "wa_appointment_reminder_1_hour",
+    rank: 6,
+    name: "תזכורת פגישה — שעה לפני",
+    description: "שעה לפני הפגישה → תזכורת WhatsApp אחרונה (מופעל מיד).",
+    triggerLabel: "פגישה קרובה (שעה לפני)",
+    resultLabels: ["תזכורת WhatsApp"],
+    categories: ["appointments", "whatsapp"],
+    engine: "whatsapp_simple",
+    whatsappTrigger: "appointment_reminder_hours",
+    hoursBefore: 1,
+    waCategory: "appointment_reminder",
+    waHints: ["reminder", "appointment", "תזכורת"],
+  },
+  {
     key: "wa_appointment_thanks",
-    rank: 5,
-    name: "תודה אחרי פגישה",
-    description: "אחרי פגישה נשלחת הודעת תודה ב-WhatsApp (מופעל מיד).",
+    rank: 7,
+    name: "תודה אחרי פגישה (WhatsApp)",
+    description: "אחרי פגישה → הודעת תודה ב-WhatsApp (מופעל מיד).",
     triggerLabel: "פגישה הסתיימה",
     resultLabels: ["הודעת תודה"],
     categories: ["appointments", "whatsapp"],
@@ -179,38 +258,10 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
     waHints: ["thanks", "thank", "תודה"],
   },
   {
-    key: "wa_lead_no_response",
-    rank: 6,
-    name: "ליד שלא נענה → מעקב",
-    description: "אם אין מענה — נשלח פולואפ WhatsApp אוטומטי (מופעל מיד).",
-    triggerLabel: "ליד שלא נענה",
-    resultLabels: ["פולואפ WhatsApp"],
-    categories: ["leads", "whatsapp"],
-    engine: "whatsapp_simple",
-    whatsappTrigger: "lead_no_response",
-    delayHours: 24,
-    waCategory: "follow_up",
-    waHints: ["follow", "מעקב", "פולואפ"],
-  },
-  {
-    key: "wa_new_client_welcome",
-    rank: 7,
-    name: "לקוח חדש → ברוכים הבאים",
-    description: "לקוח חדש ב-CRM מקבל הודעת פתיחה ב-WhatsApp (מופעל מיד).",
-    triggerLabel: "לקוח חדש",
-    resultLabels: ["הודעת פתיחה"],
-    categories: ["crm", "whatsapp"],
-    engine: "whatsapp_simple",
-    whatsappTrigger: "new_client_welcome",
-    delayMinutes: 5,
-    waCategory: "welcome",
-    waHints: ["welcome", "client", "לקוח"],
-  },
-  {
     key: "wa_appointment_review",
     rank: 8,
     name: "בקשת ביקורת אחרי פגישה",
-    description: "לאחר הפגישה נשלחת בקשת ביקורת ב-WhatsApp (מופעל מיד).",
+    description: "יום אחרי הפגישה → בקשת ביקורת ב-WhatsApp (מופעל מיד).",
     triggerLabel: "פגישה הסתיימה",
     resultLabels: ["בקשת ביקורת"],
     categories: ["appointments", "whatsapp"],
@@ -221,13 +272,27 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
     waHints: ["review", "feedback", "ביקורת"],
   },
   {
-    key: "wa_lead_followup_2",
+    key: "wa_lead_no_response",
     rank: 9,
+    name: "ליד שלא נענה → פולואפ WhatsApp",
+    description: "אחרי ~24 שעות בלי מענה → פולואפ WhatsApp (מופעל מיד).",
+    triggerLabel: "ליד שלא נענה",
+    resultLabels: ["פולואפ WhatsApp"],
+    categories: ["leads", "whatsapp"],
+    engine: "whatsapp_simple",
+    whatsappTrigger: "lead_no_response",
+    delayHours: 24,
+    waCategory: "follow_up",
+    waHints: ["follow", "מעקב", "פולואפ"],
+  },
+  {
+    key: "wa_lead_followup_2",
+    rank: 10,
     name: "פולואפ שני לליד",
-    description: "מעקב נוסף ללידים שלא הומרו (מופעל מיד).",
+    description: "מעקב נוסף אחרי ~3 ימים ללידים שלא הומרו (מופעל מיד).",
     triggerLabel: "ליד ללא המרה",
     resultLabels: ["פולואפ שני"],
-    categories: ["leads", "whatsapp"],
+    categories: ["leads", "whatsapp", "sales"],
     engine: "whatsapp_simple",
     whatsappTrigger: "lead_followup_2",
     delayDays: 3,
@@ -235,25 +300,40 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
     waHints: ["follow", "מעקב"],
   },
   {
+    key: "wa_new_client_welcome",
+    rank: 11,
+    name: "לקוח חדש → ברוכים הבאים",
+    description: "לקוח חדש ב-CRM → הודעת פתיחה ב-WhatsApp (מופעל מיד).",
+    triggerLabel: "לקוח חדש",
+    resultLabels: ["הודעת פתיחה"],
+    categories: ["crm", "whatsapp"],
+    engine: "whatsapp_simple",
+    whatsappTrigger: "new_client_welcome",
+    delayMinutes: 5,
+    waCategory: "welcome",
+    waHints: ["welcome", "client", "לקוח"],
+  },
+  {
     key: "wa_inactive_client",
-    rank: 10,
+    rank: 12,
     name: "לקוח לא פעיל → נגיעה",
-    description: "לקוחות לא פעילים מקבלים הודעת נגיעה (מופעל מיד).",
+    description: "לקוח ללא פעילות ~30 יום → הודעת נגיעה (מופעל מיד).",
     triggerLabel: "לקוח לא פעיל",
     resultLabels: ["הודעת נגיעה"],
-    categories: ["crm", "whatsapp"],
+    categories: ["crm", "whatsapp", "sales"],
     engine: "whatsapp_simple",
     whatsappTrigger: "inactive_client",
     delayDays: 30,
     waCategory: "follow_up",
     waHints: ["inactive", "נגיעה", "follow"],
   },
+
+  // ── Multi-channel workflows (publish when triggers/templates ready) ──
   {
     key: "wf_lead_multi",
-    rank: 11,
+    rank: 13,
     name: "ליד חדש → WhatsApp + משימה + התראה",
-    description:
-      "אוטומציית זרימה: ליד חדש מפעיל שלוש תוצאות יחד. נבחרת תבנית WhatsApp ומתפרסמת.",
+    description: "המקרה הקלאסי: ליד נכנס → WhatsApp + משימה לנציג + התראה לבעלים.",
     triggerLabel: "ליד חדש ב-CRM",
     resultLabels: ["WhatsApp", "משימה", "התראה"],
     categories: ["leads", "crm", "whatsapp"],
@@ -262,12 +342,7 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
     requiresWaTemplate: true,
     waCategory: "welcome",
     waHints: ["welcome", "new_lead"],
-    requiredTriggerKeys: [
-      "crm_lead_created",
-      "lead_created",
-      "new_lead",
-      "lead_new",
-    ],
+    requiredTriggerKeys: LEAD_TRIGGER_KEYS,
     buildGraph: ({ triggerKey, waTemplateId }) =>
       waEdgeGraph({
         triggerKey,
@@ -281,243 +356,602 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
       }),
   },
   {
+    key: "wf_lead_wa_email",
+    rank: 14,
+    name: "ליד חדש → WhatsApp + אימייל",
+    description: "ליד חדש מקבל גם WhatsApp וגם אימייל Bizuply — כיסוי כפול.",
+    triggerLabel: "ליד חדש ב-CRM",
+    resultLabels: ["WhatsApp", "אימייל Bizuply"],
+    categories: ["leads", "whatsapp", "email"],
+    engine: "workflow_graph",
+    requiresWaTemplate: true,
+    waCategory: "welcome",
+    waHints: ["welcome", "new_lead"],
+    requiredTriggerKeys: LEAD_TRIGGER_KEYS,
+    buildGraph: ({ triggerKey, waTemplateId }) =>
+      waEdgeGraph({
+        triggerKey,
+        triggerLabel: "ליד חדש ב-CRM",
+        actionLabel: "WhatsApp לליד",
+        waTemplateId,
+        extraActions: [
+          {
+            actionKey: "send_email",
+            label: "אימייל לליד",
+            defaults: {
+              recipientType: "lead_email",
+              subject: "שמחים שפנית אלינו",
+            },
+          },
+        ],
+      }),
+  },
+  {
+    key: "wf_lead_full_onboarding",
+    rank: 15,
+    name: "ליד חדש → WhatsApp + אימייל + משימה + התראה",
+    description: "חבילת קליטה מלאה לליד חדש בכל הערוצים החשובים.",
+    triggerLabel: "ליד חדש ב-CRM",
+    resultLabels: ["WhatsApp", "אימייל", "משימה", "התראה"],
+    categories: ["leads", "crm", "whatsapp", "email"],
+    engine: "workflow_graph",
+    requiresWaTemplate: true,
+    waCategory: "welcome",
+    waHints: ["welcome", "new_lead"],
+    requiredTriggerKeys: LEAD_TRIGGER_KEYS,
+    buildGraph: ({ triggerKey, waTemplateId }) =>
+      waEdgeGraph({
+        triggerKey,
+        triggerLabel: "ליד חדש ב-CRM",
+        actionLabel: "WhatsApp לליד",
+        waTemplateId,
+        extraActions: [
+          {
+            actionKey: "send_email",
+            label: "אימייל לליד",
+            defaults: {
+              recipientType: "lead_email",
+              subject: "שמחים שפנית אלינו",
+            },
+          },
+          { actionKey: "create_task", label: "משימת מעקב לנציג" },
+          { actionKey: "notify", label: "התראה לבעל העסק" },
+        ],
+      }),
+  },
+  {
     key: "wf_lead_email_task",
-    rank: 12,
+    rank: 16,
     name: "ליד חדש → אימייל + משימה",
-    description:
-      "אוטומציית זרימה: ליד חדש מקבל אימייל Bizuply ומשימת מעקב — בלי חיבור Gmail.",
+    description: "בלי WhatsApp: אימייל Bizuply + משימת מעקב ב-CRM.",
     triggerLabel: "ליד חדש ב-CRM",
     resultLabels: ["אימייל Bizuply", "משימת מעקב"],
     categories: ["leads", "email", "crm"],
     engine: "workflow_graph",
-    requiredTriggerKeys: [
-      "crm_lead_created",
-      "lead_created",
-      "new_lead",
-      "lead_new",
-    ],
-    buildGraph: ({ triggerKey }) => {
-      const nodes: AutomationFlowNode[] = [
-        {
-          id: "trigger_1",
-          type: "trigger",
-          position: { x: 80, y: 160 },
-          data: {
-            label: "ליד חדש ב-CRM",
-            triggerKey,
-            routeCount: 2,
-          },
-        },
-        {
-          id: "action_1",
-          type: "action",
-          position: { x: 420, y: 80 },
-          data: {
-            label: "אימייל לליד",
+    requiredTriggerKeys: LEAD_TRIGGER_KEYS,
+    buildGraph: ({ triggerKey }) =>
+      resultGraph({
+        triggerKey,
+        triggerLabel: "ליד חדש ב-CRM",
+        actions: [
+          {
             actionKey: "send_email",
-            recipientType: "lead_email",
-            subject: "שמחים שפנית אלינו",
+            label: "אימייל לליד",
+            defaults: {
+              recipientType: "lead_email",
+              subject: "שמחים שפנית אלינו",
+            },
           },
-        },
-        {
-          id: "action_2",
-          type: "action",
-          position: { x: 420, y: 240 },
-          data: {
-            label: "משימת מעקב",
-            actionKey: "create_task",
+          { actionKey: "create_task", label: "משימת מעקב" },
+        ],
+      }),
+  },
+  {
+    key: "wf_lead_email_only",
+    rank: 17,
+    name: "ליד חדש → אימייל פתיחה",
+    description: "ליד חדש מקבל אימייל פתיחה מ-Bizuply בלבד.",
+    triggerLabel: "ליד חדש ב-CRM",
+    resultLabels: ["אימייל Bizuply"],
+    categories: ["leads", "email"],
+    engine: "workflow_graph",
+    requiredTriggerKeys: LEAD_TRIGGER_KEYS,
+    buildGraph: ({ triggerKey }) =>
+      resultGraph({
+        triggerKey,
+        triggerLabel: "ליד חדש ב-CRM",
+        actions: [
+          {
+            actionKey: "send_email",
+            label: "אימייל פתיחה",
+            defaults: {
+              recipientType: "lead_email",
+              subject: "תודה על הפנייה",
+            },
           },
-        },
-      ];
-      const edges: AutomationFlowEdge[] = [
-        {
-          id: "e1",
-          source: "trigger_1",
-          target: "action_1",
-          sourceHandle: "route_1",
-          label: "תוצאה",
-        },
-        {
-          id: "e2",
-          source: "trigger_1",
-          target: "action_2",
-          sourceHandle: "route_2",
-          label: "תוצאה",
-        },
-      ];
-      return { nodes, edges };
-    },
+        ],
+      }),
+  },
+  {
+    key: "wf_lead_desk_alert",
+    rank: 18,
+    name: "ליד חדש → משימה + התראה לצוות",
+    description: "בלי הודעות ללקוח: משימה והתראה פנימית כשנכנס ליד.",
+    triggerLabel: "ליד חדש ב-CRM",
+    resultLabels: ["משימה", "התראה"],
+    categories: ["leads", "crm", "sales"],
+    engine: "workflow_graph",
+    requiredTriggerKeys: LEAD_TRIGGER_KEYS,
+    buildGraph: ({ triggerKey }) =>
+      resultGraph({
+        triggerKey,
+        triggerLabel: "ליד חדש ב-CRM",
+        actions: [
+          { actionKey: "create_task", label: "משימה לנציג" },
+          { actionKey: "notify", label: "התראה לצוות" },
+        ],
+      }),
+  },
+  {
+    key: "wf_lead_no_response_pack",
+    rank: 19,
+    name: "ליד שלא נענה → WhatsApp + משימה + סטטוס",
+    description: "מעקב חכם: WhatsApp, משימה לנציג ועדכון סטטוס ליד.",
+    triggerLabel: "ליד שלא נענה",
+    resultLabels: ["WhatsApp מעקב", "משימה", "עדכון סטטוס"],
+    categories: ["leads", "whatsapp", "sales"],
+    engine: "workflow_recipe",
+    recipeKey: "lead_no_response",
+    requiresWaTemplate: true,
+    waCategory: "follow_up",
+    waHints: ["follow", "מעקב"],
+    requiredTriggerKeys: LEAD_NO_RESPONSE_KEYS,
+    buildGraph: ({ triggerKey, waTemplateId }) =>
+      waEdgeGraph({
+        triggerKey,
+        triggerLabel: "ליד שלא נענה",
+        actionLabel: "WhatsApp מעקב",
+        waTemplateId,
+        extraActions: [
+          { actionKey: "create_task", label: "משימת חזרה לליד" },
+          {
+            actionKey: "update_status",
+            label: "עדכון סטטוס",
+            defaults: { status: "follow_up" },
+          },
+        ],
+      }),
+  },
+  {
+    key: "wf_lead_status_sales",
+    rank: 20,
+    name: "שינוי סטטוס ליד → משימה + התראה",
+    description: "כשסטטוס ליד משתנה — הצוות מקבל משימה והתראה.",
+    triggerLabel: "שינוי סטטוס ליד",
+    resultLabels: ["משימה", "התראה"],
+    categories: ["leads", "sales", "crm"],
+    engine: "workflow_graph",
+    requiredTriggerKeys: LEAD_STATUS_KEYS,
+    buildGraph: ({ triggerKey }) =>
+      resultGraph({
+        triggerKey,
+        triggerLabel: "שינוי סטטוס ליד",
+        actions: [
+          { actionKey: "create_task", label: "משימה לפי סטטוס" },
+          { actionKey: "notify", label: "התראה לצוות מכירות" },
+        ],
+      }),
+  },
+  {
+    key: "wf_new_client_pack",
+    rank: 21,
+    name: "לקוח חדש → WhatsApp + אימייל + משימת שימור",
+    description: "קליטת לקוח חדש: הודעת פתיחה, אימייל ומשימת שימור.",
+    triggerLabel: "לקוח חדש",
+    resultLabels: ["WhatsApp", "אימייל", "משימת שימור"],
+    categories: ["crm", "whatsapp", "email"],
+    engine: "workflow_recipe",
+    recipeKey: "new_client_welcome",
+    requiresWaTemplate: true,
+    waCategory: "welcome",
+    waHints: ["welcome", "client", "לקוח"],
+    requiredTriggerKeys: CLIENT_TRIGGER_KEYS,
+    buildGraph: ({ triggerKey, waTemplateId }) =>
+      waEdgeGraph({
+        triggerKey,
+        triggerLabel: "לקוח חדש",
+        actionLabel: "WhatsApp ברוכים הבאים",
+        waTemplateId,
+        extraActions: [
+          {
+            actionKey: "send_email",
+            label: "אימייל ברוכים הבאים",
+            defaults: {
+              recipientType: "client_email",
+              subject: "ברוכים הבאים",
+            },
+          },
+          { actionKey: "create_task", label: "משימת שימור" },
+        ],
+      }),
   },
   {
     key: "wf_appointment_email",
-    rank: 13,
+    rank: 22,
     name: "פגישה חדשה → אימייל אישור",
-    description: "אוטומציית זרימה: פגישה חדשה שולחת אימייל אישור ללקוח.",
+    description: "פגישה נוצרת → אימייל אישור ללקוח מ-Bizuply.",
     triggerLabel: "פגישה חדשה",
     resultLabels: ["אימייל אישור"],
     categories: ["appointments", "email"],
     engine: "workflow_graph",
-    requiredTriggerKeys: ["appointment_created"],
-    buildGraph: ({ triggerKey }) => ({
-      nodes: [
-        {
-          id: "trigger_1",
-          type: "trigger",
-          position: { x: 80, y: 160 },
-          data: {
-            label: "פגישה חדשה",
-            triggerKey,
-            routeCount: 1,
-          },
-        },
-        {
-          id: "action_1",
-          type: "action",
-          position: { x: 420, y: 160 },
-          data: {
-            label: "אימייל אישור פגישה",
+    requiredTriggerKeys: APPOINTMENT_TRIGGER_KEYS,
+    buildGraph: ({ triggerKey }) =>
+      resultGraph({
+        triggerKey,
+        triggerLabel: "פגישה חדשה",
+        actions: [
+          {
             actionKey: "send_email",
-            recipientType: "appointment_customer_email",
-            subject: "אישור פגישה",
+            label: "אימייל אישור פגישה",
+            defaults: {
+              recipientType: "appointment_customer_email",
+              subject: "אישור פגישה",
+            },
           },
-        },
-      ],
-      edges: [
-        {
-          id: "e1",
-          source: "trigger_1",
-          target: "action_1",
-          sourceHandle: "route_1",
-          label: "תוצאה",
-        },
-      ],
-    }),
+        ],
+      }),
+  },
+  {
+    key: "wf_appointment_email_notify",
+    rank: 23,
+    name: "פגישה חדשה → אימייל ללקוח + התראה לצוות",
+    description: "אישור ללקוח במייל + התראה פנימית לבעל העסק.",
+    triggerLabel: "פגישה חדשה",
+    resultLabels: ["אימייל אישור", "התראה"],
+    categories: ["appointments", "email"],
+    engine: "workflow_graph",
+    requiredTriggerKeys: APPOINTMENT_TRIGGER_KEYS,
+    buildGraph: ({ triggerKey }) =>
+      resultGraph({
+        triggerKey,
+        triggerLabel: "פגישה חדשה",
+        actions: [
+          {
+            actionKey: "send_email",
+            label: "אימייל אישור פגישה",
+            defaults: {
+              recipientType: "appointment_customer_email",
+              subject: "אישור פגישה",
+            },
+          },
+          { actionKey: "notify", label: "התראה על פגישה חדשה" },
+        ],
+      }),
   },
   {
     key: "wf_appointment_gcal",
-    rank: 14,
+    rank: 24,
     name: "פגישה חדשה → Google Calendar",
-    description:
-      "אוטומציית זרימה: פגישה חדשה יוצרת אירוע ביומן (דורש חיבור Google Calendar).",
+    description: "פגישה חדשה → אירוע ביומן Google (דורש חיבור יומן).",
     triggerLabel: "פגישה חדשה",
     resultLabels: ["אירוע ביומן Google"],
     categories: ["appointments"],
     engine: "workflow_graph",
-    requiredTriggerKeys: ["appointment_created"],
+    requiredTriggerKeys: APPOINTMENT_TRIGGER_KEYS,
     requiresCalendar: true,
-    buildGraph: ({ triggerKey }) => ({
-      nodes: [
-        {
-          id: "trigger_1",
-          type: "trigger",
-          position: { x: 80, y: 160 },
-          data: {
-            label: "פגישה חדשה",
-            triggerKey,
-            routeCount: 1,
-          },
-        },
-        {
-          id: "action_1",
-          type: "action",
-          position: { x: 420, y: 160 },
-          data: {
-            label: "יצירת אירוע ביומן",
+    buildGraph: ({ triggerKey }) =>
+      resultGraph({
+        triggerKey,
+        triggerLabel: "פגישה חדשה",
+        actions: [
+          {
             actionKey: "google_calendar_create_event",
-            title: "פגישה עם {{appointment.clientName}}",
-            calendarId: "primary",
+            label: "יצירת אירוע ביומן",
+            defaults: {
+              title: "פגישה עם {{appointment.clientName}}",
+              calendarId: "primary",
+            },
           },
-        },
-      ],
-      edges: [
-        {
-          id: "e1",
-          source: "trigger_1",
-          target: "action_1",
-          sourceHandle: "route_1",
-          label: "תוצאה",
-        },
-      ],
-    }),
+        ],
+      }),
   },
   {
+    key: "wf_appointment_email_gcal",
+    rank: 25,
+    name: "פגישה חדשה → אימייל + Google Calendar",
+    description: "אישור במייל + יצירת אירוע ביומן יחד.",
+    triggerLabel: "פגישה חדשה",
+    resultLabels: ["אימייל אישור", "אירוע ביומן"],
+    categories: ["appointments", "email"],
+    engine: "workflow_graph",
+    requiredTriggerKeys: APPOINTMENT_TRIGGER_KEYS,
+    requiresCalendar: true,
+    buildGraph: ({ triggerKey }) =>
+      resultGraph({
+        triggerKey,
+        triggerLabel: "פגישה חדשה",
+        actions: [
+          {
+            actionKey: "send_email",
+            label: "אימייל אישור פגישה",
+            defaults: {
+              recipientType: "appointment_customer_email",
+              subject: "אישור פגישה",
+            },
+          },
+          {
+            actionKey: "google_calendar_create_event",
+            label: "יצירת אירוע ביומן",
+            defaults: {
+              title: "פגישה עם {{appointment.clientName}}",
+              calendarId: "primary",
+            },
+          },
+        ],
+      }),
+  },
+  {
+    key: "wf_appointment_confirm_pack",
+    rank: 26,
+    name: "פגישה חדשה → אימייל + משימה + התראה",
+    description: "חבילת אישור פגישה לצוות וללקוח בלי WhatsApp.",
+    triggerLabel: "פגישה חדשה",
+    resultLabels: ["אימייל", "משימה", "התראה"],
+    categories: ["appointments", "email", "crm"],
+    engine: "workflow_graph",
+    requiredTriggerKeys: APPOINTMENT_TRIGGER_KEYS,
+    buildGraph: ({ triggerKey }) =>
+      resultGraph({
+        triggerKey,
+        triggerLabel: "פגישה חדשה",
+        actions: [
+          {
+            actionKey: "send_email",
+            label: "אימייל אישור",
+            defaults: {
+              recipientType: "appointment_customer_email",
+              subject: "אישור פגישה",
+            },
+          },
+          { actionKey: "create_task", label: "הכנה לפגישה" },
+          { actionKey: "notify", label: "התראה לצוות" },
+        ],
+      }),
+  },
+  {
+    key: "wf_appointment_done_email",
+    rank: 27,
+    name: "אחרי פגישה → אימייל תודה",
+    description: "בסיום פגישה נשלח אימייל תודה ללקוח.",
+    triggerLabel: "פגישה הסתיימה",
+    resultLabels: ["אימייל תודה"],
+    categories: ["appointments", "email"],
+    engine: "workflow_graph",
+    requiredTriggerKeys: APPOINTMENT_DONE_TRIGGER_KEYS,
+    buildGraph: ({ triggerKey }) =>
+      resultGraph({
+        triggerKey,
+        triggerLabel: "פגישה הסתיימה",
+        actions: [
+          {
+            actionKey: "send_email",
+            label: "אימייל תודה",
+            defaults: {
+              recipientType: "appointment_customer_email",
+              subject: "תודה על הפגישה",
+            },
+          },
+        ],
+      }),
+  },
+  {
+    key: "wf_appointment_duo",
+    rank: 28,
+    name: "פגישה → תזכורת + תודה (מתכון)",
+    description: "מתכון שרת: תזכורת לפני הפגישה והודעת תודה אחרי.",
+    triggerLabel: "פגישה חדשה / תזכורת",
+    resultLabels: ["תזכורת", "הודעת תודה"],
+    categories: ["appointments", "whatsapp"],
+    engine: "workflow_recipe",
+    recipeKey: "appointment_duo",
+    requiresWaTemplate: true,
+    waCategory: "appointment_reminder",
+    waHints: ["reminder", "thanks", "תזכורת"],
+    requiredTriggerKeys: APPOINTMENT_TRIGGER_KEYS,
+    buildGraph: ({ triggerKey, waTemplateId }) =>
+      waEdgeGraph({
+        triggerKey,
+        triggerLabel: "פגישה חדשה",
+        actionLabel: "תזכורת/תודה WhatsApp",
+        waTemplateId,
+        hoursBefore: 24,
+        extraActions: [
+          {
+            actionKey: "send_email",
+            label: "אימייל אישור",
+            defaults: {
+              recipientType: "appointment_customer_email",
+              subject: "אישור פגישה",
+            },
+          },
+        ],
+      }),
+  },
+
+  // ── AI (recipe when creatable, else graph if entitled + publishable trigger) ──
+  {
     key: "wf_ai_rank_leads",
-    rank: 15,
+    rank: 29,
     name: "AI — דירוג ליד חדש",
-    description:
-      "כשנכנס ליד: AI מדרג לפי סיכוי/דחיפות ושולח התראה. דורש תוסף AI פעיל.",
+    description: "ליד חדש → AI מדרג סיכוי/דחיפות + התראה לצוות.",
     triggerLabel: "ליד חדש ב-CRM",
     resultLabels: ["דירוג AI", "התראה"],
-    categories: ["ai", "leads"],
+    categories: ["ai", "leads", "sales"],
     engine: "workflow_recipe",
     recipeKey: "ai_rank_leads",
     requiresAiEntitlement: true,
-    requiredTriggerKeys: [
-      "crm_lead_created",
-      "lead_created",
-      "new_lead",
-      "lead_new",
-    ],
+    requiredTriggerKeys: LEAD_TRIGGER_KEYS,
+    buildGraph: ({ triggerKey }) =>
+      resultGraph({
+        triggerKey,
+        triggerLabel: "ליד חדש ב-CRM",
+        actions: [
+          { actionKey: "ai_rank_lead", label: "דירוג ליד AI" },
+          { actionKey: "notify", label: "התראה לפי דחיפות" },
+        ],
+      }),
+  },
+  {
+    key: "wf_ai_rank_and_task",
+    rank: 30,
+    name: "AI — דירוג ליד + משימה לנציג",
+    description: "ליד חדש → דירוג AI + משימת טיפול אוטומטית.",
+    triggerLabel: "ליד חדש ב-CRM",
+    resultLabels: ["דירוג AI", "משימה"],
+    categories: ["ai", "leads", "crm"],
+    engine: "workflow_graph",
+    requiresAiEntitlement: true,
+    requiredTriggerKeys: LEAD_TRIGGER_KEYS,
+    buildGraph: ({ triggerKey }) =>
+      resultGraph({
+        triggerKey,
+        triggerLabel: "ליד חדש ב-CRM",
+        actions: [
+          { actionKey: "ai_rank_lead", label: "דירוג ליד AI" },
+          { actionKey: "create_task", label: "משימה לפי דירוג" },
+        ],
+      }),
   },
   {
     key: "wf_ai_summarize",
-    rank: 16,
-    name: "AI — סיכום פגישה",
-    description: "אחרי פגישה: AI מסכם ומתעד. דורש תוסף AI פעיל.",
-    triggerLabel: "פגישה",
-    resultLabels: ["סיכום AI"],
-    categories: ["ai", "appointments"],
+    rank: 31,
+    name: "AI — סיכום פגישה ל-CRM",
+    description: "אחרי פגישה → סיכום AI + הערה ב-CRM.",
+    triggerLabel: "פגישה הסתיימה",
+    resultLabels: ["סיכום AI", "הערה ב-CRM"],
+    categories: ["ai", "appointments", "crm"],
     engine: "workflow_recipe",
     recipeKey: "ai_summarize_calls",
     requiresAiEntitlement: true,
+    requiredTriggerKeys: APPOINTMENT_DONE_TRIGGER_KEYS,
+    buildGraph: ({ triggerKey }) =>
+      resultGraph({
+        triggerKey,
+        triggerLabel: "פגישה הסתיימה",
+        actions: [
+          { actionKey: "ai_summarize_call", label: "סיכום שיחה AI" },
+          { actionKey: "create_crm_note", label: "תיעוד ב-CRM" },
+        ],
+      }),
   },
   {
     key: "wf_ai_draft_reply",
-    rank: 17,
+    rank: 32,
     name: "AI — תשובת WhatsApp מוכנה",
-    description: "בהודעה נכנסת: AI מנסח תשובה מוכנה לשליחה. דורש תוסף AI פעיל.",
+    description: "הודעת WhatsApp נכנסת → AI מנסח תשובה מוכנה לשליחה.",
     triggerLabel: "הודעת WhatsApp",
     resultLabels: ["תשובה מוכנה AI"],
     categories: ["ai", "whatsapp"],
     engine: "workflow_recipe",
     recipeKey: "ai_auto_reply",
     requiresAiEntitlement: true,
+    requiredTriggerKeys: WHATSAPP_INBOUND_KEYS,
+    buildGraph: ({ triggerKey }) =>
+      resultGraph({
+        triggerKey,
+        triggerLabel: "הודעת WhatsApp נכנסת",
+        actions: [
+          { actionKey: "ai_draft_reply", label: "תשובה מוכנה AI" },
+        ],
+      }),
   },
   {
     key: "wf_ai_risk",
-    rank: 18,
-    name: "AI — ליד בסיכון",
-    description: "AI מזהה ליד שמתקרר ומתריע. דורש תוסף AI פעיל.",
+    rank: 33,
+    name: "AI — ליד בסיכון נטישה",
+    description: "בפולואפ → AI מזהה ליד שמתקרר ומתריע לטיפול מיידי.",
     triggerLabel: "פולואפ לליד",
-    resultLabels: ["התראת סיכון"],
-    categories: ["ai", "leads"],
+    resultLabels: ["זיהוי סיכון", "התראה"],
+    categories: ["ai", "leads", "sales"],
     engine: "workflow_recipe",
     recipeKey: "ai_risk_lead",
     requiresAiEntitlement: true,
+    requiredTriggerKeys: [...LEAD_NO_RESPONSE_KEYS, ...LEAD_TRIGGER_KEYS],
+    buildGraph: ({ triggerKey }) =>
+      resultGraph({
+        triggerKey,
+        triggerLabel: "פולואפ לליד",
+        actions: [
+          { actionKey: "ai_detect_risk_lead", label: "זיהוי ליד בסיכון" },
+          { actionKey: "notify", label: "התראה מיידית" },
+        ],
+      }),
   },
   {
     key: "wf_ai_campaign",
-    rank: 19,
+    rank: 34,
     name: "AI — המלצת קמפיין",
-    description: "בשינוי סטטוס ליד: AI ממליץ על קמפיין. דורש תוסף AI פעיל.",
+    description: "בשינוי סטטוס ליד → AI ממליץ על התאמת מסר/קמפיין.",
     triggerLabel: "שינוי סטטוס ליד",
-    resultLabels: ["המלצת קמפיין"],
+    resultLabels: ["המלצת קמפיין AI"],
     categories: ["ai", "leads", "sales"],
     engine: "workflow_recipe",
     recipeKey: "ai_campaign_change",
     requiresAiEntitlement: true,
+    requiredTriggerKeys: LEAD_STATUS_KEYS,
+    buildGraph: ({ triggerKey }) =>
+      resultGraph({
+        triggerKey,
+        triggerLabel: "שינוי סטטוס ליד",
+        actions: [
+          { actionKey: "ai_campaign_recommend", label: "המלצת קמפיין AI" },
+          { actionKey: "notify", label: "התראה לצוות שיווק" },
+        ],
+      }),
   },
   {
     key: "wf_ai_tasks",
-    rank: 20,
-    name: "AI — משימות משיחה",
-    description: "אחרי פגישה: AI מחלץ משימות ל-CRM. דורש תוסף AI פעיל.",
-    triggerLabel: "פגישה",
+    rank: 35,
+    name: "AI — משימות מתוך שיחה",
+    description: "אחרי פגישה → AI מחלץ משימות מעקב ל-CRM.",
+    triggerLabel: "פגישה הסתיימה",
     resultLabels: ["משימות AI"],
     categories: ["ai", "crm", "appointments"],
     engine: "workflow_recipe",
     recipeKey: "ai_tasks_from_chat",
     requiresAiEntitlement: true,
+    requiredTriggerKeys: APPOINTMENT_DONE_TRIGGER_KEYS,
+    buildGraph: ({ triggerKey }) =>
+      resultGraph({
+        triggerKey,
+        triggerLabel: "פגישה הסתיימה",
+        actions: [
+          { actionKey: "ai_tasks_from_chat", label: "משימות משיחה AI" },
+          { actionKey: "create_task", label: "משימת מעקב ב-CRM" },
+        ],
+      }),
+  },
+  {
+    key: "wf_ai_post_meeting_pack",
+    rank: 36,
+    name: "AI — אחרי פגישה: סיכום + משימות + התראה",
+    description: "חבילת סיום פגישה: סיכום AI, משימות והתראה לצוות.",
+    triggerLabel: "פגישה הסתיימה",
+    resultLabels: ["סיכום AI", "משימות", "התראה"],
+    categories: ["ai", "appointments", "crm"],
+    engine: "workflow_graph",
+    requiresAiEntitlement: true,
+    requiredTriggerKeys: APPOINTMENT_DONE_TRIGGER_KEYS,
+    buildGraph: ({ triggerKey }) =>
+      resultGraph({
+        triggerKey,
+        triggerLabel: "פגישה הסתיימה",
+        actions: [
+          { actionKey: "ai_summarize_call", label: "סיכום פגישה AI" },
+          { actionKey: "ai_tasks_from_chat", label: "משימות מהשיחה" },
+          { actionKey: "notify", label: "התראה לצוות" },
+        ],
+      }),
   },
 ];
 
@@ -669,15 +1103,23 @@ export function getTemplateReadiness(
 
   if (template.requiresAiEntitlement) {
     const recipe = ctx.recipes.find((r) => r.key === template.recipeKey);
+    if (!ctx.aiEntitled) {
+      return {
+        ready: false,
+        blocker: "דורש תוסף אוטומציות AI פעיל",
+        recipe,
+      };
+    }
     const recipeOk =
       Boolean(recipe) &&
       recipe?.canCreate !== false &&
       !recipe?.aiLocked &&
       !recipe?.comingSoon;
-    if (!ctx.aiEntitled || !recipeOk) {
+    // Prefer creatable recipe; otherwise fall through to local AI graph + publishable trigger
+    if (!recipeOk && !template.buildGraph) {
       return {
         ready: false,
-        blocker: "דורש תוסף אוטומציות AI פעיל ומתכון זמין בשרת",
+        blocker: "דורש מתכון AI זמין בשרת",
         recipe,
       };
     }
