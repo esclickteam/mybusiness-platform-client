@@ -805,6 +805,33 @@
   color: #64748b;
 }
 
+.ax-managed-wa {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 14px;
+  padding: 12px 14px;
+  border: 1px solid #a7f3d0;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #ecfdf5 0%, #fff 80%);
+  color: #065f46;
+}
+
+.ax-managed-wa strong {
+  display: block;
+  font-size: 14px;
+  font-weight: 800;
+  color: #047857;
+}
+
+.ax-managed-wa p {
+  margin: 4px 0 0;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.45;
+  color: #047857;
+}
+
 .ax-templates__stats {
   display: inline-flex;
   flex-direction: column;
