@@ -157,6 +157,118 @@ function waEdgeGraph(opts: {
   });
 }
 
+/** Map legacy WhatsAppAutomation trigger → publishable workflow trigger keys. */
+export function triggerKeysForWhatsAppSimple(
+  template: WorkingTemplate
+): string[] {
+  switch (template.whatsappTrigger) {
+    case "new_lead_welcome":
+      return LEAD_TRIGGER_KEYS;
+    case "lead_no_response":
+    case "lead_followup_2":
+      return LEAD_NO_RESPONSE_KEYS;
+    case "appointment_reminder_1_day":
+    case "appointment_reminder_hours":
+      return APPOINTMENT_TRIGGER_KEYS;
+    case "appointment_thanks":
+    case "appointment_review_request":
+      return APPOINTMENT_DONE_TRIGGER_KEYS;
+    case "new_client_welcome":
+    case "inactive_client":
+      return CLIENT_TRIGGER_KEYS;
+    default:
+      return template.requiredTriggerKeys || LEAD_TRIGGER_KEYS;
+  }
+}
+
+/**
+ * Build a workflow graph for a whatsapp_simple blueprint.
+ * Keeps blueprint key (template.key / whatsappTrigger) separate from Meta template name.
+ */
+export function buildWhatsAppSimpleGraph(
+  template: WorkingTemplate,
+  ctx: { triggerKey: string; waTemplateId?: string }
+): { nodes: AutomationFlowNode[]; edges: AutomationFlowEdge[] } {
+  const delayMinutes = Number(template.delayMinutes || 0);
+  const delayHours = Number(template.delayHours || 0);
+  const delayDays = Number(template.delayDays || 0);
+  const useDelay =
+    delayMinutes > 0 ||
+    delayHours > 0 ||
+    (delayDays > 0 && template.whatsappTrigger !== "inactive_client");
+
+  const nodes: AutomationFlowNode[] = [
+    {
+      id: "trigger_1",
+      type: "trigger",
+      position: { x: 80, y: 160 },
+      data: {
+        label: template.triggerLabel,
+        triggerKey: ctx.triggerKey,
+        routeCount: 1,
+        ...(template.hoursBefore != null
+          ? { hoursBefore: template.hoursBefore }
+          : {}),
+      },
+    },
+  ];
+  const edges: AutomationFlowEdge[] = [];
+  let prevId = "trigger_1";
+  let prevHandle: string | undefined = "route_1";
+  let y = 40;
+
+  if (useDelay) {
+    const delayId = "delay_1";
+    const amount =
+      delayMinutes > 0 ? delayMinutes : delayHours > 0 ? delayHours : delayDays;
+    const unit =
+      delayMinutes > 0 ? "minutes" : delayHours > 0 ? "hours" : "days";
+    nodes.push({
+      id: delayId,
+      type: "delay",
+      position: { x: 320, y },
+      data: {
+        label: "המתנה",
+        amount,
+        unit,
+      },
+    });
+    edges.push({
+      id: `e_${prevId}_${delayId}`,
+      source: prevId,
+      target: delayId,
+      sourceHandle: prevHandle,
+      label: "המשך",
+    });
+    prevId = delayId;
+    prevHandle = undefined;
+    y += 140;
+  }
+
+  nodes.push({
+    id: "action_wa",
+    type: "action",
+    position: { x: 560, y },
+    data: {
+      label: "WhatsApp",
+      actionKey: "whatsapp_template",
+      templateId: ctx.waTemplateId || "",
+      senderMode: "bizuply_managed",
+      blueprintKey: template.key,
+      blueprintTrigger: template.whatsappTrigger || "",
+    },
+  });
+  edges.push({
+    id: `e_${prevId}_action_wa`,
+    source: prevId,
+    target: "action_wa",
+    ...(prevHandle ? { sourceHandle: prevHandle } : {}),
+    label: "תוצאה",
+  });
+
+  return { nodes, edges };
+}
+
 /**
  * Best working templates — common business cases that can actually activate.
  * WhatsApp simple = proven production path. Workflow/AI = gated by live readiness.
@@ -1143,6 +1255,17 @@ export function getTemplateReadiness(
   }
 
   if (template.engine === "whatsapp_simple") {
+    const triggerKey = resolvePublishableTrigger(
+      triggerKeysForWhatsAppSimple(template),
+      ctx.triggers
+    );
+    if (!triggerKey) {
+      return {
+        ready: false,
+        blocker: "אין טריגר מאושר מהשרת לאוטומציה הזו כרגע",
+        recipe,
+      };
+    }
     const picked = pickBestWaTemplate(ctx.waTemplates, {
       category: template.waCategory,
       hints: template.waHints,
@@ -1152,12 +1275,14 @@ export function getTemplateReadiness(
         ready: false,
         blocker: "בחרו תבנית Meta מאושרת בעת ההפעלה — אין כרגע תבנית מתאימה",
         recipe,
+        resolvedTriggerKey: triggerKey,
       };
     }
     return {
       ready: true,
       suggestedWaTemplateId: picked.id,
       suggestedWaTemplateName: picked.name,
+      resolvedTriggerKey: triggerKey,
     };
   }
 

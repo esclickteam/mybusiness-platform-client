@@ -33,7 +33,6 @@ import {
 } from "../../../../api/automationWorkflowApi";
 import { getGoogleCalendarStatus } from "../../../../api/googleCalendarApi";
 import {
-  createWhatsAppAutomation,
   getWhatsAppIntegrationStatus,
   listApprovedWhatsAppTemplates,
   listWhatsAppTemplates,
@@ -48,6 +47,7 @@ import {
 import { TEMPLATE_CATEGORIES, type TemplateCategoryId } from "./templateCategoryMapping";
 import {
   WORKING_TEMPLATES,
+  buildWhatsAppSimpleGraph,
   getTemplateReadiness,
   getWaTemplateId,
   isWhatsAppFacingTemplate,
@@ -270,23 +270,71 @@ export default function AutomationsTemplatesPage() {
   const showWaChecklist =
     category === "all" || category === "whatsapp" || category === "appointments";
 
-  const activateWhatsApp = async (
+  const activateWhatsAppAsWorkflow = async (
     template: WorkingTemplate,
+    readiness: TemplateReadiness,
     templateId: string
   ) => {
-    if (!businessId || !template.whatsappTrigger) return;
-    await createWhatsAppAutomation(businessId, {
-      name: template.name,
-      trigger: template.whatsappTrigger,
-      templateId,
-      hoursBefore: template.hoursBefore,
-      delayMinutes: template.delayMinutes,
-      delayHours: template.delayHours,
-      delayDays: template.delayDays,
-      enabled: true,
+    if (!businessId) return;
+    const triggerKey = readiness.resolvedTriggerKey || "";
+    if (!triggerKey) throw new Error("חסר טריגר מאושר");
+
+    const selectedTpl = waTemplates.find(
+      (tpl) => getWaTemplateId(tpl) === templateId
+    );
+    const graph = buildWhatsAppSimpleGraph(template, {
+      triggerKey,
+      waTemplateId: templateId,
     });
-    toast.success("האוטומציה הופעלה ופועלת");
-    navigate(`/business/${businessId}/dashboard/automations`);
+    const nodes = graph.nodes.map((node) => {
+      if (
+        node.type === "action" &&
+        String((node.data as { actionKey?: string }).actionKey || "") ===
+          "whatsapp_template"
+      ) {
+        return {
+          ...node,
+          data: {
+            ...node.data,
+            senderMode: "bizuply_managed",
+            templateId,
+            // Meta identity — separate from blueprint key
+            metaTemplateId: String(
+              (selectedTpl as WhatsAppTemplate)?.metaTemplateId || ""
+            ),
+            metaTemplateName: String(
+              (selectedTpl as WhatsAppTemplate)?.metaTemplateName ||
+                selectedTpl?.name ||
+                ""
+            ),
+            language: String((selectedTpl as WhatsAppTemplate)?.language || ""),
+            blueprintKey: template.key,
+            blueprintTrigger: template.whatsappTrigger || "",
+          },
+        };
+      }
+      return node;
+    });
+
+    const created = await createAutomationWorkflow(businessId, {
+      useStarter: false,
+      name: template.name,
+      description: template.description,
+      nodes,
+      edges: graph.edges,
+    });
+    try {
+      await publishAutomationWorkflow(businessId, created._id);
+      toast.success("האוטומציה נוצרה והופעלה");
+    } catch (error: unknown) {
+      toast.error(
+        readAutomationErrorMessage(
+          error,
+          "נוצרה אבל לא הופעלה — בדקו הגדרות ופרסמו"
+        )
+      );
+    }
+    navigate(`/business/${businessId}/dashboard/automations/${created._id}`);
   };
 
   const activateWorkflow = async (
@@ -476,7 +524,11 @@ export default function AutomationsTemplatesPage() {
     setCreatingKey(picker.template.key);
     try {
       if (picker.template.engine === "whatsapp_simple") {
-        await activateWhatsApp(picker.template, picker.templateId);
+        await activateWhatsAppAsWorkflow(
+          picker.template,
+          picker.readiness,
+          picker.templateId
+        );
       } else {
         await activateWorkflow(
           picker.template,
