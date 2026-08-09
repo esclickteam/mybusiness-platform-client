@@ -24,6 +24,7 @@ import {
   UserRound,
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
+import API from "../../api";
 import {
   PRICING_ADDONS,
   PRICING_CATEGORY_ACCENTS,
@@ -140,7 +141,6 @@ export default function Plans() {
     yearly: false,
   });
 
-  const API_BASE = import.meta.env.VITE_API_URL;
   const userId = user?._id || user?.userId || user?.id;
   const activePlan = useMemo(() => getActivePricingPlan(user), [user]);
   const websiteAddonLabel = isHe ? WEBSITE_ADDON.labelHe : WEBSITE_ADDON.labelEn;
@@ -197,17 +197,12 @@ export default function Plans() {
     try {
       setLoadingPlan(plan.checkoutPlan);
 
-      const res = await fetch(`${API_BASE}/stripe/create-checkout-session`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userId,
-          plan: plan.checkoutPlan,
-          includeWebsiteAddon: wantsWebsiteAddon,
-        }),
+      const res = await API.post("/stripe/create-checkout-session", {
+        plan: plan.checkoutPlan,
+        includeWebsiteAddon: wantsWebsiteAddon,
       });
 
-      const data = await res.json();
+      const data = res.data || {};
 
       if (!data.url) {
         alert(t("pricing.alertCheckoutFailed"));
