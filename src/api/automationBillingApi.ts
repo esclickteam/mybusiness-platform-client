@@ -57,7 +57,16 @@ export type AutomationBillingUsageOverview = {
     currentPeriodEnd?: string | null;
   };
   canPublish: boolean;
+  /**
+   * Plan/payment eligibility to start workflow executions.
+   * Action quota exhaustion does NOT set this to false.
+   */
   canExecute: boolean;
+  /**
+   * Whether the next billable automation action may consume quota.
+   * False when used >= actionLimit (or plan/payment blocks execution).
+   */
+  canPerformBillableAction?: boolean;
   blockReason: string | null;
 };
 

@@ -1296,11 +1296,12 @@ function EditorInner({
       return true;
     }
     if (normalized === AUTOMATION_BILLING_API_CODES.QUOTA_EXHAUSTED) {
-      const msg = "מכסת הפעולות החודשית נוצלה — יש לשדרג את החבילה";
-      setPublishError(msg);
-      toast.error(msg);
+      // Soft warning only — action quota must not block publish / workflow start.
+      toast.error(
+        "מכסת הפעולות החודשית נוצלה — פעולות מחויבות ייחסמו עד לשדרוג"
+      );
       openBillingGateModal("manage");
-      return true;
+      return false;
     }
     if (normalized === AUTOMATION_BILLING_API_CODES.BILLING_BLOCKED) {
       const msg = "לא ניתן להפעיל אוטומציות עקב מצב התשלום של החבילה";

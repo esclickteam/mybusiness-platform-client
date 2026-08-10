@@ -237,9 +237,16 @@ export default function AutomationsHomePage() {
       }
       if (
         code === AUTOMATION_BILLING_API_CODES.QUOTA_EXHAUSTED ||
-        code === AUTOMATION_BILLING_API_CODES.ACTION_QUOTA_EXHAUSTED ||
-        code === AUTOMATION_BILLING_API_CODES.BILLING_BLOCKED
+        code === AUTOMATION_BILLING_API_CODES.ACTION_QUOTA_EXHAUSTED
       ) {
+        // Soft warning — action quota must not block enable/resume of workflows.
+        toast.error(
+          "מכסת הפעולות החודשית נוצלה — פעולות מחויבות ייחסמו עד לשדרוג"
+        );
+        openPlanModal("manage");
+        return;
+      }
+      if (code === AUTOMATION_BILLING_API_CODES.BILLING_BLOCKED) {
         toast.error(
           readAutomationErrorMessage(error, "לא ניתן לעדכן את האוטומציה")
         );
