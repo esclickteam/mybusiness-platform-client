@@ -1,5 +1,15 @@
 import API from "../api";
 
+export type MySiteDomainSummary = {
+  domain?: string;
+  slug?: string;
+  url?: string;
+  published?: boolean;
+  provisioningStatus?: string;
+  provisioningSource?: string;
+  provisioningLastError?: string;
+};
+
 export type MySiteSummary = {
   _id: string;
   name?: string;
@@ -7,6 +17,8 @@ export type MySiteSummary = {
   published?: boolean;
   status?: string;
   publicUrl?: string;
+  siteDomain?: string;
+  domain?: MySiteDomainSummary | null;
   templateKey?: string;
   templateName?: string;
   thumbnailUrl?: string;

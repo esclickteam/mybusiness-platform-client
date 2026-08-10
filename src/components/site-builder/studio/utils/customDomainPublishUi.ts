@@ -181,3 +181,61 @@ export function resolvePublishedSiteDisplayUrl(options: {
   const cleanSlug = normalizeSlug(String(options.slug || ""));
   return cleanSlug ? buildPlatformUrl(cleanSlug) : "";
 }
+
+function defaultNormalizeSlug(value: string) {
+  return String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9-]/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
+function defaultBuildPlatformUrl(slug: string) {
+  return `https://${slug}.${BIZUPLY_PUBLIC_SITE_DOMAIN}`;
+}
+
+/**
+ * My Sites card URLs: active custom domain is primary + View target;
+ * platform subdomain is shown as the Bizuply alternative when custom is active.
+ */
+export function resolveMySiteCardUrls(site: any): {
+  primaryUrl: string;
+  platformUrl: string;
+  viewUrl: string;
+  hasActiveCustomDomain: boolean;
+  customDomain: string;
+  provisioningStatus: string;
+  phase: CustomDomainPublishPhase;
+} {
+  const binding = readCustomDomainBinding(site);
+  const phase = resolveCustomDomainPublishPhase(
+    binding.domain,
+    binding.provisioningStatus,
+  );
+  const hasActiveCustomDomain = phase === "active" && Boolean(binding.domain);
+  const cleanSlug = defaultNormalizeSlug(String(site?.slug || ""));
+  const platformUrl = cleanSlug ? defaultBuildPlatformUrl(cleanSlug) : "";
+  const primaryUrl = resolvePublishedSiteDisplayUrl({
+    customDomain: binding.domain,
+    provisioningStatus: binding.provisioningStatus,
+    publicUrl: site?.publicUrl,
+    domainUrl:
+      site?.domain && typeof site.domain === "object"
+        ? site.domain.url
+        : undefined,
+    slug: cleanSlug,
+    buildPlatformUrl: defaultBuildPlatformUrl,
+    normalizeSlug: defaultNormalizeSlug,
+  });
+
+  return {
+    primaryUrl,
+    platformUrl,
+    viewUrl: primaryUrl,
+    hasActiveCustomDomain,
+    customDomain: binding.domain,
+    provisioningStatus: binding.provisioningStatus,
+    phase,
+  };
+}

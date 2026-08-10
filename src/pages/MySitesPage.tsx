@@ -37,6 +37,7 @@ import {
 } from "../api/mySitesApi";
 import SiteShareModal from "../components/website/SiteShareModal";
 import MySiteCardPreview from "../components/website/MySiteCardPreview";
+import { resolveMySiteCardUrls } from "../components/site-builder/studio/utils/customDomainPublishUi";
 import { ensureSiteCardScreenshots } from "../utils/captureSiteScreenshot";
 import { useLocaleDir } from "../hooks/useLocaleDir";
 import { getApiErrorMessage } from "../utils/apiErrorMessage";
@@ -68,7 +69,8 @@ function formatUpdatedAt(value: string | undefined, locale: string) {
 
 function statusLabel(site: MySiteSummary, t: TranslateFn) {
   if (site.published || site.status === "published") {
-    const url = String(site.publicUrl || site.slug || "").trim();
+    const { primaryUrl } = resolveMySiteCardUrls(site);
+    const url = String(primaryUrl || site.publicUrl || site.slug || "").trim();
     if (/draft-/i.test(url)) {
       return t("mySites.statusLabel.publishedNeedUrl");
     }
@@ -245,6 +247,9 @@ export default function MySitesPage() {
 
   const selectedSite = menu
     ? sites.find((site) => site._id === menu.siteId) || null
+    : null;
+  const selectedSiteUrls = selectedSite
+    ? resolveMySiteCardUrls(selectedSite)
     : null;
 
   function handleCreateSite() {
@@ -600,6 +605,11 @@ export default function MySitesPage() {
                 ? folderNameById.get(String(site.folderId))
                 : null;
               const status = siteStatus(site, t);
+              const cardUrls = resolveMySiteCardUrls(site);
+              const viewUrl = cardUrls.viewUrl;
+              const canViewLive = Boolean(
+                viewUrl && published && !/draft-/i.test(viewUrl),
+              );
 
               return (
                 <article
@@ -658,9 +668,30 @@ export default function MySitesPage() {
                               {site.name || t("mySites.defaultSiteName")}
                             </h3>
 
-                            <p className="mt-0.5 truncate text-xs font-medium text-slate-400">
+                            <p
+                              className="mt-0.5 truncate text-xs font-medium text-slate-400"
+                              dir="ltr"
+                              title={statusLabel(site, t)}
+                            >
                               {statusLabel(site, t)}
                             </p>
+
+                            {published &&
+                            cardUrls.hasActiveCustomDomain &&
+                            cardUrls.platformUrl ? (
+                              <div className="mt-1 min-w-0 text-[11px] font-medium text-slate-400">
+                                <div className="truncate font-bold text-slate-500">
+                                  {t("mySites.card.bizuplyAlternative")}
+                                </div>
+                                <div
+                                  className="truncate"
+                                  dir="ltr"
+                                  title={cardUrls.platformUrl}
+                                >
+                                  {cardUrls.platformUrl}
+                                </div>
+                              </div>
+                            ) : null}
                           </div>
                         </div>
                       </div>
@@ -697,15 +728,10 @@ export default function MySitesPage() {
 
                       <button
                         type="button"
-                        disabled={
-                          !(
-                            site.publicUrl &&
-                            (site.published || site.status === "published")
-                          )
-                        }
+                        disabled={!canViewLive}
                         onClick={() => {
-                          if (!site.publicUrl) return;
-                          window.open(site.publicUrl, "_blank", "noopener");
+                          if (!canViewLive || !viewUrl) return;
+                          window.open(viewUrl, "_blank", "noopener");
                         }}
                         className="col-span-2 inline-flex h-10 items-center justify-center gap-1.5 rounded-xl border border-slate-200 bg-white px-3 text-xs font-black text-slate-700 transition hover:border-sky-200 hover:bg-sky-50 hover:text-sky-700 disabled:cursor-not-allowed disabled:opacity-40 sm:col-span-1"
                       >
@@ -793,15 +819,20 @@ export default function MySitesPage() {
                 />
               ) : null}
 
-              {selectedSite.publicUrl &&
+              {selectedSiteUrls?.viewUrl &&
               (selectedSite.published ||
-                selectedSite.status === "published") ? (
+                selectedSite.status === "published") &&
+              !/draft-/i.test(selectedSiteUrls.viewUrl) ? (
                 <MenuButton
                   icon={Globe2}
                   label={t("mySites.menu.viewLive")}
                   onClick={() => {
                     setMenu(null);
-                    window.open(selectedSite.publicUrl, "_blank", "noopener");
+                    window.open(
+                      selectedSiteUrls.viewUrl,
+                      "_blank",
+                      "noopener",
+                    );
                   }}
                 />
               ) : null}
