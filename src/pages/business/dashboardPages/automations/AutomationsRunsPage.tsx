@@ -5,6 +5,7 @@ import {
   useOutletContext,
   useSearchParams,
 } from "react-router-dom";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { ChevronLeft, Loader2, RefreshCw, Search } from "lucide-react";
 import {
@@ -22,6 +23,7 @@ import {
   readAutomationErrorMessage,
 } from "./automationUiHelpers";
 import AutomationExecutionDetailDrawer from "./AutomationExecutionDetailDrawer";
+import { automationQueryKeys } from "./automationsQueryKeys";
 import {
   formatDurationMs,
   formatExecutionDateTime,
@@ -55,14 +57,10 @@ const MAX_WORKFLOWS_FOR_ALL = 40;
  */
 export default function AutomationsRunsPage() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [searchParams, setSearchParams] = useSearchParams();
   const { businessId, readOnly } = useOutletContext<OutletCtx>();
 
-  const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
-  const [error, setError] = useState("");
-  const [workflows, setWorkflows] = useState<AutomationWorkflow[]>([]);
-  const [rows, setRows] = useState<RunRow[]>([]);
   const [selectedExecutionId, setSelectedExecutionId] = useState<string | null>(
     null
   );
@@ -89,80 +87,100 @@ export default function AutomationsRunsPage() {
     [searchParams, setSearchParams]
   );
 
-  const load = useCallback(
-    async (opts?: { quiet?: boolean }) => {
-      if (!businessId) return;
-      if (opts?.quiet) setRefreshing(true);
-      else setLoading(true);
-      setError("");
+  const runsQueryKey = businessId
+    ? ([
+        ...automationQueryKeys.executions(businessId, workflowFilter || "all"),
+        "runsPage",
+      ] as const)
+    : (["automations", "executions", "none", "runsPage"] as const);
 
-      try {
-        const list = await listAutomationWorkflows(businessId);
-        setWorkflows(list);
+  const runsQuery = useQuery({
+    queryKey: runsQueryKey,
+    enabled: Boolean(businessId),
+    queryFn: async () => {
+      if (!businessId) {
+        return { workflows: [] as AutomationWorkflow[], rows: [] as RunRow[] };
+      }
+      const list = await listAutomationWorkflows(businessId);
+      queryClient.setQueryData(
+        automationQueryKeys.workflows(businessId),
+        list
+      );
 
-        const sorted = [...list].sort((a, b) => {
-          const aTs = new Date(
-            a.lastExecution?.startedAt || a.lastRunAt || a.updatedAt || 0
-          ).getTime();
-          const bTs = new Date(
-            b.lastExecution?.startedAt || b.lastRunAt || b.updatedAt || 0
-          ).getTime();
+      const sorted = [...list].sort((a, b) => {
+        const aTs = new Date(
+          a.lastExecution?.startedAt || a.lastRunAt || a.updatedAt || 0
+        ).getTime();
+        const bTs = new Date(
+          b.lastExecution?.startedAt || b.lastRunAt || b.updatedAt || 0
+        ).getTime();
+        return bTs - aTs;
+      });
+
+      const targets = workflowFilter
+        ? sorted.filter((workflow) => workflow._id === workflowFilter)
+        : sorted.slice(0, MAX_WORKFLOWS_FOR_ALL);
+
+      const batches = await Promise.all(
+        targets.map(async (workflow) => {
+          try {
+            const executions = await listAutomationExecutions(
+              businessId,
+              workflow._id,
+              PER_WORKFLOW_LIMIT
+            );
+            queryClient.setQueryData(
+              automationQueryKeys.executions(businessId, workflow._id),
+              executions
+            );
+            return executions.map((execution) => {
+              const row: RunRow = {
+                ...execution,
+                workflowName: workflow.name || "אוטומציה",
+                workflowTriggerLabel: getTriggerLabel(workflow),
+              };
+              return row;
+            });
+          } catch {
+            return [] as RunRow[];
+          }
+        })
+      );
+
+      const merged = batches
+        .flat()
+        .sort((a, b) => {
+          const aTs = new Date(a.startedAt || a.createdAt || 0).getTime();
+          const bTs = new Date(b.startedAt || b.createdAt || 0).getTime();
           return bTs - aTs;
         });
 
-        const targets = workflowFilter
-          ? sorted.filter((workflow) => workflow._id === workflowFilter)
-          : sorted.slice(0, MAX_WORKFLOWS_FOR_ALL);
-
-        const batches = await Promise.all(
-          targets.map(async (workflow) => {
-            try {
-              const executions = await listAutomationExecutions(
-                businessId,
-                workflow._id,
-                PER_WORKFLOW_LIMIT
-              );
-              return executions.map((execution) => {
-                const row: RunRow = {
-                  ...execution,
-                  workflowName: workflow.name || "אוטומציה",
-                  workflowTriggerLabel: getTriggerLabel(workflow),
-                };
-                return row;
-              });
-            } catch {
-              return [] as RunRow[];
-            }
-          })
-        );
-
-        const merged = batches
-          .flat()
-          .sort((a, b) => {
-            const aTs = new Date(
-              a.startedAt || a.createdAt || 0
-            ).getTime();
-            const bTs = new Date(
-              b.startedAt || b.createdAt || 0
-            ).getTime();
-            return bTs - aTs;
-          });
-        setRows(merged);
-      } catch (err: unknown) {
-        setRows([]);
-        setError(readAutomationErrorMessage(err, "שגיאה בטעינת הרצות"));
-        toast.error(readAutomationErrorMessage(err, "שגיאה בטעינת הרצות"));
-      } finally {
-        setLoading(false);
-        setRefreshing(false);
-      }
+      return { workflows: list, rows: merged };
     },
-    [businessId, workflowFilter]
-  );
+    staleTime: 8_000,
+    refetchOnWindowFocus: false,
+    placeholderData: (prev) => prev,
+  });
+
+  const workflows = runsQuery.data?.workflows || [];
+  const rows = runsQuery.data?.rows || [];
+  const loading = Boolean(businessId) && runsQuery.isLoading && !runsQuery.data;
+  const refreshing = runsQuery.isFetching && Boolean(runsQuery.data);
+  const error = runsQuery.isError
+    ? readAutomationErrorMessage(runsQuery.error, "שגיאה בטעינת הרצות")
+    : "";
+
+  const load = useCallback(async () => {
+    if (!businessId) return;
+    await runsQuery.refetch();
+  }, [businessId, runsQuery]);
 
   useEffect(() => {
-    void load();
-  }, [load]);
+    if (!runsQuery.isError) return;
+    toast.error(
+      readAutomationErrorMessage(runsQuery.error, "שגיאה בטעינת הרצות")
+    );
+  }, [runsQuery.isError, runsQuery.error]);
 
   const visibleRows = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -202,7 +220,7 @@ export default function AutomationsRunsPage() {
     try {
       await retryAutomationExecution(businessId, executionId);
       toast.success("ההרצה נשלחה לניסיון חוזר");
-      await load({ quiet: true });
+      await load();
     } catch (err: unknown) {
       toast.error(readAutomationErrorMessage(err, "שגיאה בניסיון חוזר"));
     }
@@ -220,7 +238,7 @@ export default function AutomationsRunsPage() {
         <button
           type="button"
           className="ax-btn ax-btn--secondary"
-          onClick={() => void load({ quiet: true })}
+          onClick={() => void load()}
           disabled={loading || refreshing}
         >
           <RefreshCw size={14} className={refreshing ? "ax-spin" : undefined} />

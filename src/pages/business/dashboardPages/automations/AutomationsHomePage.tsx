@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useOutletContext, useSearchParams } from "react-router-dom";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "react-toastify";
 import { Loader2, Plus, Search, Workflow } from "lucide-react";
 import {
@@ -12,9 +13,9 @@ import {
   getAutomationStats,
   pauseAutomationWorkflow,
   resumeAutomationWorkflow,
-  type AutomationStats,
   type AutomationWorkflow,
 } from "../../../../api/automationWorkflowApi";
+import { automationQueryKeys } from "./automationsQueryKeys";
 import {
   AUTOMATION_BILLING_API_CODES,
   readAutomationBillingErrorCode,
@@ -66,12 +67,10 @@ const SORT_OPTIONS: Array<{ value: WorkflowSortKey; label: string }> = [
 
 export default function AutomationsHomePage() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const [searchParams, setSearchParams] = useSearchParams();
   const { businessId, readOnly } = useOutletContext<OutletCtx>();
-  const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [workflows, setWorkflows] = useState<AutomationWorkflow[]>([]);
-  const [stats, setStats] = useState<AutomationStats | null>(null);
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<WorkflowStatusFilter>("all");
   const [sort, setSort] = useState<WorkflowSortKey>("updated");
@@ -106,26 +105,69 @@ export default function AutomationsHomePage() {
     ? AUTOMATION_PREVIEW_ACTION_TOOLTIP
     : undefined;
 
+  const workflowsQuery = useQuery({
+    queryKey: businessId
+      ? automationQueryKeys.workflows(businessId)
+      : ["automations", "workflows", "none"],
+    enabled: Boolean(businessId),
+    queryFn: async () => {
+      if (!businessId) return [] as AutomationWorkflow[];
+      return listAutomationWorkflows(businessId);
+    },
+    staleTime: 10_000,
+    refetchOnWindowFocus: false,
+    placeholderData: (prev) => prev,
+  });
+
+  const statsQuery = useQuery({
+    queryKey: businessId
+      ? automationQueryKeys.stats(businessId)
+      : ["automations", "stats", "none"],
+    enabled: Boolean(businessId),
+    queryFn: async () => {
+      if (!businessId) return null;
+      return (await getAutomationStats(businessId)) || null;
+    },
+    staleTime: 10_000,
+    refetchOnWindowFocus: false,
+    placeholderData: (prev) => prev,
+  });
+
+  const workflows = workflowsQuery.data || [];
+  const stats = statsQuery.data || null;
+  const loading =
+    Boolean(businessId) &&
+    ((workflowsQuery.isLoading && !workflowsQuery.data) ||
+      (statsQuery.isLoading && statsQuery.data === undefined));
+
   const load = useCallback(async () => {
     if (!businessId) return;
-    setLoading(true);
     try {
-      const [list, statsResult] = await Promise.all([
-        listAutomationWorkflows(businessId),
-        getAutomationStats(businessId),
+      await Promise.all([
+        queryClient.fetchQuery({
+          queryKey: automationQueryKeys.workflows(businessId),
+          queryFn: () => listAutomationWorkflows(businessId),
+        }),
+        queryClient.fetchQuery({
+          queryKey: automationQueryKeys.stats(businessId),
+          queryFn: () => getAutomationStats(businessId),
+        }),
       ]);
-      setWorkflows(list);
-      setStats(statsResult || null);
     } catch (error: unknown) {
       toast.error(readAutomationErrorMessage(error, "שגיאה בטעינת האוטומציות"));
-    } finally {
-      setLoading(false);
     }
-  }, [businessId]);
+  }, [businessId, queryClient]);
 
   useEffect(() => {
-    void load();
-  }, [load]);
+    if (workflowsQuery.isError) {
+      toast.error(
+        readAutomationErrorMessage(
+          workflowsQuery.error,
+          "שגיאה בטעינת האוטומציות"
+        )
+      );
+    }
+  }, [workflowsQuery.isError, workflowsQuery.error]);
 
   useEffect(() => {
     const flag = searchParams.get("automationBilling");
@@ -231,9 +273,15 @@ export default function AutomationsHomePage() {
         status === "active"
           ? await pauseAutomationWorkflow(businessId, workflow._id)
           : await resumeAutomationWorkflow(businessId, workflow._id);
-      setWorkflows((prev) =>
-        prev.map((item) => (item._id === saved._id ? saved : item))
+      queryClient.setQueryData<AutomationWorkflow[]>(
+        automationQueryKeys.workflows(businessId),
+        (prev) =>
+          (prev || []).map((item) => (item._id === saved._id ? saved : item))
       );
+      void queryClient.invalidateQueries({
+        queryKey: automationQueryKeys.stats(businessId),
+        refetchType: "active",
+      });
       toast.success("סטטוס האוטומציה עודכן");
     } catch (error: unknown) {
       const waCode = readWhatsAppBillingErrorCode(error);
@@ -310,7 +358,14 @@ export default function AutomationsHomePage() {
     }
     try {
       await deleteAutomationWorkflow(businessId, workflow._id);
-      setWorkflows((prev) => prev.filter((item) => item._id !== workflow._id));
+      queryClient.setQueryData<AutomationWorkflow[]>(
+        automationQueryKeys.workflows(businessId),
+        (prev) => (prev || []).filter((item) => item._id !== workflow._id)
+      );
+      void queryClient.invalidateQueries({
+        queryKey: automationQueryKeys.stats(businessId),
+        refetchType: "active",
+      });
       toast.success("האוטומציה נמחקה");
     } catch (error: unknown) {
       toast.error(readAutomationErrorMessage(error, "שגיאה במחיקה"));
