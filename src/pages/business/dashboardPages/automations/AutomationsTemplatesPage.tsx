@@ -50,7 +50,10 @@ import {
   type TemplateReadiness,
   type WorkingTemplate,
 } from "./workingTemplates";
-import { defaultMappingsForMetaTemplate } from "./whatsappAutomationMetaTemplates";
+import {
+  defaultMappingsForMetaTemplate,
+  isBusinessAlertMetaTemplateName,
+} from "./whatsappAutomationMetaTemplates";
 
 type OutletCtx = {
   businessId: string | null;
@@ -302,11 +305,11 @@ export default function AutomationsTemplatesPage() {
                   ""
               )
             ),
-            recipientType:
-              String((selectedTpl as WhatsAppTemplate)?.metaTemplateName || "") ===
-              "new_lead_received"
-                ? "business_owner"
-                : "lead_phone",
+            recipientType: isBusinessAlertMetaTemplateName(
+              String((selectedTpl as WhatsAppTemplate)?.metaTemplateName || "")
+            )
+              ? "business_owner"
+              : "lead_phone",
           },
         };
       }

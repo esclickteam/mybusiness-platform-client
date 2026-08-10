@@ -1,4 +1,5 @@
 ﻿import type { ApprovedWhatsAppTemplate } from "../../../../api/whatsappApi";
+import { MANAGED_TEMPLATE_DISPLAY_NAMES } from "./whatsappAutomationMetaTemplates";
 
 /** Humanize snake_case Meta names for UI-only fallback. */
 export function humanizeWhatsAppTemplateName(metaTemplateName = ""): string {
@@ -27,6 +28,9 @@ export function resolveWhatsAppTemplateDisplayName(
     if (meta && value.toLowerCase() === meta.toLowerCase()) continue;
     return value;
   }
+  const managedDisplay =
+    MANAGED_TEMPLATE_DISPLAY_NAMES[meta.toLowerCase()] || "";
+  if (managedDisplay) return managedDisplay;
   return humanizeWhatsAppTemplateName(meta) || meta || "—";
 }
 

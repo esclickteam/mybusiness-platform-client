@@ -101,7 +101,7 @@ describe("systemAutomationCatalog", () => {
 
   it("does not treat the owner alert as a lead welcome template", () => {
     const ownerOnly = listRequiredWhatsAppMessageTemplates([
-      { metaTemplateName: "new_lead_received", status: "active", metaStatus: "APPROVED" },
+      { metaTemplateName: "new_lead_received_utility", status: "active", metaStatus: "APPROVED" },
     ]);
     expect(ownerOnly.find((row) => row.id === "wa_welcome_lead")?.prepared).toBe(false);
 
