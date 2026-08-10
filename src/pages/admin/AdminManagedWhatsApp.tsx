@@ -11,6 +11,10 @@ import {
   type AdminManagedWhatsAppStatus,
   type ManagedWhatsAppAllowlistMode,
 } from "../../api/adminManagedWhatsAppApi";
+import {
+  getAdminWhatsAppBillingMargin,
+  type WhatsAppBillingMarginReport,
+} from "../../api/whatsappBillingApi";
 import { useAuth } from "../../context/AuthContext";
 import AdminHeader from "./AdminsHeader";
 
@@ -76,6 +80,10 @@ export default function AdminManagedWhatsApp() {
   const { user } = useAuth() as { user: { role?: string } | null };
   const [status, setStatus] = useState<AdminManagedWhatsAppStatus | null>(null);
   const [audit, setAudit] = useState<AdminManagedWhatsAppAuditItem[]>([]);
+  const [marginReport, setMarginReport] =
+    useState<WhatsAppBillingMarginReport | null>(null);
+  const [marginLoading, setMarginLoading] = useState(false);
+  const [marginError, setMarginError] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [verifying, setVerifying] = useState(false);
@@ -120,6 +128,23 @@ export default function AdminManagedWhatsApp() {
   useEffect(() => {
     void load();
   }, [load]);
+
+  const loadMargin = useCallback(async () => {
+    setMarginLoading(true);
+    setMarginError("");
+    try {
+      const report = await getAdminWhatsAppBillingMargin();
+      setMarginReport(report);
+    } catch (err: any) {
+      setMarginError(err?.message || "טעינת דוח המרווח נכשלה");
+    } finally {
+      setMarginLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void loadMargin();
+  }, [loadMargin]);
 
   async function toggleManagedMode(next: boolean) {
     if (!isAdmin || saving) return;
@@ -648,6 +673,143 @@ export default function AdminManagedWhatsApp() {
                   >
                     שמור Allowlist
                   </button>
+                </>
+              ) : null}
+            </section>
+
+            <section
+              style={{
+                background: "#fff",
+                borderRadius: 14,
+                padding: 20,
+                boxShadow: "0 1px 3px rgba(15,23,42,0.06)",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  gap: 12,
+                  flexWrap: "wrap",
+                }}
+              >
+                <strong>WhatsApp usage billing — margin</strong>
+                <button
+                  type="button"
+                  onClick={() => void loadMargin()}
+                  disabled={marginLoading}
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 6,
+                    borderRadius: 10,
+                    border: "1px solid #e2e8f0",
+                    background: "#fff",
+                    padding: "8px 12px",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                  }}
+                >
+                  <RefreshCw size={14} />
+                  רענון
+                </button>
+              </div>
+              {marginError ? (
+                <p style={{ color: "#b91c1c", marginTop: 12 }}>{marginError}</p>
+              ) : null}
+              {marginLoading && !marginReport ? (
+                <p style={{ color: "#64748b", marginTop: 12 }}>טוען דוח...</p>
+              ) : null}
+              {marginReport ? (
+                <>
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "repeat(4, minmax(0, 1fr))",
+                      gap: 10,
+                      marginTop: 14,
+                    }}
+                  >
+                    {[
+                      ["הודעות", marginReport.totals.messageCount],
+                      ["חיוב ₪", marginReport.totals.chargeIls],
+                      ["עלות Meta ₪", marginReport.totals.metaCostIls],
+                      ["מרווח ₪", marginReport.totals.marginIls],
+                    ].map(([label, value]) => (
+                      <div
+                        key={String(label)}
+                        style={{
+                          border: "1px solid #e2e8f0",
+                          borderRadius: 12,
+                          padding: 12,
+                          background: "#f8fafc",
+                        }}
+                      >
+                        <div style={{ fontSize: 12, color: "#64748b" }}>
+                          {label}
+                        </div>
+                        <div style={{ fontSize: 18, fontWeight: 800 }}>
+                          {typeof value === "number"
+                            ? value.toLocaleString("he-IL")
+                            : value}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div style={{ overflowX: "auto", marginTop: 14 }}>
+                    <table
+                      style={{
+                        width: "100%",
+                        borderCollapse: "collapse",
+                        fontSize: 13,
+                      }}
+                    >
+                      <thead>
+                        <tr style={{ textAlign: "start", color: "#64748b" }}>
+                          <th style={{ padding: "8px 6px" }}>Business</th>
+                          <th style={{ padding: "8px 6px" }}>Msgs</th>
+                          <th style={{ padding: "8px 6px" }}>Charge ₪</th>
+                          <th style={{ padding: "8px 6px" }}>Meta ₪</th>
+                          <th style={{ padding: "8px 6px" }}>Margin ₪</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {(marginReport.businesses || []).slice(0, 25).map((row) => (
+                          <tr
+                            key={row.businessId}
+                            style={{ borderTop: "1px solid #f1f5f9" }}
+                          >
+                            <td style={{ padding: "8px 6px" }}>
+                              {row.businessId}
+                            </td>
+                            <td style={{ padding: "8px 6px" }}>
+                              {row.messageCount}
+                            </td>
+                            <td style={{ padding: "8px 6px" }}>
+                              {row.chargeIls}
+                            </td>
+                            <td style={{ padding: "8px 6px" }}>
+                              {row.metaCostIls}
+                            </td>
+                            <td style={{ padding: "8px 6px" }}>
+                              {row.marginIls}
+                            </td>
+                          </tr>
+                        ))}
+                        {(marginReport.businesses || []).length === 0 ? (
+                          <tr>
+                            <td
+                              colSpan={5}
+                              style={{ padding: "12px 6px", color: "#94a3b8" }}
+                            >
+                              אין שימוש מחויב עדיין
+                            </td>
+                          </tr>
+                        ) : null}
+                      </tbody>
+                    </table>
+                  </div>
                 </>
               ) : null}
             </section>

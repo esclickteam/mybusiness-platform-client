@@ -20,6 +20,11 @@ import {
   readAutomationBillingErrorCode,
   reactivateAutomationPlan,
 } from "../../../../api/automationBillingApi";
+import {
+  WHATSAPP_BILLING_API_CODES,
+  isWhatsAppBillingGateCode,
+  readWhatsAppBillingErrorCode,
+} from "../../../../api/whatsappBillingApi";
 import AutomationsWorkflowList from "./AutomationsWorkflowList";
 import CreateAutomationModal from "./CreateAutomationModal";
 import {
@@ -34,6 +39,9 @@ import AutomationPlanModal from "./billing/AutomationPlanModal";
 import AutomationCancelConfirmModal from "./billing/AutomationCancelConfirmModal";
 import AutomationCheckoutProcessing from "./billing/AutomationCheckoutProcessing";
 import { useAutomationBilling } from "./billing/useAutomationBilling";
+import WhatsAppBillingSetupModal from "../whatsapp/billing/WhatsAppBillingSetupModal";
+import { useWhatsAppBilling } from "../whatsapp/billing/useWhatsAppBilling";
+import WhatsAppCheckoutProcessing from "../whatsapp/billing/WhatsAppCheckoutProcessing";
 
 type OutletCtx = {
   businessId: string | null;
@@ -69,6 +77,9 @@ export default function AutomationsHomePage() {
   const [planModalMode, setPlanModalMode] = useState<"pick" | "manage">("pick");
   const [cancelModalOpen, setCancelModalOpen] = useState(false);
   const [checkoutProcessingOpen, setCheckoutProcessingOpen] = useState(false);
+  const [waBillingModalOpen, setWaBillingModalOpen] = useState(false);
+  const [waCheckoutProcessingOpen, setWaCheckoutProcessingOpen] =
+    useState(false);
 
   const {
     usage: billingUsage,
@@ -77,6 +88,12 @@ export default function AutomationsHomePage() {
     refresh: refreshBilling,
     setUsage: setBillingUsage,
   } = useAutomationBilling(businessId);
+
+  const {
+    usage: waBillingUsage,
+    refresh: refreshWaBilling,
+    setUsage: setWaBillingUsage,
+  } = useWhatsAppBilling(businessId);
 
   const writeBlockedTitle = readOnly
     ? AUTOMATION_PREVIEW_ACTION_TOOLTIP
@@ -105,14 +122,24 @@ export default function AutomationsHomePage() {
 
   useEffect(() => {
     const flag = searchParams.get("automationBilling");
-    if (!flag) return;
+    const waFlag =
+      searchParams.get("waBilling") || searchParams.get("whatsappBilling");
+    if (!flag && !waFlag) return;
     if (flag === "processing") {
       setCheckoutProcessingOpen(true);
     } else if (flag === "cancel") {
       toast.info("התשלום בוטל — ניתן לבחור חבילה מחדש בכל עת.");
     }
+    if (waFlag === "processing") {
+      setWaCheckoutProcessingOpen(true);
+      toast.info("מעדכנים את חיוב WhatsApp...");
+    } else if (waFlag === "cancel") {
+      toast.info("הגדרת חיוב WhatsApp בוטלה — ניתן להגדיר מחדש בכל עת.");
+    }
     const next = new URLSearchParams(searchParams);
     next.delete("automationBilling");
+    next.delete("waBilling");
+    next.delete("whatsappBilling");
     setSearchParams(next, { replace: true });
   }, [searchParams, setSearchParams]);
 
@@ -184,6 +211,24 @@ export default function AutomationsHomePage() {
       );
       toast.success("סטטוס האוטומציה עודכן");
     } catch (error: unknown) {
+      const waCode = readWhatsAppBillingErrorCode(error);
+      if (isWhatsAppBillingGateCode(waCode)) {
+        if (waCode === WHATSAPP_BILLING_API_CODES.SETUP_REQUIRED) {
+          toast.error(
+            "נדרש חיוב WhatsApp — האוטומציה כוללת שליחת הודעות WhatsApp בעלות של 0.20 ₪ להודעה. יש להגדיר אמצעי תשלום לפני ההפעלה."
+          );
+        } else {
+          toast.error(
+            readAutomationErrorMessage(
+              error,
+              "לא ניתן לעדכן את האוטומציה עקב חיוב WhatsApp"
+            )
+          );
+        }
+        setWaBillingModalOpen(true);
+        void refreshWaBilling();
+        return;
+      }
       const code = readAutomationBillingErrorCode(error);
       if (code === AUTOMATION_BILLING_API_CODES.PLAN_REQUIRED) {
         toast.error("כדי להפעיל אוטומציה יש לבחור חבילת הרצות");
@@ -428,6 +473,26 @@ export default function AutomationsHomePage() {
               void refreshBilling();
             }}
             onClose={() => setCheckoutProcessingOpen(false)}
+          />
+          <WhatsAppBillingSetupModal
+            open={waBillingModalOpen}
+            businessId={businessId}
+            usage={waBillingUsage}
+            initialMode="setup"
+            onClose={() => setWaBillingModalOpen(false)}
+            onUsageUpdated={async () => {
+              await refreshWaBilling();
+            }}
+          />
+          <WhatsAppCheckoutProcessing
+            open={waCheckoutProcessingOpen}
+            businessId={businessId}
+            onDone={(usage) => {
+              setWaBillingUsage(usage);
+              setWaCheckoutProcessingOpen(false);
+              void refreshWaBilling();
+            }}
+            onClose={() => setWaCheckoutProcessingOpen(false)}
           />
         </>
       ) : null}

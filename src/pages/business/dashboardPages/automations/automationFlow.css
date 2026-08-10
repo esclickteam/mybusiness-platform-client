@@ -1022,6 +1022,49 @@
   color: #334155;
 }
 
+.af-wa-cost {
+  display: grid;
+  gap: 8px;
+  margin-top: 2px;
+}
+
+.af-wa-cost__badge {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  font-size: 12px;
+  font-weight: 700;
+  color: #334155;
+}
+
+.af-wa-cost__estimate {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 500;
+  color: #64748b;
+  line-height: 1.45;
+}
+
+.af-node__wa-cost {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  margin: 2px 0 4px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  border: 1px solid #d1fae5;
+  background: #ecfdf5;
+  font-size: 10px;
+  font-weight: 700;
+  color: #047857;
+  white-space: nowrap;
+}
+
 .af-wa-sender label {
   display: grid;
   gap: 6px;
