@@ -100,6 +100,56 @@ export default function AutomationUsageCard({
   if (!usage || !usage.billingEnabled) return null;
 
   if (usage.exempt) {
+    const exemption = usage.exemption;
+    const isTemporary = exemption?.type === "temporary" && exemption.endsAt;
+    if (isTemporary) {
+      const endsAt = exemption.endsAt as string;
+      const endsMs = new Date(endsAt).getTime();
+      const daysLeft = Math.ceil((endsMs - Date.now()) / 86400000);
+      const dateLabel = formatHeDate(endsAt);
+      let warning: string | null = null;
+      let ctaLabel = "בחירת חבילה";
+      if (daysLeft <= 1) {
+        warning = "מחר מסתיימת חבילת המעבר";
+        ctaLabel = "בחירת חבילת אוטומציות";
+      } else if (daysLeft <= 7) {
+        warning = `חבילת המעבר מסתיימת בעוד ${daysLeft} ימים`;
+        ctaLabel = "בחירת חבילת אוטומציות";
+      }
+
+      return (
+        <div
+          className={`ax-billing-card ax-billing-card--transition${
+            warning ? " ax-billing-card--warn" : ""
+          }`}
+          role="status"
+        >
+          <div className="ax-billing-card__body">
+            <strong>חבילת מעבר לאוטומציות</strong>
+            <p>
+              האוטומציות שלך ימשיכו לפעול ללא שינוי עד{" "}
+              {dateLabel || "סיום תקופת המעבר"}.
+            </p>
+            <p>
+              לאחר מכן יהיה צורך לבחור חבילת הרצות כדי להמשיך להפעיל אוטומציות.
+            </p>
+            {warning ? (
+              <p className="ax-billing-card__note" role="alert">
+                {warning}
+              </p>
+            ) : null}
+          </div>
+          <button
+            type="button"
+            className="ax-btn ax-btn--primary"
+            onClick={() => onOpenPlans("no_plan")}
+          >
+            {ctaLabel}
+          </button>
+        </div>
+      );
+    }
+
     return (
       <div className="ax-billing-card ax-billing-card--exempt" role="status">
         <p>האוטומציות פעילות בחשבון</p>

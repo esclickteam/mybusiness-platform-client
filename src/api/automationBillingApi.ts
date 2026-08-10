@@ -20,9 +20,15 @@ export const AUTOMATION_BILLING_API_CODES = {
   DOWNGRADE_SCHEDULED: "AUTOMATION_PLAN_DOWNGRADE_SCHEDULED",
 } as const;
 
+export type AutomationBillingExemption = {
+  type: "temporary" | "permanent";
+  endsAt: string | null;
+};
+
 export type AutomationBillingUsageOverview = {
   billingEnabled: boolean;
   exempt: boolean;
+  exemption?: AutomationBillingExemption | null;
   plan: null | {
     key: string;
     name: string;

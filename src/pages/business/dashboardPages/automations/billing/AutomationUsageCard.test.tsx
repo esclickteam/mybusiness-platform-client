@@ -197,6 +197,7 @@ describe("AutomationUsageCard", () => {
     renderCard(
       baseUsage({
         exempt: true,
+        exemption: { type: "permanent", endsAt: null },
         plan: null,
         usage: null,
       })
@@ -205,6 +206,56 @@ describe("AutomationUsageCard", () => {
     expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
     expect(screen.queryByText("בחירת חבילה")).not.toBeInTheDocument();
     expect(screen.queryByText(/ניצלתם/)).not.toBeInTheDocument();
+  });
+
+  it("temporary transition card shows Hebrew copy and CTA without quota pressure", () => {
+    const endsAt = new Date(Date.now() + 20 * 86400000).toISOString();
+    renderCard(
+      baseUsage({
+        exempt: true,
+        exemption: { type: "temporary", endsAt },
+        plan: null,
+        usage: null,
+      })
+    );
+    expect(screen.getByText("חבילת מעבר לאוטומציות")).toBeInTheDocument();
+    expect(
+      screen.getByText(/האוטומציות שלך ימשיכו לפעול ללא שינוי עד/)
+    ).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "בחירת חבילה" })).toBeInTheDocument();
+    expect(screen.queryByRole("progressbar")).not.toBeInTheDocument();
+    expect(screen.queryByText(/grandfather|exempt|migration/i)).not.toBeInTheDocument();
+  });
+
+  it("<=7 day warning strengthens CTA", () => {
+    const endsAt = new Date(Date.now() + 5 * 86400000).toISOString();
+    renderCard(
+      baseUsage({
+        exempt: true,
+        exemption: { type: "temporary", endsAt },
+        plan: null,
+        usage: null,
+      })
+    );
+    expect(
+      screen.getByText(/חבילת המעבר מסתיימת בעוד 5 ימים/)
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: "בחירת חבילת אוטומציות" })
+    ).toBeInTheDocument();
+  });
+
+  it("expired transition falls through to no-plan UX when not exempt", () => {
+    renderCard(
+      baseUsage({
+        exempt: false,
+        exemption: null,
+        plan: null,
+        usage: null,
+      })
+    );
+    expect(screen.getByText(/אוטומציות בתשלום לפי שימוש/)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "בחירת חבילה" })).toBeInTheDocument();
   });
 
   it("past_due grace warning (paymentGraceEndsAt + canExecute)", () => {
