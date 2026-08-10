@@ -14,6 +14,8 @@ type ConnectDomainModalProps = {
   onConnected?: (payload: {
     customDomain: string;
     publicUrl?: string;
+    provisioningStatus?: string;
+    connected?: boolean;
   }) => void;
 };
 
@@ -104,7 +106,11 @@ export default function ConnectDomainModal({
     if (!siteId) {
       setCustomDomain(clean);
       setSuccess(`הדומיין ${clean} נרשם. שמרו את האתר כדי לקשר אותו אליו.`);
-      onConnected?.({ customDomain: clean });
+      onConnected?.({
+        customDomain: clean,
+        provisioningStatus: "",
+        connected: true,
+      });
       return;
     }
 
@@ -116,6 +122,10 @@ export default function ConnectDomainModal({
       onConnected?.({
         customDomain: result.customDomain,
         publicUrl: result.publicUrl,
+        provisioningStatus:
+          result.provisioningStatus ||
+          String(result.site?.domain?.provisioningStatus || ""),
+        connected: result.connected !== false,
       });
     } catch (requestError) {
       setError(
