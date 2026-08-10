@@ -17,7 +17,10 @@ export type MySiteSummary = {
   published?: boolean;
   status?: string;
   publicUrl?: string;
+  platformUrl?: string;
   siteDomain?: string;
+  customDomain?: string;
+  provisioningStatus?: string;
   domain?: MySiteDomainSummary | null;
   templateKey?: string;
   templateName?: string;
@@ -73,7 +76,73 @@ export async function listMySites(businessId: string, opts?: {
   if (opts?.q) params.set("q", opts.q);
 
   const { data } = await API.get(`/site-builder/sites?${params}`);
-  return (data?.sites || []) as MySiteSummary[];
+  const sites = (data?.sites || []) as MySiteSummary[];
+  return enrichMySitesDomainBindings(sites);
+}
+
+function slimDomainBinding(domain: any): MySiteDomainSummary | null {
+  if (!domain || typeof domain !== "object") return null;
+  const host = String(domain.domain || "")
+    .trim()
+    .toLowerCase();
+  if (!host) return null;
+  return {
+    domain: host,
+    url: String(domain.url || "").trim(),
+    slug: String(domain.slug || "")
+      .trim()
+      .toLowerCase(),
+    published: Boolean(domain.published),
+    provisioningStatus: String(domain.provisioningStatus || "")
+      .trim()
+      .toLowerCase(),
+    provisioningSource: String(domain.provisioningSource || "")
+      .trim()
+      .toLowerCase(),
+  };
+}
+
+function siteHasDomainBinding(site: MySiteSummary) {
+  return Boolean(
+    String(site.domain?.domain || site.customDomain || "").trim(),
+  );
+}
+
+/**
+ * List payloads historically omitted `domain`. Detail GET includes the full
+ * binding, so enrich published cards that are missing it.
+ */
+async function enrichMySitesDomainBindings(sites: MySiteSummary[]) {
+  const targets = sites.filter(
+    (site) =>
+      !siteHasDomainBinding(site) &&
+      Boolean(site.published || site.status === "published"),
+  );
+  if (!targets.length) return sites;
+
+  const enrichedEntries = await Promise.all(
+    targets.map(async (site) => {
+      try {
+        const full = await getMySite(site._id);
+        const domain = slimDomainBinding(full?.domain);
+        if (!domain) return [site._id, site] as const;
+        return [
+          site._id,
+          {
+            ...site,
+            domain,
+            customDomain: domain.domain,
+            provisioningStatus: domain.provisioningStatus,
+          },
+        ] as const;
+      } catch {
+        return [site._id, site] as const;
+      }
+    }),
+  );
+
+  const byId = new Map(enrichedEntries);
+  return sites.map((site) => byId.get(site._id) || site);
 }
 
 export async function getMySite(siteId: string) {
