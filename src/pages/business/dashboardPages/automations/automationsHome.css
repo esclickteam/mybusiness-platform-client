@@ -1476,6 +1476,17 @@
   overflow: hidden;
 }
 
+.ax-billing-stack {
+  display: grid;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.ax-billing-stack .ax-billing-card,
+.ax-billing-stack .wa-billing-card {
+  margin-bottom: 0;
+}
+
 .ax-billing-card--warn {
   border-color: #f59e0b;
   background: #fffbeb;

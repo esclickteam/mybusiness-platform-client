@@ -24,6 +24,7 @@ import {
   WHATSAPP_BILLING_API_CODES,
   isWhatsAppBillingGateCode,
   readWhatsAppBillingErrorCode,
+  reactivateWhatsAppBilling,
 } from "../../../../api/whatsappBillingApi";
 import AutomationsWorkflowList from "./AutomationsWorkflowList";
 import CreateAutomationModal from "./CreateAutomationModal";
@@ -40,6 +41,7 @@ import AutomationCancelConfirmModal from "./billing/AutomationCancelConfirmModal
 import AutomationCheckoutProcessing from "./billing/AutomationCheckoutProcessing";
 import { useAutomationBilling } from "./billing/useAutomationBilling";
 import WhatsAppBillingSetupModal from "../whatsapp/billing/WhatsAppBillingSetupModal";
+import WhatsAppUsageCard from "../whatsapp/billing/WhatsAppUsageCard";
 import { useWhatsAppBilling } from "../whatsapp/billing/useWhatsAppBilling";
 import WhatsAppCheckoutProcessing from "../whatsapp/billing/WhatsAppCheckoutProcessing";
 
@@ -78,6 +80,9 @@ export default function AutomationsHomePage() {
   const [cancelModalOpen, setCancelModalOpen] = useState(false);
   const [checkoutProcessingOpen, setCheckoutProcessingOpen] = useState(false);
   const [waBillingModalOpen, setWaBillingModalOpen] = useState(false);
+  const [waBillingModalMode, setWaBillingModalMode] = useState<"setup" | "manage">(
+    "setup"
+  );
   const [waCheckoutProcessingOpen, setWaCheckoutProcessingOpen] =
     useState(false);
 
@@ -91,6 +96,8 @@ export default function AutomationsHomePage() {
 
   const {
     usage: waBillingUsage,
+    loading: waBillingLoading,
+    error: waBillingError,
     refresh: refreshWaBilling,
     setUsage: setWaBillingUsage,
   } = useWhatsAppBilling(businessId);
@@ -142,6 +149,24 @@ export default function AutomationsHomePage() {
     next.delete("whatsappBilling");
     setSearchParams(next, { replace: true });
   }, [searchParams, setSearchParams]);
+
+  const openWaBillingModal = (mode: "setup" | "manage") => {
+    setWaBillingModalMode(mode);
+    setWaBillingModalOpen(true);
+  };
+
+  const handleWaReactivate = async () => {
+    if (!businessId) return;
+    try {
+      await reactivateWhatsAppBilling(businessId);
+      toast.success("הביטול בוטל והחיוב יישאר פעיל.");
+      await refreshWaBilling();
+    } catch (error: unknown) {
+      toast.error(
+        readAutomationErrorMessage(error, "לא הצלחנו להשאיר את חיוב WhatsApp פעיל")
+      );
+    }
+  };
 
   const openPlanModal = (mode: "pick" | "manage") => {
     setPlanModalMode(mode);
@@ -215,7 +240,7 @@ export default function AutomationsHomePage() {
       if (isWhatsAppBillingGateCode(waCode)) {
         if (waCode === WHATSAPP_BILLING_API_CODES.SETUP_REQUIRED) {
           toast.error(
-            "נדרש חיוב WhatsApp — האוטומציה כוללת שליחת הודעות WhatsApp בעלות של 0.20 ₪ להודעה. יש להגדיר אמצעי תשלום לפני ההפעלה."
+            "נדרש להגדיר חיוב WhatsApp לפני הפעלת האוטומציה."
           );
         } else {
           toast.error(
@@ -225,7 +250,7 @@ export default function AutomationsHomePage() {
             )
           );
         }
-        setWaBillingModalOpen(true);
+        openWaBillingModal("setup");
         void refreshWaBilling();
         return;
       }
@@ -346,18 +371,30 @@ export default function AutomationsHomePage() {
       ) : null}
 
       {businessId ? (
-        <AutomationUsageCard
-          businessId={businessId}
-          usage={billingUsage}
-          loading={billingLoading}
-          error={billingError}
-          onRetry={() => void refreshBilling()}
-          onOpenPlans={(reason) =>
-            openPlanModal(reason === "manage" ? "manage" : "pick")
-          }
-          onOpenManage={() => openPlanModal("manage")}
-          onReactivate={() => void handleReactivate()}
-        />
+        <section className="ax-billing-stack" aria-label="חיוב אוטומציות ו-WhatsApp">
+          <AutomationUsageCard
+            businessId={businessId}
+            usage={billingUsage}
+            loading={billingLoading}
+            error={billingError}
+            onRetry={() => void refreshBilling()}
+            onOpenPlans={(reason) =>
+              openPlanModal(reason === "manage" ? "manage" : "pick")
+            }
+            onOpenManage={() => openPlanModal("manage")}
+            onReactivate={() => void handleReactivate()}
+          />
+          <WhatsAppUsageCard
+            businessId={businessId}
+            usage={waBillingUsage}
+            loading={waBillingLoading}
+            error={waBillingError}
+            onRetry={() => void refreshWaBilling()}
+            onOpenSetup={() => openWaBillingModal("setup")}
+            onOpenManage={() => openWaBillingModal("manage")}
+            onReactivate={() => void handleWaReactivate()}
+          />
+        </section>
       ) : null}
 
       <div className="ax-toolbar">
@@ -486,7 +523,8 @@ export default function AutomationsHomePage() {
             open={waBillingModalOpen}
             businessId={businessId}
             usage={waBillingUsage}
-            initialMode="setup"
+            initialMode={waBillingModalMode}
+            returnTo="automations"
             onClose={() => setWaBillingModalOpen(false)}
             onUsageUpdated={async () => {
               await refreshWaBilling();

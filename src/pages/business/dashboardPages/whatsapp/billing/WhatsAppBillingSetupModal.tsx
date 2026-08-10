@@ -21,6 +21,8 @@ type Props = {
   businessId: string;
   usage: WhatsAppBillingUsageOverview | null;
   initialMode?: ModalMode;
+  /** Where Stripe should return after checkout. Defaults to WhatsApp settings. */
+  returnTo?: "automations" | "whatsapp";
   onClose: () => void;
   onUsageUpdated: () => void | Promise<void>;
 };
@@ -32,6 +34,7 @@ export default function WhatsAppBillingSetupModal({
   businessId,
   usage,
   initialMode = "setup",
+  returnTo = "whatsapp",
   onClose,
   onUsageUpdated,
 }: Props) {
@@ -97,7 +100,9 @@ export default function WhatsAppBillingSetupModal({
   const startCheckout = async () => {
     setBusy(true);
     try {
-      const result = await createWhatsAppBillingCheckout(businessId);
+      const result = await createWhatsAppBillingCheckout(businessId, {
+        returnTo,
+      });
       if (!result?.url) {
         toast.error("לא הצלחנו להתחיל את הגדרת החיוב. נסו שוב.");
         setBusy(false);

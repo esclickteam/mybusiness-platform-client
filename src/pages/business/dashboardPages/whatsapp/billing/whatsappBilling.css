@@ -85,9 +85,20 @@
   color: #047857;
 }
 
+.wa-billing-card__status {
+  margin: 8px 0 0;
+  font-size: 13px;
+  font-weight: 700;
+  color: #b45309;
+}
+
+.wa-billing-card__status--active {
+  color: #047857;
+}
+
 .wa-billing-card__body strong {
   display: block;
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 800;
   color: #0f172a;
 }
@@ -97,6 +108,27 @@
   font-size: 13px;
   font-weight: 500;
   color: #64748b;
+}
+
+.wa-billing-card__body .wa-billing-card__plan,
+.wa-billing-card__body .wa-billing-card__counts,
+.wa-billing-card__body .wa-billing-card__status {
+  color: inherit;
+}
+
+.wa-billing-card__body .wa-billing-card__plan {
+  color: #047857;
+  font-weight: 600;
+}
+
+.wa-billing-card__body .wa-billing-card__counts {
+  color: #334155;
+  font-weight: 600;
+}
+
+.wa-billing-card__body .wa-billing-card__status {
+  color: #b45309;
+  font-weight: 700;
 }
 
 .wa-billing-card__counts {
