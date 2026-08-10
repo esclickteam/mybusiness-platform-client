@@ -675,23 +675,6 @@ export default function MySitesPage() {
                             >
                               {statusLabel(site, t)}
                             </p>
-
-                            {published &&
-                            cardUrls.hasActiveCustomDomain &&
-                            cardUrls.platformUrl ? (
-                              <div className="mt-1 min-w-0 text-[11px] font-medium text-slate-400">
-                                <div className="truncate font-bold text-slate-500">
-                                  {t("mySites.card.bizuplyAlternative")}
-                                </div>
-                                <div
-                                  className="truncate"
-                                  dir="ltr"
-                                  title={cardUrls.platformUrl}
-                                >
-                                  {cardUrls.platformUrl}
-                                </div>
-                              </div>
-                            ) : null}
                           </div>
                         </div>
                       </div>
