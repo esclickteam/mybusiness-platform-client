@@ -237,6 +237,7 @@ export default function AutomationsHomePage() {
       }
       if (
         code === AUTOMATION_BILLING_API_CODES.QUOTA_EXHAUSTED ||
+        code === AUTOMATION_BILLING_API_CODES.ACTION_QUOTA_EXHAUSTED ||
         code === AUTOMATION_BILLING_API_CODES.BILLING_BLOCKED
       ) {
         toast.error(

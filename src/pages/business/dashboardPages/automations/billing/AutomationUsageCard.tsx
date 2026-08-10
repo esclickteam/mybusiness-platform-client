@@ -160,7 +160,8 @@ export default function AutomationUsageCard({
   const plan = usage.plan;
   const hasPlan = Boolean(plan?.key);
   const used = usage.usage?.used ?? 0;
-  const limit = usage.usage?.limit ?? plan?.executionLimit ?? 0;
+  const limit =
+    usage.usage?.limit ?? plan?.actionLimit ?? plan?.executionLimit ?? 0;
   const percentage = usage.usage?.percentage ?? 0;
   const severity = getUsageSeverity(percentage);
   const periodEndLabel = formatHeDate(usage.usage?.periodEnd);
@@ -274,8 +275,8 @@ export default function AutomationUsageCard({
           <div id={tipId} className="ax-billing-tip" role="note">
             <strong>מהי פעולה?</strong>
             <p>
-              בכל פעם שאוטומציה מופעלת, היא נחשבת לפעולה אחת — ללא קשר למספר
-              השלבים הרגילים בתהליך.
+              פעולה היא שלב באוטומציה שמשנה משהו בעסק (למשל שליחת הודעה או עדכון
+              ליד). טריגרים, תנאים והמתנות אינם נספרים במכסה.
             </p>
           </div>
         ) : null}
@@ -343,7 +344,7 @@ export default function AutomationUsageCard({
           <div>
             <strong>מכסת הפעולות החודשית נוצלה</strong>
             <p>
-              אוטומציות קיימות נשארות פעילות, אך פעולות חדשות לא יתחילו עד לחידוש
+              אוטומציות קיימות נשארות פעילות, אך פעולות חדשות לא ירוצו עד לחידוש
               המכסה או לשדרוג החבילה.
             </p>
             <button

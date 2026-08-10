@@ -13,6 +13,8 @@ export type AutomationPlanKey =
 export const AUTOMATION_BILLING_API_CODES = {
   PLAN_REQUIRED: "AUTOMATION_PLAN_REQUIRED",
   QUOTA_EXHAUSTED: "AUTOMATION_QUOTA_EXHAUSTED",
+  /** Canonical action-billing exhaustion code from newer API responses. */
+  ACTION_QUOTA_EXHAUSTED: "AUTOMATION_ACTION_QUOTA_EXHAUSTED",
   BILLING_BLOCKED: "AUTOMATION_BILLING_BLOCKED",
   PLAN_ALREADY_ACTIVE: "AUTOMATION_PLAN_ALREADY_ACTIVE",
   PLAN_UNKNOWN: "AUTOMATION_PLAN_UNKNOWN",
@@ -37,6 +39,8 @@ export type AutomationBillingUsageOverview = {
     priceIls: number;
     amountIls?: number;
     executionLimit: number;
+    /** Alias of executionLimit for action-billing responses. */
+    actionLimit?: number;
   };
   usage: null | {
     used: number;
@@ -165,10 +169,11 @@ export function readAutomationBillingErrorCode(error: unknown): string | null {
 }
 
 export function isAutomationBillingGateCode(code: string | null | undefined) {
+  const normalized = normalizeAutomationBillingPublicCode(code);
   return (
-    code === AUTOMATION_BILLING_API_CODES.PLAN_REQUIRED ||
-    code === AUTOMATION_BILLING_API_CODES.QUOTA_EXHAUSTED ||
-    code === AUTOMATION_BILLING_API_CODES.BILLING_BLOCKED
+    normalized === AUTOMATION_BILLING_API_CODES.PLAN_REQUIRED ||
+    normalized === AUTOMATION_BILLING_API_CODES.QUOTA_EXHAUSTED ||
+    normalized === AUTOMATION_BILLING_API_CODES.BILLING_BLOCKED
   );
 }
 
@@ -178,13 +183,22 @@ export function normalizeAutomationBillingPublicCode(
 ): string | null {
   const raw = String(code || "").trim();
   if (!raw) return null;
-  if (isAutomationBillingGateCode(raw)) return raw;
+  if (
+    raw === AUTOMATION_BILLING_API_CODES.PLAN_REQUIRED ||
+    raw === AUTOMATION_BILLING_API_CODES.QUOTA_EXHAUSTED ||
+    raw === AUTOMATION_BILLING_API_CODES.BILLING_BLOCKED
+  ) {
+    return raw;
+  }
   const lower = raw.toLowerCase();
   if (
     lower === "quota_exhausted" ||
-    lower === "quota_exhausted".toLowerCase() ||
-    raw === "QUOTA_EXHAUSTED"
+    raw === "QUOTA_EXHAUSTED" ||
+    raw === AUTOMATION_BILLING_API_CODES.ACTION_QUOTA_EXHAUSTED ||
+    raw === "ACTION_QUOTA_EXHAUSTED" ||
+    lower === "action_quota_exhausted"
   ) {
+    // UI gates treat action-quota exhaustion like legacy QUOTA_EXHAUSTED.
     return AUTOMATION_BILLING_API_CODES.QUOTA_EXHAUSTED;
   }
   if (

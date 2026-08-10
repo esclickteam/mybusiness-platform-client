@@ -14,6 +14,7 @@ import {
   nodeSummary,
   type AutomationNodeType,
 } from "./automationFlowTypes";
+import { nodeBillingBadgeLabel } from "./automationActionCost";
 
 const ICONS = {
   trigger: Play,
@@ -91,6 +92,10 @@ function FlowNodeShell({
     type === "action" &&
     (String(data.actionKey || "").includes("whatsapp") ||
       String(data.actionKey || "") === "send_whatsapp");
+  const costLabel = nodeBillingBadgeLabel({
+    nodeType: type,
+    actionKey: String(data.actionKey || ""),
+  });
   const triggerRouteLabels =
     type === "trigger" && routeCount > 1
       ? Array.from({ length: routeCount }, (_, i) => `תוצאה ${i + 1}`)
@@ -120,6 +125,13 @@ function FlowNodeShell({
         <Icon size={11} />
         <span>{provider}</span>
       </div>
+      <span
+        className={`af-node__cost${
+          costLabel === "ללא חיוב" ? " af-node__cost--free" : ""
+        }`}
+      >
+        {costLabel}
+      </span>
       {isWhatsAppAction ? (
         <span className="af-node__wa-cost" title="0.20 ₪ להודעת WhatsApp">
           💬 0.20 ₪

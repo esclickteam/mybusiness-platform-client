@@ -48,6 +48,7 @@ import {
 import {
   AUTOMATION_BILLING_API_CODES,
   getAutomationBillingUsage,
+  normalizeAutomationBillingPublicCode,
   type AutomationBillingUsageOverview,
 } from "../../../../api/automationBillingApi";
 import {
@@ -66,6 +67,13 @@ import {
   formatHeIls,
   resolveWhatsAppUnitPriceIls,
 } from "../whatsapp/billing/whatsappBillingFormat";
+import ScheduleTriggerFields from "./ScheduleTriggerFields";
+import AutomationUsageEstimatePanel from "./AutomationUsageEstimatePanel";
+import {
+  defaultScheduleConfig,
+  normalizeScheduleConfig,
+  type AutomationScheduleConfig,
+} from "./automationSchedule";
 import {
   getWhatsAppIntegrationStatus,
   listApprovedWhatsAppTemplates,
@@ -870,6 +878,29 @@ function EditorInner({
     return String(triggerNode?.data?.triggerKey || "");
   }, [nodes]);
 
+  const scheduledTriggerNode = useMemo(
+    () =>
+      nodes.find(
+        (node) =>
+          node.type === "trigger" &&
+          String(node.data?.triggerKey || "") === "scheduled"
+      ) || null,
+    [nodes]
+  );
+
+  const isScheduledTrigger = Boolean(scheduledTriggerNode);
+
+  const scheduledConfig = useMemo(() => {
+    if (!scheduledTriggerNode) return null;
+    return (
+      normalizeScheduleConfig(
+        (scheduledTriggerNode.data?.schedule as
+          | Partial<AutomationScheduleConfig>
+          | undefined) || {}
+      ) || defaultScheduleConfig()
+    );
+  }, [scheduledTriggerNode]);
+
   const selectedTriggerOption = useMemo(
     () => findTriggerOption(triggerCatalog, selectedTriggerKey),
     [triggerCatalog, selectedTriggerKey]
@@ -1227,6 +1258,12 @@ function EditorInner({
     }
   };
 
+  useEffect(() => {
+    if (!isScheduledTrigger || !businessId) return;
+    void refreshBillingUsage();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isScheduledTrigger, businessId]);
+
   const openBillingGateModal = (mode: "pick" | "manage") => {
     setBillingModalMode(mode);
     setShowBillingModal(true);
@@ -1250,21 +1287,22 @@ function EditorInner({
       openWhatsAppBillingGateModal();
       return true;
     }
-    if (code === AUTOMATION_BILLING_API_CODES.PLAN_REQUIRED) {
+    const normalized = normalizeAutomationBillingPublicCode(code);
+    if (normalized === AUTOMATION_BILLING_API_CODES.PLAN_REQUIRED) {
       const msg = "כדי להפעיל אוטומציה יש לבחור חבילת פעולות";
       setPublishError(msg);
       toast.error(msg);
       openBillingGateModal("pick");
       return true;
     }
-    if (code === AUTOMATION_BILLING_API_CODES.QUOTA_EXHAUSTED) {
+    if (normalized === AUTOMATION_BILLING_API_CODES.QUOTA_EXHAUSTED) {
       const msg = "מכסת הפעולות החודשית נוצלה — יש לשדרג את החבילה";
       setPublishError(msg);
       toast.error(msg);
       openBillingGateModal("manage");
       return true;
     }
-    if (code === AUTOMATION_BILLING_API_CODES.BILLING_BLOCKED) {
+    if (normalized === AUTOMATION_BILLING_API_CODES.BILLING_BLOCKED) {
       const msg = "לא ניתן להפעיל אוטומציות עקב מצב התשלום של החבילה";
       setPublishError(msg);
       toast.error(msg);
@@ -1499,6 +1537,24 @@ function EditorInner({
             <strong>הפרסום נכשל</strong>
             <span>{publishError}</span>
           </div>
+        ) : null}
+
+        {isScheduledTrigger ? (
+          <AutomationUsageEstimatePanel
+            nodes={nodes}
+            edges={edges}
+            schedule={scheduledConfig}
+            planLimit={
+              billingUsage?.usage?.limit ??
+              billingUsage?.plan?.actionLimit ??
+              billingUsage?.plan?.executionLimit ??
+              null
+            }
+            planName={
+              billingUsage?.plan?.nameHe || billingUsage?.plan?.name || null
+            }
+            onOpenPlans={() => openBillingGateModal("manage")}
+          />
         ) : null}
 
         {testOpen ? (
@@ -1756,6 +1812,14 @@ function EditorInner({
                         updateSelectedData({
                           triggerKey: opt.key,
                           label: opt.label,
+                          ...(opt.key === "scheduled"
+                            ? {
+                                schedule:
+                                  (selectedNode.data?.schedule as
+                                    | Partial<AutomationScheduleConfig>
+                                    | undefined) || defaultScheduleConfig(),
+                              }
+                            : {}),
                         });
                       }}
                     >
@@ -1816,6 +1880,17 @@ function EditorInner({
                       )?.requiredConnection
                     }
                   </p>
+                ) : null}
+                {String(selectedNode.data?.triggerKey || "") === "scheduled" ? (
+                  <ScheduleTriggerFields
+                    value={
+                      (selectedNode.data?.schedule as
+                        | Partial<AutomationScheduleConfig>
+                        | undefined) || defaultScheduleConfig()
+                    }
+                    disabled={readOnly}
+                    onChange={(schedule) => updateSelectedData({ schedule })}
+                  />
                 ) : null}
                 <label>
                   כמה תוצאות יחד מהטריגר
