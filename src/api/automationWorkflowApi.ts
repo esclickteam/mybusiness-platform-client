@@ -253,6 +253,7 @@ export async function publishAutomationWorkflow(
     version: data?.version,
     errors: data?.errors as string[] | undefined,
     warnings: data?.warnings as string[] | undefined,
+    code: typeof data?.code === "string" ? data.code : undefined,
   };
 }
 

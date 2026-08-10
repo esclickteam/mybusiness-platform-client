@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Link, useNavigate, useOutletContext } from "react-router-dom";
+import { Link, useNavigate, useOutletContext, useSearchParams } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Loader2, Plus, Search, Workflow } from "lucide-react";
 import {
@@ -15,6 +15,11 @@ import {
   type AutomationStats,
   type AutomationWorkflow,
 } from "../../../../api/automationWorkflowApi";
+import {
+  AUTOMATION_BILLING_API_CODES,
+  readAutomationBillingErrorCode,
+  reactivateAutomationPlan,
+} from "../../../../api/automationBillingApi";
 import AutomationsWorkflowList from "./AutomationsWorkflowList";
 import CreateAutomationModal from "./CreateAutomationModal";
 import {
@@ -24,6 +29,11 @@ import {
   type WorkflowSortKey,
   type WorkflowStatusFilter,
 } from "./automationUiHelpers";
+import AutomationUsageCard from "./billing/AutomationUsageCard";
+import AutomationPlanModal from "./billing/AutomationPlanModal";
+import AutomationCancelConfirmModal from "./billing/AutomationCancelConfirmModal";
+import AutomationCheckoutProcessing from "./billing/AutomationCheckoutProcessing";
+import { useAutomationBilling } from "./billing/useAutomationBilling";
 
 type OutletCtx = {
   businessId: string | null;
@@ -46,6 +56,7 @@ const SORT_OPTIONS: Array<{ value: WorkflowSortKey; label: string }> = [
 
 export default function AutomationsHomePage() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { businessId, readOnly } = useOutletContext<OutletCtx>();
   const [loading, setLoading] = useState(true);
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -54,6 +65,18 @@ export default function AutomationsHomePage() {
   const [query, setQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<WorkflowStatusFilter>("all");
   const [sort, setSort] = useState<WorkflowSortKey>("updated");
+  const [planModalOpen, setPlanModalOpen] = useState(false);
+  const [planModalMode, setPlanModalMode] = useState<"pick" | "manage">("pick");
+  const [cancelModalOpen, setCancelModalOpen] = useState(false);
+  const [checkoutProcessingOpen, setCheckoutProcessingOpen] = useState(false);
+
+  const {
+    usage: billingUsage,
+    loading: billingLoading,
+    error: billingError,
+    refresh: refreshBilling,
+    setUsage: setBillingUsage,
+  } = useAutomationBilling(businessId);
 
   const writeBlockedTitle = readOnly
     ? AUTOMATION_PREVIEW_ACTION_TOOLTIP
@@ -79,6 +102,37 @@ export default function AutomationsHomePage() {
   useEffect(() => {
     void load();
   }, [load]);
+
+  useEffect(() => {
+    const flag = searchParams.get("automationBilling");
+    if (!flag) return;
+    if (flag === "processing") {
+      setCheckoutProcessingOpen(true);
+    } else if (flag === "cancel") {
+      toast.info("התשלום בוטל — ניתן לבחור חבילה מחדש בכל עת.");
+    }
+    const next = new URLSearchParams(searchParams);
+    next.delete("automationBilling");
+    setSearchParams(next, { replace: true });
+  }, [searchParams, setSearchParams]);
+
+  const openPlanModal = (mode: "pick" | "manage") => {
+    setPlanModalMode(mode);
+    setPlanModalOpen(true);
+  };
+
+  const handleReactivate = async () => {
+    if (!businessId) return;
+    try {
+      await reactivateAutomationPlan(businessId);
+      toast.success("הביטול בוטל והחבילה תמשיך כרגיל.");
+      await refreshBilling();
+    } catch (error: unknown) {
+      toast.error(
+        readAutomationErrorMessage(error, "לא הצלחנו להשאיר את החבילה פעילה")
+      );
+    }
+  };
 
   const visibleWorkflows = useMemo(() => {
     const filtered = workflows.filter((workflow) => {
@@ -130,6 +184,22 @@ export default function AutomationsHomePage() {
       );
       toast.success("סטטוס האוטומציה עודכן");
     } catch (error: unknown) {
+      const code = readAutomationBillingErrorCode(error);
+      if (code === AUTOMATION_BILLING_API_CODES.PLAN_REQUIRED) {
+        toast.error("כדי להפעיל אוטומציה יש לבחור חבילת הרצות");
+        openPlanModal("pick");
+        return;
+      }
+      if (
+        code === AUTOMATION_BILLING_API_CODES.QUOTA_EXHAUSTED ||
+        code === AUTOMATION_BILLING_API_CODES.BILLING_BLOCKED
+      ) {
+        toast.error(
+          readAutomationErrorMessage(error, "לא ניתן לעדכן את האוטומציה")
+        );
+        openPlanModal("manage");
+        return;
+      }
       toast.error(
         readAutomationErrorMessage(error, "לא ניתן לעדכן את האוטומציה")
       );
@@ -222,6 +292,21 @@ export default function AutomationsHomePage() {
         </div>
       ) : null}
 
+      {businessId ? (
+        <AutomationUsageCard
+          businessId={businessId}
+          usage={billingUsage}
+          loading={billingLoading}
+          error={billingError}
+          onRetry={() => void refreshBilling()}
+          onOpenPlans={(reason) =>
+            openPlanModal(reason === "manage" ? "manage" : "pick")
+          }
+          onOpenManage={() => openPlanModal("manage")}
+          onReactivate={() => void handleReactivate()}
+        />
+      ) : null}
+
       <div className="ax-toolbar">
         <label className="ax-search">
           <Search size={15} />
@@ -309,6 +394,43 @@ export default function AutomationsHomePage() {
         readOnly={readOnly}
         onClose={() => setShowCreateModal(false)}
       />
+
+      {businessId ? (
+        <>
+          <AutomationPlanModal
+            open={planModalOpen}
+            businessId={businessId}
+            usage={billingUsage}
+            initialMode={planModalMode}
+            onClose={() => setPlanModalOpen(false)}
+            onUsageUpdated={async () => { await refreshBilling(); }}
+            onOpenCancel={() => {
+              setPlanModalOpen(false);
+              setCancelModalOpen(true);
+            }}
+          />
+          <AutomationCancelConfirmModal
+            open={cancelModalOpen}
+            businessId={businessId}
+            usage={billingUsage}
+            onClose={() => setCancelModalOpen(false)}
+            onCancelled={() => {
+              setCancelModalOpen(false);
+              void refreshBilling();
+            }}
+          />
+          <AutomationCheckoutProcessing
+            open={checkoutProcessingOpen}
+            businessId={businessId}
+            onDone={(usage) => {
+              setBillingUsage(usage);
+              setCheckoutProcessingOpen(false);
+              void refreshBilling();
+            }}
+            onClose={() => setCheckoutProcessingOpen(false)}
+          />
+        </>
+      ) : null}
     </div>
   );
 }
