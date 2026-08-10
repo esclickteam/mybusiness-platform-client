@@ -49,7 +49,7 @@ export function PushEmptyStateUpsell({
       </button>
 
       <p className="mt-2 text-[10px] font-semibold text-slate-400">
-        {trialEligible ? "או 19 ₪ לחודש בחיוב שנתי" : "או 228 ₪ לשנה"}
+        {trialEligible ? "או 228 ₪ לשנה (19 ₪ לחודש)" : "או 228 ₪ לשנה"}
       </p>
     </div>
   );
@@ -127,16 +127,18 @@ export function PushBellDiscoverChip({
           : "גילוי Push למכשיר"
       }
       className={[
-        "absolute -bottom-1 z-[1] inline-flex max-w-[5.5rem] items-center justify-center truncate rounded-full",
+        "absolute -bottom-1 z-[1] inline-flex max-w-[6.75rem] items-center justify-center truncate rounded-full",
         "border border-sky-200 bg-sky-50 px-1.5 py-0.5 text-[9px] font-black leading-none text-sky-700 shadow-sm",
         "transition hover:bg-sky-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300",
-        "start-[-0.35rem] sm:max-w-none sm:px-2",
+        "start-[-0.35rem] sm:max-w-[9.5rem] sm:px-2",
       ].join(" ")}
       data-testid="push-bell-chip"
     >
-      <span className="sm:hidden">Push</span>
+      <span className="sm:hidden">
+        {trialEligible ? "Push • 7י" : "Push"}
+      </span>
       <span className="hidden sm:inline">
-        {trialEligible ? "7 ימים חינם" : "Push"}
+        {trialEligible ? "Push • 7 ימים חינם" : "Push"}
       </span>
     </button>
   );
