@@ -58,6 +58,7 @@ import AutomationCancelConfirmModal from "./billing/AutomationCancelConfirmModal
 import {
   getWhatsAppIntegrationStatus,
   listApprovedWhatsAppTemplates,
+  syncWhatsAppTemplatesForAutomation,
   type ApprovedWhatsAppTemplate,
   type WhatsAppVariableMapping,
 } from "../../../../api/whatsappApi";
@@ -77,6 +78,7 @@ import {
   type GoogleCalendarStatusResponse,
 } from "../../../../api/googleCalendarApi";
 import { isTestTemplateName } from "./whatsappAutomationMetaTemplates";
+import { WhatsAppAutomationTemplateSelect } from "./WhatsAppAutomationTemplateSelect";
 
 const WA_MAPPING_PRESETS = [
   { key: "lead:name", source: "lead", field: "name", label: "שם הליד" },
@@ -522,7 +524,7 @@ function EditorInner({
           senderMode: "bizuply_managed",
         }),
         listApprovedWhatsAppTemplates(businessId, {
-          senderMode: "bizuply_managed",
+          usableForAutomation: true,
         }),
       ]);
       setWaConnected(Boolean(status.connected || approved.connected));
@@ -557,11 +559,45 @@ function EditorInner({
       }
     } catch (error: unknown) {
       setWaTemplates([]);
-      setWaSyncError(readErrorMessage(error, "לא הצלחנו לטעון תבניות WhatsApp"));
+      setWaSyncError(readErrorMessage(error, "לא הצלחנו לטעון את תבניות WhatsApp"));
     } finally {
       setWaLoading(false);
     }
   }, [businessId]);
+
+  const refreshWhatsAppTemplatesFromMeta = useCallback(async () => {
+    setWaLoading(true);
+    setWaSyncError("");
+    try {
+      const synced = await syncWhatsAppTemplatesForAutomation(businessId);
+      setWaConnected(Boolean(synced.connected));
+      setWaLastSyncAt(synced.lastTemplatesSyncAt || null);
+      setWaTemplates(synced.templates || []);
+      if (!synced.connected) {
+        setWaSyncError(
+          synced.customerUnavailableMessage ||
+            synced.message ||
+            "שירות WhatsApp אינו זמין כרגע. יש לפנות לתמיכה."
+        );
+      } else if (synced.sync?.errors?.length) {
+        setWaSyncError(
+          synced.sync.errors
+            .map((row) => row.message || row.code || "")
+            .filter(Boolean)
+            .join(" · ")
+        );
+      }
+    } catch (error: unknown) {
+      setWaSyncError(
+        readErrorMessage(error, "לא הצלחנו לטעון את תבניות WhatsApp")
+      );
+      // Keep existing templates on sync failure; still try a list refetch.
+      await loadApprovedWhatsAppTemplates();
+      return;
+    } finally {
+      setWaLoading(false);
+    }
+  }, [businessId, loadApprovedWhatsAppTemplates]);
 
   useEffect(() => {
     void loadApprovedWhatsAppTemplates();
@@ -2110,12 +2146,12 @@ function EditorInner({
                         type="button"
                         className="af-toolbar__btn"
                         disabled={waLoading || readOnly}
-                        onClick={() => void loadApprovedWhatsAppTemplates()}
+                        onClick={() => void refreshWhatsAppTemplatesFromMeta()}
                       >
                         {waLoading ? (
                           <>
                             <Loader2 size={14} className="af-spin" />
-                            טוען תבניות...
+                            תבניות נטענות...
                           </>
                         ) : (
                           "רענון תבניות"
@@ -2123,25 +2159,25 @@ function EditorInner({
                       </button>
                     </div>
 
-                    {waLoading ? (
+                    {waLoading && waTemplates.length === 0 ? (
                       <p className="af-wa-template__state">
-                        טוען תבניות מאושרות...
+                        תבניות נטענות...
                       </p>
                     ) : !waConnected ? (
                       <div className="af-wa-template__state af-wa-template__state--error">
                         <p>
                           {waManagedModeEnabled
                             ? waSyncError ||
-                              "שירות WhatsApp אינו זמין כרגע. יש לפנות לתמיכה."
+                              "לא הצלחנו לטעון את תבניות WhatsApp"
                             : "יש לחבר WhatsApp Business של העסק — המצב המנוהל כבוי כרגע."}
                         </p>
                         {waManagedModeEnabled ? (
                           <button
                             type="button"
                             className="af-toolbar__btn"
-                            onClick={() => void loadApprovedWhatsAppTemplates()}
+                            onClick={() => void refreshWhatsAppTemplatesFromMeta()}
                           >
-                            נסיון חוזר
+                            נסו שוב
                           </button>
                         ) : (
                           <a
@@ -2154,31 +2190,56 @@ function EditorInner({
                       </div>
                     ) : waSyncError && waTemplates.length === 0 ? (
                       <div className="af-wa-template__state af-wa-template__state--error">
-                        <p>{waSyncError}</p>
+                        <p>{waSyncError || "לא הצלחנו לטעון את תבניות WhatsApp"}</p>
                         <button
                           type="button"
                           className="af-toolbar__btn"
-                          onClick={() => void loadApprovedWhatsAppTemplates()}
+                          onClick={() => void refreshWhatsAppTemplatesFromMeta()}
                         >
-                          נסיון חוזר
+                          נסו שוב
                         </button>
                       </div>
-                    ) : waTemplates.length === 0 ? (
-                      <p className="af-wa-template__state">
-                        לא נמצאו תבניות מאושרות בקטלוג המנוהל של BizUply
-                      </p>
+                    ) : waTemplates.filter(
+                        (tpl) =>
+                          !tpl.isTestTemplate &&
+                          tpl.automationSendable !== false &&
+                          !isTestTemplateName(String(tpl.metaTemplateName || ""))
+                      ).length === 0 ? (
+                      <div className="af-wa-template__state">
+                        <p>אין תבניות WhatsApp מאושרות זמינות</p>
+                        <p className="af-wa-template__state-secondary">
+                          לאחר אישור תבנית ב-Meta, רעננו את הרשימה.
+                        </p>
+                        <button
+                          type="button"
+                          className="af-toolbar__btn"
+                          disabled={waLoading || readOnly}
+                          onClick={() => void refreshWhatsAppTemplatesFromMeta()}
+                        >
+                          רענון תבניות
+                        </button>
+                      </div>
                     ) : (
                       <>
-                        <label>
+                        <label className="af-wa-template__picker-label">
                           בחירת תבנית
-                          <select
+                          <WhatsAppAutomationTemplateSelect
+                            templates={waTemplates}
                             value={String(selectedNode.data?.templateId || "")}
                             disabled={readOnly}
-                            onChange={(e) => {
-                              const tpl =
-                                waTemplates.find(
-                                  (row) => row._id === e.target.value
-                                ) || null;
+                            loading={waLoading}
+                            savedMeta={{
+                              templateId: String(
+                                selectedNode.data?.templateId || ""
+                              ),
+                              metaTemplateName: String(
+                                selectedNode.data?.metaTemplateName || ""
+                              ),
+                              language: String(
+                                selectedNode.data?.language || ""
+                              ),
+                            }}
+                            onChange={(tpl) => {
                               if (!tpl) {
                                 updateSelectedData({
                                   templateId: "",
@@ -2189,7 +2250,6 @@ function EditorInner({
                                 });
                                 return;
                               }
-                              // Rebuild strictly from Meta template variables.
                               const componentMappings =
                                 buildMappingsFromTemplate(tpl, []);
                               const isBusinessAlert =
@@ -2218,31 +2278,7 @@ function EditorInner({
                                     ),
                               });
                             }}
-                          >
-                            <option value="">בחרו תבנית</option>
-                            {waTemplates
-                              .filter(
-                                (tpl) =>
-                                  !tpl.isTestTemplate &&
-                                  !isTestTemplateName(
-                                    String(tpl.metaTemplateName || "")
-                                  )
-                              )
-                              .map((tpl) => (
-                              <option key={tpl._id} value={tpl._id}>
-                                {(tpl.friendlyName || tpl.name) +
-                                  (tpl.isTestTemplate
-                                    ? " · תבנית בדיקה"
-                                    : "") +
-                                  ` · ${tpl.metaTemplateName} · ${
-                                    tpl.displaySecondary ||
-                                    `${tpl.languageLabelHe || tpl.language} · ${
-                                      tpl.categoryLabelHe || ""
-                                    } · מאושרת`
-                                  }`}
-                              </option>
-                            ))}
-                          </select>
+                          />
                         </label>
 
                         {(() => {
@@ -2256,7 +2292,9 @@ function EditorInner({
                           return (
                             <div className="af-wa-template__meta" dir="rtl">
                               <strong>
-                                {selectedTpl.friendlyName || selectedTpl.name}
+                                {selectedTpl.displayName ||
+                                  selectedTpl.friendlyName ||
+                                  selectedTpl.name}
                               </strong>
                               <code dir="ltr">
                                 {selectedTpl.metaTemplateName}
@@ -2265,7 +2303,7 @@ function EditorInner({
                                 {selectedTpl.displaySecondary ||
                                   `${selectedTpl.languageLabelHe || selectedTpl.language} · ${
                                     selectedTpl.categoryLabelHe || ""
-                                  } · מאושרת`}
+                                  }`}
                               </span>
                               {selectedTpl.isTestTemplate ? (
                                 <em>תבנית בדיקה</em>
