@@ -112,34 +112,39 @@ export function PushBellDiscoverChip({
   return (
     <button
       type="button"
+      dir="rtl"
       onClick={(event) => {
         event.stopPropagation();
         onOpenPushSettings();
       }}
       aria-label={
         trialEligible
-          ? "גילוי Push למכשיר — 7 ימים חינם"
+          ? "7 ימים של התראות Push חינם"
           : "גילוי Push למכשיר"
       }
       title={
         trialEligible
-          ? "גילוי Push למכשיר — 7 ימים חינם"
+          ? "7 ימים של התראות Push חינם"
           : "גילוי Push למכשיר"
       }
       className={[
-        "absolute -bottom-1 z-[1] inline-flex max-w-[6.75rem] items-center justify-center truncate rounded-full",
+        "absolute -bottom-1 z-[1] inline-flex max-w-[7.5rem] items-center justify-center truncate rounded-full",
         "border border-sky-200 bg-sky-50 px-1.5 py-0.5 text-[9px] font-black leading-none text-sky-700 shadow-sm",
         "transition hover:bg-sky-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300",
-        "start-[-0.35rem] sm:max-w-[9.5rem] sm:px-2",
+        "start-[-0.55rem] sm:max-w-[12.5rem] sm:px-2",
       ].join(" ")}
       data-testid="push-bell-chip"
     >
-      <span className="sm:hidden">
-        {trialEligible ? "Push • 7י" : "Push"}
-      </span>
-      <span className="hidden sm:inline">
-        {trialEligible ? "Push • 7 ימים חינם" : "Push"}
-      </span>
+      {trialEligible ? (
+        <>
+          <span className="sm:hidden">7י׳ Push חינם</span>
+          <span className="hidden sm:inline">
+            7 ימים של התראות Push חינם
+          </span>
+        </>
+      ) : (
+        <span>Push</span>
+      )}
     </button>
   );
 }

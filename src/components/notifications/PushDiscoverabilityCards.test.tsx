@@ -84,4 +84,32 @@ describe("PushDiscoverabilityCards", () => {
     fireEvent.click(chip);
     expect(onOpen).toHaveBeenCalledTimes(1);
   });
+
+  it("renders Hebrew trial badge copy in RTL without inverted Push marker", () => {
+    render(
+      <div className="relative">
+        <PushBellDiscoverChip trialEligible onOpenPushSettings={() => {}} />
+      </div>
+    );
+    const chip = screen.getByTestId("push-bell-chip");
+    expect(chip).toHaveAttribute("dir", "rtl");
+    expect(chip).toHaveAttribute("aria-label", "7 ימים של התראות Push חינם");
+    expect(chip.textContent || "").toContain("7 ימים של התראות Push חינם");
+    expect(chip.textContent || "").not.toContain("Push • 7 ימים חינם");
+  });
+
+  it("trial-used chip shows Push only without free-trial wording", () => {
+    render(
+      <div className="relative">
+        <PushBellDiscoverChip
+          trialEligible={false}
+          onOpenPushSettings={() => {}}
+        />
+      </div>
+    );
+    const chip = screen.getByTestId("push-bell-chip");
+    expect(chip).toHaveTextContent("Push");
+    expect(chip.textContent || "").not.toContain("7 ימים");
+    expect(chip.textContent || "").not.toContain("חינם");
+  });
 });
