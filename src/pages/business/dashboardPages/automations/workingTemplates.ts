@@ -10,6 +10,10 @@ import type {
   WhatsAppTemplate,
 } from "../../../../api/whatsappApi";
 import type { TemplateCategoryId } from "./templateCategoryMapping";
+import {
+  BLUEPRINT_PREFERRED_META,
+  isTestTemplateName,
+} from "./whatsappAutomationMetaTemplates";
 
 export type WorkingEngine = "whatsapp_simple" | "workflow_recipe" | "workflow_graph";
 
@@ -33,6 +37,8 @@ export type WorkingTemplate = {
   delayDays?: number;
   waCategory?: WhatsAppTemplate["category"];
   waHints?: string[];
+  waPreferredMetaName?: string;
+  allowBusinessAlert?: boolean;
   // Workflow recipe engine
   recipeKey?: string;
   // Workflow graph engine
@@ -256,6 +262,10 @@ export function buildWhatsAppSimpleGraph(
       senderMode: "bizuply_managed",
       blueprintKey: template.key,
       blueprintTrigger: template.whatsappTrigger || "",
+      recipientType:
+        template.waPreferredMetaName === "new_lead_received"
+          ? "business_owner"
+          : "lead_phone",
     },
   });
   edges.push({
@@ -288,6 +298,21 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
     delayMinutes: 5,
     waCategory: "welcome",
     waHints: ["welcome", "new_lead", "ליד"],
+  },
+  {
+    key: "wa_new_lead_owner_alert",
+    rank: 1,
+    name: "ליד חדש → התראת WhatsApp לבעל העסק",
+    description: "ליד נכנס ל-CRM → התראה פנימית ב-WhatsApp לבעל העסק.",
+    triggerLabel: "ליד חדש ב-CRM",
+    resultLabels: ["התראת WhatsApp לבעל העסק"],
+    categories: ["leads", "whatsapp", "crm"],
+    engine: "whatsapp_simple",
+    whatsappTrigger: "new_lead_welcome",
+    waCategory: "custom",
+    waPreferredMetaName: "new_lead_received",
+    waHints: ["new_lead_received"],
+    allowBusinessAlert: true,
   },
   {
     key: "wa_appointment_reminder_1_day",
@@ -1081,6 +1106,14 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
   },
 ];
 
+for (const template of WORKING_TEMPLATES) {
+  template.waPreferredMetaName =
+    BLUEPRINT_PREFERRED_META[template.key] || template.waPreferredMetaName;
+  if (template.waPreferredMetaName) {
+    template.waHints = [template.waPreferredMetaName];
+  }
+}
+
 export type TemplateReadiness = {
   ready: boolean;
   blocker?: string;
@@ -1141,9 +1174,29 @@ export function listUsableWaTemplates(
 
 export function pickBestWaTemplate(
   templates: Array<WhatsAppTemplate | ApprovedWhatsAppTemplate>,
-  opts: { category?: string; hints?: string[] }
+  opts: {
+    category?: string;
+    hints?: string[];
+    preferredMetaName?: string;
+    allowBusinessAlert?: boolean;
+  }
 ): { id: string; name: string } | null {
-  const usable = listUsableWaTemplates(templates);
+  const usable = listUsableWaTemplates(templates).filter((tpl) => {
+    const metaName = String(
+      (tpl as WhatsAppTemplate).metaTemplateName || ""
+    ).toLowerCase();
+    if (
+      isTestTemplateName(metaName) ||
+      (tpl as ApprovedWhatsAppTemplate).isTestTemplate
+    ) {
+      return false;
+    }
+    return (
+      metaName !== "new_lead_received" ||
+      opts.preferredMetaName === "new_lead_received" ||
+      opts.allowBusinessAlert === true
+    );
+  });
   if (!usable.length) return null;
 
   const hints = (opts.hints || []).map((h) => h.toLowerCase());
@@ -1164,6 +1217,11 @@ export function pickBestWaTemplate(
     const metaName = String(
       (tpl as WhatsAppTemplate).metaTemplateName || ""
     ).toLowerCase();
+    if (
+      metaName === String(opts.preferredMetaName || "").toLowerCase()
+    ) {
+      points += 10000;
+    }
     for (const hint of hints) {
       if (hay.includes(hint)) points += 3;
       if (metaName && metaName.includes(hint)) points += 4;
@@ -1269,6 +1327,8 @@ export function getTemplateReadiness(
     const picked = pickBestWaTemplate(ctx.waTemplates, {
       category: template.waCategory,
       hints: template.waHints,
+      preferredMetaName: template.waPreferredMetaName,
+      allowBusinessAlert: template.allowBusinessAlert,
     });
     if (!picked) {
       return {
@@ -1310,6 +1370,8 @@ export function getTemplateReadiness(
     const picked = pickBestWaTemplate(ctx.waTemplates, {
       category: template.waCategory,
       hints: template.waHints,
+      preferredMetaName: template.waPreferredMetaName,
+      allowBusinessAlert: template.allowBusinessAlert,
     });
     if (!picked) {
       return {

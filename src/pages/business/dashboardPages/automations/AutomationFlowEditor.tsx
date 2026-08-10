@@ -76,6 +76,7 @@ import {
   getGoogleCalendarStatus,
   type GoogleCalendarStatusResponse,
 } from "../../../../api/googleCalendarApi";
+import { isTestTemplateName } from "./whatsappAutomationMetaTemplates";
 
 const WA_MAPPING_PRESETS = [
   { key: "lead:name", source: "lead", field: "name", label: "שם הליד" },
@@ -111,6 +112,19 @@ const WA_MAPPING_PRESETS = [
 
 /** Labels for Meta positional variables (not injected system fields). */
 const WA_VARIABLE_LABELS: Record<string, Record<string, string>> = {
+  appointment_reminder: {
+    "1": "שם הלקוח",
+    "2": "זמן עד הפגישה",
+    "3": "שעת הפגישה",
+    "4": "שירות",
+  },
+  appointment_thanks: { "1": "שם הלקוח", "2": "שירות" },
+  appointment_review: { "1": "שם הלקוח", "2": "שירות" },
+  new_lead_welcome: { "1": "שם הליד" },
+  lead_follow_up: { "1": "שם הליד" },
+  lead_follow_up_2: { "1": "שם הליד" },
+  new_client_welcome: { "1": "שם הלקוח" },
+  inactive_client: { "1": "שם הלקוח" },
   new_lead_received: {
     "1": "שם הליד",
     "2": "טלפון הליד",
@@ -122,6 +136,25 @@ const WA_DEFAULT_MAPPINGS: Record<
   string,
   Record<string, { source: string; field: string }>
 > = {
+  appointment_reminder: {
+    "1": { source: "appointment", field: "clientSnapshot.name" },
+    "2": { source: "system", field: "relativeTime" },
+    "3": { source: "appointment", field: "time" },
+    "4": { source: "appointment", field: "serviceName" },
+  },
+  appointment_thanks: {
+    "1": { source: "appointment", field: "clientSnapshot.name" },
+    "2": { source: "appointment", field: "serviceName" },
+  },
+  appointment_review: {
+    "1": { source: "appointment", field: "clientSnapshot.name" },
+    "2": { source: "appointment", field: "serviceName" },
+  },
+  new_lead_welcome: { "1": { source: "lead", field: "name" } },
+  lead_follow_up: { "1": { source: "lead", field: "name" } },
+  lead_follow_up_2: { "1": { source: "lead", field: "name" } },
+  new_client_welcome: { "1": { source: "contact", field: "fullName" } },
+  inactive_client: { "1": { source: "contact", field: "fullName" } },
   new_lead_received: {
     "1": { source: "lead", field: "name" },
     "2": { source: "lead", field: "phone" },
@@ -2187,7 +2220,15 @@ function EditorInner({
                             }}
                           >
                             <option value="">בחרו תבנית</option>
-                            {waTemplates.map((tpl) => (
+                            {waTemplates
+                              .filter(
+                                (tpl) =>
+                                  !tpl.isTestTemplate &&
+                                  !isTestTemplateName(
+                                    String(tpl.metaTemplateName || "")
+                                  )
+                              )
+                              .map((tpl) => (
                               <option key={tpl._id} value={tpl._id}>
                                 {(tpl.friendlyName || tpl.name) +
                                   (tpl.isTestTemplate

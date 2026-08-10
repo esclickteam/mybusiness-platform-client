@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
-  Link,
   useNavigate,
   useOutletContext,
   useSearchParams,
@@ -40,10 +39,6 @@ import {
   type WhatsAppTemplate,
 } from "../../../../api/whatsappApi";
 import { readAutomationErrorMessage } from "./automationUiHelpers";
-import {
-  listRequiredWhatsAppMessageTemplates,
-  type RequiredWhatsAppMessageTemplateStatus,
-} from "./systemAutomationCatalog";
 import { TEMPLATE_CATEGORIES, type TemplateCategoryId } from "./templateCategoryMapping";
 import {
   WORKING_TEMPLATES,
@@ -55,6 +50,7 @@ import {
   type TemplateReadiness,
   type WorkingTemplate,
 } from "./workingTemplates";
+import { defaultMappingsForMetaTemplate } from "./whatsappAutomationMetaTemplates";
 
 type OutletCtx = {
   businessId: string | null;
@@ -95,7 +91,6 @@ export default function AutomationsTemplatesPage() {
   const [aiEntitled, setAiEntitled] = useState(false);
   const [query, setQuery] = useState("");
   const [creatingKey, setCreatingKey] = useState<string | null>(null);
-  const [showBlockedOnly, setShowBlockedOnly] = useState(false);
   const [picker, setPicker] = useState<{
     template: WorkingTemplate;
     readiness: TemplateReadiness;
@@ -222,24 +217,16 @@ export default function AutomationsTemplatesPage() {
     })).sort((a, b) => a.template.rank - b.template.rank);
   }, [ctx]);
 
-  const requiredWaMessages = useMemo<RequiredWhatsAppMessageTemplateStatus[]>(
-    () => listRequiredWhatsAppMessageTemplates(waTemplates),
-    [waTemplates]
-  );
-  const missingWaMessages = requiredWaMessages.filter((row) => !row.prepared);
-
   const visibleCards = useMemo(() => {
     const q = query.trim().toLowerCase();
     return cards.filter(({ template, readiness }) => {
       if (category !== "all" && !template.categories.includes(category)) {
         return false;
       }
-      // Coming soon / unfinished: only when explicitly showing blocked.
-      if (template.comingSoon && !showBlockedOnly) {
+      if (template.comingSoon) {
         return false;
       }
-      if (showBlockedOnly && readiness.ready) return false;
-      if (!showBlockedOnly && !readiness.ready) {
+      if (!readiness.ready) {
         // Keep WhatsApp-facing blueprints visible so users can see blockers/CTA
         if (!(category === "whatsapp" && isWhatsAppFacingTemplate(template))) {
           return false;
@@ -256,7 +243,7 @@ export default function AutomationsTemplatesPage() {
         .toLowerCase()
         .includes(q);
     });
-  }, [cards, category, query, showBlockedOnly]);
+  }, [cards, category, query]);
 
   const categoryCards = useMemo(
     () =>
@@ -267,8 +254,6 @@ export default function AutomationsTemplatesPage() {
     [cards, category]
   );
   const readyCount = categoryCards.filter((c) => c.readiness.ready).length;
-  const showWaChecklist =
-    category === "all" || category === "whatsapp" || category === "appointments";
 
   const activateWhatsAppAsWorkflow = async (
     template: WorkingTemplate,
@@ -310,6 +295,18 @@ export default function AutomationsTemplatesPage() {
             language: String((selectedTpl as WhatsAppTemplate)?.language || ""),
             blueprintKey: template.key,
             blueprintTrigger: template.whatsappTrigger || "",
+            componentMappings: defaultMappingsForMetaTemplate(
+              String(
+                (selectedTpl as WhatsAppTemplate)?.metaTemplateName ||
+                  selectedTpl?.name ||
+                  ""
+              )
+            ),
+            recipientType:
+              String((selectedTpl as WhatsAppTemplate)?.metaTemplateName || "") ===
+              "new_lead_received"
+                ? "business_owner"
+                : "lead_phone",
           },
         };
       }
@@ -586,105 +583,16 @@ export default function AutomationsTemplatesPage() {
             </button>
           ))}
         </div>
-        <label className="ax-templates__toggle">
-          <input
-            type="checkbox"
-            checked={showBlockedOnly}
-            onChange={(e) => setShowBlockedOnly(e.target.checked)}
-          />
-          הצג מה שעדיין לא מוכן
-        </label>
       </div>
-
-      {showWaChecklist ? (
-        <div className="ax-wa-checklist" role="region" aria-label="תבניות WhatsApp להכנה">
-          <div className="ax-wa-checklist__head">
-            <strong>תבניות WhatsApp מאושרות להפעלה</strong>
-            <p>
-              כל כרטיס אוטומציה הוא blueprint בלבד — בהפעלה בוחרים תבנית Meta
-              מאושרת מהקטלוג של העסק. מאושרות כרגע: {waTemplates.length}.
-              {!managedWaReady
-                ? managedModeEnabled
-                  ? " שירות WhatsApp אינו זמין כרגע."
-                  : " WhatsApp Business עדיין לא מוכן לשליחה."
-                : ""}
-            </p>
-          </div>
-          {!managedWaReady && businessId && !managedModeEnabled ? (
-            <Link
-              className="ax-btn ax-btn--primary"
-              to={`/business/${businessId}/dashboard/whatsapp`}
-            >
-              לחיבור WhatsApp Business
-            </Link>
-          ) : null}
-          {!managedWaReady && managedModeEnabled ? (
-            <div className="ax-empty ax-empty--card" style={{ marginBottom: 12 }}>
-              <strong>WhatsApp אינו זמין</strong>
-              <p>
-                {waUnavailableMessage ||
-                  "שירות WhatsApp אינו זמין כרגע. יש לפנות לתמיכה."}
-              </p>
-            </div>
-          ) : null}
-          {managedWaReady && waTemplates.length === 0 ? (
-            <div className="ax-empty ax-empty--card" style={{ marginBottom: 12 }}>
-              <strong>אין תבניות Meta מאושרות</strong>
-              <p>
-                הכינו תבנית ב-Meta ואשרו אותה — רק אז האוטומציה תוצג כמוכנה
-                להפעלה.
-              </p>
-            </div>
-          ) : null}
-          <ul className="ax-wa-checklist__list">
-            {requiredWaMessages.map((row) => (
-              <li
-                key={row.id}
-                className={
-                  row.prepared
-                    ? "ax-wa-checklist__item ax-wa-checklist__item--ready"
-                    : "ax-wa-checklist__item"
-                }
-              >
-                <span className="ax-wa-checklist__status">
-                  {row.prepared ? "מוכנה" : "מומלץ להכין"}
-                </span>
-                <div>
-                  <em>{row.title}</em>
-                  <small>
-                    {row.reason} · שם מומלץ (לא חובה):{" "}
-                    <code>{row.suggestedMetaName}</code>
-                    {row.matchedTemplateName
-                      ? ` · מחוברת: ${row.matchedTemplateName}`
-                      : ""}
-                  </small>
-                </div>
-              </li>
-            ))}
-          </ul>
-          {businessId && missingWaMessages.length > 0 ? (
-            <Link
-              className="ax-btn ax-btn--primary"
-              to={`/business/${businessId}/dashboard/whatsapp/templates`}
-            >
-              לניהול תבניות ההודעה ({missingWaMessages.length} מומלצות חסרות)
-            </Link>
-          ) : null}
-        </div>
-      ) : null}
 
       {loading ? (
         <div className="ax-empty">
           <Loader2 className="mx-auto mb-2 h-5 w-5 animate-spin" />
-          טוען תבניות אוטומציה ותבניות WhatsApp מאושרות...
+          טוען תבניות אוטומציה...
         </div>
       ) : visibleCards.length === 0 ? (
         <div className="ax-empty ax-empty--card">
-          <strong>
-            {showBlockedOnly
-              ? "אין תבניות חסומות בקטגוריה הזו"
-              : "אין כרגע תבניות מוכנות להפעלה"}
-          </strong>
+          <strong>אין כרגע תבניות מוכנות להפעלה</strong>
           <p>נסו קטגוריה אחרת או רעננו את העמוד.</p>
           <button
             type="button"
