@@ -1251,14 +1251,14 @@ function EditorInner({
       return true;
     }
     if (code === AUTOMATION_BILLING_API_CODES.PLAN_REQUIRED) {
-      const msg = "כדי להפעיל אוטומציה יש לבחור חבילת הרצות";
+      const msg = "כדי להפעיל אוטומציה יש לבחור חבילת פעולות";
       setPublishError(msg);
       toast.error(msg);
       openBillingGateModal("pick");
       return true;
     }
     if (code === AUTOMATION_BILLING_API_CODES.QUOTA_EXHAUSTED) {
-      const msg = "מכסת ההרצות החודשית נוצלה — יש לשדרג את החבילה";
+      const msg = "מכסת הפעולות החודשית נוצלה — יש לשדרג את החבילה";
       setPublishError(msg);
       toast.error(msg);
       openBillingGateModal("manage");

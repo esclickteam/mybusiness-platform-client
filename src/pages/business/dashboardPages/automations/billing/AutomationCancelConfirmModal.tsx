@@ -122,7 +122,7 @@ export default function AutomationCancelConfirmModal({
         <h2 id={titleId}>ביטול חבילת האוטומציות</h2>
         <p>החבילה תישאר פעילה עד סוף תקופת החיוב הנוכחית.</p>
         <p>
-          לאחר מכן אוטומציות לא יוכלו להתחיל הרצות חדשות עד לבחירת חבילה חדשה.
+          לאחר מכן אוטומציות לא יוכלו להתחיל פעולות חדשות עד לבחירת חבילה חדשה.
         </p>
         {periodEnd ? (
           <p className="ax-billing-cancel__date">סוף התקופה: {periodEnd}</p>

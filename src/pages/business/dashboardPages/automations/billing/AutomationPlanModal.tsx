@@ -236,7 +236,7 @@ export default function AutomationPlanModal({
             <p>
               {hasPlan
                 ? "ניתן לשדרג מיידית או לתזמן מעבר לחבילה נמוכה יותר בחידוש הבא."
-                : "בחרו מכסת הרצות חודשית להפעלת האוטומציות בעסק."}
+                : "בחרו מכסת פעולות חודשית להפעלת האוטומציות בעסק."}
             </p>
           ) : null}
         </header>
@@ -246,7 +246,7 @@ export default function AutomationPlanModal({
             {confirm.kind === "upgrade" ? (
               <>
                 <p>
-                  המכסה תגדל ל-{formatHeNumber(confirm.plan.executionLimit)} הרצות
+                  המכסה תגדל ל-{formatHeNumber(confirm.plan.executionLimit)} פעולות
                   בחודש.
                 </p>
                 <p>השימוש שכבר בוצע החודש נשמר.</p>
@@ -257,7 +257,7 @@ export default function AutomationPlanModal({
                 <p>עד אז תמשיכו ליהנות מהמכסה הנוכחית.</p>
                 <p>
                   החבילה החדשה: {confirm.plan.name} ·{" "}
-                  {formatHeNumber(confirm.plan.executionLimit)} הרצות בחודש
+                  {formatHeNumber(confirm.plan.executionLimit)} פעולות בחודש
                 </p>
               </>
             )}
@@ -316,7 +316,7 @@ export default function AutomationPlanModal({
                       <span> ₪ / חודש</span>
                     </p>
                     <p className="ax-billing-plan__limit">
-                      {formatHeNumber(plan.executionLimit)} הרצות בחודש
+                      {formatHeNumber(plan.executionLimit)} פעולות בחודש
                     </p>
                     <button
                       type="button"
