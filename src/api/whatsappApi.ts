@@ -455,6 +455,8 @@ export async function getWhatsAppIntegrationStatus(
 }
 
 export type ApprovedWhatsAppTemplate = WhatsAppTemplate & {
+  id?: string;
+  displayName?: string;
   friendlyName?: string;
   languageLabelHe?: string;
   categoryLabelHe?: string;
@@ -464,21 +466,35 @@ export type ApprovedWhatsAppTemplate = WhatsAppTemplate & {
   isTestTemplate?: boolean;
   testLabelHe?: string;
   wabaId?: string;
+  catalogSource?: "managed" | "tenant" | string;
+  automationSendable?: boolean;
+  components?: unknown[];
 };
 
 /** Approved Meta templates. Default senderMode=bizuply_managed (BizUply catalog). */
 export async function listApprovedWhatsAppTemplates(
   businessId: string,
-  opts?: { senderMode?: WhatsAppSenderMode }
+  opts?: {
+    senderMode?: WhatsAppSenderMode;
+    usableForAutomation?: boolean;
+  }
 ) {
+  const usableForAutomation = Boolean(opts?.usableForAutomation);
   const senderMode = opts?.senderMode || "bizuply_managed";
   const { data } = await API.get("/whatsapp/templates/approved", {
-    params: { businessId, senderMode },
+    params: {
+      businessId,
+      ...(usableForAutomation
+        ? { usableForAutomation: true }
+        : { senderMode }),
+    },
   });
   return data as {
     success: boolean;
     senderMode?: WhatsAppSenderMode;
+    usableForAutomation?: boolean;
     connected: boolean;
+    tenantConnected?: boolean;
     integrationId?: string;
     phoneNumberId?: string;
     wabaId?: string;
@@ -486,8 +502,42 @@ export async function listApprovedWhatsAppTemplates(
     displayPhoneMasked?: string;
     lastTemplatesSyncAt?: string | null;
     templates: ApprovedWhatsAppTemplate[];
+    duplicatePrecedence?: string;
     code?: string;
     message?: string;
+    customerUnavailableMessage?: string;
+    managedStatus?: {
+      configured?: boolean;
+      ready?: boolean;
+      reason?: string;
+      displayPhoneMasked?: string;
+    };
+  };
+}
+
+/** Sync Meta templates for Automations picker (managed + tenant if connected). */
+export async function syncWhatsAppTemplatesForAutomation(businessId: string) {
+  const { data } = await API.post("/whatsapp/templates/sync-for-automation", {
+    businessId,
+  });
+  return data as {
+    success: boolean;
+    usableForAutomation?: boolean;
+    connected: boolean;
+    tenantConnected?: boolean;
+    templates: ApprovedWhatsAppTemplate[];
+    lastTemplatesSyncAt?: string | null;
+    duplicatePrecedence?: string;
+    sync?: {
+      managedSynced?: number | null;
+      managedTotalFromMeta?: number | null;
+      tenantSynced?: number | null;
+      tenantTotalFromMeta?: number | null;
+      errors?: Array<{ source?: string; code?: string; message?: string }>;
+    };
+    code?: string;
+    message?: string;
+    customerUnavailableMessage?: string;
     managedStatus?: {
       configured?: boolean;
       ready?: boolean;
