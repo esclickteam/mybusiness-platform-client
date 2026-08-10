@@ -35,7 +35,6 @@ import {
 } from "../api/pushBillingApi";
 import { getPushDiscoverabilityState } from "./notifications/pushDiscoverability";
 import {
-  PushBellDiscoverChip,
   PushCompactUpsellCard,
   PushEmptyStateUpsell,
 } from "./notifications/PushDiscoverabilityCards";
@@ -1410,7 +1409,7 @@ export default function FacebookStyleNotifications() {
 
   return (
     <NotificationPanelErrorBoundary>
-      <div className="relative inline-flex">
+      <div className="inline-flex">
       <button
         type="button"
         onClick={toggleOpen}
@@ -1463,14 +1462,15 @@ export default function FacebookStyleNotifications() {
             </motion.span>
           </>
         )}
-      </button>
 
-      {pushDiscoverability.showUpsell ? (
-        <PushBellDiscoverChip
-          trialEligible={pushDiscoverability.trialEligible}
-          onOpenPushSettings={openPushSettings}
-        />
-      ) : null}
+        {pushDiscoverability.showUpsell ? (
+          <span
+            aria-hidden
+            data-testid="push-bell-dot"
+            className="pointer-events-none absolute bottom-1 start-1 h-2 w-2 rounded-full bg-sky-500 ring-2 ring-white"
+          />
+        ) : null}
+      </button>
 
       {toasts.length > 0 && (
         <div
@@ -1604,18 +1604,6 @@ export default function FacebookStyleNotifications() {
                       </div>
 
                       <div className="flex shrink-0 items-center gap-1.5">
-                        {pushDiscoverability.showUpsell ? (
-                          <button
-                            type="button"
-                            onClick={openPushSettings}
-                            className="hidden h-9 items-center rounded-2xl bg-sky-50 px-2.5 text-[10px] font-black text-sky-700 ring-1 ring-sky-100 transition hover:bg-sky-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300 sm:inline-flex"
-                            data-testid="push-header-chip"
-                          >
-                            {pushDiscoverability.trialEligible
-                              ? "7 ימים חינם"
-                              : "Push"}
-                          </button>
-                        ) : null}
                         <button
                           type="button"
                           onClick={() => setPanelView("settings")}
@@ -1637,6 +1625,22 @@ export default function FacebookStyleNotifications() {
                       </div>
                     </div>
                   </div>
+
+                  {pushDiscoverability.showUpsell ? (
+                    <div className="shrink-0 border-b border-sky-100 bg-sky-50/70 px-3 py-2.5">
+                      <button
+                        type="button"
+                        dir="rtl"
+                        onClick={openPushSettings}
+                        data-testid="push-center-badge"
+                        className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-sky-100 bg-white px-3 py-2 text-center text-[11px] font-black leading-4 text-sky-700 shadow-sm transition hover:bg-sky-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300"
+                      >
+                        {pushDiscoverability.trialEligible
+                          ? "7 ימים של התראות Push חינם"
+                          : "הפעלת התראות Push"}
+                      </button>
+                    </div>
+                  ) : null}
 
                   <div className="grid shrink-0 grid-cols-2 gap-2 border-b border-slate-100 bg-white p-3">
                 <button
