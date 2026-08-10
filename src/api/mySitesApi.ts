@@ -127,6 +127,8 @@ export type SiteCustomDomainResult = {
   customDomain: string;
   publicUrl?: string;
   platformUrl?: string;
+  provisioningStatus?: string;
+  provisioningSource?: string;
   dns?: {
     target: string;
     records: Array<{

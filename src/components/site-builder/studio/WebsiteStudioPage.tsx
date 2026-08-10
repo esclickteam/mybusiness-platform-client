@@ -33,6 +33,14 @@ import {
   normalizeSiteSeoSettings,
 } from "./utils/pageSeoUtils";
 
+import {
+  normalizeCustomDomainProvisioningStatus,
+  normalizeLinkedCustomDomain,
+  readCustomDomainBinding,
+  resolveCustomDomainPublishPhase,
+  resolvePublishedSiteDisplayUrl as resolvePublishedSiteDisplayUrlBase,
+} from "./utils/customDomainPublishUi";
+
 import { getStudioTemplateRenderer } from "./data/templates/templateRendererRegistry";
 import { TEMPLATE_MEDIA } from "./data/templates/shared/templateBreakpoints";
 
@@ -156,77 +164,6 @@ const BIZUPLY_PUBLIC_SITE_DOMAIN =
 
 const BIZUPLY_LEGACY_PUBLIC_SITE_DOMAIN =
   process.env.NEXT_PUBLIC_BIZUPLY_LEGACY_PUBLIC_SITE_DOMAIN || "bizuply.com";
-
-function normalizeLinkedCustomDomain(value: string) {
-  const clean = String(value || "")
-    .trim()
-    .toLowerCase()
-    .replace(/^https?:\/\//, "")
-    .replace(/^www\./, "")
-    .split("/")[0]
-    .split("?")[0]
-    .split("#")[0]
-    .replace(/\.$/, "");
-
-  if (!clean) return "";
-  if (
-    clean === BIZUPLY_PUBLIC_SITE_DOMAIN ||
-    clean === BIZUPLY_LEGACY_PUBLIC_SITE_DOMAIN ||
-    clean === `www.${BIZUPLY_PUBLIC_SITE_DOMAIN}` ||
-    clean === `www.${BIZUPLY_LEGACY_PUBLIC_SITE_DOMAIN}` ||
-    clean.endsWith(`.${BIZUPLY_PUBLIC_SITE_DOMAIN}`) ||
-    clean.endsWith(`.${BIZUPLY_LEGACY_PUBLIC_SITE_DOMAIN}`)
-  ) {
-    return "";
-  }
-
-  return clean;
-}
-
-function resolvePublishedSiteDisplayUrl(options: {
-  customDomain?: string;
-  publicUrl?: string;
-  domainUrl?: string;
-  slug?: string;
-}) {
-  const linkedDomain = normalizeLinkedCustomDomain(
-    String(options.customDomain || ""),
-  );
-  if (linkedDomain) return `https://${linkedDomain}`;
-
-  const candidates = [
-    String(options.publicUrl || "").trim(),
-    String(options.domainUrl || "").trim(),
-  ];
-
-  for (const candidate of candidates) {
-    if (!candidate) continue;
-    const host = candidate
-      .replace(/^https?:\/\//i, "")
-      .split("/")[0]
-      .split(":")[0]
-      .toLowerCase();
-    if (
-      host &&
-      host !== BIZUPLY_PUBLIC_SITE_DOMAIN &&
-      host !== BIZUPLY_LEGACY_PUBLIC_SITE_DOMAIN
-    ) {
-      const absolute = candidate.startsWith("http")
-        ? candidate
-        : `https://${candidate}`;
-      try {
-        // "View site" always enters through the homepage, never the page
-        // that happened to be open when Publish was clicked.
-        return new URL(absolute).origin;
-      } catch {
-        return absolute.split(/[?#]/)[0].replace(/\/+$/, "");
-      }
-    }
-  }
-
-  const cleanSlug = normalizePublicBusinessSlug(String(options.slug || ""));
-  return cleanSlug ? buildPublicSiteUrl(cleanSlug) : "";
-}
 
 /** Opt-in only: localStorage.setItem("bizuply-studio-debug", "1") */
 function isStudioTemplateDebugEnabled() {
@@ -410,6 +347,20 @@ function normalizePublicBusinessSlug(value: string) {
   if (isObjectIdLikeSlug(clean)) return "";
 
   return clean;
+}
+
+function resolvePublishedSiteDisplayUrl(options: {
+  customDomain?: string;
+  provisioningStatus?: string | null;
+  publicUrl?: string;
+  domainUrl?: string;
+  slug?: string;
+}) {
+  return resolvePublishedSiteDisplayUrlBase({
+    ...options,
+    buildPlatformUrl: buildPublicSiteUrl,
+    normalizeSlug: normalizePublicBusinessSlug,
+  });
 }
 
 function getPublicSlugFromSavedSite(site: any) {
@@ -5054,6 +5005,8 @@ export default function WebsiteStudioPage({
   });
   const [siteName, setSiteName] = useState("האתר שלי");
   const [customDomain, setCustomDomain] = useState("");
+  const [customDomainProvisioningStatus, setCustomDomainProvisioningStatus] =
+    useState("");
   const [siteSeoSettings, setSiteSeoSettings] = useState<SiteSeoSettings>(() =>
     normalizeSiteSeoSettings(null),
   );
@@ -5341,11 +5294,11 @@ export default function WebsiteStudioPage({
           setSiteName(String(data.site.name));
         }
 
-        setCustomDomain(
-          normalizeLinkedCustomDomain(
-            String(data.site?.domain?.domain || ""),
-          ),
-        );
+        {
+          const binding = readCustomDomainBinding(data.site);
+          setCustomDomain(binding.domain);
+          setCustomDomainProvisioningStatus(binding.provisioningStatus);
+        }
 
         setSiteSeoSettings(
           normalizeSiteSeoSettings(
@@ -5793,11 +5746,11 @@ export default function WebsiteStudioPage({
         if (data.site.name) {
           setSiteName(String(data.site.name));
         }
-        setCustomDomain(
-          normalizeLinkedCustomDomain(
-            String(data.site?.domain?.domain || ""),
-          ),
-        );
+        {
+          const binding = readCustomDomainBinding(data.site);
+          setCustomDomain(binding.domain);
+          setCustomDomainProvisioningStatus(binding.provisioningStatus);
+        }
         setSiteSeoSettings(
           normalizeSiteSeoSettings(
             data.site.seoSettings || data.site.seo,
@@ -7605,6 +7558,31 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     }
   }
 
+  function applyCustomDomainBinding(source: any) {
+    const binding = readCustomDomainBinding(source);
+    setCustomDomain(binding.domain);
+    setCustomDomainProvisioningStatus(binding.provisioningStatus);
+    return binding;
+  }
+
+  async function refreshCustomDomainBindingFromServer() {
+    const id = String(siteId || "").trim();
+    if (!id) return null;
+
+    try {
+      const res = await fetch(`/api/site-builder/sites/${id}`, {
+        method: "GET",
+        credentials: "include",
+        headers: buildAuthHeaders(),
+      });
+      const data = await res.json().catch(() => null);
+      if (!res.ok || !data?.site) return null;
+      return applyCustomDomainBinding(data.site);
+    } catch {
+      return null;
+    }
+  }
+
   function openPublishSlugModal(payload: VisualTemplateSavePayload) {
     const suggestedSlug =
       normalizePublicBusinessSlug(String(payload.slug || "")) ||
@@ -7618,6 +7596,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     setPublishSlugAvailable(null);
     setPublishSlugError("");
     setPublishSlugModalOpen(true);
+    void refreshCustomDomainBindingFromServer();
   }
 
   const handlePublishSlugDraftChange = (value: string) => {
@@ -8198,10 +8177,17 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         domain: {
           slug: cleanSlug,
           published,
-          url: normalizeLinkedCustomDomain(customDomain)
-            ? `https://${normalizeLinkedCustomDomain(customDomain)}`
-            : nextPublicUrl,
+          url:
+            resolveCustomDomainPublishPhase(
+              customDomain,
+              customDomainProvisioningStatus,
+            ) === "active" && normalizeLinkedCustomDomain(customDomain)
+              ? `https://${normalizeLinkedCustomDomain(customDomain)}`
+              : nextPublicUrl,
           domain: normalizeLinkedCustomDomain(customDomain),
+          ...(customDomainProvisioningStatus
+            ? { provisioningStatus: customDomainProvisioningStatus }
+            : {}),
         },
         name: siteName,
         seoSettings: siteSeoSettings,
@@ -8358,18 +8344,30 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       );
 
       if (published) {
-        const responseCustomDomain = normalizeLinkedCustomDomain(
-          String(
-            responseData?.site?.domain?.domain ||
-              responseData?.domain?.domain ||
-              customDomain ||
-              "",
-          ),
-        );
+        const responseSite = responseData?.site || responseData || null;
+        const responseBinding = responseSite
+          ? readCustomDomainBinding(responseSite)
+          : {
+              domain: normalizeLinkedCustomDomain(customDomain),
+              provisioningStatus: customDomainProvisioningStatus,
+            };
+
+        // Prefer server binding when present; empty status is valid for BYOD active.
+        const responseCustomDomain = responseSite
+          ? responseBinding.domain
+          : responseBinding.domain ||
+            normalizeLinkedCustomDomain(customDomain);
+        const responseProvisioningStatus = responseSite
+          ? responseBinding.provisioningStatus
+          : responseBinding.provisioningStatus ||
+            customDomainProvisioningStatus;
+
         setCustomDomain(responseCustomDomain);
+        setCustomDomainProvisioningStatus(responseProvisioningStatus);
 
         const finalPublishedUrl = resolvePublishedSiteDisplayUrl({
           customDomain: responseCustomDomain,
+          provisioningStatus: responseProvisioningStatus,
           publicUrl:
             String(responseData?.site?.publicUrl || "").trim() ||
             String(responseData?.publicUrl || "").trim() ||
@@ -8411,6 +8409,20 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       studioGroupEnd();
     }
   };
+
+  const publishCustomDomainPhase = resolveCustomDomainPublishPhase(
+    customDomain,
+    customDomainProvisioningStatus,
+  );
+  const activeCustomDomainPrimaryUrl =
+    publishCustomDomainPhase === "active" && customDomain
+      ? `https://${customDomain}`
+      : "";
+  const platformPublishAlternativeUrl = publishSlugDraft
+    ? buildPublicSiteUrl(publishSlugDraft)
+    : normalizePublicBusinessSlug(slug)
+      ? buildPublicSiteUrl(normalizePublicBusinessSlug(slug))
+      : "";
 
   if (isVisualReactTemplate && selectedTemplateRenderer && !serverVisualTemplateLoaded) {
     return (
@@ -8485,8 +8497,9 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
                     onClick={() => setConnectDomainOpen(true)}
                     className="mt-3 text-sm font-black text-violet-700 underline decoration-violet-300 underline-offset-4 transition hover:text-violet-900"
                   >
-                    {customDomain
-                      ? "ניהול דומיין מותאם"
+                    {publishCustomDomainPhase === "active" ||
+                    publishCustomDomainPhase === "provisioning"
+                      ? "ניהול דומיין"
                       : "חיבור דומיין מותאם"}
                   </button>
                 </div>
@@ -8554,40 +8567,100 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
                   פרסום האתר
                 </div>
                 <h2 className="mt-2 text-2xl font-black tracking-[-0.04em] text-slate-800">
-                  בחרי כתובת לאתר שלך
+                  {publishCustomDomainPhase === "active"
+                    ? "פרסום האתר בכתובת שלך"
+                    : "בחרי כתובת לאתר שלך"}
                 </h2>
                 <p className="mt-2 text-sm font-bold leading-7 text-slate-500">
-                  כדי לפרסם אתר חי צריך לבחור כתובת קצרה וברורה. השמירה נשארת כטיוטה גם בלי כתובת.
+                  {publishCustomDomainPhase === "active"
+                    ? "האתר יפורסם בדומיין המחובר. כתובת Bizuply נשמרת ככתובת חלופית."
+                    : "כדי לפרסם אתר חי צריך לבחור כתובת קצרה וברורה. השמירה נשארת כטיוטה גם בלי כתובת."}
                 </p>
               </div>
 
               <div className="px-7 py-6">
-                <label className="text-sm font-black text-slate-700">
-                  כתובת האתר
-                </label>
+                {publishCustomDomainPhase === "active" ? (
+                  <>
+                    <label className="text-sm font-black text-slate-700">
+                      כתובת האתר
+                    </label>
+                    <div
+                      className="mt-3 rounded-2xl border border-emerald-200 bg-emerald-50/70 px-4 py-4 text-left text-base font-black text-slate-800"
+                      dir="ltr"
+                    >
+                      {activeCustomDomainPrimaryUrl}
+                    </div>
 
-                <div className="mt-3 flex overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 focus-within:border-violet-400 focus-within:ring-4 focus-within:ring-violet-100">
-                  <span className="hidden shrink-0 items-center border-l border-slate-200 px-4 text-sm font-black text-slate-400 sm:inline-flex">
-                    https://
-                  </span>
-                  <input
-                    value={publishSlugDraft}
-                    onChange={(event) => handlePublishSlugDraftChange(event.target.value)}
-                    onKeyDown={(event) => {
-                      if (event.key === "Enter") {
-                        event.preventDefault();
-                        void handleConfirmVisualPublishSlug();
-                      }
-                    }}
-                    dir="ltr"
-                    placeholder=""
-                    className="min-w-0 flex-1 bg-transparent px-4 py-4 text-left text-base font-black text-slate-800 outline-none"
-                    autoFocus
-                  />
-                  <span className="hidden shrink-0 items-center border-r border-slate-200 px-4 text-sm font-black text-slate-400 sm:inline-flex">
-                    .{BIZUPLY_PUBLIC_SITE_DOMAIN}
-                  </span>
-                </div>
+                    <div className="mt-5">
+                      <label className="text-xs font-black text-slate-500">
+                        כתובת Bizuply חלופית
+                      </label>
+                      <div className="mt-2 flex overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 focus-within:border-violet-400 focus-within:ring-4 focus-within:ring-violet-100">
+                        <span className="hidden shrink-0 items-center border-l border-slate-200 px-3 text-xs font-black text-slate-400 sm:inline-flex">
+                          https://
+                        </span>
+                        <input
+                          value={publishSlugDraft}
+                          onChange={(event) =>
+                            handlePublishSlugDraftChange(event.target.value)
+                          }
+                          onKeyDown={(event) => {
+                            if (event.key === "Enter") {
+                              event.preventDefault();
+                              void handleConfirmVisualPublishSlug();
+                            }
+                          }}
+                          dir="ltr"
+                          placeholder=""
+                          className="min-w-0 flex-1 bg-transparent px-3 py-3 text-left text-sm font-black text-slate-700 outline-none"
+                          autoFocus
+                        />
+                        <span className="hidden shrink-0 items-center border-r border-slate-200 px-3 text-xs font-black text-slate-400 sm:inline-flex">
+                          .{BIZUPLY_PUBLIC_SITE_DOMAIN}
+                        </span>
+                      </div>
+                      {platformPublishAlternativeUrl ? (
+                        <p
+                          className="mt-2 text-xs font-bold text-slate-400"
+                          dir="ltr"
+                        >
+                          {platformPublishAlternativeUrl}
+                        </p>
+                      ) : null}
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    <label className="text-sm font-black text-slate-700">
+                      כתובת האתר
+                    </label>
+
+                    <div className="mt-3 flex overflow-hidden rounded-2xl border border-slate-200 bg-slate-50 focus-within:border-violet-400 focus-within:ring-4 focus-within:ring-violet-100">
+                      <span className="hidden shrink-0 items-center border-l border-slate-200 px-4 text-sm font-black text-slate-400 sm:inline-flex">
+                        https://
+                      </span>
+                      <input
+                        value={publishSlugDraft}
+                        onChange={(event) =>
+                          handlePublishSlugDraftChange(event.target.value)
+                        }
+                        onKeyDown={(event) => {
+                          if (event.key === "Enter") {
+                            event.preventDefault();
+                            void handleConfirmVisualPublishSlug();
+                          }
+                        }}
+                        dir="ltr"
+                        placeholder=""
+                        className="min-w-0 flex-1 bg-transparent px-4 py-4 text-left text-base font-black text-slate-800 outline-none"
+                        autoFocus
+                      />
+                      <span className="hidden shrink-0 items-center border-r border-slate-200 px-4 text-sm font-black text-slate-400 sm:inline-flex">
+                        .{BIZUPLY_PUBLIC_SITE_DOMAIN}
+                      </span>
+                    </div>
+                  </>
+                )}
 
                 <div className="mt-3 min-h-6 text-sm font-bold">
                   {publishSlugChecking ? (
@@ -8602,30 +8675,87 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
                 </div>
 
                 <div className="mt-5 rounded-2xl border border-violet-100 bg-violet-50/70 px-4 py-4">
-                  <p className="text-sm font-bold leading-6 text-slate-600">
-                    רוצים כתובת משלכם במקום{" "}
-                    <span dir="ltr" className="font-black text-slate-800">
-                      .{BIZUPLY_PUBLIC_SITE_DOMAIN}
-                    </span>
-                    ?
-                  </p>
-                  <button
-                    type="button"
-                    onClick={() => setConnectDomainOpen(true)}
-                    className="mt-2 text-sm font-black text-violet-700 underline decoration-violet-300 underline-offset-4 transition hover:text-violet-900"
-                  >
-                    {customDomain
-                      ? "ניהול דומיין מותאם"
-                      : "חיבור דומיין מותאם"}
-                  </button>
-                  {customDomain ? (
-                    <p
-                      className="mt-2 text-xs font-bold text-emerald-700"
-                      dir="ltr"
-                    >
-                      מחובר: {customDomain}
-                    </p>
-                  ) : null}
+                  {publishCustomDomainPhase === "active" ? (
+                    <>
+                      <p className="text-sm font-black text-emerald-700">
+                        דומיין מחובר
+                      </p>
+                      <p
+                        className="mt-1 text-sm font-black text-slate-800"
+                        dir="ltr"
+                      >
+                        {customDomain}
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => setConnectDomainOpen(true)}
+                        className="mt-2 text-sm font-black text-violet-700 underline decoration-violet-300 underline-offset-4 transition hover:text-violet-900"
+                      >
+                        ניהול דומיין
+                      </button>
+                    </>
+                  ) : publishCustomDomainPhase === "provisioning" ? (
+                    <>
+                      <p className="text-sm font-black text-amber-700">
+                        הדומיין בתהליך חיבור
+                      </p>
+                      <p
+                        className="mt-1 text-sm font-bold text-slate-700"
+                        dir="ltr"
+                      >
+                        {customDomain}
+                      </p>
+                      <p className="mt-2 text-xs font-bold leading-5 text-slate-500">
+                        עד שהחיבור יושלם האתר יפורסם בכתובת Bizuply.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => setConnectDomainOpen(true)}
+                        className="mt-2 text-sm font-black text-violet-700 underline decoration-violet-300 underline-offset-4 transition hover:text-violet-900"
+                      >
+                        ניהול דומיין
+                      </button>
+                    </>
+                  ) : publishCustomDomainPhase === "failed" ? (
+                    <>
+                      <p className="text-sm font-black text-rose-700">
+                        חיבור הדומיין נכשל
+                      </p>
+                      <p
+                        className="mt-1 text-sm font-bold text-slate-700"
+                        dir="ltr"
+                      >
+                        {customDomain}
+                      </p>
+                      <p className="mt-2 text-xs font-bold leading-5 text-slate-500">
+                        האתר יפורסם בינתיים בכתובת Bizuply.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => setConnectDomainOpen(true)}
+                        className="mt-2 text-sm font-black text-violet-700 underline decoration-violet-300 underline-offset-4 transition hover:text-violet-900"
+                      >
+                        ניהול דומיין
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <p className="text-sm font-bold leading-6 text-slate-600">
+                        רוצים כתובת משלכם במקום{" "}
+                        <span dir="ltr" className="font-black text-slate-800">
+                          .{BIZUPLY_PUBLIC_SITE_DOMAIN}
+                        </span>
+                        ?
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => setConnectDomainOpen(true)}
+                        className="mt-2 text-sm font-black text-violet-700 underline decoration-violet-300 underline-offset-4 transition hover:text-violet-900"
+                      >
+                        חיבור דומיין מותאם
+                      </button>
+                    </>
+                  )}
                 </div>
               </div>
 
@@ -8658,21 +8788,68 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
 
         <ConnectDomainModal
           open={connectDomainOpen}
-          onClose={() => setConnectDomainOpen(false)}
+          onClose={() => {
+            setConnectDomainOpen(false);
+            void refreshCustomDomainBindingFromServer().then((binding) => {
+              if (!binding) return;
+              setPublishedSiteUrl(
+                resolvePublishedSiteDisplayUrl({
+                  customDomain: binding.domain,
+                  provisioningStatus: binding.provisioningStatus,
+                  slug: publishSlugDraft || slug,
+                }),
+              );
+            });
+          }}
           siteId={siteId}
           siteSlug={normalizePublicBusinessSlug(slug || publishSlugDraft)}
           initialCustomDomain={customDomain}
-          onConnected={({ customDomain: nextDomain, publicUrl }) => {
-            const clean = normalizeLinkedCustomDomain(
-              String(nextDomain || ""),
+          onConnected={({
+            customDomain: nextDomain,
+            publicUrl,
+            provisioningStatus,
+            connected,
+          }) => {
+            const clean = normalizeLinkedCustomDomain(String(nextDomain || ""));
+            const nextStatus = normalizeCustomDomainProvisioningStatus(
+              provisioningStatus,
             );
+            const nextPhase = resolveCustomDomainPublishPhase(
+              clean,
+              nextStatus,
+            );
+
+            if (connected === false || !clean) {
+              setCustomDomain("");
+              setCustomDomainProvisioningStatus("");
+              setPublishedSiteUrl(
+                resolvePublishedSiteDisplayUrl({
+                  customDomain: "",
+                  provisioningStatus: "",
+                  publicUrl,
+                  slug: publishSlugDraft || slug,
+                }),
+              );
+              return;
+            }
+
             setCustomDomain(clean);
-            if (clean && publicUrl) {
-              setPublishedSiteUrl(publicUrl);
+            setCustomDomainProvisioningStatus(nextStatus);
+
+            if (nextPhase === "active") {
+              setPublishedSiteUrl(
+                publicUrl ||
+                  resolvePublishedSiteDisplayUrl({
+                    customDomain: clean,
+                    provisioningStatus: nextStatus,
+                    slug: publishSlugDraft || slug,
+                  }),
+              );
             } else {
               setPublishedSiteUrl(
                 resolvePublishedSiteDisplayUrl({
                   customDomain: clean,
+                  provisioningStatus: nextStatus,
                   publicUrl,
                   slug: publishSlugDraft || slug,
                 }),
@@ -8715,19 +8892,31 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     [VISUAL_SHARED_CHROME_KEY]: latestSharedChrome,
     __activePageId: activePageId || "home",
     __siteSlug: normalizePublicBusinessSlug(slug),
-    __publicUrl: buildPublicSiteUrl(
-      normalizePublicBusinessSlug(slug) || "your-business",
-    ),
+    __publicUrl:
+      publishCustomDomainPhase === "active" && customDomain
+        ? `https://${customDomain}`
+        : buildPublicSiteUrl(
+            normalizePublicBusinessSlug(slug) || "your-business",
+          ),
     __siteDomain: BIZUPLY_PUBLIC_SITE_DOMAIN,
   })}
   siteCustomCode={siteCustomCode}
   onSiteCustomCodeChange={setSiteCustomCode}
   slug={normalizePublicBusinessSlug(slug)}
-  publicUrl={buildPublicSiteUrl(
-    normalizePublicBusinessSlug(slug) || "your-business",
-  )}
+  publicUrl={
+    publishCustomDomainPhase === "active" && customDomain
+      ? `https://${customDomain}`
+      : buildPublicSiteUrl(
+          normalizePublicBusinessSlug(slug) || "your-business",
+        )
+  }
   siteDomain={BIZUPLY_PUBLIC_SITE_DOMAIN}
-  customDomain={customDomain}
+  customDomain={
+    publishCustomDomainPhase === "active" ||
+    publishCustomDomainPhase === "provisioning"
+      ? customDomain
+      : ""
+  }
   isSaving={saving}
   onBack={() => {
     if (businessId) {
