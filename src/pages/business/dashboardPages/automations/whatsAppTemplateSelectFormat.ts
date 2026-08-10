@@ -104,3 +104,93 @@ export function filterWhatsAppTemplatesByQuery<
     buildWhatsAppTemplateSearchText(tpl).includes(q)
   );
 }
+
+/** Tenant/business templates that Automations cannot send yet. */
+export const TENANT_TEMPLATE_NOT_SENDABLE_HE =
+  "זמינה בחשבון WhatsApp של העסק — שליחה מתבניות עסקיות באוטומציות עדיין אינה זמינה.";
+
+export const SAVED_TEMPLATE_NOT_APPROVED_HE =
+  "התבנית אינה מאושרת כרגע ולא ניתן לשלוח אותה.";
+
+/** True only for templates that Automations can newly select and send today. */
+export function isAutomationSendableTemplate(
+  template: Partial<ApprovedWhatsAppTemplate> | null | undefined
+): boolean {
+  if (!template) return false;
+  if (template.isTestTemplate) return false;
+  if (template.automationSendable === false) return false;
+  return true;
+}
+
+/** Guard: do not persist a new selection that the engine cannot send. */
+export function canPersistAutomationTemplateSelection(
+  template: Partial<ApprovedWhatsAppTemplate> | null | undefined
+): boolean {
+  return isAutomationSendableTemplate(template);
+}
+
+/**
+ * Picker rows: sendable first, then disabled tenant/business-only templates.
+ * Test templates are excluded entirely.
+ */
+export function listAutomationPickerTemplates<
+  T extends Partial<ApprovedWhatsAppTemplate>,
+>(templates: T[]): T[] {
+  const rows = (Array.isArray(templates) ? templates : []).filter(
+    (tpl) => !tpl.isTestTemplate
+  );
+  const sendable = rows.filter((tpl) => isAutomationSendableTemplate(tpl));
+  const disabled = rows.filter((tpl) => !isAutomationSendableTemplate(tpl));
+  return [...sendable, ...disabled];
+}
+
+export type AutomationTemplateWarningKind =
+  | "none"
+  | "not_approved"
+  | "tenant_not_sendable";
+
+export function resolveAutomationTemplateWarning(opts: {
+  value?: string;
+  selected?: Partial<ApprovedWhatsAppTemplate> | null;
+  templates?: Array<Partial<ApprovedWhatsAppTemplate>>;
+  savedMeta?: {
+    templateId?: string;
+    metaTemplateName?: string;
+  };
+}): { kind: AutomationTemplateWarningKind; message: string } {
+  const value = String(opts.value || opts.savedMeta?.templateId || "").trim();
+  const savedName = String(opts.savedMeta?.metaTemplateName || "").trim();
+  if (!value && !savedName) {
+    return { kind: "none", message: "" };
+  }
+
+  const selected = opts.selected || null;
+  if (selected && isAutomationSendableTemplate(selected)) {
+    return { kind: "none", message: "" };
+  }
+
+  if (selected && selected.automationSendable === false) {
+    return {
+      kind: "tenant_not_sendable",
+      message: TENANT_TEMPLATE_NOT_SENDABLE_HE,
+    };
+  }
+
+  const match =
+    (opts.templates || []).find((tpl) => String(tpl._id) === value) || null;
+  if (match && match.automationSendable === false) {
+    return {
+      kind: "tenant_not_sendable",
+      message: TENANT_TEMPLATE_NOT_SENDABLE_HE,
+    };
+  }
+
+  if (value || savedName) {
+    return {
+      kind: "not_approved",
+      message: SAVED_TEMPLATE_NOT_APPROVED_HE,
+    };
+  }
+
+  return { kind: "none", message: "" };
+}

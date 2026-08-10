@@ -8,8 +8,13 @@ import { Check, ChevronsUpDown, Loader2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import type { ApprovedWhatsAppTemplate } from "../../../../api/whatsappApi";
 import {
+  TENANT_TEMPLATE_NOT_SENDABLE_HE,
   buildWhatsAppTemplateSecondaryLine,
+  canPersistAutomationTemplateSelection,
   filterWhatsAppTemplatesByQuery,
+  isAutomationSendableTemplate,
+  listAutomationPickerTemplates,
+  resolveAutomationTemplateWarning,
   resolveWhatsAppTemplateDisplayName,
 } from "./whatsAppTemplateSelectFormat";
 
@@ -29,8 +34,10 @@ export type WhatsAppAutomationTemplateSelectProps = {
 
 function TemplateTwoLine({
   template,
+  disabledHint = "",
 }: {
   template: Partial<ApprovedWhatsAppTemplate>;
+  disabledHint?: string;
 }) {
   return (
     <span className="af-wa-tpl-option" dir="rtl">
@@ -40,6 +47,9 @@ function TemplateTwoLine({
       <span className="af-wa-tpl-option__meta" dir="auto">
         {buildWhatsAppTemplateSecondaryLine(template)}
       </span>
+      {disabledHint ? (
+        <span className="af-wa-tpl-option__hint">{disabledHint}</span>
+      ) : null}
     </span>
   );
 }
@@ -54,33 +64,39 @@ export function WhatsAppAutomationTemplateSelect({
 }: WhatsAppAutomationTemplateSelectProps) {
   const [query, setQuery] = useState("");
 
-  const selectable = useMemo(
-    () =>
-      templates.filter((tpl) => {
-        if (tpl.isTestTemplate) return false;
-        if (tpl.automationSendable === false) return false;
-        return true;
-      }),
+  const pickerRows = useMemo(
+    () => listAutomationPickerTemplates(templates),
     [templates]
   );
 
   const filtered = useMemo(
-    () => filterWhatsAppTemplatesByQuery(selectable, query),
-    [selectable, query]
+    () => filterWhatsAppTemplatesByQuery(pickerRows, query),
+    [pickerRows, query]
   );
 
-  const selected =
-    selectable.find((tpl) => String(tpl._id) === String(value)) ||
-    templates.find((tpl) => String(tpl._id) === String(value)) ||
-    null;
+  const selectedFromList =
+    templates.find((tpl) => String(tpl._id) === String(value)) || null;
 
-  const savedUnavailable =
-    Boolean(value || savedMeta?.templateId || savedMeta?.metaTemplateName) &&
-    !selected &&
-    Boolean(savedMeta?.metaTemplateName || value);
+  const selectedSendable =
+    selectedFromList && isAutomationSendableTemplate(selectedFromList)
+      ? selectedFromList
+      : null;
+
+  const savedUnsendable =
+    selectedFromList && !isAutomationSendableTemplate(selectedFromList)
+      ? selectedFromList
+      : null;
+
+  const warning = resolveAutomationTemplateWarning({
+    value,
+    selected: selectedFromList,
+    templates,
+    savedMeta,
+  });
 
   const unavailablePreview: Partial<ApprovedWhatsAppTemplate> | null =
-    savedUnavailable
+    !selectedFromList &&
+    Boolean(value || savedMeta?.templateId || savedMeta?.metaTemplateName)
       ? {
           _id: String(savedMeta?.templateId || value || ""),
           metaTemplateName: String(savedMeta?.metaTemplateName || ""),
@@ -89,23 +105,40 @@ export function WhatsAppAutomationTemplateSelect({
         }
       : null;
 
+  const closedTemplate =
+    selectedSendable || savedUnsendable || unavailablePreview;
+
   return (
     <div className="af-wa-tpl-select" dir="rtl">
       <Combobox
-        value={selected}
+        value={selectedSendable}
         disabled={disabled || loading}
         onChange={(tpl) => {
           setQuery("");
+          if (!tpl) {
+            onChange(null);
+            return;
+          }
+          if (!canPersistAutomationTemplateSelection(tpl)) {
+            return;
+          }
           onChange(tpl);
         }}
         onClose={() => setQuery("")}
         by={(a, b) => String(a?._id || "") === String(b?._id || "")}
       >
-        <ComboboxButton className="af-wa-tpl-select__button">
-          {selected ? (
-            <TemplateTwoLine template={selected} />
-          ) : unavailablePreview ? (
-            <TemplateTwoLine template={unavailablePreview} />
+        <ComboboxButton
+          className={`af-wa-tpl-select__button${
+            warning.kind !== "none" ? " af-wa-tpl-select__button--warn" : ""
+          }`}
+        >
+          {closedTemplate ? (
+            <TemplateTwoLine
+              template={closedTemplate}
+              disabledHint={
+                savedUnsendable ? TENANT_TEMPLATE_NOT_SENDABLE_HE : ""
+              }
+            />
           ) : (
             <span className="af-wa-tpl-select__placeholder">בחרו תבנית</span>
           )}
@@ -138,33 +171,51 @@ export function WhatsAppAutomationTemplateSelect({
           {filtered.length === 0 ? (
             <div className="af-wa-tpl-select__empty">לא נמצאו תבניות מתאימות</div>
           ) : (
-            filtered.map((tpl) => (
-              <ComboboxOption
-                key={tpl._id}
-                value={tpl}
-                className="af-wa-tpl-select__option"
-              >
-                {({ selected: isSelected }) => (
-                  <>
-                    <TemplateTwoLine template={tpl} />
-                    {isSelected ? (
-                      <Check
-                        size={16}
-                        className="af-wa-tpl-select__check"
-                        aria-hidden
+            filtered.map((tpl) => {
+              const sendable = isAutomationSendableTemplate(tpl);
+              return (
+                <ComboboxOption
+                  key={tpl._id}
+                  value={tpl}
+                  disabled={!sendable}
+                  className={`af-wa-tpl-select__option${
+                    sendable ? "" : " af-wa-tpl-select__option--disabled"
+                  }`}
+                >
+                  {({ selected: isSelected }) => (
+                    <>
+                      <TemplateTwoLine
+                        template={tpl}
+                        disabledHint={
+                          sendable ? "" : TENANT_TEMPLATE_NOT_SENDABLE_HE
+                        }
                       />
-                    ) : null}
-                  </>
-                )}
-              </ComboboxOption>
-            ))
+                      {isSelected && sendable ? (
+                        <Check
+                          size={16}
+                          className="af-wa-tpl-select__check"
+                          aria-hidden
+                        />
+                      ) : null}
+                    </>
+                  )}
+                </ComboboxOption>
+              );
+            })
           )}
         </ComboboxOptions>
       </Combobox>
 
-      {savedUnavailable ? (
-        <p className="af-wa-tpl-select__warn" role="status">
-          התבנית אינה מאושרת כרגע ולא ניתן לשלוח אותה.
+      {warning.kind !== "none" ? (
+        <p
+          className={`af-wa-tpl-select__warn${
+            warning.kind === "tenant_not_sendable"
+              ? " af-wa-tpl-select__warn--info"
+              : ""
+          }`}
+          role="status"
+        >
+          {warning.message}
         </p>
       ) : null}
     </div>

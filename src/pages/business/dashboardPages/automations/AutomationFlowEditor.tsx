@@ -79,6 +79,7 @@ import {
 } from "../../../../api/googleCalendarApi";
 import { isTestTemplateName } from "./whatsappAutomationMetaTemplates";
 import { WhatsAppAutomationTemplateSelect } from "./WhatsAppAutomationTemplateSelect";
+import { canPersistAutomationTemplateSelection } from "./whatsAppTemplateSelectFormat";
 
 const WA_MAPPING_PRESETS = [
   { key: "lead:name", source: "lead", field: "name", label: "שם הליד" },
@@ -2248,6 +2249,9 @@ function EditorInner({
                                   language: "",
                                   componentMappings: [],
                                 });
+                                return;
+                              }
+                              if (!canPersistAutomationTemplateSelection(tpl)) {
                                 return;
                               }
                               const componentMappings =
