@@ -35,6 +35,7 @@ import {
 } from "../api/pushBillingApi";
 import { getPushDiscoverabilityState } from "./notifications/pushDiscoverability";
 import {
+  PushBellDiscoverChip,
   PushCompactUpsellCard,
   PushEmptyStateUpsell,
 } from "./notifications/PushDiscoverabilityCards";
@@ -1409,13 +1410,22 @@ export default function FacebookStyleNotifications() {
 
   return (
     <NotificationPanelErrorBoundary>
-      <div className="inline-flex">
+      <div className="inline-flex items-center gap-2">
+      {pushDiscoverability.showUpsell ? (
+        <span className="hidden sm:inline-flex" data-testid="push-bell-chip-wrap">
+          <PushBellDiscoverChip
+            trialEligible={pushDiscoverability.trialEligible}
+            onOpenPushSettings={openPushSettings}
+          />
+        </span>
+      ) : null}
+
       <button
         type="button"
         onClick={toggleOpen}
         aria-label={t("notifications.ariaLabel")}
         className={[
-          "relative inline-flex h-12 w-12 items-center justify-center rounded-2xl border bg-gradient-to-br shadow-sm transition hover:-translate-y-0.5 hover:shadow-md",
+          "relative inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border bg-gradient-to-br shadow-sm transition hover:-translate-y-0.5 hover:shadow-md",
           unreadCount > 0
             ? "border-amber-200 from-amber-50 to-white hover:border-amber-300"
             : "border-slate-200 from-white to-white hover:border-amber-200 hover:from-amber-50",
@@ -1462,14 +1472,6 @@ export default function FacebookStyleNotifications() {
             </motion.span>
           </>
         )}
-
-        {pushDiscoverability.showUpsell ? (
-          <span
-            aria-hidden
-            data-testid="push-bell-dot"
-            className="pointer-events-none absolute bottom-1 start-1 h-2 w-2 rounded-full bg-sky-500 ring-2 ring-white"
-          />
-        ) : null}
       </button>
 
       {toasts.length > 0 && (
