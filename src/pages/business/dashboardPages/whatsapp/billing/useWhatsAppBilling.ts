@@ -1,50 +1,61 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   getWhatsAppBillingUsage,
   type WhatsAppBillingUsageOverview,
 } from "../../../../../api/whatsappBillingApi";
-
-type State = {
-  loading: boolean;
-  error: string | null;
-  usage: WhatsAppBillingUsageOverview | null;
-};
+import { automationQueryKeys } from "../../automations/automationsQueryKeys";
 
 export function useWhatsAppBilling(businessId: string | null) {
-  const [state, setState] = useState<State>({
-    loading: Boolean(businessId),
-    error: null,
-    usage: null,
+  const queryClient = useQueryClient();
+  const queryKey = businessId
+    ? automationQueryKeys.whatsappBillingUsage(businessId)
+    : ["whatsapp", "billingUsage", "none"];
+
+  const query = useQuery({
+    queryKey,
+    enabled: Boolean(businessId),
+    queryFn: async () => {
+      if (!businessId) return null;
+      return getWhatsAppBillingUsage(businessId);
+    },
+    staleTime: 15_000,
+    refetchOnWindowFocus: false,
+    placeholderData: (prev) => prev,
   });
 
   const refresh = useCallback(async () => {
-    if (!businessId) {
-      setState({ loading: false, error: null, usage: null });
-      return null;
-    }
-    setState((prev) => ({ ...prev, loading: true, error: null }));
-    try {
-      const usage = await getWhatsAppBillingUsage(businessId);
-      setState({ loading: false, error: null, usage });
-      return usage;
-    } catch {
-      setState((prev) => ({
-        loading: false,
-        error: "לא הצלחנו לטעון את נתוני חיוב WhatsApp כרגע.",
-        usage: prev.usage,
-      }));
-      return null;
-    }
-  }, [businessId]);
+    if (!businessId) return null;
+    return queryClient.fetchQuery({
+      queryKey: automationQueryKeys.whatsappBillingUsage(businessId),
+      queryFn: () => getWhatsAppBillingUsage(businessId),
+    });
+  }, [businessId, queryClient]);
+
+  const setUsage = useCallback(
+    (usage: WhatsAppBillingUsageOverview | null) => {
+      if (!businessId) return;
+      queryClient.setQueryData(
+        automationQueryKeys.whatsappBillingUsage(businessId),
+        usage
+      );
+    },
+    [businessId, queryClient]
+  );
 
   useEffect(() => {
-    void refresh();
-  }, [refresh]);
+    if (!businessId) {
+      queryClient.setQueryData(["whatsapp", "billingUsage", "none"], null);
+    }
+  }, [businessId, queryClient]);
 
   return {
-    ...state,
+    loading: Boolean(businessId) && query.isLoading && !query.data,
+    error: query.isError
+      ? "לא הצלחנו לטעון את נתוני חיוב WhatsApp כרגע."
+      : null,
+    usage: (query.data as WhatsAppBillingUsageOverview | null) || null,
     refresh,
-    setUsage: (usage: WhatsAppBillingUsageOverview | null) =>
-      setState((prev) => ({ ...prev, usage })),
+    setUsage,
   };
 }

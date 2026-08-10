@@ -1,10 +1,15 @@
 import React from "react";
 import { describe, expect, it, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { MemoryRouter, Route, Routes, Outlet } from "react-router-dom";
 
 vi.mock("../../../../../context/AuthContext", () => ({
-  useAuth: () => ({ user: { businessId: "biz-1" } }),
+  useAuth: () => ({ user: { businessId: "biz-1" }, socket: null }),
+}));
+
+vi.mock("../../../../../context/socketContext", () => ({
+  useSocket: () => null,
 }));
 
 vi.mock("../../../../../hooks/useLocaleDir", () => ({
@@ -50,6 +55,16 @@ vi.mock("../../../../../api/automationBillingApi", async () => {
   };
 });
 
+vi.mock("../../../../../api/whatsappBillingApi", async () => {
+  const actual = await vi.importActual<
+    typeof import("../../../../../api/whatsappBillingApi")
+  >("../../../../../api/whatsappBillingApi");
+  return {
+    ...actual,
+    getWhatsAppBillingUsage: vi.fn(async () => null),
+  };
+});
+
 function HomeHarness() {
   return <Outlet context={{ businessId: "biz-1", readOnly: false }} />;
 }
@@ -59,18 +74,30 @@ describe("AutomationsBillingHome smoke", () => {
     const { default: AutomationsHomePage } = await import(
       "../AutomationsHomePage"
     );
+    const queryClient = new QueryClient({
+      defaultOptions: {
+        queries: { retry: false },
+      },
+    });
 
     render(
-      <MemoryRouter initialEntries={["/business/biz-1/dashboard/automations"]}>
-        <Routes>
-          <Route path="/business/:businessId/dashboard/automations" element={<HomeHarness />}>
-            <Route index element={<AutomationsHomePage />} />
-          </Route>
-        </Routes>
-      </MemoryRouter>
+      <QueryClientProvider client={queryClient}>
+        <MemoryRouter initialEntries={["/business/biz-1/dashboard/automations"]}>
+          <Routes>
+            <Route
+              path="/business/:businessId/dashboard/automations"
+              element={<HomeHarness />}
+            >
+              <Route index element={<AutomationsHomePage />} />
+            </Route>
+          </Routes>
+        </MemoryRouter>
+      </QueryClientProvider>
     );
 
-    expect(await screen.findByRole("heading", { name: "אוטומציות" })).toBeInTheDocument();
+    expect(
+      await screen.findByRole("heading", { name: "אוטומציות" })
+    ).toBeInTheDocument();
     expect(
       await screen.findByText("לא הצלחנו לטעון את נתוני החבילה כרגע.")
     ).toBeInTheDocument();

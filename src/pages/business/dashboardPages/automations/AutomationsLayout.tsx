@@ -24,6 +24,7 @@ import {
   buildLocalAutomationGraph,
 } from "./localTemplateGraphs";
 import { WORKING_TEMPLATES } from "./workingTemplates";
+import { useAutomationsRealtime } from "./useAutomationsRealtime";
 import "./automationFlow.css";
 import "./automationsHome.css";
 
@@ -40,6 +41,8 @@ export default function AutomationsLayout() {
     normalizeBusinessId(urlBusinessId) ||
     normalizeBusinessId(user?.businessId) ||
     null;
+
+  useAutomationsRealtime(businessId);
 
   const basePath = businessId
     ? `/business/${businessId}/dashboard/automations`
