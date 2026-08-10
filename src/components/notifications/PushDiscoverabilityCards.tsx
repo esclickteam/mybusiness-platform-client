@@ -120,31 +120,22 @@ export function PushBellDiscoverChip({
       aria-label={
         trialEligible
           ? "7 ימים של התראות Push חינם"
-          : "גילוי Push למכשיר"
+          : "הפעלת התראות Push"
       }
       title={
         trialEligible
           ? "7 ימים של התראות Push חינם"
-          : "גילוי Push למכשיר"
+          : "הפעלת התראות Push"
       }
       className={[
-        "absolute -bottom-1 z-[1] inline-flex max-w-[7.5rem] items-center justify-center truncate rounded-full",
-        "border border-sky-200 bg-sky-50 px-1.5 py-0.5 text-[9px] font-black leading-none text-sky-700 shadow-sm",
-        "transition hover:bg-sky-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300",
-        "start-[-0.55rem] sm:max-w-[12.5rem] sm:px-2",
+        "inline-flex max-w-[18rem] shrink-0 items-center justify-center rounded-full",
+        "border border-sky-200 bg-sky-50 px-2.5 py-1 text-[11px] font-black leading-4 text-sky-700 shadow-sm",
+        "whitespace-nowrap text-center transition hover:bg-sky-100",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300",
       ].join(" ")}
       data-testid="push-bell-chip"
     >
-      {trialEligible ? (
-        <>
-          <span className="sm:hidden">7י׳ Push חינם</span>
-          <span className="hidden sm:inline">
-            7 ימים של התראות Push חינם
-          </span>
-        </>
-      ) : (
-        <span>Push</span>
-      )}
+      {trialEligible ? "7 ימים של התראות Push חינם" : "הפעלת התראות Push"}
     </button>
   );
 }
