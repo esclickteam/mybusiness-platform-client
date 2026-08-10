@@ -1424,6 +1424,7 @@ export default function FacebookStyleNotifications() {
         type="button"
         onClick={toggleOpen}
         aria-label={t("notifications.ariaLabel")}
+        data-testid="notifications-bell-button"
         className={[
           "relative inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border bg-gradient-to-br shadow-sm transition hover:-translate-y-0.5 hover:shadow-md",
           unreadCount > 0
