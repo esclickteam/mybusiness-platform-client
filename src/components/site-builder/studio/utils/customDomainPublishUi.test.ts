@@ -2,6 +2,7 @@ import {
   readCustomDomainBinding,
   resolveCustomDomainPublishPhase,
   resolvePublishedSiteDisplayUrl,
+  resolveMySiteCardUrls,
 } from "./customDomainPublishUi";
 
 describe("customDomainPublishUi", () => {
@@ -69,4 +70,56 @@ describe("customDomainPublishUi", () => {
       provisioningStatus: "active",
     });
   });
+
+  it("My Sites card prefers active custom domain and keeps platform alternative", () => {
+    const urls = resolveMySiteCardUrls({
+      slug: "launchgateb12",
+      publicUrl: "https://launchgateb12.sites.bizuply.com",
+      domain: {
+        domain: "bizuplylgtmsn7ksf50.com",
+        provisioningStatus: "active",
+      },
+    });
+
+    expect(urls.primaryUrl).toBe("https://bizuplylgtmsn7ksf50.com");
+    expect(urls.viewUrl).toBe("https://bizuplylgtmsn7ksf50.com");
+    expect(urls.platformUrl).toBe(
+      "https://launchgateb12.sites.bizuply.com",
+    );
+    expect(urls.hasActiveCustomDomain).toBe(true);
+  });
+
+  it("My Sites card falls back to platform URL while provisioning", () => {
+    const urls = resolveMySiteCardUrls({
+      slug: "launchgateb12",
+      publicUrl: "https://launchgateb12.sites.bizuply.com",
+      domain: {
+        domain: "bizuplylgtmsn7ksf50.com",
+        provisioningStatus: "dns_pending",
+      },
+    });
+
+    expect(urls.primaryUrl).toBe(
+      "https://launchgateb12.sites.bizuply.com",
+    );
+    expect(urls.viewUrl).toBe("https://launchgateb12.sites.bizuply.com");
+    expect(urls.hasActiveCustomDomain).toBe(false);
+  });
+
+  it("My Sites card returns to platform URL after disconnect", () => {
+    const urls = resolveMySiteCardUrls({
+      slug: "launchgateb12",
+      publicUrl: "https://launchgateb12.sites.bizuply.com",
+      domain: {
+        domain: "",
+        provisioningStatus: "",
+      },
+    });
+
+    expect(urls.primaryUrl).toBe(
+      "https://launchgateb12.sites.bizuply.com",
+    );
+    expect(urls.hasActiveCustomDomain).toBe(false);
+  });
+
 });

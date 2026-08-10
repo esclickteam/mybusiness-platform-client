@@ -2751,7 +2751,8 @@
     "card": {
       "edit": "Edit",
       "manage": "Manage",
-      "view": "View"
+      "view": "View",
+      "bizuplyAlternative": "Bizuply alternative URL"
     },
     "defaultSiteName": "My site",
     "siteFallback": "site",

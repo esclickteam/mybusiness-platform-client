@@ -2751,7 +2751,8 @@
     "card": {
       "edit": "עריכה",
       "manage": "פאנל ניהול",
-      "view": "צפייה"
+      "view": "צפייה",
+      "bizuplyAlternative": "כתובת Bizuply חלופית"
     },
     "defaultSiteName": "האתר שלי",
     "siteFallback": "האתר",
