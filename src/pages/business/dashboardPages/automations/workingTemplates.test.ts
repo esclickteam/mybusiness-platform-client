@@ -293,7 +293,7 @@ describe("workingTemplates launch safety", () => {
     const picked = pickBestWaTemplate(
       [
         { _id: "test", name: "test", category: "welcome", status: "active", metaStatus: "APPROVED", metaTemplateName: "hello_world", isTestTemplate: true } as never,
-        { _id: "alert", name: "alert", category: "welcome", status: "active", metaStatus: "APPROVED", metaTemplateName: "new_lead_received" } as never,
+        { _id: "alert", name: "alert", category: "welcome", status: "active", metaStatus: "APPROVED", metaTemplateName: "new_lead_received_utility" } as never,
         { _id: "welcome", name: "welcome", category: "welcome", status: "active", metaStatus: "APPROVED", metaTemplateName: "new_lead_welcome" } as never,
       ],
       { preferredMetaName: "new_lead_welcome" }

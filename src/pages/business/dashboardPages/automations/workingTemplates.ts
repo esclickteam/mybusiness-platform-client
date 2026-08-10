@@ -12,6 +12,8 @@ import type {
 import type { TemplateCategoryId } from "./templateCategoryMapping";
 import {
   BLUEPRINT_PREFERRED_META,
+  isBusinessAlertMetaTemplateName,
+  isLegacyManagedMetaTemplateName,
   isTestTemplateName,
 } from "./whatsappAutomationMetaTemplates";
 
@@ -263,7 +265,7 @@ export function buildWhatsAppSimpleGraph(
       blueprintKey: template.key,
       blueprintTrigger: template.whatsappTrigger || "",
       recipientType:
-        template.waPreferredMetaName === "new_lead_received"
+        isBusinessAlertMetaTemplateName(template.waPreferredMetaName || "")
           ? "business_owner"
           : "lead_phone",
     },
@@ -310,8 +312,8 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
     engine: "whatsapp_simple",
     whatsappTrigger: "new_lead_welcome",
     waCategory: "custom",
-    waPreferredMetaName: "new_lead_received",
-    waHints: ["new_lead_received"],
+    waPreferredMetaName: "new_lead_received_utility",
+    waHints: ["new_lead_received_utility", "new_lead_received"],
     allowBusinessAlert: true,
   },
   {
@@ -1192,8 +1194,9 @@ export function pickBestWaTemplate(
       return false;
     }
     return (
-      metaName !== "new_lead_received" ||
+      !isLegacyManagedMetaTemplateName(metaName) ||
       opts.preferredMetaName === "new_lead_received" ||
+      opts.preferredMetaName === "new_lead_received_utility" ||
       opts.allowBusinessAlert === true
     );
   });

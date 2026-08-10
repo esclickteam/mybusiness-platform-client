@@ -96,7 +96,7 @@ import {
   getGoogleCalendarStatus,
   type GoogleCalendarStatusResponse,
 } from "../../../../api/googleCalendarApi";
-import { isTestTemplateName } from "./whatsappAutomationMetaTemplates";
+import { isBusinessAlertMetaTemplateName, isTestTemplateName } from "./whatsappAutomationMetaTemplates";
 import { WhatsAppAutomationTemplateSelect } from "./WhatsAppAutomationTemplateSelect";
 import { canPersistAutomationTemplateSelection } from "./whatsAppTemplateSelectFormat";
 
@@ -147,6 +147,11 @@ const WA_VARIABLE_LABELS: Record<string, Record<string, string>> = {
   lead_follow_up_2: { "1": "שם הליד" },
   new_client_welcome: { "1": "שם הלקוח" },
   inactive_client: { "1": "שם הלקוח" },
+  new_lead_received_utility: {
+    "1": "שם הליד",
+    "2": "טלפון הליד",
+    "3": "מקור הליד",
+  },
   new_lead_received: {
     "1": "שם הליד",
     "2": "טלפון הליד",
@@ -177,6 +182,11 @@ const WA_DEFAULT_MAPPINGS: Record<
   lead_follow_up_2: { "1": { source: "lead", field: "name" } },
   new_client_welcome: { "1": { source: "contact", field: "fullName" } },
   inactive_client: { "1": { source: "contact", field: "fullName" } },
+  new_lead_received_utility: {
+    "1": { source: "lead", field: "name" },
+    "2": { source: "lead", field: "phone" },
+    "3": { source: "lead", field: "source" },
+  },
   new_lead_received: {
     "1": { source: "lead", field: "name" },
     "2": { source: "lead", field: "phone" },
@@ -2228,9 +2238,9 @@ function EditorInner({
                         <select
                           value={String(
                             selectedNode.data?.recipientType ||
-                              (String(
-                                selectedNode.data?.metaTemplateName || ""
-                              ).toLowerCase() === "new_lead_received"
+                              (isBusinessAlertMetaTemplateName(
+                                String(selectedNode.data?.metaTemplateName || "")
+                              )
                                 ? "business_owner"
                                 : "lead_phone")
                           )}
@@ -2262,9 +2272,9 @@ function EditorInner({
                         }[
                           String(
                             selectedNode.data?.recipientType ||
-                              (String(
-                                selectedNode.data?.metaTemplateName || ""
-                              ).toLowerCase() === "new_lead_received"
+                              (isBusinessAlertMetaTemplateName(
+                                String(selectedNode.data?.metaTemplateName || "")
+                              )
                                 ? "business_owner"
                                 : "lead_phone")
                           ) as
@@ -2411,8 +2421,9 @@ function EditorInner({
                               const componentMappings =
                                 buildMappingsFromTemplate(tpl, []);
                               const isBusinessAlert =
-                                String(tpl.metaTemplateName || "")
-                                  .toLowerCase() === "new_lead_received";
+                                isBusinessAlertMetaTemplateName(
+                                  String(tpl.metaTemplateName || "")
+                                );
                               updateSelectedData({
                                 senderMode: "bizuply_managed",
                                 templateId: tpl._id,

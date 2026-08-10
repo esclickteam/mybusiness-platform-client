@@ -7,7 +7,7 @@ export type WaDefaultMapping = {
 
 export const BLUEPRINT_PREFERRED_META: Record<string, string> = {
   wa_new_lead_welcome: "new_lead_welcome",
-  wa_new_lead_owner_alert: "new_lead_received",
+  wa_new_lead_owner_alert: "new_lead_received_utility",
   wa_appointment_reminder_1_day: "appointment_reminder",
   wa_appointment_reminder_2_days: "appointment_reminder",
   wa_appointment_reminder_3_days: "appointment_reminder",
@@ -26,6 +26,12 @@ export const BLUEPRINT_PREFERRED_META: Record<string, string> = {
   wf_new_client_pack: "new_client_welcome",
   wf_appointment_duo: "appointment_reminder",
 };
+
+const NEW_LEAD_OWNER_ALERT_MAPPINGS: WaDefaultMapping[] = [
+  { variable: "1", source: "lead", field: "name" },
+  { variable: "2", source: "lead", field: "phone" },
+  { variable: "3", source: "lead", field: "source" },
+];
 
 export const WA_DEFAULT_META_MAPPINGS: Record<string, WaDefaultMapping[]> = {
   new_lead_welcome: [{ variable: "1", source: "lead", field: "name" }],
@@ -47,15 +53,37 @@ export const WA_DEFAULT_META_MAPPINGS: Record<string, WaDefaultMapping[]> = {
   lead_follow_up_2: [{ variable: "1", source: "lead", field: "name" }],
   new_client_welcome: [{ variable: "1", source: "contact", field: "fullName" }],
   inactive_client: [{ variable: "1", source: "contact", field: "fullName" }],
-  new_lead_received: [
-    { variable: "1", source: "lead", field: "name" },
-    { variable: "2", source: "lead", field: "phone" },
-    { variable: "3", source: "lead", field: "source" },
-  ],
+  new_lead_received_utility: NEW_LEAD_OWNER_ALERT_MAPPINGS,
+  // Legacy alias for historical workflows / rollback.
+  new_lead_received: NEW_LEAD_OWNER_ALERT_MAPPINGS,
+};
+
+export const BUSINESS_ALERT_META_TEMPLATE_NAMES = new Set([
+  "new_lead_received_utility",
+  "new_lead_received",
+]);
+
+export const LEGACY_MANAGED_META_TEMPLATE_NAMES = new Set(["new_lead_received"]);
+
+export const MANAGED_TEMPLATE_DISPLAY_NAMES: Record<string, string> = {
+  new_lead_received_utility: "New Lead Received",
+  new_lead_received: "New Lead Received",
 };
 
 export const isTestTemplateName = (name: string) =>
   String(name || "").trim().toLowerCase() === "hello_world";
+
+export function isBusinessAlertMetaTemplateName(name: string) {
+  return BUSINESS_ALERT_META_TEMPLATE_NAMES.has(
+    String(name || "").trim().toLowerCase()
+  );
+}
+
+export function isLegacyManagedMetaTemplateName(name: string) {
+  return LEGACY_MANAGED_META_TEMPLATE_NAMES.has(
+    String(name || "").trim().toLowerCase()
+  );
+}
 
 export function formatRelativeTimeHe(hours: number): string {
   if (hours === 1) return "בעוד שעה";
