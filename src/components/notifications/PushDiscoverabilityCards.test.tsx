@@ -22,7 +22,7 @@ describe("PushDiscoverabilityCards", () => {
     expect(screen.getByTestId("push-empty-upsell-cta")).toHaveTextContent(
       "נסו התראות Push"
     );
-    expect(screen.getByText("או 19 ₪ לחודש בחיוב שנתי")).toBeInTheDocument();
+    expect(screen.getByText("או 228 ₪ לשנה (19 ₪ לחודש)")).toBeInTheDocument();
   });
 
   it("empty state trial-used hides free-trial copy", () => {
