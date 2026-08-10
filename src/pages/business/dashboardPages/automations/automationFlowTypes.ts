@@ -23,6 +23,14 @@ export type PaletteItem = {
   comingSoon?: boolean;
 };
 
+export type AutomationTriggerConfigField = {
+  name: string;
+  label: string;
+  required?: boolean;
+  type?: string;
+  options?: Array<{ value: string | number; label: string }>;
+};
+
 export type AutomationTriggerOption = {
   key: string;
   label: string;
@@ -31,6 +39,11 @@ export type AutomationTriggerOption = {
   status?: string;
   isSupported: boolean;
   isPublishable: boolean;
+  icon?: string | null;
+  keywords?: string[];
+  configSchema?: AutomationTriggerConfigField[];
+  billingNote?: string;
+  triggerBillable?: boolean;
   requiredConnection?: string | null;
   comingSoon?: boolean;
 };
@@ -41,8 +54,12 @@ export const TRIGGER_CATEGORY_LABELS: Record<string, string> = {
   website: "אתר וטפסים",
   store: "חנות ותשלומים",
   schedule: "לוח זמנים",
-  manual: "ידני",
-  coming_soon: "בקרוב",
+  manual: "אינטגרציות ומערכת",
+  system: "אינטגרציות ומערכת",
+  whatsapp: "WhatsApp",
+  subscriptions: "מנויים וחיובים",
+  tasks: "משימות וצוות",
+  email: "אימייל",
 };
 
 export function triggerOptionFromCatalog(row: {
@@ -53,20 +70,33 @@ export function triggerOptionFromCatalog(row: {
   status?: string;
   isSupported?: boolean;
   isPublishable?: boolean;
+  icon?: string | null;
+  keywords?: string[];
+  configSchema?: AutomationTriggerConfigField[];
+  billingSemantics?: { triggerBillable?: boolean; note?: string };
   requiredConnection?: string | null;
-}): AutomationTriggerOption {
+}): AutomationTriggerOption | null {
   const isSupported = Boolean(row.isSupported);
   const isPublishable = Boolean(row.isPublishable);
+  // Customer UI: never surface unsupported / coming-soon triggers.
+  if (!isSupported || !isPublishable) return null;
   return {
     key: String(row.key),
     label: String(row.label || row.key),
     description: String(row.description || ""),
     category: String(row.category || "crm"),
-    status: String(row.status || (isPublishable ? "active" : "coming_soon")),
+    status: String(row.status || "active"),
     isSupported,
     isPublishable,
+    icon: row.icon || null,
+    keywords: Array.isArray(row.keywords)
+      ? row.keywords.map((value) => String(value))
+      : [],
+    configSchema: Array.isArray(row.configSchema) ? row.configSchema : [],
+    billingNote: row.billingSemantics?.note || "ללא חיוב",
+    triggerBillable: Boolean(row.billingSemantics?.triggerBillable),
     requiredConnection: row.requiredConnection || null,
-    comingSoon: !isPublishable,
+    comingSoon: false,
   };
 }
 
@@ -147,7 +177,12 @@ function triggerItem(
   label: string,
   description: string,
   routeCount = 1,
-  supported = true
+  supported = true,
+  extras?: {
+    icon?: string | null;
+    keywords?: string[];
+    billingNote?: string;
+  }
 ): PaletteItem {
   const defaults: Record<string, unknown> = {
     label,
@@ -159,18 +194,29 @@ function triggerItem(
     defaults.hoursBefore = 24;
     defaults.label = label || "תזכורת פגישה — יום לפני";
   }
+  if (key === "lead_status_changed") {
+    defaults.toStatus = "contacted";
+    defaults.fromStatus = "";
+  }
+  if (key === "scheduled") {
+    // Schedule defaults are applied by the editor when selected.
+  }
   return {
     type: "trigger",
     key,
     group: "triggers",
     filter: "trigger",
-    label: `טריגר · ${label}`,
+    label,
     description:
       key === "appointment_reminder"
         ? "מתי לשלוח תזכורת לפגישה — אחר כך בוחרים את התוצאה (WhatsApp וכו׳)"
         : description,
     color: "#7c3aed",
-    defaults,
+    defaults: {
+      ...defaults,
+      icon: extras?.icon || null,
+      billingNote: extras?.billingNote || "ללא חיוב",
+    },
     supported,
     comingSoon: !supported,
   };
@@ -333,15 +379,22 @@ export const PALETTE: PaletteItem[] = FLOW_ACTION_PALETTE;
 export function buildTriggerPaletteItems(
   triggers: AutomationTriggerOption[]
 ): PaletteItem[] {
-  return triggers.map((trigger) =>
-    triggerItem(
-      trigger.key,
-      trigger.label,
-      trigger.description || "",
-      2,
-      trigger.isPublishable
-    )
-  );
+  return triggers
+    .filter((trigger) => trigger.isSupported && trigger.isPublishable)
+    .map((trigger) =>
+      triggerItem(
+        trigger.key,
+        trigger.label,
+        trigger.description || "",
+        2,
+        true,
+        {
+          icon: trigger.icon,
+          keywords: trigger.keywords,
+          billingNote: trigger.billingNote,
+        }
+      )
+    );
 }
 
 export function buildPaletteWithTriggers(
@@ -411,10 +464,32 @@ export function nodeSummary(
   }
   if (type === "trigger") {
     const key = String(data.triggerKey || "");
-    const routes = clampRouteCount(data.routeCount, 1);
-    const base = String(data.label || key || "");
-    if (routes <= 1) return base || "טריגר";
-    return `${base} · ${routes} תוצאות יחד`;
+    if (key === "appointment_reminder") {
+      const hours = Number(data.hoursBefore) || 24;
+      if (hours === 1) return "שעה לפני הפגישה";
+      if (hours === 2) return "שעתיים לפני הפגישה";
+      if (hours === 24) return "יום לפני הפגישה";
+      if (hours % 24 === 0) return `${hours / 24} ימים לפני הפגישה`;
+      return `${hours} שעות לפני הפגישה`;
+    }
+    if (key === "lead_status_changed") {
+      const toStatus = String(data.toStatus || "").trim();
+      const fromStatus = String(data.fromStatus || "").trim();
+      if (fromStatus && toStatus) return `מ־${fromStatus} אל ${toStatus}`;
+      if (toStatus) return `מעבר לסטטוס ${toStatus}`;
+      return "בכל שינוי סטטוס";
+    }
+    if (key === "scheduled") {
+      return "לפי לוח הזמנים שהוגדר";
+    }
+    if (key === "manual") return "הפעלה ידנית מהמערכת";
+    if (key === "new_lead") return "מופעל בכל יצירת ליד חדש";
+    if (key === "form_submitted") return "מופעל בשליחת טופס מהאתר";
+    if (key === "appointment_created") return "מופעל בקביעת פגישה";
+    if (key === "appointment_cancelled") return "מופעל בביטול פגישה";
+    if (key === "order_created") return "מופעל ביצירת הזמנה";
+    if (key === "payment_succeeded") return "מופעל אחרי תשלום מוצלח";
+    return String(data.label || "טריגר");
   }
   if (type === "condition") {
     const key = String(data.conditionKey || "");

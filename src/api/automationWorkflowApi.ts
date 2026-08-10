@@ -178,6 +178,14 @@ export async function listAutomationRecipes(businessId: string) {
   };
 }
 
+export type AutomationTriggerConfigField = {
+  name: string;
+  label: string;
+  required?: boolean;
+  type?: string;
+  options?: Array<{ value: string | number; label: string }>;
+};
+
 export type AutomationTriggerCatalogItem = {
   key: string;
   label: string;
@@ -186,6 +194,17 @@ export type AutomationTriggerCatalogItem = {
   status: string;
   isSupported: boolean;
   isPublishable: boolean;
+  icon?: string | null;
+  keywords?: string[];
+  configSchema?: AutomationTriggerConfigField[];
+  eventSource?: string;
+  backendCapability?: string;
+  availability?: string;
+  billingSemantics?: {
+    triggerBillable?: boolean;
+    note?: string;
+  };
+  validationRules?: string;
   requiredEntitlement?: string | null;
   requiredConnection?: string | null;
   availableFields?: string[];
