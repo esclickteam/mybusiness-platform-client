@@ -165,3 +165,38 @@ export function isAutomationBillingGateCode(code: string | null | undefined) {
     code === AUTOMATION_BILLING_API_CODES.BILLING_BLOCKED
   );
 }
+
+/** Normalize legacy/internal aliases to canonical public API codes. */
+export function normalizeAutomationBillingPublicCode(
+  code: string | null | undefined
+): string | null {
+  const raw = String(code || "").trim();
+  if (!raw) return null;
+  if (isAutomationBillingGateCode(raw)) return raw;
+  const lower = raw.toLowerCase();
+  if (
+    lower === "quota_exhausted" ||
+    lower === "quota_exhausted".toLowerCase() ||
+    raw === "QUOTA_EXHAUSTED"
+  ) {
+    return AUTOMATION_BILLING_API_CODES.QUOTA_EXHAUSTED;
+  }
+  if (
+    lower === "plan_required" ||
+    lower === "no_automation_plan" ||
+    raw === "PLAN_REQUIRED"
+  ) {
+    return AUTOMATION_BILLING_API_CODES.PLAN_REQUIRED;
+  }
+  if (
+    lower === "billing_blocked" ||
+    raw === "BILLING_BLOCKED" ||
+    lower.includes("past_due") ||
+    lower === "unpaid" ||
+    lower === "canceled" ||
+    lower.startsWith("incomplete")
+  ) {
+    return AUTOMATION_BILLING_API_CODES.BILLING_BLOCKED;
+  }
+  return raw;
+}

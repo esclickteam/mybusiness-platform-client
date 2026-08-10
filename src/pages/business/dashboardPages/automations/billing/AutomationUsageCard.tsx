@@ -2,6 +2,7 @@ import React, { useId, useState } from "react";
 import { AlertTriangle, HelpCircle, Loader2, RefreshCw } from "lucide-react";
 import {
   AUTOMATION_BILLING_API_CODES,
+  normalizeAutomationBillingPublicCode,
   type AutomationBillingUsageOverview,
 } from "../../../../../api/automationBillingApi";
 import { trackAutomationBillingEvent } from "./automationBillingAnalytics";
@@ -36,31 +37,28 @@ type Props = {
 };
 
 function isPaymentBlockReason(reason: string | null | undefined) {
+  const normalized = normalizeAutomationBillingPublicCode(reason);
+  if (!normalized) return false;
+  if (normalized === AUTOMATION_BILLING_API_CODES.QUOTA_EXHAUSTED) return false;
+  // Canonical billing-blocked + legacy eligibility reasons for backwards compat.
+  if (normalized === AUTOMATION_BILLING_API_CODES.BILLING_BLOCKED) return true;
+  if (normalized === AUTOMATION_BILLING_API_CODES.PLAN_REQUIRED) return true;
   const code = String(reason || "").trim().toLowerCase();
-  if (!code) return false;
-  if (code === "quota_exhausted") return false;
-  if (code === AUTOMATION_BILLING_API_CODES.QUOTA_EXHAUSTED.toLowerCase()) {
-    return false;
-  }
-  // Server eligibility reasons + API codes (never expose raw codes in UI copy).
   return (
-    code === "billing_blocked" ||
-    code === AUTOMATION_BILLING_API_CODES.BILLING_BLOCKED.toLowerCase() ||
     code.includes("past_due") ||
     code === "unpaid" ||
     code === "canceled" ||
     code === "incomplete" ||
     code === "incomplete_expired" ||
-    code === "no_automation_plan"
+    code === "no_automation_plan" ||
+    code === "billing_blocked"
   );
 }
 
 function isQuotaBlockReason(reason: string | null | undefined) {
-  const code = String(reason || "").trim().toLowerCase();
   return (
-    code === "quota_exhausted" ||
-    code === "QUOTA_EXHAUSTED".toLowerCase() ||
-    code === AUTOMATION_BILLING_API_CODES.QUOTA_EXHAUSTED.toLowerCase()
+    normalizeAutomationBillingPublicCode(reason) ===
+    AUTOMATION_BILLING_API_CODES.QUOTA_EXHAUSTED
   );
 }
 
