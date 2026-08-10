@@ -50,7 +50,7 @@ export const SYSTEM_AUTOMATION_CATALOG: SystemAutomationSuggestion[] = [
     resultLabels: ["WhatsApp מיידי", "משימה לנציג", "התראה לבעל העסק"],
     categories: ["leads", "crm", "whatsapp"],
     recommendedWaCategory: "welcome",
-    recommendedTemplateHints: ["new_lead_received", "welcome"],
+    recommendedTemplateHints: ["new_lead_welcome"],
   },
   {
     id: "lead_no_response",
@@ -303,7 +303,7 @@ export const REQUIRED_WHATSAPP_MESSAGE_TEMPLATES: Array<{
     category: "welcome",
     title: "ברוכים הבאים לליד חדש",
     reason: "נשלחת כשנכנס ליד חדש ל-CRM.",
-    hintNames: ["welcome", "new_lead", "new_lead_received", "ליד"],
+    hintNames: ["new_lead_welcome"],
     relatedAutomationIds: ["lead_multi_route", "wa_new_lead_welcome"],
     suggestedMetaName: "new_lead_welcome",
   },
@@ -312,7 +312,7 @@ export const REQUIRED_WHATSAPP_MESSAGE_TEMPLATES: Array<{
     category: "welcome",
     title: "ברוכים הבאים ללקוח חדש",
     reason: "נשלחת כשנוצר לקוח חדש ב-CRM.",
-    hintNames: ["welcome", "new_client", "client", "לקוח"],
+    hintNames: ["new_client_welcome"],
     relatedAutomationIds: ["new_client_welcome", "wa_new_client_welcome"],
     suggestedMetaName: "new_client_welcome",
   },
@@ -321,7 +321,7 @@ export const REQUIRED_WHATSAPP_MESSAGE_TEMPLATES: Array<{
     category: "appointment_reminder",
     title: "תזכורת פגישה",
     reason: "נשלחת לפני פגישה (שעה / שעתיים / יום / יומיים / 3 ימים).",
-    hintNames: ["appointment_reminder", "reminder", "תזכורת", "פגישה"],
+    hintNames: ["appointment_reminder"],
     relatedAutomationIds: [
       "appointment_duo",
       "appointment_reminder_1_day",
@@ -335,7 +335,7 @@ export const REQUIRED_WHATSAPP_MESSAGE_TEMPLATES: Array<{
     category: "custom",
     title: "תודה אחרי פגישה",
     reason: "נשלחת אחרי שפגישה מסומנת כהושלמה.",
-    hintNames: ["thanks", "thank_you", "תודה"],
+    hintNames: ["appointment_thanks"],
     relatedAutomationIds: ["appointment_thanks", "wa_appointment_thanks"],
     suggestedMetaName: "appointment_thanks",
   },
@@ -344,7 +344,7 @@ export const REQUIRED_WHATSAPP_MESSAGE_TEMPLATES: Array<{
     category: "custom",
     title: "בקשת ביקורת אחרי פגישה",
     reason: "נשלחת לבקשת ביקורת/פידבק אחרי פגישה.",
-    hintNames: ["review", "feedback", "ביקורת"],
+    hintNames: ["appointment_review"],
     relatedAutomationIds: ["appointment_review", "wa_appointment_review"],
     suggestedMetaName: "appointment_review",
   },
@@ -353,7 +353,7 @@ export const REQUIRED_WHATSAPP_MESSAGE_TEMPLATES: Array<{
     category: "follow_up",
     title: "מעקב לליד שלא נענה",
     reason: "נשלחת כפולואפ ראשון לליד בלי מענה.",
-    hintNames: ["follow_up", "lead_followup", "מעקב", "פולואפ"],
+    hintNames: ["lead_follow_up"],
     relatedAutomationIds: ["lead_no_response", "wa_lead_no_response"],
     suggestedMetaName: "lead_follow_up",
   },
@@ -362,7 +362,7 @@ export const REQUIRED_WHATSAPP_MESSAGE_TEMPLATES: Array<{
     category: "follow_up",
     title: "פולואפ שני לליד",
     reason: "נשלחת כמעקב נוסף ללידים שלא הומרו.",
-    hintNames: ["follow_up", "lead_followup_2", "פולואפ"],
+    hintNames: ["lead_follow_up_2"],
     relatedAutomationIds: ["lead_followup_2", "wa_lead_followup_2"],
     suggestedMetaName: "lead_follow_up_2",
   },
@@ -371,7 +371,7 @@ export const REQUIRED_WHATSAPP_MESSAGE_TEMPLATES: Array<{
     category: "follow_up",
     title: "נגיעה ללקוח לא פעיל",
     reason: "נשלחת ללקוחות ללא פעילות לאחרונה.",
-    hintNames: ["inactive", "follow_up", "נגיעה"],
+    hintNames: ["inactive_client"],
     relatedAutomationIds: ["inactive_client", "wa_inactive_client"],
     suggestedMetaName: "inactive_client",
   },
@@ -438,7 +438,11 @@ export function listRequiredWhatsAppMessageTemplates(
   return REQUIRED_WHATSAPP_MESSAGE_TEMPLATES.map((group) => {
     // Prefer name/key hints so each checklist row is independently prepared.
     const match =
-      usable.find((tpl) => templateMatchesHints(tpl, group.hintNames)) || null;
+      usable.find(
+        (tpl) =>
+          String(tpl.metaTemplateName || "").toLowerCase() ===
+          group.suggestedMetaName.toLowerCase()
+      ) || usable.find((tpl) => templateMatchesHints(tpl, group.hintNames)) || null;
     return {
       id: group.id,
       category: group.category,

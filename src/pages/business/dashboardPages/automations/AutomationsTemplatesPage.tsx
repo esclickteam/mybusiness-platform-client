@@ -55,6 +55,7 @@ import {
   type TemplateReadiness,
   type WorkingTemplate,
 } from "./workingTemplates";
+import { defaultMappingsForMetaTemplate } from "./whatsappAutomationMetaTemplates";
 
 type OutletCtx = {
   businessId: string | null;
@@ -310,6 +311,18 @@ export default function AutomationsTemplatesPage() {
             language: String((selectedTpl as WhatsAppTemplate)?.language || ""),
             blueprintKey: template.key,
             blueprintTrigger: template.whatsappTrigger || "",
+            componentMappings: defaultMappingsForMetaTemplate(
+              String(
+                (selectedTpl as WhatsAppTemplate)?.metaTemplateName ||
+                  selectedTpl?.name ||
+                  ""
+              )
+            ),
+            recipientType:
+              String((selectedTpl as WhatsAppTemplate)?.metaTemplateName || "") ===
+              "new_lead_received"
+                ? "business_owner"
+                : "lead_phone",
           },
         };
       }

@@ -81,7 +81,8 @@ describe("systemAutomationCatalog", () => {
       },
       {
         name: "תודה",
-        key: "thanks",
+        key: "appointment_thanks",
+        metaTemplateName: "appointment_thanks",
         category: "custom",
         status: "active",
       },
@@ -96,5 +97,17 @@ describe("systemAutomationCatalog", () => {
     expect(status.find((r) => r.id === "wa_appointment_review")?.prepared).toBe(
       false
     );
+  });
+
+  it("does not treat the owner alert as a lead welcome template", () => {
+    const ownerOnly = listRequiredWhatsAppMessageTemplates([
+      { metaTemplateName: "new_lead_received", status: "active", metaStatus: "APPROVED" },
+    ]);
+    expect(ownerOnly.find((row) => row.id === "wa_welcome_lead")?.prepared).toBe(false);
+
+    const customerWelcome = listRequiredWhatsAppMessageTemplates([
+      { metaTemplateName: "new_lead_welcome", status: "active", metaStatus: "APPROVED" },
+    ]);
+    expect(customerWelcome.find((row) => row.id === "wa_welcome_lead")?.prepared).toBe(true);
   });
 });

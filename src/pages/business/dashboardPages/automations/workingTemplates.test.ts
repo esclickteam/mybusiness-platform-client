@@ -288,4 +288,27 @@ describe("workingTemplates launch safety", () => {
     });
     expect(picked?.id).toBe("wa1");
   });
+
+  it("never chooses a test or business-alert template for customer welcome", () => {
+    const picked = pickBestWaTemplate(
+      [
+        { _id: "test", name: "test", category: "welcome", status: "active", metaStatus: "APPROVED", metaTemplateName: "hello_world", isTestTemplate: true } as never,
+        { _id: "alert", name: "alert", category: "welcome", status: "active", metaStatus: "APPROVED", metaTemplateName: "new_lead_received" } as never,
+        { _id: "welcome", name: "welcome", category: "welcome", status: "active", metaStatus: "APPROVED", metaTemplateName: "new_lead_welcome" } as never,
+      ],
+      { preferredMetaName: "new_lead_welcome" }
+    );
+    expect(picked?.id).toBe("welcome");
+  });
+
+  it("gives an exact preferred Meta name priority", () => {
+    const picked = pickBestWaTemplate(
+      [
+        { _id: "other", name: "other", category: "welcome", status: "active", metaStatus: "APPROVED", metaTemplateName: "other_welcome" } as never,
+        { _id: "exact", name: "exact", category: "welcome", status: "active", metaStatus: "APPROVED", metaTemplateName: "appointment_reminder" } as never,
+      ],
+      { preferredMetaName: "appointment_reminder" }
+    );
+    expect(picked?.id).toBe("exact");
+  });
 });
