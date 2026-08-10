@@ -45,6 +45,7 @@ function baseUsage(
     },
     canPublish: true,
     canExecute: true,
+    canPerformBillableAction: true,
     blockReason: null,
     ...overrides,
   };
@@ -154,8 +155,9 @@ describe("AutomationUsageCard", () => {
   it("100% quota exhausted state", () => {
     const { onOpenPlans } = renderCard(
       baseUsage({
-        canExecute: false,
-        blockReason: "quota_exhausted",
+        canExecute: true,
+        canPerformBillableAction: false,
+        blockReason: "AUTOMATION_ACTION_QUOTA_EXHAUSTED",
         usage: {
           used: 2500,
           limit: 2500,
@@ -169,6 +171,9 @@ describe("AutomationUsageCard", () => {
     expect(
       screen.getByText("מכסת הפעולות החודשית נוצלה")
     ).toBeInTheDocument();
+    expect(
+      screen.getByText(/רק פעולות מחויבות ייחסמו/)
+    ).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "שדרוג חבילה" }));
     expect(onOpenPlans).toHaveBeenCalledWith("quota_exhausted");
   });
@@ -176,8 +181,9 @@ describe("AutomationUsageCard", () => {
   it("QUOTA_EXHAUSTED path opens upgrade messaging on usage card", () => {
     const { onOpenPlans } = renderCard(
       baseUsage({
-        canExecute: false,
-        blockReason: "AUTOMATION_QUOTA_EXHAUSTED",
+        canExecute: true,
+        canPerformBillableAction: false,
+        blockReason: "AUTOMATION_ACTION_QUOTA_EXHAUSTED",
         usage: {
           used: 2500,
           limit: 2500,

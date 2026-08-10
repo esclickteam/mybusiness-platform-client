@@ -40,6 +40,7 @@ export const TRIGGER_CATEGORY_LABELS: Record<string, string> = {
   appointments: "פגישות",
   website: "אתר וטפסים",
   store: "חנות ותשלומים",
+  schedule: "לוח זמנים",
   manual: "ידני",
   coming_soon: "בקרוב",
 };

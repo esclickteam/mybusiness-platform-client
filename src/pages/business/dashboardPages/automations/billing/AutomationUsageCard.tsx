@@ -160,7 +160,8 @@ export default function AutomationUsageCard({
   const plan = usage.plan;
   const hasPlan = Boolean(plan?.key);
   const used = usage.usage?.used ?? 0;
-  const limit = usage.usage?.limit ?? plan?.executionLimit ?? 0;
+  const limit =
+    usage.usage?.limit ?? plan?.actionLimit ?? plan?.executionLimit ?? 0;
   const percentage = usage.usage?.percentage ?? 0;
   const severity = getUsageSeverity(percentage);
   const periodEndLabel = formatHeDate(usage.usage?.periodEnd);
@@ -180,9 +181,16 @@ export default function AutomationUsageCard({
     (isPaymentBlockReason(usage.blockReason) ||
       String(plan?.status || "").toLowerCase() === "past_due" ||
       String(plan?.status || "").toLowerCase() === "unpaid");
+  /**
+   * Action quota is independent of workflow execution eligibility.
+   * Prefer canPerformBillableAction; fall back to legacy canExecute+blockReason.
+   */
   const quotaBlocked =
-    !usage.canExecute &&
-    (severity === "exhausted" || isQuotaBlockReason(usage.blockReason));
+    !paymentBlocked &&
+    (typeof usage.canPerformBillableAction === "boolean"
+      ? usage.canExecute && usage.canPerformBillableAction === false
+      : !usage.canExecute &&
+        (severity === "exhausted" || isQuotaBlockReason(usage.blockReason)));
 
   if (!hasPlan) {
     return (
@@ -274,8 +282,8 @@ export default function AutomationUsageCard({
           <div id={tipId} className="ax-billing-tip" role="note">
             <strong>מהי פעולה?</strong>
             <p>
-              בכל פעם שאוטומציה מופעלת, היא נחשבת לפעולה אחת — ללא קשר למספר
-              השלבים הרגילים בתהליך.
+              פעולה היא שלב באוטומציה שמשנה משהו בעסק (למשל שליחת הודעה או עדכון
+              ליד). טריגרים, תנאים והמתנות אינם נספרים במכסה.
             </p>
           </div>
         ) : null}
@@ -343,8 +351,8 @@ export default function AutomationUsageCard({
           <div>
             <strong>מכסת הפעולות החודשית נוצלה</strong>
             <p>
-              אוטומציות קיימות נשארות פעילות, אך פעולות חדשות לא יתחילו עד לחידוש
-              המכסה או לשדרוג החבילה.
+              האוטומציות ממשיכות לרוץ; רק פעולות מחויבות ייחסמו עד לחידוש המכסה
+              או לשדרוג החבילה.
             </p>
             <button
               type="button"
