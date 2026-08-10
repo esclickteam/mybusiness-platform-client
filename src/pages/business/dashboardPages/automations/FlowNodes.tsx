@@ -87,6 +87,10 @@ function FlowNodeShell({
   const routeCount = clampRouteCount(data.routeCount, 1);
   const router = type === "router" ? ensureRouterPaths(data) : null;
   const provider = providerLabel(type, data);
+  const isWhatsAppAction =
+    type === "action" &&
+    (String(data.actionKey || "").includes("whatsapp") ||
+      String(data.actionKey || "") === "send_whatsapp");
   const triggerRouteLabels =
     type === "trigger" && routeCount > 1
       ? Array.from({ length: routeCount }, (_, i) => `תוצאה ${i + 1}`)
@@ -116,6 +120,11 @@ function FlowNodeShell({
         <Icon size={11} />
         <span>{provider}</span>
       </div>
+      {isWhatsAppAction ? (
+        <span className="af-node__wa-cost" title="0.20 ₪ להודעת WhatsApp">
+          💬 0.20 ₪
+        </span>
+      ) : null}
       <strong className="af-node__title">{title}</strong>
       {summary ? <p className="af-node__summary">{summary}</p> : null}
 

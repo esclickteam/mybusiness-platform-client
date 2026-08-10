@@ -1,12 +1,14 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import {
   NavLink,
   Outlet,
   useLocation,
   useNavigate,
   useParams,
+  useSearchParams,
 } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { toast } from "react-toastify";
 import {
   Activity,
   History,
@@ -21,6 +23,11 @@ import {
 import { useAuth } from "../../../../context/AuthContext";
 import { useLocaleDir } from "../../../../hooks/useLocaleDir";
 import { normalizeBusinessId } from "../../../../utils/notificationNavigation";
+import { reactivateWhatsAppBilling } from "../../../../api/whatsappBillingApi";
+import { useWhatsAppBilling } from "./billing/useWhatsAppBilling";
+import WhatsAppUsageCard from "./billing/WhatsAppUsageCard";
+import WhatsAppBillingSetupModal from "./billing/WhatsAppBillingSetupModal";
+import WhatsAppCheckoutProcessing from "./billing/WhatsAppCheckoutProcessing";
 
 type WhatsAppTab = {
   path: string;
@@ -39,17 +46,40 @@ const tabs: WhatsAppTab[] = [
   { path: "settings", labelKey: "whatsapp.nav.settings", icon: Settings2 },
 ];
 
+function readWaBillingFlag(searchParams: URLSearchParams) {
+  return (
+    searchParams.get("waBilling") ||
+    searchParams.get("whatsappBilling") ||
+    null
+  );
+}
+
 export default function WhatsAppMain() {
   const { t } = useTranslation();
   const dir = useLocaleDir();
   const location = useLocation();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { businessId: urlBusinessId } = useParams<{ businessId: string }>();
   const { user } = useAuth();
   const businessId =
     normalizeBusinessId(urlBusinessId) ||
     normalizeBusinessId(user?.businessId) ||
     null;
+
+  const [setupModalOpen, setSetupModalOpen] = useState(false);
+  const [setupModalMode, setSetupModalMode] = useState<"setup" | "manage">(
+    "setup"
+  );
+  const [checkoutProcessingOpen, setCheckoutProcessingOpen] = useState(false);
+
+  const {
+    usage: billingUsage,
+    loading: billingLoading,
+    error: billingError,
+    refresh: refreshBilling,
+    setUsage: setBillingUsage,
+  } = useWhatsAppBilling(businessId);
 
   const currentTab = useMemo(() => {
     const parts = location.pathname.split("/").filter(Boolean);
@@ -75,6 +105,37 @@ export default function WhatsAppMain() {
 
     navigate(`${basePath}/compose`, { replace: true });
   }, [currentTab, isKnownTab, location.pathname, navigate]);
+
+  useEffect(() => {
+    const flag = readWaBillingFlag(searchParams);
+    if (!flag) return;
+    if (flag === "processing") {
+      setCheckoutProcessingOpen(true);
+      toast.info("מעדכנים את חיוב WhatsApp...");
+    } else if (flag === "cancel") {
+      toast.info("הגדרת החיוב בוטלה — ניתן להגדיר מחדש בכל עת.");
+    }
+    const next = new URLSearchParams(searchParams);
+    next.delete("waBilling");
+    next.delete("whatsappBilling");
+    setSearchParams(next, { replace: true });
+  }, [searchParams, setSearchParams]);
+
+  const openSetupModal = (mode: "setup" | "manage") => {
+    setSetupModalMode(mode);
+    setSetupModalOpen(true);
+  };
+
+  const handleReactivate = async () => {
+    if (!businessId) return;
+    try {
+      await reactivateWhatsAppBilling(businessId);
+      toast.success("הביטול בוטל והחיוב יישאר פעיל.");
+      await refreshBilling();
+    } catch {
+      toast.error("לא הצלחנו להשאיר את החיוב פעיל.");
+    }
+  };
 
   return (
     <section
@@ -168,10 +229,48 @@ export default function WhatsAppMain() {
           </nav>
         </header>
 
+        {businessId ? (
+          <WhatsAppUsageCard
+            businessId={businessId}
+            usage={billingUsage}
+            loading={billingLoading}
+            error={billingError}
+            onRetry={() => void refreshBilling()}
+            onOpenSetup={() => openSetupModal("setup")}
+            onOpenManage={() => openSetupModal("manage")}
+            onReactivate={() => void handleReactivate()}
+          />
+        ) : null}
+
         <main className="w-full min-w-0">
           <Outlet context={{ businessId }} />
         </main>
       </div>
+
+      {businessId ? (
+        <>
+          <WhatsAppBillingSetupModal
+            open={setupModalOpen}
+            businessId={businessId}
+            usage={billingUsage}
+            initialMode={setupModalMode}
+            onClose={() => setSetupModalOpen(false)}
+            onUsageUpdated={async () => {
+              await refreshBilling();
+            }}
+          />
+          <WhatsAppCheckoutProcessing
+            open={checkoutProcessingOpen}
+            businessId={businessId}
+            onDone={(usage) => {
+              setBillingUsage(usage);
+              setCheckoutProcessingOpen(false);
+              void refreshBilling();
+            }}
+            onClose={() => setCheckoutProcessingOpen(false)}
+          />
+        </>
+      ) : null}
     </section>
   );
 }

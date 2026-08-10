@@ -51,10 +51,21 @@ import {
   type AutomationBillingUsageOverview,
 } from "../../../../api/automationBillingApi";
 import {
+  WHATSAPP_BILLING_API_CODES,
+  isWhatsAppBillingGateCode,
+  readWhatsAppBillingErrorCode,
+} from "../../../../api/whatsappBillingApi";
+import {
   readAutomationErrorCode,
 } from "./automationUiHelpers";
 import AutomationPlanModal from "./billing/AutomationPlanModal";
 import AutomationCancelConfirmModal from "./billing/AutomationCancelConfirmModal";
+import WhatsAppBillingSetupModal from "../whatsapp/billing/WhatsAppBillingSetupModal";
+import { useWhatsAppBilling } from "../whatsapp/billing/useWhatsAppBilling";
+import {
+  formatHeIls,
+  resolveWhatsAppUnitPriceIls,
+} from "../whatsapp/billing/whatsappBillingFormat";
 import {
   getWhatsAppIntegrationStatus,
   listApprovedWhatsAppTemplates,
@@ -439,6 +450,11 @@ function EditorInner({
   const [showBillingCancelModal, setShowBillingCancelModal] = useState(false);
   const [billingUsage, setBillingUsage] =
     useState<AutomationBillingUsageOverview | null>(null);
+  const [showWaBillingModal, setShowWaBillingModal] = useState(false);
+  const {
+    usage: waBillingUsage,
+    refresh: refreshWaBilling,
+  } = useWhatsAppBilling(businessId);
   const [saveState, setSaveState] = useState<"idle" | "saving" | "saved" | "error">("idle");
   const [testOpen, setTestOpen] = useState(false);
   const [testResult, setTestResult] = useState<Record<string, unknown> | null>(null);
@@ -1217,8 +1233,23 @@ function EditorInner({
     void refreshBillingUsage();
   };
 
+  const openWhatsAppBillingGateModal = () => {
+    setShowWaBillingModal(true);
+    void refreshWaBilling();
+  };
+
   const applyBillingGateCode = (code: string | null | undefined): boolean => {
     if (!code) return false;
+    if (isWhatsAppBillingGateCode(code)) {
+      const msg =
+        code === WHATSAPP_BILLING_API_CODES.SETUP_REQUIRED
+          ? "נדרש חיוב WhatsApp — האוטומציה כוללת שליחת הודעות WhatsApp בעלות של 0.20 ₪ להודעה. יש להגדיר אמצעי תשלום לפני ההפעלה."
+          : "לא ניתן להפעיל אוטומציה עקב מצב חיוב WhatsApp";
+      setPublishError(msg);
+      toast.error(msg);
+      openWhatsAppBillingGateModal();
+      return true;
+    }
     if (code === AUTOMATION_BILLING_API_CODES.PLAN_REQUIRED) {
       const msg = "כדי להפעיל אוטומציה יש לבחור חבילת הרצות";
       setPublishError(msg);
@@ -1332,7 +1363,11 @@ function EditorInner({
           };
         }
       )?.response?.data;
-      const code = readAutomationErrorCode(error) || response?.code || null;
+      const code =
+        readWhatsAppBillingErrorCode(error) ||
+        readAutomationErrorCode(error) ||
+        response?.code ||
+        null;
       if (applyBillingGateCode(code)) {
         return;
       }
@@ -1440,7 +1475,9 @@ function EditorInner({
           try {
             onSaved(await resumeAutomationWorkflow(businessId, workflow._id));
           } catch (error: unknown) {
-            const code = readAutomationErrorCode(error);
+            const code =
+              readWhatsAppBillingErrorCode(error) ||
+              readAutomationErrorCode(error);
             if (applyBillingGateCode(code)) return;
             toast.error(
               readErrorMessage(error, "לא ניתן להפעיל מחדש את האוטומציה")
@@ -2048,6 +2085,47 @@ function EditorInner({
                         עד להפעלת חיבור WhatsApp אישי לעסק, ההודעות יישלחו מהמספר
                         המרכזי של BizUply בשם העסק שלך.
                       </p>
+                    </div>
+
+                    <div className="af-wa-cost" dir="rtl">
+                      <span className="af-wa-cost__badge">
+                        ⚡ 1 פעולת אוטומציה
+                      </span>
+                      <span className="af-wa-cost__badge">
+                        💬{" "}
+                        {formatHeIls(
+                          resolveWhatsAppUnitPriceIls(
+                            waBillingUsage?.unitPriceIls
+                          )
+                        )}{" "}
+                        להודעת WhatsApp
+                      </span>
+                      {(() => {
+                        const unit = resolveWhatsAppUnitPriceIls(
+                          waBillingUsage?.unitPriceIls
+                        );
+                        const triggerKey = String(
+                          nodes.find((n) => n.type === "trigger")?.data
+                            ?.triggerKey || ""
+                        ).toLowerCase();
+                        const scheduled = /schedule|cron|recurring|daily|weekly|monthly|timer/.test(
+                          triggerKey
+                        );
+                        if (scheduled) {
+                          return (
+                            <p className="af-wa-cost__estimate">
+                              הערכה בלבד: לדוגמה הודעה אחת ביום ≈{" "}
+                              {formatHeIls(unit * 30)} לחודש
+                            </p>
+                          );
+                        }
+                        return (
+                          <p className="af-wa-cost__estimate">
+                            הערכה בלבד: לדוגמה 100 הודעות ≈{" "}
+                            {formatHeIls(unit * 100)}
+                          </p>
+                        );
+                      })()}
                     </div>
 
                     <div className="af-wa-sender" dir="rtl">
@@ -3334,6 +3412,16 @@ function EditorInner({
             onCancelled={() => {
               setShowBillingCancelModal(false);
               void refreshBillingUsage();
+            }}
+          />
+          <WhatsAppBillingSetupModal
+            open={showWaBillingModal}
+            businessId={businessId}
+            usage={waBillingUsage}
+            initialMode="setup"
+            onClose={() => setShowWaBillingModal(false)}
+            onUsageUpdated={async () => {
+              await refreshWaBilling();
             }}
           />
         </>
