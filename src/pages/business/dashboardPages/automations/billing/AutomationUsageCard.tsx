@@ -131,7 +131,7 @@ export default function AutomationUsageCard({
               {dateLabel || "סיום תקופת המעבר"}.
             </p>
             <p>
-              לאחר מכן יהיה צורך לבחור חבילת הרצות כדי להמשיך להפעיל אוטומציות.
+              לאחר מכן יהיה צורך לבחור חבילת פעולות כדי להמשיך להפעיל אוטומציות.
             </p>
             {warning ? (
               <p className="ax-billing-card__note" role="alert">
@@ -189,7 +189,7 @@ export default function AutomationUsageCard({
       <div className="ax-billing-card ax-billing-card--no-plan">
         <div className="ax-billing-card__body">
           <strong>אוטומציות בתשלום לפי שימוש</strong>
-          <p>בחרו חבילת הרצות כדי להפעיל תהליכים אוטומטיים בעסק.</p>
+          <p>בחרו חבילת פעולות כדי להפעיל תהליכים אוטומטיים בעסק.</p>
         </div>
         <button
           type="button"
@@ -258,13 +258,13 @@ export default function AutomationUsageCard({
           <strong>{formatHeNumber(used)}</strong>
           {" מתוך "}
           <strong>{formatHeNumber(limit)}</strong>
-          {" הרצות"}
+          {" פעולות"}
           <button
             type="button"
             className="ax-billing-tip-btn"
             aria-expanded={tipOpen}
             aria-controls={tipId}
-            aria-label="מהי הרצה?"
+            aria-label="מהי פעולה?"
             onClick={() => setTipOpen((v) => !v)}
           >
             <HelpCircle size={15} />
@@ -272,9 +272,9 @@ export default function AutomationUsageCard({
         </p>
         {tipOpen ? (
           <div id={tipId} className="ax-billing-tip" role="note">
-            <strong>מהי הרצה?</strong>
+            <strong>מהי פעולה?</strong>
             <p>
-              בכל פעם שאוטומציה מופעלת, היא נחשבת להרצה אחת — ללא קשר למספר
+              בכל פעם שאוטומציה מופעלת, היא נחשבת לפעולה אחת — ללא קשר למספר
               השלבים הרגילים בתהליך.
             </p>
           </div>
@@ -287,7 +287,7 @@ export default function AutomationUsageCard({
         aria-valuemin={0}
         aria-valuemax={100}
         aria-valuenow={Math.max(0, Math.min(100, Math.round(percentage)))}
-        aria-label="שימוש במכסת ההרצות החודשית"
+        aria-label="שימוש במכסת הפעולות החודשית"
       >
         <div
           className="ax-billing-progress__fill"
@@ -305,7 +305,7 @@ export default function AutomationUsageCard({
           <AlertTriangle size={16} aria-hidden />
           <div>
             <strong>
-              ניצלתם {formatHeNumber(used)} מתוך {formatHeNumber(limit)} הרצות
+              ניצלתם {formatHeNumber(used)} מתוך {formatHeNumber(limit)} פעולות
               החודש
             </strong>
             <p>אם השימוש צפוי לגדול, אפשר לשדרג את החבילה.</p>
@@ -324,8 +324,8 @@ export default function AutomationUsageCard({
         <div className="ax-billing-alert ax-billing-alert--critical" role="status">
           <AlertTriangle size={16} aria-hidden />
           <div>
-            <strong>הגעתם כמעט למכסת ההרצות החודשית</strong>
-            <p>נשארו {formatHeNumber(Math.max(0, limit - used))} הרצות.</p>
+            <strong>הגעתם כמעט למכסת הפעולות החודשית</strong>
+            <p>נשארו {formatHeNumber(Math.max(0, limit - used))} פעולות.</p>
             <button
               type="button"
               className="ax-btn ax-btn--primary"
@@ -341,9 +341,9 @@ export default function AutomationUsageCard({
         <div className="ax-billing-alert ax-billing-alert--blocked" role="alert">
           <AlertTriangle size={16} aria-hidden />
           <div>
-            <strong>מכסת ההרצות החודשית נוצלה</strong>
+            <strong>מכסת הפעולות החודשית נוצלה</strong>
             <p>
-              אוטומציות קיימות נשארות פעילות, אך הרצות חדשות לא יתחילו עד לחידוש
+              אוטומציות קיימות נשארות פעילות, אך פעולות חדשות לא יתחילו עד לחידוש
               המכסה או לשדרוג החבילה.
             </p>
             <button
@@ -383,7 +383,7 @@ export default function AutomationUsageCard({
           <AlertTriangle size={16} aria-hidden />
           <div>
             <strong>חבילת האוטומציות אינה פעילה</strong>
-            <p>לא ניתן להתחיל הרצות חדשות עד להסדרת התשלום.</p>
+            <p>לא ניתן להתחיל פעולות חדשות עד להסדרת התשלום.</p>
             <button
               type="button"
               className="ax-btn ax-btn--primary"

@@ -146,7 +146,7 @@ describe("AutomationUsageCard", () => {
     );
     expect(document.querySelector(".ax-billing-card--critical")).toBeTruthy();
     expect(
-      screen.getByText("הגעתם כמעט למכסת ההרצות החודשית")
+      screen.getByText("הגעתם כמעט למכסת הפעולות החודשית")
     ).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "שדרוג עכשיו" })).toBeInTheDocument();
   });
@@ -167,7 +167,7 @@ describe("AutomationUsageCard", () => {
       })
     );
     expect(
-      screen.getByText("מכסת ההרצות החודשית נוצלה")
+      screen.getByText("מכסת הפעולות החודשית נוצלה")
     ).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "שדרוג חבילה" }));
     expect(onOpenPlans).toHaveBeenCalledWith("quota_exhausted");

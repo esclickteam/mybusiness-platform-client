@@ -231,7 +231,7 @@ export default function AutomationsHomePage() {
       }
       const code = readAutomationBillingErrorCode(error);
       if (code === AUTOMATION_BILLING_API_CODES.PLAN_REQUIRED) {
-        toast.error("כדי להפעיל אוטומציה יש לבחור חבילת הרצות");
+        toast.error("כדי להפעיל אוטומציה יש לבחור חבילת פעולות");
         openPlanModal("pick");
         return;
       }
