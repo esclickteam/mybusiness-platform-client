@@ -1,14 +1,14 @@
 /**
- * Host-aware sitemap.xml / robots.txt for customer sites.
- * Matcher is intentionally tiny so the SPA homepage is never touched.
- *
- * This is a Vite SPA on Vercel Routing Middleware (not Next.js).
- * Use standard Request/URL/Response APIs only — never request.nextUrl
- * or next/server helpers.
+ * Edge middleware for customer-site sitemap.xml / robots.txt.
+ * Vite SPA on Vercel Routing Middleware (not Next.js).
  */
 
-const PUBLIC_SITE_DOMAIN =
-  process.env.BIZUPLY_PUBLIC_SITE_DOMAIN || "sites.bizuply.com";
+import {
+  resolveEdgePublicSiteDomain,
+  resolvePublicApiOrigin,
+} from "./publicSiteEdgeConfig.js";
+
+const PUBLIC_SITE_DOMAIN = resolveEdgePublicSiteDomain(process.env);
 
 const MARKETING_HOSTS = new Set([
   "bizuply.com",
@@ -73,7 +73,6 @@ export default async function middleware(request) {
   try {
     const host = getHost(request);
 
-    // Marketing site: proxy the static files from /public (copied to dist root)
     if (!isCustomerSiteHost(host)) {
       const marketingPath = isRobots
         ? "/marketing-robots.txt"
@@ -89,10 +88,10 @@ export default async function middleware(request) {
       });
     }
 
-    // Customer custom-domain / subdomain sites: fetch SEO docs from API by host
     const endpoint = isRobots ? "robots.txt" : "sitemap.xml";
+    const { apiOrigin } = resolvePublicApiOrigin(process.env);
     const apiUrl =
-      `https://api.bizuply.com/api/site-builder/public/by-host/${endpoint}` +
+      `${apiOrigin}/api/site-builder/public/by-host/${endpoint}` +
       `?host=${encodeURIComponent(host)}&_t=${Date.now()}`;
 
     const apiRes = await fetch(apiUrl, {
@@ -110,7 +109,6 @@ export default async function middleware(request) {
       source: "customer",
     });
   } catch {
-    // Never let an unhandled exception become MIDDLEWARE_INVOCATION_FAILED
     return seoResponse(
       isRobots ? "User-agent: *\nAllow: /\n" : EMPTY_SITEMAP,
       { isRobots, status: 200, source: "error-fallback" },
