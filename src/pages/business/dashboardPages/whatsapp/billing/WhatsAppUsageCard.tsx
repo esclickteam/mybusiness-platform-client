@@ -97,7 +97,6 @@ export default function WhatsAppUsageCard({
     (Boolean(usage.subscription?.paymentGraceEndsAt) || status === "past_due");
   const messageCount = usage.usage?.messageCount ?? 0;
   const chargeIls = usage.usage?.chargeIls ?? messageCount * unitPrice;
-  const periodStartLabel = formatHeDate(usage.usage?.periodStart);
   const periodEndLabel = formatHeDate(usage.usage?.periodEnd);
   const graceLabel = formatHeDateTime(usage.subscription?.paymentGraceEndsAt);
   const cancelDateLabel =
@@ -105,12 +104,15 @@ export default function WhatsAppUsageCard({
 
   if (needsSetup && !hasActiveLike) {
     return (
-      <div className="wa-billing-card wa-billing-card--setup">
+      <div className="wa-billing-card wa-billing-card--setup" dir="rtl">
         <div className="wa-billing-card__body">
-          <strong>חיוב לפי שימוש ב-WhatsApp</strong>
-          <p>
-            מחיר להודעה: {formatHeIls(unitPrice)}. אין צורך לרכוש חבילת הודעות
-            מראש — מחויבים רק לפי השימוש בפועל.
+          <strong>WhatsApp</strong>
+          <p className="wa-billing-card__plan">חיוב לפי שימוש</p>
+          <p className="wa-billing-card__counts">
+            {formatHeIls(unitPrice)} להודעה
+          </p>
+          <p className="wa-billing-card__status" role="status">
+            חיוב WhatsApp לא הוגדר
           </p>
         </div>
         <button
@@ -155,8 +157,11 @@ export default function WhatsAppUsageCard({
 
       <div className="wa-billing-card__header">
         <div>
-          <h3 className="wa-billing-card__title">שימוש ב-WhatsApp החודש</h3>
+          <h3 className="wa-billing-card__title">WhatsApp</h3>
           <p className="wa-billing-card__plan">חיוב לפי שימוש</p>
+          <p className="wa-billing-card__status wa-billing-card__status--active">
+            חיוב WhatsApp פעיל
+          </p>
         </div>
         <button
           type="button"
@@ -168,27 +173,21 @@ export default function WhatsAppUsageCard({
       </div>
 
       <p className="wa-billing-card__counts">
-        מחיר להודעה: <strong>{formatHeIls(unitPrice)}</strong>
+        {formatHeIls(unitPrice)} להודעה
       </p>
       <p className="wa-billing-card__counts">
-        החודש נשלחו: <strong>{formatHeNumber(messageCount)}</strong> הודעות
+        {formatHeNumber(messageCount)} הודעות החודש
       </p>
       <p className="wa-billing-card__counts">
         חיוב משוער: <strong>{formatHeIls(chargeIls)}</strong>
       </p>
 
       <div className="wa-billing-card__meta">
-        {periodStartLabel && periodEndLabel ? (
-          <span>
-            תקופה: {periodStartLabel} – {periodEndLabel}
-          </span>
-        ) : periodEndLabel ? (
-          <span>עד {periodEndLabel}</span>
-        ) : null}
+        {periodEndLabel ? <span>סוף תקופת החיוב: {periodEndLabel}</span> : null}
       </div>
 
       <p className="wa-billing-card__note">
-        אין צורך לרכוש חבילת הודעות מראש. מחויבים רק לפי השימוש בפועל.
+        אין חבילות WhatsApp — מחויבים רק לפי הודעות שנשלחו בפועל.
       </p>
 
       {inPaymentGrace ? (

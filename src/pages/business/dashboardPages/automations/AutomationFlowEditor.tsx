@@ -1280,7 +1280,7 @@ function EditorInner({
     if (isWhatsAppBillingGateCode(code)) {
       const msg =
         code === WHATSAPP_BILLING_API_CODES.SETUP_REQUIRED
-          ? "נדרש חיוב WhatsApp — האוטומציה כוללת שליחת הודעות WhatsApp בעלות של 0.20 ₪ להודעה. יש להגדיר אמצעי תשלום לפני ההפעלה."
+          ? "נדרש להגדיר חיוב WhatsApp לפני הפעלת האוטומציה."
           : "לא ניתן להפעיל אוטומציה עקב מצב חיוב WhatsApp";
       setPublishError(msg);
       toast.error(msg);
@@ -3495,6 +3495,7 @@ function EditorInner({
             businessId={businessId}
             usage={waBillingUsage}
             initialMode="setup"
+            returnTo="automations"
             onClose={() => setShowWaBillingModal(false)}
             onUsageUpdated={async () => {
               await refreshWaBilling();

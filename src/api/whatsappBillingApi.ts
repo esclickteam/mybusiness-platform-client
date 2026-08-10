@@ -102,11 +102,14 @@ export async function getWhatsAppBillingUsage(businessId: string) {
   return overview as WhatsAppBillingUsageOverview;
 }
 
-export async function createWhatsAppBillingCheckout(businessId: string) {
+export async function createWhatsAppBillingCheckout(
+  businessId: string,
+  options?: { returnTo?: "automations" | "whatsapp" }
+) {
   assertAutomationWritesAllowed();
   const { data } = await API.post(
     "/whatsapp/billing/checkout",
-    {},
+    { returnTo: options?.returnTo || undefined },
     withBusiness(businessId)
   );
   return data as WhatsAppBillingCheckoutResult;
