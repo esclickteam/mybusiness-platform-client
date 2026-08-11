@@ -117,33 +117,42 @@ describe("workingTemplates launch safety", () => {
     expect(ready.resolvedTriggerKey).toBe("new_lead");
   });
 
-  it("never marks AI templates ready (coming soon)", () => {
-    const ai = WORKING_TEMPLATES.filter((t) => t.key.startsWith("wf_ai_"));
-    expect(ai.length).toBeGreaterThanOrEqual(7);
-    for (const template of ai) {
-      expect(template.comingSoon).toBe(true);
-      const readiness = getTemplateReadiness(template, {
-        recipes: [
-          {
-            key: template.recipeKey || "ai_rank_leads",
-            name: "AI",
-            description: "",
-            triggerCount: 1,
-            pathCount: 1,
-            nodeCount: 2,
-            canCreate: true,
-            comingSoon: false,
-          } as AutomationRecipeSummary,
-        ],
-        triggers: [leadTrigger, statusTrigger],
-        waTemplates: [approvedWa],
-        managedWaReady: true,
-        calendarConnected: true,
-        aiEntitled: true,
-      });
-      expect(readiness.ready).toBe(false);
-      expect(readiness.blocker).toMatch(/AI|בקרוב/i);
-    }
+  it("exposes supported AI templates as ready when their trigger exists", () => {
+    const ai = WORKING_TEMPLATES.filter((t) => t.categories.includes("ai"));
+    expect(ai).toHaveLength(10);
+    expect(ai.every((template) => template.comingSoon === false)).toBe(true);
+    expect(ai.every((template) => template.requiresAiEntitlement !== true)).toBe(
+      true
+    );
+    expect(ai.map((template) => template.key)).toContain("ai_lead_scoring");
+    expect(ai.map((template) => template.recipeKey)).toContain("ai_rank_leads");
+    expect(WORKING_TEMPLATES.some((template) => template.key.startsWith("wf_ai_"))).toBe(false);
+
+    const leadScoring = ai.find((template) => template.recipeKey === "ai_rank_leads")!;
+    expect(leadScoring.keywords?.length).toBeGreaterThan(0);
+    expect(leadScoring.requiredTriggerKeys).toEqual(
+      expect.arrayContaining(["new_lead", "crm_lead_created"])
+    );
+    expect(leadScoring.categories).toEqual(
+      expect.arrayContaining(["ai", "leads", "crm", "sales"])
+    );
+
+    const followup = ai.find((template) => template.recipeKey === "ai_followup_draft")!;
+    expect(followup.requiredTriggerKeys).toEqual(
+      expect.arrayContaining(["lead_status_changed"])
+    );
+
+    const digest = ai.find((template) => template.recipeKey === "ai_daily_leads_digest")!;
+    expect(digest.requiredTriggerKeys).toEqual(["scheduled"]);
+    expect(digest.categories).toEqual(expect.arrayContaining(["ai", "crm"]));
+
+    const readiness = getTemplateReadiness(leadScoring, {
+      recipes: [], triggers: [leadTrigger], waTemplates: [], managedWaReady: false,
+      calendarConnected: false, aiEntitled: false,
+    });
+    expect(readiness.ready).toBe(true);
+    expect(readiness.blocker).toBeUndefined();
+    expect(readiness.resolvedTriggerKey).toBe("new_lead");
   });
 
   it("marks appointment_done_email coming soon and not ready on appointment_created", () => {

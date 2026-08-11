@@ -10,6 +10,7 @@ import type {
   WhatsAppTemplate,
 } from "../../../../api/whatsappApi";
 import type { TemplateCategoryId } from "./templateCategoryMapping";
+import { buildAiTemplateGraph, listSupportedAiTemplates } from "./aiAutomationCatalog";
 import {
   BLUEPRINT_PREFERRED_META,
   isBusinessAlertMetaTemplateName,
@@ -52,6 +53,7 @@ export type WorkingTemplate = {
   requiresWaTemplate?: boolean;
   requiresCalendar?: boolean;
   requiresAiEntitlement?: boolean;
+  keywords?: string[];
 };
 
 const LEAD_TRIGGER_KEYS = [
@@ -923,190 +925,55 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
       }),
   },
 
-  // ── AI (coming soon — executors not in SUPPORTED_ACTIONS yet) ──
-  {
-    key: "wf_ai_rank_leads",
-    rank: 29,
-    name: "AI — דירוג ליד חדש",
-    description: "ליד חדש → AI מדרג סיכוי/דחיפות + התראה לצוות.",
-    triggerLabel: "ליד חדש ב-CRM",
-    resultLabels: ["דירוג AI", "התראה"],
-    categories: ["ai", "leads", "sales"],
-    engine: "workflow_recipe",
-    recipeKey: "ai_rank_leads",
-    comingSoon: true,
-    requiresAiEntitlement: true,
-    requiredTriggerKeys: LEAD_TRIGGER_KEYS,
-    buildGraph: ({ triggerKey }) =>
-      resultGraph({
-        triggerKey,
-        triggerLabel: "ליד חדש ב-CRM",
-        actions: [
-          { actionKey: "ai_rank_lead", label: "דירוג ליד AI" },
-          { actionKey: "notify", label: "התראה לפי דחיפות" },
-        ],
-      }),
-  },
-  {
-    key: "wf_ai_rank_and_task",
-    rank: 30,
-    name: "AI — דירוג ליד + משימה לנציג",
-    description: "ליד חדש → דירוג AI + משימת טיפול אוטומטית.",
-    triggerLabel: "ליד חדש ב-CRM",
-    resultLabels: ["דירוג AI", "משימה"],
-    categories: ["ai", "leads", "crm"],
-    engine: "workflow_graph",
-    comingSoon: true,
-    requiresAiEntitlement: true,
-    requiredTriggerKeys: LEAD_TRIGGER_KEYS,
-    buildGraph: ({ triggerKey }) =>
-      resultGraph({
-        triggerKey,
-        triggerLabel: "ליד חדש ב-CRM",
-        actions: [
-          { actionKey: "ai_rank_lead", label: "דירוג ליד AI" },
-          { actionKey: "create_task", label: "משימה לפי דירוג" },
-        ],
-      }),
-  },
-  {
-    key: "wf_ai_summarize",
-    rank: 31,
-    name: "AI — סיכום פגישה ל-CRM",
-    description: "אחרי פגישה → סיכום AI + הערה ב-CRM.",
-    triggerLabel: "פגישה הסתיימה",
-    resultLabels: ["סיכום AI", "הערה ב-CRM"],
-    categories: ["ai", "appointments", "crm"],
-    engine: "workflow_recipe",
-    recipeKey: "ai_summarize_calls",
-    comingSoon: true,
-    requiresAiEntitlement: true,
-    requiredTriggerKeys: APPOINTMENT_DONE_TRIGGER_KEYS,
-    buildGraph: ({ triggerKey }) =>
-      resultGraph({
-        triggerKey,
-        triggerLabel: "פגישה הסתיימה",
-        actions: [
-          { actionKey: "ai_summarize_call", label: "סיכום שיחה AI" },
-          { actionKey: "create_crm_note", label: "תיעוד ב-CRM" },
-        ],
-      }),
-  },
-  {
-    key: "wf_ai_draft_reply",
-    rank: 32,
-    name: "AI — תשובת WhatsApp מוכנה",
-    description: "הודעת WhatsApp נכנסת → AI מנסח תשובה מוכנה לשליחה.",
-    triggerLabel: "הודעת WhatsApp",
-    resultLabels: ["תשובה מוכנה AI"],
-    categories: ["ai", "whatsapp"],
-    engine: "workflow_recipe",
-    recipeKey: "ai_auto_reply",
-    comingSoon: true,
-    requiresAiEntitlement: true,
-    requiredTriggerKeys: WHATSAPP_INBOUND_KEYS,
-    buildGraph: ({ triggerKey }) =>
-      resultGraph({
-        triggerKey,
-        triggerLabel: "הודעת WhatsApp נכנסת",
-        actions: [
-          { actionKey: "ai_draft_reply", label: "תשובה מוכנה AI" },
-        ],
-      }),
-  },
-  {
-    key: "wf_ai_risk",
-    rank: 33,
-    name: "AI — ליד בסיכון נטישה",
-    description: "בפולואפ → AI מזהה ליד שמתקרר ומתריע לטיפול מיידי.",
-    triggerLabel: "פולואפ לליד",
-    resultLabels: ["זיהוי סיכון", "התראה"],
-    categories: ["ai", "leads", "sales"],
-    engine: "workflow_recipe",
-    recipeKey: "ai_risk_lead",
-    comingSoon: true,
-    requiresAiEntitlement: true,
-    requiredTriggerKeys: [...LEAD_NO_RESPONSE_KEYS, ...LEAD_TRIGGER_KEYS],
-    buildGraph: ({ triggerKey }) =>
-      resultGraph({
-        triggerKey,
-        triggerLabel: "פולואפ לליד",
-        actions: [
-          { actionKey: "ai_detect_risk_lead", label: "זיהוי ליד בסיכון" },
-          { actionKey: "notify", label: "התראה מיידית" },
-        ],
-      }),
-  },
-  {
-    key: "wf_ai_campaign",
-    rank: 34,
-    name: "AI — המלצת קמפיין",
-    description: "בשינוי סטטוס ליד → AI ממליץ על התאמת מסר/קמפיין.",
-    triggerLabel: "שינוי סטטוס ליד",
-    resultLabels: ["המלצת קמפיין AI"],
-    categories: ["ai", "leads", "sales"],
-    engine: "workflow_recipe",
-    recipeKey: "ai_campaign_change",
-    comingSoon: true,
-    requiresAiEntitlement: true,
-    requiredTriggerKeys: LEAD_STATUS_KEYS,
-    buildGraph: ({ triggerKey }) =>
-      resultGraph({
-        triggerKey,
-        triggerLabel: "שינוי סטטוס ליד",
-        actions: [
-          { actionKey: "ai_campaign_recommend", label: "המלצת קמפיין AI" },
-          { actionKey: "notify", label: "התראה לצוות שיווק" },
-        ],
-      }),
-  },
-  {
-    key: "wf_ai_tasks",
-    rank: 35,
-    name: "AI — משימות מתוך שיחה",
-    description: "אחרי פגישה → AI מחלץ משימות מעקב ל-CRM.",
-    triggerLabel: "פגישה הסתיימה",
-    resultLabels: ["משימות AI"],
-    categories: ["ai", "crm", "appointments"],
-    engine: "workflow_recipe",
-    recipeKey: "ai_tasks_from_chat",
-    comingSoon: true,
-    requiresAiEntitlement: true,
-    requiredTriggerKeys: APPOINTMENT_DONE_TRIGGER_KEYS,
-    buildGraph: ({ triggerKey }) =>
-      resultGraph({
-        triggerKey,
-        triggerLabel: "פגישה הסתיימה",
-        actions: [
-          { actionKey: "ai_tasks_from_chat", label: "משימות משיחה AI" },
-          { actionKey: "create_task", label: "משימת מעקב ב-CRM" },
-        ],
-      }),
-  },
-  {
-    key: "wf_ai_post_meeting_pack",
-    rank: 36,
-    name: "AI — אחרי פגישה: סיכום + משימות + התראה",
-    description: "חבילת סיום פגישה: סיכום AI, משימות והתראה לצוות.",
-    triggerLabel: "פגישה הסתיימה",
-    resultLabels: ["סיכום AI", "משימות", "התראה"],
-    categories: ["ai", "appointments", "crm"],
-    engine: "workflow_graph",
-    comingSoon: true,
-    requiresAiEntitlement: true,
-    requiredTriggerKeys: APPOINTMENT_DONE_TRIGGER_KEYS,
-    buildGraph: ({ triggerKey }) =>
-      resultGraph({
-        triggerKey,
-        triggerLabel: "פגישה הסתיימה",
-        actions: [
-          { actionKey: "ai_summarize_call", label: "סיכום פגישה AI" },
-          { actionKey: "ai_tasks_from_chat", label: "משימות מהשיחה" },
-          { actionKey: "notify", label: "התראה לצוות" },
-        ],
-      }),
-  },
 ];
+
+function aiCategoriesFor(triggerKey: string): TemplateCategoryId[] {
+  if (triggerKey === "scheduled") return ["ai", "crm"];
+  if (triggerKey === "lead_status_changed") {
+    return ["ai", "leads", "crm", "sales"];
+  }
+  return ["ai", "leads", "crm", "sales"];
+}
+
+function aiRequiredTriggerKeys(triggerKey: string): string[] {
+  if (triggerKey === "scheduled") return ["scheduled"];
+  if (triggerKey === "lead_status_changed") return [...LEAD_STATUS_KEYS];
+  return [...LEAD_TRIGGER_KEYS];
+}
+
+WORKING_TEMPLATES.push(
+  ...listSupportedAiTemplates().map(
+    (template, index): WorkingTemplate => ({
+      key: template.templateKey || `wf_${template.recipeKey}`,
+      rank: 29 + index,
+      name: template.titleHe,
+      description: template.description,
+      triggerLabel: template.customerExplanation.startsWhen,
+      resultLabels: [
+        template.customerExplanation.aiDoes,
+        template.customerExplanation.afterwards,
+      ].filter(Boolean),
+      categories: aiCategoriesFor(template.recommendedTrigger),
+      keywords: [...template.keywords],
+      engine: "workflow_recipe",
+      recipeKey: template.recipeKey,
+      comingSoon: false,
+      requiresAiEntitlement: false,
+      requiredTriggerKeys: aiRequiredTriggerKeys(template.recommendedTrigger),
+      buildGraph: ({ triggerKey }) => {
+        const graph = buildAiTemplateGraph(template);
+        return {
+          nodes: graph.nodes.map((node) =>
+            node.type === "trigger"
+              ? { ...node, data: { ...node.data, triggerKey } }
+              : node
+          ),
+          edges: graph.edges,
+        };
+      },
+    })
+  )
+);
 
 for (const template of WORKING_TEMPLATES) {
   template.waPreferredMetaName =
@@ -1282,13 +1149,10 @@ export function getTemplateReadiness(
 ): TemplateReadiness {
   const recipe = ctx.recipes.find((r) => r.key === template.recipeKey);
 
-  // Launch safety: AI / unfinished product surfaces are never READY.
-  if (template.comingSoon || template.requiresAiEntitlement) {
+  if (template.comingSoon) {
     return {
       ready: false,
-      blocker: template.requiresAiEntitlement
-        ? "אוטומציות AI — בקרוב"
-        : "בקרוב — עדיין לא זמין להפעלה",
+      blocker: "בקרוב — עדיין לא זמין להפעלה",
       recipe,
     };
   }

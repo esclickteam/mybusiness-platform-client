@@ -137,13 +137,16 @@ export const ACTION_OPTIONS = [
   { value: "webhook", label: "קריאת Webhook", supported: true },
   { value: "stop", label: "עצירת זרימה", supported: true },
   { value: "create_appointment", label: "יצירת פגישה", supported: false, comingSoon: true },
-  // AI actions — not in server SUPPORTED_ACTIONS / executor yet.
-  { value: "ai_rank_lead", label: "AI · דירוג ליד", supported: false, comingSoon: true },
-  { value: "ai_summarize_call", label: "AI · סיכום שיחה", supported: false, comingSoon: true },
-  { value: "ai_draft_reply", label: "AI · ניסוח תשובה", supported: false, comingSoon: true },
-  { value: "ai_detect_risk_lead", label: "AI · ליד בסיכון", supported: false, comingSoon: true },
-  { value: "ai_campaign_recommend", label: "AI · המלצת קמפיין", supported: false, comingSoon: true },
-  { value: "ai_tasks_from_chat", label: "AI · משימות משיחה", supported: false, comingSoon: true },
+  { value: "ai_rank_lead", label: "AI · דירוג ליד", supported: true, comingSoon: false },
+  { value: "ai_classify_lead", label: "AI · סיווג ליד", supported: true, comingSoon: false },
+  { value: "ai_auto_tag", label: "AI · תיוג ליד", supported: true, comingSoon: false },
+  { value: "ai_detect_hot_lead", label: "AI · זיהוי ליד חם", supported: true, comingSoon: false },
+  { value: "ai_lead_brief", label: "AI · תקציר ליד", supported: true, comingSoon: false },
+  { value: "ai_draft_followup", label: "AI · טיוטת המשך", supported: true, comingSoon: false },
+  { value: "ai_draft_email", label: "AI · טיוטת אימייל", supported: true, comingSoon: false },
+  { value: "ai_suggest_next_action", label: "AI · הצעת פעולה", supported: true, comingSoon: false },
+  { value: "ai_daily_leads_digest", label: "AI · תקציר לידים יומי", supported: true, comingSoon: false },
+  { value: "ai_daily_agenda_digest", label: "AI · תקציר יומן יומי", supported: true, comingSoon: false },
 ] as const;
 
 export const CONDITION_OPTIONS = [
@@ -224,6 +227,7 @@ function triggerItem(
 
 function actionItem(key: string, label: string, description: string, supported = true): PaletteItem {
   const defaults: Record<string, unknown> = { label, actionKey: key, templateId: "" };
+  if (key.startsWith("ai_")) { Object.assign(defaults, { criteria: "התאמה לשירות, דחיפות ופוטנציאל רכישה", scoreMin: 1, scoreMax: 10, threshold: 7, createTask: true, extraInstructions: "" }); }
   if (key === "send_gmail" || key === "send_outlook") {
     defaults.recipientType = "lead_email";
     defaults.subject = "";
@@ -349,12 +353,16 @@ const RAW_FLOW_ACTION_PALETTE: PaletteItem[] = [
   ),
   actionItem("create_appointment", "קביעת פגישה", "יוצר תור ביומן"),
   actionItem("webhook", "Webhook", "שולח נתונים למערכת חיצונית"),
-  actionItem("ai_rank_lead", "AI דירוג ליד", "מדרג ליד לפי סיכוי ודחיפות"),
-  actionItem("ai_summarize_call", "AI סיכום שיחה", "מסכם שיחה/פגישה"),
-  actionItem("ai_draft_reply", "AI ניסוח תשובה", "מנסח תשובה מהקשר"),
-  actionItem("ai_detect_risk_lead", "AI ליד בסיכון", "מזהה ליד שמתקרר"),
-  actionItem("ai_campaign_recommend", "AI קמפיין", "ממליץ על שינוי קמפיין"),
-  actionItem("ai_tasks_from_chat", "AI משימות משיחה", "יוצר משימות מתוכן שיחה"),
+  actionItem("ai_rank_lead", "AI · דירוג ליד", "מדרג ליד לפי סיכוי ודחיפות"),
+  actionItem("ai_classify_lead", "AI · סיוג ליד", "מסווג ליד לקטגוריה"),
+  actionItem("ai_auto_tag", "AI · תיוג ליד", "מוסיף תגיות CRM אוטומטית"),
+  actionItem("ai_detect_hot_lead", "AI · זיהוי ליד חם", "מזהה ליד חם לטיפול מיידי"),
+  actionItem("ai_lead_brief", "AI · תקציר ליד", "מכין תקציר לפני שיחת מכירה"),
+  actionItem("ai_draft_followup", "AI · טיוטת Follow-up", "מנסח טיוטת הודעת מעקב"),
+  actionItem("ai_draft_email", "AI · טיוטת מייל", "מנסח טיוטת מייל ללקוח"),
+  actionItem("ai_suggest_next_action", "AI · הצעת פעולה", "מציע את הפעולה הבאה לנציג"),
+  actionItem("ai_daily_leads_digest", "AI · תקציר לידים יומי", "מסכם לידים חדשים"),
+  actionItem("ai_daily_agenda_digest", "AI · תקציר אג׳נדה יומי", "מסכם משימות ופגישות"),
 ];
 
 function applyActionSupport(item: PaletteItem): PaletteItem {
@@ -371,7 +379,9 @@ function applyActionSupport(item: PaletteItem): PaletteItem {
 }
 
 export const FLOW_ACTION_PALETTE: PaletteItem[] =
-  RAW_FLOW_ACTION_PALETTE.map(applyActionSupport);
+  RAW_FLOW_ACTION_PALETTE.map(applyActionSupport).filter(
+    (item) => !(item.key.startsWith("ai_") && item.supported === false)
+  );
 
 /** Non-trigger palette (flow/actions). Use buildPaletteWithTriggers for full list. */
 export const PALETTE: PaletteItem[] = FLOW_ACTION_PALETTE;
@@ -504,6 +514,21 @@ export function nodeSummary(
   }
   if (type === "action") {
     const key = String(data.actionKey || "");
+    if (key.startsWith("ai_")) {
+      const aiSummaries: Record<string, string> = {
+        ai_rank_lead: "מדרג ליד לפי סיכוי ודחיפות",
+        ai_classify_lead: "מסווג ליד",
+        ai_auto_tag: "תיוג אוטומטי",
+        ai_detect_hot_lead: "זיהוי ליד חם",
+        ai_lead_brief: "תקציר ליד",
+        ai_draft_followup: "טיוטת הודעת מעקב",
+        ai_draft_email: "טיוטת מייל",
+        ai_suggest_next_action: "הצעת פעולה הבאה",
+        ai_daily_leads_digest: "תקציר לידים יומי",
+        ai_daily_agenda_digest: "תקציר משימות/פגישות",
+      };
+      return aiSummaries[key] || "פעולת AI";
+    }
     if (key === "send_gmail" || key === "send_outlook") {
       const providerLabel = key === "send_outlook" ? "Outlook" : "Gmail";
       const sender =

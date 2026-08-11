@@ -4,6 +4,8 @@
  * clear Trigger → Result flows (no abstract "paths").
  */
 
+import { listSupportedAiTemplates } from "./aiAutomationCatalog";
+
 export type SystemAutomationKind =
   | "standard"
   | "ai"
@@ -208,76 +210,9 @@ export const SYSTEM_AUTOMATION_CATALOG: SystemAutomationSuggestion[] = [
     recommendedWaCategory: "follow_up",
     recommendedTemplateHints: ["inactive", "follow_up"],
   },
-  {
-    id: "ai_rank_leads",
-    recipeKey: "ai_rank_leads",
-    kind: "ai",
-    title: "AI — דירוג ליד",
-    description:
-      "כשנכנס ליד חדש: AI מדרג לפי סיכוי סגירה ודחיפות ושולח התראה.",
-    triggerLabel: "ליד חדש ב-CRM",
-    resultLabels: ["דירוג AI", "התראה לפי דחיפות"],
-    categories: ["ai", "leads"],
-    requiresAi: true,
-  },
-  {
-    id: "ai_summarize_calls",
-    recipeKey: "ai_summarize_calls",
-    kind: "ai",
-    title: "AI — סיכום שיחה/פגישה",
-    description: "אחרי סיום פגישה: AI מסכם נקודות מפתח ומתעד ב-CRM.",
-    triggerLabel: "פגישה הסתיימה",
-    resultLabels: ["סיכום AI", "תיעוד ב-CRM"],
-    categories: ["ai", "appointments"],
-    requiresAi: true,
-  },
-  {
-    id: "ai_auto_reply",
-    recipeKey: "ai_auto_reply",
-    kind: "ai",
-    title: "AI — טיוטת תשובה ל-WhatsApp",
-    description:
-      "כשמגיעה הודעת WhatsApp: AI מנסח טיוטת תשובה מוכנה לשליחה.",
-    triggerLabel: "הודעת WhatsApp נכנסת",
-    resultLabels: ["טיוטת תשובה AI"],
-    categories: ["ai", "whatsapp"],
-    requiresAi: true,
-  },
-  {
-    id: "ai_risk_lead",
-    recipeKey: "ai_risk_lead",
-    kind: "ai",
-    title: "AI — ליד בסיכון נטישה",
-    description:
-      "בפולואפ: AI מזהה ליד שמתקרר ושולח התראה לטיפול מיידי.",
-    triggerLabel: "פולואפ לליד",
-    resultLabels: ["זיהוי סיכון", "התראה מיידית"],
-    categories: ["ai", "leads"],
-    requiresAi: true,
-  },
-  {
-    id: "ai_campaign_change",
-    recipeKey: "ai_campaign_change",
-    kind: "ai",
-    title: "AI — המלצת שינוי קמפיין",
-    description: "בשינוי סטטוס ליד: AI ממליץ על התאמת קמפיין/מסר.",
-    triggerLabel: "שינוי סטטוס ליד",
-    resultLabels: ["המלצת קמפיין AI"],
-    categories: ["ai", "leads", "sales"],
-    requiresAi: true,
-  },
-  {
-    id: "ai_tasks_from_chat",
-    recipeKey: "ai_tasks_from_chat",
-    kind: "ai",
-    title: "AI — משימות מתוך שיחה",
-    description: "אחרי פגישה/שיחה: AI מחלץ משימות מעקב ל-CRM.",
-    triggerLabel: "פגישה הסתיימה",
-    resultLabels: ["משימות CRM מתוך השיחה"],
-    categories: ["ai", "crm", "appointments"],
-    requiresAi: true,
-  },
 ];
+
+SYSTEM_AUTOMATION_CATALOG.push(...listSupportedAiTemplates().map((template) => ({ id: template.templateKey, recipeKey: template.recipeKey, kind: "ai" as const, title: template.titleHe, description: template.description, triggerLabel: template.customerExplanation.startsWhen, resultLabels: [template.customerExplanation.aiDoes, template.customerExplanation.afterwards], categories: (template.recommendedTrigger === "scheduled" ? ["ai"] : ["ai", "leads"]) as SystemAutomationSuggestion["categories"], requiresAi: false })));
 
 export type MessageTemplateGap = {
   id: string;

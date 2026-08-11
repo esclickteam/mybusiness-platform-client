@@ -24,6 +24,7 @@ import {
   buildLocalAutomationGraph,
 } from "./localTemplateGraphs";
 import { WORKING_TEMPLATES } from "./workingTemplates";
+import { getAiTemplateByKey } from "./aiAutomationCatalog";
 import { useAutomationsRealtime } from "./useAutomationsRealtime";
 import "./automationFlow.css";
 import "./automationsHome.css";
@@ -68,12 +69,35 @@ export default function AutomationsLayout() {
   }, [location.pathname]);
 
   useEffect(() => {
-    const recipeKey = searchParams.get("recipe");
-    if (!businessId || !recipeKey || isEditorRoute) return;
+    const requestedTemplate = searchParams.get("template");
+    const requestedRecipe = searchParams.get("recipe");
+    const aiRequestKey =
+      requestedTemplate ||
+      (searchParams.get("configureAi") === "1" ? requestedRecipe : "");
+    const aiTemplate = aiRequestKey
+      ? getAiTemplateByKey(String(aiRequestKey))
+      : undefined;
+    const recipeKey = requestedRecipe || aiTemplate?.recipeKey;
+    if (!businessId || isEditorRoute) return;
+    if (
+      aiRequestKey &&
+      (!aiTemplate || aiTemplate.supported.endToEnd !== true)
+    ) {
+      toast.error("תבנית AI זו אינה זמינה להפעלה");
+      const next = new URLSearchParams(searchParams);
+      next.delete("recipe");
+      next.delete("template");
+      next.delete("configureAi");
+      setSearchParams(next, { replace: true });
+      navigate(`${basePath}/templates`, { replace: true });
+      return;
+    }
+    if (!recipeKey) return;
     if (isAutomationsReadOnly()) {
       toast.error(AUTOMATION_PREVIEW_WRITE_BLOCKED_MESSAGE);
       const next = new URLSearchParams(searchParams);
       next.delete("recipe");
+      next.delete("template");
       setSearchParams(next, { replace: true });
       return;
     }
@@ -84,6 +108,7 @@ export default function AutomationsLayout() {
       const clearRecipeParam = () => {
         const next = new URLSearchParams(searchParams);
         next.delete("recipe");
+        next.delete("template");
         setSearchParams(next, { replace: true });
       };
       try {
@@ -91,7 +116,9 @@ export default function AutomationsLayout() {
           createdId: string,
           successMessage: string
         ) => {
-          try {
+          if (aiTemplate) {
+            toast.success("האוטומציה נוצרה — השלימו את הגדרות ה-AI לפני פרסום");
+          } else try {
             await publishAutomationWorkflow(businessId, createdId);
             toast.success(successMessage);
           } catch (error: unknown) {
@@ -103,7 +130,7 @@ export default function AutomationsLayout() {
             );
           }
           clearRecipeParam();
-          navigate(`${basePath}/${createdId}`, { replace: true });
+          navigate(`${basePath}/${createdId}${aiTemplate ? "?configureAi=1" : ""}`, { replace: true });
         };
 
         try {
