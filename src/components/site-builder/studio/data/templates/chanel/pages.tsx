@@ -1216,6 +1216,15 @@ export default function ChanelPages({
     [goTo],
   );
 
+  const persistCart = React.useCallback((next: ChanelCartLine[]) => {
+    if (isStudioStatic) return;
+    try {
+      localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(next));
+    } catch {
+      // ignore
+    }
+  }, [isStudioStatic]);
+
   const addToCart = React.useCallback(
     (product: StoreCatalogProduct, amount = 1, variantId?: string) => {
       if (product.variants.length > 0 && !variantId) {
@@ -1246,9 +1255,11 @@ export default function ChanelPages({
         return false;
       }
 
+      let rejected = false;
       setStockMessage("");
       setCart((prev) => {
         const existing = prev.find((item) => item.id === cartKey);
+        let next: ChanelCartLine[];
         if (existing) {
           const nextQty = existing.qty + amount;
           if (
@@ -1256,31 +1267,36 @@ export default function ChanelPages({
             !product.allowBackorder &&
             nextQty > available
           ) {
+            rejected = true;
             setStockMessage(`מלאי לא מספיק. זמין: ${available}`);
             return prev;
           }
-          return prev.map((item) =>
+          next = prev.map((item) =>
             item.id === cartKey ? { ...item, qty: nextQty } : item,
           );
+        } else {
+          next = [
+            ...prev,
+            {
+              id: cartKey,
+              productId: product.id,
+              name: product.name,
+              price: unitPrice,
+              image: product.image,
+              qty: amount,
+              variantId: variant?.id,
+              variantLabel: variant?.label,
+              sku: variant?.sku || product.sku,
+            },
+          ];
         }
-        return [
-          ...prev,
-          {
-            id: cartKey,
-            productId: product.id,
-            name: product.name,
-            price: unitPrice,
-            image: product.image,
-            qty: amount,
-            variantId: variant?.id,
-            variantLabel: variant?.label,
-            sku: variant?.sku || product.sku,
-          },
-        ];
+        // Public mini-site remounts on /cart navigation — persist before goTo.
+        persistCart(next);
+        return next;
       });
-      return true;
+      return !rejected;
     },
-    [openProduct],
+    [openProduct, persistCart],
   );
 
   const openCheckout = React.useCallback(
@@ -1494,7 +1510,11 @@ export default function ChanelPages({
                 onCheckout={() => openCheckout()}
                 onContinue={() => goTo("products")}
                 onRemove={(lineId) =>
-                  setCart((prev) => prev.filter((item) => item.id !== lineId))
+                  setCart((prev) => {
+                    const next = prev.filter((item) => item.id !== lineId);
+                    persistCart(next);
+                    return next;
+                  })
                 }
               />
             ),
