@@ -177,7 +177,10 @@
         if (window.__BIZUPLY_PUBLIC_SITE__) {
           document.documentElement.style.background = "#ffffff";
           if (document.body) document.body.style.backgroundColor = "#ffffff";
-          document.title = "";
+          // Keep edge-injected customer title for crawlers / first paint.
+          if (!document.querySelector("title[data-bizuply-edge-seo]")) {
+            document.title = "";
+          }
           return;
         }
         document.documentElement.style.background =
