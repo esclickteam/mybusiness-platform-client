@@ -252,6 +252,18 @@ export function useAutomationsRealtime(businessId: string | null) {
       quietInvalidateAutomations();
     };
 
+    
+    const onAiResultCreated = (payload: any) => {
+      const data = payload?.result ? payload : { result: payload };
+      if (!sameBusiness(data?.businessId || data?.result?.businessId, businessId)) {
+        return;
+      }
+      void queryClient.invalidateQueries({
+        queryKey: ["automations", "ai-results", businessId],
+        refetchType: "active",
+      });
+    };
+
     const onWorkflowUpdated = (payload: any) => {
       const data = payload?.workflow ? payload : { workflow: payload };
       if (!sameBusiness(data?.businessId || data?.workflow?.businessId, businessId)) {
@@ -329,6 +341,7 @@ export function useAutomationsRealtime(businessId: string | null) {
     socket.on("automation:execution_created", onExecutionCreated);
     socket.on("automation:execution_updated", onExecutionUpdated);
     socket.on("automation:workflow_updated", onWorkflowUpdated);
+    socket.on("automation:ai_result_created", onAiResultCreated);
     socket.on("automation:usage_updated", onAutomationUsageUpdated);
     socket.on("whatsapp:usage_updated", onWhatsAppUsageUpdated);
     document.addEventListener("visibilitychange", onVisibility);
@@ -338,6 +351,7 @@ export function useAutomationsRealtime(businessId: string | null) {
       socket.off("automation:execution_created", onExecutionCreated);
       socket.off("automation:execution_updated", onExecutionUpdated);
       socket.off("automation:workflow_updated", onWorkflowUpdated);
+      socket.off("automation:ai_result_created", onAiResultCreated);
       socket.off("automation:usage_updated", onAutomationUsageUpdated);
       socket.off("whatsapp:usage_updated", onWhatsAppUsageUpdated);
       document.removeEventListener("visibilitychange", onVisibility);
