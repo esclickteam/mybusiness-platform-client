@@ -786,8 +786,9 @@ function ContactSection({ data }: { data: TemplateData }) {
             data-visual-edit-label="הודעה"
           />
           <button
-            type="button"
-            className="h-14 border-t px-6 text-xs font-black uppercase tracking-[0.28em] md:col-span-2"
+            type="submit"
+            data-bizuply-lead-submit="true"
+            className="h-14 border-t px-6 text-xs font-black uppercase tracking-[0.28em] md:col-span-2 disabled:cursor-wait disabled:opacity-70"
             style={{
               borderColor: citadelTheme.border,
               background: citadelTheme.accent,

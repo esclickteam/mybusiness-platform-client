@@ -1080,10 +1080,10 @@ function Booking({
             </FormFieldSlot>
 
             <FormFieldSlot id="booking.form.submit" label="כפתור שליחה">
-              <div
-                role="button"
-                tabIndex={0}
-                className="flex h-14 w-full cursor-pointer items-center justify-center rounded-full bg-[#07100e] text-sm font-black text-white transition duration-500 hover:-translate-y-0.5 hover:bg-[#17342d]"
+              <button
+                type="submit"
+                data-bizuply-lead-submit="true"
+                className="flex h-14 w-full cursor-pointer items-center justify-center rounded-full bg-[#07100e] text-sm font-black text-white transition duration-500 hover:-translate-y-0.5 hover:bg-[#17342d] disabled:cursor-wait disabled:opacity-70"
               >
                 <TemplateText
                   as="span"
@@ -1092,7 +1092,7 @@ function Booking({
                 >
                   שליחת בקשה לשיחה
                 </TemplateText>
-              </div>
+              </button>
             </FormFieldSlot>
           </div>
         </form>

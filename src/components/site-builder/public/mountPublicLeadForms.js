@@ -8,6 +8,13 @@ const LEAD_FORM_SELECTOR = [
   'form[data-bizuply-form-id]',
 ].join(", ");
 
+const SUBMIT_CTA_SELECTOR = [
+  "button[type='submit']",
+  "input[type='submit']",
+  "button[type='button']",
+  "[role='button']",
+].join(", ");
+
 function safeText(value) {
   return String(value || "")
     .replace(/\s+/g, " ")
@@ -168,6 +175,86 @@ function isLeadForm(form) {
   return false;
 }
 
+function ctaIdentityBlob(node) {
+  return [
+    node.getAttribute("data-visual-edit-id"),
+    node.getAttribute("data-visual-edit-label"),
+    node.getAttribute("aria-label"),
+    node.id,
+    node.getAttribute("name"),
+    node.className,
+    node.textContent,
+  ]
+    .map((value) => safeText(value).toLowerCase())
+    .join(" ");
+}
+
+function looksLikeSubmitCta(node) {
+  if (!(node instanceof HTMLElement)) return false;
+  if (node.getAttribute("data-bizuply-ignore-lead") === "true") return false;
+  if (node.closest("a")) return false;
+
+  const type = String(node.getAttribute("type") || "").toLowerCase();
+  if (type === "submit") return true;
+
+  return looksLike(ctaIdentityBlob(node), [
+    "submit",
+    "שליח",
+    "שלח",
+    "send",
+    "book",
+    "שיחה",
+    "transmit",
+  ]);
+}
+
+function copyAttributes(from, to) {
+  Array.from(from.attributes || []).forEach((attr) => {
+    if (!attr?.name) return;
+    if (attr.name === "role" || attr.name === "type" || attr.name === "tabindex") return;
+    try {
+      to.setAttribute(attr.name, attr.value);
+    } catch {
+      // ignore invalid attribute copies
+    }
+  });
+}
+
+/**
+ * Upgrade non-semantic CTAs inside lead forms to real submit buttons so:
+ * - click works
+ * - Enter in a field works
+ * - disabled/loading can apply
+ */
+function upgradeLegacyLeadFormCtas(root) {
+  if (!root?.querySelectorAll) return;
+
+  Array.from(root.querySelectorAll("form")).forEach((form) => {
+    if (!isLeadForm(form)) return;
+
+    // Convert button[type=button] that look like the form submit CTA.
+    Array.from(form.querySelectorAll("button[type='button']")).forEach((button) => {
+      if (!looksLikeSubmitCta(button)) return;
+      button.setAttribute("type", "submit");
+      button.setAttribute("data-bizuply-lead-submit", "true");
+    });
+
+    // Convert div/[role=button] fake CTAs into semantic submit buttons.
+    Array.from(form.querySelectorAll("[role='button']")).forEach((node) => {
+      if (node instanceof HTMLButtonElement || node instanceof HTMLInputElement) return;
+      if (!looksLikeSubmitCta(node)) return;
+
+      const button = document.createElement("button");
+      button.type = "submit";
+      button.setAttribute("data-bizuply-lead-submit", "true");
+      copyAttributes(node, button);
+      button.className = node.className || button.className;
+      button.innerHTML = node.innerHTML;
+      node.replaceWith(button);
+    });
+  });
+}
+
 function setFormStatus(form, message, tone) {
   let status = form.querySelector("[data-bizuply-lead-status='true']");
   if (!status) {
@@ -185,33 +272,63 @@ function setFormStatus(form, message, tone) {
     tone === "error" ? "#be123c" : tone === "success" ? "#047857" : "#475569";
 }
 
+function readCtaLabel(node) {
+  if (node instanceof HTMLInputElement) return String(node.value || "");
+  return String(node.textContent || "");
+}
+
+function writeCtaLabel(node, label) {
+  if (node instanceof HTMLInputElement) {
+    node.value = label;
+    return;
+  }
+  node.textContent = label;
+}
+
 function setFormBusy(form, busy, label) {
   form.setAttribute("aria-busy", busy ? "true" : "false");
-  form.querySelectorAll("button, input[type='submit']").forEach((node) => {
-    if (node instanceof HTMLButtonElement || node instanceof HTMLInputElement) {
-      if (busy) {
-        if (!node.dataset.bizuplyLeadOriginalLabel) {
-          node.dataset.bizuplyLeadOriginalLabel =
-            node instanceof HTMLInputElement
-              ? String(node.value || "")
-              : String(node.textContent || "");
-        }
-        node.disabled = true;
-        if (label) {
-          if (node instanceof HTMLInputElement) node.value = label;
-          else node.textContent = label;
-        }
-      } else if (form.getAttribute("data-bizuply-lead-submitted") !== "true") {
-        node.disabled = false;
-        const original = node.dataset.bizuplyLeadOriginalLabel;
-        if (original != null) {
-          if (node instanceof HTMLInputElement) node.value = original;
-          else node.textContent = original;
-          delete node.dataset.bizuplyLeadOriginalLabel;
-        }
-      } else {
-        node.disabled = true;
+
+  form.querySelectorAll(SUBMIT_CTA_SELECTOR).forEach((node) => {
+    if (!(node instanceof HTMLElement)) return;
+    if (!looksLikeSubmitCta(node) && node.getAttribute("type") !== "submit") return;
+
+    if (busy) {
+      if (!node.dataset.bizuplyLeadOriginalLabel) {
+        node.dataset.bizuplyLeadOriginalLabel = readCtaLabel(node);
       }
+      if (node instanceof HTMLButtonElement || node instanceof HTMLInputElement) {
+        node.disabled = true;
+      } else {
+        node.setAttribute("aria-disabled", "true");
+        node.style.pointerEvents = "none";
+        node.style.opacity = "0.72";
+      }
+      if (label) writeCtaLabel(node, label);
+      return;
+    }
+
+    if (form.getAttribute("data-bizuply-lead-submitted") === "true") {
+      if (node instanceof HTMLButtonElement || node instanceof HTMLInputElement) {
+        node.disabled = true;
+      } else {
+        node.setAttribute("aria-disabled", "true");
+        node.style.pointerEvents = "none";
+      }
+      return;
+    }
+
+    if (node instanceof HTMLButtonElement || node instanceof HTMLInputElement) {
+      node.disabled = false;
+    } else {
+      node.removeAttribute("aria-disabled");
+      node.style.pointerEvents = "";
+      node.style.opacity = "";
+    }
+
+    const original = node.dataset.bizuplyLeadOriginalLabel;
+    if (original != null) {
+      writeCtaLabel(node, original);
+      delete node.dataset.bizuplyLeadOriginalLabel;
     }
   });
 }
@@ -286,6 +403,13 @@ async function handleLeadFormSubmit(form, options) {
   }
 }
 
+function resolveLeadSubmitControl(target) {
+  if (!(target instanceof Element)) return null;
+  const control = target.closest(SUBMIT_CTA_SELECTOR);
+  if (!(control instanceof HTMLElement)) return null;
+  return control;
+}
+
 /**
  * Wire public site contact/lead forms into CRM (source: website).
  * Idempotent: reuses one delegated listener and refreshes options.
@@ -299,6 +423,8 @@ export function mountPublicLeadForms(root, options = {}) {
     pagePath: safeText(options.pagePath),
     businessId: safeText(options.businessId),
   };
+
+  upgradeLegacyLeadFormCtas(root);
 
   if (root.dataset.bizuplyLeadFormsMounted === "true") return;
   root.dataset.bizuplyLeadFormsMounted = "true";
@@ -319,27 +445,55 @@ export function mountPublicLeadForms(root, options = {}) {
     "click",
     (event) => {
       const target = event.target;
-      if (!(target instanceof Element)) return;
+      const control = resolveLeadSubmitControl(target);
+      if (!control || !root.contains(control)) return;
 
-      const button = target.closest("button, input[type='submit']");
-      if (!(button instanceof HTMLElement) || !root.contains(button)) return;
-
-      const form = button.closest("form");
+      const form = control.closest("form");
       if (!isLeadForm(form)) return;
+      if (!looksLikeSubmitCta(control) && control.getAttribute("type") !== "submit") return;
 
-      const type = String(button.getAttribute("type") || "submit").toLowerCase();
-      if (type !== "submit" && type !== "button") return;
-      if (type === "button" && button.getAttribute("data-bizuply-ignore-lead") === "true") {
-        return;
-      }
+      const type = String(control.getAttribute("type") || "").toLowerCase();
+      const isNativeSubmit =
+        (control instanceof HTMLButtonElement && (type === "submit" || type === "")) ||
+        (control instanceof HTMLInputElement && type === "submit") ||
+        control.getAttribute("type") === "submit";
 
-      // type=button lead CTAs still submit to CRM
-      if (type === "button") {
-        event.preventDefault();
-        event.stopPropagation();
-        void handleLeadFormSubmit(form, root.__bizuplyLeadFormOptions || {});
-      }
+      // Native submit buttons rely on the form "submit" event only — avoid double fire.
+      if (isNativeSubmit) return;
+
+      // Legacy non-submit CTAs (type=button / role=button) still submit via the shared handler.
+      event.preventDefault();
+      event.stopPropagation();
+      void handleLeadFormSubmit(form, root.__bizuplyLeadFormOptions || {});
+    },
+    true,
+  );
+
+  root.addEventListener(
+    "keydown",
+    (event) => {
+      if (event.key !== "Enter" && event.key !== " ") return;
+      const target = event.target;
+      const control = resolveLeadSubmitControl(target);
+      if (!control || !root.contains(control)) return;
+      if (control instanceof HTMLButtonElement || control instanceof HTMLInputElement) return;
+
+      const form = control.closest("form");
+      if (!isLeadForm(form) || !looksLikeSubmitCta(control)) return;
+
+      event.preventDefault();
+      event.stopPropagation();
+      void handleLeadFormSubmit(form, root.__bizuplyLeadFormOptions || {});
     },
     true,
   );
 }
+
+export const __testables = {
+  collectLeadFormPayload,
+  isLeadForm,
+  looksLikeSubmitCta,
+  upgradeLegacyLeadFormCtas,
+  handleLeadFormSubmit,
+  setFormBusy,
+};
