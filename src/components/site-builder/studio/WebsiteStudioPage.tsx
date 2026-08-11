@@ -4991,6 +4991,16 @@ export default function WebsiteStudioPage({
   const [loadingSite, setLoadingSite] = useState(false);
   const [saving, setSaving] = useState(false);
   const [savedAt, setSavedAt] = useState("");
+  const handleSaveRef = useRef<
+    (
+      published: boolean,
+      overrides?: {
+        pages?: StudioSitePageWithPortal[];
+        seoSettings?: SiteSeoSettings;
+        brand?: SiteBrandSettings;
+      },
+    ) => Promise<void>
+  >(async () => {});
   const [activePalette, setActivePalette] = useState<ThemePalette | null>(null);
 
   const [pages, setPages] = useState<StudioSitePageWithPortal[]>(() => {
@@ -6392,7 +6402,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     } as StudioSitePageWithPortal;
   };
 
-  const handlePageSettingsModalSave = ({
+  const handlePageSettingsModalSave = async ({
     title: nextTitle,
     slug: nextSlugValue,
     seo,
@@ -6405,55 +6415,64 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     siteSeo?: SiteSeoSettings;
     siteBrand?: SiteBrandSettings;
   }) => {
-    if (siteSeo) {
-      setSiteSeoSettings(normalizeSiteSeoSettings(siteSeo));
-    }
-    if (siteBrand) {
-      setSiteBrandSettings(normalizeSiteBrandSettings(siteBrand, siteName));
-    }
     const id = String(pageSettingsModal.pageId || "").trim();
-    if (!id) return;
+    if (!id) {
+      throw new Error("לא נמצא עמוד לשמירה");
+    }
 
     const cleanTitle = String(nextTitle || "").trim();
-    if (!cleanTitle) return;
+    if (!cleanTitle) {
+      throw new Error("שם העמוד לא יכול להיות ריק");
+    }
 
+    const nextSiteSeo = siteSeo
+      ? normalizeSiteSeoSettings(siteSeo)
+      : siteSeoSettings;
+    const nextBrand = siteBrand
+      ? normalizeSiteBrandSettings(siteBrand, siteName)
+      : siteBrandSettings;
     const nextSlug = normalizePageSlug(nextSlugValue || cleanTitle, pages, id);
 
-    setPages((prev) => {
-      const previousTitleById: Record<string, string> = {};
-      prev.forEach((page) => {
-        const pageId = String(page.id || "").trim();
-        const title = String(page.title || "").trim();
-        if (pageId && title) previousTitleById[pageId] = title;
-      });
+    const previousTitleById: Record<string, string> = {};
+    pages.forEach((page) => {
+      const pageId = String(page.id || "").trim();
+      const pageTitle = String(page.title || "").trim();
+      if (pageId && pageTitle) previousTitleById[pageId] = pageTitle;
+    });
 
-      const nextPages = prev.map((page) => {
-        if (page.id !== id) return page;
+    const nextPages = pages.map((page) => {
+      if (page.id !== id) return page;
 
-        return {
-          ...page,
-          title: cleanTitle,
-          slug: page.isHome ? "" : nextSlug,
-          seo: normalizePageSeo(seo),
-          updatedAt: new Date().toISOString(),
-        };
-      });
+      return {
+        ...page,
+        title: cleanTitle,
+        slug: page.isHome ? "" : nextSlug,
+        seo: normalizePageSeo(seo),
+        updatedAt: new Date().toISOString(),
+      };
+    });
 
-      const slimPages = slimSitePageNavSources(nextPages);
+    const slimPages = slimSitePageNavSources(nextPages);
 
-      setVisualSessionData((previous) => {
-        const synced = syncSitePageTitlesIntoVisualData(
-          previous || {},
-          slimPages,
-          { previousTitleById },
-        );
-        delete (synced as any).__sitePages;
-        delete (synced as any).__navTree;
-        delete (synced as any).__previousSitePageTitles;
-        return synced;
-      });
+    setSiteSeoSettings(nextSiteSeo);
+    setSiteBrandSettings(nextBrand);
+    setPages(nextPages);
+    setVisualSessionData((previous) => {
+      const synced = syncSitePageTitlesIntoVisualData(
+        previous || {},
+        slimPages,
+        { previousTitleById },
+      );
+      delete (synced as any).__sitePages;
+      delete (synced as any).__navTree;
+      delete (synced as any).__previousSitePageTitles;
+      return synced;
+    });
 
-      return nextPages;
+    await handleSaveRef.current(false, {
+      pages: nextPages,
+      seoSettings: nextSiteSeo,
+      brand: nextBrand,
     });
   };
 
@@ -7085,21 +7104,39 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     });
   };
 
-  const handleSave = async (published: boolean) => {
-    if (!editorRef.current || !slugValid || saving) return;
+  const handleSave = async (
+    published: boolean,
+    overrides?: {
+      pages?: StudioSitePageWithPortal[];
+      seoSettings?: SiteSeoSettings;
+      brand?: SiteBrandSettings;
+    },
+  ) => {
+    if (!editorRef.current || !slugValid || saving) {
+      if (overrides) {
+        throw new Error("לא ניתן לשמור כרגע. בדקי שהעורך מוכן ונסי שוב.");
+      }
+      return;
+    }
 
     if (slugChecking) {
-      alert("רגע, אנחנו עדיין בודקים אם הסאב דומיין פנוי.");
+      const message = "רגע, אנחנו עדיין בודקים אם הסאב דומיין פנוי.";
+      if (overrides) throw new Error(message);
+      alert(message);
       return;
     }
 
     if (published && slug === "your-business") {
-      alert("בחרי סאב דומיין אמיתי לפני פרסום.");
+      const message = "בחרי סאב דומיין אמיתי לפני פרסום.";
+      if (overrides) throw new Error(message);
+      alert(message);
       return;
     }
 
     if (published && slugAvailable === false) {
-      alert(slugError || "הסאב דומיין הזה כבר תפוס. בחרי שם אחר.");
+      const message = slugError || "הסאב דומיין הזה כבר תפוס. בחרי שם אחר.";
+      if (overrides) throw new Error(message);
+      alert(message);
       return;
     }
 
@@ -7107,7 +7144,8 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
 
     try {
       const editor = editorRef.current;
-      const savedPages = snapshotPages(pages, editor, activePageId);
+      const sourcePages = overrides?.pages || pages;
+      const savedPages = snapshotPages(sourcePages, editor, activePageId);
 
       setPages(savedPages);
 
@@ -7138,8 +7176,8 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
           published,
         },
         name: siteName,
-        seoSettings: siteSeoSettings,
-        brand: siteBrandSettings,
+        seoSettings: overrides?.seoSettings || siteSeoSettings,
+        brand: overrides?.brand || siteBrandSettings,
         pages: savedPages,
         activePageId,
         clientPortalPages: savedPages.filter(
@@ -7226,11 +7264,14 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
 
       void payload;
     } catch (error: any) {
-      alert(error?.message || "אירעה שגיאה בשמירת האתר. נסי שוב.");
+      const message = error?.message || "אירעה שגיאה בשמירת האתר. נסי שוב.";
+      if (overrides) throw new Error(message);
+      alert(message);
     } finally {
       setSaving(false);
     }
   };
+  handleSaveRef.current = handleSave;
 
   const handleApplyStyle = (style: StylePatch) => {
     runEditor((editor) => {

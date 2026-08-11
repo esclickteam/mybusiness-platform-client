@@ -48,6 +48,48 @@ function asPlainObject(value: unknown): Record<string, any> {
   return value as Record<string, any>;
 }
 
+export function isSafeHttpUrl(value: unknown): boolean {
+  const clean = safeString(value);
+  if (!clean) return true;
+
+  let parsed: URL;
+  try {
+    parsed = new URL(clean);
+  } catch {
+    return false;
+  }
+
+  const protocol = String(parsed.protocol || "").toLowerCase();
+  if (protocol !== "http:" && protocol !== "https:") return false;
+  if (!parsed.hostname) return false;
+  return true;
+}
+
+export function normalizeCanonicalUrl(value: unknown): string {
+  const clean = safeString(value);
+  if (!clean) return "";
+  return isSafeHttpUrl(clean) ? clean : "";
+}
+
+export function normalizeKeywords(value: unknown): string {
+  const raw = safeString(value);
+  if (!raw) return "";
+
+  const seen = new Set<string>();
+  const parts: string[] = [];
+
+  raw.split(",").forEach((part) => {
+    const keyword = safeString(part);
+    if (!keyword) return;
+    const key = keyword.toLowerCase();
+    if (seen.has(key)) return;
+    seen.add(key);
+    parts.push(keyword);
+  });
+
+  return parts.join(", ");
+}
+
 export function buildPublicSiteUrl(slug: string) {
   const cleanSlug = safeString(slug).toLowerCase().replace(/[^a-z0-9-]/g, "-");
   if (!cleanSlug) return "";
@@ -234,8 +276,8 @@ export function normalizePageSeo(rawSeo?: SitePageSeoSettings | null): SitePageS
     metaDescription: safeString(source.metaDescription),
     parentPageId: safeString(source.parentPageId),
     indexable: source.indexable !== false,
-    canonicalUrl: safeString(source.canonicalUrl),
-    keywords: safeString(source.keywords),
+    canonicalUrl: normalizeCanonicalUrl(source.canonicalUrl),
+    keywords: normalizeKeywords(source.keywords),
     robotsDirectives: normalizeRobotsDirectives(source.robotsDirectives),
     maxSnippet: normalizeIntOrNull(source.maxSnippet),
     maxImagePreview: normalizeMaxImagePreview(source.maxImagePreview),
@@ -324,7 +366,7 @@ export function normalizeSiteSeoSettings(
   return {
     title: safeString(source.title),
     description: safeString(source.description),
-    keywords: safeString(source.keywords),
+    keywords: normalizeKeywords(source.keywords),
     ogImage: safeString(source.ogImage || source.defaultOgImage),
     siteIndexingEnabled: source.siteIndexingEnabled !== false,
     defaultTitleTemplate:
