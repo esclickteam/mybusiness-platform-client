@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import {
   AlertTriangle,
@@ -42,6 +42,8 @@ import {
   deriveMetaDescription,
   extractGoogleSiteVerificationToken,
   extractPlainTextFromHtml,
+  isSafeHttpUrl,
+  normalizeKeywords,
   normalizePageSeo,
   normalizeSiteBrandSettings,
   normalizeSiteSeoSettings,
@@ -111,7 +113,7 @@ type PageSettingsModalProps = {
     seo: SitePageSeoSettings;
     siteSeo?: SiteSeoSettings;
     siteBrand?: SiteBrandSettings;
-  }) => void;
+  }) => void | Promise<void>;
 };
 
 const TABS: Array<{
@@ -154,6 +156,24 @@ export default function PageSettingsModal({
   const [siteBrandDraft, setSiteBrandDraft] = useState<SiteBrandSettings>(() =>
     normalizeSiteBrandSettings(brandSettings, siteName),
   );
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveError, setSaveError] = useState("");
+  const initialSnapshotRef = useRef("");
+
+  const buildDraftSnapshot = (
+    nextTitle: string,
+    nextSlug: string,
+    nextSeo: SitePageSeoSettings,
+    nextSiteSeo: SiteSeoSettings,
+    nextBrand: SiteBrandSettings,
+  ) =>
+    JSON.stringify({
+      title: nextTitle,
+      slug: nextSlug,
+      seo: nextSeo,
+      siteSeo: nextSiteSeo,
+      siteBrand: nextBrand,
+    });
 
   useEffect(() => {
     if (!open || !page) return;
@@ -162,26 +182,17 @@ export default function PageSettingsModal({
     setTitle(String(page.title || ""));
     setSlug(String(page.slug || ""));
     setSmartHint("");
+    setSaveError("");
+    setIsSaving(false);
 
     const normalized = normalizePageSeo(page.seo);
 
     /*
-      Basic auto-fill: if a page has no title/description yet, pre-populate the
-      fields with sensible values derived from the page + site so the owner sees
-      editable content instead of empty boxes. They can freely change it.
+      Auto-fill description only. titleTag stays empty when unset so SEO score
+      does not credit template/fallback titles; the input placeholder shows the
+      resolved preview title instead.
     */
-    const meta = resolvePageSeoMeta({
-      page,
-      siteName,
-      siteSlug,
-      publicUrl,
-      seoSettings,
-    });
     const pageText = extractPlainTextFromHtml(pageHtml || "");
-
-    if (!normalized.titleTag) {
-      normalized.titleTag = meta.titleTag;
-    }
     if (!normalized.metaDescription) {
       normalized.metaDescription = deriveMetaDescription(pageText);
     }
@@ -203,24 +214,77 @@ export default function PageSettingsModal({
       (item) => item.key !== "google-site-verification",
     );
 
-    setSeoDraft(normalized);
-    setSiteSeoDraft({
+    const nextSiteSeo = {
       ...siteNormalized,
       googleSiteVerification,
-    });
-    setSiteBrandDraft(normalizeSiteBrandSettings(brandSettings, siteName));
+    };
+    const nextBrand = normalizeSiteBrandSettings(brandSettings, siteName);
+    const nextTitle = String(page.title || "");
+    const nextSlug = String(page.slug || "");
+
+    setSeoDraft(normalized);
+    setSiteSeoDraft(nextSiteSeo);
+    setSiteBrandDraft(nextBrand);
+    initialSnapshotRef.current = buildDraftSnapshot(
+      nextTitle,
+      nextSlug,
+      normalized,
+      nextSiteSeo,
+      nextBrand,
+    );
   }, [open, page, initialTab, siteName, siteSlug, publicUrl, seoSettings, brandSettings, pageHtml]);
+
+  const isDirty = () =>
+    buildDraftSnapshot(title, slug, seoDraft, siteSeoDraft, siteBrandDraft) !==
+    initialSnapshotRef.current;
+
+  const requestClose = () => {
+    if (isSaving) return;
+    if (
+      isDirty() &&
+      typeof window !== "undefined" &&
+      !window.confirm("יש שינויים שלא נשמרו. לסגור בכל זאת?")
+    ) {
+      return;
+    }
+    onClose();
+  };
 
   useEffect(() => {
     if (!open) return;
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onClose();
+      if (event.key === "Escape") {
+        if (isSaving) return;
+        if (
+          buildDraftSnapshot(
+            title,
+            slug,
+            seoDraft,
+            siteSeoDraft,
+            siteBrandDraft,
+          ) !== initialSnapshotRef.current &&
+          typeof window !== "undefined" &&
+          !window.confirm("יש שינויים שלא נשמרו. לסגור בכל זאת?")
+        ) {
+          return;
+        }
+        onClose();
+      }
     };
 
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [open, onClose]);
+  }, [
+    open,
+    onClose,
+    isSaving,
+    title,
+    slug,
+    seoDraft,
+    siteSeoDraft,
+    siteBrandDraft,
+  ]);
 
   const parentPageOptions = useMemo(
     () =>
@@ -249,14 +313,28 @@ export default function PageSettingsModal({
   const pageIndexingEnabled =
     siteSeo.siteIndexingEnabled !== false && seoDraft.indexable !== false;
 
+  const canonicalUrlError = useMemo(() => {
+    const raw = String(seoDraft.canonicalUrl || "").trim();
+    if (!raw) return "";
+    if (isSafeHttpUrl(raw)) return "";
+    return "מותר רק כתובת http/https תקינה. javascript:, data:, file: או URL פגום נחסמים.";
+  }, [seoDraft.canonicalUrl]);
+
   const seoScore = useMemo(() => {
-    const titleValue = seoDraft.titleTag || previewMeta?.titleTag || "";
-    const descValue = seoDraft.metaDescription || "";
+    // Score only explicit draft fields — never credit template/fallback title.
+    const titleValue = String(seoDraft.titleTag || "").trim();
+    const descValue = String(seoDraft.metaDescription || "").trim();
     const hasSchema = (seoDraft.structuredData || []).length > 0;
-    const hasKeywords = Boolean(String(seoDraft.keywords || "").trim());
+    const hasKeywords = Boolean(normalizeKeywords(seoDraft.keywords));
     const hasOgImage = Boolean(
       seoDraft.social?.ogImage || siteSeo.ogImage || siteSeo.defaultOgImage,
     );
+    const hasGscMeta = Boolean(
+      String(siteSeoDraft.googleSiteVerification || "").trim(),
+    );
+    const hasGscHtml =
+      Boolean(String(siteSeoDraft.googleHtmlVerificationFile || "").trim()) &&
+      Boolean(String(siteSeoDraft.googleHtmlVerificationContent || "").trim());
 
     return computeSeoScore([
       {
@@ -299,39 +377,63 @@ export default function PageSettingsModal({
       {
         id: "gsc",
         label: "חיבור Google Search Console",
-        done: Boolean(
-          String(siteSeoDraft.googleSiteVerification || "").trim(),
-        ),
+        done: hasGscMeta || hasGscHtml,
       },
     ]);
-  }, [seoDraft, previewMeta, pageIndexingEnabled, siteSeo, siteBrandDraft, siteSeoDraft]);
+  }, [seoDraft, pageIndexingEnabled, siteSeo, siteBrandDraft, siteSeoDraft]);
 
   if (!open || !page || typeof document === "undefined") return null;
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    if (isSaving) return;
+
     const cleanTitle = String(title || "").trim();
     if (!cleanTitle) return;
+    if (canonicalUrlError) {
+      setSaveError(canonicalUrlError);
+      setTab("advanced");
+      return;
+    }
 
     const pageSeo = normalizePageSeo({
       ...seoDraft,
+      keywords: normalizeKeywords(seoDraft.keywords),
       customMetaTags: (seoDraft.customMetaTags || []).filter(
         (item) => item.key !== "google-site-verification",
       ),
     });
 
-    onSave({
-      title: cleanTitle,
-      slug: page.isHome ? "" : String(slug || "").trim(),
-      seo: pageSeo,
-      siteSeo: normalizeSiteSeoSettings({
-        ...siteSeoDraft,
-        googleSiteVerification: extractGoogleSiteVerificationToken(
-          siteSeoDraft.googleSiteVerification,
-        ),
-      }),
-      siteBrand: normalizeSiteBrandSettings(siteBrandDraft, cleanTitle || siteName),
-    });
-    onClose();
+    setIsSaving(true);
+    setSaveError("");
+    try {
+      await Promise.resolve(
+        onSave({
+          title: cleanTitle,
+          slug: page.isHome ? "" : String(slug || "").trim(),
+          seo: pageSeo,
+          siteSeo: normalizeSiteSeoSettings({
+            ...siteSeoDraft,
+            keywords: normalizeKeywords(siteSeoDraft.keywords),
+            googleSiteVerification: extractGoogleSiteVerificationToken(
+              siteSeoDraft.googleSiteVerification,
+            ),
+          }),
+          siteBrand: normalizeSiteBrandSettings(
+            siteBrandDraft,
+            cleanTitle || siteName,
+          ),
+        }),
+      );
+      onClose();
+    } catch (error) {
+      setSaveError(
+        error instanceof Error
+          ? error.message
+          : "שמירת ההגדרות בשרת נכשלה. נסי שוב.",
+      );
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   const updateSeo = (patch: Partial<SitePageSeoSettings>) => {
@@ -577,7 +679,7 @@ export default function PageSettingsModal({
       className="fixed inset-0 z-[2147483605] flex items-center justify-center overflow-y-auto border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800/55 p-3 backdrop-blur-md sm:p-6"
       dir="rtl"
       onMouseDown={(event) => {
-        if (event.target === event.currentTarget) onClose();
+        if (event.target === event.currentTarget) requestClose();
       }}
     >
       <div
@@ -618,8 +720,9 @@ export default function PageSettingsModal({
 
           <button
             type="button"
-            onClick={onClose}
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white/90 text-slate-500 shadow-sm transition hover:bg-slate-50 hover:text-slate-900"
+            onClick={requestClose}
+            disabled={isSaving}
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white/90 text-slate-500 shadow-sm transition hover:bg-slate-50 hover:text-slate-900 disabled:opacity-50"
             aria-label="סגירה"
           >
             <X className="h-5 w-5" />
@@ -1151,6 +1254,11 @@ export default function PageSettingsModal({
                     placeholder={previewUrl}
                     dir="ltr"
                   />
+                  {canonicalUrlError ? (
+                    <p className="text-xs font-semibold text-rose-600">
+                      {canonicalUrlError}
+                    </p>
+                  ) : null}
                 </label>
 
                 <label className="block space-y-2">
@@ -1728,25 +1836,36 @@ export default function PageSettingsModal({
           ) : null}
         </div>
 
-        <footer className="relative flex shrink-0 items-center justify-between gap-3 border-t border-slate-100/80 bg-white/90 px-5 py-4 backdrop-blur-sm sm:px-7">
-          <p className="hidden text-xs font-semibold text-slate-400 sm:block">
-            {tab !== "settings" ? `ציון SEO: ${seoScore.score}%` : "שינויים נשמרים בלחיצה על שמירה"}
-          </p>
-          <div className="flex w-full items-center justify-end gap-3 sm:w-auto">
-            <button
-              type="button"
-              onClick={onClose}
-              className="rounded-2xl border border-slate-200/90 bg-white px-5 py-3 text-sm font-black text-slate-700 shadow-sm transition hover:bg-slate-50"
-            >
-              ביטול
-            </button>
-            <button
-              type="button"
-              onClick={handleSave}
-              className="rounded-2xl bg-gradient-to-l from-blue-600 to-sky-500 px-6 py-3 text-sm font-black text-black shadow-md shadow-blue-200/50 transition hover:from-blue-700 hover:to-sky-600"
-            >
-              שמירה
-            </button>
+        <footer className="relative flex shrink-0 flex-col gap-2 border-t border-slate-100/80 bg-white/90 px-5 py-4 backdrop-blur-sm sm:px-7">
+          {saveError ? (
+            <p className="text-xs font-semibold text-rose-600">{saveError}</p>
+          ) : null}
+          <div className="flex items-center justify-between gap-3">
+            <p className="hidden text-xs font-semibold text-slate-400 sm:block">
+              {tab !== "settings"
+                ? `ציון SEO: ${seoScore.score}% · שמירה מעדכנת את השרת`
+                : "שמירה מעדכנת את ההגדרות בשרת (טיוטה)"}
+            </p>
+            <div className="flex w-full items-center justify-end gap-3 sm:w-auto">
+              <button
+                type="button"
+                onClick={requestClose}
+                disabled={isSaving}
+                className="rounded-2xl border border-slate-200/90 bg-white px-5 py-3 text-sm font-black text-slate-700 shadow-sm transition hover:bg-slate-50 disabled:opacity-50"
+              >
+                ביטול
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  void handleSave();
+                }}
+                disabled={isSaving || Boolean(canonicalUrlError)}
+                className="rounded-2xl bg-gradient-to-l from-blue-600 to-sky-500 px-6 py-3 text-sm font-black text-black shadow-md shadow-blue-200/50 transition hover:from-blue-700 hover:to-sky-600 disabled:opacity-50"
+              >
+                {isSaving ? "שומר..." : "שמירה"}
+              </button>
+            </div>
           </div>
         </footer>
       </div>
