@@ -295,6 +295,33 @@ export function useStorePluginCatalog(options: {
     });
   }, [businessId]);
 
+  // Soft realtime for public storefront (no auth socket): refresh on focus
+  // and at most every 20s while the tab is visible — not aggressive polling.
+  useEffect(() => {
+    if (!businessId || options.enabled === false) return;
+
+    const bump = () => setRefreshToken((value) => value + 1);
+
+    const onVisibility = () => {
+      if (document.visibilityState === "visible") bump();
+    };
+
+    const onFocus = () => bump();
+
+    document.addEventListener("visibilitychange", onVisibility);
+    window.addEventListener("focus", onFocus);
+
+    const timer = window.setInterval(() => {
+      if (document.visibilityState === "visible") bump();
+    }, 20_000);
+
+    return () => {
+      document.removeEventListener("visibilitychange", onVisibility);
+      window.removeEventListener("focus", onFocus);
+      window.clearInterval(timer);
+    };
+  }, [businessId, options.enabled]);
+
   useEffect(() => {
     let cancelled = false;
 
