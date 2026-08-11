@@ -608,20 +608,22 @@ function ProductCardLink({
   className?: string;
   children: React.ReactNode;
 }) {
+  const id = String(productId || "").trim();
+  const resolvedHref = id ? productHref(id) : href || "/product";
+
   return (
     <a
-      href={href}
+      href={resolvedHref}
       className={className}
       data-editable="link"
       onClick={(event) => {
-        const id = String(productId || "").trim();
         if (!id || !onOpenProduct) return;
-        // In editor/preview SPA, navigate inside the template stack.
-        if (isEditorMode(mode) || mode === "preview") {
-          event.preventDefault();
-          event.stopPropagation();
-          onOpenProduct(id);
-        }
+        // Always open inside the store SPA with a selected product id.
+        // Plain /product (no pid) leaves selectedProduct null and Add-to-cart
+        // becomes a no-op that only navigates to an empty cart.
+        event.preventDefault();
+        event.stopPropagation();
+        onOpenProduct(id);
       }}
     >
       {children}
@@ -657,7 +659,9 @@ function ProductsCatalogPage({
         <div className="mt-14 grid grid-cols-2 gap-4 sm:gap-6 lg:grid-cols-3">
           {safeArray(data.products).map((item, index) => {
             const productId = String(item.id || "").trim();
-            const href = item.href || productHref(productId);
+            const href = productId
+              ? productHref(productId)
+              : item.href || "/product";
             return (
               <article
                 key={`catalog-product-${productId || index}`}
@@ -1200,6 +1204,14 @@ export default function ChanelPages({
       persistSelectedProductId(id);
       setSelectedProductId(id);
       goTo("product");
+      if (typeof window !== "undefined") {
+        try {
+          const next = productHref(id);
+          window.history.replaceState({}, "", next);
+        } catch {
+          /* ignore */
+        }
+      }
     },
     [goTo],
   );
@@ -1842,7 +1854,11 @@ function ProductsSection({
                 )}
               >
                 <ProductCardLink
-                  href={item.href || productHref(productId)}
+                  href={
+                    productId
+                      ? productHref(productId)
+                      : item.href || "/product"
+                  }
                   mode={mode}
                   productId={productId}
                   onOpenProduct={onOpenProduct}
