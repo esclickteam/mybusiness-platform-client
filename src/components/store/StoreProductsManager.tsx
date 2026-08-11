@@ -25,8 +25,13 @@ import {
 
 import API from "../../api";
 import { useAuth } from "../../context/AuthContext";
+import { useSocket } from "../../context/socketContext";
 import BizuplyLoader from "../../components/ui/BizuplyLoader";
 import { emitStoreCatalogChanged } from "../site-builder/studio/data/templates/shared/storeCatalogSync";
+import {
+  getAllowedOrderStatusTransitions,
+  ORDER_STATUS_LABELS,
+} from "./storeOrderStatusFsm";
 import {
   CHECKOUT_APPEARANCE_PRESETS,
   DEFAULT_CHECKOUT_APPEARANCE,
@@ -504,6 +509,7 @@ export default function StoreProductsManager({
   settingsFocus = "all",
 }: StoreProductsManagerProps) {
   const { user } = useAuth() as { user: AuthUserShape | null };
+  const socket = useSocket();
 
   const businessId =
     businessIdProp || user?.businessId || user?.business?._id || "";
@@ -627,6 +633,41 @@ export default function StoreProductsManager({
   useEffect(() => {
     loadStoreData();
   }, [loadStoreData]);
+
+  useEffect(() => {
+    if (!socket || !businessId) return;
+
+    const sameBusiness = (payload: any) => {
+      const id = String(payload?.businessId || "").trim();
+      return !id || id === String(businessId);
+    };
+
+    const onStoreEvent = (payload: any) => {
+      if (!sameBusiness(payload)) return;
+      void loadStoreData();
+    };
+
+    const join = () => {
+      try {
+        socket.emit?.("joinBusinessRoom", businessId);
+      } catch {
+        /* ignore */
+      }
+    };
+
+    if (socket.connected) join();
+    socket.on?.("connect", join);
+    socket.on?.("store:order_created", onStoreEvent);
+    socket.on?.("store:order_updated", onStoreEvent);
+    socket.on?.("store:catalog_changed", onStoreEvent);
+
+    return () => {
+      socket.off?.("connect", join);
+      socket.off?.("store:order_created", onStoreEvent);
+      socket.off?.("store:order_updated", onStoreEvent);
+      socket.off?.("store:catalog_changed", onStoreEvent);
+    };
+  }, [socket, businessId, loadStoreData]);
 
   const seedDemoProducts = useCallback(async () => {
     if (!businessId || seedingDemo) return;
@@ -1128,9 +1169,13 @@ export default function StoreProductsManager({
       await API.put(`/store/${businessId}/orders/${orderId}`, { status });
       await loadStoreData();
       showMessage("success", "סטטוס ההזמנה עודכן");
-    } catch (err) {
+    } catch (err: any) {
       console.error("Update order status error:", err);
-      showMessage("error", "שגיאה בעדכון הזמנה");
+      const apiError =
+        err?.response?.data?.error ||
+        err?.response?.data?.message ||
+        "שגיאה בעדכון הזמנה";
+      showMessage("error", apiError);
     }
   };
 
@@ -3430,13 +3475,13 @@ function OrdersView({
                     }
                     className="min-w-[190px]"
                   >
-                    <option value="new">חדשה</option>
-                    <option value="pending_payment">ממתינה לתשלום</option>
-                    <option value="paid">שולמה</option>
-                    <option value="processing">בטיפול</option>
-                    <option value="shipped">נשלחה</option>
-                    <option value="completed">הושלמה</option>
-                    <option value="cancelled">בוטלה</option>
+                    {getAllowedOrderStatusTransitions(order.status).map(
+                      (status) => (
+                        <option key={status} value={status}>
+                          {ORDER_STATUS_LABELS[status] || status}
+                        </option>
+                      ),
+                    )}
                   </SelectInput>
                 </div>
               </div>
