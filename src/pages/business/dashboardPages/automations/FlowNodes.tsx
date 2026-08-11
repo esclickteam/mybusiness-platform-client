@@ -24,6 +24,7 @@ import {
   type AutomationNodeType,
 } from "./automationFlowTypes";
 import { nodeBillingBadgeLabel } from "./automationActionCost";
+import { MixedBidiText } from "./automation-builder/bidiText";
 
 const ICONS = {
   trigger: Play,
@@ -185,9 +186,9 @@ function FlowNodeShell({
           💬 0.20 ₪
         </span>
       ) : null}
-      <strong className="af-node__title">{title}</strong>
+      <MixedBidiText as="strong" className="af-node__title" text={title} />
       {showDuplicateSummary ? (
-        <p className="af-node__summary">{summary}</p>
+        <MixedBidiText as="p" className="af-node__summary" text={summary} />
       ) : null}
 
       {type === "trigger" ? (

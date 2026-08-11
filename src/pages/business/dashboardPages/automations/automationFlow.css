@@ -176,6 +176,11 @@
   gap: 8px;
 }
 
+.af-builder-toolbar__start {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
 .af-save-status {
   font-size: 12px;
   font-weight: 700;
@@ -983,8 +988,32 @@
 }
 
 .af-toolbar__name {
-  min-width: 190px;
+  /* dir="auto" + plaintext: LTR names keep leading chars; HE names stay RTL.
+     Ellipsis only at the logical end — never clip the start of English names. */
+  min-width: 120px;
+  width: min(360px, 42vw);
+  max-width: min(420px, 50vw);
+  flex: 1 1 auto;
   font-weight: 900;
+  unicode-bidi: plaintext;
+  text-align: start;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+  .af-toolbar__name {
+    width: min(240px, 46vw);
+    max-width: min(280px, 52vw);
+  }
+}
+
+@media (max-width: 640px) {
+  .af-toolbar__name {
+    width: min(180px, 56vw);
+    max-width: min(220px, 62vw);
+  }
 }
 
 .af-btn--primary {

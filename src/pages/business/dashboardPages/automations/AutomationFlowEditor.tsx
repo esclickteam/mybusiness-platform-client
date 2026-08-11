@@ -21,6 +21,7 @@ import AutomationNodePicker from "./automation-builder/AutomationNodePicker";
 import AutomationConfigDrawer from "./automation-builder/AutomationConfigDrawer";
 import AutomationEmptyState from "./automation-builder/AutomationEmptyState";
 import AutomationInsertEdge from "./automation-builder/AutomationInsertEdge";
+import { MixedBidiText } from "./automation-builder/bidiText";
 import {
   reconnectInsertOnEdge,
   spliceNodeAfterHandle,
@@ -1148,7 +1149,8 @@ function EditorInner({
 
       window.setTimeout(() => {
         try {
-          fitView({ padding: 0.2, duration: 280 });
+          // Cap fitView below ReactFlow maxZoom so Zoom In stays enabled.
+          fitView({ padding: 0.2, duration: 280, maxZoom: 1.5 });
         } catch {
           /* ignore */
         }
@@ -1783,7 +1785,10 @@ function EditorInner({
           nodesDraggable={!readOnly}
           nodesConnectable={!readOnly}
           elementsSelectable
+          minZoom={0.25}
+          maxZoom={4}
           fitView
+          fitViewOptions={{ padding: 0.2, maxZoom: 1.5 }}
           deleteKeyCode={readOnly ? null : ["Backspace", "Delete"]}
           proOptions={{ hideAttribution: true }}
           connectionLineStyle={{ stroke: "#64748b", strokeWidth: 2 }}
@@ -1800,7 +1805,10 @@ function EditorInner({
             size={1.5}
             color="#94a3b8"
           />
-          <Controls position="bottom-left" />
+          <Controls
+            position="bottom-left"
+            fitViewOptions={{ padding: 0.2, maxZoom: 1.5 }}
+          />
         </ReactFlow>
 
       <AutomationNodePicker
@@ -1957,19 +1965,29 @@ function EditorInner({
             {selectedNode.type === "trigger" ? (
               <>
                 <div className="af-trigger-config-card">
-                  <p className="af-trigger-config-card__label">
-                    {TRIGGER_CATEGORY_LABELS[
-                      selectedTriggerOption?.category || ""
-                    ] || "טריגר"}
-                  </p>
-                  <strong>
-                    {selectedTriggerOption?.label ||
-                      String(selectedNode.data?.label || "טריגר")}
-                  </strong>
-                  <p>
-                    {selectedTriggerOption?.description ||
-                      "האירוע שמתחיל את האוטומציה"}
-                  </p>
+                  <MixedBidiText
+                    as="p"
+                    className="af-trigger-config-card__label"
+                    text={
+                      TRIGGER_CATEGORY_LABELS[
+                        selectedTriggerOption?.category || ""
+                      ] || "טריגר"
+                    }
+                  />
+                  <MixedBidiText
+                    as="strong"
+                    text={
+                      selectedTriggerOption?.label ||
+                      String(selectedNode.data?.label || "טריגר")
+                    }
+                  />
+                  <MixedBidiText
+                    as="p"
+                    text={
+                      selectedTriggerOption?.description ||
+                      "האירוע שמתחיל את האוטומציה"
+                    }
+                  />
                   {!selectedTriggerOption?.triggerBillable ? (
                     <span className="af-picker-item__billing">ללא חיוב</span>
                   ) : null}

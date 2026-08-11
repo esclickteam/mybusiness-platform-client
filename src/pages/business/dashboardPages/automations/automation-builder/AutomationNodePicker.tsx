@@ -31,6 +31,7 @@ import {
   TRIGGER_PICKER_CATEGORY_LABELS,
   type TriggerPickerCategoryId,
 } from "./triggerPickerUtils";
+import { MixedBidiText } from "./bidiText";
 
 export type PickerMode = "all" | "trigger" | "result";
 
@@ -296,10 +297,14 @@ export default function AutomationNodePicker({
           <Icon size={18} />
         </span>
         <span className="af-picker-item__text">
-          <strong>{item.label}</strong>
-          <em>{item.description}</em>
+          <MixedBidiText as="strong" text={item.label} />
+          <MixedBidiText as="em" text={item.description} />
           <span className="af-picker-item__meta">
-            <span className="af-picker-item__category">{categoryLabel}</span>
+            <MixedBidiText
+              as="span"
+              className="af-picker-item__category"
+              text={categoryLabel}
+            />
             {!option?.triggerBillable ? (
               <span className="af-picker-item__billing">{billingNote}</span>
             ) : null}

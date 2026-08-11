@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { X } from "lucide-react";
+import { MixedBidiText } from "./bidiText";
 
 type Props = {
   open: boolean;
@@ -82,8 +83,8 @@ export default function AutomationConfigDrawer({
               </span>
             ) : null}
             <div>
-              <h2>{title}</h2>
-              {subtitle ? <p>{subtitle}</p> : null}
+              <MixedBidiText as="h2" text={title} />
+              {subtitle ? <MixedBidiText as="p" text={subtitle} /> : null}
             </div>
           </div>
           <button
