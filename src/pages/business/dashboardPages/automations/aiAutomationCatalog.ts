@@ -670,6 +670,23 @@ export const getAiTemplateByKey = (
     (template) => template.templateKey === key || template.recipeKey === key
   );
 
+/** Discovery/entry URL into Templates (AI filter + highlight). Does not activate. */
+export const buildAiTemplateDiscoveryHref = (
+  businessId: string,
+  templateOrKey: AiAutomationTemplate | string
+): string => {
+  const template =
+    typeof templateOrKey === "string"
+      ? getAiTemplateByKey(templateOrKey)
+      : templateOrKey;
+  const highlightKey = template?.templateKey || String(templateOrKey || "").trim();
+  const params = new URLSearchParams({
+    focus: "ai",
+    highlight: highlightKey,
+  });
+  return `/business/${businessId}/dashboard/automations/templates?${params.toString()}`;
+};
+
 export const searchAiTemplates = (query: string): AiAutomationTemplate[] => {
   const normalized = query.trim().toLocaleLowerCase("he-IL");
   if (!normalized) return listSupportedAiTemplates();

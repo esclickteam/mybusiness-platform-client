@@ -169,6 +169,16 @@ export async function reactivateAutomationPlan(businessId: string) {
   return data as AutomationReactivatePlanResult;
 }
 
+/** True when the business may activate/create automations under current plan rules. */
+export function hasActiveAutomationPlan(
+  usage: AutomationBillingUsageOverview | null | undefined
+): boolean {
+  if (!usage) return false;
+  if (!usage.billingEnabled) return true;
+  if (usage.exempt) return true;
+  return Boolean(usage.plan?.key);
+}
+
 export function readAutomationBillingErrorCode(error: unknown): string | null {
   if (!error || typeof error !== "object") return null;
   const data = (error as { response?: { data?: { code?: string } } }).response

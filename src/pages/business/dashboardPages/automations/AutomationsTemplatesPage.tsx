@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   useNavigate,
   useOutletContext,
@@ -30,6 +30,11 @@ import {
   type AutomationRecipeSummary,
   type AutomationTriggerCatalogItem,
 } from "../../../../api/automationWorkflowApi";
+import {
+  AUTOMATION_BILLING_API_CODES,
+  hasActiveAutomationPlan,
+  readAutomationBillingErrorCode,
+} from "../../../../api/automationBillingApi";
 import { getGoogleCalendarStatus } from "../../../../api/googleCalendarApi";
 import {
   getWhatsAppIntegrationStatus,
@@ -58,6 +63,9 @@ import {
   defaultMappingsForMetaTemplate,
   isBusinessAlertMetaTemplateName,
 } from "./whatsappAutomationMetaTemplates";
+import { useAutomationBilling } from "./billing/useAutomationBilling";
+import AutomationPlanModal from "./billing/AutomationPlanModal";
+import AutomationCancelConfirmModal from "./billing/AutomationCancelConfirmModal";
 
 type OutletCtx = {
   businessId: string | null;
@@ -79,10 +87,31 @@ function cardIcon(template: WorkingTemplate) {
   return Workflow;
 }
 
+function cardMatchesHighlight(
+  template: WorkingTemplate,
+  highlightKey: string
+): boolean {
+  const key = String(highlightKey || "").trim();
+  if (!key) return false;
+  if (template.key === key || template.recipeKey === key) return true;
+  const ai = getAiTemplateByKey(key);
+  if (!ai) return false;
+  return (
+    template.key === ai.templateKey ||
+    template.recipeKey === ai.recipeKey ||
+    template.key === ai.recipeKey
+  );
+}
+
 export default function AutomationsTemplatesPage() {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const { businessId, readOnly } = useOutletContext<OutletCtx>();
+  const {
+    usage: billingUsage,
+    refresh: refreshBilling,
+    loading: billingLoading,
+  } = useAutomationBilling(businessId);
   const [loading, setLoading] = useState(true);
   const [recipes, setRecipes] = useState<AutomationRecipeSummary[]>([]);
   const [triggers, setTriggers] = useState<AutomationTriggerCatalogItem[]>([]);
@@ -104,9 +133,17 @@ export default function AutomationsTemplatesPage() {
     templateId: string;
   } | null>(null);
   const [aiPreview, setAiPreview] = useState<CardModel | null>(null);
+  const [highlightedKey, setHighlightedKey] = useState<string | null>(null);
+  const [planModalOpen, setPlanModalOpen] = useState(false);
+  const [cancelModalOpen, setCancelModalOpen] = useState(false);
+  const highlightHandled = useRef<string | null>(null);
+
+  const hasPlan = hasActiveAutomationPlan(billingUsage);
+  const planGateReady = !billingLoading || billingUsage !== null;
 
   const initialCategory = (searchParams.get("focus") === "ai" ||
-  searchParams.get("tier") === "ai"
+  searchParams.get("tier") === "ai" ||
+  Boolean(searchParams.get("highlight"))
     ? "ai"
     : "all") as TemplateCategoryId;
   const [category, setCategory] = useState<TemplateCategoryId>(initialCategory);
@@ -197,14 +234,47 @@ export default function AutomationsTemplatesPage() {
   }, [load]);
 
   useEffect(() => {
-    if (searchParams.get("focus") === "ai" || searchParams.get("tier") === "ai") {
-      setCategory("ai");
+    const focusAi =
+      searchParams.get("focus") === "ai" ||
+      searchParams.get("tier") === "ai" ||
+      Boolean(searchParams.get("highlight"));
+    const pickPlan = searchParams.get("pickPlan") === "1";
+    const highlight = String(searchParams.get("highlight") || "").trim();
+
+    if (focusAi) setCategory("ai");
+    if (pickPlan) setPlanModalOpen(true);
+
+    if (focusAi || pickPlan || highlight) {
       const next = new URLSearchParams(searchParams);
       next.delete("focus");
       next.delete("tier");
-      setSearchParams(next, { replace: true });
+      next.delete("pickPlan");
+      // Keep highlight until cards are painted & scrolled; cleared in highlight effect.
+      if (!highlight) next.delete("highlight");
+      if (
+        [...next.keys()].join("|") !== [...searchParams.keys()].join("|") ||
+        [...next.values()].join("|") !== [...searchParams.values()].join("|")
+      ) {
+        setSearchParams(next, { replace: true });
+      }
+    }
+
+    if (highlight && highlightHandled.current !== highlight) {
+      setHighlightedKey(highlight);
     }
   }, [searchParams, setSearchParams]);
+
+  const openPlanPicker = useCallback(() => {
+    setPlanModalOpen(true);
+  }, []);
+
+  const ensureAutomationPlanOrOpenBilling = useCallback((): boolean => {
+    if (!planGateReady) return false;
+    if (hasPlan) return true;
+    toast.error("כדי להפעיל אוטומציה יש לבחור חבילת פעולות");
+    openPlanPicker();
+    return false;
+  }, [hasPlan, openPlanPicker, planGateReady]);
 
   const ctx = useMemo(
     () => ({
@@ -265,6 +335,49 @@ export default function AutomationsTemplatesPage() {
     [cards, category]
   );
   const readyCount = categoryCards.filter((c) => c.readiness.ready).length;
+
+  useEffect(() => {
+    if (!highlightedKey || loading) return;
+    if (highlightHandled.current === highlightedKey) return;
+    const match = visibleCards.find(({ template }) =>
+      cardMatchesHighlight(template, highlightedKey)
+    );
+    if (!match) {
+      // Avoid infinite retries once the catalog finished loading.
+      if (cards.length > 0) {
+        highlightHandled.current = highlightedKey;
+        setHighlightedKey(null);
+      }
+      return;
+    }
+    highlightHandled.current = highlightedKey;
+    const id = `ax-template-${match.template.key}`;
+    const timer = window.setTimeout(() => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "center" });
+      }
+      const next = new URLSearchParams(searchParams);
+      if (next.has("highlight")) {
+        next.delete("highlight");
+        setSearchParams(next, { replace: true });
+      }
+    }, 120);
+    const clearHighlight = window.setTimeout(() => {
+      setHighlightedKey(null);
+    }, 2600);
+    return () => {
+      window.clearTimeout(timer);
+      window.clearTimeout(clearHighlight);
+    };
+  }, [
+    cards.length,
+    highlightedKey,
+    loading,
+    searchParams,
+    setSearchParams,
+    visibleCards,
+  ]);
 
   const activateWhatsAppAsWorkflow = async (
     template: WorkingTemplate,
@@ -461,6 +574,9 @@ export default function AutomationsTemplatesPage() {
       toast.error(AUTOMATION_PREVIEW_WRITE_BLOCKED_MESSAGE);
       return;
     }
+    if (!ensureAutomationPlanOrOpenBilling()) {
+      return;
+    }
     if (!card.readiness.ready) {
       if (
         (card.template.engine === "whatsapp_simple" ||
@@ -531,11 +647,20 @@ export default function AutomationsTemplatesPage() {
 
   const confirmAiPreview = async () => {
     if (!aiPreview || !businessId) return;
+    if (!ensureAutomationPlanOrOpenBilling()) {
+      return;
+    }
     setCreatingKey(aiPreview.template.key);
     try {
       await activateWorkflow(aiPreview.template, aiPreview.readiness);
       setAiPreview(null);
     } catch (error: unknown) {
+      const code = readAutomationBillingErrorCode(error);
+      if (code === AUTOMATION_BILLING_API_CODES.PLAN_REQUIRED) {
+        toast.error("כדי להפעיל אוטומציה יש לבחור חבילת פעולות");
+        openPlanPicker();
+        return;
+      }
       toast.error(readAutomationErrorMessage(error, "שגיאה בהפעלת האוטומציה"));
     } finally {
       setCreatingKey(null);
@@ -639,9 +764,25 @@ export default function AutomationsTemplatesPage() {
             const busy = creatingKey === template.key;
             const isAi = template.categories.includes("ai");
             const isWa = isWhatsAppFacingTemplate(template);
+            const isHighlighted =
+              Boolean(highlightedKey) &&
+              cardMatchesHighlight(template, highlightedKey || "");
+            const ctaLabel = !hasPlan
+              ? "בחר חבילת אוטומציות"
+              : isWa
+                ? "הפעל — בחר תבנית הודעה"
+                : isAi
+                  ? "הפעל תבנית"
+                  : "הפעל עכשיו";
 
             return (
-              <article key={template.key} className="ax-template-card">
+              <article
+                key={template.key}
+                id={`ax-template-${template.key}`}
+                data-template-key={template.key}
+                data-recipe-key={template.recipeKey || ""}
+                className={`ax-template-card${isHighlighted ? " ax-template-card--highlight" : ""}`}
+              >
                 <div className="ax-template-card__top">
                   <span className="ax-template-card__icon" aria-hidden>
                     {isAi ? <Bot size={18} /> : <Icon size={18} />}
@@ -698,18 +839,30 @@ export default function AutomationsTemplatesPage() {
                   disabled={
                     !businessId ||
                     Boolean(creatingKey) ||
-                    !readiness.ready ||
-                    readOnly
+                    readOnly ||
+                    (!hasPlan
+                      ? !planGateReady
+                      : !readiness.ready)
                   }
                   title={
-                    !readiness.ready ? readiness.blocker : writeBlockedTitle
+                    !hasPlan
+                      ? "נדרשת חבילת אוטומציות פעילה"
+                      : !readiness.ready
+                        ? readiness.blocker
+                        : writeBlockedTitle
                   }
-                  onClick={() => void handleActivate({ template, readiness })}
+                  onClick={() => {
+                    if (!hasPlan) {
+                      openPlanPicker();
+                      return;
+                    }
+                    void handleActivate({ template, readiness });
+                  }}
                 >
                   {busy ? (
                     <Loader2 size={14} className="animate-spin" />
                   ) : null}
-                  {isWa ? "הפעל — בחר תבנית הודעה" : isAi ? "הפעל תבנית" : "הפעל עכשיו"}
+                  {ctaLabel}
                 </button>
               </article>
             );
@@ -775,12 +928,19 @@ export default function AutomationsTemplatesPage() {
                 type="button"
                 className="af-btn af-btn--primary"
                 disabled={Boolean(creatingKey)}
-                onClick={() => void confirmAiPreview()}
+                onClick={() => {
+                  if (!hasPlan) {
+                    setAiPreview(null);
+                    openPlanPicker();
+                    return;
+                  }
+                  void confirmAiPreview();
+                }}
               >
                 {creatingKey ? (
                   <Loader2 size={14} className="animate-spin" />
                 ) : null}
-                הפעל תבנית
+                {hasPlan ? "הפעל תבנית" : "בחר חבילת אוטומציות"}
               </button>
             </div>
           </div>
@@ -853,6 +1013,35 @@ export default function AutomationsTemplatesPage() {
             </div>
           </div>
         </div>
+      ) : null}
+
+      {businessId ? (
+        <>
+          <AutomationPlanModal
+            open={planModalOpen}
+            businessId={businessId}
+            usage={billingUsage}
+            initialMode="pick"
+            onClose={() => setPlanModalOpen(false)}
+            onUsageUpdated={async () => {
+              await refreshBilling();
+            }}
+            onOpenCancel={() => {
+              setPlanModalOpen(false);
+              setCancelModalOpen(true);
+            }}
+          />
+          <AutomationCancelConfirmModal
+            open={cancelModalOpen}
+            businessId={businessId}
+            usage={billingUsage}
+            onClose={() => setCancelModalOpen(false)}
+            onCancelled={() => {
+              setCancelModalOpen(false);
+              void refreshBilling();
+            }}
+          />
+        </>
       ) : null}
     </div>
   );
