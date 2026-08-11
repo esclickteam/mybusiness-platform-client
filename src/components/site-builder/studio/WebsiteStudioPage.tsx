@@ -5194,10 +5194,18 @@ export default function WebsiteStudioPage({
 
   const publicUrl = useMemo(() => {
     /*
-      Prefer the real published URL that came back from the server (custom
-      domain or live slug). Fall back to the current slug, and only use the
-      generic placeholder when the site was never published/saved.
+      Prefer an active custom domain as the primary public URL for SEO / GSC.
+      Fall back to the published session URL, then the platform subdomain.
     */
+    const linkedCustom = normalizeLinkedCustomDomain(customDomain);
+    const customPhase = resolveCustomDomainPublishPhase(
+      linkedCustom,
+      customDomainProvisioningStatus,
+    );
+    if (customPhase === "active" && linkedCustom) {
+      return `https://${linkedCustom}`;
+    }
+
     const fromSession = String(
       (visualSessionData as any)?.__publicUrl || "",
     ).trim();
@@ -5207,11 +5215,17 @@ export default function WebsiteStudioPage({
     if (cleanSlug) return buildPublicSiteUrl(cleanSlug);
 
     return buildPublicSiteUrl("your-business");
-  }, [slug, visualSessionData]);
+  }, [slug, visualSessionData, customDomain, customDomainProvisioningStatus]);
 
   const publicUrlIsPlaceholder =
     !normalizePublicBusinessSlug(slug) &&
-    !String((visualSessionData as any)?.__publicUrl || "").trim();
+    !String((visualSessionData as any)?.__publicUrl || "").trim() &&
+    !(
+      resolveCustomDomainPublishPhase(
+        normalizeLinkedCustomDomain(customDomain),
+        customDomainProvisioningStatus,
+      ) === "active" && normalizeLinkedCustomDomain(customDomain)
+    );
 
   const slugValid = /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug) && !isObjectIdLikeSlug(slug);
 
