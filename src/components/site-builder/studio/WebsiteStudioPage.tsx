@@ -9234,6 +9234,23 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
                         handleMoveSection(sectionId, "down")
                       }
                       onOpenSectionsPanel={() => setActivePanel("sections")}
+                      onOpenPageSeo={(tab = "advanced") => {
+                        const pageId =
+                          activePageId ||
+                          pages.find((page) => page.isHome)?.id ||
+                          pages[0]?.id ||
+                          "";
+                        if (!pageId) {
+                          window.alert("אין עמוד פתוח להגדרות SEO.");
+                          return;
+                        }
+                        setActivePanel(null);
+                        setPageSettingsModal({
+                          open: true,
+                          pageId,
+                          tab,
+                        });
+                      }}
                     />
                   </div>
                 </div>
@@ -9249,6 +9266,47 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
           />
         </div>
       </div>
+
+      <PageSettingsModal
+        open={pageSettingsModal.open}
+        tab={pageSettingsModal.tab}
+        page={
+          pages.find((page) => page.id === pageSettingsModal.pageId) || null
+        }
+        pages={pages}
+        siteName={siteName}
+        siteSlug={
+          normalizePublicBusinessSlug(slug) ||
+          normalizePublicBusinessSlug(
+            extractSlugFromPublicUrl(publicUrl),
+          ) ||
+          "your-business"
+        }
+        publicUrl={publicUrl}
+        publicUrlIsPlaceholder={publicUrlIsPlaceholder}
+        seoSettings={siteSeoSettings}
+        brandSettings={siteBrandSettings}
+        businessId={businessId}
+        pageHtml={(() => {
+          const target = pages.find(
+            (page) => page.id === pageSettingsModal.pageId,
+          );
+          if (!target) return "";
+          if (target.id === activePageId) {
+            try {
+              const liveHtml = editorRef.current?.getHtml?.() || "";
+              if (liveHtml) return liveHtml;
+            } catch {
+              /* fall back to stored html */
+            }
+          }
+          return String((target as any).html || "");
+        })()}
+        onClose={() =>
+          setPageSettingsModal((current) => ({ ...current, open: false }))
+        }
+        onSave={handlePageSettingsModalSave}
+      />
 
       {clientPortalModalOpen &&
       clientPortalPluginEnabled &&
