@@ -6,6 +6,15 @@ import {
   Zap,
   Play,
   Split,
+  UserPlus,
+  RefreshCw,
+  FileText,
+  CalendarPlus,
+  CalendarX,
+  Bell,
+  ShoppingBag,
+  CreditCard,
+  type LucideIcon,
 } from "lucide-react";
 import {
   TYPE_META,
@@ -15,6 +24,7 @@ import {
   type AutomationNodeType,
 } from "./automationFlowTypes";
 import { nodeBillingBadgeLabel } from "./automationActionCost";
+import { MixedBidiText } from "./automation-builder/bidiText";
 
 const ICONS = {
   trigger: Play,
@@ -23,6 +33,32 @@ const ICONS = {
   action: Zap,
   router: Split,
 } as const;
+
+const TRIGGER_ICONS: Record<string, LucideIcon> = {
+  "user-plus": UserPlus,
+  "refresh-cw": RefreshCw,
+  "file-text": FileText,
+  "calendar-plus": CalendarPlus,
+  "calendar-x": CalendarX,
+  bell: Bell,
+  "shopping-bag": ShoppingBag,
+  "credit-card": CreditCard,
+  play: Play,
+  clock: Clock3,
+};
+
+const TRIGGER_KEY_ICONS: Record<string, LucideIcon> = {
+  new_lead: UserPlus,
+  lead_status_changed: RefreshCw,
+  form_submitted: FileText,
+  appointment_created: CalendarPlus,
+  appointment_cancelled: CalendarX,
+  appointment_reminder: Bell,
+  order_created: ShoppingBag,
+  payment_succeeded: CreditCard,
+  manual: Play,
+  scheduled: Clock3,
+};
 
 function providerLabel(type: AutomationNodeType, data: Record<string, unknown>) {
   if (type === "trigger") return "טריגר";
@@ -82,7 +118,14 @@ function FlowNodeShell({
   selected?: boolean;
 }) {
   const meta = TYPE_META[type];
-  const Icon = ICONS[type];
+  const triggerKey = String(data.triggerKey || "");
+  const TriggerIcon =
+    type === "trigger"
+      ? TRIGGER_KEY_ICONS[triggerKey] ||
+        TRIGGER_ICONS[String(data.icon || "")] ||
+        Play
+      : ICONS[type];
+  const Icon = type === "trigger" ? TriggerIcon : ICONS[type];
   const title = String(data.label || meta.title);
   const summary = nodeSummary(data, type);
   const routeCount = clampRouteCount(data.routeCount, 1);
@@ -100,6 +143,10 @@ function FlowNodeShell({
     type === "trigger" && routeCount > 1
       ? Array.from({ length: routeCount }, (_, i) => `תוצאה ${i + 1}`)
       : undefined;
+  const showDuplicateSummary =
+    type === "trigger"
+      ? Boolean(summary) && summary !== title
+      : Boolean(summary) && summary !== title;
 
   return (
     <div
@@ -121,24 +168,28 @@ function FlowNodeShell({
         <Handle type="target" position={Position.Left} className="af-handle" />
       ) : null}
 
-      <div className="af-node__badge">
-        <Icon size={11} />
-        <span>{provider}</span>
+      <div className="af-node__top">
+        <div className="af-node__badge">
+          <Icon size={11} />
+          <span>{provider}</span>
+        </div>
+        <span
+          className={`af-node__cost${
+            costLabel === "ללא חיוב" ? " af-node__cost--free" : ""
+          }`}
+        >
+          {costLabel}
+        </span>
       </div>
-      <span
-        className={`af-node__cost${
-          costLabel === "ללא חיוב" ? " af-node__cost--free" : ""
-        }`}
-      >
-        {costLabel}
-      </span>
       {isWhatsAppAction ? (
         <span className="af-node__wa-cost" title="0.20 ₪ להודעת WhatsApp">
           💬 0.20 ₪
         </span>
       ) : null}
-      <strong className="af-node__title">{title}</strong>
-      {summary ? <p className="af-node__summary">{summary}</p> : null}
+      <MixedBidiText as="strong" className="af-node__title" text={title} />
+      {showDuplicateSummary ? (
+        <MixedBidiText as="p" className="af-node__summary" text={summary} />
+      ) : null}
 
       {type === "trigger" ? (
         <RouteHandles

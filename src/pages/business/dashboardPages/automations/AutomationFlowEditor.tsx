@@ -3,7 +3,6 @@ import {
   ReactFlow,
   Background,
   Controls,
-  MiniMap,
   addEdge,
   useEdgesState,
   useNodesState,
@@ -22,6 +21,7 @@ import AutomationNodePicker from "./automation-builder/AutomationNodePicker";
 import AutomationConfigDrawer from "./automation-builder/AutomationConfigDrawer";
 import AutomationEmptyState from "./automation-builder/AutomationEmptyState";
 import AutomationInsertEdge from "./automation-builder/AutomationInsertEdge";
+import { MixedBidiText } from "./automation-builder/bidiText";
 import {
   reconnectInsertOnEdge,
   spliceNodeAfterHandle,
@@ -515,7 +515,12 @@ function EditorInner({
   const [pickerAfterNodeId, setPickerAfterNodeId] = useState<string | null>(
     null
   );
+  const [inspectorBaseline, setInspectorBaseline] = useState<string | null>(
+    null
+  );
+  const [drawerSessionDirty, setDrawerSessionDirty] = useState(false);
   const selectedIdRef = useRef<string | null>(null);
+  const closingDrawerRef = useRef(false);
   const nodesRef = useRef(nodes);
   const edgesRef = useRef(edges);
   const savingRef = useRef(false);
@@ -524,13 +529,14 @@ function EditorInner({
     serializeFlowNodes(nodes) !== serializeFlowNodes(workflow.nodes || []) ||
     serializeFlowEdges(edges) !== serializeFlowEdges(workflow.edges || []);
 
+  const setSelectedIdSafe = useCallback((nextId: string | null) => {
+    selectedIdRef.current = nextId;
+    setSelectedId(nextId);
+  }, []);
+
   useEffect(() => {
     savingRef.current = saving;
   }, [saving]);
-
-  useEffect(() => {
-    selectedIdRef.current = selectedId;
-  }, [selectedId]);
 
   useEffect(() => {
     nodesRef.current = nodes;
@@ -546,9 +552,38 @@ function EditorInner({
   useEffect(() => {
     if (!selectedId) return;
     if (!nodes.some((n) => n.id === selectedId)) {
-      setSelectedId(null);
+      setSelectedIdSafe(null);
+      setInspectorBaseline(null);
+      setDrawerSessionDirty(false);
     }
-  }, [nodes, selectedId]);
+  }, [nodes, selectedId, setSelectedIdSafe]);
+
+  useEffect(() => {
+    if (!selectedId) {
+      setInspectorBaseline(null);
+      setDrawerSessionDirty(false);
+      return;
+    }
+    const node = nodes.find((n) => n.id === selectedId);
+    if (!node) return;
+    // New selection always starts a fresh edit session baseline.
+    setInspectorBaseline(JSON.stringify(node.data || {}));
+    setDrawerSessionDirty(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- only re-baseline on selection change
+  }, [selectedId]);
+
+  useEffect(() => {
+    if (!selectedId || inspectorBaseline == null) {
+      setDrawerSessionDirty(false);
+      return;
+    }
+    const node = nodes.find((n) => n.id === selectedId);
+    if (!node) {
+      setDrawerSessionDirty(false);
+      return;
+    }
+    setDrawerSessionDirty(JSON.stringify(node.data || {}) !== inspectorBaseline);
+  }, [selectedId, nodes, inspectorBaseline]);
 
   const loadApprovedWhatsAppTemplates = useCallback(async () => {
     setWaLoading(true);
@@ -699,6 +734,7 @@ function EditorInner({
       const unique = new Map<string, AutomationTriggerOption>();
       for (const row of triggers) {
         const option = triggerOptionFromCatalog(row);
+        if (!option) continue;
         if (!unique.has(option.key)) unique.set(option.key, option);
       }
       setTriggerCatalog(Array.from(unique.values()));
@@ -1092,32 +1128,35 @@ function EditorInner({
         toast.success("מודול נוסף ללוח");
       }
 
-      setSelectedId(id);
+      setSelectedIdSafe(id);
       setPickerOpen(false);
       setPickerEdgeId(null);
       setPickerAfterNodeId(null);
       setPickerMode("all");
+      setInspectorBaseline(null);
+      setDrawerSessionDirty(false);
 
-      // After choosing a trigger on a blank canvas, immediately offer results.
+      // Trigger pick: keep config drawer open (do not auto-open result picker).
       if (item.type === "trigger") {
         window.setTimeout(() => {
-          setSelectedId(id);
-          setPickerAfterNodeId(id);
-          setPickerEdgeId(null);
-          setPickerMode("result");
-          setPickerOpen(true);
-        }, 180);
+          setSelectedIdSafe(id);
+          const firstField = document.querySelector(
+            ".af-drawer--config input, .af-drawer--config select, .af-drawer--config textarea"
+          ) as HTMLElement | null;
+          firstField?.focus?.();
+        }, 60);
       }
 
       window.setTimeout(() => {
         try {
-          fitView({ padding: 0.2, duration: 280 });
+          // Cap fitView below ReactFlow maxZoom so Zoom In stays enabled.
+          fitView({ padding: 0.2, duration: 280, maxZoom: 1.5 });
         } catch {
           /* ignore */
         }
       }, 40);
     },
-    [edges, fitView, nodes, pickerAfterNodeId, selectedId, setEdges, setNodes]
+    [edges, fitView, nodes, pickerAfterNodeId, selectedId, setEdges, setNodes, setSelectedIdSafe]
   );
 
   const onDragOver = (event: React.DragEvent) => {
@@ -1159,13 +1198,106 @@ function EditorInner({
     );
   };
 
+  const clearCanvasSelection = useCallback(() => {
+    setNodes((prev) => prev.map((n) => ({ ...n, selected: false })));
+  }, [setNodes]);
+
+  const closeInspector = useCallback(
+    (opts?: { discardSession?: boolean }) => {
+      closingDrawerRef.current = true;
+      if (opts?.discardSession && selectedIdRef.current && inspectorBaseline != null) {
+        const id = selectedIdRef.current;
+        let baselineData: Record<string, unknown> = {};
+        try {
+          baselineData = JSON.parse(inspectorBaseline) as Record<string, unknown>;
+        } catch {
+          baselineData = {};
+        }
+        setNodes((prev) =>
+          prev.map((n) =>
+            n.id === id ? { ...n, data: { ...baselineData }, selected: false } : { ...n, selected: false }
+          )
+        );
+      } else {
+        clearCanvasSelection();
+      }
+      setSelectedIdSafe(null);
+      setInspectorBaseline(null);
+      setDrawerSessionDirty(false);
+      window.setTimeout(() => {
+        closingDrawerRef.current = false;
+      }, 120);
+    },
+    [clearCanvasSelection, inspectorBaseline, setNodes, setSelectedIdSafe]
+  );
+
+  const requestCloseInspector = useCallback(() => {
+    if (drawerSessionDirty) return false;
+    return true;
+  }, [drawerSessionDirty]);
+
+  const validateSelectedTriggerConfig = useCallback((): string | null => {
+    const node = nodesRef.current.find((n) => n.id === selectedIdRef.current);
+    if (!node || node.type !== "trigger") return null;
+    const key = String(node.data?.triggerKey || "");
+    if (key === "lead_status_changed") {
+      const toStatus = String(node.data?.toStatus || "").trim();
+      if (!toStatus) return "יש לבחור סטטוס יעד";
+    }
+    if (key === "appointment_reminder") {
+      const hoursBefore = Number(node.data?.hoursBefore);
+      if (!Number.isFinite(hoursBefore) || hoursBefore <= 0) {
+        return "יש להגדיר כמה שעות לפני הפגישה";
+      }
+    }
+    if (key === "scheduled") {
+      const schedule = normalizeScheduleConfig(
+        (node.data?.schedule as Partial<AutomationScheduleConfig> | undefined) ||
+          {}
+      );
+      if (!schedule) return "הגדרות לוח הזמנים אינן תקינות";
+    }
+    return null;
+  }, []);
+
+  const handleDrawerSave = async () => {
+    const validationError = validateSelectedTriggerConfig();
+    if (validationError) {
+      toast.error(validationError);
+      return false;
+    }
+    const ok = await handleSave(true);
+    if (ok) {
+      const node = nodesRef.current.find((n) => n.id === selectedIdRef.current);
+      if (node) {
+        setInspectorBaseline(JSON.stringify(node.data || {}));
+        setDrawerSessionDirty(false);
+      }
+      toast.success("ההגדרות נשמרו");
+    }
+    return ok;
+  };
+
+  const handleDrawerFinish = async () => {
+    const validationError = validateSelectedTriggerConfig();
+    if (validationError) {
+      toast.error(validationError);
+      return;
+    }
+    const ok = await handleSave(true);
+    if (!ok) return;
+    closeInspector();
+  };
+
   const deleteSelected = () => {
     if (!selectedId) return;
     setNodes((prev) => prev.filter((n) => n.id !== selectedId));
     setEdges((prev) =>
       prev.filter((e) => e.source !== selectedId && e.target !== selectedId)
     );
-    setSelectedId(null);
+    setSelectedIdSafe(null);
+    setInspectorBaseline(null);
+    setDrawerSessionDirty(false);
   };
 
   const applyGmailPublishDefaults = (list: Node[]) =>
@@ -1483,7 +1615,11 @@ function EditorInner({
       /** @deprecated use mode: "trigger" */
       preferTriggers?: boolean;
     }) => {
-      if (opts?.clearSelection) setSelectedId(null);
+      if (opts?.clearSelection) {
+        setSelectedIdSafe(null);
+        setInspectorBaseline(null);
+        setDrawerSessionDirty(false);
+      }
       setPickerEdgeId(opts?.edgeId || null);
       setPickerAfterNodeId(opts?.afterNodeId || null);
       const mode =
@@ -1492,7 +1628,7 @@ function EditorInner({
       setPickerMode(mode);
       setPickerOpen(true);
     },
-    []
+    [setSelectedIdSafe]
   );
 
   const pickerItems = filteredPalette;
@@ -1627,25 +1763,32 @@ function EditorInner({
           onDrop={readOnly ? undefined : onDrop}
           onDragOver={readOnly ? undefined : onDragOver}
           onNodeClick={(_, node) => {
+            if (closingDrawerRef.current) return;
             setPickerOpen(false);
             setPickerEdgeId(null);
-            setSelectedId(node.id);
+            setSelectedIdSafe(node.id);
+            setInspectorBaseline(null);
           }}
           onPaneClick={() => {
             setPickerOpen(false);
-            setSelectedId(null);
+            if (drawerSessionDirty) return;
+            closeInspector();
           }}
           onSelectionChange={({ nodes: selected }) => {
+            if (closingDrawerRef.current) return;
             const nextId = selected[0]?.id;
             if (nextId) {
               setPickerOpen(false);
-              setSelectedId(nextId);
+              setSelectedIdSafe(nextId);
             }
           }}
           nodesDraggable={!readOnly}
           nodesConnectable={!readOnly}
           elementsSelectable
+          minZoom={0.25}
+          maxZoom={4}
           fitView
+          fitViewOptions={{ padding: 0.2, maxZoom: 1.5 }}
           deleteKeyCode={readOnly ? null : ["Backspace", "Delete"]}
           proOptions={{ hideAttribution: true }}
           connectionLineStyle={{ stroke: "#64748b", strokeWidth: 2 }}
@@ -1662,25 +1805,16 @@ function EditorInner({
             size={1.5}
             color="#94a3b8"
           />
-          <Controls position="bottom-left" />
-          <MiniMap
-            position="bottom-right"
-            pannable
-            zoomable
-            nodeStrokeColor={(n) =>
-              TYPE_META[(n.type as keyof typeof TYPE_META) || "action"]?.color ||
-              "#94a3b8"
-            }
-            nodeColor={(n) =>
-              TYPE_META[(n.type as keyof typeof TYPE_META) || "action"]?.accent ||
-              "#e2e8f0"
-            }
+          <Controls
+            position="bottom-left"
+            fitViewOptions={{ padding: 0.2, maxZoom: 1.5 }}
           />
         </ReactFlow>
 
       <AutomationNodePicker
         open={pickerOpen}
         items={pickerItems}
+        triggerCatalog={triggerCatalog}
         mode={pickerMode}
         loading={triggerCatalogLoading}
         error={triggerCatalogError}
@@ -1694,6 +1828,30 @@ function EditorInner({
           setPickerMode("all");
         }}
         onPick={(item) => {
+          if (
+            item.type === "trigger" &&
+            selectedNode?.type === "trigger" &&
+            !pickerEdgeId &&
+            !pickerAfterNodeId
+          ) {
+            // Replace current trigger configuration in-place.
+            updateSelectedData({
+              ...item.defaults,
+              triggerKey: item.key,
+              label: item.label.replace(/^טריגר ·\s*/, ""),
+              ...(item.key === "scheduled"
+                ? {
+                    schedule:
+                      (selectedNode.data?.schedule as
+                        | Partial<AutomationScheduleConfig>
+                        | undefined) || defaultScheduleConfig(),
+                  }
+                : { schedule: undefined }),
+            });
+            setPickerOpen(false);
+            setPickerMode("all");
+            return;
+          }
           insertModule(item, {
             edgeId: pickerEdgeId,
             afterNodeId: pickerAfterNodeId || selectedId,
@@ -1715,37 +1873,19 @@ function EditorInner({
             : "הגדרות"
         }
         subtitle={
-          selectedNode
-            ? TYPE_META[selectedNode.type as keyof typeof TYPE_META]?.title
-            : undefined
+          selectedNode?.type === "trigger"
+            ? selectedTriggerOption?.description ||
+              "הגדרות הטריגר שמתחיל את האוטומציה"
+            : selectedNode
+              ? TYPE_META[selectedNode.type as keyof typeof TYPE_META]?.title
+              : undefined
         }
-        onClose={() => setSelectedId(null)}
+        onClose={() => closeInspector({ discardSession: drawerSessionDirty })}
+        onRequestClose={requestCloseInspector}
+        allowBackdropClose={!drawerSessionDirty}
         footer={
           selectedNode ? (
-            <div className="af-drawer__footer-row">
-              <button
-                type="button"
-                className="af-btn"
-                onClick={() => setSelectedId(null)}
-              >
-                ביטול
-              </button>
-              <button
-                type="button"
-                className="af-btn af-btn--secondary"
-                disabled={readOnly || saving}
-                title={writeBlockedTitle}
-                onClick={() => void handleSave()}
-              >
-                שמור
-              </button>
-              <button
-                type="button"
-                className="af-btn af-btn--primary"
-                onClick={() => setSelectedId(null)}
-              >
-                סיום
-              </button>
+            <div className="af-drawer__footer-row af-drawer__footer-row--split">
               <button
                 type="button"
                 className="af-btn af-btn--danger"
@@ -1753,6 +1893,35 @@ function EditorInner({
               >
                 מחק מודול
               </button>
+              <div className="af-drawer__footer-actions">
+                <button
+                  type="button"
+                  className="af-btn"
+                  onClick={() =>
+                    closeInspector({ discardSession: drawerSessionDirty })
+                  }
+                >
+                  ביטול
+                </button>
+                <button
+                  type="button"
+                  className="af-btn af-btn--secondary"
+                  disabled={readOnly || saving}
+                  title={writeBlockedTitle}
+                  onClick={() => void handleDrawerSave()}
+                >
+                  שמור
+                </button>
+                <button
+                  type="button"
+                  className="af-btn af-btn--primary"
+                  disabled={readOnly || saving}
+                  title={writeBlockedTitle}
+                  onClick={() => void handleDrawerFinish()}
+                >
+                  סיום
+                </button>
+              </div>
             </div>
           ) : null
         }
@@ -1795,11 +1964,34 @@ function EditorInner({
 
             {selectedNode.type === "trigger" ? (
               <>
-                <label>
-                  סוג טריגר
-                  {triggerCatalogLoading ? (
-                    <p className="af-wa-template__state">טוען קטלוג טריגרים...</p>
-                  ) : triggerCatalogError ? (
+                <div className="af-trigger-config-card">
+                  <MixedBidiText
+                    as="p"
+                    className="af-trigger-config-card__label"
+                    text={
+                      TRIGGER_CATEGORY_LABELS[
+                        selectedTriggerOption?.category || ""
+                      ] || "טריגר"
+                    }
+                  />
+                  <MixedBidiText
+                    as="strong"
+                    text={
+                      selectedTriggerOption?.label ||
+                      String(selectedNode.data?.label || "טריגר")
+                    }
+                  />
+                  <MixedBidiText
+                    as="p"
+                    text={
+                      selectedTriggerOption?.description ||
+                      "האירוע שמתחיל את האוטומציה"
+                    }
+                  />
+                  {!selectedTriggerOption?.triggerBillable ? (
+                    <span className="af-picker-item__billing">ללא חיוב</span>
+                  ) : null}
+                  {triggerCatalogError ? (
                     <div className="af-wa-template__state af-wa-template__state--error">
                       <p>{triggerCatalogError}</p>
                       <button
@@ -1810,88 +2002,87 @@ function EditorInner({
                         נסיון חוזר
                       </button>
                     </div>
-                  ) : (
-                    <select
-                      value={String(selectedNode.data?.triggerKey || "")}
-                      disabled={readOnly}
-                      onChange={(e) => {
-                        const opt = findTriggerOption(
-                          triggerCatalog,
-                          e.target.value
-                        );
-                        if (!opt?.isPublishable) return;
-                        updateSelectedData({
-                          triggerKey: opt.key,
-                          label: opt.label,
-                          ...(opt.key === "scheduled"
-                            ? {
-                                schedule:
-                                  (selectedNode.data?.schedule as
-                                    | Partial<AutomationScheduleConfig>
-                                    | undefined) || defaultScheduleConfig(),
-                              }
-                            : {}),
-                        });
-                      }}
-                    >
-                      {!findTriggerOption(
-                        triggerCatalog,
-                        String(selectedNode.data?.triggerKey || "")
-                      ) && selectedNode.data?.triggerKey ? (
-                        <option
-                          value={String(selectedNode.data.triggerKey)}
-                          disabled
-                        >
-                          {String(selectedNode.data.triggerKey)} · טריגר ישן או
-                          לא נתמך
-                        </option>
-                      ) : null}
-                      {!selectedNode.data?.triggerKey ? (
-                        <option value="" disabled>
-                          בחרו טריגר
-                        </option>
-                      ) : null}
-                      {triggerCatalog.map((o) => (
-                        <option
-                          key={o.key}
-                          value={o.key}
-                          disabled={!o.isPublishable}
-                        >
-                          {(TRIGGER_CATEGORY_LABELS[o.category || ""]
-                            ? `${TRIGGER_CATEGORY_LABELS[o.category || ""]} · `
-                            : "") +
-                            o.label}
-                          {!o.isPublishable ? " · בקרוב" : ""}
-                        </option>
-                      ))}
-                    </select>
-                  )}
-                </label>
-                {selectedNode.data?.triggerKey &&
-                !triggerCatalogLoading &&
-                !triggerCatalogError &&
-                !findTriggerOption(
-                  triggerCatalog,
-                  String(selectedNode.data.triggerKey)
-                ) ? (
-                  <p className="af-wa-template__state af-wa-template__state--error">
-                    טריגר ישן או לא נתמך
-                  </p>
-                ) : null}
-                {findTriggerOption(
-                  triggerCatalog,
-                  String(selectedNode.data?.triggerKey || "")
-                )?.requiredConnection ? (
-                  <p className="af-wa-template__state af-wa-template__state--error">
-                    חסר חיבור:{" "}
-                    {
-                      findTriggerOption(
-                        triggerCatalog,
-                        String(selectedNode.data?.triggerKey || "")
-                      )?.requiredConnection
+                  ) : null}
+                  {selectedNode.data?.triggerKey &&
+                  !triggerCatalogLoading &&
+                  !triggerCatalogError &&
+                  !findTriggerOption(
+                    triggerCatalog,
+                    String(selectedNode.data.triggerKey)
+                  ) ? (
+                    <p className="af-wa-template__state af-wa-template__state--error">
+                      טריגר ישן או לא נתמך — יש לבחור טריגר נתמך מחדש
+                    </p>
+                  ) : null}
+                  <button
+                    type="button"
+                    className="af-btn af-btn--secondary"
+                    disabled={readOnly || triggerCatalogLoading}
+                    title={writeBlockedTitle}
+                    onClick={() =>
+                      openPicker({
+                        mode: "trigger",
+                        clearSelection: false,
+                      })
                     }
-                  </p>
+                  >
+                    החלף טריגר
+                  </button>
+                </div>
+
+                {String(selectedNode.data?.triggerKey || "") ===
+                "lead_status_changed" ? (
+                  <div className="af-trigger-fields">
+                    <p className="af-trigger-fields__heading">שדות חובה</p>
+                    <label>
+                      לסטטוס
+                      <select
+                        value={String(selectedNode.data?.toStatus || "")}
+                        disabled={readOnly}
+                        required
+                        autoFocus
+                        onChange={(e) =>
+                          updateSelectedData({ toStatus: e.target.value })
+                        }
+                      >
+                        <option value="" disabled>
+                          בחרו סטטוס יעד
+                        </option>
+                        <option value="new">חדש</option>
+                        <option value="contacted">נוצר קשר</option>
+                        <option value="interested">מתעניין</option>
+                        <option value="converted">הפך ללקוח</option>
+                        <option value="lost">אבוד</option>
+                        <option value="old">ישן</option>
+                      </select>
+                    </label>
+                    {!String(selectedNode.data?.toStatus || "").trim() ? (
+                      <p className="af-field-error">יש לבחור סטטוס יעד</p>
+                    ) : null}
+                    <p className="af-trigger-fields__heading af-trigger-fields__heading--optional">
+                      אופציונלי
+                    </p>
+                    <label>
+                      מסטטוס
+                      <select
+                        value={String(selectedNode.data?.fromStatus || "")}
+                        disabled={readOnly}
+                        onChange={(e) =>
+                          updateSelectedData({ fromStatus: e.target.value })
+                        }
+                      >
+                        <option value="">כל סטטוס</option>
+                        <option value="new">חדש</option>
+                        <option value="contacted">נוצר קשר</option>
+                        <option value="interested">מתעניין</option>
+                        <option value="converted">הפך ללקוח</option>
+                        <option value="lost">אבוד</option>
+                        <option value="old">ישן</option>
+                      </select>
+                    </label>
+                  </div>
                 ) : null}
+
                 {String(selectedNode.data?.triggerKey || "") === "scheduled" ? (
                   <ScheduleTriggerFields
                     value={

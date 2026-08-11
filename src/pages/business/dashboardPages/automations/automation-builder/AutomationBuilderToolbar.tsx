@@ -97,7 +97,9 @@ export default function AutomationBuilderToolbar({
           className="af-toolbar__btn af-toolbar__name"
           aria-label="שם האוטומציה"
           disabled={readOnly}
-          title={writeBlockedTitle}
+          title={writeBlockedTitle || name}
+          dir="auto"
+          spellCheck={false}
         />
         <SaveStatus dirty={dirty} saveState={saveState} workflow={workflow} />
       </div>
