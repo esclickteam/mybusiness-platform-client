@@ -2,7 +2,7 @@
  * Host-aware SEO middleware for customer sites.
  *
  * - /sitemap.xml + /robots.txt: existing API proxy (unchanged behavior)
- * - HTML document navigations: optional edge <head> injection (Phase 1 allowlist)
+ * - HTML document navigations: optional edge <head> injection (Phase 1b canary allowlist)
  *
  * Vite SPA on Vercel Routing Middleware (not Next.js).
  * Use standard Request/URL/Response APIs only — never request.nextUrl
@@ -25,10 +25,26 @@ const EMPTY_SITEMAP =
 const SEO_EDGE_ENABLED =
   String(process.env.BIZUPLY_SEO_EDGE_INJECTION || "1").trim() !== "0";
 
+/*
+  Phase 1b canary allowlist — fixture / platform-test hosts only.
+  Do NOT expand to % of customers without explicit approval.
+*/
 const SEO_EDGE_ALLOWLIST = new Set(
   String(
     process.env.BIZUPLY_SEO_EDGE_ALLOWLIST ||
-      "launchgateb12.sites.bizuply.com",
+      [
+        // Launch Gate fixture — subdomain + custom domain
+        "launchgateb12.sites.bizuply.com",
+        "bizuplylgtmsn7ksf50.com",
+        // Second Launch Gate published site — multi-page / partial SEO
+        "chanel.sites.bizuply.com",
+        // Platform test@bizuply.com demo templates
+        "ben.sites.bizuply.com", // Fluxora — empty SEO
+        "adion.sites.bizuply.com", // multi-page + full SEO seed
+        "pulsecore.sites.bizuply.com", // schema/OG/favicon seed
+        // Platform CD smoke fixture
+        "cdnm7isjx.sites.bizuply.com",
+      ].join(","),
   )
     .split(",")
     .map((value) => value.trim().toLowerCase())
