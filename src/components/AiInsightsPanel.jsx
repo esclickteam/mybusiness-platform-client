@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 import API from "@/api";
 import { useLocaleDir } from "../hooks/useLocaleDir";
+import { localizeInsight } from "../utils/aiInsightsLocalize";
 
 function buildSiteEditorUrl(basePath, siteId, { templateKey, openSeo = false } = {}) {
   const params = new URLSearchParams();
@@ -58,39 +59,6 @@ const PRIORITY_STYLES = {
     badgeKey: "aiInsights.priorityInfo",
   },
 };
-
-function localizeInsight(insight, t) {
-  if (!insight?.id) return insight;
-
-  const base = `aiInsights.cards.${insight.id}`;
-  const title = t(`${base}.title`, { defaultValue: insight.title });
-  const description = t(`${base}.description`, {
-    defaultValue: insight.description,
-    days: 7,
-    name: insight?.meta?.siteName || "",
-  });
-  const actionLabel = t(`${base}.actionLabel`, {
-    defaultValue: insight.actionLabel || insight?.cta?.label || "",
-  });
-
-  let metric = insight.metric;
-  if (metric && typeof metric.value === "number") {
-    const metricKey =
-      metric.value === 1 ? `${base}.metricOne` : `${base}.metricOther`;
-    metric = {
-      ...metric,
-      label: t(metricKey, { defaultValue: metric.label }),
-    };
-  }
-
-  return {
-    ...insight,
-    title,
-    description,
-    actionLabel,
-    metric,
-  };
-}
 
 export default function AiInsightsPanel({ insights = [], loading, businessId }) {
   const { t } = useTranslation();
@@ -165,8 +133,7 @@ export default function AiInsightsPanel({ insights = [], loading, businessId }) 
   };
 
   const handleAction = async (insight) => {
-    handleDismiss(insight);
-
+    // CTA navigates only — do not auto-dismiss. X button dismisses.
     if (insight?.cta?.action === "navigate" && insight?.cta?.target) {
       navigate(insight.cta.target);
       return;
