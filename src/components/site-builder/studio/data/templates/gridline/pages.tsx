@@ -1040,8 +1040,9 @@ function ContactSection({
               data-visual-edit-label="שדה הודעה"
             />
             <button
-              type="button"
-              className="bg-black px-5 py-4 text-sm font-semibold uppercase tracking-[0.22em] text-white transition hover:bg-[#2a2a2a] md:col-span-2"
+              type="submit"
+              data-bizuply-lead-submit="true"
+              className="bg-black px-5 py-4 text-sm font-semibold uppercase tracking-[0.22em] text-white transition hover:bg-[#2a2a2a] disabled:cursor-wait disabled:opacity-70 md:col-span-2"
               data-visual-editable="true"
               data-visual-edit-id="contact.form.submit"
               data-visual-edit-type="button"
