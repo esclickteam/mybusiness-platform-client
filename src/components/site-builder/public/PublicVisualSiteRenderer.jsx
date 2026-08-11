@@ -2068,10 +2068,22 @@ function PublicSeoHead({ resolvedSeo, faviconUrl }) {
   const normalizedFaviconUrl = String(faviconUrl || "").trim();
 
   useLayoutEffect(() => {
+    /*
+      Edge middleware may pre-inject SEO tags for crawlers. Remove those marked
+      tags before Helmet owns <head>, so SPA navigation never leaves duplicates.
+    */
+    try {
+      document
+        .querySelectorAll("[data-bizuply-edge-seo]")
+        .forEach((node) => node.parentNode && node.parentNode.removeChild(node));
+    } catch {
+      /* ignore */
+    }
+
     if (!normalizedFaviconUrl) return undefined;
     applyPublicSiteFavicon(normalizedFaviconUrl);
     return undefined;
-  }, [normalizedFaviconUrl]);
+  }, [normalizedFaviconUrl, resolvedSeo?.titleTag, resolvedSeo?.canonicalUrl]);
 
   if (!resolvedSeo && !normalizedFaviconUrl) return null;
 
