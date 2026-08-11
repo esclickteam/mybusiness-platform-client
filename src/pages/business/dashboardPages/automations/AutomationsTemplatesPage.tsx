@@ -41,6 +41,10 @@ import {
 import { readAutomationErrorMessage } from "./automationUiHelpers";
 import { TEMPLATE_CATEGORIES, type TemplateCategoryId } from "./templateCategoryMapping";
 import {
+  AI_BILLING_SAFE_MESSAGE,
+  getAiTemplateByKey,
+} from "./aiAutomationCatalog";
+import {
   WORKING_TEMPLATES,
   buildWhatsAppSimpleGraph,
   getTemplateReadiness,
@@ -99,6 +103,7 @@ export default function AutomationsTemplatesPage() {
     readiness: TemplateReadiness;
     templateId: string;
   } | null>(null);
+  const [aiPreview, setAiPreview] = useState<CardModel | null>(null);
 
   const initialCategory = (searchParams.get("focus") === "ai" ||
   searchParams.get("tier") === "ai"
@@ -241,12 +246,15 @@ export default function AutomationsTemplatesPage() {
         template.description,
         template.triggerLabel,
         template.resultLabels.join(" "),
+        ...(template.keywords || []),
       ]
         .join(" ")
         .toLowerCase()
         .includes(q);
     });
   }, [cards, category, query]);
+
+  const visibleCategories = useMemo(() => TEMPLATE_CATEGORIES.filter((item) => item.id === "all" || cards.some(({ template }) => template.categories.includes(item.id))), [cards]);
 
   const categoryCards = useMemo(
     () =>
@@ -344,6 +352,7 @@ export default function AutomationsTemplatesPage() {
   ) => {
     if (!businessId) return;
 
+    const isAi = template.categories.includes("ai");
     const preferGraph =
       Boolean(template.buildGraph) &&
       (template.requiresWaTemplate ||
@@ -365,7 +374,7 @@ export default function AutomationsTemplatesPage() {
         recipe: readiness.recipe.key,
         name: template.name,
       });
-      try {
+      if (!isAi) try {
         await publishAutomationWorkflow(businessId, created._id);
         toast.success("האוטומציה נוצרה והופעלה");
       } catch (error: unknown) {
@@ -376,7 +385,7 @@ export default function AutomationsTemplatesPage() {
           )
         );
       }
-      navigate(`/business/${businessId}/dashboard/automations/${created._id}`);
+      navigate(`/business/${businessId}/dashboard/automations/${created._id}${isAi ? "?configureAi=1" : ""}`);
       return;
     }
 
@@ -432,7 +441,7 @@ export default function AutomationsTemplatesPage() {
       nodes,
       edges: graph.edges,
     });
-    try {
+    if (!isAi) try {
       await publishAutomationWorkflow(businessId, created._id);
       toast.success("האוטומציה נוצרה והופעלה");
     } catch (error: unknown) {
@@ -443,7 +452,7 @@ export default function AutomationsTemplatesPage() {
         )
       );
     }
-    navigate(`/business/${businessId}/dashboard/automations/${created._id}`);
+    navigate(`/business/${businessId}/dashboard/automations/${created._id}${isAi ? "?configureAi=1" : ""}`);
   };
 
   const handleActivate = async (card: CardModel) => {
@@ -471,6 +480,11 @@ export default function AutomationsTemplatesPage() {
         return;
       }
       toast.error(card.readiness.blocker || "לא ניתן להפעיל כרגע");
+      return;
+    }
+
+    if (card.template.categories.includes("ai")) {
+      setAiPreview(card);
       return;
     }
 
@@ -508,6 +522,19 @@ export default function AutomationsTemplatesPage() {
     setCreatingKey(card.template.key);
     try {
       await activateWorkflow(card.template, card.readiness);
+    } catch (error: unknown) {
+      toast.error(readAutomationErrorMessage(error, "שגיאה בהפעלת האוטומציה"));
+    } finally {
+      setCreatingKey(null);
+    }
+  };
+
+  const confirmAiPreview = async () => {
+    if (!aiPreview || !businessId) return;
+    setCreatingKey(aiPreview.template.key);
+    try {
+      await activateWorkflow(aiPreview.template, aiPreview.readiness);
+      setAiPreview(null);
     } catch (error: unknown) {
       toast.error(readAutomationErrorMessage(error, "שגיאה בהפעלת האוטומציה"));
     } finally {
@@ -573,7 +600,7 @@ export default function AutomationsTemplatesPage() {
           />
         </label>
         <div className="ax-filters" role="tablist" aria-label="קטגוריות">
-          {TEMPLATE_CATEGORIES.map((item) => (
+          {visibleCategories.map((item) => (
             <button
               key={item.id}
               type="button"
@@ -682,13 +709,83 @@ export default function AutomationsTemplatesPage() {
                   {busy ? (
                     <Loader2 size={14} className="animate-spin" />
                   ) : null}
-                  {isWa ? "הפעל — בחר תבנית הודעה" : "הפעל עכשיו"}
+                  {isWa ? "הפעל — בחר תבנית הודעה" : isAi ? "הפעל תבנית" : "הפעל עכשיו"}
                 </button>
               </article>
             );
           })}
         </div>
       )}
+
+      {aiPreview ? (
+        <div className="af-modal-backdrop" role="dialog" aria-modal="true">
+          <div className="af-modal ax-activate-modal">
+            <button
+              type="button"
+              className="af-modal__close"
+              onClick={() => setAiPreview(null)}
+            >
+              <X size={16} />
+            </button>
+            <h2>{aiPreview.template.name}</h2>
+            {(() => {
+              const catalog = getAiTemplateByKey(
+                aiPreview.template.recipeKey || aiPreview.template.key
+              );
+              const explanation = catalog?.customerExplanation;
+              return (
+                <>
+                  <p>
+                    <strong>מתי מתחיל:</strong>{" "}
+                    {explanation?.startsWhen || aiPreview.template.triggerLabel}
+                  </p>
+                  <p>
+                    <strong>מה ה-AI עושה:</strong>{" "}
+                    {explanation?.aiDoes ||
+                      aiPreview.template.resultLabels[0] ||
+                      "—"}
+                  </p>
+                  <p>
+                    <strong>אחר כך:</strong>{" "}
+                    {explanation?.afterwards ||
+                      aiPreview.template.resultLabels[1] ||
+                      "—"}
+                  </p>
+                  <p>
+                    <strong>מערכות:</strong>{" "}
+                    {(explanation?.systems || ["CRM", "התראות"]).join(" · ")}
+                  </p>
+                  <p>
+                    <strong>פעולות משוערות:</strong>{" "}
+                    {explanation?.estimatedActions ?? 2}
+                  </p>
+                  <p className="ax-template-card__hint">{AI_BILLING_SAFE_MESSAGE}</p>
+                </>
+              );
+            })()}
+            <div className="ax-activate-modal__actions">
+              <button
+                type="button"
+                className="af-btn"
+                onClick={() => setAiPreview(null)}
+              >
+                ביטול
+              </button>
+              <button
+                type="button"
+                className="af-btn af-btn--primary"
+                disabled={Boolean(creatingKey)}
+                onClick={() => void confirmAiPreview()}
+              >
+                {creatingKey ? (
+                  <Loader2 size={14} className="animate-spin" />
+                ) : null}
+                הפעל תבנית
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
 
       {picker ? (
         <div className="af-modal-backdrop" role="dialog" aria-modal="true">

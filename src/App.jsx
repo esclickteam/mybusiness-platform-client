@@ -105,6 +105,9 @@ const BusinessesList = lazy(() => import("./pages/BusinessesList"));
 const QuickJobsBoard = lazy(() => import("./pages/QuickJobsBoard"));
 const QuickJobForm = lazy(() => import("./pages/QuickJobForm"));
 const Login = lazy(() => import("./pages/Login"));
+const AiAutomationTemplatesVisualPage = import.meta.env.DEV
+  ? lazy(() => import("./pages/dev/AiAutomationTemplatesVisualPage"))
+  : null;
 const WebsiteInviteAcceptPage = lazy(() =>
   import("./pages/WebsiteInviteAcceptPage")
 );
@@ -959,6 +962,12 @@ export default function App() {
                         <Route path="/quick-jobs/new" element={<QuickJobForm />} />
 
                         <Route path="/login" element={<Login />} />
+                        {import.meta.env.DEV && AiAutomationTemplatesVisualPage ? (
+                          <Route
+                            path="/dev/ai-automation-templates-visual"
+                            element={<AiAutomationTemplatesVisualPage />}
+                          />
+                        ) : null}
                         <Route
                           path="/website-invite/:token"
                           element={<WebsiteInviteAcceptPage />}

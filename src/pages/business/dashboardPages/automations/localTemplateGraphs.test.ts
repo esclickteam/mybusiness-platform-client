@@ -56,7 +56,8 @@ describe("local system templates", () => {
 
   it("marks known system recipes as active", () => {
     expect(isActiveSystemRecipeKey("lead_multi_route")).toBe(true);
-    expect(isActiveSystemRecipeKey("ai_auto_reply")).toBe(true);
+    expect(isActiveSystemRecipeKey("ai_email_draft")).toBe(true);
+    expect(isActiveSystemRecipeKey("ai_auto_reply")).toBe(false);
     expect(isActiveSystemRecipeKey("unknown_thing")).toBe(false);
   });
 });

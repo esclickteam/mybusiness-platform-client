@@ -27,6 +27,7 @@ import {
   spliceNodeAfterHandle,
 } from "./automation-builder/insertNodeBetweenEdge";
 import { toast } from "react-toastify";
+import { useLocation, useSearchParams } from "react-router-dom";
 import {
   Loader2,
   FlaskConical,
@@ -274,6 +275,12 @@ function buildMappingsFromTemplate(
 }
 import { automationNodeTypes } from "./FlowNodes";
 import {
+  AI_AUTOMATION_CATALOG,
+  AI_BILLING_SAFE_MESSAGE,
+  getAiTemplateByKey,
+  listSupportedAiTemplates,
+} from "./aiAutomationCatalog";
+import {
   ACTION_OPTIONS,
   CONDITION_OPTIONS,
   DELAY_UNITS,
@@ -459,6 +466,8 @@ function EditorInner({
     ? AUTOMATION_PREVIEW_ACTION_TOOLTIP
     : undefined;
   const { screenToFlowPosition, fitView } = useReactFlow();
+  const location = useLocation();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [name, setName] = useState(workflow.name);
   const [saving, setSaving] = useState(false);
   const [publishing, setPublishing] = useState(false);
@@ -507,6 +516,7 @@ function EditorInner({
   const [nodes, setNodes, onNodesChange] = useNodesState(toFlowNodes(workflow));
   const [edges, setEdges, onEdgesChange] = useEdgesState(toFlowEdges(workflow));
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const configureAiHandled = useRef(false);
   const [pickerOpen, setPickerOpen] = useState(false);
   const [pickerEdgeId, setPickerEdgeId] = useState<string | null>(null);
   const [pickerMode, setPickerMode] = useState<"all" | "trigger" | "result">(
@@ -545,6 +555,16 @@ function EditorInner({
   useEffect(() => {
     edgesRef.current = edges;
   }, [edges]);
+
+
+  useEffect(() => {
+    if (configureAiHandled.current || (searchParams.get("configureAi") !== "1" && !(location.state as { configureAi?: boolean } | null)?.configureAi)) return;
+    const aiNode = nodes.find((node) => String(node.data?.actionKey || "").startsWith("ai_"));
+    if (!aiNode) return;
+    configureAiHandled.current = true;
+    setSelectedIdSafe(aiNode.id);
+    const next = new URLSearchParams(searchParams); next.delete("configureAi"); setSearchParams(next, { replace: true });
+  }, [location.state, nodes, searchParams, setSearchParams, setSelectedIdSafe]);
 
   // If the selected module was removed, clear selection; otherwise keep the
   // inspector pinned even when React Flow briefly reports an empty selection
@@ -807,6 +827,21 @@ function EditorInner({
     () => nodes.find((n) => n.id === selectedId) || null,
     [nodes, selectedId]
   );
+
+  const selectedAiTemplate = useMemo(() => {
+    if (selectedNode?.type !== "action") return undefined;
+    const actionKey = String(selectedNode.data?.actionKey || "");
+    if (!actionKey.startsWith("ai_")) return undefined;
+    return (
+      listSupportedAiTemplates().find((template) =>
+        template.requiredAiActions.includes(actionKey)
+      ) ||
+      getAiTemplateByKey(actionKey) ||
+      AI_AUTOMATION_CATALOG.find((template) =>
+        template.requiredAiActions.includes(actionKey)
+      )
+    );
+  }, [selectedNode]);
 
   const selectedGmailActionKey =
     selectedNode?.type === "action" &&
@@ -2345,13 +2380,157 @@ function EditorInner({
                       });
                     }}
                   >
-                    {ACTION_OPTIONS.map((o) => (
+                    {ACTION_OPTIONS.filter(
+                      (o) => !(o.value.startsWith("ai_") && o.supported === false)
+                    ).map((o) => (
                       <option key={o.value} value={o.value} disabled={o.supported === false}>
-                        {o.label}{o.supported === false ? " · בקרוב" : ""}
+                        {o.label}
+                        {o.supported === false && !o.value.startsWith("ai_")
+                          ? " · בקרוב"
+                          : ""}
                       </option>
                     ))}
                   </select>
                 </label>
+                {selectedAiTemplate ? (
+                  <section className="af-ai-config">
+                    <p className="af-inspector__hint-inline">
+                      {AI_BILLING_SAFE_MESSAGE}
+                    </p>
+                    <p className="af-trigger-fields__heading">הגדרות AI</p>
+                    {selectedAiTemplate.requiredConfiguration
+                      .filter((field) => !field.advanced)
+                      .map((field) => {
+                        const value =
+                          selectedNode.data?.[field.key] ??
+                          field.defaultValue ??
+                          (field.type === "boolean" ? false : "");
+                        const update = (next: unknown) =>
+                          updateSelectedData({ [field.key]: next });
+
+                        if (field.type === "boolean") {
+                          return (
+                            <label key={field.key}>
+                              <input
+                                type="checkbox"
+                                checked={Boolean(value)}
+                                disabled={readOnly}
+                                onChange={(event) => update(event.target.checked)}
+                              />{" "}
+                              {field.label}
+                            </label>
+                          );
+                        }
+                        if (field.type === "textarea") {
+                          return (
+                            <label key={field.key}>
+                              {field.label}
+                              <textarea
+                                value={String(value)}
+                                disabled={readOnly}
+                                required={field.required}
+                                onChange={(event) => update(event.target.value)}
+                              />
+                            </label>
+                          );
+                        }
+                        if (field.type === "select") {
+                          const options =
+                            field.key === "channel"
+                              ? [["whatsapp", "WhatsApp"], ["email", "אימייל"]]
+                              : [
+                                  ["professional", "מקצועי"],
+                                  ["friendly", "ידידותי"],
+                                  ["concise", "קצר"],
+                                ];
+                          return (
+                            <label key={field.key}>
+                              {field.label}
+                              <select
+                                value={String(value)}
+                                disabled={readOnly}
+                                onChange={(event) => update(event.target.value)}
+                              >
+                                {options.map(([optionValue, optionLabel]) => (
+                                  <option key={optionValue} value={optionValue}>
+                                    {optionLabel}
+                                  </option>
+                                ))}
+                              </select>
+                            </label>
+                          );
+                        }
+                        if (field.type === "multiselect") {
+                          return (
+                            <label key={field.key}>
+                              {field.label}
+                              <input
+                                value={
+                                  Array.isArray(value)
+                                    ? value.join(", ")
+                                    : String(value)
+                                }
+                                disabled={readOnly}
+                                onChange={(event) =>
+                                  update(
+                                    event.target.value
+                                      .split(",")
+                                      .map((item) => item.trim())
+                                      .filter(Boolean)
+                                  )
+                                }
+                              />
+                            </label>
+                          );
+                        }
+                        return (
+                          <label key={field.key}>
+                            {field.label}
+                            <input
+                              type={field.type === "number" ? "number" : "text"}
+                              value={String(value)}
+                              disabled={readOnly}
+                              required={field.required}
+                              onChange={(event) =>
+                                update(
+                                  field.type === "number"
+                                    ? Number(event.target.value)
+                                    : event.target.value
+                                )
+                              }
+                            />
+                          </label>
+                        );
+                      })}
+                    {selectedAiTemplate.requiredConfiguration.some(
+                      (field) => field.advanced
+                    ) ? (
+                      <details>
+                        <summary>מתקדם</summary>
+                        {selectedAiTemplate.requiredConfiguration
+                          .filter((field) => field.advanced)
+                          .map((field) => (
+                            <label key={field.key}>
+                              {field.label}
+                              <textarea
+                                value={String(
+                                  selectedNode.data?.[field.key] ??
+                                    field.defaultValue ??
+                                    ""
+                                )}
+                                disabled={readOnly}
+                                onChange={(event) =>
+                                  updateSelectedData({
+                                    [field.key]: event.target.value,
+                                  })
+                                }
+                              />
+                            </label>
+                          ))}
+                      </details>
+                    ) : null}
+                  </section>
+                ) : null}
                 {isWhatsAppActionKey(
                   selectedNode.data?.actionKey || "whatsapp_template"
                 ) ? (

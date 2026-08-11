@@ -14,6 +14,7 @@ import {
   Bell,
   ShoppingBag,
   CreditCard,
+  Sparkles,
   type LucideIcon,
 } from "lucide-react";
 import {
@@ -125,7 +126,7 @@ function FlowNodeShell({
         TRIGGER_ICONS[String(data.icon || "")] ||
         Play
       : ICONS[type];
-  const Icon = type === "trigger" ? TriggerIcon : ICONS[type];
+  const Icon = type === "trigger" ? TriggerIcon : (type === "action" && String(data.actionKey || "").startsWith("ai_") ? Sparkles : ICONS[type]);
   const title = String(data.label || meta.title);
   const summary = nodeSummary(data, type);
   const routeCount = clampRouteCount(data.routeCount, 1);
@@ -172,6 +173,7 @@ function FlowNodeShell({
         <div className="af-node__badge">
           <Icon size={11} />
           <span>{provider}</span>
+          {type === "action" && String(data.actionKey || "").startsWith("ai_") ? <span className="af-node__ai-badge">AI</span> : null}
         </div>
         <span
           className={`af-node__cost${

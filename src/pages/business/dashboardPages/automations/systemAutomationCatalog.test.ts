@@ -21,13 +21,13 @@ describe("systemAutomationCatalog", () => {
     expect(ai.map((row) => row.recipeKey)).toEqual(
       expect.arrayContaining([
         "ai_rank_leads",
-        "ai_summarize_calls",
-        "ai_auto_reply",
-        "ai_risk_lead",
-        "ai_campaign_change",
-        "ai_tasks_from_chat",
+        "ai_classify_lead",
+        "ai_auto_tag",
+        "ai_daily_leads_digest",
+        "ai_daily_agenda_digest",
       ])
     );
+    expect(ai.some((row) => row.recipeKey === "ai_auto_reply")).toBe(false);
   });
 
   it("includes 1-day and 2-day meeting reminders", () => {

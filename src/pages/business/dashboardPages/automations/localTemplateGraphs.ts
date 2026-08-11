@@ -3,6 +3,7 @@ import type {
   AutomationFlowNode,
 } from "../../../../api/automationWorkflowApi";
 import type { SystemAutomationSuggestion } from "./systemAutomationCatalog";
+import { listSupportedAiTemplates } from "./aiAutomationCatalog";
 
 export type LocalTemplateAction = {
   actionKey: string;
@@ -323,144 +324,10 @@ export const LOCAL_SYSTEM_TEMPLATES: LocalAutomationTemplate[] = [
     resultCount: 1,
   },
 
-  // —— AI (actions supported in builder) ——
-  {
-    key: "local_ai_rank_leads",
-    catalogId: "ai_rank_leads",
-    recipeKey: "ai_rank_leads",
-    name: "AI — דירוג ליד",
-    description:
-      "טריגר: ליד חדש. תוצאה: דירוג AI לפי סיכוי/דחיפות + התראה.",
-    triggerLabel: "ליד חדש ב-CRM",
-    resultLabels: ["דירוג AI", "התראה"],
-    categories: ["ai", "leads"],
-    triggerKey: "crm_lead_created",
-    triggerKeyAliases: [
-      "crm_lead_created",
-      "lead_created",
-      "new_lead",
-      "lead_new",
-    ],
-    isAi: true,
-    actions: [
-      { actionKey: "ai_rank_lead", label: "דירוג ליד AI" },
-      { actionKey: "notify", label: "התראה לפי דחיפות" },
-    ],
-    nodeCount: 3,
-    resultCount: 2,
-  },
-  {
-    key: "local_ai_summarize_calls",
-    catalogId: "ai_summarize_calls",
-    recipeKey: "ai_summarize_calls",
-    name: "AI — סיכום שיחה/פגישה",
-    description: "טריגר: פגישה. תוצאה: סיכום AI ותיעוד ב-CRM.",
-    triggerLabel: "פגישה הסתיימה",
-    resultLabels: ["סיכום AI", "הערה ב-CRM"],
-    categories: ["ai", "appointments"],
-    triggerKey: "appointment_created",
-    triggerKeyAliases: [
-      "appointment_completed",
-      "appointment_ended",
-      "appointment_created",
-    ],
-    isAi: true,
-    actions: [
-      { actionKey: "ai_summarize_call", label: "סיכום שיחה AI" },
-      { actionKey: "create_crm_note", label: "תיעוד ב-CRM" },
-    ],
-    nodeCount: 3,
-    resultCount: 2,
-  },
-  {
-    key: "local_ai_auto_reply",
-    catalogId: "ai_auto_reply",
-    recipeKey: "ai_auto_reply",
-    name: "AI — טיוטת תשובה ל-WhatsApp",
-    description:
-      "טריגר: הודעת WhatsApp נכנסת. תוצאה: טיוטת תשובה AI מוכנה להמשך.",
-    triggerLabel: "הודעת WhatsApp נכנסת",
-    resultLabels: ["טיוטת תשובה AI"],
-    categories: ["ai", "whatsapp"],
-    triggerKey: "whatsapp_message_received",
-    triggerKeyAliases: [
-      "whatsapp_message_received",
-      "whatsapp_inbound",
-      "wa_message_received",
-    ],
-    isAi: true,
-    actions: [{ actionKey: "ai_draft_reply", label: "טיוטת תשובה AI" }],
-    nodeCount: 2,
-    resultCount: 1,
-  },
-  {
-    key: "local_ai_risk_lead",
-    catalogId: "ai_risk_lead",
-    recipeKey: "ai_risk_lead",
-    name: "AI — ליד בסיכון",
-    description: "טריגר: פולואפ לליד. תוצאה: זיהוי סיכון AI + התראה.",
-    triggerLabel: "פולואפ לליד",
-    resultLabels: ["זיהוי סיכון AI", "התראה"],
-    categories: ["ai", "leads"],
-    triggerKey: "lead_no_response",
-    triggerKeyAliases: [
-      "lead_no_response",
-      "crm_lead_followup",
-      "lead_followup",
-    ],
-    isAi: true,
-    actions: [
-      { actionKey: "ai_detect_risk_lead", label: "זיהוי ליד בסיכון" },
-      { actionKey: "notify", label: "התראה מיידית" },
-    ],
-    nodeCount: 3,
-    resultCount: 2,
-  },
-  {
-    key: "local_ai_campaign_change",
-    catalogId: "ai_campaign_change",
-    recipeKey: "ai_campaign_change",
-    name: "AI — המלצת קמפיין",
-    description: "טריגר: שינוי סטטוס ליד. תוצאה: המלצת שינוי קמפיין מ-AI.",
-    triggerLabel: "שינוי סטטוס ליד",
-    resultLabels: ["המלצת קמפיין AI"],
-    categories: ["ai", "leads", "sales"],
-    triggerKey: "crm_lead_status_changed",
-    triggerKeyAliases: [
-      "crm_lead_status_changed",
-      "lead_status_changed",
-      "lead_status_updated",
-    ],
-    isAi: true,
-    actions: [
-      { actionKey: "ai_campaign_recommend", label: "המלצת קמפיין AI" },
-    ],
-    nodeCount: 2,
-    resultCount: 1,
-  },
-  {
-    key: "local_ai_tasks_from_chat",
-    catalogId: "ai_tasks_from_chat",
-    recipeKey: "ai_tasks_from_chat",
-    name: "AI — משימות מתוך שיחה",
-    description: "טריגר: פגישה. תוצאה: משימות CRM שנוצרו מתוכן השיחה.",
-    triggerLabel: "פגישה הסתיימה",
-    resultLabels: ["משימות AI מתוך שיחה"],
-    categories: ["ai", "crm", "appointments"],
-    triggerKey: "appointment_created",
-    triggerKeyAliases: [
-      "appointment_completed",
-      "appointment_ended",
-      "appointment_created",
-    ],
-    isAi: true,
-    actions: [
-      { actionKey: "ai_tasks_from_chat", label: "משימות משיחה AI" },
-    ],
-    nodeCount: 2,
-    resultCount: 1,
-  },
+
 ];
+
+LOCAL_SYSTEM_TEMPLATES.push(...listSupportedAiTemplates().map((template) => ({ key: `local_${template.recipeKey}`, catalogId: template.templateKey, recipeKey: template.recipeKey, name: template.titleHe, description: template.description, triggerLabel: template.customerExplanation.startsWhen, resultLabels: [template.customerExplanation.aiDoes, template.customerExplanation.afterwards], categories: (template.recommendedTrigger === "scheduled" ? ["ai"] : ["ai", "leads"]) as LocalAutomationTemplate["categories"], triggerKey: template.recommendedTrigger, triggerKeyAliases: template.recommendedTrigger === "new_lead" ? ["new_lead", "crm_lead_created", "lead_created", "lead_new"] : ["scheduled"], actions: [{ actionKey: template.requiredAiActions[0], label: template.customerExplanation.aiDoes }], isAi: true, nodeCount: 2, resultCount: 1 })));
 
 /** @deprecated use LOCAL_SYSTEM_TEMPLATES */
 export const LOCAL_REMINDER_TEMPLATES = LOCAL_SYSTEM_TEMPLATES.filter((t) =>
@@ -572,17 +439,7 @@ export const ACTIVE_SYSTEM_RECIPE_KEYS = new Set(
   LOCAL_SYSTEM_TEMPLATES.map((t) => t.recipeKey).filter(Boolean) as string[]
 );
 
-export const ACTIVE_SYSTEM_RECIPE_KEYS_EXTRA = new Set([
-  "lead_multi_route",
-  "lead_no_response",
-  "appointment_duo",
-  "new_client_welcome",
-  "ai_rank_leads",
-  "ai_summarize_calls",
-  "ai_auto_reply",
-  "ai_risk_lead",
-  "ai_campaign_change",
-  "ai_tasks_from_chat",
+export const ACTIVE_SYSTEM_RECIPE_KEYS_EXTRA = new Set(["lead_multi_route", "lead_no_response", "appointment_duo", "new_client_welcome", ...listSupportedAiTemplates().map((template) => template.recipeKey),
 ]);
 
 export function isActiveSystemRecipeKey(key: string) {

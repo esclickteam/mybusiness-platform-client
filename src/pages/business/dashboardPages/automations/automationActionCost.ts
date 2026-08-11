@@ -23,11 +23,15 @@ const BILLABLE_ACTION_KEYS = new Set([
   "update_client",
   "send_sms",
   "ai_rank_lead",
-  "ai_summarize_call",
-  "ai_draft_reply",
-  "ai_detect_risk_lead",
-  "ai_campaign_recommend",
-  "ai_tasks_from_chat",
+  "ai_classify_lead",
+  "ai_auto_tag",
+  "ai_detect_hot_lead",
+  "ai_lead_brief",
+  "ai_draft_followup",
+  "ai_draft_email",
+  "ai_suggest_next_action",
+  "ai_daily_leads_digest",
+  "ai_daily_agenda_digest",
 ]);
 
 const NON_BILLABLE_ACTION_KEYS = new Set(["delay", "stop", "wait_until"]);
@@ -105,6 +109,7 @@ export function getAutomationActionCost(
 export function nodeBillingBadgeLabel(
   input: AutomationActionCostInput = {}
 ): string {
+  if (String(input.actionKey || input.key || "").startsWith("ai_")) return "פעולת אוטומציה";
   return getAutomationActionCost(input) > 0 ? "⚡ 1 פעולה" : "ללא חיוב";
 }
 
