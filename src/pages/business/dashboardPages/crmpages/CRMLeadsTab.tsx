@@ -66,7 +66,7 @@ type RawFieldItem = {
   answer?: string | string[] | unknown;
 };
 
-type LeadActivityType = "note" | "call" | "whatsapp" | "status" | "task";
+type LeadActivityType = "note" | "call" | "whatsapp" | "status" | "task" | "ai";
 
 type LeadActivity = {
   _id?: string;
@@ -124,6 +124,7 @@ type Lead = {
   rawData?: any;
 
   activities?: LeadActivity[];
+  aiInsights?: Record<string, any>;
   activityCount?: number;
   openTaskCount?: number;
   nextOpenTask?: LeadActivity | null;
@@ -713,6 +714,8 @@ function getActivityTypeLabel(type: LeadActivityType | undefined, t: TFunction) 
       return t("crm.leads.activityTypes.status");
     case "task":
       return t("crm.leads.activityTypes.task");
+    case "ai":
+      return "AI";
     case "note":
     default:
       return t("crm.leads.activityTypes.note");
@@ -789,6 +792,60 @@ function SourceBadge({ lead }: { lead: Lead }) {
       <span className="max-w-full truncate text-xs font-bold text-slate-500">
         {getLeadFormName(lead, t)}
       </span>
+    </div>
+  );
+}
+
+function renderAiInsightsPanel(aiInsights: any, aiActivities: any[]) {
+  if (!aiInsights && !(aiActivities || []).length) return null;
+  const draft = aiInsights?.pendingDraft;
+  return (
+    <div data-testid="crm-ai-insights" style={{ marginBottom: 16, padding: 12, border: "1px solid #e5e9f0", borderRadius: 12, background: "#f8fafc" }}>
+      <div style={{ fontWeight: 700, marginBottom: 8 }}>תוצאות AI</div>
+      {aiInsights?.score != null ? (
+        <div style={{ marginBottom: 8 }}>
+          <strong>AI · דירוג ליד</strong>
+          <div>ציון: {aiInsights.score}</div>
+          {aiInsights.scoreReasoning ? <div>"{aiInsights.scoreReasoning}"</div> : null}
+        </div>
+      ) : null}
+      {aiInsights?.classification ? (
+        <div style={{ marginBottom: 8 }}>
+          <strong>AI · סיווג ליד</strong>
+          <div>קטגוריה: {aiInsights.classification}</div>
+        </div>
+      ) : null}
+      {aiInsights?.isHot ? (
+        <div style={{ marginBottom: 8 }}>
+          <strong>AI · ליד חם</strong>
+          <div>ציון: {aiInsights.hotScore ?? "—"}</div>
+        </div>
+      ) : null}
+      {aiInsights?.brief ? (
+        <div style={{ marginBottom: 8 }}>
+          <strong>AI · סיכום לפני שיחה</strong>
+          <div style={{ whiteSpace: "pre-wrap" }}>{aiInsights.brief}</div>
+        </div>
+      ) : null}
+      {draft ? (
+        <div style={{ marginBottom: 8 }}>
+          <strong>AI · טיוטה</strong>
+          <div>טיוטת AI — ממתינה לאישור</div>
+          {draft.subject ? <div>נושא: {draft.subject}</div> : null}
+          <div style={{ whiteSpace: "pre-wrap" }}>{draft.body}</div>
+        </div>
+      ) : null}
+      {aiInsights?.nextAction?.title ? (
+        <div style={{ marginBottom: 8 }}>
+          <strong>AI · הפעולה הבאה</strong>
+          <div>{aiInsights.nextAction.title}</div>
+        </div>
+      ) : null}
+      {(aiActivities || []).slice(0, 5).map((a: any) => (
+        <div key={a._id || a.createdAt} style={{ marginTop: 8, whiteSpace: "pre-wrap", fontSize: 13 }}>
+          {a.text}
+        </div>
+      ))}
     </div>
   );
 }
@@ -1346,6 +1403,8 @@ export default function CRMLeadsTab({
   }, [leads, t, isOldLeadsMode]);
 
   const selectedDetails = selectedLead ? getLeadDetails(selectedLead, t) : [];
+  const aiInsights = selectedLead?.aiInsights || null;
+  const aiActivities = (selectedLead?.activities || []).filter((a) => a.type === "ai");
   const selectedStatus = selectedLead?.status || "new";
   const selectedWhatsAppPhone = normalizePhoneForWhatsApp(selectedLead?.phone);
 
@@ -2895,6 +2954,7 @@ export default function CRMLeadsTab({
                         <div className="relative space-y-2.5 pr-5">
                           <span className="absolute right-2 top-2 h-[calc(100%-12px)] w-px bg-slate-200" />
 
+                          {renderAiInsightsPanel(aiInsights, aiActivities)}
                           {selectedActivities.map((activity) => {
                             const isTask = activity.type === "task";
 

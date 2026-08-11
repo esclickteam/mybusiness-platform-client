@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { AutomationRecipeSummary } from "../../../../api/automationWorkflowApi";
 import {
+  getRecipeCategories,
   getRecipeDisplayDescription,
   getRecipeDisplayName,
   getRecipeResultLabel,
@@ -37,6 +38,9 @@ describe("templateCategoryMapping trigger/result labels", () => {
   it("exposes AI recipe trigger→result", () => {
     const row = recipe({ key: "ai_rank_leads", isAiRecipe: true, tier: "ai_paid" });
     expect(getRecipeTriggerLabel(row)).toContain("ליד");
-    expect(getRecipeResultLabel(row).toLowerCase()).toContain("ai");
+    // Customer-facing result copy is Hebrew from the catalog (not Latin "ai").
+    expect(getRecipeResultLabel(row)).toMatch(/מדרג|דירוג|התראה/);
+    // Canonical filter category key remains "ai".
+    expect(getRecipeCategories(row)).toContain("ai");
   });
 });

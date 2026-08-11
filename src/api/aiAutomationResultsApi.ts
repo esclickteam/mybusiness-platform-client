@@ -1,0 +1,86 @@
+import API from "../api";
+
+export type AiResultCategory = "leads" | "drafts" | "digests" | "tasks" | "other";
+
+export type AiAutomationResult = {
+  _id: string;
+  businessId: string;
+  templateKey: string;
+  actionKey: string;
+  resultCategory: AiResultCategory;
+  resultType: string;
+  title: string;
+  preview: string;
+  summary?: string;
+  structured?: Record<string, unknown>;
+  status: "completed" | "failed";
+  workflowId?: string | null;
+  executionId?: string;
+  leadId?: string | null;
+  leadName?: string;
+  taskId?: string | null;
+  activityId?: string | null;
+  notificationId?: string | null;
+  targetUrl?: string;
+  generatedAt?: string;
+  dateRange?: { from?: string | null; to?: string | null };
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+function withBusiness(businessId: string) {
+  return { params: { businessId } };
+}
+
+export async function listAiAutomationResults(
+  businessId: string,
+  opts: {
+    filter?: string;
+    q?: string;
+    templateKey?: string;
+    leadId?: string;
+    limit?: number;
+    skip?: number;
+  } = {}
+): Promise<{ items: AiAutomationResult[]; total: number }> {
+  const { data } = await API.get("/automations/ai-results", {
+    ...withBusiness(businessId),
+    params: {
+      businessId,
+      filter: opts.filter || "all",
+      q: opts.q || "",
+      templateKey: opts.templateKey || undefined,
+      leadId: opts.leadId || undefined,
+      limit: opts.limit ?? 40,
+      skip: opts.skip ?? 0,
+    },
+  });
+  return {
+    items: Array.isArray(data?.items) ? data.items : [],
+    total: Number(data?.total || 0),
+  };
+}
+
+export async function getAiAutomationResult(
+  businessId: string,
+  resultId: string
+): Promise<AiAutomationResult | null> {
+  const { data } = await API.get(`/automations/ai-results/${resultId}`, {
+    ...withBusiness(businessId),
+    params: { businessId },
+  });
+  return data?.item || null;
+}
+
+export const AI_TEMPLATE_LABELS: Record<string, string> = {
+  ai_lead_scoring: "דירוג לידים אוטומטי",
+  ai_lead_classify: "סיווג ליד אוטומטי",
+  ai_lead_auto_tag: "תיוג אוטומטי של לידים",
+  ai_hot_lead: "זיהוי לידים חמים",
+  ai_lead_brief: "סיכום ליד לפני שיחת מכירה",
+  ai_followup_draft: "ניסוח Follow-up",
+  ai_email_draft: "ניסוח מייל",
+  ai_next_action: "הצעת הפעולה הבאה",
+  ai_daily_leads_digest: "תקציר יומי לידים",
+  ai_daily_agenda_digest: "תקציר יומי משימות/פגישות",
+};

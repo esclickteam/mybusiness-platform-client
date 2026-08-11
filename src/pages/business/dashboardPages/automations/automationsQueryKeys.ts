@@ -18,6 +18,8 @@ export const automationQueryKeys = {
     ["automations", "billingUsage", businessId] as const,
   whatsappBillingUsage: (businessId: string) =>
     ["whatsapp", "billingUsage", businessId] as const,
+  aiResults: (businessId: string) =>
+    ["automations", "ai-results", businessId] as const,
 };
 
 export type AutomationsHomeCache = {

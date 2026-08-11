@@ -114,6 +114,9 @@ const AutomationsRunsPage = lazy(() =>
 const AutomationsConnectionsPage = lazy(() =>
   import("./dashboardPages/automations/AutomationsConnectionsPage")
 );
+const AutomationsAiResultsPage = lazy(() =>
+  import("./dashboardPages/automations/AutomationsAiResultsPage")
+);
 const AutomationsEditorPage = lazy(() =>
   import("./dashboardPages/automations/AutomationsEditorPage")
 );
@@ -506,6 +509,7 @@ const BusinessDashboardRoutes = () => {
             <Route index element={<AutomationsHomePage />} />
             <Route path="templates" element={<AutomationsTemplatesPage />} />
             <Route path="runs" element={<AutomationsRunsPage />} />
+            <Route path="ai-results" element={<AutomationsAiResultsPage />} />
             <Route
               path="connections"
               element={<AutomationsConnectionsPage />}

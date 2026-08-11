@@ -57,6 +57,7 @@ export default function AutomationsLayout() {
     { to: basePath, end: true, label: "האוטומציות שלי" },
     { to: `${basePath}/templates`, end: false, label: "תבניות" },
     { to: `${basePath}/runs`, end: false, label: "הרצות" },
+    { to: `${basePath}/ai-results`, end: false, label: "תוצאות AI" },
     { to: `${basePath}/connections`, end: false, label: "חיבורים" },
   ] as const;
 
@@ -69,7 +70,7 @@ export default function AutomationsLayout() {
     if (automationsIdx < 0) return false;
     const segment = parts[automationsIdx + 1];
     if (!segment) return false;
-    return !["templates", "runs", "connections"].includes(segment);
+    return !["templates", "runs", "connections", "ai-results"].includes(segment);
   }, [location.pathname]);
 
   useEffect(() => {
