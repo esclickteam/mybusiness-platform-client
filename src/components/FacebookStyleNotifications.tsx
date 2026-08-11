@@ -627,6 +627,22 @@ export default function FacebookStyleNotifications() {
     return `notification-${crypto.randomUUID()}`;
   }
 
+  function getPersistedMongoId(notification: UnifiedNotification): string {
+    if (isValidMongoId(notification.id)) {
+      return String(notification.id);
+    }
+
+    const raw =
+      notification.raw && typeof notification.raw === "object"
+        ? (notification.raw as SystemNotification)
+        : null;
+
+    const candidate =
+      raw?._id || raw?.id || raw?.notificationId || "";
+
+    return isValidMongoId(String(candidate)) ? String(candidate) : "";
+  }
+
   function getDashboardCrmPath() {
     return `/business/${businessId}/dashboard/crm/leads`;
   }
@@ -936,12 +952,15 @@ export default function FacebookStyleNotifications() {
     const source = flattenSystemNotification(item);
 
     const sourceType = String(source.type || item.type || "");
+    const leadId = String(source.leadId || item.leadId || "");
+    // AI digests reuse type "lead" without a leadId — keep them as regular so
+    // they are not labeled/handled as a Meta/CRM "new lead" row.
     const kind: NotificationKind =
       item.kind === "task_due"
         ? "task_due"
         : item.kind === "new_lead" ||
             sourceType === "new_lead" ||
-            sourceType === "lead"
+            (sourceType === "lead" && Boolean(leadId))
           ? "new_lead"
           : "regular";
 
@@ -957,7 +976,7 @@ export default function FacebookStyleNotifications() {
       timestamp: normalizeDate(source.timestamp || source.createdAt),
       read: Boolean(source.read),
 
-      leadId: source.leadId || "",
+      leadId,
       activityId: source.activityId || "",
 
       targetUrl: source.targetUrl || "",
@@ -1157,11 +1176,12 @@ export default function FacebookStyleNotifications() {
 
   async function markAsRead(notification: UnifiedNotification) {
     try {
-      if (
-        notification.kind === "regular" &&
-        isValidMongoId(notification.id)
-      ) {
-        await API.put(`/business/my/notifications/${notification.id}/read`);
+      const persistedId = getPersistedMongoId(notification);
+
+      // AI digests use type "lead" (mapped to kind new_lead) and often have no
+      // leadId — still persist via Mongo _id so refresh cannot resurrect them.
+      if (persistedId) {
+        await API.put(`/business/my/notifications/${persistedId}/read`);
       } else if (
         notification.kind === "regular" &&
         notification.type === "message"
@@ -1306,10 +1326,73 @@ export default function FacebookStyleNotifications() {
   }
 
   async function markAllAsRead() {
-    const unread = notifications.filter((item) => !item.read);
+    const snapshot = notifications;
+    const unread = snapshot.filter((item) => !item.read);
+    if (unread.length === 0) return;
 
-    for (const item of unread) {
-      await markAsRead(item);
+    setNotifications((prev) => prev.map((item) => ({ ...item, read: true })));
+    setToasts([]);
+
+    try {
+      // One server call covers DB rows (including AI digests typed as "lead"
+      // without leadId that per-item markAsRead used to skip).
+      await API.put("/business/my/notifications/readAll");
+
+      const leadIdsFromPanel = snapshot
+        .map((item) => (item.leadId ? String(item.leadId) : ""))
+        .filter((id) => isValidMongoId(id));
+
+      // Mark every known CRM lead as seen so synthetic new-lead rows cannot
+      // reappear after refresh/polling.
+      let allLeadIds = leadIdsFromPanel;
+      try {
+        const res = await API.get("/crm/leads/my");
+        if (res.data?.success) {
+          const leads: Lead[] = Array.isArray(res.data.leads)
+            ? res.data.leads
+            : [];
+          allLeadIds = leads.map((lead) => lead._id).filter(Boolean);
+        }
+      } catch {
+        // Fall back to lead ids already visible in the panel.
+      }
+
+      if (allLeadIds.length > 0) {
+        const seenIds = getStoredArray(seenLeadsKey);
+        setStoredArray(
+          seenLeadsKey,
+          Array.from(new Set([...seenIds, ...allLeadIds]))
+        );
+      }
+
+      const taskIds = snapshot
+        .filter((item) => item.kind === "task_due")
+        .map((item) => item.id)
+        .filter(Boolean);
+
+      if (taskIds.length > 0) {
+        const readLocal = getStoredArray(readLocalNotificationsKey);
+        setStoredArray(
+          readLocalNotificationsKey,
+          Array.from(new Set([...readLocal, ...taskIds]))
+        );
+      }
+
+      await Promise.all(
+        unread
+          .filter(
+            (item) =>
+              item.kind === "task_due" && item.leadId && item.activityId
+          )
+          .map((item) =>
+            API.patch(
+              `/crm/leads/${item.leadId}/activities/${item.activityId}/notification-shown`
+            ).catch(() => null)
+          )
+      );
+    } catch (err) {
+      console.error("Error marking all notifications as read:", err);
+      await fetchAllNotifications();
     }
   }
 
