@@ -382,7 +382,8 @@ export function normalizeSiteSeoSettings(
   };
 }
 
-function normalizeGoogleHtmlFileName(value: unknown): string {
+/** Normalize Google HTML verification filename (`google….html`). Returns "" if invalid. */
+export function normalizeGoogleHtmlFileName(value: unknown): string {
   let clean = safeString(value).replace(/^\/+/, "").toLowerCase();
   if (!clean) return "";
   if (/^google[a-z0-9]+$/i.test(clean)) {

@@ -7,7 +7,6 @@ import {
   Building2,
   CheckCircle2,
   ChevronDown,
-  Copy,
   ExternalLink,
   Globe,
   Languages,
@@ -43,6 +42,7 @@ import {
   extractGoogleSiteVerificationToken,
   extractPlainTextFromHtml,
   isSafeHttpUrl,
+  normalizeGoogleHtmlFileName,
   normalizeKeywords,
   normalizePageSeo,
   normalizeSiteBrandSettings,
@@ -54,6 +54,7 @@ import {
 import SchemaBuilder from "./seo/schema-builder/SchemaBuilder";
 import type { SchemaBuilderContext } from "./seo/schema-builder/schemaTypes";
 import SeoImageUploader from "./seo/SeoImageUploader";
+import GscVerificationWizard from "./seo/GscVerificationWizard";
 import {
   GooglePreviewCard,
   SeoActionLink,
@@ -146,7 +147,6 @@ export default function PageSettingsModal({
 }: PageSettingsModalProps) {
   const [tab, setTab] = useState<PageSettingsModalTab>(initialTab);
   const [smartHint, setSmartHint] = useState("");
-  const [copiedHint, setCopiedHint] = useState(false);
   const [title, setTitle] = useState("");
   const [slug, setSlug] = useState("");
   const [seoDraft, setSeoDraft] = useState<SitePageSeoSettings>({});
@@ -376,7 +376,7 @@ export default function PageSettingsModal({
       },
       {
         id: "gsc",
-        label: "חיבור Google Search Console",
+        label: "הכנת אימות Google Search Console",
         done: hasGscMeta || hasGscHtml,
       },
     ]);
@@ -393,6 +393,28 @@ export default function PageSettingsModal({
       setSaveError(canonicalUrlError);
       setTab("advanced");
       return;
+    }
+
+    const rawHtmlFile = String(
+      siteSeoDraft.googleHtmlVerificationFile || "",
+    ).trim();
+    const rawHtmlContent = String(
+      siteSeoDraft.googleHtmlVerificationContent || "",
+    ).trim();
+    if (rawHtmlFile || rawHtmlContent) {
+      const normalizedHtmlFile = normalizeGoogleHtmlFileName(rawHtmlFile);
+      if (!normalizedHtmlFile) {
+        setSaveError(
+          "שם קובץ האימות של Google לא תקין. השתמשו בשם כמו google123.html",
+        );
+        setTab("advanced");
+        return;
+      }
+      if (!rawHtmlContent) {
+        setSaveError("חסר תוכן קובץ האימות. העלו את הקובץ מגוגל או הדביקו את התוכן.");
+        setTab("advanced");
+        return;
+      }
     }
 
     const pageSeo = normalizePageSeo({
@@ -620,24 +642,9 @@ export default function PageSettingsModal({
   const verificationCode = String(
     siteSeoDraft.googleSiteVerification || "",
   ).trim();
-
-  const setVerificationCode = (rawValue: string) => {
-    const value = extractGoogleSiteVerificationToken(rawValue);
-    setSiteSeoDraft((current) => ({
-      ...current,
-      googleSiteVerification: value,
-    }));
-  };
-
-  const copyToClipboard = (value: string) => {
-    try {
-      navigator.clipboard?.writeText(value);
-      setCopiedHint(true);
-      window.setTimeout(() => setCopiedHint(false), 2000);
-    } catch {
-      /* clipboard not available */
-    }
-  };
+  const hasGscHtmlReady =
+    Boolean(String(siteSeoDraft.googleHtmlVerificationFile || "").trim()) &&
+    Boolean(String(siteSeoDraft.googleHtmlVerificationContent || "").trim());
 
   const robotsPreview = buildRobotsContent({
     indexable: pageIndexingEnabled,
@@ -990,7 +997,7 @@ export default function PageSettingsModal({
               <SeoSection
                 icon={<Globe className="h-5 w-5" />}
                 title="בדיקה וחיבור לגוגל"
-                subtitle="מפת אתר + בדיקות. לחיבור מלא ל-Search Console עברו ל־SEO מתקדם"
+                subtitle="מפת אתר + בדיקות. מדריך האימות המלא נמצא ב־SEO מתקדם"
               >
                 <SeoStatusPill tone={pageIndexingEnabled ? "success" : "danger"}>
                   {pageIndexingEnabled
@@ -1019,10 +1026,7 @@ export default function PageSettingsModal({
                     האם האתר כבר בגוגל?
                   </SeoActionLink>
                   <SeoActionLink
-                    href={`${(publicUrl || buildPublicSiteUrl(siteSlug)).replace(
-                      /\/+$/,
-                      "",
-                    )}/sitemap.xml`}
+                    href={`${siteBaseUrl}/sitemap.xml`}
                     icon={<ExternalLink className="h-4 w-4" />}
                   >
                     מפת אתר (sitemap.xml)
@@ -1031,19 +1035,19 @@ export default function PageSettingsModal({
                     href="https://search.google.com/search-console"
                     icon={<ExternalLink className="h-4 w-4" />}
                   >
-                    Google Search Console
+                    פתיחת Google Search Console
                   </SeoActionLink>
                 </div>
 
                 <p className="text-[11px] font-semibold leading-5 text-slate-500">
-                  לחיבור מלא: טאב{" "}
+                  לאימות האתר מול גוגל עברו לטאב{" "}
                   <span className="font-black text-slate-700">"SEO מתקדם"</span>
-                  — אימות, שליחת{" "}
+                  — שם יש מדריך שלבים ברור: העתקת כתובת, בחירת שיטת אימות, שמירה,
+                  ושליחת{" "}
                   <span className="font-black" dir="ltr">
                     sitemap.xml
                   </span>
-                  , בקשת אינדקס, והסבר למה האתר עדיין לא מופיע בחיפוש (וגם מתי
-                  הפאביקון יופיע שם).
+                  . אין חיבור אוטומטי ל־Google בשלב זה.
                 </p>
               </SeoSection>
             </div>
@@ -1281,371 +1285,23 @@ export default function PageSettingsModal({
 
               <SeoAdvancedSection
                 icon={<Tags className="h-5 w-5" />}
-                title="חיבור ל-Google Search Console"
-                description="אימות → מפת אתר → בקשת אינדקס. כולל מה עושים כשכתוב שהאתר עדיין לא בגוגל."
+                title="אימות ב-Google Search Console"
+                description="מדריך שלבים: פתיחת GSC → העתקת כתובת → בחירת שיטת אימות → שמירה → Verify בגוגל → Sitemap."
                 badge={
-                  verificationCode
-                    ? { label: "קוד שמור", tone: "recommended" }
+                  verificationCode || hasGscHtmlReady
+                    ? { label: "מוכן לאימות", tone: "recommended" }
                     : { label: "מומלץ", tone: "recommended" }
                 }
                 defaultOpen
               >
-                <div className="rounded-2xl border border-emerald-200 bg-emerald-50 px-3.5 py-3 text-xs font-semibold leading-6 text-emerald-900">
-                  <p className="mb-1 flex items-center gap-1.5 text-sm font-black">
-                    <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600" />
-                    אם גוגל כבר אישר אוטומטית
-                  </p>
-                  <p>
-                    לפעמים מופיע{" "}
-                    <span className="font-black">
-                      "הבעלות אושרה באופן אוטומטי"
-                    </span>{" "}
-                    ואז עוברים ישר לנכס — בלי להדביק קוד כאן. זה תקין. במקרה
-                    כזה לחצו{" "}
-                    <span className="font-black">"מעבר לנכס"</span> ושלחו מפת
-                    אתר:
-                  </p>
-                  <div className="mt-2 flex items-center gap-2 rounded-xl border border-emerald-200 bg-white p-1.5">
-                    <input
-                      value={`${siteBaseUrl}/sitemap.xml`}
-                      readOnly
-                      dir="ltr"
-                      className="h-9 min-w-0 flex-1 rounded-lg bg-emerald-50/80 px-3 text-xs font-bold text-slate-700 outline-none"
-                    />
-                    <button
-                      type="button"
-                      onClick={() =>
-                        copyToClipboard(`${siteBaseUrl}/sitemap.xml`)
-                      }
-                      className="flex h-9 shrink-0 items-center gap-1.5 rounded-lg bg-emerald-700 px-3 text-xs font-black text-black transition hover:bg-emerald-800"
-                    >
-                      {copiedHint ? (
-                        <>
-                          <CheckCircle2 className="h-4 w-4" /> הועתק
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="h-4 w-4" /> העתקה
-                        </>
-                      )}
-                    </button>
-                  </div>
-                  <p className="mt-2 text-[11px] font-bold text-emerald-800">
-                    המדריך למטה מיועד למי שגוגל מבקש ממנו קוד אימות ידנית (רוב
-                    הלקוחות).
-                  </p>
-                </div>
-
-                <div className="rounded-2xl border border-amber-200 bg-amber-50 px-3.5 py-3 text-xs font-semibold leading-6 text-amber-900">
-                  <p className="mb-1 flex items-center gap-1.5 text-sm font-black">
-                    <AlertTriangle className="h-4 w-4 shrink-0 text-amber-600" />
-                    חשוב: בחלון של גוגל בחרו בצד שמאל
-                  </p>
-                  <p>
-                    בחרו{" "}
-                    <span className="font-black">
-                      "קידומת של כתובת URL"
-                    </span>{" "}
-                    — לא {" "}
-                    <span className="font-black">"דומיין"</span>.
-                    דומיין דורש הגדרות DNS ומסובך יותר. אצלנו עובדים עם קידומת
-                    URL + קובץ HTML (מומלץ).
-                  </p>
-                </div>
-
-                <div className="rounded-2xl border border-slate-200 bg-slate-50 px-3.5 py-3 text-xs font-semibold leading-6 text-slate-600">
-                  <p className="font-black text-slate-900">
-                    פאביקון ≠ Search Console
-                  </p>
-                  <p className="mt-1">
-                    הפאביקון מוגדר בטאב{" "}
-                    <span className="font-black text-slate-800">
-                      "הגדרות אתר"
-                    </span>
-                    . כאן מחברים את האתר לגוגל, שולחים מפת אתר ומבקשים אינדקס —
-                    כדי שהאתר (והפאביקון) יופיעו בחיפוש.
-                  </p>
-                </div>
-
-                {verificationCode ? (
-                  <div className="flex items-start gap-2 rounded-2xl border border-emerald-200 bg-emerald-50 px-3.5 py-3 text-xs font-bold text-emerald-800">
-                    <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
-                    <div>
-                      <p className="font-black">קוד האימות כבר שמור אצלנו</p>
-                      <p className="mt-1 font-semibold text-emerald-700">
-                        ודאו שפרסמתם את האתר → ב-Search Console לחצו "אמת" → אחר
-                        כך שלחו מפת אתר: {siteBaseUrl}/sitemap.xml
-                      </p>
-                    </div>
-                  </div>
-                ) : null}
-
-                <p className="text-sm font-black text-slate-900">
-                  אם גוגל מבקש קוד אימות — עקבו אחרי השלבים:
-                </p>
-
-                <ol className="space-y-3">
-                  <li className="flex gap-3">
-                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-black text-black">
-                      1
-                    </span>
-                    <div className="min-w-0 flex-1 space-y-2 pt-0.5">
-                      <p className="text-sm font-black text-slate-900">
-                        פתחו את Google Search Console
-                      </p>
-                      <p className="text-xs font-semibold text-slate-500">
-                        אם מופיע מסך פתיחה — לחצו "הוספת אתר". אם כבר התחלתם —
-                        לחצו "כבר התחלת? כדאי לסיים את האימות".
-                      </p>
-                      <a
-                        href="https://search.google.com/search-console/welcome"
-                        target="_blank"
-                        rel="noreferrer"
-                        className="inline-flex items-center gap-2 rounded-xl border border-blue-200 bg-white px-3.5 py-2 text-xs font-black text-blue-700 transition hover:bg-blue-50"
-                      >
-                        <ExternalLink className="h-4 w-4" /> פתיחת Search Console
-                      </a>
-                    </div>
-                  </li>
-
-                  <li className="flex gap-3">
-                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-black text-black">
-                      2
-                    </span>
-                    <div className="min-w-0 flex-1 space-y-2 pt-0.5">
-                      <p className="text-sm font-black text-slate-900">
-                        בחרו "קידומת של כתובת URL" (צד שמאל) והדביקו את הכתובת
-                      </p>
-                      <p className="text-xs font-semibold text-slate-500">
-                        העתיקו את הכתובת המדויקת מכאן → הדביקו בשדה של גוגל →
-                        לחצו "המשך". חשוב: רק כתובת האתר הציבורית — בלי{" "}
-                        <span className="font-black" dir="ltr">
-                          /business/.../dashboard
-                        </span>
-                        .
-                      </p>
-                      {publicUrlIsPlaceholder ? (
-                        <p className="flex items-start gap-1.5 rounded-xl bg-amber-50 px-3 py-2 text-[11px] font-bold text-amber-700">
-                          <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />
-                          האתר עדיין לא פורסם, לכן זו כתובת לדוגמה. פרסמו את
-                          האתר והכתובת האמיתית תופיע כאן.
-                        </p>
-                      ) : null}
-                      <div className="flex items-center gap-2 rounded-xl border border-slate-200 bg-white p-1.5">
-                        <input
-                          value={siteBaseUrl}
-                          readOnly
-                          dir="ltr"
-                          className="h-9 min-w-0 flex-1 rounded-lg bg-slate-50 px-3 text-xs font-bold text-slate-700 outline-none"
-                        />
-                        <button
-                          type="button"
-                          onClick={() => copyToClipboard(siteBaseUrl)}
-                          className="flex h-9 shrink-0 items-center gap-1.5 rounded-lg border border-violet-200/80 bg-gradient-to-l from-violet-50 via-sky-50 to-cyan-50 px-3 text-xs font-black text-black transition hover:from-violet-200/70 hover:via-sky-100 hover:to-cyan-50"
-                        >
-                          {copiedHint ? (
-                            <>
-                              <CheckCircle2 className="h-4 w-4" /> הועתק
-                            </>
-                          ) : (
-                            <>
-                              <Copy className="h-4 w-4" /> העתקה
-                            </>
-                          )}
-                        </button>
-                      </div>
-                    </div>
-                  </li>
-
-                  <li className="flex gap-3">
-                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-black text-black">
-                      3
-                    </span>
-                    <div className="min-w-0 flex-1 space-y-2 pt-0.5">
-                      <p className="text-sm font-black text-slate-900">
-                        באימות בחרו "HTML file" (מומלץ אצלנו)
-                      </p>
-                      <p className="text-xs font-semibold text-slate-500">
-                        גוגל ייתן קובץ להורדה בשם כמו{" "}
-                        <span className="font-black" dir="ltr">
-                          google….html
-                        </span>
-                        . הורידו אותו, ואז הזינו כאן את שם הקובץ ואת התוכן שלו
-                        (פתחו את הקובץ בפנקס רשימות והעתיקו הכול).
-                      </p>
-                      <input
-                        value={String(
-                          siteSeoDraft.googleHtmlVerificationFile || "",
-                        )}
-                        onChange={(event) => {
-                          let next = event.target.value.trim().replace(/^\/+/, "");
-                          if (/^google[a-z0-9]+$/i.test(next)) {
-                            next = `${next}.html`;
-                          }
-                          setSiteSeoDraft((current) => ({
-                            ...current,
-                            googleHtmlVerificationFile: next,
-                          }));
-                        }}
-                        className={seoFieldClass}
-                        placeholder="googleXXXXXXXX.html"
-                        dir="ltr"
-                      />
-                      <textarea
-                        value={String(
-                          siteSeoDraft.googleHtmlVerificationContent || "",
-                        )}
-                        onChange={(event) =>
-                          setSiteSeoDraft((current) => ({
-                            ...current,
-                            googleHtmlVerificationContent: event.target.value,
-                          }))
-                        }
-                        className={seoTextareaClass}
-                        placeholder="הדביקו כאן את כל תוכן הקובץ מגוגל"
-                        dir="ltr"
-                        rows={3}
-                      />
-                      {siteSeoDraft.googleHtmlVerificationFile &&
-                      siteSeoDraft.googleHtmlVerificationContent ? (
-                        <p className="flex items-center gap-1.5 text-xs font-black text-emerald-600">
-                          <CheckCircle2 className="h-4 w-4" /> קובץ האימות מוכן —
-                          המשיכו לשמירה ופרסום.
-                        </p>
-                      ) : null}
-                    </div>
-                  </li>
-
-                  <li className="flex gap-3">
-                    <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-600 text-xs font-black text-black">
-                      4
-                    </span>
-                    <div className="min-w-0 flex-1 space-y-2 pt-0.5">
-                      <p className="text-sm font-black text-slate-900">
-                        שמירה כאן → פרסום האתר → חזרה לגוגל ולחיצה על VERIFY
-                      </p>
-                      <ol className="list-decimal space-y-1 pr-4 text-xs font-semibold text-slate-500">
-                        <li>לחצו "שמירה" בתחתית החלון הזה</li>
-                        <li>פרסמו את האתר בעורך</li>
-                        <li>
-                          בדקו שהקובץ נפתח:{" "}
-                          <span className="font-black" dir="ltr">
-                            {siteBaseUrl}/
-                            {siteSeoDraft.googleHtmlVerificationFile ||
-                              "google….html"}
-                          </span>
-                        </li>
-                        <li>ב-Search Console לחצו VERIFY על HTML file</li>
-                        <li>
-                          שלחו מפת אתר:{" "}
-                          <span className="font-black" dir="ltr">
-                            sitemap.xml
-                          </span>
-                        </li>
-                      </ol>
-                    </div>
-                  </li>
-                </ol>
-
-                <div className="rounded-2xl border border-blue-200 bg-blue-50 px-3.5 py-3 text-xs font-semibold leading-6 text-blue-950">
-                  <p className="mb-2 flex items-center gap-1.5 text-sm font-black text-blue-900">
-                    <Search className="h-4 w-4 shrink-0" />
-                    אחרי האימות — איך מופיעים בגוגל (וגם הפאביקון בחיפוש)
-                  </p>
-                  <ol className="list-decimal space-y-2 pr-4">
-                    <li>
-                      ב-Search Console →{" "}
-                      <span className="font-black">Sitemaps</span> → בשדה
-                      הזינו{" "}
-                      <span className="font-black" dir="ltr">
-                        sitemap.xml
-                      </span>{" "}
-                      → שליחה.
-                    </li>
-                    <li>
-                      למעלה בשורת{" "}
-                      <span className="font-black">בדיקת כתובת URL</span>{" "}
-                      הדביקו רק את כתובת האתר הציבורית (
-                      <span className="font-black" dir="ltr">
-                        {siteBaseUrl || "https://yoursite.sites.bizuply.com"}
-                      </span>
-                      ) — לא את כתובת הדשבורד — ואז Enter →{" "}
-                      <span className="font-black">
-                        הגש בקשה ליצירת אינדקס
-                      </span>
-                      .
-                    </li>
-                    <li>
-                      אם כתוב{" "}
-                      <span className="font-black">
-                        "כתובת האתר לא נמצאת ב-Google"
-                      </span>{" "}
-                      או{" "}
-                      <span className="font-black">
-                        "נסרק — לא נכלל באינדקס כרגע"
-                      </span>
-                      — זה תקין לאתר חדש. גוגל מצא את האתר, אבל עדיין לא הכניס
-                      אותו לתוצאות. בקשת אינדקס + המתנה (ימים, לפעמים יותר).
-                    </li>
-                    <li>
-                      הפאביקון בתוצאות החיפוש מופיע{" "}
-                      <span className="font-black">רק אחרי</span> שהדף באינדקס.
-                      ודאו שהעליתם פאביקון בטאב{" "}
-                      <span className="font-black">"הגדרות אתר"</span> (ריבועי
-                      וברור, עדיף לפחות 48×48). אי אפשר לכפות את זה מיד.
-                    </li>
-                  </ol>
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    <a
-                      href="https://search.google.com/search-console"
-                      target="_blank"
-                      rel="noreferrer"
-                      className="inline-flex items-center gap-1.5 rounded-xl border border-blue-300 bg-white px-3 py-2 text-[11px] font-black text-blue-700 transition hover:bg-blue-50"
-                    >
-                      <ExternalLink className="h-3.5 w-3.5" />
-                      Search Console
-                    </a>
-                    <button
-                      type="button"
-                      onClick={() =>
-                        copyToClipboard(`${siteBaseUrl}/sitemap.xml`)
-                      }
-                      className="inline-flex items-center gap-1.5 rounded-xl border border-blue-300 bg-white px-3 py-2 text-[11px] font-black text-blue-700 transition hover:bg-blue-50"
-                    >
-                      {copiedHint ? (
-                        <>
-                          <CheckCircle2 className="h-3.5 w-3.5" /> הועתק
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="h-3.5 w-3.5" /> העתקת מפת אתר
-                        </>
-                      )}
-                    </button>
-                  </div>
-                </div>
-
-                <details className="group/meta-tag rounded-2xl border border-slate-200 bg-white [&_summary::-webkit-details-marker]:hidden">
-                  <summary className="flex cursor-pointer list-none items-center gap-1.5 px-3.5 py-3 text-xs font-black text-slate-600">
-                    <ChevronDown className="h-4 w-4 transition group-open/meta-tag:rotate-180" />
-                    אפשרות נוספת: אימות עם תג HTML (פחות מומלץ)
-                  </summary>
-                  <div className="space-y-3 border-t border-slate-100 px-3.5 py-3">
-                    <p className="text-xs font-semibold text-slate-500">
-                      מתאים רק אם גוגל מבקש תג meta. אחרי שמירה ופרסום בדקו
-                      בקוד המקור שיש google-site-verification.
-                    </p>
-                    <input
-                      value={verificationCode}
-                      onChange={(event) =>
-                        setVerificationCode(event.target.value)
-                      }
-                      className={seoFieldClass}
-                      placeholder="הדביקו את הקוד או את כל שורת ה-meta מגוגל"
-                      dir="ltr"
-                    />
-                  </div>
-                </details>
+                <GscVerificationWizard
+                  siteBaseUrl={siteBaseUrl}
+                  publicUrlIsPlaceholder={publicUrlIsPlaceholder}
+                  siteSeoDraft={siteSeoDraft}
+                  setSiteSeoDraft={setSiteSeoDraft}
+                  fieldClass={seoFieldClass}
+                  textareaClass={seoTextareaClass}
+                />
 
                 <details className="group/meta rounded-2xl border border-slate-200 bg-white [&_summary::-webkit-details-marker]:hidden">
                   <summary className="flex cursor-pointer list-none items-center gap-1.5 px-3.5 py-3 text-xs font-black text-slate-600">
