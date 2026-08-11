@@ -56,6 +56,11 @@ export const config = {
   matcher: [
     "/sitemap.xml",
     "/robots.txt",
+    /*
+      Google Search Console HTML verification files at site root.
+      Must be listed explicitly — the catch-all below skips extensions.
+    */
+    "/:googleFile(google[a-z0-9]+\\.html)",
     "/",
     /*
       Document navigations only — skip APIs, assets, and files with extensions.
@@ -337,11 +342,57 @@ async function handleHtmlSeoInjection(request) {
   }
 }
 
+function getGoogleHtmlVerificationFile(pathname) {
+  const clean = String(pathname || "")
+    .trim()
+    .replace(/^\/+/, "")
+    .toLowerCase();
+  if (!/^google[a-z0-9]+\.html$/i.test(clean)) return "";
+  return clean;
+}
+
+async function handleGoogleHtmlVerification(request, fileName) {
+  const host = getHost(request);
+  if (!isCustomerSiteHost(host)) {
+    return passThrough();
+  }
+
+  try {
+    const apiUrl =
+      `https://api.bizuply.com/api/site-builder/public/by-host/google-html` +
+      `?host=${encodeURIComponent(host)}` +
+      `&file=${encodeURIComponent(fileName)}` +
+      `&_t=${Date.now()}`;
+    const apiRes = await fetch(apiUrl, {
+      headers: { accept: "text/html,*/*" },
+    });
+    const body = await apiRes.text();
+    return new Response(body, {
+      status: apiRes.status,
+      headers: {
+        "content-type": "text/html; charset=utf-8",
+        "cache-control": "public, max-age=0, must-revalidate",
+        "x-bizuply-seo-source": "google-html",
+      },
+    });
+  } catch {
+    return new Response("Not found", {
+      status: 404,
+      headers: { "content-type": "text/plain; charset=utf-8" },
+    });
+  }
+}
+
 export default async function middleware(request) {
   const pathname = getPathname(request);
 
   if (pathname === "/sitemap.xml" || pathname === "/robots.txt") {
     return handleRobotsOrSitemap(request, pathname);
+  }
+
+  const googleFile = getGoogleHtmlVerificationFile(pathname);
+  if (googleFile) {
+    return handleGoogleHtmlVerification(request, googleFile);
   }
 
   return handleHtmlSeoInjection(request);
