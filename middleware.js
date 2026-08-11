@@ -2,11 +2,14 @@
  * Host-aware SEO middleware for customer sites.
  *
  * - /sitemap.xml + /robots.txt: existing API proxy (unchanged behavior)
- * - HTML document navigations: optional edge <head> injection (Phase 1b canary allowlist)
+ * - HTML document navigations: edge <head> injection for all customer hosts
  *
  * Vite SPA on Vercel Routing Middleware (not Next.js).
  * Use standard Request/URL/Response APIs only — never request.nextUrl
  * or next/server helpers.
+ *
+ * Rollback: set BIZUPLY_SEO_EDGE_INJECTION=0
+ * Optional narrow: BIZUPLY_SEO_EDGE_ALLOWLIST=host1,host2 (omit or "*" = 100%)
  */
 
 const PUBLIC_SITE_DOMAIN =
@@ -25,30 +28,20 @@ const EMPTY_SITEMAP =
 const SEO_EDGE_ENABLED =
   String(process.env.BIZUPLY_SEO_EDGE_INJECTION || "1").trim() !== "0";
 
-/*
-  Phase 1b canary allowlist — fixture / platform-test hosts only.
-  Do NOT expand to % of customers without explicit approval.
-*/
+const SEO_EDGE_ALLOWLIST_VALUES = String(
+  process.env.BIZUPLY_SEO_EDGE_ALLOWLIST || "*",
+)
+  .split(",")
+  .map((value) => value.trim().toLowerCase())
+  .filter(Boolean);
+
+/** Empty / "*" => all customer hosts (100% rollout). */
+const SEO_EDGE_ALLOWLIST_ALL =
+  SEO_EDGE_ALLOWLIST_VALUES.length === 0 ||
+  SEO_EDGE_ALLOWLIST_VALUES.includes("*");
+
 const SEO_EDGE_ALLOWLIST = new Set(
-  String(
-    process.env.BIZUPLY_SEO_EDGE_ALLOWLIST ||
-      [
-        // Launch Gate fixture — subdomain + custom domain
-        "launchgateb12.sites.bizuply.com",
-        "bizuplylgtmsn7ksf50.com",
-        // Second Launch Gate published site — multi-page / partial SEO
-        "chanel.sites.bizuply.com",
-        // Platform test@bizuply.com demo templates
-        "ben.sites.bizuply.com", // Fluxora — empty SEO
-        "adion.sites.bizuply.com", // multi-page + full SEO seed
-        "pulsecore.sites.bizuply.com", // schema/OG/favicon seed
-        // Platform CD smoke fixture
-        "cdnm7isjx.sites.bizuply.com",
-      ].join(","),
-  )
-    .split(",")
-    .map((value) => value.trim().toLowerCase())
-    .filter(Boolean),
+  SEO_EDGE_ALLOWLIST_ALL ? [] : SEO_EDGE_ALLOWLIST_VALUES,
 );
 
 const SEO_HEAD_TIMEOUT_MS = Math.max(
@@ -136,6 +129,7 @@ function isDocumentNavigation(request) {
 function shouldInjectHtmlSeo(host) {
   if (!SEO_EDGE_ENABLED) return false;
   if (!isCustomerSiteHost(host)) return false;
+  if (SEO_EDGE_ALLOWLIST_ALL) return true;
   return SEO_EDGE_ALLOWLIST.has(host);
 }
 
@@ -246,6 +240,19 @@ async function handleRobotsOrSitemap(request, pathname) {
   }
 }
 
+function fallbackHtmlResponse(html, status, started, reason) {
+  return new Response(html, {
+    status,
+    headers: {
+      "content-type": "text/html; charset=utf-8",
+      "cache-control": "public, max-age=0, must-revalidate",
+      "x-bizuply-seo-edge": "fallback",
+      "x-bizuply-seo-edge-reason": reason,
+      "x-bizuply-seo-edge-ms": String(Date.now() - started),
+    },
+  });
+}
+
 async function handleHtmlSeoInjection(request) {
   const host = getHost(request);
   if (!shouldInjectHtmlSeo(host)) {
@@ -264,12 +271,6 @@ async function handleHtmlSeoInjection(request) {
       `${API_SEO_HEAD}?host=${encodeURIComponent(host)}` +
       `&path=${encodeURIComponent(pathname)}&_t=${Date.now()}`;
 
-    const seoPromise = fetchWithTimeout(
-      seoUrl,
-      { headers: { accept: "application/json" } },
-      SEO_HEAD_TIMEOUT_MS,
-    );
-
     const htmlPromise = fetch(new URL("/index.html", request.url), {
       headers: {
         accept: "text/html",
@@ -277,7 +278,19 @@ async function handleHtmlSeoInjection(request) {
       },
     });
 
-    const [seoRes, htmlRes] = await Promise.all([seoPromise, htmlPromise]);
+    let seoRes = null;
+    let seoReason = "empty";
+    try {
+      seoRes = await fetchWithTimeout(
+        seoUrl,
+        { headers: { accept: "application/json" } },
+        SEO_HEAD_TIMEOUT_MS,
+      );
+    } catch {
+      seoReason = "timeout";
+    }
+
+    const htmlRes = await htmlPromise;
 
     if (!htmlRes.ok) {
       return passThrough();
@@ -289,27 +302,22 @@ async function handleHtmlSeoInjection(request) {
     }
 
     let headHtml = "";
-    if (seoRes.ok) {
+    if (seoRes && seoRes.ok) {
       try {
         const payload = await seoRes.json();
         headHtml = String(payload?.headHtml || "").trim();
+        if (!headHtml) seoReason = "empty";
       } catch {
         headHtml = "";
+        seoReason = "parse";
       }
+    } else if (seoRes && !seoRes.ok) {
+      seoReason = `seo-${seoRes.status}`;
     }
 
     // Safe fallback: never break the SPA if SEO fetch/parse fails.
     if (!headHtml) {
-      const response = new Response(html, {
-        status: htmlRes.status,
-        headers: {
-          "content-type": "text/html; charset=utf-8",
-          "cache-control": "public, max-age=0, must-revalidate",
-          "x-bizuply-seo-edge": "fallback",
-          "x-bizuply-seo-edge-ms": String(Date.now() - started),
-        },
-      });
-      return response;
+      return fallbackHtmlResponse(html, htmlRes.status, started, seoReason);
     }
 
     const injected = injectSeoHead(html, headHtml);
@@ -324,6 +332,7 @@ async function handleHtmlSeoInjection(request) {
       },
     });
   } catch {
+    // Last resort: never return 500 from SEO middleware.
     return passThrough();
   }
 }
