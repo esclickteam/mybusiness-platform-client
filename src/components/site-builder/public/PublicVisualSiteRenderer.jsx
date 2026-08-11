@@ -4,6 +4,7 @@ import React, {
   useLayoutEffect,
   useMemo,
   useRef,
+  useState,
 } from "react";
 import { Helmet } from "react-helmet-async";
 
@@ -2066,12 +2067,41 @@ function applyPublicSiteFavicon(faviconUrl) {
 
 function PublicSeoHead({ resolvedSeo, faviconUrl }) {
   const normalizedFaviconUrl = String(faviconUrl || "").trim();
+  const initialEdgeSeoRef = useRef(
+    typeof document !== "undefined" &&
+      Boolean(document.querySelector('meta[name="bizuply-seo-edge"]')),
+  );
+  const initialAbsoluteUrlRef = useRef("");
+  const [helmetOwnsHead, setHelmetOwnsHead] = useState(
+    () => !initialEdgeSeoRef.current,
+  );
 
   useLayoutEffect(() => {
-    /*
-      Edge middleware may pre-inject SEO tags for crawlers. Remove those marked
-      tags before Helmet owns <head>, so SPA navigation never leaves duplicates.
-    */
+    if (!normalizedFaviconUrl) return undefined;
+    applyPublicSiteFavicon(normalizedFaviconUrl);
+    return undefined;
+  }, [normalizedFaviconUrl]);
+
+  useLayoutEffect(() => {
+    if (!resolvedSeo) return undefined;
+
+    if (!initialAbsoluteUrlRef.current && resolvedSeo.absoluteUrl) {
+      initialAbsoluteUrlRef.current = String(resolvedSeo.absoluteUrl || "");
+    }
+
+    const absoluteUrl = String(resolvedSeo.absoluteUrl || "");
+    const navigatedAwayFromEdgePage =
+      initialEdgeSeoRef.current &&
+      initialAbsoluteUrlRef.current &&
+      absoluteUrl &&
+      absoluteUrl !== initialAbsoluteUrlRef.current;
+
+    if (!navigatedAwayFromEdgePage && initialEdgeSeoRef.current) {
+      // Keep crawler-injected head for the first painted page to avoid wiping
+      // SEO before Helmet applies (and to prevent duplicate tags).
+      return undefined;
+    }
+
     try {
       document
         .querySelectorAll("[data-bizuply-edge-seo]")
@@ -2079,13 +2109,25 @@ function PublicSeoHead({ resolvedSeo, faviconUrl }) {
     } catch {
       /* ignore */
     }
-
-    if (!normalizedFaviconUrl) return undefined;
-    applyPublicSiteFavicon(normalizedFaviconUrl);
+    if (!helmetOwnsHead) setHelmetOwnsHead(true);
     return undefined;
-  }, [normalizedFaviconUrl, resolvedSeo?.titleTag, resolvedSeo?.canonicalUrl]);
+  }, [
+    resolvedSeo,
+    resolvedSeo?.absoluteUrl,
+    helmetOwnsHead,
+  ]);
 
   if (!resolvedSeo && !normalizedFaviconUrl) return null;
+
+  // While edge SEO is authoritative for the first page, only ensure favicon.
+  if (initialEdgeSeoRef.current && !helmetOwnsHead) {
+    return normalizedFaviconUrl ? (
+      <Helmet>
+        <link rel="icon" href={normalizedFaviconUrl} />
+        <link rel="apple-touch-icon" href={normalizedFaviconUrl} />
+      </Helmet>
+    ) : null;
+  }
 
   return (
     <Helmet>
