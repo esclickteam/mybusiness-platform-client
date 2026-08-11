@@ -13,6 +13,10 @@ import { useAuth } from "../../../../context/AuthContext";
 import { useLocaleDir } from "../../../../hooks/useLocaleDir";
 import { normalizeBusinessId } from "../../../../utils/notificationNavigation";
 import {
+  getAutomationBillingUsage,
+  hasActiveAutomationPlan,
+} from "../../../../api/automationBillingApi";
+import {
   AUTOMATION_PREVIEW_WRITE_BLOCKED_MESSAGE,
   createAutomationWorkflow,
   isAutomationsReadOnly,
@@ -69,6 +73,10 @@ export default function AutomationsLayout() {
   }, [location.pathname]);
 
   useEffect(() => {
+    const onTemplatesPath = location.pathname.includes("/templates");
+    // Discovery/highlight links land on Templates — never auto-create there.
+    if (onTemplatesPath) return;
+
     const requestedTemplate = searchParams.get("template");
     const requestedRecipe = searchParams.get("recipe");
     const aiRequestKey =
@@ -109,9 +117,29 @@ export default function AutomationsLayout() {
         const next = new URLSearchParams(searchParams);
         next.delete("recipe");
         next.delete("template");
+        next.delete("configureAi");
         setSearchParams(next, { replace: true });
       };
       try {
+        const usage = await getAutomationBillingUsage(businessId).catch(
+          () => null
+        );
+        if (!hasActiveAutomationPlan(usage)) {
+          toast.error("כדי להפעיל אוטומציה יש לבחור חבילת פעולות");
+          clearRecipeParam();
+          const highlight =
+            aiTemplate?.templateKey || requestedTemplate || recipeKey;
+          const params = new URLSearchParams({
+            focus: "ai",
+            pickPlan: "1",
+          });
+          if (highlight) params.set("highlight", String(highlight));
+          navigate(`${basePath}/templates?${params.toString()}`, {
+            replace: true,
+          });
+          return;
+        }
+
         const openCreated = async (
           createdId: string,
           successMessage: string
@@ -177,12 +205,14 @@ export default function AutomationsLayout() {
       } catch (error: unknown) {
         toast.error(readAutomationErrorMessage(error, "שגיאה ביצירת אוטומציה"));
         clearRecipeParam();
+        autoCreateHandled.current = null;
       }
     })();
   }, [
     basePath,
     businessId,
     isEditorRoute,
+    location.pathname,
     navigate,
     searchParams,
     setSearchParams,

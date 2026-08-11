@@ -6,6 +6,7 @@ import {
   isSupportedAiActionKey,
   listSupportedAiTemplates,
   searchAiTemplates,
+  buildAiTemplateDiscoveryHref,
 } from "./aiAutomationCatalog";
 
 describe("AI automation catalog", () => {
@@ -60,5 +61,15 @@ describe("AI automation catalog", () => {
     expect(scoringGraph.nodes[0].data.label).toBe("\u05dc\u05d9\u05d3 \u05d7\u05d3\u05e9");
     expect(String(scoringGraph.nodes[1].data.label || "")).toContain("\u05d3\u05d9\u05e8\u05d5\u05d2");
     expect(scoringGraph.edges.find((e) => e.id === "ai-notify")?.sourceHandle).toBe("out");
+  });
+
+  it("builds discovery href without activate params", () => {
+    const template = listSupportedAiTemplates()[0];
+    const href = buildAiTemplateDiscoveryHref("biz123", template);
+    expect(href).toContain("/business/biz123/dashboard/automations/templates?");
+    expect(href).toContain("focus=ai");
+    expect(href).toContain("highlight=" + encodeURIComponent(template.templateKey));
+    expect(href).not.toContain("configureAi");
+    expect(href).not.toContain("recipe=");
   });
 });

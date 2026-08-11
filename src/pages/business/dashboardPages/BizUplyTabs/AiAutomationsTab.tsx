@@ -7,6 +7,7 @@ import { Sparkles } from "lucide-react";
 import { useLocaleDir } from "@/hooks/useLocaleDir";
 import {
   AI_BILLING_SAFE_MESSAGE,
+  buildAiTemplateDiscoveryHref,
   listSupportedAiTemplates,
 } from "../automations/aiAutomationCatalog";
 
@@ -17,9 +18,6 @@ type AiAutomationsTabProps = {
 export default function AiAutomationsTab({ businessId }: AiAutomationsTabProps) {
   const dir = useLocaleDir();
   const templates = listSupportedAiTemplates();
-  const basePath = businessId
-    ? `/business/${businessId}/dashboard/automations`
-    : "/";
 
   return (
     <section
@@ -37,13 +35,13 @@ export default function AiAutomationsTab({ businessId }: AiAutomationsTabProps) 
           </div>
         </div>
         <p className="mt-4 text-xs font-semibold leading-5 text-slate-600">
-          היועץ העסקי מנתח וממליץ; כאן מפעילים תהליכים אוטומטיים בבונה האוטומציות.
+          היועץ העסקי מנתח וממליץ; כאן מגלים תבניות AI ועוברים לסקירה לפני הפעלה.
         </p>
       </header>
 
       {templates.length === 0 ? (
         <div className="mt-5 rounded-2xl border border-slate-200 bg-slate-50 p-6 text-sm font-semibold text-slate-600">
-          אין כרגע תבניות AI זמינות להפעלה. נסו שוב בהמשך.
+          אין כרגע תבניות AI זמינות לצפייה. נסו שוב בהמשך.
         </div>
       ) : (
         <>
@@ -54,6 +52,9 @@ export default function AiAutomationsTab({ businessId }: AiAutomationsTabProps) 
             {templates.map((template) => {
               const Icon = (Icons[template.icon as keyof typeof Icons] ||
                 Sparkles) as React.ElementType;
+              const href = businessId
+                ? buildAiTemplateDiscoveryHref(businessId, template)
+                : "/";
               return (
                 <article
                   key={template.templateKey}
@@ -74,10 +75,11 @@ export default function AiAutomationsTab({ businessId }: AiAutomationsTabProps) 
                     {template.description}
                   </p>
                   <Link
-                    to={`${basePath}?recipe=${template.recipeKey}&configureAi=1`}
+                    to={href}
                     className="mt-4 inline-flex h-10 items-center justify-center rounded-xl bg-violet-600 px-3 text-xs font-black text-white hover:bg-violet-700"
+                    data-testid={`ai-overview-view-${template.templateKey}`}
                   >
-                    הפעל תבנית
+                    לצפייה בתבנית
                   </Link>
                 </article>
               );

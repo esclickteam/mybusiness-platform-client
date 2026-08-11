@@ -120,4 +120,31 @@ describe("automationBillingApi", () => {
     expect(overview).not.toHaveProperty("success");
     expect(overview.billingEnabled).toBe(true);
   });
+
+  it("hasActiveAutomationPlan respects billing/exempt/plan", async () => {
+    const api = await import("./automationBillingApi");
+    expect(api.hasActiveAutomationPlan(null)).toBe(false);
+    expect(api.hasActiveAutomationPlan({
+      billingEnabled: false, exempt: false, plan: null, usage: null,
+      subscription: { cancelAtPeriodEnd: false, pendingDowngradePlanKey: null, paymentGraceEndsAt: null },
+      canPublish: true, canExecute: true, blockReason: null,
+    })).toBe(true);
+    expect(api.hasActiveAutomationPlan({
+      billingEnabled: true, exempt: true, plan: null, usage: null,
+      subscription: { cancelAtPeriodEnd: false, pendingDowngradePlanKey: null, paymentGraceEndsAt: null },
+      canPublish: true, canExecute: true, blockReason: null,
+    })).toBe(true);
+    expect(api.hasActiveAutomationPlan({
+      billingEnabled: true, exempt: false, plan: null, usage: null,
+      subscription: { cancelAtPeriodEnd: false, pendingDowngradePlanKey: null, paymentGraceEndsAt: null },
+      canPublish: false, canExecute: false, blockReason: "AUTOMATION_PLAN_REQUIRED",
+    })).toBe(false);
+    expect(api.hasActiveAutomationPlan({
+      billingEnabled: true, exempt: false,
+      plan: { key: "automation_basic_39_ils", name: "Basic", status: "active", priceIls: 39, executionLimit: 100 },
+      usage: null,
+      subscription: { cancelAtPeriodEnd: false, pendingDowngradePlanKey: null, paymentGraceEndsAt: null },
+      canPublish: true, canExecute: true, blockReason: null,
+    })).toBe(true);
+  });
 });

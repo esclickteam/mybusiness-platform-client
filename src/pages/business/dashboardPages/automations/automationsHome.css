@@ -868,6 +868,25 @@
   background: #fff;
   padding: 16px;
   min-height: 230px;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.ax-template-card--highlight {
+  border-color: #7c3aed;
+  box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.22);
+  animation: ax-template-highlight-pulse 2.2s ease;
+}
+
+@keyframes ax-template-highlight-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(124, 58, 237, 0.45);
+  }
+  40% {
+    box-shadow: 0 0 0 8px rgba(124, 58, 237, 0.18);
+  }
+  100% {
+    box-shadow: 0 0 0 4px rgba(124, 58, 237, 0.22);
+  }
 }
 
 .ax-template-card__top {
