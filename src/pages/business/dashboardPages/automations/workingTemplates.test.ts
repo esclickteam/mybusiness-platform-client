@@ -37,7 +37,7 @@ const approvedWa = {
   status: "active",
   metaStatus: "APPROVED",
   isSystem: true,
-  metaTemplateName: "any_approved_name",
+  metaTemplateName: "new_lead_welcome",
 } as never;
 
 describe("workingTemplates launch safety", () => {
@@ -204,6 +204,80 @@ describe("workingTemplates launch safety", () => {
     });
     expect(ready.ready).toBe(true);
     expect(ready.resolvedTriggerKey).toBe("new_lead");
+  });
+
+  it("enables client WhatsApp cards when approved Meta template + client trigger exist", () => {
+    const clientTrigger = {
+      key: "client_created",
+      label: "Client",
+      description: "",
+      category: "crm",
+      status: "active" as const,
+      isSupported: true,
+      isPublishable: true,
+    };
+    const inactiveTrigger = {
+      key: "client_inactive",
+      label: "Inactive",
+      description: "",
+      category: "crm",
+      status: "active" as const,
+      isSupported: true,
+      isPublishable: true,
+    };
+    const welcomeTpl = {
+      _id: "nc1",
+      name: "New Client Welcome",
+      category: "welcome",
+      status: "active",
+      metaStatus: "APPROVED",
+      metaTemplateName: "new_client_welcome",
+    } as never;
+    const inactiveTpl = {
+      _id: "ic1",
+      name: "Inactive Client",
+      category: "follow_up",
+      status: "active",
+      metaStatus: "APPROVED",
+      metaTemplateName: "inactive_client",
+    } as never;
+
+    const welcome = WORKING_TEMPLATES.find((t) => t.key === "wa_new_client_welcome")!;
+    const inactive = WORKING_TEMPLATES.find((t) => t.key === "wa_inactive_client")!;
+
+    const welcomeReady = getTemplateReadiness(welcome, {
+      recipes: [],
+      triggers: [clientTrigger],
+      waTemplates: [welcomeTpl],
+      managedWaReady: true,
+      calendarConnected: false,
+      aiEntitled: false,
+    });
+    expect(welcomeReady.ready).toBe(true);
+    expect(welcomeReady.resolvedTriggerKey).toBe("client_created");
+
+    const inactiveReady = getTemplateReadiness(inactive, {
+      recipes: [],
+      triggers: [inactiveTrigger],
+      waTemplates: [inactiveTpl],
+      managedWaReady: true,
+      calendarConnected: false,
+      aiEntitled: false,
+    });
+    expect(inactiveReady.ready).toBe(true);
+    expect(inactiveReady.resolvedTriggerKey).toBe("client_inactive");
+
+    const missingMeta = getTemplateReadiness(welcome, {
+      recipes: [],
+      triggers: [clientTrigger],
+      waTemplates: [approvedWa],
+      managedWaReady: true,
+      calendarConnected: false,
+      aiEntitled: false,
+    });
+    expect(missingMeta.ready).toBe(false);
+    expect(missingMeta.blocker).toMatch(/תבנית WhatsApp מאושרת/);
+    expect(missingMeta.blocker).not.toMatch(/טריגר מאושר/);
   });
 
   it("keeps non-WA lead email templates ready with publishable trigger", () => {

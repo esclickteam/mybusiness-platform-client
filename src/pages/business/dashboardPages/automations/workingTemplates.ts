@@ -17,6 +17,10 @@ import {
   isLegacyManagedMetaTemplateName,
   isTestTemplateName,
 } from "./whatsappAutomationMetaTemplates";
+import {
+  WA_TEMPLATE_UNAVAILABLE_HE,
+  resolveApprovedMetaTemplateForAutomation,
+} from "./whatsappAutomationTemplateResolver";
 
 export type WorkingEngine = "whatsapp_simple" | "workflow_recipe" | "workflow_graph";
 
@@ -74,15 +78,22 @@ const APPOINTMENT_DONE_TRIGGER_KEYS = [
   "appointment_done",
 ];
 const CLIENT_TRIGGER_KEYS = [
-  "crm_client_created",
   "client_created",
+  "crm_client_created",
   "new_client",
   "customer_created",
+];
+const CLIENT_INACTIVE_TRIGGER_KEYS = [
+  "client_inactive",
+  "crm_client_inactive",
+  "inactive_client",
 ];
 const LEAD_NO_RESPONSE_KEYS = [
   "lead_no_response",
   "crm_lead_no_response",
   "lead_followup",
+  // Publishable fixture-safe path until dedicated no-response emit ships.
+  "new_lead",
 ];
 const LEAD_STATUS_KEYS = [
   "lead_status_changed",
@@ -93,6 +104,11 @@ const WHATSAPP_INBOUND_KEYS = [
   "whatsapp_message_received",
   "whatsapp_inbound",
   "wa_message_received",
+];
+/** After-meeting cards use appointment_created + delay until completed emit exists. */
+const APPOINTMENT_DONE_FALLBACK_KEYS = [
+  ...APPOINTMENT_DONE_TRIGGER_KEYS,
+  "appointment_created",
 ];
 
 type GraphAction = {
@@ -179,13 +195,14 @@ export function triggerKeysForWhatsAppSimple(
       return LEAD_NO_RESPONSE_KEYS;
     case "appointment_reminder_1_day":
     case "appointment_reminder_hours":
-      return APPOINTMENT_TRIGGER_KEYS;
+      return ["appointment_reminder", ...APPOINTMENT_TRIGGER_KEYS];
     case "appointment_thanks":
     case "appointment_review_request":
-      return APPOINTMENT_DONE_TRIGGER_KEYS;
+      return APPOINTMENT_DONE_FALLBACK_KEYS;
     case "new_client_welcome":
-    case "inactive_client":
       return CLIENT_TRIGGER_KEYS;
+    case "inactive_client":
+      return CLIENT_INACTIVE_TRIGGER_KEYS;
     default:
       return template.requiredTriggerKeys || LEAD_TRIGGER_KEYS;
   }
@@ -218,7 +235,9 @@ export function buildWhatsAppSimpleGraph(
         routeCount: 1,
         ...(template.hoursBefore != null
           ? { hoursBefore: template.hoursBefore }
-          : {}),
+          : ctx.triggerKey === "appointment_reminder"
+            ? { hoursBefore: 24 }
+            : {}),
       },
     },
   ];
@@ -328,6 +347,7 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
     categories: ["appointments", "whatsapp"],
     engine: "whatsapp_simple",
     whatsappTrigger: "appointment_reminder_1_day",
+    hoursBefore: 24,
     waCategory: "appointment_reminder",
     waHints: ["reminder", "appointment", "תזכורת", "פגישה"],
   },
@@ -1180,6 +1200,20 @@ export function getTemplateReadiness(
   }
 
   if (template.engine === "whatsapp_simple") {
+    const metaResolved = resolveApprovedMetaTemplateForAutomation({
+      automationTemplateKey: template.key,
+      preferredMetaName: template.waPreferredMetaName,
+      waTemplates: ctx.waTemplates,
+      allowBusinessAlert: template.allowBusinessAlert,
+    });
+    if (!metaResolved.ready || !metaResolved.metaTemplate) {
+      return {
+        ready: false,
+        blocker: metaResolved.whyNotReady || WA_TEMPLATE_UNAVAILABLE_HE,
+        recipe,
+      };
+    }
+
     const triggerKey = resolvePublishableTrigger(
       triggerKeysForWhatsAppSimple(template),
       ctx.triggers
@@ -1187,28 +1221,26 @@ export function getTemplateReadiness(
     if (!triggerKey) {
       return {
         ready: false,
-        blocker: "אין טריגר מאושר מהשרת לאוטומציה הזו כרגע",
+        blocker: "האוטומציה עדיין לא זמינה להפעלה במערכת",
         recipe,
       };
     }
-    const picked = pickBestWaTemplate(ctx.waTemplates, {
-      category: template.waCategory,
-      hints: template.waHints,
-      preferredMetaName: template.waPreferredMetaName,
-      allowBusinessAlert: template.allowBusinessAlert,
-    });
-    if (!picked) {
+
+    const pickedId = getWaTemplateId(metaResolved.metaTemplate);
+    if (!pickedId) {
       return {
         ready: false,
-        blocker: "בחרו תבנית Meta מאושרת בעת ההפעלה — אין כרגע תבנית מתאימה",
+        blocker: WA_TEMPLATE_UNAVAILABLE_HE,
         recipe,
         resolvedTriggerKey: triggerKey,
       };
     }
     return {
       ready: true,
-      suggestedWaTemplateId: picked.id,
-      suggestedWaTemplateName: picked.name,
+      suggestedWaTemplateId: pickedId,
+      suggestedWaTemplateName:
+        metaResolved.metaTemplateName ||
+        String(metaResolved.metaTemplate.name || ""),
       resolvedTriggerKey: triggerKey,
     };
   }
@@ -1223,6 +1255,20 @@ export function getTemplateReadiness(
 
   // WhatsApp-bearing workflows require publishable trigger + APPROVED template.
   if (template.requiresWaTemplate && template.buildGraph) {
+    const metaResolved = resolveApprovedMetaTemplateForAutomation({
+      automationTemplateKey: template.key,
+      preferredMetaName: template.waPreferredMetaName,
+      waTemplates: ctx.waTemplates,
+      allowBusinessAlert: template.allowBusinessAlert,
+    });
+    if (!metaResolved.ready || !metaResolved.metaTemplate) {
+      return {
+        ready: false,
+        blocker: metaResolved.whyNotReady || WA_TEMPLATE_UNAVAILABLE_HE,
+        recipe,
+      };
+    }
+
     const triggerKey = resolvePublishableTrigger(
       template.requiredTriggerKeys,
       ctx.triggers
@@ -1230,20 +1276,15 @@ export function getTemplateReadiness(
     if (!triggerKey) {
       return {
         ready: false,
-        blocker: "אין טריגר מאושר מהשרת לאוטומציה הזו כרגע",
+        blocker: "האוטומציה עדיין לא זמינה להפעלה במערכת",
         recipe,
       };
     }
-    const picked = pickBestWaTemplate(ctx.waTemplates, {
-      category: template.waCategory,
-      hints: template.waHints,
-      preferredMetaName: template.waPreferredMetaName,
-      allowBusinessAlert: template.allowBusinessAlert,
-    });
-    if (!picked) {
+    const pickedId = getWaTemplateId(metaResolved.metaTemplate);
+    if (!pickedId) {
       return {
         ready: false,
-        blocker: "אין תבנית WhatsApp מאושרת לבחירה עבור האוטומציה",
+        blocker: WA_TEMPLATE_UNAVAILABLE_HE,
         recipe,
         resolvedTriggerKey: triggerKey,
       };
@@ -1252,8 +1293,10 @@ export function getTemplateReadiness(
       ready: true,
       recipe,
       resolvedTriggerKey: triggerKey,
-      suggestedWaTemplateId: picked.id,
-      suggestedWaTemplateName: picked.name,
+      suggestedWaTemplateId: pickedId,
+      suggestedWaTemplateName:
+        metaResolved.metaTemplateName ||
+        String(metaResolved.metaTemplate.name || ""),
     };
   }
 
@@ -1283,9 +1326,12 @@ export function getTemplateReadiness(
       ctx.triggers
     );
     if (!triggerKey) {
+      // Non-WA graph cards still need a publishable trigger; keep precise copy.
       return {
         ready: false,
-        blocker: "אין טריגר מאושר מהשרת לאוטומציה הזו כרגע",
+        blocker: isWhatsAppFacingTemplate(template)
+          ? WA_TEMPLATE_UNAVAILABLE_HE
+          : "אין טריגר נתמך להפעלת האוטומציה הזו כרגע",
         recipe,
       };
     }
