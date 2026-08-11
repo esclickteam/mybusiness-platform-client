@@ -1472,6 +1472,12 @@ export default function CRMLeadsTab({
         applyLeadUpdate(leadId, saved.lead);
       }
 
+      try {
+        window.dispatchEvent(new CustomEvent("bizuply:leads-updated"));
+      } catch {
+        /* ignore */
+      }
+
       if (status === "converted" && saved.client?._id) {
         openConvertedClient(String(saved.client._id));
       }
