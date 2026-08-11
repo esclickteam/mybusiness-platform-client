@@ -32,6 +32,8 @@ type Props = {
   onApplyTemplate: (template: PageTemplate) => void;
   onApplyPalette: (palette: ThemePalette) => void;
   onOpenMedia: () => void;
+  /** Opens full page SEO / GSC settings modal (preferred over stub SEO panel). */
+  onOpenPageSeo?: (tab?: "seo" | "advanced" | "social" | "settings") => void;
 
   pages?: StudioSitePage[];
   activePageId?: string;
@@ -172,6 +174,7 @@ export default function StudioSidebar({
   onAddHtml,
   onApplyPalette,
   onOpenMedia,
+  onOpenPageSeo,
   pages = [],
   activePageId,
   activePageSections = [],
@@ -303,6 +306,13 @@ export default function StudioSidebar({
   const clearSearch = () => setSearch("");
 
   const handlePanelClick = (panel: StudioPanel) => {
+    if (panel === "seo" && onOpenPageSeo) {
+      onOpenPageSeo("advanced");
+      setActivePanel(null);
+      clearSearch();
+      return;
+    }
+
     if (activePanel === panel) {
       setActivePanel(null);
       clearSearch();
@@ -707,9 +717,29 @@ export default function StudioSidebar({
 
             {currentPanel === "seo" && (
               <Panel>
-                <Info title="כותרת SEO" text="תתחבר לשמירת האתר והפרסום." />
-                <Info title="תיאור SEO" text="מופיע בגוגל ובשיתוף קישור." />
-                <Info title="Open Graph" text="תמונת שיתוף לפייסבוק ווואטסאפ." />
+                <div className="space-y-3 p-1">
+                  <p className="text-sm font-black text-slate-900">
+                    SEO ו-Google Search Console
+                  </p>
+                  <p className="text-xs font-semibold leading-5 text-slate-500">
+                    מדריך שלבים לאימות ידני מול Google, שמירת קוד/קובץ אימות,
+                    ושליחת Sitemap — בלי חיבור אוטומטי ל־Google.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={() => onOpenPageSeo?.("advanced")}
+                    className="flex h-12 w-full items-center justify-center rounded-2xl bg-violet-700 px-4 text-sm font-black text-white transition hover:bg-violet-800"
+                  >
+                    פתיחת מדריך האימות
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => onOpenPageSeo?.("seo")}
+                    className="flex h-11 w-full items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 text-xs font-black text-slate-700 transition hover:bg-slate-50"
+                  >
+                    SEO בסיסי לעמוד
+                  </button>
+                </div>
               </Panel>
             )}
 
