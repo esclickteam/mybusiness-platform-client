@@ -63,6 +63,7 @@ import {
   defaultMappingsForMetaTemplate,
   isBusinessAlertMetaTemplateName,
 } from "./whatsappAutomationMetaTemplates";
+import { resolveApprovedMetaTemplateForAutomation } from "./whatsappAutomationTemplateResolver";
 import { useAutomationBilling } from "./billing/useAutomationBilling";
 import AutomationPlanModal from "./billing/AutomationPlanModal";
 import AutomationCancelConfirmModal from "./billing/AutomationCancelConfirmModal";
@@ -391,6 +392,17 @@ export default function AutomationsTemplatesPage() {
     const selectedTpl = waTemplates.find(
       (tpl) => getWaTemplateId(tpl) === templateId
     );
+    const metaName = String(
+      (selectedTpl as WhatsAppTemplate)?.metaTemplateName ||
+        selectedTpl?.name ||
+        ""
+    );
+    const resolvedMeta = resolveApprovedMetaTemplateForAutomation({
+      automationTemplateKey: template.key,
+      preferredMetaName: template.waPreferredMetaName || metaName,
+      waTemplates,
+      allowBusinessAlert: template.allowBusinessAlert,
+    });
     const graph = buildWhatsAppSimpleGraph(template, {
       triggerKey,
       waTemplateId: templateId,
@@ -412,25 +424,24 @@ export default function AutomationsTemplatesPage() {
               (selectedTpl as WhatsAppTemplate)?.metaTemplateId || ""
             ),
             metaTemplateName: String(
-              (selectedTpl as WhatsAppTemplate)?.metaTemplateName ||
-                selectedTpl?.name ||
+              resolvedMeta.metaTemplateName || metaName
+            ),
+            language: String(
+              resolvedMeta.language ||
+                (selectedTpl as WhatsAppTemplate)?.language ||
                 ""
             ),
-            language: String((selectedTpl as WhatsAppTemplate)?.language || ""),
             blueprintKey: template.key,
             blueprintTrigger: template.whatsappTrigger || "",
-            componentMappings: defaultMappingsForMetaTemplate(
-              String(
-                (selectedTpl as WhatsAppTemplate)?.metaTemplateName ||
-                  selectedTpl?.name ||
-                  ""
-              )
-            ),
-            recipientType: isBusinessAlertMetaTemplateName(
-              String((selectedTpl as WhatsAppTemplate)?.metaTemplateName || "")
-            )
-              ? "business_owner"
-              : "lead_phone",
+            componentMappings:
+              resolvedMeta.variableMappings.length > 0
+                ? resolvedMeta.variableMappings
+                : defaultMappingsForMetaTemplate(metaName),
+            recipientType:
+              resolvedMeta.recipientType ||
+              (isBusinessAlertMetaTemplateName(metaName)
+                ? "business_owner"
+                : "lead_phone"),
           },
         };
       }
