@@ -28,6 +28,7 @@ import {
   listConnectedEmailProviders,
   type EmailProviderId,
 } from "./emailProviderAutomation";
+import { APPOINTMENT_CONFIRMATION_EMAIL_DEFAULTS } from "./appointmentConfirmationEmail";
 
 export type WorkingEngine = "whatsapp_simple" | "workflow_recipe" | "workflow_graph";
 
@@ -927,8 +928,7 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
             actionKey: "connected_email",
             label: "אימייל אישור פגישה",
             defaults: {
-              recipientType: "appointment_customer_email",
-              subject: "אישור פגישה",
+              ...APPOINTMENT_CONFIRMATION_EMAIL_DEFAULTS,
             },
           },
         ],
@@ -955,8 +955,7 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
             actionKey: "connected_email",
             label: "אימייל אישור פגישה",
             defaults: {
-              recipientType: "appointment_customer_email",
-              subject: "אישור פגישה",
+              ...APPOINTMENT_CONFIRMATION_EMAIL_DEFAULTS,
             },
           },
           { actionKey: "notify", label: "התראה על פגישה חדשה" },
@@ -1013,8 +1012,7 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
             actionKey: "connected_email",
             label: "אימייל אישור פגישה",
             defaults: {
-              recipientType: "appointment_customer_email",
-              subject: "אישור פגישה",
+              ...APPOINTMENT_CONFIRMATION_EMAIL_DEFAULTS,
             },
           },
           {
@@ -1049,8 +1047,7 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
             actionKey: "connected_email",
             label: "אימייל אישור",
             defaults: {
-              recipientType: "appointment_customer_email",
-              subject: "אישור פגישה",
+              ...APPOINTMENT_CONFIRMATION_EMAIL_DEFAULTS,
             },
           },
           { actionKey: "create_task", label: "הכנה לפגישה" },
