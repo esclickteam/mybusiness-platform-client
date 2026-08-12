@@ -437,9 +437,10 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
   {
     key: "wa_lead_no_response",
     rank: 9,
-    name: "ליד שלא נענה → פולואפ WhatsApp",
-    description: "אחרי ~24 שעות בלי מענה → פולואפ WhatsApp (מופעל מיד).",
-    triggerLabel: "ליד שלא נענה",
+    name: "פולואפ לליד שלא ענה → WhatsApp",
+    description:
+      "אחרי ~24 שעות בלי תשובת WhatsApp מהליד → פולואפ (נבדק מחדש לפני שליחה).",
+    triggerLabel: "ליד שלא ענה ב-WhatsApp",
     resultLabels: ["פולואפ WhatsApp"],
     categories: ["leads", "whatsapp"],
     engine: "whatsapp_simple",
@@ -658,9 +659,10 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
   {
     key: "wf_lead_no_response_pack",
     rank: 19,
-    name: "ליד שלא נענה → WhatsApp + משימה + סטטוס",
-    description: "מעקב חכם: WhatsApp, משימה לנציג ועדכון סטטוס ליד.",
-    triggerLabel: "ליד שלא נענה",
+    name: "פולואפ לליד שלא ענה → WhatsApp + משימה + סטטוס",
+    description:
+      "מעקב חכם: בדיקת תשובת WhatsApp לפני שליחה, משימה לנציג ועדכון סטטוס ליד.",
+    triggerLabel: "ליד שלא ענה ב-WhatsApp",
     resultLabels: ["WhatsApp מעקב", "משימה", "עדכון סטטוס"],
     categories: ["leads", "whatsapp", "sales"],
     engine: "workflow_recipe",
@@ -673,7 +675,7 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
     buildGraph: ({ triggerKey, waTemplateId }) =>
       waEdgeGraph({
         triggerKey,
-        triggerLabel: "ליד שלא נענה",
+        triggerLabel: "ליד שלא ענה ב-WhatsApp",
         actionLabel: "WhatsApp מעקב",
         waTemplateId,
         extraActions: [
