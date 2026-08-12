@@ -22,6 +22,8 @@ export const LEAD_EMAIL_VARIABLES = [
   { label: "שם הליד", token: "{{lead.name}}" },
   { label: "שם העסק", token: "{{business.name}}" },
   { label: "אימייל הליד", token: "{{lead.email}}" },
+  { label: "טלפון הליד", token: "{{lead.phone}}", optional: true },
+  { label: "מקור הליד", token: "{{lead.source}}", optional: true },
 ] as const;
 
 export type EmailTemplateVariable = {
@@ -70,6 +72,10 @@ export const APPOINTMENT_EMAIL_PREVIEW_CONTEXT = {
   lead: {
     name: "ישראל ישראלי",
     email: "israel@example.com",
+    phone: "050-0000000",
+    source: "אתר",
+    optionalDetailsHtml: "<tr><td style=\"padding:6px 0;font-size:15px;line-height:1.6;color:#334155;\"><strong style=\"color:#0f172a;\">טלפון:</strong> 050-0000000</td></tr><tr><td style=\"padding:6px 0;font-size:15px;line-height:1.6;color:#334155;\"><strong style=\"color:#0f172a;\">מקור:</strong> אתר</td></tr>",
+    optionalDetailsText: "טלפון: 050-0000000\nמקור: אתר",
   },
 };
 
