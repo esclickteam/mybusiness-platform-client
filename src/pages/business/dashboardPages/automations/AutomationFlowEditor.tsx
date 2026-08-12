@@ -100,6 +100,7 @@ import {
 import { isBusinessAlertMetaTemplateName, isTestTemplateName } from "./whatsappAutomationMetaTemplates";
 import { WhatsAppAutomationTemplateSelect } from "./WhatsAppAutomationTemplateSelect";
 import { canPersistAutomationTemplateSelection } from "./whatsAppTemplateSelectFormat";
+import { EmailActionTemplateFields } from "./EmailActionTemplateFields";
 
 const WA_MAPPING_PRESETS = [
   { key: "lead:name", source: "lead", field: "name", label: "שם הליד" },
@@ -3132,125 +3133,40 @@ function EditorInner({
                           ) : null}
                         </div>
 
-                        <label>
-                          נושא
-                          <input
-                            type="text"
-                            disabled={readOnly}
-                            value={String(selectedNode.data?.subject || "")}
-                            placeholder="הודעה מ{{business.name}}"
-                            onChange={(e) =>
-                              updateSelectedData({ subject: e.target.value })
-                            }
-                          />
-                        </label>
-
-                        <label>
-                          תוכן (HTML)
-                          <textarea
-                            rows={6}
-                            disabled={readOnly}
-                            value={String(
-                              selectedNode.data?.html ||
-                                selectedNode.data?.body ||
-                                ""
-                            )}
-                            placeholder='<div dir="rtl"><p>שלום {{lead.name}}</p></div>'
-                            onChange={(e) =>
-                              updateSelectedData({
-                                html: e.target.value,
-                                body: e.target.value,
-                              })
-                            }
-                          />
-                        </label>
-
-                        <label>
-                          טקסט פשוט (אופציונלי)
-                          <textarea
-                            rows={3}
-                            disabled={readOnly}
-                            value={String(selectedNode.data?.text || "")}
-                            placeholder="גרסת טקסט ללא HTML"
-                            onChange={(e) =>
-                              updateSelectedData({ text: e.target.value })
-                            }
-                          />
-                        </label>
-
-                        {(() => {
-                          const previewHtml = String(
+                        <EmailActionTemplateFields
+                          triggerKey={selectedTriggerKey}
+                          readOnly={readOnly}
+                          subject={String(selectedNode.data?.subject || "")}
+                          html={String(
                             selectedNode.data?.html ||
                               selectedNode.data?.body ||
                               ""
-                          ).trim();
-                          const previewText = String(
-                            selectedNode.data?.text || ""
-                          ).trim();
-                          return (
-                            <div className="af-gmail-preview" dir="rtl">
-                              <strong>תצוגה מקדימה</strong>
-                              <div className="af-gmail-preview__headers">
-                                <span>
-                                  מ: Gmail —{" "}
-                                  {String(
-                                    gmailAccount.email ||
-                                      selectedNode.data?.senderEmail ||
-                                      "—"
-                                  )}
-                                </span>
-                                <span>
-                                  אל:{" "}
-                                  {GMAIL_RECIPIENT_LABELS[
-                                    String(
-                                      selectedNode.data?.recipientType ||
-                                        "lead_email"
-                                    )
-                                  ] || "—"}
-                                  {String(
-                                    selectedNode.data?.recipientType || ""
-                                  ) === "fixed_email" &&
-                                  selectedNode.data?.fixedEmail
-                                    ? ` (${String(selectedNode.data.fixedEmail)})`
-                                    : ""}
-                                  {String(
-                                    selectedNode.data?.recipientType || ""
-                                  ) === "custom_field" &&
-                                  selectedNode.data?.customField
-                                    ? ` (${String(selectedNode.data.customField)})`
-                                    : ""}
-                                </span>
-                                <span>
-                                  נושא:{" "}
-                                  {String(
-                                    selectedNode.data?.subject || ""
-                                  ).trim() || "—"}
-                                </span>
-                              </div>
-                              {!previewHtml && !previewText ? (
-                                <div className="af-gmail-preview__empty">
-                                  אין עדיין תוכן להצגה
-                                </div>
-                              ) : (
-                                <>
-                                  {previewHtml ? (
-                                    <div
-                                      className="af-gmail-preview__body"
-                                      dangerouslySetInnerHTML={{
-                                        __html: previewHtml,
-                                      }}
-                                    />
-                                  ) : null}
-                                  {previewText ? (
-                                    <pre className="af-gmail-preview__text">
-                                      {previewText}
-                                    </pre>
-                                  ) : null}
-                                </>
-                              )}
-                            </div>
-                          );
-                        })()}
+                          )}
+                          text={String(selectedNode.data?.text || "")}
+                          onChange={(patch) => updateSelectedData(patch)}
+                          previewFromLabel={("Gmail \u2014 " + String(gmailAccount?.email || selectedNode.data?.senderEmail || "\u2014"))}
+                          previewToLabel={(() => {
+                                  const type = String(
+                                    selectedNode.data?.recipientType ||
+                                      "lead_email"
+                                  );
+                                  const base =
+                                    GMAIL_RECIPIENT_LABELS[type] || "\u2014";
+                                  if (
+                                    type === "fixed_email" &&
+                                    selectedNode.data?.fixedEmail
+                                  ) {
+                                    return base + " (" + String(selectedNode.data.fixedEmail) + ")";
+                                  }
+                                  if (
+                                    type === "custom_field" &&
+                                    selectedNode.data?.customField
+                                  ) {
+                                    return base + " (" + String(selectedNode.data.customField) + ")";
+                                  }
+                                  return base;
+                                })()}
+                        />
                       </>
                     )}
                   </div>
@@ -3721,113 +3637,40 @@ function EditorInner({
                           ) : null}
                         </div>
 
-                        <label>
-                          נושא
-                          <input
-                            type="text"
-                            disabled={readOnly}
-                            value={String(selectedNode.data?.subject || "")}
-                            placeholder="הודעה מ{{business.name}}"
-                            onChange={(e) =>
-                              updateSelectedData({ subject: e.target.value })
-                            }
-                          />
-                        </label>
-
-                        <label>
-                          תוכן (HTML)
-                          <textarea
-                            rows={6}
-                            disabled={readOnly}
-                            value={String(
-                              selectedNode.data?.html ||
-                                selectedNode.data?.body ||
-                                ""
-                            )}
-                            placeholder='<div dir="rtl"><p>שלום {{lead.name}}</p></div>'
-                            onChange={(e) =>
-                              updateSelectedData({
-                                html: e.target.value,
-                                body: e.target.value,
-                              })
-                            }
-                          />
-                        </label>
-
-                        <label>
-                          טקסט פשוט (אופציונלי)
-                          <textarea
-                            rows={3}
-                            disabled={readOnly}
-                            value={String(selectedNode.data?.text || "")}
-                            placeholder="גרסת טקסט ללא HTML"
-                            onChange={(e) =>
-                              updateSelectedData({ text: e.target.value })
-                            }
-                          />
-                        </label>
-
-                        {(() => {
-                          const previewHtml = String(
+                        <EmailActionTemplateFields
+                          triggerKey={selectedTriggerKey}
+                          readOnly={readOnly}
+                          subject={String(selectedNode.data?.subject || "")}
+                          html={String(
                             selectedNode.data?.html ||
                               selectedNode.data?.body ||
                               ""
-                          ).trim();
-                          const previewText = String(
-                            selectedNode.data?.text || ""
-                          ).trim();
-                          return (
-                            <div className="af-gmail-preview" dir="rtl">
-                              <strong>תצוגה מקדימה</strong>
-                              <div className="af-gmail-preview__headers">
-                                <span>
-                                  מ: Outlook —{" "}
-                                  {String(
-                                    outlookAccount.email ||
-                                      selectedNode.data?.senderEmail ||
-                                      "—"
-                                  )}
-                                </span>
-                                <span>
-                                  אל:{" "}
-                                  {GMAIL_RECIPIENT_LABELS[
-                                    String(
-                                      selectedNode.data?.recipientType ||
-                                        "lead_email"
-                                    )
-                                  ] || "—"}
-                                </span>
-                                <span>
-                                  נושא:{" "}
-                                  {String(
-                                    selectedNode.data?.subject || ""
-                                  ).trim() || "—"}
-                                </span>
-                              </div>
-                              {!previewHtml && !previewText ? (
-                                <div className="af-gmail-preview__empty">
-                                  אין עדיין תוכן להצגה
-                                </div>
-                              ) : (
-                                <>
-                                  {previewHtml ? (
-                                    <div
-                                      className="af-gmail-preview__body"
-                                      dangerouslySetInnerHTML={{
-                                        __html: previewHtml,
-                                      }}
-                                    />
-                                  ) : null}
-                                  {previewText ? (
-                                    <pre className="af-gmail-preview__text">
-                                      {previewText}
-                                    </pre>
-                                  ) : null}
-                                </>
-                              )}
-                            </div>
-                          );
-                        })()}
+                          )}
+                          text={String(selectedNode.data?.text || "")}
+                          onChange={(patch) => updateSelectedData(patch)}
+                          previewFromLabel={("Outlook \u2014 " + String(outlookAccount?.email || selectedNode.data?.senderEmail || "\u2014"))}
+                          previewToLabel={(() => {
+                                  const type = String(
+                                    selectedNode.data?.recipientType ||
+                                      "lead_email"
+                                  );
+                                  const base =
+                                    GMAIL_RECIPIENT_LABELS[type] || "\u2014";
+                                  if (
+                                    type === "fixed_email" &&
+                                    selectedNode.data?.fixedEmail
+                                  ) {
+                                    return base + " (" + String(selectedNode.data.fixedEmail) + ")";
+                                  }
+                                  if (
+                                    type === "custom_field" &&
+                                    selectedNode.data?.customField
+                                  ) {
+                                    return base + " (" + String(selectedNode.data.customField) + ")";
+                                  }
+                                  return base;
+                                })()}
+                        />
                       </>
                     )}
                   </div>

@@ -8,6 +8,7 @@ import {
   applyEmailProviderToActions,
   type EmailProviderId,
 } from "./emailProviderAutomation";
+import { APPOINTMENT_CONFIRMATION_EMAIL_DEFAULTS } from "./appointmentConfirmationEmail";
 
 export type LocalTemplateAction = {
   actionKey: string;
@@ -190,8 +191,7 @@ export const LOCAL_SYSTEM_TEMPLATES: LocalAutomationTemplate[] = [
         actionKey: "connected_email",
         label: "אימייל אישור פגישה",
         defaults: {
-          subject: "אישור פגישה",
-          recipientType: "appointment_customer_email",
+          ...APPOINTMENT_CONFIRMATION_EMAIL_DEFAULTS,
         },
       },
     ],
