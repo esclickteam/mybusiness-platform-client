@@ -22,7 +22,7 @@ export const BLUEPRINT_PREFERRED_META: Record<string, string> = {
   wf_lead_multi: "new_lead_welcome",
   wf_lead_wa_email: "new_lead_welcome",
   wf_lead_full_onboarding: "new_lead_welcome",
-  wf_lead_no_response_pack: "lead_follow_up",
+  wf_lead_no_response_pack: "new_lead_welcome",
   wf_new_client_pack: "new_client_welcome",
   wf_appointment_duo: "appointment_reminder",
 };

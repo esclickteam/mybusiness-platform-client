@@ -356,6 +356,96 @@ describe("workingTemplates launch safety", () => {
     expect(isWhatsAppFacingTemplate(wa)).toBe(true);
   });
 
+  it("unifies lead reply sequence and hides fragmented follow-up cards", () => {
+    const main = WORKING_TEMPLATES.find(
+      (t) => t.key === "wf_lead_no_response_pack"
+    )!;
+    expect(main.comingSoon).toBeFalsy();
+    expect(main.name).toMatch(/פתיחה \+ פולואפים לפי תגובה/);
+    expect(main.requiredTriggerKeys).toEqual(
+      expect.arrayContaining(["new_lead"])
+    );
+    expect(main.requiredMetaTemplateNames).toEqual([
+      "new_lead_welcome",
+      "lead_follow_up",
+      "lead_follow_up_2",
+    ]);
+    const graph = main.buildGraph!({ triggerKey: "new_lead" });
+    const conditionKeys = graph.nodes
+      .filter((n) => n.type === "condition")
+      .map((n) => String((n.data as { conditionKey?: string }).conditionKey || ""));
+    expect(conditionKeys).toEqual(["no_response", "no_response"]);
+    const metaNames = graph.nodes
+      .filter(
+        (n) =>
+          n.type === "action" &&
+          String((n.data as { actionKey?: string }).actionKey || "") ===
+            "whatsapp_template"
+      )
+      .map((n) =>
+        String((n.data as { metaTemplateName?: string }).metaTemplateName || "")
+      );
+    expect(metaNames).toEqual([
+      "new_lead_welcome",
+      "lead_follow_up",
+      "lead_follow_up_2",
+    ]);
+
+    const hiddenStandalone = ["wa_lead_no_response", "wa_lead_followup_2"];
+    for (const key of hiddenStandalone) {
+      const tpl = WORKING_TEMPLATES.find((t) => t.key === key)!;
+      expect(tpl.comingSoon).toBe(true);
+    }
+
+    const opening = WORKING_TEMPLATES.find((t) => t.key === "wa_new_lead_welcome")!;
+    expect(opening.name).toMatch(/פתיחה בלבד/);
+    expect(opening.description).toMatch(/ללא פולואפים/);
+  });
+
+  it("requires all three Meta templates for the reply sequence card", () => {
+    const main = WORKING_TEMPLATES.find(
+      (t) => t.key === "wf_lead_no_response_pack"
+    )!;
+    const fu1 = {
+      _id: "fu1",
+      name: "Lead Follow Up",
+      category: "follow_up",
+      status: "active",
+      metaStatus: "APPROVED",
+      metaTemplateName: "lead_follow_up",
+    } as never;
+    const fu2 = {
+      _id: "fu2",
+      name: "Lead Follow Up 2",
+      category: "follow_up",
+      status: "active",
+      metaStatus: "APPROVED",
+      metaTemplateName: "lead_follow_up_2",
+    } as never;
+
+    const missing = getTemplateReadiness(main, {
+      recipes: [],
+      triggers: [leadTrigger],
+      waTemplates: [approvedWa],
+      managedWaReady: true,
+      calendarConnected: false,
+      aiEntitled: false,
+    });
+    expect(missing.ready).toBe(false);
+    expect(missing.blocker).toMatch(/lead_follow_up/);
+
+    const ready = getTemplateReadiness(main, {
+      recipes: [],
+      triggers: [leadTrigger],
+      waTemplates: [approvedWa, fu1, fu2],
+      managedWaReady: true,
+      calendarConnected: false,
+      aiEntitled: false,
+    });
+    expect(ready.ready).toBe(true);
+    expect(ready.resolvedTriggerKey).toBe("new_lead");
+  });
+
   it("resolves publishable triggers by preferred keys", () => {
     const key = resolvePublishableTrigger(
       ["crm_lead_created", "new_lead"],
