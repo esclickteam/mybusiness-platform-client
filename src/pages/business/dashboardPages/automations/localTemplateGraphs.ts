@@ -9,6 +9,7 @@ import {
   type EmailProviderId,
 } from "./emailProviderAutomation";
 import { APPOINTMENT_CONFIRMATION_EMAIL_DEFAULTS } from "./appointmentConfirmationEmail";
+import { LEAD_WELCOME_EMAIL_DEFAULTS } from "./leadWelcomeEmail";
 
 export type LocalTemplateAction = {
   actionKey: string;
@@ -244,7 +245,9 @@ export const LOCAL_SYSTEM_TEMPLATES: LocalAutomationTemplate[] = [
       {
         actionKey: "connected_email",
         label: "אימייל לליד",
-        defaults: { recipientType: "lead_email", subject: "שמחים שפנית אלינו" },
+        defaults: {
+          ...LEAD_WELCOME_EMAIL_DEFAULTS,
+        },
       },
       { actionKey: "create_task", label: "משימת מעקב" },
     ],

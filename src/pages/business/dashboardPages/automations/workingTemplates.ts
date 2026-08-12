@@ -29,6 +29,10 @@ import {
   type EmailProviderId,
 } from "./emailProviderAutomation";
 import { APPOINTMENT_CONFIRMATION_EMAIL_DEFAULTS } from "./appointmentConfirmationEmail";
+import {
+  LEAD_OPENING_EMAIL_DEFAULTS,
+  LEAD_WELCOME_EMAIL_DEFAULTS,
+} from "./leadWelcomeEmail";
 
 export type WorkingEngine = "whatsapp_simple" | "workflow_recipe" | "workflow_graph";
 
@@ -696,8 +700,7 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
             actionKey: "connected_email",
             label: "אימייל לליד",
             defaults: {
-              recipientType: "lead_email",
-              subject: "שמחים שפנית אלינו",
+              ...LEAD_WELCOME_EMAIL_DEFAULTS,
             },
           },
         ],
@@ -730,8 +733,7 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
             actionKey: "connected_email",
             label: "אימייל לליד",
             defaults: {
-              recipientType: "lead_email",
-              subject: "שמחים שפנית אלינו",
+              ...LEAD_WELCOME_EMAIL_DEFAULTS,
             },
           },
           { actionKey: "create_task", label: "משימת מעקב לנציג" },
@@ -760,8 +762,7 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
             actionKey: "connected_email",
             label: "אימייל לליד",
             defaults: {
-              recipientType: "lead_email",
-              subject: "שמחים שפנית אלינו",
+              ...LEAD_WELCOME_EMAIL_DEFAULTS,
             },
           },
           { actionKey: "create_task", label: "משימת מעקב" },
@@ -789,8 +790,7 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
             actionKey: "connected_email",
             label: "אימייל פתיחה",
             defaults: {
-              recipientType: "lead_email",
-              subject: "תודה על הפנייה",
+              ...LEAD_OPENING_EMAIL_DEFAULTS,
             },
           },
         ],
