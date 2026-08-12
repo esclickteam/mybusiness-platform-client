@@ -100,16 +100,44 @@ export function triggerOptionFromCatalog(row: {
   };
 }
 
-export const ACTION_OPTIONS = [
+export type ActionOption = {
+  value: string;
+  label: string;
+  supported: boolean;
+  comingSoon?: boolean;
+  /** Shown as a new choice in the picker / inspector. */
+  customerVisible?: boolean;
+  /** Duplicate UI key; kept for label lookup of existing graphs. */
+  aliasOf?: string;
+};
+
+export const ACTION_OPTIONS: ActionOption[] = [
   { value: "create_task", label: "יצירת משימה ב-CRM", supported: true },
   { value: "update_lead_status", label: "עדכון סטטוס ליד", supported: true },
-  { value: "update_status", label: "עדכון סטטוס ליד", supported: true },
+  {
+    value: "update_status",
+    label: "עדכון סטטוס ליד",
+    supported: true,
+    customerVisible: false,
+    aliasOf: "update_lead_status",
+  },
   { value: "assign_owner", label: "שיוך לנציג", supported: true },
   { value: "add_tag", label: "הוספת תגית", supported: true },
   { value: "create_crm_note", label: "יצירת הערה ב-CRM", supported: true },
-  { value: "send_whatsapp", label: "שליחת תבנית וואטסאפ", supported: true },
   { value: "whatsapp_template", label: "שליחת תבנית וואטסאפ", supported: true },
-  { value: "send_email", label: "שליחת אימייל (Bizuply)", supported: true },
+  {
+    value: "send_whatsapp",
+    label: "שליחת תבנית וואטסאפ",
+    supported: true,
+    customerVisible: false,
+    aliasOf: "whatsapp_template",
+  },
+  {
+    value: "send_email",
+    label: "שליחת אימייל (Bizuply)",
+    supported: true,
+    customerVisible: false,
+  },
   { value: "send_gmail", label: "שליחת מייל דרך Gmail", supported: true },
   {
     value: "send_outlook",
@@ -131,12 +159,29 @@ export const ACTION_OPTIONS = [
     label: "Google Calendar — מחיקת אירוע",
     supported: true,
   },
-  { value: "internal_notification", label: "התראה פנימית", supported: true },
   { value: "notify", label: "התראה פנימית", supported: true },
-  { value: "delay", label: "המתנה", supported: true },
+  {
+    value: "internal_notification",
+    label: "התראה פנימית",
+    supported: true,
+    customerVisible: false,
+    aliasOf: "notify",
+  },
+  {
+    value: "delay",
+    label: "המתנה",
+    supported: true,
+    customerVisible: false,
+  },
   { value: "webhook", label: "קריאת Webhook", supported: true },
   { value: "stop", label: "עצירת זרימה", supported: true },
-  { value: "create_appointment", label: "יצירת פגישה", supported: false, comingSoon: true },
+  {
+    value: "create_appointment",
+    label: "יצירת פגישה",
+    supported: false,
+    comingSoon: false,
+    customerVisible: false,
+  },
   { value: "ai_rank_lead", label: "AI · דירוג ליד", supported: true, comingSoon: false },
   { value: "ai_classify_lead", label: "AI · סיווג ליד", supported: true, comingSoon: false },
   { value: "ai_auto_tag", label: "AI · תיוג ליד", supported: true, comingSoon: false },
@@ -147,7 +192,40 @@ export const ACTION_OPTIONS = [
   { value: "ai_suggest_next_action", label: "AI · הצעת פעולה", supported: true, comingSoon: false },
   { value: "ai_daily_leads_digest", label: "AI · תקציר לידים יומי", supported: true, comingSoon: false },
   { value: "ai_daily_agenda_digest", label: "AI · תקציר יומן יומי", supported: true, comingSoon: false },
-] as const;
+];
+
+export function isCustomerFacingAction(option: ActionOption): boolean {
+  if (option.aliasOf) return false;
+  if (option.customerVisible === false) return false;
+  if (option.supported !== true) return false;
+  if (option.comingSoon) return false;
+  return true;
+}
+
+export function listCustomerActionOptions(): ActionOption[] {
+  return ACTION_OPTIONS.filter(isCustomerFacingAction);
+}
+
+export function findActionOption(key: string): ActionOption | undefined {
+  return ACTION_OPTIONS.find((entry) => entry.value === String(key || ""));
+}
+
+/** Inspector choices: unique supported actions, plus the current key if a legacy graph still uses it. */
+export function listInspectorActionOptions(currentKey?: string): ActionOption[] {
+  const visible = listCustomerActionOptions();
+  const current = String(currentKey || "").trim();
+  if (!current || visible.some((entry) => entry.value === current)) {
+    return visible;
+  }
+  const existing = findActionOption(current);
+  if (!existing) {
+    return [
+      { value: current, label: current, supported: true, customerVisible: false },
+      ...visible,
+    ];
+  }
+  return [existing, ...visible];
+}
 
 export const CONDITION_OPTIONS = [
   { value: "no_response", label: "לא נוצר קשר" },
@@ -330,10 +408,9 @@ const RAW_FLOW_ACTION_PALETTE: PaletteItem[] = [
   actionItem("create_task", "משימה", "יוצר משימת מעקב ב-CRM"),
   actionItem("create_crm_note", "הערה ב-CRM", "מתעד הערה בכרטיס ליד/לקוח"),
   actionItem("notify", "התראה", "התראה לבעל העסק"),
-  actionItem("update_status", "סטטוס", "מעדכן סטטוס ליד"),
+  actionItem("update_lead_status", "סטטוס", "מעדכן סטטוס ליד"),
   actionItem("assign_owner", "שיוך נציג", "משייך לאיש צוות"),
   actionItem("add_tag", "תגית", "מוסיף תגית לליד/לקוח"),
-  actionItem("send_email", "אימייל Bizuply", "שולח מייל טרנזקציונלי"),
   actionItem("send_gmail", "Gmail", "Gmail — שליחת מייל"),
   actionItem("send_outlook", "Outlook", "Outlook / Microsoft 365 — שליחת מייל"),
   actionItem(
@@ -351,7 +428,6 @@ const RAW_FLOW_ACTION_PALETTE: PaletteItem[] = [
     "Google Calendar · מחיקה",
     "מוחק אירוע מיומן Google"
   ),
-  actionItem("create_appointment", "קביעת פגישה", "יוצר תור ביומן"),
   actionItem("webhook", "Webhook", "שולח נתונים למערכת חיצונית"),
   actionItem("ai_rank_lead", "AI · דירוג ליד", "מדרג ליד לפי סיכוי ודחיפות"),
   actionItem("ai_classify_lead", "AI · סיוג ליד", "מסווג ליד לקטגוריה"),
@@ -370,17 +446,24 @@ function applyActionSupport(item: PaletteItem): PaletteItem {
     return {
       ...item,
       supported: item.supported !== false,
-      comingSoon: item.supported === false,
+      comingSoon: false,
     };
   }
-  const option = ACTION_OPTIONS.find((entry) => entry.value === item.key);
-  const supported = option ? option.supported : item.supported !== false;
-  return { ...item, supported, comingSoon: !supported };
+  const option = findActionOption(item.key);
+  const supported = option ? option.supported === true : item.supported !== false;
+  return { ...item, supported, comingSoon: false };
+}
+
+function isCustomerFacingPaletteItem(item: PaletteItem): boolean {
+  if (item.type !== "action") return true;
+  const option = findActionOption(item.key);
+  if (!option) return item.supported !== false;
+  return isCustomerFacingAction(option);
 }
 
 export const FLOW_ACTION_PALETTE: PaletteItem[] =
   RAW_FLOW_ACTION_PALETTE.map(applyActionSupport).filter(
-    (item) => !(item.key.startsWith("ai_") && item.supported === false)
+    isCustomerFacingPaletteItem
   );
 
 /** Non-trigger palette (flow/actions). Use buildPaletteWithTriggers for full list. */

@@ -4,6 +4,10 @@ import type {
 } from "../../../../api/automationWorkflowApi";
 import type { SystemAutomationSuggestion } from "./systemAutomationCatalog";
 import { listSupportedAiTemplates } from "./aiAutomationCatalog";
+import {
+  applyEmailProviderToActions,
+  type EmailProviderId,
+} from "./emailProviderAutomation";
 
 export type LocalTemplateAction = {
   actionKey: string;
@@ -35,6 +39,7 @@ export type LocalAutomationTemplate = {
 type GraphBuildOptions = {
   /** Override trigger key from live server catalog */
   resolvedTriggerKey?: string;
+  emailProvider?: EmailProviderId;
 };
 
 function actionNode(
@@ -182,7 +187,7 @@ export const LOCAL_SYSTEM_TEMPLATES: LocalAutomationTemplate[] = [
     triggerKey: "appointment_created",
     actions: [
       {
-        actionKey: "send_email",
+        actionKey: "connected_email",
         label: "אימייל אישור פגישה",
         defaults: {
           subject: "אישור פגישה",
@@ -237,7 +242,7 @@ export const LOCAL_SYSTEM_TEMPLATES: LocalAutomationTemplate[] = [
     ],
     actions: [
       {
-        actionKey: "send_email",
+        actionKey: "connected_email",
         label: "אימייל לליד",
         defaults: { recipientType: "lead_email", subject: "שמחים שפנית אלינו" },
       },
@@ -345,7 +350,10 @@ export function buildLocalAutomationGraph(
   edges: AutomationFlowEdge[];
 } {
   const triggerId = "trigger_1";
-  const actions = template.actions;
+  const actions = applyEmailProviderToActions(
+    template.actions,
+    options?.emailProvider
+  );
   const routeCount = Math.max(1, Math.min(6, actions.length));
   const triggerKey = options?.resolvedTriggerKey || template.triggerKey;
 

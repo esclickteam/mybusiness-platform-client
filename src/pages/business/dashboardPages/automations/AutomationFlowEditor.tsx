@@ -281,7 +281,6 @@ import {
   listSupportedAiTemplates,
 } from "./aiAutomationCatalog";
 import {
-  ACTION_OPTIONS,
   CONDITION_OPTIONS,
   DELAY_UNITS,
   FLOW_ACTION_PALETTE,
@@ -291,7 +290,9 @@ import {
   clampRouteCount,
   defaultSourceHandle,
   ensureRouterPaths,
+  findActionOption,
   findTriggerOption,
+  listInspectorActionOptions,
   listSourceHandles,
   triggerOptionFromCatalog,
   type AutomationTriggerOption,
@@ -1024,7 +1025,6 @@ function EditorInner({
       }
     ) => {
       if (item.supported === false) {
-        toast.info("אפשרות זו תתווסף בקרוב");
         return;
       }
 
@@ -2330,9 +2330,7 @@ function EditorInner({
                       selectedNode.data?.actionKey || "whatsapp_template"
                     )}
                     onChange={(e) => {
-                      const opt = ACTION_OPTIONS.find(
-                        (o) => o.value === e.target.value
-                      );
+                      const opt = findActionOption(e.target.value);
                       const nextKey = e.target.value;
                       updateSelectedData({
                         actionKey: nextKey,
@@ -2380,14 +2378,11 @@ function EditorInner({
                       });
                     }}
                   >
-                    {ACTION_OPTIONS.filter(
-                      (o) => !(o.value.startsWith("ai_") && o.supported === false)
+                    {listInspectorActionOptions(
+                      String(selectedNode.data?.actionKey || "")
                     ).map((o) => (
-                      <option key={o.value} value={o.value} disabled={o.supported === false}>
+                      <option key={o.value} value={o.value}>
                         {o.label}
-                        {o.supported === false && !o.value.startsWith("ai_")
-                          ? " · בקרוב"
-                          : ""}
                       </option>
                     ))}
                   </select>

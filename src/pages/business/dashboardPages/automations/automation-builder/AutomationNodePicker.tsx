@@ -236,6 +236,12 @@ export default function AutomationNodePicker({
     return items.filter((item) => {
       if (!matchesMode(item, mode)) return false;
       if (item.filter === "trigger" && item.supported === false) return false;
+      if (
+        item.filter === "action" &&
+        (item.supported === false || item.comingSoon)
+      ) {
+        return false;
+      }
       if (!matchesCategory(item, category)) return false;
       if (!q) return true;
       const option = catalogByKey.get(item.key);

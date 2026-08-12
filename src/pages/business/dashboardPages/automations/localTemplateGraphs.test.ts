@@ -60,4 +60,27 @@ describe("local system templates", () => {
     expect(isActiveSystemRecipeKey("ai_auto_reply")).toBe(false);
     expect(isActiveSystemRecipeKey("unknown_thing")).toBe(false);
   });
+
+  it("resolves local email templates to Gmail or Outlook", () => {
+    const emailLocals = LOCAL_SYSTEM_TEMPLATES.filter((template) =>
+      template.actions.some((action) => action.actionKey === "connected_email")
+    );
+    expect(emailLocals.length).toBe(2);
+    for (const template of emailLocals) {
+      const gmail = buildLocalAutomationGraph(template, { emailProvider: "gmail" });
+      const outlook = buildLocalAutomationGraph(template, {
+        emailProvider: "outlook",
+      });
+      const gmailKeys = gmail.nodes
+        .filter((node) => node.type === "action")
+        .map((node) => String(node.data.actionKey || ""));
+      const outlookKeys = outlook.nodes
+        .filter((node) => node.type === "action")
+        .map((node) => String(node.data.actionKey || ""));
+      expect(gmailKeys).toContain("send_gmail");
+      expect(outlookKeys).toContain("send_outlook");
+      expect(gmailKeys).not.toContain("send_email");
+      expect(outlookKeys).not.toContain("send_email");
+    }
+  });
 });
