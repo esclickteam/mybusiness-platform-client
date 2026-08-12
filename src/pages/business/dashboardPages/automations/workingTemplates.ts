@@ -1196,6 +1196,19 @@ export type WorkingContext = {
   aiEntitled: boolean;
 };
 
+/** Catalog visibility is independent of activation readiness. */
+export function isTemplateVisibleInCatalog(
+  template: WorkingTemplate,
+  readiness: Pick<TemplateReadiness, "ready">,
+  category: TemplateCategoryId
+): boolean {
+  if (template.comingSoon) return false;
+  if (readiness.ready) return true;
+  if (isEmailFacingTemplate(template)) return true;
+  if (category === "whatsapp" && isWhatsAppFacingTemplate(template)) return true;
+  return false;
+}
+
 function templateHaystack(tpl: {
   name?: string;
   key?: string;
@@ -1307,6 +1320,20 @@ export function isWhatsAppFacingTemplate(template: WorkingTemplate): boolean {
     template.engine === "whatsapp_simple" ||
     Boolean(template.requiresWaTemplate) ||
     template.categories.includes("whatsapp")
+  );
+}
+
+export function isEmailFacingTemplate(template: WorkingTemplate): boolean {
+  return (
+    Boolean(template.requiresEmailProvider) ||
+    template.categories.includes("email")
+  );
+}
+
+export function listCustomerVisibleEmailTemplates(): WorkingTemplate[] {
+  return WORKING_TEMPLATES.filter(
+    (template) =>
+      isEmailFacingTemplate(template) && template.comingSoon !== true
   );
 }
 

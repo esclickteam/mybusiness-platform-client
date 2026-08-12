@@ -3,6 +3,9 @@ export type EmailProviderId = "gmail" | "outlook";
 export const EMAIL_PROVIDER_REQUIRED_HE =
   "כדי להשתמש באוטומציה הזו יש לחבר Gmail או Outlook / Microsoft 365";
 
+export const EMAIL_TEMPLATE_CONNECT_CTA_HE =
+  "כדי להפעיל את התבנית יש לחבר Gmail או Outlook / Microsoft 365";
+
 /** Placeholder action key in template graphs — rewritten before publish. */
 export const CONNECTED_EMAIL_ACTION_KEY = "connected_email";
 

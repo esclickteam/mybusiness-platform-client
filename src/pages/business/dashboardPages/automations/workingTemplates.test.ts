@@ -4,11 +4,15 @@ import {
   WORKING_TEMPLATES,
   getTemplateReadiness,
   getWaTemplateId,
+  isEmailFacingTemplate,
+  isTemplateVisibleInCatalog,
   isWhatsAppFacingTemplate,
+  listCustomerVisibleEmailTemplates,
   listUsableWaTemplates,
   pickBestWaTemplate,
   resolvePublishableTrigger,
 } from "./workingTemplates";
+import { EMAIL_TEMPLATE_CONNECT_CTA_HE } from "./emailProviderAutomation";
 
 const leadTrigger = {
   key: "new_lead",
@@ -680,6 +684,107 @@ describe("provider-aware email templates", () => {
       expect(both.ready, `${key} both`).toBe(true);
       expect(both.needsEmailProviderChoice, key).toBe(true);
     }
+  });
+});
+
+const EXPECTED_EMAIL_TEMPLATE_KEYS = [
+  "wf_lead_wa_email",
+  "wf_lead_full_onboarding",
+  "wf_lead_email_task",
+  "wf_lead_email_only",
+  "wf_new_client_pack",
+  "wf_appointment_email",
+  "wf_appointment_email_notify",
+  "wf_appointment_email_gcal",
+  "wf_appointment_confirm_pack",
+  "wf_appointment_done_email",
+];
+
+describe("email template catalog visibility vs activation", () => {
+  it("keeps email templates in the catalog when no provider is connected", () => {
+    for (const key of EXPECTED_EMAIL_TEMPLATE_KEYS) {
+      expect(
+        WORKING_TEMPLATES.some((template) => template.key === key),
+        key
+      ).toBe(true);
+    }
+
+    const visible = listCustomerVisibleEmailTemplates();
+    expect(visible.length).toBeGreaterThan(0);
+    expect(visible.map((template) => template.key)).toEqual(
+      expect.arrayContaining([
+        "wf_lead_wa_email",
+        "wf_lead_full_onboarding",
+        "wf_lead_email_task",
+        "wf_lead_email_only",
+        "wf_appointment_email",
+        "wf_appointment_email_notify",
+        "wf_appointment_email_gcal",
+        "wf_appointment_confirm_pack",
+      ])
+    );
+    expect(visible.some((template) => template.comingSoon)).toBe(false);
+
+    const noneCtx = {
+      recipes: [],
+      triggers: [leadTrigger, appointmentTrigger],
+      waTemplates: [approvedWa],
+      managedWaReady: true,
+      calendarConnected: true,
+      gmailConnected: false,
+      outlookConnected: false,
+      aiEntitled: false,
+    };
+
+    const emailCategory = visible.filter((template) => {
+      const readiness = getTemplateReadiness(template, noneCtx);
+      return isTemplateVisibleInCatalog(template, readiness, "email");
+    });
+    expect(emailCategory.length).toBe(visible.length);
+    expect(
+      emailCategory.every((template) => {
+        const readiness = getTemplateReadiness(template, noneCtx);
+        return readiness.ready === false;
+      })
+    ).toBe(true);
+    expect(
+      emailCategory
+        .filter((template) => template.requiresEmailProvider)
+        .every((template) => {
+          const readiness = getTemplateReadiness(template, noneCtx);
+          return (
+            readiness.blocker ===
+            "כדי להשתמש באוטומציה הזו יש לחבר Gmail או Outlook / Microsoft 365"
+          );
+        })
+    ).toBe(true);
+    expect(EMAIL_TEMPLATE_CONNECT_CTA_HE).toBe(
+      "כדי להפעיל את התבנית יש לחבר Gmail או Outlook / Microsoft 365"
+    );
+  });
+
+  it("does not use provider connection as a visibility filter", () => {
+    const template = WORKING_TEMPLATES.find(
+      (row) => row.key === "wf_lead_email_only"
+    )!;
+    expect(isEmailFacingTemplate(template)).toBe(true);
+    expect(
+      isTemplateVisibleInCatalog(template, { ready: false }, "email")
+    ).toBe(true);
+    expect(
+      isTemplateVisibleInCatalog(template, { ready: false }, "all")
+    ).toBe(true);
+    expect(
+      isTemplateVisibleInCatalog(template, { ready: true }, "email")
+    ).toBe(true);
+
+    const comingSoon = WORKING_TEMPLATES.find(
+      (row) => row.key === "wf_appointment_done_email"
+    )!;
+    expect(comingSoon.comingSoon).toBe(true);
+    expect(
+      isTemplateVisibleInCatalog(comingSoon, { ready: false }, "email")
+    ).toBe(false);
   });
 });
 

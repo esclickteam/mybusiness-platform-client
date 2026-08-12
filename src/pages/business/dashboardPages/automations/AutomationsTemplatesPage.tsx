@@ -56,12 +56,16 @@ import {
   buildWhatsAppSimpleGraph,
   getTemplateReadiness,
   getWaTemplateId,
+  isTemplateVisibleInCatalog,
   isWhatsAppFacingTemplate,
   listUsableWaTemplates,
   type TemplateReadiness,
   type WorkingTemplate,
 } from "./workingTemplates";
 import {
+  EMAIL_PROVIDER_REQUIRED_HE,
+  EMAIL_TEMPLATE_CONNECT_CTA_HE,
+  hasConnectedEmailProvider,
   type EmailProviderId,
   resolveEmailProvider,
 } from "./emailProviderAutomation";
@@ -330,14 +334,8 @@ export default function AutomationsTemplatesPage() {
       if (category !== "all" && !template.categories.includes(category)) {
         return false;
       }
-      if (template.comingSoon) {
+      if (!isTemplateVisibleInCatalog(template, readiness, category)) {
         return false;
-      }
-      if (!readiness.ready) {
-        // Keep WhatsApp-facing blueprints visible so users can see blockers/CTA
-        if (!(category === "whatsapp" && isWhatsAppFacingTemplate(template))) {
-          return false;
-        }
       }
       if (!q) return true;
       return [
@@ -355,15 +353,7 @@ export default function AutomationsTemplatesPage() {
 
   const visibleCategories = useMemo(() => TEMPLATE_CATEGORIES.filter((item) => item.id === "all" || cards.some(({ template }) => template.categories.includes(item.id))), [cards]);
 
-  const categoryCards = useMemo(
-    () =>
-      cards.filter(
-        ({ template }) =>
-          category === "all" || template.categories.includes(category)
-      ),
-    [cards, category]
-  );
-  const readyCount = categoryCards.filter((c) => c.readiness.ready).length;
+  const catalogCount = visibleCards.length;
 
   useEffect(() => {
     if (!highlightedKey || loading) return;
@@ -651,6 +641,14 @@ export default function AutomationsTemplatesPage() {
     }
     if (!card.readiness.ready) {
       if (
+        card.template.requiresEmailProvider &&
+        !hasConnectedEmailProvider(ctx)
+      ) {
+        toast.error(EMAIL_PROVIDER_REQUIRED_HE);
+        navigate(`/business/${businessId}/dashboard/automations/connections`);
+        return;
+      }
+      if (
         (card.template.engine === "whatsapp_simple" ||
           card.template.requiresWaTemplate) &&
         !managedWaReady &&
@@ -800,11 +798,11 @@ export default function AutomationsTemplatesPage() {
           </p>
         </div>
         <div className="ax-templates__stats">
-          <strong>{readyCount}</strong>
+          <strong>{catalogCount}</strong>
           <span>
             {category === "all"
-              ? "מוכנות להפעלה עכשיו"
-              : "מוכנות בקטגוריה זו"}
+              ? "תבניות בקטלוג"
+              : "תבניות בקטגוריה זו"}
           </span>
         </div>
       </header>
@@ -841,7 +839,7 @@ export default function AutomationsTemplatesPage() {
         </div>
       ) : visibleCards.length === 0 ? (
         <div className="ax-empty ax-empty--card">
-          <strong>אין כרגע תבניות מוכנות להפעלה</strong>
+          <strong>אין תבניות להצגה בקטגוריה זו</strong>
           <p>נסו קטגוריה אחרת או רעננו את העמוד.</p>
           <button
             type="button"
@@ -858,16 +856,21 @@ export default function AutomationsTemplatesPage() {
             const busy = creatingKey === template.key;
             const isAi = template.categories.includes("ai");
             const isWa = isWhatsAppFacingTemplate(template);
+            const emailProviderBlocked =
+              Boolean(template.requiresEmailProvider) &&
+              !hasConnectedEmailProvider(ctx);
             const isHighlighted =
               Boolean(highlightedKey) &&
               cardMatchesHighlight(template, highlightedKey || "");
             const ctaLabel = !hasPlan
               ? "בחר חבילת אוטומציות"
-              : isWa
-                ? "הפעל — בחר תבנית הודעה"
-                : isAi
-                  ? "הפעל תבנית"
-                  : "הפעל עכשיו";
+              : emailProviderBlocked
+                ? EMAIL_TEMPLATE_CONNECT_CTA_HE
+                : isWa
+                  ? "הפעל — בחר תבנית הודעה"
+                  : isAi
+                    ? "הפעל תבנית"
+                    : "הפעל עכשיו";
 
             return (
               <article
@@ -936,14 +939,18 @@ export default function AutomationsTemplatesPage() {
                     readOnly ||
                     (!hasPlan
                       ? !planGateReady
-                      : !readiness.ready)
+                      : emailProviderBlocked
+                        ? false
+                        : !readiness.ready)
                   }
                   title={
                     !hasPlan
                       ? "נדרשת חבילת אוטומציות פעילה"
-                      : !readiness.ready
-                        ? readiness.blocker
-                        : writeBlockedTitle
+                      : emailProviderBlocked
+                        ? EMAIL_TEMPLATE_CONNECT_CTA_HE
+                        : !readiness.ready
+                          ? readiness.blocker
+                          : writeBlockedTitle
                   }
                   onClick={() => {
                     if (!hasPlan) {
