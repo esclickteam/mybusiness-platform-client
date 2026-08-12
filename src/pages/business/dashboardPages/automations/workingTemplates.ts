@@ -57,6 +57,8 @@ export type WorkingTemplate = {
   requiresWaTemplate?: boolean;
   requiresCalendar?: boolean;
   requiresAiEntitlement?: boolean;
+  /** All Meta template names that must be APPROVED before this card is ready */
+  requiredMetaTemplateNames?: string[];
   keywords?: string[];
 };
 
@@ -181,6 +183,133 @@ function waEdgeGraph(opts: {
       ...(opts.extraActions || []),
     ],
   });
+}
+
+/**
+ * Reply-aware lead nurture sequence graph:
+ * new_lead → opening → 24h → no_response? → FU1 → 3d → no_response? → FU2
+ */
+export function buildLeadReplySequenceGraph(opts: {
+  triggerKey: string;
+  openingTemplateId?: string;
+  followUp1TemplateId?: string;
+  followUp2TemplateId?: string;
+}): { nodes: AutomationFlowNode[]; edges: AutomationFlowEdge[] } {
+  const nodes: AutomationFlowNode[] = [
+    {
+      id: "t_lead",
+      type: "trigger",
+      position: { x: 40, y: 220 },
+      data: {
+        label: "ליד חדש ב-CRM",
+        triggerKey: opts.triggerKey,
+        routeCount: 1,
+      },
+    },
+    {
+      id: "a_open",
+      type: "action",
+      position: { x: 280, y: 220 },
+      data: {
+        label: "הודעת פתיחה WhatsApp",
+        actionKey: "whatsapp_template",
+        templateId: opts.openingTemplateId || "",
+        senderMode: "bizuply_managed",
+        recipientType: "lead_phone",
+        metaTemplateName: "new_lead_welcome",
+        language: "he",
+        blueprintKey: "wf_lead_no_response_pack",
+      },
+    },
+    {
+      id: "d1",
+      type: "delay",
+      position: { x: 520, y: 220 },
+      data: { label: "המתנה 24 שעות", amount: 24, unit: "hours" },
+    },
+    {
+      id: "c1",
+      type: "condition",
+      position: { x: 760, y: 200 },
+      data: {
+        label: "עדיין בלי תשובת WhatsApp?",
+        conditionKey: "no_response",
+      },
+    },
+    {
+      id: "a_fu1",
+      type: "action",
+      position: { x: 1000, y: 120 },
+      data: {
+        label: "פולואפ #1 WhatsApp",
+        actionKey: "whatsapp_template",
+        templateId: opts.followUp1TemplateId || "",
+        senderMode: "bizuply_managed",
+        recipientType: "lead_phone",
+        metaTemplateName: "lead_follow_up",
+        language: "he",
+        blueprintKey: "wf_lead_no_response_pack",
+      },
+    },
+    {
+      id: "d2",
+      type: "delay",
+      position: { x: 1240, y: 120 },
+      data: { label: "המתנה 3 ימים", amount: 3, unit: "days" },
+    },
+    {
+      id: "c2",
+      type: "condition",
+      position: { x: 1480, y: 100 },
+      data: {
+        label: "עדיין בלי תשובת WhatsApp?",
+        conditionKey: "no_response",
+      },
+    },
+    {
+      id: "a_fu2",
+      type: "action",
+      position: { x: 1720, y: 80 },
+      data: {
+        label: "פולואפ #2 WhatsApp",
+        actionKey: "whatsapp_template",
+        templateId: opts.followUp2TemplateId || "",
+        senderMode: "bizuply_managed",
+        recipientType: "lead_phone",
+        metaTemplateName: "lead_follow_up_2",
+        language: "he",
+        blueprintKey: "wf_lead_no_response_pack",
+      },
+    },
+  ];
+  const edges: AutomationFlowEdge[] = [
+    {
+      id: "e_t_open",
+      source: "t_lead",
+      target: "a_open",
+      sourceHandle: "route_1",
+      label: "פתיחה",
+    },
+    { id: "e_open_d1", source: "a_open", target: "d1" },
+    { id: "e_d1_c1", source: "d1", target: "c1" },
+    {
+      id: "e_c1_fu1",
+      source: "c1",
+      target: "a_fu1",
+      sourceHandle: "yes",
+      label: "כן — לא ענה",
+    },
+    { id: "e_fu1_d2", source: "a_fu1", target: "d2" },
+    { id: "e_d2_c2", source: "d2", target: "c2" },
+    {
+      id: "e_c2_fu2",
+      source: "c2",
+      target: "a_fu2",
+      sourceHandle: "yes",
+      label: "כן — לא ענה",
+    },
+  ];
+  return { nodes, edges };
 }
 
 /** Map legacy WhatsAppAutomation trigger → publishable workflow trigger keys. */
@@ -310,11 +439,12 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
   // ── WhatsApp simple (activate immediately when WA template exists) ──
   {
     key: "wa_new_lead_welcome",
-    rank: 1,
-    name: "ליד חדש → WhatsApp פתיחה",
-    description: "ליד נכנס ל-CRM → הודעת פתיחה ב-WhatsApp תוך דקות (מופעל מיד).",
+    rank: 2,
+    name: "ליד חדש → WhatsApp פתיחה בלבד",
+    description:
+      "הודעת פתיחה מיידית בלבד (ללא פולואפים). למסלול פתיחה + פולואפים לפי תגובה — השתמשו בתבנית «ליד חדש → פתיחה + פולואפים לפי תגובה».",
     triggerLabel: "ליד חדש ב-CRM",
-    resultLabels: ["הודעת WhatsApp"],
+    resultLabels: ["הודעת פתיחה WhatsApp"],
     categories: ["leads", "whatsapp", "crm"],
     engine: "whatsapp_simple",
     whatsappTrigger: "new_lead_welcome",
@@ -439,7 +569,7 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
     rank: 9,
     name: "פולואפ לליד שלא ענה → WhatsApp",
     description:
-      "אחרי ~24 שעות בלי תשובת WhatsApp מהליד → פולואפ (נבדק מחדש לפני שליחה).",
+      "מוזג למסלול המאוחד «ליד חדש → פתיחה + פולואפים לפי תגובה». לא מוצג ככרטיס נפרד.",
     triggerLabel: "ליד שלא ענה ב-WhatsApp",
     resultLabels: ["פולואפ WhatsApp"],
     categories: ["leads", "whatsapp"],
@@ -448,12 +578,14 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
     delayHours: 24,
     waCategory: "follow_up",
     waHints: ["follow", "מעקב", "פולואפ"],
+    comingSoon: true,
   },
   {
     key: "wa_lead_followup_2",
     rank: 10,
     name: "פולואפ שני לליד",
-    description: "מעקב נוסף אחרי ~3 ימים ללידים שלא הומרו (מופעל מיד).",
+    description:
+      "מוזג למסלול המאוחד «ליד חדש → פתיחה + פולואפים לפי תגובה». לא מוצג ככרטיס נפרד.",
     triggerLabel: "ליד ללא המרה",
     resultLabels: ["פולואפ שני"],
     categories: ["leads", "whatsapp", "sales"],
@@ -462,6 +594,7 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
     delayDays: 3,
     waCategory: "follow_up",
     waHints: ["follow", "מעקב"],
+    comingSoon: true,
   },
   {
     key: "wa_new_client_welcome",
@@ -497,7 +630,8 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
     key: "wf_lead_multi",
     rank: 13,
     name: "ליד חדש → WhatsApp + משימה + התראה",
-    description: "המקרה הקלאסי: ליד נכנס → WhatsApp + משימה לנציג + התראה לבעלים.",
+    description:
+      "פתיחה מיידית בלבד: WhatsApp + משימה + התראה. לא כולל פולואפים לפי תגובה — למסלול המלא ראו «פתיחה + פולואפים לפי תגובה».",
     triggerLabel: "ליד חדש ב-CRM",
     resultLabels: ["WhatsApp", "משימה", "התראה"],
     categories: ["leads", "crm", "whatsapp"],
@@ -523,7 +657,8 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
     key: "wf_lead_wa_email",
     rank: 14,
     name: "ליד חדש → WhatsApp + אימייל",
-    description: "ליד חדש מקבל גם WhatsApp וגם אימייל Bizuply — כיסוי כפול.",
+    description:
+      "פתיחה מיידית בלבד: WhatsApp + אימייל. לא כולל פולואפים לפי תגובת WhatsApp.",
     triggerLabel: "ליד חדש ב-CRM",
     resultLabels: ["WhatsApp", "אימייל Bizuply"],
     categories: ["leads", "whatsapp", "email"],
@@ -554,7 +689,8 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
     key: "wf_lead_full_onboarding",
     rank: 15,
     name: "ליד חדש → WhatsApp + אימייל + משימה + התראה",
-    description: "חבילת קליטה מלאה לליד חדש בכל הערוצים החשובים.",
+    description:
+      "חבילת קליטה מיידית בכל הערוצים. לא כוללת פולואפי WhatsApp לפי תגובה — למסלול המלא ראו «פתיחה + פולואפים לפי תגובה».",
     triggerLabel: "ליד חדש ב-CRM",
     resultLabels: ["WhatsApp", "אימייל", "משימה", "התראה"],
     categories: ["leads", "crm", "whatsapp", "email"],
@@ -658,34 +794,36 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
   },
   {
     key: "wf_lead_no_response_pack",
-    rank: 19,
-    name: "פולואפ לליד שלא ענה → WhatsApp + משימה + סטטוס",
+    rank: 1,
+    name: "ליד חדש → פתיחה + פולואפים לפי תגובה",
     description:
-      "מעקב חכם: בדיקת תשובת WhatsApp לפני שליחה, משימה לנציג ועדכון סטטוס ליד.",
-    triggerLabel: "ליד שלא ענה ב-WhatsApp",
-    resultLabels: ["WhatsApp מעקב", "משימה", "עדכון סטטוס"],
+      "הודעת פתיחה נשלחת מיד. אם הליד לא מגיב, נשלח פולואפ לאחר 24 שעות ופולואפ נוסף לאחר 3 ימים.",
+    triggerLabel: "ליד חדש ב-CRM",
+    resultLabels: ["פתיחה WhatsApp", "פולואפ #1", "פולואפ #2"],
     categories: ["leads", "whatsapp", "sales"],
-    engine: "workflow_recipe",
+    engine: "workflow_graph",
     recipeKey: "lead_no_response",
-    comingSoon: true,
     requiresWaTemplate: true,
-    waCategory: "follow_up",
-    waHints: ["follow", "מעקב"],
-    requiredTriggerKeys: LEAD_NO_RESPONSE_KEYS,
+    waCategory: "welcome",
+    waPreferredMetaName: "new_lead_welcome",
+    waHints: ["welcome", "follow", "מעקב", "פולואפ", "לא ענה"],
+    requiredMetaTemplateNames: [
+      "new_lead_welcome",
+      "lead_follow_up",
+      "lead_follow_up_2",
+    ],
+    requiredTriggerKeys: LEAD_TRIGGER_KEYS,
+    keywords: [
+      "ליד שלא ענה",
+      "פולואפ",
+      "follow up",
+      "no response",
+      "נגיעה",
+    ],
     buildGraph: ({ triggerKey, waTemplateId }) =>
-      waEdgeGraph({
+      buildLeadReplySequenceGraph({
         triggerKey,
-        triggerLabel: "ליד שלא ענה ב-WhatsApp",
-        actionLabel: "WhatsApp מעקב",
-        waTemplateId,
-        extraActions: [
-          { actionKey: "create_task", label: "משימת חזרה לליד" },
-          {
-            actionKey: "update_status",
-            label: "עדכון סטטוס",
-            defaults: { status: "follow_up" },
-          },
-        ],
+        openingTemplateId: waTemplateId,
       }),
   },
   {
@@ -1257,6 +1395,34 @@ export function getTemplateReadiness(
 
   // WhatsApp-bearing workflows require publishable trigger + APPROVED template.
   if (template.requiresWaTemplate && template.buildGraph) {
+    const requiredNames = (template.requiredMetaTemplateNames || [])
+      .map((n) => String(n || "").trim().toLowerCase())
+      .filter(Boolean);
+    if (requiredNames.length) {
+      const approved = listUsableWaTemplates(ctx.waTemplates);
+      const missing = requiredNames.filter(
+        (name) =>
+          !approved.some((tpl) => {
+            const meta = String(
+              (tpl as { metaTemplateName?: string }).metaTemplateName ||
+                tpl.name ||
+                tpl.key ||
+                ""
+            )
+              .trim()
+              .toLowerCase();
+            return meta === name;
+          })
+      );
+      if (missing.length) {
+        return {
+          ready: false,
+          blocker: `חסרות תבניות WhatsApp מאושרות: ${missing.join(", ")}`,
+          recipe,
+        };
+      }
+    }
+
     const metaResolved = resolveApprovedMetaTemplateForAutomation({
       automationTemplateKey: template.key,
       preferredMetaName: template.waPreferredMetaName,

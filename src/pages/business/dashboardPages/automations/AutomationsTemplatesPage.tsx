@@ -534,24 +534,55 @@ export default function AutomationsTemplatesPage() {
         String((node.data as { actionKey?: string }).actionKey || "") ===
           "whatsapp_template"
       ) {
+        const nodeMetaName = String(
+          (node.data as { metaTemplateName?: string }).metaTemplateName || ""
+        )
+          .trim()
+          .toLowerCase();
+        const nodeSpecificTpl = nodeMetaName
+          ? waTemplates.find((tpl) => {
+              const meta = String(
+                (tpl as WhatsAppTemplate).metaTemplateName ||
+                  tpl.name ||
+                  tpl.key ||
+                  ""
+              )
+                .trim()
+                .toLowerCase();
+              const status = String(
+                (tpl as WhatsAppTemplate).metaStatus || ""
+              )
+                .trim()
+                .toUpperCase();
+              return meta === nodeMetaName && status === "APPROVED";
+            })
+          : null;
+        const resolvedTpl = (nodeSpecificTpl || selectedTpl) as
+          | WhatsAppTemplate
+          | undefined;
+        const resolvedId = nodeSpecificTpl
+          ? getWaTemplateId(nodeSpecificTpl)
+          : selectedTplId ||
+            (node.data as { templateId?: string }).templateId ||
+            "";
         return {
           ...node,
           data: {
             ...node.data,
             senderMode: "bizuply_managed",
-            templateId:
-              selectedTplId ||
-              (node.data as { templateId?: string }).templateId ||
-              "",
-            metaTemplateId: String(
-              (selectedTpl as WhatsAppTemplate)?.metaTemplateId || ""
-            ),
+            templateId: resolvedId,
+            metaTemplateId: String(resolvedTpl?.metaTemplateId || ""),
             metaTemplateName: String(
-              (selectedTpl as WhatsAppTemplate)?.metaTemplateName ||
-                selectedTpl?.name ||
+              resolvedTpl?.metaTemplateName ||
+                (node.data as { metaTemplateName?: string }).metaTemplateName ||
+                resolvedTpl?.name ||
                 ""
             ),
-            language: String((selectedTpl as WhatsAppTemplate)?.language || ""),
+            language: String(
+              resolvedTpl?.language ||
+                (node.data as { language?: string }).language ||
+                ""
+            ),
           },
         };
       }
