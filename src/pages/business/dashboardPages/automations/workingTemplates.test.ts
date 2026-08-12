@@ -89,6 +89,8 @@ describe("workingTemplates launch safety", () => {
         waTemplates: [],
         managedWaReady: false,
         calendarConnected: false,
+        gmailConnected: false,
+        outlookConnected: false,
         aiEntitled: false,
       }).ready
     ).toBe(false);
@@ -100,6 +102,8 @@ describe("workingTemplates launch safety", () => {
         waTemplates: [],
         managedWaReady: true,
         calendarConnected: false,
+        gmailConnected: false,
+        outlookConnected: false,
         aiEntitled: false,
       }).ready
     ).toBe(false);
@@ -110,6 +114,8 @@ describe("workingTemplates launch safety", () => {
       waTemplates: [approvedWa],
       managedWaReady: true,
       calendarConnected: false,
+      gmailConnected: false,
+      outlookConnected: false,
       aiEntitled: false,
     });
     expect(ready.ready).toBe(true);
@@ -148,7 +154,7 @@ describe("workingTemplates launch safety", () => {
 
     const readiness = getTemplateReadiness(leadScoring, {
       recipes: [], triggers: [leadTrigger], waTemplates: [], managedWaReady: false,
-      calendarConnected: false, aiEntitled: false,
+      calendarConnected: false, gmailConnected: false, outlookConnected: false, aiEntitled: false,
     });
     expect(readiness.ready).toBe(true);
     expect(readiness.blocker).toBeUndefined();
@@ -177,6 +183,8 @@ describe("workingTemplates launch safety", () => {
       waTemplates: [],
       managedWaReady: true,
       calendarConnected: false,
+      gmailConnected: false,
+      outlookConnected: false,
       aiEntitled: false,
     });
     expect(readiness.ready).toBe(false);
@@ -190,6 +198,8 @@ describe("workingTemplates launch safety", () => {
       waTemplates: [],
       managedWaReady: true,
       calendarConnected: false,
+      gmailConnected: false,
+      outlookConnected: false,
       aiEntitled: false,
     });
     expect(blocked.ready).toBe(false);
@@ -200,6 +210,8 @@ describe("workingTemplates launch safety", () => {
       waTemplates: [approvedWa],
       managedWaReady: true,
       calendarConnected: false,
+      gmailConnected: false,
+      outlookConnected: false,
       aiEntitled: false,
     });
     expect(ready.ready).toBe(true);
@@ -251,6 +263,8 @@ describe("workingTemplates launch safety", () => {
       waTemplates: [welcomeTpl],
       managedWaReady: true,
       calendarConnected: false,
+      gmailConnected: false,
+      outlookConnected: false,
       aiEntitled: false,
     });
     expect(welcomeReady.ready).toBe(true);
@@ -262,6 +276,8 @@ describe("workingTemplates launch safety", () => {
       waTemplates: [inactiveTpl],
       managedWaReady: true,
       calendarConnected: false,
+      gmailConnected: false,
+      outlookConnected: false,
       aiEntitled: false,
     });
     expect(inactiveReady.ready).toBe(true);
@@ -273,6 +289,8 @@ describe("workingTemplates launch safety", () => {
       waTemplates: [approvedWa],
       managedWaReady: true,
       calendarConnected: false,
+      gmailConnected: false,
+      outlookConnected: false,
       aiEntitled: false,
     });
     expect(missingMeta.ready).toBe(false);
@@ -280,13 +298,8 @@ describe("workingTemplates launch safety", () => {
     expect(missingMeta.blocker).not.toMatch(/טריגר מאושר/);
   });
 
-  it("keeps non-WA lead email templates ready with publishable trigger", () => {
-    for (const key of [
-      "wf_lead_email_only",
-      "wf_lead_email_task",
-      "wf_lead_desk_alert",
-      "wf_lead_status_sales",
-    ]) {
+  it("keeps non-WA CRM templates ready with publishable trigger", () => {
+    for (const key of ["wf_lead_desk_alert", "wf_lead_status_sales"]) {
       const template = WORKING_TEMPLATES.find((t) => t.key === key)!;
       const readiness = getTemplateReadiness(template, {
         recipes: [],
@@ -294,10 +307,72 @@ describe("workingTemplates launch safety", () => {
         waTemplates: [],
         managedWaReady: false,
         calendarConnected: false,
+        gmailConnected: false,
+        outlookConnected: false,
         aiEntitled: false,
       });
       expect(readiness.ready).toBe(true);
     }
+  });
+
+  it("requires a connected email provider, not Gmail specifically", () => {
+    const template = WORKING_TEMPLATES.find((t) => t.key === "wf_lead_email_only")!;
+    const blocked = getTemplateReadiness(template, {
+      recipes: [],
+      triggers: [leadTrigger],
+      waTemplates: [],
+      managedWaReady: false,
+      calendarConnected: false,
+      gmailConnected: false,
+      outlookConnected: false,
+      aiEntitled: false,
+    });
+    expect(blocked.ready).toBe(false);
+    expect(blocked.blocker).toBe(
+      "כדי להשתמש באוטומציה הזו יש לחבר Gmail או Outlook / Microsoft 365"
+    );
+
+    const gmailOnly = getTemplateReadiness(template, {
+      recipes: [],
+      triggers: [leadTrigger],
+      waTemplates: [],
+      managedWaReady: false,
+      calendarConnected: false,
+      gmailConnected: true,
+      outlookConnected: false,
+      aiEntitled: false,
+    });
+    expect(gmailOnly.ready).toBe(true);
+    expect(gmailOnly.suggestedEmailProvider).toBe("gmail");
+    expect(gmailOnly.needsEmailProviderChoice).toBe(false);
+
+    const outlookOnly = getTemplateReadiness(template, {
+      recipes: [],
+      triggers: [leadTrigger],
+      waTemplates: [],
+      managedWaReady: false,
+      calendarConnected: false,
+      gmailConnected: false,
+      outlookConnected: true,
+      aiEntitled: false,
+    });
+    expect(outlookOnly.ready).toBe(true);
+    expect(outlookOnly.suggestedEmailProvider).toBe("outlook");
+    expect(outlookOnly.needsEmailProviderChoice).toBe(false);
+
+    const both = getTemplateReadiness(template, {
+      recipes: [],
+      triggers: [leadTrigger],
+      waTemplates: [],
+      managedWaReady: false,
+      calendarConnected: false,
+      gmailConnected: true,
+      outlookConnected: true,
+      aiEntitled: false,
+    });
+    expect(both.ready).toBe(true);
+    expect(both.needsEmailProviderChoice).toBe(true);
+    expect(both.connectedEmailProviders).toEqual(["gmail", "outlook"]);
   });
 
   it("requires calendar connection for Google Calendar workflow", () => {
@@ -320,6 +395,8 @@ describe("workingTemplates launch safety", () => {
       waTemplates: [],
       managedWaReady: true,
       calendarConnected: false,
+      gmailConnected: false,
+      outlookConnected: false,
       aiEntitled: false,
     });
     expect(blocked.ready).toBe(false);
@@ -340,6 +417,8 @@ describe("workingTemplates launch safety", () => {
       waTemplates: [],
       managedWaReady: true,
       calendarConnected: true,
+      gmailConnected: false,
+      outlookConnected: false,
       aiEntitled: false,
     });
     expect(ready.ready).toBe(true);
@@ -429,6 +508,8 @@ describe("workingTemplates launch safety", () => {
       waTemplates: [approvedWa],
       managedWaReady: true,
       calendarConnected: false,
+      gmailConnected: false,
+      outlookConnected: false,
       aiEntitled: false,
     });
     expect(missing.ready).toBe(false);
@@ -440,6 +521,8 @@ describe("workingTemplates launch safety", () => {
       waTemplates: [approvedWa, fu1, fu2],
       managedWaReady: true,
       calendarConnected: false,
+      gmailConnected: false,
+      outlookConnected: false,
       aiEntitled: false,
     });
     expect(ready.ready).toBe(true);
@@ -485,3 +568,118 @@ describe("workingTemplates launch safety", () => {
     expect(picked?.id).toBe("exact");
   });
 });
+
+const appointmentTrigger = {
+  key: "appointment_created",
+  label: "Appointment",
+  description: "",
+  category: "appointments",
+  status: "active" as const,
+  isSupported: true,
+  isPublishable: true,
+};
+
+const EMAIL_TEMPLATE_KEYS = [
+  "wf_lead_wa_email",
+  "wf_lead_full_onboarding",
+  "wf_lead_email_task",
+  "wf_lead_email_only",
+  "wf_new_client_pack",
+  "wf_appointment_email",
+  "wf_appointment_email_notify",
+  "wf_appointment_email_gcal",
+  "wf_appointment_confirm_pack",
+  "wf_appointment_done_email",
+];
+
+function emailGraphKeys(key: string, provider: "gmail" | "outlook") {
+  const template = WORKING_TEMPLATES.find((row) => row.key === key)!;
+  const triggerKey = template.requiredTriggerKeys?.[0] || "new_lead";
+  return (template.buildGraph?.({ triggerKey, emailProvider: provider })?.nodes || [])
+    .filter((node) => node.type === "action")
+    .map((node) => String((node.data as { actionKey?: string }).actionKey || ""));
+}
+
+describe("provider-aware email templates", () => {
+  it("builds Gmail or Outlook actions and never Bizuply email", () => {
+    for (const key of EMAIL_TEMPLATE_KEYS) {
+      const gmailKeys = emailGraphKeys(key, "gmail");
+      const outlookKeys = emailGraphKeys(key, "outlook");
+      expect(gmailKeys, key).toContain("send_gmail");
+      expect(outlookKeys, key).toContain("send_outlook");
+      expect(gmailKeys, key).not.toContain("send_email");
+      expect(outlookKeys, key).not.toContain("send_email");
+      expect(gmailKeys, key).not.toContain("connected_email");
+      expect(outlookKeys, key).not.toContain("connected_email");
+    }
+  });
+
+  it("audits Gmail-only, Outlook-only, both, and neither for activatable email cards", () => {
+    const activatable = EMAIL_TEMPLATE_KEYS.filter((key) => {
+      const template = WORKING_TEMPLATES.find((row) => row.key === key)!;
+      return !template.comingSoon;
+    });
+
+    for (const key of activatable) {
+      const template = WORKING_TEMPLATES.find((row) => row.key === key)!;
+      const triggers = [
+        leadTrigger,
+        appointmentTrigger,
+        {
+          key: "client_created",
+          label: "Client",
+          description: "",
+          category: "crm",
+          status: "active" as const,
+          isSupported: true,
+          isPublishable: true,
+        },
+      ];
+      const base = {
+        recipes: [],
+        triggers,
+        waTemplates: template.requiresWaTemplate ? [approvedWa] : [],
+        managedWaReady: Boolean(template.requiresWaTemplate),
+        calendarConnected: Boolean(template.requiresCalendar),
+        aiEntitled: false,
+      };
+
+      const none = getTemplateReadiness(template, {
+        ...base,
+        gmailConnected: false,
+        outlookConnected: false,
+      });
+      expect(none.ready, key).toBe(false);
+      expect(none.blocker, key).toBe(
+        "כדי להשתמש באוטומציה הזו יש לחבר Gmail או Outlook / Microsoft 365"
+      );
+
+      const gmail = getTemplateReadiness(template, {
+        ...base,
+        gmailConnected: true,
+        outlookConnected: false,
+      });
+      expect(gmail.ready, `${key} gmail`).toBe(true);
+      expect(gmail.suggestedEmailProvider, key).toBe("gmail");
+      expect(gmail.needsEmailProviderChoice, key).toBe(false);
+
+      const outlook = getTemplateReadiness(template, {
+        ...base,
+        gmailConnected: false,
+        outlookConnected: true,
+      });
+      expect(outlook.ready, `${key} outlook`).toBe(true);
+      expect(outlook.suggestedEmailProvider, key).toBe("outlook");
+      expect(outlook.needsEmailProviderChoice, key).toBe(false);
+
+      const both = getTemplateReadiness(template, {
+        ...base,
+        gmailConnected: true,
+        outlookConnected: true,
+      });
+      expect(both.ready, `${key} both`).toBe(true);
+      expect(both.needsEmailProviderChoice, key).toBe(true);
+    }
+  });
+});
+

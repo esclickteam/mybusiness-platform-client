@@ -36,6 +36,8 @@ import {
   readAutomationBillingErrorCode,
 } from "../../../../api/automationBillingApi";
 import { getGoogleCalendarStatus } from "../../../../api/googleCalendarApi";
+import { getGmailStatus } from "../../../../api/gmailApi";
+import { getOutlookStatus } from "../../../../api/outlookApi";
 import {
   getWhatsAppIntegrationStatus,
   listApprovedWhatsAppTemplates,
@@ -59,6 +61,10 @@ import {
   type TemplateReadiness,
   type WorkingTemplate,
 } from "./workingTemplates";
+import {
+  type EmailProviderId,
+  resolveEmailProvider,
+} from "./emailProviderAutomation";
 import {
   defaultMappingsForMetaTemplate,
   isBusinessAlertMetaTemplateName,
@@ -120,6 +126,8 @@ export default function AutomationsTemplatesPage() {
     Array<WhatsAppTemplate | ApprovedWhatsAppTemplate>
   >([]);
   const [calendarConnected, setCalendarConnected] = useState(false);
+  const [gmailConnected, setGmailConnected] = useState(false);
+  const [outlookConnected, setOutlookConnected] = useState(false);
   const [managedWaReady, setManagedWaReady] = useState(false);
   const [managedModeEnabled, setManagedModeEnabled] = useState(true);
   const [waUnavailableMessage, setWaUnavailableMessage] = useState<string | null>(
@@ -132,6 +140,7 @@ export default function AutomationsTemplatesPage() {
     template: WorkingTemplate;
     readiness: TemplateReadiness;
     templateId: string;
+    emailProvider: EmailProviderId | "";
   } | null>(null);
   const [aiPreview, setAiPreview] = useState<CardModel | null>(null);
   const [highlightedKey, setHighlightedKey] = useState<string | null>(null);
@@ -157,7 +166,7 @@ export default function AutomationsTemplatesPage() {
     if (!businessId) return;
     setLoading(true);
     try {
-      const [recipeResult, catalog, approved, allTpl, calendar, waStatus] =
+      const [recipeResult, catalog, approved, allTpl, calendar, gmail, outlook, waStatus] =
         await Promise.all([
           listAutomationRecipes(businessId),
           fetchAutomationTriggerCatalog(businessId).catch(() => ({
@@ -174,6 +183,8 @@ export default function AutomationsTemplatesPage() {
             () => [] as WhatsAppTemplate[]
           ),
           getGoogleCalendarStatus(businessId).catch(() => null),
+          getGmailStatus(businessId).catch(() => null),
+          getOutlookStatus(businessId).catch(() => null),
           getWhatsAppIntegrationStatus(businessId, {
             senderMode: "bizuply_managed",
           }).catch(() => null),
@@ -218,6 +229,19 @@ export default function AutomationsTemplatesPage() {
             calendar?.account?.connectionStatus === "connected"
         )
       );
+      setGmailConnected(
+        Boolean(
+          gmail?.account?.connectionStatus === "connected" &&
+            gmail?.account?.hasGmailSend !== false
+        )
+      );
+      setOutlookConnected(
+        Boolean(
+          outlook?.available !== false &&
+            outlook?.account?.connectionStatus === "connected" &&
+            outlook?.account?.hasMailSend !== false
+        )
+      );
     } catch {
       setRecipes([]);
       setTriggers([]);
@@ -225,6 +249,8 @@ export default function AutomationsTemplatesPage() {
       setManagedWaReady(false);
       setManagedModeEnabled(false);
       setWaUnavailableMessage(null);
+      setGmailConnected(false);
+      setOutlookConnected(false);
     } finally {
       setLoading(false);
     }
@@ -284,9 +310,11 @@ export default function AutomationsTemplatesPage() {
       waTemplates,
       managedWaReady,
       calendarConnected,
+      gmailConnected,
+      outlookConnected,
       aiEntitled,
     }),
-    [aiEntitled, calendarConnected, managedWaReady, recipes, triggers, waTemplates]
+    [aiEntitled, calendarConnected, gmailConnected, outlookConnected, managedWaReady, recipes, triggers, waTemplates]
   );
 
   const cards = useMemo<CardModel[]>(() => {
@@ -472,7 +500,8 @@ export default function AutomationsTemplatesPage() {
   const activateWorkflow = async (
     template: WorkingTemplate,
     readiness: TemplateReadiness,
-    waTemplateId?: string
+    waTemplateId?: string,
+    emailProvider?: EmailProviderId
   ) => {
     if (!businessId) return;
 
@@ -527,6 +556,7 @@ export default function AutomationsTemplatesPage() {
     const graph = template.buildGraph({
       triggerKey,
       waTemplateId: selectedTplId,
+      emailProvider,
     });
     const nodes = graph.nodes.map((node) => {
       if (
@@ -649,37 +679,50 @@ export default function AutomationsTemplatesPage() {
     const needsWaPick =
       card.template.engine === "whatsapp_simple" ||
       card.template.requiresWaTemplate;
+    const emailProvider = resolveEmailProvider(ctx, null);
+    const needsEmailChoice = Boolean(
+      card.template.requiresEmailProvider &&
+        card.readiness.needsEmailProviderChoice
+    );
 
-    if (needsWaPick) {
-      if (!managedWaReady) {
-        if (managedModeEnabled) {
+    if (needsWaPick || needsEmailChoice) {
+      if (needsWaPick) {
+        if (!managedWaReady) {
+          if (managedModeEnabled) {
+            toast.error(
+              waUnavailableMessage ||
+                "שירות WhatsApp אינו זמין כרגע. יש לפנות לתמיכה."
+            );
+            return;
+          }
+          toast.error("חברו WhatsApp Business לפני הפעלה");
+          navigate(`/business/${businessId}/dashboard/whatsapp`);
+          return;
+        }
+        if (!waTemplates.length) {
           toast.error(
-            waUnavailableMessage ||
-              "שירות WhatsApp אינו זמין כרגע. יש לפנות לתמיכה."
+            "אין תבניות Meta מאושרות (APPROVED) לבחירה — הכינו תבנית ואשרו אותה ב-Meta"
           );
           return;
         }
-        toast.error("חברו WhatsApp Business לפני הפעלה");
-        navigate(`/business/${businessId}/dashboard/whatsapp`);
-        return;
-      }
-      if (!waTemplates.length) {
-        toast.error(
-          "אין תבניות Meta מאושרות (APPROVED) לבחירה — הכינו תבנית ואשרו אותה ב-Meta"
-        );
-        return;
       }
       setPicker({
         template: card.template,
         readiness: card.readiness,
         templateId: card.readiness.suggestedWaTemplateId || "",
+        emailProvider: emailProvider || "",
       });
       return;
     }
 
     setCreatingKey(card.template.key);
     try {
-      await activateWorkflow(card.template, card.readiness);
+      await activateWorkflow(
+        card.template,
+        card.readiness,
+        undefined,
+        emailProvider || undefined
+      );
     } catch (error: unknown) {
       toast.error(readAutomationErrorMessage(error, "שגיאה בהפעלת האוטומציה"));
     } finally {
@@ -711,8 +754,16 @@ export default function AutomationsTemplatesPage() {
 
   const confirmPicker = async () => {
     if (!picker || !businessId) return;
-    if (!picker.templateId) {
+    const needsWa =
+      picker.template.engine === "whatsapp_simple" ||
+      Boolean(picker.template.requiresWaTemplate);
+    const needsEmail = Boolean(picker.template.requiresEmailProvider);
+    if (needsWa && !picker.templateId) {
       toast.error("בחרו תבנית WhatsApp מאושרת");
+      return;
+    }
+    if (needsEmail && !picker.emailProvider) {
+      toast.error("בחרו Gmail או Outlook / Microsoft 365");
       return;
     }
     setCreatingKey(picker.template.key);
@@ -727,7 +778,8 @@ export default function AutomationsTemplatesPage() {
         await activateWorkflow(
           picker.template,
           picker.readiness,
-          picker.templateId
+          picker.templateId || undefined,
+          picker.emailProvider || undefined
         );
       }
       setPicker(null);
@@ -1000,38 +1052,76 @@ export default function AutomationsTemplatesPage() {
               <X size={16} />
             </button>
             <h2>הפעלת «{picker.template.name}»</h2>
-            <p>
-              בחרו תבנית WhatsApp מאושרת מהרשימה שלכם — האוטומציה תופעל מיד.
-            </p>
-            <label>
-              תבנית הודעה מאושרת
-              <select
-                value={picker.templateId}
-                onChange={(e) =>
-                  setPicker((prev) =>
-                    prev ? { ...prev, templateId: e.target.value } : prev
-                  )
-                }
-              >
-                <option value="">בחרו תבנית</option>
-                {waTemplates.map((tpl) => {
-                  const id = getWaTemplateId(tpl);
-                  return (
-                    <option key={id} value={id}>
-                      {(tpl as ApprovedWhatsAppTemplate).friendlyName ||
-                        tpl.name ||
-                        tpl.key ||
-                        id}
-                      {tpl.metaTemplateName ? ` · ${tpl.metaTemplateName}` : ""}
-                    </option>
-                  );
-                })}
-              </select>
-            </label>
-            {!waTemplates.length ? (
-              <p className="ax-template-card__blocker">
-                אין תבניות מאושרות עדיין — הכינו מהרשימה למעלה ואשרו ב-Meta.
-              </p>
+            {picker.template.engine === "whatsapp_simple" ||
+            picker.template.requiresWaTemplate ? (
+              <>
+                <p>
+                  בחרו תבנית WhatsApp מאושרת מהרשימה שלכם — האוטומציה תופעל מיד.
+                </p>
+                <label>
+                  תבנית הודעה מאושרת
+                  <select
+                    value={picker.templateId}
+                    onChange={(e) =>
+                      setPicker((prev) =>
+                        prev ? { ...prev, templateId: e.target.value } : prev
+                      )
+                    }
+                  >
+                    <option value="">בחרו תבנית</option>
+                    {waTemplates.map((tpl) => {
+                      const id = getWaTemplateId(tpl);
+                      return (
+                        <option key={id} value={id}>
+                          {(tpl as ApprovedWhatsAppTemplate).friendlyName ||
+                            tpl.name ||
+                            tpl.key ||
+                            id}
+                          {tpl.metaTemplateName
+                            ? ` · ${tpl.metaTemplateName}`
+                            : ""}
+                        </option>
+                      );
+                    })}
+                  </select>
+                </label>
+                {!waTemplates.length ? (
+                  <p className="ax-template-card__blocker">
+                    אין תבניות מאושרות עדיין — הכינו מהרשימה למעלה ואשרו ב-Meta.
+                  </p>
+                ) : null}
+              </>
+            ) : (
+              <p>בחרו דרך איזה חשבון לשלוח את האימייל.</p>
+            )}
+            {picker.template.requiresEmailProvider ? (
+              <label>
+                חשבון אימייל
+                <select
+                  value={picker.emailProvider}
+                  onChange={(e) =>
+                    setPicker((prev) =>
+                      prev
+                        ? {
+                            ...prev,
+                            emailProvider: e.target.value as EmailProviderId | "",
+                          }
+                        : prev
+                    )
+                  }
+                >
+                  <option value="">בחרו ספק</option>
+                  {(picker.readiness.connectedEmailProviders || []).map(
+                    (provider) => (
+                      <option key={provider} value={provider}>
+                        {provider === "outlook"
+                          ? "Outlook / Microsoft 365"
+                          : "Gmail"}
+                      </option>
+                    )
+                  )}
+                </select>
+              </label>
             ) : null}
             <div className="ax-activate-modal__actions">
               <button
@@ -1044,7 +1134,14 @@ export default function AutomationsTemplatesPage() {
               <button
                 type="button"
                 className="af-btn af-btn--primary"
-                disabled={!picker.templateId || Boolean(creatingKey)}
+                disabled={
+                  Boolean(creatingKey) ||
+                  ((picker.template.engine === "whatsapp_simple" ||
+                    Boolean(picker.template.requiresWaTemplate)) &&
+                    !picker.templateId) ||
+                  (Boolean(picker.template.requiresEmailProvider) &&
+                    !picker.emailProvider)
+                }
                 onClick={() => void confirmPicker()}
               >
                 {creatingKey ? (
