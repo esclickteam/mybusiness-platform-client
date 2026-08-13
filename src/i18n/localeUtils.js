@@ -144,8 +144,28 @@ export function detectLanguageFromNavigator() {
  * Fast local signal before /api/geo responds.
  * Prefer Israel signals (timezone / browser language) over a stale geo cookie.
  */
+export function languageFromUrl() {
+  if (typeof window === "undefined") return null;
+  try {
+    const lang = normalizeLanguage(
+      new URLSearchParams(window.location.search).get("lang") || ""
+    );
+    return lang === "en" || lang === "he" ? lang : null;
+  } catch {
+    return null;
+  }
+}
+
+export function applyLanguageFromUrl() {
+  const lang = languageFromUrl();
+  if (!lang) return null;
+  setSessionLanguageOverride(lang);
+  return lang;
+}
+
 export function detectLanguageFromBrowserSignals() {
   return (
+    languageFromUrl() ||
     detectLanguageFromTimezone() ||
     detectLanguageFromNavigator() ||
     normalizeLanguage(getCookie(GEO_LANG_COOKIE) || "") ||
