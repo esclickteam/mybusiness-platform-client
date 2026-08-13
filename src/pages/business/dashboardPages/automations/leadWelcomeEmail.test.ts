@@ -11,6 +11,7 @@ import {
   REQUIRED_LEAD_EMAIL_TOKENS,
 } from "./leadWelcomeEmail";
 import {
+  LEAD_EMAIL_VARIABLES,
   buildEmailPreviewContext,
   interpolateEmailTemplate,
 } from "./appointmentConfirmationEmail";
@@ -50,8 +51,10 @@ describe("lead welcome email defaults", () => {
     expect(subject).toContain("העסק שלי");
     expect(html).toContain("ישראל ישראלי");
     expect(html).toContain("העסק שלי");
-    expect(html).toContain("050-0000000");
-    expect(html).toContain("אתר");
+    expect(html).not.toContain("050-0000000");
+    expect(html).not.toContain("אתר");
+    expect(html).not.toContain("טלפון");
+    expect(html).not.toContain("מקור");
     expect(html).toContain('dir="rtl"');
     expect(html).not.toMatch(/<img\b/i);
     expect(html).not.toContain("logo.png");
@@ -68,10 +71,21 @@ describe("lead welcome email defaults", () => {
     const html = interpolateEmailTemplate(LEAD_OPENING_HTML, ctx);
     expect(LEAD_OPENING_SUBJECT).toBe("תודה על הפנייה");
     expect(html).toContain("תודה שפנית אלינו");
+    expect(html).toContain("שמחנו לקבל את פנייתך אל");
+    expect(html).toContain("קיבלנו את הפרטים ונחזור אליך בהקדם עם כל המידע הרלוונטי");
+    expect(html).not.toContain("נחזור אליך בהקדם עם כל הפרטים");
     expect(html).not.toMatch(/<img\b/i);
     expect(html).not.toContain("logo.png");
     expect(html).toContain("מופעל באמצעות Bizuply");
     expect(html).not.toMatch(/\{\{/);
+    expect(html).not.toContain("טלפון");
+    expect(html).not.toContain("מקור");
+  });
+
+  it("keeps phone and source in the Builder picker only", () => {
+    expect(LEAD_EMAIL_VARIABLES.map((row) => row.token)).toEqual(
+      expect.arrayContaining(["{{lead.phone}}", "{{lead.source}}", "{{lead.name}}", "{{business.name}}"])
+    );
   });
 
   it("ships welcome defaults on mixed lead email templates", () => {
@@ -131,6 +145,34 @@ describe("lead welcome email defaults", () => {
       expect(body).not.toContain("התראה");
       expect(body).not.toContain("WhatsApp");
       expect(body).not.toContain("Google Calendar");
+    }
+  });
+
+  it("does not expose CRM internals in any of the 4 default lead emails", () => {
+    const keys = [...WELCOME_KEYS, ...OPENING_KEYS];
+    const forbidden = [
+      "{{lead.phone}}",
+      "{{lead.source}}",
+      "{{lead.optionalDetailsHtml}}",
+      "{{lead.optionalDetailsText}}",
+      "{{lead.id}}",
+      "טלפון",
+      "מקור",
+    ];
+    for (const key of keys) {
+      for (const provider of ["gmail", "outlook"] as const) {
+        const node = emailNode(key, provider);
+        const html = String((node?.data as { html?: string })?.html || "");
+        const text = String((node?.data as { text?: string })?.text || "");
+        expect(html.match(/<img\b/gi) || []).toHaveLength(0);
+        expect(html).not.toContain("logo.png");
+        expect(html).not.toContain("http://");
+        expect(html).not.toContain("https://");
+        for (const token of forbidden) {
+          expect(html, key).not.toContain(token);
+          expect(text, key).not.toContain(token);
+        }
+      }
     }
   });
 });
