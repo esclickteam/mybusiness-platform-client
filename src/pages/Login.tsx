@@ -12,6 +12,11 @@ import {
   resolvePostLoginDestination,
   sanitizeInternalRedirect,
 } from "../utils/safeInternalRedirect";
+import { useTranslation } from "react-i18next";
+import {
+  applyLanguageFromUrl,
+  normalizeLanguage,
+} from "../i18n/localeUtils";
 
 const DashboardPage = lazyWithPreload(() =>
   import("./business/dashboardPages/DashboardPage")
@@ -41,6 +46,7 @@ type ApiError = {
 export default function Login() {
   const { login, error: authError } = useAuth();
   const { fetchNotifications } = useNotifications();
+  const { i18n } = useTranslation();
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -61,6 +67,13 @@ export default function Login() {
       setDashPreloadDone(true);
     });
   }, []);
+
+  useEffect(() => {
+    const fromUrl = applyLanguageFromUrl();
+    if (fromUrl && normalizeLanguage(i18n.language) !== fromUrl) {
+      void i18n.changeLanguage(fromUrl);
+    }
+  }, [i18n, location.search]);
 
   const searchParams = useMemo(
     () => new URLSearchParams(location.search),
@@ -146,18 +159,28 @@ export default function Login() {
         rememberPostLoginRedirect(queryRedirect);
       }
 
+      const lang = searchParams.get("lang");
+      const withReviewLang = (path) => {
+        if (lang !== "en" && lang !== "he") return path;
+        const [pathname, search = ""] = String(path || "/").split("?");
+        const params = new URLSearchParams(search);
+        params.set("lang", lang);
+        const query = params.toString();
+        return query ? `${pathname}?${query}` : pathname;
+      };
+
       if (role === "admin" && !queryRedirect) {
-        navigate("/admin/dashboard", { replace: true });
+        navigate(withReviewLang("/admin/dashboard"), { replace: true });
       } else if (role === "marketer" && !queryRedirect) {
-        navigate("/marketer/dashboard", { replace: true });
+        navigate(withReviewLang("/marketer/dashboard"), { replace: true });
       } else if (
         role === "business" &&
         !loggedInUser?.hasAccess &&
         !queryRedirect
       ) {
-        navigate("/pricing", { replace: true });
+        navigate(withReviewLang("/pricing"), { replace: true });
       } else {
-        navigate(finalRedirect, { replace: true });
+        navigate(withReviewLang(finalRedirect), { replace: true });
       }
 
       setTimeout(() => {
