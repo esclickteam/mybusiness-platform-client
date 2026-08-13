@@ -99,6 +99,7 @@ import {
 } from "../../../../api/googleCalendarApi";
 import { isBusinessAlertMetaTemplateName, isTestTemplateName } from "./whatsappAutomationMetaTemplates";
 import { WhatsAppAutomationTemplateSelect } from "./WhatsAppAutomationTemplateSelect";
+import { WhatsAppActionPreview } from "./WhatsAppActionPreview";
 import { canPersistAutomationTemplateSelection } from "./whatsAppTemplateSelectFormat";
 import { EmailActionTemplateFields } from "./EmailActionTemplateFields";
 
@@ -829,6 +830,20 @@ function EditorInner({
     () => nodes.find((n) => n.id === selectedId) || null,
     [nodes, selectedId]
   );
+
+  const selectedWaTemplate = useMemo(() => {
+    if (
+      !selectedNode ||
+      !isWhatsAppActionKey(selectedNode.data?.actionKey || "whatsapp_template")
+    ) {
+      return null;
+    }
+    const templateId = String(selectedNode.data?.templateId || "");
+    if (!templateId) return null;
+    return (
+      waTemplates.find((tpl) => String(tpl._id) === templateId) || null
+    );
+  }, [selectedNode, waTemplates]);
 
   const selectedAiTemplate = useMemo(() => {
     if (selectedNode?.type !== "action") return undefined;
@@ -2957,6 +2972,23 @@ function EditorInner({
                           })()}
                       </>
                     )}
+
+                    <WhatsAppActionPreview
+                      template={selectedWaTemplate}
+                      mappings={
+                        Array.isArray(selectedNode.data?.componentMappings)
+                          ? (selectedNode.data
+                              .componentMappings as WhatsAppVariableMapping[])
+                          : []
+                      }
+                      recipientType={String(
+                        selectedNode.data?.recipientType || ""
+                      )}
+                      senderLabel="מספר BizUply המנוהל"
+                      hasSelection={Boolean(
+                        String(selectedNode.data?.templateId || "").trim()
+                      )}
+                    />
 
                     {waLastSyncAt ? (
                       <p className="af-wa-template__sync">
