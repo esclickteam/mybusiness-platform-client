@@ -76,11 +76,25 @@ i18n.on("languageChanged", (lng) => {
 
 applyDocumentLocale(i18n.language);
 
+const bootLang = applyLanguageFromUrl();
+if (bootLang && normalizeLanguage(i18n.language) !== bootLang) {
+  void i18n.changeLanguage(bootLang);
+}
+
 async function syncLanguageFromGeo() {
   if (typeof window === "undefined") return;
 
   // URL ?lang=en is an explicit review/test choice — never override it with geo.
-  if (applyLanguageFromUrl() || hasManualLanguageChoice()) {
+  const fromUrl = applyLanguageFromUrl();
+  if (fromUrl) {
+    if (normalizeLanguage(i18n.language) !== fromUrl) {
+      await i18n.changeLanguage(fromUrl);
+    } else {
+      applyDocumentLocale(fromUrl);
+    }
+    return;
+  }
+  if (hasManualLanguageChoice()) {
     applyDocumentLocale(i18n.language);
     return;
   }
