@@ -1,4 +1,5 @@
 import React, { type ReactNode } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Bot,
   CalendarDays,
@@ -6,14 +7,6 @@ import {
   Megaphone,
   Users,
 } from "lucide-react";
-
-const FEATURE_CARDS = [
-  { title: "CRM", subtitle: "לידים וניהול", icon: Users },
-  { title: "תורים", subtitle: "וזמינות", icon: CalendarDays },
-  { title: "אוטומציות", subtitle: "חכמות", icon: Bot },
-  { title: "בניית אתר", subtitle: "מקצועי", icon: Globe2 },
-  { title: "לידים ממטא", subtitle: "פייסבוק ואינסטגרם", icon: Megaphone },
-] as const;
 
 export function BrandMark({ size = "md" }: { size?: "sm" | "md" }) {
   const text = size === "sm" ? "text-2xl" : "text-3xl";
@@ -36,9 +29,18 @@ export default function AuthShell({
   headline,
   cardMaxWidthClassName = "max-w-[440px]",
 }: AuthShellProps) {
+  const { t, i18n } = useTranslation();
+  const dir = i18n.dir();
+  const featureCards = [
+    { title: t("login.featureCrmTitle"), subtitle: t("login.featureCrmText"), icon: Users },
+    { title: t("login.featureAppointmentsTitle"), subtitle: t("login.featureAppointmentsText"), icon: CalendarDays },
+    { title: t("login.featureAiTitle"), subtitle: t("login.featureAiText"), icon: Bot },
+    { title: t("login.featureWebsiteTitle"), subtitle: t("login.featureWebsiteText"), icon: Globe2 },
+    { title: t("login.featureMetaLeadsTitle"), subtitle: t("login.featureMetaLeadsText"), icon: Megaphone },
+  ];
   return (
     <div
-      dir="rtl"
+      dir={dir}
       className="relative min-h-screen overflow-hidden bg-[#F7F8FC] text-slate-800"
       style={{ fontFamily: '"Heebo", "Assistant", "Rubik", sans-serif' }}
     >
@@ -61,13 +63,9 @@ export default function AuthShell({
           <h2 className="mt-8 max-w-xl text-4xl font-black leading-[1.15] tracking-tight text-slate-900 xl:text-5xl">
             {headline || (
               <>
-                להתחבר אל{" "}
+                {t("login.heroTitleTop")}{" "}
                 <span className="bg-gradient-to-l from-sky-500 via-indigo-500 to-violet-600 bg-clip-text text-transparent">
-                  מערכת ההפעלה
-                </span>
-                <br />
-                <span className="bg-gradient-to-l from-sky-500 via-indigo-500 to-violet-600 bg-clip-text text-transparent">
-                  העסקית
+                  {t("login.heroTitleHighlight")}
                 </span>
               </>
             )}
@@ -79,7 +77,7 @@ export default function AuthShell({
           </div>
 
           <div className="mt-8 flex max-w-xl flex-wrap items-stretch justify-center gap-3">
-            {FEATURE_CARDS.map(({ title, subtitle, icon: Icon }) => (
+            {featureCards.map(({ title, subtitle, icon: Icon }) => (
               <div
                 key={title}
                 className="flex w-[148px] flex-col items-center rounded-[22px] border border-white bg-white px-4 py-4 text-center shadow-[0_10px_28px_rgba(15,23,42,0.06)]"
