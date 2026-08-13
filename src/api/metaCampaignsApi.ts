@@ -75,8 +75,11 @@ export type MetaCampaignSeriesPoint = {
 export type MetaCampaignInsight = {
   id: string;
   tone: "success" | "warning" | "info";
-  title: string;
-  body: string;
+  title?: string;
+  body?: string;
+  titleKey?: string;
+  bodyKey?: string;
+  bodyParams?: Record<string, string | number>;
   action?: string;
 };
 
@@ -155,12 +158,23 @@ export type MetaAdAccountBillingHealth = {
   actionUrl?: string;
 };
 
+export type MetaBusinessPortfolio = {
+  id: string;
+  name: string;
+};
+
 export type MetaAdsConnectionStatus = {
   success?: boolean;
   connected: boolean;
   isConnected: boolean;
   metaUserName?: string;
   adAccounts: MetaAdAccount[];
+  businesses?: MetaBusinessPortfolio[];
+  selectedBusiness?: {
+    id: string;
+    name: string;
+    selectedAt?: string | null;
+  } | null;
   selectedAdAccount: MetaSelectedAdAccount | null;
   pages: MetaAdsPage[];
   selectedPage: {
@@ -172,6 +186,9 @@ export type MetaAdsConnectionStatus = {
   lastError?: string;
   hasAccessToken?: boolean;
   tokenExpiresAt?: string | null;
+  tokenInvalid?: boolean;
+  grantedScopes?: string[];
+  hasPagesManageAds?: boolean;
   adAccountBillingHealth?: MetaAdAccountBillingHealth | null;
   objectives?: MetaLabeledOption[];
   specialAdCategories?: MetaLabeledOption[];
@@ -393,6 +410,18 @@ export async function selectMetaAdAccount(
   const { data } = await API.post<MetaAdsConnectionStatus>(
     "/meta-campaigns/select-ad-account",
     { adAccountId, businessId },
+    withBusiness(businessId)
+  );
+  return data;
+}
+
+export async function selectMetaBusiness(
+  businessId: string | undefined,
+  metaBusinessId: string
+) {
+  const { data } = await API.post<MetaAdsConnectionStatus>(
+    "/meta-campaigns/select-business",
+    { metaBusinessId, businessId },
     withBusiness(businessId)
   );
   return data;

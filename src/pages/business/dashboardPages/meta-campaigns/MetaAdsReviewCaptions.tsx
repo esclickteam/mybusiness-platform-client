@@ -1,0 +1,100 @@
+import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+
+const CAPTIONS_STORAGE_KEY = "bizuply_meta_ads_review_captions_hidden";
+
+type CaptionSet = "settings" | "overview";
+
+const SETTINGS_CAPTIONS = [
+  "The business owner signs in to Bizuply, then starts Facebook Login to connect Meta Ads.",
+  "Facebook Login asks the user to grant ads_read, ads_management, and business_management.",
+  "Bizuply uses business_management to list Business Portfolios and the Ad Accounts owned or shared by the selected business.",
+  "After authorization, the user selects their Meta Business Portfolio, then the Ad Account used to retrieve and manage campaigns.",
+] as const;
+
+const OVERVIEW_CAPTIONS = [
+  "Bizuply uses ads_read to retrieve the authenticated business's advertising campaigns and performance metrics from Meta.",
+  "The dashboard shows campaign names, statuses, spend, impressions, reach, clicks, and the selected date range.",
+  "Bizuply uses ads_management so the business owner can pause or resume a campaign from Bizuply.",
+  "After Pause or Resume, Bizuply reads the campaign back from Meta and shows the updated status.",
+] as const;
+
+export default function MetaAdsReviewCaptions({
+  set = "overview",
+}: {
+  set?: CaptionSet;
+}) {
+  const { t } = useTranslation();
+  const captions = set === "settings" ? SETTINGS_CAPTIONS : OVERVIEW_CAPTIONS;
+  const [show, setShow] = useState(() => {
+    try {
+      return sessionStorage.getItem(CAPTIONS_STORAGE_KEY) !== "1";
+    } catch {
+      return true;
+    }
+  });
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    if (!show) return;
+    const timer = window.setInterval(() => {
+      setIndex((prev) => (prev + 1) % captions.length);
+    }, 8000);
+    return () => window.clearInterval(timer);
+  }, [captions.length, show]);
+
+  if (!show) return null;
+
+  const hide = () => {
+    setShow(false);
+    try {
+      sessionStorage.setItem(CAPTIONS_STORAGE_KEY, "1");
+    } catch {
+      /* ignore */
+    }
+  };
+
+  return (
+    <div className="fixed inset-x-3 bottom-3 z-40 mx-auto max-w-3xl rounded-xl border border-slate-200 bg-white/95 p-3 shadow-lg backdrop-blur sm:inset-x-auto">
+      <div className="flex items-start gap-3">
+        <div className="min-w-0 flex-1">
+          <p className="text-[10px] font-black uppercase tracking-[0.16em] text-violet-700">
+            {set === "settings"
+              ? t("metaCampaigns.review.captionsAuth", {
+                  defaultValue:
+                    "App Review · Facebook Login · ads_read · ads_management · business_management",
+                })
+              : t("metaCampaigns.review.captionsUse", {
+                  defaultValue:
+                    "App Review · ads_read · ads_management · business_management",
+                })}
+          </p>
+          <p className="mt-1 text-sm font-semibold leading-relaxed text-slate-700">
+            {captions[index]}
+          </p>
+          <div className="mt-2 flex flex-wrap gap-1">
+            {captions.map((caption, captionIndex) => (
+              <button
+                key={caption}
+                type="button"
+                onClick={() => setIndex(captionIndex)}
+                className={[
+                  "h-1.5 w-6 rounded-full",
+                  captionIndex === index ? "bg-violet-500" : "bg-slate-200",
+                ].join(" ")}
+                aria-label={`Caption ${captionIndex + 1}`}
+              />
+            ))}
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={hide}
+          className="shrink-0 rounded-lg border border-slate-200 px-2 py-1 text-xs font-bold text-slate-500 hover:bg-slate-50"
+        >
+          {t("metaCampaigns.review.hideCaptions", { defaultValue: "Hide" })}
+        </button>
+      </div>
+    </div>
+  );
+}

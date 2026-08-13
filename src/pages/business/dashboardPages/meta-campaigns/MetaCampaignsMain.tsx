@@ -5,12 +5,18 @@ import {
   useLocation,
   useNavigate,
   useParams,
+  useSearchParams,
 } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { LayoutDashboard, Megaphone, PlusCircle, Settings2, Sparkles } from "lucide-react";
 import { useAuth } from "../../../../context/AuthContext";
 import { useLocaleDir } from "../../../../hooks/useLocaleDir";
 import { normalizeBusinessId } from "../../../../utils/notificationNavigation";
+import {
+  applyLanguageFromUrl,
+  normalizeLanguage,
+  setSessionLanguageOverride,
+} from "../../../../i18n/localeUtils";
 
 type MetaCampaignsTab = {
   path: string;
@@ -25,16 +31,34 @@ const tabs: MetaCampaignsTab[] = [
 ];
 
 export default function MetaCampaignsMain() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const dir = useLocaleDir();
   const location = useLocation();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { businessId: urlBusinessId } = useParams<{ businessId: string }>();
   const { user } = useAuth();
   const businessId =
     normalizeBusinessId(urlBusinessId) ||
     normalizeBusinessId(user?.businessId) ||
     null;
+  const currentLang = normalizeLanguage(i18n.language);
+
+  useEffect(() => {
+    const fromUrl = applyLanguageFromUrl();
+    const requested = searchParams.get("lang");
+    if (fromUrl && fromUrl !== currentLang) {
+      void i18n.changeLanguage(fromUrl);
+    } else if ((requested === "en" || requested === "he") && requested !== currentLang) {
+      setSessionLanguageOverride(requested);
+      void i18n.changeLanguage(requested);
+    }
+  }, [currentLang, i18n, searchParams]);
+
+  const switchLanguage = async (lng: "en" | "he") => {
+    setSessionLanguageOverride(lng);
+    await i18n.changeLanguage(lng);
+  };
 
   const currentTab = useMemo(() => {
     const parts = location.pathname.split("/").filter(Boolean);
@@ -93,11 +117,41 @@ export default function MetaCampaignsMain() {
                 </p>
               </div>
 
-              <div className="inline-flex w-fit items-center gap-2 rounded-lg border border-violet-100 bg-violet-50 px-3 py-1.5">
-                <Megaphone className="h-3.5 w-3.5 text-violet-600" />
-                <span className="text-xs font-black text-violet-700">
-                  {t("metaCampaigns.shell.channel")}
-                </span>
+              <div className="flex flex-wrap items-center gap-2">
+                <div className="inline-flex overflow-hidden rounded-lg border border-slate-200 bg-white text-xs font-black">
+                  <button
+                    type="button"
+                    onClick={() => void switchLanguage("en")}
+                    className={[
+                      "px-2.5 py-1.5",
+                      currentLang === "en"
+                        ? "bg-violet-600 text-white"
+                        : "text-slate-600 hover:bg-slate-50",
+                    ].join(" ")}
+                    title="English UI"
+                  >
+                    EN
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => void switchLanguage("he")}
+                    className={[
+                      "px-2.5 py-1.5",
+                      currentLang === "he"
+                        ? "bg-violet-600 text-white"
+                        : "text-slate-600 hover:bg-slate-50",
+                    ].join(" ")}
+                    title="עברית"
+                  >
+                    HE
+                  </button>
+                </div>
+                <div className="inline-flex w-fit items-center gap-2 rounded-lg border border-violet-100 bg-violet-50 px-3 py-1.5">
+                  <Megaphone className="h-3.5 w-3.5 text-violet-600" />
+                  <span className="text-xs font-black text-violet-700">
+                    {t("metaCampaigns.shell.channel")}
+                  </span>
+                </div>
               </div>
             </div>
           </div>

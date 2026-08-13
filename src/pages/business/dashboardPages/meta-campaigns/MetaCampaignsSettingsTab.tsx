@@ -17,6 +17,7 @@ import {
   refreshMetaAdAccounts,
   selectMetaAdAccount,
   selectMetaAdsPage,
+  selectMetaBusiness,
   type MetaAdsConnectionStatus,
 } from "../../../../api/metaCampaignsApi";
 import MetaBillingAccountCards from "../../../../components/meta/MetaBillingAccountCards";
@@ -37,6 +38,7 @@ import {
   resolveAdAccountId,
   resolveMetaAccountStatus,
 } from "./metaCampaignUtils";
+import MetaAdsReviewCaptions from "./MetaAdsReviewCaptions";
 
 type OutletCtx = { businessId: string | null };
 
@@ -50,6 +52,7 @@ export default function MetaCampaignsSettingsTab() {
   const [busy, setBusy] = useState(false);
   const [status, setStatus] = useState<MetaAdsConnectionStatus | null>(null);
   const [selectedAccountId, setSelectedAccountId] = useState("");
+  const [selectedBusinessId, setSelectedBusinessId] = useState("");
   const [selectedPageId, setSelectedPageId] = useState("");
 
   const load = async () => {
@@ -62,6 +65,7 @@ export default function MetaCampaignsSettingsTab() {
       const data = await getMetaCampaignsStatus(businessId);
       setStatus(data);
       setSelectedAccountId(data.selectedAdAccount?.id || "");
+      setSelectedBusinessId(data.selectedBusiness?.id || "");
       setSelectedPageId(data.selectedPage?.pageId || "");
     } catch (error: any) {
       toast.error(
@@ -118,6 +122,28 @@ export default function MetaCampaignsSettingsTab() {
           error?.message ||
           t("metaCampaigns.errors.authUrl")
       );
+      setBusy(false);
+    }
+  };
+
+  const saveBusiness = async () => {
+    if (!businessId || !selectedBusinessId) {
+      toast.error(t("metaCampaigns.settings.selectBusinessRequired"));
+      return;
+    }
+    try {
+      setBusy(true);
+      const data = await selectMetaBusiness(businessId, selectedBusinessId);
+      setStatus(data);
+      setSelectedAccountId(data.selectedAdAccount?.id || "");
+      toast.success(t("metaCampaigns.toasts.businessSelected"));
+    } catch (error: any) {
+      toast.error(
+        error?.response?.data?.error ||
+          error?.response?.data?.message ||
+          t("metaCampaigns.errors.selectBusiness")
+      );
+    } finally {
       setBusy(false);
     }
   };
@@ -188,6 +214,7 @@ export default function MetaCampaignsSettingsTab() {
       const data = await disconnectMetaAds(businessId);
       setStatus(data);
       setSelectedAccountId("");
+      setSelectedBusinessId("");
       setSelectedPageId("");
       toast.success(t("metaCampaigns.toasts.disconnected"));
     } catch (error: any) {
@@ -256,6 +283,7 @@ export default function MetaCampaignsSettingsTab() {
             onClick={connect}
             disabled={busy}
             className={btnPrimary}
+            title={t("metaCampaigns.settings.connectHint")}
           >
             {busy ? (
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -289,6 +317,19 @@ export default function MetaCampaignsSettingsTab() {
             </>
           ) : null}
         </div>
+        <p className="mt-3 text-sm font-semibold text-slate-500">
+          {t("metaCampaigns.settings.connectHint")}
+        </p>
+        <div className="mt-4 rounded-xl border border-violet-100 bg-violet-50/70 p-3">
+          <p className="text-xs font-black uppercase tracking-[0.14em] text-violet-700">
+            {t("metaCampaigns.settings.permissionWhyTitle")}
+          </p>
+          <ul className="mt-2 space-y-1.5 text-sm font-semibold text-slate-700">
+            <li>{t("metaCampaigns.settings.permissionWhyAdsRead")}</li>
+            <li>{t("metaCampaigns.settings.permissionWhyAdsManagement")}</li>
+            <li>{t("metaCampaigns.settings.permissionWhyBusinessManagement")}</li>
+          </ul>
+        </div>
 
         {status?.metaUserName ? (
           <p className="mt-4 text-sm font-bold text-slate-600">
@@ -302,6 +343,39 @@ export default function MetaCampaignsSettingsTab() {
             {status.lastError}
           </p>
         ) : null}
+        {status?.tokenInvalid ? (
+          <p className="mt-2 text-sm font-semibold text-rose-600">
+            {t("metaCampaigns.settings.tokenInvalid")}
+          </p>
+        ) : null}
+        {(status?.grantedScopes || []).length ? (
+          <div className="mt-4">
+            <p className="text-xs font-black uppercase tracking-[0.14em] text-slate-500">
+              {t("metaCampaigns.settings.grantedPermissions")}
+            </p>
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              {["ads_read", "ads_management", "business_management"].map(
+                (scope) => {
+                  const granted = (status?.grantedScopes || []).includes(scope);
+                  return (
+                    <span
+                      key={scope}
+                      className={[
+                        "rounded-full border px-2.5 py-1 text-[11px] font-black",
+                        granted
+                          ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                          : "border-slate-200 bg-slate-50 text-slate-500",
+                      ].join(" ")}
+                    >
+                      {scope}
+                      {granted ? " ✓" : ""}
+                    </span>
+                  );
+                }
+              )}
+            </div>
+          </div>
+        ) : null}
       </div>
 
       <MetaBillingAccountCards
@@ -312,6 +386,50 @@ export default function MetaCampaignsSettingsTab() {
 
       {isLinked ? (
         <>
+          {(status?.businesses || []).length ? (
+            <div className={`${cardBase} p-5`}>
+              <p className="text-sm font-black text-slate-900">
+                {t("metaCampaigns.settings.businessTitle")}
+              </p>
+              <p className="mt-1 text-xs font-semibold text-slate-500">
+                {t("metaCampaigns.settings.businessHint")}
+              </p>
+              <label className="mt-4 block">
+                <span className="mb-1.5 block text-xs font-black text-slate-500">
+                  {t("metaCampaigns.settings.business")}
+                </span>
+                <select
+                  className={inputBase}
+                  value={selectedBusinessId}
+                  onChange={(e) => setSelectedBusinessId(e.target.value)}
+                >
+                  <option value="">
+                    {t("metaCampaigns.settings.businessPlaceholder")}
+                  </option>
+                  {(status?.businesses || []).map((business) => (
+                    <option key={business.id} value={business.id}>
+                      {business.name}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <button
+                type="button"
+                onClick={saveBusiness}
+                disabled={busy || !selectedBusinessId}
+                className={`${btnPrimary} mt-4`}
+                title={t("metaCampaigns.settings.saveBusinessHint")}
+              >
+                {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+                {t("metaCampaigns.settings.saveBusiness")}
+              </button>
+            </div>
+          ) : (
+            <p className="text-xs font-semibold text-slate-500">
+              {t("metaCampaigns.settings.noBusinesses")}
+            </p>
+          )}
+
           <div className={`${cardBase} p-5`}>
             <p className="text-sm font-black text-slate-900">
               {t("metaCampaigns.settings.adAccountTitle")}
@@ -343,6 +461,7 @@ export default function MetaCampaignsSettingsTab() {
               onClick={saveAccount}
               disabled={busy || !selectedAccountId}
               className={`${btnPrimary} mt-4`}
+              title={t("metaCampaigns.settings.saveAccountHint")}
             >
               {busy ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
               {t("metaCampaigns.settings.saveAccount")}
@@ -410,6 +529,7 @@ export default function MetaCampaignsSettingsTab() {
 
         </>
       ) : null}
+      <MetaAdsReviewCaptions set="settings" />
     </div>
   );
 }

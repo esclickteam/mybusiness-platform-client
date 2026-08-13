@@ -46,11 +46,11 @@ export function toLocalIsoDate(date = new Date()) {
   return `${y}-${m}-${d}`;
 }
 
-export function formatDateTimeHe(value?: string | Date | null) {
+export function formatDateTimeHe(value?: string | Date | null, locale = "he-IL") {
   if (!value) return "—";
   const date = value instanceof Date ? value : new Date(value);
   if (Number.isNaN(date.getTime())) return "—";
-  return date.toLocaleString("he-IL", {
+  return date.toLocaleString(locale, {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
@@ -59,11 +59,11 @@ export function formatDateTimeHe(value?: string | Date | null) {
   });
 }
 
-export function formatDateHe(value?: string | Date | null) {
+export function formatDateHe(value?: string | Date | null, locale = "he-IL") {
   if (!value) return "—";
   const date = value instanceof Date ? value : new Date(value);
   if (Number.isNaN(date.getTime())) return "—";
-  return date.toLocaleDateString("he-IL");
+  return date.toLocaleDateString(locale);
 }
 
 /** Meta Marketing API account_status codes. */

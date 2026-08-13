@@ -49,6 +49,8 @@ import {
 } from "../../../../api/metaCampaignsApi";
 import BizuplyLoader from "../../../../components/ui/BizuplyLoader";
 import { btnPrimary, btnSecondary, cardBase } from "../../../../styles/bizuplyUi";
+import { getIntlLocale } from "../../../../i18n/localeUtils";
+import MetaAdsReviewCaptions from "./MetaAdsReviewCaptions";
 import {
   DATE_RANGE_OPTIONS,
   daysAgoIso,
@@ -71,16 +73,6 @@ import {
 } from "./metaCampaignUtils";
 
 type OutletCtx = { businessId: string | null };
-
-const APP_REVIEW_CAPTIONS = [
-  "The user selects a Meta ad account they own or have authorized access to.",
-  "Bizuply retrieves campaigns and performance insights from the selected Meta ad account using the ads_read permission.",
-  "The user can refresh the data and select a reporting date range.",
-  "The dashboard displays campaign spend, leads, cost per lead, reach, impressions and other performance metrics.",
-  "The user can open a campaign to review its details in read-only mode.",
-] as const;
-
-const CAPTIONS_STORAGE_KEY = "bizuply_meta_ads_review_captions_hidden";
 
 function KpiCard({
   label,
@@ -143,21 +135,31 @@ function KpiCard({
 }
 
 function InsightCard({ item }: { item: MetaCampaignInsight }) {
+  const { t } = useTranslation();
   const tone =
     item.tone === "success"
       ? "border-emerald-100 bg-emerald-50/70 text-emerald-800"
       : item.tone === "warning"
         ? "border-amber-100 bg-amber-50/70 text-amber-900"
         : "border-sky-100 bg-sky-50/70 text-sky-900";
+  const title = item.titleKey
+    ? t(item.titleKey, { defaultValue: item.title || "" })
+    : item.title || "";
+  const body = item.bodyKey
+    ? t(item.bodyKey, {
+        ...(item.bodyParams || {}),
+        defaultValue: item.body || "",
+      })
+    : item.body || "";
 
   return (
     <div className={`rounded-xl border p-3 ${tone}`}>
       <div className="flex items-start gap-2">
         <Lightbulb className="mt-0.5 h-4 w-4 shrink-0 opacity-80" />
         <div className="min-w-0">
-          <p className="text-sm font-black">{item.title}</p>
+          <p className="text-sm font-black">{title}</p>
           <p className="mt-1 text-xs font-semibold leading-relaxed opacity-90">
-            {item.body}
+            {body}
           </p>
         </div>
       </div>
@@ -205,11 +207,12 @@ function isPermissionError(error: any) {
 }
 
 export default function MetaCampaignsOverviewTab() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const { businessId } = useOutletContext<OutletCtx>();
   const { businessId: urlBusinessId } = useParams<{ businessId: string }>();
   const basePath = `/business/${urlBusinessId || businessId}/dashboard/meta-campaigns`;
+  const locale = getIntlLocale(i18n.language);
 
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -227,14 +230,8 @@ export default function MetaCampaignsOverviewTab() {
   const [detailsCampaign, setDetailsCampaign] = useState<MetaCampaign | null>(
     null
   );
-  const [showCaptions, setShowCaptions] = useState(() => {
-    try {
-      return sessionStorage.getItem(CAPTIONS_STORAGE_KEY) !== "1";
-    } catch {
-      return true;
-    }
-  });
-  const [captionIndex, setCaptionIndex] = useState(0);
+  const [pendingStatusCampaign, setPendingStatusCampaign] =
+    useState<MetaCampaign | null>(null);
 
   const currency = data?.connection?.selectedAdAccount?.currency || "ILS";
   const selectedAccount = data?.connection?.selectedAdAccount || null;
@@ -295,14 +292,6 @@ export default function MetaCampaignsOverviewTab() {
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [businessId, rangePreset, customSince, customUntil]);
-
-  useEffect(() => {
-    if (!showCaptions) return;
-    const timer = window.setInterval(() => {
-      setCaptionIndex((prev) => (prev + 1) % APP_REVIEW_CAPTIONS.length);
-    }, 7000);
-    return () => window.clearInterval(timer);
-  }, [showCaptions]);
 
   const campaigns = useMemo(() => {
     const list = data?.campaigns || [];
@@ -388,7 +377,17 @@ export default function MetaCampaignsOverviewTab() {
     const next = configured === "ACTIVE" ? "PAUSED" : "ACTIVE";
     try {
       setBusyId(campaign.id);
-      await setMetaCampaignStatus(businessId, campaign.id, next);
+      const result = await setMetaCampaignStatus(businessId, campaign.id, next);
+      const confirmed = String(
+        result?.campaign?.configuredStatus ||
+          result?.campaign?.status ||
+          ""
+      ).toUpperCase();
+      if (confirmed && confirmed !== next) {
+        toast.error(t("metaCampaigns.errors.statusNotPersisted"));
+        await load({ silent: true });
+        return;
+      }
       toast.success(
         next === "ACTIVE"
           ? t("metaCampaigns.toasts.activated")
@@ -403,17 +402,18 @@ export default function MetaCampaignsOverviewTab() {
       );
     } finally {
       setBusyId("");
+      setPendingStatusCampaign(null);
     }
   };
 
-  const hideCaptions = () => {
-    setShowCaptions(false);
-    try {
-      sessionStorage.setItem(CAPTIONS_STORAGE_KEY, "1");
-    } catch {
-      /* ignore */
-    }
-  };
+  const pendingNextStatus =
+    String(
+      pendingStatusCampaign?.configuredStatus ||
+        pendingStatusCampaign?.status ||
+        ""
+    ).toUpperCase() === "ACTIVE"
+      ? "PAUSED"
+      : "ACTIVE";
 
   if (loading) {
     return (
@@ -445,6 +445,7 @@ export default function MetaCampaignsOverviewTab() {
   }
 
   if (!tokenLinked || !connected) {
+    const needsAccount = Boolean(tokenLinked && !connected);
     return (
       <div className={`${cardBase} p-6 sm:p-8`}>
         <div className="mx-auto max-w-xl text-center">
@@ -452,15 +453,22 @@ export default function MetaCampaignsOverviewTab() {
             <Target className="h-7 w-7" />
           </div>
           <h2 className="mt-4 text-xl font-black text-slate-900">
-            {t("metaCampaigns.empty.notConnectedTitle")}
+            {needsAccount
+              ? t("metaCampaigns.empty.selectAccountTitle")
+              : t("metaCampaigns.empty.notConnectedTitle")}
           </h2>
           <p className="mt-2 text-sm font-semibold text-slate-500">
-            {t("metaCampaigns.empty.notConnectedBody")}
+            {needsAccount
+              ? t("metaCampaigns.empty.selectAccountBody")
+              : t("metaCampaigns.empty.notConnectedBody")}
           </p>
           <Link to={`${basePath}/settings`} className={`${btnPrimary} mt-5`}>
-            {t("metaCampaigns.empty.connectCta")}
+            {needsAccount
+              ? t("metaCampaigns.empty.selectAccountCta")
+              : t("metaCampaigns.empty.connectCta")}
           </Link>
         </div>
+        <MetaAdsReviewCaptions set="overview" />
       </div>
     );
   }
@@ -478,7 +486,7 @@ export default function MetaCampaignsOverviewTab() {
           {lastUpdatedAt ? (
             <p className="mt-1 text-xs font-bold text-slate-400">
               {t("metaCampaigns.overview.lastUpdated", {
-                time: formatDateTimeHe(lastUpdatedAt),
+                time: formatDateTimeHe(lastUpdatedAt, locale),
               })}
             </p>
           ) : null}
@@ -985,11 +993,11 @@ export default function MetaCampaignsOverviewTab() {
                             )}
                           </td>
                           <td className="px-3 py-3 font-bold text-slate-700">
-                            {formatDateHe(campaign.startTime)}
+                            {formatDateHe(campaign.startTime, locale)}
                           </td>
                           <td className="px-3 py-3 font-bold text-slate-700">
                             {campaign.stopTime
-                              ? formatDateHe(campaign.stopTime)
+                              ? formatDateHe(campaign.stopTime, locale)
                               : t("metaCampaigns.table.endOngoing")}
                           </td>
                           <td className="px-3 py-3">
@@ -1016,12 +1024,12 @@ export default function MetaCampaignsOverviewTab() {
                                 type="button"
                                 title={
                                   isConfiguredActive
-                                    ? t("metaCampaigns.actions.pause")
-                                    : t("metaCampaigns.actions.activate")
+                                    ? t("metaCampaigns.actions.pauseHint")
+                                    : t("metaCampaigns.actions.resumeHint")
                                 }
                                 disabled={busyId === campaign.id}
-                                onClick={() => toggleStatus(campaign)}
-                                className="grid h-8 w-8 place-items-center rounded-lg border border-slate-200 bg-white text-slate-600 hover:border-violet-200 hover:text-violet-700 disabled:opacity-50"
+                                onClick={() => setPendingStatusCampaign(campaign)}
+                                className="inline-flex h-8 items-center gap-1 rounded-lg border border-slate-200 bg-white px-2 text-[11px] font-black text-slate-700 hover:border-violet-200 hover:text-violet-700 disabled:opacity-50"
                               >
                                 {busyId === campaign.id ? (
                                   <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -1030,6 +1038,9 @@ export default function MetaCampaignsOverviewTab() {
                                 ) : (
                                   <Play className="h-3.5 w-3.5" />
                                 )}
+                                {isConfiguredActive
+                                  ? t("metaCampaigns.actions.pause")
+                                  : t("metaCampaigns.actions.resume")}
                               </button>
                             </div>
                           </td>
@@ -1132,7 +1143,6 @@ export default function MetaCampaignsOverviewTab() {
           <aside
             className="flex h-full w-full max-w-md flex-col overflow-hidden bg-white shadow-2xl sm:rounded-2xl"
             onClick={(e) => e.stopPropagation()}
-            dir="rtl"
           >
             <div className="flex items-start justify-between border-b border-slate-100 px-4 py-3">
               <div>
@@ -1258,60 +1268,79 @@ export default function MetaCampaignsOverviewTab() {
               />
               <DetailRow
                 label="Start date"
-                value={formatDateHe(detailsCampaign.startTime)}
+                value={formatDateHe(detailsCampaign.startTime, locale)}
               />
               <DetailRow
-                label="End date"
+                label={t("metaCampaigns.table.end")}
                 value={
                   detailsCampaign.stopTime
-                    ? formatDateHe(detailsCampaign.stopTime)
+                    ? formatDateHe(detailsCampaign.stopTime, locale)
                     : t("metaCampaigns.table.endOngoing")
                 }
               />
               <DetailRow
-                label="Last data update"
-                value={formatDateTimeHe(lastUpdatedAt)}
+                label={t("metaCampaigns.overview.lastUpdatedLabel")}
+                value={formatDateTimeHe(lastUpdatedAt, locale)}
               />
             </dl>
           </aside>
         </div>
       ) : null}
 
-      {showCaptions ? (
-        <div className="fixed inset-x-3 bottom-3 z-40 mx-auto max-w-3xl rounded-xl border border-slate-200 bg-white/95 p-3 shadow-lg backdrop-blur sm:inset-x-auto">
-          <div className="flex items-start gap-3">
-            <div className="min-w-0 flex-1">
-              <p className="text-[10px] font-black uppercase tracking-[0.16em] text-violet-700">
-                App Review · ads_read
-              </p>
-              <p className="mt-1 text-sm font-semibold leading-relaxed text-slate-700">
-                {APP_REVIEW_CAPTIONS[captionIndex]}
-              </p>
-              <div className="mt-2 flex flex-wrap gap-1">
-                {APP_REVIEW_CAPTIONS.map((_, index) => (
-                  <button
-                    key={APP_REVIEW_CAPTIONS[index]}
-                    type="button"
-                    onClick={() => setCaptionIndex(index)}
-                    className={[
-                      "h-1.5 w-6 rounded-full",
-                      index === captionIndex ? "bg-violet-500" : "bg-slate-200",
-                    ].join(" ")}
-                    aria-label={`Caption ${index + 1}`}
-                  />
-                ))}
-              </div>
+      {pendingStatusCampaign ? (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4"
+          onClick={() => setPendingStatusCampaign(null)}
+        >
+          <div
+            className="w-full max-w-md rounded-2xl bg-white p-5 shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <p className="text-[10px] font-black uppercase tracking-[0.16em] text-violet-700">
+              {t("metaCampaigns.review.managementBadge")}
+            </p>
+            <h3 className="mt-2 text-lg font-black text-slate-900">
+              {pendingNextStatus === "PAUSED"
+                ? t("metaCampaigns.actions.confirmPauseTitle")
+                : t("metaCampaigns.actions.confirmResumeTitle")}
+            </h3>
+            <p className="mt-2 text-sm font-semibold text-slate-600">
+              {pendingNextStatus === "PAUSED"
+                ? t("metaCampaigns.actions.confirmPauseBody", {
+                    name: pendingStatusCampaign.name,
+                  })
+                : t("metaCampaigns.actions.confirmResumeBody", {
+                    name: pendingStatusCampaign.name,
+                  })}
+            </p>
+            <div className="mt-5 flex flex-wrap justify-end gap-2">
+              <button
+                type="button"
+                className={btnSecondary}
+                onClick={() => setPendingStatusCampaign(null)}
+              >
+                {t("common.cancel", { defaultValue: "Cancel" })}
+              </button>
+              <button
+                type="button"
+                className={btnPrimary}
+                disabled={Boolean(busyId)}
+                onClick={() => void toggleStatus(pendingStatusCampaign)}
+              >
+                {busyId ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : pendingNextStatus === "PAUSED" ? (
+                  t("metaCampaigns.actions.pause")
+                ) : (
+                  t("metaCampaigns.actions.resume")
+                )}
+              </button>
             </div>
-            <button
-              type="button"
-              onClick={hideCaptions}
-              className="shrink-0 rounded-lg border border-slate-200 px-2 py-1 text-xs font-bold text-slate-500 hover:bg-slate-50"
-            >
-              Hide
-            </button>
           </div>
         </div>
       ) : null}
+
+      <MetaAdsReviewCaptions set="overview" />
     </div>
   );
 }
