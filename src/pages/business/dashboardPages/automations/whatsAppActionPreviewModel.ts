@@ -257,11 +257,8 @@ export function buildWhatsAppPreviewModel(args: {
   if (args.forceError) {
     return { ...empty, state: "error" };
   }
-  if (!args.hasSelection && !args.template) {
-    return empty;
-  }
   if (!args.template) {
-    return { ...empty, state: "error" };
+    return empty;
   }
   const copy = extractWhatsAppTemplateCopy(args.template);
   const hasMedia = ["image", "video", "document", "location"].includes(
