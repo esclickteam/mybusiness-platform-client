@@ -781,6 +781,10 @@
     "loggingIn": "Logging in...",
     "forgotPassword": "Forgot password?",
     "loadingForgot": "Loading reset password form...",
+    "rememberMe": "Remember me",
+    "noAccount": "Don't have an account?",
+    "registerCta": "Register now",
+    "checkoutSuccess": "Payment received. Sign in with the email and password you chose at registration.",
     "errors": {
       "enterCredentials": "Please enter email and password",
       "incorrectCredentials": "Incorrect email or password"

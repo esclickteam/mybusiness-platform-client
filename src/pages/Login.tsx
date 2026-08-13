@@ -46,7 +46,7 @@ type ApiError = {
 export default function Login() {
   const { login, error: authError } = useAuth();
   const { fetchNotifications } = useNotifications();
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -122,7 +122,7 @@ export default function Login() {
     const passwordValue = String(formData.get("password") || form.password || "");
 
     if (!emailValue.trim() || !passwordValue) {
-      setLoginError("אנא הזינו אימייל וסיסמה");
+      setLoginError(t("login.errors.enterCredentials"));
       return;
     }
 
@@ -190,7 +190,7 @@ export default function Login() {
       }, 1000);
     } catch (err) {
       const apiError = err as ApiError;
-      setLoginError(authError || apiError.message || "אימייל או סיסמה שגויים");
+      setLoginError(authError || apiError.message || t("login.errors.incorrectCredentials"));
     } finally {
       setLoading(false);
     }
@@ -205,8 +205,8 @@ export default function Login() {
   return (
     <AuthShell>
       <AuthCard
-        title="התחברות"
-        subtitle="התחברו כדי לנהל את העסק שלכם ב-BizUply"
+        title={t("login.cardTitle")}
+        subtitle={t("login.cardSubtitle")}
       >
         <form onSubmit={handleSubmit} noValidate className="space-y-4">
           {checkoutSuccess ? (
@@ -214,7 +214,7 @@ export default function Login() {
               className="rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm font-bold leading-6 text-emerald-800"
               role="status"
             >
-              התשלום התקבל בהצלחה. החשבון נפתח — התחברו עם האימייל והסיסמה שבחרתם בהרשמה.
+              {t("login.checkoutSuccess")}
             </p>
           ) : null}
 
@@ -223,7 +223,7 @@ export default function Login() {
               htmlFor="email"
               className="mb-2 block text-sm font-bold text-slate-700"
             >
-              אימייל
+              {t("login.emailLabel")}
             </label>
             <div className="relative">
               <Mail className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
@@ -248,7 +248,7 @@ export default function Login() {
               htmlFor="password"
               className="mb-2 block text-sm font-bold text-slate-700"
             >
-              סיסמה
+              {t("login.passwordLabel")}
             </label>
             <div className="relative">
               <Lock className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
@@ -268,7 +268,7 @@ export default function Login() {
               <button
                 type="button"
                 onClick={() => setShowPassword((prev) => !prev)}
-                aria-label={showPassword ? "הסתר סיסמה" : "הצג סיסמה"}
+                aria-label={showPassword ? t("login.hidePassword") : t("login.showPassword")}
                 className="absolute left-3 top-1/2 grid h-8 w-8 -translate-y-1/2 place-items-center rounded-full text-slate-400 transition hover:bg-slate-50 hover:text-slate-700"
               >
                 {showPassword ? <EyeOff size={17} /> : <Eye size={17} />}
@@ -281,7 +281,7 @@ export default function Login() {
               to="/forgot-password"
               className="text-slate-500 transition hover:text-violet-700"
             >
-              שכחתם סיסמה?
+              {t("login.forgotPassword")}
             </Link>
 
             <label className="inline-flex cursor-pointer items-center gap-2 text-slate-600">
@@ -291,7 +291,7 @@ export default function Login() {
                 onChange={(e) => setRememberMe(e.target.checked)}
                 className="h-4 w-4 rounded border-slate-300 text-violet-600 focus:ring-violet-500"
               />
-              זכור אותי
+              {t("login.rememberMe")}
             </label>
           </div>
 
@@ -309,17 +309,17 @@ export default function Login() {
             disabled={loading}
             className="mt-2 inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-sky-500 via-indigo-500 to-violet-600 text-base font-black text-white shadow-[0_14px_30px_rgba(99,102,241,0.35)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-70"
           >
-            {loading ? "מתחבר..." : "התחברות"}
+            {loading ? t("login.loggingIn") : t("login.signIn")}
             {!loading ? <span aria-hidden>←</span> : null}
           </button>
 
           <p className="pt-2 text-center text-sm font-semibold text-slate-600">
-            אין חשבון?{" "}
+            {t("login.noAccount")}{" "}
             <Link
               to="/pricing"
               className="font-black text-violet-700 transition hover:text-indigo-700"
             >
-              הירשמו עכשיו
+              {t("login.registerCta")}
             </Link>
           </p>
         </form>
