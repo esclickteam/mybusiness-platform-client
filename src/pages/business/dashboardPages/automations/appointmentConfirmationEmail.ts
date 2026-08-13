@@ -1,6 +1,3 @@
-export const BIZUPLY_EMAIL_LOGO_URL =
-  "https://bizuply.com/email/logo.png";
-
 export const APPOINTMENT_CONFIRMATION_SUBJECT = "אישור פגישה";
 
 export const APPOINTMENT_EMAIL_VARIABLES = [
@@ -92,12 +89,7 @@ export const APPOINTMENT_CONFIRMATION_HTML = `<!DOCTYPE html>
       <td align="center">
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#ffffff;border-radius:14px;overflow:hidden;border:1px solid #e8ecf4;">
           <tr>
-            <td align="center" style="padding:22px 24px 8px 24px;">
-              <img src="https://bizuply.com/email/logo.png" alt="BizUply" width="140" style="display:block;max-width:140px;height:auto;border:0;" />
-            </td>
-          </tr>
-          <tr>
-            <td dir="rtl" style="padding:8px 28px 28px 28px;color:#1f2937;text-align:right;direction:rtl;">
+            <td dir="rtl" style="padding:28px 28px 28px 28px;color:#1f2937;text-align:right;direction:rtl;">
               <h1 style="margin:0 0 14px 0;font-size:22px;line-height:1.35;color:#4f46e5;">הפגישה שלך נקבעה בהצלחה</h1>
               <p style="margin:0 0 12px 0;font-size:16px;line-height:1.7;">שלום {{appointment.clientName}},</p>
               <p style="margin:0 0 18px 0;font-size:16px;line-height:1.7;">

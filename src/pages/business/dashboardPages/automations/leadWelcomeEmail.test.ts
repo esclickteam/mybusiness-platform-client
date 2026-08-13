@@ -53,7 +53,8 @@ describe("lead welcome email defaults", () => {
     expect(html).toContain("050-0000000");
     expect(html).toContain("אתר");
     expect(html).toContain('dir="rtl"');
-    expect(html).toContain("bizuply.com/email/logo.png");
+    expect(html).not.toMatch(/<img\b/i);
+    expect(html).not.toContain("logo.png");
     expect(html).not.toMatch(/\{\{/);
     expect(html).not.toContain("Email E2E");
     expect(html).not.toContain("undefined");
@@ -67,7 +68,8 @@ describe("lead welcome email defaults", () => {
     const html = interpolateEmailTemplate(LEAD_OPENING_HTML, ctx);
     expect(LEAD_OPENING_SUBJECT).toBe("תודה על הפנייה");
     expect(html).toContain("תודה שפנית אלינו");
-    expect(html).toContain("bizuply.com/email/logo.png");
+    expect(html).not.toMatch(/<img\b/i);
+    expect(html).not.toContain("logo.png");
     expect(html).toContain("מופעל באמצעות Bizuply");
     expect(html).not.toMatch(/\{\{/);
   });
@@ -114,7 +116,8 @@ describe("lead welcome email defaults", () => {
         expect(String(data?.html)).toContain("{{appointment.date}}");
         expect(String(data?.html)).toContain("{{appointment.time}}");
         expect(String(data?.html)).toContain("{{appointment.duration}}");
-        expect(String(data?.html)).toContain("bizuply.com/email/logo.png");
+        expect(String(data?.html)).not.toMatch(/<img\b/i);
+        expect(String(data?.html)).not.toContain("logo.png");
         expect(String(data?.text)).toContain("{{appointment.clientName}}");
         expect(String(data?.subject)).toBe("אישור פגישה");
       }
