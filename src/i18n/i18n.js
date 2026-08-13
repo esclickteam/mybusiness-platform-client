@@ -12,11 +12,8 @@ import it from "./locales/it.json";
 import {
   applyDocumentLocale,
   applyLanguageFromUrl,
-  detectLanguageFromBrowserSignals,
-  fetchGeoLanguage,
+  DEFAULT_LANGUAGE,
   getManualLanguageChoice,
-  hasManualLanguageChoice,
-  normalizeLanguage,
 } from "./localeUtils";
 
 const supportedLanguages = ["en", "he", "fr", "de", "es", "nl", "it"];
@@ -31,8 +28,7 @@ const browserGeoDetector = {
     const manual = getManualLanguageChoice();
     if (manual && supportedLanguages.includes(manual)) return manual;
 
-    const detected = normalizeLanguage(detectLanguageFromBrowserSignals());
-    return detected === "he" || detected === "en" ? detected : "en";
+    return DEFAULT_LANGUAGE;
   },
 };
 
@@ -53,7 +49,7 @@ i18n
       it: { translation: it },
     },
 
-    fallbackLng: "en",
+    fallbackLng: DEFAULT_LANGUAGE,
     supportedLngs: supportedLanguages,
 
     interpolation: {
@@ -61,7 +57,6 @@ i18n
     },
 
     detection: {
-      // Location/browser signals first. Geo API sync confirms right after boot.
       order: ["browserGeo"],
       caches: [],
     },
@@ -75,42 +70,5 @@ i18n.on("languageChanged", (lng) => {
 });
 
 applyDocumentLocale(i18n.language);
-
-const bootLang = applyLanguageFromUrl();
-if (bootLang && normalizeLanguage(i18n.language) !== bootLang) {
-  void i18n.changeLanguage(bootLang);
-}
-
-async function syncLanguageFromGeo() {
-  if (typeof window === "undefined") return;
-
-  // URL ?lang=en is an explicit review/test choice — never override it with geo.
-  const fromUrl = applyLanguageFromUrl();
-  if (fromUrl) {
-    if (normalizeLanguage(i18n.language) !== fromUrl) {
-      await i18n.changeLanguage(fromUrl);
-    } else {
-      applyDocumentLocale(fromUrl);
-    }
-    return;
-  }
-  if (hasManualLanguageChoice()) {
-    applyDocumentLocale(i18n.language);
-    return;
-  }
-
-  // First-time visitors (no explicit choice): detect from location (IL → he, else → en).
-  const geoLanguage = await fetchGeoLanguage();
-  if (!geoLanguage) return;
-
-  const current = normalizeLanguage(i18n.language);
-  if (current !== geoLanguage) {
-    await i18n.changeLanguage(geoLanguage);
-  } else {
-    applyDocumentLocale(geoLanguage);
-  }
-}
-
-syncLanguageFromGeo();
 
 export default i18n;

@@ -817,7 +817,7 @@ export default function App() {
 
   return (
     <NotificationsProvider>
-      <div className="app-layout" dir={appDir} lang={i18n.language?.split("-")?.[0] || "en"}>
+      <div className="app-layout" dir={appDir} lang={i18n.language?.split("-")?.[0] || "he"}>
         {!isBusinessChatRoute &&
           !isEarlyAccessLanding &&
           !isAdminRoute &&
