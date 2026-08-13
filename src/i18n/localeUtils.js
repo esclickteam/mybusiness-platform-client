@@ -1,11 +1,13 @@
 export const GEO_LANG_COOKIE = "bizuply_geo_lang";
-/** Durable, user-selected language. Persists across reloads and wins over geo. */
-export const MANUAL_LANG_FLAG = "bizuply_lang_manual";
+/** Durable, user-selected language. Persists across reloads. */
+export const MANUAL_LANG_FLAG = "bizuply_lang_preference";
 export const SESSION_LANG_KEY = "bizuply_lang_session";
 export const I18N_STORAGE_KEY = "i18nextLng";
+/** Product default for fresh visitors with no explicit language choice. */
+export const DEFAULT_LANGUAGE = "he";
 
 export function normalizeLanguage(lng) {
-  return String(lng || "en").split("-")[0].toLowerCase() || "en";
+  return String(lng || DEFAULT_LANGUAGE).split("-")[0].toLowerCase() || DEFAULT_LANGUAGE;
 }
 
 export function languageFromCountry(country) {
@@ -95,7 +97,9 @@ export function getManualLanguageChoice() {
 
 export function getSessionLanguageOverride() {
   if (typeof sessionStorage === "undefined") return null;
-  const stored = normalizeLanguage(sessionStorage.getItem(SESSION_LANG_KEY) || "");
+  const raw = sessionStorage.getItem(SESSION_LANG_KEY);
+  if (!raw) return null;
+  const stored = normalizeLanguage(raw);
   return stored === "he" || stored === "en" ? stored : null;
 }
 
@@ -140,16 +144,13 @@ export function detectLanguageFromNavigator() {
   return null;
 }
 
-/**
- * Fast local signal before /api/geo responds.
- * Prefer Israel signals (timezone / browser language) over a stale geo cookie.
- */
+/** Read an explicit ?lang=en or ?lang=he query. Missing/invalid values return null. */
 export function languageFromUrl() {
   if (typeof window === "undefined") return null;
   try {
-    const lang = normalizeLanguage(
-      new URLSearchParams(window.location.search).get("lang") || ""
-    );
+    const raw = new URLSearchParams(window.location.search).get("lang");
+    if (!raw) return null;
+    const lang = normalizeLanguage(raw);
     return lang === "en" || lang === "he" ? lang : null;
   } catch {
     return null;
@@ -168,13 +169,13 @@ export function detectLanguageFromBrowserSignals() {
     languageFromUrl() ||
     detectLanguageFromTimezone() ||
     detectLanguageFromNavigator() ||
-    normalizeLanguage(getCookie(GEO_LANG_COOKIE) || "") ||
-    "en"
+    DEFAULT_LANGUAGE
   );
 }
 
 /**
- * Resolve UI language from geo API: Israel → he, everywhere else → en.
+ * Resolve a geo hint from /api/geo. This must never replace the Hebrew product
+ * default for fresh users — only URL ?lang= and an explicit toggle may do that.
  */
 export async function fetchGeoLanguage() {
   try {
@@ -202,11 +203,9 @@ export async function fetchGeoLanguage() {
       }
     }
   } catch {
-    // Ignore network failures — fall back to browser signals.
+    // Ignore network failures — fall back to the product default.
   }
 
-  const fallback = detectLanguageFromBrowserSignals();
-  const language = fallback === "he" ? "he" : "en";
-  setCookie(GEO_LANG_COOKIE, language);
-  return language;
+  setCookie(GEO_LANG_COOKIE, DEFAULT_LANGUAGE);
+  return DEFAULT_LANGUAGE;
 }

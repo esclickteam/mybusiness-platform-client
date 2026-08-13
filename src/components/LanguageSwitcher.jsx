@@ -19,7 +19,7 @@ export default function LanguageSwitcher() {
   const [open, setOpen] = useState(false);
   const wrapperRef = useRef(null);
 
-  const currentLangCode = i18n.language?.split("-")?.[0] || "en";
+  const currentLangCode = i18n.language?.split("-")?.[0] || "he";
 
   const currentLanguage =
     languages.find((lang) => lang.code === currentLangCode) || languages[0];
