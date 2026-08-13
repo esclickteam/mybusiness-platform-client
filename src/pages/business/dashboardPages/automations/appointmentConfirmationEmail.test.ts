@@ -56,6 +56,8 @@ describe("appointment confirmation email templates", () => {
     expect(html).toContain("14:40");
     expect(html).toContain("30 \u05d3\u05e7\u05d5\u05ea");
     expect(html).toContain("dir=\"rtl\"");
+    expect(html).not.toMatch(/<img\b/i);
+    expect(html).not.toContain("logo.png");
     expect(html).not.toMatch(/\{\{/);
     expect(html).not.toContain("undefined");
     expect(html).not.toContain("null");
@@ -91,6 +93,8 @@ describe("appointment confirmation email templates", () => {
       expect(String(data.html)).toContain("{{appointment.time}}");
       expect(String(data.html)).toContain("{{appointment.duration}}");
       expect(String(data.html)).toContain("{{business.name}}");
+      expect(String(data.html)).not.toMatch(/<img\b/i);
+      expect(String(data.html)).not.toContain("logo.png");
       expect(String(data.text)).toContain("{{appointment.clientName}}");
       expect(JSON.stringify(graph)).not.toContain("send_email");
     }
