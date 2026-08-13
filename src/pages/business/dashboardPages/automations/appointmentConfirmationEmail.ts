@@ -1,5 +1,5 @@
 export const BIZUPLY_EMAIL_LOGO_URL =
-  "https://api.bizuply.com/uploads/logo.png";
+  "https://bizuply.com/email/logo.png";
 
 export const APPOINTMENT_CONFIRMATION_SUBJECT = "אישור פגישה";
 
@@ -93,7 +93,7 @@ export const APPOINTMENT_CONFIRMATION_HTML = `<!DOCTYPE html>
         <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background:#ffffff;border-radius:14px;overflow:hidden;border:1px solid #e8ecf4;">
           <tr>
             <td align="center" style="padding:22px 24px 8px 24px;">
-              <img src="https://api.bizuply.com/uploads/logo.png" alt="BizUply" width="140" style="display:block;max-width:140px;height:auto;border:0;" />
+              <img src="https://bizuply.com/email/logo.png" alt="BizUply" width="140" style="display:block;max-width:140px;height:auto;border:0;" />
             </td>
           </tr>
           <tr>
