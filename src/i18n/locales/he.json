@@ -781,6 +781,10 @@
     "loggingIn": "מתחבר...",
     "forgotPassword": "שכחתם סיסמה?",
     "loadingForgot": "טוען טופס לאיפוס סיסמה...",
+    "rememberMe": "זכור אותי",
+    "noAccount": "אין חשבון?",
+    "registerCta": "הירשמו עכשיו",
+    "checkoutSuccess": "התשלום התקבל בהצלחה. החשבון נפתח — התחברו עם האימייל והסיסמה שבחרתם בהרשמה.",
     "errors": {
       "enterCredentials": "אנא הזינו אימייל וסיסמה",
       "incorrectCredentials": "אימייל או סיסמה שגויים"

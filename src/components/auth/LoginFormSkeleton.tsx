@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import AuthShell, { AuthCard } from "./AuthShell";
 
 /**
@@ -14,18 +15,19 @@ import AuthShell, { AuthCard } from "./AuthShell";
  * high CLS).
  */
 export function LoginFormSkeleton() {
+  const { t } = useTranslation();
   return (
     <AuthShell>
       <AuthCard
-        title="התחברות"
-        subtitle="התחברו כדי לנהל את העסק שלכם ב-BizUply"
+        title={t("login.cardTitle")}
+        subtitle={t("login.cardSubtitle")}
       >
         <div
           className="space-y-4"
           role="status"
           aria-live="polite"
           aria-busy="true"
-          aria-label="טוען..."
+          aria-label={t("common.loading")}
         >
           <div>
             <div className="mb-2 h-[17px] w-14 rounded bg-slate-100" />
