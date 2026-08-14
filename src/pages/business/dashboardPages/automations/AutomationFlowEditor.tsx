@@ -1621,7 +1621,14 @@ function EditorInner({
         node.type === "action" &&
         isBizuplySendEmailActionKey(node.data?.actionKey)
     );
-    if (sendEmailNodes.length && !emailSenders.length) {
+    const legacyPublishedSendEmail =
+      Boolean(workflow.publishedVersionId) &&
+      sendEmailNodes.some((node) => !String(node.data?.senderId || "").trim());
+    if (
+      sendEmailNodes.length &&
+      !emailSenders.length &&
+      !legacyPublishedSendEmail
+    ) {
       const msg = "לא הוגדר מייל שולח — יש להגדיר שולח מאומת לפני פרסום";
       setPublishError(msg);
       toast.error(msg);
@@ -3868,7 +3875,11 @@ function EditorInner({
                       </label>
                     ) : (
                       <div className="af-wa-template__state af-wa-template__state--error">
-                        <p>לא הוגדר מייל שולח</p>
+                        <p>
+                          {workflow.publishedVersionId
+                            ? "עדיין נשלח מ-BizUply עד שתגדירו שולח מאומת"
+                            : "לא הוגדר מייל שולח"}
+                        </p>
                         <a href={`/business/${businessId}/dashboard/integrations#email-senders`}>
                           הגדרת מייל שולח
                         </a>
