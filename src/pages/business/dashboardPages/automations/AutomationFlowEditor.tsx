@@ -1622,7 +1622,8 @@ function EditorInner({
         isBizuplySendEmailActionKey(node.data?.actionKey)
     );
     if (sendEmailNodes.length && !emailSenders.length) {
-      const msg = "לא הוגדר מייל שולח — יש להגדיר שולח מאומת לפני פרסום";
+      const msg =
+        "לא ניתן להפעיל את האוטומציה עדיין. יש להגדיר מייל עסקי מאומת לפני שליחת מיילים.";
       setPublishError(msg);
       toast.error(msg);
       return;
@@ -1630,7 +1631,8 @@ function EditorInner({
     if (
       sendEmailNodes.some((node) => !String(node.data?.senderId || "").trim())
     ) {
-      const msg = "יש לבחור שולח מאומת לכל פעולת שליחת מייל לפני פרסום";
+      const msg =
+        "לא ניתן להפעיל את האוטומציה עדיין. יש להגדיר מייל עסקי מאומת לפני שליחת מיילים.";
       setPublishError(msg);
       toast.error(msg);
       return;
@@ -3844,10 +3846,7 @@ function EditorInner({
                   <div className="af-wa-template" dir="rtl">
                     <div className="af-wa-banner">
                       <strong>מאת</strong>
-                      <p>
-                        המייל יישלח רק משולח מאומת של העסק. לא נשתמש ב-noreply של
-                        Bizuply.
-                      </p>
+                      <p>המייל יישלח מכתובת עסקית מאומתת של העסק.</p>
                     </div>
                     {emailSenders.length ? (
                       <label>
@@ -3867,21 +3866,20 @@ function EditorInner({
                             });
                           }}
                         >
-                          <option value="">בחרו שולח מאומת</option>
+                          <option value="">בחרו מייל עסקי מאומת</option>
                           {emailSenders.map((sender) => (
                             <option key={sender.senderId} value={sender.senderId}>
-                              {sender.fromLabel}
+                              {`${String(sender.displayName || "").replace(/[<>]/g, "").trim() || sender.email} (${sender.email})`}
                             </option>
                           ))}
                         </select>
                       </label>
                     ) : (
                       <div className="af-wa-template__state af-wa-template__state--error">
-                        <p>
-                          לא הוגדר מייל שולח מאומת — לא ניתן לפרסם או לשלוח בלי שולח
-                        </p>
+                        <p>לא ניתן להפעיל את האוטומציה עדיין</p>
+                        <p>יש להגדיר מייל עסקי מאומת לפני שליחת מיילים.</p>
                         <a href={`/business/${businessId}/dashboard/integrations#email-senders`}>
-                          הגדרת מייל שולח
+                          הגדרת מייל עסקי
                         </a>
                       </div>
                     )}
@@ -3979,13 +3977,20 @@ function EditorInner({
                       text={String(selectedNode.data?.text || "")}
                       readOnly={readOnly}
                       triggerKey={selectedTriggerKey}
-                      previewFromLabel={
-                        emailSenders.find(
+                      previewFromLabel={(() => {
+                        const sender = emailSenders.find(
                           (row) =>
                             row.senderId ===
                             String(selectedNode.data?.senderId || "")
-                        )?.fromLabel || "לא הוגדר מייל שולח"
-                      }
+                        );
+                        if (!sender) return "לא הוגדר מייל שולח";
+                        const name = String(sender.displayName || "")
+                          .replace(/[<>]/g, "")
+                          .trim();
+                        return name
+                          ? `${name} (${sender.email})`
+                          : sender.email;
+                      })()}
                       previewToLabel={(() => {
                         const type = String(
                           selectedNode.data?.recipientType ||
