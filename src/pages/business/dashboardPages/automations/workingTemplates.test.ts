@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import type { AutomationRecipeSummary } from "../../../../api/automationWorkflowApi";
 import {
   WORKING_TEMPLATES,
+  buildWhatsAppSimpleGraph,
   getTemplateReadiness,
   getWaTemplateId,
   isEmailFacingTemplate,
@@ -432,6 +433,65 @@ describe("workingTemplates launch safety", () => {
     const duo = WORKING_TEMPLATES.find((t) => t.key === "wf_appointment_duo")!;
     expect(duo.name).not.toMatch(/תודה/);
     expect(duo.description).toMatch(/ללא הודעת תודה/);
+  });
+
+  it("duo graph confirms immediately, creates a task, then reminds 24h before start", () => {
+    const duo = WORKING_TEMPLATES.find((t) => t.key === "wf_appointment_duo")!;
+    const graph = duo.buildGraph!({ triggerKey: "appointment_created" });
+    const types = graph.nodes.map((n) => n.type);
+    expect(types).toEqual(["trigger", "action", "action", "delay", "action"]);
+    const trigger = graph.nodes[0].data as { triggerKey?: string };
+    expect(trigger.triggerKey).toBe("appointment_created");
+    const actions = graph.nodes.filter((n) => n.type === "action");
+    expect(
+      actions.map((n) => String((n.data as { actionKey?: string }).actionKey))
+    ).toEqual(["whatsapp_template", "create_task", "whatsapp_template"]);
+    expect(
+      actions
+        .filter(
+          (n) =>
+            String((n.data as { actionKey?: string }).actionKey) ===
+            "whatsapp_template"
+        )
+        .map((n) =>
+          String((n.data as { metaTemplateName?: string }).metaTemplateName)
+        )
+    ).toEqual(["appointment_reminder", "appointment_reminder"]);
+    const delay = graph.nodes.find((n) => n.type === "delay")!.data as {
+      until?: string;
+      offsetHours?: number;
+    };
+    expect(delay.until).toBe("appointment_start");
+    expect(delay.offsetHours).toBe(-24);
+  });
+
+  it("thanks and review delay until appointment end, not creation time", () => {
+    const thanks = WORKING_TEMPLATES.find(
+      (t) => t.key === "wa_appointment_thanks"
+    )!;
+    const review = WORKING_TEMPLATES.find(
+      (t) => t.key === "wa_appointment_review"
+    )!;
+    expect(thanks.delayUntil).toBe("appointment_end");
+    expect(thanks.delayUntilOffsetHours).toBe(0);
+    expect(review.delayUntil).toBe("appointment_end");
+    expect(review.delayUntilOffsetHours).toBe(24);
+    const thanksGraph = buildWhatsAppSimpleGraph(thanks, {
+      triggerKey: "appointment_created",
+    });
+    const reviewGraph = buildWhatsAppSimpleGraph(review, {
+      triggerKey: "appointment_created",
+    });
+    const thanksDelay = thanksGraph.nodes.find((n) => n.type === "delay")!
+      .data as { until?: string; offsetHours?: number; amount?: number };
+    const reviewDelay = reviewGraph.nodes.find((n) => n.type === "delay")!
+      .data as { until?: string; offsetHours?: number; amount?: number };
+    expect(thanksDelay.until).toBe("appointment_end");
+    expect(thanksDelay.offsetHours).toBe(0);
+    expect(thanksDelay.amount).toBeUndefined();
+    expect(reviewDelay.until).toBe("appointment_end");
+    expect(reviewDelay.offsetHours).toBe(24);
+    expect(reviewDelay.amount).toBeUndefined();
   });
 
   it("marks WhatsApp simple templates as WhatsApp-facing", () => {
