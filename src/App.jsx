@@ -21,6 +21,11 @@ const PublicVisualSiteRenderer = lazyWithPreload(() =>
 );
 
 import { useAuth } from "./context/AuthContext";
+import {
+  ensurePushSubscription,
+  listenForPushSubscriptionChange,
+  registerServiceWorker,
+} from "./utils/push";
 import { LoginSkeleton } from "./components/LoginSkeleton";
 import { LoginFormSkeleton } from "./components/auth/LoginFormSkeleton";
 const AdminWithdrawalsPage = lazy(() =>
@@ -772,6 +777,21 @@ export default function App() {
   useEffect(() => {
     clearChunkReloadFlag();
   }, []);
+
+  useEffect(() => {
+    if (isMiniSiteHost) return;
+    void registerServiceWorker();
+  }, [isMiniSiteHost]);
+
+  useEffect(() => {
+    if (isMiniSiteHost) return undefined;
+    return listenForPushSubscriptionChange();
+  }, [isMiniSiteHost]);
+
+  useEffect(() => {
+    if (isMiniSiteHost || !user) return;
+    void ensurePushSubscription();
+  }, [isMiniSiteHost, user]);
 
   useEffect(() => {
     if (isMiniSiteHost) return;

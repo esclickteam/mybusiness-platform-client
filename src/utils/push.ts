@@ -1,7 +1,22 @@
 import API from "@api";
+import {
+  SW_SCOPE,
+  SW_URL,
+  shouldForceRebindOnSwMessage,
+} from "./pushSwMessages";
 
-const SW_URL = "/service-worker.js";
+export { SW_SCRIPT_VERSION, SW_URL, shouldForceRebindOnSwMessage } from "./pushSwMessages";
+
 const PUSH_DEVICE_ID_KEY = "bizuply-push-device-id";
+
+async function getPushRegistration(): Promise<ServiceWorkerRegistration | null> {
+  if (!("serviceWorker" in navigator)) return null;
+  return (
+    (await navigator.serviceWorker.getRegistration(SW_SCOPE)) ||
+    (await navigator.serviceWorker.getRegistration()) ||
+    null
+  );
+}
 
 export function getPushDeviceId(): string {
   if (typeof window === "undefined" || !window.localStorage) {
@@ -82,7 +97,7 @@ export async function registerServiceWorker(): Promise<ServiceWorkerRegistration
 
   try {
     const reg = await navigator.serviceWorker.register(SW_URL, {
-      scope: "/",
+      scope: SW_SCOPE,
       updateViaCache: "none",
     });
 
@@ -103,7 +118,7 @@ export async function registerServiceWorker(): Promise<ServiceWorkerRegistration
 export async function isSubscribed(): Promise<boolean> {
   if (!isPushSupported()) return false;
 
-  const reg = await navigator.serviceWorker.getRegistration(SW_URL);
+  const reg = await getPushRegistration();
   if (!reg) return false;
 
   const sub = await reg.pushManager.getSubscription();
@@ -260,9 +275,7 @@ export async function unsubscribeFromPush(): Promise<void> {
   if (!isPushSupported()) return;
 
   try {
-    const reg =
-      (await navigator.serviceWorker.getRegistration(SW_URL)) ||
-      (await navigator.serviceWorker.getRegistration());
+    const reg = await getPushRegistration();
     if (!reg) return;
 
     const subscription = await reg.pushManager.getSubscription();
@@ -291,10 +304,7 @@ export async function showLocalNotification(options: {
   if (Notification.permission !== "granted") return false;
 
   try {
-    const reg =
-      (await navigator.serviceWorker.getRegistration(SW_URL)) ||
-      (await navigator.serviceWorker.getRegistration()) ||
-      (await registerServiceWorker());
+    const reg = (await getPushRegistration()) || (await registerServiceWorker());
 
     const payload = {
       body: options.body,
@@ -330,11 +340,12 @@ export function listenForPushSubscriptionChange(): () => void {
     const data = (event as MessageEvent).data;
     if (
       data?.type !== "PUSH_SUBSCRIPTION_CHANGED" &&
+      data?.type !== "PUSH_SUBSCRIPTION_NEEDED" &&
       data?.type !== "SW_ACTIVATED"
     ) {
       return;
     }
-    const forceRebind = data?.type === "PUSH_SUBSCRIPTION_CHANGED";
+    const forceRebind = shouldForceRebindOnSwMessage(data?.type);
     if (rebindTimer) clearTimeout(rebindTimer);
     rebindTimer = setTimeout(() => {
       rebindTimer = null;
