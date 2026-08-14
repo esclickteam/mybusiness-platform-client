@@ -102,6 +102,10 @@ import { WhatsAppAutomationTemplateSelect } from "./WhatsAppAutomationTemplateSe
 import { WhatsAppActionPreview } from "./WhatsAppActionPreview";
 import { canPersistAutomationTemplateSelection } from "./whatsAppTemplateSelectFormat";
 import { EmailActionTemplateFields } from "./EmailActionTemplateFields";
+import {
+  listVerifiedEmailSenders,
+  type EmailSender,
+} from "../../../../api/emailSendersApi";
 
 const WA_MAPPING_PRESETS = [
   { key: "lead:name", source: "lead", field: "name", label: "שם הליד" },
@@ -204,6 +208,10 @@ function isWhatsAppActionKey(actionKey: unknown) {
 
 function isGmailActionKey(actionKey: unknown) {
   return String(actionKey || "") === "send_gmail";
+}
+
+function isBizuplySendEmailActionKey(actionKey: unknown) {
+  return String(actionKey || "") === "send_email";
 }
 
 function isOutlookActionKey(actionKey: unknown) {
@@ -527,6 +535,7 @@ function EditorInner({
     useState<OutlookPublicAccount | null>(null);
   const [outlookMessage, setOutlookMessage] = useState("");
   const [outlookLoading, setOutlookLoading] = useState(false);
+  const [emailSenders, setEmailSenders] = useState<EmailSender[]>([]);
   const [calendarStatus, setCalendarStatus] =
     useState<GoogleCalendarStatusResponse | null>(null);
   const [calendarMessage, setCalendarMessage] = useState("");
@@ -914,6 +923,55 @@ function EditorInner({
     if (!selectedId || !selectedCalendarActionKey) return;
     void loadCalendarStatus();
   }, [selectedId, selectedCalendarActionKey, loadCalendarStatus]);
+
+  useEffect(() => {
+    void listVerifiedEmailSenders()
+      .then(setEmailSenders)
+      .catch(() => setEmailSenders([]));
+  }, [businessId]);
+
+  useEffect(() => {
+    if (!selectedId || !emailSenders.length) return;
+    setNodes((prev) => {
+      const node = prev.find((n) => n.id === selectedId);
+      if (!node || !isBizuplySendEmailActionKey(node.data?.actionKey)) {
+        return prev;
+      }
+      const triggerKey = String(
+        prev.find((n) => n.type === "trigger")?.data?.triggerKey || ""
+      );
+      const defaultSender =
+        emailSenders.find((row) => row.isDefault) || emailSenders[0];
+      const currentSenderId = String(node.data?.senderId || "");
+      const senderStillValid = emailSenders.some(
+        (row) => row.senderId === currentSenderId
+      );
+      const nextSender = senderStillValid
+        ? emailSenders.find((row) => row.senderId === currentSenderId)
+        : defaultSender;
+      const needsRecipientDefault = !String(node.data?.recipientType || "").trim();
+      const needsSender =
+        !senderStillValid ||
+        String(node.data?.senderEmail || "") !== String(nextSender?.email || "");
+      if (!needsRecipientDefault && !needsSender) return prev;
+      return prev.map((n) => {
+        if (n.id !== selectedId) return n;
+        return {
+          ...n,
+          data: {
+            ...(n.data || {}),
+            ...(needsRecipientDefault
+              ? { recipientType: defaultEmailRecipientType(triggerKey) }
+              : {}),
+            senderId: nextSender?.senderId || "",
+            senderEmail: nextSender?.email || "",
+            senderName: nextSender?.displayName || "",
+            senderType: nextSender?.type || "",
+          },
+        };
+      });
+    });
+  }, [selectedId, emailSenders, setNodes]);
 
   useEffect(() => {
     if (!selectedId) return;
@@ -1554,6 +1612,24 @@ function EditorInner({
     if (publishing) return;
     if (triggerCatalogLoading || triggerCatalogError || !triggerCatalog.length) {
       const msg = "יש לטעון את קטלוג הטריגרים לפני פרסום";
+      setPublishError(msg);
+      toast.error(msg);
+      return;
+    }
+    const sendEmailNodes = nodes.filter(
+      (node) =>
+        node.type === "action" &&
+        isBizuplySendEmailActionKey(node.data?.actionKey)
+    );
+    const legacyPublishedSendEmail =
+      Boolean(workflow.publishedVersionId) &&
+      sendEmailNodes.some((node) => !String(node.data?.senderId || "").trim());
+    if (
+      sendEmailNodes.length &&
+      !emailSenders.length &&
+      !legacyPublishedSendEmail
+    ) {
+      const msg = "לא הוגדר מייל שולח — יש להגדיר שולח מאומת לפני פרסום";
       setPublishError(msg);
       toast.error(msg);
       return;
@@ -3761,6 +3837,171 @@ function EditorInner({
                         />
                       </>
                     )}
+                  </div>
+                ) : null}
+                {isBizuplySendEmailActionKey(selectedNode.data?.actionKey) ? (
+                  <div className="af-wa-template" dir="rtl">
+                    <div className="af-wa-banner">
+                      <strong>מאת</strong>
+                      <p>
+                        המייל יישלח רק משולח מאומת של העסק. לא נשתמש ב-noreply של
+                        Bizuply.
+                      </p>
+                    </div>
+                    {emailSenders.length ? (
+                      <label>
+                        מאת
+                        <select
+                          disabled={readOnly}
+                          value={String(selectedNode.data?.senderId || emailSenders[0]?.senderId || "")}
+                          onChange={(e) => {
+                            const sender = emailSenders.find(
+                              (row) => row.senderId === e.target.value
+                            );
+                            updateSelectedData({
+                              senderId: e.target.value,
+                              senderEmail: sender?.email || "",
+                              senderName: sender?.displayName || "",
+                              senderType: sender?.type || "",
+                            });
+                          }}
+                        >
+                          {emailSenders.map((sender) => (
+                            <option key={sender.senderId} value={sender.senderId}>
+                              {sender.fromLabel}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                    ) : (
+                      <div className="af-wa-template__state af-wa-template__state--error">
+                        <p>
+                          {workflow.publishedVersionId
+                            ? "עדיין נשלח מ-BizUply עד שתגדירו שולח מאומת"
+                            : "לא הוגדר מייל שולח"}
+                        </p>
+                        <a href={`/business/${businessId}/dashboard/integrations#email-senders`}>
+                          הגדרת מייל שולח
+                        </a>
+                      </div>
+                    )}
+                    <div className="af-wa-recipient" dir="rtl">
+                      <label>
+                        אל
+                        <select
+                          value={String(
+                            selectedNode.data?.recipientType ||
+                              defaultEmailRecipientType(selectedTriggerKey)
+                          )}
+                          disabled={readOnly}
+                          onChange={(e) => {
+                            const recipientType = e.target.value;
+                            updateSelectedData({
+                              recipientType,
+                              fixedEmail:
+                                recipientType === "fixed_email"
+                                  ? String(selectedNode.data?.fixedEmail || "")
+                                  : "",
+                              customField:
+                                recipientType === "custom_field"
+                                  ? String(selectedNode.data?.customField || "")
+                                  : "",
+                            });
+                          }}
+                        >
+                          <option value="lead_email">אימייל הליד</option>
+                          {triggerSupportsAppointmentCustomerEmail(
+                            selectedTriggerKey
+                          ) ||
+                          String(selectedNode.data?.recipientType || "") ===
+                            "appointment_customer_email" ? (
+                            <option value="appointment_customer_email">
+                              אימייל הלקוח שקבע תור
+                            </option>
+                          ) : null}
+                          {triggerSupportsStoreCustomerEmail(
+                            selectedTriggerKey
+                          ) ||
+                          String(selectedNode.data?.recipientType || "") ===
+                            "store_customer_email" ? (
+                            <option value="store_customer_email">
+                              אימייל הלקוח בהזמנה
+                            </option>
+                          ) : null}
+                          <option value="business_owner">בעל העסק</option>
+                          <option value="lead_owner">אחראי הליד</option>
+                          <option value="fixed_email">כתובת קבועה</option>
+                          <option value="custom_field">שדה מותאם אישית</option>
+                        </select>
+                      </label>
+                      {String(selectedNode.data?.recipientType || "") ===
+                      "fixed_email" ? (
+                        <label>
+                          כתובת קבועה
+                          <input
+                            type="email"
+                            dir="ltr"
+                            placeholder="name@example.com"
+                            disabled={readOnly}
+                            value={String(selectedNode.data?.fixedEmail || "")}
+                            onChange={(e) =>
+                              updateSelectedData({
+                                recipientType: "fixed_email",
+                                fixedEmail: e.target.value,
+                              })
+                            }
+                          />
+                        </label>
+                      ) : null}
+                      {String(selectedNode.data?.recipientType || "") ===
+                      "custom_field" ? (
+                        <label>
+                          שדה מותאם (מפתח)
+                          <input
+                            type="text"
+                            dir="ltr"
+                            placeholder="emailField"
+                            disabled={readOnly}
+                            value={String(selectedNode.data?.customField || "")}
+                            onChange={(e) =>
+                              updateSelectedData({
+                                recipientType: "custom_field",
+                                customField: e.target.value,
+                              })
+                            }
+                          />
+                        </label>
+                      ) : null}
+                    </div>
+                    <EmailActionTemplateFields
+                      subject={String(selectedNode.data?.subject || "")}
+                      html={String(selectedNode.data?.html || selectedNode.data?.body || "")}
+                      text={String(selectedNode.data?.text || "")}
+                      readOnly={readOnly}
+                      triggerKey={selectedTriggerKey}
+                      previewFromLabel={
+                        emailSenders.find(
+                          (row) =>
+                            row.senderId ===
+                            String(selectedNode.data?.senderId || emailSenders[0]?.senderId || "")
+                        )?.fromLabel || "לא הוגדר מייל שולח"
+                      }
+                      previewToLabel={(() => {
+                        const type = String(
+                          selectedNode.data?.recipientType ||
+                            defaultEmailRecipientType(selectedTriggerKey)
+                        );
+                        const base = GMAIL_RECIPIENT_LABELS[type] || "—";
+                        if (type === "fixed_email" && selectedNode.data?.fixedEmail) {
+                          return `${base} (${String(selectedNode.data.fixedEmail)})`;
+                        }
+                        if (type === "custom_field" && selectedNode.data?.customField) {
+                          return `${base} (${String(selectedNode.data.customField)})`;
+                        }
+                        return base;
+                      })()}
+                      onChange={(next) => updateSelectedData(next)}
+                    />
                   </div>
                 ) : null}
               </>

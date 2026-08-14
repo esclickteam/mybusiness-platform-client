@@ -1,0 +1,237 @@
+import { useEffect, useState } from "react";
+import {
+  createEmailSender,
+  deleteEmailSender,
+  listEmailSenders,
+  refreshEmailSender,
+  revokeEmailSender,
+  sendEmailSenderCode,
+  setDefaultEmailSender,
+  verifyEmailSender,
+  type EmailSender,
+} from "../../../../api/emailSendersApi";
+
+function statusLabel(status: string) {
+  if (status === "verified") return "מאומת";
+  if (status === "pending") return "ממתין לאימות";
+  if (status === "failed") return "נכשל";
+  if (status === "revoked") return "בוטל";
+  return status;
+}
+
+function typeLabel(type: string) {
+  if (type === "gmail") return "Gmail";
+  if (type === "outlook") return "Outlook";
+  return "Bizuply SMTP";
+}
+
+export default function EmailSendersPanel({
+  connectGmail,
+  connectOutlook,
+}: {
+  connectGmail?: () => void;
+  connectOutlook?: () => void;
+}) {
+  const [senders, setSenders] = useState<EmailSender[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [displayName, setDisplayName] = useState("");
+  const [email, setEmail] = useState("");
+  const [codeById, setCodeById] = useState<Record<string, string>>({});
+  const [busy, setBusy] = useState(false);
+
+  async function load() {
+    setLoading(true);
+    setError("");
+    try {
+      setSenders(await listEmailSenders());
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "שגיאה בטעינת שולחי מייל");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  useEffect(() => {
+    void load();
+  }, []);
+
+  async function addSender() {
+    setBusy(true);
+    setError("");
+    try {
+      await createEmailSender({ displayName, email });
+      setDisplayName("");
+      setEmail("");
+      await load();
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "לא ניתן להוסיף שולח");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <section
+      id="email-senders"
+      dir="rtl"
+      className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm"
+    >
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h2 className="text-lg font-semibold">שולחי מייל</h2>
+          <p className="text-sm text-slate-600 mt-1">
+            מיילים ללקוחות נשלחים רק משולח מאומת של העסק. לא נשתמש ב-noreply של
+            Bizuply כברירת מחדל.
+          </p>
+        </div>
+      </div>
+
+      {error ? (
+        <p className="mt-3 text-sm text-red-700 bg-red-50 border border-red-100 rounded-xl px-3 py-2">
+          {error}
+        </p>
+      ) : null}
+
+      {loading ? (
+        <p className="mt-4 text-sm text-slate-500">טוען שולחים...</p>
+      ) : senders.length ? (
+        <div className="mt-4 space-y-3">
+          {senders.map((sender) => (
+            <div
+              key={sender.senderId}
+              className="rounded-xl border border-slate-200 px-3 py-3 text-sm"
+            >
+              <div className="font-semibold">{sender.fromLabel}</div>
+              <div className="text-slate-600 mt-1">
+                {typeLabel(sender.type)} · {statusLabel(sender.verificationStatus)}
+                {sender.isDefault ? " · ברירת מחדל" : ""}
+              </div>
+              {sender.type === "bizuply_smtp" &&
+              sender.domainVerification?.records?.length ? (
+                <div className="mt-2 rounded-lg bg-slate-50 px-2 py-2 text-xs text-slate-600" dir="ltr">
+                  {sender.domainVerification.records.map((record, index) => (
+                    <div key={`${record.name || "dns"}-${index}`}>
+                      {record.type || "DNS"} {record.name || ""} {record.value || ""}
+                    </div>
+                  ))}
+                </div>
+              ) : null}
+              <div className="mt-2 flex flex-wrap gap-2">
+                {sender.type === "bizuply_smtp" ? (
+                  <>
+                    <button
+                      type="button"
+                      className="rounded-lg border px-2 py-1"
+                      onClick={() => refreshEmailSender(sender.senderId).then(load)}
+                    >
+                      בדיקת אימות דומיין
+                    </button>
+                    <button
+                      type="button"
+                      className="rounded-lg border px-2 py-1"
+                      onClick={() => sendEmailSenderCode(sender.senderId)}
+                    >
+                      שליחת אימות מחדש
+                    </button>
+                    <input
+                      className="rounded-lg border px-2 py-1 w-28"
+                      placeholder="קוד"
+                      value={codeById[sender.senderId] || ""}
+                      onChange={(e) =>
+                        setCodeById((prev) => ({
+                          ...prev,
+                          [sender.senderId]: e.target.value,
+                        }))
+                      }
+                    />
+                    <button
+                      type="button"
+                      className="rounded-lg border px-2 py-1"
+                      onClick={() =>
+                        verifyEmailSender(
+                          sender.senderId,
+                          codeById[sender.senderId] || ""
+                        ).then(load)
+                      }
+                    >
+                      אימות
+                    </button>
+                  </>
+                ) : null}
+                {sender.verificationStatus === "verified" && !sender.isDefault ? (
+                  <button
+                    type="button"
+                    className="rounded-lg border px-2 py-1"
+                    onClick={() => setDefaultEmailSender(sender.senderId).then(load)}
+                  >
+                    הגדרה כברירת מחדל
+                  </button>
+                ) : null}
+                {sender.verificationStatus === "verified" ? (
+                  <button
+                    type="button"
+                    className="rounded-lg border px-2 py-1"
+                    onClick={() => revokeEmailSender(sender.senderId).then(load)}
+                  >
+                    ביטול אימות
+                  </button>
+                ) : null}
+                <button
+                  type="button"
+                  className="rounded-lg border px-2 py-1 text-red-700"
+                  onClick={() => deleteEmailSender(sender.senderId).then(load)}
+                >
+                  הסרה
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p className="mt-4 text-sm text-amber-800 bg-amber-50 border border-amber-100 rounded-xl px-3 py-2">
+          לא הוגדר מייל שולח. הוסיפו שולח מאומת או חברו Gmail / Outlook.
+        </p>
+      )}
+
+      <div className="mt-4 grid gap-2 sm:grid-cols-2">
+        <input
+          className="rounded-xl border px-3 py-2 text-sm"
+          placeholder="שם השולח"
+          value={displayName}
+          onChange={(e) => setDisplayName(e.target.value)}
+        />
+        <input
+          className="rounded-xl border px-3 py-2 text-sm"
+          placeholder="info@mybusiness.co.il"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+        />
+      </div>
+      <div className="mt-3 flex flex-wrap gap-2">
+        <button
+          type="button"
+          disabled={busy || !email}
+          className="rounded-xl bg-slate-900 text-white px-3 py-2 text-sm disabled:opacity-50"
+          onClick={() => void addSender()}
+        >
+          הוספת שולח
+        </button>
+        <button
+          type="button"
+          className="rounded-xl border px-3 py-2 text-sm"
+          onClick={connectGmail}
+        >
+          חיבור Gmail
+        </button>
+        <button
+          type="button"
+          className="rounded-xl border px-3 py-2 text-sm"
+          onClick={connectOutlook}
+        >
+          חיבור Outlook
+        </button>
+      </div>
+    </section>
+  );
+}

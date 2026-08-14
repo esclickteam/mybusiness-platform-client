@@ -1,0 +1,87 @@
+import API from "../api";
+
+export type EmailSenderType = "bizuply_smtp" | "gmail" | "outlook";
+export type EmailSenderStatus = "pending" | "verified" | "failed" | "revoked";
+
+export type EmailSender = {
+  senderId: string;
+  businessId: string;
+  displayName: string;
+  email: string;
+  type: EmailSenderType;
+  verificationStatus: EmailSenderStatus;
+  verifiedAt: string | null;
+  isDefault: boolean;
+  replyTo?: string;
+  fromLabel: string;
+  domainVerification?: {
+    status?: string;
+    records?: Array<{ type?: string; name?: string; value?: string }>;
+  };
+};
+
+export async function listEmailSenders() {
+  const { data } = await API.get<{ success: boolean; senders: EmailSender[] }>(
+    "/email-senders"
+  );
+  return data.senders || [];
+}
+
+export async function listVerifiedEmailSenders() {
+  const { data } = await API.get<{ success: boolean; senders: EmailSender[] }>(
+    "/email-senders/verified"
+  );
+  return data.senders || [];
+}
+
+export async function createEmailSender(body: {
+  displayName: string;
+  email: string;
+  replyTo?: string;
+}) {
+  const { data } = await API.post<{ success?: boolean; sender: EmailSender }>(
+    "/email-senders",
+    body
+  );
+  return data.sender;
+}
+
+export async function refreshEmailSender(senderId: string) {
+  const { data } = await API.post<{ sender: EmailSender }>(
+    `/email-senders/${senderId}/refresh`
+  );
+  return data.sender;
+}
+
+export async function sendEmailSenderCode(senderId: string) {
+  const { data } = await API.post<{ sender: EmailSender }>(
+    `/email-senders/${senderId}/send-code`
+  );
+  return data.sender;
+}
+
+export async function verifyEmailSender(senderId: string, code: string) {
+  const { data } = await API.post<{ sender: EmailSender }>(
+    `/email-senders/${senderId}/verify`,
+    { code }
+  );
+  return data.sender;
+}
+
+export async function setDefaultEmailSender(senderId: string) {
+  const { data } = await API.post<{ sender: EmailSender }>(
+    `/email-senders/${senderId}/default`
+  );
+  return data.sender;
+}
+
+export async function revokeEmailSender(senderId: string) {
+  const { data } = await API.post<{ sender: EmailSender }>(
+    `/email-senders/${senderId}/revoke`
+  );
+  return data.sender;
+}
+
+export async function deleteEmailSender(senderId: string) {
+  await API.delete(`/email-senders/${senderId}`);
+}
