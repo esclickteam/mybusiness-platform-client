@@ -1,5 +1,14 @@
+import { readFileSync } from "fs";
+import { join } from "path";
 import { describe, expect, it } from "vitest";
-import { SW_SCRIPT_VERSION, SW_URL, shouldForceRebindOnSwMessage } from "./pushSwMessages";
+import {
+  SW_SCRIPT_VERSION,
+  SW_URL,
+  isCurrentSwScript,
+  isLegacyGenericBanner,
+  shouldForceRebindOnSwMessage,
+  shouldShowWebPushBanner,
+} from "./pushSwMessages";
 
 describe("push SW message handling", () => {
   it("does not unsubscribe/rebind when a new SW activates", () => {
@@ -12,7 +21,55 @@ describe("push SW message handling", () => {
   });
 
   it("cache-busts the service worker script", () => {
-    expect(SW_SCRIPT_VERSION).toBe(9);
-    expect(SW_URL).toBe("/service-worker.js?v=9");
+    expect(SW_SCRIPT_VERSION).toBe(10);
+    expect(SW_URL).toBe("/service-worker.js?v=10");
+  });
+
+  it("treats only the current query-busted SW URL as the live registration", () => {
+    expect(
+      isCurrentSwScript("https://bizuply.com/service-worker.js?v=10", "https://bizuply.com")
+    ).toBe(true);
+    expect(
+      isCurrentSwScript("https://bizuply.com/service-worker.js", "https://bizuply.com")
+    ).toBe(false);
+    expect(
+      isCurrentSwScript("https://bizuply.com/service-worker.js?v=9", "https://bizuply.com")
+    ).toBe(false);
+  });
+
+  it("does not show a generic banner when title/body are missing", () => {
+    expect(shouldShowWebPushBanner({ title: "", body: "יש לך התראה חדשה" })).toBe(false);
+    expect(shouldShowWebPushBanner({ title: "BizUply", body: "" })).toBe(false);
+    expect(
+      shouldShowWebPushBanner({
+        title: "BizUply · ליד חדש",
+        body: "ליד חדש נכנס למערכת",
+      })
+    ).toBe(true);
+  });
+
+  it("recognizes the legacy generic iOS banner", () => {
+    expect(
+      isLegacyGenericBanner({
+        title: "BizUply",
+        body: "יש לך התראה חדשה",
+        tag: "bizuply-notification",
+      })
+    ).toBe(true);
+    expect(
+      isLegacyGenericBanner({
+        title: "BizUply · ליד חדש",
+        body: "ליד חדש נכנס למערכת",
+        tag: "bizuply-lead-1",
+      })
+    ).toBe(false);
+  });
+
+  it("does not paint the generic Hebrew fallback from empty payloads", () => {
+    const sw = readFileSync(join(process.cwd(), "public/service-worker.js"), "utf8");
+    expect(sw).toContain("bizuply-sw-delivery-ack-v10");
+    expect(sw).toContain("if (!title || !body)");
+    expect(sw).not.toMatch(/body:\s*payload\.body\s*\|\|\s*"/);
+    expect(sw).not.toMatch(/data\.body\s*\|\|\s*"/);
   });
 });
