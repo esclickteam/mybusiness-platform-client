@@ -1621,15 +1621,16 @@ function EditorInner({
         node.type === "action" &&
         isBizuplySendEmailActionKey(node.data?.actionKey)
     );
-    const legacyPublishedSendEmail =
-      Boolean(workflow.publishedVersionId) &&
-      sendEmailNodes.some((node) => !String(node.data?.senderId || "").trim());
-    if (
-      sendEmailNodes.length &&
-      !emailSenders.length &&
-      !legacyPublishedSendEmail
-    ) {
+    if (sendEmailNodes.length && !emailSenders.length) {
       const msg = "לא הוגדר מייל שולח — יש להגדיר שולח מאומת לפני פרסום";
+      setPublishError(msg);
+      toast.error(msg);
+      return;
+    }
+    if (
+      sendEmailNodes.some((node) => !String(node.data?.senderId || "").trim())
+    ) {
+      const msg = "יש לבחור שולח מאומת לכל פעולת שליחת מייל לפני פרסום";
       setPublishError(msg);
       toast.error(msg);
       return;
@@ -3853,7 +3854,7 @@ function EditorInner({
                         מאת
                         <select
                           disabled={readOnly}
-                          value={String(selectedNode.data?.senderId || emailSenders[0]?.senderId || "")}
+                          value={String(selectedNode.data?.senderId || "")}
                           onChange={(e) => {
                             const sender = emailSenders.find(
                               (row) => row.senderId === e.target.value
@@ -3866,6 +3867,7 @@ function EditorInner({
                             });
                           }}
                         >
+                          <option value="">בחרו שולח מאומת</option>
                           {emailSenders.map((sender) => (
                             <option key={sender.senderId} value={sender.senderId}>
                               {sender.fromLabel}
@@ -3876,9 +3878,7 @@ function EditorInner({
                     ) : (
                       <div className="af-wa-template__state af-wa-template__state--error">
                         <p>
-                          {workflow.publishedVersionId
-                            ? "עדיין נשלח מ-BizUply עד שתגדירו שולח מאומת"
-                            : "לא הוגדר מייל שולח"}
+                          לא הוגדר מייל שולח מאומת — לא ניתן לפרסם או לשלוח בלי שולח
                         </p>
                         <a href={`/business/${businessId}/dashboard/integrations#email-senders`}>
                           הגדרת מייל שולח
@@ -3983,7 +3983,7 @@ function EditorInner({
                         emailSenders.find(
                           (row) =>
                             row.senderId ===
-                            String(selectedNode.data?.senderId || emailSenders[0]?.senderId || "")
+                            String(selectedNode.data?.senderId || "")
                         )?.fromLabel || "לא הוגדר מייל שולח"
                       }
                       previewToLabel={(() => {
