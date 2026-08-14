@@ -13,6 +13,9 @@ export const BUSINESS_EMAIL_MISSING_BODY_HE =
 
 export const BUSINESS_EMAIL_SETTINGS_CTA_HE = "הגדרת מייל עסקי";
 
+export const BUSINESS_EMAIL_SENDER_UNAVAILABLE_HE =
+  "המייל השולח שנבחר אינו זמין או אינו מאומת. יש לבחור מייל שולח אחר.";
+
 export const EMAIL_PROVIDER_OPTIONS: Array<{
   id: EmailProviderId;
   label: string;
