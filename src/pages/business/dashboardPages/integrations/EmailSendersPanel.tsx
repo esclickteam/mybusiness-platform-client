@@ -111,6 +111,7 @@ function VerificationModal({
       if (next.verificationStatus === "verified") {
         setSuccess(true);
         onVerified(next);
+        window.setTimeout(onClose, 1400);
         return;
       }
       setError(
@@ -501,7 +502,6 @@ export default function EmailSendersPanel() {
             setSenders((prev) =>
               prev.map((row) => (row.senderId === next.senderId ? next : row))
             );
-            window.setTimeout(() => setVerifySender(null), 900);
           }}
         />
       ) : null}
