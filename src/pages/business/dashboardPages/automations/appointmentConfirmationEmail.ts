@@ -103,6 +103,7 @@ export const APPOINTMENT_EMAIL_PREVIEW_CONTEXT = {
   },
   customer: {
     firstName: "דנה",
+    lastName: "כהן",
     fullName: "דנה כהן",
     email: "dana@example.com",
     phone: "050-0000000",
@@ -111,9 +112,15 @@ export const APPOINTMENT_EMAIL_PREVIEW_CONTEXT = {
     number: "ORD-1001",
     orderNumber: "ORD-1001",
     total: "185.00 ₪",
+    subtotal: "180.00 ₪",
+    discount: "20.00 ₪",
+    shipping: "25.00 ₪",
     items: "חולצה (M) × 2 — 120.00 ₪",
-    itemsHtml: "<p>חולצה (M) × 2 — 120.00 ₪</p>",
-    totalsHtml: "<p>סה״כ שולם: 185.00 ₪</p>",
+    itemsHtml: '<table role="presentation" width="100%" dir="rtl"><tr><td><div style="font-weight:700;">חולצה</div><div>M</div><div>כמות: 2 · מחיר ליחידה: 60.00 ₪</div></td></tr></table>',
+    shippingHtml: '<div>נשלח לכתובת</div><div>תל אביב</div>',
+    notesHtml: '<div>הערות</div><div>E2E</div>',
+    ctaHtml: "",
+    totalsHtml: "<p>סכום ביניים: 180.00 ₪</p><p>הנחה: 20.00 ₪</p><p>משלוח: 25.00 ₪</p><p>סה״כ שולם: 185.00 ₪</p>",
     shippingAddress: "תל אביב",
     customerNotes: "E2E",
     viewUrl: "https://www.bizuply.com/order/example",
@@ -204,7 +211,7 @@ export const APPOINTMENT_CONFIRMATION_EMAIL_DEFAULTS = {
 };
 
 export const STORE_ORDER_CONFIRMATION_SUBJECT =
-  "אישור הזמנה {{order.number}} — {{store.name}}";
+  "אישור הזמנה {{order.number}} - {{store.name}}";
 
 export const STORE_ORDER_CONFIRMATION_HTML = `<!DOCTYPE html>
 <html lang="he" dir="rtl">
@@ -213,7 +220,7 @@ export const STORE_ORDER_CONFIRMATION_HTML = `<!DOCTYPE html>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>אישור הזמנה</title>
 </head>
-<body style="margin:0;padding:0;background:#f3f4f6;font-family:Arial,Helvetica,sans-serif;" dir="rtl">
+<body style="margin:0;padding:0;background:#f3f4f6;font-family:Arial,Helvetica,sans-serif;direction:rtl;" dir="rtl">
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f3f4f6;padding:28px 12px;" dir="rtl">
     <tr>
       <td align="center">
@@ -226,15 +233,17 @@ export const STORE_ORDER_CONFIRMATION_HTML = `<!DOCTYPE html>
           </tr>
           <tr>
             <td style="padding:28px;text-align:right;" dir="rtl">
-              <h1 style="margin:0 0 14px 0;font-size:22px;color:#111827;">תודה על ההזמנה</h1>
-              <p style="margin:0 0 10px;font-size:16px;font-weight:700;">שלום {{customer.firstName}},</p>
-              <p style="margin:0 0 28px;font-size:14px;line-height:1.7;color:#4b5563;">תודה על ההזמנה! התשלום התקבל וההזמנה שלך בהכנה.</p>
+              <p style="margin:0 0 10px;font-size:16px;color:#111827;font-weight:700;">שלום {{customer.firstName}},</p>
+              <p style="margin:0 0 28px;font-size:14px;line-height:1.7;color:#4b5563;">תודה על הזמנתך! התשלום התקבל וההזמנה שלך בהכנה.</p>
+              <div style="font-size:18px;font-weight:800;color:#111827;margin-bottom:12px;">סיכום הזמנה</div>
               {{order.itemsHtml}}
-              <div style="margin-top:28px;color:#374151;font-size:14px;white-space:pre-wrap;">{{order.shippingAddress}}</div>
-              <div style="margin-top:28px;">{{order.totalsHtml}}</div>
-              <p style="margin:28px 0 0;text-align:center;">
-                <a href="{{order.viewUrl}}" style="display:inline-block;background:#111827;color:#ffffff;text-decoration:none;font-weight:700;font-size:14px;padding:12px 22px;border-radius:8px;">צפייה בהזמנה</a>
-              </p>
+              {{order.shippingHtml}}
+              <div style="margin-top:28px;text-align:right;direction:rtl;" dir="rtl">
+                <div style="font-size:15px;font-weight:800;color:#111827;margin-bottom:10px;">פרטי תשלום</div>
+                {{order.totalsHtml}}
+              </div>
+              {{order.notesHtml}}
+              {{order.ctaHtml}}
             </td>
           </tr>
           <tr>
@@ -249,20 +258,27 @@ export const STORE_ORDER_CONFIRMATION_HTML = `<!DOCTYPE html>
 </body>
 </html>`;
 
-export const STORE_ORDER_CONFIRMATION_TEXT = `תודה על ההזמנה
+export const STORE_ORDER_CONFIRMATION_TEXT = `שלום {{customer.firstName}},
 
-שלום {{customer.firstName}},
+תודה על הזמנתך! התשלום התקבל וההזמנה שלך בהכנה.
 
 מספר הזמנה: {{order.number}}
 {{store.name}}
 
+סיכום הזמנה:
 {{order.items}}
 
+נשלח לכתובת:
 {{order.shippingAddress}}
 
+סכום ביניים: {{order.subtotal}}
+הנחה: {{order.discount}}
+משלוח: {{order.shipping}}
+מע״מ: {{order.tax}}
 סה״כ שולם: {{order.total}}
 
-{{order.viewUrl}}`;
+הערות:
+{{order.customerNotes}}`;
 
 export const STORE_ORDER_CONFIRMATION_EMAIL_DEFAULTS = {
   recipientType: "store_customer_email",

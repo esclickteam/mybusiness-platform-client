@@ -131,7 +131,7 @@ const APPOINTMENT_DONE_FALLBACK_KEYS = [
   ...APPOINTMENT_DONE_TRIGGER_KEYS,
   "appointment_created",
 ];
-const STORE_ORDER_TRIGGER_KEYS = ["store_order_paid", "payment_succeeded"];
+const STORE_ORDER_TRIGGER_KEYS = ["store_order_paid"];
 
 type GraphAction = {
   actionKey: string;
@@ -905,10 +905,10 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
     key: "wf_store_order_confirmation",
     rank: 12,
     name: "אישור הזמנה בחנות",
-    description: "התקבלה הזמנה בחנות → שליחת מייל אישור ללקוח דרך Gmail או Outlook.",
+    description: "התקבלה הזמנה בחנות → שליחת מייל אישור מעוצב ללקוח.",
     triggerLabel: "התקבלה הזמנה בחנות",
     resultLabels: ["אימייל אישור הזמנה"],
-    categories: ["sales", "email"],
+    categories: ["sales", "email", "store"],
     keywords: [
       "חנות",
       "הזמנה",
@@ -919,18 +919,17 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
     ],
     engine: "workflow_graph",
     requiredTriggerKeys: STORE_ORDER_TRIGGER_KEYS,
-    requiresEmailProvider: true,
-    buildGraph: ({ triggerKey, emailProvider }) =>
+    buildGraph: ({ triggerKey }) =>
       resultGraph({
         triggerKey,
         triggerLabel: "התקבלה הזמנה בחנות",
-        emailProvider,
         actions: [
           {
-            actionKey: "connected_email",
+            actionKey: "send_email",
             label: "אימייל אישור הזמנה",
             defaults: {
               ...STORE_ORDER_CONFIRMATION_EMAIL_DEFAULTS,
+              actionKey: "send_email",
             },
           },
         ],

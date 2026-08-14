@@ -654,7 +654,6 @@ const EMAIL_TEMPLATE_KEYS = [
   "wf_appointment_email_gcal",
   "wf_appointment_confirm_pack",
   "wf_appointment_done_email",
-  "wf_store_order_confirmation",
 ];
 
 function emailGraphKeys(key: string, provider: "gmail" | "outlook") {
@@ -826,11 +825,18 @@ describe("email template catalog visibility vs activation", () => {
     });
     expect(emailCategory.length).toBe(visible.length);
     expect(
-      emailCategory.every((template) => {
-        const readiness = getTemplateReadiness(template, noneCtx);
-        return readiness.ready === false;
-      })
+      emailCategory
+        .filter((template) => template.key !== "wf_store_order_confirmation")
+        .every((template) => {
+          const readiness = getTemplateReadiness(template, noneCtx);
+          return readiness.ready === false;
+        })
     ).toBe(true);
+    const storeOrder = emailCategory.find(
+      (template) => template.key === "wf_store_order_confirmation"
+    );
+    expect(storeOrder).toBeTruthy();
+    expect(getTemplateReadiness(storeOrder!, noneCtx).ready).toBe(true);
     expect(
       emailCategory
         .filter((template) => template.requiresEmailProvider)
