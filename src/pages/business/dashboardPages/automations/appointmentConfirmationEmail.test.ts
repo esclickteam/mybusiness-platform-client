@@ -40,7 +40,12 @@ describe("appointment confirmation email templates", () => {
     expect(String(data.html)).toContain("סיכום הזמנה");
     expect(String(data.html)).toContain("פרטי תשלום");
     expect(String(data.html)).toContain("תודה על הזמנתך");
-    expect(String(data.html)).not.toMatch(/Order summary|Subtotal|Total paid|Quantity/i);
+    expect(String(data.html)).not.toMatch(
+      /Order summary|Subtotal|Total paid|Quantity|Payment details|Sent to/i
+    );
+    expect(String(data.subject) + String(data.html) + String((emailNode!.data as { text?: string }).text || "")).not.toMatch(
+      /E2E|E2EB|E2EE|HEADLINE EDITED|BODY EDITED|SOPMSSV|Widget|NAME=|NUM=|TOTAL=/
+    );
     const html = interpolateEmailTemplate(
       String(data.html),
       buildEmailPreviewContext("store_order_paid")
@@ -48,6 +53,8 @@ describe("appointment confirmation email templates", () => {
     expect(html).not.toMatch(/\{\{/);
     expect(html).toContain("דנה");
     expect(html).toContain("ORD-1001");
+    expect(html).toContain("החנות שלי");
+    expect(html).not.toContain("E2E");
   });
 
   it("exposes picker variables for store_order_paid", () => {

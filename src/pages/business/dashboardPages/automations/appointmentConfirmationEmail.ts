@@ -39,7 +39,7 @@ export const STORE_ORDER_EMAIL_VARIABLES = [
   { label: "סכום ביניים", token: "{{order.subtotal}}", optional: true },
   { label: "הנחה", token: "{{order.discount}}", optional: true },
   { label: "משלוח", token: "{{order.shipping}}", optional: true },
-  { label: "מע״מ", token: "{{order.tax}}", optional: true },
+  { label: "מס", token: "{{order.tax}}", optional: true },
   { label: "קישור הזמנה", token: "{{order.viewUrl}}", optional: true },
 ] as const;
 
@@ -118,14 +118,18 @@ export const APPOINTMENT_EMAIL_PREVIEW_CONTEXT = {
     items: "חולצה (M) × 2 — 120.00 ₪",
     itemsHtml: '<table role="presentation" width="100%" dir="rtl"><tr><td><div style="font-weight:700;">חולצה</div><div>M</div><div>כמות: 2 · מחיר ליחידה: 60.00 ₪</div></td></tr></table>',
     shippingHtml: '<div>נשלח לכתובת</div><div>תל אביב</div>',
-    notesHtml: '<div>הערות</div><div>E2E</div>',
+    notesHtml: '<div>הערות</div><div>נא לשלוח עד הצהריים</div>',
     ctaHtml: "",
     totalsHtml: "<p>סכום ביניים: 180.00 ₪</p><p>הנחה: 20.00 ₪</p><p>משלוח: 25.00 ₪</p><p>סה״כ שולם: 185.00 ₪</p>",
     shippingAddress: "תל אביב",
-    customerNotes: "E2E",
+    customerNotes: "נא לשלוח עד הצהריים",
+    shippingText: "נשלח לכתובת:\nתל אביב",
+    notesText: "הערות:\nנא לשלוח עד הצהריים",
+    discountText: "הנחה: 20.00 ₪",
+    taxText: "",
     viewUrl: "https://www.bizuply.com/order/example",
   },
-  store: { name: "BizUply E2E Store", url: "" },
+  store: { name: "החנות שלי", url: "" },
 };
 
 export const APPOINTMENT_CONFIRMATION_HTML = `<!DOCTYPE html>
@@ -221,25 +225,25 @@ export const STORE_ORDER_CONFIRMATION_HTML = `<!DOCTYPE html>
   <title>אישור הזמנה</title>
 </head>
 <body style="margin:0;padding:0;background:#f3f4f6;font-family:Arial,Helvetica,sans-serif;direction:rtl;" dir="rtl">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f3f4f6;padding:28px 12px;" dir="rtl">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f3f4f6;padding:28px 12px;direction:rtl;" dir="rtl">
     <tr>
       <td align="center">
-        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:640px;background:#ffffff;border-radius:12px;overflow:hidden;" dir="rtl">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:640px;width:100%;background:#ffffff;border-radius:12px;overflow:hidden;direction:rtl;" dir="rtl">
           <tr>
-            <td style="background:#111827;padding:28px;text-align:right;" dir="rtl">
-              <div style="font-size:22px;font-weight:800;color:#ffffff;">{{store.name}}</div>
-              <div style="margin-top:8px;font-size:13px;color:#d1d5db;">מספר הזמנה: {{order.number}}</div>
+            <td style="background:#111827;padding:28px 28px 24px;text-align:right;direction:rtl;" dir="rtl">
+              <div style="font-size:22px;font-weight:800;color:#ffffff;unicode-bidi:isolate;">{{store.name}}</div>
+              <div style="margin-top:8px;font-size:13px;color:#d1d5db;">מספר הזמנה: <span dir="ltr" style="unicode-bidi:isolate;white-space:nowrap;">{{order.number}}</span></div>
             </td>
           </tr>
           <tr>
-            <td style="padding:28px;text-align:right;" dir="rtl">
+            <td style="padding:28px;text-align:right;direction:rtl;" dir="rtl">
               <p style="margin:0 0 10px;font-size:16px;color:#111827;font-weight:700;">שלום {{customer.firstName}},</p>
               <p style="margin:0 0 28px;font-size:14px;line-height:1.7;color:#4b5563;">תודה על הזמנתך! התשלום התקבל וההזמנה שלך בהכנה.</p>
-              <div style="font-size:18px;font-weight:800;color:#111827;margin-bottom:12px;">סיכום הזמנה</div>
+              <div style="font-size:18px;font-weight:800;color:#111827;margin-bottom:12px;text-align:right;">סיכום הזמנה</div>
               {{order.itemsHtml}}
               {{order.shippingHtml}}
               <div style="margin-top:28px;text-align:right;direction:rtl;" dir="rtl">
-                <div style="font-size:15px;font-weight:800;color:#111827;margin-bottom:10px;">פרטי תשלום</div>
+                <div style="font-size:15px;font-weight:800;color:#111827;margin-bottom:10px;text-align:right;">פרטי תשלום</div>
                 {{order.totalsHtml}}
               </div>
               {{order.notesHtml}}
@@ -247,8 +251,8 @@ export const STORE_ORDER_CONFIRMATION_HTML = `<!DOCTYPE html>
             </td>
           </tr>
           <tr>
-            <td style="padding:18px 28px;background:#f9fafb;text-align:center;font-size:12px;color:#9ca3af;">
-              המייל נשלח מ־{{store.name}} באמצעות BizUply.
+            <td style="padding:18px 28px;background:#f9fafb;text-align:center;font-size:12px;color:#9ca3af;direction:rtl;" dir="rtl">
+              המייל נשלח מ-{{store.name}} באמצעות BizUply.
             </td>
           </tr>
         </table>
@@ -268,17 +272,15 @@ export const STORE_ORDER_CONFIRMATION_TEXT = `שלום {{customer.firstName}},
 סיכום הזמנה:
 {{order.items}}
 
-נשלח לכתובת:
-{{order.shippingAddress}}
+{{order.shippingText}}
 
 סכום ביניים: {{order.subtotal}}
-הנחה: {{order.discount}}
+{{order.discountText}}
 משלוח: {{order.shipping}}
-מע״מ: {{order.tax}}
+{{order.taxText}}
 סה״כ שולם: {{order.total}}
 
-הערות:
-{{order.customerNotes}}`;
+{{order.notesText}}`;
 
 export const STORE_ORDER_CONFIRMATION_EMAIL_DEFAULTS = {
   recipientType: "store_customer_email",
