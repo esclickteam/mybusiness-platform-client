@@ -18,7 +18,7 @@ function paletteActionKeys() {
 
 function graphActionKeys(
   template: (typeof WORKING_TEMPLATES)[number],
-  emailProvider?: "gmail" | "outlook"
+  emailProvider?: "gmail" | "outlook" | "business"
 ) {
   if (!template.buildGraph) return [];
   const graph = template.buildGraph({
@@ -35,7 +35,9 @@ describe("automation action catalog", () => {
   it("shows only unique supported publishable actions in the picker", () => {
     const actionKeys = paletteActionKeys();
     expect(actionKeys).toEqual([...new Set(actionKeys)]);
-    expect(actionKeys).not.toContain("send_email");
+    expect(actionKeys).toContain("send_email");
+    expect(actionKeys).toContain("send_gmail");
+    expect(actionKeys).toContain("send_outlook");
     expect(actionKeys).not.toContain("create_appointment");
     expect(actionKeys).not.toContain("update_status");
     expect(actionKeys).not.toContain("send_whatsapp");
@@ -55,16 +57,19 @@ describe("automation action catalog", () => {
     }
   });
 
-  it("hides Bizuply-hosted email and unfinished appointment from customer choices", () => {
+  it("shows business email alongside Gmail and Outlook, without Bizuply branding", () => {
     const visible = listCustomerActionOptions();
-    expect(visible.some((row) => row.value === "send_email")).toBe(false);
+    expect(visible.some((row) => row.value === "send_email")).toBe(true);
+    expect(visible.some((row) => row.value === "send_gmail")).toBe(true);
+    expect(visible.some((row) => row.value === "send_outlook")).toBe(true);
     expect(visible.some((row) => row.label.includes("Bizuply"))).toBe(false);
     expect(visible.some((row) => row.value === "create_appointment")).toBe(false);
     expect(visible.some((row) => row.label.includes("בקרוב"))).toBe(false);
 
     const sendEmail = findActionOption("send_email")!;
     expect(sendEmail.supported).toBe(true);
-    expect(sendEmail.customerVisible).toBe(false);
+    expect(sendEmail.customerVisible).not.toBe(false);
+    expect(sendEmail.label).toBe("שליחת מייל עסקי");
 
     const appointment = findActionOption("create_appointment")!;
     expect(appointment.supported).toBe(false);
@@ -90,10 +95,11 @@ describe("automation action catalog", () => {
     expect(options.every((row) => isCustomerFacingAction(row))).toBe(true);
     expect(options.some((row) => row.value === "send_gmail")).toBe(true);
     expect(options.some((row) => row.value === "send_outlook")).toBe(true);
+    expect(options.some((row) => row.value === "send_email")).toBe(true);
     expect(options.some((row) => row.label.includes("בקרוב"))).toBe(false);
 
     const legacy = listInspectorActionOptions("send_email");
-    expect(legacy[0].value).toBe("send_email");
+    expect(legacy.some((row) => row.value === "send_email")).toBe(true);
     expect(legacy.filter((row) => row.value === "send_email")).toHaveLength(1);
   });
 

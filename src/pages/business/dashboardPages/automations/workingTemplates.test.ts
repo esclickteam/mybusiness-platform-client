@@ -322,7 +322,7 @@ describe("workingTemplates launch safety", () => {
 
   it("requires a connected email provider, not Gmail specifically", () => {
     const template = WORKING_TEMPLATES.find((t) => t.key === "wf_lead_email_only")!;
-    const blocked = getTemplateReadiness(template, {
+    const none = getTemplateReadiness(template, {
       recipes: [],
       triggers: [leadTrigger],
       waTemplates: [],
@@ -332,10 +332,8 @@ describe("workingTemplates launch safety", () => {
       outlookConnected: false,
       aiEntitled: false,
     });
-    expect(blocked.ready).toBe(false);
-    expect(blocked.blocker).toBe(
-      "כדי להשתמש באוטומציה הזו יש לחבר Gmail או Outlook / Microsoft 365"
-    );
+    expect(none.ready).toBe(true);
+    expect(none.needsEmailProviderChoice).toBe(true);
 
     const gmailOnly = getTemplateReadiness(template, {
       recipes: [],
@@ -349,7 +347,7 @@ describe("workingTemplates launch safety", () => {
     });
     expect(gmailOnly.ready).toBe(true);
     expect(gmailOnly.suggestedEmailProvider).toBe("gmail");
-    expect(gmailOnly.needsEmailProviderChoice).toBe(false);
+    expect(gmailOnly.needsEmailProviderChoice).toBe(true);
 
     const outlookOnly = getTemplateReadiness(template, {
       recipes: [],
@@ -363,7 +361,7 @@ describe("workingTemplates launch safety", () => {
     });
     expect(outlookOnly.ready).toBe(true);
     expect(outlookOnly.suggestedEmailProvider).toBe("outlook");
-    expect(outlookOnly.needsEmailProviderChoice).toBe(false);
+    expect(outlookOnly.needsEmailProviderChoice).toBe(true);
 
     const both = getTemplateReadiness(template, {
       recipes: [],
@@ -661,25 +659,41 @@ const EMAIL_TEMPLATE_KEYS = [
   "wf_appointment_done_email",
 ];
 
-function emailGraphKeys(key: string, provider: "gmail" | "outlook") {
+function emailGraphKeys(key: string, provider: "gmail" | "outlook" | "business") {
   const template = WORKING_TEMPLATES.find((row) => row.key === key)!;
   const triggerKey = template.requiredTriggerKeys?.[0] || "new_lead";
-  return (template.buildGraph?.({ triggerKey, emailProvider: provider })?.nodes || [])
+  return (template.buildGraph?.({
+    triggerKey,
+    emailProvider: provider,
+    businessSender:
+      provider === "business"
+        ? {
+            senderId: "sender-1",
+            email: "support@invistimo.com",
+            displayName: "Invistimo",
+            type: "bizuply_smtp",
+            isDefault: true,
+          }
+        : null,
+  })?.nodes || [])
     .filter((node) => node.type === "action")
     .map((node) => String((node.data as { actionKey?: string }).actionKey || ""));
 }
 
 describe("provider-aware email templates", () => {
-  it("builds Gmail or Outlook actions and never Bizuply email", () => {
+  it("builds Gmail, Outlook, or business-email actions and never a placeholder", () => {
     for (const key of EMAIL_TEMPLATE_KEYS) {
       const gmailKeys = emailGraphKeys(key, "gmail");
       const outlookKeys = emailGraphKeys(key, "outlook");
+      const businessKeys = emailGraphKeys(key, "business");
       expect(gmailKeys, key).toContain("send_gmail");
       expect(outlookKeys, key).toContain("send_outlook");
+      expect(businessKeys, key).toContain("send_email");
       expect(gmailKeys, key).not.toContain("send_email");
       expect(outlookKeys, key).not.toContain("send_email");
       expect(gmailKeys, key).not.toContain("connected_email");
       expect(outlookKeys, key).not.toContain("connected_email");
+      expect(businessKeys, key).not.toContain("connected_email");
     }
   });
 
@@ -727,10 +741,8 @@ describe("provider-aware email templates", () => {
         gmailConnected: false,
         outlookConnected: false,
       });
-      expect(none.ready, key).toBe(false);
-      expect(none.blocker, key).toBe(
-        "כדי להשתמש באוטומציה הזו יש לחבר Gmail או Outlook / Microsoft 365"
-      );
+      expect(none.ready, key).toBe(true);
+      expect(none.needsEmailProviderChoice, key).toBe(true);
 
       const gmail = getTemplateReadiness(template, {
         ...base,
@@ -739,7 +751,7 @@ describe("provider-aware email templates", () => {
       });
       expect(gmail.ready, `${key} gmail`).toBe(true);
       expect(gmail.suggestedEmailProvider, key).toBe("gmail");
-      expect(gmail.needsEmailProviderChoice, key).toBe(false);
+      expect(gmail.needsEmailProviderChoice, key).toBe(true);
 
       const outlook = getTemplateReadiness(template, {
         ...base,
@@ -748,7 +760,7 @@ describe("provider-aware email templates", () => {
       });
       expect(outlook.ready, `${key} outlook`).toBe(true);
       expect(outlook.suggestedEmailProvider, key).toBe("outlook");
-      expect(outlook.needsEmailProviderChoice, key).toBe(false);
+      expect(outlook.needsEmailProviderChoice, key).toBe(true);
 
       const both = getTemplateReadiness(template, {
         ...base,
@@ -833,8 +845,9 @@ describe("email template catalog visibility vs activation", () => {
       emailCategory
         .filter((template) => template.key !== "wf_store_order_confirmation")
         .every((template) => {
+          if (template.requiresWaTemplate) return true;
           const readiness = getTemplateReadiness(template, noneCtx);
-          return readiness.ready === false;
+          return readiness.ready === true;
         })
     ).toBe(true);
     const storeOrder = emailCategory.find(
@@ -847,10 +860,7 @@ describe("email template catalog visibility vs activation", () => {
         .filter((template) => template.requiresEmailProvider)
         .every((template) => {
           const readiness = getTemplateReadiness(template, noneCtx);
-          return (
-            readiness.blocker ===
-            "כדי להשתמש באוטומציה הזו יש לחבר Gmail או Outlook / Microsoft 365"
-          );
+          return readiness.needsEmailProviderChoice === true;
         })
     ).toBe(true);
     expect(EMAIL_TEMPLATE_CONNECT_CTA_HE).toBe(

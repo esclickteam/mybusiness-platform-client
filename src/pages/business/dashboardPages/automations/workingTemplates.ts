@@ -23,10 +23,9 @@ import {
   resolveApprovedMetaTemplateForAutomation,
 } from "./whatsappAutomationTemplateResolver";
 import {
-  EMAIL_PROVIDER_REQUIRED_HE,
   applyEmailProviderToActions,
-  hasConnectedEmailProvider,
   listConnectedEmailProviders,
+  type BusinessEmailSender,
   type EmailProviderId,
 } from "./emailProviderAutomation";
 import { APPOINTMENT_CONFIRMATION_EMAIL_DEFAULTS, STORE_ORDER_CONFIRMATION_EMAIL_DEFAULTS } from "./appointmentConfirmationEmail";
@@ -70,6 +69,7 @@ export type WorkingTemplate = {
     triggerKey: string;
     waTemplateId?: string;
     emailProvider?: EmailProviderId;
+    businessSender?: BusinessEmailSender | null;
   }) => { nodes: AutomationFlowNode[]; edges: AutomationFlowEdge[] };
   requiredTriggerKeys?: string[];
   requiresWaTemplate?: boolean;
@@ -145,9 +145,14 @@ function resultGraph(opts: {
   triggerLabel: string;
   hoursBefore?: number;
   emailProvider?: EmailProviderId;
+  businessSender?: BusinessEmailSender | null;
   actions: GraphAction[];
 }) {
-  const actions = applyEmailProviderToActions(opts.actions, opts.emailProvider);
+  const actions = applyEmailProviderToActions(
+    opts.actions,
+    opts.emailProvider,
+    opts.businessSender
+  );
   const nodes: AutomationFlowNode[] = [
     {
       id: "trigger_1",
@@ -192,6 +197,7 @@ function waEdgeGraph(opts: {
   waTemplateId?: string;
   hoursBefore?: number;
   emailProvider?: EmailProviderId;
+  businessSender?: BusinessEmailSender | null;
   extraActions?: GraphAction[];
 }) {
   return resultGraph({
@@ -199,6 +205,7 @@ function waEdgeGraph(opts: {
     triggerLabel: opts.triggerLabel,
     hoursBefore: opts.hoursBefore,
     emailProvider: opts.emailProvider,
+    businessSender: opts.businessSender,
     actions: [
       {
         actionKey: "whatsapp_template",
@@ -780,13 +787,14 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
     waCategory: "welcome",
     waHints: ["welcome", "new_lead"],
     requiredTriggerKeys: LEAD_TRIGGER_KEYS,
-    buildGraph: ({ triggerKey, waTemplateId, emailProvider }) =>
+    buildGraph: ({ triggerKey, waTemplateId, emailProvider, businessSender }) =>
       waEdgeGraph({
         triggerKey,
         triggerLabel: "ליד חדש ב-CRM",
         actionLabel: "WhatsApp לליד",
         waTemplateId,
         emailProvider,
+        businessSender,
         extraActions: [
           { actionKey: "create_task", label: "משימה לנציג" },
           { actionKey: "notify", label: "התראה לבעל העסק" },
@@ -808,13 +816,14 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
     waCategory: "welcome",
     waHints: ["welcome", "new_lead"],
     requiredTriggerKeys: LEAD_TRIGGER_KEYS,
-    buildGraph: ({ triggerKey, waTemplateId, emailProvider }) =>
+    buildGraph: ({ triggerKey, waTemplateId, emailProvider, businessSender }) =>
       waEdgeGraph({
         triggerKey,
         triggerLabel: "ליד חדש ב-CRM",
         actionLabel: "WhatsApp לליד",
         waTemplateId,
         emailProvider,
+        businessSender,
         extraActions: [
           {
             actionKey: "connected_email",
@@ -841,13 +850,14 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
     waCategory: "welcome",
     waHints: ["welcome", "new_lead"],
     requiredTriggerKeys: LEAD_TRIGGER_KEYS,
-    buildGraph: ({ triggerKey, waTemplateId, emailProvider }) =>
+    buildGraph: ({ triggerKey, waTemplateId, emailProvider, businessSender }) =>
       waEdgeGraph({
         triggerKey,
         triggerLabel: "ליד חדש ב-CRM",
         actionLabel: "WhatsApp לליד",
         waTemplateId,
         emailProvider,
+        businessSender,
         extraActions: [
           {
             actionKey: "connected_email",
@@ -872,11 +882,12 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
     engine: "workflow_graph",
     requiredTriggerKeys: LEAD_TRIGGER_KEYS,
     requiresEmailProvider: true,
-    buildGraph: ({ triggerKey, emailProvider }) =>
+    buildGraph: ({ triggerKey, emailProvider, businessSender }) =>
       resultGraph({
         triggerKey,
         triggerLabel: "ליד חדש ב-CRM",
         emailProvider,
+        businessSender,
         actions: [
           {
             actionKey: "connected_email",
@@ -900,11 +911,12 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
     engine: "workflow_graph",
     requiredTriggerKeys: LEAD_TRIGGER_KEYS,
     requiresEmailProvider: true,
-    buildGraph: ({ triggerKey, emailProvider }) =>
+    buildGraph: ({ triggerKey, emailProvider, businessSender }) =>
       resultGraph({
         triggerKey,
         triggerLabel: "ליד חדש ב-CRM",
         emailProvider,
+        businessSender,
         actions: [
           {
             actionKey: "connected_email",
@@ -960,11 +972,12 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
     categories: ["leads", "crm", "sales"],
     engine: "workflow_graph",
     requiredTriggerKeys: LEAD_TRIGGER_KEYS,
-    buildGraph: ({ triggerKey, emailProvider }) =>
+    buildGraph: ({ triggerKey, emailProvider, businessSender }) =>
       resultGraph({
         triggerKey,
         triggerLabel: "ליד חדש ב-CRM",
         emailProvider,
+        businessSender,
         actions: [
           { actionKey: "create_task", label: "משימה לנציג" },
           { actionKey: "notify", label: "התראה לצוות" },
@@ -1015,7 +1028,7 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
     categories: ["leads", "sales", "crm"],
     engine: "workflow_graph",
     requiredTriggerKeys: LEAD_STATUS_KEYS,
-    buildGraph: ({ triggerKey, emailProvider }) =>
+    buildGraph: ({ triggerKey, emailProvider, businessSender }) =>
       resultGraph({
         triggerKey,
         triggerLabel: "שינוי סטטוס ליד",
@@ -1041,13 +1054,14 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
     waCategory: "welcome",
     waHints: ["welcome", "client", "לקוח"],
     requiredTriggerKeys: CLIENT_TRIGGER_KEYS,
-    buildGraph: ({ triggerKey, waTemplateId, emailProvider }) =>
+    buildGraph: ({ triggerKey, waTemplateId, emailProvider, businessSender }) =>
       waEdgeGraph({
         triggerKey,
         triggerLabel: "לקוח חדש",
         actionLabel: "WhatsApp ברוכים הבאים",
         waTemplateId,
         emailProvider,
+        businessSender,
         extraActions: [
           {
             actionKey: "connected_email",
@@ -1072,11 +1086,12 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
     engine: "workflow_graph",
     requiredTriggerKeys: APPOINTMENT_TRIGGER_KEYS,
     requiresEmailProvider: true,
-    buildGraph: ({ triggerKey, emailProvider }) =>
+    buildGraph: ({ triggerKey, emailProvider, businessSender }) =>
       resultGraph({
         triggerKey,
         triggerLabel: "פגישה חדשה",
         emailProvider,
+        businessSender,
         actions: [
           {
             actionKey: "connected_email",
@@ -1099,11 +1114,12 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
     engine: "workflow_graph",
     requiredTriggerKeys: APPOINTMENT_TRIGGER_KEYS,
     requiresEmailProvider: true,
-    buildGraph: ({ triggerKey, emailProvider }) =>
+    buildGraph: ({ triggerKey, emailProvider, businessSender }) =>
       resultGraph({
         triggerKey,
         triggerLabel: "פגישה חדשה",
         emailProvider,
+        businessSender,
         actions: [
           {
             actionKey: "connected_email",
@@ -1127,11 +1143,12 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
     engine: "workflow_graph",
     requiredTriggerKeys: APPOINTMENT_TRIGGER_KEYS,
     requiresCalendar: true,
-    buildGraph: ({ triggerKey, emailProvider }) =>
+    buildGraph: ({ triggerKey, emailProvider, businessSender }) =>
       resultGraph({
         triggerKey,
         triggerLabel: "פגישה חדשה",
         emailProvider,
+        businessSender,
         actions: [
           {
             actionKey: "google_calendar_create_event",
@@ -1156,11 +1173,12 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
     requiredTriggerKeys: APPOINTMENT_TRIGGER_KEYS,
     requiresCalendar: true,
     requiresEmailProvider: true,
-    buildGraph: ({ triggerKey, emailProvider }) =>
+    buildGraph: ({ triggerKey, emailProvider, businessSender }) =>
       resultGraph({
         triggerKey,
         triggerLabel: "פגישה חדשה",
         emailProvider,
+        businessSender,
         actions: [
           {
             actionKey: "connected_email",
@@ -1191,11 +1209,12 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
     engine: "workflow_graph",
     requiredTriggerKeys: APPOINTMENT_TRIGGER_KEYS,
     requiresEmailProvider: true,
-    buildGraph: ({ triggerKey, emailProvider }) =>
+    buildGraph: ({ triggerKey, emailProvider, businessSender }) =>
       resultGraph({
         triggerKey,
         triggerLabel: "פגישה חדשה",
         emailProvider,
+        businessSender,
         actions: [
           {
             actionKey: "connected_email",
@@ -1221,11 +1240,12 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
     comingSoon: true,
     requiredTriggerKeys: APPOINTMENT_DONE_TRIGGER_KEYS,
     requiresEmailProvider: true,
-    buildGraph: ({ triggerKey, emailProvider }) =>
+    buildGraph: ({ triggerKey, emailProvider, businessSender }) =>
       resultGraph({
         triggerKey,
         triggerLabel: "פגישה הסתיימה",
         emailProvider,
+        businessSender,
         actions: [
           {
             actionKey: "connected_email",
@@ -1527,7 +1547,7 @@ function emailReadinessMeta(
   return {
     connectedEmailProviders: connected,
     suggestedEmailProvider: connected.length === 1 ? connected[0] : null,
-    needsEmailProviderChoice: connected.length > 1,
+    needsEmailProviderChoice: true,
   };
 }
 
@@ -1619,14 +1639,6 @@ export function getTemplateReadiness(
     return {
       ready: false,
       blocker: "חברו Google Calendar במסך החיבורים כדי להפעיל",
-      recipe,
-    };
-  }
-
-  if (template.requiresEmailProvider && !hasConnectedEmailProvider(ctx)) {
-    return {
-      ready: false,
-      blocker: EMAIL_PROVIDER_REQUIRED_HE,
       recipe,
     };
   }

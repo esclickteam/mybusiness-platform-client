@@ -134,9 +134,8 @@ export const ACTION_OPTIONS: ActionOption[] = [
   },
   {
     value: "send_email",
-    label: "שליחת אימייל (Bizuply)",
+    label: "שליחת מייל עסקי",
     supported: true,
-    customerVisible: false,
   },
   { value: "send_gmail", label: "שליחת מייל דרך Gmail", supported: true },
   {
@@ -306,13 +305,15 @@ function triggerItem(
 function actionItem(key: string, label: string, description: string, supported = true): PaletteItem {
   const defaults: Record<string, unknown> = { label, actionKey: key, templateId: "" };
   if (key.startsWith("ai_")) { Object.assign(defaults, { criteria: "התאמה לשירות, דחיפות ופוטנציאל רכישה", scoreMin: 1, scoreMax: 10, threshold: 7, createTask: true, extraInstructions: "" }); }
-  if (key === "send_gmail" || key === "send_outlook") {
+  if (key === "send_gmail" || key === "send_outlook" || key === "send_email") {
     defaults.recipientType = "lead_email";
     defaults.subject = "";
     defaults.html = "";
     defaults.body = "";
     defaults.text = "";
-    defaults.emailProvider = key === "send_outlook" ? "microsoft" : "gmail";
+    if (key === "send_gmail" || key === "send_outlook") {
+      defaults.emailProvider = key === "send_outlook" ? "microsoft" : "gmail";
+    }
   }
   if (key === "google_calendar_create_event") {
     defaults.title = "פגישה עם {{appointment.clientName}}";
@@ -413,6 +414,7 @@ const RAW_FLOW_ACTION_PALETTE: PaletteItem[] = [
   actionItem("add_tag", "תגית", "מוסיף תגית לליד/לקוח"),
   actionItem("send_gmail", "Gmail", "Gmail — שליחת מייל"),
   actionItem("send_outlook", "Outlook", "Outlook / Microsoft 365 — שליחת מייל"),
+  actionItem("send_email", "מייל עסקי", "שליחת מייל עסקי"),
   actionItem(
     "google_calendar_create_event",
     "Google Calendar · יצירה",

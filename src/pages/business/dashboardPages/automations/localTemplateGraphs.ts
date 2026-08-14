@@ -6,6 +6,7 @@ import type { SystemAutomationSuggestion } from "./systemAutomationCatalog";
 import { listSupportedAiTemplates } from "./aiAutomationCatalog";
 import {
   applyEmailProviderToActions,
+  type BusinessEmailSender,
   type EmailProviderId,
 } from "./emailProviderAutomation";
 import { APPOINTMENT_CONFIRMATION_EMAIL_DEFAULTS } from "./appointmentConfirmationEmail";
@@ -42,6 +43,7 @@ type GraphBuildOptions = {
   /** Override trigger key from live server catalog */
   resolvedTriggerKey?: string;
   emailProvider?: EmailProviderId;
+  businessSender?: BusinessEmailSender | null;
 };
 
 function actionNode(
@@ -355,7 +357,8 @@ export function buildLocalAutomationGraph(
   const triggerId = "trigger_1";
   const actions = applyEmailProviderToActions(
     template.actions,
-    options?.emailProvider
+    options?.emailProvider,
+    options?.businessSender
   );
   const routeCount = Math.max(1, Math.min(6, actions.length));
   const triggerKey = options?.resolvedTriggerKey || template.triggerKey;

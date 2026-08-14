@@ -1622,8 +1622,7 @@ function EditorInner({
         isBizuplySendEmailActionKey(node.data?.actionKey)
     );
     if (sendEmailNodes.length && !emailSenders.length) {
-      const msg =
-        "לא ניתן להפעיל את האוטומציה עדיין. יש להגדיר מייל עסקי מאומת לפני שליחת מיילים.";
+      const msg = "לא הוגדר מייל עסקי מאומת";
       setPublishError(msg);
       toast.error(msg);
       return;
@@ -1631,8 +1630,7 @@ function EditorInner({
     if (
       sendEmailNodes.some((node) => !String(node.data?.senderId || "").trim())
     ) {
-      const msg =
-        "לא ניתן להפעיל את האוטומציה עדיין. יש להגדיר מייל עסקי מאומת לפני שליחת מיילים.";
+      const msg = "לא הוגדר מייל עסקי מאומת";
       setPublishError(msg);
       toast.error(msg);
       return;
@@ -3869,15 +3867,18 @@ function EditorInner({
                           <option value="">בחרו מייל עסקי מאומת</option>
                           {emailSenders.map((sender) => (
                             <option key={sender.senderId} value={sender.senderId}>
-                              {`${String(sender.displayName || "").replace(/[<>]/g, "").trim() || sender.email} (${sender.email})`}
+                              {`${String(sender.displayName || "").replace(/[<>]/g, "").trim() || sender.email} — ${sender.email}`}
                             </option>
                           ))}
                         </select>
                       </label>
                     ) : (
                       <div className="af-wa-template__state af-wa-template__state--error">
-                        <p>לא ניתן להפעיל את האוטומציה עדיין</p>
-                        <p>יש להגדיר מייל עסקי מאומת לפני שליחת מיילים.</p>
+                        <p>לא הוגדר מייל עסקי מאומת</p>
+                        <p>
+                          כדי לשלוח מהמייל העסקי של העסק, יש להשלים קודם את הגדרת
+                          המייל ואימותו.
+                        </p>
                         <a href={`/business/${businessId}/dashboard/integrations#email-senders`}>
                           הגדרת מייל עסקי
                         </a>
