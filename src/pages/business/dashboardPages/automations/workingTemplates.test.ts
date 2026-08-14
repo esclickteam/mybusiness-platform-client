@@ -695,6 +695,15 @@ describe("provider-aware email templates", () => {
         leadTrigger,
         appointmentTrigger,
         {
+          key: "store_order_paid",
+          label: "Store order",
+          description: "",
+          category: "store",
+          status: "active" as const,
+          isSupported: true,
+          isPublishable: true,
+        },
+        {
           key: "client_created",
           label: "Client",
           description: "",
@@ -763,6 +772,7 @@ const EXPECTED_EMAIL_TEMPLATE_KEYS = [
   "wf_appointment_email_gcal",
   "wf_appointment_confirm_pack",
   "wf_appointment_done_email",
+  "wf_store_order_confirmation",
 ];
 
 describe("email template catalog visibility vs activation", () => {
@@ -786,13 +796,26 @@ describe("email template catalog visibility vs activation", () => {
         "wf_appointment_email_notify",
         "wf_appointment_email_gcal",
         "wf_appointment_confirm_pack",
+        "wf_store_order_confirmation",
       ])
     );
     expect(visible.some((template) => template.comingSoon)).toBe(false);
 
     const noneCtx = {
       recipes: [],
-      triggers: [leadTrigger, appointmentTrigger],
+      triggers: [
+        leadTrigger,
+        appointmentTrigger,
+        {
+          key: "store_order_paid",
+          label: "Store order",
+          description: "",
+          category: "store",
+          status: "active" as const,
+          isSupported: true,
+          isPublishable: true,
+        },
+      ],
       waTemplates: [approvedWa],
       managedWaReady: true,
       calendarConnected: true,
@@ -807,11 +830,18 @@ describe("email template catalog visibility vs activation", () => {
     });
     expect(emailCategory.length).toBe(visible.length);
     expect(
-      emailCategory.every((template) => {
-        const readiness = getTemplateReadiness(template, noneCtx);
-        return readiness.ready === false;
-      })
+      emailCategory
+        .filter((template) => template.key !== "wf_store_order_confirmation")
+        .every((template) => {
+          const readiness = getTemplateReadiness(template, noneCtx);
+          return readiness.ready === false;
+        })
     ).toBe(true);
+    const storeOrder = emailCategory.find(
+      (template) => template.key === "wf_store_order_confirmation"
+    );
+    expect(storeOrder).toBeTruthy();
+    expect(getTemplateReadiness(storeOrder!, noneCtx).ready).toBe(true);
     expect(
       emailCategory
         .filter((template) => template.requiresEmailProvider)

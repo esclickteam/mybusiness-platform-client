@@ -581,7 +581,9 @@ export function nodeSummary(
     if (key === "appointment_created") return "מופעל בקביעת פגישה";
     if (key === "appointment_cancelled") return "מופעל בביטול פגישה";
     if (key === "order_created") return "מופעל ביצירת הזמנה";
-    if (key === "payment_succeeded") return "מופעל אחרי תשלום מוצלח";
+    if (key === "store_order_paid" || key === "payment_succeeded") {
+      return "מופעל אחרי הזמנה ששולמה בחנות";
+    }
     return String(data.label || "טריגר");
   }
   if (type === "condition") {
@@ -620,6 +622,7 @@ export function nodeSummary(
       const recipientLabels: Record<string, string> = {
         lead_email: "אימייל הליד",
         appointment_customer_email: "הלקוח שקבע תור",
+        store_customer_email: "הלקוח בהזמנה",
         business_owner: "בעל העסק",
         lead_owner: "אחראי הליד",
         fixed_email: "כתובת קבועה",

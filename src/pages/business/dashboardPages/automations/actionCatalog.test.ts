@@ -111,6 +111,12 @@ describe("automation templates after action cleanup", () => {
     const forbidden = new Set(["send_email", "create_appointment"]);
     for (const template of WORKING_TEMPLATES) {
       const keys = graphActionKeys(template);
+      if (template.key === "wf_store_order_confirmation") {
+        expect(keys, template.key).toContain("send_email");
+        expect(keys, template.key).not.toContain("connected_email");
+        expect(keys, template.key).not.toContain("create_appointment");
+        continue;
+      }
       expect(keys.some((key) => forbidden.has(key)), template.key).toBe(false);
       expect(template.name).not.toMatch(/אימייל \(Bizuply\)|אימייל Bizuply/);
       expect(template.description).not.toMatch(/אימייל \(Bizuply\)|מ-Bizuply/);

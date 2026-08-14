@@ -56,6 +56,7 @@ const TRIGGER_KEY_ICONS: Record<string, LucideIcon> = {
   appointment_cancelled: CalendarX,
   appointment_reminder: Bell,
   order_created: ShoppingBag,
+  store_order_paid: ShoppingBag,
   payment_succeeded: CreditCard,
   manual: Play,
   scheduled: Clock3,

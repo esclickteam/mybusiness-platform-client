@@ -21,6 +21,52 @@ const APPOINTMENT_TEMPLATE_KEYS = [
 ] as const;
 
 describe("appointment confirmation email templates", () => {
+  it("ships a Bizuply SMTP store confirmation template in Hebrew RTL", () => {
+    const template = WORKING_TEMPLATES.find(
+      (row) => row.key === "wf_store_order_confirmation"
+    );
+    expect(template).toBeTruthy();
+    expect(template!.requiresEmailProvider).toBeFalsy();
+    const graph = template!.buildGraph?.({ triggerKey: "store_order_paid" });
+    const emailNode = graph?.nodes.find(
+      (node) =>
+        node.type === "action" &&
+        String((node.data as { actionKey?: string }).actionKey) === "send_email"
+    );
+    expect(emailNode).toBeTruthy();
+    const data = emailNode!.data as { html?: string; subject?: string };
+    expect(String(data.subject)).toContain("אישור הזמנה {{order.number}}");
+    expect(String(data.html)).toContain("dir=\"rtl\"");
+    expect(String(data.html)).toContain("סיכום הזמנה");
+    expect(String(data.html)).toContain("פרטי תשלום");
+    expect(String(data.html)).toContain("תודה על הזמנתך");
+    expect(String(data.html)).not.toMatch(
+      /Order summary|Subtotal|Total paid|Quantity|Payment details|Sent to/i
+    );
+    expect(String(data.subject) + String(data.html) + String((emailNode!.data as { text?: string }).text || "")).not.toMatch(
+      /E2E|E2EB|E2EE|HEADLINE EDITED|BODY EDITED|SOPMSSV|Widget|NAME=|NUM=|TOTAL=/
+    );
+    const html = interpolateEmailTemplate(
+      String(data.html),
+      buildEmailPreviewContext("store_order_paid")
+    );
+    expect(html).not.toMatch(/\{\{/);
+    expect(html).toContain("דנה");
+    expect(html).toContain("ORD-1001");
+    expect(html).toContain("החנות שלי");
+    expect(html).not.toContain("E2E");
+  });
+
+  it("exposes picker variables for store_order_paid", () => {
+    const vars = emailVariablesForTrigger("store_order_paid");
+    expect(vars.map((row) => row.token)).toContain("{{customer.firstName}}");
+    expect(vars.map((row) => row.token)).toContain("{{order.number}}");
+    expect(vars.map((row) => row.token)).toContain("{{order.total}}");
+    expect(vars.map((row) => row.token)).toContain("{{order.items}}");
+    expect(vars.map((row) => row.token)).toContain("{{order.shippingAddress}}");
+    expect(vars.map((row) => row.token)).toContain("{{store.name}}");
+  });
+
   it("exposes picker variables for appointment_created", () => {
     const vars = emailVariablesForTrigger("appointment_created");
     expect(vars.map((row) => row.token)).toEqual(
