@@ -21,6 +21,16 @@ const APPOINTMENT_TEMPLATE_KEYS = [
 ] as const;
 
 describe("appointment confirmation email templates", () => {
+  it("exposes picker variables for store_order_paid", () => {
+    const vars = emailVariablesForTrigger("store_order_paid");
+    expect(vars.map((row) => row.token)).toContain("{{customer.firstName}}");
+    expect(vars.map((row) => row.token)).toContain("{{order.number}}");
+    expect(vars.map((row) => row.token)).toContain("{{order.total}}");
+    expect(vars.map((row) => row.token)).toContain("{{order.items}}");
+    expect(vars.map((row) => row.token)).toContain("{{order.shippingAddress}}");
+    expect(vars.map((row) => row.token)).toContain("{{store.name}}");
+  });
+
   it("exposes picker variables for appointment_created", () => {
     const vars = emailVariablesForTrigger("appointment_created");
     expect(vars.map((row) => row.token)).toEqual(

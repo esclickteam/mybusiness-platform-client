@@ -46,7 +46,7 @@ export const COMMON_TRIGGER_KEYS = [
   "appointment_reminder",
   "form_submitted",
   "order_created",
-  "payment_succeeded",
+  "store_order_paid",
   "scheduled",
   "manual",
 ] as const;

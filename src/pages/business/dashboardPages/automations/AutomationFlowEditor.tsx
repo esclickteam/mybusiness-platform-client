@@ -222,6 +222,7 @@ function isGoogleCalendarActionKey(actionKey: unknown) {
 const GMAIL_RECIPIENT_LABELS: Record<string, string> = {
   lead_email: "אימייל הליד",
   appointment_customer_email: "הלקוח שקבע תור",
+  store_customer_email: "הלקוח בהזמנה",
   business_owner: "בעל העסק",
   lead_owner: "אחראי הליד",
   fixed_email: "כתובת קבועה",
@@ -231,6 +232,25 @@ const GMAIL_RECIPIENT_LABELS: Record<string, string> = {
 function triggerSupportsAppointmentCustomerEmail(triggerKey: string) {
   const key = String(triggerKey || "");
   return key === "appointment_created" || key === "appointment_reminder";
+}
+
+function triggerSupportsStoreCustomerEmail(triggerKey: string) {
+  const key = String(triggerKey || "");
+  return (
+    key === "store_order_paid" ||
+    key === "order_created" ||
+    key === "payment_succeeded"
+  );
+}
+
+function defaultEmailRecipientType(triggerKey: string) {
+  if (triggerSupportsAppointmentCustomerEmail(triggerKey)) {
+    return "appointment_customer_email";
+  }
+  if (triggerSupportsStoreCustomerEmail(triggerKey)) {
+    return "store_customer_email";
+  }
+  return "lead_email";
 }
 
 function mappingPresetKey(row: WhatsAppVariableMapping) {
@@ -912,11 +932,16 @@ function EditorInner({
       if (!needsRecipientDefault && !needsSenderDisplay && !hasStalePin) {
         return prev;
       }
+      const triggerKey = String(
+        prev.find((n) => n.type === "trigger")?.data?.triggerKey || ""
+      );
       return prev.map((n) => {
         if (n.id !== selectedId) return n;
         const nextData = {
           ...(n.data || {}),
-          ...(needsRecipientDefault ? { recipientType: "lead_email" } : {}),
+          ...(needsRecipientDefault
+            ? { recipientType: defaultEmailRecipientType(triggerKey) }
+            : {}),
           ...(liveSender ? { senderEmail: liveSender } : {}),
         };
         // Runtime resolve — do not pin ConnectedAccountId into workflow nodes.
@@ -943,12 +968,17 @@ function EditorInner({
       if (!needsRecipientDefault && !needsSenderDisplay && !hasStalePin) {
         return prev;
       }
+      const triggerKey = String(
+        prev.find((n) => n.type === "trigger")?.data?.triggerKey || ""
+      );
       return prev.map((n) => {
         if (n.id !== selectedId) return n;
         const nextData = {
           ...(n.data || {}),
           emailProvider: "microsoft",
-          ...(needsRecipientDefault ? { recipientType: "lead_email" } : {}),
+          ...(needsRecipientDefault
+            ? { recipientType: defaultEmailRecipientType(triggerKey) }
+            : {}),
           ...(liveSender ? { senderEmail: liveSender } : {}),
         };
         // Runtime resolve — do not pin ConnectedAccountId into workflow nodes.
@@ -1351,8 +1381,11 @@ function EditorInner({
     setDrawerSessionDirty(false);
   };
 
-  const applyGmailPublishDefaults = (list: Node[]) =>
-    list.map((n) => {
+  const applyGmailPublishDefaults = (list: Node[]) => {
+    const triggerKey = String(
+      list.find((n) => n.type === "trigger")?.data?.triggerKey || ""
+    );
+    return list.map((n) => {
       if (
         !isGmailActionKey(n.data?.actionKey) &&
         !isOutlookActionKey(n.data?.actionKey)
@@ -1364,13 +1397,16 @@ function EditorInner({
         ...n,
         data: {
           ...(n.data || {}),
-          ...(recipientType ? {} : { recipientType: "lead_email" }),
+          ...(recipientType
+            ? {}
+            : { recipientType: defaultEmailRecipientType(triggerKey) }),
           emailProvider: isOutlookActionKey(n.data?.actionKey)
             ? "microsoft"
             : "gmail",
         },
       };
     });
+  };
 
   const handleSave = async (
     quiet = false,
@@ -3105,6 +3141,16 @@ function EditorInner({
                                   אימייל הלקוח שקבע תור
                                 </option>
                               ) : null}
+                              {triggerSupportsStoreCustomerEmail(
+                                selectedTriggerKey
+                              ) ||
+                              String(
+                                selectedNode.data?.recipientType || ""
+                              ) === "store_customer_email" ? (
+                                <option value="store_customer_email">
+                                  אימייל הלקוח בהזמנה
+                                </option>
+                              ) : null}
                               <option value="business_owner">בעל העסק</option>
                               <option value="lead_owner">אחראי הליד</option>
                               <option value="fixed_email">כתובת קבועה</option>
@@ -3605,6 +3651,16 @@ function EditorInner({
                               ) === "appointment_customer_email" ? (
                                 <option value="appointment_customer_email">
                                   אימייל הלקוח שקבע תור
+                                </option>
+                              ) : null}
+                              {triggerSupportsStoreCustomerEmail(
+                                selectedTriggerKey
+                              ) ||
+                              String(
+                                selectedNode.data?.recipientType || ""
+                              ) === "store_customer_email" ? (
+                                <option value="store_customer_email">
+                                  אימייל הלקוח בהזמנה
                                 </option>
                               ) : null}
                               <option value="business_owner">בעל העסק</option>

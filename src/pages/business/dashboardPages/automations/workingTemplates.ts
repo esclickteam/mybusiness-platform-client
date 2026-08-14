@@ -28,7 +28,7 @@ import {
   listConnectedEmailProviders,
   type EmailProviderId,
 } from "./emailProviderAutomation";
-import { APPOINTMENT_CONFIRMATION_EMAIL_DEFAULTS } from "./appointmentConfirmationEmail";
+import { APPOINTMENT_CONFIRMATION_EMAIL_DEFAULTS, STORE_ORDER_CONFIRMATION_EMAIL_DEFAULTS } from "./appointmentConfirmationEmail";
 import {
   LEAD_OPENING_EMAIL_DEFAULTS,
   LEAD_WELCOME_EMAIL_DEFAULTS,
@@ -131,6 +131,7 @@ const APPOINTMENT_DONE_FALLBACK_KEYS = [
   ...APPOINTMENT_DONE_TRIGGER_KEYS,
   "appointment_created",
 ];
+const STORE_ORDER_TRIGGER_KEYS = ["store_order_paid", "payment_succeeded"];
 
 type GraphAction = {
   actionKey: string;
@@ -895,6 +896,41 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
             label: "אימייל פתיחה",
             defaults: {
               ...LEAD_OPENING_EMAIL_DEFAULTS,
+            },
+          },
+        ],
+      }),
+  },
+  {
+    key: "wf_store_order_confirmation",
+    rank: 12,
+    name: "אישור הזמנה בחנות",
+    description: "התקבלה הזמנה בחנות → שליחת מייל אישור ללקוח דרך Gmail או Outlook.",
+    triggerLabel: "התקבלה הזמנה בחנות",
+    resultLabels: ["אימייל אישור הזמנה"],
+    categories: ["sales", "email"],
+    keywords: [
+      "חנות",
+      "הזמנה",
+      "אישור הזמנה",
+      "order confirmation",
+      "ecommerce",
+      "store",
+    ],
+    engine: "workflow_graph",
+    requiredTriggerKeys: STORE_ORDER_TRIGGER_KEYS,
+    requiresEmailProvider: true,
+    buildGraph: ({ triggerKey, emailProvider }) =>
+      resultGraph({
+        triggerKey,
+        triggerLabel: "התקבלה הזמנה בחנות",
+        emailProvider,
+        actions: [
+          {
+            actionKey: "connected_email",
+            label: "אימייל אישור הזמנה",
+            defaults: {
+              ...STORE_ORDER_CONFIRMATION_EMAIL_DEFAULTS,
             },
           },
         ],
