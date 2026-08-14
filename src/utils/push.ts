@@ -1,6 +1,25 @@
 import API from "@api";
 
 const SW_URL = "/service-worker.js";
+const PUSH_DEVICE_ID_KEY = "bizuply-push-device-id";
+
+export function getPushDeviceId(): string {
+  if (typeof window === "undefined" || !window.localStorage) {
+    return "";
+  }
+  try {
+    const existing = window.localStorage.getItem(PUSH_DEVICE_ID_KEY);
+    if (existing && existing.trim()) return existing.trim();
+    const created =
+      typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
+        ? crypto.randomUUID()
+        : `dev-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+    window.localStorage.setItem(PUSH_DEVICE_ID_KEY, created);
+    return created;
+  } catch {
+    return "";
+  }
+}
 
 export type PushPermission =
   | "granted"
@@ -164,6 +183,7 @@ export async function subscribeToPush(): Promise<SubscribeResult> {
     // Always re-bind the browser subscription to the current business tenant.
     const saveRes = await API.post("/push/subscribe", {
       subscription: subscription.toJSON(),
+      deviceId: getPushDeviceId(),
     });
 
     if (!saveRes.data?.ok) {
