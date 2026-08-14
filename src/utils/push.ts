@@ -336,6 +336,14 @@ export function listenForPushSubscriptionChange(): () => void {
   if (!("serviceWorker" in navigator)) return () => undefined;
 
   let rebindTimer: ReturnType<typeof setTimeout> | null = null;
+  const schedule = (forceRebind: boolean) => {
+    if (rebindTimer) clearTimeout(rebindTimer);
+    rebindTimer = setTimeout(() => {
+      rebindTimer = null;
+      void ensurePushSubscription({ forceRebind });
+    }, 250);
+  };
+
   const handler = (event: Event) => {
     const data = (event as MessageEvent).data;
     if (
@@ -345,14 +353,25 @@ export function listenForPushSubscriptionChange(): () => void {
     ) {
       return;
     }
-    const forceRebind = shouldForceRebindOnSwMessage(data?.type);
-    if (rebindTimer) clearTimeout(rebindTimer);
-    rebindTimer = setTimeout(() => {
-      rebindTimer = null;
-      void ensurePushSubscription({ forceRebind });
-    }, 250);
+    schedule(shouldForceRebindOnSwMessage(data?.type));
+  };
+
+  // iOS PWA often resumes a frozen JS context without remounting React.
+  // Retry the save so a new Apple endpoint is stored after a server fix.
+  const onVisible = () => {
+    if (typeof document !== "undefined" && document.visibilityState === "hidden") {
+      return;
+    }
+    schedule(false);
   };
 
   navigator.serviceWorker.addEventListener("message", handler);
-  return () => navigator.serviceWorker.removeEventListener("message", handler);
+  document.addEventListener("visibilitychange", onVisible);
+  window.addEventListener("pageshow", onVisible);
+  return () => {
+    navigator.serviceWorker.removeEventListener("message", handler);
+    document.removeEventListener("visibilitychange", onVisible);
+    window.removeEventListener("pageshow", onVisible);
+    if (rebindTimer) clearTimeout(rebindTimer);
+  };
 }
