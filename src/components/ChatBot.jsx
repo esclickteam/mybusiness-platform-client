@@ -248,7 +248,6 @@ export default function ChatBot({
     }
     businessIdRef.current = nextId;
   }, [user?.businessId]);
-  }, [chatOpen, conversation?._id]);
 
   useEffect(() => {
     if (user?.name) setHumanName((prev) => prev || user.name);
