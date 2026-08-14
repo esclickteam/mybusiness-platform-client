@@ -2,6 +2,7 @@ import API from "@api";
 import {
   SW_SCOPE,
   SW_URL,
+  isCurrentSwScript,
   shouldForceRebindOnSwMessage,
 } from "./pushSwMessages";
 
@@ -92,6 +93,32 @@ function urlBase64ToUint8Array(base64String: string): Uint8Array {
   return output;
 }
 
+async function unregisterExtraServiceWorkers(
+  keep: ServiceWorkerRegistration
+): Promise<void> {
+  if (!("getRegistrations" in navigator.serviceWorker)) return;
+
+  const origin = window.location.origin;
+  const keepSub = await keep.pushManager.getSubscription().catch(() => null);
+  const regs = await navigator.serviceWorker.getRegistrations();
+
+  for (const other of regs) {
+    const scripts = [other.active, other.waiting, other.installing]
+      .filter(Boolean)
+      .map((worker) => (worker as ServiceWorker).scriptURL);
+    if (scripts.some((script) => isCurrentSwScript(script, origin))) continue;
+
+    const otherSub = await other.pushManager.getSubscription().catch(() => null);
+    if (keepSub && otherSub && otherSub.endpoint === keepSub.endpoint) continue;
+
+    try {
+      await other.unregister();
+    } catch (err) {
+      console.error("Extra service worker unregister failed:", err);
+    }
+  }
+}
+
 export async function registerServiceWorker(): Promise<ServiceWorkerRegistration | null> {
   if (!("serviceWorker" in navigator)) return null;
 
@@ -106,6 +133,14 @@ export async function registerServiceWorker(): Promise<ServiceWorkerRegistration
       await reg.update();
     } catch {
       /* ignore update errors */
+    }
+
+    // iOS can keep /service-worker.js and /service-worker.js?v=N as two
+    // registrations. The stale one still paints the generic fallback banner.
+    try {
+      await unregisterExtraServiceWorkers(reg);
+    } catch {
+      /* ignore */
     }
 
     return reg;

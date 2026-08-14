@@ -1,7 +1,9 @@
 /* eslint-disable no-restricted-globals */
 
 // Bump when push delivery / ack behavior changes — forces clients to refresh SW.
-const SW_VERSION = "bizuply-sw-delivery-ack-v9";
+const SW_VERSION = "bizuply-sw-delivery-ack-v10";
+const LEGACY_GENERIC_TAG = "bizuply-notification";
+const LEGACY_GENERIC_BODY = "יש לך התראה חדשה";
 
 // Activate updated service workers immediately.
 self.addEventListener("install", (event) => {
@@ -127,16 +129,43 @@ async function ackPushDelivery(payload, shown) {
   }
 }
 
-async function showPushNotification(title, options) {
-  const tag = options.tag;
-  if (tag && self.registration.getNotifications) {
-    try {
-      const existing = await self.registration.getNotifications({ tag });
-      await Promise.all((existing || []).map((note) => note.close()));
-    } catch (err) {
-      console.error("[sw] getNotifications failed", err);
-    }
+function isLegacyGenericBanner(note) {
+  const title = String((note && note.title) || "");
+  const body = String((note && note.body) || "");
+  const tag = String((note && note.tag) || "");
+  return (
+    tag === LEGACY_GENERIC_TAG ||
+    body === LEGACY_GENERIC_BODY ||
+    title === "BizUply"
+  );
+}
+
+async function closeDuplicateNotifications(tag) {
+  if (!self.registration.getNotifications) return;
+  try {
+    const existing = tag
+      ? await self.registration.getNotifications({ tag })
+      : [];
+    const all = await self.registration.getNotifications();
+    const seen = new Set();
+    const toClose = []
+      .concat(existing || [], all || [])
+      .filter((note) => {
+        if (!note || seen.has(note)) return false;
+        seen.add(note);
+        return (
+          (tag && note.tag === tag) ||
+          isLegacyGenericBanner(note)
+        );
+      });
+    await Promise.all(toClose.map((note) => note.close()));
+  } catch (err) {
+    console.error("[sw] getNotifications failed", err);
   }
+}
+
+async function showPushNotification(title, options) {
+  await closeDuplicateNotifications(options.tag);
 
   const showOptions = isIosUa()
     ? {
@@ -195,7 +224,13 @@ self.addEventListener("push", (event) => {
   }
 
   const payload = unwrapPushPayload(raw);
-  const title = payload.title || "BizUply";
+  const title = payload.title || "";
+  const body = payload.body || "";
+  // Data-only Web Push has no top-level title/body. A leftover SW, or an
+  // empty iOS push event, used to paint "BizUply / יש לך התראה חדשה".
+  if (!title || !body) {
+    return;
+  }
   const targetUrl = payload.url || "/";
   const leadId = payload.leadId || null;
   const kind = payload.kind || "";
@@ -239,7 +274,7 @@ self.addEventListener("push", (event) => {
         : "bizuply-" + Date.now());
 
   const options = {
-    body: payload.body || "יש לך התראה חדשה",
+    body,
     icon: absoluteAsset(payload.icon || "/android-chrome-192x192.png"),
     badge: absoluteAsset(payload.badge || "/favicon-v2.png"),
     tag: uniqueTag,
