@@ -437,6 +437,11 @@ describe("workingTemplates launch safety", () => {
 
   it("duo graph confirms immediately, creates a task, then reminds 24h before start", () => {
     const duo = WORKING_TEMPLATES.find((t) => t.key === "wf_appointment_duo")!;
+    expect(duo.requiredMetaTemplateNames).toEqual([
+      "appointment_confirmation",
+      "appointment_reminder",
+    ]);
+    expect(duo.waPreferredMetaName).toBe("appointment_confirmation");
     const graph = duo.buildGraph!({ triggerKey: "appointment_created" });
     const types = graph.nodes.map((n) => n.type);
     expect(types).toEqual(["trigger", "action", "action", "delay", "action"]);
@@ -456,7 +461,7 @@ describe("workingTemplates launch safety", () => {
         .map((n) =>
           String((n.data as { metaTemplateName?: string }).metaTemplateName)
         )
-    ).toEqual(["appointment_reminder", "appointment_reminder"]);
+    ).toEqual(["appointment_confirmation", "appointment_reminder"]);
     const delay = graph.nodes.find((n) => n.type === "delay")!.data as {
       until?: string;
       offsetHours?: number;

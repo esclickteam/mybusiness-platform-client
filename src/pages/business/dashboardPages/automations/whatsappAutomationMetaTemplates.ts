@@ -24,7 +24,7 @@ export const BLUEPRINT_PREFERRED_META: Record<string, string> = {
   wf_lead_full_onboarding: "new_lead_welcome",
   wf_lead_no_response_pack: "new_lead_welcome",
   wf_new_client_pack: "new_client_welcome",
-  wf_appointment_duo: "appointment_reminder",
+  wf_appointment_duo: "appointment_confirmation",
 };
 
 const NEW_LEAD_OWNER_ALERT_MAPPINGS: WaDefaultMapping[] = [
@@ -35,6 +35,12 @@ const NEW_LEAD_OWNER_ALERT_MAPPINGS: WaDefaultMapping[] = [
 
 export const WA_DEFAULT_META_MAPPINGS: Record<string, WaDefaultMapping[]> = {
   new_lead_welcome: [{ variable: "1", source: "lead", field: "name" }],
+  appointment_confirmation: [
+    { variable: "1", source: "appointment", field: "clientName" },
+    { variable: "2", source: "business", field: "name" },
+    { variable: "3", source: "appointment", field: "date" },
+    { variable: "4", source: "appointment", field: "time" },
+  ],
   appointment_reminder: [
     { variable: "1", source: "appointment", field: "clientSnapshot.name" },
     { variable: "2", source: "system", field: "relativeTime" },
@@ -66,6 +72,7 @@ export const BUSINESS_ALERT_META_TEMPLATE_NAMES = new Set([
 export const LEGACY_MANAGED_META_TEMPLATE_NAMES = new Set(["new_lead_received"]);
 
 export const MANAGED_TEMPLATE_DISPLAY_NAMES: Record<string, string> = {
+  appointment_confirmation: "אישור פגישה",
   new_lead_received_utility: "New Lead Received",
   new_lead_received: "New Lead Received",
 };

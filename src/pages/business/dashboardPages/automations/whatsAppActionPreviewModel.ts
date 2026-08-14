@@ -10,7 +10,7 @@ export const WA_PREVIEW_ERROR_HE = "לא ניתן להציג כרגע תצוגה
 
 export const WA_PREVIEW_SAMPLE_DATA = {
   leadName: "ישראל ישראלי",
-  businessName: "העסק שלי",
+  businessName: "עסק בדיקה",
   appointmentDate: "16/09/2026",
   appointmentTime: "18:00",
   phone: "050-1234567",
@@ -25,6 +25,12 @@ export const WA_PREVIEW_RECIPIENT_LABELS: Record<string, string> = {
 };
 
 const WA_PREVIEW_VARIABLE_LABELS: Record<string, Record<string, string>> = {
+  appointment_confirmation: {
+    "1": "שם הלקוח",
+    "2": "שם העסק",
+    "3": "תאריך הפגישה",
+    "4": "שעת הפגישה",
+  },
   appointment_reminder: {
     "1": "שם הלקוח",
     "2": "זמן עד הפגישה",

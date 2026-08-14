@@ -13,6 +13,7 @@ import type { TemplateCategoryId } from "./templateCategoryMapping";
 import { buildAiTemplateGraph, listSupportedAiTemplates } from "./aiAutomationCatalog";
 import {
   BLUEPRINT_PREFERRED_META,
+  defaultMappingsForMetaTemplate,
   isBusinessAlertMetaTemplateName,
   isLegacyManagedMetaTemplateName,
   isTestTemplateName,
@@ -212,12 +213,10 @@ function buildAppointmentDuoGraph(opts: {
   triggerKey: string;
   waTemplateId?: string;
 }): { nodes: AutomationFlowNode[]; edges: AutomationFlowEdge[] } {
-  const waDefaults = {
+  const waBase = {
     actionKey: "whatsapp_template",
-    templateId: opts.waTemplateId || "",
     senderMode: "bizuply_managed",
     recipientType: "appointment_customer_phone",
-    metaTemplateName: "appointment_reminder",
     language: "he",
     blueprintKey: "wf_appointment_duo",
   };
@@ -238,9 +237,17 @@ function buildAppointmentDuoGraph(opts: {
         type: "action",
         position: { x: 280, y: 80 },
         data: {
-          ...waDefaults,
+          ...waBase,
+          templateId: "",
           label: "אישור WhatsApp",
+          metaTemplateName: "appointment_confirmation",
           blueprintTrigger: "appointment_created",
+          componentMappings: defaultMappingsForMetaTemplate(
+            "appointment_confirmation"
+          ),
+          variableMappings: defaultMappingsForMetaTemplate(
+            "appointment_confirmation"
+          ),
         },
       },
       {
@@ -268,10 +275,18 @@ function buildAppointmentDuoGraph(opts: {
         type: "action",
         position: { x: 1000, y: 220 },
         data: {
-          ...waDefaults,
+          ...waBase,
+          templateId: "",
           label: "תזכורת WhatsApp",
+          metaTemplateName: "appointment_reminder",
           hoursBefore: 24,
           blueprintTrigger: "appointment_reminder",
+          componentMappings: defaultMappingsForMetaTemplate(
+            "appointment_reminder"
+          ),
+          variableMappings: defaultMappingsForMetaTemplate(
+            "appointment_reminder"
+          ),
         },
       },
     ],
@@ -1201,8 +1216,12 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
     recipeKey: "appointment_duo",
     requiresWaTemplate: true,
     waCategory: "appointment_reminder",
+    waPreferredMetaName: "appointment_confirmation",
     waHints: ["reminder", "appointment", "תזכורת", "confirm"],
-    requiredMetaTemplateNames: ["appointment_reminder"],
+    requiredMetaTemplateNames: [
+      "appointment_confirmation",
+      "appointment_reminder",
+    ],
     hoursBefore: 24,
     requiredTriggerKeys: APPOINTMENT_TRIGGER_KEYS,
     buildGraph: ({ triggerKey, waTemplateId }) =>

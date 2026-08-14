@@ -72,6 +72,24 @@ describe("whatsAppTemplateSelectFormat", () => {
     );
     expect(
       resolveWhatsAppTemplateDisplayName({
+        metaTemplateName: "appointment_confirmation",
+        name: "appointment_confirmation",
+      })
+    ).toBe("אישור פגישה");
+    expect(
+      listAutomationPickerTemplates([
+        {
+          _id: "c1",
+          metaTemplateName: "appointment_confirmation",
+          name: "appointment_confirmation",
+          language: "he",
+          automationSendable: true,
+          catalogSource: "managed",
+        } as ApprovedWhatsAppTemplate,
+      ]).map((t) => t.metaTemplateName)
+    ).toEqual(["appointment_confirmation"]);
+    expect(
+      resolveWhatsAppTemplateDisplayName({
         metaTemplateName: "new_lead_received",
         name: "new_lead_received",
       })
