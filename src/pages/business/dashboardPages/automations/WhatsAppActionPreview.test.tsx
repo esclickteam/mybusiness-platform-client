@@ -18,6 +18,8 @@ const CATALOG_BODIES: Record<string, string> = {
     "Hello {{1}}, thank you for contacting us! We received your details and will get back to you shortly. You can also reply to this message.",
   new_lead_received_utility:
     "New lead: {{1}}\nPhone: {{2}}\nSource: {{3}}",
+  appointment_confirmation:
+    "שלום {{1}},\n\nהפגישה שלך עם {{2}} נקבעה בהצלחה ✅\n\n📅 תאריך: {{3}}\n🕒 שעה: {{4}}\n\nנשמח לראותך!",
   appointment_reminder:
     "Hello {{1}}, reminder for your meeting {{2}} at {{3}} for {{4}}. We look forward to seeing you!",
   appointment_thanks:
@@ -40,6 +42,12 @@ const DEFAULT_MAPPINGS: Record<string, WhatsAppVariableMapping[]> = {
     { variable: "1", source: "lead", field: "name" },
     { variable: "2", source: "lead", field: "phone" },
     { variable: "3", source: "lead", field: "source" },
+  ],
+  appointment_confirmation: [
+    { variable: "1", source: "appointment", field: "clientName" },
+    { variable: "2", source: "business", field: "name" },
+    { variable: "3", source: "appointment", field: "date" },
+    { variable: "4", source: "appointment", field: "time" },
   ],
   appointment_reminder: [
     { variable: "1", source: "appointment", field: "clientSnapshot.name" },
@@ -207,6 +215,27 @@ describe("WhatsAppActionPreview", () => {
     expect(screen.getByText(/טלפון הליד/)).toBeTruthy();
     expect(container.textContent).not.toContain("{{1}}");
     expect(container.querySelector(".af-wa-preview__button")).toBeNull();
+  });
+
+  it("renders the approved appointment confirmation copy with mapped samples", () => {
+    const { container } = render(
+      <WhatsAppActionPreview
+        template={tpl("appointment_confirmation", {
+          variables: ["1", "2", "3", "4"],
+        })}
+        mappings={DEFAULT_MAPPINGS.appointment_confirmation}
+        recipientType="appointment_customer_phone"
+        hasSelection
+      />
+    );
+    const root = container.querySelector('[data-testid="wa-action-preview"]');
+    expect(root?.getAttribute("dir")).toBe("rtl");
+    expect(screen.getByText(/ישראל ישראלי/)).toBeTruthy();
+    expect(screen.getByText(/עסק בדיקה/)).toBeTruthy();
+    expect(screen.getByText(/16\/09\/2026/)).toBeTruthy();
+    expect(screen.getByText(/18:00/)).toBeTruthy();
+    expect(screen.getByText(/נקבעה בהצלחה/)).toBeTruthy();
+    expect(container.textContent).not.toMatch(/\{\{\s*[1-4]\s*\}\}/);
   });
 
   it("renders appointment reminder preview with mapped time", () => {

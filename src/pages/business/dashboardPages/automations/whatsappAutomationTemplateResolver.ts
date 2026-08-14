@@ -79,6 +79,7 @@ function recipientTypeForMeta(metaName: string): string {
   const name = normalizeName(metaName);
   if (isBusinessAlertMetaTemplateName(name)) return "business_owner";
   if (
+    name === "appointment_confirmation" ||
     name === "appointment_reminder" ||
     name === "appointment_thanks" ||
     name === "appointment_review"

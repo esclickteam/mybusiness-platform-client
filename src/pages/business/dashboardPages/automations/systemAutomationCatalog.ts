@@ -272,6 +272,15 @@ export const REQUIRED_WHATSAPP_MESSAGE_TEMPLATES: Array<{
     suggestedMetaName: "appointment_reminder",
   },
   {
+    id: "wa_appointment_confirmation",
+    category: "custom",
+    title: "אישור פגישה",
+    reason: "נשלחת מיד כשנקבעת פגישה חדשה.",
+    hintNames: ["appointment_confirmation"],
+    relatedAutomationIds: ["appointment_duo", "wf_appointment_duo"],
+    suggestedMetaName: "appointment_confirmation",
+  },
+  {
     id: "wa_appointment_thanks",
     category: "custom",
     title: "תודה אחרי פגישה",

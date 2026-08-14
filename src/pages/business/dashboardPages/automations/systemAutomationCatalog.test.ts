@@ -45,6 +45,7 @@ describe("systemAutomationCatalog", () => {
     expect(required.map((g) => g.id)).toEqual(
       expect.arrayContaining([
         "wa_appointment_reminder",
+        "wa_appointment_confirmation",
         "wa_welcome_lead",
         "wa_welcome_client",
         "wa_follow_up",
