@@ -6,7 +6,7 @@ import React, {
   useMemo,
 } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   ArrowRight,
   Bot,
@@ -130,6 +130,7 @@ export default function ChatBot({
   const { t, i18n } = useTranslation();
   const dir = useLocaleDir();
   const navigate = useNavigate();
+  const location = useLocation();
   const { user } = useAuth();
 
   const [chatInput, setChatInput] = useState("");
@@ -152,6 +153,7 @@ export default function ChatBot({
   const [historyViewMessages, setHistoryViewMessages] = useState([]);
   const [historyViewLoading, setHistoryViewLoading] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [retryQuestion, setRetryQuestion] = useState("");
 
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
@@ -162,6 +164,8 @@ export default function ChatBot({
   const modeRef = useRef(mode);
   const lastNotifiedIdRef = useRef(null);
   const typingTimerRef = useRef(null);
+  const sendingRef = useRef(false);
+  const businessIdRef = useRef(user?.businessId || null);
 
   const historyTitle = t("chatbot.supportHistoryTitle", {
     defaultValue: "היסטוריית שיחות",
@@ -181,9 +185,9 @@ export default function ChatBot({
     if (user?.businessId) {
       return [
         t("chatbot.quickPrompts.myLeads"),
-        t("chatbot.quickPrompts.myAppointments"),
-        t("chatbot.quickPrompts.myTasks"),
-        t("chatbot.quickPrompts.createSite"),
+        t("chatbot.quickPrompts.recentLeads"),
+        t("chatbot.quickPrompts.todayAppointments"),
+        t("chatbot.quickPrompts.activeAutomations"),
       ];
     }
     return [
@@ -233,6 +237,17 @@ export default function ChatBot({
     if (chatOpen) {
       setUnreadCount(0);
     }
+  }, [chatOpen]);
+
+  useEffect(() => {
+    const nextId = user?.businessId || null;
+    if (businessIdRef.current && nextId && businessIdRef.current !== nextId) {
+      setChatMessages([]);
+      setRetryQuestion("");
+      initialSentRef.current = false;
+    }
+    businessIdRef.current = nextId;
+  }, [user?.businessId]);
   }, [chatOpen, conversation?._id]);
 
   useEffect(() => {
@@ -487,16 +502,16 @@ export default function ChatBot({
   const sendBotMessage = useCallback(
     async (messageText, { fromSuggestion = false } = {}) => {
       const text = (messageText ?? chatInput).trim();
-      if (!text || isLoading) return;
+      if (!text || isLoading || sendingRef.current) return;
 
+      sendingRef.current = true;
       if (!fromSuggestion) setChatInput("");
+      setRetryQuestion("");
 
       setChatMessages((msgs) => [...msgs, { sender: "user", text }]);
       setIsLoading(true);
 
       try {
-        // Session is best-effort — chatbot answers must work even if support
-        // session/CORS fails.
         let session = null;
         try {
           session = await ensureSession();
@@ -508,26 +523,58 @@ export default function ChatBot({
         const token = localStorage.getItem("token");
         if (token) headers.Authorization = `Bearer ${token}`;
 
+        const recentMessages = chatMessages
+          .filter((m) => m.sender === "user" || m.sender === "bot")
+          .slice(-6)
+          .map((m) => ({
+            role: m.sender === "user" ? "user" : "assistant",
+            content: String(m.text || "").slice(0, 800),
+          }));
+
         const response = await fetch("/api/chatbot", {
           method: "POST",
           headers,
           credentials: "include",
           body: JSON.stringify({
             question: text,
-            businessId: user?.businessId || undefined,
+            locale: i18n.language,
+            timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+            currentPath: location.pathname || "",
+            recentMessages,
           }),
         });
 
-        const data = await response.json();
+        const data = await response.json().catch(() => ({}));
+        if (response.status === 401) {
+          setRetryQuestion(text);
+          setChatMessages((msgs) => [
+            ...msgs,
+            {
+              sender: "bot",
+              text: t("chatbot.sessionExpired", {
+                defaultValue:
+                  "פג תוקף החיבור. התחברו מחדש כדי שהעוזר יוכל לקרוא את נתוני החשבון.",
+              }),
+              canRetry: true,
+            },
+          ]);
+          return;
+        }
         if (!response.ok) {
-          throw new Error(data.error || "request failed");
+          throw new Error(data.error || data.answer || "request failed");
         }
 
         const answer = cleanText(data.answer || t("chatbot.noAnswer"));
         const suggestions = filterSuggestionsForLocale(
           Array.isArray(data.suggestions) ? data.suggestions : [],
           i18n.language,
-          fallbackSuggestions
+          user?.businessId
+            ? [
+                t("chatbot.quickPrompts.myLeads"),
+                t("chatbot.quickPrompts.recentLeads"),
+                t("chatbot.quickPrompts.todayAppointments"),
+              ]
+            : fallbackSuggestions
         );
 
         setChatMessages((msgs) => [
@@ -557,24 +604,29 @@ export default function ChatBot({
           ).catch(() => {});
         }
       } catch {
+        setRetryQuestion(text);
         setChatMessages((msgs) => [
           ...msgs,
           {
             sender: "bot",
             text: t("chatbot.error"),
             offerHuman: true,
+            canRetry: true,
           },
         ]);
         setShowHumanForm(true);
       } finally {
+        sendingRef.current = false;
         setIsLoading(false);
       }
     },
     [
       chatInput,
+      chatMessages,
       isLoading,
       i18n.language,
       fallbackSuggestions,
+      location.pathname,
       t,
       ensureSession,
       user?.businessId,
@@ -1288,6 +1340,22 @@ export default function ChatBot({
                 )}
 
                 {msg.sender === "bot" &&
+                  msg.canRetry &&
+                  retryQuestion &&
+                  mode === "bot" && (
+                    <div className="mt-2 text-start">
+                      <button
+                        type="button"
+                        onClick={() => sendBotMessage(retryQuestion)}
+                        disabled={isLoading}
+                        className="rounded-full border border-violet-200 bg-violet-50 px-3 py-1.5 text-[11px] font-bold text-violet-800 transition hover:bg-violet-100 disabled:opacity-50"
+                      >
+                        {t("chatbot.retry", { defaultValue: "נסו שוב" })}
+                      </button>
+                    </div>
+                  )}
+
+                {msg.sender === "bot" &&
                   msg.suggestions?.length > 0 &&
                   mode === "bot" && (
                     <div dir="ltr" className="mt-2 flex flex-wrap justify-start gap-1.5">
@@ -1311,10 +1379,17 @@ export default function ChatBot({
 
             {(isLoading || agentTyping) && (
               <div dir="ltr" className="mb-3 flex justify-start">
-                <div className="flex items-center gap-1.5 rounded-2xl rounded-bl-sm border border-slate-200 bg-white px-4 py-3 shadow-sm">
+                <div className="flex items-center gap-2 rounded-2xl rounded-bl-sm border border-slate-200 bg-white px-4 py-3 shadow-sm">
                   <span className="h-2 w-2 animate-bounce rounded-full bg-violet-400 [animation-delay:0ms]" />
                   <span className="h-2 w-2 animate-bounce rounded-full bg-violet-400 [animation-delay:150ms]" />
                   <span className="h-2 w-2 animate-bounce rounded-full bg-violet-400 [animation-delay:300ms]" />
+                  {isLoading && mode === "bot" && (
+                    <span className="text-[11px] font-medium text-slate-500">
+                      {t("chatbot.toolLoading", {
+                        defaultValue: "קורא מהמערכת...",
+                      })}
+                    </span>
+                  )}
                 </div>
               </div>
             )}
@@ -1337,7 +1412,12 @@ export default function ChatBot({
                     });
                   }
                 }}
-                onKeyDown={(e) => e.key === "Enter" && handleSend()}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSend();
+                  }
+                }}
                 placeholder={
                   mode === "human"
                     ? t("chatbot.humanPlaceholder")
