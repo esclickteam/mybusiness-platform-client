@@ -152,7 +152,9 @@ async function createPushSubscription(
   }
 }
 
-export async function subscribeToPush(): Promise<SubscribeResult> {
+export async function subscribeToPush(
+  options: { forceRebind?: boolean } = {}
+): Promise<SubscribeResult> {
   if (!isPushSupported()) return { ok: false, reason: "unsupported" };
 
   // iOS only delivers Web Push from an installed Home Screen PWA.
@@ -177,6 +179,13 @@ export async function subscribeToPush(): Promise<SubscribeResult> {
     const enabled = res.data?.enabled !== false;
 
     if (!key || !enabled) return { ok: false, reason: "no-key" };
+
+    if (options.forceRebind) {
+      const existing = await reg.pushManager.getSubscription();
+      if (existing) {
+        await existing.unsubscribe().catch(() => undefined);
+      }
+    }
 
     const subscription = await createPushSubscription(reg, key);
 
@@ -232,7 +241,9 @@ export async function subscribeToPush(): Promise<SubscribeResult> {
  * If the user already granted notification permission, make sure the device
  * subscription is registered for the current business (no permission prompt).
  */
-export async function ensurePushSubscription(): Promise<SubscribeResult> {
+export async function ensurePushSubscription(
+  options: { forceRebind?: boolean } = {}
+): Promise<SubscribeResult> {
   if (!isPushSupported()) return { ok: false, reason: "unsupported" };
   if (Notification.permission !== "granted") {
     return { ok: false, reason: Notification.permission as "denied" | "default" };
@@ -242,7 +253,7 @@ export async function ensurePushSubscription(): Promise<SubscribeResult> {
     return { ok: false, reason: "ios-install" };
   }
 
-  return subscribeToPush();
+  return subscribeToPush(options);
 }
 
 export async function unsubscribeFromPush(): Promise<void> {
@@ -314,10 +325,21 @@ export async function showLocalNotification(options: {
 export function listenForPushSubscriptionChange(): () => void {
   if (!("serviceWorker" in navigator)) return () => undefined;
 
+  let rebindTimer: ReturnType<typeof setTimeout> | null = null;
   const handler = (event: Event) => {
     const data = (event as MessageEvent).data;
-    if (data?.type !== "PUSH_SUBSCRIPTION_CHANGED") return;
-    void ensurePushSubscription();
+    if (
+      data?.type !== "PUSH_SUBSCRIPTION_CHANGED" &&
+      data?.type !== "SW_ACTIVATED"
+    ) {
+      return;
+    }
+    const forceRebind = data?.type === "PUSH_SUBSCRIPTION_CHANGED";
+    if (rebindTimer) clearTimeout(rebindTimer);
+    rebindTimer = setTimeout(() => {
+      rebindTimer = null;
+      void ensurePushSubscription({ forceRebind });
+    }, 250);
   };
 
   navigator.serviceWorker.addEventListener("message", handler);

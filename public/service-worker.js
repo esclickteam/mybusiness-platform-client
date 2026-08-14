@@ -1,7 +1,9 @@
 /* eslint-disable no-restricted-globals */
 
-// Bump when softphone notification behavior changes — forces clients to refresh SW.
-const SW_VERSION = "bizuply-sw-softphone-v6";
+// Bump when push delivery / ack behavior changes — forces clients to refresh SW.
+const SW_VERSION = "bizuply-sw-delivery-ack-v7";
+const REBIND_CACHE = "bizuply-sw-meta";
+const REBIND_FLAG = "push-rebind-ack-v7";
 
 // Activate updated service workers immediately.
 self.addEventListener("install", (event) => {
@@ -12,6 +14,18 @@ self.addEventListener("install", (event) => {
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     (async () => {
+      const cache = await caches.open(REBIND_CACHE);
+      const alreadyRebound = await cache.match(REBIND_FLAG);
+      if (!alreadyRebound) {
+        try {
+          const sub = await self.registration.pushManager.getSubscription();
+          if (sub) await sub.unsubscribe();
+        } catch (err) {
+          console.error("[sw] push rebind unsubscribe failed", err);
+        }
+        await cache.put(REBIND_FLAG, new Response("1"));
+      }
+
       await self.clients.claim();
       const clientsList = await self.clients.matchAll({
         type: "window",
@@ -19,6 +33,9 @@ self.addEventListener("activate", (event) => {
       });
       for (const client of clientsList) {
         client.postMessage({ type: "SW_ACTIVATED", version: SW_VERSION });
+        if (!alreadyRebound) {
+          client.postMessage({ type: "PUSH_SUBSCRIPTION_CHANGED" });
+        }
       }
     })()
   );
@@ -41,6 +58,53 @@ function postToClients(message) {
       }
       return clientList;
     });
+}
+
+function isIosUa() {
+  return /iphone|ipad|ipod/i.test(self.navigator && self.navigator.userAgent);
+}
+
+async function ackPushDelivery(data, shown) {
+  const claimKey = (data && data.data && data.data.claimKey) || data.claimKey || "";
+  const correlationId =
+    (data && data.data && data.data.correlationId) || data.correlationId || "";
+  if (!claimKey && !correlationId) return;
+  try {
+    await fetch("/api/push/delivery-ack", {
+      method: "POST",
+      headers: { "content-type": "application/json" },
+      body: JSON.stringify({
+        claimKey,
+        correlationId,
+        swVersion: SW_VERSION,
+        shown: Boolean(shown),
+      }),
+      keepalive: true,
+    });
+  } catch (err) {
+    console.error("[sw] delivery-ack failed", err);
+  }
+}
+
+async function showPushNotification(title, options) {
+  try {
+    await self.registration.showNotification(title, options);
+    return true;
+  } catch (err) {
+    console.error("[sw] showNotification failed", err);
+    try {
+      await self.registration.showNotification(title, {
+        body: options.body,
+        tag: options.tag,
+        data: options.data,
+        renotify: true,
+      });
+      return true;
+    } catch (err2) {
+      console.error("[sw] showNotification retry failed", err2);
+      return false;
+    }
+  }
 }
 
 function buildSoftphoneUrl(noteData, softphoneAction) {
@@ -149,8 +213,17 @@ self.addEventListener("push", (event) => {
       callSid,
       callId,
       swVersion: SW_VERSION,
+      claimKey: (data.data && data.data.claimKey) || data.claimKey || null,
+      correlationId:
+        (data.data && data.data.correlationId) || data.correlationId || null,
     },
   };
+
+  if (isIosUa()) {
+    delete options.vibrate;
+    delete options.silent;
+    options.requireInteraction = false;
+  }
 
   if (actions && actions.length) {
     options.actions = actions;
@@ -173,11 +246,8 @@ self.addEventListener("push", (event) => {
           console.error("[sw] softphone prepare failed", err);
         }
       }
-      try {
-        await self.registration.showNotification(title, options);
-      } catch (err) {
-        console.error("[sw] showNotification failed", err);
-      }
+      const shown = await showPushNotification(title, options);
+      await ackPushDelivery(data, shown);
     })()
   );
 });
