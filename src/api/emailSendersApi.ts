@@ -3,11 +3,19 @@ import API from "../api";
 export type EmailSenderType = "bizuply_smtp" | "gmail" | "outlook";
 export type EmailSenderStatus = "pending" | "verified" | "failed" | "revoked";
 
+export type EmailSenderDnsRecord = {
+  type?: string;
+  name?: string;
+  value?: string;
+  priority?: string;
+};
+
 export type EmailSender = {
   senderId: string;
   businessId: string;
   displayName: string;
   email: string;
+  domain?: string;
   type: EmailSenderType;
   verificationStatus: EmailSenderStatus;
   verifiedAt: string | null;
@@ -16,7 +24,7 @@ export type EmailSender = {
   fromLabel: string;
   domainVerification?: {
     status?: string;
-    records?: Array<{ type?: string; name?: string; value?: string }>;
+    records?: EmailSenderDnsRecord[];
   };
 };
 
@@ -24,14 +32,16 @@ export async function listEmailSenders() {
   const { data } = await API.get<{ success: boolean; senders: EmailSender[] }>(
     "/email-senders"
   );
-  return data.senders || [];
+  return (data.senders || []).filter((row) => row.type === "bizuply_smtp");
 }
 
 export async function listVerifiedEmailSenders() {
   const { data } = await API.get<{ success: boolean; senders: EmailSender[] }>(
     "/email-senders/verified"
   );
-  return data.senders || [];
+  return (data.senders || []).filter(
+    (row) => row.type === "bizuply_smtp" && row.verificationStatus === "verified"
+  );
 }
 
 export async function createEmailSender(body: {
@@ -47,25 +57,11 @@ export async function createEmailSender(body: {
 }
 
 export async function refreshEmailSender(senderId: string) {
-  const { data } = await API.post<{ sender: EmailSender }>(
-    `/email-senders/${senderId}/refresh`
-  );
-  return data.sender;
-}
-
-export async function sendEmailSenderCode(senderId: string) {
-  const { data } = await API.post<{ sender: EmailSender }>(
-    `/email-senders/${senderId}/send-code`
-  );
-  return data.sender;
-}
-
-export async function verifyEmailSender(senderId: string, code: string) {
-  const { data } = await API.post<{ sender: EmailSender }>(
-    `/email-senders/${senderId}/verify`,
-    { code }
-  );
-  return data.sender;
+  const { data } = await API.post<{
+    sender: EmailSender;
+    domainInfo?: { records?: EmailSenderDnsRecord[]; verified?: boolean };
+  }>(`/email-senders/${senderId}/refresh`);
+  return data;
 }
 
 export async function setDefaultEmailSender(senderId: string) {
@@ -75,9 +71,10 @@ export async function setDefaultEmailSender(senderId: string) {
   return data.sender;
 }
 
-export async function revokeEmailSender(senderId: string) {
-  const { data } = await API.post<{ sender: EmailSender }>(
-    `/email-senders/${senderId}/revoke`
+export async function renameEmailSender(senderId: string, displayName: string) {
+  const { data } = await API.patch<{ sender: EmailSender }>(
+    `/email-senders/${senderId}`,
+    { displayName }
   );
   return data.sender;
 }
