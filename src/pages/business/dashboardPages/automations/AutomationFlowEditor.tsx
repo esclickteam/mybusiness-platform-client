@@ -106,6 +106,7 @@ import {
   listVerifiedEmailSenders,
   type EmailSender,
 } from "../../../../api/emailSendersApi";
+import { nextSendEmailSenderFields } from "./emailProviderAutomation";
 
 const WA_MAPPING_PRESETS = [
   { key: "lead:name", source: "lead", field: "name", label: "שם הליד" },
@@ -940,20 +941,17 @@ function EditorInner({
       const triggerKey = String(
         prev.find((n) => n.type === "trigger")?.data?.triggerKey || ""
       );
-      const defaultSender =
-        emailSenders.find((row) => row.isDefault) || emailSenders[0];
-      const currentSenderId = String(node.data?.senderId || "");
-      const senderStillValid = emailSenders.some(
-        (row) => row.senderId === currentSenderId
-      );
-      const nextSender = senderStillValid
-        ? emailSenders.find((row) => row.senderId === currentSenderId)
-        : defaultSender;
       const needsRecipientDefault = !String(node.data?.recipientType || "").trim();
-      const needsSender =
-        !senderStillValid ||
-        String(node.data?.senderEmail || "") !== String(nextSender?.email || "");
-      if (!needsRecipientDefault && !needsSender) return prev;
+      const nextSender = nextSendEmailSenderFields(
+        {
+          senderId: String(node.data?.senderId || ""),
+          senderEmail: String(node.data?.senderEmail || ""),
+          senderName: String(node.data?.senderName || ""),
+          senderType: String(node.data?.senderType || ""),
+        },
+        emailSenders
+      );
+      if (!needsRecipientDefault && !nextSender) return prev;
       return prev.map((n) => {
         if (n.id !== selectedId) return n;
         return {
@@ -963,10 +961,7 @@ function EditorInner({
             ...(needsRecipientDefault
               ? { recipientType: defaultEmailRecipientType(triggerKey) }
               : {}),
-            senderId: nextSender?.senderId || "",
-            senderEmail: nextSender?.email || "",
-            senderName: nextSender?.displayName || "",
-            senderType: nextSender?.type || "",
+            ...(nextSender || {}),
           },
         };
       });
@@ -1631,6 +1626,20 @@ function EditorInner({
       sendEmailNodes.some((node) => !String(node.data?.senderId || "").trim())
     ) {
       const msg = "לא הוגדר מייל עסקי מאומת";
+      setPublishError(msg);
+      toast.error(msg);
+      return;
+    }
+    if (
+      sendEmailNodes.some((node) => {
+        const senderId = String(node.data?.senderId || "").trim();
+        return (
+          senderId &&
+          !emailSenders.some((row) => row.senderId === senderId)
+        );
+      })
+    ) {
+      const msg = "השולח שנבחר אינו מאומת";
       setPublishError(msg);
       toast.error(msg);
       return;

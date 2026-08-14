@@ -98,6 +98,48 @@ export function pickDefaultBusinessSender(
   return senders.find((row) => row.isDefault) || senders[0];
 }
 
+export type SendEmailSenderFields = {
+  senderId?: string;
+  senderEmail?: string;
+  senderName?: string;
+  senderType?: string;
+};
+
+function senderFieldsFrom(sender: BusinessEmailSender): SendEmailSenderFields {
+  return {
+    senderId: sender.senderId,
+    senderEmail: sender.email || "",
+    senderName: sender.displayName || "",
+    senderType: sender.type || "",
+  };
+}
+
+/**
+ * Default sender is only for nodes with no explicit choice.
+ * A saved senderId must never be replaced by the business default.
+ */
+export function nextSendEmailSenderFields(
+  current: SendEmailSenderFields,
+  senders: BusinessEmailSender[]
+): SendEmailSenderFields | null {
+  const currentId = String(current.senderId || "").trim();
+  if (!currentId) {
+    const fallback = pickDefaultBusinessSender(senders);
+    return fallback ? senderFieldsFrom(fallback) : null;
+  }
+  const selected = senders.find((row) => row.senderId === currentId);
+  if (!selected) return null;
+  const next = senderFieldsFrom(selected);
+  if (
+    String(current.senderEmail || "") === String(next.senderEmail || "") &&
+    String(current.senderName || "") === String(next.senderName || "") &&
+    String(current.senderType || "") === String(next.senderType || "")
+  ) {
+    return null;
+  }
+  return next;
+}
+
 export type GraphEmailAction = {
   actionKey: string;
   label: string;

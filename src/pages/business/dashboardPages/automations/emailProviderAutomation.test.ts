@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   applyEmailProviderToActions,
   formatBusinessSenderLabel,
+  nextSendEmailSenderFields,
   pickDefaultBusinessSender,
 } from "./emailProviderAutomation";
 
@@ -39,6 +40,58 @@ describe("emailProviderAutomation business email", () => {
       senderEmail: "support@invistimo.com",
       senderName: "Invistimo",
     });
+  });
+
+  it("does not replace an explicit sender with the default", () => {
+    const senders = [
+      {
+        senderId: "default-id",
+        email: "orders@bizuply.com",
+        displayName: "Push Trial E2E",
+        type: "bizuply_smtp",
+        isDefault: true,
+      },
+      {
+        senderId: "invistimo-id",
+        email: "support@invistimo.com",
+        displayName: "Invistimo",
+        type: "bizuply_smtp",
+        isDefault: false,
+      },
+    ];
+    expect(
+      nextSendEmailSenderFields(
+        {
+          senderId: "invistimo-id",
+          senderEmail: "support@invistimo.com",
+          senderName: "Invistimo",
+          senderType: "bizuply_smtp",
+        },
+        senders
+      )
+    ).toBeNull();
+    expect(
+      nextSendEmailSenderFields(
+        { senderId: "invistimo-id" },
+        senders
+      )
+    ).toMatchObject({
+      senderId: "invistimo-id",
+      senderEmail: "support@invistimo.com",
+      senderName: "Invistimo",
+    });
+    expect(
+      nextSendEmailSenderFields({ senderId: "" }, senders)
+    ).toMatchObject({
+      senderId: "default-id",
+      senderEmail: "orders@bizuply.com",
+    });
+    expect(
+      nextSendEmailSenderFields(
+        { senderId: "invistimo-id", senderEmail: "support@invistimo.com" },
+        [senders[0]]
+      )
+    ).toBeNull();
   });
 
   it("formats sender labels and picks the default", () => {
