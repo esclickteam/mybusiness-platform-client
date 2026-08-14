@@ -47,7 +47,7 @@ const RECIPE_CATEGORY_MAP: Record<string, TemplateCategoryId[]> = {
 const RECIPE_TRIGGER_LABEL: Record<string, string> = {
   lead_multi_route: "ליד חדש ב-CRM",
   lead_no_response: "ליד שלא נענה",
-  appointment_duo: "פגישה חדשה / תזכורת",
+  appointment_duo: "פגישה חדשה",
   new_client_welcome: "לקוח חדש",
   ai_rank_leads: "ליד חדש ב-CRM",
   ai_summarize_calls: "פגישה הסתיימה",
@@ -60,7 +60,7 @@ const RECIPE_TRIGGER_LABEL: Record<string, string> = {
 const RECIPE_RESULT_LABEL: Record<string, string> = {
   lead_multi_route: "WhatsApp מיידי · משימה לנציג · התראה לבעל העסק",
   lead_no_response: "WhatsApp מעקב · עדכון סטטוס",
-  appointment_duo: "תזכורת לפני פגישה · הודעת תודה",
+  appointment_duo: "אישור WhatsApp · משימת הכנה · תזכורת יום לפני",
   new_client_welcome: "הודעת פתיחה · משימת שימור",
   ai_rank_leads: "דירוג AI · התראה",
   ai_summarize_calls: "סיכום AI ל-CRM",
@@ -74,7 +74,7 @@ const RECIPE_RESULT_LABEL: Record<string, string> = {
 const RECIPE_DISPLAY_NAME: Record<string, string> = {
   lead_multi_route: "ליד חדש — כמה תוצאות יחד",
   lead_no_response: "ליד שלא נענה — מעקב חכם",
-  appointment_duo: "פגישה — תזכורת + תודה",
+  appointment_duo: "פגישה — אישור + תזכורת + משימה",
   new_client_welcome: "לקוח חדש — ברוכים הבאים",
   ai_rank_leads: "AI — דירוג ליד",
   ai_summarize_calls: "AI — סיכום שיחה",
@@ -90,7 +90,7 @@ const RECIPE_DISPLAY_DESCRIPTION: Record<string, string> = {
   lead_no_response:
     "טריגר ליד שלא נענה. תוצאה: מעקב WhatsApp או עדכון סטטוס לפי המצב.",
   appointment_duo:
-    "טריגר פגישה חדשה / תזכורת. תוצאות: תזכורת לפני הפגישה והודעת תודה אחרי.",
+    "טריגר פגישה חדשה. תוצאות: אישור WhatsApp, משימת הכנה, ותזכורת יום לפני המועד.",
   new_client_welcome:
     "טריגר לקוח חדש. תוצאות: הודעת פתיחה ומשימת שימור.",
   ai_rank_leads:

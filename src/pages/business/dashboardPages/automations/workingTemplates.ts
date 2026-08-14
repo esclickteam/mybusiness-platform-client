@@ -54,6 +54,10 @@ export type WorkingTemplate = {
   delayMinutes?: number;
   delayHours?: number;
   delayDays?: number;
+  /** Delay until appointment start/end instead of a relative wait from trigger time. */
+  delayUntil?: "appointment_start" | "appointment_end";
+  /** Hours after (positive) or before (negative) the delayUntil anchor. */
+  delayUntilOffsetHours?: number;
   waCategory?: WhatsAppTemplate["category"];
   waHints?: string[];
   waPreferredMetaName?: string;
@@ -202,6 +206,88 @@ function waEdgeGraph(opts: {
       ...(opts.extraActions || []),
     ],
   });
+}
+
+function buildAppointmentDuoGraph(opts: {
+  triggerKey: string;
+  waTemplateId?: string;
+}): { nodes: AutomationFlowNode[]; edges: AutomationFlowEdge[] } {
+  const waDefaults = {
+    actionKey: "whatsapp_template",
+    templateId: opts.waTemplateId || "",
+    senderMode: "bizuply_managed",
+    recipientType: "appointment_customer_phone",
+    metaTemplateName: "appointment_reminder",
+    language: "he",
+    blueprintKey: "wf_appointment_duo",
+  };
+  return {
+    nodes: [
+      {
+        id: "trigger_1",
+        type: "trigger",
+        position: { x: 40, y: 220 },
+        data: {
+          label: "פגישה חדשה",
+          triggerKey: opts.triggerKey || "appointment_created",
+          routeCount: 1,
+        },
+      },
+      {
+        id: "a_confirm",
+        type: "action",
+        position: { x: 280, y: 80 },
+        data: {
+          ...waDefaults,
+          label: "אישור WhatsApp",
+          blueprintTrigger: "appointment_created",
+        },
+      },
+      {
+        id: "a_task",
+        type: "action",
+        position: { x: 520, y: 80 },
+        data: {
+          label: "משימת הכנה",
+          actionKey: "create_task",
+          title: "הכנה לפגישה: {{appointment.clientName}}",
+        },
+      },
+      {
+        id: "d_remind",
+        type: "delay",
+        position: { x: 760, y: 220 },
+        data: {
+          label: "המתנה עד יום לפני הפגישה",
+          until: "appointment_start",
+          offsetHours: -24,
+        },
+      },
+      {
+        id: "a_remind",
+        type: "action",
+        position: { x: 1000, y: 220 },
+        data: {
+          ...waDefaults,
+          label: "תזכורת WhatsApp",
+          hoursBefore: 24,
+          blueprintTrigger: "appointment_reminder",
+        },
+      },
+    ],
+    edges: [
+      {
+        id: "e_t_confirm",
+        source: "trigger_1",
+        target: "a_confirm",
+        sourceHandle: "route_1",
+        label: "אישור",
+      },
+      { id: "e_confirm_task", source: "a_confirm", target: "a_task" },
+      { id: "e_task_delay", source: "a_task", target: "d_remind" },
+      { id: "e_delay_remind", source: "d_remind", target: "a_remind" },
+    ],
+  };
 }
 
 /**
@@ -367,7 +453,9 @@ export function buildWhatsAppSimpleGraph(
   const delayMinutes = Number(template.delayMinutes || 0);
   const delayHours = Number(template.delayHours || 0);
   const delayDays = Number(template.delayDays || 0);
+  const delayUntil = template.delayUntil || "";
   const useDelay =
+    Boolean(delayUntil) ||
     delayMinutes > 0 ||
     delayHours > 0 ||
     (delayDays > 0 && template.whatsappTrigger !== "inactive_client");
@@ -400,15 +488,25 @@ export function buildWhatsAppSimpleGraph(
       delayMinutes > 0 ? delayMinutes : delayHours > 0 ? delayHours : delayDays;
     const unit =
       delayMinutes > 0 ? "minutes" : delayHours > 0 ? "hours" : "days";
+    const delayData: Record<string, unknown> = delayUntil
+      ? {
+          label:
+            delayUntil === "appointment_end"
+              ? "המתנה עד אחרי הפגישה"
+              : "המתנה עד מועד הפגישה",
+          until: delayUntil,
+          offsetHours: Number(template.delayUntilOffsetHours || 0),
+        }
+      : {
+          label: "המתנה",
+          amount,
+          unit,
+        };
     nodes.push({
       id: delayId,
       type: "delay",
       position: { x: 320, y },
-      data: {
-        label: "המתנה",
-        amount,
-        unit,
-      },
+      data: delayData,
     });
     edges.push({
       id: `e_${prevId}_${delayId}`,
@@ -560,12 +658,15 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
     key: "wa_appointment_thanks",
     rank: 7,
     name: "תודה אחרי פגישה (WhatsApp)",
-    description: "אחרי פגישה → הודעת תודה ב-WhatsApp (מופעל מיד).",
+    description:
+      "אחרי סיום הפגישה → הודעת תודה ב-WhatsApp (מתוזמן לפי מועד הפגישה, לא לפי יצירה).",
     triggerLabel: "פגישה הסתיימה",
     resultLabels: ["הודעת תודה"],
     categories: ["appointments", "whatsapp"],
     engine: "whatsapp_simple",
     whatsappTrigger: "appointment_thanks",
+    delayUntil: "appointment_end",
+    delayUntilOffsetHours: 0,
     waCategory: "custom",
     waHints: ["thanks", "thank", "תודה"],
   },
@@ -573,12 +674,15 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
     key: "wa_appointment_review",
     rank: 8,
     name: "בקשת ביקורת אחרי פגישה",
-    description: "יום אחרי הפגישה → בקשת ביקורת ב-WhatsApp (מופעל מיד).",
+    description:
+      "יום אחרי סיום הפגישה → בקשת ביקורת ב-WhatsApp (מתוזמן לפי מועד הפגישה, לא לפי יצירה).",
     triggerLabel: "פגישה הסתיימה",
     resultLabels: ["בקשת ביקורת"],
     categories: ["appointments", "whatsapp"],
     engine: "whatsapp_simple",
     whatsappTrigger: "appointment_review_request",
+    delayUntil: "appointment_end",
+    delayUntilOffsetHours: 24,
     delayHours: 24,
     waCategory: "custom",
     waHints: ["review", "feedback", "ביקורת"],
@@ -1093,21 +1197,16 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
     triggerLabel: "פגישה חדשה / תזכורת לפני",
     resultLabels: ["אישור WhatsApp", "תזכורת לפני", "משימה"],
     categories: ["appointments", "whatsapp"],
-    engine: "workflow_recipe",
+    engine: "workflow_graph",
     recipeKey: "appointment_duo",
     requiresWaTemplate: true,
     waCategory: "appointment_reminder",
     waHints: ["reminder", "appointment", "תזכורת", "confirm"],
+    requiredMetaTemplateNames: ["appointment_reminder"],
+    hoursBefore: 24,
     requiredTriggerKeys: APPOINTMENT_TRIGGER_KEYS,
-    buildGraph: ({ triggerKey, waTemplateId, emailProvider }) =>
-      waEdgeGraph({
-        triggerKey,
-        triggerLabel: "פגישה חדשה",
-        actionLabel: "אישור / תזכורת WhatsApp",
-        waTemplateId,
-        emailProvider,
-        hoursBefore: 24,
-      }),
+    buildGraph: ({ triggerKey, waTemplateId }) =>
+      buildAppointmentDuoGraph({ triggerKey, waTemplateId }),
   },
 
 ];
