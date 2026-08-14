@@ -1,7 +1,7 @@
 /* eslint-disable no-restricted-globals */
 
 // Bump when push delivery / ack behavior changes — forces clients to refresh SW.
-const SW_VERSION = "bizuply-sw-delivery-ack-v8";
+const SW_VERSION = "bizuply-sw-delivery-ack-v9";
 
 // Activate updated service workers immediately.
 self.addEventListener("install", (event) => {
@@ -55,14 +55,58 @@ function postToClients(message) {
 }
 
 function isIosUa() {
-  return /iphone|ipad|ipod/i.test(self.navigator && self.navigator.userAgent);
+  const ua = (self.navigator && self.navigator.userAgent) || "";
+  if (/iphone|ipad|ipod/i.test(ua)) return true;
+  // iOS SW sometimes reports a desktop Safari UA.
+  return (
+    /mac/i.test(ua) &&
+    self.navigator &&
+    Number(self.navigator.maxTouchPoints || 0) > 1
+  );
 }
 
-async function ackPushDelivery(data, shown) {
-  const claimKey = (data && data.data && data.data.claimKey) || data.claimKey || "";
-  const correlationId =
-    (data && data.data && data.data.correlationId) || data.correlationId || "";
+function unwrapPushPayload(raw) {
+  const nested =
+    raw && raw.data && typeof raw.data === "object" && !Array.isArray(raw.data)
+      ? raw.data
+      : {};
+  // Title/body live only under data so Safari does not auto-display the JSON.
+  return {
+    title: nested.title || "",
+    body: nested.body || "",
+    tag: nested.tag || "",
+    url: nested.url || "/",
+    leadId: nested.leadId || null,
+    kind: nested.kind || "",
+    claimKey: nested.claimKey || "",
+    correlationId: nested.correlationId || "",
+    fromNumber: nested.fromNumber || "",
+    contactName: nested.contactName || "",
+    callSid: nested.callSid || "",
+    callId: nested.callId || "",
+    icon: nested.icon || "",
+    badge: nested.badge || "",
+    actions: Array.isArray(nested.actions) ? nested.actions : undefined,
+  };
+}
+
+async function ackPushDelivery(payload, shown) {
+  const claimKey = payload.claimKey || "";
+  const correlationId = payload.correlationId || "";
   if (!claimKey && !correlationId) return;
+  let endpoint = "";
+  try {
+    const sub = await self.registration.pushManager.getSubscription();
+    endpoint = (sub && sub.endpoint) || "";
+  } catch (err) {
+    console.error("[sw] getSubscription for ack failed", err);
+  }
+  let host = "";
+  try {
+    host = endpoint ? new URL(endpoint).host : "";
+  } catch {
+    host = "";
+  }
   try {
     await fetch("/api/push/delivery-ack", {
       method: "POST",
@@ -70,8 +114,11 @@ async function ackPushDelivery(data, shown) {
       body: JSON.stringify({
         claimKey,
         correlationId,
+        notificationId: payload.tag || claimKey || "",
         swVersion: SW_VERSION,
         shown: Boolean(shown),
+        endpoint,
+        host,
       }),
       keepalive: true,
     });
@@ -81,27 +128,27 @@ async function ackPushDelivery(data, shown) {
 }
 
 async function showPushNotification(title, options) {
-  const attempts = isIosUa()
-    ? [
-        // iOS Web Push is picky: unsupported options can succeed the promise
-        // but never paint a banner. Show the smallest payload first.
-        { body: options.body, tag: options.tag, data: options.data, renotify: true },
-        { body: options.body },
-      ]
-    : [
-        options,
-        { body: options.body, tag: options.tag, data: options.data, renotify: true },
-      ];
-
-  for (let i = 0; i < attempts.length; i += 1) {
+  const tag = options.tag;
+  if (tag && self.registration.getNotifications) {
     try {
-      await self.registration.showNotification(title, attempts[i]);
-      return true;
+      const existing = await self.registration.getNotifications({ tag });
+      await Promise.all((existing || []).map((note) => note.close()));
     } catch (err) {
-      console.error("[sw] showNotification failed", i, err);
+      console.error("[sw] getNotifications failed", err);
     }
   }
-  return false;
+
+  const showOptions = isIosUa()
+    ? {
+        body: options.body,
+        tag: options.tag,
+        data: options.data,
+        renotify: false,
+      }
+    : options;
+
+  await self.registration.showNotification(title, showOptions);
+  return true;
 }
 
 function buildSoftphoneUrl(noteData, softphoneAction) {
@@ -139,26 +186,25 @@ async function focusOrOpenSoftphone(pathUrl, message) {
 
 // Push event sent from the server (Web Push / VAPID)
 self.addEventListener("push", (event) => {
-  let data = {};
+  let raw = {};
 
   try {
-    data = event.data ? event.data.json() : {};
+    raw = event.data ? event.data.json() : {};
   } catch (err) {
-    data = { body: event.data ? event.data.text() : "" };
+    raw = {};
   }
 
-  const title = data.title || "BizUply";
-  const targetUrl = (data.data && data.data.url) || data.url || "/";
-  const leadId = (data.data && data.data.leadId) || data.leadId || null;
-  const kind = (data.data && data.data.kind) || data.kind || "";
+  const payload = unwrapPushPayload(raw);
+  const title = payload.title || "BizUply";
+  const targetUrl = payload.url || "/";
+  const leadId = payload.leadId || null;
+  const kind = payload.kind || "";
   const isSoftphone = kind === "softphone-incoming";
 
-  const fromNumber =
-    (data.data && data.data.fromNumber) || data.fromNumber || "";
-  const contactName =
-    (data.data && data.data.contactName) || data.contactName || "";
-  const callSid = (data.data && data.data.callSid) || data.callSid || "";
-  const callId = (data.data && data.data.callId) || data.callId || "";
+  const fromNumber = payload.fromNumber || "";
+  const contactName = payload.contactName || "";
+  const callSid = payload.callSid || "";
+  const callId = payload.callId || "";
 
   const softphoneUrl = isSoftphone
     ? buildSoftphoneUrl(
@@ -167,15 +213,13 @@ self.addEventListener("push", (event) => {
       )
     : targetUrl;
 
-  // WhatsApp-style action buttons on the notification itself (Android/Chrome).
-  // iOS Web Push may only support tapping the notification body.
   const actions = isSoftphone
     ? [
         { action: "answer", title: "ענה לשיחה" },
         { action: "reject", title: "דחה" },
       ]
-    : Array.isArray(data.actions)
-      ? data.actions
+    : Array.isArray(payload.actions)
+      ? payload.actions
           .filter((a) => a && a.action && a.title)
           .slice(0, 2)
           .map((a) => ({
@@ -184,11 +228,10 @@ self.addEventListener("push", (event) => {
           }))
       : undefined;
 
-  const claimKey = (data.data && data.data.claimKey) || data.claimKey || "";
-  const correlationId =
-    (data.data && data.data.correlationId) || data.correlationId || "";
+  const claimKey = payload.claimKey || "";
+  const correlationId = payload.correlationId || "";
   const uniqueTag =
-    data.tag ||
+    payload.tag ||
     (isSoftphone
       ? "softphone-incoming"
       : claimKey
@@ -196,21 +239,12 @@ self.addEventListener("push", (event) => {
         : "bizuply-" + Date.now());
 
   const options = {
-    body: data.body || "יש לך התראה חדשה",
-    icon: absoluteAsset(
-      (data.icon && String(data.icon)) || "/android-chrome-192x192.png"
-    ),
-    badge: absoluteAsset(
-      (data.badge && String(data.badge)) || "/favicon-v2.png"
-    ),
-    dir: "rtl",
-    lang: "he",
+    body: payload.body || "יש לך התראה חדשה",
+    icon: absoluteAsset(payload.icon || "/android-chrome-192x192.png"),
+    badge: absoluteAsset(payload.badge || "/favicon-v2.png"),
     tag: uniqueTag,
-    renotify: data.renotify !== false || isSoftphone,
-    requireInteraction:
-      data.requireInteraction === true || isSoftphone || Boolean(actions),
-    vibrate: data.vibrate || (isSoftphone ? [300, 120, 300, 120, 300] : [200, 100, 200]),
-    silent: false,
+    renotify: false,
+    requireInteraction: isSoftphone,
     data: {
       url: softphoneUrl,
       leadId,
@@ -223,24 +257,20 @@ self.addEventListener("push", (event) => {
       swVersion: SW_VERSION,
       claimKey: claimKey || null,
       correlationId: correlationId || null,
+      tag: uniqueTag,
     },
   };
 
   if (isIosUa()) {
-    delete options.vibrate;
-    delete options.silent;
-    delete options.dir;
-    delete options.lang;
-    options.requireInteraction = false;
-    options.renotify = true;
+    delete options.icon;
+    delete options.badge;
+    delete options.requireInteraction;
   }
 
   if (actions && actions.length && !isIosUa()) {
     options.actions = actions;
   }
 
-  // Softphone: wake open clients so WebRTC can register before the ring transfer INVITE.
-  // Do not answer — only prepare. Answer happens when the user taps ענה.
   event.waitUntil(
     (async () => {
       if (isSoftphone) {
@@ -256,8 +286,14 @@ self.addEventListener("push", (event) => {
           console.error("[sw] softphone prepare failed", err);
         }
       }
-      const shown = await showPushNotification(title, options);
-      await ackPushDelivery(data, shown);
+      let shown = false;
+      try {
+        shown = await showPushNotification(title, options);
+      } catch (err) {
+        console.error("[sw] showNotification failed", err);
+        shown = false;
+      }
+      await ackPushDelivery({ ...payload, tag: uniqueTag }, shown);
     })()
   );
 });

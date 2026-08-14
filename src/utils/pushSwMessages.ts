@@ -1,5 +1,5 @@
 export const SW_SCOPE = "/";
-export const SW_SCRIPT_VERSION = 8;
+export const SW_SCRIPT_VERSION = 9;
 export const SW_URL = `/service-worker.js?v=${SW_SCRIPT_VERSION}`;
 
 export function shouldForceRebindOnSwMessage(type: unknown): boolean {

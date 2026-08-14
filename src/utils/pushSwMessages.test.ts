@@ -12,7 +12,7 @@ describe("push SW message handling", () => {
   });
 
   it("cache-busts the service worker script", () => {
-    expect(SW_SCRIPT_VERSION).toBe(8);
-    expect(SW_URL).toBe("/service-worker.js?v=8");
+    expect(SW_SCRIPT_VERSION).toBe(9);
+    expect(SW_URL).toBe("/service-worker.js?v=9");
   });
 });
