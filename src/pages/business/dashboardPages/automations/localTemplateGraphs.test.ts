@@ -71,6 +71,14 @@ describe("local system templates", () => {
       const outlook = buildLocalAutomationGraph(template, {
         emailProvider: "outlook",
       });
+      const business = buildLocalAutomationGraph(template, {
+        emailProvider: "business",
+        businessSender: {
+          senderId: "sender-1",
+          email: "support@invistimo.com",
+          displayName: "Invistimo",
+        },
+      });
       const gmailKeys = gmail.nodes
         .filter((node) => node.type === "action")
         .map((node) => String(node.data.actionKey || ""));
@@ -81,6 +89,11 @@ describe("local system templates", () => {
       expect(outlookKeys).toContain("send_outlook");
       expect(gmailKeys).not.toContain("send_email");
       expect(outlookKeys).not.toContain("send_email");
+      const businessKeys = business.nodes
+        .filter((node) => node.type === "action")
+        .map((node) => String(node.data.actionKey || ""));
+      expect(businessKeys).toContain("send_email");
+      expect(businessKeys).not.toContain("connected_email");
     }
   });
 });

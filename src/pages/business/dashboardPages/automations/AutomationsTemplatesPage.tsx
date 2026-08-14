@@ -39,6 +39,10 @@ import { getGoogleCalendarStatus } from "../../../../api/googleCalendarApi";
 import { getGmailStatus } from "../../../../api/gmailApi";
 import { getOutlookStatus } from "../../../../api/outlookApi";
 import {
+  listVerifiedEmailSenders,
+  type EmailSender,
+} from "../../../../api/emailSendersApi";
+import {
   getWhatsAppIntegrationStatus,
   listApprovedWhatsAppTemplates,
   listWhatsAppTemplates,
@@ -63,9 +67,13 @@ import {
   type WorkingTemplate,
 } from "./workingTemplates";
 import {
+  BUSINESS_EMAIL_MISSING_BODY_HE,
+  BUSINESS_EMAIL_MISSING_TITLE_HE,
+  BUSINESS_EMAIL_SETTINGS_CTA_HE,
+  EMAIL_PROVIDER_OPTIONS,
   EMAIL_PROVIDER_REQUIRED_HE,
-  EMAIL_TEMPLATE_CONNECT_CTA_HE,
-  hasConnectedEmailProvider,
+  formatBusinessSenderLabel,
+  pickDefaultBusinessSender,
   type EmailProviderId,
   resolveEmailProvider,
 } from "./emailProviderAutomation";
@@ -132,6 +140,7 @@ export default function AutomationsTemplatesPage() {
   const [calendarConnected, setCalendarConnected] = useState(false);
   const [gmailConnected, setGmailConnected] = useState(false);
   const [outlookConnected, setOutlookConnected] = useState(false);
+  const [businessSenders, setBusinessSenders] = useState<EmailSender[]>([]);
   const [managedWaReady, setManagedWaReady] = useState(false);
   const [managedModeEnabled, setManagedModeEnabled] = useState(true);
   const [waUnavailableMessage, setWaUnavailableMessage] = useState<string | null>(
@@ -145,6 +154,7 @@ export default function AutomationsTemplatesPage() {
     readiness: TemplateReadiness;
     templateId: string;
     emailProvider: EmailProviderId | "";
+    senderId: string;
   } | null>(null);
   const [aiPreview, setAiPreview] = useState<CardModel | null>(null);
   const [highlightedKey, setHighlightedKey] = useState<string | null>(null);
@@ -170,7 +180,7 @@ export default function AutomationsTemplatesPage() {
     if (!businessId) return;
     setLoading(true);
     try {
-      const [recipeResult, catalog, approved, allTpl, calendar, gmail, outlook, waStatus] =
+      const [recipeResult, catalog, approved, allTpl, calendar, gmail, outlook, waStatus, senders] =
         await Promise.all([
           listAutomationRecipes(businessId),
           fetchAutomationTriggerCatalog(businessId).catch(() => ({
@@ -192,6 +202,7 @@ export default function AutomationsTemplatesPage() {
           getWhatsAppIntegrationStatus(businessId, {
             senderMode: "bizuply_managed",
           }).catch(() => null),
+          listVerifiedEmailSenders().catch(() => [] as EmailSender[]),
         ]);
 
       const byId = new Map<string, WhatsAppTemplate | ApprovedWhatsAppTemplate>();
@@ -246,6 +257,7 @@ export default function AutomationsTemplatesPage() {
             outlook?.account?.hasMailSend !== false
         )
       );
+      setBusinessSenders(Array.isArray(senders) ? senders : []);
     } catch {
       setRecipes([]);
       setTriggers([]);
@@ -255,6 +267,7 @@ export default function AutomationsTemplatesPage() {
       setWaUnavailableMessage(null);
       setGmailConnected(false);
       setOutlookConnected(false);
+      setBusinessSenders([]);
     } finally {
       setLoading(false);
     }
@@ -491,7 +504,8 @@ export default function AutomationsTemplatesPage() {
     template: WorkingTemplate,
     readiness: TemplateReadiness,
     waTemplateId?: string,
-    emailProvider?: EmailProviderId
+    emailProvider?: EmailProviderId,
+    businessSender?: EmailSender | null
   ) => {
     if (!businessId) return;
 
@@ -547,6 +561,15 @@ export default function AutomationsTemplatesPage() {
       triggerKey,
       waTemplateId: selectedTplId,
       emailProvider,
+      businessSender: businessSender
+        ? {
+            senderId: businessSender.senderId,
+            email: businessSender.email,
+            displayName: businessSender.displayName,
+            type: businessSender.type,
+            isDefault: businessSender.isDefault,
+          }
+        : null,
     });
     const nodes = graph.nodes.map((node) => {
       if (
@@ -641,14 +664,6 @@ export default function AutomationsTemplatesPage() {
     }
     if (!card.readiness.ready) {
       if (
-        card.template.requiresEmailProvider &&
-        !hasConnectedEmailProvider(ctx)
-      ) {
-        toast.error(EMAIL_PROVIDER_REQUIRED_HE);
-        navigate(`/business/${businessId}/dashboard/automations/connections`);
-        return;
-      }
-      if (
         (card.template.engine === "whatsapp_simple" ||
           card.template.requiresWaTemplate) &&
         !managedWaReady &&
@@ -678,10 +693,7 @@ export default function AutomationsTemplatesPage() {
       card.template.engine === "whatsapp_simple" ||
       card.template.requiresWaTemplate;
     const emailProvider = resolveEmailProvider(ctx, null);
-    const needsEmailChoice = Boolean(
-      card.template.requiresEmailProvider &&
-        card.readiness.needsEmailProviderChoice
-    );
+    const needsEmailChoice = Boolean(card.template.requiresEmailProvider);
 
     if (needsWaPick || needsEmailChoice) {
       if (needsWaPick) {
@@ -708,7 +720,12 @@ export default function AutomationsTemplatesPage() {
         template: card.template,
         readiness: card.readiness,
         templateId: card.readiness.suggestedWaTemplateId || "",
-        emailProvider: emailProvider || "",
+        emailProvider:
+          emailProvider ||
+          (!gmailConnected && !outlookConnected && businessSenders.length
+            ? "business"
+            : ""),
+        senderId: pickDefaultBusinessSender(businessSenders)?.senderId || "",
       });
       return;
     }
@@ -761,7 +778,21 @@ export default function AutomationsTemplatesPage() {
       return;
     }
     if (needsEmail && !picker.emailProvider) {
-      toast.error("בחרו Gmail או Outlook / Microsoft 365");
+      toast.error("בחרו Gmail, Outlook / Microsoft 365 או מייל עסקי");
+      return;
+    }
+    if (picker.emailProvider === "gmail" && !gmailConnected) {
+      toast.error(EMAIL_PROVIDER_REQUIRED_HE);
+      navigate(`/business/${businessId}/dashboard/automations/connections`);
+      return;
+    }
+    if (picker.emailProvider === "outlook" && !outlookConnected) {
+      toast.error(EMAIL_PROVIDER_REQUIRED_HE);
+      navigate(`/business/${businessId}/dashboard/automations/connections`);
+      return;
+    }
+    if (picker.emailProvider === "business" && !picker.senderId) {
+      toast.error(BUSINESS_EMAIL_MISSING_TITLE_HE);
       return;
     }
     setCreatingKey(picker.template.key);
@@ -777,7 +808,11 @@ export default function AutomationsTemplatesPage() {
           picker.template,
           picker.readiness,
           picker.templateId || undefined,
-          picker.emailProvider || undefined
+          picker.emailProvider || undefined,
+          picker.emailProvider === "business"
+            ? businessSenders.find((row) => row.senderId === picker.senderId) ||
+              null
+            : null
         );
       }
       setPicker(null);
@@ -856,21 +891,16 @@ export default function AutomationsTemplatesPage() {
             const busy = creatingKey === template.key;
             const isAi = template.categories.includes("ai");
             const isWa = isWhatsAppFacingTemplate(template);
-            const emailProviderBlocked =
-              Boolean(template.requiresEmailProvider) &&
-              !hasConnectedEmailProvider(ctx);
             const isHighlighted =
               Boolean(highlightedKey) &&
               cardMatchesHighlight(template, highlightedKey || "");
             const ctaLabel = !hasPlan
               ? "בחר חבילת אוטומציות"
-              : emailProviderBlocked
-                ? EMAIL_TEMPLATE_CONNECT_CTA_HE
-                : isWa
-                  ? "הפעל — בחר תבנית הודעה"
-                  : isAi
-                    ? "הפעל תבנית"
-                    : "הפעל עכשיו";
+              : isWa
+                ? "הפעל — בחר תבנית הודעה"
+                : isAi
+                  ? "הפעל תבנית"
+                  : "הפעל עכשיו";
 
             return (
               <article
@@ -937,20 +967,14 @@ export default function AutomationsTemplatesPage() {
                     !businessId ||
                     Boolean(creatingKey) ||
                     readOnly ||
-                    (!hasPlan
-                      ? !planGateReady
-                      : emailProviderBlocked
-                        ? false
-                        : !readiness.ready)
+                    (!hasPlan ? !planGateReady : !readiness.ready)
                   }
                   title={
                     !hasPlan
                       ? "נדרשת חבילת אוטומציות פעילה"
-                      : emailProviderBlocked
-                        ? EMAIL_TEMPLATE_CONNECT_CTA_HE
-                        : !readiness.ready
-                          ? readiness.blocker
-                          : writeBlockedTitle
+                      : !readiness.ready
+                        ? readiness.blocker
+                        : writeBlockedTitle
                   }
                   onClick={() => {
                     if (!hasPlan) {
@@ -1102,33 +1126,75 @@ export default function AutomationsTemplatesPage() {
               <p>בחרו דרך איזה חשבון לשלוח את האימייל.</p>
             )}
             {picker.template.requiresEmailProvider ? (
-              <label>
-                חשבון אימייל
-                <select
-                  value={picker.emailProvider}
-                  onChange={(e) =>
-                    setPicker((prev) =>
-                      prev
-                        ? {
-                            ...prev,
-                            emailProvider: e.target.value as EmailProviderId | "",
-                          }
-                        : prev
-                    )
-                  }
-                >
-                  <option value="">בחרו ספק</option>
-                  {(picker.readiness.connectedEmailProviders || []).map(
-                    (provider) => (
-                      <option key={provider} value={provider}>
-                        {provider === "outlook"
-                          ? "Outlook / Microsoft 365"
-                          : "Gmail"}
+              <>
+                <label>
+                  חשבון אימייל
+                  <select
+                    value={picker.emailProvider}
+                    onChange={(e) => {
+                      const next = e.target.value as EmailProviderId | "";
+                      setPicker((prev) =>
+                        prev
+                          ? {
+                              ...prev,
+                              emailProvider: next,
+                              senderId:
+                                next === "business"
+                                  ? pickDefaultBusinessSender(businessSenders)
+                                      ?.senderId || ""
+                                  : prev.senderId,
+                            }
+                          : prev
+                      );
+                    }}
+                  >
+                    <option value="">בחרו ספק</option>
+                    {EMAIL_PROVIDER_OPTIONS.map((provider) => (
+                      <option key={provider.id} value={provider.id}>
+                        {provider.label}
                       </option>
-                    )
-                  )}
-                </select>
-              </label>
+                    ))}
+                  </select>
+                </label>
+                {picker.emailProvider === "business" ? (
+                  businessSenders.length ? (
+                    <label>
+                      מאת
+                      <select
+                        value={picker.senderId}
+                        onChange={(e) =>
+                          setPicker((prev) =>
+                            prev
+                              ? { ...prev, senderId: e.target.value }
+                              : prev
+                          )
+                        }
+                      >
+                        {businessSenders.length > 1 ? (
+                          <option value="">בחרו מייל עסקי מאומת</option>
+                        ) : null}
+                        {businessSenders.map((sender) => (
+                          <option key={sender.senderId} value={sender.senderId}>
+                            {formatBusinessSenderLabel(sender)}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                  ) : (
+                    <div className="ax-template-card__blocker" dir="rtl">
+                      <p>
+                        <strong>{BUSINESS_EMAIL_MISSING_TITLE_HE}</strong>
+                      </p>
+                      <p>{BUSINESS_EMAIL_MISSING_BODY_HE}</p>
+                      <a
+                        href={`/business/${businessId}/dashboard/integrations#email-senders`}
+                      >
+                        {BUSINESS_EMAIL_SETTINGS_CTA_HE}
+                      </a>
+                    </div>
+                  )
+                ) : null}
+              </>
             ) : null}
             <div className="ax-activate-modal__actions">
               <button
@@ -1147,7 +1213,9 @@ export default function AutomationsTemplatesPage() {
                     Boolean(picker.template.requiresWaTemplate)) &&
                     !picker.templateId) ||
                   (Boolean(picker.template.requiresEmailProvider) &&
-                    !picker.emailProvider)
+                    (!picker.emailProvider ||
+                      (picker.emailProvider === "business" &&
+                        !picker.senderId)))
                 }
                 onClick={() => void confirmPicker()}
               >
