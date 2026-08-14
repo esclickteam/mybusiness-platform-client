@@ -106,6 +106,10 @@ import {
   listVerifiedEmailSenders,
   type EmailSender,
 } from "../../../../api/emailSendersApi";
+import {
+  BUSINESS_EMAIL_SENDER_UNAVAILABLE_HE,
+  nextSendEmailSenderFields,
+} from "./emailProviderAutomation";
 
 const WA_MAPPING_PRESETS = [
   { key: "lead:name", source: "lead", field: "name", label: "שם הליד" },
@@ -940,20 +944,17 @@ function EditorInner({
       const triggerKey = String(
         prev.find((n) => n.type === "trigger")?.data?.triggerKey || ""
       );
-      const defaultSender =
-        emailSenders.find((row) => row.isDefault) || emailSenders[0];
-      const currentSenderId = String(node.data?.senderId || "");
-      const senderStillValid = emailSenders.some(
-        (row) => row.senderId === currentSenderId
-      );
-      const nextSender = senderStillValid
-        ? emailSenders.find((row) => row.senderId === currentSenderId)
-        : defaultSender;
       const needsRecipientDefault = !String(node.data?.recipientType || "").trim();
-      const needsSender =
-        !senderStillValid ||
-        String(node.data?.senderEmail || "") !== String(nextSender?.email || "");
-      if (!needsRecipientDefault && !needsSender) return prev;
+      const nextSender = nextSendEmailSenderFields(
+        {
+          senderId: String(node.data?.senderId || ""),
+          senderEmail: String(node.data?.senderEmail || ""),
+          senderName: String(node.data?.senderName || ""),
+          senderType: String(node.data?.senderType || ""),
+        },
+        emailSenders
+      );
+      if (!needsRecipientDefault && !nextSender) return prev;
       return prev.map((n) => {
         if (n.id !== selectedId) return n;
         return {
@@ -963,10 +964,7 @@ function EditorInner({
             ...(needsRecipientDefault
               ? { recipientType: defaultEmailRecipientType(triggerKey) }
               : {}),
-            senderId: nextSender?.senderId || "",
-            senderEmail: nextSender?.email || "",
-            senderName: nextSender?.displayName || "",
-            senderType: nextSender?.type || "",
+            ...(nextSender || {}),
           },
         };
       });
@@ -1631,6 +1629,20 @@ function EditorInner({
       sendEmailNodes.some((node) => !String(node.data?.senderId || "").trim())
     ) {
       const msg = "לא הוגדר מייל עסקי מאומת";
+      setPublishError(msg);
+      toast.error(msg);
+      return;
+    }
+    if (
+      sendEmailNodes.some((node) => {
+        const senderId = String(node.data?.senderId || "").trim();
+        return (
+          senderId &&
+          !emailSenders.some((row) => row.senderId === senderId)
+        );
+      })
+    ) {
+      const msg = BUSINESS_EMAIL_SENDER_UNAVAILABLE_HE;
       setPublishError(msg);
       toast.error(msg);
       return;
@@ -3847,31 +3859,60 @@ function EditorInner({
                       <p>המייל יישלח מכתובת עסקית מאומתת של העסק.</p>
                     </div>
                     {emailSenders.length ? (
-                      <label>
-                        מאת
-                        <select
-                          disabled={readOnly}
-                          value={String(selectedNode.data?.senderId || "")}
-                          onChange={(e) => {
-                            const sender = emailSenders.find(
-                              (row) => row.senderId === e.target.value
-                            );
-                            updateSelectedData({
-                              senderId: e.target.value,
-                              senderEmail: sender?.email || "",
-                              senderName: sender?.displayName || "",
-                              senderType: sender?.type || "",
-                            });
-                          }}
-                        >
-                          <option value="">בחרו מייל עסקי מאומת</option>
-                          {emailSenders.map((sender) => (
-                            <option key={sender.senderId} value={sender.senderId}>
-                              {`${String(sender.displayName || "").replace(/[<>]/g, "").trim() || sender.email} — ${sender.email}`}
-                            </option>
-                          ))}
-                        </select>
-                      </label>
+                      <>
+                        <label>
+                          מאת
+                          <select
+                            disabled={readOnly}
+                            value={String(selectedNode.data?.senderId || "")}
+                            onChange={(e) => {
+                              const sender = emailSenders.find(
+                                (row) => row.senderId === e.target.value
+                              );
+                              updateSelectedData({
+                                senderId: e.target.value,
+                                senderEmail: sender?.email || "",
+                                senderName: sender?.displayName || "",
+                                senderType: sender?.type || "",
+                              });
+                            }}
+                          >
+                            <option value="">בחרו מייל עסקי מאומת</option>
+                            {(() => {
+                              const selectedSenderId = String(
+                                selectedNode.data?.senderId || ""
+                              );
+                              const selectedKnown = emailSenders.some(
+                                (row) => row.senderId === selectedSenderId
+                              );
+                              if (!selectedSenderId || selectedKnown) return null;
+                              const staleLabel =
+                                String(selectedNode.data?.senderEmail || "").trim() ||
+                                "שולח שנבחר אינו זמין";
+                              return (
+                                <option value={selectedSenderId}>
+                                  {staleLabel}
+                                </option>
+                              );
+                            })()}
+                            {emailSenders.map((sender) => (
+                              <option key={sender.senderId} value={sender.senderId}>
+                                {`${String(sender.displayName || "").replace(/[<>]/g, "").trim() || sender.email} — ${sender.email}`}
+                              </option>
+                            ))}
+                          </select>
+                        </label>
+                        {String(selectedNode.data?.senderId || "").trim() &&
+                        !emailSenders.some(
+                          (row) =>
+                            row.senderId ===
+                            String(selectedNode.data?.senderId || "")
+                        ) ? (
+                          <p className="af-wa-template__state af-wa-template__state--error">
+                            {BUSINESS_EMAIL_SENDER_UNAVAILABLE_HE}
+                          </p>
+                        ) : null}
+                      </>
                     ) : (
                       <div className="af-wa-template__state af-wa-template__state--error">
                         <p>לא הוגדר מייל עסקי מאומת</p>
