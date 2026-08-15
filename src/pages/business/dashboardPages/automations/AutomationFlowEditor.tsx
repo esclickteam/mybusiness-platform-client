@@ -324,6 +324,7 @@ import {
   FLOW_ACTION_PALETTE,
   TRIGGER_CATEGORY_LABELS,
   TYPE_META,
+  DEFAULT_NEW_TRIGGER_ROUTE_COUNT,
   buildPaletteWithTriggers,
   clampRouteCount,
   defaultSourceHandle,
@@ -2067,10 +2068,15 @@ function EditorInner({
             !pickerAfterNodeId
           ) {
             // Replace current trigger configuration in-place.
+            // Keep an already-saved fan-out; only brand-new nodes use palette default 1.
             updateSelectedData({
               ...item.defaults,
               triggerKey: item.key,
               label: item.label.replace(/^טריגר ·\s*/, ""),
+              routeCount: clampRouteCount(
+                selectedNode.data?.routeCount,
+                DEFAULT_NEW_TRIGGER_ROUTE_COUNT
+              ),
               ...(item.key === "scheduled"
                 ? {
                     schedule:

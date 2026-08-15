@@ -158,6 +158,16 @@ describe("automation trigger registry client", () => {
     expect(items.some((item) => item.label.startsWith("טריגר ·"))).toBe(false);
   });
 
+  it("new catalog triggers start with one parallel result", () => {
+    const items = buildTriggerPaletteItems(SUPPORTED);
+    expect(items.length).toBeGreaterThan(0);
+    for (const item of items) {
+      expect(item.defaults.routeCount).toBe(1);
+    }
+    const newLead = items.find((item) => item.key === "new_lead");
+    expect(newLead?.defaults.routeCount).toBe(1);
+  });
+
   it("full palette includes only supported triggers", () => {
     const palette = buildPaletteWithTriggers(SUPPORTED);
     const triggers = palette.filter((item) => item.filter === "trigger");
