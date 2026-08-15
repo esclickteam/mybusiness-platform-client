@@ -468,6 +468,9 @@ export const FLOW_ACTION_PALETTE: PaletteItem[] =
 /** Non-trigger palette (flow/actions). Use buildPaletteWithTriggers for full list. */
 export const PALETTE: PaletteItem[] = FLOW_ACTION_PALETTE;
 
+/** New manual trigger/router fan-out. Saved and template values are never coerced. */
+export const DEFAULT_NEW_TRIGGER_ROUTE_COUNT = 1;
+
 export function buildTriggerPaletteItems(
   triggers: AutomationTriggerOption[]
 ): PaletteItem[] {
@@ -478,7 +481,7 @@ export function buildTriggerPaletteItems(
         trigger.key,
         trigger.label,
         trigger.description || "",
-        2,
+        DEFAULT_NEW_TRIGGER_ROUTE_COUNT,
         true,
         {
           icon: trigger.icon,
