@@ -1837,14 +1837,18 @@ function hideLibraryAccountShowcase(container) {
     container.parentElement;
   if (!root) return;
   const demoRe =
-    /לוח בקרה ללקוח|סיכום פעילות|הזמנות פעילות|יתרת נקודות|קורסים פתוחים|מועדון לקוחות|בלימודים|\+1 השבוע|#1042|#1038|#1021|#1014|#1008|12\.03\.2026|04\.03\.2026|18\.02\.2026|02\.02\.2026|15\.01\.2026|₪249|₪128|יסודות השיווק הדיגיטלי|ניהול לקוחות בפורטל|לקוח\/ה לדוגמה|client@example\.com|דשבורד לקוח|סקירת פעילות/;
+    /לוח בקרה ללקוח|סיכום פעילות|הזמנות פעילות|יתרת נקודות|קורסים פתוחים|מועדון לקוחות|בלימודים|\+1 השבוע|#1042|#1038|#1021|#1014|#1008|12\.03\.2026|04\.03\.2026|18\.02\.2026|02\.02\.2026|15\.01\.2026|₪249|₪128|₪89|₪310|₪175|1,250|מספר הזמנה|המותג שלי|hello@example\.com|ניווט ראשי|יסודות השיווק הדיגיטלי|ניהול לקוחות בפורטל|לקוח\/ה לדוגמה|client@example\.com|דשבורד לקוח|סקירת פעילות/;
   const walker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT);
   const hide = [];
+  const skip = (node) =>
+    node === container ||
+    container.contains(node) ||
+    node.contains(container) ||
+    node.getAttribute("data-bizuply-portal-kind") === "portal-account";
   while (walker.nextNode()) {
     const node = walker.currentNode;
     if (!(node instanceof HTMLElement)) continue;
-    if (node === container || container.contains(node) || node.contains(container)) continue;
-    if (node.getAttribute("data-bizuply-portal-kind") === "portal-account") continue;
+    if (skip(node)) continue;
     const text = String(node.textContent || "").replace(/\s+/g, " ").trim();
     if (text && demoRe.test(text) && text.length < 900) {
       hide.push(node);
@@ -1854,6 +1858,19 @@ function hideLibraryAccountShowcase(container) {
     node.setAttribute("data-portal-showcase-hidden", "true");
     node.style.display = "none";
   });
+  const leftover = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT);
+  while (leftover.nextNode()) {
+    const node = leftover.currentNode;
+    if (!(node instanceof HTMLElement)) continue;
+    if (skip(node) || node.getAttribute("data-portal-showcase-hidden") === "true") continue;
+    const text = String(node.innerText || "")
+      .replace(/\s+/g, " ")
+      .trim();
+    if (text && text.length < 40 && /^[\d₪+,.\s]+$/.test(text)) {
+      node.setAttribute("data-portal-showcase-hidden", "true");
+      node.style.display = "none";
+    }
+  }
 }
 
 async function mountAccount(container, { siteId, editorMode = false, paths }) {
