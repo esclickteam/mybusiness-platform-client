@@ -82,7 +82,7 @@ export default function EditorPluginOverlays({
       try {
         const [plugins, site] = await Promise.all([
           getSitePlugins(siteId),
-          getMySite(siteId),
+          getMySite(siteId, { view: "studio" }),
         ]);
         const wheelOn = plugins.enabledPlugins.includes("benefits-wheel");
         const searchOn = plugins.enabledPlugins.includes("smart-search");

@@ -110,7 +110,7 @@ export default function VisualPluginsAddPanel({
         if (plugin.key === "whatsapp-float" && !String(current?.phone || "").trim()) {
           try {
             const { getMySite } = await import("../../../../api/mySitesApi");
-            const site = await getMySite(siteId);
+            const site = await getMySite(siteId, { view: "studio" });
             const business = (site as any)?.business || {};
             const phone = String(
               business.whatsappUrl ||

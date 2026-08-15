@@ -145,8 +145,12 @@ async function enrichMySitesDomainBindings(sites: MySiteSummary[]) {
   return sites.map((site) => byId.get(site._id) || site);
 }
 
-export async function getMySite(siteId: string) {
-  const { data } = await API.get(`/site-builder/sites/${siteId}`);
+export async function getMySite(
+  siteId: string,
+  options?: { view?: "studio" | "full" },
+) {
+  const view = options?.view ? `?view=${encodeURIComponent(options.view)}` : "";
+  const { data } = await API.get(`/site-builder/sites/${siteId}${view}`);
   return (data?.site || null) as (MySiteSummary & Record<string, any>) | null;
 }
 

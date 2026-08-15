@@ -971,6 +971,40 @@ function buildSafeVisualPayloadForSave(visualPayload: {
   };
 }
 
+function buildRendererSeedFromKey(
+  templateKey: string,
+  renderer?: { key?: string; name?: string; Component?: unknown } | null,
+): ReadyWebsiteTemplateSeed | null {
+  const key = normalizeStudioTemplateKey(templateKey);
+  if (!key) return null;
+  const resolved = renderer || getStudioTemplateRenderer(key);
+  if (!resolved?.Component) return null;
+
+  return {
+    id: key,
+    key,
+    rendererKey: normalizeStudioTemplateKey(resolved.key) || key,
+    renderMode: "registry",
+    editorMode: "renderer",
+    name: resolved.name || key,
+    category: "business",
+    description: "",
+    heroTitle: resolved.name || key,
+    heroSubtitle: "",
+    palette: {},
+    colors: {},
+    fonts: {},
+    layoutSettings: {},
+    blocks: [],
+    pages: [],
+    editor: {
+      slug: key,
+      activePageId: "home",
+      pages: [],
+    },
+  } as unknown as ReadyWebsiteTemplateSeed;
+}
+
 function readTemplateSeedFromStorage(): ReadyWebsiteTemplateSeed | null {
   if (typeof window === "undefined") return null;
 
@@ -4949,13 +4983,21 @@ export default function WebsiteStudioPage({
   const location = useLocation();
   const navigate = useNavigate();
 
-  const selectedTemplateSeed = useMemo(() => {
-    if (forceTemplateLoad && initialTemplateSeed) {
-      return initialTemplateSeed;
-    }
-
-    return readTemplateSeedFromStorage();
-  }, [forceTemplateLoad, initialTemplateSeed]);
+  const [resolvedTemplateSeed, setResolvedTemplateSeed] =
+    useState<ReadyWebsiteTemplateSeed | null>(() => {
+      if (forceTemplateLoad && initialTemplateSeed) {
+        return initialTemplateSeed;
+      }
+      return readTemplateSeedFromStorage();
+    });
+  const [studioModeResolved, setStudioModeResolved] = useState(() =>
+    Boolean(
+      (forceTemplateLoad && initialTemplateSeed) ||
+        readTemplateSeedFromStorage() ||
+        !siteId,
+    ),
+  );
+  const selectedTemplateSeed = resolvedTemplateSeed;
 
   const shouldLoadSelectedTemplate = Boolean(selectedTemplateSeed);
 
@@ -5655,6 +5697,45 @@ export default function WebsiteStudioPage({
   };
 
   useEffect(() => {
+    if (!siteId || resolvedTemplateSeed) {
+      setStudioModeResolved(true);
+      return;
+    }
+
+    let alive = true;
+
+    (async () => {
+      try {
+        const res = await fetch(
+          `/api/site-builder/sites/${siteId}?view=studio`,
+          {
+            method: "GET",
+            credentials: "include",
+            headers: buildAuthHeaders(),
+          },
+        );
+        const payload = await res.json().catch(() => null);
+        const key = String(
+          payload?.site?.templateKey || payload?.site?.templateId || "",
+        ).trim();
+        const seed = buildRendererSeedFromKey(key);
+        if (alive && seed) {
+          setResolvedTemplateSeed(seed);
+        }
+      } catch {
+        /* grapes fallback stays available */
+      } finally {
+        if (alive) setStudioModeResolved(true);
+      }
+    })();
+
+    return () => {
+      alive = false;
+    };
+  }, [siteId, resolvedTemplateSeed]);
+
+  useEffect(() => {
+    if (!studioModeResolved) return;
     if (isVisualReactTemplate) return;
     if (!editorContainerRef.current || editorRef.current) return;
 
@@ -5690,7 +5771,7 @@ export default function WebsiteStudioPage({
       setReady(false);
       loadedFromServerRef.current = false;
     };
-  }, [isVisualReactTemplate]);
+  }, [isVisualReactTemplate, studioModeResolved]);
 
   useEffect(() => {
     if (isVisualReactTemplate) return;
@@ -5739,6 +5820,7 @@ export default function WebsiteStudioPage({
   }, [ready, selectedTemplateSeed, isVisualReactTemplate]);
 
   useEffect(() => {
+    if (!studioModeResolved) return;
     if (isVisualReactTemplate) return;
 
     if (
@@ -5855,6 +5937,7 @@ export default function WebsiteStudioPage({
     initialTemplateSeed,
     shouldLoadSelectedTemplate,
     isVisualReactTemplate,
+    studioModeResolved,
   ]);
 
   const runEditor = (callback: (editor: Editor) => void) => {
@@ -8548,6 +8631,15 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     : normalizePublicBusinessSlug(slug)
       ? buildPublicSiteUrl(normalizePublicBusinessSlug(slug))
       : "";
+
+  if (!studioModeResolved) {
+    return (
+      <BizuplyLoader
+        fullScreen
+        label="טוען את האתר השמור... מכין את העורך עם הנתונים האחרונים"
+      />
+    );
+  }
 
   if (isVisualReactTemplate && selectedTemplateRenderer && !serverVisualTemplateLoaded) {
     return (
