@@ -8,9 +8,16 @@ export type PluginEditorAction = {
   kind: "section" | "page" | "widget" | "overlay";
   sectionId?: string;
   pageTemplateId?: string;
+  pageTemplateIds?: string[];
   label: string;
   description?: string;
 };
+
+export const CLIENT_PORTAL_PAGE_TEMPLATE_IDS = [
+  "page-portal-01",
+  "page-portal-11",
+  "page-portal-21",
+] as const;
 
 export const PLUGIN_EDITOR_ACTIONS: Record<string, PluginEditorAction> = {
   "benefits-wheel": {
@@ -66,8 +73,9 @@ export const PLUGIN_EDITOR_ACTIONS: Record<string, PluginEditorAction> = {
     pluginKey: "client-portal",
     kind: "page",
     pageTemplateId: "page-portal-01",
-    label: "עמוד התחברות לאזור אישי",
-    description: "טופס התחברות + עמודי הזמנות/עגלה/חשבון",
+    pageTemplateIds: [...CLIENT_PORTAL_PAGE_TEMPLATE_IDS],
+    label: "אזור אישי",
+    description: "מוסיף עמודי התחברות, הרשמה וחשבון ללקוחות האתר",
   },
   "testimonials-carousel": {
     pluginKey: "testimonials-carousel",

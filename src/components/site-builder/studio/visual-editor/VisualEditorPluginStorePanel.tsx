@@ -97,7 +97,7 @@ export default function VisualEditorPluginStorePanel({
 
   return (
     <div
-      className="fixed bottom-4 right-[80px] top-[64px] z-[2147483200] flex w-[min(920px,calc(100vw-112px))] max-w-[calc(100vw-112px)] overflow-hidden rounded-[30px] border border-slate-200 bg-white shadow-[0_32px_100px_rgba(15,23,42,0.24)]"
+      className="pointer-events-auto fixed bottom-4 right-[80px] top-[64px] z-[2147483200] flex w-[min(920px,calc(100vw-112px))] max-w-[calc(100vw-112px)] overflow-hidden rounded-[30px] border border-slate-200 bg-white shadow-[0_32px_100px_rgba(15,23,42,0.24)]"
       dir="rtl"
       data-visual-editor-plugin-store="true"
     >
@@ -149,6 +149,7 @@ export default function VisualEditorPluginStorePanel({
               enabledPlugins={enabledPlugins}
               detectedFromSite={detectedFromSite}
               saving={Boolean(savingKey)}
+              containedHelp
               onToggle={handleToggle}
             />
           </div>

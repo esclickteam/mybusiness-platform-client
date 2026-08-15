@@ -583,9 +583,14 @@ ${deviceRules("mobile", MOBILE_PAIRS)}
 ${deviceRules("tablet", TABLET_PAIRS)}
 `.trim();
 
+/** Drop remote @import fonts from injected editor CSS. Those 404 / block studio. */
+export function stripRemoteStylesheetImports(css?: string | null): string {
+  return String(css || "").replace(/@import\s+url\([^)]+\)\s*;?/gi, "");
+}
+
 /** Prepend shared responsive CSS onto a template's editorCss string. */
 export function withTemplateResponsiveCss(editorCss?: string | null): string {
-  const base = String(editorCss || "").trim();
+  const base = stripRemoteStylesheetImports(editorCss).trim();
   if (!base) return templateResponsiveCss;
   if (base.includes("Bizuply template responsive foundation")) return base;
   return `${templateResponsiveCss}\n\n${base}`;

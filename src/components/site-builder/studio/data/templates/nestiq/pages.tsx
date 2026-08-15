@@ -2,6 +2,10 @@ import React, { useMemo, useState } from "react";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { nestiqDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
+import {
+  resolveTemplateNavFromSitePages,
+  siteHasNavPage,
+} from "../../../visual-editor/utils/syncNavWithSitePages";
 
 export const nestiqPages = [
   { id: "home", label: "בית", slug: "/" },
@@ -28,7 +32,10 @@ function cx(...xs: Array<string | false | null | undefined>) { return xs.filter(
 
 function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>; currentPage: string; goTo: (id: string) => void; onCta: () => void }) {
   const [open, setOpen] = useState(false);
-  const nav = nestiqPages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || p.label] as const);
+  const nav = resolveTemplateNavFromSitePages(nestiqPages, data).map((item) => ({
+    ...item,
+    label: v(data, `nav${item.id[0]?.toUpperCase()}${item.id.slice(1)}`) || item.label,
+  }));
   return (
     <header data-template-section-type="header" data-section-kind="header" className="sticky top-0 z-50 border-b"
       style={{ background: "#faf5fff2", borderColor: "rgba(30,27,75,0.1)", backdropFilter: "blur(12px)" }}>
@@ -38,9 +45,9 @@ function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>;
           <span className="tpl-display text-xl font-bold tracking-tight">{v(data, "brandName")}</span>
         </button>
         <nav className="hidden items-center gap-6 lg:flex">
-          {nav.map(([id, label]) => (
-            <button key={id} type="button" onClick={() => goTo(id)} className="text-sm font-semibold"
-              style={{ color: currentPage === id ? "#1e1b4b" : "#6366f1" }}>{label}</button>
+          {nav.map((item) => (
+            <button key={item.id} type="button" onClick={() => goTo(item.id)} className="text-sm font-semibold"
+              style={{ color: currentPage === item.id || currentPage === item.href.replace(/^\//, "") ? "#1e1b4b" : "#6366f1" }}>{item.label}</button>
           ))}
         </nav>
         <div className="flex items-center gap-2">
@@ -52,8 +59,8 @@ function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>;
       {open ? (
         <div className="border-t px-5 pb-4 lg:hidden" style={{ borderColor: "rgba(30,27,75,0.1)" }}>
           <div className="grid gap-1 pt-3">
-            {nav.map(([id, label]) => (
-              <button key={id} type="button" onClick={() => { goTo(id); setOpen(false); }} className="px-3 py-3 text-right text-sm font-semibold">{label}</button>
+            {nav.map((item) => (
+              <button key={item.id} type="button" onClick={() => { goTo(item.id); setOpen(false); }} className="px-3 py-3 text-right text-sm font-semibold">{item.label}</button>
             ))}
           </div>
         </div>
@@ -93,7 +100,9 @@ function Hero({ data, goTo, onCta }: { data: Record<string, any>; goTo: (id: str
             <p className="tpl-rise-3 mx-auto mt-6 max-w-2xl text-lg leading-8" style={{ color: "#6366f1" }}>{v(data, "heroSubtitle")}</p>
             <div className="tpl-rise-3 mt-8 flex flex-wrap justify-center gap-3">
               <button type="button" onClick={onCta} className="px-7 py-3.5 text-sm font-bold" style={{ background: "#7c3aed", color: "#ffffff" }}>{v(data, "heroPrimary")}</button>
+              {siteHasNavPage(data, "listings") ? (
               <button type="button" onClick={() => goTo("listings")} className="border px-7 py-3.5 text-sm font-semibold" style={{ borderColor: "rgba(30,27,75,0.1)" }}>{v(data, "heroSecondary")}</button>
+              ) : null}
             </div>
           </div>
         </div>
@@ -387,12 +396,13 @@ export default function NestiqPages({
   mode = "preview", data, onPageChange, isPublic, viewMode, runtimeMode,
 }: Props) {
   const merged = useMemo(() => ({ ...nestiqDefaultData, ...(data ?? {}) }), [data]);
+  const ctaPage = siteHasNavPage(merged, "contact") ? "contact" : "home";
   const { currentPage, goTo } = useTemplatePageNavigation(
     { page, pageId, initialPage, initialPageId, activePageId, currentPageId, onPageChange, isPublic, viewMode, runtimeMode },
     { allowedPages, fallbackPage: "home" },
   );
   const pageContent: Record<string, React.ReactNode> = {
-    home: <HomePage data={merged} goTo={goTo} onCta={() => goTo("contact")} />,
+    home: <HomePage data={merged} goTo={goTo} onCta={() => goTo(ctaPage)} />,
     contact: (
       <>
         <section className="border-b px-5 py-16 lg:px-8 lg:py-20" style={{ borderColor: "rgba(30,27,75,0.1)" }}>
@@ -402,7 +412,7 @@ export default function NestiqPages({
             <p className="mt-4 max-w-2xl text-lg leading-8" style={{ color: "#6366f1" }}>{v(merged, "contactText")}</p>
           </div>
         </section>
-        <ContactBlock data={merged} onCta={() => goTo("contact")} />
+        <ContactBlock data={merged} onCta={() => goTo(ctaPage)} />
         <CounterOfficeBlock data={merged} />
       <CounterAgentRoster data={merged} />
       <CounterFaqPanel data={merged} />
@@ -459,8 +469,8 @@ export default function NestiqPages({
   return (
     <div dir="rtl" data-template-id="nestiq" className="min-h-screen w-full overflow-x-hidden"
       style={{ background: "#faf5ff", color: "#1e1b4b" }}>
-      <Header data={merged} currentPage={currentPage} goTo={goTo} onCta={() => goTo("contact")} />
-      <VisualPageStack activePageId={currentPage} pages={Object.entries(pageContent).map(([id, content]) => ({ id, content }))} />
+      <Header data={merged} currentPage={currentPage} goTo={goTo} onCta={() => goTo(ctaPage)} />
+      <VisualPageStack data={merged} activePageId={currentPage} pages={Object.entries(pageContent).map(([id, content]) => ({ id, content }))} />
     </div>
   );
 }

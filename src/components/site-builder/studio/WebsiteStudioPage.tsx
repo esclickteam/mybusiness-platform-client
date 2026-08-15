@@ -40,6 +40,7 @@ import {
   resolveCustomDomainPublishPhase,
   resolvePublishedSiteDisplayUrl as resolvePublishedSiteDisplayUrlBase,
 } from "./utils/customDomainPublishUi";
+import { getPublicSiteDomain } from "../../../utils/publicSiteHost";
 
 import { getStudioTemplateRenderer } from "./data/templates/templateRendererRegistry";
 import { TEMPLATE_MEDIA } from "./data/templates/shared/templateBreakpoints";
@@ -158,12 +159,6 @@ type StudioSitePageWithPortal = StudioSitePage & {
   snapshotPageId?: string;
   visualSnapshotVersion?: number;
 };
-
-const BIZUPLY_PUBLIC_SITE_DOMAIN =
-  process.env.NEXT_PUBLIC_BIZUPLY_PUBLIC_SITE_DOMAIN || "sites.bizuply.com";
-
-const BIZUPLY_LEGACY_PUBLIC_SITE_DOMAIN =
-  process.env.NEXT_PUBLIC_BIZUPLY_LEGACY_PUBLIC_SITE_DOMAIN || "bizuply.com";
 
 /** Opt-in only: localStorage.setItem("bizuply-studio-debug", "1") */
 function isStudioTemplateDebugEnabled() {
@@ -320,7 +315,7 @@ function normalizeBusinessSlug(value: unknown) {
 
 function buildPublicSiteUrl(value: string) {
   const clean = normalizeBusinessSlug(value) || "your-business";
-  return `https://${clean}.${BIZUPLY_PUBLIC_SITE_DOMAIN}`;
+  return `https://${clean}.${getPublicSiteDomain()}`;
 }
 
 function isObjectIdLikeSlug(value: string) {
@@ -974,6 +969,40 @@ function buildSafeVisualPayloadForSave(visualPayload: {
     htmlSnapshotLength: htmlSnapshot.length,
     hasHtmlSnapshot: htmlSnapshot.length > 0,
   };
+}
+
+function buildRendererSeedFromKey(
+  templateKey: string,
+  renderer?: { key?: string; name?: string; Component?: unknown } | null,
+): ReadyWebsiteTemplateSeed | null {
+  const key = normalizeStudioTemplateKey(templateKey);
+  if (!key) return null;
+  const resolved = renderer || getStudioTemplateRenderer(key);
+  if (!resolved?.Component) return null;
+
+  return {
+    id: key,
+    key,
+    rendererKey: normalizeStudioTemplateKey(resolved.key) || key,
+    renderMode: "registry",
+    editorMode: "renderer",
+    name: resolved.name || key,
+    category: "business",
+    description: "",
+    heroTitle: resolved.name || key,
+    heroSubtitle: "",
+    palette: {},
+    colors: {},
+    fonts: {},
+    layoutSettings: {},
+    blocks: [],
+    pages: [],
+    editor: {
+      slug: key,
+      activePageId: "home",
+      pages: [],
+    },
+  } as unknown as ReadyWebsiteTemplateSeed;
 }
 
 function readTemplateSeedFromStorage(): ReadyWebsiteTemplateSeed | null {
@@ -2243,6 +2272,19 @@ function enforceSingleCanonicalHome(
   });
 }
 
+function pageHasLibraryOrigin(page: StudioSitePageWithPortal): boolean {
+  const data = asPlainObject(
+    (page as any)?.data ||
+      (page as any)?.templateData ||
+      (page as any)?.visualEditorPayload?.data,
+  );
+  return Boolean(
+    data.__libraryPage ||
+      data.__libraryPageTemplateId ||
+      (page as any)?.__libraryPageTemplateId,
+  );
+}
+
 function mergeTemplateAndSavedPages(
   templatePages: StudioSitePageWithPortal[],
   savedPages: StudioSitePageWithPortal[],
@@ -2252,6 +2294,13 @@ function mergeTemplateAndSavedPages(
 
   if (!templateList.length) return enforceSingleCanonicalHome(savedList);
   if (!savedList.length) return enforceSingleCanonicalHome(templateList);
+
+  // Once the owner added library/portal pages, the saved page list is
+  // authoritative. Re-injecting unused template shells is what ballooned
+  // Servora drafts to ~68 pages and hung Staging publish.
+  if (savedList.some(pageHasLibraryOrigin)) {
+    return enforceSingleCanonicalHome(savedList);
+  }
 
   const savedById = new Map(
     savedList.map((page) => [String(page.id || "").trim(), page]),
@@ -2264,6 +2313,15 @@ function mergeTemplateAndSavedPages(
     const id = String(templatePage.id || "").trim();
     const saved = savedById.get(id);
     if (!saved) return templatePage;
+
+    if ((saved as any).visualHydrated === false) {
+      return {
+        ...saved,
+        title: String(saved.title || templatePage.title || id),
+        slug: String(saved.slug ?? templatePage.slug ?? ""),
+        visualHydrated: false,
+      } as StudioSitePageWithPortal;
+    }
 
     const savedVisual =
       extractVisualDataFromPayload({
@@ -4817,6 +4875,12 @@ function pickVisualTemplateDataFromSavedSite(
       );
 
       candidates.push({
+        label: `site.pages[${index}].data`,
+        value: page?.data,
+        templateKey: page?.templateKey,
+      });
+
+      candidates.push({
         label: `site.pages[${index}].visualEditorPayload.data`,
         value: pageVisualPayload.data,
         templateKey: pageVisualPayload.templateKey,
@@ -4919,13 +4983,21 @@ export default function WebsiteStudioPage({
   const location = useLocation();
   const navigate = useNavigate();
 
-  const selectedTemplateSeed = useMemo(() => {
-    if (forceTemplateLoad && initialTemplateSeed) {
-      return initialTemplateSeed;
-    }
-
-    return readTemplateSeedFromStorage();
-  }, [forceTemplateLoad, initialTemplateSeed]);
+  const [resolvedTemplateSeed, setResolvedTemplateSeed] =
+    useState<ReadyWebsiteTemplateSeed | null>(() => {
+      if (forceTemplateLoad && initialTemplateSeed) {
+        return initialTemplateSeed;
+      }
+      return readTemplateSeedFromStorage();
+    });
+  const [studioModeResolved, setStudioModeResolved] = useState(() =>
+    Boolean(
+      (forceTemplateLoad && initialTemplateSeed) ||
+        readTemplateSeedFromStorage() ||
+        !siteId,
+    ),
+  );
+  const selectedTemplateSeed = resolvedTemplateSeed;
 
   const shouldLoadSelectedTemplate = Boolean(selectedTemplateSeed);
 
@@ -5013,6 +5085,10 @@ export default function WebsiteStudioPage({
 
     return createInitialPages();
   });
+  const pagesRef = useRef<StudioSitePageWithPortal[]>(pages);
+  pagesRef.current = pages;
+  const visualSavingRef = useRef(false);
+  const pendingVisualSaveRef = useRef<VisualTemplateSavePayload | null>(null);
   const [siteName, setSiteName] = useState("האתר שלי");
   const [customDomain, setCustomDomain] = useState("");
   const [customDomainProvisioningStatus, setCustomDomainProvisioningStatus] =
@@ -5271,8 +5347,8 @@ export default function WebsiteStudioPage({
         });
 
         const loadUrl = siteId
-          ? `/api/site-builder/sites/${siteId}`
-          : `/api/site-builder/site/${businessId}`;
+          ? `/api/site-builder/sites/${siteId}?view=studio`
+          : `/api/site-builder/site/${businessId}?view=studio`;
 
         const res = await fetch(loadUrl, {
           method: "GET",
@@ -5354,7 +5430,7 @@ export default function WebsiteStudioPage({
               ...savedTemplateData,
               __siteSlug: serverSlug,
               __publicUrl: serverPublicUrl,
-              __siteDomain: data.site.siteDomain || BIZUPLY_PUBLIC_SITE_DOMAIN,
+              __siteDomain: data.site.siteDomain || getPublicSiteDomain(),
               __published: Boolean(data.site.published),
               __status: data.site.status || "",
             }
@@ -5405,6 +5481,7 @@ export default function WebsiteStudioPage({
                 page.clientPortal || createDefaultClientPortalConfig(),
               data: visual,
               templateData: visual,
+              visualHydrated: page.visualHydrated !== false && Object.keys(visual).length > 0,
               projectData: {
                 ...(page.projectData || {}),
                 editorMode: "visual-react",
@@ -5432,6 +5509,10 @@ export default function WebsiteStudioPage({
 
           if (preferred) {
             setActivePageId(preferred);
+            const preferredPage = nextPages.find((page) => page.id === preferred);
+            if (!preferredPage || (preferredPage as any).visualHydrated === false) {
+              void hydrateStudioPageVisual(preferred);
+            }
           }
         } else {
           // Fallback: restore freshly generated AI pages from local cache
@@ -5620,6 +5701,45 @@ export default function WebsiteStudioPage({
   };
 
   useEffect(() => {
+    if (!siteId || resolvedTemplateSeed) {
+      setStudioModeResolved(true);
+      return;
+    }
+
+    let alive = true;
+
+    (async () => {
+      try {
+        const res = await fetch(
+          `/api/site-builder/sites/${siteId}?view=studio`,
+          {
+            method: "GET",
+            credentials: "include",
+            headers: buildAuthHeaders(),
+          },
+        );
+        const payload = await res.json().catch(() => null);
+        const key = String(
+          payload?.site?.templateKey || payload?.site?.templateId || "",
+        ).trim();
+        const seed = buildRendererSeedFromKey(key);
+        if (alive && seed) {
+          setResolvedTemplateSeed(seed);
+        }
+      } catch {
+        /* grapes fallback stays available */
+      } finally {
+        if (alive) setStudioModeResolved(true);
+      }
+    })();
+
+    return () => {
+      alive = false;
+    };
+  }, [siteId, resolvedTemplateSeed]);
+
+  useEffect(() => {
+    if (!studioModeResolved) return;
     if (isVisualReactTemplate) return;
     if (!editorContainerRef.current || editorRef.current) return;
 
@@ -5655,7 +5775,7 @@ export default function WebsiteStudioPage({
       setReady(false);
       loadedFromServerRef.current = false;
     };
-  }, [isVisualReactTemplate]);
+  }, [isVisualReactTemplate, studioModeResolved]);
 
   useEffect(() => {
     if (isVisualReactTemplate) return;
@@ -5704,6 +5824,7 @@ export default function WebsiteStudioPage({
   }, [ready, selectedTemplateSeed, isVisualReactTemplate]);
 
   useEffect(() => {
+    if (!studioModeResolved) return;
     if (isVisualReactTemplate) return;
 
     if (
@@ -5820,6 +5941,7 @@ export default function WebsiteStudioPage({
     initialTemplateSeed,
     shouldLoadSelectedTemplate,
     isVisualReactTemplate,
+    studioModeResolved,
   ]);
 
   const runEditor = (callback: (editor: Editor) => void) => {
@@ -6030,6 +6152,15 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
 
   const addLibraryPage = (pageTemplate: VisualLibraryPageTemplate) => {
     if (!pageTemplate?.id) return;
+
+    const alreadyAdded = pagesRef.current.some((page) => {
+      const data = asPlainObject((page as any).data || (page as any).templateData);
+      return (
+        String(data.__libraryPageTemplateId || "") === String(pageTemplate.id) ||
+        String(page.slug || "") === String(pageTemplate.slugSuggestion || "")
+      );
+    });
+    if (alreadyAdded) return;
 
     const id = uid("page");
     const title =
@@ -6413,7 +6544,36 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         activePageId: page.id,
       },
       updatedAt: new Date().toISOString(),
+      visualHydrated: true,
     } as StudioSitePageWithPortal;
+  };
+
+  const hydrateStudioPageVisual = async (pageId: string) => {
+    const id = String(siteId || "").trim();
+    const nextId = String(pageId || "").trim();
+    if (!id || !nextId) return;
+
+    try {
+      const res = await fetch(
+        `/api/site-builder/sites/${id}/pages/${encodeURIComponent(nextId)}`,
+        {
+          method: "GET",
+          credentials: "include",
+          headers: buildAuthHeaders(),
+        },
+      );
+      const payload = await res.json().catch(() => null);
+      const visual = asPlainObject(payload?.page?.data);
+      if (!res.ok || !Object.keys(visual).length) return;
+
+      setPages((previous) =>
+        previous.map((page) =>
+          page.id === nextId ? attachVisualDataToPage(page, visual) : page,
+        ),
+      );
+    } catch {
+      /* keep the shell; selecting the page again retries */
+    }
   };
 
   const handlePageSettingsModalSave = async ({
@@ -6888,6 +7048,11 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     );
 
     setActivePageId(nextId);
+
+    const target = pagesRef.current.find((page) => page.id === nextId);
+    if (target && (target as any).visualHydrated === false) {
+      void hydrateStudioPageVisual(nextId);
+    }
   };
 
   const handleSelectSection = (sectionId: string) => {
@@ -7158,7 +7323,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
 
     try {
       const editor = editorRef.current;
-      const sourcePages = overrides?.pages || pages;
+      const sourcePages = overrides?.pages || pagesRef.current;
       const savedPages = snapshotPages(sourcePages, editor, activePageId);
 
       setPages(savedPages);
@@ -7184,7 +7349,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         updatedAt: new Date().toISOString(),
         status: published ? "published" : "draft",
         publicUrl,
-        siteDomain: BIZUPLY_PUBLIC_SITE_DOMAIN,
+        siteDomain: getPublicSiteDomain(),
         domain: {
           slug,
           published,
@@ -7625,7 +7790,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     if (!id) return null;
 
     try {
-      const res = await fetch(`/api/site-builder/sites/${id}`, {
+      const res = await fetch(`/api/site-builder/sites/${id}?view=studio`, {
         method: "GET",
         credentials: "include",
         headers: buildAuthHeaders(),
@@ -7690,7 +7855,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       ...pendingVisualPublishPayload,
       slug: result.slug,
       publicUrl: nextPublicUrl,
-      siteDomain: BIZUPLY_PUBLIC_SITE_DOMAIN,
+      siteDomain: getPublicSiteDomain(),
       published: true,
       status: "published",
       domain: {
@@ -7705,7 +7870,10 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
   };
 
   const handleVisualTemplateSave = async (visualPayload: VisualTemplateSavePayload) => {
-    if (saving) return;
+    if (visualSavingRef.current) {
+      pendingVisualSaveRef.current = visualPayload;
+      return;
+    }
 
     const published = Boolean(
       visualPayload.published || visualPayload.status === "published",
@@ -7757,6 +7925,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       setSlug(cleanSlug);
     }
 
+    visualSavingRef.current = true;
     setSaving(true);
 
     studioGroup("Visual React publish/save flow started", {
@@ -7800,9 +7969,10 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     try {
       // The current edited pages are always authoritative.
       // The original template is only a fallback for a site that has never been edited.
+      const livePages = pagesRef.current;
       const sourcePages =
-        pages.length
-          ? pages
+        livePages.length
+          ? livePages
           : selectedTemplateSeed
             ? createPagesFromTemplateSeed(selectedTemplateSeed, cleanVisualData, {
                 htmlMode: "none",
@@ -7965,6 +8135,11 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
           String(page.type || "").toLowerCase() === "blank" ||
           /^page[_-]/i.test(String(page.id || ""));
 
+        const pageHydrated = (page as any).visualHydrated !== false;
+        const pageHasVisual = hasMeaningfulVisualCollections(
+          asPlainObject(pageVisual),
+        );
+
         return {
           id: page.id,
           title: page.title,
@@ -7996,15 +8171,10 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
           // unable to distinguish a fresh publish from an older payload.
           updatedAt: visualPayload.updatedAt || new Date().toISOString(),
           clientPortal: page.clientPortal,
-          html: String(page.html || ""),
-          // Clear obsolete snapshots so a larger legacy blob cannot win over
-          // the HTML and visual data produced by this publish revision.
+          html: published ? String(page.html || "") : "",
           htmlSnapshot: "",
-          css: String(page.css || ""),
-          data: pageVisual,
-          templateData: pageVisual,
-          // Top-level flags so the public renderer can prefer page-scoped
-          // visual data even if nested payloads are normalized by the API.
+          css: published ? String(page.css || "") : "",
+          ...(pageHydrated && pageHasVisual ? { data: pageVisual } : {}),
           __blankVisualPage: Boolean(
             (pageVisual as any)?.__blankVisualPage,
           ),
@@ -8014,22 +8184,6 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
               (page as any)?.__libraryPageTemplateId ||
               "",
           ),
-          projectData: {
-            editorMode: "visual-react",
-            templateKey: visualPayload.templateKey,
-            templateData: pageVisual,
-            data: pageVisual,
-            snapshotPageId: page.id,
-            updatedAt: visualPayload.updatedAt,
-          },
-          visualEditorPayload: {
-            editorMode: "visual-react",
-            templateKey: visualPayload.templateKey,
-            data: pageVisual,
-            templateData: pageVisual,
-            snapshotPageId: page.id,
-            updatedAt: visualPayload.updatedAt,
-          },
         };
       });
 
@@ -8180,6 +8334,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         templateName?: string;
         templateKey?: string;
         templateEditorMode?: "visual-react" | "renderer";
+        data?: Record<string, any>;
         templateData?: Record<string, any>;
         visualEditorPayload?: Record<string, any>;
       } = {
@@ -8196,12 +8351,10 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         */
         // Site-level compatibility fields always represent HOME. Each inner
         // page (including login/account/orders) owns its snapshot in pages[].
-        templateData: homeVisualData,
+        data: homeVisualData,
         visualEditorPayload: {
           templateKey: visualPayload.templateKey,
           editorMode: "visual-react",
-          data: homeVisualData,
-          templateData: homeVisualData,
           updatedAt: visualPayload.updatedAt,
           published,
           status: published ? "published" : "draft",
@@ -8218,8 +8371,6 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         projectData: {
           editorMode: "visual-react",
           templateKey: visualPayload.templateKey,
-          templateData: homeVisualData,
-          data: homeVisualData,
           slug: cleanSlug,
           published,
           publicUrl: nextPublicUrl,
@@ -8228,7 +8379,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         updatedAt: visualPayload.updatedAt,
         status: published ? "published" : "draft",
         publicUrl: nextPublicUrl,
-        siteDomain: BIZUPLY_PUBLIC_SITE_DOMAIN,
+        siteDomain: getPublicSiteDomain(),
         domain: {
           slug: cleanSlug,
           published,
@@ -8391,7 +8542,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
             __activePageId: activeVisualPageId || "home",
             __siteSlug: cleanSlug,
             __publicUrl: nextPublicUrl,
-            __siteDomain: BIZUPLY_PUBLIC_SITE_DOMAIN,
+            __siteDomain: getPublicSiteDomain(),
             __published: published,
             __status: published ? "published" : "draft",
           },
@@ -8460,8 +8611,14 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       alert(error?.message || "אירעה שגיאה בשמירת האתר. נסי שוב.");
       throw error;
     } finally {
+      visualSavingRef.current = false;
       setSaving(false);
       studioGroupEnd();
+      const pending = pendingVisualSaveRef.current;
+      if (pending) {
+        pendingVisualSaveRef.current = null;
+        void handleVisualTemplateSave(pending);
+      }
     }
   };
 
@@ -8478,6 +8635,15 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     : normalizePublicBusinessSlug(slug)
       ? buildPublicSiteUrl(normalizePublicBusinessSlug(slug))
       : "";
+
+  if (!studioModeResolved) {
+    return (
+      <BizuplyLoader
+        fullScreen
+        label="טוען את האתר השמור... מכין את העורך עם הנתונים האחרונים"
+      />
+    );
+  }
 
   if (isVisualReactTemplate && selectedTemplateRenderer && !serverVisualTemplateLoaded) {
     return (
@@ -8671,7 +8837,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
                           autoFocus
                         />
                         <span className="hidden shrink-0 items-center border-r border-slate-200 px-3 text-xs font-black text-slate-400 sm:inline-flex">
-                          .{BIZUPLY_PUBLIC_SITE_DOMAIN}
+                          .{getPublicSiteDomain()}
                         </span>
                       </div>
                       {platformPublishAlternativeUrl ? (
@@ -8711,7 +8877,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
                         autoFocus
                       />
                       <span className="hidden shrink-0 items-center border-r border-slate-200 px-4 text-sm font-black text-slate-400 sm:inline-flex">
-                        .{BIZUPLY_PUBLIC_SITE_DOMAIN}
+                        .{getPublicSiteDomain()}
                       </span>
                     </div>
                   </>
@@ -8798,7 +8964,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
                       <p className="text-sm font-bold leading-6 text-slate-600">
                         רוצים כתובת משלכם במקום{" "}
                         <span dir="ltr" className="font-black text-slate-800">
-                          .{BIZUPLY_PUBLIC_SITE_DOMAIN}
+                          .{getPublicSiteDomain()}
                         </span>
                         ?
                       </p>
@@ -8953,7 +9119,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         : buildPublicSiteUrl(
             normalizePublicBusinessSlug(slug) || "your-business",
           ),
-    __siteDomain: BIZUPLY_PUBLIC_SITE_DOMAIN,
+    __siteDomain: getPublicSiteDomain(),
   })}
   siteCustomCode={siteCustomCode}
   onSiteCustomCodeChange={setSiteCustomCode}
@@ -8965,7 +9131,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
           normalizePublicBusinessSlug(slug) || "your-business",
         )
   }
-  siteDomain={BIZUPLY_PUBLIC_SITE_DOMAIN}
+  siteDomain={getPublicSiteDomain()}
   customDomain={
     publishCustomDomainPhase === "active" ||
     publishCustomDomainPhase === "provisioning"
@@ -9176,12 +9342,16 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
           />
 
           {activePanel && (
-            <div className="pointer-events-none absolute inset-0 z-50 flex items-center justify-center p-5">
+            <div
+              className="pointer-events-none absolute inset-0 z-50 flex items-center justify-center p-5"
+              data-studio-dismiss-layer="true"
+            >
               <button
                 type="button"
                 aria-label="סגירת פאנל"
+                data-studio-dismiss-backdrop="true"
                 onClick={() => setActivePanel(null)}
-                className="pointer-events-auto absolute inset-0 border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800/10 backdrop-blur-[1px]"
+                className="pointer-events-auto absolute bottom-0 left-[110px] right-0 top-0 border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800/10 backdrop-blur-[1px]"
               />
 
               <div

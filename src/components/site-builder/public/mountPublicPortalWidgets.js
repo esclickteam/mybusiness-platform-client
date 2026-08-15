@@ -1472,17 +1472,21 @@ function renderAccountPanel(
   header.appendChild(identity);
   wrap.appendChild(header);
 
+  const statsValues = editorMode
+    ? [
+        ["הזמנות", "3"],
+        ["קורסים", "2"],
+        ["הודעות", "0"],
+      ]
+    : [];
+  if (statsValues.length) {
   const stats = el("div", {
     display: "grid",
     gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
     gap: "8px",
     marginBottom: "16px",
   });
-  [
-    ["הזמנות", "3"],
-    ["קורסים", "2"],
-    ["הודעות", "0"],
-  ].forEach(([label, value]) => {
+  statsValues.forEach(([label, value]) => {
     const card = el("div", {
       padding: "12px 10px",
       borderRadius: "14px",
@@ -1513,6 +1517,7 @@ function renderAccountPanel(
     stats.appendChild(card);
   });
   wrap.appendChild(stats);
+  }
 
   appendCustomDataSummary(
     wrap,
@@ -1527,11 +1532,13 @@ function renderAccountPanel(
       : customData,
   );
 
-  const quickLinks = [
-    { href: paths?.orders || "/orders", label: "ההזמנות שלי" },
-    { href: paths?.cart || "/cart", label: "העגלה שלי" },
-    { href: paths?.account || "/portal/account", label: "פרטי החשבון" },
-  ];
+  const quickLinks = editorMode
+    ? [
+        { href: paths?.orders || "/orders", label: "ההזמנות שלי" },
+        { href: paths?.cart || "/cart", label: "העגלה שלי" },
+        { href: paths?.account || "/portal/account", label: "פרטי החשבון" },
+      ]
+    : [];
   const quickRow = el("div", {
     display: "grid",
     gap: "8px",
@@ -1570,10 +1577,12 @@ function renderAccountPanel(
     },
     "גישה מהירה",
   );
-  wrap.appendChild(sectionTitle);
-
   const pageList = Array.isArray(pages) ? pages : [];
-  if (!pageList.length) {
+  const showPlaceholderPages = editorMode && !pageList.length;
+  if (pageList.length || showPlaceholderPages || quickLinks.length) {
+  wrap.appendChild(sectionTitle);
+  }
+  if (showPlaceholderPages) {
     ["הזמנות קודמות", "עמוד מוגן ללקוחות", "המשך רכישה"].forEach((label) => {
       wrap.appendChild(
         el(
@@ -1818,6 +1827,49 @@ async function mountCustomData(container, { siteId, editorMode = false }) {
       document.removeEventListener("visibilitychange", onVisible);
       window.clearInterval(intervalId);
     };
+  }
+}
+
+function hideLibraryAccountShowcase(container) {
+  if (!container || typeof document === "undefined") return;
+  const root =
+    container.closest("[data-visual-insert-host], [data-visual-runtime-host], [data-bizuply-public-render-root]") ||
+    container.parentElement;
+  if (!root) return;
+  const demoRe =
+    /לוח בקרה ללקוח|סיכום פעילות|הזמנות פעילות|יתרת נקודות|קורסים פתוחים|מועדון לקוחות|בלימודים|\+1 השבוע|#1042|#1038|#1021|#1014|#1008|12\.03\.2026|04\.03\.2026|18\.02\.2026|02\.02\.2026|15\.01\.2026|₪249|₪128|₪89|₪310|₪175|1,250|מספר הזמנה|המותג שלי|hello@example\.com|ניווט ראשי|יסודות השיווק הדיגיטלי|ניהול לקוחות בפורטל|לקוח\/ה לדוגמה|client@example\.com|דשבורד לקוח|סקירת פעילות/;
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT);
+  const hide = [];
+  const skip = (node) =>
+    node === container ||
+    container.contains(node) ||
+    node.contains(container) ||
+    node.getAttribute("data-bizuply-portal-kind") === "portal-account";
+  while (walker.nextNode()) {
+    const node = walker.currentNode;
+    if (!(node instanceof HTMLElement)) continue;
+    if (skip(node)) continue;
+    const text = String(node.textContent || "").replace(/\s+/g, " ").trim();
+    if (text && demoRe.test(text) && text.length < 900) {
+      hide.push(node);
+    }
+  }
+  hide.forEach((node) => {
+    node.setAttribute("data-portal-showcase-hidden", "true");
+    node.style.display = "none";
+  });
+  const leftover = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT);
+  while (leftover.nextNode()) {
+    const node = leftover.currentNode;
+    if (!(node instanceof HTMLElement)) continue;
+    if (skip(node) || node.getAttribute("data-portal-showcase-hidden") === "true") continue;
+    const text = String(node.innerText || "")
+      .replace(/\s+/g, " ")
+      .trim();
+    if (text && text.length < 40 && /^[\d₪+,.\s]+$/.test(text)) {
+      node.setAttribute("data-portal-showcase-hidden", "true");
+      node.style.display = "none";
+    }
   }
 }
 
@@ -2605,6 +2657,7 @@ export function mountPublicPortalWidgets(root, options = {}) {
         void mountAccount(node, { siteId, editorMode: true, paths });
         return;
       }
+      hideLibraryAccountShowcase(node);
       if (!siteId) {
         mountLogin(node, { siteId, host, siteName, paths, editorMode });
         return;

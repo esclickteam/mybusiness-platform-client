@@ -1009,6 +1009,31 @@ export default function VisualEditorCanvas({
     }
   }, [bodyEndHtml, isPreviewMode]);
 
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+
+    const harden = () => {
+      root.querySelectorAll("img[src], source[src]").forEach((node) => {
+        const src = String(
+          node.getAttribute("src") || node.getAttribute("srcset") || "",
+        );
+        if (!/unsplash|images\.pexels/i.test(src)) return;
+        node.setAttribute("referrerpolicy", "no-referrer");
+      });
+    };
+
+    harden();
+    const observer = new MutationObserver(harden);
+    observer.observe(root, {
+      subtree: true,
+      childList: true,
+      attributes: true,
+      attributeFilter: ["src", "srcset"],
+    });
+    return () => observer.disconnect();
+  }, [TemplateComponent]);
+
   // Head + custom JS only in preview (so editor tools stay stable)
   useEffect(() => {
     if (!isPreviewMode) {

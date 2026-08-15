@@ -203,7 +203,14 @@ function LiveTemplatePreview({
   return (
     <ScaledFrame height={1600}>
       {editorCss ? (
-        <style dangerouslySetInnerHTML={{ __html: editorCss }} />
+        <style
+          dangerouslySetInnerHTML={{
+            __html: String(editorCss).replace(
+              /@import\s+url\([^)]+\)\s*;?/gi,
+              "",
+            ),
+          }}
+        />
       ) : null}
       <style>{PAGE_PANEL_FORCE_CSS}</style>
       <div

@@ -10,6 +10,7 @@ import type {
   SiteSeoSettings,
   StudioSitePage,
 } from "../types";
+import { getPublicSiteDomain } from "../../../../utils/publicSiteHost";
 
 const ROBOTS_DIRECTIVES: SeoRobotsDirective[] = [
   "nofollow",
@@ -32,9 +33,6 @@ export function createSeoId(prefix = "seo") {
   seoIdCounter += 1;
   return `${prefix}_${Date.now().toString(36)}_${seoIdCounter.toString(36)}`;
 }
-
-const PUBLIC_SITE_DOMAIN =
-  import.meta.env.VITE_BIZUPLY_PUBLIC_SITE_DOMAIN || "sites.bizuply.com";
 
 function safeString(value: unknown) {
   return String(value ?? "").trim();
@@ -93,7 +91,7 @@ export function normalizeKeywords(value: unknown): string {
 export function buildPublicSiteUrl(slug: string) {
   const cleanSlug = safeString(slug).toLowerCase().replace(/[^a-z0-9-]/g, "-");
   if (!cleanSlug) return "";
-  return `https://${cleanSlug}.${PUBLIC_SITE_DOMAIN}`;
+  return `https://${cleanSlug}.${getPublicSiteDomain()}`;
 }
 
 export function buildPagePath(page?: Pick<StudioSitePage, "slug" | "id" | "isHome"> | null) {

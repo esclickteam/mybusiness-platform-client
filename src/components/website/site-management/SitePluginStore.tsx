@@ -28,6 +28,7 @@ type SitePluginStoreProps = {
   enabledPlugins: string[];
   detectedFromSite?: string[];
   saving?: boolean;
+  containedHelp?: boolean;
   onToggle: (pluginKey: string, enabled: boolean) => void;
 };
 
@@ -53,6 +54,7 @@ function PluginStoreCard({
   return (
     <article
       className="group flex cursor-pointer flex-col overflow-hidden rounded-xl border border-slate-200/90 bg-white transition hover:border-slate-300 hover:shadow-[0_4px_20px_rgba(15,23,42,0.08)]"
+      data-plugin-help-trigger={plugin.key}
       onClick={onOpen}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
@@ -92,7 +94,12 @@ function PluginStoreCard({
       </div>
 
       <div className="flex flex-1 flex-col p-4 pt-3">
-        <h3 className="truncate text-sm font-bold text-slate-900">{plugin.name}</h3>
+        <h3
+          className="truncate text-sm font-bold text-slate-900"
+          data-plugin-help-trigger={plugin.key}
+        >
+          {plugin.name}
+        </h3>
 
         <div className="mt-1 flex items-center gap-2">
           <span className="inline-flex items-center gap-0.5 text-xs font-medium text-slate-600">
@@ -110,6 +117,17 @@ function PluginStoreCard({
         </p>
 
         <div className="mt-auto flex items-center justify-between gap-2 pt-3">
+          <button
+            type="button"
+            data-plugin-help-trigger={plugin.key}
+            onClick={(e) => {
+              e.stopPropagation();
+              onOpen();
+            }}
+            className="text-xs font-semibold text-slate-600 underline-offset-2 hover:text-slate-900 hover:underline"
+          >
+            עזרה
+          </button>
           <span className="text-xs font-semibold text-emerald-600">
             {formatPluginPrice(plugin)}
           </span>
@@ -145,6 +163,7 @@ export default function SitePluginStore({
   enabledPlugins,
   detectedFromSite = [],
   saving = false,
+  containedHelp = false,
   onToggle,
 }: SitePluginStoreProps) {
   const [category, setCategory] = useState("all");
@@ -186,7 +205,7 @@ export default function SitePluginStore({
   }, [catalog]);
 
   return (
-    <div dir="rtl" className="min-h-[600px]">
+    <div dir="rtl" className="relative min-h-[600px]">
       {/* Search bar — Chrome Web Store style */}
       <div className="mb-6 flex justify-center">
         <div className="relative w-full max-w-2xl">
@@ -403,6 +422,7 @@ export default function SitePluginStore({
         open={Boolean(detailPlugin)}
         isEnabled={detailPlugin ? enabledSet.has(detailPlugin.key) : false}
         saving={saving}
+        contained={containedHelp}
         onClose={() => setDetailPlugin(null)}
         onToggle={
           detailPlugin

@@ -1,4 +1,5 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 import {
   Check,
   ChevronLeft,
@@ -24,6 +25,7 @@ type SitePluginHelpModalProps = {
   open: boolean;
   isEnabled?: boolean;
   saving?: boolean;
+  contained?: boolean;
   onClose: () => void;
   onToggle?: () => void;
 };
@@ -33,21 +35,53 @@ export default function SitePluginHelpModal({
   open,
   isEnabled = false,
   saving = false,
+  contained = false,
   onClose,
   onToggle,
 }: SitePluginHelpModalProps) {
+  const dialogRef = useRef<HTMLDivElement | null>(null);
+  const previousFocusRef = useRef<HTMLElement | null>(null);
+
   useEffect(() => {
     if (!open) return;
+
+    previousFocusRef.current =
+      document.activeElement instanceof HTMLElement
+        ? document.activeElement
+        : null;
+
     const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") onClose();
+      if (e.key === "Escape") {
+        e.stopPropagation();
+        onClose();
+      }
     };
-    document.body.style.overflow = "hidden";
+
+    const previousBodyOverflow = document.body.style.overflow;
+    const previousHtmlOverflow = document.documentElement.style.overflow;
+    if (!contained) {
+      document.body.style.overflow = "hidden";
+      document.documentElement.style.overflow = "hidden";
+    }
+
+    const frame = window.requestAnimationFrame(() => {
+      dialogRef.current
+        ?.querySelector<HTMLElement>("button[aria-label='סגירה']")
+        ?.focus();
+    });
+
     window.addEventListener("keydown", onKey);
     return () => {
-      document.body.style.overflow = "";
+      window.cancelAnimationFrame(frame);
       window.removeEventListener("keydown", onKey);
+      if (!contained) {
+        document.body.style.overflow = previousBodyOverflow;
+        document.documentElement.style.overflow = previousHtmlOverflow;
+      }
+      previousFocusRef.current?.focus?.();
+      previousFocusRef.current = null;
     };
-  }, [open, onClose]);
+  }, [open, onClose, contained]);
 
   if (!open || !plugin) return null;
 
@@ -60,19 +94,35 @@ export default function SitePluginHelpModal({
     plugin.description ||
     "תוסף זה מרחיב את יכולות האתר. לאחר ההתקנה ניתן להגדיר אותו בפאנל הניהול.";
 
-  return (
-    <div dir="rtl" className="fixed inset-0 z-[100]">
-      <div
-        className="absolute inset-0 bg-slate-900/30 backdrop-blur-[2px]"
-        onMouseDown={onClose}
-        aria-hidden
+  const host =
+    contained && typeof document !== "undefined"
+      ? document.querySelector("[data-visual-editor-plugin-store='true']")
+      : null;
+
+  const modal = (
+    <div
+      ref={dialogRef}
+      dir="rtl"
+      className={
+        contained
+          ? "pointer-events-none absolute inset-0 z-40"
+          : "pointer-events-none fixed inset-0 z-[100]"
+      }
+      data-plugin-help-modal="true"
+    >
+      <button
+        type="button"
+        aria-label="סגירת עזרת תוסף"
+        data-studio-dismiss-backdrop="true"
+        className="pointer-events-auto absolute inset-0 bg-slate-900/30 backdrop-blur-[2px]"
+        onClick={onClose}
       />
 
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby="plugin-detail-title"
-        className="absolute inset-y-0 left-0 flex w-full max-w-xl flex-col border-r border-slate-200 bg-white shadow-[-8px_0_40px_rgba(15,23,42,0.12)]"
+        className="pointer-events-auto absolute inset-y-0 left-0 flex w-full max-w-xl flex-col border-r border-slate-200 bg-white shadow-[-8px_0_40px_rgba(15,23,42,0.12)]"
       >
         {/* Header */}
         <div className="flex shrink-0 items-center gap-3 border-b border-slate-100 px-5 py-4">
@@ -246,4 +296,10 @@ export default function SitePluginHelpModal({
       </div>
     </div>
   );
+
+  if (host) {
+    return createPortal(modal, host);
+  }
+
+  return modal;
 }

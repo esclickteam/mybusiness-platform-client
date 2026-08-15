@@ -1082,6 +1082,7 @@ export default function VisualSitePagesPanel({
       {menuPortal}
       {parentPickerPortal}
       <aside
+        data-visual-site-pages="true"
         className="absolute inset-y-0 right-0 z-[2147483000] flex w-[340px] max-w-[92vw] flex-col border-l border-slate-200/80 bg-[#f4f6fb] shadow-[-22px_0_60px_rgba(15,23,42,0.14)]"
         dir="rtl"
       >

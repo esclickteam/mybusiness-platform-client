@@ -14,6 +14,12 @@
 
 const PUBLIC_SITE_DOMAIN =
   process.env.BIZUPLY_PUBLIC_SITE_DOMAIN || "sites.bizuply.com";
+const STAGING_PUBLIC_SITE_DOMAIN = "sites-staging.bizuply.com";
+
+const PRODUCTION_PUBLIC_API =
+  "https://api.bizuply.com/api/site-builder/public";
+const STAGING_PUBLIC_API =
+  "https://server-staging-15bb.up.railway.app/api/site-builder/public";
 
 const MARKETING_HOSTS = new Set([
   "bizuply.com",
@@ -49,9 +55,6 @@ const SEO_HEAD_TIMEOUT_MS = Math.max(
   Number(process.env.BIZUPLY_SEO_EDGE_TIMEOUT_MS || 1200) || 1200,
 );
 
-const API_SEO_HEAD =
-  "https://api.bizuply.com/api/site-builder/public/by-host/seo-head";
-
 export const config = {
   matcher: [
     "/sitemap.xml",
@@ -69,6 +72,21 @@ export const config = {
     "/((?!api/|assets/|.*\\.[a-zA-Z0-9]+$).+)",
   ],
 };
+
+function isStagingCustomerHost(host) {
+  if (!host) return false;
+  return (
+    host === STAGING_PUBLIC_SITE_DOMAIN ||
+    host.endsWith(`.${STAGING_PUBLIC_SITE_DOMAIN}`)
+  );
+}
+
+function publicSiteApiBase(host) {
+  if (isStagingCustomerHost(host)) {
+    return process.env.BIZUPLY_STAGING_PUBLIC_API || STAGING_PUBLIC_API;
+  }
+  return process.env.BIZUPLY_PRODUCTION_PUBLIC_API || PRODUCTION_PUBLIC_API;
+}
 
 function getPathname(request) {
   try {
@@ -93,8 +111,9 @@ function getHost(request) {
 
 function isCustomerSiteHost(host) {
   if (!host) return false;
-  if (host === PUBLIC_SITE_DOMAIN) return false;
+  if (host === PUBLIC_SITE_DOMAIN || host === STAGING_PUBLIC_SITE_DOMAIN) return false;
   if (host.endsWith(`.${PUBLIC_SITE_DOMAIN}`)) return true;
+  if (host.endsWith(`.${STAGING_PUBLIC_SITE_DOMAIN}`)) return true;
   if (MARKETING_HOSTS.has(host) || host.endsWith(".vercel.app")) return false;
   return true;
 }
@@ -220,7 +239,7 @@ async function handleRobotsOrSitemap(request, pathname) {
 
     const endpoint = isRobots ? "robots.txt" : "sitemap.xml";
     const apiUrl =
-      `https://api.bizuply.com/api/site-builder/public/by-host/${endpoint}` +
+      `${publicSiteApiBase(host)}/by-host/${endpoint}` +
       `?host=${encodeURIComponent(host)}&_t=${Date.now()}`;
 
     const apiRes = await fetch(apiUrl, {
@@ -273,7 +292,7 @@ async function handleHtmlSeoInjection(request) {
 
   try {
     const seoUrl =
-      `${API_SEO_HEAD}?host=${encodeURIComponent(host)}` +
+      `${publicSiteApiBase(host)}/by-host/seo-head?host=${encodeURIComponent(host)}` +
       `&path=${encodeURIComponent(pathname)}&_t=${Date.now()}`;
 
     const htmlPromise = fetch(new URL("/index.html", request.url), {
@@ -359,7 +378,7 @@ async function handleGoogleHtmlVerification(request, fileName) {
 
   try {
     const apiUrl =
-      `https://api.bizuply.com/api/site-builder/public/by-host/google-html` +
+      `${publicSiteApiBase(host)}/by-host/google-html` +
       `?host=${encodeURIComponent(host)}` +
       `&file=${encodeURIComponent(fileName)}` +
       `&_t=${Date.now()}`;

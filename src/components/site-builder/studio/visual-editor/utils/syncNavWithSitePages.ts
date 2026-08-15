@@ -128,6 +128,63 @@ export function buildNavTreeFromSitePages(
     .map(toItem);
 }
 
+export type ResolvedTemplateNavItem = {
+  id: string;
+  label: string;
+  href: string;
+};
+
+/**
+ * Header/footer items for visual-react templates.
+ * When Site Pages are present, the menu follows saved pages only —
+ * never leftover template demo routes (listings/about/...).
+ */
+export function resolveTemplateNavFromSitePages(
+  fallbackPages: Array<{ id?: string; label?: string; slug?: string }> | null | undefined,
+  data?: Record<string, any> | null,
+): ResolvedTemplateNavItem[] {
+  const fallback = (Array.isArray(fallbackPages) ? fallbackPages : [])
+    .map((page) => {
+      const id = String(page?.id || "").trim();
+      const slug = String(page?.slug || "").trim();
+      return {
+        id,
+        label: String(page?.label || id).trim(),
+        href: slug || (id === "home" ? "/" : id ? `/${id}` : "/"),
+      };
+    })
+    .filter((page) => page.id);
+
+  const tree = Array.isArray(data?.__navTree) && data.__navTree.length
+    ? (data.__navTree as SiteNavTreeItem[])
+    : buildNavTreeFromSitePages(data?.__sitePages);
+
+  if (!tree.length) return fallback;
+
+  return tree
+    .map((item) => ({
+      id: String(item.id || item.slug || "").trim(),
+      label: String(item.title || item.slug || item.id || "").trim(),
+      href: String(item.href || "/"),
+    }))
+    .filter((item) => item.id);
+}
+
+export function siteHasNavPage(
+  data: Record<string, any> | null | undefined,
+  idOrSlug: string,
+): boolean {
+  const key = String(idOrSlug || "").trim().toLowerCase();
+  if (!key) return false;
+  const pages = slimSitePageNavSources(data?.__sitePages);
+  if (!pages.length) return true;
+  return pages.some((page) => {
+    const id = String(page.id || "").trim().toLowerCase();
+    const slug = String(page.slug || "").trim().toLowerCase().replace(/^\/+|\/+$/g, "");
+    return id === key || slug === key || (key === "home" && page.isHome);
+  });
+}
+
 /**
  * Drop top-level nav entries that point at nested Site Pages, and attach
  * `subpages` on their parents so templates can render dropdowns.

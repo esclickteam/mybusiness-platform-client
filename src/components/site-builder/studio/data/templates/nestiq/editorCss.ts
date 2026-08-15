@@ -1,6 +1,4 @@
 export const nestiqEditorCss = `
-@import url("https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&family=Heebo:wght@400;500;700&display=swap");
-
 [data-template-id="nestiq"], [data-template-id="nestiq"] {
   direction: rtl; text-align: right;
   font-family: "Heebo", Heebo, sans-serif;

@@ -181,8 +181,6 @@ const MetaCallbackPage = lazy(() =>
 
 const noopResetSearchFilters = () => {};
 
-const PUBLIC_SITE_DOMAIN = getPublicSiteDomain();
-
 const RAW_API_BASE_URL = String(
   import.meta.env.VITE_API_URL ||
     import.meta.env.VITE_API_BASE_URL ||
@@ -209,11 +207,14 @@ function isPublicMiniSiteHost() {
 
 function getMiniSiteSlugFromHost() {
   const hostname = getCurrentHostname();
-  const suffix = `.${PUBLIC_SITE_DOMAIN}`;
-
-  if (!hostname.endsWith(suffix)) return "";
-
-  return hostname.replace(suffix, "");
+  const domains = Array.from(
+    new Set([getPublicSiteDomain(), "sites-staging.bizuply.com", "sites.bizuply.com"])
+  );
+  for (const domain of domains) {
+    const suffix = `.${domain}`;
+    if (hostname.endsWith(suffix)) return hostname.replace(suffix, "");
+  }
+  return "";
 }
 
 /** App/dashboard paths that must never appear on a public customer site URL. */

@@ -82,7 +82,7 @@ export default function VisualEditorIconRail({
   return (
     <aside
       data-visual-editor-icon-rail="true"
-      className="relative z-[2147483050] flex w-[72px] shrink-0 flex-col items-center border-l border-slate-200 bg-white/95 py-2 shadow-sm backdrop-blur-xl"
+      className="relative z-[2147483600] flex w-[72px] shrink-0 flex-col items-center border-l border-slate-200 bg-white/95 py-2 shadow-sm backdrop-blur-xl"
       dir="rtl"
     >
       <div className="flex flex-col items-center gap-1 px-1">

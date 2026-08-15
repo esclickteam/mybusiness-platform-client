@@ -1,8 +1,7 @@
-const BIZUPLY_PUBLIC_SITE_DOMAIN =
-  process.env.NEXT_PUBLIC_BIZUPLY_PUBLIC_SITE_DOMAIN || "sites.bizuply.com";
-
-const BIZUPLY_LEGACY_PUBLIC_SITE_DOMAIN =
-  process.env.NEXT_PUBLIC_BIZUPLY_LEGACY_PUBLIC_SITE_DOMAIN || "bizuply.com";
+import {
+  getLegacyPublicSiteDomain,
+  getPublicSiteDomain,
+} from "../../../../utils/publicSiteHost";
 
 const CUSTOM_DOMAIN_ACTIVE_STATUSES = new Set(["active"]);
 const CUSTOM_DOMAIN_FAILED_STATUSES = new Set([
@@ -39,14 +38,7 @@ export function normalizeLinkedCustomDomain(value: string) {
     .replace(/\.$/, "");
 
   if (!clean) return "";
-  if (
-    clean === BIZUPLY_PUBLIC_SITE_DOMAIN ||
-    clean === BIZUPLY_LEGACY_PUBLIC_SITE_DOMAIN ||
-    clean === `www.${BIZUPLY_PUBLIC_SITE_DOMAIN}` ||
-    clean === `www.${BIZUPLY_LEGACY_PUBLIC_SITE_DOMAIN}` ||
-    clean.endsWith(`.${BIZUPLY_PUBLIC_SITE_DOMAIN}`) ||
-    clean.endsWith(`.${BIZUPLY_LEGACY_PUBLIC_SITE_DOMAIN}`)
-  ) {
+  if (isPlatformPublicSiteHost(clean)) {
     return "";
   }
 
@@ -110,13 +102,19 @@ export function isPlatformPublicSiteHost(host: string) {
     .toLowerCase()
     .replace(/\.$/, "");
   if (!clean) return false;
-  return (
-    clean === BIZUPLY_PUBLIC_SITE_DOMAIN ||
-    clean === BIZUPLY_LEGACY_PUBLIC_SITE_DOMAIN ||
-    clean === `www.${BIZUPLY_PUBLIC_SITE_DOMAIN}` ||
-    clean === `www.${BIZUPLY_LEGACY_PUBLIC_SITE_DOMAIN}` ||
-    clean.endsWith(`.${BIZUPLY_PUBLIC_SITE_DOMAIN}`) ||
-    clean.endsWith(`.${BIZUPLY_LEGACY_PUBLIC_SITE_DOMAIN}`)
+  const domains = Array.from(
+    new Set([
+      getPublicSiteDomain(),
+      getLegacyPublicSiteDomain(),
+      "sites.bizuply.com",
+      "sites-staging.bizuply.com",
+    ]),
+  );
+  return domains.some(
+    (domain) =>
+      clean === domain ||
+      clean === `www.${domain}` ||
+      clean.endsWith(`.${domain}`),
   );
 }
 
@@ -176,7 +174,7 @@ export function resolvePublishedSiteDisplayUrl(options: {
         .replace(/^-|-$/g, ""));
   const buildPlatformUrl =
     options.buildPlatformUrl ||
-    ((slug: string) => `https://${slug}.${BIZUPLY_PUBLIC_SITE_DOMAIN}`);
+    ((slug: string) => `https://${slug}.${getPublicSiteDomain()}`);
 
   const cleanSlug = normalizeSlug(String(options.slug || ""));
   return cleanSlug ? buildPlatformUrl(cleanSlug) : "";
@@ -192,7 +190,7 @@ function defaultNormalizeSlug(value: string) {
 }
 
 function defaultBuildPlatformUrl(slug: string) {
-  return `https://${slug}.${BIZUPLY_PUBLIC_SITE_DOMAIN}`;
+  return `https://${slug}.${getPublicSiteDomain()}`;
 }
 
 /**
