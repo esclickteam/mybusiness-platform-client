@@ -5509,6 +5509,10 @@ export default function WebsiteStudioPage({
 
           if (preferred) {
             setActivePageId(preferred);
+            const preferredPage = nextPages.find((page) => page.id === preferred);
+            if (!preferredPage || (preferredPage as any).visualHydrated === false) {
+              void hydrateStudioPageVisual(preferred);
+            }
           }
         } else {
           // Fallback: restore freshly generated AI pages from local cache

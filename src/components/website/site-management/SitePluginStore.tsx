@@ -117,6 +117,17 @@ function PluginStoreCard({
         </p>
 
         <div className="mt-auto flex items-center justify-between gap-2 pt-3">
+          <button
+            type="button"
+            data-plugin-help-trigger={plugin.key}
+            onClick={(e) => {
+              e.stopPropagation();
+              onOpen();
+            }}
+            className="text-xs font-semibold text-slate-600 underline-offset-2 hover:text-slate-900 hover:underline"
+          >
+            עזרה
+          </button>
           <span className="text-xs font-semibold text-emerald-600">
             {formatPluginPrice(plugin)}
           </span>
