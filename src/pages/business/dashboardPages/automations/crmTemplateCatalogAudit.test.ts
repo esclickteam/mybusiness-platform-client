@@ -448,6 +448,9 @@ describe("CRM template catalog audit", () => {
       (template) => template.comingSoon
     );
     expect(visible.length + hiddenComingSoon.length).toBe(templates.length);
+    expect(visible.some((template) => template.categories.includes("ai"))).toBe(
+      true
+    );
     for (const key of FORMER_LEAD_TEMPLATE_KEYS) {
       const template = WORKING_TEMPLATES.find((row) => row.key === key)!;
       if (template.comingSoon) continue;

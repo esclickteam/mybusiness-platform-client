@@ -156,7 +156,18 @@ export function recipeMatchesCategory(
   category: TemplateCategoryId
 ): boolean {
   if (category === "all") return true;
-  return getRecipeCategories(recipe).includes(category);
+  const categories = getRecipeCategories(recipe);
+  const isAi = categories.includes("ai") || recipe.isAiRecipe === true;
+  if (category === "ai") return isAi;
+  if (category === "email" || category === "whatsapp") {
+    if (categories.includes(category)) return true;
+    if (!isAi) return false;
+    const haystack = `${recipe.key} ${recipe.name} ${recipe.description}`;
+    return category === "email"
+      ? /email|מייל|gmail|outlook/.test(haystack)
+      : /whatsapp|וואטסאפ/.test(haystack);
+  }
+  return categories.includes(category);
 }
 
 export function recipeMatchesQuery(

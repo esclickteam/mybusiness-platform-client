@@ -1375,6 +1375,56 @@ export type WorkingContext = {
   aiEntitled: boolean;
 };
 
+export function isAiGalleryTemplate(template: WorkingTemplate): boolean {
+  return template.categories.includes("ai");
+}
+
+function galleryHaystack(template: WorkingTemplate): string {
+  return [
+    template.key,
+    template.recipeKey,
+    template.name,
+    template.description,
+    ...(template.keywords || []),
+  ]
+    .filter(Boolean)
+    .join(" ")
+    .toLowerCase();
+}
+
+export function aiTemplateUsesGalleryChannel(
+  template: WorkingTemplate,
+  channel: Extract<TemplateCategoryId, "email" | "whatsapp">
+): boolean {
+  if (channel === "email") {
+    if (isEmailFacingTemplate(template)) return true;
+    return /email|מייל|gmail|outlook|ai_draft_email|ai_email/.test(
+      galleryHaystack(template)
+    );
+  }
+  if (isWhatsAppFacingTemplate(template)) return true;
+  return /whatsapp|וואטסאפ|ai_draft_reply|ai_auto_reply/.test(
+    galleryHaystack(template)
+  );
+}
+
+/** Gallery tabs only — does not change stored template metadata. */
+export function templateMatchesGalleryCategory(
+  template: WorkingTemplate,
+  category: TemplateCategoryId
+): boolean {
+  if (category === "all") return true;
+  if (category === "ai") return isAiGalleryTemplate(template);
+  if (category === "email" || category === "whatsapp") {
+    if (template.categories.includes(category)) return true;
+    return (
+      isAiGalleryTemplate(template) &&
+      aiTemplateUsesGalleryChannel(template, category)
+    );
+  }
+  return template.categories.includes(category);
+}
+
 /** Catalog visibility is independent of activation readiness. */
 export function isTemplateVisibleInCatalog(
   template: WorkingTemplate,
@@ -1382,6 +1432,7 @@ export function isTemplateVisibleInCatalog(
   category: TemplateCategoryId
 ): boolean {
   if (template.comingSoon) return false;
+  if (!templateMatchesGalleryCategory(template, category)) return false;
   if (readiness.ready) return true;
   if (isEmailFacingTemplate(template)) return true;
   if (category === "whatsapp" && isWhatsAppFacingTemplate(template)) return true;
