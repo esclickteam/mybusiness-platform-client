@@ -214,6 +214,9 @@ function blueprint({
             label: triggerLabel,
             triggerKey: resolvedTriggerKey,
             routeCount: 1,
+            ...(resolvedTriggerKey === "lead_status_changed"
+              ? { toStatus: "contacted" }
+              : {}),
           },
     },
     {

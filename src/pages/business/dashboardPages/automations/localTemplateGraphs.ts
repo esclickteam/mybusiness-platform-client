@@ -212,7 +212,7 @@ export const LOCAL_SYSTEM_TEMPLATES: LocalAutomationTemplate[] = [
       "טריגר: ליד חדש ב-CRM. תוצאות יחד: WhatsApp, משימה לנציג והתראה לבעל העסק.",
     triggerLabel: "ליד חדש ב-CRM",
     resultLabels: ["WhatsApp מיידי", "משימה לנציג", "התראה לבעל העסק"],
-    categories: ["leads", "crm", "whatsapp"],
+    categories: ["crm", "whatsapp"],
     triggerKey: "crm_lead_created",
     triggerKeyAliases: [
       "crm_lead_created",
@@ -235,7 +235,7 @@ export const LOCAL_SYSTEM_TEMPLATES: LocalAutomationTemplate[] = [
     description: "טריגר: ליד חדש. תוצאות: אימייל ומשימת מעקב ב-CRM.",
     triggerLabel: "ליד חדש ב-CRM",
     resultLabels: ["אימייל", "משימת מעקב"],
-    categories: ["leads", "email", "crm"],
+    categories: ["crm", "email"],
     triggerKey: "crm_lead_created",
     triggerKeyAliases: [
       "crm_lead_created",
@@ -265,7 +265,7 @@ export const LOCAL_SYSTEM_TEMPLATES: LocalAutomationTemplate[] = [
       "פתיחה מיידית; אם אין תשובת WhatsApp — פולואפ אחרי 24ש׳ ואחרי 3 ימים.",
     triggerLabel: "ליד חדש ב-CRM",
     resultLabels: ["פתיחה WhatsApp", "פולואפ #1", "פולואפ #2"],
-    categories: ["leads", "whatsapp", "sales"],
+    categories: ["crm", "whatsapp", "sales"],
     triggerKey: "new_lead",
     triggerKeyAliases: ["new_lead", "crm_lead_created", "lead_created"],
     actions: [
@@ -284,7 +284,7 @@ export const LOCAL_SYSTEM_TEMPLATES: LocalAutomationTemplate[] = [
       "מוזג למסלול המאוחד «ליד חדש → פתיחה + פולואפים לפי תגובה».",
     triggerLabel: "ליד ללא המרה",
     resultLabels: ["WhatsApp פולואפ שני"],
-    categories: ["leads", "whatsapp"],
+    categories: ["crm", "whatsapp"],
     triggerKey: "new_lead",
     triggerKeyAliases: ["new_lead", "lead_followup", "crm_lead_created"],
     actions: [
@@ -340,7 +340,7 @@ export const LOCAL_SYSTEM_TEMPLATES: LocalAutomationTemplate[] = [
 
 ];
 
-LOCAL_SYSTEM_TEMPLATES.push(...listSupportedAiTemplates().map((template) => ({ key: `local_${template.recipeKey}`, catalogId: template.templateKey, recipeKey: template.recipeKey, name: template.titleHe, description: template.description, triggerLabel: template.customerExplanation.startsWhen, resultLabels: [template.customerExplanation.aiDoes, template.customerExplanation.afterwards], categories: (template.recommendedTrigger === "scheduled" ? ["ai"] : ["ai", "leads"]) as LocalAutomationTemplate["categories"], triggerKey: template.recommendedTrigger, triggerKeyAliases: template.recommendedTrigger === "new_lead" ? ["new_lead", "crm_lead_created", "lead_created", "lead_new"] : ["scheduled"], actions: [{ actionKey: template.requiredAiActions[0], label: template.customerExplanation.aiDoes }], isAi: true, nodeCount: 2, resultCount: 1 })));
+LOCAL_SYSTEM_TEMPLATES.push(...listSupportedAiTemplates().map((template) => ({ key: `local_${template.recipeKey}`, catalogId: template.templateKey, recipeKey: template.recipeKey, name: template.titleHe, description: template.description, triggerLabel: template.customerExplanation.startsWhen, resultLabels: [template.customerExplanation.aiDoes, template.customerExplanation.afterwards], categories: (template.recommendedTrigger === "scheduled" ? ["ai", "crm"] : ["ai", "crm", "sales"]) as LocalAutomationTemplate["categories"], triggerKey: template.recommendedTrigger, triggerKeyAliases: template.recommendedTrigger === "new_lead" ? ["new_lead", "crm_lead_created", "lead_created", "lead_new"] : template.recommendedTrigger === "lead_status_changed" ? ["lead_status_changed", "crm_lead_status_changed", "lead_updated"] : ["scheduled"], actions: [{ actionKey: template.requiredAiActions[0], label: template.customerExplanation.aiDoes }], isAi: true, nodeCount: 2, resultCount: 1 })));
 
 /** @deprecated use LOCAL_SYSTEM_TEMPLATES */
 export const LOCAL_REMINDER_TEMPLATES = LOCAL_SYSTEM_TEMPLATES.filter((t) =>

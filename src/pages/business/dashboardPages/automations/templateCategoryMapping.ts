@@ -3,12 +3,12 @@ import { getCatalogByRecipeKey } from "./systemAutomationCatalog";
 
 export type TemplateCategoryId =
   | "all"
-  | "leads"
   | "crm"
   | "appointments"
   | "email"
   | "whatsapp"
   | "sales"
+  | "store"
   | "ai";
 
 export type TemplateCategory = {
@@ -18,12 +18,12 @@ export type TemplateCategory = {
 
 export const TEMPLATE_CATEGORIES: TemplateCategory[] = [
   { id: "all", label: "הכל" },
-  { id: "leads", label: "לידים" },
   { id: "crm", label: "CRM" },
   { id: "appointments", label: "פגישות" },
   { id: "email", label: "מייל" },
   { id: "whatsapp", label: "WhatsApp" },
   { id: "sales", label: "מכירות" },
+  { id: "store", label: "חנות" },
   { id: "ai", label: "AI" },
 ];
 
@@ -32,21 +32,21 @@ export const TEMPLATE_CATEGORIES: TemplateCategory[] = [
  * Derived from recipe keys + known trigger intent — not inventing backend fields.
  */
 const RECIPE_CATEGORY_MAP: Record<string, TemplateCategoryId[]> = {
-  lead_multi_route: ["leads", "crm", "whatsapp"],
-  lead_no_response: ["leads", "whatsapp"],
+  lead_multi_route: ["crm", "whatsapp"],
+  lead_no_response: ["crm", "whatsapp"],
   appointment_duo: ["appointments", "whatsapp"],
   new_client_welcome: ["crm", "whatsapp"],
-  ai_rank_leads: ["ai", "leads"],
+  ai_rank_leads: ["ai", "crm"],
   ai_summarize_calls: ["ai", "appointments"],
   ai_auto_reply: ["ai", "whatsapp"],
-  ai_risk_lead: ["ai", "leads"],
-  ai_campaign_change: ["ai", "leads", "sales"],
+  ai_risk_lead: ["ai", "crm"],
+  ai_campaign_change: ["ai", "crm", "sales"],
   ai_tasks_from_chat: ["ai", "crm", "appointments"],
 };
 
 const RECIPE_TRIGGER_LABEL: Record<string, string> = {
   lead_multi_route: "ליד חדש ב-CRM",
-  lead_no_response: "ליד שלא נענה",
+  lead_no_response: "ליד חדש ב-CRM",
   appointment_duo: "פגישה חדשה",
   new_client_welcome: "לקוח חדש",
   ai_rank_leads: "ליד חדש ב-CRM",
@@ -59,7 +59,7 @@ const RECIPE_TRIGGER_LABEL: Record<string, string> = {
 
 const RECIPE_RESULT_LABEL: Record<string, string> = {
   lead_multi_route: "WhatsApp מיידי · משימה לנציג · התראה לבעל העסק",
-  lead_no_response: "WhatsApp מעקב · עדכון סטטוס",
+  lead_no_response: "פתיחה WhatsApp · פולואפ #1 · פולואפ #2",
   appointment_duo: "אישור WhatsApp · משימת הכנה · תזכורת יום לפני",
   new_client_welcome: "הודעת פתיחה · משימת שימור",
   ai_rank_leads: "דירוג AI · התראה",
@@ -73,7 +73,7 @@ const RECIPE_RESULT_LABEL: Record<string, string> = {
 /** Override backend recipe copy that still talks about "paths/routes". */
 const RECIPE_DISPLAY_NAME: Record<string, string> = {
   lead_multi_route: "ליד חדש — כמה תוצאות יחד",
-  lead_no_response: "ליד שלא נענה — מעקב חכם",
+  lead_no_response: "ליד חדש → פתיחה + פולואפים לפי תגובה",
   appointment_duo: "פגישה — אישור + תזכורת + משימה",
   new_client_welcome: "לקוח חדש — ברוכים הבאים",
   ai_rank_leads: "AI — דירוג ליד",
@@ -88,7 +88,7 @@ const RECIPE_DISPLAY_DESCRIPTION: Record<string, string> = {
   lead_multi_route:
     "טריגר ליד חדש ב-CRM. תוצאות יחד: WhatsApp מיידי, משימה לנציג והתראה לבעל העסק.",
   lead_no_response:
-    "טריגר ליד שלא נענה. תוצאה: מעקב WhatsApp או עדכון סטטוס לפי המצב.",
+    "הודעת פתיחה נשלחת מיד. אם הליד לא מגיב, נשלח פולואפ לאחר 24 שעות ופולואפ נוסף לאחר 3 ימים.",
   appointment_duo:
     "טריגר פגישה חדשה. תוצאות: אישור WhatsApp, משימת הכנה, ותזכורת יום לפני המועד.",
   new_client_welcome:

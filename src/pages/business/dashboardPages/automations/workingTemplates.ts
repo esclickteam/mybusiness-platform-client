@@ -144,6 +144,7 @@ function resultGraph(opts: {
   triggerKey: string;
   triggerLabel: string;
   hoursBefore?: number;
+  triggerData?: Record<string, unknown>;
   emailProvider?: EmailProviderId;
   businessSender?: BusinessEmailSender | null;
   actions: GraphAction[];
@@ -163,6 +164,7 @@ function resultGraph(opts: {
         triggerKey: opts.triggerKey,
         routeCount: actions.length,
         ...(opts.hoursBefore != null ? { hoursBefore: opts.hoursBefore } : {}),
+        ...(opts.triggerData || {}),
       },
     },
   ];
@@ -585,7 +587,7 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
       "הודעת פתיחה מיידית בלבד (ללא פולואפים). למסלול פתיחה + פולואפים לפי תגובה — השתמשו בתבנית «ליד חדש → פתיחה + פולואפים לפי תגובה».",
     triggerLabel: "ליד חדש ב-CRM",
     resultLabels: ["הודעת פתיחה WhatsApp"],
-    categories: ["leads", "whatsapp", "crm"],
+    categories: ["crm", "whatsapp"],
     engine: "whatsapp_simple",
     whatsappTrigger: "new_lead_welcome",
     delayMinutes: 5,
@@ -599,7 +601,7 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
     description: "ליד נכנס ל-CRM → התראה פנימית ב-WhatsApp לבעל העסק.",
     triggerLabel: "ליד חדש ב-CRM",
     resultLabels: ["התראת WhatsApp לבעל העסק"],
-    categories: ["leads", "whatsapp", "crm"],
+    categories: ["crm", "whatsapp"],
     engine: "whatsapp_simple",
     whatsappTrigger: "new_lead_welcome",
     waCategory: "custom",
@@ -718,7 +720,7 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
       "מוזג למסלול המאוחד «ליד חדש → פתיחה + פולואפים לפי תגובה». לא מוצג ככרטיס נפרד.",
     triggerLabel: "ליד שלא ענה ב-WhatsApp",
     resultLabels: ["פולואפ WhatsApp"],
-    categories: ["leads", "whatsapp"],
+    categories: ["crm", "whatsapp"],
     engine: "whatsapp_simple",
     whatsappTrigger: "lead_no_response",
     delayHours: 24,
@@ -734,7 +736,7 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
       "מוזג למסלול המאוחד «ליד חדש → פתיחה + פולואפים לפי תגובה». לא מוצג ככרטיס נפרד.",
     triggerLabel: "ליד ללא המרה",
     resultLabels: ["פולואפ שני"],
-    categories: ["leads", "whatsapp", "sales"],
+    categories: ["crm", "whatsapp", "sales"],
     engine: "whatsapp_simple",
     whatsappTrigger: "lead_followup_2",
     delayDays: 3,
@@ -780,7 +782,7 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
       "פתיחה מיידית בלבד: WhatsApp + משימה + התראה. לא כולל פולואפים לפי תגובה — למסלול המלא ראו «פתיחה + פולואפים לפי תגובה».",
     triggerLabel: "ליד חדש ב-CRM",
     resultLabels: ["WhatsApp", "משימה", "התראה"],
-    categories: ["leads", "crm", "whatsapp"],
+    categories: ["crm", "whatsapp"],
     engine: "workflow_recipe",
     recipeKey: "lead_multi_route",
     requiresWaTemplate: true,
@@ -796,7 +798,7 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
         emailProvider,
         businessSender,
         extraActions: [
-          { actionKey: "create_task", label: "משימה לנציג" },
+          { actionKey: "create_task", label: "משימה לנציג", defaults: { title: "ליד חדש: {{lead.name}}", dueInHours: 24 } },
           { actionKey: "notify", label: "התראה לבעל העסק" },
         ],
       }),
@@ -809,7 +811,7 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
       "פתיחה מיידית בלבד: WhatsApp + אימייל. לא כולל פולואפים לפי תגובת WhatsApp.",
     triggerLabel: "ליד חדש ב-CRM",
     resultLabels: ["WhatsApp", "אימייל"],
-    categories: ["leads", "whatsapp", "email"],
+    categories: ["crm", "whatsapp", "email"],
     engine: "workflow_graph",
     requiresWaTemplate: true,
     requiresEmailProvider: true,
@@ -843,7 +845,7 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
       "חבילת קליטה מיידית בכל הערוצים. לא כוללת פולואפי WhatsApp לפי תגובה — למסלול המלא ראו «פתיחה + פולואפים לפי תגובה».",
     triggerLabel: "ליד חדש ב-CRM",
     resultLabels: ["WhatsApp", "אימייל", "משימה", "התראה"],
-    categories: ["leads", "crm", "whatsapp", "email"],
+    categories: ["crm", "whatsapp", "email"],
     engine: "workflow_graph",
     requiresWaTemplate: true,
     requiresEmailProvider: true,
@@ -866,7 +868,7 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
               ...LEAD_WELCOME_EMAIL_DEFAULTS,
             },
           },
-          { actionKey: "create_task", label: "משימת מעקב לנציג" },
+          { actionKey: "create_task", label: "משימת מעקב לנציג", defaults: { title: "מעקב ליד: {{lead.name}}", dueInHours: 24 } },
           { actionKey: "notify", label: "התראה לבעל העסק" },
         ],
       }),
@@ -875,10 +877,11 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
     key: "wf_lead_email_task",
     rank: 16,
     name: "ליד חדש → אימייל + משימה",
-    description: "בלי WhatsApp: אימייל דרך Gmail או Outlook + משימת מעקב ב-CRM.",
+    description:
+      "בלי WhatsApp: אימייל דרך Gmail, Outlook או מייל עסקי + משימת מעקב ב-CRM.",
     triggerLabel: "ליד חדש ב-CRM",
     resultLabels: ["אימייל", "משימת מעקב"],
-    categories: ["leads", "email", "crm"],
+    categories: ["crm", "email"],
     engine: "workflow_graph",
     requiredTriggerKeys: LEAD_TRIGGER_KEYS,
     requiresEmailProvider: true,
@@ -896,7 +899,7 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
               ...LEAD_WELCOME_EMAIL_DEFAULTS,
             },
           },
-          { actionKey: "create_task", label: "משימת מעקב" },
+          { actionKey: "create_task", label: "משימת מעקב", defaults: { title: "מעקב ליד: {{lead.name}}", dueInHours: 24 } },
         ],
       }),
   },
@@ -904,10 +907,11 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
     key: "wf_lead_email_only",
     rank: 17,
     name: "ליד חדש → אימייל פתיחה",
-    description: "ליד חדש מקבל אימייל פתיחה דרך Gmail או Outlook.",
+    description:
+      "ליד חדש מקבל אימייל פתיחה דרך Gmail, Outlook או מייל עסקי.",
     triggerLabel: "ליד חדש ב-CRM",
     resultLabels: ["אימייל"],
-    categories: ["leads", "email"],
+    categories: ["crm", "email"],
     engine: "workflow_graph",
     requiredTriggerKeys: LEAD_TRIGGER_KEYS,
     requiresEmailProvider: true,
@@ -969,7 +973,7 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
     description: "בלי הודעות ללקוח: משימה והתראה פנימית כשנכנס ליד.",
     triggerLabel: "ליד חדש ב-CRM",
     resultLabels: ["משימה", "התראה"],
-    categories: ["leads", "crm", "sales"],
+    categories: ["crm", "sales"],
     engine: "workflow_graph",
     requiredTriggerKeys: LEAD_TRIGGER_KEYS,
     buildGraph: ({ triggerKey, emailProvider, businessSender }) =>
@@ -979,7 +983,7 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
         emailProvider,
         businessSender,
         actions: [
-          { actionKey: "create_task", label: "משימה לנציג" },
+          { actionKey: "create_task", label: "משימה לנציג", defaults: { title: "ליד חדש: {{lead.name}}", dueInHours: 24 } },
           { actionKey: "notify", label: "התראה לצוות" },
         ],
       }),
@@ -992,7 +996,7 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
       "הודעת פתיחה נשלחת מיד. אם הליד לא מגיב, נשלח פולואפ לאחר 24 שעות ופולואפ נוסף לאחר 3 ימים.",
     triggerLabel: "ליד חדש ב-CRM",
     resultLabels: ["פתיחה WhatsApp", "פולואפ #1", "פולואפ #2"],
-    categories: ["leads", "whatsapp", "sales"],
+    categories: ["crm", "whatsapp", "sales"],
     engine: "workflow_graph",
     recipeKey: "lead_no_response",
     requiresWaTemplate: true,
@@ -1025,15 +1029,16 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
     description: "כשסטטוס ליד משתנה — הצוות מקבל משימה והתראה.",
     triggerLabel: "שינוי סטטוס ליד",
     resultLabels: ["משימה", "התראה"],
-    categories: ["leads", "sales", "crm"],
+    categories: ["crm", "sales"],
     engine: "workflow_graph",
     requiredTriggerKeys: LEAD_STATUS_KEYS,
     buildGraph: ({ triggerKey, emailProvider, businessSender }) =>
       resultGraph({
         triggerKey,
         triggerLabel: "שינוי סטטוס ליד",
+        triggerData: { toStatus: "contacted" },
         actions: [
-          { actionKey: "create_task", label: "משימה לפי סטטוס" },
+          { actionKey: "create_task", label: "משימה לפי סטטוס", defaults: { title: "ליד שינה סטטוס: {{lead.name}}", dueInHours: 24 } },
           { actionKey: "notify", label: "התראה לצוות מכירות" },
         ],
       }),
@@ -1071,7 +1076,7 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
               subject: "ברוכים הבאים",
             },
           },
-          { actionKey: "create_task", label: "משימת שימור" },
+          { actionKey: "create_task", label: "משימת שימור", defaults: { title: "שימור לקוח: {{contact.fullName}}", dueInHours: 24 } },
         ],
       }),
   },
@@ -1223,7 +1228,14 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
               ...APPOINTMENT_CONFIRMATION_EMAIL_DEFAULTS,
             },
           },
-          { actionKey: "create_task", label: "הכנה לפגישה" },
+          {
+            actionKey: "create_task",
+            label: "הכנה לפגישה",
+            defaults: {
+              title: "הכנה לפגישה: {{appointment.clientName}}",
+              dueInHours: 24,
+            },
+          },
           { actionKey: "notify", label: "התראה לצוות" },
         ],
       }),
@@ -1287,10 +1299,7 @@ export const WORKING_TEMPLATES: WorkingTemplate[] = [
 
 function aiCategoriesFor(triggerKey: string): TemplateCategoryId[] {
   if (triggerKey === "scheduled") return ["ai", "crm"];
-  if (triggerKey === "lead_status_changed") {
-    return ["ai", "leads", "crm", "sales"];
-  }
-  return ["ai", "leads", "crm", "sales"];
+  return ["ai", "crm", "sales"];
 }
 
 function aiRequiredTriggerKeys(triggerKey: string): string[] {

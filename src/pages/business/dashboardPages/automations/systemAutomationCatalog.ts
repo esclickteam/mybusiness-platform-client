@@ -24,7 +24,7 @@ export type SystemAutomationSuggestion = {
   triggerLabel: string;
   resultLabels: string[];
   categories: Array<
-    "leads" | "crm" | "appointments" | "email" | "whatsapp" | "sales" | "ai"
+    "crm" | "appointments" | "email" | "whatsapp" | "sales" | "store" | "ai"
   >;
   /** Recommended WhatsApp template category (for gap reporting) */
   recommendedWaCategory?:
@@ -50,7 +50,7 @@ export const SYSTEM_AUTOMATION_CATALOG: SystemAutomationSuggestion[] = [
       "כשנכנס ליד חדש ב-CRM: שליחת WhatsApp, יצירת משימה לנציג והתראה לבעל העסק — במקביל.",
     triggerLabel: "ליד חדש ב-CRM",
     resultLabels: ["WhatsApp מיידי", "משימה לנציג", "התראה לבעל העסק"],
-    categories: ["leads", "crm", "whatsapp"],
+    categories: ["crm", "whatsapp"],
     recommendedWaCategory: "welcome",
     recommendedTemplateHints: ["new_lead_welcome"],
   },
@@ -64,7 +64,7 @@ export const SYSTEM_AUTOMATION_CATALOG: SystemAutomationSuggestion[] = [
       "הודעת פתיחה מיד. אם אין תשובת WhatsApp — פולואפ אחרי 24 שעות ופולואפ נוסף אחרי 3 ימים.",
     triggerLabel: "ליד חדש ב-CRM",
     resultLabels: ["פתיחה WhatsApp", "פולואפ #1", "פולואפ #2"],
-    categories: ["leads", "whatsapp", "sales"],
+    categories: ["crm", "whatsapp", "sales"],
     recommendedWaCategory: "welcome",
     recommendedTemplateHints: [
       "new_lead_welcome",
@@ -124,7 +124,7 @@ export const SYSTEM_AUTOMATION_CATALOG: SystemAutomationSuggestion[] = [
     description: "טריגר ליד חדש. תוצאות: אימייל ומשימת מעקב.",
     triggerLabel: "ליד חדש ב-CRM",
     resultLabels: ["אימייל", "משימת מעקב"],
-    categories: ["leads", "email", "crm"],
+    categories: ["crm", "email"],
   },
   {
     id: "appointment_reminder_1_day",
@@ -198,7 +198,7 @@ export const SYSTEM_AUTOMATION_CATALOG: SystemAutomationSuggestion[] = [
       "מוזג למסלול המאוחד «ליד חדש → פתיחה + פולואפים לפי תגובה». לא מוצג ככרטיס נפרד.",
     triggerLabel: "ליד ללא המרה",
     resultLabels: ["WhatsApp פולואפ שני"],
-    categories: ["leads", "whatsapp"],
+    categories: ["crm", "whatsapp"],
     recommendedWaCategory: "follow_up",
     recommendedTemplateHints: ["lead_follow_up_2"],
     timingHint: "חלק ממסלול הפולואפים המאוחד",
@@ -218,7 +218,7 @@ export const SYSTEM_AUTOMATION_CATALOG: SystemAutomationSuggestion[] = [
   },
 ];
 
-SYSTEM_AUTOMATION_CATALOG.push(...listSupportedAiTemplates().map((template) => ({ id: template.templateKey, recipeKey: template.recipeKey, kind: "ai" as const, title: template.titleHe, description: template.description, triggerLabel: template.customerExplanation.startsWhen, resultLabels: [template.customerExplanation.aiDoes, template.customerExplanation.afterwards], categories: (template.recommendedTrigger === "scheduled" ? ["ai"] : ["ai", "leads"]) as SystemAutomationSuggestion["categories"], requiresAi: false })));
+SYSTEM_AUTOMATION_CATALOG.push(...listSupportedAiTemplates().map((template) => ({ id: template.templateKey, recipeKey: template.recipeKey, kind: "ai" as const, title: template.titleHe, description: template.description, triggerLabel: template.customerExplanation.startsWhen, resultLabels: [template.customerExplanation.aiDoes, template.customerExplanation.afterwards], categories: (template.recommendedTrigger === "scheduled" ? ["ai", "crm"] : ["ai", "crm", "sales"]) as SystemAutomationSuggestion["categories"], requiresAi: false })));
 
 export type MessageTemplateGap = {
   id: string;
