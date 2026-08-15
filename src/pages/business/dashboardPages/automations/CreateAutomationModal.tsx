@@ -1,7 +1,7 @@
 import React, { useEffect, useId, useState } from "react";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import { FilePlus2, LayoutTemplate, Loader2, Sparkles, X } from "lucide-react";
+import { FilePlus2, LayoutTemplate, Loader2, X } from "lucide-react";
 import {
   AUTOMATION_PREVIEW_ACTION_TOOLTIP,
   AUTOMATION_PREVIEW_WRITE_BLOCKED_MESSAGE,
@@ -17,12 +17,6 @@ type Props = {
   onClose: () => void;
 };
 
-/**
- * AI text-to-automation is not implemented yet.
- * Keep the option visible as Beta / Coming soon — never fake-create.
- */
-const AI_TEXT_CREATION_AVAILABLE = false;
-
 export default function CreateAutomationModal({
   open,
   businessId,
@@ -31,12 +25,10 @@ export default function CreateAutomationModal({
 }: Props) {
   const navigate = useNavigate();
   const titleId = useId();
-  const [aiPrompt, setAiPrompt] = useState("");
   const [creatingBlank, setCreatingBlank] = useState(false);
 
   useEffect(() => {
     if (!open) {
-      setAiPrompt("");
       setCreatingBlank(false);
       return;
     }
@@ -117,38 +109,6 @@ export default function CreateAutomationModal({
           <h2 id={titleId}>צור אוטומציה</h2>
           <p>בחר איך להתחיל</p>
         </header>
-
-        <section className="ax-create-modal__ai">
-          <div className="ax-create-modal__ai-head">
-            <span className="ax-create-modal__ai-icon" aria-hidden>
-              <Sparkles size={16} />
-            </span>
-            <div>
-              <strong>מה תרצה להפוך לאוטומטי?</strong>
-              <em className="ax-badge ax-badge--draft">Beta · בקרוב</em>
-            </div>
-          </div>
-          <textarea
-            className="ax-create-modal__textarea"
-            rows={3}
-            value={aiPrompt}
-            onChange={(event) => setAiPrompt(event.target.value)}
-            placeholder="כשנכנס ליד חדש, שלח מייל ולאחר יום צור משימת מעקב"
-            disabled={!AI_TEXT_CREATION_AVAILABLE}
-          />
-          <button
-            type="button"
-            className="ax-btn ax-btn--primary ax-create-modal__ai-cta"
-            disabled
-            title="יצירה עם AI מטקסט תהיה זמינה בקרוב"
-          >
-            צור עם AI
-          </button>
-        </section>
-
-        <div className="ax-create-modal__divider" role="separator">
-          <span>או</span>
-        </div>
 
         <div className="ax-create-modal__choices">
           <button

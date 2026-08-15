@@ -326,7 +326,7 @@ export default function AutomationNodePicker({
   );
 
   return (
-    <div className="af-drawer-backdrop" onClick={onClose} role="presentation">
+    <div className="af-drawer-backdrop af-drawer-backdrop--picker" onClick={onClose} role="presentation">
       <aside
         className={`af-drawer af-drawer--picker${
           isTriggerMode ? " af-drawer--trigger-picker" : ""

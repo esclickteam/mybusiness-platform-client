@@ -223,6 +223,10 @@
   background: rgba(15, 23, 42, 0.28);
 }
 
+.af-drawer-backdrop--picker {
+  z-index: 22;
+}
+
 .af-drawer-backdrop--config {
   background: transparent;
   pointer-events: auto;
@@ -443,6 +447,7 @@
 .af-drawer--picker {
   inset-inline-start: 0;
   border-inline-end: 1px solid #e5e7eb;
+  z-index: 22;
 }
 
 .af-drawer--config {
