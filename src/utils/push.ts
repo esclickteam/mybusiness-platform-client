@@ -3,6 +3,7 @@ import {
   SW_SCOPE,
   SW_URL,
   isCurrentSwScript,
+  pickPushRegistrationIndex,
   shouldForceRebindOnSwMessage,
 } from "./pushSwMessages";
 
@@ -10,13 +11,40 @@ export { SW_SCRIPT_VERSION, SW_URL, shouldForceRebindOnSwMessage } from "./pushS
 
 const PUSH_DEVICE_ID_KEY = "bizuply-push-device-id";
 
-async function getPushRegistration(): Promise<ServiceWorkerRegistration | null> {
-  if (!("serviceWorker" in navigator)) return null;
-  return (
+function registrationScriptURLs(reg: ServiceWorkerRegistration): string[] {
+  return [reg.active, reg.waiting, reg.installing]
+    .filter(Boolean)
+    .map((worker) => (worker as ServiceWorker).scriptURL);
+}
+
+async function listPushRegistrations(): Promise<ServiceWorkerRegistration[]> {
+  if (!("serviceWorker" in navigator)) return [];
+  if ("getRegistrations" in navigator.serviceWorker) {
+    return navigator.serviceWorker.getRegistrations();
+  }
+  const one =
     (await navigator.serviceWorker.getRegistration(SW_SCOPE)) ||
     (await navigator.serviceWorker.getRegistration()) ||
-    null
-  );
+    null;
+  return one ? [one] : [];
+}
+
+async function getPushRegistration(): Promise<ServiceWorkerRegistration | null> {
+  const regs = await listPushRegistrations();
+  if (!regs.length) return null;
+
+  const origin = window.location.origin;
+  const snapshots = [];
+  for (const reg of regs) {
+    const sub = await reg.pushManager.getSubscription().catch(() => null);
+    snapshots.push({
+      scriptURLs: registrationScriptURLs(reg),
+      hasSubscription: Boolean(sub),
+    });
+  }
+
+  const index = pickPushRegistrationIndex(snapshots, origin);
+  return index >= 0 ? regs[index] : null;
 }
 
 export function getPushDeviceId(): string {
@@ -74,7 +102,9 @@ export function isStandalone(): boolean {
 
 export function isIos(): boolean {
   if (typeof navigator === "undefined") return false;
-  return /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const ua = navigator.userAgent || "";
+  if (/iphone|ipad|ipod/i.test(ua)) return true;
+  return /macintosh/i.test(ua) && Number(navigator.maxTouchPoints || 0) > 1;
 }
 
 function urlBase64ToUint8Array(base64String: string): Uint8Array {
@@ -109,6 +139,10 @@ async function unregisterExtraServiceWorkers(
     if (scripts.some((script) => isCurrentSwScript(script, origin))) continue;
 
     const otherSub = await other.pushManager.getSubscription().catch(() => null);
+    // Never drop a live token just because a newer SW script has no
+    // subscription yet. That is what made the settings toggle read OFF
+    // while the phone still received push.
+    if (otherSub && !keepSub) continue;
     if (keepSub && otherSub && otherSub.endpoint === keepSub.endpoint) continue;
 
     try {
@@ -150,14 +184,15 @@ export async function registerServiceWorker(): Promise<ServiceWorkerRegistration
   }
 }
 
-export async function isSubscribed(): Promise<boolean> {
-  if (!isPushSupported()) return false;
-
+export async function getCurrentPushSubscription(): Promise<PushSubscription | null> {
+  if (!isPushSupported()) return null;
   const reg = await getPushRegistration();
-  if (!reg) return false;
+  if (!reg) return null;
+  return (await reg.pushManager.getSubscription().catch(() => null)) || null;
+}
 
-  const sub = await reg.pushManager.getSubscription();
-  return Boolean(sub);
+export async function isSubscribed(): Promise<boolean> {
+  return Boolean(await getCurrentPushSubscription());
 }
 
 export type SubscribeResult = {
@@ -170,6 +205,7 @@ export type SubscribeResult = {
     | "no-key"
     | "ios-install"
     | "entitlement-required"
+    | "no-subscription"
     | "error";
   detail?: string;
   code?: string;
@@ -231,29 +267,19 @@ export async function subscribeToPush(
     if (!key || !enabled) return { ok: false, reason: "no-key" };
 
     if (options.forceRebind) {
-      const existing = await reg.pushManager.getSubscription();
+      const existing = await getCurrentPushSubscription();
       if (existing) {
         await existing.unsubscribe().catch(() => undefined);
+      }
+    } else {
+      const existing = await getCurrentPushSubscription();
+      if (existing) {
+        return saveExistingPushSubscription(existing);
       }
     }
 
     const subscription = await createPushSubscription(reg, key);
-
-    // Always re-bind the browser subscription to the current business tenant.
-    const saveRes = await API.post("/push/subscribe", {
-      subscription: subscription.toJSON(),
-      deviceId: getPushDeviceId(),
-    });
-
-    if (!saveRes.data?.ok) {
-      return {
-        ok: false,
-        reason: "error",
-        detail: saveRes.data?.error || "subscribe save failed",
-      };
-    }
-
-    return { ok: true };
+    return saveExistingPushSubscription(subscription);
   } catch (err) {
     console.error("subscribeToPush failed:", err);
     const anyErr = err as {
@@ -281,6 +307,74 @@ export async function subscribeToPush(
       ok: false,
       reason: "error",
       detail: err instanceof Error ? err.message : "subscribe failed",
+      code: typeof code === "string" ? code : undefined,
+      status: typeof status === "number" ? status : undefined,
+    };
+  }
+}
+
+async function saveExistingPushSubscription(
+  subscription: PushSubscription
+): Promise<SubscribeResult> {
+  const saveRes = await API.post("/push/subscribe", {
+    subscription: subscription.toJSON(),
+    deviceId: getPushDeviceId(),
+  });
+
+  if (!saveRes.data?.ok) {
+    return {
+      ok: false,
+      reason: "error",
+      detail: saveRes.data?.error || "subscribe save failed",
+    };
+  }
+
+  return { ok: true };
+}
+
+/**
+ * Re-save the current browser subscription to the server.
+ * Does not create a new PushSubscription.
+ */
+export async function bindExistingPushSubscription(): Promise<SubscribeResult> {
+  if (!isPushSupported()) return { ok: false, reason: "unsupported" };
+  if (Notification.permission !== "granted") {
+    return {
+      ok: false,
+      reason: Notification.permission as "denied" | "default",
+    };
+  }
+
+  const existing = await getCurrentPushSubscription();
+  if (!existing) return { ok: false, reason: "no-subscription" };
+
+  try {
+    return await saveExistingPushSubscription(existing);
+  } catch (err) {
+    const anyErr = err as {
+      status?: number;
+      code?: string;
+      message?: string;
+      response?: { status?: number; data?: { code?: string; error?: string } };
+    };
+    const status = anyErr.response?.status ?? anyErr.status;
+    const code = anyErr.response?.data?.code || anyErr.code;
+    if (status === 402 || code === "PUSH_ENTITLEMENT_REQUIRED") {
+      return {
+        ok: false,
+        reason: "entitlement-required",
+        detail:
+          anyErr.response?.data?.error ||
+          anyErr.message ||
+          "entitlement required",
+        code: typeof code === "string" ? code : "PUSH_ENTITLEMENT_REQUIRED",
+        status: 402,
+      };
+    }
+    return {
+      ok: false,
+      reason: "error",
+      detail: err instanceof Error ? err.message : "bind failed",
       code: typeof code === "string" ? code : undefined,
       status: typeof status === "number" ? status : undefined,
     };

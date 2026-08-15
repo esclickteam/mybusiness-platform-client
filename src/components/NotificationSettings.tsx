@@ -39,9 +39,16 @@ import {
   isSubscribed,
   subscribeToPush,
   unsubscribeFromPush,
+  bindExistingPushSubscription,
+  getCurrentPushSubscription,
   ensurePushSubscription,
   type PushPermission,
 } from "../utils/push";
+import { resolvePushToggleCopy } from "../utils/pushToggleState";
+import {
+  isPushOnFromServerOnly,
+  resolvePushSupportBanner,
+} from "../utils/pushSupportBanner";
 
 type NotificationSettingsState = {
   master: boolean;
@@ -187,6 +194,9 @@ export function NotificationSettingsPanel({
   const [permission, setPermission] = useState<PushPermission>("default");
   const [subscribed, setSubscribed] = useState(false);
   const [serverReady, setServerReady] = useState(false);
+  const [thisDeviceRegistered, setThisDeviceRegistered] = useState<
+    boolean | null
+  >(null);
   const [deviceCount, setDeviceCount] = useState(0);
   const [testMessage, setTestMessage] = useState("");
   const [billingMessage, setBillingMessage] = useState("");
@@ -233,17 +243,21 @@ export function NotificationSettingsPanel({
         setTestMessage("");
         setBillingMessage("");
 
-        if (getPermission() === "granted") {
-          const ensure = await ensurePushSubscription();
-          if (ensure.reason === "entitlement-required") {
+        const localSub = await getCurrentPushSubscription();
+        if (localSub) {
+          const bind = await bindExistingPushSubscription();
+          if (bind.reason === "entitlement-required") {
             setBillingMessage("נדרש מנוי Push כדי להפעיל התראות במכשיר");
           }
         }
 
+        const endpoint = localSub?.endpoint || "";
         const [subscribedNow, res, statusRes, billing] = await Promise.all([
           isSubscribed(),
           API.get("/business/my/notification-settings"),
-          API.get("/push/status").catch(() => null),
+          API.get("/push/status", {
+            params: endpoint ? { endpoint } : undefined,
+          }).catch(() => null),
           getPushBillingStatus().catch(() => null),
         ]);
 
@@ -251,6 +265,11 @@ export function NotificationSettingsPanel({
 
         setSubscribed(subscribedNow);
         setServerReady(Boolean(statusRes?.data?.ready));
+        setThisDeviceRegistered(
+          typeof statusRes?.data?.thisDeviceRegistered === "boolean"
+            ? statusRes.data.thisDeviceRegistered
+            : null
+        );
         setDeviceCount(Number(statusRes?.data?.deviceCount || 0));
         if (billing) {
           setBillingStatus(billing);
@@ -271,6 +290,25 @@ export function NotificationSettingsPanel({
     };
   }, [active]);
 
+  useEffect(() => {
+    if (!active) return;
+
+    const refreshLocal = () => {
+      if (typeof document !== "undefined" && document.visibilityState === "hidden") {
+        return;
+      }
+      setPermission(getPermission());
+      void isSubscribed().then(setSubscribed);
+    };
+
+    document.addEventListener("visibilitychange", refreshLocal);
+    window.addEventListener("pageshow", refreshLocal);
+    return () => {
+      document.removeEventListener("visibilitychange", refreshLocal);
+      window.removeEventListener("pageshow", refreshLocal);
+    };
+  }, [active]);
+
   const billingEnabled = Boolean(billingStatus?.billingEnabled);
   const entitled = Boolean(billingStatus?.entitled);
   const subscription = billingStatus?.subscription || null;
@@ -286,8 +324,30 @@ export function NotificationSettingsPanel({
   const showFreePushToggle = !billingEnabled;
   const categoriesLocked = showPaywall;
 
+  const entitledOk = !billingEnabled || entitled;
   const pushOn =
-    subscribed && settings.master && (!billingEnabled || entitled);
+    (subscribed && settings.master && entitledOk) ||
+    isPushOnFromServerOnly({
+      supported,
+      master: settings.master,
+      entitled: entitledOk,
+      deviceCount,
+    });
+  const toggleCopy = resolvePushToggleCopy({
+    pushOn,
+    serverReady,
+    thisDeviceRegistered,
+    permission,
+    subscribed,
+    deviceCount,
+    ios: isIos(),
+  });
+  const supportBanner = resolvePushSupportBanner({
+    supported,
+    ios: isIos(),
+    standalone: isStandalone(),
+    deviceCount,
+  });
 
   async function persist(next: NotificationSettingsState) {
     try {
@@ -339,8 +399,16 @@ export function NotificationSettingsPanel({
         setSettings(next);
         await persist(next);
 
-        const statusRes = await API.get("/push/status").catch(() => null);
+        const localSub = await getCurrentPushSubscription();
+        const statusRes = await API.get("/push/status", {
+          params: localSub?.endpoint ? { endpoint: localSub.endpoint } : undefined,
+        }).catch(() => null);
         setServerReady(Boolean(statusRes?.data?.ready));
+        setThisDeviceRegistered(
+          typeof statusRes?.data?.thisDeviceRegistered === "boolean"
+            ? statusRes.data.thisDeviceRegistered
+            : null
+        );
         setDeviceCount(Number(statusRes?.data?.deviceCount || 0));
       } else if (result.reason === "entitlement-required") {
         setBillingMessage("נדרש מנוי Push כדי להפעיל התראות במכשיר");
@@ -546,22 +614,15 @@ export function NotificationSettingsPanel({
         </div>
       ) : (
         <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-3">
-          {!supported && (
+          {supportBanner ? (
             <div className="mb-2 rounded-2xl border border-amber-200 bg-amber-50 p-3 text-xs font-bold text-amber-800">
-              הדפדפן לא תומך בהתראות Push. נסה/י Chrome / Edge / Firefox מעודכן.
+              {supportBanner.text}
             </div>
-          )}
+          ) : null}
 
           {supported && permission === "denied" && (
             <div className="mb-2 rounded-2xl border border-red-200 bg-red-50 p-3 text-xs font-bold text-red-700">
               התראות חסומות. לחצ/י 🔒 ליד כתובת האתר → התראות → אפשר/י.
-            </div>
-          )}
-
-          {supported && iosNeedsInstall && (
-            <div className="mb-2 rounded-2xl border border-orange-200 bg-orange-50 p-3 text-xs font-bold text-orange-800">
-              באייפון חייבים להתקין את BizUply למסך הבית (Safari → שיתוף → הוסף
-              למסך הבית) ואז לפתוח מהאייקון — אחרת Push לטלפון לא יעבוד.
             </div>
           )}
 
@@ -733,11 +794,7 @@ export function NotificationSettingsPanel({
                       התראות Push במכשיר
                     </p>
                     <p className="text-[10px] font-semibold text-slate-500">
-                      {pushOn
-                        ? serverReady
-                          ? `מופעל · ${deviceCount} מכשיר רשום`
-                          : "מופעל במכשיר, אבל עדיין לא רשום בשרת — לחץ בדיקה"
-                        : "כבוי — לחץ להפעלה לקבלת התראות לטלפון"}
+                      {toggleCopy.text}
                     </p>
                   </div>
                 </div>
@@ -798,13 +855,9 @@ export function NotificationSettingsPanel({
                   <p className="text-sm font-black text-slate-900">
                     התראות Push במכשיר
                   </p>
-                  <p className="text-[11px] font-semibold text-slate-500">
-                    {pushOn
-                      ? serverReady
-                        ? `מופעל · ${deviceCount} מכשיר רשום`
-                        : "מופעל במכשיר, אבל עדיין לא רשום בשרת — לחץ בדיקה"
-                      : "כבוי — לחץ להפעלה לקבלת התראות לטלפון"}
-                  </p>
+                    <p className="text-[11px] font-semibold text-slate-500">
+                      {toggleCopy.text}
+                    </p>
                 </div>
               </div>
 

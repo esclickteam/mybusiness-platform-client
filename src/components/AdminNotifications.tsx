@@ -28,6 +28,7 @@ import {
   type AdminSupportAlert,
 } from "../utils/adminSupportAlerts";
 import {
+  bindExistingPushSubscription,
   ensurePushSubscription,
   getPermission,
   isIos,
@@ -118,7 +119,7 @@ function AdminPushSettings({
         setTestMessage("");
 
         if (getPermission() === "granted") {
-          await ensurePushSubscription();
+          await bindExistingPushSubscription();
         }
 
         const [subscribedNow, statusRes] = await Promise.all([
