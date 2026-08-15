@@ -61,6 +61,7 @@ import {
   getWaTemplateId,
   isTemplateVisibleInCatalog,
   isWhatsAppFacingTemplate,
+  templateMatchesGalleryCategory,
   listUsableWaTemplates,
   type TemplateReadiness,
   type WorkingTemplate,
@@ -341,25 +342,35 @@ export default function AutomationsTemplatesPage() {
 
   const visibleCards = useMemo(() => {
     const q = query.trim().toLowerCase();
-    return cards.filter(({ template, readiness }) => {
-      if (category !== "all" && !template.categories.includes(category)) {
-        return false;
-      }
-      if (!isTemplateVisibleInCatalog(template, readiness, category)) {
-        return false;
-      }
-      if (!q) return true;
-      return [
-        template.name,
-        template.description,
-        template.triggerLabel,
-        template.resultLabels.join(" "),
-        ...(template.keywords || []),
-      ]
-        .join(" ")
-        .toLowerCase()
-        .includes(q);
-    });
+    const seen = new Set<string>();
+    return cards
+      .filter(({ template, readiness }) => {
+        if (!templateMatchesGalleryCategory(template, category)) {
+          return false;
+        }
+        if (!isTemplateVisibleInCatalog(template, readiness, category)) {
+          return false;
+        }
+        if (seen.has(template.key)) return false;
+        seen.add(template.key);
+        if (!q) return true;
+        return [
+          template.name,
+          template.description,
+          template.triggerLabel,
+          template.resultLabels.join(" "),
+          ...(template.keywords || []),
+        ]
+          .join(" ")
+          .toLowerCase()
+          .includes(q);
+      })
+      .sort((a, b) => {
+        const aiA = a.template.categories.includes("ai") ? 1 : 0;
+        const aiB = b.template.categories.includes("ai") ? 1 : 0;
+        if (aiA !== aiB) return aiA - aiB;
+        return a.template.rank - b.template.rank;
+      });
   }, [cards, category, query]);
 
   const visibleCategories = useMemo(() => TEMPLATE_CATEGORIES.filter((item) => item.id === "all" || cards.some(({ template }) => template.categories.includes(item.id))), [cards]);

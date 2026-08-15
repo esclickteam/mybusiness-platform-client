@@ -5,9 +5,11 @@ import {
   buildWhatsAppSimpleGraph,
   getTemplateReadiness,
   getWaTemplateId,
+  isAiGalleryTemplate,
   isEmailFacingTemplate,
   isTemplateVisibleInCatalog,
   isWhatsAppFacingTemplate,
+  templateMatchesGalleryCategory,
   listCustomerVisibleEmailTemplates,
   listUsableWaTemplates,
   pickBestWaTemplate,
@@ -890,6 +892,48 @@ describe("email template catalog visibility vs activation", () => {
     expect(
       isTemplateVisibleInCatalog(comingSoon, { ready: false }, "email")
     ).toBe(false);
+  });
+
+  it("keeps AI as an extra discovery filter without hiding business use cases", () => {
+    const visible = WORKING_TEMPLATES.filter(
+      (template) => !template.comingSoon
+    );
+    const ai = visible.filter((template) => isAiGalleryTemplate(template));
+    expect(ai.length).toBeGreaterThan(0);
+
+    for (const template of ai) {
+      expect(templateMatchesGalleryCategory(template, "ai")).toBe(true);
+      expect(templateMatchesGalleryCategory(template, "all")).toBe(true);
+      expect(templateMatchesGalleryCategory(template, "crm")).toBe(
+        template.categories.includes("crm")
+      );
+      expect(templateMatchesGalleryCategory(template, "appointments")).toBe(
+        template.categories.includes("appointments")
+      );
+      expect(templateMatchesGalleryCategory(template, "sales")).toBe(
+        template.categories.includes("sales")
+      );
+    }
+
+    const leadBrief = ai.find((template) => template.key === "ai_lead_brief")!;
+    expect(templateMatchesGalleryCategory(leadBrief, "crm")).toBe(true);
+    expect(templateMatchesGalleryCategory(leadBrief, "sales")).toBe(true);
+    expect(templateMatchesGalleryCategory(leadBrief, "ai")).toBe(true);
+
+    const emailDraft = ai.find((template) => template.key === "ai_email_draft")!;
+    expect(templateMatchesGalleryCategory(emailDraft, "email")).toBe(true);
+    expect(templateMatchesGalleryCategory(emailDraft, "ai")).toBe(true);
+
+    const crm = visible.filter((template) =>
+      isTemplateVisibleInCatalog(template, { ready: true }, "crm")
+    );
+    expect(crm.some((template) => isAiGalleryTemplate(template))).toBe(true);
+    expect(new Set(crm.map((template) => template.key)).size).toBe(crm.length);
+
+    const onlyAi = visible.filter((template) =>
+      isTemplateVisibleInCatalog(template, { ready: true }, "ai")
+    );
+    expect(onlyAi.every((template) => isAiGalleryTemplate(template))).toBe(true);
   });
 });
 

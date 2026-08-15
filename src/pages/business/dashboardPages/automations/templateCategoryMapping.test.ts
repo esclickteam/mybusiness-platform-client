@@ -7,6 +7,7 @@ import {
   getRecipeDisplayName,
   getRecipeResultLabel,
   getRecipeTriggerLabel,
+  recipeMatchesCategory,
 } from "./templateCategoryMapping";
 
 function recipe(partial: Partial<AutomationRecipeSummary>): AutomationRecipeSummary {
@@ -69,5 +70,9 @@ describe("templateCategoryMapping trigger/result labels", () => {
     expect(getRecipeResultLabel(row)).toMatch(/מדרג|דירוג|התראה/);
     // Canonical filter category key remains "ai".
     expect(getRecipeCategories(row)).toContain("ai");
+    expect(recipeMatchesCategory(row, "ai")).toBe(true);
+    expect(recipeMatchesCategory(row, "all")).toBe(true);
+    expect(recipeMatchesCategory(row, "crm")).toBe(true);
+    expect(recipeMatchesCategory(row, "appointments")).toBe(false);
   });
 });
