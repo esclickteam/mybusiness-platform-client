@@ -54,6 +54,7 @@ function PluginStoreCard({
   return (
     <article
       className="group flex cursor-pointer flex-col overflow-hidden rounded-xl border border-slate-200/90 bg-white transition hover:border-slate-300 hover:shadow-[0_4px_20px_rgba(15,23,42,0.08)]"
+      data-plugin-help-trigger={plugin.key}
       onClick={onOpen}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
@@ -93,7 +94,12 @@ function PluginStoreCard({
       </div>
 
       <div className="flex flex-1 flex-col p-4 pt-3">
-        <h3 className="truncate text-sm font-bold text-slate-900">{plugin.name}</h3>
+        <h3
+          className="truncate text-sm font-bold text-slate-900"
+          data-plugin-help-trigger={plugin.key}
+        >
+          {plugin.name}
+        </h3>
 
         <div className="mt-1 flex items-center gap-2">
           <span className="inline-flex items-center gap-0.5 text-xs font-medium text-slate-600">

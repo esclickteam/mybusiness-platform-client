@@ -1351,19 +1351,29 @@ export default function VisualAddLayersPanel({
     <div
       className={
         mode === "add"
-          ? "fixed inset-0 z-[2147483200] flex items-center justify-center border border-slate-200/80 bg-gradient-to-l from-slate-200/90 via-slate-100 to-sky-50 text-slate-800/45 p-5 backdrop-blur-[2px]"
+          ? "pointer-events-none fixed inset-0 z-[2147483200] flex items-center justify-center p-5"
           : "contents"
       }
-      onMouseDown={(event) => {
-        if (mode === "add" && event.target === event.currentTarget) {
-          onClose();
-        }
-      }}
+      data-studio-add-overlay={mode === "add" ? "true" : undefined}
     >
+      {mode === "add" ? (
+        <button
+          type="button"
+          aria-label="סגירת פאנל"
+          data-studio-dismiss-backdrop="true"
+          onClick={onClose}
+          className="pointer-events-auto absolute bottom-0 left-0 top-16 border border-slate-200/80 bg-gradient-to-l from-slate-200/90 via-slate-100 to-sky-50 text-slate-800/10 backdrop-blur-[2px] right-[72px]"
+        />
+      ) : null}
       <aside
         data-editor-only="true"
         data-bizuply-editor-only="true"
-        className={panelClassName}
+        className={[
+          panelClassName,
+          mode === "add" ? "pointer-events-auto relative z-10" : "",
+        ]
+          .filter(Boolean)
+          .join(" ")}
         dir="rtl"
         role={mode === "add" ? "dialog" : undefined}
         aria-modal={mode === "add" ? "true" : undefined}

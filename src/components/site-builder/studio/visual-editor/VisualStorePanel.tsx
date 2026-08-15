@@ -17,11 +17,15 @@ export default function VisualStorePanel({
   if (!open) return null;
 
   return (
-    <div className="pointer-events-none absolute inset-0 z-[80] flex justify-start">
+    <div
+      className="pointer-events-none absolute inset-0 z-[80] flex justify-start"
+      data-studio-dismiss-layer="true"
+    >
       <button
         type="button"
         aria-label="סגירת ניהול חנות"
-        className="pointer-events-auto absolute inset-0 bg-slate-900/20 backdrop-blur-[1px]"
+        data-studio-dismiss-backdrop="true"
+        className="pointer-events-auto absolute inset-y-0 left-0 right-0 bg-slate-900/20 backdrop-blur-[1px]"
         onClick={onClose}
       />
 

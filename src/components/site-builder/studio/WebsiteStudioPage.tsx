@@ -2280,6 +2280,15 @@ function mergeTemplateAndSavedPages(
     const saved = savedById.get(id);
     if (!saved) return templatePage;
 
+    if ((saved as any).visualHydrated === false) {
+      return {
+        ...saved,
+        title: String(saved.title || templatePage.title || id),
+        slug: String(saved.slug ?? templatePage.slug ?? ""),
+        visualHydrated: false,
+      } as StudioSitePageWithPortal;
+    }
+
     const savedVisual =
       extractVisualDataFromPayload({
         data: (saved as any).data,
@@ -4832,6 +4841,12 @@ function pickVisualTemplateDataFromSavedSite(
       );
 
       candidates.push({
+        label: `site.pages[${index}].data`,
+        value: page?.data,
+        templateKey: page?.templateKey,
+      });
+
+      candidates.push({
         label: `site.pages[${index}].visualEditorPayload.data`,
         value: pageVisualPayload.data,
         templateKey: pageVisualPayload.templateKey,
@@ -5290,8 +5305,8 @@ export default function WebsiteStudioPage({
         });
 
         const loadUrl = siteId
-          ? `/api/site-builder/sites/${siteId}`
-          : `/api/site-builder/site/${businessId}`;
+          ? `/api/site-builder/sites/${siteId}?view=studio`
+          : `/api/site-builder/site/${businessId}?view=studio`;
 
         const res = await fetch(loadUrl, {
           method: "GET",
@@ -5424,6 +5439,7 @@ export default function WebsiteStudioPage({
                 page.clientPortal || createDefaultClientPortalConfig(),
               data: visual,
               templateData: visual,
+              visualHydrated: page.visualHydrated !== false && Object.keys(visual).length > 0,
               projectData: {
                 ...(page.projectData || {}),
                 editorMode: "visual-react",
@@ -6441,7 +6457,36 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         activePageId: page.id,
       },
       updatedAt: new Date().toISOString(),
+      visualHydrated: true,
     } as StudioSitePageWithPortal;
+  };
+
+  const hydrateStudioPageVisual = async (pageId: string) => {
+    const id = String(siteId || "").trim();
+    const nextId = String(pageId || "").trim();
+    if (!id || !nextId) return;
+
+    try {
+      const res = await fetch(
+        `/api/site-builder/sites/${id}/pages/${encodeURIComponent(nextId)}`,
+        {
+          method: "GET",
+          credentials: "include",
+          headers: buildAuthHeaders(),
+        },
+      );
+      const payload = await res.json().catch(() => null);
+      const visual = asPlainObject(payload?.page?.data);
+      if (!res.ok || !Object.keys(visual).length) return;
+
+      setPages((previous) =>
+        previous.map((page) =>
+          page.id === nextId ? attachVisualDataToPage(page, visual) : page,
+        ),
+      );
+    } catch {
+      /* keep the shell; selecting the page again retries */
+    }
   };
 
   const handlePageSettingsModalSave = async ({
@@ -6916,6 +6961,11 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     );
 
     setActivePageId(nextId);
+
+    const target = pagesRef.current.find((page) => page.id === nextId);
+    if (target && (target as any).visualHydrated === false) {
+      void hydrateStudioPageVisual(nextId);
+    }
   };
 
   const handleSelectSection = (sectionId: string) => {
@@ -7653,7 +7703,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     if (!id) return null;
 
     try {
-      const res = await fetch(`/api/site-builder/sites/${id}`, {
+      const res = await fetch(`/api/site-builder/sites/${id}?view=studio`, {
         method: "GET",
         credentials: "include",
         headers: buildAuthHeaders(),
@@ -8029,15 +8079,10 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
           // unable to distinguish a fresh publish from an older payload.
           updatedAt: visualPayload.updatedAt || new Date().toISOString(),
           clientPortal: page.clientPortal,
-          html: String(page.html || ""),
-          // Clear obsolete snapshots so a larger legacy blob cannot win over
-          // the HTML and visual data produced by this publish revision.
+          html: published ? String(page.html || "") : "",
           htmlSnapshot: "",
-          css: String(page.css || ""),
+          css: published ? String(page.css || "") : "",
           data: pageVisual,
-          templateData: pageVisual,
-          // Top-level flags so the public renderer can prefer page-scoped
-          // visual data even if nested payloads are normalized by the API.
           __blankVisualPage: Boolean(
             (pageVisual as any)?.__blankVisualPage,
           ),
@@ -8047,22 +8092,6 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
               (page as any)?.__libraryPageTemplateId ||
               "",
           ),
-          projectData: {
-            editorMode: "visual-react",
-            templateKey: visualPayload.templateKey,
-            templateData: pageVisual,
-            data: pageVisual,
-            snapshotPageId: page.id,
-            updatedAt: visualPayload.updatedAt,
-          },
-          visualEditorPayload: {
-            editorMode: "visual-react",
-            templateKey: visualPayload.templateKey,
-            data: pageVisual,
-            templateData: pageVisual,
-            snapshotPageId: page.id,
-            updatedAt: visualPayload.updatedAt,
-          },
         };
       });
 
@@ -8213,6 +8242,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         templateName?: string;
         templateKey?: string;
         templateEditorMode?: "visual-react" | "renderer";
+        data?: Record<string, any>;
         templateData?: Record<string, any>;
         visualEditorPayload?: Record<string, any>;
       } = {
@@ -8229,12 +8259,10 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         */
         // Site-level compatibility fields always represent HOME. Each inner
         // page (including login/account/orders) owns its snapshot in pages[].
-        templateData: homeVisualData,
+        data: homeVisualData,
         visualEditorPayload: {
           templateKey: visualPayload.templateKey,
           editorMode: "visual-react",
-          data: homeVisualData,
-          templateData: homeVisualData,
           updatedAt: visualPayload.updatedAt,
           published,
           status: published ? "published" : "draft",
@@ -8251,8 +8279,6 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         projectData: {
           editorMode: "visual-react",
           templateKey: visualPayload.templateKey,
-          templateData: homeVisualData,
-          data: homeVisualData,
           slug: cleanSlug,
           published,
           publicUrl: nextPublicUrl,
@@ -9215,12 +9241,16 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
           />
 
           {activePanel && (
-            <div className="pointer-events-none absolute inset-0 z-50 flex items-center justify-center p-5">
+            <div
+              className="pointer-events-none absolute inset-0 z-50 flex items-center justify-center p-5"
+              data-studio-dismiss-layer="true"
+            >
               <button
                 type="button"
                 aria-label="סגירת פאנל"
+                data-studio-dismiss-backdrop="true"
                 onClick={() => setActivePanel(null)}
-                className="pointer-events-auto absolute inset-0 border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800/10 backdrop-blur-[1px]"
+                className="pointer-events-auto absolute bottom-0 left-[110px] right-0 top-0 border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800/10 backdrop-blur-[1px]"
               />
 
               <div
