@@ -52,4 +52,31 @@ describe("resolvePushToggleCopy", () => {
     expect(copy.kind).toBe("blocked");
     expect(copy.text).toContain("חסום");
   });
+  it("shows installed-device copy when this browser has no Push API but the server has devices", () => {
+    const copy = resolvePushToggleCopy({
+      pushOn: true,
+      serverReady: true,
+      thisDeviceRegistered: false,
+      permission: "unsupported",
+      subscribed: false,
+      deviceCount: 2,
+      ios: true,
+    });
+    expect(copy.kind).toBe("on-other-context");
+    expect(copy.text).toContain("פעיל במכשיר מותקן");
+  });
+
+  it("does not ask to tap enable when Push API is missing and no devices exist", () => {
+    const copy = resolvePushToggleCopy({
+      pushOn: false,
+      serverReady: false,
+      thisDeviceRegistered: false,
+      permission: "unsupported",
+      subscribed: false,
+      deviceCount: 0,
+      ios: true,
+    });
+    expect(copy.kind).toBe("unsupported");
+    expect(copy.text).not.toContain("כבוי");
+  });
 });

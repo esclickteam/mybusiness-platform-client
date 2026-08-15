@@ -3,8 +3,10 @@ import type { PushPermission } from "./push";
 export type PushToggleCopyKind =
   | "on-ready"
   | "on-unbound"
+  | "on-other-context"
   | "need-rebind"
   | "blocked"
+  | "unsupported"
   | "off";
 
 export function resolvePushToggleCopy(input: {
@@ -14,11 +16,27 @@ export function resolvePushToggleCopy(input: {
   permission: PushPermission;
   subscribed: boolean;
   deviceCount: number;
+  ios?: boolean;
 }): { kind: PushToggleCopyKind; text: string } {
   if (input.permission === "denied") {
     return {
       kind: "blocked",
       text: "חסום בהגדרות הדפדפן/המכשיר",
+    };
+  }
+
+  if (input.permission === "unsupported") {
+    if (input.pushOn || input.deviceCount > 0) {
+      return {
+        kind: "on-other-context",
+        text: `פעיל במכשיר מותקן · ${input.deviceCount} מכשיר רשום`,
+      };
+    }
+    return {
+      kind: "unsupported",
+      text: input.ios
+        ? "לא ניתן להפעיל מכאן — פתחו מ-Safari דרך האייקון במסך הבית"
+        : "הדפדפן הזה לא תומך ב-Push",
     };
   }
 

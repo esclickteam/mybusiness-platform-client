@@ -45,6 +45,10 @@ import {
   type PushPermission,
 } from "../utils/push";
 import { resolvePushToggleCopy } from "../utils/pushToggleState";
+import {
+  isPushOnFromServerOnly,
+  resolvePushSupportBanner,
+} from "../utils/pushSupportBanner";
 
 type NotificationSettingsState = {
   master: boolean;
@@ -320,14 +324,28 @@ export function NotificationSettingsPanel({
   const showFreePushToggle = !billingEnabled;
   const categoriesLocked = showPaywall;
 
+  const entitledOk = !billingEnabled || entitled;
   const pushOn =
-    subscribed && settings.master && (!billingEnabled || entitled);
+    (subscribed && settings.master && entitledOk) ||
+    isPushOnFromServerOnly({
+      supported,
+      master: settings.master,
+      entitled: entitledOk,
+      deviceCount,
+    });
   const toggleCopy = resolvePushToggleCopy({
     pushOn,
     serverReady,
     thisDeviceRegistered,
     permission,
     subscribed,
+    deviceCount,
+    ios: isIos(),
+  });
+  const supportBanner = resolvePushSupportBanner({
+    supported,
+    ios: isIos(),
+    standalone: isStandalone(),
     deviceCount,
   });
 
@@ -596,22 +614,15 @@ export function NotificationSettingsPanel({
         </div>
       ) : (
         <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-3">
-          {!supported && (
+          {supportBanner ? (
             <div className="mb-2 rounded-2xl border border-amber-200 bg-amber-50 p-3 text-xs font-bold text-amber-800">
-              הדפדפן לא תומך בהתראות Push. נסה/י Chrome / Edge / Firefox מעודכן.
+              {supportBanner.text}
             </div>
-          )}
+          ) : null}
 
           {supported && permission === "denied" && (
             <div className="mb-2 rounded-2xl border border-red-200 bg-red-50 p-3 text-xs font-bold text-red-700">
               התראות חסומות. לחצ/י 🔒 ליד כתובת האתר → התראות → אפשר/י.
-            </div>
-          )}
-
-          {supported && iosNeedsInstall && (
-            <div className="mb-2 rounded-2xl border border-orange-200 bg-orange-50 p-3 text-xs font-bold text-orange-800">
-              באייפון חייבים להתקין את BizUply למסך הבית (Safari → שיתוף → הוסף
-              למסך הבית) ואז לפתוח מהאייקון — אחרת Push לטלפון לא יעבוד.
             </div>
           )}
 

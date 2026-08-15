@@ -102,7 +102,9 @@ export function isStandalone(): boolean {
 
 export function isIos(): boolean {
   if (typeof navigator === "undefined") return false;
-  return /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const ua = navigator.userAgent || "";
+  if (/iphone|ipad|ipod/i.test(ua)) return true;
+  return /macintosh/i.test(ua) && Number(navigator.maxTouchPoints || 0) > 1;
 }
 
 function urlBase64ToUint8Array(base64String: string): Uint8Array {
