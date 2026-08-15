@@ -8048,6 +8048,11 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
           String(page.type || "").toLowerCase() === "blank" ||
           /^page[_-]/i.test(String(page.id || ""));
 
+        const pageHydrated = (page as any).visualHydrated !== false;
+        const pageHasVisual = hasMeaningfulVisualCollections(
+          asPlainObject(pageVisual),
+        );
+
         return {
           id: page.id,
           title: page.title,
@@ -8082,7 +8087,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
           html: published ? String(page.html || "") : "",
           htmlSnapshot: "",
           css: published ? String(page.css || "") : "",
-          data: pageVisual,
+          ...(pageHydrated && pageHasVisual ? { data: pageVisual } : {}),
           __blankVisualPage: Boolean(
             (pageVisual as any)?.__blankVisualPage,
           ),
