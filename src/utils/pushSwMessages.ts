@@ -22,6 +22,40 @@ export function isCurrentSwScript(scriptURL: string, origin: string): boolean {
   }
 }
 
+export type PushRegistrationSnapshot = {
+  scriptURLs: string[];
+  hasSubscription: boolean;
+};
+
+/**
+ * Prefer the registration that already has a live PushSubscription.
+ * iOS can keep /service-worker.js and /service-worker.js?v=N as two
+ * registrations; getRegistration("/") may return the stale one first.
+ */
+export function pickPushRegistrationIndex(
+  regs: PushRegistrationSnapshot[],
+  origin: string
+): number {
+  if (!regs.length) return -1;
+
+  const currentWithSub = regs.findIndex(
+    (reg) =>
+      reg.hasSubscription &&
+      reg.scriptURLs.some((script) => isCurrentSwScript(script, origin))
+  );
+  if (currentWithSub >= 0) return currentWithSub;
+
+  const anyWithSub = regs.findIndex((reg) => reg.hasSubscription);
+  if (anyWithSub >= 0) return anyWithSub;
+
+  const current = regs.findIndex((reg) =>
+    reg.scriptURLs.some((script) => isCurrentSwScript(script, origin))
+  );
+  if (current >= 0) return current;
+
+  return 0;
+}
+
 export function shouldShowWebPushBanner(payload: {
   title?: string;
   body?: string;

@@ -6,6 +6,7 @@ import {
   SW_URL,
   isCurrentSwScript,
   isLegacyGenericBanner,
+  pickPushRegistrationIndex,
   shouldForceRebindOnSwMessage,
   shouldShowWebPushBanner,
 } from "./pushSwMessages";
@@ -23,6 +24,28 @@ describe("push SW message handling", () => {
   it("cache-busts the service worker script", () => {
     expect(SW_SCRIPT_VERSION).toBe(10);
     expect(SW_URL).toBe("/service-worker.js?v=10");
+  });
+
+  it("picks the registration that already has a push subscription", () => {
+    const origin = "https://bizuply.com";
+    expect(
+      pickPushRegistrationIndex(
+        [
+          { scriptURLs: [`${origin}/service-worker.js`], hasSubscription: false },
+          { scriptURLs: [`${origin}/service-worker.js?v=10`], hasSubscription: true },
+        ],
+        origin
+      )
+    ).toBe(1);
+    expect(
+      pickPushRegistrationIndex(
+        [
+          { scriptURLs: [`${origin}/service-worker.js`], hasSubscription: true },
+          { scriptURLs: [`${origin}/service-worker.js?v=10`], hasSubscription: false },
+        ],
+        origin
+      )
+    ).toBe(0);
   });
 
   it("treats only the current query-busted SW URL as the live registration", () => {
