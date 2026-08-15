@@ -1837,7 +1837,7 @@ function hideLibraryAccountShowcase(container) {
     container.parentElement;
   if (!root) return;
   const demoRe =
-    /לוח בקרה ללקוח|הזמנות פעילות|יתרת נקודות|קורסים פתוחים|#1042|#1038|#1021|#1014|יסודות השיווק הדיגיטלי|ניהול לקוחות בפורטל|לקוח\/ה לדוגמה|client@example\.com|דשבורד לקוח|סקירת פעילות/;
+    /לוח בקרה ללקוח|סיכום פעילות|הזמנות פעילות|יתרת נקודות|קורסים פתוחים|מועדון לקוחות|בלימודים|\+1 השבוע|#1042|#1038|#1021|#1014|#1008|12\.03\.2026|04\.03\.2026|18\.02\.2026|02\.02\.2026|15\.01\.2026|₪249|₪128|יסודות השיווק הדיגיטלי|ניהול לקוחות בפורטל|לקוח\/ה לדוגמה|client@example\.com|דשבורד לקוח|סקירת פעילות/;
   const walker = document.createTreeWalker(root, NodeFilter.SHOW_ELEMENT);
   const hide = [];
   while (walker.nextNode()) {
@@ -1846,7 +1846,7 @@ function hideLibraryAccountShowcase(container) {
     if (node === container || container.contains(node) || node.contains(container)) continue;
     if (node.getAttribute("data-bizuply-portal-kind") === "portal-account") continue;
     const text = String(node.textContent || "").replace(/\s+/g, " ").trim();
-    if (text && demoRe.test(text) && text.length < 400) {
+    if (text && demoRe.test(text) && text.length < 900) {
       hide.push(node);
     }
   }
