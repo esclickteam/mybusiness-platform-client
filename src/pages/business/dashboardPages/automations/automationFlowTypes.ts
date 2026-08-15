@@ -375,15 +375,12 @@ const RAW_FLOW_ACTION_PALETTE: PaletteItem[] = [
     group: "flow",
     filter: "router",
     label: "פיצול · כמה תוצאות יחד",
-    description: "מפצל ל־2–6 תוצאות שרצות יחד — בלי מסלולים מורכבים",
+    description: "מפצל ל־1–6 תוצאות שרצות יחד — בלי מסלולים מורכבים",
     color: "#db2777",
     defaults: {
       label: "פיצול לכמה תוצאות",
-      pathCount: 2,
-      paths: [
-        { id: "path_1", label: "תוצאה 1" },
-        { id: "path_2", label: "תוצאה 2" },
-      ],
+      pathCount: 1,
+      paths: [{ id: "path_1", label: "תוצאה 1" }],
     },
   },
   conditionItem("no_response", "לא נוצר קשר", "כן/לא לפי מענה"),
@@ -532,7 +529,7 @@ export function clampRouteCount(value: unknown, fallback = 1) {
 }
 
 export function ensureRouterPaths(data: Record<string, unknown>) {
-  const pathCount = Math.max(2, clampRouteCount(data.pathCount, 2));
+  const pathCount = Math.max(1, clampRouteCount(data.pathCount, 1));
   const existing = Array.isArray(data.paths)
     ? (data.paths as Array<{ id?: string; label?: string }>)
     : [];

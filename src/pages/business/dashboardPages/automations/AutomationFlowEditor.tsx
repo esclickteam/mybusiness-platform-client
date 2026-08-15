@@ -26,6 +26,10 @@ import {
   reconnectInsertOnEdge,
   spliceNodeAfterHandle,
 } from "./automation-builder/insertNodeBetweenEdge";
+import {
+  resolveToolbarAddStep,
+  shouldIgnoreCanvasPickerClose,
+} from "./automation-builder/toolbarAddStep";
 import { toast } from "react-toastify";
 import { useLocation, useSearchParams } from "react-router-dom";
 import {
@@ -567,6 +571,8 @@ function EditorInner({
   const [drawerSessionDirty, setDrawerSessionDirty] = useState(false);
   const selectedIdRef = useRef<string | null>(null);
   const closingDrawerRef = useRef(false);
+  const holdPickerOpenRef = useRef(false);
+  const holdPickerOpenTimerRef = useRef<number | null>(null);
   const nodesRef = useRef(nodes);
   const edgesRef = useRef(edges);
   const savingRef = useRef(false);
@@ -578,6 +584,14 @@ function EditorInner({
   const setSelectedIdSafe = useCallback((nextId: string | null) => {
     selectedIdRef.current = nextId;
     setSelectedId(nextId);
+  }, []);
+
+  useEffect(() => {
+    return () => {
+      if (holdPickerOpenTimerRef.current != null) {
+        window.clearTimeout(holdPickerOpenTimerRef.current);
+      }
+    };
   }, []);
 
   useEffect(() => {
@@ -1791,6 +1805,14 @@ function EditorInner({
       /** @deprecated use mode: "trigger" */
       preferTriggers?: boolean;
     }) => {
+      holdPickerOpenRef.current = true;
+      if (holdPickerOpenTimerRef.current != null) {
+        window.clearTimeout(holdPickerOpenTimerRef.current);
+      }
+      holdPickerOpenTimerRef.current = window.setTimeout(() => {
+        holdPickerOpenRef.current = false;
+        holdPickerOpenTimerRef.current = null;
+      }, 300);
       if (opts?.clearSelection) {
         setSelectedIdSafe(null);
         setInspectorBaseline(null);
@@ -1806,6 +1828,18 @@ function EditorInner({
     },
     [setSelectedIdSafe]
   );
+
+  const handleToolbarAddStep = useCallback(() => {
+    const intent = resolveToolbarAddStep(selectedIdRef.current);
+    // Close the config drawer without saving or discarding node data.
+    // Opening the picker must not mutate the graph.
+    closeInspector();
+    openPicker({
+      mode: intent.mode,
+      afterNodeId: intent.afterNodeId,
+      clearSelection: false,
+    });
+  }, [closeInspector, openPicker]);
 
   const pickerItems = filteredPalette;
 
@@ -1846,7 +1880,7 @@ function EditorInner({
           }
         }}
         onToggleTest={() => setTestOpen((open) => !open)}
-        onOpenPicker={() => openPicker({ clearSelection: true })}
+        onOpenPicker={handleToolbarAddStep}
         hasUnsupportedTrigger={hasUnsupportedTrigger}
         triggerCatalogError={triggerCatalogError}
       />
@@ -1939,19 +1973,41 @@ function EditorInner({
           onDrop={readOnly ? undefined : onDrop}
           onDragOver={readOnly ? undefined : onDragOver}
           onNodeClick={(_, node) => {
-            if (closingDrawerRef.current) return;
+            if (
+              shouldIgnoreCanvasPickerClose({
+                holdPickerOpen: holdPickerOpenRef.current,
+                closingDrawer: closingDrawerRef.current,
+              })
+            ) {
+              return;
+            }
             setPickerOpen(false);
             setPickerEdgeId(null);
             setSelectedIdSafe(node.id);
             setInspectorBaseline(null);
           }}
           onPaneClick={() => {
+            if (
+              shouldIgnoreCanvasPickerClose({
+                holdPickerOpen: holdPickerOpenRef.current,
+                closingDrawer: closingDrawerRef.current,
+              })
+            ) {
+              return;
+            }
             setPickerOpen(false);
             if (drawerSessionDirty) return;
             closeInspector();
           }}
           onSelectionChange={({ nodes: selected }) => {
-            if (closingDrawerRef.current) return;
+            if (
+              shouldIgnoreCanvasPickerClose({
+                holdPickerOpen: holdPickerOpenRef.current,
+                closingDrawer: closingDrawerRef.current,
+              })
+            ) {
+              return;
+            }
             const nextId = selected[0]?.id;
             if (nextId) {
               setPickerOpen(false);
@@ -2368,15 +2424,15 @@ function EditorInner({
                   כמה תוצאות יחד
                   <input
                     type="number"
-                    min={2}
+                    min={1}
                     max={6}
                     value={selectedRouter.pathCount}
                     onChange={(e) => {
                       const next = ensureRouterPaths({
                         ...selectedNode.data,
                         pathCount: Math.max(
-                          2,
-                          clampRouteCount(e.target.value, 2)
+                          1,
+                          clampRouteCount(e.target.value, 1)
                         ),
                       });
                       updateSelectedData(next);
