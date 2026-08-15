@@ -149,7 +149,7 @@ export async function getMySite(
   siteId: string,
   options?: { view?: "studio" | "full" },
 ) {
-  const view = options?.view ? `?view=${encodeURIComponent(options.view)}` : "";
+  const view = options?.view === "full" ? "" : "?view=studio";
   const { data } = await API.get(`/site-builder/sites/${siteId}${view}`);
   return (data?.site || null) as (MySiteSummary & Record<string, any>) | null;
 }

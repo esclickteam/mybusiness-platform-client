@@ -472,6 +472,27 @@ export default function VisualEditorShell({
           <button
             type="button"
             disabled={busy}
+            onClick={() => {
+              void runAction(async () => {
+                if (typeof editor.save === "function") {
+                  await editor.save("draft");
+                  return;
+                }
+                if (typeof editor.saveDraft === "function") {
+                  await editor.saveDraft();
+                  return;
+                }
+                throw new Error("פעולת השמירה אינה מחוברת לעורך.");
+              });
+            }}
+            className="inline-flex h-11 items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-800 shadow-sm transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60 lg:px-5"
+          >
+            {isSaving ? "שומר..." : "שמירה"}
+          </button>
+
+          <button
+            type="button"
+            disabled={busy}
             onClick={handlePublish}
             className="inline-flex h-11 items-center gap-2 rounded-2xl border border-violet-200/70 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-4 text-sm font-black text-black shadow-sm transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:cursor-not-allowed disabled:opacity-60 lg:px-5"
           >
