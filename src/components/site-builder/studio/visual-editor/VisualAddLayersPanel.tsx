@@ -1256,12 +1256,18 @@ export default function VisualAddLayersPanel({
     closeAfter(() => {
       if (typeof onAddLibraryPage === "function") {
         onAddLibraryPage(page);
-        return;
-      }
-
-      if (typeof editor?.addLibraryPage === "function") {
+      } else if (typeof editor?.addLibraryPage === "function") {
         editor.addLibraryPage(page.id);
       }
+      window.setTimeout(() => {
+        if (typeof editor?.saveDraft === "function") {
+          void editor.saveDraft();
+          return;
+        }
+        if (typeof editor?.save === "function") {
+          void editor.save("draft");
+        }
+      }, 400);
     });
   };
 

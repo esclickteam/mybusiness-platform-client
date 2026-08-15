@@ -34,6 +34,7 @@ import {
 import type { VisualDeviceMode } from "./visualEditorTypes";
 import type { useVisualEditorState } from "./hooks/useVisualEditorState";
 import type { VisualLibraryPageTemplate } from "./library/visualLibraryTypes";
+import { buildPublicSiteUrl, getPublicSiteDomain } from "../../../../utils/publicSiteHost";
 
 const DEVICE_OPTIONS: Array<{
   value: VisualDeviceMode;
@@ -44,9 +45,6 @@ const DEVICE_OPTIONS: Array<{
   { value: "tablet", label: "טאבלט", icon: <Tablet className="h-4 w-4" /> },
   { value: "mobile", label: "מובייל", icon: <Smartphone className="h-4 w-4" /> },
 ];
-
-const PUBLIC_SITE_DOMAIN =
-  import.meta.env.VITE_BIZUPLY_PUBLIC_SITE_DOMAIN || "sites.bizuply.com";
 
 type VisualEditorRuntime = ReturnType<typeof useVisualEditorState> & {
   templateName?: string;
@@ -219,8 +217,8 @@ export default function VisualEditorShell({
       .replace(/[^a-z0-9-]/g, "-")
       .replace(/-+/g, "-")
       .replace(/^-|-$/g, "");
-    if (!slug) return `https://${PUBLIC_SITE_DOMAIN}`;
-    return `https://${slug}.${PUBLIC_SITE_DOMAIN}`;
+    if (!slug) return `https://${getPublicSiteDomain()}`;
+    return buildPublicSiteUrl(slug);
   }, [linkedCustomDomain, siteSlug]);
 
   const templateName =
@@ -289,12 +287,39 @@ export default function VisualEditorShell({
       setSidePanelMode("add");
     }
 
-    if (addPage && typeof onAddLibraryPage === "function") {
+    const addPagesParam = params.get("addPages") || "";
+    const pageIds = Array.from(
+      new Set(
+        [addPage, ...addPagesParam.split(",")]
+          .map((id) => String(id || "").trim())
+          .filter(Boolean),
+      ),
+    );
+
+    if (pageIds.length && typeof onAddLibraryPage === "function") {
       import("./library/pageLibrary").then(({ getPageTemplateById }) => {
-        const page = getPageTemplateById(addPage);
-        if (page) {
-          window.setTimeout(() => onAddLibraryPage(page), 600);
+        for (const id of pageIds) {
+          const page = getPageTemplateById(id);
+          if (page) onAddLibraryPage(page);
         }
+        params.delete("addPage");
+        params.delete("addPages");
+        params.delete("addPlugin");
+        const next = params.toString();
+        window.history.replaceState(
+          {},
+          "",
+          `${window.location.pathname}${next ? `?${next}` : ""}`,
+        );
+        window.setTimeout(() => {
+          if (typeof editor.saveDraft === "function") {
+            void editor.saveDraft();
+            return;
+          }
+          if (typeof editor.save === "function") {
+            void editor.save("draft");
+          }
+        }, 700);
       });
     }
 

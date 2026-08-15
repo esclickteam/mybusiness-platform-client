@@ -60,8 +60,14 @@ export default function SiteDynamicPluginPanel({
   const editorAddHref =
     editorAction.kind === "section" && editorAction.sectionId
       ? `${editorHref}?addSection=${encodeURIComponent(editorAction.sectionId)}&addPlugin=${encodeURIComponent(pluginKey)}`
-      : editorAction.kind === "page" && editorAction.pageTemplateId
-        ? `${editorHref}?addPage=${encodeURIComponent(editorAction.pageTemplateId)}&addPlugin=${encodeURIComponent(pluginKey)}`
+      : editorAction.kind === "page" &&
+          (editorAction.pageTemplateIds?.length || editorAction.pageTemplateId)
+        ? `${editorHref}?addPages=${encodeURIComponent(
+            (editorAction.pageTemplateIds?.length
+              ? editorAction.pageTemplateIds
+              : [editorAction.pageTemplateId as string]
+            ).join(","),
+          )}&addPlugin=${encodeURIComponent(pluginKey)}`
         : `${editorHref}?addPlugin=${encodeURIComponent(pluginKey)}`;
 
   const scope = str(settings.scope, "site-wide");

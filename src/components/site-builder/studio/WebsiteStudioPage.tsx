@@ -40,6 +40,7 @@ import {
   resolveCustomDomainPublishPhase,
   resolvePublishedSiteDisplayUrl as resolvePublishedSiteDisplayUrlBase,
 } from "./utils/customDomainPublishUi";
+import { getPublicSiteDomain } from "../../../utils/publicSiteHost";
 
 import { getStudioTemplateRenderer } from "./data/templates/templateRendererRegistry";
 import { TEMPLATE_MEDIA } from "./data/templates/shared/templateBreakpoints";
@@ -158,12 +159,6 @@ type StudioSitePageWithPortal = StudioSitePage & {
   snapshotPageId?: string;
   visualSnapshotVersion?: number;
 };
-
-const BIZUPLY_PUBLIC_SITE_DOMAIN =
-  process.env.NEXT_PUBLIC_BIZUPLY_PUBLIC_SITE_DOMAIN || "sites.bizuply.com";
-
-const BIZUPLY_LEGACY_PUBLIC_SITE_DOMAIN =
-  process.env.NEXT_PUBLIC_BIZUPLY_LEGACY_PUBLIC_SITE_DOMAIN || "bizuply.com";
 
 /** Opt-in only: localStorage.setItem("bizuply-studio-debug", "1") */
 function isStudioTemplateDebugEnabled() {
@@ -320,7 +315,7 @@ function normalizeBusinessSlug(value: unknown) {
 
 function buildPublicSiteUrl(value: string) {
   const clean = normalizeBusinessSlug(value) || "your-business";
-  return `https://${clean}.${BIZUPLY_PUBLIC_SITE_DOMAIN}`;
+  return `https://${clean}.${getPublicSiteDomain()}`;
 }
 
 function isObjectIdLikeSlug(value: string) {
@@ -5013,6 +5008,10 @@ export default function WebsiteStudioPage({
 
     return createInitialPages();
   });
+  const pagesRef = useRef<StudioSitePageWithPortal[]>(pages);
+  pagesRef.current = pages;
+  const visualSavingRef = useRef(false);
+  const pendingVisualSaveRef = useRef<VisualTemplateSavePayload | null>(null);
   const [siteName, setSiteName] = useState("האתר שלי");
   const [customDomain, setCustomDomain] = useState("");
   const [customDomainProvisioningStatus, setCustomDomainProvisioningStatus] =
@@ -5354,7 +5353,7 @@ export default function WebsiteStudioPage({
               ...savedTemplateData,
               __siteSlug: serverSlug,
               __publicUrl: serverPublicUrl,
-              __siteDomain: data.site.siteDomain || BIZUPLY_PUBLIC_SITE_DOMAIN,
+              __siteDomain: data.site.siteDomain || getPublicSiteDomain(),
               __published: Boolean(data.site.published),
               __status: data.site.status || "",
             }
@@ -6030,6 +6029,15 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
 
   const addLibraryPage = (pageTemplate: VisualLibraryPageTemplate) => {
     if (!pageTemplate?.id) return;
+
+    const alreadyAdded = pagesRef.current.some((page) => {
+      const data = asPlainObject((page as any).data || (page as any).templateData);
+      return (
+        String(data.__libraryPageTemplateId || "") === String(pageTemplate.id) ||
+        String(page.slug || "") === String(pageTemplate.slugSuggestion || "")
+      );
+    });
+    if (alreadyAdded) return;
 
     const id = uid("page");
     const title =
@@ -7158,7 +7166,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
 
     try {
       const editor = editorRef.current;
-      const sourcePages = overrides?.pages || pages;
+      const sourcePages = overrides?.pages || pagesRef.current;
       const savedPages = snapshotPages(sourcePages, editor, activePageId);
 
       setPages(savedPages);
@@ -7184,7 +7192,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         updatedAt: new Date().toISOString(),
         status: published ? "published" : "draft",
         publicUrl,
-        siteDomain: BIZUPLY_PUBLIC_SITE_DOMAIN,
+        siteDomain: getPublicSiteDomain(),
         domain: {
           slug,
           published,
@@ -7690,7 +7698,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       ...pendingVisualPublishPayload,
       slug: result.slug,
       publicUrl: nextPublicUrl,
-      siteDomain: BIZUPLY_PUBLIC_SITE_DOMAIN,
+      siteDomain: getPublicSiteDomain(),
       published: true,
       status: "published",
       domain: {
@@ -7705,7 +7713,10 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
   };
 
   const handleVisualTemplateSave = async (visualPayload: VisualTemplateSavePayload) => {
-    if (saving) return;
+    if (visualSavingRef.current) {
+      pendingVisualSaveRef.current = visualPayload;
+      return;
+    }
 
     const published = Boolean(
       visualPayload.published || visualPayload.status === "published",
@@ -7757,6 +7768,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       setSlug(cleanSlug);
     }
 
+    visualSavingRef.current = true;
     setSaving(true);
 
     studioGroup("Visual React publish/save flow started", {
@@ -7800,9 +7812,10 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     try {
       // The current edited pages are always authoritative.
       // The original template is only a fallback for a site that has never been edited.
+      const livePages = pagesRef.current;
       const sourcePages =
-        pages.length
-          ? pages
+        livePages.length
+          ? livePages
           : selectedTemplateSeed
             ? createPagesFromTemplateSeed(selectedTemplateSeed, cleanVisualData, {
                 htmlMode: "none",
@@ -8228,7 +8241,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         updatedAt: visualPayload.updatedAt,
         status: published ? "published" : "draft",
         publicUrl: nextPublicUrl,
-        siteDomain: BIZUPLY_PUBLIC_SITE_DOMAIN,
+        siteDomain: getPublicSiteDomain(),
         domain: {
           slug: cleanSlug,
           published,
@@ -8391,7 +8404,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
             __activePageId: activeVisualPageId || "home",
             __siteSlug: cleanSlug,
             __publicUrl: nextPublicUrl,
-            __siteDomain: BIZUPLY_PUBLIC_SITE_DOMAIN,
+            __siteDomain: getPublicSiteDomain(),
             __published: published,
             __status: published ? "published" : "draft",
           },
@@ -8460,8 +8473,14 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       alert(error?.message || "אירעה שגיאה בשמירת האתר. נסי שוב.");
       throw error;
     } finally {
+      visualSavingRef.current = false;
       setSaving(false);
       studioGroupEnd();
+      const pending = pendingVisualSaveRef.current;
+      if (pending) {
+        pendingVisualSaveRef.current = null;
+        void handleVisualTemplateSave(pending);
+      }
     }
   };
 
@@ -8671,7 +8690,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
                           autoFocus
                         />
                         <span className="hidden shrink-0 items-center border-r border-slate-200 px-3 text-xs font-black text-slate-400 sm:inline-flex">
-                          .{BIZUPLY_PUBLIC_SITE_DOMAIN}
+                          .{getPublicSiteDomain()}
                         </span>
                       </div>
                       {platformPublishAlternativeUrl ? (
@@ -8711,7 +8730,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
                         autoFocus
                       />
                       <span className="hidden shrink-0 items-center border-r border-slate-200 px-4 text-sm font-black text-slate-400 sm:inline-flex">
-                        .{BIZUPLY_PUBLIC_SITE_DOMAIN}
+                        .{getPublicSiteDomain()}
                       </span>
                     </div>
                   </>
@@ -8798,7 +8817,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
                       <p className="text-sm font-bold leading-6 text-slate-600">
                         רוצים כתובת משלכם במקום{" "}
                         <span dir="ltr" className="font-black text-slate-800">
-                          .{BIZUPLY_PUBLIC_SITE_DOMAIN}
+                          .{getPublicSiteDomain()}
                         </span>
                         ?
                       </p>
@@ -8953,7 +8972,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         : buildPublicSiteUrl(
             normalizePublicBusinessSlug(slug) || "your-business",
           ),
-    __siteDomain: BIZUPLY_PUBLIC_SITE_DOMAIN,
+    __siteDomain: getPublicSiteDomain(),
   })}
   siteCustomCode={siteCustomCode}
   onSiteCustomCodeChange={setSiteCustomCode}
@@ -8965,7 +8984,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
           normalizePublicBusinessSlug(slug) || "your-business",
         )
   }
-  siteDomain={BIZUPLY_PUBLIC_SITE_DOMAIN}
+  siteDomain={getPublicSiteDomain()}
   customDomain={
     publishCustomDomainPhase === "active" ||
     publishCustomDomainPhase === "provisioning"

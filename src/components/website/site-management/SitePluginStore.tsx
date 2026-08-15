@@ -28,6 +28,7 @@ type SitePluginStoreProps = {
   enabledPlugins: string[];
   detectedFromSite?: string[];
   saving?: boolean;
+  containedHelp?: boolean;
   onToggle: (pluginKey: string, enabled: boolean) => void;
 };
 
@@ -145,6 +146,7 @@ export default function SitePluginStore({
   enabledPlugins,
   detectedFromSite = [],
   saving = false,
+  containedHelp = false,
   onToggle,
 }: SitePluginStoreProps) {
   const [category, setCategory] = useState("all");
@@ -186,7 +188,7 @@ export default function SitePluginStore({
   }, [catalog]);
 
   return (
-    <div dir="rtl" className="min-h-[600px]">
+    <div dir="rtl" className="relative min-h-[600px]">
       {/* Search bar — Chrome Web Store style */}
       <div className="mb-6 flex justify-center">
         <div className="relative w-full max-w-2xl">
@@ -403,6 +405,7 @@ export default function SitePluginStore({
         open={Boolean(detailPlugin)}
         isEnabled={detailPlugin ? enabledSet.has(detailPlugin.key) : false}
         saving={saving}
+        contained={containedHelp}
         onClose={() => setDetailPlugin(null)}
         onToggle={
           detailPlugin

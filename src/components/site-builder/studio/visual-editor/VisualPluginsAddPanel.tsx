@@ -287,13 +287,35 @@ export default function VisualPluginsAddPanel({
       return;
     }
 
-    if (action.kind === "page" && action.pageTemplateId) {
-      const page = getPageTemplateById(action.pageTemplateId);
-      if (page && typeof onAddLibraryPage === "function") {
-        onAddLibraryPage(page);
+    if (action.kind === "page" && (action.pageTemplateIds?.length || action.pageTemplateId)) {
+      const ids = action.pageTemplateIds?.length
+        ? action.pageTemplateIds
+        : [action.pageTemplateId as string];
+      const addedTitles: string[] = [];
+      for (const id of ids) {
+        const page = getPageTemplateById(id);
+        if (page && typeof onAddLibraryPage === "function") {
+          onAddLibraryPage(page);
+          addedTitles.push(page.title);
+        }
+      }
+      if (addedTitles.length) {
         setContentActive((prev) => ({ ...prev, [plugin.key]: true }));
         setPageWidgetsEpoch((e) => e + 1);
-        onAdded?.(`עמוד «${page.title}» נוסף — ${plugin.name} פעיל`);
+        window.setTimeout(() => {
+          if (typeof editor?.saveDraft === "function") {
+            void editor.saveDraft();
+            return;
+          }
+          if (typeof editor?.save === "function") {
+            void editor.save("draft");
+          }
+        }, 700);
+        onAdded?.(
+          addedTitles.length > 1
+            ? `נוספו ${addedTitles.length} עמודים — ${plugin.name} פעיל`
+            : `עמוד «${addedTitles[0]}» נוסף — ${plugin.name} פעיל`,
+        );
         return;
       }
     }

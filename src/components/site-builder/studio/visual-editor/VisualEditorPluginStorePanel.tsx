@@ -149,6 +149,7 @@ export default function VisualEditorPluginStorePanel({
               enabledPlugins={enabledPlugins}
               detectedFromSite={detectedFromSite}
               saving={Boolean(savingKey)}
+              containedHelp
               onToggle={handleToggle}
             />
           </div>

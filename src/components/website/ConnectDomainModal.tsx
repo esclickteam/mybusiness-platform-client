@@ -4,6 +4,7 @@ import { Globe2, X } from "lucide-react";
 import DomainSearch from "./DomainSearch";
 import DomainRenewalPanel from "./DomainRenewalPanel";
 import { connectSiteCustomDomain, getMySite } from "../../api/mySitesApi";
+import { buildPublicSiteUrl, getPublicSiteDomain } from "../../utils/publicSiteHost";
 
 type ConnectDomainModalProps = {
   open: boolean;
@@ -19,9 +20,6 @@ type ConnectDomainModalProps = {
   }) => void;
 };
 
-const PUBLIC_SITE_DOMAIN =
-  import.meta.env.VITE_BIZUPLY_PUBLIC_SITE_DOMAIN || "sites.bizuply.com";
-
 function normalizeDomain(value: string) {
   const clean = String(value || "")
     .trim()
@@ -35,9 +33,9 @@ function normalizeDomain(value: string) {
 
   if (!clean) return "";
   if (
-    clean === PUBLIC_SITE_DOMAIN ||
-    clean === `www.${PUBLIC_SITE_DOMAIN}` ||
-    clean.endsWith(`.${PUBLIC_SITE_DOMAIN}`)
+    clean === getPublicSiteDomain() ||
+    clean === `www.${getPublicSiteDomain()}` ||
+    clean.endsWith(`.${getPublicSiteDomain()}`)
   ) {
     return "";
   }
@@ -64,8 +62,8 @@ export default function ConnectDomainModal({
       .replace(/[^a-z0-9-]/g, "-")
       .replace(/-+/g, "-")
       .replace(/^-|-$/g, "");
-    if (!slug) return `https://${PUBLIC_SITE_DOMAIN}`;
-    return `https://${slug}.${PUBLIC_SITE_DOMAIN}`;
+    if (!slug) return `https://${getPublicSiteDomain()}`;
+    return buildPublicSiteUrl(slug);
   }, [siteSlug]);
 
   useEffect(() => {

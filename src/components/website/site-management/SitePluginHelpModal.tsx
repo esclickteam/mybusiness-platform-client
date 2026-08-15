@@ -24,6 +24,7 @@ type SitePluginHelpModalProps = {
   open: boolean;
   isEnabled?: boolean;
   saving?: boolean;
+  contained?: boolean;
   onClose: () => void;
   onToggle?: () => void;
 };
@@ -33,6 +34,7 @@ export default function SitePluginHelpModal({
   open,
   isEnabled = false,
   saving = false,
+  contained = false,
   onClose,
   onToggle,
 }: SitePluginHelpModalProps) {
@@ -41,13 +43,17 @@ export default function SitePluginHelpModal({
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
     };
-    document.body.style.overflow = "hidden";
+    if (!contained) {
+      document.body.style.overflow = "hidden";
+    }
     window.addEventListener("keydown", onKey);
     return () => {
-      document.body.style.overflow = "";
+      if (!contained) {
+        document.body.style.overflow = "";
+      }
       window.removeEventListener("keydown", onKey);
     };
-  }, [open, onClose]);
+  }, [open, onClose, contained]);
 
   if (!open || !plugin) return null;
 
@@ -61,11 +67,19 @@ export default function SitePluginHelpModal({
     "תוסף זה מרחיב את יכולות האתר. לאחר ההתקנה ניתן להגדיר אותו בפאנל הניהול.";
 
   return (
-    <div dir="rtl" className="fixed inset-0 z-[100]">
+    <div
+      dir="rtl"
+      className={
+        contained
+          ? "absolute inset-0 z-30"
+          : "fixed inset-0 z-[100]"
+      }
+      data-plugin-help-modal="true"
+    >
       <div
         className="absolute inset-0 bg-slate-900/30 backdrop-blur-[2px]"
         onMouseDown={onClose}
-        aria-hidden
+        aria-hidden="true"
       />
 
       <div
