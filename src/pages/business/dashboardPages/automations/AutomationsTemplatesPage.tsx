@@ -16,7 +16,6 @@ import {
   Users,
   Workflow,
   X,
-  Zap,
 } from "lucide-react";
 // MessageCircle used by cardIcon for whatsapp category
 import {
@@ -102,7 +101,6 @@ function cardIcon(template: WorkingTemplate) {
   if (template.categories.includes("whatsapp")) return MessageCircle;
   if (template.categories.includes("email")) return Mail;
   if (template.categories.includes("crm")) return Users;
-  if (template.categories.includes("leads")) return Zap;
   return Workflow;
 }
 

@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { AutomationRecipeSummary } from "../../../../api/automationWorkflowApi";
 import {
+  TEMPLATE_CATEGORIES,
   getRecipeCategories,
   getRecipeDisplayDescription,
   getRecipeDisplayName,
@@ -21,6 +22,32 @@ function recipe(partial: Partial<AutomationRecipeSummary>): AutomationRecipeSumm
 }
 
 describe("templateCategoryMapping trigger/result labels", () => {
+  it("exposes CRM instead of a separate leads browse category", () => {
+    expect(TEMPLATE_CATEGORIES.map((item) => item.id)).toEqual([
+      "all",
+      "crm",
+      "appointments",
+      "email",
+      "whatsapp",
+      "sales",
+      "store",
+      "ai",
+    ]);
+    expect(TEMPLATE_CATEGORIES.some((item) => item.id === "crm")).toBe(true);
+  });
+
+  it("maps former lead recipes into CRM", () => {
+    expect(getRecipeCategories(recipe({ key: "lead_multi_route" }))).toEqual(
+      expect.arrayContaining(["crm", "whatsapp"])
+    );
+    expect(getRecipeCategories(recipe({ key: "lead_no_response" }))).toEqual(
+      expect.arrayContaining(["crm", "whatsapp"])
+    );
+    expect(
+      getRecipeCategories(recipe({ key: "lead_multi_route" })).join(" ")
+    ).not.toMatch(/\bleads\b/);
+  });
+
   it("exposes clear trigger and result for system recipes", () => {
     const row = recipe({ key: "lead_multi_route" });
     expect(getRecipeTriggerLabel(row)).toContain("ליד");

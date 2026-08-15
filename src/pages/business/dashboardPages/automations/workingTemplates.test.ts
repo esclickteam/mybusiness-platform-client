@@ -145,7 +145,7 @@ describe("workingTemplates launch safety", () => {
       expect.arrayContaining(["new_lead", "crm_lead_created"])
     );
     expect(leadScoring.categories).toEqual(
-      expect.arrayContaining(["ai", "leads", "crm", "sales"])
+      expect.arrayContaining(["ai", "crm", "sales"])
     );
 
     const followup = ai.find((template) => template.recipeKey === "ai_followup_draft")!;

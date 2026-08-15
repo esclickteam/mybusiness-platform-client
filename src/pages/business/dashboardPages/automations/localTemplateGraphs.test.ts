@@ -12,7 +12,7 @@ describe("local system templates", () => {
     const cats = new Set(
       LOCAL_SYSTEM_TEMPLATES.flatMap((t) => t.categories)
     );
-    expect(cats.has("leads")).toBe(true);
+    expect(cats.has("crm")).toBe(true);
     expect(cats.has("appointments")).toBe(true);
     expect(cats.has("whatsapp")).toBe(true);
     expect(cats.has("email")).toBe(true);
