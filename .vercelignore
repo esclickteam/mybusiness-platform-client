@@ -1,0 +1,11 @@
+_wt_*
+_wt_*/
+tmp
+tmp/
+review-assets
+.cursor
+.vscode
+*.mp4
+node_modules
+.git
+agent-transcripts
