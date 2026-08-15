@@ -2238,6 +2238,19 @@ function enforceSingleCanonicalHome(
   });
 }
 
+function pageHasLibraryOrigin(page: StudioSitePageWithPortal): boolean {
+  const data = asPlainObject(
+    (page as any)?.data ||
+      (page as any)?.templateData ||
+      (page as any)?.visualEditorPayload?.data,
+  );
+  return Boolean(
+    data.__libraryPage ||
+      data.__libraryPageTemplateId ||
+      (page as any)?.__libraryPageTemplateId,
+  );
+}
+
 function mergeTemplateAndSavedPages(
   templatePages: StudioSitePageWithPortal[],
   savedPages: StudioSitePageWithPortal[],
@@ -2247,6 +2260,13 @@ function mergeTemplateAndSavedPages(
 
   if (!templateList.length) return enforceSingleCanonicalHome(savedList);
   if (!savedList.length) return enforceSingleCanonicalHome(templateList);
+
+  // Once the owner added library/portal pages, the saved page list is
+  // authoritative. Re-injecting unused template shells is what ballooned
+  // Servora drafts to ~68 pages and hung Staging publish.
+  if (savedList.some(pageHasLibraryOrigin)) {
+    return enforceSingleCanonicalHome(savedList);
+  }
 
   const savedById = new Map(
     savedList.map((page) => [String(page.id || "").trim(), page]),
