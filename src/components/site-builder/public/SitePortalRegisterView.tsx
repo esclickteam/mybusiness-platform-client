@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { sitePortalRegister } from "../../../api/sitePortalApi";
 
 type Props = {
@@ -20,9 +20,12 @@ export default function SitePortalRegisterView({
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const inFlightRef = useRef(false);
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
+    if (loading || inFlightRef.current) return;
+    inFlightRef.current = true;
     setLoading(true);
     setError("");
 
@@ -48,6 +51,7 @@ export default function SitePortalRegisterView({
     } catch (err: any) {
       setError(err?.message || "ההרשמה נכשלה");
     } finally {
+      inFlightRef.current = false;
       setLoading(false);
     }
   }
@@ -55,7 +59,8 @@ export default function SitePortalRegisterView({
   return (
     <div
       dir="rtl"
-      className="flex min-h-screen items-center justify-center bg-gradient-to-b from-slate-50 via-white to-sky-50 px-4 py-10"
+      data-bizuply-portal-auth="register"
+      className="relative z-[2147483000] flex min-h-screen items-center justify-center bg-gradient-to-b from-slate-50 via-white to-sky-50 px-4 py-10"
     >
       <div className="w-full max-w-md rounded-[28px] border border-slate-200 bg-white p-8 shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
         <p className="text-xs font-bold tracking-wide text-sky-700">אזור אישי</p>
@@ -66,15 +71,21 @@ export default function SitePortalRegisterView({
           מלאו את הפרטים כדי לפתוח חשבון ולהמשיך באתר.
         </p>
 
-        <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+        <form
+          onSubmit={handleSubmit}
+          data-bizuply-portal-auth-form="register"
+          className="mt-6 space-y-4"
+        >
           <label className="block">
             <span className="mb-1.5 block text-xs font-bold text-slate-600">
               שם מלא
             </span>
             <input
               type="text"
+              name="fullName"
               required
               autoComplete="name"
+              data-bizuply-portal-auth-field="fullName"
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
               className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-800 outline-none ring-sky-200 transition focus:bg-white focus:ring-2"
@@ -88,8 +99,10 @@ export default function SitePortalRegisterView({
             </span>
             <input
               type="email"
+              name="email"
               required
               autoComplete="username"
+              data-bizuply-portal-auth-field="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-800 outline-none ring-sky-200 transition focus:bg-white focus:ring-2"
@@ -103,7 +116,9 @@ export default function SitePortalRegisterView({
             </span>
             <input
               type="tel"
+              name="phone"
               autoComplete="tel"
+              data-bizuply-portal-auth-field="phone"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
               className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-800 outline-none ring-sky-200 transition focus:bg-white focus:ring-2"
@@ -117,8 +132,10 @@ export default function SitePortalRegisterView({
             </span>
             <input
               type="password"
+              name="password"
               required
               autoComplete="new-password"
+              data-bizuply-portal-auth-field="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-800 outline-none ring-sky-200 transition focus:bg-white focus:ring-2"
@@ -135,6 +152,8 @@ export default function SitePortalRegisterView({
           <button
             type="submit"
             disabled={loading}
+            aria-busy={loading}
+            data-bizuply-portal-auth-submit="register"
             className="w-full rounded-2xl bg-slate-900 px-4 py-3 text-sm font-black text-white transition hover:bg-slate-800 disabled:opacity-60"
           >
             {loading ? "יוצר חשבון..." : "יצירת חשבון"}
