@@ -86,7 +86,7 @@ import {
 } from "./visual-editor/utils/pageHierarchyUtils";
 import { detectPortalPageKind } from "../public/portalSitePaths";
 import { getSitePlugins } from "../../../api/sitePluginsApi";
-import { CLIENT_PORTAL_PAGE_TEMPLATE_IDS } from "../../data/pluginEditorRegistry";
+import { CLIENT_PORTAL_PAGE_TEMPLATE_IDS } from "../../../data/pluginEditorRegistry";
 import { getPageTemplateById } from "./visual-editor/library/pageLibrary";
 
 export type StudioPageSection = {
