@@ -543,6 +543,7 @@ function SortablePageRow({
           <button
             ref={buttonRef}
             type="button"
+            data-testid="visual-page-actions"
             aria-label={`פעולות עבור ${page.title || "עמוד"}`}
             aria-expanded={menuOpen}
             onClick={onOpenMenu}
@@ -1083,6 +1084,7 @@ export default function VisualSitePagesPanel({
       {parentPickerPortal}
       <aside
         data-visual-site-pages="true"
+        data-testid="visual-pages-panel"
         className="absolute inset-y-0 right-0 z-[2147483000] flex w-[340px] max-w-[92vw] flex-col border-l border-slate-200/80 bg-[#f4f6fb] shadow-[-22px_0_60px_rgba(15,23,42,0.14)]"
         dir="rtl"
       >
