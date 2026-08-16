@@ -262,7 +262,7 @@ function getMenuPosition(anchor: MenuAnchor) {
 
   const viewportWidth = window.innerWidth;
   const viewportHeight = window.innerHeight;
-  const estimatedHeight = 420;
+  const estimatedHeight = Math.min(480, Math.round(viewportHeight * 0.7));
 
   let left = anchor.left - MENU_WIDTH - MENU_GAP;
   if (left < 12) {

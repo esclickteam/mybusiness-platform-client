@@ -8038,14 +8038,14 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         sourcePages: summarizeStudioPagesForDebug(sourcePages),
       });
 
-      let publishedPages = buildPublishedVisualPages(sourcePages, {
-        templateKey: visualPayload.templateKey,
-        data: cleanVisualData,
-        updatedAt: visualPayload.updatedAt,
-        activePageId: activeVisualPageId,
-        published,
-        status: published ? "published" : "draft",
-      });
+      const saveClientStartedAt =
+        typeof performance !== "undefined" ? performance.now() : Date.now();
+
+      /*
+        Draft save is visual-data only. Rebuilding / re-stamping HTML for every
+        Store page (Velmora) is what burned ~10s before the PUT even started.
+      */
+      let publishedPages = sourcePages;
 
       /*
         חשוב:
@@ -8053,9 +8053,11 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         אם בעתיד נצטרך אותו רק לפרסום, משתמשים בו לבניית ה־HTML של העמוד בלבד,
         אבל לא שומרים אותו בתוך projectData/templateData.
       */
-      const liveHtmlSnapshot = String(visualPayload.htmlSnapshot || "").trim();
+      const liveHtmlSnapshot = published
+        ? String(visualPayload.htmlSnapshot || "").trim()
+        : "";
 
-      if (liveHtmlSnapshot.length > 20) {
+      if (published && liveHtmlSnapshot.length > 20) {
         const normalizedTargetPageId =
           String(activeVisualPageId || "home").trim() || "home";
         const visualCss = buildPublishedVisualRuntimeCss(cleanVisualData);
@@ -8162,7 +8164,8 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
           page.id === activeVisualPageId ||
           (activeVisualPageId === "home" && isCanonicalHome);
         const pageId = String(page.id || "").trim();
-        const isClientCreatedPage = /^page[_-]/i.test(pageId);
+        const isClientCreatedPage =
+          /^page-\d{10,}/i.test(pageId) || /^page_[a-z0-9]{8,}/i.test(pageId);
         const isDirtyPage = Boolean(pageId) && dirtyPageIds.has(pageId);
         const shouldSendVisual =
           isActivePage || isDirtyPage || isClientCreatedPage;
@@ -8206,23 +8209,29 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
           asPlainObject(pageVisual),
         );
 
+        const keepStoredMeta = !published && !shouldSendVisual;
+
         return {
           id: page.id,
           title: page.title,
-          slug: isCanonicalHome
-            ? ""
-            : String(page.slug || "").trim() ||
-              normalizePageSlug(
-                page.title || page.id,
-                publishedPages,
-                page.id,
-              ),
-          type: isCanonicalHome
-            ? ("home" as StudioSitePageType)
-            : page.type === "home"
-              ? ("blank" as StudioSitePageType)
-              : page.type,
-          isHome: isCanonicalHome,
+          slug: keepStoredMeta
+            ? page.slug
+            : isCanonicalHome
+              ? ""
+              : String(page.slug || "").trim() ||
+                normalizePageSlug(
+                  page.title || page.id,
+                  publishedPages,
+                  page.id,
+                ),
+          type: keepStoredMeta
+            ? page.type
+            : isCanonicalHome
+              ? ("home" as StudioSitePageType)
+              : page.type === "home"
+                ? ("blank" as StudioSitePageType)
+                : page.type,
+          isHome: keepStoredMeta ? page.isHome : isCanonicalHome,
           hiddenFromMenu: Boolean((page as any).hiddenFromMenu),
           parentPageId:
             String((page as any).parentPageId || "").trim() || undefined,
@@ -8237,9 +8246,9 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
           // unable to distinguish a fresh publish from an older payload.
           updatedAt: visualPayload.updatedAt || new Date().toISOString(),
           clientPortal: page.clientPortal,
-          html: published ? String(page.html || "") : "",
+          html: " ",
           htmlSnapshot: "",
-          css: published ? String(page.css || "") : "",
+          css: " ",
           ...(shouldSendVisual && (pageHasVisual || isClientCreatedPage)
             ? { data: pageVisual }
             : {}),
@@ -8325,7 +8334,13 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         if (hasMeaningfulVisualCollections(extractedHomeVisualData)) {
           return withPublishChrome(extractedHomeVisualData);
         }
-        if (hasMeaningfulVisualCollections(serverHomeVisualData)) {
+        const isVelmoraTemplate = /velmora/i.test(
+          String(visualPayload.templateKey || ""),
+        );
+        if (
+          !isVelmoraTemplate &&
+          hasMeaningfulVisualCollections(serverHomeVisualData)
+        ) {
           return withPublishChrome(serverHomeVisualData);
         }
         if (
@@ -8434,9 +8449,9 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
 
         slug: cleanSlug,
         published,
-        html: String(homePage?.html || ""),
+        html: " ",
         htmlSnapshot: "",
-        css: String(homePage?.css || ""),
+        css: " ",
         projectData: {
           editorMode: "visual-react",
           templateKey: visualPayload.templateKey,
@@ -8476,8 +8491,14 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
           : siteCustomCode,
       } as any;
 
+      const tPagesReady =
+        typeof performance !== "undefined" ? performance.now() : Date.now();
       const safePayload = cleanDataForJsonSave(payload);
+      const tCleaned =
+        typeof performance !== "undefined" ? performance.now() : Date.now();
       const requestBody = JSON.stringify(safePayload);
+      const tStringified =
+        typeof performance !== "undefined" ? performance.now() : Date.now();
       const requestSizeMb = requestBody.length / 1024 / 1024;
 
       studioDebug("handleVisualTemplateSave:payload-ready", {
@@ -8513,6 +8534,20 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         url: "/api/site-builder/site",
         method: "PUT",
         requestSizeMb: requestSizeMb.toFixed(2),
+        published,
+        pagesCount: pagesForSave.length,
+        buildPagesMs: Math.round(tPagesReady - saveClientStartedAt),
+        cleanMs: Math.round(tCleaned - tPagesReady),
+        stringifyMs: Math.round(tStringified - tCleaned),
+        clientBeforeRequestMs: Math.round(tStringified - saveClientStartedAt),
+      });
+      console.log("[BizUply Studio] save timing", {
+        published,
+        requestSizeMb: Number(requestSizeMb.toFixed(2)),
+        buildPagesMs: Math.round(tPagesReady - saveClientStartedAt),
+        cleanMs: Math.round(tCleaned - tPagesReady),
+        stringifyMs: Math.round(tStringified - tCleaned),
+        clientBeforeRequestMs: Math.round(tStringified - saveClientStartedAt),
       });
 
       const res = await fetch("/api/site-builder/site", {

@@ -548,7 +548,11 @@ function VelmoraCartPage({
                         <Plus className="h-4 w-4" />
                       </button>
 
-                      <div className="flex h-11 min-w-14 items-center justify-center border-x border-black/10 bg-white px-4 text-sm font-black">
+                      <div
+                        data-testid="cart-item-qty"
+                        data-cart-qty={String(item.quantity)}
+                        className="flex h-11 min-w-14 items-center justify-center border-x border-black/10 bg-white px-4 text-sm font-black"
+                      >
                         {item.quantity}
                       </div>
 
@@ -1050,6 +1054,8 @@ export default function VelmoraPages({
     storeProducts,
   ]);
 
+  const requestedPage = activePageId ?? pageId ?? initialPage;
+
   const [selectedProductId, setSelectedProductId] = React.useState(() => {
     if (typeof window === "undefined") return "";
     const fromPath = String(window.location.pathname || "").match(
@@ -1069,16 +1075,39 @@ export default function VelmoraPages({
     }
   });
 
-  const selectedShopProduct =
-    shopCatalog.products.find((product) => product.id === selectedProductId) ||
-    shopCatalog.products[0] ||
-    null;
+  React.useEffect(() => {
+    if (typeof window === "undefined") return;
+    const fromPath = String(window.location.pathname || "").match(
+      /\/product\/([^/]+)/,
+    );
+    if (!fromPath?.[1]) return;
+    try {
+      setSelectedProductId(decodeURIComponent(fromPath[1]));
+    } catch {
+      setSelectedProductId(fromPath[1]);
+    }
+  }, [requestedPage]);
+
+  const selectedShopProduct = React.useMemo(() => {
+    if (selectedProductId) {
+      const match = shopCatalog.products.find(
+        (product) =>
+          product.id === selectedProductId ||
+          product.ref === selectedProductId,
+      );
+      if (match) return match;
+      if (storeCatalogLoading) return null;
+    }
+    return shopCatalog.products[0] || null;
+  }, [
+    selectedProductId,
+    shopCatalog.products,
+    storeCatalogLoading,
+  ]);
 
   const relatedShopProducts = shopCatalog.products
     .filter((product) => product.id !== selectedShopProduct?.id)
     .slice(0, 4);
-
-  const requestedPage = activePageId ?? pageId ?? initialPage;
 
   const safeInitialPage = React.useMemo<VelmoraPageId>(() => {
     return resolveVelmoraPageId(requestedPage || "home");
@@ -1146,6 +1175,12 @@ export default function VelmoraPages({
     } catch {
       // ignore
     }
+    if (typeof window !== "undefined") {
+      const nextPath = `/product/${encodeURIComponent(id)}`;
+      if (window.location.pathname !== nextPath) {
+        window.history.pushState({}, "", nextPath);
+      }
+    }
     handlePageChange("product");
   }
 
@@ -1153,18 +1188,44 @@ export default function VelmoraPages({
     if (isStudioStatic) return;
 
     if (typeof window !== "undefined") {
+      const detail = {
+        productId: item.productId,
+        title: item.title,
+        name: item.title,
+        price: item.price,
+        image: item.image,
+        quantity: item.quantity || 1,
+      };
       window.dispatchEvent(
         new CustomEvent("bizuply:add-to-cart", {
-          detail: {
-            productId: item.productId,
-            title: item.title,
-            name: item.title,
-            price: item.price,
-            image: item.image,
-            quantity: item.quantity || 1,
-          },
+          detail,
         }),
       );
+      const publicBusinessId = String(businessId || "").trim();
+      if (publicBusinessId) {
+        try {
+          const key = `bizuply_store_cart_${publicBusinessId}`;
+          const raw = window.localStorage.getItem(key);
+          const parsed = raw ? JSON.parse(raw) : [];
+          const next = Array.isArray(parsed) ? [...parsed] : [];
+          const existing = next.find((row) => row && row.productId === item.productId);
+          if (existing) {
+            existing.quantity = Number(existing.quantity || 0) + (item.quantity || 1);
+          } else {
+            next.push({
+              productId: item.productId,
+              name: item.title,
+              title: item.title,
+              price: item.price,
+              quantity: item.quantity || 1,
+              image: item.image,
+            });
+          }
+          window.localStorage.setItem(key, JSON.stringify(next));
+        } catch {
+          // ignore quota / private mode
+        }
+      }
     }
 
     const cartId = `${item.productId}-${item.size}-${item.color}`;
@@ -1174,24 +1235,26 @@ export default function VelmoraPages({
         (cartItem) => cartItem.cartId === cartId,
       );
 
-      if (existingItem) {
-        return currentItems.map((cartItem) =>
-          cartItem.cartId === cartId
-            ? {
-                ...cartItem,
-                quantity: cartItem.quantity + item.quantity,
-              }
-            : cartItem,
-        );
-      }
+      const nextItems = existingItem
+        ? currentItems.map((cartItem) =>
+            cartItem.cartId === cartId
+              ? {
+                  ...cartItem,
+                  quantity: cartItem.quantity + item.quantity,
+                }
+              : cartItem,
+          )
+        : [
+            ...currentItems,
+            {
+              ...item,
+              cartId,
+            },
+          ];
 
-      return [
-        ...currentItems,
-        {
-          ...item,
-          cartId,
-        },
-      ];
+      // Write before public popstate/remount, otherwise /cart loads empty.
+      writeStoredCartItems(nextItems);
+      return nextItems;
     });
 
     onPageChange?.("cart");

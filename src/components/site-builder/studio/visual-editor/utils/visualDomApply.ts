@@ -44,7 +44,10 @@ import { applySavedFormBuildersToDom } from "./visualForms";
 import { expandSharedChromeIntoVisualData } from "./visualSharedChrome";
 import { applySitePageNavSubmenusToDom } from "./applySitePageNavSubmenusToDom";
 import { enhanceTemplateMobileNav } from "./enhanceTemplateMobileNav";
-import { isStoreBoundVisualContentKey } from "../../data/templates/shared/storeCatalogSync";
+import {
+  isAutoHarvestedVisualContentKey,
+  isStoreBoundVisualContentKey,
+} from "../../data/templates/shared/storeCatalogSync";
 import { shouldApplyLibraryBlankMode } from "../../../runtime/visualLibraryPage";
 import {
   ensurePluginWidgetsLayering,
@@ -3699,8 +3702,6 @@ export function collectVisualContentFromDom(
 
   if (!root) return nextContent;
 
-  registerAllVisualElements(root);
-
   const nodes = Array.from(
     root.querySelectorAll<HTMLElement>("[data-visual-edit-id]"),
   );
@@ -3718,8 +3719,11 @@ export function collectVisualContentFromDom(
 
     if (!elementId) return;
 
-    // Live store fields must stay site-plugin-scoped — never bake into saved visual data.
-    if (isStoreBoundVisualContentKey(elementId)) {
+    // Live store fields and auto-stamped DOM paths must not be baked into site data.
+    if (
+      isStoreBoundVisualContentKey(elementId) ||
+      isAutoHarvestedVisualContentKey(elementId)
+    ) {
       delete nextContent[elementId];
       return;
     }

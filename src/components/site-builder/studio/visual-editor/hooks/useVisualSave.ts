@@ -1164,44 +1164,61 @@ export function useVisualSave({
     const currentData = normalizeVisualData(
       (dataRef?.current || data || {}) as Record<string, any>,
     );
+    const isStoreTemplate = /velmora/i.test(String(renderer?.key || ""));
 
     /*
-      Publish/save must capture the live canvas the user sees.
-      Re-applying state onto the DOM before collect wiped unsaved edits
-      (spaces, links, text) — like rebuilding instead of publishing.
+      Store/Velmora canvases have thousands of visual-edit nodes.
+      Walking them on save burned ~10s before the PUT and re-inflated
+      harvested maps. Visual-react already holds the live React state.
     */
-    const domSnapshot = normalizeVisualData(
-      (buildVisualSaveDataFromDom(root, currentData) || {}) as Record<
-        string,
-        any
-      >,
-    );
+    const domSnapshot = isStoreTemplate
+      ? currentData
+      : normalizeVisualData(
+          (buildVisualSaveDataFromDom(root, currentData) || {}) as Record<
+            string,
+            any
+          >,
+        );
 
-    const merged = mergeVisualSnapshotData({
-      currentData,
-      domSnapshotData: domSnapshot,
-    });
+    const merged = isStoreTemplate
+      ? currentData
+      : mergeVisualSnapshotData({
+          currentData,
+          domSnapshotData: domSnapshot,
+        });
 
     /*
       Header/footer belong to the whole site. Lift their edits into the shared
       chrome map so every other page publishes the same chrome.
     */
-    const mergedWithChrome = writeSharedChromeIntoVisualData(root, merged);
+    const mergedWithChrome = isStoreTemplate
+      ? merged
+      : writeSharedChromeIntoVisualData(root, merged);
 
     const cleaned = cleanSerializableValue(mergedWithChrome) || {};
     const sanitized = sanitizeVisualDataForPersistence(
-      stripPortalShellLinksFromDomSnapshot(
-        root,
-        stripPortalRuntimeVisualMaps({
-          ...normalizeVisualData(cleaned),
-          __activePageId: activePageId || "home",
-          __siteSlug: slug || String(cleaned.__siteSlug || ""),
-          __publicUrl:
-            publicUrl || String(cleaned.__publicUrl || ""),
-          __siteDomain:
-            siteDomain || String(cleaned.__siteDomain || ""),
-        }),
-      ),
+      isStoreTemplate
+        ? stripPortalRuntimeVisualMaps({
+            ...normalizeVisualData(cleaned),
+            __activePageId: activePageId || "home",
+            __siteSlug: slug || String(cleaned.__siteSlug || ""),
+            __publicUrl:
+              publicUrl || String(cleaned.__publicUrl || ""),
+            __siteDomain:
+              siteDomain || String(cleaned.__siteDomain || ""),
+          })
+        : stripPortalShellLinksFromDomSnapshot(
+            root,
+            stripPortalRuntimeVisualMaps({
+              ...normalizeVisualData(cleaned),
+              __activePageId: activePageId || "home",
+              __siteSlug: slug || String(cleaned.__siteSlug || ""),
+              __publicUrl:
+                publicUrl || String(cleaned.__publicUrl || ""),
+              __siteDomain:
+                siteDomain || String(cleaned.__siteDomain || ""),
+            }),
+          ),
     );
 
     assertNoTemporaryMedia("snapshot", sanitized);
@@ -1220,6 +1237,7 @@ export function useVisualSave({
     dataRef,
     onDataSnapshot,
     publicUrl,
+    renderer?.key,
     siteDomain,
     slug,
   ]);
@@ -1250,21 +1268,27 @@ export function useVisualSave({
           );
         }
 
-        const snapshotData = buildSnapshotData();
-        const htmlSnapshot = buildPublishedHtmlSnapshot(
-          canvasRef.current,
-          snapshotData,
-        );
-
-        if (!htmlSnapshot) {
-          throw new Error(
-            "לא נמצא תוכן אתר לשמירה. רענני את העורך ונסי שוב.",
-          );
-        }
-
-        assertNoTemporaryMedia("htmlSnapshot", htmlSnapshot);
-
         const published = status === "published";
+        const t0 =
+          typeof performance !== "undefined" ? performance.now() : Date.now();
+
+        const snapshotData = buildSnapshotData();
+        const tData =
+          typeof performance !== "undefined" ? performance.now() : Date.now();
+
+        /*
+          Visual-react restores and publishes from template + data.
+          Cloning the live canvas HTML is uniquely expensive on Store
+          (Velmora galleries + product grids) and a static snapshot also
+          replaces the live React store on the public host, breaking cart.
+        */
+        const htmlSnapshot = "";
+        const tHtml =
+          typeof performance !== "undefined" ? performance.now() : Date.now();
+
+        if (htmlSnapshot) {
+          assertNoTemporaryMedia("htmlSnapshot", htmlSnapshot);
+        }
 
         const payload = buildVisualSavePayload({
           templateKey: renderer.key,
@@ -1288,7 +1312,12 @@ export function useVisualSave({
           slug,
           snapshotPageId: activePageId,
           htmlSnapshotLength: htmlSnapshot.length,
+          snapshotDataMs: Math.round(tData - t0),
+          htmlSnapshotMs: Math.round(tHtml - tData),
         });
+        console.log(
+          `[BizUply Visual Save] save timing snapshotDataMs=${Math.round(tData - t0)} htmlSnapshotMs=${Math.round(tHtml - tData)} template=${renderer.key}`,
+        );
 
         await onSave(payload);
 

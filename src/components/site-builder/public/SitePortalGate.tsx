@@ -57,8 +57,31 @@ export default function SitePortalGate({
     if (path === "/portal/accept-invite") return "accept-invite";
     if (path === "/portal/forgot-password") return "forgot-password";
     if (path === "/portal/reset-password") return "reset-password";
+    /*
+      Empty library stubs at /login|/register|/account have no visual, so the
+      public renderer paints Home. Treat those aliases as portal routes unless
+      the merchant actually designed a portal widget on that page.
+    */
+    if (
+      (path === "/login" || path === "/signin") &&
+      !hasRenderableDesignedPortalPage(site, path)
+    ) {
+      return "login";
+    }
+    if (
+      (path === "/register" || path === "/signup") &&
+      !hasRenderableDesignedPortalPage(site, path)
+    ) {
+      return "register";
+    }
+    if (
+      (path === "/account" || path === "/my-account") &&
+      !hasRenderableDesignedPortalPage(site, path)
+    ) {
+      return "account";
+    }
     return null;
-  }, [pathname]);
+  }, [pathname, site]);
 
   const pluginEnabled =
     portalGate.pluginEnabled !== false &&
@@ -103,9 +126,14 @@ export default function SitePortalGate({
     );
   }
 
+  const currentPath = String(pathname || "/").replace(/\/+$/, "") || "/";
+
   if (portalRoute === "login") {
     // Legacy route: use the designed page inside the published site chrome.
-    if (hasDesignedPage(portalPaths.login)) {
+    if (
+      hasDesignedPage(portalPaths.login) &&
+      portalPaths.login !== currentPath
+    ) {
       const search =
         typeof window !== "undefined" ? window.location.search || "" : "";
       return <PortalRedirect to={`${portalPaths.login}${search}`} />;
@@ -128,7 +156,10 @@ export default function SitePortalGate({
   }
 
   if (portalRoute === "register") {
-    if (hasDesignedPage(portalPaths.register)) {
+    if (
+      hasDesignedPage(portalPaths.register) &&
+      portalPaths.register !== currentPath
+    ) {
       const search =
         typeof window !== "undefined" ? window.location.search || "" : "";
       return <PortalRedirect to={`${portalPaths.register}${search}`} />;
@@ -183,7 +214,10 @@ export default function SitePortalGate({
 
   if (portalRoute === "account") {
     // Legacy route: use the designed account page when it exists.
-    if (hasDesignedPage(portalPaths.account)) {
+    if (
+      hasDesignedPage(portalPaths.account) &&
+      portalPaths.account !== currentPath
+    ) {
       return <PortalRedirect to={portalPaths.account} />;
     }
 

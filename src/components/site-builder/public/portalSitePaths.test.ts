@@ -211,6 +211,27 @@ describe("hasRenderableDesignedPortalPage", () => {
     expect(hasRenderableDesignedPortalPage(site, "/login-02")).toBe(true);
   });
 
+  it("does not treat a home visual with a leftover page-portal template id as designed", () => {
+    expect(
+      hasRenderableDesignedPortalPage(
+        {
+          pages: [
+            {
+              id: "login",
+              slug: "login",
+              __libraryPageTemplateId: "page-portal-01",
+              data: {
+                __libraryPageTemplateId: "page-portal-01",
+                __content: { hero: { text: "נתונים. נכסים. החלטות." } },
+              },
+            },
+          ],
+        },
+        "/login",
+      ),
+    ).toBe(false);
+  });
+
   it("does not treat a home visual parked on /login as designed", () => {
     expect(
       hasRenderableDesignedPortalPage(
@@ -231,6 +252,25 @@ describe("hasRenderableDesignedPortalPage", () => {
   it("does not treat a missing /packages path as designed", () => {
     expect(
       hasRenderableDesignedPortalPage({ pages: [{ id: "home", slug: "" }] }, "/packages"),
+    ).toBe(false);
+  });
+
+  it("does not treat a library stub with no visual as designed", () => {
+    expect(
+      hasRenderableDesignedPortalPage(
+        {
+          pages: [
+            {
+              id: "login",
+              slug: "login",
+              __libraryPage: true,
+              __libraryPageTemplateId: "page-portal-01",
+              __blankVisualPage: false,
+            },
+          ],
+        },
+        "/login",
+      ),
     ).toBe(false);
   });
 });

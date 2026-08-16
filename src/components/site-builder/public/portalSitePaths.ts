@@ -242,16 +242,12 @@ export function hasRenderableDesignedPortalPage(site: any, path: unknown): boole
   const hasPortalSection = Object.values(insertedSections).some((section) =>
     /^section-portal-/.test(String(asPlainObject(section).libraryId || "")),
   );
-  const hasPortalTemplate = /^page-portal-\d+$/.test(
-    String(
-      page?.__libraryPageTemplateId ||
-        page?.libraryPageTemplateId ||
-        data.__libraryPageTemplateId ||
-        "",
-    ).trim(),
-  );
-
-  return hasPortalWidget || hasPortalSection || hasPortalTemplate;
+  /*
+    A leftover page-portal-NN id is not enough. Site E copied the Nestiq
+    home visual onto /login after adding a portal library page, and the
+    template id alone redirected /portal/login onto that home page.
+  */
+  return hasPortalWidget || hasPortalSection;
 }
 
 export function resolvePortalPaths(site: any): PortalPaths {

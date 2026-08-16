@@ -305,8 +305,8 @@ function Contact({ data, openModal }: { data: Record<string, any>; openModal: ()
             <input className="border border-[var(--p)]/25 bg-transparent px-5 py-4 text-right text-white outline-none transition placeholder:text-white/38 focus:border-[var(--p)]" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
             <input className="border border-[var(--p)]/25 bg-transparent px-5 py-4 text-right text-white outline-none transition placeholder:text-white/38 focus:border-[var(--p)]" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
             <input className="border border-[var(--p)]/25 bg-transparent px-5 py-4 text-right text-white outline-none transition placeholder:text-white/38 focus:border-[var(--p)]" placeholder="אימייל"  name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
-            <textarea className="min-h-32 border border-[var(--p)]/25 bg-transparent px-5 py-4 text-right text-white outline-none transition placeholder:text-white/38 focus:border-[var(--p)]" placeholder="מה תרצו לעצב?"  name="other" data-bizuply-form-field-id="other"></textarea>
-            <button type="submit" onClick={openModal} className="bg-[var(--p)] px-7 py-4 text-sm font-bold text-white">
+            <textarea className="min-h-32 border border-[var(--p)]/25 bg-transparent px-5 py-4 text-right text-white outline-none transition placeholder:text-white/38 focus:border-[var(--p)]" placeholder="מה תרצו לעצב?"  name="message" data-bizuply-form-field-id="message"></textarea>
+            <button type="submit" className="bg-[var(--p)] px-7 py-4 text-sm font-bold text-white">
               {getValue(data, "contactButton")}
             </button>
           </form>
