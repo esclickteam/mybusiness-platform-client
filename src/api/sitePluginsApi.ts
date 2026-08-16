@@ -22,6 +22,7 @@ export type SitePluginEditorHint = {
   pluginKey: string;
   action: string;
   pageTemplateId?: string;
+  pageTemplateIds?: string[];
   sectionId?: string;
   message?: string;
 };

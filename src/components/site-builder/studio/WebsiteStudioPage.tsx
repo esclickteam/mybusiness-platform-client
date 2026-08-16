@@ -86,6 +86,8 @@ import {
 } from "./visual-editor/utils/pageHierarchyUtils";
 import { detectPortalPageKind } from "../public/portalSitePaths";
 import { getSitePlugins } from "../../../api/sitePluginsApi";
+import { CLIENT_PORTAL_PAGE_TEMPLATE_IDS } from "../../data/pluginEditorRegistry";
+import { getPageTemplateById } from "./visual-editor/library/pageLibrary";
 
 export type StudioPageSection = {
   id: string;
@@ -433,6 +435,15 @@ function createPortalConfigForLibraryPage(
 
   portalConfig.loginRequired = !isPublicAuthPage;
   return portalConfig;
+}
+
+function canonicalizePortalPageTitle(pageTemplate: Record<string, any>) {
+  const raw = String(pageTemplate?.title || "").trim();
+  const slug = String(pageTemplate?.slugSuggestion || "").trim();
+  if (pageTemplate?.category === "portal" && slug && !/-\d+$/.test(slug)) {
+    return raw.replace(/\s+\d+$/, "") || raw;
+  }
+  return raw;
 }
 
 function createInitialPages(): StudioSitePageWithPortal[] {
@@ -6153,18 +6164,26 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
   const addLibraryPage = (pageTemplate: VisualLibraryPageTemplate) => {
     if (!pageTemplate?.id) return;
 
+    const wantedKind = detectPortalPageKind({
+      data: { __libraryPageTemplateId: String(pageTemplate.id || "") },
+    });
     const alreadyAdded = pagesRef.current.some((page) => {
       const data = asPlainObject((page as any).data || (page as any).templateData);
       return (
         String(data.__libraryPageTemplateId || "") === String(pageTemplate.id) ||
-        String(page.slug || "") === String(pageTemplate.slugSuggestion || "")
+        String((page as any).__libraryPageTemplateId || "") ===
+          String(pageTemplate.id) ||
+        String(page.slug || "") === String(pageTemplate.slugSuggestion || "") ||
+        Boolean(wantedKind && detectPortalPageKind(page) === wantedKind)
       );
     });
     if (alreadyAdded) return;
 
     const id = uid("page");
     const title =
-      String(pageTemplate.title || "").trim() || "עמוד חדש";
+      canonicalizePortalPageTitle(pageTemplate) ||
+      String(pageTemplate.title || "").trim() ||
+      "עמוד חדש";
     const slugSuggestion =
       String(pageTemplate.slugSuggestion || "").trim() || title;
 
@@ -6238,6 +6257,44 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     setActivePageId(id);
     setActivePanel("pages");
   };
+
+  useEffect(() => {
+    if (!clientPortalPluginEnabled) return;
+    if (!pagesRef.current.length) return;
+    const missing = CLIENT_PORTAL_PAGE_TEMPLATE_IDS.filter((templateId) => {
+      const pageTemplate = getPageTemplateById(templateId);
+      if (!pageTemplate) return false;
+      const wantedKind = detectPortalPageKind({
+        data: { __libraryPageTemplateId: templateId },
+      });
+      return !pagesRef.current.some((page) => {
+        const data = asPlainObject(
+          (page as any).data || (page as any).templateData,
+        );
+        return (
+          String(data.__libraryPageTemplateId || "") === templateId ||
+          String((page as any).__libraryPageTemplateId || "") === templateId ||
+          String(page.slug || "") === String(pageTemplate.slugSuggestion || "") ||
+          Boolean(wantedKind && detectPortalPageKind(page) === wantedKind)
+        );
+      });
+    });
+    if (!missing.length) return;
+    missing.forEach((templateId) => {
+      const pageTemplate = getPageTemplateById(templateId);
+      if (pageTemplate) addLibraryPage(pageTemplate);
+    });
+    window.setTimeout(() => {
+      const editor = editorRef.current as any;
+      if (typeof editor?.saveDraft === "function") {
+        void editor.saveDraft();
+        return;
+      }
+      if (typeof editor?.save === "function") {
+        void editor.save("draft");
+      }
+    }, 900);
+  }, [clientPortalPluginEnabled, pages]);
 
   useEffect(() => {
     const handleLibraryPage = (event: Event) => {

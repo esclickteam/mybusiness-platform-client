@@ -5,7 +5,9 @@ import {
   getSitePlugins,
   updateSitePlugins,
   type SitePluginDefinition,
+  type SitePluginEditorHint,
 } from "../../../../api/sitePluginsApi";
+import { getPluginEditorAction } from "../../../../data/pluginEditorRegistry";
 import SitePluginStore from "../../../website/site-management/SitePluginStore";
 import BizuplyLoader from "../../../ui/BizuplyLoader";
 
@@ -13,7 +15,12 @@ type VisualEditorPluginStorePanelProps = {
   open: boolean;
   siteId?: string;
   onClose: () => void;
-  onInstalled?: () => void;
+  onInstalled?: (info?: {
+    pluginKey?: string;
+    enabled?: boolean;
+    pageTemplateIds?: string[];
+    editorHints?: SitePluginEditorHint[];
+  }) => void;
 };
 
 export default function VisualEditorPluginStorePanel({
@@ -83,7 +90,21 @@ export default function VisualEditorPluginStorePanel({
       if (warningText) {
         setError(warningText);
       }
-      onInstalled?.();
+      const action = getPluginEditorAction(key);
+      const pageTemplateIds =
+        enabled && action.kind === "page"
+          ? action.pageTemplateIds?.length
+            ? [...action.pageTemplateIds]
+            : action.pageTemplateId
+              ? [action.pageTemplateId]
+              : []
+          : [];
+      onInstalled?.({
+        pluginKey: key,
+        enabled,
+        pageTemplateIds,
+        editorHints: result.editorHints,
+      });
     } catch (err) {
       setError(
         err instanceof Error ? err.message : "עדכון התוסף נכשל",
