@@ -517,7 +517,6 @@ export default function VisualEditorShell({
             onBack={onBack}
             onOpenDomain={() => setConnectDomainOpen(true)}
             onOpenAdd={() => {
-              setPreferredAddTab("sections");
               setSidePanelMode((current) =>
                 current === "add" ? null : "add",
               );

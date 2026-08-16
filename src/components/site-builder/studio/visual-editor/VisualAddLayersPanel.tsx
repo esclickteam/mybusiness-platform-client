@@ -768,13 +768,18 @@ export default function VisualAddLayersPanel({
   useEffect(() => {
     if (mode !== "add") return;
 
-    setAddTab(preferredAddTab || "sections");
     setElementCategory("all");
     setSectionQuickFilter("recommended");
     setPreviewSection(null);
     setSearchQuery("");
     setMediaQuery("");
-  }, [mode, preferredAddTab]);
+  }, [mode]);
+
+  useEffect(() => {
+    if (mode !== "add") return;
+    if (!preferredAddTab) return;
+    setAddTab(preferredAddTab);
+  }, [preferredAddTab]);
 
   useEffect(() => {
     if (mode !== "add" || addTab !== "elements") {
@@ -876,7 +881,7 @@ export default function VisualAddLayersPanel({
         description: "העלאה מהמחשב והחלפה חופשית",
         category: "media",
         preview: "image",
-        action: () => editor?.addImage?.(),
+        action: () => editor?.addImage?.({ openMediaPicker: false }),
       },
       {
         id: "video",
