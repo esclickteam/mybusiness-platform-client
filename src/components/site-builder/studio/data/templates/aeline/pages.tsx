@@ -39,11 +39,11 @@ export const aelinePages: Array<{
   slug: string;
 }> = [
   { id: "home", name: "בית", slug: "/" },
-  { id: "services", name: "פתרונות", slug: "/פתרונות" },
-  { id: "about", name: "הסטודיו", slug: "/הסטודיו" },
-  { id: "pricing", name: "חבילות", slug: "/חבילות" },
-  { id: "blog", name: "מגזין", slug: "/מגזין" },
-  { id: "contact", name: "שיחה ראשונה", slug: "/שיחה-ראשונה" },
+  { id: "services", name: "פתרונות", slug: "/services" },
+  { id: "about", name: "הסטודיו", slug: "/about" },
+  { id: "pricing", name: "חבילות", slug: "/pricing" },
+  { id: "blog", name: "מגזין", slug: "/blog" },
+  { id: "contact", name: "שיחה ראשונה", slug: "/contact" },
 ];
 
 type AelinePagesProps = {
