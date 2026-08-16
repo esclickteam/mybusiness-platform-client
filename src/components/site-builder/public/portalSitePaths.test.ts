@@ -254,4 +254,23 @@ describe("hasRenderableDesignedPortalPage", () => {
       hasRenderableDesignedPortalPage({ pages: [{ id: "home", slug: "" }] }, "/packages"),
     ).toBe(false);
   });
+
+  it("does not treat a library stub with no visual as designed", () => {
+    expect(
+      hasRenderableDesignedPortalPage(
+        {
+          pages: [
+            {
+              id: "login",
+              slug: "login",
+              __libraryPage: true,
+              __libraryPageTemplateId: "page-portal-01",
+              __blankVisualPage: false,
+            },
+          ],
+        },
+        "/login",
+      ),
+    ).toBe(false);
+  });
 });

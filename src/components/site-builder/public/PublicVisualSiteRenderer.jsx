@@ -31,7 +31,10 @@ import { mountCountdownWidgets } from "../../site-plugins/countdown/mountCountdo
 import { mountBookingWidgets } from "../../site-plugins/booking/mountBookingWidgets";
 import { mountPublicLeadForms } from "./mountPublicLeadForms";
 import { mountPublicPortalWidgets } from "./mountPublicPortalWidgets";
-import { findPortalPageForFriendlyPath } from "./portalSitePaths";
+import {
+  findPortalPageForFriendlyPath,
+  hasRenderableDesignedPortalPage,
+} from "./portalSitePaths";
 import {
   getCurrentPathname,
   getFallbackPageId,
@@ -531,12 +534,22 @@ function resolveActivePage(site, pathname) {
     return pagePath === currentPath || pageId === currentPath;
   });
 
-  if (exactPage) return exactPage;
+  const exactPath = currentPath ? `/${currentPath}` : "/";
+  const exactIsEmptyAuthStub =
+    Boolean(exactPage) &&
+    /^(login|signin|register|signup|account|my-account)$/i.test(currentPath) &&
+    !hasRenderableDesignedPortalPage(source, exactPath);
+  if (exactPage && !exactIsEmptyAuthStub) return exactPage;
 
   const aliasedPortalPage = currentPath
     ? findPortalPageForFriendlyPath(source, `/${currentPath}`)
     : null;
-  if (aliasedPortalPage) return aliasedPortalPage;
+  if (
+    aliasedPortalPage &&
+    hasRenderableDesignedPortalPage(source, `/${currentPath}`)
+  ) {
+    return aliasedPortalPage;
+  }
 
   const activePageId = safeString(source.activePageId);
 
