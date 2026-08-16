@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import {
   AlertTriangle,
@@ -158,22 +158,6 @@ export default function PageSettingsModal({
   );
   const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState("");
-  const initialSnapshotRef = useRef("");
-
-  const buildDraftSnapshot = (
-    nextTitle: string,
-    nextSlug: string,
-    nextSeo: SitePageSeoSettings,
-    nextSiteSeo: SiteSeoSettings,
-    nextBrand: SiteBrandSettings,
-  ) =>
-    JSON.stringify({
-      title: nextTitle,
-      slug: nextSlug,
-      seo: nextSeo,
-      siteSeo: nextSiteSeo,
-      siteBrand: nextBrand,
-    });
 
   useEffect(() => {
     if (!open || !page) return;
@@ -219,34 +203,13 @@ export default function PageSettingsModal({
       googleSiteVerification,
     };
     const nextBrand = normalizeSiteBrandSettings(brandSettings, siteName);
-    const nextTitle = String(page.title || "");
-    const nextSlug = String(page.slug || "");
 
     setSeoDraft(normalized);
     setSiteSeoDraft(nextSiteSeo);
     setSiteBrandDraft(nextBrand);
-    initialSnapshotRef.current = buildDraftSnapshot(
-      nextTitle,
-      nextSlug,
-      normalized,
-      nextSiteSeo,
-      nextBrand,
-    );
   }, [open, page, initialTab, siteName, siteSlug, publicUrl, seoSettings, brandSettings, pageHtml]);
 
-  const isDirty = () =>
-    buildDraftSnapshot(title, slug, seoDraft, siteSeoDraft, siteBrandDraft) !==
-    initialSnapshotRef.current;
-
   const requestClose = () => {
-    if (isSaving) return;
-    if (
-      isDirty() &&
-      typeof window !== "undefined" &&
-      !window.confirm("יש שינויים שלא נשמרו. לסגור בכל זאת?")
-    ) {
-      return;
-    }
     onClose();
   };
 
@@ -254,37 +217,15 @@ export default function PageSettingsModal({
     if (!open) return;
 
     const handleKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") {
-        if (isSaving) return;
-        if (
-          buildDraftSnapshot(
-            title,
-            slug,
-            seoDraft,
-            siteSeoDraft,
-            siteBrandDraft,
-          ) !== initialSnapshotRef.current &&
-          typeof window !== "undefined" &&
-          !window.confirm("יש שינויים שלא נשמרו. לסגור בכל זאת?")
-        ) {
-          return;
-        }
-        onClose();
-      }
+      if (event.key !== "Escape") return;
+      event.preventDefault();
+      event.stopPropagation();
+      onClose();
     };
 
-    document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [
-    open,
-    onClose,
-    isSaving,
-    title,
-    slug,
-    seoDraft,
-    siteSeoDraft,
-    siteBrandDraft,
-  ]);
+    document.addEventListener("keydown", handleKeyDown, true);
+    return () => document.removeEventListener("keydown", handleKeyDown, true);
+  }, [open, onClose]);
 
   const parentPageOptions = useMemo(
     () =>
@@ -428,25 +369,24 @@ export default function PageSettingsModal({
     setIsSaving(true);
     setSaveError("");
     try {
-      await Promise.resolve(
-        onSave({
-          title: cleanTitle,
-          slug: page.isHome ? "" : String(slug || "").trim(),
-          seo: pageSeo,
-          siteSeo: normalizeSiteSeoSettings({
-            ...siteSeoDraft,
-            keywords: normalizeKeywords(siteSeoDraft.keywords),
-            googleSiteVerification: extractGoogleSiteVerificationToken(
-              siteSeoDraft.googleSiteVerification,
-            ),
-          }),
-          siteBrand: normalizeSiteBrandSettings(
-            siteBrandDraft,
-            cleanTitle || siteName,
+      const pending = onSave({
+        title: cleanTitle,
+        slug: page.isHome ? "" : String(slug || "").trim(),
+        seo: pageSeo,
+        siteSeo: normalizeSiteSeoSettings({
+          ...siteSeoDraft,
+          keywords: normalizeKeywords(siteSeoDraft.keywords),
+          googleSiteVerification: extractGoogleSiteVerificationToken(
+            siteSeoDraft.googleSiteVerification,
           ),
         }),
-      );
+        siteBrand: normalizeSiteBrandSettings(
+          siteBrandDraft,
+          cleanTitle || siteName,
+        ),
+      });
       onClose();
+      await Promise.resolve(pending);
     } catch (error) {
       setSaveError(
         error instanceof Error
@@ -685,6 +625,7 @@ export default function PageSettingsModal({
     <div
       className="fixed inset-0 z-[2147483605] flex items-center justify-center overflow-y-auto border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800/55 p-3 backdrop-blur-md sm:p-6"
       dir="rtl"
+      data-testid="page-settings-backdrop"
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) requestClose();
       }}
@@ -693,6 +634,7 @@ export default function PageSettingsModal({
         role="dialog"
         aria-modal="true"
         aria-label={`הגדרות עמוד (${page.title || "עמוד"})`}
+        data-testid="page-settings-modal"
         className="relative my-auto flex h-[min(780px,calc(100vh-24px))] w-full max-w-[900px] flex-col overflow-hidden rounded-[32px] border border-white/80 bg-white shadow-[0_32px_120px_rgba(15,23,42,0.28)] sm:h-[min(780px,calc(100vh-48px))]"
         onMouseDown={(event) => event.stopPropagation()}
       >
@@ -728,8 +670,7 @@ export default function PageSettingsModal({
           <button
             type="button"
             onClick={requestClose}
-            disabled={isSaving}
-            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white/90 text-slate-500 shadow-sm transition hover:bg-slate-50 hover:text-slate-900 disabled:opacity-50"
+            className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-slate-200 bg-white/90 text-slate-500 shadow-sm transition hover:bg-slate-50 hover:text-slate-900"
             aria-label="סגירה"
           >
             <X className="h-5 w-5" />
@@ -1508,8 +1449,7 @@ export default function PageSettingsModal({
               <button
                 type="button"
                 onClick={requestClose}
-                disabled={isSaving}
-                className="rounded-2xl border border-slate-200/90 bg-white px-5 py-3 text-sm font-black text-slate-700 shadow-sm transition hover:bg-slate-50 disabled:opacity-50"
+                className="rounded-2xl border border-slate-200/90 bg-white px-5 py-3 text-sm font-black text-slate-700 shadow-sm transition hover:bg-slate-50"
               >
                 ביטול
               </button>
