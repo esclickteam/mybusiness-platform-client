@@ -1243,7 +1243,10 @@ export function useVisualSave({
   ]);
 
   const executeSave = useCallback(
-    async (status: "draft" | "published") => {
+    async (
+      status: "draft" | "published",
+      options?: { autosave?: boolean; clientSaveSeq?: number },
+    ) => {
       if (!onSave) {
         const message =
           "[BizUply Visual Save] missing onSave handler";
@@ -1300,6 +1303,8 @@ export function useVisualSave({
           status,
           htmlSnapshot,
           snapshotPageId: activePageId,
+          autosave: Boolean(options?.autosave),
+          clientSaveSeq: options?.clientSaveSeq,
         });
 
         assertNoTemporaryMedia(status, payload);
@@ -1361,7 +1366,8 @@ export function useVisualSave({
   );
 
   const saveDraft = useCallback(
-    () => executeSave("draft"),
+    (options?: { autosave?: boolean; clientSaveSeq?: number }) =>
+      executeSave("draft", options),
     [executeSave],
   );
 

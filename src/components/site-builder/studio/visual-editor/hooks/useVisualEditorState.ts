@@ -116,6 +116,7 @@ import { useVisualHistory } from "./useVisualHistory";
 import { useVisualSelection } from "./useVisualSelection";
 import { useVisualKeyboardShortcuts } from "./useVisualKeyboardShortcuts";
 import { useVisualSave } from "./useVisualSave";
+import { useVisualAutosave } from "./useVisualAutosave";
 import type {
   VisualMediaModalApplyPayload,
   VisualMediaModalMode,
@@ -1201,8 +1202,12 @@ export function useVisualEditorState({
     [initialData],
   );
 
+  const markAutosaveDirtyRef = useRef<() => void>(() => {});
   const history = useVisualHistory<Record<string, any>>(
     normalizeVisualData(initialData || {}),
+    {
+      onUserChange: () => markAutosaveDirtyRef.current(),
+    },
   );
   const data = history.value;
   const dataRef = useRef<Record<string, any>>(
@@ -5015,15 +5020,56 @@ export function useVisualEditorState({
     onDataSnapshot: replaceData,
   });
 
-  const saveDraftWithPendingMedia = useCallback(async () => {
-    await waitForPendingMediaUploads();
-    return save.saveDraft();
-  }, [save.saveDraft, waitForPendingMediaUploads]);
+  const autosaveApiRef = useRef<{
+    flushAutosave: () => Promise<void>;
+    acknowledgeSaved: () => void;
+    cancelPending: () => void;
+    getAutosaveStatus: () => string;
+  } | null>(null);
+
+  const saveDraftWithPendingMedia = useCallback(
+    async (options?: { autosave?: boolean; clientSaveSeq?: number }) => {
+      if (!options?.autosave) {
+        autosaveApiRef.current?.cancelPending();
+      }
+      await waitForPendingMediaUploads();
+      const result = await save.saveDraft(options);
+      if (!options?.autosave) {
+        autosaveApiRef.current?.acknowledgeSaved();
+      }
+      return result;
+    },
+    [save.saveDraft, waitForPendingMediaUploads],
+  );
 
   const publishWithPendingMedia = useCallback(async () => {
+    await autosaveApiRef.current?.flushAutosave();
+    const autosaveStatus = autosaveApiRef.current?.getAutosaveStatus();
+    if (autosaveStatus === "error" || autosaveStatus === "offline") {
+      throw new Error(
+        "יש שינויים שעדיין לא נשמרו. נסי שוב לפני הפרסום.",
+      );
+    }
     await waitForPendingMediaUploads();
-    return save.publish();
+    const result = await save.publish();
+    autosaveApiRef.current?.acknowledgeSaved();
+    return result;
   }, [save.publish, waitForPendingMediaUploads]);
+
+  const autosave = useVisualAutosave({
+    saveDraft: (context) =>
+      saveDraftWithPendingMedia({
+        autosave: true,
+        clientSaveSeq: context.revision,
+      }),
+  });
+  markAutosaveDirtyRef.current = autosave.markDirty;
+  autosaveApiRef.current = {
+    flushAutosave: autosave.flushAutosave,
+    acknowledgeSaved: autosave.acknowledgeSaved,
+    cancelPending: autosave.cancelPending,
+    getAutosaveStatus: autosave.getAutosaveStatus,
+  };
 
   useVisualKeyboardShortcuts({
     enabled: !isPreviewMode,
@@ -5232,6 +5278,10 @@ export function useVisualEditorState({
       isUploadingMedia,
       lastSavedAt: save.lastSavedAt,
       saveError: save.saveError,
+      autosaveStatus: autosave.autosaveStatus,
+      markAutosaveDirty: autosave.markDirty,
+      flushAutosave: autosave.flushAutosave,
+      retryAutosave: autosave.retryAutosave,
 
       keys: {
         VISUAL_STYLE_KEY,
@@ -5367,6 +5417,10 @@ export function useVisualEditorState({
       isUploadingMedia,
       save.lastSavedAt,
       save.saveError,
+      autosave.autosaveStatus,
+      autosave.markDirty,
+      autosave.flushAutosave,
+      autosave.retryAutosave,
       updateText,
       sitePagesSignature,
     ],

@@ -1241,6 +1241,8 @@ type VisualTemplateSavePayload = {
   snapshotPageId?: string;
   /** Site-wide custom code (CSS/Head/Body/JS) */
   customCode?: Record<string, any>;
+  autosave?: boolean;
+  clientSaveSeq?: number;
 };
 
 
@@ -5134,6 +5136,9 @@ export default function WebsiteStudioPage({
   const markVisualPageDirty = (pageId: string) => {
     const id = String(pageId || "").trim();
     if (id) dirtyVisualPageIdsRef.current.add(id);
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("bizuply:visual-autosave-dirty"));
+    }
   };
   const rememberPersistedPageIds = (
     list: Array<{ id?: string } | null | undefined> | undefined,
@@ -5142,6 +5147,11 @@ export default function WebsiteStudioPage({
   };
   const visualSavingRef = useRef(false);
   const pendingVisualSaveRef = useRef<VisualTemplateSavePayload | null>(null);
+  const pendingVisualSaveGateRef = useRef<{
+    promise: Promise<void>;
+    resolve: () => void;
+    reject: (error: unknown) => void;
+  } | null>(null);
   const [siteName, setSiteName] = useState("האתר שלי");
   const [customDomain, setCustomDomain] = useState("");
   const [customDomainProvisioningStatus, setCustomDomainProvisioningStatus] =
@@ -7987,9 +7997,24 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     }
 
     if (visualSavingRef.current) {
-      pendingVisualSaveRef.current = visualPayload;
+      const pendingPublished = Boolean(
+        pendingVisualSaveRef.current?.published ||
+          pendingVisualSaveRef.current?.status === "published",
+      );
+      if (!(pendingPublished && !published)) {
+        pendingVisualSaveRef.current = visualPayload;
+      }
+      if (!pendingVisualSaveGateRef.current) {
+        let resolve!: () => void;
+        let reject!: (error: unknown) => void;
+        const promise = new Promise<void>((res, rej) => {
+          resolve = res;
+          reject = rej;
+        });
+        pendingVisualSaveGateRef.current = { promise, resolve, reject };
+      }
       traceVisualPublish("save-queued-in-flight", { published, incomingSlug });
-      return;
+      return pendingVisualSaveGateRef.current.promise;
     }
 
     const cleanVisualData = buildCleanVisualDataForSave(
@@ -8551,6 +8576,8 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         customCode: Object.keys(asPlainObject(visualPayload.customCode)).length
           ? asPlainObject(visualPayload.customCode)
           : siteCustomCode,
+        autosave: Boolean(visualPayload.autosave),
+        clientSaveSeq: visualPayload.clientSaveSeq,
       } as any;
 
       const tPagesReady =
@@ -8794,16 +8821,27 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         },
       });
 
-      alert(error?.message || "אירעה שגיאה בשמירת האתר. נסי שוב.");
+      if (!visualPayload.autosave) {
+        alert(error?.message || "אירעה שגיאה בשמירת האתר. נסי שוב.");
+      }
       throw error;
     } finally {
       visualSavingRef.current = false;
       setSaving(false);
       studioGroupEnd();
       const pending = pendingVisualSaveRef.current;
+      const gate = pendingVisualSaveGateRef.current;
+      pendingVisualSaveRef.current = null;
+      pendingVisualSaveGateRef.current = null;
       if (pending) {
-        pendingVisualSaveRef.current = null;
-        void handleVisualTemplateSave(pending);
+        try {
+          await handleVisualTemplateSave(pending);
+          gate?.resolve();
+        } catch (pendingError) {
+          gate?.reject(pendingError);
+        }
+      } else {
+        gate?.resolve();
       }
     }
   };

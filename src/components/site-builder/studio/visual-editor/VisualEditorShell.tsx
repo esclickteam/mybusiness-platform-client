@@ -23,6 +23,7 @@ import VisualEditorIconRail from "./VisualEditorIconRail";
 import VisualEditorPluginStorePanel from "./VisualEditorPluginStorePanel";
 import VisualMediaModal from "./components/VisualMediaModal";
 import VisualLinkModal from "./components/VisualLinkModal";
+import VisualAutosaveStatus from "./components/VisualAutosaveStatus";
 import FormBuilderModal from "../FormBuilderModal";
 import ConnectDomainModal from "../../../website/ConnectDomainModal";
 import { getSitePlugins } from "../../../../api/sitePluginsApi";
@@ -63,6 +64,15 @@ type VisualEditorRuntime = ReturnType<typeof useVisualEditorState> & {
   isUploadingMedia?: boolean;
   lastSavedAt?: string;
   saveError?: string;
+  autosaveStatus?:
+    | "clean"
+    | "dirty"
+    | "saving"
+    | "saved"
+    | "error"
+    | "offline";
+  flushAutosave?: () => void | Promise<void>;
+  retryAutosave?: () => void | Promise<void>;
 
   save?: (
     status?: "draft" | "published",
@@ -476,6 +486,15 @@ export default function VisualEditorShell({
             </span>
           </button>
 
+          <VisualAutosaveStatus
+            status={editor.autosaveStatus || "clean"}
+            onRetry={() => {
+              void runAction(async () => {
+                await editor.retryAutosave?.();
+              });
+            }}
+          />
+
           <button
             type="button"
             disabled={busy}
@@ -633,6 +652,7 @@ export default function VisualEditorShell({
                 ((editor as any).data as Record<string, any>) ||
                 {};
               onSelectSitePage(pageId, currentVisualData);
+              void editor.flushAutosave?.();
             }}
             onAddPage={() => {
               if (typeof onAddLibraryPage === "function") {
