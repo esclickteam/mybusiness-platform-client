@@ -575,7 +575,28 @@ export default function VisualEditorShell({
             open={sidePanelMode === "plugins"}
             siteId={siteId}
             onClose={() => setSidePanelMode(null)}
-            onInstalled={() => setOverlayRefreshKey((k) => k + 1)}
+            onInstalled={(info) => {
+              setOverlayRefreshKey((k) => k + 1);
+              const ids = Array.isArray(info?.pageTemplateIds)
+                ? info.pageTemplateIds
+                : [];
+              if (!ids.length || typeof onAddLibraryPage !== "function") return;
+              void import("./library/pageLibrary").then(({ getPageTemplateById }) => {
+                ids.forEach((id) => {
+                  const page = getPageTemplateById(id);
+                  if (page) onAddLibraryPage(page);
+                });
+                window.setTimeout(() => {
+                  if (typeof editor.saveDraft === "function") {
+                    void editor.saveDraft();
+                    return;
+                  }
+                  if (typeof editor.save === "function") {
+                    void editor.save("draft");
+                  }
+                }, 700);
+              });
+            }}
           />
         ) : null}
 
