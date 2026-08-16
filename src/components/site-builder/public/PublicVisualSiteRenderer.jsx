@@ -2381,6 +2381,7 @@ export default function PublicVisualSiteRenderer({
       if (typeof window === "undefined") return;
       const nextPath = resolvePublicPathForPageId(site, renderer, nextPageId);
       const currentPath = window.location.pathname || "/";
+      if (currentPath.startsWith("/portal/")) return;
       if (nextPath === currentPath) return;
       window.history.pushState({}, "", nextPath);
       window.dispatchEvent(new PopStateEvent("popstate"));

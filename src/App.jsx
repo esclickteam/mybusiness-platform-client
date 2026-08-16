@@ -342,12 +342,7 @@ function PublicMiniSitePage() {
       setSeoDocument(null);
 
       // Portal routes need site metadata (name/id) but not a specific page.
-      const requestPath =
-        pathname === "/portal/login" ||
-        pathname === "/portal/account" ||
-        pathname === "/portal/accept-invite"
-          ? "/"
-          : pathname;
+      const requestPath = pathname.startsWith("/portal/") ? "/" : pathname;
 
       const url = `${API_SITE_BUILDER_BASE_URL}/public/by-host?host=${encodeURIComponent(
         host
@@ -684,10 +679,22 @@ function PublicMiniSitePage() {
 }
 
 function PublicMiniSiteContent({ site, location, onPortalAuthChange }) {
-  const pathname =
-    typeof window !== "undefined"
-      ? window.location.pathname
-      : location.pathname;
+  const routerPath = location?.pathname;
+  const [pathname, setPathname] = React.useState(
+    () =>
+      (typeof window !== "undefined" ? window.location.pathname : "") ||
+      routerPath ||
+      "/",
+  );
+
+  React.useEffect(() => {
+    const sync = () => {
+      setPathname(window.location.pathname || "/");
+    };
+    sync();
+    window.addEventListener("popstate", sync);
+    return () => window.removeEventListener("popstate", sync);
+  }, [routerPath]);
 
   return (
     <Suspense fallback={<PublicSiteLoader fullScreen label="Loading" />}>
