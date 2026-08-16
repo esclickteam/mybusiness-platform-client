@@ -374,6 +374,13 @@ export default function VisualEditorShell({
   }
 
   function handlePublish() {
+    if (typeof window !== "undefined") {
+      const bag = ((window as any).__WB_PUBLISH_TRACE ||= []) as Array<
+        Record<string, unknown>
+      >;
+      bag.push({ t: Date.now(), step: "publish-click-fired" });
+      console.log("[WB_PUBLISH_TRACE]", "publish-click-fired");
+    }
     void runAction(async () => {
       if (typeof editor.save === "function") {
         await editor.save("published");
