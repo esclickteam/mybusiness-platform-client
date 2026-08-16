@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   detectPortalPageKind,
   findPortalPageForFriendlyPath,
+  hasRenderableDesignedPortalPage,
   resolvePortalPaths,
 } from "./portalSitePaths";
 
@@ -159,5 +160,60 @@ describe("resolvePortalPaths", () => {
       "login-05",
     );
     expect(resolvePortalPaths(site).register).toBe("/register-03");
+  });
+});
+
+describe("hasRenderableDesignedPortalPage", () => {
+  it("ignores auto-seeded blank entitlement stubs", () => {
+    const site = {
+      pages: [
+        { id: "home", slug: "", isHome: true, data: {} },
+        {
+          id: "login",
+          slug: "login",
+          type: "blank",
+          __libraryPage: true,
+          data: {
+            __blankVisualPage: true,
+            __libraryPage: true,
+            __libraryPageTemplateId: "page-portal-01",
+            __attributes: {
+              "section-portal-login-01": {
+                "data-bizuply-widget": "portal-login",
+                "data-bizuply-portal-kind": "portal-login",
+              },
+            },
+          },
+        },
+        {
+          id: "register",
+          slug: "register",
+          type: "blank",
+          data: {
+            __blankVisualPage: true,
+            __libraryPageTemplateId: "page-portal-11",
+          },
+        },
+      ],
+    };
+
+    expect(resolvePortalPaths(site).login).toBe("/login");
+    expect(hasRenderableDesignedPortalPage(site, "/login")).toBe(false);
+    expect(hasRenderableDesignedPortalPage(site, "/register")).toBe(false);
+    expect(hasRenderableDesignedPortalPage(site, "/portal/login")).toBe(false);
+  });
+
+  it("treats a merchant-designed portal page as renderable", () => {
+    const site = {
+      pages: [pageWithAttributes("login-02", "portal-login")],
+    };
+
+    expect(hasRenderableDesignedPortalPage(site, "/login-02")).toBe(true);
+  });
+
+  it("does not treat a missing /packages path as designed", () => {
+    expect(
+      hasRenderableDesignedPortalPage({ pages: [{ id: "home", slug: "" }] }, "/packages"),
+    ).toBe(false);
   });
 });

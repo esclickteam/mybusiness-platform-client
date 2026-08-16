@@ -108,6 +108,13 @@ export default function SitePortalLoginView({
             {loading ? "מתחבר..." : "התחברות"}
           </button>
         </form>
+
+        <p className="mt-5 text-center text-sm font-medium text-slate-500">
+          אין לכם חשבון?{" "}
+          <a href="/portal/register" className="font-bold text-sky-700 hover:underline">
+            הרשמה
+          </a>
+        </p>
       </div>
     </div>
   );

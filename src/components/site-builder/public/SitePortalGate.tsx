@@ -3,7 +3,11 @@ import SitePortalLoginView from "./SitePortalLoginView";
 import SitePortalAcceptInviteView from "./SitePortalAcceptInviteView";
 import SitePortalAccountView from "./SitePortalAccountView";
 import SitePortalPasswordView from "./SitePortalPasswordView";
-import { resolvePortalPaths } from "./portalSitePaths";
+import {
+  hasRenderableDesignedPortalPage,
+  resolvePortalPaths,
+} from "./portalSitePaths";
+import SitePortalRegisterView from "./SitePortalRegisterView";
 
 type PortalGateInfo = {
   pluginEnabled?: boolean;
@@ -69,7 +73,7 @@ export default function SitePortalGate({
   const portalPaths = useMemo(() => resolvePortalPaths(site), [site]);
 
   const hasDesignedPage = (path: string) =>
-    Boolean(path) && !path.startsWith("/portal/");
+    hasRenderableDesignedPortalPage(site, path);
 
   if (portalRoute && !pluginEnabled) {
     return (
@@ -130,14 +134,8 @@ export default function SitePortalGate({
       return <PortalRedirect to={`${portalPaths.register}${search}`} />;
     }
 
-    // No designed register page yet — keep guests on the login gate with a
-    // clear path rather than bouncing them through a fake /register alias.
-    if (hasDesignedPage(portalPaths.login)) {
-      return <PortalRedirect to={portalPaths.login} />;
-    }
-
     return (
-      <SitePortalLoginView
+      <SitePortalRegisterView
         siteName={siteName}
         siteId={siteId}
         returnPath={portalPaths.account || "/portal/account"}
