@@ -14,6 +14,14 @@ import {
   type StoreCatalogCategory,
   type StoreCatalogProduct,
 } from "./useStorePluginCatalog";
+import {
+  loadRichStoreCart,
+  persistRichStoreCart,
+  resolveRichStoreCartBusinessId,
+  type RichStoreCartItem,
+} from "./richStoreCartStorage";
+
+export type { RichStoreCartItem };
 
 export type RichStoreSitePageId =
   | "home"
@@ -29,18 +37,6 @@ export type RichStoreSitePageId =
   | "shipping";
 
 type StorePage = { id: string; label: string; slug: string };
-
-export type RichStoreCartItem = {
-  id: string;
-  productId: string;
-  name: string;
-  price: number;
-  image: string;
-  qty: number;
-  variantId?: string;
-  variantLabel?: string;
-  sku?: string;
-};
 
 export type RichStoreSiteRuntimeProps = {
   templateId: string;
@@ -911,7 +907,10 @@ export default function RichStoreSiteRuntime({
   const [sort, setSort] = useState<RichSort>("featured");
   const [selectedProductId, setSelectedProductId] = useState("");
   const [selectedVariantId, setSelectedVariantId] = useState("");
-  const [cart, setCart] = useState<RichStoreCartItem[]>([]);
+  const cartBusinessId = resolveRichStoreCartBusinessId(businessId);
+  const [cart, setCart] = useState<RichStoreCartItem[]>(() =>
+    loadRichStoreCart(cartBusinessId),
+  );
   const [qty, setQty] = useState(1);
   const [stockMessage, setStockMessage] = useState("");
   const [navOpen, setNavOpen] = useState(false);
@@ -919,6 +918,20 @@ export default function RichStoreSiteRuntime({
   const goToPage = (pageId: string) => {
     setNavOpen(false);
     navigatePage(pageId);
+  };
+
+  useEffect(() => {
+    setCart(loadRichStoreCart(cartBusinessId));
+  }, [cartBusinessId]);
+
+  const commitCart = (
+    next: RichStoreCartItem[] | ((prev: RichStoreCartItem[]) => RichStoreCartItem[]),
+  ) => {
+    setCart((prev) => {
+      const value = typeof next === "function" ? next(prev) : next;
+      persistRichStoreCart(cartBusinessId, value);
+      return value;
+    });
   };
 
   useEffect(() => {
@@ -1068,7 +1081,7 @@ export default function RichStoreSiteRuntime({
     }
 
     setStockMessage("");
-    setCart((prev) => {
+    commitCart((prev) => {
       const existing = prev.find((item) => item.id === cartKey);
       if (existing) {
         const nextQty = existing.qty + amount;
@@ -2316,7 +2329,7 @@ export default function RichStoreSiteRuntime({
             {selectedProduct ? (
               <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-2">
                 <Reveal variant="right"><StoreImage src={selectedProduct.image} alt={selectedProduct.name} fallbackLabel={selectedProduct.name} className={cx("w-full object-cover", skin.media)} /></Reveal>
-                <Reveal variant="left" className="text-right"><p className="text-xs font-black uppercase tracking-[0.22em] text-[var(--p)]">{selectedProduct.category}</p><h1 className={cx("store-display mt-4 text-5xl font-black", skin.title)}>{selectedProduct.name}</h1><p className="mt-4 text-2xl font-black text-[var(--p)]">{formatStorePrice((selectedProduct.variants.find((v) => v.id === selectedVariantId)?.price ?? selectedProduct.price), currency)}</p><p className="mt-6 text-base leading-8 text-[var(--muted)]">{selectedProduct.shortDescription || g("productFallbackText")}</p>{selectedProduct.variants.length > 0 ? <div className="mt-6"><p className="mb-2 text-xs font-black uppercase tracking-[0.18em] text-[var(--muted)]">בחירת וריאציה</p><div className="flex flex-wrap gap-2">{selectedProduct.variants.map((variant) => { const disabled = selectedProduct.trackStock && !selectedProduct.allowBackorder && variant.stock <= 0; return <button key={variant.id || variant.label} type="button" disabled={disabled} onClick={() => setSelectedVariantId(variant.id)} className={cx("px-4 py-2 text-xs font-black", skin.outlineButton, selectedVariantId === variant.id ? "ring-2 ring-[var(--p)]" : "", disabled ? "opacity-40" : "")}>{variant.label || variant.optionValue}{selectedProduct.trackStock ? ` · ${variant.stock}` : ""}</button>; })}</div></div> : null}{!selectedProduct.inStock ? <p className="mt-4 text-sm font-black text-red-600">אזל מהמלאי</p> : selectedProduct.trackStock && selectedProduct.stock <= 3 ? <p className="mt-4 text-sm font-black text-amber-600">נותרו {selectedProduct.stock} במלאי</p> : null}{stockMessage ? <p className="mt-3 text-sm font-black text-red-600">{stockMessage}</p> : null}<div className="mt-8 flex flex-wrap items-center gap-3"><div className={cx("flex items-center border", skin.input)}><button type="button" className="px-4 py-3" onClick={() => setQty((q) => Math.max(1, q - 1))}>-</button><span className="min-w-10 text-center font-black">{qty}</span><button type="button" className="px-4 py-3" onClick={() => setQty((q) => q + 1)}>+</button></div><button type="button" disabled={!selectedProduct.inStock} onClick={() => { addToCart(selectedProduct, qty); goToPage("cart"); }} className={cx("text-sm font-black", skin.button, !selectedProduct.inStock ? "opacity-50" : "")}>{selectedProduct.inStock ? "הוספה לסל" : "אזל מהמלאי"}</button><button type="button" onClick={() => goToPage("shop")} className={cx("text-sm font-black", skin.outlineButton)}>חזרה לחנות</button></div></Reveal>
+                <Reveal variant="left" className="text-right"><p className="text-xs font-black uppercase tracking-[0.22em] text-[var(--p)]">{selectedProduct.category}</p><h1 className={cx("store-display mt-4 text-5xl font-black", skin.title)}>{selectedProduct.name}</h1><p className="mt-4 text-2xl font-black text-[var(--p)]">{formatStorePrice((selectedProduct.variants.find((v) => v.id === selectedVariantId)?.price ?? selectedProduct.price), currency)}</p><p className="mt-6 text-base leading-8 text-[var(--muted)]">{selectedProduct.shortDescription || g("productFallbackText")}</p>{selectedProduct.variants.length > 0 ? <div className="mt-6"><p className="mb-2 text-xs font-black uppercase tracking-[0.18em] text-[var(--muted)]">בחירת וריאציה</p><div className="flex flex-wrap gap-2">{selectedProduct.variants.map((variant) => { const disabled = selectedProduct.trackStock && !selectedProduct.allowBackorder && variant.stock <= 0; return <button key={variant.id || variant.label} type="button" disabled={disabled} onClick={() => setSelectedVariantId(variant.id)} className={cx("px-4 py-2 text-xs font-black", skin.outlineButton, selectedVariantId === variant.id ? "ring-2 ring-[var(--p)]" : "", disabled ? "opacity-40" : "")}>{variant.label || variant.optionValue}{selectedProduct.trackStock ? ` · ${variant.stock}` : ""}</button>; })}</div></div> : null}{!selectedProduct.inStock ? <p className="mt-4 text-sm font-black text-red-600">אזל מהמלאי</p> : selectedProduct.trackStock && selectedProduct.stock <= 3 ? <p className="mt-4 text-sm font-black text-amber-600">נותרו {selectedProduct.stock} במלאי</p> : null}{stockMessage ? <p className="mt-3 text-sm font-black text-red-600">{stockMessage}</p> : null}<div className="mt-8 flex flex-wrap items-center gap-3"><div className={cx("flex items-center border", skin.input)}><button type="button" className="px-4 py-3" onClick={() => setQty((q) => Math.max(1, q - 1))}>-</button><span className="min-w-10 text-center font-black">{qty}</span><button type="button" className="px-4 py-3" onClick={() => setQty((q) => q + 1)}>+</button></div><button type="button" data-testid="store-add-to-cart" disabled={!selectedProduct.inStock} onClick={() => { addToCart(selectedProduct, qty); goToPage("cart"); }} className={cx("text-sm font-black", skin.button, !selectedProduct.inStock ? "opacity-50" : "")}>{selectedProduct.inStock ? "הוספה לסל" : "אזל מהמלאי"}</button><button type="button" onClick={() => goToPage("shop")} className={cx("text-sm font-black", skin.outlineButton)}>חזרה לחנות</button></div></Reveal>
               </div>
             ) : <p className="mx-auto max-w-7xl text-[var(--muted)]">אין מוצרים להצגה.</p>}
           </section>
@@ -2339,7 +2352,7 @@ export default function RichStoreSiteRuntime({
       return (
         <div>
           {Header}
-          <section {...sectionProps("cart-rich-main", "cart", "סל")} className="px-5 py-16 lg:px-8 lg:py-24"><div className="mx-auto max-w-5xl"><h1 className={cx("store-display text-5xl font-black", skin.title)}>{g("cartTitle")}</h1><p className="mt-3 text-[var(--muted)]">{g("cartText")}</p><div className="mt-10 space-y-4">{cart.length === 0 ? <div className={cx("border border-dashed p-10 text-center", skin.softCard)}><p className="text-[var(--muted)]">הסל ריק כרגע.</p><button type="button" onClick={() => goToPage("shop")} className={cx("mt-6 text-sm font-black", skin.button)}>לעמוד החנות</button></div> : cart.map((item) => <div key={item.id} className={cx("flex flex-wrap items-center justify-between gap-4 border p-4", skin.card)}><div className="flex items-center gap-4"><StoreImage src={item.image} alt="" fallbackLabel={item.name} className="h-20 w-16 object-cover" /><div className="text-right"><p className="font-black">{item.name}</p>{item.variantLabel ? <p className="text-xs font-bold text-[var(--muted)]">{item.variantLabel}</p> : null}<p className="text-sm text-[var(--muted)]">{formatStorePrice(item.price, currency)} x {item.qty}</p></div></div><div className="flex items-center gap-3"><p className="font-black">{formatStorePrice(item.price * item.qty, currency)}</p><button type="button" className="text-xs font-bold text-red-600" onClick={() => setCart((prev) => prev.filter((x) => x.id !== item.id))}>הסר</button></div></div>)}</div>{cart.length > 0 ? <div className="mt-8 flex flex-wrap items-center justify-between gap-4 border-t border-[var(--line)] pt-6"><p className="text-xl font-black">סה"כ: {formatStorePrice(cartTotal, currency)}</p><button type="button" onClick={openCheckout} className={cx("text-sm font-black", skin.button)}>המשך לתשלום</button></div> : null}</div></section>
+          <section data-testid="rich-store-cart" {...sectionProps("cart-rich-main", "cart", "סל")} className="px-5 py-16 lg:px-8 lg:py-24"><div className="mx-auto max-w-5xl"><h1 className={cx("store-display text-5xl font-black", skin.title)}>{g("cartTitle")}</h1><p className="mt-3 text-[var(--muted)]">{g("cartText")}</p><div className="mt-10 space-y-4">{cart.length === 0 ? <div data-testid="cart-empty" className={cx("border border-dashed p-10 text-center", skin.softCard)}><p className="text-[var(--muted)]">הסל ריק כרגע.</p><button type="button" onClick={() => goToPage("shop")} className={cx("mt-6 text-sm font-black", skin.button)}>לעמוד החנות</button></div> : cart.map((item) => <div key={item.id} data-testid="cart-line" data-cart-item="true" data-product-name={item.name} data-product-id={item.productId} className={cx("flex flex-wrap items-center justify-between gap-4 border p-4", skin.card)}><div className="flex items-center gap-4"><StoreImage src={item.image} alt="" fallbackLabel={item.name} className="h-20 w-16 object-cover" /><div className="text-right"><p className="font-black">{item.name}</p>{item.variantLabel ? <p className="text-xs font-bold text-[var(--muted)]">{item.variantLabel}</p> : null}<p className="text-sm text-[var(--muted)]">{formatStorePrice(item.price, currency)} x <span data-testid="cart-item-qty" data-cart-qty={String(item.qty)}>{item.qty}</span></p></div></div><div className="flex items-center gap-3"><div className={cx("flex items-center border", skin.input)}><button type="button" aria-label="decrease-qty" onClick={() => commitCart((prev) => prev.map((line) => line.id === item.id ? { ...line, qty: Math.max(1, line.qty - 1) } : line))}>-</button><span className="min-w-8 text-center font-black">{item.qty}</span><button type="button" aria-label="increase-qty" onClick={() => commitCart((prev) => prev.map((line) => line.id === item.id ? { ...line, qty: line.qty + 1 } : line))}>+</button></div><p className="font-black">{formatStorePrice(item.price * item.qty, currency)}</p><button type="button" className="text-xs font-bold text-red-600" data-testid="cart-item-remove" onClick={() => commitCart((prev) => prev.filter((x) => x.id !== item.id))}>הסר</button></div></div>)}</div>{cart.length > 0 ? <div className="mt-8 flex flex-wrap items-center justify-between gap-4 border-t border-[var(--line)] pt-6"><p className="text-xl font-black">סה"כ: {formatStorePrice(cartTotal, currency)}</p><button type="button" onClick={openCheckout} className={cx("text-sm font-black", skin.button)}>המשך לתשלום</button></div> : null}</div></section>
           <SimpleInfoSection id="cart-rich-steps" kind="features" label="שלבי הזמנה" title="מה קורה אחרי הסל" text={g("shippingText")} className={skin.alt} />
           <ProductRail id="cart-rich-upsells" label="השלמות לסל" title="אולי תרצו להוסיף" productsToShow={showcase.slice(0, 4)} />
           <ShippingPills id="cart-rich-secure" className={skin.alt} />
