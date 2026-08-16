@@ -8687,6 +8687,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         {publishSuccessOpen ? (
           <div
             dir="rtl"
+            data-testid="visual-publish-success"
             className="fixed inset-0 z-[2147483647] flex items-center justify-center border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800/45 px-4 backdrop-blur-sm"
           >
             <div className="w-full max-w-[640px] overflow-hidden rounded-[34px] border border-white/80 bg-white text-right shadow-[0_35px_120px_rgba(15,23,42,0.35)]">

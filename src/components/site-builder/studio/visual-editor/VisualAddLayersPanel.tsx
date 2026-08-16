@@ -310,6 +310,13 @@ type LibraryElement = {
   action: () => void | Promise<any>;
 };
 
+const PRIMITIVE_ELEMENT_IDS = new Set([
+  "heading",
+  "paragraph",
+  "button",
+  "image",
+]);
+
 const ELEMENT_CATEGORY_LABELS: Array<{
   id: ElementCategory;
   label: string;
@@ -510,15 +517,18 @@ function NavigationButton({
   icon,
   label,
   onClick,
+  testId,
 }: {
   active: boolean;
   icon: React.ReactNode;
   label: string;
   onClick: () => void;
+  testId?: string;
 }) {
   return (
     <button
       type="button"
+      data-testid={testId}
       onClick={onClick}
       className={[
         "group flex w-full flex-col items-center gap-2 rounded-xl px-2 py-3 text-[11px] font-bold transition",
@@ -560,6 +570,7 @@ export default function VisualAddLayersPanel({
     null,
   );
   const [addTab, setAddTab] = useState<AddPanelTab>("sections");
+  const [elementCatalogReady, setElementCatalogReady] = useState(false);
   const sectionSensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: { distance: 3 },
@@ -764,6 +775,17 @@ export default function VisualAddLayersPanel({
     setSearchQuery("");
     setMediaQuery("");
   }, [mode, preferredAddTab]);
+
+  useEffect(() => {
+    if (mode !== "add" || addTab !== "elements") {
+      setElementCatalogReady(false);
+      return;
+    }
+    const frame = window.requestAnimationFrame(() => {
+      setElementCatalogReady(true);
+    });
+    return () => window.cancelAnimationFrame(frame);
+  }, [mode, addTab]);
 
   useEffect(() => {
     let cancelled = false;
@@ -1049,6 +1071,23 @@ export default function VisualAddLayersPanel({
     elements,
     searchQuery,
   ]);
+
+  const primitiveElements = useMemo(
+    () =>
+      elements.filter((item) => {
+        if (!PRIMITIVE_ELEMENT_IDS.has(item.id)) return false;
+        return (
+          elementCategory === "all" || item.category === elementCategory
+        );
+      }),
+    [elementCategory, elements],
+  );
+
+  const catalogElements = useMemo(
+    () =>
+      filteredElements.filter((item) => !PRIMITIVE_ELEMENT_IDS.has(item.id)),
+    [filteredElements],
+  );
 
   const visibleSectionNav = SECTION_LIBRARY_NAV;
   const visiblePageNav = PAGE_LIBRARY_NAV;
@@ -1395,6 +1434,7 @@ export default function VisualAddLayersPanel({
                   <Grid3X3 className="h-5 w-5" />
                 }
                 label="אלמנטים"
+                testId="visual-add-tab-elements"
                 onClick={() =>
                   setAddTab("elements")
                 }
@@ -1406,6 +1446,7 @@ export default function VisualAddLayersPanel({
                   <PanelTop className="h-5 w-5" />
                 }
                 label="סקשנים"
+                testId="visual-add-tab-sections"
                 onClick={() =>
                   setAddTab("sections")
                 }
@@ -1417,6 +1458,7 @@ export default function VisualAddLayersPanel({
                   <FileText className="h-5 w-5" />
                 }
                 label="עמודים"
+                testId="visual-add-tab-pages"
                 onClick={() => setAddTab("pages")}
               />
 
@@ -1936,12 +1978,20 @@ export default function VisualAddLayersPanel({
                       ) : null}
 
                       <div className="grid grid-cols-3 gap-4">
-                        {filteredElements.map(
+                        {[
+                          ...primitiveElements,
+                          ...(elementCatalogReady ? catalogElements : []),
+                        ].map(
                           (item) => (
                             <button
                               key={item.id}
                               type="button"
-                              data-testid={`visual-add-element-${item.id}`}
+                              data-testid={
+                                PRIMITIVE_ELEMENT_IDS.has(item.id)
+                                  ? `visual-add-primitive-${item.id}`
+                                  : `visual-add-element-${item.id}`
+                              }
+                              data-visual-add-element={item.id}
                               onClick={() =>
                                 closeAfter(
                                   item.action,
