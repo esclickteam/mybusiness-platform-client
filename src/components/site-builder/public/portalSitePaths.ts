@@ -222,7 +222,36 @@ export function hasRenderableDesignedPortalPage(site: any, path: unknown): boole
 
   if (!page) return false;
   if (isBlankLibraryPortalStub(page)) return false;
-  return true;
+
+  /*
+    A page at /login is not a login form just because of its slug. Older
+    publishes copied the home visual onto login/register/account. Those
+    must not steal /portal/login away from the real portal views.
+  */
+  const data = readPageVisualData(page);
+  const attributes = asPlainObject(data.__attributes);
+  const hasPortalWidget = Object.values(attributes).some((value) => {
+    const kind = String(
+      asPlainObject(value)["data-bizuply-portal-kind"] ||
+        asPlainObject(value)["data-bizuply-widget"] ||
+        "",
+    ).trim();
+    return PORTAL_KINDS.includes(kind as PortalWidgetKind);
+  });
+  const insertedSections = asPlainObject(data.__insertedSections);
+  const hasPortalSection = Object.values(insertedSections).some((section) =>
+    /^section-portal-/.test(String(asPlainObject(section).libraryId || "")),
+  );
+  const hasPortalTemplate = /^page-portal-\d+$/.test(
+    String(
+      page?.__libraryPageTemplateId ||
+        page?.libraryPageTemplateId ||
+        data.__libraryPageTemplateId ||
+        "",
+    ).trim(),
+  );
+
+  return hasPortalWidget || hasPortalSection || hasPortalTemplate;
 }
 
 export function resolvePortalPaths(site: any): PortalPaths {
