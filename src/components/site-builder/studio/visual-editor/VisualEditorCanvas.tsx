@@ -34,6 +34,7 @@ import {
   injectHtmlIntoElement,
 } from "./utils/visualCustomCodeRuntime";
 import { readVisualSectionOrder } from "./utils/visualData";
+import { markVisualAutosaveDirty } from "./utils/visualAutosaveController";
 import { syncSitePageTitlesIntoVisualData } from "./utils/syncNavWithSitePages";
 import {
   applyVisualSectionOrderToDom,
@@ -1800,6 +1801,7 @@ export default function VisualEditorCanvas({
       if (!node.contains(event.target)) return;
 
       event.stopPropagation();
+      markVisualAutosaveDirty();
 
       window.requestAnimationFrame(refreshSelectionBox);
     };

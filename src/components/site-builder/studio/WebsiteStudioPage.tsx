@@ -6181,6 +6181,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
 
       return nextPages;
     });
+    markVisualPageDirty(pageId);
   };
 
   const addBusinessPage = (title: string) => {
@@ -6770,6 +6771,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       handleSave throws and the backdrop blocks studio Save (C_SAVE start=0).
       Studio Save/Publish is the PUT that persists title/slug/SEO.
     */
+    markVisualPageDirty(id);
   };
 
   const handleVisualSitePageAction = (
