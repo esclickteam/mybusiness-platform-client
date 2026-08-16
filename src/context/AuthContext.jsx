@@ -31,6 +31,7 @@ import {
 } from "../utils/safeInternalRedirect";
 import BizuplyLoader from "../components/ui/BizuplyLoader";
 import { isPublicCustomerSiteHost } from "../utils/publicSiteHost";
+import { clearPushEnabledPreferenceCache } from "../utils/pushPreference";
 
 /* ===========================
    🧩 Normalize User
@@ -535,6 +536,7 @@ export function AuthProvider({ children }) {
 
     // Explicit logout → next login lands on main dashboard
     clearLocalAuth({ clearDashboardRoute: true });
+    clearPushEnabledPreferenceCache();
     markRefreshDead();
 
     setToken(null);

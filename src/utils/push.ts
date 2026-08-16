@@ -205,6 +205,7 @@ export type SubscribeResult = {
     | "no-key"
     | "ios-install"
     | "entitlement-required"
+    | "preference-off"
     | "no-subscription"
     | "error";
   detail?: string;
@@ -384,9 +385,12 @@ export async function bindExistingPushSubscription(): Promise<SubscribeResult> {
 /**
  * If the user already granted notification permission, make sure the device
  * subscription is registered for the current business (no permission prompt).
+ *
+ * Recovery never writes the business preference. If pushEnabled/master is
+ * false, this is a no-op so login/SW refresh cannot turn Push back on.
  */
 export async function ensurePushSubscription(
-  options: { forceRebind?: boolean } = {}
+  options: { forceRebind?: boolean; ignorePreference?: boolean } = {}
 ): Promise<SubscribeResult> {
   if (!isPushSupported()) return { ok: false, reason: "unsupported" };
   if (Notification.permission !== "granted") {
@@ -395,6 +399,14 @@ export async function ensurePushSubscription(
 
   if (isIos() && !isStandalone()) {
     return { ok: false, reason: "ios-install" };
+  }
+
+  if (!options.ignorePreference) {
+    const { getPushEnabledPreference } = await import("./pushPreference");
+    const pushEnabled = await getPushEnabledPreference();
+    if (!pushEnabled) {
+      return { ok: false, reason: "preference-off" };
+    }
   }
 
   return subscribeToPush(options);

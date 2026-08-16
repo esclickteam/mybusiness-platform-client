@@ -45,13 +45,19 @@ import {
   type PushPermission,
 } from "../utils/push";
 import { resolvePushToggleCopy } from "../utils/pushToggleState";
+import { resolvePushSupportBanner } from "../utils/pushSupportBanner";
 import {
-  isPushOnFromServerOnly,
-  resolvePushSupportBanner,
-} from "../utils/pushSupportBanner";
+  buildNotificationSettingsWrite,
+  isPushEnabledPreference,
+  persistPushEnabledPreference,
+  rememberPushEnabledPreference,
+  resolvePushToggleChecked,
+  shouldRecoverDeviceSubscription,
+} from "../utils/pushPreference";
 
 type NotificationSettingsState = {
   master: boolean;
+  pushEnabled?: boolean;
   appointment: boolean;
   collaboration: boolean;
   review: boolean;
@@ -60,7 +66,7 @@ type NotificationSettingsState = {
   task: boolean;
 };
 
-type CategoryKey = keyof Omit<NotificationSettingsState, "master">;
+type CategoryKey = keyof Omit<NotificationSettingsState, "master" | "pushEnabled">;
 
 type BeforeInstallPromptEvent = Event & {
   prompt: () => Promise<void>;
@@ -69,6 +75,7 @@ type BeforeInstallPromptEvent = Event & {
 
 const DEFAULT_SETTINGS: NotificationSettingsState = {
   master: true,
+  pushEnabled: true,
   appointment: true,
   collaboration: true,
   review: true,
@@ -125,10 +132,12 @@ function Toggle({
   checked,
   onChange,
   disabled = false,
+  testId,
 }: {
   checked: boolean;
   onChange: () => void;
   disabled?: boolean;
+  testId?: string;
 }) {
   return (
     <button
@@ -136,6 +145,7 @@ function Toggle({
       role="switch"
       dir="ltr"
       aria-checked={checked}
+      data-testid={testId}
       disabled={disabled}
       onClick={onChange}
       className={[
@@ -243,22 +253,59 @@ export function NotificationSettingsPanel({
         setTestMessage("");
         setBillingMessage("");
 
-        const localSub = await getCurrentPushSubscription();
-        if (localSub) {
-          const bind = await bindExistingPushSubscription();
-          if (bind.reason === "entitlement-required") {
+        const [res, billing] = await Promise.all([
+          API.get("/business/my/notification-settings"),
+          getPushBillingStatus().catch(() => null),
+        ]);
+
+        if (cancelled) return;
+
+        const loadedSettings =
+          res.data?.ok && res.data.settings
+            ? { ...DEFAULT_SETTINGS, ...res.data.settings }
+            : DEFAULT_SETTINGS;
+        setSettings(loadedSettings);
+        rememberPushEnabledPreference(isPushEnabledPreference(loadedSettings));
+        if (billing) {
+          setBillingStatus(billing);
+        }
+
+        const billingOn = Boolean(billing?.billingEnabled);
+        const entitledNow = Boolean(billing?.entitled);
+        const entitledOkNow = !billingOn || entitledNow;
+        const pushEnabled = isPushEnabledPreference(loadedSettings);
+
+        if (
+          shouldRecoverDeviceSubscription({
+            pushEnabled,
+            entitled: entitledOkNow,
+            permission: getPermission(),
+            supported: isPushSupported(),
+          })
+        ) {
+          const recover = await ensurePushSubscription();
+          if (recover.reason === "entitlement-required") {
             setBillingMessage("נדרש מנוי Push כדי להפעיל התראות במכשיר");
+          }
+        } else {
+          const localSub = await getCurrentPushSubscription();
+          if (localSub && pushEnabled) {
+            const bind = await bindExistingPushSubscription();
+            if (bind.reason === "entitlement-required") {
+              setBillingMessage("נדרש מנוי Push כדי להפעיל התראות במכשיר");
+            }
           }
         }
 
+        if (cancelled) return;
+
+        const localSub = await getCurrentPushSubscription();
         const endpoint = localSub?.endpoint || "";
-        const [subscribedNow, res, statusRes, billing] = await Promise.all([
+        const [subscribedNow, statusRes] = await Promise.all([
           isSubscribed(),
-          API.get("/business/my/notification-settings"),
           API.get("/push/status", {
             params: endpoint ? { endpoint } : undefined,
           }).catch(() => null),
-          getPushBillingStatus().catch(() => null),
         ]);
 
         if (cancelled) return;
@@ -271,13 +318,6 @@ export function NotificationSettingsPanel({
             : null
         );
         setDeviceCount(Number(statusRes?.data?.deviceCount || 0));
-        if (billing) {
-          setBillingStatus(billing);
-        }
-
-        if (res.data?.ok && res.data.settings) {
-          setSettings({ ...DEFAULT_SETTINGS, ...res.data.settings });
-        }
       } catch (err) {
         console.error("Failed to load notification settings:", err);
       } finally {
@@ -325,14 +365,11 @@ export function NotificationSettingsPanel({
   const categoriesLocked = showPaywall;
 
   const entitledOk = !billingEnabled || entitled;
-  const pushOn =
-    (subscribed && settings.master && entitledOk) ||
-    isPushOnFromServerOnly({
-      supported,
-      master: settings.master,
-      entitled: entitledOk,
-      deviceCount,
-    });
+  const pushEnabled = isPushEnabledPreference(settings);
+  const pushOn = resolvePushToggleChecked({
+    pushEnabled,
+    entitled: entitledOk,
+  });
   const toggleCopy = resolvePushToggleCopy({
     pushOn,
     serverReady,
@@ -349,11 +386,12 @@ export function NotificationSettingsPanel({
     deviceCount,
   });
 
-  async function persist(next: NotificationSettingsState) {
+  async function persistCategories(next: NotificationSettingsState) {
     try {
-      const res = await API.put("/business/my/notification-settings", {
-        settings: next,
-      });
+      const res = await API.put(
+        "/business/my/notification-settings",
+        buildNotificationSettingsWrite({ settings: next })
+      );
 
       if (res.data?.ok && res.data.settings) {
         setSettings({ ...DEFAULT_SETTINGS, ...res.data.settings });
@@ -366,6 +404,34 @@ export function NotificationSettingsPanel({
     }
   }
 
+  async function persistMaster(enabled: boolean, current: NotificationSettingsState) {
+    try {
+      const savedSettings = await persistPushEnabledPreference(enabled, current);
+      if (savedSettings) {
+        setSettings({ ...DEFAULT_SETTINGS, ...savedSettings });
+      }
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
+    } catch (err) {
+      console.error("Failed to save push preference:", err);
+    }
+  }
+
+  async function refreshDeviceStatus() {
+    const localSub = await getCurrentPushSubscription();
+    const statusRes = await API.get("/push/status", {
+      params: localSub?.endpoint ? { endpoint: localSub.endpoint } : undefined,
+    }).catch(() => null);
+    setSubscribed(Boolean(localSub));
+    setServerReady(Boolean(statusRes?.data?.ready));
+    setThisDeviceRegistered(
+      typeof statusRes?.data?.thisDeviceRegistered === "boolean"
+        ? statusRes.data.thisDeviceRegistered
+        : null
+    );
+    setDeviceCount(Number(statusRes?.data?.deviceCount || 0));
+  }
+
   async function handleMasterToggle() {
     if (busy) return;
 
@@ -374,14 +440,17 @@ export function NotificationSettingsPanel({
       return;
     }
 
-    if (pushOn) {
+    if (pushEnabled) {
       setBusy(true);
       try {
-        const next = { ...settings, master: false };
+        const next = { ...settings, master: false, pushEnabled: false };
         setSettings(next);
+        await persistMaster(false, next);
         await unsubscribeFromPush();
         setSubscribed(false);
-        await persist(next);
+        setServerReady(false);
+        setThisDeviceRegistered(false);
+        setDeviceCount(0);
       } finally {
         setBusy(false);
       }
@@ -390,26 +459,16 @@ export function NotificationSettingsPanel({
 
     setBusy(true);
     try {
+      const next = { ...settings, master: true, pushEnabled: true };
+      setSettings(next);
+      await persistMaster(true, next);
+
       const result = await subscribeToPush();
       setPermission(getPermission());
 
       if (result.ok) {
         setSubscribed(true);
-        const next = { ...settings, master: true };
-        setSettings(next);
-        await persist(next);
-
-        const localSub = await getCurrentPushSubscription();
-        const statusRes = await API.get("/push/status", {
-          params: localSub?.endpoint ? { endpoint: localSub.endpoint } : undefined,
-        }).catch(() => null);
-        setServerReady(Boolean(statusRes?.data?.ready));
-        setThisDeviceRegistered(
-          typeof statusRes?.data?.thisDeviceRegistered === "boolean"
-            ? statusRes.data.thisDeviceRegistered
-            : null
-        );
-        setDeviceCount(Number(statusRes?.data?.deviceCount || 0));
+        await refreshDeviceStatus();
       } else if (result.reason === "entitlement-required") {
         setBillingMessage("נדרש מנוי Push כדי להפעיל התראות במכשיר");
         await refreshBillingStatus();
@@ -417,6 +476,8 @@ export function NotificationSettingsPanel({
         setSupported(false);
       } else if (result.reason === "ios-install") {
         setShowGuide(true);
+      } else {
+        await refreshDeviceStatus();
       }
     } finally {
       setBusy(false);
@@ -430,7 +491,7 @@ export function NotificationSettingsPanel({
     }
     const next = { ...settings, [key]: !settings[key] };
     setSettings(next);
-    persist(next);
+    persistCategories(next);
   }
 
   async function handleCheckout() {
@@ -793,14 +854,21 @@ export function NotificationSettingsPanel({
                     <p className="text-xs font-black text-slate-900">
                       התראות Push במכשיר
                     </p>
-                    <p className="text-[10px] font-semibold text-slate-500">
+                    <p
+                      className="text-[10px] font-semibold text-slate-500"
+                      data-testid="push-device-status"
+                    >
                       {toggleCopy.text}
                     </p>
                   </div>
                 </div>
                 <Toggle
                   checked={pushOn}
-                  disabled={busy || !supported || permission === "denied"}
+                  testId="push-master-toggle"
+                  disabled={
+                    busy ||
+                    (!pushEnabled && (!supported || permission === "denied"))
+                  }
                   onChange={handleMasterToggle}
                 />
               </div>
@@ -855,7 +923,10 @@ export function NotificationSettingsPanel({
                   <p className="text-sm font-black text-slate-900">
                     התראות Push במכשיר
                   </p>
-                    <p className="text-[11px] font-semibold text-slate-500">
+                    <p
+                      className="text-[11px] font-semibold text-slate-500"
+                      data-testid="push-device-status"
+                    >
                       {toggleCopy.text}
                     </p>
                 </div>
@@ -863,7 +934,11 @@ export function NotificationSettingsPanel({
 
               <Toggle
                 checked={pushOn}
-                disabled={busy || !supported || permission === "denied"}
+                testId="push-master-toggle"
+                disabled={
+                  busy ||
+                  (!pushEnabled && (!supported || permission === "denied"))
+                }
                 onChange={handleMasterToggle}
               />
             </div>
