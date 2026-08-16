@@ -3164,9 +3164,9 @@ export function useVisualEditorState({
   );
 
   const addImage = useCallback(
-    () =>
+    (options?: { openMediaPicker?: boolean }) =>
       addElement("image", {
-        openMediaPicker: true,
+        openMediaPicker: options?.openMediaPicker !== false,
       }),
     [addElement],
   );
