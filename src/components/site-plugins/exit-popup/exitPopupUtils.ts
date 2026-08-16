@@ -38,13 +38,17 @@ export function wasExitPopupSeenRecently(
   siteKey: string,
   showOncePerDays: number
 ) {
+  const key = exitPopupSeenKey(siteKey);
+  const days = Number(showOncePerDays);
   try {
-    const raw = localStorage.getItem(exitPopupSeenKey(siteKey));
+    // 0 / missing = once per tab session, never a permanent lock.
+    if (!Number.isFinite(days) || days <= 0) {
+      return sessionStorage.getItem(key) === "1";
+    }
+    const raw = localStorage.getItem(key);
     if (!raw) return false;
     const seenAt = Number(raw);
     if (!Number.isFinite(seenAt)) return false;
-    const days = Math.max(0, Number(showOncePerDays) || 0);
-    if (days <= 0) return true;
     return Date.now() - seenAt < days * 24 * 60 * 60 * 1000;
   } catch {
     return false;
@@ -52,8 +56,14 @@ export function wasExitPopupSeenRecently(
 }
 
 export function markExitPopupSeen(siteKey: string) {
+  const key = exitPopupSeenKey(siteKey);
   try {
-    localStorage.setItem(exitPopupSeenKey(siteKey), String(Date.now()));
+    sessionStorage.setItem(key, "1");
+  } catch {
+    // ignore
+  }
+  try {
+    localStorage.setItem(key, String(Date.now()));
   } catch {
     // ignore
   }

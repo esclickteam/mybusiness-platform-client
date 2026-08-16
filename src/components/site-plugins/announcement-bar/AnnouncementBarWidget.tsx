@@ -102,12 +102,10 @@ export default function AnnouncementBarWidget({
       setHost(resolveAnnouncementHost());
     };
     mount();
-    const t1 = window.setTimeout(mount, 50);
-    const t2 = window.setTimeout(mount, 300);
+    const timers = [50, 300, 800, 2000].map((ms) => window.setTimeout(mount, ms));
     return () => {
       cancelled = true;
-      window.clearTimeout(t1);
-      window.clearTimeout(t2);
+      timers.forEach((id) => window.clearTimeout(id));
     };
   }, [mode, siteKey, cfg.message, cfg.isActive]);
 
