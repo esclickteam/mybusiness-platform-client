@@ -211,6 +211,27 @@ describe("hasRenderableDesignedPortalPage", () => {
     expect(hasRenderableDesignedPortalPage(site, "/login-02")).toBe(true);
   });
 
+  it("does not treat a home visual with a leftover page-portal template id as designed", () => {
+    expect(
+      hasRenderableDesignedPortalPage(
+        {
+          pages: [
+            {
+              id: "login",
+              slug: "login",
+              __libraryPageTemplateId: "page-portal-01",
+              data: {
+                __libraryPageTemplateId: "page-portal-01",
+                __content: { hero: { text: "נתונים. נכסים. החלטות." } },
+              },
+            },
+          ],
+        },
+        "/login",
+      ),
+    ).toBe(false);
+  });
+
   it("does not treat a home visual parked on /login as designed", () => {
     expect(
       hasRenderableDesignedPortalPage(
