@@ -87,7 +87,11 @@ function PluginStoreCard({
 
           {isEnabled ? (
             <span className="rounded-full bg-emerald-500 px-2.5 py-0.5 text-[11px] font-semibold text-white shadow-sm">
-              מותקן
+              {plugin.statusLabel || "מותקן"}
+            </span>
+          ) : plugin.key === "client-portal" && plugin.billingEnabled ? (
+            <span className="rounded-full bg-slate-700 px-2.5 py-0.5 text-[11px] font-semibold text-white shadow-sm">
+              {plugin.statusLabel || "לא פעיל"}
             </span>
           ) : null}
         </div>
@@ -148,6 +152,8 @@ function PluginStoreCard({
               <BizuplyLoader size="xs" compact />
             ) : isEnabled ? (
               "הסרה"
+            ) : plugin.ctaLabel ? (
+              plugin.ctaLabel
             ) : (
               "התקנה"
             )}
@@ -371,7 +377,8 @@ export default function SitePluginStore({
           </div>
 
           <p className="mb-5 rounded-lg border border-blue-100 bg-blue-50/60 px-4 py-2.5 text-xs leading-relaxed text-blue-900">
-            כל התוספים זמינים <strong>בחינם</strong> בשלב הבנייה. המחירים לתצוגה
+            רוב התוספים זמינים <strong>בחינם</strong> בשלב הבנייה. «אזור אישי»
+            הוא מנוי ב־199 ₪ לחודש.
             בלבד — ללא חיוב.
           </p>
 

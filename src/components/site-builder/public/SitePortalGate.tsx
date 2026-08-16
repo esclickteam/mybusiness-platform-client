@@ -78,9 +78,15 @@ export default function SitePortalGate({
         className="flex min-h-screen items-center justify-center bg-white px-4"
       >
         <div className="w-full max-w-md rounded-[28px] border border-slate-200 p-8 text-center">
-          <h1 className="text-2xl font-black text-slate-900">אין אזור אישי</h1>
+          <h1 className="text-2xl font-black text-slate-900">
+            {portalGate.reason === "billing_inactive"
+              ? "האזור האישי אינו פעיל"
+              : "אין אזור אישי"}
+          </h1>
           <p className="mt-3 text-sm font-medium text-slate-500">
-            באתר זה לא מותקן התוסף «אזור אישי», ולכן אין התחברות ללקוחות.
+            {portalGate.reason === "billing_inactive"
+              ? "התוסף «אזור אישי» קיים באתר, אך המנוי אינו פעיל כרגע."
+              : "באתר זה לא מותקן התוסף «אזור אישי», ולכן אין התחברות ללקוחות."}
           </p>
           <a
             href="/"

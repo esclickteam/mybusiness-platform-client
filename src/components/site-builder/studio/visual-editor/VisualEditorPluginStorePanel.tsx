@@ -7,6 +7,10 @@ import {
   type SitePluginDefinition,
   type SitePluginEditorHint,
 } from "../../../../api/sitePluginsApi";
+import {
+  isClientPortalCheckoutRequiredError,
+  startClientPortalCheckout,
+} from "../../../../api/clientPortalBillingApi";
 import { getPluginEditorAction } from "../../../../data/pluginEditorRegistry";
 import SitePluginStore from "../../../website/site-management/SitePluginStore";
 import BizuplyLoader from "../../../ui/BizuplyLoader";
@@ -73,6 +77,16 @@ export default function VisualEditorPluginStorePanel({
     setSavingKey(key);
     setError("");
     try {
+      const plugin = catalog.find((item) => item.key === key);
+      if (
+        enabled &&
+        key === "client-portal" &&
+        plugin?.billingEnabled &&
+        plugin?.entitled === false
+      ) {
+        await startClientPortalCheckout(id);
+        return;
+      }
       const next = enabled
         ? Array.from(new Set([...enabledPlugins, key]))
         : enabledPlugins.filter((item) => item !== key);
@@ -106,6 +120,19 @@ export default function VisualEditorPluginStorePanel({
         editorHints: result.editorHints,
       });
     } catch (err) {
+      if (enabled && key === "client-portal" && isClientPortalCheckoutRequiredError(err)) {
+        try {
+          await startClientPortalCheckout(id);
+          return;
+        } catch (checkoutErr) {
+          setError(
+            checkoutErr instanceof Error
+              ? checkoutErr.message
+              : "פתיחת תשלום לאזור אישי נכשלה",
+          );
+          return;
+        }
+      }
       setError(
         err instanceof Error ? err.message : "עדכון התוסף נכשל",
       );

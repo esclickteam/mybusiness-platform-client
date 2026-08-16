@@ -207,6 +207,11 @@ export default function SitePluginHelpModal({
                     <X size={16} />
                     הסרת תוסף
                   </>
+                ) : plugin.ctaLabel ? (
+                  <>
+                    <Download size={16} />
+                    {plugin.ctaLabel}
+                  </>
                 ) : (
                   <>
                     <Download size={16} />
