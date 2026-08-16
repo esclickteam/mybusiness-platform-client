@@ -1142,6 +1142,21 @@ export default function VelmoraPages({
   function handleAddToCart(item: VelmoraCartInput) {
     if (isStudioStatic) return;
 
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(
+        new CustomEvent("bizuply:add-to-cart", {
+          detail: {
+            productId: item.productId,
+            title: item.title,
+            name: item.title,
+            price: item.price,
+            image: item.image,
+            quantity: item.quantity || 1,
+          },
+        }),
+      );
+    }
+
     const cartId = `${item.productId}-${item.size}-${item.color}`;
 
     setCartItems((currentItems) => {
@@ -1270,6 +1285,7 @@ export default function VelmoraPages({
                     categories={shopCatalog.categories}
                     isLiveCatalog={shopCatalog.isLive}
                     catalogLoading={storeCatalogLoading}
+                    isVisualEditor={isVisualEditor}
                   />
                 ),
               },

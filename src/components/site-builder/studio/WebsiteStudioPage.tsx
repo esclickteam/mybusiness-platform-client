@@ -465,6 +465,16 @@ function createInitialPages(): StudioSitePageWithPortal[] {
   ];
 }
 
+function collectStudioPageIds(
+  list: Array<{ id?: string } | null | undefined> | undefined,
+): Set<string> {
+  return new Set(
+    (Array.isArray(list) ? list : [])
+      .map((page) => String(page?.id || "").trim())
+      .filter(Boolean),
+  );
+}
+
 function snapshotPages(
   pages: StudioSitePageWithPortal[],
   editor: Editor,
@@ -5098,6 +5108,17 @@ export default function WebsiteStudioPage({
   });
   const pagesRef = useRef<StudioSitePageWithPortal[]>(pages);
   pagesRef.current = pages;
+  const persistedPageIdsRef = useRef<Set<string>>(new Set());
+  const dirtyVisualPageIdsRef = useRef<Set<string>>(new Set());
+  const markVisualPageDirty = (pageId: string) => {
+    const id = String(pageId || "").trim();
+    if (id) dirtyVisualPageIdsRef.current.add(id);
+  };
+  const rememberPersistedPageIds = (
+    list: Array<{ id?: string } | null | undefined> | undefined,
+  ) => {
+    persistedPageIdsRef.current = collectStudioPageIds(list);
+  };
   const visualSavingRef = useRef(false);
   const pendingVisualSaveRef = useRef<VisualTemplateSavePayload | null>(null);
   const [siteName, setSiteName] = useState("האתר שלי");
@@ -5512,6 +5533,8 @@ export default function WebsiteStudioPage({
           );
 
           setPages(nextPages);
+          rememberPersistedPageIds(savedPages);
+          dirtyVisualPageIdsRef.current.clear();
 
           const preferred =
             data.site.activePageId ||
@@ -6151,6 +6174,8 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         return [...withSnapshot, nextPage];
       });
 
+      markVisualPageDirty(activePageId);
+      markVisualPageDirty(id);
       setActivePageId(id);
       setActivePanel("pages");
 
@@ -6257,6 +6282,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     } as StudioSitePageWithPortal;
 
     setPages((previousPages) => [...previousPages, nextPage]);
+    markVisualPageDirty(id);
     setActivePageId(id);
     setActivePanel("pages");
   };
@@ -6406,6 +6432,10 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         return [...withCurrentSnapshot, nextPage];
       });
 
+      if (Object.keys(currentVisualData).length) {
+        markVisualPageDirty(activePageId);
+      }
+      markVisualPageDirty(id);
       setActivePageId(id);
       setActivePanel("pages");
     };
@@ -6787,6 +6817,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       } as StudioSitePageWithPortal;
 
       setPages((prev) => [...prev, nextPage]);
+      markVisualPageDirty(newId);
       setActivePageId(newId);
       return;
     }
@@ -6931,6 +6962,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
           normalizePageMenuOrders([...prev, nextPage]),
         ) as StudioSitePageWithPortal[],
       );
+      markVisualPageDirty(newId);
       return;
     }
 
@@ -7044,6 +7076,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       edit. Owners must not need a manual save between page switches.
     */
     if (hasSnapshot) {
+      markVisualPageDirty(activePageId);
       setPages((previousPages) =>
         previousPages.map((page) =>
           page.id === activePageId
@@ -8120,30 +8153,41 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       const hasPublishedSharedChrome =
         Object.keys(publishedSharedChrome).length > 0;
 
+      const persistedPageIds = persistedPageIdsRef.current;
+      const dirtyPageIds = dirtyVisualPageIdsRef.current;
+      markVisualPageDirty(activeVisualPageId);
+
       const pagesForSave = publishedPages.map((page) => {
         const isCanonicalHome = page.id === canonicalHomeId;
         const isActivePage =
           page.id === activeVisualPageId ||
           (activeVisualPageId === "home" && isCanonicalHome);
+        const pageId = String(page.id || "").trim();
+        const isNewPage = Boolean(pageId) && !persistedPageIds.has(pageId);
+        const isDirtyPage = Boolean(pageId) && dirtyPageIds.has(pageId);
+        const shouldSendVisual = isActivePage || isNewPage || isDirtyPage;
 
-        const basePageVisual = isActivePage
-          ? cleanVisualData
-          : extractVisualDataFromPayload({
-              data: (page as any)?.data,
-              templateData: (page as any)?.templateData,
-              projectData: (page as any)?.projectData,
-              visualEditorPayload: (page as any)?.visualEditorPayload,
-            }) ||
-            (page as any)?.templateData ||
-            (page as any)?.data ||
-            {};
+        const basePageVisual = !shouldSendVisual
+          ? {}
+          : isActivePage
+            ? cleanVisualData
+            : extractVisualDataFromPayload({
+                data: (page as any)?.data,
+                templateData: (page as any)?.templateData,
+                projectData: (page as any)?.projectData,
+                visualEditorPayload: (page as any)?.visualEditorPayload,
+              }) ||
+              (page as any)?.templateData ||
+              (page as any)?.data ||
+              {};
 
         /*
-          Other pages must not keep their own stale header/footer entries,
-          otherwise they would override the shared chrome after publish.
+          Other changed pages must not keep their own stale header/footer
+          entries, otherwise they would override the shared chrome after
+          publish. Unchanged siblings send metadata only — no visual blob.
         */
         const pageVisual =
-          hasPublishedSharedChrome && !isActivePage
+          shouldSendVisual && hasPublishedSharedChrome && !isActivePage
             ? {
                 ...stripChromeFromVisualData(asPlainObject(basePageVisual)),
                 [VISUAL_SHARED_CHROME_KEY]: publishedSharedChrome,
@@ -8152,11 +8196,12 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
 
         const isLibraryPage =
           Boolean((pageVisual as any)?.__libraryPage) ||
+          Boolean((page as any)?.__libraryPage) ||
           Boolean((pageVisual as any)?.__blankVisualPage) ||
+          Boolean((page as any)?.__blankVisualPage) ||
           String(page.type || "").toLowerCase() === "blank" ||
           /^page[_-]/i.test(String(page.id || ""));
 
-        const pageHydrated = (page as any).visualHydrated !== false;
         const pageHasVisual = hasMeaningfulVisualCollections(
           asPlainObject(pageVisual),
         );
@@ -8195,9 +8240,12 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
           html: published ? String(page.html || "") : "",
           htmlSnapshot: "",
           css: published ? String(page.css || "") : "",
-          ...(pageHydrated && pageHasVisual ? { data: pageVisual } : {}),
+          ...(shouldSendVisual && (pageHasVisual || isNewPage)
+            ? { data: pageVisual }
+            : {}),
           __blankVisualPage: Boolean(
-            (pageVisual as any)?.__blankVisualPage,
+            (pageVisual as any)?.__blankVisualPage ||
+              (page as any)?.__blankVisualPage,
           ),
           __libraryPage: isLibraryPage,
           __libraryPageTemplateId: String(
@@ -8504,6 +8552,9 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       if (!res.ok) {
         throw new Error(responseData?.error || "שמירת האתר בשרת נכשלה");
       }
+
+      rememberPersistedPageIds(pagesForSave);
+      dirtyVisualPageIdsRef.current.clear();
 
       {
         const savedSiteCode = asPlainObject(

@@ -24,6 +24,7 @@ type Props = {
   categories?: string[];
   isLiveCatalog?: boolean;
   catalogLoading?: boolean;
+  isVisualEditor?: boolean;
 };
 
 type SortOption = "newest" | "price-low" | "price-high" | "popular";
@@ -94,12 +95,14 @@ function ProductCard({
   onPageChange,
   onAddToCart,
   onOpenProduct,
+  isVisualEditor = false,
 }: {
   product: Product;
   index: number;
   onPageChange: (page: VelmoraPageId) => void;
   onAddToCart?: (item: VelmoraCartInput) => void;
   onOpenProduct?: (productId: string) => void;
+  isVisualEditor?: boolean;
 }) {
   function openProduct() {
     if (onOpenProduct) {
@@ -112,6 +115,7 @@ function ProductCard({
   function handleAddToCart(event: React.MouseEvent) {
     event.preventDefault();
     event.stopPropagation();
+    if (product.inStock === false) return;
 
     if (onAddToCart) {
       onAddToCart({
@@ -136,8 +140,10 @@ function ProductCard({
         <a
           href={`/product/${encodeURIComponent(String(product.id || product.ref || ""))}`}
           onClick={(event) => {
-            event.preventDefault();
-            openProduct();
+            if (isVisualEditor) {
+              event.preventDefault();
+              openProduct();
+            }
           }}
           className="relative block w-full overflow-hidden bg-[#eee7da]"
         >
@@ -212,10 +218,14 @@ function ProductCard({
 
           <button
             type="button"
+            data-testid="store-add-to-cart"
+            data-bizuply-add-to-cart={String(product.id || "")}
+            data-product-id={String(product.id || "")}
+            disabled={product.inStock === false}
             onClick={handleAddToCart}
-            className="mt-5 flex h-11 w-full items-center justify-center gap-2 rounded-[4px] bg-[#292318] text-sm font-bold text-white transition hover:-translate-y-0.5 hover:bg-black"
+            className="mt-5 flex h-11 w-full items-center justify-center gap-2 rounded-[4px] bg-[#292318] text-sm font-bold text-white transition hover:-translate-y-0.5 hover:bg-black disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0"
           >
-            הוספה לסל
+            {product.inStock === false ? "אזל מהמלאי" : "הוספה לסל"}
             <ShoppingBag className="h-4 w-4" />
           </button>
         </div>
@@ -232,6 +242,7 @@ export default function VelmoraShop({
   categories: categoriesProp,
   isLiveCatalog = false,
   catalogLoading = false,
+  isVisualEditor = false,
 }: Props) {
   // Trust the parent catalog. Parent keeps demos while loading and swaps to
   // live products when ready — local empty override remounted the grid and
@@ -478,6 +489,7 @@ export default function VelmoraShop({
                   onPageChange={onPageChange}
                   onAddToCart={onAddToCart}
                   onOpenProduct={onOpenProduct}
+                  isVisualEditor={isVisualEditor}
                 />
               ))}
             </div>
