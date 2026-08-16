@@ -74,6 +74,10 @@ import {
   readSharedChrome,
   stripChromeFromVisualData,
 } from "./visual-editor/utils/visualSharedChrome";
+import {
+  copyStoreVisualScalars,
+  hasStoreVisualScalars,
+} from "./visual-editor/utils/visualData";
 import { buildVisualPageSwitchSession } from "./visual-editor/utils/visualPageSwitch";
 import {
   applyDisplayRowsToPages,
@@ -2802,16 +2806,18 @@ function hasVisualRootSnapshot(source: Record<string, any>) {
 function hasMeaningfulVisualCollections(source: Record<string, any>) {
   const input = asPlainObject(source);
 
-  return Array.from(VISUAL_ROOT_COLLECTION_KEYS).some((key) => {
-    const value = input[key];
+  return (
+    Array.from(VISUAL_ROOT_COLLECTION_KEYS).some((key) => {
+      const value = input[key];
 
-    return Boolean(
-      value &&
-        typeof value === "object" &&
-        !Array.isArray(value) &&
-        Object.keys(value).length > 0,
-    );
-  });
+      return Boolean(
+        value &&
+          typeof value === "object" &&
+          !Array.isArray(value) &&
+          Object.keys(value).length > 0,
+      );
+    }) || hasStoreVisualScalars(input)
+  );
 }
 
 function pickVisualCollectionsOnly(source: Record<string, any>) {
@@ -2846,7 +2852,7 @@ function pickVisualCollectionsOnly(source: Record<string, any>) {
     }
   });
 
-  return output;
+  return copyStoreVisualScalars(output, input);
 }
 
 function mergeVisualRootData(
@@ -8228,7 +8234,8 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         Object.keys(publishedSharedChrome).length > 0;
 
       const dirtyPageIds = dirtyVisualPageIdsRef.current;
-      markVisualPageDirty(activeVisualPageId);
+      const activeDirtyId = String(activeVisualPageId || "").trim();
+      if (activeDirtyId) dirtyPageIds.add(activeDirtyId);
 
       const pagesForSave = publishedPages.map((page) => {
         const isCanonicalHome = page.id === canonicalHomeId;
@@ -8403,10 +8410,23 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       })();
 
       const homeVisualData = (() => {
+        const activeIsHome =
+          String(activeVisualPageId || "") === "home" ||
+          String(activeVisualPageId || "") === String(homePageId || "");
+        /*
+          Live canvas edits live in cleanVisualData. extractedHomeVisualData
+          is the last hydrated home snapshot and can win a stale persist.
+        */
+        if (
+          activeIsHome &&
+          hasMeaningfulVisualCollections(cleanVisualData)
+        ) {
+          return withPublishChrome(cleanVisualData);
+        }
         if (hasMeaningfulVisualCollections(extractedHomeVisualData)) {
           return withPublishChrome(extractedHomeVisualData);
         }
-        const isVelmoraTemplate = /velmora/i.test(
+        const isVelmoraTemplate = /velmora|scentora/i.test(
           String(visualPayload.templateKey || ""),
         );
         if (
@@ -8534,6 +8554,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
           snapshotPageId: homePageId,
           hasTemplateData: true,
           dataKeys: Object.keys(homeVisualData || {}),
+          data: homeVisualData,
         },
 
         slug: cleanSlug,
@@ -8690,7 +8711,23 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       }
 
       rememberPersistedPageIds(pagesForSave);
-      dirtyVisualPageIdsRef.current.clear();
+      const liveRevision =
+        typeof window === "undefined"
+          ? 0
+          : Number((window as any).__WB_AUTOSAVE?.revision || 0);
+      const completedSeq = Number(visualPayload.clientSaveSeq || 0);
+      const isStaleAutosave =
+        Boolean(visualPayload.autosave) &&
+        completedSeq > 0 &&
+        liveRevision > completedSeq;
+      if (!isStaleAutosave) {
+        dirtyVisualPageIdsRef.current.clear();
+      }
+      if (typeof window !== "undefined" && completedSeq > 0 && !isStaleAutosave) {
+        const api = (window as any).__WB_AUTOSAVE || {};
+        api.persistedRevision = completedSeq;
+        (window as any).__WB_AUTOSAVE = api;
+      }
 
       {
         const savedSiteCode = asPlainObject(
@@ -8740,22 +8777,25 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         אחרי שמירה לא מרעננים ולא מפרקים את העורך.
         cleanVisualData הוא ה-state החי שנשמר עכשיו, ולכן הוא חייב לנצח
         כל response ישן/חלקי מהשרת.
+        Autosave must not hydrate an older snapshot over a newer local revision.
       */
-      setServerVisualTemplateData((current) =>
-        mergeVisualRootData(
-          current || {},
-          savedDataFromResponse || {},
-          cleanVisualData || {},
-          {
-            __activePageId: activeVisualPageId || "home",
-            __siteSlug: cleanSlug,
-            __publicUrl: nextPublicUrl,
-            __siteDomain: getPublicSiteDomain(),
-            __published: published,
-            __status: published ? "published" : "draft",
-          },
-        ),
-      );
+      if (!visualPayload.autosave) {
+        setServerVisualTemplateData((current) =>
+          mergeVisualRootData(
+            current || {},
+            savedDataFromResponse || {},
+            cleanVisualData || {},
+            {
+              __activePageId: activeVisualPageId || "home",
+              __siteSlug: cleanSlug,
+              __publicUrl: nextPublicUrl,
+              __siteDomain: getPublicSiteDomain(),
+              __published: published,
+              __status: published ? "published" : "draft",
+            },
+          ),
+        );
+      }
 
       if (published) {
         const responseSite = responseData?.site || responseData || null;

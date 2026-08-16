@@ -51,6 +51,8 @@ import {
   writeVisualInsertedElement,
   writeVisualInsertedSection,
   writeVisualContentItem,
+  STORE_VISUAL_SCALAR_KEYS,
+  syncStoreTextScalar,
   writeVisualLayoutItem,
   writeVisualResponsiveItem,
   writeVisualStyleItem,
@@ -117,6 +119,7 @@ import { useVisualSelection } from "./useVisualSelection";
 import { useVisualKeyboardShortcuts } from "./useVisualKeyboardShortcuts";
 import { useVisualSave } from "./useVisualSave";
 import { useVisualAutosave } from "./useVisualAutosave";
+import { pushVisualAutosaveTrace } from "../utils/visualAutosaveController";
 import type {
   VisualMediaModalApplyPayload,
   VisualMediaModalMode,
@@ -733,6 +736,15 @@ function syncTemplateMediaValue(
         currentType: Array.isArray(currentValue) ? "array" : typeof currentValue,
       });
     }
+  } else if (
+    STORE_VISUAL_SCALAR_KEYS.includes(
+      elementId as (typeof STORE_VISUAL_SCALAR_KEYS)[number],
+    )
+  ) {
+    next = {
+      ...next,
+      [elementId]: src,
+    };
   }
 
   /*
@@ -1383,6 +1395,17 @@ export function useVisualEditorState({
       return;
     }
 
+    const liveAutosave = (window as any).__WB_AUTOSAVE;
+    if (
+      liveAutosave &&
+      Number(liveAutosave.revision || 0) >
+        Number(liveAutosave.savedRevision || 0)
+    ) {
+      lastHydratedInitialDataSignatureRef.current =
+        initialDataSignature;
+      return;
+    }
+
     const nextInitialData = normalizeVisualData(initialData || {});
 
     lastHydratedInitialDataSignatureRef.current =
@@ -1403,6 +1426,18 @@ export function useVisualEditorState({
     history,
     selection,
   ]);
+
+  const commitInlineTextSilent = useCallback(
+    (elementId: string, value: string, previousText?: string) => {
+      const id = String(elementId || "").trim();
+      if (!id) return;
+      const text = String(value ?? "");
+      let next = writeVisualContentItem(dataRef.current || {}, id, { text });
+      next = syncStoreTextScalar(next, id, text, previousText);
+      dataRef.current = next;
+    },
+    [],
+  );
 
   const persistPortalAuthControlShellPatch = useCallback(
     (elementId: string, patch: { text?: string; href?: string }) => {
@@ -1651,6 +1686,7 @@ export function useVisualEditorState({
         let next = writeVisualContentItem(current || {}, elementId, {
           text,
         });
+        next = syncStoreTextScalar(next, elementId, text, previousText);
 
         // Portal form buttons remount from shell attrs — persist there too.
         if (portalShell?.attrPatch && Object.keys(portalShell.attrPatch).length) {
@@ -5025,6 +5061,8 @@ export function useVisualEditorState({
     acknowledgeSaved: () => void;
     cancelPending: () => void;
     getAutosaveStatus: () => string;
+    getRevision: () => number;
+    getSavedRevision: () => number;
   } | null>(null);
 
   const saveDraftWithPendingMedia = useCallback(
@@ -5043,15 +5081,53 @@ export function useVisualEditorState({
   );
 
   const publishWithPendingMedia = useCallback(async () => {
-    await autosaveApiRef.current?.flushAutosave();
+    const currentRevision = autosaveApiRef.current?.getRevision?.() || 0;
+    if (typeof window !== "undefined") {
+      const api = (window as any).__WB_AUTOSAVE || {};
+      api.publishRevision = currentRevision;
+      (window as any).__WB_AUTOSAVE = api;
+    }
+    pushVisualAutosaveTrace("publish-flush-start", {
+      publishRevision: currentRevision,
+    });
+    try {
+      await autosaveApiRef.current?.flushAutosave();
+    } catch (error) {
+      pushVisualAutosaveTrace("publish-flush-failed", {
+        publishRevision: currentRevision,
+      });
+      throw error;
+    }
+    const autosaveRevision =
+      autosaveApiRef.current?.getSavedRevision?.() || 0;
+    const persistedRevision = Number(
+      (window as any).__WB_AUTOSAVE?.persistedRevision || 0,
+    );
     const autosaveStatus = autosaveApiRef.current?.getAutosaveStatus();
-    if (autosaveStatus === "error" || autosaveStatus === "offline") {
+    pushVisualAutosaveTrace("publish-flush-done", {
+      publishRevision: currentRevision,
+      autosaveRevision,
+      persistedRevision,
+      status: autosaveStatus,
+    });
+    if (
+      autosaveStatus === "error" ||
+      autosaveStatus === "offline" ||
+      autosaveRevision < currentRevision
+    ) {
+      pushVisualAutosaveTrace("publish-blocked", {
+        publishRevision: currentRevision,
+        status: autosaveStatus,
+      });
       throw new Error(
         "יש שינויים שעדיין לא נשמרו. נסי שוב לפני הפרסום.",
       );
     }
     await waitForPendingMediaUploads();
     const result = await save.publish();
+    pushVisualAutosaveTrace("publish-request-sent", {
+      publishRevision: currentRevision,
+    });
     autosaveApiRef.current?.acknowledgeSaved();
     return result;
   }, [save.publish, waitForPendingMediaUploads]);
@@ -5069,6 +5145,8 @@ export function useVisualEditorState({
     acknowledgeSaved: autosave.acknowledgeSaved,
     cancelPending: autosave.cancelPending,
     getAutosaveStatus: autosave.getAutosaveStatus,
+    getRevision: autosave.getRevision,
+    getSavedRevision: autosave.getSavedRevision,
   };
 
   useVisualKeyboardShortcuts({
@@ -5282,6 +5360,7 @@ export function useVisualEditorState({
       markAutosaveDirty: autosave.markDirty,
       flushAutosave: autosave.flushAutosave,
       retryAutosave: autosave.retryAutosave,
+      commitInlineTextSilent,
 
       keys: {
         VISUAL_STYLE_KEY,
@@ -5422,6 +5501,7 @@ export function useVisualEditorState({
       autosave.flushAutosave,
       autosave.retryAutosave,
       updateText,
+      commitInlineTextSilent,
       sitePagesSignature,
     ],
   );

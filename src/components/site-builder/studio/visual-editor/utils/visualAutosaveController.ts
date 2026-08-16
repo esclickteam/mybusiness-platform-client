@@ -29,6 +29,52 @@ export function markVisualAutosaveDirty() {
   window.dispatchEvent(new CustomEvent(VISUAL_AUTOSAVE_DIRTY_EVENT));
 }
 
+export function readVisualAutosaveWindowState() {
+  if (typeof window === "undefined") {
+    return {
+      currentRevision: 0,
+      autosaveRevision: 0,
+      persistedRevision: 0,
+      publishRevision: 0,
+    };
+  }
+
+  const api = (window as any).__WB_AUTOSAVE || {};
+  return {
+    currentRevision: Number(api.revision || 0),
+    autosaveRevision: Number(api.savedRevision || 0),
+    persistedRevision: Number(api.persistedRevision || 0),
+    publishRevision: Number(api.publishRevision || 0),
+  };
+}
+
+export function pushVisualAutosaveTrace(
+  event: string,
+  extra: Record<string, unknown> = {},
+) {
+  if (typeof window === "undefined") return;
+
+  const state = readVisualAutosaveWindowState();
+  const row = {
+    event,
+    at: Date.now(),
+    currentRevision: state.currentRevision,
+    autosaveRevision: state.autosaveRevision,
+    persistedRevision: state.persistedRevision,
+    publishRevision:
+      extra.publishRevision == null
+        ? state.publishRevision
+        : Number(extra.publishRevision),
+    ...extra,
+  };
+
+  const previous = Array.isArray((window as any).__WB_AUTOSAVE_TRACE)
+    ? (window as any).__WB_AUTOSAVE_TRACE
+    : [];
+  (window as any).__WB_AUTOSAVE_TRACE = [...previous, row].slice(-40);
+  console.log("[WB autosave trace]", row);
+}
+
 export function createVisualAutosaveController(
   options: VisualAutosaveControllerOptions,
 ) {
@@ -112,20 +158,28 @@ export function createVisualAutosaveController(
         retries = 0;
         emit("saved");
       } catch (error) {
+        const offline = !isOnline();
+
+        /*
+          A failed request must always leave "saving". A newer local
+          revision stays dirty and gets one follow-up; it must not look
+          like the in-flight request is still running.
+        */
         if (revision > startedRevision) {
           retries = 0;
-          schedule(debounceMs);
+          emit(offline ? "offline" : "dirty");
+          if (!offline) schedule(debounceMs);
           return;
         }
 
         retries += 1;
-        if (retries < maxRetries && isOnline()) {
+        if (retries < maxRetries && !offline) {
           emit("dirty");
           schedule(Math.min(8000, 1000 * 2 ** retries));
           return;
         }
 
-        emit(isOnline() ? "error" : "offline");
+        emit(offline ? "offline" : "error");
         if (propagateError) throw error;
       } finally {
         inFlight = null;

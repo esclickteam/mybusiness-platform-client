@@ -11,6 +11,24 @@ type UseVisualAutosaveOptions = {
   saveDraft: (context: { revision: number }) => Promise<void>;
 };
 
+function writeAutosaveWindow(
+  controller: ReturnType<typeof createVisualAutosaveController> | null,
+  extra: Record<string, unknown> = {},
+) {
+  if (typeof window === "undefined") return;
+  const previous = (window as any).__WB_AUTOSAVE || {};
+  (window as any).__WB_AUTOSAVE = {
+    ...previous,
+    status: controller?.getStatus() || previous.status || "clean",
+    revision: controller?.getRevision() || 0,
+    savedRevision: controller?.getSavedRevision() || 0,
+    inFlightRevision: controller?.getInFlightRevision() || 0,
+    persistedRevision: Number(previous.persistedRevision || 0),
+    publishRevision: Number(previous.publishRevision || 0),
+    ...extra,
+  };
+}
+
 export function useVisualAutosave({
   enabled = true,
   saveDraft,
@@ -25,13 +43,18 @@ export function useVisualAutosave({
   useEffect(() => {
     const controller = createVisualAutosaveController({
       save: (context) => saveDraftRef.current(context),
-      onStatus: setStatus,
+      onStatus: (next) => {
+        setStatus(next);
+        writeAutosaveWindow(controller, { status: next });
+      },
     });
     controllerRef.current = controller;
+    writeAutosaveWindow(controller);
 
     const onDirty = () => {
       if (!enabled) return;
       controller.markDirty();
+      writeAutosaveWindow(controller);
     };
     const onOnline = () => controller.handleOnline();
     const onOffline = () => controller.handleOffline();
@@ -54,19 +77,23 @@ export function useVisualAutosave({
   const markDirty = useCallback(() => {
     if (!enabled) return;
     controllerRef.current?.markDirty();
+    writeAutosaveWindow(controllerRef.current);
   }, [enabled]);
 
   const flushAutosave = useCallback(async () => {
     if (!enabled) return;
     await controllerRef.current?.flush();
+    writeAutosaveWindow(controllerRef.current);
   }, [enabled]);
 
   const retryAutosave = useCallback(async () => {
     await controllerRef.current?.retry();
+    writeAutosaveWindow(controllerRef.current);
   }, []);
 
   const acknowledgeSaved = useCallback(() => {
     controllerRef.current?.acknowledgeSaved();
+    writeAutosaveWindow(controllerRef.current);
   }, []);
 
   const cancelPending = useCallback(() => {
@@ -74,14 +101,11 @@ export function useVisualAutosave({
   }, []);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    (window as any).__WB_AUTOSAVE = {
+    writeAutosaveWindow(controllerRef.current, {
       status,
-      revision: controllerRef.current?.getRevision() || 0,
-      savedRevision: controllerRef.current?.getSavedRevision() || 0,
       flush: flushAutosave,
       markDirty,
-    };
+    });
   }, [flushAutosave, markDirty, status]);
 
   return {
@@ -92,5 +116,7 @@ export function useVisualAutosave({
     acknowledgeSaved,
     cancelPending,
     getAutosaveStatus: () => controllerRef.current?.getStatus() || status,
+    getRevision: () => controllerRef.current?.getRevision() || 0,
+    getSavedRevision: () => controllerRef.current?.getSavedRevision() || 0,
   };
 }

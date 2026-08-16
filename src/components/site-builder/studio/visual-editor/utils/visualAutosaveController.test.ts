@@ -111,6 +111,42 @@ describe("visualAutosaveController", () => {
     expect(h.controller.getStatus()).toBe("saved");
   });
 
+  it("leaves saving after a failed request even if a newer revision exists", async () => {
+    const h = createHarness();
+    let release: ((error?: Error) => void) | undefined;
+    h.setSave(() => new Promise((_, reject) => {
+      release = (error) => reject(error || new Error("forced 500"));
+    }));
+    h.controller.markDirty();
+    await h.flushTimers();
+    expect(h.controller.getStatus()).toBe("saving");
+    h.controller.markDirty();
+    release?.();
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(h.controller.getStatus()).not.toBe("saving");
+    expect(h.controller.getStatus()).toBe("dirty");
+    expect(h.controller.getSavedRevision()).toBe(0);
+  });
+
+  it("manual retry after final error leaves saving and can recover", async () => {
+    const h = createHarness();
+    h.setSave(async () => {
+      throw new Error("forced 500");
+    });
+    h.controller.markDirty();
+    await h.flushTimers();
+    await h.flushTimers();
+    await h.flushTimers();
+    expect(h.controller.getStatus()).toBe("error");
+    expect(h.saves.length).toBe(3);
+
+    h.setSave(async () => {});
+    await h.controller.retry();
+    expect(h.controller.getStatus()).toBe("saved");
+    expect(h.controller.getSavedRevision()).toBe(1);
+  });
+
   it("ignores a stale save completion after a newer revision exists", async () => {
     const h = createHarness();
     const releases: Array<() => void> = [];

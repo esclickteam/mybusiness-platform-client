@@ -1455,6 +1455,7 @@ export default function PageSettingsModal({
               </button>
               <button
                 type="button"
+                data-testid="page-settings-save"
                 onClick={() => {
                   void handleSave();
                 }}
