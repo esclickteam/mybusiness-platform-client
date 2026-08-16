@@ -91,6 +91,9 @@ export function isVisualLibraryPage(input: {
 
   if (!rawPageId || rawPageId === VISUAL_LIBRARY_STACK_ID) return false;
 
+  const langCode = rawPageId.toLowerCase();
+  if (/^(he|en|fr|de|es|nl|it)(-[a-z]{2})?$/.test(langCode)) return false;
+
   if (isStudioGeneratedPageId(rawPageId)) return true;
 
   const known = input.knownPageIds

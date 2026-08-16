@@ -120,16 +120,27 @@ export default function SmartFormsInboxPanel(props: PluginPanelProps) {
               {row.message ? (
                 <p className="mt-2 text-sm text-slate-700">{row.message}</p>
               ) : null}
-              {row.formPdf?.url ? (
-                <a
+              {row.formPdf?.mediaAssetId ? (
+                <button
+                  type="button"
                   data-testid="form-pdf-download"
                   className="mt-2 inline-block text-xs font-bold text-amber-700"
-                  href={row.formPdf.url}
-                  target="_blank"
-                  rel="noreferrer"
+                  onClick={async () => {
+                    const { data } = await API.get(
+                      `/site-builder/sites/${props.siteId}/media/${row.formPdf?.mediaAssetId}/download`,
+                      { responseType: "blob" },
+                    );
+                    const blob = new Blob([data], { type: "application/pdf" });
+                    const href = URL.createObjectURL(blob);
+                    const link = document.createElement("a");
+                    link.href = href;
+                    link.download = "form-submission.pdf";
+                    link.click();
+                    URL.revokeObjectURL(href);
+                  }}
                 >
                   Download PDF
-                </a>
+                </button>
               ) : null}
               <button
                 type="button"

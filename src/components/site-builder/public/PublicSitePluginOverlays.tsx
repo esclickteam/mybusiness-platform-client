@@ -97,9 +97,12 @@ export default function PublicSitePluginOverlays({ site }: PublicSitePluginOverl
   const showAccessibility = Boolean(accessibilitySettings?.isActive);
   const showSmartBot = Boolean(smartBotSettings?.isActive);
   const contactBarSettings = enabledPlugins.includes("floating-contact-bar")
-    ? site?.pluginSettings?.["floating-contact-bar"]
+    ? site?.pluginSettings?.["floating-contact-bar"] || { isActive: true }
     : null;
-  const showContactBar = Boolean(contactBarSettings?.isActive !== false && contactBarSettings);
+  const showContactBar = Boolean(
+    enabledPlugins.includes("floating-contact-bar") &&
+      contactBarSettings?.isActive !== false
+  );
   const hideWhatsappForBar = Boolean(
     showContactBar && contactBarSettings?.hideWhatsappFloat !== false && contactBarSettings?.showWhatsapp !== false
   );

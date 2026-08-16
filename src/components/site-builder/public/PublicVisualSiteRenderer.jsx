@@ -38,6 +38,7 @@ import {
   getPagePath,
   normalizePublicPath,
   resolvePublicPathForPageId,
+  stripPublicLanguagePrefix,
 } from "./publicTemplatePagePath";
 import {
   applyAllVisualDataToDom,
@@ -491,9 +492,7 @@ function normalizeTemplateKey(value) {
 function resolveActivePage(site, pathname) {
   const source = asPlainObject(site);
   const pages = Array.isArray(source.pages) ? source.pages : [];
-  const currentPath = normalizePublicPath(
-    getCurrentPathname(pathname),
-  );
+  const currentPath = stripPublicLanguagePrefix(pathname);
 
   const responseActivePage = asPlainObject(source.activePage);
 
@@ -1923,10 +1922,27 @@ function applyPublicVisualData(root, visualData, pathname, site) {
 
   const enabledPlugins = Array.isArray(site?.enabledPlugins) ? site.enabledPlugins : [];
   if (enabledPlugins.includes("countdown")) {
-    mountCountdownWidgets(
-      root,
-      mergeCountdownSettings(site?.pluginSettings?.countdown),
+    const countdownSettings = mergeCountdownSettings(
+      site?.pluginSettings?.countdown,
     );
+    if (countdownSettings?.isActive !== false) {
+      const hasCanvasHost = Boolean(
+        root.querySelector('[data-bizuply-widget="countdown"]'),
+      );
+      if (!hasCanvasHost) {
+        const host = document.createElement("div");
+        host.setAttribute("data-bizuply-widget", "countdown");
+        host.setAttribute("data-countdown-mount", "true");
+        host.setAttribute("data-bizuply-plugin-runtime", "true");
+        root.appendChild(host);
+      }
+      mountCountdownWidgets(
+        root,
+        hasCanvasHost
+          ? countdownSettings
+          : { ...countdownSettings, layoutMode: "floating" },
+      );
+    }
   }
 
   const publicBusinessId = safeString(site?.businessId || site?.business?._id);
@@ -2114,6 +2130,62 @@ function applyPublicSiteLanguage(lang) {
   if (document.body) document.body.setAttribute("dir", lang.dir);
 }
 
+function applyLocaleCopyToVisualData(visualData, site, pathname) {
+  const data = asPlainObject(visualData);
+  const enabled = Array.isArray(site?.enabledPlugins)
+    ? site.enabledPlugins.includes("multi-language")
+    : false;
+  if (!enabled) return data;
+  const stored = asPlainObject(site?.pluginSettings?.["multi-language"]);
+  const lang = resolvePublicSiteLanguage(site, pathname);
+  const copy = asPlainObject(stored.localeCopy?.[lang.code]);
+  const pageCopy = asPlainObject(asPlainObject(site?.activePage).publicCopy);
+  const source = Object.keys(copy).length ? copy : pageCopy;
+  if (!Object.keys(source).length) return data;
+
+  const replacements = asPlainObject(source.replacements || source);
+  const content = { ...asPlainObject(data.__content) };
+  Object.entries(content).forEach(([id, val]) => {
+    if (typeof val === "string" && replacements[val]) {
+      content[id] = replacements[val];
+      return;
+    }
+    if (val && typeof val === "object" && typeof val.text === "string" && replacements[val.text]) {
+      content[id] = { ...val, text: replacements[val.text] };
+    }
+  });
+  if (source.__content && typeof source.__content === "object") {
+    Object.assign(content, source.__content);
+  }
+  return { ...data, __content: content, __activeLanguage: lang.code };
+}
+
+function buildClientHreflang(site, pagePath) {
+  const enabled = Array.isArray(site?.enabledPlugins)
+    ? site.enabledPlugins.includes("multi-language")
+    : false;
+  if (!enabled) return [];
+  const stored = asPlainObject(site?.pluginSettings?.["multi-language"]);
+  const languages =
+    Array.isArray(stored.languages) && stored.languages.length
+      ? stored.languages
+      : [{ code: "he" }, { code: "en" }];
+  const defaultLanguage = String(
+    stored.defaultLanguage || languages[0]?.code || "he",
+  ).toLowerCase();
+  const root = String(site?.publicUrl || "").replace(/\/+$/, "");
+  if (!root) return [];
+  const path = pagePath === "/" ? "" : String(pagePath || "");
+  return languages
+    .map((lang) => {
+      const code = String(lang?.code || "").toLowerCase();
+      if (!code) return null;
+      return { lang: code, href: `${root}/${code}${path}` };
+    })
+    .filter(Boolean)
+    .concat([{ lang: "x-default", href: `${root}/${defaultLanguage}${path}` }]);
+}
+
 function PublicSeoHead({ resolvedSeo, faviconUrl, htmlLang, htmlDir }) {
   const normalizedFaviconUrl = String(faviconUrl || "").trim();
   const initialEdgeSeoRef = useRef(
@@ -2168,14 +2240,34 @@ function PublicSeoHead({ resolvedSeo, faviconUrl, htmlLang, htmlDir }) {
 
   if (!resolvedSeo && !normalizedFaviconUrl) return null;
 
-  // While edge SEO is authoritative for the first page, only ensure favicon.
+  // Edge SEO owns title/description on first paint. Still emit language
+  // alternates and canonical so /he and /en stay crawlable.
   if (initialEdgeSeoRef.current && !helmetOwnsHead) {
-    return normalizedFaviconUrl ? (
+    return (
       <Helmet htmlAttributes={{ lang: htmlLang || "he", dir: htmlDir || "rtl" }}>
-        <link rel="icon" href={normalizedFaviconUrl} />
-        <link rel="apple-touch-icon" href={normalizedFaviconUrl} />
+        {normalizedFaviconUrl ? (
+          <>
+            <link rel="icon" href={normalizedFaviconUrl} />
+            <link rel="apple-touch-icon" href={normalizedFaviconUrl} />
+          </>
+        ) : null}
+        {resolvedSeo?.canonicalUrl ? (
+          <link rel="canonical" href={resolvedSeo.canonicalUrl} />
+        ) : null}
+        {Array.isArray(resolvedSeo?.hreflang)
+          ? resolvedSeo.hreflang
+              .filter((entry) => entry && entry.lang && entry.href)
+              .map((entry) => (
+                <link
+                  key={`edge-hreflang-${entry.lang}`}
+                  rel="alternate"
+                  hrefLang={entry.lang}
+                  href={entry.href}
+                />
+              ))
+          : null}
       </Helmet>
-    ) : null;
+    );
   }
 
   return (
@@ -2373,13 +2465,17 @@ export default function PublicVisualSiteRenderer({
       ? asPlainObject(site).pages
       : [];
 
-    return applySharedChromeScalarsToVisualData(
-      syncSitePageTitlesIntoVisualData(
-        withResolvedSharedChrome(site, activePage, raw),
-        sitePages,
+    return applyLocaleCopyToVisualData(
+      applySharedChromeScalarsToVisualData(
+        syncSitePageTitlesIntoVisualData(
+          withResolvedSharedChrome(site, activePage, raw),
+          sitePages,
+        ),
       ),
+      site,
+      pathname,
     );
-  }, [site, activePage, templateData]);
+  }, [site, activePage, templateData, pathname]);
 
   const customCode = useMemo(
     () => readCustomCode(site, activePage, visualData),
@@ -2462,7 +2558,26 @@ export default function PublicVisualSiteRenderer({
       seoSettings: site?.seoSettings || site?.seo,
     });
 
-    if (!site?.resolvedSeo) return clientResolved;
+    const clientHreflang = clientResolved.hreflang?.length
+      ? clientResolved.hreflang
+      : buildClientHreflang(site, clientResolved.pagePath || "/");
+    const publicLang = resolvePublicSiteLanguage(site, pathname);
+    const root = String(site?.publicUrl || "").replace(/\/+$/, "");
+    const pagePath =
+      clientResolved.pagePath === "/" ? "" : String(clientResolved.pagePath || "");
+    const languageCanonical =
+      publicLang && root && Array.isArray(site?.enabledPlugins) &&
+      site.enabledPlugins.includes("multi-language")
+        ? `${root}/${publicLang.code}${pagePath}`
+        : "";
+    const clientWithI18n = {
+      ...clientResolved,
+      hreflang: clientHreflang,
+      canonicalUrl: languageCanonical || clientResolved.canonicalUrl,
+      absoluteUrl: languageCanonical || clientResolved.absoluteUrl,
+    };
+
+    if (!site?.resolvedSeo) return clientWithI18n;
 
     /*
       Prefer the server-resolved meta for scalar values, but backfill the
@@ -2470,21 +2585,23 @@ export default function PublicVisualSiteRenderer({
       client resolver so they render even against an older server payload.
     */
     return {
-      ...clientResolved,
+      ...clientWithI18n,
       ...site.resolvedSeo,
       structuredData:
         site.resolvedSeo.structuredData?.length
           ? site.resolvedSeo.structuredData
-          : clientResolved.structuredData,
+          : clientWithI18n.structuredData,
       customMetaTags:
         site.resolvedSeo.customMetaTags?.length
           ? site.resolvedSeo.customMetaTags
-          : clientResolved.customMetaTags,
+          : clientWithI18n.customMetaTags,
       hreflang: site.resolvedSeo.hreflang?.length
         ? site.resolvedSeo.hreflang
-        : clientResolved.hreflang,
+        : clientWithI18n.hreflang,
+      canonicalUrl: languageCanonical || site.resolvedSeo.canonicalUrl || clientWithI18n.canonicalUrl,
+      absoluteUrl: languageCanonical || site.resolvedSeo.absoluteUrl || clientWithI18n.absoluteUrl,
     };
-  }, [site, activePage]);
+  }, [site, activePage, pathname]);
 
   useEffect(() => {
     if (disableAnalytics) return;
@@ -2950,7 +3067,13 @@ export default function PublicVisualSiteRenderer({
             וכך נמחקו סקשנים/מדיה שהוחלו על ה-DOM. העדכונים מגיעים
             דרך props + applyPublicVisualData, בלי להרוס את העץ.
           */}
-          <VisualLibraryPageProvider pageId={pageId} data={visualData}>
+          <VisualLibraryPageProvider
+            pageId={pageId}
+            data={visualData}
+            knownPageIds={(Array.isArray(renderer?.pages) ? renderer.pages : [])
+              .map((page) => String(page?.id || "").trim())
+              .filter(Boolean)}
+          >
             <TemplateComponent
               key={templateKey || "template"}
               mode="preview"

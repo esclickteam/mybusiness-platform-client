@@ -20,6 +20,35 @@ export function normalizePublicPath(value) {
   return clean.replace(/^\/+/, "").replace(/\/+$/, "");
 }
 
+const DEFAULT_PUBLIC_LANG_CODES = new Set([
+  "he",
+  "en",
+  "fr",
+  "de",
+  "es",
+  "nl",
+  "it",
+]);
+
+export function stripPublicLanguagePrefix(pathname, languages) {
+  const codes = new Set(DEFAULT_PUBLIC_LANG_CODES);
+  if (Array.isArray(languages)) {
+    languages.forEach((lang) => {
+      const code = safeString(lang?.code || lang)
+        .toLowerCase()
+        .trim();
+      if (code) codes.add(code);
+    });
+  }
+  const currentPath = normalizePublicPath(getCurrentPathname(pathname));
+  if (!currentPath) return "";
+  const parts = currentPath.split("/").filter(Boolean);
+  if (parts.length && codes.has(parts[0])) {
+    return parts.slice(1).join("/");
+  }
+  return currentPath;
+}
+
 export function getCurrentPathname(pathname) {
   if (typeof pathname === "string") return pathname;
 
@@ -50,7 +79,7 @@ export function resolveTemplatePageIdFromPath(renderer, pathname) {
   const pages = Array.isArray(renderer?.pages) ? renderer.pages : [];
   if (!pages.length) return "";
 
-  const currentPath = normalizePublicPath(getCurrentPathname(pathname));
+  const currentPath = stripPublicLanguagePrefix(pathname);
   if (!currentPath) return "home";
 
   const pathHead = currentPath.split("/")[0];
@@ -94,10 +123,7 @@ export function getFallbackPageId(activePage, pathname, renderer) {
   const page = asPlainObject(activePage);
   if (safeString(page.id)) return safeString(page.id);
 
-  return (
-    normalizePublicPath(getCurrentPathname(pathname)) ||
-    "home"
-  );
+  return stripPublicLanguagePrefix(pathname) || "home";
 }
 
 /** Map a template/site page id to a public pathname for SPA nav buttons. */

@@ -45,4 +45,15 @@ describe("publicTemplatePagePath", () => {
       getFallbackPageId({ id: "home" }, "/shop", velmoraRenderer),
     ).toBe("shop");
   });
+
+  it("strips /he and /en before resolving template pages", () => {
+    expect(resolveTemplatePageIdFromPath(velmoraRenderer, "/he")).toBe("home");
+    expect(resolveTemplatePageIdFromPath(velmoraRenderer, "/en")).toBe("home");
+    expect(resolveTemplatePageIdFromPath(velmoraRenderer, "/he/shop")).toBe(
+      "shop",
+    );
+    expect(getFallbackPageId({ id: "home" }, "/en/products", velmoraRenderer)).toBe(
+      "shop",
+    );
+  });
 });

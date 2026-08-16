@@ -31,7 +31,7 @@ export default function FloatingContactBarWidget({
     cfg.showPhone !== false && phone
       ? { key: "phone", href: `tel:${phone}`, label: "Call" }
       : null,
-    cfg.showEmail && cfg.email
+    cfg.showEmail !== false && cfg.email
       ? { key: "email", href: `mailto:${cfg.email}`, label: "Email" }
       : null,
     cfg.showForm ? { key: "form", href: "#contact", label: "Form" } : null,
