@@ -66,6 +66,19 @@ describe("resolvePushToggleCopy", () => {
     expect(copy.text).toContain("פעיל במכשיר מותקן");
   });
 
+  it("keeps preference-on copy when the local subscription is missing", () => {
+    const copy = resolvePushToggleCopy({
+      pushOn: true,
+      serverReady: false,
+      thisDeviceRegistered: false,
+      permission: "granted",
+      subscribed: false,
+      deviceCount: 0,
+    });
+    expect(copy.kind).toBe("on-unbound");
+    expect(copy.text).not.toContain("כבוי");
+  });
+
   it("does not ask to tap enable when Push API is missing and no devices exist", () => {
     const copy = resolvePushToggleCopy({
       pushOn: false,
