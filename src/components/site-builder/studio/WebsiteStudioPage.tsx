@@ -6733,11 +6733,12 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       return synced;
     });
 
-    await handleSaveRef.current(false, {
-      pages: nextPages,
-      seoSettings: nextSiteSeo,
-      brand: nextBrand,
-    });
+    /*
+      Apply page meta locally and return. Awaiting studio persist here kept
+      PageSettingsModal mounted: visual-react has no GrapesJS editorRef, so
+      handleSave throws and the backdrop blocks studio Save (C_SAVE start=0).
+      Studio Save/Publish is the PUT that persists title/slug/SEO.
+    */
   };
 
   const handleVisualSitePageAction = (

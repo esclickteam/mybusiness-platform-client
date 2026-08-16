@@ -752,6 +752,7 @@ export default function VisualSitePagesPanel({
     if (!open) {
       setMenuPageId("");
       setMenuAnchor(null);
+      setParentPickerPageId("");
       setDraggingPageId("");
       setDropTargetId("");
       setDropPlacement(null);
@@ -796,6 +797,20 @@ export default function VisualSitePagesPanel({
       window.removeEventListener("scroll", onReposition, true);
     };
   }, [menuPageId]);
+
+  useEffect(() => {
+    if (!parentPickerPageId) return;
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      event.preventDefault();
+      event.stopPropagation();
+      setParentPickerPageId("");
+    };
+
+    document.addEventListener("keydown", onKeyDown, true);
+    return () => document.removeEventListener("keydown", onKeyDown, true);
+  }, [parentPickerPageId]);
 
   const handleDragStart = (event: DragStartEvent) => {
     isDraggingRef.current = true;
