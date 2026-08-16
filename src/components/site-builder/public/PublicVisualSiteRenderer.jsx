@@ -1900,6 +1900,7 @@ function applyPublicVisualData(root, visualData, pathname, site) {
     - forms, hidden/deleted וידאו
   */
   applyAllVisualDataToDom(root, data);
+  applyLocaleCopyToDom(root, site, pathname);
 
   // Public-only hydration that must run after the shared DOM pipeline.
   materializePublicMedia(root, data);
@@ -2128,6 +2129,43 @@ function applyPublicSiteLanguage(lang) {
   document.documentElement.setAttribute("lang", lang.code);
   document.documentElement.setAttribute("dir", lang.dir);
   if (document.body) document.body.setAttribute("dir", lang.dir);
+}
+
+const PUBLIC_EN_CHROME = {
+  "דלג לתוכן הראשי": "Skip to main content",
+  "דף הבית": "Home",
+  "צור קשר": "Contact",
+  "שירותים": "Services",
+  "עבודות": "Work",
+  "מחירים": "Pricing",
+  "חבילות": "Packages",
+  "גלריה": "Gallery",
+  "סיפורים": "Stories",
+  "שיחת היכרות": "Intro call",
+  "המבצע מסתיים בעוד": "The offer ends in",
+};
+
+function applyLocaleCopyToDom(root, site, pathname) {
+  if (!root || typeof document === "undefined") return;
+  const lang = resolvePublicSiteLanguage(site, pathname);
+  if (!lang || lang.code === "he") return;
+  const stored = asPlainObject(site?.pluginSettings?.["multi-language"]);
+  const copy = asPlainObject(stored.localeCopy?.[lang.code]);
+  const replacements = {
+    ...PUBLIC_EN_CHROME,
+    ...asPlainObject(copy.replacements || copy),
+  };
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  const nodes = [];
+  while (walker.nextNode()) nodes.push(walker.currentNode);
+  nodes.forEach((node) => {
+    const raw = String(node.nodeValue || "");
+    const trimmed = raw.trim();
+    if (!trimmed) return;
+    if (replacements[trimmed]) {
+      node.nodeValue = raw.replace(trimmed, replacements[trimmed]);
+    }
+  });
 }
 
 function applyLocaleCopyToVisualData(visualData, site, pathname) {
@@ -2975,7 +3013,7 @@ export default function PublicVisualSiteRenderer({
         {css ? <style>{css}</style> : null}
 
         <a href="#bizuply-main-content" className="bizuply-skip-link">
-          דלג לתוכן הראשי
+          {publicLang.code === "en" ? "Skip to main content" : "דלג לתוכן הראשי"}
         </a>
 
         {customCode.enabled !== false ? (
@@ -3050,7 +3088,7 @@ export default function PublicVisualSiteRenderer({
         {css ? <style>{css}</style> : null}
 
         <a href="#bizuply-main-content" className="bizuply-skip-link">
-          דלג לתוכן הראשי
+          {publicLang.code === "en" ? "Skip to main content" : "דלג לתוכן הראשי"}
         </a>
 
         {customCode.enabled !== false ? (
