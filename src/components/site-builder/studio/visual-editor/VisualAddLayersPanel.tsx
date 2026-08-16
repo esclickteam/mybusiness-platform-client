@@ -1818,6 +1818,7 @@ export default function VisualAddLayersPanel({
                           <button
                             key={categoryItem.id}
                             type="button"
+                            data-testid={`visual-add-category-${categoryItem.id}`}
                             onClick={() =>
                               setElementCategory(
                                 categoryItem.id,

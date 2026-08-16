@@ -74,6 +74,37 @@ function readPageVisualData(page: any) {
 
 /** Which portal widget a saved page hosts, or "" when it is a normal page. */
 export function detectPortalPageKind(page: any): PortalWidgetKind | "" {
+  const pageSlug = String(page?.slug || page?.path || page?.id || "")
+    .replace(/^\/+/, "")
+    .split("/")[0]
+    .trim()
+    .toLowerCase();
+  const authSlugKind = (
+    {
+      login: "portal-login",
+      register: "portal-register",
+      signup: "portal-register",
+      account: "portal-account",
+      "my-account": "portal-account",
+      "forgot-password": "portal-forgot-password",
+      "reset-request": "portal-forgot-password",
+      "reset-password": "portal-reset-password",
+      "new-password": "portal-reset-password",
+    } as Record<string, PortalWidgetKind>
+  )[pageSlug.replace(/-\d+$/, "")];
+  if (authSlugKind) return authSlugKind;
+
+  const pageTemplateId = String(
+    page?.__libraryPageTemplateId || page?.libraryPageTemplateId || "",
+  ).trim();
+  const pageTemplateMatch = pageTemplateId.match(/^page-portal-(\d+)$/);
+  if (pageTemplateMatch) {
+    const index = Number(pageTemplateMatch[1]);
+    if (index >= 1 && index <= PORTAL_KINDS.length * 10) {
+      return PORTAL_KINDS[Math.floor((index - 1) / 10)];
+    }
+  }
+
   const data = readPageVisualData(page);
 
   const attributes = asPlainObject(data.__attributes);
