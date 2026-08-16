@@ -324,6 +324,27 @@ function isObjectIdLikeSlug(value: string) {
   return /^[a-f0-9]{24}$/i.test(String(value || "").trim());
 }
 
+function isUnpublishableStudioSlug(value: string) {
+  const clean = normalizePublicBusinessSlug(value);
+  return (
+    !clean ||
+    clean === "your-business" ||
+    clean === "object-object" ||
+    clean.startsWith("draft-") ||
+    !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(clean) ||
+    isObjectIdLikeSlug(clean)
+  );
+}
+
+function traceVisualPublish(step: string, extra?: Record<string, unknown>) {
+  if (typeof window === "undefined") return;
+  const bag = ((window as any).__WB_PUBLISH_TRACE ||= []) as Array<
+    Record<string, unknown>
+  >;
+  bag.push({ t: Date.now(), step, ...(extra || {}) });
+  console.log("[WB_PUBLISH_TRACE]", step, extra || {});
+}
+
 function extractSlugFromPublicUrl(value: string) {
   const clean = String(value || "")
     .trim()
@@ -7883,7 +7904,19 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
   };
 
   const handleConfirmVisualPublishSlug = async () => {
-    if (!pendingVisualPublishPayload || publishSlugChecking || saving) return;
+    if (!pendingVisualPublishPayload || publishSlugChecking) {
+      traceVisualPublish("slug-modal-submit-blocked", {
+        hasPayload: Boolean(pendingVisualPublishPayload),
+        publishSlugChecking,
+        saving,
+      });
+      return;
+    }
+
+    traceVisualPublish("slug-modal-submit-fired", {
+      draft: publishSlugDraft,
+      saving,
+    });
 
     setPublishSlugChecking(true);
     setPublishSlugError("");
@@ -7895,6 +7928,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     setPublishSlugAvailable(result.ok);
 
     if (!result.ok) {
+      traceVisualPublish("slug-check-rejected", { message: result.message });
       setPublishSlugError(result.message);
       return;
     }
@@ -7905,6 +7939,9 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     setSlugAvailable(true);
     setSlugError("");
     setPublishSlugModalOpen(false);
+    traceVisualPublish("slug-state-updated-modal-unmounted", {
+      slug: result.slug,
+    });
 
     const payloadToPublish: VisualTemplateSavePayload = {
       ...pendingVisualPublishPayload,
@@ -7925,14 +7962,35 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
   };
 
   const handleVisualTemplateSave = async (visualPayload: VisualTemplateSavePayload) => {
-    if (visualSavingRef.current) {
-      pendingVisualSaveRef.current = visualPayload;
-      return;
-    }
-
     const published = Boolean(
       visualPayload.published || visualPayload.status === "published",
     );
+    const incomingSlug =
+      normalizePublicBusinessSlug(String(visualPayload.slug || "")) ||
+      normalizePublicBusinessSlug(slug);
+
+    traceVisualPublish("handleVisualTemplateSave-entered", {
+      published,
+      incomingSlug,
+      inFlight: visualSavingRef.current,
+      templateKey: visualPayload.templateKey,
+    });
+
+    if (published && isUnpublishableStudioSlug(incomingSlug)) {
+      traceVisualPublish("publish-branch-slug-modal", { incomingSlug });
+      openPublishSlugModal({
+        ...visualPayload,
+        published: true,
+        status: "published",
+      });
+      return;
+    }
+
+    if (visualSavingRef.current) {
+      pendingVisualSaveRef.current = visualPayload;
+      traceVisualPublish("save-queued-in-flight", { published, incomingSlug });
+      return;
+    }
 
     const cleanVisualData = buildCleanVisualDataForSave(
       visualPayload as Record<string, any>,
@@ -7947,28 +8005,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       activePageId ||
       "home";
 
-    const cleanSlug =
-      normalizePublicBusinessSlug(String(visualPayload.slug || "")) ||
-      normalizePublicBusinessSlug(slug);
-
-    const cleanSlugValid = /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(cleanSlug);
-
-    if (published) {
-      if (
-        !cleanSlug ||
-        cleanSlug === "your-business" ||
-        cleanSlug.startsWith("draft-") ||
-        !cleanSlugValid ||
-        isObjectIdLikeSlug(cleanSlug)
-      ) {
-        openPublishSlugModal({
-          ...visualPayload,
-          published: true,
-          status: "published",
-        });
-        return;
-      }
-    }
+    const cleanSlug = incomingSlug;
 
     const nextPublicUrl =
       published && cleanSlug
@@ -7982,6 +8019,13 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
 
     visualSavingRef.current = true;
     setSaving(true);
+    if (published) {
+      traceVisualPublish("publish-branch-entered", {
+        cleanSlug,
+        siteId,
+        activeVisualPageId,
+      });
+    }
 
     studioGroup("Visual React publish/save flow started", {
       businessId,
@@ -8387,8 +8431,21 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         visual-react מפורסם מ-template + data. HTML הוא אופציונלי —
         חסימה בגלל HTML ריק השאירה את האתר הציבורי על גרסה ישנה.
       */
+      const isStoreVisualTemplate = /velmora/i.test(
+        String(
+          visualPayload.templateKey || selectedTemplateRenderer?.key || "",
+        ),
+      );
+
+      /*
+        Store/Velmora publish is template + live catalog, not harvested HTML.
+        pruneAutoHarvestedVisualMaps leaves empty visual collections, and
+        pagesForSave.html is always " ", so the old guard threw before fetch
+        (D_PUBLISH start=0). Draft save never hit this branch.
+      */
       if (
         published &&
+        !isStoreVisualTemplate &&
         (!homePage?.html || String(homePage.html).trim().length < 20) &&
         !hasMeaningfulVisualPublishData
       ) {
@@ -8405,6 +8462,10 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
           },
         });
 
+        traceVisualPublish("publish-blocked-no-content", {
+          templateKey: visualPayload.templateKey,
+          homeHtmlLength: getTextLength(homePage?.html),
+        });
         throw new Error(
           "הפרסום נעצר: לא נמצא תוכן אתר לשמירה. רענני את העורך ונסי שוב.",
         );
@@ -8549,6 +8610,16 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         cleanMs: Math.round(tCleaned - tPagesReady),
         stringifyMs: Math.round(tStringified - tCleaned),
         clientBeforeRequestMs: Math.round(tStringified - saveClientStartedAt),
+      });
+      traceVisualPublish("payload-build-completed", {
+        published,
+        requestSizeMb: Number(requestSizeMb.toFixed(2)),
+        pagesCount: pagesForSave.length,
+      });
+      traceVisualPublish("fetch-called", {
+        published,
+        slug: cleanSlug,
+        bytes: requestBody.length,
       });
 
       const res = await fetch("/api/site-builder/site", {
@@ -8708,6 +8779,10 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         requestSizeMb: requestSizeMb.toFixed(2),
       });
     } catch (error: any) {
+      traceVisualPublish("exception", {
+        published,
+        message: String(error?.message || error),
+      });
       studioError("handleVisualTemplateSave:error", {
         message: error?.message,
         stack: error?.stack,
