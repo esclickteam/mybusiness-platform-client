@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { sitePortalLogin } from "../../../api/sitePortalApi";
+import { sitePortalRegister } from "../../../api/sitePortalApi";
 
 type Props = {
   siteName?: string;
@@ -8,13 +8,15 @@ type Props = {
   onSuccess?: (siteId: string) => void;
 };
 
-export default function SitePortalLoginView({
+export default function SitePortalRegisterView({
   siteName = "",
   siteId = "",
-  returnPath = "/",
+  returnPath = "/portal/account",
   onSuccess,
 }: Props) {
+  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -25,9 +27,11 @@ export default function SitePortalLoginView({
     setError("");
 
     try {
-      const result = await sitePortalLogin({
+      const result = await sitePortalRegister({
         email,
         password,
+        fullName,
+        phone,
         siteId: siteId || undefined,
         host: typeof window !== "undefined" ? window.location.host : undefined,
       });
@@ -35,15 +39,14 @@ export default function SitePortalLoginView({
       const nextSiteId = result.site?.id || siteId;
       onSuccess?.(nextSiteId);
 
-      // Default landing after login: personal account hub with portal page links.
       const target =
-        returnPath && returnPath.startsWith("/") && returnPath !== "/portal/login"
+        returnPath && returnPath.startsWith("/") && returnPath !== "/portal/register"
           ? returnPath
           : "/portal/account";
       window.history.replaceState({}, "", target);
       window.dispatchEvent(new PopStateEvent("popstate"));
     } catch (err: any) {
-      setError(err?.message || "ההתחברות נכשלה");
+      setError(err?.message || "ההרשמה נכשלה");
     } finally {
       setLoading(false);
     }
@@ -57,13 +60,28 @@ export default function SitePortalLoginView({
       <div className="w-full max-w-md rounded-[28px] border border-slate-200 bg-white p-8 shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
         <p className="text-xs font-bold tracking-wide text-sky-700">אזור אישי</p>
         <h1 className="mt-2 text-2xl font-black text-slate-900">
-          {siteName ? `התחברות ל${siteName}` : "התחברות לאזור האישי"}
+          {siteName ? `הרשמה ל${siteName}` : "הרשמה לאזור האישי"}
         </h1>
         <p className="mt-2 text-sm font-medium leading-6 text-slate-500">
-          הזינו את הפרטים שלכם כדי להיכנס לחשבון באתר.
+          מלאו את הפרטים כדי לפתוח חשבון ולהמשיך באתר.
         </p>
 
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+          <label className="block">
+            <span className="mb-1.5 block text-xs font-bold text-slate-600">
+              שם מלא
+            </span>
+            <input
+              type="text"
+              required
+              autoComplete="name"
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
+              className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-800 outline-none ring-sky-200 transition focus:bg-white focus:ring-2"
+              placeholder="שם מלא"
+            />
+          </label>
+
           <label className="block">
             <span className="mb-1.5 block text-xs font-bold text-slate-600">
               אימייל
@@ -81,12 +99,26 @@ export default function SitePortalLoginView({
 
           <label className="block">
             <span className="mb-1.5 block text-xs font-bold text-slate-600">
+              טלפון (אופציונלי)
+            </span>
+            <input
+              type="tel"
+              autoComplete="tel"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-800 outline-none ring-sky-200 transition focus:bg-white focus:ring-2"
+              placeholder="050-0000000"
+            />
+          </label>
+
+          <label className="block">
+            <span className="mb-1.5 block text-xs font-bold text-slate-600">
               סיסמה
             </span>
             <input
               type="password"
               required
-              autoComplete="current-password"
+              autoComplete="new-password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-800 outline-none ring-sky-200 transition focus:bg-white focus:ring-2"
@@ -105,14 +137,14 @@ export default function SitePortalLoginView({
             disabled={loading}
             className="w-full rounded-2xl bg-slate-900 px-4 py-3 text-sm font-black text-white transition hover:bg-slate-800 disabled:opacity-60"
           >
-            {loading ? "מתחבר..." : "התחברות"}
+            {loading ? "יוצר חשבון..." : "יצירת חשבון"}
           </button>
         </form>
 
         <p className="mt-5 text-center text-sm font-medium text-slate-500">
-          אין לכם חשבון?{" "}
-          <a href="/portal/register" className="font-bold text-sky-700 hover:underline">
-            הרשמה
+          כבר יש לכם חשבון?{" "}
+          <a href="/portal/login" className="font-bold text-sky-700 hover:underline">
+            התחברות
           </a>
         </p>
       </div>

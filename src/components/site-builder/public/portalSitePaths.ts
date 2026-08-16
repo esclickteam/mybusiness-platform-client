@@ -162,6 +162,38 @@ export function findPortalPageForFriendlyPath(site: any, pathname: unknown) {
   return indexPortalPagesByKind(site)[kind] || null;
 }
 
+function isBlankLibraryPortalStub(page: any): boolean {
+  if (!page) return true;
+  const data = readPageVisualData(page);
+  return (
+    page.__blankVisualPage === true ||
+    data.__blankVisualPage === true
+  );
+}
+
+/**
+ * True only when the published site has a real designed page at `path`.
+ * Auto-seeded entitlement stubs (`__blankVisualPage`) must not hijack
+ * `/portal/login` onto `/login` — template storefronts then fall back to home.
+ */
+export function hasRenderableDesignedPortalPage(site: any, path: unknown): boolean {
+  const normalized = normalizeSitePagePath(path);
+  if (!normalized || normalized === "/" || normalized.startsWith("/portal/")) {
+    return false;
+  }
+
+  const pages = Array.isArray(site?.pages) ? site.pages : [];
+  const page = pages.find(
+    (candidate: any) =>
+      normalizeSitePagePath(candidate?.slug || candidate?.id || "") ===
+      normalized,
+  );
+
+  if (!page) return false;
+  if (isBlankLibraryPortalStub(page)) return false;
+  return true;
+}
+
 export function resolvePortalPaths(site: any): PortalPaths {
   const pages = Array.isArray(site?.pages) ? site.pages : [];
 
