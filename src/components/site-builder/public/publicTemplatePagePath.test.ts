@@ -28,10 +28,16 @@ describe("publicTemplatePagePath", () => {
   it("prefers ASCII page ids for store SPA hrefs", () => {
     expect(
       resolvePublicPathForPageId({ pages: [] }, velmoraRenderer, "shop"),
-    ).toBe("/shop");
+    ).toBe("/products");
     expect(
       resolvePublicPathForPageId({ pages: [] }, velmoraRenderer, "cart"),
     ).toBe("/cart");
+  });
+
+  it("maps /products to the shop page", () => {
+    expect(resolveTemplatePageIdFromPath(velmoraRenderer, "/products")).toBe(
+      "shop",
+    );
   });
 
   it("does not keep home activePageId when URL is /shop", () => {

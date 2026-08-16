@@ -83,7 +83,7 @@ function cancelPendingAuthRetries() {
 
 registerAuthRetryAbort(cancelPendingAuthRetries);
 
-function rejectWithApiMessage(response) {
+function rejectWithApiMessage(response, { silent = false } = {}) {
   const contentType = response.headers["content-type"] || "";
   let message;
 
@@ -101,7 +101,16 @@ function rejectWithApiMessage(response) {
         : JSON.stringify(response.data));
   }
 
-  console.error(`API Error ${response.status}:`, message);
+  const isExpectedRefreshMiss =
+    response.status === 401 &&
+    (response.data?.code === "NO_REFRESH_TOKEN" ||
+      response.data?.message === "No refresh token" ||
+      message === "No refresh token" ||
+      message === "NO_REFRESH_TOKEN");
+
+  if (!silent && !isExpectedRefreshMiss) {
+    console.error(`API Error ${response.status}:`, message);
+  }
   const err = new Error(message);
   err.code = response.data?.code;
   err.status = response.status;
@@ -154,13 +163,17 @@ API.interceptors.response.use(
 
     const authErrorCode = response.data?.code;
 
-    // Irrevocable session invalidation ג€” atomic logout, never refresh/retry.
+    // Irrevocable session invalidation — atomic logout, never refresh/retry.
     if (
       response.status === 401 &&
       isSessionInvalidAuthCode(authErrorCode)
     ) {
       handleSessionInvalidated({ code: authErrorCode });
       return rejectWithApiMessage(response);
+    }
+
+    if (response.status === 401 && isRefreshEndpoint(config?.url)) {
+      return rejectWithApiMessage(response, { silent: true });
     }
 
     // Handle unauthorized ג€” refresh cookie then retry (including /auth/me)

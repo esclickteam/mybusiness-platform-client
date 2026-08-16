@@ -1,15 +1,17 @@
 import type { StudioEditableLink, StudioSitePage } from "../types";
 
 export function createSlugFromPageTitle(title: string) {
-  const clean = title
+  const ascii = title
     .trim()
     .toLowerCase()
-    .replace(/[^\u0590-\u05FFa-z0-9\s-]/g, "")
+    .replace(/[^a-z0-9\s-]/g, "")
     .replace(/\s+/g, "-")
     .replace(/-+/g, "-")
     .replace(/^-|-$/g, "");
 
-  return clean || "page";
+  if (ascii) return ascii;
+
+  return "page";
 }
 
 export function normalizePageSlug(
@@ -17,7 +19,18 @@ export function normalizePageSlug(
   pages: StudioSitePage[],
   currentPageId?: string
 ) {
-  const base = createSlugFromPageTitle(title);
+  const fromTitle = createSlugFromPageTitle(title);
+  const fromId = String(currentPageId || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9-]/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+  const idFallback = fromId === "shop" ? "products" : fromId;
+  const base =
+    /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(fromTitle) && fromTitle !== "page"
+      ? fromTitle
+      : idFallback || "page";
   let slug = base;
   let index = 2;
 

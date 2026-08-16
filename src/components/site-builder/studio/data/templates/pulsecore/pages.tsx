@@ -39,11 +39,11 @@ export const pulsecorePages: Array<{
   slug: string;
 }> = [
   { id: "home", name: "בית", slug: "/" },
-  { id: "programs", name: "תוכניות", slug: "/תוכניות" },
-  { id: "trainers", name: "מאמנים", slug: "/מאמנים" },
-  { id: "pricing", name: "מחירים", slug: "/מחירים" },
-  { id: "schedule", name: "מערכת שעות", slug: "/מערכת-שעות" },
-  { id: "contact", name: "הצטרפות", slug: "/הצטרפות" },
+  { id: "programs", name: "תוכניות", slug: "/programs" },
+  { id: "trainers", name: "מאמנים", slug: "/trainers" },
+  { id: "pricing", name: "מחירים", slug: "/pricing" },
+  { id: "schedule", name: "מערכת שעות", slug: "/schedule" },
+  { id: "contact", name: "הצטרפות", slug: "/contact" },
 ];
 
 type PulsecorePagesProps = {

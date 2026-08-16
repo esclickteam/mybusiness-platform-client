@@ -1282,26 +1282,28 @@ export default function VisualAddLayersPanel({
   };
 
   const handleAddLibrarySection = (item: VisualLibrarySectionTemplate) => {
-    if (typeof editor?.addLibrarySection === "function") {
-      editor.addLibrarySection(item.id);
-    } else {
-      editor?.addSection?.("after", undefined, item.id);
-    }
+    closeAfter(() => {
+      if (typeof editor?.addLibrarySection === "function") {
+        editor.addLibrarySection(item.id, "append");
+      } else {
+        editor?.addSection?.("after", undefined, item.id);
+      }
 
-    setRecentSectionIds((current) => {
-      const next = [item.id, ...current.filter((id) => id !== item.id)].slice(
-        0,
-        16,
+      setRecentSectionIds((current) => {
+        const next = [item.id, ...current.filter((id) => id !== item.id)].slice(
+          0,
+          16,
+        );
+        storeSectionIds("bizuply-recent-sections", next);
+        return next;
+      });
+      setLastAddedTitle(
+        item.category === "booking"
+          ? `״${item.title}״ נוסף ומחובר ליומן ה-CRM`
+          : `״${item.title}״ נוסף לעמוד`,
       );
-      storeSectionIds("bizuply-recent-sections", next);
-      return next;
+      setPreviewSection(null);
     });
-    setLastAddedTitle(
-      item.category === "booking"
-        ? `״${item.title}״ נוסף ומחובר ליומן ה-CRM`
-        : `״${item.title}״ נוסף לעמוד`,
-    );
-    setPreviewSection(null);
   };
 
   const handleReplaceLibrarySection = (
@@ -1938,6 +1940,7 @@ export default function VisualAddLayersPanel({
                             <button
                               key={item.id}
                               type="button"
+                              data-testid={`visual-add-element-${item.id}`}
                               onClick={() =>
                                 closeAfter(
                                   item.action,
@@ -2195,6 +2198,20 @@ export default function VisualAddLayersPanel({
                               </div>
                               </button>
 
+                              <button
+                                type="button"
+                                data-testid="visual-add-to-page"
+                                aria-label={`הוספה לעמוד: ${item.title}`}
+                                onClick={(event) => {
+                                  event.preventDefault();
+                                  event.stopPropagation();
+                                  handleAddLibrarySection(item);
+                                }}
+                                className="absolute bottom-3 left-3 z-20 inline-flex h-9 items-center gap-1.5 rounded-md bg-slate-900 px-3 text-[11px] font-black text-white shadow-md transition hover:bg-slate-800"
+                              >
+                                <Plus className="h-3.5 w-3.5" />
+                                הוספה לעמוד
+                              </button>
                               <button
                                 type="button"
                                 onClick={() => toggleFavoriteSection(item.id)}

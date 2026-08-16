@@ -628,6 +628,20 @@ export default function VisualEditorShell({
               onSelectSitePage(pageId, currentVisualData);
             }}
             onAddPage={() => {
+              if (typeof onAddLibraryPage === "function") {
+                onAddLibraryPage({
+                  id: "blank-editable-page",
+                  kind: "page",
+                  tab: "pages",
+                  category: "hero",
+                  title: "עמוד חדש",
+                  description: "עמוד ריק לעריכה מלאה",
+                  slugSuggestion: "new-page",
+                  keywords: ["ריק", "עריכה", "blank"],
+                  sectionIds: [],
+                });
+                return;
+              }
               setPreferredAddTab("pages");
               setSidePanelMode("add");
             }}

@@ -53,6 +53,16 @@ export function resolveTemplatePageIdFromPath(renderer, pathname) {
   const currentPath = normalizePublicPath(getCurrentPathname(pathname));
   if (!currentPath) return "home";
 
+  const pathHead = currentPath.split("/")[0];
+  const aliases = {
+    products: "shop",
+    store: "shop",
+    shop: "shop",
+    product: "product",
+    cart: "cart",
+    basket: "cart",
+  };
+
   for (const page of pages) {
     const source = asPlainObject(page);
     const id = normalizePublicPath(source.id);
@@ -66,6 +76,10 @@ export function resolveTemplatePageIdFromPath(renderer, pathname) {
       path === currentPath ||
       name === currentPath
     ) {
+      return safeString(source.id) || "home";
+    }
+
+    if (aliases[pathHead] && aliases[pathHead] === id) {
       return safeString(source.id) || "home";
     }
   }
@@ -119,6 +133,7 @@ export function resolvePublicPathForPageId(site, renderer, pageId) {
     if (source.id === "home" || source.isHome) return "/";
     // Prefer stable ASCII ids (shop/cart/...) so shell hrefs and SPA routing match.
     const idPath = normalizePublicPath(safeString(source.id));
+    if (idPath === "shop") return "/products";
     if (idPath && /^[a-z0-9_-]+$/i.test(idPath)) {
       return `/${idPath}`;
     }

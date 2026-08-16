@@ -3004,7 +3004,6 @@ export function useVisualEditorState({
       },
     ) => {
       const root = canvasRef.current;
-      if (!root) return "";
 
       const selectedNode = getSelectedDomNode(
         selection.selectedElement,
@@ -3523,8 +3522,10 @@ export function useVisualEditorState({
       }
 
       const root = canvasRef.current;
-      if (!root) return "";
-      const sectionTheme = resolveVisualSectionTheme(renderer.key, root);
+      const sectionTheme = resolveVisualSectionTheme(
+        renderer.key,
+        root || document.body,
+      );
       const lockPalette = shouldLockLibraryPalette(template);
 
       const selectedNode = getSelectedDomNode(selection.selectedElement);

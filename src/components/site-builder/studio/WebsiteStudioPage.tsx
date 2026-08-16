@@ -6167,7 +6167,10 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     const wantedKind = detectPortalPageKind({
       data: { __libraryPageTemplateId: String(pageTemplate.id || "") },
     });
-    const alreadyAdded = pagesRef.current.some((page) => {
+    const isBlankPage = String(pageTemplate.id) === "blank-editable-page";
+    const alreadyAdded =
+      !isBlankPage &&
+      pagesRef.current.some((page) => {
       const data = asPlainObject((page as any).data || (page as any).templateData);
       return (
         String(data.__libraryPageTemplateId || "") === String(pageTemplate.id) ||
@@ -6740,48 +6743,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     }
 
     if (action === "rename") {
-      const nextTitle = window.prompt(
-        "שם חדש לעמוד",
-        String(target.title || ""),
-      );
-      if (nextTitle == null) return;
-      const cleanTitle = String(nextTitle).trim();
-      if (!cleanTitle) return;
-
-      setPages((prev) => {
-        const previousTitleById: Record<string, string> = {};
-        prev.forEach((page) => {
-          const pageId = String(page.id || "").trim();
-          const title = String(page.title || "").trim();
-          if (pageId && title) previousTitleById[pageId] = title;
-        });
-
-        const nextPages = prev.map((page) => {
-          if (page.id !== id) return page;
-
-          return {
-            ...page,
-            title: cleanTitle,
-            updatedAt: new Date().toISOString(),
-          };
-        });
-
-        const slimPages = slimSitePageNavSources(nextPages);
-
-        setVisualSessionData((previous) => {
-          const synced = syncSitePageTitlesIntoVisualData(
-            previous || {},
-            slimPages,
-            { previousTitleById },
-          );
-          delete (synced as any).__sitePages;
-        delete (synced as any).__navTree;
-          delete (synced as any).__previousSitePageTitles;
-          return synced;
-        });
-
-        return nextPages;
-      });
+      setPageSettingsModal({ open: true, pageId: id, tab: "settings" });
       return;
     }
 
@@ -6800,9 +6762,11 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         ...target,
         id: newId,
         title: copyTitle,
-        slug: target.isHome
-          ? normalizePageSlug(copyTitle, pages)
-          : normalizePageSlug(copyTitle, pages),
+        slug: normalizePageSlug(
+          `${String(target.slug || target.id || "page").replace(/[^a-z0-9-]/gi, "") || "page"}-copy`,
+          pages,
+          newId,
+        ),
         isHome: false,
         type: target.type === "home" ? "blank" : target.type,
         createdAt: new Date().toISOString(),
@@ -8628,20 +8592,23 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         setCustomDomain(responseCustomDomain);
         setCustomDomainProvisioningStatus(responseProvisioningStatus);
 
-        const finalPublishedUrl = resolvePublishedSiteDisplayUrl({
-          customDomain: responseCustomDomain,
-          provisioningStatus: responseProvisioningStatus,
-          publicUrl:
-            String(responseData?.site?.publicUrl || "").trim() ||
-            String(responseData?.publicUrl || "").trim() ||
-            String(nextPublicUrl || "").trim(),
-          domainUrl:
-            String(responseData?.site?.domain?.url || "").trim() ||
-            String(responseData?.domain?.url || "").trim(),
-          slug:
-            cleanSlug ||
-            getPublicSlugFromSavedSite(responseData?.site || responseData || {}),
-        });
+        const finalPublishedUrl =
+          resolvePublishedSiteDisplayUrl({
+            customDomain: responseCustomDomain,
+            provisioningStatus: responseProvisioningStatus,
+            publicUrl:
+              String(responseData?.site?.publicUrl || "").trim() ||
+              String(responseData?.publicUrl || "").trim() ||
+              String(nextPublicUrl || "").trim(),
+            domainUrl:
+              String(responseData?.site?.domain?.url || "").trim() ||
+              String(responseData?.domain?.url || "").trim(),
+            slug:
+              cleanSlug ||
+              getPublicSlugFromSavedSite(responseData?.site || responseData || {}),
+          }) ||
+          String(nextPublicUrl || "").trim() ||
+          (cleanSlug ? buildPublicSiteUrl(cleanSlug) : "");
 
         setPublishedSiteUrl(finalPublishedUrl);
         setPublishSuccessOpen(true);
@@ -8717,7 +8684,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         dir="rtl"
         className="fixed inset-0 z-[999999] h-screen w-screen overflow-hidden bg-[#f6f4ff] text-slate-800"
       >
-        {publishSuccessOpen && publishedSiteUrl ? (
+        {publishSuccessOpen ? (
           <div
             dir="rtl"
             className="fixed inset-0 z-[2147483647] flex items-center justify-center border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800/45 px-4 backdrop-blur-sm"

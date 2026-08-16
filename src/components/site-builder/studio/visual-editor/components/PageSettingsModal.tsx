@@ -787,6 +787,7 @@ export default function PageSettingsModal({
               <label className="block space-y-2">
                 <span className="text-sm font-black text-slate-800">שם העמוד</span>
                 <input
+                  name="title"
                   value={title}
                   onChange={(event) => setTitle(event.target.value)}
                   className={seoFieldClass}
@@ -802,6 +803,7 @@ export default function PageSettingsModal({
                   <div className="flex items-center gap-2 rounded-2xl border border-slate-200/90 bg-slate-50/80 px-3">
                     <span className="text-sm font-bold text-slate-400">/</span>
                     <input
+                      name="slug"
                       value={slug}
                       onChange={(event) => setSlug(event.target.value)}
                       className="h-11 min-w-0 flex-1 border-0 bg-transparent px-1 text-left text-sm font-semibold text-slate-900 outline-none"
