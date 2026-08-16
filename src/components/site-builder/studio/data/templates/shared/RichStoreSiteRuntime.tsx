@@ -105,6 +105,15 @@ function textProps(id: string, label?: string) {
   };
 }
 
+function imageProps(id: string, label?: string) {
+  return {
+    "data-visual-edit-id": id,
+    "data-visual-edit-type": "image",
+    "data-visual-editable": "true",
+    ...(label ? { "data-visual-edit-label": label } : {}),
+  };
+}
+
 function sectionProps(id: string, kind: string, label: string) {
   return {
     "data-template-section-id": id,
@@ -681,12 +690,16 @@ function StoreImage({
   src,
   alt,
   className,
+  visualId,
+  visualLabel,
   fallbackLabel: _fallbackLabel,
   fallbackClassName: _fallbackClassName,
 }: {
   src?: string;
   alt: string;
   className?: string;
+  visualId?: string;
+  visualLabel?: string;
   fallbackLabel?: string;
   fallbackClassName?: string;
 }) {
@@ -699,6 +712,7 @@ function StoreImage({
 
   return (
     <img
+      {...(visualId ? imageProps(visualId, visualLabel) : {})}
       src={!resolved || failed ? SAFE_IMAGE_FALLBACK : resolved}
       alt={alt}
       className={className}
@@ -904,10 +918,15 @@ export default function RichStoreSiteRuntime({
     if (
       contentItem &&
       typeof contentItem === "object" &&
-      !Array.isArray(contentItem) &&
-      Object.prototype.hasOwnProperty.call(contentItem, "text")
+      !Array.isArray(contentItem)
     ) {
-      return String(contentItem.text ?? "");
+      const mediaSrc = String(
+        contentItem.src || contentItem.secureUrl || contentItem.url || "",
+      ).trim();
+      if (mediaSrc) return mediaSrc;
+      if (Object.prototype.hasOwnProperty.call(contentItem, "text")) {
+        return String(contentItem.text ?? "");
+      }
     }
     return String(getValue(mergedData, RICH_DEFAULTS, key) || "");
   };
@@ -2171,7 +2190,7 @@ export default function RichStoreSiteRuntime({
       <div>
         {Header}
         <section {...sectionProps("salon-centered-hero", "hero", "סלון יוקרתי")} className="px-5 py-24 text-center lg:px-8 lg:py-36"><Reveal className="mx-auto max-w-5xl"><p className="text-xs font-black uppercase tracking-[0.4em] text-[var(--p)]">{g("heroEyebrow")}</p><h1 className="store-display mt-8 font-serif text-6xl font-light leading-none md:text-9xl" {...textProps("heroTitle", "כותרת ראשית")}>{g("heroTitle")}</h1><p className="mx-auto mt-8 max-w-2xl text-lg leading-8 text-[var(--muted)]">{g("heroSubtitle")}</p><button type="button" onClick={() => goToPage("shop")} className={cx("mt-8 text-sm font-black", skin.button)}>{g("heroPrimaryButton")}</button></Reveal></section>
-        <section {...sectionProps("salon-fragrance-orbit", "gallery", "אורביט ניחוח")} className="px-5 py-16 lg:px-8"><div className="mx-auto grid max-w-7xl items-center gap-5 md:grid-cols-3"><StoreImage src={g("lookOne")} alt="" fallbackLabel={g("lookbookTitle")} className="aspect-[3/4] rounded-full object-cover" /><StoreImage src={g("heroImage")} alt="" fallbackLabel={g("brandName")} className="aspect-square rounded-full object-cover md:scale-110" /><StoreImage src={g("lookTwo")} alt="" fallbackLabel={g("lookbookTitle")} className="aspect-[3/4] rounded-full object-cover" /></div></section>
+        <section {...sectionProps("salon-fragrance-orbit", "gallery", "אורביט ניחוח")} className="px-5 py-16 lg:px-8"><div className="mx-auto grid max-w-7xl items-center gap-5 md:grid-cols-3"><StoreImage src={g("lookOne")} alt="" fallbackLabel={g("lookbookTitle")} className="aspect-[3/4] rounded-full object-cover" /><StoreImage visualId="heroImage" visualLabel="תמונת הירו" src={g("heroImage")} alt="" fallbackLabel={g("brandName")} className="aspect-square rounded-full object-cover md:scale-110" /><StoreImage src={g("lookTwo")} alt="" fallbackLabel={g("lookbookTitle")} className="aspect-[3/4] rounded-full object-cover" /></div></section>
         <ProductRail id="salon-product-portraits" label="פורטרטים ריחניים" title={g("productsTitle")} text={g("productsText")} railClassName="lg:grid-cols-3" />
         <section {...sectionProps("salon-soft-categories", "categories", "משפחות ניחוח")} className={skin.alt + " px-5 py-20 lg:px-8"}><div className="mx-auto grid max-w-7xl gap-5 md:grid-cols-4">{categoryTiles.slice(0, 4).map((cat, index) => <CategoryTile key={cat.id} cat={cat} index={index} className="aspect-[3/4] rounded-[999px]" />)}</div></section>
         <SimpleInfoSection id="salon-notes" kind="features" label="תווי ניחוח" title={g("productDetailOne")} text={g("productDetailTwo")} />
