@@ -68,6 +68,8 @@ function availableStockForProduct(
 type PublicStoreCheckoutProps = {
   businessId: string;
   enabled?: boolean;
+  /** Shift the floating cart so it is not covered by the accessibility trigger. */
+  shiftForLeftWidgets?: boolean;
 };
 
 const CART_KEY = (businessId: string) => `bizuply_store_cart_${businessId}`;
@@ -163,6 +165,7 @@ function normalizeIncomingCartItems(rawItems: unknown): CartItem[] {
 export default function PublicStoreCheckout({
   businessId,
   enabled = true,
+  shiftForLeftWidgets = false,
 }: PublicStoreCheckoutProps) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -689,11 +692,13 @@ export default function PublicStoreCheckout({
         <button
           type="button"
           onClick={() => setOpen(true)}
-          className="fixed bottom-5 left-5 z-[70] inline-flex h-14 items-center gap-2 px-5 text-sm font-bold shadow-xl transition hover:opacity-95"
+          className="fixed z-[70] inline-flex h-14 items-center gap-2 px-5 text-sm font-bold shadow-xl transition hover:opacity-95"
           style={{
             backgroundColor: checkoutPrimary,
             color: appearance.buttonTextColor,
             borderRadius: 999,
+            bottom: "1.25rem",
+            left: shiftForLeftWidgets ? "5.75rem" : "1.25rem",
           }}
           aria-label="פתח סל קניות"
         >

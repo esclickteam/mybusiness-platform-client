@@ -176,7 +176,10 @@ export default function PublicSitePluginOverlays({ site }: PublicSitePluginOverl
         />
       ) : null}
       {showStoreCheckout ? (
-        <PublicStoreCheckout businessId={businessId} />
+        <PublicStoreCheckout
+          businessId={businessId}
+          shiftForLeftWidgets={showAccessibility}
+        />
       ) : null}
     </>
   );
