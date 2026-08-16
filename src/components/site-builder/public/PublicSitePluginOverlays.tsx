@@ -7,6 +7,8 @@ import AccessibilityWidget from "../../site-plugins/accessibility/AccessibilityW
 import WhatsAppFloatWidget from "../../site-plugins/whatsapp-float/WhatsAppFloatWidget";
 import AnnouncementBarWidget from "../../site-plugins/announcement-bar/AnnouncementBarWidget";
 import CookieBannerWidget from "../../site-plugins/cookie-banner/CookieBannerWidget";
+import ExitPopupWidget from "../../site-plugins/exit-popup/ExitPopupWidget";
+import { mergeExitPopupSettings } from "../../site-plugins/exit-popup/exitPopupUtils";
 import { mergePluginSettings as mergeWheelSettings } from "./benefitsWheelPublicUtils";
 import { mergePluginSettings as mergeSearchSettings } from "./smartSearchPublicUtils";
 import { mergeAccessibilitySettings } from "../../site-plugins/accessibility/accessibilityUtils";
@@ -76,6 +78,11 @@ export default function PublicSitePluginOverlays({ site }: PublicSitePluginOverl
     return mergeCookieBannerSettings(site?.pluginSettings?.["cookie-banner"]);
   }, [enabledPlugins, site?.pluginSettings]);
 
+  const exitPopupSettings = useMemo(() => {
+    if (!enabledPlugins.includes("exit-popup")) return null;
+    return mergeExitPopupSettings(site?.pluginSettings?.["exit-popup"]);
+  }, [enabledPlugins, site?.pluginSettings]);
+
   const pages = useMemo(
     () => (Array.isArray(site?.pages) ? site.pages : []),
     [site?.pages]
@@ -88,6 +95,7 @@ export default function PublicSitePluginOverlays({ site }: PublicSitePluginOverl
   const showWhatsapp = Boolean(whatsappSettings?.isActive);
   const showAnnouncement = Boolean(announcementSettings?.isActive);
   const showCookie = Boolean(cookieSettings?.isActive);
+  const showExitPopup = Boolean(exitPopupSettings?.isActive);
   const showStoreCheckout = Boolean(businessId);
 
   const whatsappFallbackPhone = useMemo(() => {
@@ -118,6 +126,7 @@ export default function PublicSitePluginOverlays({ site }: PublicSitePluginOverl
     !showWhatsapp &&
     !showAnnouncement &&
     !showCookie &&
+    !showExitPopup &&
     !showStoreCheckout
   ) {
     return null;
@@ -157,6 +166,14 @@ export default function PublicSitePluginOverlays({ site }: PublicSitePluginOverl
       ) : null}
       {showCookie ? (
         <CookieBannerWidget siteKey={siteKey} settings={cookieSettings!} mode="live" />
+      ) : null}
+      {showExitPopup ? (
+        <ExitPopupWidget
+          siteKey={siteKey}
+          slug={slug}
+          settings={exitPopupSettings}
+          mode="live"
+        />
       ) : null}
       {showStoreCheckout ? (
         <PublicStoreCheckout businessId={businessId} />

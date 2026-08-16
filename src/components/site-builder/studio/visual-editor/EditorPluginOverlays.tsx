@@ -10,6 +10,7 @@ import AccessibilityWidget from "../../../site-plugins/accessibility/Accessibili
 import WhatsAppFloatWidget from "../../../site-plugins/whatsapp-float/WhatsAppFloatWidget";
 import AnnouncementBarWidget from "../../../site-plugins/announcement-bar/AnnouncementBarWidget";
 import CookieBannerWidget from "../../../site-plugins/cookie-banner/CookieBannerWidget";
+import ExitPopupWidget from "../../../site-plugins/exit-popup/ExitPopupWidget";
 import type { BenefitsWheelSettings } from "../../../site-plugins/benefits-wheel/benefitsWheelUtils";
 import type { SmartSearchSettings } from "../../../site-plugins/smart-search/smartSearchUtils";
 import type { SmartBotSettings } from "../../../site-plugins/smart-bot/smartBotUtils";
@@ -17,6 +18,8 @@ import type { AccessibilitySettings } from "../../../site-plugins/accessibility/
 import type { WhatsAppFloatSettings } from "../../../site-plugins/whatsapp-float/whatsappFloatUtils";
 import type { AnnouncementBarSettings } from "../../../site-plugins/announcement-bar/announcementBarUtils";
 import type { CookieBannerSettings } from "../../../site-plugins/cookie-banner/cookieBannerUtils";
+import type { ExitPopupSettings } from "../../../site-plugins/exit-popup/exitPopupUtils";
+import { mergeExitPopupSettings } from "../../../site-plugins/exit-popup/exitPopupUtils";
 import { mergeSmartSearchSettings } from "../../../site-plugins/smart-search/smartSearchUtils";
 import { mergeSmartBotSettings } from "../../../site-plugins/smart-bot/smartBotUtils";
 import { mergeAccessibilitySettings } from "../../../site-plugins/accessibility/accessibilityUtils";
@@ -53,6 +56,8 @@ export default function EditorPluginOverlays({
   const [announcementEnabled, setAnnouncementEnabled] = useState(false);
   const [cookieSettings, setCookieSettings] = useState<CookieBannerSettings | null>(null);
   const [cookieEnabled, setCookieEnabled] = useState(false);
+  const [exitPopupSettings, setExitPopupSettings] = useState<ExitPopupSettings | null>(null);
+  const [exitPopupEnabled, setExitPopupEnabled] = useState(false);
   const [pages, setPages] = useState<Array<Record<string, unknown>>>([]);
 
   useEffect(() => {
@@ -91,6 +96,7 @@ export default function EditorPluginOverlays({
         const whatsappOn = plugins.enabledPlugins.includes("whatsapp-float");
         const announcementOn = plugins.enabledPlugins.includes("announcement-bar");
         const cookieOn = plugins.enabledPlugins.includes("cookie-banner");
+        const exitOn = plugins.enabledPlugins.includes("exit-popup");
 
         if (cancelled) return;
 
@@ -101,6 +107,7 @@ export default function EditorPluginOverlays({
         setWhatsappEnabled(whatsappOn);
         setAnnouncementEnabled(announcementOn);
         setCookieEnabled(cookieOn);
+        setExitPopupEnabled(exitOn);
         setPages(Array.isArray(site?.pages) ? site.pages : []);
 
         const { getSitePluginSettings } = await import(
@@ -162,6 +169,14 @@ export default function EditorPluginOverlays({
             setCookieSettings(mergeCookieBannerSettings(settings as CookieBannerSettings));
           }
         }
+
+        if (!exitOn) setExitPopupSettings(null);
+        else {
+          const settings = await getSitePluginSettings(siteId, "exit-popup");
+          if (!cancelled) {
+            setExitPopupSettings(mergeExitPopupSettings(settings as ExitPopupSettings));
+          }
+        }
       } catch {
         if (!cancelled) {
           setWheelEnabled(false);
@@ -178,6 +193,8 @@ export default function EditorPluginOverlays({
           setAnnouncementSettings(null);
           setCookieEnabled(false);
           setCookieSettings(null);
+          setExitPopupEnabled(false);
+          setExitPopupSettings(null);
         }
       }
     })();
@@ -338,6 +355,15 @@ export default function EditorPluginOverlays({
         <CookieBannerWidget
           siteKey={siteKey}
           settings={cookieSettings}
+          mode="editor"
+        />
+      ) : null}
+
+      {exitPopupEnabled && exitPopupSettings && exitPopupSettings.isActive !== false ? (
+        <ExitPopupWidget
+          siteKey={siteKey}
+          slug={siteSlug}
+          settings={exitPopupSettings}
           mode="editor"
         />
       ) : null}

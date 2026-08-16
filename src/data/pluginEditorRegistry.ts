@@ -62,6 +62,12 @@ export const PLUGIN_EDITOR_ACTIONS: Record<string, PluginEditorAction> = {
     label: "באנר עוגיות",
     description: "באנר הסכמה בתחתית האתר — לא רכיב בעמוד",
   },
+  "exit-popup": {
+    pluginKey: "exit-popup",
+    kind: "overlay",
+    label: "פופאפ יציאה",
+    description: "חלון לידים ביציאה או אחרי השהיה — לא סקשן בעמוד",
+  },
   store: {
     pluginKey: "store",
     kind: "page",
