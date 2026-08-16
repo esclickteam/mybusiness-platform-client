@@ -1043,6 +1043,7 @@ export default function VisualSitePagesPanel({
                 <button
                   type="button"
                   role="menuitem"
+                  data-testid={`visual-page-action-${item.action}`}
                   disabled={item.disabled || !onPageAction}
                   title={item.hint}
                   onClick={() => {
