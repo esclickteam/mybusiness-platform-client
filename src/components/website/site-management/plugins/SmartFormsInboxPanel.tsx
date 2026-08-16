@@ -23,6 +23,7 @@ type Submission = {
   status: string;
   createdAt?: string;
   attachments?: Array<{ originalName?: string; url?: string; fieldId?: string }>;
+  formPdf?: { mediaAssetId?: string; url?: string } | null;
 };
 
 export default function SmartFormsInboxPanel(props: PluginPanelProps) {
@@ -119,6 +120,29 @@ export default function SmartFormsInboxPanel(props: PluginPanelProps) {
               {row.message ? (
                 <p className="mt-2 text-sm text-slate-700">{row.message}</p>
               ) : null}
+              {row.formPdf?.url ? (
+                <a
+                  data-testid="form-pdf-download"
+                  className="mt-2 inline-block text-xs font-bold text-amber-700"
+                  href={row.formPdf.url}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Download PDF
+                </a>
+              ) : null}
+              <button
+                type="button"
+                data-testid="form-pdf-regenerate"
+                className="mt-2 block text-xs font-bold text-slate-600"
+                onClick={async () => {
+                  await API.post(
+                    `/site-builder/sites/${props.siteId}/leads/${row.leadId}/form-pdf`,
+                  );
+                }}
+              >
+                Regenerate PDF
+              </button>
               {row.attachments?.length ? (
                 <p className="mt-2 text-xs font-bold text-indigo-700">
                   קבצים:{" "}

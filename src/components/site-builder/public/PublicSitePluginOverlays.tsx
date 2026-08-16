@@ -11,6 +11,7 @@ import ExitPopupWidget from "../../site-plugins/exit-popup/ExitPopupWidget";
 import SocialProofWidget from "../../site-plugins/social-proof/SocialProofWidget";
 import FloatingContactBarWidget from "../../site-plugins/floating-contact-bar/FloatingContactBarWidget";
 import LanguageSwitcherWidget from "../../site-plugins/multi-language/LanguageSwitcherWidget";
+import FaqWidget from "../../site-plugins/faq-pro/FaqWidget";
 import { mergeExitPopupSettings } from "../../site-plugins/exit-popup/exitPopupUtils";
 import { mergePluginSettings as mergeWheelSettings } from "./benefitsWheelPublicUtils";
 import { mergePluginSettings as mergeSearchSettings } from "./smartSearchPublicUtils";
@@ -105,6 +106,8 @@ export default function PublicSitePluginOverlays({ site }: PublicSitePluginOverl
   const showWhatsapp = Boolean(whatsappSettings?.isActive) && !hideWhatsappForBar;
   const showSocialProof = enabledPlugins.includes("social-proof");
   const showLanguage = enabledPlugins.includes("multi-language");
+  const showFaq = enabledPlugins.includes("faq-pro");
+  const extraPopups = Array.isArray(exitPopupSettings?.popups) ? exitPopupSettings.popups : [];
   const showAnnouncement = Boolean(announcementSettings?.isActive);
   const showCookie = Boolean(cookieSettings?.isActive);
   const showExitPopup = Boolean(exitPopupSettings?.isActive);
@@ -142,7 +145,8 @@ export default function PublicSitePluginOverlays({ site }: PublicSitePluginOverl
     !showStoreCheckout &&
     !showContactBar &&
     !showSocialProof &&
-    !showLanguage
+    !showLanguage &&
+    !showFaq
   ) {
     return null;
   }
@@ -201,6 +205,7 @@ export default function PublicSitePluginOverlays({ site }: PublicSitePluginOverl
       {showCookie ? (
         <CookieBannerWidget siteKey={siteKey} settings={cookieSettings!} mode="live" />
       ) : null}
+      {showFaq ? <FaqWidget slug={slug} /> : null}
       {showExitPopup ? (
         <ExitPopupWidget
           siteKey={siteKey}
@@ -209,6 +214,17 @@ export default function PublicSitePluginOverlays({ site }: PublicSitePluginOverl
           mode="live"
         />
       ) : null}
+      {showExitPopup
+        ? extraPopups.map((popup, index) => (
+            <ExitPopupWidget
+              key={String(popup.id || index)}
+              siteKey={`${siteKey}:${popup.id || index}`}
+              slug={slug}
+              settings={mergeExitPopupSettings({ ...exitPopupSettings, ...popup, popups: [] })}
+              mode="live"
+            />
+          ))
+        : null}
       {showStoreCheckout ? (
         <PublicStoreCheckout
           businessId={businessId}

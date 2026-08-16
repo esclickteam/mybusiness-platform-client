@@ -12,6 +12,7 @@ import {
 import { useCountdownFitScale } from "./useCountdownFitScale";
 import { useCountdownPreviewSettings } from "./useCountdownPreviewSettings";
 import { useCountdownTimer } from "./useCountdownTimer";
+import { matchesDeviceTarget, matchesPageTarget } from "../whatsapp-float/whatsappFloatUtils";
 
 type CountdownWidgetProps = {
   settings: CountdownSettings;
@@ -211,6 +212,26 @@ export default function CountdownWidget({
   useEffect(() => {
     setDragPos(position);
   }, [position.x, position.y]);
+
+  useEffect(() => {
+    if (preview || editorMode || !expired) return;
+    const redirect = String(timerSettings.redirectOnExpiry || "").trim();
+    if (redirect && typeof window !== "undefined") {
+      window.location.assign(redirect);
+    }
+  }, [editorMode, expired, preview, timerSettings.redirectOnExpiry]);
+
+  if (!preview && !editorMode && expired && timerSettings.hideOnExpiry) {
+    return null;
+  }
+  if (
+    !preview &&
+    !editorMode &&
+    (!matchesPageTarget(timerSettings.pageTargeting) ||
+      !matchesDeviceTarget(timerSettings.deviceTargeting))
+  ) {
+    return null;
+  }
 
   const displayUnits = units;
 

@@ -19,6 +19,10 @@ import {
   isClientPortalCheckoutRequiredError,
   startClientPortalCheckout,
 } from "../api/clientPortalBillingApi";
+import {
+  isPluginCheckoutRequiredError,
+  startPluginCheckout,
+} from "../api/pluginBillingApi";
 import SitePluginStore from "../components/website/site-management/SitePluginStore";
 import SiteBookingPanel from "../components/website/site-management/SiteBookingPanel";
 import SitePaymentsPanel from "../components/website/site-management/SitePaymentsPanel";
@@ -157,13 +161,16 @@ export default function SiteManagementPanelPage() {
     const plugin = catalog.find((item) => item.key === pluginKey);
     if (
       enabled &&
-      pluginKey === "client-portal" &&
       plugin?.billingEnabled &&
       plugin?.entitled === false
     ) {
       setSavingPlugins(true);
       try {
-        await startClientPortalCheckout(siteId);
+        if (pluginKey === "client-portal") {
+          await startClientPortalCheckout(siteId);
+        } else {
+          await startPluginCheckout(pluginKey, siteId);
+        }
       } catch (err: any) {
         const serverError =
           err?.response?.data?.error ||
@@ -214,6 +221,19 @@ export default function SiteManagementPanelPage() {
             checkoutErr?.response?.data?.error ||
               checkoutErr?.message ||
               "פתיחת תשלום לאזור אישי נכשלה",
+          );
+          return;
+        }
+      }
+      if (enabled && isPluginCheckoutRequiredError(err)) {
+        try {
+          await startPluginCheckout(pluginKey, siteId);
+          return;
+        } catch (checkoutErr: any) {
+          alert(
+            checkoutErr?.response?.data?.error ||
+              checkoutErr?.message ||
+              "פתיחת תשלום לתוסף נכשלה",
           );
           return;
         }

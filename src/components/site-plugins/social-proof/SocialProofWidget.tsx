@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { matchesDeviceTarget, matchesPageTarget } from "../whatsapp-float/whatsappFloatUtils";
 
 type SocialProofEvent = {
   text: string;
@@ -11,7 +12,14 @@ export default function SocialProofWidget({
   settings,
 }: {
   slug: string;
-  settings?: { position?: string; delaySeconds?: number; frequencySeconds?: number; demoMode?: boolean };
+  settings?: {
+    position?: string;
+    delaySeconds?: number;
+    frequencySeconds?: number;
+    demoMode?: boolean;
+    pageTargeting?: { mode?: string; pageIds?: string[] };
+    deviceTargeting?: { desktop?: boolean; tablet?: boolean; mobile?: boolean };
+  };
 }) {
   const [events, setEvents] = useState<SocialProofEvent[]>([]);
   const [index, setIndex] = useState(0);
@@ -43,6 +51,9 @@ export default function SocialProofWidget({
     };
   }, [events, settings?.delaySeconds, settings?.frequencySeconds]);
 
+  if (!matchesPageTarget(settings?.pageTargeting) || !matchesDeviceTarget(settings?.deviceTargeting)) {
+    return null;
+  }
   if (!visible || !events[index]) return null;
   const event = events[index];
   const pos = settings?.position || "bottom-left";
