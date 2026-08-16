@@ -12,6 +12,9 @@ export type SitePluginDefinition = {
   accent?: string;
   billingEnabled?: boolean;
   installable?: boolean;
+  entitled?: boolean;
+  statusLabel?: string | null;
+  ctaLabel?: string | null;
   displayPriceLabel?: string;
   futurePriceLabel?: string | null;
   helpText?: string;
@@ -39,6 +42,19 @@ export type SitePluginsResponse = {
   detectedFromSite?: string[];
   editorHints?: SitePluginEditorHint[];
   warnings?: SitePluginWarning[];
+  entitlements?: Record<
+    string,
+    {
+      addonKey?: string;
+      entitled?: boolean;
+      status?: string;
+      reason?: string | null;
+      currentPeriodEnd?: string | null;
+      stripeSubscriptionId?: string | null;
+      stripePriceId?: string | null;
+      billingEnabled?: boolean;
+    }
+  >;
 };
 
 export async function getSitePlugins(siteId: string) {
@@ -46,7 +62,8 @@ export async function getSitePlugins(siteId: string) {
   return {
     catalog: (data?.catalog || []) as SitePluginDefinition[],
     enabledPlugins: (data?.enabledPlugins || []) as string[],
-    detectedFromSite: (data?.detectedFromSite || []) as string[],
+      detectedFromSite: (data?.detectedFromSite || []) as string[],
+      entitlements: data?.entitlements || {},
   } satisfies SitePluginsResponse;
 }
 

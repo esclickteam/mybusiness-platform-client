@@ -15,6 +15,10 @@ import {
   updateSitePlugins,
   type SitePluginDefinition,
 } from "../api/sitePluginsApi";
+import {
+  isClientPortalCheckoutRequiredError,
+  startClientPortalCheckout,
+} from "../api/clientPortalBillingApi";
 import SitePluginStore from "../components/website/site-management/SitePluginStore";
 import SiteBookingPanel from "../components/website/site-management/SiteBookingPanel";
 import SitePaymentsPanel from "../components/website/site-management/SitePaymentsPanel";
@@ -150,6 +154,29 @@ export default function SiteManagementPanelPage() {
   }
 
   async function handleTogglePlugin(pluginKey: string, enabled: boolean) {
+    const plugin = catalog.find((item) => item.key === pluginKey);
+    if (
+      enabled &&
+      pluginKey === "client-portal" &&
+      plugin?.billingEnabled &&
+      plugin?.entitled === false
+    ) {
+      setSavingPlugins(true);
+      try {
+        await startClientPortalCheckout(siteId);
+      } catch (err: any) {
+        const serverError =
+          err?.response?.data?.error ||
+          err?.response?.data?.message ||
+          err?.message ||
+          "פתיחת תשלום לאזור אישי נכשלה";
+        window.alert(serverError);
+      } finally {
+        setSavingPlugins(false);
+      }
+      return;
+    }
+
     const next = enabled
       ? [...enabledPlugins, pluginKey]
       : enabledPlugins.filter((key) => key !== pluginKey);
@@ -178,6 +205,19 @@ export default function SiteManagementPanelPage() {
         }
       }
     } catch (err: any) {
+      if (enabled && pluginKey === "client-portal" && isClientPortalCheckoutRequiredError(err)) {
+        try {
+          await startClientPortalCheckout(siteId);
+          return;
+        } catch (checkoutErr: any) {
+          alert(
+            checkoutErr?.response?.data?.error ||
+              checkoutErr?.message ||
+              "פתיחת תשלום לאזור אישי נכשלה",
+          );
+          return;
+        }
+      }
       const serverError =
         err?.response?.data?.error ||
         err?.response?.data?.message ||
