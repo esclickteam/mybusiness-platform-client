@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { sitePortalLogin } from "../../../api/sitePortalApi";
 
 type Props = {
@@ -18,9 +18,12 @@ export default function SitePortalLoginView({
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const inFlightRef = useRef(false);
 
   async function handleSubmit(event: React.FormEvent) {
     event.preventDefault();
+    if (loading || inFlightRef.current) return;
+    inFlightRef.current = true;
     setLoading(true);
     setError("");
 
@@ -45,6 +48,7 @@ export default function SitePortalLoginView({
     } catch (err: any) {
       setError(err?.message || "ההתחברות נכשלה");
     } finally {
+      inFlightRef.current = false;
       setLoading(false);
     }
   }
@@ -52,7 +56,8 @@ export default function SitePortalLoginView({
   return (
     <div
       dir="rtl"
-      className="flex min-h-screen items-center justify-center bg-gradient-to-b from-slate-50 via-white to-sky-50 px-4 py-10"
+      data-bizuply-portal-auth="login"
+      className="relative z-[2147483000] flex min-h-screen items-center justify-center bg-gradient-to-b from-slate-50 via-white to-sky-50 px-4 py-10"
     >
       <div className="w-full max-w-md rounded-[28px] border border-slate-200 bg-white p-8 shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
         <p className="text-xs font-bold tracking-wide text-sky-700">אזור אישי</p>
@@ -63,15 +68,21 @@ export default function SitePortalLoginView({
           הזינו את הפרטים שלכם כדי להיכנס לחשבון באתר.
         </p>
 
-        <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+        <form
+          onSubmit={handleSubmit}
+          data-bizuply-portal-auth-form="login"
+          className="mt-6 space-y-4"
+        >
           <label className="block">
             <span className="mb-1.5 block text-xs font-bold text-slate-600">
               אימייל
             </span>
             <input
               type="email"
+              name="email"
               required
               autoComplete="username"
+              data-bizuply-portal-auth-field="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-800 outline-none ring-sky-200 transition focus:bg-white focus:ring-2"
@@ -85,8 +96,10 @@ export default function SitePortalLoginView({
             </span>
             <input
               type="password"
+              name="password"
               required
               autoComplete="current-password"
+              data-bizuply-portal-auth-field="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-800 outline-none ring-sky-200 transition focus:bg-white focus:ring-2"
@@ -95,7 +108,10 @@ export default function SitePortalLoginView({
           </label>
 
           {error ? (
-            <p className="rounded-2xl bg-rose-50 px-3 py-2 text-xs font-bold text-rose-600">
+            <p
+              data-bizuply-portal-auth-error="login"
+              className="rounded-2xl bg-rose-50 px-3 py-2 text-xs font-bold text-rose-600"
+            >
               {error}
             </p>
           ) : null}
@@ -103,6 +119,9 @@ export default function SitePortalLoginView({
           <button
             type="submit"
             disabled={loading}
+            aria-busy={loading}
+            data-bizuply-portal-login-submit=""
+            data-bizuply-portal-auth-submit="login"
             className="w-full rounded-2xl bg-slate-900 px-4 py-3 text-sm font-black text-white transition hover:bg-slate-800 disabled:opacity-60"
           >
             {loading ? "מתחבר..." : "התחברות"}

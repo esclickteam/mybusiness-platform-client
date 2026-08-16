@@ -45,7 +45,7 @@ export default function SitePortalAccountView({ siteId, siteName = "" }: Props) 
 
   async function handleLogout() {
     await sitePortalLogout(siteId);
-    window.history.replaceState({}, "", "/");
+    window.history.replaceState({}, "", "/portal/login");
     window.dispatchEvent(new PopStateEvent("popstate"));
   }
 
@@ -77,7 +77,8 @@ export default function SitePortalAccountView({ siteId, siteName = "" }: Props) 
   return (
     <div
       dir="rtl"
-      className="flex min-h-screen items-center justify-center bg-gradient-to-b from-slate-50 to-white px-4 py-10"
+      data-bizuply-portal-auth="account"
+      className="relative z-[2147483000] flex min-h-screen items-center justify-center bg-gradient-to-b from-slate-50 to-white px-4 py-10"
     >
       <div className="w-full max-w-lg rounded-[28px] border border-slate-200 bg-white p-8 shadow-sm">
         <p className="text-xs font-bold text-sky-700">החשבון שלי</p>
@@ -141,6 +142,7 @@ export default function SitePortalAccountView({ siteId, siteName = "" }: Props) 
           </a>
           <button
             type="button"
+            data-bizuply-portal-logout=""
             onClick={handleLogout}
             className="rounded-2xl bg-slate-900 px-4 py-2.5 text-sm font-bold text-white"
           >

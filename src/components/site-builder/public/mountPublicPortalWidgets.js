@@ -248,16 +248,20 @@ function mountLogin(container, { siteId, host, siteName, paths, editorMode }) {
 
   const email = document.createElement("input");
   email.type = "email";
+  email.name = "email";
   email.required = true;
   email.placeholder = copy.email;
   email.autocomplete = "username";
+  email.setAttribute("data-bizuply-portal-auth-field", "email");
   styleInput(email, theme);
 
   const password = document.createElement("input");
   password.type = "password";
+  password.name = "password";
   password.required = true;
   password.placeholder = copy.password;
   password.autocomplete = "current-password";
+  password.setAttribute("data-bizuply-portal-auth-field", "password");
   styleInput(password, theme);
 
   const errorBox = el("div", {
@@ -287,18 +291,31 @@ function mountLogin(container, { siteId, host, siteName, paths, editorMode }) {
     },
     copy.submit,
   );
-  submit.type = "button";
+  submit.type = "submit";
+  submit.setAttribute("data-bizuply-portal-login-submit", "");
+  submit.setAttribute("data-bizuply-portal-auth-submit", "login");
   stampPortalAuthControl(submit, container, "submit", editorMode);
 
-  submit.addEventListener("click", async () => {
+  const form = document.createElement("form");
+  form.setAttribute("data-bizuply-portal-auth", "login");
+  form.setAttribute("data-bizuply-portal-auth-form", "login");
+  form.style.display = "flex";
+  form.style.flexDirection = "column";
+
+  let submitting = false;
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
     errorBox.style.display = "none";
 
     if (editorMode) {
       // Selection handles the click in the studio — no fake login noise.
       return;
     }
+    if (submitting) return;
+    submitting = true;
 
     submit.disabled = true;
+    submit.setAttribute("aria-busy", "true");
     submit.textContent = "מתחבר...";
     try {
       await sitePortalLogin({
@@ -310,17 +327,21 @@ function mountLogin(container, { siteId, host, siteName, paths, editorMode }) {
       navigateToSitePath(paths?.account || "/portal/account");
     } catch (err) {
       errorBox.textContent = err?.message || "ההתחברות נכשלה";
+      errorBox.setAttribute("data-bizuply-portal-auth-error", "login");
       errorBox.style.display = "block";
     } finally {
+      submitting = false;
       submit.disabled = false;
+      submit.removeAttribute("aria-busy");
       submit.textContent = copy.submit;
     }
   });
 
-  wrap.appendChild(email);
-  wrap.appendChild(password);
-  wrap.appendChild(errorBox);
-  wrap.appendChild(submit);
+  form.appendChild(email);
+  form.appendChild(password);
+  form.appendChild(errorBox);
+  form.appendChild(submit);
+  wrap.appendChild(form);
 
   const linksRow = el("div", {
     display: "flex",
@@ -441,29 +462,37 @@ function mountRegister(container, { siteId, host, siteName, paths, editorMode })
 
   const fullName = document.createElement("input");
   fullName.type = "text";
+  fullName.name = "fullName";
   fullName.required = true;
   fullName.placeholder = copy.name;
   fullName.autocomplete = "name";
+  fullName.setAttribute("data-bizuply-portal-auth-field", "fullName");
   styleInput(fullName, theme);
 
   const email = document.createElement("input");
   email.type = "email";
+  email.name = "email";
   email.required = true;
   email.placeholder = copy.email;
   email.autocomplete = "username";
+  email.setAttribute("data-bizuply-portal-auth-field", "email");
   styleInput(email, theme);
 
   const phone = document.createElement("input");
   phone.type = "tel";
+  phone.name = "phone";
   phone.placeholder = copy.phone;
   phone.autocomplete = "tel";
+  phone.setAttribute("data-bizuply-portal-auth-field", "phone");
   styleInput(phone, theme);
 
   const password = document.createElement("input");
   password.type = "password";
+  password.name = "password";
   password.required = true;
   password.placeholder = copy.password;
   password.autocomplete = "new-password";
+  password.setAttribute("data-bizuply-portal-auth-field", "password");
   styleInput(password, theme);
 
   const errorBox = el("div", {
@@ -493,17 +522,29 @@ function mountRegister(container, { siteId, host, siteName, paths, editorMode })
     },
     copy.submit,
   );
-  submit.type = "button";
+  submit.type = "submit";
+  submit.setAttribute("data-bizuply-portal-auth-submit", "register");
   stampPortalAuthControl(submit, container, "submit", editorMode);
 
-  submit.addEventListener("click", async () => {
+  const form = document.createElement("form");
+  form.setAttribute("data-bizuply-portal-auth", "register");
+  form.setAttribute("data-bizuply-portal-auth-form", "register");
+  form.style.display = "flex";
+  form.style.flexDirection = "column";
+
+  let submitting = false;
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
     errorBox.style.display = "none";
 
     if (editorMode) {
       return;
     }
+    if (submitting) return;
+    submitting = true;
 
     submit.disabled = true;
+    submit.setAttribute("aria-busy", "true");
     submit.textContent = "נרשם...";
     try {
       await sitePortalRegister({
@@ -519,17 +560,20 @@ function mountRegister(container, { siteId, host, siteName, paths, editorMode })
       errorBox.textContent = err?.message || "ההרשמה נכשלה";
       errorBox.style.display = "block";
     } finally {
+      submitting = false;
       submit.disabled = false;
+      submit.removeAttribute("aria-busy");
       submit.textContent = copy.submit;
     }
   });
 
-  wrap.appendChild(fullName);
-  wrap.appendChild(email);
-  wrap.appendChild(phone);
-  wrap.appendChild(password);
-  wrap.appendChild(errorBox);
-  wrap.appendChild(submit);
+  form.appendChild(fullName);
+  form.appendChild(email);
+  form.appendChild(phone);
+  form.appendChild(password);
+  form.appendChild(errorBox);
+  form.appendChild(submit);
+  wrap.appendChild(form);
 
   const loginLink = document.createElement("a");
   const loginHref = readPortalLink(
@@ -1428,6 +1472,7 @@ function renderAccountPanel(
     background: theme.soft,
     minHeight: "100%",
   });
+  wrap.setAttribute("data-bizuply-portal-auth", "account");
 
   const header = el("div", {
     display: "flex",
@@ -1643,6 +1688,7 @@ function renderAccountPanel(
       "התנתקות",
     );
     logout.type = "button";
+    logout.setAttribute("data-bizuply-portal-logout", "");
     logout.addEventListener("click", onLogout);
     wrap.appendChild(logout);
   }
