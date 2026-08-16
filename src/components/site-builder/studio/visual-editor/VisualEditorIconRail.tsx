@@ -38,12 +38,14 @@ function RailButton({
   active,
   disabled,
   onClick,
+  testId,
   children,
 }: {
   title: string;
   active?: boolean;
   disabled?: boolean;
   onClick?: () => void;
+  testId?: string;
   children: React.ReactNode;
 }) {
   return (
@@ -51,6 +53,7 @@ function RailButton({
       type="button"
       title={title}
       aria-label={title}
+      data-testid={testId}
       disabled={disabled}
       onClick={onClick}
       className={[
@@ -94,6 +97,7 @@ export default function VisualEditorIconRail({
       <div className="mt-2 flex flex-1 flex-col items-center gap-1 overflow-y-auto px-1">
         <RailButton
           title="הוספה"
+          testId="visual-editor-add"
           active={sidePanelMode === "add"}
           onClick={onOpenAdd}
         >
@@ -102,6 +106,7 @@ export default function VisualEditorIconRail({
 
         <RailButton
           title="חנות תוספים"
+          testId="visual-editor-plugins"
           active={sidePanelMode === "plugins"}
           onClick={onOpenPlugins}
         >
@@ -110,6 +115,7 @@ export default function VisualEditorIconRail({
 
         <RailButton
           title="עמודים"
+          testId="visual-editor-pages"
           active={sidePanelMode === "pages"}
           onClick={() => onTogglePanel("pages")}
         >
