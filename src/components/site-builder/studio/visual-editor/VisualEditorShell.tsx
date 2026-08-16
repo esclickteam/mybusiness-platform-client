@@ -486,6 +486,7 @@ export default function VisualEditorShell({
               });
             }}
             className="inline-flex h-11 items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-800 shadow-sm transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60 lg:px-5"
+            data-testid="visual-studio-save"
           >
             {isSaving ? "שומר..." : "שמירה"}
           </button>
