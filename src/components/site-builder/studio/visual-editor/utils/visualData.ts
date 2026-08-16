@@ -1,7 +1,9 @@
 import type { AnimationPresetValue, StylePatch } from "../../types";
 import type { BizuplyFormConfig } from "../../FormBuilderModal";
 import {
+  isAutoHarvestedVisualContentKey,
   isStoreBoundVisualContentKey,
+  pruneAutoHarvestedVisualMaps,
   stripStoreBoundVisualImageOverrides,
 } from "../../data/templates/shared/storeCatalogSync";
 import { stripPortalShellLinkFields } from "./portalAuthControls";
@@ -832,13 +834,20 @@ export function sanitizeVisualDataForPersistence(
 ): Record<string, any> {
   // Drop live store product/category mirrors before persistence — plugin-owned per site.
   const nextData = cloneVisualData(
-    stripStoreBoundVisualImageOverrides(data || {}) || data || {},
+    stripStoreBoundVisualImageOverrides(
+      pruneAutoHarvestedVisualMaps(data || {}),
+    ) || data || {},
   );
   const content = readVisualContent(nextData);
   const nextContent: VisualContentMap = {};
 
   Object.entries(content).forEach(([elementId, item]) => {
-    if (isStoreBoundVisualContentKey(elementId)) return;
+    if (
+      isStoreBoundVisualContentKey(elementId) ||
+      isAutoHarvestedVisualContentKey(elementId)
+    ) {
+      return;
+    }
 
     const nextItem: VisualContentItem = { ...(item || {}) };
 
@@ -894,7 +903,7 @@ export function sanitizeVisualDataForPersistence(
 export function normalizeVisualData(
   data: Record<string, any> | undefined | null,
 ): Record<string, any> {
-  const source = asPlainObject(data);
+  const source = asPlainObject(pruneAutoHarvestedVisualMaps(data || {}));
   const attributes = cloneVisualData(readVisualAttributes(source)) as Record<
     string,
     any

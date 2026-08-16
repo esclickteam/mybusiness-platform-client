@@ -2396,6 +2396,7 @@ export default function PublicVisualSiteRenderer({
       const currentPath = window.location.pathname || "/";
       if (currentPath.startsWith("/portal/")) return;
       if (nextPath === currentPath) return;
+      if (nextPath !== "/" && currentPath.startsWith(`${nextPath}/`)) return;
       window.history.pushState({}, "", nextPath);
       window.dispatchEvent(new PopStateEvent("popstate"));
     },

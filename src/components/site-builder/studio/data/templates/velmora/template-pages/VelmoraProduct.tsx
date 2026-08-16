@@ -483,10 +483,10 @@ export default function VelmoraProduct({
               <div className="mt-8 grid gap-3">
                 <button
                   type="button"
-                  data-testid="store-add-to-cart"
+                  {...(product ? { "data-testid": "store-add-to-cart" } : {})}
                   data-bizuply-add-to-cart={String(selectedProduct.id || "")}
                   data-product-id={String(selectedProduct.id || "")}
-                  disabled={selectedProduct.inStock === false}
+                  disabled={!product || selectedProduct.inStock === false}
                   onClick={handleAddToCart}
                   className="relative flex h-13 items-center justify-center gap-3 rounded-[4px] bg-[#292318] px-7 py-4 text-sm font-black text-white transition hover:-translate-y-1 hover:bg-black disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0"
                 >
@@ -754,10 +754,10 @@ export default function VelmoraProduct({
           <div className="mt-8 flex flex-wrap justify-center gap-3">
             <button
               type="button"
-              data-testid="store-add-to-cart"
+              {...(product ? { "data-testid": "store-add-to-cart" } : {})}
               data-bizuply-add-to-cart={String(selectedProduct.id || "")}
               data-product-id={String(selectedProduct.id || "")}
-              disabled={selectedProduct.inStock === false}
+              disabled={!product || selectedProduct.inStock === false}
               onClick={handleAddToCart}
               className="h-12 rounded-[4px] bg-white px-8 text-sm font-bold text-[#292318] transition hover:-translate-y-1 disabled:cursor-not-allowed disabled:opacity-40"
             >
