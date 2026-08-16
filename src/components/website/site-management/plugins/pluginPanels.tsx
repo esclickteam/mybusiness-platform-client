@@ -18,6 +18,7 @@ import type { SitePanelSection } from "../../../../data/sitePluginNav";
 import { useSitePluginSettings } from "./useSitePluginSettings";
 import SiteBenefitsWheelPanel from "./BenefitsWheelPanel";
 import SiteCountdownPanel from "./CountdownPanel";
+import SmartFormsInboxPanel from "./SmartFormsInboxPanel";
 import SmartSearchPanel from "./SmartSearchPanel";
 import SmartBotPanel from "./SmartBotPanel";
 import {
@@ -446,6 +447,7 @@ export const PLUGIN_PANEL_MAP: Partial<
   "form-abandonment": SiteFormAbandonmentPanel,
   "journey-recording": SiteJourneyRecordingPanel,
   countdown: SiteCountdownPanel,
+  "smart-forms": SmartFormsInboxPanel,
   "benefits-wheel": SiteBenefitsWheelPanel,
   "smart-search": SmartSearchPanel,
   "smart-bot": SmartBotPanel,

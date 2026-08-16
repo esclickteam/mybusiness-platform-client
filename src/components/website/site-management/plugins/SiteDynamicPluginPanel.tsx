@@ -347,6 +347,26 @@ export default function SiteDynamicPluginPanel({
               type="number"
             />
           </Field>
+          <Field label="טריגר">
+            <TextInput
+              value={str(settings.trigger, "exit-or-delay")}
+              onChange={(v) => updateField("trigger", v)}
+              placeholder="exit / delay / exit-or-delay"
+            />
+          </Field>
+          <Field label="הצגה חוזרת כל כמה ימים">
+            <TextInput
+              value={String(num(settings.showOncePerDays, 7))}
+              onChange={(v) => updateField("showOncePerDays", Number(v) || 0)}
+              type="number"
+            />
+          </Field>
+          <Field label="הודעת הצלחה">
+            <TextInput
+              value={str(settings.successMessage)}
+              onChange={(v) => updateField("successMessage", v)}
+            />
+          </Field>
           <Toggle
             label="טלפון חובה"
             checked={bool(settings.requirePhone, true)}

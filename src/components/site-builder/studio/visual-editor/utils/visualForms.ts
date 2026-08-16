@@ -13,6 +13,10 @@ import {
   TEMPLATE_FORM_SKIN_ATTR,
   TEMPLATE_FORM_SKIN_VALUE,
 } from "../../data/templates/shared/templateLeadForm";
+import {
+  normalizeCondition,
+  normalizeSteps,
+} from "../../formProConfig";
 
 import {
   FORM_BUILDER_KEY,
@@ -458,6 +462,8 @@ export function normalizeFormBuilderConfig(value: unknown): BizuplyFormConfig {
     title: preserveTemplateSkin ? rawTitle : rawTitle || fallback.title,
     submitText: String(source.submitText || fallback.submitText),
     successMessage: String(source.successMessage || fallback.successMessage),
+    redirectUrl: String(source.redirectUrl || ""),
+    steps: normalizeSteps(source.steps),
     colors: normalizeFormColors(source.colors),
     preserveTemplateSkin,
     fields: Array.isArray(source.fields)
@@ -476,6 +482,8 @@ export function normalizeFormBuilderConfig(value: unknown): BizuplyFormConfig {
               : field?.width === "half"
                 ? "half"
                 : undefined,
+          step: Number(field?.step) > 0 ? Number(field.step) : undefined,
+          visibleWhen: normalizeCondition(field?.visibleWhen),
         }))
       : fallback.fields,
   };
@@ -728,6 +736,12 @@ export function buildFormBuilderDomHtml(form: BizuplyFormConfig) {
           data-bizuply-form-field-wrapper="true"
           data-bizuply-form-field-id="${fieldId}"
           data-bizuply-form-field-width="${width}"
+          ${field.step ? `data-bizuply-form-step="${Number(field.step)}"` : ""}
+          ${
+            field.visibleWhen
+              ? `data-bizuply-visible-when="${escapeFormHtml(JSON.stringify(field.visibleWhen))}"`
+              : ""
+          }
           data-visual-editable="true"
           data-visual-edit-id="form.field.${fieldId}"
           data-visual-edit-type="box"
@@ -904,6 +918,9 @@ export function syncTemplateSkinnedFormFromConfig(
       formNode.getAttribute("data-bizuply-success-message") ||
       "",
   );
+  if (safeForm.redirectUrl) {
+    formNode.setAttribute("data-bizuply-redirect-url", safeForm.redirectUrl);
+  }
 
   // Stale generic defaults must never mutate a template-designed form.
   if (isGenericDefaultFormConfig(safeForm) || isGenericDefaultFormConfig(form)) {
@@ -1021,6 +1038,19 @@ export function applyFormBuilderConfigToFormNode(
     "data-bizuply-success-message",
     safeForm.successMessage || "",
   );
+  if (safeForm.redirectUrl) {
+    formNode.setAttribute("data-bizuply-redirect-url", safeForm.redirectUrl);
+  } else {
+    formNode.removeAttribute("data-bizuply-redirect-url");
+  }
+  if ((safeForm.steps || []).length > 1) {
+    formNode.setAttribute(
+      "data-bizuply-form-steps",
+      String(safeForm.steps?.length || 0),
+    );
+  } else {
+    formNode.removeAttribute("data-bizuply-form-steps");
+  }
   formNode.setAttribute("novalidate", "false");
 
   /*
