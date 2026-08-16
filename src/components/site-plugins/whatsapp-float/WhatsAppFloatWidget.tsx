@@ -4,6 +4,9 @@ import { GripVertical } from "lucide-react";
 
 import {
   buildWhatsAppUrl,
+  isWhatsAppWithinHours,
+  matchesDeviceTarget,
+  matchesPageTarget,
   mergeWhatsAppFloatSettings,
   type WhatsAppFloatSettings,
 } from "./whatsappFloatUtils";
@@ -12,6 +15,9 @@ type WhatsAppFloatWidgetProps = {
   settings?: Partial<WhatsAppFloatSettings> | null;
   fallbackPhone?: string;
   mode?: "live" | "editor";
+  pageId?: string;
+  pagePath?: string;
+  siteSlug?: string;
   onPositionChange?: (pos: { x: number; y: number }) => void;
 };
 
@@ -30,13 +36,34 @@ export default function WhatsAppFloatWidget({
   settings,
   fallbackPhone = "",
   mode = "live",
+  pageId,
+  pagePath,
+  siteSlug,
   onPositionChange,
 }: WhatsAppFloatWidgetProps) {
   const cfg = mergeWhatsAppFloatSettings(settings);
+  const agents = Array.isArray(cfg.agents) ? cfg.agents.filter((a) => a.phone) : [];
+  const [agentId, setAgentId] = useState(agents[0]?.id || "");
+  const selected = agents.find((a) => a.id === agentId) || agents[0];
+  const pageMessage =
+    (pagePath && cfg.pageMessages?.[pagePath]) ||
+    (pageId && cfg.pageMessages?.[pageId]) ||
+    cfg.message;
   const phone =
-    String(cfg.phone || "").trim() || String(fallbackPhone || "").trim();
-  const href = buildWhatsAppUrl(phone, cfg.message);
+    String(selected?.phone || cfg.phone || "").trim() ||
+    String(fallbackPhone || "").trim();
+  const online = isWhatsAppWithinHours(cfg);
+  const href = online
+    ? buildWhatsAppUrl(phone, selected?.message || pageMessage)
+    : "";
   const hideOnMobile = cfg.showOnMobile === false;
+  const hideOnDesktop = cfg.showOnDesktop === false;
+  if (mode === "live" && !matchesPageTarget(cfg.pageTargeting, pageId)) return null;
+  if (mode === "live" && !matchesDeviceTarget({
+    mobile: cfg.showOnMobile !== false,
+    desktop: cfg.showOnDesktop !== false,
+    tablet: true,
+  })) return null;
   const missingPhone = !href;
   const isEditor = mode === "editor";
   const position = cfg.triggerPosition || { x: 8, y: 88 };
@@ -134,7 +161,13 @@ export default function WhatsAppFloatWidget({
 
   const ui = (
     <div
-      className={hideOnMobile ? "hidden sm:block" : "block"}
+      className={[
+        hideOnMobile ? "hidden sm:block" : "",
+        hideOnDesktop ? "sm:hidden" : "",
+        !hideOnMobile && !hideOnDesktop ? "block" : "",
+      ]
+        .filter(Boolean)
+        .join(" ") || "block"}
       style={{
         position: "fixed",
         zIndex: 2147483000,
@@ -180,6 +213,17 @@ export default function WhatsAppFloatWidget({
           rel="noopener noreferrer"
           onClick={(e) => {
             if (suppressClickRef.current || !href) e.preventDefault();
+            if (href && siteSlug) {
+              fetch(`/api/site-builder/public/${encodeURIComponent(siteSlug)}/events`, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  eventType: "whatsapp_click",
+                  pagePath,
+                  source: "whatsapp-float",
+                }),
+              }).catch(() => undefined);
+            }
           }}
           aria-label="WhatsApp"
           title={missingPhone ? "Set WhatsApp number in settings" : "WhatsApp"}
@@ -188,6 +232,25 @@ export default function WhatsAppFloatWidget({
           <WhatsAppLogo size={30} />
         </a>
       )}
+      {!isEditor && agents.length > 1 ? (
+        <div className="mt-2 flex flex-col gap-1 rounded-xl bg-white p-2 text-xs shadow">
+          {agents.map((agent) => (
+            <button
+              key={agent.id}
+              type="button"
+              onClick={() => setAgentId(agent.id)}
+              className={agent.id === (selected?.id || "") ? "font-bold text-emerald-700" : "text-slate-600"}
+            >
+              {agent.name || agent.phone}
+            </button>
+          ))}
+        </div>
+      ) : null}
+      {!isEditor && !online ? (
+        <div className="mt-2 max-w-[180px] rounded-lg bg-white p-2 text-[11px] text-slate-600 shadow">
+          {cfg.offlineMessage || "We are currently offline"}
+        </div>
+      ) : null}
       {isEditor ? (
         <div className="mt-1 rounded-md bg-slate-900/80 px-2 py-0.5 text-center text-[10px] font-bold text-white">
           WhatsApp · גררו

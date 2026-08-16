@@ -42,6 +42,12 @@ export type CountdownSettings = {
   effectMode?: CountdownEffectMode;
   effectWhen?: CountdownEffectWhen;
   expiredMessage?: string;
+  mode?: "fixed" | "evergreen";
+  evergreenMinutes?: number;
+  hideOnExpiry?: boolean;
+  redirectOnExpiry?: string;
+  pageTargeting?: { mode?: "all" | "include" | "exclude"; pageIds?: string[] };
+  deviceTargeting?: { desktop?: boolean; tablet?: boolean; mobile?: boolean };
 };
 
 export type CountdownUnit = {

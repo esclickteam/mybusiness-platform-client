@@ -8,6 +8,9 @@ import WhatsAppFloatWidget from "../../site-plugins/whatsapp-float/WhatsAppFloat
 import AnnouncementBarWidget from "../../site-plugins/announcement-bar/AnnouncementBarWidget";
 import CookieBannerWidget from "../../site-plugins/cookie-banner/CookieBannerWidget";
 import ExitPopupWidget from "../../site-plugins/exit-popup/ExitPopupWidget";
+import SocialProofWidget from "../../site-plugins/social-proof/SocialProofWidget";
+import FloatingContactBarWidget from "../../site-plugins/floating-contact-bar/FloatingContactBarWidget";
+import LanguageSwitcherWidget from "../../site-plugins/multi-language/LanguageSwitcherWidget";
 import { mergeExitPopupSettings } from "../../site-plugins/exit-popup/exitPopupUtils";
 import { mergePluginSettings as mergeWheelSettings } from "./benefitsWheelPublicUtils";
 import { mergePluginSettings as mergeSearchSettings } from "./smartSearchPublicUtils";
@@ -92,7 +95,16 @@ export default function PublicSitePluginOverlays({ site }: PublicSitePluginOverl
   const showSearch = Boolean(searchSettings?.isActive);
   const showAccessibility = Boolean(accessibilitySettings?.isActive);
   const showSmartBot = Boolean(smartBotSettings?.isActive);
-  const showWhatsapp = Boolean(whatsappSettings?.isActive);
+  const contactBarSettings = enabledPlugins.includes("floating-contact-bar")
+    ? site?.pluginSettings?.["floating-contact-bar"]
+    : null;
+  const showContactBar = Boolean(contactBarSettings?.isActive !== false && contactBarSettings);
+  const hideWhatsappForBar = Boolean(
+    showContactBar && contactBarSettings?.hideWhatsappFloat !== false && contactBarSettings?.showWhatsapp !== false
+  );
+  const showWhatsapp = Boolean(whatsappSettings?.isActive) && !hideWhatsappForBar;
+  const showSocialProof = enabledPlugins.includes("social-proof");
+  const showLanguage = enabledPlugins.includes("multi-language");
   const showAnnouncement = Boolean(announcementSettings?.isActive);
   const showCookie = Boolean(cookieSettings?.isActive);
   const showExitPopup = Boolean(exitPopupSettings?.isActive);
@@ -127,7 +139,10 @@ export default function PublicSitePluginOverlays({ site }: PublicSitePluginOverl
     !showAnnouncement &&
     !showCookie &&
     !showExitPopup &&
-    !showStoreCheckout
+    !showStoreCheckout &&
+    !showContactBar &&
+    !showSocialProof &&
+    !showLanguage
   ) {
     return null;
   }
@@ -162,6 +177,25 @@ export default function PublicSitePluginOverlays({ site }: PublicSitePluginOverl
           settings={whatsappSettings!}
           fallbackPhone={whatsappFallbackPhone}
           mode="live"
+          siteSlug={slug}
+        />
+      ) : null}
+      {showContactBar ? (
+        <FloatingContactBarWidget
+          settings={contactBarSettings}
+          fallbackPhone={whatsappFallbackPhone}
+        />
+      ) : null}
+      {showSocialProof ? (
+        <SocialProofWidget
+          slug={slug}
+          settings={site?.pluginSettings?.["social-proof"]}
+        />
+      ) : null}
+      {showLanguage ? (
+        <LanguageSwitcherWidget
+          languages={site?.pluginSettings?.["multi-language"]?.languages || []}
+          current={site?.__activeLanguage}
         />
       ) : null}
       {showCookie ? (
