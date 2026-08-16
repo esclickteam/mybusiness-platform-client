@@ -18,24 +18,16 @@ export function useVisualAutosave({
   const [status, setStatus] = useState<VisualAutosaveStatus>("clean");
   const saveDraftRef = useRef(saveDraft);
   saveDraftRef.current = saveDraft;
-
   const controllerRef = useRef<ReturnType<
     typeof createVisualAutosaveController
   > | null>(null);
-  if (!controllerRef.current) {
-    controllerRef.current = createVisualAutosaveController({
+
+  useEffect(() => {
+    const controller = createVisualAutosaveController({
       save: (context) => saveDraftRef.current(context),
       onStatus: setStatus,
     });
-  }
-
-  useEffect(() => {
-    controllerRef.current?.setSave((context) => saveDraftRef.current(context));
-  }, [saveDraft]);
-
-  useEffect(() => {
-    const controller = controllerRef.current;
-    if (!controller) return undefined;
+    controllerRef.current = controller;
 
     const onDirty = () => {
       if (!enabled) return;
@@ -52,14 +44,12 @@ export function useVisualAutosave({
       window.removeEventListener(VISUAL_AUTOSAVE_DIRTY_EVENT, onDirty);
       window.removeEventListener("online", onOnline);
       window.removeEventListener("offline", onOffline);
+      controller.dispose();
+      if (controllerRef.current === controller) {
+        controllerRef.current = null;
+      }
     };
   }, [enabled]);
-
-  useEffect(() => {
-    return () => {
-      controllerRef.current?.dispose();
-    };
-  }, []);
 
   const markDirty = useCallback(() => {
     if (!enabled) return;

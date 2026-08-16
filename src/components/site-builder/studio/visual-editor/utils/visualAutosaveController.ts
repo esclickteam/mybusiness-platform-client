@@ -230,6 +230,10 @@ export function createVisualAutosaveController(
       return inFlightRevision;
     },
 
+    isDisposed() {
+      return disposed;
+    },
+
     dispose() {
       disposed = true;
       clearTimer();
