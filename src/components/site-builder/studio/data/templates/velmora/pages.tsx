@@ -1052,6 +1052,16 @@ export default function VelmoraPages({
 
   const [selectedProductId, setSelectedProductId] = React.useState(() => {
     if (typeof window === "undefined") return "";
+    const fromPath = String(window.location.pathname || "").match(
+      /\/product\/([^/]+)/,
+    );
+    if (fromPath?.[1]) {
+      try {
+        return decodeURIComponent(fromPath[1]);
+      } catch {
+        return fromPath[1];
+      }
+    }
     try {
       return String(sessionStorage.getItem(SELECTED_PRODUCT_KEY) || "").trim();
     } catch {

@@ -8153,7 +8153,6 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       const hasPublishedSharedChrome =
         Object.keys(publishedSharedChrome).length > 0;
 
-      const persistedPageIds = persistedPageIdsRef.current;
       const dirtyPageIds = dirtyVisualPageIdsRef.current;
       markVisualPageDirty(activeVisualPageId);
 
@@ -8163,9 +8162,10 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
           page.id === activeVisualPageId ||
           (activeVisualPageId === "home" && isCanonicalHome);
         const pageId = String(page.id || "").trim();
-        const isNewPage = Boolean(pageId) && !persistedPageIds.has(pageId);
+        const isClientCreatedPage = /^page[_-]/i.test(pageId);
         const isDirtyPage = Boolean(pageId) && dirtyPageIds.has(pageId);
-        const shouldSendVisual = isActivePage || isNewPage || isDirtyPage;
+        const shouldSendVisual =
+          isActivePage || isDirtyPage || isClientCreatedPage;
 
         const basePageVisual = !shouldSendVisual
           ? {}
@@ -8240,7 +8240,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
           html: published ? String(page.html || "") : "",
           htmlSnapshot: "",
           css: published ? String(page.css || "") : "",
-          ...(shouldSendVisual && (pageHasVisual || isNewPage)
+          ...(shouldSendVisual && (pageHasVisual || isClientCreatedPage)
             ? { data: pageVisual }
             : {}),
           __blankVisualPage: Boolean(

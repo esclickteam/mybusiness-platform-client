@@ -140,10 +140,8 @@ function ProductCard({
         <a
           href={`/product/${encodeURIComponent(String(product.id || product.ref || ""))}`}
           onClick={(event) => {
-            if (isVisualEditor) {
-              event.preventDefault();
-              openProduct();
-            }
+            event.preventDefault();
+            openProduct();
           }}
           className="relative block w-full overflow-hidden bg-[#eee7da]"
         >
