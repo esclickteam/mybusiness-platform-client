@@ -1127,6 +1127,7 @@ export default function VisualSitePagesPanel({
             <div className="p-3">
               <button
                 type="button"
+                data-testid="visual-add-blank-page"
                 onClick={onAddPage}
                 className="flex h-11 w-full items-center justify-center gap-2 rounded-2xl bg-slate-900 text-sm font-black text-white shadow-[0_10px_28px_rgba(15,23,42,0.22)] transition hover:bg-slate-800"
               >

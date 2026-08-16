@@ -401,10 +401,24 @@ export function readVisualInsertedElements(
 export function readVisualInsertedSections(
   data: Record<string, any>,
 ): VisualInsertedSectionMap {
-  return readMap<VisualInsertedSectionMap>(
+  const raw = readMap<VisualInsertedSectionMap>(
     data,
     VISUAL_INSERTED_SECTIONS_KEY,
   );
+  const next: VisualInsertedSectionMap = {};
+
+  Object.entries(raw).forEach(([key, item]) => {
+    const source = item && typeof item === "object" ? item : {};
+    const id = String(source.id || key || "").trim();
+    if (!id) return;
+    next[id] = {
+      ...source,
+      id,
+      libraryId: String(source.libraryId || id).trim() || id,
+    };
+  });
+
+  return next;
 }
 
 export function readVisualSectionOrder(

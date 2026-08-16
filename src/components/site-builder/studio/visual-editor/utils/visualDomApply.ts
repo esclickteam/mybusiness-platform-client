@@ -2699,6 +2699,15 @@ function createInsertedSectionNode(
   if (item.libraryId) {
     section.setAttribute("data-section-library-id", String(item.libraryId));
   }
+  const portalKindMatch = String(item.libraryId || item.id || "").match(
+    /portal-(login|register|account|orders|cart|packages|forgot-password|reset-password)/i,
+  );
+  if (portalKindMatch) {
+    const kind = `portal-${portalKindMatch[1].toLowerCase()}`;
+    section.setAttribute("data-bizuply-widget", kind);
+    section.setAttribute("data-bizuply-portal-kind", kind);
+    section.setAttribute("data-bizuply-portal-mount", "true");
+  }
   section.setAttribute(
     "data-section-title",
     item.label || "סקשן חדש",

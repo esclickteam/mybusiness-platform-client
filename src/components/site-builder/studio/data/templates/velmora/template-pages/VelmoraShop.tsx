@@ -133,9 +133,12 @@ function ProductCard({
   return (
     <Reveal delay={(index % 8) * 70}>
       <article className="group relative overflow-hidden rounded-[7px] border border-black/10 bg-white shadow-sm transition duration-500 hover:-translate-y-2 hover:shadow-[0_24px_70px_rgba(0,0,0,0.14)]">
-        <button
-          type="button"
-          onClick={openProduct}
+        <a
+          href={`/product/${encodeURIComponent(String(product.id || product.ref || ""))}`}
+          onClick={(event) => {
+            event.preventDefault();
+            openProduct();
+          }}
           className="relative block w-full overflow-hidden bg-[#eee7da]"
         >
           <img data-visual-edit-id={`shop.products.${index}.image`} data-visual-edit-type="image" data-visual-type="image" data-visual-editable="true" data-editable="image" data-field={`shop.products.${index}.image`} data-image-field={`shop.products.${index}.image`} data-visual-image-field={`shop.products.${index}.image`}
@@ -158,7 +161,7 @@ function ProductCard({
               <Eye className="h-4 w-4" />
             </span>
           </div>
-        </button>
+        </a>
 
         <div className="p-5 text-right">
           <div className="flex items-start justify-between gap-4">
