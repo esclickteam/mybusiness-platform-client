@@ -198,7 +198,10 @@ export default function PublicSitePluginOverlays({ site }: PublicSitePluginOverl
       ) : null}
       {showLanguage ? (
         <LanguageSwitcherWidget
-          languages={site?.pluginSettings?.["multi-language"]?.languages || []}
+          languages={site?.pluginSettings?.["multi-language"]?.languages || [
+            { code: "he", label: "HE", dir: "rtl" },
+            { code: "en", label: "EN", dir: "ltr" },
+          ]}
           current={site?.__activeLanguage}
         />
       ) : null}

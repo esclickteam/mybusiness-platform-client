@@ -2065,7 +2065,56 @@ function applyPublicSiteFavicon(faviconUrl) {
   ensureLink("apple-touch-icon");
 }
 
-function PublicSeoHead({ resolvedSeo, faviconUrl }) {
+function resolvePublicSiteLanguage(site, pathname) {
+  const enabled = Array.isArray(site?.enabledPlugins)
+    ? site.enabledPlugins.includes("multi-language")
+    : false;
+  const stored = site?.pluginSettings?.["multi-language"] || {};
+  const languages =
+    Array.isArray(stored.languages) && stored.languages.length
+      ? stored.languages
+      : [
+          { code: "he", dir: "rtl" },
+          { code: "en", dir: "ltr" },
+        ];
+  const path = String(
+    pathname ||
+      (typeof window !== "undefined" ? window.location.pathname : "") ||
+      "/",
+  );
+  const first = String(path.split("/").filter(Boolean)[0] || "").toLowerCase();
+  const fromUrl = languages.find(
+    (lang) => String(lang?.code || "").toLowerCase() === first,
+  );
+  const fromSite = languages.find(
+    (lang) =>
+      String(lang?.code || "").toLowerCase() ===
+      String(site?.__activeLanguage || "").toLowerCase(),
+  );
+  const picked = enabled
+    ? fromUrl || fromSite || languages[0]
+    : { code: "he", dir: "rtl" };
+  const code = String(picked?.code || "he").toLowerCase();
+  const explicit = String(picked?.dir || "").toLowerCase();
+  const dir =
+    explicit === "ltr" || explicit === "rtl"
+      ? explicit
+      : code === "en" || code.startsWith("en-")
+        ? "ltr"
+        : "rtl";
+  return { code, dir };
+}
+
+function applyPublicSiteLanguage(lang) {
+  if (typeof document === "undefined" || !lang) return;
+  document.documentElement.lang = lang.code;
+  document.documentElement.dir = lang.dir;
+  document.documentElement.setAttribute("lang", lang.code);
+  document.documentElement.setAttribute("dir", lang.dir);
+  if (document.body) document.body.setAttribute("dir", lang.dir);
+}
+
+function PublicSeoHead({ resolvedSeo, faviconUrl, htmlLang, htmlDir }) {
   const normalizedFaviconUrl = String(faviconUrl || "").trim();
   const initialEdgeSeoRef = useRef(
     typeof document !== "undefined" &&
@@ -2122,7 +2171,7 @@ function PublicSeoHead({ resolvedSeo, faviconUrl }) {
   // While edge SEO is authoritative for the first page, only ensure favicon.
   if (initialEdgeSeoRef.current && !helmetOwnsHead) {
     return normalizedFaviconUrl ? (
-      <Helmet>
+      <Helmet htmlAttributes={{ lang: htmlLang || "he", dir: htmlDir || "rtl" }}>
         <link rel="icon" href={normalizedFaviconUrl} />
         <link rel="apple-touch-icon" href={normalizedFaviconUrl} />
       </Helmet>
@@ -2130,7 +2179,7 @@ function PublicSeoHead({ resolvedSeo, faviconUrl }) {
   }
 
   return (
-    <Helmet>
+    <Helmet htmlAttributes={{ lang: htmlLang || "he", dir: htmlDir || "rtl" }}>
       {normalizedFaviconUrl ? (
         <>
           <link rel="icon" href={normalizedFaviconUrl} />
@@ -2375,6 +2424,14 @@ export default function PublicVisualSiteRenderer({
     () => readPublicRevision(site, activePage),
     [site, activePage],
   );
+  const publicLang = useMemo(
+    () => resolvePublicSiteLanguage(site, pathname),
+    [site, pathname],
+  );
+
+  useLayoutEffect(() => {
+    applyPublicSiteLanguage(publicLang);
+  }, [publicLang]);
 
   const handleTemplatePageChange = useCallback(
     (nextPageId) => {
@@ -2777,11 +2834,14 @@ export default function PublicVisualSiteRenderer({
         data-bizuply-public-revision={publicRevision}
         data-business-id={publicBusinessId || undefined}
         data-bizuply-business-id={publicBusinessId || undefined}
-        dir="rtl"
+        dir={publicLang.dir}
+        lang={publicLang.code}
       >
         <PublicSeoHead
           resolvedSeo={resolvedSeo}
           faviconUrl={site?.brand?.faviconUrl || ""}
+          htmlLang={publicLang.code}
+          htmlDir={publicLang.dir}
         />
         {fontUrls.length ? (
           <Helmet>
@@ -2849,11 +2909,14 @@ export default function PublicVisualSiteRenderer({
         data-bizuply-public-revision={publicRevision}
         data-business-id={publicBusinessId || undefined}
         data-bizuply-business-id={publicBusinessId || undefined}
-        dir="rtl"
+        dir={publicLang.dir}
+        lang={publicLang.code}
       >
         <PublicSeoHead
           resolvedSeo={resolvedSeo}
           faviconUrl={site?.brand?.faviconUrl || ""}
+          htmlLang={publicLang.code}
+          htmlDir={publicLang.dir}
         />
         {fontUrls.length ? (
           <Helmet>
@@ -2924,7 +2987,8 @@ export default function PublicVisualSiteRenderer({
   return (
     <div
       className="flex min-h-screen items-center justify-center bg-slate-50 p-6"
-      dir="rtl"
+      dir={publicLang.dir}
+      lang={publicLang.code}
     >
       <div className="max-w-xl rounded-3xl border border-slate-200 bg-white p-8 text-center shadow-sm">
         <h1 className="text-2xl font-black text-slate-800">

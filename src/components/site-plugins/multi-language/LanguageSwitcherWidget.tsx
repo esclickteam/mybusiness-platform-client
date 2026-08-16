@@ -1,6 +1,13 @@
-import React from "react";
+import React, { useLayoutEffect } from "react";
 
 type Lang = { code: string; label: string; dir?: string };
+
+function dirFor(lang?: Lang, code?: string) {
+  const explicit = String(lang?.dir || "").toLowerCase();
+  if (explicit === "ltr" || explicit === "rtl") return explicit;
+  const resolved = String(code || lang?.code || "he").toLowerCase();
+  return resolved === "en" || resolved.startsWith("en-") ? "ltr" : "rtl";
+}
 
 export default function LanguageSwitcherWidget({
   languages,
@@ -13,7 +20,23 @@ export default function LanguageSwitcherWidget({
     { code: "he", label: "HE", dir: "rtl" },
     { code: "en", label: "EN", dir: "ltr" },
   ];
-  const active = current || list[0]?.code;
+  const pathCode =
+    typeof window === "undefined"
+      ? ""
+      : String(window.location.pathname.split("/").filter(Boolean)[0] || "").toLowerCase();
+  const fromUrl = list.find((lang) => lang.code === pathCode);
+  const active = fromUrl?.code || current || list[0]?.code;
+  const activeLang = list.find((lang) => lang.code === active) || list[0];
+
+  useLayoutEffect(() => {
+    if (typeof document === "undefined" || !active) return;
+    const nextDir = dirFor(activeLang, active);
+    document.documentElement.lang = active;
+    document.documentElement.dir = nextDir;
+    document.documentElement.setAttribute("lang", active);
+    document.documentElement.setAttribute("dir", nextDir);
+    if (document.body) document.body.setAttribute("dir", nextDir);
+  }, [active, activeLang]);
 
   function hrefFor(code: string) {
     const path = typeof window === "undefined" ? "/" : window.location.pathname;
