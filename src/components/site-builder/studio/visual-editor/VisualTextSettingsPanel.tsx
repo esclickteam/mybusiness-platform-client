@@ -283,8 +283,18 @@ export default function VisualTextSettingsPanel({
 
   useEffect(() => {
     if (typeof window === "undefined") return;
-    const left = Math.max(24, window.innerWidth - 360);
-    setPosition((current) => ({ ...current, left }));
+    const place = () => {
+      setPosition((current) => ({
+        top: Math.min(Math.max(88, current.top), Math.max(88, window.innerHeight - 160)),
+        left: Math.min(
+          Math.max(12, current.left || Math.max(24, window.innerWidth - 360)),
+          Math.max(12, window.innerWidth - 332),
+        ),
+      }));
+    };
+    place();
+    window.addEventListener("resize", place);
+    return () => window.removeEventListener("resize", place);
   }, []);
 
   useEffect(() => {
@@ -367,7 +377,7 @@ export default function VisualTextSettingsPanel({
       data-testid="visual-text-settings-panel"
       onMouseDown={(event) => {
         event.stopPropagation();
-        snapshotTextRange(node, elementId);
+        snapshotTextRange(node, elementId, { clearIfNone: true });
       }}
       onClick={(event) => event.stopPropagation()}
       className="pointer-events-auto fixed z-[2147483001] flex w-[min(320px,calc(100vw-24px))] max-h-[calc(100vh-120px)] flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0_18px_50px_rgba(15,23,42,0.18)]"

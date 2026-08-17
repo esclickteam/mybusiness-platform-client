@@ -211,13 +211,21 @@ export function getRangeOffsets(
   }
 }
 
-export function snapshotTextRange(node: HTMLElement | null, elementId: string) {
+export function snapshotTextRange(
+  node: HTMLElement | null,
+  elementId: string,
+  options?: { clearIfNone?: boolean },
+) {
   const id = String(elementId || "").trim();
   if (!node || !id) return;
   const range = getLiveTextRange(node);
-  if (!range) return;
-  const offsets = getRangeOffsets(node, range);
-  if (!offsets) return;
+  const offsets = range ? getRangeOffsets(node, range) : null;
+  if (!offsets) {
+    if (options?.clearIfNone && (!lastRangeSnapshot || lastRangeSnapshot.elementId === id)) {
+      lastRangeSnapshot = null;
+    }
+    return;
+  }
   lastRangeSnapshot = { elementId: id, ...offsets };
 }
 
