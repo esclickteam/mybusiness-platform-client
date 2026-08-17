@@ -194,6 +194,7 @@ function ColorSwatch({
       title={title}
       data-testid={testId}
       onMouseDown={(event) => event.stopPropagation()}
+      onClick={() => onChange(safe)}
       className="relative inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-md text-slate-700 hover:bg-slate-100"
     >
       {children}
@@ -204,6 +205,7 @@ function ColorSwatch({
       <input
         type="color"
         value={safe}
+        onInput={(event) => onChange(event.currentTarget.value)}
         onChange={(event) => onChange(event.currentTarget.value)}
         className="absolute inset-0 cursor-pointer opacity-0"
       />
