@@ -412,6 +412,21 @@ export function harvestRichHtmlFromNode(node: HTMLElement | null) {
   return "";
 }
 
+export function plainTextFromRichHtml(html: string) {
+  const raw = String(html || "");
+  if (!raw.trim()) return "";
+  if (typeof document === "undefined") {
+    return raw.replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim();
+  }
+  const root = document.createElement("div");
+  root.innerHTML = sanitizeRichHtml(raw);
+  return String(root.innerText || root.textContent || "").replace(/\s+/g, " ").trim();
+}
+
+export function richHtmlMatchesText(html: string, text: string) {
+  return plainTextFromRichHtml(html) === String(text || "").replace(/\s+/g, " ").trim();
+}
+
 export function readComputedInlineState(node: HTMLElement | null) {
   if (!node || typeof window === "undefined") {
     return {

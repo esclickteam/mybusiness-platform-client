@@ -28,6 +28,7 @@ import {
   peekTextRangeSnapshot,
   snapshotTextRange,
 } from "./utils/richTextHtml";
+import { resolvePersistedVisualId } from "./utils/visualPersistId";
 
 type VisualTextSettingsPanelProps = {
   editor: any;
@@ -63,16 +64,7 @@ function getElementNode(element: any): HTMLElement | null {
 }
 
 function getStableVisualId(node: HTMLElement | null, fallback = "") {
-  let current = node;
-  while (current) {
-    const id = String(current.getAttribute("data-visual-edit-id") || "").trim();
-    const paint = current.getAttribute("data-visual-rich-paint") === "true";
-    const mark = current.getAttribute("data-visual-inline-mark") === "true";
-    const elementLink = current.getAttribute("data-visual-element-link") === "true";
-    if (id && !paint && !mark && !elementLink) return id;
-    current = current.parentElement;
-  }
-  return fallback;
+  return resolvePersistedVisualId(node, fallback);
 }
 
 function getElementId(element: any) {

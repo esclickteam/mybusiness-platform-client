@@ -51,6 +51,7 @@ import {
   writeVisualInsertedElement,
   writeVisualInsertedSection,
   writeVisualContentItem,
+  persistVisualTextFields,
   STORE_VISUAL_SCALAR_KEYS,
   syncStoreTextScalar,
   writeVisualLayoutItem,
@@ -82,7 +83,8 @@ import { isGenericDefaultFormConfig } from "../../data/templates/shared/template
 import { buildVisualRuntimeCss } from "../utils/visualCssRuntime";
 import { applyAllVisualDataToDom, previewVisualStyleOnDom } from "../utils/visualDomApply";
 import { applySharedTextFormat } from "../utils/textFormatCommands";
-import { harvestRichHtmlFromNode } from "../utils/richTextHtml";
+import { harvestRichHtmlFromNode, richHtmlMatchesText } from "../utils/richTextHtml";
+import { resolvePersistedVisualId } from "../utils/visualPersistId";
 import { safeCssSelectorValue } from "../utils/visualSelectors";
 import {
   applyPortalShellAttributePatch,
@@ -1435,8 +1437,21 @@ export function useVisualEditorState({
       const id = String(elementId || "").trim();
       if (!id) return;
       const text = String(value ?? "");
-      let next = writeVisualContentItem(dataRef.current || {}, id, { text });
-      next = syncStoreTextScalar(next, id, text, previousText);
+      const existing = readVisualContent(dataRef.current || {})[id] as
+        | Record<string, any>
+        | undefined;
+      const existingHtml = String(existing?.html || "");
+      const next = persistVisualTextFields(
+        dataRef.current || {},
+        id,
+        {
+          text,
+          ...(existingHtml && richHtmlMatchesText(existingHtml, text)
+            ? { html: existingHtml }
+            : {}),
+        },
+        previousText,
+      );
       dataRef.current = next;
     },
     [],
@@ -1686,11 +1701,22 @@ export function useVisualEditorState({
       });
 
       setData((current) => {
-        let next = writeVisualContentItem(current || {}, elementId, {
-          text,
-          html: "",
-        });
-        next = syncStoreTextScalar(next, elementId, text, previousText);
+        const existing = readVisualContent(current || {})[elementId] as
+          | Record<string, any>
+          | undefined;
+        const existingHtml = String(existing?.html || "");
+        let next = persistVisualTextFields(
+          current || {},
+          elementId,
+          {
+            text,
+            html:
+              existingHtml && richHtmlMatchesText(existingHtml, text)
+                ? existingHtml
+                : "",
+          },
+          previousText,
+        );
 
         // Portal form buttons remount from shell attrs — persist there too.
         if (portalShell?.attrPatch && Object.keys(portalShell.attrPatch).length) {
@@ -2882,15 +2908,24 @@ export function useVisualEditorState({
   const persistRichText = useCallback(
     (elementId: string, text: string, html: string) => {
       if (!elementId) return false;
+      const node = findTextFormatNode(elementId);
+      const persistId = resolvePersistedVisualId(node, elementId);
+      const previousText = String(
+        readVisualContent(dataRef.current || {})[persistId]?.text ||
+          readVisualContent(dataRef.current || {})[elementId]?.text ||
+          "",
+      );
       setData((current) =>
-        writeVisualContentItem(current || {}, elementId, {
-          text,
-          html,
-        }),
+        persistVisualTextFields(
+          current || {},
+          persistId,
+          { text, html },
+          previousText,
+        ),
       );
       return true;
     },
-    [setData],
+    [findTextFormatNode, setData],
   );
 
   const applyTextFormat = useCallback(
@@ -5407,9 +5442,7 @@ export function useVisualEditorState({
             )
             .forEach((node) => {
               if (!root.contains(node)) return;
-              const elementId = String(
-                node.getAttribute("data-visual-edit-id") || "",
-              ).trim();
+              const elementId = resolvePersistedVisualId(node);
               if (!elementId) return;
 
               const text = String(node.innerText || node.textContent || "")

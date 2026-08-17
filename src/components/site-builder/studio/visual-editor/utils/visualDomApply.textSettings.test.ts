@@ -6,6 +6,8 @@ import {
 } from "./visualDomApply";
 import { applySharedTextFormat } from "./textFormatCommands";
 import { snapshotTextRange } from "./richTextHtml";
+import { persistVisualTextFields } from "./visualData";
+import { resolvePersistedVisualId } from "./visualPersistId";
 
 describe("visual text persistence", () => {
   it("applies persisted typography onto the matching text node", () => {
@@ -120,5 +122,61 @@ describe("visual text persistence", () => {
     expect(html).not.toMatch(/<(em|i|span)[^>]*>שלום/);
     expect(html).not.toMatch(/<(em|i|span)[^>]*>יפה/);
     document.body.removeChild(node);
+  });
+
+  it("persists rich html onto the matching scalar field, not the paint wrapper", () => {
+    const root = document.createElement("div");
+    const paragraph = document.createElement("p");
+    paragraph.setAttribute("data-visual-edit-id", "heroSubtitle");
+    const paint = document.createElement("span");
+    paint.setAttribute("data-visual-rich-paint", "true");
+    paint.setAttribute("data-visual-auto-id", "true");
+    paint.setAttribute("data-visual-edit-id", "page.hero.text.span.p-1.span-1");
+    paint.innerHTML =
+      'שלום <a data-visual-inline-mark="true" href="https://example.com/inline"><em>עולם</em></a> יפה';
+    paragraph.appendChild(paint);
+    root.appendChild(paragraph);
+
+    expect(resolvePersistedVisualId(paint)).toBe("heroSubtitle");
+
+    const next = persistVisualTextFields(
+      {
+        heroSubtitle: "שלום עולם יפה",
+      },
+      "page.hero.text.span.p-1.span-1",
+      {
+        text: "שלום עולם יפה",
+        html: 'שלום <a href="https://example.com/inline"><em>עולם</em></a> יפה',
+      },
+      "שלום עולם יפה",
+    );
+
+    expect(next.__content.heroSubtitle.html).toContain("עולם");
+    expect(next.__content.heroSubtitle.html).toContain("https://example.com/inline");
+    expect(next.__content.heroSubtitle.html).not.toMatch(/<a[^>]*>שלום/);
+  });
+
+  it("rehydrates inline html onto the stable text node after remount", () => {
+    const root = document.createElement("div");
+    const paragraph = document.createElement("p");
+    paragraph.setAttribute("data-visual-edit-id", "heroSubtitle");
+    paragraph.textContent = "שלום עולם יפה";
+    root.appendChild(paragraph);
+
+    applyVisualContentToDom(root, {
+      __content: {
+        heroSubtitle: {
+          text: "שלום עולם יפה",
+          html: 'שלום <a href="https://example.com/inline" style="font-style: italic; color: #2563eb; background-color: #facc15">עולם</a> יפה',
+        },
+      },
+    });
+
+    const link = paragraph.querySelector("a");
+    expect(paragraph.textContent).toContain("שלום עולם יפה");
+    expect(link?.textContent).toBe("עולם");
+    expect(link?.getAttribute("href")).toBe("https://example.com/inline");
+    expect(paragraph.innerHTML).not.toMatch(/<a[^>]*>שלום/);
+    expect(paragraph.innerHTML).not.toMatch(/<a[^>]*>יפה/);
   });
 });

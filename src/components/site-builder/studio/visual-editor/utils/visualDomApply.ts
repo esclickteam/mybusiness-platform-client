@@ -1546,14 +1546,13 @@ export function applyVisualContentToDom(
     // Product/category media is owned by the live store catalog.
     if (isStoreBoundVisualContentKey(elementId)) return;
 
-    let nodes = findVisualNodes(root, elementId, {
-      allowFallback: false,
-    });
+    let nodes = findPersistedVisualNodes(root, elementId);
 
     if (!nodes.length) {
-      nodes = findVisualNodes(root, elementId, {
-        allowFallback: true,
-      });
+      nodes = findContentNodesByExactText(
+        root,
+        String((item as Record<string, any>)?.text ?? ""),
+      );
     }
 
     if (!nodes.length) return;
@@ -1943,6 +1942,27 @@ export function applyMediaContentToNode(
       node.setAttribute("data-visual-background-src", src);
     }
   }
+}
+
+function normalizeCompareText(value: string) {
+  return String(value || "").replace(/\s+/g, " ").trim();
+}
+
+function findContentNodesByExactText(root: HTMLElement, text: string) {
+  const wanted = normalizeCompareText(text);
+  if (!wanted) return [];
+
+  const candidates = Array.from(
+    root.querySelectorAll<HTMLElement>("h1,h2,h3,h4,h5,h6,p,button,a,li,span"),
+  ).filter((node) => {
+    if (isEditorOnlyNode(node)) return false;
+    if (node.getAttribute("data-visual-rich-paint") === "true") return false;
+    if (node.getAttribute("data-visual-inline-mark") === "true") return false;
+    if (hasNestedEditableTextChildren(node)) return false;
+    return normalizeCompareText(node.innerText || node.textContent || "") === wanted;
+  });
+
+  return candidates.length === 1 ? candidates : [];
 }
 
 function findPersistedVisualNodes(root: HTMLElement, elementId: string) {

@@ -17,6 +17,7 @@ import {
 
 import { applyMediaFitStyles } from "./utils/visualMediaUtils";
 import { harvestRichHtmlFromNode } from "./utils/richTextHtml";
+import { resolvePersistedVisualId } from "./utils/visualPersistId";
 import { resolveFormContext } from "./utils/visualForms";
 import { getSitePluginSettings, saveSitePluginSettings } from "../../../../api/sitePluginSettingsApi";
 import { getSitePlugins } from "../../../../api/sitePluginsApi";
@@ -244,7 +245,7 @@ function isHTMLElement(value: unknown): value is HTMLElement {
 }
 
 function getElementId(node: HTMLElement | null) {
-  return String(node?.getAttribute("data-visual-edit-id") || "").trim();
+  return resolvePersistedVisualId(node);
 }
 
 function getElementType(node: HTMLElement | null) {

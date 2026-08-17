@@ -569,6 +569,29 @@ export function writeVisualContentItem(
   return writeMapItem(data, VISUAL_CONTENT_KEY, elementId, patch);
 }
 
+export function persistVisualTextFields(
+  data: Record<string, any>,
+  elementId: string,
+  patch: VisualContentItem,
+  previousText?: string,
+): Record<string, any> {
+  const id = String(elementId || "").trim();
+  if (!id) return data || {};
+
+  let next = writeVisualContentItem(data || {}, id, patch);
+  if (typeof patch.text !== "string") return next;
+
+  next = syncStoreTextScalar(next, id, patch.text, previousText);
+
+  STORE_VISUAL_SCALAR_KEYS.forEach((key) => {
+    if (String(next[key] ?? "") !== String(patch.text ?? "")) return;
+    if (key === id) return;
+    next = writeVisualContentItem(next, key, patch);
+  });
+
+  return next;
+}
+
 export function removeVisualContentItem(
   data: Record<string, any>,
   elementId: string,
