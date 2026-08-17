@@ -45,19 +45,20 @@ const LINE_HEIGHTS = ["1", "1.15", "1.3", "1.5", "1.7", "2"];
 const LETTER_SPACINGS = ["-1px", "0px", "0.5px", "1px", "2px", "4px"];
 
 function getElementNode(element: any): HTMLElement | null {
-  const node =
+  let node =
     element?.node || element?.domNode || element?.element || null;
   if (!(node instanceof HTMLElement)) return null;
-  if (node.getAttribute("data-visual-element-link") === "true") {
+
+  while (node.parentElement) {
+    const auto = node.getAttribute("data-visual-auto-id") === "true";
+    const paint = node.getAttribute("data-visual-rich-paint") === "true";
+    const elementLink = node.getAttribute("data-visual-element-link") === "true";
+    if (!auto && !paint && !elementLink) break;
     const parent = node.parentElement;
-    if (
-      parent &&
-      /^(H[1-6]|P|SPAN)$/.test(parent.tagName) &&
-      parent.getAttribute("data-visual-edit-id")
-    ) {
-      return parent;
-    }
+    if (!parent.getAttribute("data-visual-edit-id")) break;
+    node = parent;
   }
+
   return node;
 }
 
