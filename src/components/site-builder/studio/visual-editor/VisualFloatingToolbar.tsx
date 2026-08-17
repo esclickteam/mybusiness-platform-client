@@ -1585,7 +1585,7 @@ export default function VisualFloatingToolbar({
         event.stopPropagation();
         const selectedNode = getElementNode(element);
         if (selectedNode && elementId) {
-          snapshotTextRange(selectedNode, elementId, { clearIfNone: true });
+          snapshotTextRange(selectedNode, elementId);
         }
       }}
       onClick={(event) => event.stopPropagation()}

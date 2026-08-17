@@ -22,7 +22,12 @@ import {
   isTextSettingsElement,
   TEXT_STYLE_PRESETS,
 } from "./utils/textFormatCommands";
-import { snapshotTextRange } from "./utils/richTextHtml";
+import {
+  clearTextRangeSnapshot,
+  getLiveTextRange,
+  peekTextRangeSnapshot,
+  snapshotTextRange,
+} from "./utils/richTextHtml";
 
 type VisualTextSettingsPanelProps = {
   editor: any;
@@ -162,6 +167,7 @@ function ToggleButton({
         event.stopPropagation();
         onClick();
       }}
+      data-active={active ? "true" : "false"}
       className={`inline-flex h-8 w-8 items-center justify-center rounded-md text-sm font-black transition ${
         active
           ? "bg-sky-100 text-sky-700"
@@ -193,7 +199,10 @@ function ColorSwatch({
     <label
       title={title}
       data-testid={testId}
-      onMouseDown={(event) => event.stopPropagation()}
+      onMouseDown={(event) => {
+        event.preventDefault();
+        event.stopPropagation();
+      }}
       onClick={() => onChange(safe)}
       className="relative inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-md text-slate-700 hover:bg-slate-100"
     >
@@ -314,25 +323,36 @@ export default function VisualTextSettingsPanel({
   }, [elementId, open]);
 
   useEffect(() => {
+    clearTextRangeSnapshot();
+    setHasInlineRange(false);
+  }, [elementId]);
+
+  useEffect(() => {
     if (!open || !node) return;
 
-    const syncRange = () => {
-      const selection = window.getSelection();
-      const hasRange = Boolean(
-        selection &&
-          !selection.isCollapsed &&
-          selection.rangeCount > 0 &&
-          node.contains(selection.anchorNode),
-      );
-      setHasInlineRange(hasRange);
-      if (hasRange) snapshotTextRange(node, elementId);
+    const syncRange = (fromNodeClick = false) => {
+      const live = Boolean(getLiveTextRange(node));
+      if (live) {
+        snapshotTextRange(node, elementId);
+        setHasInlineRange(true);
+        return;
+      }
+      if (fromNodeClick) {
+        clearTextRangeSnapshot(elementId);
+        setHasInlineRange(false);
+        return;
+      }
+      setHasInlineRange(Boolean(peekTextRangeSnapshot(elementId)));
     };
 
-    document.addEventListener("selectionchange", syncRange);
-    node.addEventListener("mouseup", syncRange);
+    const onSelectionChange = () => syncRange(false);
+    const onNodeMouseUp = () => syncRange(true);
+
+    document.addEventListener("selectionchange", onSelectionChange);
+    node.addEventListener("mouseup", onNodeMouseUp);
     return () => {
-      document.removeEventListener("selectionchange", syncRange);
-      node.removeEventListener("mouseup", syncRange);
+      document.removeEventListener("selectionchange", onSelectionChange);
+      node.removeEventListener("mouseup", onNodeMouseUp);
     };
   }, [elementId, node, open]);
 
@@ -379,7 +399,7 @@ export default function VisualTextSettingsPanel({
       data-testid="visual-text-settings-panel"
       onMouseDown={(event) => {
         event.stopPropagation();
-        snapshotTextRange(node, elementId, { clearIfNone: true });
+        snapshotTextRange(node, elementId);
       }}
       onClick={(event) => event.stopPropagation()}
       className="pointer-events-auto fixed z-[2147483001] flex w-[min(320px,calc(100vw-24px))] max-h-[calc(100vh-120px)] flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0_18px_50px_rgba(15,23,42,0.18)]"
@@ -389,6 +409,8 @@ export default function VisualTextSettingsPanel({
         className="flex cursor-grab items-center justify-between border-b border-slate-100 px-4 py-3 active:cursor-grabbing"
         onMouseDown={(event) => {
           if ((event.target as HTMLElement).closest("button")) return;
+          snapshotTextRange(node, elementId, { clearIfNone: true });
+          setHasInlineRange(false);
           setDragging({
             x: event.clientX,
             y: event.clientY,

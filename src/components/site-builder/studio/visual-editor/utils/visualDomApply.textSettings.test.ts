@@ -5,6 +5,7 @@ import {
   applyVisualStylesToDom,
 } from "./visualDomApply";
 import { applySharedTextFormat } from "./textFormatCommands";
+import { snapshotTextRange } from "./richTextHtml";
 
 describe("visual text persistence", () => {
   it("applies persisted typography onto the matching text node", () => {
@@ -84,6 +85,40 @@ describe("visual text persistence", () => {
     expect(html).toContain("https://example.com/inline");
     expect(html).not.toMatch(/<a[^>]*>שלום/);
     expect(html).not.toMatch(/<a[^>]*>יפה/);
+    document.body.removeChild(node);
+  });
+
+  it("keeps a snapshotted inline range after the live selection collapses", () => {
+    const node = document.createElement("p");
+    node.textContent = "שלום עולם יפה";
+    document.body.appendChild(node);
+    const text = node.firstChild as Text;
+    const range = document.createRange();
+    range.setStart(text, 5);
+    range.setEnd(text, 9);
+    const selection = window.getSelection();
+    selection?.removeAllRanges();
+    selection?.addRange(range);
+    snapshotTextRange(node, "heroSubtitle");
+    selection?.removeAllRanges();
+
+    let html = "";
+    const result = applySharedTextFormat({
+      elementId: "heroSubtitle",
+      patch: { "font-style": "italic", fontStyle: "italic" },
+      node,
+      applyElementStyle: () => false,
+      persistRichText: (_id, _text, nextHtml) => {
+        html = nextHtml;
+        return true;
+      },
+    });
+
+    expect(result.mode).toBe("inline");
+    expect(html).toMatch(/italic|font-style/i);
+    expect(html).toContain("עולם");
+    expect(html).not.toMatch(/<(em|i|span)[^>]*>שלום/);
+    expect(html).not.toMatch(/<(em|i|span)[^>]*>יפה/);
     document.body.removeChild(node);
   });
 });
