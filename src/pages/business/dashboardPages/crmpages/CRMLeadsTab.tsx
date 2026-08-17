@@ -40,6 +40,7 @@ import {
   setAdminActiveBusinessId,
 } from "../../../../utils/adminTenant";
 import { useAuth } from "../../../../context/AuthContext";
+import { getApiErrorMessage } from "../../../../utils/apiErrorMessage";
 
 type LeadStatus =
   | "new"
@@ -1075,7 +1076,7 @@ export default function CRMLeadsTab({
       });
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : t("crm.leads.errors.loadFailed")
+        getApiErrorMessage(err, t("crm.leads.errors.loadFailed"))
       );
     } finally {
       if (!options.silent) {
@@ -1143,9 +1144,7 @@ export default function CRMLeadsTab({
       }
     } catch (err) {
       setError(
-        err instanceof Error
-          ? err.message
-          : t("crm.leads.errors.openFromNotificationFailed")
+        getApiErrorMessage(err, t("crm.leads.errors.openFromNotificationFailed"))
       );
     }
   };
@@ -1465,9 +1464,7 @@ export default function CRMLeadsTab({
       }
     } catch (err) {
       setError(
-        err instanceof Error
-          ? err.message
-          : t("crm.leads.errors.takeLeadFailed")
+        getApiErrorMessage(err, t("crm.leads.errors.takeLeadFailed"))
       );
     } finally {
       setTakingLead(false);
@@ -1496,9 +1493,7 @@ export default function CRMLeadsTab({
       }
     } catch (err) {
       setError(
-        err instanceof Error
-          ? err.message
-          : t("crm.leads.errors.convertLeadFailed")
+        getApiErrorMessage(err, t("crm.leads.errors.convertLeadFailed"))
       );
     } finally {
       setConvertingLead(false);
@@ -1546,7 +1541,7 @@ export default function CRMLeadsTab({
         previousLeads.find((lead) => lead._id === leadId) || selectedLead
       );
       setError(
-        err instanceof Error ? err.message : t("crm.leads.errors.updateStatusFailed")
+        getApiErrorMessage(err, t("crm.leads.errors.updateStatusFailed"))
       );
     }
   };
@@ -1623,9 +1618,7 @@ export default function CRMLeadsTab({
       }
     } catch (err) {
       setError(
-        err instanceof Error
-          ? err.message
-          : t("crm.leads.errors.saveActivityFailed")
+        getApiErrorMessage(err, t("crm.leads.errors.saveActivityFailed"))
       );
     } finally {
       setSavingActivity(false);
@@ -1699,7 +1692,7 @@ export default function CRMLeadsTab({
       }
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : t("crm.leads.errors.updateTaskFailed")
+        getApiErrorMessage(err, t("crm.leads.errors.updateTaskFailed"))
       );
     }
   };

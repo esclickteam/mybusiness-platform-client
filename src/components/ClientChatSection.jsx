@@ -51,7 +51,7 @@ export default function ClientChatSection() {
 
     socketRef.current.on("connect_error", (err) => {
       console.error("❌ Socket error:", err);
-      setError("Error connecting to chat: " + err.message);
+      setError("לא הצלחנו להתחבר לצ׳אט. נסו שוב.");
     });
 
     return () => {

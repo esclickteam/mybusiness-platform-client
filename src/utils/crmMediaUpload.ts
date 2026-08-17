@@ -81,11 +81,7 @@ async function signAndUploadDirect(
   const cloudinaryResult = await cloudinaryResponse.json().catch(() => null);
 
   if (!cloudinaryResponse.ok || !cloudinaryResult?.secure_url) {
-    throw new Error(
-      cloudinaryResult?.error?.message ||
-        cloudinaryResult?.message ||
-        "העלאה ל־Cloudinary נכשלה"
-    );
+    throw new Error("העלאת הקובץ נכשלה. נסו שוב.");
   }
 
   const secureUrl = String(cloudinaryResult.secure_url || "");

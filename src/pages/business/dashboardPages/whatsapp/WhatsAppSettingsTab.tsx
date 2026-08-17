@@ -27,6 +27,7 @@ import {
 } from "../../../../api/metaCampaignsApi";
 import MetaBillingAccountCards from "../../../../components/meta/MetaBillingAccountCards";
 import { loadFacebookSdk } from "../../../../utils/loadFacebookSdk";
+import { getApiErrorMessage } from "../../../../utils/apiErrorMessage";
 import {
   btnPrimary,
   btnSecondary,
@@ -160,11 +161,11 @@ export default function WhatsAppSettingsTab() {
 
   const handleConnect = async () => {
     setActionError("");
-    setActionInfo("Starting WhatsApp Embedded Signup…");
+    setActionInfo(t("whatsapp.settings.connecting"));
     console.info("[whatsapp] Connect clicked", { businessId });
 
     if (!businessId) {
-      const msg = "Missing business id. Refresh the page and try again.";
+      const msg = t("whatsapp.settings.missingBusiness");
       setActionError(msg);
       setActionInfo("");
       toast.error(msg);
@@ -184,14 +185,10 @@ export default function WhatsAppSettingsTab() {
       });
 
       if (!signup.appId) {
-        throw new Error(
-          "META_APP_ID is missing on the server. Add it in Railway."
-        );
+        throw new Error(t("whatsapp.settings.configMissing"));
       }
       if (!signup.configId) {
-        throw new Error(
-          "WHATSAPP_EMBEDDED_SIGNUP_CONFIG_ID is missing on the server. Add the Configuration ID in Railway."
-        );
+        throw new Error(t("whatsapp.settings.configMissing"));
       }
       if (!signup.encryptionReady) {
         throw new Error(t("whatsapp.settings.encryptionMissing"));
@@ -200,7 +197,7 @@ export default function WhatsAppSettingsTab() {
         throw new Error(t("whatsapp.settings.configMissing"));
       }
 
-      setActionInfo("Loading Meta SDK…");
+      setActionInfo(t("whatsapp.settings.connecting"));
       sessionRef.current = null;
       const FB = await loadFacebookSdk(
         signup.appId,
@@ -208,7 +205,7 @@ export default function WhatsAppSettingsTab() {
       );
       console.info("[whatsapp] Facebook SDK ready");
 
-      setActionInfo("Opening Meta login popup…");
+      setActionInfo(t("whatsapp.settings.openingMeta"));
       await new Promise<void>((resolve, reject) => {
         let settled = false;
         const settleReject = (error: Error) => {
@@ -240,7 +237,7 @@ export default function WhatsAppSettingsTab() {
                     return;
                   }
 
-                  setActionInfo("Completing connection on server…");
+                  setActionInfo(t("whatsapp.settings.completingConnection"));
                   await new Promise((r) => setTimeout(r, 600));
                   const assets = sessionRef.current;
                   if (!assets?.phoneNumberId || !assets?.wabaId) {
@@ -312,10 +309,10 @@ export default function WhatsAppSettingsTab() {
         }
       });
     } catch (error: any) {
-      const msg =
-        error?.response?.data?.error ||
-        error?.message ||
-        t("whatsapp.errors.connectFailed");
+      const msg = getApiErrorMessage(
+        error,
+        t("whatsapp.errors.connectFailed")
+      );
       console.error("[whatsapp] Connect failed", error);
       setActionError(msg);
       setActionInfo("");
@@ -547,24 +544,10 @@ export default function WhatsAppSettingsTab() {
                     {connection?.displayPhoneNumber || "—"}
                   </dd>
                 </div>
-                <div className="flex flex-wrap justify-between gap-2">
-                  <dt className="font-semibold text-slate-500">WABA ID</dt>
-                  <dd className="font-mono text-xs font-bold text-slate-800" dir="ltr">
-                    {connection?.wabaId || "—"}
-                  </dd>
-                </div>
-                <div className="flex flex-wrap justify-between gap-2">
-                  <dt className="font-semibold text-slate-500">
-                    Phone Number ID
-                  </dt>
-                  <dd className="font-mono text-xs font-bold text-slate-800" dir="ltr">
-                    {connection?.phoneNumberId || "—"}
-                  </dd>
-                </div>
                 {connection?.phonePlatformStatus ? (
                   <div className="flex flex-wrap justify-between gap-2">
                     <dt className="font-semibold text-slate-500">
-                      Meta phone status
+                      {t("whatsapp.settings.phoneStatus")}
                     </dt>
                     <dd className="font-bold text-slate-900" dir="ltr">
                       {connection.phonePlatformStatus}

@@ -32,7 +32,7 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
         return res.json();
       })
       .then((data) => setRecommendations(data))
-      .catch((err) => setError("Error loading recommendations: " + err.message));
+      .catch(() => setError("לא הצלחנו לטעון את ההמלצות. נסו שוב."));
 
     // Load existing approval count
     fetch(`/api/business/my`, {
@@ -159,7 +159,7 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
         return next;
       });
     } catch (err) {
-      setError("Error approving recommendation: " + err.message);
+      setError("לא הצלחנו לאשר את ההמלצה. נסו שוב.");
     } finally {
       setLoadingIds((ids) => {
         const next = new Set(ids);
@@ -190,7 +190,7 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
         )
       );
     } catch (err) {
-      setError("Error rejecting recommendation: " + err.message);
+      setError("לא הצלחנו לדחות את ההמלצה. נסו שוב.");
     } finally {
       setLoadingIds((ids) => {
         const next = new Set(ids);
@@ -234,7 +234,7 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
       );
       cancelEditing();
     } catch (err) {
-      setError("Error saving draft: " + err.message);
+      setError("לא הצלחנו לשמור את הטיוטה. נסו שוב.");
     } finally {
       setLoadingIds((ids) => {
         const next = new Set(ids);
@@ -276,7 +276,7 @@ const AiRecommendations = ({ businessId, token, onTokenExpired }) => {
       );
       cancelEditing();
     } catch (err) {
-      setError("Error saving and approving: " + err.message);
+      setError("לא הצלחנו לשמור ולאשר. נסו שוב.");
     } finally {
       setLoadingIds((ids) => {
         const next = new Set(ids);

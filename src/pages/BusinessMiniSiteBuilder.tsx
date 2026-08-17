@@ -263,7 +263,7 @@ async function fetchWebsiteTemplateByKey(templateKey: string) {
   });
 
   if (!data?.success || !data?.template) {
-    throw new Error(data?.message || "שגיאה בטעינת התבנית ממונגו");
+    throw new Error(data?.message || "לא הצלחנו לטעון את התבנית. נסו שוב.");
   }
 
   return data.template;

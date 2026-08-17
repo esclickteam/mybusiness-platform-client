@@ -1,37 +1,29 @@
 import React from 'react';
 
-// Error Boundary Component
 class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
-    this.state = { hasError: false, errorInfo: null };
+    this.state = { hasError: false };
   }
 
-  // Catches the error and updates the state
-  static getDerivedStateFromError(error) {
+  static getDerivedStateFromError() {
     return { hasError: true };
   }
 
-  // Captures the error details
   componentDidCatch(error, errorInfo) {
-    this.setState({ errorInfo });
     console.error("Error caught by ErrorBoundary:", error, errorInfo);
   }
 
   render() {
     if (this.state.hasError) {
-      // Display a custom message when an error occurs
       return (
-        <div>
-          <h1>An error occurred while saving.</h1>
-          <details style={{ whiteSpace: 'pre-wrap' }}>
-            {this.state.errorInfo && this.state.errorInfo.componentStack}
-          </details>
+        <div dir="rtl" style={{ padding: "2rem", textAlign: "center" }}>
+          <h1>אירעה שגיאה זמנית</h1>
+          <p>נסו לרענן את העמוד. אם הבעיה נמשכת, פנו לתמיכה.</p>
         </div>
       );
     }
 
-    // If no error, render the child components
     return this.props.children;
   }
 }

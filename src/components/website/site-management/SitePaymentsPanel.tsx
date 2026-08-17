@@ -238,14 +238,6 @@ export default function SitePaymentsPanel({ businessId }: SitePaymentsPanelProps
                   {primaryConnected.label || primaryConnected.provider}.
                 </li>
               </ol>
-              {primaryConnected.provider === "stripe" && businessId ? (
-                <p className="mt-3 text-xs text-slate-400">
-                  Webhook (אופציונלי):{" "}
-                  <span className="font-mono text-[11px] text-slate-600" dir="ltr">
-                    https://api.bizuply.com/api/store/stripe/webhook/{businessId}
-                  </span>
-                </p>
-              ) : null}
             </SitePanelCard>
           ) : null}
           <PaymentsProviderGallery

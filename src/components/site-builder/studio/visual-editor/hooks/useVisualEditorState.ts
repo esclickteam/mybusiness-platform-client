@@ -559,7 +559,7 @@ async function uploadVisualMediaToCloudinary({
   }
 
   if (!signData.apiKey || !signData.timestamp || !signData.signature || !signData.uploadUrl) {
-    throw new Error("חסרים פרטי חתימה להעלאה ל־Cloudinary");
+    throw new Error("לא ניתן להתחיל את ההעלאה כרגע. נסו שוב.");
   }
 
   const formData = new FormData();
@@ -586,11 +586,7 @@ async function uploadVisualMediaToCloudinary({
     (await cloudinaryResponse.json().catch(() => null)) as CloudinaryUploadResult | null;
 
   if (!cloudinaryResponse.ok || !cloudinaryResult?.secure_url) {
-    throw new Error(
-      cloudinaryResult?.error?.message ||
-        cloudinaryResult?.message ||
-        "העלאה ל־Cloudinary נכשלה",
-    );
+    throw new Error("העלאת הקובץ נכשלה. נסו שוב.");
   }
 
   const resourceType = String(cloudinaryResult.resource_type || "image");

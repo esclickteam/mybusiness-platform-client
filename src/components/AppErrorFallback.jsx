@@ -1,47 +1,29 @@
 import React from "react";
 
-const AppErrorFallback = ({ error, resetErrorBoundary }) => {
-  console.error("🔥 Error caught by ErrorBoundary:", error);
-
+const AppErrorFallback = ({ resetErrorBoundary }) => {
   return (
     <div
+      dir="rtl"
       style={{
         padding: "2rem",
         textAlign: "center",
-        color: "#b00020",
-        background: "#fff3f3",
+        color: "#0f172a",
+        background: "#f8fafc",
         borderRadius: "12px",
         margin: "4rem auto",
         maxWidth: "600px",
-        boxShadow: "0 0 10px rgba(0,0,0,0.1)",
+        boxShadow: "0 0 10px rgba(0,0,0,0.08)",
         fontFamily: "sans-serif"
       }}
     >
-      <h2>⚠️ Application Error</h2>
-      <p>Something went wrong... please refresh the page or try again later.</p>
-      {error?.message && (
-        <div
-          style={{
-            background: "#fce4e4",
-            color: "#b00020",
-            padding: "1rem",
-            borderRadius: "8px",
-            marginTop: "1rem",
-            textAlign: "left",
-            direction: "ltr",
-            whiteSpace: "pre-wrap",
-            fontSize: "0.9rem"
-          }}
-        >
-          {error.message}
-        </div>
-      )}
+      <h2>אירעה שגיאה זמנית</h2>
+      <p>לא הצלחנו לטעון את העמוד. רעננו ונסו שוב.</p>
       <button
         onClick={resetErrorBoundary}
         style={{
           marginTop: "2rem",
           padding: "0.75rem 1.5rem",
-          background: "#b00020",
+          background: "#2563eb",
           color: "#fff",
           border: "none",
           borderRadius: "6px",
@@ -49,7 +31,7 @@ const AppErrorFallback = ({ error, resetErrorBoundary }) => {
           cursor: "pointer"
         }}
       >
-        🔁 Refresh Page
+        רענון העמוד
       </button>
     </div>
   );

@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import i18n from "i18next";
 import {
   BadgeCheck,
   BriefcaseBusiness,
@@ -27,6 +26,7 @@ import {
 import { createMySite } from "../api/mySitesApi";
 import TemplateCardPreview from "../components/website/TemplateCardPreview";
 import { getTemplateFullPageScreenshotUrl } from "../utils/templateScreenshot";
+import { getApiErrorMessage } from "../utils/apiErrorMessage";
 import { useLocaleDir } from "../hooks/useLocaleDir";
 
 type WebsiteTemplateBlock = {
@@ -163,7 +163,7 @@ async function apiRequest<T>(url: string, options: RequestInit = {}): Promise<T>
   const data = await res.json().catch(() => null);
 
   if (!res.ok) {
-    throw new Error(data?.message || data?.error || "Request failed");
+    throw new Error(data?.message || data?.error || "לא הצלחנו להשלים את הפעולה");
   }
 
   return data as T;
@@ -429,112 +429,6 @@ async function fetchWebsiteTemplates() {
   }
 }
 
-function normalizeTemplateForMongo(template: any, index: number) {
-  const seed = getStudioTemplateSeedById(template.id);
-
-  const image =
-    seed?.image ||
-    template.image ||
-    template.previewImage ||
-    template.previewImageUrl ||
-    template.thumbnailUrl ||
-    template.thumbnailImage ||
-    "";
-
-  return {
-    key: template.id || seed?.id,
-    id: template.id || seed?.id,
-
-    name: template.name || seed?.name || template.id,
-
-    category: template.category || seed?.category || "business",
-
-    categoryLabel:
-      template.categoryLabel ||
-      template.category ||
-      seed?.category ||
-      "Website template",
-
-    description: template.description || seed?.description || "",
-
-    niche: seed?.niche || template.category || "business",
-
-    layout: seed?.layout || "full",
-
-    image,
-
-    thumbnailUrl: image,
-
-    previewImageUrl: image,
-
-    heroTitle:
-      seed?.heroTitle ||
-      template.heroTitle ||
-      template.name ||
-      i18n.t("websiteTemplates.defaultHeroTitle"),
-
-    heroSubtitle:
-      seed?.heroSubtitle ||
-      template.description ||
-      seed?.description ||
-      i18n.t("websiteTemplates.defaultHeroSubtitle"),
-
-    palette: seed?.palette || {
-      primary: "#111827",
-      secondary: "#4B5563",
-      accent: "#2563EB",
-      background: "#FFFFFF",
-      surface: "#F9FAFB",
-      text: "#111827",
-      muted: "#6B7280",
-      dark: "#020617",
-    },
-
-    blocks: seed?.blocks || [],
-
-    tags: [
-      template.category,
-      template.categoryLabel,
-      template.author,
-      seed?.niche,
-    ].filter(Boolean),
-
-    isActive: true,
-
-    isNew: Boolean(template.badge === "NEW" || template.isNew),
-
-    isFeatured: Boolean(template.isFeatured),
-
-    badge: template.badge || "",
-
-    status: "active",
-
-    order: Number(template.order || index + 1),
-  };
-}
-
-async function syncExistingWebsiteTemplatesToMongo() {
-  const templates = studioTemplateDefinitions.map((template, index) =>
-    normalizeTemplateForMongo(template, index)
-  );
-
-  const data = await apiRequest<{
-    success: boolean;
-    message: string;
-    count: number;
-    templates: WebsiteTemplate[];
-  }>("/api/website-templates/bulk-upsert", {
-    method: "POST",
-    body: JSON.stringify({ templates }),
-  });
-
-  if (!data?.success) {
-    throw new Error(data?.message || "Failed to sync templates to Mongo");
-  }
-
-  return data;
-}
-
 export default function WebsiteTemplatesPage() {
   const navigate = useNavigate();
   const { businessId } = useParams<{ businessId: string }>();
@@ -557,7 +451,6 @@ export default function WebsiteTemplatesPage() {
   const [sortValue, setSortValue] = useState<"newest" | "name">("newest");
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string>("");
-  const [syncingTemplates, setSyncingTemplates] = useState(false);
   /** Windowed render — expand ahead of scroll for a smooth UX. */
   const [visibleCount, setVisibleCount] = useState(GALLERY_INITIAL_SIZE);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
@@ -574,7 +467,9 @@ export default function WebsiteTemplatesPage() {
       setTemplates(data);
     } catch (err: any) {
       console.error("Load website templates error:", err);
-      setError(err?.message || t("websiteTemplates.alerts.loadFailed"));
+      setError(
+        getApiErrorMessage(err, t("websiteTemplates.alerts.loadFailed"))
+      );
     } finally {
       setLoading(false);
     }
@@ -900,23 +795,6 @@ export default function WebsiteTemplatesPage() {
     loadTemplates();
   }
 
-  async function handleSyncTemplatesToMongo() {
-    try {
-      setSyncingTemplates(true);
-
-      const result = await syncExistingWebsiteTemplatesToMongo();
-
-      alert(t("websiteTemplates.alerts.syncedCount", { count: result.count }));
-
-      await loadTemplates();
-    } catch (err: any) {
-      console.error("SYNC TEMPLATES TO MONGO ERROR:", err);
-      alert(err?.message || t("websiteTemplates.alerts.syncFailed"));
-    } finally {
-      setSyncingTemplates(false);
-    }
-  }
-
   return (
     <main
       dir={dir}
@@ -1001,26 +879,6 @@ export default function WebsiteTemplatesPage() {
 
                   <p className="mt-3 max-w-2xl text-[15px] leading-7 text-[#6b7280]">
                     {t("websiteTemplates.galleryIntro")}
-                  </p>
-
-                  <button
-                    type="button"
-                    onClick={handleSyncTemplatesToMongo}
-                    disabled={syncingTemplates}
-                    className="
-                      mt-5 inline-flex items-center justify-center rounded-xl
-                      border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-5 py-3 text-sm font-bold text-black
-                      transition hover:from-violet-200/70 hover:via-sky-100 hover:to-cyan-50 disabled:cursor-not-allowed
-                      disabled:opacity-50
-                    "
-                  >
-                    {syncingTemplates
-                      ? t("websiteTemplates.syncing")
-                      : t("websiteTemplates.syncButton")}
-                  </button>
-
-                  <p className="mt-2 text-xs font-bold text-[#9ca3af]">
-                    {t("websiteTemplates.syncHint")}
                   </p>
                 </div>
 
