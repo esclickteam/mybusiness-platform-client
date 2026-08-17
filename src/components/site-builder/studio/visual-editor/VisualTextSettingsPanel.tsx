@@ -293,6 +293,19 @@ export default function VisualTextSettingsPanel({
   }, [elementId, isText]);
 
   useEffect(() => {
+    if (!node || !elementId || !isText) return;
+
+    const reopen = () => {
+      if (dismissedIdRef.current !== elementId) return;
+      dismissedIdRef.current = "";
+      setOpen(true);
+    };
+
+    node.addEventListener("click", reopen);
+    return () => node.removeEventListener("click", reopen);
+  }, [elementId, isText, node]);
+
+  useEffect(() => {
     if (typeof window === "undefined") return;
     const place = () => {
       setPosition((current) => ({
