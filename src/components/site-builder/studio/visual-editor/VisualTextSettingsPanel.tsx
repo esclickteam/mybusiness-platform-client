@@ -50,10 +50,10 @@ function getElementNode(element: any): HTMLElement | null {
   if (!(node instanceof HTMLElement)) return null;
 
   while (node.parentElement) {
-    const auto = node.getAttribute("data-visual-auto-id") === "true";
     const paint = node.getAttribute("data-visual-rich-paint") === "true";
     const elementLink = node.getAttribute("data-visual-element-link") === "true";
-    if (!auto && !paint && !elementLink) break;
+    const mark = node.getAttribute("data-visual-inline-mark") === "true";
+    if (!paint && !elementLink && !mark) break;
     const parent = node.parentElement;
     if (!parent.getAttribute("data-visual-edit-id")) break;
     node = parent;
@@ -66,9 +66,10 @@ function getStableVisualId(node: HTMLElement | null, fallback = "") {
   let current = node;
   while (current) {
     const id = String(current.getAttribute("data-visual-edit-id") || "").trim();
-    const auto = current.getAttribute("data-visual-auto-id") === "true";
     const paint = current.getAttribute("data-visual-rich-paint") === "true";
-    if (id && !auto && !paint) return id;
+    const mark = current.getAttribute("data-visual-inline-mark") === "true";
+    const elementLink = current.getAttribute("data-visual-element-link") === "true";
+    if (id && !paint && !mark && !elementLink) return id;
     current = current.parentElement;
   }
   return fallback;
