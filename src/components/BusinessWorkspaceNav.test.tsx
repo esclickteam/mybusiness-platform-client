@@ -2,7 +2,9 @@ import { describe, it, expect, vi, afterEach } from "vitest";
 import { render, screen, cleanup } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 
-const ALLOWED_BUSINESS_ID = "64a52720016d081ad1d6e325";
+const ALLOWED_BUSINESS_ID = "6a452720016d081ad1d6e328";
+/** The owning user's _id, which is deliberately NOT the allowlist key. */
+const ALLOWED_BUSINESS_OWNER_USER_ID = "6a452720016d081ad1d6e325";
 const OTHER_BUSINESS_ID = "6600000000000000000000ff";
 const FUTURE_BUSINESS_ID = "77aaaaaaaaaaaaaaaaaaaaaa";
 
@@ -87,6 +89,19 @@ describe("BusinessWorkspaceNav restricted nav allowlist", () => {
 
     expect(whatsappLink(FUTURE_BUSINESS_ID)).toBeNull();
     expect(metaCampaignsLink(FUTURE_BUSINESS_ID)).toBeNull();
+  });
+
+  it("does not match on the owning user's _id, only the business _id", async () => {
+    await renderNav({
+      user: {
+        businessId: ALLOWED_BUSINESS_OWNER_USER_ID,
+        role: "business",
+      },
+      urlBusinessId: ALLOWED_BUSINESS_OWNER_USER_ID,
+    });
+
+    expect(whatsappLink(ALLOWED_BUSINESS_OWNER_USER_ID)).toBeNull();
+    expect(metaCampaignsLink(ALLOWED_BUSINESS_OWNER_USER_ID)).toBeNull();
   });
 
   it("hides both entries when the business cannot be resolved", async () => {

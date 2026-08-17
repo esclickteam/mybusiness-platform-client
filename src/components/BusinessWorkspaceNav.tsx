@@ -59,9 +59,12 @@ type NavItemConfig = {
    Restricted Nav Allowlist
 ========================= */
 
-/** Nav entries limited to the businesses listed below. */
+/**
+ * Nav entries limited to the businesses listed below.
+ * These are Business `_id` values, matched against the resolved `user.businessId`.
+ */
 const RESTRICTED_NAV_ALLOWED_BUSINESS_IDS = new Set([
-  "64a52720016d081ad1d6e325",
+  "6a452720016d081ad1d6e328",
 ]);
 
 /** Allowlist only: an unresolved or unlisted business never sees the entries. */
