@@ -27,6 +27,8 @@ export type VisualSaveAdapterInput = {
   siteDomain?: string;
   htmlSnapshot?: string;
   snapshotPageId?: string;
+  autosave?: boolean;
+  clientSaveSeq?: number;
 };
 
 const VISUAL_MAP_KEYS = [
@@ -280,6 +282,10 @@ export function buildVisualSavePayload(
       data: templateData,
       templateData,
     },
+
+    autosave: Boolean(input.autosave),
+    clientSaveSeq:
+      typeof input.clientSaveSeq === "number" ? input.clientSaveSeq : undefined,
   };
 }
 

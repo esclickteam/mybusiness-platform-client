@@ -219,6 +219,68 @@ export const VISUAL_ANIMATION_KEY = "__animations";
 export const VISUAL_CONTENT_KEY = "__content";
 export const VISUAL_DELETED_KEY = "__deletedElements";
 
+/** Store/Scentora React fields that must survive collection-only snapshots. */
+export const STORE_VISUAL_SCALAR_KEYS = [
+  "heroTitle",
+  "heroSubtitle",
+  "heroEyebrow",
+  "heroPrimaryButton",
+  "heroImage",
+  "brandName",
+  "logoText",
+  "tagline",
+  "aboutImage",
+] as const;
+
+export function hasStoreVisualScalars(source: Record<string, any> | null | undefined) {
+  const input = source && typeof source === "object" ? source : {};
+  return STORE_VISUAL_SCALAR_KEYS.some((key) => {
+    const value = input[key];
+    if (value == null) return false;
+    if (typeof value === "string") return value.trim().length > 0;
+    return true;
+  });
+}
+
+export function copyStoreVisualScalars(
+  target: Record<string, any>,
+  source: Record<string, any> | null | undefined,
+) {
+  const input = source && typeof source === "object" ? source : {};
+  const next = { ...target };
+  STORE_VISUAL_SCALAR_KEYS.forEach((key) => {
+    if (!Object.prototype.hasOwnProperty.call(input, key)) return;
+    const value = input[key];
+    if (value == null) return;
+    if (typeof value === "string" && !value.trim()) return;
+    next[key] = value;
+  });
+  return next;
+}
+
+export function syncStoreTextScalar(
+  data: Record<string, any>,
+  elementId: string,
+  text: string,
+  previousText?: string,
+) {
+  const id = String(elementId || "").trim();
+  const nextText = String(text ?? "");
+  let next = { ...data };
+  if (STORE_VISUAL_SCALAR_KEYS.includes(id as (typeof STORE_VISUAL_SCALAR_KEYS)[number])) {
+    next[id] = nextText;
+    return next;
+  }
+  const previous = String(previousText ?? "");
+  STORE_VISUAL_SCALAR_KEYS.forEach((key) => {
+    const currentValue = String(next[key] ?? "");
+    if (currentValue && currentValue === previous) {
+      next = { ...next, [key]: nextText };
+    }
+  });
+  return next;
+}
+
 export const VISUAL_LAYOUT_KEY = "__layout";
 export const VISUAL_ATTRIBUTE_KEY = "__attributes";
 export const VISUAL_RESPONSIVE_KEY = "__responsive";

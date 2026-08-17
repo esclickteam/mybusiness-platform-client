@@ -21,6 +21,8 @@ import {
   hasPendingVisualMedia,
   normalizeVisualData,
   sanitizeVisualDataForPersistence,
+  syncStoreTextScalar,
+  writeVisualContentItem,
 } from "../utils/visualData";
 
 import { buildVisualSavePayload } from "../utils/visualSaveAdapter";
@@ -476,6 +478,35 @@ function mergeVisualSnapshotData({
       ? { ...previousMap }
       : { ...domMap };
   });
+
+  return next;
+}
+
+function commitLiveInlineTextToData(
+  root: HTMLElement | null,
+  data: Record<string, any>,
+) {
+  if (!root) return data;
+
+  let next = data;
+  root
+    .querySelectorAll<HTMLElement>(
+      '[data-visual-inline-editing="true"], [contenteditable="true"]',
+    )
+    .forEach((node) => {
+      if (!root.contains(node)) return;
+      const elementId = getVisualElementId(node);
+      if (!elementId) return;
+
+      const text = String(node.innerText || node.textContent || "")
+        .replace(/\u00a0/g, " ")
+        .replace(/\r\n/g, "\n");
+      const previousText = String(
+        next?.__content?.[elementId]?.text ?? next?.[elementId] ?? "",
+      );
+      next = writeVisualContentItem(next, elementId, { text });
+      next = syncStoreTextScalar(next, elementId, text, previousText);
+    });
 
   return next;
 }
@@ -1159,12 +1190,16 @@ export function useVisualSave({
     }
   }, [data, dataRef]);
 
-  const buildSnapshotData = useCallback(() => {
+  const buildSnapshotData = useCallback((options?: { applySnapshot?: boolean }) => {
     const root = canvasRef.current;
-    const currentData = normalizeVisualData(
+    const committedData = commitLiveInlineTextToData(
+      root,
       (dataRef?.current || data || {}) as Record<string, any>,
     );
-    const isStoreTemplate = /velmora/i.test(String(renderer?.key || ""));
+    if (dataRef) dataRef.current = committedData;
+
+    const currentData = normalizeVisualData(committedData);
+    const isStoreTemplate = /velmora|scentora/i.test(String(renderer?.key || ""));
 
     /*
       Store/Velmora canvases have thousands of visual-edit nodes.
@@ -1227,7 +1262,9 @@ export function useVisualSave({
     logSnapshotData("snapshot dom", domSnapshot);
     logSnapshotData("snapshot final", sanitized);
 
-    onDataSnapshot?.(sanitized);
+    if (options?.applySnapshot !== false) {
+      onDataSnapshot?.(sanitized);
+    }
 
     return sanitized;
   }, [
@@ -1243,7 +1280,10 @@ export function useVisualSave({
   ]);
 
   const executeSave = useCallback(
-    async (status: "draft" | "published") => {
+    async (
+      status: "draft" | "published",
+      options?: { autosave?: boolean; clientSaveSeq?: number },
+    ) => {
       if (!onSave) {
         const message =
           "[BizUply Visual Save] missing onSave handler";
@@ -1272,7 +1312,9 @@ export function useVisualSave({
         const t0 =
           typeof performance !== "undefined" ? performance.now() : Date.now();
 
-        const snapshotData = buildSnapshotData();
+        const snapshotData = buildSnapshotData({
+          applySnapshot: !options?.autosave,
+        });
         const tData =
           typeof performance !== "undefined" ? performance.now() : Date.now();
 
@@ -1300,6 +1342,8 @@ export function useVisualSave({
           status,
           htmlSnapshot,
           snapshotPageId: activePageId,
+          autosave: Boolean(options?.autosave),
+          clientSaveSeq: options?.clientSaveSeq,
         });
 
         assertNoTemporaryMedia(status, payload);
@@ -1361,7 +1405,8 @@ export function useVisualSave({
   );
 
   const saveDraft = useCallback(
-    () => executeSave("draft"),
+    (options?: { autosave?: boolean; clientSaveSeq?: number }) =>
+      executeSave("draft", options),
     [executeSave],
   );
 

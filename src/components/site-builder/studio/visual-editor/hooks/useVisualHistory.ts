@@ -10,6 +10,7 @@ type VisualHistoryState<T> = {
 
 type UseVisualHistoryOptions = {
   limit?: number;
+  onUserChange?: () => void;
 };
 
 export function useVisualHistory<T>(
@@ -17,6 +18,8 @@ export function useVisualHistory<T>(
   options: UseVisualHistoryOptions = {},
 ) {
   const limit = options.limit || VISUAL_HISTORY_LIMIT;
+  const onUserChangeRef = useRef(options.onUserChange);
+  onUserChangeRef.current = options.onUserChange;
   const initialRef = useRef<T>(cloneVisualData(initialValue));
 
   const [history, setHistory] = useState<VisualHistoryState<T>>({
@@ -57,6 +60,7 @@ export function useVisualHistory<T>(
           future: [],
         };
       });
+      if (shouldPushHistory) onUserChangeRef.current?.();
     },
     [limit],
   );
@@ -66,8 +70,10 @@ export function useVisualHistory<T>(
   }, [setPresent]);
 
   const undo = useCallback(() => {
+    let changed = false;
     setHistory((currentHistory) => {
       if (!currentHistory.past.length) return currentHistory;
+      changed = true;
 
       const previous = currentHistory.past[currentHistory.past.length - 1];
       const nextPast = currentHistory.past.slice(0, -1);
@@ -78,11 +84,14 @@ export function useVisualHistory<T>(
         future: [cloneVisualData(currentHistory.present), ...currentHistory.future],
       };
     });
+    if (changed) onUserChangeRef.current?.();
   }, []);
 
   const redo = useCallback(() => {
+    let changed = false;
     setHistory((currentHistory) => {
       if (!currentHistory.future.length) return currentHistory;
+      changed = true;
 
       const next = currentHistory.future[0];
       const nextFuture = currentHistory.future.slice(1);
@@ -95,6 +104,7 @@ export function useVisualHistory<T>(
         future: nextFuture,
       };
     });
+    if (changed) onUserChangeRef.current?.();
   }, [limit]);
 
   const resetHistory = useCallback((nextValue: T) => {

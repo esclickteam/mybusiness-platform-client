@@ -74,6 +74,10 @@ import {
   readSharedChrome,
   stripChromeFromVisualData,
 } from "./visual-editor/utils/visualSharedChrome";
+import {
+  copyStoreVisualScalars,
+  hasStoreVisualScalars,
+} from "./visual-editor/utils/visualData";
 import { buildVisualPageSwitchSession } from "./visual-editor/utils/visualPageSwitch";
 import {
   applyDisplayRowsToPages,
@@ -1241,6 +1245,8 @@ type VisualTemplateSavePayload = {
   snapshotPageId?: string;
   /** Site-wide custom code (CSS/Head/Body/JS) */
   customCode?: Record<string, any>;
+  autosave?: boolean;
+  clientSaveSeq?: number;
 };
 
 
@@ -2800,16 +2806,18 @@ function hasVisualRootSnapshot(source: Record<string, any>) {
 function hasMeaningfulVisualCollections(source: Record<string, any>) {
   const input = asPlainObject(source);
 
-  return Array.from(VISUAL_ROOT_COLLECTION_KEYS).some((key) => {
-    const value = input[key];
+  return (
+    Array.from(VISUAL_ROOT_COLLECTION_KEYS).some((key) => {
+      const value = input[key];
 
-    return Boolean(
-      value &&
-        typeof value === "object" &&
-        !Array.isArray(value) &&
-        Object.keys(value).length > 0,
-    );
-  });
+      return Boolean(
+        value &&
+          typeof value === "object" &&
+          !Array.isArray(value) &&
+          Object.keys(value).length > 0,
+      );
+    }) || hasStoreVisualScalars(input)
+  );
 }
 
 function pickVisualCollectionsOnly(source: Record<string, any>) {
@@ -2844,7 +2852,7 @@ function pickVisualCollectionsOnly(source: Record<string, any>) {
     }
   });
 
-  return output;
+  return copyStoreVisualScalars(output, input);
 }
 
 function mergeVisualRootData(
@@ -5134,6 +5142,9 @@ export default function WebsiteStudioPage({
   const markVisualPageDirty = (pageId: string) => {
     const id = String(pageId || "").trim();
     if (id) dirtyVisualPageIdsRef.current.add(id);
+    if (typeof window !== "undefined") {
+      window.dispatchEvent(new CustomEvent("bizuply:visual-autosave-dirty"));
+    }
   };
   const rememberPersistedPageIds = (
     list: Array<{ id?: string } | null | undefined> | undefined,
@@ -5142,6 +5153,11 @@ export default function WebsiteStudioPage({
   };
   const visualSavingRef = useRef(false);
   const pendingVisualSaveRef = useRef<VisualTemplateSavePayload | null>(null);
+  const pendingVisualSaveGateRef = useRef<{
+    promise: Promise<void>;
+    resolve: () => void;
+    reject: (error: unknown) => void;
+  } | null>(null);
   const [siteName, setSiteName] = useState("האתר שלי");
   const [customDomain, setCustomDomain] = useState("");
   const [customDomainProvisioningStatus, setCustomDomainProvisioningStatus] =
@@ -6171,6 +6187,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
 
       return nextPages;
     });
+    markVisualPageDirty(pageId);
   };
 
   const addBusinessPage = (title: string) => {
@@ -6760,6 +6777,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       handleSave throws and the backdrop blocks studio Save (C_SAVE start=0).
       Studio Save/Publish is the PUT that persists title/slug/SEO.
     */
+    markVisualPageDirty(id);
   };
 
   const handleVisualSitePageAction = (
@@ -7987,9 +8005,24 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     }
 
     if (visualSavingRef.current) {
-      pendingVisualSaveRef.current = visualPayload;
+      const pendingPublished = Boolean(
+        pendingVisualSaveRef.current?.published ||
+          pendingVisualSaveRef.current?.status === "published",
+      );
+      if (!(pendingPublished && !published)) {
+        pendingVisualSaveRef.current = visualPayload;
+      }
+      if (!pendingVisualSaveGateRef.current) {
+        let resolve!: () => void;
+        let reject!: (error: unknown) => void;
+        const promise = new Promise<void>((res, rej) => {
+          resolve = res;
+          reject = rej;
+        });
+        pendingVisualSaveGateRef.current = { promise, resolve, reject };
+      }
       traceVisualPublish("save-queued-in-flight", { published, incomingSlug });
-      return;
+      return pendingVisualSaveGateRef.current.promise;
     }
 
     const cleanVisualData = buildCleanVisualDataForSave(
@@ -8201,7 +8234,8 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         Object.keys(publishedSharedChrome).length > 0;
 
       const dirtyPageIds = dirtyVisualPageIdsRef.current;
-      markVisualPageDirty(activeVisualPageId);
+      const activeDirtyId = String(activeVisualPageId || "").trim();
+      if (activeDirtyId) dirtyPageIds.add(activeDirtyId);
 
       const pagesForSave = publishedPages.map((page) => {
         const isCanonicalHome = page.id === canonicalHomeId;
@@ -8376,10 +8410,23 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       })();
 
       const homeVisualData = (() => {
+        const activeIsHome =
+          String(activeVisualPageId || "") === "home" ||
+          String(activeVisualPageId || "") === String(homePageId || "");
+        /*
+          Live canvas edits live in cleanVisualData. extractedHomeVisualData
+          is the last hydrated home snapshot and can win a stale persist.
+        */
+        if (
+          activeIsHome &&
+          hasMeaningfulVisualCollections(cleanVisualData)
+        ) {
+          return withPublishChrome(cleanVisualData);
+        }
         if (hasMeaningfulVisualCollections(extractedHomeVisualData)) {
           return withPublishChrome(extractedHomeVisualData);
         }
-        const isVelmoraTemplate = /velmora/i.test(
+        const isVelmoraTemplate = /velmora|scentora/i.test(
           String(visualPayload.templateKey || ""),
         );
         if (
@@ -8507,6 +8554,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
           snapshotPageId: homePageId,
           hasTemplateData: true,
           dataKeys: Object.keys(homeVisualData || {}),
+          data: homeVisualData,
         },
 
         slug: cleanSlug,
@@ -8551,6 +8599,8 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         customCode: Object.keys(asPlainObject(visualPayload.customCode)).length
           ? asPlainObject(visualPayload.customCode)
           : siteCustomCode,
+        autosave: Boolean(visualPayload.autosave),
+        clientSaveSeq: visualPayload.clientSaveSeq,
       } as any;
 
       const tPagesReady =
@@ -8661,7 +8711,23 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       }
 
       rememberPersistedPageIds(pagesForSave);
-      dirtyVisualPageIdsRef.current.clear();
+      const liveRevision =
+        typeof window === "undefined"
+          ? 0
+          : Number((window as any).__WB_AUTOSAVE?.revision || 0);
+      const completedSeq = Number(visualPayload.clientSaveSeq || 0);
+      const isStaleAutosave =
+        Boolean(visualPayload.autosave) &&
+        completedSeq > 0 &&
+        liveRevision > completedSeq;
+      if (!isStaleAutosave) {
+        dirtyVisualPageIdsRef.current.clear();
+      }
+      if (typeof window !== "undefined" && completedSeq > 0 && !isStaleAutosave) {
+        const api = (window as any).__WB_AUTOSAVE || {};
+        api.persistedRevision = completedSeq;
+        (window as any).__WB_AUTOSAVE = api;
+      }
 
       {
         const savedSiteCode = asPlainObject(
@@ -8711,22 +8777,25 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         אחרי שמירה לא מרעננים ולא מפרקים את העורך.
         cleanVisualData הוא ה-state החי שנשמר עכשיו, ולכן הוא חייב לנצח
         כל response ישן/חלקי מהשרת.
+        Autosave must not hydrate an older snapshot over a newer local revision.
       */
-      setServerVisualTemplateData((current) =>
-        mergeVisualRootData(
-          current || {},
-          savedDataFromResponse || {},
-          cleanVisualData || {},
-          {
-            __activePageId: activeVisualPageId || "home",
-            __siteSlug: cleanSlug,
-            __publicUrl: nextPublicUrl,
-            __siteDomain: getPublicSiteDomain(),
-            __published: published,
-            __status: published ? "published" : "draft",
-          },
-        ),
-      );
+      if (!visualPayload.autosave) {
+        setServerVisualTemplateData((current) =>
+          mergeVisualRootData(
+            current || {},
+            savedDataFromResponse || {},
+            cleanVisualData || {},
+            {
+              __activePageId: activeVisualPageId || "home",
+              __siteSlug: cleanSlug,
+              __publicUrl: nextPublicUrl,
+              __siteDomain: getPublicSiteDomain(),
+              __published: published,
+              __status: published ? "published" : "draft",
+            },
+          ),
+        );
+      }
 
       if (published) {
         const responseSite = responseData?.site || responseData || null;
@@ -8794,16 +8863,27 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         },
       });
 
-      alert(error?.message || "אירעה שגיאה בשמירת האתר. נסי שוב.");
+      if (!visualPayload.autosave) {
+        alert(error?.message || "אירעה שגיאה בשמירת האתר. נסי שוב.");
+      }
       throw error;
     } finally {
       visualSavingRef.current = false;
       setSaving(false);
       studioGroupEnd();
       const pending = pendingVisualSaveRef.current;
+      const gate = pendingVisualSaveGateRef.current;
+      pendingVisualSaveRef.current = null;
+      pendingVisualSaveGateRef.current = null;
       if (pending) {
-        pendingVisualSaveRef.current = null;
-        void handleVisualTemplateSave(pending);
+        try {
+          await handleVisualTemplateSave(pending);
+          gate?.resolve();
+        } catch (pendingError) {
+          gate?.reject(pendingError);
+        }
+      } else {
+        gate?.resolve();
       }
     }
   };
