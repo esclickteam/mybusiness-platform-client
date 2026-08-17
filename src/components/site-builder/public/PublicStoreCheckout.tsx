@@ -68,6 +68,7 @@ function availableStockForProduct(
 type PublicStoreCheckoutProps = {
   businessId: string;
   enabled?: boolean;
+  language?: string;
   /** Shift the floating cart so it is not covered by the accessibility trigger. */
   shiftForLeftWidgets?: boolean;
 };
@@ -165,8 +166,14 @@ function normalizeIncomingCartItems(rawItems: unknown): CartItem[] {
 export default function PublicStoreCheckout({
   businessId,
   enabled = true,
+  language,
   shiftForLeftWidgets = false,
 }: PublicStoreCheckoutProps) {
+  const isEnglish =
+    String(
+      language ||
+        (typeof document !== "undefined" ? document.documentElement.lang : ""),
+    ).toLowerCase() === "en";
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [paying, setPaying] = useState(false);
@@ -687,7 +694,7 @@ export default function PublicStoreCheckout({
   if (!checkoutReady && !open) return null;
 
   return (
-    <div dir="rtl" className="bizuply-public-store-checkout">
+    <div dir={isEnglish ? "ltr" : "rtl"} className="bizuply-public-store-checkout">
       {checkoutReady && !hasTemplateCartUi ? (
         <button
           type="button"
@@ -700,10 +707,10 @@ export default function PublicStoreCheckout({
             bottom: "1.25rem",
             left: shiftForLeftWidgets ? "5.75rem" : "1.25rem",
           }}
-          aria-label="פתח סל קניות"
+          aria-label={isEnglish ? "Open cart" : "פתח סל קניות"}
         >
           <ShoppingBag size={18} />
-          סל
+          {isEnglish ? "Cart" : "סל"}
           {cartCount > 0 ? (
             <span
               className="grid h-6 min-w-6 place-items-center rounded-full px-1.5 text-xs font-black"

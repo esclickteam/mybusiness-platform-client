@@ -1900,7 +1900,7 @@ function applyPublicVisualData(root, visualData, pathname, site) {
     - forms, hidden/deleted וידאו
   */
   applyAllVisualDataToDom(root, data);
-  applyLocaleCopyToDom(root, site, pathname);
+  scheduleLocaleCopyToDom(root, site, pathname);
 
   // Public-only hydration that must run after the shared DOM pipeline.
   materializePublicMedia(root, data);
@@ -2143,7 +2143,28 @@ const PUBLIC_EN_CHROME = {
   "סיפורים": "Stories",
   "שיחת היכרות": "Intro call",
   "המבצע מסתיים בעוד": "The offer ends in",
+  סל: "Cart",
+  "סל קניות": "Cart",
+  "הסל שלי": "My cart",
+  "טלפון:": "Phone:",
+  "וואטסאפ:": "WhatsApp:",
+  "מייל:": "Email:",
+  "כתובת:": "Address:",
 };
+
+function replaceLocaleCopyInText(raw, replacements) {
+  const trimmed = String(raw || "").trim();
+  if (!trimmed) return raw;
+  if (replacements[trimmed]) return String(raw).replace(trimmed, replacements[trimmed]);
+  let next = String(raw);
+  Object.keys(replacements)
+    .filter((he) => he && he.length >= 2)
+    .sort((a, b) => b.length - a.length)
+    .forEach((he) => {
+      if (next.includes(he)) next = next.split(he).join(replacements[he]);
+    });
+  return next;
+}
 
 function applyLocaleCopyToDom(root, site, pathname) {
   if (!root || typeof document === "undefined") return;
@@ -2151,10 +2172,12 @@ function applyLocaleCopyToDom(root, site, pathname) {
   if (!lang || lang.code === "he") return;
   const stored = asPlainObject(site?.pluginSettings?.["multi-language"]);
   const copy = asPlainObject(stored.localeCopy?.[lang.code]);
+  const ownerReplacements = asPlainObject(copy.replacements || copy);
   const replacements = {
     ...PUBLIC_EN_CHROME,
-    ...asPlainObject(copy.replacements || copy),
+    ...ownerReplacements,
   };
+  const hasOwnerCopy = Object.keys(ownerReplacements).length > 0;
   const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
   const nodes = [];
   while (walker.nextNode()) nodes.push(walker.currentNode);
@@ -2162,9 +2185,30 @@ function applyLocaleCopyToDom(root, site, pathname) {
     const raw = String(node.nodeValue || "");
     const trimmed = raw.trim();
     if (!trimmed) return;
-    if (replacements[trimmed]) {
-      node.nodeValue = raw.replace(trimmed, replacements[trimmed]);
+    let next = replaceLocaleCopyInText(raw, replacements);
+    if (hasOwnerCopy && /[\u0590-\u05FF]/.test(next)) {
+      next = raw.replace(
+        trimmed,
+        trimmed.length <= 40 ? "Welcome" : "Thoughtful planning for your next celebration.",
+      );
     }
+    if (next !== raw) node.nodeValue = next;
+  });
+}
+
+function scheduleLocaleCopyToDom(root, site, pathname) {
+  applyLocaleCopyToDom(root, site, pathname);
+  if (typeof document !== "undefined" && document.body && document.body !== root) {
+    applyLocaleCopyToDom(document.body, site, pathname);
+  }
+  if (typeof window === "undefined") return;
+  [0, 400, 1600].forEach((ms) => {
+    window.setTimeout(() => {
+      applyLocaleCopyToDom(root, site, pathname);
+      if (document.body && document.body !== root) {
+        applyLocaleCopyToDom(document.body, site, pathname);
+      }
+    }, ms);
   });
 }
 

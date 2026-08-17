@@ -234,6 +234,7 @@ export default function PublicSitePluginOverlays({ site }: PublicSitePluginOverl
       {showStoreCheckout ? (
         <PublicStoreCheckout
           businessId={businessId}
+          language={site?.__activeLanguage}
           shiftForLeftWidgets={showAccessibility}
         />
       ) : null}
