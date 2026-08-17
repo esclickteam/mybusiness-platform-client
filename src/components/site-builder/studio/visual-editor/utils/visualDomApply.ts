@@ -730,6 +730,29 @@ function applyTextContentToNode(
   applyMultilineTextValue(target, value);
 }
 
+const ELEMENT_LINK_ATTR = "data-visual-element-link";
+const STYLE_SKIP_KEYS = new Set(["href", "target", "rel"]);
+
+function stampLinkAttributes(
+  link: HTMLElement,
+  href: string,
+  target: string,
+  rel: string,
+) {
+  link.setAttribute("href", href);
+  link.setAttribute("target", target);
+  link.setAttribute("data-visual-link-href", href);
+  link.setAttribute("data-visual-link-target", target);
+  link.setAttribute("data-link-url", href);
+  link.setAttribute("data-href", href);
+
+  if (rel) {
+    link.setAttribute("rel", rel);
+  } else {
+    link.removeAttribute("rel");
+  }
+}
+
 function applyLinkContentToNode(
   node: HTMLElement,
   href: string,
@@ -748,28 +771,41 @@ function applyLinkContentToNode(
   const cleanRel =
     rel || (cleanTarget === "_blank" ? "noopener noreferrer" : "");
 
-  const link =
-    node instanceof HTMLAnchorElement
-      ? node
-      : (node.closest("a") as HTMLAnchorElement | null) ||
-        // Do not reach into portal mounts and retarget switch/forgot anchors.
-        (isPortalMountShell(node)
-          ? null
-          : (node.querySelector("a") as HTMLAnchorElement | null));
+  if (node instanceof HTMLAnchorElement) {
+    stampLinkAttributes(node, cleanHref, cleanTarget, cleanRel);
+    return;
+  }
 
-  if (link) {
-    link.setAttribute("href", cleanHref);
-    link.setAttribute("target", cleanTarget);
-    link.setAttribute("data-visual-link-href", cleanHref);
-    link.setAttribute("data-visual-link-target", cleanTarget);
-    link.setAttribute("data-link-url", cleanHref);
+  const existingWrap = node.querySelector(
+    `:scope > a[${ELEMENT_LINK_ATTR}="true"]`,
+  ) as HTMLAnchorElement | null;
+  const nestedLink =
+    existingWrap ||
+    (node.querySelector("a") as HTMLAnchorElement | null);
 
-    if (cleanRel) {
-      link.setAttribute("rel", cleanRel);
-    } else {
-      link.removeAttribute("rel");
+  if (
+    nestedLink &&
+    (existingWrap ||
+      (nestedLink.parentElement === node &&
+        String(nestedLink.textContent || "").trim() ===
+          String(node.textContent || "").trim()))
+  ) {
+    nestedLink.setAttribute(ELEMENT_LINK_ATTR, "true");
+    stampLinkAttributes(nestedLink, cleanHref, cleanTarget, cleanRel);
+    return;
+  }
+
+  if (cleanHref && cleanHref !== "#") {
+    const anchor = node.ownerDocument.createElement("a");
+    anchor.setAttribute(ELEMENT_LINK_ATTR, "true");
+    stampLinkAttributes(anchor, cleanHref, cleanTarget, cleanRel);
+    while (node.firstChild) {
+      anchor.appendChild(node.firstChild);
     }
-
+    node.appendChild(anchor);
+    node.setAttribute("data-visual-link-href", cleanHref);
+    node.setAttribute("data-visual-link-target", cleanTarget);
+    node.style.cursor = "pointer";
     return;
   }
 
@@ -1909,6 +1945,58 @@ export function applyMediaContentToNode(
   }
 }
 
+function findPersistedVisualNodes(root: HTMLElement, elementId: string) {
+  let nodes = Array.from(
+    findVisualNodes(root, elementId, { allowFallback: false }),
+  );
+
+  if (!nodes.length) {
+    nodes = Array.from(
+      findVisualNodes(root, elementId, { allowFallback: true }),
+    );
+  }
+
+  if (!nodes.length) {
+    const semanticId = String(elementId || "").split(".").filter(Boolean).pop() || "";
+    if (
+      semanticId &&
+      semanticId !== elementId &&
+      !/^(h\d|p|span|div|a|section)-\d+$/i.test(semanticId)
+    ) {
+      nodes = Array.from(
+        findVisualNodes(root, semanticId, { allowFallback: false }),
+      );
+    }
+  }
+
+  return nodes;
+}
+
+function applyStylePatchToNode(node: HTMLElement, style: Record<string, any>) {
+  const targets = [node];
+  const paint = node.querySelector<HTMLElement>(
+    '[data-visual-rich-paint="true"]',
+  );
+  if (paint && !targets.includes(paint)) targets.push(paint);
+
+  targets.forEach((target) => {
+    Object.entries(style || {}).forEach(([key, value]) => {
+      if (value === undefined || value === null || value === "") return;
+      if (STYLE_SKIP_KEYS.has(key)) return;
+
+      try {
+        target.style.setProperty(
+          key.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`),
+          String(value),
+          "important",
+        );
+      } catch {
+        // ignore invalid css values
+      }
+    });
+  });
+}
+
 export function applyVisualStylesToDom(
   root: HTMLElement | null,
   data: Record<string, any>,
@@ -1918,26 +2006,12 @@ export function applyVisualStylesToDom(
   const styles = readVisualStyles(data);
 
   Object.entries(styles).forEach(([elementId, style]) => {
-    const nodes = findVisualNodes(root, elementId, {
-      allowFallback: false,
-    });
+    const nodes = findPersistedVisualNodes(root, elementId);
 
     nodes.forEach((node) => {
       if (isEditorOnlyNode(node)) return;
 
-      Object.entries(style || {}).forEach(([key, value]) => {
-        if (value === undefined || value === null || value === "") return;
-
-        try {
-          node.style.setProperty(
-            key.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`),
-            String(value),
-            "important",
-          );
-        } catch {
-          // ignore invalid css values
-        }
-      });
+      applyStylePatchToNode(node, style || {});
 
       /*
         תמונה ווידאו מקבלים object-fit: cover כברירת מחדל אם עדיין לא הוגדר,
@@ -1970,22 +2044,11 @@ export function previewVisualStyleOnDom(
 ) {
   if (!root || !elementId) return;
 
-  const nodes = findVisualNodes(root, elementId, {
-    allowFallback: false,
-  });
+  const nodes = findPersistedVisualNodes(root, elementId);
 
   nodes.forEach((node) => {
     if (isEditorOnlyNode(node)) return;
-
-    Object.entries(style || {}).forEach(([key, value]) => {
-      if (value === undefined || value === null || value === "") return;
-
-      try {
-        node.style.setProperty(cssPropertyName(key), String(value), "important");
-      } catch {
-        // ignore invalid css values
-      }
-    });
+    applyStylePatchToNode(node, style || {});
   });
 }
 

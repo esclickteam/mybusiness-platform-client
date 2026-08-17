@@ -606,10 +606,13 @@ export default function VisualTextSettingsPanel({
             }
             fallback="#fff59d"
             onChange={(value) =>
-              apply({
-                "background-color": value,
-                backgroundColor: value,
-              } as StylePatch)
+              apply(
+                {
+                  "background-color": value,
+                  backgroundColor: value,
+                } as StylePatch,
+                !hasInlineRange,
+              )
             }
           >
             <Highlighter className="h-4 w-4" />
@@ -773,11 +776,13 @@ export default function VisualTextSettingsPanel({
               onClick={() => {
                 const href = linkValue.trim();
                 if (!href) return;
-                apply({ href } as StylePatch);
-                editor?.updateLink?.(elementId, {
-                  href,
-                  target: href.startsWith("http") ? "_blank" : "_self",
-                });
+                const target = href.startsWith("http") ? "_blank" : "_self";
+                if (hasInlineRange) {
+                  apply({ href, target } as StylePatch);
+                  return;
+                }
+                apply({ href, target } as StylePatch, true);
+                editor?.updateLink?.(elementId, { href, target });
               }}
               className="h-9 rounded-lg bg-slate-900 px-3 text-xs font-bold text-white disabled:opacity-40"
             >

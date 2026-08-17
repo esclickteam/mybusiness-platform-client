@@ -174,11 +174,12 @@ export function applySharedTextFormat(options: {
 
   if (!elementId) return { applied: false, mode: "none" as const };
 
+  const href = String((patch as { href?: string }).href || "").trim();
+  const hasInlineStyles = Object.keys(pickInlineStylePatch(patch)).length > 0;
   const offsets =
     !forceElement &&
     node &&
-    isInlineCapablePatch(patch) &&
-    Object.keys(pickInlineStylePatch(patch)).length > 0
+    (hasInlineStyles || Boolean(href))
       ? resolveInlineOffsets(node, elementId)
       : null;
 

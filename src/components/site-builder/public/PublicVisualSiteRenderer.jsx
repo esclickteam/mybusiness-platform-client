@@ -2484,6 +2484,7 @@ export default function PublicVisualSiteRenderer({
     let applyScheduled = false;
     let applying = false;
     let reapplyQueued = false;
+    let mutationObserver = null;
 
     const insertedSectionIds = Object.keys(
       asPlainObject(asPlainObject(visualData).__insertedSections),
@@ -2499,14 +2500,25 @@ export default function PublicVisualSiteRenderer({
       });
     };
 
+    const observerOptions = {
+      childList: true,
+      subtree: true,
+      attributes: true,
+      attributeFilter: ["data-template-page-id", "data-active-page-id"],
+    };
+    let applyPasses = 0;
+
     const applyVisual = () => {
       if (applying) {
         reapplyQueued = true;
         return;
       }
+      if (applyPasses > 12) return;
 
       applying = true;
+      mutationObserver?.disconnect();
       try {
+        applyPasses += 1;
         applyPublicVisualData(
           root,
           visualData,
@@ -2515,13 +2527,12 @@ export default function PublicVisualSiteRenderer({
         );
       } finally {
         applying = false;
+        mutationObserver?.observe(root, observerOptions);
       }
 
       if (reapplyQueued) {
         reapplyQueued = false;
-        if (isInsertedVisualMissing()) {
-          window.requestAnimationFrame(() => applyVisual());
-        }
+        window.requestAnimationFrame(() => applyVisual());
       }
     };
 
@@ -2542,7 +2553,7 @@ export default function PublicVisualSiteRenderer({
       });
     };
 
-    const mutationObserver =
+    mutationObserver =
       typeof MutationObserver !== "undefined"
         ? new MutationObserver((mutations) => {
             const pageChanged = mutations.some(
@@ -2572,18 +2583,13 @@ export default function PublicVisualSiteRenderer({
               return;
             }
 
-            if (isInsertedVisualMissing()) {
-              scheduleApply();
-            }
+            // Re-apply persisted __styles/__content after React remounts
+            // template text, not only when inserted sections are missing.
+            scheduleApply();
           })
         : null;
 
-    mutationObserver?.observe(root, {
-      childList: true,
-      subtree: true,
-      attributes: true,
-      attributeFilter: ["data-template-page-id", "data-active-page-id"],
-    });
+    mutationObserver?.observe(root, observerOptions);
 
     /*
       Justora (ואחרות) מחליפות children אחרי paint — rAF כפול תופס
