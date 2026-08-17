@@ -182,7 +182,7 @@ export default function AdsManagerCreateLeadFormModal({
 
   const handleSave = async () => {
     if (!businessId) {
-      toast.error("Missing business");
+      toast.error("לא הצלחנו לזהות את העסק. רעננו את העמוד.");
       return;
     }
     if (!pageId) {

@@ -10,6 +10,7 @@ import {
   clearRefreshDead,
   markRefreshDead,
 } from "../utils/tokenRefresh";
+import { getApiErrorMessage } from "../utils/apiErrorMessage";
 import {
   bindSessionInvalidationListeners,
   clearPersistedAuthState,
@@ -496,7 +497,7 @@ export function AuthProvider({ children }) {
       setLoading(false);
       return normalized;
     } catch (err) {
-      setError(err.message || "שגיאה");
+      setError(getApiErrorMessage(err, "אירעה שגיאה. נסו שוב."));
       setLoading(false);
       throw err;
     }

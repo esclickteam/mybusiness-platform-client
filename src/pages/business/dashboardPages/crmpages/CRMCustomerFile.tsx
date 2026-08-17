@@ -158,7 +158,7 @@ export default function CRMCustomerFile({
     }
 
     if (!businessId) {
-      alert("Missing business ID");
+      alert("לא הצלחנו לזהות את העסק. רעננו את העמוד.");
       return;
     }
 

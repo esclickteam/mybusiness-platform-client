@@ -116,7 +116,7 @@ export default function SeoImageUploader({
             ) : null}
 
             <p className="text-[11px] font-semibold leading-5 text-slate-500">
-              {hint || "PNG, JPG, WEBP או ICO — נשמר ב-Cloudinary"}
+              {hint || "PNG, JPG, WEBP או ICO"}
             </p>
           </div>
         </div>

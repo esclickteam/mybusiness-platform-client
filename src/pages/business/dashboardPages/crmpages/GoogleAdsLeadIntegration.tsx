@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import API from "@api";
 import BizuplyLoader from "../../../../components/ui/BizuplyLoader";
+import { getApiErrorMessage as getSharedApiErrorMessage } from "../../../../utils/apiErrorMessage";
 
 type GoogleCustomer = {
   customerId: string;
@@ -66,20 +67,7 @@ type GoogleAdsLeadIntegrationProps = {
 };
 
 function getApiErrorMessage(err: unknown): string {
-  if (err && typeof err === "object") {
-    const anyErr = err as {
-      response?: { data?: { message?: string; error?: string } };
-      message?: string;
-    };
-    return (
-      anyErr.response?.data?.message ||
-      anyErr.response?.data?.error ||
-      anyErr.message ||
-      ""
-    );
-  }
-  if (err instanceof Error && err.message) return err.message;
-  return "";
+  return getSharedApiErrorMessage(err, "הפעולה נכשלה. נסו שוב.");
 }
 
 function mapGoogleAdsError(raw: string, fallback: string): string {
@@ -457,8 +445,8 @@ export default function GoogleAdsLeadIntegration({
                 <p className="mt-2 text-sm font-semibold leading-6 text-slate-600">
                   Bizuply does not modify or delete campaigns, ads, budgets, or
                   account settings. The only write action is configuring the
-                  webhook delivery method on the lead form selected by the user
-                  so new submissions can be delivered to Bizuply.
+                  delivery of new submissions from the lead form selected by
+                  the user so they can reach Bizuply.
                 </p>
                 <p className="mt-2 text-xs font-bold text-slate-500">
                   Only the Google Ads account selected by the user is connected
@@ -593,8 +581,8 @@ export default function GoogleAdsLeadIntegration({
                   </select>
                 )}
                 <p className="mt-2 text-xs font-semibold text-slate-500">
-                  Bizuply configures webhook delivery on the selected lead form
-                  so new submissions appear in CRM.
+                  Bizuply sets up delivery on the selected lead form so new
+                  submissions appear in the CRM.
                 </p>
               </div>
 

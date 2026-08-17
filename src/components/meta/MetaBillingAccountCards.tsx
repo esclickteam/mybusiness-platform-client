@@ -193,7 +193,7 @@ export default function MetaBillingAccountCards({
         {showWaba ? (
         <BillingCardShell
           title="WhatsApp Business Account"
-          subtitle="Cloud API message fees (WABA)"
+          subtitle="WhatsApp message fees"
           icon={<MessageCircle className="h-5 w-5" />}
           severity={
             wabaBilling?.connected ? wabaBilling.severity : "warning"
@@ -213,10 +213,9 @@ export default function MetaBillingAccountCards({
             <div className="space-y-2 text-sm">
               <p className="font-bold text-slate-900">
                 {wabaBilling.wabaName || "WhatsApp Business"}
-                {wabaBilling.wabaId ? ` · ${wabaBilling.wabaId}` : ""}
               </p>
               <p className="text-xs font-semibold text-slate-600">
-                WABA status: {wabaBilling.status || "—"}
+                Account status: {wabaBilling.status || "—"}
                 {wabaBilling.canSendMessage
                   ? ` · Send: ${wabaBilling.canSendMessage}`
                   : ""}

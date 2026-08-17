@@ -85,7 +85,7 @@ export async function uploadMediaToCloudinary({
   }
 
   if (!signData.apiKey || !signData.timestamp || !signData.signature || !signData.uploadUrl) {
-    throw new Error("חסרים פרטי חתימה להעלאה ל־Cloudinary");
+    throw new Error("לא ניתן להתחיל את ההעלאה כרגע. נסו שוב.");
   }
 
   const formData = new FormData();
@@ -107,11 +107,7 @@ export async function uploadMediaToCloudinary({
     (await cloudinaryResponse.json().catch(() => null)) as CloudinaryUploadResult | null;
 
   if (!cloudinaryResponse.ok || !cloudinaryResult?.secure_url) {
-    throw new Error(
-      cloudinaryResult?.error?.message ||
-        cloudinaryResult?.message ||
-        "העלאה ל־Cloudinary נכשלה",
-    );
+    throw new Error("העלאת הקובץ נכשלה. נסו שוב.");
   }
 
   const secureUrl = String(cloudinaryResult.secure_url || cloudinaryResult.url || "");

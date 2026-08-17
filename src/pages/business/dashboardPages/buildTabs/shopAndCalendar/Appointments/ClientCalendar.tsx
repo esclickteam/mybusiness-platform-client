@@ -133,7 +133,7 @@ export default function ClientCalendar({
 
   const loadBookedSlots = async () => {
     if (!businessId) {
-      setError("Missing business ID.");
+      setError("לא הצלחנו לזהות את העסק. רעננו את העמוד.");
       return;
     }
 
@@ -305,7 +305,7 @@ export default function ClientCalendar({
     }
 
     if (!businessId) {
-      alert("Missing business ID. Please refresh the page and try again.");
+      alert("לא הצלחנו לזהות את העסק. רעננו את העמוד ונסו שוב.");
       return false;
     }
 

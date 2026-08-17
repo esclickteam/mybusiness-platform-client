@@ -9,6 +9,7 @@ import {
   Tablet,
 } from "lucide-react";
 
+import { getApiErrorMessage } from "../../../../utils/apiErrorMessage";
 import VisualEditorCanvas from "./VisualEditorCanvas";
 import VisualFloatingToolbar from "./VisualFloatingToolbar";
 import VisualTextSettingsPanel from "./VisualTextSettingsPanel";
@@ -363,11 +364,7 @@ export default function VisualEditorShell({
     try {
       await action();
     } catch (error) {
-      setActionError(
-        error instanceof Error
-          ? error.message
-          : "הפעולה נכשלה",
-      );
+      setActionError(getApiErrorMessage(error, "הפעולה נכשלה. נסו שוב."));
     }
   }
 

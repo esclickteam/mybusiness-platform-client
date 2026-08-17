@@ -52,7 +52,7 @@ export default function AutomationsEditorPage() {
   }, [businessId, workflowId]);
 
   if (!businessId) {
-    return <div className="ax-empty">חסר מזהה עסק</div>;
+    return <div className="ax-empty">לא הצלחנו לזהות את העסק. רעננו את העמוד.</div>;
   }
 
   if (loading) {

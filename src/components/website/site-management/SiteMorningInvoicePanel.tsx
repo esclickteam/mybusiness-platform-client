@@ -180,14 +180,14 @@ export default function SiteMorningInvoicePanel({
           <li className="rounded-2xl border border-slate-100 bg-slate-50 p-4">
             <span className="font-black text-emerald-700">1. מנוי Best+</span>
             <br />
-            ודאו שיש לכם מנוי Best ומעלה ב-Morning. לבדיקות אפשר Sandbox:
+            ודאו שיש לכם מנוי Best ומעלה ב-Morning. לבדיקות אפשר חשבון בדיקות:
             <a
               href="https://lp.sandbox.d.greeninvoice.co.il/join"
               target="_blank"
               rel="noopener noreferrer"
               className="mr-2 inline-flex items-center gap-1 font-black text-violet-700 hover:underline"
             >
-              הרשמה ל-Sandbox
+              הרשמה לחשבון בדיקות
               <ExternalLink size={13} />
             </a>
           </li>
@@ -262,8 +262,8 @@ export default function SiteMorningInvoicePanel({
               }
               className="h-11 w-full rounded-2xl border border-slate-200 px-4 text-sm font-bold"
             >
-              <option value="live">Production (חי)</option>
-              <option value="test">Sandbox (בדיקות)</option>
+              <option value="live">חשבון חי</option>
+              <option value="test">חשבון בדיקות</option>
             </select>
           </label>
 
@@ -418,25 +418,6 @@ export default function SiteMorningInvoicePanel({
         </div>
       </SitePanelCard>
 
-      <div className="rounded-2xl border border-dashed border-emerald-200 bg-emerald-50/30 p-4 text-sm leading-relaxed text-slate-600">
-        <strong className="text-slate-800">API ידני (למפתחים):</strong>
-        <br />
-        Production: <code className="text-xs">POST https://api.greeninvoice.co.il/api/v1/account/token</code>
-        <br />
-        Sandbox: <code className="text-xs">POST https://sandbox.d.greeninvoice.co.il/api/v1/account/token</code>
-        <br />
-        Body: <code className="text-xs">{`{"id":"KEY_ID","secret":"KEY_SECRET"}`}</code>
-        <br />
-        תיעוד:{" "}
-        <a
-          href="https://www.greeninvoice.co.il/help-center/api/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="font-black text-violet-700 hover:underline"
-        >
-          greeninvoice.co.il/help-center/api
-        </a>
-      </div>
     </div>
   );
 }

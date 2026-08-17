@@ -20,6 +20,7 @@ import {
   X,
 } from "lucide-react";
 
+import { getApiErrorMessage } from "../../../../../utils/apiErrorMessage";
 import type {
   SeoCustomMetaTag,
   SeoHreflangEntry,
@@ -389,9 +390,7 @@ export default function PageSettingsModal({
       await Promise.resolve(pending);
     } catch (error) {
       setSaveError(
-        error instanceof Error
-          ? error.message
-          : "שמירת ההגדרות בשרת נכשלה. נסי שוב.",
+        getApiErrorMessage(error, "שמירת ההגדרות נכשלה. נסי שוב."),
       );
     } finally {
       setIsSaving(false);
