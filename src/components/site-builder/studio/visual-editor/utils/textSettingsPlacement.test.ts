@@ -3,12 +3,25 @@ import { describe, expect, it } from "vitest";
 import {
   clampPanelToViewport,
   isElementInViewport,
+  narrowAnchorRect,
   placeTextSettingsPanel,
 } from "./textSettingsPlacement";
 
 const panel = { width: 320, height: 480 };
 
 describe("placeTextSettingsPanel", () => {
+  it("narrows a full-bleed heading so the panel can sit to the side", () => {
+    const wide = { top: 200, left: 80, right: 1360, bottom: 280, width: 1280, height: 80 };
+    const narrow = narrowAnchorRect(wide, 1440);
+    const placed = placeTextSettingsPanel({
+      element: narrow,
+      panel,
+      viewport: { width: 1440, height: 900 },
+    });
+    expect(narrow.width).toBeLessThan(300);
+    expect(placed.side).toBe("right");
+  });
+
   it("opens to the right when there is room", () => {
     const placed = placeTextSettingsPanel({
       element: { top: 160, left: 120, right: 360, bottom: 220, width: 240, height: 60 },

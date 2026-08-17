@@ -24,6 +24,25 @@ function clamp(value: number, min: number, max: number) {
   return Math.min(Math.max(min, value), Math.max(min, max));
 }
 
+export function narrowAnchorRect(
+  rect: RectLike,
+  viewportWidth: number,
+  maxWidth = 280,
+): RectLike {
+  if (rect.width <= Math.max(maxWidth, viewportWidth * 0.45)) return rect;
+  const width = Math.min(maxWidth, rect.width);
+  const center = rect.left + rect.width / 2;
+  const left = center - width / 2;
+  return {
+    top: rect.top,
+    bottom: rect.bottom,
+    height: rect.height,
+    width,
+    left,
+    right: left + width,
+  };
+}
+
 export function isElementInViewport(
   rect: RectLike,
   viewport: { width: number; height: number },

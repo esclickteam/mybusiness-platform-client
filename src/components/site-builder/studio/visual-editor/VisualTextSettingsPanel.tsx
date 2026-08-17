@@ -31,6 +31,7 @@ import {
 import { resolvePersistedVisualId } from "./utils/visualPersistId";
 import {
   clampPanelToViewport,
+  narrowAnchorRect,
   placeTextSettingsPanel,
   TEXT_SETTINGS_PANEL_WIDTH,
   type TextSettingsPlacementSide,
@@ -379,28 +380,33 @@ export default function VisualTextSettingsPanel({
       try {
         const walker = document.createTreeWalker(node, NodeFilter.SHOW_TEXT);
         let textNode = walker.nextNode();
-        while (textNode && !String(textNode.nodeValue || "").trim()) {
-          textNode = walker.nextNode();
-        }
-        if (textNode) {
-          const range = document.createRange();
-          range.selectNodeContents(textNode);
-          const contentRect = range.getBoundingClientRect();
-          if (contentRect.width >= 24 && contentRect.height >= 8) {
-            rect = contentRect;
+        while (textNode) {
+          if (String(textNode.nodeValue || "").trim()) {
+            const range = document.createRange();
+            range.selectNodeContents(textNode);
+            const contentRect = range.getBoundingClientRect();
+            if (
+              contentRect.width >= 24 &&
+              contentRect.height >= 8 &&
+              contentRect.width < rect.width
+            ) {
+              rect = contentRect;
+            }
           }
+          textNode = walker.nextNode();
         }
       } catch {
         rect = blockRect;
       }
       const viewport = { width: window.innerWidth, height: window.innerHeight };
+      rect = narrowAnchorRect(rect, viewport.width);
 
       const box = panelRef.current?.getBoundingClientRect();
       const placed = placeTextSettingsPanel({
         element: rect,
         panel: {
           width: box?.width || TEXT_SETTINGS_PANEL_WIDTH,
-          height: box?.height || 520,
+          height: box?.height || 440,
         },
         viewport,
       });
@@ -549,11 +555,11 @@ export default function VisualTextSettingsPanel({
         snapshotTextRange(node, elementId);
       }}
       onClick={(event) => event.stopPropagation()}
-      className="pointer-events-auto fixed z-[2147483001] flex w-[min(320px,calc(100vw-24px))] max-h-[calc(100vh-24px)] flex-col overflow-hidden rounded-xl border border-slate-200 bg-white text-right shadow-[0_18px_50px_rgba(15,23,42,0.18)]"
+      className="pointer-events-auto fixed z-[2147483001] flex w-[min(320px,calc(100vw-24px))] max-h-[calc(100vh-112px)] flex-col overflow-hidden rounded-xl border border-slate-200 bg-white text-right shadow-[0_18px_50px_rgba(15,23,42,0.18)]"
       style={{ top: position.top, left: position.left }}
     >
       <header
-        className="flex cursor-grab items-center justify-between border-b border-slate-100 px-4 py-3 active:cursor-grabbing"
+        className="flex cursor-grab items-center justify-between border-b border-slate-100 px-3 py-2 active:cursor-grabbing"
         onMouseDown={(event) => {
           if ((event.target as HTMLElement).closest("button")) return;
           snapshotTextRange(node, elementId, { clearIfNone: true });
@@ -590,7 +596,7 @@ export default function VisualTextSettingsPanel({
         </div>
       </header>
 
-      <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-4 py-4">
+      <div className="min-h-0 flex-1 space-y-2.5 overflow-y-auto px-3 py-3">
         {hasInlineRange ? (
           <div
             data-testid="text-settings-inline-hint"
