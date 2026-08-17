@@ -7516,7 +7516,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         );
 
         if (savedHtmlLength < 20 && !hasSavedPageHtml) {
-          studioError("handleVisualTemplateSave:saved-site-has-no-html", {
+          studioWarn("handleVisualTemplateSave:saved-site-has-no-html", {
             responseData,
             payloadSummary: {
               htmlLength: getTextLength(payload.html),
@@ -8748,7 +8748,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         );
 
         if (savedHtmlLength < 20 && !hasSavedPageHtml) {
-          studioError("handleVisualTemplateSave:saved-site-has-no-html", {
+          studioWarn("handleVisualTemplateSave:saved-site-has-no-html", {
             responseData,
             payloadSummary: {
               htmlLength: getTextLength(payload.html),

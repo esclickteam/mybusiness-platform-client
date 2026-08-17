@@ -11,6 +11,10 @@ import {
   isClientPortalCheckoutRequiredError,
   startClientPortalCheckout,
 } from "../../../../api/clientPortalBillingApi";
+import {
+  isPluginCheckoutRequiredError,
+  startPluginCheckout,
+} from "../../../../api/pluginBillingApi";
 import { getPluginEditorAction } from "../../../../data/pluginEditorRegistry";
 import SitePluginStore from "../../../website/site-management/SitePluginStore";
 import BizuplyLoader from "../../../ui/BizuplyLoader";
@@ -80,11 +84,14 @@ export default function VisualEditorPluginStorePanel({
       const plugin = catalog.find((item) => item.key === key);
       if (
         enabled &&
-        key === "client-portal" &&
         plugin?.billingEnabled &&
         plugin?.entitled === false
       ) {
-        await startClientPortalCheckout(id);
+        if (key === "client-portal") {
+          await startClientPortalCheckout(id);
+        } else {
+          await startPluginCheckout(key, id);
+        }
         return;
       }
       const next = enabled
@@ -129,6 +136,19 @@ export default function VisualEditorPluginStorePanel({
             checkoutErr instanceof Error
               ? checkoutErr.message
               : "פתיחת תשלום לאזור אישי נכשלה",
+          );
+          return;
+        }
+      }
+      if (enabled && isPluginCheckoutRequiredError(err)) {
+        try {
+          await startPluginCheckout(key, id);
+          return;
+        } catch (checkoutErr) {
+          setError(
+            checkoutErr instanceof Error
+              ? checkoutErr.message
+              : "פתיחת תשלום לתוסף נכשלה",
           );
           return;
         }

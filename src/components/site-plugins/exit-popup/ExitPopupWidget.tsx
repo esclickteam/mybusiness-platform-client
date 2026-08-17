@@ -8,6 +8,7 @@ import {
   wasExitPopupSeenRecently,
   type ExitPopupSettings,
 } from "./exitPopupUtils";
+import { matchesDeviceTarget, matchesPageTarget } from "../whatsapp-float/whatsappFloatUtils";
 
 type ExitPopupWidgetProps = {
   siteKey?: string;
@@ -34,6 +35,14 @@ export default function ExitPopupWidget({
   useEffect(() => {
     if (mode === "editor" || cfg.isActive === false) return;
     if (wasExitPopupSeenRecently(siteKey, cfg.showOncePerDays)) return;
+    if (!matchesPageTarget(cfg.pageTargeting, siteKey)) return;
+    if (!matchesDeviceTarget(cfg.deviceTargeting)) return;
+    if (cfg.schedule?.enabled) {
+      const now = Date.now();
+      const start = cfg.schedule.startAt ? Date.parse(cfg.schedule.startAt) : 0;
+      const end = cfg.schedule.endAt ? Date.parse(cfg.schedule.endAt) : Number.POSITIVE_INFINITY;
+      if (now < start || now > end) return;
+    }
 
     let shown = false;
     const show = () => {
@@ -41,28 +50,46 @@ export default function ExitPopupWidget({
       shown = true;
       setOpen(true);
       markExitPopupSeen(siteKey);
+      if (slug) {
+        fetch(`/api/site-builder/public/${encodeURIComponent(slug)}/events`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ eventType: "popup_impression", pagePath: window.location.pathname, source: "exit-popup" }),
+        }).catch(() => undefined);
+      }
     };
 
     const trigger = cfg.trigger || "exit-or-delay";
     let timer: number | undefined;
 
     if (trigger === "delay" || trigger === "exit-or-delay") {
-      const delayMs = Math.max(3, Number(cfg.delaySeconds) || 25) * 1000;
+      const delayMs = Math.max(1, Number(cfg.delaySeconds) || 25) * 1000;
       timer = window.setTimeout(show, delayMs);
     }
 
     const onMouseLeave = (e: MouseEvent) => {
       if (e.clientY > 0) return;
-      if (trigger === "delay") return;
+      if (trigger === "delay" || trigger === "scroll") return;
       show();
     };
 
+    const onScroll = () => {
+      if (trigger !== "scroll" && trigger !== "exit-or-delay") return;
+      const percent = Number(cfg.scrollPercent) || 0;
+      if (percent <= 0) return;
+      const doc = document.documentElement;
+      const scrolled = (window.scrollY / Math.max(1, doc.scrollHeight - window.innerHeight)) * 100;
+      if (scrolled >= percent) show();
+    };
+
     document.addEventListener("mouseout", onMouseLeave);
+    window.addEventListener("scroll", onScroll, { passive: true });
     return () => {
       if (timer) window.clearTimeout(timer);
       document.removeEventListener("mouseout", onMouseLeave);
+      window.removeEventListener("scroll", onScroll);
     };
-  }, [cfg.delaySeconds, cfg.isActive, cfg.showOncePerDays, cfg.trigger, mode, siteKey]);
+  }, [cfg, mode, siteKey, slug]);
 
   if (cfg.isActive === false || !open) return null;
 
@@ -93,6 +120,17 @@ export default function ExitPopupWidget({
         pagePath: typeof window !== "undefined" ? window.location.pathname : "",
       });
       setDone(true);
+      if (slug) {
+        fetch(`/api/site-builder/public/${encodeURIComponent(slug)}/events`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            eventType: "popup_conversion",
+            pagePath: window.location.pathname,
+            source: "exit-popup",
+          }),
+        }).catch(() => undefined);
+      }
     } catch {
       setError("שליחה נכשלה — נסו שוב");
     } finally {
@@ -162,6 +200,18 @@ export default function ExitPopupWidget({
                 disabled={submitting}
                 className="w-full rounded-xl px-4 py-2.5 text-sm font-bold text-white transition hover:opacity-90 disabled:opacity-60"
                 style={{ background: cfg.accentColor || "#EF4444" }}
+                onClick={() => {
+                  if (!slug) return;
+                  fetch(`/api/site-builder/public/${encodeURIComponent(slug)}/events`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({
+                      eventType: "popup_click",
+                      pagePath: window.location.pathname,
+                      source: "exit-popup",
+                    }),
+                  }).catch(() => undefined);
+                }}
               >
                 {submitting ? "שולח..." : cfg.ctaLabel || "שלחו"}
               </button>

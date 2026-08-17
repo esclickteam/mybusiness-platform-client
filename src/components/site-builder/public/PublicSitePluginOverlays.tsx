@@ -8,6 +8,10 @@ import WhatsAppFloatWidget from "../../site-plugins/whatsapp-float/WhatsAppFloat
 import AnnouncementBarWidget from "../../site-plugins/announcement-bar/AnnouncementBarWidget";
 import CookieBannerWidget from "../../site-plugins/cookie-banner/CookieBannerWidget";
 import ExitPopupWidget from "../../site-plugins/exit-popup/ExitPopupWidget";
+import SocialProofWidget from "../../site-plugins/social-proof/SocialProofWidget";
+import FloatingContactBarWidget from "../../site-plugins/floating-contact-bar/FloatingContactBarWidget";
+import LanguageSwitcherWidget from "../../site-plugins/multi-language/LanguageSwitcherWidget";
+import FaqWidget from "../../site-plugins/faq-pro/FaqWidget";
 import { mergeExitPopupSettings } from "../../site-plugins/exit-popup/exitPopupUtils";
 import { mergePluginSettings as mergeWheelSettings } from "./benefitsWheelPublicUtils";
 import { mergePluginSettings as mergeSearchSettings } from "./smartSearchPublicUtils";
@@ -92,7 +96,21 @@ export default function PublicSitePluginOverlays({ site }: PublicSitePluginOverl
   const showSearch = Boolean(searchSettings?.isActive);
   const showAccessibility = Boolean(accessibilitySettings?.isActive);
   const showSmartBot = Boolean(smartBotSettings?.isActive);
-  const showWhatsapp = Boolean(whatsappSettings?.isActive);
+  const contactBarSettings = enabledPlugins.includes("floating-contact-bar")
+    ? site?.pluginSettings?.["floating-contact-bar"] || { isActive: true }
+    : null;
+  const showContactBar = Boolean(
+    enabledPlugins.includes("floating-contact-bar") &&
+      contactBarSettings?.isActive !== false
+  );
+  const hideWhatsappForBar = Boolean(
+    showContactBar && contactBarSettings?.hideWhatsappFloat !== false && contactBarSettings?.showWhatsapp !== false
+  );
+  const showWhatsapp = Boolean(whatsappSettings?.isActive) && !hideWhatsappForBar;
+  const showSocialProof = enabledPlugins.includes("social-proof");
+  const showLanguage = enabledPlugins.includes("multi-language");
+  const showFaq = enabledPlugins.includes("faq-pro");
+  const extraPopups = Array.isArray(exitPopupSettings?.popups) ? exitPopupSettings.popups : [];
   const showAnnouncement = Boolean(announcementSettings?.isActive);
   const showCookie = Boolean(cookieSettings?.isActive);
   const showExitPopup = Boolean(exitPopupSettings?.isActive);
@@ -127,7 +145,11 @@ export default function PublicSitePluginOverlays({ site }: PublicSitePluginOverl
     !showAnnouncement &&
     !showCookie &&
     !showExitPopup &&
-    !showStoreCheckout
+    !showStoreCheckout &&
+    !showContactBar &&
+    !showSocialProof &&
+    !showLanguage &&
+    !showFaq
   ) {
     return null;
   }
@@ -162,11 +184,34 @@ export default function PublicSitePluginOverlays({ site }: PublicSitePluginOverl
           settings={whatsappSettings!}
           fallbackPhone={whatsappFallbackPhone}
           mode="live"
+          siteSlug={slug}
+        />
+      ) : null}
+      {showContactBar ? (
+        <FloatingContactBarWidget
+          settings={contactBarSettings}
+          fallbackPhone={whatsappFallbackPhone}
+        />
+      ) : null}
+      {showSocialProof ? (
+        <SocialProofWidget
+          slug={slug}
+          settings={site?.pluginSettings?.["social-proof"]}
+        />
+      ) : null}
+      {showLanguage ? (
+        <LanguageSwitcherWidget
+          languages={site?.pluginSettings?.["multi-language"]?.languages || [
+            { code: "he", label: "HE", dir: "rtl" },
+            { code: "en", label: "EN", dir: "ltr" },
+          ]}
+          current={site?.__activeLanguage}
         />
       ) : null}
       {showCookie ? (
         <CookieBannerWidget siteKey={siteKey} settings={cookieSettings!} mode="live" />
       ) : null}
+      {showFaq ? <FaqWidget slug={slug} /> : null}
       {showExitPopup ? (
         <ExitPopupWidget
           siteKey={siteKey}
@@ -175,9 +220,21 @@ export default function PublicSitePluginOverlays({ site }: PublicSitePluginOverl
           mode="live"
         />
       ) : null}
+      {showExitPopup
+        ? extraPopups.map((popup, index) => (
+            <ExitPopupWidget
+              key={String(popup.id || index)}
+              siteKey={`${siteKey}:${popup.id || index}`}
+              slug={slug}
+              settings={mergeExitPopupSettings({ ...exitPopupSettings, ...popup, popups: [] })}
+              mode="live"
+            />
+          ))
+        : null}
       {showStoreCheckout ? (
         <PublicStoreCheckout
           businessId={businessId}
+          language={site?.__activeLanguage}
           shiftForLeftWidgets={showAccessibility}
         />
       ) : null}

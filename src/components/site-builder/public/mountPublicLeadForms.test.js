@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, vi } from "vitest";
 
 vi.mock("../../../api/publicSiteLeadsApi", () => ({
   submitPublicSiteLead: vi.fn(),
+  uploadPublicFormFile: vi.fn(),
 }));
 
 import { submitPublicSiteLead } from "../../../api/publicSiteLeadsApi";

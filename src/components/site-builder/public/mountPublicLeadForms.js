@@ -1,4 +1,9 @@
-import { submitPublicSiteLead } from "../../../api/publicSiteLeadsApi";
+import { submitPublicSiteLead, uploadPublicFormFile } from "../../../api/publicSiteLeadsApi";
+import {
+  collectFileInputs,
+  enhancePublicLeadForm,
+  maybeRedirectAfterSubmit,
+} from "./mountPublicLeadFormPro";
 
 const LEAD_FORM_SELECTOR = [
   'form[data-bizuply-block="lead-form"]',
@@ -118,6 +123,7 @@ function collectLeadFormPayload(form) {
     if (["button", "submit", "reset", "file", "hidden", "checkbox", "radio"].includes(type)) {
       return type === "checkbox" || type === "radio" ? node.checked : false;
     }
+    if (node.closest("[data-bizuply-field-hidden='true']")) return false;
     if (node.disabled) return false;
     return true;
   });
@@ -352,17 +358,45 @@ async function handleLeadFormSubmit(form, options) {
   }
 
   const idempotencyKey = getOrCreateSubmitKey(form);
+  const formId =
+    form.getAttribute("data-bizuply-form-id") ||
+    form.getAttribute("data-bizuply-block") ||
+    "website-form";
 
   form.setAttribute("data-bizuply-lead-submitting", "true");
   setFormBusy(form, true, "שולחים...");
   setFormStatus(form, "שולחים את הפנייה...", "info");
 
   try {
+    const attachments = [];
+    const fileInputs = collectFileInputs(form);
+    for (const input of fileInputs) {
+      const file = input.files?.[0];
+      if (!file) continue;
+      const uploaded = await uploadPublicFormFile(options.slug || "", file, {
+        host: options.host || "",
+        formId,
+        fieldId:
+          input.getAttribute("data-bizuply-form-field-id") ||
+          input.getAttribute("name") ||
+          input.id ||
+          "file",
+      });
+      if (uploaded?.mediaAssetId) {
+        attachments.push({
+          mediaAssetId: uploaded.mediaAssetId,
+          fieldId: uploaded.fieldId || input.getAttribute("name") || "file",
+          originalName: uploaded.originalName || file.name,
+        });
+        collected.fields.push({
+          label: readFieldLabel(input) || "קובץ",
+          value: uploaded.originalName || file.name,
+        });
+      }
+    }
+
     const response = await submitPublicSiteLead(options.slug || "", {
-      formId:
-        form.getAttribute("data-bizuply-form-id") ||
-        form.getAttribute("data-bizuply-block") ||
-        "website-form",
+      formId,
       pagePath: options.pagePath || "",
       host: options.host || "",
       name: collected.name,
@@ -370,6 +404,7 @@ async function handleLeadFormSubmit(form, options) {
       email: collected.email,
       message: collected.message,
       fields: collected.fields,
+      attachments,
       idempotencyKey,
     });
 
@@ -382,6 +417,7 @@ async function handleLeadFormSubmit(form, options) {
     setFormStatus(form, successMessage, "success");
     form.reset();
     setFormBusy(form, false);
+    maybeRedirectAfterSubmit(form);
     // Keep submit locked briefly so double-click after success cannot resubmit
     // until the user intentionally starts a new attempt (new idempotency key).
     window.setTimeout(() => {
@@ -425,6 +461,9 @@ export function mountPublicLeadForms(root, options = {}) {
   };
 
   upgradeLegacyLeadFormCtas(root);
+  Array.from(root.querySelectorAll("form")).forEach((form) => {
+    if (isLeadForm(form)) enhancePublicLeadForm(form);
+  });
 
   if (root.dataset.bizuplyLeadFormsMounted === "true") return;
   root.dataset.bizuplyLeadFormsMounted = "true";

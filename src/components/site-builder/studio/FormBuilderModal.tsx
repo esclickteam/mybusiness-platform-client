@@ -1,5 +1,11 @@
 import React from "react";
 import {
+  normalizeCondition,
+  normalizeSteps,
+  type BizuplyFormCondition,
+  type BizuplyFormStep,
+} from "./formProConfig";
+import {
   ArrowDown,
   ArrowUp,
   CalendarDays,
@@ -43,6 +49,8 @@ export type BizuplyFormField = {
   required?: boolean;
   options?: string[];
   width?: "half" | "full";
+  step?: number;
+  visibleWhen?: BizuplyFormCondition;
 };
 
 export type BizuplyFormColors = {
@@ -65,6 +73,8 @@ export type BizuplyFormConfig = {
   title: string;
   submitText: string;
   successMessage: string;
+  redirectUrl?: string;
+  steps?: BizuplyFormStep[];
   fields: BizuplyFormField[];
   colors?: BizuplyFormColors;
   /**
@@ -235,6 +245,8 @@ function normalizeForm(form: BizuplyFormConfig): BizuplyFormConfig {
       form?.successMessage || "תודה! קיבלנו את הפנייה ונחזור אליך בהקדם."
     ),
     colors: normalizeFormColors(form?.colors),
+    redirectUrl: String(form?.redirectUrl || ""),
+    steps: normalizeSteps(form?.steps),
     fields: Array.isArray(form?.fields)
       ? form.fields.map((field, index) => ({
           id: String(field?.id || `field-${index + 1}`),
@@ -246,6 +258,8 @@ function normalizeForm(form: BizuplyFormConfig): BizuplyFormConfig {
             ? field.options.map((option) => String(option)).filter(Boolean)
             : [],
           width: normalizeFieldWidth(field),
+          step: Number(field?.step) > 0 ? Number(field.step) : undefined,
+          visibleWhen: normalizeCondition(field?.visibleWhen),
         }))
       : [],
   };
@@ -893,6 +907,53 @@ export default function FormBuilderModal({
                   />
                 </label>
 
+                <div className="rounded-2xl border border-indigo-100 bg-indigo-50/70 p-3">
+                  <div className="mb-3 text-xs font-black text-indigo-800">
+                    Smart Forms Pro
+                  </div>
+                  <label className="block">
+                    <span className="mb-2 block text-xs font-black text-slate-600">
+                      הפניה אחרי שליחה
+                    </span>
+                    <input
+                      dir="ltr"
+                      value={safeForm.redirectUrl || ""}
+                      onChange={(event) =>
+                        updateWholeForm({ redirectUrl: event.target.value })
+                      }
+                      placeholder="https://... או /thanks"
+                      className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-left text-sm font-bold text-slate-800 outline-none transition focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
+                    />
+                  </label>
+                  <label className="mt-3 flex items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-3">
+                    <span className="text-sm font-black text-slate-700">
+                      טופס רב־שלבי
+                    </span>
+                    <input
+                      type="checkbox"
+                      checked={(safeForm.steps || []).length > 1}
+                      onChange={(event) =>
+                        updateWholeForm({
+                          steps: event.target.checked
+                            ? [
+                                { id: "step-1", title: "פרטים" },
+                                { id: "step-2", title: "בחירה" },
+                                { id: "step-3", title: "שליחה" },
+                              ]
+                            : [],
+                          fields: safeForm.fields.map((field, index) => ({
+                            ...field,
+                            step: event.target.checked
+                              ? Math.min(3, Math.floor(index / Math.max(1, Math.ceil(safeForm.fields.length / 3))) + 1)
+                              : undefined,
+                          })),
+                        })
+                      }
+                      className="h-5 w-5 rounded border-slate-300"
+                    />
+                  </label>
+                </div>
+
                 <div className="rounded-2xl border border-slate-200 bg-slate-50/80 p-3">
                   <div className="mb-3 text-xs font-black text-slate-700">
                     צבעים פנימיים של הטופס
@@ -1086,6 +1147,99 @@ export default function FormBuilderModal({
                       className="h-5 w-5 rounded border-slate-300"
                     />
                   </label>
+
+                  {(safeForm.steps || []).length > 1 ? (
+                    <label className="block">
+                      <span className="mb-2 block text-xs font-black text-slate-600">
+                        שלב
+                      </span>
+                      <select
+                        value={String(selectedField.step || 1)}
+                        onChange={(event) =>
+                          updateSelectedField({
+                            step: Number(event.target.value) || 1,
+                          })
+                        }
+                        className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-right text-sm font-black text-slate-800 outline-none"
+                      >
+                        {(safeForm.steps || []).map((step, index) => (
+                          <option key={step.id} value={index + 1}>
+                            {index + 1}. {step.title}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                  ) : null}
+
+                  <label className="block">
+                    <span className="mb-2 block text-xs font-black text-slate-600">
+                      הצג רק אם שדה
+                    </span>
+                    <select
+                      value={selectedField.visibleWhen?.fieldId || ""}
+                      onChange={(event) =>
+                        updateSelectedField({
+                          visibleWhen: event.target.value
+                            ? {
+                                fieldId: event.target.value,
+                                operator:
+                                  selectedField.visibleWhen?.operator || "equals",
+                                value: selectedField.visibleWhen?.value || "",
+                              }
+                            : undefined,
+                        })
+                      }
+                      className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-right text-sm font-black text-slate-800 outline-none"
+                    >
+                      <option value="">תמיד מוצג</option>
+                      {safeForm.fields
+                        .filter((field) => field.id !== selectedField.id)
+                        .map((field) => (
+                          <option key={field.id} value={field.id}>
+                            {field.label}
+                          </option>
+                        ))}
+                    </select>
+                  </label>
+                  {selectedField.visibleWhen?.fieldId ? (
+                    <div className="grid grid-cols-2 gap-3">
+                      <select
+                        value={selectedField.visibleWhen.operator}
+                        onChange={(event) =>
+                          updateSelectedField({
+                            visibleWhen: {
+                              ...selectedField.visibleWhen,
+                              fieldId: selectedField.visibleWhen.fieldId,
+                              operator: event.target.value as
+                                | "equals"
+                                | "notEquals"
+                                | "contains",
+                              value: selectedField.visibleWhen.value,
+                            },
+                          })
+                        }
+                        className="h-12 rounded-2xl border border-slate-200 bg-white px-3 text-right text-sm font-black"
+                      >
+                        <option value="equals">שווה ל</option>
+                        <option value="notEquals">שונה מ</option>
+                        <option value="contains">מכיל</option>
+                      </select>
+                      <input
+                        value={selectedField.visibleWhen.value}
+                        onChange={(event) =>
+                          updateSelectedField({
+                            visibleWhen: {
+                              ...selectedField.visibleWhen,
+                              fieldId: selectedField.visibleWhen.fieldId,
+                              operator: selectedField.visibleWhen.operator,
+                              value: event.target.value,
+                            },
+                          })
+                        }
+                        className="h-12 rounded-2xl border border-slate-200 bg-white px-3 text-right text-sm font-bold"
+                      />
+                    </div>
+                  ) : null}
 
                   <div className="grid grid-cols-3 gap-2">
                     <button

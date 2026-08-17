@@ -11,6 +11,10 @@ import {
   Users,
   CircleDot,
   Search,
+  MessageCircle,
+  DoorOpen,
+  Megaphone,
+  FileText,
   type LucideIcon,
 } from "lucide-react";
 
@@ -18,6 +22,16 @@ import type { SitePanelSection } from "../../../../data/sitePluginNav";
 import { useSitePluginSettings } from "./useSitePluginSettings";
 import SiteBenefitsWheelPanel from "./BenefitsWheelPanel";
 import SiteCountdownPanel from "./CountdownPanel";
+import SmartFormsInboxPanel from "./SmartFormsInboxPanel";
+import {
+  AnalyticsProPanel,
+  BirthdayClubPanel,
+  FaqProPanel,
+  MultiLanguagePanel,
+  QrGeneratorPanel,
+  ReferAFriendPanel,
+  SeoProPanel,
+} from "./AddonOpsPanels";
 import SmartSearchPanel from "./SmartSearchPanel";
 import SmartBotPanel from "./SmartBotPanel";
 import {
@@ -436,6 +450,150 @@ export const SiteAccessibilityPanel = makePanel(
   }
 );
 
+export const SiteWhatsAppFloatPanel = makePanel(
+  "whatsapp-float",
+  MessageCircle,
+  "#22C55E",
+  "WhatsApp",
+  "Basic לפי העיצוב הקיים. Pro: כמה נציגים, שעות, מיקוד ומעקב לחיצות.",
+  ({ settings, updateField }) => (
+    <>
+      <Field label="טלפון">
+        <TextInput
+          value={str(settings.phone)}
+          onChange={(v) => updateField("phone", v)}
+          placeholder="97250..."
+        />
+      </Field>
+      <Toggle
+        label="בחירת נציג"
+        checked={bool(settings.agentPicker, true)}
+        onChange={(v) => updateField("agentPicker", v)}
+      />
+      <Toggle
+        label="שעות פעילות"
+        checked={bool(settings.workingHoursEnabled, true)}
+        onChange={(v) => updateField("workingHoursEnabled", v)}
+      />
+      <Field label="הודעת אופליין">
+        <TextInput
+          value={str(settings.offlineMessage, "נחזור אליכם בשעות הפעילות")}
+          onChange={(v) => updateField("offlineMessage", v)}
+        />
+      </Field>
+    </>
+  )
+);
+
+export const SiteExitPopupPanel = makePanel(
+  "exit-popup",
+  DoorOpen,
+  "#EF4444",
+  "פופאפ",
+  "Basic: יציאה/השהייה. Pro: גלילה, מיקוד, תזמון וכמה פופאפים.",
+  ({ settings, updateField }) => (
+    <>
+      <Field label="כותרת">
+        <TextInput value={str(settings.headline)} onChange={(v) => updateField("headline", v)} />
+      </Field>
+      <Field label="השהייה בשניות">
+        <TextInput
+          type="number"
+          value={String(num(settings.delaySeconds, 5))}
+          onChange={(v) => updateField("delaySeconds", Number(v) || 5)}
+        />
+      </Field>
+      <Field label="אחוז גלילה">
+        <TextInput
+          type="number"
+          value={String(num(settings.scrollPercent, 50))}
+          onChange={(v) => updateField("scrollPercent", Number(v) || 0)}
+        />
+      </Field>
+    </>
+  )
+);
+
+export const SiteSocialProofPanel = makePanel(
+  "social-proof",
+  Megaphone,
+  "#F97316",
+  "Social Proof",
+  "טוסט מאירוע אמיתי. DEMO חייב להיות מסומן.",
+  ({ settings, updateField }) => (
+    <>
+      <Toggle
+        label="מצב DEMO"
+        checked={bool(settings.demoMode)}
+        onChange={(v) => updateField("demoMode", v)}
+      />
+      <Field label="מיקום">
+        <TextInput
+          value={str(settings.position, "bottom-left")}
+          onChange={(v) => updateField("position", v)}
+        />
+      </Field>
+    </>
+  )
+);
+
+export const SiteFloatingContactBarPanel = makePanel(
+  "floating-contact-bar",
+  MessageCircle,
+  "#0F172A",
+  "סרגל יצירת קשר",
+  "טלפון, אימייל, WhatsApp, טופס וקביעת תור. מסתיר את כפתור הוואטסאפ הצף כשיש כפילות.",
+  ({ settings, updateField }) => (
+    <>
+      <Toggle
+        label="WhatsApp"
+        checked={bool(settings.showWhatsapp, true)}
+        onChange={(v) => updateField("showWhatsapp", v)}
+      />
+      <Toggle
+        label="טלפון"
+        checked={bool(settings.showPhone, true)}
+        onChange={(v) => updateField("showPhone", v)}
+      />
+      <Toggle
+        label="אימייל"
+        checked={bool(settings.showEmail, true)}
+        onChange={(v) => updateField("showEmail", v)}
+      />
+      <Toggle
+        label="טופס"
+        checked={bool(settings.showForm)}
+        onChange={(v) => updateField("showForm", v)}
+      />
+      <Toggle
+        label="קביעת תור"
+        checked={bool(settings.showBooking)}
+        onChange={(v) => updateField("showBooking", v)}
+      />
+      <Field label="אימייל">
+        <TextInput value={str(settings.email)} onChange={(v) => updateField("email", v)} />
+      </Field>
+    </>
+  )
+);
+
+export const SiteFormToPdfPanel = makePanel(
+  "form-to-pdf",
+  FileText,
+  "#B45309",
+  "Form to PDF",
+  "יצירת PDF מהגשה, עברית RTL ומיתוג.",
+  ({ settings, updateField }) => (
+    <>
+      <Toggle
+        label="כלול לוגו"
+        checked={bool(settings.includeLogo, true)}
+        onChange={(v) => updateField("includeLogo", v)}
+      />
+    </>
+  )
+);
+
 export const PLUGIN_PANEL_MAP: Partial<
   Record<SitePanelSection, React.ComponentType<PluginPanelProps>>
 > = {
@@ -446,6 +604,19 @@ export const PLUGIN_PANEL_MAP: Partial<
   "form-abandonment": SiteFormAbandonmentPanel,
   "journey-recording": SiteJourneyRecordingPanel,
   countdown: SiteCountdownPanel,
+  "smart-forms": SmartFormsInboxPanel,
+  "analytics-pro": AnalyticsProPanel,
+  "seo-pro": SeoProPanel,
+  "multi-language": MultiLanguagePanel,
+  "refer-a-friend": ReferAFriendPanel,
+  "birthday-club": BirthdayClubPanel,
+  "qr-generator": QrGeneratorPanel,
+  "faq-pro": FaqProPanel,
+  "whatsapp-float": SiteWhatsAppFloatPanel,
+  "exit-popup": SiteExitPopupPanel,
+  "social-proof": SiteSocialProofPanel,
+  "floating-contact-bar": SiteFloatingContactBarPanel,
+  "form-to-pdf": SiteFormToPdfPanel,
   "benefits-wheel": SiteBenefitsWheelPanel,
   "smart-search": SmartSearchPanel,
   "smart-bot": SmartBotPanel,

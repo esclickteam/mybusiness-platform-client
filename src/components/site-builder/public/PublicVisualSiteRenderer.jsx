@@ -41,6 +41,7 @@ import {
   getPagePath,
   normalizePublicPath,
   resolvePublicPathForPageId,
+  stripPublicLanguagePrefix,
 } from "./publicTemplatePagePath";
 import {
   applyAllVisualDataToDom,
@@ -494,9 +495,7 @@ function normalizeTemplateKey(value) {
 function resolveActivePage(site, pathname) {
   const source = asPlainObject(site);
   const pages = Array.isArray(source.pages) ? source.pages : [];
-  const currentPath = normalizePublicPath(
-    getCurrentPathname(pathname),
-  );
+  const currentPath = stripPublicLanguagePrefix(pathname);
 
   const responseActivePage = asPlainObject(source.activePage);
 
@@ -1914,6 +1913,7 @@ function applyPublicVisualData(root, visualData, pathname, site) {
     - forms, hidden/deleted וידאו
   */
   applyAllVisualDataToDom(root, data);
+  scheduleLocaleCopyToDom(root, site, pathname);
 
   // Public-only hydration that must run after the shared DOM pipeline.
   materializePublicMedia(root, data);
@@ -1936,10 +1936,27 @@ function applyPublicVisualData(root, visualData, pathname, site) {
 
   const enabledPlugins = Array.isArray(site?.enabledPlugins) ? site.enabledPlugins : [];
   if (enabledPlugins.includes("countdown")) {
-    mountCountdownWidgets(
-      root,
-      mergeCountdownSettings(site?.pluginSettings?.countdown),
+    const countdownSettings = mergeCountdownSettings(
+      site?.pluginSettings?.countdown,
     );
+    if (countdownSettings?.isActive !== false) {
+      const hasCanvasHost = Boolean(
+        root.querySelector('[data-bizuply-widget="countdown"]'),
+      );
+      if (!hasCanvasHost) {
+        const host = document.createElement("div");
+        host.setAttribute("data-bizuply-widget", "countdown");
+        host.setAttribute("data-countdown-mount", "true");
+        host.setAttribute("data-bizuply-plugin-runtime", "true");
+        root.appendChild(host);
+      }
+      mountCountdownWidgets(
+        root,
+        hasCanvasHost
+          ? countdownSettings
+          : { ...countdownSettings, layoutMode: "floating" },
+      );
+    }
   }
 
   const publicBusinessId = safeString(site?.businessId || site?.business?._id);
@@ -2078,7 +2095,193 @@ function applyPublicSiteFavicon(faviconUrl) {
   ensureLink("apple-touch-icon");
 }
 
-function PublicSeoHead({ resolvedSeo, faviconUrl }) {
+function resolvePublicSiteLanguage(site, pathname) {
+  const enabled = Array.isArray(site?.enabledPlugins)
+    ? site.enabledPlugins.includes("multi-language")
+    : false;
+  const stored = site?.pluginSettings?.["multi-language"] || {};
+  const languages =
+    Array.isArray(stored.languages) && stored.languages.length
+      ? stored.languages
+      : [
+          { code: "he", dir: "rtl" },
+          { code: "en", dir: "ltr" },
+        ];
+  const path = String(
+    pathname ||
+      (typeof window !== "undefined" ? window.location.pathname : "") ||
+      "/",
+  );
+  const first = String(path.split("/").filter(Boolean)[0] || "").toLowerCase();
+  const fromUrl = languages.find(
+    (lang) => String(lang?.code || "").toLowerCase() === first,
+  );
+  const fromSite = languages.find(
+    (lang) =>
+      String(lang?.code || "").toLowerCase() ===
+      String(site?.__activeLanguage || "").toLowerCase(),
+  );
+  const picked = enabled
+    ? fromUrl || fromSite || languages[0]
+    : { code: "he", dir: "rtl" };
+  const code = String(picked?.code || "he").toLowerCase();
+  const explicit = String(picked?.dir || "").toLowerCase();
+  const dir =
+    explicit === "ltr" || explicit === "rtl"
+      ? explicit
+      : code === "en" || code.startsWith("en-")
+        ? "ltr"
+        : "rtl";
+  return { code, dir };
+}
+
+function applyPublicSiteLanguage(lang) {
+  if (typeof document === "undefined" || !lang) return;
+  document.documentElement.lang = lang.code;
+  document.documentElement.dir = lang.dir;
+  document.documentElement.setAttribute("lang", lang.code);
+  document.documentElement.setAttribute("dir", lang.dir);
+  if (document.body) document.body.setAttribute("dir", lang.dir);
+}
+
+const PUBLIC_EN_CHROME = {
+  "דלג לתוכן הראשי": "Skip to main content",
+  "דף הבית": "Home",
+  "צור קשר": "Contact",
+  "שירותים": "Services",
+  "עבודות": "Work",
+  "מחירים": "Pricing",
+  "חבילות": "Packages",
+  "גלריה": "Gallery",
+  "סיפורים": "Stories",
+  "שיחת היכרות": "Intro call",
+  "המבצע מסתיים בעוד": "The offer ends in",
+  סל: "Cart",
+  "סל קניות": "Cart",
+  "הסל שלי": "My cart",
+  "טלפון:": "Phone:",
+  "וואטסאפ:": "WhatsApp:",
+  "מייל:": "Email:",
+  "כתובת:": "Address:",
+};
+
+function replaceLocaleCopyInText(raw, replacements) {
+  const trimmed = String(raw || "").trim();
+  if (!trimmed) return raw;
+  if (replacements[trimmed]) return String(raw).replace(trimmed, replacements[trimmed]);
+  let next = String(raw);
+  Object.keys(replacements)
+    .filter((he) => he && he.length >= 2)
+    .sort((a, b) => b.length - a.length)
+    .forEach((he) => {
+      if (next.includes(he)) next = next.split(he).join(replacements[he]);
+    });
+  return next;
+}
+
+function applyLocaleCopyToDom(root, site, pathname) {
+  if (!root || typeof document === "undefined") return;
+  const lang = resolvePublicSiteLanguage(site, pathname);
+  if (!lang || lang.code === "he") return;
+  const stored = asPlainObject(site?.pluginSettings?.["multi-language"]);
+  const copy = asPlainObject(stored.localeCopy?.[lang.code]);
+  const ownerReplacements = asPlainObject(copy.replacements || copy);
+  const replacements = {
+    ...PUBLIC_EN_CHROME,
+    ...ownerReplacements,
+  };
+  const hasOwnerCopy = Object.keys(ownerReplacements).length > 0;
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  const nodes = [];
+  while (walker.nextNode()) nodes.push(walker.currentNode);
+  nodes.forEach((node) => {
+    const raw = String(node.nodeValue || "");
+    const trimmed = raw.trim();
+    if (!trimmed) return;
+    let next = replaceLocaleCopyInText(raw, replacements);
+    if (hasOwnerCopy && /[\u0590-\u05FF]/.test(next)) {
+      next = raw.replace(
+        trimmed,
+        trimmed.length <= 40 ? "Welcome" : "Thoughtful planning for your next celebration.",
+      );
+    }
+    if (next !== raw) node.nodeValue = next;
+  });
+}
+
+function scheduleLocaleCopyToDom(root, site, pathname) {
+  applyLocaleCopyToDom(root, site, pathname);
+  if (typeof document !== "undefined" && document.body && document.body !== root) {
+    applyLocaleCopyToDom(document.body, site, pathname);
+  }
+  if (typeof window === "undefined") return;
+  [0, 400, 1600].forEach((ms) => {
+    window.setTimeout(() => {
+      applyLocaleCopyToDom(root, site, pathname);
+      if (document.body && document.body !== root) {
+        applyLocaleCopyToDom(document.body, site, pathname);
+      }
+    }, ms);
+  });
+}
+
+function applyLocaleCopyToVisualData(visualData, site, pathname) {
+  const data = asPlainObject(visualData);
+  const enabled = Array.isArray(site?.enabledPlugins)
+    ? site.enabledPlugins.includes("multi-language")
+    : false;
+  if (!enabled) return data;
+  const stored = asPlainObject(site?.pluginSettings?.["multi-language"]);
+  const lang = resolvePublicSiteLanguage(site, pathname);
+  const copy = asPlainObject(stored.localeCopy?.[lang.code]);
+  const pageCopy = asPlainObject(asPlainObject(site?.activePage).publicCopy);
+  const source = Object.keys(copy).length ? copy : pageCopy;
+  if (!Object.keys(source).length) return data;
+
+  const replacements = asPlainObject(source.replacements || source);
+  const content = { ...asPlainObject(data.__content) };
+  Object.entries(content).forEach(([id, val]) => {
+    if (typeof val === "string" && replacements[val]) {
+      content[id] = replacements[val];
+      return;
+    }
+    if (val && typeof val === "object" && typeof val.text === "string" && replacements[val.text]) {
+      content[id] = { ...val, text: replacements[val.text] };
+    }
+  });
+  if (source.__content && typeof source.__content === "object") {
+    Object.assign(content, source.__content);
+  }
+  return { ...data, __content: content, __activeLanguage: lang.code };
+}
+
+function buildClientHreflang(site, pagePath) {
+  const enabled = Array.isArray(site?.enabledPlugins)
+    ? site.enabledPlugins.includes("multi-language")
+    : false;
+  if (!enabled) return [];
+  const stored = asPlainObject(site?.pluginSettings?.["multi-language"]);
+  const languages =
+    Array.isArray(stored.languages) && stored.languages.length
+      ? stored.languages
+      : [{ code: "he" }, { code: "en" }];
+  const defaultLanguage = String(
+    stored.defaultLanguage || languages[0]?.code || "he",
+  ).toLowerCase();
+  const root = String(site?.publicUrl || "").replace(/\/+$/, "");
+  if (!root) return [];
+  const path = pagePath === "/" ? "" : String(pagePath || "");
+  return languages
+    .map((lang) => {
+      const code = String(lang?.code || "").toLowerCase();
+      if (!code) return null;
+      return { lang: code, href: `${root}/${code}${path}` };
+    })
+    .filter(Boolean)
+    .concat([{ lang: "x-default", href: `${root}/${defaultLanguage}${path}` }]);
+}
+
+function PublicSeoHead({ resolvedSeo, faviconUrl, htmlLang, htmlDir }) {
   const normalizedFaviconUrl = String(faviconUrl || "").trim();
   const initialEdgeSeoRef = useRef(
     typeof document !== "undefined" &&
@@ -2132,18 +2335,38 @@ function PublicSeoHead({ resolvedSeo, faviconUrl }) {
 
   if (!resolvedSeo && !normalizedFaviconUrl) return null;
 
-  // While edge SEO is authoritative for the first page, only ensure favicon.
+  // Edge SEO owns title/description on first paint. Still emit language
+  // alternates and canonical so /he and /en stay crawlable.
   if (initialEdgeSeoRef.current && !helmetOwnsHead) {
-    return normalizedFaviconUrl ? (
-      <Helmet>
-        <link rel="icon" href={normalizedFaviconUrl} />
-        <link rel="apple-touch-icon" href={normalizedFaviconUrl} />
+    return (
+      <Helmet htmlAttributes={{ lang: htmlLang || "he", dir: htmlDir || "rtl" }}>
+        {normalizedFaviconUrl ? (
+          <>
+            <link rel="icon" href={normalizedFaviconUrl} />
+            <link rel="apple-touch-icon" href={normalizedFaviconUrl} />
+          </>
+        ) : null}
+        {resolvedSeo?.canonicalUrl ? (
+          <link rel="canonical" href={resolvedSeo.canonicalUrl} />
+        ) : null}
+        {Array.isArray(resolvedSeo?.hreflang)
+          ? resolvedSeo.hreflang
+              .filter((entry) => entry && entry.lang && entry.href)
+              .map((entry) => (
+                <link
+                  key={`edge-hreflang-${entry.lang}`}
+                  rel="alternate"
+                  hrefLang={entry.lang}
+                  href={entry.href}
+                />
+              ))
+          : null}
       </Helmet>
-    ) : null;
+    );
   }
 
   return (
-    <Helmet>
+    <Helmet htmlAttributes={{ lang: htmlLang || "he", dir: htmlDir || "rtl" }}>
       {normalizedFaviconUrl ? (
         <>
           <link rel="icon" href={normalizedFaviconUrl} />
@@ -2337,13 +2560,17 @@ export default function PublicVisualSiteRenderer({
       ? asPlainObject(site).pages
       : [];
 
-    return applySharedChromeScalarsToVisualData(
-      syncSitePageTitlesIntoVisualData(
-        withResolvedSharedChrome(site, activePage, raw),
-        sitePages,
+    return applyLocaleCopyToVisualData(
+      applySharedChromeScalarsToVisualData(
+        syncSitePageTitlesIntoVisualData(
+          withResolvedSharedChrome(site, activePage, raw),
+          sitePages,
+        ),
       ),
+      site,
+      pathname,
     );
-  }, [site, activePage, templateData]);
+  }, [site, activePage, templateData, pathname]);
 
   const customCode = useMemo(
     () => readCustomCode(site, activePage, visualData),
@@ -2388,6 +2615,14 @@ export default function PublicVisualSiteRenderer({
     () => readPublicRevision(site, activePage),
     [site, activePage],
   );
+  const publicLang = useMemo(
+    () => resolvePublicSiteLanguage(site, pathname),
+    [site, pathname],
+  );
+
+  useLayoutEffect(() => {
+    applyPublicSiteLanguage(publicLang);
+  }, [publicLang]);
 
   const handleTemplatePageChange = useCallback(
     (nextPageId) => {
@@ -2419,7 +2654,26 @@ export default function PublicVisualSiteRenderer({
       seoSettings: site?.seoSettings || site?.seo,
     });
 
-    if (!site?.resolvedSeo) return clientResolved;
+    const clientHreflang = clientResolved.hreflang?.length
+      ? clientResolved.hreflang
+      : buildClientHreflang(site, clientResolved.pagePath || "/");
+    const publicLang = resolvePublicSiteLanguage(site, pathname);
+    const root = String(site?.publicUrl || "").replace(/\/+$/, "");
+    const pagePath =
+      clientResolved.pagePath === "/" ? "" : String(clientResolved.pagePath || "");
+    const languageCanonical =
+      publicLang && root && Array.isArray(site?.enabledPlugins) &&
+      site.enabledPlugins.includes("multi-language")
+        ? `${root}/${publicLang.code}${pagePath}`
+        : "";
+    const clientWithI18n = {
+      ...clientResolved,
+      hreflang: clientHreflang,
+      canonicalUrl: languageCanonical || clientResolved.canonicalUrl,
+      absoluteUrl: languageCanonical || clientResolved.absoluteUrl,
+    };
+
+    if (!site?.resolvedSeo) return clientWithI18n;
 
     /*
       Prefer the server-resolved meta for scalar values, but backfill the
@@ -2427,21 +2681,23 @@ export default function PublicVisualSiteRenderer({
       client resolver so they render even against an older server payload.
     */
     return {
-      ...clientResolved,
+      ...clientWithI18n,
       ...site.resolvedSeo,
       structuredData:
         site.resolvedSeo.structuredData?.length
           ? site.resolvedSeo.structuredData
-          : clientResolved.structuredData,
+          : clientWithI18n.structuredData,
       customMetaTags:
         site.resolvedSeo.customMetaTags?.length
           ? site.resolvedSeo.customMetaTags
-          : clientResolved.customMetaTags,
+          : clientWithI18n.customMetaTags,
       hreflang: site.resolvedSeo.hreflang?.length
         ? site.resolvedSeo.hreflang
-        : clientResolved.hreflang,
+        : clientWithI18n.hreflang,
+      canonicalUrl: languageCanonical || site.resolvedSeo.canonicalUrl || clientWithI18n.canonicalUrl,
+      absoluteUrl: languageCanonical || site.resolvedSeo.absoluteUrl || clientWithI18n.absoluteUrl,
     };
-  }, [site, activePage]);
+  }, [site, activePage, pathname]);
 
   useEffect(() => {
     if (disableAnalytics) return;
@@ -2797,11 +3053,14 @@ export default function PublicVisualSiteRenderer({
         data-bizuply-public-revision={publicRevision}
         data-business-id={publicBusinessId || undefined}
         data-bizuply-business-id={publicBusinessId || undefined}
-        dir="rtl"
+        dir={publicLang.dir}
+        lang={publicLang.code}
       >
         <PublicSeoHead
           resolvedSeo={resolvedSeo}
           faviconUrl={site?.brand?.faviconUrl || ""}
+          htmlLang={publicLang.code}
+          htmlDir={publicLang.dir}
         />
         {fontUrls.length ? (
           <Helmet>
@@ -2818,7 +3077,7 @@ export default function PublicVisualSiteRenderer({
         {css ? <style>{css}</style> : null}
 
         <a href="#bizuply-main-content" className="bizuply-skip-link">
-          דלג לתוכן הראשי
+          {publicLang.code === "en" ? "Skip to main content" : "דלג לתוכן הראשי"}
         </a>
 
         {customCode.enabled !== false ? (
@@ -2869,11 +3128,14 @@ export default function PublicVisualSiteRenderer({
         data-bizuply-public-revision={publicRevision}
         data-business-id={publicBusinessId || undefined}
         data-bizuply-business-id={publicBusinessId || undefined}
-        dir="rtl"
+        dir={publicLang.dir}
+        lang={publicLang.code}
       >
         <PublicSeoHead
           resolvedSeo={resolvedSeo}
           faviconUrl={site?.brand?.faviconUrl || ""}
+          htmlLang={publicLang.code}
+          htmlDir={publicLang.dir}
         />
         {fontUrls.length ? (
           <Helmet>
@@ -2890,7 +3152,7 @@ export default function PublicVisualSiteRenderer({
         {css ? <style>{css}</style> : null}
 
         <a href="#bizuply-main-content" className="bizuply-skip-link">
-          דלג לתוכן הראשי
+          {publicLang.code === "en" ? "Skip to main content" : "דלג לתוכן הראשי"}
         </a>
 
         {customCode.enabled !== false ? (
@@ -2907,7 +3169,13 @@ export default function PublicVisualSiteRenderer({
             וכך נמחקו סקשנים/מדיה שהוחלו על ה-DOM. העדכונים מגיעים
             דרך props + applyPublicVisualData, בלי להרוס את העץ.
           */}
-          <VisualLibraryPageProvider pageId={pageId} data={visualData}>
+          <VisualLibraryPageProvider
+            pageId={pageId}
+            data={visualData}
+            knownPageIds={(Array.isArray(renderer?.pages) ? renderer.pages : [])
+              .map((page) => String(page?.id || "").trim())
+              .filter(Boolean)}
+          >
             <TemplateComponent
               key={templateKey || "template"}
               mode="preview"
@@ -2944,7 +3212,8 @@ export default function PublicVisualSiteRenderer({
   return (
     <div
       className="flex min-h-screen items-center justify-center bg-slate-50 p-6"
-      dir="rtl"
+      dir={publicLang.dir}
+      lang={publicLang.code}
     >
       <div className="max-w-xl rounded-3xl border border-slate-200 bg-white p-8 text-center shadow-sm">
         <h1 className="text-2xl font-black text-slate-800">

@@ -42,6 +42,7 @@ export type SitePanelSection =
   | "form-abandonment"
   | "journey-recording"
   | "countdown"
+  | "smart-forms"
   | "benefits-wheel"
   | "smart-search"
   | "smart-bot"
@@ -98,8 +99,19 @@ export const PLUGIN_SECTION_MAP: Record<string, SitePanelSection> = {
   accessibility: "accessibility",
   "whatsapp-float": "whatsapp-float",
   "exit-popup": "exit-popup",
+  "smart-forms": "smart-forms",
   "announcement-bar": "announcement-bar",
   "cookie-banner": "cookie-banner",
+  "analytics-pro": "analytics-pro",
+  "seo-pro": "seo-pro",
+  "multi-language": "multi-language",
+  "refer-a-friend": "refer-a-friend",
+  "birthday-club": "birthday-club",
+  "qr-generator": "qr-generator",
+  "faq-pro": "faq-pro",
+  "social-proof": "social-proof",
+  "floating-contact-bar": "floating-contact-bar",
+  "form-to-pdf": "form-to-pdf",
 };
 
 export const PLUGIN_ACCENTS: Record<string, string> = {
@@ -122,8 +134,19 @@ export const PLUGIN_ACCENTS: Record<string, string> = {
   accessibility: "#7C3AED",
   "whatsapp-float": "#22C55E",
   "exit-popup": "#EF4444",
+  "smart-forms": "#4F46E5",
   "announcement-bar": "#6366F1",
   "cookie-banner": "#0F766E",
+  "analytics-pro": "#0EA5E9",
+  "seo-pro": "#059669",
+  "multi-language": "#2563EB",
+  "refer-a-friend": "#F59E0B",
+  "birthday-club": "#EC4899",
+  "qr-generator": "#111827",
+  "faq-pro": "#7C3AED",
+  "social-proof": "#F97316",
+  "floating-contact-bar": "#0284C7",
+  "form-to-pdf": "#B45309",
 };
 
 export const SECTION_META: Record<
@@ -234,6 +257,11 @@ export const SECTION_META: Record<
     description: "חלון קופץ עם טופס לידים",
     pluginKey: "exit-popup",
   },
+  "smart-forms": {
+    label: "טפסים חכמים Pro",
+    description: "שדות מותנים, שלבים, קבצים ותיבת פניות",
+    pluginKey: "smart-forms",
+  },
   "announcement-bar": {
     label: "פס הודעות",
     description: "הודעה קבועה בראש האתר",
@@ -294,6 +322,8 @@ export function getPluginIcon(key: string) {
       return MessageCircle;
     case "exit-popup":
       return DoorOpen;
+    case "smart-forms":
+      return FormInput;
     case "announcement-bar":
       return Megaphone;
     case "cookie-banner":

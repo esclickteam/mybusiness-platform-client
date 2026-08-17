@@ -42,6 +42,12 @@ export type CountdownSettings = {
   effectMode?: CountdownEffectMode;
   effectWhen?: CountdownEffectWhen;
   expiredMessage?: string;
+  mode?: "fixed" | "evergreen";
+  evergreenMinutes?: number;
+  hideOnExpiry?: boolean;
+  redirectOnExpiry?: string;
+  pageTargeting?: { mode?: "all" | "include" | "exclude"; pageIds?: string[] };
+  deviceTargeting?: { desktop?: boolean; tablet?: boolean; mobile?: boolean };
 };
 
 export type CountdownUnit = {
@@ -259,6 +265,15 @@ export function parseEndDate(endDate?: string) {
   return Number.isFinite(parsed) ? parsed : null;
 }
 
+function countdownUnitLabel(hebrew: string, english: string) {
+  if (typeof document === "undefined") return hebrew;
+  return String(document.documentElement.lang || "")
+    .toLowerCase()
+    .startsWith("en")
+    ? english
+    : hebrew;
+}
+
 export function buildCountdownUnits(settings: CountdownSettings, parts: {
   months: number;
   weeks: number;
@@ -272,14 +287,14 @@ export function buildCountdownUnits(settings: CountdownSettings, parts: {
 
   if (format === "daysOnly") {
     if (settings.showDays !== false) {
-      units.push({ key: "days", label: "ימים (סה״כ)", value: parts.days });
+      units.push({ key: "days", label: countdownUnitLabel("ימים (סה״כ)", "days (total)"), value: parts.days });
     }
   } else if (format === "weeksOnly") {
     if (settings.showWeeks !== false) {
-      units.push({ key: "weeks", label: "שבועות (סה״כ)", value: parts.weeks });
+      units.push({ key: "weeks", label: countdownUnitLabel("שבועות (סה״כ)", "weeks (total)"), value: parts.weeks });
     }
     if (settings.showDays !== false && parts.days > 0) {
-      units.push({ key: "days", label: "ימים", value: parts.days });
+      units.push({ key: "days", label: countdownUnitLabel("ימים", "days"), value: parts.days });
     }
   } else {
     const showMonths = settings.showMonths !== false && settings.monthsAsDays !== true;
@@ -288,24 +303,24 @@ export function buildCountdownUnits(settings: CountdownSettings, parts: {
       settings.weeksAsDays !== true &&
       !(settings.monthsAsDays && settings.weeksAsDays);
 
-    if (showMonths) units.push({ key: "months", label: "חודשים", value: parts.months });
-    if (showWeeks) units.push({ key: "weeks", label: "שבועות", value: parts.weeks });
+    if (showMonths) units.push({ key: "months", label: countdownUnitLabel("חודשים", "months"), value: parts.months });
+    if (showWeeks) units.push({ key: "weeks", label: countdownUnitLabel("שבועות", "weeks"), value: parts.weeks });
     if (settings.showDays !== false) {
       const daysLabel =
         settings.monthsAsDays && settings.weeksAsDays
-          ? "ימים (סה״כ)"
+          ? countdownUnitLabel("ימים (סה״כ)", "days (total)")
           : settings.monthsAsDays
-            ? "ימים (כולל חודשים)"
+            ? countdownUnitLabel("ימים (כולל חודשים)", "days (incl. months)")
             : settings.weeksAsDays
-              ? "ימים (כולל שבועות)"
-              : "ימים";
+              ? countdownUnitLabel("ימים (כולל שבועות)", "days (incl. weeks)")
+              : countdownUnitLabel("ימים", "days");
       units.push({ key: "days", label: daysLabel, value: parts.days });
     }
   }
 
-  if (settings.showHours !== false) units.push({ key: "hours", label: "שעות", value: parts.hours });
-  if (settings.showMinutes !== false) units.push({ key: "minutes", label: "דקות", value: parts.minutes });
-  if (settings.showSeconds !== false) units.push({ key: "seconds", label: "שניות", value: parts.seconds });
+  if (settings.showHours !== false) units.push({ key: "hours", label: countdownUnitLabel("שעות", "hours"), value: parts.hours });
+  if (settings.showMinutes !== false) units.push({ key: "minutes", label: countdownUnitLabel("דקות", "minutes"), value: parts.minutes });
+  if (settings.showSeconds !== false) units.push({ key: "seconds", label: countdownUnitLabel("שניות", "seconds"), value: parts.seconds });
 
   if (settings.unitOrderReversed !== false) {
     units.reverse();

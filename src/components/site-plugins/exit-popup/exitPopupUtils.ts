@@ -4,11 +4,17 @@ export type ExitPopupSettings = {
   subheadline: string;
   ctaLabel: string;
   successMessage: string;
-  trigger: "exit" | "delay" | "exit-or-delay";
+  trigger: "exit" | "delay" | "exit-or-delay" | "scroll";
   delaySeconds: number;
   showOncePerDays: number;
   requirePhone: boolean;
   accentColor: string;
+  popups?: Array<Partial<ExitPopupSettings> & { id?: string }>;
+  scrollPercent?: number;
+  deviceTargeting?: { desktop?: boolean; tablet?: boolean; mobile?: boolean };
+  pageTargeting?: { mode?: "all" | "include" | "exclude"; pageIds?: string[] };
+  schedule?: { enabled?: boolean; startAt?: string; endAt?: string };
+  variantKey?: string;
 };
 
 const DEFAULTS: ExitPopupSettings = {

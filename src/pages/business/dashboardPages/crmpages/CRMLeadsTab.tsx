@@ -106,6 +106,8 @@ type Lead = {
   externalLeadId?: string;
   externalPageId?: string;
   externalFormId?: string;
+  formId?: string;
+  websiteId?: string;
 
   createdAt?: string;
 
@@ -523,6 +525,7 @@ function getLeadFormName(lead: Lead, t: TFunction) {
   return (
     lead.google?.formName ||
     lead.facebook?.formName ||
+    lead.formId ||
     lead.externalFormId ||
     lead.google?.formId ||
     lead.facebook?.formId ||
@@ -3137,6 +3140,7 @@ export default function CRMLeadsTab({
                         <DetailRow
                           label={t("crm.leads.drawer.formId")}
                           value={
+                            selectedLead.formId ||
                             selectedLead.externalFormId ||
                             selectedLead.google?.formId ||
                             selectedLead.facebook?.formId

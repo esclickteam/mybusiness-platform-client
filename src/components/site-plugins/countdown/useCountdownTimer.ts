@@ -7,8 +7,24 @@ import {
   type CountdownUnit,
 } from "./countdownUtils";
 
+function evergreenEndMs(settings: CountdownSettings) {
+  if (settings.mode !== "evergreen") return null;
+  const minutes = Math.max(1, Number(settings.evergreenMinutes) || 30);
+  if (typeof window === "undefined") return Date.now() + minutes * 60 * 1000;
+  const key = `bizuply-countdown-evergreen:${settings.title || "default"}`;
+  try {
+    const existing = Number(window.localStorage.getItem(key) || 0);
+    if (existing > Date.now()) return existing;
+    const next = Date.now() + minutes * 60 * 1000;
+    window.localStorage.setItem(key, String(next));
+    return next;
+  } catch {
+    return Date.now() + minutes * 60 * 1000;
+  }
+}
+
 export function useCountdownTimer(settings: CountdownSettings) {
-  const endMs = parseEndDate(settings.endDate);
+  const endMs = parseEndDate(settings.endDate) || evergreenEndMs(settings);
   const [tick, setTick] = useState(0);
 
   useEffect(() => {
