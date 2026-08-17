@@ -29,18 +29,33 @@ import {
   snapshotTextRange,
 } from "./utils/richTextHtml";
 import { resolvePersistedVisualId } from "./utils/visualPersistId";
+import {
+  clampPanelToViewport,
+  narrowAnchorRect,
+  placeTextSettingsPanel,
+  TEXT_SETTINGS_PANEL_WIDTH,
+  type TextSettingsPlacementSide,
+} from "./utils/textSettingsPlacement";
 
 type VisualTextSettingsPanelProps = {
   editor: any;
 };
 
 const FONT_WEIGHTS = [
-  { label: "Regular", value: "400" },
-  { label: "Medium", value: "500" },
-  { label: "Semi Bold", value: "600" },
-  { label: "Bold", value: "700" },
-  { label: "Black", value: "900" },
+  { label: "רגיל", value: "400" },
+  { label: "בינוני", value: "500" },
+  { label: "חצי מודגש", value: "600" },
+  { label: "מודגש", value: "700" },
+  { label: "שחור", value: "900" },
 ];
+
+const STYLE_LABELS: Record<string, string> = {
+  h1: "כותרת 1",
+  h2: "כותרת 2",
+  h3: "כותרת 3",
+  h4: "כותרת 4",
+  paragraph: "פסקה",
+};
 
 const LINE_HEIGHTS = ["1", "1.15", "1.3", "1.5", "1.7", "2"];
 const LETTER_SPACINGS = ["-1px", "0px", "0.5px", "1px", "2px", "4px"];
@@ -123,7 +138,7 @@ function isTransparentColor(value: string) {
 
 function FieldLabel({ children }: { children: React.ReactNode }) {
   return (
-    <div className="mb-1.5 text-[11px] font-bold uppercase tracking-wide text-slate-500">
+    <div className="mb-1.5 text-right text-[11px] font-bold tracking-wide text-slate-500">
       {children}
     </div>
   );
@@ -149,7 +164,7 @@ function PanelSelect({
         value={value}
         onMouseDown={(event) => event.stopPropagation()}
         onChange={(event) => onChange(event.target.value)}
-        className="h-9 w-full appearance-none rounded-lg border border-slate-200 bg-white px-3 pr-8 text-sm font-semibold text-slate-800 outline-none transition hover:border-slate-300 focus:border-violet-400"
+        className="h-9 w-full appearance-none rounded-lg border border-slate-200 bg-white px-3 pl-8 text-right text-sm font-semibold text-slate-800 outline-none transition hover:border-slate-300 focus:border-violet-400"
       >
         {children}
       </select>
@@ -178,6 +193,7 @@ function ToggleButton({
       type="button"
       data-testid={testId}
       title={title}
+      aria-label={title}
       disabled={disabled}
       onMouseDown={(event) => {
         event.preventDefault();
@@ -219,6 +235,7 @@ function ColorSwatch({
   return (
     <label
       title={title}
+      aria-label={title}
       data-testid={testId}
       onMouseDown={(event) => {
         event.preventDefault();
@@ -254,7 +271,11 @@ export default function VisualTextSettingsPanel({
 
   const [open, setOpen] = useState(false);
   const dismissedIdRef = useRef("");
-  const [position, setPosition] = useState({ top: 148, left: 0 });
+  const panelRef = useRef<HTMLElement | null>(null);
+  const userDraggedRef = useRef(false);
+  const lastPlacedIdRef = useRef("");
+  const [position, setPosition] = useState({ top: 148, left: 24 });
+  const [placementSide, setPlacementSide] = useState<TextSettingsPlacementSide>("right");
   const [dragging, setDragging] = useState<null | { x: number; y: number; top: number; left: number }>(null);
   const [effectsOpen, setEffectsOpen] = useState(false);
   const [linkValue, setLinkValue] = useState("");
@@ -310,6 +331,10 @@ export default function VisualTextSettingsPanel({
       return;
     }
     if (dismissedIdRef.current === elementId) return;
+    if (lastPlacedIdRef.current !== elementId) {
+      userDraggedRef.current = false;
+      lastPlacedIdRef.current = elementId;
+    }
     setOpen(true);
   }, [elementId, isText]);
 
@@ -319,6 +344,7 @@ export default function VisualTextSettingsPanel({
     const reopen = () => {
       if (dismissedIdRef.current !== elementId) return;
       dismissedIdRef.current = "";
+      userDraggedRef.current = false;
       setOpen(true);
     };
 
@@ -327,20 +353,99 @@ export default function VisualTextSettingsPanel({
   }, [elementId, isText, node]);
 
   useEffect(() => {
-    if (typeof window === "undefined") return;
-    const place = () => {
-      setPosition((current) => ({
-        top: Math.min(Math.max(88, current.top), Math.max(88, window.innerHeight - 160)),
-        left: Math.min(
-          Math.max(12, current.left || Math.max(24, window.innerWidth - 360)),
-          Math.max(12, window.innerWidth - 332),
-        ),
-      }));
+    if (!open || !node || typeof window === "undefined") return;
+
+    const placeBesideElement = () => {
+      if (userDraggedRef.current) {
+        const box = panelRef.current?.getBoundingClientRect();
+        setPosition((current) =>
+          clampPanelToViewport(
+            current,
+            {
+              width: box?.width || TEXT_SETTINGS_PANEL_WIDTH,
+              height: box?.height || 480,
+            },
+            { width: window.innerWidth, height: window.innerHeight },
+          ),
+        );
+        return;
+      }
+
+      if (!node.isConnected) {
+        return;
+      }
+
+      const blockRect = node.getBoundingClientRect();
+      let rect = blockRect;
+      try {
+        const walker = document.createTreeWalker(node, NodeFilter.SHOW_TEXT);
+        let textNode = walker.nextNode();
+        while (textNode) {
+          if (String(textNode.nodeValue || "").trim()) {
+            const range = document.createRange();
+            range.selectNodeContents(textNode);
+            const contentRect = range.getBoundingClientRect();
+            if (
+              contentRect.width >= 24 &&
+              contentRect.height >= 8 &&
+              contentRect.width < rect.width
+            ) {
+              rect = contentRect;
+            }
+          }
+          textNode = walker.nextNode();
+        }
+      } catch {
+        rect = blockRect;
+      }
+      const viewport = { width: window.innerWidth, height: window.innerHeight };
+      rect = narrowAnchorRect(rect, viewport.width);
+
+      const box = panelRef.current?.getBoundingClientRect();
+      const placed = placeTextSettingsPanel({
+        element: rect,
+        panel: {
+          width: box?.width || TEXT_SETTINGS_PANEL_WIDTH,
+          height: box?.height || 440,
+        },
+        viewport,
+      });
+      setPosition({ top: placed.top, left: placed.left });
+      setPlacementSide(placed.side);
     };
-    place();
-    window.addEventListener("resize", place);
-    return () => window.removeEventListener("resize", place);
-  }, []);
+
+    placeBesideElement();
+    const frame = window.requestAnimationFrame(placeBesideElement);
+    window.addEventListener("resize", placeBesideElement);
+    window.addEventListener("scroll", placeBesideElement, true);
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.removeEventListener("resize", placeBesideElement);
+      window.removeEventListener("scroll", placeBesideElement, true);
+    };
+  }, [elementId, node, open]);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const onPointerDown = (event: MouseEvent) => {
+      const target = event.target;
+      if (!(target instanceof HTMLElement)) return;
+      if (target.closest("[data-visual-text-settings-panel='true']")) return;
+      if (target.closest("[data-visual-font-picker='true']")) return;
+      if (target.closest("[data-visual-floating-toolbar='true']")) return;
+      if (node?.contains(target)) return;
+      if (target.closest("[data-visual-edit-id], [data-visual-editable='true']")) {
+        return;
+      }
+      editor?.clearSelection?.();
+      dismissedIdRef.current = elementId;
+      setOpen(false);
+    };
+
+    document.addEventListener("mousedown", onPointerDown, true);
+    return () => document.removeEventListener("mousedown", onPointerDown, true);
+  }, [editor, elementId, node, open]);
 
   useEffect(() => {
     if (!open) return;
@@ -394,10 +499,20 @@ export default function VisualTextSettingsPanel({
     if (!dragging) return;
 
     const onMove = (event: MouseEvent) => {
-      setPosition({
-        top: Math.max(88, dragging.top + event.clientY - dragging.y),
-        left: Math.max(12, dragging.left + event.clientX - dragging.x),
-      });
+      const box = panelRef.current?.getBoundingClientRect();
+      setPosition(
+        clampPanelToViewport(
+          {
+            top: dragging.top + event.clientY - dragging.y,
+            left: dragging.left + event.clientX - dragging.x,
+          },
+          {
+            width: box?.width || TEXT_SETTINGS_PANEL_WIDTH,
+            height: box?.height || 480,
+          },
+          { width: window.innerWidth, height: window.innerHeight },
+        ),
+      );
     };
     const onUp = () => setDragging(null);
 
@@ -428,23 +543,28 @@ export default function VisualTextSettingsPanel({
 
   return (
     <aside
-      dir="ltr"
+      ref={panelRef}
+      dir="rtl"
       data-visual-text-settings-panel="true"
       data-testid="visual-text-settings-panel"
+      data-floating-panel="true"
+      data-panel-sidebar="false"
+      data-panel-placement={placementSide}
       onMouseDown={(event) => {
         event.stopPropagation();
         snapshotTextRange(node, elementId);
       }}
       onClick={(event) => event.stopPropagation()}
-      className="pointer-events-auto fixed z-[2147483001] flex w-[min(320px,calc(100vw-24px))] max-h-[calc(100vh-120px)] flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0_18px_50px_rgba(15,23,42,0.18)]"
+      className="pointer-events-auto fixed z-[2147483001] flex w-[min(320px,calc(100vw-24px))] max-h-[calc(100vh-112px)] flex-col overflow-hidden rounded-xl border border-slate-200 bg-white text-right shadow-[0_18px_50px_rgba(15,23,42,0.18)]"
       style={{ top: position.top, left: position.left }}
     >
       <header
-        className="flex cursor-grab items-center justify-between border-b border-slate-100 px-4 py-3 active:cursor-grabbing"
+        className="flex cursor-grab items-center justify-between border-b border-slate-100 px-3 py-2 active:cursor-grabbing"
         onMouseDown={(event) => {
           if ((event.target as HTMLElement).closest("button")) return;
           snapshotTextRange(node, elementId, { clearIfNone: true });
           setHasInlineRange(false);
+          userDraggedRef.current = true;
           setDragging({
             x: event.clientX,
             y: event.clientY,
@@ -454,16 +574,17 @@ export default function VisualTextSettingsPanel({
         }}
       >
         <div className="text-[15px] font-semibold text-slate-900">
-          Text Settings
+          הגדרות טקסט
         </div>
         <div className="flex items-center gap-1">
-          <span className="inline-flex h-7 w-7 items-center justify-center text-slate-400">
+          <span className="inline-flex h-7 w-7 items-center justify-center text-slate-400" title="עזרה" aria-label="עזרה">
             <HelpCircle className="h-4 w-4" />
           </span>
           <button
             type="button"
             data-testid="text-settings-close"
-            title="Close"
+            title="סגירה"
+            aria-label="סגירה"
             onClick={() => {
               dismissedIdRef.current = elementId;
               setOpen(false);
@@ -475,29 +596,29 @@ export default function VisualTextSettingsPanel({
         </div>
       </header>
 
-      <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-4 py-4">
+      <div className="min-h-0 flex-1 space-y-2.5 overflow-y-auto px-3 py-3">
         {hasInlineRange ? (
           <div
             data-testid="text-settings-inline-hint"
             className="rounded-lg bg-sky-50 px-3 py-2 text-xs font-semibold text-sky-800"
           >
-            Formatting applies to the selected text.
+            העיצוב חל על הטקסט שנבחר.
           </div>
         ) : (
           <div
             data-testid="text-settings-element-hint"
             className="rounded-lg bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-500"
           >
-            Formatting applies to the whole text element.
+            העיצוב חל על כל אלמנט הטקסט.
           </div>
         )}
 
         <div>
-          <FieldLabel>Style</FieldLabel>
+          <FieldLabel>סגנון</FieldLabel>
           <PanelSelect
             testId="text-settings-style"
             value={styleId}
-            title="Text style"
+            title="סגנון טקסט"
             onChange={(id) => {
               const preset = TEXT_STYLE_PRESETS.find((item) => item.id === id);
               if (preset) apply(preset.style, true);
@@ -505,17 +626,19 @@ export default function VisualTextSettingsPanel({
           >
             {TEXT_STYLE_PRESETS.map((item) => (
               <option key={item.id} value={item.id}>
-                {item.label}
+                {STYLE_LABELS[item.id] || item.label}
               </option>
             ))}
           </PanelSelect>
         </div>
 
         <div>
-          <FieldLabel>Fonts</FieldLabel>
+          <FieldLabel>גופן</FieldLabel>
           <div data-testid="text-settings-font-family">
             <StudioFontPicker
               value={currentFont}
+              searchPlaceholder="חיפוש גופנים..."
+              closeAriaLabel="סגור גופנים"
               onChange={(fontFamily) =>
                 apply({
                   "font-family": fontFamily,
@@ -534,7 +657,7 @@ export default function VisualTextSettingsPanel({
                     ? "700"
                     : "400"
               }
-              title="Font weight"
+              title="משקל"
               onChange={(fontWeight) =>
                 apply({
                   "font-weight": fontWeight,
@@ -552,7 +675,7 @@ export default function VisualTextSettingsPanel({
         </div>
 
         <div>
-          <FieldLabel>Font size (px)</FieldLabel>
+          <FieldLabel>גודל גופן (px)</FieldLabel>
           <div className="flex items-center gap-3">
             <input
               type="range"
@@ -560,6 +683,7 @@ export default function VisualTextSettingsPanel({
               max={120}
               value={Math.min(120, Math.max(8, sizePx))}
               data-testid="text-settings-font-size-slider"
+              aria-label="גודל גופן"
               onMouseDown={(event) => event.stopPropagation()}
               onChange={(event) => {
                 const fontSize = `${event.target.value}px`;
@@ -576,6 +700,7 @@ export default function VisualTextSettingsPanel({
               max={120}
               value={Math.round(sizePx) || 16}
               data-testid="text-settings-font-size"
+              aria-label="גודל גופן"
               onMouseDown={(event) => event.stopPropagation()}
               onChange={(event) => {
                 const fontSize = `${event.target.value}px`;
@@ -592,7 +717,7 @@ export default function VisualTextSettingsPanel({
         <div className="flex flex-wrap items-center gap-1">
           <ToggleButton
             testId="text-settings-bold"
-            title="Bold"
+            title="מודגש"
             disabled={locked}
             active={boldActive}
             onClick={() =>
@@ -606,7 +731,7 @@ export default function VisualTextSettingsPanel({
           </ToggleButton>
           <ToggleButton
             testId="text-settings-italic"
-            title="Italic"
+            title="נטוי"
             disabled={locked}
             active={italicActive}
             onClick={() =>
@@ -620,7 +745,7 @@ export default function VisualTextSettingsPanel({
           </ToggleButton>
           <ToggleButton
             testId="text-settings-underline"
-            title="Underline"
+            title="קו תחתון"
             disabled={locked}
             active={underlineActive}
             onClick={() =>
@@ -634,7 +759,7 @@ export default function VisualTextSettingsPanel({
           </ToggleButton>
           <ColorSwatch
             testId="text-settings-color"
-            title="Text color"
+            title="צבע טקסט"
             value={isTransparentColor(currentColor) ? "#111827" : currentColor}
             fallback="#111827"
             onChange={(value) => {
@@ -658,7 +783,7 @@ export default function VisualTextSettingsPanel({
           </ColorSwatch>
           <ColorSwatch
             testId="text-settings-highlight"
-            title="Highlight"
+            title="הדגשה"
             value={
               isTransparentColor(currentHighlight) ? "#fff59d" : currentHighlight
             }
@@ -677,7 +802,7 @@ export default function VisualTextSettingsPanel({
           </ColorSwatch>
           <ToggleButton
             testId="text-settings-link"
-            title="Link"
+            title="קישור"
             disabled={locked}
             onClick={() => editor?.openLinkSettings?.(elementId)}
           >
@@ -688,7 +813,7 @@ export default function VisualTextSettingsPanel({
         <div className="flex flex-wrap items-center gap-1">
           <ToggleButton
             testId="text-settings-align-left"
-            title="Align left"
+            title="יישור לשמאל"
             disabled={locked}
             active={currentAlign === "left"}
             onClick={() =>
@@ -702,7 +827,7 @@ export default function VisualTextSettingsPanel({
           </ToggleButton>
           <ToggleButton
             testId="text-settings-align-center"
-            title="Align center"
+            title="יישור למרכז"
             disabled={locked}
             active={currentAlign === "center"}
             onClick={() =>
@@ -716,7 +841,7 @@ export default function VisualTextSettingsPanel({
           </ToggleButton>
           <ToggleButton
             testId="text-settings-align-right"
-            title="Align right"
+            title="יישור לימין"
             disabled={locked}
             active={currentAlign === "right"}
             onClick={() =>
@@ -730,7 +855,7 @@ export default function VisualTextSettingsPanel({
           </ToggleButton>
           <ToggleButton
             testId="text-settings-ltr"
-            title="LTR"
+            title="משמאל לימין"
             disabled={locked}
             active={currentDirection === "ltr"}
             onClick={() =>
@@ -748,7 +873,7 @@ export default function VisualTextSettingsPanel({
           </ToggleButton>
           <ToggleButton
             testId="text-settings-rtl"
-            title="RTL"
+            title="מימין לשמאל"
             disabled={locked}
             active={currentDirection === "rtl"}
             onClick={() =>
@@ -768,7 +893,7 @@ export default function VisualTextSettingsPanel({
 
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <FieldLabel>Line height</FieldLabel>
+            <FieldLabel>גובה שורה</FieldLabel>
             <PanelSelect
               testId="text-settings-line-height"
               value={currentLineHeight}
@@ -779,7 +904,7 @@ export default function VisualTextSettingsPanel({
                 )
               }
             >
-              <option value="">Default</option>
+              <option value="">ברירת מחדל</option>
               {LINE_HEIGHTS.map((value) => (
                 <option key={value} value={value}>
                   {value}
@@ -788,7 +913,7 @@ export default function VisualTextSettingsPanel({
             </PanelSelect>
           </div>
           <div>
-            <FieldLabel>Letter spacing</FieldLabel>
+            <FieldLabel>ריווח אותיות</FieldLabel>
             <PanelSelect
               testId="text-settings-letter-spacing"
               value={currentLetterSpacing}
@@ -802,7 +927,7 @@ export default function VisualTextSettingsPanel({
                 )
               }
             >
-              <option value="">Default</option>
+              <option value="">ברירת מחדל</option>
               {LETTER_SPACINGS.map((value) => (
                 <option key={value} value={value}>
                   {value}
@@ -813,12 +938,13 @@ export default function VisualTextSettingsPanel({
         </div>
 
         <div>
-          <FieldLabel>Link</FieldLabel>
+          <FieldLabel>קישור</FieldLabel>
           <div className="flex gap-2">
             <input
               data-testid="text-settings-link-input"
               value={linkValue}
-              placeholder="https://"
+              placeholder="הדביקו קישור"
+              aria-label="קישור"
               onMouseDown={(event) => event.stopPropagation()}
               onChange={(event) => setLinkValue(event.target.value)}
               className="h-9 flex-1 rounded-lg border border-slate-200 px-3 text-sm outline-none focus:border-violet-400"
@@ -826,6 +952,8 @@ export default function VisualTextSettingsPanel({
             <button
               type="button"
               data-testid="text-settings-link-apply"
+              title="החל"
+              aria-label="החל"
               disabled={locked || !linkValue.trim()}
               onMouseDown={(event) => {
                 event.preventDefault();
@@ -844,7 +972,7 @@ export default function VisualTextSettingsPanel({
               }}
               className="h-9 rounded-lg bg-slate-900 px-3 text-xs font-bold text-white disabled:opacity-40"
             >
-              Apply
+              החל
             </button>
           </div>
         </div>
@@ -853,12 +981,13 @@ export default function VisualTextSettingsPanel({
           <button
             type="button"
             data-testid="text-settings-effects"
+            title="אפקטים"
             onClick={() => setEffectsOpen((value) => !value)}
             className="flex w-full items-center justify-between py-2 text-sm font-semibold text-slate-800"
           >
             <span className="inline-flex items-center gap-2">
               <Sparkles className="h-4 w-4 text-violet-500" />
-              Effects
+              אפקטים
             </span>
             <ChevronDown
               className={`h-4 w-4 text-slate-400 transition ${
@@ -912,7 +1041,7 @@ export default function VisualTextSettingsPanel({
                     : "border-slate-200 text-slate-700 hover:bg-slate-50"
                 }`}
               >
-                {hasTextGradient ? "Clear text gradient" : "Text gradient"}
+                {hasTextGradient ? "נקה גרדיאנט טקסט" : "גרדיאנט טקסט"}
               </button>
             </div>
           ) : null}

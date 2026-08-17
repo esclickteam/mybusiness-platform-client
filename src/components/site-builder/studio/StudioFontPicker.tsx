@@ -6,6 +6,8 @@ import BizuplyLoader from "../../../components/ui/BizuplyLoader";
 type StudioFontPickerProps = {
   value: string;
   onChange: (fontFamily: string) => void;
+  searchPlaceholder?: string;
+  closeAriaLabel?: string;
 };
 
 type ServerGoogleFont = {
@@ -244,6 +246,8 @@ function loadGoogleFont(font: StudioFont | string) {
 export default function StudioFontPicker({
   value,
   onChange,
+  searchPlaceholder = "Search fonts...",
+  closeAriaLabel = "Close fonts",
 }: StudioFontPickerProps) {
   const buttonRef = useRef<HTMLButtonElement | null>(null);
 
@@ -368,11 +372,12 @@ export default function StudioFontPicker({
               type="button"
               className="fixed inset-0 z-[999990] cursor-default bg-transparent"
               onClick={() => setOpen(false)}
-              aria-label="Close fonts"
+              aria-label={closeAriaLabel}
             />
 
             <div
               dir="ltr"
+              data-visual-font-picker="true"
               className="
                 fixed z-[999999]
                 flex flex-col overflow-hidden
@@ -399,7 +404,7 @@ export default function StudioFontPicker({
                     value={query}
                     onChange={(event) => setQuery(event.target.value)}
                     autoFocus
-                    placeholder="Search fonts..."
+                    placeholder={searchPlaceholder}
                     className="
                       min-w-0 flex-1 bg-transparent text-sm font-medium
                       text-slate-900 outline-none placeholder:text-slate-400
