@@ -324,6 +324,11 @@ export function AuthProvider({ children }) {
       return;
     }
 
+    if (normalizedUser.role === "partner") {
+      navigate("/partner/dashboard", { replace: true });
+      return;
+    }
+
     if (normalizedUser.role === "business" && normalizedUser.businessId) {
       clearLastDashboardRoute(normalizedUser.businessId);
       navigate(
@@ -413,6 +418,15 @@ export function AuthProvider({ children }) {
         ) {
           navigate("/marketer/dashboard", { replace: true });
           return { user: normalizedUser, redirectUrl: "/marketer/dashboard" };
+        }
+
+        if (
+          normalizedUser.role === "partner" &&
+          !isImpersonating &&
+          !urlRedirect
+        ) {
+          navigate("/partner/dashboard", { replace: true });
+          return { user: normalizedUser, redirectUrl: "/partner/dashboard" };
         }
 
         consumePostLoginRedirect();
