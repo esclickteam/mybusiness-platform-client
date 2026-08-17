@@ -89,6 +89,15 @@ export function getNodeText(node: HTMLElement | null) {
     ).trim();
   }
 
+  const paint = node.querySelector<HTMLElement>(
+    '[data-visual-rich-paint="true"]',
+  );
+  if (paint) {
+    return normalizeVisibleText(
+      paint.innerText || paint.textContent || "",
+    ).trim();
+  }
+
   // Prefer innerText so contenteditable spaces (pre-wrap) survive save/publish.
   const raw =
     typeof node.innerText === "string" && node.innerText.length

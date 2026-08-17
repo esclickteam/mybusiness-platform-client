@@ -33,6 +33,7 @@ import {
 
 import type { StylePatch } from "../types";
 import StudioFontPicker from "../StudioFontPicker";
+import { snapshotTextRange } from "./utils/richTextHtml";
 import { resolveFormContext } from "./utils/visualForms";
 import {
   fetchConfiguredClientFields,
@@ -1147,7 +1148,22 @@ export default function VisualFloatingToolbar({
 
   function apply(stylePatch: StylePatch) {
     if (!elementId || locked) return;
-    editor?.applyStyle?.(styleTargetId(), stylePatch);
+    const targetId = styleTargetId();
+    const keys = Object.keys(stylePatch || {});
+    const isTypographyPatch = keys.some((key) =>
+      /font|text-|text[A-Z]|color|letter|line-height|direction|webkit-text/i.test(
+        key,
+      ),
+    );
+    if (
+      typeof editor?.applyTextFormat === "function" &&
+      isTextEditable &&
+      isTypographyPatch
+    ) {
+      editor.applyTextFormat(targetId, stylePatch);
+      return;
+    }
+    editor?.applyStyle?.(targetId, stylePatch);
   }
 
   function preview(stylePatch: StylePatch) {
@@ -1565,7 +1581,13 @@ export default function VisualFloatingToolbar({
     <div
       dir="rtl"
       data-visual-floating-toolbar="true"
-      onMouseDown={(event) => event.stopPropagation()}
+      onMouseDown={(event) => {
+        event.stopPropagation();
+        const selectedNode = getElementNode(element);
+        if (selectedNode && elementId) {
+          snapshotTextRange(selectedNode, elementId);
+        }
+      }}
       onClick={(event) => event.stopPropagation()}
       className="pointer-events-none fixed inset-x-0 top-[72px] z-[2147483000] flex justify-center overflow-visible border-b border-slate-200 bg-white/95 px-3 shadow-[0_10px_30px_rgba(15,23,42,0.08)] backdrop-blur-2xl"
     >

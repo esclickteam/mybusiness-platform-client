@@ -1,6 +1,7 @@
 export { default as VisualEditorShell } from "./VisualEditorShell";
 export { default as VisualEditorCanvas } from "./VisualEditorCanvas";
 export { default as VisualFloatingToolbar } from "./VisualFloatingToolbar";
+export { default as VisualTextSettingsPanel } from "./VisualTextSettingsPanel";
 export { default as VisualInspectorPanel } from "./VisualInspectorPanel";
 export { default as VisualContextMenu } from "./VisualContextMenu";
 

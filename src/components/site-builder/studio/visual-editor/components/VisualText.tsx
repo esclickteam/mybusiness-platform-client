@@ -1,6 +1,7 @@
 import React from "react";
 
 import { readVisualContent } from "../utils/visualData";
+import { hasRichMarkup, sanitizeRichHtml } from "../utils/richTextHtml";
 
 export type VisualTextMode = "edit" | "preview";
 
@@ -46,6 +47,11 @@ export default function VisualText({
           ? fallback
           : "";
 
+  const richHtml =
+    item?.html && hasRichMarkup(item.html)
+      ? sanitizeRichHtml(String(item.html))
+      : "";
+
   const visualAttrs =
     editable && id
       ? {
@@ -65,8 +71,9 @@ export default function VisualText({
         ...(preserveWhitespace ? { whiteSpace: "pre-wrap" } : {}),
         ...style,
       }}
+      {...(richHtml ? { dangerouslySetInnerHTML: { __html: richHtml } } : {})}
     >
-      {content}
+      {richHtml ? null : content}
     </Tag>
   );
 }
