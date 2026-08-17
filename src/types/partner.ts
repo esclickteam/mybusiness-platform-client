@@ -157,4 +157,5 @@ export type AdminPartnerRow = {
   partnerMarkupTotal: number;
   lastPayment?: { at?: string; amountIls?: number | null } | null;
   nextPartnerSubscriptionRenewal?: string | null;
+  snapshotError?: string;
 };

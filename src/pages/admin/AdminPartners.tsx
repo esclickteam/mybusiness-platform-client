@@ -18,14 +18,35 @@ export default function AdminPartners() {
   const [items, setItems] = useState<AdminPartnerRow[]>([]);
   const [q, setQ] = useState("");
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
+
+  function describeLoadError(err: any) {
+    const status = err?.response?.status;
+    const body = err?.response?.data || {};
+    const detail =
+      body.error || body.message || err?.message || "שגיאה בטעינה";
+    const path = body.path ? ` path=${body.path}` : "";
+    return `HTTP ${status || "network"} — ${detail}${path}`;
+  }
 
   async function refresh(search = q) {
-    const data = await fetchAdminPartners(search);
-    setItems(data.items || []);
+    setError("");
+    setLoading(true);
+    try {
+      const data = await fetchAdminPartners(search);
+      setItems(data.items || []);
+    } catch (err: any) {
+      setItems([]);
+      setError(describeLoadError(err));
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => {
-    refresh().catch((err) => setError(err.response?.data?.error || "שגיאה בטעינה"));
+    refresh();
+    // initial load only
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
@@ -34,6 +55,7 @@ export default function AdminPartners() {
       <main className="mx-auto max-w-[1480px] px-4 py-6">
         <h1 className="mb-4 text-2xl font-black">פרטנרים</h1>
         {error ? <p className="mb-3 font-bold text-rose-600">{error}</p> : null}
+        {loading ? <p className="mb-3 text-sm font-bold text-slate-500">טוען פרטנרים...</p> : null}
         <input
           value={q}
           onChange={(e) => setQ(e.target.value)}
@@ -65,7 +87,14 @@ export default function AdminPartners() {
             <tbody>
               {items.map((row) => (
                 <tr key={row.partnerId} className="border-t border-slate-100">
-                  <td className="px-3 py-3 font-black">{row.name}</td>
+                  <td className="px-3 py-3 font-black">
+                    {row.name}
+                    {row.snapshotError ? (
+                      <p className="mt-1 text-xs font-bold text-rose-600">
+                        snapshot: {row.snapshotError}
+                      </p>
+                    ) : null}
+                  </td>
                   <td className="px-3 py-3">{row.planName || row.planKey}</td>
                   <td className="px-3 py-3">{row.status}</td>
                   <td className="px-3 py-3">{ils(row.amountDueToBizuply)}</td>
@@ -162,6 +191,13 @@ export default function AdminPartners() {
                   </td>
                 </tr>
               ))}
+              {!loading && !error && items.length === 0 ? (
+                <tr>
+                  <td className="px-3 py-6 font-bold text-slate-500" colSpan={12}>
+                    אין פרטנרים להצגה
+                  </td>
+                </tr>
+              ) : null}
             </tbody>
           </table>
         </div>
