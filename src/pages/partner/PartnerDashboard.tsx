@@ -54,6 +54,19 @@ export default function PartnerDashboard() {
         </div>
       ) : null}
 
+      {partner?.status === "payment_due" ? (
+        <div className="rounded-xl border border-orange-200 bg-orange-50 px-4 py-3 text-sm font-bold text-orange-800">
+          יש יתרת תשלום ל-Bizuply. ניתן לצפות בחיוב ולשלם, אך לא ליצור לקוחות,
+          לשנות תמחור או להפעיל חשבונות עד להסדרת החוב.
+        </div>
+      ) : null}
+
+      {partner?.status === "suspended" ? (
+        <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-bold text-rose-800">
+          חשבון הפרטנר מושעה. החנות הציבורית כבויה ופעולות כתיבה חסומות.
+        </div>
+      ) : null}
+
       <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
         <p className="text-xs font-bold text-slate-500">הסכום לתשלום ל-Bizuply החודש</p>
         <p className="mt-1 text-4xl font-black text-slate-900">{ils(due)}</p>

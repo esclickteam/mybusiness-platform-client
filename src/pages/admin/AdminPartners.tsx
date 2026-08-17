@@ -2,11 +2,13 @@ import React, { useEffect, useState } from "react";
 import AdminHeader from "./AdminsHeader";
 import {
   adminActivateSetup,
+  adminChangePartnerPlan,
   adminPostMonthly,
   adminRecordPayment,
+  adminSuspendPartner,
   fetchAdminPartners,
 } from "../../lib/partnerApi";
-import type { AdminPartnerRow } from "../../types/partner";
+import type { AdminPartnerRow, PartnerPlanKey } from "../../types/partner";
 
 function ils(value?: number) {
   return `₪${Number(value || 0).toLocaleString("he-IL")}`;
@@ -117,6 +119,45 @@ export default function AdminPartners() {
                       >
                         רשום תשלום
                       </button>
+                      <select
+                        defaultValue=""
+                        onChange={async (event) => {
+                          const planKey = event.target.value as PartnerPlanKey;
+                          if (!planKey) return;
+                          await adminChangePartnerPlan(row.partnerId, planKey);
+                          event.target.value = "";
+                          await refresh();
+                        }}
+                        className="rounded-lg border px-2 py-1 text-xs font-bold"
+                      >
+                        <option value="">שינוי מסלול</option>
+                        <option value="partner_basic">Partner</option>
+                        <option value="partner_pro">Pro</option>
+                        <option value="partner_premium">Premium</option>
+                      </select>
+                      {row.status === "suspended" ? (
+                        <button
+                          type="button"
+                          onClick={async () => {
+                            await adminSuspendPartner(row.partnerId, true);
+                            await refresh();
+                          }}
+                          className="rounded-lg border px-2 py-1 text-xs font-bold"
+                        >
+                          שחרר השעיה
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          onClick={async () => {
+                            await adminSuspendPartner(row.partnerId, false);
+                            await refresh();
+                          }}
+                          className="rounded-lg border border-rose-200 px-2 py-1 text-xs font-bold text-rose-700"
+                        >
+                          השעה
+                        </button>
+                      )}
                     </div>
                   </td>
                 </tr>

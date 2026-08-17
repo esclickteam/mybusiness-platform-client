@@ -5,6 +5,7 @@ import type {
   PartnerMe,
   PartnerPermission,
   PartnerPlan,
+  PartnerPlanKey,
   PartnerPriceLine,
 } from "../types/partner";
 
@@ -176,5 +177,17 @@ export async function adminPostMonthly(id: string) {
 
 export async function adminRecordPayment(id: string, amountIls: number) {
   const { data } = await API.post(`/admin/partners/${id}/record-payment`, { amountIls });
+  return data;
+}
+
+export async function adminChangePartnerPlan(id: string, planKey: PartnerPlanKey) {
+  const { data } = await API.post(`/admin/partners/${id}/plan`, { planKey });
+  return data;
+}
+
+export async function adminSuspendPartner(id: string, resume = false) {
+  const { data } = await API.post(`/admin/partners/${id}/suspend`, {
+    status: resume ? "active" : "suspended",
+  });
   return data;
 }
