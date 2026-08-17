@@ -81,6 +81,9 @@ import {
 import { isGenericDefaultFormConfig } from "../../data/templates/shared/templateLeadForm";
 import { buildVisualRuntimeCss } from "../utils/visualCssRuntime";
 import { applyAllVisualDataToDom, previewVisualStyleOnDom } from "../utils/visualDomApply";
+import { applySharedTextFormat } from "../utils/textFormatCommands";
+import { harvestRichHtmlFromNode } from "../utils/richTextHtml";
+import { safeCssSelectorValue } from "../utils/visualSelectors";
 import {
   applyPortalShellAttributePatch,
   getPortalAuthShell,
@@ -1685,6 +1688,7 @@ export function useVisualEditorState({
       setData((current) => {
         let next = writeVisualContentItem(current || {}, elementId, {
           text,
+          html: "",
         });
         next = syncStoreTextScalar(next, elementId, text, previousText);
 
@@ -2856,6 +2860,78 @@ export function useVisualEditorState({
       return true;
     },
     [canvasRef, selection, setData],
+  );
+
+  const findTextFormatNode = useCallback(
+    (elementId: string): HTMLElement | null => {
+      const selected = selection.selectedElement as any;
+      if (selected && String(selected.id || "") === elementId) {
+        const selectedNode =
+          selected.node || selected.domNode || selected.element || null;
+        if (selectedNode instanceof HTMLElement) return selectedNode;
+      }
+
+      const root = canvasRef.current;
+      if (!root || !elementId) return null;
+      const selector = `[data-visual-edit-id="${safeCssSelectorValue(elementId)}"]`;
+      return root.querySelector<HTMLElement>(selector);
+    },
+    [canvasRef, selection.selectedElement],
+  );
+
+  const persistRichText = useCallback(
+    (elementId: string, text: string, html: string) => {
+      if (!elementId) return false;
+      setData((current) =>
+        writeVisualContentItem(current || {}, elementId, {
+          text,
+          html,
+        }),
+      );
+      return true;
+    },
+    [setData],
+  );
+
+  const applyTextFormat = useCallback(
+    (
+      elementId: string,
+      style: StylePatch,
+      options?: { forceElement?: boolean },
+    ) => {
+      if (!elementId) return false;
+
+      const node = findTextFormatNode(elementId);
+      const contentItem = readVisualContent(dataRef.current || {})[elementId] as
+        | Record<string, any>
+        | undefined;
+
+      const result = applySharedTextFormat({
+        elementId,
+        patch: style,
+        node,
+        currentHtml: String(contentItem?.html || harvestRichHtmlFromNode(node) || ""),
+        currentText: String(
+          contentItem?.text || node?.innerText || node?.textContent || "",
+        ),
+        applyElementStyle: applyStyle,
+        persistRichText,
+        forceElement: Boolean(options?.forceElement),
+      });
+
+      window.requestAnimationFrame(() => {
+        selection.refreshSelectedElement?.();
+      });
+
+      return result.applied;
+    },
+    [
+      applyStyle,
+      dataRef,
+      findTextFormatNode,
+      persistRichText,
+      selection,
+    ],
   );
 
   /** Drag-preview colors without history / React state. */
@@ -5280,6 +5356,7 @@ export function useVisualEditorState({
       bringToFront,
       sendToBack,
       applyStyle,
+      applyTextFormat,
       previewStyle,
       resetStyle,
       applyLayout,
@@ -5338,8 +5415,13 @@ export function useVisualEditorState({
               const text = String(node.innerText || node.textContent || "")
                 .replace(/\u00a0/g, " ")
                 .replace(/\r\n/g, "\n");
+              const html = harvestRichHtmlFromNode(node);
 
-              updateText(elementId, text);
+              if (html) {
+                updateContent(elementId, { text, html });
+              } else {
+                updateText(elementId, text);
+              }
 
               node.removeAttribute("contenteditable");
               node.removeAttribute("spellcheck");
@@ -5467,6 +5549,7 @@ export function useVisualEditorState({
       bringToFront,
       sendToBack,
       applyStyle,
+      applyTextFormat,
       previewStyle,
       resetStyle,
       applyLayout,

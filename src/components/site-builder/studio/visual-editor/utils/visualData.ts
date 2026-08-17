@@ -15,6 +15,7 @@ export type VisualAnimationMap = Record<string, AnimationPresetValue | string>;
 
 export type VisualContentItem = {
   text?: string;
+  html?: string;
 
   src?: string;
   url?: string;

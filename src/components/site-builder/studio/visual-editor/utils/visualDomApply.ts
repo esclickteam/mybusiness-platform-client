@@ -59,6 +59,7 @@ import {
   clearPortalShellLinkDomAttrs,
   isPortalMountShell,
 } from "./portalAuthControls";
+import { applyRichTextToNode, harvestRichHtmlFromNode } from "./richTextHtml";
 
 type FindVisualNodesOptions = {
   allowFallback?: boolean;
@@ -682,7 +683,11 @@ function applyMultilineTextValue(node: HTMLElement, value: string) {
   }
 }
 
-function applyTextContentToNode(node: HTMLElement, value: string) {
+function applyTextContentToNode(
+  node: HTMLElement,
+  value: string,
+  html?: string,
+) {
   const tagName = String(node.tagName || "").toLowerCase();
 
   if (
@@ -716,13 +721,13 @@ function applyTextContentToNode(node: HTMLElement, value: string) {
   }
 
   const paintTarget = getTextPaintTarget(node);
+  const target = paintTarget && paintTarget !== node ? paintTarget : node;
 
-  if (paintTarget && paintTarget !== node) {
-    applyMultilineTextValue(paintTarget, value);
+  if (html && applyRichTextToNode(target, value, html)) {
     return;
   }
 
-  applyMultilineTextValue(node, value);
+  applyMultilineTextValue(target, value);
 }
 
 function applyLinkContentToNode(
@@ -1529,10 +1534,14 @@ export function applyVisualContentToDom(
 
       if (
         !specialApplied &&
-        itemRecord.text !== undefined &&
+        (itemRecord.text !== undefined || itemRecord.html) &&
         shouldApplyTextToNode(node)
       ) {
-        applyTextContentToNode(node, String(itemRecord.text ?? ""));
+        applyTextContentToNode(
+          node,
+          String(itemRecord.text ?? ""),
+          itemRecord.html,
+        );
       }
 
       if (itemRecord.href !== undefined) {
@@ -3738,6 +3747,17 @@ export function collectVisualContentFromDom(
         כך שינוי טקסט ומחיקה מלאה נשמרים גם בפרסום.
       */
       nextValue.text = getNodeText(node);
+      const html = harvestRichHtmlFromNode(node);
+      if (html) {
+        nextValue.html = html;
+      } else if (
+        currentValue.html &&
+        String(nextValue.text || "") === String(currentValue.text || "")
+      ) {
+        nextValue.html = currentValue.html;
+      } else if (currentValue.html !== undefined) {
+        nextValue.html = "";
+      }
     }
 
     if (

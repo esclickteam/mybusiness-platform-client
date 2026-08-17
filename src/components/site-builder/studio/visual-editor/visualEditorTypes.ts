@@ -277,6 +277,11 @@ export type VisualEditorController = {
     payload: VisualLinkPayload,
   ) => boolean | void;
 
+  applyTextFormat?: (
+    elementId: string,
+    style: StylePatch,
+    options?: { forceElement?: boolean },
+  ) => boolean | void;
   applyStyle: (
     elementId: string,
     style: StylePatch,

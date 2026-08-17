@@ -11,6 +11,7 @@ import {
 
 import VisualEditorCanvas from "./VisualEditorCanvas";
 import VisualFloatingToolbar from "./VisualFloatingToolbar";
+import VisualTextSettingsPanel from "./VisualTextSettingsPanel";
 import VisualContextMenu from "./VisualContextMenu";
 import VisualAddLayersPanel from "./VisualAddLayersPanel";
 import EditorPluginOverlays from "./EditorPluginOverlays";
@@ -571,6 +572,10 @@ export default function VisualEditorShell({
             editor={editor as any}
             clientPortalPluginEnabled={clientPortalPluginEnabled}
           />
+        ) : null}
+
+        {shouldShowFloatingToolbar ? (
+          <VisualTextSettingsPanel editor={editor as any} />
         ) : null}
 
         {shouldShowContextMenu ? (

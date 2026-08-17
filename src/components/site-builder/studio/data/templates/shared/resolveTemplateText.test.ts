@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 
-import { resolveTemplateTextFromVisualData } from "./resolveTemplateText";
+import {
+  resolveTemplateRichHtmlFromVisualData,
+  resolveTemplateTextFromVisualData,
+} from "./resolveTemplateText";
 
 describe("resolveTemplateTextFromVisualData", () => {
   it("prefers page __content over hardcoded children", () => {
@@ -39,5 +42,18 @@ describe("resolveTemplateTextFromVisualData", () => {
         brandName: "IDO",
       }),
     ).toBeNull();
+  });
+
+  it("resolves persisted inline html from page content", () => {
+    expect(
+      resolveTemplateRichHtmlFromVisualData("hero.title", {
+        __content: {
+          "hero.title": {
+            text: "Your Trusted Towing",
+            html: '<span style="font-weight: 700">Trusted</span>',
+          },
+        },
+      }),
+    ).toBe('<span style="font-weight: 700">Trusted</span>');
   });
 });

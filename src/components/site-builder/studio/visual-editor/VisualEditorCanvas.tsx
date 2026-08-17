@@ -16,6 +16,7 @@ import {
 } from "./utils/visualDomApply";
 
 import { applyMediaFitStyles } from "./utils/visualMediaUtils";
+import { harvestRichHtmlFromNode } from "./utils/richTextHtml";
 import { resolveFormContext } from "./utils/visualForms";
 import { getSitePluginSettings, saveSitePluginSettings } from "../../../../api/sitePluginSettingsApi";
 import { getSitePlugins } from "../../../../api/sitePluginsApi";
@@ -58,6 +59,19 @@ function isMediaDragTarget(node: EventTarget | null) {
         "img, video, picture, [data-bizuply-editor-media-preview='true'], [data-visual-edit-type='image'], [data-visual-type='image']",
       ),
   );
+}
+
+function isTextSelectionTarget(node: EventTarget | null) {
+  if (!(node instanceof HTMLElement)) return false;
+  const type = String(
+    node.getAttribute("data-visual-edit-type") ||
+      node.getAttribute("data-editable") ||
+      "",
+  )
+    .trim()
+    .toLowerCase();
+  if (["text", "heading", "paragraph"].includes(type)) return true;
+  return TEXT_TAGS.has(String(node.tagName || "").toLowerCase());
 }
 
 function isButtonDragTarget(node: EventTarget | null) {
@@ -194,6 +208,7 @@ const EDITOR_UI_SELECTOR = [
   "[data-visual-selection-box='true']",
   "[data-visual-resize-handle='true']",
   "[data-visual-floating-toolbar='true']",
+  "[data-visual-text-settings-panel='true']",
   "[data-visual-context-menu='true']",
   "[data-visual-selection-overlay='true']",
   ".visual-floating-toolbar",
@@ -1296,9 +1311,17 @@ export default function VisualEditorCanvas({
         : originalTextRef.current;
 
       if (save && elementId) {
-        editorAny.updateText?.(elementId, nextText, {
-          previousText: originalTextRef.current,
-        });
+        const html = harvestRichHtmlFromNode(node);
+        if (html) {
+          editorAny.updateContent?.(elementId, {
+            text: nextText,
+            html,
+          });
+        } else {
+          editorAny.updateText?.(elementId, nextText, {
+            previousText: originalTextRef.current,
+          });
+        }
       }
 
       if (!save) {
@@ -2203,7 +2226,19 @@ export default function VisualEditorCanvas({
           : getSelectedNode(editorAny, root);
       const elementId = String(selected?.id || getElementId(node)).trim();
 
+      root
+        .querySelectorAll("[data-visual-selected-text='true']")
+        .forEach((item) => item.removeAttribute("data-visual-selected-text"));
+
       if (!node || !elementId || Boolean(editorAny.locked?.[elementId])) {
+        return;
+      }
+
+      if (
+        isTextSelectionTarget(node) ||
+        isTextSelectionTarget(event.target)
+      ) {
+        node.setAttribute("data-visual-selected-text", "true");
         return;
       }
 
@@ -2620,6 +2655,17 @@ export default function VisualEditorCanvas({
             outline: 2px dashed rgba(124, 58, 237, 0.35);
             outline-offset: -2px;
             transition: outline-color 160ms ease;
+          }
+
+          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] [data-visual-selected-text="true"],
+          [data-visual-template-canvas="true"][data-visual-editor-mode="edit"] [data-visual-selected-text="true"] * {
+            cursor: text !important;
+            user-select: text !important;
+            -webkit-user-select: text !important;
+          }
+
+          [data-visual-rich-paint="true"] {
+            display: inline;
           }
 
           [data-visual-template-canvas="true"] [data-visual-inline-editing="true"],

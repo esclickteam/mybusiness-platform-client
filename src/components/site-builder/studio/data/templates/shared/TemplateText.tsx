@@ -1,7 +1,14 @@
 import React from "react";
 
 import { useVisualLibraryPage } from "../../../../runtime/visualLibraryPage";
-import { resolveTemplateTextFromVisualData } from "./resolveTemplateText";
+import {
+  resolveTemplateRichHtmlFromVisualData,
+  resolveTemplateTextFromVisualData,
+} from "./resolveTemplateText";
+import {
+  hasRichMarkup,
+  sanitizeRichHtml,
+} from "../../../visual-editor/utils/richTextHtml";
 
 type TemplateTextProps = {
   as?: React.ElementType;
@@ -21,10 +28,11 @@ export function TemplateText({
   ...props
 }: TemplateTextProps) {
   const libraryPage = useVisualLibraryPage();
-  const resolved = resolveTemplateTextFromVisualData(
-    editId,
-    (libraryPage?.data as Record<string, any> | null) || null,
-  );
+  const data = (libraryPage?.data as Record<string, any> | null) || null;
+  const resolved = resolveTemplateTextFromVisualData(editId, data);
+  const richHtml = resolveTemplateRichHtmlFromVisualData(editId, data);
+  const safeHtml =
+    richHtml && hasRichMarkup(richHtml) ? sanitizeRichHtml(richHtml) : "";
 
   return (
     <Tag
@@ -34,8 +42,9 @@ export function TemplateText({
       {...(editId ? { "data-visual-edit-id": editId } : {})}
       {...(editLabel ? { "data-visual-edit-label": editLabel } : {})}
       {...props}
+      {...(safeHtml ? { dangerouslySetInnerHTML: { __html: safeHtml } } : {})}
     >
-      {resolved !== null ? resolved : children}
+      {safeHtml ? null : resolved !== null ? resolved : children}
     </Tag>
   );
 }
