@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import {
   ArrowRight,
   ExternalLink,
@@ -53,9 +53,11 @@ const CORE_PLUGIN_KEYS = new Set([
 export default function SiteManagementPanelPage() {
   const { businessId = "", siteId = "" } = useParams();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   const [loading, setLoading] = useState(true);
   const [savingPlugins, setSavingPlugins] = useState(false);
+  const [savingKey, setSavingKey] = useState<string | null>(null);
   const [siteName, setSiteName] = useState("האתר שלי");
   const [sitePublished, setSitePublished] = useState(false);
   const [publicUrl, setPublicUrl] = useState("");
@@ -63,7 +65,9 @@ export default function SiteManagementPanelPage() {
   const [catalog, setCatalog] = useState<SitePluginDefinition[]>([]);
   const [enabledPlugins, setEnabledPlugins] = useState<string[]>([]);
   const [detectedFromSite, setDetectedFromSite] = useState<string[]>([]);
-  const [activeSection, setActiveSection] = useState<SitePanelSection>("overview");
+  const [activeSection, setActiveSection] = useState<SitePanelSection>(
+    searchParams.get("section") === "plugins" ? "plugins" : "overview"
+  );
   const [error, setError] = useState("");
 
   const basePath = `/business/${businessId}/dashboard`;
@@ -157,30 +161,35 @@ export default function SiteManagementPanelPage() {
     }
   }
 
+  async function startPaidCheckout(pluginKey: string, tier: "basic" | "pro" = "pro") {
+    setSavingPlugins(true);
+    setSavingKey(pluginKey);
+    try {
+      if (pluginKey === "client-portal") {
+        await startClientPortalCheckout(siteId);
+      } else {
+        await startPluginCheckout(pluginKey, siteId, tier);
+      }
+    } catch (err: any) {
+      const serverError =
+        err?.response?.data?.error ||
+        err?.response?.data?.message ||
+        err?.message ||
+        "פתיחת תשלום לתוסף נכשלה";
+      window.alert(serverError);
+    } finally {
+      setSavingPlugins(false);
+      setSavingKey(null);
+    }
+  }
+
   async function handleTogglePlugin(pluginKey: string, enabled: boolean) {
     const plugin = catalog.find((item) => item.key === pluginKey);
-    if (
-      enabled &&
-      plugin?.billingEnabled &&
-      plugin?.entitled === false
-    ) {
-      setSavingPlugins(true);
-      try {
-        if (pluginKey === "client-portal") {
-          await startClientPortalCheckout(siteId);
-        } else {
-          await startPluginCheckout(pluginKey, siteId);
-        }
-      } catch (err: any) {
-        const serverError =
-          err?.response?.data?.error ||
-          err?.response?.data?.message ||
-          err?.message ||
-          "פתיחת תשלום לאזור אישי נכשלה";
-        window.alert(serverError);
-      } finally {
-        setSavingPlugins(false);
-      }
+    if (enabled && plugin?.billingEnabled && plugin?.entitled === false) {
+      await startPaidCheckout(
+        pluginKey,
+        plugin.purchaseTier === "basic" ? "basic" : "pro"
+      );
       return;
     }
 
@@ -212,31 +221,13 @@ export default function SiteManagementPanelPage() {
         }
       }
     } catch (err: any) {
-      if (enabled && pluginKey === "client-portal" && isClientPortalCheckoutRequiredError(err)) {
-        try {
-          await startClientPortalCheckout(siteId);
-          return;
-        } catch (checkoutErr: any) {
-          alert(
-            checkoutErr?.response?.data?.error ||
-              checkoutErr?.message ||
-              "פתיחת תשלום לאזור אישי נכשלה",
-          );
-          return;
-        }
+      if (enabled && isClientPortalCheckoutRequiredError(err)) {
+        await startPaidCheckout("client-portal");
+        return;
       }
       if (enabled && isPluginCheckoutRequiredError(err)) {
-        try {
-          await startPluginCheckout(pluginKey, siteId);
-          return;
-        } catch (checkoutErr: any) {
-          alert(
-            checkoutErr?.response?.data?.error ||
-              checkoutErr?.message ||
-              "פתיחת תשלום לתוסף נכשלה",
-          );
-          return;
-        }
+        await startPaidCheckout(pluginKey, "pro");
+        return;
       }
       const serverError =
         err?.response?.data?.error ||
@@ -498,7 +489,11 @@ export default function SiteManagementPanelPage() {
             enabledPlugins={enabledPlugins}
             detectedFromSite={detectedFromSite}
             saving={savingPlugins}
+            savingKey={savingKey}
             onToggle={handleTogglePlugin}
+            onUpgrade={(pluginKey) => {
+              void startPaidCheckout(pluginKey, "pro");
+            }}
           />
         ) : null}
 
