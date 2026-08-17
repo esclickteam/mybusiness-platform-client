@@ -1,6 +1,7 @@
 export const TEXT_SETTINGS_PANEL_WIDTH = 320;
 export const TEXT_SETTINGS_PANEL_GAP = 20;
 export const TEXT_SETTINGS_VIEWPORT_PAD = 12;
+export const TEXT_SETTINGS_TOP_SAFE = 88;
 
 export type TextSettingsPlacementSide = "right" | "left" | "below" | "above";
 
@@ -42,11 +43,12 @@ export function clampPanelToViewport(
   panel: { width: number; height: number },
   viewport: { width: number; height: number },
   pad = TEXT_SETTINGS_VIEWPORT_PAD,
+  padTop = TEXT_SETTINGS_TOP_SAFE,
 ) {
   const maxLeft = Math.max(pad, viewport.width - panel.width - pad);
-  const maxTop = Math.max(pad, viewport.height - panel.height - pad);
+  const maxTop = Math.max(padTop, viewport.height - panel.height - pad);
   return {
-    top: clamp(position.top, pad, maxTop),
+    top: clamp(position.top, padTop, maxTop),
     left: clamp(position.left, pad, maxLeft),
   };
 }
@@ -65,7 +67,7 @@ export function placeTextSettingsPanel(input: {
   const spaceRight = viewport.width - element.right - pad;
   const spaceLeft = element.left - pad;
   const spaceBelow = viewport.height - element.bottom - pad;
-  const spaceAbove = element.top - pad;
+  const spaceAbove = element.top - TEXT_SETTINGS_TOP_SAFE;
 
   let side: TextSettingsPlacementSide = "right";
   let left = element.right + gap;

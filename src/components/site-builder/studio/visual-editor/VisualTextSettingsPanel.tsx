@@ -377,11 +377,18 @@ export default function VisualTextSettingsPanel({
       const blockRect = node.getBoundingClientRect();
       let rect = blockRect;
       try {
-        const range = document.createRange();
-        range.selectNodeContents(node);
-        const contentRect = range.getBoundingClientRect();
-        if (contentRect.width >= 40 && contentRect.height >= 8) {
-          rect = contentRect;
+        const walker = document.createTreeWalker(node, NodeFilter.SHOW_TEXT);
+        let textNode = walker.nextNode();
+        while (textNode && !String(textNode.nodeValue || "").trim()) {
+          textNode = walker.nextNode();
+        }
+        if (textNode) {
+          const range = document.createRange();
+          range.selectNodeContents(textNode);
+          const contentRect = range.getBoundingClientRect();
+          if (contentRect.width >= 24 && contentRect.height >= 8) {
+            rect = contentRect;
+          }
         }
       } catch {
         rect = blockRect;

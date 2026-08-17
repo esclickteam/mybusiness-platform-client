@@ -59,9 +59,9 @@ describe("placeTextSettingsPanel", () => {
     expect(placed.left).toBeGreaterThanOrEqual(12);
     expect(placed.top).toBeGreaterThanOrEqual(12);
     expect(placed.left + 320).toBeLessThanOrEqual(390);
-    expect(placed.top).toBe(12);
+    expect(placed.top).toBe(88);
     const clamped = clampPanelToViewport(placed, { width: 320, height: 800 }, { width: 390, height: 700 });
-    expect(clamped.top).toBe(12);
+    expect(clamped.top).toBe(88);
     expect(clamped.left).toBeGreaterThanOrEqual(12);
   });
 
