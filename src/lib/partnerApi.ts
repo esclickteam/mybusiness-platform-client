@@ -102,6 +102,19 @@ export async function activatePartnerClient(id: string, password?: string) {
   return data;
 }
 
+export async function enterPartnerClient(id: string) {
+  const { data } = await API.post(`/partner/clients/${id}/enter`);
+  return data as {
+    token: string;
+    user: {
+      businessId?: string;
+      enabledModules?: string[] | null;
+      businessName?: string | null;
+      impersonatorRole?: string;
+    };
+  };
+}
+
 export async function addPartnerNote(id: string, text: string) {
   const { data } = await API.post(`/partner/clients/${id}/notes`, { text });
   return data.notes;

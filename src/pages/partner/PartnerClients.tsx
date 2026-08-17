@@ -1,61 +1,47 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import {
   ChevronLeft,
   ChevronRight,
   Filter,
+  LogIn,
   Plus,
   Search,
 } from "lucide-react";
+import { enterPartnerClient, fetchPartnerClients } from "../../lib/partnerApi";
+import { formatIls } from "../../lib/partnerMoney";
+import type { PartnerClient } from "../../types/partner";
 import {
-  addPartnerNote,
-  addPartnerTask,
-  fetchPartnerClient,
-  fetchPartnerClients,
-  togglePartnerTask,
-} from "../../lib/partnerApi";
-import type { PartnerClient, PartnerClientStatus } from "../../types/partner";
+  PARTNER_CLIENT_STATUSES,
+  PARTNER_STATUS_LABEL,
+  PARTNER_STATUS_TONE,
+} from "../../lib/partnerLabels";
 import BizuplyLoader from "../../components/ui/BizuplyLoader";
+import PartnerPageHeader from "../../components/partner/PartnerPageHeader";
+import { useAuth } from "../../context/AuthContext";
+import { getDefaultDashboardPath } from "../../utils/moduleAccess";
 
-const STATUSES: Array<PartnerClientStatus | ""> = [
-  "",
-  "lead",
-  "waiting_payment",
-  "provisioning",
-  "active",
-  "payment_issue",
-  "suspended",
-  "cancelled",
-];
-
-const STATUS_LABEL: Record<string, string> = {
-  lead: "ליד",
-  waiting_payment: "ממתין לתשלום",
-  provisioning: "בהקמה",
-  active: "פעיל",
-  payment_issue: "בעיית תשלום",
-  suspended: "מושעה",
-  cancelled: "בוטל",
-};
-
-function ils(value?: number) {
-  return `₪${Number(value || 0).toLocaleString("he-IL")}`;
-}
+const STATUSES = PARTNER_CLIENT_STATUSES;
 
 export default function PartnerClients() {
+  const navigate = useNavigate();
+  const { loginWithToken } = useAuth() as {
+    loginWithToken?: (
+      user: unknown,
+      token: string,
+      options?: { skipRedirect?: boolean }
+    ) => void;
+  };
   const [params, setParams] = useSearchParams();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [items, setItems] = useState<PartnerClient[]>([]);
   const [total, setTotal] = useState(0);
-  const [selected, setSelected] = useState<PartnerClient | null>(null);
-  const [note, setNote] = useState("");
-  const [task, setTask] = useState("");
+  const [enteringId, setEnteringId] = useState("");
 
   const q = params.get("q") || "";
   const status = params.get("status") || "";
   const page = Number(params.get("page") || 1);
-
   const query = useMemo(() => ({ q, status, page }), [q, status, page]);
 
   useEffect(() => {
@@ -82,45 +68,44 @@ export default function PartnerClients() {
 
   const pages = Math.max(1, Math.ceil(total / 20));
 
-  async function openClient(id: string) {
-    const client = await fetchPartnerClient(id);
-    setSelected(client);
-  }
-
-  async function saveNote() {
-    if (!selected || !note.trim()) return;
-    const notes = await addPartnerNote(selected._id, note.trim());
-    setSelected({ ...selected, notes });
-    setNote("");
-  }
-
-  async function saveTask() {
-    if (!selected || !task.trim()) return;
-    const tasks = await addPartnerTask(selected._id, task.trim());
-    setSelected({ ...selected, tasks });
-    setTask("");
+  async function enterClient(event: React.MouseEvent, row: PartnerClient) {
+    event.preventDefault();
+    event.stopPropagation();
+    if (!row.canEnterClient) return;
+    setEnteringId(row._id);
+    setError("");
+    try {
+      const data = await enterPartnerClient(row._id);
+      loginWithToken?.(data.user, data.token, { skipRedirect: true });
+      navigate(getDefaultDashboardPath(data.user.businessId, data.user.enabledModules), {
+        replace: true,
+      });
+    } catch (err: any) {
+      setError(err.response?.data?.error || "לא ניתן להיכנס לניהול הלקוח");
+    } finally {
+      setEnteringId("");
+    }
   }
 
   return (
-    <div className="space-y-4">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <h2 className="text-xl font-black">CRM פרטנר</h2>
-          <p className="text-sm font-bold text-slate-500">
-            קשר מסחרי מול עסקים במורד — לא ה-CRM של העסק שלך
-          </p>
-        </div>
-        <Link
-          to="/partner/dashboard/clients/new"
-          className="inline-flex items-center gap-2 rounded-xl bg-slate-900 px-4 py-2 text-sm font-black text-white"
-        >
-          <Plus className="h-4 w-4" />
-          לקוח חדש
-        </Link>
-      </div>
+    <div className="space-y-5">
+      <PartnerPageHeader
+        eyebrow="CRM פרטנר"
+        title="לקוחות במורד"
+        subtitle="תיק מסחרי מלא לכל עסק שאתם מנהלים — כולל עמלה נוספת, אחוזי פיצול, וגישה ישירה לניהול."
+        actions={
+          <Link
+            to="/partner/dashboard/clients/new"
+            className="inline-flex items-center gap-2 rounded-2xl bg-slate-900 px-4 py-2.5 text-sm font-black text-white shadow-lg shadow-slate-900/10"
+          >
+            <Plus className="h-4 w-4" />
+            לקוח חדש
+          </Link>
+        }
+      />
 
       <div className="flex flex-wrap gap-2">
-        <label className="flex min-w-[220px] flex-1 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2">
+        <label className="flex min-w-[220px] flex-1 items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2.5 shadow-sm">
           <Search className="h-4 w-4 text-slate-400" />
           <input
             value={q}
@@ -134,7 +119,7 @@ export default function PartnerClients() {
             className="w-full bg-transparent text-sm font-bold outline-none"
           />
         </label>
-        <label className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-bold">
+        <label className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2.5 text-sm font-bold shadow-sm">
           <Filter className="h-4 w-4" />
           <select
             value={status}
@@ -148,7 +133,7 @@ export default function PartnerClients() {
           >
             {STATUSES.map((item) => (
               <option key={item || "all"} value={item}>
-                {item ? STATUS_LABEL[item] : "כל הסטטוסים"}
+                {item ? PARTNER_STATUS_LABEL[item] : "כל הסטטוסים"}
               </option>
             ))}
           </select>
@@ -156,7 +141,7 @@ export default function PartnerClients() {
       </div>
 
       {error ? (
-        <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-bold text-rose-700">
+        <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-bold text-rose-700">
           {error}
         </div>
       ) : null}
@@ -164,40 +149,81 @@ export default function PartnerClients() {
       {loading ? (
         <BizuplyLoader label="טוען לקוחות..." />
       ) : (
-        <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
+        <div className="overflow-hidden rounded-3xl border border-slate-200/80 bg-white shadow-[0_18px_50px_rgba(15,23,42,0.05)]">
           <table className="w-full text-right text-sm">
-            <thead className="bg-slate-50 text-xs font-black text-slate-500">
+            <thead className="bg-slate-50 text-[11px] font-black uppercase tracking-wide text-slate-500">
               <tr>
                 <th className="px-4 py-3">עסק</th>
                 <th className="px-4 py-3">איש קשר</th>
                 <th className="px-4 py-3">סטטוס</th>
                 <th className="px-4 py-3">מחיר ללקוח</th>
-                <th className="px-4 py-3">עלות לפרטנר</th>
+                <th className="px-4 py-3">עמלה נוספת</th>
+                <th className="px-4 py-3">עלות ל-Bizuply</th>
+                <th className="px-4 py-3" />
               </tr>
             </thead>
             <tbody>
-              {items.map((row) => (
-                <tr
-                  key={row._id}
-                  className="cursor-pointer border-t border-slate-100 hover:bg-slate-50"
-                  onClick={() => openClient(row._id)}
-                >
-                  <td className="px-4 py-3 font-black">{row.contact.businessName}</td>
-                  <td className="px-4 py-3">
-                    {row.contact.contactName}
-                    <div className="text-xs text-slate-500">{row.contact.email}</div>
-                  </td>
-                  <td className="px-4 py-3 font-bold">
-                    {STATUS_LABEL[row.status] || row.status}
-                  </td>
-                  <td className="px-4 py-3">{ils(row.mrrCustomer)}</td>
-                  <td className="px-4 py-3">{ils(row.mrrWholesale)}</td>
-                </tr>
-              ))}
+              {items.map((row) => {
+                const extra = (row.selectedSkus || []).reduce(
+                  (sum, line) => sum + Number(line.markup || line.additionalCommission || 0),
+                  0
+                );
+                return (
+                  <tr
+                    key={row._id}
+                    className="cursor-pointer border-t border-slate-100 transition hover:bg-violet-50/40"
+                    onClick={() => navigate(`/partner/dashboard/crm/${row._id}`)}
+                  >
+                    <td className="px-4 py-4">
+                      <p className="font-black text-slate-900">{row.contact.businessName}</p>
+                      <p className="text-[11px] font-bold text-slate-400">
+                        {row.managementMode === "partner"
+                          ? "הפרטנר מנהל"
+                          : row.managementMode === "customer"
+                            ? "הלקוח מנהל"
+                            : "ניהול משותף"}
+                      </p>
+                    </td>
+                    <td className="px-4 py-4">
+                      <p className="font-bold">{row.contact.contactName}</p>
+                      <p className="text-xs text-slate-500">{row.contact.email}</p>
+                    </td>
+                    <td className="px-4 py-4">
+                      <span
+                        className={[
+                          "rounded-full px-2.5 py-1 text-[11px] font-black",
+                          PARTNER_STATUS_TONE[row.status] || "bg-slate-100",
+                        ].join(" ")}
+                      >
+                        {PARTNER_STATUS_LABEL[row.status] || row.status}
+                      </span>
+                    </td>
+                    <td className="px-4 py-4 font-black">{formatIls(row.mrrCustomer)}</td>
+                    <td className="px-4 py-4 font-bold text-violet-800">{formatIls(extra)}</td>
+                    <td className="px-4 py-4">{formatIls(row.mrrWholesale)}</td>
+                    <td className="px-4 py-4">
+                      <div className="flex justify-end gap-2">
+                        {row.canEnterClient ? (
+                          <button
+                            type="button"
+                            onClick={(event) => enterClient(event, row)}
+                            className="inline-flex items-center gap-1 rounded-xl bg-slate-900 px-3 py-1.5 text-xs font-black text-white"
+                          >
+                            <LogIn className="h-3.5 w-3.5" />
+                            {enteringId === row._id ? "נכנס..." : "כניסה לניהול"}
+                          </button>
+                        ) : (
+                          <span className="text-[11px] font-bold text-slate-400">הפעלה נדרשת</span>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
               {!items.length ? (
                 <tr>
-                  <td colSpan={5} className="px-4 py-8 text-center font-bold text-slate-500">
-                    אין לקוחות להצגה
+                  <td colSpan={7} className="px-4 py-12 text-center font-bold text-slate-500">
+                    אין לקוחות להצגה — התחילו באשף לקוח חדש
                   </td>
                 </tr>
               ) : null}
@@ -219,7 +245,7 @@ export default function PartnerClients() {
               next.set("page", String(page - 1));
               setParams(next);
             }}
-            className="rounded-lg border border-slate-200 bg-white p-2 disabled:opacity-40"
+            className="rounded-xl border border-slate-200 bg-white p-2 disabled:opacity-40"
           >
             <ChevronRight className="h-4 w-4" />
           </button>
@@ -237,98 +263,6 @@ export default function PartnerClients() {
           </button>
         </div>
       </div>
-
-      {selected ? (
-        <div className="fixed inset-0 z-50 flex justify-end bg-slate-900/30" dir="rtl">
-          <aside className="h-full w-full max-w-lg overflow-y-auto bg-white p-5 shadow-2xl">
-            <div className="mb-4 flex items-start justify-between">
-              <div>
-                <h3 className="text-lg font-black">{selected.contact.businessName}</h3>
-                <p className="text-sm font-bold text-slate-500">
-                  {STATUS_LABEL[selected.status]} · {selected.contact.email}
-                </p>
-              </div>
-              <button type="button" onClick={() => setSelected(null)} className="font-black">
-                סגור
-              </button>
-            </div>
-
-            <div className="space-y-3 text-sm">
-              {selected.selectedSkus?.map((line) => (
-                <div key={line.sku} className="rounded-xl border border-slate-200 p-3">
-                  <p className="font-black">{line.nameHe || line.sku}</p>
-                  <p>מחיר Bizuply לפרטנר: {ils(line.partnerWholesalePrice)}</p>
-                  <p>העמלה שהפרטנר מוסיף: {ils(line.markup)}</p>
-                  <p>המחיר הסופי ללקוח: {ils(line.customerFinalPrice)}</p>
-                  <p>חלק הפרטנר מהעמלה: {ils(line.partnerMarkupShare)}</p>
-                  <p>חלק Bizuply מהעמלה: {ils(line.bizuplyMarkupShare)}</p>
-                  <p className="text-xs text-slate-500">
-                    Retail להשוואה בלבד: {ils(line.retailPrice)}
-                  </p>
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-6">
-              <h4 className="mb-2 font-black">הערות</h4>
-              <div className="space-y-2">
-                {(selected.notes || []).map((item) => (
-                  <div key={item._id} className="rounded-lg bg-slate-50 px-3 py-2 text-sm">
-                    {item.text}
-                  </div>
-                ))}
-              </div>
-              <div className="mt-2 flex gap-2">
-                <input
-                  value={note}
-                  onChange={(e) => setNote(e.target.value)}
-                  className="flex-1 rounded-xl border border-slate-200 px-3 py-2 text-sm"
-                  placeholder="הערה חדשה"
-                />
-                <button type="button" onClick={saveNote} className="rounded-xl bg-slate-900 px-3 py-2 text-sm font-bold text-white">
-                  שמור
-                </button>
-              </div>
-            </div>
-
-            <div className="mt-6">
-              <h4 className="mb-2 font-black">משימות</h4>
-              <div className="space-y-2">
-                {(selected.tasks || []).map((item) => (
-                  <label key={item._id} className="flex items-center gap-2 text-sm">
-                    <input
-                      type="checkbox"
-                      checked={Boolean(item.done)}
-                      onChange={async (e) => {
-                        const tasks = await togglePartnerTask(
-                          selected._id,
-                          String(item._id),
-                          e.target.checked
-                        );
-                        setSelected({ ...selected, tasks });
-                      }}
-                    />
-                    <span className={item.done ? "line-through text-slate-400" : ""}>
-                      {item.title}
-                    </span>
-                  </label>
-                ))}
-              </div>
-              <div className="mt-2 flex gap-2">
-                <input
-                  value={task}
-                  onChange={(e) => setTask(e.target.value)}
-                  className="flex-1 rounded-xl border border-slate-200 px-3 py-2 text-sm"
-                  placeholder="משימה חדשה"
-                />
-                <button type="button" onClick={saveTask} className="rounded-xl bg-slate-900 px-3 py-2 text-sm font-bold text-white">
-                  הוסף
-                </button>
-              </div>
-            </div>
-          </aside>
-        </div>
-      ) : null}
     </div>
   );
 }

@@ -165,6 +165,7 @@ const MarketerDashboardPage = lazy(() =>
 const PartnerLayout = lazy(() => import("./pages/partner/PartnerLayout"));
 const PartnerDashboard = lazy(() => import("./pages/partner/PartnerDashboard"));
 const PartnerClients = lazy(() => import("./pages/partner/PartnerClients"));
+const PartnerClientDossier = lazy(() => import("./pages/partner/PartnerClientDossier"));
 const PartnerClientWizard = lazy(() => import("./pages/partner/PartnerClientWizard"));
 const PartnerPricing = lazy(() => import("./pages/partner/PartnerPricing"));
 const PartnerStorefrontSettings = lazy(() => import("./pages/partner/PartnerStorefrontSettings"));
@@ -1400,6 +1401,7 @@ export default function App() {
                         >
                           <Route index element={<PartnerDashboard />} />
                           <Route path="crm" element={<PartnerClients />} />
+                          <Route path="crm/:clientId" element={<PartnerClientDossier />} />
                           <Route path="clients/new" element={<PartnerClientWizard />} />
                           <Route path="pricing" element={<PartnerPricing />} />
                           <Route path="storefront" element={<PartnerStorefrontSettings />} />

@@ -81,6 +81,10 @@ export type PartnerPriceLine = {
   customerFinalPrice: number;
   partnerMarkupShare: number;
   bizuplyMarkupShare: number;
+  partnerShareRate?: number;
+  bizuplyShareRate?: number;
+  additionalCommission?: number;
+  partnerCostToBizuply?: number;
   discountRate?: number;
   enabledInStorefront?: boolean;
   descriptionHe?: string;
@@ -125,6 +129,13 @@ export type PartnerClient = {
   tasks?: PartnerTask[];
   createdAt?: string;
   updatedAt?: string;
+  activatedAt?: string | null;
+  joinedAt?: string | null;
+  nextBillingDate?: string | null;
+  enabledEntitlements?: string[];
+  canEnterClient?: boolean;
+  partnerShareRate?: number;
+  bizuplyShareRate?: number;
 };
 
 export type AmountDue = {

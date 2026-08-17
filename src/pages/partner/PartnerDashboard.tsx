@@ -67,17 +67,19 @@ export default function PartnerDashboard() {
         </div>
       ) : null}
 
-      <section className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-        <p className="text-xs font-bold text-slate-500">הסכום לתשלום ל-Bizuply החודש</p>
-        <p className="mt-1 text-4xl font-black text-slate-900">{ils(due)}</p>
+      <section className="overflow-hidden rounded-3xl border border-slate-200/80 bg-gradient-to-l from-white via-white to-[#f4efff] p-6 shadow-[0_18px_50px_rgba(15,23,42,0.06)]">
+        <p className="text-xs font-black uppercase tracking-[0.16em] text-[#7C4DFF]">
+          הסכום לתשלום ל-Bizuply החודש
+        </p>
+        <p className="mt-2 text-4xl font-black text-slate-900">{ils(due)}</p>
         <p className="mt-2 text-sm font-bold text-slate-500">
           {partner?.name} · {partner?.plan?.nameHe || partner?.planKey} · {partner?.status}
         </p>
         <Link
           to="/partner/dashboard/revenue"
-          className="mt-3 inline-block text-sm font-black text-[#7C4DFF]"
+          className="mt-4 inline-flex rounded-2xl bg-slate-900 px-4 py-2 text-sm font-black text-white"
         >
-          לפירוט החיוב →
+          לפירוט החיוב
         </Link>
       </section>
 
@@ -109,7 +111,7 @@ export default function PartnerDashboard() {
           <Link
             key={String(label)}
             to={String(href)}
-            className="rounded-2xl border border-slate-200 bg-white p-4"
+            className="rounded-3xl border border-slate-200/80 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-violet-200 hover:shadow-md"
           >
             <p className="text-xs font-bold text-slate-500">{label}</p>
             <p className="text-2xl font-black">{value}</p>
