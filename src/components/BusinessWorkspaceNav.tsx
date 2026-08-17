@@ -21,6 +21,7 @@ import {
   isModuleEnabled,
   normalizeEnabledModules,
 } from "../utils/moduleAccess";
+import { normalizeBusinessId } from "../utils/notificationNavigation";
 
 /* =========================
    Types
@@ -53,6 +54,22 @@ type NavItemConfig = {
   exact?: boolean;
   moduleKey?: string | null;
 };
+
+/* =========================
+   Restricted Nav Allowlist
+========================= */
+
+/** Nav entries limited to the businesses listed below. */
+const RESTRICTED_NAV_ALLOWED_BUSINESS_IDS = new Set([
+  "64a52720016d081ad1d6e325",
+]);
+
+/** Allowlist only: an unresolved or unlisted business never sees the entries. */
+function canSeeRestrictedNav(businessId: unknown): boolean {
+  const normalized = normalizeBusinessId(businessId);
+  if (!normalized) return false;
+  return RESTRICTED_NAV_ALLOWED_BUSINESS_IDS.has(normalized);
+}
 
 /* =========================
    Fallback Translation
@@ -158,6 +175,7 @@ export default function BusinessWorkspaceNav({
       _id?: string | null;
       id?: string | null;
       userId?: string | null;
+      businessId?: string | null;
     } | null;
   };
   const t = tProp || ((key: string) => tI18n(key));
@@ -174,6 +192,11 @@ export default function BusinessWorkspaceNav({
     !isModuleEnabled(enabledModules, "website");
 
   const basePath = businessId ? `/business/${businessId}` : "/business";
+
+  // The signed-in business wins over the URL so a tenant cannot reveal the entry
+  // by visiting another business path; the URL is only a fallback for admins,
+  // who carry no businessId of their own.
+  const showRestrictedNav = canSeeRestrictedNav(user?.businessId || businessId);
 
   const items: NavItemConfig[] = [
     {
@@ -202,14 +225,14 @@ export default function BusinessWorkspaceNav({
       fallback: "WhatsApp Messages",
       to: `${basePath}/dashboard/whatsapp`,
       icon: MessageCircle,
-      moduleKey: "whatsapp",
+      moduleKey: showRestrictedNav ? "whatsapp" : "__hidden__",
     },
     {
       labelKey: "businessNav.metaCampaigns",
       fallback: "Meta Campaigns",
       to: `${basePath}/dashboard/meta-campaigns`,
       icon: Megaphone,
-      moduleKey: "meta-campaigns",
+      moduleKey: showRestrictedNav ? "meta-campaigns" : "__hidden__",
     },
     {
       labelKey: "businessNav.collaborations",
