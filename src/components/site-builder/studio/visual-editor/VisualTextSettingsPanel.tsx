@@ -371,11 +371,21 @@ export default function VisualTextSettingsPanel({
       }
 
       if (!node.isConnected) {
-        setOpen(false);
         return;
       }
 
-      const rect = node.getBoundingClientRect();
+      const blockRect = node.getBoundingClientRect();
+      let rect = blockRect;
+      try {
+        const range = document.createRange();
+        range.selectNodeContents(node);
+        const contentRect = range.getBoundingClientRect();
+        if (contentRect.width >= 40 && contentRect.height >= 8) {
+          rect = contentRect;
+        }
+      } catch {
+        rect = blockRect;
+      }
       const viewport = { width: window.innerWidth, height: window.innerHeight };
 
       const box = panelRef.current?.getBoundingClientRect();
