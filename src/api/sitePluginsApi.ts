@@ -13,8 +13,21 @@ export type SitePluginDefinition = {
   billingEnabled?: boolean;
   installable?: boolean;
   entitled?: boolean;
+  proEntitled?: boolean;
+  status?: string | null;
+  cancelAtPeriodEnd?: boolean;
+  currentPeriodEnd?: string | null;
+  purchaseTier?: "basic" | "pro";
+  plans?: Array<{
+    planKey: string;
+    tier: string;
+    amountIls: number;
+    displayPriceLabel?: string;
+    ctaLabel?: string;
+  }>;
   statusLabel?: string | null;
   ctaLabel?: string | null;
+  secondaryCtaLabel?: string | null;
   displayPriceLabel?: string;
   futurePriceLabel?: string | null;
   helpText?: string;

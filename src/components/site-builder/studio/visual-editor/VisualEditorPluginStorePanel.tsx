@@ -90,7 +90,11 @@ export default function VisualEditorPluginStorePanel({
         if (key === "client-portal") {
           await startClientPortalCheckout(id);
         } else {
-          await startPluginCheckout(key, id);
+          await startPluginCheckout(
+            key,
+            id,
+            plugin.purchaseTier === "basic" ? "basic" : "pro"
+          );
         }
         return;
       }
@@ -142,7 +146,7 @@ export default function VisualEditorPluginStorePanel({
       }
       if (enabled && isPluginCheckoutRequiredError(err)) {
         try {
-          await startPluginCheckout(key, id);
+          await startPluginCheckout(key, id, "pro");
           return;
         } catch (checkoutErr) {
           setError(
@@ -217,8 +221,21 @@ export default function VisualEditorPluginStorePanel({
               enabledPlugins={enabledPlugins}
               detectedFromSite={detectedFromSite}
               saving={Boolean(savingKey)}
+              savingKey={savingKey}
               containedHelp
               onToggle={handleToggle}
+              onUpgrade={(pluginKey) => {
+                setSavingKey(pluginKey);
+                void startPluginCheckout(pluginKey, String(siteId || ""), "pro")
+                  .catch((checkoutErr) => {
+                    setError(
+                      checkoutErr instanceof Error
+                        ? checkoutErr.message
+                        : "פתיחת תשלום לתוסף נכשלה",
+                    );
+                  })
+                  .finally(() => setSavingKey(null));
+              }}
             />
           </div>
         )}
