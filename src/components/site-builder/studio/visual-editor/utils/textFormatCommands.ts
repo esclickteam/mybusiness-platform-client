@@ -124,8 +124,16 @@ export function isTextSettingsElement(element: any) {
     .trim()
     .toLowerCase();
   if (["text", "heading", "paragraph"].includes(visualType)) return true;
+  if (node.getAttribute("data-visual-element-link") === "true") return true;
 
   const tag = String(node.tagName || "").toLowerCase();
+  if (
+    (tag === "a" || visualType === "link" || visualType === "button") &&
+    node.closest("h1,h2,h3,h4,h5,h6,p,[data-visual-edit-type='text']")
+  ) {
+    return true;
+  }
+
   return [
     "h1",
     "h2",

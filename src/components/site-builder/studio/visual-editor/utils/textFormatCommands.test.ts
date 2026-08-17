@@ -17,6 +17,11 @@ describe("textFormatCommands", () => {
     expect(isTextSettingsElement({ type: "text" })).toBe(true);
     expect(isTextSettingsElement({ type: "image" })).toBe(false);
     expect(isTextSettingsElement({ type: "section" })).toBe(false);
+    const heading = document.createElement("h1");
+    const link = document.createElement("a");
+    link.setAttribute("data-visual-element-link", "true");
+    heading.appendChild(link);
+    expect(isTextSettingsElement({ type: "link", node: link })).toBe(true);
   });
 
   it("formats the whole element when no text range is selected", () => {

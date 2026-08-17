@@ -47,11 +47,26 @@ const LETTER_SPACINGS = ["-1px", "0px", "0.5px", "1px", "2px", "4px"];
 function getElementNode(element: any): HTMLElement | null {
   const node =
     element?.node || element?.domNode || element?.element || null;
-  return node instanceof HTMLElement ? node : null;
+  if (!(node instanceof HTMLElement)) return null;
+  if (node.getAttribute("data-visual-element-link") === "true") {
+    const parent = node.parentElement;
+    if (
+      parent &&
+      /^(H[1-6]|P|SPAN)$/.test(parent.tagName) &&
+      parent.getAttribute("data-visual-edit-id")
+    ) {
+      return parent;
+    }
+  }
+  return node;
 }
 
 function getElementId(element: any) {
-  return String(element?.id || element?.elementId || element?.visualId || "").trim();
+  const node = getElementNode(element);
+  const fromNode = node?.getAttribute("data-visual-edit-id") || "";
+  return String(
+    fromNode || element?.id || element?.elementId || element?.visualId || "",
+  ).trim();
 }
 
 function getStyleValue(
