@@ -1346,17 +1346,6 @@ export function useVisualEditorState({
 
   const previousSitePageTitlesRef = useRef<Record<string, string>>({});
 
-  if (
-    Object.keys(previousSitePageTitlesRef.current).length === 0 &&
-    (sitePages || []).length
-  ) {
-    (sitePages || []).forEach((page) => {
-      const pageId = String(page?.id || "").trim();
-      const title = String(page?.title || page?.name || "").trim();
-      if (pageId && title) previousSitePageTitlesRef.current[pageId] = title;
-    });
-  }
-
   useEffect(() => {
     const previousTitleById = { ...previousSitePageTitlesRef.current };
     const current = dataRef.current || {};

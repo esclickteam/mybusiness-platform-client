@@ -326,17 +326,20 @@ describe("navigation type matrix", () => {
       ["contact", "Contact"],
     ]);
 
-    const renamed = syncSitePageTitlesIntoVisualData({ nav }, sitePages, {
+    const renamedPages = sitePages.map((page) =>
+      page.id === "home" ? { ...page, title: "RenamedHome" } : page,
+    );
+    const renamed = syncSitePageTitlesIntoVisualData(firstLoad, renamedPages, {
       previousTitleById: {
-        home: "Main",
-        services: "Services",
-        contact: "Contact",
+        home: "HomePage",
+        services: "OurServices",
+        contact: "ContactUs",
       },
     });
     expect(renamed.nav.map((item: any) => [item.page, item.label])).toEqual([
-      ["home", "HomePage"],
-      ["services", "OurServices"],
-      ["contact", "ContactUs"],
+      ["home", "RenamedHome"],
+      ["services", "Services"],
+      ["contact", "Contact"],
     ]);
   });
 });

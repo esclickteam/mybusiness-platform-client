@@ -6183,6 +6183,13 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     if (!cleanTitle) return;
 
     setPages((prev) => {
+      const previousTitleById: Record<string, string> = {};
+      prev.forEach((page) => {
+        const id = String(page.id || "").trim();
+        const pageTitle = String(page.title || "").trim();
+        if (id && pageTitle) previousTitleById[id] = pageTitle;
+      });
+
       const nextPages = prev.map((page) => {
         if (page.id !== pageId) return page;
         return {
@@ -6196,6 +6203,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         syncSitePageTitlesIntoVisualData(
           previous || {},
           slimSitePageNavSources(nextPages),
+          { previousTitleById },
         ),
       );
 
