@@ -4,6 +4,7 @@ import { useAuth } from "../context/AuthContext";
 import Unauthorized from "./Unauthorized";
 import TrialExpiredModal from "./TrialExpiredModal";
 import BizuplyLoader from "./ui/BizuplyLoader";
+import { rememberPostLoginRedirect } from "../utils/safeInternalRedirect";
 
 type UserRole =
   | "admin"
@@ -91,12 +92,16 @@ export default function ProtectedRoute({
      🚫 Not authenticated
   =========================== */
   if (!user) {
+    const from = `${location.pathname}${location.search || ""}${
+      location.hash || ""
+    }`;
+    rememberPostLoginRedirect(from);
     return (
       <Navigate
         to="/login"
         replace
         state={{
-          from: location.pathname,
+          from,
         }}
       />
     );

@@ -101,6 +101,28 @@ export function clearRefreshDead() {
 }
 
 /**
+ * Stripe Checkout return flags on the manage/plugins URL.
+ * Safe recovery signal: only attempt cookie refresh when these are present.
+ */
+export function isBillingReturnSearch(
+  search = typeof window !== "undefined" ? window.location.search : ""
+) {
+  try {
+    const params = new URLSearchParams(search || "");
+    const portal = params.get("portalBilling");
+    const plugin = params.get("pluginBilling");
+    return (
+      portal === "success" ||
+      portal === "cancel" ||
+      plugin === "success" ||
+      plugin === "cancel"
+    );
+  } catch {
+    return false;
+  }
+}
+
+/**
  * Only call /auth/refresh-token when something suggests a session may exist.
  * Anonymous first visits must not hit the endpoint (browser logs every 401 in red).
  */
@@ -111,6 +133,10 @@ export function shouldAttemptRefresh() {
   if (localStorage.getItem("impersonatedBy")) return false;
   if (localStorage.getItem("token")) return true;
   if (localStorage.getItem("businessDetails")) return true;
+  // Returning from Stripe: access token may be gone/expired; try httpOnly cookie.
+  if (typeof window !== "undefined" && isBillingReturnSearch(window.location.search)) {
+    return true;
+  }
   return false;
 }
 
