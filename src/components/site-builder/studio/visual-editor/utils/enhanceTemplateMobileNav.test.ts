@@ -3,6 +3,7 @@ import { afterEach, describe, expect, it } from "vitest";
 import {
   detectDesktopNav,
   enhanceTemplateMobileNav,
+  headerNeedsCompactNav,
   headerRowOverflows,
 } from "./enhanceTemplateMobileNav";
 
@@ -68,6 +69,24 @@ describe("enhanceTemplateMobileNav", () => {
     expect(header.classList.contains("bizuply-mobile-nav-open")).toBe(true);
     toggle.click();
     expect(header.classList.contains("bizuply-mobile-nav-open")).toBe(false);
+  });
+
+  it("uses compact nav when the header is narrower than the template breakpoint", () => {
+    document.body.innerHTML = `
+      <header data-bizuply-mobile-nav="on" data-bizuply-nav-bp="lg">
+        <div style="width:900px">
+          <nav class="hidden lg:flex" data-bizuply-desktop-nav="true"><a>A</a></nav>
+        </div>
+      </header>
+    `;
+    const header = document.querySelector("header") as HTMLElement;
+    const row = header.querySelector("div") as HTMLElement;
+    row.getBoundingClientRect = () =>
+      ({ width: 900, height: 64, top: 0, left: 0, bottom: 64, right: 900, x: 0, y: 0, toJSON() {} });
+    expect(headerNeedsCompactNav(header)).toBe(true);
+    row.getBoundingClientRect = () =>
+      ({ width: 1280, height: 64, top: 0, left: 0, bottom: 64, right: 1280, x: 0, y: 0, toJSON() {} });
+    expect(headerNeedsCompactNav(header)).toBe(false);
   });
 
   it("marks overflow when the header row is narrower than its contents", () => {
