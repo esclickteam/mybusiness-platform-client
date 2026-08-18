@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { fetchPartnerLedger } from "../../lib/partnerApi";
+import { fetchPartnerLedger, partnerApiError } from "../../lib/partnerApi";
 import type { AmountDue } from "../../types/partner";
 
 function ils(value?: number) {
@@ -17,7 +17,7 @@ export default function PartnerRevenue() {
         setDue(data);
         setItems(data.items || []);
       })
-      .catch((err) => setError(err.response?.data?.error || "שגיאה בטעינת חיוב"));
+      .catch((err) => setError(partnerApiError(err, "שגיאה בטעינת חיוב")));
   }, []);
 
   return (

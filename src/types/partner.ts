@@ -153,6 +153,41 @@ export type AmountDue = {
   };
 };
 
+export type PartnerDashboardMetrics = {
+  openTasks: number;
+  customerMrr: number | null;
+  monthlyWholesale: number | null;
+  partnerMonthlyProfit: number | null;
+  salesThisMonth: number | null;
+};
+
+export type PartnerDashboardActivity = {
+  _id: string;
+  entryType: string;
+  label: string;
+  sku?: string;
+  amountIls: number;
+  description?: string;
+  createdAt?: string;
+};
+
+export type PartnerDashboardPayload = {
+  partner: PartnerMe;
+  amountDueToBizuply: number | null;
+  breakdown: AmountDue["breakdown"] | null;
+  clients: {
+    total: number;
+    active: number;
+    waitingPayment: number;
+    leads: number;
+    paymentIssue?: number;
+    suspended?: number;
+  };
+  metrics?: PartnerDashboardMetrics;
+  recentClients?: PartnerClient[];
+  recentActivity?: PartnerDashboardActivity[];
+};
+
 export type AdminPartnerRow = {
   partnerId: string;
   name: string;

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import {
   fetchPartnerTeam,
   invitePartnerMember,
+  partnerApiError,
   revokePartnerMember,
   updatePartnerMember,
 } from "../../lib/partnerApi";
@@ -35,7 +36,7 @@ export default function PartnerTeam() {
   }
 
   useEffect(() => {
-    refresh().catch((err) => setError(err.response?.data?.error || "שגיאה בטעינת צוות"));
+    refresh().catch((err) => setError(partnerApiError(err, "שגיאה בטעינת צוות")));
   }, []);
 
   async function invite(e: React.FormEvent) {

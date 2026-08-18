@@ -57,7 +57,7 @@ export default function PartnerMarkupBreakdown({
 
       <div className="grid gap-2 sm:grid-cols-3">
         <Metric
-          label="מחיר Bizuply לפרטנר"
+          label="מחיר Bizuply עבורך"
           value={formatIls(wholesale)}
           hint="עלות סיטונאית לפי המסלול"
         />
@@ -97,24 +97,32 @@ export default function PartnerMarkupBreakdown({
         <div className="grid gap-3 sm:grid-cols-2">
           <SplitRow
             tone="partner"
-            title="נשאר לפרטנר"
+            title="החלק שלך"
             percent={formatPct(partnerRate)}
             amount={formatIls(partnerShare)}
-            detail="החלק שלכם מהעמלה הנוספת"
+            detail={`${formatPct(partnerRate)} = ${formatIls(partnerShare)} מהעמלה הנוספת`}
           />
           <SplitRow
             tone="bizuply"
             title="חלק Bizuply"
             percent={formatPct(bizuplyRate)}
             amount={formatIls(bizuplyShare)}
-            detail="הסכום מתוך העמלה הנוספת שעובר ל-Bizuply"
+            detail={`${formatPct(bizuplyRate)} = ${formatIls(bizuplyShare)} מתוך העמלה הנוספת`}
           />
         </div>
       </div>
 
-      <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl bg-slate-50 px-3 py-2 text-sm">
-        <span className="font-bold text-slate-500">עלות הפרטנר ל-Bizuply למוצר זה</span>
-        <span className="font-black text-slate-900">{formatIls(partnerCost)}</span>
+      <div className="grid gap-2 rounded-xl bg-slate-50 px-3 py-3 text-sm sm:grid-cols-2">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <span className="font-bold text-slate-500">סה״כ לתשלום ל-Bizuply</span>
+          <span className="font-black text-slate-900">
+            {formatIls(wholesale)} + {formatIls(bizuplyShare)} = {formatIls(partnerCost)}
+          </span>
+        </div>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <span className="font-bold text-slate-500">הרווח שלך</span>
+          <span className="font-black text-violet-800">{formatIls(partnerShare)}</span>
+        </div>
       </div>
       {line.retailPrice || line.retailIls ? (
         <p className="text-[11px] font-bold text-slate-400">

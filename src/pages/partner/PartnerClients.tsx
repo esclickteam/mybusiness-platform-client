@@ -8,7 +8,7 @@ import {
   Plus,
   Search,
 } from "lucide-react";
-import { enterPartnerClient, fetchPartnerClients } from "../../lib/partnerApi";
+import { enterPartnerClient, fetchPartnerClients, partnerApiError } from "../../lib/partnerApi";
 import { formatIls } from "../../lib/partnerMoney";
 import type { PartnerClient } from "../../types/partner";
 import {
@@ -56,7 +56,7 @@ export default function PartnerClients() {
           setTotal(data.total || 0);
         }
       } catch (err: any) {
-        if (!cancelled) setError(err.response?.data?.error || "שגיאה בטעינת לקוחות");
+        if (!cancelled) setError(partnerApiError(err, "שגיאה בטעינת לקוחות"));
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -81,7 +81,7 @@ export default function PartnerClients() {
         replace: true,
       });
     } catch (err: any) {
-      setError(err.response?.data?.error || "לא ניתן להיכנס לניהול הלקוח");
+      setError(partnerApiError(err, "לא ניתן להיכנס לניהול הלקוח"));
     } finally {
       setEnteringId("");
     }

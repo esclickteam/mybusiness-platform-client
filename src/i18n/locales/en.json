@@ -437,7 +437,7 @@
     "marketerImpersonationTitle": "Marketer mode — client access",
     "marketerImpersonationText": "You are managing {{name}}'s account. Campaign management and CRM are available.",
     "partnerImpersonationTitle": "Partner mode — client management",
-    "partnerImpersonationText": "You are managing {{name}} and can perform every action in this business. Exit returns you to the partner dashboard.",
+    "partnerImpersonationText": "You are currently managing: {{name}}",
     "backToAdmin": "Back to admin panel",
     "backToMarketer": "Back to marketer dashboard",
     "backToPartner": "Back to partner dashboard",

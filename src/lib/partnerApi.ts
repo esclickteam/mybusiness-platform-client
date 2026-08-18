@@ -30,6 +30,12 @@ export async function fetchPartnerMe() {
   return data.partner as PartnerMe;
 }
 
+export function partnerApiError(err: unknown, fallback: string) {
+  const response = (err as { response?: { data?: { error?: string; message?: string } } })
+    ?.response?.data;
+  return response?.error || response?.message || fallback;
+}
+
 export async function fetchPartnerDashboard() {
   const { data } = await API.get("/partner/dashboard");
   return data;

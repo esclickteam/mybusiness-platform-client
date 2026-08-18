@@ -15,6 +15,7 @@ import {
   addPartnerTask,
   enterPartnerClient,
   fetchPartnerClient,
+  partnerApiError,
   togglePartnerTask,
 } from "../../lib/partnerApi";
 import { formatIls, formatPct } from "../../lib/partnerMoney";
@@ -66,7 +67,7 @@ export default function PartnerClientDossier() {
         const data = await fetchPartnerClient(clientId);
         if (!cancelled) setClient(data);
       } catch (err: any) {
-        if (!cancelled) setError(err.response?.data?.error || "לא ניתן לטעון את תיק הלקוח");
+        if (!cancelled) setError(partnerApiError(err, "לא ניתן לטעון את תיק הלקוח"));
       } finally {
         if (!cancelled) setLoading(false);
       }
@@ -101,7 +102,7 @@ export default function PartnerClientDossier() {
         replace: true,
       });
     } catch (err: any) {
-      setError(err.response?.data?.error || "לא ניתן להיכנס לניהול הלקוח");
+      setError(partnerApiError(err, "לא ניתן להיכנס לניהול הלקוח"));
     } finally {
       setEntering(false);
     }
@@ -128,6 +129,15 @@ export default function PartnerClientDossier() {
     (sum, line) => sum + Number(line.bizuplyMarkupShare || 0),
     0
   );
+  const wholesaleTotal = (client.selectedSkus || []).reduce(
+    (sum, line) => sum + Number(line.partnerWholesalePrice || 0),
+    0
+  );
+  const finalTotal = (client.selectedSkus || []).reduce(
+    (sum, line) => sum + Number(line.customerFinalPrice || 0),
+    0
+  );
+  const dueTotal = wholesaleTotal + bizuplyShare;
 
   return (
     <div className="space-y-5">
@@ -218,6 +228,38 @@ export default function PartnerClientDossier() {
           <p className="rounded-2xl border border-dashed border-slate-200 px-4 py-6 text-sm font-bold text-slate-500">
             עדיין לא נבחרו מוצרים ללקוח זה
           </p>
+        ) : (client.selectedSkus?.length || 0) > 1 ? (
+          <div className="rounded-3xl border border-slate-900 bg-slate-900 p-5 text-white">
+            <p className="text-xs font-black text-white/60">סיכום כל המוצרים</p>
+            <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              <div>
+                <p className="text-[11px] font-bold text-white/55">מחיר Bizuply עבורך</p>
+                <p className="text-lg font-black">{formatIls(wholesaleTotal)}</p>
+              </div>
+              <div>
+                <p className="text-[11px] font-bold text-white/55">עמלה נוספת</p>
+                <p className="text-lg font-black">{formatIls(extra)}</p>
+              </div>
+              <div>
+                <p className="text-[11px] font-bold text-white/55">מחיר סופי ללקוח</p>
+                <p className="text-lg font-black">{formatIls(finalTotal)}</p>
+              </div>
+              <div>
+                <p className="text-[11px] font-bold text-white/55">החלק שלך</p>
+                <p className="text-lg font-black">{formatIls(partnerShare)}</p>
+              </div>
+              <div>
+                <p className="text-[11px] font-bold text-white/55">חלק Bizuply</p>
+                <p className="text-lg font-black">{formatIls(bizuplyShare)}</p>
+              </div>
+              <div>
+                <p className="text-[11px] font-bold text-white/55">סה״כ לתשלום ל-Bizuply</p>
+                <p className="text-lg font-black">
+                  {formatIls(wholesaleTotal)} + {formatIls(bizuplyShare)} = {formatIls(dueTotal)}
+                </p>
+              </div>
+            </div>
+          </div>
         ) : null}
       </section>
 

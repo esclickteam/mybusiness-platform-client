@@ -37,7 +37,7 @@ export default function PartnerPricing() {
       <PartnerPageHeader
         eyebrow="תמחור"
         title="מחירון פרטנר"
-        subtitle="אפשר לערוך רק את העמלה הנוספת ואת ההצגה בחנות. מחיר Bizuply לפרטנר מחושב לפי המסלול, כולל אחוז ל-Bizuply וכמה נשאר לכם."
+        subtitle="אפשר לערוך רק את העמלה הנוספת ואת ההצגה בחנות. מחיר Bizuply עבורך מחושב לפי המסלול, כולל אחוז ל-Bizuply וכמה נשאר לכם."
       />
       {error ? (
         <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-bold text-rose-700">

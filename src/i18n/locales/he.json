@@ -437,7 +437,7 @@
     "marketerImpersonationTitle": "מצב משווק — כניסה ללקוח",
     "marketerImpersonationText": "אתם מנהלים את חשבון הלקוח {{name}}. פתוחים ניהול קמפיינים ו-CRM.",
     "partnerImpersonationTitle": "מצב פרטנר — כניסה לניהול הלקוח",
-    "partnerImpersonationText": "אתם מנהלים את עסק הלקוח {{name}} ויכולים לבצע בו את כל הפעולות. החזרה מחזירה ללוח הפרטנר.",
+    "partnerImpersonationText": "אתה מנהל כרגע את: {{name}}",
     "backToAdmin": "חזרה לפאנל אדמין",
     "backToMarketer": "חזרה ללוח המשווק",
     "backToPartner": "חזרה ללוח הפרטנר",

@@ -279,7 +279,7 @@ export default function PartnerClientWizard() {
       {step === 2 ? (
         <section className="space-y-4">
           <div className="rounded-3xl border border-violet-100 bg-violet-50/70 px-5 py-4 text-sm font-bold text-violet-900">
-            עמלה נוספת היא התוספת שאתם גובים מעל מחיר Bizuply לפרטנר. הלקוח משלם לכם את המחיר הסופי,
+            עמלה נוספת היא התוספת שאתם גובים מעל מחיר Bizuply עבורך. הלקוח משלם לכם את המחיר הסופי,
             ו-Bizuply מקבלת אחוז קבוע מהעמלה הנוספת לפי המסלול שלכם.
           </div>
           {catalog.map((item) => {
@@ -311,7 +311,7 @@ export default function PartnerClientWizard() {
                     <div>
                       <h3 className="font-black text-slate-900">{item.nameHe || item.sku}</h3>
                       <p className="text-xs font-bold text-slate-500">
-                        מחיר Bizuply לפרטנר {formatIls(item.partnerWholesalePrice)} · השוואה קמעונאית{" "}
+                        מחיר Bizuply עבורך {formatIls(item.partnerWholesalePrice)} · השוואה קמעונאית{" "}
                         {formatIls(item.retailIls || item.retailPrice)}
                       </p>
                     </div>
