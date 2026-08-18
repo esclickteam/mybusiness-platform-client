@@ -202,6 +202,7 @@ export default function AdminPartners() {
                       >
                         ייצוא
                       </a>
+                      {row.status === "suspended" ? (
                         <button
                           type="button"
                           onClick={async () => {
