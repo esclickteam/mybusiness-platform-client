@@ -192,9 +192,7 @@ export default function AnnouncementBarWidget({
         ) : null}
       </div>
       {isEditor ? (
-        <div className="border-t border-white/15 bg-black/20 px-3 py-1 text-center text-[10px] font-bold">
-          פס הודעות · מעל ההדר · לא נצמד בגלילה
-        </div>
+        <span className="sr-only">פס הודעות · מעל ההדר · לא נצמד בגלילה</span>
       ) : null}
     </div>
   );

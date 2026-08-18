@@ -11,6 +11,8 @@ import WhatsAppFloatWidget from "../../../site-plugins/whatsapp-float/WhatsAppFl
 import AnnouncementBarWidget from "../../../site-plugins/announcement-bar/AnnouncementBarWidget";
 import CookieBannerWidget from "../../../site-plugins/cookie-banner/CookieBannerWidget";
 import ExitPopupWidget from "../../../site-plugins/exit-popup/ExitPopupWidget";
+import FloatingContactBarWidget from "../../../site-plugins/floating-contact-bar/FloatingContactBarWidget";
+import LanguageSwitcherWidget from "../../../site-plugins/multi-language/LanguageSwitcherWidget";
 import type { BenefitsWheelSettings } from "../../../site-plugins/benefits-wheel/benefitsWheelUtils";
 import type { SmartSearchSettings } from "../../../site-plugins/smart-search/smartSearchUtils";
 import type { SmartBotSettings } from "../../../site-plugins/smart-bot/smartBotUtils";
@@ -58,6 +60,13 @@ export default function EditorPluginOverlays({
   const [cookieEnabled, setCookieEnabled] = useState(false);
   const [exitPopupSettings, setExitPopupSettings] = useState<ExitPopupSettings | null>(null);
   const [exitPopupEnabled, setExitPopupEnabled] = useState(false);
+  const [contactBarSettings, setContactBarSettings] = useState<Record<string, any> | null>(
+    null
+  );
+  const [contactBarEnabled, setContactBarEnabled] = useState(false);
+  const [languageSettings, setLanguageSettings] = useState<Record<string, any> | null>(null);
+  const [languageEnabled, setLanguageEnabled] = useState(false);
+  const [fallbackPhone, setFallbackPhone] = useState("");
   const [pages, setPages] = useState<Array<Record<string, unknown>>>([]);
 
   useEffect(() => {
@@ -97,6 +106,8 @@ export default function EditorPluginOverlays({
         const announcementOn = plugins.enabledPlugins.includes("announcement-bar");
         const cookieOn = plugins.enabledPlugins.includes("cookie-banner");
         const exitOn = plugins.enabledPlugins.includes("exit-popup");
+        const contactOn = plugins.enabledPlugins.includes("floating-contact-bar");
+        const languageOn = plugins.enabledPlugins.includes("multi-language");
 
         if (cancelled) return;
 
@@ -108,6 +119,27 @@ export default function EditorPluginOverlays({
         setAnnouncementEnabled(announcementOn);
         setCookieEnabled(cookieOn);
         setExitPopupEnabled(exitOn);
+        setContactBarEnabled(contactOn);
+        setLanguageEnabled(languageOn);
+        setContactBarSettings(
+          contactOn
+            ? site?.pluginSettings?.["floating-contact-bar"] || { isActive: true }
+            : null
+        );
+        setLanguageSettings(languageOn ? site?.pluginSettings?.["multi-language"] || {} : null);
+        const business = site?.business || {};
+        const brand = site?.brand || {};
+        setFallbackPhone(
+          String(
+            business.whatsappUrl ||
+              business.whatsapp ||
+              business.whatsappLink ||
+              business.phone ||
+              brand.phone ||
+              site?.phone ||
+              ""
+          ).trim()
+        );
         setPages(Array.isArray(site?.pages) ? site.pages : []);
 
         const { getSitePluginSettings } = await import(
@@ -195,6 +227,11 @@ export default function EditorPluginOverlays({
           setCookieSettings(null);
           setExitPopupEnabled(false);
           setExitPopupSettings(null);
+          setContactBarEnabled(false);
+          setContactBarSettings(null);
+          setLanguageEnabled(false);
+          setLanguageSettings(null);
+          setFallbackPhone("");
         }
       }
     })();
@@ -285,6 +322,12 @@ export default function EditorPluginOverlays({
   }, [siteId]);
 
   const siteKey = siteId || "editor";
+  const hideWhatsappForBar = Boolean(
+    contactBarEnabled &&
+      contactBarSettings?.isActive !== false &&
+      contactBarSettings?.hideWhatsappFloat !== false &&
+      contactBarSettings?.showWhatsapp !== false
+  );
 
   return (
     <>
@@ -324,7 +367,10 @@ export default function EditorPluginOverlays({
         />
       ) : null}
 
-      {whatsappEnabled && whatsappSettings && whatsappSettings.isActive !== false ? (
+      {whatsappEnabled &&
+      whatsappSettings &&
+      whatsappSettings.isActive !== false &&
+      !hideWhatsappForBar ? (
         <WhatsAppFloatWidget
           settings={whatsappSettings}
           mode="editor"
@@ -348,6 +394,25 @@ export default function EditorPluginOverlays({
           siteKey={siteKey}
           settings={announcementSettings}
           mode="editor"
+        />
+      ) : null}
+
+      {contactBarEnabled && contactBarSettings?.isActive !== false ? (
+        <FloatingContactBarWidget
+          settings={contactBarSettings}
+          fallbackPhone={fallbackPhone}
+          hidesWhatsappFloat={hideWhatsappForBar}
+        />
+      ) : null}
+
+      {languageEnabled ? (
+        <LanguageSwitcherWidget
+          languages={
+            languageSettings?.languages || [
+              { code: "he", label: "HE", dir: "rtl" },
+              { code: "en", label: "EN", dir: "ltr" },
+            ]
+          }
         />
       ) : null}
 
