@@ -322,6 +322,7 @@ export default function SmartBotWidget({
     <div
       data-bizuply-smart-bot="true"
       data-bizuply-widget="smart-bot"
+      data-bizuply-plugin="smart-bot"
       data-bizuply-plugin-runtime="true"
       dir="rtl"
     >

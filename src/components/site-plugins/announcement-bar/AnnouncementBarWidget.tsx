@@ -123,6 +123,7 @@ export default function AnnouncementBarWidget({
     <div
       dir="rtl"
       data-bizuply-widget="announcement-bar"
+      data-bizuply-plugin="announcement-bar"
       data-bizuply-plugin-runtime="true"
       style={{
         position: "relative",

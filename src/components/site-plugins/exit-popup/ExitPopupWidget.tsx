@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { X } from "lucide-react";
 
 import { submitPublicSiteLead } from "../../../api/publicSiteLeadsApi";
+import { postPublicSiteEvent } from "../../../api/publicSiteRuntimeApi";
 import {
   markExitPopupSeen,
   mergeExitPopupSettings,
@@ -13,6 +14,7 @@ import { matchesDeviceTarget, matchesPageTarget } from "../whatsapp-float/whatsa
 type ExitPopupWidgetProps = {
   siteKey?: string;
   slug?: string;
+  pageId?: string;
   settings?: Partial<ExitPopupSettings> | null;
   mode?: "live" | "editor";
 };
@@ -20,6 +22,7 @@ type ExitPopupWidgetProps = {
 export default function ExitPopupWidget({
   siteKey = "site",
   slug = "",
+  pageId = "",
   settings,
   mode = "live",
 }: ExitPopupWidgetProps) {
@@ -35,7 +38,7 @@ export default function ExitPopupWidget({
   useEffect(() => {
     if (mode === "editor" || cfg.isActive === false) return;
     if (wasExitPopupSeenRecently(siteKey, cfg.showOncePerDays)) return;
-    if (!matchesPageTarget(cfg.pageTargeting, siteKey)) return;
+    if (!matchesPageTarget(cfg.pageTargeting, pageId)) return;
     if (!matchesDeviceTarget(cfg.deviceTargeting)) return;
     if (cfg.schedule?.enabled) {
       const now = Date.now();
@@ -50,21 +53,24 @@ export default function ExitPopupWidget({
       shown = true;
       setOpen(true);
       markExitPopupSeen(siteKey);
-      if (slug) {
-        fetch(`/api/site-builder/public/${encodeURIComponent(slug)}/events`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ eventType: "popup_impression", pagePath: window.location.pathname, source: "exit-popup" }),
-        }).catch(() => undefined);
-      }
+      void postPublicSiteEvent(slug, {
+        eventType: "popup_impression",
+        pagePath: window.location.pathname,
+        source: "exit-popup",
+      });
     };
 
     const trigger = cfg.trigger || "exit-or-delay";
     let timer: number | undefined;
+    const delaySeconds = Number(cfg.delaySeconds);
+    const hasDelay = Number.isFinite(delaySeconds) && delaySeconds > 0;
 
-    if (trigger === "delay" || trigger === "exit-or-delay") {
-      const delayMs = Math.max(1, Number(cfg.delaySeconds) || 25) * 1000;
-      timer = window.setTimeout(show, delayMs);
+    if (trigger === "delay" && hasDelay) {
+      timer = window.setTimeout(show, delaySeconds * 1000);
+    } else if (trigger === "delay") {
+      timer = window.setTimeout(show, 25000);
+    } else if (trigger === "exit-or-delay" && hasDelay) {
+      timer = window.setTimeout(show, delaySeconds * 1000);
     }
 
     const onMouseLeave = (e: MouseEvent) => {
@@ -82,14 +88,20 @@ export default function ExitPopupWidget({
       if (scrolled >= percent) show();
     };
 
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+
     document.addEventListener("mouseout", onMouseLeave);
     window.addEventListener("scroll", onScroll, { passive: true });
+    document.addEventListener("keydown", onKey);
     return () => {
       if (timer) window.clearTimeout(timer);
       document.removeEventListener("mouseout", onMouseLeave);
       window.removeEventListener("scroll", onScroll);
+      document.removeEventListener("keydown", onKey);
     };
-  }, [cfg, mode, siteKey, slug]);
+  }, [cfg, mode, pageId, siteKey, slug]);
 
   if (cfg.isActive === false || !open) return null;
 
@@ -120,17 +132,11 @@ export default function ExitPopupWidget({
         pagePath: typeof window !== "undefined" ? window.location.pathname : "",
       });
       setDone(true);
-      if (slug) {
-        fetch(`/api/site-builder/public/${encodeURIComponent(slug)}/events`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            eventType: "popup_conversion",
-            pagePath: window.location.pathname,
-            source: "exit-popup",
-          }),
-        }).catch(() => undefined);
-      }
+      void postPublicSiteEvent(slug, {
+        eventType: "popup_conversion",
+        pagePath: typeof window !== "undefined" ? window.location.pathname : "",
+        source: "exit-popup",
+      });
     } catch {
       setError("שליחה נכשלה — נסו שוב");
     } finally {
@@ -142,11 +148,15 @@ export default function ExitPopupWidget({
     <div
       dir="rtl"
       data-bizuply-widget="exit-popup"
+      data-bizuply-plugin="exit-popup"
       data-bizuply-plugin-runtime="true"
       className="fixed inset-0 z-[2147483200] flex items-center justify-center bg-slate-900/50 p-4"
       role="dialog"
       aria-modal="true"
       aria-label={cfg.headline || "פופאפ לידים"}
+      onMouseDown={(e) => {
+        if (e.target === e.currentTarget) setOpen(false);
+      }}
     >
       <div className="relative w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl">
         <button
