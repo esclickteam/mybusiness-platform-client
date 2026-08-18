@@ -186,6 +186,29 @@ export default function WhatsAppSettingsTab() {
             sessionRef.current = { phoneNumberId, wabaId, metaBusinessId };
           }
         }
+
+        // Meta voice OTP is chosen inside the popup (e.g. "שיחת טלפון") before FINISH.
+        // Keep/refresh the waiting session if we learn the user is on phone verification.
+        const currentStep = String(data?.data?.current_step || "").trim();
+        if (
+          businessId &&
+          (currentStep === "PHONE_NUMBER_VERIFICATION" ||
+            currentStep === "PHONE_NUMBER_SETUP")
+        ) {
+          void (async () => {
+            try {
+              const result = await startWhatsAppVoiceVerification(businessId, {
+                source: "embedded_signup",
+                wabaId: sessionRef.current?.wabaId,
+                phoneNumberId: sessionRef.current?.phoneNumberId,
+                metaBusinessId: sessionRef.current?.metaBusinessId,
+              });
+              setVoiceSession(result.session);
+            } catch {
+              // Session may already exist, or DID may be unmapped — connect can continue.
+            }
+          })();
+        }
       } catch {
         // Ignore non-JSON postMessages from the popup.
       }
@@ -193,7 +216,7 @@ export default function WhatsAppSettingsTab() {
 
     window.addEventListener("message", onMessage);
     return () => window.removeEventListener("message", onMessage);
-  }, []);
+  }, [businessId]);
 
   const handleConnect = async () => {
     setActionError("");
@@ -231,6 +254,40 @@ export default function WhatsAppSettingsTab() {
       }
       if (!signup.ready) {
         throw new Error(t("whatsapp.settings.configMissing"));
+      }
+
+      // Create waiting_for_call session BEFORE Meta popup can place a voice OTP call.
+      // Meta does not expose a reliable pre-call callback for "שיחת טלפון".
+      try {
+        setActionInfo("Preparing voice verification…");
+        const voice = await startWhatsAppVoiceVerification(businessId, {
+          source: "embedded_signup",
+        });
+        setVoiceSession(voice.session);
+        console.info("[whatsapp] Voice verification session ready", {
+          sessionId: voice.session?.sessionId,
+          created: voice.created,
+          status: voice.session?.status,
+          telnyxDid: voice.session?.telnyxDid,
+        });
+      } catch (voiceError: any) {
+        const code = String(voiceError?.response?.data?.code || "");
+        console.warn("[whatsapp] Voice session start before ES failed", {
+          code,
+          message: voiceError?.response?.data?.error || voiceError?.message,
+        });
+        if (code === "VERIFICATION_DID_MISSING") {
+          toast.info(
+            "No Telnyx verification number is mapped for this business. SMS verification can still work; voice OTP capture will not."
+          );
+        } else {
+          toast.warning(
+            getApiErrorMessage(
+              voiceError,
+              "Voice verification session could not be prepared. SMS may still work."
+            )
+          );
+        }
       }
 
       setActionInfo(t("whatsapp.settings.connecting"));
@@ -394,7 +451,9 @@ export default function WhatsAppSettingsTab() {
     if (!businessId) return;
     try {
       setStartingVoiceVerification(true);
-      const result = await startWhatsAppVoiceVerification(businessId);
+      const result = await startWhatsAppVoiceVerification(businessId, {
+        source: "manual",
+      });
       setVoiceSession(result.session);
       toast.info("Voice verification is ready. Request a voice call from Meta.");
     } catch (error: any) {
