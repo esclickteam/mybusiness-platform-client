@@ -18,6 +18,8 @@ type SelectTimeFromSlotsProps = {
   serviceId: string;
   schedule?: ScheduleDay[];
   duration?: number;
+  /** When editing, the appointment must not hide its own slot. */
+  excludeAppointmentId?: string | null;
 };
 
 type ApiError = {
@@ -37,6 +39,7 @@ export default function SelectTimeFromSlots({
   serviceId,
   schedule = [],
   duration = 30,
+  excludeAppointmentId = null,
 }: SelectTimeFromSlotsProps) {
   const [availableSlots, setAvailableSlots] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
@@ -97,17 +100,22 @@ export default function SelectTimeFromSlots({
             serviceId,
             date,
             duration,
+            ...(excludeAppointmentId
+              ? { excludeAppointmentId }
+              : {}),
           },
         });
 
         const slots = Array.isArray(res.data?.slots) ? res.data.slots : [];
 
-        setAvailableSlots(slots);
+        // Keep the time already on the appointment selectable, so editing other
+        // fields never forces the user to move the appointment.
+        const withCurrent =
+          localSelectedTime && !slots.includes(localSelectedTime)
+            ? [...slots, localSelectedTime].sort()
+            : slots;
 
-        if (localSelectedTime && !slots.includes(localSelectedTime)) {
-          setLocalSelectedTime("");
-          onChange("");
-        }
+        setAvailableSlots(withCurrent);
       } catch (err) {
         const apiErr = err as ApiError;
 

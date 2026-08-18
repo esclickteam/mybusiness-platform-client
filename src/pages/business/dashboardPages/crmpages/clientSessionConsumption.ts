@@ -91,12 +91,11 @@ export async function applyClientSessionConsumption(
   const cleanClientId = String(clientId || "").trim();
   if (!cleanBusinessId || !cleanClientId || !delta) return null;
 
-  const { data } = await API.get(`/crm-clients/${cleanBusinessId}`);
-  const clients = Array.isArray(data) ? (data as CrmClientLike[]) : [];
-  const client = clients.find(
-    (item) => String(item?._id || "").trim() === cleanClientId,
-  );
-  if (!client) return null;
+  // The clients list omits custom tab fields, so reading it would rebuild the
+  // counters from scratch and wipe the real package values. Load the one client.
+  const { data } = await API.get(`/crm-clients/item/${cleanClientId}`);
+  const client = (data?.client || data) as CrmClientLike | null;
+  if (!client || String(client._id || "").trim() !== cleanClientId) return null;
 
   const tabs: CustomTabLike[] = Array.isArray(client.customTabs)
     ? client.customTabs.map((tab) => ({
