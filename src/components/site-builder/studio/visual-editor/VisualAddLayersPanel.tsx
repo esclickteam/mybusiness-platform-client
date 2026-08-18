@@ -1471,6 +1471,7 @@ export default function VisualAddLayersPanel({
                 active={addTab === "plugins"}
                 icon={<Puzzle className="h-5 w-5" />}
                 label="תוספים"
+                testId="visual-add-tab-plugins"
                 onClick={() => setAddTab("plugins")}
               />
 

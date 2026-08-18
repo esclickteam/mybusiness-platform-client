@@ -116,33 +116,6 @@ export default function PublicSitePluginOverlays({ site, pageId }: PublicSitePlu
     [site?.pages]
   );
 
-  const showWheel = Boolean(siteId && wheelSettings?.isActive);
-  const showSearch = Boolean(searchSettings?.isActive);
-  const showAccessibility = Boolean(accessibilitySettings?.isActive);
-  const showSmartBot = Boolean(smartBotSettings?.isActive);
-  const contactBarSettings = enabledPlugins.includes("floating-contact-bar")
-    ? site?.pluginSettings?.["floating-contact-bar"] || { isActive: true }
-    : null;
-  const showContactBar = Boolean(
-    enabledPlugins.includes("floating-contact-bar") &&
-      contactBarSettings?.isActive !== false
-  );
-  const hideWhatsappForBar = Boolean(
-    showContactBar && contactBarSettings?.hideWhatsappFloat !== false && contactBarSettings?.showWhatsapp !== false
-  );
-  const showWhatsapp = Boolean(whatsappSettings?.isActive) && !hideWhatsappForBar;
-  const showSocialProof = enabledPlugins.includes("social-proof");
-  const showLanguage = enabledPlugins.includes("multi-language");
-  const showFaq = enabledPlugins.includes("faq-pro");
-  const extraPopups = [];
-  const showAnnouncement = Boolean(announcementSettings?.isActive);
-  const showCookie = Boolean(cookieSettings?.isActive);
-  const showExitPopup = Boolean(exitPopupSettings?.isActive);
-  const showStoreCheckout = Boolean(businessId);
-  const showStoreCatalog = Boolean(
-    businessId && enabledPlugins.includes("store")
-  );
-
   const whatsappFallbackPhone = useMemo(() => {
     const business = site?.business || {};
     const brand = site?.brand || {};
@@ -156,6 +129,53 @@ export default function PublicSitePluginOverlays({ site, pageId }: PublicSitePlu
         ""
     ).trim();
   }, [site]);
+
+  const showWheel = Boolean(siteId && wheelSettings?.isActive);
+  const showSearch = Boolean(searchSettings?.isActive);
+  const showAccessibility = Boolean(accessibilitySettings?.isActive);
+  const showSmartBot = Boolean(smartBotSettings?.isActive);
+  const contactBarSettings = enabledPlugins.includes("floating-contact-bar")
+    ? site?.pluginSettings?.["floating-contact-bar"] || { isActive: true }
+    : null;
+  const contactBarPhone = String(
+    contactBarSettings?.phone ||
+      contactBarSettings?.whatsappPhone ||
+      whatsappSettings?.phone ||
+      whatsappFallbackPhone ||
+      ""
+  ).trim();
+  // Only treat the bar as "shown" when it will actually render at least one action.
+  // Otherwise we must not hide the standalone WhatsApp float.
+  const contactBarHasActions = Boolean(
+    contactBarSettings &&
+      contactBarSettings.isActive !== false &&
+      ((contactBarSettings.showWhatsapp !== false && contactBarPhone) ||
+        (contactBarSettings.showPhone !== false && contactBarPhone) ||
+        (contactBarSettings.showEmail !== false && contactBarSettings.email) ||
+        contactBarSettings.showForm ||
+        contactBarSettings.showBooking)
+  );
+  const showContactBar = Boolean(
+    enabledPlugins.includes("floating-contact-bar") && contactBarHasActions
+  );
+  const hideWhatsappForBar = Boolean(
+    showContactBar &&
+      contactBarSettings?.hideWhatsappFloat !== false &&
+      contactBarSettings?.showWhatsapp !== false &&
+      contactBarPhone
+  );
+  const showWhatsapp = Boolean(whatsappSettings?.isActive) && !hideWhatsappForBar;
+  const showSocialProof = enabledPlugins.includes("social-proof");
+  const showLanguage = enabledPlugins.includes("multi-language");
+  const showFaq = enabledPlugins.includes("faq-pro");
+  const extraPopups = [];
+  const showAnnouncement = Boolean(announcementSettings?.isActive);
+  const showCookie = Boolean(cookieSettings?.isActive);
+  const showExitPopup = Boolean(exitPopupSettings?.isActive);
+  const showStoreCheckout = Boolean(businessId);
+  const showStoreCatalog = Boolean(
+    businessId && enabledPlugins.includes("store")
+  );
 
   useEffect(() => {
     removeOverlayPluginPlaceholders(document);
@@ -218,7 +238,7 @@ export default function PublicSitePluginOverlays({ site, pageId }: PublicSitePlu
       {showContactBar ? (
         <FloatingContactBarWidget
           settings={contactBarSettings}
-          fallbackPhone={whatsappFallbackPhone}
+          fallbackPhone={contactBarPhone || whatsappFallbackPhone}
           hidesWhatsappFloat={hideWhatsappForBar}
         />
       ) : null}
