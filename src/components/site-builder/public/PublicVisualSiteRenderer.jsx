@@ -46,6 +46,7 @@ import {
 import {
   applyAllVisualDataToDom,
   applyVisualResponsiveToDom,
+  hostAlreadyHasOwnLinks,
   prepareAllVideosInDom,
 } from "../studio/visual-editor/utils/visualDomApply";
 import {
@@ -1609,6 +1610,13 @@ function applyPublicLinksToDom(root, visualData) {
     // Never turn a login/register/account widget into a page link.
     if (isPortalMountShellNode(selectedNode)) {
       clearPortalShellPublicLinkAttrs(selectedNode);
+      return;
+    }
+
+    if (
+      !selectedNode.matches("a") &&
+      hostAlreadyHasOwnLinks(selectedNode)
+    ) {
       return;
     }
 

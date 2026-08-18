@@ -113,14 +113,30 @@ describe("enhanceTemplateMobileNav", () => {
     expect(headerNeedsCompactNav(header)).toBe(false);
   });
 
-  it("marks overflow when the header row is narrower than its contents", () => {
+  it("marks overflow from intrinsic chrome widths, not crushed scrollWidth", () => {
     const header = document.createElement("header");
     const row = document.createElement("div");
-    Object.defineProperty(row, "scrollWidth", { value: 900, configurable: true });
-    Object.defineProperty(row, "clientWidth", { value: 640, configurable: true });
+    row.style.display = "flex";
+    Object.defineProperty(row, "clientWidth", { value: 400, configurable: true });
+    const logo = document.createElement("a");
+    const nav = document.createElement("nav");
+    const link = document.createElement("a");
+    const cta = document.createElement("a");
+    nav.appendChild(link);
+    row.append(logo, nav, cta);
     header.appendChild(row);
+    [
+      [logo, 180],
+      [link, 220],
+      [cta, 140],
+    ].forEach(([el, w]) => {
+      const node = el as HTMLElement;
+      Object.defineProperty(node, "scrollWidth", { value: w, configurable: true });
+      node.getBoundingClientRect = () =>
+        ({ width: Number(w), height: 20, top: 0, left: 0, bottom: 20, right: Number(w), x: 0, y: 0, toJSON() {} });
+    });
     expect(headerRowOverflows(header)).toBe(true);
-    Object.defineProperty(row, "scrollWidth", { value: 640, configurable: true });
+    Object.defineProperty(row, "clientWidth", { value: 900, configurable: true });
     expect(headerRowOverflows(header)).toBe(false);
   });
 });

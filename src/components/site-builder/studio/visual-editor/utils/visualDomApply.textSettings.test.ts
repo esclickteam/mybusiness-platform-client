@@ -179,4 +179,29 @@ describe("visual text persistence", () => {
     expect(paragraph.innerHTML).not.toMatch(/<a[^>]*>שלום/);
     expect(paragraph.innerHTML).not.toMatch(/<a[^>]*>יפה/);
   });
+
+  it("does not wrap a header nav that already contains multiple links", () => {
+    const root = document.createElement("div");
+    const nav = document.createElement("nav");
+    nav.setAttribute("data-visual-edit-id", "home.nav-3.section");
+    ["שירותים", "אודות", "קייסים"].forEach((label, index) => {
+      const link = document.createElement("a");
+      link.href = `#item-${index}`;
+      link.textContent = label;
+      nav.appendChild(link);
+    });
+    root.appendChild(nav);
+
+    applyVisualContentToDom(root, {
+      __content: {
+        "home.nav-3.section": {
+          href: "#home",
+        },
+      },
+    });
+
+    expect(nav.querySelectorAll(":scope > a")).toHaveLength(3);
+    expect(nav.querySelector("a a")).toBeNull();
+    expect(nav.querySelector("a")?.getAttribute("href")).toBe("#item-0");
+  });
 });
