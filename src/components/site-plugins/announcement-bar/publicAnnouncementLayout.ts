@@ -149,7 +149,9 @@ export function observePublicAnnouncementLayout(
   resizeObserver?.observe(bar);
   const mutationObserver =
     typeof MutationObserver === "function"
-      ? new MutationObserver(() => measure())
+      ? new MutationObserver(() => {
+          requestAnimationFrame(measure);
+        })
       : null;
   document.querySelectorAll(ROOT_SELECTOR).forEach((root) => {
     mutationObserver?.observe(root, { childList: true, subtree: true });
