@@ -247,7 +247,7 @@ const MOBILE_PAIRS: Array<{ selector: string; body: string }> = [
     body: "flex-wrap: wrap;",
   },
   {
-    selector: ".whitespace-nowrap",
+    selector: ".whitespace-nowrap:not(header *):not([data-template-section-type='header'] *):not([data-section-kind='header'] *)",
     body: "white-space: normal !important;",
   },
   {
@@ -279,7 +279,7 @@ const MOBILE_PAIRS: Array<{ selector: string; body: string }> = [
     body: "max-width: 100%;",
   },
   {
-    selector: "nav",
+    selector: "nav:not(header nav):not([data-template-section-type='header'] nav):not([data-section-kind='header'] nav)",
     body: "max-width: 100%; flex-wrap: wrap;",
   },
 ];
@@ -559,10 +559,50 @@ word-break: break-word;
 )}
 
 ${rule(
-  underRoots("h1, h2, h3, h4, h5, h6, p, li, label, a, button, span"),
+  underRoots(
+    "h1, h2, h3, h4, h5, h6, p, li, label, a, button, span",
+  ),
   `
 overflow-wrap: anywhere;
 word-break: break-word;
+`,
+)}
+
+/* Header chrome must never mid-word wrap / flex-crush — use hamburger instead. */
+${rule(
+  underRoots(
+    [
+      "header",
+      "header *",
+      "[data-template-section-type='header']",
+      "[data-template-section-type='header'] *",
+      "[data-section-kind='header']",
+      "[data-section-kind='header'] *",
+    ].join(", "),
+  ),
+  `
+overflow-wrap: normal !important;
+word-break: normal !important;
+`,
+)}
+
+${rule(
+  underRoots(
+    [
+      "header nav",
+      "header nav a",
+      "header nav button",
+      "header nav span",
+      "[data-template-section-type='header'] nav",
+      "[data-template-section-type='header'] nav a",
+      "[data-section-kind='header'] nav",
+      "[data-section-kind='header'] nav a",
+    ].join(", "),
+  ),
+  `
+flex-shrink: 0 !important;
+white-space: nowrap !important;
+min-width: min-content !important;
 `,
 )}
 
