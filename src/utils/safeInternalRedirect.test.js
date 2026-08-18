@@ -58,6 +58,12 @@ describe("sanitizeInternalRedirect", () => {
 });
 
 describe("resolvePostLoginDestination", () => {
+  it("login without redirect → partner dashboard", () => {
+    expect(resolvePostLoginDestination({ role: "partner" })).toBe(
+      "/partner/dashboard"
+    );
+  });
+
   it("login without redirect → dashboard for full business", () => {
     expect(
       resolvePostLoginDestination({

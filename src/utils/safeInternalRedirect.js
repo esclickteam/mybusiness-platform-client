@@ -120,6 +120,7 @@ export function resolvePostLoginDestination({
   const normalizedRole = String(role || "").toLowerCase();
   if (normalizedRole === "admin") return "/admin/dashboard";
   if (normalizedRole === "marketer") return "/marketer/dashboard";
+  if (normalizedRole === "partner") return "/partner/dashboard";
   if (normalizedRole === "affiliate") return "/affiliate/dashboard";
   if (normalizedRole === "customer") return "/client/dashboard";
 

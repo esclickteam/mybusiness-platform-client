@@ -173,6 +173,8 @@ export default function Login() {
         navigate(withReviewLang("/admin/dashboard"), { replace: true });
       } else if (role === "marketer" && !queryRedirect) {
         navigate(withReviewLang("/marketer/dashboard"), { replace: true });
+      } else if (role === "partner" && !queryRedirect) {
+        navigate(withReviewLang("/partner/dashboard"), { replace: true });
       } else if (
         role === "business" &&
         !loggedInUser?.hasAccess &&

@@ -157,10 +157,23 @@ const ManageRoles = lazy(() => import("./pages/admin/ManageRoles"));
 const AdminPayoutPage = lazy(() => import("./pages/admin/AdminPayoutPage"));
 const AdminAffiliates = lazy(() => import("./pages/admin/AdminAffiliates"));
 const AdminMarketers = lazy(() => import("./pages/admin/AdminMarketers"));
+const AdminPartners = lazy(() => import("./pages/admin/AdminPartners"));
 const AdminSupportChat = lazy(() => import("./pages/admin/AdminSupportChat"));
 const MarketerDashboardPage = lazy(() =>
   import("./pages/marketer/MarketerDashboardPage")
 );
+const PartnerLayout = lazy(() => import("./pages/partner/PartnerLayout"));
+const PartnerDashboard = lazy(() => import("./pages/partner/PartnerDashboard"));
+const PartnerClients = lazy(() => import("./pages/partner/PartnerClients"));
+const PartnerClientDossier = lazy(() => import("./pages/partner/PartnerClientDossier"));
+const PartnerClientWizard = lazy(() => import("./pages/partner/PartnerClientWizard"));
+const PartnerPricing = lazy(() => import("./pages/partner/PartnerPricing"));
+const PartnerStorefrontSettings = lazy(() => import("./pages/partner/PartnerStorefrontSettings"));
+const PartnerRevenue = lazy(() => import("./pages/partner/PartnerRevenue"));
+const PartnerTeam = lazy(() => import("./pages/partner/PartnerTeam"));
+const PartnerSettings = lazy(() => import("./pages/partner/PartnerSettings"));
+const PartnerRegister = lazy(() => import("./pages/partner/PartnerRegister"));
+const PartnerStorefront = lazy(() => import("./pages/public/PartnerStorefront"));
 
 const AffiliatePage = lazy(() =>
   import("./pages/business/dashboardPages/AffiliatePage")
@@ -776,6 +789,8 @@ export default function App() {
     isAdminRoute ||
     isStaffRoute ||
     location.pathname.startsWith("/client") ||
+    location.pathname.startsWith("/partner") ||
+    location.pathname.startsWith("/p/") ||
     location.pathname.includes("/messages");
 
   const isPublicBusinessProfile = /^\/business\/[^/]+$/.test(
@@ -972,6 +987,8 @@ export default function App() {
                         <Route path="/how-it-works" element={<HowItWorks />} />
                         <Route path="/pricing" element={<Pricing />} />
                         <Route path="/Pricing" element={<Pricing />} />
+                        <Route path="/p/:slug" element={<PartnerStorefront />} />
+                        <Route path="/partner/register" element={<PartnerRegister />} />
                         <Route path="/checkout" element={<Checkout />} />
                         <Route path="/faq" element={<FAQ />} />
                         <Route path="/accessibility" element={<Accessibility />} />
@@ -1325,6 +1342,15 @@ export default function App() {
                         />
 
                         <Route
+                          path="/admin/partners"
+                          element={
+                            <ProtectedRoute roles={["admin"]}>
+                              <AdminPartners />
+                            </ProtectedRoute>
+                          }
+                        />
+
+                        <Route
                           path="/admin/support-chat"
                           element={
                             <ProtectedRoute roles={["admin"]}>
@@ -1364,6 +1390,25 @@ export default function App() {
                             </ProtectedRoute>
                           }
                         />
+
+                        <Route
+                          path="/partner/dashboard"
+                          element={
+                            <ProtectedRoute roles={["partner"]}>
+                              <PartnerLayout />
+                            </ProtectedRoute>
+                          }
+                        >
+                          <Route index element={<PartnerDashboard />} />
+                          <Route path="crm" element={<PartnerClients />} />
+                          <Route path="crm/:clientId" element={<PartnerClientDossier />} />
+                          <Route path="clients/new" element={<PartnerClientWizard />} />
+                          <Route path="pricing" element={<PartnerPricing />} />
+                          <Route path="storefront" element={<PartnerStorefrontSettings />} />
+                          <Route path="revenue" element={<PartnerRevenue />} />
+                          <Route path="team" element={<PartnerTeam />} />
+                          <Route path="settings" element={<PartnerSettings />} />
+                        </Route>
 
                         <Route path="*" element={<Navigate to="/" replace />} />
                       </Routes>

@@ -57,7 +57,7 @@ type AuthUser = {
   earlyBirdModalSeenAt?: string | null;
   earlyBirdExpiresAt?: string | Date | null;
 
-  impersonatorRole?: "admin" | "marketer" | string | null;
+  impersonatorRole?: "admin" | "marketer" | "partner" | string | null;
   enabledModules?: string[] | null;
 };
 
@@ -384,30 +384,39 @@ export default function BusinessDashboardLayout() {
       : null) ||
     "admin";
   const isMarketerImpersonation = impersonatorRole === "marketer";
+  const isPartnerImpersonation = impersonatorRole === "partner";
 
   const handleExitImpersonation = async () => {
     if (exitingImpersonation) return;
     setExitingImpersonation(true);
 
     try {
-      const endpoint = isMarketerImpersonation
-        ? "/marketer/exit-impersonation"
-        : "/admin/exit-impersonation";
+      const endpoint = isPartnerImpersonation
+        ? "/partner/exit-impersonation"
+        : isMarketerImpersonation
+          ? "/marketer/exit-impersonation"
+          : "/admin/exit-impersonation";
       const { data } = await API.post(endpoint);
       loginWithToken?.(data.user, data.token, { skipRedirect: true });
       localStorage.removeItem("impersonatedBy");
       localStorage.removeItem("impersonatorRole");
       const redirectTo =
         data.user?.redirectUrl ||
-        (isMarketerImpersonation ? "/marketer/dashboard" : "/admin/dashboard");
+        (isPartnerImpersonation
+          ? "/partner/dashboard"
+          : isMarketerImpersonation
+            ? "/marketer/dashboard"
+            : "/admin/dashboard");
       navigate(redirectTo, { replace: true });
     } catch (err) {
       console.error("Exit impersonation failed:", err);
       alert(
         t(
-          isMarketerImpersonation
-            ? "layout.exitMarketerImpersonationError"
-            : "layout.exitImpersonationError"
+          isPartnerImpersonation
+            ? "layout.exitPartnerImpersonationError"
+            : isMarketerImpersonation
+              ? "layout.exitMarketerImpersonationError"
+              : "layout.exitImpersonationError"
         )
       );
     } finally {
@@ -431,16 +440,20 @@ export default function BusinessDashboardLayout() {
               <div className="text-start">
                 <strong className="block text-sm font-black">
                   {t(
-                    isMarketerImpersonation
-                      ? "layout.marketerImpersonationTitle"
-                      : "layout.adminImpersonationTitle"
+                    isPartnerImpersonation
+                      ? "layout.partnerImpersonationTitle"
+                      : isMarketerImpersonation
+                        ? "layout.marketerImpersonationTitle"
+                        : "layout.adminImpersonationTitle"
                   )}
                 </strong>
                 <span className="block text-xs font-bold text-amber-900/70">
                   {t(
-                    isMarketerImpersonation
-                      ? "layout.marketerImpersonationText"
-                      : "layout.adminImpersonationText",
+                    isPartnerImpersonation
+                      ? "layout.partnerImpersonationText"
+                      : isMarketerImpersonation
+                        ? "layout.marketerImpersonationText"
+                        : "layout.adminImpersonationText",
                     {
                       name: user?.businessName || user?.name || "",
                     }
@@ -457,9 +470,11 @@ export default function BusinessDashboardLayout() {
                 {exitingImpersonation
                   ? t("layout.returning")
                   : t(
-                      isMarketerImpersonation
-                        ? "layout.backToMarketer"
-                        : "layout.backToAdmin"
+                      isPartnerImpersonation
+                        ? "layout.backToPartner"
+                        : isMarketerImpersonation
+                          ? "layout.backToMarketer"
+                          : "layout.backToAdmin"
                     )}
               </button>
             </div>
