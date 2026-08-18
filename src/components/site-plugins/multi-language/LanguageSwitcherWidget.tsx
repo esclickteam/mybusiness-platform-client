@@ -51,6 +51,7 @@ export default function LanguageSwitcherWidget({
   return (
     <div
       data-bizuply-widget="language-switcher"
+      data-bizuply-plugin="multi-language"
       data-bizuply-plugin-runtime="true"
       className="fixed top-3 left-3 z-[2147482400] flex gap-1 rounded-full bg-white/95 p-1 text-xs shadow"
     >

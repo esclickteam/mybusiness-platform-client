@@ -371,11 +371,28 @@ export default function EditorPluginOverlays({
   }, [siteId]);
 
   const siteKey = siteId || "editor";
-  const hideWhatsappForBar = Boolean(
+  const contactBarPhone = String(
+    (contactBarSettings as any)?.phone ||
+      (contactBarSettings as any)?.whatsappPhone ||
+      whatsappSettings?.phone ||
+      fallbackPhone ||
+      ""
+  ).trim();
+  const contactBarHasActions = Boolean(
     contactBarEnabled &&
       contactBarSettings?.isActive !== false &&
+      (((contactBarSettings as any)?.showWhatsapp !== false && contactBarPhone) ||
+        ((contactBarSettings as any)?.showPhone !== false && contactBarPhone) ||
+        ((contactBarSettings as any)?.showEmail !== false &&
+          (contactBarSettings as any)?.email) ||
+        (contactBarSettings as any)?.showForm ||
+        (contactBarSettings as any)?.showBooking)
+  );
+  const hideWhatsappForBar = Boolean(
+    contactBarHasActions &&
       contactBarSettings?.hideWhatsappFloat !== false &&
-      contactBarSettings?.showWhatsapp !== false
+      contactBarSettings?.showWhatsapp !== false &&
+      contactBarPhone
   );
 
   return (
@@ -463,11 +480,11 @@ export default function EditorPluginOverlays({
         />
       ) : null}
 
-      {contactBarEnabled && contactBarSettings?.isActive !== false ? (
+      {contactBarHasActions ? (
         <FloatingContactBarWidget
           settings={contactBarSettings}
           hidesWhatsappFloat={hideWhatsappForBar}
-          fallbackPhone={fallbackPhone}
+          fallbackPhone={contactBarPhone || fallbackPhone}
         />
       ) : null}
 
