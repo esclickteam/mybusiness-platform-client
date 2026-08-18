@@ -161,11 +161,12 @@ function Header() {
     <header
       {...templateSectionProps("header", "Header", "header")}
       data-template-section-type="header"
+      data-visual-flow-lock="true"
       className="sticky top-0 z-50 px-4 pt-4 md:px-8"
       dir="rtl"
     >
-      <div className="mx-auto flex max-w-7xl items-center justify-between rounded-full border border-white/10 bg-[#07100e]/75 px-4 py-3 text-white shadow-[0_18px_70px_rgba(0,0,0,0.25)] backdrop-blur-2xl">
-        <a href="#home" className="flex items-center gap-3">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 overflow-x-auto rounded-full border border-white/10 bg-[#07100e]/75 px-4 py-3 text-white shadow-[0_18px_70px_rgba(0,0,0,0.25)] backdrop-blur-2xl">
+        <a href="#home" className="flex shrink-0 items-center gap-3">
           <TemplateText
             as="span"
             editId="header.logo"
@@ -186,23 +187,23 @@ function Header() {
           </TemplateText>
         </a>
 
-        <nav className="hidden items-center gap-7 text-sm font-medium text-white/65 md:flex">
-          <a href="#services" className="transition hover:text-[#c9f4dc]">
+        <nav className="hidden shrink-0 items-center gap-7 whitespace-nowrap text-sm font-medium text-white/65 md:flex">
+          <a href="#services" className="shrink-0 whitespace-nowrap transition hover:text-[#c9f4dc]">
             <TemplateText as="span" editId="header.nav.services" editLabel="ניווט שירותים">
               שירותים
             </TemplateText>
           </a>
-          <a href="#about" className="transition hover:text-[#c9f4dc]">
+          <a href="#about" className="shrink-0 whitespace-nowrap transition hover:text-[#c9f4dc]">
             <TemplateText as="span" editId="header.nav.about" editLabel="ניווט אודות">
               אודות
             </TemplateText>
           </a>
-          <a href="#gallery" className="transition hover:text-[#c9f4dc]">
+          <a href="#gallery" className="shrink-0 whitespace-nowrap transition hover:text-[#c9f4dc]">
             <TemplateText as="span" editId="header.nav.gallery" editLabel="ניווט קייסים">
               קייסים
             </TemplateText>
           </a>
-          <a href="#booking" className="transition hover:text-[#c9f4dc]">
+          <a href="#booking" className="shrink-0 whitespace-nowrap transition hover:text-[#c9f4dc]">
             <TemplateText as="span" editId="header.nav.booking" editLabel="ניווט ייעוץ">
               ייעוץ
             </TemplateText>
@@ -211,7 +212,7 @@ function Header() {
 
         <a
           href="#booking"
-          className="rounded-full bg-[#c9f4dc] px-5 py-3 text-sm font-black transition duration-500 hover:-translate-y-0.5 hover:bg-white"
+          className="shrink-0 whitespace-nowrap rounded-full bg-[#c9f4dc] px-5 py-3 text-sm font-black transition duration-500 hover:-translate-y-0.5 hover:bg-white"
           style={{ color: "#07100e" }}
         >
           <TemplateText as="span" editId="header.cta" editLabel="כפתור קביעת שיחה">
