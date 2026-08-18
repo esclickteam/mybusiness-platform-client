@@ -118,6 +118,17 @@ const OVERLAY_PLACEHOLDER_KEYS = [
   "benefits-wheel",
   "smart-search",
   "accessibility",
+  "multi-language",
+  "social-proof",
+  "floating-contact-bar",
+  "faq-pro",
+  "analytics-pro",
+  "seo-pro",
+  "refer-a-friend",
+  "birthday-club",
+  "form-to-pdf",
+  "smart-forms",
+  "qr-generator",
 ];
 
 export function removeOverlayPluginPlaceholders(root?: ParentNode | null) {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { X } from "lucide-react";
 
 import { submitPublicSiteLead } from "../../../api/publicSiteLeadsApi";
@@ -26,7 +26,7 @@ export default function ExitPopupWidget({
   settings,
   mode = "live",
 }: ExitPopupWidgetProps) {
-  const cfg = mergeExitPopupSettings(settings);
+  const cfg = useMemo(() => mergeExitPopupSettings(settings), [settings]);
   const [open, setOpen] = useState(mode === "editor");
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");

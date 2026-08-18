@@ -257,18 +257,6 @@ export default function PublicSitePluginOverlays({ site, pageId }: PublicSitePlu
           mode="live"
         />
       ) : null}
-      {showExitPopup
-        ? extraPopups.map((popup: any, index: number) => (
-            <ExitPopupWidget
-              key={String(popup.id || index)}
-              siteKey={`${siteKey}:${popup.id || index}`}
-              slug={slug}
-              pageId={activePageId}
-              settings={mergeExitPopupSettings({ ...exitPopupSettings, ...popup, popups: [] })}
-              mode="live"
-            />
-          ))
-        : null}
       {showStoreCheckout ? (
         <PublicStoreCheckout
           businessId={businessId}

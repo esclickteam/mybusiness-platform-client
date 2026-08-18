@@ -11,8 +11,10 @@ import WhatsAppFloatWidget from "../../../site-plugins/whatsapp-float/WhatsAppFl
 import AnnouncementBarWidget from "../../../site-plugins/announcement-bar/AnnouncementBarWidget";
 import CookieBannerWidget from "../../../site-plugins/cookie-banner/CookieBannerWidget";
 import ExitPopupWidget from "../../../site-plugins/exit-popup/ExitPopupWidget";
+import SocialProofWidget from "../../../site-plugins/social-proof/SocialProofWidget";
 import FloatingContactBarWidget from "../../../site-plugins/floating-contact-bar/FloatingContactBarWidget";
 import LanguageSwitcherWidget from "../../../site-plugins/multi-language/LanguageSwitcherWidget";
+import FaqWidget from "../../../site-plugins/faq-pro/FaqWidget";
 import type { BenefitsWheelSettings } from "../../../site-plugins/benefits-wheel/benefitsWheelUtils";
 import type { SmartSearchSettings } from "../../../site-plugins/smart-search/smartSearchUtils";
 import type { SmartBotSettings } from "../../../site-plugins/smart-bot/smartBotUtils";
@@ -60,14 +62,21 @@ export default function EditorPluginOverlays({
   const [cookieEnabled, setCookieEnabled] = useState(false);
   const [exitPopupSettings, setExitPopupSettings] = useState<ExitPopupSettings | null>(null);
   const [exitPopupEnabled, setExitPopupEnabled] = useState(false);
-  const [contactBarSettings, setContactBarSettings] = useState<Record<string, any> | null>(
+  const [socialProofEnabled, setSocialProofEnabled] = useState(false);
+  const [socialProofSettings, setSocialProofSettings] = useState<Record<string, unknown> | null>(
     null
   );
-  const [contactBarEnabled, setContactBarEnabled] = useState(false);
-  const [languageSettings, setLanguageSettings] = useState<Record<string, any> | null>(null);
   const [languageEnabled, setLanguageEnabled] = useState(false);
+  const [languageSettings, setLanguageSettings] = useState<Record<string, unknown> | null>(null);
+  const [contactBarEnabled, setContactBarEnabled] = useState(false);
+  const [contactBarSettings, setContactBarSettings] = useState<Record<string, unknown> | null>(
+    null
+  );
+  const [faqEnabled, setFaqEnabled] = useState(false);
+  const [faqSettings, setFaqSettings] = useState<Record<string, unknown> | null>(null);
   const [fallbackPhone, setFallbackPhone] = useState("");
   const [pages, setPages] = useState<Array<Record<string, unknown>>>([]);
+  const [activePageId, setActivePageId] = useState("");
 
   useEffect(() => {
     const clean = () => {
@@ -106,8 +115,10 @@ export default function EditorPluginOverlays({
         const announcementOn = plugins.enabledPlugins.includes("announcement-bar");
         const cookieOn = plugins.enabledPlugins.includes("cookie-banner");
         const exitOn = plugins.enabledPlugins.includes("exit-popup");
-        const contactOn = plugins.enabledPlugins.includes("floating-contact-bar");
+        const socialOn = plugins.enabledPlugins.includes("social-proof");
         const languageOn = plugins.enabledPlugins.includes("multi-language");
+        const contactOn = plugins.enabledPlugins.includes("floating-contact-bar");
+        const faqOn = plugins.enabledPlugins.includes("faq-pro");
 
         if (cancelled) return;
 
@@ -119,28 +130,34 @@ export default function EditorPluginOverlays({
         setAnnouncementEnabled(announcementOn);
         setCookieEnabled(cookieOn);
         setExitPopupEnabled(exitOn);
-        setContactBarEnabled(contactOn);
+        setSocialProofEnabled(socialOn);
         setLanguageEnabled(languageOn);
-        setContactBarSettings(
-          contactOn
-            ? site?.pluginSettings?.["floating-contact-bar"] || { isActive: true }
-            : null
-        );
-        setLanguageSettings(languageOn ? site?.pluginSettings?.["multi-language"] || {} : null);
-        const business = site?.business || {};
-        const brand = site?.brand || {};
-        setFallbackPhone(
-          String(
-            business.whatsappUrl ||
-              business.whatsapp ||
-              business.whatsappLink ||
-              business.phone ||
-              brand.phone ||
-              site?.phone ||
-              ""
-          ).trim()
-        );
+        setContactBarEnabled(contactOn);
+                setFaqEnabled(faqOn);
+        {
+          const business = site?.business || {};
+          const brand = site?.brand || {};
+          setFallbackPhone(
+            String(
+              business.whatsappUrl ||
+                business.whatsapp ||
+                business.whatsappLink ||
+                business.phone ||
+                brand.phone ||
+                site?.phone ||
+                ""
+            ).trim()
+          );
+        }
         setPages(Array.isArray(site?.pages) ? site.pages : []);
+        setActivePageId(
+          String(
+            site?.pages?.[0]?.id ||
+              site?.pages?.[0]?._id ||
+              site?.pages?.[0]?.slug ||
+              ""
+          )
+        );
 
         const { getSitePluginSettings } = await import(
           "../../../../api/sitePluginSettingsApi"
@@ -209,6 +226,34 @@ export default function EditorPluginOverlays({
             setExitPopupSettings(mergeExitPopupSettings(settings as ExitPopupSettings));
           }
         }
+
+        if (!socialOn) setSocialProofSettings(null);
+        else {
+          const settings = await getSitePluginSettings(siteId, "social-proof");
+          if (!cancelled) setSocialProofSettings((settings as Record<string, unknown>) || {});
+        }
+
+        if (!languageOn) setLanguageSettings(null);
+        else {
+          const settings = await getSitePluginSettings(siteId, "multi-language");
+          if (!cancelled) setLanguageSettings((settings as Record<string, unknown>) || {});
+        }
+
+        if (!contactOn) setContactBarSettings(null);
+        else {
+          const settings = await getSitePluginSettings(siteId, "floating-contact-bar");
+          if (!cancelled) {
+            setContactBarSettings(
+              (settings as Record<string, unknown>) || { isActive: true }
+            );
+          }
+        }
+
+        if (!faqOn) setFaqSettings(null);
+        else {
+          const settings = await getSitePluginSettings(siteId, "faq-pro");
+          if (!cancelled) setFaqSettings((settings as Record<string, unknown>) || {});
+        }
       } catch {
         if (!cancelled) {
           setWheelEnabled(false);
@@ -227,10 +272,14 @@ export default function EditorPluginOverlays({
           setCookieSettings(null);
           setExitPopupEnabled(false);
           setExitPopupSettings(null);
-          setContactBarEnabled(false);
-          setContactBarSettings(null);
+          setSocialProofEnabled(false);
+          setSocialProofSettings(null);
           setLanguageEnabled(false);
           setLanguageSettings(null);
+          setContactBarEnabled(false);
+          setContactBarSettings(null);
+          setFaqEnabled(false);
+          setFaqSettings(null);
           setFallbackPhone("");
         }
       }
@@ -397,25 +446,6 @@ export default function EditorPluginOverlays({
         />
       ) : null}
 
-      {contactBarEnabled && contactBarSettings?.isActive !== false ? (
-        <FloatingContactBarWidget
-          settings={contactBarSettings}
-          fallbackPhone={fallbackPhone}
-          hidesWhatsappFloat={hideWhatsappForBar}
-        />
-      ) : null}
-
-      {languageEnabled ? (
-        <LanguageSwitcherWidget
-          languages={
-            languageSettings?.languages || [
-              { code: "he", label: "HE", dir: "rtl" },
-              { code: "en", label: "EN", dir: "ltr" },
-            ]
-          }
-        />
-      ) : null}
-
       {cookieEnabled && cookieSettings && cookieSettings.isActive !== false ? (
         <CookieBannerWidget
           siteKey={siteKey}
@@ -431,6 +461,41 @@ export default function EditorPluginOverlays({
           settings={exitPopupSettings}
           mode="editor"
         />
+      ) : null}
+
+      {contactBarEnabled && contactBarSettings?.isActive !== false ? (
+        <FloatingContactBarWidget
+          settings={contactBarSettings}
+          hidesWhatsappFloat={hideWhatsappForBar}
+          fallbackPhone={fallbackPhone}
+        />
+      ) : null}
+
+      {socialProofEnabled ? (
+        <SocialProofWidget
+          slug={siteSlug}
+          pageId={activePageId}
+          settings={socialProofSettings}
+        />
+      ) : null}
+
+      {languageEnabled ? (
+        <LanguageSwitcherWidget
+          languages={
+            (languageSettings?.languages as Array<{
+              code: string;
+              label: string;
+              dir?: string;
+            }>) || [
+              { code: "he", label: "HE", dir: "rtl" },
+              { code: "en", label: "EN", dir: "ltr" },
+            ]
+          }
+        />
+      ) : null}
+
+      {faqEnabled ? (
+        <FaqWidget slug={siteSlug} pageId={activePageId} settings={faqSettings} />
       ) : null}
     </>
   );
