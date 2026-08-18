@@ -282,3 +282,28 @@ export function clearAccessToken() {
     authHeaderSetter(null);
   }
 }
+
+/**
+ * Extend the current Bearer access token without relying on the refresh cookie.
+ * Safe before Stripe Checkout redirects on cross-site SPA/API setups.
+ */
+export async function extendAccessToken() {
+  const current = localStorage.getItem("token");
+  if (!current) return null;
+
+  const { data } = await axios.post(
+    `${BASE_URL}/auth/extend-access`,
+    null,
+    {
+      withCredentials: true,
+      headers: { Authorization: `Bearer ${current}` },
+    }
+  );
+
+  const accessToken = data?.accessToken;
+  if (!accessToken) {
+    throw new Error("No access token from extend-access");
+  }
+  applyAccessToken(accessToken);
+  return accessToken;
+}
