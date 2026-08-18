@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   isNavMenuLabelElementId,
+  resolveNavLabelFromSitePages,
   resolveSitePageForNavContentElement,
   syncSitePageTitlesIntoVisualData,
 } from "./syncNavWithSitePages";
@@ -70,5 +71,102 @@ describe("nav menu label site page rename", () => {
       next[VISUAL_SHARED_CHROME_KEY].__content["chrome.header.nav.0"].text,
     ).toBe("דף הבית");
     expect(next.nav[0].label).toBe("דף הבית");
+  });
+});
+
+describe("first-load nav label lifecycle", () => {
+  it("keeps template label בית when the initial server home title differs", () => {
+    const next = syncSitePageTitlesIntoVisualData(
+      {
+        nav: [{ page: "home", label: "בית", href: "/" }],
+        navHome: "בית",
+      },
+      [{ id: "home", title: "דף הבית", slug: "", isHome: true }],
+    );
+
+    expect(next.nav[0].label).toBe("בית");
+    expect(next.navHome).toBe("בית");
+    expect(next.nav[0].__sitePageId).toBe("home");
+  });
+
+  it("keeps template label Shop when the initial server home title is Store", () => {
+    const next = syncSitePageTitlesIntoVisualData(
+      {
+        nav: [{ page: "home", label: "Shop", href: "/" }],
+        navHome: "Shop",
+      },
+      [{ id: "home", title: "Store", slug: "", isHome: true }],
+    );
+
+    expect(next.nav[0].label).toBe("Shop");
+    expect(next.navHome).toBe("Shop");
+  });
+
+  it("updates the nav label after an already-initialized page is renamed", () => {
+    const sitePages = [
+      { id: "home", title: "Store", slug: "", isHome: true },
+    ];
+    const initialized = syncSitePageTitlesIntoVisualData(
+      { nav: [{ page: "home", label: "Shop", href: "/" }], navHome: "Shop" },
+      sitePages,
+    );
+
+    const renamed = syncSitePageTitlesIntoVisualData(
+      initialized,
+      [{ id: "home", title: "Main Store", slug: "", isHome: true }],
+      { previousTitleById: { home: "Store" } },
+    );
+
+    expect(renamed.nav[0].__sitePageId).toBe("home");
+    expect(renamed.nav[0].label).toBe("Main Store");
+    expect(renamed.navHome).toBe("Main Store");
+  });
+
+  it("keeps a bound nav label when previous titles are empty and the site page title differs", () => {
+    const next = syncSitePageTitlesIntoVisualData(
+      { navHome: "בית" },
+      [{ id: "home", title: "דף הבית", slug: "", isHome: true }],
+    );
+    expect(next.navHome).toBe("בית");
+    expect(
+      resolveNavLabelFromSitePages(
+        { page: "home", label: next.navHome, href: "/", __sitePageId: "home" },
+        next.__sitePages,
+        { href: "/" },
+      ),
+    ).toBe("בית");
+  });
+
+  it("leaves anchor, custom, external, mailto, and tel items unchanged", () => {
+    const nav = [
+      { label: "Home", href: "/" },
+      { label: "About", href: "/#about" },
+      { label: "Lookbook", href: "/lookbook" },
+      { label: "Instagram", href: "https://instagram.com/example" },
+      { label: "Email", href: "mailto:hi@example.com" },
+      { label: "Call", href: "tel:+15551212" },
+    ];
+    const next = syncSitePageTitlesIntoVisualData(
+      { nav },
+      [
+        { id: "home", title: "דף הבית", slug: "", isHome: true },
+        { id: "products", title: "Products", slug: "products" },
+      ],
+      { previousTitleById: { home: "Home", products: "Shop" } },
+    ).nav;
+
+    expect(next.map((item: any) => [item.label, item.href])).toEqual([
+      ["Home", "/"],
+      ["About", "/#about"],
+      ["Lookbook", "/lookbook"],
+      ["Instagram", "https://instagram.com/example"],
+      ["Email", "mailto:hi@example.com"],
+      ["Call", "tel:+15551212"],
+    ]);
+    expect(next[1].__sitePageId).toBeFalsy();
+    expect(next[2].__sitePageId).toBeFalsy();
+    expect(next[3].__sitePageId).toBeFalsy();
+    expect(next[4].__sitePageId).toBeFalsy();
+    expect(next[5].__sitePageId).toBeFalsy();
   });
 });

@@ -63,10 +63,19 @@ function pageTitle(page: SitePageNavSource | null | undefined) {
   return String(page?.title || page?.name || "").trim();
 }
 
+function navItemAlreadyBoundToSitePage(
+  navItem: { __sitePageId?: unknown; sitePageId?: unknown } | null | undefined,
+) {
+  return Boolean(
+    String(navItem?.__sitePageId || navItem?.sitePageId || "").trim(),
+  );
+}
+
 function labelAfterSitePageRename(
   currentLabel: string,
   matched: SitePageNavSource | null | undefined,
   previousTitleById?: Record<string, string>,
+  alreadyBound = false,
 ) {
   const itemLabel = String(currentLabel || "").trim();
   const currentTitle = pageTitle(matched);
@@ -75,10 +84,17 @@ function labelAfterSitePageRename(
     previousTitleById?.[String(matched.id || "")] || "",
   ).trim();
   /*
-    Keep template Preview labels on first editor load.
-    Only rewrite when a Site Page title actually changed.
+    Initial Template → Site Page binding keeps the template label.
+    A different server title on first load is not a user rename.
+    Only rewrite after an already-bound page title changes post-init.
   */
-  if (previousTitle && previousTitle !== currentTitle) return currentTitle;
+  if (
+    alreadyBound &&
+    previousTitle &&
+    previousTitle !== currentTitle
+  ) {
+    return currentTitle;
+  }
   return itemLabel || currentTitle;
 }
 
@@ -602,6 +618,7 @@ export function resolveNavLabelFromSitePages(
       String(navItem?.label || "").trim(),
       matched,
       options?.previousTitleById,
+      navItemAlreadyBoundToSitePage(navItem),
     ) || pageTitle(matched)
   );
 }
@@ -709,6 +726,7 @@ export function syncNavLabelsWithSitePages<T extends TemplateNavItem>(
       String(item?.label || "").trim(),
       matched,
       options?.previousTitleById,
+      navItemAlreadyBoundToSitePage(item),
     );
     const nextPageId = isNonPageNavHref(resolvedHref)
       ? ""
@@ -803,6 +821,9 @@ function writeNavLabelsIntoContent(
       String(existing.text || item.label || "").trim(),
       matched,
       previousTitleById,
+      navItemAlreadyBoundToSitePage({
+        __sitePageId: existing.sitePageId || item.__sitePageId,
+      }),
     );
     if (!label) return;
 
@@ -899,6 +920,7 @@ function syncAllNavLikeContent(
       String(item.text || "").trim(),
       matched,
       previousTitleById,
+      navItemAlreadyBoundToSitePage(item),
     );
     if (!title || String(item.text || "") === title) return;
 
@@ -967,6 +989,7 @@ function syncLinkedPageNameContent(
 function syncNavStringFields(
   data: Record<string, any>,
   sitePages: SitePageNavSource[],
+  previousTitleById?: Record<string, string>,
 ) {
   const next = { ...data };
 
@@ -981,6 +1004,15 @@ function syncNavStringFields(
     */
     if (!id || normalizeKey(title) === id) return;
     if (/^[a-z][a-z0-9_-]*$/i.test(title.trim())) return;
+
+    const previousTitle = String(
+      previousTitleById?.[String(page.id || "")] || "",
+    ).trim();
+    /*
+      First bind keeps the template string (navHome, …).
+      Rewrite only after this page's initialized title actually changes.
+    */
+    if (!previousTitle || previousTitle === title) return;
 
     const candidates = new Set<string>();
 
@@ -1079,7 +1111,7 @@ export function syncSitePageTitlesIntoVisualData(
     };
   }
 
-  next = syncNavStringFields(next, pages);
+  next = syncNavStringFields(next, pages, previousTitleById);
   next = {
     ...next,
     __navTree: buildNavTreeFromSitePages(pages),
