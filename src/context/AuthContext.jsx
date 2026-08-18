@@ -498,7 +498,7 @@ export function AuthProvider({ children }) {
 
       return {
         user: normalizedUser,
-        redirectUrl: destination || redirectUrl || null,
+        redirectUrl: redirectUrl || destination || null,
       };
     } catch (err) {
       setError(
