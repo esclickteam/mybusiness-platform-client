@@ -115,7 +115,7 @@ export default function WebsiteProductPage() {
         <meta property="og:type" content="website" />
         <meta property="og:site_name" content="BizUply" />
         <link rel="preload" as="image" href="/floriquedesk.webp" />
-        <link rel="preload" as="image" href="/velmoradesk.webp" />
+        <link rel="preload" as="image" href="/Adiondesk.webp" />
         <link rel="preload" as="image" href="/PulseCoredesk.webp" />
       </Helmet>
 

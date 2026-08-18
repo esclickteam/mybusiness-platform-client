@@ -570,7 +570,7 @@ export function initBizuplyEditor({
     // Do NOT load defaultWebsiteHtml/defaultCanvasCss here.
     // WebsiteStudioPage is the single source responsible for loading the selected template.
     // Loading a default template here causes a visible flash of an old/generic template
-    // before the selected renderer template, like Velmora, is loaded.
+    // before the selected renderer template is loaded.
     console.log("[BIZUPLY STUDIO] initEditor:skip-default-canvas-template");
 
     studioElements.forEach((element) => {
@@ -841,32 +841,6 @@ function injectCanvasRuntimeAssets(editor: Editor) {
       .gjs-hovered {
         outline: 2px dashed rgba(124,58,237,0.55) !important;
         outline-offset: 6px !important;
-      }
-
-      [data-template-id="velmora"],
-      [data-template-id="velmora"] * {
-        box-sizing: border-box;
-      }
-
-      [data-template-id="velmora"] {
-        background: #f6f2ea;
-        color: #27231f;
-        font-family: Inter, Assistant, Arial, sans-serif;
-      }
-
-      [data-template-id="velmora"] img {
-        display: block;
-      }
-
-      [data-template-id="velmora"] button,
-      [data-template-id="velmora"] a {
-        cursor: pointer;
-      }
-
-      [data-template-id="velmora"] .serif-title,
-      [data-template-id="velmora"] [class*="Georgia"],
-      [data-template-id="velmora"] [class*="Times_New_Roman"] {
-        font-family: Georgia, 'Times New Roman', serif;
       }
 
       .bizuply-reveal-up {

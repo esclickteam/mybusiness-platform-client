@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
   isNavMenuLabelElementId,
+  resolveBuiltinNavLabelFromSitePages,
   resolveNavLabelFromSitePages,
   resolveSitePageForNavContentElement,
   syncSitePageTitlesIntoVisualData,
@@ -168,5 +169,35 @@ describe("first-load nav label lifecycle", () => {
     expect(next[3].__sitePageId).toBeFalsy();
     expect(next[4].__sitePageId).toBeFalsy();
     expect(next[5].__sitePageId).toBeFalsy();
+  });
+});
+
+describe("resolveBuiltinNavLabelFromSitePages", () => {
+  const pages = [
+    { id: "home", title: "Home page", slug: "", isHome: true },
+  ];
+
+  it("keeps the template label when the initial Site Page title differs", () => {
+    expect(
+      resolveBuiltinNavLabelFromSitePages("home", "Welcome", pages, {
+        href: "/",
+        boundSitePageId: "home",
+      }),
+    ).toBe("Welcome");
+  });
+
+  it("uses the Site Page title after a real post-init rename", () => {
+    expect(
+      resolveBuiltinNavLabelFromSitePages(
+        "home",
+        "Welcome",
+        [{ id: "home", title: "Landing", slug: "", isHome: true }],
+        {
+          href: "/",
+          boundSitePageId: "home",
+          previousTitleById: { home: "Home page" },
+        },
+      ),
+    ).toBe("Landing");
   });
 });

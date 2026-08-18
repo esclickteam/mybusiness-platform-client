@@ -108,7 +108,7 @@ export function VisualPageStack({
               : !forceLibrary && page.id === effectiveActivePageId;
 
           // Marketing / static previews: skip mounting inactive pages entirely.
-          // Velmora alone registers 14+ pages — keep-alive freezes mobile scroll.
+          // Large templates register many pages — keep-alive freezes mobile scroll.
           if (!keepAlive && !visible) return null;
 
           return (

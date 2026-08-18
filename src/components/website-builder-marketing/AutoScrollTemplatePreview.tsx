@@ -189,7 +189,7 @@ export default function AutoScrollTemplatePreview({
       node.offsetHeight,
       DESIGN_MIN_HEIGHT * 0.7,
     );
-    // Never resize the scrolling layer mid-pass — that is what made Velmora "fall".
+    // Never resize the scrolling layer mid-pass — that is what made previews "fall".
     if (height > 0 && !scrollingRef.current) setContentHeight(height);
     return height;
   };

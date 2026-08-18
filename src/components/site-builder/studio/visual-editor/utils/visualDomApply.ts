@@ -565,8 +565,7 @@ function shouldApplyTextToNode(node: HTMLElement) {
 
   if (
     node.getAttribute("data-bizuply-lock-text") === "true" ||
-    node.getAttribute("data-velmora-page-link") === "true" ||
-    node.closest('[data-bizuply-lock-text="true"], [data-velmora-page-link="true"]')
+    node.closest('[data-bizuply-lock-text="true"]')
   ) {
     return false;
   }
@@ -692,8 +691,7 @@ function applyTextContentToNode(
 
   if (
     node.getAttribute("data-bizuply-lock-text") === "true" ||
-    node.getAttribute("data-velmora-page-link") === "true" ||
-    node.closest('[data-bizuply-lock-text="true"], [data-velmora-page-link="true"]')
+    node.closest('[data-bizuply-lock-text="true"]')
   ) {
     return;
   }

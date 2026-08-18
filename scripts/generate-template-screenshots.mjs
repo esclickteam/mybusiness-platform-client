@@ -5,7 +5,7 @@
  * Usage:
  *   node scripts/generate-template-screenshots.mjs
  *   node scripts/generate-template-screenshots.mjs --base=http://127.0.0.1:4173
- *   node scripts/generate-template-screenshots.mjs --only=velmora,adion
+ *   node scripts/generate-template-screenshots.mjs --only=adion,pulsecore
  *   node scripts/generate-template-screenshots.mjs --limit=10
  *   node scripts/generate-template-screenshots.mjs --concurrency=2
  */

@@ -1,6 +1,6 @@
 /**
  * Ensures only one marketing live-template preview mounts at a time.
- * Prevents mobile scroll jank when heavy templates (e.g. Velmora) mount together.
+ * Prevents mobile scroll jank when heavy templates mount together.
  */
 
 type Listener = (activeId: string | null) => void;

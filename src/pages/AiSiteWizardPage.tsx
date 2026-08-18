@@ -212,8 +212,8 @@ export default function AiSiteWizardPage() {
       );
       const built = materializeAiSitePlan({
         ...plan,
-        hostTemplateKey: "velmora",
-        templateKey: "velmora",
+        hostTemplateKey: "adion",
+        templateKey: "adion",
       });
 
       const hostKey = built.hostTemplateKey;

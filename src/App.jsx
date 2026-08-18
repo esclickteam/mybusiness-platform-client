@@ -509,13 +509,12 @@ function PublicMiniSitePage() {
       if (isPortalMountShell(link)) return;
 
       /*
-        Template SPA nav (Velmora etc.) owns its own page state. Let the
+        Template SPA nav owns its own page state. Let the
         React onClick run instead of remounting the public site via loadSite.
       */
       if (
-        link.getAttribute("data-velmora-page-link") === "true" ||
         link.getAttribute("data-bizuply-spa-nav") === "true" ||
-        link.closest('[data-velmora-page-link="true"], [data-bizuply-spa-nav="true"]')
+        link.closest('[data-bizuply-spa-nav="true"]')
       ) {
         return;
       }

@@ -2,11 +2,6 @@ import type { ComponentType } from "react";
 
 import { withTemplateResponsiveCss } from "./shared/templateResponsiveCss";
 
-import VelmoraPages, { velmoraPages } from "./velmora/pages";
-import { velmoraEditorCss } from "./velmora/editorCss";
-import { velmoraSchema } from "./velmora/schema";
-import { velmoraDefaultData } from "./velmora/defaultData";
-
 import AelinePages, { aelinePages } from "./aeline/pages";
 import { aelineEditorCss } from "./aeline/editorCss";
 import { aelineSchema } from "./aeline/schema";
@@ -230,11 +225,6 @@ import LoteraPages, { loteraPages } from "./lotera/pages";
 import { loteraEditorCss } from "./lotera/editorCss";
 import { loteraSchema } from "./lotera/schema";
 import { loteraDefaultData } from "./lotera/defaultData";
-
-import KeyoraPages, { keyoraPages } from "./keyora/pages";
-import { keyoraEditorCss } from "./keyora/editorCss";
-import { keyoraSchema } from "./keyora/schema";
-import { keyoraDefaultData } from "./keyora/defaultData";
 
 import EstateoPages, { estateoPages } from "./estateo/pages";
 import { estateoEditorCss } from "./estateo/editorCss";
@@ -1062,7 +1052,7 @@ import type {
   כל תבנית שרוצה להיות זהה בצפייה ובעריכה
   חייבת להיות מיובאת כאן ולהופיע בתוך studioTemplateRendererRegistry.
 
-  תבניות מקצועיות כמו Velmora / Aeline / PulseCore / Spalcio /
+  תבניות מקצועיות כמו Aeline / PulseCore / Spalcio /
   Wantravel / Lexora / IDO / Elevora / Servora / Adion / Virello /
   Nadlanist / Novastra / Domora / Serenova / Justora / Shinora / Cyclora / Chanel יעבדו עם:
   editorMode: "visual-react"
@@ -1163,17 +1153,6 @@ export const studioTemplateRendererRegistry: Record<
     schema: idoSchema as StudioTemplateRenderer["schema"],
     defaultData: idoDefaultData as unknown as Record<string, any>,
     editorCss: idoEditorCss,
-  }),
-
-  velmora: createRenderer({
-    key: "velmora",
-    name: "Velmora",
-    Component: VelmoraPages,
-    pages: velmoraPages,
-    editorMode: "visual-react",
-    schema: velmoraSchema,
-    defaultData: velmoraDefaultData,
-    editorCss: velmoraEditorCss,
   }),
 
   aeline: createRenderer({
@@ -1655,17 +1634,6 @@ export const studioTemplateRendererRegistry: Record<
     schema: loteraSchema as unknown as StudioTemplateRenderer["schema"],
     defaultData: loteraDefaultData as unknown as Record<string, any>,
     editorCss: loteraEditorCss,
-  }),
-
-  keyora: createRenderer({
-    key: "keyora",
-    name: "Keyora",
-    Component: KeyoraPages,
-    pages: keyoraPages,
-    editorMode: "visual-react",
-    schema: keyoraSchema as unknown as StudioTemplateRenderer["schema"],
-    defaultData: keyoraDefaultData as unknown as Record<string, any>,
-    editorCss: keyoraEditorCss,
   }),
 
   estateo: createRenderer({

@@ -495,9 +495,6 @@ ${rule(
       ".journal-hero img.absolute",
       "[data-media-replaceable='true'] > img.h-full",
       "[data-editable-image-card='true'] > img.h-full",
-      "[data-velmora-safe-image-box='true'] > img",
-      "[data-velmora-hard-image='true'] > img",
-      "[data-velmora-fan-card='true'] > img",
     ].join(", "),
   ),
   `

@@ -624,6 +624,34 @@ export function resolveNavLabelFromSitePages(
 }
 
 /**
+ * Render-time builtin nav labels (React headers that rebuild menus from
+ * template keys + Site Pages). Uses the same first-load / rename lifecycle
+ * as visual-data sync — never prefer a Site Page title on initial bind.
+ */
+export function resolveBuiltinNavLabelFromSitePages(
+  pageKey: string,
+  templateLabel: string,
+  sitePages: SitePageNavSource[] | null | undefined,
+  options?: FindNavPageOptions & { boundSitePageId?: string; href?: string },
+) {
+  const key = String(pageKey || "").trim();
+  const href =
+    String(options?.href || "").trim() ||
+    (normalizeKey(key) === "home" || !key ? "/" : `/${normalizeKey(key)}`);
+  return resolveNavLabelFromSitePages(
+    {
+      id: key,
+      page: key,
+      label: templateLabel,
+      href,
+      __sitePageId: options?.boundSitePageId,
+    },
+    sitePages,
+    options,
+  );
+}
+
+/**
  * One menu item per target page — prevents duplicates like two "צור קשר"
  * when FAQ + Contact both pointed at `contact` and titles were synced.
  */

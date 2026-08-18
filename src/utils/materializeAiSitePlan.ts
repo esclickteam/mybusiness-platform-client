@@ -265,7 +265,7 @@ export function materializePageVisualData(
 
 export function materializeAiSitePlan(plan: AiSitePlan) {
   const hostTemplateKey = String(
-    plan.hostTemplateKey || plan.templateKey || "velmora"
+    plan.hostTemplateKey || plan.templateKey || "adion"
   ).toLowerCase();
 
   const pages = (plan.pages || []).map((page, index) => {
@@ -536,8 +536,8 @@ export function buildClientAiSitePlan(input: {
 
   return {
     siteName: businessName,
-    hostTemplateKey: "velmora",
-    templateKey: "velmora",
+    hostTemplateKey: "adion",
+    templateKey: "adion",
     palette: {
       primary: input.primaryColor || "#4c1d95",
       secondary: input.secondaryColor || "#0ea5e9",

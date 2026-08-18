@@ -19,10 +19,6 @@ const TEMPLATE_THEMES: Record<string, Partial<VisualSectionTheme>> = {
     text: "#18231F",
     muted: "#59645E",
   },
-  velmora: {
-    primary: "#2F241B", accent: "#9A6F3B", background: "#FBF7EF",
-    surface: "#FFFFFF", text: "#2F241B", muted: "#8B735F",
-  },
   wantravel: {
     primary: "#18392F", accent: "#B6772F", background: "#F7F1E7",
     surface: "#FFF8EF", text: "#1F2A24", muted: "#6B786F",
