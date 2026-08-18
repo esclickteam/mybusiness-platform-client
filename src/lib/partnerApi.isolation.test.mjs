@@ -49,10 +49,31 @@ test("shared Business layout uses Partner managed context, not impersonation", (
   assert.equal(src.includes("/marketer/exit-impersonation"), true);
   assert.equal(src.includes("/partner/managed-context/exit"), true);
   assert.equal(src.includes('impersonatorRole === "partner"'), false);
-  assert.equal(src.includes("אתה מנהל כרגע את:"), true);
-  assert.equal(src.includes("חזרה ללוח הפרטנר"), true);
+  assert.equal(src.includes("layout.partnerImpersonationText"), true);
+  assert.equal(src.includes("layout.backToPartner"), true);
+  assert.equal(src.includes("layout.partnerManagedPartnerLine"), true);
   assert.equal(src.includes("CRMClient"), false);
   assert.equal(src.includes("/crm-clients"), false);
+
+  const he = readFileSync(join(ROOT, "i18n/locales/he.json"), "utf8");
+  assert.equal(he.includes("אתה מנהל כרגע את: {{name}}"), true);
+  assert.equal(he.includes("חזרה ללוח הפרטנר"), true);
+  assert.equal(he.includes("Partner: {{name}}"), true);
+});
+
+test("DashboardPage allows Partner managed context without switching role", () => {
+  const src = readFileSync(
+    join(ROOT, "pages/business/dashboardPages/DashboardPage.tsx"),
+    "utf8"
+  );
+  assert.equal(src.includes("canOperateManagedBusiness"), true);
+  assert.equal(src.includes("isPartnerManaged"), true);
+});
+
+test("AuthContext decodes JWT as UTF-8 instead of raw atob", () => {
+  const auth = readFileSync(join(ROOT, "context/AuthContext.jsx"), "utf8");
+  assert.equal(auth.includes("JSON.parse(atob"), false);
+  assert.equal(auth.includes("decodeJwtPayload"), true);
 });
 
 test("logged-in partner is not dropped on the public homepage", () => {

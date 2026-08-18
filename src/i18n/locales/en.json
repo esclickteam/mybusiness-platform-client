@@ -438,6 +438,7 @@
     "marketerImpersonationText": "You are managing {{name}}'s account. Campaign management and CRM are available.",
     "partnerImpersonationTitle": "Partner mode — client management",
     "partnerImpersonationText": "You are currently managing: {{name}}",
+    "partnerManagedPartnerLine": "Partner: {{name}}",
     "backToAdmin": "Back to admin panel",
     "backToMarketer": "Back to marketer dashboard",
     "backToPartner": "Back to partner dashboard",

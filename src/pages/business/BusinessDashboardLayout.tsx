@@ -23,6 +23,8 @@ import {
   setAdminActiveBusinessId,
 } from "../../utils/adminTenant";
 import { ensurePushSubscription, listenForPushSubscriptionChange } from "../../utils/push";
+import { clearManagedBusinessContext } from "../../lib/partnerManagedContext";
+import { refreshAccessTokenOnce } from "../../utils/tokenRefresh";
 
 import FacebookStyleNotifications from "../../components/FacebookStyleNotifications";
 import BusinessWorkspaceNav from "../../components/BusinessWorkspaceNav";
@@ -425,25 +427,48 @@ export default function BusinessDashboardLayout() {
       loginWithToken?.(data.user, data.token, { skipRedirect: true });
       localStorage.removeItem("impersonatedBy");
       localStorage.removeItem("impersonatorRole");
-      localStorage.removeItem("managedBusinessId");
-      localStorage.removeItem("managedBusinessName");
+      clearManagedBusinessContext();
       const redirectTo =
-        data.user?.redirectUrl ||
-        (isPartnerManaged
+        isPartnerManaged
           ? "/partner/dashboard"
-          : isMarketerImpersonation
-            ? "/marketer/dashboard"
-            : "/admin/dashboard");
+          : data.user?.redirectUrl ||
+            (isMarketerImpersonation
+              ? "/marketer/dashboard"
+              : "/admin/dashboard");
       navigate(redirectTo, { replace: true });
     } catch (err) {
       console.error("Exit managed context / impersonation failed:", err);
+      if (isPartnerManaged) {
+        clearManagedBusinessContext();
+        try {
+          const newToken = await refreshAccessTokenOnce();
+          if (newToken) {
+            loginWithToken?.(
+              {
+                ...(user || {}),
+                role: "partner",
+                businessId: null,
+                managedBusinessId: null,
+                managedBusinessName: null,
+                impersonatedBy: null,
+                impersonatorRole: null,
+                redirectUrl: "/partner/dashboard",
+              },
+              newToken,
+              { skipRedirect: true }
+            );
+          }
+        } catch {
+          /* still leave the managed UI */
+        }
+        navigate("/partner/dashboard", { replace: true });
+        return;
+      }
       alert(
         t(
-          isPartnerManaged
-            ? "layout.exitPartnerImpersonationError"
-            : isMarketerImpersonation
-              ? "layout.exitMarketerImpersonationError"
-              : "layout.exitImpersonationError"
+          isMarketerImpersonation
+            ? "layout.exitMarketerImpersonationError"
+            : "layout.exitImpersonationError"
         )
       );
     } finally {
@@ -468,10 +493,14 @@ export default function BusinessDashboardLayout() {
                 {isPartnerManaged ? (
                   <>
                     <strong className="block text-sm font-black">
-                      אתה מנהל כרגע את: {managedBusinessName}
+                      {t("layout.partnerImpersonationText", {
+                        name: managedBusinessName,
+                      })}
                     </strong>
                     <span className="block text-xs font-bold text-amber-900/70">
-                      Partner: {partnerDisplayName}
+                      {t("layout.partnerManagedPartnerLine", {
+                        name: partnerDisplayName,
+                      })}
                     </span>
                   </>
                 ) : (
@@ -506,7 +535,7 @@ export default function BusinessDashboardLayout() {
                 {exitingImpersonation
                   ? t("layout.returning")
                   : isPartnerManaged
-                    ? "חזרה ללוח הפרטנר"
+                    ? t("layout.backToPartner")
                     : t(
                         isMarketerImpersonation
                           ? "layout.backToMarketer"

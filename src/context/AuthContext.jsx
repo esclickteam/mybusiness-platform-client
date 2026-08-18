@@ -18,9 +18,11 @@ import {
   resetSessionInvalidationGuard,
 } from "../utils/sessionInvalidation";
 import {
+  applyManagedSessionToUser,
   clearManagedBusinessContext,
   setManagedBusinessContext,
 } from "../lib/partnerManagedContext";
+import { decodeJwtPayload } from "../lib/decodeJwtPayload";
 import {
   clearLastDashboardRoute,
   resolveBusinessDashboardPath,
@@ -254,7 +256,7 @@ export function AuthProvider({ children }) {
         }
       );
 
-      const normalized = normalizeUser(data);
+      const normalized = applyManagedSessionToUser(normalizeUser(data));
       setUser(normalized);
       localStorage.setItem("businessDetails", JSON.stringify(normalized));
       return normalized;
@@ -294,17 +296,17 @@ export function AuthProvider({ children }) {
     setAuthToken(accessToken);
     setToken(accessToken);
 
-    const normalizedUser = normalizeUser(userFromServer);
+    let normalizedUser = normalizeUser(userFromServer);
     setUser(normalizedUser);
     localStorage.setItem("businessDetails", JSON.stringify(normalizedUser));
 
     try {
-      const payload = JSON.parse(atob(accessToken.split(".")[1]));
+      const payload = decodeJwtPayload(accessToken) || {};
 
       if (payload.impersonatedBy && payload.impersonatorRole !== "partner") {
-        localStorage.setItem("impersonatedBy", payload.impersonatedBy);
+        localStorage.setItem("impersonatedBy", String(payload.impersonatedBy));
         if (payload.impersonatorRole) {
-          localStorage.setItem("impersonatorRole", payload.impersonatorRole);
+          localStorage.setItem("impersonatorRole", String(payload.impersonatorRole));
         } else if (userFromServer?.impersonatorRole) {
           localStorage.setItem(
             "impersonatorRole",
@@ -317,25 +319,31 @@ export function AuthProvider({ children }) {
       }
 
       const managedBusinessId =
-        payload.managedBusinessId ||
         userFromServer?.managedBusinessId ||
+        payload.managedBusinessId ||
         null;
+      const managedBusinessName =
+        userFromServer?.managedBusinessName ||
+        payload.managedBusinessName ||
+        null;
+      const partnerName =
+        userFromServer?.partnerName || payload.partnerName || null;
       setManagedBusinessContext({
         managedBusinessId,
-        managedBusinessName:
-          payload.managedBusinessName ||
-          userFromServer?.managedBusinessName ||
-          null,
-        partnerName: payload.partnerName || userFromServer?.partnerName || null,
+        managedBusinessName,
+        partnerName,
       });
       if (managedBusinessId) {
-        normalizedUser.managedBusinessId = managedBusinessId;
-        normalizedUser.managedBusinessName =
-          payload.managedBusinessName || userFromServer?.managedBusinessName;
-        normalizedUser.partnerName =
-          payload.partnerName || userFromServer?.partnerName;
-        normalizedUser.role = "partner";
-        setUser({ ...normalizedUser });
+        normalizedUser = applyManagedSessionToUser({
+          ...normalizedUser,
+          role: "partner",
+          managedBusinessId,
+          managedBusinessName,
+          partnerName,
+          businessId: userFromServer?.businessId || managedBusinessId,
+        });
+        setUser(normalizedUser);
+        localStorage.setItem("businessDetails", JSON.stringify(normalizedUser));
       } else if (normalizedUser.role === "partner") {
         clearManagedBusinessContext();
       }
