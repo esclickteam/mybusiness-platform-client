@@ -30,6 +30,7 @@ import {
   resolvePostLoginDestination,
   sanitizeInternalRedirect,
 } from "../utils/safeInternalRedirect";
+import { isAllowedPluginBillingReturn } from "../utils/pluginBillingReturn";
 import BizuplyLoader from "../components/ui/BizuplyLoader";
 import { isPublicCustomerSiteHost } from "../utils/publicSiteHost";
 import { clearPushEnabledPreferenceCache } from "../utils/pushPreference";
@@ -832,15 +833,10 @@ export function AuthProvider({ children }) {
             location.pathname === "/dashboard" ||
             location.pathname.startsWith("/dashboard/") ||
             (location.pathname.startsWith("/business/") &&
-              !/^\/business\/[^/]+\/dashboard\/website(\/|$)/.test(
-                location.pathname
-              ) &&
-              !["success", "cancel"].includes(
-                new URLSearchParams(location.search).get("portalBilling") || ""
-              ) &&
-              !["success", "cancel"].includes(
-                new URLSearchParams(location.search).get("pluginBilling") || ""
-              ))
+              !isAllowedPluginBillingReturn({
+                pathname: location.pathname,
+                search: location.search,
+              }))
           ) {
             navigate("/pricing", { replace: true });
           }

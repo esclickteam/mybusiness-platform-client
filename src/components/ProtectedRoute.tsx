@@ -5,6 +5,7 @@ import Unauthorized from "./Unauthorized";
 import TrialExpiredModal from "./TrialExpiredModal";
 import BizuplyLoader from "./ui/BizuplyLoader";
 import { rememberPostLoginRedirect } from "../utils/safeInternalRedirect";
+import { isAllowedPluginBillingReturn } from "../utils/pluginBillingReturn";
 
 type UserRole =
   | "admin"
@@ -141,29 +142,19 @@ export default function ProtectedRoute({
 
   /* ===========================
      💳 Unpaid business – finish checkout first
-     Allow Stripe plugin/portal billing returns and website manage routes so
-     post-checkout deep links are not bounced to /pricing before entitlement UI.
+     Exception: Stripe plugin/portal billing return only (query or same-tab
+     marker). Manual /website manage URLs must still hit /pricing.
   =========================== */
   const isImpersonating =
     typeof window !== "undefined" &&
     Boolean(window.localStorage.getItem("impersonatedBy"));
 
-  const isWebsiteDashboardPath = /^\/business\/[^/]+\/dashboard\/website(\/|$)/.test(
-    location.pathname
-  );
-  const billingReturnParam =
-    new URLSearchParams(location.search || "").get("portalBilling") ||
-    new URLSearchParams(location.search || "").get("pluginBilling");
-  const isBillingReturn =
-    billingReturnParam === "success" || billingReturnParam === "cancel";
+  const isBillingReturn = isAllowedPluginBillingReturn({
+    pathname: location.pathname,
+    search: location.search,
+  });
 
-  if (
-    isBusiness &&
-    !user.hasAccess &&
-    !isImpersonating &&
-    !isWebsiteDashboardPath &&
-    !isBillingReturn
-  ) {
+  if (isBusiness && !user.hasAccess && !isImpersonating && !isBillingReturn) {
     return <Navigate to="/pricing" replace />;
   }
 
