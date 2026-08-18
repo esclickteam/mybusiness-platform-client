@@ -63,6 +63,7 @@ export type PartnerMe = {
   membership: {
     membershipId: string;
     role: "owner" | "member";
+    status?: "active" | "revoked";
     permissions: PartnerPermission[];
   };
 };
@@ -138,19 +139,42 @@ export type PartnerClient = {
   bizuplyShareRate?: number;
 };
 
+export type PartnerSubscriptionSnapshot = {
+  planKey?: PartnerPlanKey | string | null;
+  planName?: string | null;
+  monthlyFeeIls?: number | null;
+  monthlyStatus?: "active" | "inactive";
+  currentMonthPayment?: "paid" | "unpaid";
+  currentPeriodKey?: string;
+  setupFeeIls?: number | null;
+  setupPayment?: "paid" | "unpaid" | "waived";
+  openSubscriptionDebtIls?: number;
+  teamSeatLimit?: number | null;
+  softwareDiscountCap?: number | null;
+  partnerMarkupShare?: number | null;
+  bizuplyMarkupShare?: number | null;
+};
+
 export type AmountDue = {
   amountDueToBizuply: number;
+  clientUsageDebtIls?: number;
+  openPartnerSubscriptionDebtIls?: number;
+  totalAmountDueToBizuply?: number;
   overdue?: boolean;
   breakdown: {
     monthlySubscription: number;
     unpaidSetupFee: number;
+    postedMonthlySubscription?: number;
+    postedSetupFee?: number;
     wholesaleSubscriptions: number;
     bizuplyMarkupShare: number;
     usage: number;
     addOns: number;
     adjustments: number;
     payments: number;
+    partnerPlanPayments?: number;
   };
+  partnerSubscription?: PartnerSubscriptionSnapshot;
 };
 
 export type PartnerDashboardMetrics = {
@@ -174,6 +198,10 @@ export type PartnerDashboardActivity = {
 export type PartnerDashboardPayload = {
   partner: PartnerMe;
   amountDueToBizuply: number | null;
+  clientUsageDebtIls?: number | null;
+  openPartnerSubscriptionDebtIls?: number | null;
+  totalAmountDueToBizuply?: number | null;
+  partnerSubscription?: PartnerSubscriptionSnapshot | null;
   breakdown: AmountDue["breakdown"] | null;
   clients: {
     total: number;
@@ -195,6 +223,9 @@ export type AdminPartnerRow = {
   planName?: string;
   status: PartnerStatus;
   amountDueToBizuply: number;
+  clientUsageDebtIls?: number;
+  openPartnerSubscriptionDebtIls?: number;
+  totalAmountDueToBizuply?: number;
   overdueBalance: number;
   activeDownstreamBusinesses: number;
   suspendedDownstreamBusinesses: number;

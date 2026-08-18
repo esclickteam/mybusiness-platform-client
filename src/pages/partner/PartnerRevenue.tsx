@@ -22,22 +22,54 @@ export default function PartnerRevenue() {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-black">הסכום לתשלום ל-Bizuply החודש</h2>
+      <h2 className="text-xl font-black">חיוב ל-Bizuply</h2>
       {error ? (
         <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-bold text-rose-700">
           {error}
         </div>
       ) : null}
+      <section className="grid gap-4 lg:grid-cols-2">
+        <div className="rounded-2xl border border-violet-200 bg-white p-5">
+          <p className="text-xs font-black uppercase tracking-[0.16em] text-violet-700">
+            מנוי Partner שלי
+          </p>
+          <p className="mt-2 text-2xl font-black">
+            {due?.partnerSubscription?.planName || "Partner"}
+          </p>
+          <p className="mt-1 font-bold text-slate-700">
+            {ils(due?.partnerSubscription?.monthlyFeeIls)} לחודש ·{" "}
+            {due?.partnerSubscription?.monthlyStatus === "active" ? "פעיל" : "לא פעיל"} /{" "}
+            {due?.partnerSubscription?.currentMonthPayment === "paid" ? "שולם" : "לא שולם"}
+          </p>
+          <p className="mt-1 text-sm font-bold text-slate-600">
+            דמי הקמה {ils(due?.partnerSubscription?.setupFeeIls)}:{" "}
+            {due?.partnerSubscription?.setupPayment === "paid" ||
+            due?.partnerSubscription?.setupPayment === "waived"
+              ? "שולם"
+              : "לא שולם"}
+          </p>
+          <p className="mt-3 text-sm font-bold text-slate-500">
+            חוב מנוי פתוח: {ils(due?.openPartnerSubscriptionDebtIls)}
+          </p>
+        </div>
+        <div className="rounded-2xl border border-slate-200 bg-white p-5">
+          <p className="text-xs font-black uppercase tracking-[0.16em] text-[#7C4DFF]">
+            חוב עבור לקוחות / פעילות
+          </p>
+          <p className="mt-2 text-4xl font-black">{ils(due?.amountDueToBizuply)}</p>
+          <p className="mt-2 text-sm font-bold text-slate-500">
+            סיטונאות, חלק Bizuply מהעמלה, ושימוש. מנוי Partner ששולם לא נכלל.
+          </p>
+        </div>
+      </section>
       <section className="rounded-2xl border border-slate-200 bg-white p-5">
-        <p className="text-4xl font-black">{ils(due?.amountDueToBizuply)}</p>
-        <div className="mt-4 grid gap-2 text-sm sm:grid-cols-2">
-          <p>מנוי חודשי: {ils(due?.breakdown.monthlySubscription)}</p>
-          <p>דמי הקמה: {ils(due?.breakdown.unpaidSetupFee)}</p>
+        <div className="mt-0 grid gap-2 text-sm sm:grid-cols-2">
           <p>סיטונאות: {ils(due?.breakdown.wholesaleSubscriptions)}</p>
           <p>חלק Bizuply מהעמלה: {ils(due?.breakdown.bizuplyMarkupShare)}</p>
           <p>שימוש: {ils(due?.breakdown.usage)}</p>
           <p>תוספים: {ils(due?.breakdown.addOns)}</p>
-          <p>תשלומים ששולמו: {ils(due?.breakdown.payments)}</p>
+          <p>תשלומי לקוחות/פעילות: {ils(due?.breakdown.payments)}</p>
+          <p>תשלומי מנוי Partner: {ils(due?.breakdown.partnerPlanPayments)}</p>
         </div>
       </section>
       <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white">

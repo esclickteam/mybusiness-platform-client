@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { fetchPartnerDashboard, partnerApiError } from "../../lib/partnerApi";
-import type { PartnerDashboardPayload, PartnerMe } from "../../types/partner";
+import type { PartnerDashboardPayload, PartnerMe, PartnerSubscriptionSnapshot } from "../../types/partner";
 import BizuplyLoader from "../../components/ui/BizuplyLoader";
 import { formatIls } from "../../lib/partnerMoney";
 import { PARTNER_STATUS_LABEL, PARTNER_STATUS_TONE } from "../../lib/partnerLabels";
@@ -43,6 +43,8 @@ export default function PartnerDashboard() {
 
   const partner = data?.partner as PartnerMe | undefined;
   const due = data?.amountDueToBizuply;
+  const clientDue = data?.clientUsageDebtIls ?? due;
+  const subscription = data?.partnerSubscription || null;
   const breakdown = data?.breakdown || null;
   const clients = data?.clients;
   const metrics = data?.metrics;
@@ -81,31 +83,33 @@ export default function PartnerDashboard() {
             </div>
           ) : null}
 
-          <section className="overflow-hidden rounded-3xl border border-slate-200/80 bg-gradient-to-l from-white via-white to-[#f4efff] p-6 shadow-[0_18px_50px_rgba(15,23,42,0.06)]">
-            <p className="text-xs font-black uppercase tracking-[0.16em] text-[#7C4DFF]">
-              הסכום לתשלום ל-Bizuply החודש
-            </p>
-            <p className="mt-2 text-4xl font-black text-slate-900">{ils(due)}</p>
-            <p className="mt-2 text-sm font-bold text-slate-500">
-              {partner?.name} · {partner?.plan?.nameHe || partner?.planKey} · {partner?.status}
-            </p>
-            <Link
-              to="/partner/dashboard/revenue"
-              className="mt-4 inline-flex rounded-2xl bg-slate-900 px-4 py-2 text-sm font-black text-white"
-            >
-              לפירוט החיוב
-            </Link>
+          <section className="grid gap-4 lg:grid-cols-2">
+            <MyPartnerSubscriptionCard partner={partner} subscription={subscription} />
+            <section className="overflow-hidden rounded-3xl border border-slate-200/80 bg-gradient-to-l from-white via-white to-[#f4efff] p-6 shadow-[0_18px_50px_rgba(15,23,42,0.06)]">
+              <p className="text-xs font-black uppercase tracking-[0.16em] text-[#7C4DFF]">
+                הסכום שאני חייב ל-Bizuply עבור הפעילות/לקוחות שלי
+              </p>
+              <p className="mt-2 text-4xl font-black text-slate-900">{ils(clientDue)}</p>
+              <p className="mt-2 text-sm font-bold text-slate-500">
+                סיטונאות, חלק Bizuply מהעמלה הנוספת, ושימוש. מנוי Partner ששולם לא נכלל כאן.
+              </p>
+              <Link
+                to="/partner/dashboard/revenue"
+                className="mt-4 inline-flex rounded-2xl bg-slate-900 px-4 py-2 text-sm font-black text-white"
+              >
+                לפירוט החיוב
+              </Link>
+            </section>
           </section>
 
           {breakdown ? (
             <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               {[
-                ["מנוי חודשי", breakdown.monthlySubscription],
-                ["דמי הקמה", breakdown.unpaidSetupFee],
                 ["סיטונאות לקוחות", breakdown.wholesaleSubscriptions],
                 ["חלק Bizuply מהעמלה", breakdown.bizuplyMarkupShare],
                 ["שימוש", breakdown.usage],
                 ["תוספים", breakdown.addOns],
+                ["חוב מנוי Partner פתוח", data?.openPartnerSubscriptionDebtIls ?? 0],
               ].map(([label, value]) => (
                 <div key={String(label)} className="rounded-2xl border border-slate-200 bg-white p-4">
                   <p className="text-xs font-bold text-slate-500">{label}</p>
@@ -225,6 +229,54 @@ export default function PartnerDashboard() {
         </>
       )}
     </div>
+  );
+}
+
+function paymentLabel(value?: string | null) {
+  if (value === "paid" || value === "waived") return "שולם";
+  if (value === "unpaid") return "לא שולם";
+  return "—";
+}
+
+function statusLabel(value?: string | null) {
+  if (value === "active") return "פעיל";
+  if (value === "inactive") return "לא פעיל";
+  return value || "—";
+}
+
+function MyPartnerSubscriptionCard({
+  partner,
+  subscription,
+}: {
+  partner?: PartnerMe;
+  subscription: PartnerSubscriptionSnapshot | null;
+}) {
+  const planName = subscription?.planName || partner?.plan?.nameHe || partner?.planKey || "מנוי Partner";
+  const monthly = subscription?.monthlyFeeIls ?? partner?.plan?.monthlyIls ?? null;
+  const setup = subscription?.setupFeeIls ?? partner?.plan?.setupIls ?? null;
+  const monthlyPaid = subscription?.currentMonthPayment === "paid";
+  const setupPaid =
+    subscription?.setupPayment === "paid" || subscription?.setupPayment === "waived";
+  return (
+    <section className="overflow-hidden rounded-3xl border border-violet-200/80 bg-white p-6 shadow-[0_18px_50px_rgba(15,23,42,0.06)]">
+      <p className="text-xs font-black uppercase tracking-[0.16em] text-violet-700">
+        מנוי Partner שלי
+      </p>
+      <p className="mt-2 text-2xl font-black text-slate-900">{planName}</p>
+      <p className="mt-1 text-lg font-black text-slate-800">
+        {monthly != null ? `${ils(monthly)} לחודש` : "—"}
+      </p>
+      <p className="mt-3 text-sm font-bold text-slate-600">
+        סטטוס: {statusLabel(subscription?.monthlyStatus)} / {paymentLabel(subscription?.currentMonthPayment)}
+      </p>
+      <p className="mt-1 text-sm font-bold text-slate-600">
+        דמי הקמה {setup != null ? ils(setup) : "—"}: {paymentLabel(subscription?.setupPayment)}
+      </p>
+      <p className="mt-3 text-[11px] font-bold text-slate-400">
+        {partner?.name} · {partner?.status}
+        {monthlyPaid && setupPaid ? " · מנוי זה אינו חוב פתוח ל-Bizuply" : ""}
+      </p>
+    </section>
   );
 }
 
