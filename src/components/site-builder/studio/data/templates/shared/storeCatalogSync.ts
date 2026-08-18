@@ -53,7 +53,7 @@ export function isStoreBoundVisualContentKey(key: string) {
 
 /**
  * Auto-stamped DOM-path ids from registerAllVisualElements.
- * Store/Velmora pages mint thousands of these (gallery/product nodes) and
+ * Store pages mint thousands of these (gallery/product nodes) and
  * harvesting them is what blew D_SAVE to ~1.1MB / 10s+.
  */
 export function isAutoHarvestedVisualContentKey(key: string) {

@@ -230,8 +230,8 @@
       "Forms that flow straight into the CRM",
       "Your own domain and a mobile-ready site"
     ],
-    "siteCrumb": "Website builder · Velmora",
-    "siteAlt": "Velmora — an online store built with the BizUply website builder",
+    "siteCrumb": "Website builder · Chanel",
+    "siteAlt": "Chanel — an online store built with the BizUply website builder",
     "siteCta": "See the website builder",
     "siteExtra1Crumb": "Website builder · PulseCore",
     "siteExtra1Alt": "PulseCore — a booking site built with the BizUply website builder",
@@ -7750,7 +7750,7 @@
     },
     "heroTemplates": {
       "florique": "Beauty & cosmetics",
-      "velmora": "Online store",
+      "chanel": "Online store",
       "adion": "Modern business site",
       "pulsecore": "Site with booking",
       "aeline": "Professional services",

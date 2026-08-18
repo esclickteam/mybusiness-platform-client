@@ -7,6 +7,7 @@ import {
 import { useVisualLibraryPage } from "../../../../runtime/visualLibraryPage";
 import {
   buildNavTreeFromSitePages,
+  resolveBuiltinNavLabelFromSitePages,
   type SiteNavTreeItem,
 } from "../../../visual-editor/utils/syncNavWithSitePages";
 import { NavSubmenuChevron } from "../../../visual-editor/utils/NavSubmenuChevron";
@@ -243,7 +244,19 @@ function buildJustoraHeaderNav(data: Record<string, any>) {
     if (treeItem?.id) matchedIds.add(String(treeItem.id));
     return {
       id,
-      label: String(treeItem?.title || label || id),
+      label: resolveBuiltinNavLabelFromSitePages(
+        id,
+        label,
+        data.__sitePages,
+        {
+          boundSitePageId: treeItem?.id,
+          previousTitleById:
+            data.__previousSitePageTitles &&
+            typeof data.__previousSitePageTitles === "object"
+              ? data.__previousSitePageTitles
+              : undefined,
+        },
+      ),
       href: getJustoraHref(id),
       isBuiltin: true,
       subpages: Array.isArray(treeItem?.subpages) ? treeItem.subpages : [],

@@ -124,8 +124,8 @@ function isWebsiteFullScreenRoute(pathname: string, search: string) {
 
   /*
     תופס נתיבים כמו:
-    /business/:businessId/dashboard/website?template=velmora
-    /business/:businessId/dashboard/website?templateId=velmora
+    /business/:businessId/dashboard/website?template=adion
+    /business/:businessId/dashboard/website?templateId=adion
   */
   const isWebsiteTemplateEditor =
     path.includes("/dashboard/website") && Boolean(template);
@@ -135,7 +135,7 @@ function isWebsiteFullScreenRoute(pathname: string, search: string) {
 
   /*
     תופס Preview/View/Edit של כל תבנית:
-    /business/:businessId/dashboard/website/templates/velmora/preview
+    /business/:businessId/dashboard/website/templates/adion/preview
     /business/:businessId/dashboard/website/templates/xxx/preview
     /business/:businessId/dashboard/website/templates/xxx/view
     /business/:businessId/dashboard/website/templates/xxx/edit

@@ -48,7 +48,6 @@ import { autovoltTemplate } from "./autovolt/meta";
 import { neuralisTemplate } from "./neuralis/meta";
 import { floriqueTemplate } from "./florique/meta";
 import { loteraTemplate } from "./lotera/meta";
-import { keyoraTemplate } from "./keyora/meta";
 import { estateoTemplate } from "./estateo/meta";
 import { homaraTemplate } from "./homara/meta";
 import { urbanixTemplate } from "./urbanix/meta";
@@ -262,7 +261,6 @@ export const studioTemplateDefinitions: StudioTemplateDefinition[] = [
   neuralisTemplate,
   floriqueTemplate,
   loteraTemplate,
-  keyoraTemplate,
   estateoTemplate,
   homaraTemplate,
   urbanixTemplate,

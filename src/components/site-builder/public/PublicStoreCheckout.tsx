@@ -325,7 +325,7 @@ export default function PublicStoreCheckout({
       setHasTemplateCartUi(
         Boolean(
           document.querySelector(
-            '[data-template-id="velmora"], [data-bizuply-template-cart="true"]'
+            '[data-bizuply-template-cart="true"]'
           )
         )
       );
