@@ -66,7 +66,7 @@ function Header({ data, openModal }: { data: Record<string, any>; openModal: () 
 function Hero({ data, openModal }: { data: Record<string, any>; openModal: () => void }) {
   return (
     <section data-template-section-type="hero" className="relative min-h-[100svh] overflow-hidden bg-[#1E1C1A]">
-      <img src={getValue(data, "heroImage")} alt="" className="t-hero-zoom absolute inset-0 h-full w-full object-cover" />
+      <img src={getValue(data, "heroImage")} alt={getValue(data, "heroImageAlt") || getValue(data, "brandName") || ""} className="t-hero-zoom absolute inset-0 h-full w-full object-cover" />
       <div className="absolute inset-0 bg-gradient-to-t from-[#1E1C1A] via-[#1E1C1A]/38 to-[#1E1C1A]/18" />
       <div className="absolute bottom-0 left-0 right-0 z-10 border-t-4 border-[var(--p)] bg-[#1E1C1A]/88 backdrop-blur-md">
         <div className="mx-auto grid max-w-7xl gap-6 px-5 py-9 lg:grid-cols-[1.15fr_0.85fr] lg:items-end lg:px-8 lg:py-12">
