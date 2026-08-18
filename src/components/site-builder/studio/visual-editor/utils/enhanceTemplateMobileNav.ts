@@ -223,25 +223,48 @@ function ensureStyles(doc: Document) {
   if (style.textContent !== MOBILE_NAV_CSS) style.textContent = MOBILE_NAV_CSS;
 }
 
+function unwrapIllegalNavLinkWraps(header: HTMLElement) {
+  header.querySelectorAll("nav a[data-visual-element-link='true']").forEach((wrap) => {
+    if (!(wrap instanceof HTMLAnchorElement)) return;
+    if (!wrap.querySelector("a")) return;
+    const parent = wrap.parentElement;
+    if (!parent) return;
+    while (wrap.firstChild) parent.insertBefore(wrap.firstChild, wrap);
+    wrap.remove();
+  });
+}
+
 function classNameOf(el: Element): string {
   if (typeof el.className === "string") return el.className;
   return el.getAttribute("class") || "";
+}
+
+function navBreakpoint(cls: string): "md" | "lg" | "xl" {
+  if (/\bxl:flex\b/.test(cls)) return "xl";
+  if (/\blg:flex\b/.test(cls)) return "lg";
+  if (/\bmd:flex\b/.test(cls)) return "md";
+  return "lg";
 }
 
 export function detectDesktopNav(header: HTMLElement): {
   nav: HTMLElement;
   bp: "md" | "lg" | "xl";
 } | null {
-  const navs = Array.from(header.querySelectorAll("nav"));
+  const navs = Array.from(header.querySelectorAll("nav")).filter(
+    (nav): nav is HTMLElement => nav instanceof HTMLElement,
+  );
+
   for (const nav of navs) {
-    if (!(nav instanceof HTMLElement)) continue;
     const cls = classNameOf(nav);
     if (!/\bhidden\b/.test(cls)) continue;
-    if (/\bxl:flex\b/.test(cls)) return { nav, bp: "xl" };
-    if (/\blg:flex\b/.test(cls)) return { nav, bp: "lg" };
-    if (/\bmd:flex\b/.test(cls)) return { nav, bp: "md" };
+    if (/\b(?:md|lg|xl):flex\b/.test(cls)) {
+      return { nav, bp: navBreakpoint(cls) };
+    }
   }
-  return null;
+
+  const fallback = navs[0];
+  if (!fallback) return null;
+  return { nav: fallback, bp: navBreakpoint(classNameOf(fallback)) };
 }
 
 function isNativeMenuButton(btn: HTMLButtonElement): boolean {
@@ -328,32 +351,109 @@ export function headerNeedsCompactNav(header: HTMLElement): boolean {
 }
 
 export function headerRowOverflows(header: HTMLElement): boolean {
-  const row =
-    (header.querySelector(":scope > div") as HTMLElement | null) || header;
-  const nav = header.querySelector(
-    "nav[data-bizuply-desktop-nav='true'], nav",
-  ) as HTMLElement | null;
-  if (!row) return false;
+  const row = findHeaderRow(header);
+  const win = header.ownerDocument.defaultView;
+  if (!win || !row) return false;
 
-  const prevNavCss = nav?.getAttribute("style") || "";
-  if (nav) {
-    nav.style.setProperty("display", "flex", "important");
-    nav.style.setProperty("flex-wrap", "nowrap");
-    nav.style.setProperty("width", "max-content");
-    nav.style.setProperty("max-width", "none");
-    nav.style.setProperty("position", "static");
-    nav.style.setProperty("visibility", "hidden");
-    nav.style.setProperty("pointer-events", "none");
+  const cs = win.getComputedStyle(row);
+  const available =
+    row.clientWidth -
+    parsePx(cs.paddingInlineStart || cs.paddingLeft) -
+    parsePx(cs.paddingInlineEnd || cs.paddingRight);
+  if (available <= 0) return false;
+
+  const children = Array.from(row.children).filter((node): node is HTMLElement => {
+    if (!(node instanceof HTMLElement)) return false;
+    if (node.getAttribute(TOGGLE_ATTR) === "true") return false;
+    if (node.getAttribute("data-header-mobile-menu") === "true") return false;
+    return win.getComputedStyle(node).display !== "none";
+  });
+
+  if (!children.length) return false;
+
+  const gap = Math.max(
+    parsePx(cs.columnGap),
+    parsePx(cs.gap === "normal" ? "0" : cs.gap),
+  );
+
+  let used = 0;
+  children.forEach((child, index) => {
+    used += intrinsicChromeWidth(child);
+    if (index > 0) used += gap;
+  });
+
+  return used > available + 8;
+}
+
+function parsePx(value: string | undefined): number {
+  const n = parseFloat(value || "0");
+  return Number.isFinite(n) ? n : 0;
+}
+
+function findHeaderRow(header: HTMLElement): HTMLElement {
+  const candidates = [header, ...Array.from(header.querySelectorAll("div"))];
+  for (const node of candidates) {
+    if (!(node instanceof HTMLElement)) continue;
+    const display =
+      node.ownerDocument.defaultView?.getComputedStyle(node).display || "";
+    if (!display.includes("flex")) continue;
+    if (
+      node.ownerDocument.defaultView?.getComputedStyle(node).flexDirection ===
+      "column"
+    ) {
+      continue;
+    }
+    const hasNav = Boolean(node.querySelector(":scope > nav, :scope nav"));
+    const realKids = Array.from(node.children).filter(
+      (child) =>
+        child instanceof HTMLElement &&
+        child.getAttribute(TOGGLE_ATTR) !== "true",
+    );
+    if (hasNav && realKids.length >= 2) return node;
   }
+  return (header.querySelector(":scope > div") as HTMLElement | null) || header;
+}
 
-  const overflowing = row.scrollWidth > row.clientWidth + 4;
+function intrinsicChromeWidth(el: HTMLElement): number {
+  const nav =
+    el.tagName === "NAV"
+      ? el
+      : (el.querySelector("nav") as HTMLElement | null);
+  if (nav) return intrinsicNavWidth(nav);
 
-  if (nav) {
-    if (prevNavCss) nav.setAttribute("style", prevNavCss);
-    else nav.removeAttribute("style");
-  }
+  return measureMaxContent(el);
+}
 
-  return overflowing;
+function intrinsicNavWidth(nav: HTMLElement): number {
+  const items = Array.from(nav.querySelectorAll(":scope > a, :scope > button"));
+  if (!items.length) return measureMaxContent(nav);
+
+  const win = nav.ownerDocument.defaultView;
+  const gap = parsePx(win?.getComputedStyle(nav).columnGap || win?.getComputedStyle(nav).gap);
+  let width = 0;
+  items.forEach((item, index) => {
+    if (!(item instanceof HTMLElement)) return;
+    width += measureMaxContent(item);
+    if (index > 0) width += gap;
+  });
+  return width;
+}
+
+function measureMaxContent(el: HTMLElement): number {
+  const prev = el.getAttribute("style");
+  el.style.setProperty("flex", "0 0 auto", "important");
+  el.style.setProperty("width", "max-content", "important");
+  el.style.setProperty("max-width", "none", "important");
+  el.style.setProperty("min-width", "min-content", "important");
+  el.style.setProperty("white-space", "nowrap", "important");
+  el.style.setProperty("display", el.tagName === "NAV" ? "flex" : getComputedStyle(el).display === "flex" ? "flex" : "inline-flex", "important");
+  const width = Math.max(
+    el.scrollWidth,
+    Math.ceil(el.getBoundingClientRect().width),
+  );
+  if (prev) el.setAttribute("style", prev);
+  else el.removeAttribute("style");
+  return width;
 }
 
 function applyOverflowFlag(header: HTMLElement) {
@@ -378,8 +478,8 @@ function observeOverflow(header: HTMLElement) {
   if (typeof ResizeObserver === "function") {
     const ro = new ResizeObserver(() => run());
     ro.observe(header);
-    const row = header.querySelector(":scope > div");
-    if (row) ro.observe(row);
+    const row = findHeaderRow(header);
+    if (row && row !== header) ro.observe(row);
   }
 
   header.ownerDocument.defaultView?.addEventListener("resize", run);
@@ -461,6 +561,8 @@ export function enhanceTemplateMobileNav(root: HTMLElement | null) {
 
     if (seen.has(header)) return;
     seen.add(header);
+
+    unwrapIllegalNavLinkWraps(header);
 
     if (hasNativeMobileToggle(header)) {
       header.setAttribute(HEADER_ATTR, "native");
