@@ -16,9 +16,11 @@ type BarSettings = {
 export default function FloatingContactBarWidget({
   settings,
   fallbackPhone,
+  hidesWhatsappFloat,
 }: {
   settings?: BarSettings | null;
   fallbackPhone?: string;
+  hidesWhatsappFloat?: boolean;
 }) {
   const cfg = settings || {};
   if (cfg.isActive === false) return null;
@@ -43,7 +45,9 @@ export default function FloatingContactBarWidget({
   return (
     <div
       data-bizuply-widget="floating-contact-bar"
+      data-bizuply-plugin="floating-contact-bar"
       data-bizuply-plugin-runtime="true"
+      data-hides-whatsapp-float={hidesWhatsappFloat ? "true" : "false"}
       className="fixed inset-x-0 bottom-0 z-[2147482800] flex justify-center gap-2 bg-slate-900/95 px-3 py-2 text-sm text-white"
     >
       {items.map((item) => (

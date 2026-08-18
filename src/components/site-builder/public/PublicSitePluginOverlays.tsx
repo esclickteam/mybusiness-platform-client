@@ -31,13 +31,36 @@ import PublicStoreCheckout from "./PublicStoreCheckout";
 
 type PublicSitePluginOverlaysProps = {
   site: Record<string, any>;
+  pageId?: string;
 };
 
-export default function PublicSitePluginOverlays({ site }: PublicSitePluginOverlaysProps) {
+function currentPublicPageId(site: Record<string, any>, explicit?: string) {
+  if (explicit) return String(explicit);
+  const path =
+    typeof window !== "undefined"
+      ? String(window.location.pathname || "/").replace(/\/+$/, "") || "/"
+      : "/";
+  const slug = path.replace(/^\//, "") || "home";
+  const pages = Array.isArray(site?.pages) ? site.pages : [];
+  const match = pages.find((page: any) => {
+    const pageSlug = String(page?.slug || page?.path || "").replace(/^\//, "");
+    return pageSlug === slug || `/${pageSlug}` === path || String(page?.id || "") === slug;
+  });
+  return String(match?.id || match?._id || slug);
+}
+
+function extraPopupIsRenderable(popup: Record<string, any> | null | undefined) {
+  if (!popup || popup.isActive === false) return false;
+  const keys = Object.keys(popup).filter((key) => key !== "id" && key !== "popups");
+  return keys.length > 0;
+}
+
+export default function PublicSitePluginOverlays({ site, pageId }: PublicSitePluginOverlaysProps) {
   const siteId = String(site?._id || site?.id || "");
   const slug = String(site?.slug || "");
   const businessId = String(site?.businessId || site?.business?._id || "");
   const siteKey = siteId || slug || "site";
+  const activePageId = currentPublicPageId(site, pageId);
   const enabledPlugins: string[] = Array.isArray(site?.enabledPlugins)
     ? site.enabledPlugins
     : [];
@@ -110,7 +133,9 @@ export default function PublicSitePluginOverlays({ site }: PublicSitePluginOverl
   const showSocialProof = enabledPlugins.includes("social-proof");
   const showLanguage = enabledPlugins.includes("multi-language");
   const showFaq = enabledPlugins.includes("faq-pro");
-  const extraPopups = Array.isArray(exitPopupSettings?.popups) ? exitPopupSettings.popups : [];
+  const extraPopups = Array.isArray(exitPopupSettings?.popups)
+    ? exitPopupSettings.popups.filter((popup: any) => extraPopupIsRenderable(popup))
+    : [];
   const showAnnouncement = Boolean(announcementSettings?.isActive);
   const showCookie = Boolean(cookieSettings?.isActive);
   const showExitPopup = Boolean(exitPopupSettings?.isActive);
@@ -191,11 +216,13 @@ export default function PublicSitePluginOverlays({ site }: PublicSitePluginOverl
         <FloatingContactBarWidget
           settings={contactBarSettings}
           fallbackPhone={whatsappFallbackPhone}
+          hidesWhatsappFloat={hideWhatsappForBar}
         />
       ) : null}
       {showSocialProof ? (
         <SocialProofWidget
           slug={slug}
+          pageId={activePageId}
           settings={site?.pluginSettings?.["social-proof"]}
         />
       ) : null}
@@ -211,21 +238,29 @@ export default function PublicSitePluginOverlays({ site }: PublicSitePluginOverl
       {showCookie ? (
         <CookieBannerWidget siteKey={siteKey} settings={cookieSettings!} mode="live" />
       ) : null}
-      {showFaq ? <FaqWidget slug={slug} /> : null}
+      {showFaq ? (
+        <FaqWidget
+          slug={slug}
+          pageId={activePageId}
+          settings={site?.pluginSettings?.["faq-pro"]}
+        />
+      ) : null}
       {showExitPopup ? (
         <ExitPopupWidget
           siteKey={siteKey}
           slug={slug}
+          pageId={activePageId}
           settings={exitPopupSettings}
           mode="live"
         />
       ) : null}
       {showExitPopup
-        ? extraPopups.map((popup, index) => (
+        ? extraPopups.map((popup: any, index: number) => (
             <ExitPopupWidget
               key={String(popup.id || index)}
               siteKey={`${siteKey}:${popup.id || index}`}
               slug={slug}
+              pageId={activePageId}
               settings={mergeExitPopupSettings({ ...exitPopupSettings, ...popup, popups: [] })}
               mode="live"
             />

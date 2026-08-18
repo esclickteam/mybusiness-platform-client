@@ -510,7 +510,7 @@ function isMetaLead(lead: Lead) {
 
 function isWebsiteLead(lead: Lead) {
   const source = String(lead.source || lead.provider || "").toLowerCase();
-  return source === "website" || source.includes("website") || source.includes("site");
+  return source === "website" || source === "birthday-club" || source.includes("website") || source.includes("site");
 }
 
 function getLeadSourceLabel(lead: Lead, t: TFunction) {
