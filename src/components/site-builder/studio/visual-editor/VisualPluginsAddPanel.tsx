@@ -212,6 +212,9 @@ export default function VisualPluginsAddPanel({
         if (cancelled) return;
         setCatalog(data.catalog);
         setEnabledPlugins(data.enabledPlugins);
+        refreshContentActive(data.enabledPlugins);
+        // Show the installed list immediately; overlay activation continues in background.
+        setLoading(false);
         await loadAndActivateOverlays(data.catalog, data.enabledPlugins);
         if (cancelled) return;
         refreshContentActive(data.enabledPlugins);
@@ -223,6 +226,7 @@ export default function VisualPluginsAddPanel({
         setEnabledPlugins([]);
         setOverlayActive({});
         setContentActive({});
+        setLoading(false);
       })
       .finally(() => {
         if (!cancelled) setLoading(false);
