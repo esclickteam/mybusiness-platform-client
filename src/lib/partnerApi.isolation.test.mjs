@@ -52,3 +52,21 @@ test("shared Business layout only changes impersonation when role is partner", (
   assert.equal(src.includes("CRMClient"), false);
   assert.equal(src.includes("/crm-clients"), false);
 });
+
+test("logged-in partner is not dropped on the public homepage", () => {
+  const app = readFileSync(join(ROOT, "App.jsx"), "utf8");
+  assert.equal(app.includes('user.role === "partner"'), true);
+  assert.equal(app.includes('to="/partner/dashboard"'), true);
+  assert.equal(app.includes('roles={["partner"]}'), true);
+
+  const auth = readFileSync(join(ROOT, "context/AuthContext.jsx"), "utf8");
+  assert.equal(auth.includes('freshUser.role === "partner"'), true);
+  assert.equal(auth.includes('navigate("/partner/dashboard", { replace: true })'), true);
+
+  const header = readFileSync(join(ROOT, "components/Header.tsx"), "utf8");
+  assert.equal(header.includes('user?.role === "partner"'), true);
+  assert.equal(header.includes('"/partner/dashboard"'), true);
+
+  const guard = readFileSync(join(ROOT, "components/ProtectedRoute.tsx"), "utf8");
+  assert.equal(guard.includes('role === "partner"'), true);
+});

@@ -124,6 +124,9 @@ export default function ProtectedRoute({
      🔐 Role validation
   =========================== */
   if (normalizedRoles.length > 0 && !normalizedRoles.includes(role)) {
+    if (role === "partner") {
+      return <Navigate to="/partner/dashboard" replace />;
+    }
     return <Unauthorized />;
   }
 

@@ -29,6 +29,7 @@ import {
   rememberPostLoginRedirect,
   resolvePostLoginDestination,
   sanitizeInternalRedirect,
+  clearPostLoginRedirect,
 } from "../utils/safeInternalRedirect";
 import BizuplyLoader from "../components/ui/BizuplyLoader";
 import { isPublicCustomerSiteHost } from "../utils/publicSiteHost";
@@ -549,8 +550,9 @@ export function AuthProvider({ children }) {
       });
     }
 
-    // Explicit logout → next login lands on main dashboard
+    // Explicit logout → next login lands on role home, not a stale deep-link
     clearLocalAuth({ clearDashboardRoute: true });
+    clearPostLoginRedirect();
     clearPushEnabledPreferenceCache();
     markRefreshDead();
 
@@ -708,6 +710,15 @@ export function AuthProvider({ children }) {
           !location.pathname.startsWith("/business/")
         ) {
           navigate("/admin/dashboard", { replace: true });
+          return;
+        }
+
+        if (
+          freshUser.role === "partner" &&
+          !isImpersonating &&
+          !location.pathname.startsWith("/partner")
+        ) {
+          navigate("/partner/dashboard", { replace: true });
           return;
         }
 

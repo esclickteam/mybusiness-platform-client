@@ -10,7 +10,7 @@
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
-    "test:partner-isolation": "node --test src/lib/partnerApi.isolation.test.mjs",
+    "test:partner-isolation": "node --test src/lib/partnerApi.isolation.test.mjs src/utils/safeInternalRedirect.node.test.mjs",
     "generate-sitemap": "node generate-sitemap.js",
     "generate-template-screenshots": "node scripts/generate-template-screenshots.mjs",
     "test:template-parity": "vitest run src/components/site-builder/studio/data/templates/shared/templateLeadForm.test.ts src/components/site-builder/studio/visual-editor/utils/visualForms.templateSkin.test.ts src/components/site-builder/public/mountPublicLeadForms.templateSkin.test.js",

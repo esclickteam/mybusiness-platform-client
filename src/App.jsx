@@ -939,6 +939,8 @@ export default function App() {
                                 )
                               ) : user.role === "admin" ? (
                                 <Navigate to="/admin/dashboard" replace />
+                              ) : user.role === "partner" ? (
+                                <Navigate to="/partner/dashboard" replace />
                               ) : (
                                 <HomePage />
                               )
