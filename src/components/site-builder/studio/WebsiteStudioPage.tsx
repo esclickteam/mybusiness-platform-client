@@ -5138,6 +5138,7 @@ export default function WebsiteStudioPage({
   const pagesRef = useRef<StudioSitePageWithPortal[]>(pages);
   pagesRef.current = pages;
   const persistedPageIdsRef = useRef<Set<string>>(new Set());
+  const deletedPageIdsRef = useRef<Set<string>>(new Set());
   const dirtyVisualPageIdsRef = useRef<Set<string>>(new Set());
   const markVisualPageDirty = (pageId: string) => {
     const id = String(pageId || "").trim();
@@ -5150,6 +5151,19 @@ export default function WebsiteStudioPage({
     list: Array<{ id?: string } | null | undefined> | undefined,
   ) => {
     persistedPageIdsRef.current = collectStudioPageIds(list);
+    // Once the server has accepted the inventory without these ids, clear
+    // the pending-delete buffer for any id that is no longer persisted.
+    for (const id of Array.from(deletedPageIdsRef.current)) {
+      if (!persistedPageIdsRef.current.has(id)) {
+        deletedPageIdsRef.current.delete(id);
+      }
+    }
+  };
+  const markPageDeleted = (pageId: string) => {
+    const id = String(pageId || "").trim();
+    if (!id) return;
+    deletedPageIdsRef.current.add(id);
+    dirtyVisualPageIdsRef.current.delete(id);
   };
   const visualSavingRef = useRef(false);
   const pendingVisualSaveRef = useRef<VisualTemplateSavePayload | null>(null);
@@ -7076,6 +7090,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       const ok = window.confirm(`למחוק את העמוד "${target.title}"?`);
       if (!ok) return;
 
+      markPageDeleted(id);
       setPages((prev) =>
         prev
           .filter((page) => page.id !== id)
@@ -7471,6 +7486,8 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         seoSettings: overrides?.seoSettings || siteSeoSettings,
         brand: overrides?.brand || siteBrandSettings,
         pages: savedPages,
+        pagesAuthoritative: true,
+        deletedPageIds: Array.from(deletedPageIdsRef.current),
         activePageId,
         clientPortalPages: savedPages.filter(
           (page) => page.clientPortal?.enabled,
@@ -8612,6 +8629,8 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         seoSettings: siteSeoSettings,
         brand: siteBrandSettings,
         pages: pagesForSave,
+        pagesAuthoritative: true,
+        deletedPageIds: Array.from(deletedPageIdsRef.current),
         // Public root must always anchor to home, regardless of which page
         // was open in the studio at publish time.
         activePageId: published ? homePageId : activeVisualPageId,
