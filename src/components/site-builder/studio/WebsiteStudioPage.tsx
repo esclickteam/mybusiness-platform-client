@@ -6778,6 +6778,25 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       Studio Save/Publish is the PUT that persists title/slug/SEO.
     */
     markVisualPageDirty(id);
+
+    const persistId = String(siteId || "").trim();
+    if (!persistId) return;
+    const res = await fetch(
+      `/api/site-builder/sites/${persistId}/pages/${encodeURIComponent(id)}/seo`,
+      {
+        method: "PATCH",
+        credentials: "include",
+        headers: buildAuthHeaders({ "Content-Type": "application/json" }),
+        body: JSON.stringify({
+          title: cleanTitle,
+          seo: normalizePageSeo(seo),
+        }),
+      },
+    );
+    const payload = await res.json().catch(() => null);
+    if (!res.ok || !payload?.success) {
+      throw new Error(payload?.error || "שמירת SEO נכשלה");
+    }
   };
 
   const handleVisualSitePageAction = (
