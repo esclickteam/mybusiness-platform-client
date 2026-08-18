@@ -36,12 +36,6 @@ export const idoEditorCss = `
   z-index: 50 !important;
 }
 
-[data-visual-template-canvas="true"] [data-template-id="ido"] > header nav,
-[data-visual-template-canvas="true"] [data-template-id="ido"] > header nav a {
-  flex-shrink: 0 !important;
-  white-space: nowrap !important;
-}
-
 /*
   בעורך — גרירה חופשית של שדות הטופס:
   מכבים grid, מגדירים מיכל יחסי ושדות עם position:absolute + ברירות מחדל לערימה.

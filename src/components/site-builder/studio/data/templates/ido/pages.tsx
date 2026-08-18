@@ -165,7 +165,7 @@ function Header() {
       className="sticky top-0 z-50 px-4 pt-4 md:px-8"
       dir="rtl"
     >
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 overflow-x-auto rounded-full border border-white/10 bg-[#07100e]/75 px-4 py-3 text-white shadow-[0_18px_70px_rgba(0,0,0,0.25)] backdrop-blur-2xl">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 rounded-full border border-white/10 bg-[#07100e]/75 px-4 py-3 text-white shadow-[0_18px_70px_rgba(0,0,0,0.25)] backdrop-blur-2xl">
         <a href="#home" className="flex shrink-0 items-center gap-3">
           <TemplateText
             as="span"
