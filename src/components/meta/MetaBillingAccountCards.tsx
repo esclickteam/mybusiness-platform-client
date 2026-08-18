@@ -11,6 +11,11 @@ type Props = {
   /** Relative paths for connect CTAs when disconnected */
   adsSettingsPath?: string;
   whatsappSettingsPath?: string;
+  /**
+   * When already on the WhatsApp settings page, pass a click handler instead of
+   * a same-route Link (e.g. `to="."`), which is a no-op in React Router.
+   */
+  onOpenWhatsAppSettings?: () => void;
   /** Meta Ads connection page should not show WhatsApp billing. */
   showWaba?: boolean;
   showAdAccount?: boolean;
@@ -85,6 +90,7 @@ export default function MetaBillingAccountCards({
   wabaBilling,
   adsSettingsPath = "../meta-campaigns/settings",
   whatsappSettingsPath = "../whatsapp/settings",
+  onOpenWhatsAppSettings,
   showWaba = true,
   showAdAccount = true,
   className = "",
@@ -202,12 +208,22 @@ export default function MetaBillingAccountCards({
           {!wabaBilling?.connected ? (
             <div className="space-y-2 text-sm font-semibold text-slate-700">
               <p>WhatsApp Business is not connected for this workspace.</p>
-              <Link
-                to={whatsappSettingsPath}
-                className={`${btnSecondary} inline-flex`}
-              >
-                Open WhatsApp settings
-              </Link>
+              {onOpenWhatsAppSettings ? (
+                <button
+                  type="button"
+                  onClick={onOpenWhatsAppSettings}
+                  className={`${btnSecondary} inline-flex`}
+                >
+                  Open WhatsApp settings
+                </button>
+              ) : (
+                <Link
+                  to={whatsappSettingsPath}
+                  className={`${btnSecondary} inline-flex`}
+                >
+                  Open WhatsApp settings
+                </Link>
+              )}
             </div>
           ) : (
             <div className="space-y-2 text-sm">

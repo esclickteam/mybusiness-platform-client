@@ -508,11 +508,18 @@ export default function WhatsAppSettingsTab() {
         adAccountBilling={adAccountBilling}
         wabaBilling={connection?.wabaBillingHealth || null}
         adsSettingsPath="../meta-campaigns/settings"
-        whatsappSettingsPath="."
+        onOpenWhatsAppSettings={() => {
+          document
+            .getElementById("whatsapp-connection-settings")
+            ?.scrollIntoView({ behavior: "smooth", block: "start" });
+        }}
       />
 
     <div className="grid gap-4 xl:grid-cols-[1.2fr_0.8fr]">
-      <section className={`${cardBase} p-4 sm:p-5`}>
+      <section
+        id="whatsapp-connection-settings"
+        className={`${cardBase} p-4 sm:p-5`}
+      >
         <h2 className="text-lg font-black text-slate-900">
           {t("whatsapp.settings.title")}
         </h2>
