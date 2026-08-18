@@ -100,8 +100,10 @@ export type WhatsAppVoiceVerificationSession = {
   businessId: string;
   wabaId: string;
   phoneNumberId: string;
+  metaBusinessId?: string;
   metaDisplayPhoneNumber: string;
   telnyxDid: string;
+  source?: string;
   status:
     | "waiting_for_call"
     | "call_received"
@@ -120,9 +122,19 @@ export type WhatsAppVoiceVerificationSession = {
   lastError: string;
 };
 
-export async function startWhatsAppVoiceVerification(businessId: string) {
+export async function startWhatsAppVoiceVerification(
+  businessId: string,
+  opts: {
+    source?: "embedded_signup" | "manual";
+    wabaId?: string;
+    phoneNumberId?: string;
+    metaBusinessId?: string;
+    metaDisplayPhoneNumber?: string;
+  } = {}
+) {
   const { data } = await API.post("/whatsapp/voice-verification/start", {
     businessId,
+    ...opts,
   });
   return data as {
     success: boolean;
