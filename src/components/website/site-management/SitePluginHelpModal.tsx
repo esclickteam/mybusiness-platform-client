@@ -172,7 +172,7 @@ export default function SitePluginHelpModal({
                   <span className="text-sm text-slate-600">
                     {CATEGORY_LABELS[plugin.category] || plugin.category}
                   </span>
-                  {isEnabled && plugin.entitled !== false ? (
+                  {isEnabled && plugin.entitled === true ? (
                     <>
                       <span className="text-sm text-slate-400">·</span>
                       <span className="inline-flex items-center gap-1 text-sm font-semibold text-emerald-600">
@@ -196,14 +196,14 @@ export default function SitePluginHelpModal({
                 disabled={saving || !onToggle}
                 onClick={onToggle}
                 className={`inline-flex h-11 min-w-[140px] items-center justify-center gap-2 rounded-full px-6 text-sm font-bold transition disabled:opacity-60 ${
-                  isEnabled && plugin.entitled !== false
+                  isEnabled && plugin.entitled === true
                     ? "border border-slate-200 bg-white text-slate-700 hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600"
                     : "bg-blue-600 text-white hover:bg-blue-700"
                 }`}
               >
                 {saving ? (
                   <BizuplyLoader size="xs" compact />
-                ) : isEnabled && plugin.entitled !== false ? (
+                ) : isEnabled && plugin.entitled === true ? (
                   <>
                     <X size={16} />
                     הסרת תוסף

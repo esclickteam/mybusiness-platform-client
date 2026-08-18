@@ -84,8 +84,8 @@ export default function VisualEditorPluginStorePanel({
       const plugin = catalog.find((item) => item.key === key);
       if (
         enabled &&
-        plugin?.billingEnabled &&
-        plugin?.entitled === false
+        (key === "client-portal" || plugin?.billingEnabled) &&
+        plugin?.entitled !== true
       ) {
         if (key === "client-portal") {
           await startClientPortalCheckout(id);
@@ -93,7 +93,7 @@ export default function VisualEditorPluginStorePanel({
           await startPluginCheckout(
             key,
             id,
-            plugin.purchaseTier === "basic" ? "basic" : "pro"
+            plugin?.purchaseTier === "basic" ? "basic" : "pro"
           );
         }
         return;
