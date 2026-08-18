@@ -141,12 +141,29 @@ export default function ProtectedRoute({
 
   /* ===========================
      💳 Unpaid business – finish checkout first
+     Allow Stripe plugin/portal billing returns and website manage routes so
+     post-checkout deep links are not bounced to /pricing before entitlement UI.
   =========================== */
   const isImpersonating =
     typeof window !== "undefined" &&
     Boolean(window.localStorage.getItem("impersonatedBy"));
 
-  if (isBusiness && !user.hasAccess && !isImpersonating) {
+  const isWebsiteDashboardPath = /^\/business\/[^/]+\/dashboard\/website(\/|$)/.test(
+    location.pathname
+  );
+  const billingReturnParam =
+    new URLSearchParams(location.search || "").get("portalBilling") ||
+    new URLSearchParams(location.search || "").get("pluginBilling");
+  const isBillingReturn =
+    billingReturnParam === "success" || billingReturnParam === "cancel";
+
+  if (
+    isBusiness &&
+    !user.hasAccess &&
+    !isImpersonating &&
+    !isWebsiteDashboardPath &&
+    !isBillingReturn
+  ) {
     return <Navigate to="/pricing" replace />;
   }
 
