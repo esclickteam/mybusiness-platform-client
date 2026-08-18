@@ -263,7 +263,9 @@ function isNativeMenuButton(btn: HTMLButtonElement): boolean {
 
   const looksSquare =
     /\bh-(9|10|11|12)\b/.test(cls) && /\bw-(9|10|11|12)\b/.test(cls);
-  if (looksSquare && btn.querySelector("svg")) return true;
+  if (looksSquare && (btn.querySelector("svg") || btn.querySelectorAll("span").length >= 2)) {
+    return true;
+  }
 
   if (/\bgrid\b/.test(cls) && /\bplace-items-center\b/.test(cls) && btn.querySelector("svg")) {
     return true;
