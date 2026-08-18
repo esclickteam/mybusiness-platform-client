@@ -89,7 +89,7 @@ function PluginStoreCard({
             <span />
           )}
 
-          {isEnabled && (plugin.entitled !== false) ? (
+          {isEnabled && plugin.entitled === true ? (
             <span className="rounded-full bg-emerald-500 px-2.5 py-0.5 text-[11px] font-semibold text-white shadow-sm">
               {plugin.statusLabel || "מנוי פעיל"}
             </span>
@@ -157,7 +157,7 @@ function PluginStoreCard({
             type="button"
             data-plugin-cta={plugin.key}
             data-plugin-purchase-tier={
-              plugin.billingEnabled && plugin.entitled === false
+              plugin.billingEnabled && plugin.entitled !== true
                 ? plugin.purchaseTier || "pro"
                 : undefined
             }
@@ -167,14 +167,14 @@ function PluginStoreCard({
               onToggle();
             }}
             className={`shrink-0 rounded-full px-3 py-1.5 text-[11px] font-bold transition disabled:opacity-60 ${
-              isEnabled && plugin.entitled !== false
+              isEnabled && plugin.entitled === true
                 ? "border border-slate-200 bg-white text-slate-600 hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600"
                 : "bg-blue-600 text-white hover:bg-blue-700"
             }`}
           >
             {saving ? (
               <BizuplyLoader size="xs" compact />
-            ) : isEnabled && plugin.entitled !== false ? (
+            ) : isEnabled && plugin.entitled === true ? (
               "הסרה"
             ) : plugin.ctaLabel ? (
               plugin.ctaLabel

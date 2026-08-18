@@ -135,11 +135,15 @@ export default function SiteManagementPanelPage() {
 
   const enabledSet = useMemo(() => new Set(enabledPlugins), [enabledPlugins]);
 
+  const portalEntitled =
+    catalog.find((item) => item.key === "client-portal")?.entitled === true;
+
   const navSections = useMemo(() => {
-    // Portal tab appears only after installing the "client-portal" plugin.
+    // Portal tab appears only after installing + paying for "client-portal".
     const items: SitePanelSection[] = ["overview", "plugins", "payments"];
 
     enabledPlugins.forEach((key) => {
+      if (key === "client-portal" && !portalEntitled) return;
       const section = resolvePluginSection(key);
       if (section && !items.includes(section)) {
         items.push(section);
@@ -147,7 +151,7 @@ export default function SiteManagementPanelPage() {
     });
 
     return items;
-  }, [enabledPlugins]);
+  }, [enabledPlugins, portalEntitled]);
 
   const activeMeta = getSectionMetaForPlugin(activeSection, catalog);
 
@@ -188,10 +192,15 @@ export default function SiteManagementPanelPage() {
 
   async function handleTogglePlugin(pluginKey: string, enabled: boolean) {
     const plugin = catalog.find((item) => item.key === pluginKey);
-    if (enabled && plugin?.billingEnabled && plugin?.entitled === false) {
+    const needsPaidCheckout =
+      enabled &&
+      Boolean(plugin?.billingEnabled || pluginKey === "client-portal") &&
+      plugin?.entitled !== true &&
+      (pluginKey === "client-portal" || Boolean(plugin?.billingEnabled));
+    if (needsPaidCheckout) {
       await startPaidCheckout(
         pluginKey,
-        plugin.purchaseTier === "basic" ? "basic" : "pro"
+        plugin?.purchaseTier === "basic" ? "basic" : "pro"
       );
       return;
     }
@@ -205,6 +214,9 @@ export default function SiteManagementPanelPage() {
     try {
       const result = await updateSitePlugins(siteId, next);
       setEnabledPlugins(result.enabledPlugins);
+      if (Array.isArray(result.catalog) && result.catalog.length) {
+        setCatalog(result.catalog);
+      }
       setDetectedFromSite([]);
 
       if (enabled) {
@@ -500,7 +512,9 @@ export default function SiteManagementPanelPage() {
           />
         ) : null}
 
-        {activeSection === "portal" && enabledSet.has("client-portal") ? (
+        {activeSection === "portal" &&
+        enabledSet.has("client-portal") &&
+        portalEntitled ? (
           <SitePortalMembersPanel siteId={siteId} publicUrl={publicUrl} />
         ) : null}
 
