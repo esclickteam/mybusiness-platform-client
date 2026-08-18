@@ -581,8 +581,8 @@ ${rule(
     ].join(", "),
   ),
   `
-overflow-wrap: normal;
-word-break: normal;
+overflow-wrap: normal !important;
+word-break: normal !important;
 `,
 )}
 
@@ -600,9 +600,9 @@ ${rule(
     ].join(", "),
   ),
   `
-flex-shrink: 0;
-white-space: nowrap;
-min-width: min-content;
+flex-shrink: 0 !important;
+white-space: nowrap !important;
+min-width: min-content !important;
 `,
 )}
 

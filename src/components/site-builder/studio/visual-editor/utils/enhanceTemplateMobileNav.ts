@@ -85,13 +85,16 @@ header[${HEADER_ATTR}] nav span {
 }
 
 @media (min-width: 768px) and (max-width: 1023px) {
-  header[${HEADER_ATTR}="on"] [${TOGGLE_ATTR}="true"] {
+  header[${HEADER_ATTR}="on"][${BP_ATTR}="lg"] [${TOGGLE_ATTR}="true"],
+  header[${HEADER_ATTR}="on"][${BP_ATTR}="xl"] [${TOGGLE_ATTR}="true"] {
     display: inline-flex !important;
   }
-  header[${HEADER_ATTR}="on"]:not(.${OPEN_CLASS}) nav[data-bizuply-desktop-nav="true"] {
+  header[${HEADER_ATTR}="on"][${BP_ATTR}="lg"]:not(.${OPEN_CLASS}) nav[data-bizuply-desktop-nav="true"],
+  header[${HEADER_ATTR}="on"][${BP_ATTR}="xl"]:not(.${OPEN_CLASS}) nav[data-bizuply-desktop-nav="true"] {
     display: none !important;
   }
-  header[${HEADER_ATTR}="on"].${OPEN_CLASS} nav[data-bizuply-desktop-nav="true"] {
+  header[${HEADER_ATTR}="on"][${BP_ATTR}="lg"].${OPEN_CLASS} nav[data-bizuply-desktop-nav="true"],
+  header[${HEADER_ATTR}="on"][${BP_ATTR}="xl"].${OPEN_CLASS} nav[data-bizuply-desktop-nav="true"] {
     ${DROPDOWN_NAV}
   }
 }
@@ -156,7 +159,7 @@ header.${OPEN_CLASS} nav[data-bizuply-desktop-nav="true"] button:hover {
 }
 
 /* Canvas / nested site width — same rules as viewport, independent of window */
-@container bizuply-template (max-width: 1023px) {
+@container bizuply-template (max-width: 767px) {
   header[${HEADER_ATTR}="on"] [${TOGGLE_ATTR}="true"] {
     display: inline-flex !important;
   }
@@ -164,6 +167,33 @@ header.${OPEN_CLASS} nav[data-bizuply-desktop-nav="true"] button:hover {
     display: none !important;
   }
   header[${HEADER_ATTR}="on"].${OPEN_CLASS} nav[data-bizuply-desktop-nav="true"] {
+    ${DROPDOWN_NAV}
+  }
+}
+
+@container bizuply-template (min-width: 768px) and (max-width: 1023px) {
+  header[${HEADER_ATTR}="on"][${BP_ATTR}="lg"] [${TOGGLE_ATTR}="true"],
+  header[${HEADER_ATTR}="on"][${BP_ATTR}="xl"] [${TOGGLE_ATTR}="true"] {
+    display: inline-flex !important;
+  }
+  header[${HEADER_ATTR}="on"][${BP_ATTR}="lg"]:not(.${OPEN_CLASS}) nav[data-bizuply-desktop-nav="true"],
+  header[${HEADER_ATTR}="on"][${BP_ATTR}="xl"]:not(.${OPEN_CLASS}) nav[data-bizuply-desktop-nav="true"] {
+    display: none !important;
+  }
+  header[${HEADER_ATTR}="on"][${BP_ATTR}="lg"].${OPEN_CLASS} nav[data-bizuply-desktop-nav="true"],
+  header[${HEADER_ATTR}="on"][${BP_ATTR}="xl"].${OPEN_CLASS} nav[data-bizuply-desktop-nav="true"] {
+    ${DROPDOWN_NAV}
+  }
+}
+
+@container bizuply-template (min-width: 1024px) and (max-width: 1279px) {
+  header[${HEADER_ATTR}="on"][${BP_ATTR}="xl"] [${TOGGLE_ATTR}="true"] {
+    display: inline-flex !important;
+  }
+  header[${HEADER_ATTR}="on"][${BP_ATTR}="xl"]:not(.${OPEN_CLASS}) nav[data-bizuply-desktop-nav="true"] {
+    display: none !important;
+  }
+  header[${HEADER_ATTR}="on"][${BP_ATTR}="xl"].${OPEN_CLASS} nav[data-bizuply-desktop-nav="true"] {
     ${DROPDOWN_NAV}
   }
 }
@@ -214,39 +244,64 @@ export function detectDesktopNav(header: HTMLElement): {
   return null;
 }
 
+function isNativeMenuButton(btn: HTMLButtonElement): boolean {
+  const cls = classNameOf(btn);
+  if (!/\b(?:sm|md|lg|xl):hidden\b/.test(cls) && !btn.hasAttribute("data-header-mobile-menu")) {
+    return false;
+  }
+
+  const text = (btn.textContent || "").replace(/\s+/g, "").trim();
+  if (
+    text === "☰" ||
+    text === "×" ||
+    text === "✕" ||
+    text === "Menu" ||
+    text === "תפריט"
+  ) {
+    return true;
+  }
+
+  const looksSquare =
+    /\bh-(9|10|11|12)\b/.test(cls) && /\bw-(9|10|11|12)\b/.test(cls);
+  if (looksSquare && btn.querySelector("svg")) return true;
+
+  if (/\bgrid\b/.test(cls) && /\bplace-items-center\b/.test(cls) && btn.querySelector("svg")) {
+    return true;
+  }
+
+  return btn.getAttribute("data-header-mobile-menu") === "true";
+}
+
 function hasNativeMobileToggle(header: HTMLElement): boolean {
   if (header.querySelector(`[${TOGGLE_ATTR}="true"]`)) return false;
+  return Array.from(header.querySelectorAll("button")).some(
+    (btn) => btn instanceof HTMLButtonElement && isNativeMenuButton(btn),
+  );
+}
 
-  const buttons = Array.from(header.querySelectorAll("button"));
-  return buttons.some((btn) => {
-    const cls = classNameOf(btn);
-    if (!/\b(?:sm|md|lg|xl):hidden\b/.test(cls) && !btn.hasAttribute("data-header-mobile-menu")) {
-      return false;
-    }
+function bindNativeOverflowMenu(header: HTMLElement) {
+  if (header.dataset.bizuplyNativeOverflowBound === "true") return;
+  header.dataset.bizuplyNativeOverflowBound = "true";
 
-    const text = (btn.textContent || "").replace(/\s+/g, "").trim();
-    if (
-      text === "☰" ||
-      text === "×" ||
-      text === "✕" ||
-      text === "Menu" ||
-      text === "תפריט"
-    ) {
-      return true;
-    }
+  header.addEventListener(
+    "click",
+    (event) => {
+      if (header.getAttribute(OVERFLOW_ATTR) !== "true") return;
+      const target = event.target;
+      if (!(target instanceof Element)) return;
+      const btn = target.closest("button");
+      if (!(btn instanceof HTMLButtonElement) || !header.contains(btn)) return;
+      if (!isNativeMenuButton(btn)) return;
 
-    const looksSquare =
-      /\bh-(9|10|11|12)\b/.test(cls) && /\bw-(9|10|11|12)\b/.test(cls);
-    if (looksSquare && btn.querySelector("svg")) return true;
-
-    if (/\bgrid\b/.test(cls) && /\bplace-items-center\b/.test(cls) && btn.querySelector("svg")) {
-      return true;
-    }
-
-    if (btn.getAttribute("data-header-mobile-menu") === "true") return true;
-
-    return false;
-  });
+      event.preventDefault();
+      event.stopPropagation();
+      const next = header.getAttribute(OPEN_ATTR) !== "true";
+      header.setAttribute(OPEN_ATTR, next ? "true" : "false");
+      header.classList.toggle(OPEN_CLASS, next);
+      btn.setAttribute("aria-expanded", next ? "true" : "false");
+    },
+    true,
+  );
 }
 
 function syncOpenState(header: HTMLElement, toggle: HTMLButtonElement) {
@@ -392,6 +447,7 @@ export function enhanceTemplateMobileNav(root: HTMLElement | null) {
       header.setAttribute(HEADER_ATTR, "native");
       const found = detectDesktopNav(header);
       if (found) found.nav.setAttribute("data-bizuply-desktop-nav", "true");
+      bindNativeOverflowMenu(header);
       observeOverflow(header);
       return;
     }
