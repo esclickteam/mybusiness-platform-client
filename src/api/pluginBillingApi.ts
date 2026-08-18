@@ -1,4 +1,5 @@
 import API from "../api";
+import { extendAccessToken } from "../utils/tokenRefresh";
 
 export const PLUGIN_INSTALL_PLAN: Record<string, string> = {
   "smart-forms": "smart_forms_pro_monthly_29_ils",
@@ -69,6 +70,11 @@ export async function startPluginCheckout(
   if (existing) return existing;
 
   const pending = (async () => {
+    try {
+      await extendAccessToken();
+    } catch {
+      /* checkout will surface auth failures */
+    }
     const result = await createPluginCheckout(planKey, siteId);
     if (result?.upgraded) return result;
     if (!result?.url) {

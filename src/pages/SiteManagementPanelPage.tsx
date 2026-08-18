@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import {
   ArrowRight,
   ExternalLink,
@@ -53,6 +53,7 @@ const CORE_PLUGIN_KEYS = new Set([
 export default function SiteManagementPanelPage() {
   const { businessId = "", siteId = "" } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams] = useSearchParams();
 
   const [loading, setLoading] = useState(true);
@@ -115,6 +116,46 @@ export default function SiteManagementPanelPage() {
   useEffect(() => {
     loadPanel();
   }, [loadPanel]);
+
+  // After Stripe success/cancel, refresh entitlement/catalog once the user lands
+  // back on the plugins manage screen (access token may have been refreshed).
+  useEffect(() => {
+    const portalBilling = searchParams.get("portalBilling");
+    const pluginBilling = searchParams.get("pluginBilling");
+    const isReturn =
+      portalBilling === "success" ||
+      portalBilling === "cancel" ||
+      pluginBilling === "success" ||
+      pluginBilling === "cancel";
+    if (!isReturn || !siteId) return;
+
+    let cancelled = false;
+    (async () => {
+      try {
+        await loadPanel();
+      } finally {
+        if (cancelled) return;
+        const next = new URLSearchParams(searchParams);
+        next.delete("portalBilling");
+        next.delete("pluginBilling");
+        next.delete("addon");
+        if (!next.get("section")) next.set("section", "plugins");
+        navigate(
+          {
+            pathname: location.pathname,
+            search: next.toString() ? `?${next.toString()}` : "",
+          },
+          { replace: true }
+        );
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+    // Intentionally once per return landing — deps exclude loadPanel churn.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [siteId, searchParams.get("portalBilling"), searchParams.get("pluginBilling")]);
 
   useEffect(() => {
     if (
