@@ -84,9 +84,9 @@ export default function VisualPluginsAddPanel({
     (enabled: string[]) => {
       const root = editor?.canvasRef?.current as HTMLElement | null;
       const next: Record<string, boolean> = {};
-      enabled.forEach((key) => {
+                  enabled.forEach((key) => {
         const kind = getPluginEditorAction(key).kind;
-        if (kind === "overlay") return;
+        if (kind === "overlay" || kind === "settings") return;
         next[key] = pageHasPluginContent(root, key);
       });
       setContentActive(next);
@@ -287,6 +287,44 @@ export default function VisualPluginsAddPanel({
       return;
     }
 
+    if (action.kind === "settings" && siteId) {
+      try {
+        const { enabledPlugins: currentEnabled } = await getSitePlugins(siteId);
+        if (!currentEnabled.includes(plugin.key)) {
+          const result = await updateSitePlugins(siteId, [
+            ...currentEnabled,
+            plugin.key,
+          ]);
+          setEnabledPlugins(result.enabledPlugins);
+        }
+        const businessId =
+          String(
+            (typeof window !== "undefined" &&
+              (() => {
+                try {
+                  return JSON.parse(localStorage.getItem("businessDetails") || "{}")
+                    ?.businessId;
+                } catch {
+                  return "";
+                }
+              })()) ||
+              ""
+          ) || "";
+        const manageUrl = businessId
+          ? `/business/${businessId}/dashboard/website/sites/${siteId}/manage?section=${encodeURIComponent(plugin.key)}`
+          : null;
+        if (manageUrl) {
+          window.open(manageUrl, "_blank", "noopener,noreferrer");
+        }
+        onAdded?.(
+          `«${plugin.name}» מנוהל בהגדרות הפאנל — לא מתווסף כרכיב לעמוד`
+        );
+      } catch {
+        onAdded?.(`שגיאה בפתיחת הגדרות ${plugin.name}`);
+      }
+      return;
+    }
+
     if (action.kind === "page" && (action.pageTemplateIds?.length || action.pageTemplateId)) {
       const ids = action.pageTemplateIds?.length
         ? action.pageTemplateIds
@@ -467,7 +505,9 @@ export default function VisualPluginsAddPanel({
                         ? "הוספת עמוד"
                         : action.kind === "section"
                           ? "הוספת סקשן לעמוד"
-                          : "הוספת רכיב"}
+                          : action.kind === "settings"
+                            ? "הגדרות בפאנל"
+                            : "הוספת רכיב"}
                 </span>
 
                 <div className="mt-3 flex flex-wrap gap-2">
@@ -501,9 +541,11 @@ export default function VisualPluginsAddPanel({
                     >
                       {isOverlay
                         ? "הפעלה בעורך"
-                        : isContentActive
-                          ? "הוספה שוב"
-                          : "הוספה ופתיחה בעורך"}
+                        : action.kind === "settings"
+                          ? "פתח הגדרות"
+                          : isContentActive
+                            ? "הוספה שוב"
+                            : "הוספה ופתיחה בעורך"}
                     </button>
                   )}
                 </div>

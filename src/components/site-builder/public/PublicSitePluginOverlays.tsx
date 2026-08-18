@@ -133,9 +133,7 @@ export default function PublicSitePluginOverlays({ site, pageId }: PublicSitePlu
   const showSocialProof = enabledPlugins.includes("social-proof");
   const showLanguage = enabledPlugins.includes("multi-language");
   const showFaq = enabledPlugins.includes("faq-pro");
-  const extraPopups = Array.isArray(exitPopupSettings?.popups)
-    ? exitPopupSettings.popups.filter((popup: any) => extraPopupIsRenderable(popup))
-    : [];
+  const extraPopups = [];
   const showAnnouncement = Boolean(announcementSettings?.isActive);
   const showCookie = Boolean(cookieSettings?.isActive);
   const showExitPopup = Boolean(exitPopupSettings?.isActive);
@@ -254,18 +252,6 @@ export default function PublicSitePluginOverlays({ site, pageId }: PublicSitePlu
           mode="live"
         />
       ) : null}
-      {showExitPopup
-        ? extraPopups.map((popup: any, index: number) => (
-            <ExitPopupWidget
-              key={String(popup.id || index)}
-              siteKey={`${siteKey}:${popup.id || index}`}
-              slug={slug}
-              pageId={activePageId}
-              settings={mergeExitPopupSettings({ ...exitPopupSettings, ...popup, popups: [] })}
-              mode="live"
-            />
-          ))
-        : null}
       {showStoreCheckout ? (
         <PublicStoreCheckout
           businessId={businessId}

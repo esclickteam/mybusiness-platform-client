@@ -65,9 +65,12 @@ export default function SiteManagementPanelPage() {
   const [catalog, setCatalog] = useState<SitePluginDefinition[]>([]);
   const [enabledPlugins, setEnabledPlugins] = useState<string[]>([]);
   const [detectedFromSite, setDetectedFromSite] = useState<string[]>([]);
-  const [activeSection, setActiveSection] = useState<SitePanelSection>(
-    searchParams.get("section") === "plugins" ? "plugins" : "overview"
-  );
+  const [activeSection, setActiveSection] = useState<SitePanelSection>(() => {
+    const section = searchParams.get("section");
+    if (!section) return "overview";
+    if (section === "plugins") return "plugins";
+    return resolvePluginSection(section);
+  });
   const [error, setError] = useState("");
 
   const basePath = `/business/${businessId}/dashboard`;
