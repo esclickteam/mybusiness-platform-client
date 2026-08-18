@@ -28,6 +28,7 @@ import type { SmartSearchSettings } from "../../site-plugins/smart-search/smartS
 import type { SmartBotSettings } from "../../site-plugins/smart-bot/smartBotUtils";
 import type { AccessibilitySettings } from "../../site-plugins/accessibility/accessibilityUtils";
 import PublicStoreCheckout from "./PublicStoreCheckout";
+import PublicStoreCatalogGrid from "./PublicStoreCatalogGrid";
 
 type PublicSitePluginOverlaysProps = {
   site: Record<string, any>;
@@ -138,6 +139,9 @@ export default function PublicSitePluginOverlays({ site, pageId }: PublicSitePlu
   const showCookie = Boolean(cookieSettings?.isActive);
   const showExitPopup = Boolean(exitPopupSettings?.isActive);
   const showStoreCheckout = Boolean(businessId);
+  const showStoreCatalog = Boolean(
+    businessId && enabledPlugins.includes("store")
+  );
 
   const whatsappFallbackPhone = useMemo(() => {
     const business = site?.business || {};
@@ -169,6 +173,7 @@ export default function PublicSitePluginOverlays({ site, pageId }: PublicSitePlu
     !showCookie &&
     !showExitPopup &&
     !showStoreCheckout &&
+    !showStoreCatalog &&
     !showContactBar &&
     !showSocialProof &&
     !showLanguage &&
@@ -258,6 +263,9 @@ export default function PublicSitePluginOverlays({ site, pageId }: PublicSitePlu
           language={site?.__activeLanguage}
           shiftForLeftWidgets={showAccessibility}
         />
+      ) : null}
+      {showStoreCatalog ? (
+        <PublicStoreCatalogGrid businessId={businessId} enabled />
       ) : null}
     </>
   );

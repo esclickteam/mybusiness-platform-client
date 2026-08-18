@@ -75,6 +75,8 @@ export default function SocialProofWidget({
         ...style,
       }}
       className="max-w-xs rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm shadow-lg"
+      role="status"
+      aria-live="polite"
     >
       {event.demo || settings?.demoMode ? (
         <div className="mb-1 text-[10px] font-bold uppercase tracking-wide text-amber-600">

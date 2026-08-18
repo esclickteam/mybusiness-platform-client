@@ -74,6 +74,7 @@ export default function EditorPluginOverlays({
   );
   const [faqEnabled, setFaqEnabled] = useState(false);
   const [faqSettings, setFaqSettings] = useState<Record<string, unknown> | null>(null);
+  const [fallbackPhone, setFallbackPhone] = useState("");
   const [pages, setPages] = useState<Array<Record<string, unknown>>>([]);
   const [activePageId, setActivePageId] = useState("");
 
@@ -132,7 +133,22 @@ export default function EditorPluginOverlays({
         setSocialProofEnabled(socialOn);
         setLanguageEnabled(languageOn);
         setContactBarEnabled(contactOn);
-        setFaqEnabled(faqOn);
+                setFaqEnabled(faqOn);
+        {
+          const business = site?.business || {};
+          const brand = site?.brand || {};
+          setFallbackPhone(
+            String(
+              business.whatsappUrl ||
+                business.whatsapp ||
+                business.whatsappLink ||
+                business.phone ||
+                brand.phone ||
+                site?.phone ||
+                ""
+            ).trim()
+          );
+        }
         setPages(Array.isArray(site?.pages) ? site.pages : []);
         setActivePageId(
           String(
@@ -264,6 +280,7 @@ export default function EditorPluginOverlays({
           setContactBarSettings(null);
           setFaqEnabled(false);
           setFaqSettings(null);
+          setFallbackPhone("");
         }
       }
     })();
@@ -354,6 +371,12 @@ export default function EditorPluginOverlays({
   }, [siteId]);
 
   const siteKey = siteId || "editor";
+  const hideWhatsappForBar = Boolean(
+    contactBarEnabled &&
+      contactBarSettings?.isActive !== false &&
+      contactBarSettings?.hideWhatsappFloat !== false &&
+      contactBarSettings?.showWhatsapp !== false
+  );
 
   return (
     <>
@@ -396,12 +419,7 @@ export default function EditorPluginOverlays({
       {whatsappEnabled &&
       whatsappSettings &&
       whatsappSettings.isActive !== false &&
-      !(
-        contactBarEnabled &&
-        contactBarSettings?.isActive !== false &&
-        contactBarSettings?.hideWhatsappFloat !== false &&
-        contactBarSettings?.showWhatsapp !== false
-      ) ? (
+      !hideWhatsappForBar ? (
         <WhatsAppFloatWidget
           settings={whatsappSettings}
           mode="editor"
@@ -448,7 +466,8 @@ export default function EditorPluginOverlays({
       {contactBarEnabled && contactBarSettings?.isActive !== false ? (
         <FloatingContactBarWidget
           settings={contactBarSettings}
-          hidesWhatsappFloat={contactBarSettings?.hideWhatsappFloat !== false}
+          hidesWhatsappFloat={hideWhatsappForBar}
+          fallbackPhone={fallbackPhone}
         />
       ) : null}
 
