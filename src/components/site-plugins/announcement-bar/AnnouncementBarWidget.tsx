@@ -7,7 +7,7 @@ import {
   mergeAnnouncementBarSettings,
   type AnnouncementBarSettings,
 } from "./announcementBarUtils";
-import { observePublicAnnouncementLayout } from "./publicAnnouncementLayout";
+import { observePublicAnnouncementLayout, applyPublicAnnouncementFromBar } from "./publicAnnouncementLayout";
 
 type AnnouncementBarWidgetProps = {
   siteKey?: string;
@@ -115,7 +115,8 @@ export default function AnnouncementBarWidget({
 
   useLayoutEffect(() => {
     if (!visible) {
-      return observePublicAnnouncementLayout(null);
+      applyPublicAnnouncementFromBar(null);
+      return;
     }
     let stop = observePublicAnnouncementLayout(barRef.current);
     const frame = window.requestAnimationFrame(() => {
@@ -125,6 +126,7 @@ export default function AnnouncementBarWidget({
     return () => {
       window.cancelAnimationFrame(frame);
       stop();
+      applyPublicAnnouncementFromBar(null);
     };
   }, [visible, host, message, cfg.backgroundColor]);
 

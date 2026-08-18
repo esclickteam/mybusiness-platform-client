@@ -55,10 +55,54 @@ export function viewportAnnouncementInset(bar: HTMLElement | null) {
   return Math.max(0, rect.bottom);
 }
 
-function offsetForHeader(position: string, layoutHeight: number, inset: number) {
-  if (position === "absolute") return layoutHeight;
+function absoluteOffsetPx(header: HTMLElement, bar: HTMLElement) {
+  const parent = (header.offsetParent as HTMLElement | null) || header.parentElement;
+  const parentTop = parent ? parent.getBoundingClientRect().top : 0;
+  return Math.max(0, Math.round(bar.getBoundingClientRect().bottom - parentTop));
+}
+
+function offsetForHeader(
+  header: HTMLElement,
+  position: string,
+  bar: HTMLElement | null,
+  layoutHeight: number,
+  inset: number
+) {
+  if (!bar) return 0;
+  if (position === "absolute") return absoluteOffsetPx(header, bar);
   if (position === "fixed" || position === "sticky") return inset;
   return 0;
+}
+
+function writeCssVars(layoutPx: number, insetPx: number) {
+  document.documentElement.style.setProperty(ANNOUNCEMENT_HEIGHT_VAR, `${layoutPx}px`);
+  document.documentElement.style.setProperty(ANNOUNCEMENT_INSET_VAR, `${insetPx}px`);
+  document.querySelectorAll<HTMLElement>(ROOT_SELECTOR).forEach((root) => {
+    root.style.setProperty(ANNOUNCEMENT_HEIGHT_VAR, `${layoutPx}px`);
+    root.style.setProperty(ANNOUNCEMENT_INSET_VAR, `${insetPx}px`);
+  });
+}
+
+export function applyPublicAnnouncementFromBar(bar: HTMLElement | null) {
+  if (typeof document === "undefined") return;
+  const layoutPx = bar
+    ? Math.max(0, Math.round(bar.getBoundingClientRect().height || bar.offsetHeight || 0))
+    : 0;
+  const insetPx = viewportAnnouncementInset(bar);
+  writeCssVars(layoutPx, insetPx);
+
+  for (const header of readHeaderElements()) {
+    const position = window.getComputedStyle(header).position;
+    const px = offsetForHeader(header, position, bar, layoutPx, insetPx);
+    if (px <= 0) {
+      if (header.hasAttribute(OFFSET_ATTR)) restoreHeaderTop(header);
+      continue;
+    }
+    rememberHeaderTop(header);
+    const base = header.getAttribute(TOP_BASE_ATTR) || "0px";
+    header.style.top = `calc(${base} + ${px}px)`;
+    header.setAttribute(OFFSET_ATTR, String(px));
+  }
 }
 
 export function applyPublicAnnouncementLayout(
@@ -68,22 +112,16 @@ export function applyPublicAnnouncementLayout(
   if (typeof document === "undefined") return;
   const layoutPx = Math.max(0, Math.round(Number(layoutHeight) || 0));
   const insetPx = Math.max(0, Math.round(Number(viewportInset) || 0));
-  document.documentElement.style.setProperty(
-    ANNOUNCEMENT_HEIGHT_VAR,
-    `${layoutPx}px`
-  );
-  document.documentElement.style.setProperty(
-    ANNOUNCEMENT_INSET_VAR,
-    `${insetPx}px`
-  );
-  document.querySelectorAll<HTMLElement>(ROOT_SELECTOR).forEach((root) => {
-    root.style.setProperty(ANNOUNCEMENT_HEIGHT_VAR, `${layoutPx}px`);
-    root.style.setProperty(ANNOUNCEMENT_INSET_VAR, `${insetPx}px`);
-  });
+  writeCssVars(layoutPx, insetPx);
 
   for (const header of readHeaderElements()) {
     const position = window.getComputedStyle(header).position;
-    const px = offsetForHeader(position, layoutPx, insetPx);
+    const px =
+      position === "absolute"
+        ? layoutPx
+        : position === "fixed" || position === "sticky"
+          ? insetPx
+          : 0;
     if (px <= 0) {
       if (header.hasAttribute(OFFSET_ATTR)) restoreHeaderTop(header);
       continue;
@@ -104,27 +142,28 @@ export function observePublicAnnouncementLayout(
 ): () => void {
   if (typeof window === "undefined") return () => {};
   if (!bar) {
-    applyPublicAnnouncementLayout(0, 0);
+    applyPublicAnnouncementFromBar(null);
     return () => {};
   }
 
-  const measure = () => {
-    const layoutHeight = bar.getBoundingClientRect().height || bar.offsetHeight || 0;
-    applyPublicAnnouncementLayout(layoutHeight, viewportAnnouncementInset(bar));
-  };
-
+  const measure = () => applyPublicAnnouncementFromBar(bar);
   measure();
-  const observer =
-    typeof ResizeObserver === "function"
-      ? new ResizeObserver(() => measure())
+  const resizeObserver =
+    typeof ResizeObserver === "function" ? new ResizeObserver(() => measure()) : null;
+  resizeObserver?.observe(bar);
+  const mutationObserver =
+    typeof MutationObserver === "function"
+      ? new MutationObserver(() => measure())
       : null;
-  observer?.observe(bar);
+  document.querySelectorAll(ROOT_SELECTOR).forEach((root) => {
+    mutationObserver?.observe(root, { childList: true, subtree: true });
+  });
   window.addEventListener("resize", measure);
   window.addEventListener("scroll", measure, { passive: true });
   return () => {
-    observer?.disconnect();
+    resizeObserver?.disconnect();
+    mutationObserver?.disconnect();
     window.removeEventListener("resize", measure);
     window.removeEventListener("scroll", measure);
-    applyPublicAnnouncementLayout(0, 0);
   };
 }
