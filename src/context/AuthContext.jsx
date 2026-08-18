@@ -829,9 +829,18 @@ export function AuthProvider({ children }) {
             });
           } else if (
             location.pathname === "/" ||
-            location.pathname.startsWith("/business/") ||
             location.pathname === "/dashboard" ||
-            location.pathname.startsWith("/dashboard/")
+            location.pathname.startsWith("/dashboard/") ||
+            (location.pathname.startsWith("/business/") &&
+              !/^\/business\/[^/]+\/dashboard\/website(\/|$)/.test(
+                location.pathname
+              ) &&
+              !["success", "cancel"].includes(
+                new URLSearchParams(location.search).get("portalBilling") || ""
+              ) &&
+              !["success", "cancel"].includes(
+                new URLSearchParams(location.search).get("pluginBilling") || ""
+              ))
           ) {
             navigate("/pricing", { replace: true });
           }
