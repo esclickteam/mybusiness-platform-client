@@ -76,6 +76,23 @@ test("AuthContext decodes JWT as UTF-8 instead of raw atob", () => {
   assert.equal(auth.includes("decodeJwtPayload"), true);
 });
 
+test("public partner deal page does not render internal finance fields", () => {
+  const src = readFileSync(join(ROOT, "pages/partner/PartnerPublicDeal.tsx"), "utf8");
+  assert.equal(src.includes("wholesale"), false);
+  assert.equal(src.includes("commission"), false);
+  assert.equal(src.toLowerCase().includes("sku"), false);
+  assert.equal(src.includes("Bizuply share"), false);
+  assert.equal(src.includes("partnerWholesalePrice"), false);
+  assert.equal(src.includes("CRMClient"), false);
+  assert.equal(src.includes("/api/crm"), false);
+});
+
+test("partner deal math keeps wholesale + markup split", () => {
+  const src = readFileSync(join(ROOT, "lib/partnerDealMath.ts"), "utf8");
+  assert.equal(src.includes("partnerPaysBizuply"), true);
+  assert.equal(src.includes("partnerCommission"), true);
+});
+
 test("logged-in partner is not dropped on the public homepage", () => {
   const app = readFileSync(join(ROOT, "App.jsx"), "utf8");
   assert.equal(app.includes('user.role === "partner"'), true);

@@ -14,7 +14,9 @@ const PAYMENT_STATUSES = [
 const COMMISSION_STATUSES = [
   { id: "", label: "כל סטטוסי העמלה" },
   { id: "pending", label: "ממתינה" },
-  { id: "eligible", label: "זכאית" },
+  { id: "eligible", label: "זמינה למשיכה" },
+  { id: "withdrawal_requested", label: "בבקשת משיכה" },
+  { id: "approved", label: "מאושרת" },
   { id: "paid", label: "שולמה" },
   { id: "reversed", label: "הפוכה" },
 ];
@@ -30,6 +32,7 @@ export default function PartnerTransactions() {
   const [paymentStatus, setPaymentStatus] = useState("");
   const [commissionStatus, setCommissionStatus] = useState("");
   const [product, setProduct] = useState("");
+  const [client, setClient] = useState("");
   const [error, setError] = useState("");
   const [rows, setRows] = useState<any[]>([]);
   const [totals, setTotals] = useState<any>(null);
@@ -46,6 +49,7 @@ export default function PartnerTransactions() {
         if (paymentStatus) params.paymentStatus = paymentStatus;
         if (commissionStatus) params.commissionStatus = commissionStatus;
         if (product) params.sku = product;
+        if (client) params.clientId = client;
         const data = await fetchPartnerTransactions(params);
         if (!cancelled) {
           setRows(data.items || []);
@@ -59,7 +63,7 @@ export default function PartnerTransactions() {
     return () => {
       cancelled = true;
     };
-  }, [preset, from, to, paymentStatus, commissionStatus, product]);
+  }, [preset, from, to, paymentStatus, commissionStatus, product, client]);
 
   return (
     <div className="space-y-4">
@@ -101,9 +105,15 @@ export default function PartnerTransactions() {
           ))}
         </select>
         <input
+          value={client}
+          onChange={(e) => setClient(e.target.value)}
+          placeholder="מזהה לקוח"
+          className="rounded-2xl border border-slate-200 px-3 py-2 text-sm font-bold"
+        />
+        <input
           value={product}
           onChange={(e) => setProduct(e.target.value)}
-          placeholder="מוצר / SKU"
+          placeholder="מוצר"
           className="rounded-2xl border border-slate-200 px-3 py-2 text-sm font-bold"
         />
       </div>
@@ -121,16 +131,14 @@ export default function PartnerTransactions() {
             <tr>
               <th className="px-3 py-3">תאריך</th>
               <th className="px-3 py-3">לקוח</th>
-              <th className="px-3 py-3">מוצר/חבילה</th>
-              <th className="px-3 py-3">סכום ששילם הלקוח</th>
-              <th className="px-3 py-3">wholesale</th>
-              <th className="px-3 py-3">עמלה נוספת</th>
-              <th className="px-3 py-3">אחוז Partner</th>
-              <th className="px-3 py-3">עמלת Partner ₪</th>
-              <th className="px-3 py-3">חלק Bizuply ₪</th>
-              <th className="px-3 py-3">סטטוס תשלום</th>
-              <th className="px-3 py-3">סטטוס עמלה</th>
-              <th className="px-3 py-3">reference</th>
+              <th className="px-3 py-3">Deal</th>
+              <th className="px-3 py-3">מוצר</th>
+              <th className="px-3 py-3">סכום העסקה</th>
+              <th className="px-3 py-3">Partner commission</th>
+              <th className="px-3 py-3">Bizuply amount</th>
+              <th className="px-3 py-3">payment status</th>
+              <th className="px-3 py-3">commission status</th>
+              <th className="px-3 py-3">Stripe reference</th>
             </tr>
           </thead>
           <tbody>
@@ -142,21 +150,21 @@ export default function PartnerTransactions() {
                     : "—"}
                 </td>
                 <td className="px-3 py-3 font-bold">{row.clientName || "—"}</td>
-                <td className="px-3 py-3">{row.product || row.sku}</td>
+                <td className="px-3 py-3">{row.dealNumber || "—"}</td>
+                <td className="px-3 py-3">{row.product || "—"}</td>
                 <td className="px-3 py-3">{ils(row.customerFinalPrice)}</td>
-                <td className="px-3 py-3">{ils(row.wholesalePrice)}</td>
-                <td className="px-3 py-3">{ils(row.additionalMarkup)}</td>
-                <td className="px-3 py-3">{Number(row.partnerSharePercent || 0)}%</td>
                 <td className="px-3 py-3 font-black">{ils(row.partnerCommissionAmount)}</td>
-                <td className="px-3 py-3">{ils(row.bizuplyMarkupShare)}</td>
+                <td className="px-3 py-3">{ils(row.bizuplyGrossAmount || row.bizuplyMarkupShare)}</td>
                 <td className="px-3 py-3">{row.customerPaymentStatus}</td>
                 <td className="px-3 py-3">{row.commissionStatus}</td>
-                <td className="px-3 py-3 text-xs">{row.reference || row.transactionId}</td>
+                <td className="px-3 py-3 text-xs">
+                  {row.stripePaymentIntentId || row.reference || row.transactionId}
+                </td>
               </tr>
             ))}
             {!rows.length ? (
               <tr>
-                <td className="px-3 py-8 text-center font-bold text-slate-400" colSpan={12}>
+                <td className="px-3 py-8 text-center font-bold text-slate-400" colSpan={10}>
                   אין עסקאות בטווח שנבחר
                 </td>
               </tr>

@@ -18,8 +18,8 @@ import {
   partnerApiError,
   togglePartnerTask,
 } from "../../lib/partnerApi";
-import { formatIls, formatPct } from "../../lib/partnerMoney";
-import type { PartnerClient } from "../../types/partner";
+import { formatIls } from "../../lib/partnerMoney";
+import type { PartnerClient, PartnerDeal } from "../../types/partner";
 import PartnerMarkupBreakdown from "../../components/partner/PartnerMarkupBreakdown";
 import PartnerPageHeader from "../../components/partner/PartnerPageHeader";
 import BizuplyLoader from "../../components/ui/BizuplyLoader";
@@ -51,11 +51,13 @@ export default function PartnerClientDossier() {
     ) => void;
   };
   const [client, setClient] = useState<PartnerClient | null>(null);
+  const [deals, setDeals] = useState<PartnerDeal[]>([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const [note, setNote] = useState("");
   const [task, setTask] = useState("");
   const [tab, setTab] = useState("overview");
+  const [entering, setEntering] = useState(false);
 
   useEffect(() => {
     if (!clientId) return;
@@ -65,7 +67,10 @@ export default function PartnerClientDossier() {
       setError("");
       try {
         const data = await fetchPartnerClient(clientId);
-        if (!cancelled) setClient(data);
+        if (!cancelled) {
+          setClient(data.client);
+          setDeals(data.deals || []);
+        }
       } catch (err: any) {
         if (!cancelled) setError(partnerApiError(err, "לא ניתן לטעון את תיק הלקוח"));
       } finally {
@@ -182,8 +187,9 @@ export default function PartnerClientDossier() {
         {[
           ["overview", "סקירה"],
           ["details", "פרטי לקוח"],
-          ["products", "מוצרים"],
-          ["pricing", "תמחור"],
+          ["products", "החבילה והשירותים"],
+          ["deals", "היסטוריית עסקאות"],
+          ["pricing", "תמחור פנימי"],
           ["permissions", "הרשאות"],
           ["tasks", "משימות"],
           ["notes", "הערות"],
@@ -225,18 +231,38 @@ export default function PartnerClientDossier() {
         <DateCell label="חיוב הבא" value={formatWhen(client.nextBillingDate)} />
       </section>
 
-      <section className="grid gap-3 rounded-3xl border border-violet-100 bg-gradient-to-l from-[#f7f3ff] to-white p-5 md:grid-cols-4">
-        <MoneyCell label="מחיר ללקוח" value={formatIls(client.mrrCustomer)} />
-        <MoneyCell label="עמלה נוספת" value={formatIls(extra)} />
+      <section className="grid gap-3 rounded-3xl border border-violet-100 bg-gradient-to-l from-[#f7f3ff] to-white p-5 md:grid-cols-5">
         <MoneyCell
-          label={`נשאר לפרטנר (${formatPct(client.partnerShareRate)})`}
-          value={formatIls(partnerShare)}
+          label="חבילה"
+          value={
+            (client.selectedSkus || []).find((line) =>
+              ["monthly", "yearly", "website_only"].includes(String(line.sku))
+            )?.nameHe || "—"
+          }
         />
         <MoneyCell
-          label={`חלק Bizuply (${formatPct(client.bizuplyShareRate)})`}
-          value={formatIls(bizuplyShare)}
+          label="שירותים"
+          value={`${(client.selectedSkus || []).filter((line) => !line.included).length} פעילים`}
         />
+        <MoneyCell label="תשלום חודשי" value={formatIls(client.mrrCustomer)} />
+        <MoneyCell
+          label="חד-פעמי"
+          value={formatIls(
+            (client.selectedSkus || [])
+              .filter((line) => line.billing === "one_time")
+              .reduce((sum, line) => sum + Number(line.customerFinalPrice || 0), 0)
+          )}
+        />
+        <MoneyCell label="עמלה שנצברה" value={formatIls(partnerShare)} />
       </section>
+      {deals[0] ? (
+        <Link
+          to={`/partner/deals/${deals[deals.length - 1]._id}`}
+          className="inline-flex rounded-2xl border border-violet-200 bg-violet-50 px-4 py-2 text-sm font-black text-violet-800"
+        >
+          צפייה בסיכום העסקה
+        </Link>
+      ) : null}
 
       {client.contact.notes ? (
         <section className="rounded-3xl border border-slate-200 bg-white p-5">
@@ -248,22 +274,62 @@ export default function PartnerClientDossier() {
       ) : null}
 
       <section className="space-y-3">
-        <h3 className="font-black">מוצרים, עמלה נוספת ופיצול</h3>
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <h3 className="font-black">החבילה והשירותים</h3>
+          <Link
+            to={`/partner/dashboard/clients/new?clientId=${client._id}`}
+            className="rounded-2xl border px-3 py-2 text-sm font-black"
+          >
+            עסקה חדשה / תוספת
+          </Link>
+        </div>
         {(client.selectedSkus || []).map((line) => (
-          <div
+          <article
             key={line.sku}
             className="rounded-3xl border border-slate-200 bg-white p-5 shadow-[0_12px_40px_rgba(15,23,42,0.05)]"
           >
-            <PartnerMarkupBreakdown line={line} />
-          </div>
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <p className="text-lg font-black">{line.nameHe || line.nameEn}</p>
+                <p className="text-sm font-bold text-slate-500">
+                  {line.billing === "recurring_month"
+                    ? "חודשי"
+                    : line.billing === "recurring_year"
+                      ? "שנתי"
+                      : "חד-פעמי"}
+                </p>
+              </div>
+              <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-black">
+                {client.status === "active"
+                  ? "פעיל"
+                  : client.status === "waiting_payment"
+                    ? "ממתין לתשלום"
+                    : client.status === "payment_issue"
+                      ? "בעיית תשלום"
+                      : client.status === "cancelled"
+                        ? "בוטל"
+                        : PARTNER_STATUS_LABEL[client.status] || client.status}
+              </span>
+            </div>
+            <div className="mt-3 grid gap-2 sm:grid-cols-3 text-sm font-bold">
+              <p>מחיר {formatIls(line.customerFinalPrice)}</p>
+              <p>התחלה {formatWhen(client.activatedAt || client.createdAt)}</p>
+              <p>חידוש הבא {formatWhen(client.nextBillingDate)}</p>
+            </div>
+            {tab === "pricing" ? (
+              <div className="mt-4">
+                <PartnerMarkupBreakdown line={line} />
+              </div>
+            ) : null}
+          </article>
         ))}
         {!client.selectedSkus?.length ? (
           <p className="rounded-2xl border border-dashed border-slate-200 px-4 py-6 text-sm font-bold text-slate-500">
             עדיין לא נבחרו מוצרים ללקוח זה
           </p>
-        ) : (client.selectedSkus?.length || 0) > 1 ? (
+        ) : tab === "pricing" ? (
           <div className="rounded-3xl border border-slate-900 bg-slate-900 p-5 text-white">
-            <p className="text-xs font-black text-white/60">סיכום כל המוצרים</p>
+            <p className="text-xs font-black text-white/60">פירוט פנימי</p>
             <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
               <div>
                 <p className="text-[11px] font-bold text-white/55">מחיר Bizuply עבורך</p>
@@ -278,7 +344,7 @@ export default function PartnerClientDossier() {
                 <p className="text-lg font-black">{formatIls(finalTotal)}</p>
               </div>
               <div>
-                <p className="text-[11px] font-bold text-white/55">החלק שלך</p>
+                <p className="text-[11px] font-bold text-white/55">העמלה שלך</p>
                 <p className="text-lg font-black">{formatIls(partnerShare)}</p>
               </div>
               <div>
@@ -286,13 +352,39 @@ export default function PartnerClientDossier() {
                 <p className="text-lg font-black">{formatIls(bizuplyShare)}</p>
               </div>
               <div>
-                <p className="text-[11px] font-bold text-white/55">הלקוח משלם</p>
-                <p className="text-lg font-black">{formatIls(finalTotal)}</p>
+                <p className="text-[11px] font-bold text-white/55">לתשלום ל-Bizuply</p>
+                <p className="text-lg font-black">{formatIls(dueTotal)}</p>
               </div>
             </div>
           </div>
         ) : null}
       </section>
+
+      {tab === "deals" || tab === "overview" ? (
+        <section className="rounded-3xl border border-slate-200 bg-white p-5">
+          <h3 className="mb-3 font-black">היסטוריית עסקאות</h3>
+          <div className="space-y-2">
+            {deals.map((deal) => (
+              <Link
+                key={deal._id}
+                to={`/partner/dashboard/deals/${deal._id}`}
+                className="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-slate-50 px-4 py-3 hover:bg-violet-50"
+              >
+                <div>
+                  <p className="font-black">{deal.dealNumber}</p>
+                  <p className="text-xs font-bold text-slate-500">
+                    {deal.createdAt ? new Date(deal.createdAt).toLocaleDateString("he-IL") : "—"} · {deal.status}
+                  </p>
+                </div>
+                <p className="font-black">{formatIls(deal.totals?.customerNow)}</p>
+              </Link>
+            ))}
+            {!deals.length ? (
+              <p className="text-sm font-bold text-slate-400">אין עדיין עסקאות</p>
+            ) : null}
+          </div>
+        </section>
+      ) : null}
 
       {client.enabledEntitlements?.length ? (
         <section className="rounded-3xl border border-slate-200 bg-white p-5">

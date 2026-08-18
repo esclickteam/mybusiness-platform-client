@@ -102,17 +102,22 @@ export default function PartnerDashboard() {
               הפעילות העסקית שלי
             </h2>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              <MetricCard label="סך העסקאות" value={ils(metrics?.totalSales)} hint="הלקוח משלם ל-Bizuply" />
+              <MetricCard label="סך המכירות" value={ils(metrics?.totalSales)} hint="מה שהלקוחות רכשו דרככם" />
               <MetricCard label="העמלה שלי" value={ils(metrics?.partnerCommission)} hint="חלקכם מהעמלה הנוספת" />
-              <MetricCard label="עמלה ממתינה" value={ils(metrics?.pendingCommission)} hint="ממתינה לסימון תשלום" />
-              <MetricCard label="עמלה ששולמה" value={ils(metrics?.paidCommission)} hint="עמלות שסומנו כשולמו" />
+              <MetricCard label="עמלה ממתינה" value={ils(metrics?.pendingCommission)} hint="עדיין לא שולמה ל-Bizuply" />
+              <MetricCard label="עמלה זמינה למשיכה" value={ils(metrics?.eligibleCommission)} hint="אחרי תשלום ל-Bizuply" href="/partner/dashboard/withdrawals" />
+              <MetricCard label="עמלה ששולמה" value={ils(metrics?.paidCommission)} hint="עמלות ששולמו בפועל" />
+              <MetricCard label="מספר עסקאות" value={String(metrics?.transactionCount ?? 0)} hint="בטווח שנבחר" href="/partner/dashboard/transactions" />
               <MetricCard
                 label="לקוחות פעילים"
                 value={String(clients?.active ?? 0)}
                 hint="לקוחות עם חשבון פעיל"
                 href="/partner/dashboard/crm?status=active"
               />
-              <MetricCard label="MRR לקוחות" value={ils(metrics?.customerMrr)} hint="סכום חודשי שהלקוחות משלמים" />
+              <MetricCard label="MRR לקוחות" value={ils(metrics?.customerMrr)} hint="תשלום חודשי מתחדש" />
+              <MetricCard label="Recurring collected" value={ils(metrics?.recurringCollected)} hint="גבייה מתחדשת בטווח" />
+              <MetricCard label="One-time sales" value={ils(metrics?.oneTimeSales)} hint="מכירות חד-פעמיות בטווח" />
+              <MetricCard label="Total sales" value={ils(metrics?.totalSales)} hint="סך המכירות בטווח" />
             </div>
           </section>
 

@@ -11,6 +11,7 @@ import {
   adminSuspendPartner,
   fetchAdminPartners,
   fetchAdminPartnerTransactions,
+  fetchAdminWithdrawalMonth,
 } from "../../lib/partnerApi";
 import type { AdminPartnerRow, PartnerPlanKey } from "../../types/partner";
 
@@ -25,6 +26,7 @@ export default function AdminPartners() {
   const [loading, setLoading] = useState(true);
   const [financePartnerId, setFinancePartnerId] = useState("");
   const [financeRows, setFinanceRows] = useState<any[]>([]);
+  const [monthSummary, setMonthSummary] = useState<any>(null);
 
   function describeLoadError(err: any) {
     const status = err?.response?.status;
@@ -39,8 +41,12 @@ export default function AdminPartners() {
     setError("");
     setLoading(true);
     try {
-      const data = await fetchAdminPartners(search);
+      const [data, month] = await Promise.all([
+        fetchAdminPartners(search),
+        fetchAdminWithdrawalMonth().catch(() => null),
+      ]);
       setItems(data.items || []);
+      if (month) setMonthSummary(month);
     } catch (err: any) {
       setItems([]);
       setError(describeLoadError(err));
@@ -60,6 +66,16 @@ export default function AdminPartners() {
       <AdminHeader />
       <main className="mx-auto max-w-[1480px] px-4 py-6">
         <h1 className="mb-4 text-2xl font-black">פרטנרים</h1>
+        {monthSummary ? (
+          <section className="mb-4 grid gap-3 sm:grid-cols-3 lg:grid-cols-6">
+            <MiniKpi label="בקשות משיכה החודש" value={String(monthSummary.count || 0)} />
+            <MiniKpi label="סכום כולל" value={ils(monthSummary.total)} />
+            <MiniKpi label="ממתינות" value={String((monthSummary.submitted || 0) + (monthSummary.under_review || 0))} />
+            <MiniKpi label="מאושרות" value={String(monthSummary.approved || 0)} />
+            <MiniKpi label="נדחו" value={String(monthSummary.rejected || 0)} />
+            <MiniKpi label="שולמו" value={String(monthSummary.paid || 0)} />
+          </section>
+        ) : null}
         {error ? <p className="mb-3 font-bold text-rose-600">{error}</p> : null}
         {loading ? <p className="mb-3 text-sm font-bold text-slate-500">טוען פרטנרים...</p> : null}
         <input
@@ -95,7 +111,9 @@ export default function AdminPartners() {
               {items.map((row) => (
                 <tr key={row.partnerId} className="border-t border-slate-100">
                   <td className="px-3 py-3 font-black">
-                    {row.name}
+                    <a href={`/admin/partners/${row.partnerId}`} className="text-violet-700 hover:underline">
+                      {row.name}
+                    </a>
                     {row.snapshotError ? (
                       <p className="mt-1 text-xs font-bold text-rose-600">
                         snapshot: {row.snapshotError}
@@ -296,6 +314,15 @@ export default function AdminPartners() {
           </section>
         ) : null}
       </main>
+    </div>
+  );
+}
+
+function MiniKpi({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-2xl border border-slate-200 bg-white p-3">
+      <p className="text-[11px] font-black text-slate-500">{label}</p>
+      <p className="mt-1 text-lg font-black">{value}</p>
     </div>
   );
 }

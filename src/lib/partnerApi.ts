@@ -81,7 +81,13 @@ export async function fetchPartnerLedger() {
 
 export async function fetchPartnerCatalog() {
   const { data } = await API.get("/partner/catalog");
-  return (data.items || []) as PartnerPriceLine[];
+  return data as {
+    items: PartnerPriceLine[];
+    wizard: import("../types/partner").PartnerWizardCatalog;
+    planKey: string;
+    partnerShareRate: number;
+    bizuplyShareRate: number;
+  };
 }
 
 export async function fetchPartnerPricebook() {
@@ -108,7 +114,10 @@ export async function fetchPartnerClients(params: {
 
 export async function fetchPartnerClient(id: string) {
   const { data } = await API.get(`/partner/clients/${id}`);
-  return data.client as PartnerClient;
+  return data as {
+    client: PartnerClient;
+    deals?: import("../types/partner").PartnerDeal[];
+  };
 }
 
 export async function createPartnerClient(payload: Record<string, unknown>) {
@@ -121,8 +130,102 @@ export async function updatePartnerClient(id: string, payload: Record<string, un
   return data.client as PartnerClient;
 }
 
-export async function quotePartnerClient(id: string, lines: { sku: string; markupIls: number }[]) {
-  const { data } = await API.post(`/partner/clients/${id}/quote`, { lines });
+export async function quotePartnerClient(
+  id: string,
+  lines: { sku: string; markupIls: number }[],
+  additionalMarkup = 0
+) {
+  const { data } = await API.post(`/partner/clients/${id}/quote`, {
+    lines,
+    additionalMarkup,
+  });
+  return data;
+}
+
+export async function createPartnerDeal(
+  clientId: string,
+  payload: { lines: { sku: string; markupIls?: number }[]; additionalMarkup?: number; kind?: string }
+) {
+  const { data } = await API.post(`/partner/clients/${clientId}/deals`, payload);
+  return data as {
+    deal: import("../types/partner").PartnerDeal;
+    publicUrl: string;
+  };
+}
+
+export async function fetchPartnerDeal(dealId: string) {
+  const { data } = await API.get(`/partner/deals/${dealId}`);
+  return data as {
+    deal: import("../types/partner").PartnerDeal;
+    client: PartnerClient | null;
+    stripeItems: Array<{ nameEn: string; nameHe: string; amountIls: number; billing: string; sku: string }>;
+  };
+}
+
+export async function startPartnerDealCheckout(dealId: string) {
+  const { data } = await API.post(`/partner/deals/${dealId}/checkout`);
+  return data as { url: string; sessionId: string; livemode?: boolean };
+}
+
+export async function fetchPublicPartnerDeal(dealId: string) {
+  const { data } = await API.get(`/public/partner-deals/${dealId}`);
+  return data.summary as Record<string, unknown>;
+}
+
+export async function fetchPartnerWithdrawals() {
+  const { data } = await API.get("/partner/withdrawals");
+  return data as {
+    items: any[];
+    balances: {
+      eligible: number;
+      pending: number;
+      requested: number;
+      paid: number;
+    };
+    cycle: { copy: string; afterCutoff: boolean; expectedPaymentBy: string; cutoffDate: string };
+  };
+}
+
+export async function submitPartnerWithdrawal(form: FormData) {
+  const { data } = await API.post("/partner/withdrawals", form, {
+    headers: { "Content-Type": "multipart/form-data" },
+  });
+  return data;
+}
+
+export async function fetchAdminWithdrawalMonth() {
+  const { data } = await API.get("/admin/partners/withdrawals/month");
+  return data.summary as {
+    count: number;
+    total: number;
+    submitted: number;
+    under_review: number;
+    approved: number;
+    rejected: number;
+    paid: number;
+  };
+}
+
+export async function fetchAdminPartnerDossier(id: string) {
+  const { data } = await API.get(`/admin/partners/${id}/dossier`);
+  return data;
+}
+
+export async function fetchAdminWithdrawalRequest(partnerId: string, requestId: string) {
+  const { data } = await API.get(`/admin/partners/${partnerId}/withdrawals/${requestId}`);
+  return data as { request: any; commissions?: any[] };
+}
+
+export async function adminReviewWithdrawal(
+  partnerId: string,
+  requestId: string,
+  action: "approve" | "reject" | "pay",
+  payload: Record<string, unknown> = {}
+) {
+  const { data } = await API.post(
+    `/admin/partners/${partnerId}/withdrawals/${requestId}/${action}`,
+    payload
+  );
   return data;
 }
 

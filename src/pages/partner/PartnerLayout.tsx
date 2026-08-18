@@ -11,6 +11,7 @@ import {
   UserPlus,
   Receipt,
   Wallet,
+  Banknote,
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 
@@ -21,6 +22,7 @@ const NAV = [
   { to: "/partner/dashboard/pricing", label: "תמחור", icon: BadgePercent },
   { to: "/partner/dashboard/storefront", label: "חנות", icon: Store },
   { to: "/partner/dashboard/transactions", label: "עסקאות ועמלות", icon: Receipt },
+  { to: "/partner/dashboard/withdrawals", label: "משיכת עמלות", icon: Banknote },
   { to: "/partner/dashboard/revenue", label: "המנוי שלי", icon: Wallet },
   { to: "/partner/dashboard/team", label: "צוות", icon: Building2 },
   { to: "/partner/dashboard/settings", label: "הגדרות", icon: Settings },

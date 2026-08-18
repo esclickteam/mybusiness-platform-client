@@ -89,6 +89,60 @@ export type PartnerPriceLine = {
   discountRate?: number;
   enabledInStorefront?: boolean;
   descriptionHe?: string;
+  uxCategory?: string;
+  isMainPackage?: boolean;
+  packageGroup?: string | null;
+  packageInterval?: string | null;
+  displayNameHe?: string;
+  taglineHe?: string;
+  includedHe?: string[];
+  dependsOn?: string[];
+  websiteRequired?: boolean;
+};
+
+export type PartnerWizardCategory = {
+  id: string;
+  labelHe: string;
+  items: PartnerPriceLine[];
+};
+
+export type PartnerWizardCatalog = {
+  packages: PartnerPriceLine[];
+  categories: PartnerWizardCategory[];
+  featureLabels?: Record<string, string>;
+  coveredByPackage?: Record<string, string[]>;
+};
+
+export type PartnerDealTotals = {
+  oneTime: number;
+  monthly: number;
+  annual: number;
+  customerNow: number;
+  partnerPaysBizuply: number;
+  partnerCommission: number;
+  bizuplyShare: number;
+  wholesale: number;
+};
+
+export type PartnerDeal = {
+  _id: string;
+  dealId?: string;
+  dealNumber: string;
+  status: string;
+  kind?: string;
+  packageSku?: string;
+  additionalMarkup?: number;
+  lines: PartnerPriceLine[];
+  totals: PartnerDealTotals;
+  currency?: string;
+  partnerPlanKey?: string;
+  stripeCheckoutSessionId?: string;
+  stripePaymentIntentId?: string;
+  stripeSubscriptionId?: string;
+  stripeInvoiceId?: string;
+  publicUrl?: string;
+  paidAt?: string | null;
+  createdAt?: string;
 };
 
 export type PartnerClientContact = {
@@ -183,24 +237,12 @@ export type PartnerDashboardMetrics = {
   totalSales?: number | null;
   partnerCommission?: number | null;
   pendingCommission?: number | null;
+  eligibleCommission?: number | null;
   paidCommission?: number | null;
   transactionCount?: number | null;
+  oneTimeSales?: number | null;
+  recurringCollected?: number | null;
 };
-
-export type PartnerDashboardPayload = {
-  partner: PartnerMe;
-  partnerSubscription?: PartnerSubscriptionSnapshot | null;
-  openPartnerSubscriptionDebtIls?: number | null;
-  wholesaleDebtIls?: number | null;
-  range?: {
-    preset?: string;
-    from?: string;
-    to?: string;
-    granularity?: string;
-  } | null;
-  chart?: Array<{ bucket: string; sales: number; commission: number }>;
-  breakdown?: AmountDue["breakdown"] | null;
-  clients: {
 
 export type PartnerDashboardActivity = {
   _id: string;
