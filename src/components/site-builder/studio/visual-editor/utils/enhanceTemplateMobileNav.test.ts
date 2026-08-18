@@ -49,6 +49,30 @@ describe("enhanceTemplateMobileNav", () => {
     );
   });
 
+  it("does not inject a second hamburger when a native icon toggle exists", () => {
+    document.body.innerHTML = `
+      <div data-template-id="scentora">
+        <header>
+          <div>
+            <nav class="hidden xl:flex"><button>Shop</button></nav>
+            <button class="inline-flex h-10 w-10 items-center justify-center xl:hidden" aria-label="menu">
+              <span class="flex w-4 flex-col gap-1">
+                <span class="h-0.5"></span>
+                <span class="h-0.5"></span>
+                <span class="h-0.5"></span>
+              </span>
+            </button>
+          </div>
+        </header>
+      </div>
+    `;
+    const root = document.querySelector("[data-template-id='scentora']") as HTMLElement;
+    enhanceTemplateMobileNav(root);
+    const header = root.querySelector("header") as HTMLElement;
+    expect(header.getAttribute("data-bizuply-mobile-nav")).toBe("native");
+    expect(header.querySelector("[data-bizuply-mobile-toggle='true']")).toBeNull();
+  });
+
   it("toggles the injected menu open and closed", () => {
     document.body.innerHTML = `
       <div data-visual-template-canvas="true">
