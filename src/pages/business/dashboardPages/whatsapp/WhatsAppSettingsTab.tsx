@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import {
   CheckCircle2,
   Loader2,
+  PhoneCall,
   PlugZap,
   RefreshCw,
   ShieldAlert,
@@ -12,14 +13,17 @@ import {
 } from "lucide-react";
 import {
   completeWhatsAppEmbeddedSignup,
+  getWhatsAppVoiceVerificationStatus,
   disconnectWhatsApp,
   getWhatsAppEmbeddedSignupConfig,
   getWhatsAppStatus,
   listWhatsAppTemplates,
   registerWhatsAppPhone,
   sendWhatsAppTest,
+  startWhatsAppVoiceVerification,
   type WhatsAppConnection,
   type WhatsAppTemplate,
+  type WhatsAppVoiceVerificationSession,
 } from "../../../../api/whatsappApi";
 import {
   getMetaCampaignsStatus,
@@ -79,6 +83,10 @@ export default function WhatsAppSettingsTab() {
   const [connecting, setConnecting] = useState(false);
   const [saving, setSaving] = useState(false);
   const [registering, setRegistering] = useState(false);
+  const [startingVoiceVerification, setStartingVoiceVerification] =
+    useState(false);
+  const [voiceSession, setVoiceSession] =
+    useState<WhatsAppVoiceVerificationSession | null>(null);
   const [testing, setTesting] = useState(false);
   const [connection, setConnection] = useState<WhatsAppConnection | null>(null);
   const [adAccountBilling, setAdAccountBilling] =
@@ -127,6 +135,34 @@ export default function WhatsAppSettingsTab() {
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [businessId]);
+
+  useEffect(() => {
+    if (!businessId) return;
+    let cancelled = false;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const poll = async () => {
+      try {
+        const result = await getWhatsAppVoiceVerificationStatus(businessId);
+        if (cancelled) return;
+        setVoiceSession(result.session);
+        if (
+          result.session &&
+          ["waiting_for_call", "call_received", "answered", "capturing"].includes(
+            result.session.status
+          )
+        ) {
+          timer = setTimeout(poll, 2500);
+        }
+      } catch {
+        // The main settings load reports connectivity errors.
+      }
+    };
+    void poll();
+    return () => {
+      cancelled = true;
+      if (timer) clearTimeout(timer);
+    };
+  }, [businessId, voiceSession?.status]);
 
   useEffect(() => {
     const onMessage = (event: MessageEvent) => {
@@ -354,6 +390,22 @@ export default function WhatsAppSettingsTab() {
     }
   };
 
+  const handleStartVoiceVerification = async () => {
+    if (!businessId) return;
+    try {
+      setStartingVoiceVerification(true);
+      const result = await startWhatsAppVoiceVerification(businessId);
+      setVoiceSession(result.session);
+      toast.info("Voice verification is ready. Request a voice call from Meta.");
+    } catch (error: any) {
+      toast.error(
+        getApiErrorMessage(error, "Could not start voice verification")
+      );
+    } finally {
+      setStartingVoiceVerification(false);
+    }
+  };
+
   const handleDisconnect = async () => {
     if (!businessId) return;
     if (!window.confirm(t("whatsapp.settings.confirmDisconnect"))) return;
@@ -568,6 +620,7 @@ export default function WhatsAppSettingsTab() {
             </div>
 
             {needsRegistration && (
+              <>
               <div className="rounded-xl border border-amber-200 bg-white px-4 py-3">
                 <label className="block text-sm font-black text-slate-900">
                   {t("whatsapp.settings.pinLabel")}
@@ -606,6 +659,54 @@ export default function WhatsAppSettingsTab() {
                     : t("whatsapp.settings.registerCta")}
                 </button>
               </div>
+              <div className="rounded-xl border border-sky-200 bg-sky-50/60 px-4 py-3">
+                <div className="flex items-center gap-2">
+                  <PhoneCall className="h-4 w-4 text-sky-700" />
+                  <p className="text-sm font-black text-slate-900">
+                    Voice verification code
+                  </p>
+                </div>
+                <p className="mt-1 text-xs font-medium text-slate-600">
+                  Start listening, then ask Meta to call your verification number.
+                </p>
+                {voiceSession?.otpAvailable && voiceSession.otpCode ? (
+                  <div
+                    className="mt-3 rounded-lg bg-white px-3 py-2 text-center font-mono text-2xl font-black tracking-[0.3em] text-slate-900"
+                    dir="ltr"
+                    aria-label="Captured voice verification code"
+                  >
+                    {voiceSession.otpCode}
+                  </div>
+                ) : voiceSession ? (
+                  <p className="mt-3 text-xs font-bold text-sky-800">
+                    Status: {voiceSession.status.replace(/_/g, " ")}
+                  </p>
+                ) : null}
+                <button
+                  type="button"
+                  className={`${btnSecondary} mt-3`}
+                  disabled={
+                    startingVoiceVerification ||
+                    Boolean(
+                      voiceSession &&
+                        ["waiting_for_call", "call_received", "answered", "capturing"].includes(
+                          voiceSession.status
+                        )
+                    )
+                  }
+                  onClick={() => {
+                    void handleStartVoiceVerification();
+                  }}
+                >
+                  {startingVoiceVerification ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <PhoneCall className="h-4 w-4" />
+                  )}
+                  Start voice capture
+                </button>
+              </div>
+              </>
             )}
 
             <div className="flex flex-wrap gap-2">

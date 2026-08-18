@@ -95,6 +95,66 @@ export type WhatsAppConnection = {
   };
 };
 
+export type WhatsAppVoiceVerificationSession = {
+  sessionId: string;
+  businessId: string;
+  wabaId: string;
+  phoneNumberId: string;
+  metaDisplayPhoneNumber: string;
+  telnyxDid: string;
+  status:
+    | "waiting_for_call"
+    | "call_received"
+    | "answered"
+    | "capturing"
+    | "otp_captured"
+    | "ambiguous"
+    | "failed"
+    | "expired"
+    | "consumed";
+  expiresAt: string | null;
+  otpCapturedAt: string | null;
+  otpExpiresAt: string | null;
+  otpAvailable: boolean;
+  otpCode?: string;
+  lastError: string;
+};
+
+export async function startWhatsAppVoiceVerification(businessId: string) {
+  const { data } = await API.post("/whatsapp/voice-verification/start", {
+    businessId,
+  });
+  return data as {
+    success: boolean;
+    created: boolean;
+    session: WhatsAppVoiceVerificationSession;
+  };
+}
+
+export async function getWhatsAppVoiceVerificationStatus(businessId: string) {
+  const { data } = await API.get("/whatsapp/voice-verification/status", {
+    params: { businessId },
+  });
+  return data as {
+    success: boolean;
+    session: WhatsAppVoiceVerificationSession | null;
+  };
+}
+
+export async function consumeWhatsAppVoiceOtp(
+  businessId: string,
+  sessionId: string
+) {
+  const { data } = await API.post("/whatsapp/voice-verification/consume", {
+    businessId,
+    sessionId,
+  });
+  return data as {
+    success: boolean;
+    session: WhatsAppVoiceVerificationSession;
+  };
+}
+
 export type WhatsAppEmbeddedSignupConfig = {
   ready: boolean;
   appId: string;
