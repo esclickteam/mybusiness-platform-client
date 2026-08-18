@@ -95,6 +95,9 @@ export function clearPersistedAuthState({ clearDashboardRoute = true } = {}) {
     localStorage.removeItem("dashboardStats");
     localStorage.removeItem("impersonatedBy");
     localStorage.removeItem("impersonatorRole");
+    localStorage.removeItem("managedBusinessId");
+    localStorage.removeItem("managedBusinessName");
+    localStorage.removeItem("partnerDisplayName");
   } catch {
     /* ignore */
   }

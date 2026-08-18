@@ -22,7 +22,7 @@ export default function PartnerRevenue() {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-xl font-black">חיוב ל-Bizuply</h2>
+      <h2 className="text-xl font-black">המנוי שלי</h2>
       {error ? (
         <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-bold text-rose-700">
           {error}
@@ -54,11 +54,10 @@ export default function PartnerRevenue() {
         </div>
         <div className="rounded-2xl border border-slate-200 bg-white p-5">
           <p className="text-xs font-black uppercase tracking-[0.16em] text-[#7C4DFF]">
-            חוב עבור לקוחות / פעילות
+            עסקאות לקוחות אינן חוב של Partner
           </p>
-          <p className="mt-2 text-4xl font-black">{ils(due?.amountDueToBizuply)}</p>
-          <p className="mt-2 text-sm font-bold text-slate-500">
-            סיטונאות, חלק Bizuply מהעמלה, ושימוש. מנוי Partner ששולם לא נכלל.
+          <p className="mt-2 text-sm font-bold text-slate-600">
+            הלקוח משלם ל-Bizuply. העמלות מופיעות במסך עסקאות ועמלות.
           </p>
         </div>
       </section>

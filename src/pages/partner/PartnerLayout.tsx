@@ -9,6 +9,7 @@ import {
   Store,
   Users,
   UserPlus,
+  Receipt,
   Wallet,
 } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
@@ -19,7 +20,8 @@ const NAV = [
   { to: "/partner/dashboard/clients/new", label: "לקוח חדש", icon: UserPlus },
   { to: "/partner/dashboard/pricing", label: "תמחור", icon: BadgePercent },
   { to: "/partner/dashboard/storefront", label: "חנות", icon: Store },
-  { to: "/partner/dashboard/revenue", label: "חיוב ל-Bizuply", icon: Wallet },
+  { to: "/partner/dashboard/transactions", label: "עסקאות ועמלות", icon: Receipt },
+  { to: "/partner/dashboard/revenue", label: "המנוי שלי", icon: Wallet },
   { to: "/partner/dashboard/team", label: "צוות", icon: Building2 },
   { to: "/partner/dashboard/settings", label: "הגדרות", icon: Settings },
 ];

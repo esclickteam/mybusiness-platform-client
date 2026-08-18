@@ -94,10 +94,10 @@ export default function PartnerMarkupBreakdown({
             <span className="w-full bg-slate-200" />
           )}
         </div>
-        <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid gap-2 sm:grid-cols-2">
           <SplitRow
             tone="partner"
-            title="החלק שלך"
+            title="העמלה שלך"
             percent={formatPct(partnerRate)}
             amount={formatIls(partnerShare)}
             detail={`${formatPct(partnerRate)} = ${formatIls(partnerShare)} מהעמלה הנוספת`}
@@ -114,13 +114,11 @@ export default function PartnerMarkupBreakdown({
 
       <div className="grid gap-2 rounded-xl bg-slate-50 px-3 py-3 text-sm sm:grid-cols-2">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <span className="font-bold text-slate-500">סה״כ לתשלום ל-Bizuply</span>
-          <span className="font-black text-slate-900">
-            {formatIls(wholesale)} + {formatIls(bizuplyShare)} = {formatIls(partnerCost)}
-          </span>
+          <span className="font-bold text-slate-500">הלקוח משלם</span>
+          <span className="font-black text-slate-900">{formatIls(finalPrice)}</span>
         </div>
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <span className="font-bold text-slate-500">הרווח שלך</span>
+          <span className="font-bold text-slate-500">העמלה שלך</span>
           <span className="font-black text-violet-800">{formatIls(partnerShare)}</span>
         </div>
       </div>

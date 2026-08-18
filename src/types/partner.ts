@@ -180,10 +180,27 @@ export type AmountDue = {
 export type PartnerDashboardMetrics = {
   openTasks: number;
   customerMrr: number | null;
-  monthlyWholesale: number | null;
-  partnerMonthlyProfit: number | null;
-  salesThisMonth: number | null;
+  totalSales?: number | null;
+  partnerCommission?: number | null;
+  pendingCommission?: number | null;
+  paidCommission?: number | null;
+  transactionCount?: number | null;
 };
+
+export type PartnerDashboardPayload = {
+  partner: PartnerMe;
+  partnerSubscription?: PartnerSubscriptionSnapshot | null;
+  openPartnerSubscriptionDebtIls?: number | null;
+  wholesaleDebtIls?: number | null;
+  range?: {
+    preset?: string;
+    from?: string;
+    to?: string;
+    granularity?: string;
+  } | null;
+  chart?: Array<{ bucket: string; sales: number; commission: number }>;
+  breakdown?: AmountDue["breakdown"] | null;
+  clients: {
 
 export type PartnerDashboardActivity = {
   _id: string;
@@ -197,12 +214,15 @@ export type PartnerDashboardActivity = {
 
 export type PartnerDashboardPayload = {
   partner: PartnerMe;
-  amountDueToBizuply: number | null;
+  amountDueToBizuply?: number | null;
   clientUsageDebtIls?: number | null;
   openPartnerSubscriptionDebtIls?: number | null;
+  wholesaleDebtIls?: number | null;
   totalAmountDueToBizuply?: number | null;
   partnerSubscription?: PartnerSubscriptionSnapshot | null;
-  breakdown: AmountDue["breakdown"] | null;
+  breakdown?: AmountDue["breakdown"] | null;
+  range?: { preset?: string; from?: string; to?: string; granularity?: string } | null;
+  chart?: Array<{ bucket: string; sales: number; commission: number }>;
   clients: {
     total: number;
     active: number;
@@ -222,16 +242,23 @@ export type AdminPartnerRow = {
   planKey: PartnerPlanKey;
   planName?: string;
   status: PartnerStatus;
-  amountDueToBizuply: number;
+  amountDueToBizuply?: number;
+  totalCustomerSales?: number;
+  commissionAccrued?: number;
+  commissionPending?: number;
+  commissionPaid?: number;
+  commissionReversed?: number;
+  customerMrr?: number;
+  partnerSubscription?: PartnerSubscriptionSnapshot;
   clientUsageDebtIls?: number;
   openPartnerSubscriptionDebtIls?: number;
   totalAmountDueToBizuply?: number;
-  overdueBalance: number;
+  overdueBalance?: number;
   activeDownstreamBusinesses: number;
   suspendedDownstreamBusinesses: number;
-  currentWholesaleMrr: number;
-  bizuplyMarkupRevenue: number;
-  partnerMarkupTotal: number;
+  currentWholesaleMrr?: number;
+  bizuplyMarkupRevenue?: number;
+  partnerMarkupTotal?: number;
   lastPayment?: { at?: string; amountIls?: number | null } | null;
   nextPartnerSubscriptionRenewal?: string | null;
   snapshotError?: string;

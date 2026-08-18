@@ -39,16 +39,18 @@ test("Partner pages do not fetch Direct Business CRM", () => {
   }
 });
 
-test("shared Business layout only changes impersonation when role is partner", () => {
+test("shared Business layout uses Partner managed context, not impersonation", () => {
   const src = readFileSync(
     join(ROOT, "pages/business/BusinessDashboardLayout.tsx"),
     "utf8"
   );
-  assert.equal(src.includes('impersonatorRole === "partner"'), true);
   assert.equal(src.includes('impersonatorRole === "marketer"'), true);
   assert.equal(src.includes("/admin/exit-impersonation"), true);
   assert.equal(src.includes("/marketer/exit-impersonation"), true);
-  assert.equal(src.includes("/partner/exit-impersonation"), true);
+  assert.equal(src.includes("/partner/managed-context/exit"), true);
+  assert.equal(src.includes('impersonatorRole === "partner"'), false);
+  assert.equal(src.includes("אתה מנהל כרגע את:"), true);
+  assert.equal(src.includes("חזרה ללוח הפרטנר"), true);
   assert.equal(src.includes("CRMClient"), false);
   assert.equal(src.includes("/crm-clients"), false);
 });

@@ -18,6 +18,10 @@ import {
   resetSessionInvalidationGuard,
 } from "../utils/sessionInvalidation";
 import {
+  clearManagedBusinessContext,
+  setManagedBusinessContext,
+} from "../lib/partnerManagedContext";
+import {
   clearLastDashboardRoute,
   resolveBusinessDashboardPath,
 } from "../utils/dashboardRoutePersistence";
@@ -297,7 +301,7 @@ export function AuthProvider({ children }) {
     try {
       const payload = JSON.parse(atob(accessToken.split(".")[1]));
 
-      if (payload.impersonatedBy) {
+      if (payload.impersonatedBy && payload.impersonatorRole !== "partner") {
         localStorage.setItem("impersonatedBy", payload.impersonatedBy);
         if (payload.impersonatorRole) {
           localStorage.setItem("impersonatorRole", payload.impersonatorRole);
@@ -311,12 +315,40 @@ export function AuthProvider({ children }) {
         localStorage.removeItem("impersonatedBy");
         localStorage.removeItem("impersonatorRole");
       }
+
+      const managedBusinessId =
+        payload.managedBusinessId ||
+        userFromServer?.managedBusinessId ||
+        null;
+      setManagedBusinessContext({
+        managedBusinessId,
+        managedBusinessName:
+          payload.managedBusinessName ||
+          userFromServer?.managedBusinessName ||
+          null,
+        partnerName: payload.partnerName || userFromServer?.partnerName || null,
+      });
+      if (managedBusinessId) {
+        normalizedUser.managedBusinessId = managedBusinessId;
+        normalizedUser.managedBusinessName =
+          payload.managedBusinessName || userFromServer?.managedBusinessName;
+        normalizedUser.partnerName =
+          payload.partnerName || userFromServer?.partnerName;
+        normalizedUser.role = "partner";
+        setUser({ ...normalizedUser });
+      } else if (normalizedUser.role === "partner") {
+        clearManagedBusinessContext();
+      }
     } catch {
       localStorage.removeItem("impersonatedBy");
       localStorage.removeItem("impersonatorRole");
     }
 
     const isImpersonating = Boolean(localStorage.getItem("impersonatedBy"));
+    const isPartnerManaged = Boolean(
+      normalizedUser.managedBusinessId ||
+        localStorage.getItem("managedBusinessId")
+    );
 
     if (skipRedirect || isImpersonating) return;
 
@@ -326,6 +358,7 @@ export function AuthProvider({ children }) {
     }
 
     if (normalizedUser.role === "partner") {
+      if (isPartnerManaged) return;
       navigate("/partner/dashboard", { replace: true });
       return;
     }
@@ -716,7 +749,10 @@ export function AuthProvider({ children }) {
         if (
           freshUser.role === "partner" &&
           !isImpersonating &&
-          !location.pathname.startsWith("/partner")
+          !freshUser.managedBusinessId &&
+          !localStorage.getItem("managedBusinessId") &&
+          !location.pathname.startsWith("/partner") &&
+          !location.pathname.startsWith("/business/")
         ) {
           navigate("/partner/dashboard", { replace: true });
           return;
@@ -725,7 +761,7 @@ export function AuthProvider({ children }) {
         const newSocket = await createSocket(
           getValidAccessToken,
           null,
-          freshUser.businessId
+          freshUser.managedBusinessId || freshUser.businessId
         );
 
         if (!cancelled) {

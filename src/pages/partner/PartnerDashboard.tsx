@@ -6,6 +6,17 @@ import BizuplyLoader from "../../components/ui/BizuplyLoader";
 import { formatIls } from "../../lib/partnerMoney";
 import { PARTNER_STATUS_LABEL, PARTNER_STATUS_TONE } from "../../lib/partnerLabels";
 
+const PRESETS = [
+  { id: "today", label: "היום" },
+  { id: "week", label: "השבוע" },
+  { id: "month", label: "החודש" },
+  { id: "last_month", label: "החודש הקודם" },
+  { id: "3m", label: "3 חודשים" },
+  { id: "6m", label: "6 חודשים" },
+  { id: "year", label: "השנה" },
+  { id: "custom", label: "טווח מותאם אישית" },
+];
+
 function ils(value: number | null | undefined) {
   if (value == null) return "—";
   return formatIls(value);
@@ -15,12 +26,21 @@ export default function PartnerDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [data, setData] = useState<PartnerDashboardPayload | null>(null);
+  const [preset, setPreset] = useState("month");
+  const [from, setFrom] = useState("");
+  const [to, setTo] = useState("");
 
   useEffect(() => {
     let cancelled = false;
     (async () => {
+      setLoading(true);
       try {
-        const payload = await fetchPartnerDashboard();
+        const params: Record<string, string> = { preset };
+        if (preset === "custom") {
+          if (from) params.from = from;
+          if (to) params.to = to;
+        }
+        const payload = await fetchPartnerDashboard(params);
         if (!cancelled) {
           setData(payload);
           setError("");
@@ -37,17 +57,15 @@ export default function PartnerDashboard() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [preset, from, to]);
 
-  if (loading) return <BizuplyLoader fullScreen label="טוען לוח פרטנר..." />;
+  if (loading && !data) return <BizuplyLoader fullScreen label="טוען לוח פרטנר..." />;
 
   const partner = data?.partner as PartnerMe | undefined;
-  const due = data?.amountDueToBizuply;
-  const clientDue = data?.clientUsageDebtIls ?? due;
   const subscription = data?.partnerSubscription || null;
-  const breakdown = data?.breakdown || null;
   const clients = data?.clients;
   const metrics = data?.metrics;
+  const chart = data?.chart || [];
 
   return (
     <div className="space-y-6">
@@ -63,87 +81,52 @@ export default function PartnerDashboard() {
         </p>
       ) : (
         <>
-          {partner?.status === "pending_setup" ? (
-            <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-bold text-amber-800">
-              החשבון ממתין להפעלת דמי הקמה ב-Staging (אדמין → פרטנרים → הפעל הקמה).
-              אין Stripe LIVE ואין תשלום Production ב-Phase 1.
-            </div>
-          ) : null}
+          <DateRangeBar
+            preset={preset}
+            from={from}
+            to={to}
+            onPreset={setPreset}
+            onFrom={setFrom}
+            onTo={setTo}
+          />
 
-          {partner?.status === "payment_due" ? (
-            <div className="rounded-xl border border-orange-200 bg-orange-50 px-4 py-3 text-sm font-bold text-orange-800">
-              יש יתרת תשלום ל-Bizuply. ניתן לצפות בחיוב ולשלם, אך לא ליצור לקוחות,
-              לשנות תמחור או להפעיל חשבונות עד להסדרת החוב.
-            </div>
-          ) : null}
-
-          {partner?.status === "suspended" ? (
-            <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-bold text-rose-800">
-              חשבון הפרטנר מושעה. החנות הציבורית כבויה ופעולות כתיבה חסומות.
-            </div>
-          ) : null}
-
-          <section className="grid gap-4 lg:grid-cols-2">
+          <section>
+            <h2 className="mb-3 text-sm font-black uppercase tracking-[0.16em] text-violet-700">
+              המנוי שלי
+            </h2>
             <MyPartnerSubscriptionCard partner={partner} subscription={subscription} />
-            <section className="overflow-hidden rounded-3xl border border-slate-200/80 bg-gradient-to-l from-white via-white to-[#f4efff] p-6 shadow-[0_18px_50px_rgba(15,23,42,0.06)]">
-              <p className="text-xs font-black uppercase tracking-[0.16em] text-[#7C4DFF]">
-                הסכום שאני חייב ל-Bizuply עבור הפעילות/לקוחות שלי
-              </p>
-              <p className="mt-2 text-4xl font-black text-slate-900">{ils(clientDue)}</p>
-              <p className="mt-2 text-sm font-bold text-slate-500">
-                סיטונאות, חלק Bizuply מהעמלה הנוספת, ושימוש. מנוי Partner ששולם לא נכלל כאן.
-              </p>
-              <Link
-                to="/partner/dashboard/revenue"
-                className="mt-4 inline-flex rounded-2xl bg-slate-900 px-4 py-2 text-sm font-black text-white"
-              >
-                לפירוט החיוב
-              </Link>
-            </section>
           </section>
 
-          {breakdown ? (
-            <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-              {[
-                ["סיטונאות לקוחות", breakdown.wholesaleSubscriptions],
-                ["חלק Bizuply מהעמלה", breakdown.bizuplyMarkupShare],
-                ["שימוש", breakdown.usage],
-                ["תוספים", breakdown.addOns],
-                ["חוב מנוי Partner פתוח", data?.openPartnerSubscriptionDebtIls ?? 0],
-              ].map(([label, value]) => (
-                <div key={String(label)} className="rounded-2xl border border-slate-200 bg-white p-4">
-                  <p className="text-xs font-bold text-slate-500">{label}</p>
-                  <p className="text-xl font-black">{ils(Number(value))}</p>
-                </div>
-              ))}
-            </section>
-          ) : null}
+          <section>
+            <h2 className="mb-3 text-sm font-black uppercase tracking-[0.16em] text-slate-500">
+              הפעילות העסקית שלי
+            </h2>
+            <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+              <MetricCard label="סך העסקאות" value={ils(metrics?.totalSales)} hint="הלקוח משלם ל-Bizuply" />
+              <MetricCard label="העמלה שלי" value={ils(metrics?.partnerCommission)} hint="חלקכם מהעמלה הנוספת" />
+              <MetricCard label="עמלה ממתינה" value={ils(metrics?.pendingCommission)} hint="ממתינה לסימון תשלום" />
+              <MetricCard label="עמלה ששולמה" value={ils(metrics?.paidCommission)} hint="עמלות שסומנו כשולמו" />
+              <MetricCard
+                label="לקוחות פעילים"
+                value={String(clients?.active ?? 0)}
+                hint="לקוחות עם חשבון פעיל"
+                href="/partner/dashboard/crm?status=active"
+              />
+              <MetricCard label="MRR לקוחות" value={ils(metrics?.customerMrr)} hint="סכום חודשי שהלקוחות משלמים" />
+            </div>
+          </section>
+
+          <SalesCommissionChart points={chart} />
 
           <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {metrics?.partnerMonthlyProfit != null ? (
-              <MetricCard label="רווח Partner החודש" value={ils(metrics.partnerMonthlyProfit)} hint="חלקכם מהעמלה הנוספת על לקוחות פעילים" />
-            ) : null}
-            {metrics?.salesThisMonth != null ? (
-              <MetricCard label="מכירות החודש" value={ils(metrics.salesThisMonth)} hint="מחיר סופי ללקוח בהפעלות החודש" />
-            ) : null}
-            {metrics?.customerMrr != null ? (
-              <MetricCard label="MRR לקוחות" value={ils(metrics.customerMrr)} hint="סכום חודשי שהלקוחות משלמים לכם" />
-            ) : null}
-            {metrics?.monthlyWholesale != null ? (
-              <MetricCard label="סיטונאות חודשית" value={ils(metrics.monthlyWholesale)} hint="עלות Bizuply על מנויים פעילים" />
-            ) : null}
             <MetricCard
               label="משימות פתוחות"
               value={String(metrics?.openTasks ?? 0)}
               hint="משימות מעקב בתיקי הלקוחות"
               href="/partner/dashboard/crm"
             />
-          </section>
-
-          <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {[
               ["כל הלקוחות", clients?.total ?? 0, "/partner/dashboard/crm", ""],
-              ["פעילים", clients?.active ?? 0, "/partner/dashboard/crm", "active"],
               ["ממתינים לתשלום", clients?.waitingPayment ?? 0, "/partner/dashboard/crm", "waiting_payment"],
               ["לידים", clients?.leads ?? 0, "/partner/dashboard/crm", "lead"],
               ["בעיית תשלום", clients?.paymentIssue ?? 0, "/partner/dashboard/crm", "payment_issue"],
@@ -200,9 +183,9 @@ export default function PartnerDashboard() {
 
             <section className="rounded-3xl border border-slate-200 bg-white p-5">
               <div className="mb-3 flex items-center justify-between">
-                <h3 className="font-black">פעילות אחרונה</h3>
-                <Link to="/partner/dashboard/revenue" className="text-xs font-black text-violet-700">
-                  ליומן החיוב
+                <h3 className="font-black">עסקאות אחרונות</h3>
+                <Link to="/partner/dashboard/transactions" className="text-xs font-black text-violet-700">
+                  לכל העסקאות
                 </Link>
               </div>
               <div className="space-y-2">
@@ -214,14 +197,14 @@ export default function PartnerDashboard() {
                     <div className="min-w-0">
                       <p className="truncate text-sm font-black text-slate-800">{row.label}</p>
                       <p className="truncate text-[11px] font-bold text-slate-400">
-                        {row.sku || row.description || "—"}
+                        {row.description || row.sku || "—"}
                       </p>
                     </div>
                     <p className="shrink-0 font-black">{ils(row.amountIls)}</p>
                   </div>
                 ))}
                 {!data.recentActivity?.length ? (
-                  <p className="text-sm font-bold text-slate-400">אין עדיין תנועות ביומן</p>
+                  <p className="text-sm font-bold text-slate-400">אין עדיין עסקאות בטווח</p>
                 ) : null}
               </div>
             </section>
@@ -229,6 +212,112 @@ export default function PartnerDashboard() {
         </>
       )}
     </div>
+  );
+}
+
+function DateRangeBar({
+  preset,
+  from,
+  to,
+  onPreset,
+  onFrom,
+  onTo,
+}: {
+  preset: string;
+  from: string;
+  to: string;
+  onPreset: (value: string) => void;
+  onFrom: (value: string) => void;
+  onTo: (value: string) => void;
+}) {
+  return (
+    <section className="rounded-3xl border border-slate-200 bg-white p-4">
+      <div className="flex flex-wrap gap-2">
+        {PRESETS.map((item) => (
+          <button
+            key={item.id}
+            type="button"
+            onClick={() => onPreset(item.id)}
+            className={[
+              "rounded-2xl px-3 py-2 text-sm font-black",
+              preset === item.id
+                ? "bg-slate-900 text-white"
+                : "border border-slate-200 bg-slate-50 text-slate-600",
+            ].join(" ")}
+          >
+            {item.label}
+          </button>
+        ))}
+      </div>
+      {preset === "custom" ? (
+        <div className="mt-3 grid gap-3 sm:grid-cols-2">
+          <label className="text-xs font-black text-slate-500">
+            מ
+            <input
+              type="date"
+              value={from}
+              onChange={(e) => onFrom(e.target.value)}
+              className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm font-bold"
+            />
+          </label>
+          <label className="text-xs font-black text-slate-500">
+            עד
+            <input
+              type="date"
+              value={to}
+              onChange={(e) => onTo(e.target.value)}
+              className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm font-bold"
+            />
+          </label>
+        </div>
+      ) : null}
+    </section>
+  );
+}
+
+function SalesCommissionChart({
+  points,
+}: {
+  points: Array<{ bucket: string; sales: number; commission: number }>;
+}) {
+  const width = 640;
+  const height = 220;
+  const pad = 28;
+  const max = Math.max(
+    1,
+    ...points.map((row) => Math.max(Number(row.sales) || 0, Number(row.commission) || 0))
+  );
+  const path = (key: "sales" | "commission") => {
+    if (!points.length) return "";
+    return points
+      .map((row, index) => {
+        const x =
+          pad +
+          (points.length === 1 ? (width - pad * 2) / 2 : (index * (width - pad * 2)) / (points.length - 1));
+        const y = height - pad - ((Number(row[key]) || 0) / max) * (height - pad * 2);
+        return `${index === 0 ? "M" : "L"}${x},${y}`;
+      })
+      .join(" ");
+  };
+
+  return (
+    <section className="rounded-3xl border border-slate-200 bg-white p-5">
+      <div className="mb-3 flex items-center justify-between">
+        <h3 className="font-black">מכירות ועמלת Partner</h3>
+        <div className="flex gap-3 text-[11px] font-black">
+          <span className="text-slate-700">● מכירות</span>
+          <span className="text-violet-700">● העמלה שלך</span>
+        </div>
+      </div>
+      {points.length ? (
+        <svg viewBox={`0 0 ${width} ${height}`} className="h-56 w-full">
+          <path d={path("sales")} fill="none" stroke="#0f172a" strokeWidth="3" />
+          <path d={path("commission")} fill="none" stroke="#6d28d9" strokeWidth="3" />
+        </svg>
+      ) : (
+        <p className="text-sm font-bold text-slate-400">אין נתונים לגרף בטווח שנבחר</p>
+      )}
+    </section>
   );
 }
 
@@ -254,15 +343,10 @@ function MyPartnerSubscriptionCard({
   const planName = subscription?.planName || partner?.plan?.nameHe || partner?.planKey || "מנוי Partner";
   const monthly = subscription?.monthlyFeeIls ?? partner?.plan?.monthlyIls ?? null;
   const setup = subscription?.setupFeeIls ?? partner?.plan?.setupIls ?? null;
-  const monthlyPaid = subscription?.currentMonthPayment === "paid";
-  const setupPaid =
-    subscription?.setupPayment === "paid" || subscription?.setupPayment === "waived";
+  const renewal = partner?.nextRenewalAt || partner?.currentPeriodEnd;
   return (
     <section className="overflow-hidden rounded-3xl border border-violet-200/80 bg-white p-6 shadow-[0_18px_50px_rgba(15,23,42,0.06)]">
-      <p className="text-xs font-black uppercase tracking-[0.16em] text-violet-700">
-        מנוי Partner שלי
-      </p>
-      <p className="mt-2 text-2xl font-black text-slate-900">{planName}</p>
+      <p className="text-2xl font-black text-slate-900">{planName}</p>
       <p className="mt-1 text-lg font-black text-slate-800">
         {monthly != null ? `${ils(monthly)} לחודש` : "—"}
       </p>
@@ -270,11 +354,10 @@ function MyPartnerSubscriptionCard({
         סטטוס: {statusLabel(subscription?.monthlyStatus)} / {paymentLabel(subscription?.currentMonthPayment)}
       </p>
       <p className="mt-1 text-sm font-bold text-slate-600">
-        דמי הקמה {setup != null ? ils(setup) : "—"}: {paymentLabel(subscription?.setupPayment)}
+        חידוש הבא: {renewal ? new Date(renewal).toLocaleDateString("he-IL") : "—"}
       </p>
-      <p className="mt-3 text-[11px] font-bold text-slate-400">
-        {partner?.name} · {partner?.status}
-        {monthlyPaid && setupPaid ? " · מנוי זה אינו חוב פתוח ל-Bizuply" : ""}
+      <p className="mt-1 text-sm font-bold text-slate-600">
+        דמי הקמה {setup != null ? ils(setup) : "—"} — {paymentLabel(subscription?.setupPayment)}
       </p>
     </section>
   );
@@ -298,8 +381,7 @@ function MetricCard({
       <p className="mt-1 text-[11px] font-bold text-slate-400">{hint}</p>
     </>
   );
-  const className =
-    "rounded-3xl border border-slate-200/80 bg-white p-4 shadow-sm";
+  const className = "rounded-3xl border border-slate-200/80 bg-white p-4 shadow-sm";
   if (href) {
     return (
       <Link to={href} className={`${className} transition hover:-translate-y-0.5 hover:border-violet-200`}>
@@ -309,3 +391,5 @@ function MetricCard({
   }
   return <div className={className}>{inner}</div>;
 }
+
+export { DateRangeBar, PRESETS };

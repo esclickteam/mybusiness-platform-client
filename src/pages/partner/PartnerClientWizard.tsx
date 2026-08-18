@@ -24,12 +24,12 @@ import { useAuth } from "../../context/AuthContext";
 import { getDefaultDashboardPath } from "../../utils/moduleAccess";
 
 const STEPS = [
-  { id: 1, label: "יצירה", icon: Store },
-  { id: 2, label: "מוצרים והעמלה", icon: Sparkles },
+  { id: 1, label: "פרטי העסק", icon: Store },
+  { id: 2, label: "מוצרים וחבילה", icon: Sparkles },
   { id: 3, label: "הרשאות", icon: Shield },
-  { id: 4, label: "עלות פרטנר", icon: Wallet },
+  { id: 4, label: "עמלה נוספת", icon: Wallet },
   { id: 5, label: "תשלום / הפעלה", icon: CreditCard },
-  { id: 6, label: "הקמת עסק", icon: Check },
+  { id: 6, label: "הקמת העסק", icon: Check },
 ];
 
 const MODE_COPY: Record<
@@ -421,13 +421,13 @@ export default function PartnerClientWizard() {
             </div>
           ))}
           <div className="grid gap-3 rounded-3xl border border-slate-900 bg-slate-900 p-5 text-white md:grid-cols-3">
-            <SummaryStat label="עמלה נוספת כוללת" value={formatIls(extraCommission)} />
-            <SummaryStat label="הלקוח משלם לכם" value={formatIls(customerTotal)} />
-            <SummaryStat label="עלות הפרטנר ל-Bizuply" value={formatIls(partnerCost)} />
+            <SummaryStat label="עמלה נוספת" value={formatIls(extraCommission)} />
+            <SummaryStat label="מחיר סופי ללקוח" value={formatIls(customerTotal)} />
+            <SummaryStat label="הלקוח משלם" value={formatIls(customerTotal)} />
           </div>
           <p className="text-sm font-bold leading-6 text-slate-500">
-            הלקוח משלם לכם ישירות. Bizuply לא מחזיקה כספים ולא מבצעת payout ב-Phase 1.
-            מוצרים בתשלום יופעלו רק אחרי הפעלה. החוב ל-Bizuply הוא הסיטונאות ועוד חלק Bizuply מהעמלה הנוספת.
+            הלקוח משלם ל-Bizuply את המחיר הסופי. העמלה שלך מחושבת מהעמלה הנוספת לפי המסלול.
+            אין חוב סיטונאי של Partner על עסקאות לקוחות ששולמו ל-Bizuply.
           </p>
           {step === 4 ? (
             <div className="flex flex-wrap gap-2">
@@ -469,7 +469,7 @@ export default function PartnerClientWizard() {
                 onClick={() => finish(true)}
                 className="rounded-2xl bg-violet-700 px-5 py-2.5 text-sm font-black text-white shadow-lg shadow-violet-700/20"
               >
-                {saving ? "מפעיל..." : "הפעלה ורישום חוב ל-Bizuply"}
+                {saving ? "מפעיל..." : "הפעלה ורישום עמלה"}
               </button>
             </div>
           )}

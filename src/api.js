@@ -137,6 +137,17 @@ API.interceptors.request.use(
       delete config.headers["X-Business-Id"];
     }
 
+    try {
+      const managedBusinessId = localStorage.getItem("managedBusinessId");
+      if (managedBusinessId) {
+        config.headers["X-Managed-Business-Id"] = managedBusinessId;
+      } else {
+        delete config.headers["X-Managed-Business-Id"];
+      }
+    } catch {
+      delete config.headers["X-Managed-Business-Id"];
+    }
+
     // FormData must not be forced to JSON
     if (config.data && !(config.data instanceof FormData)) {
       config.headers["Content-Type"] = "application/json";

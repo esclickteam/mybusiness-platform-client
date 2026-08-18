@@ -36,8 +36,36 @@ export function partnerApiError(err: unknown, fallback: string) {
   return response?.error || response?.message || fallback;
 }
 
-export async function fetchPartnerDashboard() {
-  const { data } = await API.get("/partner/dashboard");
+export async function enterPartnerClient(id: string) {
+  const { data } = await API.post(`/partner/clients/${id}/enter`);
+  return data as {
+    token: string;
+    user: {
+      role?: string;
+      businessId?: string;
+      managedBusinessId?: string;
+      managedBusinessName?: string | null;
+      partnerId?: string;
+      partnerName?: string | null;
+      enabledModules?: string[] | null;
+      businessName?: string | null;
+      impersonatorRole?: string | null;
+    };
+  };
+}
+
+export async function exitPartnerManagedContext() {
+  const { data } = await API.post("/partner/managed-context/exit");
+  return data as { token: string; user: { redirectUrl?: string; role?: string } };
+}
+
+export async function fetchPartnerDashboard(params?: Record<string, string>) {
+  const { data } = await API.get("/partner/dashboard", { params });
+  return data;
+}
+
+export async function fetchPartnerTransactions(params?: Record<string, string | number | undefined>) {
+  const { data } = await API.get("/partner/transactions", { params });
   return data;
 }
 
@@ -106,19 +134,6 @@ export async function submitPartnerClient(id: string) {
 export async function activatePartnerClient(id: string, password?: string) {
   const { data } = await API.post(`/partner/clients/${id}/activate`, { password });
   return data;
-}
-
-export async function enterPartnerClient(id: string) {
-  const { data } = await API.post(`/partner/clients/${id}/enter`);
-  return data as {
-    token: string;
-    user: {
-      businessId?: string;
-      enabledModules?: string[] | null;
-      businessName?: string | null;
-      impersonatorRole?: string;
-    };
-  };
 }
 
 export async function addPartnerNote(id: string, text: string) {
@@ -201,6 +216,29 @@ export async function adminRecordPayment(id: string, amountIls: number) {
 
 export async function adminChangePartnerPlan(id: string, planKey: PartnerPlanKey) {
   const { data } = await API.post(`/admin/partners/${id}/plan`, { planKey });
+  return data;
+}
+
+export async function adminMarkCommissionPaid(partnerId: string, entryId: string) {
+  const { data } = await API.post(`/admin/partners/${partnerId}/commissions/${entryId}/mark-paid`);
+  return data;
+}
+
+export async function adminReverseCommission(
+  partnerId: string,
+  entryId: string,
+  reason: "refund" | "chargeback" = "refund"
+) {
+  const { data } = await API.post(`/admin/partners/${partnerId}/commissions/${entryId}/reverse`, {
+    reason,
+  });
+  return data;
+}
+
+export async function fetchAdminPartnerTransactions(partnerId: string) {
+  const { data } = await API.get(`/admin/partners/${partnerId}/transactions`, {
+    params: { preset: "month", limit: 100 },
+  });
   return data;
 }
 

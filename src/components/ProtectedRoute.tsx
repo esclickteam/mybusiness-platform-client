@@ -48,6 +48,13 @@ export default function ProtectedRoute({
   const role = (user?.role || "").toLowerCase();
   const isAdmin = role === "admin";
   const isBusiness = role === "business";
+  const isPartnerManaged =
+    role === "partner" &&
+    Boolean(
+      user?.managedBusinessId ||
+        (typeof window !== "undefined" &&
+          window.localStorage.getItem("managedBusinessId"))
+    );
 
   const normalizedRoles = useMemo(
     () => roles.map((item) => item.toLowerCase()),
@@ -124,10 +131,13 @@ export default function ProtectedRoute({
      🔐 Role validation
   =========================== */
   if (normalizedRoles.length > 0 && !normalizedRoles.includes(role)) {
-    if (role === "partner") {
+    if (isPartnerManaged && normalizedRoles.includes("business")) {
+      // Partner stays role=partner while operating a managed business.
+    } else if (role === "partner") {
       return <Navigate to="/partner/dashboard" replace />;
+    } else {
+      return <Unauthorized />;
     }
-    return <Unauthorized />;
   }
 
   /* ===========================

@@ -55,7 +55,7 @@ export default function PartnerClientDossier() {
   const [loading, setLoading] = useState(true);
   const [note, setNote] = useState("");
   const [task, setTask] = useState("");
-  const [entering, setEntering] = useState(false);
+  const [tab, setTab] = useState("overview");
 
   useEffect(() => {
     if (!clientId) return;
@@ -178,12 +178,45 @@ export default function PartnerClientDossier() {
         </div>
       ) : null}
 
+      <section className="flex flex-wrap gap-2">
+        {[
+          ["overview", "סקירה"],
+          ["details", "פרטי לקוח"],
+          ["products", "מוצרים"],
+          ["pricing", "תמחור"],
+          ["permissions", "הרשאות"],
+          ["tasks", "משימות"],
+          ["notes", "הערות"],
+          ["history", "היסטוריה"],
+        ].map(([id, label]) => (
+          <button
+            key={id}
+            type="button"
+            onClick={() => setTab(id)}
+            className={[
+              "rounded-2xl px-3 py-2 text-sm font-black",
+              tab === id ? "bg-slate-900 text-white" : "border border-slate-200 bg-white",
+            ].join(" ")}
+          >
+            {label}
+          </button>
+        ))}
+        <Link
+          to="/partner/dashboard/transactions"
+          className="rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm font-black"
+        >
+          עסקאות
+        </Link>
+      </section>
+
+      {tab === "overview" || tab === "details" || tab === "history" ? (
       <section className="grid gap-3 md:grid-cols-4">
         <InfoCard icon={User} label="סטטוס" value={PARTNER_STATUS_LABEL[client.status] || client.status} />
         <InfoCard icon={Shield} label="מצב ניהול" value={MODE_LABEL[client.managementMode] || client.managementMode} />
         <InfoCard icon={Mail} label="אימייל" value={client.contact.email} />
         <InfoCard icon={Phone} label="טלפון" value={client.contact.phone || "—"} />
       </section>
+      ) : null}
 
       <section className="grid gap-3 rounded-3xl border border-slate-200 bg-white p-5 md:grid-cols-4">
         <DateCell label="נוצר" value={formatWhen(client.createdAt)} />
@@ -253,10 +286,8 @@ export default function PartnerClientDossier() {
                 <p className="text-lg font-black">{formatIls(bizuplyShare)}</p>
               </div>
               <div>
-                <p className="text-[11px] font-bold text-white/55">סה״כ לתשלום ל-Bizuply</p>
-                <p className="text-lg font-black">
-                  {formatIls(wholesaleTotal)} + {formatIls(bizuplyShare)} = {formatIls(dueTotal)}
-                </p>
+                <p className="text-[11px] font-bold text-white/55">הלקוח משלם</p>
+                <p className="text-lg font-black">{formatIls(finalTotal)}</p>
               </div>
             </div>
           </div>
