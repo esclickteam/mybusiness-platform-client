@@ -121,7 +121,12 @@ export default function SmartSearchWidget({
   if (settings.isActive === false) return null;
 
   return (
-    <div data-bizuply-smart-search="true" dir="rtl">
+    <div
+      data-bizuply-smart-search="true"
+      data-bizuply-plugin="smart-search"
+      data-bizuply-plugin-runtime="true"
+      dir="rtl"
+    >
       <style>{`
         .bizuply-search-highlight {
           outline: 2px solid ${accent} !important;
