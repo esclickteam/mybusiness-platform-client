@@ -63,6 +63,25 @@ function pageTitle(page: SitePageNavSource | null | undefined) {
   return String(page?.title || page?.name || "").trim();
 }
 
+function labelAfterSitePageRename(
+  currentLabel: string,
+  matched: SitePageNavSource | null | undefined,
+  previousTitleById?: Record<string, string>,
+) {
+  const itemLabel = String(currentLabel || "").trim();
+  const currentTitle = pageTitle(matched);
+  if (!matched || !currentTitle) return itemLabel;
+  const previousTitle = String(
+    previousTitleById?.[String(matched.id || "")] || "",
+  ).trim();
+  /*
+    Keep template Preview labels on first editor load.
+    Only rewrite when a Site Page title actually changed.
+  */
+  if (previousTitle && previousTitle !== currentTitle) return currentTitle;
+  return itemLabel || currentTitle;
+}
+
 /** Runtime-only page descriptors — never embed full page visual/html payloads. */
 export function slimSitePageNavSources(
   sitePages: SitePageNavSource[] | null | undefined,
@@ -252,7 +271,28 @@ function isHomePage(page: SitePageNavSource) {
 }
 
 function isHomeKey(key: string) {
-  return !key || key === "home" || key === "index" || key === "/" || key === "#";
+  return key === "home" || key === "index" || key === "/" || key === "#";
+}
+
+/**
+ * Hash / mailto / absolute / section hrefs are template chrome — not Site Pages.
+ * Empty keys must not count as "home" or every unbound nav item binds to `/`.
+ */
+export function isNonPageNavHref(href: unknown) {
+  const raw = String(href || "").trim();
+  if (!raw) return false;
+  if (/^(mailto:|tel:|sms:|javascript:)/i.test(raw)) return true;
+  if (/^https?:\/\//i.test(raw) || raw.startsWith("//")) return true;
+  const hashIndex = raw.indexOf("#");
+  if (hashIndex < 0) return false;
+  const hash = raw.slice(hashIndex + 1).trim();
+  return Boolean(hash);
+}
+
+function navItemHasExplicitPageBinding(navItem: TemplateNavItem | null | undefined) {
+  return Boolean(
+    String(navItem?.__sitePageId || navItem?.page || navItem?.pageId || "").trim(),
+  );
 }
 
 function navItemPageKey(navItem: TemplateNavItem | null | undefined) {
@@ -436,8 +476,10 @@ export function findSitePageByHref(
   const pages = Array.isArray(sitePages) ? sitePages : [];
   if (!pages.length) return null;
 
+  if (isNonPageNavHref(href)) return null;
+
   const key = normalizeKey(href);
-  if (isHomeKey(key)) {
+  if (!key || isHomeKey(key)) {
     return pages.find((page) => isHomePage(page)) || null;
   }
 
@@ -478,29 +520,34 @@ export function findSitePageForNavItem(
   if (!pages.length) return null;
 
   const previousTitleById = options?.previousTitleById || {};
+  const href = String(options?.href || navItem?.href || "").trim();
+
+  /*
+    Hash / mailto / tel / absolute URLs are template chrome, not Site Pages.
+    An explicit href that does not resolve to a Site Page is a manual link —
+    never bind it via empty pageKey, label, or a stale __sitePageId=home.
+  */
+  if (isNonPageNavHref(href)) return null;
+
+  if (href) {
+    const byHref = findSitePageByHref(href, pages);
+    if (byHref) return byHref;
+    return null;
+  }
 
   const boundId = normalizeKey(navItem?.__sitePageId);
-  if (boundId) {
+  if (boundId && navItemHasExplicitPageBinding(navItem)) {
     const bound =
       pages.find((page) => normalizeKey(page.id) === boundId) || null;
     if (bound) return bound;
   }
 
-  const href = String(options?.href || navItem?.href || "").trim();
-  if (href) {
-    const byHref = findSitePageByHref(href, pages);
-    if (byHref) return byHref;
-  }
-
   const pageKey = navItemPageKey(navItem);
   if (isHomeKey(pageKey)) {
-    /*
-      Only treat as home when the item actually points at home.
-      Missing keys without an href are unresolved — not home.
-    */
-    if (!pageKey && !href) return null;
     return pages.find((page) => isHomePage(page)) || null;
   }
+
+  if (!pageKey) return null;
 
   const exact =
     pages.find((page) => {
@@ -522,6 +569,8 @@ export function findSitePageForNavItem(
     });
     if (byTitle.length === 1) return byTitle[0];
   }
+
+  if (!pageKey) return null;
 
   const fuzzy = pages.filter((page) => {
     const id = normalizeKey(page.id);
@@ -548,8 +597,13 @@ export function resolveNavLabelFromSitePages(
   options?: FindNavPageOptions,
 ) {
   const matched = findSitePageForNavItem(navItem, sitePages, options);
-  const title = pageTitle(matched);
-  return title || String(navItem?.label || "").trim();
+  return (
+    labelAfterSitePageRename(
+      String(navItem?.label || "").trim(),
+      matched,
+      options?.previousTitleById,
+    ) || pageTitle(matched)
+  );
 }
 
 /**
@@ -566,14 +620,17 @@ export function dedupeNavItemsByPage<T extends TemplateNavItem>(
   const result: T[] = [];
 
   items.forEach((item) => {
-    const key = normalizeKey(
-      item.__sitePageId ||
-        item.page ||
-        item.pageId ||
-        item.id ||
-        item.href ||
-        "",
-    );
+    const href = String(item.href || "").trim();
+    const key = isNonPageNavHref(href)
+      ? `href:${normalizeKey(href)}`
+      : normalizeKey(
+          item.__sitePageId ||
+            item.page ||
+            item.pageId ||
+            item.id ||
+            href ||
+            "",
+        );
     if (key) {
       if (seen.has(key)) return;
       seen.add(key);
@@ -641,31 +698,48 @@ export function syncNavLabelsWithSitePages<T extends TemplateNavItem>(
 
   const synced = items.map((item, index) => {
     const href = options?.hrefByIndex?.[index];
-    const matched = findSitePageForNavItem(item, sitePages, {
-      href,
-      previousTitleById: options?.previousTitleById,
-    });
-    const nextLabel =
-      pageTitle(matched) || String(item?.label || "").trim();
-    const nextPageId = String(matched?.id || item.__sitePageId || "").trim();
+    const resolvedHref = String(href || item.href || "").trim();
+    const matched = isNonPageNavHref(resolvedHref)
+      ? null
+      : findSitePageForNavItem(item, sitePages, {
+          href,
+          previousTitleById: options?.previousTitleById,
+        });
+    const nextLabel = labelAfterSitePageRename(
+      String(item?.label || "").trim(),
+      matched,
+      options?.previousTitleById,
+    );
+    const nextPageId = isNonPageNavHref(resolvedHref)
+      ? ""
+      : String(matched?.id || item.__sitePageId || "").trim();
     const nextHref =
-      String(href || item.href || "").trim() ||
-      (matched ? sitePageHref(matched) : "");
+      resolvedHref || (matched ? sitePageHref(matched) : "");
 
+    const stalePageBind =
+      isNonPageNavHref(resolvedHref) && Boolean(item.__sitePageId);
     const labelChanged = Boolean(nextLabel && nextLabel !== item.label);
     const bindingChanged =
-      Boolean(nextPageId) && nextPageId !== String(item.__sitePageId || "");
+      stalePageBind ||
+      (Boolean(nextPageId) && nextPageId !== String(item.__sitePageId || ""));
     const hrefChanged =
       Boolean(nextHref) && nextHref !== String(item.href || "");
 
     if (!labelChanged && !bindingChanged && !hrefChanged) return item;
 
-    return {
+    const nextItem = {
       ...item,
       ...(nextLabel ? { label: nextLabel } : {}),
-      ...(nextPageId ? { __sitePageId: nextPageId } : {}),
       ...(nextHref ? { href: nextHref } : {}),
-    };
+    } as T;
+
+    if (nextPageId) {
+      nextItem.__sitePageId = nextPageId;
+    } else if (stalePageBind) {
+      delete nextItem.__sitePageId;
+    }
+
+    return nextItem;
   });
 
   return dedupeNavItemsByPage(synced);
@@ -725,12 +799,11 @@ function writeNavLabelsIntoContent(
       href,
       previousTitleById,
     });
-    const label =
-      pageTitle(matched) ||
-      resolveNavLabelFromSitePages(item, sitePages, {
-        href,
-        previousTitleById,
-      });
+    const label = labelAfterSitePageRename(
+      String(existing.text || item.label || "").trim(),
+      matched,
+      previousTitleById,
+    );
     if (!label) return;
 
     const nextHref = href || (matched ? sitePageHref(matched) : "");
@@ -770,6 +843,8 @@ function syncAllNavLikeContent(
     if (!isNavContentElementId(elementId)) return;
     const item = (rawItem || {}) as Record<string, any>;
     const href = hrefFromContentItem(item);
+    if (isNonPageNavHref(href)) return;
+
     const boundId = normalizeKey(item.sitePageId || item.__sitePageId);
 
     let matched = boundId
@@ -820,8 +895,17 @@ function syncAllNavLikeContent(
       }
     }
 
-    const title = pageTitle(matched);
+    const title = labelAfterSitePageRename(
+      String(item.text || "").trim(),
+      matched,
+      previousTitleById,
+    );
     if (!title || String(item.text || "") === title) return;
+
+    const previousTitle = String(
+      previousTitleById?.[String(matched?.id || "")] || "",
+    ).trim();
+    if (!previousTitle || previousTitle === pageTitle(matched)) return;
 
     next = writeVisualContentItem(next, elementId, {
       ...item,
