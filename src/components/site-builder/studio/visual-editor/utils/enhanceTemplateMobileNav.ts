@@ -311,6 +311,20 @@ function syncOpenState(header: HTMLElement, toggle: HTMLButtonElement) {
   toggle.textContent = open ? "×" : "☰";
 }
 
+export function headerNeedsCompactNav(header: HTMLElement): boolean {
+  const bp = header.getAttribute(BP_ATTR);
+  const row =
+    (header.querySelector(":scope > div") as HTMLElement | null) || header;
+  const width = Math.round(
+    row.getBoundingClientRect?.().width || row.clientWidth || 0,
+  );
+
+  if (bp === "md") return width > 0 && width < 768;
+  if (bp === "lg") return width > 0 && width < 1024;
+  if (bp === "xl") return width > 0 && width < 1280;
+  return false;
+}
+
 export function headerRowOverflows(header: HTMLElement): boolean {
   const row =
     (header.querySelector(":scope > div") as HTMLElement | null) || header;
@@ -342,8 +356,11 @@ export function headerRowOverflows(header: HTMLElement): boolean {
 
 function applyOverflowFlag(header: HTMLElement) {
   try {
-    if (headerRowOverflows(header)) header.setAttribute(OVERFLOW_ATTR, "true");
-    else header.removeAttribute(OVERFLOW_ATTR);
+    if (headerRowOverflows(header) || headerNeedsCompactNav(header)) {
+      header.setAttribute(OVERFLOW_ATTR, "true");
+    } else {
+      header.removeAttribute(OVERFLOW_ATTR);
+    }
   } catch {
     header.removeAttribute(OVERFLOW_ATTR);
   }
@@ -446,7 +463,10 @@ export function enhanceTemplateMobileNav(root: HTMLElement | null) {
     if (hasNativeMobileToggle(header)) {
       header.setAttribute(HEADER_ATTR, "native");
       const found = detectDesktopNav(header);
-      if (found) found.nav.setAttribute("data-bizuply-desktop-nav", "true");
+      if (found) {
+        found.nav.setAttribute("data-bizuply-desktop-nav", "true");
+        header.setAttribute(BP_ATTR, found.bp);
+      }
       bindNativeOverflowMenu(header);
       observeOverflow(header);
       return;
