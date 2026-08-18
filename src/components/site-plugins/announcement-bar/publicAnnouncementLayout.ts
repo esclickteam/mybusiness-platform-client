@@ -16,15 +16,11 @@ const TOP_INLINE_ATTR = "data-bizuply-header-top-inline";
 
 function readHeaderElements(): HTMLElement[] {
   if (typeof document === "undefined") return [];
-  const roots = Array.from(document.querySelectorAll<HTMLElement>(ROOT_SELECTOR));
-  const scopes: Array<ParentNode> = roots.length ? roots : [document];
   const found = new Set<HTMLElement>();
-  for (const scope of scopes) {
-    scope.querySelectorAll<HTMLElement>(HEADER_SELECTOR).forEach((el) => {
-      if (el.closest('[data-bizuply-widget="announcement-bar"]')) return;
-      found.add(el);
-    });
-  }
+  document.querySelectorAll<HTMLElement>(HEADER_SELECTOR).forEach((el) => {
+    if (el.closest('[data-bizuply-widget="announcement-bar"]')) return;
+    found.add(el);
+  });
   return Array.from(found);
 }
 
@@ -158,6 +154,9 @@ export function observePublicAnnouncementLayout(
   document.querySelectorAll(ROOT_SELECTOR).forEach((root) => {
     mutationObserver?.observe(root, { childList: true, subtree: true });
   });
+  if (document.body) {
+    mutationObserver?.observe(document.body, { childList: true, subtree: true });
+  }
   window.addEventListener("resize", measure);
   window.addEventListener("scroll", measure, { passive: true });
   return () => {
