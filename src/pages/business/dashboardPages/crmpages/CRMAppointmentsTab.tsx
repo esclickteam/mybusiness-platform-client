@@ -1072,8 +1072,8 @@ export default function CRMAppointmentsTab() {
       time: newAppointment.time,
       duration: Number(newAppointment.duration) || minDuration,
       crmClientId: newAppointment.crmClientId || null,
-      completed: Boolean(newAppointment.completed),
-      status: newAppointment.completed ? "completed" : "scheduled",
+      // Fulfilment is stored in the appointment status; keep one source of truth.
+      status: newAppointment.completed ? "completed" : "not_completed",
     };
 
     setIsSaving(true);
@@ -1117,6 +1117,10 @@ export default function CRMAppointmentsTab() {
           alert(t("crm.appointments.treatmentConsumeFailed"));
         }
       }
+
+      // The saved state is now the baseline, so saving again without changing
+      // fulfilment cannot consume a second treatment.
+      previousCompletedRef.current = nowCompleted;
 
       await queryClient.invalidateQueries({
         queryKey: ["appointments", businessId],
@@ -2102,6 +2106,7 @@ function AppointmentModal({
                       serviceId={appointment.serviceId}
                       schedule={scheduleArray}
                       duration={appointment.duration}
+                      excludeAppointmentId={editId}
                     />
                   </FormBlock>
 
