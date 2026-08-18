@@ -36,6 +36,7 @@ import {
   resolvePostLoginDestination,
   sanitizeInternalRedirect,
   clearPostLoginRedirect,
+  isCompatibleRedirect,
 } from "../utils/safeInternalRedirect";
 import BizuplyLoader from "../components/ui/BizuplyLoader";
 import { isPublicCustomerSiteHost } from "../utils/publicSiteHost";
@@ -412,6 +413,14 @@ export function AuthProvider({ children }) {
       setToken(accessToken);
 
       const normalizedUser = normalizeUser(loggedInUser);
+      if (
+        normalizedUser.role === "partner" &&
+        !loggedInUser?.managedBusinessId
+      ) {
+        // Leftover managed-business localStorage must not overlay a fresh
+        // partner session and skip /partner/dashboard.
+        clearManagedBusinessContext();
+      }
       setUser(normalizedUser);
       localStorage.setItem("businessDetails", JSON.stringify(normalizedUser));
 
@@ -430,8 +439,16 @@ export function AuthProvider({ children }) {
       const urlRedirect = sanitizeInternalRedirect(
         new URLSearchParams(window.location.search).get("redirect")
       );
-      if (urlRedirect) {
+      const storedRedirect = peekPostLoginRedirect();
+      if (
+        urlRedirect &&
+        isCompatibleRedirect(normalizedUser.role, urlRedirect)
+      ) {
         rememberPostLoginRedirect(urlRedirect);
+      } else if (
+        !isCompatibleRedirect(normalizedUser.role, storedRedirect)
+      ) {
+        clearPostLoginRedirect();
       }
 
       const destination = resolvePostLoginDestination({
@@ -440,7 +457,7 @@ export function AuthProvider({ children }) {
         hasAccess: normalizedUser.hasAccess,
         enabledModules: normalizedUser.enabledModules,
         queryRedirect: urlRedirect,
-        storedRedirect: peekPostLoginRedirect(),
+        storedRedirect: peekPostLoginRedirect() || storedRedirect,
       });
 
       // Login.tsx owns navigation when skipRedirect=true so auth bootstrap
@@ -754,16 +771,23 @@ export function AuthProvider({ children }) {
           return;
         }
 
-        if (
-          freshUser.role === "partner" &&
-          !isImpersonating &&
-          !freshUser.managedBusinessId &&
-          !localStorage.getItem("managedBusinessId") &&
-          !location.pathname.startsWith("/partner") &&
-          !location.pathname.startsWith("/business/")
-        ) {
-          navigate("/partner/dashboard", { replace: true });
-          return;
+        if (freshUser.role === "partner" && !isImpersonating) {
+          const path = location.pathname;
+          const onPartnerArea =
+            path === "/partner" || path.startsWith("/partner/");
+          const grantedManagedId = String(
+            freshUser.managedBusinessId || ""
+          ).trim();
+          const onGrantedManagedBusiness = Boolean(
+            grantedManagedId &&
+              path.startsWith(`/business/${grantedManagedId}`)
+          );
+          // Leftover localStorage managedBusinessId must not keep a partner
+          // on public `/` (or any non-partner path) before auth settles.
+          if (!onPartnerArea && !onGrantedManagedBusiness) {
+            navigate("/partner/dashboard", { replace: true });
+            return;
+          }
         }
 
         const newSocket = await createSocket(
@@ -812,7 +836,10 @@ export function AuthProvider({ children }) {
             return;
           }
 
-          if (pendingDeepLink) {
+          if (
+            pendingDeepLink &&
+            isCompatibleRedirect(freshUser.role, pendingDeepLink)
+          ) {
             const dest = alignRedirectBusinessId(
               consumePostLoginRedirect() || pendingDeepLink,
               freshUser.businessId
@@ -838,19 +865,23 @@ export function AuthProvider({ children }) {
         }
 
         if (pendingDeepLink) {
-          const savedRedirect = consumePostLoginRedirect() || pendingDeepLink;
-          const isPricing = savedRedirect === "/pricing";
-          const shouldSkip = isPricing && freshUser.hasAccess;
+          if (!isCompatibleRedirect(freshUser.role, pendingDeepLink)) {
+            clearPostLoginRedirect();
+          } else {
+            const savedRedirect = consumePostLoginRedirect() || pendingDeepLink;
+            const isPricing = savedRedirect === "/pricing";
+            const shouldSkip = isPricing && freshUser.hasAccess;
 
-          if (!shouldSkip) {
-            navigate(
-              alignRedirectBusinessId(savedRedirect, freshUser.businessId) ||
-                savedRedirect,
-              { replace: true }
-            );
+            if (!shouldSkip) {
+              navigate(
+                alignRedirectBusinessId(savedRedirect, freshUser.businessId) ||
+                  savedRedirect,
+                { replace: true }
+              );
+            }
+
+            return;
           }
-
-          return;
         }
 
         const pendingNotificationUrl = consumePendingNotificationUrl();

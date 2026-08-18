@@ -8,6 +8,8 @@ import { lazyWithPreload } from "../utils/lazyWithPreload";
 import AuthShell, { AuthCard } from "../components/auth/AuthShell";
 import { LoginFormSkeleton } from "../components/auth/LoginFormSkeleton";
 import {
+  clearPostLoginRedirect,
+  isCompatibleRedirect,
   rememberPostLoginRedirect,
   resolvePostLoginDestination,
   sanitizeInternalRedirect,
@@ -87,7 +89,7 @@ export default function Login() {
   );
 
   useEffect(() => {
-    if (queryRedirect) {
+    if (queryRedirect && queryRedirect !== "/") {
       rememberPostLoginRedirect(queryRedirect);
     }
   }, [queryRedirect]);
@@ -153,10 +155,13 @@ export default function Login() {
         storedRedirect: loginResult?.redirectUrl || null,
       });
 
-      // Keep sessionStorage redirect until auth bootstrap acknowledges the
-      // destination — prevents a race that snaps back to the generic dashboard.
-      if (queryRedirect) {
+      // Keep only a role-compatible deep link. Stale `/`, `/dashboard`, or
+      // `/client/dashboard` (or a server payload for the wrong product area)
+      // must not win over the partner home on the next auth bootstrap.
+      if (queryRedirect && isCompatibleRedirect(role, queryRedirect)) {
         rememberPostLoginRedirect(queryRedirect);
+      } else {
+        clearPostLoginRedirect();
       }
 
       const lang = searchParams.get("lang");
@@ -169,21 +174,7 @@ export default function Login() {
         return query ? `${pathname}?${query}` : pathname;
       };
 
-      if (role === "admin" && !queryRedirect) {
-        navigate(withReviewLang("/admin/dashboard"), { replace: true });
-      } else if (role === "marketer" && !queryRedirect) {
-        navigate(withReviewLang("/marketer/dashboard"), { replace: true });
-      } else if (role === "partner" && !queryRedirect) {
-        navigate(withReviewLang("/partner/dashboard"), { replace: true });
-      } else if (
-        role === "business" &&
-        !loggedInUser?.hasAccess &&
-        !queryRedirect
-      ) {
-        navigate(withReviewLang("/pricing"), { replace: true });
-      } else {
-        navigate(withReviewLang(finalRedirect), { replace: true });
-      }
+      navigate(withReviewLang(finalRedirect), { replace: true });
 
       setTimeout(() => {
         if (typeof fetchNotifications === "function") {

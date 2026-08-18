@@ -3,6 +3,7 @@ import {
   alignRedirectBusinessId,
   clearPostLoginRedirect,
   consumePostLoginRedirect,
+  isCompatibleRedirect,
   peekPostLoginRedirect,
   rememberPostLoginRedirect,
   resolvePostLoginDestination,
@@ -92,6 +93,23 @@ describe("resolvePostLoginDestination", () => {
         queryRedirect: "/partner/dashboard/crm",
       })
     ).toBe("/partner/dashboard/crm");
+  });
+
+  it("ignores leftover public/client homes even when they are the query", () => {
+    expect(
+      resolvePostLoginDestination({
+        role: "partner",
+        queryRedirect: "/",
+        storedRedirect: "/client/dashboard",
+      })
+    ).toBe("/partner/dashboard");
+    expect(isCompatibleRedirect("partner", "/")).toBe(false);
+    expect(isCompatibleRedirect("partner", "/dashboard")).toBe(false);
+    expect(isCompatibleRedirect("partner", "/client/dashboard")).toBe(false);
+    expect(isCompatibleRedirect("partner", "/partner/dashboard")).toBe(true);
+    expect(isCompatibleRedirect("partner", "/partner/dashboard/crm")).toBe(
+      true
+    );
   });
 
   it("does not change admin / business / affiliate / marketer homes", () => {

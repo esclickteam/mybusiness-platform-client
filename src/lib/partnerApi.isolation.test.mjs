@@ -80,11 +80,22 @@ test("logged-in partner is not dropped on the public homepage", () => {
   const app = readFileSync(join(ROOT, "App.jsx"), "utf8");
   assert.equal(app.includes('user.role === "partner"'), true);
   assert.equal(app.includes('to="/partner/dashboard"'), true);
+  assert.equal(app.includes('path="/partner/dashboard"'), true);
   assert.equal(app.includes('roles={["partner"]}'), true);
+  const catchAllAt = app.lastIndexOf('path="*"');
+  const partnerRouteAt = app.indexOf('path="/partner/dashboard"');
+  assert.ok(partnerRouteAt > 0);
+  assert.ok(catchAllAt > partnerRouteAt);
 
   const auth = readFileSync(join(ROOT, "context/AuthContext.jsx"), "utf8");
   assert.equal(auth.includes('freshUser.role === "partner"'), true);
   assert.equal(auth.includes('navigate("/partner/dashboard", { replace: true })'), true);
+  assert.equal(auth.includes("isCompatibleRedirect"), true);
+  assert.equal(auth.includes("clearManagedBusinessContext"), true);
+
+  const login = readFileSync(join(ROOT, "pages/Login.tsx"), "utf8");
+  assert.equal(login.includes("isCompatibleRedirect"), true);
+  assert.equal(login.includes("resolvePostLoginDestination"), true);
 
   const header = readFileSync(join(ROOT, "components/Header.tsx"), "utf8");
   assert.equal(header.includes('user?.role === "partner"'), true);
@@ -92,4 +103,5 @@ test("logged-in partner is not dropped on the public homepage", () => {
 
   const guard = readFileSync(join(ROOT, "components/ProtectedRoute.tsx"), "utf8");
   assert.equal(guard.includes('role === "partner"'), true);
+  assert.equal(guard.includes('to="/partner/dashboard"'), true);
 });

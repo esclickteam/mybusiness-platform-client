@@ -1,6 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import {
+  isCompatibleRedirect,
   resolvePostLoginDestination,
   roleHomePath,
 } from "./safeInternalRedirect.js";
@@ -26,10 +27,15 @@ test("partner login home is /partner/dashboard for every partner role", () => {
   assert.equal(
     resolvePostLoginDestination({
       role: "partner",
-      queryRedirect: "/partner/dashboard/crm",
+      queryRedirect: "/",
+      storedRedirect: "/client/dashboard",
     }),
-    "/partner/dashboard/crm"
+    "/partner/dashboard"
   );
+  assert.equal(isCompatibleRedirect("partner", "/"), false);
+  assert.equal(isCompatibleRedirect("partner", "/dashboard"), false);
+  assert.equal(isCompatibleRedirect("partner", "/client/dashboard"), false);
+  assert.equal(isCompatibleRedirect("partner", "/partner/dashboard"), true);
 });
 
 test("other role homes stay unchanged", () => {

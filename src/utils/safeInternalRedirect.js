@@ -113,11 +113,21 @@ export function roleHomePath(role) {
   return null;
 }
 
-function isCompatibleRedirect(role, path) {
+export function isCompatibleRedirect(role, path) {
   const safe = sanitizeInternalRedirect(path);
   if (!safe || safe === "/") return false;
   const normalizedRole = String(role || "").toLowerCase();
   if (normalizedRole === "partner") {
+    // Generic homes from login-from-public-page or stale sessionStorage
+    // must never keep a partner on the marketing site / client CRM.
+    if (
+      safe === "/dashboard" ||
+      safe.startsWith("/dashboard/") ||
+      safe === "/client/dashboard" ||
+      safe.startsWith("/client/dashboard/")
+    ) {
+      return false;
+    }
     return safe === "/partner" || safe.startsWith("/partner/");
   }
   return true;
