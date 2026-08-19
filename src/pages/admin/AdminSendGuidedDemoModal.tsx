@@ -242,6 +242,10 @@ export default function AdminSendGuidedDemoModal({
     setError("");
     try {
       const data = await fn();
+      if (data?.delivery && data.delivery.ok === false) {
+        setError(data.delivery.error || "לא הצלחנו לשלוח את הדמו ב-WhatsApp.");
+        return;
+      }
       if (data?.demoLink) await navigator.clipboard?.writeText(data.demoLink);
       await load();
     } catch (err: any) {

@@ -64,9 +64,14 @@ export default function AdminGuidedDemoDetail() {
     setBanner("");
     try {
       const result = await fn();
+      if (result?.delivery && result.delivery.ok === false) {
+        setError(result.delivery.error || "לא הצלחנו לשלוח את הדמו ב-WhatsApp.");
+        await load();
+        return;
+      }
       if (result?.demoLink) {
         await navigator.clipboard?.writeText(result.demoLink);
-        setBanner(`${okMessage} ${result.demoLink}`);
+        setBanner(okMessage);
       } else {
         setBanner(okMessage);
       }
