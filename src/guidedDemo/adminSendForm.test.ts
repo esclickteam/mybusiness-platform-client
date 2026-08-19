@@ -3,10 +3,14 @@ import {
   approvedNeedLabelFromCatalog,
   canSubmitSendDemo,
   demoContentSummary,
+  firstNameFromFullName,
   isValidDemoPhone,
+  isValidFullName,
+  normalizeFullName,
   orderedPresets,
   payloadFingerprint,
   resolveSelectedKeys,
+  sourceNameForPrefill,
   sourcePhoneForPrefill,
 } from "./adminSendForm";
 
@@ -38,11 +42,23 @@ describe("admin send demo form", () => {
     expect(sourcePhoneForPrefill("")).toBe("");
   });
 
-  it("keeps destination phone independent from the CRM source snapshot", () => {
+  it("prefills full name and treats missing CRM name as empty", () => {
+    expect(sourceNameForPrefill("דניאל כהן")).toBe("דניאל כהן");
+    expect(sourceNameForPrefill("  דניאל   כהן  ")).toBe("דניאל כהן");
+    expect(sourceNameForPrefill("לא צוין")).toBe("");
+    expect(sourceNameForPrefill("")).toBe("");
+  });
+
+  it("keeps destination name and phone independent from the CRM source snapshot", () => {
+    const crmName = "ישראל ישראלי";
     const crmPhone = "0501234567";
+    let destinationName = sourceNameForPrefill(crmName);
     let destination = sourcePhoneForPrefill(crmPhone);
+    destinationName = "דניאל כהן";
     destination = "0529999999";
+    expect(destinationName).toBe("דניאל כהן");
     expect(destination).toBe("0529999999");
+    expect(crmName).toBe("ישראל ישראלי");
     expect(crmPhone).toBe("0501234567");
   });
 
@@ -82,7 +98,7 @@ describe("admin send demo form", () => {
     ).toEqual(["crm", "email"]);
   });
 
-  it("blocks send until a valid phone and at least one module exist", () => {
+  it("blocks send until a valid full name, phone, and at least one module exist", () => {
     expect(
       canSubmitSendDemo({ customerName: "ישראל", phone: "0501234567", selectedKeys: [] })
     ).toBe(false);
@@ -93,8 +109,21 @@ describe("admin send demo form", () => {
       canSubmitSendDemo({ customerName: "", phone: "0501234567", selectedKeys: ["crm"] })
     ).toBe(false);
     expect(
+      canSubmitSendDemo({ customerName: "   ", phone: "0501234567", selectedKeys: ["crm"] })
+    ).toBe(false);
+    expect(
       canSubmitSendDemo({ customerName: "ישראל", phone: "0501234567", selectedKeys: ["crm"] })
     ).toBe(true);
+    expect(isValidFullName("דניאל כהן")).toBe(true);
+    expect(isValidFullName("לא צוין")).toBe(false);
+  });
+
+  it("derives firstName from the modal full name without sending the full string", () => {
+    expect(normalizeFullName("  דניאל   כהן  ")).toBe("דניאל כהן");
+    expect(firstNameFromFullName("דניאל כהן")).toBe("דניאל");
+    expect(firstNameFromFullName("דניאל")).toBe("דניאל");
+    expect(firstNameFromFullName("")).toBe("");
+    expect(firstNameFromFullName("undefined")).toBe("");
   });
 
   it("summarizes full demo vs selected modules", () => {
@@ -125,16 +154,19 @@ describe("admin send demo form", () => {
 
   it("retries the same invitation when destination content did not change", () => {
     const first = payloadFingerprint({
+      customerName: "דניאל כהן",
       customerPhone: "0501234567",
       presetKey: "crm-only",
       moduleKeys: ["crm"],
     });
     const same = payloadFingerprint({
+      customerName: "דניאל כהן",
       customerPhone: "0501234567",
       presetKey: "crm-only",
       moduleKeys: ["crm"],
     });
     const changed = payloadFingerprint({
+      customerName: "דניאל כהן",
       customerPhone: "0520000000",
       presetKey: "crm-only",
       moduleKeys: ["crm"],

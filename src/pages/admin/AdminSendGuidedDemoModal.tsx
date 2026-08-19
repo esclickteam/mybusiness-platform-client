@@ -16,9 +16,11 @@ import {
   demoContentSummary,
   invitationIdOf,
   isValidDemoPhone,
+  normalizeFullName,
   orderedPresets,
   payloadFingerprint,
   resolveSelectedKeys,
+  sourceNameForPrefill,
   sourcePhoneForPrefill,
   type GuidedDemoCatalog,
 } from "../../guidedDemo/adminSendForm";
@@ -137,7 +139,7 @@ export default function AdminSendGuidedDemoModal({
     setCopied(false);
     setLastInvitationId("");
     setLastFingerprint("");
-    setCustomerName(String(context.customerName || "").trim());
+    setCustomerName(sourceNameForPrefill(context.customerName));
     setPhone(sourcePhoneForPrefill(context.phone));
     setPresetKey("full");
     setModuleKeys([]);
@@ -188,7 +190,7 @@ export default function AdminSendGuidedDemoModal({
     setCopied(false);
     try {
       const payload = {
-        customerName: customerName.trim(),
+        customerName: normalizeFullName(customerName),
         customerPhone: phone.trim(),
         businessName: context.businessName || "",
         presetKey,
@@ -203,6 +205,7 @@ export default function AdminSendGuidedDemoModal({
         approvedNeedLabel,
       };
       const fingerprint = payloadFingerprint({
+        customerName: payload.customerName,
         customerPhone: payload.customerPhone,
         presetKey: payload.presetKey,
         moduleKeys: payload.moduleKeys,
@@ -339,21 +342,18 @@ export default function AdminSendGuidedDemoModal({
           ) : (
             <div className="space-y-5">
               <section>
-                <h3 className="text-sm font-black text-slate-900">פרטי לקוח</h3>
-                {customerName ? (
-                  <p className="mt-2 text-sm font-bold text-slate-700">
-                    לקוח: {customerName}
-                  </p>
-                ) : (
-                  <label className="mt-2 block text-sm font-black">
-                    שם לקוח
-                    <input
-                      className="mt-1 h-11 w-full rounded-xl border px-3 font-bold"
-                      value={customerName}
-                      onChange={(e) => setCustomerName(e.target.value)}
-                    />
-                  </label>
-                )}
+                <h3 className="text-sm font-black text-slate-900">פרטי הלקוח</h3>
+                <label className="mt-2 block text-sm font-black">
+                  שם מלא
+                  <input
+                    className="mt-1 h-11 w-full rounded-xl border px-3 font-bold"
+                    value={customerName}
+                    onChange={(e) => setCustomerName(e.target.value)}
+                    placeholder="דניאל כהן"
+                    data-testid="admin-send-demo-fullname"
+                    autoComplete="name"
+                  />
+                </label>
                 <label className="mt-3 block text-sm font-black">
                   מספר טלפון
                   <input
@@ -364,6 +364,7 @@ export default function AdminSendGuidedDemoModal({
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="0501234567"
                     data-testid="admin-send-demo-phone"
+                    autoComplete="tel"
                   />
                 </label>
                 {phone && !isValidDemoPhone(phone) ? (
@@ -372,7 +373,7 @@ export default function AdminSendGuidedDemoModal({
               </section>
 
               <section>
-                <h3 className="text-sm font-black text-slate-900">תוכן הדמו</h3>
+                <h3 className="text-sm font-black text-slate-900">מה לכלול בדמו?</h3>
                 <div className="mt-2 grid gap-2 sm:grid-cols-2">
                   {orderedPresets(catalog).map((preset) => (
                     <button
@@ -422,8 +423,16 @@ export default function AdminSendGuidedDemoModal({
               </section>
 
               <section className="rounded-2xl bg-slate-50 p-4">
-                <p className="text-sm font-black text-slate-900">הדמו יכלול:</p>
-                <p className="mt-1 text-sm font-bold text-slate-700">{summary || "לא נבחרו מודולים"}</p>
+                <h3 className="text-sm font-black text-slate-900">סיכום</h3>
+                <p className="mt-2 text-sm font-bold text-slate-700">
+                  לקוח: {normalizeFullName(customerName) || "—"}
+                </p>
+                <p className="text-sm font-bold text-slate-700" dir="ltr">
+                  טלפון: {phone || "—"}
+                </p>
+                <p className="text-sm font-bold text-slate-700">
+                  הדמו יכלול: {summary || "לא נבחרו מודולים"}
+                </p>
               </section>
 
               <section>

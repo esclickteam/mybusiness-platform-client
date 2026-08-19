@@ -41,6 +41,33 @@ export function isValidDemoPhone(raw: string) {
   return false;
 }
 
+export function normalizeFullName(raw?: string | null) {
+  return String(raw || "").trim().replace(/\s+/g, " ");
+}
+
+export function sourceNameForPrefill(sourceName?: string | null) {
+  const value = normalizeFullName(sourceName);
+  if (!value || value === "לא צוין") return "";
+  const lower = value.toLowerCase();
+  if (lower === "undefined" || lower === "null") return "";
+  return value;
+}
+
+export function isValidFullName(raw?: string | null) {
+  const value = normalizeFullName(raw);
+  if (!value) return false;
+  const lower = value.toLowerCase();
+  if (lower === "undefined" || lower === "null") return false;
+  if (value === "לא צוין" || value === "{{1}}" || lower === "{{firstname}}") return false;
+  return true;
+}
+
+export function firstNameFromFullName(raw?: string | null) {
+  const value = normalizeFullName(raw);
+  if (!isValidFullName(value)) return "";
+  return value.split(/\s+/)[0] || "";
+}
+
 export function sourcePhoneForPrefill(sourcePhone?: string | null) {
   const value = String(sourcePhone || "").trim();
   if (!value || value === "לא צוין") return "";
@@ -107,15 +134,17 @@ export function canSubmitSendDemo({
   phone: string;
   selectedKeys: string[];
 }) {
-  return Boolean(customerName.trim()) && isValidDemoPhone(phone) && selectedKeys.length > 0;
+  return isValidFullName(customerName) && isValidDemoPhone(phone) && selectedKeys.length > 0;
 }
 
 export function payloadFingerprint(payload: {
+  customerName: string;
   customerPhone: string;
   presetKey: string;
   moduleKeys: string[];
 }) {
   return JSON.stringify({
+    customerName: normalizeFullName(payload.customerName),
     customerPhone: payload.customerPhone.trim(),
     presetKey: payload.presetKey,
     moduleKeys: [...payload.moduleKeys].sort(),

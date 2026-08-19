@@ -69,7 +69,16 @@ describe("admin send demo button and modal", () => {
     const modal = await screen.findByTestId("admin-send-demo-modal");
     expect(modal.getAttribute("dir")).toBe("rtl");
     expect(screen.getByText("שליחת דמו אינטראקטיבי")).toBeTruthy();
-    expect(screen.getByText("לקוח: ישראל ישראלי")).toBeTruthy();
+    expect(screen.getByText("שם מלא")).toBeTruthy();
+    expect(screen.getByText("מספר טלפון")).toBeTruthy();
+    expect(screen.getByText("פרטי הלקוח")).toBeTruthy();
+    expect(screen.getByText("מה לכלול בדמו?")).toBeTruthy();
+    expect(screen.getByText("סיכום")).toBeTruthy();
+
+    const fullName = await screen.findByTestId("admin-send-demo-fullname");
+    expect((fullName as HTMLInputElement).value).toBe("ישראל ישראלי");
+    fireEvent.change(fullName, { target: { value: "" } });
+    expect((fullName as HTMLInputElement).value).toBe("");
 
     const phone = await screen.findByTestId("admin-send-demo-phone");
     expect((phone as HTMLInputElement).value).toBe("0501234567");
