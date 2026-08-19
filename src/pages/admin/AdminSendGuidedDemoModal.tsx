@@ -430,6 +430,15 @@ export default function AdminSendGuidedDemoModal({
                 <h3 className="text-sm font-black text-slate-900">אופן שליחה</h3>
                 <div className="mt-2 rounded-2xl border border-violet-200 bg-violet-50 p-3 text-sm font-bold">
                   WhatsApp
+                  <span className="mt-1 block text-xs font-semibold text-slate-600">
+                    תבנית guided_demo_invite
+                    {delivery?.whatsapp?.template?.language
+                      ? ` · ${delivery.whatsapp.template.language}`
+                      : ""}
+                    {delivery?.whatsapp?.template?.reportingStatus
+                      ? ` · ${delivery.whatsapp.template.reportingStatus}`
+                      : ""}
+                  </span>
                 </div>
                 <div className="mt-2 rounded-2xl border border-slate-200 bg-slate-50 p-3 text-sm font-bold text-slate-400">
                   SMS עדיין לא זמין
