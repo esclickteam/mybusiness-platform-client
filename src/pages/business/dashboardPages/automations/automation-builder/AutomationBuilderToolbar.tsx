@@ -130,6 +130,7 @@ export default function AutomationBuilderToolbar({
           className="af-btn af-btn--secondary"
           disabled={saving || readOnly}
           title={writeBlockedTitle}
+          data-demo-target="automations-save"
           onClick={onSave}
         >
           {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}

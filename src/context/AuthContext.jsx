@@ -153,6 +153,7 @@ function isPublicRoute(pathname) {
     "/privacy-policy",
     "/terms",
     "/accessibility",
+    "/demo",
   ];
 
   return publicRoutes.some((route) => {

@@ -180,6 +180,8 @@ function KpiCard({
   series,
   icon,
   accent = "violet",
+  onClick,
+  dataDemoTarget,
 }: {
   title: string;
   value: string;
@@ -188,11 +190,32 @@ function KpiCard({
   series: number[];
   icon: React.ReactNode;
   accent?: keyof typeof KPI_ACCENTS;
+  onClick?: () => void;
+  dataDemoTarget?: string;
 }) {
   const tone = KPI_ACCENTS[accent];
+  const interactive = Boolean(onClick);
 
   return (
-    <div className="relative min-h-[156px] overflow-hidden rounded-[28px] border border-slate-200/70 bg-white p-5 shadow-[0_18px_50px_rgba(15,23,42,0.06)]">
+    <div
+      role={interactive ? "button" : undefined}
+      tabIndex={interactive ? 0 : undefined}
+      onClick={onClick}
+      onKeyDown={
+        interactive
+          ? (event) => {
+              if (event.key === "Enter" || event.key === " ") {
+                event.preventDefault();
+                onClick?.();
+              }
+            }
+          : undefined
+      }
+      data-demo-target={dataDemoTarget}
+      className={`relative min-h-[156px] overflow-hidden rounded-[28px] border border-slate-200/70 bg-white p-5 shadow-[0_18px_50px_rgba(15,23,42,0.06)] ${
+        interactive ? "cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-violet-400" : ""
+      }`}
+    >
       <div
         className={`pointer-events-none absolute -right-8 -top-8 h-28 w-28 rounded-full bg-gradient-to-br ${tone.glow} to-transparent blur-2xl`}
       />
@@ -442,6 +465,8 @@ export default function DashboardOverview({
           series={(data?.leads.series || []).map((item) => item.value)}
           icon={<UserPlus size={20} />}
           accent="blue"
+          dataDemoTarget="dashboard-kpi-new-leads"
+          onClick={() => navigate(`${basePath}/crm/leads`)}
         />
         <KpiCard
           title={t("overview.reviews")}

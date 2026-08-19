@@ -297,6 +297,9 @@ export default function AutomationNodePicker({
         disabled={disabled}
         title={writeBlockedTitle}
         aria-label={`${item.label}. ${item.description}`}
+        data-demo-target={
+          item.key === "new_lead" ? "automations-trigger-new-lead" : undefined
+        }
         onClick={() => handlePick(item)}
       >
         <span className="af-picker-item__icon" aria-hidden>
@@ -452,6 +455,11 @@ export default function AutomationNodePicker({
                     className="af-picker-item"
                     disabled={disabled}
                     title={writeBlockedTitle}
+                    data-demo-target={
+                      String(item.key || item.defaults?.actionKey || "").includes("create_task")
+                        ? "automations-action-create-task"
+                        : undefined
+                    }
                     onClick={() => handlePick(item)}
                   >
                     <span

@@ -228,6 +228,7 @@ export default function CRMMain() {
                   <NavLink
                     key={tab.path}
                     to={tab.path}
+                    data-demo-target={`crm-nav-${tab.path}`}
                     className={({ isActive }) =>
                       [
                         "group relative flex shrink-0 items-center gap-2 px-3 py-3 text-sm font-black transition-colors",

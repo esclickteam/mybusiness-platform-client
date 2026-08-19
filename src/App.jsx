@@ -57,6 +57,7 @@ import {
 import BizuplyLoader from "./components/ui/BizuplyLoader";
 import PublicSiteLoader from "./components/ui/PublicSiteLoader";
 import LazyRouteBoundary from "./components/LazyRouteBoundary";
+import GuidedDemoHost from "./guidedDemo/GuidedDemoHost";
 const SitePortalGate = lazy(() =>
   import("./components/site-builder/public/SitePortalGate")
 );
@@ -116,6 +117,7 @@ const AiAutomationTemplatesVisualPage = import.meta.env.DEV
 const WebsiteInviteAcceptPage = lazy(() =>
   import("./pages/WebsiteInviteAcceptPage")
 );
+const GuidedDemoRedeemPage = lazy(() => import("./pages/GuidedDemoRedeemPage"));
 const Register = lazy(() => import("./pages/Register"));
 const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
@@ -152,6 +154,10 @@ const AdminUsers = lazy(() => import("./pages/admin/AdminUsers"));
 const AdminCreateUser = lazy(() => import("./pages/admin/AdminCreateUser"));
 const AdminBusinesses = lazy(() => import("./pages/admin/AdminBusinesses"));
 const AdminCustomers = lazy(() => import("./pages/admin/AdminCustomers"));
+const AdminGuidedDemos = lazy(() => import("./pages/admin/AdminGuidedDemos"));
+const AdminGuidedDemoDetail = lazy(
+  () => import("./pages/admin/AdminGuidedDemoDetail")
+);
 const EditSiteContent = lazy(() => import("./pages/admin/EditSiteContent"));
 const ManageRoles = lazy(() => import("./pages/admin/ManageRoles"));
 const AdminPayoutPage = lazy(() => import("./pages/admin/AdminPayoutPage"));
@@ -765,6 +771,7 @@ export default function App() {
   const isEarlyAccessLanding = location.pathname === "/early-access";
   const isAdminRoute = location.pathname.startsWith("/admin");
   const isStaffRoute = location.pathname.startsWith("/staff");
+  const isGuidedDemoRoute = location.pathname.startsWith("/demo/");
 
   const isBusinessChatRoute =
     location.pathname.includes("/business/") &&
@@ -848,7 +855,8 @@ export default function App() {
         {!isBusinessChatRoute &&
           !isEarlyAccessLanding &&
           !isAdminRoute &&
-          !isStaffRoute && <Header />}
+          !isStaffRoute &&
+          !isGuidedDemoRoute && <Header />}
 
         {/* Staff: top header + softphone (same behavior as admin) */}
         {isStaffRoute ? <StaffSoftphoneHost /> : null}
@@ -998,6 +1006,10 @@ export default function App() {
                         <Route
                           path="/website-invite/:token"
                           element={<WebsiteInviteAcceptPage />}
+                        />
+                        <Route
+                          path="/demo/:token"
+                          element={<GuidedDemoRedeemPage />}
                         />
                         <Route path="/register" element={<Register />} />
                         <Route
@@ -1288,6 +1300,24 @@ export default function App() {
                         />
 
                         <Route
+                          path="/admin/guided-demos"
+                          element={
+                            <ProtectedRoute roles={["admin"]}>
+                              <AdminGuidedDemos />
+                            </ProtectedRoute>
+                          }
+                        />
+
+                        <Route
+                          path="/admin/guided-demos/:id"
+                          element={
+                            <ProtectedRoute roles={["admin"]}>
+                              <AdminGuidedDemoDetail />
+                            </ProtectedRoute>
+                          }
+                        />
+
+                        <Route
                           path="/admin/site-edit"
                           element={
                             <ProtectedRoute roles={["admin"]}>
@@ -1377,10 +1407,12 @@ export default function App() {
           )}
         </main>
 
-        {!isDashboardRoute && !isPublicBusinessProfile && !isEarlyAccessLanding && (
+        {!isDashboardRoute && !isPublicBusinessProfile && !isEarlyAccessLanding && !isGuidedDemoRoute && (
           <Footer />
         )}
       </div>
+
+      <GuidedDemoHost />
 
       {!user && !isEarlyAccessLanding && <PreLoginBot />}
 
@@ -1392,6 +1424,7 @@ export default function App() {
         !isBusinessChatRoute &&
         !isAdminRoute &&
         !isStaffRoute &&
+        !isGuidedDemoRoute &&
         !location.pathname.startsWith("/embed/") &&
         !isMiniSiteHost && (
           <SupportChatWidget />
