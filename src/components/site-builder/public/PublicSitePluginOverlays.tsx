@@ -29,6 +29,10 @@ import type { SmartBotSettings } from "../../site-plugins/smart-bot/smartBotUtil
 import type { AccessibilitySettings } from "../../site-plugins/accessibility/accessibilityUtils";
 import PublicStoreCheckout from "./PublicStoreCheckout";
 import PublicStoreCatalogGrid from "./PublicStoreCatalogGrid";
+import {
+  isStoreFeatureEnabled,
+  shouldShowPublicStoreCart,
+} from "./shouldShowPublicStoreCart";
 
 type PublicSitePluginOverlaysProps = {
   site: Record<string, any>;
@@ -172,7 +176,7 @@ export default function PublicSitePluginOverlays({ site, pageId }: PublicSitePlu
   const showAnnouncement = Boolean(announcementSettings?.isActive);
   const showCookie = Boolean(cookieSettings?.isActive);
   const showExitPopup = Boolean(exitPopupSettings?.isActive);
-  const showStoreCheckout = Boolean(businessId);
+  const showStoreCheckout = shouldShowPublicStoreCart(site);
   const showStoreCatalog = Boolean(
     businessId && enabledPlugins.includes("store")
   );
@@ -280,6 +284,8 @@ export default function PublicSitePluginOverlays({ site, pageId }: PublicSitePlu
       {showStoreCheckout ? (
         <PublicStoreCheckout
           businessId={businessId}
+          enabled={showStoreCheckout}
+          storeFeatureEnabled={isStoreFeatureEnabled(site)}
           language={site?.__activeLanguage}
           shiftForLeftWidgets={showAccessibility}
         />

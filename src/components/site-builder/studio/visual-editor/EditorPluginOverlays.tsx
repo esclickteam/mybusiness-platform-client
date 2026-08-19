@@ -15,6 +15,11 @@ import SocialProofWidget from "../../../site-plugins/social-proof/SocialProofWid
 import FloatingContactBarWidget from "../../../site-plugins/floating-contact-bar/FloatingContactBarWidget";
 import LanguageSwitcherWidget from "../../../site-plugins/multi-language/LanguageSwitcherWidget";
 import FaqWidget from "../../../site-plugins/faq-pro/FaqWidget";
+import PublicStoreCheckout from "../../public/PublicStoreCheckout";
+import {
+  isStoreFeatureEnabled,
+  shouldShowPublicStoreCart,
+} from "../../public/shouldShowPublicStoreCart";
 import type { BenefitsWheelSettings } from "../../../site-plugins/benefits-wheel/benefitsWheelUtils";
 import type { SmartSearchSettings } from "../../../site-plugins/smart-search/smartSearchUtils";
 import type { SmartBotSettings } from "../../../site-plugins/smart-bot/smartBotUtils";
@@ -74,6 +79,9 @@ export default function EditorPluginOverlays({
   );
   const [faqEnabled, setFaqEnabled] = useState(false);
   const [faqSettings, setFaqSettings] = useState<Record<string, unknown> | null>(null);
+  const [storeCheckoutSite, setStoreCheckoutSite] = useState<Record<string, unknown> | null>(
+    null
+  );
   const [fallbackPhone, setFallbackPhone] = useState("");
   const [pages, setPages] = useState<Array<Record<string, unknown>>>([]);
   const [activePageId, setActivePageId] = useState("");
@@ -133,7 +141,11 @@ export default function EditorPluginOverlays({
         setSocialProofEnabled(socialOn);
         setLanguageEnabled(languageOn);
         setContactBarEnabled(contactOn);
-                setFaqEnabled(faqOn);
+        setFaqEnabled(faqOn);
+        setStoreCheckoutSite({
+          ...(site && typeof site === "object" ? site : {}),
+          enabledPlugins: plugins.enabledPlugins,
+        });
         {
           const business = site?.business || {};
           const brand = site?.brand || {};
@@ -280,6 +292,7 @@ export default function EditorPluginOverlays({
           setContactBarSettings(null);
           setFaqEnabled(false);
           setFaqSettings(null);
+          setStoreCheckoutSite(null);
           setFallbackPhone("");
         }
       }
@@ -513,6 +526,19 @@ export default function EditorPluginOverlays({
 
       {faqEnabled ? (
         <FaqWidget slug={siteSlug} pageId={activePageId} settings={faqSettings} />
+      ) : null}
+
+      {shouldShowPublicStoreCart(storeCheckoutSite) ? (
+        <PublicStoreCheckout
+          businessId={String(
+            storeCheckoutSite?.businessId ||
+              (storeCheckoutSite?.business as { _id?: unknown } | undefined)?._id ||
+              ""
+          )}
+          enabled
+          storeFeatureEnabled={isStoreFeatureEnabled(storeCheckoutSite)}
+          shiftForLeftWidgets={a11yEnabled}
+        />
       ) : null}
     </>
   );
