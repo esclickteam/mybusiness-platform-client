@@ -105,20 +105,23 @@ export async function trackBizuplyPageView(input: TrackPageViewInput) {
   const body = JSON.stringify(payload);
   const endpoint = `${getApiBaseUrl()}/analytics/page-view`;
 
-  if (navigator.sendBeacon) {
-    navigator.sendBeacon(endpoint, new Blob([body], { type: "application/json" }));
+  // Prefer credentialed fetch so httpOnly refreshToken cookies reach the API
+  // when available (same-site *.sites.bizuply.com -> api.bizuply.com).
+  try {
+    await fetch(endpoint, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body,
+      keepalive: true,
+      credentials: "include",
+    });
     return;
+  } catch {
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon(endpoint, new Blob([body], { type: "application/json" }));
+    }
   }
-
-  await fetch(endpoint, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body,
-    keepalive: true,
-    credentials: "omit",
-  }).catch(() => undefined);
 }
-
 export function readSiteAnalyticsContext(site: Record<string, any> | null | undefined) {
   if (!site) {
     return null;
