@@ -43,11 +43,15 @@ function findTarget(selector) {
 }
 
 function pad(rect) {
+  const vw = typeof window === "undefined" ? 1280 : window.innerWidth;
+  const vh = typeof window === "undefined" ? 720 : window.innerHeight;
+  const width = Math.min(rect.width + 12, Math.max(24, vw - 16));
+  const height = Math.min(rect.height + 12, Math.max(24, vh - 16));
   return {
-    top: Math.max(8, rect.top - 6),
-    left: Math.max(8, rect.left - 6),
-    width: rect.width + 12,
-    height: rect.height + 12,
+    top: Math.min(Math.max(8, rect.top - 6), Math.max(8, vh - height - 8)),
+    left: Math.min(Math.max(8, rect.left - 6), Math.max(8, vw - width - 8)),
+    width,
+    height,
   };
 }
 
@@ -420,9 +424,12 @@ export default function GuidedDemoEngine() {
       {isComplete ? (
         <div className="pointer-events-auto absolute inset-0 z-[2147483004] flex items-center justify-center bg-slate-950/55 p-4">
           <div role="dialog" aria-modal="true" className="w-full max-w-lg rounded-[28px] bg-white p-6 text-right shadow-2xl">
-            <h2 className="text-2xl font-black text-slate-900">סיימתם את הדמו 🎉</h2>
+            <h2 className="text-2xl font-black text-slate-900">הדמו הסתיים 🎉</h2>
             <p className="mt-3 text-sm font-semibold leading-6 text-slate-600">
-              עכשיו ראיתם איך Bizuply מרכזת את ניהול העסק במקום אחד.
+              סיימת את הדמו של Bizuply.
+            </p>
+            <p className="mt-2 text-sm font-semibold leading-6 text-slate-600">
+              ראית כיצד ניתן לרכז את הכלים והתהליכים שבחרנו עבורך במקום אחד ולנהל אותם בצורה פשוטה ומסודרת.
             </p>
             <ul className="mt-4 space-y-1 text-sm font-bold text-emerald-700">
               {progress.map((mod) => (
@@ -431,10 +438,10 @@ export default function GuidedDemoEngine() {
             </ul>
             <button
               type="button"
-              onClick={() => void handleCta("start", "/register")}
+              onClick={() => void handleCta("start", "/contact")}
               className="mt-6 w-full rounded-2xl bg-[#6D28D9] px-4 py-3 text-sm font-black text-white"
             >
-              אני רוצה להתחיל עם Bizuply
+              רוצה לראות איך זה יכול להתאים לעסק שלך?
             </button>
             <button
               type="button"

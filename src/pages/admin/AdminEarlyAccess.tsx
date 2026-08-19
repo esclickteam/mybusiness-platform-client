@@ -5,6 +5,9 @@ import { MessageCircle } from "lucide-react";
 import AdminDialButton from "../../components/AdminDialButton";
 import { useAuth } from "../../context/AuthContext";
 import AdminHeader from "./AdminsHeader";
+import AdminSendGuidedDemoModal, {
+  AdminSendDemoButton,
+} from "./AdminSendGuidedDemoModal";
 
 type EarlyAccessStatus = "new" | "contacted" | "joined_group" | "not_relevant";
 type StatusFilter = "all" | EarlyAccessStatus;
@@ -229,6 +232,7 @@ function AdminEarlyAccess() {
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [loading, setLoading] = useState(true);
   const [actionLoadingId, setActionLoadingId] = useState<string>("");
+  const [demoLead, setDemoLead] = useState<EarlyAccessLead | null>(null);
 
   useEffect(() => {
     if (!user) return;
@@ -645,6 +649,10 @@ function AdminEarlyAccess() {
                             </button>
                           ) : null}
 
+                          <AdminSendDemoButton
+                            onClick={() => setDemoLead(item)}
+                          />
+
                           <div className="grid grid-cols-2 gap-2">
                             <button
                               type="button"
@@ -854,6 +862,10 @@ function AdminEarlyAccess() {
                                   </button>
                                 ) : null}
 
+                                <AdminSendDemoButton
+                                  onClick={() => setDemoLead(item)}
+                                />
+
                                 <button
                                   type="button"
                                   disabled={isActionLoading}
@@ -908,6 +920,22 @@ function AdminEarlyAccess() {
           </div>
         </section>
       </main>
+      <AdminSendGuidedDemoModal
+        open={Boolean(demoLead)}
+        onClose={() => setDemoLead(null)}
+        context={{
+          customerName:
+            demoLead?.name && demoLead.name !== "לא צוין" ? demoLead.name : "",
+          phone: demoLead?.phone || "",
+          businessName: demoLead?.business || "",
+          sourceType: "early_access",
+          sourceLeadId: demoLead ? getLeadId(demoLead) : "",
+          needCandidates: [
+            ...(Array.isArray(demoLead?.interests) ? demoLead.interests : []),
+            demoLead?.interest || "",
+          ],
+        }}
+      />
     </>
   );
 }

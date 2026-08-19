@@ -126,21 +126,21 @@ export default function AdminGuidedDemoDetail() {
                 className="rounded-xl border px-3 py-2 text-xs font-black"
                 onClick={() => void run(() => copyGuidedDemoLink(id), "הקישור הועתק")}
               >
-                העתק קישור
+                העתקת קישור
               </button>
               <button
                 type="button"
                 className="rounded-xl border px-3 py-2 text-xs font-black"
                 onClick={() => void run(() => resendGuidedDemo(id), "ההודעה נשלחה מחדש")}
               >
-                שלח מחדש הודעה
+                שליחה מחדש
               </button>
               <button
                 type="button"
                 className="rounded-xl border px-3 py-2 text-xs font-black"
                 onClick={() => void run(() => extendGuidedDemo(id, 24), "התוקף הוארך")}
               >
-                הארך תוקף
+                הארכת תוקף
               </button>
               <button
                 type="button"
@@ -154,7 +154,7 @@ export default function AdminGuidedDemoDetail() {
                 className="rounded-xl border border-rose-200 px-3 py-2 text-xs font-black text-rose-700"
                 onClick={() => void run(() => revokeGuidedDemo(id), "הדמו בוטל")}
               >
-                בטל דמו
+                ביטול קישור
               </button>
             </div>
 

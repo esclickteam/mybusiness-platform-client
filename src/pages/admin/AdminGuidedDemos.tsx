@@ -1,11 +1,12 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Play, Plus, Search, Sparkles, X } from "lucide-react";
+import { Search } from "lucide-react";
 import AdminHeader from "./AdminsHeader";
 import BizuplyLoader from "../../components/ui/BizuplyLoader";
+import AdminSendGuidedDemoModal, {
+  AdminSendDemoButton,
+} from "./AdminSendGuidedDemoModal";
 import {
-  createGuidedDemo,
-  fetchGuidedDemoCatalog,
   fetchGuidedDemoAnalytics,
   listGuidedDemos,
 } from "../../api/guidedDemoApi";
@@ -14,7 +15,7 @@ const STATUS_LABEL: Record<string, string> = {
   created: "נוצר",
   sent: "נשלח",
   opened: "נפתח",
-  in_progress: "בתהליך",
+  in_progress: "התחיל",
   completed: "הושלם",
   expired: "פג תוקף",
   revoked: "בוטל",
@@ -44,44 +45,24 @@ function formatDate(value?: string | null) {
   }).format(date);
 }
 
-const EMPTY = {
-  customerName: "",
-  customerPhone: "",
-  businessName: "",
-  internalNote: "",
-  presetKey: "full",
-  moduleKeys: [] as string[],
-  channel: "whatsapp",
-  ttlHours: 24,
-};
-
 export default function AdminGuidedDemos() {
   const navigate = useNavigate();
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [q, setQ] = useState("");
-  const [catalog, setCatalog] = useState<any>(null);
-  const [delivery, setDelivery] = useState<any>(null);
   const [analytics, setAnalytics] = useState<any>(null);
-  const [wizard, setWizard] = useState(false);
-  const [step, setStep] = useState(1);
-  const [form, setForm] = useState(EMPTY);
-  const [creating, setCreating] = useState(false);
-  const [success, setSuccess] = useState<any>(null);
+  const [modalOpen, setModalOpen] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
     setError("");
     try {
-      const [list, cat, stats] = await Promise.all([
+      const [list, stats] = await Promise.all([
         listGuidedDemos({ q, limit: 50 }),
-        fetchGuidedDemoCatalog(),
         fetchGuidedDemoAnalytics().catch(() => null),
       ]);
       setItems(list.items || []);
-      setCatalog(cat.catalog);
-      setDelivery(cat.delivery);
       setAnalytics(stats?.analytics || null);
     } catch (err: any) {
       setError(err?.response?.data?.error || "טעינת הדמואים נכשלה");
@@ -94,54 +75,6 @@ export default function AdminGuidedDemos() {
     void load();
   }, [load]);
 
-  const selectedKeys = useMemo(() => {
-    if (form.presetKey === "custom") return form.moduleKeys;
-    const preset = catalog?.presets?.find((p: any) => p.key === form.presetKey);
-    return preset?.moduleKeys || [];
-  }, [form.presetKey, form.moduleKeys, catalog]);
-
-  const selectedTitles = (catalog?.modules || [])
-    .filter((m: any) => selectedKeys.includes(m.key))
-    .map((m: any) => m.title);
-
-  function toggleModule(key: string) {
-    setForm((prev) => {
-      const has = prev.moduleKeys.includes(key);
-      return {
-        ...prev,
-        presetKey: "custom",
-        moduleKeys: has ? prev.moduleKeys.filter((k) => k !== key) : [...prev.moduleKeys, key],
-      };
-    });
-  }
-
-  async function submit() {
-    setCreating(true);
-    setError("");
-    try {
-      const data = await createGuidedDemo({
-        ...form,
-        moduleKeys: selectedKeys,
-      });
-      if (!data.delivery?.ok) {
-        setSuccess({
-          ...data,
-          warning: data.delivery?.error || "השליחה נכשלה",
-        });
-      } else {
-        setSuccess(data);
-      }
-      await load();
-    } catch (err: any) {
-      setError(err?.response?.data?.error || "יצירת הדמו נכשלה");
-    } finally {
-      setCreating(false);
-    }
-  }
-
-  const waOk = delivery?.whatsapp?.available;
-  const smsOk = delivery?.sms?.available;
-
   return (
     <div className="min-h-screen bg-[#f5f6fb]" dir="rtl">
       <AdminHeader />
@@ -153,20 +86,7 @@ export default function AdminGuidedDemos() {
               שליחת קישור אישי לדמו אינטראקטיבי מבודד.
             </p>
           </div>
-          <button
-            type="button"
-            onClick={() => {
-              setWizard(true);
-              setStep(1);
-              setForm(EMPTY);
-              setSuccess(null);
-              setError("");
-            }}
-            className="inline-flex items-center gap-2 rounded-2xl bg-[#6D28D9] px-4 py-3 text-sm font-black text-white"
-          >
-            <Plus className="h-4 w-4" />
-            שליחת דמו חדש
-          </button>
+          <AdminSendDemoButton onClick={() => setModalOpen(true)} className="px-4 py-3 text-sm" />
         </div>
 
         {analytics ? (
@@ -196,7 +116,7 @@ export default function AdminGuidedDemos() {
           />
         </div>
 
-        {error && !wizard ? <p className="mb-3 text-sm font-bold text-rose-600">{error}</p> : null}
+        {error ? <p className="mb-3 text-sm font-bold text-rose-600">{error}</p> : null}
 
         {loading ? (
           <div className="grid place-items-center py-20">
@@ -229,7 +149,9 @@ export default function AdminGuidedDemos() {
                     </td>
                     <td className="px-4 py-3">{formatDate(row.createdAt)}</td>
                     <td className="px-4 py-3 text-xs font-bold text-slate-500">
-                      {(row.selectedModules || []).join(", ") || row.presetKey}
+                      {row.presetKey === "full"
+                        ? `דמו מלא — ${(row.selectedModules || []).length} מודולים`
+                        : (row.selectedModules || []).join(" · ") || row.presetKey}
                     </td>
                     <td className="px-4 py-3">
                       <span className={`rounded-full border px-2 py-0.5 text-[11px] font-black ${STATUS_TONE[row.status] || STATUS_TONE.created}`}>
@@ -254,232 +176,14 @@ export default function AdminGuidedDemos() {
           </div>
         )}
       </main>
-
-      {wizard ? (
-        <div className="fixed inset-0 z-50 grid place-items-center bg-slate-950/50 p-4">
-          <div className="max-h-[92vh] w-full max-w-2xl overflow-auto rounded-[28px] bg-white p-6 shadow-2xl">
-            <div className="mb-4 flex items-center justify-between">
-              <h2 className="text-xl font-black">שליחת דמו חדש</h2>
-              <button type="button" onClick={() => setWizard(false)}>
-                <X className="h-5 w-5" />
-              </button>
-            </div>
-
-            {success ? (
-              <div className="text-center">
-                <Sparkles className="mx-auto h-10 w-10 text-violet-600" />
-                <h3 className="mt-3 text-2xl font-black">
-                  {success.delivery?.ok ? "הדמו נשלח בהצלחה" : "הדמו נוצר, השליחה נכשלה"}
-                </h3>
-                <p className="mt-2 text-sm font-bold text-slate-500">
-                  {selectedTitles.join(" + ") || success.invitation?.selectedModules?.join(" + ")}
-                </p>
-                {success.demoLink ? (
-                  <p className="mt-3 break-all rounded-xl bg-slate-50 p-3 text-xs font-bold" dir="ltr">
-                    {success.demoLink}
-                  </p>
-                ) : null}
-                {success.warning ? (
-                  <p className="mt-2 text-sm font-bold text-rose-600">{success.warning}</p>
-                ) : null}
-                <button
-                  type="button"
-                  className="mt-6 rounded-2xl bg-[#6D28D9] px-4 py-3 text-sm font-black text-white"
-                  onClick={() => {
-                    setWizard(false);
-                    if (success.invitation?._id) {
-                      navigate(`/admin/guided-demos/${success.invitation._id}`);
-                    }
-                  }}
-                >
-                  מעקב אחר הדמו
-                </button>
-              </div>
-            ) : (
-              <>
-                {step === 1 ? (
-                  <div className="space-y-3">
-                    <label className="block text-sm font-black">שם הלקוח
-                      <input
-                        className="mt-1 h-11 w-full rounded-xl border px-3 font-bold"
-                        value={form.customerName}
-                        onChange={(e) => setForm({ ...form, customerName: e.target.value })}
-                      />
-                    </label>
-                    <label className="block text-sm font-black">מספר טלפון
-                      <input
-                        className="mt-1 h-11 w-full rounded-xl border px-3 font-bold"
-                        dir="ltr"
-                        value={form.customerPhone}
-                        onChange={(e) => setForm({ ...form, customerPhone: e.target.value })}
-                        placeholder="0501234567"
-                      />
-                    </label>
-                    <label className="block text-sm font-black">שם העסק (אופציונלי)
-                      <input
-                        className="mt-1 h-11 w-full rounded-xl border px-3 font-bold"
-                        value={form.businessName}
-                        onChange={(e) => setForm({ ...form, businessName: e.target.value })}
-                      />
-                    </label>
-                    <label className="block text-sm font-black">הערה פנימית
-                      <textarea
-                        className="mt-1 w-full rounded-xl border px-3 py-2 font-bold"
-                        value={form.internalNote}
-                        onChange={(e) => setForm({ ...form, internalNote: e.target.value })}
-                      />
-                    </label>
-                  </div>
-                ) : null}
-
-                {step === 2 ? (
-                  <div className="space-y-4">
-                    <p className="text-sm font-black">מה לכלול?</p>
-                    <div className="grid gap-2 sm:grid-cols-2">
-                      {(catalog?.presets || []).map((preset: any) => (
-                        <button
-                          key={preset.key}
-                          type="button"
-                          onClick={() =>
-                            setForm({
-                              ...form,
-                              presetKey: preset.key,
-                              moduleKeys: preset.key === "custom" ? form.moduleKeys : preset.moduleKeys,
-                            })
-                          }
-                          className={`rounded-2xl border p-3 text-right text-sm font-bold ${
-                            form.presetKey === preset.key
-                              ? "border-violet-400 bg-violet-50"
-                              : "border-slate-200"
-                          }`}
-                        >
-                          {preset.title}
-                          <span className="mt-1 block text-xs font-semibold text-slate-500">
-                            {preset.description}
-                          </span>
-                        </button>
-                      ))}
-                    </div>
-                    <div className="grid max-h-56 gap-2 overflow-auto sm:grid-cols-2">
-                      {(catalog?.modules || []).map((mod: any) => (
-                        <label key={mod.key} className="flex items-start gap-2 rounded-xl border border-slate-100 p-2 text-sm font-bold">
-                          <input
-                            type="checkbox"
-                            checked={selectedKeys.includes(mod.key)}
-                            onChange={() => toggleModule(mod.key)}
-                          />
-                          <span>
-                            {mod.title}
-                            {!mod.interactive ? (
-                              <em className="block text-[11px] font-semibold text-amber-700">
-                                {mod.simulationReason || "הסבר בלבד"}
-                              </em>
-                            ) : null}
-                          </span>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-                ) : null}
-
-                {step === 3 ? (
-                  <div className="space-y-3">
-                    <p className="text-sm font-black">שליחה דרך</p>
-                    <label className={`flex items-center gap-2 rounded-2xl border p-3 ${waOk ? "border-violet-200" : "opacity-60"}`}>
-                      <input
-                        type="radio"
-                        name="channel"
-                        checked={form.channel === "whatsapp"}
-                        disabled={!waOk}
-                        onChange={() => setForm({ ...form, channel: "whatsapp" })}
-                      />
-                      WhatsApp
-                      {!waOk ? (
-                        <span className="text-xs font-bold text-rose-600">
-                          {delivery?.whatsapp?.reason || "לא זמין"}
-                        </span>
-                      ) : null}
-                    </label>
-                    <label className={`flex items-center gap-2 rounded-2xl border p-3 ${smsOk ? "border-violet-200" : "opacity-60"}`}>
-                      <input
-                        type="radio"
-                        name="channel"
-                        checked={form.channel === "sms"}
-                        disabled={!smsOk}
-                        onChange={() => setForm({ ...form, channel: "sms" })}
-                      />
-                      SMS
-                      <span className="text-xs font-bold text-rose-600">
-                        {delivery?.sms?.reason || "לא זמין"}
-                      </span>
-                    </label>
-                    <label className="block text-sm font-black">תוקף
-                      <select
-                        className="mt-1 h-11 w-full rounded-xl border px-3 font-bold"
-                        value={form.ttlHours}
-                        onChange={(e) => setForm({ ...form, ttlHours: Number(e.target.value) })}
-                      >
-                        {(catalog?.ttlOptionsHours || [1, 6, 24, 48, 168]).map((h: number) => (
-                          <option key={h} value={h}>
-                            {h === 168 ? "7 ימים" : h === 1 ? "שעה" : `${h} שעות`}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-                  </div>
-                ) : null}
-
-                {step === 4 ? (
-                  <div className="space-y-2 rounded-2xl bg-slate-50 p-4 text-sm font-bold">
-                    <p>לקוח: {form.customerName}</p>
-                    <p>טלפון: {form.customerPhone}</p>
-                    <p>ערוץ: {form.channel === "whatsapp" ? "WhatsApp" : "SMS"}</p>
-                    <p>דמו כולל: {selectedTitles.join(", ") || "—"}</p>
-                    <p>תוקף: {form.ttlHours === 168 ? "7 ימים" : `${form.ttlHours} שעות`}</p>
-                  </div>
-                ) : null}
-
-                {error ? <p className="mt-3 text-sm font-bold text-rose-600">{error}</p> : null}
-
-                <div className="mt-6 flex justify-between">
-                  <button
-                    type="button"
-                    disabled={step === 1}
-                    onClick={() => setStep((s) => s - 1)}
-                    className="rounded-xl border px-4 py-2 text-sm font-black disabled:opacity-40"
-                  >
-                    חזרה
-                  </button>
-                  {step < 4 ? (
-                    <button
-                      type="button"
-                      disabled={
-                        (step === 1 && (!form.customerName.trim() || !form.customerPhone.trim())) ||
-                        (step === 2 && !selectedKeys.length) ||
-                        (step === 3 && ((form.channel === "whatsapp" && !waOk) || (form.channel === "sms" && !smsOk)))
-                      }
-                      onClick={() => setStep((s) => s + 1)}
-                      className="rounded-xl bg-[#6D28D9] px-4 py-2 text-sm font-black text-white disabled:opacity-40"
-                    >
-                      המשך
-                    </button>
-                  ) : (
-                    <button
-                      type="button"
-                      disabled={creating}
-                      onClick={() => void submit()}
-                      className="inline-flex items-center gap-2 rounded-xl bg-[#6D28D9] px-4 py-2 text-sm font-black text-white"
-                    >
-                      <Play className="h-4 w-4" />
-                      {creating ? "שולח…" : "צור ושלח דמו"}
-                    </button>
-                  )}
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-      ) : null}
+      <AdminSendGuidedDemoModal
+        open={modalOpen}
+        onClose={() => {
+          setModalOpen(false);
+          void load();
+        }}
+        context={{ sourceType: "manual" }}
+      />
     </div>
   );
 }
