@@ -50,6 +50,11 @@ export async function copyGuidedDemoLink(id) {
   return data;
 }
 
+export async function recordGuidedDemoManualShare(id) {
+  const { data } = await API.post(`/admin/guided-demos/${id}/manual-share`);
+  return data;
+}
+
 export async function duplicateGuidedDemo(id, payload = {}) {
   const { data } = await API.post(`/admin/guided-demos/${id}/duplicate`, payload);
   return data;

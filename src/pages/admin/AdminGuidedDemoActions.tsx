@@ -4,6 +4,7 @@ import {
   duplicateGuidedDemo,
   extendGuidedDemo,
   previewGuidedDemo,
+  recordGuidedDemoManualShare,
   resendGuidedDemo,
   revokeGuidedDemo,
 } from "../../api/guidedDemoApi";
@@ -121,6 +122,7 @@ export default function AdminGuidedDemoActions({
                     demoUrl: url,
                   });
                   openExternalUrl(share);
+                  void recordGuidedDemoManualShare(id).catch(() => null);
                   setMessage("WhatsApp נפתח — שלחו ידנית מהאפליקציה");
                 })
               }

@@ -43,6 +43,7 @@ vi.mock("../../api/guidedDemoApi", () => ({
   createGuidedDemo: vi.fn(),
   resendGuidedDemo: vi.fn(),
   copyGuidedDemoLink: vi.fn(),
+  recordGuidedDemoManualShare: vi.fn(async () => ({ success: true })),
   previewGuidedDemo: vi.fn(),
   extendGuidedDemo: vi.fn(),
   revokeGuidedDemo: vi.fn(),

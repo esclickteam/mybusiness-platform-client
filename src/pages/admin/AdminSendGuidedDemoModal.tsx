@@ -5,6 +5,7 @@ import {
   createGuidedDemo,
   fetchGuidedDemoCatalog,
   listGuidedDemos,
+  recordGuidedDemoManualShare,
   resendGuidedDemo,
 } from "../../api/guidedDemoApi";
 import { resolveAdminSupportChat } from "../../api/supportChatAdminApi";
@@ -215,6 +216,10 @@ export default function AdminSendGuidedDemoModal({
     });
     openExternalUrl(share);
     setShareNote("WhatsApp נפתח — שלחו ידנית מהאפליקציה");
+    const id = invitationIdOf(result?.invitation) || lastInvitationId;
+    if (id) {
+      void recordGuidedDemoManualShare(id).catch(() => null);
+    }
   }
 
   async function openSupportChat() {
