@@ -433,7 +433,10 @@ export default function BusinessDashboardLayout() {
                   {t(
                     isMarketerImpersonation
                       ? "layout.marketerImpersonationTitle"
-                      : "layout.adminImpersonationTitle"
+                      : "layout.adminImpersonationTitle",
+                    {
+                      name: user?.businessName || user?.name || "",
+                    }
                   )}
                 </strong>
                 <span className="block text-xs font-bold text-amber-900/70">

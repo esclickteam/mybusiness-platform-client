@@ -6,11 +6,12 @@ import AdminHeader from "../AdminsHeader";
 
 const TABS = [
   { to: "/admin/crm", label: "סקירה", end: true },
-  { to: "/admin/crm/customers", label: "לקוחות" },
-  { to: "/admin/crm/pipeline", label: "פייפליין" },
+  { to: "/admin/crm/customers", label: "לקוחות ולידים" },
+  { to: "/admin/crm/pipeline", label: "Pipeline" },
   { to: "/admin/crm/tasks", label: "משימות" },
-  { to: "/admin/crm/activities", label: "פעילויות" },
+  { to: "/admin/crm/follow-ups", label: "מעקבים" },
   { to: "/admin/crm/whatsapp", label: "WhatsApp" },
+  { to: "/admin/crm/activities", label: "פעילות" },
 ];
 
 export default function AdminCrmLayout() {
@@ -27,10 +28,10 @@ export default function AdminCrmLayout() {
       <main className="mx-auto mt-5 max-w-[1480px]">
         <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-xs font-black text-[#7C4DFF]">Admin · CRM</p>
-            <h1 className="text-2xl font-black text-purple-950 sm:text-3xl">CRM לקוחות BizUply</h1>
+            <p className="text-xs font-black text-[#7C4DFF]">פאנל ניהול</p>
+            <h1 className="text-2xl font-black text-purple-950 sm:text-3xl">CRM וניהול לקוחות</h1>
             <p className="mt-1 text-sm font-bold text-slate-500">
-              ניהול לידים ולקוחות הפלטפורמה. נפרד לחלוטין מ-CRM של העסק.
+              ניהול לידים ולקוחות BizUply לכל אורך מחזור החיים. נפרד לחלוטין מ-CRM של העסק.
             </p>
           </div>
         </div>

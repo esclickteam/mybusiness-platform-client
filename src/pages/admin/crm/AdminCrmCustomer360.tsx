@@ -8,9 +8,12 @@ import adminCrmApi from "../../../api/adminCrmApi";
 import {
   ACTIVITY_LABELS,
   Badge,
+  FIELD_LABELS,
+  FOLLOW_UP_TYPE_LABELS,
   HEALTH_LABELS,
   LIFECYCLE_LABELS,
   LOST_REASON_LABELS,
+  NOTE_TYPE_LABELS,
   PACKAGE_LABELS,
   PRIORITY_LABELS,
   SOURCE_LABELS,
@@ -35,15 +38,15 @@ import AdminCrmWhatsAppPanel from "./AdminCrmWhatsAppPanel";
 
 const TABS = [
   ["overview", "סקירה"],
-  ["timeline", "ציר זמן"],
-  ["info", "פרטי CRM"],
-  ["products", "מוצרים וגישה"],
-  ["websites", "אתרים"],
-  ["whatsapp", "WhatsApp"],
-  ["automations", "אוטומציות"],
-  ["billing", "חיוב"],
   ["activity", "פעילות"],
   ["tasks", "משימות"],
+  ["communication", "תקשורת"],
+  ["products", "חבילה וגישה"],
+  ["billing", "חיובים"],
+  ["websites", "אתרים"],
+  ["automations", "אוטומציות"],
+  ["support", "תמיכה"],
+  ["info", "עריכת CRM"],
 ];
 
 export default function AdminCrmCustomer360() {
@@ -51,7 +54,13 @@ export default function AdminCrmCustomer360() {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { loginWithToken } = useAuth() as { loginWithToken: Function };
-  const [tab, setTab] = useState(searchParams.get("tab") || "overview");
+  const [tab, setTab] = useState(
+    searchParams.get("tab") === "whatsapp" || searchParams.get("tab") === "timeline"
+      ? searchParams.get("tab") === "whatsapp"
+        ? "communication"
+        : "activity"
+      : searchParams.get("tab") || "overview"
+  );
   const [perms, setPerms] = useState<any>({});
   const [customer, setCustomer] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -60,11 +69,12 @@ export default function AdminCrmCustomer360() {
   const [tabData, setTabData] = useState<any>(null);
   const [tabLoading, setTabLoading] = useState(false);
   const [edit, setEdit] = useState<any>({});
-  const [note, setNote] = useState("");
   const [noteType, setNoteType] = useState("normal");
   const [taskTitle, setTaskTitle] = useState("");
   const [followAt, setFollowAt] = useState("");
   const [followNote, setFollowNote] = useState("");
+  const [followType, setFollowType] = useState("call_back");
+  const [waIntent, setWaIntent] = useState<"message" | "follow_up" | "demo" | "payment">("message");
   const [activity, setActivity] = useState({ type: "note", description: "" });
   const [planSku, setPlanSku] = useState("monthly");
   const [preview, setPreview] = useState<any>(null);
@@ -78,6 +88,7 @@ export default function AdminCrmCustomer360() {
     try {
       const { data } = await adminCrmApi.customer(id);
       setCustomer(data.customer);
+      if (data.customer.nextFollowUpType) setFollowType(data.customer.nextFollowUpType);
       setEdit({
         contactName: data.customer.contactName || "",
         companyName: data.customer.companyName || "",
@@ -109,13 +120,30 @@ export default function AdminCrmCustomer360() {
       setTabLoading(true);
       try {
         let data: any = null;
-        if (tab === "timeline") data = (await adminCrmApi.timeline(id)).data;
+        if (tab === "activity") {
+          const [timeline, notes] = await Promise.all([
+            adminCrmApi.timeline(id),
+            adminCrmApi.notes(id).catch(() => ({ data: { notes: [] } })),
+          ]);
+          data = { items: timeline.data.items, notes: notes.data.notes };
+        }
         if (tab === "products") data = (await adminCrmApi.products(id)).data;
         if (tab === "websites") data = (await adminCrmApi.websites(id)).data;
         if (tab === "automations") data = (await adminCrmApi.automations(id)).data;
         if (tab === "billing") data = (await adminCrmApi.billing(id)).data;
-        if (tab === "activity") data = (await adminCrmApi.activities(id)).data;
         if (tab === "tasks") data = (await adminCrmApi.customerTasks(id)).data;
+        if (tab === "support") {
+          const [notes, tasks, audit] = await Promise.all([
+            adminCrmApi.notes(id),
+            adminCrmApi.customerTasks(id),
+            adminCrmApi.audit(id).catch(() => ({ data: { items: [] } })),
+          ]);
+          data = {
+            notes: notes.data.notes,
+            tasks: tasks.data.tasks,
+            audit: audit.data.items || audit.data.logs || [],
+          };
+        }
         if (tab === "overview") {
           const [notes, tasks, sub, products] = await Promise.all([
             adminCrmApi.notes(id),
@@ -161,11 +189,25 @@ export default function AdminCrmCustomer360() {
 
   async function openBusiness() {
     if (!customer?.businessId) return;
-    const { data } = await API.post("/admin/impersonate-business", {
-      businessId: customer.businessId,
-    });
-    loginWithToken(data.user, data.token, { skipRedirect: true });
-    navigate(getDefaultDashboardPath(data.user, customer.businessId));
+    try {
+      if (perms.customerEnter === false) {
+        setBanner("אין הרשאה לכניסה לעסק");
+        return;
+      }
+      await adminCrmApi.enterBusiness(id!, { reason: "כניסה מתיק לקוח CRM" });
+      const { data } = await API.post("/admin/impersonate-business", {
+        businessId: customer.businessId,
+      });
+      loginWithToken(data.user, data.token, { skipRedirect: true });
+      navigate(getDefaultDashboardPath(data.user, customer.businessId));
+    } catch (err: any) {
+      setBanner(err?.response?.data?.error || "כניסה לעסק נכשלה");
+    }
+  }
+
+  function openCommunication(intent: "message" | "follow_up" | "demo" | "payment" = "message") {
+    setWaIntent(intent);
+    setTab("communication");
   }
 
   if (loading) return <LoadingState />;
@@ -185,9 +227,9 @@ export default function AdminCrmCustomer360() {
         <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
           <div>
             <h1 className="text-2xl font-black text-purple-950">
-              {customer.companyName || customer.contactName || "לקוח"}
+              {customer.contactName || customer.companyName || "לקוח"}
             </h1>
-            <p className="mt-1 font-bold text-slate-600">{customer.contactName}</p>
+            <p className="mt-1 font-bold text-slate-600">{customer.businessName || customer.companyName}</p>
             <p className="mt-1 font-bold" dir="ltr">{customer.phone} · {customer.email}</p>
             <div className="mt-3 flex flex-wrap gap-2">
               <Badge tone={lifecycleTone(customer.lifecycle)}>{LIFECYCLE_LABELS[customer.lifecycle]}</Badge>
@@ -204,44 +246,64 @@ export default function AdminCrmCustomer360() {
               </Badge>
             </div>
             <p className="mt-2 text-sm font-bold text-slate-500">
-              אחראי: {customer.assignedAdminName || "לא משויך"} · לקוח מאז {formatIsraelDate(customer.convertedAt || customer.createdAt)} · פעילות אחרונה {formatIsraelDate(customer.lastActivityAt, true)}
+              אחראי: {customer.assignedAdminName || "לא משויך"} · חבילה נוכחית{" "}
+              {PACKAGE_LABELS[customer.account?.subscriptionPlan] || "אין"} · MRR ₪
+              {Number(customer.mrr || 0).toLocaleString("he-IL")} · הצטרפות{" "}
+              {formatIsraelDate(customer.convertedAt || customer.createdAt)} · פעילות אחרונה{" "}
+              {formatIsraelDate(customer.lastActivityAt, true)}
             </p>
             {customer.nextFollowUpAt ? (
               <p className="mt-1 text-sm font-black text-[#7C4DFF]">
-                מעקב הבא: {formatIsraelDate(customer.nextFollowUpAt, true)} {customer.nextFollowUpNote}
+                מעקב הבא: {formatIsraelDate(customer.nextFollowUpAt, true)}
+                {customer.nextFollowUpType
+                  ? ` · ${FOLLOW_UP_TYPE_LABELS[customer.nextFollowUpType] || customer.nextFollowUpType}`
+                  : ""}{" "}
+                {customer.nextFollowUpNote}
               </p>
-            ) : null}
+            ) : (
+              <p className="mt-1 text-sm font-bold text-slate-400">אין מעקב הבא</p>
+            )}
           </div>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+            <button
+              type="button"
+              className="relative min-h-11 rounded-2xl bg-emerald-50 px-3 py-2 text-sm font-black text-emerald-700"
+              onClick={() => openCommunication("message")}
+            >
+              WhatsApp
+              {waUnread ? (
+                <span className="absolute -top-1 -left-1 inline-flex min-h-5 min-w-5 items-center justify-center rounded-full bg-rose-600 px-1 text-[10px] text-white">
+                  {waUnread}
+                </span>
+              ) : null}
+            </button>
             <AdminDialButton phone={customer.phone} name={customer.contactName} source="admin-crm" refId={customer.adminCustomerId} size="md" label="שיחה" />
             {customer.phone ? (
-              <button
-                type="button"
-                className="relative min-h-11 rounded-2xl bg-emerald-50 px-3 py-2 text-sm font-black text-emerald-700"
-                onClick={() => setTab("whatsapp")}
-              >
-                BizUply WhatsApp
-                {waUnread ? (
-                  <span className="absolute -top-1 -left-1 inline-flex min-h-5 min-w-5 items-center justify-center rounded-full bg-rose-600 px-1 text-[10px] text-white">
-                    {waUnread}
-                  </span>
-                ) : null}
-              </button>
+              <a className="min-h-11 rounded-2xl bg-slate-50 px-3 py-2 text-center text-sm font-black text-slate-700" href={`sms:${customer.phone}`}>SMS</a>
             ) : null}
             {customer.email ? (
-              <a className="min-h-11 rounded-2xl bg-sky-50 px-3 py-2 text-center text-sm font-black text-sky-700" href={`mailto:${customer.email}`}>אימייל</a>
+              <a className="min-h-11 rounded-2xl bg-sky-50 px-3 py-2 text-center text-sm font-black text-sky-700" href={`mailto:${customer.email}`}>מייל</a>
             ) : null}
-            <SecondaryButton onClick={() => setTab("tasks")}>משימה</SecondaryButton>
-            <SecondaryButton onClick={() => setTab("activity")}>הערה / פעילות</SecondaryButton>
-            <SecondaryButton onClick={() => setTab("info")}>עריכת CRM</SecondaryButton>
+            {perms.demoSend !== false ? (
+              <SecondaryButton onClick={() => openCommunication("demo")}>שליחת דמו</SecondaryButton>
+            ) : null}
+            <SecondaryButton onClick={() => setTab("tasks")}>משימה חדשה</SecondaryButton>
+            <SecondaryButton onClick={() => setTab("activity")}>הוספת תיעוד</SecondaryButton>
+            <SecondaryButton onClick={() => setTab("tasks")}>קביעת מעקב</SecondaryButton>
             {customer.businessId ? (
-              <SecondaryButton onClick={openBusiness}>פתיחת העסק</SecondaryButton>
+              perms.customerEnter !== false ? (
+                <PrimaryButton onClick={openBusiness}>כניסה לעסק</PrimaryButton>
+              ) : (
+                <SecondaryButton disabled>אין הרשאת כניסה</SecondaryButton>
+              )
             ) : (
               <SecondaryButton onClick={() => navigate("/admin/customers")}>יצירת חשבון</SecondaryButton>
             )}
             <SecondaryButton onClick={() => setTab("billing")}>ניהול חבילה</SecondaryButton>
-            <PrimaryButton onClick={() => adminCrmApi.markWon(id!).then(load)}>Won</PrimaryButton>
-            <SecondaryButton onClick={() => setLostOpen(true)}>Lost</SecondaryButton>
+            <SecondaryButton onClick={() => setTab("billing")}>שדרוג</SecondaryButton>
+            <SecondaryButton onClick={() => setTab("products")}>ניהול תוספים</SecondaryButton>
+            <PrimaryButton onClick={() => adminCrmApi.markWon(id!).then(load)}>נסגר</PrimaryButton>
+            <SecondaryButton onClick={() => setLostOpen(true)}>לא נסגר</SecondaryButton>
           </div>
         </div>
       </CrmCard>
@@ -258,25 +320,28 @@ export default function AdminCrmCustomer360() {
             ].join(" ")}
           >
             {label}
-            {key === "whatsapp" && waUnread ? ` (${waUnread})` : ""}
+            {key === "communication" && waUnread ? ` (${waUnread})` : ""}
           </button>
         ))}
       </div>
 
-      {tabLoading && tab !== "whatsapp" ? <LoadingState /> : null}
+      {tabLoading && tab !== "communication" ? <LoadingState /> : null}
 
       {tab === "overview" && tabData ? (
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
           <CrmCard>
-            <h3 className="font-black">פרטי לקוח</h3>
-            <p>מעגל חיים: {LIFECYCLE_LABELS[customer.lifecycle]}</p>
+            <h3 className="font-black">פרטי הלקוח</h3>
+            <p>שם: {customer.contactName || "—"}</p>
+            <p>עסק: {customer.businessName || customer.companyName || "—"}</p>
+            <p>סטטוס CRM: {LIFECYCLE_LABELS[customer.lifecycle]}</p>
             <p>שלב מכירה: {STAGE_LABELS[customer.salesStage]}</p>
-            <p>מקור: {SOURCE_LABELS[customer.leadSource] || customer.leadSource}</p>
-            <p>חבילה: {PACKAGE_LABELS[customer.account?.subscriptionPlan] || "—"}</p>
-            <p>סטטוס חיוב: {customer.account?.subscriptionStatus || "—"} <span className="text-xs text-slate-400">(מקור: User)</span></p>
+            <p>אחראי: {customer.assignedAdminName || "לא משויך"}</p>
+            <p>מקור ליד: {SOURCE_LABELS[customer.leadSource] || customer.leadSource}</p>
+            <p>חבילה נוכחית: {PACKAGE_LABELS[customer.account?.subscriptionPlan] || "—"}</p>
+            <p>סטטוס מנוי: {customer.account?.subscriptionStatus || "—"}</p>
           </CrmCard>
           <CrmCard>
-            <h3 className="font-black">בריאות</h3>
+            <h3 className="font-black">מצב הלקוח</h3>
             <Badge tone={healthTone(customer.health?.health)}>{HEALTH_LABELS[customer.health?.health] || "—"}</Badge>
             <ul className="mt-2 list-disc pr-5 text-sm font-bold text-slate-600">
               {(customer.health?.reasons || ["אין התראות"]).map((r: string) => <li key={r}>{r}</li>)}
@@ -299,13 +364,41 @@ export default function AdminCrmCustomer360() {
         </div>
       ) : null}
 
-      {tab === "timeline" && (
+      {tab === "activity" && (
         <div className="space-y-3">
+          <CrmCard>
+            <form
+              className="space-y-3"
+              onSubmit={async (e) => {
+                e.preventDefault();
+                await adminCrmApi.createActivity(id!, activity);
+                if (activity.description.trim()) {
+                  await adminCrmApi.createNote(id!, {
+                    content: activity.description,
+                    type: noteType,
+                  });
+                }
+                setActivity({ type: "note", description: "" });
+                setBanner("התיעוד נשמר");
+                const { data } = await adminCrmApi.timeline(id!);
+                setTabData((prev: any) => ({ ...prev, items: data.items }));
+              }}
+            >
+              <select value={activity.type} onChange={(e) => setActivity({ ...activity, type: e.target.value })} className="min-h-11 w-full rounded-2xl border px-3">
+                {Object.entries(ACTIVITY_LABELS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+              </select>
+              <select value={noteType} onChange={(e) => setNoteType(e.target.value)} className="min-h-11 w-full rounded-2xl border px-3">
+                {Object.entries(NOTE_TYPE_LABELS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+              </select>
+              <textarea className="min-h-28 w-full rounded-2xl border p-3" placeholder="תיעוד פנימי — לא נחשף ללקוח" value={activity.description} onChange={(e) => setActivity({ ...activity, description: e.target.value })} />
+              <PrimaryButton type="submit">שמירת תיעוד</PrimaryButton>
+            </form>
+          </CrmCard>
           {(tabData?.items || []).map((item: any) => (
             <article key={item.id} className="rounded-2xl border border-purple-100 bg-white p-4">
               <div className="text-xs font-black text-[#7C4DFF]">{TIMELINE_LABELS[item.type] || item.type} · {formatIsraelDate(item.occurredAt, true)}</div>
               <p className="font-bold">{item.description}</p>
-              <p className="text-xs text-slate-500">{item.actorName} · {item.sourceOfTruth}</p>
+              <p className="text-xs text-slate-500">{item.actorName}</p>
               {item.deepLink ? <a className="text-xs font-black text-[#7C4DFF]" href={item.deepLink}>פתיחה</a> : null}
             </article>
           ))}
@@ -318,7 +411,7 @@ export default function AdminCrmCustomer360() {
           <p className="mb-3 text-sm font-bold text-amber-700">עריכה זו משנה רק נתוני Admin CRM. חשבון, חיוב והרשאות נשארים במקור האמת שלהם.</p>
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             {["contactName", "companyName", "phone", "email"].map((field) => (
-              <input key={field} className="min-h-11 rounded-2xl border px-3" value={edit[field] || ""} onChange={(e) => setEdit({ ...edit, [field]: e.target.value })} placeholder={field} />
+              <input key={field} className="min-h-11 rounded-2xl border px-3" value={edit[field] || ""} onChange={(e) => setEdit({ ...edit, [field]: e.target.value })} placeholder={FIELD_LABELS[field] || field} />
             ))}
             <select className="min-h-11 rounded-2xl border px-3" value={edit.lifecycle} onChange={(e) => setEdit({ ...edit, lifecycle: e.target.value })}>
               {Object.entries(LIFECYCLE_LABELS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
@@ -351,7 +444,10 @@ export default function AdminCrmCustomer360() {
               <div className="flex items-center justify-between gap-3">
                 <div>
                   <div className="font-black">{row.name}</div>
-                  <div className="text-xs text-slate-500">מקור: {row.source} · {row.included ? "כלול בחבילה" : row.paid ? "בתשלום" : "לא פעיל"}</div>
+                  <div className="text-xs text-slate-500">
+                    {row.included ? "כלול בחבילה" : row.paid ? "תוסף בתשלום" : "לא פעיל"}
+                    {row.enabled ? " · פעיל" : " · לא פעיל"}
+                  </div>
                 </div>
                 <Badge tone={statusTone(row.enabled ? "active" : "inactive")}>{row.status}</Badge>
               </div>
@@ -383,12 +479,14 @@ export default function AdminCrmCustomer360() {
         </div>
       )}
 
-      {tab === "whatsapp" && (
+      {tab === "communication" && (
         <AdminCrmWhatsAppPanel
           customerId={id!}
           canSend={Boolean(perms.whatsappSend)}
           canTemplates={Boolean(perms.whatsappTemplates)}
+          canDemo={Boolean(perms.demoSend)}
           onBanner={setBanner}
+          initialIntent={waIntent}
         />
       )}
 
@@ -442,38 +540,6 @@ export default function AdminCrmCustomer360() {
         </div>
       )}
 
-      {tab === "activity" && (
-        <CrmCard>
-          <form
-            className="space-y-3"
-            onSubmit={async (e) => {
-              e.preventDefault();
-              await adminCrmApi.createActivity(id!, activity);
-              if ((note || activity.description).trim()) {
-                await adminCrmApi.createNote(id!, {
-                  content: note || activity.description,
-                  type: noteType,
-                });
-              }
-              setNote("");
-              setBanner("הפעילות נשמרה");
-              setTab("timeline");
-            }}
-          >
-            <select value={activity.type} onChange={(e) => setActivity({ ...activity, type: e.target.value })} className="min-h-11 w-full rounded-2xl border px-3">
-              {Object.entries(ACTIVITY_LABELS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
-            </select>
-            <textarea className="min-h-28 w-full rounded-2xl border p-3" placeholder="תיאור" value={activity.description} onChange={(e) => setActivity({ ...activity, description: e.target.value })} />
-            <select value={noteType} onChange={(e) => setNoteType(e.target.value)} className="min-h-11 rounded-2xl border px-3">
-              <option value="normal">הערה רגילה</option>
-              <option value="important">חשובה</option>
-              <option value="pinned">נעוצה</option>
-            </select>
-            <PrimaryButton type="submit">שמירת פעילות</PrimaryButton>
-          </form>
-        </CrmCard>
-      )}
-
       {tab === "tasks" && (
         <CrmCard>
           <form
@@ -490,17 +556,32 @@ export default function AdminCrmCustomer360() {
             <PrimaryButton type="submit">הוספה</PrimaryButton>
           </form>
           <form
-            className="mb-4 flex flex-col gap-2 sm:flex-row"
+            className="mb-4 grid grid-cols-1 gap-2 sm:grid-cols-2"
             onSubmit={async (e) => {
               e.preventDefault();
-              await adminCrmApi.followUp(id!, { at: followAt, note: followNote });
+              await adminCrmApi.followUp(id!, { at: followAt, note: followNote, type: followType });
               setBanner("מעקב עודכן");
               load();
             }}
           >
             <input type="datetime-local" className="min-h-11 rounded-2xl border px-3" value={followAt} onChange={(e) => setFollowAt(e.target.value)} required />
-            <input className="min-h-11 flex-1 rounded-2xl border px-3" value={followNote} onChange={(e) => setFollowNote(e.target.value)} placeholder="הערת מעקב" />
+            <select className="min-h-11 rounded-2xl border px-3" value={followType} onChange={(e) => setFollowType(e.target.value)}>
+              {Object.entries(FOLLOW_UP_TYPE_LABELS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+            </select>
+            <input className="min-h-11 rounded-2xl border px-3 sm:col-span-2" value={followNote} onChange={(e) => setFollowNote(e.target.value)} placeholder="הערת מעקב" />
             <PrimaryButton type="submit">קביעת מעקב</PrimaryButton>
+            {customer.nextFollowUpAt ? (
+              <SecondaryButton
+                type="button"
+                onClick={async () => {
+                  await adminCrmApi.completeFollowUp(id!, followAt ? { at: followAt, note: followNote, type: followType } : {});
+                  setBanner(followAt ? "המעקב הושלם ונקבע מעקב הבא" : "המעקב הושלם");
+                  load();
+                }}
+              >
+                סיום מעקב
+              </SecondaryButton>
+            ) : null}
           </form>
           {(tabData?.tasks || []).map((task: any) => (
             <div key={task._id} className="mb-2 flex items-center justify-between rounded-2xl bg-slate-50 p-3">
@@ -518,6 +599,38 @@ export default function AdminCrmCustomer360() {
             </div>
           ))}
         </CrmCard>
+      )}
+
+      {tab === "support" && (
+        <div className="space-y-4">
+          <CrmCard>
+            <h3 className="font-black">פניות ותיעוד תמיכה</h3>
+            <p className="mb-3 text-sm font-bold text-slate-500">הערות פנימיות בלבד. לא נחשפות ללקוח.</p>
+            {(tabData?.notes || []).filter((n: any) => n.type === "support_summary" || n.pinned).length === 0 ? (
+              <p className="text-slate-500">אין תיעוד תמיכה פתוח</p>
+            ) : (
+              (tabData?.notes || [])
+                .filter((n: any) => n.type === "support_summary" || n.pinned)
+                .map((n: any) => (
+                  <p key={n._id} className="mb-2 rounded-2xl bg-slate-50 p-3 text-sm font-bold">
+                    {NOTE_TYPE_LABELS[n.type] || n.type} · {formatIsraelDate(n.createdAt, true)}
+                    <br />
+                    {n.content}
+                  </p>
+                ))
+            )}
+          </CrmCard>
+          <CrmCard>
+            <h3 className="mb-2 font-black">משימות פתוחות</h3>
+            {(tabData?.tasks || []).filter((t: any) => ["open", "in_progress"].includes(t.status)).map((t: any) => (
+              <p key={t._id}>{t.title} · {formatIsraelDate(t.dueAt, true)}</p>
+            ))}
+            {(tabData?.tasks || []).filter((t: any) => ["open", "in_progress"].includes(t.status)).length === 0 ? (
+              <p className="text-slate-500">אין משימות פתוחות</p>
+            ) : null}
+          </CrmCard>
+          <SecondaryButton onClick={() => setTab("activity")}>הוספת סיכום תמיכה</SecondaryButton>
+        </div>
       )}
 
       {lostOpen ? (

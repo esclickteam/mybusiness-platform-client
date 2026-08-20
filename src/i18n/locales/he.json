@@ -432,11 +432,11 @@
     }
   },
   "layout": {
-    "adminImpersonationTitle": "מצב אדמין — כניסה לעסק",
-    "adminImpersonationText": "אתם פועלים עם הרשאות החבילה של העסק {{name}}. כל הפעולות נשמרות בעסק זה.",
+    "adminImpersonationTitle": "מצב ניהול אדמין — העסק: {{name}}",
+    "adminImpersonationText": "אתם פועלים במצב ניהול אדמין בעסק {{name}}. כל הפעולות נשמרות ומתועדות.",
     "marketerImpersonationTitle": "מצב משווק — כניסה ללקוח",
     "marketerImpersonationText": "אתם מנהלים את חשבון הלקוח {{name}}. פתוחים ניהול קמפיינים ו-CRM.",
-    "backToAdmin": "חזרה לפאנל אדמין",
+    "backToAdmin": "יציאה ממצב ניהול",
     "backToMarketer": "חזרה ללוח המשווק",
     "returning": "חוזר...",
     "adminBarTitle": "מצב אדמין — צפייה וניהול בעסק",

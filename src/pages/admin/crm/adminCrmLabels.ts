@@ -10,17 +10,17 @@ export const LIFECYCLE_LABELS: Record<string, string> = {
 
 export const STAGE_LABELS: Record<string, string> = {
   new_lead: "ליד חדש",
-  contact_required: "נדרש יצירת קשר",
+  contact_required: "צריך ליצור קשר",
   contacted: "נוצר קשר",
-  qualified: "הוכשר",
+  qualified: "מתאים",
   demo_scheduled: "דמו נקבע",
   demo_sent: "דמו נשלח",
   proposal_sent: "הצעה נשלחה",
   negotiation: "משא ומתן",
   awaiting_payment: "ממתין לתשלום",
   won: "נסגר",
-  lost: "אבוד",
-  follow_up_later: "מעקב מאוחר יותר",
+  lost: "לא נסגר",
+  follow_up_later: "מעקב עתידי",
 };
 
 export const SOURCE_LABELS: Record<string, string> = {
@@ -38,7 +38,7 @@ export const SOURCE_LABELS: Record<string, string> = {
 };
 
 export const HEALTH_LABELS: Record<string, string> = {
-  healthy: "בריא",
+  healthy: "תקין",
   attention: "דורש תשומת לב",
   at_risk: "בסיכון",
 };
@@ -83,12 +83,68 @@ export const ACTIVITY_LABELS: Record<string, string> = {
 
 export const TIMELINE_LABELS: Record<string, string> = {
   ...ACTIVITY_LABELS,
+  lead_created: "ליד נוצר",
+  sales_status_changed: "שינוי שלב מכירה",
+  lifecycle_changed: "שינוי סטטוס CRM",
+  note_added: "הערה",
+  task_created: "משימה נוצרה",
+  task_completed: "משימה הושלמה",
+  phone_interaction: "שיחה",
   whatsapp_message: "הודעת WhatsApp",
   whatsapp_template_sent: "תבנית WhatsApp נשלחה",
   whatsapp_message_sent: "הודעת WhatsApp נשלחה",
   whatsapp_message_received: "הודעת WhatsApp התקבלה",
+  whatsapp_delivered: "WhatsApp נמסר",
+  whatsapp_read: "WhatsApp נקרא",
   whatsapp_failed: "שליחת WhatsApp נכשלה",
-  demo_sent: "דמו נשלח ב-WhatsApp",
+  demo_sent: "דמו נשלח",
+  demo_opened: "דמו נפתח",
+  account_created: "חשבון נוצר",
+  subscription_activated: "מנוי הופעל",
+  payment_succeeded: "תשלום הצליח",
+  payment_failed: "תשלום נכשל",
+  package_changed: "חבילה שונתה",
+  addon_enabled: "תוסף נוסף",
+  addon_disabled: "תוסף הוסר",
+  website_created: "אתר נוצר",
+  website_published: "אתר פורסם",
+  domain_connected: "דומיין חובר",
+  whatsapp_connected: "WhatsApp חובר",
+  automation_enabled: "אוטומציה הופעלה",
+  support_interaction: "פנייה לתמיכה",
+  cancellation: "ביטול",
+  reactivation: "חזרה לשירות",
+  assignment_changed: "שינוי אחראי",
+  follow_up_scheduled: "מעקב נקבע",
+  customer_updated: "רשומת לקוח עודכנה",
+  health_override: "עדכון מצב לקוח",
+  migrated_existing: "שיוך לקוח קיים",
+};
+
+export const FOLLOW_UP_TYPE_LABELS: Record<string, string> = {
+  call_back: "לחזור טלפונית",
+  after_demo: "לבדוק אחרי דמו",
+  check_payment: "לבדוק תשלום",
+  in_a_week: "לדבר בעוד שבוע",
+  after_trial: "לבדוק אחרי ניסיון",
+  renewal: "מעקב חידוש מנוי",
+  other: "אחר",
+};
+
+export const NOTE_TYPE_LABELS: Record<string, string> = {
+  normal: "הערה רגילה",
+  important: "הערה חשובה",
+  pinned: "הערה מוצמדת",
+  call_summary: "סיכום שיחה",
+  meeting_summary: "סיכום פגישה",
+  support_summary: "סיכום תמיכה",
+};
+
+export const FIELD_LABELS: Record<string, string> = {
+  contactName: "שם לקוח",
+  companyName: "שם העסק",
+  phone: "טלפון",
+  email: "אימייל",
 };
 
 export const PACKAGE_LABELS: Record<string, string> = {

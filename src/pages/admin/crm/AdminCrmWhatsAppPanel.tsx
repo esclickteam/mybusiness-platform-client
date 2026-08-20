@@ -40,17 +40,21 @@ export default function AdminCrmWhatsAppPanel({
   customerId,
   canSend,
   canTemplates,
+  canDemo = true,
   onBanner,
+  initialIntent = "message",
 }: {
   customerId: string;
   canSend: boolean;
   canTemplates: boolean;
+  canDemo?: boolean;
   onBanner: (msg: string) => void;
+  initialIntent?: "message" | "follow_up" | "demo" | "payment";
 }) {
   const [data, setData] = useState<any>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [error, setError] = useState("");
-  const [intent, setIntent] = useState<"message" | "follow_up" | "demo" | "payment">("message");
+  const [intent, setIntent] = useState<"message" | "follow_up" | "demo" | "payment">(initialIntent);
   const [templateId, setTemplateId] = useState("");
   const [body, setBody] = useState("");
   const [vars, setVars] = useState<Record<string, string>>({});
@@ -120,6 +124,10 @@ export default function AdminCrmWhatsAppPanel({
 
   async function send() {
     if (!canSend) return;
+    if (intent === "demo" && !canDemo) {
+      onBanner("אין הרשאה לשליחת דמו");
+      return;
+    }
     setSending(true);
     try {
       const payload: Record<string, unknown> = {
@@ -133,7 +141,7 @@ export default function AdminCrmWhatsAppPanel({
       };
       const { data: res } = await adminCrmApi.whatsappSend(customerId, payload);
       onBanner(
-        res.kind === "template" ? "תבנית WhatsApp נשלחה דרך השולח המנוהל" : "הודעת WhatsApp נשלחה"
+        res.kind === "template" ? "תבנית WhatsApp נשלחה מערוץ BizUply" : "הודעת WhatsApp נשלחה מערוץ BizUply"
       );
       setBody("");
       setPreview("");
@@ -158,13 +166,13 @@ export default function AdminCrmWhatsAppPanel({
   return (
     <div className="space-y-4">
       <CrmCard>
-        <h3 className="text-lg font-black text-purple-950">BizUply WhatsApp communication</h3>
+        <h3 className="text-lg font-black text-purple-950">WhatsApp של BizUply</h3>
         <p className="mt-1 text-sm font-bold text-slate-500">
-          תקשורת BizUply עם הלקוח דרך השולח המנוהל. לא משתמש בחיבור WhatsApp של הלקוח.
+          תקשורת BizUply עם הלקוח. לא משתמש בחיבור WhatsApp של הלקוח.
         </p>
         <div className="mt-3 flex flex-wrap gap-2">
           <Badge tone={senderReady ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-rose-50 text-rose-700 border-rose-200"}>
-            {senderReady ? "שולח מנוהל מוכן" : data.bizuplyManaged?.sender?.message || "שולח מנוהל לא זמין"}
+            {senderReady ? "ערוץ WhatsApp של BizUply מוכן" : data.bizuplyManaged?.sender?.message || "ערוץ WhatsApp של BizUply לא זמין"}
           </Badge>
           <Badge tone={sessionOpen ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-amber-50 text-amber-800 border-amber-200"}>
             {sessionOpen ? "חלון 24 שעות פתוח" : "נדרשת תבנית מאושרת"}
@@ -183,7 +191,7 @@ export default function AdminCrmWhatsAppPanel({
       </CrmCard>
 
       <CrmCard>
-        <h3 className="mb-3 font-black">Customer WhatsApp connection</h3>
+        <h3 className="mb-3 font-black">חיבור WhatsApp של העסק</h3>
         <p className="text-sm font-bold text-slate-500">
           חיבור WhatsApp Business של הלקוח עצמו — מידע בלבד, לא משמש לשליחת הודעות אדמין.
         </p>
@@ -228,13 +236,15 @@ export default function AdminCrmWhatsAppPanel({
         ) : null}
         {!senderReady ? (
           <p className="mb-3 font-bold text-rose-700">
-            לא ניתן לשלוח: השולח המנוהל של BizUply אינו זמין.
+            לא ניתן לשלוח: ערוץ WhatsApp של BizUply אינו זמין.
           </p>
         ) : null}
         <div className="mb-3 flex flex-wrap gap-2">
           <SecondaryButton type="button" onClick={() => setIntent("message")}>שליחת הודעה</SecondaryButton>
           <SecondaryButton type="button" onClick={() => setIntent("follow_up")}>שליחת מעקב</SecondaryButton>
-          <SecondaryButton type="button" onClick={() => setIntent("demo")}>Send Demo</SecondaryButton>
+          {canDemo ? (
+            <SecondaryButton type="button" onClick={() => setIntent("demo")}>שליחת דמו</SecondaryButton>
+          ) : null}
           <SecondaryButton type="button" onClick={() => setIntent("payment")}>קישור תשלום / שדרוג</SecondaryButton>
         </div>
         <p className="mb-3 text-sm font-bold text-[#7C4DFF]">
@@ -243,7 +253,7 @@ export default function AdminCrmWhatsAppPanel({
             : intent === "payment"
               ? "קישור תשלום נוצר בתשתית Stripe הקיימת."
               : intent === "follow_up"
-                ? "הודעת מעקב דרך השולח המנוהל."
+                ? "הודעת מעקב דרך WhatsApp של BizUply."
                 : "הודעה רגילה או תבנית מאושרת."}
         </p>
         {intent === "demo" ? (

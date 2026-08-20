@@ -30,6 +30,12 @@ export const adminCrmApi = {
     API.post(`/admin/crm/customers/${id}/lost`, body),
   followUp: (id: string, body: Record<string, unknown>) =>
     API.post(`/admin/crm/customers/${id}/follow-up`, body),
+  completeFollowUp: (id: string, body: Record<string, unknown> = {}) =>
+    API.post(`/admin/crm/customers/${id}/follow-up/complete`, body),
+  followUps: (params: AdminCrmListQuery = {}) =>
+    API.get(`/admin/crm/follow-ups${qs(params)}`),
+  enterBusiness: (id: string, body: Record<string, unknown> = {}) =>
+    API.post(`/admin/crm/customers/${id}/enter-business`, body),
   healthOverride: (id: string, body: Record<string, unknown>) =>
     API.post(`/admin/crm/customers/${id}/health-override`, body),
   timeline: (id: string) => API.get(`/admin/crm/customers/${id}/timeline`),
