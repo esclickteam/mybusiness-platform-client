@@ -436,12 +436,17 @@
     "adminImpersonationText": "You are acting with this business's package permissions in {{name}}. All actions are saved to this business.",
     "marketerImpersonationTitle": "Marketer mode — client access",
     "marketerImpersonationText": "You are managing {{name}}'s account. Campaign management and CRM are available.",
+    "partnerImpersonationTitle": "Partner mode — client management",
+    "partnerImpersonationText": "You are currently managing: {{name}}",
+    "partnerManagedPartnerLine": "Partner: {{name}}",
     "backToAdmin": "Back to admin panel",
     "backToMarketer": "Back to marketer dashboard",
+    "backToPartner": "Back to partner dashboard",
     "returning": "Returning...",
     "adminBarTitle": "Admin mode — viewing and managing business",
     "exitImpersonationError": "Could not return to the admin panel right now",
-    "exitMarketerImpersonationError": "Could not return to the marketer dashboard right now"
+    "exitMarketerImpersonationError": "Could not return to the marketer dashboard right now",
+    "exitPartnerImpersonationError": "Could not return to the partner dashboard right now"
   },
   "overview": {
     "greeting": "Hello, {{name}}!",

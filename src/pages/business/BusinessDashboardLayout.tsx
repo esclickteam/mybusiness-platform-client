@@ -23,6 +23,8 @@ import {
   setAdminActiveBusinessId,
 } from "../../utils/adminTenant";
 import { ensurePushSubscription, listenForPushSubscriptionChange } from "../../utils/push";
+import { clearManagedBusinessContext } from "../../lib/partnerManagedContext";
+import { refreshAccessTokenOnce } from "../../utils/tokenRefresh";
 
 import FacebookStyleNotifications from "../../components/FacebookStyleNotifications";
 import BusinessWorkspaceNav from "../../components/BusinessWorkspaceNav";
@@ -58,6 +60,10 @@ type AuthUser = {
   earlyBirdExpiresAt?: string | Date | null;
 
   impersonatorRole?: "admin" | "marketer" | string | null;
+  managedBusinessId?: string | null;
+  managedBusinessName?: string | null;
+  partnerName?: string | null;
+  partnerId?: string | null;
   enabledModules?: string[] | null;
 };
 
@@ -384,25 +390,80 @@ export default function BusinessDashboardLayout() {
       : null) ||
     "admin";
   const isMarketerImpersonation = impersonatorRole === "marketer";
+  const isPartnerManaged =
+    user?.role === "partner" &&
+    Boolean(
+      user?.managedBusinessId ||
+        (typeof localStorage !== "undefined" &&
+          localStorage.getItem("managedBusinessId"))
+    );
+  const managedBusinessName =
+    user?.managedBusinessName ||
+    (typeof localStorage !== "undefined"
+      ? localStorage.getItem("managedBusinessName")
+      : "") ||
+    user?.name ||
+    "";
+  const partnerDisplayName =
+    user?.partnerName ||
+    (typeof localStorage !== "undefined"
+      ? localStorage.getItem("partnerDisplayName")
+      : "") ||
+    user?.name ||
+    "";
+  const showTopBanner = Boolean(isImpersonating || isPartnerManaged);
 
   const handleExitImpersonation = async () => {
     if (exitingImpersonation) return;
     setExitingImpersonation(true);
 
     try {
-      const endpoint = isMarketerImpersonation
-        ? "/marketer/exit-impersonation"
-        : "/admin/exit-impersonation";
+      const endpoint = isPartnerManaged
+        ? "/partner/managed-context/exit"
+        : isMarketerImpersonation
+          ? "/marketer/exit-impersonation"
+          : "/admin/exit-impersonation";
       const { data } = await API.post(endpoint);
       loginWithToken?.(data.user, data.token, { skipRedirect: true });
       localStorage.removeItem("impersonatedBy");
       localStorage.removeItem("impersonatorRole");
+      clearManagedBusinessContext();
       const redirectTo =
-        data.user?.redirectUrl ||
-        (isMarketerImpersonation ? "/marketer/dashboard" : "/admin/dashboard");
+        isPartnerManaged
+          ? "/partner/dashboard"
+          : data.user?.redirectUrl ||
+            (isMarketerImpersonation
+              ? "/marketer/dashboard"
+              : "/admin/dashboard");
       navigate(redirectTo, { replace: true });
     } catch (err) {
-      console.error("Exit impersonation failed:", err);
+      console.error("Exit managed context / impersonation failed:", err);
+      if (isPartnerManaged) {
+        clearManagedBusinessContext();
+        try {
+          const newToken = await refreshAccessTokenOnce();
+          if (newToken) {
+            loginWithToken?.(
+              {
+                ...(user || {}),
+                role: "partner",
+                businessId: null,
+                managedBusinessId: null,
+                managedBusinessName: null,
+                impersonatedBy: null,
+                impersonatorRole: null,
+                redirectUrl: "/partner/dashboard",
+              },
+              newToken,
+              { skipRedirect: true }
+            );
+          }
+        } catch {
+          /* still leave the managed UI */
+        }
+        navigate("/partner/dashboard", { replace: true });
+        return;
+      }
       alert(
         t(
           isMarketerImpersonation
@@ -426,26 +487,43 @@ export default function BusinessDashboardLayout() {
           dir={layoutDir}
           className="min-h-screen w-full bg-[#f5f6fb] text-slate-800"
         >
-          {isImpersonating ? (
+          {showTopBanner ? (
             <div className="fixed inset-x-0 top-0 z-[60] flex flex-wrap items-center justify-between gap-3 border-b border-amber-300 bg-amber-50 px-4 py-3 text-amber-950 md:px-6">
               <div className="text-start">
-                <strong className="block text-sm font-black">
-                  {t(
-                    isMarketerImpersonation
-                      ? "layout.marketerImpersonationTitle"
-                      : "layout.adminImpersonationTitle"
-                  )}
-                </strong>
-                <span className="block text-xs font-bold text-amber-900/70">
-                  {t(
-                    isMarketerImpersonation
-                      ? "layout.marketerImpersonationText"
-                      : "layout.adminImpersonationText",
-                    {
-                      name: user?.businessName || user?.name || "",
-                    }
-                  )}
-                </span>
+                {isPartnerManaged ? (
+                  <>
+                    <strong className="block text-sm font-black">
+                      {t("layout.partnerImpersonationText", {
+                        name: managedBusinessName,
+                      })}
+                    </strong>
+                    <span className="block text-xs font-bold text-amber-900/70">
+                      {t("layout.partnerManagedPartnerLine", {
+                        name: partnerDisplayName,
+                      })}
+                    </span>
+                  </>
+                ) : (
+                  <>
+                    <strong className="block text-sm font-black">
+                      {t(
+                        isMarketerImpersonation
+                          ? "layout.marketerImpersonationTitle"
+                          : "layout.adminImpersonationTitle"
+                      )}
+                    </strong>
+                    <span className="block text-xs font-bold text-amber-900/70">
+                      {t(
+                        isMarketerImpersonation
+                          ? "layout.marketerImpersonationText"
+                          : "layout.adminImpersonationText",
+                        {
+                          name: user?.businessName || user?.name || "",
+                        }
+                      )}
+                    </span>
+                  </>
+                )}
               </div>
 
               <button
@@ -456,11 +534,13 @@ export default function BusinessDashboardLayout() {
               >
                 {exitingImpersonation
                   ? t("layout.returning")
-                  : t(
-                      isMarketerImpersonation
-                        ? "layout.backToMarketer"
-                        : "layout.backToAdmin"
-                    )}
+                  : isPartnerManaged
+                    ? t("layout.backToPartner")
+                    : t(
+                        isMarketerImpersonation
+                          ? "layout.backToMarketer"
+                          : "layout.backToAdmin"
+                      )}
               </button>
             </div>
           ) : null}
@@ -493,8 +573,8 @@ export default function BusinessDashboardLayout() {
                 }
               `}
               style={{
-                top: isImpersonating ? 56 : 0,
-                height: isImpersonating ? "calc(100vh - 56px)" : "100vh",
+                top: showTopBanner ? 56 : 0,
+                height: showTopBanner ? "calc(100vh - 56px)" : "100vh",
                 width: isMobile ? SIDEBAR_WIDTH_EXPANDED : sidebarWidth,
               }}
             >
@@ -629,7 +709,7 @@ export default function BusinessDashboardLayout() {
                 backdrop-blur-xl transition-all duration-300 lg:px-6
               "
               style={{
-                top: isImpersonating ? 56 : isAdmin ? 40 : 0,
+                top: showTopBanner ? 56 : isAdmin ? 40 : 0,
                 left: isMobile ? 0 : isRtl ? 0 : sidebarWidth,
                 right: isMobile ? 0 : isRtl ? sidebarWidth : 0,
               }}
@@ -690,12 +770,12 @@ export default function BusinessDashboardLayout() {
             className={[
               "min-h-screen w-full max-w-none overflow-x-hidden bg-[#f5f6fb] transition-[padding] duration-300",
               isWebsiteFullScreen
-                ? isImpersonating
+                ? showTopBanner
                   ? "pt-14"
                   : "pt-0"
                 : isAdmin
                   ? "pt-[104px]"
-                  : isImpersonating
+                  : showTopBanner
                     ? "pt-[120px]"
                     : "pt-16",
             ].join(" ")}

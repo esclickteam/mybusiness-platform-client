@@ -18,6 +18,12 @@ import {
   resetSessionInvalidationGuard,
 } from "../utils/sessionInvalidation";
 import {
+  applyManagedSessionToUser,
+  clearManagedBusinessContext,
+  setManagedBusinessContext,
+} from "../lib/partnerManagedContext";
+import { decodeJwtPayload } from "../lib/decodeJwtPayload";
+import {
   clearLastDashboardRoute,
   resolveBusinessDashboardPath,
 } from "../utils/dashboardRoutePersistence";
@@ -29,6 +35,8 @@ import {
   rememberPostLoginRedirect,
   resolvePostLoginDestination,
   sanitizeInternalRedirect,
+  clearPostLoginRedirect,
+  isCompatibleRedirect,
 } from "../utils/safeInternalRedirect";
 import { isAllowedPluginBillingReturn } from "../utils/pluginBillingReturn";
 import BizuplyLoader from "../components/ui/BizuplyLoader";
@@ -250,7 +258,7 @@ export function AuthProvider({ children }) {
         }
       );
 
-      const normalized = normalizeUser(data);
+      const normalized = applyManagedSessionToUser(normalizeUser(data));
       setUser(normalized);
       localStorage.setItem("businessDetails", JSON.stringify(normalized));
       return normalized;
@@ -290,17 +298,17 @@ export function AuthProvider({ children }) {
     setAuthToken(accessToken);
     setToken(accessToken);
 
-    const normalizedUser = normalizeUser(userFromServer);
+    let normalizedUser = normalizeUser(userFromServer);
     setUser(normalizedUser);
     localStorage.setItem("businessDetails", JSON.stringify(normalizedUser));
 
     try {
-      const payload = JSON.parse(atob(accessToken.split(".")[1]));
+      const payload = decodeJwtPayload(accessToken) || {};
 
-      if (payload.impersonatedBy) {
-        localStorage.setItem("impersonatedBy", payload.impersonatedBy);
+      if (payload.impersonatedBy && payload.impersonatorRole !== "partner") {
+        localStorage.setItem("impersonatedBy", String(payload.impersonatedBy));
         if (payload.impersonatorRole) {
-          localStorage.setItem("impersonatorRole", payload.impersonatorRole);
+          localStorage.setItem("impersonatorRole", String(payload.impersonatorRole));
         } else if (userFromServer?.impersonatorRole) {
           localStorage.setItem(
             "impersonatorRole",
@@ -311,17 +319,57 @@ export function AuthProvider({ children }) {
         localStorage.removeItem("impersonatedBy");
         localStorage.removeItem("impersonatorRole");
       }
+
+      const managedBusinessId =
+        userFromServer?.managedBusinessId ||
+        payload.managedBusinessId ||
+        null;
+      const managedBusinessName =
+        userFromServer?.managedBusinessName ||
+        payload.managedBusinessName ||
+        null;
+      const partnerName =
+        userFromServer?.partnerName || payload.partnerName || null;
+      setManagedBusinessContext({
+        managedBusinessId,
+        managedBusinessName,
+        partnerName,
+      });
+      if (managedBusinessId) {
+        normalizedUser = applyManagedSessionToUser({
+          ...normalizedUser,
+          role: "partner",
+          managedBusinessId,
+          managedBusinessName,
+          partnerName,
+          businessId: userFromServer?.businessId || managedBusinessId,
+        });
+        setUser(normalizedUser);
+        localStorage.setItem("businessDetails", JSON.stringify(normalizedUser));
+      } else if (normalizedUser.role === "partner") {
+        clearManagedBusinessContext();
+      }
     } catch {
       localStorage.removeItem("impersonatedBy");
       localStorage.removeItem("impersonatorRole");
     }
 
     const isImpersonating = Boolean(localStorage.getItem("impersonatedBy"));
+    const isPartnerManaged = Boolean(
+      normalizedUser.managedBusinessId ||
+        localStorage.getItem("managedBusinessId")
+    );
 
     if (skipRedirect || isImpersonating) return;
 
     if (normalizedUser.role === "marketer") {
       navigate("/marketer/dashboard", { replace: true });
+      return;
+    }
+
+    if (normalizedUser.role === "partner") {
+      if (isPartnerManaged) return;
+      navigate("/partner/dashboard", { replace: true });
       return;
     }
 
@@ -366,6 +414,14 @@ export function AuthProvider({ children }) {
       setToken(accessToken);
 
       const normalizedUser = normalizeUser(loggedInUser);
+      if (
+        normalizedUser.role === "partner" &&
+        !loggedInUser?.managedBusinessId
+      ) {
+        // Leftover managed-business localStorage must not overlay a fresh
+        // partner session and skip /partner/dashboard.
+        clearManagedBusinessContext();
+      }
       setUser(normalizedUser);
       localStorage.setItem("businessDetails", JSON.stringify(normalizedUser));
 
@@ -384,8 +440,16 @@ export function AuthProvider({ children }) {
       const urlRedirect = sanitizeInternalRedirect(
         new URLSearchParams(window.location.search).get("redirect")
       );
-      if (urlRedirect) {
+      const storedRedirect = peekPostLoginRedirect();
+      if (
+        urlRedirect &&
+        isCompatibleRedirect(normalizedUser.role, urlRedirect)
+      ) {
         rememberPostLoginRedirect(urlRedirect);
+      } else if (
+        !isCompatibleRedirect(normalizedUser.role, storedRedirect)
+      ) {
+        clearPostLoginRedirect();
       }
 
       const destination = resolvePostLoginDestination({
@@ -394,7 +458,7 @@ export function AuthProvider({ children }) {
         hasAccess: normalizedUser.hasAccess,
         enabledModules: normalizedUser.enabledModules,
         queryRedirect: urlRedirect,
-        storedRedirect: peekPostLoginRedirect(),
+        storedRedirect: peekPostLoginRedirect() || storedRedirect,
       });
 
       // Login.tsx owns navigation when skipRedirect=true so auth bootstrap
@@ -416,6 +480,15 @@ export function AuthProvider({ children }) {
           return { user: normalizedUser, redirectUrl: "/marketer/dashboard" };
         }
 
+        if (
+          normalizedUser.role === "partner" &&
+          !isImpersonating &&
+          !urlRedirect
+        ) {
+          navigate("/partner/dashboard", { replace: true });
+          return { user: normalizedUser, redirectUrl: "/partner/dashboard" };
+        }
+
         consumePostLoginRedirect();
         if (normalizedUser.role === "business" && normalizedUser.businessId) {
           clearLastDashboardRoute(normalizedUser.businessId);
@@ -426,7 +499,7 @@ export function AuthProvider({ children }) {
 
       return {
         user: normalizedUser,
-        redirectUrl: destination || redirectUrl || null,
+        redirectUrl: redirectUrl || destination || null,
       };
     } catch (err) {
       setError(
@@ -536,8 +609,9 @@ export function AuthProvider({ children }) {
       });
     }
 
-    // Explicit logout → next login lands on main dashboard
+    // Explicit logout → next login lands on role home, not a stale deep-link
     clearLocalAuth({ clearDashboardRoute: true });
+    clearPostLoginRedirect();
     clearPushEnabledPreferenceCache();
     markRefreshDead();
 
@@ -698,10 +772,29 @@ export function AuthProvider({ children }) {
           return;
         }
 
+        if (freshUser.role === "partner" && !isImpersonating) {
+          const path = location.pathname;
+          const onPartnerArea =
+            path === "/partner" || path.startsWith("/partner/");
+          const grantedManagedId = String(
+            freshUser.managedBusinessId || ""
+          ).trim();
+          const onGrantedManagedBusiness = Boolean(
+            grantedManagedId &&
+              path.startsWith(`/business/${grantedManagedId}`)
+          );
+          // Leftover localStorage managedBusinessId must not keep a partner
+          // on public `/` (or any non-partner path) before auth settles.
+          if (!onPartnerArea && !onGrantedManagedBusiness) {
+            navigate("/partner/dashboard", { replace: true });
+            return;
+          }
+        }
+
         const newSocket = await createSocket(
           getValidAccessToken,
           null,
-          freshUser.businessId
+          freshUser.managedBusinessId || freshUser.businessId
         );
 
         if (!cancelled) {
@@ -744,7 +837,10 @@ export function AuthProvider({ children }) {
             return;
           }
 
-          if (pendingDeepLink) {
+          if (
+            pendingDeepLink &&
+            isCompatibleRedirect(freshUser.role, pendingDeepLink)
+          ) {
             const dest = alignRedirectBusinessId(
               consumePostLoginRedirect() || pendingDeepLink,
               freshUser.businessId
@@ -770,19 +866,23 @@ export function AuthProvider({ children }) {
         }
 
         if (pendingDeepLink) {
-          const savedRedirect = consumePostLoginRedirect() || pendingDeepLink;
-          const isPricing = savedRedirect === "/pricing";
-          const shouldSkip = isPricing && freshUser.hasAccess;
+          if (!isCompatibleRedirect(freshUser.role, pendingDeepLink)) {
+            clearPostLoginRedirect();
+          } else {
+            const savedRedirect = consumePostLoginRedirect() || pendingDeepLink;
+            const isPricing = savedRedirect === "/pricing";
+            const shouldSkip = isPricing && freshUser.hasAccess;
 
-          if (!shouldSkip) {
-            navigate(
-              alignRedirectBusinessId(savedRedirect, freshUser.businessId) ||
-                savedRedirect,
-              { replace: true }
-            );
+            if (!shouldSkip) {
+              navigate(
+                alignRedirectBusinessId(savedRedirect, freshUser.businessId) ||
+                  savedRedirect,
+                { replace: true }
+              );
+            }
+
+            return;
           }
-
-          return;
         }
 
         const pendingNotificationUrl = consumePendingNotificationUrl();

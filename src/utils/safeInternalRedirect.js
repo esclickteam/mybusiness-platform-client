@@ -101,6 +101,38 @@ export function clearPostLoginRedirect() {
 /**
  * Resolve where to send the user after a successful login.
  */
+export function roleHomePath(role) {
+  const normalizedRole = String(role || "").toLowerCase();
+  if (normalizedRole === "admin") return "/admin/dashboard";
+  if (normalizedRole === "marketer") return "/marketer/dashboard";
+  if (normalizedRole === "partner") return "/partner/dashboard";
+  if (normalizedRole === "affiliate") return "/affiliate/dashboard";
+  if (normalizedRole === "customer") return "/client/dashboard";
+  if (normalizedRole === "worker") return "/staff/dashboard";
+  if (normalizedRole === "manager") return "/manager/dashboard";
+  return null;
+}
+
+export function isCompatibleRedirect(role, path) {
+  const safe = sanitizeInternalRedirect(path);
+  if (!safe || safe === "/") return false;
+  const normalizedRole = String(role || "").toLowerCase();
+  if (normalizedRole === "partner") {
+    // Generic homes from login-from-public-page or stale sessionStorage
+    // must never keep a partner on the marketing site / client CRM.
+    if (
+      safe === "/dashboard" ||
+      safe.startsWith("/dashboard/") ||
+      safe === "/client/dashboard" ||
+      safe.startsWith("/client/dashboard/")
+    ) {
+      return false;
+    }
+    return safe === "/partner" || safe.startsWith("/partner/");
+  }
+  return true;
+}
+
 export function resolvePostLoginDestination({
   role,
   businessId,
@@ -113,15 +145,13 @@ export function resolvePostLoginDestination({
     sanitizeInternalRedirect(queryRedirect) ||
     sanitizeInternalRedirect(storedRedirect);
 
-  if (preferred) {
+  if (preferred && isCompatibleRedirect(role, preferred)) {
     return alignRedirectBusinessId(preferred, businessId) || preferred;
   }
 
   const normalizedRole = String(role || "").toLowerCase();
-  if (normalizedRole === "admin") return "/admin/dashboard";
-  if (normalizedRole === "marketer") return "/marketer/dashboard";
-  if (normalizedRole === "affiliate") return "/affiliate/dashboard";
-  if (normalizedRole === "customer") return "/client/dashboard";
+  const roleHome = roleHomePath(normalizedRole);
+  if (roleHome) return roleHome;
 
   if (normalizedRole === "business") {
     if (!hasAccess) return "/pricing";
