@@ -551,7 +551,7 @@ export type ApprovedWhatsAppTemplate = WhatsAppTemplate & {
   components?: unknown[];
 };
 
-/** Approved Meta templates. Default senderMode=bizuply_managed (BizUply catalog). */
+/** Approved Meta templates. Pass senderMode to resolve Managed vs private catalog. */
 export async function listApprovedWhatsAppTemplates(
   businessId: string,
   opts?: {
@@ -564,9 +564,8 @@ export async function listApprovedWhatsAppTemplates(
   const { data } = await API.get("/whatsapp/templates/approved", {
     params: {
       businessId,
-      ...(usableForAutomation
-        ? { usableForAutomation: true }
-        : { senderMode }),
+      senderMode,
+      ...(usableForAutomation ? { usableForAutomation: true } : {}),
     },
   });
   return data as {
@@ -575,6 +574,7 @@ export async function listApprovedWhatsAppTemplates(
     usableForAutomation?: boolean;
     connected: boolean;
     tenantConnected?: boolean;
+    managedAllowed?: boolean;
     integrationId?: string;
     phoneNumberId?: string;
     wabaId?: string;
@@ -595,20 +595,40 @@ export async function listApprovedWhatsAppTemplates(
   };
 }
 
-/** Sync Meta templates for Automations picker (managed + tenant if connected). */
-export async function syncWhatsAppTemplatesForAutomation(businessId: string) {
+/** Refresh Automations picker templates for the active sender (Managed store or private Meta sync). */
+export async function syncWhatsAppTemplatesForAutomation(
+  businessId: string,
+  opts?: { senderMode?: WhatsAppSenderMode }
+) {
+  const senderMode = opts?.senderMode || "bizuply_managed";
   const { data } = await API.post("/whatsapp/templates/sync-for-automation", {
     businessId,
+    senderMode,
   });
   return data as {
     success: boolean;
     usableForAutomation?: boolean;
+    senderMode?: WhatsAppSenderMode;
     connected: boolean;
     tenantConnected?: boolean;
+    managedAllowed?: boolean;
     templates: ApprovedWhatsAppTemplate[];
     lastTemplatesSyncAt?: string | null;
     duplicatePrecedence?: string;
     sync?: {
+      managed?: {
+        synced?: number | null;
+        totalFromMeta?: number | null;
+        skipped?: boolean;
+        refreshedFromStore?: boolean;
+        reason?: string;
+      };
+      tenant?: {
+        synced?: number | null;
+        totalFromMeta?: number | null;
+        skipped?: boolean;
+        reason?: string;
+      };
       managedSynced?: number | null;
       managedTotalFromMeta?: number | null;
       tenantSynced?: number | null;
