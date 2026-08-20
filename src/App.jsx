@@ -153,6 +153,13 @@ const AdminUsers = lazy(() => import("./pages/admin/AdminUsers"));
 const AdminCreateUser = lazy(() => import("./pages/admin/AdminCreateUser"));
 const AdminBusinesses = lazy(() => import("./pages/admin/AdminBusinesses"));
 const AdminCustomers = lazy(() => import("./pages/admin/AdminCustomers"));
+const AdminCrmLayout = lazy(() => import("./pages/admin/crm/AdminCrmLayout"));
+const AdminCrmOverview = lazy(() => import("./pages/admin/crm/AdminCrmOverview"));
+const AdminCrmCustomers = lazy(() => import("./pages/admin/crm/AdminCrmCustomers"));
+const AdminCrmCustomer360 = lazy(() => import("./pages/admin/crm/AdminCrmCustomer360"));
+const AdminCrmPipeline = lazy(() => import("./pages/admin/crm/AdminCrmPipeline"));
+const AdminCrmTasks = lazy(() => import("./pages/admin/crm/AdminCrmTasks"));
+const AdminCrmActivities = lazy(() => import("./pages/admin/crm/AdminCrmActivities"));
 const EditSiteContent = lazy(() => import("./pages/admin/EditSiteContent"));
 const ManageRoles = lazy(() => import("./pages/admin/ManageRoles"));
 const AdminPayoutPage = lazy(() => import("./pages/admin/AdminPayoutPage"));
@@ -1294,6 +1301,22 @@ export default function App() {
                             </ProtectedRoute>
                           }
                         />
+
+                        <Route
+                          path="/admin/crm"
+                          element={
+                            <ProtectedRoute roles={["admin"]}>
+                              <AdminCrmLayout />
+                            </ProtectedRoute>
+                          }
+                        >
+                          <Route index element={<AdminCrmOverview />} />
+                          <Route path="customers" element={<AdminCrmCustomers />} />
+                          <Route path="customers/:id" element={<AdminCrmCustomer360 />} />
+                          <Route path="pipeline" element={<AdminCrmPipeline />} />
+                          <Route path="tasks" element={<AdminCrmTasks />} />
+                          <Route path="activities" element={<AdminCrmActivities />} />
+                        </Route>
 
                         <Route
                           path="/admin/site-edit"
