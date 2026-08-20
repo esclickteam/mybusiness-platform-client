@@ -1,17 +1,24 @@
 import { describe, expect, it } from "vitest";
 import {
   approvedNeedLabelFromCatalog,
+  buildManualWhatsAppMessage,
+  buildManualWhatsAppUrl,
   canSubmitSendDemo,
   demoContentSummary,
+  firstNameForManualShare,
   firstNameFromFullName,
+  invitationLinkAvailable,
+  invitationNeedsNewLink,
   isValidDemoPhone,
   isValidFullName,
+  MANUAL_WHATSAPP_FIRST_NAME_FALLBACK,
   normalizeFullName,
   orderedPresets,
   payloadFingerprint,
   resolveSelectedKeys,
   sourceNameForPrefill,
   sourcePhoneForPrefill,
+  whatsappShareDigits,
 } from "./adminSendForm";
 
 const catalog = {
@@ -173,5 +180,50 @@ describe("admin send demo form", () => {
     });
     expect(first).toBe(same);
     expect(first).not.toBe(changed);
+  });
+
+  it("builds a wa.me share URL without using the Cloud API", () => {
+    expect(whatsappShareDigits("0501234567")).toBe("972501234567");
+    expect(whatsappShareDigits("+972501234567")).toBe("972501234567");
+    expect(whatsappShareDigits("972501234567")).toBe("972501234567");
+    expect(firstNameForManualShare("")).toBe(MANUAL_WHATSAPP_FIRST_NAME_FALLBACK);
+    expect(firstNameForManualShare("דניאל כהן")).toBe("דניאל");
+    const message = buildManualWhatsAppMessage({
+      customerName: "דניאל כהן",
+      demoUrl: "https://bizuply.com/demo/abc",
+    });
+    expect(message).toContain("היי דניאל 👋");
+    expect(message).toContain("https://bizuply.com/demo/abc");
+    expect(message).toContain("כמו שסיכמנו");
+    const url = buildManualWhatsAppUrl({
+      phone: "0501234567",
+      customerName: "דניאל כהן",
+      demoUrl: "https://bizuply.com/demo/abc",
+    });
+    expect(url.startsWith("https://wa.me/972501234567?text=")).toBe(true);
+    expect(url).toContain(encodeURIComponent("https://bizuply.com/demo/abc"));
+  });
+
+  it("treats valid invitations as copyable and redeemed/expired ones as needing a new link", () => {
+    const valid = {
+      demoLink: "https://bizuply.com/demo/abc",
+      linkAvailable: true,
+      status: "created",
+      expiresAt: new Date(Date.now() + 60_000).toISOString(),
+    };
+    expect(invitationLinkAvailable(valid)).toBe(true);
+    expect(invitationNeedsNewLink(valid)).toBe(false);
+    expect(
+      invitationLinkAvailable({
+        ...valid,
+        redeemedAt: new Date().toISOString(),
+      })
+    ).toBe(false);
+    expect(
+      invitationNeedsNewLink({
+        status: "expired",
+        expiresAt: new Date(Date.now() - 1000).toISOString(),
+      })
+    ).toBe(true);
   });
 });

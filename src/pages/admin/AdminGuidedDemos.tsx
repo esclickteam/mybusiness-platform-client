@@ -6,10 +6,13 @@ import BizuplyLoader from "../../components/ui/BizuplyLoader";
 import AdminSendGuidedDemoModal, {
   AdminSendDemoButton,
 } from "./AdminSendGuidedDemoModal";
+import AdminGuidedDemoActions from "./AdminGuidedDemoActions";
 import {
   fetchGuidedDemoAnalytics,
+  fetchGuidedDemoCatalog,
   listGuidedDemos,
 } from "../../api/guidedDemoApi";
+import { invitationIdOf } from "../../guidedDemo/adminSendForm";
 
 const STATUS_LABEL: Record<string, string> = {
   created: "נוצר",
@@ -53,17 +56,20 @@ export default function AdminGuidedDemos() {
   const [q, setQ] = useState("");
   const [analytics, setAnalytics] = useState<any>(null);
   const [modalOpen, setModalOpen] = useState(false);
+  const [waOk, setWaOk] = useState(false);
 
   const load = useCallback(async () => {
     setLoading(true);
     setError("");
     try {
-      const [list, stats] = await Promise.all([
+      const [list, stats, catalog] = await Promise.all([
         listGuidedDemos({ q, limit: 50 }),
         fetchGuidedDemoAnalytics().catch(() => null),
+        fetchGuidedDemoCatalog().catch(() => null),
       ]);
       setItems(list.items || []);
       setAnalytics(stats?.analytics || null);
+      setWaOk(Boolean(catalog?.delivery?.whatsapp?.available));
     } catch (err: any) {
       setError(err?.response?.data?.error || "טעינת הדמואים נכשלה");
     } finally {
@@ -83,7 +89,7 @@ export default function AdminGuidedDemos() {
           <div>
             <h1 className="text-3xl font-black text-slate-900">דמואים ללקוחות</h1>
             <p className="mt-1 text-sm font-semibold text-slate-500">
-              שליחת קישור אישי לדמו אינטראקטיבי מבודד.
+              יצירת קישור אישי לדמו אינטראקטיבי מבודד, בלי תלות ב-WhatsApp.
             </p>
           </div>
           <AdminSendDemoButton onClick={() => setModalOpen(true)} className="px-4 py-3 text-sm" />
@@ -106,6 +112,12 @@ export default function AdminGuidedDemos() {
           </div>
         ) : null}
 
+        {!waOk ? (
+          <p className="mb-4 text-sm font-bold text-amber-700">
+            שליחה אוטומטית ב-WhatsApp אינה זמינה כרגע
+          </p>
+        ) : null}
+
         <div className="mb-4 flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2">
           <Search className="h-4 w-4 text-slate-400" />
           <input
@@ -123,51 +135,73 @@ export default function AdminGuidedDemos() {
             <BizuplyLoader />
           </div>
         ) : (
-          <div className="overflow-hidden rounded-[24px] border border-slate-100 bg-white shadow-sm">
-            <table className="w-full text-right text-sm">
+          <div className="overflow-x-auto rounded-[24px] border border-slate-100 bg-white shadow-sm">
+            <table className="w-full min-w-[980px] text-right text-sm">
               <thead className="bg-slate-50 text-xs font-black text-slate-500">
                 <tr>
                   <th className="px-4 py-3">לקוח</th>
                   <th className="px-4 py-3">טלפון</th>
-                  <th className="px-4 py-3">נשלח</th>
-                  <th className="px-4 py-3">סוג דמו</th>
+                  <th className="px-4 py-3">מודולים</th>
+                  <th className="px-4 py-3">נוצר</th>
+                  <th className="px-4 py-3">תוקף</th>
                   <th className="px-4 py-3">סטטוס</th>
-                  <th className="px-4 py-3">התקדמות</th>
-                  <th className="px-4 py-3">פעילות אחרונה</th>
+                  <th className="px-4 py-3">קישור</th>
+                  <th className="px-4 py-3">פעולות</th>
                 </tr>
               </thead>
               <tbody>
-                {items.map((row) => (
-                  <tr
-                    key={row._id}
-                    className="cursor-pointer border-t border-slate-100 hover:bg-violet-50/40"
-                    onClick={() => navigate(`/admin/guided-demos/${row._id}`)}
-                  >
-                    <td className="px-4 py-3 font-black text-slate-800">{row.customerName}</td>
-                    <td className="px-4 py-3 font-bold text-slate-600" dir="ltr">
-                      {row.customerPhone}
-                    </td>
-                    <td className="px-4 py-3">{formatDate(row.createdAt)}</td>
-                    <td className="px-4 py-3 text-xs font-bold text-slate-500">
-                      {row.presetKey === "full"
-                        ? `דמו מלא — ${(row.selectedModules || []).length} מודולים`
-                        : (row.selectedModules || []).join(" · ") || row.presetKey}
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className={`rounded-full border px-2 py-0.5 text-[11px] font-black ${STATUS_TONE[row.status] || STATUS_TONE.created}`}>
-                        {STATUS_LABEL[row.status] || row.status}
-                      </span>
-                    </td>
-                    <td className="px-4 py-3 font-bold">
-                      {row.completedSteps || 0}/{row.totalSteps || 0} — {row.completionPercent || 0}%
-                    </td>
-                    <td className="px-4 py-3 text-slate-500">{formatDate(row.lastActivityAt)}</td>
-                  </tr>
-                ))}
+                {items.map((row) => {
+                  const id = invitationIdOf(row) || row._id;
+                  return (
+                    <tr
+                      key={id}
+                      className="cursor-pointer border-t border-slate-100 hover:bg-violet-50/40"
+                      onClick={() => navigate(`/admin/guided-demos/${id}`)}
+                    >
+                      <td className="px-4 py-3 font-black text-slate-800">{row.customerName}</td>
+                      <td className="px-4 py-3 font-bold text-slate-600" dir="ltr">
+                        {row.customerPhone}
+                      </td>
+                      <td className="px-4 py-3 text-xs font-bold text-slate-500">
+                        {row.presetKey === "full"
+                          ? `דמו מלא — ${(row.selectedModules || []).length} מודולים`
+                          : (row.selectedModules || []).join(" · ") || row.presetKey}
+                      </td>
+                      <td className="px-4 py-3">{formatDate(row.createdAt)}</td>
+                      <td className="px-4 py-3">{formatDate(row.expiresAt)}</td>
+                      <td className="px-4 py-3">
+                        <span className={`rounded-full border px-2 py-0.5 text-[11px] font-black ${STATUS_TONE[row.status] || STATUS_TONE.created}`}>
+                          {STATUS_LABEL[row.status] || row.status}
+                        </span>
+                      </td>
+                      <td className="max-w-[220px] px-4 py-3">
+                        {row.linkAvailable && row.demoLink ? (
+                          <span className="block truncate text-left text-xs font-bold text-slate-600" dir="ltr">
+                            {row.demoLink}
+                          </span>
+                        ) : (
+                          <span className="text-xs font-bold text-slate-400">לא זמין</span>
+                        )}
+                      </td>
+                      <td className="px-4 py-3">
+                        <AdminGuidedDemoActions
+                          invitation={row}
+                          whatsAppApiAvailable={waOk}
+                          onChanged={() => void load()}
+                          onCreated={(created) => {
+                            const nextId = invitationIdOf(created?.invitation);
+                            if (nextId) navigate(`/admin/guided-demos/${nextId}`);
+                            else void load();
+                          }}
+                        />
+                      </td>
+                    </tr>
+                  );
+                })}
                 {!items.length ? (
                   <tr>
-                    <td colSpan={7} className="px-4 py-10 text-center font-bold text-slate-400">
-                      עדיין לא נשלחו דמואים
+                    <td colSpan={8} className="px-4 py-10 text-center font-bold text-slate-400">
+                      עדיין לא נוצרו דמואים
                     </td>
                   </tr>
                 ) : null}

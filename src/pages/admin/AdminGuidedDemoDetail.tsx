@@ -2,14 +2,9 @@ import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import AdminHeader from "./AdminsHeader";
 import BizuplyLoader from "../../components/ui/BizuplyLoader";
-import {
-  copyGuidedDemoLink,
-  duplicateGuidedDemo,
-  extendGuidedDemo,
-  getGuidedDemo,
-  resendGuidedDemo,
-  revokeGuidedDemo,
-} from "../../api/guidedDemoApi";
+import AdminGuidedDemoActions from "./AdminGuidedDemoActions";
+import { fetchGuidedDemoCatalog, getGuidedDemo } from "../../api/guidedDemoApi";
+import { invitationIdOf } from "../../guidedDemo/adminSendForm";
 
 const STATUS_LABEL: Record<string, string> = {
   created: "נוצר",
@@ -39,13 +34,18 @@ export default function AdminGuidedDemoDetail() {
   const navigate = useNavigate();
   const [data, setData] = useState<any>(null);
   const [error, setError] = useState("");
-  const [banner, setBanner] = useState("");
   const [loading, setLoading] = useState(true);
+  const [waOk, setWaOk] = useState(false);
 
   async function load() {
     setLoading(true);
     try {
-      setData(await getGuidedDemo(id));
+      const [demo, catalog] = await Promise.all([
+        getGuidedDemo(id),
+        fetchGuidedDemoCatalog().catch(() => null),
+      ]);
+      setData(demo);
+      setWaOk(Boolean(catalog?.delivery?.whatsapp?.available));
     } catch (err: any) {
       setError(err?.response?.data?.error || "טעינה נכשלה");
     } finally {
@@ -58,28 +58,7 @@ export default function AdminGuidedDemoDetail() {
   }, [id]);
 
   const inv = data?.invitation;
-
-  async function run(fn: () => Promise<any>, okMessage: string) {
-    setError("");
-    setBanner("");
-    try {
-      const result = await fn();
-      if (result?.delivery && result.delivery.ok === false) {
-        setError(result.delivery.error || "לא הצלחנו לשלוח את הדמו ב-WhatsApp.");
-        await load();
-        return;
-      }
-      if (result?.demoLink) {
-        await navigator.clipboard?.writeText(result.demoLink);
-        setBanner(okMessage);
-      } else {
-        setBanner(okMessage);
-      }
-      await load();
-    } catch (err: any) {
-      setError(err?.response?.data?.error || "הפעולה נכשלה");
-    }
-  }
+  const demoUrl = inv?.linkAvailable ? inv.demoLink : "";
 
   return (
     <div className="min-h-screen bg-[#f5f6fb]" dir="rtl">
@@ -104,14 +83,20 @@ export default function AdminGuidedDemoDetail() {
             <p className="mt-1 font-bold text-slate-500" dir="ltr">
               {inv.customerPhone}
             </p>
-            {banner ? <p className="mt-3 text-sm font-bold text-emerald-700">{banner}</p> : null}
             {error ? <p className="mt-3 text-sm font-bold text-rose-600">{error}</p> : null}
 
             <div className="mt-6 grid gap-3 rounded-[24px] border border-slate-100 bg-white p-5 text-sm font-bold shadow-sm">
-              <p>מודולים: {(inv.selectedModules || []).join(", ")}</p>
-              <p>ערוץ: {inv.deliveryChannel}</p>
+              <p>שם לקוח: {inv.customerName}</p>
+              <p dir="ltr">טלפון: {inv.customerPhone}</p>
+              <p>
+                מודולים / preset: {inv.presetKey}
+                {(inv.selectedModules || []).length
+                  ? ` — ${(inv.selectedModules || []).join(", ")}`
+                  : ""}
+              </p>
               <p>סטטוס: {STATUS_LABEL[inv.status] || inv.status}</p>
               <p>נוצר: {formatDate(inv.createdAt)}</p>
+              <p>תוקף: {formatDate(inv.expiresAt)}</p>
               <p>נשלח: {inv.deliveryStatus}</p>
               <p>נפתח: {formatDate(inv.openedAt)}</p>
               <p>התחיל: {formatDate(inv.redeemedAt)}</p>
@@ -122,45 +107,27 @@ export default function AdminGuidedDemoDetail() {
               </p>
               <p>הושלם: {formatDate(inv.completedAt)}</p>
               <p>פעילות אחרונה: {formatDate(inv.lastActivityAt)}</p>
-              <p>תוקף: {formatDate(inv.expiresAt)}</p>
+              {demoUrl ? (
+                <p className="break-all text-left" dir="ltr">
+                  קישור דמו: {demoUrl}
+                </p>
+              ) : (
+                <p>קישור דמו: לא זמין</p>
+              )}
             </div>
 
-            <div className="mt-4 flex flex-wrap gap-2">
-              <button
-                type="button"
-                className="rounded-xl border px-3 py-2 text-xs font-black"
-                onClick={() => void run(() => copyGuidedDemoLink(id), "הקישור הועתק")}
-              >
-                העתקת קישור
-              </button>
-              <button
-                type="button"
-                className="rounded-xl border px-3 py-2 text-xs font-black"
-                onClick={() => void run(() => resendGuidedDemo(id), "ההודעה נשלחה מחדש")}
-              >
-                שליחה מחדש
-              </button>
-              <button
-                type="button"
-                className="rounded-xl border px-3 py-2 text-xs font-black"
-                onClick={() => void run(() => extendGuidedDemo(id, 24), "התוקף הוארך")}
-              >
-                הארכת תוקף
-              </button>
-              <button
-                type="button"
-                className="rounded-xl border px-3 py-2 text-xs font-black"
-                onClick={() => void run(() => duplicateGuidedDemo(id), "נוצר דמו חדש")}
-              >
-                שכפל לדמו חדש
-              </button>
-              <button
-                type="button"
-                className="rounded-xl border border-rose-200 px-3 py-2 text-xs font-black text-rose-700"
-                onClick={() => void run(() => revokeGuidedDemo(id), "הדמו בוטל")}
-              >
-                ביטול קישור
-              </button>
+            <div className="mt-4">
+              <AdminGuidedDemoActions
+                invitation={inv}
+                whatsAppApiAvailable={waOk}
+                showUnavailableHint
+                onChanged={() => void load()}
+                onCreated={(created) => {
+                  const nextId = invitationIdOf(created?.invitation);
+                  if (nextId) navigate(`/admin/guided-demos/${nextId}`);
+                  else void load();
+                }}
+              />
             </div>
 
             <h2 className="mt-8 text-lg font-black">ציר זמן</h2>

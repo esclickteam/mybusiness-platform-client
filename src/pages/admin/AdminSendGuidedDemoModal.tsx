@@ -1,22 +1,22 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Copy, Link2, Play, Sparkles, X } from "lucide-react";
+import { Copy, ExternalLink, Link2, MessageCircle, Play, Sparkles, X } from "lucide-react";
 import {
-  copyGuidedDemoLink,
   createGuidedDemo,
-  extendGuidedDemo,
   fetchGuidedDemoCatalog,
   listGuidedDemos,
   resendGuidedDemo,
-  revokeGuidedDemo,
 } from "../../api/guidedDemoApi";
 import {
   approvedNeedLabelFromCatalog,
+  buildManualWhatsAppUrl,
   canSubmitSendDemo,
   demoContentSummary,
   invitationIdOf,
+  invitationPhone,
   isValidDemoPhone,
   normalizeFullName,
+  openExternalUrl,
   orderedPresets,
   payloadFingerprint,
   resolveSelectedKeys,
@@ -24,6 +24,7 @@ import {
   sourcePhoneForPrefill,
   type GuidedDemoCatalog,
 } from "../../guidedDemo/adminSendForm";
+import AdminGuidedDemoActions from "./AdminGuidedDemoActions";
 
 const STATUS_LABEL: Record<string, string> = {
   created: "נוצר",
@@ -66,7 +67,7 @@ export type SendDemoContext = {
   needCandidates?: string[];
 };
 
-type UiMode = "form" | "success" | "failure" | "link_only";
+type UiMode = "form" | "created" | "failure";
 
 function SendDemoButton({
   onClick,
@@ -108,9 +109,10 @@ export default function AdminSendGuidedDemoModal({
   const [presetKey, setPresetKey] = useState("full");
   const [moduleKeys, setModuleKeys] = useState<string[]>([]);
   const [ttlHours, setTtlHours] = useState(24);
-  const [submitting, setSubmitting] = useState(false);
+  const [submitting, setSubmitting] = useState<"link" | "api" | "">("");
   const [mode, setMode] = useState<UiMode>("form");
   const [error, setError] = useState("");
+  const [shareNote, setShareNote] = useState("");
   const [result, setResult] = useState<any>(null);
   const [copied, setCopied] = useState(false);
   const [lastInvitationId, setLastInvitationId] = useState("");
@@ -135,6 +137,7 @@ export default function AdminSendGuidedDemoModal({
     if (!open) return;
     setMode("form");
     setError("");
+    setShareNote("");
     setResult(null);
     setCopied(false);
     setLastInvitationId("");
@@ -163,6 +166,9 @@ export default function AdminSendGuidedDemoModal({
     catalog,
     candidates: context.needCandidates,
   });
+  const demoUrl = result?.demoLink || result?.invitation?.demoLink || "";
+  const resultName = result?.invitation?.customerName || customerName;
+  const resultPhone = invitationPhone(result?.invitation, phone);
 
   function toggleModule(key: string) {
     setModuleKeys((prev) =>
@@ -172,21 +178,40 @@ export default function AdminSendGuidedDemoModal({
   }
 
   async function copyLink(url?: string) {
-    const value = url || result?.demoLink;
+    const value = url || demoUrl;
     if (!value) return;
     await navigator.clipboard?.writeText(value);
     setCopied(true);
+    setShareNote("הקישור הועתק");
+  }
+
+  function openDemo(url?: string) {
+    const value = url || demoUrl;
+    if (!value) return;
+    openExternalUrl(value);
+    setShareNote("הדמו נפתח בחלון חדש");
+  }
+
+  function shareManually() {
+    if (!demoUrl) return;
+    const share = buildManualWhatsAppUrl({
+      phone: resultPhone,
+      customerName: resultName,
+      demoUrl,
+    });
+    openExternalUrl(share);
+    setShareNote("WhatsApp נפתח — שלחו ידנית מהאפליקציה");
   }
 
   async function submit(send: boolean) {
     if (submitting || !canSubmit) return;
     if (send && !waOk) {
-      setError(delivery?.whatsapp?.reason || "WhatsApp אינו זמין");
-      setMode("failure");
+      setError("שליחה אוטומטית ב-WhatsApp אינה זמינה כרגע");
       return;
     }
-    setSubmitting(true);
+    setSubmitting(send ? "api" : "link");
     setError("");
+    setShareNote("");
     setCopied(false);
     try {
       const payload = {
@@ -221,42 +246,46 @@ export default function AdminSendGuidedDemoModal({
       setLastFingerprint(fingerprint);
       setResult(data);
       await load().catch(() => null);
-      if (!send) {
-        setMode("link_only");
+      if (data?.demoLink || data?.invitation) {
+        if (send && data.delivery && data.delivery.ok === false && !data.delivery.skipped) {
+          setError(data.delivery.error || "לא הצלחנו לשלוח את הדמו ב-WhatsApp.");
+        }
+        setMode("created");
         return;
       }
-      if (data.delivery?.ok) {
-        setMode("success");
-      } else {
-        setError(
-          data.delivery?.error || "לא הצלחנו לשלוח את הדמו ב-WhatsApp."
-        );
-        setMode("failure");
-      }
+      setError("יצירת קישור הדמו נכשלה");
+      setMode("failure");
     } catch (err: any) {
-      setError(err?.response?.data?.error || "שליחת הדמו נכשלה");
+      setError(err?.response?.data?.error || (send ? "שליחת הדמו נכשלה" : "יצירת קישור הדמו נכשלה"));
       setMode("failure");
     } finally {
-      setSubmitting(false);
+      setSubmitting("");
     }
   }
 
-  async function runHistoryAction(fn: () => Promise<any>) {
+  async function sendViaApi() {
+    if (!waOk || !lastInvitationId || submitting) return;
+    setSubmitting("api");
     setError("");
     try {
-      const data = await fn();
-      if (data?.delivery && data.delivery.ok === false) {
-        setError(data.delivery.error || "לא הצלחנו לשלוח את הדמו ב-WhatsApp.");
-        return;
+      const data = await resendGuidedDemo(lastInvitationId);
+      setResult((prev: any) => ({ ...prev, ...data, demoLink: data.demoLink || prev?.demoLink }));
+      if (data.delivery?.ok) {
+        setShareNote("ההודעה נשלחה ב-WhatsApp");
+      } else {
+        setError(data.delivery?.error || "לא הצלחנו לשלוח את הדמו ב-WhatsApp.");
       }
-      if (data?.demoLink) await navigator.clipboard?.writeText(data.demoLink);
-      await load();
+      await load().catch(() => null);
     } catch (err: any) {
-      setError(err?.response?.data?.error || "הפעולה נכשלה");
+      setError(err?.response?.data?.error || "שליחת WhatsApp נכשלה");
+    } finally {
+      setSubmitting("");
     }
   }
 
   if (!open) return null;
+
+  const createdTitle = result?.delivery?.ok ? "הדמו נשלח בהצלחה" : "הקישור נוצר";
 
   return (
     <div
@@ -269,7 +298,7 @@ export default function AdminSendGuidedDemoModal({
           <div className="min-w-0">
             <h2 className="text-xl font-black text-slate-900">שליחת דמו אינטראקטיבי</h2>
             <p className="mt-1 text-sm font-semibold leading-6 text-slate-500">
-              בחרו אילו חלקים במערכת יוצגו ללקוח ולאן לשלוח את קישור הדמו.
+              צרו קישור מאובטח לדמו. שליחת WhatsApp אוטומטית היא אופציונלית.
             </p>
           </div>
           <button type="button" onClick={onClose} aria-label="סגירה">
@@ -278,58 +307,90 @@ export default function AdminSendGuidedDemoModal({
         </div>
 
         <div className="min-h-0 flex-1 overflow-y-auto px-5 py-4">
-          {mode === "success" ? (
+          {mode === "created" ? (
             <div className="text-center">
-              <Sparkles className="mx-auto h-10 w-10 text-violet-600" />
-              <h3 className="mt-3 text-2xl font-black">הדמו נשלח בהצלחה</h3>
-              <div className="mt-4 space-y-1 rounded-2xl bg-slate-50 p-4 text-sm font-bold text-slate-700">
-                <p>לקוח: {result?.invitation?.customerName || customerName}</p>
-                <p dir="ltr">טלפון: {result?.invitation?.customerPhone || phone}</p>
+              {result?.delivery?.ok ? (
+                <Sparkles className="mx-auto h-10 w-10 text-violet-600" />
+              ) : (
+                <Link2 className="mx-auto h-10 w-10 text-violet-600" />
+              )}
+              <h3 className="mt-3 text-2xl font-black">{createdTitle}</h3>
+              <p className="mt-2 text-sm font-bold text-slate-500">
+                הקישור חד-פעמי. אפשר להעתיק, לפתוח או לשתף ידנית ב-WhatsApp.
+              </p>
+              <div className="mt-4 space-y-1 rounded-2xl bg-slate-50 p-4 text-right text-sm font-bold text-slate-700">
+                <p>לקוח: {resultName}</p>
+                <p dir="ltr">טלפון: {resultPhone}</p>
                 <p>הדמו יכלול: {summary}</p>
-                <p>נשלח: {formatDate(result?.invitation?.updatedAt || result?.invitation?.createdAt)}</p>
-                <p>סטטוס: {STATUS_LABEL[result?.invitation?.status] || result?.invitation?.status}</p>
+                <p>תוקף: {formatDate(result?.invitation?.expiresAt)}</p>
+                <p>סטטוס: {STATUS_LABEL[result?.invitation?.status] || result?.invitation?.status || "נוצר"}</p>
               </div>
-              {result?.demoLink ? (
+              {demoUrl ? (
+                <p
+                  className="mt-3 break-all rounded-2xl border border-slate-200 bg-white px-3 py-2 text-left text-xs font-bold text-slate-700"
+                  dir="ltr"
+                  data-testid="admin-created-demo-url"
+                >
+                  {demoUrl}
+                </p>
+              ) : null}
+              <div className="mt-4 flex flex-wrap justify-center gap-2">
                 <button
                   type="button"
                   onClick={() => void copyLink()}
-                  className="mt-4 inline-flex items-center gap-2 rounded-2xl border px-4 py-2 text-sm font-black"
+                  className="inline-flex items-center gap-2 rounded-2xl bg-[#6D28D9] px-4 py-3 text-sm font-black text-white"
+                  data-testid="admin-created-copy-link"
                 >
                   <Copy className="h-4 w-4" />
                   {copied ? "הקישור הועתק" : "העתקת קישור"}
                 </button>
+                <button
+                  type="button"
+                  onClick={() => openDemo()}
+                  className="inline-flex items-center gap-2 rounded-2xl border px-4 py-3 text-sm font-black"
+                  data-testid="admin-created-open-demo"
+                >
+                  <ExternalLink className="h-4 w-4" />
+                  פתיחת הדמו
+                </button>
+                <button
+                  type="button"
+                  onClick={shareManually}
+                  className="inline-flex items-center gap-2 rounded-2xl border px-4 py-3 text-sm font-black"
+                  data-testid="admin-created-manual-whatsapp"
+                >
+                  <MessageCircle className="h-4 w-4" />
+                  שליחה ידנית ב-WhatsApp
+                </button>
+                <button
+                  type="button"
+                  disabled={!waOk || Boolean(submitting)}
+                  onClick={() => void sendViaApi()}
+                  className="inline-flex items-center gap-2 rounded-2xl border px-4 py-3 text-sm font-black disabled:opacity-40"
+                  data-testid="admin-created-api-whatsapp"
+                >
+                  שליחת הדמו ב-WhatsApp
+                </button>
+              </div>
+              {shareNote ? <p className="mt-3 text-sm font-bold text-emerald-700">{shareNote}</p> : null}
+              {!waOk ? (
+                <p className="mt-3 text-sm font-bold text-amber-700" data-testid="admin-wa-api-unavailable">
+                  שליחה אוטומטית ב-WhatsApp אינה זמינה כרגע
+                </p>
               ) : null}
-            </div>
-          ) : mode === "link_only" ? (
-            <div className="text-center">
-              <Link2 className="mx-auto h-10 w-10 text-violet-600" />
-              <h3 className="mt-3 text-2xl font-black">הקישור נוצר</h3>
-              <p className="mt-2 text-sm font-bold text-slate-500">
-                ניתן להעתיק את הקישור ולשלוח אותו ידנית. הקישור חד-פעמי.
-              </p>
-              <p className="mt-3 text-sm font-black">הדמו יכלול: {summary}</p>
-              <button
-                type="button"
-                onClick={() => void copyLink()}
-                className="mt-4 inline-flex items-center gap-2 rounded-2xl bg-[#6D28D9] px-4 py-3 text-sm font-black text-white"
-              >
-                <Copy className="h-4 w-4" />
-                {copied ? "הקישור הועתק" : "העתקת קישור"}
-              </button>
+              {error ? <p className="mt-3 text-sm font-bold text-rose-600">{error}</p> : null}
             </div>
           ) : mode === "failure" ? (
             <div>
-              <h3 className="text-xl font-black text-rose-700">
-                לא הצלחנו לשלוח את הדמו ב-WhatsApp.
-              </h3>
+              <h3 className="text-xl font-black text-rose-700">יצירת קישור הדמו נכשלה</h3>
               <p className="mt-2 text-sm font-bold text-slate-600">{error}</p>
               <button
                 type="button"
-                disabled={submitting || !canSubmit}
-                onClick={() => void submit(true)}
+                disabled={Boolean(submitting) || !canSubmit}
+                onClick={() => void submit(false)}
                 className="mt-4 rounded-2xl bg-[#6D28D9] px-4 py-3 text-sm font-black text-white disabled:opacity-40"
               >
-                {submitting ? "שולח דמו..." : "נסו שוב"}
+                {submitting ? "יוצר קישור..." : "יצירת קישור לדמו"}
               </button>
               <button
                 type="button"
@@ -440,7 +501,7 @@ export default function AdminSendGuidedDemoModal({
                 <div className="mt-2 rounded-2xl border border-violet-200 bg-violet-50 p-3 text-sm font-bold">
                   WhatsApp
                   <span className="mt-1 block text-xs font-semibold text-slate-600">
-                    תבנית guided_demo_invite
+                    שליחה ידנית זמינה תמיד. שליחה אוטומטית דרך Bizuply אופציונלית.
                     {delivery?.whatsapp?.template?.language
                       ? ` · ${delivery.whatsapp.template.language}`
                       : ""}
@@ -453,8 +514,8 @@ export default function AdminSendGuidedDemoModal({
                   SMS עדיין לא זמין
                 </div>
                 {!waOk ? (
-                  <p className="mt-2 text-xs font-bold text-rose-600">
-                    {delivery?.whatsapp?.reason || "שליחת WhatsApp אינה זמינה כרגע"}
+                  <p className="mt-2 text-xs font-bold text-amber-700" data-testid="admin-wa-api-unavailable">
+                    שליחה אוטומטית ב-WhatsApp אינה זמינה כרגע
                   </p>
                 ) : null}
                 <label className="mt-3 block text-sm font-black">
@@ -477,23 +538,23 @@ export default function AdminSendGuidedDemoModal({
                 <section>
                   <h3 className="text-sm font-black text-slate-900">היסטוריית דמואים</h3>
                   <div className="mt-2 overflow-x-auto rounded-2xl border border-slate-100">
-                    <table className="w-full min-w-[640px] text-right text-xs">
+                    <table className="w-full min-w-[720px] text-right text-xs">
                       <thead className="bg-slate-50 font-black text-slate-500">
                         <tr>
-                          <th className="px-3 py-2">נוצר</th>
+                          <th className="px-3 py-2">שם</th>
                           <th className="px-3 py-2">טלפון</th>
                           <th className="px-3 py-2">תוכן</th>
-                          <th className="px-3 py-2">ערוץ</th>
-                          <th className="px-3 py-2">שליחה</th>
-                          <th className="px-3 py-2">דמו</th>
-                          <th className="px-3 py-2">התקדמות</th>
+                          <th className="px-3 py-2">נוצר</th>
+                          <th className="px-3 py-2">תוקף</th>
+                          <th className="px-3 py-2">סטטוס</th>
+                          <th className="px-3 py-2">קישור</th>
                           <th className="px-3 py-2">פעולות</th>
                         </tr>
                       </thead>
                       <tbody>
                         {history.map((row) => (
                           <tr key={row._id || row.id} className="border-t border-slate-100">
-                            <td className="px-3 py-2">{formatDate(row.createdAt)}</td>
+                            <td className="px-3 py-2 font-black">{row.customerName}</td>
                             <td className="px-3 py-2" dir="ltr">
                               {row.customerPhone}
                             </td>
@@ -502,78 +563,36 @@ export default function AdminSendGuidedDemoModal({
                                 ? `דמו מלא — ${(row.selectedModules || []).length} מודולים`
                                 : (row.selectedModules || []).join(" · ")}
                             </td>
-                            <td className="px-3 py-2">
-                              {row.deliveryChannel === "whatsapp" ? "WhatsApp" : row.deliveryChannel}
-                            </td>
-                            <td className="px-3 py-2">
-                              {DELIVERY_LABEL[row.deliveryStatus] || row.deliveryStatus}
-                            </td>
+                            <td className="px-3 py-2">{formatDate(row.createdAt)}</td>
+                            <td className="px-3 py-2">{formatDate(row.expiresAt)}</td>
                             <td className="px-3 py-2">
                               {STATUS_LABEL[row.status] || row.status}
                               <div className="text-[10px] font-semibold text-slate-400">
-                                נפתח {formatDate(row.openedAt || row.redeemedAt)} · הושלם {formatDate(row.completedAt)}
-                                <br />
-                                תוקף {formatDate(row.expiresAt)}
-                                {row.revokedAt ? " · בוטל" : ""}
+                                {DELIVERY_LABEL[row.deliveryStatus] || row.deliveryStatus}
                               </div>
                             </td>
-                            <td className="px-3 py-2 font-black">
-                              {row.completedSteps || 0}/{row.totalSteps || 0}
+                            <td className="max-w-[180px] px-3 py-2">
+                              {row.linkAvailable && row.demoLink ? (
+                                <span className="block truncate text-left font-bold" dir="ltr">
+                                  {row.demoLink}
+                                </span>
+                              ) : (
+                                "—"
+                              )}
                             </td>
                             <td className="px-3 py-2">
-                              <div className="flex flex-wrap gap-1">
-                                <button
-                                  type="button"
-                                  className="rounded-lg border px-2 py-1 font-black"
-                                  onClick={() => navigate(`/admin/guided-demos/${row._id || row.id}`)}
-                                >
-                                  צפייה
-                                </button>
-                                <button
-                                  type="button"
-                                  className="rounded-lg border px-2 py-1 font-black"
-                                  onClick={() =>
-                                    void runHistoryAction(() =>
-                                      copyGuidedDemoLink(row._id || row.id)
-                                    )
-                                  }
-                                >
-                                  העתקת קישור
-                                </button>
-                                <button
-                                  type="button"
-                                  className="rounded-lg border px-2 py-1 font-black"
-                                  onClick={() =>
-                                    void runHistoryAction(() =>
-                                      resendGuidedDemo(row._id || row.id)
-                                    )
-                                  }
-                                >
-                                  שליחה מחדש
-                                </button>
-                                <button
-                                  type="button"
-                                  className="rounded-lg border px-2 py-1 font-black"
-                                  onClick={() =>
-                                    void runHistoryAction(() =>
-                                      extendGuidedDemo(row._id || row.id, 24)
-                                    )
-                                  }
-                                >
-                                  הארכת תוקף
-                                </button>
-                                <button
-                                  type="button"
-                                  className="rounded-lg border border-rose-200 px-2 py-1 font-black text-rose-700"
-                                  onClick={() =>
-                                    void runHistoryAction(() =>
-                                      revokeGuidedDemo(row._id || row.id)
-                                    )
-                                  }
-                                >
-                                  ביטול קישור
-                                </button>
-                              </div>
+                              <button
+                                type="button"
+                                className="mb-1 rounded-lg border px-2 py-1 font-black"
+                                onClick={() => navigate(`/admin/guided-demos/${row._id || row.id}`)}
+                              >
+                                צפייה
+                              </button>
+                              <AdminGuidedDemoActions
+                                invitation={row}
+                                whatsAppApiAvailable={waOk}
+                                onChanged={() => void load()}
+                              />
                             </td>
                           </tr>
                         ))}
@@ -591,24 +610,27 @@ export default function AdminSendGuidedDemoModal({
         </div>
 
         {mode === "form" ? (
-          <div className="flex flex-col gap-2 border-t border-slate-100 px-5 py-4 sm:flex-row sm:justify-between">
-            <button
-              type="button"
-              disabled={submitting || !canSubmit}
-              onClick={() => void submit(false)}
-              className="rounded-2xl border px-4 py-3 text-sm font-black disabled:opacity-40"
-            >
-              יצירת קישור בלבד
-            </button>
-            <button
-              type="button"
-              disabled={submitting || !canSubmit}
-              onClick={() => void submit(true)}
-              className="rounded-2xl bg-[#6D28D9] px-4 py-3 text-sm font-black text-white disabled:opacity-40"
-              data-testid="admin-send-demo-submit"
-            >
-              {submitting ? "שולח דמו..." : "שליחת הדמו ב-WhatsApp"}
-            </button>
+          <div className="flex flex-col gap-2 border-t border-slate-100 px-5 py-4">
+            <div className="flex flex-col gap-2 sm:flex-row sm:justify-between">
+              <button
+                type="button"
+                disabled={Boolean(submitting) || !canSubmit}
+                onClick={() => void submit(false)}
+                className="rounded-2xl bg-[#6D28D9] px-4 py-3 text-sm font-black text-white disabled:opacity-40"
+                data-testid="admin-create-demo-link"
+              >
+                {submitting === "link" ? "יוצר קישור..." : "יצירת קישור לדמו"}
+              </button>
+              <button
+                type="button"
+                disabled={Boolean(submitting) || !canSubmit || !waOk}
+                onClick={() => void submit(true)}
+                className="rounded-2xl border px-4 py-3 text-sm font-black disabled:opacity-40"
+                data-testid="admin-send-demo-submit"
+              >
+                {submitting === "api" ? "שולח דמו..." : "שליחת הדמו ב-WhatsApp"}
+              </button>
+            </div>
           </div>
         ) : (
           <div className="border-t border-slate-100 px-5 py-4">

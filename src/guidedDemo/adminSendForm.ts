@@ -169,3 +169,108 @@ export function approvedNeedLabelFromCatalog({
 export function invitationIdOf(invitation: { id?: string; _id?: string } | null | undefined) {
   return String(invitation?.id || invitation?._id || "");
 }
+
+export const MANUAL_WHATSAPP_FIRST_NAME_FALLBACK = "שלום";
+
+export type GuidedDemoInvitationRow = {
+  id?: string;
+  _id?: string;
+  customerName?: string;
+  customerPhone?: string;
+  customerPhoneWhatsapp?: string;
+  customerPhoneE164?: string;
+  selectedModules?: string[];
+  presetKey?: string;
+  status?: string;
+  createdAt?: string;
+  expiresAt?: string | Date | null;
+  redeemedAt?: string | Date | null;
+  revokedAt?: string | Date | null;
+  demoLink?: string;
+  linkAvailable?: boolean;
+  deliveryStatus?: string;
+  completedSteps?: number;
+  totalSteps?: number;
+};
+
+export function firstNameForManualShare(raw?: string | null) {
+  return firstNameFromFullName(raw) || MANUAL_WHATSAPP_FIRST_NAME_FALLBACK;
+}
+
+export function whatsappShareDigits(phone: string) {
+  let digits = digitsOnly(phone);
+  if (/^05\d{8}$/.test(digits)) return `972${digits.slice(1)}`;
+  if (/^009725\d{8}$/.test(digits)) return digits.slice(2);
+  if (/^9725\d{8}$/.test(digits)) return digits;
+  if (digits.startsWith("0") && digits.length === 10) return `972${digits.slice(1)}`;
+  return digits;
+}
+
+export function buildManualWhatsAppMessage({
+  customerName,
+  demoUrl,
+}: {
+  customerName?: string | null;
+  demoUrl: string;
+}) {
+  const firstName = firstNameForManualShare(customerName);
+  return [
+    `היי ${firstName} 👋`,
+    "",
+    "כמו שסיכמנו, מצרף לך קישור לדמו אינטראקטיבי קצר של Bizuply:",
+    "",
+    demoUrl,
+    "",
+    "אפשר לעבור עליו בזמן שנוח לך.",
+  ].join("\n");
+}
+
+export function buildManualWhatsAppUrl({
+  phone,
+  customerName,
+  demoUrl,
+}: {
+  phone?: string | null;
+  customerName?: string | null;
+  demoUrl: string;
+}) {
+  const digits = whatsappShareDigits(String(phone || ""));
+  if (!digits || !demoUrl) return "";
+  return `https://wa.me/${digits}?text=${encodeURIComponent(
+    buildManualWhatsAppMessage({ customerName, demoUrl })
+  )}`;
+}
+
+export function invitationPhone(invitation?: GuidedDemoInvitationRow | null, fallback = "") {
+  return (
+    invitation?.customerPhoneWhatsapp ||
+    invitation?.customerPhoneE164 ||
+    invitation?.customerPhone ||
+    fallback ||
+    ""
+  );
+}
+
+export function invitationLinkAvailable(invitation?: GuidedDemoInvitationRow | null) {
+  if (!invitation) return false;
+  if (invitation.revokedAt || invitation.status === "revoked") return false;
+  if (invitation.redeemedAt) return false;
+  if (invitation.status === "expired") return false;
+  if (invitation.expiresAt && new Date(invitation.expiresAt).getTime() < Date.now()) return false;
+  if (invitation.linkAvailable === false) return false;
+  return Boolean(invitation.demoLink) || invitation.linkAvailable === true;
+}
+
+export function invitationNeedsNewLink(invitation?: GuidedDemoInvitationRow | null) {
+  if (!invitation) return false;
+  if (invitation.revokedAt || invitation.status === "revoked") return true;
+  if (invitation.redeemedAt) return true;
+  if (invitation.status === "expired") return true;
+  if (invitation.expiresAt && new Date(invitation.expiresAt).getTime() < Date.now()) return true;
+  return false;
+}
+
+export function openExternalUrl(url?: string | null) {
+  if (!url) return;
+  window.open(url, "_blank", "noopener,noreferrer");
+}
