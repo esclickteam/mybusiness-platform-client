@@ -349,6 +349,16 @@ export default function AdminManagedWhatsApp() {
                       labelBad="Connection: NOT READY"
                     />
                   </div>
+                  <p
+                    style={{
+                      margin: "10px 0 0",
+                      fontSize: 12,
+                      color: "#94a3b8",
+                    }}
+                  >
+                    סטטוסים אלה משקפים רק את החיבור המרכזי של Bizuply — לא חיבורי
+                    עסקים פרטיים.
+                  </p>
                 </div>
                 <label
                   style={{
@@ -427,6 +437,51 @@ export default function AdminManagedWhatsApp() {
                     {status.lastError ||
                       status.connection?.connectionReason ||
                       "אין"}
+                  </div>
+                </div>
+              </div>
+
+              <div
+                style={{
+                  marginTop: 18,
+                  padding: 14,
+                  borderRadius: 12,
+                  background: "#f8fafc",
+                  border: "1px solid #e2e8f0",
+                }}
+              >
+                <strong style={{ fontSize: 14 }}>חיבורי עסקים (נפרד מהפלטפורמה)</strong>
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "repeat(auto-fit, minmax(160px, 1fr))",
+                    gap: 12,
+                    marginTop: 10,
+                  }}
+                >
+                  <div>
+                    <div style={{ color: "#64748b", fontSize: 12 }}>
+                      Managed connection
+                    </div>
+                    <div style={{ fontSize: 16, fontWeight: 700 }}>
+                      {connectionReady ? "READY" : "NOT READY"}
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ color: "#64748b", fontSize: 12 }}>
+                      עסקים עם WhatsApp פרטי מחובר
+                    </div>
+                    <div style={{ fontSize: 16, fontWeight: 700 }}>
+                      {status.businessConnections?.privateConnected ?? 0}
+                    </div>
+                  </div>
+                  <div>
+                    <div style={{ color: "#64748b", fontSize: 12 }}>
+                      עסקים מנותקים (פרטי)
+                    </div>
+                    <div style={{ fontSize: 16, fontWeight: 700 }}>
+                      {status.businessConnections?.privateDisconnected ?? 0}
+                    </div>
                   </div>
                 </div>
               </div>
