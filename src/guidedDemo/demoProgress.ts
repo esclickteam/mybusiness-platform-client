@@ -16,6 +16,35 @@ const listeners = new Set<Listener>();
 let interceptorId: number | null = null;
 let lastWrongClickAt = 0;
 
+function getCurrentStep(session: any) {
+  if (!session) return null;
+  const steps = session.steps || [];
+  if (session.currentStepId) {
+    return steps.find((s: any) => s.id === session.currentStepId) || steps[session.currentStepIndex] || null;
+  }
+  return steps[session.currentStepIndex] || null;
+}
+
+function maybeDispatchSuccessToast(prevSession: any, nextSession: any) {
+  if (!prevSession || !nextSession) return;
+  const prevStep = getCurrentStep(prevSession);
+  if (!prevStep?.successFeedback) return;
+  const prevId = prevStep.id;
+  const completed = nextSession.completedStepIds || [];
+  const advanced =
+    prevId &&
+    completed.includes(prevId) &&
+    nextSession.currentStepId !== prevId &&
+    nextSession.status !== "completed";
+  if (advanced || (prevId && completed.includes(prevId) && nextSession.status === "completed")) {
+    window.dispatchEvent(
+      new CustomEvent("guided-demo:toast", {
+        detail: { message: prevStep.successFeedback },
+      })
+    );
+  }
+}
+
 export const demoProgress = {
   isActive() {
     return isGuidedDemoActive();
@@ -33,8 +62,12 @@ export const demoProgress = {
   },
   async report(event: string, payload: Record<string, unknown> = {}) {
     if (!this.isActive()) return null;
+    const prevSession = readGuidedDemoSession();
     const data = await reportGuidedDemoProgress(event, payload);
-    if (data?.session) this.emit(data.session);
+    if (data?.session) {
+      maybeDispatchSuccessToast(prevSession, data.session);
+      this.emit(data.session);
+    }
     return data?.session || null;
   },
   async completeStep(event: string, payload: Record<string, unknown> = {}) {
@@ -90,6 +123,12 @@ export function mapRequestToEvent(config: { method?: string; url?: string; data?
   }
   if (method === "POST" && /\/appointments\/?$/.test(url)) {
     return { event: "APPOINTMENT_CREATED", payload: body };
+  }
+  if (method === "POST" && /\/appointments\/update-work-hours/.test(url)) {
+    return { event: "WORKING_HOURS_UPDATED", payload: body };
+  }
+  if (method === "POST" && /\/business\/my\/services/.test(url)) {
+    return { event: "SERVICE_CREATED", payload: body };
   }
   if ((method === "PUT" || method === "PATCH") && /site-builder/.test(url)) {
     if (body.published === true || body.status === "published") {
