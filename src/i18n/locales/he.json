@@ -5300,7 +5300,15 @@
       "helpTitle": "How to connect",
       "help1": "לחצו על חיבור WhatsApp Business כדי לפתוח את תהליך החיבור של Meta.",
       "help2": "Select or create your WhatsApp Business Account and verify the phone number.",
-      "help3": "Return to BizUply to see the connected account, sync approved templates, and send a real test message."
+      "help3": "Return to BizUply to see the connected account, sync approved templates, and send a real test message.",
+      "usingManagedTitle": "אתם משתמשים ב־WhatsApp מנוהל של Bizuply",
+      "usingManagedBody": "ניתן לשלוח אוטומציות דרך המספר המרכזי. אפשר גם לחבר מספר WhatsApp פרטי של העסק — זה לא מנתק ולא משנה את החיבור המנוהל.",
+      "connectOwnIntro": "לחיבור מספר WhatsApp של העסק (WABA נפרד) לחצו כאן. החיבור הפרטי נשמר רק לעסק הזה.",
+      "connectOwnCta": "חבר מספר WhatsApp של העסק",
+      "managedHostTitle": "חיבור מרכזי מנוהל (Bizuply Managed)",
+      "managedHostBody": "המספר המוצג הוא החיבור המרכזי של הפלטפורמה. עסק לקוח שמחבר מספר משלו עושה זאת מההגדרות של אותו עסק — לא מכאן.",
+      "managedHostNoDisconnect": "לא ניתן לנתק את החיבור המרכזי המנוהל ממסך העסק. ניהול מתבצע ב־Admin → WhatsApp Managed. עסק שרוצה מספר פרטי מחבר אותו מההגדרות של העסק שלו.",
+      "managedHostNoConnectOwn": "בעסק המארח של Managed אי אפשר להחליף את המספר המרכזי ב־Embedded Signup. כדי לחבר מספר פרטי — היכנסו להגדרות WhatsApp של העסק הרצוי."
     },
     "errors": {
       "loadCompose": "Failed to load WhatsApp compose data",

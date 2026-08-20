@@ -69,6 +69,14 @@ export type WhatsAppConnection = {
   verifiedName: string;
   metaBusinessId?: string;
   connectionSource?: string;
+  senderType?: string;
+  isPlatformManagedConnection?: boolean;
+  canDisconnect?: boolean;
+  canConnectOwnNumber?: boolean;
+  managedModeEnabled?: boolean;
+  managedReady?: boolean;
+  managedDisplayPhoneMasked?: string;
+  usingManagedWithoutPrivate?: boolean;
   webhookSubscribed?: boolean;
   hasAccessToken: boolean;
   usingEnvFallback: boolean;
