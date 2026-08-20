@@ -5,6 +5,7 @@ import {
   getAdminManagedWhatsAppStatus,
   listAdminManagedWhatsAppAudit,
   saveAndVerifyAdminManagedWhatsAppConnection,
+  registerAdminManagedWhatsAppPhone,
   syncAdminManagedWhatsAppTemplates,
   updateAdminManagedWhatsAppSettings,
   type AdminManagedWhatsAppAuditItem,
@@ -95,6 +96,8 @@ export default function AdminManagedWhatsApp() {
   const [phoneNumberId, setPhoneNumberId] = useState("");
   const [displayPhoneNumber, setDisplayPhoneNumber] = useState("");
   const [accessToken, setAccessToken] = useState("");
+  const [registerPin, setRegisterPin] = useState("");
+  const [registering, setRegistering] = useState(false);
 
   const isAdmin = String(user?.role || "").toLowerCase() === "admin";
 
@@ -209,6 +212,36 @@ export default function AdminManagedWhatsApp() {
       setError(err?.message || "שמירה ובדיקת חיבור נכשלו");
     } finally {
       setVerifying(false);
+    }
+  }
+
+  async function registerPhone() {
+    if (!isAdmin || registering) return;
+    const pin = registerPin.replace(/\D/g, "").slice(0, 6);
+    if (!/^\d{6}$/.test(pin)) {
+      setError("הזינו PIN דו-שלבי בן 6 ספרות");
+      return;
+    }
+    setRegistering(true);
+    setError("");
+    setSyncFlash("");
+    try {
+      const data = await registerAdminManagedWhatsAppPhone(pin);
+      applyStatus(data);
+      setRegisterPin("");
+      setSyncFlash(
+        data.registration?.phoneRegistered || data.registration?.sendReady
+          ? "המספר נרשם מול Meta — אפשר לשלוח הודעות"
+          : "הרישום נשלח, אך המספר עדיין לא מסומן כמוכן לשליחה"
+      );
+      const aud = await listAdminManagedWhatsAppAudit(30).catch(() => ({
+        items: [],
+      }));
+      setAudit(aud.items || []);
+    } catch (err: any) {
+      setError(err?.response?.data?.error || err?.message || "רישום המספר נכשל");
+    } finally {
+      setRegistering(false);
     }
   }
 
@@ -348,6 +381,11 @@ export default function AdminManagedWhatsApp() {
                       labelOk="Connection: READY"
                       labelBad="Connection: NOT READY"
                     />
+                    <StatusPill
+                      ok={Boolean(status.registration?.phoneRegistered)}
+                      labelOk="רישום לשליחה: רשום"
+                      labelBad="רישום לשליחה: נדרש PIN"
+                    />
                   </div>
                   <p
                     style={{
@@ -410,6 +448,25 @@ export default function AdminManagedWhatsApp() {
                   <div style={{ color: "#64748b", fontSize: 12 }}>REJECTED</div>
                   <div style={{ fontSize: 18, fontWeight: 600 }}>
                     {connectionReady ? status.templates?.REJECTED ?? 0 : 0}
+                  </div>
+                </div>
+                <div>
+                  <div style={{ color: "#64748b", fontSize: 12 }}>רישום לשליחה</div>
+                  <div
+                    style={{
+                      fontSize: 16,
+                      fontWeight: 700,
+                      color:
+                        status.registration?.sendReady ||
+                        status.registration?.phoneRegistered
+                          ? "#047857"
+                          : "#b91c1c",
+                    }}
+                  >
+                    {status.registration?.sendReady ||
+                    status.registration?.phoneRegistered
+                      ? "רשום"
+                      : "נדרש PIN"}
                   </div>
                 </div>
                 <div>
@@ -648,6 +705,82 @@ export default function AdminManagedWhatsApp() {
                 <Link2 size={16} />
                 {verifying ? "מאמת מול Meta…" : "שמור ובדוק חיבור"}
               </button>
+
+              <div
+                style={{
+                  marginTop: 18,
+                  padding: 14,
+                  borderRadius: 12,
+                  background: "#fff7ed",
+                  border: "1px solid #fed7aa",
+                }}
+              >
+                <strong style={{ fontSize: 14 }}>רישום מספר לשליחה (PIN)</strong>
+                <p style={{ color: "#9a3412", fontSize: 13, margin: "8px 0 0" }}>
+                  חיבור WABA יכול להיות READY ועדיין חסום לשליחה. Meta דורשת
+                  רישום חד-פעמי עם PIN דו-שלבי של 6 ספרות של המספר{" "}
+                  {status.configForm?.displayPhoneNumber ||
+                    status.connection?.displayPhoneMasked ||
+                    ""}
+                  . זה לא קוד SMS — זה ה-PIN שהוגדר ב-Meta Business Manager למספר.
+                </p>
+                {status.registration?.lastError ? (
+                  <p style={{ color: "#b91c1c", fontSize: 13, marginTop: 8 }}>
+                    {status.registration.lastError}
+                  </p>
+                ) : null}
+                <div
+                  style={{
+                    display: "flex",
+                    flexWrap: "wrap",
+                    gap: 10,
+                    alignItems: "end",
+                    marginTop: 12,
+                  }}
+                >
+                  <label style={{ display: "grid", gap: 6 }}>
+                    <span style={{ fontWeight: 600, fontSize: 13 }}>
+                      PIN דו-שלבי
+                    </span>
+                    <input
+                      style={{ ...fieldStyle, maxWidth: 180, letterSpacing: "0.35em" }}
+                      dir="ltr"
+                      type="password"
+                      inputMode="numeric"
+                      autoComplete="one-time-code"
+                      maxLength={6}
+                      value={registerPin}
+                      onChange={(e) =>
+                        setRegisterPin(e.target.value.replace(/\D/g, "").slice(0, 6))
+                      }
+                      placeholder="••••••"
+                    />
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => void registerPhone()}
+                    disabled={
+                      registering ||
+                      registerPin.replace(/\D/g, "").length !== 6 ||
+                      !connectionReady
+                    }
+                    style={{
+                      display: "inline-flex",
+                      alignItems: "center",
+                      gap: 8,
+                      border: "none",
+                      borderRadius: 10,
+                      padding: "10px 14px",
+                      background: "#7c2d12",
+                      color: "#fff",
+                      fontWeight: 600,
+                      cursor: registering ? "wait" : "pointer",
+                    }}
+                  >
+                    {registering ? "רושם מול Meta…" : "רישום מספר לשליחה"}
+                  </button>
+                </div>
+              </div>
             </section>
 
             <section
