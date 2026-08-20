@@ -1,0 +1,77 @@
+import API from "../api";
+
+export type AdminCrmListQuery = Record<string, string | number | boolean | undefined>;
+
+function qs(params: AdminCrmListQuery = {}) {
+  const search = new URLSearchParams();
+  Object.entries(params).forEach(([key, value]) => {
+    if (value === undefined || value === null || value === "") return;
+    search.set(key, String(value));
+  });
+  const text = search.toString();
+  return text ? `?${text}` : "";
+}
+
+export const adminCrmApi = {
+  meta: () => API.get("/admin/crm/meta"),
+  dashboard: () => API.get("/admin/crm/dashboard"),
+  admins: () => API.get("/admin/crm/admins"),
+  customers: (params: AdminCrmListQuery = {}) =>
+    API.get(`/admin/crm/customers${qs(params)}`),
+  createCustomer: (body: Record<string, unknown>) =>
+    API.post("/admin/crm/customers", body),
+  customer: (id: string) => API.get(`/admin/crm/customers/${id}`),
+  updateCustomer: (id: string, body: Record<string, unknown>) =>
+    API.patch(`/admin/crm/customers/${id}`, body),
+  archiveCustomer: (id: string) => API.post(`/admin/crm/customers/${id}/archive`),
+  deleteCustomer: (id: string) => API.delete(`/admin/crm/customers/${id}`),
+  markWon: (id: string) => API.post(`/admin/crm/customers/${id}/won`),
+  markLost: (id: string, body: Record<string, unknown>) =>
+    API.post(`/admin/crm/customers/${id}/lost`, body),
+  followUp: (id: string, body: Record<string, unknown>) =>
+    API.post(`/admin/crm/customers/${id}/follow-up`, body),
+  healthOverride: (id: string, body: Record<string, unknown>) =>
+    API.post(`/admin/crm/customers/${id}/health-override`, body),
+  timeline: (id: string) => API.get(`/admin/crm/customers/${id}/timeline`),
+  activities: (id: string) => API.get(`/admin/crm/customers/${id}/activities`),
+  createActivity: (id: string, body: Record<string, unknown>) =>
+    API.post(`/admin/crm/customers/${id}/activities`, body),
+  notes: (id: string) => API.get(`/admin/crm/customers/${id}/notes`),
+  createNote: (id: string, body: Record<string, unknown>) =>
+    API.post(`/admin/crm/customers/${id}/notes`, body),
+  updateNote: (noteId: string, body: Record<string, unknown>) =>
+    API.patch(`/admin/crm/notes/${noteId}`, body),
+  customerTasks: (id: string) => API.get(`/admin/crm/customers/${id}/tasks`),
+  createTask: (id: string, body: Record<string, unknown>) =>
+    API.post(`/admin/crm/customers/${id}/tasks`, body),
+  updateTask: (taskId: string, body: Record<string, unknown>) =>
+    API.patch(`/admin/crm/tasks/${taskId}`, body),
+  subscription: (id: string) => API.get(`/admin/crm/customers/${id}/subscription`),
+  products: (id: string) => API.get(`/admin/crm/customers/${id}/products`),
+  websites: (id: string) => API.get(`/admin/crm/customers/${id}/websites`),
+  whatsapp: (id: string) => API.get(`/admin/crm/customers/${id}/whatsapp`),
+  automations: (id: string) => API.get(`/admin/crm/customers/${id}/automations`),
+  billing: (id: string) => API.get(`/admin/crm/customers/${id}/billing`),
+  previewPlan: (id: string, body: Record<string, unknown>) =>
+    API.post(`/admin/crm/customers/${id}/plan/preview`, body),
+  confirmPlan: (id: string, body: Record<string, unknown>) =>
+    API.post(`/admin/crm/customers/${id}/plan/confirm`, body),
+  pipeline: (params: AdminCrmListQuery = {}) =>
+    API.get(`/admin/crm/pipeline${qs(params)}`),
+  movePipeline: (body: Record<string, unknown>) =>
+    API.patch("/admin/crm/pipeline/move", body),
+  tasks: (params: AdminCrmListQuery = {}) =>
+    API.get(`/admin/crm/tasks${qs(params)}`),
+  globalActivities: () => API.get("/admin/crm/activities"),
+  tags: () => API.get("/admin/crm/tags"),
+  createTag: (body: Record<string, unknown>) => API.post("/admin/crm/tags", body),
+  filters: () => API.get("/admin/crm/filters"),
+  saveFilter: (body: Record<string, unknown>) => API.post("/admin/crm/filters", body),
+  deleteFilter: (id: string) => API.delete(`/admin/crm/filters/${id}`),
+  bulk: (body: Record<string, unknown>) => API.post("/admin/crm/customers/bulk", body),
+  audit: (id: string) => API.get(`/admin/crm/customers/${id}/audit`),
+  exportUrl: (params: AdminCrmListQuery = {}) =>
+    `/admin/crm/export${qs(params)}`,
+};
+
+export default adminCrmApi;
