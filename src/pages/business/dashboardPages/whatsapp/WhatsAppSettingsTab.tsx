@@ -231,6 +231,14 @@ export default function WhatsAppSettingsTab() {
       return;
     }
 
+    if (connection?.canConnectOwnNumber === false || connection?.isPlatformManagedConnection) {
+      const msg = t("whatsapp.settings.managedHostNoConnectOwn");
+      setActionError(msg);
+      setActionInfo("");
+      toast.error(msg);
+      return;
+    }
+
     try {
       setConnecting(true);
 
@@ -467,6 +475,10 @@ export default function WhatsAppSettingsTab() {
 
   const handleDisconnect = async () => {
     if (!businessId) return;
+    if (connection?.canDisconnect === false || connection?.isPlatformManagedConnection) {
+      toast.error(t("whatsapp.settings.managedHostNoDisconnect"));
+      return;
+    }
     if (!window.confirm(t("whatsapp.settings.confirmDisconnect"))) return;
     try {
       setSaving(true);
@@ -476,8 +488,11 @@ export default function WhatsAppSettingsTab() {
       setRegisterPin("");
       toast.success(t("whatsapp.settings.disconnected"));
     } catch (error: any) {
+      const code = error?.response?.data?.code;
       toast.error(
-        error?.response?.data?.error || t("whatsapp.errors.disconnect")
+        code === "PLATFORM_MANAGED_CONNECTION_PROTECTED"
+          ? t("whatsapp.settings.managedHostNoDisconnect")
+          : error?.response?.data?.error || t("whatsapp.errors.disconnect")
       );
     } finally {
       setSaving(false);
@@ -536,6 +551,10 @@ export default function WhatsAppSettingsTab() {
   }
 
   const linked = Boolean(connection?.connected);
+  const isPlatformManaged = Boolean(connection?.isPlatformManagedConnection);
+  const canDisconnect = connection?.canDisconnect !== false && !isPlatformManaged;
+  const canConnectOwn = connection?.canConnectOwnNumber !== false && !isPlatformManaged;
+  const usingManagedWithoutPrivate = Boolean(connection?.usingManagedWithoutPrivate);
   const readyToSend = Boolean(connection?.readyToSend);
   const needsRegistration =
     linked &&
@@ -588,26 +607,46 @@ export default function WhatsAppSettingsTab() {
 
         {!linked ? (
           <div className="mt-6 space-y-4">
+            {usingManagedWithoutPrivate ? (
+              <div className="rounded-xl border border-emerald-200 bg-emerald-50/80 px-4 py-3 text-sm font-medium text-emerald-900">
+                <p className="font-black">
+                  {t("whatsapp.settings.usingManagedTitle")}
+                </p>
+                <p className="mt-1 text-emerald-800">
+                  {t("whatsapp.settings.usingManagedBody")}
+                </p>
+              </div>
+            ) : null}
             <p className="text-sm font-medium text-slate-600">
-              {t("whatsapp.settings.connectIntro")}
+              {usingManagedWithoutPrivate
+                ? t("whatsapp.settings.connectOwnIntro")
+                : t("whatsapp.settings.connectIntro")}
             </p>
-            <button
-              type="button"
-              className={btnPrimary}
-              disabled={connecting}
-              onClick={() => {
-                void handleConnect();
-              }}
-            >
-              {connecting ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <PlugZap className="h-4 w-4" />
-              )}
-              {connecting
-                ? t("whatsapp.settings.connecting")
-                : t("whatsapp.settings.connectCta")}
-            </button>
+            {canConnectOwn ? (
+              <button
+                type="button"
+                className={btnPrimary}
+                disabled={connecting}
+                onClick={() => {
+                  void handleConnect();
+                }}
+              >
+                {connecting ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <PlugZap className="h-4 w-4" />
+                )}
+                {connecting
+                  ? t("whatsapp.settings.connecting")
+                  : usingManagedWithoutPrivate
+                    ? t("whatsapp.settings.connectOwnCta")
+                    : t("whatsapp.settings.connectCta")}
+              </button>
+            ) : (
+              <p className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-900">
+                {t("whatsapp.settings.managedHostNoConnectOwn")}
+              </p>
+            )}
             {actionInfo && (
               <p className="rounded-xl border border-sky-200 bg-sky-50 px-3 py-2 text-xs font-semibold text-sky-800">
                 {actionInfo}
@@ -632,6 +671,16 @@ export default function WhatsAppSettingsTab() {
           </div>
         ) : (
           <div className="mt-5 space-y-3">
+            {isPlatformManaged ? (
+              <div className="rounded-xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm font-medium text-sky-950">
+                <p className="font-black">
+                  {t("whatsapp.settings.managedHostTitle")}
+                </p>
+                <p className="mt-1 text-sky-900">
+                  {t("whatsapp.settings.managedHostBody")}
+                </p>
+              </div>
+            ) : null}
             <div className={`rounded-xl border px-4 py-3 ${tone.box}`}>
               <div className="flex items-center gap-2">
                 {readyToSend ? (
@@ -776,28 +825,36 @@ export default function WhatsAppSettingsTab() {
             )}
 
             <div className="flex flex-wrap gap-2">
-              <button
-                type="button"
-                className={btnPrimary}
-                disabled={connecting}
-                onClick={handleConnect}
-              >
-                {connecting ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <RefreshCw className="h-4 w-4" />
-                )}
-                {t("whatsapp.settings.reconnect")}
-              </button>
-              <button
-                type="button"
-                className={btnSecondary}
-                disabled={saving}
-                onClick={handleDisconnect}
-              >
-                <Unplug className="h-4 w-4" />
-                {t("whatsapp.settings.disconnect")}
-              </button>
+              {canConnectOwn ? (
+                <button
+                  type="button"
+                  className={btnPrimary}
+                  disabled={connecting}
+                  onClick={handleConnect}
+                >
+                  {connecting ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <RefreshCw className="h-4 w-4" />
+                  )}
+                  {t("whatsapp.settings.reconnect")}
+                </button>
+              ) : null}
+              {canDisconnect ? (
+                <button
+                  type="button"
+                  className={btnSecondary}
+                  disabled={saving}
+                  onClick={handleDisconnect}
+                >
+                  <Unplug className="h-4 w-4" />
+                  {t("whatsapp.settings.disconnect")}
+                </button>
+              ) : isPlatformManaged ? (
+                <p className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-700">
+                  {t("whatsapp.settings.managedHostNoDisconnect")}
+                </p>
+              ) : null}
             </div>
           </div>
         )}
