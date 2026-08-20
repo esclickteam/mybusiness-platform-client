@@ -30,6 +30,12 @@ export const adminCrmApi = {
     API.post(`/admin/crm/customers/${id}/lost`, body),
   followUp: (id: string, body: Record<string, unknown>) =>
     API.post(`/admin/crm/customers/${id}/follow-up`, body),
+  completeFollowUp: (id: string, body: Record<string, unknown> = {}) =>
+    API.post(`/admin/crm/customers/${id}/follow-up/complete`, body),
+  followUps: (params: AdminCrmListQuery = {}) =>
+    API.get(`/admin/crm/follow-ups${qs(params)}`),
+  enterBusiness: (id: string, body: Record<string, unknown> = {}) =>
+    API.post(`/admin/crm/customers/${id}/enter-business`, body),
   healthOverride: (id: string, body: Record<string, unknown>) =>
     API.post(`/admin/crm/customers/${id}/health-override`, body),
   timeline: (id: string) => API.get(`/admin/crm/customers/${id}/timeline`),
@@ -72,6 +78,18 @@ export const adminCrmApi = {
   audit: (id: string) => API.get(`/admin/crm/customers/${id}/audit`),
   exportUrl: (params: AdminCrmListQuery = {}) =>
     `/admin/crm/export${qs(params)}`,
+  whatsappMessages: (id: string) =>
+    API.get(`/admin/crm/customers/${id}/whatsapp/messages`),
+  whatsappPreview: (id: string, body: Record<string, unknown>) =>
+    API.post(`/admin/crm/customers/${id}/whatsapp/preview`, body),
+  whatsappSend: (id: string, body: Record<string, unknown>) =>
+    API.post(`/admin/crm/customers/${id}/whatsapp/send`, body),
+  whatsappRead: (id: string) => API.post(`/admin/crm/customers/${id}/whatsapp/read`),
+  whatsappTemplates: () => API.get("/admin/crm/whatsapp/templates"),
+  whatsappInbox: (params: AdminCrmListQuery = {}) =>
+    API.get(`/admin/crm/whatsapp/inbox${qs(params)}`),
+  whatsappAssign: (threadId: string, body: Record<string, unknown>) =>
+    API.post(`/admin/crm/whatsapp/inbox/${threadId}/assign`, body),
 };
 
 export default adminCrmApi;

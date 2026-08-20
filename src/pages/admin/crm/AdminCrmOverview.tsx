@@ -8,6 +8,7 @@ type Metrics = {
   newLeadsToday: number;
   newLeadsThisWeek: number;
   leadsRequiringContact: number;
+  followUpsToday: number;
   overdueFollowUps: number;
   demosSent: number;
   awaitingPayment: number;
@@ -21,20 +22,28 @@ type Metrics = {
   generatedAt?: string;
 };
 
-const CARDS: { key: keyof Metrics; label: string; tone: string }[] = [
-  { key: "newLeadsToday", label: "לידים חדשים היום", tone: "from-violet-50 to-white" },
-  { key: "newLeadsThisWeek", label: "לידים השבוע", tone: "from-sky-50 to-white" },
-  { key: "leadsRequiringContact", label: "דורשים יצירת קשר", tone: "from-amber-50 to-white" },
-  { key: "overdueFollowUps", label: "מעקבים באיחור", tone: "from-rose-50 to-white" },
-  { key: "demosSent", label: "דמו שנשלח החודש", tone: "from-indigo-50 to-white" },
-  { key: "awaitingPayment", label: "ממתינים לתשלום", tone: "from-orange-50 to-white" },
-  { key: "wonThisMonth", label: "נסגרו החודש", tone: "from-emerald-50 to-white" },
-  { key: "lostThisMonth", label: "אבודים החודש", tone: "from-slate-50 to-white" },
-  { key: "conversionRate", label: "אחוז המרה", tone: "from-purple-50 to-white" },
-  { key: "activeCustomers", label: "לקוחות פעילים", tone: "from-emerald-50 to-white" },
-  { key: "mrr", label: "MRR ₪", tone: "from-cyan-50 to-white" },
-  { key: "failedPayments", label: "תשלומים שנכשלו", tone: "from-rose-50 to-white" },
-  { key: "customersAtRisk", label: "לקוחות בסיכון", tone: "from-amber-50 to-white" },
+const CARDS: { key: keyof Metrics; label: string; to: string; tone: string }[] = [
+  { key: "newLeadsToday", label: "לידים חדשים היום", to: "/admin/crm/customers", tone: "from-violet-50 to-white" },
+  { key: "newLeadsThisWeek", label: "לידים חדשים השבוע", to: "/admin/crm/customers", tone: "from-sky-50 to-white" },
+  { key: "leadsRequiringContact", label: "לידים שטרם נוצר איתם קשר", to: "/admin/crm/customers", tone: "from-amber-50 to-white" },
+  { key: "followUpsToday", label: "מעקבים להיום", to: "/admin/crm/follow-ups?scope=today", tone: "from-indigo-50 to-white" },
+  { key: "overdueFollowUps", label: "מעקבים באיחור", to: "/admin/crm/follow-ups?scope=overdue", tone: "from-rose-50 to-white" },
+  { key: "demosSent", label: "דמואים שנשלחו", to: "/admin/crm/activities", tone: "from-violet-50 to-white" },
+  { key: "awaitingPayment", label: "ממתינים לתשלום", to: "/admin/crm/pipeline", tone: "from-orange-50 to-white" },
+  { key: "wonThisMonth", label: "עסקאות שנסגרו החודש", to: "/admin/crm/pipeline", tone: "from-emerald-50 to-white" },
+  { key: "lostThisMonth", label: "עסקאות שאבדו", to: "/admin/crm/pipeline", tone: "from-slate-50 to-white" },
+  { key: "activeCustomers", label: "לקוחות פעילים", to: "/admin/crm/customers", tone: "from-emerald-50 to-white" },
+  { key: "mrr", label: "MRR", to: "/admin/crm/customers", tone: "from-cyan-50 to-white" },
+  { key: "failedPayments", label: "חיובים שנכשלו", to: "/admin/crm/customers", tone: "from-rose-50 to-white" },
+  { key: "customersAtRisk", label: "לקוחות בסיכון", to: "/admin/crm/customers", tone: "from-amber-50 to-white" },
+];
+
+const SHORTCUTS = [
+  { label: "ליד חדש", to: "/admin/crm/customers?create=1" },
+  { label: "משימה חדשה", to: "/admin/crm/tasks" },
+  { label: "שליחת דמו", to: "/admin/crm/whatsapp" },
+  { label: "מעקבים להיום", to: "/admin/crm/follow-ups?scope=today" },
+  { label: "WhatsApp Inbox", to: "/admin/crm/whatsapp" },
 ];
 
 export default function AdminCrmOverview() {
@@ -66,12 +75,24 @@ export default function AdminCrmOverview() {
 
   return (
     <div className="space-y-5">
+      <div className="flex flex-wrap gap-2">
+        {SHORTCUTS.map((item) => (
+          <button
+            key={item.label}
+            type="button"
+            onClick={() => navigate(item.to)}
+            className="min-h-11 rounded-2xl bg-[#7C4DFF] px-4 text-sm font-black text-white shadow-lg shadow-[#7C4DFF]/20"
+          >
+            {item.label}
+          </button>
+        ))}
+      </div>
       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
         {CARDS.map((card) => (
           <button
             key={card.key}
             type="button"
-            onClick={() => navigate("/admin/crm/customers")}
+            onClick={() => navigate(card.to)}
             className={`rounded-[24px] border border-purple-100 bg-gradient-to-br ${card.tone} p-4 text-right shadow-sm`}
           >
             <div className="text-xs font-bold text-slate-500">{card.label}</div>

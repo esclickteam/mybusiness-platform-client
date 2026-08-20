@@ -8,7 +8,7 @@ import { useAuth } from "../../context/AuthContext";
 
 const NAV_ITEMS = [
   { path: "/admin/dashboard", label: "דשבורד" },
-  { path: "/admin/crm", label: "CRM" },
+  { path: "/admin/crm", label: "CRM וניהול לקוחות" },
   { path: "/admin/customers", label: "לקוחות" },
   { path: "/admin/early-access", label: "הרשמה מוקדמת" },
   { path: "/admin/managed-whatsapp", label: "WhatsApp Managed" },

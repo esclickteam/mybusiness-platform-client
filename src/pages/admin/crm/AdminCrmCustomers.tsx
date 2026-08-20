@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import AdminDialButton from "../../../components/AdminDialButton";
 import API from "../../../api";
 import adminCrmApi from "../../../api/adminCrmApi";
@@ -57,6 +57,7 @@ const ALL_COLUMNS = [
 
 export default function AdminCrmCustomers() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const [items, setItems] = useState<Row[]>([]);
   const [total, setTotal] = useState(0);
   const [page, setPage] = useState(1);
@@ -76,7 +77,7 @@ export default function AdminCrmCustomers() {
   const [sort, setSort] = useState("createdAt");
   const [selected, setSelected] = useState<string[]>([]);
   const [columns, setColumns] = useState<string[]>(ALL_COLUMNS.map((c) => c.key));
-  const [showCreate, setShowCreate] = useState(false);
+  const [showCreate, setShowCreate] = useState(searchParams.get("create") === "1");
   const [creating, setCreating] = useState(false);
   const [form, setForm] = useState({
     contactName: "",
