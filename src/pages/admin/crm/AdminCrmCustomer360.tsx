@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import AdminDialButton from "../../../components/AdminDialButton";
 import { useAuth } from "../../../context/AuthContext";
 import { getDefaultDashboardPath } from "../../../utils/moduleAccess";
@@ -16,6 +16,7 @@ import {
   SOURCE_LABELS,
   STAGE_LABELS,
   TASK_STATUS_LABELS,
+  TIMELINE_LABELS,
   formatIsraelDate,
   healthTone,
   lifecycleTone,
@@ -30,6 +31,7 @@ import {
   PrimaryButton,
   SecondaryButton,
 } from "./AdminCrmUi";
+import AdminCrmWhatsAppPanel from "./AdminCrmWhatsAppPanel";
 
 const TABS = [
   ["overview", "סקירה"],
@@ -46,9 +48,11 @@ const TABS = [
 
 export default function AdminCrmCustomer360() {
   const { id } = useParams();
+  const [searchParams] = useSearchParams();
   const navigate = useNavigate();
   const { loginWithToken } = useAuth() as { loginWithToken: Function };
-  const [tab, setTab] = useState("overview");
+  const [tab, setTab] = useState(searchParams.get("tab") || "overview");
+  const [perms, setPerms] = useState<any>({});
   const [customer, setCustomer] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
@@ -95,6 +99,7 @@ export default function AdminCrmCustomer360() {
 
   useEffect(() => {
     load();
+    adminCrmApi.meta().then(({ data }) => setPerms(data.permissions || {})).catch(() => null);
   }, [id]);
 
   useEffect(() => {
@@ -107,7 +112,6 @@ export default function AdminCrmCustomer360() {
         if (tab === "timeline") data = (await adminCrmApi.timeline(id)).data;
         if (tab === "products") data = (await adminCrmApi.products(id)).data;
         if (tab === "websites") data = (await adminCrmApi.websites(id)).data;
-        if (tab === "whatsapp") data = (await adminCrmApi.whatsapp(id)).data;
         if (tab === "automations") data = (await adminCrmApi.automations(id)).data;
         if (tab === "billing") data = (await adminCrmApi.billing(id)).data;
         if (tab === "activity") data = (await adminCrmApi.activities(id)).data;
@@ -168,9 +172,7 @@ export default function AdminCrmCustomer360() {
   if (error) return <ErrorState message={error} onRetry={load} />;
   if (!customer) return <EmptyState title="לקוח לא נמצא" />;
 
-  const waLink = customer.phone
-    ? `https://wa.me/${String(customer.normalizedPhone || customer.phone).replace(/\D/g, "")}`
-    : null;
+  const waUnread = Number(customer.whatsappUnreadCount || 0);
 
   return (
     <div className="space-y-4">
@@ -212,8 +214,19 @@ export default function AdminCrmCustomer360() {
           </div>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
             <AdminDialButton phone={customer.phone} name={customer.contactName} source="admin-crm" refId={customer.adminCustomerId} size="md" label="שיחה" />
-            {waLink ? (
-              <a className="min-h-11 rounded-2xl bg-emerald-50 px-3 py-2 text-center text-sm font-black text-emerald-700" href={waLink} target="_blank" rel="noreferrer">WhatsApp</a>
+            {customer.phone ? (
+              <button
+                type="button"
+                className="relative min-h-11 rounded-2xl bg-emerald-50 px-3 py-2 text-sm font-black text-emerald-700"
+                onClick={() => setTab("whatsapp")}
+              >
+                BizUply WhatsApp
+                {waUnread ? (
+                  <span className="absolute -top-1 -left-1 inline-flex min-h-5 min-w-5 items-center justify-center rounded-full bg-rose-600 px-1 text-[10px] text-white">
+                    {waUnread}
+                  </span>
+                ) : null}
+              </button>
             ) : null}
             {customer.email ? (
               <a className="min-h-11 rounded-2xl bg-sky-50 px-3 py-2 text-center text-sm font-black text-sky-700" href={`mailto:${customer.email}`}>אימייל</a>
@@ -239,14 +252,18 @@ export default function AdminCrmCustomer360() {
             key={key}
             type="button"
             onClick={() => setTab(key)}
-            className={`min-h-11 shrink-0 rounded-2xl px-4 text-sm font-black ${tab === key ? "bg-[#7C4DFF] text-white" : "bg-white border border-purple-100 text-slate-600"}`}
+            className={[
+              "min-h-11 shrink-0 rounded-2xl px-4 text-sm font-black",
+              tab === key ? "bg-[#7C4DFF] text-white" : "bg-white border border-purple-100 text-slate-600",
+            ].join(" ")}
           >
             {label}
+            {key === "whatsapp" && waUnread ? ` (${waUnread})` : ""}
           </button>
         ))}
       </div>
 
-      {tabLoading ? <LoadingState /> : null}
+      {tabLoading && tab !== "whatsapp" ? <LoadingState /> : null}
 
       {tab === "overview" && tabData ? (
         <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
@@ -286,7 +303,7 @@ export default function AdminCrmCustomer360() {
         <div className="space-y-3">
           {(tabData?.items || []).map((item: any) => (
             <article key={item.id} className="rounded-2xl border border-purple-100 bg-white p-4">
-              <div className="text-xs font-black text-[#7C4DFF]">{item.type} · {formatIsraelDate(item.occurredAt, true)}</div>
+              <div className="text-xs font-black text-[#7C4DFF]">{TIMELINE_LABELS[item.type] || item.type} · {formatIsraelDate(item.occurredAt, true)}</div>
               <p className="font-bold">{item.description}</p>
               <p className="text-xs text-slate-500">{item.actorName} · {item.sourceOfTruth}</p>
               {item.deepLink ? <a className="text-xs font-black text-[#7C4DFF]" href={item.deepLink}>פתיחה</a> : null}
@@ -367,18 +384,12 @@ export default function AdminCrmCustomer360() {
       )}
 
       {tab === "whatsapp" && (
-        <CrmCard>
-          {tabData?.connected ? (
-            <>
-              <p>מספר: {tabData.connection?.phoneNumber || "—"}</p>
-              <p>סוג חיבור: {tabData.connection?.connectionType || "—"}</p>
-              <p>סטטוס שולח: {tabData.connection?.senderStatus || "—"}</p>
-              <SecondaryButton onClick={() => navigate("/admin/managed-whatsapp")}>כלי WhatsApp Managed</SecondaryButton>
-            </>
-          ) : (
-            <p>אין חיבור WhatsApp. לא מוצגים טוקנים או סודות.</p>
-          )}
-        </CrmCard>
+        <AdminCrmWhatsAppPanel
+          customerId={id!}
+          canSend={Boolean(perms.whatsappSend)}
+          canTemplates={Boolean(perms.whatsappTemplates)}
+          onBanner={setBanner}
+        />
       )}
 
       {tab === "automations" && (

@@ -160,6 +160,8 @@ const AdminCrmCustomer360 = lazy(() => import("./pages/admin/crm/AdminCrmCustome
 const AdminCrmPipeline = lazy(() => import("./pages/admin/crm/AdminCrmPipeline"));
 const AdminCrmTasks = lazy(() => import("./pages/admin/crm/AdminCrmTasks"));
 const AdminCrmActivities = lazy(() => import("./pages/admin/crm/AdminCrmActivities"));
+const AdminCrmWhatsAppInbox = lazy(() => import("./pages/admin/crm/AdminCrmWhatsAppInbox"));
+const AdminCrmGuidedDemo = lazy(() => import("./pages/admin/crm/AdminCrmGuidedDemo"));
 const EditSiteContent = lazy(() => import("./pages/admin/EditSiteContent"));
 const ManageRoles = lazy(() => import("./pages/admin/ManageRoles"));
 const AdminPayoutPage = lazy(() => import("./pages/admin/AdminPayoutPage"));
@@ -1011,6 +1013,7 @@ export default function App() {
                           path="/website-invite/:token"
                           element={<WebsiteInviteAcceptPage />}
                         />
+                        <Route path="/guided-demo/:token" element={<AdminCrmGuidedDemo />} />
                         <Route path="/register" element={<Register />} />
                         {/* Hidden private offer — reachable only via direct URL.
                             NOT linked from nav/footer/pricing/sitemap. */}
@@ -1316,6 +1319,7 @@ export default function App() {
                           <Route path="pipeline" element={<AdminCrmPipeline />} />
                           <Route path="tasks" element={<AdminCrmTasks />} />
                           <Route path="activities" element={<AdminCrmActivities />} />
+                          <Route path="whatsapp" element={<AdminCrmWhatsAppInbox />} />
                         </Route>
 
                         <Route

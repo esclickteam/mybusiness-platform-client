@@ -10,6 +10,7 @@ const TABS = [
   { to: "/admin/crm/pipeline", label: "פייפליין" },
   { to: "/admin/crm/tasks", label: "משימות" },
   { to: "/admin/crm/activities", label: "פעילויות" },
+  { to: "/admin/crm/whatsapp", label: "WhatsApp" },
 ];
 
 export default function AdminCrmLayout() {

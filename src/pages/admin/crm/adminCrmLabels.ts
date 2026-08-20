@@ -81,6 +81,16 @@ export const ACTIVITY_LABELS: Record<string, string> = {
   custom: "פעילות אחרת",
 };
 
+export const TIMELINE_LABELS: Record<string, string> = {
+  ...ACTIVITY_LABELS,
+  whatsapp_message: "הודעת WhatsApp",
+  whatsapp_template_sent: "תבנית WhatsApp נשלחה",
+  whatsapp_message_sent: "הודעת WhatsApp נשלחה",
+  whatsapp_message_received: "הודעת WhatsApp התקבלה",
+  whatsapp_failed: "שליחת WhatsApp נכשלה",
+  demo_sent: "דמו נשלח ב-WhatsApp",
+};
+
 export const PACKAGE_LABELS: Record<string, string> = {
   monthly: "חבילה חודשית",
   yearly: "חבילה שנתית",
