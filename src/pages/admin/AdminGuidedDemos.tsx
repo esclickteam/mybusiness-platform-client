@@ -25,6 +25,19 @@ const STATUS_LABEL: Record<string, string> = {
   delivery_failed: "שגיאת שליחה",
 };
 
+const DELIVERY_LABEL: Record<string, string> = {
+  pending: "ממתין",
+  sent: "נשלח",
+  failed: "נכשל",
+  skipped: "לא נשלח",
+};
+
+function sendMethodLabel(row: any) {
+  if (row.deliveryStatus === "skipped") return "קישור בלבד";
+  if (row.deliveryChannel === "whatsapp") return "WhatsApp";
+  return row.deliveryChannel || "—";
+}
+
 const STATUS_TONE: Record<string, string> = {
   created: "bg-slate-50 text-slate-600 border-slate-200",
   sent: "bg-sky-50 text-sky-700 border-sky-200",
@@ -123,7 +136,7 @@ export default function AdminGuidedDemos() {
           <input
             value={q}
             onChange={(e) => setQ(e.target.value)}
-            placeholder="חיפוש לפי שם או טלפון"
+            placeholder="חיפוש לפי שם, טלפון או עסק"
             className="h-10 w-full bg-transparent text-sm font-bold outline-none"
           />
         </div>
@@ -135,16 +148,58 @@ export default function AdminGuidedDemos() {
             <BizuplyLoader />
           </div>
         ) : (
-          <div className="overflow-x-auto rounded-[24px] border border-slate-100 bg-white shadow-sm">
-            <table className="w-full min-w-[980px] text-right text-sm">
+          <>
+            <div className="space-y-3 p-3 md:hidden">
+              {items.map((row) => {
+                const id = invitationIdOf(row) || row._id;
+                return (
+                  <article
+                    key={id}
+                    className="rounded-[20px] border border-slate-100 bg-white p-4 shadow-sm"
+                    onClick={() => navigate(`/admin/guided-demos/${id}`)}
+                  >
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <p className="text-base font-black text-slate-900">{row.customerName}</p>
+                        {row.businessName ? (
+                          <p className="mt-1 text-xs font-bold text-slate-500">{row.businessName}</p>
+                        ) : null}
+                        <p className="mt-1 text-sm font-bold text-slate-600" dir="ltr">
+                          {row.customerPhone}
+                        </p>
+                      </div>
+                      <span className={`rounded-full border px-2 py-0.5 text-[10px] font-black ${STATUS_TONE[row.status] || STATUS_TONE.created}`}>
+                        {STATUS_LABEL[row.status] || row.status}
+                      </span>
+                    </div>
+                    <div className="mt-3 flex flex-wrap gap-2 text-[11px] font-bold text-slate-500">
+                      <span>{sendMethodLabel(row)}</span>
+                      <span>·</span>
+                      <span>{DELIVERY_LABEL[row.deliveryStatus] || row.deliveryStatus}</span>
+                      <span>·</span>
+                      <span>{formatDate(row.createdAt)}</span>
+                    </div>
+                  </article>
+                );
+              })}
+              {!items.length ? (
+                <p className="py-10 text-center font-bold text-slate-400">עדיין לא נוצרו דמואים</p>
+              ) : null}
+            </div>
+
+            <div className="hidden overflow-x-auto rounded-[24px] border border-slate-100 bg-white shadow-sm md:block">
+            <table className="w-full min-w-[1100px] text-right text-sm">
               <thead className="bg-slate-50 text-xs font-black text-slate-500">
                 <tr>
                   <th className="px-4 py-3">לקוח</th>
+                  <th className="px-4 py-3">עסק</th>
                   <th className="px-4 py-3">טלפון</th>
                   <th className="px-4 py-3">מודולים</th>
+                  <th className="px-4 py-3">שליחה</th>
                   <th className="px-4 py-3">נוצר</th>
                   <th className="px-4 py-3">תוקף</th>
                   <th className="px-4 py-3">סטטוס</th>
+                  <th className="px-4 py-3">WhatsApp</th>
                   <th className="px-4 py-3">קישור</th>
                   <th className="px-4 py-3">פעולות</th>
                 </tr>
@@ -159,6 +214,9 @@ export default function AdminGuidedDemos() {
                       onClick={() => navigate(`/admin/guided-demos/${id}`)}
                     >
                       <td className="px-4 py-3 font-black text-slate-800">{row.customerName}</td>
+                      <td className="px-4 py-3 font-bold text-slate-600">
+                        {row.businessName || "—"}
+                      </td>
                       <td className="px-4 py-3 font-bold text-slate-600" dir="ltr">
                         {row.customerPhone}
                       </td>
@@ -167,12 +225,23 @@ export default function AdminGuidedDemos() {
                           ? `דמו מלא — ${(row.selectedModules || []).length} מודולים`
                           : (row.selectedModules || []).join(" · ") || row.presetKey}
                       </td>
+                      <td className="px-4 py-3 text-xs font-bold text-slate-500">
+                        {sendMethodLabel(row)}
+                      </td>
                       <td className="px-4 py-3">{formatDate(row.createdAt)}</td>
                       <td className="px-4 py-3">{formatDate(row.expiresAt)}</td>
                       <td className="px-4 py-3">
                         <span className={`rounded-full border px-2 py-0.5 text-[11px] font-black ${STATUS_TONE[row.status] || STATUS_TONE.created}`}>
                           {STATUS_LABEL[row.status] || row.status}
                         </span>
+                      </td>
+                      <td className="px-4 py-3 text-xs font-bold text-slate-500">
+                        {DELIVERY_LABEL[row.deliveryStatus] || row.deliveryStatus || "—"}
+                        {row.metadata?.whatsappStatus ? (
+                          <span className="mt-1 block text-[10px] font-semibold text-slate-400">
+                            {row.metadata.whatsappStatus}
+                          </span>
+                        ) : null}
                       </td>
                       <td className="max-w-[220px] px-4 py-3">
                         {row.linkAvailable && row.demoLink ? (
@@ -200,14 +269,15 @@ export default function AdminGuidedDemos() {
                 })}
                 {!items.length ? (
                   <tr>
-                    <td colSpan={8} className="px-4 py-10 text-center font-bold text-slate-400">
+                    <td colSpan={11} className="px-4 py-10 text-center font-bold text-slate-400">
                       עדיין לא נוצרו דמואים
                     </td>
                   </tr>
                 ) : null}
               </tbody>
             </table>
-          </div>
+            </div>
+          </>
         )}
       </main>
       <AdminSendGuidedDemoModal

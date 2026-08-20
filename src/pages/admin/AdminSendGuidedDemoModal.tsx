@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Copy, ExternalLink, Link2, MessageCircle, Play, Sparkles, X } from "lucide-react";
 import {
@@ -7,6 +7,7 @@ import {
   listGuidedDemos,
   resendGuidedDemo,
 } from "../../api/guidedDemoApi";
+import { resolveAdminSupportChat } from "../../api/supportChatAdminApi";
 import {
   approvedNeedLabelFromCatalog,
   buildManualWhatsAppUrl,
@@ -117,6 +118,8 @@ export default function AdminSendGuidedDemoModal({
   const [copied, setCopied] = useState(false);
   const [lastInvitationId, setLastInvitationId] = useState("");
   const [lastFingerprint, setLastFingerprint] = useState("");
+  const [openingChat, setOpeningChat] = useState(false);
+  const submitLockRef = useRef(false);
 
   const load = useCallback(async () => {
     const cat = await fetchGuidedDemoCatalog();
@@ -168,7 +171,18 @@ export default function AdminSendGuidedDemoModal({
   });
   const demoUrl = result?.demoLink || result?.invitation?.demoLink || "";
   const resultName = result?.invitation?.customerName || customerName;
+  const resultBusiness =
+    result?.invitation?.businessName || context.businessName || "";
   const resultPhone = invitationPhone(result?.invitation, phone);
+  const sendFailedAfterCreate =
+    Boolean(result?.delivery) &&
+    result.delivery.ok === false &&
+    !result.delivery.skipped;
+  const createdTitle = result?.delivery?.ok
+    ? "הדמו נשלח בהצלחה"
+    : sendFailedAfterCreate
+      ? "הקישור לדמו נוצר, אך השליחה ב-WhatsApp נכשלה"
+      : "הקישור נוצר";
 
   function toggleModule(key: string) {
     setModuleKeys((prev) =>
@@ -203,12 +217,35 @@ export default function AdminSendGuidedDemoModal({
     setShareNote("WhatsApp נפתח — שלחו ידנית מהאפליקציה");
   }
 
+  async function openSupportChat() {
+    if (openingChat) return;
+    setOpeningChat(true);
+    setError("");
+    try {
+      const resolved = await resolveAdminSupportChat({
+        sourceLeadId: context.sourceLeadId || "",
+        phone: resultPhone,
+      });
+      if (resolved.conversationId) {
+        navigate(`/admin/support-chat?c=${resolved.conversationId}`);
+        onClose();
+        return;
+      }
+      setShareNote("לא נמצאה שיחה — היא תיווצר לאחר שליחת WhatsApp מוצלחת");
+    } catch (err: any) {
+      setError(err?.message || "לא ניתן לפתוח את השיחה");
+    } finally {
+      setOpeningChat(false);
+    }
+  }
+
   async function submit(send: boolean) {
-    if (submitting || !canSubmit) return;
+    if (submitting || submitLockRef.current || !canSubmit) return;
     if (send && !waOk) {
       setError("שליחה אוטומטית ב-WhatsApp אינה זמינה כרגע");
       return;
     }
+    submitLockRef.current = true;
     setSubmitting(send ? "api" : "link");
     setError("");
     setShareNote("");
@@ -260,11 +297,13 @@ export default function AdminSendGuidedDemoModal({
       setMode("failure");
     } finally {
       setSubmitting("");
+      submitLockRef.current = false;
     }
   }
 
   async function sendViaApi() {
-    if (!waOk || !lastInvitationId || submitting) return;
+    if (!waOk || !lastInvitationId || submitting || submitLockRef.current) return;
+    submitLockRef.current = true;
     setSubmitting("api");
     setError("");
     try {
@@ -280,12 +319,11 @@ export default function AdminSendGuidedDemoModal({
       setError(err?.response?.data?.error || "שליחת WhatsApp נכשלה");
     } finally {
       setSubmitting("");
+      submitLockRef.current = false;
     }
   }
 
   if (!open) return null;
-
-  const createdTitle = result?.delivery?.ok ? "הדמו נשלח בהצלחה" : "הקישור נוצר";
 
   return (
     <div
@@ -316,14 +354,28 @@ export default function AdminSendGuidedDemoModal({
               )}
               <h3 className="mt-3 text-2xl font-black">{createdTitle}</h3>
               <p className="mt-2 text-sm font-bold text-slate-500">
-                הקישור חד-פעמי. אפשר להעתיק, לפתוח או לשתף ידנית ב-WhatsApp.
+                {sendFailedAfterCreate
+                  ? "הקישור לדמו נוצר, אך השליחה ב-WhatsApp נכשלה. אפשר להעתיק, לפתוח או לשתף ידנית."
+                  : "הקישור חד-פעמי. אפשר להעתיק, לפתוח או לשתף ידנית ב-WhatsApp."}
               </p>
               <div className="mt-4 space-y-1 rounded-2xl bg-slate-50 p-4 text-right text-sm font-bold text-slate-700">
                 <p>לקוח: {resultName}</p>
+                {resultBusiness ? <p>עסק: {resultBusiness}</p> : null}
                 <p dir="ltr">טלפון: {resultPhone}</p>
                 <p>הדמו יכלול: {summary}</p>
                 <p>תוקף: {formatDate(result?.invitation?.expiresAt)}</p>
-                <p>סטטוס: {STATUS_LABEL[result?.invitation?.status] || result?.invitation?.status || "נוצר"}</p>
+                <p>
+                  סטטוס:{" "}
+                  {STATUS_LABEL[result?.invitation?.status] ||
+                    result?.invitation?.status ||
+                    "נוצר"}
+                </p>
+                <p>
+                  שליחה:{" "}
+                  {DELIVERY_LABEL[result?.invitation?.deliveryStatus] ||
+                    result?.invitation?.deliveryStatus ||
+                    (result?.delivery?.ok ? "נשלח" : result?.delivery?.skipped ? "לא נשלח" : "ממתין")}
+                </p>
               </div>
               {demoUrl ? (
                 <p
@@ -335,6 +387,15 @@ export default function AdminSendGuidedDemoModal({
                 </p>
               ) : null}
               <div className="mt-4 flex flex-wrap justify-center gap-2">
+                <button
+                  type="button"
+                  disabled={openingChat}
+                  onClick={() => void openSupportChat()}
+                  className="inline-flex items-center gap-2 rounded-2xl border px-4 py-3 text-sm font-black disabled:opacity-40"
+                  data-testid="admin-created-open-chat"
+                >
+                  {openingChat ? "פותח..." : "פתיחת השיחה"}
+                </button>
                 <button
                   type="button"
                   onClick={() => void copyLink()}
@@ -355,6 +416,19 @@ export default function AdminSendGuidedDemoModal({
                 </button>
                 <button
                   type="button"
+                  onClick={() => {
+                    const id = invitationIdOf(result?.invitation);
+                    if (id) navigate(`/admin/guided-demos/${id}`);
+                    else navigate("/admin/guided-demos");
+                    onClose();
+                  }}
+                  className="inline-flex items-center gap-2 rounded-2xl border px-4 py-3 text-sm font-black"
+                  data-testid="admin-created-back-to-list"
+                >
+                  חזרה לרשימה
+                </button>
+                <button
+                  type="button"
                   onClick={shareManually}
                   className="inline-flex items-center gap-2 rounded-2xl border px-4 py-3 text-sm font-black"
                   data-testid="admin-created-manual-whatsapp"
@@ -369,13 +443,24 @@ export default function AdminSendGuidedDemoModal({
                   className="inline-flex items-center gap-2 rounded-2xl border px-4 py-3 text-sm font-black disabled:opacity-40"
                   data-testid="admin-created-api-whatsapp"
                 >
-                  שליחת הדמו ב-WhatsApp
+                  {submitting === "api" ? "שולח..." : "שליחת הדמו ב-WhatsApp"}
                 </button>
               </div>
               {shareNote ? <p className="mt-3 text-sm font-bold text-emerald-700">{shareNote}</p> : null}
               {!waOk ? (
                 <p className="mt-3 text-sm font-bold text-amber-700" data-testid="admin-wa-api-unavailable">
-                  שליחה אוטומטית ב-WhatsApp אינה זמינה כרגע
+                  שליחה אוטומטית ב-WhatsApp אינה זמינה כרגע. ניתן ליצור קישור ולשלוח אותו ידנית.
+                  {delivery?.whatsapp?.reason ? (
+                    <span className="mt-1 block text-xs font-semibold text-amber-800">
+                      {delivery.whatsapp.reason}
+                    </span>
+                  ) : null}
+                  <a
+                    href="/admin/managed-whatsapp"
+                    className="mt-1 block text-xs font-black text-violet-700 underline"
+                  >
+                    בדיקת חיבור WhatsApp מנוהל
+                  </a>
                 </p>
               ) : null}
               {error ? <p className="mt-3 text-sm font-bold text-rose-600">{error}</p> : null}
@@ -515,7 +600,18 @@ export default function AdminSendGuidedDemoModal({
                 </div>
                 {!waOk ? (
                   <p className="mt-2 text-xs font-bold text-amber-700" data-testid="admin-wa-api-unavailable">
-                    שליחה אוטומטית ב-WhatsApp אינה זמינה כרגע
+                    שליחה אוטומטית ב-WhatsApp אינה זמינה כרגע. ניתן ליצור קישור ולשלוח אותו ידנית.
+                    {delivery?.whatsapp?.reason ? (
+                      <span className="mt-1 block font-semibold text-amber-800">
+                        {delivery.whatsapp.reason}
+                      </span>
+                    ) : null}
+                    <a
+                      href="/admin/managed-whatsapp"
+                      className="mt-1 block font-black text-violet-700 underline"
+                    >
+                      בדיקת חיבור WhatsApp מנוהל
+                    </a>
                   </p>
                 ) : null}
                 <label className="mt-3 block text-sm font-black">

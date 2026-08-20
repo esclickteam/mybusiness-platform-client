@@ -91,7 +91,6 @@ describe("AdminSupportChat whatsapp", () => {
 
     expect(document.querySelector("[dir='rtl']")).toBeTruthy();
     expect(await screen.findByText("דניאל כהן")).toBeTruthy();
-    expect(screen.getByText("WhatsApp")).toBeTruthy();
     expect(screen.getByText("0501234567")).toBeTruthy();
 
     fireEvent.click(screen.getByText("דניאל כהן"));

@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import {
   ArrowRight,
   Headphones,
@@ -24,6 +24,7 @@ import {
 type SupportConversation = {
   _id: string;
   name?: string;
+  businessName?: string;
   email?: string;
   phone?: string;
   channel?: "web" | "whatsapp" | string;
@@ -40,7 +41,15 @@ type SupportConversation = {
   assignedTo?: { _id?: string; name?: string } | string | null;
 };
 
-type SupportMessage = SupportChatMessage;
+type SupportMessage = SupportChatMessage & {
+  metadata?: {
+    source?: string;
+    invitationId?: string;
+    sourceLeadId?: string;
+    template?: string;
+    businessName?: string;
+  };
+};
 
 function statusLabel(status: string) {
   switch (status) {
@@ -94,6 +103,66 @@ function formatTime(value?: string) {
   } catch {
     return "";
   }
+}
+
+function conversationIdentityLine(conversation: SupportConversation) {
+  const business = String(conversation.businessName || "").trim();
+  const phoneDisplay =
+    conversation.channel === "whatsapp" && conversation.phone
+      ? formatWhatsAppPhoneDisplay(conversation.phone)
+      : "";
+  if (business && phoneDisplay) {
+    return (
+      <>
+        {business}
+        <span className="mx-1">·</span>
+        <span dir="ltr" className="inline-block [unicode-bidi:isolate]">
+          {phoneDisplay}
+        </span>
+      </>
+    );
+  }
+  if (business) return business;
+  if (phoneDisplay) {
+    return (
+      <span dir="ltr" className="inline-block [unicode-bidi:isolate]">
+        {phoneDisplay}
+      </span>
+    );
+  }
+  if (conversation.channel === "whatsapp") return "WhatsApp";
+  return conversation.email || "—";
+}
+
+function conversationListSubtitle(conversation: SupportConversation) {
+  const business = String(conversation.businessName || "").trim();
+  const phoneDisplay =
+    conversation.channel === "whatsapp" && conversation.phone
+      ? formatWhatsAppPhoneDisplay(conversation.phone)
+      : "";
+  if (conversation.channel === "whatsapp") {
+    if (business && phoneDisplay) {
+      return (
+        <>
+          <span>{business}</span>
+          <span className="mx-1">·</span>
+          <span dir="ltr" className="inline-block [unicode-bidi:isolate]">
+            {phoneDisplay}
+          </span>
+        </>
+      );
+    }
+    if (business) return business;
+    if (phoneDisplay) {
+      return (
+        <span dir="ltr" className="inline-block [unicode-bidi:isolate]">
+          {phoneDisplay}
+        </span>
+      );
+    }
+    return "WhatsApp";
+  }
+  return conversation.email || "ללא אימייל";
 }
 
 function ChatMessageBody({
@@ -187,6 +256,18 @@ function ChatBubble({
               : contactName || msg.senderName || "לקוח"}
         </p>
         <ChatMessageBody text={msg.text || ""} mine={mine} />
+        {msg.metadata?.source === "guided_demo" && msg.metadata?.invitationId ? (
+          <Link
+            to={`/admin/guided-demos/${msg.metadata.invitationId}`}
+            className={`mt-2 inline-flex rounded-full px-2 py-0.5 text-[10px] font-black ${
+              mine
+                ? "bg-white/15 text-white ring-1 ring-white/25"
+                : "bg-violet-50 text-violet-700 ring-1 ring-violet-100"
+            }`}
+          >
+            דמו מודרך
+          </Link>
+        ) : null}
         <p className="mt-1.5 text-[10px] font-semibold opacity-70">
           {formatTime(msg.createdAt)}
           {status ? ` · ${status}` : ""}
@@ -823,18 +904,7 @@ export default function AdminSupportChat() {
                               {c.name || "אורח"}
                             </p>
                             <p className="truncate text-[11px] font-semibold text-slate-500">
-                              {c.channel === "whatsapp" ? (
-                                <>
-                                  <span>WhatsApp</span>
-                                  {c.phone ? (
-                                    <span dir="ltr" className="ms-1 inline-block [unicode-bidi:isolate]">
-                                      {formatWhatsAppPhoneDisplay(c.phone)}
-                                    </span>
-                                  ) : null}
-                                </>
-                              ) : (
-                                c.email || "ללא אימייל"
-                              )}
+                              {conversationListSubtitle(c)}
                             </p>
                           </div>
                           <div className="shrink-0 text-left">
@@ -903,21 +973,7 @@ export default function AdminSupportChat() {
                         {selected.name || "אורח"}
                       </h2>
                       <p className="truncate text-xs font-semibold text-slate-500">
-                        {selected.channel === "whatsapp" ? (
-                          <>
-                            WhatsApp
-                            {selected.phone ? (
-                              <span
-                                dir="ltr"
-                                className="ms-1 inline-block [unicode-bidi:isolate]"
-                              >
-                                {formatWhatsAppPhoneDisplay(selected.phone)}
-                              </span>
-                            ) : null}
-                          </>
-                        ) : (
-                          selected.email || "—"
-                        )}{" "}
+                        {conversationIdentityLine(selected)}{" "}
                         ·{" "}
                         <span
                           className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-black ${statusTone(
@@ -930,26 +986,34 @@ export default function AdminSupportChat() {
                       {(selected.sourceLeadId || selected.sourceCustomerId) && (
                         <p className="mt-1 flex flex-wrap gap-2 text-[11px] font-bold">
                           {selected.sourceLeadId ? (
-                            <a
-                              href="/admin/early-access"
+                            <Link
+                              to={`/admin/early-access?lead=${encodeURIComponent(selected.sourceLeadId)}`}
                               className="text-[#7C4DFF] underline"
                             >
                               ליד מקושר
-                            </a>
+                            </Link>
                           ) : null}
                           {selected.sourceCustomerId ? (
-                            <a
-                              href="/admin/customers"
+                            <Link
+                              to="/admin/customers"
                               className="text-[#7C4DFF] underline"
                             >
                               לקוח מקושר
-                            </a>
+                            </Link>
                           ) : null}
                         </p>
                       )}
                     </div>
                   </div>
                   <div className="flex flex-wrap gap-2">
+                    {selected.sourceLeadId ? (
+                      <Link
+                        to={`/admin/early-access?lead=${encodeURIComponent(selected.sourceLeadId)}`}
+                        className="inline-flex items-center gap-1.5 rounded-2xl border border-violet-200 bg-violet-50 px-3.5 py-2 text-xs font-black text-violet-800"
+                      >
+                        פתיחת הפנייה
+                      </Link>
+                    ) : null}
                     <button
                       type="button"
                       onClick={() => void openCustomerHistory()}

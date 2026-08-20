@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { MessageCircle } from "lucide-react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { MessageCircle, ChevronDown, ChevronUp } from "lucide-react";
 
 import AdminDialButton from "../../components/AdminDialButton";
 import { useAuth } from "../../context/AuthContext";
@@ -8,6 +8,8 @@ import AdminHeader from "./AdminsHeader";
 import AdminSendGuidedDemoModal, {
   AdminSendDemoButton,
 } from "./AdminSendGuidedDemoModal";
+import { listGuidedDemos } from "../../api/guidedDemoApi";
+import { resolveAdminSupportChat } from "../../api/supportChatAdminApi";
 
 type EarlyAccessStatus = "new" | "contacted" | "joined_group" | "not_relevant";
 type StatusFilter = "all" | EarlyAccessStatus;
@@ -40,6 +42,24 @@ const statusLabels: Record<EarlyAccessStatus, string> = {
   contacted: "טופל",
   joined_group: "צורף לקבוצה",
   not_relevant: "לא רלוונטי",
+};
+
+const DEMO_STATUS_LABEL: Record<string, string> = {
+  created: "נוצר",
+  sent: "נשלח",
+  opened: "נפתח",
+  in_progress: "התחיל",
+  completed: "הושלם",
+  expired: "פג תוקף",
+  revoked: "בוטל",
+  delivery_failed: "שגיאת שליחה",
+};
+
+const DELIVERY_LABEL: Record<string, string> = {
+  pending: "ממתין",
+  sent: "נשלח",
+  failed: "נכשל",
+  skipped: "לא נשלח",
 };
 
 function getToken() {
@@ -226,6 +246,7 @@ function SummaryCard({
 function AdminEarlyAccess() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   const [registrations, setRegistrations] = useState<EarlyAccessLead[]>([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -233,6 +254,12 @@ function AdminEarlyAccess() {
   const [loading, setLoading] = useState(true);
   const [actionLoadingId, setActionLoadingId] = useState<string>("");
   const [demoLead, setDemoLead] = useState<EarlyAccessLead | null>(null);
+  const [expandedLeadId, setExpandedLeadId] = useState<string>("");
+  const [demoHistoryByLead, setDemoHistoryByLead] = useState<Record<string, any[]>>({});
+  const [demoHistoryLoadingId, setDemoHistoryLoadingId] = useState<string>("");
+  const [chatOpeningId, setChatOpeningId] = useState<string>("");
+
+  const highlightLeadId = String(searchParams.get("lead") || "").trim();
 
   useEffect(() => {
     if (!user) return;
@@ -260,6 +287,178 @@ function AdminEarlyAccess() {
   useEffect(() => {
     loadRegistrations();
   }, []);
+
+  useEffect(() => {
+    if (!highlightLeadId || loading) return;
+    setExpandedLeadId(highlightLeadId);
+    void loadLeadDemoHistory(highlightLeadId);
+    window.setTimeout(() => {
+      document
+        .getElementById(`early-access-lead-${highlightLeadId}`)
+        ?.scrollIntoView({ behavior: "smooth", block: "center" });
+    }, 150);
+  }, [highlightLeadId, loading]);
+
+  async function loadLeadDemoHistory(leadId: string) {
+    if (!leadId || demoHistoryByLead[leadId]) return;
+    setDemoHistoryLoadingId(leadId);
+    try {
+      const list = await listGuidedDemos({ sourceLeadId: leadId, limit: 20 });
+      setDemoHistoryByLead((current) => ({
+        ...current,
+        [leadId]: list.items || [],
+      }));
+    } catch {
+      setDemoHistoryByLead((current) => ({ ...current, [leadId]: [] }));
+    } finally {
+      setDemoHistoryLoadingId("");
+    }
+  }
+
+  async function toggleLeadDetails(item: EarlyAccessLead) {
+    const id = getLeadId(item);
+    if (!id) return;
+    const next = expandedLeadId === id ? "" : id;
+    setExpandedLeadId(next);
+    if (next) await loadLeadDemoHistory(next);
+  }
+
+  async function openWhatsAppSupportChat(item: EarlyAccessLead) {
+    const id = getLeadId(item);
+    const phone = getRegistrationValue(item, "phone");
+    if (!id && (!phone || phone === "לא צוין")) return;
+    setChatOpeningId(id);
+    try {
+      const resolved = await resolveAdminSupportChat({
+        sourceLeadId: id,
+        phone: phone !== "לא צוין" ? phone : "",
+      });
+      if (resolved.conversationId) {
+        navigate(`/admin/support-chat?c=${resolved.conversationId}`);
+        return;
+      }
+      alert("לא נמצאה שיחת WhatsApp לליד זה. שליחת דמו תיצור שיחה כש-WhatsApp מחובר.");
+    } catch (error: any) {
+      alert(error?.message || "לא ניתן לפתוח את השיחה");
+    } finally {
+      setChatOpeningId("");
+    }
+  }
+
+  function LeadDetailPanel({ item }: { item: EarlyAccessLead }) {
+    const id = getLeadId(item);
+    const fullName = getRegistrationValue(item, "fullName");
+    const email = getRegistrationValue(item, "email");
+    const phone = getRegistrationValue(item, "phone");
+    const businessName = getRegistrationValue(item, "businessName");
+    const interest = getRegistrationValue(item, "interest");
+    const monthlyBudget = getRegistrationValue(item, "monthlyBudget");
+    const itemStatus = item.status || "new";
+    const history = demoHistoryByLead[id] || [];
+    const historyLoading = demoHistoryLoadingId === id;
+
+    return (
+      <div className="mt-4 rounded-[20px] border border-purple-100 bg-purple-50/40 p-4">
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+          <div>
+            <p className="text-[11px] font-black text-purple-400">שם</p>
+            <p className="text-sm font-black text-purple-950">{fullName}</p>
+          </div>
+          <div>
+            <p className="text-[11px] font-black text-purple-400">עסק</p>
+            <p className="text-sm font-bold text-purple-900">{businessName}</p>
+          </div>
+          <div>
+            <p className="text-[11px] font-black text-purple-400">טלפון</p>
+            <p className="text-sm font-bold text-purple-900" dir="ltr">
+              {phone}
+            </p>
+          </div>
+          <div>
+            <p className="text-[11px] font-black text-purple-400">מייל</p>
+            <p className="text-sm font-bold text-purple-900" dir="ltr">
+              {email}
+            </p>
+          </div>
+          <div>
+            <p className="text-[11px] font-black text-purple-400">מקור</p>
+            <p className="text-sm font-bold text-purple-900">
+              {item.source || "לא צוין"}
+            </p>
+          </div>
+          <div>
+            <p className="text-[11px] font-black text-purple-400">סטטוס</p>
+            <StatusBadge status={itemStatus} />
+          </div>
+          <div>
+            <p className="text-[11px] font-black text-purple-400">נרשם</p>
+            <p className="text-sm font-bold text-purple-900">
+              {formatDate(item.createdAt)}
+            </p>
+          </div>
+          <div>
+            <p className="text-[11px] font-black text-purple-400">עודכן</p>
+            <p className="text-sm font-bold text-purple-900">
+              {formatDate(item.updatedAt)}
+            </p>
+          </div>
+          <div className="sm:col-span-2 lg:col-span-3">
+            <p className="text-[11px] font-black text-purple-400">תחומי עניין / תקציב</p>
+            <p className="text-sm font-bold text-purple-900">
+              {interest} · {monthlyBudget}
+            </p>
+          </div>
+        </div>
+
+        <div className="mt-4 flex flex-wrap gap-2">
+          <button
+            type="button"
+            disabled={chatOpeningId === id}
+            onClick={() => void openWhatsAppSupportChat(item)}
+            className="inline-flex min-h-11 items-center justify-center gap-1.5 rounded-2xl bg-[#7C4DFF] px-4 text-xs font-black text-white disabled:opacity-50"
+          >
+            <MessageCircle className="h-3.5 w-3.5" />
+            {chatOpeningId === id ? "פותח..." : "פתיחת השיחה ב-WhatsApp"}
+          </button>
+          <AdminSendDemoButton onClick={() => setDemoLead(item)} />
+        </div>
+
+        <div className="mt-4">
+          <p className="text-sm font-black text-purple-950">היסטוריית דמואים</p>
+          {historyLoading ? (
+            <p className="mt-2 text-xs font-bold text-purple-700/70">טוען...</p>
+          ) : history.length === 0 ? (
+            <p className="mt-2 text-xs font-bold text-purple-700/70">
+              עדיין לא נשלח דמו לליד זה
+            </p>
+          ) : (
+            <div className="mt-2 space-y-2">
+              {history.map((row) => (
+                <button
+                  key={row._id || row.id}
+                  type="button"
+                  onClick={() => navigate(`/admin/guided-demos/${row._id || row.id}`)}
+                  className="flex w-full items-center justify-between rounded-2xl border border-purple-100 bg-white px-3 py-2 text-right"
+                >
+                  <div>
+                    <p className="text-xs font-black text-purple-950">
+                      {formatDate(row.createdAt)} ·{" "}
+                      {DEMO_STATUS_LABEL[row.status] || row.status}
+                    </p>
+                    <p className="text-[11px] font-semibold text-purple-700/70">
+                      {DELIVERY_LABEL[row.deliveryStatus] || row.deliveryStatus}
+                      {row.businessName ? ` · ${row.businessName}` : ""}
+                    </p>
+                  </div>
+                  <span className="text-[11px] font-black text-violet-700">צפייה</span>
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    );
+  }
 
   const filteredRegistrations = useMemo(() => {
     const term = searchTerm.trim().toLowerCase();
@@ -592,7 +791,12 @@ function AdminEarlyAccess() {
                     return (
                       <article
                         key={`m-${id}`}
-                        className="rounded-[24px] border border-purple-100 bg-white p-4 shadow-sm"
+                        id={`early-access-lead-${id}`}
+                        className={`rounded-[24px] border bg-white p-4 shadow-sm ${
+                          highlightLeadId === id
+                            ? "border-violet-400 ring-2 ring-violet-200"
+                            : "border-purple-100"
+                        }`}
                       >
                         <div className="flex items-start justify-between gap-3">
                           <div className="min-w-0 flex-1">
@@ -607,6 +811,9 @@ function AdminEarlyAccess() {
                             </p>
                             <p className="mt-1 truncate text-sm font-bold text-slate-600">
                               {businessName}
+                            </p>
+                            <p className="mt-1 truncate text-xs font-bold text-slate-500" dir="ltr">
+                              {email !== "לא צוין" ? email : ""}
                             </p>
                             <div className="mt-2">
                               <StatusBadge status={itemStatus} />
@@ -632,6 +839,24 @@ function AdminEarlyAccess() {
                         ) : null}
 
                         <div className="mt-3 grid gap-2">
+                          <button
+                            type="button"
+                            onClick={() => void toggleLeadDetails(item)}
+                            className="inline-flex min-h-11 items-center justify-center gap-1 rounded-2xl border border-purple-200 bg-white px-3 text-xs font-black text-purple-800"
+                          >
+                            {expandedLeadId === id ? (
+                              <>
+                                <ChevronUp className="h-3.5 w-3.5" />
+                                הסתר פרטים
+                              </>
+                            ) : (
+                              <>
+                                <ChevronDown className="h-3.5 w-3.5" />
+                                פרטי ליד
+                              </>
+                            )}
+                          </button>
+
                           {whatsappPhone ? (
                             <button
                               type="button"
@@ -694,6 +919,8 @@ function AdminEarlyAccess() {
                             </button>
                           </div>
                         </div>
+
+                        {expandedLeadId === id ? <LeadDetailPanel item={item} /> : null}
                       </article>
                     );
                   })}
@@ -760,9 +987,12 @@ function AdminEarlyAccess() {
                         const isActionLoading = actionLoadingId === id;
 
                         return (
+                          <React.Fragment key={id}>
                           <tr
-                            key={id}
-                            className="border-b border-purple-100 transition hover:bg-purple-50/60"
+                            id={`early-access-lead-${id}`}
+                            className={`border-b border-purple-100 transition hover:bg-purple-50/60 ${
+                              highlightLeadId === id ? "bg-violet-50/80" : ""
+                            }`}
                           >
                             <td className="px-5 py-4 text-right">
                               <strong className="block text-sm font-black text-purple-950">
@@ -834,6 +1064,14 @@ function AdminEarlyAccess() {
 
                             <td className="px-5 py-4 text-right">
                               <div className="flex flex-wrap justify-start gap-2">
+                                <button
+                                  type="button"
+                                  onClick={() => void toggleLeadDetails(item)}
+                                  className="rounded-full bg-white px-3 py-2 text-xs font-black text-purple-800 ring-1 ring-purple-200"
+                                >
+                                  {expandedLeadId === id ? "הסתר" : "פרטים"}
+                                </button>
+
                                 {phone && phone !== "לא צוין" ? (
                                   <AdminDialButton
                                     phone={phone}
@@ -910,6 +1148,14 @@ function AdminEarlyAccess() {
                               </div>
                             </td>
                           </tr>
+                          {expandedLeadId === id ? (
+                            <tr className="border-b border-purple-100 bg-purple-50/30">
+                              <td colSpan={10} className="px-5 py-4">
+                                <LeadDetailPanel item={item} />
+                              </td>
+                            </tr>
+                          ) : null}
+                          </React.Fragment>
                         );
                       })}
                     </tbody>
