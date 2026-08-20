@@ -287,7 +287,7 @@ function Hero({
     <section
       id="home"
       {...templateSectionProps("hero", "הירו", "hero")}
-      className="relative min-h-[100dvh] overflow-hidden bg-[#07100e] text-white"
+      className="relative min-h-[calc(100dvh-5.5rem)] overflow-x-clip bg-[#07100e] text-white"
       dir="rtl"
     >
       <div className="absolute inset-0 bg-[#07100e]" />
@@ -872,7 +872,7 @@ function Gallery({ editMode = false }: { editMode?: boolean }) {
       id="gallery"
       ref={sectionRef}
       {...templateSectionProps("gallery", "גלריה", "gallery")}
-      className="relative min-h-[100dvh] overflow-hidden bg-[#22292b] px-4 py-12 text-white md:px-8 md:py-24"
+      className="relative min-h-[calc(100dvh-5.5rem)] overflow-x-clip overflow-y-visible bg-[#22292b] px-4 py-12 text-white md:px-8 md:py-24"
       dir="rtl"
     >
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(201,244,220,.08),transparent_38%),linear-gradient(180deg,rgba(255,255,255,.03),transparent)]" />
@@ -1304,7 +1304,20 @@ export default function IdoPages({
   const visible = useReveal(editMode, currentPage);
 
   const pageContent: Record<string, React.ReactNode> = {
-    home: <Hero editMode={editMode} goTo={goTo} />,
+    /*
+      Home stays the full scrollable landing (original ido experience).
+      Other Site Architecture pages mount a single section for focused editing.
+    */
+    home: (
+      <>
+        <Hero editMode={editMode} goTo={goTo} />
+        <Services visible={visible} editMode={editMode} goTo={goTo} />
+        <About visible={visible} editMode={editMode} />
+        <Gallery editMode={editMode} />
+        <Booking visible={visible} editMode={editMode} />
+        <Faq visible={visible} editMode={editMode} />
+      </>
+    ),
     services: <Services visible={visible} editMode={editMode} goTo={goTo} />,
     about: <About visible={visible} editMode={editMode} />,
     gallery: <Gallery editMode={editMode} />,
@@ -1319,7 +1332,7 @@ export default function IdoPages({
       data-template-page={currentPage}
       data-template-page-id={currentPage}
       data-template-mode={mode}
-      className="relative min-h-[100dvh] overflow-x-hidden overflow-y-visible bg-[#07100e] font-sans"
+      className="relative min-h-[100dvh] overflow-x-clip bg-[#07100e] font-sans pb-8"
     >
       <style>{idoEditorCss}</style>
       <Header currentPage={currentPage} goTo={goTo} />
