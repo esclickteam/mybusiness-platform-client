@@ -128,6 +128,14 @@ export type WhatsAppVoiceVerificationSession = {
   otpAvailable: boolean;
   otpCode?: string;
   lastError: string;
+  metaVerifyStatus?:
+    | ""
+    | "pending"
+    | "submitted"
+    | "verified"
+    | "failed"
+    | "skipped_missing_credentials";
+  metaVerifyError?: string;
 };
 
 export async function startWhatsAppVoiceVerification(
@@ -172,6 +180,31 @@ export async function consumeWhatsAppVoiceOtp(
   return data as {
     success: boolean;
     session: WhatsAppVoiceVerificationSession;
+  };
+}
+
+export async function requestWhatsAppVoiceVerificationCode(businessId: string) {
+  const { data } = await API.post("/whatsapp/voice-verification/request-code", {
+    businessId,
+  });
+  return data as {
+    success: boolean;
+    phoneNumberId?: string;
+  };
+}
+
+export async function submitWhatsAppVoiceVerificationCode(
+  businessId: string,
+  sessionId?: string
+) {
+  const { data } = await API.post("/whatsapp/voice-verification/verify-code", {
+    businessId,
+    ...(sessionId ? { sessionId } : {}),
+  });
+  return data as {
+    success: boolean;
+    verified?: boolean;
+    session?: WhatsAppVoiceVerificationSession;
   };
 }
 
