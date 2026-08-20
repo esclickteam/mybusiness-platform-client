@@ -62,9 +62,13 @@ type NavItemConfig = {
 /**
  * Nav entries limited to the businesses listed below.
  * These are Business `_id` values, matched against the resolved `user.businessId`.
+ *
+ * - 6a452720016d081ad1d6e328 — Managed-host / early WhatsApp pilot
+ * - 6a1c7b9c17abeea4a444f6fa — bdika (private WhatsApp Embedded Signup enabled)
  */
 const RESTRICTED_NAV_ALLOWED_BUSINESS_IDS = new Set([
   "6a452720016d081ad1d6e328",
+  "6a1c7b9c17abeea4a444f6fa",
 ]);
 
 /** Allowlist only: an unresolved or unlisted business never sees the entries. */

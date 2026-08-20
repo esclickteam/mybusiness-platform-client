@@ -3,6 +3,8 @@ import { render, screen, cleanup } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 
 const ALLOWED_BUSINESS_ID = "6a452720016d081ad1d6e328";
+/** bdika — private WhatsApp connect allowlisted alongside Managed mode. */
+const BDIKA_BUSINESS_ID = "6a1c7b9c17abeea4a444f6fa";
 /** The owning user's _id, which is deliberately NOT the allowlist key. */
 const ALLOWED_BUSINESS_OWNER_USER_ID = "6a452720016d081ad1d6e325";
 const OTHER_BUSINESS_ID = "6600000000000000000000ff";
@@ -69,6 +71,16 @@ describe("BusinessWorkspaceNav restricted nav allowlist", () => {
 
     expect(whatsappLink(ALLOWED_BUSINESS_ID)).not.toBeNull();
     expect(metaCampaignsLink(ALLOWED_BUSINESS_ID)).not.toBeNull();
+  });
+
+  it("shows WhatsApp for bdika so private Embedded Signup is reachable", async () => {
+    await renderNav({
+      user: { businessId: BDIKA_BUSINESS_ID, role: "business" },
+      urlBusinessId: BDIKA_BUSINESS_ID,
+    });
+
+    expect(whatsappLink(BDIKA_BUSINESS_ID)).not.toBeNull();
+    expect(metaCampaignsLink(BDIKA_BUSINESS_ID)).not.toBeNull();
   });
 
   it("hides both restricted entries for any other business", async () => {
