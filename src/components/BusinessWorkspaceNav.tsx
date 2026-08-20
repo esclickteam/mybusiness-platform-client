@@ -188,14 +188,23 @@ export default function BusinessWorkspaceNav({
   const t = tProp || ((key: string) => tI18n(key));
   const dir = getTextDirection(i18n.language);
   const enabledModules = normalizeEnabledModules(user?.enabledModules);
-  const hasBusinessModules =
+  // Full business-system surface (monthly/yearly/etc.) — not CRM-only.
+  // CRM alone must not unlock website upsell or public-profile chrome.
+  const hasFullBusinessSurface =
     !enabledModules ||
-    isModuleEnabled(enabledModules, "crm") ||
-    isModuleEnabled(enabledModules, "automations");
-  // Website Builder upsell: show entry for business-plan users without the add-on.
+    isModuleEnabled(enabledModules, "automations") ||
+    isModuleEnabled(enabledModules, "collab") ||
+    isModuleEnabled(enabledModules, "BizUply") ||
+    isModuleEnabled(enabledModules, "build") ||
+    isModuleEnabled(enabledModules, "website");
+  // Website Builder upsell: business-plan users without the website module.
   const showWebsiteUpsell =
     Boolean(enabledModules) &&
-    hasBusinessModules &&
+    hasFullBusinessSurface &&
+    (isModuleEnabled(enabledModules, "automations") ||
+      isModuleEnabled(enabledModules, "collab") ||
+      isModuleEnabled(enabledModules, "BizUply") ||
+      isModuleEnabled(enabledModules, "build")) &&
     !isModuleEnabled(enabledModules, "website");
 
   const basePath = businessId ? `/business/${businessId}` : "/business";
@@ -268,8 +277,9 @@ export default function BusinessWorkspaceNav({
       to: basePath,
       icon: UserRound,
       exact: true,
-      // Hide only for tightly ACL-limited marketer clients (no business modules).
-      moduleKey: enabledModules && !hasBusinessModules ? "__hidden__" : null,
+      // Hide for CRM-only / marketer ACL without website or business profile surface.
+      moduleKey:
+        enabledModules && !hasFullBusinessSurface ? "__hidden__" : null,
     },
     {
       labelKey: "businessNav.buildWebsite",

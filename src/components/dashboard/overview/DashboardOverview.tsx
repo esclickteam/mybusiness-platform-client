@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useEffect, useMemo } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
@@ -29,6 +29,9 @@ import DashboardSkeleton from "@/components/DashboardSkeleton";
 import BizuplyLoader from "@/components/ui/BizuplyLoader";
 import AiInsightsPanel from "@/components/AiInsightsPanel";
 import useAiInsights from "@/hooks/useAiInsights";
+import { useAuth } from "@/context/AuthContext";
+import { isModuleEnabled } from "@/utils/moduleAccess";
+import { isFeatureAccessible } from "@/utils/entitlementAccess";
 
 import type {
   DashboardFilters,
@@ -265,7 +268,28 @@ export default function DashboardOverview({
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { businessId } = useParams();
+  const { user } = useAuth();
   const basePath = `/business/${businessId}/dashboard`;
+  const enabledModules = user?.enabledModules ?? null;
+  const entitlements = user?.entitlements ?? null;
+  const canWebsite = isModuleEnabled(enabledModules, "website");
+  const canCollab = isModuleEnabled(enabledModules, "collab");
+  const canBizUply = isModuleEnabled(enabledModules, "BizUply");
+  const canAppointments = isFeatureAccessible(entitlements, "appointments");
+  const canLeads =
+    isModuleEnabled(enabledModules, "crm") ||
+    isFeatureAccessible(entitlements, "leads") ||
+    isFeatureAccessible(entitlements, "crm");
+  const canReviews = canWebsite || isModuleEnabled(enabledModules, "build");
+
+  const visiblePerformanceTabs = PERFORMANCE_TABS.filter((metric) => {
+    if (metric === "views") return canWebsite;
+    if (metric === "leads") return canLeads;
+    if (metric === "appointments") return canAppointments;
+    if (metric === "collaborations") return canCollab;
+    return true;
+  });
+
   const { insights: aiInsights, loading: aiInsightsLoading, error: aiInsightsError } =
     useAiInsights(typeof businessId === "string" ? businessId : undefined);
 
@@ -290,6 +314,15 @@ export default function DashboardOverview({
     }));
   }, [data?.performance]);
 
+  useEffect(() => {
+    if (
+      visiblePerformanceTabs.length &&
+      !visiblePerformanceTabs.includes(filters.performanceMetric)
+    ) {
+      onFiltersChange({ performanceMetric: visiblePerformanceTabs[0] });
+    }
+  }, [filters.performanceMetric, onFiltersChange, visiblePerformanceTabs]);
+
   if (loading && !data) {
     return <BizuplyLoader fullScreen label="Loading dashboard..." />;
   }
@@ -310,7 +343,7 @@ export default function DashboardOverview({
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
-            {data?.customDomainConnected ? (
+            {canWebsite && data?.customDomainConnected ? (
               <span className="rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-bold text-emerald-700">
                 {t("overview.customDomainConnected")}
               </span>
@@ -413,118 +446,146 @@ export default function DashboardOverview({
       ) : null}
 
       <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <KpiCard
-          title={t("overview.websiteViews")}
-          value={loading ? "—" : formatNumber(data?.website.totalViews || 0)}
-          subtitle={
-            loading
-              ? t("overview.loadingVisitors")
-              : t("overview.uniqueVisitors", {
-                  count: formatNumber(data?.website.uniqueVisitors || 0),
-                })
-          }
-          change={data?.website.viewsChange || 0}
-          series={(data?.website.viewsSeries || []).map((item) => item.value)}
-          icon={<Eye size={20} />}
-          accent="violet"
-        />
-        <KpiCard
-          title={t("overview.newLeads")}
-          value={loading ? "—" : formatNumber(data?.leads.newCount || 0)}
-          subtitle={
-            loading
-              ? t("overview.loadingLeads")
-              : t("overview.untreatedLeads", {
-                  count: formatNumber(data?.leads.untreatedCount || 0),
-                })
-          }
-          change={data?.leads.change || 0}
-          series={(data?.leads.series || []).map((item) => item.value)}
-          icon={<UserPlus size={20} />}
-          accent="blue"
-        />
-        <KpiCard
-          title={t("overview.reviews")}
-          value={
-            loading
-              ? "—"
-              : (data?.reviews.totalCount || 0) > 0
-                ? (data?.reviews.averageRating || 0).toFixed(1)
-                : "0"
-          }
-          subtitle={
-            loading
-              ? t("overview.loadingReviews")
-              : t("overview.reviewsSubtitle", {
-                  newCount: formatNumber(data?.reviews.newCount || 0),
-                  totalCount: formatNumber(data?.reviews.totalCount || 0),
-                })
-          }
-          change={data?.reviews.change || 0}
-          series={(data?.reviews.series || []).map((item) => item.value)}
-          icon={<Star size={20} />}
-          accent="amber"
-        />
-        <KpiCard
-          title={t("overview.collaborations")}
-          value={
-            loading
-              ? "—"
-              : formatNumber(data?.collaborations.totalInPeriod || 0)
-          }
-          subtitle={
-            loading
-              ? t("overview.loadingCollaborations")
-              : t("overview.collabSubtitle", {
-                  approved: formatNumber(data?.collaborations.newInPeriod || 0),
-                  total: formatNumber(data?.collaborations.totalInPeriod || 0),
-                })
-          }
-          change={data?.collaborations.change || 0}
-          series={(data?.collaborations.series || []).map((item) => item.value)}
-          icon={<Handshake size={20} />}
-          accent="pink"
-        />
+        {canWebsite ? (
+          <KpiCard
+            title={t("overview.websiteViews")}
+            value={loading ? "—" : formatNumber(data?.website.totalViews || 0)}
+            subtitle={
+              loading
+                ? t("overview.loadingVisitors")
+                : t("overview.uniqueVisitors", {
+                    count: formatNumber(data?.website.uniqueVisitors || 0),
+                  })
+            }
+            change={data?.website.viewsChange || 0}
+            series={(data?.website.viewsSeries || []).map((item) => item.value)}
+            icon={<Eye size={20} />}
+            accent="violet"
+          />
+        ) : null}
+        {canLeads ? (
+          <KpiCard
+            title={t("overview.newLeads")}
+            value={loading ? "—" : formatNumber(data?.leads.newCount || 0)}
+            subtitle={
+              loading
+                ? t("overview.loadingLeads")
+                : t("overview.untreatedLeads", {
+                    count: formatNumber(data?.leads.untreatedCount || 0),
+                  })
+            }
+            change={data?.leads.change || 0}
+            series={(data?.leads.series || []).map((item) => item.value)}
+            icon={<UserPlus size={20} />}
+            accent="blue"
+          />
+        ) : null}
+        {canReviews ? (
+          <KpiCard
+            title={t("overview.reviews")}
+            value={
+              loading
+                ? "—"
+                : (data?.reviews.totalCount || 0) > 0
+                  ? (data?.reviews.averageRating || 0).toFixed(1)
+                  : "0"
+            }
+            subtitle={
+              loading
+                ? t("overview.loadingReviews")
+                : t("overview.reviewsSubtitle", {
+                    newCount: formatNumber(data?.reviews.newCount || 0),
+                    totalCount: formatNumber(data?.reviews.totalCount || 0),
+                  })
+            }
+            change={data?.reviews.change || 0}
+            series={(data?.reviews.series || []).map((item) => item.value)}
+            icon={<Star size={20} />}
+            accent="amber"
+          />
+        ) : null}
+        {canCollab ? (
+          <KpiCard
+            title={t("overview.collaborations")}
+            value={
+              loading
+                ? "—"
+                : formatNumber(data?.collaborations.totalInPeriod || 0)
+            }
+            subtitle={
+              loading
+                ? t("overview.loadingCollaborations")
+                : t("overview.collabSubtitle", {
+                    approved: formatNumber(data?.collaborations.newInPeriod || 0),
+                    total: formatNumber(data?.collaborations.totalInPeriod || 0),
+                  })
+            }
+            change={data?.collaborations.change || 0}
+            series={(data?.collaborations.series || []).map((item) => item.value)}
+            icon={<Handshake size={20} />}
+            accent="pink"
+          />
+        ) : null}
       </section>
 
-      {aiInsightsError ? (
+      {canBizUply && aiInsightsError ? (
         <div className="rounded-[28px] border border-rose-200 bg-rose-50/70 px-5 py-4 text-sm font-bold text-rose-700">
           {aiInsightsError}
         </div>
       ) : null}
 
-      <AiInsightsPanel
-        insights={aiInsights}
-        loading={aiInsightsLoading}
-        businessId={businessId}
-      />
+      {canBizUply ? (
+        <AiInsightsPanel
+          insights={aiInsights}
+          loading={aiInsightsLoading}
+          businessId={businessId}
+        />
+      ) : null}
 
       <Panel className="p-3">
         <div className="flex flex-wrap gap-2">
           {[
-            { label: t("overview.addLead"), icon: <UserPlus size={16} />, to: `${basePath}/crm/leads` },
-            {
-              label: t("overview.newAppointment"),
-              icon: <CalendarPlus size={16} />,
-              to: `${basePath}/crm/appointments`,
-            },
-            { label: t("overview.editWebsite"), icon: <Pencil size={16} />, to: `${basePath}/website` },
-            {
-              label: t("overview.createCollaboration"),
-              icon: <Handshake size={16} />,
-              to: `${basePath}/collab/find-partner`,
-            },
-          ].map((action) => (
-            <button
-              key={action.label}
-              type="button"
-              onClick={() => navigate(action.to)}
-              className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 transition hover:border-violet-300 hover:text-violet-700"
-            >
-              {action.icon}
-              {action.label}
-            </button>
-          ))}
+            canLeads
+              ? {
+                  label: t("overview.addLead"),
+                  icon: <UserPlus size={16} />,
+                  to: `${basePath}/crm/leads`,
+                }
+              : null,
+            canAppointments
+              ? {
+                  label: t("overview.newAppointment"),
+                  icon: <CalendarPlus size={16} />,
+                  to: `${basePath}/crm/appointments`,
+                }
+              : null,
+            canWebsite
+              ? {
+                  label: t("overview.editWebsite"),
+                  icon: <Pencil size={16} />,
+                  to: `${basePath}/website`,
+                }
+              : null,
+            canCollab
+              ? {
+                  label: t("overview.createCollaboration"),
+                  icon: <Handshake size={16} />,
+                  to: `${basePath}/collab/find-partner`,
+                }
+              : null,
+          ]
+            .filter(Boolean)
+            .map((action) => (
+              <button
+                key={action!.label}
+                type="button"
+                onClick={() => navigate(action!.to)}
+                className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 transition hover:border-violet-300 hover:text-violet-700"
+              >
+                {action!.icon}
+                {action!.label}
+              </button>
+            ))}
           <button
             type="button"
             className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-600"
@@ -544,7 +605,7 @@ export default function DashboardOverview({
           </div>
 
           <div className="flex flex-wrap gap-2">
-            {PERFORMANCE_TABS.map((metric) => (
+            {visiblePerformanceTabs.map((metric) => (
               <button
                 key={metric}
                 type="button"
