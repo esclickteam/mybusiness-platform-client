@@ -31,6 +31,13 @@ export type AdminManagedWhatsAppStatus = {
     connectionStatus?: "READY" | "NOT_READY" | string;
     statusSource?: "platform_managed_only" | string;
   };
+  registration?: {
+    status?: string;
+    phoneRegistered?: boolean;
+    lastError?: string;
+    sendReady?: boolean;
+    registeredAt?: string | null;
+  };
   businessConnections?: {
     privateConnected: number;
     privateDisconnected: number;
@@ -95,6 +102,11 @@ export async function syncAdminManagedWhatsAppTemplates() {
       lastTemplatesSyncAt?: string;
     };
   };
+}
+
+export async function registerAdminManagedWhatsAppPhone(pin: string) {
+  const { data } = await API.post("/admin/managed-whatsapp/register", { pin });
+  return data as AdminManagedWhatsAppStatus;
 }
 
 export async function listAdminManagedWhatsAppAudit(limit = 50) {

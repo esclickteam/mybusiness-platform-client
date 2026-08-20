@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import adminCrmApi from "../../../api/adminCrmApi";
 import { Badge, formatIsraelDate, statusTone } from "./adminCrmLabels";
 import { CrmCard, EmptyState, PrimaryButton, SecondaryButton } from "./AdminCrmUi";
@@ -66,7 +67,16 @@ export default function AdminCrmWhatsAppPanel({
   const templates: Template[] = data?.bizuplyManaged?.templates || [];
   const selected = templates.find((t) => t.id === templateId);
   const sessionOpen = Boolean(data?.bizuplyManaged?.sessionWindowOpen);
-  const senderReady = Boolean(data?.bizuplyManaged?.sender?.ready);
+  const sender = data?.bizuplyManaged?.sender || {};
+  const senderReady = Boolean(
+    sender.sendReady ?? (sender.ready && sender.registrationStatus !== "required")
+  );
+  const needsRegistration =
+    Boolean(sender.ready) &&
+    (sender.phoneRegistered === false ||
+      sender.registrationStatus === "required" ||
+      sender.registrationStatus === "failed" ||
+      sender.registrationStatus === "pending");
 
   async function load() {
     setError("");
@@ -172,7 +182,11 @@ export default function AdminCrmWhatsAppPanel({
         </p>
         <div className="mt-3 flex flex-wrap gap-2">
           <Badge tone={senderReady ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-rose-50 text-rose-700 border-rose-200"}>
-            {senderReady ? "ערוץ WhatsApp של BizUply מוכן" : data.bizuplyManaged?.sender?.message || "ערוץ WhatsApp של BizUply לא זמין"}
+            {senderReady
+              ? "ערוץ WhatsApp של BizUply מוכן לשליחה"
+              : needsRegistration
+                ? "נדרש רישום PIN במסך WhatsApp Managed"
+                : data.bizuplyManaged?.sender?.message || "ערוץ WhatsApp של BizUply לא זמין"}
           </Badge>
           <Badge tone={sessionOpen ? "bg-emerald-50 text-emerald-700 border-emerald-200" : "bg-amber-50 text-amber-800 border-amber-200"}>
             {sessionOpen ? "חלון 24 שעות פתוח" : "נדרשת תבנית מאושרת"}
@@ -236,7 +250,14 @@ export default function AdminCrmWhatsAppPanel({
         ) : null}
         {!senderReady ? (
           <p className="mb-3 font-bold text-rose-700">
-            לא ניתן לשלוח: ערוץ WhatsApp של BizUply אינו זמין.
+            {needsRegistration
+              ? "לא ניתן לשלוח: מספר WhatsApp של BizUply עדיין לא רשום לשליחה ב-Meta. "
+              : "לא ניתן לשלוח: ערוץ WhatsApp של BizUply אינו זמין."}
+            {needsRegistration ? (
+              <Link className="underline" to="/admin/managed-whatsapp">
+                פתחו WhatsApp Managed והשלימו רישום עם PIN של 6 ספרות
+              </Link>
+            ) : null}
           </p>
         ) : null}
         <div className="mb-3 flex flex-wrap gap-2">
