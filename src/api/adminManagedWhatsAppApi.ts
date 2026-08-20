@@ -29,6 +29,13 @@ export type AdminManagedWhatsAppStatus = {
     connectionCode?: string;
     connectionReason?: string;
     connectionStatus?: "READY" | "NOT_READY" | string;
+    statusSource?: "platform_managed_only" | string;
+  };
+  businessConnections?: {
+    privateConnected: number;
+    privateDisconnected: number;
+    privateRows: number;
+    usingManaged?: number | null;
   };
   configForm?: {
     wabaId?: string;
