@@ -2132,6 +2132,7 @@ export default function CRMLeadsTab({
                     if (node) node.scrollTop = 0;
                   }}
                   data-leads-scroll
+                  data-demo-target="crm-leads-list"
                   className="min-h-0 flex-1 overflow-y-auto"
                   style={{ direction: "ltr" }}
                 >

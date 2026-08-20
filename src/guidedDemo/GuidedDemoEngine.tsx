@@ -246,6 +246,7 @@ export default function GuidedDemoEngine() {
   const [toast, setToast] = useState<ToastState>(null);
   const [missingTarget, setMissingTarget] = useState(false);
   const [introOpen, setIntroOpen] = useState(false);
+  const [tourMinimized, setTourMinimized] = useState(false);
   const [mobileExpanded, setMobileExpanded] = useState(false);
   const [isMobile, setIsMobile] = useState(() => typeof window !== "undefined" && window.innerWidth < 640);
   const cardRef = useRef<HTMLDivElement | null>(null);
@@ -264,7 +265,7 @@ export default function GuidedDemoEngine() {
   const isComplete = session?.status === "completed";
   const handoff = session?.pendingHandoff;
   const businessId = user?.businessId;
-  const showPanel = !introOpen && !isComplete && !handoff && !!step;
+  const showPanel = !introOpen && !isComplete && !handoff && !!step && !tourMinimized;
   const showWebsiteHero =
     showPanel &&
     (step?.target === "website-headline" || step?.target === "website-cta" || step?.id === "site-edit-headline");
@@ -551,13 +552,36 @@ export default function GuidedDemoEngine() {
 
       <HandPointer hand={hand} visible={Boolean(hole && !handoff && !handHidden && stepNeedsBlock(step))} />
 
-      <button
-        type="button"
-        onClick={() => void handleExit()}
-        className="pointer-events-auto absolute left-3 top-3 z-[2147483005] rounded-full border border-slate-200/90 bg-white/95 px-3 py-1.5 text-xs font-bold text-slate-600 shadow-sm backdrop-blur"
-      >
-        יציאה מהדמו
-      </button>
+      {tourMinimized && !introOpen && !isComplete && !handoff ? (
+        <button
+          type="button"
+          onClick={() => setTourMinimized(false)}
+          className="pointer-events-auto absolute bottom-4 left-1/2 z-[2147483005] -translate-x-1/2 rounded-full border border-violet-200 bg-white px-5 py-2.5 text-sm font-black text-violet-800 shadow-lg"
+        >
+          המשך הדמו
+        </button>
+      ) : null}
+
+      {!tourMinimized ? (
+        <div className="pointer-events-auto absolute left-3 top-3 z-[2147483005] flex gap-1.5">
+          {showPanel ? (
+            <button
+              type="button"
+              onClick={() => setTourMinimized(true)}
+              className="rounded-full border border-slate-200/90 bg-white/95 px-3 py-1.5 text-xs font-bold text-slate-600 shadow-sm backdrop-blur"
+            >
+              הסתר
+            </button>
+          ) : null}
+          <button
+            type="button"
+            onClick={() => void handleExit()}
+            className="rounded-full border border-slate-200/90 bg-white/95 px-3 py-1.5 text-xs font-bold text-slate-600 shadow-sm backdrop-blur"
+          >
+            יציאה מהדמו
+          </button>
+        </div>
+      ) : null}
 
       {showPanel ? (
         <div className="pointer-events-auto absolute inset-x-0 top-3 z-[2147483004] flex justify-center px-3">

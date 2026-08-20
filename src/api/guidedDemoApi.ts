@@ -55,6 +55,11 @@ export async function duplicateGuidedDemo(id, payload = {}) {
   return data;
 }
 
+export async function previewGuidedDemo(id) {
+  const { data } = await API.post(`/admin/guided-demos/${id}/admin-preview`);
+  return data;
+}
+
 export async function peekGuidedDemo(token) {
   const { data } = await API.get(`/guided-demo/peek/${encodeURIComponent(token)}`);
   return data;

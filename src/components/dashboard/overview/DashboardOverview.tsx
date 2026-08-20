@@ -106,12 +106,15 @@ const KPI_ACCENTS = {
 function Panel({
   children,
   className = "",
+  dataDemoTarget,
 }: {
   children: React.ReactNode;
   className?: string;
+  dataDemoTarget?: string;
 }) {
   return (
     <div
+      data-demo-target={dataDemoTarget}
       className={`rounded-[28px] border border-slate-200/70 bg-white p-5 shadow-[0_18px_50px_rgba(15,23,42,0.06)] ${className}`}
     >
       {children}
@@ -435,7 +438,10 @@ export default function DashboardOverview({
         </Panel>
       ) : null}
 
-      <section className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+      <section
+        data-demo-target="dashboard-kpi-section"
+        className="grid gap-4 md:grid-cols-2 xl:grid-cols-4"
+      >
         <KpiCard
           title={t("overview.websiteViews")}
           value={loading ? "—" : formatNumber(data?.website.totalViews || 0)}
@@ -527,7 +533,12 @@ export default function DashboardOverview({
       <Panel className="p-3">
         <div className="flex flex-wrap gap-2">
           {[
-            { label: t("overview.addLead"), icon: <UserPlus size={16} />, to: `${basePath}/crm/leads` },
+            {
+              label: t("overview.addLead"),
+              icon: <UserPlus size={16} />,
+              to: `${basePath}/crm/leads`,
+              dataDemoTarget: "dashboard-quick-add-lead",
+            },
             {
               label: t("overview.newAppointment"),
               icon: <CalendarPlus size={16} />,
@@ -543,6 +554,7 @@ export default function DashboardOverview({
             <button
               key={action.label}
               type="button"
+              data-demo-target={action.dataDemoTarget}
               onClick={() => navigate(action.to)}
               className="inline-flex items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-700 transition hover:border-violet-300 hover:text-violet-700"
             >
@@ -560,7 +572,7 @@ export default function DashboardOverview({
         </div>
       </Panel>
 
-      <Panel className="p-6">
+      <Panel className="p-6" dataDemoTarget="dashboard-performance-chart">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <h2 className="text-xl font-black text-slate-800">
@@ -642,7 +654,7 @@ export default function DashboardOverview({
       </Panel>
 
       <section className="grid gap-5 xl:grid-cols-2">
-        <Panel>
+        <Panel dataDemoTarget="dashboard-latest-leads">
           <div className="mb-4 flex items-center justify-between gap-3">
             <div>
               <h3 className="text-lg font-black text-slate-800">
@@ -698,7 +710,7 @@ export default function DashboardOverview({
           )}
         </Panel>
 
-        <Panel>
+        <Panel dataDemoTarget="dashboard-upcoming-appointments">
           <div className="mb-4 flex items-center justify-between gap-3">
             <div>
               <h3 className="text-lg font-black text-slate-800">

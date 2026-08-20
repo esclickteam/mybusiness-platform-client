@@ -3,6 +3,7 @@ import {
   copyGuidedDemoLink,
   duplicateGuidedDemo,
   extendGuidedDemo,
+  previewGuidedDemo,
   resendGuidedDemo,
   revokeGuidedDemo,
 } from "../../api/guidedDemoApi";
@@ -66,6 +67,29 @@ export default function AdminGuidedDemoActions({
   return (
     <div onClick={(event) => event.stopPropagation()}>
       <div className="flex flex-wrap gap-1">
+        {invitation.status !== "revoked" ? (
+          <button
+            type="button"
+            className="rounded-lg border px-2 py-1 text-[11px] font-black disabled:opacity-40"
+            disabled={Boolean(busy)}
+            data-testid="admin-demo-open"
+            title="פותח תצוגת אדמין — לא מממש את קישור הלקוח החד-פעמי"
+            onClick={() =>
+              void run("open", async () => {
+                const data = await previewGuidedDemo(id);
+                const url = String(data?.previewUrl || "");
+                if (!url) {
+                  throw new Error("לא ניתן לפתוח תצוגת אדמין");
+                }
+                openExternalUrl(url);
+                setMessage("תצוגת האדמין נפתחה בחלון חדש — ללא מימוש קישור הלקוח");
+              })
+            }
+          >
+            {busy === "open" ? "פותח..." : "פתיחת הדמו"}
+          </button>
+        ) : null}
+
         {linkAvailable ? (
           <>
             <button
@@ -82,21 +106,6 @@ export default function AdminGuidedDemoActions({
               }
             >
               {busy === "copy" ? "מעתיק..." : "העתקת קישור"}
-            </button>
-            <button
-              type="button"
-              className="rounded-lg border px-2 py-1 text-[11px] font-black disabled:opacity-40"
-              disabled={Boolean(busy)}
-              data-testid="admin-demo-open"
-              onClick={() =>
-                void run("open", async () => {
-                  const url = await resolveLiveLink();
-                  openExternalUrl(url);
-                  setMessage("הדמו נפתח בחלון חדש");
-                })
-              }
-            >
-              פתיחת הדמו
             </button>
             <button
               type="button"
