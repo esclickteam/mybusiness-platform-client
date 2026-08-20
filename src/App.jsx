@@ -117,6 +117,7 @@ const WebsiteInviteAcceptPage = lazy(() =>
   import("./pages/WebsiteInviteAcceptPage")
 );
 const Register = lazy(() => import("./pages/Register"));
+const CrmOfferPage = lazy(() => import("./pages/offer/CrmOfferPage"));
 const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const ChangePassword = lazy(() => import("./pages/ChangePassword"));
@@ -763,6 +764,9 @@ export default function App() {
 
   const isMiniSiteHost = isPublicMiniSiteHost();
   const isEarlyAccessLanding = location.pathname === "/early-access";
+  // Hidden private offers (e.g. /offer/crm) are clean landing pages: no
+  // Header, no Footer, no public chrome — reachable only via a direct link.
+  const isHiddenOffer = location.pathname.startsWith("/offer/");
   const isAdminRoute = location.pathname.startsWith("/admin");
   const isStaffRoute = location.pathname.startsWith("/staff");
 
@@ -847,6 +851,7 @@ export default function App() {
       <div className="app-layout" dir={appDir} lang={i18n.language?.split("-")?.[0] || "he"}>
         {!isBusinessChatRoute &&
           !isEarlyAccessLanding &&
+          !isHiddenOffer &&
           !isAdminRoute &&
           !isStaffRoute && <Header />}
 
@@ -1000,6 +1005,9 @@ export default function App() {
                           element={<WebsiteInviteAcceptPage />}
                         />
                         <Route path="/register" element={<Register />} />
+                        {/* Hidden private offer — reachable only via direct URL.
+                            NOT linked from nav/footer/pricing/sitemap. */}
+                        <Route path="/offer/crm" element={<CrmOfferPage />} />
                         <Route
                           path="/forgot-password"
                           element={<ForgotPassword />}
@@ -1377,12 +1385,13 @@ export default function App() {
           )}
         </main>
 
-        {!isDashboardRoute && !isPublicBusinessProfile && !isEarlyAccessLanding && (
-          <Footer />
-        )}
+        {!isDashboardRoute &&
+          !isPublicBusinessProfile &&
+          !isEarlyAccessLanding &&
+          !isHiddenOffer && <Footer />}
       </div>
 
-      {!user && !isEarlyAccessLanding && <PreLoginBot />}
+      {!user && !isEarlyAccessLanding && !isHiddenOffer && <PreLoginBot />}
 
       {/* Admin softphone — survives page changes + business impersonation */}
       <AdminSoftphoneHost />
@@ -1390,6 +1399,7 @@ export default function App() {
       {/* Site-wide support bot — keep visible on public + app pages */}
       {!isEarlyAccessLanding &&
         !isBusinessChatRoute &&
+        !isHiddenOffer &&
         !isAdminRoute &&
         !isStaffRoute &&
         !location.pathname.startsWith("/embed/") &&

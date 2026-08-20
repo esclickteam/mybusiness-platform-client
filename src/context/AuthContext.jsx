@@ -153,6 +153,8 @@ function isPublicRoute(pathname) {
     "/privacy-policy",
     "/terms",
     "/accessibility",
+    // Hidden private offers (e.g. /offer/crm) are viewable without login.
+    "/offer",
   ];
 
   return publicRoutes.some((route) => {
