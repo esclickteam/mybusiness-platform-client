@@ -313,7 +313,7 @@ export default function WhatsAppWebThread({
             {contactName || "שיחת WhatsApp"}
           </p>
           <p className="truncate text-[12px] font-bold text-[#667781]" dir="ltr">
-            {data?.bizuplyManaged?.prefill?.phone || phone || ""}
+            {matchPhone || ""}
             {sessionOpen ? " · חלון 24 שעות פתוח" : " · נדרשת תבנית"}
           </p>
         </div>
