@@ -63,4 +63,15 @@ export function useAdminCrmWhatsAppRealtime(handlers: Handlers) {
       socket.off("adminCrm:whatsapp_thread", onThread);
     };
   }, [socket]);
+
+  useEffect(() => {
+    const poll = () => {
+      if (typeof document !== "undefined" && document.visibilityState !== "visible") {
+        return;
+      }
+      handlersRef.current.onReconnect?.();
+    };
+    const pollId = window.setInterval(poll, 4000);
+    return () => window.clearInterval(pollId);
+  }, []);
 }

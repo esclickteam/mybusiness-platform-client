@@ -696,6 +696,14 @@ export function AuthProvider({ children }) {
           !location.pathname.startsWith("/admin") &&
           !location.pathname.startsWith("/business/")
         ) {
+          const adminSocket = await createSocket(
+            getValidAccessToken,
+            null,
+            freshUser.businessId
+          );
+          if (!cancelled) {
+            setSocket(adminSocket);
+          }
           navigate("/admin/dashboard", { replace: true });
           return;
         }
@@ -875,6 +883,22 @@ export function AuthProvider({ children }) {
       cancelled = true;
     };
   }, [token, initialized, location.pathname]);
+
+  useEffect(() => {
+    if (!initialized || !user || socket) return;
+    let cancelled = false;
+    (async () => {
+      const recovered = await createSocket(
+        getValidAccessToken,
+        null,
+        user.businessId
+      );
+      if (!cancelled && recovered) setSocket(recovered);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [initialized, user, socket]);
 
   /* ===========================
      🔁 Proactive token refresh
