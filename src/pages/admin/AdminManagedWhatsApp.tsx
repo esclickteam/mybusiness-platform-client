@@ -96,6 +96,22 @@ function okLabel(ok: boolean, good: string, bad: string) {
   return ok ? good : bad;
 }
 
+function formatTokenExpiration(health?: AdminManagedWhatsAppHealth) {
+  if (health?.tokenExpirationStatus === "never" || health?.tokenExpiration === "never") {
+    return "Never expires";
+  }
+  if (health?.tokenExpirationStatus === "dated" && health.tokenExpiration) {
+    return formatDate(health.tokenExpiration);
+  }
+  return "לא ניתן להוכיח";
+}
+
+function formatTokenValidity(health?: AdminManagedWhatsAppHealth) {
+  if (health?.tokenValidNow === true) return "Valid";
+  if (health?.tokenValidNow === false) return "Invalid";
+  return "לא ידוע";
+}
+
 function ManagedConnectionHealthPanel({
   health,
 }: {
@@ -128,6 +144,40 @@ function ManagedConnectionHealthPanel({
           Token:{" "}
           {okLabel(Boolean(health?.tokenConfigured), "מוגדר", "לא מוגדר")}
         </div>
+        <div>
+          Token type: {health?.tokenTypeLabel || health?.tokenType || "לא ידוע"}
+        </div>
+        <div>Token validity: {formatTokenValidity(health)}</div>
+        <div>Token expiration: {formatTokenExpiration(health)}</div>
+        {health?.tokenExpirationStatus === "unknown" && health?.tokenExpirationReason ? (
+          <div style={{ color: "#9a3412" }}>
+            הוכחת תפוגה: {health.tokenExpirationReason}
+          </div>
+        ) : null}
+        {health?.dataAccessExpiresAt && health.dataAccessExpiresAt !== "never" ? (
+          <div>Data access expires: {formatDate(health.dataAccessExpiresAt)}</div>
+        ) : null}
+        <div>
+          הרשאות:{" "}
+          {health?.requiredPermissionsOk === true
+            ? "whatsapp_business_messaging + whatsapp_business_management"
+            : health?.requiredPermissionsOk === false
+              ? `חסר: ${(health.missingPermissions || []).join(", ") || "לא ידוע"}`
+              : "לא נבדק"}
+        </div>
+        <div>
+          WABA assigned:{" "}
+          {health?.wabaAssignedToSystemUser === true
+            ? "תקין"
+            : health?.wabaAssignedToSystemUser === false
+              ? "לא הוכח / שגיאה"
+              : "לא נבדק"}
+        </div>
+        {health?.wabaAssignmentReason ? (
+          <div style={{ color: "#64748b", fontSize: 12 }}>
+            {health.wabaAssignmentReason}
+          </div>
+        ) : null}
         <div>
           WABA: {okLabel(Boolean(health?.wabaAccessible), "תקין", "שגיאה")}
         </div>

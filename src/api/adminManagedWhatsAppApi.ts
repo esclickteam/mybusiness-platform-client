@@ -25,6 +25,23 @@ export type AdminManagedWhatsAppHealth = {
   errorCode?: string | null;
   errorType?: string | null;
   errorMessage?: string | null;
+  tokenType?: string | null;
+  tokenTypeLabel?: string | null;
+  tokenIsSystemUser?: boolean;
+  tokenValidNow?: boolean | null;
+  tokenExpiration?: string | null;
+  tokenExpirationStatus?: "never" | "dated" | "unknown" | string;
+  tokenExpirationReason?: string | null;
+  dataAccessExpiresAt?: string | null;
+  requiredPermissionsOk?: boolean | null;
+  requiredPermissions?: {
+    whatsapp_business_messaging?: boolean | null;
+    whatsapp_business_management?: boolean | null;
+  };
+  missingPermissions?: string[];
+  systemUserId?: string | null;
+  wabaAssignedToSystemUser?: boolean | null;
+  wabaAssignmentReason?: string | null;
 };
 
 export type AdminManagedWhatsAppStatus = {
