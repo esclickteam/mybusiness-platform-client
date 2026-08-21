@@ -41,6 +41,7 @@ export type AdminManagedWhatsAppHealth = {
   missingPermissions?: string[];
   systemUserId?: string | null;
   wabaAssignedToSystemUser?: boolean | null;
+  wabaAssignmentStatus?: "pass" | "fail" | "unknown" | "not_applicable" | string;
   wabaAssignmentReason?: string | null;
 };
 
