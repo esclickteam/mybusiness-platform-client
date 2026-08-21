@@ -1,115 +1,231 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useCallback, useMemo, useState } from "react";
 import adminCrmApi from "../../../api/adminCrmApi";
-import { formatIsraelDate } from "./adminCrmLabels";
-import { CrmCard, EmptyState, ErrorState, LoadingState, SecondaryButton } from "./AdminCrmUi";
+import { ErrorState, LoadingState, SecondaryButton } from "./AdminCrmUi";
+import WhatsAppWebThread from "./whatsappWeb/WhatsAppWebThread";
+import { useAdminCrmWhatsAppRealtime } from "./whatsappWeb/useAdminCrmWhatsAppRealtime";
+import {
+  bumpThreadList,
+  listTimeLabel,
+  type PublicWhatsAppThread,
+} from "./whatsappWeb/whatsAppWebMessages";
 
-type InboxItem = {
-  id: string;
-  adminCustomerId: string | null;
-  name: string;
-  phone: string;
-  lastMessage: string;
-  lastMessageAt: string;
-  assignedAdminName: string;
-  unreadCount: number;
-  unresolved: boolean;
-  matchStatus: string;
+type InboxItem = PublicWhatsAppThread & {
+  assignedAdminName?: string;
 };
 
 export default function AdminCrmWhatsAppInbox() {
-  const navigate = useNavigate();
+  const [perms, setPerms] = useState<any>({});
   const [items, setItems] = useState<InboxItem[]>([]);
   const [unreadTotal, setUnreadTotal] = useState(0);
   const [unresolvedTotal, setUnresolvedTotal] = useState(0);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [unresolvedOnly, setUnresolvedOnly] = useState(false);
+  const [query, setQuery] = useState("");
+  const [selected, setSelected] = useState<InboxItem | null>(null);
+  const [banner, setBanner] = useState("");
+  const [mobileChat, setMobileChat] = useState(false);
 
-  async function load(nextUnresolved = unresolvedOnly) {
-    setLoading(true);
-    setError("");
-    try {
-      const { data } = await adminCrmApi.whatsappInbox({
-        unresolved: nextUnresolved ? "true" : undefined,
-      });
-      setItems(data.items || []);
-      setUnreadTotal(data.unreadTotal || 0);
-      setUnresolvedTotal(data.unresolvedTotal || 0);
-    } catch (err: any) {
-      setError(err?.response?.data?.error || "טעינת תיבת WhatsApp נכשלה");
-    } finally {
-      setLoading(false);
-    }
-  }
+  const load = useCallback(
+    async (nextUnresolved = unresolvedOnly, q = query) => {
+      setLoading(true);
+      setError("");
+      try {
+        const { data } = await adminCrmApi.whatsappInbox({
+          unresolved: nextUnresolved ? "true" : undefined,
+          q: q || undefined,
+          limit: 120,
+        });
+        setItems(data.items || []);
+        setUnreadTotal(data.unreadTotal || 0);
+        setUnresolvedTotal(data.unresolvedTotal || 0);
+      } catch (err: any) {
+        setError(err?.response?.data?.error || "טעינת תיבת WhatsApp נכשלה");
+      } finally {
+        setLoading(false);
+      }
+    },
+    [query, unresolvedOnly]
+  );
 
-  useEffect(() => {
+  React.useEffect(() => {
     load();
+    adminCrmApi.meta().then(({ data }) => setPerms(data.permissions || {})).catch(() => null);
   }, []);
 
-  if (loading) return <LoadingState />;
-  if (error) return <ErrorState message={error} onRetry={() => load()} />;
+  useAdminCrmWhatsAppRealtime({
+    onMessage: (payload) => {
+      if (!payload.thread?.id) {
+        void load(unresolvedOnly, query);
+        return;
+      }
+      setItems((prev) => {
+        const existing = prev.find((row) => row.id === payload.thread!.id);
+        return bumpThreadList(prev, {
+          ...(existing || {}),
+          ...payload.thread,
+          name: existing?.name || payload.thread.name,
+          lastMessage: payload.message?.bodyPreview || payload.thread.lastMessage,
+          lastMessageAt: payload.message?.timestamp || payload.thread.lastMessageAt,
+          unreadCount:
+            selected?.id === payload.thread.id
+              ? 0
+              : payload.thread.unreadCount ?? existing?.unreadCount ?? 0,
+        });
+      });
+      if (payload.message?.direction === "inbound" && selected?.id !== payload.thread.id) {
+        setUnreadTotal((n) => n + 1);
+      }
+    },
+    onThread: (payload) => {
+      if (!payload.thread?.id) return;
+      setItems((prev) =>
+        bumpThreadList(prev, {
+          ...(prev.find((row) => row.id === payload.thread!.id) || {}),
+          ...payload.thread,
+        })
+      );
+    },
+    onReconnect: () => {
+      void load(unresolvedOnly, query);
+    },
+  });
+
+  const filtered = useMemo(() => items, [items]);
+
+  if (loading && !items.length) return <LoadingState />;
+  if (error && !items.length) return <ErrorState message={error} onRetry={() => load()} />;
 
   return (
-    <div className="space-y-4">
-      <CrmCard>
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h2 className="text-xl font-black text-purple-950">תיבת WhatsApp של BizUply</h2>
-            <p className="text-sm font-bold text-slate-500">
-              שיחות על המספר המנוהל של BizUply. לחיצה פותחת את אותו Customer 360.
-            </p>
-          </div>
-          <div className="flex gap-2">
-            <span className="rounded-2xl bg-violet-50 px-3 py-2 text-sm font-black text-violet-700">
-              {unreadTotal} שלא נקראו
-            </span>
-            <span className="rounded-2xl bg-amber-50 px-3 py-2 text-sm font-black text-amber-800">
-              {unresolvedTotal} ללא שיוך
-            </span>
-            <SecondaryButton
-              onClick={() => {
-                const next = !unresolvedOnly;
-                setUnresolvedOnly(next);
-                load(next);
-              }}
-            >
-              {unresolvedOnly ? "כל השיחות" : "רק לא משויכות"}
-            </SecondaryButton>
-          </div>
+    <div
+      className="overflow-hidden rounded-[24px] border border-purple-100 bg-white shadow-[0_18px_50px_rgba(124,77,255,0.06)]"
+      dir="rtl"
+    >
+      {banner ? (
+        <div className="border-b border-purple-100 bg-violet-50 px-4 py-2 text-sm font-bold text-[#7C4DFF]">
+          {banner}
         </div>
-      </CrmCard>
-      {!items.length ? <EmptyState title="אין שיחות WhatsApp" /> : null}
-      <div className="space-y-2">
-        {items.map((row) => (
-          <button
-            key={row.id}
-            type="button"
-            className="w-full rounded-[24px] border border-purple-100 bg-white p-4 text-right shadow-sm"
-            onClick={() => {
-              if (row.adminCustomerId) navigate(`/admin/crm/customers/${row.adminCustomerId}?tab=whatsapp`);
-            }}
-            disabled={!row.adminCustomerId}
-          >
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <div className="font-black text-purple-950">{row.name}</div>
-                <div className="mt-1 text-sm font-bold" dir="ltr">{row.phone}</div>
-                <div className="mt-2 text-sm text-slate-600">{row.lastMessage || "—"}</div>
-              </div>
-              <div className="text-left text-xs font-bold text-slate-500">
-                <div>{formatIsraelDate(row.lastMessageAt, true)}</div>
-                {row.unreadCount ? (
-                  <div className="mt-2 inline-flex min-h-7 min-w-7 items-center justify-center rounded-full bg-[#7C4DFF] px-2 text-white">
-                    {row.unreadCount}
-                  </div>
-                ) : null}
-                <div className="mt-2">{row.assignedAdminName || "לא משויך"}</div>
-                {row.unresolved ? <div className="mt-1 text-amber-700">דורש שיוך ידני</div> : null}
+      ) : null}
+      <div className="flex h-[min(780px,calc(100vh-210px))] min-h-[520px]">
+        <aside
+          className={[
+            "flex w-full shrink-0 flex-col border-purple-100 bg-white lg:w-[360px] lg:border-s",
+            mobileChat ? "hidden lg:flex" : "flex",
+          ].join(" ")}
+        >
+          <div className="border-b border-[#e9edef] bg-[#f0f2f5] px-3 py-3">
+            <div className="mb-3 flex items-center justify-between gap-2">
+              <h2 className="text-base font-black text-[#111b21]">שיחות</h2>
+              <div className="flex gap-1 text-[11px] font-black">
+                <span className="rounded-full bg-violet-50 px-2 py-1 text-violet-700">{unreadTotal}</span>
+                <span className="rounded-full bg-amber-50 px-2 py-1 text-amber-800">{unresolvedTotal}</span>
               </div>
             </div>
-          </button>
-        ))}
+            <input
+              className="min-h-10 w-full rounded-lg border-none bg-white px-3 text-sm outline-none"
+              placeholder="חיפוש או מספר טלפון"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") void load(unresolvedOnly, query);
+              }}
+            />
+            <div className="mt-2 flex gap-2">
+              <SecondaryButton
+                className="!min-h-9 !rounded-lg !px-3 !text-xs"
+                onClick={() => {
+                  const next = !unresolvedOnly;
+                  setUnresolvedOnly(next);
+                  void load(next, query);
+                }}
+              >
+                {unresolvedOnly ? "כל השיחות" : "לא משויכות"}
+              </SecondaryButton>
+              <SecondaryButton
+                className="!min-h-9 !rounded-lg !px-3 !text-xs"
+                onClick={() => void load(unresolvedOnly, query)}
+              >
+                חיפוש
+              </SecondaryButton>
+            </div>
+          </div>
+          <div className="min-h-0 flex-1 overflow-y-auto">
+            {!filtered.length ? (
+              <p className="px-4 py-16 text-center text-sm font-bold text-slate-400">אין שיחות WhatsApp</p>
+            ) : (
+              filtered.map((row) => {
+                const active = selected?.id === row.id;
+                return (
+                  <button
+                    key={row.id}
+                    type="button"
+                    className={[
+                      "flex w-full items-center gap-3 border-b border-[#e9edef] px-3 py-3 text-right",
+                      active ? "bg-[#f0f2f5]" : "bg-white hover:bg-[#f5f6f6]",
+                    ].join(" ")}
+                    onClick={() => {
+                      setSelected(row);
+                      setMobileChat(true);
+                      setItems((prev) =>
+                        prev.map((item) =>
+                          item.id === row.id ? { ...item, unreadCount: 0 } : item
+                        )
+                      );
+                    }}
+                  >
+                    <div className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-[#dfe5e7] text-sm font-black text-[#54656f]">
+                      {(row.name || "?").slice(0, 1)}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-baseline justify-between gap-2">
+                        <p className="truncate text-[16px] font-black text-[#111b21]">{row.name}</p>
+                        <span className="shrink-0 text-[12px] text-[#667781]">
+                          {listTimeLabel(row.lastMessageAt)}
+                        </span>
+                      </div>
+                      <div className="mt-0.5 flex items-center justify-between gap-2">
+                        <p className="truncate text-[13px] text-[#667781]">{row.lastMessage || "—"}</p>
+                        {row.unreadCount ? (
+                          <span className="inline-flex min-h-5 min-w-5 items-center justify-center rounded-full bg-[#25d366] px-1.5 text-[11px] font-black text-white">
+                            {row.unreadCount}
+                          </span>
+                        ) : null}
+                      </div>
+                    </div>
+                  </button>
+                );
+              })
+            )}
+          </div>
+        </aside>
+
+        <section
+          className={[
+            "min-w-0 flex-1",
+            mobileChat ? "flex" : "hidden lg:flex",
+          ].join(" ")}
+        >
+          {selected ? (
+            <WhatsAppWebThread
+              customerId={selected.adminCustomerId}
+              threadId={selected.id}
+              canSend={Boolean(perms.whatsappSend)}
+              canTemplates={Boolean(perms.whatsappTemplates)}
+              canDemo={perms.demoSend !== false}
+              onBanner={setBanner}
+              onBack={() => setMobileChat(false)}
+            />
+          ) : (
+            <div className="flex h-full w-full flex-col items-center justify-center bg-[#f0f2f5] text-center">
+              <div className="max-w-sm px-6">
+                <p className="text-2xl font-black text-[#41525d]">WhatsApp של BizUply</p>
+                <p className="mt-3 text-sm font-bold leading-6 text-[#667781]">
+                  בחרו שיחה מהרשימה כדי לקרוא ולשלוח הודעות בזמן אמת, כמו ב-WhatsApp Web.
+                </p>
+              </div>
+            </div>
+          )}
+        </section>
       </div>
     </div>
   );
