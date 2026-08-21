@@ -78,8 +78,8 @@ export const adminCrmApi = {
   audit: (id: string) => API.get(`/admin/crm/customers/${id}/audit`),
   exportUrl: (params: AdminCrmListQuery = {}) =>
     `/admin/crm/export${qs(params)}`,
-  whatsappMessages: (id: string) =>
-    API.get(`/admin/crm/customers/${id}/whatsapp/messages`),
+  whatsappMessages: (id: string, params: AdminCrmListQuery = {}) =>
+    API.get(`/admin/crm/customers/${id}/whatsapp/messages${qs(params)}`),
   whatsappPreview: (id: string, body: Record<string, unknown>) =>
     API.post(`/admin/crm/customers/${id}/whatsapp/preview`, body),
   whatsappSend: (id: string, body: Record<string, unknown>) =>
@@ -88,6 +88,8 @@ export const adminCrmApi = {
   whatsappTemplates: () => API.get("/admin/crm/whatsapp/templates"),
   whatsappInbox: (params: AdminCrmListQuery = {}) =>
     API.get(`/admin/crm/whatsapp/inbox${qs(params)}`),
+  whatsappThreadMessages: (threadId: string, params: AdminCrmListQuery = {}) =>
+    API.get(`/admin/crm/whatsapp/inbox/${threadId}/messages${qs(params)}`),
   whatsappAssign: (threadId: string, body: Record<string, unknown>) =>
     API.post(`/admin/crm/whatsapp/inbox/${threadId}/assign`, body),
 };

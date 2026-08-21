@@ -16,11 +16,24 @@ const TABS = [
 
 export default function AdminCrmLayout() {
   const navigate = useNavigate();
-  const { user } = useAuth() as { user: { role?: string } | null };
+  const { user, socket } = useAuth() as {
+    user: { role?: string } | null;
+    socket?: { emit?: (event: string, ...args: any[]) => void; on?: Function; off?: Function; connected?: boolean } | null;
+  };
 
   React.useEffect(() => {
     if (user && user.role !== "admin") navigate("/", { replace: true });
   }, [user, navigate]);
+
+  React.useEffect(() => {
+    if (!socket?.emit) return;
+    const join = () => socket.emit?.("joinRoom", "admin-crm");
+    join();
+    socket.on?.("connect", join);
+    return () => {
+      socket.off?.("connect", join);
+    };
+  }, [socket]);
 
   return (
     <div className={ADMIN_PAGE_SHELL_CLASS} dir="rtl" style={{ fontFamily: '"Assistant", "Rubik", sans-serif' }}>
