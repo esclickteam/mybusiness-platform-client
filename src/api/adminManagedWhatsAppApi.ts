@@ -2,6 +2,31 @@ import API from "../api";
 
 export type ManagedWhatsAppAllowlistMode = "all_entitled" | "allowlist";
 
+export type ManagedWhatsAppHealthStatus =
+  | "healthy"
+  | "degraded"
+  | "failed"
+  | "not_configured";
+
+export type AdminManagedWhatsAppHealth = {
+  status: ManagedWhatsAppHealthStatus | string;
+  tokenConfigured: boolean;
+  authenticationValid: boolean;
+  wabaAccessible: boolean;
+  phoneNumberAccessible: boolean;
+  phoneBelongsToWaba?: boolean;
+  wabaId?: string;
+  phoneNumberId?: string;
+  displayPhoneNumber?: string;
+  lastCheckedAt?: string | null;
+  lastSuccessfulCheckAt?: string | null;
+  lastSuccessfulSendAt?: string | null;
+  lastFailedCheckAt?: string | null;
+  errorCode?: string | null;
+  errorType?: string | null;
+  errorMessage?: string | null;
+};
+
 export type AdminManagedWhatsAppStatus = {
   success?: boolean;
   managedModeEnabled: boolean;
@@ -16,6 +41,8 @@ export type AdminManagedWhatsAppStatus = {
   updatedAt?: string | null;
   healthy?: boolean;
   customerUnavailableMessage?: string | null;
+  health?: AdminManagedWhatsAppHealth;
+  liveTest?: { ok: boolean; message?: string };
   connection: {
     managedBusinessIdConfigured: boolean;
     managedBusinessId?: string;
@@ -90,6 +117,16 @@ export async function saveAndVerifyAdminManagedWhatsAppConnection(payload: {
 }) {
   const { data } = await API.post("/admin/managed-whatsapp/connection", payload);
   return data as AdminManagedWhatsAppStatus;
+}
+
+export async function getAdminManagedWhatsAppHealth() {
+  const { data } = await API.get("/admin/managed-whatsapp/health");
+  return data as { success?: boolean; health: AdminManagedWhatsAppHealth } & AdminManagedWhatsAppHealth;
+}
+
+export async function testAdminManagedWhatsAppConnection() {
+  const { data } = await API.post("/admin/managed-whatsapp/test");
+  return data as { success?: boolean; health: AdminManagedWhatsAppHealth } & AdminManagedWhatsAppHealth;
 }
 
 export async function syncAdminManagedWhatsAppTemplates() {

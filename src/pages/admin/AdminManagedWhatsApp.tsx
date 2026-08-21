@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { Link2, MessageSquare, RefreshCw, Shield } from "lucide-react";
 
 import {
+  getAdminManagedWhatsAppHealth,
   getAdminManagedWhatsAppStatus,
   listAdminManagedWhatsAppAudit,
   saveAndVerifyAdminManagedWhatsAppConnection,
@@ -9,6 +10,7 @@ import {
   syncAdminManagedWhatsAppTemplates,
   updateAdminManagedWhatsAppSettings,
   type AdminManagedWhatsAppAuditItem,
+  type AdminManagedWhatsAppHealth,
   type AdminManagedWhatsAppStatus,
   type ManagedWhatsAppAllowlistMode,
 } from "../../api/adminManagedWhatsAppApi";
@@ -30,6 +32,19 @@ function formatDate(value?: string | null) {
     hour: "2-digit",
     minute: "2-digit",
   }).format(date);
+}
+
+function healthHeadline(status?: string) {
+  switch (status) {
+    case "healthy":
+      return { emoji: "🟢", label: "מחובר ותקין", color: "#047857", bg: "#ecfdf5" };
+    case "degraded":
+      return { emoji: "🟠", label: "מחובר אך קיימת בעיה", color: "#c2410c", bg: "#fff7ed" };
+    case "failed":
+      return { emoji: "🔴", label: "החיבור אינו תקין", color: "#b91c1c", bg: "#fef2f2" };
+    default:
+      return { emoji: "⚪", label: "לא הוגדר", color: "#475569", bg: "#f8fafc" };
+  }
 }
 
 function StatusPill({
@@ -77,6 +92,66 @@ const fieldStyle: React.CSSProperties = {
   boxSizing: "border-box",
 };
 
+function okLabel(ok: boolean, good: string, bad: string) {
+  return ok ? good : bad;
+}
+
+function ManagedConnectionHealthPanel({
+  health,
+}: {
+  health?: AdminManagedWhatsAppHealth;
+}) {
+  const headline = healthHeadline(health?.status);
+  return (
+    <div
+      style={{
+        margin: "12px 0 16px",
+        padding: 14,
+        borderRadius: 12,
+        background: headline.bg,
+        border: "1px solid rgba(15,23,42,0.06)",
+      }}
+    >
+      <strong style={{ color: headline.color, fontSize: 15 }}>
+        מצב חיבור: {headline.emoji} {headline.label}
+      </strong>
+      <div
+        style={{
+          marginTop: 10,
+          display: "grid",
+          gap: 4,
+          fontSize: 13,
+          color: "#334155",
+        }}
+      >
+        <div>
+          Token:{" "}
+          {okLabel(Boolean(health?.tokenConfigured), "מוגדר", "לא מוגדר")}
+        </div>
+        <div>
+          WABA: {okLabel(Boolean(health?.wabaAccessible), "תקין", "שגיאה")}
+        </div>
+        <div>
+          מספר WhatsApp:{" "}
+          {okLabel(Boolean(health?.phoneNumberAccessible), "תקין", "שגיאה")}
+        </div>
+        <div>בדיקה אחרונה: {formatDate(health?.lastCheckedAt)}</div>
+        <div>
+          בדיקה מוצלחת אחרונה: {formatDate(health?.lastSuccessfulCheckAt)}
+        </div>
+        <div>
+          שליחה מוצלחת אחרונה: {formatDate(health?.lastSuccessfulSendAt)}
+        </div>
+        {health?.errorMessage ? (
+          <div style={{ color: "#b91c1c", marginTop: 4 }}>
+            שגיאה אחרונה: {health.errorMessage}
+          </div>
+        ) : null}
+      </div>
+    </div>
+  );
+}
+
 export default function AdminManagedWhatsApp() {
   const { user } = useAuth() as { user: { role?: string } | null };
   const [status, setStatus] = useState<AdminManagedWhatsAppStatus | null>(null);
@@ -115,11 +190,17 @@ export default function AdminManagedWhatsApp() {
     setLoading(true);
     setError("");
     try {
-      const [st, aud] = await Promise.all([
+      const [st, aud, liveHealth] = await Promise.all([
         getAdminManagedWhatsAppStatus(),
         listAdminManagedWhatsAppAudit(30).catch(() => ({ items: [] })),
+        getAdminManagedWhatsAppHealth().catch(() => null),
       ]);
-      applyStatus(st);
+      if (liveHealth) {
+        const health = liveHealth.health || liveHealth;
+        applyStatus({ ...st, health });
+      } else {
+        applyStatus(st);
+      }
       setAudit(aud.items || []);
     } catch (err: any) {
       setError(err?.message || "טעינת הסטטוס נכשלה");
@@ -199,11 +280,14 @@ export default function AdminManagedWhatsApp() {
         accessToken: accessToken.trim() || undefined,
       });
       applyStatus(data);
-      setSyncFlash(
-        data.connection?.connectionReady
-          ? "החיבור נשמר ואומת מול Meta — Connection status: READY"
-          : "נשמר, אך החיבור עדיין לא READY — בדקו את הסטטוס"
-      );
+      const liveOk = data.liveTest?.ok ?? data.health?.status === "healthy";
+      const message =
+        data.liveTest?.message ||
+        (liveOk
+          ? "החיבור ל-WhatsApp נבדק בהצלחה והטוקן תקין."
+          : "הטוקן נשמר, אך Meta דחתה את החיבור. בדוק את הרשאות ה-System User.");
+      if (liveOk) setSyncFlash(message);
+      else setError(message);
       const aud = await listAdminManagedWhatsAppAudit(30).catch(() => ({
         items: [],
       }));
@@ -603,6 +687,7 @@ export default function AdminManagedWhatsApp() {
                 הגדרה ידנית של WABA הפלטפורמה (ללא OAuth). ה-Access Token נשמר
                 מוצפן בשרת בלבד ולא מוחזר ללקוח.
               </p>
+              <ManagedConnectionHealthPanel health={status.health} />
               {!status.connection?.managedBusinessIdConfigured ? (
                 <div
                   style={{
