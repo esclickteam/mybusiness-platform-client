@@ -167,11 +167,15 @@ function ManagedConnectionHealthPanel({
         </div>
         <div>
           WABA assigned:{" "}
-          {health?.wabaAssignedToSystemUser === true
+          {health?.wabaAssignmentStatus === "pass" ||
+          health?.wabaAssignedToSystemUser === true
             ? "תקין"
-            : health?.wabaAssignedToSystemUser === false
-              ? "לא הוכח / שגיאה"
-              : "לא נבדק"}
+            : health?.wabaAssignmentStatus === "not_applicable"
+              ? "לא רלוונטי (לא BSP)"
+              : health?.wabaAssignmentStatus === "fail" ||
+                  health?.wabaAssignedToSystemUser === false
+                ? "לא משויך"
+                : "לא ניתן להוכיח"}
         </div>
         {health?.wabaAssignmentReason ? (
           <div style={{ color: "#64748b", fontSize: 12 }}>
