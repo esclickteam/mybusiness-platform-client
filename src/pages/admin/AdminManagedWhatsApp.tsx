@@ -731,7 +731,7 @@ export default function AdminManagedWhatsApp() {
                   רישום לשליחה: רשום
                 </div>
               ) : needsRegistration ? (
-              <div
+                <div
                 style={{
                   marginTop: 18,
                   padding: 14,
@@ -806,7 +806,7 @@ export default function AdminManagedWhatsApp() {
                   </button>
                 </div>
               </div>
-              )}
+              ) : null}
             </section>
 
             <section
