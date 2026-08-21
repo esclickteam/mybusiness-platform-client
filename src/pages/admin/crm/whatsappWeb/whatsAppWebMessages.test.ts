@@ -3,6 +3,7 @@ import {
   applyStatusPatch,
   buildMessageFeed,
   dateSeparatorLabel,
+  inboundEventMatches,
   mergeMessages,
   messageKey,
 } from "./whatsAppWebMessages";
@@ -27,6 +28,33 @@ describe("whatsAppWebMessages", () => {
     });
     expect(next).toHaveLength(1);
     expect(messageKey(next[0])).toBe("wamid:wamid.1");
+  });
+
+  it("matches an inbound event by thread, customer, or phone", () => {
+    expect(
+      inboundEventMatches(
+        { thread: { id: "th1", phone: "0501234567" } as any },
+        { threadId: "th1" }
+      )
+    ).toBe(true);
+    expect(
+      inboundEventMatches(
+        { adminCustomerId: "c1", thread: { id: "other" } as any },
+        { customerId: "c1" }
+      )
+    ).toBe(true);
+    expect(
+      inboundEventMatches(
+        { thread: { id: "x", phone: "+972501234567" } as any },
+        { phone: "0501234567" }
+      )
+    ).toBe(true);
+    expect(
+      inboundEventMatches(
+        { thread: { id: "x", phone: "0501111111" } as any },
+        { phone: "0501234567", customerId: "nope" }
+      )
+    ).toBe(false);
   });
 
   it("replaces an optimistic outbound with the confirmed log", () => {

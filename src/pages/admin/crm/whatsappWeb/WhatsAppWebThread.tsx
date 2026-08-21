@@ -9,6 +9,7 @@ import {
   applyStatusPatch,
   buildMessageFeed,
   formatClock,
+  inboundEventMatches,
   mergeMessages,
   type PublicWhatsAppMessage,
 } from "./whatsAppWebMessages";
@@ -28,6 +29,7 @@ type Template = {
 export default function WhatsAppWebThread({
   customerId,
   threadId,
+  phone: phoneProp,
   canSend,
   canTemplates,
   canDemo = true,
@@ -38,6 +40,7 @@ export default function WhatsAppWebThread({
 }: {
   customerId?: string | null;
   threadId?: string | null;
+  phone?: string | null;
   canSend: boolean;
   canTemplates: boolean;
   canDemo?: boolean;
@@ -82,9 +85,10 @@ export default function WhatsAppWebThread({
     data?.bizuplyManaged?.prefill?.contact_name ||
     data?.bizuplyManaged?.prefill?.name ||
     "";
-  const phone =
+  const matchPhone =
+    phoneProp ||
+    data?.bizuplyManaged?.prefill?.phone ||
     data?.bizuplyManaged?.thread?.phone ||
-    sender.displayPhoneMasked ||
     "";
 
   const scrollToBottom = useCallback((smooth = false) => {
@@ -156,13 +160,15 @@ export default function WhatsAppWebThread({
     return next;
   }, [vars, selected]);
 
+  const matchCtx = {
+    customerId: customerId || null,
+    threadId: threadId || null,
+    phone: matchPhone,
+  };
+
   useAdminCrmWhatsAppRealtime({
     onMessage: (payload) => {
-      const belongs =
-        (customerId && payload.adminCustomerId === customerId) ||
-        (threadId && payload.thread?.id === threadId) ||
-        (customerId && payload.thread?.adminCustomerId === customerId);
-      if (!belongs || !payload.message) return;
+      if (!inboundEventMatches(payload, matchCtx) || !payload.message) return;
       setMessages((prev) => mergeMessages(prev, payload.message!));
       if (stickRef.current) {
         requestAnimationFrame(() => scrollToBottom(true));
@@ -172,11 +178,7 @@ export default function WhatsAppWebThread({
       }
     },
     onStatus: (payload) => {
-      const belongs =
-        (customerId && payload.adminCustomerId === customerId) ||
-        (threadId && payload.thread?.id === threadId) ||
-        (customerId && payload.thread?.adminCustomerId === customerId);
-      if (!belongs) return;
+      if (!inboundEventMatches(payload, matchCtx)) return;
       setMessages((prev) => applyStatusPatch(prev, payload));
     },
     onReconnect: () => {
