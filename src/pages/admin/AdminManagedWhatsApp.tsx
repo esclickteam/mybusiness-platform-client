@@ -285,6 +285,10 @@ export default function AdminManagedWhatsApp() {
   const tokenOk = status?.connection?.accessToken === "configured";
   const connectionReady = Boolean(status?.connection?.connectionReady);
   const tokenConfigured = Boolean(status?.configForm?.accessTokenConfigured);
+  const sendRegistered = Boolean(
+    status?.registration?.phoneRegistered || status?.registration?.sendReady
+  );
+  const needsRegistration = connectionReady && !sendRegistered;
 
   return (
     <div dir="rtl" style={{ minHeight: "100vh", background: "#f6f7fb" }}>
@@ -382,7 +386,7 @@ export default function AdminManagedWhatsApp() {
                       labelBad="Connection: NOT READY"
                     />
                     <StatusPill
-                      ok={Boolean(status.registration?.phoneRegistered)}
+                      ok={sendRegistered}
                       labelOk="רישום לשליחה: רשום"
                       labelBad="רישום לשליחה: נדרש PIN"
                     />
@@ -491,9 +495,14 @@ export default function AdminManagedWhatsApp() {
                       color: status.lastError ? "#b91c1c" : "#64748b",
                     }}
                   >
-                    {status.lastError ||
-                      status.connection?.connectionReason ||
-                      "אין"}
+                    {sendRegistered
+                      ? status.lastError ||
+                        status.connection?.connectionReason ||
+                        "אין"
+                      : status.lastError ||
+                        status.registration?.lastError ||
+                        status.connection?.connectionReason ||
+                        "אין"}
                   </div>
                 </div>
               </div>
@@ -706,6 +715,22 @@ export default function AdminManagedWhatsApp() {
                 {verifying ? "מאמת מול Meta…" : "שמור ובדוק חיבור"}
               </button>
 
+              {sendRegistered ? (
+                <div
+                  style={{
+                    marginTop: 18,
+                    padding: 14,
+                    borderRadius: 12,
+                    background: "#ecfdf5",
+                    border: "1px solid #a7f3d0",
+                    color: "#047857",
+                    fontWeight: 600,
+                    fontSize: 14,
+                  }}
+                >
+                  רישום לשליחה: רשום
+                </div>
+              ) : needsRegistration ? (
               <div
                 style={{
                   marginTop: 18,
@@ -781,6 +806,7 @@ export default function AdminManagedWhatsApp() {
                   </button>
                 </div>
               </div>
+              )}
             </section>
 
             <section
