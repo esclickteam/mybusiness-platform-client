@@ -1,6 +1,7 @@
 import React from "react";
 
 const RELOAD_KEY = "bizuply:chunk-reload";
+const RETRY_DELAYS_MS = [400, 1000, 2000];
 
 export function isChunkLoadError(error: unknown): boolean {
   const message = String(
@@ -11,7 +12,11 @@ export function isChunkLoadError(error: unknown): boolean {
     /Importing a module script failed/i.test(message) ||
     /Loading chunk [\d]+ failed/i.test(message) ||
     /error loading dynamically imported module/i.test(message) ||
-    /Unable to preload CSS/i.test(message)
+    /Unable to preload CSS/i.test(message) ||
+    /ChunkLoadError/i.test(message) ||
+    /net::ERR_ABORTED/i.test(message) ||
+    /net::ERR_FAILED/i.test(message) ||
+    (/404/.test(message) && /\/assets\//i.test(message))
   );
 }
 
@@ -33,25 +38,47 @@ function markChunkReload(): boolean {
   }
 }
 
+function sleep(ms: number): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}
+
 /**
- * React.lazy wrapper that recovers from stale deploy chunks by reloading once.
+ * Retry a dynamic import across a short deploy/CDN race, then reload once.
+ * Never returns a hanging Promise — that left the splash screen spinning forever.
  */
-export function lazyWithRetry<T extends React.ComponentType<any>>(
-  factory: () => Promise<{ default: T }>
-): React.LazyExoticComponent<T> {
-  return React.lazy(async () => {
+export async function importWithRetry<T>(factory: () => Promise<T>): Promise<T> {
+  let lastError: unknown;
+
+  for (let attempt = 0; attempt <= RETRY_DELAYS_MS.length; attempt += 1) {
     try {
       const mod = await factory();
       clearChunkReloadFlag();
       return mod;
     } catch (error) {
-      if (isChunkLoadError(error) && markChunkReload()) {
-        window.location.reload();
-        // Keep Suspense pending until the page reloads.
-        return new Promise(() => {});
+      lastError = error;
+      if (!isChunkLoadError(error) || attempt >= RETRY_DELAYS_MS.length) {
+        break;
       }
-      clearChunkReloadFlag();
-      throw error;
+      await sleep(RETRY_DELAYS_MS[attempt]);
     }
-  });
+  }
+
+  if (isChunkLoadError(lastError) && markChunkReload()) {
+    window.location.reload();
+  } else {
+    clearChunkReloadFlag();
+  }
+
+  throw lastError;
+}
+
+/**
+ * React.lazy wrapper that recovers from stale / missing deploy chunks.
+ */
+export function lazyWithRetry<T extends React.ComponentType<any>>(
+  factory: () => Promise<{ default: T }>
+): React.LazyExoticComponent<T> {
+  return React.lazy(() => importWithRetry(factory));
 }
