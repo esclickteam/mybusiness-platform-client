@@ -45,6 +45,15 @@ function timeMs(value?: string | Date | null) {
   return Number.isNaN(ms) ? 0 : ms;
 }
 
+export function normalizeWaPhone(raw?: string | null) {
+  const digits = String(raw || "").replace(/\D/g, "");
+  if (!digits) return "";
+  if (digits.startsWith("972") && digits.length >= 11) return digits;
+  if (digits.startsWith("0") && digits.length >= 9) return `972${digits.slice(1)}`;
+  if (digits.length === 9) return `972${digits}`;
+  return digits;
+}
+
 export function mergeMessages(
   current: PublicWhatsAppMessage[],
   incoming: PublicWhatsAppMessage | PublicWhatsAppMessage[]
@@ -113,8 +122,51 @@ export function bumpThreadList(
   extras: Partial<PublicWhatsAppThread> = {}
 ) {
   const merged = { ...thread, ...extras };
-  const rest = items.filter((row) => row.id !== merged.id);
+  const rest = items.filter((row) => {
+    if (row.id && merged.id && String(row.id) === String(merged.id)) return false;
+    if (
+      row.adminCustomerId &&
+      merged.adminCustomerId &&
+      String(row.adminCustomerId) === String(merged.adminCustomerId)
+    ) {
+      return false;
+    }
+    const a = normalizeWaPhone(row.phone);
+    const b = normalizeWaPhone(merged.phone);
+    if (a && b && a === b) return false;
+    return true;
+  });
   return [merged, ...rest];
+}
+
+export function inboundEventMatches(
+  payload: {
+    adminCustomerId?: string | null;
+    thread?: PublicWhatsAppThread | null;
+  } | null
+  | undefined,
+  ctx: { customerId?: string | null; threadId?: string | null; phone?: string | null }
+) {
+  if (!payload) return false;
+  if (
+    ctx.threadId &&
+    payload.thread?.id &&
+    String(payload.thread.id) === String(ctx.threadId)
+  ) {
+    return true;
+  }
+  const payloadCustomer =
+    payload.adminCustomerId || payload.thread?.adminCustomerId || null;
+  if (
+    ctx.customerId &&
+    payloadCustomer &&
+    String(payloadCustomer) === String(ctx.customerId)
+  ) {
+    return true;
+  }
+  const eventPhone = normalizeWaPhone(payload.thread?.phone);
+  const localPhone = normalizeWaPhone(ctx.phone);
+  return Boolean(eventPhone && localPhone && eventPhone === localPhone);
 }
 
 export function formatClock(value?: string | Date | null) {

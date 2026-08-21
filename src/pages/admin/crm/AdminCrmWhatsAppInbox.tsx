@@ -209,6 +209,7 @@ export default function AdminCrmWhatsAppInbox() {
             <WhatsAppWebThread
               customerId={selected.adminCustomerId}
               threadId={selected.id}
+              phone={selected.phone}
               canSend={Boolean(perms.whatsappSend)}
               canTemplates={Boolean(perms.whatsappTemplates)}
               canDemo={perms.demoSend !== false}
