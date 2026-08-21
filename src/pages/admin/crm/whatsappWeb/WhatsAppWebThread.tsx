@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
-import adminCrmApi from "../../../../../api/adminCrmApi";
+import adminCrmApi from "../../../../api/adminCrmApi";
 import { Badge } from "../adminCrmLabels";
 import { PrimaryButton, SecondaryButton } from "../AdminCrmUi";
 import { WhatsAppWebTicks } from "./WhatsAppWebTicks";
