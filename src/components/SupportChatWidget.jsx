@@ -1,6 +1,17 @@
 import React, { Component, useCallback, useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { Bot } from "lucide-react";
 import ChatBot from "./ChatBot";
+
+function isBizuplyPublicBookingPath(pathname = "") {
+  const parts = String(pathname || "")
+    .split("/")
+    .filter(Boolean);
+  if (parts[0] === "book" && parts[1] === "bizuply" && parts[2]) return true;
+  if (parts[0] === "bizuply" && parts[1] === "book" && parts[2]) return true;
+  if (parts[0] === "book" && parts[1] && !/^[a-fA-F0-9]{24}$/.test(parts[1])) return true;
+  return false;
+}
 
 /**
  * If ChatBot crashes while open, recover instead of swallowing the UI.
@@ -41,6 +52,7 @@ class ChatBotBoundary extends Component {
  * Listens for `bizuply:openSupportChat` CustomEvent with optional { message }.
  */
 export default function SupportChatWidget() {
+  const location = useLocation();
   const [chatOpen, setChatOpen] = useState(false);
   const [initialMessage, setInitialMessage] = useState(null);
   const [panelKey, setPanelKey] = useState(0);
@@ -63,6 +75,10 @@ export default function SupportChatWidget() {
     // Remount ChatBot next open so a prior error does not stick.
     setPanelKey((k) => k + 1);
   }, []);
+
+  if (isBizuplyPublicBookingPath(location.pathname)) {
+    return null;
+  }
 
   return (
     <>

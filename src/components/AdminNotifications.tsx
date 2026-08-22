@@ -338,29 +338,33 @@ function AdminPushSettings({
           )}
 
           <div className="rounded-2xl border border-slate-100 bg-white p-3">
-            <div className="flex items-start gap-2">
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-red-500 ring-1 ring-amber-100">
-                <Headphones className="h-4 w-4" />
-              </span>
-              <div>
-                <p className="text-sm font-black text-slate-900">
-                  צ׳אט תמיכה מלקוחות
-                </p>
-                <p className="mt-1 text-[11px] font-semibold leading-5 text-slate-500">
-                  תקבלו התראה כשלקוח מבקש נציג או שולח הודעה בשיחת תמיכה חיה.
-                </p>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+              <div className="flex min-w-0 items-start gap-2">
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-red-500 ring-1 ring-amber-100">
+                  <Headphones className="h-4 w-4" />
+                </span>
+                <div className="min-w-0">
+                  <p className="text-sm font-black text-slate-900">
+                    צ׳אט תמיכה מלקוחות
+                  </p>
+                  <p className="mt-1 text-[11px] font-semibold leading-5 text-slate-500">
+                    תקבלו התראה כשלקוח מבקש נציג או שולח הודעה בשיחת תמיכה חיה.
+                  </p>
+                </div>
               </div>
               <Toggle checked disabled onChange={() => {}} />
             </div>
-            <div className="mt-3 flex items-start gap-2 border-t border-slate-100 pt-3">
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-violet-50 text-[#7C4DFF] ring-1 ring-violet-100">
-                <CalendarDays className="h-4 w-4" />
-              </span>
-              <div>
-                <p className="text-sm font-black text-slate-900">יומן BizUply</p>
-                <p className="mt-1 text-[11px] font-semibold leading-5 text-slate-500">
-                  תקבלו התראה כשנקבעת שיחה חדשה ותזכורת 10 דקות לפני הפגישה.
-                </p>
+            <div className="mt-3 flex flex-col gap-3 border-t border-slate-100 pt-3 sm:flex-row sm:items-start sm:justify-between">
+              <div className="flex min-w-0 items-start gap-2">
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-violet-50 text-[#7C4DFF] ring-1 ring-violet-100">
+                  <CalendarDays className="h-4 w-4" />
+                </span>
+                <div className="min-w-0">
+                  <p className="text-sm font-black text-slate-900">יומן BizUply</p>
+                  <p className="mt-1 text-[11px] font-semibold leading-5 text-slate-500">
+                    תקבלו התראה כשנקבעת שיחה חדשה ותזכורת 10 דקות לפני הפגישה.
+                  </p>
+                </div>
               </div>
               <Toggle checked disabled onChange={() => {}} />
             </div>
@@ -445,6 +449,35 @@ export default function AdminNotifications() {
     return alerts;
   }, [alerts, tab]);
 
+  const footerAction = useMemo(() => {
+    const latest = filtered.find((a) => !a.read) || filtered[0];
+    if (!latest) return null;
+    const isCalendar =
+      latest.kind === "calendar_booking" || latest.kind === "calendar_reminder";
+    if (isCalendar) {
+      const url =
+        latest.targetUrl ||
+        (latest.adminCustomerId
+          ? `/admin/crm/customers/${latest.adminCustomerId}`
+          : "/admin/crm/customers");
+      return {
+        label: "לכרטיס לקוח",
+        icon: CalendarDays,
+        url,
+        tone: "violet" as const,
+      };
+    }
+    const url = latest.conversationId
+      ? `/admin/support-chat?c=${latest.conversationId}`
+      : "/admin/support-chat";
+    return {
+      label: "לצ׳אט תמיכה",
+      icon: Headphones,
+      url,
+      tone: "support" as const,
+    };
+  }, [filtered]);
+
   const handleStaffNotify = useCallback(
     (payload: any) => {
       const rows = Array.isArray(payload?.notifications)
@@ -471,7 +504,7 @@ export default function AdminNotifications() {
   );
 
   useEffect(() => {
-    void ensurePushSubscription().catch(() => {});
+    void ensurePushSubscription({ ignorePreference: true }).catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -900,18 +933,25 @@ export default function AdminNotifications() {
                   )}
                 </div>
 
-                <div className="shrink-0 border-t border-slate-100 p-3">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      closePanel();
-                      navigate("/admin/support-chat");
-                    }}
-                    className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-amber-400 to-red-500 text-sm font-black text-white shadow-sm"
-                  >
-                    <Headphones className="h-4 w-4" />
-                    לצ׳אט תמיכה
-                  </button>
+                <div className="shrink-0 border-t border-slate-100 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+                  {footerAction ? (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        closePanel();
+                        navigate(footerAction.url);
+                      }}
+                      className={[
+                        "inline-flex h-11 w-full items-center justify-center gap-2 rounded-2xl text-sm font-black text-white shadow-sm",
+                        footerAction.tone === "violet"
+                          ? "bg-[#7C4DFF]"
+                          : "bg-gradient-to-l from-amber-400 to-red-500",
+                      ].join(" ")}
+                    >
+                      <footerAction.icon className="h-4 w-4" />
+                      {footerAction.label}
+                    </button>
+                  ) : null}
                 </div>
               </>
             )}

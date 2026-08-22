@@ -17,12 +17,12 @@ export const ADMIN_FLOATING_PANEL_CLASS = [
 
 export const ADMIN_FLOATING_PANEL_COMPACT_CLASS = [
   "fixed z-[9999] flex flex-col overflow-hidden border border-slate-200/90 bg-white text-slate-900",
-  "inset-x-0 bottom-0 top-auto h-[min(85dvh,560px)] w-full rounded-t-[28px] rounded-b-none",
-  "pb-[env(safe-area-inset-bottom)]",
+  "inset-x-0 bottom-0 top-auto h-[min(92dvh,680px)] w-full max-w-full rounded-t-[28px] rounded-b-none",
+  "pb-[max(env(safe-area-inset-bottom),0.75rem)] pt-[env(safe-area-inset-top)]",
   "shadow-[0_-16px_48px_rgba(15,23,42,0.2)]",
   "sm:inset-auto sm:left-4 sm:top-20 sm:left-6",
   "sm:h-[min(560px,calc(100dvh-6.5rem))] sm:w-[min(380px,calc(100vw-24px))]",
-  "sm:rounded-[28px] sm:pb-0",
+  "sm:max-w-[380px] sm:rounded-[28px] sm:pb-0 sm:pt-0",
   "sm:shadow-2xl",
 ].join(" ");
 
