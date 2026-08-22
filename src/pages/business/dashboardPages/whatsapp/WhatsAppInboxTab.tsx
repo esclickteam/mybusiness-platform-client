@@ -17,6 +17,7 @@ import {
   cardBase,
   inputBase,
 } from "../../../../styles/bizuplyUi";
+import GuidedDemoSandboxButton from "../../../../guidedDemo/GuidedDemoSandboxButton";
 
 type OutletCtx = { businessId: string | null };
 
@@ -288,6 +289,12 @@ export default function WhatsAppInboxTab() {
         </div>
 
         <div className="border-t border-slate-100 p-4">
+          <GuidedDemoSandboxButton
+            target="whatsapp-demo-send"
+            className="mb-3 w-full rounded-2xl border border-amber-200 bg-amber-50 px-4 py-2 text-xs font-black text-amber-900"
+          >
+            שלחו הודעת הדגמה — לא נשלחת ללקוח אמיתי
+          </GuidedDemoSandboxButton>
           <p className="mb-2 text-xs font-medium text-slate-500">
             {t("whatsapp.inbox.sessionHint")}
           </p>

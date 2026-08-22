@@ -1211,6 +1211,7 @@ export default function CRMAppointmentsTab() {
             <button
               type="button"
               onClick={openCreateModal}
+              data-demo-target="calendar-create-appointment"
               className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-[#6D28D9] px-4 text-sm font-black text-white transition hover:bg-[#5B21B6]"
             >
               <Plus className="h-4 w-4" />
@@ -2293,6 +2294,7 @@ function AppointmentModal({
             <button
               type="button"
               onClick={onSave}
+              data-demo-target="calendar-save-appointment"
               disabled={
                 isSaving ||
                 !appointment.clientName ||

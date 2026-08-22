@@ -116,6 +116,7 @@ export default function CreateAutomationModal({
             className="ax-create-choice"
             disabled={!businessId || creatingBlank || readOnly}
             title={writeBlockedTitle}
+            data-demo-target="automations-create-blank"
             onClick={() => void handleBlank()}
           >
             <span className="ax-create-choice__icon">

@@ -2132,6 +2132,7 @@ export default function CRMLeadsTab({
                     if (node) node.scrollTop = 0;
                   }}
                   data-leads-scroll
+                  data-demo-target="crm-leads-list"
                   className="min-h-0 flex-1 overflow-y-auto"
                   style={{ direction: "ltr" }}
                 >
@@ -2208,6 +2209,13 @@ export default function CRMLeadsTab({
                               <React.Fragment key={lead._id}>
                                 <article
                                   onClick={() => openLeadDrawer(lead)}
+                                  data-demo-target={
+                                    (lead.tags || []).includes("demo:daniel")
+                                      ? "crm-lead-card-daniel"
+                                      : (lead.tags || []).includes("demo:maya")
+                                        ? "crm-lead-card-maya"
+                                        : undefined
+                                  }
                                   className={[
                                     "hidden cursor-pointer px-4 py-3.5 transition xl:grid xl:grid-cols-[1.35fr_1.15fr_0.9fr_0.8fr_1.15fr_0.85fr_0.95fr] xl:items-center xl:gap-3",
                                     selectedLead?._id === lead._id
@@ -2331,6 +2339,13 @@ export default function CRMLeadsTab({
                                     <button
                                       type="button"
                                       onClick={() => openLeadDrawer(lead)}
+                                      data-demo-target={
+                                        (lead.tags || []).includes("demo:daniel")
+                                          ? "crm-lead-card-daniel"
+                                          : (lead.tags || []).includes("demo:maya")
+                                            ? "crm-lead-card-maya"
+                                            : undefined
+                                      }
                                       className="inline-flex h-9 items-center gap-1.5 rounded-full bg-[#6D28D9] px-3 text-xs font-black text-white transition hover:bg-[#5B21B6]"
                                     >
                                       {t("crm.common.open")}
@@ -2341,6 +2356,13 @@ export default function CRMLeadsTab({
 
                                 <article
                                   onClick={() => openLeadDrawer(lead, "form")}
+                                  data-demo-target={
+                                    (lead.tags || []).includes("demo:daniel")
+                                      ? "crm-lead-card-daniel"
+                                      : (lead.tags || []).includes("demo:maya")
+                                        ? "crm-lead-card-maya"
+                                        : undefined
+                                  }
                                   className={[
                                     "grid cursor-pointer grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)_minmax(0,0.95fr)] items-center gap-2 px-3 py-2.5 transition xl:hidden",
                                     selectedLead?._id === lead._id
@@ -2740,6 +2762,7 @@ export default function CRMLeadsTab({
 
                       <select
                         value={selectedStatus}
+                        data-demo-target="crm-status-select"
                         onChange={(event) =>
                           handleStatusChange(
                             selectedLead._id,
@@ -2932,6 +2955,7 @@ export default function CRMLeadsTab({
                           <button
                             type="button"
                             onClick={handleAddActivity}
+                            data-demo-target="crm-activity-submit"
                             disabled={
                               savingActivity ||
                               !newActivityText.trim() ||

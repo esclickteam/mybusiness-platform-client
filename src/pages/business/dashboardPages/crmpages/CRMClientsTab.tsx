@@ -2581,6 +2581,11 @@ function ClientsTable({
               <tr
                 key={client._id}
                 onClick={() => onOpen(client)}
+                data-demo-target={
+                  (client.tags || []).includes("demo:yael")
+                    ? "crm-client-card-yael"
+                    : undefined
+                }
                 className="group cursor-pointer border-b border-slate-100 transition hover:bg-slate-50/80"
               >
                 <td

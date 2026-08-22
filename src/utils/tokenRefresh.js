@@ -131,6 +131,18 @@ export function shouldAttemptRefresh() {
   // Lazy import avoided — session gate is checked by api.js via isSessionInvalidated().
   // Keep this function free of a circular dependency on sessionInvalidation.
   if (localStorage.getItem("impersonatedBy")) return false;
+  try {
+    const token = localStorage.getItem("token") || "";
+    if (token) {
+      const payload = JSON.parse(atob(token.split(".")[1] || ""));
+      if (payload?.isGuidedDemo || payload?.guidedDemoSessionId) return false;
+    }
+  } catch {
+    /* ignore */
+  }
+  if (typeof sessionStorage !== "undefined" && sessionStorage.getItem("guidedDemo.active") === "1") {
+    return false;
+  }
   if (localStorage.getItem("token")) return true;
   if (localStorage.getItem("businessDetails")) return true;
   // Returning from Stripe: access token may be gone/expired; try httpOnly cookie.

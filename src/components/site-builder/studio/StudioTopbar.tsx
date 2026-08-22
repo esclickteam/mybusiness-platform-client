@@ -175,9 +175,11 @@ export default function StudioTopbar({
           מדיה
         </IconButton>
 
-        <IconButton title="תצוגה מקדימה" onClick={onPreview} icon="👁">
-          תצוגה
-        </IconButton>
+        <span data-demo-target="website-preview">
+          <IconButton title="תצוגה מקדימה" onClick={onPreview} icon="👁">
+            תצוגה
+          </IconButton>
+        </span>
 
         <IconButton title="איפוס האתר לברירת מחדל" onClick={onReset} icon="↺">
           איפוס
@@ -198,6 +200,7 @@ export default function StudioTopbar({
           type="button"
           onClick={onSaveDraft}
           disabled={!canSave}
+          data-demo-target="website-save"
           title={!slugValid ? "הכתובת לא תקינה" : "שמירה כטיוטה"}
           className={[
             "shrink-0 rounded-2xl border px-4 py-3 text-xs font-black shadow-sm transition",
@@ -213,6 +216,7 @@ export default function StudioTopbar({
           type="button"
           onClick={onPublish}
           disabled={!canSave}
+          data-demo-target="website-publish"
           title={!slugValid ? "הכתובת לא תקינה" : "פרסום האתר"}
           className={[
             "shrink-0 rounded-2xl px-5 py-3 text-xs font-black text-black shadow-xl transition",

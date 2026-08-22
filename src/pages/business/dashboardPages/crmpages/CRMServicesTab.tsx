@@ -271,6 +271,7 @@ export default function CRMServicesTab() {
           <button
             type="button"
             onClick={openAdd}
+            data-demo-target="services-add-button"
             className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-[#6D28D9] px-4 text-sm font-black text-white transition hover:bg-[#5B21B6]"
           >
             <Plus className="h-4 w-4" />
@@ -551,6 +552,7 @@ function ServiceFormPanel({
             type="button"
             onClick={onSave}
             disabled={saving}
+            data-demo-target="services-save-button"
             className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#6D28D9] px-4 py-2.5 text-sm font-black text-white transition hover:bg-[#5B21B6] disabled:cursor-not-allowed disabled:opacity-60"
           >
             <Save className="h-4 w-4" />
@@ -750,6 +752,7 @@ function EmptyServicesState({ onCreate }: { onCreate: () => void }) {
       <button
         type="button"
         onClick={onCreate}
+        data-demo-target="services-add-button"
         className="mt-5 inline-flex items-center justify-center gap-2 rounded-xl bg-[#6D28D9] px-4 py-2.5 text-sm font-black text-white transition hover:bg-[#5B21B6]"
       >
         <Plus className="h-4 w-4" />
