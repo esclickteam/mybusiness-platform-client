@@ -790,6 +790,14 @@ export default function App() {
   const isAdminRoute = location.pathname.startsWith("/admin");
   const isStaffRoute = location.pathname.startsWith("/staff");
   const isGuidedDemoRoute = location.pathname.startsWith("/demo/");
+  const bizuplyBookingToken = (() => {
+    const parts = location.pathname.split("/").filter(Boolean);
+    if (parts[0] === "book" && parts[1] === "bizuply" && parts[2]) return parts[2];
+    if (parts[0] === "bizuply" && parts[1] === "book" && parts[2]) return parts[2];
+    if (parts[0] === "book" && parts[1] && !/^[a-fA-F0-9]{24}$/.test(parts[1])) return parts[1];
+    return "";
+  })();
+  const isBizuplyPublicBookingRoute = Boolean(bizuplyBookingToken);
 
   const isBusinessChatRoute =
     location.pathname.includes("/business/") &&
@@ -875,7 +883,8 @@ export default function App() {
           !isHiddenOffer &&
           !isAdminRoute &&
           !isStaffRoute &&
-          !isGuidedDemoRoute && <Header />}
+          !isGuidedDemoRoute &&
+          !isBizuplyPublicBookingRoute && <Header />}
 
         {/* Staff: top header + softphone (same behavior as admin) */}
         {isStaffRoute ? <StaffSoftphoneHost /> : null}
@@ -1486,12 +1495,15 @@ export default function App() {
           !isPublicBusinessProfile &&
           !isEarlyAccessLanding &&
           !isHiddenOffer &&
-          !isGuidedDemoRoute && <Footer />}
+          !isGuidedDemoRoute &&
+          !isBizuplyPublicBookingRoute && <Footer />}
       </div>
 
       <GuidedDemoHost />
 
-      {!user && !isEarlyAccessLanding && !isHiddenOffer && <PreLoginBot />}
+      {!user && !isEarlyAccessLanding && !isHiddenOffer && !isBizuplyPublicBookingRoute && (
+        <PreLoginBot />
+      )}
 
       {/* Admin softphone — survives page changes + business impersonation */}
       <AdminSoftphoneHost />
@@ -1503,6 +1515,7 @@ export default function App() {
         !isAdminRoute &&
         !isStaffRoute &&
         !isGuidedDemoRoute &&
+        !isBizuplyPublicBookingRoute &&
         !location.pathname.startsWith("/embed/") &&
         !isMiniSiteHost && (
           <SupportChatWidget />
@@ -1512,7 +1525,8 @@ export default function App() {
       {!isDashboardRoute &&
         !isBusinessChatRoute &&
         !isEarlyAccessLanding &&
-        !isMiniSiteHost && (
+        !isMiniSiteHost &&
+        !isBizuplyPublicBookingRoute && (
           <AccessibilityWidget siteKey="bizuply-platform" mode="live" />
         )}
     </NotificationsProvider>
