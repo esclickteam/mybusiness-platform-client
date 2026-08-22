@@ -359,7 +359,10 @@ export default function PublicIntroBookingPage() {
     const container = mobileDateScrollRef.current;
     if (!container || !key) return;
     const target = container.querySelector<HTMLElement>(`[data-date-key="${key}"]`);
-    target?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+    if (!target) return;
+    const offset =
+      target.offsetLeft - (container.clientWidth - target.offsetWidth) / 2;
+    container.scrollTo({ left: Math.max(0, offset), behavior: "smooth" });
   }
 
   function selectDate(key: string) {
@@ -497,7 +500,7 @@ export default function PublicIntroBookingPage() {
 
             {dates.length ? (
               <>
-                <section className="min-w-0">
+                <section className="min-w-0 overflow-hidden">
                   <div className="mb-2 flex items-center justify-between gap-2">
                     <h2 className="text-sm font-black text-slate-800">בחרו תאריך</h2>
                     <div className="hidden items-center gap-1 sm:flex">
@@ -544,19 +547,16 @@ export default function PublicIntroBookingPage() {
                     <DatePickerCube onClick={() => setPickerOpen(true)} />
                   </div>
 
-                  {/* Desktop: paginated grid + picker cube */}
-                  <div className="hidden gap-2 sm:flex">
-                    <div className="grid min-w-0 flex-1 grid-cols-4 gap-2">
-                      {visibleDates.map((day) => (
-                        <DateCard
-                          key={day.key}
-                          day={day}
-                          active={day.key === selectedDateKey}
-                          onSelect={selectDate}
-                        />
-                      ))}
-                    </div>
-                    <DatePickerCube onClick={() => setPickerOpen(true)} />
+                  {/* Desktop: unchanged paginated 4-date grid with arrows */}
+                  <div className="hidden grid-cols-4 gap-2 sm:grid">
+                    {visibleDates.map((day) => (
+                      <DateCard
+                        key={day.key}
+                        day={day}
+                        active={day.key === selectedDateKey}
+                        onSelect={selectDate}
+                      />
+                    ))}
                   </div>
                 </section>
 
