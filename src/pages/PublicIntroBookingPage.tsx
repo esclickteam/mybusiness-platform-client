@@ -1,9 +1,10 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { Calendar, Check, ChevronLeft, ChevronRight, Info, Phone, X } from "lucide-react";
 import API from "../api";
 
 type Slot = { startAt: string; endAt: string; label: string };
+type DateRow = { key: string; slots: Slot[]; sampleIso: string };
 
 const TIMEZONE = "Asia/Jerusalem";
 const DATES_VISIBLE = 4;
@@ -54,6 +55,180 @@ function formatWhen(iso: string) {
   }).format(new Date(iso));
 }
 
+function formatPickerLabel(key: string, sampleIso: string) {
+  try {
+    return new Intl.DateTimeFormat("he-IL", {
+      timeZone: TIMEZONE,
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    }).format(new Date(sampleIso || `${key}T12:00:00`));
+  } catch {
+    return key;
+  }
+}
+
+const dateCardClass = (active: boolean) =>
+  [
+    "flex min-h-[72px] flex-col items-center justify-center rounded-2xl border px-1 py-2 transition",
+    active
+      ? "border-[#7C4DFF] bg-[#7C4DFF]/5 text-[#7C4DFF] ring-1 ring-[#7C4DFF]/30"
+      : "border-slate-200 bg-white text-slate-700 hover:border-[#7C4DFF]/30",
+  ].join(" ");
+
+function DateCard({
+  day,
+  active,
+  onSelect,
+  compact = false,
+}: {
+  day: DateRow;
+  active: boolean;
+  onSelect: (key: string) => void;
+  compact?: boolean;
+}) {
+  return (
+    <button
+      type="button"
+      data-date-key={day.key}
+      onClick={() => onSelect(day.key)}
+      className={[
+        dateCardClass(active),
+        compact ? "w-[72px] shrink-0 snap-center" : "w-full",
+      ].join(" ")}
+    >
+      <span className="text-sm font-black tabular-nums">{formatDateCard(day.sampleIso)}</span>
+      <span className="mt-0.5 text-center text-[10px] font-bold leading-tight">
+        {formatWeekday(day.sampleIso)}
+      </span>
+    </button>
+  );
+}
+
+function DatePickerCube({ onClick }: { onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="flex min-h-[72px] w-[72px] shrink-0 snap-center flex-col items-center justify-center rounded-2xl border border-dashed border-[#7C4DFF]/40 bg-[#7C4DFF]/5 px-1 py-2 text-[#7C4DFF] transition hover:border-[#7C4DFF]/60 hover:bg-[#7C4DFF]/10"
+    >
+      <Calendar className="h-5 w-5" strokeWidth={2.2} />
+      <span className="mt-1 text-center text-[10px] font-black leading-tight">בחירת תאריך</span>
+    </button>
+  );
+}
+
+function DatePickerModal({
+  open,
+  onClose,
+  dates,
+  selectedDateKey,
+  onSelect,
+}: {
+  open: boolean;
+  onClose: () => void;
+  dates: DateRow[];
+  selectedDateKey: string;
+  onSelect: (key: string) => void;
+}) {
+  const availableKeys = useMemo(() => new Set(dates.map((d) => d.key)), [dates]);
+  const minDate = dates[0]?.key || "";
+  const maxDate = dates[dates.length - 1]?.key || "";
+  const [draft, setDraft] = useState(selectedDateKey);
+  const [pickerError, setPickerError] = useState("");
+
+  useEffect(() => {
+    if (open) {
+      setDraft(selectedDateKey || dates[0]?.key || "");
+      setPickerError("");
+    }
+  }, [open, selectedDateKey, dates]);
+
+  if (!open) return null;
+
+  function applyDate(key: string) {
+    if (!availableKeys.has(key)) {
+      setPickerError("אין מועדים פנויים בתאריך זה. בחרו תאריך אחר.");
+      return;
+    }
+    onSelect(key);
+    onClose();
+  }
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-end justify-center bg-slate-900/40 p-4 sm:items-center"
+      role="dialog"
+      aria-modal="true"
+      aria-label="בחירת תאריך"
+      onClick={onClose}
+    >
+      <div
+        className="w-full max-w-sm rounded-[24px] border border-purple-100 bg-white p-4 shadow-xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="mb-3 flex items-center justify-between gap-2">
+          <h3 className="text-base font-black text-[#1E1B4B]">בחרו תאריך</h3>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="סגירה"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-xl bg-slate-50 text-slate-500"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+
+        <label className="block text-xs font-bold text-slate-500">תאריך</label>
+        <input
+          type="date"
+          dir="ltr"
+          min={minDate}
+          max={maxDate}
+          value={draft}
+          onChange={(e) => {
+            setDraft(e.target.value);
+            setPickerError("");
+          }}
+          className="mt-1 h-12 w-full rounded-2xl border border-slate-200 px-3 text-sm font-bold text-slate-800"
+        />
+
+        {pickerError ? (
+          <p className="mt-2 text-xs font-bold text-rose-600">{pickerError}</p>
+        ) : null}
+
+        <div className="mt-3 max-h-44 space-y-1 overflow-y-auto overscroll-contain">
+          {dates.map((day) => (
+            <button
+              key={day.key}
+              type="button"
+              onClick={() => applyDate(day.key)}
+              className={[
+                "flex w-full items-center justify-between rounded-xl border px-3 py-2 text-right text-sm font-semibold transition",
+                day.key === selectedDateKey
+                  ? "border-[#7C4DFF] bg-[#7C4DFF]/5 text-[#7C4DFF]"
+                  : "border-slate-100 bg-slate-50 text-slate-700 hover:border-[#7C4DFF]/30",
+              ].join(" ")}
+            >
+              <span>{formatPickerLabel(day.key, day.sampleIso)}</span>
+              <span className="text-xs tabular-nums text-slate-500">{day.slots.length} מועדים</span>
+            </button>
+          ))}
+        </div>
+
+        <button
+          type="button"
+          onClick={() => applyDate(draft)}
+          className="mt-4 inline-flex h-11 w-full items-center justify-center rounded-2xl bg-[#7C4DFF] text-sm font-black text-white"
+        >
+          אישור תאריך
+        </button>
+      </div>
+    </div>
+  );
+}
+
 function Stepper() {
   const steps = [
     { label: "לקוח", done: true },
@@ -99,6 +274,7 @@ export default function PublicIntroBookingPage() {
   const navigate = useNavigate();
   const { token, businessId } = useParams();
   const rawToken = String(token || businessId || "").trim();
+  const mobileDateScrollRef = useRef<HTMLDivElement | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [data, setData] = useState<any>(null);
@@ -106,6 +282,7 @@ export default function PublicIntroBookingPage() {
   const [selected, setSelected] = useState("");
   const [datePage, setDatePage] = useState(0);
   const [timePage, setTimePage] = useState(0);
+  const [pickerOpen, setPickerOpen] = useState(false);
   const [saving, setSaving] = useState(false);
   const [done, setDone] = useState<any>(null);
 
@@ -178,11 +355,28 @@ export default function PublicIntroBookingPage() {
   const showMoreTimesButton =
     hasMoreTimes && visibleTimes.length >= TIMES_VISIBLE - 1;
 
+  function scrollSelectedDateIntoView(key: string) {
+    const container = mobileDateScrollRef.current;
+    if (!container || !key) return;
+    const target = container.querySelector<HTMLElement>(`[data-date-key="${key}"]`);
+    target?.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+  }
+
   function selectDate(key: string) {
     setSelectedDateKey(key);
     setSelected("");
     setTimePage(0);
+    const index = dates.findIndex((d) => d.key === key);
+    if (index >= 0) {
+      setDatePage(Math.floor(index / DATES_VISIBLE));
+    }
+    window.requestAnimationFrame(() => scrollSelectedDateIntoView(key));
   }
+
+  useEffect(() => {
+    if (!selectedDateKey) return;
+    scrollSelectedDateIntoView(selectedDateKey);
+  }, [selectedDateKey, dates.length]);
 
   function goBack() {
     if (window.history.length > 1) {
@@ -303,10 +497,10 @@ export default function PublicIntroBookingPage() {
 
             {dates.length ? (
               <>
-                <section>
+                <section className="min-w-0">
                   <div className="mb-2 flex items-center justify-between gap-2">
                     <h2 className="text-sm font-black text-slate-800">בחרו תאריך</h2>
-                    <div className="flex items-center gap-1">
+                    <div className="hidden items-center gap-1 sm:flex">
                       <button
                         type="button"
                         disabled={!hasPrevDates}
@@ -327,30 +521,42 @@ export default function PublicIntroBookingPage() {
                       </button>
                     </div>
                   </div>
-                  <div className="grid grid-cols-4 gap-2">
-                    {visibleDates.map((day) => {
-                      const active = day.key === selectedDateKey;
-                      return (
-                        <button
+
+                  {/* Mobile: continuous horizontal swipe row */}
+                  <div
+                    ref={mobileDateScrollRef}
+                    className={[
+                      "-mx-4 flex gap-2 overflow-x-auto overscroll-x-contain px-4 pb-1",
+                      "[-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
+                      "[scroll-snap-type:x_mandatory] [touch-action:pan-x]",
+                      "sm:hidden",
+                    ].join(" ")}
+                  >
+                    {dates.map((day) => (
+                      <DateCard
+                        key={day.key}
+                        day={day}
+                        active={day.key === selectedDateKey}
+                        onSelect={selectDate}
+                        compact
+                      />
+                    ))}
+                    <DatePickerCube onClick={() => setPickerOpen(true)} />
+                  </div>
+
+                  {/* Desktop: paginated grid + picker cube */}
+                  <div className="hidden gap-2 sm:flex">
+                    <div className="grid min-w-0 flex-1 grid-cols-4 gap-2">
+                      {visibleDates.map((day) => (
+                        <DateCard
                           key={day.key}
-                          type="button"
-                          onClick={() => selectDate(day.key)}
-                          className={[
-                            "flex min-h-[72px] flex-col items-center justify-center rounded-2xl border px-1 py-2 transition",
-                            active
-                              ? "border-[#7C4DFF] bg-[#7C4DFF]/5 text-[#7C4DFF] ring-1 ring-[#7C4DFF]/30"
-                              : "border-slate-200 bg-white text-slate-700 hover:border-[#7C4DFF]/30",
-                          ].join(" ")}
-                        >
-                          <span className="text-sm font-black tabular-nums">
-                            {formatDateCard(day.sampleIso)}
-                          </span>
-                          <span className="mt-0.5 text-[10px] font-bold leading-tight">
-                            {formatWeekday(day.sampleIso)}
-                          </span>
-                        </button>
-                      );
-                    })}
+                          day={day}
+                          active={day.key === selectedDateKey}
+                          onSelect={selectDate}
+                        />
+                      ))}
+                    </div>
+                    <DatePickerCube onClick={() => setPickerOpen(true)} />
                   </div>
                 </section>
 
@@ -436,6 +642,14 @@ export default function PublicIntroBookingPage() {
           </div>
         </footer>
       ) : null}
+
+      <DatePickerModal
+        open={pickerOpen}
+        onClose={() => setPickerOpen(false)}
+        dates={dates}
+        selectedDateKey={selectedDateKey}
+        onSelect={selectDate}
+      />
     </div>
   );
 }
