@@ -132,13 +132,13 @@ export async function saveBotExchange(conversationId, visitorText, botText, gues
 
 export async function requestHumanAgent(
   conversationId,
-  { name, email, note } = {},
+  { name, email, phone, note, pageUrl, campaign } = {},
   guestToken
 ) {
   const data = await supportFetch(`/support-chat/${conversationId}/request-human`, {
     method: "POST",
     token: guestToken,
-    body: { name, email, note },
+    body: { name, email, phone, note, pageUrl, campaign },
   });
 
   const prev = loadSupportSession() || {};

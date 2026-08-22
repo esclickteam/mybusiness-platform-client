@@ -127,7 +127,6 @@ const BusinessProfileView = lazy(() =>
   import("./components/shared/BusinessProfileView")
 );
 
-const ClientBookingPage = lazy(() => import("./pages/ClientBookingPage"));
 const ClientDashboard = lazy(() => import("./pages/client/ClientDashboard"));
 const OrdersPage = lazy(() => import("./pages/client/OrdersPage"));
 
@@ -163,6 +162,10 @@ const AdminCrmActivities = lazy(() => import("./pages/admin/crm/AdminCrmActiviti
 const AdminCrmWhatsAppInbox = lazy(() => import("./pages/admin/crm/AdminCrmWhatsAppInbox"));
 const AdminCrmFollowUps = lazy(() => import("./pages/admin/crm/AdminCrmFollowUps"));
 const AdminCrmGuidedDemo = lazy(() => import("./pages/admin/crm/AdminCrmGuidedDemo"));
+const AdminBizuplyCalendar = lazy(() => import("./pages/admin/AdminBizuplyCalendar"));
+const AdminAutomations = lazy(() => import("./pages/admin/AdminAutomations"));
+const AdminSystemHub = lazy(() => import("./pages/admin/AdminSystemHub"));
+const BookRouteDispatch = lazy(() => import("./pages/BookRouteDispatch"));
 const EditSiteContent = lazy(() => import("./pages/admin/EditSiteContent"));
 const ManageRoles = lazy(() => import("./pages/admin/ManageRoles"));
 const AdminPayoutPage = lazy(() => import("./pages/admin/AdminPayoutPage"));
@@ -1015,6 +1018,10 @@ export default function App() {
                           element={<WebsiteInviteAcceptPage />}
                         />
                         <Route path="/guided-demo/:token" element={<AdminCrmGuidedDemo />} />
+                        <Route
+                          path="/book/:businessId"
+                          element={<BookRouteDispatch />}
+                        />
                         <Route path="/register" element={<Register />} />
                         {/* Hidden private offer — reachable only via direct URL.
                             NOT linked from nav/footer/pricing/sitemap. */}
@@ -1030,11 +1037,6 @@ export default function App() {
                         <Route
                           path="/business/:businessId"
                           element={<BusinessProfileView />}
-                        />
-
-                        <Route
-                          path="/book/:businessId"
-                          element={<ClientBookingPage />}
                         />
 
                         <Route
@@ -1230,6 +1232,33 @@ export default function App() {
                           element={
                             <ProtectedRoute roles={["admin"]}>
                               <AdminManagedWhatsApp />
+                            </ProtectedRoute>
+                          }
+                        />
+
+                        <Route
+                          path="/admin/calendar"
+                          element={
+                            <ProtectedRoute roles={["admin"]}>
+                              <AdminBizuplyCalendar />
+                            </ProtectedRoute>
+                          }
+                        />
+
+                        <Route
+                          path="/admin/automations"
+                          element={
+                            <ProtectedRoute roles={["admin"]}>
+                              <AdminAutomations />
+                            </ProtectedRoute>
+                          }
+                        />
+
+                        <Route
+                          path="/admin/system"
+                          element={
+                            <ProtectedRoute roles={["admin"]}>
+                              <AdminSystemHub />
                             </ProtectedRoute>
                           }
                         />

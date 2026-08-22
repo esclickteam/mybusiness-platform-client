@@ -13,6 +13,7 @@ export const STAGE_LABELS: Record<string, string> = {
   contact_required: "צריך ליצור קשר",
   contacted: "נוצר קשר",
   qualified: "מתאים",
+  initial_call_scheduled: "שיחה ראשונית נקבעה",
   demo_scheduled: "דמו נקבע",
   demo_sent: "דמו נשלח",
   proposal_sent: "הצעה נשלחה",
@@ -24,16 +25,17 @@ export const STAGE_LABELS: Record<string, string> = {
 };
 
 export const SOURCE_LABELS: Record<string, string> = {
-  facebook: "פייסבוק / Meta",
-  meta_lead_ads: "Meta Lead Ads",
-  website_form: "טופס אתר",
-  manual: "יצירה ידנית",
+  facebook: "Facebook",
+  meta_lead_ads: "Facebook",
+  website_form: "טופס באתר",
+  website_bot: "בוט באתר BizUply",
+  manual: "ידני",
   imported: "ייבוא",
-  demo_request: "בקשת דמו",
+  demo_request: "דמו",
   landing_page: "דף נחיתה",
   early_access: "הרשמה מוקדמת",
-  partner_referral: "שותף / הפניה",
-  whatsapp: "וואטסאפ",
+  partner_referral: "שותף",
+  whatsapp: "WhatsApp",
   other: "אחר",
 };
 
@@ -119,6 +121,13 @@ export const TIMELINE_LABELS: Record<string, string> = {
   customer_updated: "רשומת לקוח עודכנה",
   health_override: "עדכון מצב לקוח",
   migrated_existing: "שיוך לקוח קיים",
+  meeting: "פגישה",
+  initial_call_booked: "נקבעה שיחה ראשונית",
+  initial_call_cancelled: "שיחה ראשונית בוטלה",
+  initial_call_completed: "שיחה ראשונית הושלמה",
+  initial_call_no_show: "שיחה ראשונית — לא הגיע",
+  automation_whatsapp_sent: "נשלחה הודעת WhatsApp לתיאום שיחה ראשונית",
+  automation_whatsapp_failed: "שליחת WhatsApp לתיאום שיחה נכשלה",
 };
 
 export const FOLLOW_UP_TYPE_LABELS: Record<string, string> = {

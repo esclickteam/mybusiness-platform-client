@@ -92,6 +92,25 @@ export const adminCrmApi = {
     API.get(`/admin/crm/whatsapp/inbox/${threadId}/messages${qs(params)}`),
   whatsappAssign: (threadId: string, body: Record<string, unknown>) =>
     API.post(`/admin/crm/whatsapp/inbox/${threadId}/assign`, body),
+  calendar: (params: AdminCrmListQuery = {}) =>
+    API.get(`/admin/crm/calendar${qs(params)}`),
+  calendarSlots: (params: AdminCrmListQuery = {}) =>
+    API.get(`/admin/crm/calendar/slots${qs(params)}`),
+  calendarBook: (body: Record<string, unknown>) =>
+    API.post("/admin/crm/calendar/bookings", body),
+  calendarStatus: (id: string, body: Record<string, unknown>) =>
+    API.post(`/admin/crm/calendar/bookings/${id}/status`, body),
+  calendarReschedule: (id: string, body: Record<string, unknown>) =>
+    API.post(`/admin/crm/calendar/bookings/${id}/reschedule`, body),
+  customerAppointments: (id: string) =>
+    API.get(`/admin/crm/customers/${id}/appointments`),
+  automationsList: () => API.get("/admin/crm/automations"),
+  automationRuns: (params: AdminCrmListQuery = {}) =>
+    API.get(`/admin/crm/automations/runs${qs(params)}`),
+  setAutomationEnabled: (key: string, enabled: boolean) =>
+    API.post(`/admin/crm/automations/${key}/enabled`, { enabled }),
+  retryAutomationRun: (id: string) =>
+    API.post(`/admin/crm/automations/runs/${id}/retry`),
 };
 
 export default adminCrmApi;

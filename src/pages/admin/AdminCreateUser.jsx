@@ -108,6 +108,17 @@ export default function AdminCreateUser() {
     } else if (checkout === "cancel") {
       setError("תשלום Stripe בוטל — המשתמש כבר נוצר וניתן לשלוח שוב לתשלום מלקוחות.");
     }
+    if (searchParams.get("fromCrm")) {
+      setForm((prev) => ({
+        ...prev,
+        userType: "business",
+        name: searchParams.get("name") || prev.name,
+        email: searchParams.get("email") || prev.email,
+        phone: searchParams.get("phone") || prev.phone,
+        businessName: searchParams.get("businessName") || prev.businessName,
+        notes: prev.notes || `AdminCustomer ${searchParams.get("fromCrm")}`,
+      }));
+    }
   }, [searchParams]);
 
   const loadMeta = useCallback(async () => {

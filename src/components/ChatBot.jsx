@@ -143,6 +143,7 @@ export default function ChatBot({
   const [showHumanForm, setShowHumanForm] = useState(false);
   const [humanName, setHumanName] = useState("");
   const [humanEmail, setHumanEmail] = useState("");
+  const [humanPhone, setHumanPhone] = useState("");
   const [humanNote, setHumanNote] = useState("");
   const [humanStatus, setHumanStatus] = useState(""); // waiting | active | ""
   const [agentTyping, setAgentTyping] = useState(false);
@@ -654,7 +655,19 @@ export default function ChatBot({
       const session = await ensureSession();
       const data = await requestHumanAgent(
         session.conversation._id,
-        { name, email, note: humanNote.trim() || undefined },
+        {
+          name,
+          email,
+          phone: humanPhone.trim() || undefined,
+          note: humanNote.trim() || undefined,
+          pageUrl: typeof window !== "undefined" ? window.location.href : undefined,
+          campaign:
+            typeof window !== "undefined"
+              ? new URLSearchParams(window.location.search).get("utm_campaign") ||
+                new URLSearchParams(window.location.search).get("utm_source") ||
+                undefined
+              : undefined,
+        },
         session.guestToken
       );
 
@@ -688,7 +701,7 @@ export default function ChatBot({
     } finally {
       setHandoffLoading(false);
     }
-  }, [humanName, humanEmail, humanNote, ensureSession, t]);
+  }, [humanName, humanEmail, humanPhone, humanNote, ensureSession, t]);
 
   const sendHumanMessage = useCallback(async () => {
     const text = chatInput.trim();
@@ -1193,6 +1206,13 @@ export default function ChatBot({
                 value={humanEmail}
                 onChange={(e) => setHumanEmail(e.target.value)}
                 placeholder={t("chatbot.humanEmail")}
+                className="h-9 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm outline-none focus:border-violet-300"
+              />
+              <input
+                type="tel"
+                value={humanPhone}
+                onChange={(e) => setHumanPhone(e.target.value)}
+                placeholder={t("chatbot.humanPhone", { defaultValue: "טלפון (מומלץ ל-WhatsApp)" })}
                 className="h-9 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm outline-none focus:border-violet-300"
               />
               <textarea
