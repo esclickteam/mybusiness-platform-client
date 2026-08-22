@@ -50,6 +50,7 @@
     "dayjs": "^1.11.19",
     "dotenv": "^16.6.1",
     "emailjs-com": "^3.2.0",
+    "emoji-picker-react": "^4.19.1",
     "exceljs": "^4.4.0",
     "express": "^5.1.0",
     "framer-motion": "^12.23.24",

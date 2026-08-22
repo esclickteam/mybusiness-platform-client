@@ -16,6 +16,13 @@ export type PublicWhatsAppMessage = {
   error?: string;
   providerMessageId?: string;
   pending?: boolean;
+  messageType?: string;
+  mimeType?: string;
+  filename?: string;
+  caption?: string;
+  mediaSize?: number;
+  hasMedia?: boolean;
+  mediaPath?: string;
 };
 
 export type PublicWhatsAppThread = {
