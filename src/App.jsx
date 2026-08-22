@@ -8,6 +8,7 @@ import PreLoginBot from "./components/PreLoginBot";
 import SupportChatWidget from "./components/SupportChatWidget";
 import AccessibilityWidget from "./components/site-plugins/accessibility/AccessibilityWidget";
 import AdminSoftphoneHost from "./components/AdminSoftphoneHost";
+import AdminPushPermissionBanner from "./components/AdminPushPermissionBanner";
 import StaffSoftphoneHost from "./components/staff/StaffSoftphoneHost";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
@@ -1507,6 +1508,8 @@ export default function App() {
 
       {/* Admin softphone — survives page changes + business impersonation */}
       <AdminSoftphoneHost />
+
+      {user?.role === "admin" && isAdminRoute && <AdminPushPermissionBanner />}
 
       {/* Site-wide support bot — keep visible on public + app pages */}
       {!isEarlyAccessLanding &&
