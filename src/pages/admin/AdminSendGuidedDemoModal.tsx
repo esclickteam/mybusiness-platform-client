@@ -341,7 +341,7 @@ export default function AdminSendGuidedDemoModal({
           <div className="min-w-0">
             <h2 className="text-xl font-black text-slate-900">שליחת דמו אינטראקטיבי</h2>
             <p className="mt-1 text-sm font-semibold leading-6 text-slate-500">
-              צרו קישור מאובטח לדמו. שליחת WhatsApp אוטומטית היא אופציונלית.
+              צרו קישור מאובטח לדמו ושלחו ב-WhatsApp בלבד.
             </p>
           </div>
           <button type="button" onClick={onClose} aria-label="סגירה">
@@ -587,9 +587,9 @@ export default function AdminSendGuidedDemoModal({
               </section>
 
               <section>
-                <h3 className="text-sm font-black text-slate-900">אופן שליחה</h3>
+                <h3 className="text-sm font-black text-slate-900">שליחה ב-WhatsApp</h3>
                 <div className="mt-2 rounded-2xl border border-violet-200 bg-violet-50 p-3 text-sm font-bold">
-                  WhatsApp
+                  WhatsApp בלבד
                   <span className="mt-1 block text-xs font-semibold text-slate-600">
                     שליחה ידנית זמינה תמיד. שליחה אוטומטית דרך Bizuply אופציונלית.
                     {delivery?.whatsapp?.template?.language
@@ -599,9 +599,6 @@ export default function AdminSendGuidedDemoModal({
                       ? ` · ${delivery.whatsapp.template.reportingStatus}`
                       : ""}
                   </span>
-                </div>
-                <div className="mt-2 rounded-2xl border border-slate-200 bg-slate-50 p-3 text-sm font-bold text-slate-400">
-                  SMS עדיין לא זמין
                 </div>
                 {!waOk ? (
                   <p className="mt-2 text-xs font-bold text-amber-700" data-testid="admin-wa-api-unavailable">
