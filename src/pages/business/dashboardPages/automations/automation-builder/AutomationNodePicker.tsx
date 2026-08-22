@@ -458,7 +458,11 @@ export default function AutomationNodePicker({
                     data-demo-target={
                       String(item.key || item.defaults?.actionKey || "").includes("create_task")
                         ? "automations-action-create-task"
-                        : undefined
+                        : /send_email|send_gmail|send_outlook|connected_email/.test(
+                            String(item.key || item.defaults?.actionKey || "")
+                          )
+                          ? "automations-action-send-email"
+                          : undefined
                     }
                     onClick={() => handlePick(item)}
                   >

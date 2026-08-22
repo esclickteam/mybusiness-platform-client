@@ -179,18 +179,23 @@ describe("BusinessWorkspaceNav restricted nav allowlist", () => {
     expect(navLink(ALLOWED_BUSINESS_ID, "crm")).not.toBeNull();
   });
 
-  it("shows WhatsApp for a guided demo session even off the production allowlist", async () => {
+  it("hides WhatsApp, Meta campaigns and billing in a guided demo session", async () => {
     await renderNav({
       user: {
         businessId: OTHER_BUSINESS_ID,
         role: "business",
         isGuidedDemo: true,
-        enabledModules: ["dashboard", "whatsapp", "crm"],
+        enabledModules: ["dashboard", "whatsapp", "crm", "meta-campaigns"],
       },
       urlBusinessId: OTHER_BUSINESS_ID,
     });
 
-    expect(whatsappLink(OTHER_BUSINESS_ID)).not.toBeNull();
+    expect(whatsappLink(OTHER_BUSINESS_ID)).toBeNull();
+    expect(metaCampaignsLink(OTHER_BUSINESS_ID)).toBeNull();
     expect(navLink(OTHER_BUSINESS_ID, "billing")).toBeNull();
+    expect(navLink(OTHER_BUSINESS_ID, "crm")).not.toBeNull();
+    expect(
+      document.querySelector(`a[href="/business/${OTHER_BUSINESS_ID}"]`)
+    ).toBeNull();
   });
 });

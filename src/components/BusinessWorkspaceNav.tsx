@@ -218,8 +218,8 @@ export default function BusinessWorkspaceNav({
   // by visiting another business path; the URL is only a fallback for admins,
   // who carry no businessId of their own.
   const showRestrictedNav =
-    canSeeRestrictedNav(user?.businessId || businessId) ||
-    Boolean(user?.isGuidedDemo);
+    canSeeRestrictedNav(user?.businessId || businessId) &&
+    !Boolean(user?.isGuidedDemo);
 
   const items: NavItemConfig[] = [
     {
@@ -323,6 +323,15 @@ export default function BusinessWorkspaceNav({
     if (!item.moduleKey) return true;
     if (item.moduleKey === "__hidden__") return false;
     if (item.moduleKey === "billing" && user?.isGuidedDemo) return false;
+    if (item.labelKey === "businessNav.viewPublicProfile" && user?.isGuidedDemo) {
+      return false;
+    }
+    if (
+      user?.isGuidedDemo &&
+      (item.moduleKey === "whatsapp" || item.moduleKey === "meta-campaigns")
+    ) {
+      return false;
+    }
     if (item.moduleKey === "website" && showWebsiteUpsell) return true;
     return isModuleEnabled(enabledModules, item.moduleKey);
   });
