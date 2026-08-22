@@ -5,7 +5,19 @@ import { demoProgress, runDemoSpecialAction, startDemoProgressBridge, stopDemoPr
 import { isGuidedDemoActive, readGuidedDemoSession, restorePreviousAuth, clearGuidedDemoLocal } from "./sessionStore";
 import { exitGuidedDemoSession, fetchGuidedDemoSession } from "../api/guidedDemoApi";
 import { useAuth } from "../context/AuthContext";
-import { calcHand, findDemoTarget, INTRO_CATEGORIES, padHole, type HandPos, type Hole } from "./overlayHelpers";
+import {
+  calcHand,
+  findDemoTarget,
+  holeOptionsForKind,
+  INTRO_CATEGORIES,
+  inputValueSatisfied,
+  padHole,
+  readDemoInputValue,
+  resolveStepKind,
+  type HandPos,
+  type Hole,
+} from "./overlayHelpers";
+import { CalendarCheck, LayoutDashboard, LayoutTemplate, Sparkles, Users, Workflow } from "lucide-react";
 
 const BRAND = "#6D28D9";
 const TARGET_WAIT_MS = 10000;
@@ -144,13 +156,25 @@ function nextStepInModule(session: any, step: any) {
   return idx >= 0 ? modSteps[idx + 1] || null : null;
 }
 
-function stepNeedsBlock(step: any) {
-  return step?.completionRule?.type === "click" || step?.action === "click";
+function isAcknowledge(step: any) {
+  return resolveStepKind(step) === "acknowledge";
 }
 
-function isAcknowledge(step: any) {
-  return step?.action === "acknowledge" || step?.completionRule?.type === "acknowledge";
+function isDiscreteInput(el: Element | null) {
+  if (!el) return false;
+  if (el instanceof HTMLSelectElement) return true;
+  if (!(el instanceof HTMLInputElement)) return false;
+  return ["date", "datetime-local", "time", "checkbox", "radio", "number"].includes(el.type);
 }
+
+const INTRO_ICONS: Record<string, React.ComponentType<{ className?: string }>> = {
+  dashboard: LayoutDashboard,
+  crm: Users,
+  work: CalendarCheck,
+  auto: Workflow,
+  growth: Sparkles,
+  web: LayoutTemplate,
+};
 
 function DimBlockers({ hole, onBlock }: { hole: Hole; onBlock: () => void }) {
   const { top, left, width, height } = hole;
@@ -214,6 +238,7 @@ export default function GuidedDemoEngine() {
   const [introOpen, setIntroOpen] = useState(false);
   const [tourMinimized, setTourMinimized] = useState(false);
   const [finishConfirm, setFinishConfirm] = useState(false);
+  const [inputReady, setInputReady] = useState(false);
   const cardRef = useRef<HTMLDivElement | null>(null);
   const retryRef = useRef(0);
   const skipLockRef = useRef(false);
@@ -226,6 +251,7 @@ export default function GuidedDemoEngine() {
   const modStepNum = modStepIndex >= 0 ? modStepIndex + 1 : (currentModule?.done || 0) + 1;
   const modStepTotal = modSteps.length || currentModule?.total || 0;
   const nextPreview = step ? nextStepInModule(session, step) : null;
+  const stepKind = resolveStepKind(step);
   const moduleIndex = progress.findIndex((m: any) => m.current);
   const globalStepIndex = Math.max(0, Number(session?.currentStepIndex || 0));
   const globalStepTotal = session?.totalSteps || (session?.steps || []).length || 0;
@@ -285,6 +311,7 @@ export default function GuidedDemoEngine() {
     setHandHidden(false);
     skipLockRef.current = false;
     retryRef.current += 1;
+    setInputReady(false);
   }, [step?.id]);
 
   const layoutCard = useCallback(() => {
@@ -329,7 +356,13 @@ export default function GuidedDemoEngine() {
 
     const sync = (el: Element) => {
       if (cancelled || token !== retryRef.current) return;
-      const rect = padHole(el.getBoundingClientRect(), window.innerWidth, window.innerHeight);
+      const kind = resolveStepKind(step);
+      const rect = padHole(
+        el.getBoundingClientRect(),
+        window.innerWidth,
+        window.innerHeight,
+        holeOptionsForKind(kind)
+      );
       setHole(rect);
       setHand(calcHand(rect, window.innerWidth, window.innerHeight));
     };
@@ -344,6 +377,7 @@ export default function GuidedDemoEngine() {
         requestAnimationFrame(() => {
           if (cancelled || token !== retryRef.current) return;
           sync(el);
+          window.setTimeout(() => sync(el), 280);
           ro = new ResizeObserver(() => sync(el));
           ro.observe(el);
           const onMove = () => sync(el);
@@ -407,7 +441,7 @@ export default function GuidedDemoEngine() {
 
   useEffect(() => {
     if (!step || introOpen || isComplete) return undefined;
-    const isClick = stepNeedsBlock(step);
+    const kind = resolveStepKind(step);
     const onClick = (event: MouseEvent) => {
       const targetEl = (event.target as HTMLElement)?.closest?.("[data-demo-target]");
       const key = targetEl?.getAttribute?.("data-demo-target");
@@ -419,22 +453,61 @@ export default function GuidedDemoEngine() {
           void runDemoSpecialAction(step);
           return;
         }
-        if (isClick) {
+        if (kind === "navigation") {
           void demoProgress.completeStep("DEMO_CLICK", { target: key });
-          return;
-        }
-        if (isAcknowledge(step)) {
-          void demoProgress.completeStep("DEMO_ACKNOWLEDGE");
         }
         return;
       }
-      if (isClick && step.target && key !== step.target) {
+      if (kind === "navigation" && step.target && key !== step.target) {
         const blocked = (event.target as HTMLElement)?.closest?.("a,button,select,input,textarea");
         if (blocked) demoProgress.notifyWrongAction();
       }
     };
     document.addEventListener("click", onClick, true);
     return () => document.removeEventListener("click", onClick, true);
+  }, [step?.id, step?.target, introOpen, isComplete]);
+
+  useEffect(() => {
+    if (!step || introOpen || isComplete) return undefined;
+    if (String(step?.completionRule?.type) !== "input") return undefined;
+    const rule = step.completionRule || {};
+    const readFromEvent = (event: Event) => {
+      const raw = event.target as HTMLElement | null;
+      const scoped = raw?.closest?.("[data-demo-target]") as HTMLElement | null;
+      const key = scoped?.getAttribute?.("data-demo-target");
+      if (step.target && key && key !== step.target) return null;
+      const el =
+        (key === step.target && scoped) ||
+        findDemoTarget(step.target) ||
+        raw;
+      return el;
+    };
+    const evaluate = (event: Event, autoComplete: boolean) => {
+      const el = readFromEvent(event);
+      if (!el) return;
+      const value = readDemoInputValue(el);
+      const satisfied = inputValueSatisfied(rule, value);
+      setInputReady(satisfied);
+      if (autoComplete && satisfied) {
+        void demoProgress.completeStep("DEMO_INPUT", { target: step.target, value });
+      }
+    };
+    const onInput = (event: Event) => evaluate(event, false);
+    const onChange = (event: Event) => {
+      const el = readFromEvent(event);
+      evaluate(event, isDiscreteInput(el));
+    };
+    const onBlur = (event: Event) => evaluate(event, true);
+    document.addEventListener("input", onInput, true);
+    document.addEventListener("change", onChange, true);
+    document.addEventListener("blur", onBlur, true);
+    const current = findDemoTarget(step.target);
+    if (current) setInputReady(inputValueSatisfied(rule, readDemoInputValue(current)));
+    return () => {
+      document.removeEventListener("input", onInput, true);
+      document.removeEventListener("change", onChange, true);
+      document.removeEventListener("blur", onBlur, true);
+    };
   }, [step?.id, step?.target, introOpen, isComplete]);
 
   useEffect(() => {
@@ -504,7 +577,18 @@ export default function GuidedDemoEngine() {
   async function handleHeadlineBlur(event: React.FocusEvent<HTMLHeadingElement>) {
     const text = String(event.currentTarget.textContent || "").trim();
     if (!text) return;
-    await demoProgress.report("WEBSITE_TEXT_CHANGED", { text });
+    await demoProgress.report("WEBSITE_TEXT_CHANGED", { text, value: text });
+  }
+
+  async function handleInputContinue() {
+    const el = findDemoTarget(step?.target);
+    const value = readDemoInputValue(el);
+    if (!inputValueSatisfied(step?.completionRule, value) && !step?.allowSkip) return;
+    if (!inputValueSatisfied(step?.completionRule, value) && step?.allowSkip) {
+      await demoProgress.report("DEMO_STEP_SKIPPED", { reason: "optional_input" });
+      return;
+    }
+    await demoProgress.completeStep("DEMO_INPUT", { target: step?.target, value });
   }
 
   async function handleCta(cta: string, path: string) {
@@ -523,7 +607,7 @@ export default function GuidedDemoEngine() {
   const globalProgressPct = globalStepTotal ? Math.round((Math.max(0, globalStepNum - 1) / globalStepTotal) * 100) : 0;
 
   const overlay = (
-    <div dir="rtl" className="pointer-events-none fixed inset-0 z-[2147483000] overflow-hidden">
+    <div dir="rtl" className="pointer-events-none fixed inset-0 z-[2147483000]">
       <style>{`
         @keyframes guidedDemoHandNudge {
           0%, 100% { transform: translate(0, 0) scaleX(var(--hand-flip, 1)) rotate(var(--hand-rot, 0deg)); }
@@ -531,11 +615,11 @@ export default function GuidedDemoEngine() {
         }
       `}</style>
 
-      {hole && showPanel ? (
+      {hole && showPanel && stepKind === "navigation" ? (
         <DimBlockers
           hole={hole}
           onBlock={() => {
-            if (stepNeedsBlock(step)) demoProgress.notifyWrongAction();
+            demoProgress.notifyWrongAction();
           }}
         />
       ) : showPanel && !hole && !showWebsiteHero ? (
@@ -564,7 +648,7 @@ export default function GuidedDemoEngine() {
               } as HandPos)
             : null
         }
-        visible={Boolean(hole && !handHidden && stepNeedsBlock(step))}
+        visible={Boolean(hole && !handHidden && (stepKind === "navigation" || stepKind === "commit"))}
       />
 
       {tourMinimized && !introOpen && !isComplete ? (
@@ -669,24 +753,30 @@ export default function GuidedDemoEngine() {
             role="dialog"
             aria-modal="true"
             aria-labelledby="guided-demo-intro-title"
-            className="w-full max-w-lg rounded-[28px] bg-white p-6 text-right shadow-2xl sm:p-8"
+            className="w-full max-w-xl rounded-[28px] bg-white p-6 text-right shadow-2xl sm:p-8"
           >
             <p className="text-xs font-black tracking-[0.16em] text-violet-500">BIZUPLY</p>
             <h2 id="guided-demo-intro-title" className="mt-2 text-2xl font-black text-slate-900 sm:text-3xl">
               הדמו האישי שלכם מוכן
             </h2>
             <p className="mt-3 text-sm font-semibold leading-7 text-slate-600">
-              ברוכים הבאים 👋
-              <br />
-              הדמו ייקח אתכם במסלול קצר דרך הכלים המרכזיים של BizUply ויראה איך הם מתחברים יחד לניהול העסק.
+              בכמה דקות תראו איך BizUply מרכזת את ניהול העסק במקום אחד.
             </p>
-            <div className="mt-5 grid grid-cols-1 gap-2 sm:grid-cols-2">
-              {INTRO_CATEGORIES.map((item) => (
-                <div key={item.key} className="rounded-2xl border border-slate-100 bg-slate-50 px-3.5 py-3">
-                  <p className="text-sm font-black text-slate-800">{item.title}</p>
-                  <p className="mt-0.5 text-[11px] font-semibold text-slate-500">{item.hint}</p>
-                </div>
-              ))}
+            <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
+              {INTRO_CATEGORIES.map((item) => {
+                const Icon = INTRO_ICONS[item.icon];
+                return (
+                  <div
+                    key={item.key}
+                    className="flex flex-col items-center gap-2 rounded-2xl border border-violet-100 bg-violet-50/50 px-3 py-4 text-center shadow-sm"
+                  >
+                    <span className="grid h-11 w-11 place-items-center rounded-2xl bg-white text-violet-700 shadow-sm ring-1 ring-violet-100">
+                      {Icon ? <Icon className="h-5 w-5" /> : null}
+                    </span>
+                    <p className="text-sm font-black leading-5 text-slate-800">{item.title}</p>
+                  </div>
+                );
+              })}
             </div>
             <button
               type="button"
@@ -742,12 +832,21 @@ export default function GuidedDemoEngine() {
             <p className="mt-2 text-sm font-semibold leading-6 text-slate-600">
               ראיתם איך הכלים המרכזיים מתחברים יחד לניהול העסק במקום אחד.
             </p>
-            <div className="mt-4 grid grid-cols-2 gap-2">
-              {INTRO_CATEGORIES.map((item) => (
-                <div key={item.key} className="rounded-xl bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-800">
-                  {item.title}
-                </div>
-              ))}
+            <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
+              {INTRO_CATEGORIES.map((item) => {
+                const Icon = INTRO_ICONS[item.icon];
+                return (
+                  <div
+                    key={item.key}
+                    className="flex flex-col items-center gap-2 rounded-2xl border border-violet-100 bg-violet-50/50 px-3 py-3 text-center"
+                  >
+                    <span className="grid h-9 w-9 place-items-center rounded-xl bg-white text-violet-700 ring-1 ring-violet-100">
+                      {Icon ? <Icon className="h-4 w-4" /> : null}
+                    </span>
+                    <p className="text-[11px] font-black leading-4 text-slate-800">{item.title}</p>
+                  </div>
+                );
+              })}
             </div>
             <button
               type="button"
@@ -789,7 +888,7 @@ export default function GuidedDemoEngine() {
           {step?.suggestedValue ? (
             <p className="mt-2 rounded-xl bg-violet-50 px-3 py-2 text-xs font-bold text-violet-800">טקסט מוצע: {step.suggestedValue}</p>
           ) : null}
-          {nextPreview ? (
+          {nextPreview && stepKind !== "input" ? (
             <p className="mt-2 text-[11px] font-bold text-slate-400">הבא: {nextPreview.title}</p>
           ) : null}
           <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-slate-100">
@@ -824,6 +923,15 @@ export default function GuidedDemoEngine() {
                 style={{ background: BRAND }}
               >
                 המשך
+              </button>
+            ) : step?.completionRule?.type === "input" && (inputReady || step?.allowSkip) ? (
+              <button
+                type="button"
+                onClick={() => void handleInputContinue()}
+                className="rounded-xl px-4 py-2 text-xs font-black text-white"
+                style={{ background: BRAND }}
+              >
+                {inputReady ? "המשך" : "דלג"}
               </button>
             ) : (
               <span className="text-[11px] font-bold text-slate-400">הדמו יתקדם כשתבצעו את הפעולה</span>

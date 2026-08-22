@@ -2919,6 +2919,7 @@ export default function CRMLeadsTab({
                             onChange={(event) =>
                               setNewActivityText(event.target.value)
                             }
+                            data-demo-target="crm-activity-text"
                             placeholder={
                               newActivityType === "task"
                                 ? t("crm.leads.drawer.taskPlaceholder")

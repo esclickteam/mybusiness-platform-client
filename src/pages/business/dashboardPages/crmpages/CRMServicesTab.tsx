@@ -448,6 +448,7 @@ function ServiceFormPanel({
         <div className="grid gap-4 lg:grid-cols-2">
           <FormField label={t("crm.services.nameLabel")} required>
             <input
+              data-demo-target="services-name"
               placeholder={t("crm.services.namePlaceholder")}
               value={form.name}
               onChange={(event) =>
@@ -465,6 +466,7 @@ function ServiceFormPanel({
               <ShekelIcon className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-sm text-slate-400" />
               <input
                 type="number"
+                data-demo-target="services-price"
                 placeholder={t("crm.services.pricePlaceholder")}
                 value={form.price}
                 onChange={(event) =>
@@ -480,6 +482,7 @@ function ServiceFormPanel({
 
           <FormField label={t("crm.services.durationLabel")}>
             <select
+              data-demo-target="services-duration"
               value={form.duration}
               onChange={(event) =>
                 setForm((prev) => ({
@@ -524,6 +527,7 @@ function ServiceFormPanel({
           <div className="lg:col-span-2">
             <FormField label={t("crm.services.descriptionLabel")}>
               <textarea
+                data-demo-target="services-description"
                 placeholder={t("crm.services.descriptionPlaceholder")}
                 value={form.description}
                 onChange={(event) =>
