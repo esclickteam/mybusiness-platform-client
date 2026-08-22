@@ -47,6 +47,8 @@ import {
   CustomerAppointmentActions,
   israelWeekday,
 } from "../AdminBizuplyBookFlow";
+import IntroCallSummaryViewModal from "./introCallSummary/IntroCallSummaryViewModal";
+import { buildSummaryPreview, introQuestionnaireFromCallSummary } from "./introCallSummary/utils";
 
 const TABS = [
   ["overview", "סקירה"],
@@ -98,6 +100,7 @@ export default function AdminCrmCustomer360() {
   const [bookOpen, setBookOpen] = useState(false);
   const [demoOpen, setDemoOpen] = useState(false);
   const [calendarServices, setCalendarServices] = useState<any[]>([]);
+  const [activitySummaryView, setActivitySummaryView] = useState<any>(null);
 
   async function load() {
     if (!id) return;
@@ -607,14 +610,75 @@ export default function AdminCrmCustomer360() {
               <PrimaryButton type="submit">שמירת תיעוד</PrimaryButton>
             </form>
           </CrmCard>
-          {(tabData?.items || []).map((item: any) => (
-            <article key={item.id} className="rounded-2xl border border-purple-100 bg-white p-4">
-              <div className="text-xs font-black text-[#7C4DFF]">{TIMELINE_LABELS[item.type] || item.type} · {formatIsraelDate(item.occurredAt, true)}</div>
-              <p className="font-bold">{item.description}</p>
-              <p className="text-xs text-slate-500">{item.actorName}</p>
-              {item.deepLink ? <a className="text-xs font-black text-[#7C4DFF]" href={item.deepLink}>פתיחה</a> : null}
-            </article>
-          ))}
+          {(tabData?.items || []).map((item: any) => {
+            const isIntroSummary = item.type === "initial_call_summary";
+            const questionnaire = isIntroSummary
+              ? introQuestionnaireFromCallSummary({
+                  introQuestionnaire: item.metadata?.introQuestionnaire,
+                  summaryMeta: item.metadata?.summaryMeta,
+                })
+              : null;
+            const preview = questionnaire ? buildSummaryPreview(questionnaire) : [];
+            return (
+              <article
+                key={item.id}
+                className={[
+                  "rounded-2xl border bg-white p-4",
+                  isIntroSummary ? "border-purple-200 bg-purple-50/30" : "border-purple-100",
+                ].join(" ")}
+              >
+                <div className="text-sm font-black text-[#7C4DFF]">
+                  {TIMELINE_LABELS[item.type] || item.type} · {formatIsraelDate(item.occurredAt, true)}
+                </div>
+                {isIntroSummary ? (
+                  <div className="mt-2 space-y-2">
+                    <p className="text-base font-black text-slate-900">
+                      {item.metadata?.serviceName || "פגישה ראשונית"}
+                    </p>
+                    {preview.length ? (
+                      <ul className="space-y-1 text-sm font-bold text-slate-800">
+                        {preview.map((line) => (
+                          <li key={line.label}>
+                            <span className="text-slate-600">{line.label}: </span>
+                            {line.value}
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="font-bold text-slate-700">{item.description}</p>
+                    )}
+                    <SecondaryButton
+                      compact
+                      onClick={() =>
+                        setActivitySummaryView({
+                          callSummary: {
+                            introQuestionnaire: item.metadata?.introQuestionnaire,
+                            summaryMeta: item.metadata?.summaryMeta,
+                          },
+                          booking: {
+                            serviceName: item.metadata?.serviceName,
+                            startAt: item.metadata?.bookingStartAt,
+                          },
+                        })
+                      }
+                    >
+                      צפייה בסיכום שיחה
+                    </SecondaryButton>
+                  </div>
+                ) : (
+                  <>
+                    <p className="font-bold">{item.description}</p>
+                    {item.deepLink ? (
+                      <a className="text-xs font-black text-[#7C4DFF]" href={item.deepLink}>
+                        פתיחה
+                      </a>
+                    ) : null}
+                  </>
+                )}
+                <p className="mt-2 text-xs text-slate-500">{item.actorName}</p>
+              </article>
+            );
+          })}
           {!tabData?.items?.length ? <EmptyState title="אין אירועים בציר הזמן" /> : null}
         </div>
       )}
@@ -957,6 +1021,15 @@ export default function AdminCrmCustomer360() {
           sourceCustomerId: customer.adminCustomerId || id || "",
         }}
       />
+
+      {activitySummaryView ? (
+        <IntroCallSummaryViewModal
+          open
+          booking={activitySummaryView.booking}
+          callSummary={activitySummaryView.callSummary}
+          onClose={() => setActivitySummaryView(null)}
+        />
+      ) : null}
     </div>
   );
 }

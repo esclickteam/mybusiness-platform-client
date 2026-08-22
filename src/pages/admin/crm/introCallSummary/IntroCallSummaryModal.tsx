@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import adminCrmApi from "../../../../api/adminCrmApi";
 import { AdminModal } from "../AdminModal";
-import { CompactInput, PrimaryButton, SecondaryButton, SectionLabel } from "../AdminCrmUi";
+import { CompactInput, PrimaryButton, SecondaryButton } from "../AdminCrmUi";
 import { israelWeekday } from "../../AdminBizuplyBookFlow";
 import {
   BOTTLENECK_OPTIONS,
@@ -26,7 +26,7 @@ import {
 type Option = { value: string; label: string };
 
 function FieldLabel({ children }: { children: React.ReactNode }) {
-  return <p className="mb-2 text-sm font-black text-slate-800">{children}</p>;
+  return <p className="mb-2 text-sm font-black text-slate-900 sm:text-base">{children}</p>;
 }
 
 function ShortTextarea({
@@ -42,7 +42,7 @@ function ShortTextarea({
 }) {
   return (
     <textarea
-      className="min-h-[88px] w-full rounded-2xl border border-slate-200 bg-white px-3 py-2.5 text-sm font-medium text-slate-800 outline-none focus:border-[#7C4DFF]/40"
+      className="min-h-[96px] w-full rounded-2xl border border-slate-200 bg-white px-3 py-3 text-sm font-medium text-slate-900 outline-none focus:border-[#7C4DFF]/40 sm:text-base"
       rows={rows}
       placeholder={placeholder}
       value={value}
@@ -68,11 +68,11 @@ function CheckboxGroup({
 }) {
   return (
     <div className="space-y-2">
-      <div className="grid gap-2 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
         {options.map((option) => (
           <label
             key={option.value}
-            className="flex min-h-10 cursor-pointer items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-700"
+            className="flex min-h-11 cursor-pointer items-center gap-3 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm font-bold text-slate-900 sm:text-base"
           >
             <input
               type="checkbox"
@@ -120,11 +120,11 @@ function RadioGroup({
 }) {
   return (
     <div className="space-y-2">
-      <div className="grid gap-2 sm:grid-cols-2">
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
         {options.map((option) => (
           <label
             key={option.value}
-            className="flex min-h-10 cursor-pointer items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm font-bold text-slate-700"
+            className="flex min-h-11 cursor-pointer items-center gap-3 rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm font-bold text-slate-900 sm:text-base"
           >
             <input
               type="radio"
@@ -158,11 +158,11 @@ function QuestionSection({
   children: React.ReactNode;
 }) {
   return (
-    <section className="rounded-2xl border border-slate-100 bg-slate-50/60 p-4">
-      <SectionLabel>
+    <section className="rounded-2xl border border-slate-200 bg-white p-4 sm:p-5">
+      <h3 className="text-base font-black leading-7 text-slate-950 sm:text-lg">
         {number}. {title}
-      </SectionLabel>
-      <div className="mt-3">{children}</div>
+      </h3>
+      <div className="mt-4">{children}</div>
     </section>
   );
 }
@@ -184,7 +184,7 @@ export default function IntroCallSummaryModal({
     callSummary?: any;
   };
   onClose: () => void;
-  onSaved: () => void;
+  onSaved: (closeAfter?: boolean) => void;
   onError: (message: string) => void;
   completeOnSave?: boolean;
 }) {
@@ -223,7 +223,7 @@ export default function IntroCallSummaryModal({
         ...payload,
         complete: closeAfter && completeOnSave && booking.status === "booked",
       });
-      onSaved();
+      onSaved(closeAfter);
       if (closeAfter) onClose();
     } catch (err: any) {
       onError(err?.response?.data?.error || "שמירת סיכום השיחה נכשלה");
@@ -258,7 +258,7 @@ export default function IntroCallSummaryModal({
         </div>
       }
     >
-      <div className="space-y-4 overflow-y-auto px-1 py-1">
+      <div className="max-h-[min(68vh,720px)] space-y-4 overflow-y-auto px-1 py-1">
         <QuestionSection number={1} title="מה העסק עושה?">
           <ShortTextarea
             value={form.businessDescription}
@@ -529,8 +529,8 @@ export default function IntroCallSummaryModal({
           />
         </QuestionSection>
 
-        <section className="rounded-2xl border border-amber-100 bg-amber-50/50 p-4">
-          <SectionLabel>הערות פנימיות</SectionLabel>
+        <section className="rounded-2xl border border-amber-200 bg-amber-50/60 p-4 sm:p-5">
+          <h3 className="text-base font-black text-amber-950 sm:text-lg">הערות פנימיות</h3>
           <p className="mb-3 text-xs font-bold text-amber-800">
             לשימוש פנימי בלבד — לא מוצג ללקוח.
           </p>

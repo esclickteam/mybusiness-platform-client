@@ -130,6 +130,7 @@ export const TIMELINE_LABELS: Record<string, string> = {
   initial_call_cancelled: "הפגישה בוטלה",
   initial_call_completed: "השיחה הושלמה",
   initial_call_no_show: "הלקוח לא הגיע לפגישה",
+  initial_call_summary: "פגישה ראשונית — סיכום שיחה",
   automation_whatsapp_sent: "נשלחה הודעת WhatsApp לתיאום שיחה ראשונית",
   automation_whatsapp_failed: "שליחת WhatsApp לתיאום שיחה נכשלה",
 };

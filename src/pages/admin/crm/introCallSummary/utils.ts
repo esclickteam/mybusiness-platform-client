@@ -73,6 +73,94 @@ export function hasIntroSummaryData(questionnaire: IntroQuestionnaire) {
   return JSON.stringify(questionnaire) !== JSON.stringify(emptyIntroQuestionnaire());
 }
 
+export function isSummarySaved(callSummary: any) {
+  return Boolean(callSummary?.summaryMeta?.updatedAt) && hasIntroSummaryData(introQuestionnaireFromCallSummary(callSummary));
+}
+
+export type SummarySection = { title: string; value: string };
+
+export function buildFullSummarySections(questionnaire: IntroQuestionnaire): SummarySection[] {
+  const sections: SummarySection[] = [];
+  const push = (title: string, value: string) => {
+    if (String(value || "").trim()) sections.push({ title, value: String(value).trim() });
+  };
+
+  push("מה העסק עושה?", questionnaire.businessDescription);
+  push(
+    "מה הכי חסר לכם היום?",
+    joinLabels(questionnaire.missingNeeds.selections, MISSING_NEEDS_OPTIONS, questionnaire.missingNeeds.other)
+  );
+  push("הערה נוספת (צרכים)", questionnaire.missingNeeds.note);
+  push("איך מנהלים היום?", questionnaire.currentManagement);
+  push("מה חסר בדרך שבה עובדים?", questionnaire.workingGaps);
+
+  const marketingAnswer = MARKETING_ANSWER_OPTIONS.find((o) => o.value === questionnaire.marketing.answer)?.label;
+  if (marketingAnswer) {
+    const channels = joinLabels(
+      questionnaire.marketing.channels.selections,
+      MARKETING_CHANNEL_OPTIONS,
+      questionnaire.marketing.channels.other
+    );
+    push("שיווק", channels ? `${marketingAnswer} · ${channels}` : marketingAnswer);
+    if (questionnaire.marketing.answer === "other") push("שיווק (אחר)", questionnaire.marketing.other);
+  }
+
+  push(
+    "מקורות פניות",
+    joinLabels(questionnaire.leadSources.selections, LEAD_SOURCE_OPTIONS, questionnaire.leadSources.other)
+  );
+  push("הערה על מקורות פניות", questionnaire.leadSources.note);
+  push("מה קורה מפנייה חדשה?", questionnaire.inquiryFlow);
+  push(
+    "איפה התהליך נתקע?",
+    joinLabels(questionnaire.bottlenecks.selections, BOTTLENECK_OPTIONS, questionnaire.bottlenecks.other)
+  );
+  push("פירוט תקיעות", questionnaire.bottlenecks.detail);
+  push("מה הייתם רוצים שיקרה אוטומטית?", questionnaire.automationWishes);
+
+  const websiteStatus = websiteStatusLabel(questionnaire.website.status);
+  if (websiteStatus) {
+    push("אתר", websiteStatus);
+    if (questionnaire.website.status === "yes") {
+      const satisfaction = optionLabel(questionnaire.website.satisfaction, [
+        { value: "yes", label: "מרוצים" },
+        { value: "partial", label: "חלקית" },
+        { value: "no", label: "לא מרוצים" },
+      ]);
+      if (satisfaction) push("שביעות רצון מהאתר", satisfaction);
+      push(
+        "שיפורים באתר",
+        joinLabels(
+          questionnaire.website.improvements.selections,
+          WEBSITE_IMPROVEMENT_OPTIONS,
+          questionnaire.website.improvements.other
+        )
+      );
+      push("הערה על האתר", questionnaire.website.note);
+    }
+    if (questionnaire.website.status === "other") push("אתר (אחר)", questionnaire.website.other);
+  }
+
+  const team = teamHandlerLabel(questionnaire.team.handler);
+  if (team) push("מי מטפל בפניות?", team);
+  if (questionnaire.team.handler === "other") push("מי מטפל (אחר)?", questionnaire.team.other);
+  if (questionnaire.team.userCount.trim()) push("כמה משתמשים צפויים?", questionnaire.team.userCount);
+  push(
+    "מה חשוב לראות בדמו?",
+    joinLabels(questionnaire.demoFocus.selections, DEMO_FOCUS_OPTIONS, questionnaire.demoFocus.other)
+  );
+  push("דבר אחד ש-BizUply תפתור מחר", questionnaire.oneThingTomorrow);
+  push("הערות פנימיות", questionnaire.internalNotes);
+
+  return sections;
+}
+
+export function buildSummaryDescription(questionnaire: IntroQuestionnaire) {
+  return buildSummaryPreview(questionnaire)
+    .map((line) => `${line.label}: ${line.value}`)
+    .join(" · ");
+}
+
 export function suggestDemoFocus(questionnaire: IntroQuestionnaire): string[] {
   const suggested = new Set<string>();
   const add = (...keys: string[]) => keys.forEach((k) => suggested.add(k));

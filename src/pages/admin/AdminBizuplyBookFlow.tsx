@@ -11,8 +11,9 @@ import {
 } from "./crm/AdminCrmUi";
 import { AdminModal } from "./crm/AdminModal";
 import IntroCallSummaryModal from "./crm/introCallSummary/IntroCallSummaryModal";
+import IntroCallSummaryViewModal from "./crm/introCallSummary/IntroCallSummaryViewModal";
 import { IntroCallSummaryCard } from "./crm/introCallSummary/IntroCallSummaryCard";
-import { hasIntroSummaryData, introQuestionnaireFromCallSummary } from "./crm/introCallSummary/utils";
+import { hasIntroSummaryData, introQuestionnaireFromCallSummary, isSummarySaved } from "./crm/introCallSummary/utils";
 
 export const APPOINTMENT_STATUS_HE: Record<string, string> = {
   booked: "מתוכנן",
@@ -497,12 +498,14 @@ export function CustomerAppointmentActions({
   onError: (message: string) => void;
 }) {
   const navigate = useNavigate();
-  const [summaryOpen, setSummaryOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
+  const [viewOpen, setViewOpen] = useState(false);
   const [noShowOpen, setNoShowOpen] = useState(false);
   const [rescheduleOpen, setRescheduleOpen] = useState(false);
   const [slots, setSlots] = useState<any[]>([]);
   const [startAt, setStartAt] = useState("");
   const isIntroCall = (row.serviceKey || "intro_call") === "intro_call";
+  const savedSummary = isIntroCall && isSummarySaved(row.callSummary);
   const hasSummary = isIntroCall && hasIntroSummaryData(introQuestionnaireFromCallSummary(row.callSummary));
 
   async function setStatus(status: string, extra: Record<string, unknown> = {}) {
@@ -524,20 +527,32 @@ export function CustomerAppointmentActions({
     return (
       <div className="mt-2 space-y-2">
         {isIntroCall ? (
-          <IntroCallSummaryCard callSummary={row.callSummary} onOpen={() => setSummaryOpen(true)} />
+          <IntroCallSummaryCard
+            callSummary={row.callSummary}
+            onView={() => setViewOpen(true)}
+            onFill={savedSummary ? undefined : () => setEditOpen(true)}
+          />
         ) : null}
         {row.status === "completed" && onBookAnother ? (
           <SecondaryButton compact onClick={onBookAnother}>+ תיאום נוסף</SecondaryButton>
         ) : null}
         {isIntroCall ? (
-          <IntroCallSummaryModal
-            open={summaryOpen}
-            booking={row}
-            onClose={() => setSummaryOpen(false)}
-            onSaved={onChanged}
-            onError={onError}
-            completeOnSave={row.status === "booked"}
-          />
+          <>
+            <IntroCallSummaryViewModal
+              open={viewOpen}
+              booking={row}
+              callSummary={row.callSummary}
+              onClose={() => setViewOpen(false)}
+            />
+            <IntroCallSummaryModal
+              open={editOpen}
+              booking={row}
+              onClose={() => setEditOpen(false)}
+              onSaved={() => onChanged()}
+              onError={onError}
+              completeOnSave={false}
+            />
+          </>
         ) : null}
       </div>
     );
@@ -551,8 +566,14 @@ export function CustomerAppointmentActions({
           <SecondaryButton compact onClick={() => setStatus("cancelled")}>ביטול</SecondaryButton>
           {isIntroCall ? (
             <>
-              <PrimaryButton compact onClick={() => setSummaryOpen(true)}>סמן כהושלם</PrimaryButton>
-              <SecondaryButton compact onClick={() => setSummaryOpen(true)}>הוסף סיכום</SecondaryButton>
+              {savedSummary ? (
+                <PrimaryButton compact onClick={() => setStatus("completed")}>סמן כהושלם</PrimaryButton>
+              ) : (
+                <PrimaryButton compact onClick={() => setEditOpen(true)}>סמן כהושלם</PrimaryButton>
+              )}
+              {!savedSummary ? (
+                <SecondaryButton compact onClick={() => setEditOpen(true)}>הוסף סיכום</SecondaryButton>
+              ) : null}
             </>
           ) : (
             <PrimaryButton compact onClick={() => setStatus("completed")}>סמן כהושלם</PrimaryButton>
@@ -561,19 +582,37 @@ export function CustomerAppointmentActions({
         </div>
       ) : null}
 
-      {isIntroCall && hasSummary ? (
-        <IntroCallSummaryCard callSummary={row.callSummary} onOpen={() => setSummaryOpen(true)} />
+      {isIntroCall && (savedSummary || hasSummary) ? (
+        <IntroCallSummaryCard
+          callSummary={row.callSummary}
+          onView={() => setViewOpen(true)}
+          onFill={savedSummary ? undefined : () => setEditOpen(true)}
+        />
       ) : null}
 
       {isIntroCall ? (
-        <IntroCallSummaryModal
-          open={summaryOpen}
-          booking={row}
-          onClose={() => setSummaryOpen(false)}
-          onSaved={onChanged}
-          onError={onError}
-          completeOnSave={row.status === "booked"}
-        />
+        <>
+          <IntroCallSummaryViewModal
+            open={viewOpen}
+            booking={row}
+            callSummary={row.callSummary}
+            onClose={() => setViewOpen(false)}
+          />
+          <IntroCallSummaryModal
+            open={editOpen}
+            booking={row}
+            onClose={() => setEditOpen(false)}
+            onSaved={(closeAfter) => {
+              onChanged();
+              if (closeAfter) {
+                setEditOpen(false);
+                setViewOpen(true);
+              }
+            }}
+            onError={onError}
+            completeOnSave
+          />
+        </>
       ) : null}
 
       {noShowOpen ? (
