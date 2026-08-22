@@ -12,6 +12,7 @@ import {
 } from "./crm/AdminCrmUi";
 import { formatIsraelDate } from "./crm/adminCrmLabels";
 import { ADMIN_PAGE_SHELL_CLASS } from "../../utils/adminResponsive";
+import AdminBizuplyHours, { hoursFromPayload } from "./AdminBizuplyHours";
 
 const STATUS_LABELS: Record<string, string> = {
   booked: "Scheduled",
@@ -26,16 +27,6 @@ const STATUS_HE: Record<string, string> = {
   completed: "הושלמה",
   no_show: "לא הגיע",
 };
-
-const DAY_OPTIONS = [
-  ["sun", "א׳"],
-  ["mon", "ב׳"],
-  ["tue", "ג׳"],
-  ["wed", "ד׳"],
-  ["thu", "ה׳"],
-  ["fri", "ו׳"],
-  ["sat", "ש׳"],
-];
 
 function israelDateKey(iso: string) {
   return new Intl.DateTimeFormat("en-CA", {
@@ -78,15 +69,7 @@ export default function AdminBizuplyCalendar() {
   const [slots, setSlots] = useState<any[]>([]);
   const [rescheduleStart, setRescheduleStart] = useState("");
   const [followNote, setFollowNote] = useState("");
-
-  const [availability, setAvailability] = useState({
-    activeDays: ["sun", "mon", "tue", "wed", "thu"],
-    start: "09:00",
-    end: "18:00",
-    minAdvanceMinutes: 60,
-    bookingHorizonDays: 14,
-    bufferAfterMinutes: 0,
-  });
+  const [hours, setHours] = useState(() => hoursFromPayload({}));
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -106,18 +89,7 @@ export default function AdminBizuplyCalendar() {
       const days = nextView === "day" ? 1 : nextView === "week" ? 7 : 14;
       const { data: res } = await adminCrmApi.calendar({ from: nextFrom, days });
       setData(res);
-      const intro = res?.introCall || (res?.services || []).find((row: any) => row.key === "intro_call");
-      const hours = res?.weeklyHours || {};
-      const activeDays = Object.keys(hours).filter((day) => (hours[day] || []).length);
-      const firstWindow = activeDays.map((day) => hours[day]?.[0]).find(Boolean) || { start: "09:00", end: "18:00" };
-      setAvailability({
-        activeDays: activeDays.length ? activeDays : ["sun", "mon", "tue", "wed", "thu"],
-        start: firstWindow.start || "09:00",
-        end: firstWindow.end || "18:00",
-        minAdvanceMinutes: intro?.minAdvanceMinutes || 60,
-        bookingHorizonDays: intro?.bookingHorizonDays || 14,
-        bufferAfterMinutes: intro?.bufferAfterMinutes || 0,
-      });
+      setHours(hoursFromPayload(res));
     } catch (err: any) {
       setError(err?.response?.data?.error || "טעינת היומן נכשלה");
     } finally {
@@ -165,13 +137,12 @@ export default function AdminBizuplyCalendar() {
     }
   }
 
-  async function saveAvailability() {
+  async function saveAvailability(payload: Record<string, unknown>) {
     setSavingSettings(true);
     try {
-      const { data: res } = await adminCrmApi.calendarSettings({
-        introAvailability: availability,
-      });
+      const { data: res } = await adminCrmApi.calendarSettings(payload);
       setData(res);
+      setHours(hoursFromPayload(res));
       setSettingsOpen(false);
     } catch (err: any) {
       setError(err?.response?.data?.error || "שמירת הזמינות נכשלה");
@@ -249,11 +220,12 @@ export default function AdminBizuplyCalendar() {
             <p className="text-xs font-black text-[#7C4DFF]">יומן BizUply</p>
             <h1 className="text-2xl font-black text-purple-950">שיחה ראשונית — 15 דקות</h1>
             <p className="font-bold text-slate-500">
-              {intro?.nameHe || "שיחה ראשונית"} · {intro?.durationMinutes || 15} דקות · {data?.timezone || "Asia/Jerusalem"}
+              {intro?.nameHe || "שיחה ראשונית"} · {intro?.durationMinutes || 15} דקות · שעון ישראל
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
-            <SecondaryButton onClick={() => setSettingsOpen(true)}>זמינות</SecondaryButton>
+            <PrimaryButton onClick={() => navigate("/admin/crm/customers")}>+ קביעת שיחה</PrimaryButton>
+            <SecondaryButton onClick={() => setSettingsOpen(true)}>שעות פעילות</SecondaryButton>
             <SecondaryButton onClick={() => load()}>רענון</SecondaryButton>
           </div>
         </div>
@@ -399,98 +371,12 @@ export default function AdminBizuplyCalendar() {
         ) : null}
 
         {settingsOpen ? (
-          <div className="fixed inset-0 z-40 bg-black/40 p-3 sm:p-6" onClick={() => setSettingsOpen(false)}>
-            <div
-              className="mx-auto max-w-lg rounded-[28px] bg-white p-5"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <h2 className="text-xl font-black text-purple-950">זמינות לשיחה ראשונית</h2>
-              <p className="font-bold text-slate-500">שיחה ראשונית — 15 דקות בלבד</p>
-              <div className="mt-3 flex flex-wrap gap-2">
-                {DAY_OPTIONS.map(([key, label]) => (
-                  <button
-                    key={key}
-                    type="button"
-                    onClick={() =>
-                      setAvailability((prev) => ({
-                        ...prev,
-                        activeDays: prev.activeDays.includes(key)
-                          ? prev.activeDays.filter((day) => day !== key)
-                          : [...prev.activeDays, key],
-                      }))
-                    }
-                    className={[
-                      "min-h-11 min-w-11 rounded-2xl px-3 text-sm font-black",
-                      availability.activeDays.includes(key)
-                        ? "bg-[#7C4DFF] text-white"
-                        : "border border-purple-100 bg-white",
-                    ].join(" ")}
-                  >
-                    {label}
-                  </button>
-                ))}
-              </div>
-              <div className="mt-3 grid grid-cols-2 gap-2">
-                <label className="text-sm font-bold">
-                  התחלה
-                  <input
-                    type="time"
-                    className="mt-1 min-h-11 w-full rounded-2xl border px-3"
-                    value={availability.start}
-                    onChange={(e) => setAvailability((prev) => ({ ...prev, start: e.target.value }))}
-                  />
-                </label>
-                <label className="text-sm font-bold">
-                  סיום
-                  <input
-                    type="time"
-                    className="mt-1 min-h-11 w-full rounded-2xl border px-3"
-                    value={availability.end}
-                    onChange={(e) => setAvailability((prev) => ({ ...prev, end: e.target.value }))}
-                  />
-                </label>
-                <label className="text-sm font-bold">
-                  התראה מינימלית (דק׳)
-                  <input
-                    type="number"
-                    className="mt-1 min-h-11 w-full rounded-2xl border px-3"
-                    value={availability.minAdvanceMinutes}
-                    onChange={(e) =>
-                      setAvailability((prev) => ({ ...prev, minAdvanceMinutes: Number(e.target.value) }))
-                    }
-                  />
-                </label>
-                <label className="text-sm font-bold">
-                  אופק תיאום (ימים)
-                  <input
-                    type="number"
-                    className="mt-1 min-h-11 w-full rounded-2xl border px-3"
-                    value={availability.bookingHorizonDays}
-                    onChange={(e) =>
-                      setAvailability((prev) => ({ ...prev, bookingHorizonDays: Number(e.target.value) }))
-                    }
-                  />
-                </label>
-                <label className="col-span-2 text-sm font-bold">
-                  באפר אחרי פגישה (דק׳, אופציונלי)
-                  <input
-                    type="number"
-                    className="mt-1 min-h-11 w-full rounded-2xl border px-3"
-                    value={availability.bufferAfterMinutes}
-                    onChange={(e) =>
-                      setAvailability((prev) => ({ ...prev, bufferAfterMinutes: Number(e.target.value) }))
-                    }
-                  />
-                </label>
-              </div>
-              <div className="mt-4 flex gap-2">
-                <PrimaryButton disabled={savingSettings} onClick={saveAvailability}>
-                  שמירת זמינות
-                </PrimaryButton>
-                <SecondaryButton onClick={() => setSettingsOpen(false)}>סגירה</SecondaryButton>
-              </div>
-            </div>
-          </div>
+          <AdminBizuplyHours
+            initial={hours}
+            saving={savingSettings}
+            onSave={saveAvailability}
+            onClose={() => setSettingsOpen(false)}
+          />
         ) : null}
       </main>
     </div>

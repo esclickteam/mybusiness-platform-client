@@ -148,7 +148,14 @@ export default function AdminCrmCustomer360() {
             audit: audit.data.items || audit.data.logs || [],
           };
         }
-        if (tab === "meetings") data = (await adminCrmApi.customerAppointments(id)).data;
+        if (tab === "meetings") {
+          const [appointments, open] = await Promise.all([
+            adminCrmApi.customerAppointments(id),
+            adminCrmApi.calendarSlots({ serviceKey: "intro_call" }),
+          ]);
+          data = appointments.data;
+          if (!cancelled) setSlots(open.data.slots || []);
+        }
         if (tab === "overview") {
           const [notes, tasks, sub, products] = await Promise.all([
             adminCrmApi.notes(id),
@@ -390,7 +397,7 @@ export default function AdminCrmCustomer360() {
         <div className="space-y-4">
           <CrmCard>
             <h3 className="font-black">פגישות ביומן BizUply</h3>
-            <p className="mt-1 text-sm font-bold text-slate-500">קביעת שיחה · שיחה ראשונית — 15 דקות</p>
+            <p className="mt-1 text-sm font-bold text-slate-500">קביעת שיחה · שיחה ראשונית — 15 דקות · שעון ישראל</p>
             <div className="mt-3 flex flex-wrap gap-2">
               <SecondaryButton
                 onClick={async () => {
@@ -400,33 +407,50 @@ export default function AdminCrmCustomer360() {
               >
                 טעינת מועדים פנויים
               </SecondaryButton>
-              <select
-                className="min-h-11 rounded-2xl border px-3"
-                value={bookingStart}
-                onChange={(e) => setBookingStart(e.target.value)}
-              >
-                <option value="">בחירת מועד</option>
-                {slots.map((slot: any) => (
-                  <option key={slot.startAt} value={slot.startAt}>
+            </div>
+            {slots.length ? (
+              <div className="mt-3 flex flex-wrap gap-2">
+                {slots.slice(0, 48).map((slot: any) => (
+                  <button
+                    key={slot.startAt}
+                    type="button"
+                    onClick={() => setBookingStart(slot.startAt)}
+                    className={[
+                      "min-h-11 rounded-2xl px-3 text-sm font-black",
+                      bookingStart === slot.startAt
+                        ? "bg-[#7C4DFF] text-white"
+                        : "border border-purple-100 bg-purple-50",
+                    ].join(" ")}
+                  >
                     {slot.label}
-                  </option>
+                  </button>
                 ))}
-              </select>
+              </div>
+            ) : null}
+            <div className="mt-3">
               <PrimaryButton
                 disabled={!bookingStart}
                 onClick={async () => {
-                  await adminCrmApi.calendarBook({
-                    serviceKey: "intro_call",
-                    startAt: bookingStart,
-                    adminCustomerId: id,
-                    contactName: customer.contactName,
-                    phone: customer.phone,
-                    email: customer.email,
-                  });
-                  setBanner("הפגישה נקבעה");
-                  setBookingStart("");
-                  const { data } = await adminCrmApi.customerAppointments(id!);
-                  setTabData(data);
+                  try {
+                    await adminCrmApi.calendarBook({
+                      serviceKey: "intro_call",
+                      startAt: bookingStart,
+                      adminCustomerId: id,
+                      contactName: customer.contactName,
+                      phone: customer.phone,
+                      email: customer.email,
+                    });
+                    setBanner("השיחה נקבעה בהצלחה · 15 דקות");
+                    setBookingStart("");
+                    const [{ data }, slotsRes] = await Promise.all([
+                      adminCrmApi.customerAppointments(id!),
+                      adminCrmApi.calendarSlots({ serviceKey: "intro_call" }),
+                    ]);
+                    setTabData(data);
+                    setSlots(slotsRes.data.slots || []);
+                  } catch (err: any) {
+                    setBanner(err?.response?.data?.error || "המועד כבר תפוס או אינו פתוח לתיאום. בחרו מועד אחר.");
+                  }
                 }}
               >
                 קביעת שיחה
