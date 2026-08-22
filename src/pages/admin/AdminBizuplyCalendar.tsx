@@ -19,6 +19,7 @@ import {
   AppointmentDetails,
   israelTime,
 } from "./AdminBizuplyBookFlow";
+import { AdminModal } from "./crm/AdminModal";
 
 function israelDateKey(iso: string) {
   return new Intl.DateTimeFormat("en-CA", {
@@ -295,36 +296,38 @@ export default function AdminBizuplyCalendar() {
         ) : null}
 
         {selected ? (
-          <div className="fixed inset-0 z-40 bg-black/40 p-3 sm:p-6" onClick={() => setSelected(null)}>
-            <div
-              className="mx-auto max-h-full max-w-lg overflow-y-auto rounded-[28px] bg-white p-5"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <AppointmentDetails row={selected} />
-              <p className="mt-2 font-bold text-slate-700">{selected.contactName}</p>
-              <p className="font-bold text-slate-600" dir="ltr">{selected.phone || "—"}</p>
-              <div className="mt-4 grid grid-cols-2 gap-2">
+          <AdminModal
+            open
+            onClose={() => setSelected(null)}
+            eyebrow="יומן BizUply"
+            title={selected.serviceName || "שיחה ראשונית"}
+            subtitle={selected.contactName || "ללא שם"}
+            size="sm"
+            footer={
+              <>
                 {selected.adminCustomerId ? (
-                  <PrimaryButton onClick={() => navigate(`/admin/crm/customers/${selected.adminCustomerId}`)}>
+                  <PrimaryButton compact onClick={() => navigate(`/admin/crm/customers/${selected.adminCustomerId}`)}>
                     פתח כרטיס לקוח
                   </PrimaryButton>
-                ) : (
-                  <p className="col-span-2 text-sm font-bold text-slate-500">חסימה פנימית — לא משויכת ללקוח</p>
-                )}
+                ) : null}
                 {selected.adminCustomerId ? (
                   <Link
-                    className="min-h-11 rounded-2xl bg-emerald-50 px-3 py-2 text-center text-sm font-black text-emerald-700"
+                    className="inline-flex h-8 items-center rounded-lg bg-emerald-50 px-3 text-xs font-semibold text-emerald-700"
                     to={`/admin/crm/customers/${selected.adminCustomerId}?tab=whatsapp`}
                   >
                     WhatsApp
                   </Link>
                 ) : null}
-              </div>
-              <div className="mt-4">
-                <SecondaryButton onClick={() => setSelected(null)}>סגירה</SecondaryButton>
-              </div>
-            </div>
-          </div>
+                <SecondaryButton compact onClick={() => setSelected(null)}>סגירה</SecondaryButton>
+              </>
+            }
+          >
+            <AppointmentDetails row={selected} />
+            <p className="mt-2 text-sm font-medium text-slate-700" dir="ltr">{selected.phone || "—"}</p>
+            {!selected.adminCustomerId ? (
+              <p className="mt-2 text-xs text-slate-500">חסימה פנימית — לא משויכת ללקוח</p>
+            ) : null}
+          </AdminModal>
         ) : null}
 
         {bookOpen ? (

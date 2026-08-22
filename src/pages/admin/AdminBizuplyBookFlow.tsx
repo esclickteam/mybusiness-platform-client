@@ -2,7 +2,14 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import adminCrmApi from "../../api/adminCrmApi";
 import { formatIsraelDate } from "./crm/adminCrmLabels";
-import { PrimaryButton, SecondaryButton } from "./crm/AdminCrmUi";
+import {
+  CompactInput,
+  PrimaryButton,
+  SecondaryButton,
+  SectionLabel,
+  StepIndicator,
+} from "./crm/AdminCrmUi";
+import { AdminModal } from "./crm/AdminModal";
 
 export const APPOINTMENT_STATUS_HE: Record<string, string> = {
   booked: "מתוכנן",
@@ -53,22 +60,89 @@ export function timeRange(startAt: string, endAt?: string, durationMinutes?: num
   return start;
 }
 
-export function AppointmentDetails({ row }: { row: any }) {
+export function AppointmentDetails({ row, compact = false }: { row: any; compact?: boolean }) {
   return (
     <div>
-      <h3 className="text-lg font-black text-purple-950">{row.serviceName || "שיחה ראשונית"}</h3>
-      <p className="mt-1 font-bold text-slate-700">{israelDateShort(row.startAt)}</p>
-      <p className="font-black text-[#7C4DFF]">
+      <h3 className={compact ? "text-sm font-bold text-slate-900" : "text-base font-bold text-slate-900"}>
+        {row.serviceName || "שיחה ראשונית"}
+      </h3>
+      <p className="mt-0.5 text-xs font-medium text-slate-600">{israelDateShort(row.startAt)}</p>
+      <p className="text-sm font-semibold text-[#7C4DFF]">
         {timeRange(row.startAt, row.endAt, row.durationMinutes)} · {row.durationMinutes || 15} דקות
       </p>
-      <p className="mt-1 text-sm font-bold text-slate-500">
-        צוות: {row.assignedAdminName || "לא משויך"}
-      </p>
-      <p className="text-sm font-bold text-slate-500">
-        סטטוס: {row.statusLabelHe || APPOINTMENT_STATUS_HE[row.status] || row.status}
-        {" · "}
-        מקור: {row.sourceLabelHe || SOURCE_HE[row.source] || row.source || "—"}
-      </p>
+      {!compact ? (
+        <>
+          <p className="mt-1 text-xs text-slate-500">צוות: {row.assignedAdminName || "לא משויך"}</p>
+          <p className="text-xs text-slate-500">
+            סטטוס: {row.statusLabelHe || APPOINTMENT_STATUS_HE[row.status] || row.status}
+            {" · "}
+            מקור: {row.sourceLabelHe || SOURCE_HE[row.source] || row.source || "—"}
+          </p>
+        </>
+      ) : null}
+    </div>
+  );
+}
+
+function LeadCreateForm({
+  draft,
+  setDraft,
+  saving,
+  onSubmit,
+}: {
+  draft: { contactName: string; companyName: string; phone: string; email: string };
+  setDraft: React.Dispatch<React.SetStateAction<typeof draft>>;
+  saving: boolean;
+  onSubmit: () => void;
+}) {
+  return (
+    <div className="mt-2 rounded-lg border border-slate-200 bg-slate-50/60 p-3">
+      <p className="mb-2 text-xs font-semibold text-slate-700">יצירת ליד/לקוח חדש</p>
+      <div className="grid gap-2 sm:grid-cols-2">
+        <label className="block text-xs text-slate-600">
+          שם
+          <CompactInput
+            className="mt-1"
+            placeholder="שם איש קשר"
+            value={draft.contactName}
+            onChange={(e) => setDraft({ ...draft, contactName: e.target.value })}
+          />
+        </label>
+        <label className="block text-xs text-slate-600">
+          שם עסק
+          <CompactInput
+            className="mt-1"
+            placeholder="שם העסק"
+            value={draft.companyName}
+            onChange={(e) => setDraft({ ...draft, companyName: e.target.value })}
+          />
+        </label>
+        <label className="block text-xs text-slate-600">
+          טלפון
+          <CompactInput
+            className="mt-1"
+            placeholder="050-0000000"
+            value={draft.phone}
+            onChange={(e) => setDraft({ ...draft, phone: e.target.value })}
+            dir="ltr"
+          />
+        </label>
+        <label className="block text-xs text-slate-600">
+          אימייל
+          <CompactInput
+            className="mt-1"
+            placeholder="email@example.com"
+            value={draft.email}
+            onChange={(e) => setDraft({ ...draft, email: e.target.value })}
+            dir="ltr"
+          />
+        </label>
+      </div>
+      <div className="mt-2.5">
+        <PrimaryButton compact disabled={saving} onClick={onSubmit}>
+          {saving ? "יוצר…" : "יצירה והמשך לתיאום"}
+        </PrimaryButton>
+      </div>
     </div>
   );
 }
@@ -116,6 +190,9 @@ export function AdminBizuplyBookFlow({
     () => activeServices.find((row) => row.key === serviceKey) || activeServices[0],
     [activeServices, serviceKey]
   );
+
+  const stepIndex = step === "customer" ? 0 : step === "service" ? 1 : 2;
+  const stepLabels = lockedCustomer ? ["שירות", "מועד"] : ["לקוח", "שירות", "מועד"];
 
   useEffect(() => {
     if (lockedCustomer) setCustomer(lockedCustomer);
@@ -213,159 +290,193 @@ export function AdminBizuplyBookFlow({
     return [...map.entries()];
   }, [slots]);
 
+  const subtitle = lockedCustomer
+    ? `${customer?.contactName || customer?.companyName || "לקוח"} · הלקוח כבר נבחר מכרטיס 360`
+    : "בחרו לקוח מ-Admin CRM ואז שירות ומועד";
+
+  const footer = (
+    <>
+      {step === "slot" ? (
+        <SecondaryButton compact onClick={() => setStep("service")}>
+          חזרה לשירות
+        </SecondaryButton>
+      ) : null}
+      {step === "service" && !lockedCustomer ? (
+        <SecondaryButton compact onClick={() => setStep("customer")}>
+          חזרה ללקוח
+        </SecondaryButton>
+      ) : null}
+      {step === "slot" ? (
+        <PrimaryButton compact disabled={!startAt || saving} onClick={confirm}>
+          {saving ? "שומר…" : confirmLabel}
+        </PrimaryButton>
+      ) : step === "service" ? (
+        <PrimaryButton
+          compact
+          onClick={() => {
+            setStep("slot");
+            loadSlots(serviceKey);
+          }}
+        >
+          המשך לבחירת מועד
+        </PrimaryButton>
+      ) : null}
+      <SecondaryButton compact onClick={onClose}>
+        סגירה
+      </SecondaryButton>
+    </>
+  );
+
   return (
-    <div className="fixed inset-0 z-50 bg-black/40 p-3 sm:p-6" onClick={onClose}>
-      <div
-        className="mx-auto flex max-h-full max-w-2xl flex-col overflow-hidden rounded-[28px] bg-white"
-        onClick={(e) => e.stopPropagation()}
-        dir="rtl"
-      >
-        <div className="border-b px-5 py-4">
-          <p className="text-xs font-black text-[#7C4DFF]">יומן BizUply</p>
-          <h2 className="text-xl font-black text-purple-950">{title}</h2>
-          {customer ? (
-            <p className="font-bold text-slate-500">
-              {customer.contactName || customer.companyName || "לקוח"}
-              {lockedCustomer ? " · הלקוח כבר נבחר מכרטיס 360" : ""}
-            </p>
+    <AdminModal
+      open
+      onClose={onClose}
+      eyebrow="יומן BizUply"
+      title={title}
+      subtitle={subtitle}
+      footer={footer}
+      size="md"
+    >
+      <StepIndicator
+        steps={stepLabels}
+        current={lockedCustomer ? stepIndex - 1 : stepIndex}
+      />
+
+      {error ? (
+        <div className="mb-3 rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs font-medium text-rose-800">
+          {error}
+        </div>
+      ) : null}
+
+      {step === "customer" ? (
+        <div>
+          <SectionLabel>שלב 1 — בחירת לקוח</SectionLabel>
+          <CompactInput
+            placeholder="חיפוש לפי שם, עסק, טלפון או אימייל"
+            value={query}
+            onChange={(e) => searchCustomers(e.target.value)}
+          />
+          {searching ? <p className="mt-1.5 text-xs text-slate-500">מחפש…</p> : null}
+          <div className="mt-2 space-y-1">
+            {results.map((row) => {
+              const id = row.adminCustomerId || row.id || row._id;
+              return (
+                <button
+                  key={id}
+                  type="button"
+                  className="flex w-full items-center justify-between rounded-lg border border-slate-100 bg-white px-3 py-2 text-right transition hover:border-[#7C4DFF]/30 hover:bg-[#7C4DFF]/5"
+                  onClick={() => {
+                    setCustomer({
+                      id,
+                      contactName: row.contactName,
+                      phone: row.phone,
+                      email: row.email,
+                      companyName: row.companyName || row.businessName,
+                    });
+                    setStep("service");
+                  }}
+                >
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-semibold text-slate-900">
+                      {row.contactName || row.companyName}
+                    </p>
+                    <p className="truncate text-xs text-slate-500">
+                      {[row.companyName || row.businessName, row.phone, row.email]
+                        .filter(Boolean)
+                        .join(" · ")}
+                    </p>
+                  </div>
+                  <span className="mr-2 text-slate-300">←</span>
+                </button>
+              );
+            })}
+          </div>
+          {!createOpen ? (
+            <button
+              type="button"
+              className="mt-2 text-xs font-semibold text-[#7C4DFF] hover:underline"
+              onClick={() => setCreateOpen(true)}
+            >
+              + יצירת ליד/לקוח חדש
+            </button>
           ) : (
-            <p className="font-bold text-slate-500">בחרו לקוח מ-Admin CRM ואז שירות ומועד</p>
+            <LeadCreateForm
+              draft={draft}
+              setDraft={setDraft}
+              saving={saving}
+              onSubmit={createLead}
+            />
           )}
         </div>
-        <div className="flex-1 space-y-4 overflow-y-auto px-4 py-4 sm:px-5">
-          {error ? (
-            <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 font-bold text-rose-800">
-              {error}
-            </div>
-          ) : null}
+      ) : null}
 
-          {step === "customer" ? (
-            <div className="space-y-3">
-              <input
-                className="min-h-11 w-full rounded-2xl border px-3"
-                placeholder="חיפוש לפי שם, עסק, טלפון או אימייל"
-                value={query}
-                onChange={(e) => searchCustomers(e.target.value)}
-              />
-              {searching ? <p className="text-sm font-bold text-slate-500">מחפש…</p> : null}
-              <div className="space-y-2">
-                {results.map((row) => {
-                  const id = row.adminCustomerId || row.id || row._id;
-                  return (
-                    <button
-                      key={id}
-                      type="button"
-                      className="w-full rounded-2xl border border-purple-100 bg-purple-50 p-3 text-right"
-                      onClick={() => {
-                        setCustomer({
-                          id,
-                          contactName: row.contactName,
-                          phone: row.phone,
-                          email: row.email,
-                          companyName: row.companyName || row.businessName,
-                        });
-                        setStep("service");
-                      }}
-                    >
-                      <p className="font-black text-purple-950">{row.contactName || row.companyName}</p>
-                      <p className="text-sm font-bold text-slate-600">
-                        {row.companyName || row.businessName || ""} {row.phone} {row.email}
-                      </p>
-                    </button>
-                  );
-                })}
-              </div>
-              <SecondaryButton onClick={() => setCreateOpen(true)}>+ יצירת ליד/לקוח</SecondaryButton>
-              {createOpen ? (
-                <div className="space-y-2 rounded-2xl border border-purple-100 p-3">
-                  <input className="min-h-11 w-full rounded-2xl border px-3" placeholder="שם" value={draft.contactName} onChange={(e) => setDraft({ ...draft, contactName: e.target.value })} />
-                  <input className="min-h-11 w-full rounded-2xl border px-3" placeholder="שם עסק" value={draft.companyName} onChange={(e) => setDraft({ ...draft, companyName: e.target.value })} />
-                  <input className="min-h-11 w-full rounded-2xl border px-3" placeholder="טלפון" value={draft.phone} onChange={(e) => setDraft({ ...draft, phone: e.target.value })} dir="ltr" />
-                  <input className="min-h-11 w-full rounded-2xl border px-3" placeholder="אימייל" value={draft.email} onChange={(e) => setDraft({ ...draft, email: e.target.value })} dir="ltr" />
-                  <PrimaryButton disabled={saving} onClick={createLead}>יצירה והמשך לתיאום</PrimaryButton>
-                </div>
-              ) : null}
-            </div>
-          ) : null}
-
-          {step === "service" ? (
-            <div className="space-y-2">
-              <h3 className="font-black">בחירת שירות</h3>
-              {activeServices.map((row) => (
-                <button
-                  key={row.key}
-                  type="button"
-                  onClick={() => setServiceKey(row.key)}
-                  className={[
-                    "w-full rounded-2xl border p-3 text-right",
-                    serviceKey === row.key ? "border-[#7C4DFF] bg-purple-50" : "border-purple-100 bg-white",
-                  ].join(" ")}
-                >
-                  <p className="font-black text-purple-950">{row.nameHe}</p>
-                  <p className="text-sm font-bold text-slate-500">{row.durationMinutes} דקות</p>
-                  {row.descriptionHe ? <p className="text-sm text-slate-500">{row.descriptionHe}</p> : null}
-                </button>
-              ))}
-              <PrimaryButton
-                onClick={() => {
-                  setStep("slot");
-                  loadSlots(serviceKey);
-                }}
+      {step === "service" ? (
+        <div>
+          <SectionLabel>שלב {lockedCustomer ? 1 : 2} — בחירת שירות</SectionLabel>
+          <div className="grid gap-1.5 sm:grid-cols-2">
+            {activeServices.map((row) => (
+              <button
+                key={row.key}
+                type="button"
+                onClick={() => setServiceKey(row.key)}
+                className={[
+                  "rounded-lg border px-3 py-2 text-right transition",
+                  serviceKey === row.key
+                    ? "border-[#7C4DFF] bg-[#7C4DFF]/5 ring-1 ring-[#7C4DFF]/20"
+                    : "border-slate-200 bg-white hover:border-slate-300",
+                ].join(" ")}
               >
-                המשך לבחירת מועד
-              </PrimaryButton>
-            </div>
-          ) : null}
+                <p className="text-sm font-semibold text-slate-900">{row.nameHe}</p>
+                <p className="text-xs text-slate-500">{row.durationMinutes} דקות</p>
+              </button>
+            ))}
+          </div>
+        </div>
+      ) : null}
 
-          {step === "slot" ? (
-            <div className="space-y-3">
-              <p className="font-black">
-                {selectedService?.nameHe} — {selectedService?.durationMinutes} דקות
-              </p>
-              {loadingSlots ? <p className="font-bold text-slate-500">טוען מועדים פנויים…</p> : null}
-              {!loadingSlots && !groupedSlots.length ? (
-                <p className="font-bold text-slate-500">אין מועדים שבהם משך השירות נכנס במלואו.</p>
-              ) : null}
-              {groupedSlots.map(([day, daySlots]) => (
-                <div key={day}>
-                  <h4 className="mb-2 text-sm font-black text-slate-600">{day}</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {daySlots.map((slot: any) => (
-                      <button
-                        key={slot.startAt}
-                        type="button"
-                        onClick={() => setStartAt(slot.startAt)}
-                        className={[
-                          "min-h-11 rounded-2xl px-3 text-sm font-black",
-                          startAt === slot.startAt ? "bg-[#7C4DFF] text-white" : "border border-purple-100 bg-purple-50",
-                        ].join(" ")}
-                      >
-                        {israelTime(slot.startAt)}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              ))}
-              {startAt ? (
-                <p className="text-sm font-bold text-slate-600">
-                  נבחר: {formatIsraelDate(startAt, true)}
-                </p>
-              ) : null}
-              <PrimaryButton disabled={!startAt || saving} onClick={confirm}>
-                {saving ? "שומר…" : confirmLabel}
-              </PrimaryButton>
+      {step === "slot" ? (
+        <div>
+          <SectionLabel>שלב {lockedCustomer ? 2 : 3} — בחירת מועד</SectionLabel>
+          <div className="mb-3 flex items-center gap-2 rounded-lg bg-slate-50 px-3 py-2">
+            <span className="text-xs text-slate-500">משך הפגישה:</span>
+            <span className="text-sm font-semibold text-[#7C4DFF]">
+              {selectedService?.nameHe} — {selectedService?.durationMinutes} דקות
+            </span>
+          </div>
+          {loadingSlots ? <p className="text-xs text-slate-500">טוען מועדים פנויים…</p> : null}
+          {!loadingSlots && !groupedSlots.length ? (
+            <p className="text-xs text-slate-500">אין מועדים שבהם משך השירות נכנס במלואו.</p>
+          ) : null}
+          {groupedSlots.map(([day, daySlots]) => (
+            <div key={day} className="mb-3">
+              <h4 className="mb-1.5 text-xs font-semibold text-slate-500">{day}</h4>
+              <div className="flex flex-wrap gap-1.5">
+                {daySlots.map((slot: any) => (
+                  <button
+                    key={slot.startAt}
+                    type="button"
+                    onClick={() => setStartAt(slot.startAt)}
+                    className={[
+                      "h-8 rounded-lg px-2.5 text-xs font-semibold tabular-nums transition",
+                      startAt === slot.startAt
+                        ? "bg-[#7C4DFF] text-white"
+                        : "border border-slate-200 bg-white text-slate-700 hover:border-[#7C4DFF]/30",
+                    ].join(" ")}
+                  >
+                    {israelTime(slot.startAt)}
+                  </button>
+                ))}
+              </div>
             </div>
+          ))}
+          {startAt ? (
+            <p className="text-xs font-medium text-slate-600">
+              נבחר: {formatIsraelDate(startAt, true)}
+            </p>
           ) : null}
         </div>
-        <div className="flex flex-wrap gap-2 border-t px-5 py-4">
-          {step === "slot" ? <SecondaryButton onClick={() => setStep("service")}>חזרה לשירות</SecondaryButton> : null}
-          {step === "service" && !lockedCustomer ? (
-            <SecondaryButton onClick={() => setStep("customer")}>חזרה ללקוח</SecondaryButton>
-          ) : null}
-          <SecondaryButton onClick={onClose}>סגירה</SecondaryButton>
-        </div>
-      </div>
-    </div>
+      ) : null}
+    </AdminModal>
   );
 }
 
@@ -415,34 +526,37 @@ export function CustomerAppointmentActions({
   if (row.status !== "booked" && !summaryOpen && !noShowOpen) {
     return row.status === "completed" && onBookAnother ? (
       <div className="mt-2">
-        <SecondaryButton onClick={onBookAnother}>+ תיאום נוסף</SecondaryButton>
+        <SecondaryButton compact onClick={onBookAnother}>+ תיאום נוסף</SecondaryButton>
       </div>
     ) : null;
   }
 
   return (
-    <div className="mt-3 space-y-3">
+    <div className="mt-2 space-y-2">
       {row.status === "booked" ? (
-        <div className="flex flex-wrap gap-2">
-          <SecondaryButton onClick={openReschedule}>שינוי מועד</SecondaryButton>
-          <SecondaryButton onClick={() => setStatus("cancelled")}>ביטול</SecondaryButton>
-          <PrimaryButton onClick={() => setSummaryOpen(true)}>סמן כהושלם</PrimaryButton>
-          <SecondaryButton onClick={() => setNoShowOpen(true)}>לא הגיע</SecondaryButton>
-          <SecondaryButton onClick={() => setSummaryOpen(true)}>הוסף סיכום</SecondaryButton>
+        <div className="flex flex-wrap gap-1.5">
+          <SecondaryButton compact onClick={openReschedule}>שינוי מועד</SecondaryButton>
+          <SecondaryButton compact onClick={() => setStatus("cancelled")}>ביטול</SecondaryButton>
+          <PrimaryButton compact onClick={() => setSummaryOpen(true)}>סמן כהושלם</PrimaryButton>
+          <SecondaryButton compact onClick={() => setNoShowOpen(true)}>לא הגיע</SecondaryButton>
+          <SecondaryButton compact onClick={() => setSummaryOpen(true)}>הוסף סיכום</SecondaryButton>
         </div>
       ) : null}
 
       {summaryOpen ? (
-        <div className="space-y-2 rounded-2xl bg-slate-50 p-3">
-          <h4 className="font-black">סיכום שיחה</h4>
-          <textarea className="min-h-24 w-full rounded-2xl border p-3" placeholder="סיכום" value={summary.summary} onChange={(e) => setSummary({ ...summary, summary: e.target.value })} />
-          <input className="min-h-11 w-full rounded-2xl border px-3" placeholder="מה הלקוח צריך" value={summary.customerNeed} onChange={(e) => setSummary({ ...summary, customerNeed: e.target.value })} />
-          <input className="min-h-11 w-full rounded-2xl border px-3" placeholder="רמת עניין" value={summary.interestLevel} onChange={(e) => setSummary({ ...summary, interestLevel: e.target.value })} />
-          <input className="min-h-11 w-full rounded-2xl border px-3" placeholder="התנגדויות" value={summary.objections} onChange={(e) => setSummary({ ...summary, objections: e.target.value })} />
-          <input className="min-h-11 w-full rounded-2xl border px-3" placeholder="צעד הבא" value={summary.nextStep} onChange={(e) => setSummary({ ...summary, nextStep: e.target.value })} />
-          <input className="min-h-11 w-full rounded-2xl border px-3" placeholder="מעקב הבא" value={summary.nextFollowUp} onChange={(e) => setSummary({ ...summary, nextFollowUp: e.target.value })} />
-          <div className="flex flex-wrap gap-2">
+        <div className="space-y-2 rounded-lg border border-slate-200 bg-slate-50/60 p-3">
+          <h4 className="text-xs font-semibold text-slate-700">סיכום שיחה</h4>
+          <textarea className="min-h-20 w-full rounded-lg border border-slate-200 p-2 text-sm" placeholder="סיכום" value={summary.summary} onChange={(e) => setSummary({ ...summary, summary: e.target.value })} />
+          <div className="grid gap-2 sm:grid-cols-2">
+            <CompactInput placeholder="מה הלקוח צריך" value={summary.customerNeed} onChange={(e) => setSummary({ ...summary, customerNeed: e.target.value })} />
+            <CompactInput placeholder="רמת עניין" value={summary.interestLevel} onChange={(e) => setSummary({ ...summary, interestLevel: e.target.value })} />
+            <CompactInput placeholder="התנגדויות" value={summary.objections} onChange={(e) => setSummary({ ...summary, objections: e.target.value })} />
+            <CompactInput placeholder="צעד הבא" value={summary.nextStep} onChange={(e) => setSummary({ ...summary, nextStep: e.target.value })} />
+            <CompactInput placeholder="מעקב הבא" value={summary.nextFollowUp} onChange={(e) => setSummary({ ...summary, nextFollowUp: e.target.value })} />
+          </div>
+          <div className="flex flex-wrap gap-1.5">
             <PrimaryButton
+              compact
               onClick={async () => {
                 await setStatus("completed", { callSummary: summary });
                 setSummaryOpen(false);
@@ -450,16 +564,17 @@ export function CustomerAppointmentActions({
             >
               שמירת סיכום וסיום
             </PrimaryButton>
-            {onBookAnother ? <SecondaryButton onClick={onBookAnother}>+ תיאום נוסף</SecondaryButton> : null}
+            {onBookAnother ? <SecondaryButton compact onClick={onBookAnother}>+ תיאום נוסף</SecondaryButton> : null}
           </div>
         </div>
       ) : null}
 
       {noShowOpen ? (
-        <div className="space-y-2 rounded-2xl bg-amber-50 p-3">
-          <p className="font-black">הלקוח לא הגיע. WhatsApp לא נשלח אוטומטית.</p>
-          <div className="flex flex-wrap gap-2">
+        <div className="space-y-2 rounded-lg border border-amber-200 bg-amber-50/60 p-3">
+          <p className="text-xs font-semibold text-amber-900">הלקוח לא הגיע. WhatsApp לא נשלח אוטומטית.</p>
+          <div className="flex flex-wrap gap-1.5">
             <PrimaryButton
+              compact
               onClick={async () => {
                 await setStatus("no_show");
                 navigate(`/admin/crm/customers/${customerId}?tab=whatsapp`);
@@ -468,6 +583,7 @@ export function CustomerAppointmentActions({
               שלח WhatsApp
             </PrimaryButton>
             <SecondaryButton
+              compact
               onClick={async () => {
                 await setStatus("no_show");
                 setNoShowOpen(false);
@@ -477,6 +593,7 @@ export function CustomerAppointmentActions({
               תאם מחדש
             </SecondaryButton>
             <SecondaryButton
+              compact
               onClick={async () => {
                 await setStatus("no_show");
                 navigate(`/admin/crm/customers/${customerId}?tab=tasks`);
@@ -489,9 +606,9 @@ export function CustomerAppointmentActions({
       ) : null}
 
       {rescheduleOpen ? (
-        <div className="space-y-2 rounded-2xl border border-purple-100 p-3">
-          <h4 className="font-black">שינוי מועד — אותה פגישה</h4>
-          <select className="min-h-11 w-full rounded-2xl border px-3" value={startAt} onChange={(e) => setStartAt(e.target.value)}>
+        <div className="space-y-2 rounded-lg border border-slate-200 p-3">
+          <h4 className="text-xs font-semibold text-slate-700">שינוי מועד — אותה פגישה</h4>
+          <select className="h-8 w-full rounded-lg border border-slate-200 px-2 text-sm" value={startAt} onChange={(e) => setStartAt(e.target.value)}>
             <option value="">בחירת מועד חדש</option>
             {slots.map((slot) => (
               <option key={slot.startAt} value={slot.startAt}>
@@ -500,6 +617,7 @@ export function CustomerAppointmentActions({
             ))}
           </select>
           <PrimaryButton
+            compact
             disabled={!startAt}
             onClick={async () => {
               try {

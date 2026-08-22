@@ -34,6 +34,7 @@ import {
   PrimaryButton,
   SecondaryButton,
 } from "./AdminCrmUi";
+import { AdminModal } from "./AdminModal";
 import AdminCrmWhatsAppPanel from "./AdminCrmWhatsAppPanel";
 import {
   AdminBizuplyBookFlow,
@@ -340,7 +341,7 @@ export default function AdminCrmCustomer360() {
               </PrimaryButton>
             )}
             <PrimaryButton onClick={() => openNewAppointment()}>+ תיאום חדש</PrimaryButton>
-            <SecondaryButton onClick={() => setTab("meetings")}>תיאומים</SecondaryButton>
+            <SecondaryButton onClick={() => setTab("meetings")}>כל התיאומים</SecondaryButton>
             <SecondaryButton onClick={() => setTab("billing")}>ניהול חבילה</SecondaryButton>
             <SecondaryButton onClick={() => setTab("billing")}>שדרוג</SecondaryButton>
             <SecondaryButton onClick={() => setTab("products")}>ניהול תוספים</SecondaryButton>
@@ -405,40 +406,44 @@ export default function AdminCrmCustomer360() {
                 <p key={t._id}>{t.title} · {formatIsraelDate(t.dueAt, true)}</p>
               ))}
           </CrmCard>
-          <CrmCard>
-            <h3 className="font-black">התיאום הבא</h3>
+          <CrmCard className="!border-[#7C4DFF]/20 !bg-gradient-to-l !from-[#7C4DFF]/5 !to-white">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <p className="text-[11px] font-semibold uppercase tracking-wide text-[#7C4DFF]">התיאום הבא</p>
+                {tabData.nextAppointment ? (
+                  <>
+                    <p className="mt-1 text-lg font-bold text-slate-900">{tabData.nextAppointment.serviceName}</p>
+                    <p className="text-sm font-medium text-slate-700">{israelWeekday(tabData.nextAppointment.startAt)}</p>
+                    <p className="text-sm font-semibold text-[#7C4DFF]">
+                      {new Intl.DateTimeFormat("he-IL", {
+                        timeZone: "Asia/Jerusalem",
+                        hour: "2-digit",
+                        minute: "2-digit",
+                        hour12: false,
+                      }).format(new Date(tabData.nextAppointment.startAt))}
+                      {" · "}
+                      {tabData.nextAppointment.durationMinutes} דקות
+                    </p>
+                  </>
+                ) : (
+                  <p className="mt-1 text-sm font-medium text-slate-500">אין תיאום עתידי</p>
+                )}
+              </div>
+              <PrimaryButton compact onClick={() => openNewAppointment()}>+ תיאום חדש</PrimaryButton>
+            </div>
             {tabData.nextAppointment ? (
-              <div className="mt-2">
-                <p className="text-lg font-black text-purple-950">{tabData.nextAppointment.serviceName}</p>
-                <p className="font-bold text-slate-700">{israelWeekday(tabData.nextAppointment.startAt)}</p>
-                <p className="font-black text-[#7C4DFF]">
-                  {new Intl.DateTimeFormat("he-IL", {
-                    timeZone: "Asia/Jerusalem",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                    hour12: false,
-                  }).format(new Date(tabData.nextAppointment.startAt))}
-                  {" · "}
-                  {tabData.nextAppointment.durationMinutes} דקות
-                </p>
-                <div className="mt-3 flex flex-wrap gap-2">
-                  <CustomerAppointmentActions
-                    row={tabData.nextAppointment}
-                    customerId={id!}
-                    onChanged={() => setTab("meetings")}
-                    onBookAnother={() => openNewAppointment()}
-                    onError={setBanner}
-                  />
-                  <SecondaryButton onClick={() => setTab("meetings")}>כל התיאומים</SecondaryButton>
-                  <SecondaryButton onClick={() => openCommunication("message")}>WhatsApp</SecondaryButton>
-                </div>
+              <div className="mt-3 border-t border-[#7C4DFF]/10 pt-3">
+                <CustomerAppointmentActions
+                  row={tabData.nextAppointment}
+                  customerId={id!}
+                  onChanged={() => setTab("meetings")}
+                  onBookAnother={() => openNewAppointment()}
+                  onError={setBanner}
+                />
               </div>
             ) : (
-              <div className="mt-2">
-                <p className="font-bold text-slate-500">אין תיאום עתידי</p>
-                <div className="mt-3">
-                  <PrimaryButton onClick={() => { setTab("meetings"); openNewAppointment(); }}>+ תיאום חדש</PrimaryButton>
-                </div>
+              <div className="mt-3">
+                <PrimaryButton compact onClick={() => openNewAppointment()}>קביעת שיחה ראשונה</PrimaryButton>
               </div>
             )}
           </CrmCard>
@@ -452,24 +457,20 @@ export default function AdminCrmCustomer360() {
       ) : null}
 
       {tab === "meetings" ? (
-        <div className="space-y-4">
-          <CrmCard>
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <h3 className="font-black">תיאומים</h3>
-                <p className="mt-1 text-sm font-bold text-slate-500">
-                  כל פגישות יומן BizUply של הלקוח הזה. היסטוריה מלאה נשמרת.
-                </p>
-              </div>
-              <PrimaryButton onClick={() => openNewAppointment()}>+ תיאום חדש</PrimaryButton>
+        <div className="space-y-3">
+          <div className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-slate-200 bg-white px-4 py-3">
+            <div>
+              <h3 className="text-sm font-bold text-slate-900">תיאומים</h3>
+              <p className="text-xs text-slate-500">כל פגישות יומן BizUply של הלקוח</p>
             </div>
-          </CrmCard>
+            <PrimaryButton compact onClick={() => openNewAppointment()}>+ תיאום חדש</PrimaryButton>
+          </div>
           {(tabData?.upcoming || []).length ? (
-            <CrmCard>
-              <h3 className="font-black">קרובים</h3>
+            <div className="rounded-xl border border-[#7C4DFF]/20 bg-[#7C4DFF]/5 p-3">
+              <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-[#7C4DFF]">קרובים</h3>
               {(tabData.upcoming || []).map((row: any) => (
-                <div key={row.id} className="mt-3 border-t border-slate-100 pt-3">
-                  <AppointmentDetails row={row} />
+                <div key={row.id} className="border-t border-[#7C4DFF]/10 py-2 first:border-t-0 first:pt-0">
+                  <AppointmentDetails row={row} compact />
                   <CustomerAppointmentActions
                     row={row}
                     customerId={id!}
@@ -482,21 +483,21 @@ export default function AdminCrmCustomer360() {
                   />
                 </div>
               ))}
-            </CrmCard>
+            </div>
           ) : (
             <EmptyState
               title="אין תיאום עתידי"
-              action={<PrimaryButton onClick={() => openNewAppointment()}>+ תיאום חדש</PrimaryButton>}
+              action={<PrimaryButton compact onClick={() => openNewAppointment()}>+ תיאום חדש</PrimaryButton>}
             />
           )}
-          <CrmCard>
-            <h3 className="font-black">היסטוריה</h3>
+          <div className="rounded-xl border border-slate-200 bg-white p-3">
+            <h3 className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-400">היסטוריה</h3>
             {(tabData?.history || []).length ? (
               (tabData.history || []).map((row: any) => (
-                <div key={row.id} className="mt-3 border-t border-slate-100 pt-3">
-                  <AppointmentDetails row={row} />
+                <div key={row.id} className="border-t border-slate-100 py-2 first:border-t-0 first:pt-0">
+                  <AppointmentDetails row={row} compact />
                   {row.cancelledAt ? (
-                    <p className="text-xs font-bold text-slate-500">
+                    <p className="text-[11px] text-slate-500">
                       בוטל ב-{formatIsraelDate(row.cancelledAt, true)}
                       {row.cancelledByName ? ` · ${row.cancelledByName}` : ""}
                     </p>
@@ -514,9 +515,9 @@ export default function AdminCrmCustomer360() {
                 </div>
               ))
             ) : (
-              <p className="mt-2 font-bold text-slate-500">אין היסטוריית תיאומים</p>
+              <p className="text-xs text-slate-500">אין היסטוריית תיאומים</p>
             )}
-          </CrmCard>
+          </div>
         </div>
       ) : null}
 
@@ -812,23 +813,28 @@ export default function AdminCrmCustomer360() {
       ) : null}
 
       {lostOpen ? (
-        <div className="fixed inset-0 z-50 grid place-items-center bg-slate-950/40 p-4">
-          <form
-            className="w-full max-w-md space-y-3 rounded-[28px] bg-white p-5"
-            onSubmit={async (e) => {
-              e.preventDefault();
-              await adminCrmApi.markLost(id!, { reason: lostReason });
-              setLostOpen(false);
-              load();
-            }}
-          >
-            <h2 className="font-black">סיבת הפסד</h2>
-            <select value={lostReason} onChange={(e) => setLostReason(e.target.value)} className="min-h-11 w-full rounded-2xl border px-3">
-              {Object.entries(LOST_REASON_LABELS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
-            </select>
-            <PrimaryButton type="submit">שמירה</PrimaryButton>
-          </form>
-        </div>
+        <AdminModal
+          open
+          onClose={() => setLostOpen(false)}
+          title="סיבת הפסד"
+          size="sm"
+          footer={
+            <PrimaryButton
+              compact
+              onClick={async () => {
+                await adminCrmApi.markLost(id!, { reason: lostReason });
+                setLostOpen(false);
+                load();
+              }}
+            >
+              שמירה
+            </PrimaryButton>
+          }
+        >
+          <select value={lostReason} onChange={(e) => setLostReason(e.target.value)} className="h-8 w-full rounded-lg border border-slate-200 px-2 text-sm">
+            {Object.entries(LOST_REASON_LABELS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
+          </select>
+        </AdminModal>
       ) : null}
     </div>
   );
