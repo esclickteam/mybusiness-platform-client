@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 import AdminDialButton from "../../../components/AdminDialButton";
 import API from "../../../api";
 import adminCrmApi from "../../../api/adminCrmApi";
@@ -15,7 +15,8 @@ import {
   stageTone,
   statusTone,
 } from "./adminCrmLabels";
-import { CrmCard, EmptyState, ErrorState, LoadingState, PrimaryButton, SecondaryButton } from "./AdminCrmUi";
+import { CrmCard, EmptyState, ErrorState, LoadingState, PrimaryButton, SecondaryButton, DangerButton } from "./AdminCrmUi";
+import { AdminModal } from "./AdminModal";
 
 type Row = {
   adminCustomerId: string;
@@ -57,6 +58,7 @@ const ALL_COLUMNS = [
 
 export default function AdminCrmCustomers() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [searchParams] = useSearchParams();
   const [items, setItems] = useState<Row[]>([]);
   const [total, setTotal] = useState(0);
@@ -89,6 +91,9 @@ export default function AdminCrmCustomers() {
   const [savedFilters, setSavedFilters] = useState<any[]>([]);
   const [banner, setBanner] = useState("");
   const [canExport, setCanExport] = useState(false);
+  const [canDelete, setCanDelete] = useState(false);
+  const [deleteTarget, setDeleteTarget] = useState<Row | null>(null);
+  const [deleteLoading, setDeleteLoading] = useState(false);
 
   useEffect(() => {
     const t = setTimeout(() => setDebounced(q), 300);
@@ -133,8 +138,19 @@ export default function AdminCrmCustomers() {
 
   useEffect(() => {
     adminCrmApi.filters().then(({ data }) => setSavedFilters(data.filters || [])).catch(() => {});
-    adminCrmApi.meta().then(({ data }) => setCanExport(Boolean(data?.permissions?.export))).catch(() => {});
+    adminCrmApi.meta().then(({ data }) => {
+      setCanExport(Boolean(data?.permissions?.export));
+      setCanDelete(Boolean(data?.permissions?.delete));
+    }).catch(() => {});
   }, []);
+
+  useEffect(() => {
+    const state = location.state as { deletedLeadToast?: boolean } | null;
+    if (state?.deletedLeadToast) {
+      setBanner("הליד נמחק לצמיתות");
+      navigate(location.pathname + location.search, { replace: true, state: {} });
+    }
+  }, [location, navigate]);
 
   async function createCustomer(e: React.FormEvent) {
     e.preventDefault();
@@ -159,6 +175,26 @@ export default function AdminCrmCustomers() {
     await adminCrmApi.saveFilter({ name, filters: query });
     const { data } = await adminCrmApi.filters();
     setSavedFilters(data.filters || []);
+  }
+
+  async function confirmPermanentDelete() {
+    if (!deleteTarget) return;
+    setDeleteLoading(true);
+    try {
+      await adminCrmApi.deleteCustomer(deleteTarget.adminCustomerId);
+      setItems((prev) => prev.filter((row) => row.adminCustomerId !== deleteTarget.adminCustomerId));
+      setTotal((prev) => Math.max(0, prev - 1));
+      setBanner("הליד נמחק לצמיתות");
+      setDeleteTarget(null);
+    } catch (err: any) {
+      setBanner(err?.response?.data?.error || "מחיקת הליד נכשלה");
+    } finally {
+      setDeleteLoading(false);
+    }
+  }
+
+  function rowCanDelete(row: Row) {
+    return canDelete && row.lifecycle === "lead" && !row.currentPackageLabel && !row.subscriptionStatus;
   }
 
   async function bulkAssign() {
@@ -349,6 +385,7 @@ export default function AdminCrmCustomers() {
                       {col.label}
                     </th>
                   ))}
+                  {canDelete ? <th className="p-2">פעולות</th> : null}
                 </tr>
               </thead>
               <tbody>
@@ -376,6 +413,15 @@ export default function AdminCrmCustomers() {
                         {cell(row, col.key)}
                       </td>
                     ))}
+                    {canDelete ? (
+                      <td className="p-2 align-top" onClick={(e) => e.stopPropagation()}>
+                        {rowCanDelete(row) ? (
+                          <DangerButton compact onClick={() => setDeleteTarget(row)}>
+                            מחיקת ליד
+                          </DangerButton>
+                        ) : null}
+                      </td>
+                    ) : null}
                   </tr>
                 ))}
               </tbody>
@@ -406,6 +452,30 @@ export default function AdminCrmCustomers() {
             </div>
           </form>
         </div>
+      ) : null}
+
+      {deleteTarget ? (
+        <AdminModal
+          open
+          onClose={() => !deleteLoading && setDeleteTarget(null)}
+          title="למחוק את הליד לצמיתות?"
+          subtitle="הפעולה תמחק את הליד ואת נתוני ה-Admin CRM המשויכים אליו ולא ניתן יהיה לשחזר אותם."
+          size="sm"
+          footer={
+            <div className="flex flex-wrap gap-2">
+              <SecondaryButton compact disabled={deleteLoading} onClick={() => setDeleteTarget(null)}>
+                ביטול
+              </SecondaryButton>
+              <DangerButton compact disabled={deleteLoading} onClick={confirmPermanentDelete}>
+                {deleteLoading ? "מוחק..." : "מחיקה לצמיתות"}
+              </DangerButton>
+            </div>
+          }
+        >
+          <p className="text-sm font-bold text-slate-600">
+            {deleteTarget.contactName || deleteTarget.companyName || "ליד"} · {deleteTarget.phone || deleteTarget.email}
+          </p>
+        </AdminModal>
       ) : null}
     </div>
   );
