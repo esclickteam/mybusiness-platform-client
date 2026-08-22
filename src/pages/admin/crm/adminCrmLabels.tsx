@@ -123,7 +123,10 @@ export const TIMELINE_LABELS: Record<string, string> = {
   migrated_existing: "שיוך לקוח קיים",
   meeting: "פגישה",
   initial_call_booked: "נקבעה שיחה ראשונית ביומן BizUply",
-  whatsapp_conversation_started: "שיחת WhatsApp התחילה",
+  whatsapp_conversation_started: "הלקוח בחר להמשיך בשיחה ב-WhatsApp",
+  whatsapp_handoff_ack_sent: "נשלחה הודעת אישור אוטומטית",
+  whatsapp_handoff_ack_failed: "שליחת הודעת אישור אוטומטית נכשלה",
+  whatsapp_staff_replied: "נציג BizUply השיב ב-WhatsApp",
   initial_call_cancelled: "הפגישה בוטלה",
   initial_call_completed: "השיחה הושלמה",
   initial_call_no_show: "הלקוח לא הגיע לפגישה",
@@ -165,6 +168,24 @@ export const PACKAGE_LABELS: Record<string, string> = {
   trial: "ניסיון",
   earlybird: "Early Bird",
 };
+
+export const WHATSAPP_INBOX_STATUS_LABELS: Record<string, string> = {
+  waiting_for_staff: "ממתין לנציג",
+  active: "שיחת WhatsApp פעילה",
+};
+
+export function waitingTimeLabel(since?: string | Date | null) {
+  if (!since) return "";
+  const ms = Date.now() - new Date(since).getTime();
+  if (Number.isNaN(ms) || ms < 0) return "";
+  const mins = Math.floor(ms / 60000);
+  if (mins < 1) return "פחות מדקה";
+  if (mins < 60) return `${mins} דק׳`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `${hours} שע׳`;
+  const days = Math.floor(hours / 24);
+  return `${days} ימים`;
+}
 
 export function formatIsraelDate(value?: string | Date | null, withTime = false) {
   if (!value) return "—";

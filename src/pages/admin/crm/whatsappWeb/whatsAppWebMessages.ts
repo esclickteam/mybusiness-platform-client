@@ -30,7 +30,15 @@ export type PublicWhatsAppThread = {
   lastStatus?: string;
   matchStatus?: string;
   unresolved?: boolean;
+  inboxStatus?: string;
+  inboxStatusLabel?: string;
+  waitingSince?: string | Date | null;
+  assignedStaffId?: string | null;
+  assignedStaffName?: string;
   assignedAdminName?: string;
+  leadSource?: string;
+  handoffAckStatus?: string;
+  handoffAckError?: string;
 };
 
 export function messageKey(msg: PublicWhatsAppMessage) {
