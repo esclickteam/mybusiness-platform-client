@@ -107,10 +107,15 @@ export default function AdminAutomations() {
                 <p className="mt-3 text-sm font-bold text-amber-800">
                   ברירת המחדל בפרודקשן היא כבוי. אין שליחה היסטורית בעת הפעלה.
                 </p>
+                {item.enabledAt ? (
+                  <p className="text-sm font-bold text-slate-500">
+                    enabledAt: {formatIsraelDate(item.enabledAt, true)}
+                  </p>
+                ) : null}
               </div>
               <div className="flex gap-2">
                 {item.enabled ? (
-                  <SecondaryButton disabled={saving} onClick={() => toggle(false)}>כיבוי</SecondaryButton>
+                  <SecondaryButton disabled={saving} onClick={() => toggle(false)}>Disable</SecondaryButton>
                 ) : (
                   <PrimaryButton disabled={saving} onClick={() => toggle(true)}>הפעלה</PrimaryButton>
                 )}

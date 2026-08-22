@@ -94,6 +94,8 @@ export const adminCrmApi = {
     API.post(`/admin/crm/whatsapp/inbox/${threadId}/assign`, body),
   calendar: (params: AdminCrmListQuery = {}) =>
     API.get(`/admin/crm/calendar${qs(params)}`),
+  calendarSettings: (body: Record<string, unknown>) =>
+    API.put("/admin/crm/calendar/settings", body),
   calendarSlots: (params: AdminCrmListQuery = {}) =>
     API.get(`/admin/crm/calendar/slots${qs(params)}`),
   calendarBook: (body: Record<string, unknown>) =>
