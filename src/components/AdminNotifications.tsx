@@ -5,6 +5,7 @@ import {
   ArrowRight,
   Bell,
   BellRing,
+  CalendarDays,
   Check,
   CheckCheck,
   Headphones,
@@ -16,17 +17,18 @@ import {
 } from "lucide-react";
 
 import API from "../api";
+import adminCrmApi from "../api/adminCrmApi";
 import { useAuth } from "../context/AuthContext";
 import {
   ADMIN_FLOATING_PANEL_COMPACT_CLASS,
   ADMIN_MOBILE_BACKDROP_CLASS,
 } from "../utils/adminResponsive";
 import {
-  loadStoredAlerts,
-  notifyAdminSupportEvent,
-  persistAlerts,
-  type AdminSupportAlert,
-} from "../utils/adminSupportAlerts";
+  loadStoredSupportAlerts,
+  notifyAdminStaffEvent,
+  persistSupportAlerts,
+  type AdminStaffAlert,
+} from "../utils/adminStaffAlerts";
 import {
   bindExistingPushSubscription,
   ensurePushSubscription,
@@ -251,7 +253,7 @@ function AdminPushSettings({
                 הגדרות התראות אדמין
               </h3>
               <p className="truncate text-[11px] font-bold text-slate-500">
-                Push / PWA — רק צ׳אט תמיכה מלקוחות
+                Push / PWA — תמיכה ויומן BizUply
               </p>
             </div>
           </div>
@@ -350,6 +352,18 @@ function AdminPushSettings({
               </div>
               <Toggle checked disabled onChange={() => {}} />
             </div>
+            <div className="mt-3 flex items-start gap-2 border-t border-slate-100 pt-3">
+              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-violet-50 text-[#7C4DFF] ring-1 ring-violet-100">
+                <CalendarDays className="h-4 w-4" />
+              </span>
+              <div>
+                <p className="text-sm font-black text-slate-900">יומן BizUply</p>
+                <p className="mt-1 text-[11px] font-semibold leading-5 text-slate-500">
+                  תקבלו התראה כשנקבעת שיחה חדשה ותזכורת 10 דקות לפני הפגישה.
+                </p>
+              </div>
+              <Toggle checked disabled onChange={() => {}} />
+            </div>
           </div>
         </div>
       )}
@@ -369,11 +383,57 @@ export default function AdminNotifications() {
   const [open, setOpen] = useState(false);
   const [panelView, setPanelView] = useState<"list" | "settings">("list");
   const [tab, setTab] = useState<"all" | "unread">("all");
-  const [alerts, setAlerts] = useState<AdminSupportAlert[]>(() =>
-    loadStoredAlerts()
+  const [alerts, setAlerts] = useState<AdminStaffAlert[]>(() =>
+    loadStoredSupportAlerts()
   );
   const [badge, setBadge] = useState(0);
   const rootRef = useRef<HTMLDivElement | null>(null);
+
+  const mergeAlerts = useCallback((incoming: AdminStaffAlert[]) => {
+    const map = new Map<string, AdminStaffAlert>();
+    for (const item of incoming) {
+      map.set(item.id, item);
+    }
+    return [...map.values()].sort((a, b) => b.at - a.at).slice(0, 40);
+  }, []);
+
+  const pushAlert = useCallback((alert: AdminStaffAlert) => {
+    setAlerts((prev) => {
+      if (prev.some((a) => a.id === alert.id)) return prev;
+      const next = mergeAlerts([alert, ...prev]);
+      persistSupportAlerts(next);
+      return next;
+    });
+    setBadge((n) => n + 1);
+  }, [mergeAlerts]);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const { data } = await adminCrmApi.staffNotifications({ limit: 40 });
+        if (cancelled) return;
+        const serverItems: AdminStaffAlert[] = (data.items || []).map((row: any) => ({
+          id: row.id,
+          kind: row.kind || "calendar_booking",
+          title: row.title,
+          body: row.body,
+          targetUrl: row.targetUrl || "",
+          bookingId: row.bookingId,
+          adminCustomerId: row.adminCustomerId,
+          at: row.at || new Date(row.createdAt).getTime(),
+          read: Boolean(row.read),
+          server: true,
+        }));
+        setAlerts((prev) => mergeAlerts([...serverItems, ...prev]));
+      } catch {
+        /* ignore */
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [mergeAlerts]);
 
   const unreadCount = useMemo(
     () => alerts.filter((a) => !a.read).length,
@@ -385,15 +445,30 @@ export default function AdminNotifications() {
     return alerts;
   }, [alerts, tab]);
 
-  const pushAlert = useCallback((alert: AdminSupportAlert) => {
-    setAlerts((prev) => {
-      if (prev.some((a) => a.id === alert.id)) return prev;
-      const next = [alert, ...prev].slice(0, 40);
-      persistAlerts(next);
-      return next;
-    });
-    setBadge((n) => n + 1);
-  }, []);
+  const handleStaffNotify = useCallback(
+    (payload: any) => {
+      const rows = Array.isArray(payload?.notifications)
+        ? payload.notifications
+        : payload
+          ? [payload]
+          : [];
+      for (const row of rows) {
+        void notifyAdminStaffEvent({
+          id: row.id,
+          kind: row.kind || payload?.kind || "calendar_booking",
+          title: row.title || payload?.title || "התראה",
+          body: row.body || payload?.body || "",
+          targetUrl: row.targetUrl || payload?.targetUrl || "",
+          bookingId: row.bookingId || payload?.bookingId || null,
+          adminCustomerId: row.adminCustomerId || payload?.adminCustomerId || null,
+          skipOsNotification: false,
+        }).then((alert) => {
+          if (alert) pushAlert(alert);
+        });
+      }
+    },
+    [pushAlert]
+  );
 
   useEffect(() => {
     void ensurePushSubscription().catch(() => {});
@@ -416,7 +491,8 @@ export default function AdminNotifications() {
         : null;
       const name = payload?.conversation?.name || "לקוח";
       const body = payload?.message?.text || "הודעה חדשה";
-      void notifyAdminSupportEvent({
+      void notifyAdminStaffEvent({
+        kind: "support",
         title: "הודעה חדשה מלקוח",
         body: `${name}: ${body}`,
         conversationId,
@@ -433,7 +509,8 @@ export default function AdminNotifications() {
       }
       const conversationId =
         payload?.conversationId || payload?.conversation?._id || null;
-      void notifyAdminSupportEvent({
+      void notifyAdminStaffEvent({
+        kind: "support",
         title: payload?.title || "פניית תמיכה",
         body: payload?.body || "יש פנייה חדשה מלקוח",
         conversationId,
@@ -449,7 +526,8 @@ export default function AdminNotifications() {
         return;
       }
       const conversation = payload?.conversation;
-      void notifyAdminSupportEvent({
+      void notifyAdminStaffEvent({
+        kind: "support",
         title: "לקוח ממתין לנציג",
         body: `${conversation?.name || "אורח"} מבקש נציג אנושי`,
         conversationId: conversation?._id,
@@ -460,28 +538,34 @@ export default function AdminNotifications() {
     };
 
     socket.emit("joinRoom", "admin-support");
+    socket.emit("joinRoom", "admin-crm");
     socket.on("support:notify", onNotify);
     socket.on("support:waiting", onWaiting);
     socket.on("support:newMessage", onVisitorMessage);
+    socket.on("adminStaff:notify", handleStaffNotify);
+    socket.on("adminCrm:calendar_notify", handleStaffNotify);
+    socket.on("adminCrm:calendar_booking", handleStaffNotify);
+    socket.on("adminCrm:calendar_reminder", handleStaffNotify);
 
     return () => {
       socket.off("support:notify", onNotify);
       socket.off("support:waiting", onWaiting);
       socket.off("support:newMessage", onVisitorMessage);
+      socket.off("adminStaff:notify", handleStaffNotify);
+      socket.off("adminCrm:calendar_notify", handleStaffNotify);
+      socket.off("adminCrm:calendar_booking", handleStaffNotify);
+      socket.off("adminCrm:calendar_reminder", handleStaffNotify);
     };
-  }, [socket, pushAlert]);
+  }, [socket, pushAlert, handleStaffNotify]);
 
   useEffect(() => {
     const onCustom = (event: Event) => {
-      const detail = (event as CustomEvent<AdminSupportAlert>).detail;
+      const detail = (event as CustomEvent<AdminStaffAlert>).detail;
       if (!detail?.id) return;
       setAlerts((prev) => {
         if (prev.some((a) => a.id === detail.id)) return prev;
-        const next = [{ ...detail, read: detail.read ?? false }, ...prev].slice(
-          0,
-          40
-        );
-        persistAlerts(next);
+        const next = mergeAlerts([{ ...detail, read: detail.read ?? false }, ...prev]);
+        persistSupportAlerts(next);
         return next;
       });
       if (!location.pathname.startsWith("/admin/support-chat")) {
@@ -491,7 +575,7 @@ export default function AdminNotifications() {
     window.addEventListener("bizuply:adminSupportAlert", onCustom);
     return () =>
       window.removeEventListener("bizuply:adminSupportAlert", onCustom);
-  }, [location.pathname]);
+  }, [location.pathname, mergeAlerts]);
 
   useEffect(() => {
     if (location.pathname.startsWith("/admin/support-chat")) {
@@ -519,27 +603,39 @@ export default function AdminNotifications() {
   function markAllRead() {
     setAlerts((prev) => {
       const next = prev.map((a) => ({ ...a, read: true }));
-      persistAlerts(next);
+      persistSupportAlerts(next);
       return next;
     });
     setBadge(0);
+    void adminCrmApi.markAllStaffNotificationsRead().catch(() => {});
   }
 
-  function openAlert(alert: AdminSupportAlert) {
+  function openAlert(alert: AdminStaffAlert) {
     setAlerts((prev) => {
       const next = prev.map((a) =>
         a.id === alert.id ? { ...a, read: true } : a
       );
-      persistAlerts(next);
+      persistSupportAlerts(next);
       return next;
     });
+    if (alert.server) {
+      void adminCrmApi.markStaffNotificationRead(alert.id).catch(() => {});
+    }
     closePanel();
     setBadge(0);
+    if (alert.targetUrl) {
+      navigate(alert.targetUrl);
+      return;
+    }
     if (alert.conversationId) {
       navigate(`/admin/support-chat?c=${alert.conversationId}`);
-    } else {
-      navigate("/admin/support-chat");
+      return;
     }
+    if (alert.adminCustomerId) {
+      navigate(`/admin/crm/customers/${alert.adminCustomerId}`);
+      return;
+    }
+    navigate("/admin/support-chat");
   }
 
   const displayBadge = Math.max(badge, unreadCount);
@@ -649,7 +745,7 @@ export default function AdminNotifications() {
                           התראות
                         </p>
                         <p className="truncate text-[11px] font-bold text-slate-500">
-                          צ׳אט תמיכה · הודעות מלקוחות
+                          תמיכה · יומן BizUply
                         </p>
                       </div>
                     </div>
@@ -735,13 +831,17 @@ export default function AdminNotifications() {
                         אין התראות עדיין
                       </p>
                       <p className="mt-2 max-w-xs text-sm font-semibold leading-6 text-slate-400">
-                        כשלקוח ישלח הודעה בצ׳אט התמיכה — תופיע כאן ותישלח גם
+                        כשלקוח ישלח הודעה בצ׳אט התמיכה או יקבע שיחה — תופיע כאן ותישלח גם
                         ב־PWA.
                       </p>
                     </div>
                   ) : (
                     <div className="space-y-2">
-                      {filtered.map((alert) => (
+                      {filtered.map((alert) => {
+                        const isCalendar =
+                          alert.kind === "calendar_booking" ||
+                          alert.kind === "calendar_reminder";
+                        return (
                         <button
                           type="button"
                           key={alert.id}
@@ -753,13 +853,31 @@ export default function AdminNotifications() {
                               : "border-sky-100 bg-gradient-to-l from-sky-50/80 via-white to-white shadow-sm hover:shadow-md",
                           ].join(" ")}
                         >
-                          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-sky-50 text-sky-700 ring-1 ring-sky-100">
-                            <Headphones className="h-5 w-5" />
+                          <span
+                            className={[
+                              "flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ring-1",
+                              isCalendar
+                                ? "bg-violet-50 text-[#7C4DFF] ring-violet-100"
+                                : "bg-sky-50 text-sky-700 ring-sky-100",
+                            ].join(" ")}
+                          >
+                            {isCalendar ? (
+                              <CalendarDays className="h-5 w-5" />
+                            ) : (
+                              <Headphones className="h-5 w-5" />
+                            )}
                           </span>
                           <span className="min-w-0 flex-1">
                             <span className="mb-2 flex items-center justify-between gap-2">
-                              <span className="inline-flex shrink-0 items-center rounded-full bg-sky-50 px-2.5 py-1 text-[11px] font-black text-sky-700 ring-1 ring-sky-100">
-                                צ׳אט תמיכה
+                              <span
+                                className={[
+                                  "inline-flex shrink-0 items-center rounded-full px-2.5 py-1 text-[11px] font-black ring-1",
+                                  isCalendar
+                                    ? "bg-violet-50 text-[#7C4DFF] ring-violet-100"
+                                    : "bg-sky-50 text-sky-700 ring-sky-100",
+                                ].join(" ")}
+                              >
+                                {isCalendar ? "יומן BizUply" : "צ׳אט תמיכה"}
                               </span>
                               <span className="shrink-0 text-[11px] font-black text-slate-400">
                                 {timeAgo(alert.at)}
@@ -776,7 +894,8 @@ export default function AdminNotifications() {
                             <span className="absolute end-4 top-5 h-2.5 w-2.5 rounded-full bg-sky-500 shadow-[0_0_0_4px_rgba(14,165,233,0.16)]" />
                           )}
                         </button>
-                      ))}
+                      );
+                      })}
                     </div>
                   )}
                 </div>
