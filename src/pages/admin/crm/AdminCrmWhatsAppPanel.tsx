@@ -8,6 +8,7 @@ export default function AdminCrmWhatsAppPanel({
   canDemo = true,
   onBanner,
   initialIntent = "message",
+  onOpenSendDemo,
 }: {
   customerId: string;
   canSend: boolean;
@@ -15,6 +16,7 @@ export default function AdminCrmWhatsAppPanel({
   canDemo?: boolean;
   onBanner: (msg: string) => void;
   initialIntent?: "message" | "follow_up" | "demo" | "payment";
+  onOpenSendDemo?: () => void;
 }) {
   return (
     <div className="h-[min(720px,calc(100vh-220px))] min-h-[520px] overflow-hidden rounded-[24px] border border-purple-100">
@@ -26,6 +28,7 @@ export default function AdminCrmWhatsAppPanel({
         onBanner={onBanner}
         initialIntent={initialIntent}
         showConnectionCards
+        onOpenSendDemo={onOpenSendDemo}
       />
     </div>
   );

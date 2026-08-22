@@ -37,6 +37,7 @@ export default function WhatsAppWebThread({
   initialIntent = "message",
   showConnectionCards = false,
   onBack,
+  onOpenSendDemo,
 }: {
   customerId?: string | null;
   threadId?: string | null;
@@ -48,6 +49,7 @@ export default function WhatsAppWebThread({
   initialIntent?: "message" | "follow_up" | "demo" | "payment";
   showConnectionCards?: boolean;
   onBack?: () => void;
+  onOpenSendDemo?: () => void;
 }) {
   const [data, setData] = useState<any>(null);
   const [messages, setMessages] = useState<PublicWhatsAppMessage[]>([]);
@@ -456,7 +458,11 @@ export default function WhatsAppWebThread({
             שליחת מעקב
           </SecondaryButton>
           {canDemo ? (
-            <SecondaryButton type="button" className="!min-h-9 !rounded-full !px-3 !text-xs" onClick={() => setIntent("demo")}>
+            <SecondaryButton
+              type="button"
+              className="!min-h-9 !rounded-full !px-3 !text-xs"
+              onClick={() => (onOpenSendDemo ? onOpenSendDemo() : setIntent("demo"))}
+            >
               שליחת דמו
             </SecondaryButton>
           ) : null}
@@ -465,7 +471,7 @@ export default function WhatsAppWebThread({
           </SecondaryButton>
         </div>
 
-        {intent === "demo" ? (
+        {intent === "demo" && !onOpenSendDemo ? (
           <div className="mb-2 flex flex-wrap gap-2 px-1">
             {(data?.bizuplyManaged?.demoModules || []).map((mod: { key: string; label: string }) => (
               <label key={mod.key} className="flex min-h-9 items-center gap-2 rounded-full border border-purple-100 bg-white px-3 text-xs font-bold">

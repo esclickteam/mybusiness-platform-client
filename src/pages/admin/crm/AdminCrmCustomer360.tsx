@@ -249,7 +249,12 @@ export default function AdminCrmCustomer360() {
   }
 
   function openCommunication(intent: "message" | "follow_up" | "demo" | "payment" = "message") {
-    setWaIntent(intent);
+    if (intent === "demo") {
+      setDemoOpen(true);
+      setWaIntent("message");
+    } else {
+      setWaIntent(intent);
+    }
     setTab("communication");
   }
 
@@ -722,6 +727,7 @@ export default function AdminCrmCustomer360() {
             canDemo={Boolean(perms.demoSend)}
             onBanner={setBanner}
             initialIntent={waIntent}
+            onOpenSendDemo={() => setDemoOpen(true)}
           />
         </div>
       )}

@@ -1,5 +1,6 @@
 import React, { useCallback, useMemo, useState } from "react";
 import adminCrmApi from "../../../api/adminCrmApi";
+import AdminSendGuidedDemoModal from "../AdminSendGuidedDemoModal";
 import {
   Badge,
   SOURCE_LABELS,
@@ -31,6 +32,7 @@ export default function AdminCrmWhatsAppInbox() {
   const [selected, setSelected] = useState<InboxItem | null>(null);
   const [banner, setBanner] = useState("");
   const [mobileChat, setMobileChat] = useState(false);
+  const [demoOpen, setDemoOpen] = useState(false);
 
   const load = useCallback(
     async (nextUnresolved = unresolvedOnly, q = query) => {
@@ -255,6 +257,7 @@ export default function AdminCrmWhatsAppInbox() {
               canDemo={perms.demoSend !== false}
               onBanner={setBanner}
               onBack={() => setMobileChat(false)}
+              onOpenSendDemo={() => setDemoOpen(true)}
             />
           ) : (
             <div className="flex h-full w-full flex-col items-center justify-center bg-[#f0f2f5] text-center">
@@ -268,6 +271,17 @@ export default function AdminCrmWhatsAppInbox() {
           )}
         </section>
       </div>
+
+      <AdminSendGuidedDemoModal
+        open={demoOpen}
+        onClose={() => setDemoOpen(false)}
+        context={{
+          customerName: selected?.name || "",
+          phone: selected?.phone || "",
+          sourceType: "manual",
+          sourceCustomerId: selected?.adminCustomerId || "",
+        }}
+      />
     </div>
   );
 }
