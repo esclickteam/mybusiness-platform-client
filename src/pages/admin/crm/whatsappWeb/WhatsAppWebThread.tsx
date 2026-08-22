@@ -2,7 +2,10 @@ import React, { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { Link } from "react-router-dom";
 import adminCrmApi from "../../../../api/adminCrmApi";
 import { Badge, WHATSAPP_INBOX_STATUS_LABELS } from "../adminCrmLabels";
-import { PrimaryButton, SecondaryButton } from "../AdminCrmUi";
+import { SecondaryButton } from "../AdminCrmUi";
+import { WhatsAppMessageBody } from "./WhatsAppMediaBubble";
+import { WhatsAppMessageComposer } from "./WhatsAppMessageComposer";
+import type { StagedWhatsAppFile } from "./whatsappMedia";
 import { WhatsAppWebTicks } from "./WhatsAppWebTicks";
 import { useAdminCrmWhatsAppRealtime } from "./useAdminCrmWhatsAppRealtime";
 import {
@@ -64,6 +67,7 @@ export default function WhatsAppWebThread({
   const [modules, setModules] = useState<string[]>(["dashboard", "crm"]);
   const [paymentPlan, setPaymentPlan] = useState("monthly");
   const [sending, setSending] = useState(false);
+  const [stagedFile, setStagedFile] = useState<StagedWhatsAppFile | null>(null);
   const [unseen, setUnseen] = useState(0);
   const stickRef = useRef(true);
   const scrollerRef = useRef<HTMLDivElement | null>(null);
@@ -225,18 +229,29 @@ export default function WhatsAppWebThread({
       return;
     }
     const text = String(body || preview || "").trim();
-    if (sessionOpen && !templateId && !text) return;
-    if (!sessionOpen && !templateId) {
-      onBanner("מחוץ לחלון 24 שעות יש לבחור תבנית מאושרת");
+    if (!stagedFile) {
+      if (sessionOpen && !templateId && !text) return;
+      if (!sessionOpen && !templateId) {
+        onBanner("מחוץ לחלון 24 שעות יש לבחור תבנית מאושרת");
+        return;
+      }
+    } else if (!sessionOpen) {
+      onBanner("שליחת מדיה זמינה רק בתוך חלון 24 שעות");
       return;
     }
+
     setSending(true);
     const optimistic: PublicWhatsAppMessage = {
       id: `tmp-${Date.now()}`,
       direction: "outbound",
       status: "queued",
       timestamp: new Date().toISOString(),
-      bodyPreview: text || selected?.body || "…",
+      bodyPreview: stagedFile
+        ? stagedFile.filename
+        : text || selected?.body || "…",
+      messageType: stagedFile?.messageType || "text",
+      filename: stagedFile?.filename,
+      caption: stagedFile && text ? text : "",
       kind: templateId ? "template" : "free_form",
       pending: true,
     };
@@ -244,30 +259,55 @@ export default function WhatsAppWebThread({
     setMessages((prev) => mergeMessages(prev, optimistic));
     requestAnimationFrame(() => scrollToBottom(true));
     try {
+      let uploadedMedia: Record<string, unknown> | null = null;
+      if (stagedFile) {
+        const { data: uploadRes } = await adminCrmApi.whatsappUploadMedia(
+          customerId,
+          stagedFile.file
+        );
+        uploadedMedia = uploadRes.media || null;
+      }
+
       const payload: Record<string, unknown> = {
         intent,
         templateId: templateId || null,
-        body,
+        body: text,
         vars: mappedVars,
         previewConfirmed: Boolean(preview || !(selected?.variables || []).length),
         demoModules: modules,
         paymentPlan,
       };
+      if (uploadedMedia) {
+        payload.mediaType = uploadedMedia.messageType;
+        payload.mediaUrl = uploadedMedia.mediaUrl;
+        payload.filename = uploadedMedia.filename;
+        payload.mimeType = uploadedMedia.mimeType;
+        payload.mediaSize = uploadedMedia.mediaSize;
+        payload.mediaPublicId = uploadedMedia.mediaPublicId;
+      }
+
       const { data: res } = await adminCrmApi.whatsappSend(customerId, payload);
       if (res.message) {
         setMessages((prev) => mergeMessages(prev, res.message));
       }
       onBanner(
-        res.kind === "template"
-          ? "תבנית WhatsApp נשלחה מערוץ BizUply"
-          : "הודעת WhatsApp נשלחה מערוץ BizUply"
+        res.kind === "media"
+          ? "מדיה נשלחה ב-WhatsApp"
+          : res.kind === "template"
+            ? "תבנית WhatsApp נשלחה מערוץ BizUply"
+            : "הודעת WhatsApp נשלחה מערוץ BizUply"
       );
       setBody("");
       setPreview("");
+      setStagedFile(null);
       requestAnimationFrame(() => scrollToBottom(true));
     } catch (err: any) {
       setMessages((prev) =>
-        applyStatusPatch(prev, { id: optimistic.id, status: "failed", error: "שליחה נכשלה" })
+        applyStatusPatch(prev, {
+          id: optimistic.id,
+          status: "failed",
+          error: err?.response?.data?.error || "שליחה נכשלה",
+        })
       );
       onBanner(err?.response?.data?.error || "השליחה נכשלה. הטיוטה נשמרה.");
     } finally {
@@ -392,9 +432,11 @@ export default function WhatsAppWebThread({
                       : "rounded-es-none bg-white text-[#111b21]",
                   ].join(" ")}
                 >
-                  <p className="whitespace-pre-wrap break-words [overflow-wrap:anywhere]">
-                    {item.message.bodyPreview || "—"}
-                  </p>
+                  <WhatsAppMessageBody
+                    message={item.message}
+                    customerId={customerId}
+                    threadId={threadId}
+                  />
                   {item.message.templateName ? (
                     <p className="mt-1 text-[11px] text-[#667781]">{item.message.templateName}</p>
                   ) : null}
@@ -540,31 +582,17 @@ export default function WhatsAppWebThread({
           <div className="mb-2 rounded-2xl bg-white px-3 py-2 text-sm whitespace-pre-wrap">{preview}</div>
         ) : null}
 
-        <div className="flex items-end gap-2">
-          <textarea
-            className="max-h-36 min-h-[44px] flex-1 resize-none rounded-[24px] border-none bg-white px-4 py-2.5 text-[15px] leading-5 text-[#111b21] outline-none"
-            placeholder={sessionOpen ? "הודעה חופשית" : "מחוץ לחלון 24 שעות חובה לבחור תבנית"}
-            value={body}
-            rows={1}
-            disabled={!customerId || sending || (!sessionOpen && !templateId)}
-            onChange={(e) => setBody(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter" && !e.shiftKey) {
-                e.preventDefault();
-                void send();
-              }
-            }}
-          />
-          <PrimaryButton
-            type="button"
-            className="!min-h-11 !min-w-11 !rounded-full !px-0"
-            disabled={!canSend || !senderReady || !customerId || sending}
-            onClick={() => void send()}
-            aria-label="שליחה"
-          >
-            {sending ? "…" : "➤"}
-          </PrimaryButton>
-        </div>
+        <WhatsAppMessageComposer
+          body={body}
+          onBodyChange={setBody}
+          disabled={!canSend || !customerId || !senderReady}
+          sending={sending}
+          sessionOpen={sessionOpen}
+          hasTemplate={Boolean(templateId)}
+          stagedFile={stagedFile}
+          onStageFile={setStagedFile}
+          onSend={() => void send()}
+        />
         <p className="mt-1 px-2 text-[11px] font-bold text-[#667781]">
           {sessionOpen ? (
             <>

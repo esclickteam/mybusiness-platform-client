@@ -84,6 +84,14 @@ export const adminCrmApi = {
     API.post(`/admin/crm/customers/${id}/whatsapp/preview`, body),
   whatsappSend: (id: string, body: Record<string, unknown>) =>
     API.post(`/admin/crm/customers/${id}/whatsapp/send`, body),
+  whatsappUploadMedia: (id: string, file: File) => {
+    const form = new FormData();
+    form.append("file", file);
+    return API.post(`/admin/crm/customers/${id}/whatsapp/media/upload`, form, {
+      headers: { "Content-Type": "multipart/form-data" },
+      timeout: 120000,
+    });
+  },
   whatsappRead: (id: string) => API.post(`/admin/crm/customers/${id}/whatsapp/read`),
   whatsappTemplates: () => API.get("/admin/crm/whatsapp/templates"),
   whatsappInbox: (params: AdminCrmListQuery = {}) =>
