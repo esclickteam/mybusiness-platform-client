@@ -1975,6 +1975,7 @@ function AppointmentModal({
                 <div className="grid gap-4 md:grid-cols-2">
                   <FormBlock label={t("crm.appointments.existingClient")}>
                     <select
+                      data-demo-target="calendar-appointment-client"
                       value={appointment.crmClientId}
                       onChange={(event) => onSelectClient(event.target.value)}
                       className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-black outline-none transition focus:border-sky-300 focus:ring-4 focus:ring-sky-100"
@@ -1991,6 +1992,7 @@ function AppointmentModal({
                   <FormInput
                     label={t("crm.appointments.clientName")}
                     value={appointment.clientName}
+                    demoTarget="calendar-appointment-client"
                     onChange={(value) =>
                       setAppointment((prev) => ({
                         ...prev,
@@ -2067,6 +2069,7 @@ function AppointmentModal({
                 <div className="grid gap-4 md:grid-cols-2">
                   <FormBlock label={t("crm.common.service")}>
                     <select
+                      data-demo-target="calendar-appointment-service"
                       value={appointment.serviceId}
                       onChange={(event) => onSelectService(event.target.value)}
                       className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-black outline-none transition focus:border-sky-300 focus:ring-4 focus:ring-sky-100"
@@ -2083,6 +2086,7 @@ function AppointmentModal({
                   <FormInput
                     label={t("crm.common.date")}
                     type="date"
+                    demoTarget="calendar-appointment-date"
                     value={appointment.date}
                     onChange={(value) =>
                       setAppointment((prev) => ({
@@ -2097,6 +2101,7 @@ function AppointmentModal({
                     <SelectTimeFromSlots
                       date={appointment.date}
                       selectedTime={appointment.time}
+                      demoTarget="calendar-appointment-time"
                       onChange={(time: string) =>
                         setAppointment((prev) => ({
                           ...prev,
@@ -2352,12 +2357,14 @@ function FormInput({
   onChange,
   type = "text",
   placeholder = "",
+  demoTarget,
 }: {
   label: string;
   value: string;
   onChange: (value: string) => void;
   type?: string;
   placeholder?: string;
+  demoTarget?: string;
 }) {
   return (
     <FormBlock label={label}>
@@ -2366,6 +2373,7 @@ function FormInput({
         value={value}
         onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}
+        data-demo-target={demoTarget}
         className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-black outline-none transition placeholder:text-slate-400 focus:border-sky-300 focus:ring-4 focus:ring-sky-100"
       />
     </FormBlock>
