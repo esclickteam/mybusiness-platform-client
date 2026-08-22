@@ -54,6 +54,7 @@ export default function AdminBizuplyCalendar() {
   const [from, setFrom] = useState(toDateInput(new Date()));
   const [selected, setSelected] = useState<any>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [settingsTab, setSettingsTab] = useState<"hours" | "services" | "holidays" | "blocks">("hours");
   const [bookOpen, setBookOpen] = useState(false);
   const [savingSettings, setSavingSettings] = useState(false);
   const [hours, setHours] = useState(() => hoursFromPayload({}));
@@ -181,7 +182,22 @@ export default function AdminBizuplyCalendar() {
           </div>
           <div className="flex flex-wrap gap-2">
             <PrimaryButton onClick={() => setBookOpen(true)}>+ קביעת שיחה</PrimaryButton>
-            <SecondaryButton onClick={() => setSettingsOpen(true)}>שעות פעילות</SecondaryButton>
+            <SecondaryButton
+              onClick={() => {
+                setSettingsTab("hours");
+                setSettingsOpen(true);
+              }}
+            >
+              שעות פעילות
+            </SecondaryButton>
+            <SecondaryButton
+              onClick={() => {
+                setSettingsTab("services");
+                setSettingsOpen(true);
+              }}
+            >
+              שירותים
+            </SecondaryButton>
             <SecondaryButton onClick={() => load()}>רענון</SecondaryButton>
           </div>
         </div>
@@ -324,7 +340,9 @@ export default function AdminBizuplyCalendar() {
 
         {settingsOpen ? (
           <AdminBizuplyHours
+            key={settingsTab}
             initial={hours}
+            initialTab={settingsTab}
             saving={savingSettings}
             onSave={saveAvailability}
             onClose={() => setSettingsOpen(false)}
