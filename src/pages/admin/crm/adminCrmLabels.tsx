@@ -124,9 +124,9 @@ export const TIMELINE_LABELS: Record<string, string> = {
   meeting: "פגישה",
   initial_call_booked: "נקבעה שיחה ראשונית ביומן BizUply",
   whatsapp_conversation_started: "שיחת WhatsApp התחילה",
-  initial_call_cancelled: "שיחה ראשונית בוטלה",
-  initial_call_completed: "שיחה ראשונית הושלמה",
-  initial_call_no_show: "שיחה ראשונית — לא הגיע",
+  initial_call_cancelled: "הפגישה בוטלה",
+  initial_call_completed: "השיחה הושלמה",
+  initial_call_no_show: "הלקוח לא הגיע לפגישה",
   automation_whatsapp_sent: "נשלחה הודעת WhatsApp לתיאום שיחה ראשונית",
   automation_whatsapp_failed: "שליחת WhatsApp לתיאום שיחה נכשלה",
 };
