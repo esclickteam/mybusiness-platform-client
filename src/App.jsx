@@ -173,8 +173,6 @@ const AdminGuidedDemos = lazy(() => import("./pages/admin/AdminGuidedDemos"));
 const AdminGuidedDemoDetail = lazy(
   () => import("./pages/admin/AdminGuidedDemoDetail")
 );
-const GuidedDemoHost = lazy(() => import("./guidedDemo/GuidedDemoHost"));
-const GuidedDemoRedeemPage = lazy(() => import("./pages/GuidedDemoRedeemPage"));
 const EditSiteContent = lazy(() => import("./pages/admin/EditSiteContent"));
 const ManageRoles = lazy(() => import("./pages/admin/ManageRoles"));
 const AdminPayoutPage = lazy(() => import("./pages/admin/AdminPayoutPage"));
