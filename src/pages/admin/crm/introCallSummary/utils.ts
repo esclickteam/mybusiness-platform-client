@@ -149,7 +149,6 @@ export function buildFullSummarySections(questionnaire: IntroQuestionnaire): Sum
     "מה חשוב לראות בדמו?",
     joinLabels(questionnaire.demoFocus.selections, DEMO_FOCUS_OPTIONS, questionnaire.demoFocus.other)
   );
-  push("דבר אחד ש-BizUply תפתור מחר", questionnaire.oneThingTomorrow);
   push("הערות פנימיות", questionnaire.internalNotes);
 
   return sections;

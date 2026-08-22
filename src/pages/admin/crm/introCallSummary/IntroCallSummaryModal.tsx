@@ -518,17 +518,6 @@ export default function IntroCallSummaryModal({
           />
         </QuestionSection>
 
-        <QuestionSection
-          number={13}
-          title="אם BizUply הייתה פותרת לכם דבר אחד כבר מחר — מה הייתם רוצים שזה יהיה?"
-        >
-          <ShortTextarea
-            rows={2}
-            value={form.oneThingTomorrow}
-            onChange={(oneThingTomorrow) => setForm({ ...form, oneThingTomorrow })}
-          />
-        </QuestionSection>
-
         <section className="rounded-2xl border border-amber-200 bg-amber-50/60 p-4 sm:p-5">
           <h3 className="text-base font-black text-amber-950 sm:text-lg">הערות פנימיות</h3>
           <p className="mb-3 text-xs font-bold text-amber-800">
