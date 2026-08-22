@@ -38,7 +38,7 @@ import AdminCrmWhatsAppPanel from "./AdminCrmWhatsAppPanel";
 
 const TABS = [
   ["overview", "סקירה"],
-  ["meetings", "פגישות"],
+  ["meetings", "פגישות ביומן BizUply"],
   ["activity", "פעילות"],
   ["tasks", "משימות"],
   ["communication", "תקשורת"],
@@ -312,7 +312,7 @@ export default function AdminCrmCustomer360() {
                 הפוך ללקוח / צור חשבון BizUply
               </PrimaryButton>
             )}
-            <SecondaryButton onClick={() => setTab("meetings")}>קביעת פגישה</SecondaryButton>
+            <SecondaryButton onClick={() => setTab("meetings")}>קביעת שיחה</SecondaryButton>
             <SecondaryButton onClick={() => setTab("billing")}>ניהול חבילה</SecondaryButton>
             <SecondaryButton onClick={() => setTab("billing")}>שדרוג</SecondaryButton>
             <SecondaryButton onClick={() => setTab("products")}>ניהול תוספים</SecondaryButton>
@@ -389,7 +389,8 @@ export default function AdminCrmCustomer360() {
       {tab === "meetings" ? (
         <div className="space-y-4">
           <CrmCard>
-            <h3 className="font-black">קביעת פגישה</h3>
+            <h3 className="font-black">פגישות ביומן BizUply</h3>
+            <p className="mt-1 text-sm font-bold text-slate-500">קביעת שיחה · שיחה ראשונית — 15 דקות</p>
             <div className="mt-3 flex flex-wrap gap-2">
               <SecondaryButton
                 onClick={async () => {
@@ -428,7 +429,7 @@ export default function AdminCrmCustomer360() {
                   setTabData(data);
                 }}
               >
-                קביעת פגישה
+                קביעת שיחה
               </PrimaryButton>
             </div>
           </CrmCard>

@@ -166,6 +166,7 @@ const AdminBizuplyCalendar = lazy(() => import("./pages/admin/AdminBizuplyCalend
 const AdminAutomations = lazy(() => import("./pages/admin/AdminAutomations"));
 const AdminSystemHub = lazy(() => import("./pages/admin/AdminSystemHub"));
 const BookRouteDispatch = lazy(() => import("./pages/BookRouteDispatch"));
+const PublicIntroBookingPage = lazy(() => import("./pages/PublicIntroBookingPage"));
 const EditSiteContent = lazy(() => import("./pages/admin/EditSiteContent"));
 const ManageRoles = lazy(() => import("./pages/admin/ManageRoles"));
 const AdminPayoutPage = lazy(() => import("./pages/admin/AdminPayoutPage"));
@@ -1018,6 +1019,14 @@ export default function App() {
                           element={<WebsiteInviteAcceptPage />}
                         />
                         <Route path="/guided-demo/:token" element={<AdminCrmGuidedDemo />} />
+                        <Route
+                          path="/book/bizuply/:token"
+                          element={<PublicIntroBookingPage />}
+                        />
+                        <Route
+                          path="/bizuply/book/:token"
+                          element={<PublicIntroBookingPage />}
+                        />
                         <Route
                           path="/book/:businessId"
                           element={<BookRouteDispatch />}
