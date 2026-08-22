@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
@@ -508,6 +509,15 @@ export default function AdminNotifications() {
   }, []);
 
   useEffect(() => {
+    if (!open || typeof document === "undefined") return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [open]);
+
+  useEffect(() => {
     if (!socket) return;
 
     const onSupportPage = () =>
@@ -673,17 +683,270 @@ export default function AdminNotifications() {
 
   const displayBadge = Math.max(badge, unreadCount);
 
+  async function handleBellClick() {
+    if (open) {
+      setPanelView("list");
+      setOpen(false);
+      return;
+    }
+
+    setBadge(0);
+    setOpen(true);
+
+    try {
+      const permission = getPermission();
+      if (permission !== "granted") {
+        setPanelView("settings");
+        return;
+      }
+      const subscribed = await isSubscribed();
+      if (!subscribed) setPanelView("settings");
+      else setPanelView("list");
+    } catch {
+      setPanelView("list");
+    }
+  }
+
+  const panelOverlay =
+    typeof document !== "undefined"
+      ? createPortal(
+          <>
+            <AnimatePresence>
+              {open && (
+                <motion.button
+                  key="admin-notifications-backdrop"
+                  type="button"
+                  aria-label="סגור התראות"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className={ADMIN_MOBILE_BACKDROP_CLASS}
+                  onClick={closePanel}
+                />
+              )}
+            </AnimatePresence>
+
+            <AnimatePresence>
+              {open && (
+                <motion.div
+                  key="admin-notifications-panel"
+                  initial={{ opacity: 0, y: 40 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: 40 }}
+                  transition={{ duration: 0.18 }}
+                  className={ADMIN_FLOATING_PANEL_COMPACT_CLASS}
+                  dir="rtl"
+                >
+                <div className="mx-auto mb-1 mt-2 h-1.5 w-12 shrink-0 rounded-full bg-slate-200 sm:hidden" />
+                {panelView === "settings" ? (
+                  <AdminPushSettings
+                    active={panelView === "settings"}
+                    onBack={() => setPanelView("list")}
+                  />
+                ) : (
+                  <>
+                    <div className="relative shrink-0 border-b border-slate-100 bg-white p-4">
+                      <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-l from-amber-400 via-orange-400 to-red-500" />
+                      <div className="flex items-center justify-between gap-2 pt-1">
+                        <div className="flex min-w-0 items-center gap-2">
+                          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-amber-50 text-red-500 ring-1 ring-amber-100">
+                            <Bell className="h-5 w-5 fill-amber-400" />
+                          </span>
+                          <div className="min-w-0">
+                            <p className="truncate text-base font-black text-slate-900">
+                              התראות
+                            </p>
+                            <p className="truncate text-[11px] font-bold text-slate-500">
+                              תמיכה · יומן BizUply
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <button
+                            type="button"
+                            onClick={() => setPanelView("settings")}
+                            className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-slate-50 text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"
+                            aria-label="הגדרות התראות"
+                            title="הגדרות התראות"
+                          >
+                            <Settings className="h-4 w-4" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={closePanel}
+                            className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-slate-50 text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"
+                            aria-label="סגור"
+                          >
+                            <X className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="grid shrink-0 grid-cols-2 gap-2 border-b border-slate-100 bg-white p-3">
+                      <button
+                        type="button"
+                        onClick={() => setTab("all")}
+                        className={[
+                          "h-11 rounded-2xl text-sm font-black transition",
+                          tab === "all"
+                            ? "bg-sky-50 text-sky-700 shadow-sm ring-1 ring-sky-100"
+                            : "text-slate-500 hover:bg-slate-50 hover:text-slate-700",
+                        ].join(" ")}
+                      >
+                        הכל
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setTab("unread")}
+                        className={[
+                          "h-11 rounded-2xl text-sm font-black transition",
+                          tab === "unread"
+                            ? "bg-sky-50 text-sky-700 shadow-sm ring-1 ring-sky-100"
+                            : "text-slate-500 hover:bg-slate-50 hover:text-slate-700",
+                        ].join(" ")}
+                      >
+                        לא נקראו
+                      </button>
+                    </div>
+
+                    <div className="flex shrink-0 items-center justify-between gap-3 border-b border-slate-100 px-5 py-4">
+                      <div>
+                        <p className="text-sm font-black text-slate-800">
+                          עדכונים אחרונים
+                        </p>
+                        <p className="mt-1 text-xs font-bold text-slate-400">
+                          {unreadCount > 0
+                            ? `${unreadCount} לא נקראו`
+                            : "אין לא נקראו"}
+                        </p>
+                      </div>
+                      {unreadCount > 0 && (
+                        <button
+                          type="button"
+                          onClick={markAllRead}
+                          className="inline-flex h-9 items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 text-xs font-black text-slate-600 transition hover:bg-slate-50"
+                        >
+                          <CheckCheck className="h-4 w-4" />
+                          סמן הכל
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-3">
+                      {filtered.length === 0 ? (
+                        <div className="flex min-h-[230px] flex-col items-center justify-center rounded-3xl border border-dashed border-slate-200 bg-slate-50 px-8 py-10 text-center">
+                          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-3xl bg-white text-slate-400 shadow-sm ring-1 ring-slate-100">
+                            <ListChecks className="h-7 w-7" />
+                          </div>
+                          <p className="text-base font-black text-slate-800">
+                            אין התראות עדיין
+                          </p>
+                          <p className="mt-2 max-w-xs text-sm font-semibold leading-6 text-slate-400">
+                            כשלקוח ישלח הודעה בצ׳אט התמיכה או יקבע שיחה — תופיע כאן ותישלח גם
+                            ב־PWA.
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="space-y-2">
+                          {filtered.map((alert) => {
+                            const isCalendar =
+                              alert.kind === "calendar_booking" ||
+                              alert.kind === "calendar_reminder";
+                            return (
+                              <button
+                                type="button"
+                                key={alert.id}
+                                onClick={() => openAlert(alert)}
+                                className={[
+                                  "group relative flex w-full items-start gap-3 rounded-3xl border p-4 text-start transition",
+                                  alert.read
+                                    ? "border-slate-100 bg-white opacity-75 hover:bg-slate-50"
+                                    : "border-sky-100 bg-gradient-to-l from-sky-50/80 via-white to-white shadow-sm hover:shadow-md",
+                                ].join(" ")}
+                              >
+                                <span
+                                  className={[
+                                    "flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ring-1",
+                                    isCalendar
+                                      ? "bg-violet-50 text-[#7C4DFF] ring-violet-100"
+                                      : "bg-sky-50 text-sky-700 ring-sky-100",
+                                  ].join(" ")}
+                                >
+                                  {isCalendar ? (
+                                    <CalendarDays className="h-5 w-5" />
+                                  ) : (
+                                    <Headphones className="h-5 w-5" />
+                                  )}
+                                </span>
+                                <span className="min-w-0 flex-1">
+                                  <span className="mb-2 flex items-center justify-between gap-2">
+                                    <span
+                                      className={[
+                                        "inline-flex shrink-0 items-center rounded-full px-2.5 py-1 text-[11px] font-black ring-1",
+                                        isCalendar
+                                          ? "bg-violet-50 text-[#7C4DFF] ring-violet-100"
+                                          : "bg-sky-50 text-sky-700 ring-sky-100",
+                                      ].join(" ")}
+                                    >
+                                      {isCalendar ? "יומן BizUply" : "צ׳אט תמיכה"}
+                                    </span>
+                                    <span className="shrink-0 text-[11px] font-black text-slate-400">
+                                      {timeAgo(alert.at)}
+                                    </span>
+                                  </span>
+                                  <span className="block truncate text-sm font-black text-slate-800">
+                                    {alert.title}
+                                  </span>
+                                  <span className="mt-1 block text-sm font-semibold leading-6 text-slate-600">
+                                    {alert.body}
+                                  </span>
+                                </span>
+                                {!alert.read && (
+                                  <span className="absolute end-4 top-5 h-2.5 w-2.5 rounded-full bg-sky-500 shadow-[0_0_0_4px_rgba(14,165,233,0.16)]" />
+                                )}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="shrink-0 border-t border-slate-100 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+                      {footerAction ? (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            closePanel();
+                            navigate(footerAction.url);
+                          }}
+                          className={[
+                            "inline-flex h-11 w-full items-center justify-center gap-2 rounded-2xl text-sm font-black text-white shadow-sm",
+                            footerAction.tone === "violet"
+                              ? "bg-[#7C4DFF]"
+                              : "bg-gradient-to-l from-amber-400 to-red-500",
+                          ].join(" ")}
+                        >
+                          <footerAction.icon className="h-4 w-4" />
+                          {footerAction.label}
+                        </button>
+                      ) : null}
+                    </div>
+                  </>
+                )}
+              </motion.div>
+              )}
+            </AnimatePresence>
+          </>,
+          document.body
+        )
+      : null;
+
   return (
     <div className="inline-flex" ref={rootRef}>
       <button
         type="button"
-        onClick={() => {
-          setOpen((v) => {
-            if (v) setPanelView("list");
-            else setBadge(0);
-            return !v;
-          });
-        }}
+        onClick={() => void handleBellClick()}
         aria-label="התראות תמיכה"
         className={[
           "relative inline-flex h-11 w-11 items-center justify-center rounded-2xl border bg-gradient-to-br shadow-sm transition hover:-translate-y-0.5 hover:shadow-md sm:h-12 sm:w-12",
@@ -733,231 +996,7 @@ export default function AdminNotifications() {
         )}
       </button>
 
-      <AnimatePresence>
-        {open && (
-          <motion.button
-            key="admin-notifications-backdrop"
-            type="button"
-            aria-label="סגור התראות"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className={ADMIN_MOBILE_BACKDROP_CLASS}
-            onClick={closePanel}
-          />
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 40 }}
-            transition={{ duration: 0.18 }}
-            className={ADMIN_FLOATING_PANEL_COMPACT_CLASS}
-            dir="rtl"
-          >
-            <div className="mx-auto mb-1 mt-2 h-1.5 w-12 shrink-0 rounded-full bg-slate-200 sm:hidden" />
-            {panelView === "settings" ? (
-              <AdminPushSettings
-                active={panelView === "settings"}
-                onBack={() => setPanelView("list")}
-              />
-            ) : (
-              <>
-                <div className="relative shrink-0 border-b border-slate-100 bg-white p-4">
-                  <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-l from-amber-400 via-orange-400 to-red-500" />
-                  <div className="flex items-center justify-between gap-2 pt-1">
-                    <div className="flex min-w-0 items-center gap-2">
-                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-amber-50 text-red-500 ring-1 ring-amber-100">
-                        <Bell className="h-5 w-5 fill-amber-400" />
-                      </span>
-                      <div className="min-w-0">
-                        <p className="truncate text-base font-black text-slate-900">
-                          התראות
-                        </p>
-                        <p className="truncate text-[11px] font-bold text-slate-500">
-                          תמיכה · יומן BizUply
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <button
-                        type="button"
-                        onClick={() => setPanelView("settings")}
-                        className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-slate-50 text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"
-                        aria-label="הגדרות התראות"
-                        title="הגדרות התראות"
-                      >
-                        <Settings className="h-4 w-4" />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={closePanel}
-                        className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-slate-50 text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"
-                        aria-label="סגור"
-                      >
-                        <X className="h-4 w-4" />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="grid shrink-0 grid-cols-2 gap-2 border-b border-slate-100 bg-white p-3">
-                  <button
-                    type="button"
-                    onClick={() => setTab("all")}
-                    className={[
-                      "h-11 rounded-2xl text-sm font-black transition",
-                      tab === "all"
-                        ? "bg-sky-50 text-sky-700 shadow-sm ring-1 ring-sky-100"
-                        : "text-slate-500 hover:bg-slate-50 hover:text-slate-700",
-                    ].join(" ")}
-                  >
-                    הכל
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setTab("unread")}
-                    className={[
-                      "h-11 rounded-2xl text-sm font-black transition",
-                      tab === "unread"
-                        ? "bg-sky-50 text-sky-700 shadow-sm ring-1 ring-sky-100"
-                        : "text-slate-500 hover:bg-slate-50 hover:text-slate-700",
-                    ].join(" ")}
-                  >
-                    לא נקראו
-                  </button>
-                </div>
-
-                <div className="flex shrink-0 items-center justify-between gap-3 border-b border-slate-100 px-5 py-4">
-                  <div>
-                    <p className="text-sm font-black text-slate-800">
-                      עדכונים אחרונים
-                    </p>
-                    <p className="mt-1 text-xs font-bold text-slate-400">
-                      {unreadCount > 0
-                        ? `${unreadCount} לא נקראו`
-                        : "אין לא נקראו"}
-                    </p>
-                  </div>
-                  {unreadCount > 0 && (
-                    <button
-                      type="button"
-                      onClick={markAllRead}
-                      className="inline-flex h-9 items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 text-xs font-black text-slate-600 transition hover:bg-slate-50"
-                    >
-                      <CheckCheck className="h-4 w-4" />
-                      סמן הכל
-                    </button>
-                  )}
-                </div>
-
-                <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-3">
-                  {filtered.length === 0 ? (
-                    <div className="flex min-h-[230px] flex-col items-center justify-center rounded-3xl border border-dashed border-slate-200 bg-slate-50 px-8 py-10 text-center">
-                      <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-3xl bg-white text-slate-400 shadow-sm ring-1 ring-slate-100">
-                        <ListChecks className="h-7 w-7" />
-                      </div>
-                      <p className="text-base font-black text-slate-800">
-                        אין התראות עדיין
-                      </p>
-                      <p className="mt-2 max-w-xs text-sm font-semibold leading-6 text-slate-400">
-                        כשלקוח ישלח הודעה בצ׳אט התמיכה או יקבע שיחה — תופיע כאן ותישלח גם
-                        ב־PWA.
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="space-y-2">
-                      {filtered.map((alert) => {
-                        const isCalendar =
-                          alert.kind === "calendar_booking" ||
-                          alert.kind === "calendar_reminder";
-                        return (
-                        <button
-                          type="button"
-                          key={alert.id}
-                          onClick={() => openAlert(alert)}
-                          className={[
-                            "group relative flex w-full items-start gap-3 rounded-3xl border p-4 text-start transition",
-                            alert.read
-                              ? "border-slate-100 bg-white opacity-75 hover:bg-slate-50"
-                              : "border-sky-100 bg-gradient-to-l from-sky-50/80 via-white to-white shadow-sm hover:shadow-md",
-                          ].join(" ")}
-                        >
-                          <span
-                            className={[
-                              "flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ring-1",
-                              isCalendar
-                                ? "bg-violet-50 text-[#7C4DFF] ring-violet-100"
-                                : "bg-sky-50 text-sky-700 ring-sky-100",
-                            ].join(" ")}
-                          >
-                            {isCalendar ? (
-                              <CalendarDays className="h-5 w-5" />
-                            ) : (
-                              <Headphones className="h-5 w-5" />
-                            )}
-                          </span>
-                          <span className="min-w-0 flex-1">
-                            <span className="mb-2 flex items-center justify-between gap-2">
-                              <span
-                                className={[
-                                  "inline-flex shrink-0 items-center rounded-full px-2.5 py-1 text-[11px] font-black ring-1",
-                                  isCalendar
-                                    ? "bg-violet-50 text-[#7C4DFF] ring-violet-100"
-                                    : "bg-sky-50 text-sky-700 ring-sky-100",
-                                ].join(" ")}
-                              >
-                                {isCalendar ? "יומן BizUply" : "צ׳אט תמיכה"}
-                              </span>
-                              <span className="shrink-0 text-[11px] font-black text-slate-400">
-                                {timeAgo(alert.at)}
-                              </span>
-                            </span>
-                            <span className="block truncate text-sm font-black text-slate-800">
-                              {alert.title}
-                            </span>
-                            <span className="mt-1 block text-sm font-semibold leading-6 text-slate-600">
-                              {alert.body}
-                            </span>
-                          </span>
-                          {!alert.read && (
-                            <span className="absolute end-4 top-5 h-2.5 w-2.5 rounded-full bg-sky-500 shadow-[0_0_0_4px_rgba(14,165,233,0.16)]" />
-                          )}
-                        </button>
-                      );
-                      })}
-                    </div>
-                  )}
-                </div>
-
-                <div className="shrink-0 border-t border-slate-100 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
-                  {footerAction ? (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        closePanel();
-                        navigate(footerAction.url);
-                      }}
-                      className={[
-                        "inline-flex h-11 w-full items-center justify-center gap-2 rounded-2xl text-sm font-black text-white shadow-sm",
-                        footerAction.tone === "violet"
-                          ? "bg-[#7C4DFF]"
-                          : "bg-gradient-to-l from-amber-400 to-red-500",
-                      ].join(" ")}
-                    >
-                      <footerAction.icon className="h-4 w-4" />
-                      {footerAction.label}
-                    </button>
-                  ) : null}
-                </div>
-              </>
-            )}
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {panelOverlay}
     </div>
   );
 }
