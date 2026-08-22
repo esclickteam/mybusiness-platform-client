@@ -49,6 +49,7 @@ import {
 } from "../AdminBizuplyBookFlow";
 import IntroCallSummaryViewModal from "./introCallSummary/IntroCallSummaryViewModal";
 import { buildSummaryPreview, introQuestionnaireFromCallSummary } from "./introCallSummary/utils";
+import PostDemoCustomerSection from "./postDemo/PostDemoCustomerSection";
 
 const TABS = [
   ["overview", "סקירה"],
@@ -512,6 +513,7 @@ export default function AdminCrmCustomer360() {
               <span key={f.key} className="mb-2 ml-2 inline-flex rounded-full bg-purple-50 px-2 py-1 text-xs font-black text-[#7C4DFF]">{f.name}</span>
             ))}
           </CrmCard>
+          <PostDemoCustomerSection customerId={id!} />
         </div>
       ) : null}
 

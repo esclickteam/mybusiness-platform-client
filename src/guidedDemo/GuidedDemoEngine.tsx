@@ -18,6 +18,7 @@ import {
   type Hole,
 } from "./overlayHelpers";
 import { CalendarCheck, LayoutDashboard, LayoutTemplate, Sparkles, Users, Workflow } from "lucide-react";
+import PostDemoFlow from "./postDemoQuestionnaire/PostDemoFlow";
 
 const BRAND = "#6D28D9";
 const TARGET_WAIT_MS = 10000;
@@ -239,6 +240,7 @@ export default function GuidedDemoEngine() {
   const [tourMinimized, setTourMinimized] = useState(false);
   const [finishConfirm, setFinishConfirm] = useState(false);
   const [inputReady, setInputReady] = useState(false);
+  const [postDemoHidden, setPostDemoHidden] = useState(false);
   const cardRef = useRef<HTMLDivElement | null>(null);
   const retryRef = useRef(0);
   const skipLockRef = useRef(false);
@@ -258,6 +260,16 @@ export default function GuidedDemoEngine() {
   const globalStepNum = Math.min(globalStepIndex + 1, globalStepTotal || 1);
   const isFullDemo = (session?.modules || []).length > 1;
   const isComplete = session?.status === "completed";
+  const questionnaire = session?.questionnaire;
+  const questionnaireStatus = questionnaire?.status || "not_started";
+  const showPostDemoFlow =
+    isComplete &&
+    !postDemoHidden &&
+    questionnaireStatus !== "proposal_requested";
+  const canResumePostDemo =
+    isComplete &&
+    postDemoHidden &&
+    questionnaireStatus !== "proposal_requested";
   const businessId = user?.businessId;
   const showPanel = !introOpen && !isComplete && !!step && !tourMinimized && !finishConfirm;
   const showWebsiteHero =
@@ -270,6 +282,12 @@ export default function GuidedDemoEngine() {
     setToast({ message, kind });
     window.setTimeout(() => setToast(null), kind === "success" ? 3200 : 2400);
   }, []);
+
+  useEffect(() => {
+    if (!isComplete) {
+      setPostDemoHidden(false);
+    }
+  }, [isComplete]);
 
   useEffect(() => {
     if (!isGuidedDemoActive()) return undefined;
@@ -591,16 +609,6 @@ export default function GuidedDemoEngine() {
     await demoProgress.completeStep("DEMO_INPUT", { target: step?.target, value });
   }
 
-  async function handleCta(cta: string, path: string) {
-    try {
-      await demoProgress.report("demo_cta_clicked", { cta });
-    } catch {
-      /* ignore */
-    }
-    await handleExit();
-    navigate(path);
-  }
-
   if (!isGuidedDemoActive() || !session) return null;
 
   const modProgressPct = modStepTotal ? Math.round((Math.max(0, modStepNum - 1) / modStepTotal) * 100) : 0;
@@ -824,47 +832,22 @@ export default function GuidedDemoEngine() {
         </div>
       ) : null}
 
-      {isComplete ? (
-        <div className="pointer-events-auto absolute inset-0 z-[2147483006] flex items-center justify-center bg-slate-950/55 p-4">
-          <div role="dialog" aria-modal="true" className="w-full max-w-lg rounded-[28px] bg-white p-6 text-right shadow-2xl">
-            <h2 className="text-2xl font-black text-slate-900">הדמו הסתיים</h2>
-            <p className="mt-3 text-sm font-semibold leading-6 text-slate-600">סיימתם את המסלול המודרך של BizUply.</p>
-            <p className="mt-2 text-sm font-semibold leading-6 text-slate-600">
-              ראיתם איך הכלים המרכזיים מתחברים יחד לניהול העסק במקום אחד.
-            </p>
-            <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-3">
-              {INTRO_CATEGORIES.map((item) => {
-                const Icon = INTRO_ICONS[item.icon];
-                return (
-                  <div
-                    key={item.key}
-                    className="flex flex-col items-center gap-2 rounded-2xl border border-violet-100 bg-violet-50/50 px-3 py-3 text-center"
-                  >
-                    <span className="grid h-9 w-9 place-items-center rounded-xl bg-white text-violet-700 ring-1 ring-violet-100">
-                      {Icon ? <Icon className="h-4 w-4" /> : null}
-                    </span>
-                    <p className="text-[11px] font-black leading-4 text-slate-800">{item.title}</p>
-                  </div>
-                );
-              })}
-            </div>
-            <button
-              type="button"
-              onClick={() => void handleCta("start", "/contact")}
-              className="mt-6 w-full rounded-2xl px-4 py-3 text-sm font-black text-white"
-              style={{ background: BRAND }}
-            >
-              רוצה לראות איך זה יכול להתאים לעסק שלך?
-            </button>
-            <button
-              type="button"
-              onClick={() => void handleCta("talk", "/contact")}
-              className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm font-black text-slate-700"
-            >
-              דברו איתי
-            </button>
-          </div>
-        </div>
+      {showPostDemoFlow ? (
+        <PostDemoFlow
+          initialQuestionnaire={questionnaire}
+          onDefer={() => setPostDemoHidden(true)}
+          onDone={() => setPostDemoHidden(true)}
+        />
+      ) : null}
+
+      {canResumePostDemo ? (
+        <button
+          type="button"
+          onClick={() => setPostDemoHidden(false)}
+          className="pointer-events-auto absolute bottom-4 left-1/2 z-[2147483005] min-h-11 -translate-x-1/2 rounded-full bg-[#6D28D9] px-5 py-3 text-sm font-black text-white shadow-lg"
+        >
+          המשך התאמה אישית
+        </button>
       ) : null}
 
       {showPanel ? (

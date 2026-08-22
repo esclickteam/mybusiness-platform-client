@@ -104,3 +104,22 @@ export async function exitGuidedDemoSession() {
   const { data } = await API.post("/guided-demo/session/exit");
   return data;
 }
+
+export async function fetchGuidedDemoQuestionnaire() {
+  const { data } = await API.get("/guided-demo/session/questionnaire");
+  return data;
+}
+
+export async function saveGuidedDemoQuestionnaire(payload: {
+  answers: Record<string, unknown>;
+  lastCompletedStep: string;
+  defer?: boolean;
+}) {
+  const { data } = await API.post("/guided-demo/session/questionnaire", payload);
+  return data;
+}
+
+export async function requestGuidedDemoProposal(payload: { answers: Record<string, unknown> }) {
+  const { data } = await API.post("/guided-demo/session/questionnaire/proposal", payload);
+  return data;
+}
