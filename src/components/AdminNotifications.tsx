@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -21,8 +21,9 @@ import API from "../api";
 import adminCrmApi from "../api/adminCrmApi";
 import { useAuth } from "../context/AuthContext";
 import {
-  ADMIN_FLOATING_PANEL_COMPACT_CLASS,
-  ADMIN_MOBILE_BACKDROP_CLASS,
+  ADMIN_ANCHORED_PANEL_CLASS,
+  ADMIN_PANEL_BACKDROP_CLASS,
+  getAdminAnchoredPanelStyle,
 } from "../utils/adminResponsive";
 import {
   loadStoredSupportAlerts,
@@ -393,6 +394,11 @@ export default function AdminNotifications() {
   );
   const [badge, setBadge] = useState(0);
   const rootRef = useRef<HTMLDivElement | null>(null);
+  const bellRef = useRef<HTMLButtonElement | null>(null);
+  const panelRef = useRef<HTMLDivElement | null>(null);
+  const [panelStyle, setPanelStyle] = useState<React.CSSProperties>({
+    visibility: "hidden",
+  });
 
   const mergeAlerts = useCallback((incoming: AdminStaffAlert[]) => {
     const map = new Map<string, AdminStaffAlert>();
@@ -629,14 +635,32 @@ export default function AdminNotifications() {
   useEffect(() => {
     if (!open) return;
     const onDoc = (e: MouseEvent) => {
-      if (!rootRef.current?.contains(e.target as Node)) {
-        setOpen(false);
-        setPanelView("list");
+      const target = e.target as Node;
+      if (bellRef.current?.contains(target) || panelRef.current?.contains(target)) {
+        return;
       }
+      setOpen(false);
+      setPanelView("list");
     };
     document.addEventListener("mousedown", onDoc);
     return () => document.removeEventListener("mousedown", onDoc);
   }, [open]);
+
+  useLayoutEffect(() => {
+    if (!open) return;
+
+    function updatePosition() {
+      setPanelStyle(getAdminAnchoredPanelStyle(bellRef.current));
+    }
+
+    updatePosition();
+    window.addEventListener("resize", updatePosition);
+    window.addEventListener("scroll", updatePosition, true);
+    return () => {
+      window.removeEventListener("resize", updatePosition);
+      window.removeEventListener("scroll", updatePosition, true);
+    };
+  }, [open, panelView]);
 
   function closePanel() {
     setOpen(false);
@@ -720,7 +744,7 @@ export default function AdminNotifications() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className={ADMIN_MOBILE_BACKDROP_CLASS}
+                  className={ADMIN_PANEL_BACKDROP_CLASS}
                   onClick={closePanel}
                 />
               )}
@@ -730,14 +754,15 @@ export default function AdminNotifications() {
               {open && (
                 <motion.div
                   key="admin-notifications-panel"
-                  initial={{ opacity: 0, y: 40 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 40 }}
+                  ref={panelRef}
+                  initial={{ opacity: 0, y: -8, scale: 0.98 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -8, scale: 0.98 }}
                   transition={{ duration: 0.18 }}
-                  className={ADMIN_FLOATING_PANEL_COMPACT_CLASS}
+                  className={ADMIN_ANCHORED_PANEL_CLASS}
+                  style={panelStyle}
                   dir="rtl"
                 >
-                <div className="mx-auto mb-1 mt-2 h-1.5 w-12 shrink-0 rounded-full bg-slate-200 sm:hidden" />
                 {panelView === "settings" ? (
                   <AdminPushSettings
                     active={panelView === "settings"}
@@ -946,6 +971,7 @@ export default function AdminNotifications() {
     <div className="inline-flex" ref={rootRef}>
       <button
         type="button"
+        ref={bellRef}
         onClick={() => void handleBellClick()}
         aria-label="התראות תמיכה"
         className={[

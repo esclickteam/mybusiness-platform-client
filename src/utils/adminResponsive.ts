@@ -2,6 +2,7 @@
  * Shared responsive classes for admin floating panels (softphone, notifications).
  * Classes are fully static so Tailwind JIT can detect them.
  */
+import type { CSSProperties } from "react";
 export const ADMIN_FLOATING_PANEL_CLASS = [
   "fixed z-[9999] flex flex-col overflow-hidden border border-slate-200/90 bg-white text-slate-900",
   // Mobile: bottom sheet
@@ -26,8 +27,41 @@ export const ADMIN_FLOATING_PANEL_COMPACT_CLASS = [
   "sm:shadow-2xl",
 ].join(" ");
 
+/** Panel classes when positioned under the notifications bell (all breakpoints). */
+export const ADMIN_ANCHORED_PANEL_CLASS = [
+  "fixed z-[9999] flex flex-col overflow-hidden border border-slate-200/90 bg-white text-slate-900",
+  "rounded-[28px] shadow-2xl",
+  "pb-[max(env(safe-area-inset-bottom),0.5rem)]",
+].join(" ");
+
+export function getAdminAnchoredPanelStyle(
+  anchor: HTMLElement | null
+): CSSProperties {
+  if (!anchor || typeof window === "undefined") {
+    return { visibility: "hidden" };
+  }
+
+  const rect = anchor.getBoundingClientRect();
+  const margin = 8;
+  const width = Math.min(380, window.innerWidth - margin * 2);
+  const top = rect.bottom + margin;
+  const maxHeight = Math.max(240, window.innerHeight - top - margin);
+  const right = Math.max(margin, window.innerWidth - rect.right);
+
+  return {
+    top,
+    right,
+    width,
+    maxHeight,
+    visibility: "visible",
+  };
+}
+
 export const ADMIN_PAGE_SHELL_CLASS =
   "min-h-screen bg-[#f6f2fb] px-3 py-5 text-right text-slate-800 sm:px-4 sm:py-7 md:px-8";
 
 export const ADMIN_MOBILE_BACKDROP_CLASS =
   "fixed inset-0 z-[9998] bg-slate-950/35 backdrop-blur-[2px] sm:hidden";
+
+export const ADMIN_PANEL_BACKDROP_CLASS =
+  "fixed inset-0 z-[9998] bg-slate-950/35 backdrop-blur-[2px]";
