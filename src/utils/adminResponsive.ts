@@ -35,23 +35,31 @@ export const ADMIN_ANCHORED_PANEL_CLASS = [
 ].join(" ");
 
 export function getAdminAnchoredPanelStyle(
-  anchor: HTMLElement | null
+  anchor: HTMLElement | null,
+  viewport = typeof window !== "undefined"
+    ? { width: window.innerWidth, height: window.innerHeight }
+    : { width: 0, height: 0 }
 ): CSSProperties {
-  if (!anchor || typeof window === "undefined") {
+  if (!anchor || !viewport.width) {
     return { visibility: "hidden" };
   }
 
   const rect = anchor.getBoundingClientRect();
   const margin = 8;
-  const width = Math.min(380, window.innerWidth - margin * 2);
-  const top = rect.bottom + margin;
-  const maxHeight = Math.max(240, window.innerHeight - top - margin);
-  const right = Math.max(margin, window.innerWidth - rect.right);
+  const panelWidth = Math.min(380, viewport.width - margin * 2);
+  const top = Math.min(rect.bottom + margin, viewport.height - margin);
+  const maxHeight = Math.max(200, viewport.height - top - margin);
+
+  // Drop below the bell, centered on it, then clamp so nothing is clipped.
+  let left = rect.left + rect.width / 2 - panelWidth / 2;
+  left = Math.max(margin, Math.min(left, viewport.width - panelWidth - margin));
 
   return {
+    position: "fixed",
     top,
-    right,
-    width,
+    left,
+    right: "auto",
+    width: panelWidth,
     maxHeight,
     visibility: "visible",
   };
