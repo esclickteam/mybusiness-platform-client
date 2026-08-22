@@ -5309,7 +5309,8 @@
       "managedHostTitle": "חיבור מרכזי מנוהל (Bizuply Managed)",
       "managedHostBody": "המספר המוצג הוא החיבור המרכזי של הפלטפורמה. עסק לקוח שמחבר מספר משלו עושה זאת מההגדרות של אותו עסק — לא מכאן.",
       "managedHostNoDisconnect": "לא ניתן לנתק את החיבור המרכזי המנוהל ממסך העסק. ניהול מתבצע ב־Admin → WhatsApp Managed. עסק שרוצה מספר פרטי מחבר אותו מההגדרות של העסק שלו.",
-      "managedHostNoConnectOwn": "בעסק המארח של Managed אי אפשר להחליף את המספר המרכזי ב־Embedded Signup. כדי לחבר מספר פרטי — היכנסו להגדרות WhatsApp של העסק הרצוי."
+      "managedHostNoConnectOwn": "בעסק המארח של Managed אי אפשר להחליף את המספר המרכזי ב־Embedded Signup. כדי לחבר מספר פרטי — היכנסו להגדרות WhatsApp של העסק הרצוי.",
+      "verificationDidMissing": "אין מספר Telnyx לאימות קולי לעסק הזה. אי אפשר להמשיך בחיבור עד שממפים Verification DID."
     },
     "errors": {
       "loadCompose": "Failed to load WhatsApp compose data",
