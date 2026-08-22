@@ -113,6 +113,12 @@ export const adminCrmApi = {
     API.post(`/admin/crm/automations/${key}/enabled`, { enabled }),
   retryAutomationRun: (id: string) =>
     API.post(`/admin/crm/automations/runs/${id}/retry`),
+  staffNotifications: (params: AdminCrmListQuery = {}) =>
+    API.get(`/admin/crm/staff-notifications${qs(params)}`),
+  markStaffNotificationRead: (id: string) =>
+    API.post(`/admin/crm/staff-notifications/${id}/read`),
+  markAllStaffNotificationsRead: () =>
+    API.post("/admin/crm/staff-notifications/read-all"),
 };
 
 export default adminCrmApi;
