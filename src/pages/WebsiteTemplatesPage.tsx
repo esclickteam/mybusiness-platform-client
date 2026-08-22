@@ -23,11 +23,12 @@ import {
   getStudioTemplateSeedById,
 } from "../components/site-builder/studio/data/templates";
 
-import { createMySite } from "../api/mySitesApi";
+import { createMySite, listMySites } from "../api/mySitesApi";
 import TemplateCardPreview from "../components/website/TemplateCardPreview";
 import { getTemplateFullPageScreenshotUrl } from "../utils/templateScreenshot";
 import { getApiErrorMessage } from "../utils/apiErrorMessage";
 import { useLocaleDir } from "../hooks/useLocaleDir";
+import { isGuidedDemoActive } from "@/guidedDemo/sessionStore";
 
 type WebsiteTemplateBlock = {
   id: string;
@@ -758,6 +759,23 @@ export default function WebsiteTemplatesPage() {
     }
   } catch (err: any) {
     console.error("Create site from template failed:", err);
+    if (isGuidedDemoActive() && businessId) {
+      try {
+        const existing = await listMySites(businessId);
+        const fallbackSite = existing?.[0];
+        if (fallbackSite?._id) {
+          navigate(
+            `${basePath}/dashboard/website/sites/${fallbackSite._id}/edit?template=${encodeURIComponent(cleanTemplateKey)}`
+          );
+          return;
+        }
+      } catch {
+        /* keep falling through only for non-demo */
+      }
+    }
+    if (isGuidedDemoActive()) {
+      return;
+    }
     const status = Number(err?.response?.status || 0);
     const apiMessage = String(
       err?.response?.data?.error ||
@@ -780,6 +798,10 @@ export default function WebsiteTemplatesPage() {
       return;
     }
     // fallback לזרימה הישנה אם יצירת האתר נכשלה בלי הודעה ברורה
+  }
+
+  if (isGuidedDemoActive()) {
+    return;
   }
 
   navigate(`${basePath}/dashboard/website/templates/${cleanTemplateKey}/edit`);
@@ -1091,6 +1113,9 @@ export default function WebsiteTemplatesPage() {
                                   onClick={() =>
                                     handlePreviewTemplate(template.key)
                                   }
+                                  data-demo-target={
+                                    index === 0 ? "website-template-preview" : undefined
+                                  }
                                   className="
                                     rounded-lg border border-[#d1d5db] bg-white
                                     px-3 py-2 text-xs font-bold text-[#111827]
@@ -1105,6 +1130,9 @@ export default function WebsiteTemplatesPage() {
                                   type="button"
                                   onClick={() =>
                                     handleEditTemplate(template.key)
+                                  }
+                                  data-demo-target={
+                                    index === 0 ? "website-template-edit" : undefined
                                   }
                                   className="
                                     rounded-lg border border-[#111827] bg-[#111827]

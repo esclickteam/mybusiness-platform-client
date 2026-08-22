@@ -29,6 +29,8 @@ import {
   Zap,
 } from "lucide-react";
 import BizuplyLoader from "../../../../components/ui/BizuplyLoader";
+import { isGuidedDemoActive } from "@/guidedDemo/sessionStore";
+import { DEMO_ADVISOR_RECOMMENDATION } from "@/guidedDemo/demoOverlayData";
 import {
   AdvisorActionsPanel,
   AdvisorThinkingLoader,
@@ -697,6 +699,7 @@ export default function BusinessAdvisorTab({
   return (
     <section
       dir={dir}
+      data-demo-target="advisor-panel"
       className="h-[calc(100vh-120px)] max-h-[calc(100vh-120px)] overflow-hidden bg-slate-50 p-3 text-start text-slate-800 sm:p-5"
     >
       <div className="mx-auto flex h-full min-h-0 w-full max-w-[1700px] flex-col gap-4">
@@ -732,6 +735,19 @@ export default function BusinessAdvisorTab({
                 <p className="mt-2 text-sm font-semibold leading-6 text-slate-500">
                   {t("advisor.subtitle")}
                 </p>
+                {isGuidedDemoActive() ? (
+                  <div
+                    data-demo-target="advisor-recommendation"
+                    className="mt-3 max-w-xl rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3"
+                  >
+                    <p className="text-xs font-black uppercase tracking-[0.14em] text-amber-700">
+                      {DEMO_ADVISOR_RECOMMENDATION.title}
+                    </p>
+                    <p className="mt-1 text-sm font-semibold leading-6 text-amber-950">
+                      {DEMO_ADVISOR_RECOMMENDATION.body}
+                    </p>
+                  </div>
+                ) : null}
               </div>
             </div>
 

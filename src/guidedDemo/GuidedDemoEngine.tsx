@@ -5,15 +5,14 @@ import { demoProgress, runDemoSpecialAction, startDemoProgressBridge, stopDemoPr
 import { isGuidedDemoActive, readGuidedDemoSession, restorePreviousAuth, clearGuidedDemoLocal } from "./sessionStore";
 import { exitGuidedDemoSession, fetchGuidedDemoSession } from "../api/guidedDemoApi";
 import { useAuth } from "../context/AuthContext";
+import { calcHand, findDemoTarget, INTRO_CATEGORIES, padHole, type HandPos, type Hole } from "./overlayHelpers";
 
 const BRAND = "#6D28D9";
-const TARGET_WAIT_MS = 8000;
-const POLL_MS = 100;
+const TARGET_WAIT_MS = 10000;
+const POLL_MS = 120;
 const HEADER_OFFSET = 72;
 const SPECIAL_TARGETS = new Set(["automations-demo-trigger", "messages-demo-send", "whatsapp-demo-send"]);
 
-type Hole = { top: number; left: number; width: number; height: number };
-type HandPos = { x: number; y: number; flip: boolean; dx: number; dy: number };
 type CardPos = { top: number; left: number; width: number };
 type ToastState = { message: string; kind: "success" | "nudge" } | null;
 
@@ -51,26 +50,8 @@ function moduleProgress(session: any) {
   });
 }
 
-function findTarget(selector?: string | null) {
-  if (!selector) return null;
-  return document.querySelector(`[data-demo-target="${selector}"]`);
-}
-
 function clamp(n: number, min: number, max: number) {
   return Math.min(Math.max(n, min), max);
-}
-
-function padHole(rect: DOMRect): Hole {
-  const vw = window.innerWidth;
-  const vh = window.innerHeight;
-  const width = Math.min(rect.width + 14, Math.max(28, vw - 16));
-  const height = Math.min(rect.height + 14, Math.max(28, vh - 16));
-  return {
-    top: clamp(rect.top - 7, 8, Math.max(8, vh - height - 8)),
-    left: clamp(rect.left - 7, 8, Math.max(8, vw - width - 8)),
-    width,
-    height,
-  };
 }
 
 function scrollTargetIntoView(el: Element) {
@@ -157,27 +138,6 @@ function placeCard(hole: Hole | null, cardW: number, cardH: number): CardPos {
   return { top: clamp(target.bottom + margin, 8, vh - cardH - 8), left: clamp((vw - width) / 2, 8, vw - width - 8), width };
 }
 
-function calcHand(hole: Hole): HandPos {
-  const vw = window.innerWidth;
-  const vh = window.innerHeight;
-  const cx = hole.left + hole.width / 2;
-  const cy = hole.top + hole.height / 2;
-  let x = hole.left - 28;
-  let y = hole.top - 42;
-  let flip = false;
-  if (x < 6) {
-    x = hole.left + hole.width + 8;
-    flip = true;
-  }
-  if (y < 6) y = hole.top + hole.height + 6;
-  if (y + 40 > vh - 6) y = hole.top - 44;
-  x = clamp(x, 6, vw - 40);
-  y = clamp(y, 6, vh - 40);
-  const dx = clamp(cx - (x + 18), -10, 10);
-  const dy = clamp(cy - (y + 14), -10, 10);
-  return { x, y, flip, dx, dy };
-}
-
 function nextStepInModule(session: any, step: any) {
   const modSteps = moduleSteps(session, step?.module);
   const idx = modSteps.findIndex((s: any) => s.id === step?.id);
@@ -188,9 +148,13 @@ function stepNeedsBlock(step: any) {
   return step?.completionRule?.type === "click" || step?.action === "click";
 }
 
+function isAcknowledge(step: any) {
+  return step?.action === "acknowledge" || step?.completionRule?.type === "acknowledge";
+}
+
 function DimBlockers({ hole, onBlock }: { hole: Hole; onBlock: () => void }) {
   const { top, left, width, height } = hole;
-  const cls = "pointer-events-auto absolute bg-slate-900/60 transition-opacity duration-200";
+  const cls = "pointer-events-auto absolute bg-slate-900/55 transition-opacity duration-200";
   return (
     <>
       <div className={cls} style={{ top: 0, left: 0, right: 0, height: top }} onClick={onBlock} aria-hidden />
@@ -207,24 +171,27 @@ function HandPointer({ hand, visible }: { hand: HandPos | null; visible: boolean
     <svg
       aria-hidden
       className="pointer-events-none absolute z-[2147483003]"
-      width="38"
-      height="38"
+      width="40"
+      height="40"
       viewBox="0 0 24 24"
       style={{
         top: hand.y,
         left: hand.x,
-        filter: "drop-shadow(0 2px 4px rgba(15,23,42,0.25))",
+        filter: "drop-shadow(0 2px 4px rgba(15,23,42,0.28))",
         animation: "guidedDemoHandNudge 1.05s ease-in-out infinite",
         ["--hand-dx" as string]: `${hand.dx}px`,
         ["--hand-dy" as string]: `${hand.dy}px`,
         ["--hand-flip" as string]: hand.flip ? "-1" : "1",
+        ["--hand-rot" as string]: `${hand.rotation}deg`,
+        transformOrigin: "center",
       }}
     >
       <path
         fill="#fff"
         stroke={BRAND}
-        strokeWidth="1.2"
-        d="M9 11V5.5a1.5 1.5 0 013 0V11h1V7.5a1.5 1.5 0 013 0V11h.5a2.5 2.5 0 012.45 2.04l-.82 5.74A2 2 0 0116.13 21H11a3 3 0 01-2.83-2L6.5 13.5A2.5 2.5 0 019 11z"
+        strokeWidth="1.3"
+        strokeLinejoin="round"
+        d="M8 13.2V6.4a1.4 1.4 0 012.8 0V12h.2V7.2a1.4 1.4 0 012.8 0V12h.2V8.4a1.4 1.4 0 012.8 0v6.1c0 2.3-1.5 4.3-3.7 4.9l-.7.2H11a3.2 3.2 0 01-3.1-2.4L6.2 13.8A1.8 1.8 0 018 13.2z"
       />
     </svg>
   );
@@ -244,13 +211,12 @@ export default function GuidedDemoEngine() {
   const [handHidden, setHandHidden] = useState(false);
   const [cardPos, setCardPos] = useState<CardPos | null>(null);
   const [toast, setToast] = useState<ToastState>(null);
-  const [missingTarget, setMissingTarget] = useState(false);
   const [introOpen, setIntroOpen] = useState(false);
   const [tourMinimized, setTourMinimized] = useState(false);
-  const [mobileExpanded, setMobileExpanded] = useState(false);
-  const [isMobile, setIsMobile] = useState(() => typeof window !== "undefined" && window.innerWidth < 640);
+  const [finishConfirm, setFinishConfirm] = useState(false);
   const cardRef = useRef<HTMLDivElement | null>(null);
   const retryRef = useRef(0);
+  const skipLockRef = useRef(false);
 
   const step = currentStep(session);
   const progress = useMemo(() => moduleProgress(session), [session]);
@@ -261,14 +227,17 @@ export default function GuidedDemoEngine() {
   const modStepTotal = modSteps.length || currentModule?.total || 0;
   const nextPreview = step ? nextStepInModule(session, step) : null;
   const moduleIndex = progress.findIndex((m: any) => m.current);
+  const globalStepIndex = Math.max(0, Number(session?.currentStepIndex || 0));
+  const globalStepTotal = session?.totalSteps || (session?.steps || []).length || 0;
+  const globalStepNum = Math.min(globalStepIndex + 1, globalStepTotal || 1);
   const isFullDemo = (session?.modules || []).length > 1;
   const isComplete = session?.status === "completed";
-  const handoff = session?.pendingHandoff;
   const businessId = user?.businessId;
-  const showPanel = !introOpen && !isComplete && !handoff && !!step && !tourMinimized;
+  const showPanel = !introOpen && !isComplete && !!step && !tourMinimized && !finishConfirm;
   const showWebsiteHero =
     showPanel &&
-    (step?.target === "website-headline" || step?.target === "website-cta" || step?.id === "site-edit-headline");
+    (step?.target === "website-headline" || step?.target === "website-cta") &&
+    !findDemoTarget(step?.target);
 
   const pushToast = useCallback((message: string, kind: ToastState["kind"]) => {
     if (!message) return;
@@ -298,14 +267,6 @@ export default function GuidedDemoEngine() {
     };
   }, [pushToast]);
 
-  useEffect(() => {
-    const mq = window.matchMedia("(max-width: 639px)");
-    const sync = () => setIsMobile(mq.matches);
-    sync();
-    mq.addEventListener("change", sync);
-    return () => mq.removeEventListener("change", sync);
-  }, []);
-
   const goToStepRoute = useCallback(
     (nextStep: any) => {
       if (!nextStep?.route || !businessId) return;
@@ -322,7 +283,7 @@ export default function GuidedDemoEngine() {
 
   useEffect(() => {
     setHandHidden(false);
-    setMissingTarget(false);
+    skipLockRef.current = false;
     retryRef.current += 1;
   }, [step?.id]);
 
@@ -333,16 +294,30 @@ export default function GuidedDemoEngine() {
     setCardPos(placeCard(hole, w, h));
   }, [hole]);
 
+  const skipMissingTarget = useCallback(
+    async (target?: string | null) => {
+      if (skipLockRef.current) return;
+      skipLockRef.current = true;
+      console.warn("[guided-demo] target missing, skipping step", {
+        stepId: step?.id,
+        target,
+        path: location.pathname,
+      });
+      await demoProgress.report("DEMO_STEP_FAILED", { reason: "target_missing", target, skipped: true });
+      await demoProgress.report("DEMO_STEP_SKIPPED", { reason: "target_missing", target });
+    },
+    [step?.id, location.pathname]
+  );
+
   useEffect(() => {
-    if (!step || introOpen || isComplete || handoff) {
+    if (!step || introOpen || isComplete) {
       setHole(null);
       setHand(null);
       return undefined;
     }
-    if (!step.target || step.action === "acknowledge") {
+    if (!step.target) {
       setHole(null);
       setHand(null);
-      setMissingTarget(false);
       layoutCard();
       return undefined;
     }
@@ -354,14 +329,17 @@ export default function GuidedDemoEngine() {
 
     const sync = (el: Element) => {
       if (cancelled || token !== retryRef.current) return;
-      const rect = padHole(el.getBoundingClientRect());
+      const rect = padHole(el.getBoundingClientRect(), window.innerWidth, window.innerHeight);
       setHole(rect);
-      setHand(calcHand(rect));
-      setMissingTarget(false);
+      setHand(calcHand(rect, window.innerWidth, window.innerHeight));
     };
 
     const attach = (el: Element) => {
-      scrollTargetIntoView(el);
+      try {
+        el.scrollIntoView({ block: "center", inline: "nearest", behavior: "smooth" });
+      } catch {
+        scrollTargetIntoView(el);
+      }
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
           if (cancelled || token !== retryRef.current) return;
@@ -379,21 +357,33 @@ export default function GuidedDemoEngine() {
       });
     };
 
-    const poll = (started: number) => {
+    const poll = (started: number, navigated = false) => {
       if (cancelled || token !== retryRef.current) return;
-      const el = findTarget(step.target);
+      const el = findDemoTarget(step.target);
       if (el) {
-        attach(el);
-        return;
+        const rect = el.getBoundingClientRect();
+        if (rect.width > 2 && rect.height > 2) {
+          attach(el);
+          return;
+        }
+        try {
+          el.scrollIntoView({ block: "center", inline: "nearest" });
+        } catch {
+          /* ignore */
+        }
       }
       if (Date.now() - started > TARGET_WAIT_MS) {
-        setMissingTarget(true);
+        if (!navigated && step.route) {
+          goToStepRoute(step);
+          window.setTimeout(() => poll(Date.now(), true), 400);
+          return;
+        }
         setHole(null);
         setHand(null);
-        void demoProgress.report("DEMO_STEP_FAILED", { reason: "target_missing", target: step.target });
+        void skipMissingTarget(step.target);
         return;
       }
-      window.setTimeout(() => poll(started), POLL_MS);
+      window.setTimeout(() => poll(started, navigated), POLL_MS);
     };
 
     poll(Date.now());
@@ -402,7 +392,7 @@ export default function GuidedDemoEngine() {
       ro?.disconnect();
       removeScroll?.();
     };
-  }, [step?.id, step?.target, introOpen, isComplete, handoff, location.pathname]);
+  }, [step?.id, step?.target, introOpen, isComplete, location.pathname, layoutCard, goToStepRoute, skipMissingTarget]);
 
   useEffect(() => {
     layoutCard();
@@ -421,7 +411,7 @@ export default function GuidedDemoEngine() {
     const onClick = (event: MouseEvent) => {
       const targetEl = (event.target as HTMLElement)?.closest?.("[data-demo-target]");
       const key = targetEl?.getAttribute?.("data-demo-target");
-      if (isClick && key && key === step.target) {
+      if (key && key === step.target) {
         setHandHidden(true);
         if (SPECIAL_TARGETS.has(step.target)) {
           event.preventDefault();
@@ -429,7 +419,13 @@ export default function GuidedDemoEngine() {
           void runDemoSpecialAction(step);
           return;
         }
-        void demoProgress.completeStep("DEMO_CLICK", { target: key });
+        if (isClick) {
+          void demoProgress.completeStep("DEMO_CLICK", { target: key });
+          return;
+        }
+        if (isAcknowledge(step)) {
+          void demoProgress.completeStep("DEMO_ACKNOWLEDGE");
+        }
         return;
       }
       if (isClick && step.target && key !== step.target) {
@@ -448,18 +444,18 @@ export default function GuidedDemoEngine() {
   useEffect(() => {
     const onKey = (event: KeyboardEvent) => {
       if (event.key !== "Escape") return;
-      if (introOpen || isComplete || session?.pendingHandoff) {
+      if (introOpen || isComplete) {
         event.preventDefault();
         return;
       }
-      if (step?.action === "acknowledge" || step?.completionRule?.type === "acknowledge") {
+      if (isAcknowledge(step)) {
         event.preventDefault();
         void demoProgress.completeStep("DEMO_ACKNOWLEDGE");
       }
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [introOpen, isComplete, step?.id, session?.pendingHandoff]);
+  }, [introOpen, isComplete, step?.id]);
 
   async function handleExit() {
     try {
@@ -485,6 +481,13 @@ export default function GuidedDemoEngine() {
     await demoProgress.report("DEMO_INTRO_SEEN");
   }
 
+  async function handleExploreAlone() {
+    setIntroOpen(false);
+    setTourMinimized(true);
+    await demoProgress.report("DEMO_INTRO_SEEN");
+    await demoProgress.report("DEMO_EXPLORE_FREE");
+  }
+
   async function handleBack() {
     await demoProgress.report("DEMO_BACK");
   }
@@ -493,8 +496,9 @@ export default function GuidedDemoEngine() {
     await demoProgress.report("DEMO_MODULE_SKIP", { moduleKey: session?.currentModule });
   }
 
-  async function handleHandoff() {
-    await demoProgress.report("DEMO_HANDOFF_ACK");
+  async function handleFinishDemo() {
+    setFinishConfirm(false);
+    await demoProgress.report("DEMO_FINISH");
   }
 
   async function handleHeadlineBlur(event: React.FocusEvent<HTMLHeadingElement>) {
@@ -513,27 +517,32 @@ export default function GuidedDemoEngine() {
     navigate(path);
   }
 
-  function handleRetryTarget() {
-    setMissingTarget(false);
-    retryRef.current += 1;
-    if (step) goToStepRoute(step);
-  }
-
   if (!isGuidedDemoActive() || !session) return null;
 
   const modProgressPct = modStepTotal ? Math.round((Math.max(0, modStepNum - 1) / modStepTotal) * 100) : 0;
+  const globalProgressPct = globalStepTotal ? Math.round((Math.max(0, globalStepNum - 1) / globalStepTotal) * 100) : 0;
 
   const overlay = (
     <div dir="rtl" className="pointer-events-none fixed inset-0 z-[2147483000] overflow-hidden">
       <style>{`
         @keyframes guidedDemoHandNudge {
-          0%, 100% { transform: translate(0, 0) scaleX(var(--hand-flip, 1)); }
-          50% { transform: translate(var(--hand-dx, 0), var(--hand-dy, 0)) scaleX(var(--hand-flip, 1)); }
+          0%, 100% { transform: translate(0, 0) scaleX(var(--hand-flip, 1)) rotate(var(--hand-rot, 0deg)); }
+          50% { transform: translate(var(--hand-dx, 0), var(--hand-dy, 0)) scaleX(var(--hand-flip, 1)) rotate(var(--hand-rot, 0deg)); }
         }
       `}</style>
 
-      {hole && !handoff && stepNeedsBlock(step) ? <DimBlockers hole={hole} onBlock={() => demoProgress.notifyWrongAction()} /> : null}
-      {hole && !handoff ? (
+      {hole && showPanel ? (
+        <DimBlockers
+          hole={hole}
+          onBlock={() => {
+            if (stepNeedsBlock(step)) demoProgress.notifyWrongAction();
+          }}
+        />
+      ) : showPanel && !hole && !showWebsiteHero ? (
+        <div aria-hidden className="pointer-events-none absolute inset-0 bg-slate-900/30 transition-opacity duration-200" />
+      ) : null}
+
+      {hole && showPanel ? (
         <div
           aria-hidden
           className="pointer-events-none absolute rounded-2xl transition-all duration-200 ease-out"
@@ -542,17 +551,23 @@ export default function GuidedDemoEngine() {
             left: hole.left,
             width: hole.width,
             height: hole.height,
-            boxShadow: `0 0 0 2px ${BRAND}, 0 0 0 4px rgba(109,40,217,0.18), 0 0 24px rgba(109,40,217,0.35)`,
-            animation: "pulse 2.4s ease-in-out infinite",
+            boxShadow: `0 0 0 2px ${BRAND}, 0 0 0 9999px rgba(15,23,42,0.45), 0 0 24px rgba(109,40,217,0.35)`,
           }}
         />
-      ) : showPanel && !hole && !showWebsiteHero ? (
-        <div aria-hidden className="pointer-events-none absolute inset-0 bg-slate-900/35 transition-opacity duration-200" />
       ) : null}
 
-      <HandPointer hand={hand} visible={Boolean(hole && !handoff && !handHidden && stepNeedsBlock(step))} />
+      <HandPointer
+        hand={
+          hand
+            ? ({
+                ...hand,
+              } as HandPos)
+            : null
+        }
+        visible={Boolean(hole && !handHidden && stepNeedsBlock(step))}
+      />
 
-      {tourMinimized && !introOpen && !isComplete && !handoff ? (
+      {tourMinimized && !introOpen && !isComplete ? (
         <button
           type="button"
           onClick={() => setTourMinimized(false)}
@@ -575,99 +590,38 @@ export default function GuidedDemoEngine() {
           ) : null}
           <button
             type="button"
-            onClick={() => void handleExit()}
+            onClick={() => setFinishConfirm(true)}
             className="rounded-full border border-slate-200/90 bg-white/95 px-3 py-1.5 text-xs font-bold text-slate-600 shadow-sm backdrop-blur"
           >
-            יציאה מהדמו
+            סיום הדמו
           </button>
         </div>
       ) : null}
 
       {showPanel ? (
         <div className="pointer-events-auto absolute inset-x-0 top-3 z-[2147483004] flex justify-center px-3">
-          <div
-            className="w-full max-w-xl overflow-hidden rounded-2xl border border-violet-100 bg-white/95 shadow-lg backdrop-blur transition-all duration-200"
-            onClick={() => isMobile && setMobileExpanded((v) => !v)}
-          >
-            {isMobile ? (
-              <div className="px-3 py-2.5">
-                <div className="flex items-center justify-between gap-2 text-xs font-bold text-slate-700">
-                  <span className="truncate">
-                    {currentModule?.title || "דמו"} · שלב {modStepNum} מתוך {modStepTotal || "—"}
-                  </span>
-                  {isFullDemo ? (
-                    <span className="shrink-0 text-[10px] font-semibold text-slate-400">
-                      מודול {moduleIndex + 1} מתוך {progress.length}
-                    </span>
+          <div className="w-full max-w-md overflow-hidden rounded-2xl border border-violet-100 bg-white/95 shadow-lg backdrop-blur">
+            <div className="px-4 py-3">
+              <div className="flex items-start justify-between gap-3">
+                <div className="min-w-0">
+                  <p className="truncate text-[11px] font-bold text-violet-700">{currentModule?.title || "BizUply"}</p>
+                  <p className="mt-0.5 text-xs font-semibold text-slate-500">
+                    {isFullDemo ? `שלב ${globalStepNum} מתוך ${globalStepTotal || "—"}` : `שלב ${modStepNum} מתוך ${modStepTotal || "—"}`}
+                  </p>
+                  {isFullDemo && modStepTotal ? (
+                    <p className="mt-0.5 text-[11px] font-semibold text-slate-400">
+                      {currentModule?.title} · שלב {modStepNum} מתוך {modStepTotal} במודול
+                    </p>
                   ) : null}
                 </div>
-                <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-slate-100">
-                  <div className="h-full rounded-full transition-all duration-300" style={{ width: `${modProgressPct}%`, background: BRAND }} />
-                </div>
-                {(mobileExpanded || !hole) && (
-                  <div className="mt-2 border-t border-slate-100 pt-2">
-                    <p className="text-sm font-black text-slate-900">{step?.title}</p>
-                    {nextPreview ? (
-                      <p className="mt-0.5 truncate text-[11px] font-semibold text-slate-400">הבא: {nextPreview.title}</p>
-                    ) : null}
-                    <div className="mt-2 flex flex-wrap gap-1">
-                      {modSteps.map((s: any, i: number) => {
-                        const done = (session.completedStepIds || []).includes(s.id);
-                        const current = s.id === step?.id;
-                        return (
-                          <span
-                            key={s.id}
-                            className={`inline-flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-black ${
-                              done ? "bg-emerald-100 text-emerald-700" : current ? "text-white" : "bg-slate-100 text-slate-400"
-                            }`}
-                            style={current ? { background: BRAND } : undefined}
-                          >
-                            {done ? "✓" : current ? "●" : "○"}
-                          </span>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
               </div>
-            ) : (
-              <div className="px-4 py-3">
-                <div className="flex flex-wrap items-start justify-between gap-2">
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-[11px] font-bold text-violet-700">{currentModule?.title || "דמו Bizuply"}</p>
-                    <p className="mt-0.5 text-xs font-semibold text-slate-500">
-                      שלב {modStepNum} מתוך {modStepTotal || "—"}
-                      {isFullDemo ? (
-                        <span className="mr-2 text-[10px] text-slate-400">
-                          · מודול {moduleIndex + 1} מתוך {progress.length}
-                        </span>
-                      ) : null}
-                    </p>
-                    <p className="mt-1 truncate text-sm font-black text-slate-900">{step?.title}</p>
-                  </div>
-                  <div className="flex shrink-0 gap-1 pt-1">
-                    {modSteps.map((s: any) => {
-                      const done = (session.completedStepIds || []).includes(s.id);
-                      const current = s.id === step?.id;
-                      return (
-                        <span
-                          key={s.id}
-                          className={`text-xs font-black ${done ? "text-emerald-600" : current ? "text-violet-700" : "text-slate-300"}`}
-                          aria-hidden
-                        >
-                          {done ? "✓" : current ? "●" : "○"}
-                        </span>
-                      );
-                    })}
-                  </div>
-                </div>
-                {nextPreview ? (
-                  <p className="mt-2 truncate border-t border-slate-100 pt-2 text-[11px] font-semibold text-slate-400">
-                    הבא: {nextPreview.title}
-                  </p>
-                ) : null}
+              <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-slate-100">
+                <div
+                  className="h-full rounded-full transition-all duration-300"
+                  style={{ width: `${isFullDemo ? globalProgressPct : modProgressPct}%`, background: BRAND }}
+                />
               </div>
-            )}
+            </div>
           </div>
         </div>
       ) : null}
@@ -696,9 +650,7 @@ export default function GuidedDemoEngine() {
             onBlur={handleHeadlineBlur}
             className="mt-3 text-3xl font-black text-slate-900 outline-none focus:ring-2 focus:ring-violet-300"
           >
-            {step?.suggestedValue && step.id === "site-edit-headline"
-              ? "סטודיו נועה — רגעים שנשארים"
-              : step?.suggestedValue || "סטודיו נועה — רגעים שנשארים"}
+            {step?.suggestedValue || "סטודיו נועה — רגעים שנשארים"}
           </h1>
           <button
             type="button"
@@ -717,23 +669,25 @@ export default function GuidedDemoEngine() {
             role="dialog"
             aria-modal="true"
             aria-labelledby="guided-demo-intro-title"
-            className="w-full max-w-lg rounded-[28px] bg-white p-6 text-right shadow-2xl"
+            className="w-full max-w-lg rounded-[28px] bg-white p-6 text-right shadow-2xl sm:p-8"
           >
-            <h2 id="guided-demo-intro-title" className="text-2xl font-black text-slate-900">
-              ברוכים הבאים לדמו האישי שלכם ב-Bizuply
+            <p className="text-xs font-black tracking-[0.16em] text-violet-500">BIZUPLY</p>
+            <h2 id="guided-demo-intro-title" className="mt-2 text-2xl font-black text-slate-900 sm:text-3xl">
+              הדמו האישי שלכם מוכן
             </h2>
-            <p className="mt-3 text-sm font-semibold leading-6 text-slate-600">
-              בכמה הדקות הקרובות תוכלו להשתמש במערכת בעצמכם ולראות איך היא עובדת בפועל.
+            <p className="mt-3 text-sm font-semibold leading-7 text-slate-600">
+              ברוכים הבאים 👋
+              <br />
+              הדמו ייקח אתכם במסלול קצר דרך הכלים המרכזיים של BizUply ויראה איך הם מתחברים יחד לניהול העסק.
             </p>
-            <p className="mt-2 text-sm font-semibold leading-6 text-slate-600">
-              אנחנו נסמן לכם בדיוק איפה ללחוץ — והדמו יתקדם לפי הפעולות שתבצעו.
-            </p>
-            <p className="mt-4 text-sm font-black text-slate-800">הדמו שלכם כולל:</p>
-            <ul className="mt-2 space-y-1 text-sm font-bold text-emerald-700">
-              {(session.modules || []).map((mod: any) => (
-                <li key={mod.key}>✓ {mod.title}</li>
+            <div className="mt-5 grid grid-cols-1 gap-2 sm:grid-cols-2">
+              {INTRO_CATEGORIES.map((item) => (
+                <div key={item.key} className="rounded-2xl border border-slate-100 bg-slate-50 px-3.5 py-3">
+                  <p className="text-sm font-black text-slate-800">{item.title}</p>
+                  <p className="mt-0.5 text-[11px] font-semibold text-slate-500">{item.hint}</p>
+                </div>
               ))}
-            </ul>
+            </div>
             <button
               type="button"
               autoFocus
@@ -741,25 +695,40 @@ export default function GuidedDemoEngine() {
               className="mt-6 w-full rounded-2xl px-4 py-3 text-sm font-black text-white"
               style={{ background: BRAND }}
             >
-              מתחילים
+              התחלת הדמו
+            </button>
+            <button
+              type="button"
+              onClick={() => void handleExploreAlone()}
+              className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm font-black text-slate-600"
+            >
+              אעבור לבד
             </button>
           </div>
         </div>
       ) : null}
 
-      {handoff && !introOpen && !isComplete ? (
+      {finishConfirm && !isComplete ? (
         <div className="pointer-events-auto absolute inset-0 z-[2147483006] flex items-center justify-center bg-slate-950/55 p-4">
-          <div role="dialog" aria-modal="true" className="w-full max-w-lg rounded-[28px] bg-white p-6 text-right shadow-2xl">
-            <h2 className="text-2xl font-black text-slate-900">מעולה! סיימתם להכיר את {handoff.fromTitle}</h2>
-            <p className="mt-3 text-sm font-semibold leading-6 text-slate-600">עכשיו נראה איך Bizuply עובדת ב{handoff.toTitle}.</p>
+          <div role="dialog" aria-modal="true" className="w-full max-w-md rounded-[28px] bg-white p-6 text-right shadow-2xl">
+            <h2 className="text-xl font-black text-slate-900">לסיים את הדמו?</h2>
+            <p className="mt-2 text-sm font-semibold leading-6 text-slate-600">
+              ההתקדמות נשמרת לפי שלבים. סיום יציג את מסך הסיום בלבד — בלי להשפיע על חשבון אמיתי.
+            </p>
             <button
               type="button"
-              autoFocus
-              onClick={() => void handleHandoff()}
-              className="mt-6 w-full rounded-2xl px-4 py-3 text-sm font-black text-white"
+              onClick={() => void handleFinishDemo()}
+              className="mt-5 w-full rounded-2xl px-4 py-3 text-sm font-black text-white"
               style={{ background: BRAND }}
             >
-              המשך ל{handoff.toTitle}
+              סיום הדמו
+            </button>
+            <button
+              type="button"
+              onClick={() => setFinishConfirm(false)}
+              className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm font-black text-slate-600"
+            >
+              להמשיך במסלול
             </button>
           </div>
         </div>
@@ -769,15 +738,17 @@ export default function GuidedDemoEngine() {
         <div className="pointer-events-auto absolute inset-0 z-[2147483006] flex items-center justify-center bg-slate-950/55 p-4">
           <div role="dialog" aria-modal="true" className="w-full max-w-lg rounded-[28px] bg-white p-6 text-right shadow-2xl">
             <h2 className="text-2xl font-black text-slate-900">הדמו הסתיים</h2>
-            <p className="mt-3 text-sm font-semibold leading-6 text-slate-600">סיימת את הדמו של Bizuply.</p>
+            <p className="mt-3 text-sm font-semibold leading-6 text-slate-600">סיימתם את המסלול המודרך של BizUply.</p>
             <p className="mt-2 text-sm font-semibold leading-6 text-slate-600">
-              ראית כיצד ניתן לרכז את הכלים והתהליכים שבחרנו עבורך במקום אחד ולנהל אותם בצורה פשוטה ומסודרת.
+              ראיתם איך הכלים המרכזיים מתחברים יחד לניהול העסק במקום אחד.
             </p>
-            <ul className="mt-4 space-y-1 text-sm font-bold text-emerald-700">
-              {progress.map((mod: any) => (
-                <li key={mod.key}>✓ {mod.title}</li>
+            <div className="mt-4 grid grid-cols-2 gap-2">
+              {INTRO_CATEGORIES.map((item) => (
+                <div key={item.key} className="rounded-xl bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-800">
+                  {item.title}
+                </div>
               ))}
-            </ul>
+            </div>
             <button
               type="button"
               onClick={() => void handleCta("start", "/contact")}
@@ -809,19 +780,21 @@ export default function GuidedDemoEngine() {
               : { bottom: 16, left: "50%", transform: "translateX(-50%)", width: "min(92vw, 420px)" }
           }
         >
-          <h3 className="text-base font-black text-slate-900">{step?.title}</h3>
+          <p className="text-[11px] font-bold text-violet-700">{currentModule?.title || "דמו"}</p>
+          <p className="mt-0.5 text-[11px] font-semibold text-slate-400">
+            שלב {modStepNum} מתוך {modStepTotal || "—"}
+          </p>
+          <h3 className="mt-2 text-base font-black text-slate-900">{step?.title}</h3>
           <p className="mt-1 text-sm font-semibold leading-6 text-slate-600">{step?.instruction}</p>
           {step?.suggestedValue ? (
             <p className="mt-2 rounded-xl bg-violet-50 px-3 py-2 text-xs font-bold text-violet-800">טקסט מוצע: {step.suggestedValue}</p>
           ) : null}
-          {missingTarget ? (
-            <div className="mt-3 rounded-xl bg-rose-50 px-3 py-2 text-sm font-bold text-rose-800">
-              לא הצלחנו למצוא את האלמנט לשלב הזה. נסו לרענן או לחזור לנתיב הנכון.
-              <button type="button" className="mr-2 underline" onClick={handleRetryTarget}>
-                נסו שוב
-              </button>
-            </div>
+          {nextPreview ? (
+            <p className="mt-2 text-[11px] font-bold text-slate-400">הבא: {nextPreview.title}</p>
           ) : null}
+          <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-slate-100">
+            <div className="h-full rounded-full transition-all duration-300" style={{ width: `${modProgressPct}%`, background: BRAND }} />
+          </div>
           <div className="mt-4 flex flex-wrap items-center justify-between gap-2">
             <div className="flex gap-2">
               {step?.allowBack !== false && (session.currentStepIndex || 0) > 0 ? (
@@ -843,7 +816,7 @@ export default function GuidedDemoEngine() {
                 </button>
               ) : null}
             </div>
-            {step?.action === "acknowledge" || step?.completionRule?.type === "acknowledge" ? (
+            {isAcknowledge(step) ? (
               <button
                 type="button"
                 onClick={() => void demoProgress.completeStep("DEMO_ACKNOWLEDGE")}

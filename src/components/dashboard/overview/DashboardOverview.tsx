@@ -32,6 +32,8 @@ import useAiInsights from "@/hooks/useAiInsights";
 import { useAuth } from "@/context/AuthContext";
 import { isModuleEnabled } from "@/utils/moduleAccess";
 import { isFeatureAccessible } from "@/utils/entitlementAccess";
+import { isGuidedDemoActive } from "@/guidedDemo/sessionStore";
+import { DEMO_ACTIVITY_TIMELINE, DEMO_DASHBOARD_OVERLAY } from "@/guidedDemo/demoOverlayData";
 
 import type {
   DashboardFilters,
@@ -307,6 +309,8 @@ export default function DashboardOverview({
     isFeatureAccessible(entitlements, "leads") ||
     isFeatureAccessible(entitlements, "crm");
   const canReviews = canWebsite || isModuleEnabled(enabledModules, "build");
+  const demoMode = isGuidedDemoActive();
+  const demoKpis = DEMO_DASHBOARD_OVERLAY;
 
   const visiblePerformanceTabs = PERFORMANCE_TABS.filter((metric) => {
     if (metric === "views") return canWebsite;
@@ -478,15 +482,31 @@ export default function DashboardOverview({
         {canWebsite ? (
           <KpiCard
             title={t("overview.websiteViews")}
-            value={loading ? "—" : formatNumber(data?.website.totalViews || 0)}
+            value={
+              loading
+                ? "—"
+                : formatNumber(
+                    demoMode
+                      ? Math.max(data?.website.totalViews || 0, demoKpis.website.totalViews)
+                      : data?.website.totalViews || 0
+                  )
+            }
             subtitle={
               loading
                 ? t("overview.loadingVisitors")
                 : t("overview.uniqueVisitors", {
-                    count: formatNumber(data?.website.uniqueVisitors || 0),
+                    count: formatNumber(
+                      demoMode
+                        ? Math.max(data?.website.uniqueVisitors || 0, demoKpis.website.uniqueVisitors)
+                        : data?.website.uniqueVisitors || 0
+                    ),
                   })
             }
-            change={data?.website.viewsChange || 0}
+            change={
+              demoMode
+                ? data?.website.viewsChange || demoKpis.website.viewsChange
+                : data?.website.viewsChange || 0
+            }
             series={(data?.website.viewsSeries || []).map((item) => item.value)}
             icon={<Eye size={20} />}
             accent="violet"
@@ -495,15 +515,27 @@ export default function DashboardOverview({
         {canLeads ? (
           <KpiCard
             title={t("overview.newLeads")}
-            value={loading ? "—" : formatNumber(data?.leads.newCount || 0)}
+            value={
+              loading
+                ? "—"
+                : formatNumber(
+                    demoMode
+                      ? Math.max(data?.leads.newCount || 0, demoKpis.leads.newCount)
+                      : data?.leads.newCount || 0
+                  )
+            }
             subtitle={
               loading
                 ? t("overview.loadingLeads")
                 : t("overview.untreatedLeads", {
-                    count: formatNumber(data?.leads.untreatedCount || 0),
+                    count: formatNumber(
+                      demoMode
+                        ? Math.max(data?.leads.untreatedCount || 0, demoKpis.leads.untreatedCount)
+                        : data?.leads.untreatedCount || 0
+                    ),
                   })
             }
-            change={data?.leads.change || 0}
+            change={demoMode ? data?.leads.change || demoKpis.leads.change : data?.leads.change || 0}
             series={(data?.leads.series || []).map((item) => item.value)}
             icon={<UserPlus size={20} />}
             accent="blue"
@@ -517,19 +549,29 @@ export default function DashboardOverview({
             value={
               loading
                 ? "—"
-                : (data?.reviews.totalCount || 0) > 0
-                  ? (data?.reviews.averageRating || 0).toFixed(1)
-                  : "0"
+                : demoMode
+                  ? demoKpis.reviews.averageRating.toFixed(1)
+                  : (data?.reviews.totalCount || 0) > 0
+                    ? (data?.reviews.averageRating || 0).toFixed(1)
+                    : "0"
             }
             subtitle={
               loading
                 ? t("overview.loadingReviews")
                 : t("overview.reviewsSubtitle", {
-                    newCount: formatNumber(data?.reviews.newCount || 0),
-                    totalCount: formatNumber(data?.reviews.totalCount || 0),
+                    newCount: formatNumber(
+                      demoMode
+                        ? Math.max(data?.reviews.newCount || 0, demoKpis.reviews.newCount)
+                        : data?.reviews.newCount || 0
+                    ),
+                    totalCount: formatNumber(
+                      demoMode
+                        ? Math.max(data?.reviews.totalCount || 0, demoKpis.reviews.totalCount)
+                        : data?.reviews.totalCount || 0
+                    ),
                   })
             }
-            change={data?.reviews.change || 0}
+            change={demoMode ? data?.reviews.change || demoKpis.reviews.change : data?.reviews.change || 0}
             series={(data?.reviews.series || []).map((item) => item.value)}
             icon={<Star size={20} />}
             accent="amber"
@@ -541,23 +583,53 @@ export default function DashboardOverview({
             value={
               loading
                 ? "—"
-                : formatNumber(data?.collaborations.totalInPeriod || 0)
+                : formatNumber(
+                    demoMode
+                      ? Math.max(data?.collaborations.totalInPeriod || 0, demoKpis.collaborations.totalInPeriod)
+                      : data?.collaborations.totalInPeriod || 0
+                  )
             }
             subtitle={
               loading
                 ? t("overview.loadingCollaborations")
                 : t("overview.collabSubtitle", {
-                    approved: formatNumber(data?.collaborations.newInPeriod || 0),
-                    total: formatNumber(data?.collaborations.totalInPeriod || 0),
+                    approved: formatNumber(
+                      demoMode
+                        ? Math.max(data?.collaborations.newInPeriod || 0, demoKpis.collaborations.newInPeriod)
+                        : data?.collaborations.newInPeriod || 0
+                    ),
+                    total: formatNumber(
+                      demoMode
+                        ? Math.max(data?.collaborations.totalInPeriod || 0, demoKpis.collaborations.totalInPeriod)
+                        : data?.collaborations.totalInPeriod || 0
+                    ),
                   })
             }
-            change={data?.collaborations.change || 0}
+            change={
+              demoMode
+                ? data?.collaborations.change || demoKpis.collaborations.change
+                : data?.collaborations.change || 0
+            }
             series={(data?.collaborations.series || []).map((item) => item.value)}
             icon={<Handshake size={20} />}
             accent="pink"
           />
         ) : null}
       </section>
+
+      {demoMode ? (
+        <Panel dataDemoTarget="dashboard-recent-activity">
+          <h3 className="text-lg font-black text-slate-800">פעילות אחרונה</h3>
+          <ul className="mt-4 space-y-3">
+            {DEMO_ACTIVITY_TIMELINE.map((item) => (
+              <li key={item.id} className="flex items-start justify-between gap-3 border-b border-slate-100 pb-3 last:border-0 last:pb-0">
+                <p className="text-sm font-semibold text-slate-700">{item.text}</p>
+                <span className="shrink-0 text-[11px] font-bold text-slate-400">{item.time}</span>
+              </li>
+            ))}
+          </ul>
+        </Panel>
+      ) : null}
 
       {canBizUply && aiInsightsError ? (
         <div className="rounded-[28px] border border-rose-200 bg-rose-50/70 px-5 py-4 text-sm font-bold text-rose-700">

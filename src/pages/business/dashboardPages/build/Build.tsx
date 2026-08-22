@@ -1025,6 +1025,7 @@ export default function Build() {
                   value={businessDetails.businessName}
                   onChange={handleInputChange}
                   disabled={isSaving}
+                  data-demo-target="business-page-name"
                   placeholder={t("buildPage.main.businessNamePlaceholder")}
                   className="h-12 w-full rounded-2xl border border-violet-100 bg-white/90 px-4 text-sm font-semibold text-slate-900 shadow-sm outline-none transition placeholder:text-slate-400 focus:border-violet-400 focus:ring-4 focus:ring-violet-100 disabled:cursor-not-allowed disabled:opacity-60"
                 />
@@ -1885,7 +1886,10 @@ export default function Build() {
       />
 
       <div className="mx-auto flex max-w-7xl flex-col gap-7 xl:flex-row">
-        <section className="order-1 w-full overflow-hidden rounded-[2rem] border border-white/90 bg-white/95 shadow-[0_34px_110px_rgba(79,70,229,0.16)] backdrop-blur-xl xl:w-[52%]">
+        <section
+          data-demo-target="business-page-editor"
+          className="order-1 w-full overflow-hidden rounded-[2rem] border border-white/90 bg-white/95 shadow-[0_34px_110px_rgba(79,70,229,0.16)] backdrop-blur-xl xl:w-[52%]"
+        >
           <div className="relative overflow-hidden border-b border-violet-100 bg-gradient-to-br from-white via-violet-50 to-blue-50 px-6 py-8 sm:px-8">
             <div className="absolute -left-20 -top-20 h-56 w-56 rounded-full bg-violet-300/35 blur-3xl" />
             <div className="absolute -bottom-28 right-10 h-72 w-72 rounded-full bg-blue-300/30 blur-3xl" />
@@ -1932,6 +1936,7 @@ export default function Build() {
                     type="button"
                     onClick={() => navigate(`/business/${businessDetails._id}`)}
                     disabled={isSaving}
+                    data-demo-target="business-page-view-public"
                     className="flex h-[56px] items-center justify-center rounded-2xl border border-violet-100 bg-white px-6 text-sm font-black text-violet-700 shadow-sm transition hover:-translate-y-0.5 hover:bg-violet-50 disabled:cursor-not-allowed disabled:translate-y-0 disabled:opacity-60"
                   >
                     {t("buildPage.actions.viewProfile")}
@@ -1942,7 +1947,7 @@ export default function Build() {
           </div>
         </section>
 
-        <aside className="order-2 w-full xl:w-[48%]">
+        <aside data-demo-target="business-page-preview" className="order-2 w-full xl:w-[48%]">
           <div className="sticky top-6 overflow-hidden rounded-[2.35rem] border border-white/90 bg-[linear-gradient(135deg,rgba(255,255,255,0.96)_0%,rgba(248,250,252,0.94)_38%,rgba(237,233,254,0.88)_100%)] text-start shadow-[0_34px_110px_rgba(79,70,229,0.18)] backdrop-blur-xl">
             <div className="relative p-5 sm:p-7">
               <div className="pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full bg-violet-500/25 blur-3xl" />

@@ -2905,6 +2905,7 @@ export default function CRMLeadsTab({
                                 event.target.value as LeadActivityType
                               )
                             }
+                            data-demo-target="crm-activity-type"
                             className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm font-black text-slate-700 outline-none focus:ring-4 focus:ring-sky-100"
                           >
                             <option value="note">{t("crm.common.note")}</option>
@@ -2939,6 +2940,7 @@ export default function CRMLeadsTab({
                               onChange={(event) =>
                                 setNewTaskDueAt(event.target.value)
                               }
+                              data-demo-target="crm-task-due"
                               className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm font-bold text-slate-700 outline-none focus:ring-4 focus:ring-sky-100"
                             />
                           </div>
@@ -2975,8 +2977,14 @@ export default function CRMLeadsTab({
                           <span className="absolute right-2 top-2 h-[calc(100%-12px)] w-px bg-slate-200" />
 
                           {renderAiInsightsPanel(aiInsights, aiActivities)}
-                          {selectedActivities.map((activity) => {
+                          {selectedActivities.map((activity, activityIndex) => {
                             const isTask = activity.type === "task";
+                            const isFirstOpenTask =
+                              isTask &&
+                              !activity.taskDone &&
+                              selectedActivities.findIndex(
+                                (item) => item.type === "task" && !item.taskDone
+                              ) === activityIndex;
 
                             return (
                               <div
@@ -3013,6 +3021,9 @@ export default function CRMLeadsTab({
                                         type="button"
                                         onClick={() =>
                                           handleToggleTaskActivity(activity)
+                                        }
+                                        data-demo-target={
+                                          isFirstOpenTask ? "crm-task-complete" : undefined
                                         }
                                         className={[
                                           "rounded-lg border px-2 py-0.5 text-[10px] font-black transition",
