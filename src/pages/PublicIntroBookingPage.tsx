@@ -11,8 +11,9 @@ function formatWhen(iso: string, timezone: string) {
       weekday: "long",
       day: "numeric",
       month: "long",
-      hour: "2-digit",
-      minute: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false,
     });
   } catch {
     return iso;
@@ -36,8 +37,9 @@ function formatTime(iso: string, timezone: string) {
   try {
     return new Date(iso).toLocaleTimeString("he-IL", {
       timeZone: timezone || "Asia/Jerusalem",
-      hour: "2-digit",
-      minute: "2-digit",
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false,
     });
   } catch {
     return iso;
@@ -110,8 +112,6 @@ export default function PublicIntroBookingPage() {
     }
   }
 
-  const duration = data?.service?.durationMinutes || 15;
-
   return (
     <div
       className="min-h-screen overflow-x-hidden bg-[#F7F4FF] px-4 py-6 sm:py-10"
@@ -123,13 +123,8 @@ export default function PublicIntroBookingPage() {
         <h1 className="text-2xl font-black leading-tight text-purple-950 sm:text-3xl">
           שיחה ראשונית עם BizUply
         </h1>
-        <p className="text-base font-black text-[#7C4DFF]">משך השיחה: {duration} דקות</p>
-        <p className="text-sm font-bold text-slate-500">שעון ישראל</p>
-        {data?.firstName ? (
-          <p className="font-bold text-slate-600">היי {data.firstName}, בחרו מועד שנוח לכם.</p>
-        ) : (
-          <p className="font-bold text-slate-600">בחרו מועד שנוח לכם לשיחת היכרות קצרה.</p>
-        )}
+        <p className="text-base font-black text-[#7C4DFF]">15 דקות</p>
+        <p className="font-bold text-slate-600">בחרו מועד שנוח לכם</p>
 
         {loading ? <p className="font-bold text-slate-500">טוען מועדים…</p> : null}
         {error ? (
@@ -141,8 +136,17 @@ export default function PublicIntroBookingPage() {
         {done ? (
           <section className="rounded-[28px] border border-emerald-200 bg-white p-5 shadow-sm">
             <h2 className="text-xl font-black text-emerald-800">השיחה נקבעה בהצלחה</h2>
-            <p className="mt-3 font-bold text-slate-700">{formatWhen(done.startAt, done.timezone || timezone)}</p>
-            <p className="mt-1 font-black text-[#7C4DFF]">משך השיחה: {done.durationMinutes || 15} דקות</p>
+            <p className="mt-3 font-black text-purple-950">{done.serviceName || "שיחה ראשונית"}</p>
+            <p className="mt-1 font-bold text-slate-700">
+              {new Date(done.startAt).toLocaleDateString("he-IL", {
+                timeZone: done.timezone || timezone,
+                day: "2-digit",
+                month: "2-digit",
+                year: "numeric",
+              })}{" "}
+              בשעה {formatTime(done.startAt, done.timezone || timezone)}
+            </p>
+            <p className="mt-1 font-black text-[#7C4DFF]">{done.durationMinutes || 15} דקות</p>
             <p className="mt-4 text-sm font-bold text-slate-500">ניצור איתך קשר במועד שנבחר.</p>
           </section>
         ) : data?.alreadyBooked ? (

@@ -35,13 +35,19 @@ import {
   SecondaryButton,
 } from "./AdminCrmUi";
 import AdminCrmWhatsAppPanel from "./AdminCrmWhatsAppPanel";
+import {
+  AdminBizuplyBookFlow,
+  AppointmentDetails,
+  CustomerAppointmentActions,
+  israelWeekday,
+} from "../AdminBizuplyBookFlow";
 
 const TABS = [
   ["overview", "סקירה"],
-  ["meetings", "פגישות ביומן BizUply"],
   ["activity", "פעילות"],
-  ["tasks", "משימות"],
+  ["tasks", "משימות ומעקבים"],
   ["communication", "תקשורת"],
+  ["meetings", "תיאומים"],
   ["products", "חבילה וגישה"],
   ["billing", "חיובים"],
   ["websites", "אתרים"],
@@ -81,9 +87,8 @@ export default function AdminCrmCustomer360() {
   const [preview, setPreview] = useState<any>(null);
   const [lostOpen, setLostOpen] = useState(false);
   const [lostReason, setLostReason] = useState("no_response");
-  const [slots, setSlots] = useState<any[]>([]);
-  const [bookingStart, setBookingStart] = useState("");
-  const [callSummary, setCallSummary] = useState<any>({});
+  const [bookOpen, setBookOpen] = useState(false);
+  const [calendarServices, setCalendarServices] = useState<any[]>([]);
 
   async function load() {
     if (!id) return;
@@ -149,25 +154,28 @@ export default function AdminCrmCustomer360() {
           };
         }
         if (tab === "meetings") {
-          const [appointments, open] = await Promise.all([
+          const [appointments, calendar] = await Promise.all([
             adminCrmApi.customerAppointments(id),
-            adminCrmApi.calendarSlots({ serviceKey: "intro_call" }),
+            adminCrmApi.calendar({ days: 1 }).catch(() => ({ data: {} })),
           ]);
           data = appointments.data;
-          if (!cancelled) setSlots(open.data.slots || []);
+          if (!cancelled) setCalendarServices(calendar.data.services || []);
         }
         if (tab === "overview") {
-          const [notes, tasks, sub, products] = await Promise.all([
+          const [notes, tasks, sub, products, appointments] = await Promise.all([
             adminCrmApi.notes(id),
             adminCrmApi.customerTasks(id),
             adminCrmApi.subscription(id).catch(() => ({ data: {} })),
             adminCrmApi.products(id).catch(() => ({ data: {} })),
+            adminCrmApi.customerAppointments(id).catch(() => ({ data: {} })),
           ]);
           data = {
             notes: notes.data.notes,
             tasks: tasks.data.tasks,
             subscription: sub.data.subscription,
             products: products.data,
+            nextAppointment: appointments.data.nextAppointment || null,
+            appointments: appointments.data.appointments || [],
           };
         }
         if (!cancelled) setTabData(data);
@@ -220,6 +228,18 @@ export default function AdminCrmCustomer360() {
   function openCommunication(intent: "message" | "follow_up" | "demo" | "payment" = "message") {
     setWaIntent(intent);
     setTab("communication");
+  }
+
+  async function openNewAppointment() {
+    if (!calendarServices.length) {
+      try {
+        const { data } = await adminCrmApi.calendar({ days: 1 });
+        setCalendarServices(data.services || []);
+      } catch {
+        setCalendarServices([{ key: "intro_call", nameHe: "שיחה ראשונית", durationMinutes: 15, active: true }]);
+      }
+    }
+    setBookOpen(true);
   }
 
   if (loading) return <LoadingState />;
@@ -319,7 +339,7 @@ export default function AdminCrmCustomer360() {
                 הפוך ללקוח / צור חשבון BizUply
               </PrimaryButton>
             )}
-            <SecondaryButton onClick={() => setTab("meetings")}>קביעת שיחה</SecondaryButton>
+            <SecondaryButton onClick={() => setTab("meetings")}>תיאומים</SecondaryButton>
             <SecondaryButton onClick={() => setTab("billing")}>ניהול חבילה</SecondaryButton>
             <SecondaryButton onClick={() => setTab("billing")}>שדרוג</SecondaryButton>
             <SecondaryButton onClick={() => setTab("products")}>ניהול תוספים</SecondaryButton>
@@ -385,6 +405,43 @@ export default function AdminCrmCustomer360() {
               ))}
           </CrmCard>
           <CrmCard>
+            <h3 className="font-black">התיאום הבא</h3>
+            {tabData.nextAppointment ? (
+              <div className="mt-2">
+                <p className="text-lg font-black text-purple-950">{tabData.nextAppointment.serviceName}</p>
+                <p className="font-bold text-slate-700">{israelWeekday(tabData.nextAppointment.startAt)}</p>
+                <p className="font-black text-[#7C4DFF]">
+                  {new Intl.DateTimeFormat("he-IL", {
+                    timeZone: "Asia/Jerusalem",
+                    hour: "2-digit",
+                    minute: "2-digit",
+                    hour12: false,
+                  }).format(new Date(tabData.nextAppointment.startAt))}
+                  {" · "}
+                  {tabData.nextAppointment.durationMinutes} דקות
+                </p>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <CustomerAppointmentActions
+                    row={tabData.nextAppointment}
+                    customerId={id!}
+                    onChanged={() => setTab("meetings")}
+                    onBookAnother={() => openNewAppointment()}
+                    onError={setBanner}
+                  />
+                  <SecondaryButton onClick={() => setTab("meetings")}>כל התיאומים</SecondaryButton>
+                  <SecondaryButton onClick={() => openCommunication("message")}>WhatsApp</SecondaryButton>
+                </div>
+              </div>
+            ) : (
+              <div className="mt-2">
+                <p className="font-bold text-slate-500">אין תיאום עתידי</p>
+                <div className="mt-3">
+                  <PrimaryButton onClick={() => { setTab("meetings"); openNewAppointment(); }}>+ תיאום חדש</PrimaryButton>
+                </div>
+              </div>
+            )}
+          </CrmCard>
+          <CrmCard>
             <h3 className="font-black">גישה נוכחית</h3>
             {(tabData.products?.features || []).filter((f: any) => f.enabled).map((f: any) => (
               <span key={f.key} className="mb-2 ml-2 inline-flex rounded-full bg-purple-50 px-2 py-1 text-xs font-black text-[#7C4DFF]">{f.name}</span>
@@ -396,106 +453,69 @@ export default function AdminCrmCustomer360() {
       {tab === "meetings" ? (
         <div className="space-y-4">
           <CrmCard>
-            <h3 className="font-black">פגישות ביומן BizUply</h3>
-            <p className="mt-1 text-sm font-bold text-slate-500">קביעת שיחה · שיחה ראשונית — 15 דקות · שעון ישראל</p>
-            <div className="mt-3 flex flex-wrap gap-2">
-              <SecondaryButton
-                onClick={async () => {
-                  const { data } = await adminCrmApi.calendarSlots({ serviceKey: "intro_call" });
-                  setSlots(data.slots || []);
-                }}
-              >
-                טעינת מועדים פנויים
-              </SecondaryButton>
-            </div>
-            {slots.length ? (
-              <div className="mt-3 flex flex-wrap gap-2">
-                {slots.slice(0, 48).map((slot: any) => (
-                  <button
-                    key={slot.startAt}
-                    type="button"
-                    onClick={() => setBookingStart(slot.startAt)}
-                    className={[
-                      "min-h-11 rounded-2xl px-3 text-sm font-black",
-                      bookingStart === slot.startAt
-                        ? "bg-[#7C4DFF] text-white"
-                        : "border border-purple-100 bg-purple-50",
-                    ].join(" ")}
-                  >
-                    {slot.label}
-                  </button>
-                ))}
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <h3 className="font-black">תיאומים</h3>
+                <p className="mt-1 text-sm font-bold text-slate-500">
+                  כל פגישות יומן BizUply של הלקוח הזה. היסטוריה מלאה נשמרת.
+                </p>
               </div>
-            ) : null}
-            <div className="mt-3">
-              <PrimaryButton
-                disabled={!bookingStart}
-                onClick={async () => {
-                  try {
-                    await adminCrmApi.calendarBook({
-                      serviceKey: "intro_call",
-                      startAt: bookingStart,
-                      adminCustomerId: id,
-                      contactName: customer.contactName,
-                      phone: customer.phone,
-                      email: customer.email,
-                    });
-                    setBanner("השיחה נקבעה בהצלחה · 15 דקות");
-                    setBookingStart("");
-                    const [{ data }, slotsRes] = await Promise.all([
-                      adminCrmApi.customerAppointments(id!),
-                      adminCrmApi.calendarSlots({ serviceKey: "intro_call" }),
-                    ]);
-                    setTabData(data);
-                    setSlots(slotsRes.data.slots || []);
-                  } catch (err: any) {
-                    setBanner(err?.response?.data?.error || "המועד כבר תפוס או אינו פתוח לתיאום. בחרו מועד אחר.");
-                  }
-                }}
-              >
-                קביעת שיחה
-              </PrimaryButton>
+              <PrimaryButton onClick={() => openNewAppointment()}>+ תיאום חדש</PrimaryButton>
             </div>
           </CrmCard>
-          {["booked", "completed", "no_show", "cancelled"].map((status) => {
-            const rows = (tabData?.appointments || []).filter((row: any) => row.status === status);
-            const title =
-              status === "booked"
-                ? "פגישות קרובות"
-                : status === "completed"
-                  ? "שיחות שהושלמו"
-                  : status === "no_show"
-                    ? "No Show"
-                    : "פגישות שבוטלו";
-            return (
-              <CrmCard key={status}>
-                <h3 className="font-black">{title}</h3>
-                {!rows.length ? <p className="mt-2 font-bold text-slate-500">אין</p> : null}
-                {rows.map((row: any) => (
-                  <div key={row.id} className="mt-3 border-t border-slate-100 pt-3">
-                    <p className="font-black">{row.serviceName} · {formatIsraelDate(row.startAt, true)} · {row.durationMinutes} דק׳</p>
-                    {row.status === "booked" ? (
-                      <div className="mt-2 flex flex-wrap gap-2">
-                        <SecondaryButton onClick={() => adminCrmApi.calendarStatus(row.id, { status: "cancelled" }).then(load)}>ביטול</SecondaryButton>
-                        <SecondaryButton onClick={() => adminCrmApi.calendarStatus(row.id, { status: "no_show" }).then(load)}>No Show</SecondaryButton>
-                        <PrimaryButton
-                          onClick={async () => {
-                            await adminCrmApi.calendarStatus(row.id, { status: "completed", callSummary });
-                            setCallSummary({});
-                            setBanner("השיחה סומנה כהושלמה");
-                            const { data } = await adminCrmApi.customerAppointments(id!);
-                            setTabData(data);
-                          }}
-                        >
-                          הושלמה
-                        </PrimaryButton>
-                      </div>
-                    ) : null}
-                  </div>
-                ))}
-              </CrmCard>
-            );
-          })}
+          {(tabData?.upcoming || []).length ? (
+            <CrmCard>
+              <h3 className="font-black">קרובים</h3>
+              {(tabData.upcoming || []).map((row: any) => (
+                <div key={row.id} className="mt-3 border-t border-slate-100 pt-3">
+                  <AppointmentDetails row={row} />
+                  <CustomerAppointmentActions
+                    row={row}
+                    customerId={id!}
+                    onChanged={async () => {
+                      const { data } = await adminCrmApi.customerAppointments(id!);
+                      setTabData(data);
+                    }}
+                    onBookAnother={() => openNewAppointment()}
+                    onError={setBanner}
+                  />
+                </div>
+              ))}
+            </CrmCard>
+          ) : (
+            <EmptyState
+              title="אין תיאום עתידי"
+              action={<PrimaryButton onClick={() => openNewAppointment()}>+ תיאום חדש</PrimaryButton>}
+            />
+          )}
+          <CrmCard>
+            <h3 className="font-black">היסטוריה</h3>
+            {(tabData?.history || []).length ? (
+              (tabData.history || []).map((row: any) => (
+                <div key={row.id} className="mt-3 border-t border-slate-100 pt-3">
+                  <AppointmentDetails row={row} />
+                  {row.cancelledAt ? (
+                    <p className="text-xs font-bold text-slate-500">
+                      בוטל ב-{formatIsraelDate(row.cancelledAt, true)}
+                      {row.cancelledByName ? ` · ${row.cancelledByName}` : ""}
+                    </p>
+                  ) : null}
+                  <CustomerAppointmentActions
+                    row={row}
+                    customerId={id!}
+                    onChanged={async () => {
+                      const { data } = await adminCrmApi.customerAppointments(id!);
+                      setTabData(data);
+                    }}
+                    onBookAnother={() => openNewAppointment()}
+                    onError={setBanner}
+                  />
+                </div>
+              ))
+            ) : (
+              <p className="mt-2 font-bold text-slate-500">אין היסטוריית תיאומים</p>
+            )}
+          </CrmCard>
         </div>
       ) : null}
 
@@ -767,6 +787,28 @@ export default function AdminCrmCustomer360() {
           <SecondaryButton onClick={() => setTab("activity")}>הוספת סיכום תמיכה</SecondaryButton>
         </div>
       )}
+
+      {bookOpen ? (
+        <AdminBizuplyBookFlow
+          lockedCustomer={{
+            id: id!,
+            contactName: customer.contactName,
+            phone: customer.phone,
+            email: customer.email,
+            companyName: customer.companyName,
+          }}
+          services={calendarServices}
+          title="+ תיאום חדש"
+          onClose={() => setBookOpen(false)}
+          onBooked={async () => {
+            setBookOpen(false);
+            setBanner("התיאום נקבע ושויך ללקוח זה");
+            const { data } = await adminCrmApi.customerAppointments(id!);
+            setTabData(data);
+            setTab("meetings");
+          }}
+        />
+      ) : null}
 
       {lostOpen ? (
         <div className="fixed inset-0 z-50 grid place-items-center bg-slate-950/40 p-4">
