@@ -124,6 +124,7 @@ export default function PublicIntroBookingPage() {
           שיחה ראשונית עם BizUply
         </h1>
         <p className="text-base font-black text-[#7C4DFF]">משך השיחה: {duration} דקות</p>
+        <p className="text-sm font-bold text-slate-500">שעון ישראל</p>
         {data?.firstName ? (
           <p className="font-bold text-slate-600">היי {data.firstName}, בחרו מועד שנוח לכם.</p>
         ) : (
