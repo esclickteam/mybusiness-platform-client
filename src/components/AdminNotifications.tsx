@@ -707,7 +707,7 @@ export default function AdminNotifications() {
 
   const displayBadge = Math.max(badge, unreadCount);
 
-  async function handleBellClick() {
+  function handleBellClick() {
     if (open) {
       setPanelView("list");
       setOpen(false);
@@ -715,20 +715,8 @@ export default function AdminNotifications() {
     }
 
     setBadge(0);
+    setPanelView("list");
     setOpen(true);
-
-    try {
-      const permission = getPermission();
-      if (permission !== "granted") {
-        setPanelView("settings");
-        return;
-      }
-      const subscribed = await isSubscribed();
-      if (!subscribed) setPanelView("settings");
-      else setPanelView("list");
-    } catch {
-      setPanelView("list");
-    }
   }
 
   const panelOverlay =
@@ -972,7 +960,7 @@ export default function AdminNotifications() {
       <button
         type="button"
         ref={bellRef}
-        onClick={() => void handleBellClick()}
+        onClick={() => handleBellClick()}
         aria-label="התראות תמיכה"
         className={[
           "relative inline-flex h-11 w-11 items-center justify-center rounded-2xl border bg-gradient-to-br shadow-sm transition hover:-translate-y-0.5 hover:shadow-md sm:h-12 sm:w-12",
