@@ -103,6 +103,25 @@ export function SecondaryButton({
   );
 }
 
+export function DangerButton({
+  children,
+  compact = false,
+  ...props
+}: React.ButtonHTMLAttributes<HTMLButtonElement> & { compact?: boolean }) {
+  return (
+    <button
+      {...props}
+      className={[
+        "inline-flex items-center justify-center rounded-lg border border-rose-200 bg-rose-50 font-semibold text-rose-700 transition hover:border-rose-300 hover:bg-rose-100 disabled:opacity-50",
+        compact ? "min-h-8 px-3 text-xs" : "min-h-9 px-4 text-sm",
+        props.className || "",
+      ].join(" ")}
+    >
+      {children}
+    </button>
+  );
+}
+
 export function CompactInput({
   className = "",
   ...props

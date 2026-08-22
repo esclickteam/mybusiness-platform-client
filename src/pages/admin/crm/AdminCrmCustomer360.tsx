@@ -34,6 +34,7 @@ import {
   LoadingState,
   PrimaryButton,
   SecondaryButton,
+  DangerButton,
 } from "./AdminCrmUi";
 import { AdminModal } from "./AdminModal";
 import AdminCrmWhatsAppPanel from "./AdminCrmWhatsAppPanel";
@@ -89,6 +90,8 @@ export default function AdminCrmCustomer360() {
   const [preview, setPreview] = useState<any>(null);
   const [lostOpen, setLostOpen] = useState(false);
   const [lostReason, setLostReason] = useState("no_response");
+  const [deleteOpen, setDeleteOpen] = useState(false);
+  const [deleteLoading, setDeleteLoading] = useState(false);
   const [bookOpen, setBookOpen] = useState(false);
   const [calendarServices, setCalendarServices] = useState<any[]>([]);
 
@@ -206,6 +209,20 @@ export default function AdminCrmCustomer360() {
       load();
     } catch (err: any) {
       setBanner(err?.response?.data?.error || "השמירה נכשלה");
+    }
+  }
+
+  async function confirmPermanentDelete() {
+    if (!id) return;
+    setDeleteLoading(true);
+    try {
+      await adminCrmApi.deleteCustomer(id);
+      navigate("/admin/crm/customers", { state: { deletedLeadToast: true } });
+    } catch (err: any) {
+      setBanner(err?.response?.data?.error || "מחיקת הליד נכשלה");
+      setDeleteOpen(false);
+    } finally {
+      setDeleteLoading(false);
     }
   }
 
@@ -359,6 +376,24 @@ export default function AdminCrmCustomer360() {
             <SecondaryButton onClick={() => setTab("products")}>ניהול תוספים</SecondaryButton>
             <PrimaryButton onClick={() => adminCrmApi.markWon(id!).then(load)}>נסגר</PrimaryButton>
             <SecondaryButton onClick={() => setLostOpen(true)}>לא נסגר</SecondaryButton>
+            {perms.delete !== false && customer.canDeleteLead ? (
+              <DangerButton onClick={() => setDeleteOpen(true)}>מחיקת ליד</DangerButton>
+            ) : null}
+            {perms.delete !== false && customer.suggestArchive ? (
+              <SecondaryButton
+                onClick={async () => {
+                  try {
+                    await adminCrmApi.archiveCustomer(id!);
+                    setBanner("הלקוח אורכב");
+                    load();
+                  } catch (err: any) {
+                    setBanner(err?.response?.data?.error || "ארכוב נכשל");
+                  }
+                }}
+              >
+                ארכוב לקוח
+              </SecondaryButton>
+            ) : null}
           </div>
         </div>
       </CrmCard>
@@ -874,6 +909,30 @@ export default function AdminCrmCustomer360() {
           <select value={lostReason} onChange={(e) => setLostReason(e.target.value)} className="h-8 w-full rounded-lg border border-slate-200 px-2 text-sm">
             {Object.entries(LOST_REASON_LABELS).map(([k, v]) => <option key={k} value={k}>{v}</option>)}
           </select>
+        </AdminModal>
+      ) : null}
+
+      {deleteOpen ? (
+        <AdminModal
+          open
+          onClose={() => !deleteLoading && setDeleteOpen(false)}
+          title="למחוק את הליד לצמיתות?"
+          subtitle="הפעולה תמחק את הליד ואת נתוני ה-Admin CRM המשויכים אליו ולא ניתן יהיה לשחזר אותם."
+          size="sm"
+          footer={
+            <div className="flex flex-wrap gap-2">
+              <SecondaryButton compact disabled={deleteLoading} onClick={() => setDeleteOpen(false)}>
+                ביטול
+              </SecondaryButton>
+              <DangerButton compact disabled={deleteLoading} onClick={confirmPermanentDelete}>
+                {deleteLoading ? "מוחק..." : "מחיקה לצמיתות"}
+              </DangerButton>
+            </div>
+          }
+        >
+          <p className="text-sm font-bold text-slate-600">
+            לאחר המחיקה לא יישלחו הודעות אוטומציה נוספות לליד זה, וקישורי תיאום קיימים יבוטלו.
+          </p>
         </AdminModal>
       ) : null}
     </div>
