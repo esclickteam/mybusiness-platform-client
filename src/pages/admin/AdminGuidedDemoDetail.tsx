@@ -96,10 +96,15 @@ export default function AdminGuidedDemoDetail() {
               </p>
               <p>סטטוס: {STATUS_LABEL[inv.status] || inv.status}</p>
               <p>נוצר: {formatDate(inv.createdAt)}</p>
-              <p>תוקף: {formatDate(inv.expiresAt)}</p>
+              <p>דמו פעיל עד: {formatDate(inv.expiresAt)}</p>
               <p>נשלח: {inv.deliveryStatus}</p>
-              <p>נפתח: {formatDate(inv.openedAt)}</p>
-              <p>התחיל: {formatDate(inv.redeemedAt)}</p>
+              <p>כניסות לדמו: {inv.openCount || 0}</p>
+              <p>כניסה ראשונה: {formatDate(inv.firstOpenedAt || inv.openedAt)}</p>
+              <p>כניסה אחרונה: {formatDate(inv.lastOpenedAt)}</p>
+              <p>סיים דמו: {formatDate(inv.demoCompletedAt || inv.completedAt)}</p>
+              <p>שאלון: {inv.questionnaireStatus || "not_started"}</p>
+              <p>סיים שאלון: {formatDate(inv.questionnaireCompletedAt)}</p>
+              <p>ביקש הצעה: {formatDate(inv.proposalRequestedAt)}</p>
               <p>מודול נוכחי: {inv.currentModule || "—"}</p>
               <p>שלב נוכחי: {inv.lastStep || "—"}</p>
               <p>

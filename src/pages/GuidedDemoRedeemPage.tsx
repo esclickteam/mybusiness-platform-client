@@ -58,9 +58,7 @@ export default function GuidedDemoRedeemPage() {
       navigate(`/business/${businessId}${first}`, { replace: true });
     } catch (err: any) {
       const code = err?.response?.data?.code;
-      if (code === "DEMO_ALREADY_REDEEMED") {
-        setError("הקישור כבר מומש במכשיר אחר.");
-      } else if (code === "DEMO_EXPIRED" || code === "DEMO_REVOKED") {
+      if (code === "DEMO_EXPIRED" || code === "DEMO_REVOKED") {
         setState("expired");
       } else {
         setError(err?.response?.data?.error || "לא הצלחנו לפתוח את הדמו.");
@@ -82,9 +80,9 @@ export default function GuidedDemoRedeemPage() {
     return (
       <div className="grid min-h-screen place-items-center bg-[#f5f6fb] p-6" dir="rtl">
         <div className="w-full max-w-md rounded-[28px] bg-white p-8 text-center shadow-xl">
-          <h1 className="text-2xl font-black text-slate-900">הדמו הזה כבר אינו פעיל</h1>
-          <p className="mt-3 text-sm font-semibold text-slate-500">
-            הקישור פג תוקף, בוטל, או שאינו תקין.
+          <h1 className="text-2xl font-black text-slate-900">הקישור לדמו כבר אינו פעיל</h1>
+          <p className="mt-3 text-sm font-semibold leading-7 text-slate-500">
+            תוקף הדמו שקיבלת הסתיים. אם תרצה/י לצפות בו שוב, ניתן לפנות אלינו לקבלת קישור חדש.
           </p>
           <Link
             to="/contact"

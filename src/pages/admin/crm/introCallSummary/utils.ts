@@ -250,10 +250,6 @@ export function buildSummaryPreview(questionnaire: IntroQuestionnaire): SummaryP
   );
   if (bottlenecks) lines.push({ label: "תקיעות בתהליך", value: bottlenecks });
 
-  if (questionnaire.oneThingTomorrow.trim()) {
-    lines.push({ label: "דבר אחד למחר", value: questionnaire.oneThingTomorrow.trim() });
-  }
-
   return lines.slice(0, 6);
 }
 

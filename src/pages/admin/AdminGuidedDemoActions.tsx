@@ -74,7 +74,7 @@ export default function AdminGuidedDemoActions({
             className="rounded-lg border px-2 py-1 text-[11px] font-black disabled:opacity-40"
             disabled={Boolean(busy)}
             data-testid="admin-demo-open"
-            title="פותח תצוגת אדמין — לא מממש את קישור הלקוח החד-פעמי"
+            title="פותח תצוגת אדמין — לא משפיע על קישור הלקוח"
             onClick={() =>
               void run("open", async () => {
                 const data = await previewGuidedDemo(id);
