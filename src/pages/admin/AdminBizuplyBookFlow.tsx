@@ -10,6 +10,9 @@ import {
   StepIndicator,
 } from "./crm/AdminCrmUi";
 import { AdminModal } from "./crm/AdminModal";
+import IntroCallSummaryModal from "./crm/introCallSummary/IntroCallSummaryModal";
+import { IntroCallSummaryCard } from "./crm/introCallSummary/IntroCallSummaryCard";
+import { hasIntroSummaryData, introQuestionnaireFromCallSummary } from "./crm/introCallSummary/utils";
 
 export const APPOINTMENT_STATUS_HE: Record<string, string> = {
   booked: "מתוכנן",
@@ -499,14 +502,8 @@ export function CustomerAppointmentActions({
   const [rescheduleOpen, setRescheduleOpen] = useState(false);
   const [slots, setSlots] = useState<any[]>([]);
   const [startAt, setStartAt] = useState("");
-  const [summary, setSummary] = useState({
-    summary: row.callSummary?.summary || "",
-    customerNeed: row.callSummary?.customerNeed || "",
-    interestLevel: row.callSummary?.interestLevel || "",
-    objections: row.callSummary?.objections || "",
-    nextStep: row.callSummary?.nextStep || "",
-    nextFollowUp: row.callSummary?.nextFollowUp || "",
-  });
+  const isIntroCall = (row.serviceKey || "intro_call") === "intro_call";
+  const hasSummary = isIntroCall && hasIntroSummaryData(introQuestionnaireFromCallSummary(row.callSummary));
 
   async function setStatus(status: string, extra: Record<string, unknown> = {}) {
     try {
@@ -523,12 +520,27 @@ export function CustomerAppointmentActions({
     setRescheduleOpen(true);
   }
 
-  if (row.status !== "booked" && !summaryOpen && !noShowOpen) {
-    return row.status === "completed" && onBookAnother ? (
-      <div className="mt-2">
-        <SecondaryButton compact onClick={onBookAnother}>+ תיאום נוסף</SecondaryButton>
+  if (row.status !== "booked" && !noShowOpen) {
+    return (
+      <div className="mt-2 space-y-2">
+        {isIntroCall ? (
+          <IntroCallSummaryCard callSummary={row.callSummary} onOpen={() => setSummaryOpen(true)} />
+        ) : null}
+        {row.status === "completed" && onBookAnother ? (
+          <SecondaryButton compact onClick={onBookAnother}>+ תיאום נוסף</SecondaryButton>
+        ) : null}
+        {isIntroCall ? (
+          <IntroCallSummaryModal
+            open={summaryOpen}
+            booking={row}
+            onClose={() => setSummaryOpen(false)}
+            onSaved={onChanged}
+            onError={onError}
+            completeOnSave={row.status === "booked"}
+          />
+        ) : null}
       </div>
-    ) : null;
+    );
   }
 
   return (
@@ -537,36 +549,31 @@ export function CustomerAppointmentActions({
         <div className="flex flex-wrap gap-1.5">
           <SecondaryButton compact onClick={openReschedule}>שינוי מועד</SecondaryButton>
           <SecondaryButton compact onClick={() => setStatus("cancelled")}>ביטול</SecondaryButton>
-          <PrimaryButton compact onClick={() => setSummaryOpen(true)}>סמן כהושלם</PrimaryButton>
+          {isIntroCall ? (
+            <>
+              <PrimaryButton compact onClick={() => setSummaryOpen(true)}>סמן כהושלם</PrimaryButton>
+              <SecondaryButton compact onClick={() => setSummaryOpen(true)}>הוסף סיכום</SecondaryButton>
+            </>
+          ) : (
+            <PrimaryButton compact onClick={() => setStatus("completed")}>סמן כהושלם</PrimaryButton>
+          )}
           <SecondaryButton compact onClick={() => setNoShowOpen(true)}>לא הגיע</SecondaryButton>
-          <SecondaryButton compact onClick={() => setSummaryOpen(true)}>הוסף סיכום</SecondaryButton>
         </div>
       ) : null}
 
-      {summaryOpen ? (
-        <div className="space-y-2 rounded-lg border border-slate-200 bg-slate-50/60 p-3">
-          <h4 className="text-xs font-semibold text-slate-700">סיכום שיחה</h4>
-          <textarea className="min-h-20 w-full rounded-lg border border-slate-200 p-2 text-sm" placeholder="סיכום" value={summary.summary} onChange={(e) => setSummary({ ...summary, summary: e.target.value })} />
-          <div className="grid gap-2 sm:grid-cols-2">
-            <CompactInput placeholder="מה הלקוח צריך" value={summary.customerNeed} onChange={(e) => setSummary({ ...summary, customerNeed: e.target.value })} />
-            <CompactInput placeholder="רמת עניין" value={summary.interestLevel} onChange={(e) => setSummary({ ...summary, interestLevel: e.target.value })} />
-            <CompactInput placeholder="התנגדויות" value={summary.objections} onChange={(e) => setSummary({ ...summary, objections: e.target.value })} />
-            <CompactInput placeholder="צעד הבא" value={summary.nextStep} onChange={(e) => setSummary({ ...summary, nextStep: e.target.value })} />
-            <CompactInput placeholder="מעקב הבא" value={summary.nextFollowUp} onChange={(e) => setSummary({ ...summary, nextFollowUp: e.target.value })} />
-          </div>
-          <div className="flex flex-wrap gap-1.5">
-            <PrimaryButton
-              compact
-              onClick={async () => {
-                await setStatus("completed", { callSummary: summary });
-                setSummaryOpen(false);
-              }}
-            >
-              שמירת סיכום וסיום
-            </PrimaryButton>
-            {onBookAnother ? <SecondaryButton compact onClick={onBookAnother}>+ תיאום נוסף</SecondaryButton> : null}
-          </div>
-        </div>
+      {isIntroCall && hasSummary ? (
+        <IntroCallSummaryCard callSummary={row.callSummary} onOpen={() => setSummaryOpen(true)} />
+      ) : null}
+
+      {isIntroCall ? (
+        <IntroCallSummaryModal
+          open={summaryOpen}
+          booking={row}
+          onClose={() => setSummaryOpen(false)}
+          onSaved={onChanged}
+          onError={onError}
+          completeOnSave={row.status === "booked"}
+        />
       ) : null}
 
       {noShowOpen ? (

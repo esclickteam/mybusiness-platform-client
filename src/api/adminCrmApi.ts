@@ -102,6 +102,8 @@ export const adminCrmApi = {
     API.post("/admin/crm/calendar/bookings", body),
   calendarStatus: (id: string, body: Record<string, unknown>) =>
     API.post(`/admin/crm/calendar/bookings/${id}/status`, body),
+  calendarCallSummary: (id: string, body: Record<string, unknown>) =>
+    API.patch(`/admin/crm/calendar/bookings/${id}/call-summary`, body),
   calendarReschedule: (id: string, body: Record<string, unknown>) =>
     API.post(`/admin/crm/calendar/bookings/${id}/reschedule`, body),
   customerAppointments: (id: string) =>
