@@ -1,7 +1,7 @@
 /* eslint-disable no-restricted-globals */
 
 // Bump when push delivery / ack behavior changes — forces clients to refresh SW.
-const SW_VERSION = "bizuply-sw-delivery-ack-v10";
+const SW_VERSION = "bizuply-sw-delivery-ack-v11";
 const LEGACY_GENERIC_TAG = "bizuply-notification";
 const LEGACY_GENERIC_BODY = "יש לך התראה חדשה";
 
@@ -72,23 +72,28 @@ function unwrapPushPayload(raw) {
     raw && raw.data && typeof raw.data === "object" && !Array.isArray(raw.data)
       ? raw.data
       : {};
-  // Title/body live only under data so Safari does not auto-display the JSON.
+  // Title/body live under data for data-only Web Push (Safari/iOS).
+  // Keep top-level fallbacks for legacy senders.
   return {
-    title: nested.title || "",
-    body: nested.body || "",
-    tag: nested.tag || "",
-    url: nested.url || "/",
-    leadId: nested.leadId || null,
-    kind: nested.kind || "",
-    claimKey: nested.claimKey || "",
-    correlationId: nested.correlationId || "",
-    fromNumber: nested.fromNumber || "",
-    contactName: nested.contactName || "",
-    callSid: nested.callSid || "",
-    callId: nested.callId || "",
-    icon: nested.icon || "",
-    badge: nested.badge || "",
-    actions: Array.isArray(nested.actions) ? nested.actions : undefined,
+    title: nested.title || raw.title || "",
+    body: nested.body || raw.body || "",
+    tag: nested.tag || raw.tag || "",
+    url: nested.url || raw.url || "/",
+    leadId: nested.leadId || raw.leadId || null,
+    kind: nested.kind || raw.kind || "",
+    claimKey: nested.claimKey || raw.claimKey || "",
+    correlationId: nested.correlationId || raw.correlationId || "",
+    fromNumber: nested.fromNumber || raw.fromNumber || "",
+    contactName: nested.contactName || raw.contactName || "",
+    callSid: nested.callSid || raw.callSid || "",
+    callId: nested.callId || raw.callId || "",
+    icon: nested.icon || raw.icon || "",
+    badge: nested.badge || raw.badge || "",
+    actions: Array.isArray(nested.actions)
+      ? nested.actions
+      : Array.isArray(raw.actions)
+        ? raw.actions
+        : undefined,
   };
 }
 

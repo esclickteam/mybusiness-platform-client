@@ -1,5 +1,5 @@
 export const SW_SCOPE = "/";
-export const SW_SCRIPT_VERSION = 10;
+export const SW_SCRIPT_VERSION = 11;
 export const SW_URL = `/service-worker.js?v=${SW_SCRIPT_VERSION}`;
 export const LEGACY_GENERIC_TAG = "bizuply-notification";
 export const LEGACY_GENERIC_BODY = "יש לך התראה חדשה";
