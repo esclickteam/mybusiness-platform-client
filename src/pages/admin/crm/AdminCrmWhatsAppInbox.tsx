@@ -1,5 +1,11 @@
 import React, { useCallback, useMemo, useState } from "react";
 import adminCrmApi from "../../../api/adminCrmApi";
+import {
+  Badge,
+  SOURCE_LABELS,
+  WHATSAPP_INBOX_STATUS_LABELS,
+  waitingTimeLabel,
+} from "./adminCrmLabels";
 import { ErrorState, LoadingState, SecondaryButton } from "./AdminCrmUi";
 import WhatsAppWebThread from "./whatsappWeb/WhatsAppWebThread";
 import { useAdminCrmWhatsAppRealtime } from "./whatsappWeb/useAdminCrmWhatsAppRealtime";
@@ -183,6 +189,35 @@ export default function AdminCrmWhatsAppInbox() {
                           {listTimeLabel(row.lastMessageAt)}
                         </span>
                       </div>
+                      <div className="mt-0.5 flex flex-wrap items-center gap-1">
+                        {row.inboxStatus ? (
+                          <Badge
+                            tone={
+                              row.inboxStatus === "waiting_for_staff"
+                                ? "bg-amber-50 text-amber-800 border-amber-200"
+                                : "bg-emerald-50 text-emerald-700 border-emerald-200"
+                            }
+                          >
+                            {row.inboxStatusLabel ||
+                              WHATSAPP_INBOX_STATUS_LABELS[row.inboxStatus] ||
+                              row.inboxStatus}
+                          </Badge>
+                        ) : null}
+                        {row.waitingSince && row.inboxStatus === "waiting_for_staff" ? (
+                          <span className="text-[11px] font-bold text-amber-800">
+                            {waitingTimeLabel(row.waitingSince)}
+                          </span>
+                        ) : null}
+                      </div>
+                      <p className="mt-0.5 truncate text-[12px] font-bold text-slate-500" dir="ltr">
+                        {row.phone || "—"}
+                        {row.leadSource
+                          ? ` · ${SOURCE_LABELS[row.leadSource] || row.leadSource}`
+                          : ""}
+                        {row.assignedStaffName || row.assignedAdminName
+                          ? ` · ${row.assignedStaffName || row.assignedAdminName}`
+                          : " · לא משויך"}
+                      </p>
                       <div className="mt-0.5 flex items-center justify-between gap-2">
                         <p className="truncate text-[13px] text-[#667781]">{row.lastMessage || "—"}</p>
                         {row.unreadCount ? (
@@ -191,6 +226,11 @@ export default function AdminCrmWhatsAppInbox() {
                           </span>
                         ) : null}
                       </div>
+                      {row.handoffAckStatus === "failed" && row.handoffAckError ? (
+                        <p className="mt-0.5 truncate text-[11px] font-bold text-rose-700">
+                          אישור אוטומטי נכשל
+                        </p>
+                      ) : null}
                     </div>
                   </button>
                 );
@@ -210,7 +250,7 @@ export default function AdminCrmWhatsAppInbox() {
               customerId={selected.adminCustomerId}
               threadId={selected.id}
               phone={selected.phone}
-              canSend={Boolean(perms.whatsappSend)}
+              canSend={Boolean(perms.whatsappSend || perms.conversationsReply)}
               canTemplates={Boolean(perms.whatsappTemplates)}
               canDemo={perms.demoSend !== false}
               onBanner={setBanner}

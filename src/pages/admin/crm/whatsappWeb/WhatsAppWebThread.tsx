@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import adminCrmApi from "../../../../api/adminCrmApi";
-import { Badge } from "../adminCrmLabels";
+import { Badge, WHATSAPP_INBOX_STATUS_LABELS } from "../adminCrmLabels";
 import { PrimaryButton, SecondaryButton } from "../AdminCrmUi";
 import { WhatsAppWebTicks } from "./WhatsAppWebTicks";
 import { useAdminCrmWhatsAppRealtime } from "./useAdminCrmWhatsAppRealtime";
@@ -316,6 +316,17 @@ export default function WhatsAppWebThread({
             {matchPhone || ""}
             {sessionOpen ? " · חלון 24 שעות פתוח" : " · נדרשת תבנית"}
           </p>
+          {data?.bizuplyManaged?.conversation?.active ? (
+            <div className="mt-1 flex flex-wrap items-center gap-1">
+              <Badge tone="bg-emerald-50 text-emerald-700 border-emerald-200">שיחת WhatsApp פעילה</Badge>
+              {data.bizuplyManaged.conversation.status === "waiting_for_staff" ? (
+                <Badge tone="bg-amber-50 text-amber-800 border-amber-200">
+                  {data.bizuplyManaged.conversation.statusLabel ||
+                    WHATSAPP_INBOX_STATUS_LABELS.waiting_for_staff}
+                </Badge>
+              ) : null}
+            </div>
+          ) : null}
         </div>
         {customerId ? (
           <Link

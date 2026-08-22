@@ -20,6 +20,7 @@ import {
   STAGE_LABELS,
   TASK_STATUS_LABELS,
   TIMELINE_LABELS,
+  WHATSAPP_INBOX_STATUS_LABELS,
   formatIsraelDate,
   healthTone,
   lifecycleTone,
@@ -247,6 +248,9 @@ export default function AdminCrmCustomer360() {
   if (!customer) return <EmptyState title="לקוח לא נמצא" />;
 
   const waUnread = Number(customer.whatsappUnreadCount || 0);
+  const waConversation = customer.whatsappConversation || {};
+  const waActive = Boolean(waConversation.active || customer.whatsappConversationStartedAt);
+  const waWaiting = waConversation.status === "waiting_for_staff";
 
   return (
     <div className="space-y-4">
@@ -276,6 +280,14 @@ export default function AdminCrmCustomer360() {
                   ? PACKAGE_LABELS[customer.account.subscriptionPlan] || customer.account.subscriptionPlan
                   : "אין מנוי"}
               </Badge>
+              {waActive ? (
+                <Badge tone="bg-emerald-50 text-emerald-700 border-emerald-200">שיחת WhatsApp פעילה</Badge>
+              ) : null}
+              {waWaiting ? (
+                <Badge tone="bg-amber-50 text-amber-800 border-amber-200">
+                  {waConversation.statusLabel || WHATSAPP_INBOX_STATUS_LABELS.waiting_for_staff}
+                </Badge>
+              ) : null}
             </div>
             <p className="mt-2 text-sm font-bold text-slate-500">
               אחראי: {customer.assignedAdminName || "לא משויך"} · חבילה נוכחית{" "}
@@ -636,14 +648,42 @@ export default function AdminCrmCustomer360() {
       )}
 
       {tab === "communication" && (
-        <AdminCrmWhatsAppPanel
-          customerId={id!}
-          canSend={Boolean(perms.whatsappSend)}
-          canTemplates={Boolean(perms.whatsappTemplates)}
-          canDemo={Boolean(perms.demoSend)}
-          onBanner={setBanner}
-          initialIntent={waIntent}
-        />
+        <div className="space-y-3">
+          {waActive || waWaiting || waConversation.handoffAckStatus === "failed" ? (
+            <CrmCard>
+              <div className="flex flex-wrap items-center gap-2">
+                {waActive ? (
+                  <Badge tone="bg-emerald-50 text-emerald-700 border-emerald-200">שיחת WhatsApp פעילה</Badge>
+                ) : null}
+                {waWaiting ? (
+                  <Badge tone="bg-amber-50 text-amber-800 border-amber-200">
+                    {waConversation.statusLabel || WHATSAPP_INBOX_STATUS_LABELS.waiting_for_staff}
+                  </Badge>
+                ) : null}
+              </div>
+              {waConversation.assignedStaffName ? (
+                <p className="mt-2 text-sm font-bold text-slate-600">
+                  נציג משויך: {waConversation.assignedStaffName}
+                </p>
+              ) : waWaiting ? (
+                <p className="mt-2 text-sm font-bold text-slate-500">בתור לנציג BizUply</p>
+              ) : null}
+              {waConversation.handoffAckStatus === "failed" && waConversation.handoffAckError ? (
+                <p className="mt-2 text-sm font-bold text-rose-700">
+                  אישור אוטומטי לא נשלח: {waConversation.handoffAckError}
+                </p>
+              ) : null}
+            </CrmCard>
+          ) : null}
+          <AdminCrmWhatsAppPanel
+            customerId={id!}
+            canSend={Boolean(perms.whatsappSend || perms.conversationsReply)}
+            canTemplates={Boolean(perms.whatsappTemplates)}
+            canDemo={Boolean(perms.demoSend)}
+            onBanner={setBanner}
+            initialIntent={waIntent}
+          />
+        </div>
       )}
 
       {tab === "automations" && (
