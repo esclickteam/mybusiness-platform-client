@@ -461,6 +461,20 @@ export default function AdminNotifications() {
     if (!latest) return null;
     const isCalendar =
       latest.kind === "calendar_booking" || latest.kind === "calendar_reminder";
+    const isGuidedDemo = latest.kind === "guided_demo";
+    if (isGuidedDemo) {
+      const url =
+        latest.targetUrl ||
+        (latest.adminCustomerId
+          ? `/admin/crm/customers/${latest.adminCustomerId}`
+          : "/admin/guided-demos");
+      return {
+        label: "לכרטיס לקוח",
+        icon: CalendarDays,
+        url,
+        tone: "violet" as const,
+      };
+    }
     if (isCalendar) {
       const url =
         latest.targetUrl ||
@@ -866,6 +880,8 @@ export default function AdminNotifications() {
                             const isCalendar =
                               alert.kind === "calendar_booking" ||
                               alert.kind === "calendar_reminder";
+                            const isGuidedDemo = alert.kind === "guided_demo";
+                            const isViolet = isCalendar || isGuidedDemo;
                             return (
                               <button
                                 type="button"
@@ -881,12 +897,12 @@ export default function AdminNotifications() {
                                 <span
                                   className={[
                                     "flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ring-1",
-                                    isCalendar
+                                    isViolet
                                       ? "bg-violet-50 text-[#7C4DFF] ring-violet-100"
                                       : "bg-sky-50 text-sky-700 ring-sky-100",
                                   ].join(" ")}
                                 >
-                                  {isCalendar ? (
+                                  {isViolet ? (
                                     <CalendarDays className="h-5 w-5" />
                                   ) : (
                                     <Headphones className="h-5 w-5" />
@@ -897,12 +913,16 @@ export default function AdminNotifications() {
                                     <span
                                       className={[
                                         "inline-flex shrink-0 items-center rounded-full px-2.5 py-1 text-[11px] font-black ring-1",
-                                        isCalendar
+                                        isViolet
                                           ? "bg-violet-50 text-[#7C4DFF] ring-violet-100"
                                           : "bg-sky-50 text-sky-700 ring-sky-100",
                                       ].join(" ")}
                                     >
-                                      {isCalendar ? "יומן BizUply" : "צ׳אט תמיכה"}
+                                      {isGuidedDemo
+                                        ? "דמו מודרך"
+                                        : isCalendar
+                                          ? "יומן BizUply"
+                                          : "צ׳אט תמיכה"}
                                     </span>
                                     <span className="shrink-0 text-[11px] font-black text-slate-400">
                                       {timeAgo(alert.at)}

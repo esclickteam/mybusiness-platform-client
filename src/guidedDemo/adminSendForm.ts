@@ -254,7 +254,6 @@ export function invitationPhone(invitation?: GuidedDemoInvitationRow | null, fal
 export function invitationLinkAvailable(invitation?: GuidedDemoInvitationRow | null) {
   if (!invitation) return false;
   if (invitation.revokedAt || invitation.status === "revoked") return false;
-  if (invitation.redeemedAt) return false;
   if (invitation.status === "expired") return false;
   if (invitation.expiresAt && new Date(invitation.expiresAt).getTime() < Date.now()) return false;
   if (invitation.linkAvailable === false) return false;
@@ -264,7 +263,6 @@ export function invitationLinkAvailable(invitation?: GuidedDemoInvitationRow | n
 export function invitationNeedsNewLink(invitation?: GuidedDemoInvitationRow | null) {
   if (!invitation) return false;
   if (invitation.revokedAt || invitation.status === "revoked") return true;
-  if (invitation.redeemedAt) return true;
   if (invitation.status === "expired") return true;
   if (invitation.expiresAt && new Date(invitation.expiresAt).getTime() < Date.now()) return true;
   return false;
