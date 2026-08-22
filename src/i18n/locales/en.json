@@ -2306,6 +2306,7 @@
     "humanFormHint": "Leave your details and we'll connect you live",
     "humanName": "Full name",
     "humanEmail": "Email",
+    "humanPhone": "Phone (recommended for WhatsApp)",
     "humanNote": "How can we help? (optional)",
     "humanSubmit": "Connect me to an agent",
     "humanCancel": "Cancel",

@@ -9,16 +9,11 @@ import { useAuth } from "../../context/AuthContext";
 const NAV_ITEMS = [
   { path: "/admin/dashboard", label: "דשבורד" },
   { path: "/admin/crm", label: "CRM וניהול לקוחות" },
-  { path: "/admin/customers", label: "לקוחות" },
-  { path: "/admin/early-access", label: "הרשמה מוקדמת" },
+  { path: "/admin/calendar", label: "יומן BizUply" },
+  { path: "/admin/automations", label: "אוטומציות אדמין" },
   { path: "/admin/managed-whatsapp", label: "WhatsApp Managed" },
-  { path: "/admin/users", label: "משתמשים" },
-  { path: "/admin/create-user", label: "יצירת משתמש" },
-  { path: "/admin/businesses", label: "עסקים" },
-  { path: "/admin/affiliates", label: "שותפים" },
-  { path: "/admin/marketers", label: "משווקים" },
-  { path: "/admin/withdrawals", label: "משיכות" },
-  { path: "/admin/support-chat", label: "צ'אט תמיכה" },
+  { path: "/admin/crm/pipeline", label: "דמואים" },
+  { path: "/admin/system", label: "ניהול מערכת" },
 ] as const;
 
 function AdminHeader() {
