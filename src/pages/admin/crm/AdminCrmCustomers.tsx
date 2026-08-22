@@ -79,7 +79,7 @@ export default function AdminCrmCustomers() {
   const [sort, setSort] = useState("createdAt");
   const [selected, setSelected] = useState<string[]>([]);
   const [columns, setColumns] = useState<string[]>(ALL_COLUMNS.map((c) => c.key));
-  const [showCreate, setShowCreate] = useState(searchParams.get("create") === "1");
+  const [showCreate, setShowCreate] = useState(false);
   const [creating, setCreating] = useState(false);
   const [form, setForm] = useState({
     contactName: "",
@@ -94,6 +94,31 @@ export default function AdminCrmCustomers() {
   const [canDelete, setCanDelete] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<Row | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
+
+  function closeCreateModal() {
+    setShowCreate(false);
+    if (searchParams.get("create") === "1") {
+      const next = new URLSearchParams(searchParams);
+      next.delete("create");
+      const search = next.toString();
+      navigate(
+        { pathname: location.pathname, search: search ? `?${search}` : "" },
+        { replace: true }
+      );
+    }
+  }
+
+  useEffect(() => {
+    if (searchParams.get("create") !== "1") return;
+    setShowCreate(true);
+    const next = new URLSearchParams(searchParams);
+    next.delete("create");
+    const search = next.toString();
+    navigate(
+      { pathname: location.pathname, search: search ? `?${search}` : "" },
+      { replace: true }
+    );
+  }, [searchParams, location.pathname, navigate]);
 
   useEffect(() => {
     const t = setTimeout(() => setDebounced(q), 300);
@@ -158,7 +183,7 @@ export default function AdminCrmCustomers() {
     setBanner("");
     try {
       await adminCrmApi.createCustomer(form);
-      setShowCreate(false);
+      closeCreateModal();
       setForm({ contactName: "", companyName: "", phone: "", email: "", leadSource: "manual" });
       setBanner("הרשומה נשמרה");
       load();
@@ -448,7 +473,7 @@ export default function AdminCrmCustomers() {
             <input className="min-h-11 w-full rounded-2xl border px-3" placeholder="אימייל" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} />
             <div className="flex gap-2">
               <PrimaryButton disabled={creating} type="submit">{creating ? "שומר..." : "שמירה"}</PrimaryButton>
-              <SecondaryButton type="button" onClick={() => setShowCreate(false)}>ביטול</SecondaryButton>
+              <SecondaryButton type="button" onClick={closeCreateModal}>ביטול</SecondaryButton>
             </div>
           </form>
         </div>
