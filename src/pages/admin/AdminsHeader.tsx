@@ -5,10 +5,12 @@ import { Crown, LogOut, Settings } from "lucide-react";
 import AdminNotifications from "../../components/AdminNotifications";
 import AdminSoftphoneLauncher from "../../components/AdminSoftphoneLauncher";
 import { useAuth } from "../../context/AuthContext";
+import API from "../../api";
 
 const NAV_ITEMS = [
   { path: "/admin/dashboard", label: "דשבורד" },
   { path: "/admin/crm", label: "CRM וניהול לקוחות" },
+  { path: "/admin/guided-demos", label: "דמואים מודרכים" },
   { path: "/admin/calendar", label: "יומן BizUply" },
   { path: "/admin/automations", label: "אוטומציות אדמין" },
   { path: "/admin/managed-whatsapp", label: "WhatsApp Managed" },
@@ -36,29 +38,59 @@ function AdminHeader() {
     .toUpperCase() || "A";
 
   useEffect(() => {
-    if (!socket) return;
+    let cancelled = false;
 
-    const bump = () => setSupportBadge((n) => n + 1);
+    async function loadUnread() {
+      try {
+        const { data } = await API.get("/support-chat/admin/unread-count");
+        if (!cancelled) {
+          setSupportBadge(Number(data?.unread || 0));
+        }
+      } catch {
+        /* keep last known badge */
+      }
+    }
 
-    socket.emit("joinRoom", "admin-support");
-    socket.on("support:notify", bump);
-    socket.on("support:waiting", bump);
-    socket.on("support:newMessage", (payload: any) => {
-      if (payload?.message?.senderType === "visitor") bump();
-    });
+    void loadUnread();
+    const interval = window.setInterval(() => {
+      void loadUnread();
+    }, 15000);
 
     return () => {
-      socket.off("support:notify", bump);
-      socket.off("support:waiting", bump);
-      socket.off("support:newMessage");
+      cancelled = true;
+      window.clearInterval(interval);
     };
-  }, [socket]);
+  }, []);
 
   useEffect(() => {
-    if (location.pathname.startsWith("/admin/support-chat")) {
-      setSupportBadge(0);
-    }
-  }, [location.pathname]);
+    if (!socket) return;
+
+    const refresh = () => {
+      API.get("/support-chat/admin/unread-count")
+        .then(({ data }) => setSupportBadge(Number(data?.unread || 0)))
+        .catch(() => {});
+    };
+
+    socket.emit("joinRoom", "admin-support");
+    socket.on("support:notify", refresh);
+    socket.on("support:waiting", refresh);
+    socket.on("support:newMessage", (payload: any) => {
+      if (
+        payload?.message?.senderType === "visitor" ||
+        payload?.message?.direction === "inbound"
+      ) {
+        refresh();
+      }
+    });
+    window.addEventListener("bizuply:adminSupportRead", refresh);
+
+    return () => {
+      socket.off("support:notify", refresh);
+      socket.off("support:waiting", refresh);
+      socket.off("support:newMessage");
+      window.removeEventListener("bizuply:adminSupportRead", refresh);
+    };
+  }, [socket]);
 
   function isActive(path: string) {
     if (path === "/admin/dashboard") {
@@ -102,7 +134,10 @@ function AdminHeader() {
         >
           {item.label}
           {isSupport && supportBadge > 0 && (
-            <span className="absolute left-1 top-1 grid h-4 min-w-4 place-items-center rounded-full bg-rose-500 px-1 text-[10px] font-black text-white">
+            <span
+              data-testid="admin-support-unread-badge"
+              className="absolute left-1 top-1 grid h-4 min-w-4 place-items-center rounded-full bg-rose-500 px-1 text-[10px] font-black text-white"
+            >
               {supportBadge > 9 ? "9+" : supportBadge}
             </span>
           )}

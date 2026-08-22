@@ -619,6 +619,11 @@ export default function MySitesPage() {
                   <button
                     type="button"
                     onClick={() => openSite(site)}
+                    data-demo-target={
+                      String(site.name || "").includes("סטודיו נועה")
+                        ? "website-demo-site"
+                        : undefined
+                    }
                     className="block w-full text-start"
                   >
                     <div className="relative aspect-[16/9] overflow-hidden bg-gradient-to-br from-slate-100 via-slate-50 to-violet-50">

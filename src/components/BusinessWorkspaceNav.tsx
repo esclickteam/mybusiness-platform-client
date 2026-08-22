@@ -44,6 +44,7 @@ type NavItemProps = {
   exact?: boolean;
   onNavigate?: () => void;
   collapsed?: boolean;
+  demoTarget?: string | null;
 };
 
 type NavItemConfig = {
@@ -53,6 +54,7 @@ type NavItemConfig = {
   icon: React.ElementType;
   exact?: boolean;
   moduleKey?: string | null;
+  demoTarget?: string | null;
 };
 
 /* =========================
@@ -98,6 +100,7 @@ function NavItem({
   exact = false,
   onNavigate,
   collapsed = false,
+  demoTarget = null,
 }: NavItemProps) {
   return (
     <NavLink
@@ -106,6 +109,7 @@ function NavItem({
       onClick={onNavigate}
       title={collapsed ? label : undefined}
       aria-label={label}
+      data-demo-target={demoTarget || undefined}
       className={({ isActive }) =>
         `
           group relative flex items-center rounded-md transition-all duration-200
@@ -183,6 +187,7 @@ export default function BusinessWorkspaceNav({
       id?: string | null;
       userId?: string | null;
       businessId?: string | null;
+      isGuidedDemo?: boolean;
     } | null;
   };
   const t = tProp || ((key: string) => tI18n(key));
@@ -212,7 +217,9 @@ export default function BusinessWorkspaceNav({
   // The signed-in business wins over the URL so a tenant cannot reveal the entry
   // by visiting another business path; the URL is only a fallback for admins,
   // who carry no businessId of their own.
-  const showRestrictedNav = canSeeRestrictedNav(user?.businessId || businessId);
+  const showRestrictedNav =
+    canSeeRestrictedNav(user?.businessId || businessId) ||
+    Boolean(user?.isGuidedDemo);
 
   const items: NavItemConfig[] = [
     {
@@ -221,6 +228,7 @@ export default function BusinessWorkspaceNav({
       to: `${basePath}/dashboard/dashboard`,
       icon: LayoutDashboard,
       moduleKey: "dashboard",
+      demoTarget: "nav-dashboard",
     },
     {
       labelKey: "businessNav.crmSystem",
@@ -228,6 +236,7 @@ export default function BusinessWorkspaceNav({
       to: `${basePath}/dashboard/crm`,
       icon: CircleUserRound,
       moduleKey: "crm",
+      demoTarget: "nav-crm",
     },
     {
       labelKey: "businessNav.automations",
@@ -235,6 +244,7 @@ export default function BusinessWorkspaceNav({
       to: `${basePath}/dashboard/automations`,
       icon: Workflow,
       moduleKey: "automations",
+      demoTarget: "nav-automations",
     },
     {
       labelKey: "businessNav.whatsapp",
@@ -242,6 +252,7 @@ export default function BusinessWorkspaceNav({
       to: `${basePath}/dashboard/whatsapp`,
       icon: MessageCircle,
       moduleKey: showRestrictedNav ? "whatsapp" : "__hidden__",
+      demoTarget: "nav-whatsapp",
     },
     {
       labelKey: "businessNav.metaCampaigns",
@@ -256,6 +267,7 @@ export default function BusinessWorkspaceNav({
       to: `${basePath}/dashboard/collab`,
       icon: Handshake,
       moduleKey: "collab",
+      demoTarget: "nav-collab",
     },
     {
       labelKey: "businessNav.bizuplyAdvisor",
@@ -263,6 +275,7 @@ export default function BusinessWorkspaceNav({
       to: `${basePath}/dashboard/BizUply`,
       icon: Sparkles,
       moduleKey: "BizUply",
+      demoTarget: "nav-advisor",
     },
     {
       labelKey: "businessNav.editBusinessPage",
@@ -270,6 +283,7 @@ export default function BusinessWorkspaceNav({
       to: `${basePath}/dashboard/build`,
       icon: PencilLine,
       moduleKey: "build",
+      demoTarget: "nav-build",
     },
     {
       labelKey: "businessNav.viewPublicProfile",
@@ -287,6 +301,7 @@ export default function BusinessWorkspaceNav({
       to: `${basePath}/dashboard/website`,
       icon: LayoutTemplate,
       moduleKey: "website",
+      demoTarget: "nav-website",
     },
     {
       labelKey: "businessNav.billing",
@@ -307,6 +322,7 @@ export default function BusinessWorkspaceNav({
   const visibleItems = items.filter((item) => {
     if (!item.moduleKey) return true;
     if (item.moduleKey === "__hidden__") return false;
+    if (item.moduleKey === "billing" && user?.isGuidedDemo) return false;
     if (item.moduleKey === "website" && showWebsiteUpsell) return true;
     return isModuleEnabled(enabledModules, item.moduleKey);
   });
@@ -333,6 +349,7 @@ export default function BusinessWorkspaceNav({
             exact={item.exact}
             onNavigate={onNavigate}
             collapsed={collapsed}
+            demoTarget={item.demoTarget || null}
           />
         ))}
       </div>

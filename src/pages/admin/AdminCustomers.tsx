@@ -17,6 +17,9 @@ import UpsellPicker from "../../components/pricing/UpsellPicker";
 import { useAuth } from "../../context/AuthContext";
 import BizuplyLoader from "../../components/ui/BizuplyLoader";
 import AdminHeader from "./AdminsHeader";
+import AdminSendGuidedDemoModal, {
+  AdminSendDemoButton,
+} from "./AdminSendGuidedDemoModal";
 
 type CatalogUpsell = {
   sku: string;
@@ -198,6 +201,7 @@ function AdminCustomers() {
   const [purchasesFor, setPurchasesFor] = useState<AdminCustomer | null>(null);
   const [purchases, setPurchases] = useState<BusinessPurchase[]>([]);
   const [purchasesLoading, setPurchasesLoading] = useState(false);
+  const [demoCustomer, setDemoCustomer] = useState<AdminCustomer | null>(null);
 
   useEffect(() => {
     if (user && user.role !== "admin") {
@@ -672,6 +676,9 @@ function AdminCustomers() {
                         ) : null}
 
                         <div className="mt-3 grid gap-2">
+                          <AdminSendDemoButton
+                            onClick={() => setDemoCustomer(customer)}
+                          />
                           <button
                             type="button"
                             disabled={!ownerId || checkoutUserId === ownerId}
@@ -816,6 +823,9 @@ function AdminCustomers() {
                             </td>
                             <td className="px-4 py-4">
                               <div className="flex min-w-[220px] flex-col gap-2">
+                                <AdminSendDemoButton
+                                  onClick={() => setDemoCustomer(customer)}
+                                />
                                 <button
                                   type="button"
                                   disabled={
@@ -1326,6 +1336,19 @@ function AdminCustomers() {
           </div>
         </div>
       ) : null}
+      <AdminSendGuidedDemoModal
+        open={Boolean(demoCustomer)}
+        onClose={() => setDemoCustomer(null)}
+        context={{
+          customerName:
+            demoCustomer?.owner?.name || demoCustomer?.businessName || "",
+          phone: demoCustomer?.phone || "",
+          businessName: demoCustomer?.businessName || "",
+          sourceType: "customer",
+          sourceCustomerId: demoCustomer?._id || "",
+          sourceUserId: demoCustomer?.owner?._id || "",
+        }}
+      />
     </>
   );
 }

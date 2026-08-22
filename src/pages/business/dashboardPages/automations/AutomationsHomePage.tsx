@@ -45,6 +45,7 @@ import WhatsAppBillingSetupModal from "../whatsapp/billing/WhatsAppBillingSetupM
 import WhatsAppUsageCard from "../whatsapp/billing/WhatsAppUsageCard";
 import { useWhatsAppBilling } from "../whatsapp/billing/useWhatsAppBilling";
 import WhatsAppCheckoutProcessing from "../whatsapp/billing/WhatsAppCheckoutProcessing";
+import GuidedDemoSandboxButton from "../../../../guidedDemo/GuidedDemoSandboxButton";
 
 type OutletCtx = {
   businessId: string | null;
@@ -392,6 +393,7 @@ export default function AutomationsHomePage() {
             type="button"
             className="ax-btn ax-btn--primary"
             onClick={openCreateModal}
+            data-demo-target="automations-new"
             disabled={!businessId || readOnly}
             title={writeBlockedTitle}
           >
@@ -401,6 +403,9 @@ export default function AutomationsHomePage() {
           <Link to="templates" className="ax-btn ax-btn--secondary">
             תבניות
           </Link>
+          <GuidedDemoSandboxButton target="automations-demo-trigger">
+            הפעל טריגר לדוגמה
+          </GuidedDemoSandboxButton>
         </div>
       </header>
 
@@ -505,6 +510,7 @@ export default function AutomationsHomePage() {
               type="button"
               className="ax-btn ax-btn--primary"
               onClick={openCreateModal}
+              data-demo-target="automations-new"
               disabled={!businessId || readOnly}
               title={writeBlockedTitle}
             >
