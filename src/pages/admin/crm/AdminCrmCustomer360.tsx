@@ -44,10 +44,10 @@ import {
 
 const TABS = [
   ["overview", "סקירה"],
+  ["meetings", "תיאומים"],
   ["activity", "פעילות"],
   ["tasks", "משימות ומעקבים"],
   ["communication", "תקשורת"],
-  ["meetings", "תיאומים"],
   ["products", "חבילה וגישה"],
   ["billing", "חיובים"],
   ["websites", "אתרים"],
@@ -339,6 +339,7 @@ export default function AdminCrmCustomer360() {
                 הפוך ללקוח / צור חשבון BizUply
               </PrimaryButton>
             )}
+            <PrimaryButton onClick={() => openNewAppointment()}>+ תיאום חדש</PrimaryButton>
             <SecondaryButton onClick={() => setTab("meetings")}>תיאומים</SecondaryButton>
             <SecondaryButton onClick={() => setTab("billing")}>ניהול חבילה</SecondaryButton>
             <SecondaryButton onClick={() => setTab("billing")}>שדרוג</SecondaryButton>

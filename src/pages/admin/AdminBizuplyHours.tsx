@@ -119,13 +119,15 @@ export default function AdminBizuplyHours({
   saving,
   onSave,
   onClose,
+  initialTab = "hours",
 }: {
   initial: ReturnType<typeof hoursFromPayload>;
   saving: boolean;
   onSave: (payload: Record<string, unknown>) => void;
   onClose: () => void;
+  initialTab?: "hours" | "services" | "holidays" | "blocks";
 }) {
-  const [tab, setTab] = useState<"hours" | "services" | "holidays" | "blocks">("hours");
+  const [tab, setTab] = useState<"hours" | "services" | "holidays" | "blocks">(initialTab);
   const [weeklyHours, setWeeklyHours] = useState(initial.weeklyHours);
   const [minAdvanceMinutes, setMinAdvanceMinutes] = useState(initial.minAdvanceMinutes);
   const [bookingHorizonDays, setBookingHorizonDays] = useState(initial.bookingHorizonDays);
