@@ -38,6 +38,9 @@ import {
 } from "./AdminCrmUi";
 import { AdminModal } from "./AdminModal";
 import AdminCrmWhatsAppPanel from "./AdminCrmWhatsAppPanel";
+import AdminSendGuidedDemoModal, {
+  AdminSendDemoButton,
+} from "../AdminSendGuidedDemoModal";
 import {
   AdminBizuplyBookFlow,
   AppointmentDetails,
@@ -93,6 +96,7 @@ export default function AdminCrmCustomer360() {
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [bookOpen, setBookOpen] = useState(false);
+  const [demoOpen, setDemoOpen] = useState(false);
   const [calendarServices, setCalendarServices] = useState<any[]>([]);
 
   async function load() {
@@ -340,14 +344,14 @@ export default function AdminCrmCustomer360() {
               ) : null}
             </button>
             <AdminDialButton phone={customer.phone} name={customer.contactName} source="admin-crm" refId={customer.adminCustomerId} size="md" label="שיחה" />
-            {customer.phone ? (
-              <a className="min-h-11 rounded-2xl bg-slate-50 px-3 py-2 text-center text-sm font-black text-slate-700" href={`sms:${customer.phone}`}>SMS</a>
-            ) : null}
             {customer.email ? (
               <a className="min-h-11 rounded-2xl bg-sky-50 px-3 py-2 text-center text-sm font-black text-sky-700" href={`mailto:${customer.email}`}>מייל</a>
             ) : null}
             {perms.demoSend !== false ? (
-              <SecondaryButton onClick={() => openCommunication("demo")}>שליחת דמו</SecondaryButton>
+              <AdminSendDemoButton
+                onClick={() => setDemoOpen(true)}
+                className="min-h-11 w-full px-3 py-2 text-sm"
+              />
             ) : null}
             <SecondaryButton onClick={() => setTab("tasks")}>משימה חדשה</SecondaryButton>
             <SecondaryButton onClick={() => setTab("activity")}>הוספת תיעוד</SecondaryButton>
@@ -935,6 +939,18 @@ export default function AdminCrmCustomer360() {
           </p>
         </AdminModal>
       ) : null}
+
+      <AdminSendGuidedDemoModal
+        open={demoOpen}
+        onClose={() => setDemoOpen(false)}
+        context={{
+          customerName: customer.contactName || customer.companyName || "",
+          phone: customer.phone || "",
+          businessName: customer.companyName || "",
+          sourceType: "manual",
+          sourceCustomerId: customer.adminCustomerId || id || "",
+        }}
+      />
     </div>
   );
 }

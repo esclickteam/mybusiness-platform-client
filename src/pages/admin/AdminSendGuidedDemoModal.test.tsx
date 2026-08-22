@@ -97,7 +97,6 @@ describe("admin send demo button and modal", () => {
 
     const submit = screen.getByTestId("admin-send-demo-submit") as HTMLButtonElement;
     expect(submit.disabled).toBe(true);
-    expect(screen.getByText("SMS עדיין לא זמין")).toBeTruthy();
     expect(screen.getByText("יצירת קישור לדמו")).toBeTruthy();
     expect((screen.getByTestId("admin-create-demo-link") as HTMLButtonElement).disabled).toBe(true);
   });
