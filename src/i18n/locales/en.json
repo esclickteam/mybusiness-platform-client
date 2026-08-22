@@ -5320,7 +5320,8 @@
       "managedHostTitle": "Platform Managed connection (Bizuply Managed)",
       "managedHostBody": "The number shown is the platform central connection. A customer business that wants its own number connects it from that business's settings — not here.",
       "managedHostNoDisconnect": "The platform Managed connection cannot be disconnected from business settings. Manage it in Admin → WhatsApp Managed. A business that wants a private number connects it from its own WhatsApp settings.",
-      "managedHostNoConnectOwn": "On the Managed host business you cannot replace the central number via Embedded Signup. To connect a private number, open WhatsApp settings for that customer business."
+      "managedHostNoConnectOwn": "On the Managed host business you cannot replace the central number via Embedded Signup. To connect a private number, open WhatsApp settings for that customer business.",
+      "verificationDidMissing": "No Telnyx verification number is mapped for this business. Connect cannot continue until a verification DID is assigned."
     },
     "errors": {
       "loadCompose": "Failed to load WhatsApp compose data",

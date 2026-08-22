@@ -35,6 +35,7 @@ import {
 import MetaBillingAccountCards from "../../../../components/meta/MetaBillingAccountCards";
 import { loadFacebookSdk } from "../../../../utils/loadFacebookSdk";
 import { getApiErrorMessage } from "../../../../utils/apiErrorMessage";
+import { shouldAbortEmbeddedSignupForVoiceError } from "./embeddedSignupVoiceGate";
 import {
   btnPrimary,
   btnSecondary,
@@ -361,18 +362,19 @@ export default function WhatsAppSettingsTab() {
           code,
           message: voiceError?.response?.data?.error || voiceError?.message,
         });
-        if (code === "VERIFICATION_DID_MISSING") {
-          toast.info(
-            "No Telnyx verification number is mapped for this business. SMS verification can still work; voice OTP capture will not."
-          );
-        } else {
-          toast.warning(
-            getApiErrorMessage(
-              voiceError,
-              "Voice verification session could not be prepared. SMS may still work."
-            )
-          );
+        if (shouldAbortEmbeddedSignupForVoiceError(code)) {
+          const msg = t("whatsapp.settings.verificationDidMissing");
+          setActionError(msg);
+          setActionInfo("");
+          toast.error(msg);
+          return;
         }
+        toast.warning(
+          getApiErrorMessage(
+            voiceError,
+            "Voice verification session could not be prepared. SMS may still work."
+          )
+        );
       }
 
       setActionInfo(t("whatsapp.settings.connecting"));
