@@ -84,11 +84,11 @@ function overlaps(a: Hole, b: DOMRect, margin = 8) {
   );
 }
 
-function placeCard(hole: Hole | null, cardW: number, cardH: number): CardPos {
+function placeCard(hole: Hole | null, cardW: number, cardH: number, preferBottom = false): CardPos {
   const vw = window.innerWidth;
   const vh = window.innerHeight;
   const width = Math.min(cardW, vw - 16);
-  if (!hole) {
+  if (preferBottom || !hole) {
     return { top: vh - cardH - 16, left: clamp((vw - width) / 2, 8, vw - width - 8), width };
   }
   const target = {
@@ -245,6 +245,7 @@ export default function GuidedDemoEngine() {
   const cardRef = useRef<HTMLDivElement | null>(null);
   const retryRef = useRef(0);
   const skipLockRef = useRef(false);
+  const initialInputRef = useRef("");
 
   const step = currentStep(session);
   const progress = useMemo(() => moduleProgress(session), [session]);
@@ -272,6 +273,7 @@ export default function GuidedDemoEngine() {
   const showPanel = !introOpen && !isComplete && !!step && !tourMinimized && !finishConfirm;
   const showWebsiteHero =
     showPanel &&
+    !isWebsiteEditorPath(location.pathname) &&
     (step?.target === "website-headline" || step?.target === "website-cta") &&
     !findDemoTarget(step?.target, "acknowledge");
 
@@ -363,8 +365,11 @@ export default function GuidedDemoEngine() {
     const heading = document.querySelector(
       "[data-visual-template-canvas='true'] h1, [data-visual-editable='true'] h1"
     ) as HTMLElement | null;
-    if (heading && !heading.getAttribute("data-demo-target")) {
-      heading.setAttribute("data-demo-target", "website-headline");
+    if (heading) {
+      if (!heading.getAttribute("data-demo-target")) {
+        heading.setAttribute("data-demo-target", "website-headline");
+      }
+      initialInputRef.current = readDemoInputValue(heading);
     }
   }, [step?.id, step?.target, location.pathname]);
 
@@ -372,6 +377,7 @@ export default function GuidedDemoEngine() {
     setHandHidden(false);
     skipLockRef.current = false;
     retryRef.current += 1;
+    initialInputRef.current = "";
     setInputReady(false);
     setOverlayReady(false);
     if (step) {
@@ -383,8 +389,8 @@ export default function GuidedDemoEngine() {
     const el = cardRef.current;
     const h = el?.offsetHeight || 210;
     const w = el?.offsetWidth || Math.min(420, window.innerWidth - 16);
-    setCardPos(placeCard(hole, w, h));
-  }, [hole]);
+    setCardPos(placeCard(hole, w, h, isWebsiteEditorStayStep(step)));
+  }, [hole, step?.id]);
 
   const skipMissingTarget = useCallback(
     async (target?: string | null) => {
@@ -432,6 +438,9 @@ export default function GuidedDemoEngine() {
     };
 
     const attach = (el: Element) => {
+      if (step?.target === "website-headline" && !initialInputRef.current) {
+        initialInputRef.current = readDemoInputValue(el);
+      }
       if (!scrolled) {
         scrolled = true;
         scrollTargetFullyVisible(el, DEMO_HEADER_OFFSET);
@@ -500,6 +509,12 @@ export default function GuidedDemoEngine() {
 
       const loadingGrace = isDemoPageLoading() ? TARGET_WAIT_MS : 0;
       if (Date.now() - started > TARGET_WAIT_MS + loadingGrace) {
+        if (isWebsiteEditorStayStep(step)) {
+          setHole(null);
+          setHand(null);
+          setOverlayReady(true);
+          return;
+        }
         if (!navigated && step.route) {
           goToStepRoute(step);
           window.setTimeout(() => poll(Date.now(), true), 400);
@@ -575,18 +590,14 @@ export default function GuidedDemoEngine() {
       const raw = event.target as HTMLElement | null;
       const scoped = raw?.closest?.("[data-demo-target]") as HTMLElement | null;
       const key = scoped?.getAttribute?.("data-demo-target");
-      if (step.target && key && key !== step.target) return null;
-      const el =
-        (key === step.target && scoped) ||
-        findDemoTarget(step.target, "input") ||
-        raw;
-      return el;
+      if (step.target && key === step.target) return scoped;
+      return null;
     };
     const evaluate = (event: Event, autoComplete: boolean) => {
       const el = readFromEvent(event);
       if (!el) return;
       const value = readDemoInputValue(el);
-      const satisfied = inputValueSatisfied(rule, value);
+      const satisfied = inputValueSatisfied(rule, value, initialInputRef.current);
       setInputReady(satisfied);
       if (autoComplete && satisfied) {
         void demoProgress.completeStep("DEMO_INPUT", { target: step.target, value });
@@ -602,7 +613,10 @@ export default function GuidedDemoEngine() {
     document.addEventListener("change", onChange, true);
     document.addEventListener("blur", onBlur, true);
     const current = findDemoTarget(step.target, "input");
-    if (current) setInputReady(inputValueSatisfied(rule, readDemoInputValue(current)));
+    if (current) {
+      if (!initialInputRef.current) initialInputRef.current = readDemoInputValue(current);
+      setInputReady(inputValueSatisfied(rule, readDemoInputValue(current), initialInputRef.current));
+    }
     return () => {
       document.removeEventListener("input", onInput, true);
       document.removeEventListener("change", onChange, true);
@@ -683,8 +697,8 @@ export default function GuidedDemoEngine() {
   async function handleInputContinue() {
     const el = findDemoTarget(step?.target, "input");
     const value = readDemoInputValue(el);
-    if (!inputValueSatisfied(step?.completionRule, value) && !step?.allowSkip) return;
-    if (!inputValueSatisfied(step?.completionRule, value) && step?.allowSkip) {
+    if (!inputValueSatisfied(step?.completionRule, value, initialInputRef.current) && !step?.allowSkip) return;
+    if (!inputValueSatisfied(step?.completionRule, value, initialInputRef.current) && step?.allowSkip) {
       await demoProgress.report("DEMO_STEP_SKIPPED", { reason: "optional_input" });
       return;
     }
@@ -705,14 +719,14 @@ export default function GuidedDemoEngine() {
         }
       `}</style>
 
-      {hole && showPanel && stepKind === "navigation" ? (
+      {hole && showPanel && stepKind === "navigation" && !isWebsiteEditorStayStep(step) ? (
         <DimBlockers
           hole={hole}
           onBlock={() => {
             demoProgress.notifyWrongAction();
           }}
         />
-      ) : showPanel && !hole && !showWebsiteHero ? (
+      ) : showPanel && !hole && !showWebsiteHero && !isWebsiteEditorStayStep(step) ? (
         <div aria-hidden className="pointer-events-none absolute inset-0 bg-slate-900/30 transition-opacity duration-200" />
       ) : null}
 
@@ -753,7 +767,11 @@ export default function GuidedDemoEngine() {
       ) : null}
 
       {!tourMinimized ? (
-        <div className="pointer-events-auto absolute left-3 top-3 z-[2147483005] flex gap-1.5">
+        <div
+          className={`pointer-events-auto absolute z-[2147483005] flex gap-1.5 ${
+            isWebsiteEditorStayStep(step) ? "right-3 top-20" : "left-3 top-3"
+          }`}
+        >
           {showPanel ? (
             <button
               type="button"
@@ -773,7 +791,7 @@ export default function GuidedDemoEngine() {
         </div>
       ) : null}
 
-      {showPanel ? (
+      {showPanel && !isWebsiteEditorStayStep(step) ? (
         <div className="pointer-events-auto absolute inset-x-0 top-3 z-[2147483004] flex justify-center px-3">
           <div className="w-full max-w-md overflow-hidden rounded-2xl border border-violet-100 bg-white/95 shadow-lg backdrop-blur">
             <div className="px-4 py-3">
@@ -1015,9 +1033,7 @@ export default function GuidedDemoEngine() {
               <button
                 type="button"
                 onClick={() => {
-                  const publishBtn = document.querySelector(
-                    '[data-demo-target="website-publish"]'
-                  ) as HTMLElement | null;
+                  const publishBtn = findDemoTarget("website-publish", "navigation") as HTMLElement | null;
                   publishBtn?.click();
                   goToMySites();
                   void demoProgress.completeStep("DEMO_CLICK", { target: "website-publish" });

@@ -123,6 +123,8 @@ describe("guided demo step kinds and holes", () => {
     expect(inputValueSatisfied({ match: { value: "task" } }, "task")).toBe(true);
     expect(inputValueSatisfied({ numeric: true }, "abc")).toBe(false);
     expect(inputValueSatisfied({ numeric: true }, "90")).toBe(true);
+    expect(inputValueSatisfied({ minLength: 2, requireChange: true }, "Hello", "Hello")).toBe(false);
+    expect(inputValueSatisfied({ minLength: 2, requireChange: true }, "Hello there", "Hello")).toBe(true);
   });
 
   it("prefers the actual form control over a large wrapper", () => {
@@ -138,6 +140,22 @@ describe("guided demo step kinds and holes", () => {
     field.getBoundingClientRect = () =>
       ({ top: 120, left: 48, width: 420, height: 80, right: 468, bottom: 200, x: 48, y: 120, toJSON() {} }) as DOMRect;
     expect(findDemoTarget("crm-activity-text", "input")).toBe(field);
+  });
+
+  it("prefers the visual editor publish button over other publish controls", () => {
+    document.body.innerHTML = `
+      <button data-demo-target="website-publish" id="studio-publish">פרסום</button>
+      <div data-template-visual-editor="true">
+        <button data-demo-target="website-publish" id="visual-publish">פרסום</button>
+      </div>
+    `;
+    const visual = document.getElementById("visual-publish") as HTMLElement;
+    const studio = document.getElementById("studio-publish") as HTMLElement;
+    visual.getBoundingClientRect = () =>
+      ({ top: 12, left: 24, width: 88, height: 40, right: 112, bottom: 52, x: 24, y: 12, toJSON() {} }) as DOMRect;
+    studio.getBoundingClientRect = () =>
+      ({ top: 12, left: 200, width: 88, height: 40, right: 288, bottom: 52, x: 200, y: 12, toJSON() {} }) as DOMRect;
+    expect(findDemoTarget("website-publish", "navigation")).toBe(visual);
   });
 });
 

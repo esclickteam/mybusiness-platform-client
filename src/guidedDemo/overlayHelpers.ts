@@ -213,6 +213,12 @@ function scoreDemoCandidate(el: Element, kind: DemoStepKind | undefined, viewpor
 
 export function findDemoTarget(selector?: string | null, kind?: DemoStepKind): Element | null {
   if (!selector) return null;
+  if (selector === "website-publish") {
+    const visual = document.querySelector(
+      "[data-template-visual-editor] [data-demo-target='website-publish']"
+    );
+    if (visual) return visual;
+  }
   const matches = Array.from(document.querySelectorAll(`[data-demo-target="${selector}"]`));
   const visible = matches.filter((el) => {
     const rect = el.getBoundingClientRect();
@@ -284,10 +290,19 @@ export function readDemoInputValue(el: Element | null): string {
 }
 
 export function inputValueSatisfied(
-  rule: { minLength?: number; match?: Record<string, unknown> | null; numeric?: boolean } | null | undefined,
-  value: string
+  rule: {
+    minLength?: number;
+    match?: Record<string, unknown> | null;
+    numeric?: boolean;
+    requireChange?: boolean;
+  } | null | undefined,
+  value: string,
+  previousValue?: string | null
 ) {
   const trimmed = String(value || "").trim();
+  if (rule?.requireChange && String(previousValue || "").trim() === trimmed) {
+    return false;
+  }
   if (rule?.match && typeof rule.match === "object") {
     const expected =
       rule.match.value ??
