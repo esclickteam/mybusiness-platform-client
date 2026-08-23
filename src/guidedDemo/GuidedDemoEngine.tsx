@@ -9,11 +9,14 @@ import {
   calcHand,
   DEMO_HEADER_OFFSET,
   findDemoTarget,
+  findWebsiteHeadline,
   holeOptionsForKind,
   INTRO_CATEGORIES,
   inputValueSatisfied,
   isDemoPageLoading,
   isTargetReady,
+  isWebsiteHeadlineStep,
+  isWebsitePublishStep,
   padHole,
   readDemoInputValue,
   resetPageScroll,
@@ -361,16 +364,27 @@ export default function GuidedDemoEngine() {
   }, [location.pathname, step?.module, introOpen, isComplete]);
 
   useEffect(() => {
-    if (step?.target !== "website-headline") return;
-    const heading = document.querySelector(
-      "[data-visual-template-canvas='true'] h1, [data-visual-editable='true'] h1"
-    ) as HTMLElement | null;
-    if (heading) {
-      if (!heading.getAttribute("data-demo-target")) {
+    if (!isWebsiteHeadlineStep(step)) return undefined;
+    let cancelled = false;
+    const tag = () => {
+      const heading = findWebsiteHeadline();
+      if (!heading || cancelled) return Boolean(heading);
+      if (heading.getAttribute("data-demo-target") !== "website-headline") {
         heading.setAttribute("data-demo-target", "website-headline");
       }
-      initialInputRef.current = readDemoInputValue(heading);
-    }
+      if (!initialInputRef.current) {
+        initialInputRef.current = readDemoInputValue(heading);
+      }
+      return true;
+    };
+    if (tag()) return undefined;
+    const timer = window.setInterval(() => {
+      if (tag()) window.clearInterval(timer);
+    }, 250);
+    return () => {
+      cancelled = true;
+      window.clearInterval(timer);
+    };
   }, [step?.id, step?.target, location.pathname]);
 
   useEffect(() => {
@@ -389,7 +403,7 @@ export default function GuidedDemoEngine() {
     const el = cardRef.current;
     const h = el?.offsetHeight || 210;
     const w = el?.offsetWidth || Math.min(420, window.innerWidth - 16);
-    setCardPos(placeCard(hole, w, h, isWebsiteEditorStayStep(step)));
+    setCardPos(placeCard(hole, w, h, isWebsitePublishStep(step)));
   }, [hole, step?.id]);
 
   const skipMissingTarget = useCallback(
@@ -585,42 +599,75 @@ export default function GuidedDemoEngine() {
   useEffect(() => {
     if (!step || introOpen || isComplete) return undefined;
     if (String(step?.completionRule?.type) !== "input") return undefined;
-    const rule = step.completionRule || {};
+    const headlineStep = isWebsiteHeadlineStep(step);
+    const rule = {
+      ...(step.completionRule || {}),
+      requireChange: Boolean(step.completionRule?.requireChange) || headlineStep,
+    };
+    let completed = false;
     const readFromEvent = (event: Event) => {
       const raw = event.target as HTMLElement | null;
+      if (headlineStep) {
+        if (
+          raw?.closest?.("[data-demo-target='website-headline'], [data-visual-edit-id='hero.title'], [data-visual-inline-editing='true']") ||
+          raw?.closest?.("h1, h2")
+        ) {
+          return findWebsiteHeadline() || raw;
+        }
+        return null;
+      }
       const scoped = raw?.closest?.("[data-demo-target]") as HTMLElement | null;
       const key = scoped?.getAttribute?.("data-demo-target");
       if (step.target && key === step.target) return scoped;
       return null;
     };
-    const evaluate = (event: Event, autoComplete: boolean) => {
-      const el = readFromEvent(event);
-      if (!el) return;
+    const finishIfReady = (el: Element | null, autoComplete: boolean) => {
+      if (!el || completed) return;
+      if (!initialInputRef.current) initialInputRef.current = readDemoInputValue(el);
       const value = readDemoInputValue(el);
       const satisfied = inputValueSatisfied(rule, value, initialInputRef.current);
       setInputReady(satisfied);
       if (autoComplete && satisfied) {
+        completed = true;
         void demoProgress.completeStep("DEMO_INPUT", { target: step.target, value });
       }
+    };
+    const evaluate = (event: Event, autoComplete: boolean) => {
+      finishIfReady(readFromEvent(event), autoComplete);
     };
     const onInput = (event: Event) => evaluate(event, false);
     const onChange = (event: Event) => {
       const el = readFromEvent(event);
-      evaluate(event, isDiscreteInput(el));
+      evaluate(event, headlineStep || isDiscreteInput(el));
     };
     const onBlur = (event: Event) => evaluate(event, true);
     document.addEventListener("input", onInput, true);
     document.addEventListener("change", onChange, true);
     document.addEventListener("blur", onBlur, true);
-    const current = findDemoTarget(step.target, "input");
+    document.addEventListener("focusout", onBlur, true);
+    const current = findDemoTarget(step.target, "input") || (headlineStep ? findWebsiteHeadline() : null);
     if (current) {
       if (!initialInputRef.current) initialInputRef.current = readDemoInputValue(current);
       setInputReady(inputValueSatisfied(rule, readDemoInputValue(current), initialInputRef.current));
     }
+    const poll = headlineStep
+      ? window.setInterval(() => {
+          const el = findWebsiteHeadline();
+          if (!el) return;
+          if (!initialInputRef.current) initialInputRef.current = readDemoInputValue(el);
+          const stillEditing = Boolean(
+            el.closest("[data-visual-inline-editing='true'], [contenteditable='true']") ||
+              el.matches("[data-visual-inline-editing='true'], [contenteditable='true']")
+          );
+          finishIfReady(el, !stillEditing);
+        }, 400)
+      : 0;
     return () => {
       document.removeEventListener("input", onInput, true);
       document.removeEventListener("change", onChange, true);
       document.removeEventListener("blur", onBlur, true);
+      document.removeEventListener("focusout", onBlur, true);
+      if (poll) window.clearInterval(poll);
     };
   }, [step?.id, step?.target, introOpen, isComplete]);
 
@@ -695,10 +742,16 @@ export default function GuidedDemoEngine() {
   }
 
   async function handleInputContinue() {
-    const el = findDemoTarget(step?.target, "input");
+    const el =
+      findDemoTarget(step?.target, "input") ||
+      (isWebsiteHeadlineStep(step) ? findWebsiteHeadline() : null);
     const value = readDemoInputValue(el);
-    if (!inputValueSatisfied(step?.completionRule, value, initialInputRef.current) && !step?.allowSkip) return;
-    if (!inputValueSatisfied(step?.completionRule, value, initialInputRef.current) && step?.allowSkip) {
+    const rule = {
+      ...(step?.completionRule || {}),
+      requireChange: Boolean(step?.completionRule?.requireChange) || isWebsiteHeadlineStep(step),
+    };
+    if (!inputValueSatisfied(rule, value, initialInputRef.current) && !step?.allowSkip) return;
+    if (!inputValueSatisfied(rule, value, initialInputRef.current) && step?.allowSkip) {
       await demoProgress.report("DEMO_STEP_SKIPPED", { reason: "optional_input" });
       return;
     }
@@ -753,7 +806,11 @@ export default function GuidedDemoEngine() {
               } as HandPos)
             : null
         }
-        visible={Boolean(hole && !handHidden && (stepKind === "navigation" || stepKind === "commit"))}
+        visible={Boolean(
+          hole &&
+            !handHidden &&
+            (stepKind === "navigation" || stepKind === "commit" || isWebsiteHeadlineStep(step))
+        )}
       />
 
       {tourMinimized && !introOpen && !isComplete ? (

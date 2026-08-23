@@ -211,8 +211,40 @@ function scoreDemoCandidate(el: Element, kind: DemoStepKind | undefined, viewpor
   return score;
 }
 
+export function findWebsiteHeadline(): HTMLElement | null {
+  if (typeof document === "undefined") return null;
+  const tagged = document.querySelector(
+    "[data-demo-target='website-headline']"
+  ) as HTMLElement | null;
+  if (tagged && isTargetReady(tagged)) return tagged;
+
+  const canvas =
+    document.querySelector("[data-visual-template-canvas='true']") ||
+    document.querySelector("[data-template-visual-editor]");
+  const root = canvas || document;
+  const byEditId = root.querySelector(
+    '[data-visual-edit-id="hero.title"]'
+  ) as HTMLElement | null;
+  if (byEditId && isTargetReady(byEditId)) return byEditId;
+
+  const headings = Array.from(root.querySelectorAll("h1, h2")).filter((el) => {
+    const rect = el.getBoundingClientRect();
+    return rect.width > 40 && rect.height > 20;
+  }) as HTMLElement[];
+  headings.sort((a, b) => {
+    const ar = a.getBoundingClientRect();
+    const br = b.getBoundingClientRect();
+    return br.width * br.height - ar.width * ar.height;
+  });
+  return headings[0] || null;
+}
+
 export function findDemoTarget(selector?: string | null, kind?: DemoStepKind): Element | null {
   if (!selector) return null;
+  if (selector === "website-headline") {
+    const heading = findWebsiteHeadline();
+    if (heading) return heading;
+  }
   if (selector === "website-publish") {
     const visual = document.querySelector(
       "[data-template-visual-editor] [data-demo-target='website-publish']"
@@ -241,10 +273,7 @@ export function findDemoTarget(selector?: string | null, kind?: DemoStepKind): E
       return document.querySelector("[data-visual-template-canvas='true']");
     }
     if (selector === "website-headline") {
-      return (
-        document.querySelector("[data-visual-editable='true'] h1") ||
-        document.querySelector("[data-visual-template-canvas='true'] h1")
-      );
+      return findWebsiteHeadline();
     }
     return null;
   }
@@ -345,6 +374,16 @@ export function isWebsiteEditorStayStep(step: { id?: string; keepEditor?: boolea
   if (!step) return false;
   if (step.keepEditor) return true;
   return ["site-editor-open", "site-headline", "site-publish"].includes(String(step.id || ""));
+}
+
+export function isWebsiteHeadlineStep(step: { id?: string; target?: string } | null) {
+  if (!step) return false;
+  return step.id === "site-headline" || step.target === "website-headline";
+}
+
+export function isWebsitePublishStep(step: { id?: string; target?: string } | null) {
+  if (!step) return false;
+  return step.id === "site-publish" || step.target === "website-publish";
 }
 
 export const INTRO_CATEGORIES = [
