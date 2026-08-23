@@ -14,6 +14,7 @@ const NAV_ITEMS = [
   { path: "/admin/calendar", label: "יומן BizUply" },
   { path: "/admin/automations", label: "אוטומציות אדמין" },
   { path: "/admin/managed-whatsapp", label: "WhatsApp Managed" },
+  { path: "/admin/partners", label: "פרטנרים" },
   { path: "/admin/system", label: "ניהול מערכת" },
 ] as const;
 

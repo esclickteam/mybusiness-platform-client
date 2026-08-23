@@ -3,6 +3,7 @@ import {
   alignRedirectBusinessId,
   clearPostLoginRedirect,
   consumePostLoginRedirect,
+  isCompatibleRedirect,
   peekPostLoginRedirect,
   rememberPostLoginRedirect,
   resolvePostLoginDestination,
@@ -58,6 +59,78 @@ describe("sanitizeInternalRedirect", () => {
 });
 
 describe("resolvePostLoginDestination", () => {
+  it("login without redirect → partner dashboard", () => {
+    expect(resolvePostLoginDestination({ role: "partner" })).toBe(
+      "/partner/dashboard"
+    );
+  });
+
+  it("does not send partner to public home or generic /dashboard", () => {
+    expect(
+      resolvePostLoginDestination({
+        role: "partner",
+        storedRedirect: "/",
+      })
+    ).toBe("/partner/dashboard");
+    expect(
+      resolvePostLoginDestination({
+        role: "partner",
+        storedRedirect: "/dashboard",
+      })
+    ).toBe("/partner/dashboard");
+    expect(
+      resolvePostLoginDestination({
+        role: "partner",
+        storedRedirect: "/client/dashboard",
+      })
+    ).toBe("/partner/dashboard");
+  });
+
+  it("keeps an explicit partner deep-link", () => {
+    expect(
+      resolvePostLoginDestination({
+        role: "partner",
+        queryRedirect: "/partner/dashboard/crm",
+      })
+    ).toBe("/partner/dashboard/crm");
+  });
+
+  it("ignores leftover public/client homes even when they are the query", () => {
+    expect(
+      resolvePostLoginDestination({
+        role: "partner",
+        queryRedirect: "/",
+        storedRedirect: "/client/dashboard",
+      })
+    ).toBe("/partner/dashboard");
+    expect(isCompatibleRedirect("partner", "/")).toBe(false);
+    expect(isCompatibleRedirect("partner", "/dashboard")).toBe(false);
+    expect(isCompatibleRedirect("partner", "/client/dashboard")).toBe(false);
+    expect(isCompatibleRedirect("partner", "/partner/dashboard")).toBe(true);
+    expect(isCompatibleRedirect("partner", "/partner/dashboard/crm")).toBe(
+      true
+    );
+  });
+
+  it("does not change admin / business / affiliate / marketer homes", () => {
+    expect(resolvePostLoginDestination({ role: "admin" })).toBe(
+      "/admin/dashboard"
+    );
+    expect(resolvePostLoginDestination({ role: "affiliate" })).toBe(
+      "/affiliate/dashboard"
+    );
+    expect(resolvePostLoginDestination({ role: "marketer" })).toBe(
+      "/marketer/dashboard"
+    );
+    expect(
+      resolvePostLoginDestination({
+        role: "business",
+        businessId: BIZ,
+        hasAccess: true,
+      })
+    ).toBe(`/business/${BIZ}/dashboard`);
+  });
+
   it("login without redirect → dashboard for full business", () => {
     expect(
       resolvePostLoginDestination({

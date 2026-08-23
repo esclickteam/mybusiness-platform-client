@@ -436,12 +436,17 @@
     "adminImpersonationText": "אתם פועלים במצב ניהול אדמין בעסק {{name}}. כל הפעולות נשמרות ומתועדות.",
     "marketerImpersonationTitle": "מצב משווק — כניסה ללקוח",
     "marketerImpersonationText": "אתם מנהלים את חשבון הלקוח {{name}}. פתוחים ניהול קמפיינים ו-CRM.",
+    "partnerImpersonationTitle": "מצב פרטנר — כניסה לניהול הלקוח",
+    "partnerImpersonationText": "אתה מנהל כרגע את: {{name}}",
+    "partnerManagedPartnerLine": "Partner: {{name}}",
     "backToAdmin": "יציאה ממצב ניהול",
     "backToMarketer": "חזרה ללוח המשווק",
+    "backToPartner": "חזרה ללוח הפרטנר",
     "returning": "חוזר...",
     "adminBarTitle": "מצב אדמין — צפייה וניהול בעסק",
     "exitImpersonationError": "לא ניתן לחזור לפאנל האדמין כרגע",
-    "exitMarketerImpersonationError": "לא ניתן לחזור ללוח המשווק כרגע"
+    "exitMarketerImpersonationError": "לא ניתן לחזור ללוח המשווק כרגע",
+    "exitPartnerImpersonationError": "לא ניתן לחזור ללוח הפרטנר כרגע"
   },
   "overview": {
     "greeting": "שלום, {{name}}!",

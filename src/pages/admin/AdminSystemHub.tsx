@@ -11,6 +11,7 @@ const LINKS = [
   { to: "/admin/businesses", title: "עסקים", text: "עסקי לקוחות בפלטפורמה" },
   { to: "/admin/affiliates", title: "שותפים", text: "תוכנית שותפים" },
   { to: "/admin/marketers", title: "משווקים", text: "משווקי קמפיינים" },
+  { to: "/admin/partners", title: "פרטנרים", text: "תוכנית Partner, עמלות ומשיכות" },
   { to: "/admin/withdrawals", title: "משיכות", text: "בקשות תשלום לשותפים" },
   { to: "/admin/support-chat", title: "צ'אט תמיכה", text: "פניות אנושיות מהאתר" },
   { to: "/admin/early-access", title: "הרשמה מוקדמת", text: "לידים מדף Early Access" },

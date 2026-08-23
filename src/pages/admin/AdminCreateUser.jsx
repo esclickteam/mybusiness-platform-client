@@ -16,12 +16,31 @@ import AdminHeader from "./AdminsHeader";
 
 const USER_TYPES = [
   { id: "business", label: "עסק / לקוח SaaS", needsPackage: true },
+  { id: "partner", label: "פרטנר Bizuply", needsPackage: false },
   { id: "affiliate", label: "שותף (Affiliate)", needsPackage: false },
   { id: "marketer", label: "משווק קמפיינים", needsPackage: false },
   { id: "customer", label: "לקוח קצה", needsPackage: false },
   { id: "worker", label: "עובד", needsPackage: false },
   { id: "manager", label: "מנהל", needsPackage: false },
   { id: "admin", label: "מנהל מערכת", needsPackage: false },
+];
+
+const PARTNER_PLAN_OPTIONS = [
+  {
+    planKey: "partner_basic",
+    label: "Partner",
+    details: "₪990 הקמה · ₪499 לחודש · עד 10% הנחת Partner · 75% מהעמלה הנוספת · 0 משתמשי צוות נוספים",
+  },
+  {
+    planKey: "partner_pro",
+    label: "Partner Pro",
+    details: "₪1,490 הקמה · ₪799 לחודש · עד 15% הנחת Partner · 85% מהעמלה הנוספת · עד 3 משתמשי צוות נוספים",
+  },
+  {
+    planKey: "partner_premium",
+    label: "Partner Premium",
+    details: "₪2,490 הקמה · ₪1,199 לחודש · עד 20% הנחת Partner · 95% מהעמלה הנוספת · עד 5 משתמשי צוות נוספים",
+  },
 ];
 
 const PAYMENT_MODES = [
@@ -76,6 +95,8 @@ const EMPTY = {
   fullAccess: true,
   enabledModules: ["crm", "meta-campaigns"],
   notes: "",
+  partnerPlanKey: "partner_pro",
+  partnerStatus: "pending_setup",
 };
 
 export default function AdminCreateUser() {
@@ -298,6 +319,12 @@ export default function AdminCreateUser() {
         payload.marketerId = form.publicId.trim();
       }
 
+      if (form.userType === "partner") {
+        payload.businessName = form.businessName.trim();
+        payload.planKey = form.partnerPlanKey;
+        payload.partnerStatus = form.partnerStatus;
+      }
+
       const { data } = await API.post("/admin/users/create", payload);
 
       if (data.checkout?.url) {
@@ -373,6 +400,11 @@ export default function AdminCreateUser() {
                 חבילה: {result.packageSku}
                 {result.includeWebsiteAddon ? " + תוספת אתר" : ""} · תשלום:{" "}
                 {result.paymentMode}
+              </p>
+            ) : null}
+            {result.partner ? (
+              <p className="mt-1 font-bold">
+                פרטנר: {result.partner.name} · {result.partner.planKey} · {result.partner.status}
               </p>
             ) : null}
             {result.warning ? (
@@ -472,6 +504,92 @@ export default function AdminCreateUser() {
               </label>
             ) : null}
           </section>
+
+          {form.userType === "partner" ? (
+            <section className="space-y-4">
+              <label className="block text-sm font-bold">
+                שם העסק של הפרטנר *
+                <input
+                  name="businessName"
+                  value={form.businessName}
+                  onChange={onChange}
+                  required
+                  className="mt-1 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm outline-none focus:border-violet-300"
+                />
+              </label>
+              <div>
+                <h2 className="mb-2 text-sm font-black">מסלול פרטנר</h2>
+                <div className="grid gap-2">
+                  {PARTNER_PLAN_OPTIONS.map((plan) => (
+                    <label
+                      key={plan.planKey}
+                      className={`cursor-pointer rounded-xl border px-3 py-3 text-sm ${
+                        form.partnerPlanKey === plan.planKey
+                          ? "border-[#7C4DFF] bg-violet-50"
+                          : "border-slate-200"
+                      }`}
+                    >
+                      <input
+                        type="radio"
+                        name="partnerPlanKey"
+                        value={plan.planKey}
+                        checked={form.partnerPlanKey === plan.planKey}
+                        onChange={onChange}
+                        className="me-2"
+                      />
+                      <strong>{plan.label}</strong>
+                      <p className="mt-1 text-xs font-bold text-slate-500">{plan.details}</p>
+                    </label>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <h2 className="mb-2 text-sm font-black">סטטוס התחלה</h2>
+                <div className="grid gap-2 sm:grid-cols-2">
+                  <label
+                    className={`cursor-pointer rounded-xl border px-3 py-3 text-sm font-bold ${
+                      form.partnerStatus === "pending_setup"
+                        ? "border-[#7C4DFF] bg-violet-50"
+                        : "border-slate-200"
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="partnerStatus"
+                      value="pending_setup"
+                      checked={form.partnerStatus === "pending_setup"}
+                      onChange={onChange}
+                      className="me-2"
+                    />
+                    pending_setup
+                    <p className="mt-1 text-xs font-bold text-slate-500">
+                      ממתין להפעלת דמי הקמה ב-Staging
+                    </p>
+                  </label>
+                  <label
+                    className={`cursor-pointer rounded-xl border px-3 py-3 text-sm font-bold ${
+                      form.partnerStatus === "active"
+                        ? "border-[#7C4DFF] bg-violet-50"
+                        : "border-slate-200"
+                    }`}
+                  >
+                    <input
+                      type="radio"
+                      name="partnerStatus"
+                      value="active"
+                      checked={form.partnerStatus === "active"}
+                      onChange={onChange}
+                      className="me-2"
+                    />
+                    active
+                    <p className="mt-1 text-xs font-bold text-slate-500">
+                      מפעיל דרך setup activation + חיוב חודשי TEST. בלי Stripe LIVE.
+                    </p>
+                  </label>
+                </div>
+              </div>
+            </section>
+          ) : null}
 
           {form.userType === "affiliate" || form.userType === "marketer" ? (
             <section className="grid gap-4 md:grid-cols-2">

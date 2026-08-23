@@ -33,6 +33,7 @@ import {
 import API from "@/api";
 import { useAuth } from "@/context/AuthContext";
 import { createSocket } from "@/socket";
+import { canOperateManagedBusiness } from "@/lib/partnerManagedContext";
 import {
   lazyWithPreload,
   type PreloadableComponent,
@@ -53,6 +54,7 @@ type AuthUser = {
   email?: string;
   role?: string;
   businessId?: string;
+  managedBusinessId?: string | null;
   businessName?: string;
   hasPaid?: boolean;
   paymentStatus?: string;
@@ -1702,8 +1704,9 @@ export default function DashboardPage() {
   const isAdmin = user?.role === "admin";
   const isBusinessOwner =
     user?.role === "business" && user?.businessId === businessId;
+  const isPartnerManaged = canOperateManagedBusiness(user, businessId);
 
-  if (!isAdmin && !isBusinessOwner) {
+  if (!isAdmin && !isBusinessOwner && !isPartnerManaged) {
     return (
       <ErrorShell
         title={tx("dashboard.states.accessDeniedTitle", "Access denied")}
