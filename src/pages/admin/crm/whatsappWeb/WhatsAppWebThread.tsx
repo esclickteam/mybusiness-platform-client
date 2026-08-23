@@ -274,8 +274,12 @@ export default function WhatsAppWebThread({
       messageType: stagedFile?.messageType || "text",
       filename: stagedFile?.filename,
       caption: stagedFile && text ? text : "",
+      mimeType: stagedFile?.mimeType,
+      mediaSize: stagedFile?.size,
+      hasMedia: Boolean(stagedFile),
       kind: templateId ? "template" : "free_form",
       pending: true,
+      localPreviewUrl: stagedFile?.previewUrl || "",
     };
     stickRef.current = true;
     setMessages((prev) => mergeMessages(prev, optimistic));
@@ -288,6 +292,11 @@ export default function WhatsAppWebThread({
           stagedFile.file
         );
         uploadedMedia = uploadRes.media || null;
+        if (!uploadedMedia?.mediaId && !uploadedMedia?.mediaUrl) {
+          throw Object.assign(new Error("העלאת המדיה נכשלה — לא התקבל media_id"), {
+            response: { data: { error: "העלאת המדיה ל-WhatsApp נכשלה" } },
+          });
+        }
       }
 
       const payload: Record<string, unknown> = {
@@ -302,6 +311,7 @@ export default function WhatsAppWebThread({
       if (uploadedMedia) {
         payload.mediaType = uploadedMedia.messageType;
         payload.mediaUrl = uploadedMedia.mediaUrl;
+        payload.mediaId = uploadedMedia.mediaId;
         payload.filename = uploadedMedia.filename;
         payload.mimeType = uploadedMedia.mimeType;
         payload.mediaSize = uploadedMedia.mediaSize;

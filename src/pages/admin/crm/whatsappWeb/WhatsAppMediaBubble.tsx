@@ -9,14 +9,25 @@ type Props = {
   threadId?: string | null;
 };
 
-function useAuthedMediaUrl(message: PublicWhatsAppMessage, customerId?: string | null, threadId?: string | null) {
-  const [url, setUrl] = useState("");
+function useAuthedMediaUrl(
+  message: PublicWhatsAppMessage,
+  customerId?: string | null,
+  threadId?: string | null
+) {
+  const [url, setUrl] = useState(message.localPreviewUrl || "");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   useEffect(() => {
+    if (message.localPreviewUrl && message.pending) {
+      setUrl(message.localPreviewUrl);
+      setLoading(false);
+      setError("");
+      return undefined;
+    }
+
     if (!message.hasMedia || !message.mediaPath) {
-      setUrl("");
+      if (!message.localPreviewUrl) setUrl("");
       return undefined;
     }
 
@@ -32,16 +43,32 @@ function useAuthedMediaUrl(message: PublicWhatsAppMessage, customerId?: string |
 
     API.get(`${message.mediaPath}${suffix}`, {
       responseType: "blob",
-      maxRedirects: 5,
     })
       .then((res) => {
         if (!active) return;
+        const contentType = String(res.headers?.["content-type"] || "");
+        if (contentType.includes("application/json")) {
+          throw new Error("תגובת מדיה לא תקינה");
+        }
         objectUrl = URL.createObjectURL(res.data);
         setUrl(objectUrl);
       })
-      .catch(() => {
+      .catch((err) => {
         if (!active) return;
-        setError("לא ניתן לטעון מדיה");
+        if (message.localPreviewUrl) {
+          setUrl(message.localPreviewUrl);
+          setError("");
+          return;
+        }
+        const status = err?.response?.status;
+        const apiError = err?.response?.data?.error;
+        setError(
+          apiError
+            ? String(apiError)
+            : status
+              ? `לא ניתן לטעון מדיה (${status})`
+              : "לא ניתן לטעון מדיה"
+        );
       })
       .finally(() => {
         if (active) setLoading(false);
@@ -51,7 +78,15 @@ function useAuthedMediaUrl(message: PublicWhatsAppMessage, customerId?: string |
       active = false;
       if (objectUrl) URL.revokeObjectURL(objectUrl);
     };
-  }, [message.id, message.mediaPath, message.hasMedia, customerId, threadId]);
+  }, [
+    message.id,
+    message.mediaPath,
+    message.hasMedia,
+    message.localPreviewUrl,
+    message.pending,
+    customerId,
+    threadId,
+  ]);
 
   return { url, loading, error };
 }
@@ -97,10 +132,10 @@ export function WhatsAppMediaBubble({ message, customerId, threadId }: Props) {
 
   if (type === "text" || !message.hasMedia) return null;
 
-  if (loading) {
+  if (loading && !url) {
     return <p className="text-[12px] text-[#667781]">טוען מדיה…</p>;
   }
-  if (error) {
+  if (error && !url) {
     return <p className="text-[12px] text-rose-700">{error}</p>;
   }
 

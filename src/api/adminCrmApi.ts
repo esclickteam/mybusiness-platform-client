@@ -87,8 +87,8 @@ export const adminCrmApi = {
   whatsappUploadMedia: (id: string, file: File) => {
     const form = new FormData();
     form.append("file", file);
+    // Do NOT set Content-Type manually — browser must add multipart boundary.
     return API.post(`/admin/crm/customers/${id}/whatsapp/media/upload`, form, {
-      headers: { "Content-Type": "multipart/form-data" },
       timeout: 120000,
     });
   },
