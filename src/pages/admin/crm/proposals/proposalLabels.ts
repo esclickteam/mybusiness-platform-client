@@ -5,26 +5,44 @@ const RELEVANT: Record<string, string> = {
   leads: "ניהול לידים",
   whatsapp: "WhatsApp",
   automations: "אוטומציות",
-  website: "אתר",
+  website: "בניית אתר",
+  tasks_meetings: "ניהול משימות ופגישות",
   scheduling: "תיאום פגישות",
   tasks: "ניהול משימות",
   collab: "שיתופי פעולה",
+  advisor: "היועץ העסקי",
   full_system: "מערכת מלאה",
+  other: "נושא נוסף",
+};
+
+const GOAL: Record<string, string> = {
+  more_leads: "להביא ולטפל ביותר לידים",
+  organize: "לעשות סדר בניהול העסק",
+  save_time: "לחסוך זמן",
+  client_followup: "לשפר מעקב אחרי לקוחות",
+  sales_process: "לשפר את תהליך המכירה",
+  website: "להקים או לשפר אתר",
+  automate: "להפוך פעולות לאוטומטיות",
+  more_collab: "ליצור יותר שיתופי פעולה",
   other: "נושא נוסף",
 };
 
 const AUTOMATION: Record<string, string> = {
   new_lead_msg: "הודעה אוטומטית לליד חדש",
+  unanswered_followup: "Follow-up ללידים שלא ענו",
   lead_followup: "מעקב אחרי לידים",
   client_reminders: "תזכורות ללקוחות",
   internal_reminders: "תזכורות פנימיות",
   status_changes: "שינוי סטטוסים",
+  auto_status: "שינוי סטטוס אוטומטי",
   task_creation: "יצירת משימות",
   alerts: "התראות",
   scheduling: "תיאום פגישות",
+  meeting_reminders: "תיאום / תזכורת לפגישה",
   whatsapp_msgs: "הודעות WhatsApp",
   internal_flows: "תהליכים פנימיים בעסק",
   other: "אוטומציה נוספת",
+  not_needed: "לא צריך כרגע",
 };
 
 const SERVICE: Record<string, string> = {
@@ -57,7 +75,18 @@ const START_TIMING: Record<string, string> = {
   other: "מועד אחר",
 };
 
-const MAPS = [RELEVANT, AUTOMATION, SERVICE, BLOCKER, START_TIMING];
+const TRANSFER: Record<string, string> = {
+  clients: "לקוחות",
+  leads: "לידים",
+  tasks: "משימות",
+  meetings: "פגישות",
+  website_content: "תוכן מאתר קיים",
+  sales_stages: "סטטוסים / שלבי מכירה",
+  other: "מידע נוסף",
+  none: "אין צורך להעביר מידע",
+};
+
+const MAPS = [RELEVANT, GOAL, AUTOMATION, TRANSFER, SERVICE, BLOCKER, START_TIMING];
 
 export function heLabel(value?: string): string {
   const raw = String(value || "").trim();
