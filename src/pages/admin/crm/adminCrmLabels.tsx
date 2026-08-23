@@ -26,7 +26,8 @@ export const STAGE_LABELS: Record<string, string> = {
 
 export const SOURCE_LABELS: Record<string, string> = {
   facebook: "Facebook",
-  meta_lead_ads: "Facebook",
+  meta_lead_ads: "Meta",
+  meta_lead_ads: "Meta",
   website_form: "טופס באתר",
   website_bot: "בוט באתר BizUply",
   manual: "ידני",

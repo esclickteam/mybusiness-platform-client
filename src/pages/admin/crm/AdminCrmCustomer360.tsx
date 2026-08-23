@@ -441,7 +441,24 @@ export default function AdminCrmCustomer360() {
             <p>סטטוס CRM: {LIFECYCLE_LABELS[customer.lifecycle]}</p>
             <p>שלב מכירה: {STAGE_LABELS[customer.salesStage]}</p>
             <p>אחראי: {customer.assignedAdminName || "לא משויך"}</p>
-            <p>מקור ליד: {SOURCE_LABELS[customer.leadSource] || customer.leadSource}</p>
+            <p>מקור ליד: {customer.leadSourceLabel || SOURCE_LABELS[customer.leadSource] || customer.leadSource}</p>
+            {customer.metaLead?.formId || customer.metaLead?.formName ? (
+              <div className="mt-3 space-y-1 rounded-2xl border border-purple-100 bg-[#faf7ff] p-3 text-sm font-bold text-slate-700">
+                <p>עמוד: {customer.metaLead.pageName || customer.metaLead.pageId || "—"}</p>
+                <p>שם הטופס: {customer.metaLead.formName || "—"}</p>
+                <p>מזהה טופס: {customer.metaLead.formId || "—"}</p>
+                {customer.metaLead.campaignName || customer.metaLead.campaignId ? (
+                  <p>קמפיין: {customer.metaLead.campaignName || customer.metaLead.campaignId}</p>
+                ) : null}
+                {customer.metaLead.adsetName || customer.metaLead.adsetId ? (
+                  <p>Ad set: {customer.metaLead.adsetName || customer.metaLead.adsetId}</p>
+                ) : null}
+                {customer.metaLead.adName || customer.metaLead.adId ? (
+                  <p>מודעה: {customer.metaLead.adName || customer.metaLead.adId}</p>
+                ) : null}
+                <p>תאריך קבלת הליד: {formatIsraelDate(customer.metaLead.receivedAt, true)}</p>
+              </div>
+            ) : null}
             {(customer.leadSourceHistory || []).length > 1 ? (
               <p className="text-sm font-bold text-slate-500">
                 מקורות נוספים: {(customer.leadSourceHistory || [])
