@@ -1888,6 +1888,34 @@ export default function VisualEditorCanvas({
         return;
       }
 
+      if (
+        (event.key === "Backspace" || event.key === "Delete") &&
+        selection &&
+        !selection.isCollapsed &&
+        String(selection.toString() || "")
+      ) {
+        const range = selection.getRangeAt(0);
+        if (!node.contains(range.commonAncestorContainer)) return;
+
+        event.preventDefault();
+        range.deleteContents();
+        range.collapse(true);
+        selection.removeAllRanges();
+        selection.addRange(range);
+
+        const elementId = getElementId(node);
+        if (elementId) {
+          editorAny.commitInlineTextSilent?.(
+            elementId,
+            normalizeText(node.innerText || node.textContent || ""),
+            originalTextRef.current,
+          );
+        }
+        markVisualAutosaveDirty();
+        window.requestAnimationFrame(refreshSelectionBox);
+        return;
+      }
+
       /*
         Space on <button> / role=button activates the control by default.
         Also: execCommand("insertText") often returns true on buttons without

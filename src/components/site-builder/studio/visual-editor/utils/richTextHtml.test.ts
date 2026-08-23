@@ -1,7 +1,9 @@
 import { describe, expect, it } from "vitest";
 
+import { shouldDeleteElementOnKey } from "../hooks/useVisualKeyboardShortcuts";
 import {
   applyInlinePatchToHtml,
+  deleteSelectedTextInNode,
   hasRichMarkup,
   isInlineCapablePatch,
   pickInlineStylePatch,
@@ -37,11 +39,67 @@ describe("richTextHtml", () => {
     expect(html).toContain("font-weight: 700");
   });
 
+  it("deletes only the selected part of a sentence", () => {
+    const node = document.createElement("p");
+    node.setAttribute("data-visual-edit-id", "heroSubtitle");
+    node.setAttribute("data-visual-edit-type", "text");
+    node.textContent = "שלום עולם יפה";
+    document.body.appendChild(node);
+
+    const text = node.firstChild as Text;
+    const range = document.createRange();
+    range.setStart(text, 5);
+    range.setEnd(text, 9);
+    const selection = window.getSelection();
+    selection?.removeAllRanges();
+    selection?.addRange(range);
+
+    const result = deleteSelectedTextInNode(node);
+
+    expect(result?.text.replace(/\s+/g, " ").trim()).toBe("שלום יפה");
+    expect(result?.text).toContain("שלום");
+    expect(result?.text).toContain("יפה");
+    expect(result?.text).not.toContain("עולם");
+    expect(node.textContent).not.toContain("עולם");
+    expect(node.textContent).toContain("שלום");
+    expect(node.textContent).toContain("יפה");
+
+    document.body.removeChild(node);
+  });
+
   it("treats alignment as element-only", () => {
     expect(isInlineCapablePatch({ "text-align": "center" })).toBe(false);
     expect(isInlineCapablePatch({ "font-weight": "700" })).toBe(true);
     expect(pickInlineStylePatch({ "text-align": "center", color: "#111" })).toEqual({
       color: "#111",
     });
+  });
+});
+
+describe("shouldDeleteElementOnKey", () => {
+  it("does not delete the element while a text range is selected", () => {
+    expect(
+      shouldDeleteElementOnKey({
+        selectedElementId: "heroTitle",
+        hasTextSelection: true,
+      }),
+    ).toBe(false);
+  });
+
+  it("does not delete the element while typing or inline-editing", () => {
+    expect(
+      shouldDeleteElementOnKey({
+        selectedElementId: "heroTitle",
+        isTyping: true,
+      }),
+    ).toBe(false);
+  });
+
+  it("deletes the element when no text range is selected", () => {
+    expect(
+      shouldDeleteElementOnKey({
+        selectedElementId: "heroTitle",
+      }),
+    ).toBe(true);
   });
 });
