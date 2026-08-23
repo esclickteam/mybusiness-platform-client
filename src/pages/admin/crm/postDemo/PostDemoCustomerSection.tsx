@@ -16,7 +16,13 @@ function pickLatestDemo(items: any[]) {
   })[0];
 }
 
-export default function PostDemoCustomerSection({ customerId }: { customerId: string }) {
+export default function PostDemoCustomerSection({
+  customerId,
+  onCreateProposal,
+}: {
+  customerId: string;
+  onCreateProposal?: () => void;
+}) {
   const [demo, setDemo] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
@@ -100,7 +106,7 @@ export default function PostDemoCustomerSection({ customerId }: { customerId: st
 
       <div className="mt-4 flex flex-wrap gap-2">
         {waitingProposal ? (
-          <PrimaryButton compact onClick={() => window.alert("יצירת הצעה — בקרוב")}>
+          <PrimaryButton compact onClick={() => onCreateProposal?.()}>
             יצירת הצעה
           </PrimaryButton>
         ) : null}

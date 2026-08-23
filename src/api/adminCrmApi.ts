@@ -129,6 +129,22 @@ export const adminCrmApi = {
     API.post(`/admin/crm/staff-notifications/${id}/read`),
   markAllStaffNotificationsRead: () =>
     API.post("/admin/crm/staff-notifications/read-all"),
+
+  proposalCatalog: () => API.get("/admin/crm/proposals/catalog"),
+  proposalContext: (customerId: string) =>
+    API.get(`/admin/crm/customers/${customerId}/proposals/context`),
+  listProposals: (customerId: string) =>
+    API.get(`/admin/crm/customers/${customerId}/proposals`),
+  createProposal: (customerId: string, body: Record<string, unknown>) =>
+    API.post(`/admin/crm/customers/${customerId}/proposals`, body),
+  getProposal: (proposalId: string) =>
+    API.get(`/admin/crm/proposals/${proposalId}`),
+  updateProposal: (proposalId: string, body: Record<string, unknown>) =>
+    API.patch(`/admin/crm/proposals/${proposalId}`, body),
+  issueProposal: (proposalId: string) =>
+    API.post(`/admin/crm/proposals/${proposalId}/issue`),
+  reviseProposal: (proposalId: string) =>
+    API.post(`/admin/crm/proposals/${proposalId}/revise`),
 };
 
 export default adminCrmApi;
