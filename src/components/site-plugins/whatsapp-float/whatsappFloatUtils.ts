@@ -79,7 +79,13 @@ export function matchesPageTarget(
   const mode = targeting?.mode || "all";
   const ids = targeting?.pageIds || [];
   if (mode === "all" || !ids.length) return true;
-  const hit = Boolean(pageId && ids.includes(pageId));
+  const path =
+    typeof window !== "undefined"
+      ? String(window.location.pathname || "/").replace(/\/+$/, "") || "/"
+      : "";
+  const slug = path.replace(/^\//, "") || "home";
+  const candidates = [pageId, path, slug, `/${slug}`].filter(Boolean).map(String);
+  const hit = ids.some((id) => candidates.includes(String(id)));
   return mode === "include" ? hit : !hit;
 }
 
@@ -112,6 +118,17 @@ const OVERLAY_PLACEHOLDER_KEYS = [
   "benefits-wheel",
   "smart-search",
   "accessibility",
+  "multi-language",
+  "social-proof",
+  "floating-contact-bar",
+  "faq-pro",
+  "analytics-pro",
+  "seo-pro",
+  "refer-a-friend",
+  "birthday-club",
+  "form-to-pdf",
+  "smart-forms",
+  "qr-generator",
 ];
 
 export function removeOverlayPluginPlaceholders(root?: ParentNode | null) {

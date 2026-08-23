@@ -21,6 +21,7 @@ import {
   isModuleEnabled,
   normalizeEnabledModules,
 } from "../utils/moduleAccess";
+import { normalizeBusinessId } from "../utils/notificationNavigation";
 
 /* =========================
    Types
@@ -43,6 +44,7 @@ type NavItemProps = {
   exact?: boolean;
   onNavigate?: () => void;
   collapsed?: boolean;
+  demoTarget?: string | null;
 };
 
 type NavItemConfig = {
@@ -52,7 +54,31 @@ type NavItemConfig = {
   icon: React.ElementType;
   exact?: boolean;
   moduleKey?: string | null;
+  demoTarget?: string | null;
 };
+
+/* =========================
+   Restricted Nav Allowlist
+========================= */
+
+/**
+ * Nav entries limited to the businesses listed below.
+ * These are Business `_id` values, matched against the resolved `user.businessId`.
+ *
+ * - 6a452720016d081ad1d6e328 — Managed-host / early WhatsApp pilot
+ * - 6a1c7b9c17abeea4a444f6fa — bdika (private WhatsApp Embedded Signup enabled)
+ */
+const RESTRICTED_NAV_ALLOWED_BUSINESS_IDS = new Set([
+  "6a452720016d081ad1d6e328",
+  "6a1c7b9c17abeea4a444f6fa",
+]);
+
+/** Allowlist only: an unresolved or unlisted business never sees the entries. */
+function canSeeRestrictedNav(businessId: unknown): boolean {
+  const normalized = normalizeBusinessId(businessId);
+  if (!normalized) return false;
+  return RESTRICTED_NAV_ALLOWED_BUSINESS_IDS.has(normalized);
+}
 
 /* =========================
    Fallback Translation
@@ -74,6 +100,7 @@ function NavItem({
   exact = false,
   onNavigate,
   collapsed = false,
+  demoTarget = null,
 }: NavItemProps) {
   return (
     <NavLink
@@ -82,6 +109,7 @@ function NavItem({
       onClick={onNavigate}
       title={collapsed ? label : undefined}
       aria-label={label}
+      data-demo-target={demoTarget || undefined}
       className={({ isActive }) =>
         `
           group relative flex items-center rounded-md transition-all duration-200
@@ -158,22 +186,40 @@ export default function BusinessWorkspaceNav({
       _id?: string | null;
       id?: string | null;
       userId?: string | null;
+      businessId?: string | null;
+      isGuidedDemo?: boolean;
     } | null;
   };
   const t = tProp || ((key: string) => tI18n(key));
   const dir = getTextDirection(i18n.language);
   const enabledModules = normalizeEnabledModules(user?.enabledModules);
-  const hasBusinessModules =
+  // Full business-system surface (monthly/yearly/etc.) — not CRM-only.
+  // CRM alone must not unlock website upsell or public-profile chrome.
+  const hasFullBusinessSurface =
     !enabledModules ||
-    isModuleEnabled(enabledModules, "crm") ||
-    isModuleEnabled(enabledModules, "automations");
-  // Website Builder upsell: show entry for business-plan users without the add-on.
+    isModuleEnabled(enabledModules, "automations") ||
+    isModuleEnabled(enabledModules, "collab") ||
+    isModuleEnabled(enabledModules, "BizUply") ||
+    isModuleEnabled(enabledModules, "build") ||
+    isModuleEnabled(enabledModules, "website");
+  // Website Builder upsell: business-plan users without the website module.
   const showWebsiteUpsell =
     Boolean(enabledModules) &&
-    hasBusinessModules &&
+    hasFullBusinessSurface &&
+    (isModuleEnabled(enabledModules, "automations") ||
+      isModuleEnabled(enabledModules, "collab") ||
+      isModuleEnabled(enabledModules, "BizUply") ||
+      isModuleEnabled(enabledModules, "build")) &&
     !isModuleEnabled(enabledModules, "website");
 
   const basePath = businessId ? `/business/${businessId}` : "/business";
+
+  // The signed-in business wins over the URL so a tenant cannot reveal the entry
+  // by visiting another business path; the URL is only a fallback for admins,
+  // who carry no businessId of their own.
+  const showRestrictedNav =
+    canSeeRestrictedNav(user?.businessId || businessId) &&
+    !Boolean(user?.isGuidedDemo);
 
   const items: NavItemConfig[] = [
     {
@@ -182,6 +228,7 @@ export default function BusinessWorkspaceNav({
       to: `${basePath}/dashboard/dashboard`,
       icon: LayoutDashboard,
       moduleKey: "dashboard",
+      demoTarget: "nav-dashboard",
     },
     {
       labelKey: "businessNav.crmSystem",
@@ -189,6 +236,7 @@ export default function BusinessWorkspaceNav({
       to: `${basePath}/dashboard/crm`,
       icon: CircleUserRound,
       moduleKey: "crm",
+      demoTarget: "nav-crm",
     },
     {
       labelKey: "businessNav.automations",
@@ -196,20 +244,22 @@ export default function BusinessWorkspaceNav({
       to: `${basePath}/dashboard/automations`,
       icon: Workflow,
       moduleKey: "automations",
+      demoTarget: "nav-automations",
     },
     {
       labelKey: "businessNav.whatsapp",
       fallback: "WhatsApp Messages",
       to: `${basePath}/dashboard/whatsapp`,
       icon: MessageCircle,
-      moduleKey: "whatsapp",
+      moduleKey: showRestrictedNav ? "whatsapp" : "__hidden__",
+      demoTarget: "nav-whatsapp",
     },
     {
       labelKey: "businessNav.metaCampaigns",
       fallback: "Meta Campaigns",
       to: `${basePath}/dashboard/meta-campaigns`,
       icon: Megaphone,
-      moduleKey: "meta-campaigns",
+      moduleKey: showRestrictedNav ? "meta-campaigns" : "__hidden__",
     },
     {
       labelKey: "businessNav.collaborations",
@@ -217,6 +267,7 @@ export default function BusinessWorkspaceNav({
       to: `${basePath}/dashboard/collab`,
       icon: Handshake,
       moduleKey: "collab",
+      demoTarget: "nav-collab",
     },
     {
       labelKey: "businessNav.bizuplyAdvisor",
@@ -224,6 +275,7 @@ export default function BusinessWorkspaceNav({
       to: `${basePath}/dashboard/BizUply`,
       icon: Sparkles,
       moduleKey: "BizUply",
+      demoTarget: "nav-advisor",
     },
     {
       labelKey: "businessNav.editBusinessPage",
@@ -231,6 +283,7 @@ export default function BusinessWorkspaceNav({
       to: `${basePath}/dashboard/build`,
       icon: PencilLine,
       moduleKey: "build",
+      demoTarget: "nav-build",
     },
     {
       labelKey: "businessNav.viewPublicProfile",
@@ -238,8 +291,9 @@ export default function BusinessWorkspaceNav({
       to: basePath,
       icon: UserRound,
       exact: true,
-      // Hide only for tightly ACL-limited marketer clients (no business modules).
-      moduleKey: enabledModules && !hasBusinessModules ? "__hidden__" : null,
+      // Hide for CRM-only / marketer ACL without website or business profile surface.
+      moduleKey:
+        enabledModules && !hasFullBusinessSurface ? "__hidden__" : null,
     },
     {
       labelKey: "businessNav.buildWebsite",
@@ -247,6 +301,7 @@ export default function BusinessWorkspaceNav({
       to: `${basePath}/dashboard/website`,
       icon: LayoutTemplate,
       moduleKey: "website",
+      demoTarget: "nav-website",
     },
     {
       labelKey: "businessNav.billing",
@@ -267,6 +322,16 @@ export default function BusinessWorkspaceNav({
   const visibleItems = items.filter((item) => {
     if (!item.moduleKey) return true;
     if (item.moduleKey === "__hidden__") return false;
+    if (item.moduleKey === "billing" && user?.isGuidedDemo) return false;
+    if (item.labelKey === "businessNav.viewPublicProfile" && user?.isGuidedDemo) {
+      return false;
+    }
+    if (
+      user?.isGuidedDemo &&
+      (item.moduleKey === "whatsapp" || item.moduleKey === "meta-campaigns")
+    ) {
+      return false;
+    }
     if (item.moduleKey === "website" && showWebsiteUpsell) return true;
     return isModuleEnabled(enabledModules, item.moduleKey);
   });
@@ -293,6 +358,7 @@ export default function BusinessWorkspaceNav({
             exact={item.exact}
             onNavigate={onNavigate}
             collapsed={collapsed}
+            demoTarget={item.demoTarget || null}
           />
         ))}
       </div>

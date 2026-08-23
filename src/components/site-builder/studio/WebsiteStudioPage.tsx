@@ -212,7 +212,7 @@ type TemplatePageHtmlMode = "all" | "none" | "home-only";
 type CreateTemplatePagesOptions = {
   /**
    * visual-react editors render live React — building static HTML for every
-   * page on open freezes the main thread (Velmora has 14+ pages).
+   * page on open freezes the main thread (large visual-react templates).
    */
   htmlMode?: TemplatePageHtmlMode;
 };
@@ -1352,117 +1352,6 @@ function createTemplateCss(seed: ReadyWebsiteTemplateSeed) {
 `;
 }
 
-function createVelmoraShellHtml(content: string, activeLabel: string) {
-  return `
-<main data-studio-page="true" data-bizuply-site="true" data-template-id="velmora" dir="rtl" class="bizuply-template-site min-h-screen bg-[#f6f2ea] text-[#27231f]">
-  <header data-section-kind="header" data-section-title="Header" class="sticky top-0 z-40 bg-[#f6f2ea]/90 px-4 py-4 backdrop-blur-xl">
-    <div class="mx-auto grid max-w-6xl grid-cols-[1fr_auto_1fr] items-center rounded-[10px] border border-black/10 bg-white/90 px-5 py-3 shadow-[0_18px_55px_rgba(0,0,0,0.12)]">
-      <nav class="hidden items-center gap-8 text-sm font-bold text-slate-600 lg:flex">
-        <a data-editable-link="true" href="#about" class="hover:text-slate-900">אודות</a>
-        <a data-editable-link="true" href="#shop" class="hover:text-slate-900">חנות</a>
-        <a data-editable-link="true" href="#collections" class="hover:text-slate-900">קולקציות</a>
-      </nav>
-      <div class="text-center">
-        <div class="serif-title text-[28px] uppercase tracking-[0.08em] text-[#27231f]">ATELIER NOA</div>
-        <div class="mt-1 text-[10px] font-black uppercase tracking-[0.28em] text-slate-500">Boutique</div>
-      </div>
-      <nav class="hidden items-center justify-end gap-8 text-sm font-bold text-slate-600 lg:flex">
-        <a data-editable-link="true" href="#styling" class="hover:text-slate-900">סטיילינג</a>
-        <a data-editable-link="true" href="#contact" class="hover:text-slate-900">צור קשר</a>
-        <a data-editable-link="true" href="#cart" class="rounded-[5px] bg-[#292318] px-5 py-3 text-white hover:bg-black">סל קניות</a>
-      </nav>
-    </div>
-  </header>
-
-  ${content}
-
-  <footer data-section-kind="footer" data-section-title="Footer" class="border-t border-black/10 bg-[#e8dfcf] px-6 py-14">
-    <div class="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1.35fr_1fr_1fr_1fr]">
-      <section>
-        <div class="serif-title text-4xl uppercase tracking-[0.08em]">ATELIER NOA</div>
-        <p class="mt-5 max-w-md text-sm leading-8 text-slate-600">אופנה מדויקת, סגנון אישי וחוויית רכישה נקייה לכל קהל יעד.</p>
-        <div class="mt-7 flex flex-wrap gap-2"><span class="rounded-full border border-black/10 bg-white/45 px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-slate-500">Fashion Store</span><span class="rounded-full border border-black/10 bg-white/45 px-4 py-2 text-xs font-black uppercase tracking-[0.16em] text-slate-500">RTL</span></div>
-      </section>
-      <section><h3 class="mb-4 border-b border-black/10 pb-3 text-sm font-black">עמודי האתר</h3><div class="grid gap-3 text-sm text-slate-600"><a>בית</a><a>אודות</a><a>חנות</a><a>קולקציות</a><a>סטיילינג</a><a>צור קשר</a></div></section>
-      <section><h3 class="mb-4 border-b border-black/10 pb-3 text-sm font-black">מידע חשוב</h3><div class="grid gap-3 text-sm text-slate-600"><a>תקנון אתר</a><a>מדיניות פרטיות</a><a>נגישות</a></div></section>
-      <section><h3 class="mb-4 border-b border-black/10 pb-3 text-sm font-black">שירות לקוחות</h3><div class="grid gap-3 text-sm text-slate-600"><a>שאלות נפוצות</a><a>משלוחים והחזרות</a><a>שירות והזמנות</a></div><a data-editable-link="true" href="#contact" class="mt-6 inline-flex rounded-[4px] bg-[#292318] px-5 py-3 text-sm font-bold text-black">יצירת קשר</a></section>
-    </div>
-  </footer>
-</main>`;
-}
-
-function createVelmoraHomeContent(seed: ReadyWebsiteTemplateSeed) {
-  const heroTitle = escapeHtml(seed.heroTitle || "אופנה שמרגישה בדיוק נכון");
-  const heroSubtitle = escapeHtml(
-    seed.heroSubtitle ||
-      "בוטיק אופנה נקי, מדויק וגמיש לעריכה מלאה בתוך BizUply.",
-  );
-
-  const galleryImages = [
-    "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=700&q=90",
-    "https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=700&q=90",
-    "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=700&q=90",
-    "https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=700&q=90",
-    "https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=700&q=90",
-    "https://images.unsplash.com/photo-1485968579580-b6d095142e6e?auto=format&fit=crop&w=700&q=90",
-  ];
-
-  const productCards = [
-    ["שמלת NOA", "₪349", galleryImages[5]],
-    [
-      "תיק Resort",
-      "₪260",
-      "https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=900&q=90",
-    ],
-    ["חליפת Atelier", "₪390", galleryImages[2]],
-    ["חולצת Silk", "₪190", galleryImages[3]],
-  ];
-
-  return `
-  <section id="hero" data-section-kind="hero" data-section-title="Hero" class="overflow-hidden px-6 pb-24 pt-24 text-center">
-    <p class="bizuply-reveal-up mx-auto max-w-3xl text-sm font-bold tracking-[0.28em] text-slate-500">בוטיק אופנה · סטיילינג אישי · קולקציות נבחרות</p>
-    <h1 class="serif-title bizuply-reveal-up mx-auto mt-8 max-w-5xl text-[64px] leading-[0.95] text-[#2f241b] md:text-[92px]">${heroTitle}</h1>
-    <p class="bizuply-reveal-up mx-auto mt-7 max-w-3xl text-lg leading-9 text-slate-600">${heroSubtitle}</p>
-    <a data-editable-link="true" href="#shop" class="bizuply-reveal-up mt-9 inline-flex rounded-[4px] bg-[#292318] px-9 py-4 text-sm font-black text-black">לכל הקולקציות</a>
-    <div class="mx-auto mt-20 flex max-w-6xl items-end justify-center gap-4 overflow-hidden">
-      ${galleryImages.map((image, index) => `<img data-section-kind="gallery" data-section-title="Hero card ${index + 1}" class="bizuply-float-soft h-[${index === 2 ? "360" : index === 1 || index === 3 ? "300" : "240"}px] w-[${index === 2 ? "190" : "155"}px] rounded-t-3xl object-cover shadow-2xl" src="${image}" />`).join("")}
-    </div>
-  </section>
-
-  <section id="about" data-section-kind="about" data-section-title="About" class="grid min-h-[760px] bg-white lg:grid-cols-2">
-    <div class="flex flex-col justify-between px-8 py-20 lg:px-16"><div><p class="text-sm font-black uppercase tracking-[0.22em] text-slate-500">About</p><h2 class="serif-title mt-8 max-w-xl text-6xl leading-tight text-[#2f241b]">סגנון שמתחיל בפרטים הקטנים</h2></div><div class="grid gap-8 text-base leading-8 text-slate-600 md:grid-cols-2"><p>כאן אפשר לערוך את סיפור המותג, החזון והסגנון של העסק.</p><p>העמוד בנוי מבלוקים שניתנים לבחירה, שינוי, מחיקה ושכפול.</p></div></div>
-    <img class="h-full min-h-[620px] w-full object-cover" src="https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=1400&q=90" />
-  </section>
-
-  <section id="shop" data-section-kind="store" data-section-title="Shop Products" class="bg-[#f6f2ea] px-6 py-24"><div class="mx-auto max-w-7xl"><div class="mb-12 flex items-end justify-between gap-6"><div><p class="text-sm font-black uppercase tracking-[0.22em] text-slate-500">Shop</p><h2 class="serif-title mt-4 text-6xl">מוצרים נבחרים</h2></div><a data-editable-link="true" href="#shop" class="rounded-md border border-black/15 bg-white px-6 py-3 text-sm font-black">מעבר לחנות</a></div><div class="grid gap-6 md:grid-cols-2 lg:grid-cols-4">${productCards.map(([title, price, image]) => `<article data-section-kind="product" data-section-title="${title}" class="group overflow-hidden rounded-xl bg-white shadow-sm"><img class="h-[360px] w-full object-cover transition duration-700 group-hover:scale-105" src="${image}" /><div class="p-5"><p class="text-xs font-black uppercase tracking-[0.18em] text-slate-400">REF. VLM</p><h3 class="mt-2 text-2xl font-black">${title}</h3><p class="mt-3 text-lg font-black">${price}</p></div></article>`).join("")}</div></div></section>
-
-  <section id="collections" data-section-kind="gallery" data-section-title="Moving Gallery" class="overflow-hidden bg-white py-24"><div class="px-6"><h2 class="serif-title text-6xl">קולקציות שנבחרו בקפידה</h2></div><div class="mt-12 overflow-hidden"><div class="bizuply-marquee-track flex w-max gap-5 px-6">${[...galleryImages, ...galleryImages].map((image) => `<img class="h-[360px] w-[260px] shrink-0 object-cover shadow-lg" src="${image}" />`).join("")}</div></div></section>
-
-  <section id="styling" data-section-kind="services" data-section-title="Personal Styling" class="bg-[#f6f2ea] px-6 py-28"><div class="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[1fr_1.1fr] lg:items-center"><div><p class="text-sm font-black uppercase tracking-[0.22em] text-slate-500">Custom</p><h2 class="serif-title mt-5 text-6xl leading-tight">סטיילינג אישי שמותאם לקהל שלך</h2><p class="mt-6 max-w-xl text-lg leading-9 text-slate-600">בלוק שירותים לעריכה מלאה: תהליך עבודה, המלצות, התאמה אישית וטופס פנייה.</p></div><div class="grid grid-cols-2 gap-5"><img class="h-[420px] w-full object-cover" src="https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=900&q=90" /><img class="mt-16 h-[420px] w-full object-cover" src="https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=900&q=90" /></div></div></section>
-
-  <section id="contact" data-section-kind="contact" data-section-title="Contact" class="bg-white px-6 py-24"><div class="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.9fr_1.1fr]"><div><p class="text-sm font-black uppercase tracking-[0.22em] text-slate-500">Contact</p><h2 class="serif-title mt-5 text-6xl">יצירת קשר</h2><p class="mt-6 text-lg leading-9 text-slate-600">אפשר לערוך כאן פרטי עסק, טופס, שעות פעילות וקישורים.</p></div><form class="grid gap-4 rounded-xl border border-black/10 bg-[#f6f2ea] p-7"><input class="h-14 rounded-md border border-black/10 bg-white px-4 text-sm" placeholder="שם מלא" /><input class="h-14 rounded-md border border-black/10 bg-white px-4 text-sm" placeholder="טלפון" /><input class="h-14 rounded-md border border-black/10 bg-white px-4 text-sm" placeholder="אימייל" /><textarea class="min-h-[140px] rounded-md border border-black/10 bg-white p-4 text-sm" placeholder="הודעה"></textarea><button class="h-14 rounded-md bg-[#292318] font-black text-black">שליחה</button></form></div></section>`;
-}
-
-function createVelmoraInfoContent(title: string, eyebrow: string) {
-  return `<section data-section-kind="info" data-section-title="${escapeHtml(title)}" class="bg-[#f6f2ea] px-6 py-24"><div class="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[320px_1fr]"><aside class="h-fit rounded-xl border border-black/10 bg-white/70 p-6 shadow-xl"><p class="text-xs font-black uppercase tracking-[0.22em] text-slate-400">${escapeHtml(eyebrow)}</p><h1 class="serif-title mt-4 text-5xl text-[#2f241b]">${escapeHtml(title)}</h1><p class="mt-4 text-sm leading-7 text-slate-600">עמוד דוגמה לעריכה מלאה בעורך.</p></aside><article class="rounded-xl border border-black/10 bg-white p-10 shadow-xl"><p class="text-sm tracking-[0.26em] text-slate-500">${escapeHtml(eyebrow)}</p><h2 class="serif-title mt-5 text-6xl text-[#2f241b]">${escapeHtml(title)}</h2><p class="mt-8 max-w-3xl text-lg leading-9 text-slate-800/60">כאן מחליפים את התוכן לטקסט אמיתי של העסק. המבנה כולל כותרת, פתיח, סעיפים, כרטיסים וכפתורי מעבר.</p>${["כללי", "פרטים חשובים", "יצירת קשר", "עדכון אחרון"].map((item, i) => `<section data-section-kind="basic" data-section-title="${item}" class="mt-8 border-t border-black/10 pt-7"><h3 class="serif-title text-4xl">${i + 1}. ${item}</h3><p class="mt-4 leading-8 text-slate-600">טקסט דוגמה בלבד. ניתן לערוך, למחוק, לשכפל ולהוסיף בלוקים נוספים.</p></section>`).join("")}</article></div></section>`;
-}
-
-function createVelmoraShopContent() {
-  const images = [
-    "https://images.unsplash.com/photo-1485968579580-b6d095142e6e?auto=format&fit=crop&w=900&q=90",
-    "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=900&q=90",
-    "https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=900&q=90",
-    "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?auto=format&fit=crop&w=900&q=90",
-    "https://images.unsplash.com/photo-1496747611176-843222e1e57c?auto=format&fit=crop&w=900&q=90",
-  ];
-  const products = Array.from({ length: 24 }).map((_, index) => ({
-    title: `פריט בוטיק ${index + 1}`,
-    price: `₪${169 + index * 10}`,
-    image: images[index % images.length],
-  }));
-  return `<section id="shop" data-section-kind="store" data-section-title="Shop Page" class="bg-[#f6f2ea] px-6 py-24"><div class="mx-auto max-w-7xl"><p class="text-sm font-black uppercase tracking-[0.22em] text-slate-500">Shop</p><h1 class="serif-title mt-5 text-7xl text-[#2f241b]">חנות</h1><p class="mt-6 max-w-2xl text-lg leading-9 text-slate-600">עמוד חנות מלא לדוגמה עם מוצרים, מחירים ותמונות להחלפה.</p><div class="mt-12 grid gap-6 md:grid-cols-3 xl:grid-cols-4">${products.map((product) => `<article data-section-kind="product" data-section-title="${product.title}" class="group overflow-hidden rounded-xl bg-white shadow-sm"><img class="h-[330px] w-full object-cover transition duration-700 group-hover:scale-105" src="${product.image}" /><div class="p-5"><h3 class="text-xl font-black">${product.title}</h3><p class="mt-2 font-black">${product.price}</p><a data-editable-link="true" href="#product" class="mt-4 inline-flex rounded-md bg-[#292318] px-4 py-2 text-xs font-black text-black">צפייה במוצר</a></div></article>`).join("")}</div></div></section>`;
-}
-
 
 function normalizeStudioTemplateKey(value: unknown) {
   return String(value || "")
@@ -2014,130 +1903,6 @@ function createPagesFromRegisteredRenderer(
   return built;
 }
 
-function createVelmoraTemplatePages(
-  seed: ReadyWebsiteTemplateSeed,
-): BuiltTemplatePages {
-  const now = new Date().toISOString();
-  const css = createTemplateCss(seed);
-  const pageInputs = [
-    {
-      id: "home",
-      title: "דף הבית",
-      slug: "",
-      type: "home",
-      isHome: true,
-      content: createVelmoraHomeContent(seed),
-    },
-    {
-      id: "shop",
-      title: "חנות",
-      slug: "shop",
-      type: "store",
-      content: createVelmoraShopContent(),
-    },
-    {
-      id: "product",
-      title: "עמוד מוצר",
-      slug: "product",
-      type: "product",
-      content: createVelmoraInfoContent("עמוד מוצר", "PRODUCT"),
-    },
-    {
-      id: "about",
-      title: "אודות",
-      slug: "about",
-      type: "about",
-      content: createVelmoraInfoContent("אודות", "ABOUT"),
-    },
-    {
-      id: "projects",
-      title: "קולקציות",
-      slug: "collections",
-      type: "gallery",
-      content: createVelmoraInfoContent("קולקציות", "COLLECTIONS"),
-    },
-    {
-      id: "custom",
-      title: "סטיילינג",
-      slug: "styling",
-      type: "services",
-      content: createVelmoraInfoContent("סטיילינג אישי", "CUSTOM"),
-    },
-    {
-      id: "contact",
-      title: "צור קשר",
-      slug: "contact",
-      type: "contact",
-      content: createVelmoraInfoContent("צור קשר", "CONTACT"),
-    },
-    {
-      id: "cart",
-      title: "סל קניות",
-      slug: "cart",
-      type: "cart",
-      content: createVelmoraInfoContent("סל קניות", "CART"),
-    },
-    {
-      id: "terms",
-      title: "תקנון אתר",
-      slug: "terms",
-      type: "info",
-      content: createVelmoraInfoContent("תקנון אתר", "TERMS"),
-    },
-    {
-      id: "privacy",
-      title: "מדיניות פרטיות",
-      slug: "privacy",
-      type: "info",
-      content: createVelmoraInfoContent("מדיניות פרטיות", "PRIVACY"),
-    },
-    {
-      id: "accessibility",
-      title: "נגישות",
-      slug: "accessibility",
-      type: "info",
-      content: createVelmoraInfoContent("נגישות", "ACCESSIBILITY"),
-    },
-    {
-      id: "faq",
-      title: "שאלות נפוצות",
-      slug: "faq",
-      type: "info",
-      content: createVelmoraInfoContent("שאלות נפוצות", "FAQ"),
-    },
-    {
-      id: "shipping",
-      title: "משלוחים והחזרות",
-      slug: "shipping",
-      type: "info",
-      content: createVelmoraInfoContent("משלוחים והחזרות", "SHIPPING"),
-    },
-    {
-      id: "orders",
-      title: "שירות והזמנות",
-      slug: "orders",
-      type: "info",
-      content: createVelmoraInfoContent("שירות והזמנות", "ORDERS"),
-    },
-  ];
-
-  return {
-    slug: normalizeBusinessSlug(seed.id || seed.name || "velmora") || "velmora",
-    activePageId: "home",
-    pages: pageInputs.map((page) => ({
-      id: page.id,
-      title: page.title,
-      slug: page.slug,
-      type: page.type as StudioSitePageType,
-      isHome: Boolean(page.isHome),
-      html: createVelmoraShellHtml(page.content, page.title),
-      css,
-      createdAt: now,
-      updatedAt: now,
-      clientPortal: createDefaultClientPortalConfig(),
-    })),
-  };
-}
 
 function createGenericTemplatePages(
   seed: ReadyWebsiteTemplateSeed,
@@ -2182,13 +1947,6 @@ function createGenericTemplatePages(
       },
     ],
   };
-}
-
-function isVelmoraTemplate(seed: ReadyWebsiteTemplateSeed) {
-  const id = String(seed.id || "").trim().toLowerCase();
-  const name = String(seed.name || "").trim().toLowerCase();
-
-  return id === "velmora" || name.includes("velmora");
 }
 
 function hasUsefulTemplateHtml(pages: StudioSitePageWithPortal[]) {
@@ -5127,7 +4885,7 @@ export default function WebsiteStudioPage({
 
   const [pages, setPages] = useState<StudioSitePageWithPortal[]>(() => {
     if (selectedTemplateSeed) {
-      // Shells only — full SSR of every Velmora page here blocked first paint.
+      // Shells only — full SSR of every template page here blocked first paint.
       return createPagesFromTemplateSeed(selectedTemplateSeed, undefined, {
         htmlMode: "none",
       }).pages;
@@ -5138,6 +4896,7 @@ export default function WebsiteStudioPage({
   const pagesRef = useRef<StudioSitePageWithPortal[]>(pages);
   pagesRef.current = pages;
   const persistedPageIdsRef = useRef<Set<string>>(new Set());
+  const deletedPageIdsRef = useRef<Set<string>>(new Set());
   const dirtyVisualPageIdsRef = useRef<Set<string>>(new Set());
   const markVisualPageDirty = (pageId: string) => {
     const id = String(pageId || "").trim();
@@ -5150,6 +4909,19 @@ export default function WebsiteStudioPage({
     list: Array<{ id?: string } | null | undefined> | undefined,
   ) => {
     persistedPageIdsRef.current = collectStudioPageIds(list);
+    // Once the server has accepted the inventory without these ids, clear
+    // the pending-delete buffer for any id that is no longer persisted.
+    for (const id of Array.from(deletedPageIdsRef.current)) {
+      if (!persistedPageIdsRef.current.has(id)) {
+        deletedPageIdsRef.current.delete(id);
+      }
+    }
+  };
+  const markPageDeleted = (pageId: string) => {
+    const id = String(pageId || "").trim();
+    if (!id) return;
+    deletedPageIdsRef.current.add(id);
+    dirtyVisualPageIdsRef.current.delete(id);
   };
   const visualSavingRef = useRef(false);
   const pendingVisualSaveRef = useRef<VisualTemplateSavePayload | null>(null);
@@ -6169,6 +5941,13 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     if (!cleanTitle) return;
 
     setPages((prev) => {
+      const previousTitleById: Record<string, string> = {};
+      prev.forEach((page) => {
+        const id = String(page.id || "").trim();
+        const pageTitle = String(page.title || "").trim();
+        if (id && pageTitle) previousTitleById[id] = pageTitle;
+      });
+
       const nextPages = prev.map((page) => {
         if (page.id !== pageId) return page;
         return {
@@ -6182,6 +5961,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         syncSitePageTitlesIntoVisualData(
           previous || {},
           slimSitePageNavSources(nextPages),
+          { previousTitleById },
         ),
       );
 
@@ -6778,6 +6558,25 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       Studio Save/Publish is the PUT that persists title/slug/SEO.
     */
     markVisualPageDirty(id);
+
+    const persistId = String(siteId || "").trim();
+    if (!persistId) return;
+    const res = await fetch(
+      `/api/site-builder/sites/${persistId}/pages/${encodeURIComponent(id)}/seo`,
+      {
+        method: "PATCH",
+        credentials: "include",
+        headers: buildAuthHeaders({ "Content-Type": "application/json" }),
+        body: JSON.stringify({
+          title: cleanTitle,
+          seo: normalizePageSeo(seo),
+        }),
+      },
+    );
+    const payload = await res.json().catch(() => null);
+    if (!res.ok || !payload?.success) {
+      throw new Error(payload?.error || "שמירת SEO נכשלה");
+    }
   };
 
   const handleVisualSitePageAction = (
@@ -7057,6 +6856,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       const ok = window.confirm(`למחוק את העמוד "${target.title}"?`);
       if (!ok) return;
 
+      markPageDeleted(id);
       setPages((prev) =>
         prev
           .filter((page) => page.id !== id)
@@ -7452,6 +7252,8 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         seoSettings: overrides?.seoSettings || siteSeoSettings,
         brand: overrides?.brand || siteBrandSettings,
         pages: savedPages,
+        pagesAuthoritative: true,
+        deletedPageIds: Array.from(deletedPageIdsRef.current),
         activePageId,
         clientPortalPages: savedPages.filter(
           (page) => page.clientPortal?.enabled,
@@ -8121,7 +7923,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
 
       /*
         Draft save is visual-data only. Rebuilding / re-stamping HTML for every
-        Store page (Velmora) is what burned ~10s before the PUT even started.
+        Store pages are what burned ~10s before the PUT even started.
       */
       let publishedPages = sourcePages;
 
@@ -8426,11 +8228,11 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         if (hasMeaningfulVisualCollections(extractedHomeVisualData)) {
           return withPublishChrome(extractedHomeVisualData);
         }
-        const isVelmoraTemplate = /velmora|scentora/i.test(
+        const isStoreCatalogTemplate = /scentora|chanel|novastra/i.test(
           String(visualPayload.templateKey || ""),
         );
         if (
-          !isVelmoraTemplate &&
+          !isStoreCatalogTemplate &&
           hasMeaningfulVisualCollections(serverHomeVisualData)
         ) {
           return withPublishChrome(serverHomeVisualData);
@@ -8478,14 +8280,14 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         visual-react מפורסם מ-template + data. HTML הוא אופציונלי —
         חסימה בגלל HTML ריק השאירה את האתר הציבורי על גרסה ישנה.
       */
-      const isStoreVisualTemplate = /velmora/i.test(
+      const isStoreVisualTemplate = /scentora|chanel|novastra/i.test(
         String(
           visualPayload.templateKey || selectedTemplateRenderer?.key || "",
         ),
       );
 
       /*
-        Store/Velmora publish is template + live catalog, not harvested HTML.
+        Store publish is template + live catalog, not harvested HTML.
         pruneAutoHarvestedVisualMaps leaves empty visual collections, and
         pagesForSave.html is always " ", so the old guard threw before fetch
         (D_PUBLISH start=0). Draft save never hit this branch.
@@ -8593,6 +8395,8 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         seoSettings: siteSeoSettings,
         brand: siteBrandSettings,
         pages: pagesForSave,
+        pagesAuthoritative: true,
+        deletedPageIds: Array.from(deletedPageIdsRef.current),
         // Public root must always anchor to home, regardless of which page
         // was open in the studio at publish time.
         activePageId: published ? homePageId : activeVisualPageId,

@@ -1075,6 +1075,7 @@ function Header({
 
         <button
           type="button"
+          data-demo-target="dashboard-notifications-bell"
           className="relative flex h-12 w-12 items-center justify-center rounded-2xl border border-white bg-white/85 text-slate-500 shadow-sm backdrop-blur-xl transition hover:text-violet-700"
         >
           <Bell size={18} />

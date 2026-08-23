@@ -13,11 +13,24 @@
       "destination": "https://api.bizuply.com/api/$1"
     },
     {
-      "source": "/((?!api/|assets/|email/|service-worker\\.js$|site\\.webmanifest$|manifest\\.json$|manifest\\.webmanifest$|favicon[^/]*|android-chrome[^/]*|apple-touch-icon[^/]*|robots\\.txt$|sitemap\\.xml$|softphone-hold\\.mp3$|.*\\.mp3$|.*\\.wav$|.*\\.png$).*)",
+      "source": "/((?!api/|assets/|email/|service-worker\\.js$|site\\.webmanifest$|manifest\\.json$|manifest\\.webmanifest$|build-info\\.json$|favicon[^/]*|android-chrome[^/]*|apple-touch-icon[^/]*|robots\\.txt$|sitemap\\.xml$|softphone-hold\\.mp3$|.*\\.mp3$|.*\\.wav$|.*\\.png$).*)",
       "destination": "/index.html"
     }
   ],
   "headers": [
+    {
+      "source": "/offer/(.*)",
+      "headers": [
+        {
+          "key": "X-Robots-Tag",
+          "value": "noindex, nofollow"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
+        }
+      ]
+    },
     {
       "source": "/service-worker.js",
       "headers": [

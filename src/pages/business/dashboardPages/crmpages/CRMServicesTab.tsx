@@ -271,6 +271,7 @@ export default function CRMServicesTab() {
           <button
             type="button"
             onClick={openAdd}
+            data-demo-target="services-add-button"
             className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-[#6D28D9] px-4 text-sm font-black text-white transition hover:bg-[#5B21B6]"
           >
             <Plus className="h-4 w-4" />
@@ -447,6 +448,7 @@ function ServiceFormPanel({
         <div className="grid gap-4 lg:grid-cols-2">
           <FormField label={t("crm.services.nameLabel")} required>
             <input
+              data-demo-target="services-name"
               placeholder={t("crm.services.namePlaceholder")}
               value={form.name}
               onChange={(event) =>
@@ -464,6 +466,7 @@ function ServiceFormPanel({
               <ShekelIcon className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-sm text-slate-400" />
               <input
                 type="number"
+                data-demo-target="services-price"
                 placeholder={t("crm.services.pricePlaceholder")}
                 value={form.price}
                 onChange={(event) =>
@@ -479,6 +482,7 @@ function ServiceFormPanel({
 
           <FormField label={t("crm.services.durationLabel")}>
             <select
+              data-demo-target="services-duration"
               value={form.duration}
               onChange={(event) =>
                 setForm((prev) => ({
@@ -523,6 +527,7 @@ function ServiceFormPanel({
           <div className="lg:col-span-2">
             <FormField label={t("crm.services.descriptionLabel")}>
               <textarea
+                data-demo-target="services-description"
                 placeholder={t("crm.services.descriptionPlaceholder")}
                 value={form.description}
                 onChange={(event) =>
@@ -551,6 +556,7 @@ function ServiceFormPanel({
             type="button"
             onClick={onSave}
             disabled={saving}
+            data-demo-target="services-save-button"
             className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#6D28D9] px-4 py-2.5 text-sm font-black text-white transition hover:bg-[#5B21B6] disabled:cursor-not-allowed disabled:opacity-60"
           >
             <Save className="h-4 w-4" />
@@ -750,6 +756,7 @@ function EmptyServicesState({ onCreate }: { onCreate: () => void }) {
       <button
         type="button"
         onClick={onCreate}
+        data-demo-target="services-add-button"
         className="mt-5 inline-flex items-center justify-center gap-2 rounded-xl bg-[#6D28D9] px-4 py-2.5 text-sm font-black text-white transition hover:bg-[#5B21B6]"
       >
         <Plus className="h-4 w-4" />

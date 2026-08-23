@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import {
   ArrowRight,
   ExternalLink,
@@ -53,9 +53,12 @@ const CORE_PLUGIN_KEYS = new Set([
 export default function SiteManagementPanelPage() {
   const { businessId = "", siteId = "" } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
 
   const [loading, setLoading] = useState(true);
   const [savingPlugins, setSavingPlugins] = useState(false);
+  const [savingKey, setSavingKey] = useState<string | null>(null);
   const [siteName, setSiteName] = useState("האתר שלי");
   const [sitePublished, setSitePublished] = useState(false);
   const [publicUrl, setPublicUrl] = useState("");
@@ -63,7 +66,12 @@ export default function SiteManagementPanelPage() {
   const [catalog, setCatalog] = useState<SitePluginDefinition[]>([]);
   const [enabledPlugins, setEnabledPlugins] = useState<string[]>([]);
   const [detectedFromSite, setDetectedFromSite] = useState<string[]>([]);
-  const [activeSection, setActiveSection] = useState<SitePanelSection>("overview");
+  const [activeSection, setActiveSection] = useState<SitePanelSection>(() => {
+    const section = searchParams.get("section");
+    if (!section) return "overview";
+    if (section === "plugins") return "plugins";
+    return resolvePluginSection(section);
+  });
   const [error, setError] = useState("");
 
   const basePath = `/business/${businessId}/dashboard`;
@@ -109,6 +117,46 @@ export default function SiteManagementPanelPage() {
     loadPanel();
   }, [loadPanel]);
 
+  // After Stripe success/cancel, refresh entitlement/catalog once the user lands
+  // back on the plugins manage screen (access token may have been refreshed).
+  useEffect(() => {
+    const portalBilling = searchParams.get("portalBilling");
+    const pluginBilling = searchParams.get("pluginBilling");
+    const isReturn =
+      portalBilling === "success" ||
+      portalBilling === "cancel" ||
+      pluginBilling === "success" ||
+      pluginBilling === "cancel";
+    if (!isReturn || !siteId) return;
+
+    let cancelled = false;
+    (async () => {
+      try {
+        await loadPanel();
+      } finally {
+        if (cancelled) return;
+        const next = new URLSearchParams(searchParams);
+        next.delete("portalBilling");
+        next.delete("pluginBilling");
+        next.delete("addon");
+        if (!next.get("section")) next.set("section", "plugins");
+        navigate(
+          {
+            pathname: location.pathname,
+            search: next.toString() ? `?${next.toString()}` : "",
+          },
+          { replace: true }
+        );
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+    // Intentionally once per return landing — deps exclude loadPanel churn.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [siteId, searchParams.get("portalBilling"), searchParams.get("pluginBilling")]);
+
   useEffect(() => {
     if (
       activeSection === "overview" ||
@@ -128,11 +176,15 @@ export default function SiteManagementPanelPage() {
 
   const enabledSet = useMemo(() => new Set(enabledPlugins), [enabledPlugins]);
 
+  const portalEntitled =
+    catalog.find((item) => item.key === "client-portal")?.entitled === true;
+
   const navSections = useMemo(() => {
-    // Portal tab appears only after installing the "client-portal" plugin.
+    // Portal tab appears only after installing + paying for "client-portal".
     const items: SitePanelSection[] = ["overview", "plugins", "payments"];
 
     enabledPlugins.forEach((key) => {
+      if (key === "client-portal" && !portalEntitled) return;
       const section = resolvePluginSection(key);
       if (section && !items.includes(section)) {
         items.push(section);
@@ -140,7 +192,7 @@ export default function SiteManagementPanelPage() {
     });
 
     return items;
-  }, [enabledPlugins]);
+  }, [enabledPlugins, portalEntitled]);
 
   const activeMeta = getSectionMetaForPlugin(activeSection, catalog);
 
@@ -157,30 +209,40 @@ export default function SiteManagementPanelPage() {
     }
   }
 
+  async function startPaidCheckout(pluginKey: string, tier: "basic" | "pro" = "pro") {
+    setSavingPlugins(true);
+    setSavingKey(pluginKey);
+    try {
+      if (pluginKey === "client-portal") {
+        await startClientPortalCheckout(siteId);
+      } else {
+        await startPluginCheckout(pluginKey, siteId, tier);
+      }
+    } catch (err: any) {
+      const serverError =
+        err?.response?.data?.error ||
+        err?.response?.data?.message ||
+        err?.message ||
+        "פתיחת תשלום לתוסף נכשלה";
+      window.alert(serverError);
+    } finally {
+      setSavingPlugins(false);
+      setSavingKey(null);
+    }
+  }
+
   async function handleTogglePlugin(pluginKey: string, enabled: boolean) {
     const plugin = catalog.find((item) => item.key === pluginKey);
-    if (
+    const needsPaidCheckout =
       enabled &&
-      plugin?.billingEnabled &&
-      plugin?.entitled === false
-    ) {
-      setSavingPlugins(true);
-      try {
-        if (pluginKey === "client-portal") {
-          await startClientPortalCheckout(siteId);
-        } else {
-          await startPluginCheckout(pluginKey, siteId);
-        }
-      } catch (err: any) {
-        const serverError =
-          err?.response?.data?.error ||
-          err?.response?.data?.message ||
-          err?.message ||
-          "פתיחת תשלום לאזור אישי נכשלה";
-        window.alert(serverError);
-      } finally {
-        setSavingPlugins(false);
-      }
+      Boolean(plugin?.billingEnabled || pluginKey === "client-portal") &&
+      plugin?.entitled !== true &&
+      (pluginKey === "client-portal" || Boolean(plugin?.billingEnabled));
+    if (needsPaidCheckout) {
+      await startPaidCheckout(
+        pluginKey,
+        plugin?.purchaseTier === "basic" ? "basic" : "pro"
+      );
       return;
     }
 
@@ -193,6 +255,9 @@ export default function SiteManagementPanelPage() {
     try {
       const result = await updateSitePlugins(siteId, next);
       setEnabledPlugins(result.enabledPlugins);
+      if (Array.isArray(result.catalog) && result.catalog.length) {
+        setCatalog(result.catalog);
+      }
       setDetectedFromSite([]);
 
       if (enabled) {
@@ -212,31 +277,13 @@ export default function SiteManagementPanelPage() {
         }
       }
     } catch (err: any) {
-      if (enabled && pluginKey === "client-portal" && isClientPortalCheckoutRequiredError(err)) {
-        try {
-          await startClientPortalCheckout(siteId);
-          return;
-        } catch (checkoutErr: any) {
-          alert(
-            checkoutErr?.response?.data?.error ||
-              checkoutErr?.message ||
-              "פתיחת תשלום לאזור אישי נכשלה",
-          );
-          return;
-        }
+      if (enabled && isClientPortalCheckoutRequiredError(err)) {
+        await startPaidCheckout("client-portal");
+        return;
       }
       if (enabled && isPluginCheckoutRequiredError(err)) {
-        try {
-          await startPluginCheckout(pluginKey, siteId);
-          return;
-        } catch (checkoutErr: any) {
-          alert(
-            checkoutErr?.response?.data?.error ||
-              checkoutErr?.message ||
-              "פתיחת תשלום לתוסף נכשלה",
-          );
-          return;
-        }
+        await startPaidCheckout(pluginKey, "pro");
+        return;
       }
       const serverError =
         err?.response?.data?.error ||
@@ -498,11 +545,17 @@ export default function SiteManagementPanelPage() {
             enabledPlugins={enabledPlugins}
             detectedFromSite={detectedFromSite}
             saving={savingPlugins}
+            savingKey={savingKey}
             onToggle={handleTogglePlugin}
+            onUpgrade={(pluginKey) => {
+              void startPaidCheckout(pluginKey, "pro");
+            }}
           />
         ) : null}
 
-        {activeSection === "portal" && enabledSet.has("client-portal") ? (
+        {activeSection === "portal" &&
+        enabledSet.has("client-portal") &&
+        portalEntitled ? (
           <SitePortalMembersPanel siteId={siteId} publicUrl={publicUrl} />
         ) : null}
 

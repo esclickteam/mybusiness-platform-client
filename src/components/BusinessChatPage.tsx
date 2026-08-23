@@ -9,6 +9,7 @@ import ConversationsList from "./ConversationsList";
 import BusinessChatTab from "./BusinessChatTab";
 import API from "../api";
 import BizuplyLoader from "./ui/BizuplyLoader";
+import GuidedDemoSandboxButton from "../guidedDemo/GuidedDemoSandboxButton";
 
 /* =====================================================
    TYPES
@@ -358,6 +359,15 @@ export default function BusinessChatPage() {
                 <h1 className="mt-4 text-3xl font-black tracking-tight sm:text-4xl">
                   Client Messages
                 </h1>
+
+                <div className="mt-3">
+                  <GuidedDemoSandboxButton
+                    target="messages-demo-send"
+                    className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-2 text-xs font-black text-amber-900"
+                  >
+                    שלחו הודעת הדגמה — לא נשלחת ללקוח אמיתי
+                  </GuidedDemoSandboxButton>
+                </div>
 
                 <p className="mt-2 max-w-2xl text-sm leading-6 text-white/60">
                   Manage all customer conversations, reply faster, and keep your

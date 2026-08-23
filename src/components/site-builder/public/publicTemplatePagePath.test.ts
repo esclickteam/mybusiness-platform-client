@@ -6,7 +6,7 @@ import {
   resolveTemplatePageIdFromPath,
 } from "./publicTemplatePagePath";
 
-const velmoraRenderer = {
+const storeRenderer = {
   pages: [
     { id: "home", name: "home-he", slug: "/" },
     { id: "shop", name: "shop-he", slug: "/shop-he" },
@@ -16,43 +16,43 @@ const velmoraRenderer = {
 
 describe("publicTemplatePagePath", () => {
   it("maps /shop and localized slug to shop page id", () => {
-    expect(resolveTemplatePageIdFromPath(velmoraRenderer, "/shop")).toBe(
+    expect(resolveTemplatePageIdFromPath(storeRenderer, "/shop")).toBe(
       "shop",
     );
-    expect(resolveTemplatePageIdFromPath(velmoraRenderer, "/shop-he")).toBe(
+    expect(resolveTemplatePageIdFromPath(storeRenderer, "/shop-he")).toBe(
       "shop",
     );
-    expect(resolveTemplatePageIdFromPath(velmoraRenderer, "/")).toBe("home");
+    expect(resolveTemplatePageIdFromPath(storeRenderer, "/")).toBe("home");
   });
 
   it("prefers ASCII page ids for store SPA hrefs", () => {
     expect(
-      resolvePublicPathForPageId({ pages: [] }, velmoraRenderer, "shop"),
+      resolvePublicPathForPageId({ pages: [] }, storeRenderer, "shop"),
     ).toBe("/products");
     expect(
-      resolvePublicPathForPageId({ pages: [] }, velmoraRenderer, "cart"),
+      resolvePublicPathForPageId({ pages: [] }, storeRenderer, "cart"),
     ).toBe("/cart");
   });
 
   it("maps /products to the shop page", () => {
-    expect(resolveTemplatePageIdFromPath(velmoraRenderer, "/products")).toBe(
+    expect(resolveTemplatePageIdFromPath(storeRenderer, "/products")).toBe(
       "shop",
     );
   });
 
   it("does not keep home activePageId when URL is /shop", () => {
     expect(
-      getFallbackPageId({ id: "home" }, "/shop", velmoraRenderer),
+      getFallbackPageId({ id: "home" }, "/shop", storeRenderer),
     ).toBe("shop");
   });
 
   it("strips /he and /en before resolving template pages", () => {
-    expect(resolveTemplatePageIdFromPath(velmoraRenderer, "/he")).toBe("home");
-    expect(resolveTemplatePageIdFromPath(velmoraRenderer, "/en")).toBe("home");
-    expect(resolveTemplatePageIdFromPath(velmoraRenderer, "/he/shop")).toBe(
+    expect(resolveTemplatePageIdFromPath(storeRenderer, "/he")).toBe("home");
+    expect(resolveTemplatePageIdFromPath(storeRenderer, "/en")).toBe("home");
+    expect(resolveTemplatePageIdFromPath(storeRenderer, "/he/shop")).toBe(
       "shop",
     );
-    expect(getFallbackPageId({ id: "home" }, "/en/products", velmoraRenderer)).toBe(
+    expect(getFallbackPageId({ id: "home" }, "/en/products", storeRenderer)).toBe(
       "shop",
     );
   });

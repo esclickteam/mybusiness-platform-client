@@ -176,6 +176,7 @@ export default function WhatsAppFloatWidget({
         transform: "translate(50%, 50%)",
       }}
       data-bizuply-widget="whatsapp-float"
+      data-bizuply-plugin="whatsapp-float"
       data-bizuply-plugin-runtime="true"
     >
       {isEditor ? (

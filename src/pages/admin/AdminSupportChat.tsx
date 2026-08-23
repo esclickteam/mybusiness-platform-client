@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import {
   ArrowRight,
   Headphones,
@@ -13,11 +13,23 @@ import API from "../../api";
 import { useAuth } from "../../context/AuthContext";
 import { notifyAdminSupportEvent } from "../../utils/adminSupportAlerts";
 import AdminHeader from "./AdminsHeader";
+import {
+  deliveryStatusLabel,
+  formatWhatsAppPhoneDisplay,
+  isOutboundSupportBubble,
+  splitMessageSegments,
+  type SupportChatMessage,
+} from "./adminSupportChatDisplay";
 
 type SupportConversation = {
   _id: string;
   name?: string;
+  businessName?: string;
   email?: string;
+  phone?: string;
+  channel?: "web" | "whatsapp" | string;
+  sourceLeadId?: string;
+  sourceCustomerId?: string;
   visitorId?: string;
   userId?: string | null;
   status: "bot" | "waiting" | "active" | "closed";
@@ -29,12 +41,14 @@ type SupportConversation = {
   assignedTo?: { _id?: string; name?: string } | string | null;
 };
 
-type SupportMessage = {
-  _id: string;
-  senderType: "visitor" | "bot" | "agent" | "system";
-  senderName?: string;
-  text: string;
-  createdAt?: string;
+type SupportMessage = SupportChatMessage & {
+  metadata?: {
+    source?: string;
+    invitationId?: string;
+    sourceLeadId?: string;
+    template?: string;
+    businessName?: string;
+  };
 };
 
 function statusLabel(status: string) {
@@ -89,6 +103,178 @@ function formatTime(value?: string) {
   } catch {
     return "";
   }
+}
+
+function conversationIdentityLine(conversation: SupportConversation) {
+  const business = String(conversation.businessName || "").trim();
+  const phoneDisplay =
+    conversation.channel === "whatsapp" && conversation.phone
+      ? formatWhatsAppPhoneDisplay(conversation.phone)
+      : "";
+  if (business && phoneDisplay) {
+    return (
+      <>
+        {business}
+        <span className="mx-1">·</span>
+        <span dir="ltr" className="inline-block [unicode-bidi:isolate]">
+          {phoneDisplay}
+        </span>
+      </>
+    );
+  }
+  if (business) return business;
+  if (phoneDisplay) {
+    return (
+      <span dir="ltr" className="inline-block [unicode-bidi:isolate]">
+        {phoneDisplay}
+      </span>
+    );
+  }
+  if (conversation.channel === "whatsapp") return "WhatsApp";
+  return conversation.email || "—";
+}
+
+function conversationListSubtitle(conversation: SupportConversation) {
+  const business = String(conversation.businessName || "").trim();
+  const phoneDisplay =
+    conversation.channel === "whatsapp" && conversation.phone
+      ? formatWhatsAppPhoneDisplay(conversation.phone)
+      : "";
+  if (conversation.channel === "whatsapp") {
+    if (business && phoneDisplay) {
+      return (
+        <>
+          <span>{business}</span>
+          <span className="mx-1">·</span>
+          <span dir="ltr" className="inline-block [unicode-bidi:isolate]">
+            {phoneDisplay}
+          </span>
+        </>
+      );
+    }
+    if (business) return business;
+    if (phoneDisplay) {
+      return (
+        <span dir="ltr" className="inline-block [unicode-bidi:isolate]">
+          {phoneDisplay}
+        </span>
+      );
+    }
+    return "WhatsApp";
+  }
+  return conversation.email || "ללא אימייל";
+}
+
+function ChatMessageBody({
+  text,
+  mine,
+}: {
+  text: string;
+  mine: boolean;
+}) {
+  const segments = splitMessageSegments(text);
+  return (
+    <p className="whitespace-pre-wrap break-words [overflow-wrap:anywhere] font-semibold">
+      {segments.map((part, index) => {
+        if (part.type === "url") {
+          return (
+            <a
+              key={`${part.type}-${index}`}
+              href={part.value}
+              target="_blank"
+              rel="noreferrer"
+              dir="ltr"
+              className={`inline break-all underline ${
+                mine ? "text-white" : "text-[#5B21B6]"
+              }`}
+            >
+              {part.value}
+            </a>
+          );
+        }
+        if (part.type === "phone") {
+          return (
+            <span
+              key={`${part.type}-${index}`}
+              dir="ltr"
+              className="inline-block [unicode-bidi:isolate]"
+            >
+              {part.value}
+            </span>
+          );
+        }
+        return <span key={`${part.type}-${index}`}>{part.value}</span>;
+      })}
+    </p>
+  );
+}
+
+function ChatBubble({
+  msg,
+  contactName,
+}: {
+  msg: SupportMessage;
+  contactName?: string;
+}) {
+  if (msg.senderType === "system") {
+    return (
+      <div
+        key={msg._id}
+        className="mx-auto max-w-[85%] rounded-full bg-white/80 px-4 py-1.5 text-center text-[11px] font-semibold text-slate-500 ring-1 ring-slate-200/70"
+      >
+        {msg.text}
+      </div>
+    );
+  }
+
+  const mine = isOutboundSupportBubble(msg);
+  const status = deliveryStatusLabel(msg.deliveryStatus);
+  return (
+    <div
+      data-testid={mine ? "support-bubble-outbound" : "support-bubble-inbound"}
+      data-direction={mine ? "outbound" : "inbound"}
+      dir="ltr"
+      className={mine ? "flex justify-end" : "flex justify-start"}
+    >
+      <div
+        dir="rtl"
+        className={`max-w-[min(78%,28rem)] rounded-[22px] px-4 py-3 text-sm leading-relaxed shadow-sm ${
+          mine
+            ? msg.deliveryStatus === "failed"
+              ? "rounded-bl-md bg-rose-600 text-white"
+              : "rounded-bl-md bg-[#7C4DFF] text-white shadow-[#7C4DFF]/20"
+            : msg.senderType === "bot"
+              ? "rounded-br-md border border-slate-200 bg-white text-slate-800"
+              : "rounded-br-md border border-emerald-100 bg-emerald-50 text-slate-800"
+        }`}
+      >
+        <p className="mb-1 text-[10px] font-black opacity-80">
+          {mine
+            ? msg.senderName || "Bizuply"
+            : msg.senderType === "bot"
+              ? "בוט"
+              : contactName || msg.senderName || "לקוח"}
+        </p>
+        <ChatMessageBody text={msg.text || ""} mine={mine} />
+        {msg.metadata?.source === "guided_demo" && msg.metadata?.invitationId ? (
+          <Link
+            to={`/admin/guided-demos/${msg.metadata.invitationId}`}
+            className={`mt-2 inline-flex rounded-full px-2 py-0.5 text-[10px] font-black ${
+              mine
+                ? "bg-white/15 text-white ring-1 ring-white/25"
+                : "bg-violet-50 text-violet-700 ring-1 ring-violet-100"
+            }`}
+          >
+            דמו מודרך
+          </Link>
+        ) : null}
+        <p className="mt-1.5 text-[10px] font-semibold opacity-70">
+          {formatTime(msg.createdAt)}
+          {status ? ` · ${status}` : ""}
+        </p>
+      </div>
+    </div>
+  );
 }
 
 function mergeMessagesById(
@@ -217,6 +403,7 @@ export default function AdminSupportChat() {
         setConversations((prev) =>
           prev.map((c) => (c._id === id ? { ...c, unreadByAgent: 0 } : c))
         );
+        window.dispatchEvent(new Event("bizuply:adminSupportRead"));
       } catch (err: any) {
         if (!silent) {
           setError(err?.response?.data?.error || "שגיאה בטעינת הודעות");
@@ -351,12 +538,26 @@ export default function AdminSupportChat() {
           return [...prev, message];
         });
       }
-      if (message?.senderType === "visitor") {
+      if (message?.senderType === "visitor" || message?.direction === "inbound") {
         showLocalAlert(
-          "הודעה חדשה בתמיכה",
-          `${conversation?.name || "אורח"}: ${message.text || ""}`,
+          conversation?.channel === "whatsapp"
+            ? "הודעה חדשה ב-WhatsApp"
+            : "הודעה חדשה בתמיכה",
+          `${conversation?.name || conversation?.phone || "אורח"}: ${message.text || ""}`,
           conversation?._id
         );
+      }
+    };
+
+    const onMessageStatus = (payload: any) => {
+      const conversation = payload?.conversation;
+      const message = payload?.message;
+      if (conversation) upsertConversation(conversation);
+      if (
+        message &&
+        String(conversation?._id) === String(selectedIdRef.current)
+      ) {
+        setMessages((prev) => mergeMessagesById(prev, [message]));
       }
     };
 
@@ -388,6 +589,7 @@ export default function AdminSupportChat() {
 
     socket.emit("joinRoom", "admin-support");
     socket.on("support:newMessage", onNewMessage);
+    socket.on("support:messageStatus", onMessageStatus);
     socket.on("support:conversationUpdated", onUpdated);
     socket.on("support:conversationAssigned", onUpdated);
     socket.on("support:waiting", onUpdated);
@@ -397,6 +599,7 @@ export default function AdminSupportChat() {
 
     return () => {
       socket.off("support:newMessage", onNewMessage);
+      socket.off("support:messageStatus", onMessageStatus);
       socket.off("support:conversationUpdated", onUpdated);
       socket.off("support:conversationAssigned", onUpdated);
       socket.off("support:waiting", onUpdated);
@@ -599,7 +802,7 @@ export default function AdminSupportChat() {
               צ׳אט שירות לקוחות
             </h1>
             <p className="mt-2 text-sm font-semibold text-slate-500">
-              שיחות בזמן אמת מהאתר — מועברות לנציג המחובר
+              שיחות אתר ו-WhatsApp באותו צ׳אט תמיכה — כולל הזמנות דמו מודרך
             </p>
           </div>
 
@@ -635,7 +838,7 @@ export default function AdminSupportChat() {
           </div>
         )}
 
-        <div className="grid min-h-[72vh] grid-cols-1 overflow-hidden rounded-[28px] border border-slate-100 bg-white shadow-[0_16px_40px_rgba(15,23,42,0.06)] lg:grid-cols-[360px_1fr]">
+        <div className="grid min-h-[calc(100dvh-11rem)] grid-cols-1 overflow-hidden rounded-[28px] border border-slate-100 bg-white shadow-[0_16px_40px_rgba(15,23,42,0.06)] lg:grid-cols-[360px_1fr]">
           <aside
             className={`border-b border-slate-100 bg-gradient-to-b from-white to-slate-50/80 lg:border-b-0 lg:border-l lg:border-slate-100 ${
               selectedId ? "hidden lg:block" : "block"
@@ -701,7 +904,7 @@ export default function AdminSupportChat() {
                               {c.name || "אורח"}
                             </p>
                             <p className="truncate text-[11px] font-semibold text-slate-500">
-                              {c.email || "ללא אימייל"}
+                              {conversationListSubtitle(c)}
                             </p>
                           </div>
                           <div className="shrink-0 text-left">
@@ -770,7 +973,8 @@ export default function AdminSupportChat() {
                         {selected.name || "אורח"}
                       </h2>
                       <p className="truncate text-xs font-semibold text-slate-500">
-                        {selected.email || "—"} ·{" "}
+                        {conversationIdentityLine(selected)}{" "}
+                        ·{" "}
                         <span
                           className={`inline-flex rounded-full px-2 py-0.5 text-[10px] font-black ${statusTone(
                             selected.status
@@ -779,9 +983,37 @@ export default function AdminSupportChat() {
                           {statusLabel(selected.status)}
                         </span>
                       </p>
+                      {(selected.sourceLeadId || selected.sourceCustomerId) && (
+                        <p className="mt-1 flex flex-wrap gap-2 text-[11px] font-bold">
+                          {selected.sourceLeadId ? (
+                            <Link
+                              to={`/admin/early-access?lead=${encodeURIComponent(selected.sourceLeadId)}`}
+                              className="text-[#7C4DFF] underline"
+                            >
+                              ליד מקושר
+                            </Link>
+                          ) : null}
+                          {selected.sourceCustomerId ? (
+                            <Link
+                              to="/admin/customers"
+                              className="text-[#7C4DFF] underline"
+                            >
+                              לקוח מקושר
+                            </Link>
+                          ) : null}
+                        </p>
+                      )}
                     </div>
                   </div>
                   <div className="flex flex-wrap gap-2">
+                    {selected.sourceLeadId ? (
+                      <Link
+                        to={`/admin/early-access?lead=${encodeURIComponent(selected.sourceLeadId)}`}
+                        className="inline-flex items-center gap-1.5 rounded-2xl border border-violet-200 bg-violet-50 px-3.5 py-2 text-xs font-black text-violet-800"
+                      >
+                        פתיחת הפנייה
+                      </Link>
+                    ) : null}
                     <button
                       type="button"
                       onClick={() => void openCustomerHistory()}
@@ -930,53 +1162,13 @@ export default function AdminSupportChat() {
                       ) : historyPreviewMessages.length === 0 ? (
                         <p className="text-sm text-slate-500">אין הודעות בשיחה</p>
                       ) : (
-                        historyPreviewMessages.map((msg) => {
-                          if (msg.senderType === "system") {
-                            return (
-                              <div
-                                key={msg._id}
-                                className="mx-auto max-w-[85%] rounded-full bg-white/80 px-4 py-1.5 text-center text-[11px] font-semibold text-slate-500 ring-1 ring-slate-200/70"
-                              >
-                                {msg.text}
-                              </div>
-                            );
-                          }
-                          const mine = msg.senderType === "agent";
-                          return (
-                            <div
-                              key={msg._id}
-                              dir="ltr"
-                              className={
-                                mine ? "flex justify-end" : "flex justify-start"
-                              }
-                            >
-                              <div
-                                dir="rtl"
-                                className={`max-w-[78%] rounded-[22px] px-4 py-3 text-sm leading-relaxed shadow-sm ${
-                                  mine
-                                    ? "rounded-bl-md bg-[#7C4DFF] text-white shadow-[#7C4DFF]/20"
-                                    : msg.senderType === "bot"
-                                      ? "rounded-br-md border border-slate-200 bg-white text-slate-800"
-                                      : "rounded-br-md border border-emerald-100 bg-emerald-50 text-slate-800"
-                                }`}
-                              >
-                                <p className="mb-1 text-[10px] font-black opacity-80">
-                                  {msg.senderType === "visitor"
-                                    ? selected.name || "לקוח"
-                                    : msg.senderType === "bot"
-                                      ? "בוט"
-                                      : msg.senderName || "נציג"}
-                                </p>
-                                <p className="whitespace-pre-wrap break-words font-semibold">
-                                  {msg.text}
-                                </p>
-                                <p className="mt-1.5 text-[10px] font-semibold opacity-70">
-                                  {formatTime(msg.createdAt)}
-                                </p>
-                              </div>
-                            </div>
-                          );
-                        })
+                        historyPreviewMessages.map((msg) => (
+                          <ChatBubble
+                            key={msg._id}
+                            msg={msg}
+                            contactName={selected.name}
+                          />
+                        ))
                       )}
                     </>
                   ) : null}
@@ -988,54 +1180,13 @@ export default function AdminSupportChat() {
                           טוען הודעות...
                         </p>
                       ) : (
-                        messages.map((msg) => {
-                          if (msg.senderType === "system") {
-                            return (
-                              <div
-                                key={msg._id}
-                                className="mx-auto max-w-[85%] rounded-full bg-white/80 px-4 py-1.5 text-center text-[11px] font-semibold text-slate-500 ring-1 ring-slate-200/70"
-                              >
-                                {msg.text}
-                              </div>
-                            );
-                          }
-
-                          const mine = msg.senderType === "agent";
-                          return (
-                            <div
-                              key={msg._id}
-                              dir="ltr"
-                              className={
-                                mine ? "flex justify-end" : "flex justify-start"
-                              }
-                            >
-                              <div
-                                dir="rtl"
-                                className={`max-w-[78%] rounded-[22px] px-4 py-3 text-sm leading-relaxed shadow-sm ${
-                                  mine
-                                    ? "rounded-bl-md bg-[#7C4DFF] text-white shadow-[#7C4DFF]/20"
-                                    : msg.senderType === "bot"
-                                      ? "rounded-br-md border border-slate-200 bg-white text-slate-800"
-                                      : "rounded-br-md border border-emerald-100 bg-emerald-50 text-slate-800"
-                                }`}
-                              >
-                                <p className="mb-1 text-[10px] font-black opacity-80">
-                                  {msg.senderType === "visitor"
-                                    ? selected.name || "לקוח"
-                                    : msg.senderType === "bot"
-                                      ? "בוט"
-                                      : msg.senderName || "נציג"}
-                                </p>
-                                <p className="whitespace-pre-wrap break-words font-semibold">
-                                  {msg.text}
-                                </p>
-                                <p className="mt-1.5 text-[10px] font-semibold opacity-70">
-                                  {formatTime(msg.createdAt)}
-                                </p>
-                              </div>
-                            </div>
-                          );
-                        })
+                        messages.map((msg) => (
+                          <ChatBubble
+                            key={msg._id}
+                            msg={msg}
+                            contactName={selected.name}
+                          />
+                        ))
                       )}
                       <div ref={messagesEndRef} />
                     </>
@@ -1043,20 +1194,28 @@ export default function AdminSupportChat() {
                 </div>
 
                 {!historyPreviewId && (
-                  <footer className="border-t border-slate-100 bg-white px-4 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
-                    <div className="flex items-center gap-2 rounded-[22px] border border-slate-200 bg-slate-50 p-2 shadow-inner">
-                      <input
-                        type="text"
+                  <footer className="sticky bottom-0 z-10 border-t border-slate-100 bg-white px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+                    <div className="flex items-end gap-2 rounded-[22px] border border-slate-200 bg-slate-50 p-2 shadow-inner">
+                      <textarea
+                        data-testid="support-chat-composer"
                         value={input}
+                        rows={1}
                         disabled={selected.status === "closed" || sending}
                         onChange={(e) => setInput(e.target.value)}
-                        onKeyDown={(e) => e.key === "Enter" && sendMessage()}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter" && !e.shiftKey) {
+                            e.preventDefault();
+                            void sendMessage();
+                          }
+                        }}
                         placeholder={
                           selected.status === "closed"
                             ? "השיחה סגורה"
-                            : "כתבו תשובה ללקוח..."
+                            : selected.channel === "whatsapp"
+                              ? "תשובה ב-WhatsApp..."
+                              : "כתבו תשובה ללקוח..."
                         }
-                        className="h-11 min-h-11 flex-1 rounded-2xl bg-transparent px-3 text-sm font-semibold text-slate-900 outline-none placeholder:text-slate-400 disabled:opacity-50"
+                        className="max-h-32 min-h-11 flex-1 resize-none rounded-2xl bg-transparent px-3 py-2.5 text-sm font-semibold text-slate-900 outline-none placeholder:text-slate-400 disabled:opacity-50"
                       />
                       <button
                         type="button"

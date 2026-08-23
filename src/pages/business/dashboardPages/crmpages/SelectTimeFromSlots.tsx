@@ -18,6 +18,9 @@ type SelectTimeFromSlotsProps = {
   serviceId: string;
   schedule?: ScheduleDay[];
   duration?: number;
+  /** When editing, the appointment must not hide its own slot. */
+  excludeAppointmentId?: string | null;
+  demoTarget?: string;
 };
 
 type ApiError = {
@@ -37,6 +40,8 @@ export default function SelectTimeFromSlots({
   serviceId,
   schedule = [],
   duration = 30,
+  excludeAppointmentId = null,
+  demoTarget,
 }: SelectTimeFromSlotsProps) {
   const [availableSlots, setAvailableSlots] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
@@ -97,17 +102,22 @@ export default function SelectTimeFromSlots({
             serviceId,
             date,
             duration,
+            ...(excludeAppointmentId
+              ? { excludeAppointmentId }
+              : {}),
           },
         });
 
         const slots = Array.isArray(res.data?.slots) ? res.data.slots : [];
 
-        setAvailableSlots(slots);
+        // Keep the time already on the appointment selectable, so editing other
+        // fields never forces the user to move the appointment.
+        const withCurrent =
+          localSelectedTime && !slots.includes(localSelectedTime)
+            ? [...slots, localSelectedTime].sort()
+            : slots;
 
-        if (localSelectedTime && !slots.includes(localSelectedTime)) {
-          setLocalSelectedTime("");
-          onChange("");
-        }
+        setAvailableSlots(withCurrent);
       } catch (err) {
         const apiErr = err as ApiError;
 
@@ -141,7 +151,7 @@ export default function SelectTimeFromSlots({
 
   if (!date) {
     return (
-      <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm font-bold text-slate-500">
+      <div data-demo-target={demoTarget} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm font-bold text-slate-500">
         Please select a date first
       </div>
     );
@@ -149,7 +159,7 @@ export default function SelectTimeFromSlots({
 
   if (!serviceId) {
     return (
-      <div className="rounded-2xl border border-amber-100 bg-amber-50 px-4 py-4 text-sm font-bold text-amber-700">
+      <div data-demo-target={demoTarget} className="rounded-2xl border border-amber-100 bg-amber-50 px-4 py-4 text-sm font-bold text-amber-700">
         Select a service first to see available times
       </div>
     );
@@ -157,7 +167,7 @@ export default function SelectTimeFromSlots({
 
   if (!isDayValid) {
     return (
-      <div className="rounded-2xl border border-amber-100 bg-amber-50 px-4 py-4 text-sm font-bold text-amber-700">
+      <div data-demo-target={demoTarget} className="rounded-2xl border border-amber-100 bg-amber-50 px-4 py-4 text-sm font-bold text-amber-700">
         This day is closed
       </div>
     );
@@ -165,7 +175,7 @@ export default function SelectTimeFromSlots({
 
   if (loading) {
     return (
-      <div className="rounded-2xl border border-violet-100 bg-violet-50 px-4 py-4 text-sm font-bold text-violet-700">
+      <div data-demo-target={demoTarget} className="rounded-2xl border border-violet-100 bg-violet-50 px-4 py-4 text-sm font-bold text-violet-700">
         Loading available times...
       </div>
     );
@@ -173,7 +183,7 @@ export default function SelectTimeFromSlots({
 
   if (error) {
     return (
-      <div className="rounded-2xl border border-red-100 bg-red-50 px-4 py-4 text-sm font-bold text-red-700">
+      <div data-demo-target={demoTarget} className="rounded-2xl border border-red-100 bg-red-50 px-4 py-4 text-sm font-bold text-red-700">
         {error}
       </div>
     );
@@ -181,14 +191,14 @@ export default function SelectTimeFromSlots({
 
   if (availableSlots.length === 0) {
     return (
-      <div className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm font-bold text-slate-500">
+      <div data-demo-target={demoTarget} className="rounded-2xl border border-slate-200 bg-slate-50 px-4 py-4 text-sm font-bold text-slate-500">
         No available slots for this date
       </div>
     );
   }
 
   return (
-    <div className="space-y-3">
+    <div data-demo-target={demoTarget} className="space-y-3">
       {localSelectedTime ? (
         <div className="flex flex-col gap-3 rounded-2xl border border-emerald-100 bg-emerald-50 p-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
@@ -211,6 +221,7 @@ export default function SelectTimeFromSlots({
       ) : (
         <div>
           <select
+            data-demo-target={demoTarget}
             value={localSelectedTime}
             onChange={(event) => handleSelectTime(event.target.value)}
             className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 text-sm font-semibold text-slate-900 outline-none transition focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-100"

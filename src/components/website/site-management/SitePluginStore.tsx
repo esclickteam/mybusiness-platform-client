@@ -28,8 +28,10 @@ type SitePluginStoreProps = {
   enabledPlugins: string[];
   detectedFromSite?: string[];
   saving?: boolean;
+  savingKey?: string | null;
   containedHelp?: boolean;
   onToggle: (pluginKey: string, enabled: boolean) => void;
+  onUpgrade?: (pluginKey: string) => void;
 };
 
 function PluginStoreCard({
@@ -39,6 +41,7 @@ function PluginStoreCard({
   saving,
   onOpen,
   onToggle,
+  onUpgrade,
 }: {
   plugin: SitePluginDefinition;
   isEnabled: boolean;
@@ -46,6 +49,7 @@ function PluginStoreCard({
   saving: boolean;
   onOpen: () => void;
   onToggle: () => void;
+  onUpgrade?: () => void;
 }) {
   const Icon = getPluginIcon(plugin.key);
   const accent = getPluginAccent(plugin.key, plugin.accent);
@@ -85,13 +89,13 @@ function PluginStoreCard({
             <span />
           )}
 
-          {isEnabled ? (
+          {isEnabled && plugin.entitled === true ? (
             <span className="rounded-full bg-emerald-500 px-2.5 py-0.5 text-[11px] font-semibold text-white shadow-sm">
-              {plugin.statusLabel || "מותקן"}
+              {plugin.statusLabel || "מנוי פעיל"}
             </span>
-          ) : plugin.key === "client-portal" && plugin.billingEnabled ? (
+          ) : plugin.statusLabel ? (
             <span className="rounded-full bg-slate-700 px-2.5 py-0.5 text-[11px] font-semibold text-white shadow-sm">
-              {plugin.statusLabel || "לא פעיל"}
+              {plugin.statusLabel}
             </span>
           ) : null}
         </div>
@@ -135,22 +139,42 @@ function PluginStoreCard({
           <span className="text-xs font-semibold text-emerald-600">
             {formatPluginPrice(plugin)}
           </span>
+          {plugin.secondaryCtaLabel && onUpgrade ? (
+            <button
+              type="button"
+              data-plugin-upgrade={plugin.key}
+              disabled={saving}
+              onClick={(e) => {
+                e.stopPropagation();
+                onUpgrade();
+              }}
+              className="shrink-0 rounded-full border border-blue-200 bg-white px-3 py-1.5 text-[11px] font-bold text-blue-700 hover:bg-blue-50 disabled:opacity-60"
+            >
+              {plugin.secondaryCtaLabel}
+            </button>
+          ) : null}
           <button
             type="button"
+            data-plugin-cta={plugin.key}
+            data-plugin-purchase-tier={
+              plugin.billingEnabled && plugin.entitled !== true
+                ? plugin.purchaseTier || "pro"
+                : undefined
+            }
             disabled={saving}
             onClick={(e) => {
               e.stopPropagation();
               onToggle();
             }}
             className={`shrink-0 rounded-full px-3 py-1.5 text-[11px] font-bold transition disabled:opacity-60 ${
-              isEnabled
+              isEnabled && plugin.entitled === true
                 ? "border border-slate-200 bg-white text-slate-600 hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600"
                 : "bg-blue-600 text-white hover:bg-blue-700"
             }`}
           >
             {saving ? (
               <BizuplyLoader size="xs" compact />
-            ) : isEnabled ? (
+            ) : isEnabled && plugin.entitled === true ? (
               "הסרה"
             ) : plugin.ctaLabel ? (
               plugin.ctaLabel
@@ -169,8 +193,10 @@ export default function SitePluginStore({
   enabledPlugins,
   detectedFromSite = [],
   saving = false,
+  savingKey = null,
   containedHelp = false,
   onToggle,
+  onUpgrade,
 }: SitePluginStoreProps) {
   const [category, setCategory] = useState("all");
   const [query, setQuery] = useState("");
@@ -377,9 +403,8 @@ export default function SitePluginStore({
           </div>
 
           <p className="mb-5 rounded-lg border border-blue-100 bg-blue-50/60 px-4 py-2.5 text-xs leading-relaxed text-blue-900">
-            רוב התוספים זמינים <strong>בחינם</strong> בשלב הבנייה. «אזור אישי»
-            הוא מנוי ב־199 ₪ לחודש.
-            בלבד — ללא חיוב.
+            תוספים בתשלום נפתחים ב-Stripe Checkout. בלי מנוי תראו מחיר וכפתור
+            «רכישה». אזור אישי הוא מנוי ב־199 ₪ לחודש.
           </p>
 
           {/* 4-column grid */}
@@ -390,11 +415,12 @@ export default function SitePluginStore({
                 plugin={plugin}
                 isEnabled={enabledSet.has(plugin.key)}
                 wasDetected={detectedSet.has(plugin.key)}
-                saving={saving}
+                saving={saving || savingKey === plugin.key}
                 onOpen={() => setDetailPlugin(plugin)}
                 onToggle={() =>
                   onToggle(plugin.key, !enabledSet.has(plugin.key))
                 }
+                onUpgrade={onUpgrade ? () => onUpgrade(plugin.key) : undefined}
               />
             ))}
           </div>

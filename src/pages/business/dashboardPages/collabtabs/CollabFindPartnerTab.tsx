@@ -28,6 +28,8 @@ import BizuplyLoader, {
 import { fetchMyBusinessId, resolveBusinessId } from "./collabUtils";
 import { useTranslation } from "react-i18next";
 import { useLocaleDir } from "../../../../hooks/useLocaleDir";
+import { isGuidedDemoActive } from "@/guidedDemo/sessionStore";
+import { DEMO_COLLAB_PARTNERS } from "@/guidedDemo/demoOverlayData";
 
 type BusinessPartner = {
   _id: string;
@@ -55,6 +57,7 @@ type PartnerCardProps = {
   onSendProposal: (business: BusinessPartner) => void;
   onStartChat: (business: BusinessPartner) => void;
   chatLoadingId: string | null;
+  demoHighlight?: boolean;
 };
 
 function PartnerCard({
@@ -64,6 +67,7 @@ function PartnerCard({
   onSendProposal,
   onStartChat,
   chatLoadingId,
+  demoHighlight = false,
 }: PartnerCardProps) {
   const { t } = useTranslation();
   const dir = useLocaleDir();
@@ -80,7 +84,10 @@ function PartnerCard({
         isMine ? "border-violet-200 ring-4 ring-violet-50" : "border-slate-100",
       ].join(" ")}
     >
-      <div className="relative overflow-hidden border-b border-slate-100 bg-gradient-to-br from-white via-sky-50 to-violet-50 p-5">
+      <div
+        data-demo-target={demoHighlight ? "collab-partner-card" : undefined}
+        className="relative overflow-hidden border-b border-slate-100 bg-gradient-to-br from-white via-sky-50 to-violet-50 p-5"
+      >
         <div className="pointer-events-none absolute -left-12 -top-16 h-44 w-44 rounded-full bg-violet-200/40 blur-3xl" />
         <div className="pointer-events-none absolute bottom-0 right-10 h-32 w-32 rounded-full bg-sky-200/50 blur-3xl" />
 
@@ -176,6 +183,7 @@ function PartnerCard({
             <button
               type="button"
               onClick={() => onSendProposal(business)}
+              data-demo-target={demoHighlight ? "collab-partner-cta" : undefined}
               className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-5 text-sm font-black text-slate-800 shadow-[0_14px_30px_rgba(124,58,237,0.22)] transition hover:-translate-y-0.5"
             >
               <Send className="h-5 w-5" />
@@ -213,6 +221,10 @@ function PartnerCard({
   );
 }
 
+function isDemoPartnerId(id?: string | null) {
+  return String(id || "").startsWith("demo-partner-");
+}
+
 export default function CollabFindPartnerTab({
   searchMode,
   searchCategory,
@@ -242,10 +254,22 @@ export default function CollabFindPartnerTab({
       ]);
 
       setMyBusinessId(businessId);
-      setPartners(partnersRes.data.relevant || []);
+      const loaded = (partnersRes.data.relevant || []) as BusinessPartner[];
+      if (isGuidedDemoActive()) {
+        const existingIds = new Set(loaded.map((partner) => String(partner._id)));
+        const extras = DEMO_COLLAB_PARTNERS.filter((partner) => !existingIds.has(partner._id));
+        setPartners([...extras, ...loaded]);
+      } else {
+        setPartners(loaded);
+      }
     } catch (fetchError) {
       console.error("Failed to load partners:", fetchError);
-      setError(t("collab.findPartner.loadError"));
+      if (isGuidedDemoActive()) {
+        setPartners(DEMO_COLLAB_PARTNERS);
+        setError(null);
+      } else {
+        setError(t("collab.findPartner.loadError"));
+      }
     } finally {
       setLoading(false);
     }
@@ -326,6 +350,7 @@ export default function CollabFindPartnerTab({
 
   const handleOpenProfile = useCallback(
     (business: BusinessPartner) => {
+      if (isDemoPartnerId(business._id)) return;
       navigate(`/business-profile/${business._id}`);
     },
     [navigate]
@@ -333,6 +358,7 @@ export default function CollabFindPartnerTab({
 
   const handleSendProposal = useCallback(
     (business: BusinessPartner) => {
+      if (isDemoPartnerId(business._id)) return;
       navigate(`/business-profile/${business._id}`, {
         state: { openProposal: true },
       });
@@ -342,6 +368,7 @@ export default function CollabFindPartnerTab({
 
   const handleStartChat = useCallback(
     async (business: BusinessPartner) => {
+      if (isDemoPartnerId(business._id)) return;
       const businessId = myBusinessId || (await fetchMyBusinessId());
 
       if (!businessId) {
@@ -398,7 +425,7 @@ export default function CollabFindPartnerTab({
   }
 
   return (
-    <div dir={dir} className="space-y-6 text-start">
+    <div dir={dir} className="space-y-6 text-start" data-demo-target="collab-find-area">
       <section className="relative overflow-hidden rounded-[2rem] border border-sky-100 bg-gradient-to-br from-white via-sky-50 to-violet-50 p-5 shadow-[0_18px_70px_rgba(15,23,42,0.06)] sm:p-7">
         <div className="pointer-events-none absolute -left-20 -top-20 h-72 w-72 rounded-full bg-violet-200/35 blur-3xl" />
         <div className="pointer-events-none absolute bottom-0 right-1/3 h-56 w-56 rounded-full bg-sky-200/45 blur-3xl" />
@@ -485,6 +512,7 @@ export default function CollabFindPartnerTab({
                 value={localSearch}
                 onChange={(event) => setLocalSearch(event.target.value)}
                 placeholder={t("collab.findPartner.searchPlaceholder")}
+                data-demo-target="collab-search"
                 className="h-12 w-full rounded-2xl border border-slate-200 bg-slate-50 pr-12 pl-4 text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:bg-white focus:ring-4 focus:ring-violet-100 sm:w-[360px]"
               />
             </div>
@@ -498,7 +526,7 @@ export default function CollabFindPartnerTab({
             ref={gridRef}
             className="grid gap-4 p-5 md:grid-cols-2 2xl:grid-cols-3"
           >
-            {filteredPartners.map((business) => (
+            {filteredPartners.map((business, index) => (
               <PartnerCard
                 key={business._id}
                 business={business}
@@ -507,6 +535,7 @@ export default function CollabFindPartnerTab({
                 onSendProposal={handleSendProposal}
                 onStartChat={handleStartChat}
                 chatLoadingId={chatLoadingId}
+                demoHighlight={index === 0}
               />
             ))}
           </div>

@@ -324,6 +324,9 @@ export default function AccessibilityWidget({
       className="bizuply-a11y-root"
       style={{ ["--biz-a11y-primary" as string]: accent }}
       data-bizuply-accessibility-widget="true"
+      data-bizuply-widget="accessibility"
+      data-bizuply-plugin="accessibility"
+      data-bizuply-plugin-runtime="true"
       data-mode={mode}
     >
       <button

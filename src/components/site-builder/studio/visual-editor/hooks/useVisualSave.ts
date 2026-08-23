@@ -1199,10 +1199,10 @@ export function useVisualSave({
     if (dataRef) dataRef.current = committedData;
 
     const currentData = normalizeVisualData(committedData);
-    const isStoreTemplate = /velmora|scentora/i.test(String(renderer?.key || ""));
+    const isStoreTemplate = /scentora|chanel|novastra/i.test(String(renderer?.key || ""));
 
     /*
-      Store/Velmora canvases have thousands of visual-edit nodes.
+      Store canvases have thousands of visual-edit nodes.
       Walking them on save burned ~10s before the PUT and re-inflated
       harvested maps. Visual-react already holds the live React state.
     */
@@ -1321,7 +1321,7 @@ export function useVisualSave({
         /*
           Visual-react restores and publishes from template + data.
           Cloning the live canvas HTML is uniquely expensive on Store
-          (Velmora galleries + product grids) and a static snapshot also
+          (store galleries + product grids) and a static snapshot also
           replaces the live React store on the public host, breaking cart.
         */
         const htmlSnapshot = "";

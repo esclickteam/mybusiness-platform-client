@@ -1378,7 +1378,7 @@ export default function VisualAddLayersPanel({
   const panelClassName =
     mode === "add"
       ? "relative flex h-[min(88vh,900px)] w-[min(1420px,calc(100vw-40px))] max-h-[calc(100vh-40px)] overflow-hidden rounded-[20px] border border-slate-200 bg-white shadow-[0_32px_100px_rgba(15,23,42,0.28)]"
-      : "fixed bottom-4 right-[80px] top-[64px] z-[2147483200] flex w-[480px] max-w-[calc(100vw-112px)] overflow-hidden rounded-[30px] border border-slate-200 bg-white shadow-[0_32px_100px_rgba(15,23,42,0.24)]";
+      : "fixed bottom-4 right-[80px] top-[64px] z-[2147483700] flex w-[480px] max-w-[calc(100vw-112px)] overflow-hidden rounded-[30px] border border-slate-200 bg-white shadow-[0_32px_100px_rgba(15,23,42,0.24)]";
 
   const title =
     mode === "add"
@@ -1471,6 +1471,7 @@ export default function VisualAddLayersPanel({
                 active={addTab === "plugins"}
                 icon={<Puzzle className="h-5 w-5" />}
                 label="תוספים"
+                testId="visual-add-tab-plugins"
                 onClick={() => setAddTab("plugins")}
               />
 

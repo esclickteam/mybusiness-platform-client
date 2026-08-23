@@ -1,0 +1,24 @@
+import API from "../api";
+
+export async function getPublicSiteResource<T = any>(
+  slug: string,
+  resourcePath: string
+): Promise<T> {
+  const path = resourcePath.startsWith("/") ? resourcePath : `/${resourcePath}`;
+  const { data } = await API.get(
+    `/site-builder/public/${encodeURIComponent(slug)}${path}`
+  );
+  return data as T;
+}
+
+export async function postPublicSiteEvent(
+  slug: string,
+  payload: Record<string, unknown>
+): Promise<void> {
+  if (!slug) return;
+  try {
+    await API.post(`/site-builder/public/${encodeURIComponent(slug)}/events`, payload);
+  } catch {
+    // public analytics must never block the visitor UI
+  }
+}

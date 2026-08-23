@@ -1,10 +1,12 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 
+import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { TemplateText } from "../shared/TemplateText";
 import {
   templateMediaProps,
   templateSectionProps,
 } from "../shared/templateVisualAttrs";
+import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
 import { idoEditorCss } from "./editorCss";
 
 export type IdoPageId =
@@ -19,18 +21,31 @@ export const idoPages: Array<{
   id: IdoPageId;
   label: string;
   path: string;
+  slug: string;
 }> = [
-  { id: "home", label: "בית", path: "/" },
-  { id: "services", label: "שירותים", path: "/services" },
-  { id: "about", label: "אודות", path: "/about" },
-  { id: "gallery", label: "קייסים", path: "/gallery" },
-  { id: "booking", label: "שיחת ייעוץ", path: "/booking" },
-  { id: "contact", label: "צור קשר", path: "/contact" },
+  { id: "home", label: "בית", path: "/", slug: "/" },
+  { id: "services", label: "שירותים", path: "/services", slug: "/services" },
+  { id: "about", label: "אודות", path: "/about", slug: "/about" },
+  { id: "gallery", label: "קייסים", path: "/gallery", slug: "/gallery" },
+  { id: "booking", label: "שיחת ייעוץ", path: "/booking", slug: "/booking" },
+  { id: "contact", label: "צור קשר", path: "/contact", slug: "/contact" },
 ];
 
+const allowedPages = idoPages.map((page) => page.id);
+
 type IdoPagesProps = {
-  initialPage?: IdoPageId;
+  initialPage?: IdoPageId | string;
+  initialPageId?: string;
+  page?: string;
+  pageId?: string;
+  activePageId?: string;
+  currentPageId?: string;
   mode?: "preview" | "editor" | "edit" | "site" | string;
+  onPageChange?: (pageId: string) => void;
+  isPublic?: boolean;
+  viewMode?: string;
+  runtimeMode?: string;
+  data?: Record<string, unknown>;
 };
 
 function isIdoEditMode(mode?: string) {
@@ -38,7 +53,7 @@ function isIdoEditMode(mode?: string) {
   return value === "edit" || value === "editor";
 }
 
-function useReveal(editMode = false) {
+function useReveal(editMode = false, activePageId = "home") {
   const [visible, setVisible] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
@@ -55,8 +70,11 @@ function useReveal(editMode = false) {
       return undefined;
     }
 
+    const root = document.querySelector(
+      `[data-visual-page-panel="${activePageId}"]`,
+    );
     const nodes = Array.from(
-      document.querySelectorAll<HTMLElement>("[data-ido-reveal]"),
+      (root || document).querySelectorAll<HTMLElement>("[data-ido-reveal]"),
     );
 
     const observer = new IntersectionObserver(
@@ -78,7 +96,7 @@ function useReveal(editMode = false) {
 
     nodes.forEach((node) => observer.observe(node));
     return () => observer.disconnect();
-  }, [editMode]);
+  }, [editMode, activePageId]);
 
   return visible;
 }
@@ -156,16 +174,34 @@ function FormFieldSlot({
   );
 }
 
-function Header() {
+function Header({
+  currentPage,
+  goTo,
+}: {
+  currentPage: string;
+  goTo: (pageId: string) => void;
+}) {
+  const navItems: Array<{ id: IdoPageId; editId: string; editLabel: string; label: string }> = [
+    { id: "services", editId: "header.nav.services", editLabel: "ניווט שירותים", label: "שירותים" },
+    { id: "about", editId: "header.nav.about", editLabel: "ניווט אודות", label: "אודות" },
+    { id: "gallery", editId: "header.nav.gallery", editLabel: "ניווט קייסים", label: "קייסים" },
+    { id: "booking", editId: "header.nav.booking", editLabel: "ניווט ייעוץ", label: "ייעוץ" },
+  ];
+
   return (
     <header
       {...templateSectionProps("header", "Header", "header")}
       data-template-section-type="header"
+      data-visual-flow-lock="true"
       className="sticky top-0 z-50 px-4 pt-4 md:px-8"
       dir="rtl"
     >
-      <div className="mx-auto flex max-w-7xl items-center justify-between rounded-full border border-white/10 bg-[#07100e]/75 px-4 py-3 text-white shadow-[0_18px_70px_rgba(0,0,0,0.25)] backdrop-blur-2xl">
-        <a href="#home" className="flex items-center gap-3">
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 rounded-full border border-white/10 bg-[#07100e]/75 px-4 py-3 text-white shadow-[0_18px_70px_rgba(0,0,0,0.25)] backdrop-blur-2xl">
+        <button
+          type="button"
+          onClick={() => goTo("home")}
+          className="flex shrink-0 items-center gap-3"
+        >
           <TemplateText
             as="span"
             editId="header.logo"
@@ -184,46 +220,48 @@ function Header() {
           >
             SOCIAL STUDIO
           </TemplateText>
-        </a>
+        </button>
 
-        <nav className="hidden items-center gap-7 text-sm font-medium text-white/65 md:flex">
-          <a href="#services" className="transition hover:text-[#c9f4dc]">
-            <TemplateText as="span" editId="header.nav.services" editLabel="ניווט שירותים">
-              שירותים
-            </TemplateText>
-          </a>
-          <a href="#about" className="transition hover:text-[#c9f4dc]">
-            <TemplateText as="span" editId="header.nav.about" editLabel="ניווט אודות">
-              אודות
-            </TemplateText>
-          </a>
-          <a href="#gallery" className="transition hover:text-[#c9f4dc]">
-            <TemplateText as="span" editId="header.nav.gallery" editLabel="ניווט קייסים">
-              קייסים
-            </TemplateText>
-          </a>
-          <a href="#booking" className="transition hover:text-[#c9f4dc]">
-            <TemplateText as="span" editId="header.nav.booking" editLabel="ניווט ייעוץ">
-              ייעוץ
-            </TemplateText>
-          </a>
+        <nav className="hidden shrink-0 items-center gap-7 whitespace-nowrap text-sm font-medium text-white/65 md:flex">
+          {navItems.map((item) => (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => goTo(item.id)}
+              className={[
+                "shrink-0 whitespace-nowrap transition hover:text-[#c9f4dc]",
+                currentPage === item.id ? "text-[#c9f4dc]" : "",
+              ].join(" ")}
+            >
+              <TemplateText as="span" editId={item.editId} editLabel={item.editLabel}>
+                {item.label}
+              </TemplateText>
+            </button>
+          ))}
         </nav>
 
-        <a
-          href="#booking"
-          className="rounded-full bg-[#c9f4dc] px-5 py-3 text-sm font-black transition duration-500 hover:-translate-y-0.5 hover:bg-white"
+        <button
+          type="button"
+          onClick={() => goTo("booking")}
+          className="shrink-0 whitespace-nowrap rounded-full bg-[#c9f4dc] px-5 py-3 text-sm font-black transition duration-500 hover:-translate-y-0.5 hover:bg-white"
           style={{ color: "#07100e" }}
         >
           <TemplateText as="span" editId="header.cta" editLabel="כפתור קביעת שיחה">
             קביעת שיחה
           </TemplateText>
-        </a>
+        </button>
       </div>
     </header>
   );
 }
 
-function Hero({ editMode = false }: { editMode?: boolean }) {
+function Hero({
+  editMode = false,
+  goTo,
+}: {
+  editMode?: boolean;
+  goTo: (pageId: string) => void;
+}) {
   const [open, setOpen] = useState(editMode);
 
   const heroImage =
@@ -249,7 +287,7 @@ function Hero({ editMode = false }: { editMode?: boolean }) {
     <section
       id="home"
       {...templateSectionProps("hero", "הירו", "hero")}
-      className="relative min-h-[100dvh] overflow-hidden bg-[#07100e] text-white"
+      className="relative min-h-[calc(100dvh-5.5rem)] overflow-x-clip bg-[#07100e] text-white"
       dir="rtl"
     >
       <div className="absolute inset-0 bg-[#07100e]" />
@@ -367,24 +405,26 @@ function Hero({ editMode = false }: { editMode?: boolean }) {
           ].join(" ")}
           style={{ transitionDelay: "2550ms" }}
         >
-          <a
-            href="#booking"
+          <button
+            type="button"
+            onClick={() => goTo("booking")}
             className="rounded-full bg-[#c9f4dc] px-7 py-4 text-sm font-black shadow-[0_18px_60px_rgba(201,244,220,.22)] transition duration-500 hover:-translate-y-0.5 hover:bg-white"
             style={{ color: "#07100e" }}
           >
             <TemplateText as="span" editId="hero.cta.primary" editLabel="כפתור ייעוץ">
               קביעת שיחת ייעוץ
             </TemplateText>
-          </a>
+          </button>
 
-          <a
-            href="#services"
+          <button
+            type="button"
+            onClick={() => goTo("services")}
             className="rounded-full border border-white/15 bg-white/[0.09] px-7 py-4 text-sm font-black text-white shadow-2xl backdrop-blur-2xl transition duration-500 hover:-translate-y-0.5 hover:border-[#c9f4dc] hover:bg-white/[0.14]"
           >
             <TemplateText as="span" editId="hero.cta.secondary" editLabel="כפתור שירותים">
               צפייה בשירותים
             </TemplateText>
-          </a>
+          </button>
         </div>
 
         <div
@@ -435,9 +475,11 @@ function Hero({ editMode = false }: { editMode?: boolean }) {
 function Services({
   visible,
   editMode = false,
+  goTo,
 }: {
   visible: Record<string, boolean>;
   editMode?: boolean;
+  goTo: (pageId: string) => void;
 }) {
   const showRight = editMode || visible["services-right"];
   const showImage = editMode || visible["services-image"];
@@ -483,8 +525,9 @@ function Services({
             מהיכרות ראשונה ועד פנייה אמיתית.
           </TemplateText>
 
-          <a
-            href="#about"
+          <button
+            type="button"
+            onClick={() => goTo("about")}
             className="mt-9 inline-flex items-center gap-3 text-sm font-black uppercase tracking-[0.12em] text-[#111827]"
           >
             <TemplateText as="span" editId="services.cta" editLabel="כפתור אודות">
@@ -493,7 +536,7 @@ function Services({
             <span className="grid h-8 w-8 place-items-center rounded-md bg-[#111827] text-white">
               ←
             </span>
-          </a>
+          </button>
         </div>
 
         <div
@@ -829,7 +872,7 @@ function Gallery({ editMode = false }: { editMode?: boolean }) {
       id="gallery"
       ref={sectionRef}
       {...templateSectionProps("gallery", "גלריה", "gallery")}
-      className="relative min-h-[100dvh] overflow-hidden bg-[#22292b] px-4 py-12 text-white md:px-8 md:py-24"
+      className="relative min-h-[calc(100dvh-5.5rem)] overflow-x-clip overflow-y-visible bg-[#22292b] px-4 py-12 text-white md:px-8 md:py-24"
       dir="rtl"
     >
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,rgba(201,244,220,.08),transparent_38%),linear-gradient(180deg,rgba(255,255,255,.03),transparent)]" />
@@ -1230,37 +1273,77 @@ function Footer() {
 
 export default function IdoPages({
   initialPage = "home",
+  initialPageId,
+  page,
+  pageId,
+  activePageId,
+  currentPageId,
   mode = "preview",
+  onPageChange,
+  isPublic,
+  viewMode,
+  runtimeMode,
+  data,
 }: IdoPagesProps) {
   const editMode = isIdoEditMode(mode);
-  const visible = useReveal(editMode);
-  const page = useMemo(() => initialPage || "home", [initialPage]);
+  const { currentPage, goTo } = useTemplatePageNavigation(
+    {
+      page,
+      pageId,
+      initialPage,
+      initialPageId,
+      activePageId,
+      currentPageId,
+      onPageChange,
+      isPublic,
+      viewMode,
+      runtimeMode,
+    },
+    { allowedPages, fallbackPage: "home" },
+  );
+  const visible = useReveal(editMode, currentPage);
+
+  const pageContent: Record<string, React.ReactNode> = {
+    /*
+      Home stays the full scrollable landing (original ido experience).
+      Other Site Architecture pages mount a single section for focused editing.
+    */
+    home: (
+      <>
+        <Hero editMode={editMode} goTo={goTo} />
+        <Services visible={visible} editMode={editMode} goTo={goTo} />
+        <About visible={visible} editMode={editMode} />
+        <Gallery editMode={editMode} />
+        <Booking visible={visible} editMode={editMode} />
+        <Faq visible={visible} editMode={editMode} />
+      </>
+    ),
+    services: <Services visible={visible} editMode={editMode} goTo={goTo} />,
+    about: <About visible={visible} editMode={editMode} />,
+    gallery: <Gallery editMode={editMode} />,
+    booking: <Booking visible={visible} editMode={editMode} />,
+    contact: <Faq visible={visible} editMode={editMode} />,
+  };
 
   return (
     <main
       dir="rtl"
       data-template-id="ido"
-      data-template-page={page}
-      data-template-page-id={page}
+      data-template-page={currentPage}
+      data-template-page-id={currentPage}
       data-template-mode={mode}
-      className="relative min-h-[100dvh] overflow-x-hidden overflow-y-visible bg-[#07100e] font-sans"
+      className="relative min-h-[100dvh] overflow-x-clip bg-[#07100e] font-sans pb-8"
     >
       <style>{idoEditorCss}</style>
-      <Header />
-      <Hero editMode={editMode} />
-      <Services visible={visible} editMode={editMode} />
-      <About visible={visible} editMode={editMode} />
-      <Gallery editMode={editMode} />
-      <Booking visible={visible} editMode={editMode} />
-      <Faq visible={visible} editMode={editMode} />
-
-      {/* Host for library/contact sections so form fields can be freely dragged */}
-      <div
-        data-visual-insert-host="true"
-        data-visual-runtime-host="true"
-        className="relative min-h-0 overflow-visible"
+      <Header currentPage={currentPage} goTo={goTo} />
+      <VisualPageStack
+        data={(data as Record<string, unknown> | null) ?? null}
+        activePageId={currentPage}
+        pages={Object.entries(pageContent).map(([id, content]) => ({
+          id,
+          content,
+        }))}
       />
-
       <Footer />
     </main>
   );

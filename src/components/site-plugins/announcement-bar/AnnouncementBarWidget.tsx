@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { X } from "lucide-react";
 
@@ -7,6 +7,7 @@ import {
   mergeAnnouncementBarSettings,
   type AnnouncementBarSettings,
 } from "./announcementBarUtils";
+import { observePublicAnnouncementLayout, applyPublicAnnouncementFromBar } from "./publicAnnouncementLayout";
 
 type AnnouncementBarWidgetProps = {
   siteKey?: string;
@@ -25,8 +26,6 @@ function resolveAnnouncementRoot(): HTMLElement | null {
 
   if (!candidates.length) return null;
 
-  // Prefer the deepest site root that already contains the header, so the bar
-  // sits in normal document flow directly above the header (not fixed over it).
   let best: HTMLElement | null = null;
   let bestDepth = -1;
   for (const el of candidates) {
@@ -82,9 +81,14 @@ export default function AnnouncementBarWidget({
   const cfg = mergeAnnouncementBarSettings(settings);
   const [dismissed, setDismissed] = useState(false);
   const [host, setHost] = useState<HTMLElement | null>(null);
+  const barRef = useRef<HTMLDivElement | null>(null);
+  const isEditor = mode === "editor";
+  const message = String(cfg.message || "").trim();
+  const visible =
+    cfg.isActive !== false && Boolean(message) && (isEditor || !dismissed);
 
   useEffect(() => {
-    if (mode === "editor" || !cfg.dismissible) {
+    if (isEditor || !cfg.dismissible) {
       setDismissed(false);
       return;
     }
@@ -93,7 +97,7 @@ export default function AnnouncementBarWidget({
     } catch {
       setDismissed(false);
     }
-  }, [cfg.dismissible, mode, siteKey]);
+  }, [cfg.dismissible, isEditor, siteKey]);
 
   useEffect(() => {
     let cancelled = false;
@@ -109,20 +113,38 @@ export default function AnnouncementBarWidget({
     };
   }, [mode, siteKey, cfg.message, cfg.isActive]);
 
-  if (cfg.isActive === false) return null;
-  if (dismissed && mode !== "editor") return null;
+  useLayoutEffect(() => {
+    if (!visible) {
+      applyPublicAnnouncementFromBar(null);
+      return;
+    }
+    let stop = observePublicAnnouncementLayout(barRef.current);
+    const frame = window.requestAnimationFrame(() => {
+      stop();
+      stop = observePublicAnnouncementLayout(barRef.current);
+    });
+    return () => {
+      window.cancelAnimationFrame(frame);
+      stop();
+      applyPublicAnnouncementFromBar(null);
+    };
+  }, [visible, host, message, cfg.backgroundColor]);
 
-  const message = String(cfg.message || "").trim();
-  if (!message) return null;
+  if (!visible || !host) return null;
 
   const linkUrl = String(cfg.linkUrl || "").trim();
   const linkLabel = String(cfg.linkLabel || "").trim();
-  const isEditor = mode === "editor";
+  const dir =
+    typeof document !== "undefined"
+      ? document.documentElement.getAttribute("dir") || "rtl"
+      : "rtl";
 
   const ui = (
     <div
-      dir="rtl"
+      ref={barRef}
+      dir={dir === "ltr" ? "ltr" : "rtl"}
       data-bizuply-widget="announcement-bar"
+      data-bizuply-plugin="announcement-bar"
       data-bizuply-plugin-runtime="true"
       style={{
         position: "relative",
@@ -153,7 +175,7 @@ export default function AnnouncementBarWidget({
           <button
             type="button"
             aria-label="סגור"
-            className="absolute left-3 top-1/2 -translate-y-1/2 rounded p-1 opacity-80 hover:opacity-100"
+            className="absolute start-3 top-1/2 -translate-y-1/2 rounded p-1 opacity-80 hover:opacity-100"
             onClick={() => {
               setDismissed(true);
               if (mode === "live") {
@@ -170,13 +192,10 @@ export default function AnnouncementBarWidget({
         ) : null}
       </div>
       {isEditor ? (
-        <div className="border-t border-white/15 bg-black/20 px-3 py-1 text-center text-[10px] font-bold">
-          פס הודעות · מעל ההדר · לא נצמד בגלילה
-        </div>
+        <span className="sr-only">פס הודעות · מעל ההדר · לא נצמד בגלילה</span>
       ) : null}
     </div>
   );
 
-  if (!host) return null;
   return createPortal(ui, host);
 }

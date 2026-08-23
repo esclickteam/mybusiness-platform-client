@@ -565,8 +565,7 @@ function shouldApplyTextToNode(node: HTMLElement) {
 
   if (
     node.getAttribute("data-bizuply-lock-text") === "true" ||
-    node.getAttribute("data-velmora-page-link") === "true" ||
-    node.closest('[data-bizuply-lock-text="true"], [data-velmora-page-link="true"]')
+    node.closest('[data-bizuply-lock-text="true"]')
   ) {
     return false;
   }
@@ -692,8 +691,7 @@ function applyTextContentToNode(
 
   if (
     node.getAttribute("data-bizuply-lock-text") === "true" ||
-    node.getAttribute("data-velmora-page-link") === "true" ||
-    node.closest('[data-bizuply-lock-text="true"], [data-velmora-page-link="true"]')
+    node.closest('[data-bizuply-lock-text="true"]')
   ) {
     return;
   }
@@ -753,6 +751,35 @@ function stampLinkAttributes(
   }
 }
 
+/** Nav/header chrome already has real links — wrapping it in another <a> collapses them. */
+export function hostAlreadyHasOwnLinks(node: HTMLElement): boolean {
+  if (
+    node.matches(
+      "nav, header, form, [data-template-section-type='header'], [data-section-kind='header']",
+    )
+  ) {
+    return Boolean(node.querySelector("a, button"));
+  }
+
+  return node.querySelectorAll("a").length > 1;
+}
+
+function unwrapNestedElementLink(node: HTMLElement) {
+  const wraps = Array.from(
+    node.querySelectorAll(`a[${ELEMENT_LINK_ATTR}="true"]`),
+  );
+  wraps.forEach((wrap) => {
+    if (!(wrap instanceof HTMLAnchorElement)) return;
+    if (!wrap.querySelector("a")) return;
+    const parent = wrap.parentElement;
+    if (!parent) return;
+    while (wrap.firstChild) {
+      parent.insertBefore(wrap.firstChild, wrap);
+    }
+    wrap.remove();
+  });
+}
+
 function applyLinkContentToNode(
   node: HTMLElement,
   href: string,
@@ -763,6 +790,12 @@ function applyLinkContentToNode(
   // Portal forms are widgets — never turn the whole shell into a link.
   if (isPortalMountShell(node)) {
     clearPortalShellLinkDomAttrs(node);
+    return;
+  }
+
+  unwrapNestedElementLink(node);
+
+  if (hostAlreadyHasOwnLinks(node)) {
     return;
   }
 

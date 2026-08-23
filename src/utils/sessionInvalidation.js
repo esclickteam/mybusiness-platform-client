@@ -112,6 +112,7 @@ export function clearPersistedAuthState({ clearDashboardRoute = true } = {}) {
         sessionStorage.removeItem(key);
       }
     });
+    sessionStorage.removeItem("bizuply:pluginBillingReturn");
   } catch {
     /* ignore */
   }

@@ -4,6 +4,8 @@ import { useAuth } from "../context/AuthContext";
 import Unauthorized from "./Unauthorized";
 import TrialExpiredModal from "./TrialExpiredModal";
 import BizuplyLoader from "./ui/BizuplyLoader";
+import { rememberPostLoginRedirect } from "../utils/safeInternalRedirect";
+import { isAllowedPluginBillingReturn } from "../utils/pluginBillingReturn";
 
 type UserRole =
   | "admin"
@@ -98,12 +100,16 @@ export default function ProtectedRoute({
      🚫 Not authenticated
   =========================== */
   if (!user) {
+    const from = `${location.pathname}${location.search || ""}${
+      location.hash || ""
+    }`;
+    rememberPostLoginRedirect(from);
     return (
       <Navigate
         to="/login"
         replace
         state={{
-          from: location.pathname,
+          from,
         }}
       />
     );
@@ -149,12 +155,19 @@ export default function ProtectedRoute({
 
   /* ===========================
      💳 Unpaid business – finish checkout first
+     Exception: Stripe plugin/portal billing return only (query or same-tab
+     marker). Manual /website manage URLs must still hit /pricing.
   =========================== */
   const isImpersonating =
     typeof window !== "undefined" &&
     Boolean(window.localStorage.getItem("impersonatedBy"));
 
-  if (isBusiness && !user.hasAccess && !isImpersonating) {
+  const isBillingReturn = isAllowedPluginBillingReturn({
+    pathname: location.pathname,
+    search: location.search,
+  });
+
+  if (isBusiness && !user.hasAccess && !isImpersonating && !isBillingReturn) {
     return <Navigate to="/pricing" replace />;
   }
 

@@ -470,6 +470,7 @@ export default function MySitesPage() {
           <div className="order-2 flex flex-wrap items-center gap-3 xl:order-1">
             <button
               type="button"
+              data-demo-target="website-create-new"
               onClick={handleCreateSite}
               className="inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-5 text-sm font-black text-black shadow-[0_14px_30px_rgba(109,40,217,0.24)] transition hover:-translate-y-0.5 hover:shadow-[0_18px_38px_rgba(109,40,217,0.3)]"
             >
@@ -588,6 +589,7 @@ export default function MySitesPage() {
 
               <button
                 type="button"
+                data-demo-target="website-create-new"
                 onClick={handleCreateSite}
                 className="mt-6 inline-flex min-h-12 items-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-6 text-sm font-black text-black shadow-lg transition hover:-translate-y-0.5"
               >
@@ -619,6 +621,11 @@ export default function MySitesPage() {
                   <button
                     type="button"
                     onClick={() => openSite(site)}
+                    data-demo-target={
+                      String(site.name || "").includes("סטודיו נועה")
+                        ? "website-demo-site"
+                        : undefined
+                    }
                     className="block w-full text-start"
                   >
                     <div className="relative aspect-[16/9] overflow-hidden bg-gradient-to-br from-slate-100 via-slate-50 to-violet-50">

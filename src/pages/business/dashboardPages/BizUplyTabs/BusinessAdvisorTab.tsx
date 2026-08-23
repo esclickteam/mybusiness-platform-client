@@ -29,6 +29,8 @@ import {
   Zap,
 } from "lucide-react";
 import BizuplyLoader from "../../../../components/ui/BizuplyLoader";
+import { isGuidedDemoActive } from "@/guidedDemo/sessionStore";
+import { DEMO_ADVISOR_CHAT } from "@/guidedDemo/demoOverlayData";
 import {
   AdvisorActionsPanel,
   AdvisorThinkingLoader,
@@ -225,6 +227,7 @@ export default function BusinessAdvisorTab({
   const advisorLanguage = i18n.language?.startsWith("en") ? "en" : "he";
   const [userInput, setUserInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [demoActionDone, setDemoActionDone] = useState(false);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [lastAnswer, setLastAnswer] = useState("");
   const [historyLoading, setHistoryLoading] = useState(false);
@@ -393,12 +396,19 @@ export default function BusinessAdvisorTab({
   );
 
   const startNewConversation = useCallback(() => {
-    setMessages([
-      {
-        role: "assistant",
-        content: t("advisor.welcome"),
-      },
-    ]);
+    setMessages(
+      isGuidedDemoActive()
+        ? [
+            { role: "user", content: DEMO_ADVISOR_CHAT.question },
+            { role: "assistant", content: DEMO_ADVISOR_CHAT.answer },
+          ]
+        : [
+            {
+              role: "assistant",
+              content: t("advisor.welcome"),
+            },
+          ]
+    );
     setActiveConversationId(null);
     setActiveMode("general");
     setUserInput("");
@@ -697,6 +707,7 @@ export default function BusinessAdvisorTab({
   return (
     <section
       dir={dir}
+      data-demo-target="advisor-panel"
       className="h-[calc(100vh-120px)] max-h-[calc(100vh-120px)] overflow-hidden bg-slate-50 p-3 text-start text-slate-800 sm:p-5"
     >
       <div className="mx-auto flex h-full min-h-0 w-full max-w-[1700px] flex-col gap-4">
@@ -708,6 +719,7 @@ export default function BusinessAdvisorTab({
               </div>
 
               <div>
+              <div data-demo-target="advisor-header">
                 <div className="flex flex-wrap items-center gap-2">
                   <h1 className="text-2xl font-black tracking-tight text-slate-800 sm:text-3xl">
                     {t("advisor.title")}
@@ -732,6 +744,7 @@ export default function BusinessAdvisorTab({
                 <p className="mt-2 text-sm font-semibold leading-6 text-slate-500">
                   {t("advisor.subtitle")}
                 </p>
+              </div>
               </div>
             </div>
 
@@ -875,10 +888,22 @@ export default function BusinessAdvisorTab({
                     ? extractWhatsAppFromAnswer(stripped)
                     : { displayContent: stripped, extracted: [] as WhatsAppPrepared[] };
                   const displayContent = parsed.displayContent;
+                  const demoActive = isGuidedDemoActive();
+                  const isDemoQuestion =
+                    demoActive && !isAssistant && msg.content === DEMO_ADVISOR_CHAT.question;
+                  const isDemoAnswer =
+                    demoActive && isAssistant && msg.content === DEMO_ADVISOR_CHAT.answer;
 
                   return (
                     <div
                       key={`${msg.role}-${index}`}
+                      data-demo-target={
+                        isDemoQuestion
+                          ? "advisor-demo-question"
+                          : isDemoAnswer
+                            ? "advisor-demo-answer"
+                            : undefined
+                      }
                       className={`flex min-w-0 gap-3 ${
                         isAssistant ? "justify-start" : "justify-end"
                       }`}
@@ -933,6 +958,33 @@ export default function BusinessAdvisorTab({
                                 onAction={(action) => void executeAction(action)}
                               />
                             )}
+                            {isDemoAnswer ? (
+                              <div className="mt-4 space-y-3">
+                                <button
+                                  type="button"
+                                  data-demo-target="advisor-demo-action"
+                                  onClick={() => setDemoActionDone(true)}
+                                  className="inline-flex rounded-xl bg-amber-700 px-3 py-2 text-xs font-black text-white"
+                                >
+                                  {DEMO_ADVISOR_CHAT.actionLabel}
+                                </button>
+                                <div
+                                  data-demo-target="advisor-demo-result"
+                                  className={`rounded-xl border px-3 py-2 ${
+                                    demoActionDone
+                                      ? "border-emerald-200 bg-emerald-50"
+                                      : "border-amber-100 bg-white/70"
+                                  }`}
+                                >
+                                  <p className="text-[11px] font-black uppercase tracking-[0.12em] text-emerald-700">
+                                    {DEMO_ADVISOR_CHAT.resultTitle}
+                                  </p>
+                                  <p className="mt-1 text-sm font-semibold leading-6 text-emerald-950">
+                                    {DEMO_ADVISOR_CHAT.resultBody}
+                                  </p>
+                                </div>
+                              </div>
+                            ) : null}
                           </div>
                         ) : (
                           <p className="whitespace-pre-wrap">{msg.content}</p>

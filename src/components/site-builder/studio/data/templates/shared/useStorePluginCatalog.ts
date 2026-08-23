@@ -104,7 +104,7 @@ export function isSeededDemoCatalogProduct(
 
 /**
  * Once the merchant has real inventory, drop leftover sample rows so every
- * store template (Velmora, Chanel, Rich/Store runtimes) shows the same catalog.
+ * store template (Chanel, Rich/Store runtimes) shows the same catalog.
  */
 export function preferRealStoreCatalogProducts(
   products: StoreCatalogProduct[],

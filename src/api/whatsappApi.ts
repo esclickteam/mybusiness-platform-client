@@ -69,6 +69,14 @@ export type WhatsAppConnection = {
   verifiedName: string;
   metaBusinessId?: string;
   connectionSource?: string;
+  senderType?: string;
+  isPlatformManagedConnection?: boolean;
+  canDisconnect?: boolean;
+  canConnectOwnNumber?: boolean;
+  managedModeEnabled?: boolean;
+  managedReady?: boolean;
+  managedDisplayPhoneMasked?: string;
+  usingManagedWithoutPrivate?: boolean;
   webhookSubscribed?: boolean;
   hasAccessToken: boolean;
   usingEnvFallback: boolean;
@@ -94,6 +102,111 @@ export type WhatsAppConnection = {
     route?: string;
   };
 };
+
+export type WhatsAppVoiceVerificationSession = {
+  sessionId: string;
+  businessId: string;
+  wabaId: string;
+  phoneNumberId: string;
+  metaBusinessId?: string;
+  metaDisplayPhoneNumber: string;
+  telnyxDid: string;
+  source?: string;
+  status:
+    | "waiting_for_call"
+    | "call_received"
+    | "answered"
+    | "capturing"
+    | "otp_captured"
+    | "ambiguous"
+    | "failed"
+    | "expired"
+    | "consumed";
+  expiresAt: string | null;
+  otpCapturedAt: string | null;
+  otpExpiresAt: string | null;
+  otpAvailable: boolean;
+  otpCode?: string;
+  lastError: string;
+  metaVerifyStatus?:
+    | ""
+    | "pending"
+    | "submitted"
+    | "verified"
+    | "failed"
+    | "skipped_missing_credentials";
+  metaVerifyError?: string;
+};
+
+export async function startWhatsAppVoiceVerification(
+  businessId: string,
+  opts: {
+    source?: "embedded_signup" | "manual";
+    wabaId?: string;
+    phoneNumberId?: string;
+    metaBusinessId?: string;
+    metaDisplayPhoneNumber?: string;
+  } = {}
+) {
+  const { data } = await API.post("/whatsapp/voice-verification/start", {
+    businessId,
+    ...opts,
+  });
+  return data as {
+    success: boolean;
+    created: boolean;
+    session: WhatsAppVoiceVerificationSession;
+  };
+}
+
+export async function getWhatsAppVoiceVerificationStatus(businessId: string) {
+  const { data } = await API.get("/whatsapp/voice-verification/status", {
+    params: { businessId },
+  });
+  return data as {
+    success: boolean;
+    session: WhatsAppVoiceVerificationSession | null;
+  };
+}
+
+export async function consumeWhatsAppVoiceOtp(
+  businessId: string,
+  sessionId: string
+) {
+  const { data } = await API.post("/whatsapp/voice-verification/consume", {
+    businessId,
+    sessionId,
+  });
+  return data as {
+    success: boolean;
+    session: WhatsAppVoiceVerificationSession;
+  };
+}
+
+export async function requestWhatsAppVoiceVerificationCode(businessId: string) {
+  const { data } = await API.post("/whatsapp/voice-verification/request-code", {
+    businessId,
+  });
+  return data as {
+    success: boolean;
+    phoneNumberId?: string;
+  };
+}
+
+export async function submitWhatsAppVoiceVerificationCode(
+  businessId: string,
+  sessionId?: string
+) {
+  const { data } = await API.post("/whatsapp/voice-verification/verify-code", {
+    businessId,
+    ...(sessionId ? { sessionId } : {}),
+  });
+  return data as {
+    success: boolean;
+    verified?: boolean;
+    session?: WhatsAppVoiceVerificationSession;
+  };
+}
 
 export type WhatsAppEmbeddedSignupConfig = {
   ready: boolean;
@@ -471,7 +584,7 @@ export type ApprovedWhatsAppTemplate = WhatsAppTemplate & {
   components?: unknown[];
 };
 
-/** Approved Meta templates. Default senderMode=bizuply_managed (BizUply catalog). */
+/** Approved Meta templates. Pass senderMode to resolve Managed vs private catalog. */
 export async function listApprovedWhatsAppTemplates(
   businessId: string,
   opts?: {
@@ -484,9 +597,8 @@ export async function listApprovedWhatsAppTemplates(
   const { data } = await API.get("/whatsapp/templates/approved", {
     params: {
       businessId,
-      ...(usableForAutomation
-        ? { usableForAutomation: true }
-        : { senderMode }),
+      senderMode,
+      ...(usableForAutomation ? { usableForAutomation: true } : {}),
     },
   });
   return data as {
@@ -495,6 +607,7 @@ export async function listApprovedWhatsAppTemplates(
     usableForAutomation?: boolean;
     connected: boolean;
     tenantConnected?: boolean;
+    managedAllowed?: boolean;
     integrationId?: string;
     phoneNumberId?: string;
     wabaId?: string;
@@ -515,20 +628,40 @@ export async function listApprovedWhatsAppTemplates(
   };
 }
 
-/** Sync Meta templates for Automations picker (managed + tenant if connected). */
-export async function syncWhatsAppTemplatesForAutomation(businessId: string) {
+/** Refresh Automations picker templates for the active sender (Managed store or private Meta sync). */
+export async function syncWhatsAppTemplatesForAutomation(
+  businessId: string,
+  opts?: { senderMode?: WhatsAppSenderMode }
+) {
+  const senderMode = opts?.senderMode || "bizuply_managed";
   const { data } = await API.post("/whatsapp/templates/sync-for-automation", {
     businessId,
+    senderMode,
   });
   return data as {
     success: boolean;
     usableForAutomation?: boolean;
+    senderMode?: WhatsAppSenderMode;
     connected: boolean;
     tenantConnected?: boolean;
+    managedAllowed?: boolean;
     templates: ApprovedWhatsAppTemplate[];
     lastTemplatesSyncAt?: string | null;
     duplicatePrecedence?: string;
     sync?: {
+      managed?: {
+        synced?: number | null;
+        totalFromMeta?: number | null;
+        skipped?: boolean;
+        refreshedFromStore?: boolean;
+        reason?: string;
+      };
+      tenant?: {
+        synced?: number | null;
+        totalFromMeta?: number | null;
+        skipped?: boolean;
+        reason?: string;
+      };
       managedSynced?: number | null;
       managedTotalFromMeta?: number | null;
       tenantSynced?: number | null;

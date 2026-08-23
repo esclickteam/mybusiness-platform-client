@@ -5,7 +5,14 @@ import { buildCountdownWidgetMarker } from "../components/site-plugins/countdown
  */
 export type PluginEditorAction = {
   pluginKey: string;
-  kind: "section" | "page" | "widget" | "overlay";
+  /**
+   * overlay — site-wide floating widget (editor + live mounts, no page HTML)
+   * page — adds library page(s)
+   * section — inserts a library section into the page
+   * widget — real in-page element (e.g. countdown)
+   * settings — configuration-only; open manage panel, never insert placeholders
+   */
+  kind: "section" | "page" | "widget" | "overlay" | "settings";
   sectionId?: string;
   pageTemplateId?: string;
   pageTemplateIds?: string[];
@@ -67,6 +74,72 @@ export const PLUGIN_EDITOR_ACTIONS: Record<string, PluginEditorAction> = {
     kind: "overlay",
     label: "פופאפ יציאה",
     description: "חלון לידים ביציאה או אחרי השהיה — לא סקשן בעמוד",
+  },
+  "multi-language": {
+    pluginKey: "multi-language",
+    kind: "overlay",
+    label: "מחליף שפה",
+    description: "כפתור שפה צף בכל האתר — לא רכיב שנגרר לעמוד",
+  },
+  "social-proof": {
+    pluginKey: "social-proof",
+    kind: "overlay",
+    label: "הוכחה חברתית",
+    description: "התראות המרה צפות — לא רכיב שנגרר לעמוד",
+  },
+  "floating-contact-bar": {
+    pluginKey: "floating-contact-bar",
+    kind: "overlay",
+    label: "סרגל יצירת קשר",
+    description: "סרגל צף בכל האתר — לא רכיב שנגרר לעמוד",
+  },
+  "faq-pro": {
+    pluginKey: "faq-pro",
+    kind: "overlay",
+    label: "FAQ Pro",
+    description: "וידג'ט FAQ לפי הגדרות הפאנל — לא placeholder בעמוד",
+  },
+  "analytics-pro": {
+    pluginKey: "analytics-pro",
+    kind: "settings",
+    label: "Analytics Pro",
+    description: "הגדרות אנליטיקה בפאנל הניהול — לא אלמנט בעורך",
+  },
+  "seo-pro": {
+    pluginKey: "seo-pro",
+    kind: "settings",
+    label: "SEO Pro",
+    description: "ביקורת והגדרות SEO בפאנל — לא אלמנט בעורך",
+  },
+  "refer-a-friend": {
+    pluginKey: "refer-a-friend",
+    kind: "settings",
+    label: "חבר מביא חבר",
+    description: "קמפיין הפניות בהגדרות — לא אלמנט בעורך",
+  },
+  "birthday-club": {
+    pluginKey: "birthday-club",
+    kind: "settings",
+    label: "מועדון יום הולדת",
+    description: "הגדרות CRM/אוטומציה בפאנל — לא אלמנט בעורך",
+  },
+  "form-to-pdf": {
+    pluginKey: "form-to-pdf",
+    kind: "settings",
+    label: "טופס ל-PDF",
+    description: "הפקת PDF מהגדרות — לא אלמנט בעורך",
+  },
+  "smart-forms": {
+    pluginKey: "smart-forms",
+    kind: "settings",
+    label: "טפסים חכמים Pro",
+    description: "ניהול טפסים בפאנל — לא placeholder בעמוד",
+  },
+  "qr-generator": {
+    pluginKey: "qr-generator",
+    kind: "settings",
+    label: "QR Generator",
+    description: "יצירת QR בפאנל הניהול — לא placeholder בעמוד",
   },
   store: {
     pluginKey: "store",
@@ -160,11 +233,13 @@ export const PLUGIN_EDITOR_ACTIONS: Record<string, PluginEditorAction> = {
 
 export function getPluginEditorAction(pluginKey: string): PluginEditorAction | null {
   if (PLUGIN_EDITOR_ACTIONS[pluginKey]) return PLUGIN_EDITOR_ACTIONS[pluginKey];
+  // Never invent a generic dashed placeholder for unknown catalog keys.
+  // Config / site-wide addons open settings instead of inserting fake HTML.
   return {
     pluginKey,
-    kind: "widget",
-    label: "רכיב תוסף",
-    description: "יוצג באתר לפי ההגדרות בפאנל",
+    kind: "settings",
+    label: "הגדרות תוסף",
+    description: "ניהול בפאנל — לא רכיב שנגרר לעמוד",
   };
 }
 
@@ -173,5 +248,9 @@ export function buildPluginWidgetMarker(pluginKey: string, label: string) {
     return buildCountdownWidgetMarker(label);
   }
 
-  return `<div data-bizuply-plugin="${pluginKey}" data-bizuply-widget="${pluginKey}" style="padding:48px 24px;text-align:center;border:2px dashed #c4b5fd;border-radius:12px;background:linear-gradient(135deg,#f5f3ff,#eff6ff);font-family:system-ui,sans-serif;direction:rtl"><div style="font-size:13px;font-weight:700;color:#6d28d9;margin-bottom:6px">תוסף Bizuply</div><div style="font-size:18px;font-weight:800;color:#1e293b">${label}</div><div style="font-size:12px;color:#64748b;margin-top:8px">יופיע באתר החי לפי ההגדרות בפאנל</div></div>`;
+  // Only countdown is a real in-page widget. Any other call is a programming error —
+  // callers should use overlay/settings actions instead of inserting HTML stubs.
+  throw new Error(
+    `No in-page widget marker for plugin "${pluginKey}" (${label}). Use overlay/settings action.`
+  );
 }

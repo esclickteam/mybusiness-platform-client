@@ -19,8 +19,8 @@ import { registerServiceWorkerNotificationBridge } from "./utils/notificationNav
 import BizuplyLoader from "./components/ui/BizuplyLoader";
 import PublicSiteLoader from "./components/ui/PublicSiteLoader";
 import { isPublicCustomerSiteHost } from "./utils/publicSiteHost";
-import { lazyWithRetry } from "./utils/lazyWithRetry";
 import LazyRouteBoundary from "./components/LazyRouteBoundary";
+import App from "./App.jsx";
 
 /* ==========================================================
    Types
@@ -94,13 +94,7 @@ const queryClient = new QueryClient({
 });
 
 /* ==========================================================
-   Lazy App
-========================================================== */
-
-const App = lazyWithRetry(() => import("./App.jsx"));
-
-/* ==========================================================
-   Fallback
+   Fallback (nested lazy routes inside App)
 ========================================================== */
 
 function AppLoader() {

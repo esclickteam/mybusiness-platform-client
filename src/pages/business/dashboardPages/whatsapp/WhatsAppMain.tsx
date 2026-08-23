@@ -28,6 +28,7 @@ import { useWhatsAppBilling } from "./billing/useWhatsAppBilling";
 import WhatsAppUsageCard from "./billing/WhatsAppUsageCard";
 import WhatsAppBillingSetupModal from "./billing/WhatsAppBillingSetupModal";
 import WhatsAppCheckoutProcessing from "./billing/WhatsAppCheckoutProcessing";
+import GuidedDemoSandboxButton from "../../../../guidedDemo/GuidedDemoSandboxButton";
 
 type WhatsAppTab = {
   path: string;
@@ -163,11 +164,19 @@ export default function WhatsAppMain() {
                 </p>
               </div>
 
-              <div className="inline-flex w-fit items-center gap-2 rounded-lg border border-emerald-100 bg-emerald-50 px-3 py-1.5">
-                <MessageCircle className="h-3.5 w-3.5 text-emerald-600" />
-                <span className="text-xs font-black text-emerald-700">
-                  {t("whatsapp.shell.channel")}
-                </span>
+              <div className="flex flex-wrap items-center gap-2">
+                <GuidedDemoSandboxButton
+                  target="whatsapp-demo-send"
+                  className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-2 text-xs font-black text-amber-900"
+                >
+                  שלחו הודעת הדגמה — לא נשלחת ללקוח אמיתי
+                </GuidedDemoSandboxButton>
+                <div className="inline-flex w-fit items-center gap-2 rounded-lg border border-emerald-100 bg-emerald-50 px-3 py-1.5">
+                  <MessageCircle className="h-3.5 w-3.5 text-emerald-600" />
+                  <span className="text-xs font-black text-emerald-700">
+                    {t("whatsapp.shell.channel")}
+                  </span>
+                </div>
               </div>
             </div>
           </div>

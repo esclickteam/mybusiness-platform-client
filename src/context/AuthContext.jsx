@@ -38,6 +38,7 @@ import {
   clearPostLoginRedirect,
   isCompatibleRedirect,
 } from "../utils/safeInternalRedirect";
+import { isAllowedPluginBillingReturn } from "../utils/pluginBillingReturn";
 import BizuplyLoader from "../components/ui/BizuplyLoader";
 import { isPublicCustomerSiteHost } from "../utils/publicSiteHost";
 import { clearPushEnabledPreferenceCache } from "../utils/pushPreference";
@@ -160,6 +161,9 @@ function isPublicRoute(pathname) {
     "/privacy-policy",
     "/terms",
     "/accessibility",
+    // Hidden private offers (e.g. /offer/crm) are viewable without login.
+    "/offer",
+    "/demo",
   ];
 
   return publicRoutes.some((route) => {
@@ -767,6 +771,14 @@ export function AuthProvider({ children }) {
           !location.pathname.startsWith("/admin") &&
           !location.pathname.startsWith("/business/")
         ) {
+          const adminSocket = await createSocket(
+            getValidAccessToken,
+            null,
+            freshUser.businessId
+          );
+          if (!cancelled) {
+            setSocket(adminSocket);
+          }
           navigate("/admin/dashboard", { replace: true });
           return;
         }
@@ -929,9 +941,13 @@ export function AuthProvider({ children }) {
             });
           } else if (
             location.pathname === "/" ||
-            location.pathname.startsWith("/business/") ||
             location.pathname === "/dashboard" ||
-            location.pathname.startsWith("/dashboard/")
+            location.pathname.startsWith("/dashboard/") ||
+            (location.pathname.startsWith("/business/") &&
+              !isAllowedPluginBillingReturn({
+                pathname: location.pathname,
+                search: location.search,
+              }))
           ) {
             navigate("/pricing", { replace: true });
           }
@@ -968,6 +984,22 @@ export function AuthProvider({ children }) {
       cancelled = true;
     };
   }, [token, initialized, location.pathname]);
+
+  useEffect(() => {
+    if (!initialized || !user || socket) return;
+    let cancelled = false;
+    (async () => {
+      const recovered = await createSocket(
+        getValidAccessToken,
+        null,
+        user.businessId
+      );
+      if (!cancelled && recovered) setSocket(recovered);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [initialized, user, socket]);
 
   /* ===========================
      🔁 Proactive token refresh

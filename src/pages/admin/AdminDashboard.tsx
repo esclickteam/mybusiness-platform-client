@@ -13,6 +13,7 @@ import {
   Wallet,
   ShieldCheck,
   ArrowLeft,
+  Play,
 } from "lucide-react";
 
 import API from "../../api";
@@ -432,6 +433,14 @@ function AdminDashboard() {
                 title="ניהול לקוחות"
                 description="חיפוש עסקים, יצירת לקוח, בחירת חבילה ותשלום Stripe"
                 onClick={() => navigate("/admin/customers")}
+              />
+
+              <QuickAction
+                icon={<Play className="h-5 w-5" />}
+                iconClassName="bg-violet-100 text-[#7C4DFF]"
+                title="דמואים ללקוחות"
+                description="שליחת דמו אינטראקטיבי אישי לליד"
+                onClick={() => navigate("/admin/guided-demos")}
               />
 
               <QuickAction

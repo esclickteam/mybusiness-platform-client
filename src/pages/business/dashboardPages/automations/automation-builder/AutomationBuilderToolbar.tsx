@@ -111,6 +111,7 @@ export default function AutomationBuilderToolbar({
           disabled={readOnly}
           title={writeBlockedTitle}
           onClick={onOpenPicker}
+          data-demo-target="automations-add-action"
         >
           <Plus size={14} />
           הוסף שלב
@@ -130,6 +131,7 @@ export default function AutomationBuilderToolbar({
           className="af-btn af-btn--secondary"
           disabled={saving || readOnly}
           title={writeBlockedTitle}
+          data-demo-target="automations-save"
           onClick={onSave}
         >
           {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}

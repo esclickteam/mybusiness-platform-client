@@ -28,16 +28,44 @@ import type { SmartSearchSettings } from "../../site-plugins/smart-search/smartS
 import type { SmartBotSettings } from "../../site-plugins/smart-bot/smartBotUtils";
 import type { AccessibilitySettings } from "../../site-plugins/accessibility/accessibilityUtils";
 import PublicStoreCheckout from "./PublicStoreCheckout";
+import PublicStoreCatalogGrid from "./PublicStoreCatalogGrid";
+import {
+  isStoreFeatureEnabled,
+  shouldShowPublicStoreCart,
+} from "./shouldShowPublicStoreCart";
 
 type PublicSitePluginOverlaysProps = {
   site: Record<string, any>;
+  pageId?: string;
 };
 
-export default function PublicSitePluginOverlays({ site }: PublicSitePluginOverlaysProps) {
+function currentPublicPageId(site: Record<string, any>, explicit?: string) {
+  if (explicit) return String(explicit);
+  const path =
+    typeof window !== "undefined"
+      ? String(window.location.pathname || "/").replace(/\/+$/, "") || "/"
+      : "/";
+  const slug = path.replace(/^\//, "") || "home";
+  const pages = Array.isArray(site?.pages) ? site.pages : [];
+  const match = pages.find((page: any) => {
+    const pageSlug = String(page?.slug || page?.path || "").replace(/^\//, "");
+    return pageSlug === slug || `/${pageSlug}` === path || String(page?.id || "") === slug;
+  });
+  return String(match?.id || match?._id || slug);
+}
+
+function extraPopupIsRenderable(popup: Record<string, any> | null | undefined) {
+  if (!popup || popup.isActive === false) return false;
+  const keys = Object.keys(popup).filter((key) => key !== "id" && key !== "popups");
+  return keys.length > 0;
+}
+
+export default function PublicSitePluginOverlays({ site, pageId }: PublicSitePluginOverlaysProps) {
   const siteId = String(site?._id || site?.id || "");
   const slug = String(site?.slug || "");
   const businessId = String(site?.businessId || site?.business?._id || "");
   const siteKey = siteId || slug || "site";
+  const activePageId = currentPublicPageId(site, pageId);
   const enabledPlugins: string[] = Array.isArray(site?.enabledPlugins)
     ? site.enabledPlugins
     : [];
@@ -92,30 +120,6 @@ export default function PublicSitePluginOverlays({ site }: PublicSitePluginOverl
     [site?.pages]
   );
 
-  const showWheel = Boolean(siteId && wheelSettings?.isActive);
-  const showSearch = Boolean(searchSettings?.isActive);
-  const showAccessibility = Boolean(accessibilitySettings?.isActive);
-  const showSmartBot = Boolean(smartBotSettings?.isActive);
-  const contactBarSettings = enabledPlugins.includes("floating-contact-bar")
-    ? site?.pluginSettings?.["floating-contact-bar"] || { isActive: true }
-    : null;
-  const showContactBar = Boolean(
-    enabledPlugins.includes("floating-contact-bar") &&
-      contactBarSettings?.isActive !== false
-  );
-  const hideWhatsappForBar = Boolean(
-    showContactBar && contactBarSettings?.hideWhatsappFloat !== false && contactBarSettings?.showWhatsapp !== false
-  );
-  const showWhatsapp = Boolean(whatsappSettings?.isActive) && !hideWhatsappForBar;
-  const showSocialProof = enabledPlugins.includes("social-proof");
-  const showLanguage = enabledPlugins.includes("multi-language");
-  const showFaq = enabledPlugins.includes("faq-pro");
-  const extraPopups = Array.isArray(exitPopupSettings?.popups) ? exitPopupSettings.popups : [];
-  const showAnnouncement = Boolean(announcementSettings?.isActive);
-  const showCookie = Boolean(cookieSettings?.isActive);
-  const showExitPopup = Boolean(exitPopupSettings?.isActive);
-  const showStoreCheckout = Boolean(businessId);
-
   const whatsappFallbackPhone = useMemo(() => {
     const business = site?.business || {};
     const brand = site?.brand || {};
@@ -129,6 +133,53 @@ export default function PublicSitePluginOverlays({ site }: PublicSitePluginOverl
         ""
     ).trim();
   }, [site]);
+
+  const showWheel = Boolean(siteId && wheelSettings?.isActive);
+  const showSearch = Boolean(searchSettings?.isActive);
+  const showAccessibility = Boolean(accessibilitySettings?.isActive);
+  const showSmartBot = Boolean(smartBotSettings?.isActive);
+  const contactBarSettings = enabledPlugins.includes("floating-contact-bar")
+    ? site?.pluginSettings?.["floating-contact-bar"] || { isActive: true }
+    : null;
+  const contactBarPhone = String(
+    contactBarSettings?.phone ||
+      contactBarSettings?.whatsappPhone ||
+      whatsappSettings?.phone ||
+      whatsappFallbackPhone ||
+      ""
+  ).trim();
+  // Only treat the bar as "shown" when it will actually render at least one action.
+  // Otherwise we must not hide the standalone WhatsApp float.
+  const contactBarHasActions = Boolean(
+    contactBarSettings &&
+      contactBarSettings.isActive !== false &&
+      ((contactBarSettings.showWhatsapp !== false && contactBarPhone) ||
+        (contactBarSettings.showPhone !== false && contactBarPhone) ||
+        (contactBarSettings.showEmail !== false && contactBarSettings.email) ||
+        contactBarSettings.showForm ||
+        contactBarSettings.showBooking)
+  );
+  const showContactBar = Boolean(
+    enabledPlugins.includes("floating-contact-bar") && contactBarHasActions
+  );
+  const hideWhatsappForBar = Boolean(
+    showContactBar &&
+      contactBarSettings?.hideWhatsappFloat !== false &&
+      contactBarSettings?.showWhatsapp !== false &&
+      contactBarPhone
+  );
+  const showWhatsapp = Boolean(whatsappSettings?.isActive) && !hideWhatsappForBar;
+  const showSocialProof = enabledPlugins.includes("social-proof");
+  const showLanguage = enabledPlugins.includes("multi-language");
+  const showFaq = enabledPlugins.includes("faq-pro");
+  const extraPopups = [];
+  const showAnnouncement = Boolean(announcementSettings?.isActive);
+  const showCookie = Boolean(cookieSettings?.isActive);
+  const showExitPopup = Boolean(exitPopupSettings?.isActive);
+  const showStoreCheckout = shouldShowPublicStoreCart(site);
+  const showStoreCatalog = Boolean(
+    businessId && enabledPlugins.includes("store")
+  );
 
   useEffect(() => {
     removeOverlayPluginPlaceholders(document);
@@ -146,6 +197,7 @@ export default function PublicSitePluginOverlays({ site }: PublicSitePluginOverl
     !showCookie &&
     !showExitPopup &&
     !showStoreCheckout &&
+    !showStoreCatalog &&
     !showContactBar &&
     !showSocialProof &&
     !showLanguage &&
@@ -190,12 +242,14 @@ export default function PublicSitePluginOverlays({ site }: PublicSitePluginOverl
       {showContactBar ? (
         <FloatingContactBarWidget
           settings={contactBarSettings}
-          fallbackPhone={whatsappFallbackPhone}
+          fallbackPhone={contactBarPhone || whatsappFallbackPhone}
+          hidesWhatsappFloat={hideWhatsappForBar}
         />
       ) : null}
       {showSocialProof ? (
         <SocialProofWidget
           slug={slug}
+          pageId={activePageId}
           settings={site?.pluginSettings?.["social-proof"]}
         />
       ) : null}
@@ -211,32 +265,33 @@ export default function PublicSitePluginOverlays({ site }: PublicSitePluginOverl
       {showCookie ? (
         <CookieBannerWidget siteKey={siteKey} settings={cookieSettings!} mode="live" />
       ) : null}
-      {showFaq ? <FaqWidget slug={slug} /> : null}
+      {showFaq ? (
+        <FaqWidget
+          slug={slug}
+          pageId={activePageId}
+          settings={site?.pluginSettings?.["faq-pro"]}
+        />
+      ) : null}
       {showExitPopup ? (
         <ExitPopupWidget
           siteKey={siteKey}
           slug={slug}
+          pageId={activePageId}
           settings={exitPopupSettings}
           mode="live"
         />
       ) : null}
-      {showExitPopup
-        ? extraPopups.map((popup, index) => (
-            <ExitPopupWidget
-              key={String(popup.id || index)}
-              siteKey={`${siteKey}:${popup.id || index}`}
-              slug={slug}
-              settings={mergeExitPopupSettings({ ...exitPopupSettings, ...popup, popups: [] })}
-              mode="live"
-            />
-          ))
-        : null}
       {showStoreCheckout ? (
         <PublicStoreCheckout
           businessId={businessId}
+          enabled={showStoreCheckout}
+          storeFeatureEnabled={isStoreFeatureEnabled(site)}
           language={site?.__activeLanguage}
           shiftForLeftWidgets={showAccessibility}
         />
+      ) : null}
+      {showStoreCatalog ? (
+        <PublicStoreCatalogGrid businessId={businessId} enabled />
       ) : null}
     </>
   );

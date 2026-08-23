@@ -510,7 +510,7 @@ function isMetaLead(lead: Lead) {
 
 function isWebsiteLead(lead: Lead) {
   const source = String(lead.source || lead.provider || "").toLowerCase();
-  return source === "website" || source.includes("website") || source.includes("site");
+  return source === "website" || source === "birthday-club" || source.includes("website") || source.includes("site");
 }
 
 function getLeadSourceLabel(lead: Lead, t: TFunction) {
@@ -2132,6 +2132,7 @@ export default function CRMLeadsTab({
                     if (node) node.scrollTop = 0;
                   }}
                   data-leads-scroll
+                  data-demo-target="crm-leads-list"
                   className="min-h-0 flex-1 overflow-y-auto"
                   style={{ direction: "ltr" }}
                 >
@@ -2208,6 +2209,13 @@ export default function CRMLeadsTab({
                               <React.Fragment key={lead._id}>
                                 <article
                                   onClick={() => openLeadDrawer(lead)}
+                                  data-demo-target={
+                                    (lead.tags || []).includes("demo:daniel")
+                                      ? "crm-lead-card-daniel"
+                                      : (lead.tags || []).includes("demo:maya")
+                                        ? "crm-lead-card-maya"
+                                        : undefined
+                                  }
                                   className={[
                                     "hidden cursor-pointer px-4 py-3.5 transition xl:grid xl:grid-cols-[1.35fr_1.15fr_0.9fr_0.8fr_1.15fr_0.85fr_0.95fr] xl:items-center xl:gap-3",
                                     selectedLead?._id === lead._id
@@ -2331,6 +2339,13 @@ export default function CRMLeadsTab({
                                     <button
                                       type="button"
                                       onClick={() => openLeadDrawer(lead)}
+                                      data-demo-target={
+                                        (lead.tags || []).includes("demo:daniel")
+                                          ? "crm-lead-card-daniel"
+                                          : (lead.tags || []).includes("demo:maya")
+                                            ? "crm-lead-card-maya"
+                                            : undefined
+                                      }
                                       className="inline-flex h-9 items-center gap-1.5 rounded-full bg-[#6D28D9] px-3 text-xs font-black text-white transition hover:bg-[#5B21B6]"
                                     >
                                       {t("crm.common.open")}
@@ -2341,6 +2356,13 @@ export default function CRMLeadsTab({
 
                                 <article
                                   onClick={() => openLeadDrawer(lead, "form")}
+                                  data-demo-target={
+                                    (lead.tags || []).includes("demo:daniel")
+                                      ? "crm-lead-card-daniel"
+                                      : (lead.tags || []).includes("demo:maya")
+                                        ? "crm-lead-card-maya"
+                                        : undefined
+                                  }
                                   className={[
                                     "grid cursor-pointer grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)_minmax(0,0.95fr)] items-center gap-2 px-3 py-2.5 transition xl:hidden",
                                     selectedLead?._id === lead._id
@@ -2740,6 +2762,7 @@ export default function CRMLeadsTab({
 
                       <select
                         value={selectedStatus}
+                        data-demo-target="crm-status-select"
                         onChange={(event) =>
                           handleStatusChange(
                             selectedLead._id,
@@ -2873,7 +2896,10 @@ export default function CRMLeadsTab({
                         </p>
                       </div>
 
-                      <div className="mb-4 rounded-2xl border border-slate-200 bg-slate-50 p-3">
+                      <div
+                        data-demo-target="crm-task-composer"
+                        className="mb-4 rounded-2xl border border-slate-200 bg-slate-50 p-3"
+                      >
                         <div className="mb-3 grid gap-2 sm:grid-cols-[160px_minmax(0,1fr)]">
                           <select
                             value={newActivityType}
@@ -2882,7 +2908,8 @@ export default function CRMLeadsTab({
                                 event.target.value as LeadActivityType
                               )
                             }
-                            className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm font-black text-slate-700 outline-none focus:ring-4 focus:ring-sky-100"
+                            data-demo-target="crm-activity-type"
+                            className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm font-black text-slate-700 outline-none focus:ring-4 focus:ring-sky-100"
                           >
                             <option value="note">{t("crm.common.note")}</option>
                             <option value="call">{t("crm.common.call")}</option>
@@ -2895,12 +2922,13 @@ export default function CRMLeadsTab({
                             onChange={(event) =>
                               setNewActivityText(event.target.value)
                             }
+                            data-demo-target="crm-activity-text"
                             placeholder={
                               newActivityType === "task"
                                 ? t("crm.leads.drawer.taskPlaceholder")
                                 : t("crm.leads.drawer.notePlaceholder")
                             }
-                            className="min-h-[80px] rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm font-bold leading-6 text-slate-700 outline-none placeholder:text-slate-400 focus:ring-4 focus:ring-sky-100"
+                            className="min-h-[80px] w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm font-bold leading-6 text-slate-700 outline-none placeholder:text-slate-400 focus:ring-4 focus:ring-sky-100"
                           />
                         </div>
 
@@ -2916,7 +2944,8 @@ export default function CRMLeadsTab({
                               onChange={(event) =>
                                 setNewTaskDueAt(event.target.value)
                               }
-                              className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm font-bold text-slate-700 outline-none focus:ring-4 focus:ring-sky-100"
+                              data-demo-target="crm-task-due"
+                              className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm font-bold text-slate-700 outline-none focus:ring-4 focus:ring-sky-100"
                             />
                           </div>
                         )}
@@ -2932,6 +2961,7 @@ export default function CRMLeadsTab({
                           <button
                             type="button"
                             onClick={handleAddActivity}
+                            data-demo-target="crm-activity-submit"
                             disabled={
                               savingActivity ||
                               !newActivityText.trim() ||
@@ -2951,8 +2981,14 @@ export default function CRMLeadsTab({
                           <span className="absolute right-2 top-2 h-[calc(100%-12px)] w-px bg-slate-200" />
 
                           {renderAiInsightsPanel(aiInsights, aiActivities)}
-                          {selectedActivities.map((activity) => {
+                          {selectedActivities.map((activity, activityIndex) => {
                             const isTask = activity.type === "task";
+                            const isFirstOpenTask =
+                              isTask &&
+                              !activity.taskDone &&
+                              selectedActivities.findIndex(
+                                (item) => item.type === "task" && !item.taskDone
+                              ) === activityIndex;
 
                             return (
                               <div
@@ -2989,6 +3025,9 @@ export default function CRMLeadsTab({
                                         type="button"
                                         onClick={() =>
                                           handleToggleTaskActivity(activity)
+                                        }
+                                        data-demo-target={
+                                          isFirstOpenTask ? "crm-task-complete" : undefined
                                         }
                                         className={[
                                           "rounded-lg border px-2 py-0.5 text-[10px] font-black transition",

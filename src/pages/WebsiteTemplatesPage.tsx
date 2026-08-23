@@ -23,11 +23,12 @@ import {
   getStudioTemplateSeedById,
 } from "../components/site-builder/studio/data/templates";
 
-import { createMySite } from "../api/mySitesApi";
+import { createMySite, listMySites } from "../api/mySitesApi";
 import TemplateCardPreview from "../components/website/TemplateCardPreview";
 import { getTemplateFullPageScreenshotUrl } from "../utils/templateScreenshot";
 import { getApiErrorMessage } from "../utils/apiErrorMessage";
 import { useLocaleDir } from "../hooks/useLocaleDir";
+import { isGuidedDemoActive } from "@/guidedDemo/sessionStore";
 
 type WebsiteTemplateBlock = {
   id: string;
@@ -454,8 +455,34 @@ export default function WebsiteTemplatesPage() {
   /** Windowed render — expand ahead of scroll for a smooth UX. */
   const [visibleCount, setVisibleCount] = useState(GALLERY_INITIAL_SIZE);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
+  const [selectedTemplateKey, setSelectedTemplateKey] = useState(() => {
+    try {
+      return String(localStorage.getItem("bizuply-selected-template-key") || "")
+        .trim()
+        .toLowerCase();
+    } catch {
+      return "";
+    }
+  });
 
   const basePath = businessId ? `/business/${businessId}` : "/business";
+
+  function markSelectedTemplate(templateKey: string) {
+    const clean = String(templateKey || "").trim().toLowerCase();
+    if (!clean) return;
+    setSelectedTemplateKey(clean);
+    try {
+      localStorage.setItem("bizuply-selected-template-key", clean);
+    } catch {
+      /* ignore */
+    }
+  }
+
+  function isDemoHighlightedTemplate(template: WebsiteTemplate, index: number) {
+    const key = String(template.key || "").trim().toLowerCase();
+    if (selectedTemplateKey) return key === selectedTemplateKey;
+    return index === 0;
+  }
 
   async function loadTemplates() {
     try {
@@ -732,6 +759,7 @@ export default function WebsiteTemplatesPage() {
   };
 
   localStorage.setItem("bizuply-selected-template-key", cleanTemplateKey);
+  markSelectedTemplate(cleanTemplateKey);
   localStorage.setItem("bizuply-selected-template-id", cleanTemplateKey);
   localStorage.setItem(
     "bizuply-selected-template-data",
@@ -758,6 +786,28 @@ export default function WebsiteTemplatesPage() {
     }
   } catch (err: any) {
     console.error("Create site from template failed:", err);
+    if (isGuidedDemoActive() && businessId) {
+      try {
+        const existing = await listMySites(businessId);
+        const match = (existing || []).find((site) => {
+          const keys = [site.templateKey, site.templateName]
+            .map((value) => String(value || "").trim().toLowerCase());
+          return keys.includes(cleanTemplateKey);
+        });
+        if (match?._id) {
+          navigate(
+            `${basePath}/dashboard/website/sites/${match._id}/edit?template=${encodeURIComponent(cleanTemplateKey)}`
+          );
+          return;
+        }
+      } catch {
+        /* keep falling through to the selected-template editor */
+      }
+      navigate(
+        `${basePath}/dashboard/website/templates/${cleanTemplateKey}/edit`
+      );
+      return;
+    }
     const status = Number(err?.response?.status || 0);
     const apiMessage = String(
       err?.response?.data?.error ||
@@ -787,7 +837,7 @@ export default function WebsiteTemplatesPage() {
 
   function handlePreviewTemplate(templateKey: string) {
     const cleanTemplateKey = String(templateKey || "").trim().toLowerCase();
-
+    markSelectedTemplate(cleanTemplateKey);
     navigate(`${basePath}/dashboard/website/templates/${cleanTemplateKey}/preview`);
   }
 
@@ -1091,6 +1141,11 @@ export default function WebsiteTemplatesPage() {
                                   onClick={() =>
                                     handlePreviewTemplate(template.key)
                                   }
+                                  data-demo-target={
+                                    isDemoHighlightedTemplate(template, index)
+                                      ? "website-template-preview"
+                                      : undefined
+                                  }
                                   className="
                                     rounded-lg border border-[#d1d5db] bg-white
                                     px-3 py-2 text-xs font-bold text-[#111827]
@@ -1105,6 +1160,11 @@ export default function WebsiteTemplatesPage() {
                                   type="button"
                                   onClick={() =>
                                     handleEditTemplate(template.key)
+                                  }
+                                  data-demo-target={
+                                    isDemoHighlightedTemplate(template, index)
+                                      ? "website-template-edit"
+                                      : undefined
                                   }
                                   className="
                                     rounded-lg border border-[#111827] bg-[#111827]

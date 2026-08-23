@@ -5,6 +5,7 @@ import { toast } from "react-toastify";
 import {
   CheckCircle2,
   Loader2,
+  PhoneCall,
   PlugZap,
   RefreshCw,
   ShieldAlert,
@@ -12,14 +13,20 @@ import {
 } from "lucide-react";
 import {
   completeWhatsAppEmbeddedSignup,
+  consumeWhatsAppVoiceOtp,
+  getWhatsAppVoiceVerificationStatus,
   disconnectWhatsApp,
   getWhatsAppEmbeddedSignupConfig,
   getWhatsAppStatus,
   listWhatsAppTemplates,
   registerWhatsAppPhone,
+  requestWhatsAppVoiceVerificationCode,
   sendWhatsAppTest,
+  startWhatsAppVoiceVerification,
+  submitWhatsAppVoiceVerificationCode,
   type WhatsAppConnection,
   type WhatsAppTemplate,
+  type WhatsAppVoiceVerificationSession,
 } from "../../../../api/whatsappApi";
 import {
   getMetaCampaignsStatus,
@@ -28,6 +35,7 @@ import {
 import MetaBillingAccountCards from "../../../../components/meta/MetaBillingAccountCards";
 import { loadFacebookSdk } from "../../../../utils/loadFacebookSdk";
 import { getApiErrorMessage } from "../../../../utils/apiErrorMessage";
+import { shouldAbortEmbeddedSignupForVoiceError } from "./embeddedSignupVoiceGate";
 import {
   btnPrimary,
   btnSecondary,
@@ -42,6 +50,48 @@ type SessionAssets = {
   wabaId: string;
   metaBusinessId?: string;
 };
+
+function voiceSessionStatusLabel(
+  session: WhatsAppVoiceVerificationSession | null
+): string {
+  if (!session) return "";
+  switch (session.status) {
+    case "waiting_for_call":
+      return "Waiting for Meta to call your verification number…";
+    case "call_received":
+      return "Call received";
+    case "answered":
+      return "Call answered";
+    case "capturing":
+      return "Listening for verification code…";
+    case "otp_captured":
+      if (session.metaVerifyStatus === "verified") {
+        return "Verification code submitted to Meta successfully";
+      }
+      if (session.metaVerifyStatus === "failed") {
+        return "Auto-submit to Meta failed — enter the code manually in Meta if needed";
+      }
+      if (session.metaVerifyStatus === "submitted") {
+        return "Submitting verification code to Meta…";
+      }
+      if (session.metaVerifyStatus === "skipped_missing_credentials") {
+        return "Code captured — connect WhatsApp credentials to auto-submit, or enter it in Meta";
+      }
+      return "Verification code captured";
+    case "ambiguous":
+      return "Could not hear a clear code — retry the voice call from Meta";
+    case "failed":
+      return "Voice verification failed — start capture again and retry from Meta";
+    case "expired":
+      return "Voice verification expired — start capture again";
+    case "consumed":
+      return session.metaVerifyStatus === "verified"
+        ? "Verification complete"
+        : "Verification code used";
+    default:
+      return session.status.replace(/_/g, " ");
+  }
+}
 
 function readinessTone(connection: WhatsAppConnection | null) {
   if (!connection?.connected) {
@@ -79,6 +129,10 @@ export default function WhatsAppSettingsTab() {
   const [connecting, setConnecting] = useState(false);
   const [saving, setSaving] = useState(false);
   const [registering, setRegistering] = useState(false);
+  const [startingVoiceVerification, setStartingVoiceVerification] =
+    useState(false);
+  const [voiceSession, setVoiceSession] =
+    useState<WhatsAppVoiceVerificationSession | null>(null);
   const [testing, setTesting] = useState(false);
   const [connection, setConnection] = useState<WhatsAppConnection | null>(null);
   const [adAccountBilling, setAdAccountBilling] =
@@ -129,6 +183,66 @@ export default function WhatsAppSettingsTab() {
   }, [businessId]);
 
   useEffect(() => {
+    if (!businessId) return;
+    let cancelled = false;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const poll = async () => {
+      try {
+        const result = await getWhatsAppVoiceVerificationStatus(businessId);
+        if (cancelled) return;
+        setVoiceSession(result.session);
+        const status = result.session?.status;
+        const metaStatus = result.session?.metaVerifyStatus;
+        const keepPolling =
+          result.session &&
+          (["waiting_for_call", "call_received", "answered", "capturing"].includes(
+            status || ""
+          ) ||
+            (status === "otp_captured" &&
+              ["pending", "submitted", ""].includes(metaStatus || "")));
+        if (keepPolling) {
+          timer = setTimeout(poll, 2500);
+        }
+      } catch {
+        // The main settings load reports connectivity errors.
+      }
+    };
+    void poll();
+    return () => {
+      cancelled = true;
+      if (timer) clearTimeout(timer);
+    };
+  }, [businessId, voiceSession?.status, voiceSession?.metaVerifyStatus]);
+
+  useEffect(() => {
+    if (!businessId || !voiceSession?.sessionId) return;
+    if (voiceSession.metaVerifyStatus !== "verified") return;
+    if (voiceSession.status === "consumed") return;
+    let cancelled = false;
+    void (async () => {
+      try {
+        const result = await consumeWhatsAppVoiceOtp(
+          businessId,
+          voiceSession.sessionId
+        );
+        if (!cancelled && result.session) {
+          setVoiceSession(result.session);
+        }
+      } catch {
+        // Already consumed server-side after auto-verify is fine.
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [
+    businessId,
+    voiceSession?.sessionId,
+    voiceSession?.metaVerifyStatus,
+    voiceSession?.status,
+  ]);
+
+  useEffect(() => {
     const onMessage = (event: MessageEvent) => {
       if (
         event.origin !== "https://www.facebook.com" &&
@@ -150,6 +264,29 @@ export default function WhatsAppSettingsTab() {
             sessionRef.current = { phoneNumberId, wabaId, metaBusinessId };
           }
         }
+
+        // Meta voice OTP is chosen inside the popup (e.g. "שיחת טלפון") before FINISH.
+        // Keep/refresh the waiting session if we learn the user is on phone verification.
+        const currentStep = String(data?.data?.current_step || "").trim();
+        if (
+          businessId &&
+          (currentStep === "PHONE_NUMBER_VERIFICATION" ||
+            currentStep === "PHONE_NUMBER_SETUP")
+        ) {
+          void (async () => {
+            try {
+              const result = await startWhatsAppVoiceVerification(businessId, {
+                source: "embedded_signup",
+                wabaId: sessionRef.current?.wabaId,
+                phoneNumberId: sessionRef.current?.phoneNumberId,
+                metaBusinessId: sessionRef.current?.metaBusinessId,
+              });
+              setVoiceSession(result.session);
+            } catch {
+              // Session may already exist, or DID may be unmapped — connect can continue.
+            }
+          })();
+        }
       } catch {
         // Ignore non-JSON postMessages from the popup.
       }
@@ -157,7 +294,7 @@ export default function WhatsAppSettingsTab() {
 
     window.addEventListener("message", onMessage);
     return () => window.removeEventListener("message", onMessage);
-  }, []);
+  }, [businessId]);
 
   const handleConnect = async () => {
     setActionError("");
@@ -166,6 +303,14 @@ export default function WhatsAppSettingsTab() {
 
     if (!businessId) {
       const msg = t("whatsapp.settings.missingBusiness");
+      setActionError(msg);
+      setActionInfo("");
+      toast.error(msg);
+      return;
+    }
+
+    if (connection?.canConnectOwnNumber === false || connection?.isPlatformManagedConnection) {
+      const msg = t("whatsapp.settings.managedHostNoConnectOwn");
       setActionError(msg);
       setActionInfo("");
       toast.error(msg);
@@ -195,6 +340,41 @@ export default function WhatsAppSettingsTab() {
       }
       if (!signup.ready) {
         throw new Error(t("whatsapp.settings.configMissing"));
+      }
+
+      // Create waiting_for_call session BEFORE Meta popup can place a voice OTP call.
+      // Meta does not expose a reliable pre-call callback for "שיחת טלפון".
+      try {
+        setActionInfo("Preparing voice verification…");
+        const voice = await startWhatsAppVoiceVerification(businessId, {
+          source: "embedded_signup",
+        });
+        setVoiceSession(voice.session);
+        console.info("[whatsapp] Voice verification session ready", {
+          sessionId: voice.session?.sessionId,
+          created: voice.created,
+          status: voice.session?.status,
+          telnyxDid: voice.session?.telnyxDid,
+        });
+      } catch (voiceError: any) {
+        const code = String(voiceError?.response?.data?.code || "");
+        console.warn("[whatsapp] Voice session start before ES failed", {
+          code,
+          message: voiceError?.response?.data?.error || voiceError?.message,
+        });
+        if (shouldAbortEmbeddedSignupForVoiceError(code)) {
+          const msg = t("whatsapp.settings.verificationDidMissing");
+          setActionError(msg);
+          setActionInfo("");
+          toast.error(msg);
+          return;
+        }
+        toast.warning(
+          getApiErrorMessage(
+            voiceError,
+            "Voice verification session could not be prepared. SMS may still work."
+          )
+        );
       }
 
       setActionInfo(t("whatsapp.settings.connecting"));
@@ -354,8 +534,80 @@ export default function WhatsAppSettingsTab() {
     }
   };
 
+  const handleStartVoiceVerification = async () => {
+    if (!businessId) return;
+    try {
+      setStartingVoiceVerification(true);
+      const result = await startWhatsAppVoiceVerification(businessId, {
+        source: "manual",
+      });
+      setVoiceSession(result.session);
+      try {
+        await requestWhatsAppVoiceVerificationCode(businessId);
+        toast.info(
+          "Voice verification is ready. Meta should call your verification number."
+        );
+      } catch {
+        toast.info(
+          "Voice verification is ready. Request a voice call from Meta."
+        );
+      }
+    } catch (error: any) {
+      toast.error(
+        getApiErrorMessage(error, "Could not start voice verification")
+      );
+    } finally {
+      setStartingVoiceVerification(false);
+    }
+  };
+
+  const handleCopyVoiceOtp = async () => {
+    if (!businessId || !voiceSession?.otpCode || !voiceSession.sessionId) return;
+    try {
+      await navigator.clipboard.writeText(voiceSession.otpCode);
+      toast.success("Verification code copied");
+      try {
+        const result = await consumeWhatsAppVoiceOtp(
+          businessId,
+          voiceSession.sessionId
+        );
+        setVoiceSession(result.session);
+      } catch {
+        // Keep showing code if consume races with auto-verify.
+      }
+    } catch {
+      toast.error("Could not copy verification code");
+    }
+  };
+
+  const handleRetryMetaVerify = async () => {
+    if (!businessId || !voiceSession?.sessionId) return;
+    try {
+      const result = await submitWhatsAppVoiceVerificationCode(
+        businessId,
+        voiceSession.sessionId
+      );
+      if (result.session) setVoiceSession(result.session);
+      toast.success("Submitted verification code to Meta");
+    } catch (error: any) {
+      toast.error(
+        getApiErrorMessage(error, "Could not submit verification code to Meta")
+      );
+      try {
+        const status = await getWhatsAppVoiceVerificationStatus(businessId);
+        setVoiceSession(status.session);
+      } catch {
+        // ignore refresh failure
+      }
+    }
+  };
+
   const handleDisconnect = async () => {
     if (!businessId) return;
+    if (connection?.canDisconnect === false || connection?.isPlatformManagedConnection) {
+      toast.error(t("whatsapp.settings.managedHostNoDisconnect"));
+      return;
+    }
     if (!window.confirm(t("whatsapp.settings.confirmDisconnect"))) return;
     try {
       setSaving(true);
@@ -365,8 +617,11 @@ export default function WhatsAppSettingsTab() {
       setRegisterPin("");
       toast.success(t("whatsapp.settings.disconnected"));
     } catch (error: any) {
+      const code = error?.response?.data?.code;
       toast.error(
-        error?.response?.data?.error || t("whatsapp.errors.disconnect")
+        code === "PLATFORM_MANAGED_CONNECTION_PROTECTED"
+          ? t("whatsapp.settings.managedHostNoDisconnect")
+          : error?.response?.data?.error || t("whatsapp.errors.disconnect")
       );
     } finally {
       setSaving(false);
@@ -425,6 +680,10 @@ export default function WhatsAppSettingsTab() {
   }
 
   const linked = Boolean(connection?.connected);
+  const isPlatformManaged = Boolean(connection?.isPlatformManagedConnection);
+  const canDisconnect = connection?.canDisconnect !== false && !isPlatformManaged;
+  const canConnectOwn = connection?.canConnectOwnNumber !== false && !isPlatformManaged;
+  const usingManagedWithoutPrivate = Boolean(connection?.usingManagedWithoutPrivate);
   const readyToSend = Boolean(connection?.readyToSend);
   const needsRegistration =
     linked &&
@@ -456,11 +715,18 @@ export default function WhatsAppSettingsTab() {
         adAccountBilling={adAccountBilling}
         wabaBilling={connection?.wabaBillingHealth || null}
         adsSettingsPath="../meta-campaigns/settings"
-        whatsappSettingsPath="."
+        onOpenWhatsAppSettings={() => {
+          document
+            .getElementById("whatsapp-connection-settings")
+            ?.scrollIntoView({ behavior: "smooth", block: "start" });
+        }}
       />
 
     <div className="grid gap-4 xl:grid-cols-[1.2fr_0.8fr]">
-      <section className={`${cardBase} p-4 sm:p-5`}>
+      <section
+        id="whatsapp-connection-settings"
+        className={`${cardBase} p-4 sm:p-5`}
+      >
         <h2 className="text-lg font-black text-slate-900">
           {t("whatsapp.settings.title")}
         </h2>
@@ -470,26 +736,46 @@ export default function WhatsAppSettingsTab() {
 
         {!linked ? (
           <div className="mt-6 space-y-4">
+            {usingManagedWithoutPrivate ? (
+              <div className="rounded-xl border border-emerald-200 bg-emerald-50/80 px-4 py-3 text-sm font-medium text-emerald-900">
+                <p className="font-black">
+                  {t("whatsapp.settings.usingManagedTitle")}
+                </p>
+                <p className="mt-1 text-emerald-800">
+                  {t("whatsapp.settings.usingManagedBody")}
+                </p>
+              </div>
+            ) : null}
             <p className="text-sm font-medium text-slate-600">
-              {t("whatsapp.settings.connectIntro")}
+              {usingManagedWithoutPrivate
+                ? t("whatsapp.settings.connectOwnIntro")
+                : t("whatsapp.settings.connectIntro")}
             </p>
-            <button
-              type="button"
-              className={btnPrimary}
-              disabled={connecting}
-              onClick={() => {
-                void handleConnect();
-              }}
-            >
-              {connecting ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <PlugZap className="h-4 w-4" />
-              )}
-              {connecting
-                ? t("whatsapp.settings.connecting")
-                : t("whatsapp.settings.connectCta")}
-            </button>
+            {canConnectOwn ? (
+              <button
+                type="button"
+                className={btnPrimary}
+                disabled={connecting}
+                onClick={() => {
+                  void handleConnect();
+                }}
+              >
+                {connecting ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <PlugZap className="h-4 w-4" />
+                )}
+                {connecting
+                  ? t("whatsapp.settings.connecting")
+                  : usingManagedWithoutPrivate
+                    ? t("whatsapp.settings.connectOwnCta")
+                    : t("whatsapp.settings.connectCta")}
+              </button>
+            ) : (
+              <p className="rounded-xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-semibold text-amber-900">
+                {t("whatsapp.settings.managedHostNoConnectOwn")}
+              </p>
+            )}
             {actionInfo && (
               <p className="rounded-xl border border-sky-200 bg-sky-50 px-3 py-2 text-xs font-semibold text-sky-800">
                 {actionInfo}
@@ -514,6 +800,16 @@ export default function WhatsAppSettingsTab() {
           </div>
         ) : (
           <div className="mt-5 space-y-3">
+            {isPlatformManaged ? (
+              <div className="rounded-xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm font-medium text-sky-950">
+                <p className="font-black">
+                  {t("whatsapp.settings.managedHostTitle")}
+                </p>
+                <p className="mt-1 text-sky-900">
+                  {t("whatsapp.settings.managedHostBody")}
+                </p>
+              </div>
+            ) : null}
             <div className={`rounded-xl border px-4 py-3 ${tone.box}`}>
               <div className="flex items-center gap-2">
                 {readyToSend ? (
@@ -568,6 +864,7 @@ export default function WhatsAppSettingsTab() {
             </div>
 
             {needsRegistration && (
+              <>
               <div className="rounded-xl border border-amber-200 bg-white px-4 py-3">
                 <label className="block text-sm font-black text-slate-900">
                   {t("whatsapp.settings.pinLabel")}
@@ -606,31 +903,123 @@ export default function WhatsAppSettingsTab() {
                     : t("whatsapp.settings.registerCta")}
                 </button>
               </div>
+              <div className="rounded-xl border border-sky-200 bg-sky-50/60 px-4 py-3">
+                <div className="flex items-center gap-2">
+                  <PhoneCall className="h-4 w-4 text-sky-700" />
+                  <p className="text-sm font-black text-slate-900">
+                    Voice verification code
+                  </p>
+                </div>
+                <p className="mt-1 text-xs font-medium text-slate-600">
+                  Start listening, then ask Meta to call your verification number.
+                </p>
+                {voiceSession?.otpAvailable && voiceSession.otpCode ? (
+                  <div className="mt-3 space-y-2">
+                    <button
+                      type="button"
+                      className="w-full rounded-lg bg-white px-3 py-2 text-center font-mono text-2xl font-black tracking-[0.3em] text-slate-900"
+                      dir="ltr"
+                      aria-label="Captured voice verification code — click to copy"
+                      onClick={() => {
+                        void handleCopyVoiceOtp();
+                      }}
+                    >
+                      {voiceSession.otpCode}
+                    </button>
+                    {voiceSession.metaVerifyStatus === "verified" ? (
+                      <p className="text-xs font-bold text-emerald-800">
+                        Submitted to Meta successfully
+                      </p>
+                    ) : null}
+                    {voiceSession.metaVerifyStatus === "failed" ? (
+                      <div className="space-y-2">
+                        <p className="text-xs font-bold text-rose-700">
+                          {voiceSession.metaVerifyError ||
+                            "Auto-submit failed — enter this code in Meta, or retry"}
+                        </p>
+                        <button
+                          type="button"
+                          className={btnSecondary}
+                          onClick={() => {
+                            void handleRetryMetaVerify();
+                          }}
+                        >
+                          Retry Meta submit
+                        </button>
+                      </div>
+                    ) : null}
+                  </div>
+                ) : voiceSession ? (
+                  <p className="mt-3 text-xs font-bold text-sky-800">
+                    {voiceSessionStatusLabel(voiceSession)}
+                  </p>
+                ) : null}
+                {voiceSession?.metaVerifyStatus ? (
+                  <p className="mt-2 text-[11px] font-semibold text-slate-500" dir="ltr">
+                    Meta verify: {voiceSession.metaVerifyStatus}
+                    {voiceSession.metaVerifyError
+                      ? ` — ${voiceSession.metaVerifyError}`
+                      : ""}
+                  </p>
+                ) : null}
+                <button
+                  type="button"
+                  className={`${btnSecondary} mt-3`}
+                  disabled={
+                    startingVoiceVerification ||
+                    Boolean(
+                      voiceSession &&
+                        ["waiting_for_call", "call_received", "answered", "capturing"].includes(
+                          voiceSession.status
+                        )
+                    )
+                  }
+                  onClick={() => {
+                    void handleStartVoiceVerification();
+                  }}
+                >
+                  {startingVoiceVerification ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <PhoneCall className="h-4 w-4" />
+                  )}
+                  Start voice capture
+                </button>
+              </div>
+              </>
             )}
 
             <div className="flex flex-wrap gap-2">
-              <button
-                type="button"
-                className={btnPrimary}
-                disabled={connecting}
-                onClick={handleConnect}
-              >
-                {connecting ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <RefreshCw className="h-4 w-4" />
-                )}
-                {t("whatsapp.settings.reconnect")}
-              </button>
-              <button
-                type="button"
-                className={btnSecondary}
-                disabled={saving}
-                onClick={handleDisconnect}
-              >
-                <Unplug className="h-4 w-4" />
-                {t("whatsapp.settings.disconnect")}
-              </button>
+              {canConnectOwn ? (
+                <button
+                  type="button"
+                  className={btnPrimary}
+                  disabled={connecting}
+                  onClick={handleConnect}
+                >
+                  {connecting ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <RefreshCw className="h-4 w-4" />
+                  )}
+                  {t("whatsapp.settings.reconnect")}
+                </button>
+              ) : null}
+              {canDisconnect ? (
+                <button
+                  type="button"
+                  className={btnSecondary}
+                  disabled={saving}
+                  onClick={handleDisconnect}
+                >
+                  <Unplug className="h-4 w-4" />
+                  {t("whatsapp.settings.disconnect")}
+                </button>
+              ) : isPlatformManaged ? (
+                <p className="w-full rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-xs font-semibold text-slate-700">
+                  {t("whatsapp.settings.managedHostNoDisconnect")}
+                </p>
+              ) : null}
             </div>
           </div>
         )}

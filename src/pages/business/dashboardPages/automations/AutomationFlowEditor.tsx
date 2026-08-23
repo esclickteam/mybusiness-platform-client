@@ -84,6 +84,7 @@ import {
   listApprovedWhatsAppTemplates,
   syncWhatsAppTemplatesForAutomation,
   type ApprovedWhatsAppTemplate,
+  type WhatsAppSenderMode,
   type WhatsAppVariableMapping,
 } from "../../../../api/whatsappApi";
 import {
@@ -529,6 +530,7 @@ function EditorInner({
   const [filter] = useState<PaletteFilter>("all");
   const [waConnected, setWaConnected] = useState(false);
   const [waManagedModeEnabled, setWaManagedModeEnabled] = useState(true);
+  const [waPrivateConnected, setWaPrivateConnected] = useState(false);
   const [waTemplates, setWaTemplates] = useState<ApprovedWhatsAppTemplate[]>([]);
   const [waLoading, setWaLoading] = useState(false);
   const [waSyncError, setWaSyncError] = useState("");
@@ -656,44 +658,55 @@ function EditorInner({
     setDrawerSessionDirty(JSON.stringify(node.data || {}) !== inspectorBaseline);
   }, [selectedId, nodes, inspectorBaseline]);
 
-  const loadApprovedWhatsAppTemplates = useCallback(async () => {
+  const loadApprovedWhatsAppTemplates = useCallback(async (
+    senderMode: WhatsAppSenderMode = "bizuply_managed"
+  ) => {
     setWaLoading(true);
     setWaSyncError("");
     try {
-      const [status, approved] = await Promise.all([
+      const [managedStatus, privateStatus, approved] = await Promise.all([
         getWhatsAppIntegrationStatus(businessId, {
           senderMode: "bizuply_managed",
         }),
+        getWhatsAppIntegrationStatus(businessId, {
+          senderMode: "business_connected",
+        }),
         listApprovedWhatsAppTemplates(businessId, {
           usableForAutomation: true,
+          senderMode,
         }),
       ]);
-      setWaConnected(Boolean(status.connected || approved.connected));
+      setWaPrivateConnected(Boolean(privateStatus.connected));
       setWaManagedModeEnabled(
         Boolean(
-          status.managedModeEnabled ??
-            status.managedStatus?.managedModeEnabled ??
+          managedStatus.managedModeEnabled ??
+            managedStatus.managedStatus?.managedModeEnabled ??
+            (approved as { managedModeEnabled?: boolean }).managedModeEnabled ??
             true
         )
       );
+      setWaConnected(Boolean(approved.connected));
       setWaLastSyncAt(
         approved.lastTemplatesSyncAt ||
-          status.lastTemplatesSyncAt ||
-          status.managedStatus?.lastTemplatesSyncAt ||
+          (senderMode === "business_connected"
+            ? privateStatus.lastTemplatesSyncAt
+            : managedStatus.lastTemplatesSyncAt ||
+              managedStatus.managedStatus?.lastTemplatesSyncAt) ||
           null
       );
       setWaTemplates(approved.templates || []);
       const unavailable =
-        status.customerUnavailableMessage ||
-        status.managedStatus?.customerUnavailableMessage ||
-        (approved as { customerUnavailableMessage?: string })
-          .customerUnavailableMessage ||
+        managedStatus.customerUnavailableMessage ||
+        managedStatus.managedStatus?.customerUnavailableMessage ||
+        approved.customerUnavailableMessage ||
         "";
       if (!approved.connected) {
         setWaSyncError(
           unavailable ||
             approved.message ||
-            "שירות WhatsApp אינו זמין כרגע. יש לפנות לתמיכה."
+            (senderMode === "business_connected"
+              ? "יש לחבר מספר WhatsApp של העסק לפני בחירת תבנית"
+              : "שירות WhatsApp אינו זמין כרגע. יש לפנות לתמיכה.")
         );
       } else if (approved.message) {
         setWaSyncError(approved.message);
@@ -706,11 +719,15 @@ function EditorInner({
     }
   }, [businessId]);
 
-  const refreshWhatsAppTemplatesFromMeta = useCallback(async () => {
+  const refreshWhatsAppTemplatesFromMeta = useCallback(async (
+    senderMode: WhatsAppSenderMode = "bizuply_managed"
+  ) => {
     setWaLoading(true);
     setWaSyncError("");
     try {
-      const synced = await syncWhatsAppTemplatesForAutomation(businessId);
+      const synced = await syncWhatsAppTemplatesForAutomation(businessId, {
+        senderMode,
+      });
       setWaConnected(Boolean(synced.connected));
       setWaLastSyncAt(synced.lastTemplatesSyncAt || null);
       setWaTemplates(synced.templates || []);
@@ -732,17 +749,14 @@ function EditorInner({
       setWaSyncError(
         readErrorMessage(error, "לא הצלחנו לטעון את תבניות WhatsApp")
       );
-      // Keep existing templates on sync failure; still try a list refetch.
-      await loadApprovedWhatsAppTemplates();
+      await loadApprovedWhatsAppTemplates(senderMode);
       return;
     } finally {
       setWaLoading(false);
     }
   }, [businessId, loadApprovedWhatsAppTemplates]);
 
-  useEffect(() => {
-    void loadApprovedWhatsAppTemplates();
-  }, [loadApprovedWhatsAppTemplates]);
+  // Templates are loaded after selectedNode / senderMode is known (see effect below).
 
   const loadGmailStatus = useCallback(async () => {
     setGmailLoading(true);
@@ -878,6 +892,16 @@ function EditorInner({
     () => nodes.find((n) => n.id === selectedId) || null,
     [nodes, selectedId]
   );
+
+  const selectedWaSenderMode = useMemo<WhatsAppSenderMode>(() => {
+    const raw = String(selectedNode?.data?.senderMode || "").trim();
+    if (raw === "business_connected") return "business_connected";
+    return "bizuply_managed";
+  }, [selectedNode?.data?.senderMode]);
+
+  useEffect(() => {
+    void loadApprovedWhatsAppTemplates(selectedWaSenderMode);
+  }, [loadApprovedWhatsAppTemplates, selectedWaSenderMode]);
 
   const selectedWaTemplate = useMemo(() => {
     if (
@@ -2197,6 +2221,9 @@ function EditorInner({
               <input
                 value={String(selectedNode.data?.label || "")}
                 onChange={(e) => updateSelectedData({ label: e.target.value })}
+                data-demo-target={
+                  selectedNode.type !== "trigger" ? "automations-action-config" : undefined
+                }
               />
             </label>
 
@@ -2360,6 +2387,7 @@ function EditorInner({
                       afterNodeId: selectedNode.id,
                     })
                   }
+                  data-demo-target="automations-add-action"
                 >
                   הוסף תוצאה לטריגר
                 </button>
@@ -2786,15 +2814,37 @@ function EditorInner({
                       <label>
                         שולח
                         <select
-                          value="bizuply_managed"
-                          disabled
-                          onChange={() => undefined}
+                          value={selectedWaSenderMode}
+                          disabled={readOnly || (!waManagedModeEnabled && !waPrivateConnected)}
+                          onChange={(e) => {
+                            const next = (
+                              e.target.value === "business_connected"
+                                ? "business_connected"
+                                : "bizuply_managed"
+                            ) as WhatsAppSenderMode;
+                            updateSelectedData({
+                              senderMode: next,
+                              templateId: "",
+                              metaTemplateId: "",
+                              metaTemplateName: "",
+                              language: "",
+                              componentMappings: [],
+                            });
+                          }}
                         >
-                          <option value="bizuply_managed">
+                          <option
+                            value="bizuply_managed"
+                            disabled={!waManagedModeEnabled}
+                          >
                             מספר BizUply המנוהל
                           </option>
-                          <option value="business_connected" disabled>
-                            חיבור מספר WhatsApp של העסק — בקרוב
+                          <option
+                            value="business_connected"
+                            disabled={!waPrivateConnected}
+                          >
+                            {waPrivateConnected
+                              ? "מספר WhatsApp של העסק"
+                              : "חיבור מספר WhatsApp של העסק — חבר בהגדרות"}
                           </option>
                         </select>
                       </label>
@@ -2879,7 +2929,11 @@ function EditorInner({
                         type="button"
                         className="af-toolbar__btn"
                         disabled={waLoading || readOnly}
-                        onClick={() => void refreshWhatsAppTemplatesFromMeta()}
+                        onClick={() =>
+                              void refreshWhatsAppTemplatesFromMeta(
+                                selectedWaSenderMode
+                              )
+                            }
                       >
                         {waLoading ? (
                           <>
@@ -2908,7 +2962,11 @@ function EditorInner({
                           <button
                             type="button"
                             className="af-toolbar__btn"
-                            onClick={() => void refreshWhatsAppTemplatesFromMeta()}
+                            onClick={() =>
+                              void refreshWhatsAppTemplatesFromMeta(
+                                selectedWaSenderMode
+                              )
+                            }
                           >
                             נסו שוב
                           </button>
@@ -2927,7 +2985,11 @@ function EditorInner({
                         <button
                           type="button"
                           className="af-toolbar__btn"
-                          onClick={() => void refreshWhatsAppTemplatesFromMeta()}
+                          onClick={() =>
+                              void refreshWhatsAppTemplatesFromMeta(
+                                selectedWaSenderMode
+                              )
+                            }
                         >
                           נסו שוב
                         </button>
@@ -2947,7 +3009,11 @@ function EditorInner({
                           type="button"
                           className="af-toolbar__btn"
                           disabled={waLoading || readOnly}
-                          onClick={() => void refreshWhatsAppTemplatesFromMeta()}
+                          onClick={() =>
+                              void refreshWhatsAppTemplatesFromMeta(
+                                selectedWaSenderMode
+                              )
+                            }
                         >
                           רענון תבניות
                         </button>
@@ -2993,7 +3059,7 @@ function EditorInner({
                                   String(tpl.metaTemplateName || "")
                                 );
                               updateSelectedData({
-                                senderMode: "bizuply_managed",
+                                senderMode: selectedWaSenderMode,
                                 templateId: tpl._id,
                                 metaTemplateId: tpl.metaTemplateId || "",
                                 metaTemplateName: tpl.metaTemplateName || "",

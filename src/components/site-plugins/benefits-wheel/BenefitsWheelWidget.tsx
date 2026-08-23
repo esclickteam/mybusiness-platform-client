@@ -224,6 +224,9 @@ export default function BenefitsWheelWidget({
       {showTrigger ? (
         <button
           type="button"
+          data-bizuply-widget="benefits-wheel"
+          data-bizuply-plugin="benefits-wheel"
+          data-bizuply-plugin-runtime="true"
           onClick={openModal}
           onPointerDown={onPointerDown}
           onPointerMove={onPointerMove}

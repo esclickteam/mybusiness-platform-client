@@ -1,10 +1,12 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
   ArrowRight,
   Bell,
   BellRing,
+  CalendarDays,
   Check,
   CheckCheck,
   Headphones,
@@ -16,17 +18,19 @@ import {
 } from "lucide-react";
 
 import API from "../api";
+import adminCrmApi from "../api/adminCrmApi";
 import { useAuth } from "../context/AuthContext";
 import {
-  ADMIN_FLOATING_PANEL_COMPACT_CLASS,
-  ADMIN_MOBILE_BACKDROP_CLASS,
+  ADMIN_ANCHORED_PANEL_CLASS,
+  ADMIN_PANEL_BACKDROP_CLASS,
+  getAdminAnchoredPanelStyle,
 } from "../utils/adminResponsive";
 import {
-  loadStoredAlerts,
-  notifyAdminSupportEvent,
-  persistAlerts,
-  type AdminSupportAlert,
-} from "../utils/adminSupportAlerts";
+  loadStoredSupportAlerts,
+  notifyAdminStaffEvent,
+  persistSupportAlerts,
+  type AdminStaffAlert,
+} from "../utils/adminStaffAlerts";
 import {
   bindExistingPushSubscription,
   ensurePushSubscription,
@@ -251,7 +255,7 @@ function AdminPushSettings({
                 הגדרות התראות אדמין
               </h3>
               <p className="truncate text-[11px] font-bold text-slate-500">
-                Push / PWA — רק צ׳אט תמיכה מלקוחות
+                Push / PWA — תמיכה ויומן BizUply
               </p>
             </div>
           </div>
@@ -336,17 +340,33 @@ function AdminPushSettings({
           )}
 
           <div className="rounded-2xl border border-slate-100 bg-white p-3">
-            <div className="flex items-start gap-2">
-              <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-red-500 ring-1 ring-amber-100">
-                <Headphones className="h-4 w-4" />
-              </span>
-              <div>
-                <p className="text-sm font-black text-slate-900">
-                  צ׳אט תמיכה מלקוחות
-                </p>
-                <p className="mt-1 text-[11px] font-semibold leading-5 text-slate-500">
-                  תקבלו התראה כשלקוח מבקש נציג או שולח הודעה בשיחת תמיכה חיה.
-                </p>
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+              <div className="flex min-w-0 items-start gap-2">
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-amber-50 text-red-500 ring-1 ring-amber-100">
+                  <Headphones className="h-4 w-4" />
+                </span>
+                <div className="min-w-0">
+                  <p className="text-sm font-black text-slate-900">
+                    צ׳אט תמיכה מלקוחות
+                  </p>
+                  <p className="mt-1 text-[11px] font-semibold leading-5 text-slate-500">
+                    תקבלו התראה כשלקוח מבקש נציג או שולח הודעה בשיחת תמיכה חיה.
+                  </p>
+                </div>
+              </div>
+              <Toggle checked disabled onChange={() => {}} />
+            </div>
+            <div className="mt-3 flex flex-col gap-3 border-t border-slate-100 pt-3 sm:flex-row sm:items-start sm:justify-between">
+              <div className="flex min-w-0 items-start gap-2">
+                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-violet-50 text-[#7C4DFF] ring-1 ring-violet-100">
+                  <CalendarDays className="h-4 w-4" />
+                </span>
+                <div className="min-w-0">
+                  <p className="text-sm font-black text-slate-900">יומן BizUply</p>
+                  <p className="mt-1 text-[11px] font-semibold leading-5 text-slate-500">
+                    תקבלו התראה כשנקבעת שיחה חדשה ותזכורת 10 דקות לפני הפגישה.
+                  </p>
+                </div>
               </div>
               <Toggle checked disabled onChange={() => {}} />
             </div>
@@ -369,11 +389,62 @@ export default function AdminNotifications() {
   const [open, setOpen] = useState(false);
   const [panelView, setPanelView] = useState<"list" | "settings">("list");
   const [tab, setTab] = useState<"all" | "unread">("all");
-  const [alerts, setAlerts] = useState<AdminSupportAlert[]>(() =>
-    loadStoredAlerts()
+  const [alerts, setAlerts] = useState<AdminStaffAlert[]>(() =>
+    loadStoredSupportAlerts()
   );
   const [badge, setBadge] = useState(0);
   const rootRef = useRef<HTMLDivElement | null>(null);
+  const bellRef = useRef<HTMLButtonElement | null>(null);
+  const panelRef = useRef<HTMLDivElement | null>(null);
+  const [panelStyle, setPanelStyle] = useState<React.CSSProperties>({
+    visibility: "hidden",
+  });
+
+  const mergeAlerts = useCallback((incoming: AdminStaffAlert[]) => {
+    const map = new Map<string, AdminStaffAlert>();
+    for (const item of incoming) {
+      map.set(item.id, item);
+    }
+    return [...map.values()].sort((a, b) => b.at - a.at).slice(0, 40);
+  }, []);
+
+  const pushAlert = useCallback((alert: AdminStaffAlert) => {
+    setAlerts((prev) => {
+      if (prev.some((a) => a.id === alert.id)) return prev;
+      const next = mergeAlerts([alert, ...prev]);
+      persistSupportAlerts(next);
+      return next;
+    });
+    setBadge((n) => n + 1);
+  }, [mergeAlerts]);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const { data } = await adminCrmApi.staffNotifications({ limit: 40 });
+        if (cancelled) return;
+        const serverItems: AdminStaffAlert[] = (data.items || []).map((row: any) => ({
+          id: row.id,
+          kind: row.kind || "calendar_booking",
+          title: row.title,
+          body: row.body,
+          targetUrl: row.targetUrl || "",
+          bookingId: row.bookingId,
+          adminCustomerId: row.adminCustomerId,
+          at: row.at || new Date(row.createdAt).getTime(),
+          read: Boolean(row.read),
+          server: true,
+        }));
+        setAlerts((prev) => mergeAlerts([...serverItems, ...prev]));
+      } catch {
+        /* ignore */
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [mergeAlerts]);
 
   const unreadCount = useMemo(
     () => alerts.filter((a) => !a.read).length,
@@ -385,19 +456,89 @@ export default function AdminNotifications() {
     return alerts;
   }, [alerts, tab]);
 
-  const pushAlert = useCallback((alert: AdminSupportAlert) => {
-    setAlerts((prev) => {
-      if (prev.some((a) => a.id === alert.id)) return prev;
-      const next = [alert, ...prev].slice(0, 40);
-      persistAlerts(next);
-      return next;
-    });
-    setBadge((n) => n + 1);
+  const footerAction = useMemo(() => {
+    const latest = filtered.find((a) => !a.read) || filtered[0];
+    if (!latest) return null;
+    const isCalendar =
+      latest.kind === "calendar_booking" || latest.kind === "calendar_reminder";
+    const isGuidedDemo = latest.kind === "guided_demo";
+    const isSalesProposal = latest.kind === "sales_proposal";
+    if (isGuidedDemo || isSalesProposal) {
+      const url =
+        latest.targetUrl ||
+        (latest.adminCustomerId
+          ? `/admin/crm/customers/${latest.adminCustomerId}`
+          : isSalesProposal
+            ? "/admin/crm/customers"
+            : "/admin/guided-demos");
+      return {
+        label: "לכרטיס לקוח",
+        icon: CalendarDays,
+        url,
+        tone: "violet" as const,
+      };
+    }
+    if (isCalendar) {
+      const url =
+        latest.targetUrl ||
+        (latest.adminCustomerId
+          ? `/admin/crm/customers/${latest.adminCustomerId}`
+          : "/admin/crm/customers");
+      return {
+        label: "לכרטיס לקוח",
+        icon: CalendarDays,
+        url,
+        tone: "violet" as const,
+      };
+    }
+    const url = latest.conversationId
+      ? `/admin/support-chat?c=${latest.conversationId}`
+      : "/admin/support-chat";
+    return {
+      label: "לצ׳אט תמיכה",
+      icon: Headphones,
+      url,
+      tone: "support" as const,
+    };
+  }, [filtered]);
+
+  const handleStaffNotify = useCallback(
+    (payload: any) => {
+      const rows = Array.isArray(payload?.notifications)
+        ? payload.notifications
+        : payload
+          ? [payload]
+          : [];
+      for (const row of rows) {
+        void notifyAdminStaffEvent({
+          id: row.id,
+          kind: row.kind || payload?.kind || "calendar_booking",
+          title: row.title || payload?.title || "התראה",
+          body: row.body || payload?.body || "",
+          targetUrl: row.targetUrl || payload?.targetUrl || "",
+          bookingId: row.bookingId || payload?.bookingId || null,
+          adminCustomerId: row.adminCustomerId || payload?.adminCustomerId || null,
+          skipOsNotification: false,
+        }).then((alert) => {
+          if (alert) pushAlert(alert);
+        });
+      }
+    },
+    [pushAlert]
+  );
+
+  useEffect(() => {
+    void ensurePushSubscription({ ignorePreference: true }).catch(() => {});
   }, []);
 
   useEffect(() => {
-    void ensurePushSubscription().catch(() => {});
-  }, []);
+    if (!open || typeof document === "undefined") return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = prev;
+    };
+  }, [open]);
 
   useEffect(() => {
     if (!socket) return;
@@ -416,7 +557,8 @@ export default function AdminNotifications() {
         : null;
       const name = payload?.conversation?.name || "לקוח";
       const body = payload?.message?.text || "הודעה חדשה";
-      void notifyAdminSupportEvent({
+      void notifyAdminStaffEvent({
+        kind: "support",
         title: "הודעה חדשה מלקוח",
         body: `${name}: ${body}`,
         conversationId,
@@ -433,7 +575,8 @@ export default function AdminNotifications() {
       }
       const conversationId =
         payload?.conversationId || payload?.conversation?._id || null;
-      void notifyAdminSupportEvent({
+      void notifyAdminStaffEvent({
+        kind: "support",
         title: payload?.title || "פניית תמיכה",
         body: payload?.body || "יש פנייה חדשה מלקוח",
         conversationId,
@@ -449,7 +592,8 @@ export default function AdminNotifications() {
         return;
       }
       const conversation = payload?.conversation;
-      void notifyAdminSupportEvent({
+      void notifyAdminStaffEvent({
+        kind: "support",
         title: "לקוח ממתין לנציג",
         body: `${conversation?.name || "אורח"} מבקש נציג אנושי`,
         conversationId: conversation?._id,
@@ -460,28 +604,34 @@ export default function AdminNotifications() {
     };
 
     socket.emit("joinRoom", "admin-support");
+    socket.emit("joinRoom", "admin-crm");
     socket.on("support:notify", onNotify);
     socket.on("support:waiting", onWaiting);
     socket.on("support:newMessage", onVisitorMessage);
+    socket.on("adminStaff:notify", handleStaffNotify);
+    socket.on("adminCrm:calendar_notify", handleStaffNotify);
+    socket.on("adminCrm:calendar_booking", handleStaffNotify);
+    socket.on("adminCrm:calendar_reminder", handleStaffNotify);
 
     return () => {
       socket.off("support:notify", onNotify);
       socket.off("support:waiting", onWaiting);
       socket.off("support:newMessage", onVisitorMessage);
+      socket.off("adminStaff:notify", handleStaffNotify);
+      socket.off("adminCrm:calendar_notify", handleStaffNotify);
+      socket.off("adminCrm:calendar_booking", handleStaffNotify);
+      socket.off("adminCrm:calendar_reminder", handleStaffNotify);
     };
-  }, [socket, pushAlert]);
+  }, [socket, pushAlert, handleStaffNotify]);
 
   useEffect(() => {
     const onCustom = (event: Event) => {
-      const detail = (event as CustomEvent<AdminSupportAlert>).detail;
+      const detail = (event as CustomEvent<AdminStaffAlert>).detail;
       if (!detail?.id) return;
       setAlerts((prev) => {
         if (prev.some((a) => a.id === detail.id)) return prev;
-        const next = [{ ...detail, read: detail.read ?? false }, ...prev].slice(
-          0,
-          40
-        );
-        persistAlerts(next);
+        const next = mergeAlerts([{ ...detail, read: detail.read ?? false }, ...prev]);
+        persistSupportAlerts(next);
         return next;
       });
       if (!location.pathname.startsWith("/admin/support-chat")) {
@@ -491,7 +641,7 @@ export default function AdminNotifications() {
     window.addEventListener("bizuply:adminSupportAlert", onCustom);
     return () =>
       window.removeEventListener("bizuply:adminSupportAlert", onCustom);
-  }, [location.pathname]);
+  }, [location.pathname, mergeAlerts]);
 
   useEffect(() => {
     if (location.pathname.startsWith("/admin/support-chat")) {
@@ -502,14 +652,32 @@ export default function AdminNotifications() {
   useEffect(() => {
     if (!open) return;
     const onDoc = (e: MouseEvent) => {
-      if (!rootRef.current?.contains(e.target as Node)) {
-        setOpen(false);
-        setPanelView("list");
+      const target = e.target as Node;
+      if (bellRef.current?.contains(target) || panelRef.current?.contains(target)) {
+        return;
       }
+      setOpen(false);
+      setPanelView("list");
     };
     document.addEventListener("mousedown", onDoc);
     return () => document.removeEventListener("mousedown", onDoc);
   }, [open]);
+
+  useLayoutEffect(() => {
+    if (!open) return;
+
+    function updatePosition() {
+      setPanelStyle(getAdminAnchoredPanelStyle(bellRef.current));
+    }
+
+    updatePosition();
+    window.addEventListener("resize", updatePosition);
+    window.addEventListener("scroll", updatePosition, true);
+    return () => {
+      window.removeEventListener("resize", updatePosition);
+      window.removeEventListener("scroll", updatePosition, true);
+    };
+  }, [open, panelView]);
 
   function closePanel() {
     setOpen(false);
@@ -519,42 +687,306 @@ export default function AdminNotifications() {
   function markAllRead() {
     setAlerts((prev) => {
       const next = prev.map((a) => ({ ...a, read: true }));
-      persistAlerts(next);
+      persistSupportAlerts(next);
       return next;
     });
     setBadge(0);
+    void adminCrmApi.markAllStaffNotificationsRead().catch(() => {});
   }
 
-  function openAlert(alert: AdminSupportAlert) {
+  function openAlert(alert: AdminStaffAlert) {
     setAlerts((prev) => {
       const next = prev.map((a) =>
         a.id === alert.id ? { ...a, read: true } : a
       );
-      persistAlerts(next);
+      persistSupportAlerts(next);
       return next;
     });
+    if (alert.server) {
+      void adminCrmApi.markStaffNotificationRead(alert.id).catch(() => {});
+    }
     closePanel();
     setBadge(0);
+    if (alert.targetUrl) {
+      navigate(alert.targetUrl);
+      return;
+    }
     if (alert.conversationId) {
       navigate(`/admin/support-chat?c=${alert.conversationId}`);
-    } else {
-      navigate("/admin/support-chat");
+      return;
     }
+    if (alert.adminCustomerId) {
+      navigate(`/admin/crm/customers/${alert.adminCustomerId}`);
+      return;
+    }
+    navigate("/admin/support-chat");
   }
 
   const displayBadge = Math.max(badge, unreadCount);
+
+  function handleBellClick() {
+    if (open) {
+      setPanelView("list");
+      setOpen(false);
+      return;
+    }
+
+    setBadge(0);
+    setPanelView("list");
+    setOpen(true);
+  }
+
+  const panelOverlay =
+    typeof document !== "undefined"
+      ? createPortal(
+          <>
+            <AnimatePresence>
+              {open && (
+                <motion.button
+                  key="admin-notifications-backdrop"
+                  type="button"
+                  aria-label="סגור התראות"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className={ADMIN_PANEL_BACKDROP_CLASS}
+                  onClick={closePanel}
+                />
+              )}
+            </AnimatePresence>
+
+            <AnimatePresence>
+              {open && (
+                <motion.div
+                  key="admin-notifications-panel"
+                  ref={panelRef}
+                  initial={{ opacity: 0, y: -8, scale: 0.98 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: -8, scale: 0.98 }}
+                  transition={{ duration: 0.18 }}
+                  className={ADMIN_ANCHORED_PANEL_CLASS}
+                  style={panelStyle}
+                  dir="rtl"
+                >
+                {panelView === "settings" ? (
+                  <AdminPushSettings
+                    active={panelView === "settings"}
+                    onBack={() => setPanelView("list")}
+                  />
+                ) : (
+                  <>
+                    <div className="relative shrink-0 border-b border-slate-100 bg-white p-4">
+                      <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-l from-amber-400 via-orange-400 to-red-500" />
+                      <div className="flex items-center justify-between gap-2 pt-1">
+                        <div className="flex min-w-0 items-center gap-2">
+                          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-amber-50 text-red-500 ring-1 ring-amber-100">
+                            <Bell className="h-5 w-5 fill-amber-400" />
+                          </span>
+                          <div className="min-w-0">
+                            <p className="truncate text-base font-black text-slate-900">
+                              התראות
+                            </p>
+                            <p className="truncate text-[11px] font-bold text-slate-500">
+                              תמיכה · יומן BizUply
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-1">
+                          <button
+                            type="button"
+                            onClick={() => setPanelView("settings")}
+                            className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-slate-50 text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"
+                            aria-label="הגדרות התראות"
+                            title="הגדרות התראות"
+                          >
+                            <Settings className="h-4 w-4" />
+                          </button>
+                          <button
+                            type="button"
+                            onClick={closePanel}
+                            className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-slate-50 text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"
+                            aria-label="סגור"
+                          >
+                            <X className="h-4 w-4" />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="grid shrink-0 grid-cols-2 gap-2 border-b border-slate-100 bg-white p-3">
+                      <button
+                        type="button"
+                        onClick={() => setTab("all")}
+                        className={[
+                          "h-11 rounded-2xl text-sm font-black transition",
+                          tab === "all"
+                            ? "bg-sky-50 text-sky-700 shadow-sm ring-1 ring-sky-100"
+                            : "text-slate-500 hover:bg-slate-50 hover:text-slate-700",
+                        ].join(" ")}
+                      >
+                        הכל
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setTab("unread")}
+                        className={[
+                          "h-11 rounded-2xl text-sm font-black transition",
+                          tab === "unread"
+                            ? "bg-sky-50 text-sky-700 shadow-sm ring-1 ring-sky-100"
+                            : "text-slate-500 hover:bg-slate-50 hover:text-slate-700",
+                        ].join(" ")}
+                      >
+                        לא נקראו
+                      </button>
+                    </div>
+
+                    <div className="flex shrink-0 items-center justify-between gap-3 border-b border-slate-100 px-5 py-4">
+                      <div>
+                        <p className="text-sm font-black text-slate-800">
+                          עדכונים אחרונים
+                        </p>
+                        <p className="mt-1 text-xs font-bold text-slate-400">
+                          {unreadCount > 0
+                            ? `${unreadCount} לא נקראו`
+                            : "אין לא נקראו"}
+                        </p>
+                      </div>
+                      {unreadCount > 0 && (
+                        <button
+                          type="button"
+                          onClick={markAllRead}
+                          className="inline-flex h-9 items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 text-xs font-black text-slate-600 transition hover:bg-slate-50"
+                        >
+                          <CheckCheck className="h-4 w-4" />
+                          סמן הכל
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-3">
+                      {filtered.length === 0 ? (
+                        <div className="flex min-h-[230px] flex-col items-center justify-center rounded-3xl border border-dashed border-slate-200 bg-slate-50 px-8 py-10 text-center">
+                          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-3xl bg-white text-slate-400 shadow-sm ring-1 ring-slate-100">
+                            <ListChecks className="h-7 w-7" />
+                          </div>
+                          <p className="text-base font-black text-slate-800">
+                            אין התראות עדיין
+                          </p>
+                          <p className="mt-2 max-w-xs text-sm font-semibold leading-6 text-slate-400">
+                            כשלקוח ישלח הודעה בצ׳אט התמיכה או יקבע שיחה — תופיע כאן ותישלח גם
+                            ב־PWA.
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="space-y-2">
+                          {filtered.map((alert) => {
+                            const isCalendar =
+                              alert.kind === "calendar_booking" ||
+                              alert.kind === "calendar_reminder";
+                            const isGuidedDemo = alert.kind === "guided_demo";
+                            const isSalesProposal = alert.kind === "sales_proposal";
+                            const isViolet = isCalendar || isGuidedDemo || isSalesProposal;
+                            return (
+                              <button
+                                type="button"
+                                key={alert.id}
+                                onClick={() => openAlert(alert)}
+                                className={[
+                                  "group relative flex w-full items-start gap-3 rounded-3xl border p-4 text-start transition",
+                                  alert.read
+                                    ? "border-slate-100 bg-white opacity-75 hover:bg-slate-50"
+                                    : "border-sky-100 bg-gradient-to-l from-sky-50/80 via-white to-white shadow-sm hover:shadow-md",
+                                ].join(" ")}
+                              >
+                                <span
+                                  className={[
+                                    "flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl ring-1",
+                                    isViolet
+                                      ? "bg-violet-50 text-[#7C4DFF] ring-violet-100"
+                                      : "bg-sky-50 text-sky-700 ring-sky-100",
+                                  ].join(" ")}
+                                >
+                                  {isViolet ? (
+                                    <CalendarDays className="h-5 w-5" />
+                                  ) : (
+                                    <Headphones className="h-5 w-5" />
+                                  )}
+                                </span>
+                                <span className="min-w-0 flex-1">
+                                  <span className="mb-2 flex items-center justify-between gap-2">
+                                    <span
+                                      className={[
+                                        "inline-flex shrink-0 items-center rounded-full px-2.5 py-1 text-[11px] font-black ring-1",
+                                        isViolet
+                                          ? "bg-violet-50 text-[#7C4DFF] ring-violet-100"
+                                          : "bg-sky-50 text-sky-700 ring-sky-100",
+                                      ].join(" ")}
+                                    >
+                                      {isSalesProposal
+                                        ? "הצעת מחיר"
+                                        : isGuidedDemo
+                                          ? "דמו מודרך"
+                                          : isCalendar
+                                            ? "יומן BizUply"
+                                            : "צ׳אט תמיכה"}
+                                    </span>
+                                    <span className="shrink-0 text-[11px] font-black text-slate-400">
+                                      {timeAgo(alert.at)}
+                                    </span>
+                                  </span>
+                                  <span className="block truncate text-sm font-black text-slate-800">
+                                    {alert.title}
+                                  </span>
+                                  <span className="mt-1 block text-sm font-semibold leading-6 text-slate-600">
+                                    {alert.body}
+                                  </span>
+                                </span>
+                                {!alert.read && (
+                                  <span className="absolute end-4 top-5 h-2.5 w-2.5 rounded-full bg-sky-500 shadow-[0_0_0_4px_rgba(14,165,233,0.16)]" />
+                                )}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="shrink-0 border-t border-slate-100 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+                      {footerAction ? (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            closePanel();
+                            navigate(footerAction.url);
+                          }}
+                          className={[
+                            "inline-flex h-11 w-full items-center justify-center gap-2 rounded-2xl text-sm font-black text-white shadow-sm",
+                            footerAction.tone === "violet"
+                              ? "bg-[#7C4DFF]"
+                              : "bg-gradient-to-l from-amber-400 to-red-500",
+                          ].join(" ")}
+                        >
+                          <footerAction.icon className="h-4 w-4" />
+                          {footerAction.label}
+                        </button>
+                      ) : null}
+                    </div>
+                  </>
+                )}
+              </motion.div>
+              )}
+            </AnimatePresence>
+          </>,
+          document.body
+        )
+      : null;
 
   return (
     <div className="inline-flex" ref={rootRef}>
       <button
         type="button"
-        onClick={() => {
-          setOpen((v) => {
-            if (v) setPanelView("list");
-            else setBadge(0);
-            return !v;
-          });
-        }}
+        ref={bellRef}
+        onClick={() => handleBellClick()}
         aria-label="התראות תמיכה"
         className={[
           "relative inline-flex h-11 w-11 items-center justify-center rounded-2xl border bg-gradient-to-br shadow-sm transition hover:-translate-y-0.5 hover:shadow-md sm:h-12 sm:w-12",
@@ -604,201 +1036,7 @@ export default function AdminNotifications() {
         )}
       </button>
 
-      <AnimatePresence>
-        {open && (
-          <motion.button
-            key="admin-notifications-backdrop"
-            type="button"
-            aria-label="סגור התראות"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className={ADMIN_MOBILE_BACKDROP_CLASS}
-            onClick={closePanel}
-          />
-        )}
-      </AnimatePresence>
-
-      <AnimatePresence>
-        {open && (
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 40 }}
-            transition={{ duration: 0.18 }}
-            className={ADMIN_FLOATING_PANEL_COMPACT_CLASS}
-            dir="rtl"
-          >
-            <div className="mx-auto mb-1 mt-2 h-1.5 w-12 shrink-0 rounded-full bg-slate-200 sm:hidden" />
-            {panelView === "settings" ? (
-              <AdminPushSettings
-                active={panelView === "settings"}
-                onBack={() => setPanelView("list")}
-              />
-            ) : (
-              <>
-                <div className="relative shrink-0 border-b border-slate-100 bg-white p-4">
-                  <div className="pointer-events-none absolute inset-x-0 top-0 h-1 bg-gradient-to-l from-amber-400 via-orange-400 to-red-500" />
-                  <div className="flex items-center justify-between gap-2 pt-1">
-                    <div className="flex min-w-0 items-center gap-2">
-                      <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl bg-amber-50 text-red-500 ring-1 ring-amber-100">
-                        <Bell className="h-5 w-5 fill-amber-400" />
-                      </span>
-                      <div className="min-w-0">
-                        <p className="truncate text-base font-black text-slate-900">
-                          התראות
-                        </p>
-                        <p className="truncate text-[11px] font-bold text-slate-500">
-                          צ׳אט תמיכה · הודעות מלקוחות
-                        </p>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <button
-                        type="button"
-                        onClick={() => setPanelView("settings")}
-                        className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-slate-50 text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"
-                        aria-label="הגדרות התראות"
-                        title="הגדרות התראות"
-                      >
-                        <Settings className="h-4 w-4" />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={closePanel}
-                        className="inline-flex h-9 w-9 items-center justify-center rounded-2xl bg-slate-50 text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"
-                        aria-label="סגור"
-                      >
-                        <X className="h-4 w-4" />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="grid shrink-0 grid-cols-2 gap-2 border-b border-slate-100 bg-white p-3">
-                  <button
-                    type="button"
-                    onClick={() => setTab("all")}
-                    className={[
-                      "h-11 rounded-2xl text-sm font-black transition",
-                      tab === "all"
-                        ? "bg-sky-50 text-sky-700 shadow-sm ring-1 ring-sky-100"
-                        : "text-slate-500 hover:bg-slate-50 hover:text-slate-700",
-                    ].join(" ")}
-                  >
-                    הכל
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setTab("unread")}
-                    className={[
-                      "h-11 rounded-2xl text-sm font-black transition",
-                      tab === "unread"
-                        ? "bg-sky-50 text-sky-700 shadow-sm ring-1 ring-sky-100"
-                        : "text-slate-500 hover:bg-slate-50 hover:text-slate-700",
-                    ].join(" ")}
-                  >
-                    לא נקראו
-                  </button>
-                </div>
-
-                <div className="flex shrink-0 items-center justify-between gap-3 border-b border-slate-100 px-5 py-4">
-                  <div>
-                    <p className="text-sm font-black text-slate-800">
-                      עדכונים אחרונים
-                    </p>
-                    <p className="mt-1 text-xs font-bold text-slate-400">
-                      {unreadCount > 0
-                        ? `${unreadCount} לא נקראו`
-                        : "אין לא נקראו"}
-                    </p>
-                  </div>
-                  {unreadCount > 0 && (
-                    <button
-                      type="button"
-                      onClick={markAllRead}
-                      className="inline-flex h-9 items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 text-xs font-black text-slate-600 transition hover:bg-slate-50"
-                    >
-                      <CheckCheck className="h-4 w-4" />
-                      סמן הכל
-                    </button>
-                  )}
-                </div>
-
-                <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-3">
-                  {filtered.length === 0 ? (
-                    <div className="flex min-h-[230px] flex-col items-center justify-center rounded-3xl border border-dashed border-slate-200 bg-slate-50 px-8 py-10 text-center">
-                      <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-3xl bg-white text-slate-400 shadow-sm ring-1 ring-slate-100">
-                        <ListChecks className="h-7 w-7" />
-                      </div>
-                      <p className="text-base font-black text-slate-800">
-                        אין התראות עדיין
-                      </p>
-                      <p className="mt-2 max-w-xs text-sm font-semibold leading-6 text-slate-400">
-                        כשלקוח ישלח הודעה בצ׳אט התמיכה — תופיע כאן ותישלח גם
-                        ב־PWA.
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="space-y-2">
-                      {filtered.map((alert) => (
-                        <button
-                          type="button"
-                          key={alert.id}
-                          onClick={() => openAlert(alert)}
-                          className={[
-                            "group relative flex w-full items-start gap-3 rounded-3xl border p-4 text-start transition",
-                            alert.read
-                              ? "border-slate-100 bg-white opacity-75 hover:bg-slate-50"
-                              : "border-sky-100 bg-gradient-to-l from-sky-50/80 via-white to-white shadow-sm hover:shadow-md",
-                          ].join(" ")}
-                        >
-                          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-sky-50 text-sky-700 ring-1 ring-sky-100">
-                            <Headphones className="h-5 w-5" />
-                          </span>
-                          <span className="min-w-0 flex-1">
-                            <span className="mb-2 flex items-center justify-between gap-2">
-                              <span className="inline-flex shrink-0 items-center rounded-full bg-sky-50 px-2.5 py-1 text-[11px] font-black text-sky-700 ring-1 ring-sky-100">
-                                צ׳אט תמיכה
-                              </span>
-                              <span className="shrink-0 text-[11px] font-black text-slate-400">
-                                {timeAgo(alert.at)}
-                              </span>
-                            </span>
-                            <span className="block truncate text-sm font-black text-slate-800">
-                              {alert.title}
-                            </span>
-                            <span className="mt-1 block text-sm font-semibold leading-6 text-slate-600">
-                              {alert.body}
-                            </span>
-                          </span>
-                          {!alert.read && (
-                            <span className="absolute end-4 top-5 h-2.5 w-2.5 rounded-full bg-sky-500 shadow-[0_0_0_4px_rgba(14,165,233,0.16)]" />
-                          )}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                <div className="shrink-0 border-t border-slate-100 p-3">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      closePanel();
-                      navigate("/admin/support-chat");
-                    }}
-                    className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-amber-400 to-red-500 text-sm font-black text-white shadow-sm"
-                  >
-                    <Headphones className="h-4 w-4" />
-                    לצ׳אט תמיכה
-                  </button>
-                </div>
-              </>
-            )}
-          </motion.div>
-        )}
-      </AnimatePresence>
+      {panelOverlay}
     </div>
   );
 }

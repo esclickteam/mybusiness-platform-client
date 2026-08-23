@@ -1,4 +1,5 @@
 import API from "../api";
+import { extendAccessToken } from "../utils/tokenRefresh";
 
 export const CLIENT_PORTAL_BILLING_CODES = {
   ENTITLEMENT_REQUIRED: "CLIENT_PORTAL_ENTITLEMENT_REQUIRED",
@@ -89,10 +90,31 @@ export function isClientPortalCheckoutRequiredError(error: unknown): boolean {
   );
 }
 
+const portalInflight = new Map<string, Promise<ClientPortalCheckoutResult>>();
+
 export async function startClientPortalCheckout(siteId?: string) {
-  const result = await createClientPortalCheckout(siteId);
-  if (result?.url) {
-    window.location.assign(result.url);
-  }
-  return result;
+  const inflightKey = String(siteId || "");
+  const existing = portalInflight.get(inflightKey);
+  if (existing) return existing;
+
+  const pending = (async () => {
+    try {
+      await extendAccessToken();
+    } catch {
+      /* checkout will surface auth failures */
+    }
+    const result = await createClientPortalCheckout(siteId);
+    if (!result?.url) {
+      throw new Error("Checkout session did not return a Stripe URL");
+    }
+    if (typeof window !== "undefined") {
+      window.location.assign(result.url);
+    }
+    return result;
+  })().finally(() => {
+    portalInflight.delete(inflightKey);
+  });
+
+  portalInflight.set(inflightKey, pending);
+  return pending;
 }

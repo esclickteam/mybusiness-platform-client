@@ -1,8 +1,10 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, beforeEach } from "vitest";
 import {
   abortAuthRefreshPipeline,
   isAccessTokenExpired,
+  isBillingReturnSearch,
   isHardRefreshFailure,
+  shouldAttemptRefresh,
 } from "./tokenRefresh";
 
 function makeToken(expInSeconds) {
@@ -46,5 +48,34 @@ describe("session-invalid hard refresh failures", () => {
     localStorage.setItem("token", "abc");
     abortAuthRefreshPipeline();
     expect(localStorage.getItem("token")).toBeNull();
+  });
+});
+
+describe("billing return refresh gate", () => {
+  beforeEach(() => {
+    localStorage.clear();
+    sessionStorage.clear();
+  });
+
+  it("detects portal/plugin billing return query params", () => {
+    expect(isBillingReturnSearch("?portalBilling=success&section=plugins")).toBe(
+      true
+    );
+    expect(isBillingReturnSearch("?pluginBilling=cancel")).toBe(true);
+    expect(isBillingReturnSearch("?section=plugins")).toBe(false);
+  });
+
+  it("allows refresh attempt on Stripe return without local token", () => {
+    window.history.replaceState(
+      {},
+      "",
+      "/business/x/dashboard/website/sites/y/manage?section=plugins&portalBilling=success"
+    );
+    expect(shouldAttemptRefresh()).toBe(true);
+  });
+
+  it("does not refresh for anonymous visits", () => {
+    window.history.replaceState({}, "", "/login");
+    expect(shouldAttemptRefresh()).toBe(false);
   });
 });

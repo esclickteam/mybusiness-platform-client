@@ -1,4 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { getPublicSiteResource } from "../../../api/publicSiteRuntimeApi";
+import { matchesPageTarget } from "../whatsapp-float/whatsappFloatUtils";
 
 type FaqItem = {
   id?: string;
@@ -15,15 +17,22 @@ type FaqSet = {
   schemaEnabled?: boolean;
 };
 
-export default function FaqWidget({ slug }: { slug: string }) {
+export default function FaqWidget({
+  slug,
+  pageId,
+  settings,
+}: {
+  slug: string;
+  pageId?: string;
+  settings?: { pageTargeting?: { mode?: string; pageIds?: string[] } };
+}) {
   const [sets, setSets] = useState<FaqSet[]>([]);
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("");
 
   useEffect(() => {
     if (!slug) return;
-    fetch(`/api/site-builder/public/${encodeURIComponent(slug)}/faq-sets`)
-      .then((res) => res.json())
+    getPublicSiteResource<{ items?: FaqSet[] }>(slug, "/faq-sets")
       .then((data) => setSets(Array.isArray(data?.items) ? data.items : []))
       .catch(() => setSets([]));
   }, [slug]);
@@ -44,10 +53,11 @@ export default function FaqWidget({ slug }: { slug: string }) {
   const categories = Array.from(new Set(items.map((item) => item.category).filter(Boolean)));
   const schemaSets = sets.filter((set) => set.schemaEnabled !== false);
 
+  if (!matchesPageTarget(settings?.pageTargeting, pageId)) return null;
   if (!sets.length) return null;
 
   return (
-    <div data-bizuply-widget="faq-pro" data-bizuply-plugin-runtime="true" className="mx-auto my-6 max-w-3xl rounded-2xl bg-white p-4 shadow">
+    <div data-bizuply-widget="faq-pro" data-bizuply-plugin="faq-pro" data-bizuply-plugin-runtime="true" className="mx-auto my-6 max-w-3xl rounded-2xl bg-white p-4 shadow">
       {schemaSets.length ? (
         <script
           type="application/ld+json"

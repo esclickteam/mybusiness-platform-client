@@ -8,6 +8,7 @@ import PreLoginBot from "./components/PreLoginBot";
 import SupportChatWidget from "./components/SupportChatWidget";
 import AccessibilityWidget from "./components/site-plugins/accessibility/AccessibilityWidget";
 import AdminSoftphoneHost from "./components/AdminSoftphoneHost";
+import AdminPushPermissionBanner from "./components/AdminPushPermissionBanner";
 import StaffSoftphoneHost from "./components/staff/StaffSoftphoneHost";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
@@ -57,6 +58,7 @@ import {
 import BizuplyLoader from "./components/ui/BizuplyLoader";
 import PublicSiteLoader from "./components/ui/PublicSiteLoader";
 import LazyRouteBoundary from "./components/LazyRouteBoundary";
+import GuidedDemoHost from "./guidedDemo/GuidedDemoHost";
 const SitePortalGate = lazy(() =>
   import("./components/site-builder/public/SitePortalGate")
 );
@@ -116,7 +118,10 @@ const AiAutomationTemplatesVisualPage = import.meta.env.DEV
 const WebsiteInviteAcceptPage = lazy(() =>
   import("./pages/WebsiteInviteAcceptPage")
 );
+const GuidedDemoRedeemPage = lazy(() => import("./pages/GuidedDemoRedeemPage"));
+const PublicSalesProposalPage = lazy(() => import("./pages/PublicSalesProposalPage"));
 const Register = lazy(() => import("./pages/Register"));
+const CrmOfferPage = lazy(() => import("./pages/offer/CrmOfferPage"));
 const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
 const ResetPassword = lazy(() => import("./pages/ResetPassword"));
 const ChangePassword = lazy(() => import("./pages/ChangePassword"));
@@ -126,7 +131,6 @@ const BusinessProfileView = lazy(() =>
   import("./components/shared/BusinessProfileView")
 );
 
-const ClientBookingPage = lazy(() => import("./pages/ClientBookingPage"));
 const ClientDashboard = lazy(() => import("./pages/client/ClientDashboard"));
 const OrdersPage = lazy(() => import("./pages/client/OrdersPage"));
 
@@ -152,6 +156,25 @@ const AdminUsers = lazy(() => import("./pages/admin/AdminUsers"));
 const AdminCreateUser = lazy(() => import("./pages/admin/AdminCreateUser"));
 const AdminBusinesses = lazy(() => import("./pages/admin/AdminBusinesses"));
 const AdminCustomers = lazy(() => import("./pages/admin/AdminCustomers"));
+const AdminCrmLayout = lazy(() => import("./pages/admin/crm/AdminCrmLayout"));
+const AdminCrmOverview = lazy(() => import("./pages/admin/crm/AdminCrmOverview"));
+const AdminCrmCustomers = lazy(() => import("./pages/admin/crm/AdminCrmCustomers"));
+const AdminCrmCustomer360 = lazy(() => import("./pages/admin/crm/AdminCrmCustomer360"));
+const AdminCrmPipeline = lazy(() => import("./pages/admin/crm/AdminCrmPipeline"));
+const AdminCrmTasks = lazy(() => import("./pages/admin/crm/AdminCrmTasks"));
+const AdminCrmActivities = lazy(() => import("./pages/admin/crm/AdminCrmActivities"));
+const AdminCrmWhatsAppInbox = lazy(() => import("./pages/admin/crm/AdminCrmWhatsAppInbox"));
+const AdminCrmFollowUps = lazy(() => import("./pages/admin/crm/AdminCrmFollowUps"));
+const AdminCrmGuidedDemo = lazy(() => import("./pages/admin/crm/AdminCrmGuidedDemo"));
+const AdminBizuplyCalendar = lazy(() => import("./pages/admin/AdminBizuplyCalendar"));
+const AdminAutomations = lazy(() => import("./pages/admin/AdminAutomations"));
+const AdminSystemHub = lazy(() => import("./pages/admin/AdminSystemHub"));
+const BookRouteDispatch = lazy(() => import("./pages/BookRouteDispatch"));
+const PublicIntroBookingPage = lazy(() => import("./pages/PublicIntroBookingPage"));
+const AdminGuidedDemos = lazy(() => import("./pages/admin/AdminGuidedDemos"));
+const AdminGuidedDemoDetail = lazy(
+  () => import("./pages/admin/AdminGuidedDemoDetail")
+);
 const EditSiteContent = lazy(() => import("./pages/admin/EditSiteContent"));
 const ManageRoles = lazy(() => import("./pages/admin/ManageRoles"));
 const AdminPayoutPage = lazy(() => import("./pages/admin/AdminPayoutPage"));
@@ -527,13 +550,12 @@ function PublicMiniSitePage() {
       if (isPortalMountShell(link)) return;
 
       /*
-        Template SPA nav (Velmora etc.) owns its own page state. Let the
+        Template SPA nav owns its own page state. Let the
         React onClick run instead of remounting the public site via loadSite.
       */
       if (
-        link.getAttribute("data-velmora-page-link") === "true" ||
         link.getAttribute("data-bizuply-spa-nav") === "true" ||
-        link.closest('[data-velmora-page-link="true"], [data-bizuply-spa-nav="true"]')
+        link.closest('[data-bizuply-spa-nav="true"]')
       ) {
         return;
       }
@@ -782,8 +804,21 @@ export default function App() {
 
   const isMiniSiteHost = isPublicMiniSiteHost();
   const isEarlyAccessLanding = location.pathname === "/early-access";
+  // Hidden private offers (e.g. /offer/crm) are clean landing pages: no
+  // Header, no Footer, no public chrome — reachable only via a direct link.
+  const isHiddenOffer = location.pathname.startsWith("/offer/");
   const isAdminRoute = location.pathname.startsWith("/admin");
   const isStaffRoute = location.pathname.startsWith("/staff");
+  const isGuidedDemoRoute = location.pathname.startsWith("/demo/");
+  const isPublicProposalRoute = location.pathname.startsWith("/proposal/");
+  const bizuplyBookingToken = (() => {
+    const parts = location.pathname.split("/").filter(Boolean);
+    if (parts[0] === "book" && parts[1] === "bizuply" && parts[2]) return parts[2];
+    if (parts[0] === "bizuply" && parts[1] === "book" && parts[2]) return parts[2];
+    if (parts[0] === "book" && parts[1] && !/^[a-fA-F0-9]{24}$/.test(parts[1])) return parts[1];
+    return "";
+  })();
+  const isBizuplyPublicBookingRoute = Boolean(bizuplyBookingToken);
 
   const isBusinessChatRoute =
     location.pathname.includes("/business/") &&
@@ -869,9 +904,13 @@ export default function App() {
       <div className="app-layout" dir={appDir} lang={i18n.language?.split("-")?.[0] || "he"}>
         {!isBusinessChatRoute &&
           !isEarlyAccessLanding &&
+          !isHiddenOffer &&
           !isAdminRoute &&
           !isStaffRoute &&
-          !isPublicPartnerDeal && <Header />}
+          !isPublicPartnerDeal &&
+          !isGuidedDemoRoute &&
+          !isPublicProposalRoute &&
+          !isBizuplyPublicBookingRoute && <Header />}
 
         {/* Staff: top header + softphone (same behavior as admin) */}
         {isStaffRoute ? <StaffSoftphoneHost /> : null}
@@ -1027,7 +1066,31 @@ export default function App() {
                           path="/website-invite/:token"
                           element={<WebsiteInviteAcceptPage />}
                         />
+                        <Route path="/guided-demo/:token" element={<AdminCrmGuidedDemo />} />
+                        <Route
+                          path="/demo/:token"
+                          element={<GuidedDemoRedeemPage />}
+                        />
+                        <Route
+                          path="/proposal/:token"
+                          element={<PublicSalesProposalPage />}
+                        />
+                        <Route
+                          path="/book/bizuply/:token"
+                          element={<PublicIntroBookingPage />}
+                        />
+                        <Route
+                          path="/bizuply/book/:token"
+                          element={<PublicIntroBookingPage />}
+                        />
+                        <Route
+                          path="/book/:businessId"
+                          element={<BookRouteDispatch />}
+                        />
                         <Route path="/register" element={<Register />} />
+                        {/* Hidden private offer — reachable only via direct URL.
+                            NOT linked from nav/footer/pricing/sitemap. */}
+                        <Route path="/offer/crm" element={<CrmOfferPage />} />
                         <Route
                           path="/forgot-password"
                           element={<ForgotPassword />}
@@ -1039,11 +1102,6 @@ export default function App() {
                         <Route
                           path="/business/:businessId"
                           element={<BusinessProfileView />}
-                        />
-
-                        <Route
-                          path="/book/:businessId"
-                          element={<ClientBookingPage />}
                         />
 
                         <Route
@@ -1244,6 +1302,33 @@ export default function App() {
                         />
 
                         <Route
+                          path="/admin/calendar"
+                          element={
+                            <ProtectedRoute roles={["admin"]}>
+                              <AdminBizuplyCalendar />
+                            </ProtectedRoute>
+                          }
+                        />
+
+                        <Route
+                          path="/admin/automations"
+                          element={
+                            <ProtectedRoute roles={["admin"]}>
+                              <AdminAutomations />
+                            </ProtectedRoute>
+                          }
+                        />
+
+                        <Route
+                          path="/admin/system"
+                          element={
+                            <ProtectedRoute roles={["admin"]}>
+                              <AdminSystemHub />
+                            </ProtectedRoute>
+                          }
+                        />
+
+                        <Route
                           path="/admin/withdrawals"
                           element={
                             <ProtectedRoute roles={["admin"]}>
@@ -1311,6 +1396,42 @@ export default function App() {
                           element={
                             <ProtectedRoute roles={["admin"]}>
                               <AdminCustomers />
+                            </ProtectedRoute>
+                          }
+                        />
+
+                        <Route
+                          path="/admin/crm"
+                          element={
+                            <ProtectedRoute roles={["admin"]}>
+                              <AdminCrmLayout />
+                            </ProtectedRoute>
+                          }
+                        >
+                          <Route index element={<AdminCrmOverview />} />
+                          <Route path="customers" element={<AdminCrmCustomers />} />
+                          <Route path="customers/:id" element={<AdminCrmCustomer360 />} />
+                          <Route path="pipeline" element={<AdminCrmPipeline />} />
+                          <Route path="tasks" element={<AdminCrmTasks />} />
+                          <Route path="follow-ups" element={<AdminCrmFollowUps />} />
+                          <Route path="activities" element={<AdminCrmActivities />} />
+                          <Route path="whatsapp" element={<AdminCrmWhatsAppInbox />} />
+                        </Route>
+
+                        <Route
+                          path="/admin/guided-demos"
+                          element={
+                            <ProtectedRoute roles={["admin"]}>
+                              <AdminGuidedDemos />
+                            </ProtectedRoute>
+                          }
+                        />
+
+                        <Route
+                          path="/admin/guided-demos/:id"
+                          element={
+                            <ProtectedRoute roles={["admin"]}>
+                              <AdminGuidedDemoDetail />
                             </ProtectedRoute>
                           }
                         />
@@ -1444,21 +1565,35 @@ export default function App() {
           )}
         </main>
 
-        {!isDashboardRoute && !isPublicBusinessProfile && !isEarlyAccessLanding && (
-          <Footer />
-        )}
+        {!isDashboardRoute &&
+          !isPublicBusinessProfile &&
+          !isEarlyAccessLanding &&
+          !isHiddenOffer &&
+          !isGuidedDemoRoute &&
+          !isPublicProposalRoute &&
+          !isBizuplyPublicBookingRoute && <Footer />}
       </div>
 
-      {!user && !isEarlyAccessLanding && <PreLoginBot />}
+      <GuidedDemoHost />
+
+      {!user && !isEarlyAccessLanding && !isHiddenOffer && !isBizuplyPublicBookingRoute && !isPublicProposalRoute && (
+        <PreLoginBot />
+      )}
 
       {/* Admin softphone — survives page changes + business impersonation */}
       <AdminSoftphoneHost />
 
+      {user?.role === "admin" && isAdminRoute && <AdminPushPermissionBanner />}
+
       {/* Site-wide support bot — keep visible on public + app pages */}
       {!isEarlyAccessLanding &&
         !isBusinessChatRoute &&
+        !isHiddenOffer &&
         !isAdminRoute &&
         !isStaffRoute &&
+        !isGuidedDemoRoute &&
+        !isPublicProposalRoute &&
+        !isBizuplyPublicBookingRoute &&
         !location.pathname.startsWith("/embed/") &&
         !isMiniSiteHost && (
           <SupportChatWidget />
@@ -1468,7 +1603,9 @@ export default function App() {
       {!isDashboardRoute &&
         !isBusinessChatRoute &&
         !isEarlyAccessLanding &&
-        !isMiniSiteHost && (
+        !isMiniSiteHost &&
+        !isPublicProposalRoute &&
+        !isBizuplyPublicBookingRoute && (
           <AccessibilityWidget siteKey="bizuply-platform" mode="live" />
         )}
     </NotificationsProvider>

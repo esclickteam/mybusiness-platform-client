@@ -68,6 +68,8 @@ function availableStockForProduct(
 type PublicStoreCheckoutProps = {
   businessId: string;
   enabled?: boolean;
+  /** True when the Store plugin was explicitly enabled for this site. */
+  storeFeatureEnabled?: boolean;
   language?: string;
   /** Shift the floating cart so it is not covered by the accessibility trigger. */
   shiftForLeftWidgets?: boolean;
@@ -166,6 +168,7 @@ function normalizeIncomingCartItems(rawItems: unknown): CartItem[] {
 export default function PublicStoreCheckout({
   businessId,
   enabled = true,
+  storeFeatureEnabled = false,
   language,
   shiftForLeftWidgets = false,
 }: PublicStoreCheckoutProps) {
@@ -325,7 +328,7 @@ export default function PublicStoreCheckout({
       setHasTemplateCartUi(
         Boolean(
           document.querySelector(
-            '[data-template-id="velmora"], [data-bizuply-template-cart="true"]'
+            '[data-bizuply-template-cart="true"]'
           )
         )
       );
@@ -690,7 +693,11 @@ export default function PublicStoreCheckout({
     }
   }
 
+  const hasCatalog = products.length > 0 || cart.length > 0;
+  const canShowCartUi = storeFeatureEnabled || hasCatalog;
+
   if (!enabled || !businessId || loading) return null;
+  if (!canShowCartUi) return null;
   if (!checkoutReady && !open) return null;
 
   return (
@@ -698,6 +705,8 @@ export default function PublicStoreCheckout({
       {checkoutReady && !hasTemplateCartUi ? (
         <button
           type="button"
+          data-testid="public-store-cart-fab"
+          data-bizuply-public-cart="true"
           onClick={() => setOpen(true)}
           className="fixed z-[70] inline-flex h-14 items-center gap-2 px-5 text-sm font-bold shadow-xl transition hover:opacity-95"
           style={{
@@ -714,6 +723,7 @@ export default function PublicStoreCheckout({
           {cartCount > 0 ? (
             <span
               className="grid h-6 min-w-6 place-items-center rounded-full px-1.5 text-xs font-black"
+              data-bizuply-cart-count={cartCount}
               style={{
                 backgroundColor: appearance.buttonTextColor,
                 color: checkoutPrimary,
@@ -858,6 +868,7 @@ export default function PublicStoreCheckout({
                     {cart.map((item) => (
                       <div
                         key={item.productId}
+                        data-bizuply-cart-item={item.productId}
                         className="flex items-center justify-between gap-2 px-3 py-2"
                         style={{
                           borderRadius: Math.max(8, appearance.buttonRadius - 2),
@@ -881,6 +892,7 @@ export default function PublicStoreCheckout({
                         <div className="flex items-center gap-1">
                           <button
                             type="button"
+                            aria-label="הקטן כמות"
                             className="grid h-7 w-7 place-items-center"
                             style={{
                               borderRadius: 8,
@@ -889,29 +901,29 @@ export default function PublicStoreCheckout({
                             }}
                             onClick={() =>
                               syncCart((prev) =>
-                                prev
-                                  .map((row) =>
-                                    row.productId === item.productId
-                                      ? {
-                                          ...row,
-                                          quantity: Math.max(0, row.quantity - 1),
-                                        }
-                                      : row
-                                  )
-                                  .filter((row) => row.quantity > 0)
+                                prev.map((row) =>
+                                  row.productId === item.productId
+                                    ? {
+                                        ...row,
+                                        quantity: Math.max(1, row.quantity - 1),
+                                      }
+                                    : row
+                                )
                               )
                             }
                           >
-                            <Minus size={12} />
+                            <Minus size={12} aria-hidden="true" />
                           </button>
                           <span
                             className="w-6 text-center text-sm font-bold"
+                            data-bizuply-cart-qty={item.productId}
                             style={{ color: appearance.textColor }}
                           >
                             {item.quantity}
                           </span>
                           <button
                             type="button"
+                            aria-label="הגדל כמות"
                             className="grid h-7 w-7 place-items-center"
                             style={{
                               borderRadius: 8,
@@ -928,13 +940,31 @@ export default function PublicStoreCheckout({
                               )
                             }
                           >
-                            <Plus size={12} />
+                            <Plus size={12} aria-hidden="true" />
+                          </button>
+                          <button
+                            type="button"
+                            aria-label="הסר מהסל"
+                            className="ms-1 grid h-7 px-2 place-items-center text-[11px] font-bold"
+                            style={{
+                              borderRadius: 8,
+                              border: `1px solid ${appearance.borderColor}`,
+                              color: appearance.textColor,
+                            }}
+                            onClick={() =>
+                              syncCart((prev) =>
+                                prev.filter((row) => row.productId !== item.productId)
+                              )
+                            }
+                          >
+                            הסר מהסל
                           </button>
                         </div>
                       </div>
                     ))}
                     <p
                       className="text-sm font-bold"
+                      data-bizuply-cart-total={cartTotal}
                       style={{ color: appearance.textColor }}
                     >
                       סה״כ: {formatMoney(cartTotal, currency)}

@@ -347,6 +347,7 @@ export default function WorkHoursTab({ variant = "page" }: WorkHoursTabProps) {
               type="button"
               onClick={handleSave}
               disabled={saving}
+              data-demo-target="work-hours-save"
               className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-[#6D28D9] px-4 text-sm font-black text-white transition hover:bg-[#5B21B6] disabled:cursor-not-allowed disabled:opacity-60"
             >
               <Save className="h-4 w-4" />
@@ -413,6 +414,7 @@ export default function WorkHoursTab({ variant = "page" }: WorkHoursTabProps) {
               type="button"
               onClick={handleSave}
               disabled={saving}
+              data-demo-target="work-hours-save"
               className="inline-flex h-12 items-center justify-center gap-2 rounded-2xl bg-[#6D28D9] text-white shadow-lg shadow-slate-300 transition hover:-translate-y-0.5 hover:bg-[#5B21B6] disabled:cursor-not-allowed disabled:opacity-60"
             >
               <Save className="h-5 w-5" />
@@ -474,6 +476,7 @@ export default function WorkHoursTab({ variant = "page" }: WorkHoursTabProps) {
                   type="button"
                   onClick={handleSave}
                   disabled={saving}
+                  data-demo-target="work-hours-save"
                   className="inline-flex h-11 items-center justify-center gap-2 rounded-md border border-sky-200/80 bg-gradient-to-l from-sky-100 via-cyan-100 to-white px-4 text-sm font-black text-black shadow-lg shadow-sky-100 transition hover:-translate-y-0.5 hover:bg-[#5B21B6] disabled:cursor-not-allowed disabled:opacity-60"
                 >
                   <Save className="h-4 w-4" />
@@ -554,6 +557,7 @@ export default function WorkHoursTab({ variant = "page" }: WorkHoursTabProps) {
                         <button
                           type="button"
                           onClick={() => toggleDay(index)}
+                          data-demo-target={index === 0 ? "work-hours-day-toggle" : undefined}
                           className={[
                             "inline-flex h-11 min-w-[104px] items-center justify-center gap-2 rounded-2xl px-4 text-sm font-black transition",
                             isClosed

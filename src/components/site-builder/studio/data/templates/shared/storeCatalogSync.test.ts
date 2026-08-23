@@ -8,7 +8,7 @@ import {
 
 describe("isAutoHarvestedVisualContentKey", () => {
   it("keeps explicit template field ids", () => {
-    expect(isAutoHarvestedVisualContentKey("velmora.image.3")).toBe(false);
+    expect(isAutoHarvestedVisualContentKey("hero.image.3")).toBe(false);
     expect(isAutoHarvestedVisualContentKey("hero.title")).toBe(false);
     expect(isAutoHarvestedVisualContentKey("header.cta")).toBe(false);
   });

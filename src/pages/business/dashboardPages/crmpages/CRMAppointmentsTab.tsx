@@ -23,6 +23,7 @@ import {
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
+import { isGuidedDemoActive } from "@/guidedDemo/sessionStore";
 import { useTranslation } from "react-i18next";
 import type { TFunction } from "i18next";
 
@@ -1072,8 +1073,8 @@ export default function CRMAppointmentsTab() {
       time: newAppointment.time,
       duration: Number(newAppointment.duration) || minDuration,
       crmClientId: newAppointment.crmClientId || null,
-      completed: Boolean(newAppointment.completed),
-      status: newAppointment.completed ? "completed" : "scheduled",
+      // Fulfilment is stored in the appointment status; keep one source of truth.
+      status: newAppointment.completed ? "completed" : "not_completed",
     };
 
     setIsSaving(true);
@@ -1117,6 +1118,10 @@ export default function CRMAppointmentsTab() {
           alert(t("crm.appointments.treatmentConsumeFailed"));
         }
       }
+
+      // The saved state is now the baseline, so saving again without changing
+      // fulfilment cannot consume a second treatment.
+      previousCompletedRef.current = nowCompleted;
 
       await queryClient.invalidateQueries({
         queryKey: ["appointments", businessId],
@@ -1207,6 +1212,7 @@ export default function CRMAppointmentsTab() {
             <button
               type="button"
               onClick={openCreateModal}
+              data-demo-target="calendar-create-appointment"
               className="inline-flex h-10 items-center justify-center gap-2 rounded-xl bg-[#6D28D9] px-4 text-sm font-black text-white transition hover:bg-[#5B21B6]"
             >
               <Plus className="h-4 w-4" />
@@ -1444,7 +1450,12 @@ export default function CRMAppointmentsTab() {
 
             <div className="mt-4 max-h-[720px] space-y-3 overflow-y-auto pr-1">
               {filteredAppointments.length === 0 ? (
-                <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-7 text-center">
+                <div
+                  className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-7 text-center"
+                  data-demo-target={
+                    isGuidedDemoActive() ? "calendar-existing-appointments" : undefined
+                  }
+                >
                   <CalendarDays className="mx-auto h-9 w-9 text-slate-300" />
 
                   <h3 className="mt-3 text-base font-black text-slate-800">
@@ -1456,7 +1467,7 @@ export default function CRMAppointmentsTab() {
                   </p>
                 </div>
               ) : (
-                filteredAppointments.map((appointment) => (
+                filteredAppointments.map((appointment, index) => (
                   <AppointmentCard
                     key={appointment._id}
                     appointment={appointment}
@@ -1469,6 +1480,11 @@ export default function CRMAppointmentsTab() {
                     onEdit={() => handleEditAppointment(appointment)}
                     onCancel={() => handleCancelAppointment(appointment._id)}
                     onOpenClient={() => openClientFile(appointment)}
+                    demoTarget={
+                      isGuidedDemoActive() && index === 0
+                        ? "calendar-existing-appointments"
+                        : undefined
+                    }
                   />
                 ))
               )}
@@ -1619,6 +1635,7 @@ function AppointmentCard({
   onEdit,
   onCancel,
   onOpenClient,
+  demoTarget,
 }: {
   appointment: AppointmentItem;
   clients: CRMClient[];
@@ -1630,6 +1647,7 @@ function AppointmentCard({
   onEdit: () => void;
   onCancel: () => void;
   onOpenClient: () => void;
+  demoTarget?: string;
 }) {
   const { t, i18n } = useTranslation();
   const unnamedClient = t("crm.common.unnamedClient");
@@ -1660,7 +1678,10 @@ function AppointmentCard({
   });
 
   return (
-    <article className="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm transition hover:border-sky-100 hover:shadow-[0_16px_40px_rgba(15,23,42,0.07)]">
+    <article
+      className="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm transition hover:border-sky-100 hover:shadow-[0_16px_40px_rgba(15,23,42,0.07)]"
+      data-demo-target={demoTarget}
+    >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <div
@@ -1970,6 +1991,7 @@ function AppointmentModal({
                 <div className="grid gap-4 md:grid-cols-2">
                   <FormBlock label={t("crm.appointments.existingClient")}>
                     <select
+                      data-demo-target="calendar-appointment-client"
                       value={appointment.crmClientId}
                       onChange={(event) => onSelectClient(event.target.value)}
                       className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-black outline-none transition focus:border-sky-300 focus:ring-4 focus:ring-sky-100"
@@ -1986,6 +2008,7 @@ function AppointmentModal({
                   <FormInput
                     label={t("crm.appointments.clientName")}
                     value={appointment.clientName}
+                    demoTarget="calendar-appointment-client"
                     onChange={(value) =>
                       setAppointment((prev) => ({
                         ...prev,
@@ -2062,6 +2085,7 @@ function AppointmentModal({
                 <div className="grid gap-4 md:grid-cols-2">
                   <FormBlock label={t("crm.common.service")}>
                     <select
+                      data-demo-target="calendar-appointment-service"
                       value={appointment.serviceId}
                       onChange={(event) => onSelectService(event.target.value)}
                       className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-black outline-none transition focus:border-sky-300 focus:ring-4 focus:ring-sky-100"
@@ -2078,6 +2102,7 @@ function AppointmentModal({
                   <FormInput
                     label={t("crm.common.date")}
                     type="date"
+                    demoTarget="calendar-appointment-date"
                     value={appointment.date}
                     onChange={(value) =>
                       setAppointment((prev) => ({
@@ -2092,6 +2117,7 @@ function AppointmentModal({
                     <SelectTimeFromSlots
                       date={appointment.date}
                       selectedTime={appointment.time}
+                      demoTarget="calendar-appointment-time"
                       onChange={(time: string) =>
                         setAppointment((prev) => ({
                           ...prev,
@@ -2102,6 +2128,7 @@ function AppointmentModal({
                       serviceId={appointment.serviceId}
                       schedule={scheduleArray}
                       duration={appointment.duration}
+                      excludeAppointmentId={editId}
                     />
                   </FormBlock>
 
@@ -2288,6 +2315,7 @@ function AppointmentModal({
             <button
               type="button"
               onClick={onSave}
+              data-demo-target="calendar-save-appointment"
               disabled={
                 isSaving ||
                 !appointment.clientName ||
@@ -2345,12 +2373,14 @@ function FormInput({
   onChange,
   type = "text",
   placeholder = "",
+  demoTarget,
 }: {
   label: string;
   value: string;
   onChange: (value: string) => void;
   type?: string;
   placeholder?: string;
+  demoTarget?: string;
 }) {
   return (
     <FormBlock label={label}>
@@ -2359,6 +2389,7 @@ function FormInput({
         value={value}
         onChange={(event) => onChange(event.target.value)}
         placeholder={placeholder}
+        data-demo-target={demoTarget}
         className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-black outline-none transition placeholder:text-slate-400 focus:border-sky-300 focus:ring-4 focus:ring-sky-100"
       />
     </FormBlock>

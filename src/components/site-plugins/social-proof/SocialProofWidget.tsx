@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { getPublicSiteResource } from "../../../api/publicSiteRuntimeApi";
 import { matchesDeviceTarget, matchesPageTarget } from "../whatsapp-float/whatsappFloatUtils";
 
 type SocialProofEvent = {
@@ -9,9 +10,11 @@ type SocialProofEvent = {
 
 export default function SocialProofWidget({
   slug,
+  pageId,
   settings,
 }: {
   slug: string;
+  pageId?: string;
   settings?: {
     position?: string;
     delaySeconds?: number;
@@ -27,8 +30,7 @@ export default function SocialProofWidget({
 
   useEffect(() => {
     if (!slug) return;
-    fetch(`/api/site-builder/public/${encodeURIComponent(slug)}/social-proof`)
-      .then((res) => res.json())
+    getPublicSiteResource<{ events?: SocialProofEvent[] }>(slug, "/social-proof")
       .then((data) => {
         const items = Array.isArray(data?.events) ? data.events : [];
         setEvents(items);
@@ -51,7 +53,7 @@ export default function SocialProofWidget({
     };
   }, [events, settings?.delaySeconds, settings?.frequencySeconds]);
 
-  if (!matchesPageTarget(settings?.pageTargeting) || !matchesDeviceTarget(settings?.deviceTargeting)) {
+  if (!matchesPageTarget(settings?.pageTargeting, pageId) || !matchesDeviceTarget(settings?.deviceTargeting)) {
     return null;
   }
   if (!visible || !events[index]) return null;
@@ -65,6 +67,7 @@ export default function SocialProofWidget({
   return (
     <div
       data-bizuply-widget="social-proof"
+      data-bizuply-plugin="social-proof"
       data-bizuply-plugin-runtime="true"
       style={{
         position: "fixed",
@@ -72,6 +75,8 @@ export default function SocialProofWidget({
         ...style,
       }}
       className="max-w-xs rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm shadow-lg"
+      role="status"
+      aria-live="polite"
     >
       {event.demo || settings?.demoMode ? (
         <div className="mb-1 text-[10px] font-bold uppercase tracking-wide text-amber-600">

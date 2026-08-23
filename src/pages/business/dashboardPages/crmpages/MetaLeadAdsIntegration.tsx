@@ -45,20 +45,45 @@ type SelectedForm = {
   formId: string;
   formName: string;
   selectedAt?: string;
+  pageId?: string;
+  pageName?: string;
+};
+
+type AdminMetaSyncSummary = {
+  found?: number;
+  created?: number;
+  imported?: number;
+  skippedExisting?: number;
+  duplicate?: number;
+  failed?: number;
 };
 
 type MetaLeadAdsIntegrationProps = {
   businessId?: string;
   onBack?: () => void;
+  destination?: "business" | "admin_crm";
+  onLeadsSynced?: (summary: AdminMetaSyncSummary) => void;
 };
 
 type WizardStep = 1 | 2 | 3;
 
 const T = "crm.leads.metaIntegration";
 
+function normalizeSyncSummary(raw?: AdminMetaSyncSummary | null): AdminMetaSyncSummary | null {
+  if (!raw || typeof raw !== "object") return null;
+  return {
+    found: Number(raw.found || 0),
+    created: Number(raw.created ?? raw.imported ?? 0),
+    skippedExisting: Number(raw.skippedExisting ?? raw.duplicate ?? 0),
+    failed: Number(raw.failed || 0),
+  };
+}
+
 export default function MetaLeadAdsIntegration({
   businessId,
   onBack,
+  destination = "business",
+  onLeadsSynced,
 }: MetaLeadAdsIntegrationProps) {
   const { t } = useTranslation();
   const dir = useLocaleDir();
@@ -74,12 +99,20 @@ export default function MetaLeadAdsIntegration({
   const [pages, setPages] = useState<MetaPage[]>([]);
   const [forms, setForms] = useState<MetaLeadForm[]>([]);
   const [selectedForm, setSelectedForm] = useState<SelectedForm | null>(null);
+  const [selectedForms, setSelectedForms] = useState<SelectedForm[]>([]);
   const [selectedPageId, setSelectedPageId] = useState("");
+  const [syncing, setSyncing] = useState(false);
+  const [syncSummary, setSyncSummary] = useState<AdminMetaSyncSummary | null>(null);
 
+  const isAdminCrm = destination === "admin_crm";
   const isConnected = Boolean(connectedPage?.pageId);
   const hasAccount = pages.length > 0 || isConnected;
-  const hasForm = Boolean(selectedForm?.formId);
-  const tenantParams = businessId ? { businessId } : undefined;
+  const hasForm = Boolean(selectedForm?.formId) || selectedForms.length > 0;
+  const tenantParams = isAdminCrm
+    ? { destination: "admin_crm" }
+    : businessId
+      ? { businessId }
+      : undefined;
   const emDash = t(`${T}.emDash`);
 
   const wizardStep: WizardStep = !hasAccount
@@ -99,6 +132,7 @@ export default function MetaLeadAdsIntegration({
         pages?: MetaPage[];
         forms?: MetaLeadForm[];
         selectedForm?: SelectedForm | null;
+        selectedForms?: SelectedForm[];
         purgedHistorical?: number;
       }>("/meta-leads/status", {
         params: tenantParams,
@@ -110,6 +144,9 @@ export default function MetaLeadAdsIntegration({
       setPages(data.pages || []);
       setForms(nextConnectedPage?.pageId ? data.forms || [] : []);
       setSelectedForm(nextConnectedPage?.pageId ? data.selectedForm || null : null);
+      setSelectedForms(
+        nextConnectedPage?.pageId ? data.selectedForms || (data.selectedForm ? [data.selectedForm] : []) : []
+      );
 
       if (nextConnectedPage?.pageId) {
         setSelectedPageId(nextConnectedPage.pageId);
@@ -130,11 +167,11 @@ export default function MetaLeadAdsIntegration({
   };
 
   useEffect(() => {
-    if (businessId && isAdminUser()) {
+    if (businessId && isAdminUser() && !isAdminCrm) {
       setAdminActiveBusinessId(businessId);
     }
     loadStatus();
-  }, [businessId]);
+  }, [businessId, isAdminCrm]);
 
   // Return from Facebook OAuth → stay in wizard on page/form step.
   useEffect(() => {
@@ -197,6 +234,7 @@ export default function MetaLeadAdsIntegration({
         connectedPage: ConnectedPage;
         forms: MetaLeadForm[];
         selectedForm?: SelectedForm | null;
+        selectedForms?: SelectedForm[];
       }>(
         "/meta-leads/connect-page",
         { pageId: selectedPageId },
@@ -206,6 +244,9 @@ export default function MetaLeadAdsIntegration({
       setConnectedPage(data.connectedPage);
       setForms(data.forms || []);
       setSelectedForm(data.selectedForm || null);
+      if (Array.isArray(data.selectedForms)) {
+        setSelectedForms(data.selectedForms);
+      }
       setSuccess(t(`${T}.successPageConnected`));
       setForceSetup(true);
 
@@ -233,6 +274,7 @@ export default function MetaLeadAdsIntegration({
       setConnectedPage(null);
       setForms([]);
       setSelectedForm(null);
+      setSelectedForms([]);
       setSelectedPageId("");
       setForceSetup(true);
       setSuccess(t(`${T}.successDisconnected`));
@@ -251,6 +293,38 @@ export default function MetaLeadAdsIntegration({
     }
   };
 
+  const disconnectForm = async (form: SelectedForm) => {
+    if (!isAdminCrm) return;
+    try {
+      setBusy(true);
+      setError("");
+      setSuccess("");
+      const { data } = await API.post<{
+        success?: boolean;
+        selectedForm?: SelectedForm | null;
+        selectedForms?: SelectedForm[];
+      }>(
+        "/meta-leads/disconnect-form",
+        { formId: form.formId },
+        { params: tenantParams }
+      );
+      setSelectedForm(data.selectedForm || null);
+      setSelectedForms(data.selectedForms || []);
+      setSuccess(
+        t(`${T}.successFormRemoved`, { name: form.formName || form.formId })
+      );
+      if (!(data.selectedForms || []).length) {
+        setForceSetup(true);
+      }
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : t(`${T}.errors.disconnectForm`)
+      );
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const refreshForms = async () => {
     try {
       setBusy(true);
@@ -260,6 +334,7 @@ export default function MetaLeadAdsIntegration({
         success: boolean;
         forms: MetaLeadForm[];
         selectedForm?: SelectedForm | null;
+        selectedForms?: SelectedForm[];
       }>("/meta-leads/forms", {
         params: tenantParams,
       });
@@ -268,12 +343,76 @@ export default function MetaLeadAdsIntegration({
       if ("selectedForm" in data) {
         setSelectedForm(data.selectedForm || null);
       }
+      if ("selectedForms" in data) {
+        setSelectedForms(data.selectedForms || []);
+      }
     } catch (err) {
       setError(
         err instanceof Error ? err.message : t(`${T}.errors.refreshForms`)
       );
     } finally {
       setBusy(false);
+    }
+  };
+
+  const formatSyncDone = (summary: AdminMetaSyncSummary) => {
+    const created = Number(summary.created || 0);
+    const duplicate = Number(summary.skippedExisting || 0);
+    const failed = Number(summary.failed || 0);
+    const found = Number(summary.found || 0);
+    if (failed > 0) {
+      return t(`${T}.syncDoneWithFailed`, { created, duplicate, failed });
+    }
+    if (found === 0 && created === 0) {
+      return t(`${T}.syncDoneNone`);
+    }
+    return t(`${T}.syncDone`, { created, duplicate });
+  };
+
+  const applySyncResult = (raw?: AdminMetaSyncSummary | null) => {
+    const summary = normalizeSyncSummary(raw);
+    if (!summary) return null;
+    setSyncSummary(summary);
+    setSuccess(formatSyncDone(summary));
+    window.dispatchEvent(
+      new CustomEvent("bizuply:leads-updated", { detail: summary })
+    );
+    onLeadsSynced?.(summary);
+    return summary;
+  };
+
+  const syncLeads = async () => {
+    if (!isAdminCrm) return;
+    if (!hasForm) {
+      setError(t(`${T}.errors.selectFormBeforeSync`));
+      return;
+    }
+
+    try {
+      setBusy(true);
+      setSyncing(true);
+      setError("");
+      setSuccess("");
+      setSyncSummary({ found: 0, created: 0, skippedExisting: 0, failed: 0 });
+
+      const { data } = await API.post<{
+        success?: boolean;
+        sync?: AdminMetaSyncSummary;
+        found?: number;
+        created?: number;
+        imported?: number;
+        skippedExisting?: number;
+        failed?: number;
+      }>("/meta-leads/sync-leads", {}, { params: tenantParams, timeout: 180000 });
+
+      applySyncResult(data.sync || data);
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : t(`${T}.errors.syncFailed`)
+      );
+    } finally {
+      setBusy(false);
+      setSyncing(false);
     }
   };
 
@@ -285,25 +424,40 @@ export default function MetaLeadAdsIntegration({
 
     try {
       setBusy(true);
+      if (isAdminCrm) setSyncing(true);
       setError("");
       setSuccess("");
 
       const { data } = await API.post<{
         success: boolean;
         selectedForm: SelectedForm;
+        selectedForms?: SelectedForm[];
+        sync?: AdminMetaSyncSummary;
       }>(
         "/meta-leads/select-form",
         { formId: form.id },
-        { params: tenantParams }
+        { params: tenantParams, timeout: isAdminCrm ? 180000 : undefined }
       );
 
       setSelectedForm(data.selectedForm);
+      setSelectedForms(data.selectedForms || (data.selectedForm ? [data.selectedForm] : []));
       setForceSetup(false);
-      setSuccess(
-        t(`${T}.successFormSelected`, {
-          name: data.selectedForm.formName || form.name,
-        })
-      );
+      if (isAdminCrm) {
+        const synced = applySyncResult(data.sync);
+        if (!synced) {
+          setSuccess(
+            t(`${T}.successFormAdded`, {
+              name: data.selectedForm?.formName || form.name,
+            })
+          );
+        }
+      } else {
+        setSuccess(
+          t(`${T}.successFormSelected`, {
+            name: data.selectedForm.formName || form.name,
+          })
+        );
+      }
 
       await loadStatus();
     } catch (err) {
@@ -312,6 +466,7 @@ export default function MetaLeadAdsIntegration({
       );
     } finally {
       setBusy(false);
+      setSyncing(false);
     }
   };
 
@@ -396,6 +551,31 @@ export default function MetaLeadAdsIntegration({
                   </div>
                 )}
 
+                {isAdminCrm && (syncing || syncSummary) ? (
+                  <div className="mb-4 rounded-2xl border border-violet-200 bg-violet-50 p-4">
+                    <p className="text-sm font-black text-violet-800">
+                      {syncing
+                        ? t(`${T}.syncingLeads`)
+                        : formatSyncDone(syncSummary || {})}
+                    </p>
+                    {syncSummary ? (
+                      <p className="mt-1 text-xs font-bold text-violet-700">
+                        {t(`${T}.syncProgress`, {
+                          found: syncSummary.found || 0,
+                          created: syncSummary.created || 0,
+                          duplicate: syncSummary.skippedExisting || 0,
+                          failedPart:
+                            Number(syncSummary.failed || 0) > 0
+                              ? t(`${T}.syncProgressFailed`, {
+                                  failed: syncSummary.failed,
+                                })
+                              : "",
+                        })}
+                      </p>
+                    ) : null}
+                  </div>
+                ) : null}
+
                 {wizardStep === 1 && (
                   <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-[0_10px_30px_rgba(15,23,42,0.04)] sm:p-8">
                     <h2 className="text-xl font-black text-slate-900 sm:text-2xl">
@@ -434,7 +614,9 @@ export default function MetaLeadAdsIntegration({
                             {t(`${T}.wizard.step2Title`)}
                           </h2>
                           <p className="mt-2 max-w-xl text-sm font-semibold leading-6 text-slate-500">
-                            {t(`${T}.wizard.step2Desc`)}
+                            {isAdminCrm
+                              ? t(`${T}.wizard.step2DescAdmin`)
+                              : t(`${T}.wizard.step2Desc`)}
                           </p>
                         </div>
 
@@ -506,7 +688,9 @@ export default function MetaLeadAdsIntegration({
                           </h3>
                           <p className="mt-1 text-sm font-semibold text-slate-500">
                             {isConnected
-                              ? t(`${T}.leadFormsDesc`)
+                              ? isAdminCrm
+                                ? t(`${T}.leadFormsDescAdmin`)
+                                : t(`${T}.leadFormsDesc`)
                               : t(`${T}.wizard.step2FormLocked`)}
                           </p>
                         </div>
@@ -529,7 +713,9 @@ export default function MetaLeadAdsIntegration({
                       ) : forms.length > 0 ? (
                         <div className="space-y-3">
                           {forms.map((form) => {
-                            const isActive = selectedForm?.formId === form.id;
+                            const isActive =
+                              selectedForm?.formId === form.id ||
+                              selectedForms.some((item) => item.formId === form.id);
 
                             return (
                               <div
@@ -587,7 +773,9 @@ export default function MetaLeadAdsIntegration({
                                   )}
                                   {isActive
                                     ? t(`${T}.selectedForm`)
-                                    : t(`${T}.selectForm`)}
+                                    : isAdminCrm
+                                      ? t(`${T}.addForm`)
+                                      : t(`${T}.selectForm`)}
                                 </button>
                               </div>
                             );
@@ -614,7 +802,9 @@ export default function MetaLeadAdsIntegration({
                           {t(`${T}.wizard.readyTitle`)}
                         </h2>
                         <p className="mt-2 text-sm font-semibold text-slate-500">
-                          {t(`${T}.wizard.readyDesc`)}
+                          {isAdminCrm
+                            ? t(`${T}.wizard.readyDescAdmin`)
+                            : t(`${T}.wizard.readyDesc`)}
                         </p>
                       </div>
 
@@ -624,7 +814,9 @@ export default function MetaLeadAdsIntegration({
                           onClick={() => setForceSetup(true)}
                           className="inline-flex h-10 items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-4 text-xs font-black text-slate-700 transition hover:bg-white"
                         >
-                          {t(`${T}.wizard.changeSetup`)}
+                          {isAdminCrm
+                            ? t(`${T}.addAnotherForm`)
+                            : t(`${T}.wizard.changeSetup`)}
                         </button>
                         <button
                           type="button"
@@ -657,15 +849,72 @@ export default function MetaLeadAdsIntegration({
                       </div>
                       <div className="rounded-2xl border border-slate-200 bg-[#F4F5F8] p-4">
                         <p className="text-xs font-bold text-slate-500">
-                          {t(`${T}.activeForm`)}
+                          {isAdminCrm ? t(`${T}.connectedFormsTitle`) : t(`${T}.activeForm`)}
                         </p>
                         <p className="mt-1 truncate text-lg font-black text-slate-900">
-                          {selectedForm?.formName || emDash}
+                          {isAdminCrm
+                            ? t(`${T}.connectedFormsCount`, {
+                                count: selectedForms.length,
+                              })
+                            : selectedForm?.formName || emDash}
                         </p>
                       </div>
                     </div>
 
+                    {isAdminCrm ? (
+                      <div className="mt-4 space-y-3">
+                        <p className="text-sm font-black text-slate-900">
+                          {t(`${T}.connectedFormsTitle`)}
+                        </p>
+                        <p className="text-xs font-bold text-slate-500">
+                          {t(`${T}.connectedFormsDesc`)}
+                        </p>
+                        {selectedForms.map((form) => (
+                          <div
+                            key={form.formId}
+                            className="flex flex-col gap-3 rounded-2xl border border-violet-100 bg-violet-50 p-4 sm:flex-row sm:items-center sm:justify-between"
+                          >
+                            <div className="min-w-0">
+                              <p className="truncate text-sm font-black text-slate-900">
+                                {form.formName}
+                              </p>
+                              <p className="mt-1 text-xs font-bold text-slate-500">
+                                {form.pageName ? `${form.pageName} · ` : ""}
+                                {t(`${T}.formId`, { id: form.formId })}
+                              </p>
+                            </div>
+                            <button
+                              type="button"
+                              onClick={() => disconnectForm(form)}
+                              disabled={busy}
+                              className="inline-flex h-10 shrink-0 items-center justify-center gap-2 rounded-xl border border-rose-200 bg-white px-3 text-xs font-black text-rose-700 transition hover:bg-rose-50 disabled:opacity-60"
+                            >
+                              <Unplug className="h-4 w-4" />
+                              {t(`${T}.disconnectForm`)}
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    ) : null}
+
                     <div className="mt-4 flex flex-wrap gap-2">
+                      {isAdminCrm ? (
+                        <button
+                          type="button"
+                          onClick={syncLeads}
+                          disabled={busy || !hasForm}
+                          className="inline-flex h-11 items-center gap-2 rounded-xl bg-violet-600 px-4 text-xs font-black text-white transition hover:bg-violet-500 disabled:opacity-60"
+                        >
+                          {syncing ? (
+                            <BizuplyLoader size="xs" compact />
+                          ) : (
+                            <RefreshCw className="h-4 w-4" />
+                          )}
+                          {syncing
+                            ? t(`${T}.syncingLeads`)
+                            : t(`${T}.syncLeadsAdmin`)}
+                        </button>
+                      ) : null}
                       <button
                         type="button"
                         onClick={loadStatus}

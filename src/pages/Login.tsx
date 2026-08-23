@@ -83,9 +83,14 @@ export default function Login() {
   );
   const checkoutSuccess = searchParams.get("checkout") === "success";
   const checkoutEmail = searchParams.get("email") || "";
+  const stateFrom = useMemo(() => {
+    const fromState = (location.state as { from?: string } | null)?.from;
+    return sanitizeInternalRedirect(fromState);
+  }, [location.state]);
   const queryRedirect = useMemo(
-    () => sanitizeInternalRedirect(searchParams.get("redirect")),
-    [searchParams]
+    () =>
+      sanitizeInternalRedirect(searchParams.get("redirect")) || stateFrom,
+    [searchParams, stateFrom]
   );
 
   useEffect(() => {

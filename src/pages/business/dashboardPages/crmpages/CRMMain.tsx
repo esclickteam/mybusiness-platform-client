@@ -16,6 +16,7 @@ import API from "../../../../api";
 import { useAuth } from "../../../../context/AuthContext";
 import { useLocaleDir } from "../../../../hooks/useLocaleDir";
 import { workHoursQueryKey } from "../../../../hooks/useBusinessWorkHours";
+import { isFeatureAccessible } from "../../../../utils/entitlementAccess";
 import {
   SHOW_BUSINESS_MINI_SAAS,
   SHOW_CRM_PAYMENTS,
@@ -28,6 +29,7 @@ type CrmTab = {
   icon: React.ElementType;
   badgeKey?: string;
   hidden?: boolean;
+  requiresFeature?: string;
 };
 
 const removedTabPaths = new Set([
@@ -64,12 +66,14 @@ const crmTabs: CrmTab[] = [
     labelKey: "crm.nav.appointments",
     descriptionKey: "crm.nav.appointmentsDesc",
     icon: CalendarDays,
+    requiresFeature: "appointments",
   },
   {
     path: "services",
     labelKey: "crm.nav.services",
     descriptionKey: "crm.nav.servicesDesc",
     icon: Wrench,
+    requiresFeature: "appointments",
   },
   {
     path: "payments",
@@ -104,10 +108,19 @@ export default function CRMMain() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const businessId = user?.businessId || null;
+  const entitlements = user?.entitlements ?? null;
+  const canAppointments = isFeatureAccessible(entitlements, "appointments");
 
   const visibleTabs = useMemo(
-    () => crmTabs.filter((tab) => !tab.hidden),
-    []
+    () =>
+      crmTabs.filter((tab) => {
+        if (tab.hidden) return false;
+        if (tab.requiresFeature === "appointments" && !canAppointments) {
+          return false;
+        }
+        return true;
+      }),
+    [canAppointments]
   );
 
   const currentTab = useMemo(() => {
@@ -133,7 +146,10 @@ export default function CRMMain() {
     const isCrmRoot = lastPart === "crm";
     const isRemovedTab = removedTabPaths.has(currentTab);
     const isHiddenTab = crmTabs.some(
-      (tab) => tab.path === currentTab && tab.hidden
+      (tab) =>
+        tab.path === currentTab &&
+        (tab.hidden ||
+          (tab.requiresFeature === "appointments" && !canAppointments))
     );
     const isUnknownTab =
       !isKnownVisibleTab && !allowedNonNavTabPaths.has(currentTab);
@@ -145,42 +161,44 @@ export default function CRMMain() {
       : cleanPath.replace(new RegExp(`/${currentTab}$`), "");
 
     navigate(`${basePath}/leads`, { replace: true });
-  }, [currentTab, isKnownVisibleTab, location.pathname, navigate]);
+  }, [canAppointments, currentTab, isKnownVisibleTab, location.pathname, navigate]);
 
   useEffect(() => {
     if (!businessId) return;
 
-    queryClient.prefetchQuery({
-      queryKey: ["businessAppointments", businessId],
-      queryFn: async () =>
-        (
-          await API.get("/appointments/all-with-services", {
-            params: { businessId },
-          })
-        ).data,
-    });
+    if (canAppointments) {
+      queryClient.prefetchQuery({
+        queryKey: ["businessAppointments", businessId],
+        queryFn: async () =>
+          (
+            await API.get("/appointments/all-with-services", {
+              params: { businessId },
+            })
+          ).data,
+      });
+
+      queryClient.prefetchQuery({
+        queryKey: ["businessServices", businessId],
+        queryFn: async () => (await API.get("/business/my/services")).data,
+      });
+
+      queryClient.prefetchQuery({
+        queryKey: workHoursQueryKey(businessId),
+        queryFn: async () =>
+          (
+            await API.get("/appointments/get-work-hours", {
+              params: { businessId },
+            })
+          ).data,
+      });
+    }
 
     queryClient.prefetchQuery({
       queryKey: ["crmClients", businessId],
       queryFn: async () =>
         (await API.get(`/crm-clients/${businessId}`)).data,
     });
-
-    queryClient.prefetchQuery({
-      queryKey: ["businessServices", businessId],
-      queryFn: async () => (await API.get("/business/my/services")).data,
-    });
-
-    queryClient.prefetchQuery({
-      queryKey: workHoursQueryKey(businessId),
-      queryFn: async () =>
-        (
-          await API.get("/appointments/get-work-hours", {
-            params: { businessId },
-          })
-        ).data,
-    });
-  }, [queryClient, businessId]);
+  }, [queryClient, businessId, canAppointments]);
 
   return (
     <section
@@ -228,6 +246,7 @@ export default function CRMMain() {
                   <NavLink
                     key={tab.path}
                     to={tab.path}
+                    data-demo-target={`crm-nav-${tab.path}`}
                     className={({ isActive }) =>
                       [
                         "group relative flex shrink-0 items-center gap-2 px-3 py-3 text-sm font-black transition-colors",

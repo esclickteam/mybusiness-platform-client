@@ -41,16 +41,22 @@ type ApiError = {
   message?: string;
 };
 
-type PricingPlan = "monthly" | "yearly" | "website";
+type PricingPlan = "monthly" | "yearly" | "website" | "crm_only";
 
 const PLAN_LABELS: Record<PricingPlan, string> = {
   monthly: "חבילה עסקית חודשית — 149₪ לחודש, חיוב חודשי מתחדש",
   yearly: "חבילה עסקית שנתית — 1,490₪ לשנה, חיוב שנתי מתחדש",
   website: "בניית אתר בלבד — 600₪ לשנה, תשלום חד־פעמי ללא חידוש אוטומטי",
+  crm_only: "CRM בלבד — 89₪ לחודש, חיוב חודשי מתחדש",
 };
 
 function parsePlan(value: string | null): PricingPlan | null {
-  if (value === "monthly" || value === "yearly" || value === "website") {
+  if (
+    value === "monthly" ||
+    value === "yearly" ||
+    value === "website" ||
+    value === "crm_only"
+  ) {
     return value;
   }
   return null;
