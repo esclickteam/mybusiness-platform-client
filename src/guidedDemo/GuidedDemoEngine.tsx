@@ -12,11 +12,14 @@ import {
   holeOptionsForKind,
   INTRO_CATEGORIES,
   inputValueSatisfied,
+  isDemoPageLoading,
+  isTargetReady,
   padHole,
   readDemoInputValue,
   resetPageScroll,
   resolveStepKind,
   scrollTargetFullyVisible,
+  targetLayoutKey,
   type HandPos,
   type Hole,
 } from "./overlayHelpers";
@@ -234,6 +237,7 @@ export default function GuidedDemoEngine() {
   const [tourMinimized, setTourMinimized] = useState(false);
   const [finishConfirm, setFinishConfirm] = useState(false);
   const [inputReady, setInputReady] = useState(false);
+  const [overlayReady, setOverlayReady] = useState(false);
   const [postDemoHidden, setPostDemoHidden] = useState(false);
   const cardRef = useRef<HTMLDivElement | null>(null);
   const retryRef = useRef(0);
@@ -329,6 +333,10 @@ export default function GuidedDemoEngine() {
     skipLockRef.current = false;
     retryRef.current += 1;
     setInputReady(false);
+    setOverlayReady(false);
+    if (step) {
+      window.dispatchEvent(new CustomEvent("guided-demo:step-change", { detail: { step } }));
+    }
   }, [step?.id]);
 
   const layoutCard = useCallback(() => {
@@ -357,12 +365,7 @@ export default function GuidedDemoEngine() {
     if (!step || introOpen || isComplete) {
       setHole(null);
       setHand(null);
-      return undefined;
-    }
-    if (!step.target) {
-      setHole(null);
-      setHand(null);
-      layoutCard();
+      setOverlayReady(false);
       return undefined;
     }
 
@@ -370,6 +373,9 @@ export default function GuidedDemoEngine() {
     let ro: ResizeObserver | null = null;
     let removeScroll: (() => void) | undefined;
     const token = ++retryRef.current;
+    let lastKey = "";
+    let stableHits = 0;
+    let scrolled = false;
 
     const sync = (el: Element) => {
       if (cancelled || token !== retryRef.current) return;
@@ -378,19 +384,24 @@ export default function GuidedDemoEngine() {
         el.getBoundingClientRect(),
         window.innerWidth,
         window.innerHeight,
-        holeOptionsForKind(kind)
+        holeOptionsForKind(kind, step.target)
       );
       setHole(rect);
       setHand(calcHand(rect, window.innerWidth, window.innerHeight));
+      setOverlayReady(true);
     };
 
     const attach = (el: Element) => {
-      scrollTargetFullyVisible(el, DEMO_HEADER_OFFSET);
+      if (!scrolled) {
+        scrolled = true;
+        scrollTargetFullyVisible(el, DEMO_HEADER_OFFSET);
+      }
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
           if (cancelled || token !== retryRef.current) return;
+          if (!isTargetReady(el)) return;
           sync(el);
-          const timers = [160, 360, 700].map((ms) => window.setTimeout(() => sync(el), ms));
+          const timers = [180, 420].map((ms) => window.setTimeout(() => sync(el), ms));
           ro = new ResizeObserver(() => sync(el));
           ro.observe(el);
           const onMove = () => sync(el);
@@ -407,16 +418,48 @@ export default function GuidedDemoEngine() {
 
     const poll = (started: number, navigated = false) => {
       if (cancelled || token !== retryRef.current) return;
+      if (isDemoPageLoading()) {
+        lastKey = "";
+        stableHits = 0;
+        setOverlayReady(false);
+        setHole(null);
+        setHand(null);
+        window.setTimeout(() => poll(started, navigated), POLL_MS);
+        return;
+      }
+
+      if (!step.target) {
+        setHole(null);
+        setHand(null);
+        setOverlayReady(true);
+        layoutCard();
+        return;
+      }
+
       const el = findDemoTarget(step.target, resolveStepKind(step));
-      if (el) {
-        const rect = el.getBoundingClientRect();
-        if (rect.width > 2 && rect.height > 2) {
+      if (el && isTargetReady(el)) {
+        const key = targetLayoutKey(el);
+        if (key !== lastKey) {
+          lastKey = key;
+          stableHits = 0;
+          if (!scrolled) {
+            scrolled = true;
+            scrollTargetFullyVisible(el, DEMO_HEADER_OFFSET);
+          }
+        } else {
+          stableHits += 1;
+        }
+        if (stableHits >= 3) {
           attach(el);
           return;
         }
-        scrollTargetFullyVisible(el, DEMO_HEADER_OFFSET);
+      } else {
+        lastKey = "";
+        stableHits = 0;
       }
-      if (Date.now() - started > TARGET_WAIT_MS) {
+
+      const loadingGrace = isDemoPageLoading() ? TARGET_WAIT_MS : 0;
+      if (Date.now() - started > TARGET_WAIT_MS + loadingGrace) {
         if (!navigated && step.route) {
           goToStepRoute(step);
           window.setTimeout(() => poll(Date.now(), true), 400);

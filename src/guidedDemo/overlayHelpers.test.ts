@@ -70,6 +70,17 @@ describe("guided demo step kinds and holes", () => {
     expect(hole.left).toBe(72);
   });
 
+  it("caps a tall partner card so the tooltip still has room", () => {
+    const hole = padHole(
+      { top: 160, left: 720, width: 380, height: 560 },
+      1280,
+      720,
+      holeOptionsForKind("acknowledge", "collab-partner-card")
+    );
+    expect(hole.height).toBeLessThanOrEqual(200);
+    expect(hole.width).toBeLessThanOrEqual(560);
+  });
+
   it("caps huge containers so the highlight does not swallow the page", () => {
     const hole = padHole(
       { top: 90, left: 24, width: 1100, height: 620 },

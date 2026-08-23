@@ -2896,7 +2896,10 @@ export default function CRMLeadsTab({
                         </p>
                       </div>
 
-                      <div className="mb-4 rounded-2xl border border-slate-200 bg-slate-50 p-3">
+                      <div
+                        data-demo-target="crm-task-composer"
+                        className="mb-4 rounded-2xl border border-slate-200 bg-slate-50 p-3"
+                      >
                         <div className="mb-3 grid gap-2 sm:grid-cols-[160px_minmax(0,1fr)]">
                           <select
                             value={newActivityType}
