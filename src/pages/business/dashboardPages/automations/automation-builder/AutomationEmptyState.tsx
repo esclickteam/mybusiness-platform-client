@@ -43,6 +43,7 @@ export default function AutomationEmptyState({ readOnly, onAddTrigger }: Props) 
         className="af-btn af-btn--primary"
         disabled={readOnly}
         onClick={onAddTrigger}
+        data-demo-target="automations-add-trigger"
       >
         <Plus size={14} />
         בחר טריגר

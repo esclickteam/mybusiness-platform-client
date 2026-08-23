@@ -23,6 +23,7 @@ import {
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
+import { isGuidedDemoActive } from "@/guidedDemo/sessionStore";
 import { useTranslation } from "react-i18next";
 import type { TFunction } from "i18next";
 
@@ -1449,7 +1450,12 @@ export default function CRMAppointmentsTab() {
 
             <div className="mt-4 max-h-[720px] space-y-3 overflow-y-auto pr-1">
               {filteredAppointments.length === 0 ? (
-                <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-7 text-center">
+                <div
+                  className="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-7 text-center"
+                  data-demo-target={
+                    isGuidedDemoActive() ? "calendar-existing-appointments" : undefined
+                  }
+                >
                   <CalendarDays className="mx-auto h-9 w-9 text-slate-300" />
 
                   <h3 className="mt-3 text-base font-black text-slate-800">
@@ -1461,7 +1467,7 @@ export default function CRMAppointmentsTab() {
                   </p>
                 </div>
               ) : (
-                filteredAppointments.map((appointment) => (
+                filteredAppointments.map((appointment, index) => (
                   <AppointmentCard
                     key={appointment._id}
                     appointment={appointment}
@@ -1474,6 +1480,11 @@ export default function CRMAppointmentsTab() {
                     onEdit={() => handleEditAppointment(appointment)}
                     onCancel={() => handleCancelAppointment(appointment._id)}
                     onOpenClient={() => openClientFile(appointment)}
+                    demoTarget={
+                      isGuidedDemoActive() && index === 0
+                        ? "calendar-existing-appointments"
+                        : undefined
+                    }
                   />
                 ))
               )}
@@ -1624,6 +1635,7 @@ function AppointmentCard({
   onEdit,
   onCancel,
   onOpenClient,
+  demoTarget,
 }: {
   appointment: AppointmentItem;
   clients: CRMClient[];
@@ -1635,6 +1647,7 @@ function AppointmentCard({
   onEdit: () => void;
   onCancel: () => void;
   onOpenClient: () => void;
+  demoTarget?: string;
 }) {
   const { t, i18n } = useTranslation();
   const unnamedClient = t("crm.common.unnamedClient");
@@ -1665,7 +1678,10 @@ function AppointmentCard({
   });
 
   return (
-    <article className="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm transition hover:border-sky-100 hover:shadow-[0_16px_40px_rgba(15,23,42,0.07)]">
+    <article
+      className="rounded-2xl border border-slate-100 bg-white p-4 shadow-sm transition hover:border-sky-100 hover:shadow-[0_16px_40px_rgba(15,23,42,0.07)]"
+      data-demo-target={demoTarget}
+    >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <div
