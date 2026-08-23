@@ -51,7 +51,9 @@ export type ProposalViewModel = {
 };
 
 function money(n?: number) {
-  return `₪${Number(n || 0).toLocaleString("he-IL")}`;
+  const value = Number(n || 0);
+  if (value === 0) return "ללא עלות";
+  return `₪${value.toLocaleString("he-IL")}`;
 }
 
 function billingLabel(billing?: string) {
