@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, LayoutTemplate, Pencil, Wand2 } from "lucide-react";
 
@@ -110,8 +111,8 @@ export default function WebsiteTemplatePreviewPage() {
   }
 
   function PreviewActions() {
-    return (
-      <div className="fixed right-4 top-4 z-[2147483008] flex items-center gap-3">
+    const bar = (
+      <div className="fixed right-4 top-4 z-[2147483646] flex items-center gap-3">
         <button
           type="button"
           onClick={handleBackToTemplates}
@@ -123,7 +124,7 @@ export default function WebsiteTemplatePreviewPage() {
 
         <button
           type="button"
-          onClick={() => void handleEditTemplate()}
+          onClick={handleEditTemplate}
           data-demo-target="website-template-edit"
           className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-[#6D28D9] px-5 text-sm font-black text-white shadow-2xl transition hover:bg-[#5b21b6]"
         >
@@ -141,6 +142,8 @@ export default function WebsiteTemplatePreviewPage() {
         </button>
       </div>
     );
+    if (typeof document === "undefined") return bar;
+    return createPortal(bar, document.body);
   }
 
   if (!template && !renderer?.Component) {

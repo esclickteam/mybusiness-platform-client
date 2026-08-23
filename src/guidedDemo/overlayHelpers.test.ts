@@ -7,6 +7,7 @@ import {
   inputValueSatisfied,
   holeOptionsForKind,
   findDemoTarget,
+  resolveTemplateEditorPath,
 } from "./overlayHelpers";
 
 describe("guided demo hand orientation", () => {
@@ -135,5 +136,22 @@ describe("guided demo step kinds and holes", () => {
     field.getBoundingClientRect = () =>
       ({ top: 120, left: 48, width: 420, height: 80, right: 468, bottom: 200, x: 48, y: 120, toJSON() {} }) as DOMRect;
     expect(findDemoTarget("crm-activity-text", "input")).toBe(field);
+  });
+});
+
+describe("resolveTemplateEditorPath", () => {
+  it("turns a preview URL into the same-template editor path", () => {
+    expect(
+      resolveTemplateEditorPath(
+        "/business/biz1/dashboard/website/templates/ido/preview",
+        "biz1"
+      )
+    ).toBe("/business/biz1/dashboard/website/templates/ido/edit");
+  });
+
+  it("uses the selected template key when the path is not a preview", () => {
+    expect(
+      resolveTemplateEditorPath("/business/biz1/dashboard/website/templates", "biz1", "aeline")
+    ).toBe("/business/biz1/dashboard/website/templates/aeline/edit");
   });
 });

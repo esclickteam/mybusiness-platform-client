@@ -18,6 +18,7 @@ import {
   readDemoInputValue,
   resetPageScroll,
   resolveStepKind,
+  resolveTemplateEditorPath,
   scrollTargetFullyVisible,
   targetLayoutKey,
   type HandPos,
@@ -315,6 +316,17 @@ export default function GuidedDemoEngine() {
     [businessId, location.pathname, navigate]
   );
 
+  const openSelectedTemplateEditor = useCallback(() => {
+    const storedKey =
+      typeof window === "undefined"
+        ? ""
+        : window.localStorage.getItem("bizuply-selected-template-key") ||
+          window.localStorage.getItem("bizuply-selected-template-id");
+    const dest = resolveTemplateEditorPath(location.pathname, businessId, storedKey);
+    if (dest) navigate(dest);
+    return Boolean(dest);
+  }, [businessId, location.pathname, navigate]);
+
   useEffect(() => {
     if (!step || introOpen || isComplete) return;
     goToStepRoute(step);
@@ -505,15 +517,8 @@ export default function GuidedDemoEngine() {
           return;
         }
         if (kind === "navigation") {
-          if (key === "website-template-edit" && businessId) {
-            const previewMatch = location.pathname.match(
-              /\/website\/templates\/([^/]+)\/preview\/?$/i
-            );
-            if (previewMatch?.[1]) {
-              navigate(
-                `/business/${businessId}/dashboard/website/templates/${encodeURIComponent(previewMatch[1])}/edit`
-              );
-            }
+          if (key === "website-template-edit") {
+            openSelectedTemplateEditor();
           }
           void demoProgress.completeStep("DEMO_CLICK", { target: key });
         }
@@ -526,7 +531,7 @@ export default function GuidedDemoEngine() {
     };
     document.addEventListener("click", onClick, true);
     return () => document.removeEventListener("click", onClick, true);
-  }, [step?.id, step?.target, introOpen, isComplete, businessId, location.pathname, navigate]);
+  }, [step?.id, step?.target, introOpen, isComplete, openSelectedTemplateEditor]);
 
   useEffect(() => {
     if (!step || introOpen || isComplete) return undefined;
@@ -959,6 +964,18 @@ export default function GuidedDemoEngine() {
                 style={{ background: BRAND }}
               >
                 {inputReady ? "המשך" : "דלג"}
+              </button>
+            ) : step?.target === "website-template-edit" ? (
+              <button
+                type="button"
+                onClick={() => {
+                  openSelectedTemplateEditor();
+                  void demoProgress.completeStep("DEMO_CLICK", { target: "website-template-edit" });
+                }}
+                className="rounded-xl px-4 py-2 text-xs font-black text-white"
+                style={{ background: BRAND }}
+              >
+                עריכה
               </button>
             ) : (
               <span className="text-[11px] font-bold text-slate-400">הדמו יתקדם כשתבצעו את הפעולה</span>

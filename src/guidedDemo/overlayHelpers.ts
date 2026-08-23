@@ -300,6 +300,21 @@ export function inputValueSatisfied(
   return trimmed.length >= minLength;
 }
 
+export function resolveTemplateEditorPath(
+  pathname: string,
+  businessId?: string | null,
+  fallbackKey?: string | null,
+) {
+  const id = String(businessId || "").trim();
+  if (!id) return null;
+  const match = String(pathname || "").match(
+    /\/website\/templates\/([^/?#]+)\/(?:preview|edit)\/?$/i
+  );
+  const key = String(match?.[1] || fallbackKey || "").trim();
+  if (!key) return null;
+  return `/business/${id}/dashboard/website/templates/${encodeURIComponent(key)}/edit`;
+}
+
 export const INTRO_CATEGORIES = [
   { key: "dash", title: "דשבורד", hint: "מדדים ופעילות", icon: "dashboard" },
   { key: "crm", title: "CRM ולידים", hint: "פניות ומעקב", icon: "crm" },
