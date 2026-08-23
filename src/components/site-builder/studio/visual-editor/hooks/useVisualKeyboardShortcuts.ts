@@ -9,8 +9,11 @@ type UseVisualKeyboardShortcutsOptions = {
   onUndo?: () => void;
   onRedo?: () => void;
   onDelete?: () => void;
+  onDeleteTextRange?: () => boolean | void;
+  onReplaceTextRange?: (text: string) => boolean | void;
   onCopy?: () => void;
   onPaste?: () => void;
+  onPasteTextRange?: (text: string) => boolean | void;
   onDuplicate?: () => void;
   onSave?: () => void;
   onClearSelection?: () => void;
@@ -30,6 +33,33 @@ function isTypingTarget(target: EventTarget | null) {
   );
 }
 
+function hasDeletableTextSelection() {
+  if (typeof window === "undefined") return false;
+  const selection = window.getSelection();
+  if (!selection || selection.rangeCount === 0 || selection.isCollapsed) {
+    return false;
+  }
+  return Boolean(String(selection.toString() || ""));
+}
+
+export function shouldDeleteElementOnKey(options: {
+  isTyping?: boolean;
+  hasTextSelection?: boolean;
+  selectedElementId?: string;
+}) {
+  if (options.isTyping) return false;
+  if (options.hasTextSelection) return false;
+  return Boolean(options.selectedElementId);
+}
+
+export function shouldUseElementClipboardOnKey(options: {
+  isTyping?: boolean;
+  hasTextSelection?: boolean;
+  selectedElementId?: string;
+}) {
+  return shouldDeleteElementOnKey(options);
+}
+
 export function useVisualKeyboardShortcuts({
   enabled = true,
   canUndo = false,
@@ -39,8 +69,11 @@ export function useVisualKeyboardShortcuts({
   onUndo,
   onRedo,
   onDelete,
+  onDeleteTextRange,
+  onReplaceTextRange,
   onCopy,
   onPaste,
+  onPasteTextRange,
   onDuplicate,
   onSave,
   onClearSelection,
@@ -81,34 +114,94 @@ export function useVisualKeyboardShortcuts({
 
       if (typing) return;
 
-      if (meta && key === "c" && selectedElementId) {
+      const hasTextSelection = hasDeletableTextSelection();
+      const useElementShortcut = shouldUseElementClipboardOnKey({
+        isTyping: typing,
+        hasTextSelection,
+        selectedElementId,
+      });
+
+      if (meta && key === "c") {
+        if (hasTextSelection) {
+          return;
+        }
+        if (!selectedElementId) return;
         event.preventDefault();
         onCopy?.();
         return;
       }
 
+      if (meta && key === "x") {
+        if (hasTextSelection) {
+          const text = String(window.getSelection()?.toString() || "");
+          if (text && navigator.clipboard?.writeText) {
+            void navigator.clipboard.writeText(text);
+          }
+          const handled = onDeleteTextRange?.();
+          if (handled) event.preventDefault();
+          return;
+        }
+        return;
+      }
+
       if (meta && key === "v") {
+        if (hasTextSelection) {
+          return;
+        }
         event.preventDefault();
         onPaste?.();
         return;
       }
 
       if ((key === "delete" || key === "backspace") && selectedElementId) {
+        if (!useElementShortcut) {
+          if (hasTextSelection) {
+            const handled = onDeleteTextRange?.();
+            if (handled) {
+              event.preventDefault();
+            }
+          }
+          return;
+        }
         event.preventDefault();
         onDelete?.();
         return;
       }
 
-      if (meta && key === "d" && selectedElementId) {
+      if (
+        hasTextSelection &&
+        !meta &&
+        !event.altKey &&
+        event.key.length === 1
+      ) {
+        const handled = onReplaceTextRange?.(event.key);
+        if (handled) event.preventDefault();
+        return;
+      }
+
+      if (meta && key === "d" && useElementShortcut && selectedElementId) {
         event.preventDefault();
         onDuplicate?.();
       }
     };
 
+    const handlePaste = (event: ClipboardEvent) => {
+      if (isTypingTarget(event.target) || isInlineEditing) return;
+      if (!hasDeletableTextSelection()) return;
+      const text = String(event.clipboardData?.getData("text/plain") ?? "");
+      const handled = onPasteTextRange?.(text);
+      if (handled) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+    };
+
     window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("paste", handlePaste, true);
 
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
+      window.removeEventListener("paste", handlePaste, true);
     };
   }, [
     enabled,
@@ -119,8 +212,11 @@ export function useVisualKeyboardShortcuts({
     onUndo,
     onRedo,
     onDelete,
+    onDeleteTextRange,
+    onReplaceTextRange,
     onCopy,
     onPaste,
+    onPasteTextRange,
     onDuplicate,
     onSave,
     onClearSelection,

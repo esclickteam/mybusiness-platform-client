@@ -194,6 +194,141 @@ export function getLiveTextRange(node: HTMLElement | null): Range | null {
   return range;
 }
 
+const RANGE_DELETE_TEXT_TAGS = new Set([
+  "h1",
+  "h2",
+  "h3",
+  "h4",
+  "h5",
+  "h6",
+  "p",
+  "span",
+  "label",
+  "figcaption",
+  "blockquote",
+  "a",
+  "button",
+  "strong",
+  "em",
+  "small",
+  "b",
+  "i",
+  "u",
+  "div",
+  "li",
+]);
+
+function isTextLikeRangeTarget(node: HTMLElement) {
+  const type = String(
+    node.getAttribute("data-visual-edit-type") ||
+      node.getAttribute("data-editable") ||
+      "",
+  )
+    .trim()
+    .toLowerCase();
+  if (["text", "heading", "paragraph", "button", "link"].includes(type)) {
+    return true;
+  }
+  return RANGE_DELETE_TEXT_TAGS.has(String(node.tagName || "").toLowerCase());
+}
+
+function elementFromBoundary(node: Node | null) {
+  if (!node) return null;
+  if (node instanceof HTMLElement) return node;
+  return node.parentElement;
+}
+
+export function hasDeletableTextSelection() {
+  if (typeof window === "undefined") return false;
+  const selection = window.getSelection();
+  if (!selection || selection.rangeCount === 0 || selection.isCollapsed) {
+    return false;
+  }
+  return Boolean(String(selection.toString() || ""));
+}
+
+export function resolveTextEditNodeFromSelection(
+  preferred: HTMLElement | null,
+): HTMLElement | null {
+  if (typeof window === "undefined") return null;
+  const selection = window.getSelection();
+  if (!selection || selection.rangeCount === 0 || selection.isCollapsed) {
+    return null;
+  }
+
+  const range = selection.getRangeAt(0);
+  if (!String(range.toString() || "")) return null;
+
+  const startEl = elementFromBoundary(range.startContainer);
+  const endEl = elementFromBoundary(range.endContainer);
+  const startId = startEl?.closest<HTMLElement>("[data-visual-edit-id]");
+  const endId = endEl?.closest<HTMLElement>("[data-visual-edit-id]");
+  if (startId && startId === endId && isTextLikeRangeTarget(startId)) {
+    return startId;
+  }
+
+  if (
+    preferred &&
+    preferred.contains(range.commonAncestorContainer) &&
+    isTextLikeRangeTarget(preferred)
+  ) {
+    return preferred;
+  }
+
+  return null;
+}
+
+function snapshotNodeText(node: HTMLElement) {
+  return {
+    node,
+    text: String(node.innerText || node.textContent || "").replace(/\u00a0/g, " "),
+    html: harvestRichHtmlFromNode(node),
+  };
+}
+
+export function deleteSelectedTextInNode(preferred: HTMLElement | null) {
+  const node = resolveTextEditNodeFromSelection(preferred);
+  if (!node) return null;
+
+  const range = getLiveTextRange(node);
+  if (!range) return null;
+
+  range.deleteContents();
+  range.collapse(true);
+
+  const selection = window.getSelection();
+  selection?.removeAllRanges();
+  selection?.addRange(range);
+
+  return snapshotNodeText(node);
+}
+
+export function replaceSelectedTextInNode(
+  preferred: HTMLElement | null,
+  replacement: string,
+) {
+  const node = resolveTextEditNodeFromSelection(preferred);
+  if (!node) return null;
+
+  const range = getLiveTextRange(node);
+  if (!range) return null;
+
+  range.deleteContents();
+  const value = String(replacement ?? "").replace(/\u00a0/g, " ");
+  if (value) {
+    const textNode = document.createTextNode(value);
+    range.insertNode(textNode);
+    range.setStartAfter(textNode);
+  }
+  range.collapse(true);
+
+  const selection = window.getSelection();
+  selection?.removeAllRanges();
+  selection?.addRange(range);
+
+  return snapshotNodeText(node);
+}
+
 export function getRangeOffsets(
   root: HTMLElement,
   range: Range,
