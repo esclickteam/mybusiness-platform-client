@@ -54,7 +54,7 @@ export default function AdminCrmWhatsAppInbox() {
         const { data } = await adminCrmApi.whatsappInbox({
           unresolved: nextUnresolved ? "true" : undefined,
           q: q || undefined,
-          limit: 120,
+          limit: 500,
         });
         const nextItems = data.items || [];
         setItems(nextItems);
@@ -94,15 +94,28 @@ export default function AdminCrmWhatsAppInbox() {
         return;
       }
       setItems((prev) => {
-        const existing = prev.find((row) => row.id === payload.thread!.id);
+        const existing =
+          prev.find((row) => row.id === payload.thread!.id) ||
+          prev.find(
+            (row) =>
+              payload.adminCustomerId &&
+              row.adminCustomerId === payload.adminCustomerId
+          );
         return bumpThreadList(prev, {
           ...(existing || {}),
           ...payload.thread,
           name: existing?.name || payload.thread.name,
+          phone: existing?.phone || payload.thread.phone,
+          adminCustomerId:
+            existing?.adminCustomerId ||
+            payload.adminCustomerId ||
+            payload.thread.adminCustomerId,
+          hasConversation: true,
           lastMessage: payload.message?.bodyPreview || payload.thread.lastMessage,
           lastMessageAt: payload.message?.timestamp || payload.thread.lastMessageAt,
           unreadCount:
-            selected?.id === payload.thread.id
+            selected?.id === payload.thread.id ||
+            selected?.adminCustomerId === payload.adminCustomerId
               ? 0
               : payload.thread.unreadCount ?? existing?.unreadCount ?? 0,
         });
@@ -113,12 +126,30 @@ export default function AdminCrmWhatsAppInbox() {
     },
     onThread: (payload) => {
       if (!payload.thread?.id) return;
-      setItems((prev) =>
-        bumpThreadList(prev, {
-          ...(prev.find((row) => row.id === payload.thread!.id) || {}),
+      setItems((prev) => {
+        const existing =
+          prev.find((row) => row.id === payload.thread!.id) ||
+          prev.find(
+            (row) =>
+              payload.adminCustomerId &&
+              row.adminCustomerId === payload.adminCustomerId
+          );
+        return bumpThreadList(prev, {
+          ...(existing || {}),
           ...payload.thread,
-        })
-      );
+          name: existing?.name || payload.thread.name,
+          phone: existing?.phone || payload.thread.phone,
+          adminCustomerId:
+            existing?.adminCustomerId ||
+            payload.adminCustomerId ||
+            payload.thread.adminCustomerId,
+          hasConversation: Boolean(
+            payload.thread.lastMessageAt ||
+              payload.thread.lastMessage ||
+              existing?.hasConversation
+          ),
+        });
+      });
     },
     onReconnect: () => {
       void load(unresolvedOnly, query);
@@ -234,13 +265,19 @@ export default function AdminCrmWhatsAppInbox() {
           </div>
           <div className="min-h-0 flex-1 overflow-y-auto">
             {!filtered.length ? (
-              <p className="px-4 py-16 text-center text-sm font-bold text-slate-400">אין שיחות WhatsApp</p>
+              <p className="px-4 py-16 text-center text-sm font-bold text-slate-400">אין לקוחות עם מספר טלפון</p>
             ) : (
               filtered.map((row) => {
-                const active = selected?.id === row.id;
+                const active =
+                  selected?.id === row.id ||
+                  Boolean(
+                    selected?.adminCustomerId &&
+                      row.adminCustomerId &&
+                      selected.adminCustomerId === row.adminCustomerId
+                  );
                 return (
                   <button
-                    key={row.id}
+                    key={row.adminCustomerId || row.id}
                     type="button"
                     className={[
                       "flex w-full items-center gap-3 border-b border-[#e9edef] px-3 py-3 text-right",
@@ -251,7 +288,11 @@ export default function AdminCrmWhatsAppInbox() {
                       setMobileChat(true);
                       setItems((prev) =>
                         prev.map((item) =>
-                          item.id === row.id ? { ...item, unreadCount: 0 } : item
+                          item.id === row.id ||
+                          (row.adminCustomerId &&
+                            item.adminCustomerId === row.adminCustomerId)
+                            ? { ...item, unreadCount: 0 }
+                            : item
                         )
                       );
                     }}
@@ -293,10 +334,14 @@ export default function AdminCrmWhatsAppInbox() {
                           : ""}
                         {row.assignedStaffName || row.assignedAdminName
                           ? ` · ${row.assignedStaffName || row.assignedAdminName}`
-                          : " · לא משויך"}
+                          : ""}
                       </p>
                       <div className="mt-0.5 flex items-center justify-between gap-2">
-                        <p className="truncate text-[13px] text-[#667781]">{row.lastMessage || "—"}</p>
+                        <p className="truncate text-[13px] text-[#667781]">
+                          {row.hasConversation
+                            ? row.lastMessage || "—"
+                            : "אין שיחה עדיין"}
+                        </p>
                         {row.unreadCount ? (
                           <span className="inline-flex min-h-5 min-w-5 items-center justify-center rounded-full bg-[#25d366] px-1.5 text-[11px] font-black text-white">
                             {row.unreadCount}
@@ -325,7 +370,12 @@ export default function AdminCrmWhatsAppInbox() {
           {selected ? (
             <WhatsAppWebThread
               customerId={selected.adminCustomerId}
-              threadId={selected.id}
+              threadId={
+                selected.threadId ||
+                (selected.id && !String(selected.id).startsWith("customer:")
+                  ? selected.id
+                  : null)
+              }
               phone={selected.phone}
               contactName={selected.name}
               canSend={Boolean(perms.whatsappSend || perms.conversationsReply)}
