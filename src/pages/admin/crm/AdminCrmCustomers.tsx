@@ -193,6 +193,14 @@ export default function AdminCrmCustomers() {
     }
   }, [location, navigate]);
 
+  useEffect(() => {
+    const onLeadsUpdated = () => {
+      load();
+    };
+    window.addEventListener("bizuply:leads-updated", onLeadsUpdated);
+    return () => window.removeEventListener("bizuply:leads-updated", onLeadsUpdated);
+  }, [query]);
+
   async function createCustomer(e: React.FormEvent) {
     e.preventDefault();
     setCreating(true);
@@ -294,6 +302,23 @@ export default function AdminCrmCustomers() {
       { pathname: location.pathname, search: search ? `?${search}` : "" },
       { replace: true }
     );
+    load();
+  }
+
+  function handleMetaLeadsSynced(summary: {
+    created?: number;
+    skippedExisting?: number;
+    failed?: number;
+  }) {
+    const created = Number(summary?.created || 0);
+    const duplicate = Number(summary?.skippedExisting || 0);
+    const failed = Number(summary?.failed || 0);
+    setBanner(
+      failed > 0
+        ? `הסנכרון הושלם — נוספו ${created} לידים, ${duplicate} כבר היו קיימים. נכשלו ${failed}.`
+        : `הסנכרון הושלם — נוספו ${created} לידים, ${duplicate} כבר היו קיימים.`
+    );
+    load();
   }
 
   function openMetaSetup() {
@@ -316,6 +341,7 @@ export default function AdminCrmCustomers() {
       <MetaLeadAdsIntegration
         destination="admin_crm"
         onBack={closeMetaSetup}
+        onLeadsSynced={handleMetaLeadsSynced}
       />
     );
   }
