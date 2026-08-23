@@ -307,11 +307,23 @@ export default function GuidedDemoEngine() {
     };
   }, [pushToast]);
 
+  const goToMySites = useCallback(() => {
+    if (!businessId) return;
+    const dest = `/business/${businessId}/dashboard/website`;
+    if (location.pathname.replace(/\/$/, "") !== dest) navigate(dest);
+  }, [businessId, location.pathname, navigate]);
+
   const goToStepRoute = useCallback(
     (nextStep: any) => {
       if (!nextStep?.route || !businessId) return;
-      const dest = `/business/${businessId}${nextStep.route}`;
-      if (!location.pathname.startsWith(dest.split("?")[0])) navigate(dest);
+      const dest = `/business/${businessId}${nextStep.route}`.split("?")[0];
+      const here = location.pathname.replace(/\/$/, "");
+      const there = dest.replace(/\/$/, "");
+      if (nextStep.forceRoute) {
+        if (here !== there) navigate(there);
+        return;
+      }
+      if (!here.startsWith(there)) navigate(dest);
     },
     [businessId, location.pathname, navigate]
   );
@@ -336,6 +348,16 @@ export default function GuidedDemoEngine() {
     if (!step || introOpen || isComplete) return;
     resetPageScroll();
   }, [location.pathname, step?.module, introOpen, isComplete]);
+
+  useEffect(() => {
+    if (step?.target !== "website-headline") return;
+    const heading = document.querySelector(
+      "[data-visual-template-canvas='true'] h1, [data-visual-editable='true'] h1"
+    ) as HTMLElement | null;
+    if (heading && !heading.getAttribute("data-demo-target")) {
+      heading.setAttribute("data-demo-target", "website-headline");
+    }
+  }, [step?.id, step?.target, location.pathname]);
 
   useEffect(() => {
     setHandHidden(false);
@@ -520,6 +542,9 @@ export default function GuidedDemoEngine() {
           if (key === "website-template-edit") {
             openSelectedTemplateEditor();
           }
+          if (key === "website-publish") {
+            goToMySites();
+          }
           void demoProgress.completeStep("DEMO_CLICK", { target: key });
         }
         return;
@@ -531,7 +556,7 @@ export default function GuidedDemoEngine() {
     };
     document.addEventListener("click", onClick, true);
     return () => document.removeEventListener("click", onClick, true);
-  }, [step?.id, step?.target, introOpen, isComplete, openSelectedTemplateEditor]);
+  }, [step?.id, step?.target, introOpen, isComplete, openSelectedTemplateEditor, goToMySites]);
 
   useEffect(() => {
     if (!step || introOpen || isComplete) return undefined;
@@ -976,6 +1001,22 @@ export default function GuidedDemoEngine() {
                 style={{ background: BRAND }}
               >
                 עריכה
+              </button>
+            ) : step?.target === "website-publish" ? (
+              <button
+                type="button"
+                onClick={() => {
+                  const publishBtn = document.querySelector(
+                    '[data-demo-target="website-publish"]'
+                  ) as HTMLElement | null;
+                  publishBtn?.click();
+                  goToMySites();
+                  void demoProgress.completeStep("DEMO_CLICK", { target: "website-publish" });
+                }}
+                className="rounded-xl px-4 py-2 text-xs font-black text-white"
+                style={{ background: BRAND }}
+              >
+                פרסום
               </button>
             ) : (
               <span className="text-[11px] font-bold text-slate-400">הדמו יתקדם כשתבצעו את הפעולה</span>

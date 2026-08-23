@@ -13,7 +13,12 @@ export type HandPos = {
 
 const HAND_SIZE = 40;
 const CONTROL_SELECTOR = "input, textarea, select, button, [role='button'], [role='combobox']";
-const ALLOW_LARGE_TARGETS = new Set(["website-editor-canvas", "website-headline", "collab-find-area"]);
+const ALLOW_LARGE_TARGETS = new Set([
+  "website-editor-canvas",
+  "website-headline",
+  "website-demo-site",
+  "collab-find-area",
+]);
 
 export const DEMO_HEADER_OFFSET = 72;
 export const DEMO_TOOLTIP_RESERVE = 240;
