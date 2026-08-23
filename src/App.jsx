@@ -792,6 +792,7 @@ export default function App() {
   const isAdminRoute = location.pathname.startsWith("/admin");
   const isStaffRoute = location.pathname.startsWith("/staff");
   const isGuidedDemoRoute = location.pathname.startsWith("/demo/");
+  const isPublicProposalRoute = location.pathname.startsWith("/proposal/");
   const bizuplyBookingToken = (() => {
     const parts = location.pathname.split("/").filter(Boolean);
     if (parts[0] === "book" && parts[1] === "bizuply" && parts[2]) return parts[2];
@@ -886,6 +887,7 @@ export default function App() {
           !isAdminRoute &&
           !isStaffRoute &&
           !isGuidedDemoRoute &&
+          !isPublicProposalRoute &&
           !isBizuplyPublicBookingRoute && <Header />}
 
         {/* Staff: top header + softphone (same behavior as admin) */}
@@ -1502,12 +1504,13 @@ export default function App() {
           !isEarlyAccessLanding &&
           !isHiddenOffer &&
           !isGuidedDemoRoute &&
+          !isPublicProposalRoute &&
           !isBizuplyPublicBookingRoute && <Footer />}
       </div>
 
       <GuidedDemoHost />
 
-      {!user && !isEarlyAccessLanding && !isHiddenOffer && !isBizuplyPublicBookingRoute && (
+      {!user && !isEarlyAccessLanding && !isHiddenOffer && !isBizuplyPublicBookingRoute && !isPublicProposalRoute && (
         <PreLoginBot />
       )}
 
@@ -1523,6 +1526,7 @@ export default function App() {
         !isAdminRoute &&
         !isStaffRoute &&
         !isGuidedDemoRoute &&
+        !isPublicProposalRoute &&
         !isBizuplyPublicBookingRoute &&
         !location.pathname.startsWith("/embed/") &&
         !isMiniSiteHost && (
@@ -1534,6 +1538,7 @@ export default function App() {
         !isBusinessChatRoute &&
         !isEarlyAccessLanding &&
         !isMiniSiteHost &&
+        !isPublicProposalRoute &&
         !isBizuplyPublicBookingRoute && (
           <AccessibilityWidget siteKey="bizuply-platform" mode="live" />
         )}

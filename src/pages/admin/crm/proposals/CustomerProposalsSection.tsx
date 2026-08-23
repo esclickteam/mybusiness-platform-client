@@ -4,18 +4,10 @@ import { Badge, formatIsraelDate } from "../adminCrmLabels";
 import { CrmCard, PrimaryButton, SecondaryButton } from "../AdminCrmUi";
 import ProposalBuilderModal from "./ProposalBuilderModal";
 import ProposalDocumentView from "./ProposalDocumentView";
+import { PROPOSAL_STATUS_LABELS } from "./proposalLabels";
 import { AdminModal } from "../AdminModal";
 
-const STATUS_LABELS: Record<string, string> = {
-  draft: "טיוטה",
-  issued: "הונפקה",
-  viewed: "נצפתה",
-  question_asked: "שאלה על הצעה",
-  thinking: "חושב על זה",
-  accepted: "רוצה להתחיל",
-  declined: "נדחתה",
-  expired: "פג תוקף",
-};
+const STATUS_LABELS = PROPOSAL_STATUS_LABELS;
 
 export default function CustomerProposalsSection({
   customerId,
@@ -93,14 +85,33 @@ export default function CustomerProposalsSection({
                       : ""}
                     {row.createdByName ? ` · נוצר ע״י ${row.createdByName}` : ""}
                   </p>
+                  {row.approvedByName ? (
+                    <p className="mt-1 text-xs font-black text-emerald-700">
+                      נחתם: {row.approvedByName}
+                      {row.approvedByIdNumber ? ` · ת״ז ${row.approvedByIdNumber}` : ""}
+                      {row.approvedByBusinessNumber
+                        ? ` · ח״פ ${row.approvedByBusinessNumber}`
+                        : ""}
+                      {row.paidAt ? ` · שולם ${formatIsraelDate(row.paidAt, true)}` : ""}
+                    </p>
+                  ) : null}
+                  {row.signatureData ? (
+                    <img
+                      src={row.signatureData}
+                      alt="חתימה"
+                      className="mt-2 h-14 rounded-lg border border-slate-200 bg-white p-1"
+                    />
+                  ) : null}
                 </div>
                 <Badge
                   tone={
-                    row.status === "accepted"
+                    row.status === "paid" || row.status === "accepted"
                       ? "bg-emerald-50 text-emerald-700 border-emerald-200"
-                      : row.status === "question_asked"
-                        ? "bg-amber-50 text-amber-800 border-amber-200"
-                        : "bg-violet-50 text-violet-700 border-violet-100"
+                      : row.status === "signed" || row.status === "payment_pending"
+                        ? "bg-sky-50 text-sky-800 border-sky-200"
+                        : row.status === "question_asked" || row.status === "thinking"
+                          ? "bg-amber-50 text-amber-800 border-amber-200"
+                          : "bg-violet-50 text-violet-700 border-violet-100"
                   }
                 >
                   {STATUS_LABELS[row.status] || row.status}

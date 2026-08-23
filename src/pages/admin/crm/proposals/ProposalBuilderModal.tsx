@@ -3,6 +3,7 @@ import adminCrmApi from "../../../../api/adminCrmApi";
 import { AdminModal } from "../AdminModal";
 import { PrimaryButton, SecondaryButton } from "../AdminCrmUi";
 import ProposalDocumentView from "./ProposalDocumentView";
+import { heLabel, heLabels } from "./proposalLabels";
 
 type CatalogItem = {
   sku: string;
@@ -17,6 +18,8 @@ type CatalogItem = {
   icon?: string;
   badge?: string;
   defaultBullets: string[];
+  defaultLimits?: string[];
+  defaultNotIncluded?: string[];
   hidden?: boolean;
   allowQuantity?: boolean;
   parentSku?: string | null;
@@ -29,6 +32,8 @@ type LineDraft = {
   priceEdited: boolean;
   quantity: number;
   bullets: string[];
+  limits: string[];
+  notIncluded: string[];
   descriptionHe: string;
   summaryHe: string;
   icon: string;
@@ -122,6 +127,8 @@ export default function ProposalBuilderModal({
         priceEdited: line.priceEdited,
         quantity: line.quantity,
         bullets: line.bullets,
+        limits: line.limits,
+        notIncluded: line.notIncluded,
         descriptionHe: line.descriptionHe,
         summaryHe: line.summaryHe,
         icon: line.icon,
@@ -162,6 +169,8 @@ export default function ProposalBuilderModal({
         priceEdited: false,
         quantity: 1,
         bullets: [...(item.defaultBullets || [])],
+        limits: [...(item.defaultLimits || [])],
+        notIncluded: [...(item.defaultNotIncluded || [])],
         descriptionHe: item.descriptionHe || "",
         summaryHe: item.summaryHe || item.descriptionHe || "",
         icon: item.icon || "•",
@@ -379,19 +388,19 @@ export default function ProposalBuilderModal({
               <h3 className="font-black text-amber-900">מידע מהלקוח (לעזרת הנציג)</h3>
               <div className="mt-2 space-y-1 font-bold text-slate-700">
                 {context.postDemo?.relevant?.length ? (
-                  <p>הכי עניין מהדמו: {context.postDemo.relevant.join(", ")}</p>
+                  <p>הכי עניין מהדמו: {heLabels(context.postDemo.relevant).join(", ")}</p>
                 ) : null}
                 {context.postDemo?.automation?.length ? (
-                  <p>אוטומציות: {context.postDemo.automation.join(", ")}</p>
+                  <p>אוטומציות: {heLabels(context.postDemo.automation).join(", ")}</p>
                 ) : null}
                 {context.postDemo?.services?.length ? (
-                  <p>שירותים שסימן: {context.postDemo.services.join(", ")}</p>
+                  <p>שירותים שסימן: {heLabels(context.postDemo.services).join(", ")}</p>
                 ) : null}
                 {context.postDemo?.blockers?.length ? (
-                  <p>התלבטויות: {context.postDemo.blockers.join(", ")}</p>
+                  <p>התלבטויות: {heLabels(context.postDemo.blockers).join(", ")}</p>
                 ) : null}
                 {context.postDemo?.startTiming ? (
-                  <p>מועד התחלה: {context.postDemo.startTiming}</p>
+                  <p>מועד התחלה: {heLabel(context.postDemo.startTiming)}</p>
                 ) : null}
               </div>
             </section>
@@ -521,19 +530,72 @@ export default function ProposalBuilderModal({
                                   }
                                 />
                               </label>
+                              <label className="block text-xs font-bold">
+                                מגבלות (שורה לכל נקודה)
+                                <textarea
+                                  className="mt-1 min-h-16 w-full rounded-xl border p-2"
+                                  value={(draft.limits || []).join("\n")}
+                                  onChange={(e) =>
+                                    setSelected((prev) => ({
+                                      ...prev,
+                                      [item.sku]: {
+                                        ...prev[item.sku],
+                                        limits: e.target.value
+                                          .split("\n")
+                                          .map((x) => x.trim())
+                                          .filter(Boolean),
+                                      },
+                                    }))
+                                  }
+                                />
+                              </label>
+                              <label className="block text-xs font-bold">
+                                לא כלול / דורש תוספת
+                                <textarea
+                                  className="mt-1 min-h-16 w-full rounded-xl border p-2"
+                                  value={(draft.notIncluded || []).join("\n")}
+                                  onChange={(e) =>
+                                    setSelected((prev) => ({
+                                      ...prev,
+                                      [item.sku]: {
+                                        ...prev[item.sku],
+                                        notIncluded: e.target.value
+                                          .split("\n")
+                                          .map((x) => x.trim())
+                                          .filter(Boolean),
+                                      },
+                                    }))
+                                  }
+                                />
+                              </label>
                             </>
                           ) : (
-                            <ul className="space-y-1.5">
-                              {(item.defaultBullets || []).map((b) => (
-                                <li
-                                  key={b}
-                                  className="flex items-start gap-2 text-xs font-semibold text-slate-700"
-                                >
-                                  <span className="text-emerald-500">✓</span>
-                                  <span>{b}</span>
-                                </li>
-                              ))}
-                            </ul>
+                            <div className="space-y-3">
+                              <ul className="space-y-1.5">
+                                {(item.defaultBullets || []).map((b) => (
+                                  <li
+                                    key={b}
+                                    className="flex items-start gap-2 text-xs font-semibold text-slate-700"
+                                  >
+                                    <span className="text-emerald-500">✓</span>
+                                    <span>{b}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                              {(item.defaultLimits || []).length ? (
+                                <ul className="space-y-1">
+                                  {(item.defaultLimits || []).map((b) => (
+                                    <li
+                                      key={b}
+                                      className="flex items-start gap-2 text-xs font-semibold text-amber-800"
+                                    >
+                                      <span>!</span>
+                                      <span>{b}</span>
+                                    </li>
+                                  ))}
+                                </ul>
+                              ) : null}
+                            </div>
                           )}
                         </div>
                       ) : null}
@@ -675,19 +737,72 @@ export default function ProposalBuilderModal({
                                   }
                                 />
                               </label>
+                              <label className="block text-xs font-bold">
+                                מגבלות (שורה לכל נקודה)
+                                <textarea
+                                  className="mt-1 min-h-16 w-full rounded-xl border p-2"
+                                  value={(draft.limits || []).join("\n")}
+                                  onChange={(e) =>
+                                    setSelected((prev) => ({
+                                      ...prev,
+                                      [item.sku]: {
+                                        ...prev[item.sku],
+                                        limits: e.target.value
+                                          .split("\n")
+                                          .map((x) => x.trim())
+                                          .filter(Boolean),
+                                      },
+                                    }))
+                                  }
+                                />
+                              </label>
+                              <label className="block text-xs font-bold">
+                                לא כלול / דורש תוספת
+                                <textarea
+                                  className="mt-1 min-h-16 w-full rounded-xl border p-2"
+                                  value={(draft.notIncluded || []).join("\n")}
+                                  onChange={(e) =>
+                                    setSelected((prev) => ({
+                                      ...prev,
+                                      [item.sku]: {
+                                        ...prev[item.sku],
+                                        notIncluded: e.target.value
+                                          .split("\n")
+                                          .map((x) => x.trim())
+                                          .filter(Boolean),
+                                      },
+                                    }))
+                                  }
+                                />
+                              </label>
                             </>
                           ) : (
-                            <ul className="space-y-1.5">
-                              {(item.defaultBullets || []).map((b) => (
-                                <li
-                                  key={b}
-                                  className="flex items-start gap-2 text-xs font-semibold text-slate-700"
-                                >
-                                  <span className="text-emerald-500">✓</span>
-                                  <span>{b}</span>
-                                </li>
-                              ))}
-                            </ul>
+                            <div className="space-y-3">
+                              <ul className="space-y-1.5">
+                                {(item.defaultBullets || []).map((b) => (
+                                  <li
+                                    key={b}
+                                    className="flex items-start gap-2 text-xs font-semibold text-slate-700"
+                                  >
+                                    <span className="text-emerald-500">✓</span>
+                                    <span>{b}</span>
+                                  </li>
+                                ))}
+                              </ul>
+                              {(item.defaultLimits || []).length ? (
+                                <ul className="space-y-1">
+                                  {(item.defaultLimits || []).map((b) => (
+                                    <li
+                                      key={b}
+                                      className="flex items-start gap-2 text-xs font-semibold text-amber-800"
+                                    >
+                                      <span>!</span>
+                                      <span>{b}</span>
+                                    </li>
+                                  ))}
+                                </ul>
+                              ) : null}
+                            </div>
                           )}
                         </div>
                       ) : null}
