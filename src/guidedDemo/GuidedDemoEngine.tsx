@@ -19,6 +19,8 @@ import {
   resetPageScroll,
   resolveStepKind,
   resolveTemplateEditorPath,
+  isWebsiteEditorPath,
+  isWebsiteEditorStayStep,
   scrollTargetFullyVisible,
   targetLayoutKey,
   type HandPos,
@@ -316,6 +318,7 @@ export default function GuidedDemoEngine() {
   const goToStepRoute = useCallback(
     (nextStep: any) => {
       if (!nextStep?.route || !businessId) return;
+      if (isWebsiteEditorStayStep(nextStep)) return;
       const dest = `/business/${businessId}${nextStep.route}`.split("?")[0];
       const here = location.pathname.replace(/\/$/, "");
       const there = dest.replace(/\/$/, "");
@@ -329,11 +332,13 @@ export default function GuidedDemoEngine() {
   );
 
   const openSelectedTemplateEditor = useCallback(() => {
+    if (isWebsiteEditorPath(location.pathname)) return true;
     const storedKey =
       typeof window === "undefined"
         ? ""
         : window.localStorage.getItem("bizuply-selected-template-key") ||
-          window.localStorage.getItem("bizuply-selected-template-id");
+          window.localStorage.getItem("bizuply-selected-template-id") ||
+          "ido";
     const dest = resolveTemplateEditorPath(location.pathname, businessId, storedKey);
     if (dest) navigate(dest);
     return Boolean(dest);
@@ -341,8 +346,12 @@ export default function GuidedDemoEngine() {
 
   useEffect(() => {
     if (!step || introOpen || isComplete) return;
+    if (isWebsiteEditorStayStep(step)) {
+      if (!isWebsiteEditorPath(location.pathname)) openSelectedTemplateEditor();
+      return;
+    }
     goToStepRoute(step);
-  }, [step?.id, introOpen, isComplete, goToStepRoute]);
+  }, [step?.id, introOpen, isComplete, location.pathname, goToStepRoute, openSelectedTemplateEditor]);
 
   useEffect(() => {
     if (!step || introOpen || isComplete) return;
