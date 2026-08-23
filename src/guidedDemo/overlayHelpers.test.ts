@@ -7,9 +7,12 @@ import {
   inputValueSatisfied,
   holeOptionsForKind,
   findDemoTarget,
+  findWebsiteHeadline,
   resolveTemplateEditorPath,
   isWebsiteEditorPath,
   isWebsiteEditorStayStep,
+  isWebsiteHeadlineStep,
+  isWebsitePublishStep,
 } from "./overlayHelpers";
 
 describe("guided demo hand orientation", () => {
@@ -157,6 +160,20 @@ describe("guided demo step kinds and holes", () => {
       ({ top: 12, left: 200, width: 88, height: 40, right: 288, bottom: 52, x: 200, y: 12, toJSON() {} }) as DOMRect;
     expect(findDemoTarget("website-publish", "navigation")).toBe(visual);
   });
+
+  it("focuses the IDO hero title even when it is an h2, not an h1", () => {
+    document.body.innerHTML = `
+      <div data-visual-template-canvas="true">
+        <h2 data-visual-edit-id="hero.title" data-visual-editable="true" id="hero">מומחה סושיאל</h2>
+        <p>subtitle</p>
+      </div>
+    `;
+    const hero = document.getElementById("hero") as HTMLElement;
+    hero.getBoundingClientRect = () =>
+      ({ top: 180, left: 80, width: 720, height: 220, right: 800, bottom: 400, x: 80, y: 180, toJSON() {} }) as DOMRect;
+    expect(findWebsiteHeadline()).toBe(hero);
+    expect(findDemoTarget("website-headline", "input")).toBe(hero);
+  });
 });
 
 describe("resolveTemplateEditorPath", () => {
@@ -190,5 +207,9 @@ describe("website editor stay", () => {
     expect(isWebsiteEditorStayStep({ id: "site-publish" })).toBe(true);
     expect(isWebsiteEditorStayStep({ id: "site-demo-card" })).toBe(false);
     expect(isWebsiteEditorStayStep({ id: "site-choose-template", keepEditor: true })).toBe(true);
+    expect(isWebsiteHeadlineStep({ id: "site-headline" })).toBe(true);
+    expect(isWebsiteHeadlineStep({ target: "website-headline" })).toBe(true);
+    expect(isWebsitePublishStep({ id: "site-publish" })).toBe(true);
+    expect(isWebsitePublishStep({ target: "website-publish" })).toBe(true);
   });
 });
