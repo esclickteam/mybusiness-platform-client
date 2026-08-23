@@ -59,7 +59,11 @@ export default function WebsiteTemplatePreviewPage() {
     navigate(`${basePath}/dashboard/website?template=${id}`);
   }
 
-  async function handleEditTemplate() {
+  function openTemplateEditor(cleanTemplateKey: string) {
+    navigate(`${basePath}/dashboard/website/templates/${cleanTemplateKey}/edit`);
+  }
+
+  function handleEditTemplate() {
     const cleanTemplateKey = String(template?.id || renderer?.key || cleanTemplateId)
       .trim()
       .toLowerCase();
@@ -69,49 +73,40 @@ export default function WebsiteTemplatePreviewPage() {
     localStorage.setItem("bizuply-selected-template-key", cleanTemplateKey);
     localStorage.setItem("bizuply-selected-template-id", cleanTemplateKey);
 
-    const goToFallbackEditor = () => {
-      navigate(`${basePath}/dashboard/website/templates/${cleanTemplateKey}/edit`);
-    };
+    openTemplateEditor(cleanTemplateKey);
 
-    try {
-      if (!businessId) throw new Error("missing-business");
-      const site = await createMySite({
-        businessId,
-        name: (template as any)?.name || localSeed?.name || cleanTemplateKey,
-        templateKey: cleanTemplateKey,
-        templateName: (template as any)?.name || localSeed?.name || cleanTemplateKey,
-      });
-      if (site?._id) {
-        navigate(
-          `${basePath}/dashboard/website/sites/${site._id}/edit?template=${encodeURIComponent(cleanTemplateKey)}`
-        );
-        return;
-      }
-    } catch {
-      if (isGuidedDemoActive() && businessId) {
-        try {
-          const existing = await listMySites(businessId);
-          const match = (existing || []).find((site) => {
-            const keys = [site.templateKey, site.templateName].map((value) =>
-              String(value || "").trim().toLowerCase()
-            );
-            return keys.includes(cleanTemplateKey);
-          });
-          if (match?._id) {
-            navigate(
-              `${basePath}/dashboard/website/sites/${match._id}/edit?template=${encodeURIComponent(cleanTemplateKey)}`
-            );
-            return;
-          }
-        } catch {
-          /* keep falling through to the selected-template editor */
+    if (!businessId) return;
+    void createMySite({
+      businessId,
+      name: (template as any)?.name || localSeed?.name || cleanTemplateKey,
+      templateKey: cleanTemplateKey,
+      templateName: (template as any)?.name || localSeed?.name || cleanTemplateKey,
+    }).then((site) => {
+      if (!site?._id) return;
+      navigate(
+        `${basePath}/dashboard/website/sites/${site._id}/edit?template=${encodeURIComponent(cleanTemplateKey)}`,
+        { replace: true }
+      );
+    }).catch(async () => {
+      if (!isGuidedDemoActive()) return;
+      try {
+        const existing = await listMySites(businessId);
+        const match = (existing || []).find((site) => {
+          const keys = [site.templateKey, site.templateName].map((value) =>
+            String(value || "").trim().toLowerCase()
+          );
+          return keys.includes(cleanTemplateKey);
+        });
+        if (match?._id) {
+          navigate(
+            `${basePath}/dashboard/website/sites/${match._id}/edit?template=${encodeURIComponent(cleanTemplateKey)}`,
+            { replace: true }
+          );
         }
-        goToFallbackEditor();
-        return;
+      } catch {
+        /* already in the template editor */
       }
-    }
-
-    goToFallbackEditor();
+    });
   }
 
   function PreviewActions() {
