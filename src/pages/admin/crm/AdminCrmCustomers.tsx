@@ -17,6 +17,10 @@ import {
 } from "./adminCrmLabels";
 import { CrmCard, EmptyState, ErrorState, LoadingState, PrimaryButton, SecondaryButton, DangerButton } from "./AdminCrmUi";
 import { AdminModal } from "./AdminModal";
+import MetaLeadAdsIntegration from "../../business/dashboardPages/crmpages/MetaLeadAdsIntegration";
+import AdNetworkPickerModal, {
+  type AdNetworkId,
+} from "../../business/dashboardPages/crmpages/AdNetworkPickerModal";
 
 type Row = {
   adminCustomerId: string;
@@ -28,6 +32,12 @@ type Row = {
   salesStage?: string;
   assignedAdminName?: string;
   leadSource?: string;
+  leadSourceLabel?: string;
+  metaLead?: {
+    formName?: string;
+    formId?: string;
+    pageName?: string;
+  };
   currentPackageLabel?: string;
   mrr?: number;
   addons?: string[];
@@ -94,6 +104,12 @@ export default function AdminCrmCustomers() {
   const [canDelete, setCanDelete] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState<Row | null>(null);
   const [deleteLoading, setDeleteLoading] = useState(false);
+  const [showAdNetworkPicker, setShowAdNetworkPicker] = useState(false);
+
+  const showMetaSetup =
+    searchParams.get("metaSetup") === "1" ||
+    searchParams.get("meta_connected") === "1" ||
+    Boolean(searchParams.get("meta_error"));
 
   function closeCreateModal() {
     setShowCreate(false);
@@ -246,7 +262,9 @@ export default function AdminCrmCustomers() {
     if (key === "salesStage") {
       return <Badge tone={stageTone(row.salesStage)}>{STAGE_LABELS[row.salesStage || ""] || row.salesStage}</Badge>;
     }
-    if (key === "leadSource") return SOURCE_LABELS[row.leadSource || ""] || row.leadSource || "—";
+    if (key === "leadSource") {
+      return row.leadSourceLabel || SOURCE_LABELS[row.leadSource || ""] || row.leadSource || "—";
+    }
     if (key === "subscriptionStatus") {
       return <Badge tone={statusTone(row.subscriptionStatus)}>{row.subscriptionStatus || "—"}</Badge>;
     }
@@ -264,6 +282,42 @@ export default function AdminCrmCustomers() {
       );
     }
     return (row as any)[key] || "—";
+  }
+
+  function closeMetaSetup() {
+    const next = new URLSearchParams(searchParams);
+    next.delete("metaSetup");
+    next.delete("meta_connected");
+    next.delete("meta_error");
+    const search = next.toString();
+    navigate(
+      { pathname: location.pathname, search: search ? `?${search}` : "" },
+      { replace: true }
+    );
+  }
+
+  function openMetaSetup() {
+    const next = new URLSearchParams(searchParams);
+    next.set("metaSetup", "1");
+    navigate(
+      { pathname: location.pathname, search: `?${next.toString()}` },
+      { replace: false }
+    );
+  }
+
+  function handleAdNetworkSelect(network: AdNetworkId) {
+    setShowAdNetworkPicker(false);
+    if (network === "meta") openMetaSetup();
+    if (network === "google") setBanner("חיבור Google Ads יגיע בקרוב");
+  }
+
+  if (showMetaSetup) {
+    return (
+      <MetaLeadAdsIntegration
+        destination="admin_crm"
+        onBack={closeMetaSetup}
+      />
+    );
   }
 
   return (
@@ -302,6 +356,7 @@ export default function AdminCrmCustomers() {
             ))}
           </select>
           <PrimaryButton onClick={() => setShowCreate(true)}>לקוח חדש</PrimaryButton>
+          <SecondaryButton onClick={() => setShowAdNetworkPicker(true)}>חיבור לרשת פרסום</SecondaryButton>
         </div>
         <div className="mt-3 flex flex-wrap gap-2">
           <SecondaryButton onClick={() => setShowAdvanced((v) => !v)}>סינון מתקדם</SecondaryButton>
@@ -502,6 +557,12 @@ export default function AdminCrmCustomers() {
           </p>
         </AdminModal>
       ) : null}
+
+      <AdNetworkPickerModal
+        open={showAdNetworkPicker}
+        onClose={() => setShowAdNetworkPicker(false)}
+        onSelect={handleAdNetworkSelect}
+      />
     </div>
   );
 }
