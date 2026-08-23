@@ -8,6 +8,8 @@ import {
   holeOptionsForKind,
   findDemoTarget,
   resolveTemplateEditorPath,
+  isWebsiteEditorPath,
+  isWebsiteEditorStayStep,
 } from "./overlayHelpers";
 
 describe("guided demo hand orientation", () => {
@@ -153,5 +155,22 @@ describe("resolveTemplateEditorPath", () => {
     expect(
       resolveTemplateEditorPath("/business/biz1/dashboard/website/templates", "biz1", "aeline")
     ).toBe("/business/biz1/dashboard/website/templates/aeline/edit");
+  });
+});
+
+describe("website editor stay", () => {
+  it("detects template and site editor paths", () => {
+    expect(isWebsiteEditorPath("/business/biz1/dashboard/website/templates/ido/edit")).toBe(true);
+    expect(isWebsiteEditorPath("/business/biz1/dashboard/website/sites/abc/edit")).toBe(true);
+    expect(isWebsiteEditorPath("/business/biz1/dashboard/website/templates")).toBe(false);
+    expect(isWebsiteEditorPath("/business/biz1/dashboard/website")).toBe(false);
+  });
+
+  it("keeps the editor steps on the editor", () => {
+    expect(isWebsiteEditorStayStep({ id: "site-editor-open" })).toBe(true);
+    expect(isWebsiteEditorStayStep({ id: "site-headline" })).toBe(true);
+    expect(isWebsiteEditorStayStep({ id: "site-publish" })).toBe(true);
+    expect(isWebsiteEditorStayStep({ id: "site-demo-card" })).toBe(false);
+    expect(isWebsiteEditorStayStep({ id: "site-choose-template", keepEditor: true })).toBe(true);
   });
 });

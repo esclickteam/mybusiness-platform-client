@@ -320,6 +320,18 @@ export function resolveTemplateEditorPath(
   return `/business/${id}/dashboard/website/templates/${encodeURIComponent(key)}/edit`;
 }
 
+export function isWebsiteEditorPath(pathname: string) {
+  return /\/website\/(?:templates\/[^/]+|sites\/[^/]+)\/edit(?:\/|$)/i.test(
+    String(pathname || "")
+  );
+}
+
+export function isWebsiteEditorStayStep(step: { id?: string; keepEditor?: boolean } | null) {
+  if (!step) return false;
+  if (step.keepEditor) return true;
+  return ["site-editor-open", "site-headline", "site-publish"].includes(String(step.id || ""));
+}
+
 export const INTRO_CATEGORIES = [
   { key: "dash", title: "דשבורד", hint: "מדדים ופעילות", icon: "dashboard" },
   { key: "crm", title: "CRM ולידים", hint: "פניות ומעקב", icon: "crm" },
