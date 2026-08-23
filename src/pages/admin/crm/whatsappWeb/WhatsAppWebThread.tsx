@@ -33,6 +33,7 @@ export default function WhatsAppWebThread({
   customerId,
   threadId,
   phone: phoneProp,
+  contactName: contactNameProp,
   canSend,
   canTemplates,
   canDemo = true,
@@ -45,6 +46,7 @@ export default function WhatsAppWebThread({
   customerId?: string | null;
   threadId?: string | null;
   phone?: string | null;
+  contactName?: string | null;
   canSend: boolean;
   canTemplates: boolean;
   canDemo?: boolean;
@@ -86,10 +88,17 @@ export default function WhatsAppWebThread({
       sender.registrationStatus === "required" ||
       sender.registrationStatus === "failed" ||
       sender.registrationStatus === "pending");
+  const linkedCustomerId =
+    customerId ||
+    data?.bizuplyManaged?.thread?.adminCustomerId ||
+    data?.thread?.adminCustomerId ||
+    null;
   const contactName =
+    contactNameProp ||
     data?.customerConnection?.customerName ||
     data?.bizuplyManaged?.prefill?.contact_name ||
     data?.bizuplyManaged?.prefill?.name ||
+    data?.thread?.name ||
     "";
   const matchPhone =
     phoneProp ||
@@ -109,15 +118,28 @@ export default function WhatsAppWebThread({
       if (customerId) {
         const { data: hist } = await adminCrmApi.whatsappMessages(customerId, {
           since,
-          limit: since ? 300 : 120,
+          limit: since ? 500 : 500,
         });
         return (hist.messages || []) as PublicWhatsAppMessage[];
       }
       if (threadId) {
         const { data: hist } = await adminCrmApi.whatsappThreadMessages(threadId, {
           since,
-          limit: since ? 300 : 120,
+          limit: since ? 500 : 500,
         });
+        if (hist.thread) {
+          setData((prev: any) => ({
+            ...(prev || {}),
+            thread: hist.thread,
+            bizuplyManaged: {
+              ...(prev?.bizuplyManaged || {}),
+              thread: {
+                ...(prev?.bizuplyManaged?.thread || {}),
+                ...hist.thread,
+              },
+            },
+          }));
+        }
         return (hist.messages || []) as PublicWhatsAppMessage[];
       }
       return [];
@@ -370,10 +392,10 @@ export default function WhatsAppWebThread({
             </div>
           ) : null}
         </div>
-        {customerId ? (
+        {linkedCustomerId ? (
           <Link
             className="hidden text-xs font-black text-[#7C4DFF] sm:inline"
-            to={`/admin/crm/customers/${customerId}`}
+            to={`/admin/crm/customers/${linkedCustomerId}`}
           >
             כרטיס לקוח
           </Link>

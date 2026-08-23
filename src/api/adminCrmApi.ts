@@ -96,6 +96,8 @@ export const adminCrmApi = {
   whatsappTemplates: () => API.get("/admin/crm/whatsapp/templates"),
   whatsappInbox: (params: AdminCrmListQuery = {}) =>
     API.get(`/admin/crm/whatsapp/inbox${qs(params)}`),
+  whatsappSync: () =>
+    API.post("/admin/crm/whatsapp/sync", {}, { timeout: 180000 }),
   whatsappThreadMessages: (threadId: string, params: AdminCrmListQuery = {}) =>
     API.get(`/admin/crm/whatsapp/inbox/${threadId}/messages${qs(params)}`),
   whatsappAssign: (threadId: string, body: Record<string, unknown>) =>

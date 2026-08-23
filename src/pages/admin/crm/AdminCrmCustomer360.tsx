@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import AdminDialButton from "../../../components/AdminDialButton";
 import { useAuth } from "../../../context/AuthContext";
 import { getDefaultDashboardPath } from "../../../utils/moduleAccess";
@@ -811,8 +811,24 @@ export default function AdminCrmCustomer360() {
                   אישור אוטומטי לא נשלח: {waConversation.handoffAckError}
                 </p>
               ) : null}
+              <div className="mt-3">
+                <Link
+                  className="inline-flex min-h-11 items-center rounded-2xl bg-purple-50 px-3 py-2 text-sm font-black text-[#7C4DFF]"
+                  to={`/admin/crm/whatsapp?customer=${id}`}
+                >
+                  פתיחת השיחה בתיבת WhatsApp
+                </Link>
+              </div>
             </CrmCard>
           ) : null}
+          <div className="flex justify-end">
+            <Link
+              className="text-sm font-black text-[#7C4DFF]"
+              to={`/admin/crm/whatsapp?customer=${id}`}
+            >
+              פתיחה בתיבת WhatsApp
+            </Link>
+          </div>
           <AdminCrmWhatsAppPanel
             customerId={id!}
             canSend={Boolean(perms.whatsappSend || perms.conversationsReply)}
