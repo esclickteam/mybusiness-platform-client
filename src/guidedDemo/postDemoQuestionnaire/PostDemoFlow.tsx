@@ -7,6 +7,8 @@ import {
   AUTOMATION_OPTIONS,
   BLOCKER_OPTIONS,
   EMPTY_ANSWERS,
+  FILE_OPTIONS,
+  GOAL_OPTIONS,
   isStepKey,
   mergeAnswers,
   QUESTION_STEPS,
@@ -14,10 +16,14 @@ import {
   SERVICE_OPTIONS,
   START_TIMING_OPTIONS,
   STEP_ORDER,
-  StepKey,
+  TRANSFER_OPTIONS,
   TRI_OPTIONS,
+  toggleExclusive,
+  wantsCrmOrLeads,
   type PostDemoAnswers,
+  type StepKey,
 } from "./types";
+import { formatPostDemoAnswers } from "./displayUtils";
 
 const BRAND = "#6D28D9";
 const SAVE_DEBOUNCE_MS = 450;
@@ -28,103 +34,19 @@ type Props = {
   onDone: () => void;
 };
 
-function labelOf(
-  options: readonly { value: string; label: string }[],
-  value: string
-) {
-  return options.find((o) => o.value === value)?.label || value;
-}
-
 function toggleValue(list: string[], value: string) {
-  return list.includes(value) ? list.filter((v) => v !== value) : [...list, value];
+  return list.includes(value) ? list.filter((item) => item !== value) : [...list, value];
 }
 
 function resolveInitialStep(q: any): StepKey {
   if (q?.status === "proposal_requested") return "success";
-  const raw = q?.lastCompletedStep || q?.currentStep || "intro";
+  const raw = String(q?.lastCompletedStep || q?.currentStep || "intro");
+  if (raw === "11") return "10";
   if (isStepKey(raw) && raw !== "success") return raw;
   return "intro";
 }
 
-function buildSummary(answers: PostDemoAnswers) {
-  const rows: { label: string; value: string }[] = [];
-  const rel = answers.relevant.selections
-    .map((v) => labelOf(RELEVANT_OPTIONS, v))
-    .concat(answers.relevant.other ? [answers.relevant.other] : []);
-  if (rel.length) rows.push({ label: "מה הכי רלוונטי", value: rel.join(" + ") });
-  if (answers.relevant.note.trim()) {
-    rows.push({ label: "מה עניין במיוחד", value: answers.relevant.note.trim() });
-  }
-  if (answers.missing.answer === "yes" || answers.missing.answer === "unsure") {
-    rows.push({
-      label: "מה חסר",
-      value: answers.missing.detail.trim() || labelOf(TRI_OPTIONS, answers.missing.answer),
-    });
-  } else if (answers.missing.answer === "no") {
-    rows.push({ label: "מה חסר", value: "לא" });
-  }
-  if (answers.unclear.trim()) {
-    rows.push({ label: "לא היה ברור / לפרט יותר", value: answers.unclear.trim() });
-  }
-  const auto = answers.automation.selections
-    .map((v) => labelOf(AUTOMATION_OPTIONS, v))
-    .concat(answers.automation.other ? [answers.automation.other] : []);
-  if (auto.length) {
-    rows.push({ label: "אוטומציות שמעניינות אותך", value: auto.join(" + ") });
-  }
-  if (answers.automation.detail.trim()) {
-    rows.push({ label: "פירוט אוטומציות", value: answers.automation.detail.trim() });
-  }
-  if (answers.migration.answer === "yes" || answers.migration.answer === "unsure") {
-    rows.push({
-      label: "לשמור / להעביר",
-      value: answers.migration.detail.trim() || labelOf(TRI_OPTIONS, answers.migration.answer),
-    });
-  }
-  if (answers.integrations.answer === "yes" || answers.integrations.answer === "unsure") {
-    rows.push({
-      label: "חיבור למערכת",
-      value:
-        answers.integrations.detail.trim() ||
-        labelOf(TRI_OPTIONS, answers.integrations.answer),
-    });
-  }
-  if (answers.workflowFit.trim()) {
-    rows.push({ label: "התאמה לתהליך העבודה", value: answers.workflowFit.trim() });
-  }
-  const services = answers.services.selections
-    .filter((v) => v !== "not_now")
-    .map((v) => labelOf(SERVICE_OPTIONS, v))
-    .concat(answers.services.other ? [answers.services.other] : []);
-  if (services.length) {
-    rows.push({ label: "שירותים נוספים", value: services.join(" + ") });
-  }
-  if (answers.services.detail.trim()) {
-    rows.push({ label: "פירוט שירותים", value: answers.services.detail.trim() });
-  }
-  const blockers = answers.blockers.selections
-    .map((v) => labelOf(BLOCKER_OPTIONS, v))
-    .concat(answers.blockers.other ? [answers.blockers.other] : []);
-  if (blockers.length) {
-    rows.push({ label: "מה יכול לעכב", value: blockers.join(" + ") });
-  }
-  if (answers.startTiming) {
-    const timing =
-      answers.startTiming === "other" && answers.startTimingOther.trim()
-        ? answers.startTimingOther.trim()
-        : labelOf(START_TIMING_OPTIONS, answers.startTiming);
-    rows.push({ label: "מועד רצוי להתחלה", value: timing });
-  }
-  if (answers.extraNotes.trim()) {
-    rows.push({ label: "הערות נוספות", value: answers.extraNotes.trim() });
-  }
-  if ((answers.mainGoal || "").trim()) {
-    rows.push({ label: "מטרה מרכזית", value: String(answers.mainGoal).trim() });
-  }
-  return rows;
-}
-
-function CardGrid({
+function OptionGrid({
   options,
   values,
   onToggle,
@@ -158,7 +80,7 @@ function CardGrid({
   );
 }
 
-function RadioCards({
+function RadioGrid({
   options,
   value,
   onChange,
@@ -172,7 +94,9 @@ function RadioCards({
   return (
     <div
       className={
-        columns === 2 ? "grid grid-cols-1 gap-2.5 sm:grid-cols-2" : "grid grid-cols-1 gap-2.5 sm:grid-cols-3"
+        columns === 2
+          ? "grid grid-cols-1 gap-2.5 sm:grid-cols-2"
+          : "grid grid-cols-1 gap-2.5 sm:grid-cols-3"
       }
     >
       {options.map((opt) => (
@@ -214,10 +138,15 @@ export default function PostDemoFlow({ initialQuestionnaire, onDefer, onDone }: 
   answersRef.current = answers;
   stepRef.current = step;
 
-  const summary = useMemo(() => buildSummary(answers), [answers]);
+  const summary = useMemo(() => formatPostDemoAnswers(answers), [answers]);
   const questionIdx = QUESTION_STEPS.indexOf(step as (typeof QUESTION_STEPS)[number]);
   const showProgress = questionIdx >= 0;
   const progressPct = showProgress ? ((questionIdx + 1) / QUESTION_STEPS.length) * 100 : 0;
+  const showFileFollowup =
+    wantsCrmOrLeads(answers) && !answers.transfer.selections.includes("none");
+  const showAutomationDetail =
+    answers.automation.selections.includes("other") ||
+    answers.automation.selections.some((value) => value !== "not_needed");
 
   const persistSilent = useCallback(async (nextStep: StepKey, defer = false) => {
     try {
@@ -227,7 +156,7 @@ export default function PostDemoFlow({ initialQuestionnaire, onDefer, onDone }: 
         defer,
       });
     } catch {
-      /* background save — keep UI responsive */
+      /* keep the UI responsive */
     }
   }, []);
 
@@ -295,28 +224,25 @@ export default function PostDemoFlow({ initialQuestionnaire, onDefer, onDone }: 
     }
   }
 
-  const navFooter =
-    showProgress ? (
-      <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-between">
-        <button
-          type="button"
-          onClick={goBack}
-          className="min-h-11 rounded-2xl border border-slate-200 px-4 py-3 text-sm font-black text-slate-700"
-        >
-          חזרה
-        </button>
-        <button
-          type="button"
-          onClick={goNext}
-          className="min-h-11 rounded-2xl px-5 py-3 text-sm font-black text-white"
-          style={{ background: BRAND }}
-        >
-          המשך
-        </button>
-      </div>
-    ) : null;
-
-  let footer: React.ReactNode = navFooter;
+  let footer: React.ReactNode = showProgress ? (
+    <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-between">
+      <button
+        type="button"
+        onClick={goBack}
+        className="min-h-11 rounded-2xl border border-slate-200 px-4 py-3 text-sm font-black text-slate-700"
+      >
+        חזרה
+      </button>
+      <button
+        type="button"
+        onClick={goNext}
+        className="min-h-11 rounded-2xl px-5 py-3 text-sm font-black text-white"
+        style={{ background: BRAND }}
+      >
+        המשך
+      </button>
+    </div>
+  ) : null;
 
   if (step === "intro") {
     footer = (
@@ -379,7 +305,6 @@ export default function PostDemoFlow({ initialQuestionnaire, onDefer, onDone }: 
       className="pointer-events-auto absolute inset-0 z-[2147483007] flex items-end justify-center bg-slate-950/55 p-0 sm:items-center sm:p-4"
       dir="rtl"
     >
-      {/* Fixed shell — size never changes between steps */}
       <div
         role="dialog"
         aria-modal="true"
@@ -403,7 +328,10 @@ export default function PostDemoFlow({ initialQuestionnaire, onDefer, onDone }: 
           )}
         </div>
 
-        <div ref={contentRef} className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 py-5 sm:px-8 sm:py-6">
+        <div
+          ref={contentRef}
+          className="min-h-0 flex-1 overflow-y-auto overscroll-contain px-5 py-5 sm:px-8 sm:py-6"
+        >
           <div key={step} className="animate-[postDemoFade_220ms_ease-out]">
             {step === "intro" ? (
               <div>
@@ -414,49 +342,37 @@ export default function PostDemoFlow({ initialQuestionnaire, onDefer, onDone }: 
                   נשמח להבין מה מתוך הדמו הכי מתאים לעסק שלך ומה חשוב לך לפני שנמשיך להצעה.
                 </p>
                 <p className="mt-3 text-base font-semibold leading-7 text-slate-600">
-                  כמה שאלות קצרות יעזרו לנו להתאים את ההמשך בצורה מדויקת יותר.
+                  עשר שאלות קצרות יעזרו לנו להתאים את ההמשך בצורה מדויקת יותר.
                 </p>
                 <p className="mt-5 text-sm font-bold text-[#6D28D9]">כ־2 דקות • אין שאלות חובה</p>
               </div>
             ) : null}
 
             {step === "1" ? (
-              <div>
-                <h2 className="text-xl font-black text-slate-950 sm:text-2xl">
-                  מה מתוך הדמו הכי רלוונטי לעסק שלך?
-                </h2>
-                <div className="mt-5">
-                  <CardGrid
-                    options={RELEVANT_OPTIONS}
-                    values={answers.relevant.selections}
-                    onToggle={(value) =>
-                      patchAnswers((prev) => ({
-                        ...prev,
-                        relevant: {
-                          ...prev.relevant,
-                          selections: toggleValue(prev.relevant.selections, value),
-                        },
-                      }))
-                    }
-                  />
-                </div>
-                {answers.relevant.selections.includes("other") ? (
-                  <label className="mt-4 block text-sm font-black text-slate-800">
-                    מה עוד היה רלוונטי עבורך?
-                    <input
-                      className={fieldClass}
-                      value={answers.relevant.other}
-                      onChange={(e) =>
-                        patchAnswers((prev) => ({
-                          ...prev,
-                          relevant: { ...prev.relevant, other: e.target.value },
-                        }))
-                      }
-                    />
-                  </label>
-                ) : null}
+              <QuestionBlock
+                title="מה הכי רלוונטי לך מתוך BizUply?"
+                options={RELEVANT_OPTIONS}
+                values={answers.relevant.selections}
+                other={answers.relevant.other}
+                otherLabel="מה עוד רלוונטי עבורך?"
+                onToggle={(value) =>
+                  patchAnswers((prev) => ({
+                    ...prev,
+                    relevant: {
+                      ...prev.relevant,
+                      selections: toggleValue(prev.relevant.selections, value),
+                    },
+                  }))
+                }
+                onOther={(other) =>
+                  patchAnswers((prev) => ({
+                    ...prev,
+                    relevant: { ...prev.relevant, other },
+                  }))
+                }
+              >
                 <label className="mt-5 block text-sm font-black text-slate-800">
-                  יש משהו ספציפי מתוך מה שראית שעניין אותך במיוחד?
+                  יש משהו ספציפי מתוך מה שבחרת שחשוב לך במיוחד?
                   <textarea
                     className={areaClass}
                     value={answers.relevant.note}
@@ -468,304 +384,254 @@ export default function PostDemoFlow({ initialQuestionnaire, onDefer, onDone }: 
                     }
                   />
                 </label>
-              </div>
+              </QuestionBlock>
             ) : null}
 
             {step === "2" ? (
-              <div>
-                <h2 className="text-xl font-black text-slate-950 sm:text-2xl">
-                  האם היה משהו שחסר לך או שהיית רוצה שיהיה במערכת?
-                </h2>
-                <div className="mt-5">
-                  <RadioCards
-                    options={TRI_OPTIONS}
-                    value={answers.missing.answer}
-                    onChange={(answer) =>
-                      patchAnswers((prev) => ({
-                        ...prev,
-                        missing: { ...prev.missing, answer: answer as any },
-                      }))
-                    }
-                  />
-                </div>
-                {answers.missing.answer === "yes" || answers.missing.answer === "unsure" ? (
-                  <label className="mt-4 block text-sm font-black text-slate-800">
-                    מה היה חסר לך?
-                    <textarea
-                      className={areaClass}
-                      value={answers.missing.detail}
-                      onChange={(e) =>
-                        patchAnswers((prev) => ({
-                          ...prev,
-                          missing: { ...prev.missing, detail: e.target.value },
-                        }))
-                      }
-                    />
-                  </label>
-                ) : null}
-              </div>
+              <QuestionBlock
+                title="מה הכי חשוב לך לשפר בעסק כרגע?"
+                options={GOAL_OPTIONS}
+                values={answers.goals.selections}
+                other={answers.goals.other}
+                otherLabel="מה עוד חשוב לשפר?"
+                onToggle={(value) =>
+                  patchAnswers((prev) => ({
+                    ...prev,
+                    goals: {
+                      ...prev.goals,
+                      selections: toggleValue(prev.goals.selections, value),
+                    },
+                  }))
+                }
+                onOther={(other) =>
+                  patchAnswers((prev) => ({
+                    ...prev,
+                    goals: { ...prev.goals, other },
+                  }))
+                }
+              />
             ) : null}
 
             {step === "3" ? (
               <div>
                 <h2 className="text-xl font-black text-slate-950 sm:text-2xl">
-                  האם היה משהו שלא היה ברור או שהיית רוצה לראות בצורה מפורטת יותר?
-                </h2>
-                <textarea
-                  className={`${areaClass} mt-5 min-h-40`}
-                  placeholder="אפשר לרשום כאן משהו שתרצה/י שנראה שוב או נסביר בצורה יותר מפורטת."
-                  value={answers.unclear}
-                  onChange={(e) =>
-                    patchAnswers((prev) => ({ ...prev, unclear: e.target.value }))
-                  }
-                />
-              </div>
-            ) : null}
-
-            {step === "4" ? (
-              <div>
-                <h2 className="text-xl font-black text-slate-950 sm:text-2xl">
-                  מה היית רוצה שיקרה בעסק באופן אוטומטי?
+                  האם אתם משתמשים היום במערכת או כלי שתרצו להחליף ב־BizUply?
                 </h2>
                 <div className="mt-5">
-                  <CardGrid
-                    options={AUTOMATION_OPTIONS}
-                    values={answers.automation.selections}
-                    onToggle={(value) =>
+                  <RadioGrid
+                    options={TRI_OPTIONS}
+                    value={answers.currentTool.answer}
+                    onChange={(answer) =>
                       patchAnswers((prev) => ({
                         ...prev,
-                        automation: {
-                          ...prev.automation,
-                          selections: toggleValue(prev.automation.selections, value),
+                        currentTool: {
+                          answer: answer as PostDemoAnswers["currentTool"]["answer"],
+                          detail: answer === "yes" ? prev.currentTool.detail : "",
                         },
                       }))
                     }
                   />
                 </div>
-                {answers.automation.selections.includes("other") ? (
+                {answers.currentTool.answer === "yes" ? (
                   <label className="mt-4 block text-sm font-black text-slate-800">
-                    מה עוד היית רוצה להפוך לאוטומטי?
-                    <input
-                      className={fieldClass}
-                      value={answers.automation.other}
+                    באיזו מערכת או כלי אתם משתמשים היום?
+                    <textarea
+                      className={areaClass}
+                      placeholder="לדוגמה: Excel, יומן, WhatsApp, מערכת לניהול לקוחות או כלי אחר."
+                      value={answers.currentTool.detail}
                       onChange={(e) =>
                         patchAnswers((prev) => ({
                           ...prev,
-                          automation: { ...prev.automation, other: e.target.value },
+                          currentTool: { ...prev.currentTool, detail: e.target.value },
                         }))
                       }
                     />
                   </label>
                 ) : null}
-                <label className="mt-5 block text-sm font-black text-slate-800">
-                  פירוט נוסף
-                  <textarea
-                    className={areaClass}
-                    value={answers.automation.detail}
-                    onChange={(e) =>
-                      patchAnswers((prev) => ({
-                        ...prev,
-                        automation: { ...prev.automation, detail: e.target.value },
-                      }))
-                    }
-                  />
-                </label>
               </div>
             ) : null}
 
+            {step === "4" ? (
+              <QuestionBlock
+                title="האם יש מידע או תוכן שחשוב לכם להעביר ל־BizUply?"
+                options={TRANSFER_OPTIONS}
+                values={answers.transfer.selections}
+                other={answers.transfer.other}
+                otherLabel="איזה מידע נוסף חשוב להעביר?"
+                onToggle={(value) =>
+                  patchAnswers((prev) => {
+                    const selections = toggleExclusive(prev.transfer.selections, value, "none");
+                    return {
+                      ...prev,
+                      transfer: {
+                        ...prev.transfer,
+                        selections,
+                        hasFile: selections.includes("none") ? "" : prev.transfer.hasFile,
+                      },
+                    };
+                  })
+                }
+                onOther={(other) =>
+                  patchAnswers((prev) => ({
+                    ...prev,
+                    transfer: { ...prev.transfer, other },
+                  }))
+                }
+              >
+                {showFileFollowup ? (
+                  <div className="mt-5">
+                    <p className="text-sm font-black text-slate-800">
+                      האם יש לכם קובץ Excel/CSV עם הנתונים?
+                    </p>
+                    <div className="mt-3">
+                      <RadioGrid
+                        options={FILE_OPTIONS}
+                        value={answers.transfer.hasFile}
+                        onChange={(hasFile) =>
+                          patchAnswers((prev) => ({
+                            ...prev,
+                            transfer: {
+                              ...prev.transfer,
+                              hasFile: hasFile as PostDemoAnswers["transfer"]["hasFile"],
+                            },
+                          }))
+                        }
+                      />
+                    </div>
+                  </div>
+                ) : null}
+              </QuestionBlock>
+            ) : null}
+
             {step === "5" ? (
-              <div>
-                <h2 className="text-xl font-black text-slate-950 sm:text-2xl">
-                  יש משהו שאתם משתמשים בו היום שחשוב לכם לשמור, להעביר או לחבר ל־BizUply?
-                </h2>
-                <div className="mt-5">
-                  <RadioCards
-                    options={TRI_OPTIONS}
-                    value={answers.migration.answer}
-                    onChange={(answer) =>
-                      patchAnswers((prev) => ({
-                        ...prev,
-                        migration: { ...prev.migration, answer: answer as any },
-                      }))
-                    }
-                  />
-                </div>
-                {answers.migration.answer === "yes" || answers.migration.answer === "unsure" ? (
-                  <label className="mt-4 block text-sm font-black text-slate-800">
-                    מה חשוב לכם לשמור, להעביר או לחבר?
+              <QuestionBlock
+                title="מה היית רוצה שיקרה אצלך באופן אוטומטי?"
+                options={AUTOMATION_OPTIONS}
+                values={answers.automation.selections}
+                other={answers.automation.other}
+                otherLabel="מה עוד היית רוצה להפוך לאוטומטי?"
+                hideOtherInput
+                onToggle={(value) =>
+                  patchAnswers((prev) => ({
+                    ...prev,
+                    automation: {
+                      ...prev.automation,
+                      selections: toggleExclusive(
+                        prev.automation.selections,
+                        value,
+                        "not_needed"
+                      ),
+                      detail: value === "not_needed" ? "" : prev.automation.detail,
+                      other: value === "not_needed" ? "" : prev.automation.other,
+                    },
+                  }))
+                }
+                onOther={(other) =>
+                  patchAnswers((prev) => ({
+                    ...prev,
+                    automation: { ...prev.automation, other },
+                  }))
+                }
+              >
+                {showAutomationDetail ? (
+                  <label className="mt-5 block text-sm font-black text-slate-800">
+                    פירוט נוסף
                     <textarea
                       className={areaClass}
-                      placeholder="לדוגמה: לקוחות, לידים, Excel, CRM קיים, אתר, WhatsApp או מערכת אחרת."
-                      value={answers.migration.detail}
+                      value={answers.automation.detail}
                       onChange={(e) =>
                         patchAnswers((prev) => ({
                           ...prev,
-                          migration: { ...prev.migration, detail: e.target.value },
+                          automation: { ...prev.automation, detail: e.target.value },
                         }))
                       }
                     />
                   </label>
                 ) : null}
-              </div>
+              </QuestionBlock>
             ) : null}
 
             {step === "6" ? (
               <div>
                 <h2 className="text-xl font-black text-slate-950 sm:text-2xl">
-                  האם יש חיבור למערכת מסוימת שחשוב לכם שיהיה?
-                </h2>
-                <div className="mt-5">
-                  <RadioCards
-                    options={TRI_OPTIONS}
-                    value={answers.integrations.answer}
-                    onChange={(answer) =>
-                      patchAnswers((prev) => ({
-                        ...prev,
-                        integrations: { ...prev.integrations, answer: answer as any },
-                      }))
-                    }
-                  />
-                </div>
-                {answers.integrations.answer === "yes" ||
-                answers.integrations.answer === "unsure" ? (
-                  <label className="mt-4 block text-sm font-black text-slate-800">
-                    לאיזו מערכת חשוב לכם להתחבר?
-                    <textarea
-                      className={areaClass}
-                      placeholder="לדוגמה: יומן, מערכת קיימת, טופס, אתר, מערכת שיווק או שירות אחר."
-                      value={answers.integrations.detail}
-                      onChange={(e) =>
-                        patchAnswers((prev) => ({
-                          ...prev,
-                          integrations: { ...prev.integrations, detail: e.target.value },
-                        }))
-                      }
-                    />
-                  </label>
-                ) : null}
-              </div>
-            ) : null}
-
-            {step === "7" ? (
-              <div>
-                <h2 className="text-xl font-black text-slate-950 sm:text-2xl">
-                  האם יש משהו בתהליך העבודה שלכם שחשוב שהמערכת תתאים אליו?
+                  האם יש תהליך מיוחד בעסק שחשוב שניקח בחשבון?
                 </h2>
                 <textarea
                   className={`${areaClass} mt-5 min-h-40`}
-                  placeholder="לדוגמה: תהליך מיוחד לטיפול בלידים, אישורים פנימיים, חלוקת עבודה בין נציגים או שלבים קבועים בתהליך."
-                  value={answers.workflowFit}
+                  placeholder="לדוגמה: שלבי טיפול בליד, חלוקת עבודה בין עובדים, אישורים פנימיים, תהליך מכירה ייחודי או שלבים קבועים בעבודה."
+                  value={answers.specialProcess}
                   onChange={(e) =>
-                    patchAnswers((prev) => ({ ...prev, workflowFit: e.target.value }))
+                    patchAnswers((prev) => ({ ...prev, specialProcess: e.target.value }))
                   }
                 />
               </div>
             ) : null}
 
+            {step === "7" ? (
+              <QuestionBlock
+                title="האם תרצו גם שירות מקצועי מעבר למערכת?"
+                options={SERVICE_OPTIONS}
+                values={answers.services.selections}
+                other={answers.services.other}
+                otherLabel="איזה שירות נוסף היה מעניין אותך?"
+                onToggle={(value) =>
+                  patchAnswers((prev) => ({
+                    ...prev,
+                    services: {
+                      ...prev.services,
+                      selections: toggleExclusive(prev.services.selections, value, "not_now"),
+                    },
+                  }))
+                }
+                onOther={(other) =>
+                  patchAnswers((prev) => ({
+                    ...prev,
+                    services: { ...prev.services, other },
+                  }))
+                }
+              />
+            ) : null}
+
             {step === "8" ? (
-              <div>
-                <h2 className="text-xl font-black text-slate-950 sm:text-2xl">
-                  האם היה מעניין אותך לקבל בנוסף למערכת גם שירותים מנציגים אנושיים?
-                </h2>
-                <div className="mt-5">
-                  <CardGrid
-                    options={SERVICE_OPTIONS}
-                    values={answers.services.selections}
-                    onToggle={(value) =>
-                      patchAnswers((prev) => ({
-                        ...prev,
-                        services: {
-                          ...prev.services,
-                          selections: toggleValue(prev.services.selections, value),
-                        },
-                      }))
-                    }
-                  />
-                </div>
-                {answers.services.selections.includes("other") ? (
-                  <label className="mt-4 block text-sm font-black text-slate-800">
-                    איזה שירות נוסף היה מעניין אותך?
-                    <input
-                      className={fieldClass}
-                      value={answers.services.other}
-                      onChange={(e) =>
-                        patchAnswers((prev) => ({
-                          ...prev,
-                          services: { ...prev.services, other: e.target.value },
-                        }))
-                      }
-                    />
-                  </label>
-                ) : null}
-                {answers.services.selections.some((v) => v !== "not_now") ? (
-                  <label className="mt-4 block text-sm font-black text-slate-800">
-                    ספר/י לנו בקצרה במה היית רוצה שנעזור
-                    <textarea
-                      className={areaClass}
-                      value={answers.services.detail}
-                      onChange={(e) =>
-                        patchAnswers((prev) => ({
-                          ...prev,
-                          services: { ...prev.services, detail: e.target.value },
-                        }))
-                      }
-                    />
-                  </label>
-                ) : null}
-              </div>
+              <QuestionBlock
+                title="מה הדבר העיקרי שעלול לעכב אתכם מלהתחיל?"
+                options={BLOCKER_OPTIONS}
+                values={answers.blockers.selections}
+                other={answers.blockers.other}
+                otherLabel="מה עלול לעכב?"
+                onToggle={(value) =>
+                  patchAnswers((prev) => ({
+                    ...prev,
+                    blockers: {
+                      ...prev.blockers,
+                      selections: toggleExclusive(
+                        prev.blockers.selections,
+                        value,
+                        "nothing_blocking"
+                      ),
+                    },
+                  }))
+                }
+                onOther={(other) =>
+                  patchAnswers((prev) => ({
+                    ...prev,
+                    blockers: { ...prev.blockers, other },
+                  }))
+                }
+              />
             ) : null}
 
             {step === "9" ? (
               <div>
                 <h2 className="text-xl font-black text-slate-950 sm:text-2xl">
-                  יש משהו שיכול לגרום לך להתלבט לפני התחלה?
+                  אם הכול מתאים, מתי הייתם רוצים להתחיל?
                 </h2>
                 <div className="mt-5">
-                  <CardGrid
-                    options={BLOCKER_OPTIONS}
-                    values={answers.blockers.selections}
-                    onToggle={(value) =>
-                      patchAnswers((prev) => ({
-                        ...prev,
-                        blockers: {
-                          ...prev.blockers,
-                          selections: toggleValue(prev.blockers.selections, value),
-                        },
-                      }))
-                    }
-                  />
-                </div>
-                {answers.blockers.selections.includes("other") ? (
-                  <label className="mt-4 block text-sm font-black text-slate-800">
-                    מה ההתלבטות?
-                    <input
-                      className={fieldClass}
-                      value={answers.blockers.other}
-                      onChange={(e) =>
-                        patchAnswers((prev) => ({
-                          ...prev,
-                          blockers: { ...prev.blockers, other: e.target.value },
-                        }))
-                      }
-                    />
-                  </label>
-                ) : null}
-              </div>
-            ) : null}
-
-            {step === "10" ? (
-              <div>
-                <h2 className="text-xl font-black text-slate-950 sm:text-2xl">
-                  אם הכול מתאים — מתי היית רוצה להתחיל?
-                </h2>
-                <div className="mt-5">
-                  <RadioCards
+                  <RadioGrid
                     columns={2}
                     options={START_TIMING_OPTIONS}
                     value={answers.startTiming}
-                    onChange={(startTiming) =>
-                      patchAnswers((prev) => ({ ...prev, startTiming }))
-                    }
+                    onChange={(startTiming) => patchAnswers((prev) => ({ ...prev, startTiming }))}
                   />
                 </div>
                 {answers.startTiming === "other" ? (
@@ -784,14 +650,14 @@ export default function PostDemoFlow({ initialQuestionnaire, onDefer, onDone }: 
               </div>
             ) : null}
 
-            {step === "11" ? (
+            {step === "10" ? (
               <div>
                 <h2 className="text-xl font-black text-slate-950 sm:text-2xl">
-                  יש משהו נוסף שחשוב שנדע לפני שנכין לך הצעה?
+                  יש משהו נוסף שחשוב שנדע לפני שנכין לכם התאמה והצעה?
                 </h2>
                 <textarea
                   className={`${areaClass} mt-5 min-h-40`}
-                  placeholder="כל פרט נוסף שיכול לעזור לנו להתאים את ההמשך לעסק שלך."
+                  placeholder="כל פרט נוסף שיעזור לנו להבין את העסק ואת הצרכים שלכם."
                   value={answers.extraNotes}
                   onChange={(e) =>
                     patchAnswers((prev) => ({ ...prev, extraNotes: e.target.value }))
@@ -849,9 +715,7 @@ export default function PostDemoFlow({ initialQuestionnaire, onDefer, onDone }: 
           </div>
         </div>
 
-        <div className="shrink-0 border-t border-slate-100 bg-white px-5 py-4 sm:px-8">
-          {footer}
-        </div>
+        <div className="shrink-0 border-t border-slate-100 bg-white px-5 py-4 sm:px-8">{footer}</div>
       </div>
 
       <style>{`
@@ -860,6 +724,44 @@ export default function PostDemoFlow({ initialQuestionnaire, onDefer, onDone }: 
           to { opacity: 1; transform: translateY(0); }
         }
       `}</style>
+    </div>
+  );
+}
+
+function QuestionBlock({
+  title,
+  options,
+  values,
+  other,
+  otherLabel,
+  hideOtherInput = false,
+  onToggle,
+  onOther,
+  children,
+}: {
+  title: string;
+  options: readonly { value: string; label: string; icon?: string }[];
+  values: string[];
+  other: string;
+  otherLabel: string;
+  hideOtherInput?: boolean;
+  onToggle: (value: string) => void;
+  onOther: (value: string) => void;
+  children?: React.ReactNode;
+}) {
+  return (
+    <div>
+      <h2 className="text-xl font-black text-slate-950 sm:text-2xl">{title}</h2>
+      <div className="mt-5">
+        <OptionGrid options={options} values={values} onToggle={onToggle} />
+      </div>
+      {!hideOtherInput && values.includes("other") ? (
+        <label className="mt-4 block text-sm font-black text-slate-800">
+          {otherLabel}
+          <input className={fieldClass} value={other} onChange={(e) => onOther(e.target.value)} />
+        </label>
+      ) : null}
+      {children}
     </div>
   );
 }

@@ -390,6 +390,9 @@ export default function ProposalBuilderModal({
                 {context.postDemo?.relevant?.length ? (
                   <p>הכי עניין מהדמו: {heLabels(context.postDemo.relevant).join(", ")}</p>
                 ) : null}
+                {context.postDemo?.goals?.length ? (
+                  <p>חשוב לשפר: {heLabels(context.postDemo.goals).join(", ")}</p>
+                ) : null}
                 {context.postDemo?.automation?.length ? (
                   <p>אוטומציות: {heLabels(context.postDemo.automation).join(", ")}</p>
                 ) : null}

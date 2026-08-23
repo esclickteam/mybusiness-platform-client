@@ -1,104 +1,147 @@
 import {
   AUTOMATION_OPTIONS,
   BLOCKER_OPTIONS,
+  FILE_OPTIONS,
+  GOAL_OPTIONS,
   RELEVANT_OPTIONS,
   SERVICE_OPTIONS,
   START_TIMING_OPTIONS,
+  TRANSFER_OPTIONS,
+  TRI_OPTIONS,
   type PostDemoAnswers,
 } from "./types";
 
-const TRI_LABELS: Record<string, string> = {
-  no: "לא",
-  yes: "כן",
-  unsure: "לא בטוח/ה",
-};
-
-function labelFor(
+function labelOf(
   options: readonly { value: string; label: string }[],
   value: string
 ) {
-  return options.find((o) => o.value === value)?.label || value;
+  return options.find((item) => item.value === value)?.label || value;
 }
 
-function labelsFor(
+function labelsOf(
   options: readonly { value: string; label: string }[],
-  values: string[]
+  values: string[],
+  other = ""
 ) {
-  return values.map((v) => labelFor(options, v)).filter(Boolean);
+  const labels = values.map((value) => labelOf(options, value)).filter(Boolean);
+  if (other.trim()) labels.push(other.trim());
+  return labels;
 }
 
-function triValue(answer: string, detail = "") {
+function triText(
+  options: readonly { value: string; label: string }[],
+  answer: string,
+  detail = ""
+) {
   if (!answer) return "";
-  const label = TRI_LABELS[answer] || answer;
+  const label = labelOf(options, answer);
   return detail.trim() ? `${label} — ${detail.trim()}` : label;
 }
 
 export function formatPostDemoAnswers(answers: PostDemoAnswers) {
   const rows: { label: string; value: string }[] = [];
-  const rel = labelsFor(RELEVANT_OPTIONS, answers.relevant.selections);
-  if (answers.relevant.other) rel.push(answers.relevant.other);
-  if (rel.length) rows.push({ label: "הכי רלוונטי", value: rel.join(" · ") });
+
+  const relevant = labelsOf(
+    RELEVANT_OPTIONS,
+    answers.relevant.selections,
+    answers.relevant.other
+  );
+  if (relevant.length) rows.push({ label: "מה הכי רלוונטי", value: relevant.join(" · ") });
   if (answers.relevant.note.trim()) {
-    rows.push({ label: "מה עניין במיוחד", value: answers.relevant.note.trim() });
+    rows.push({ label: "מה חשוב במיוחד", value: answers.relevant.note.trim() });
   }
-  if (answers.missing.answer) {
+
+  const goals = labelsOf(GOAL_OPTIONS, answers.goals.selections, answers.goals.other);
+  if (goals.length) rows.push({ label: "מה חשוב לשפר עכשיו", value: goals.join(" · ") });
+
+  if (answers.currentTool.answer) {
     rows.push({
-      label: "חסר במערכת",
-      value: triValue(answers.missing.answer, answers.missing.detail),
+      label: "מערכת או כלי להחלפה",
+      value: triText(TRI_OPTIONS, answers.currentTool.answer, answers.currentTool.detail),
     });
   }
-  if (answers.unclear.trim()) {
-    rows.push({ label: "לא היה ברור", value: answers.unclear.trim() });
+
+  const transfer = labelsOf(
+    TRANSFER_OPTIONS,
+    answers.transfer.selections,
+    answers.transfer.other
+  );
+  if (transfer.length) rows.push({ label: "מידע להעברה", value: transfer.join(" · ") });
+  if (answers.transfer.hasFile) {
+    rows.push({
+      label: "קובץ Excel/CSV",
+      value: labelOf(FILE_OPTIONS, answers.transfer.hasFile),
+    });
   }
-  const auto = labelsFor(AUTOMATION_OPTIONS, answers.automation.selections);
-  if (answers.automation.other) auto.push(answers.automation.other);
-  if (auto.length) rows.push({ label: "אוטומציות מבוקשות", value: auto.join(" · ") });
-  if (answers.automation.detail?.trim()) {
+
+  const automation = labelsOf(
+    AUTOMATION_OPTIONS,
+    answers.automation.selections,
+    answers.automation.other
+  );
+  if (automation.length) {
+    rows.push({ label: "מה לייצר באופן אוטומטי", value: automation.join(" · ") });
+  }
+  if (answers.automation.detail.trim()) {
     rows.push({ label: "פירוט אוטומציות", value: answers.automation.detail.trim() });
   }
-  if (answers.migration.answer) {
+
+  if (answers.specialProcess.trim()) {
+    rows.push({ label: "תהליך מיוחד בעסק", value: answers.specialProcess.trim() });
+  }
+
+  const services = labelsOf(
+    SERVICE_OPTIONS,
+    answers.services.selections.filter((value) => value !== "not_now"),
+    answers.services.other
+  );
+  if (services.length) rows.push({ label: "שירות מקצועי נוסף", value: services.join(" · ") });
+  else if (answers.services.selections.includes("not_now")) {
+    rows.push({ label: "שירות מקצועי נוסף", value: "לא כרגע" });
+  }
+
+  const blockers = labelsOf(
+    BLOCKER_OPTIONS,
+    answers.blockers.selections,
+    answers.blockers.other
+  );
+  if (blockers.length) rows.push({ label: "מה עלול לעכב התחלה", value: blockers.join(" · ") });
+
+  if (answers.startTiming) {
+    const timing =
+      answers.startTiming === "other" && answers.startTimingOther.trim()
+        ? answers.startTimingOther.trim()
+        : labelOf(START_TIMING_OPTIONS, answers.startTiming);
+    rows.push({ label: "מתי להתחיל", value: timing });
+  }
+
+  if (answers.extraNotes.trim()) {
+    rows.push({ label: "פרט נוסף", value: answers.extraNotes.trim() });
+  }
+
+  if ((answers.mainGoal || "").trim()) {
+    rows.push({ label: "מטרה מרכזית (ישן)", value: String(answers.mainGoal).trim() });
+  }
+  if (answers.missing?.answer) {
     rows.push({
-      label: "מעבר ממערכות",
-      value: triValue(answers.migration.answer, answers.migration.detail),
+      label: "מה חסר (ישן)",
+      value: triText(TRI_OPTIONS, answers.missing.answer, answers.missing.detail || ""),
     });
+  }
+  if ((answers.unclear || "").trim()) {
+    rows.push({ label: "מה לא היה ברור (ישן)", value: String(answers.unclear).trim() });
   }
   if (answers.integrations?.answer) {
     rows.push({
-      label: "חיבור למערכת",
-      value: triValue(answers.integrations.answer, answers.integrations.detail),
+      label: "חיבור למערכת (ישן)",
+      value: triText(
+        TRI_OPTIONS,
+        answers.integrations.answer,
+        answers.integrations.detail || ""
+      ),
     });
   }
-  if (answers.workflowFit?.trim()) {
-    rows.push({ label: "התאמה לתהליך", value: answers.workflowFit.trim() });
-  }
-  const services = labelsFor(SERVICE_OPTIONS, answers.services.selections).filter(
-    (s) => s !== "לא כרגע"
-  );
-  if (answers.services.other) services.push(answers.services.other);
-  if (services.length) {
-    rows.push({
-      label: "שירותים נוספים",
-      value: [services.join(" · "), answers.services.detail.trim()]
-        .filter(Boolean)
-        .join(" — "),
-    });
-  }
-  const blockers = labelsFor(BLOCKER_OPTIONS, answers.blockers.selections);
-  if (answers.blockers.other) blockers.push(answers.blockers.other);
-  if (blockers.length) rows.push({ label: "מה יכול לעכב", value: blockers.join(" · ") });
-  if (answers.startTiming) {
-    const timing =
-      answers.startTiming === "other" && answers.startTimingOther?.trim()
-        ? answers.startTimingOther.trim()
-        : labelFor(START_TIMING_OPTIONS, answers.startTiming);
-    rows.push({ label: "מועד התחלה", value: timing });
-  }
-  if (answers.extraNotes.trim()) {
-    rows.push({ label: "הערות נוספות", value: answers.extraNotes.trim() });
-  }
-  if ((answers.mainGoal || "").trim()) {
-    rows.push({ label: "מטרה מרכזית", value: String(answers.mainGoal).trim() });
-  }
+
   return rows;
 }
 
