@@ -511,6 +511,7 @@ export default function VisualEditorShell({
             }}
             className="inline-flex h-11 items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-800 shadow-sm transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60 lg:px-5"
             data-testid="visual-studio-save"
+            data-demo-target="website-save"
           >
             {isSaving ? "שומר..." : "שמירה"}
           </button>
@@ -519,6 +520,7 @@ export default function VisualEditorShell({
             type="button"
             disabled={busy}
             onClick={handlePublish}
+            data-demo-target="website-publish"
             className="inline-flex h-11 items-center gap-2 rounded-2xl border border-violet-200/70 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-4 text-sm font-black text-black shadow-sm transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:cursor-not-allowed disabled:opacity-60 lg:px-5"
           >
             {isSaving ? "מפרסם..." : "פרסום"}

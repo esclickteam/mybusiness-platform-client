@@ -38,6 +38,7 @@ import {
 import SiteShareModal from "../components/website/SiteShareModal";
 import MySiteCardPreview from "../components/website/MySiteCardPreview";
 import { resolveMySiteCardUrls } from "../components/site-builder/studio/utils/customDomainPublishUi";
+import { isGuidedDemoActive } from "@/guidedDemo/sessionStore";
 import { ensureSiteCardScreenshots } from "../utils/captureSiteScreenshot";
 import { useLocaleDir } from "../hooks/useLocaleDir";
 import { getApiErrorMessage } from "../utils/apiErrorMessage";
@@ -616,16 +617,14 @@ export default function MySitesPage() {
               return (
                 <article
                   key={site._id}
+                  data-demo-target={
+                    isGuidedDemoActive() && index === 0 ? "website-demo-site" : undefined
+                  }
                   className="group relative overflow-hidden rounded-[26px] border border-slate-200/90 bg-white shadow-[0_12px_32px_rgba(15,23,42,0.06)] transition duration-300 hover:-translate-y-1 hover:border-violet-200 hover:shadow-[0_22px_48px_rgba(76,29,149,0.12)]"
                 >
                   <button
                     type="button"
                     onClick={() => openSite(site)}
-                    data-demo-target={
-                      String(site.name || "").includes("סטודיו נועה")
-                        ? "website-demo-site"
-                        : undefined
-                    }
                     className="block w-full text-start"
                   >
                     <div className="relative aspect-[16/9] overflow-hidden bg-gradient-to-br from-slate-100 via-slate-50 to-violet-50">
