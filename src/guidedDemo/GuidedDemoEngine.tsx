@@ -260,10 +260,7 @@ export default function GuidedDemoEngine() {
   const isComplete = session?.status === "completed";
   const questionnaire = session?.questionnaire;
   const questionnaireStatus = questionnaire?.status || "not_started";
-  const showPostDemoFlow =
-    isComplete &&
-    !postDemoHidden &&
-    questionnaireStatus !== "proposal_requested";
+  const showPostDemoFlow = isComplete && !postDemoHidden;
   const canResumePostDemo =
     isComplete &&
     postDemoHidden &&
@@ -872,8 +869,8 @@ export default function GuidedDemoEngine() {
       {showPostDemoFlow ? (
         <PostDemoFlow
           initialQuestionnaire={questionnaire}
-          onDefer={() => setPostDemoHidden(true)}
-          onDone={() => setPostDemoHidden(true)}
+          onDefer={() => void handleExit()}
+          onDone={() => void handleExit()}
         />
       ) : null}
 

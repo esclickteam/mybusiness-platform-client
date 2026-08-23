@@ -47,7 +47,7 @@ describe("guided demo intro categories", () => {
     expect(INTRO_CATEGORIES.map((item) => item.title)).toEqual([
       "דשבורד",
       "CRM ולידים",
-      "משימות ופגישות",
+      "פגישות ויומן",
       "אוטומציות",
       "כלים לצמיחה",
       "בניית אתר",

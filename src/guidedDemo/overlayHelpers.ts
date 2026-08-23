@@ -303,7 +303,7 @@ export function inputValueSatisfied(
 export const INTRO_CATEGORIES = [
   { key: "dash", title: "דשבורד", hint: "מדדים ופעילות", icon: "dashboard" },
   { key: "crm", title: "CRM ולידים", hint: "פניות ומעקב", icon: "crm" },
-  { key: "work", title: "משימות ופגישות", hint: "Follow-up ויומן", icon: "work" },
+  { key: "work", title: "פגישות ויומן", hint: "תורים ויומן", icon: "work" },
   { key: "auto", title: "אוטומציות", hint: "טריגרים ופעולות", icon: "auto" },
   { key: "growth", title: "כלים לצמיחה", hint: "שותפים ויועץ", icon: "growth" },
   { key: "web", title: "בניית אתר", hint: "תבניות ופרסום", icon: "web" },
