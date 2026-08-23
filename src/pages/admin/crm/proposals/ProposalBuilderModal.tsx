@@ -13,6 +13,9 @@ type CatalogItem = {
   billingLabel: string;
   amountIls: number;
   descriptionHe: string;
+  summaryHe?: string;
+  icon?: string;
+  badge?: string;
   defaultBullets: string[];
   hidden?: boolean;
   allowQuantity?: boolean;
@@ -22,9 +25,14 @@ type CatalogItem = {
 type LineDraft = {
   sku: string;
   amountIls: number;
+  catalogAmountIls: number;
+  priceEdited: boolean;
   quantity: number;
   bullets: string[];
   descriptionHe: string;
+  summaryHe: string;
+  icon: string;
+  badge: string;
   highlightedByCustomer?: boolean;
 };
 
@@ -108,9 +116,16 @@ export default function ProposalBuilderModal({
       return {
         sku: line.sku,
         amountIls: line.amountIls,
+        originalPrice: line.catalogAmountIls,
+        catalogAmountIls: line.catalogAmountIls,
+        customPrice: line.priceEdited ? line.amountIls : null,
+        priceEdited: line.priceEdited,
         quantity: line.quantity,
         bullets: line.bullets,
         descriptionHe: line.descriptionHe,
+        summaryHe: line.summaryHe,
+        icon: line.icon,
+        badge: line.badge,
         highlightedByCustomer: interested.has(line.sku),
         nameHe: item?.nameHe,
         category: item?.category,
@@ -143,11 +158,32 @@ export default function ProposalBuilderModal({
       next[item.sku] = {
         sku: item.sku,
         amountIls: item.amountIls,
+        catalogAmountIls: item.amountIls,
+        priceEdited: false,
         quantity: 1,
         bullets: [...(item.defaultBullets || [])],
         descriptionHe: item.descriptionHe || "",
+        summaryHe: item.summaryHe || item.descriptionHe || "",
+        icon: item.icon || "•",
+        badge: item.badge || item.categoryLabel,
       };
       return next;
+    });
+  }
+
+  function setLinePrice(sku: string, value: number) {
+    setSelected((prev) => {
+      const row = prev[sku];
+      if (!row) return prev;
+      const amountIls = Math.max(0, Number(value) || 0);
+      return {
+        ...prev,
+        [sku]: {
+          ...row,
+          amountIls,
+          priceEdited: amountIls !== row.catalogAmountIls,
+        },
+      };
     });
   }
 
@@ -268,6 +304,7 @@ export default function ProposalBuilderModal({
       {step === "preview" ? (
         <ProposalDocumentView
           interactive
+          mode="admin-preview"
           proposal={{
             proposalNumber: "תצוגה מקדימה",
             customerName,
@@ -279,7 +316,23 @@ export default function ProposalBuilderModal({
             lines: linesPayload as any,
             totals: previewTotals,
             expiresAt: new Date(expiresAt).toISOString(),
+            createdAt: new Date().toISOString(),
+            status: "draft",
+            contextSnapshot: context,
           }}
+          footer={
+            <div className="space-y-2 border-t border-slate-100 pt-6 opacity-70">
+              <div className="min-h-12 rounded-2xl bg-[#6D28D9] px-4 py-3 text-center text-base font-black text-white">
+                אני רוצה להתחיל
+              </div>
+              <div className="min-h-11 rounded-2xl border border-slate-200 px-4 py-3 text-center text-sm font-black text-slate-700">
+                יש לי שאלה על ההצעה
+              </div>
+              <div className="min-h-11 rounded-2xl px-4 py-3 text-center text-sm font-bold text-slate-500">
+                אני רוצה לחשוב על זה
+              </div>
+            </div>
+          }
         />
       ) : null}
 
@@ -378,74 +431,113 @@ export default function ProposalBuilderModal({
                     ].join(" ")}
                   >
                     <div className="flex items-start justify-between gap-2">
-                      <div>
-                        <p className="font-black text-slate-900">{item.nameHe}</p>
-                        <p className="text-xs font-bold text-slate-500">
-                          {item.categoryLabel} · {item.billingLabel} · ₪{item.amountIls}
-                          {item.hidden ? " · הצעה פרטית" : ""}
-                        </p>
+                      <div className="flex min-w-0 items-start gap-2">
+                        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-violet-50 text-base">
+                          {item.icon || "•"}
+                        </span>
+                        <div className="min-w-0">
+                          <p className="font-black text-slate-900">{item.nameHe}</p>
+                          <p className="text-xs font-bold text-slate-500">
+                            {item.categoryLabel} · {item.billingLabel} · ₪{item.amountIls}
+                            {item.hidden ? " · הצעה פרטית" : ""}
+                          </p>
+                          {item.summaryHe ? (
+                            <p className="mt-1 text-xs font-semibold text-slate-500 line-clamp-2">
+                              {item.summaryHe}
+                            </p>
+                          ) : null}
+                        </div>
                       </div>
                       <button
                         type="button"
                         onClick={() => toggleSku(item)}
-                        className="min-h-10 rounded-xl border px-3 text-xs font-black"
+                        className="min-h-10 shrink-0 rounded-xl border px-3 text-xs font-black"
                       >
                         {on ? "הוסר" : "הוסף"}
                       </button>
                     </div>
-                    {on ? (
-                      <div className="mt-3 space-y-2">
-                        <button
-                          type="button"
-                          className="text-xs font-black text-[#6D28D9]"
-                          onClick={() =>
-                            setExpandedSku((s) => (s === item.sku ? "" : item.sku))
-                          }
-                        >
-                          {expandedSku === item.sku ? "⌃ פירוט" : "⌄ פירוט / עריכה"}
-                        </button>
-                        {expandedSku === item.sku ? (
-                          <div className="space-y-2">
-                            <label className="block text-xs font-bold">
-                              מחיר להצעה (₪)
-                              <input
-                                type="number"
-                                className="mt-1 min-h-10 w-full rounded-xl border px-2"
-                                value={draft.amountIls}
-                                onChange={(e) =>
-                                  setSelected((prev) => ({
-                                    ...prev,
-                                    [item.sku]: {
-                                      ...prev[item.sku],
-                                      amountIls: Number(e.target.value || 0),
-                                    },
-                                  }))
-                                }
-                              />
-                            </label>
-                            <label className="block text-xs font-bold">
-                              שורות פירוט (שורה לכל נקודה)
-                              <textarea
-                                className="mt-1 min-h-24 w-full rounded-xl border p-2"
-                                value={(draft.bullets || []).join("\n")}
-                                onChange={(e) =>
-                                  setSelected((prev) => ({
-                                    ...prev,
-                                    [item.sku]: {
-                                      ...prev[item.sku],
-                                      bullets: e.target.value
-                                        .split("\n")
-                                        .map((x) => x.trim())
-                                        .filter(Boolean),
-                                    },
-                                  }))
-                                }
-                              />
-                            </label>
-                          </div>
-                        ) : null}
-                      </div>
-                    ) : null}
+                    <div className="mt-3 space-y-2">
+                      <button
+                        type="button"
+                        className="text-xs font-black text-[#6D28D9]"
+                        onClick={() =>
+                          setExpandedSku((s) => (s === item.sku ? "" : item.sku))
+                        }
+                      >
+                        {expandedSku === item.sku
+                          ? "⌃ הסתר פירוט"
+                          : on
+                            ? "⌄ פירוט / עריכת מחיר ותוכן"
+                            : "⌄ פירוט מה כלול"}
+                      </button>
+                      {expandedSku === item.sku ? (
+                        <div className="space-y-2 rounded-xl bg-slate-50 p-3">
+                          {on && draft ? (
+                            <>
+                              <div className="flex flex-wrap items-center gap-2 text-xs font-bold text-slate-600">
+                                <span>מחיר קטלוג: ₪{draft.catalogAmountIls}</span>
+                                {draft.priceEdited ? (
+                                  <span className="rounded-full bg-amber-50 px-2 py-0.5 text-amber-700">
+                                    מחיר מותאם / נערך ידנית
+                                  </span>
+                                ) : null}
+                              </div>
+                              <label className="block text-xs font-bold">
+                                מחיר להצעה זו (₪) — {item.billingLabel}
+                                <input
+                                  type="number"
+                                  className="mt-1 min-h-10 w-full rounded-xl border px-2"
+                                  value={draft.amountIls}
+                                  onChange={(e) =>
+                                    setLinePrice(item.sku, Number(e.target.value || 0))
+                                  }
+                                />
+                              </label>
+                              {draft.priceEdited ? (
+                                <button
+                                  type="button"
+                                  className="text-xs font-black text-slate-500"
+                                  onClick={() => setLinePrice(item.sku, draft.catalogAmountIls)}
+                                >
+                                  איפוס למחיר קטלוג
+                                </button>
+                              ) : null}
+                              <label className="block text-xs font-bold">
+                                שורות פירוט (שורה לכל נקודה) — רק להצעה זו
+                                <textarea
+                                  className="mt-1 min-h-24 w-full rounded-xl border p-2"
+                                  value={(draft.bullets || []).join("\n")}
+                                  onChange={(e) =>
+                                    setSelected((prev) => ({
+                                      ...prev,
+                                      [item.sku]: {
+                                        ...prev[item.sku],
+                                        bullets: e.target.value
+                                          .split("\n")
+                                          .map((x) => x.trim())
+                                          .filter(Boolean),
+                                      },
+                                    }))
+                                  }
+                                />
+                              </label>
+                            </>
+                          ) : (
+                            <ul className="space-y-1.5">
+                              {(item.defaultBullets || []).map((b) => (
+                                <li
+                                  key={b}
+                                  className="flex items-start gap-2 text-xs font-semibold text-slate-700"
+                                >
+                                  <span className="text-emerald-500">✓</span>
+                                  <span>{b}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
+                      ) : null}
+                    </div>
                   </div>
                 );
               })}
@@ -474,93 +566,132 @@ export default function ProposalBuilderModal({
                       </p>
                     ) : null}
                     <div className="flex items-start justify-between gap-2">
-                      <div>
-                        <p className="font-black text-slate-900">{item.nameHe}</p>
-                        <p className="text-xs font-bold text-slate-500">
-                          {item.billingLabel} · ₪{item.amountIls}
-                        </p>
+                      <div className="flex min-w-0 items-start gap-2">
+                        <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-violet-50 text-base">
+                          {item.icon || "•"}
+                        </span>
+                        <div className="min-w-0">
+                          <p className="font-black text-slate-900">{item.nameHe}</p>
+                          <p className="text-xs font-bold text-slate-500">
+                            {item.categoryLabel} · {item.billingLabel} · ₪{item.amountIls}
+                          </p>
+                          {item.summaryHe ? (
+                            <p className="mt-1 text-xs font-semibold text-slate-500 line-clamp-2">
+                              {item.summaryHe}
+                            </p>
+                          ) : null}
+                        </div>
                       </div>
                       <button
                         type="button"
                         onClick={() => toggleSku(item)}
-                        className="min-h-10 rounded-xl border px-3 text-xs font-black"
+                        className="min-h-10 shrink-0 rounded-xl border px-3 text-xs font-black"
                       >
                         {on ? "הוסר" : "הוסף"}
                       </button>
                     </div>
-                    {on ? (
-                      <div className="mt-3 space-y-2">
-                        <button
-                          type="button"
-                          className="text-xs font-black text-[#6D28D9]"
-                          onClick={() =>
-                            setExpandedSku((s) => (s === item.sku ? "" : item.sku))
-                          }
-                        >
-                          {expandedSku === item.sku ? "⌃ פירוט" : "⌄ פירוט / עריכה"}
-                        </button>
-                        {expandedSku === item.sku ? (
-                          <div className="space-y-2">
-                            <label className="block text-xs font-bold">
-                              מחיר להצעה (₪)
-                              <input
-                                type="number"
-                                className="mt-1 min-h-10 w-full rounded-xl border px-2"
-                                value={draft.amountIls}
-                                onChange={(e) =>
-                                  setSelected((prev) => ({
-                                    ...prev,
-                                    [item.sku]: {
-                                      ...prev[item.sku],
-                                      amountIls: Number(e.target.value || 0),
-                                    },
-                                  }))
-                                }
-                              />
-                            </label>
-                            {item.allowQuantity ? (
+                    <div className="mt-3 space-y-2">
+                      <button
+                        type="button"
+                        className="text-xs font-black text-[#6D28D9]"
+                        onClick={() =>
+                          setExpandedSku((s) => (s === item.sku ? "" : item.sku))
+                        }
+                      >
+                        {expandedSku === item.sku
+                          ? "⌃ הסתר פירוט"
+                          : on
+                            ? "⌄ פירוט / עריכת מחיר ותוכן"
+                            : "⌄ פירוט מה כלול"}
+                      </button>
+                      {expandedSku === item.sku ? (
+                        <div className="space-y-2 rounded-xl bg-slate-50 p-3">
+                          {on && draft ? (
+                            <>
+                              <div className="flex flex-wrap items-center gap-2 text-xs font-bold text-slate-600">
+                                <span>מחיר קטלוג: ₪{draft.catalogAmountIls}</span>
+                                {draft.priceEdited ? (
+                                  <span className="rounded-full bg-amber-50 px-2 py-0.5 text-amber-700">
+                                    מחיר מותאם / נערך ידנית
+                                  </span>
+                                ) : null}
+                              </div>
                               <label className="block text-xs font-bold">
-                                כמות
+                                מחיר להצעה זו (₪) — {item.billingLabel}
                                 <input
                                   type="number"
-                                  min={1}
                                   className="mt-1 min-h-10 w-full rounded-xl border px-2"
-                                  value={draft.quantity}
+                                  value={draft.amountIls}
+                                  onChange={(e) =>
+                                    setLinePrice(item.sku, Number(e.target.value || 0))
+                                  }
+                                />
+                              </label>
+                              {draft.priceEdited ? (
+                                <button
+                                  type="button"
+                                  className="text-xs font-black text-slate-500"
+                                  onClick={() => setLinePrice(item.sku, draft.catalogAmountIls)}
+                                >
+                                  איפוס למחיר קטלוג
+                                </button>
+                              ) : null}
+                              {item.allowQuantity ? (
+                                <label className="block text-xs font-bold">
+                                  כמות
+                                  <input
+                                    type="number"
+                                    min={1}
+                                    className="mt-1 min-h-10 w-full rounded-xl border px-2"
+                                    value={draft.quantity}
+                                    onChange={(e) =>
+                                      setSelected((prev) => ({
+                                        ...prev,
+                                        [item.sku]: {
+                                          ...prev[item.sku],
+                                          quantity: Math.max(1, Number(e.target.value || 1)),
+                                        },
+                                      }))
+                                    }
+                                  />
+                                </label>
+                              ) : null}
+                              <label className="block text-xs font-bold">
+                                שורות פירוט (שורה לכל נקודה) — רק להצעה זו
+                                <textarea
+                                  className="mt-1 min-h-24 w-full rounded-xl border p-2"
+                                  value={(draft.bullets || []).join("\n")}
                                   onChange={(e) =>
                                     setSelected((prev) => ({
                                       ...prev,
                                       [item.sku]: {
                                         ...prev[item.sku],
-                                        quantity: Math.max(1, Number(e.target.value || 1)),
+                                        bullets: e.target.value
+                                          .split("\n")
+                                          .map((x) => x.trim())
+                                          .filter(Boolean),
                                       },
                                     }))
                                   }
                                 />
                               </label>
-                            ) : null}
-                            <label className="block text-xs font-bold">
-                              שורות פירוט
-                              <textarea
-                                className="mt-1 min-h-24 w-full rounded-xl border p-2"
-                                value={(draft.bullets || []).join("\n")}
-                                onChange={(e) =>
-                                  setSelected((prev) => ({
-                                    ...prev,
-                                    [item.sku]: {
-                                      ...prev[item.sku],
-                                      bullets: e.target.value
-                                        .split("\n")
-                                        .map((x) => x.trim())
-                                        .filter(Boolean),
-                                    },
-                                  }))
-                                }
-                              />
-                            </label>
-                          </div>
-                        ) : null}
-                      </div>
-                    ) : null}
+                            </>
+                          ) : (
+                            <ul className="space-y-1.5">
+                              {(item.defaultBullets || []).map((b) => (
+                                <li
+                                  key={b}
+                                  className="flex items-start gap-2 text-xs font-semibold text-slate-700"
+                                >
+                                  <span className="text-emerald-500">✓</span>
+                                  <span>{b}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
+                      ) : null}
+                    </div>
                   </div>
                 );
               })}
