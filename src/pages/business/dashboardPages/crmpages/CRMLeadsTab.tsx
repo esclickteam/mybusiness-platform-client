@@ -2906,7 +2906,7 @@ export default function CRMLeadsTab({
                               )
                             }
                             data-demo-target="crm-activity-type"
-                            className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm font-black text-slate-700 outline-none focus:ring-4 focus:ring-sky-100"
+                            className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm font-black text-slate-700 outline-none focus:ring-4 focus:ring-sky-100"
                           >
                             <option value="note">{t("crm.common.note")}</option>
                             <option value="call">{t("crm.common.call")}</option>
@@ -2925,7 +2925,7 @@ export default function CRMLeadsTab({
                                 ? t("crm.leads.drawer.taskPlaceholder")
                                 : t("crm.leads.drawer.notePlaceholder")
                             }
-                            className="min-h-[80px] rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm font-bold leading-6 text-slate-700 outline-none placeholder:text-slate-400 focus:ring-4 focus:ring-sky-100"
+                            className="min-h-[80px] w-full rounded-xl border border-slate-200 bg-white px-3 py-2.5 text-sm font-bold leading-6 text-slate-700 outline-none placeholder:text-slate-400 focus:ring-4 focus:ring-sky-100"
                           />
                         </div>
 
@@ -2942,7 +2942,7 @@ export default function CRMLeadsTab({
                                 setNewTaskDueAt(event.target.value)
                               }
                               data-demo-target="crm-task-due"
-                              className="h-10 rounded-xl border border-slate-200 bg-white px-3 text-sm font-bold text-slate-700 outline-none focus:ring-4 focus:ring-sky-100"
+                              className="h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm font-bold text-slate-700 outline-none focus:ring-4 focus:ring-sky-100"
                             />
                           </div>
                         )}

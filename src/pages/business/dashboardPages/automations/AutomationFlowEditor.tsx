@@ -2221,6 +2221,9 @@ function EditorInner({
               <input
                 value={String(selectedNode.data?.label || "")}
                 onChange={(e) => updateSelectedData({ label: e.target.value })}
+                data-demo-target={
+                  selectedNode.type !== "trigger" ? "automations-action-config" : undefined
+                }
               />
             </label>
 
@@ -2384,6 +2387,7 @@ function EditorInner({
                       afterNodeId: selectedNode.id,
                     })
                   }
+                  data-demo-target="automations-add-action"
                 >
                   הוסף תוצאה לטריגר
                 </button>

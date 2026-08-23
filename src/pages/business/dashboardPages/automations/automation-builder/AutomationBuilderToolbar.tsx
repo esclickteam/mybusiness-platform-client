@@ -111,6 +111,7 @@ export default function AutomationBuilderToolbar({
           disabled={readOnly}
           title={writeBlockedTitle}
           onClick={onOpenPicker}
+          data-demo-target="automations-add-action"
         >
           <Plus size={14} />
           הוסף שלב

@@ -227,6 +227,7 @@ export default function BusinessAdvisorTab({
   const advisorLanguage = i18n.language?.startsWith("en") ? "en" : "he";
   const [userInput, setUserInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [demoActionDone, setDemoActionDone] = useState(false);
   const [actionLoading, setActionLoading] = useState<string | null>(null);
   const [lastAnswer, setLastAnswer] = useState("");
   const [historyLoading, setHistoryLoading] = useState(false);
@@ -711,6 +712,7 @@ export default function BusinessAdvisorTab({
               </div>
 
               <div>
+              <div data-demo-target="advisor-header">
                 <div className="flex flex-wrap items-center gap-2">
                   <h1 className="text-2xl font-black tracking-tight text-slate-800 sm:text-3xl">
                     {t("advisor.title")}
@@ -735,17 +737,43 @@ export default function BusinessAdvisorTab({
                 <p className="mt-2 text-sm font-semibold leading-6 text-slate-500">
                   {t("advisor.subtitle")}
                 </p>
-                {isGuidedDemoActive() ? (
-                  <div
-                    data-demo-target="advisor-recommendation"
-                    className="mt-3 max-w-xl rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3"
-                  >
-                    <p className="text-xs font-black uppercase tracking-[0.14em] text-amber-700">
-                      {DEMO_ADVISOR_RECOMMENDATION.title}
-                    </p>
-                    <p className="mt-1 text-sm font-semibold leading-6 text-amber-950">
-                      {DEMO_ADVISOR_RECOMMENDATION.body}
-                    </p>
+              </div>
+              {isGuidedDemoActive() ? (
+                  <div className="mt-3 max-w-xl space-y-3">
+                    <div
+                      data-demo-target="advisor-recommendation"
+                      className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3"
+                    >
+                      <p className="text-xs font-black uppercase tracking-[0.14em] text-amber-700">
+                        {DEMO_ADVISOR_RECOMMENDATION.title}
+                      </p>
+                      <p className="mt-1 text-sm font-semibold leading-6 text-amber-950">
+                        {DEMO_ADVISOR_RECOMMENDATION.body}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      data-demo-target="advisor-demo-action"
+                      onClick={() => setDemoActionDone(true)}
+                      className="inline-flex rounded-xl bg-amber-700 px-3 py-2 text-xs font-black text-white"
+                    >
+                      {DEMO_ADVISOR_RECOMMENDATION.actionLabel}
+                    </button>
+                    <div
+                      data-demo-target="advisor-demo-result"
+                      className={`rounded-xl border px-3 py-2 ${
+                        demoActionDone
+                          ? "border-emerald-200 bg-emerald-50"
+                          : "border-amber-100 bg-white/70"
+                      }`}
+                    >
+                      <p className="text-[11px] font-black uppercase tracking-[0.12em] text-emerald-700">
+                        {DEMO_ADVISOR_RECOMMENDATION.resultTitle}
+                      </p>
+                      <p className="mt-1 text-sm font-semibold leading-6 text-emerald-950">
+                        {DEMO_ADVISOR_RECOMMENDATION.resultBody}
+                      </p>
+                    </div>
                   </div>
                 ) : null}
               </div>

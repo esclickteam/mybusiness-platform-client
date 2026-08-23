@@ -455,8 +455,34 @@ export default function WebsiteTemplatesPage() {
   /** Windowed render — expand ahead of scroll for a smooth UX. */
   const [visibleCount, setVisibleCount] = useState(GALLERY_INITIAL_SIZE);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
+  const [selectedTemplateKey, setSelectedTemplateKey] = useState(() => {
+    try {
+      return String(localStorage.getItem("bizuply-selected-template-key") || "")
+        .trim()
+        .toLowerCase();
+    } catch {
+      return "";
+    }
+  });
 
   const basePath = businessId ? `/business/${businessId}` : "/business";
+
+  function markSelectedTemplate(templateKey: string) {
+    const clean = String(templateKey || "").trim().toLowerCase();
+    if (!clean) return;
+    setSelectedTemplateKey(clean);
+    try {
+      localStorage.setItem("bizuply-selected-template-key", clean);
+    } catch {
+      /* ignore */
+    }
+  }
+
+  function isDemoHighlightedTemplate(template: WebsiteTemplate, index: number) {
+    const key = String(template.key || "").trim().toLowerCase();
+    if (selectedTemplateKey) return key === selectedTemplateKey;
+    return index === 0;
+  }
 
   async function loadTemplates() {
     try {
@@ -733,6 +759,7 @@ export default function WebsiteTemplatesPage() {
   };
 
   localStorage.setItem("bizuply-selected-template-key", cleanTemplateKey);
+  markSelectedTemplate(cleanTemplateKey);
   localStorage.setItem("bizuply-selected-template-id", cleanTemplateKey);
   localStorage.setItem(
     "bizuply-selected-template-data",
@@ -762,18 +789,23 @@ export default function WebsiteTemplatesPage() {
     if (isGuidedDemoActive() && businessId) {
       try {
         const existing = await listMySites(businessId);
-        const fallbackSite = existing?.[0];
-        if (fallbackSite?._id) {
+        const match = (existing || []).find((site) => {
+          const keys = [site.templateKey, site.templateName]
+            .map((value) => String(value || "").trim().toLowerCase());
+          return keys.includes(cleanTemplateKey);
+        });
+        if (match?._id) {
           navigate(
-            `${basePath}/dashboard/website/sites/${fallbackSite._id}/edit?template=${encodeURIComponent(cleanTemplateKey)}`
+            `${basePath}/dashboard/website/sites/${match._id}/edit?template=${encodeURIComponent(cleanTemplateKey)}`
           );
           return;
         }
       } catch {
-        /* keep falling through only for non-demo */
+        /* keep falling through to the selected-template editor */
       }
-    }
-    if (isGuidedDemoActive()) {
+      navigate(
+        `${basePath}/dashboard/website/templates/${cleanTemplateKey}/edit`
+      );
       return;
     }
     const status = Number(err?.response?.status || 0);
@@ -800,16 +832,12 @@ export default function WebsiteTemplatesPage() {
     // fallback לזרימה הישנה אם יצירת האתר נכשלה בלי הודעה ברורה
   }
 
-  if (isGuidedDemoActive()) {
-    return;
-  }
-
   navigate(`${basePath}/dashboard/website/templates/${cleanTemplateKey}/edit`);
 }
 
   function handlePreviewTemplate(templateKey: string) {
     const cleanTemplateKey = String(templateKey || "").trim().toLowerCase();
-
+    markSelectedTemplate(cleanTemplateKey);
     navigate(`${basePath}/dashboard/website/templates/${cleanTemplateKey}/preview`);
   }
 
@@ -1114,7 +1142,9 @@ export default function WebsiteTemplatesPage() {
                                     handlePreviewTemplate(template.key)
                                   }
                                   data-demo-target={
-                                    index === 0 ? "website-template-preview" : undefined
+                                    isDemoHighlightedTemplate(template, index)
+                                      ? "website-template-preview"
+                                      : undefined
                                   }
                                   className="
                                     rounded-lg border border-[#d1d5db] bg-white
@@ -1132,7 +1162,9 @@ export default function WebsiteTemplatesPage() {
                                     handleEditTemplate(template.key)
                                   }
                                   data-demo-target={
-                                    index === 0 ? "website-template-edit" : undefined
+                                    isDemoHighlightedTemplate(template, index)
+                                      ? "website-template-edit"
+                                      : undefined
                                   }
                                   className="
                                     rounded-lg border border-[#111827] bg-[#111827]

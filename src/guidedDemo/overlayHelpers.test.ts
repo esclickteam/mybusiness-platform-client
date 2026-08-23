@@ -6,6 +6,7 @@ import {
   resolveStepKind,
   inputValueSatisfied,
   holeOptionsForKind,
+  findDemoTarget,
 } from "./overlayHelpers";
 
 describe("guided demo hand orientation", () => {
@@ -51,6 +52,7 @@ describe("guided demo intro categories", () => {
       "כלים לצמיחה",
       "בניית אתר",
     ]);
+    expect(INTRO_CATEGORIES.map((item) => item.title)).not.toContain("עמוד עסקי");
   });
 });
 
@@ -80,6 +82,17 @@ describe("guided demo step kinds and holes", () => {
     expect(hole.top).toBe(82);
   });
 
+  it("does not clip a normal input field to half its size", () => {
+    const hole = padHole(
+      { top: 200, left: 40, width: 720, height: 44 },
+      1280,
+      720,
+      holeOptionsForKind("input")
+    );
+    expect(hole.width).toBeGreaterThanOrEqual(720);
+    expect(hole.height).toBeGreaterThanOrEqual(44);
+  });
+
   it("resolves navigation, input and commit without treating open as complete", () => {
     expect(resolveStepKind({ kind: "navigation", action: "click" })).toBe("navigation");
     expect(resolveStepKind({ completionRule: { type: "input" } })).toBe("input");
@@ -96,5 +109,20 @@ describe("guided demo step kinds and holes", () => {
     expect(inputValueSatisfied({ match: { value: "task" } }, "task")).toBe(true);
     expect(inputValueSatisfied({ numeric: true }, "abc")).toBe(false);
     expect(inputValueSatisfied({ numeric: true }, "90")).toBe(true);
+  });
+
+  it("prefers the actual form control over a large wrapper", () => {
+    document.body.innerHTML = `
+      <section data-demo-target="crm-activity-text" class="wrap">
+        <textarea data-demo-target="crm-activity-text"></textarea>
+      </section>
+    `;
+    const wrap = document.querySelector("section") as HTMLElement;
+    const field = document.querySelector("textarea") as HTMLElement;
+    wrap.getBoundingClientRect = () =>
+      ({ top: 80, left: 40, width: 900, height: 280, right: 940, bottom: 360, x: 40, y: 80, toJSON() {} }) as DOMRect;
+    field.getBoundingClientRect = () =>
+      ({ top: 120, left: 48, width: 420, height: 80, right: 468, bottom: 200, x: 48, y: 120, toJSON() {} }) as DOMRect;
+    expect(findDemoTarget("crm-activity-text", "input")).toBe(field);
   });
 });

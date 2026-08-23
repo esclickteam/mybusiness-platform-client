@@ -7,13 +7,16 @@ import { exitGuidedDemoSession, fetchGuidedDemoSession } from "../api/guidedDemo
 import { useAuth } from "../context/AuthContext";
 import {
   calcHand,
+  DEMO_HEADER_OFFSET,
   findDemoTarget,
   holeOptionsForKind,
   INTRO_CATEGORIES,
   inputValueSatisfied,
   padHole,
   readDemoInputValue,
+  resetPageScroll,
   resolveStepKind,
+  scrollTargetFullyVisible,
   type HandPos,
   type Hole,
 } from "./overlayHelpers";
@@ -23,7 +26,6 @@ import PostDemoFlow from "./postDemoQuestionnaire/PostDemoFlow";
 const BRAND = "#6D28D9";
 const TARGET_WAIT_MS = 10000;
 const POLL_MS = 120;
-const HEADER_OFFSET = 72;
 const SPECIAL_TARGETS = new Set(["automations-demo-trigger", "messages-demo-send", "whatsapp-demo-send"]);
 
 type CardPos = { top: number; left: number; width: number };
@@ -65,14 +67,6 @@ function moduleProgress(session: any) {
 
 function clamp(n: number, min: number, max: number) {
   return Math.min(Math.max(n, min), max);
-}
-
-function scrollTargetIntoView(el: Element) {
-  const rect = el.getBoundingClientRect();
-  const absoluteTop = rect.top + window.scrollY;
-  const visible = window.innerHeight - HEADER_OFFSET;
-  const targetY = absoluteTop - HEADER_OFFSET - Math.max(0, (visible - rect.height) / 2);
-  window.scrollTo({ top: Math.max(0, targetY), behavior: "smooth" });
 }
 
 function overlaps(a: Hole, b: DOMRect, margin = 8) {
@@ -275,7 +269,7 @@ export default function GuidedDemoEngine() {
   const showWebsiteHero =
     showPanel &&
     (step?.target === "website-headline" || step?.target === "website-cta") &&
-    !findDemoTarget(step?.target);
+    !findDemoTarget(step?.target, "acknowledge");
 
   const pushToast = useCallback((message: string, kind: ToastState["kind"]) => {
     if (!message) return;
@@ -324,6 +318,11 @@ export default function GuidedDemoEngine() {
     if (!step || introOpen || isComplete) return;
     goToStepRoute(step);
   }, [step?.id, introOpen, isComplete, goToStepRoute]);
+
+  useEffect(() => {
+    if (!step || introOpen || isComplete) return;
+    resetPageScroll();
+  }, [location.pathname, step?.module, introOpen, isComplete]);
 
   useEffect(() => {
     setHandHidden(false);
@@ -386,22 +385,19 @@ export default function GuidedDemoEngine() {
     };
 
     const attach = (el: Element) => {
-      try {
-        el.scrollIntoView({ block: "center", inline: "nearest", behavior: "smooth" });
-      } catch {
-        scrollTargetIntoView(el);
-      }
+      scrollTargetFullyVisible(el, DEMO_HEADER_OFFSET);
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
           if (cancelled || token !== retryRef.current) return;
           sync(el);
-          window.setTimeout(() => sync(el), 280);
+          const timers = [160, 360, 700].map((ms) => window.setTimeout(() => sync(el), ms));
           ro = new ResizeObserver(() => sync(el));
           ro.observe(el);
           const onMove = () => sync(el);
           window.addEventListener("resize", onMove);
           window.addEventListener("scroll", onMove, true);
           removeScroll = () => {
+            timers.forEach((id) => window.clearTimeout(id));
             window.removeEventListener("resize", onMove);
             window.removeEventListener("scroll", onMove, true);
           };
@@ -411,18 +407,14 @@ export default function GuidedDemoEngine() {
 
     const poll = (started: number, navigated = false) => {
       if (cancelled || token !== retryRef.current) return;
-      const el = findDemoTarget(step.target);
+      const el = findDemoTarget(step.target, resolveStepKind(step));
       if (el) {
         const rect = el.getBoundingClientRect();
         if (rect.width > 2 && rect.height > 2) {
           attach(el);
           return;
         }
-        try {
-          el.scrollIntoView({ block: "center", inline: "nearest" });
-        } catch {
-          /* ignore */
-        }
+        scrollTargetFullyVisible(el, DEMO_HEADER_OFFSET);
       }
       if (Date.now() - started > TARGET_WAIT_MS) {
         if (!navigated && step.route) {
@@ -438,9 +430,10 @@ export default function GuidedDemoEngine() {
       window.setTimeout(() => poll(started, navigated), POLL_MS);
     };
 
-    poll(Date.now());
+    const start = window.setTimeout(() => poll(Date.now()), 40);
     return () => {
       cancelled = true;
+      window.clearTimeout(start);
       ro?.disconnect();
       removeScroll?.();
     };
@@ -496,7 +489,7 @@ export default function GuidedDemoEngine() {
       if (step.target && key && key !== step.target) return null;
       const el =
         (key === step.target && scoped) ||
-        findDemoTarget(step.target) ||
+        findDemoTarget(step.target, "input") ||
         raw;
       return el;
     };
@@ -519,7 +512,7 @@ export default function GuidedDemoEngine() {
     document.addEventListener("input", onInput, true);
     document.addEventListener("change", onChange, true);
     document.addEventListener("blur", onBlur, true);
-    const current = findDemoTarget(step.target);
+    const current = findDemoTarget(step.target, "input");
     if (current) setInputReady(inputValueSatisfied(rule, readDemoInputValue(current)));
     return () => {
       document.removeEventListener("input", onInput, true);
@@ -599,7 +592,7 @@ export default function GuidedDemoEngine() {
   }
 
   async function handleInputContinue() {
-    const el = findDemoTarget(step?.target);
+    const el = findDemoTarget(step?.target, "input");
     const value = readDemoInputValue(el);
     if (!inputValueSatisfied(step?.completionRule, value) && !step?.allowSkip) return;
     if (!inputValueSatisfied(step?.completionRule, value) && step?.allowSkip) {
@@ -637,12 +630,13 @@ export default function GuidedDemoEngine() {
       {hole && showPanel ? (
         <div
           aria-hidden
-          className="pointer-events-none absolute rounded-2xl transition-all duration-200 ease-out"
+          className="pointer-events-none absolute"
           style={{
             top: hole.top,
             left: hole.left,
             width: hole.width,
             height: hole.height,
+            borderRadius: hole.height < 56 ? 10 : 14,
             boxShadow: `0 0 0 2px ${BRAND}, 0 0 0 9999px rgba(15,23,42,0.45), 0 0 24px rgba(109,40,217,0.35)`,
           }}
         />
