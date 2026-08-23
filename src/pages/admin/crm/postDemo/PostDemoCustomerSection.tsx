@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { listGuidedDemos } from "../../../../api/guidedDemoApi";
 import { mergeAnswers } from "../../../../guidedDemo/postDemoQuestionnaire/types";
 import {
-  formatFullPostDemoSummary,
   formatPostDemoAnswers,
   QUESTIONNAIRE_STATUS_LABELS,
 } from "../../../../guidedDemo/postDemoQuestionnaire/displayUtils";
@@ -45,11 +44,10 @@ export default function PostDemoCustomerSection({ customerId }: { customerId: st
   if (!demo) return null;
 
   const answers = mergeAnswers(demo.postDemoQuestionnaire || {});
-  const filledRows = formatPostDemoAnswers(answers);
-  const answerRows = formatFullPostDemoSummary(answers);
+  const answerRows = formatPostDemoAnswers(answers);
   const qStatus = demo.questionnaireStatus || "not_started";
   const waitingProposal = qStatus === "proposal_requested";
-  const hasQuestionnaireContent = filledRows.length > 0 || qStatus !== "not_started";
+  const hasQuestionnaireContent = answerRows.length > 0 || qStatus !== "not_started";
 
   return (
     <CrmCard className="!border-violet-100 !bg-gradient-to-l !from-violet-50/60 !to-white lg:col-span-2">
