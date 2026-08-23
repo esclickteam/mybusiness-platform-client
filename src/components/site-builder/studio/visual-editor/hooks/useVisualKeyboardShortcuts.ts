@@ -9,6 +9,7 @@ type UseVisualKeyboardShortcutsOptions = {
   onUndo?: () => void;
   onRedo?: () => void;
   onDelete?: () => void;
+  onDeleteTextRange?: () => boolean | void;
   onCopy?: () => void;
   onPaste?: () => void;
   onDuplicate?: () => void;
@@ -30,6 +31,25 @@ function isTypingTarget(target: EventTarget | null) {
   );
 }
 
+function hasDeletableTextSelection() {
+  if (typeof window === "undefined") return false;
+  const selection = window.getSelection();
+  if (!selection || selection.rangeCount === 0 || selection.isCollapsed) {
+    return false;
+  }
+  return Boolean(String(selection.toString() || ""));
+}
+
+export function shouldDeleteElementOnKey(options: {
+  isTyping?: boolean;
+  hasTextSelection?: boolean;
+  selectedElementId?: string;
+}) {
+  if (options.isTyping) return false;
+  if (options.hasTextSelection) return false;
+  return Boolean(options.selectedElementId);
+}
+
 export function useVisualKeyboardShortcuts({
   enabled = true,
   canUndo = false,
@@ -39,6 +59,7 @@ export function useVisualKeyboardShortcuts({
   onUndo,
   onRedo,
   onDelete,
+  onDeleteTextRange,
   onCopy,
   onPaste,
   onDuplicate,
@@ -94,6 +115,22 @@ export function useVisualKeyboardShortcuts({
       }
 
       if ((key === "delete" || key === "backspace") && selectedElementId) {
+        const hasTextSelection = hasDeletableTextSelection();
+        if (
+          !shouldDeleteElementOnKey({
+            isTyping: typing,
+            hasTextSelection,
+            selectedElementId,
+          })
+        ) {
+          if (hasTextSelection) {
+            const handled = onDeleteTextRange?.();
+            if (handled) {
+              event.preventDefault();
+            }
+          }
+          return;
+        }
         event.preventDefault();
         onDelete?.();
         return;
@@ -119,6 +156,7 @@ export function useVisualKeyboardShortcuts({
     onUndo,
     onRedo,
     onDelete,
+    onDeleteTextRange,
     onCopy,
     onPaste,
     onDuplicate,

@@ -83,7 +83,11 @@ import { isGenericDefaultFormConfig } from "../../data/templates/shared/template
 import { buildVisualRuntimeCss } from "../utils/visualCssRuntime";
 import { applyAllVisualDataToDom, previewVisualStyleOnDom } from "../utils/visualDomApply";
 import { applySharedTextFormat } from "../utils/textFormatCommands";
-import { harvestRichHtmlFromNode, richHtmlMatchesText } from "../utils/richTextHtml";
+import {
+  deleteSelectedTextInNode,
+  harvestRichHtmlFromNode,
+  richHtmlMatchesText,
+} from "../utils/richTextHtml";
 import { resolvePersistedVisualId } from "../utils/visualPersistId";
 import { safeCssSelectorValue } from "../utils/visualSelectors";
 import {
@@ -1431,9 +1435,10 @@ export function useVisualEditorState({
         id,
         {
           text,
-          ...(existingHtml && richHtmlMatchesText(existingHtml, text)
-            ? { html: existingHtml }
-            : {}),
+          html:
+            existingHtml && richHtmlMatchesText(existingHtml, text)
+              ? existingHtml
+              : "",
         },
         previousText,
       );
@@ -2912,6 +2917,24 @@ export function useVisualEditorState({
     },
     [findTextFormatNode, setData],
   );
+
+  const deleteSelectedTextRange = useCallback(() => {
+    const selectedElement = selection.selectedElement as any;
+    const preferred = getSelectedDomNode(selectedElement);
+    const result = deleteSelectedTextInNode(preferred);
+    if (!result) return false;
+
+    const elementId =
+      String(result.node.getAttribute("data-visual-edit-id") || "").trim() ||
+      getCanonicalSelectedElementId(undefined, selectedElement);
+    if (!elementId) return false;
+
+    persistRichText(elementId, result.text, result.html);
+    window.requestAnimationFrame(() => {
+      selection.refreshSelectedElement?.();
+    });
+    return true;
+  }, [persistRichText, selection]);
 
   const applyTextFormat = useCallback(
     (
@@ -5254,6 +5277,7 @@ export function useVisualEditorState({
     onUndo: history.undo,
     onRedo: history.redo,
     onDelete: () => deleteElement(),
+    onDeleteTextRange: () => deleteSelectedTextRange(),
     onCopy: copySelectedElement,
     onPaste: pasteCopiedElement,
     onDuplicate: duplicateElement,
