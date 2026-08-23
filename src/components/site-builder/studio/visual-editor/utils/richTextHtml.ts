@@ -276,6 +276,14 @@ export function resolveTextEditNodeFromSelection(
   return null;
 }
 
+function snapshotNodeText(node: HTMLElement) {
+  return {
+    node,
+    text: String(node.innerText || node.textContent || "").replace(/\u00a0/g, " "),
+    html: harvestRichHtmlFromNode(node),
+  };
+}
+
 export function deleteSelectedTextInNode(preferred: HTMLElement | null) {
   const node = resolveTextEditNodeFromSelection(preferred);
   if (!node) return null;
@@ -290,11 +298,33 @@ export function deleteSelectedTextInNode(preferred: HTMLElement | null) {
   selection?.removeAllRanges();
   selection?.addRange(range);
 
-  return {
-    node,
-    text: String(node.innerText || node.textContent || "").replace(/\u00a0/g, " "),
-    html: harvestRichHtmlFromNode(node),
-  };
+  return snapshotNodeText(node);
+}
+
+export function replaceSelectedTextInNode(
+  preferred: HTMLElement | null,
+  replacement: string,
+) {
+  const node = resolveTextEditNodeFromSelection(preferred);
+  if (!node) return null;
+
+  const range = getLiveTextRange(node);
+  if (!range) return null;
+
+  range.deleteContents();
+  const value = String(replacement ?? "").replace(/\u00a0/g, " ");
+  if (value) {
+    const textNode = document.createTextNode(value);
+    range.insertNode(textNode);
+    range.setStartAfter(textNode);
+  }
+  range.collapse(true);
+
+  const selection = window.getSelection();
+  selection?.removeAllRanges();
+  selection?.addRange(range);
+
+  return snapshotNodeText(node);
 }
 
 export function getRangeOffsets(

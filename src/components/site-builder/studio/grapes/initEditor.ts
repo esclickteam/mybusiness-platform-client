@@ -3543,6 +3543,11 @@ function beginInlineTextEdit(editor: Editor, component: any) {
   }
 
   function handleKeyDown(event: KeyboardEvent) {
+    if (event.key === "Backspace" || event.key === "Delete") {
+      event.stopPropagation();
+      return;
+    }
+
     if (event.key === "Escape") {
       event.preventDefault();
       finish(false);
@@ -3623,8 +3628,28 @@ function setupDoubleClickInlineTextEditing(editor: Editor) {
    SHORTCUTS
 ===================================================== */
 
+function isGrapesTextEditing(editor: Editor) {
+  const doc = editor.Canvas.getDocument();
+  const active = doc?.activeElement;
+  if (
+    active instanceof HTMLElement &&
+    (active.isContentEditable ||
+      active.dataset.bizuplyInlineEditing === "true" ||
+      Boolean(active.closest("[data-bizuply-inline-editing='true']")))
+  ) {
+    return true;
+  }
+
+  const selection = (doc?.defaultView || window).getSelection();
+  return Boolean(
+    selection && !selection.isCollapsed && String(selection.toString() || ""),
+  );
+}
+
 function registerKeyboardShortcuts(editor: Editor) {
   editor.Keymaps.add("bizuply:delete", "backspace, delete", (currentEditor) => {
+    if (isGrapesTextEditing(currentEditor)) return;
+
     const selected = currentEditor.getSelected();
 
     if (!selected) return;

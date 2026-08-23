@@ -1,12 +1,16 @@
 import { describe, expect, it } from "vitest";
 
-import { shouldDeleteElementOnKey } from "../hooks/useVisualKeyboardShortcuts";
+import {
+  shouldDeleteElementOnKey,
+  shouldUseElementClipboardOnKey,
+} from "../hooks/useVisualKeyboardShortcuts";
 import {
   applyInlinePatchToHtml,
   deleteSelectedTextInNode,
   hasRichMarkup,
   isInlineCapablePatch,
   pickInlineStylePatch,
+  replaceSelectedTextInNode,
   sanitizeRichHtml,
 } from "./richTextHtml";
 
@@ -67,6 +71,32 @@ describe("richTextHtml", () => {
     document.body.removeChild(node);
   });
 
+  it("replaces only the selected part of a sentence", () => {
+    const node = document.createElement("p");
+    node.setAttribute("data-visual-edit-id", "heroSubtitle");
+    node.setAttribute("data-visual-edit-type", "text");
+    node.textContent = "שלום עולם יפה";
+    document.body.appendChild(node);
+
+    const text = node.firstChild as Text;
+    const range = document.createRange();
+    range.setStart(text, 5);
+    range.setEnd(text, 9);
+    const selection = window.getSelection();
+    selection?.removeAllRanges();
+    selection?.addRange(range);
+
+    const result = replaceSelectedTextInNode(node, "בית");
+
+    expect(result?.text.replace(/\s+/g, " ").trim()).toBe("שלום בית יפה");
+    expect(node.textContent).toContain("שלום");
+    expect(node.textContent).toContain("בית");
+    expect(node.textContent).toContain("יפה");
+    expect(node.textContent).not.toContain("עולם");
+
+    document.body.removeChild(node);
+  });
+
   it("treats alignment as element-only", () => {
     expect(isInlineCapablePatch({ "text-align": "center" })).toBe(false);
     expect(isInlineCapablePatch({ "font-weight": "700" })).toBe(true);
@@ -101,5 +131,14 @@ describe("shouldDeleteElementOnKey", () => {
         selectedElementId: "heroTitle",
       }),
     ).toBe(true);
+  });
+
+  it("does not copy or paste the whole element while a text range is selected", () => {
+    expect(
+      shouldUseElementClipboardOnKey({
+        selectedElementId: "heroTitle",
+        hasTextSelection: true,
+      }),
+    ).toBe(false);
   });
 });

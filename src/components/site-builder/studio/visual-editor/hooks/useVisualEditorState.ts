@@ -85,6 +85,7 @@ import { applyAllVisualDataToDom, previewVisualStyleOnDom } from "../utils/visua
 import { applySharedTextFormat } from "../utils/textFormatCommands";
 import {
   deleteSelectedTextInNode,
+  replaceSelectedTextInNode,
   harvestRichHtmlFromNode,
   richHtmlMatchesText,
 } from "../utils/richTextHtml";
@@ -2918,23 +2919,38 @@ export function useVisualEditorState({
     [findTextFormatNode, setData],
   );
 
+  const persistSelectedTextResult = useCallback(
+    (result: { node: HTMLElement; text: string; html: string } | null) => {
+      if (!result) return false;
+      const selectedElement = selection.selectedElement as any;
+      const elementId =
+        String(result.node.getAttribute("data-visual-edit-id") || "").trim() ||
+        getCanonicalSelectedElementId(undefined, selectedElement);
+      if (!elementId) return false;
+
+      persistRichText(elementId, result.text, result.html);
+      window.requestAnimationFrame(() => {
+        selection.refreshSelectedElement?.();
+      });
+      return true;
+    },
+    [persistRichText, selection],
+  );
+
   const deleteSelectedTextRange = useCallback(() => {
-    const selectedElement = selection.selectedElement as any;
-    const preferred = getSelectedDomNode(selectedElement);
-    const result = deleteSelectedTextInNode(preferred);
-    if (!result) return false;
+    const preferred = getSelectedDomNode(selection.selectedElement as any);
+    return persistSelectedTextResult(deleteSelectedTextInNode(preferred));
+  }, [persistSelectedTextResult, selection.selectedElement]);
 
-    const elementId =
-      String(result.node.getAttribute("data-visual-edit-id") || "").trim() ||
-      getCanonicalSelectedElementId(undefined, selectedElement);
-    if (!elementId) return false;
-
-    persistRichText(elementId, result.text, result.html);
-    window.requestAnimationFrame(() => {
-      selection.refreshSelectedElement?.();
-    });
-    return true;
-  }, [persistRichText, selection]);
+  const replaceSelectedTextRange = useCallback(
+    (nextText: string) => {
+      const preferred = getSelectedDomNode(selection.selectedElement as any);
+      return persistSelectedTextResult(
+        replaceSelectedTextInNode(preferred, nextText),
+      );
+    },
+    [persistSelectedTextResult, selection.selectedElement],
+  );
 
   const applyTextFormat = useCallback(
     (
@@ -5278,8 +5294,10 @@ export function useVisualEditorState({
     onRedo: history.redo,
     onDelete: () => deleteElement(),
     onDeleteTextRange: () => deleteSelectedTextRange(),
+    onReplaceTextRange: (text) => replaceSelectedTextRange(text),
     onCopy: copySelectedElement,
     onPaste: pasteCopiedElement,
+    onPasteTextRange: (text) => replaceSelectedTextRange(text),
     onDuplicate: duplicateElement,
     onSave: saveDraftWithPendingMedia,
     onClearSelection: selection.clearSelection,
