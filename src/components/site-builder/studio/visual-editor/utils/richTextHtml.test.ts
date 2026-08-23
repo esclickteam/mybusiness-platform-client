@@ -1,6 +1,10 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  getStudioTemplateRendererKeys,
+  studioTemplateRendererRegistry,
+} from "../../data/templates/templateRendererRegistry";
+import {
   shouldDeleteElementOnKey,
   shouldUseElementClipboardOnKey,
 } from "../hooks/useVisualKeyboardShortcuts";
@@ -140,5 +144,73 @@ describe("shouldDeleteElementOnKey", () => {
         hasTextSelection: true,
       }),
     ).toBe(false);
+  });
+});
+
+describe("template text range audit", () => {
+  it("keeps every registered studio template on the shared visual editor", () => {
+    const keys = getStudioTemplateRendererKeys();
+    expect(keys.length).toBeGreaterThan(80);
+
+    const grapesKeys = keys.filter(
+      (key) =>
+        studioTemplateRendererRegistry[key]?.editorMode !== "visual-react",
+    );
+
+    expect(grapesKeys).toEqual([]);
+  });
+
+  it.each([
+    ["h1", "text"],
+    ["p", "text"],
+    ["span", "text"],
+    ["div", "text"],
+    ["button", "button"],
+    ["a", "link"],
+    ["li", "text"],
+  ] as const)("deletes only the selected word in %s", (tag, type) => {
+    const node = document.createElement(tag);
+    node.setAttribute("data-visual-edit-id", `sample.${tag}`);
+    node.setAttribute("data-visual-edit-type", type);
+    node.textContent = "שלום עולם יפה";
+    document.body.appendChild(node);
+
+    const text = node.firstChild as Text;
+    const range = document.createRange();
+    range.setStart(text, 5);
+    range.setEnd(text, 9);
+    window.getSelection()?.removeAllRanges();
+    window.getSelection()?.addRange(range);
+
+    const result = deleteSelectedTextInNode(node);
+    expect(result?.text.replace(/\s+/g, " ").trim()).toBe("שלום יפה");
+    expect(node.textContent).not.toContain("עולם");
+    document.body.removeChild(node);
+  });
+
+  it("does not flatten a parent section when a nested heading is selected", () => {
+    const section = document.createElement("section");
+    section.setAttribute("data-visual-edit-id", "home.hero");
+    section.setAttribute("data-visual-edit-type", "section");
+    const heading = document.createElement("h1");
+    heading.setAttribute("data-visual-edit-id", "heroTitle");
+    heading.setAttribute("data-visual-edit-type", "text");
+    heading.textContent = "שלום עולם יפה";
+    section.appendChild(heading);
+    document.body.appendChild(section);
+
+    const text = heading.firstChild as Text;
+    const range = document.createRange();
+    range.setStart(text, 5);
+    range.setEnd(text, 9);
+    window.getSelection()?.removeAllRanges();
+    window.getSelection()?.addRange(range);
+
+    const result = deleteSelectedTextInNode(section);
+    expect(result?.node).toBe(heading);
+    expect(section.querySelector("h1")).toBe(heading);
+    expect(heading.textContent).not.toContain("עולם");
+    expect(heading.textContent).toContain("שלום");
+    document.body.removeChild(section);
   });
 });
