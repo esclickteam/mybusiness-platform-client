@@ -41,7 +41,8 @@ export function padHole(
   const naturalH = Math.max(rect.height + pad * 2, 28);
   let width = Math.min(naturalW, vw - 16);
   let height = Math.min(naturalH, vh - 16);
-  if (isGiantContainer(rect, vw, vh)) {
+  const tall = rect.height > vh * 0.28;
+  if (isGiantContainer(rect, vw, vh) || tall) {
     if (opts?.maxWidth) width = Math.min(width, opts.maxWidth);
     if (opts?.maxHeight) height = Math.min(height, opts.maxHeight);
   }
@@ -53,9 +54,16 @@ export function padHole(
   };
 }
 
-export function holeOptionsForKind(kind: DemoStepKind): { maxWidth?: number; maxHeight?: number } | undefined {
+export function holeOptionsForKind(
+  kind: DemoStepKind,
+  selector?: string | null
+): { maxWidth?: number; maxHeight?: number } | undefined {
+  if (selector && ALLOW_LARGE_TARGETS.has(selector)) return undefined;
   if (kind === "input" || kind === "commit") {
     return { maxWidth: 640, maxHeight: 220 };
+  }
+  if (kind === "acknowledge" || kind === "navigation") {
+    return { maxWidth: 560, maxHeight: 200 };
   }
   return undefined;
 }
@@ -65,6 +73,22 @@ export function resetPageScroll() {
   window.scrollTo({ top: 0, left: 0, behavior: "auto" });
   document.documentElement.scrollTop = 0;
   document.body.scrollTop = 0;
+}
+
+export function isDemoPageLoading() {
+  if (typeof document === "undefined") return false;
+  return Boolean(document.querySelector('[data-demo-loading="true"]'));
+}
+
+export function targetLayoutKey(el: Element) {
+  const rect = el.getBoundingClientRect();
+  return `${Math.round(rect.top)}:${Math.round(rect.left)}:${Math.round(rect.width)}:${Math.round(rect.height)}`;
+}
+
+export function isTargetReady(el: Element | null) {
+  if (!el || isDemoPageLoading()) return false;
+  const rect = el.getBoundingClientRect();
+  return rect.width > 2 && rect.height > 2;
 }
 
 export function scrollTargetFullyVisible(el: Element, headerOffset = DEMO_HEADER_OFFSET) {

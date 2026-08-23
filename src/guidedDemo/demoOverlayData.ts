@@ -68,8 +68,19 @@ export const DEMO_COLLAB_PARTNERS = [
 
 export const DEMO_ADVISOR_RECOMMENDATION = {
   title: "המלצה השבוע",
+  question: "אילו לידים כדאי לי לחזור אליהם היום?",
+  answer:
+    "יש לך 3 לידים חדשים שעדיין לא קיבלו מענה. מומלץ להתחיל משני הלידים שהגיעו מ־Meta כי הם החדשים ביותר.",
   body: "יש 3 לידים חדשים שעדיין לא קיבלו מענה. מומלץ ליצור איתם קשר היום — זו הזדמנות חמה שאפשר לפספס אם מחכים.",
-  actionLabel: "טפלו בלידים שלא נענו",
+  actionLabel: "פתחו את רשימת הלידים הרלוונטיים",
   resultTitle: "התוצאה",
-  resultBody: "סומנו 3 לידים למעקב. בדמו לא נשלחה הודעה אמיתית ולא נוצר תיק לקוח אמיתי.",
+  resultBody: "נפתחה רשימת 3 הלידים שכדאי לחזור אליהם היום. בדמו לא נשלחה הודעה אמיתית.",
+};
+
+export const DEMO_ADVISOR_CHAT = {
+  question: DEMO_ADVISOR_RECOMMENDATION.question,
+  answer: DEMO_ADVISOR_RECOMMENDATION.answer,
+  actionLabel: DEMO_ADVISOR_RECOMMENDATION.actionLabel,
+  resultTitle: DEMO_ADVISOR_RECOMMENDATION.resultTitle,
+  resultBody: DEMO_ADVISOR_RECOMMENDATION.resultBody,
 };

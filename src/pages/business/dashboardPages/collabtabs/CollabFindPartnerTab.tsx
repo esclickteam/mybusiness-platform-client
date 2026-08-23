@@ -78,14 +78,16 @@ function PartnerCard({
   return (
     <article
       dir={dir}
-      data-demo-target={demoHighlight ? "collab-partner-card" : undefined}
       className={[
         "group flex h-full flex-col overflow-hidden rounded-[2rem] border bg-white text-start shadow-sm transition",
         "hover:-translate-y-1 hover:border-violet-100 hover:shadow-[0_24px_80px_rgba(15,23,42,0.10)]",
         isMine ? "border-violet-200 ring-4 ring-violet-50" : "border-slate-100",
       ].join(" ")}
     >
-      <div className="relative overflow-hidden border-b border-slate-100 bg-gradient-to-br from-white via-sky-50 to-violet-50 p-5">
+      <div
+        data-demo-target={demoHighlight ? "collab-partner-card" : undefined}
+        className="relative overflow-hidden border-b border-slate-100 bg-gradient-to-br from-white via-sky-50 to-violet-50 p-5"
+      >
         <div className="pointer-events-none absolute -left-12 -top-16 h-44 w-44 rounded-full bg-violet-200/40 blur-3xl" />
         <div className="pointer-events-none absolute bottom-0 right-10 h-32 w-32 rounded-full bg-sky-200/50 blur-3xl" />
 

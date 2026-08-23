@@ -21,6 +21,7 @@ describe("guided demo overlay data", () => {
       true
     );
     expect(DEMO_ADVISOR_RECOMMENDATION.title).toBe("המלצה השבוע");
+    expect(DEMO_ADVISOR_RECOMMENDATION.question).toContain("אילו לידים");
     expect(DEMO_ADVISOR_RECOMMENDATION.actionLabel).toContain("לידים");
     expect(DEMO_ADVISOR_RECOMMENDATION.resultBody).toContain("בדמו");
   });

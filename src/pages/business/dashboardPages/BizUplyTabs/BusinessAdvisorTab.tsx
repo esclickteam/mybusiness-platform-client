@@ -30,7 +30,7 @@ import {
 } from "lucide-react";
 import BizuplyLoader from "../../../../components/ui/BizuplyLoader";
 import { isGuidedDemoActive } from "@/guidedDemo/sessionStore";
-import { DEMO_ADVISOR_RECOMMENDATION } from "@/guidedDemo/demoOverlayData";
+import { DEMO_ADVISOR_CHAT } from "@/guidedDemo/demoOverlayData";
 import {
   AdvisorActionsPanel,
   AdvisorThinkingLoader,
@@ -396,12 +396,19 @@ export default function BusinessAdvisorTab({
   );
 
   const startNewConversation = useCallback(() => {
-    setMessages([
-      {
-        role: "assistant",
-        content: t("advisor.welcome"),
-      },
-    ]);
+    setMessages(
+      isGuidedDemoActive()
+        ? [
+            { role: "user", content: DEMO_ADVISOR_CHAT.question },
+            { role: "assistant", content: DEMO_ADVISOR_CHAT.answer },
+          ]
+        : [
+            {
+              role: "assistant",
+              content: t("advisor.welcome"),
+            },
+          ]
+    );
     setActiveConversationId(null);
     setActiveMode("general");
     setUserInput("");
@@ -738,44 +745,6 @@ export default function BusinessAdvisorTab({
                   {t("advisor.subtitle")}
                 </p>
               </div>
-              {isGuidedDemoActive() ? (
-                  <div className="mt-3 max-w-xl space-y-3">
-                    <div
-                      data-demo-target="advisor-recommendation"
-                      className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3"
-                    >
-                      <p className="text-xs font-black uppercase tracking-[0.14em] text-amber-700">
-                        {DEMO_ADVISOR_RECOMMENDATION.title}
-                      </p>
-                      <p className="mt-1 text-sm font-semibold leading-6 text-amber-950">
-                        {DEMO_ADVISOR_RECOMMENDATION.body}
-                      </p>
-                    </div>
-                    <button
-                      type="button"
-                      data-demo-target="advisor-demo-action"
-                      onClick={() => setDemoActionDone(true)}
-                      className="inline-flex rounded-xl bg-amber-700 px-3 py-2 text-xs font-black text-white"
-                    >
-                      {DEMO_ADVISOR_RECOMMENDATION.actionLabel}
-                    </button>
-                    <div
-                      data-demo-target="advisor-demo-result"
-                      className={`rounded-xl border px-3 py-2 ${
-                        demoActionDone
-                          ? "border-emerald-200 bg-emerald-50"
-                          : "border-amber-100 bg-white/70"
-                      }`}
-                    >
-                      <p className="text-[11px] font-black uppercase tracking-[0.12em] text-emerald-700">
-                        {DEMO_ADVISOR_RECOMMENDATION.resultTitle}
-                      </p>
-                      <p className="mt-1 text-sm font-semibold leading-6 text-emerald-950">
-                        {DEMO_ADVISOR_RECOMMENDATION.resultBody}
-                      </p>
-                    </div>
-                  </div>
-                ) : null}
               </div>
             </div>
 
@@ -919,10 +888,22 @@ export default function BusinessAdvisorTab({
                     ? extractWhatsAppFromAnswer(stripped)
                     : { displayContent: stripped, extracted: [] as WhatsAppPrepared[] };
                   const displayContent = parsed.displayContent;
+                  const demoActive = isGuidedDemoActive();
+                  const isDemoQuestion =
+                    demoActive && !isAssistant && msg.content === DEMO_ADVISOR_CHAT.question;
+                  const isDemoAnswer =
+                    demoActive && isAssistant && msg.content === DEMO_ADVISOR_CHAT.answer;
 
                   return (
                     <div
                       key={`${msg.role}-${index}`}
+                      data-demo-target={
+                        isDemoQuestion
+                          ? "advisor-demo-question"
+                          : isDemoAnswer
+                            ? "advisor-demo-answer"
+                            : undefined
+                      }
                       className={`flex min-w-0 gap-3 ${
                         isAssistant ? "justify-start" : "justify-end"
                       }`}
@@ -977,6 +958,33 @@ export default function BusinessAdvisorTab({
                                 onAction={(action) => void executeAction(action)}
                               />
                             )}
+                            {isDemoAnswer ? (
+                              <div className="mt-4 space-y-3">
+                                <button
+                                  type="button"
+                                  data-demo-target="advisor-demo-action"
+                                  onClick={() => setDemoActionDone(true)}
+                                  className="inline-flex rounded-xl bg-amber-700 px-3 py-2 text-xs font-black text-white"
+                                >
+                                  {DEMO_ADVISOR_CHAT.actionLabel}
+                                </button>
+                                <div
+                                  data-demo-target="advisor-demo-result"
+                                  className={`rounded-xl border px-3 py-2 ${
+                                    demoActionDone
+                                      ? "border-emerald-200 bg-emerald-50"
+                                      : "border-amber-100 bg-white/70"
+                                  }`}
+                                >
+                                  <p className="text-[11px] font-black uppercase tracking-[0.12em] text-emerald-700">
+                                    {DEMO_ADVISOR_CHAT.resultTitle}
+                                  </p>
+                                  <p className="mt-1 text-sm font-semibold leading-6 text-emerald-950">
+                                    {DEMO_ADVISOR_CHAT.resultBody}
+                                  </p>
+                                </div>
+                              </div>
+                            ) : null}
                           </div>
                         ) : (
                           <p className="whitespace-pre-wrap">{msg.content}</p>
