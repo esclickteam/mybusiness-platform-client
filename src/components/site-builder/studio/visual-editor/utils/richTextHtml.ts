@@ -214,6 +214,8 @@ const RANGE_DELETE_TEXT_TAGS = new Set([
   "b",
   "i",
   "u",
+  "div",
+  "li",
 ]);
 
 function isTextLikeRangeTarget(node: HTMLElement) {
