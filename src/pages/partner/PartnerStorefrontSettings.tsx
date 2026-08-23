@@ -1,6 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { fetchPartnerStorefront, updatePartnerStorefront } from "../../lib/partnerApi";
+import PartnerPageHeader from "../../components/partner/PartnerPageHeader";
+import {
+  PartnerCard,
+  PartnerInput,
+  PartnerPrimaryButton,
+  PartnerTextarea,
+} from "../../components/partner/partnerUi";
 
 export default function PartnerStorefrontSettings() {
   const [form, setForm] = useState({
@@ -59,44 +66,43 @@ export default function PartnerStorefrontSettings() {
   }
 
   return (
-    <form onSubmit={save} className="space-y-4 rounded-2xl border border-slate-200 bg-white p-5">
-      <h2 className="text-xl font-black">הגדרות חנות</h2>
+    <form onSubmit={save} className="space-y-5">
+      <PartnerPageHeader
+        eyebrow="חנות"
+        title="הגדרות חנות"
+        subtitle="עמוד המכירה הציבורי של הפרטנר."
+      />
+      <PartnerCard className="space-y-4 p-6">
       {error ? <p className="text-sm font-bold text-rose-600">{error}</p> : null}
       {saved ? <p className="text-sm font-bold text-emerald-700">{saved}</p> : null}
-      <input
+      <PartnerInput
         value={form.slug}
         onChange={(e) => setForm({ ...form, slug: e.target.value })}
-        className="w-full rounded-xl border border-slate-200 px-3 py-2"
         placeholder="slug"
       />
-      <input
+      <PartnerInput
         value={form.logoUrl}
         onChange={(e) => setForm({ ...form, logoUrl: e.target.value })}
-        className="w-full rounded-xl border border-slate-200 px-3 py-2"
         placeholder="לוגו URL"
       />
-      <textarea
+      <PartnerTextarea
         value={form.description}
         onChange={(e) => setForm({ ...form, description: e.target.value })}
-        className="w-full rounded-xl border border-slate-200 px-3 py-2"
         placeholder="תיאור"
       />
-      <input
+      <PartnerInput
         value={form.phone}
         onChange={(e) => setForm({ ...form, phone: e.target.value })}
-        className="w-full rounded-xl border border-slate-200 px-3 py-2"
         placeholder="טלפון"
       />
-      <input
+      <PartnerInput
         value={form.email}
         onChange={(e) => setForm({ ...form, email: e.target.value })}
-        className="w-full rounded-xl border border-slate-200 px-3 py-2"
         placeholder="אימייל"
       />
-      <input
+      <PartnerInput
         value={form.whatsapp}
         onChange={(e) => setForm({ ...form, whatsapp: e.target.value })}
-        className="w-full rounded-xl border border-slate-200 px-3 py-2"
         placeholder="WhatsApp"
       />
       <label className="block text-sm font-bold">
@@ -135,9 +141,8 @@ export default function PartnerStorefrontSettings() {
           תצוגה מקדימה: /p/{form.slug}
         </Link>
       ) : null}
-      <button type="submit" className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-black text-white">
-        שמור
-      </button>
+      <PartnerPrimaryButton type="submit">שמור</PartnerPrimaryButton>
+      </PartnerCard>
     </form>
   );
 }

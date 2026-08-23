@@ -87,7 +87,7 @@ export default function PartnerWithdrawals() {
         <Kpi label="שולמה" value={formatIls(balances?.paid)} />
       </section>
 
-      <section className="rounded-3xl border border-slate-200 bg-white p-5">
+      <section className="rounded-[16px] border border-slate-100 bg-white p-5 shadow-[0_4px_20px_rgba(15,23,42,0.05)]">
         <h3 className="mb-4 font-black">בקשת משיכה</h3>
         <div className="grid gap-3 sm:grid-cols-2">
           <label className="text-sm font-black">
@@ -137,7 +137,7 @@ export default function PartnerWithdrawals() {
         </button>
       </section>
 
-      <section className="overflow-x-auto rounded-3xl border border-slate-200 bg-white">
+      <section className="overflow-x-auto rounded-[16px] border border-slate-100 bg-white shadow-[0_4px_20px_rgba(15,23,42,0.05)]">
         <table className="min-w-full text-right text-sm">
           <thead className="bg-slate-50 text-xs font-black text-slate-500">
             <tr>
@@ -190,7 +190,7 @@ export default function PartnerWithdrawals() {
 
 function Kpi({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-3xl border border-slate-200 bg-white p-4">
+    <div className="rounded-[16px] border border-slate-100 bg-white p-4 shadow-[0_4px_20px_rgba(15,23,42,0.05)]">
       <p className="text-xs font-black text-slate-500">{label}</p>
       <p className="mt-1 text-2xl font-black">{value}</p>
     </div>

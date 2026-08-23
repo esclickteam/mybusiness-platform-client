@@ -122,3 +122,29 @@ test("logged-in partner is not dropped on the public homepage", () => {
   assert.equal(guard.includes('role === "partner"'), true);
   assert.equal(guard.includes('to="/partner/dashboard"'), true);
 });
+
+test("Partner shell uses sidebar + pill navigation without Direct CRM", () => {
+  const layout = readFileSync(join(ROOT, "pages/partner/PartnerLayout.tsx"), "utf8");
+  assert.equal(layout.includes("sticky"), true);
+  assert.equal(layout.includes("לוח פרטנר"), true);
+  assert.equal(layout.includes("/partner/dashboard/crm"), true);
+  assert.equal(layout.includes("/partner/dashboard/tasks"), true);
+  assert.equal(layout.includes("/partner/dashboard/reminders"), true);
+  assert.equal(layout.includes("CRMClient"), false);
+  assert.equal(layout.includes("/api/crm"), false);
+
+  const app = readFileSync(join(ROOT, "App.jsx"), "utf8");
+  assert.equal(app.includes('path="tasks"'), true);
+  assert.equal(app.includes('path="reminders"'), true);
+  const catchAllAt = app.lastIndexOf('path="*"');
+  const tasksAt = app.indexOf('path="tasks"');
+  assert.ok(tasksAt > 0);
+  assert.ok(catchAllAt > tasksAt);
+});
+
+test("partner work helpers stay on PartnerClient tasks", () => {
+  const src = readFileSync(join(ROOT, "lib/partnerWork.ts"), "utf8");
+  assert.equal(src.includes("PartnerClient"), true);
+  assert.equal(src.includes("CRMClient"), false);
+  assert.equal(src.includes("/api/crm"), false);
+});

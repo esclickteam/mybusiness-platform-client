@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import { fetchPartnerTransactions, partnerApiError } from "../../lib/partnerApi";
 import { formatIls } from "../../lib/partnerMoney";
 import { DateRangeBar } from "./PartnerDashboard";
+import PartnerPageHeader from "../../components/partner/PartnerPageHeader";
+import { PartnerCard } from "../../components/partner/partnerUi";
 
 const PAYMENT_STATUSES = [
   { id: "", label: "כל תשלומי הלקוח" },
@@ -66,8 +68,12 @@ export default function PartnerTransactions() {
   }, [preset, from, to, paymentStatus, commissionStatus, product, client]);
 
   return (
-    <div className="space-y-4">
-      <h2 className="text-xl font-black">עסקאות ועמלות</h2>
+    <div className="space-y-5">
+      <PartnerPageHeader
+        eyebrow="עסקאות"
+        title="עסקאות ועמלות"
+        subtitle="כל העסקאות שנסגרו דרככם, כולל סטטוס תשלום ועמלה."
+      />
       {error ? (
         <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-bold text-rose-700">
           {error}
@@ -125,7 +131,7 @@ export default function PartnerTransactions() {
           <Kpi label="עמלה ששולמה" value={ils(totals.paidCommission)} />
         </section>
       ) : null}
-      <div className="overflow-x-auto rounded-3xl border border-slate-200 bg-white">
+      <PartnerCard className="overflow-x-auto">
         <table className="min-w-full text-right text-sm">
           <thead className="bg-slate-50 text-xs font-black text-slate-500">
             <tr>
@@ -171,14 +177,14 @@ export default function PartnerTransactions() {
             ) : null}
           </tbody>
         </table>
-      </div>
+      </PartnerCard>
     </div>
   );
 }
 
 function Kpi({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-2xl border border-slate-200 bg-white p-4">
+    <div className="rounded-[16px] border border-slate-100 bg-white p-4 shadow-[0_4px_20px_rgba(15,23,42,0.05)]">
       <p className="text-xs font-bold text-slate-500">{label}</p>
       <p className="text-xl font-black">{value}</p>
     </div>

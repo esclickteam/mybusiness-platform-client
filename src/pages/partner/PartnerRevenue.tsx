@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { fetchPartnerLedger, partnerApiError } from "../../lib/partnerApi";
 import type { AmountDue } from "../../types/partner";
+import PartnerPageHeader from "../../components/partner/PartnerPageHeader";
+import { PartnerCard } from "../../components/partner/partnerUi";
 
 function ils(value?: number) {
   return `₪${Number(value || 0).toLocaleString("he-IL")}`;
@@ -21,15 +23,19 @@ export default function PartnerRevenue() {
   }, []);
 
   return (
-    <div className="space-y-4">
-      <h2 className="text-xl font-black">המנוי שלי</h2>
+    <div className="space-y-5">
+      <PartnerPageHeader
+        eyebrow="דוחות"
+        title="המנוי שלי"
+        subtitle="סטטוס מנוי Partner והפירוט הכספי הפנימי."
+      />
       {error ? (
         <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-bold text-rose-700">
           {error}
         </div>
       ) : null}
       <section className="grid gap-4 lg:grid-cols-2">
-        <div className="rounded-2xl border border-violet-200 bg-white p-5">
+        <PartnerCard className="p-5">
           <p className="text-xs font-black uppercase tracking-[0.16em] text-violet-700">
             מנוי Partner שלי
           </p>
@@ -51,17 +57,17 @@ export default function PartnerRevenue() {
           <p className="mt-3 text-sm font-bold text-slate-500">
             חוב מנוי פתוח: {ils(due?.openPartnerSubscriptionDebtIls)}
           </p>
-        </div>
-        <div className="rounded-2xl border border-slate-200 bg-white p-5">
+        </PartnerCard>
+        <PartnerCard className="p-5">
           <p className="text-xs font-black uppercase tracking-[0.16em] text-[#7C4DFF]">
             עסקאות לקוחות אינן חוב של Partner
           </p>
           <p className="mt-2 text-sm font-bold text-slate-600">
             הלקוח משלם ל-Bizuply. העמלות מופיעות במסך עסקאות ועמלות.
           </p>
-        </div>
+        </PartnerCard>
       </section>
-      <section className="rounded-2xl border border-slate-200 bg-white p-5">
+      <PartnerCard className="p-5">
         <div className="mt-0 grid gap-2 text-sm sm:grid-cols-2">
           <p>סיטונאות: {ils(due?.breakdown.wholesaleSubscriptions)}</p>
           <p>חלק Bizuply מהעמלה: {ils(due?.breakdown.bizuplyMarkupShare)}</p>
@@ -70,8 +76,8 @@ export default function PartnerRevenue() {
           <p>תשלומי לקוחות/פעילות: {ils(due?.breakdown.payments)}</p>
           <p>תשלומי מנוי Partner: {ils(due?.breakdown.partnerPlanPayments)}</p>
         </div>
-      </section>
-      <section className="overflow-hidden rounded-2xl border border-slate-200 bg-white">
+      </PartnerCard>
+      <PartnerCard className="overflow-hidden">
         <table className="w-full text-right text-sm">
           <thead className="bg-slate-50 text-xs font-black text-slate-500">
             <tr>
@@ -92,7 +98,7 @@ export default function PartnerRevenue() {
             ))}
           </tbody>
         </table>
-      </section>
+      </PartnerCard>
     </div>
   );
 }

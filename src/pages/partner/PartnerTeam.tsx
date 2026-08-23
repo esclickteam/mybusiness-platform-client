@@ -7,6 +7,12 @@ import {
   updatePartnerMember,
 } from "../../lib/partnerApi";
 import type { PartnerPermission } from "../../types/partner";
+import PartnerPageHeader from "../../components/partner/PartnerPageHeader";
+import {
+  PartnerCard,
+  PartnerInput,
+  PartnerPrimaryButton,
+} from "../../components/partner/partnerUi";
 
 const PERMISSIONS: Array<{ key: PartnerPermission; label: string }> = [
   { key: "view_clients", label: "צפייה בלקוחות" },
@@ -53,37 +59,34 @@ export default function PartnerTeam() {
 
   return (
     <div className="space-y-5">
-      <div>
-        <h2 className="text-xl font-black">צוות פרטנר</h2>
-        <p className="text-sm font-bold text-slate-500">
-          מגבלת מושבים: {data?.used || 0} / {data?.limit ?? 0} (מעבר לבעלים)
-        </p>
-      </div>
+      <PartnerPageHeader
+        eyebrow="צוות"
+        title="צוות פרטנר"
+        subtitle={`מגבלת מושבים: ${data?.used || 0} / ${data?.limit ?? 0} (מעבר לבעלים)`}
+      />
       {error ? (
         <div className="rounded-xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-bold text-rose-700">
           {error}
         </div>
       ) : null}
 
-      <form onSubmit={invite} className="grid gap-2 rounded-2xl border border-slate-200 bg-white p-5">
-        <input
+      <form onSubmit={invite} className="grid gap-3">
+        <PartnerCard className="grid gap-3 p-5">
+        <PartnerInput
           value={form.name}
           onChange={(e) => setForm({ ...form, name: e.target.value })}
           placeholder="שם"
-          className="rounded-xl border border-slate-200 px-3 py-2"
         />
-        <input
+        <PartnerInput
           value={form.email}
           onChange={(e) => setForm({ ...form, email: e.target.value })}
           placeholder="אימייל"
-          className="rounded-xl border border-slate-200 px-3 py-2"
         />
-        <input
+        <PartnerInput
           type="password"
           value={form.password}
           onChange={(e) => setForm({ ...form, password: e.target.value })}
           placeholder="סיסמה"
-          className="rounded-xl border border-slate-200 px-3 py-2"
         />
         <div className="grid gap-1 text-sm">
           {PERMISSIONS.map((item) => (
@@ -102,14 +105,13 @@ export default function PartnerTeam() {
             </label>
           ))}
         </div>
-        <button type="submit" className="rounded-xl bg-slate-900 px-4 py-2 text-sm font-black text-white">
-          הזמן חבר צוות
-        </button>
+        <PartnerPrimaryButton type="submit">הזמן חבר צוות</PartnerPrimaryButton>
+        </PartnerCard>
       </form>
 
       <div className="space-y-3">
         {(data?.members || []).map((member: any) => (
-          <article key={member._id} className="rounded-2xl border border-slate-200 bg-white p-4">
+          <article key={member._id} className="rounded-[16px] border border-slate-100 bg-white p-4 shadow-[0_4px_20px_rgba(15,23,42,0.05)]">
             <p className="font-black">
               {member.user?.name || "משתמש"} · {member.role} · {member.status}
             </p>
