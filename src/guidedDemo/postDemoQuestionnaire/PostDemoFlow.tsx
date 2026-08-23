@@ -10,6 +10,7 @@ import {
   EMPTY_ANSWERS,
   mergeAnswers,
   RELEVANT_OPTIONS,
+  resolveStep,
   SERVICE_OPTIONS,
   START_TIMING_OPTIONS,
   STEP_ORDER,
@@ -17,6 +18,7 @@ import {
   TRI_OPTIONS,
   type PostDemoAnswers,
 } from "./types";
+import { formatFullPostDemoSummary } from "./displayUtils";
 
 const BRAND = "#6D28D9";
 const QUESTION_STEPS = STEP_ORDER.filter((s) => !["intro", "summary", "success"].includes(s));
@@ -58,8 +60,8 @@ function Shell({
 }) {
   return (
     <div className="pointer-events-auto absolute inset-0 z-[2147483007] flex items-end justify-center bg-slate-950/60 p-0 sm:items-center sm:p-4">
-      <div className="flex max-h-[100dvh] w-full max-w-2xl flex-col overflow-hidden rounded-t-[28px] bg-white shadow-2xl sm:max-h-[92dvh] sm:rounded-[28px]">
-        <div className="flex-1 overflow-y-auto px-5 py-6 sm:px-8 sm:py-8">{children}</div>
+      <div className="flex h-[100dvh] w-full flex-col overflow-hidden rounded-t-[28px] bg-white shadow-2xl sm:h-[680px] sm:w-[640px] sm:max-w-[640px] sm:rounded-[28px]">
+        <div className="min-h-0 flex-1 overflow-y-auto px-5 py-6 sm:px-8 sm:py-8">{children}</div>
         {footer ? (
           <div className="shrink-0 border-t border-slate-100 bg-white px-5 py-4 sm:px-8">{footer}</div>
         ) : null}
@@ -132,24 +134,8 @@ function RadioCards({
   );
 }
 
-function buildSummary(answers: PostDemoAnswers) {
-  const rel = answers.relevant.selections
-    .map((v) => RELEVANT_OPTIONS.find((o) => o.value === v)?.label || v)
-    .concat(answers.relevant.other ? [answers.relevant.other] : []);
-  const services = answers.services.selections
-    .filter((v) => v !== "not_now")
-    .map((v) => SERVICE_OPTIONS.find((o) => o.value === v)?.label || v);
-  const timing = START_TIMING_OPTIONS.find((o) => o.value === answers.startTiming)?.label;
-  const rows = [];
-  if (rel.length) rows.push({ label: "הכי רלוונטי עבורך", value: rel.join(" + ") });
-  if (answers.mainGoal.trim()) rows.push({ label: "המטרה המרכזית", value: answers.mainGoal.trim() });
-  if (services.length) rows.push({ label: "שירותים שמעניינים אותך", value: services.join(" + ") });
-  if (timing) rows.push({ label: "מועד התחלה", value: timing });
-  return rows;
-}
-
 export default function PostDemoFlow({ initialQuestionnaire, onDefer, onDone }: Props) {
-  const initialStep = (initialQuestionnaire?.lastCompletedStep as StepKey) || "intro";
+  const initialStep = resolveStep(initialQuestionnaire?.lastCompletedStep || "intro");
   const [step, setStep] = useState<StepKey>(
     initialQuestionnaire?.status === "proposal_requested"
       ? "success"
@@ -163,7 +149,7 @@ export default function PostDemoFlow({ initialQuestionnaire, onDefer, onDone }: 
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
-  const summary = useMemo(() => buildSummary(answers), [answers]);
+  const summary = useMemo(() => formatFullPostDemoSummary(answers), [answers]);
 
   async function persist(nextStep: StepKey, defer = false) {
     setSaving(true);
@@ -269,7 +255,7 @@ export default function PostDemoFlow({ initialQuestionnaire, onDefer, onDone }: 
         ) : null}
 
         {step === "1" ? (
-          <Shell footer={navFooter("2")}>
+          <Shell footer={navFooter("3")}>
             <ProgressBar current="1" />
             <h2 className="text-xl font-black text-slate-950 sm:text-2xl">מה מתוך הדמו הכי רלוונטי לעסק שלך?</h2>
             <div className="mt-5">
@@ -315,21 +301,6 @@ export default function PostDemoFlow({ initialQuestionnaire, onDefer, onDone }: 
                 }
               />
             </label>
-          </Shell>
-        ) : null}
-
-        {step === "2" ? (
-          <Shell footer={navFooter("3")}>
-            <ProgressBar current="2" />
-            <h2 className="text-xl font-black text-slate-950 sm:text-2xl">
-              אם BizUply הייתה משפרת דבר אחד בעסק שלך — מה היית רוצה שזה יהיה?
-            </h2>
-            <textarea
-              className="mt-5 min-h-40 w-full rounded-2xl border border-slate-200 px-4 py-4 text-base"
-              placeholder="למשל: לעשות סדר בלידים, לחסוך עבודה ידנית, לא לשכוח מעקבים, לרכז הכול במקום אחד..."
-              value={answers.mainGoal}
-              onChange={(e) => setAnswers((prev) => ({ ...prev, mainGoal: e.target.value }))}
-            />
           </Shell>
         ) : null}
 
@@ -596,9 +567,6 @@ export default function PostDemoFlow({ initialQuestionnaire, onDefer, onDone }: 
                   <p className="mt-1 text-base font-black text-slate-900">{row.value}</p>
                 </div>
               ))}
-              {!summary.length ? (
-                <p className="text-sm font-semibold text-slate-500">אפשר להמשיך גם בלי למלא הכול.</p>
-              ) : null}
             </div>
             {error ? <p className="mt-3 text-sm font-bold text-rose-600">{error}</p> : null}
           </Shell>

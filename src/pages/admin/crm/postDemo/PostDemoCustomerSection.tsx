@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { listGuidedDemos } from "../../../../api/guidedDemoApi";
 import { mergeAnswers } from "../../../../guidedDemo/postDemoQuestionnaire/types";
 import {
+  formatFullPostDemoSummary,
   formatPostDemoAnswers,
   QUESTIONNAIRE_STATUS_LABELS,
 } from "../../../../guidedDemo/postDemoQuestionnaire/displayUtils";
@@ -44,9 +45,11 @@ export default function PostDemoCustomerSection({ customerId }: { customerId: st
   if (!demo) return null;
 
   const answers = mergeAnswers(demo.postDemoQuestionnaire || {});
-  const answerRows = formatPostDemoAnswers(answers);
+  const filledRows = formatPostDemoAnswers(answers);
+  const answerRows = formatFullPostDemoSummary(answers);
   const qStatus = demo.questionnaireStatus || "not_started";
   const waitingProposal = qStatus === "proposal_requested";
+  const hasQuestionnaireContent = filledRows.length > 0 || qStatus !== "not_started";
 
   return (
     <CrmCard className="!border-violet-100 !bg-gradient-to-l !from-violet-50/60 !to-white lg:col-span-2">
@@ -82,7 +85,7 @@ export default function PostDemoCustomerSection({ customerId }: { customerId: st
         <p>ביקש הצעה: {formatIsraelDate(demo.proposalRequestedAt, true)}</p>
       </div>
 
-      {answerRows.length ? (
+      {hasQuestionnaireContent ? (
         <ul className="mt-4 space-y-2 text-sm">
           {answerRows.map((row) => (
             <li key={row.label} className="rounded-2xl border border-violet-100 bg-white/80 p-3">

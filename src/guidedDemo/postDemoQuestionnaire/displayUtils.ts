@@ -27,59 +27,79 @@ function labelsFor(
   return values.map((v) => labelFor(options, v)).filter(Boolean);
 }
 
+const UNANSWERED = "לא צוין";
+
+function joined(parts: Array<string | undefined | null>) {
+  return parts.map((p) => String(p || "").trim()).filter(Boolean).join(" · ");
+}
+
+function triValue(answer: string, detail = "") {
+  if (!answer) return "";
+  const label = TRI_LABELS[answer] || answer;
+  return detail.trim() ? `${label} — ${detail.trim()}` : label;
+}
+
 export function formatPostDemoAnswers(answers: PostDemoAnswers) {
-  const rows: { label: string; value: string }[] = [];
+  return formatFullPostDemoSummary(answers).filter((row) => row.value !== UNANSWERED);
+}
+
+export function formatFullPostDemoSummary(answers: PostDemoAnswers) {
   const rel = labelsFor(RELEVANT_OPTIONS, answers.relevant.selections);
   if (answers.relevant.other) rel.push(answers.relevant.other);
-  if (rel.length) rows.push({ label: "הכי רלוונטי", value: rel.join(" · ") });
-  if (answers.relevant.note.trim()) {
-    rows.push({ label: "מה עניין במיוחד", value: answers.relevant.note.trim() });
-  }
-  if (answers.mainGoal.trim()) {
-    rows.push({ label: "מטרה מרכזית", value: answers.mainGoal.trim() });
-  }
-  if (answers.missing.answer) {
-    const missing = TRI_LABELS[answers.missing.answer] || answers.missing.answer;
-    rows.push({
-      label: "חסר במערכת",
-      value: answers.missing.detail.trim()
-        ? `${missing} — ${answers.missing.detail.trim()}`
-        : missing,
-    });
-  }
   const auto = labelsFor(AUTOMATION_OPTIONS, answers.automation.selections);
   if (answers.automation.other) auto.push(answers.automation.other);
-  if (auto.length) rows.push({ label: "אוטומציות מבוקשות", value: auto.join(" · ") });
-  if (answers.migration.answer) {
-    const mig = TRI_LABELS[answers.migration.answer] || answers.migration.answer;
-    rows.push({
-      label: "מעבר ממערכות",
-      value: answers.migration.detail.trim()
-        ? `${mig} — ${answers.migration.detail.trim()}`
-        : mig,
-    });
-  }
-  const services = labelsFor(SERVICE_OPTIONS, answers.services.selections).filter(
-    (s) => s !== "לא כרגע"
-  );
+  const services = labelsFor(SERVICE_OPTIONS, answers.services.selections);
   if (answers.services.other) services.push(answers.services.other);
-  if (services.length) {
-    rows.push({
-      label: "שירותים נוספים",
-      value: [services.join(" · "), answers.services.detail.trim()].filter(Boolean).join(" — "),
-    });
-  }
   const blockers = labelsFor(BLOCKER_OPTIONS, answers.blockers.selections);
   if (answers.blockers.other) blockers.push(answers.blockers.other);
-  if (blockers.length) rows.push({ label: "מה יכול לעכב", value: blockers.join(" · ") });
-  if (answers.startTiming) {
-    rows.push({
-      label: "מועד התחלה",
-      value: labelFor(START_TIMING_OPTIONS, answers.startTiming),
+
+  const rows: { label: string; value: string }[] = [
+    {
+      label: "מה מתוך הדמו הכי רלוונטי לעסק שלך?",
+      value: rel.length ? rel.join(" · ") : UNANSWERED,
+    },
+    {
+      label: "יש משהו ספציפי שעניין אותך במיוחד?",
+      value: answers.relevant.note.trim() || UNANSWERED,
+    },
+    {
+      label: "היה משהו שחסר לך או שהיית רוצה לראות במערכת?",
+      value: triValue(answers.missing.answer, answers.missing.detail) || UNANSWERED,
+    },
+    {
+      label: "מה היית רוצה שיקרה בעסק בלי שתצטרך לזכור לעשות את זה ידנית?",
+      value: auto.length ? auto.join(" · ") : UNANSWERED,
+    },
+    {
+      label: "יש משהו שאתם משתמשים בו היום שחשוב לכם לשמור, להעביר או לחבר ל-BizUply?",
+      value: triValue(answers.migration.answer, answers.migration.detail) || UNANSWERED,
+    },
+    {
+      label: "רוצה שגם נעזור לך לעשות את העבודה בפועל?",
+      value:
+        joined([services.join(" · "), answers.services.detail.trim()]) || UNANSWERED,
+    },
+    {
+      label: "יש משהו שיכול לגרום לך להתלבט לפני התחלה?",
+      value: blockers.length ? blockers.join(" · ") : UNANSWERED,
+    },
+    {
+      label: "אם הכול מתאים — מתי היית רוצה להתחיל?",
+      value: answers.startTiming
+        ? labelFor(START_TIMING_OPTIONS, answers.startTiming)
+        : UNANSWERED,
+    },
+    {
+      label: "יש משהו נוסף שחשוב שנדע?",
+      value: answers.extraNotes.trim() || UNANSWERED,
+    },
+  ];
+
+  if ((answers.mainGoal || "").trim()) {
+    rows.splice(2, 0, {
+      label: "אם BizUply הייתה משפרת דבר אחד בעסק שלך",
+      value: answers.mainGoal.trim(),
     });
-  }
-  if (answers.extraNotes.trim()) {
-    rows.push({ label: "הערות נוספות", value: answers.extraNotes.trim() });
   }
   return rows;
 }

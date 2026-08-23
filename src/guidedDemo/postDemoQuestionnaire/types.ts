@@ -86,12 +86,19 @@ export const TRI_OPTIONS = [
   { value: "unsure", label: "לא בטוח/ה" },
 ] as const;
 
-export const STEP_ORDER = ["intro", "1", "2", "3", "4", "5", "6", "7", "8", "9", "summary", "success"] as const;
+export const STEP_ORDER = ["intro", "1", "3", "4", "5", "6", "7", "8", "9", "summary", "success"] as const;
 export type StepKey = (typeof STEP_ORDER)[number];
 
 export function stepIndex(key: StepKey) {
   const idx = STEP_ORDER.indexOf(key);
   return idx < 0 ? 0 : idx;
+}
+
+export function resolveStep(raw: unknown): StepKey {
+  const key = String(raw || "").trim();
+  if (key === "2") return "3";
+  if ((STEP_ORDER as readonly string[]).includes(key)) return key as StepKey;
+  return "intro";
 }
 
 export function mergeAnswers(raw: any): PostDemoAnswers {
