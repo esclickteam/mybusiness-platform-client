@@ -107,6 +107,7 @@ export async function fetchPartnerClients(params: {
   q?: string;
   status?: string;
   page?: number;
+  limit?: number;
 }) {
   const { data } = await API.get("/partner/clients", { params });
   return data as { items: PartnerClient[]; total: number; page: number; limit: number };

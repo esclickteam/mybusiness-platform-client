@@ -1,23 +1,36 @@
 import type { PartnerClientStatus } from "../types/partner";
 
 export const PARTNER_STATUS_LABEL: Record<string, string> = {
-  lead: "ליד",
+  lead: "ליד חדש",
   waiting_payment: "ממתין לתשלום",
-  provisioning: "בהקמה",
+  provisioning: "בתהליך",
   active: "פעיל",
-  payment_issue: "בעיית תשלום",
+  payment_issue: "מעקב",
   suspended: "מושעה",
   cancelled: "בוטל",
 };
 
 export const PARTNER_STATUS_TONE: Record<string, string> = {
-  lead: "bg-sky-50 text-sky-800",
-  waiting_payment: "bg-amber-50 text-amber-800",
-  provisioning: "bg-indigo-50 text-indigo-800",
-  active: "bg-emerald-50 text-emerald-800",
-  payment_issue: "bg-orange-50 text-orange-800",
-  suspended: "bg-rose-50 text-rose-800",
-  cancelled: "bg-slate-100 text-slate-500",
+  lead: "bg-[#F3E8FF] text-[#6B21A8]",
+  waiting_payment: "bg-[#FFEDD5] text-[#9A3412]",
+  provisioning: "bg-[#E0F2FE] text-[#075985]",
+  active: "bg-[#DCFCE7] text-[#166534]",
+  payment_issue: "bg-[#F1F5F9] text-[#475569]",
+  suspended: "bg-[#FFE4E6] text-[#9F1239]",
+  cancelled: "bg-[#F1F5F9] text-[#64748B]",
+};
+
+export const PARTNER_STATUS_BADGE_TONE: Record<
+  string,
+  "violet" | "sky" | "amber" | "emerald" | "slate" | "rose"
+> = {
+  lead: "violet",
+  waiting_payment: "amber",
+  provisioning: "sky",
+  active: "emerald",
+  payment_issue: "slate",
+  suspended: "rose",
+  cancelled: "slate",
 };
 
 export const PARTNER_CLIENT_STATUSES: Array<PartnerClientStatus | ""> = [

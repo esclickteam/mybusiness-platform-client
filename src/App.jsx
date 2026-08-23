@@ -198,6 +198,7 @@ const PartnerTransactions = lazy(() => import("./pages/partner/PartnerTransactio
 const PartnerTeam = lazy(() => import("./pages/partner/PartnerTeam"));
 const PartnerSettings = lazy(() => import("./pages/partner/PartnerSettings"));
 const PartnerWithdrawals = lazy(() => import("./pages/partner/PartnerWithdrawals"));
+const PartnerWorkboard = lazy(() => import("./pages/partner/PartnerWorkboard"));
 const PartnerDealDetail = lazy(() => import("./pages/partner/PartnerDealDetail"));
 const PartnerPublicDeal = lazy(() => import("./pages/partner/PartnerPublicDeal"));
 const PartnerRegister = lazy(() => import("./pages/partner/PartnerRegister"));
@@ -1542,6 +1543,8 @@ export default function App() {
                           <Route path="crm" element={<PartnerClients />} />
                           <Route path="crm/:clientId" element={<PartnerClientDossier />} />
                           <Route path="clients/new" element={<PartnerClientWizard />} />
+                          <Route path="tasks" element={<PartnerWorkboard />} />
+                          <Route path="reminders" element={<PartnerWorkboard />} />
                           <Route path="pricing" element={<PartnerPricing />} />
                           <Route path="storefront" element={<PartnerStorefrontSettings />} />
                           <Route path="transactions" element={<PartnerTransactions />} />
