@@ -119,6 +119,7 @@ const WebsiteInviteAcceptPage = lazy(() =>
   import("./pages/WebsiteInviteAcceptPage")
 );
 const GuidedDemoRedeemPage = lazy(() => import("./pages/GuidedDemoRedeemPage"));
+const PublicSalesProposalPage = lazy(() => import("./pages/PublicSalesProposalPage"));
 const Register = lazy(() => import("./pages/Register"));
 const CrmOfferPage = lazy(() => import("./pages/offer/CrmOfferPage"));
 const ForgotPassword = lazy(() => import("./pages/ForgotPassword"));
@@ -1040,6 +1041,10 @@ export default function App() {
                         <Route
                           path="/demo/:token"
                           element={<GuidedDemoRedeemPage />}
+                        />
+                        <Route
+                          path="/proposal/:token"
+                          element={<PublicSalesProposalPage />}
                         />
                         <Route
                           path="/book/bizuply/:token"

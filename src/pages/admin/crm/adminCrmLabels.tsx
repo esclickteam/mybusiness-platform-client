@@ -132,6 +132,10 @@ export const TIMELINE_LABELS: Record<string, string> = {
   initial_call_no_show: "הלקוח לא הגיע לפגישה",
   initial_call_summary: "פגישה ראשונית — סיכום שיחה",
   proposal_requested: "בקשה להצעה מותאמת",
+  proposal_viewed: "הלקוח צפה בהצעה",
+  proposal_accepted: "הלקוח רוצה להתקדם עם ההצעה",
+  proposal_question: "שאלה על הצעה",
+  proposal_thinking: "הלקוח רוצה לחשוב על ההצעה",
   automation_whatsapp_sent: "נשלחה הודעת WhatsApp לתיאום שיחה ראשונית",
   automation_whatsapp_failed: "שליחת WhatsApp לתיאום שיחה נכשלה",
 };

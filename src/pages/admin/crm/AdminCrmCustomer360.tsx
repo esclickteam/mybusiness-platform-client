@@ -50,6 +50,7 @@ import {
 import IntroCallSummaryViewModal from "./introCallSummary/IntroCallSummaryViewModal";
 import { buildSummaryPreview, introQuestionnaireFromCallSummary } from "./introCallSummary/utils";
 import PostDemoCustomerSection from "./postDemo/PostDemoCustomerSection";
+import CustomerProposalsSection from "./proposals/CustomerProposalsSection";
 
 const TABS = [
   ["overview", "סקירה"],
@@ -100,6 +101,7 @@ export default function AdminCrmCustomer360() {
   const [deleteLoading, setDeleteLoading] = useState(false);
   const [bookOpen, setBookOpen] = useState(false);
   const [demoOpen, setDemoOpen] = useState(false);
+  const [proposalOpen, setProposalOpen] = useState(false);
   const [calendarServices, setCalendarServices] = useState<any[]>([]);
   const [activitySummaryView, setActivitySummaryView] = useState<any>(null);
 
@@ -513,7 +515,15 @@ export default function AdminCrmCustomer360() {
               <span key={f.key} className="mb-2 ml-2 inline-flex rounded-full bg-purple-50 px-2 py-1 text-xs font-black text-[#7C4DFF]">{f.name}</span>
             ))}
           </CrmCard>
-          <PostDemoCustomerSection customerId={id!} />
+          <PostDemoCustomerSection
+            customerId={id!}
+            onCreateProposal={() => setProposalOpen(true)}
+          />
+          <CustomerProposalsSection
+            customerId={id!}
+            openBuilder={proposalOpen}
+            onBuilderClose={() => setProposalOpen(false)}
+          />
         </div>
       ) : null}
 

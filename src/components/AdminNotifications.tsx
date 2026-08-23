@@ -462,12 +462,15 @@ export default function AdminNotifications() {
     const isCalendar =
       latest.kind === "calendar_booking" || latest.kind === "calendar_reminder";
     const isGuidedDemo = latest.kind === "guided_demo";
-    if (isGuidedDemo) {
+    const isSalesProposal = latest.kind === "sales_proposal";
+    if (isGuidedDemo || isSalesProposal) {
       const url =
         latest.targetUrl ||
         (latest.adminCustomerId
           ? `/admin/crm/customers/${latest.adminCustomerId}`
-          : "/admin/guided-demos");
+          : isSalesProposal
+            ? "/admin/crm/customers"
+            : "/admin/guided-demos");
       return {
         label: "לכרטיס לקוח",
         icon: CalendarDays,
@@ -881,7 +884,8 @@ export default function AdminNotifications() {
                               alert.kind === "calendar_booking" ||
                               alert.kind === "calendar_reminder";
                             const isGuidedDemo = alert.kind === "guided_demo";
-                            const isViolet = isCalendar || isGuidedDemo;
+                            const isSalesProposal = alert.kind === "sales_proposal";
+                            const isViolet = isCalendar || isGuidedDemo || isSalesProposal;
                             return (
                               <button
                                 type="button"
@@ -918,11 +922,13 @@ export default function AdminNotifications() {
                                           : "bg-sky-50 text-sky-700 ring-sky-100",
                                       ].join(" ")}
                                     >
-                                      {isGuidedDemo
-                                        ? "דמו מודרך"
-                                        : isCalendar
-                                          ? "יומן BizUply"
-                                          : "צ׳אט תמיכה"}
+                                      {isSalesProposal
+                                        ? "הצעת מחיר"
+                                        : isGuidedDemo
+                                          ? "דמו מודרך"
+                                          : isCalendar
+                                            ? "יומן BizUply"
+                                            : "צ׳אט תמיכה"}
                                     </span>
                                     <span className="shrink-0 text-[11px] font-black text-slate-400">
                                       {timeAgo(alert.at)}
