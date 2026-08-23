@@ -27,9 +27,11 @@ export type PublicWhatsAppMessage = {
 
 export type PublicWhatsAppThread = {
   id: string;
+  threadId?: string | null;
   adminCustomerId?: string | null;
   name?: string;
   phone?: string;
+  hasConversation?: boolean;
   lastMessage?: string;
   lastMessageAt?: string | Date | null;
   unreadCount?: number;
@@ -148,7 +150,9 @@ export function bumpThreadList(
     }
     const a = normalizeWaPhone(row.phone);
     const b = normalizeWaPhone(merged.phone);
-    if (a && b && a === b) return false;
+    if (a && b && a === b && !row.adminCustomerId && !merged.adminCustomerId) {
+      return false;
+    }
     return true;
   });
   return [merged, ...rest];

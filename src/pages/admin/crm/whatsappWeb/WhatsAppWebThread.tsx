@@ -426,6 +426,11 @@ export default function WhatsAppWebThread({
         }}
       >
         <div className="mx-auto flex max-w-[760px] flex-col">
+          {!feed.length ? (
+            <div className="my-10 text-center text-sm font-bold text-[#667781]">
+              אין שיחה עדיין. אפשר להתחיל לשלוח הודעה מכאן.
+            </div>
+          ) : null}
           {feed.map((item) => {
             if (item.type === "date") {
               return (
