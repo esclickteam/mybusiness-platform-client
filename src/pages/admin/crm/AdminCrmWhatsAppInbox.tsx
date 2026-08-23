@@ -1,4 +1,5 @@
 import React, { useCallback, useMemo, useState } from "react";
+import { useSearchParams } from "react-router-dom";
 import adminCrmApi from "../../../api/adminCrmApi";
 import AdminSendGuidedDemoModal from "../AdminSendGuidedDemoModal";
 import {
@@ -20,7 +21,16 @@ type InboxItem = PublicWhatsAppThread & {
   assignedAdminName?: string;
 };
 
+type WhatsAppSyncSummary = {
+  scanned?: number;
+  conversations?: number;
+  messagesAdded?: number;
+  skipped?: number;
+  failed?: number;
+};
+
 export default function AdminCrmWhatsAppInbox() {
+  const [searchParams] = useSearchParams();
   const [perms, setPerms] = useState<any>({});
   const [items, setItems] = useState<InboxItem[]>([]);
   const [unreadTotal, setUnreadTotal] = useState(0);
@@ -33,6 +43,8 @@ export default function AdminCrmWhatsAppInbox() {
   const [banner, setBanner] = useState("");
   const [mobileChat, setMobileChat] = useState(false);
   const [demoOpen, setDemoOpen] = useState(false);
+  const [syncing, setSyncing] = useState(false);
+  const [syncSummary, setSyncSummary] = useState<WhatsAppSyncSummary | null>(null);
 
   const load = useCallback(
     async (nextUnresolved = unresolvedOnly, q = query) => {
@@ -44,16 +56,30 @@ export default function AdminCrmWhatsAppInbox() {
           q: q || undefined,
           limit: 120,
         });
-        setItems(data.items || []);
+        const nextItems = data.items || [];
+        setItems(nextItems);
         setUnreadTotal(data.unreadTotal || 0);
         setUnresolvedTotal(data.unresolvedTotal || 0);
+        const wantedCustomer = searchParams.get("customer");
+        const wantedThread = searchParams.get("thread");
+        if ((wantedCustomer || wantedThread) && nextItems.length) {
+          const match = nextItems.find((row) =>
+            wantedThread
+              ? row.id === wantedThread
+              : row.adminCustomerId === wantedCustomer
+          );
+          if (match) {
+            setSelected(match);
+            setMobileChat(true);
+          }
+        }
       } catch (err: any) {
         setError(err?.response?.data?.error || "טעינת תיבת WhatsApp נכשלה");
       } finally {
         setLoading(false);
       }
     },
-    [query, unresolvedOnly]
+    [query, unresolvedOnly, searchParams]
   );
 
   React.useEffect(() => {
@@ -98,6 +124,30 @@ export default function AdminCrmWhatsAppInbox() {
       void load(unresolvedOnly, query);
     },
   });
+
+  async function syncConversations() {
+    setSyncing(true);
+    setError("");
+    try {
+      const { data } = await adminCrmApi.whatsappSync();
+      const summary: WhatsAppSyncSummary = data.sync || data;
+      setSyncSummary(summary);
+      const created = Number(summary.messagesAdded || 0);
+      const skipped = Number(summary.skipped || 0);
+      const conversations = Number(summary.conversations || 0);
+      const failed = Number(summary.failed || 0);
+      setBanner(
+        failed > 0
+          ? `הסנכרון הושלם — ${conversations} שיחות, ${created} הודעות נוספו, ${skipped} כבר היו קיימות. נכשלו ${failed}.`
+          : `הסנכרון הושלם — ${conversations} שיחות, ${created} הודעות נוספו, ${skipped} כבר היו קיימות.`
+      );
+      await load(unresolvedOnly, query);
+    } catch (err: any) {
+      setError(err?.response?.data?.error || "סנכרון שיחות WhatsApp נכשל");
+    } finally {
+      setSyncing(false);
+    }
+  }
 
   const filtered = useMemo(() => items, [items]);
 
@@ -155,7 +205,32 @@ export default function AdminCrmWhatsAppInbox() {
               >
                 חיפוש
               </SecondaryButton>
+              <SecondaryButton
+                className="!min-h-9 !rounded-lg !px-3 !text-xs"
+                onClick={() => void syncConversations()}
+                disabled={syncing}
+              >
+                {syncing ? "מסנכרן שיחות..." : "סנכרון שיחות"}
+              </SecondaryButton>
             </div>
+            {syncing || syncSummary ? (
+              <div className="mt-2 rounded-xl border border-violet-100 bg-violet-50 px-3 py-2 text-[11px] font-bold text-violet-800">
+                {syncing ? (
+                  <p>מסנכרן שיחות...</p>
+                ) : null}
+                {syncSummary ? (
+                  <p>
+                    נסרקו {syncSummary.scanned || 0} לקוחות · נמצאו{" "}
+                    {syncSummary.conversations || 0} שיחות · נוספו{" "}
+                    {syncSummary.messagesAdded || 0} הודעות · דולגו{" "}
+                    {syncSummary.skipped || 0}
+                    {Number(syncSummary.failed || 0) > 0
+                      ? ` · נכשלו ${syncSummary.failed}`
+                      : ""}
+                  </p>
+                ) : null}
+              </div>
+            ) : null}
           </div>
           <div className="min-h-0 flex-1 overflow-y-auto">
             {!filtered.length ? (
@@ -252,6 +327,7 @@ export default function AdminCrmWhatsAppInbox() {
               customerId={selected.adminCustomerId}
               threadId={selected.id}
               phone={selected.phone}
+              contactName={selected.name}
               canSend={Boolean(perms.whatsappSend || perms.conversationsReply)}
               canTemplates={Boolean(perms.whatsappTemplates)}
               canDemo={perms.demoSend !== false}
