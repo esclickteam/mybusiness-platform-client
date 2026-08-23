@@ -23,6 +23,9 @@ export type PublicWhatsAppMessage = {
   mediaSize?: number;
   hasMedia?: boolean;
   mediaPath?: string;
+  mediaId?: string;
+  /** Temporary client-only preview while upload/send is in flight */
+  localPreviewUrl?: string;
 };
 
 export type PublicWhatsAppThread = {
