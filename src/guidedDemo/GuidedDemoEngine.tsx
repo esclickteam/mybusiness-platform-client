@@ -505,6 +505,16 @@ export default function GuidedDemoEngine() {
           return;
         }
         if (kind === "navigation") {
+          if (key === "website-template-edit" && businessId) {
+            const previewMatch = location.pathname.match(
+              /\/website\/templates\/([^/]+)\/preview\/?$/i
+            );
+            if (previewMatch?.[1]) {
+              navigate(
+                `/business/${businessId}/dashboard/website/templates/${encodeURIComponent(previewMatch[1])}/edit`
+              );
+            }
+          }
           void demoProgress.completeStep("DEMO_CLICK", { target: key });
         }
         return;
@@ -516,7 +526,7 @@ export default function GuidedDemoEngine() {
     };
     document.addEventListener("click", onClick, true);
     return () => document.removeEventListener("click", onClick, true);
-  }, [step?.id, step?.target, introOpen, isComplete]);
+  }, [step?.id, step?.target, introOpen, isComplete, businessId, location.pathname, navigate]);
 
   useEffect(() => {
     if (!step || introOpen || isComplete) return undefined;
