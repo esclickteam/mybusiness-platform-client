@@ -1,9 +1,11 @@
 import React, { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { ArrowLeft, LayoutTemplate, Wand2 } from "lucide-react";
+import { ArrowLeft, LayoutTemplate, Pencil, Wand2 } from "lucide-react";
 
-import { getStudioTemplateById } from "../components/site-builder/studio/data/templates";
+import { createMySite, listMySites } from "../api/mySitesApi";
+import { getStudioTemplateById, getStudioTemplateSeedById } from "../components/site-builder/studio/data/templates";
 import { getStudioTemplateRenderer } from "../components/site-builder/studio/data/templates/templateRendererRegistry";
+import { isGuidedDemoActive } from "@/guidedDemo/sessionStore";
 
 export default function WebsiteTemplatePreviewPage() {
   const navigate = useNavigate();
@@ -57,9 +59,64 @@ export default function WebsiteTemplatePreviewPage() {
     navigate(`${basePath}/dashboard/website?template=${id}`);
   }
 
+  async function handleEditTemplate() {
+    const cleanTemplateKey = String(template?.id || renderer?.key || cleanTemplateId)
+      .trim()
+      .toLowerCase();
+    if (!cleanTemplateKey) return;
+
+    const localSeed = getStudioTemplateSeedById(cleanTemplateKey);
+    localStorage.setItem("bizuply-selected-template-key", cleanTemplateKey);
+    localStorage.setItem("bizuply-selected-template-id", cleanTemplateKey);
+
+    const goToFallbackEditor = () => {
+      navigate(`${basePath}/dashboard/website/templates/${cleanTemplateKey}/edit`);
+    };
+
+    try {
+      if (!businessId) throw new Error("missing-business");
+      const site = await createMySite({
+        businessId,
+        name: (template as any)?.name || localSeed?.name || cleanTemplateKey,
+        templateKey: cleanTemplateKey,
+        templateName: (template as any)?.name || localSeed?.name || cleanTemplateKey,
+      });
+      if (site?._id) {
+        navigate(
+          `${basePath}/dashboard/website/sites/${site._id}/edit?template=${encodeURIComponent(cleanTemplateKey)}`
+        );
+        return;
+      }
+    } catch {
+      if (isGuidedDemoActive() && businessId) {
+        try {
+          const existing = await listMySites(businessId);
+          const match = (existing || []).find((site) => {
+            const keys = [site.templateKey, site.templateName].map((value) =>
+              String(value || "").trim().toLowerCase()
+            );
+            return keys.includes(cleanTemplateKey);
+          });
+          if (match?._id) {
+            navigate(
+              `${basePath}/dashboard/website/sites/${match._id}/edit?template=${encodeURIComponent(cleanTemplateKey)}`
+            );
+            return;
+          }
+        } catch {
+          /* keep falling through to the selected-template editor */
+        }
+        goToFallbackEditor();
+        return;
+      }
+    }
+
+    goToFallbackEditor();
+  }
+
   function PreviewActions() {
     return (
-      <div className="fixed left-4 top-4 z-[99999] flex items-center gap-3">
+      <div className="fixed right-4 top-4 z-[2147483008] flex items-center gap-3">
         <button
           type="button"
           onClick={handleBackToTemplates}
@@ -67,6 +124,16 @@ export default function WebsiteTemplatePreviewPage() {
         >
           <ArrowLeft className="h-4 w-4" />
           חזרה
+        </button>
+
+        <button
+          type="button"
+          onClick={() => void handleEditTemplate()}
+          data-demo-target="website-template-edit"
+          className="inline-flex h-11 items-center justify-center gap-2 rounded-full bg-[#6D28D9] px-5 text-sm font-black text-white shadow-2xl transition hover:bg-[#5b21b6]"
+        >
+          <Pencil className="h-4 w-4" />
+          עריכה
         </button>
 
         <button
