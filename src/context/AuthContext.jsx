@@ -17,6 +17,7 @@ import {
   isSessionInvalidated,
   resetSessionInvalidationGuard,
 } from "../utils/sessionInvalidation";
+import { clearAdminActiveBusinessId } from "../utils/adminTenant";
 import {
   applyManagedSessionToUser,
   clearManagedBusinessContext,
@@ -321,6 +322,7 @@ export function AuthProvider({ children }) {
       } else {
         localStorage.removeItem("impersonatedBy");
         localStorage.removeItem("impersonatorRole");
+        clearAdminActiveBusinessId();
       }
 
       const managedBusinessId =
@@ -412,6 +414,10 @@ export function AuthProvider({ children }) {
 
       resetSessionInvalidationGuard();
       clearRefreshDead();
+      localStorage.removeItem("impersonatedBy");
+      localStorage.removeItem("impersonatorRole");
+      clearManagedBusinessContext();
+      clearAdminActiveBusinessId();
       localStorage.setItem("token", accessToken);
       setAuthToken(accessToken);
       setToken(accessToken);
@@ -533,6 +539,10 @@ export function AuthProvider({ children }) {
 
       resetSessionInvalidationGuard();
       clearRefreshDead();
+      localStorage.removeItem("impersonatedBy");
+      localStorage.removeItem("impersonatorRole");
+      clearManagedBusinessContext();
+      clearAdminActiveBusinessId();
       localStorage.setItem("token", accessToken);
       setAuthToken(accessToken);
       setToken(accessToken);
