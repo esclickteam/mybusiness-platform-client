@@ -525,7 +525,7 @@ export default function AdminCrmCustomer360() {
                 </div>
               ) : (
                 <p className="rounded-xl border border-dashed border-slate-200 bg-slate-50 p-6 text-center text-sm font-bold text-slate-400">
-                  אין נתוני טופס שמורים עדיין. סנכרנו את לידי Meta כדי למשוך את התשובות.
+                  אין נתוני טופס שמורים עדיין.
                 </p>
               )}
             </CrmCard>

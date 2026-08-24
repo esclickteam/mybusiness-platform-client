@@ -29,7 +29,7 @@ const NAV_ITEMS = [
 function AdminHeader() {
   const { user, logout, socket } = useAuth() as {
     user: { name?: string; email?: string } | null;
-    logout: () => void;
+    logout: (opts?: { callServer?: boolean; redirect?: boolean }) => Promise<void>;
     socket: any;
   };
   const navigate = useNavigate();
@@ -111,9 +111,8 @@ function AdminHeader() {
     return location.pathname === path || location.pathname.startsWith(`${path}/`);
   }
 
-  function handleLogout() {
-    logout();
-    navigate("/login", { replace: true });
+  async function handleLogout() {
+    await logout({ redirect: true });
   }
 
   function renderNav(mobile: boolean) {

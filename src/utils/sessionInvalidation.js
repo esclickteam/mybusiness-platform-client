@@ -14,6 +14,7 @@ import {
   clearRefreshDead,
   markRefreshDead,
 } from "./tokenRefresh";
+import { clearAdminActiveBusinessId } from "./adminTenant";
 
 function getApiBaseUrl() {
   const envApiUrl = String(import.meta.env.VITE_API_URL || "")
@@ -98,6 +99,7 @@ export function clearPersistedAuthState({ clearDashboardRoute = true } = {}) {
     localStorage.removeItem("managedBusinessId");
     localStorage.removeItem("managedBusinessName");
     localStorage.removeItem("partnerDisplayName");
+    clearAdminActiveBusinessId();
   } catch {
     /* ignore */
   }

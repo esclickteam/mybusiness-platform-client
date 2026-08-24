@@ -31,6 +31,7 @@ describe("sessionInvalidation", () => {
     localStorage.setItem("businessDetails", JSON.stringify({ name: "Amir" }));
     localStorage.setItem("dashboardStats", "{}");
     localStorage.setItem("impersonatedBy", "admin-1");
+    localStorage.setItem("adminActiveBusinessId", "biz-1");
 
     Object.defineProperty(window, "location", {
       configurable: true,
@@ -75,6 +76,7 @@ describe("sessionInvalidation", () => {
     expect(localStorage.getItem("businessDetails")).toBeNull();
     expect(localStorage.getItem("dashboardStats")).toBeNull();
     expect(localStorage.getItem("impersonatedBy")).toBeNull();
+    expect(localStorage.getItem("adminActiveBusinessId")).toBeNull();
     expect(isRefreshDead()).toBe(true);
 
     expect(window.location.replace).toHaveBeenCalledTimes(1);
