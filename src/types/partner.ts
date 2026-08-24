@@ -122,6 +122,12 @@ export type PartnerDealTotals = {
   partnerCommission: number;
   bizuplyShare: number;
   wholesale: number;
+  oneTimeCommission?: number;
+  monthlyCommission?: number;
+  partnerOneTimeCommission?: number;
+  partnerMonthlyCommission?: number;
+  bizuplyOneTimeShare?: number;
+  bizuplyMonthlyShare?: number;
 };
 
 export type PartnerDeal = {
@@ -132,6 +138,8 @@ export type PartnerDeal = {
   kind?: string;
   packageSku?: string;
   additionalMarkup?: number;
+  oneTimeCommission?: number;
+  monthlyCommission?: number;
   lines: PartnerPriceLine[];
   totals: PartnerDealTotals;
   currency?: string;

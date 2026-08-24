@@ -127,10 +127,10 @@ export default function PartnerPublicDeal() {
           <section className="rounded-[28px] bg-slate-900 p-6 text-white">
             <h3 className="text-lg font-black">תשלום</h3>
             <div className="mt-4 space-y-2 font-black">
-              <Row label="חד-פעמי" value={formatIls(pay.oneTime)} />
-              <Row label="חודשי" value={`${formatIls(pay.monthly)} / חודש`} />
+              <Row label="מחיר חד-פעמי" value={formatIls(pay.oneTime)} />
+              <Row label="מחיר כל חודש" value={`${formatIls(pay.monthly)} / חודש`} />
               {pay.annual ? <Row label="שנתי" value={`${formatIls(pay.annual)} / שנה`} /> : null}
-              <Row label="סה״כ לתשלום כעת" value={formatIls(pay.dueNow)} large />
+              <Row label="לתשלום עכשיו" value={formatIls(pay.dueNow)} large />
             </div>
             {pay.renewalMonthly ? (
               <p className="mt-4 text-sm font-bold text-white/70">

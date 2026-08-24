@@ -18,8 +18,8 @@ import {
   partnerApiError,
   updatePartnerClient,
 } from "../../lib/partnerApi";
-import { computeDealPreview } from "../../lib/partnerDealMath";
-import { formatIls } from "../../lib/partnerMoney";
+import { computeDealPreview, isCommissionSku } from "../../lib/partnerDealMath";
+import { formatIls, formatPct } from "../../lib/partnerMoney";
 import type {
   ManagementMode,
   PartnerPriceLine,
@@ -69,6 +69,7 @@ export default function PartnerClientWizard() {
   });
   const [selectedSkus, setSelectedSkus] = useState<string[]>([]);
   const [additionalMarkup, setAdditionalMarkup] = useState(0);
+  const [monthlyCommission, setMonthlyCommission] = useState(0);
   const [managementMode, setManagementMode] = useState<ManagementMode>("shared");
   const [createdDeal, setCreatedDeal] = useState<{ id: string; number: string; publicUrl: string } | null>(
     null
@@ -103,9 +104,17 @@ export default function PartnerClientWizard() {
   }, [existingClientId]);
 
   const preview = useMemo(
-    () => computeDealPreview(items, selectedSkus, additionalMarkup, partnerShareRate),
-    [items, selectedSkus, additionalMarkup, partnerShareRate]
+    () =>
+      computeDealPreview(
+        items,
+        selectedSkus,
+        additionalMarkup,
+        partnerShareRate,
+        monthlyCommission
+      ),
+    [items, selectedSkus, additionalMarkup, partnerShareRate, monthlyCommission]
   );
+  const bizuplyShareRate = Math.max(0, 1 - Number(partnerShareRate || 0));
 
   async function createDraft() {
     if (!contact.businessName.trim() || !contact.contactName.trim() || !contact.email.trim()) {
@@ -148,6 +157,8 @@ export default function PartnerClientWizard() {
       const data = await createPartnerDeal(clientId, {
         lines: selectedSkus.map((sku) => ({ sku, markupIls: 0 })),
         additionalMarkup,
+        oneTimeCommission: additionalMarkup,
+        monthlyCommission,
         kind: existingClientId ? "amendment" : "initial",
       });
       setCreatedDeal({
@@ -265,6 +276,7 @@ export default function PartnerClientWizard() {
           selectedSkus={selectedSkus}
           onChange={setSelectedSkus}
           additionalMarkup={additionalMarkup}
+          monthlyCommission={monthlyCommission}
           partnerShareRate={partnerShareRate}
           onContinue={() => setStep(step === 2 ? 3 : 4)}
           continueLabel={step === 2 ? "המשך לתוספות" : "המשך לתמחור ללקוח"}
@@ -276,12 +288,11 @@ export default function PartnerClientWizard() {
         <section className="space-y-4 rounded-3xl border border-slate-200 bg-white p-6">
           <h3 className="text-lg font-black">תמחור ללקוח</h3>
           <p className="text-sm font-bold text-slate-500">
-            הלקוח לא רואה עמלה. הוא רואה רק את המחיר הסופי של החבילה והשירותים.
+            הלקוח רואה מחיר חד-פעמי ומחיר לכל חודש, כולל העמלה. Bizuply מקבלת {formatPct(bizuplyShareRate)} מכל עמלה לפי חבילת הפרטנר, ואתם מקבלים {formatPct(partnerShareRate)}.
           </p>
           <div className="grid gap-4 md:grid-cols-2">
-            <Metric label="עלות השירותים שלך מ-Bizuply" value={formatIls(preview.totals.wholesale)} />
             <label className="rounded-3xl border border-violet-200 bg-violet-50 p-4">
-              <span className="text-xs font-black text-violet-700">עמלה נוספת</span>
+              <span className="text-xs font-black text-violet-700">עמלה חד-פעמית על העסקה</span>
               <input
                 type="number"
                 min={0}
@@ -289,9 +300,28 @@ export default function PartnerClientWizard() {
                 onChange={(e) => setAdditionalMarkup(Math.max(0, Number(e.target.value) || 0))}
                 className="mt-2 w-full rounded-2xl border border-violet-200 bg-white px-3 py-2 text-lg font-black"
               />
+              <p className="mt-2 text-[11px] font-bold text-violet-700">
+                שלכם {formatIls(preview.totals.partnerOneTimeCommission)} · Bizuply {formatIls(preview.totals.bizuplyOneTimeShare)}
+              </p>
             </label>
-            <Metric label="מחיר סופי ללקוח כעת" value={formatIls(preview.totals.customerNow)} />
-            <Metric label="העמלה שלך" value={formatIls(preview.totals.partnerCommission)} />
+            <label className="rounded-3xl border border-sky-200 bg-sky-50 p-4">
+              <span className="text-xs font-black text-sky-800">עמלה חודשית קבועה (אופציונלי)</span>
+              <input
+                type="number"
+                min={0}
+                value={monthlyCommission}
+                onChange={(e) => setMonthlyCommission(Math.max(0, Number(e.target.value) || 0))}
+                className="mt-2 w-full rounded-2xl border border-sky-200 bg-white px-3 py-2 text-lg font-black"
+              />
+              <p className="mt-2 text-[11px] font-bold text-sky-800">
+                שלכם {formatIls(preview.totals.partnerMonthlyCommission)} / חודש · Bizuply {formatIls(preview.totals.bizuplyMonthlyShare)} / חודש
+              </p>
+            </label>
+            <Metric label="עלות השירותים שלך מ-Bizuply" value={formatIls(preview.totals.wholesale)} />
+            <Metric label="העמלה שלך (חד-פעמי + חודשי)" value={formatIls(preview.totals.partnerCommission)} />
+            <Metric label="מחיר חד-פעמי ללקוח" value={formatIls(preview.totals.oneTime)} />
+            <Metric label="מחיר כל חודש ללקוח" value={formatIls(preview.totals.monthly)} />
+            <Metric label="לתשלום עכשיו ללקוח" value={formatIls(preview.totals.customerNow)} />
             <Metric label="חלק Bizuply" value={formatIls(preview.totals.bizuplyShare)} />
             <Metric label="הסכום לתשלום ל-Bizuply" value={formatIls(preview.totals.partnerPaysBizuply)} />
           </div>
@@ -302,7 +332,9 @@ export default function PartnerClientWizard() {
                 <div key={line.sku} className="flex justify-between gap-3">
                   <span>{line.displayNameHe || line.nameHe}</span>
                   <span>
-                    {formatIls(line.partnerWholesalePrice)} → {formatIls(line.customerFinalPrice)}
+                    {isCommissionSku(line.sku)
+                      ? formatIls(line.customerFinalPrice)
+                      : `${formatIls(line.partnerWholesalePrice)} → ${formatIls(line.customerFinalPrice)}`}
                   </span>
                 </div>
               ))}
@@ -327,19 +359,19 @@ export default function PartnerClientWizard() {
         <section className="space-y-4 rounded-3xl border border-slate-200 bg-white p-6">
           <h3 className="text-lg font-black">תצוגה מקדימה ללקוח</h3>
           <p className="text-sm font-bold text-slate-500">
-            כך הלקוח יראה את סיכום העסקה — בלי מחיר Partner, בלי עמלה ובלי SKU.
+            כך הלקוח יראה את הסיכום: מחיר חד-פעמי, מחיר כל חודש, וסה״כ לתשלום עכשיו — כולל העמלה, בלי פירוט פנימי.
           </p>
           <div className="rounded-[28px] border border-slate-100 bg-slate-50 p-5">
             <p className="text-xs font-black text-slate-400">החבילה שלך</p>
             <p className="text-2xl font-black">
               {preview.primary?.displayNameHe || preview.primary?.nameHe || "חבילה"}
             </p>
-            <p className="mt-4 text-sm font-black">חד-פעמי {formatIls(preview.totals.oneTime)}</p>
-            <p className="text-sm font-black">חודשי {formatIls(preview.totals.monthly)}</p>
+            <p className="mt-4 text-sm font-black">מחיר חד-פעמי {formatIls(preview.totals.oneTime)}</p>
+            <p className="text-sm font-black">מחיר כל חודש {formatIls(preview.totals.monthly)}</p>
             {preview.totals.annual ? (
               <p className="text-sm font-black">שנתי {formatIls(preview.totals.annual)}</p>
             ) : null}
-            <p className="mt-3 text-xl font-black">סה״כ לתשלום כעת {formatIls(preview.totals.customerNow)}</p>
+            <p className="mt-3 text-xl font-black">לתשלום עכשיו {formatIls(preview.totals.customerNow)}</p>
           </div>
           {createdDeal ? (
             <div className="rounded-3xl border border-emerald-200 bg-emerald-50 p-5">
@@ -367,6 +399,12 @@ export default function PartnerClientWizard() {
                   className="rounded-2xl border px-4 py-2 text-sm font-black"
                 >
                   תיק הלקוח
+                </Link>
+                <Link
+                  to="/partner/dashboard/withdrawals"
+                  className="rounded-2xl border px-4 py-2 text-sm font-black"
+                >
+                  משיכת עמלה
                 </Link>
               </div>
             </div>

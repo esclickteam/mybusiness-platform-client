@@ -7,6 +7,7 @@ import {
   UserPlus,
   Users,
   Bell,
+  Wallet,
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { fetchPartnerClients, fetchPartnerDashboard, partnerApiError } from "../../lib/partnerApi";
@@ -268,6 +269,12 @@ export default function PartnerDashboard() {
                   to="/partner/dashboard/clients/new"
                   label="הצעת מחיר"
                   icon={<FileText className="h-4 w-4" />}
+                  tone="sky"
+                />
+                <PartnerQuickAction
+                  to="/partner/dashboard/withdrawals"
+                  label="משיכת עמלה"
+                  icon={<Wallet className="h-4 w-4" />}
                   tone="sky"
                 />
               </PartnerCard>

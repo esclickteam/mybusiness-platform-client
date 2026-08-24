@@ -17,6 +17,7 @@ type Props = {
   selectedSkus: string[];
   onChange: (skus: string[]) => void;
   additionalMarkup: number;
+  monthlyCommission?: number;
   partnerShareRate: number;
   onContinue?: () => void;
   continueLabel?: string;
@@ -38,6 +39,7 @@ export default function PartnerCatalogPicker({
   selectedSkus,
   onChange,
   additionalMarkup,
+  monthlyCommission = 0,
   partnerShareRate,
   onContinue,
   continueLabel = "המשך לסיכום העסקה",
@@ -49,7 +51,13 @@ export default function PartnerCatalogPicker({
   const selected = new Set(selectedSkus);
   const packageSku = selectedSkus.find((sku) => isMainPackageSku(sku)) || "";
   const covered = wizard.coveredByPackage?.[packageSku] || [];
-  const preview = computeDealPreview(items, selectedSkus, additionalMarkup, partnerShareRate);
+  const preview = computeDealPreview(
+    items,
+    selectedSkus,
+    additionalMarkup,
+    partnerShareRate,
+    monthlyCommission
+  );
 
   const businessGroup = (wizard.packages || []).filter(
     (item) => item.packageGroup === "bizuply_business"
@@ -425,12 +433,12 @@ function DealStickySummary({
         </>
       ) : null}
       <div className="mt-4 space-y-2 border-t border-slate-100 pt-4 text-sm font-black">
-        <Row label="חד-פעמי" value={formatIls(preview.totals.oneTime)} />
-        <Row label="חודשי" value={formatIls(preview.totals.monthly)} />
+        <Row label="מחיר חד-פעמי ללקוח" value={formatIls(preview.totals.oneTime)} />
+        <Row label="מחיר כל חודש ללקוח" value={formatIls(preview.totals.monthly)} />
         {preview.totals.annual ? (
           <Row label="שנתי" value={formatIls(preview.totals.annual)} />
         ) : null}
-        <Row label="מחיר סופי ללקוח כעת" value={formatIls(preview.totals.customerNow)} strong />
+        <Row label="לתשלום עכשיו" value={formatIls(preview.totals.customerNow)} strong />
       </div>
       {onContinue ? (
         <button

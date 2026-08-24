@@ -71,13 +71,18 @@ export default function PartnerWithdrawals() {
       <PartnerPageHeader
         eyebrow="משיכת עמלות"
         title="בקשת משיכה"
-        subtitle="רק עמלה מעסקה ששולמה בפועל ל-Bizuply זמינה למשיכה."
+        subtitle="ניתן לשלוח בקשת משיכה עד ה-20 לכל חודש. העמלה תיכנס עד ה-1 לכל חודש. כל בקשה לאחר ה-20 תיכנס לחודש העוקב."
       />
       {cycle?.copy ? (
         <p className="rounded-2xl border border-violet-100 bg-violet-50 px-4 py-3 text-sm font-bold text-violet-800">
           {cycle.copy}
         </p>
       ) : null}
+      <section className="grid gap-3 sm:grid-cols-3">
+        <Kpi label="בקשות עד" value="ה-20 בחודש" />
+        <Kpi label="העמלה נכנסת עד" value="ה-1 בחודש" />
+        <Kpi label="אחרי ה-20" value="עובר לחודש הבא" />
+      </section>
       {error ? <p className="font-black text-rose-700">{error}</p> : null}
 
       <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">

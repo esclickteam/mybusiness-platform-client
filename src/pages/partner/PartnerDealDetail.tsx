@@ -79,9 +79,11 @@ export default function PartnerDealDetail() {
       <section className="rounded-3xl border border-slate-200 bg-white p-5">
         <h3 className="font-black">פירוט התמחור (פנימי)</h3>
         <div className="mt-3 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          <Stat label="מחיר Bizuply עבורך" value={formatIls(totals.wholesale)} />
-          <Stat label="עמלה נוספת" value={formatIls(deal.additionalMarkup)} />
-          <Stat label="מחיר סופי ללקוח" value={formatIls(totals.customerNow)} />
+        <Stat label="עמלה חד-פעמית" value={formatIls(deal.oneTimeCommission ?? deal.additionalMarkup)} />
+          <Stat label="עמלה חודשית" value={formatIls(deal.monthlyCommission)} />
+          <Stat label="מחיר חד-פעמי ללקוח" value={formatIls(totals.oneTime)} />
+          <Stat label="מחיר כל חודש ללקוח" value={formatIls(totals.monthly)} />
+          <Stat label="לתשלום עכשיו ללקוח" value={formatIls(totals.customerNow)} />
           <Stat label="העמלה שלך" value={formatIls(totals.partnerCommission)} />
           <Stat label="חלק Bizuply" value={formatIls(totals.bizuplyShare)} />
           <Stat label="לתשלום ל-Bizuply" value={formatIls(totals.partnerPaysBizuply)} />
@@ -130,6 +132,9 @@ export default function PartnerDealDetail() {
             תיק הלקוח
           </Link>
         ) : null}
+        <Link to="/partner/dashboard/withdrawals" className="rounded-2xl border px-4 py-2 text-sm font-black">
+          משיכת עמלה
+        </Link>
       </div>
     </div>
   );

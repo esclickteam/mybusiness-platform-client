@@ -338,7 +338,7 @@ export default function PartnerClientDossier() {
                 <p className="text-lg font-black">{formatIls(wholesaleTotal)}</p>
               </div>
               <div>
-                <p className="text-[11px] font-bold text-white/55">עמלה נוספת</p>
+                <p className="text-[11px] font-bold text-white/55">סה״כ עמלה</p>
                 <p className="text-lg font-black">{formatIls(extra)}</p>
               </div>
               <div>

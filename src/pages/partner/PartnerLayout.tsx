@@ -1,20 +1,6 @@
 import React, { useMemo, useState } from "react";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
-import {
-  BadgePercent,
-  Bell,
-  CalendarCheck,
-  Handshake,
-  LayoutDashboard,
-  LogOut,
-  Menu,
-  Settings,
-  Store,
-  UserPlus,
-  Users,
-  Wallet,
-  X,
-} from "lucide-react";
+import { Banknote, BadgePercent, Bell, CalendarCheck, Handshake, LayoutDashboard, LogOut, Menu, Settings, Store, UserPlus, Users, Wallet, X } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { PARTNER_FONT } from "../../components/partner/partnerUi";
 
@@ -32,6 +18,7 @@ const SIDEBAR: NavItem[] = [
   { to: "/partner/dashboard/reminders", label: "תזכורות", icon: Bell },
   { to: "/partner/dashboard/tasks", label: "משימות", icon: CalendarCheck },
   { to: "/partner/dashboard/transactions", label: "עסקאות", icon: Handshake },
+  { to: "/partner/dashboard/withdrawals", label: "משיכת עמלה", icon: Banknote },
   { to: "/partner/dashboard/pricing", label: "מוצרים ושירותים", icon: BadgePercent },
   { to: "/partner/dashboard/revenue", label: "דוחות", icon: Wallet },
   { to: "/partner/dashboard/settings", label: "הגדרות", icon: Settings },
@@ -43,6 +30,7 @@ const PILLS: NavItem[] = [
   { to: "/partner/dashboard/clients/new", label: "לקוח חדש", icon: UserPlus },
   { to: "/partner/dashboard/tasks", label: "משימות", icon: CalendarCheck },
   { to: "/partner/dashboard/transactions", label: "עסקאות", icon: Handshake },
+  { to: "/partner/dashboard/withdrawals", label: "משיכת עמלה", icon: Banknote },
   { to: "/partner/dashboard/pricing", label: "מוצרים ושירותים", icon: BadgePercent },
   { to: "/partner/dashboard/revenue", label: "דוחות", icon: Wallet },
   { to: "/partner/dashboard/settings", label: "הגדרות", icon: Settings },
@@ -50,7 +38,6 @@ const PILLS: NavItem[] = [
 
 const TOOLS = [
   { to: "/partner/dashboard/storefront", label: "חנות" },
-  { to: "/partner/dashboard/withdrawals", label: "משיכת עמלות" },
   { to: "/partner/dashboard/team", label: "צוות" },
 ];
 

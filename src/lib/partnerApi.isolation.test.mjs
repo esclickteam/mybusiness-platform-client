@@ -89,6 +89,7 @@ test("public partner deal page does not render internal finance fields", () => {
 
 test("partner deal math keeps wholesale + markup split", () => {
   const src = readFileSync(join(ROOT, "lib/partnerDealMath.ts"), "utf8");
+  assert.equal(src.includes("monthlyCommission"), true);
   assert.equal(src.includes("partnerPaysBizuply"), true);
   assert.equal(src.includes("partnerCommission"), true);
 });
@@ -130,6 +131,7 @@ test("Partner shell uses sidebar + pill navigation without Direct CRM", () => {
   assert.equal(layout.includes("/partner/dashboard/crm"), true);
   assert.equal(layout.includes("/partner/dashboard/tasks"), true);
   assert.equal(layout.includes("/partner/dashboard/reminders"), true);
+  assert.equal(layout.includes("/partner/dashboard/withdrawals"), true);
   assert.equal(layout.includes("CRMClient"), false);
   assert.equal(layout.includes("/api/crm"), false);
 
