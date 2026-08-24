@@ -161,11 +161,12 @@ export async function quotePartnerClient(
 export async function createPartnerDeal(
   clientId: string,
   payload: {
-    lines: { sku: string; markupIls?: number }[];
+    lines: { sku: string; markupIls?: number; displayNameHe?: string }[];
     additionalMarkup?: number;
     oneTimeCommission?: number;
     monthlyCommission?: number;
     packageDisplayName?: string;
+    packageDescription?: string;
     logoUrl?: string;
     kind?: string;
   }
@@ -179,11 +180,34 @@ export async function createPartnerDeal(
 
 export async function updatePartnerDeal(
   dealId: string,
-  payload: { packageDisplayName?: string; logoUrl?: string }
+  payload: {
+    packageDisplayName?: string;
+    packageDescription?: string;
+    logoUrl?: string;
+    lineNames?: Array<{ sku: string; displayNameHe: string }>;
+  }
 ) {
   const { data } = await API.patch(`/partner/deals/${dealId}`, payload);
-  return data as { deal: import("../types/partner").PartnerDeal };
+  return data as {
+    deal: import("../types/partner").PartnerDeal;
+    serviceRows?: PartnerServiceRow[];
+  };
 }
+
+export type PartnerServiceRow = {
+  sku: string;
+  name: string;
+  billing?: string;
+  isPackage?: boolean;
+  partnerPrice: number;
+  customerPrice: number;
+  customerSetup?: number;
+  payBizuply: number;
+  payBizuplySetupShare?: number;
+  payBizuplyMonthlyShare?: number;
+  oneTimeCommission?: number;
+  monthlyCommission?: number;
+};
 
 export async function fetchPartnerDeal(dealId: string) {
   const { data } = await API.get(`/partner/deals/${dealId}`);
@@ -191,6 +215,7 @@ export async function fetchPartnerDeal(dealId: string) {
     deal: import("../types/partner").PartnerDeal;
     client: PartnerClient | null;
     stripeItems: Array<{ nameEn: string; nameHe: string; amountIls: number; billing: string; sku: string }>;
+    serviceRows?: PartnerServiceRow[];
     billingSafety?: {
       ok: boolean;
       enabled: boolean;

@@ -15,6 +15,7 @@ type PublicSummary = {
     description?: string;
     billing?: string;
     amount?: number;
+    setupAmount?: number;
     includes?: string[];
   };
   addons?: Array<{ name?: string; description?: string; billing?: string; customerFinalPrice?: number }>;
@@ -52,6 +53,7 @@ export default function PartnerPublicDeal() {
   const pay = summary.payment || {};
   const date = summary.dealDate ? new Date(summary.dealDate).toLocaleDateString("he-IL") : "";
   const logo = summary.partner?.logo || summary.business?.logo;
+  const setupAmount = Number(summary.package?.setupAmount || 0);
 
   return (
     <div dir="rtl" className="min-h-screen bg-[#f6f4ff] px-4 py-10" style={{ fontFamily: '"Assistant","Rubik",sans-serif' }}>
@@ -87,9 +89,26 @@ export default function PartnerPublicDeal() {
 
           <section>
             <p className="text-xs font-black uppercase tracking-[0.16em] text-violet-700">החבילה שלך</p>
-            <h2 className="mt-1 text-3xl font-black">{summary.package?.name}</h2>
+            <div className="mt-1 flex flex-wrap items-end justify-between gap-3">
+              <h2 className="text-3xl font-black">{summary.package?.name}</h2>
+              {summary.package?.amount ? (
+                <p className="text-xl font-black text-violet-800">
+                  {formatIls(summary.package.amount)}
+                  {summary.package.billing === "recurring_month" ? " / חודש" : summary.package.billing === "recurring_year" ? " / שנה" : ""}
+                </p>
+              ) : null}
+            </div>
             {summary.package?.description ? (
               <p className="mt-2 font-bold text-slate-500">{summary.package.description}</p>
+            ) : null}
+            {setupAmount > 0 ? (
+              <div className="mt-3 flex items-center justify-between rounded-2xl bg-violet-50 px-4 py-3">
+                <div>
+                  <p className="font-black text-violet-900">הקמה</p>
+                  <p className="text-xs font-bold text-violet-700">חד-פעמי</p>
+                </div>
+                <p className="font-black text-violet-900">{formatIls(setupAmount)}</p>
+              </div>
             ) : null}
             {summary.package?.includes?.length ? (
               <>
@@ -127,6 +146,9 @@ export default function PartnerPublicDeal() {
 
           <section className="rounded-[28px] bg-slate-900 p-6 text-white">
             <h3 className="text-lg font-black">תשלום</h3>
+            <p className="mt-1 text-sm font-bold text-white/60">
+              מחיר אחיד לרישיון ולשירותים, כולל הקמה וחיוב חודשי.
+            </p>
             <div className="mt-4 space-y-2 font-black">
               <Row label="מחיר חד-פעמי" value={formatIls(pay.oneTime)} />
               <Row label="מחיר כל חודש" value={`${formatIls(pay.monthly)} / חודש`} />

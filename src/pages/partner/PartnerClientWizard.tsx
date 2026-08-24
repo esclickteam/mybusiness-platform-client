@@ -19,7 +19,7 @@ import {
   partnerApiError,
   updatePartnerClient,
 } from "../../lib/partnerApi";
-import { computeDealPreview, isCommissionSku } from "../../lib/partnerDealMath";
+import { computeDealPreview, customerPackageAmount, isCommissionSku, publicPackageLabel } from "../../lib/partnerDealMath";
 import { formatIls, formatPct } from "../../lib/partnerMoney";
 import type {
   ManagementMode,
@@ -72,6 +72,8 @@ export default function PartnerClientWizard() {
   const [additionalMarkup, setAdditionalMarkup] = useState(0);
   const [monthlyCommission, setMonthlyCommission] = useState(0);
   const [packageDisplayName, setPackageDisplayName] = useState("");
+  const [packageDescription, setPackageDescription] = useState("");
+  const [lineNames, setLineNames] = useState<Record<string, string>>({});
   const [logoUrl, setLogoUrl] = useState("");
   const [managementMode, setManagementMode] = useState<ManagementMode>("shared");
   const [createdDeal, setCreatedDeal] = useState<{ id: string; number: string; publicUrl: string } | null>(
@@ -124,7 +126,27 @@ export default function PartnerClientWizard() {
     [items, selectedSkus, additionalMarkup, partnerShareRate, monthlyCommission]
   );
   const bizuplyShareRate = Math.max(0, 1 - Number(partnerShareRate || 0));
-  const defaultPackageName = preview.primary?.displayNameHe || preview.primary?.nameHe || "";
+  const defaultPackageName = publicPackageLabel(
+    preview.primary?.displayNameHe || preview.primary?.nameHe || "",
+    "רישיון שימוש במערכת"
+  );
+
+  useEffect(() => {
+    setLineNames((prev) => {
+      const next = { ...prev };
+      let changed = false;
+      for (const sku of selectedSkus) {
+        if (next[sku]) continue;
+        const item = items.find((row) => row.sku === sku);
+        next[sku] = publicPackageLabel(
+          item?.displayNameHe || item?.nameHe,
+          item?.nameHe || sku
+        );
+        changed = true;
+      }
+      return changed ? next : prev;
+    });
+  }, [selectedSkus, items]);
 
   useEffect(() => {
     if (packageDisplayName || !defaultPackageName) return;
@@ -170,11 +192,12 @@ export default function PartnerClientWizard() {
     try {
       await persistQuote();
       const data = await createPartnerDeal(clientId, {
-        lines: selectedSkus.map((sku) => ({ sku, markupIls: 0 })),
+        lines: selectedSkus.map((sku) => ({ sku, markupIls: 0, displayNameHe: lineNames[sku] })),
         additionalMarkup,
         oneTimeCommission: additionalMarkup,
         monthlyCommission,
         packageDisplayName,
+        packageDescription,
         logoUrl,
         kind: existingClientId ? "amendment" : "initial",
       });
@@ -383,7 +406,7 @@ export default function PartnerClientWizard() {
               <img src={logoUrl} alt="" className="mb-4 h-14 w-14 rounded-2xl bg-white object-cover" />
             ) : null}
             <label className="block">
-              <span className="text-xs font-black text-slate-400">שם החבילה בהצעה ובקישור ללקוח</span>
+              <span className="text-xs font-black text-slate-400">שם הרישיון / החבילה בהצעה ללקוח</span>
               <input
                 value={packageDisplayName}
                 onChange={(e) => setPackageDisplayName(e.target.value)}
@@ -391,6 +414,35 @@ export default function PartnerClientWizard() {
                 className="mt-1 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-2xl font-black outline-none focus:border-violet-400"
               />
             </label>
+            <label className="mt-3 block">
+              <span className="text-xs font-black text-slate-400">תיאור הרישיון ללקוח</span>
+              <textarea
+                value={packageDescription}
+                onChange={(e) => setPackageDescription(e.target.value)}
+                placeholder="רישיון שימוש במערכת ניהול עסק מלאה"
+                rows={2}
+                className="mt-1 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 font-bold outline-none focus:border-violet-400"
+              />
+            </label>
+            <div className="mt-4 space-y-2">
+              {preview.lines.filter((line) => !isCommissionSku(line.sku)).map((line) => (
+                <label key={line.sku} className="block">
+                  <span className="text-[11px] font-black text-slate-400">שם השירות ללקוח</span>
+                  <input
+                    value={lineNames[line.sku] || ""}
+                    onChange={(e) => setLineNames((prev) => ({ ...prev, [line.sku]: e.target.value }))}
+                    className="mt-1 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm font-black outline-none focus:border-violet-400"
+                  />
+                </label>
+              ))}
+            </div>
+            <p className="mt-4 text-sm font-black">
+              רישיון {formatIls(customerPackageAmount(Number(preview.primary?.partnerWholesalePrice) || 0, monthlyCommission, preview.primary?.billing))}
+              {preview.primary?.billing === "recurring_month" ? " / חודש" : ""}
+            </p>
+            {additionalMarkup ? (
+              <p className="text-sm font-black">הקמה {formatIls(additionalMarkup)}</p>
+            ) : null}
             <p className="mt-4 text-sm font-black">מחיר חד-פעמי {formatIls(preview.totals.oneTime)}</p>
             <p className="text-sm font-black">מחיר כל חודש {formatIls(preview.totals.monthly)}</p>
             {preview.totals.annual ? (

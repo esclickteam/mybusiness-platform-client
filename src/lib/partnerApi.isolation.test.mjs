@@ -83,9 +83,11 @@ test("public partner deal page does not render internal finance fields", () => {
   assert.equal(src.includes("commission"), false);
   assert.equal(src.toLowerCase().includes("sku"), false);
   assert.equal(src.includes("Bizuply share"), false);
+  assert.equal(src.includes("Bizuply Business"), false);
   assert.equal(src.includes("partnerWholesalePrice"), false);
   assert.equal(src.includes("CRMClient"), false);
   assert.equal(src.includes("/api/crm"), false);
+  assert.equal(src.includes("setupAmount"), true);
 });
 
 test("public partner deal link hides footer and support bot", () => {

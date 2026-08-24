@@ -23,8 +23,26 @@ export function isMainPackageSku(sku?: string) {
   return sku === "monthly" || sku === "yearly" || sku === "website_only";
 }
 
-export function isCommissionSku(sku?: string) {
-  return sku === COMMISSION_ONE_TIME_SKU || sku === COMMISSION_MONTHLY_SKU;
+export function isBizuplyBrandedName(value?: string) {
+  return /bizuply/i.test(String(value || ""));
+}
+
+export function publicPackageLabel(name?: string, fallback = "רישיון שימוש במערכת") {
+  const trimmed = String(name || "").trim();
+  if (trimmed && !isBizuplyBrandedName(trimmed)) return trimmed;
+  return fallback;
+}
+
+export function customerPackageAmount(
+  wholesale: number,
+  monthlyCommission: number,
+  billing?: string
+) {
+  const base = roundIls(Number(wholesale) || 0);
+  if (billing === "recurring_month" || billing === "recurring_year") {
+    return roundIls(base + Number(monthlyCommission || 0));
+  }
+  return base;
 }
 
 function splitFee(amount: number, partnerShareRate: number) {

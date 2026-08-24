@@ -168,6 +168,7 @@ export type PartnerDeal = {
   kind?: string;
   packageSku?: string;
   packageDisplayName?: string;
+  packageDescription?: string;
   logoUrl?: string;
   additionalMarkup?: number;
   oneTimeCommission?: number;
