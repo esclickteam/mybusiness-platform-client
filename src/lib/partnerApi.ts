@@ -32,9 +32,20 @@ export async function fetchPartnerMe() {
 }
 
 export function partnerApiError(err: unknown, fallback: string) {
-  const response = (err as { response?: { data?: { error?: string; message?: string } } })
-    ?.response?.data;
-  return response?.error || response?.message || fallback;
+  const data = (
+    err as {
+      response?: { data?: { error?: string; message?: string; details?: string } };
+      message?: string;
+    }
+  )?.response?.data;
+  if (typeof data?.error === "string" && data.error.trim()) return data.error.trim();
+  if (typeof data?.message === "string" && data.message.trim()) return data.message.trim();
+  if (typeof data?.details === "string" && data.details.trim()) return data.details.trim();
+  if (err instanceof Error) {
+    const msg = String(err.message || "").trim();
+    if (msg && msg !== "Error" && msg !== "undefined") return msg;
+  }
+  return fallback;
 }
 
 export async function enterPartnerClient(id: string) {
@@ -180,6 +191,13 @@ export async function fetchPartnerDeal(dealId: string) {
     deal: import("../types/partner").PartnerDeal;
     client: PartnerClient | null;
     stripeItems: Array<{ nameEn: string; nameHe: string; amountIls: number; billing: string; sku: string }>;
+    billingSafety?: {
+      ok: boolean;
+      enabled: boolean;
+      mode?: string;
+      code?: string;
+      message?: string;
+    };
   };
 }
 

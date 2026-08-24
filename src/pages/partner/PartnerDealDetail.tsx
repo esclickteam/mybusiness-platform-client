@@ -13,6 +13,11 @@ export default function PartnerDealDetail() {
   const [deal, setDeal] = useState<PartnerDeal | null>(null);
   const [client, setClient] = useState<PartnerClient | null>(null);
   const [stripeItems, setStripeItems] = useState<any[]>([]);
+  const [billingSafety, setBillingSafety] = useState<{
+    enabled?: boolean;
+    mode?: string;
+    message?: string;
+  } | null>(null);
   const [packageDisplayName, setPackageDisplayName] = useState("");
   const [savingName, setSavingName] = useState(false);
   const [error, setError] = useState("");
@@ -25,6 +30,7 @@ export default function PartnerDealDetail() {
         setDeal(data.deal);
         setClient(data.client);
         setStripeItems(data.stripeItems || []);
+        setBillingSafety(data.billingSafety || null);
         setPackageDisplayName(data.deal.packageDisplayName || "");
       })
       .catch((err) => setError(partnerApiError(err, "לא ניתן לטעון עסקה")));
@@ -71,6 +77,12 @@ export default function PartnerDealDetail() {
         </p>
       ) : null}
       {error ? <p className="font-black text-rose-700">{error}</p> : null}
+      {billingSafety && billingSafety.enabled === false ? (
+        <p className="rounded-2xl bg-amber-50 px-4 py-3 text-sm font-black text-amber-800">
+          תשלום ל-Bizuply כבוי בסביבה זו
+          {billingSafety.message ? ` — ${billingSafety.message}` : ""}
+        </p>
+      ) : null}
 
       <section className="rounded-3xl border border-slate-200 bg-white p-5">
         <label className="block">

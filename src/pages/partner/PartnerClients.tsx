@@ -169,12 +169,12 @@ export default function PartnerClients() {
                     <td className="px-5 py-4">
                       <div className="flex items-center gap-3">
                         <span className="grid h-9 w-9 place-items-center rounded-full bg-violet-100 text-xs font-black text-violet-800">
-                          {(row.contact.businessName || "?").slice(0, 1)}
+                          {(row.contact?.businessName || "?").slice(0, 1)}
                         </span>
                         <div>
-                          <p className="font-black text-slate-900">{row.contact.businessName}</p>
+                          <p className="font-black text-slate-900">{row.contact?.businessName || "—"}</p>
                           <p className="text-[11px] font-bold text-slate-400">
-                            {row.contact.email}
+                            {row.contact?.email || "—"}
                           </p>
                         </div>
                       </div>
@@ -188,9 +188,9 @@ export default function PartnerClients() {
                         {PARTNER_STATUS_LABEL[row.status] || row.status}
                       </span>
                     </td>
-                    <td className="px-3 py-4 font-bold text-slate-700">{row.contact.contactName}</td>
+                    <td className="px-3 py-4 font-bold text-slate-700">{row.contact?.contactName || "—"}</td>
                     <td className="px-3 py-4 font-bold text-slate-600" dir="ltr">
-                      {row.contact.phone || "—"}
+                      {row.contact?.phone || "—"}
                     </td>
                     <td className="px-3 py-4 font-bold text-slate-600">{eventTypeLabel(row)}</td>
                     <td className="px-3 py-4 font-bold text-slate-600">

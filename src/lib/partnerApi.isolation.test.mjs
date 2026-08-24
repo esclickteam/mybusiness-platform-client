@@ -106,6 +106,16 @@ test("partner deal math keeps wholesale + markup split", () => {
   assert.equal(src.includes("partnerCommission"), true);
 });
 
+test("partnerApiError reads interceptor Error.message when response is missing", () => {
+  const api = readFileSync(join(ROOT, "lib/partnerApi.ts"), "utf8");
+  assert.equal(api.includes("err instanceof Error"), true);
+  assert.equal(api.includes("err.message"), true);
+  const fnStart = api.indexOf("export function partnerApiError");
+  const fn = api.slice(fnStart, fnStart + 900);
+  assert.equal(fn.includes("response?.error || response?.message || fallback"), false);
+  assert.equal(fn.includes("data?.error"), true);
+});
+
 test("logged-in partner is not dropped on the public homepage", () => {
   const app = readFileSync(join(ROOT, "App.jsx"), "utf8");
   assert.equal(app.includes('user.role === "partner"'), true);

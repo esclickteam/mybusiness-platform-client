@@ -69,12 +69,12 @@ export default function PartnerRevenue() {
       </section>
       <PartnerCard className="p-5">
         <div className="mt-0 grid gap-2 text-sm sm:grid-cols-2">
-          <p>סיטונאות: {ils(due?.breakdown.wholesaleSubscriptions)}</p>
-          <p>חלק Bizuply מהעמלה: {ils(due?.breakdown.bizuplyMarkupShare)}</p>
-          <p>שימוש: {ils(due?.breakdown.usage)}</p>
-          <p>תוספים: {ils(due?.breakdown.addOns)}</p>
-          <p>תשלומי לקוחות/פעילות: {ils(due?.breakdown.payments)}</p>
-          <p>תשלומי מנוי Partner: {ils(due?.breakdown.partnerPlanPayments)}</p>
+          <p>סיטונאות: {ils(due?.breakdown?.wholesaleSubscriptions)}</p>
+          <p>חלק Bizuply מהעמלה: {ils(due?.breakdown?.bizuplyMarkupShare)}</p>
+          <p>שימוש: {ils(due?.breakdown?.usage)}</p>
+          <p>תוספים: {ils(due?.breakdown?.addOns)}</p>
+          <p>תשלומי לקוחות/פעילות: {ils(due?.breakdown?.payments)}</p>
+          <p>תשלומי מנוי Partner: {ils(due?.breakdown?.partnerPlanPayments)}</p>
         </div>
       </PartnerCard>
       <PartnerCard className="overflow-hidden">
