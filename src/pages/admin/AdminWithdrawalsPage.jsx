@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import API from "../../api";
 import AdminHeader from "./AdminsHeader";
+import { fetchAdminPartnerWithdrawalsPending } from "../../lib/partnerApi";
+import { formatIls } from "../../lib/partnerMoney";
 import "./AdminPayoutPage.css";
 
 const AdminWithdrawalsPage = () => {
   const [withdrawals, setWithdrawals] = useState([]);
+  const [partnerWithdrawals, setPartnerWithdrawals] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [uploadingId, setUploadingId] = useState(null);
@@ -15,8 +19,12 @@ const AdminWithdrawalsPage = () => {
       setLoading(true);
       setError(null);
       try {
-        const res = await API.get("/admin/withdrawals/pending");
-        setWithdrawals(res.data || []);
+        const [legacyRes, partnerRes] = await Promise.all([
+          API.get("/admin/withdrawals/pending"),
+          fetchAdminPartnerWithdrawalsPending().catch(() => ({ items: [] })),
+        ]);
+        setWithdrawals(legacyRes.data || []);
+        setPartnerWithdrawals(partnerRes.items || []);
       } catch (err) {
         setError("Error loading pending withdrawals");
       } finally {
@@ -75,7 +83,61 @@ const AdminWithdrawalsPage = () => {
       {loading && <p>Loading withdrawals...</p>}
       {error && <p className="error">{error}</p>}
 
-      {!loading && withdrawals.length === 0 && <p>No pending withdrawals at the moment.</p>}
+      <section className="mt-6">
+        <h2 className="text-xl font-black text-purple-950">משיכות פרטנרים</h2>
+        <p className="mt-1 text-sm font-bold text-slate-500">
+          בקשות משיכה של תוכנית Partner. לאישור/דחייה/תשלום עברו לתיק הפרטנר.
+        </p>
+        {!loading && partnerWithdrawals.length === 0 ? (
+          <p className="mt-3 text-sm font-bold text-slate-500">אין בקשות משיכה פתוחות לפרטנרים.</p>
+        ) : null}
+        {partnerWithdrawals.length > 0 ? (
+          <div className="mt-4 overflow-x-auto rounded-2xl border border-purple-100 bg-white">
+            <table className="min-w-[900px] w-full text-right">
+              <thead>
+                <tr>
+                  <th>פרטנר</th>
+                  <th>מספר בקשה</th>
+                  <th>סכום</th>
+                  <th>סטטוס</th>
+                  <th>קבלה</th>
+                  <th>תאריך</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {partnerWithdrawals.map((row) => (
+                  <tr key={row._id}>
+                    <td>{row.partnerName || "—"}</td>
+                    <td>{row.requestNumber || "—"}</td>
+                    <td>{formatIls(row.amount)}</td>
+                    <td>{row.status || "—"}</td>
+                    <td>{row.receiptNumber || "—"}</td>
+                    <td>
+                      {row.submittedAt
+                        ? new Date(row.submittedAt).toLocaleDateString("he-IL")
+                        : "—"}
+                    </td>
+                    <td>
+                      <Link
+                        to={`/admin/partners/${row.partnerId}`}
+                        className="font-black text-violet-700"
+                      >
+                        תיק פרטנר
+                      </Link>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : null}
+      </section>
+
+      <h2 className="mt-10 text-xl font-black text-purple-950">משיכות שותפים / משווקים</h2>
+      {!loading && withdrawals.length === 0 && (
+        <p className="mt-3 text-sm font-bold text-slate-500">אין משיכות ממתינות לשותפים כרגע.</p>
+      )}
 
       {!loading && withdrawals.length > 0 && (
         <>

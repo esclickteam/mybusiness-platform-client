@@ -77,7 +77,7 @@ test("AuthContext decodes JWT as UTF-8 instead of raw atob", () => {
   assert.equal(auth.includes("decodeJwtPayload"), true);
 });
 
-test("public partner deal page does not render internal finance fields", () => {
+test("public partner deal page shows products without line prices", () => {
   const src = readFileSync(join(ROOT, "pages/partner/PartnerPublicDeal.tsx"), "utf8");
   assert.equal(src.includes("wholesale"), false);
   assert.equal(src.includes("commission"), false);
@@ -87,7 +87,9 @@ test("public partner deal page does not render internal finance fields", () => {
   assert.equal(src.includes("partnerWholesalePrice"), false);
   assert.equal(src.includes("CRMClient"), false);
   assert.equal(src.includes("/api/crm"), false);
-  assert.equal(src.includes("setupAmount"), true);
+  assert.equal(src.includes("setupAmount"), false);
+  assert.equal(src.includes("customerFinalPrice"), false);
+  assert.equal(src.includes("פירוט מוצרים"), true);
 });
 
 test("public partner deal link hides footer and support bot", () => {

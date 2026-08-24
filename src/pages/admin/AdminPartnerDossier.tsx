@@ -248,6 +248,8 @@ const dealCols = [
   ["status", "סטטוס"],
   ["totals.customerNow", "סכום ללקוח"],
   ["totals.partnerPaysBizuply", "לתשלום ל-Bizuply"],
+  ["paidAt", "שולם"],
+  ["clientProvisioning.status", "משתמש"],
 ];
 const commissionCols = [
   ["product", "מוצר"],

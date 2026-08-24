@@ -498,6 +498,14 @@ export function AuthProvider({ children }) {
           return { user: normalizedUser, redirectUrl: "/partner/dashboard" };
         }
 
+        if (
+          normalizedUser.role === "business" &&
+          (normalizedUser.mustChangePassword || normalizedUser.isTempPassword)
+        ) {
+          navigate("/change-password", { replace: true });
+          return { user: normalizedUser, redirectUrl: "/change-password" };
+        }
+
         consumePostLoginRedirect();
         if (normalizedUser.role === "business" && normalizedUser.businessId) {
           clearLastDashboardRoute(normalizedUser.businessId);
@@ -923,6 +931,13 @@ export function AuthProvider({ children }) {
           !isMetaCallbackRoute &&
           !isCheckoutContinuationPath(location.pathname)
         ) {
+          if (location.pathname === "/change-password") {
+            return;
+          }
+          if (freshUser.mustChangePassword || freshUser.isTempPassword) {
+            navigate("/change-password", { replace: true });
+            return;
+          }
           if (freshUser.hasAccess) {
             // Already inside the business app (including after a CTA navigate) —
             // never snap back to the generic dashboard.
