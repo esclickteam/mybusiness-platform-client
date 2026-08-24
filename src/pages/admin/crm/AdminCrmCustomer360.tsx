@@ -66,6 +66,29 @@ const TABS = [
   ["info", "עריכת CRM"],
 ];
 
+function metaLeadFormDetails(metaLead: any): { label: string; value: string }[] {
+  const rows: { label: string; value: string }[] = [];
+  const push = (label?: unknown, value?: unknown) => {
+    const cleanLabel = String(label || "").trim();
+    const cleanValue = Array.isArray(value)
+      ? value.map((item) => String(item || "").trim()).filter(Boolean).join(", ")
+      : String(value || "").trim();
+    if (!cleanLabel || !cleanValue) return;
+    if (rows.some((row) => row.label === cleanLabel && row.value === cleanValue)) return;
+    rows.push({ label: cleanLabel, value: cleanValue });
+  };
+  (Array.isArray(metaLead?.details) ? metaLead.details : []).forEach((row: any) => {
+    push(row?.label, row?.value);
+  });
+  (Array.isArray(metaLead?.rawFieldData) ? metaLead.rawFieldData : []).forEach((field: any) => {
+    const value = Array.isArray(field?.values)
+      ? field.values
+      : field?.value || field?.answer || field?.text || "";
+    push(field?.label || field?.name || field?.key, value);
+  });
+  return rows;
+}
+
 export default function AdminCrmCustomer360() {
   const { id } = useParams();
   const [searchParams] = useSearchParams();
@@ -104,6 +127,7 @@ export default function AdminCrmCustomer360() {
   const [proposalOpen, setProposalOpen] = useState(false);
   const [calendarServices, setCalendarServices] = useState<any[]>([]);
   const [activitySummaryView, setActivitySummaryView] = useState<any>(null);
+  const formDetails = metaLeadFormDetails(customer?.metaLead);
 
   async function load() {
     if (!id) return;
@@ -447,6 +471,10 @@ export default function AdminCrmCustomer360() {
                 <p>עמוד: {customer.metaLead.pageName || customer.metaLead.pageId || "—"}</p>
                 <p>שם הטופס: {customer.metaLead.formName || "—"}</p>
                 <p>מזהה טופס: {customer.metaLead.formId || "—"}</p>
+                {customer.metaLead.providerLeadId ? (
+                  <p>מזהה ליד: {customer.metaLead.providerLeadId}</p>
+                ) : null}
+                {customer.metaLead.pageId ? <p>מזהה עמוד: {customer.metaLead.pageId}</p> : null}
                 {customer.metaLead.campaignName || customer.metaLead.campaignId ? (
                   <p>קמפיין: {customer.metaLead.campaignName || customer.metaLead.campaignId}</p>
                 ) : null}
@@ -470,6 +498,38 @@ export default function AdminCrmCustomer360() {
             <p>חבילה נוכחית: {PACKAGE_LABELS[customer.account?.subscriptionPlan] || "—"}</p>
             <p>סטטוס מנוי: {customer.account?.subscriptionStatus || "—"}</p>
           </CrmCard>
+          {customer.metaLead?.formId || customer.metaLead?.formName || customer.metaLead?.providerLeadId ? (
+            <CrmCard className="lg:col-span-2">
+              <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                <h3 className="font-black">כל נתוני הטופס</h3>
+                <span className="rounded-full bg-purple-50 px-2.5 py-0.5 text-[11px] font-black text-[#7C4DFF] ring-1 ring-purple-100">
+                  {formDetails.length} שדות
+                </span>
+              </div>
+              {formDetails.length ? (
+                <div className="grid gap-2 sm:grid-cols-2">
+                  {formDetails.map((row, index) => (
+                    <div
+                      key={`${row.label}-${index}`}
+                      className="rounded-xl border border-purple-100 bg-[#faf7ff] p-3"
+                    >
+                      <p className="mb-1 text-[11px] font-black text-slate-400">{row.label}</p>
+                      <p
+                        className="whitespace-pre-wrap break-words text-sm font-black text-slate-900"
+                        dir={/[A-Za-z0-9@+]/.test(row.value) ? "ltr" : undefined}
+                      >
+                        {row.value}
+                      </p>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="rounded-xl border border-dashed border-slate-200 bg-slate-50 p-6 text-center text-sm font-bold text-slate-400">
+                  אין נתוני טופס שמורים עדיין. סנכרנו את לידי Meta כדי למשוך את התשובות.
+                </p>
+              )}
+            </CrmCard>
+          ) : null}
           <CrmCard>
             <h3 className="font-black">מצב הלקוח</h3>
             <Badge tone={healthTone(customer.health?.health)}>{HEALTH_LABELS[customer.health?.health] || "—"}</Badge>
