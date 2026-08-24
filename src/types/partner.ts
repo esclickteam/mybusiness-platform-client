@@ -167,6 +167,8 @@ export type PartnerDeal = {
   status: string;
   kind?: string;
   packageSku?: string;
+  packageDisplayName?: string;
+  logoUrl?: string;
   additionalMarkup?: number;
   oneTimeCommission?: number;
   monthlyCommission?: number;

@@ -154,6 +154,8 @@ export async function createPartnerDeal(
     additionalMarkup?: number;
     oneTimeCommission?: number;
     monthlyCommission?: number;
+    packageDisplayName?: string;
+    logoUrl?: string;
     kind?: string;
   }
 ) {
@@ -162,6 +164,14 @@ export async function createPartnerDeal(
     deal: import("../types/partner").PartnerDeal;
     publicUrl: string;
   };
+}
+
+export async function updatePartnerDeal(
+  dealId: string,
+  payload: { packageDisplayName?: string; logoUrl?: string }
+) {
+  const { data } = await API.patch(`/partner/deals/${dealId}`, payload);
+  return data as { deal: import("../types/partner").PartnerDeal };
 }
 
 export async function fetchPartnerDeal(dealId: string) {

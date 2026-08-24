@@ -15,6 +15,7 @@ import {
   createPartnerDeal,
   fetchPartnerCatalog,
   fetchPartnerClient,
+  fetchPartnerMe,
   partnerApiError,
   updatePartnerClient,
 } from "../../lib/partnerApi";
@@ -70,6 +71,8 @@ export default function PartnerClientWizard() {
   const [selectedSkus, setSelectedSkus] = useState<string[]>([]);
   const [additionalMarkup, setAdditionalMarkup] = useState(0);
   const [monthlyCommission, setMonthlyCommission] = useState(0);
+  const [packageDisplayName, setPackageDisplayName] = useState("");
+  const [logoUrl, setLogoUrl] = useState("");
   const [managementMode, setManagementMode] = useState<ManagementMode>("shared");
   const [createdDeal, setCreatedDeal] = useState<{ id: string; number: string; publicUrl: string } | null>(
     null
@@ -83,6 +86,12 @@ export default function PartnerClientWizard() {
         setPartnerShareRate(Number(data.partnerShareRate) || 0.75);
       })
       .catch(() => setError("לא ניתן לטעון קטלוג"));
+    fetchPartnerMe()
+      .then((data) => {
+        const branding = data.branding || {};
+        setLogoUrl(String(branding.logoUrl || ""));
+      })
+      .catch(() => undefined);
   }, []);
 
   useEffect(() => {
@@ -115,6 +124,12 @@ export default function PartnerClientWizard() {
     [items, selectedSkus, additionalMarkup, partnerShareRate, monthlyCommission]
   );
   const bizuplyShareRate = Math.max(0, 1 - Number(partnerShareRate || 0));
+  const defaultPackageName = preview.primary?.displayNameHe || preview.primary?.nameHe || "";
+
+  useEffect(() => {
+    if (packageDisplayName || !defaultPackageName) return;
+    setPackageDisplayName(defaultPackageName);
+  }, [defaultPackageName, packageDisplayName]);
 
   async function createDraft() {
     if (!contact.businessName.trim() || !contact.contactName.trim() || !contact.email.trim()) {
@@ -159,6 +174,8 @@ export default function PartnerClientWizard() {
         additionalMarkup,
         oneTimeCommission: additionalMarkup,
         monthlyCommission,
+        packageDisplayName,
+        logoUrl,
         kind: existingClientId ? "amendment" : "initial",
       });
       setCreatedDeal({
@@ -362,10 +379,18 @@ export default function PartnerClientWizard() {
             כך הלקוח יראה את הסיכום: מחיר חד-פעמי, מחיר כל חודש, וסה״כ לתשלום עכשיו — כולל העמלה, בלי פירוט פנימי.
           </p>
           <div className="rounded-[28px] border border-slate-100 bg-slate-50 p-5">
-            <p className="text-xs font-black text-slate-400">החבילה שלך</p>
-            <p className="text-2xl font-black">
-              {preview.primary?.displayNameHe || preview.primary?.nameHe || "חבילה"}
-            </p>
+            {logoUrl ? (
+              <img src={logoUrl} alt="" className="mb-4 h-14 w-14 rounded-2xl bg-white object-cover" />
+            ) : null}
+            <label className="block">
+              <span className="text-xs font-black text-slate-400">שם החבילה בהצעה ובקישור ללקוח</span>
+              <input
+                value={packageDisplayName}
+                onChange={(e) => setPackageDisplayName(e.target.value)}
+                placeholder={defaultPackageName || "שם החבילה"}
+                className="mt-1 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-2xl font-black outline-none focus:border-violet-400"
+              />
+            </label>
             <p className="mt-4 text-sm font-black">מחיר חד-פעמי {formatIls(preview.totals.oneTime)}</p>
             <p className="text-sm font-black">מחיר כל חודש {formatIls(preview.totals.monthly)}</p>
             {preview.totals.annual ? (

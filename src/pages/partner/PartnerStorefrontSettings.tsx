@@ -85,6 +85,9 @@ export default function PartnerStorefrontSettings() {
         onChange={(e) => setForm({ ...form, logoUrl: e.target.value })}
         placeholder="לוגו URL"
       />
+      <p className="text-xs font-bold text-slate-500">
+        אם מוגדר לוגו, הוא יופיע בהצעת העסקה ובקישור שנשלח ללקוח.
+      </p>
       <PartnerTextarea
         value={form.description}
         onChange={(e) => setForm({ ...form, description: e.target.value })}

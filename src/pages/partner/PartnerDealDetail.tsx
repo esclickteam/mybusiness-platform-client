@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams, useSearchParams } from "react-router-dom";
-import { fetchPartnerDeal, partnerApiError, startPartnerDealCheckout } from "../../lib/partnerApi";
+import { fetchPartnerDeal, partnerApiError, startPartnerDealCheckout, updatePartnerDeal } from "../../lib/partnerApi";
 import { billingLabel } from "../../lib/partnerDealMath";
 import { formatIls } from "../../lib/partnerMoney";
 import PartnerPageHeader from "../../components/partner/PartnerPageHeader";
@@ -13,6 +13,8 @@ export default function PartnerDealDetail() {
   const [deal, setDeal] = useState<PartnerDeal | null>(null);
   const [client, setClient] = useState<PartnerClient | null>(null);
   const [stripeItems, setStripeItems] = useState<any[]>([]);
+  const [packageDisplayName, setPackageDisplayName] = useState("");
+  const [savingName, setSavingName] = useState(false);
   const [error, setError] = useState("");
   const [paying, setPaying] = useState(false);
 
@@ -23,6 +25,7 @@ export default function PartnerDealDetail() {
         setDeal(data.deal);
         setClient(data.client);
         setStripeItems(data.stripeItems || []);
+        setPackageDisplayName(data.deal.packageDisplayName || "");
       })
       .catch((err) => setError(partnerApiError(err, "לא ניתן לטעון עסקה")));
   }, [dealId]);
@@ -55,7 +58,7 @@ export default function PartnerDealDetail() {
       <PartnerPageHeader
         eyebrow={`Deal #${deal.dealNumber}`}
         title={client?.contact?.businessName || "סיכום עסקה"}
-        subtitle="אתם גובים מהלקוח את מלוא הסכום, ואז משלמים ל-Bizuply דרך Stripe TEST."
+        subtitle="אתם גובים מהלקוח את מלוא הסכום, ואז משלמים ל-Bizuply דרך Stripe. עמלה חד-פעמית נרשמת בחודש התשלום; עמלה חודשית נגבית ב-Stripe כל עוד המנוי פעיל ומתווספת לעמלות למשיכה."
       />
       {paidFlag ? (
         <p className="rounded-2xl bg-emerald-50 px-4 py-3 text-sm font-black text-emerald-800">
@@ -68,6 +71,39 @@ export default function PartnerDealDetail() {
         </p>
       ) : null}
       {error ? <p className="font-black text-rose-700">{error}</p> : null}
+
+      <section className="rounded-3xl border border-slate-200 bg-white p-5">
+        <label className="block">
+          <span className="text-xs font-black text-slate-500">שם החבילה בהצעה ובקישור ללקוח</span>
+          <div className="mt-2 flex flex-wrap gap-2">
+            <input
+              value={packageDisplayName}
+              onChange={(e) => setPackageDisplayName(e.target.value)}
+              className="min-w-[220px] flex-1 rounded-2xl border border-slate-200 bg-slate-50 px-3 py-2 font-black outline-none focus:border-violet-400 focus:bg-white"
+            />
+            <button
+              type="button"
+              disabled={savingName}
+              onClick={async () => {
+                if (!dealId) return;
+                setSavingName(true);
+                setError("");
+                try {
+                  const data = await updatePartnerDeal(dealId, { packageDisplayName });
+                  setDeal(data.deal);
+                } catch (err: unknown) {
+                  setError(partnerApiError(err, "לא ניתן לשמור את שם החבילה"));
+                } finally {
+                  setSavingName(false);
+                }
+              }}
+              className="rounded-2xl bg-slate-900 px-4 py-2 text-sm font-black text-white disabled:opacity-60"
+            >
+              {savingName ? "שומר..." : "שמירת שם"}
+            </button>
+          </div>
+        </label>
+      </section>
 
       <section className="grid gap-3 md:grid-cols-4">
         <Stat label="סטטוס" value={deal.status} />
@@ -92,6 +128,9 @@ export default function PartnerDealDetail() {
 
       <section className="rounded-3xl border border-slate-200 bg-white p-5">
         <h3 className="mb-3 font-black">פריטים לתשלום ב-Stripe</h3>
+        <p className="mb-3 text-sm font-bold text-slate-500">
+          פריטים חודשיים, כולל חלק Bizuply מהעמלה החודשית, מתחדשים כל עוד המנוי פעיל. עמלה חד-פעמית נגבית רק בחשבונית הראשונה.
+        </p>
         <ul className="space-y-2 text-sm font-bold">
           {stripeItems.map((item) => (
             <li key={item.sku} className="flex justify-between gap-3 rounded-2xl bg-slate-50 px-3 py-2">

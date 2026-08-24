@@ -1574,12 +1574,13 @@ export default function App() {
           !isHiddenOffer &&
           !isGuidedDemoRoute &&
           !isPublicProposalRoute &&
+          !isPublicPartnerDeal &&
           !isBizuplyPublicBookingRoute && <Footer />}
       </div>
 
       <GuidedDemoHost />
 
-      {!user && !isEarlyAccessLanding && !isHiddenOffer && !isBizuplyPublicBookingRoute && !isPublicProposalRoute && (
+      {!user && !isEarlyAccessLanding && !isHiddenOffer && !isBizuplyPublicBookingRoute && !isPublicProposalRoute && !isPublicPartnerDeal && (
         <PreLoginBot />
       )}
 
@@ -1596,6 +1597,7 @@ export default function App() {
         !isStaffRoute &&
         !isGuidedDemoRoute &&
         !isPublicProposalRoute &&
+        !isPublicPartnerDeal &&
         !isBizuplyPublicBookingRoute &&
         !location.pathname.startsWith("/embed/") &&
         !isMiniSiteHost && (
@@ -1608,6 +1610,7 @@ export default function App() {
         !isEarlyAccessLanding &&
         !isMiniSiteHost &&
         !isPublicProposalRoute &&
+        !isPublicPartnerDeal &&
         !isBizuplyPublicBookingRoute && (
           <AccessibilityWidget siteKey="bizuply-platform" mode="live" />
         )}

@@ -88,6 +88,17 @@ test("public partner deal page does not render internal finance fields", () => {
   assert.equal(src.includes("/api/crm"), false);
 });
 
+test("public partner deal link hides footer and support bot", () => {
+  const app = readFileSync(join(ROOT, "App.jsx"), "utf8");
+  assert.equal(app.includes("isPublicPartnerDeal"), true);
+  const footerAt = app.indexOf("<Footer />");
+  const botAt = app.indexOf("<SupportChatWidget />");
+  const footerWindow = app.slice(Math.max(0, footerAt - 400), footerAt);
+  const botWindow = app.slice(Math.max(0, botAt - 500), botAt);
+  assert.equal(footerWindow.includes("isPublicPartnerDeal"), true);
+  assert.equal(botWindow.includes("isPublicPartnerDeal"), true);
+});
+
 test("partner deal math keeps wholesale + markup split", () => {
   const src = readFileSync(join(ROOT, "lib/partnerDealMath.ts"), "utf8");
   assert.equal(src.includes("monthlyCommission"), true);

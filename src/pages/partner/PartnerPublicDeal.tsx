@@ -8,7 +8,7 @@ import BizuplyLoader from "../../components/ui/BizuplyLoader";
 type PublicSummary = {
   dealNumber?: string;
   dealDate?: string;
-  business?: { name?: string; contactName?: string; phone?: string; email?: string };
+  business?: { name?: string; contactName?: string; phone?: string; email?: string; logo?: string };
   partner?: { name?: string; logo?: string; phone?: string; email?: string };
   package?: {
     name?: string;
@@ -51,17 +51,18 @@ export default function PartnerPublicDeal() {
 
   const pay = summary.payment || {};
   const date = summary.dealDate ? new Date(summary.dealDate).toLocaleDateString("he-IL") : "";
+  const logo = summary.partner?.logo || summary.business?.logo;
 
   return (
     <div dir="rtl" className="min-h-screen bg-[#f6f4ff] px-4 py-10" style={{ fontFamily: '"Assistant","Rubik",sans-serif' }}>
       <article className="mx-auto max-w-3xl overflow-hidden rounded-[32px] border border-white bg-white shadow-[0_24px_80px_rgba(76,29,149,0.12)]">
         <header className="bg-gradient-to-l from-[#4C1D95] to-[#7C4DFF] px-8 py-8 text-white">
           <div className="flex items-center gap-4">
-            {summary.partner?.logo ? (
-              <img src={summary.partner.logo} alt="" className="h-14 w-14 rounded-2xl bg-white object-cover" />
+            {logo ? (
+              <img src={logo} alt="" className="h-14 w-14 rounded-2xl bg-white object-cover" />
             ) : (
               <div className="grid h-14 w-14 place-items-center rounded-2xl bg-white/15 text-lg font-black">
-                {(summary.partner?.name || "P").slice(0, 1)}
+                {(summary.partner?.name || summary.business?.name || "P").slice(0, 1)}
               </div>
             )}
             <div>
