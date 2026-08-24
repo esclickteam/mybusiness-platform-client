@@ -19,6 +19,7 @@ test("Partner API uses /partner/* and never Direct CRMClient as a data source", 
   const api = readFileSync(join(ROOT, "lib/partnerApi.ts"), "utf8");
   assert.equal(api.includes('API.get("/partner/clients"'), true);
   assert.equal(api.includes('API.get("/partner/dashboard"'), true);
+  assert.equal(api.includes("/partner/compliance"), true);
   assert.equal(api.includes("/api/crm/"), false);
   assert.equal(api.includes("/crm-clients"), false);
   assert.equal(api.includes("CRMClient"), false);

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import AdminHeader from "./AdminsHeader";
 import {
+  adminReviewPartnerCompliance,
   adminReviewWithdrawal,
   fetchAdminPartnerDossier,
   fetchAdminWithdrawalRequest,
@@ -11,6 +12,7 @@ import { formatIls } from "../../lib/partnerMoney";
 
 const TABS = [
   ["overview", "סקירה"],
+  ["kyc", "מסמכים וחשבון בנק"],
   ["clients", "לקוחות"],
   ["deals", "עסקאות"],
   ["commissions", "עמלות"],
@@ -29,11 +31,13 @@ export default function AdminPartnerDossier() {
   const [feedback, setFeedback] = useState("");
   const [paymentReference, setPaymentReference] = useState("");
   const [paymentNote, setPaymentNote] = useState("");
+  const [kycFeedback, setKycFeedback] = useState("");
 
   async function refresh() {
     if (!partnerId) return;
     const payload = await fetchAdminPartnerDossier(partnerId);
     setData(payload);
+    setKycFeedback(payload.compliance?.adminFeedback || "");
   }
 
   useEffect(() => {
@@ -124,7 +128,29 @@ export default function AdminPartnerDossier() {
             <Kpi label="Eligible balance" value={formatIls(data.commissions?.totals?.eligibleCommission)} />
             <Kpi label="Pending withdrawals" value={formatIls(data.commissions?.totals?.pendingCommission)} />
             <Kpi label="Paid commissions" value={formatIls(data.commissions?.totals?.paidCommission)} />
+            <Kpi label="מסמכים" value={data.compliance?.reviewStatus || "incomplete"} />
           </section>
+        ) : null}
+
+        {tab === "kyc" ? (
+          <KycPanel
+            compliance={data.compliance || {}}
+            feedback={kycFeedback}
+            onFeedback={setKycFeedback}
+            onReview={async (status) => {
+              if (!partnerId) return;
+              setError("");
+              try {
+                const compliance = await adminReviewPartnerCompliance(partnerId, {
+                  status,
+                  adminFeedback: kycFeedback,
+                });
+                setData({ ...data, compliance });
+              } catch (err: unknown) {
+                setError(partnerApiError(err, "לא ניתן לעדכן מסמכים"));
+              }
+            }}
+          />
         ) : null}
 
         {tab === "clients" ? <Table rows={data.clients} cols={clientCols} /> : null}
@@ -299,6 +325,107 @@ function Kpi({ label, value }: { label: string; value: string }) {
     <div className="rounded-3xl border bg-white p-4">
       <p className="text-xs font-black text-slate-500">{label}</p>
       <p className="mt-1 text-xl font-black">{value}</p>
+    </div>
+  );
+}
+
+function DocLink({ label, doc }: { label: string; doc?: { url?: string; originalName?: string } | null }) {
+  if (!doc?.url) {
+    return (
+      <div className="rounded-2xl border border-amber-100 bg-amber-50 px-4 py-3">
+        <p className="text-sm font-black">{label}</p>
+        <p className="text-xs font-bold text-amber-800">לא הועלה</p>
+      </div>
+    );
+  }
+  return (
+    <a
+      href={doc.url}
+      target="_blank"
+      rel="noreferrer"
+      className="block rounded-2xl border border-violet-100 bg-violet-50 px-4 py-3 hover:bg-violet-100"
+    >
+      <p className="text-sm font-black">{label}</p>
+      <p className="text-xs font-bold text-violet-800">{doc.originalName || "פתיחת מסמך"}</p>
+    </a>
+  );
+}
+
+function KycPanel({
+  compliance,
+  feedback,
+  onFeedback,
+  onReview,
+}: {
+  compliance: any;
+  feedback: string;
+  onFeedback: (value: string) => void;
+  onReview: (status: "approved" | "rejected") => void;
+}) {
+  const docs = compliance.documents || {};
+  return (
+    <section className="mt-5 grid gap-4 lg:grid-cols-[1fr_320px]">
+      <div className="space-y-4 rounded-3xl border bg-white p-5">
+        <h3 className="font-black">פרטי חשבון ות״ז</h3>
+        <div className="grid gap-3 sm:grid-cols-2">
+          <Field label="שם בעל החשבון" value={compliance.accountHolderName} />
+          <Field label="ת״ז" value={compliance.idNumber} />
+          <Field label="ח.פ / עוסק" value={compliance.taxNumber} />
+          <Field label="טלפון" value={compliance.phone} />
+        </div>
+        <h3 className="pt-2 font-black">חשבון בנק</h3>
+        <div className="grid gap-3 sm:grid-cols-3">
+          <Field label="בנק" value={compliance.bankName} />
+          <Field label="סניף" value={compliance.branch} />
+          <Field label="מספר חשבון" value={compliance.account} />
+        </div>
+        <h3 className="pt-2 font-black">מסמכים</h3>
+        <div className="grid gap-3 md:grid-cols-3">
+          <DocLink label="אישור ניהול חשבון" doc={docs.accountManagementAuth} />
+          <DocLink label="תעודת עוסק" doc={docs.dealerCertificate} />
+          <DocLink label="צילום תעודה מזהה" doc={docs.idPhoto} />
+        </div>
+      </div>
+      <aside className="rounded-3xl border bg-white p-5">
+        <p className="text-xs font-black text-slate-500">סטטוס בדיקה</p>
+        <p className="mt-1 text-xl font-black">{compliance.reviewStatus || "incomplete"}</p>
+        {(compliance.missing || []).length ? (
+          <p className="mt-2 text-sm font-bold text-amber-700">
+            חסר: {(compliance.missing || []).join(", ")}
+          </p>
+        ) : null}
+        <textarea
+          value={feedback}
+          onChange={(e) => onFeedback(e.target.value)}
+          placeholder="משוב לפרטנר / סיבת דחייה"
+          className="mt-3 w-full rounded-2xl border px-3 py-2 text-sm"
+        />
+        <div className="mt-3 flex flex-col gap-2">
+          <button
+            type="button"
+            onClick={() => onReview("approved")}
+            className="rounded-2xl bg-emerald-700 py-2 text-sm font-black text-white"
+          >
+            אישור מסמכים
+          </button>
+          <button
+            type="button"
+            onClick={() => onReview("rejected")}
+            className="rounded-2xl border border-rose-200 py-2 text-sm font-black text-rose-700"
+          >
+            דחייה
+          </button>
+        </div>
+      </aside>
+    </section>
+  );
+}
+
+function Field({ label, value }: { label: string; value?: string }) {
+  return (
+    <div>
+      <p className="text-[11px] font-black text-slate-400">{label}</p>
+      <p className="font-black text-slate-900">{value || "—"}</p>
     </div>
   );
 }

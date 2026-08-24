@@ -45,6 +45,35 @@ export type PartnerPlan = {
   canHideBizuplyBranding: boolean;
 };
 
+export type PartnerComplianceDocument = {
+  url: string;
+  mime?: string;
+  originalName?: string;
+  uploadedAt?: string | null;
+} | null;
+
+export type PartnerCompliance = {
+  accountHolderName: string;
+  idNumber: string;
+  taxNumber: string;
+  phone: string;
+  bankName: string;
+  branch: string;
+  account: string;
+  documents: {
+    accountManagementAuth: PartnerComplianceDocument;
+    dealerCertificate: PartnerComplianceDocument;
+    idPhoto: PartnerComplianceDocument;
+  };
+  documentLabels?: Record<string, string>;
+  reviewStatus: "incomplete" | "submitted" | "approved" | "rejected";
+  adminFeedback?: string;
+  submittedAt?: string | null;
+  reviewedAt?: string | null;
+  missing?: string[];
+  complete?: boolean;
+};
+
 export type PartnerMe = {
   partnerId: string;
   name: string;
@@ -59,6 +88,7 @@ export type PartnerMe = {
   nextRenewalAt?: string | null;
   branding?: Record<string, unknown>;
   storefront?: Record<string, unknown>;
+  compliance?: PartnerCompliance;
   teamSeatLimit: number;
   membership: {
     membershipId: string;

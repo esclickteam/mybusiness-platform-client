@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import {
   fetchPartnerWithdrawals,
   partnerApiError,
@@ -73,6 +74,13 @@ export default function PartnerWithdrawals() {
         title="בקשת משיכה"
         subtitle="ניתן לשלוח בקשת משיכה עד ה-20 לכל חודש. העמלה תיכנס עד ה-1 לכל חודש. כל בקשה לאחר ה-20 תיכנס לחודש העוקב."
       />
+      <p className="rounded-2xl border border-slate-100 bg-white px-4 py-3 text-sm font-bold text-slate-600">
+        לפני משיכה ודאו שפרטי חשבון הבנק, הת״ז והמסמכים מעודכנים ב{" "}
+        <Link to="/partner/dashboard/settings" className="font-black text-violet-700">
+          הגדרות פרטנר
+        </Link>
+        .
+      </p>
       {cycle?.copy ? (
         <p className="rounded-2xl border border-violet-100 bg-violet-50 px-4 py-3 text-sm font-bold text-violet-800">
           {cycle.copy}

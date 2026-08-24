@@ -7,6 +7,7 @@ import type {
   PartnerPlan,
   PartnerPlanKey,
   PartnerPriceLine,
+  PartnerCompliance,
 } from "../types/partner";
 
 export async function fetchPartnerPlans() {
@@ -272,6 +273,27 @@ export async function fetchPartnerStorefront() {
 export async function updatePartnerStorefront(payload: Record<string, unknown>) {
   const { data } = await API.patch("/partner/storefront", payload);
   return data;
+}
+
+export async function updatePartnerCompliance(payload: Record<string, unknown>) {
+  const { data } = await API.patch("/partner/compliance", payload);
+  return data.compliance as PartnerCompliance;
+}
+
+export async function uploadPartnerComplianceDocument(kind: string, file: File) {
+  const form = new FormData();
+  form.append("kind", kind);
+  form.append("file", file);
+  const { data } = await API.post("/partner/compliance/documents", form);
+  return data.compliance as PartnerCompliance;
+}
+
+export async function adminReviewPartnerCompliance(
+  partnerId: string,
+  payload: { status: "approved" | "rejected"; adminFeedback?: string }
+) {
+  const { data } = await API.post(`/admin/partners/${partnerId}/compliance/review`, payload);
+  return data.compliance as PartnerCompliance;
 }
 
 export async function fetchPartnerTeam() {
