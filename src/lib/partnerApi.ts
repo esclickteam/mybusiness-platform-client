@@ -270,6 +270,16 @@ export async function fetchAdminWithdrawalMonth() {
   };
 }
 
+export async function fetchAdminPartnerWithdrawalsPending() {
+  const { data } = await API.get("/admin/partners/withdrawals/pending");
+  return data as { items: any[] };
+}
+
+export async function fetchAdminPartnerPaymentsRecent() {
+  const { data } = await API.get("/admin/partners/payments/recent");
+  return data as { items: any[] };
+}
+
 export async function fetchAdminPartnerDossier(id: string) {
   const { data } = await API.get(`/admin/partners/${id}/dossier`);
   return data;

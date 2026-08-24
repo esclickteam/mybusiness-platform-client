@@ -2,10 +2,12 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../api";
 import { useAuth } from "../context/AuthContext";
-import "../styles/ChangePassword.css"; // ✅ This is the import you need
+import AuthShell, { AuthCard } from "../components/auth/AuthShell";
+import { resolvePostLoginDestination } from "../utils/safeInternalRedirect";
+import "../styles/ChangePassword.css";
 
 const ChangePassword = () => {
-  const { user, refreshUserData } = useAuth();
+  const { user, refreshUser } = useAuth();
   const navigate = useNavigate();
 
   const [form, setForm] = useState({
@@ -16,6 +18,7 @@ const ChangePassword = () => {
 
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -29,94 +32,86 @@ const ChangePassword = () => {
     const { currentPassword, newPassword, confirmPassword } = form;
 
     if (!currentPassword || !newPassword || !confirmPassword) {
-      setError("❗ All fields are required");
+      setError("יש למלא את כל השדות");
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      setError("❗ New password and confirmation do not match");
+      setError("הסיסמה החדשה ואישור הסיסמה אינם תואמים");
       return;
     }
 
     if (newPassword.length < 6) {
-      setError("❗ Password must be at least 6 characters");
+      setError("הסיסמה החדשה חייבת להכיל 6 תווים לפחות");
       return;
     }
 
+    setLoading(true);
     try {
-      const res = await API.post("/auth/change-password", {
+      await API.post("/auth/change-password", {
         currentPassword,
         newPassword,
       });
 
-      setSuccess("✅ Password updated successfully!");
-
-      // Refresh user data from the server
-      const updatedUser = await refreshUserData();
-
-      // Route by role
-      switch (updatedUser.role) {
-        case "business":
-          navigate("/dashboard");
-          break;
-        case "customer":
-          navigate("/client-dashboard");
-          break;
-        case "worker":
-          navigate("/worker-dashboard");
-          break;
-        case "manager":
-          navigate("/manager-dashboard");
-          break;
-        case "admin":
-          navigate("/admin-dashboard");
-          break;
-        default:
-          navigate("/");
-      }
+      setSuccess("הסיסמה עודכנה בהצלחה");
+      const updatedUser = (await refreshUser(true)) || user;
+      const dest = resolvePostLoginDestination({
+        role: updatedUser?.role,
+        businessId: updatedUser?.businessId,
+        hasAccess: updatedUser?.hasAccess !== false,
+        enabledModules: updatedUser?.enabledModules ?? null,
+      });
+      setTimeout(() => navigate(dest, { replace: true }), 600);
     } catch (err) {
-      console.error("❌ Error changing password:", err);
-      setError(err.response?.data?.error || "❌ Server error. Please try again.");
+      setError(err.response?.data?.error || err.response?.data?.message || "שגיאת שרת. נסו שוב.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className="change-password-container" dir="ltr" lang="en">
-      <h2>🔒 Change Password</h2>
-      <p>Since you logged in with a temporary password, you must change it to continue.</p>
-
-      <form onSubmit={handleSubmit}>
-        <input
-          type="password"
-          name="currentPassword"
-          placeholder="Current password"
-          value={form.currentPassword}
-          onChange={handleChange}
-          required
-        />
-        <input
-          type="password"
-          name="newPassword"
-          placeholder="New password"
-          value={form.newPassword}
-          onChange={handleChange}
-          required
-        />
-        <input
-          type="password"
-          name="confirmPassword"
-          placeholder="Confirm new password"
-          value={form.confirmPassword}
-          onChange={handleChange}
-          required
-        />
-
-        <button type="submit">Update Password</button>
-      </form>
-
-      {error && <p className="error-message">{error}</p>}
-      {success && <p className="success-message">{success}</p>}
-    </div>
+    <AuthShell>
+      <AuthCard title="הגדרת סיסמה חדשה" subtitle="הסיסמה החד-פעמית מיועדת לכניסה ראשונה בלבד. בחרו סיסמה אישית להמשך.">
+        <form onSubmit={handleSubmit} className="space-y-4" dir="rtl">
+          <input
+            type="password"
+            name="currentPassword"
+            placeholder="סיסמה חד-פעמית / נוכחית"
+            value={form.currentPassword}
+            onChange={handleChange}
+            required
+            className="w-full rounded-2xl border border-slate-200 px-4 py-3 font-bold"
+          />
+          <input
+            type="password"
+            name="newPassword"
+            placeholder="סיסמה חדשה"
+            value={form.newPassword}
+            onChange={handleChange}
+            required
+            className="w-full rounded-2xl border border-slate-200 px-4 py-3 font-bold"
+          />
+          <input
+            type="password"
+            name="confirmPassword"
+            placeholder="אישור סיסמה חדשה"
+            value={form.confirmPassword}
+            onChange={handleChange}
+            required
+            className="w-full rounded-2xl border border-slate-200 px-4 py-3 font-bold"
+          />
+          <button
+            className="w-full rounded-2xl bg-slate-900 py-3 font-black text-white disabled:opacity-60"
+            type="submit"
+            disabled={loading}
+          >
+            {loading ? "שומר..." : "שמירת סיסמה"}
+          </button>
+          {error ? <p className="font-bold text-rose-700">{error}</p> : null}
+          {success ? <p className="font-bold text-emerald-700">{success}</p> : null}
+        </form>
+      </AuthCard>
+    </AuthShell>
   );
 };
 

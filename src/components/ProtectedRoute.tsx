@@ -147,9 +147,20 @@ export default function ProtectedRoute({
   }
 
   /* ===========================
+     🔑 One-time password — Partner customers (business role only)
+  =========================== */
+  if (
+    isBusiness &&
+    (user?.mustChangePassword || user?.isTempPassword) &&
+    location.pathname !== "/change-password"
+  ) {
+    return <Navigate to="/change-password" replace />;
+  }
+
+  /* ===========================
      🏗️ Business without businessId
   =========================== */
-  if (isBusiness && !user.businessId) {
+  if (isBusiness && !user.businessId && location.pathname !== "/change-password") {
     return <Navigate to="/create-business" replace />;
   }
 
@@ -167,7 +178,7 @@ export default function ProtectedRoute({
     search: location.search,
   });
 
-  if (isBusiness && !user.hasAccess && !isImpersonating && !isBillingReturn) {
+  if (isBusiness && !user.hasAccess && !isImpersonating && !isBillingReturn && location.pathname !== "/change-password") {
     return <Navigate to="/pricing" replace />;
   }
 
