@@ -271,7 +271,16 @@ export default function AdminCrmCustomers() {
       return <Badge tone={stageTone(row.salesStage)}>{STAGE_LABELS[row.salesStage || ""] || row.salesStage}</Badge>;
     }
     if (key === "leadSource") {
-      return row.leadSourceLabel || SOURCE_LABELS[row.leadSource || ""] || row.leadSource || "—";
+      const source = row.leadSourceLabel || SOURCE_LABELS[row.leadSource || ""] || row.leadSource || "—";
+      const formName = row.metaLead?.formName;
+      return (
+        <span>
+          {source}
+          {formName ? (
+            <span className="mt-1 block text-[11px] font-black text-[#7C4DFF]">טופס ליד · {formName}</span>
+          ) : null}
+        </span>
+      );
     }
     if (key === "subscriptionStatus") {
       return <Badge tone={statusTone(row.subscriptionStatus)}>{row.subscriptionStatus || "—"}</Badge>;
@@ -467,6 +476,9 @@ export default function AdminCrmCustomers() {
               >
                 <div className="font-black text-purple-950">{row.companyName || row.contactName || "ללא שם"}</div>
                 <div className="mt-1 text-sm font-bold text-slate-500">{row.contactName} · {row.phone}</div>
+                {row.metaLead?.formName ? (
+                  <p className="mt-1 text-xs font-black text-[#7C4DFF]">טופס ליד · {row.metaLead.formName}</p>
+                ) : null}
                 <div className="mt-2 flex flex-wrap gap-2">
                   <Badge tone={lifecycleTone(row.lifecycle)}>{LIFECYCLE_LABELS[row.lifecycle || ""]}</Badge>
                   <Badge tone={stageTone(row.salesStage)}>{STAGE_LABELS[row.salesStage || ""]}</Badge>

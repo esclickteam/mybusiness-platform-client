@@ -28,7 +28,7 @@ export default function AdminSystemHub() {
           <p className="text-xs font-black text-[#7C4DFF]">ניהול מערכת</p>
           <h1 className="text-2xl font-black text-purple-950">כלים טכניים</h1>
           <p className="font-bold text-slate-500">
-            הנתיבים הישנים נשמרו. מכאן אפשר להגיע ליצירת משתמש, עסקים, שותפים ותמיכה.
+            קיצור דרך לאותם מסכים שמופיעים גם בתפריט האדמין הראשי.
           </p>
         </div>
         <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">

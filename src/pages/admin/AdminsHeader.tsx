@@ -10,12 +10,20 @@ import API from "../../api";
 const NAV_ITEMS = [
   { path: "/admin/dashboard", label: "דשבורד" },
   { path: "/admin/crm", label: "CRM וניהול לקוחות" },
+  { path: "/admin/customers", label: "לקוחות" },
+  { path: "/admin/early-access", label: "הרשמה מוקדמת" },
   { path: "/admin/guided-demos", label: "דמואים מודרכים" },
   { path: "/admin/calendar", label: "יומן BizUply" },
   { path: "/admin/automations", label: "אוטומציות אדמין" },
   { path: "/admin/managed-whatsapp", label: "WhatsApp Managed" },
+  { path: "/admin/users", label: "משתמשים" },
+  { path: "/admin/create-user", label: "יצירת משתמש" },
+  { path: "/admin/businesses", label: "עסקים" },
+  { path: "/admin/affiliates", label: "שותפים" },
   { path: "/admin/partners", label: "פרטנרים" },
-  { path: "/admin/system", label: "ניהול מערכת" },
+  { path: "/admin/marketers", label: "משווקים" },
+  { path: "/admin/withdrawals", label: "משיכות" },
+  { path: "/admin/support-chat", label: "צ'אט תמיכה" },
 ] as const;
 
 function AdminHeader() {
