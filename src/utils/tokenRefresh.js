@@ -101,7 +101,7 @@ export function clearRefreshDead() {
 }
 
 /**
- * Stripe Checkout return flags on the manage/plugins URL.
+ * Stripe Checkout return flags (plugin portal, or Partner deal paid/canceled).
  * Safe recovery signal: only attempt cookie refresh when these are present.
  */
 export function isBillingReturnSearch(
@@ -111,11 +111,15 @@ export function isBillingReturnSearch(
     const params = new URLSearchParams(search || "");
     const portal = params.get("portalBilling");
     const plugin = params.get("pluginBilling");
+    const paid = params.get("paid");
+    const canceled = params.get("canceled");
     return (
       portal === "success" ||
       portal === "cancel" ||
       plugin === "success" ||
-      plugin === "cancel"
+      plugin === "cancel" ||
+      paid === "1" ||
+      canceled === "1"
     );
   } catch {
     return false;
