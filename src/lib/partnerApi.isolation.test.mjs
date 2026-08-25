@@ -308,6 +308,8 @@ test("partner pipeline routes are registered in App", () => {
   assert.equal(app.includes("isPartnerHostPublicChrome"), true);
   assert.equal(app.includes("looksLikePartnerHost &&"), true);
   assert.equal(app.includes("isPartnerHost &&"), false);
+  assert.equal(app.includes("const isPartnerHostPublicChrome = looksLikePartnerHost"), true);
+  assert.equal(app.includes("!location.pathname.includes(\"/dashboard\") &&"), false);
   assert.equal(app.includes("RedirectIfPartnerHost"), true);
   assert.equal(app.includes("<Route index element={<PartnerDashboard />} />"), true);
   assert.equal(app.includes('location.pathname === "/checkout/success"'), true);

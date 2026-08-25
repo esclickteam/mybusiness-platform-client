@@ -842,11 +842,7 @@ export default function App() {
     looksLikePartnerHost,
     branding: partnerHostBranding,
   } = usePartnerHostBranding();
-  const isPartnerHostPublicChrome =
-    looksLikePartnerHost &&
-    !location.pathname.includes("/dashboard") &&
-    !isAdminRoute &&
-    !isStaffRoute;
+  const isPartnerHostPublicChrome = looksLikePartnerHost;
   const isPublicPartnerSales =
     location.pathname.startsWith("/p/") ||
     location.pathname === "/plans" ||
