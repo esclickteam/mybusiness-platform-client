@@ -84,6 +84,43 @@ export function partnerFacingLogo(
   return String(branding?.logoUrl || branding?.stored?.logoUrl || "").trim();
 }
 
+export function partnerSiteSuffix(hostname?: string) {
+  const host = String(
+    hostname || (typeof window !== "undefined" ? window.location.hostname : "")
+  )
+    .toLowerCase()
+    .split(":")[0];
+  if (
+    host === "bizuply.co.il" ||
+    host === "www.bizuply.co.il" ||
+    host.endsWith(".bizuply.co.il")
+  ) {
+    return ".bizuply.co.il";
+  }
+  return ".bizuply.com";
+}
+
+export function partnerPersonalUrl({
+  subdomain,
+  urls,
+  slug,
+  hostname,
+}: {
+  subdomain?: string;
+  urls?: PublicPartnerBranding["urls"];
+  slug?: string;
+  hostname?: string;
+} = {}) {
+  const fromApi = String(urls?.subdomainUrl || "").replace(/\/+$/, "");
+  if (fromApi) return fromApi;
+  const sub = String(subdomain || "").trim();
+  if (sub) return `https://${sub}${partnerSiteSuffix(hostname)}`;
+  const personal = String(urls?.personalUrl || urls?.slugUrl || "").replace(/\/+$/, "");
+  if (personal) return personal;
+  if (slug && typeof window !== "undefined") return `${window.location.origin}/p/${slug}`;
+  return "";
+}
+
 export function absoluteCustomerUrl(pathOrUrl: string, fallbackOrigin?: string) {
   const value = String(pathOrUrl || "").trim();
   if (/^https?:\/\//i.test(value)) return value;

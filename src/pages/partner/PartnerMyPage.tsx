@@ -6,7 +6,7 @@ import {
   fetchPartnerPricebook,
   partnerApiError,
 } from "../../lib/partnerApi";
-import PartnerPageHeader from "../../components/partner/PartnerPageHeader";
+import { partnerPersonalUrl } from "../../lib/partnerBranding";
 import PartnerBrandingCard from "../../components/partner/PartnerBrandingCard";
 import {
   PartnerCard,
@@ -30,11 +30,11 @@ export default function PartnerMyPage() {
       .then(([me, data, pricebook]) => {
         const urls = data.urls || data.branding?.urls || {};
         setPersonalUrl(
-          data.branding?.stored?.subdomain || data.branding?.subdomain
-            ? `https://${data.branding.stored?.subdomain || data.branding.subdomain}.bizuply.com`
-            : urls.personalUrl ||
-              urls.slugUrl ||
-              (me.slug ? `${window.location.origin}/p/${me.slug}` : "")
+          partnerPersonalUrl({
+            subdomain: data.branding?.stored?.subdomain || data.branding?.subdomain,
+            urls,
+            slug: me.slug,
+          })
         );
         setPlansUrl(
           urls.plansUrl || (me.slug ? `${window.location.origin}/p/${me.slug}/plans` : "")
