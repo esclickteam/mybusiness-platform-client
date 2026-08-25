@@ -257,6 +257,11 @@ test("login branding resolves from hostname helper, not scattered partner ifs", 
   assert.equal(storefront.includes("Powered by Bizuply"), false);
   assert.equal(storefront.includes("רכישה מתבצעת בעמוד החבילות"), true);
   assert.equal(storefront.includes("רכישה מתבצעת מול הפרטנר."), false);
+  const settings = readFileSync(join(ROOT, "pages/partner/PartnerStorefrontSettings.tsx"), "utf8");
+  assert.equal(settings.includes("הרכישה מתבצעת בעמוד החבילות"), true);
+  assert.equal(settings.includes("רכישה מתבצעת מול הפרטנר"), false);
+  assert.equal(settings.includes("הפעל עמוד מכירה"), false);
+  assert.equal(settings.includes("form.enabled"), false);
 });
 
 test("public checkout client sends sku and contact, never a customer price", () => {
