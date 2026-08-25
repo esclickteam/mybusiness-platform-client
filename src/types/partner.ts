@@ -116,9 +116,21 @@ export type PartnerPriceLine = {
   partnerWholesalePrice: number;
   markup?: number;
   markupIls?: number;
+  oneTimeMarkupEnabled?: boolean;
+  oneTimeMarkupAmount?: number;
+  recurringMarkupEnabled?: boolean;
+  recurringMarkupAmount?: number;
+  baseOneTimeAmount?: number;
+  baseRecurringAmount?: number;
+  partnerOneTimeMarkup?: number;
+  partnerRecurringMarkup?: number;
+  customerOneTimeAmount?: number;
+  customerRecurringAmount?: number;
   customerFinalPrice: number;
   partnerMarkupShare: number;
   bizuplyMarkupShare: number;
+  oneTimePartnerShare?: number;
+  recurringPartnerShare?: number;
   partnerShareRate?: number;
   bizuplyShareRate?: number;
   additionalCommission?: number;
@@ -187,6 +199,9 @@ export type PartnerDeal = {
   additionalMarkup?: number;
   oneTimeCommission?: number;
   monthlyCommission?: number;
+  partnerIncomeOneTime?: number;
+  partnerIncomeRecurring?: number;
+  recurringIncomeActive?: boolean;
   lines: PartnerPriceLine[];
   totals: PartnerDealTotals;
   currency?: string;
@@ -306,6 +321,10 @@ export type PartnerDashboardMetrics = {
   transactionCount?: number | null;
   oneTimeSales?: number | null;
   recurringCollected?: number | null;
+  oneTimeCommission?: number | null;
+  recurringCommission?: number | null;
+  referralCommission?: number | null;
+  commissionMrr?: number | null;
 };
 
 export type PartnerDashboardActivity = {

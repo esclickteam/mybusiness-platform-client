@@ -126,12 +126,15 @@ export default function PartnerTransactions() {
         />
       </div>
       {totals ? (
-        <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
+        <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
           <Kpi label="סך העסקאות" value={ils(totals.totalSales)} />
           <Kpi label="העמלה שלך" value={ils(totals.partnerCommission)} />
           <Kpi label="עמלה ממתינה" value={ils(totals.pendingCommission)} />
           <Kpi label="זמינה למשיכה" value={ils(totals.eligibleCommission)} />
-          <Kpi label="עמלה ששולמה" value={ils(totals.paidCommission)} />
+          <Kpi label="עמלות חד-פעמיות" value={ils(totals.oneTimeCommission)} />
+          <Kpi label="עמלות חודשיות" value={ils(totals.recurringCommission)} />
+          <Kpi label="MRR מעמלות" value={ils(totals.commissionMrr)} />
+          <Kpi label="עמלות צירוף פרטנרים" value={ils(totals.referralCommission)} />
         </section>
       ) : null}
       <PartnerCard className="overflow-x-auto">
@@ -180,7 +183,9 @@ export default function PartnerTransactions() {
                 <td className="px-3 py-3">{partnerStatusLabel(row.commissionStatus)}</td>
                 <td className="px-3 py-3">
                   {partnerStatusLabel(row.salesSource || row.sourceType || row.commissionType)}
-                  {row.sourceType === "renewal" || row.commissionType === "customer_renewal"
+                  {row.sourceType === "renewal" ||
+                  row.commissionType === "customer_renewal" ||
+                  row.commissionType === "customer_sale_recurring"
                     ? " · חידוש"
                     : ""}
                 </td>

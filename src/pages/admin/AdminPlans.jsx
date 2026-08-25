@@ -36,6 +36,7 @@ export default function AdminPlans() {
           amountIls: Number(item.amountIls || 0),
           billing: item.billing || "one_time",
           active: item.active !== false,
+          partnerSellable: item.partnerSellable !== false,
           sortOrder: Number(item.sortOrder || 0),
           descriptionHe: item.descriptionHe || "",
         };
@@ -72,6 +73,7 @@ export default function AdminPlans() {
         amountIls: Number(draft.amountIls || 0),
         billing: draft.billing,
         active: !!draft.active,
+        partnerSellable: draft.partnerSellable !== false,
         sortOrder: Number(draft.sortOrder || 0),
         descriptionHe: draft.descriptionHe || "",
       });
@@ -86,6 +88,7 @@ export default function AdminPlans() {
             amountIls: Number(updated.amountIls || 0),
             billing: updated.billing || "one_time",
             active: updated.active !== false,
+            partnerSellable: updated.partnerSellable !== false,
             sortOrder: Number(updated.sortOrder || 0),
             descriptionHe: updated.descriptionHe || "",
           },
@@ -115,6 +118,7 @@ export default function AdminPlans() {
               <th className="px-3 py-2 text-right font-medium">מחיר ₪</th>
               <th className="px-3 py-2 text-right font-medium">חיוב</th>
               <th className="px-3 py-2 text-right font-medium">פעיל</th>
+              <th className="px-3 py-2 text-right font-medium">זמין לפרטנרים</th>
               <th className="px-3 py-2 text-right font-medium">סדר</th>
               <th className="px-3 py-2 text-right font-medium">פעולה</th>
             </tr>
@@ -177,6 +181,16 @@ export default function AdminPlans() {
                       checked={draft.active !== false}
                       onChange={(e) => updateDraft(item.sku, { active: e.target.checked })}
                     />
+                    <div className="mt-1 text-[10px] text-slate-400">מכירה ישירה</div>
+                  </td>
+                  <td className="px-3 py-2 text-center">
+                    <input
+                      type="checkbox"
+                      checked={draft.partnerSellable !== false}
+                      onChange={(e) =>
+                        updateDraft(item.sku, { partnerSellable: e.target.checked })
+                      }
+                    />
                   </td>
                   <td className="px-3 py-2">
                     <input
@@ -203,7 +217,7 @@ export default function AdminPlans() {
             })}
             {!list.length ? (
               <tr>
-                <td colSpan={8} className="px-3 py-6 text-center text-slate-500">
+                <td colSpan={9} className="px-3 py-6 text-center text-slate-500">
                   אין פריטים
                 </td>
               </tr>

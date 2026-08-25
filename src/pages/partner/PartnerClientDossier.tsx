@@ -267,7 +267,7 @@ export default function PartnerClientDossier() {
         <DateCell label="חיוב הבא" value={formatWhen(client.nextBillingDate)} />
       </section>
 
-      <section className="grid gap-3 rounded-3xl border border-violet-100 bg-gradient-to-l from-[#f7f3ff] to-white p-5 md:grid-cols-5">
+      <section className="grid gap-3 rounded-3xl border border-violet-100 bg-gradient-to-l from-[#f7f3ff] to-white p-5 md:grid-cols-3">
         <MoneyCell
           label="חבילה"
           value={
@@ -284,12 +284,36 @@ export default function PartnerClientDossier() {
         <MoneyCell
           label="חד-פעמי"
           value={formatIls(
-            (client.selectedSkus || [])
-              .filter((line) => line.billing === "one_time")
-              .reduce((sum, line) => sum + Number(line.customerFinalPrice || 0), 0)
+            (client.selectedSkus || []).reduce(
+              (sum, line) =>
+                sum +
+                Number(
+                  line.customerOneTimeAmount ||
+                    (line.billing === "one_time" ? line.customerFinalPrice : 0) ||
+                    0
+                ),
+              0
+            )
           )}
         />
-        <MoneyCell label="עמלה שנצברה" value={formatIls(partnerShare)} />
+        <MoneyCell
+          label="הכנסה חד-פעמית שלך"
+          value={formatIls(
+            (client.selectedSkus || []).reduce(
+              (sum, line) => sum + Number(line.oneTimePartnerShare || 0),
+              0
+            )
+          )}
+        />
+        <MoneyCell
+          label="הכנסה חודשית שלך"
+          value={`${formatIls(
+            (client.selectedSkus || []).reduce(
+              (sum, line) => sum + Number(line.recurringPartnerShare || 0),
+              0
+            )
+          )} / חודש`}
+        />
       </section>
       {deals[0] ? (
         <div className="flex flex-wrap gap-2">
@@ -356,9 +380,18 @@ export default function PartnerClientDossier() {
               </span>
             </div>
             <div className="mt-3 grid gap-2 sm:grid-cols-3 text-sm font-bold">
-              <p>מחיר {formatIls(line.customerFinalPrice)}</p>
-              <p>התחלה {formatWhen(client.activatedAt || client.createdAt)}</p>
-              <p>חידוש הבא {formatWhen(client.nextBillingDate)}</p>
+              <p>
+                מחיר{" "}
+                {Number(line.customerOneTimeAmount) || Number(line.customerRecurringAmount)
+                  ? `${Number(line.customerOneTimeAmount) ? `${formatIls(line.customerOneTimeAmount)} חד-פעמי` : ""}${
+                      Number(line.customerOneTimeAmount) && Number(line.customerRecurringAmount)
+                        ? " + "
+                        : ""
+                    }${Number(line.customerRecurringAmount) ? `${formatIls(line.customerRecurringAmount)} / חודש` : ""}`
+                  : formatIls(line.customerFinalPrice)}
+              </p>
+              <p>הכנסה חד-פעמית {formatIls(line.oneTimePartnerShare)}</p>
+              <p>הכנסה חודשית {formatIls(line.recurringPartnerShare)} / חודש</p>
             </div>
             {tab === "pricing" ? (
               <div className="mt-4">

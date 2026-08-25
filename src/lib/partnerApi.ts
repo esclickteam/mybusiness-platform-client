@@ -114,7 +114,14 @@ export async function fetchPartnerPricebook() {
 
 export async function updatePricebookItem(
   sku: string,
-  payload: { markupIls: number; enabledInStorefront?: boolean }
+  payload: {
+    markupIls?: number;
+    oneTimeMarkupEnabled?: boolean;
+    oneTimeMarkupAmount?: number;
+    recurringMarkupEnabled?: boolean;
+    recurringMarkupAmount?: number;
+    enabledInStorefront?: boolean;
+  }
 ) {
   const { data } = await API.patch(`/partner/pricebook/${encodeURIComponent(sku)}`, payload);
   return data.item as PartnerPriceLine;
@@ -212,6 +219,8 @@ export type PartnerServiceRow = {
   payBizuplyMonthlyShare?: number;
   oneTimeCommission?: number;
   monthlyCommission?: number;
+  partnerIncomeOneTime?: number;
+  partnerIncomeRecurring?: number;
 };
 
 export async function fetchPartnerDeal(dealId: string) {

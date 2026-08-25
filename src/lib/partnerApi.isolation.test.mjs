@@ -191,7 +191,7 @@ test("public partner deal is a summary, not a fake checkout", () => {
 
 test("partner public plans page shows customer price only", () => {
   const src = readFileSync(join(ROOT, "pages/public/PartnerPublicPlans.tsx"), "utf8");
-  assert.equal(src.includes("customerFinalPrice"), true);
+  assert.equal(src.includes("formatPublicCustomerPrice"), true);
   assert.equal(src.includes("wholesale"), false);
   assert.equal(src.includes("partnerWholesalePrice"), false);
   assert.equal(src.includes("commission"), false);
@@ -312,6 +312,18 @@ test("bizuply.com /plans without a partner host falls back to pricing", () => {
   assert.equal(src.includes('to="/pricing"'), true);
   assert.equal(src.includes("setFallbackToPricing"), true);
   assert.equal(src.includes("fetchPublicPartnerBranding"), true);
+});
+
+test("public partner plans page shows only final customer prices", () => {
+  const src = readFileSync(join(ROOT, "pages/public/PartnerPublicPlans.tsx"), "utf8");
+  assert.equal(src.includes("wholesale"), false);
+  assert.equal(src.includes("partnerWholesalePrice"), false);
+  assert.equal(src.includes("partnerShare"), false);
+  assert.equal(src.includes("formatPublicCustomerPrice"), true);
+  const pricing = readFileSync(join(ROOT, "pages/partner/PartnerPricing.tsx"), "utf8");
+  assert.equal(pricing.includes("הוסף עמלה חד-פעמית"), true);
+  assert.equal(pricing.includes("הוסף עמלה חודשית מתחדשת"), true);
+  assert.equal(pricing.includes("מחיר בסיס"), true);
 });
 
 test("white-label host home sends anonymous visitors to plans without changing partner dashboard", () => {

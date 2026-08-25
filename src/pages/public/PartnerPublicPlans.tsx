@@ -6,7 +6,7 @@ import {
   partnerApiError,
   startPublicPartnerCheckout,
 } from "../../lib/partnerApi";
-import { formatIls } from "../../lib/partnerMoney";
+import { formatPublicCustomerPrice } from "../../lib/partnerMoney";
 import { billingLabel } from "../../lib/partnerDealMath";
 import PublicPartnerShell from "../../components/partner/PublicPartnerShell";
 import type { PublicPartnerBranding } from "../../lib/partnerBranding";
@@ -124,10 +124,7 @@ export default function PartnerPublicPlans() {
                 ) : null}
               </div>
               <p className="text-2xl font-black">
-                {formatIls(product.customerFinalPrice)}
-                {String(product.billing || "").includes("month") ? (
-                  <span className="text-sm font-bold text-slate-400"> לחודש</span>
-                ) : null}
+                {formatPublicCustomerPrice(product)}
               </p>
             </div>
             <button
@@ -147,7 +144,7 @@ export default function PartnerPublicPlans() {
       {selected ? (
         <form onSubmit={buy} className="mt-8 space-y-3 rounded-3xl border border-violet-100 bg-white p-5">
           <h3 className="text-lg font-black">פרטי לקוח לרכישת {selected.nameHe}</h3>
-          <p className="text-sm font-bold text-slate-500">לתשלום: {formatIls(selected.customerFinalPrice)}</p>
+          <p className="text-sm font-bold text-slate-500">לתשלום: {formatPublicCustomerPrice(selected)}</p>
           <input
             required
             placeholder="שם מלא"

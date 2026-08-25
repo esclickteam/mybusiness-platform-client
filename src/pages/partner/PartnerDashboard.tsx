@@ -254,7 +254,7 @@ export default function PartnerDashboard() {
                   iconClassName="bg-rose-100 text-rose-600"
                 />
               </div>
-              {metrics?.pendingCommission != null || metrics?.eligibleCommission != null ? (
+                  {metrics?.pendingCommission != null || metrics?.eligibleCommission != null ? (
                 <div className="grid gap-4 sm:grid-cols-3">
                   <PartnerMetricCard
                     label="עמלה ממתינה"
@@ -279,6 +279,34 @@ export default function PartnerDashboard() {
                     href="/partner/dashboard/withdrawals"
                     icon={<Wallet className="h-5 w-5" />}
                     iconClassName="bg-slate-100 text-slate-700"
+                  />
+                </div>
+              ) : null}
+              {metrics?.oneTimeCommission != null || metrics?.recurringCommission != null ? (
+                <div className="grid gap-4 sm:grid-cols-3">
+                  <PartnerMetricCard
+                    label="עמלות חד-פעמיות"
+                    value={ils(metrics?.oneTimeCommission)}
+                    hint="מכירות לקוח חד-פעמיות בטווח"
+                    href="/partner/dashboard/transactions"
+                    icon={<Wallet className="h-5 w-5" />}
+                    iconClassName="bg-violet-100 text-violet-700"
+                  />
+                  <PartnerMetricCard
+                    label="MRR מעמלות"
+                    value={ils(metrics?.commissionMrr)}
+                    hint="עמלות חודשיות בטווח"
+                    href="/partner/dashboard/transactions"
+                    icon={<Wallet className="h-5 w-5" />}
+                    iconClassName="bg-sky-100 text-sky-700"
+                  />
+                  <PartnerMetricCard
+                    label="עמלות צירוף פרטנרים"
+                    value={ils(metrics?.referralCommission)}
+                    hint="₪500 אחרי 40 ימים — לא חלק מ-MRR"
+                    href="/partner/dashboard/referrals"
+                    icon={<UserPlus className="h-5 w-5" />}
+                    iconClassName="bg-amber-100 text-amber-800"
                   />
                 </div>
               ) : null}

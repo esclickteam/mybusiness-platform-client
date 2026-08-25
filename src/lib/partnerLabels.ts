@@ -63,6 +63,8 @@ export const PARTNER_ENUM_LABEL: Record<string, string> = {
   renewal: "חידוש",
   partner_referral: "צירוף פרטנר",
   customer_sale: "מכירת לקוח",
+  customer_sale_one_time: "עמלה חד-פעמית",
+  customer_sale_recurring: "עמלה חודשית",
   customer_renewal: "חידוש לקוח",
   software_entitlement: "מודול תוכנה",
   human_service: "שירות אנושי",

@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { fetchPartnerPricebook, updatePricebookItem } from "../../lib/partnerApi";
-import { formatIls, quotePreviewLine } from "../../lib/partnerMoney";
+import { formatIls, quotePreviewComponents } from "../../lib/partnerMoney";
 import type { PartnerPriceLine } from "../../types/partner";
-import PartnerMarkupBreakdown from "../../components/partner/PartnerMarkupBreakdown";
 import PartnerPageHeader from "../../components/partner/PartnerPageHeader";
 
 export default function PartnerPricing() {
@@ -16,13 +15,25 @@ export default function PartnerPricing() {
       .catch((err) => setError(err.response?.data?.error || "שגיאה בטעינת מחירון"));
   }, []);
 
-  async function save(item: PartnerPriceLine, markupIls: number, enabled: boolean) {
+  async function save(
+    item: PartnerPriceLine,
+    payload: {
+      oneTimeMarkupEnabled: boolean;
+      oneTimeMarkupAmount: number;
+      recurringMarkupEnabled: boolean;
+      recurringMarkupAmount: number;
+      enabled: boolean;
+    }
+  ) {
     setSaving(item.sku);
     setError("");
     try {
       const updated = await updatePricebookItem(item.sku, {
-        markupIls,
-        enabledInStorefront: enabled,
+        oneTimeMarkupEnabled: payload.oneTimeMarkupEnabled,
+        oneTimeMarkupAmount: payload.oneTimeMarkupAmount,
+        recurringMarkupEnabled: payload.recurringMarkupEnabled,
+        recurringMarkupAmount: payload.recurringMarkupAmount,
+        enabledInStorefront: payload.enabled,
       });
       setItems((prev) => prev.map((row) => (row.sku === item.sku ? { ...row, ...updated } : row)));
     } catch (err: any) {
@@ -35,9 +46,9 @@ export default function PartnerPricing() {
   return (
     <div className="space-y-5">
       <PartnerPageHeader
-        eyebrow="תמחור"
-        title="מחירון פרטנר"
-        subtitle="אפשר לערוך את העמלה הנוספת ואת ההצגה בעמוד המכירה. המחיר הסופי ללקוח = מחיר סיטונאי + תוספת. הלקוח רואה רק את המחיר הסופי."
+        eyebrow="מוצרים וחבילות"
+        title="מוצרים וחבילות"
+        subtitle="רק חבילות Bizuply פעילות שמותרות למכירת פרטנר. מחיר הבסיס לקריאה בלבד. אפשר להוסיף עמלה חד-פעמית, עמלה חודשית, שתיהן, או אף אחת."
       />
       {error ? (
         <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-bold text-rose-700">
@@ -48,6 +59,11 @@ export default function PartnerPricing() {
         {items.map((item) => (
           <PriceRow key={item.sku} item={item} saving={saving === item.sku} onSave={save} />
         ))}
+        {!items.length ? (
+          <p className="rounded-2xl border border-dashed border-slate-200 px-4 py-8 text-center text-sm font-bold text-slate-400">
+            אין כרגע מוצרים פעילים למכירת פרטנר.
+          </p>
+        ) : null}
       </div>
     </div>
   );
@@ -60,21 +76,38 @@ function PriceRow({
 }: {
   item: PartnerPriceLine;
   saving: boolean;
-  onSave: (item: PartnerPriceLine, markupIls: number, enabled: boolean) => void;
+  onSave: (
+    item: PartnerPriceLine,
+    payload: {
+      oneTimeMarkupEnabled: boolean;
+      oneTimeMarkupAmount: number;
+      recurringMarkupEnabled: boolean;
+      recurringMarkupAmount: number;
+      enabled: boolean;
+    }
+  ) => void;
 }) {
-  const [markup, setMarkup] = useState(Number(item.markup || item.markupIls || 0));
+  const [oneTimeEnabled, setOneTimeEnabled] = useState(Boolean(item.oneTimeMarkupEnabled));
+  const [oneTimeAmount, setOneTimeAmount] = useState(Number(item.oneTimeMarkupAmount || 0));
+  const [recurringEnabled, setRecurringEnabled] = useState(Boolean(item.recurringMarkupEnabled));
+  const [recurringAmount, setRecurringAmount] = useState(Number(item.recurringMarkupAmount || 0));
   const [enabled, setEnabled] = useState(Boolean(item.enabledInStorefront));
-  const quoted = quotePreviewLine({ ...item, markup });
+  const quoted = quotePreviewComponents({
+    ...item,
+    oneTimeMarkupEnabled: oneTimeEnabled,
+    oneTimeMarkupAmount: oneTimeAmount,
+    recurringMarkupEnabled: recurringEnabled,
+    recurringMarkupAmount: recurringAmount,
+  });
 
   return (
     <article className="rounded-[16px] border border-slate-100 bg-white p-5 shadow-[0_4px_20px_rgba(15,23,42,0.05)]">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h3 className="text-lg font-black">{item.nameHe || item.sku}</h3>
-          <p className="text-xs font-bold text-slate-400">{item.sku}</p>
-          <p className="mt-2 text-sm font-black text-slate-900">
-            מחיר סופי ללקוח: {formatIls(quoted.customerFinalPrice)}
-          </p>
+          {item.descriptionHe ? (
+            <p className="mt-1 max-w-2xl text-sm font-bold text-slate-500">{item.descriptionHe}</p>
+          ) : null}
           {item.category === "human_service" ? (
             <p className="mt-1 text-xs font-black text-amber-700">
               שירות אנושי – אינו מפעיל מודול אוטומטית.
@@ -88,37 +121,104 @@ function PriceRow({
             onChange={(e) => setEnabled(e.target.checked)}
             className="accent-violet-700"
           />
-          הצג בעמוד המכירה
+          הצג בעמוד האישי
         </label>
       </div>
 
-      <div className="mt-4 grid gap-3 md:grid-cols-[220px_1fr]">
-        <label className="rounded-2xl border border-violet-200 bg-violet-50 p-4 text-sm font-black text-violet-900">
-          עמלה נוספת
-          <input
-            type="number"
-            min={0}
-            value={markup}
-            onChange={(e) => setMarkup(Number(e.target.value) || 0)}
-            className="mt-2 w-full rounded-xl border border-violet-200 bg-white px-3 py-2 text-lg font-black text-slate-900"
-          />
-          <span className="mt-2 block text-[11px] font-bold text-violet-700">
-            התוספת מעל {formatIls(item.partnerWholesalePrice)}
-          </span>
-        </label>
-        <PartnerMarkupBreakdown
-          showTitle={false}
-          compact
-          line={{ ...item, ...quoted, markup }}
-        />
+      <div className="mt-4 grid gap-4 md:grid-cols-2">
+        <section className="rounded-2xl border border-violet-100 bg-violet-50/60 p-4">
+          <label className="flex items-center gap-2 text-sm font-black text-violet-900">
+            <input
+              type="checkbox"
+              checked={oneTimeEnabled}
+              onChange={(e) => setOneTimeEnabled(e.target.checked)}
+              className="accent-violet-700"
+            />
+            הוסף עמלה חד-פעמית
+          </label>
+          {oneTimeEnabled ? (
+            <label className="mt-3 block text-sm font-black text-violet-900">
+              סכום העמלה: ₪
+              <input
+                type="number"
+                min={0}
+                value={oneTimeAmount}
+                onChange={(e) => setOneTimeAmount(Number(e.target.value) || 0)}
+                className="mt-2 w-full rounded-xl border border-violet-200 bg-white px-3 py-2 text-lg font-black text-slate-900"
+              />
+            </label>
+          ) : null}
+          <dl className="mt-3 space-y-1 text-sm font-bold text-slate-700">
+            <div className="flex justify-between gap-3">
+              <dt>מחיר בסיס</dt>
+              <dd>{formatIls(quoted.oneTimeBase)}</dd>
+            </div>
+            <div className="flex justify-between gap-3">
+              <dt>העמלה שלך</dt>
+              <dd>{formatIls(quoted.oneTimeMarkup)}</dd>
+            </div>
+            <div className="flex justify-between gap-3 font-black text-slate-900">
+              <dt>מחיר ללקוח</dt>
+              <dd>{formatIls(quoted.customerOneTimeAmount)}</dd>
+            </div>
+          </dl>
+        </section>
+
+        <section className="rounded-2xl border border-sky-100 bg-sky-50/60 p-4">
+          <label className="flex items-center gap-2 text-sm font-black text-sky-900">
+            <input
+              type="checkbox"
+              checked={recurringEnabled}
+              onChange={(e) => setRecurringEnabled(e.target.checked)}
+              className="accent-sky-700"
+            />
+            הוסף עמלה חודשית מתחדשת
+          </label>
+          {recurringEnabled ? (
+            <label className="mt-3 block text-sm font-black text-sky-900">
+              עמלה חודשית: ₪
+              <input
+                type="number"
+                min={0}
+                value={recurringAmount}
+                onChange={(e) => setRecurringAmount(Number(e.target.value) || 0)}
+                className="mt-2 w-full rounded-xl border border-sky-200 bg-white px-3 py-2 text-lg font-black text-slate-900"
+              />
+              <span className="mt-1 block text-[11px] font-bold text-sky-700">לחודש</span>
+            </label>
+          ) : null}
+          <dl className="mt-3 space-y-1 text-sm font-bold text-slate-700">
+            <div className="flex justify-between gap-3">
+              <dt>מחיר בסיס</dt>
+              <dd>{formatIls(quoted.recurringBase)} לחודש</dd>
+            </div>
+            <div className="flex justify-between gap-3">
+              <dt>העמלה שלך</dt>
+              <dd>{formatIls(quoted.recurringMarkup)} לחודש</dd>
+            </div>
+            <div className="flex justify-between gap-3 font-black text-slate-900">
+              <dt>מחיר ללקוח</dt>
+              <dd>{formatIls(quoted.customerRecurringAmount)} לחודש</dd>
+            </div>
+          </dl>
+        </section>
       </div>
+
       <button
         type="button"
         disabled={saving}
-        onClick={() => onSave(item, markup, enabled)}
+        onClick={() =>
+          onSave(item, {
+            oneTimeMarkupEnabled: oneTimeEnabled,
+            oneTimeMarkupAmount: oneTimeAmount,
+            recurringMarkupEnabled: recurringEnabled,
+            recurringMarkupAmount: recurringAmount,
+            enabled,
+          })
+        }
         className="mt-4 rounded-2xl bg-slate-900 px-4 py-2.5 text-sm font-black text-white disabled:opacity-60"
       >
-        {saving ? "שומר..." : "שמירת עמלה נוספת"}
+        {saving ? "שומר..." : "שמירת עמלות"}
       </button>
     </article>
   );

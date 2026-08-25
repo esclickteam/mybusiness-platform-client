@@ -354,6 +354,32 @@ export default function PartnerDealDetail() {
         <Stat label="שנתי ללקוח" value={formatIls(totals.annual)} />
       </section>
 
+      <section className="grid gap-3 md:grid-cols-3">
+        <Stat
+          label="הכנסה חד-פעמית שלך"
+          value={formatIls(
+            Number(deal.partnerIncomeOneTime) ||
+              serviceRows.reduce((sum, row) => sum + Number(row.partnerIncomeOneTime || 0), 0)
+          )}
+        />
+        <Stat
+          label="הכנסה חודשית שלך"
+          value={`${formatIls(
+            Number(deal.partnerIncomeRecurring) ||
+              serviceRows.reduce((sum, row) => sum + Number(row.partnerIncomeRecurring || 0), 0)
+          )} / חודש`}
+        />
+        <Stat
+          label="הכנסה חודשית פעילה"
+          value={
+            deal.recurringIncomeActive ||
+            (isPaid && deal.stripeSubscriptionId && deal.paymentStatus !== "refunded")
+              ? "פעילה"
+              : "לא פעילה"
+          }
+        />
+      </section>
+
       <section className="overflow-x-auto rounded-3xl border border-slate-200 bg-white p-5">
         <h3 className="font-black">פירוט פנימי לעסק</h3>
         <p className="mt-1 text-sm font-bold text-slate-500">
