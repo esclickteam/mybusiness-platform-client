@@ -1097,7 +1097,14 @@ export default function App() {
                           element={<ForgotPassword />}
                         />
                         <Route path="/reset-password" element={<ResetPassword />} />
-                        <Route path="/change-password" element={<ChangePassword />} />
+                        <Route
+                          path="/change-password"
+                          element={
+                            <ProtectedRoute>
+                              <ChangePassword />
+                            </ProtectedRoute>
+                          }
+                        />
                         <Route path="/staff-login" element={<StaffLogin />} />
 
                         <Route

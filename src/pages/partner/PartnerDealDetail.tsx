@@ -102,10 +102,28 @@ export default function PartnerDealDetail() {
         title={client?.contact?.businessName || "סיכום עסקה"}
         subtitle="הלקוח רואה מחיר אחיד: מחיר פרטנר + עמלה. כאן אתם רואים לכל שירות את מחיר הלקוח, התשלום ל-Bizuply, והעמלה החד-פעמית והחודשית."
       />
-      {paidFlag ? (
-        <p className="rounded-2xl bg-emerald-50 px-4 py-3 text-sm font-black text-emerald-800">
-          התשלום ל-Bizuply התקבל. העמלות והשירותים יעודכנו אוטומטית.
-        </p>
+      {paidFlag || deal.status === "paid" ? (
+        <div className="space-y-2 rounded-2xl bg-emerald-50 px-4 py-3 text-sm font-black text-emerald-800">
+          <p>התשלום ל-Bizuply התקבל. העמלות והשירותים עודכנו אצל האדמין.</p>
+          {deal.clientProvisioning?.status === "created" ? (
+            <p>
+              נפתח משתמש ללקוח
+              {deal.clientProvisioning.email ? ` (${deal.clientProvisioning.email})` : ""}.
+              {deal.clientProvisioning.welcomeEmailSent
+                ? " סיסמה חד-פעמית נשלחה לאימייל, והלקוח יוכל להחליף אותה בכניסה הראשונה."
+                : " יש לשלוח ללקוח את פרטי הכניסה אם המייל לא נשלח."}
+            </p>
+          ) : null}
+          {deal.clientProvisioning?.status === "already_active" ? (
+            <p>ללקוח כבר יש משתמש פעיל במערכת.</p>
+          ) : null}
+          {deal.clientProvisioning?.status === "email_exists" ? (
+            <p>לא נפתח משתמש חדש — האימייל כבר קיים במערכת.</p>
+          ) : null}
+          {deal.clientProvisioning?.status === "failed" ? (
+            <p>פתיחת המשתמש נכשלה{deal.clientProvisioning.error ? `: ${deal.clientProvisioning.error}` : ""}.</p>
+          ) : null}
+        </div>
       ) : null}
       {canceled ? (
         <p className="rounded-2xl bg-amber-50 px-4 py-3 text-sm font-black text-amber-800">

@@ -184,6 +184,14 @@ export type PartnerDeal = {
   publicUrl?: string;
   paidAt?: string | null;
   createdAt?: string;
+  clientProvisioning?: {
+    status?: string;
+    email?: string;
+    welcomeEmailSent?: boolean;
+    welcomeEmailSentAt?: string | null;
+    temporaryPasswordIssuedAt?: string | null;
+    error?: string;
+  } | null;
 };
 
 export type PartnerClientContact = {

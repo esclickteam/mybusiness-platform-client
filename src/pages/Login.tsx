@@ -34,6 +34,8 @@ type LoginUser = {
   businessId?: string;
   enabledModules?: string[] | null;
   hasAccess?: boolean;
+  mustChangePassword?: boolean;
+  isTempPassword?: boolean;
 };
 
 type LoginResponse = {
@@ -150,6 +152,15 @@ export default function Login() {
 
       const loggedInUser = loginResult?.user;
       const role = String(loggedInUser?.role || "").toLowerCase();
+
+      if (
+        role === "business" &&
+        (loggedInUser?.mustChangePassword || loggedInUser?.isTempPassword)
+      ) {
+        clearPostLoginRedirect();
+        navigate("/change-password", { replace: true });
+        return;
+      }
 
       const finalRedirect = resolvePostLoginDestination({
         role: loggedInUser?.role,

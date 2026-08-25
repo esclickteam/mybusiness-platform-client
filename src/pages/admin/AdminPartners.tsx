@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import AdminHeader from "./AdminsHeader";
 import API from "../../api";
 import {
@@ -12,6 +13,7 @@ import {
   fetchAdminPartners,
   fetchAdminPartnerTransactions,
   fetchAdminWithdrawalMonth,
+  fetchAdminPartnerPaymentsRecent,
 } from "../../lib/partnerApi";
 import type { AdminPartnerRow, PartnerPlanKey } from "../../types/partner";
 
@@ -27,6 +29,7 @@ export default function AdminPartners() {
   const [financePartnerId, setFinancePartnerId] = useState("");
   const [financeRows, setFinanceRows] = useState<any[]>([]);
   const [monthSummary, setMonthSummary] = useState<any>(null);
+  const [recentPayments, setRecentPayments] = useState<any[]>([]);
 
   function describeLoadError(err: any) {
     const status = err?.response?.status;
@@ -41,12 +44,14 @@ export default function AdminPartners() {
     setError("");
     setLoading(true);
     try {
-      const [data, month] = await Promise.all([
+      const [data, month, payments] = await Promise.all([
         fetchAdminPartners(search),
         fetchAdminWithdrawalMonth().catch(() => null),
+        fetchAdminPartnerPaymentsRecent().catch(() => ({ items: [] })),
       ]);
       setItems(data.items || []);
       if (month) setMonthSummary(month);
+      setRecentPayments(payments.items || []);
     } catch (err: any) {
       setItems([]);
       setError(describeLoadError(err));
@@ -74,6 +79,45 @@ export default function AdminPartners() {
             <MiniKpi label="מאושרות" value={String(monthSummary.approved || 0)} />
             <MiniKpi label="נדחו" value={String(monthSummary.rejected || 0)} />
             <MiniKpi label="שולמו" value={String(monthSummary.paid || 0)} />
+          </section>
+        ) : null}
+        {recentPayments.length ? (
+          <section className="mb-6 overflow-x-auto rounded-2xl border border-slate-200 bg-white">
+            <h2 className="px-4 py-3 text-lg font-black">תשלומי עסקאות אחרונים</h2>
+            <table className="min-w-full text-right text-sm">
+              <thead className="bg-slate-50 text-xs font-black text-slate-500">
+                <tr>
+                  <th className="px-3 py-2">עסקה</th>
+                  <th className="px-3 py-2">פרטנר</th>
+                  <th className="px-3 py-2">לקוח</th>
+                  <th className="px-3 py-2">לתשלום עכשיו</th>
+                  <th className="px-3 py-2">חודשי</th>
+                  <th className="px-3 py-2">ל-Bizuply</th>
+                  <th className="px-3 py-2">משתמש</th>
+                  <th className="px-3 py-2">שולם</th>
+                </tr>
+              </thead>
+              <tbody>
+                {recentPayments.map((row) => (
+                  <tr key={row._id} className="border-t">
+                    <td className="px-3 py-2 font-black">{row.dealNumber}</td>
+                    <td className="px-3 py-2">
+                      <Link className="font-black text-violet-700" to={`/admin/partners/${row.partnerId}`}>
+                        {row.partnerName || "פרטנר"}
+                      </Link>
+                    </td>
+                    <td className="px-3 py-2">{row.clientName || row.clientEmail || "—"}</td>
+                    <td className="px-3 py-2">{ils(row.customerNow)}</td>
+                    <td className="px-3 py-2">{ils(row.monthly)}</td>
+                    <td className="px-3 py-2">{ils(row.partnerPaysBizuply)}</td>
+                    <td className="px-3 py-2">{row.provisioningStatus || "—"}</td>
+                    <td className="px-3 py-2">
+                      {row.paidAt ? new Date(row.paidAt).toLocaleDateString("he-IL") : "—"}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </section>
         ) : null}
         {error ? <p className="mb-3 font-bold text-rose-600">{error}</p> : null}

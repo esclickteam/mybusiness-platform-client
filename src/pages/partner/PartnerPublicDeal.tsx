@@ -5,6 +5,12 @@ import { billingLabel } from "../../lib/partnerDealMath";
 import { formatIls } from "../../lib/partnerMoney";
 import BizuplyLoader from "../../components/ui/BizuplyLoader";
 
+type PublicProduct = {
+  name?: string;
+  description?: string;
+  billing?: string;
+};
+
 type PublicSummary = {
   dealNumber?: string;
   dealDate?: string;
@@ -14,11 +20,10 @@ type PublicSummary = {
     name?: string;
     description?: string;
     billing?: string;
-    amount?: number;
-    setupAmount?: number;
     includes?: string[];
   };
-  addons?: Array<{ name?: string; description?: string; billing?: string; customerFinalPrice?: number }>;
+  addons?: PublicProduct[];
+  included?: PublicProduct[];
   payment?: {
     oneTime?: number;
     monthly?: number;
@@ -53,7 +58,16 @@ export default function PartnerPublicDeal() {
   const pay = summary.payment || {};
   const date = summary.dealDate ? new Date(summary.dealDate).toLocaleDateString("he-IL") : "";
   const logo = summary.partner?.logo || summary.business?.logo;
-  const setupAmount = Number(summary.package?.setupAmount || 0);
+  const products: PublicProduct[] = [
+    summary.package
+      ? {
+          name: summary.package.name,
+          description: summary.package.description,
+          billing: summary.package.billing,
+        }
+      : null,
+    ...(summary.addons || []),
+  ].filter(Boolean) as PublicProduct[];
 
   return (
     <div dir="rtl" className="min-h-screen bg-[#f6f4ff] px-4 py-10" style={{ fontFamily: '"Assistant","Rubik",sans-serif' }}>
@@ -88,28 +102,25 @@ export default function PartnerPublicDeal() {
           </section>
 
           <section>
-            <p className="text-xs font-black uppercase tracking-[0.16em] text-violet-700">החבילה שלך</p>
-            <div className="mt-1 flex flex-wrap items-end justify-between gap-3">
-              <h2 className="text-3xl font-black">{summary.package?.name}</h2>
-              {summary.package?.amount ? (
-                <p className="text-xl font-black text-violet-800">
-                  {formatIls(summary.package.amount)}
-                  {summary.package.billing === "recurring_month" ? " / חודש" : summary.package.billing === "recurring_year" ? " / שנה" : ""}
-                </p>
-              ) : null}
-            </div>
+            <p className="text-xs font-black uppercase tracking-[0.16em] text-violet-700">פירוט מוצרים</p>
+            <h2 className="mt-1 text-3xl font-black">{summary.package?.name}</h2>
             {summary.package?.description ? (
               <p className="mt-2 font-bold text-slate-500">{summary.package.description}</p>
             ) : null}
-            {setupAmount > 0 ? (
-              <div className="mt-3 flex items-center justify-between rounded-2xl bg-violet-50 px-4 py-3">
-                <div>
-                  <p className="font-black text-violet-900">הקמה</p>
-                  <p className="text-xs font-bold text-violet-700">חד-פעמי</p>
+            <div className="mt-4 space-y-2">
+              {products.map((item) => (
+                <div
+                  key={`${item.name}-${item.billing}`}
+                  className="rounded-2xl border border-slate-100 px-4 py-3"
+                >
+                  <p className="font-black">{item.name}</p>
+                  {item.description ? (
+                    <p className="text-sm font-bold text-slate-500">{item.description}</p>
+                  ) : null}
+                  <p className="text-xs font-bold text-slate-400">{billingLabel(item.billing)}</p>
                 </div>
-                <p className="font-black text-violet-900">{formatIls(setupAmount)}</p>
-              </div>
-            ) : null}
+              ))}
+            </div>
             {summary.package?.includes?.length ? (
               <>
                 <h3 className="mt-5 font-black">מה כלול בחבילה</h3>
@@ -124,30 +135,10 @@ export default function PartnerPublicDeal() {
             ) : null}
           </section>
 
-          {summary.addons?.length ? (
-            <section>
-              <h3 className="font-black">תוספות שבחרת</h3>
-              <div className="mt-3 space-y-2">
-                {summary.addons.map((item) => (
-                  <div
-                    key={item.name}
-                    className="flex items-center justify-between rounded-2xl border border-slate-100 px-4 py-3"
-                  >
-                    <div>
-                      <p className="font-black">{item.name}</p>
-                      <p className="text-xs font-bold text-slate-400">{billingLabel(item.billing)}</p>
-                    </div>
-                    <p className="font-black">{formatIls(item.customerFinalPrice)}</p>
-                  </div>
-                ))}
-              </div>
-            </section>
-          ) : null}
-
           <section className="rounded-[28px] bg-slate-900 p-6 text-white">
             <h3 className="text-lg font-black">תשלום</h3>
             <p className="mt-1 text-sm font-bold text-white/60">
-              מחיר אחיד לרישיון ולשירותים, כולל הקמה וחיוב חודשי.
+              מחיר אחיד לרישיון ולשירותים — הסכום הסופי כולל את כל הרכיבים.
             </p>
             <div className="mt-4 space-y-2 font-black">
               <Row label="מחיר חד-פעמי" value={formatIls(pay.oneTime)} />

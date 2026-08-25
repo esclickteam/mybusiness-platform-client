@@ -19,7 +19,7 @@ import {
   partnerApiError,
   updatePartnerClient,
 } from "../../lib/partnerApi";
-import { computeDealPreview, customerPackageAmount, isCommissionSku, publicPackageLabel } from "../../lib/partnerDealMath";
+import { computeDealPreview, isCommissionSku, publicPackageLabel, billingLabel } from "../../lib/partnerDealMath";
 import { formatIls, formatPct } from "../../lib/partnerMoney";
 import type {
   ManagementMode,
@@ -399,7 +399,7 @@ export default function PartnerClientWizard() {
         <section className="space-y-4 rounded-3xl border border-slate-200 bg-white p-6">
           <h3 className="text-lg font-black">תצוגה מקדימה ללקוח</h3>
           <p className="text-sm font-bold text-slate-500">
-            כך הלקוח יראה את הסיכום: מחיר חד-פעמי, מחיר כל חודש, וסה״כ לתשלום עכשיו — כולל העמלה, בלי פירוט פנימי.
+            כך הלקוח יראה את המוצרים ואת הסכום הסופי בלבד. פירוט המחירים נשאר אצלך בעמוד העסקה.
           </p>
           <div className="rounded-[28px] border border-slate-100 bg-slate-50 p-5">
             {logoUrl ? (
@@ -436,13 +436,15 @@ export default function PartnerClientWizard() {
                 </label>
               ))}
             </div>
-            <p className="mt-4 text-sm font-black">
-              רישיון {formatIls(customerPackageAmount(Number(preview.primary?.partnerWholesalePrice) || 0, monthlyCommission, preview.primary?.billing))}
-              {preview.primary?.billing === "recurring_month" ? " / חודש" : ""}
-            </p>
-            {additionalMarkup ? (
-              <p className="text-sm font-black">הקמה {formatIls(additionalMarkup)}</p>
-            ) : null}
+            <p className="mt-4 text-xs font-black uppercase tracking-[0.16em] text-violet-700">פירוט מוצרים</p>
+            <div className="mt-2 space-y-2">
+              {preview.lines.filter((line) => !isCommissionSku(line.sku)).map((line) => (
+                <div key={line.sku} className="rounded-2xl border border-slate-100 bg-white px-3 py-2">
+                  <p className="font-black">{lineNames[line.sku] || publicPackageLabel(line.displayNameHe || line.nameHe, line.nameHe)}</p>
+                  <p className="text-xs font-bold text-slate-400">{billingLabel(line.billing)}</p>
+                </div>
+              ))}
+            </div>
             <p className="mt-4 text-sm font-black">מחיר חד-פעמי {formatIls(preview.totals.oneTime)}</p>
             <p className="text-sm font-black">מחיר כל חודש {formatIls(preview.totals.monthly)}</p>
             {preview.totals.annual ? (
