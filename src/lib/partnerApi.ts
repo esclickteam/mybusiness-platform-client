@@ -157,15 +157,10 @@ export async function updatePartnerClient(id: string, payload: Record<string, un
 
 export async function quotePartnerClient(
   id: string,
-  lines: { sku: string; markupIls: number }[],
-  additionalMarkup = 0,
-  monthlyCommission = 0
+  lines: { sku: string; displayNameHe?: string }[]
 ) {
   const { data } = await API.post(`/partner/clients/${id}/quote`, {
     lines,
-    additionalMarkup,
-    oneTimeCommission: additionalMarkup,
-    monthlyCommission,
   });
   return data;
 }
@@ -173,10 +168,7 @@ export async function quotePartnerClient(
 export async function createPartnerDeal(
   clientId: string,
   payload: {
-    lines: { sku: string; markupIls?: number; displayNameHe?: string }[];
-    additionalMarkup?: number;
-    oneTimeCommission?: number;
-    monthlyCommission?: number;
+    lines: { sku: string; displayNameHe?: string }[];
     packageDisplayName?: string;
     packageDescription?: string;
     logoUrl?: string;

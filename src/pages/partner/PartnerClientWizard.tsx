@@ -71,8 +71,6 @@ export default function PartnerClientWizard() {
     notes: "",
   });
   const [selectedSkus, setSelectedSkus] = useState<string[]>([]);
-  const [additionalMarkup, setAdditionalMarkup] = useState(0);
-  const [monthlyCommission, setMonthlyCommission] = useState(0);
   const [packageDisplayName, setPackageDisplayName] = useState("");
   const [packageDescription, setPackageDescription] = useState("");
   const [lineNames, setLineNames] = useState<Record<string, string>>({});
@@ -125,28 +123,9 @@ export default function PartnerClientWizard() {
       .catch((err) => setError(partnerApiError(err, "לא ניתן לטעון לקוח")));
   }, [existingClientId]);
 
-  const previewCatalog = useMemo(() => {
-    if (!(additionalMarkup > 0 || monthlyCommission > 0)) return items;
-    return items.map((item) => ({
-      ...item,
-      oneTimeMarkupEnabled: false,
-      oneTimeMarkupAmount: 0,
-      recurringMarkupEnabled: false,
-      recurringMarkupAmount: 0,
-      markup: 0,
-      markupIls: 0,
-    }));
-  }, [items, additionalMarkup, monthlyCommission]);
   const preview = useMemo(
-    () =>
-      computeDealPreview(
-        previewCatalog,
-        selectedSkus,
-        additionalMarkup,
-        partnerShareRate,
-        monthlyCommission
-      ),
-    [previewCatalog, selectedSkus, additionalMarkup, partnerShareRate, monthlyCommission]
+    () => computeDealPreview(items, selectedSkus, partnerShareRate),
+    [items, selectedSkus, partnerShareRate]
   );
   const bizuplyShareRate = Math.max(0, 1 - Number(partnerShareRate || 0));
   const defaultPackageName = publicPackageLabel(
@@ -199,25 +178,10 @@ export default function PartnerClientWizard() {
   }
 
   function dealLines() {
-    const extraFees = additionalMarkup > 0 || monthlyCommission > 0;
-    return selectedSkus.map((sku) => {
-      const item = items.find((row) => row.sku === sku);
-      const dual =
-        !extraFees &&
-        (item?.oneTimeMarkupEnabled != null || item?.recurringMarkupEnabled != null);
-      return {
-        sku,
-        displayNameHe: lineNames[sku],
-        ...(dual
-          ? {
-              oneTimeMarkupEnabled: Boolean(item?.oneTimeMarkupEnabled),
-              oneTimeMarkupAmount: Number(item?.oneTimeMarkupAmount) || 0,
-              recurringMarkupEnabled: Boolean(item?.recurringMarkupEnabled),
-              recurringMarkupAmount: Number(item?.recurringMarkupAmount) || 0,
-            }
-          : { markupIls: extraFees ? 0 : Number(item?.markupIls ?? item?.markup) || 0 }),
-      };
-    });
+    return selectedSkus.map((sku) => ({
+      sku,
+      displayNameHe: lineNames[sku],
+    }));
   }
 
   async function persistQuote() {
@@ -237,9 +201,6 @@ export default function PartnerClientWizard() {
       await persistQuote();
       const data = await createPartnerDeal(clientId, {
         lines: dealLines(),
-        additionalMarkup,
-        oneTimeCommission: additionalMarkup,
-        monthlyCommission,
         packageDisplayName,
         packageDescription,
         logoUrl,
@@ -358,12 +319,10 @@ export default function PartnerClientWizard() {
 
       {step === 2 || step === 3 ? (
         <PartnerCatalogPicker
-          items={previewCatalog}
+          items={items}
           wizard={wizard}
           selectedSkus={selectedSkus}
           onChange={setSelectedSkus}
-          additionalMarkup={additionalMarkup}
-          monthlyCommission={monthlyCommission}
           partnerShareRate={partnerShareRate}
           onContinue={() => setStep(step === 2 ? 3 : 4)}
           continueLabel={step === 2 ? "המשך לתוספות" : "המשך לתמחור ללקוח"}
@@ -375,35 +334,9 @@ export default function PartnerClientWizard() {
         <section className="space-y-4 rounded-3xl border border-slate-200 bg-white p-6">
           <h3 className="text-lg font-black">תמחור ללקוח</h3>
           <p className="text-sm font-bold text-slate-500">
-            עמלות המוצרים מגיעות ממסך מוצרים וחבילות ונכנסות למחיר הלקוח. כאן אפשר להוסיף עמלה נוספת לעסקה זו בלבד. Bizuply מקבלת {formatPct(bizuplyShareRate)} מכל עמלה לפי חבילת הפרטנר, ואתם מקבלים {formatPct(partnerShareRate)}.
+            המחיר נבנה רק מהמוצרים שנבחרו: מחיר Bizuply + העמלה החד-פעמית והחודשית שהוגדרו לכל מוצר במחירון. Bizuply מקבלת {formatPct(bizuplyShareRate)} מכל עמלה לפי חבילת הפרטנר, ואתם מקבלים {formatPct(partnerShareRate)}.
           </p>
           <div className="grid gap-4 md:grid-cols-2">
-            <label className="rounded-3xl border border-violet-200 bg-violet-50 p-4">
-              <span className="text-xs font-black text-violet-700">עמלה חד-פעמית נוספת לעסקה זו</span>
-              <input
-                type="number"
-                min={0}
-                value={additionalMarkup}
-                onChange={(e) => setAdditionalMarkup(Math.max(0, Number(e.target.value) || 0))}
-                className="mt-2 w-full rounded-2xl border border-violet-200 bg-white px-3 py-2 text-lg font-black"
-              />
-              <p className="mt-2 text-[11px] font-bold text-violet-700">
-                שלכם {formatIls(preview.totals.partnerOneTimeCommission)} · Bizuply {formatIls(preview.totals.bizuplyOneTimeShare)}
-              </p>
-            </label>
-            <label className="rounded-3xl border border-sky-200 bg-sky-50 p-4">
-              <span className="text-xs font-black text-sky-800">עמלה חודשית נוספת לעסקה זו (אופציונלי)</span>
-              <input
-                type="number"
-                min={0}
-                value={monthlyCommission}
-                onChange={(e) => setMonthlyCommission(Math.max(0, Number(e.target.value) || 0))}
-                className="mt-2 w-full rounded-2xl border border-sky-200 bg-white px-3 py-2 text-lg font-black"
-              />
-              <p className="mt-2 text-[11px] font-bold text-sky-800">
-                שלכם {formatIls(preview.totals.partnerMonthlyCommission)} / חודש · Bizuply {formatIls(preview.totals.bizuplyMonthlyShare)} / חודש
-              </p>
-            </label>
             <Metric label="עלות השירותים שלך מ-Bizuply" value={formatIls(preview.totals.wholesale)} />
             <Metric label="העמלה שלך (חד-פעמי + חודשי)" value={formatIls(preview.totals.partnerCommission)} />
             <Metric label="מחיר חד-פעמי ללקוח" value={formatIls(preview.totals.oneTime)} />

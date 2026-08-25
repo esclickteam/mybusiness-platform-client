@@ -16,8 +16,6 @@ type Props = {
   wizard: PartnerWizardCatalog;
   selectedSkus: string[];
   onChange: (skus: string[]) => void;
-  additionalMarkup: number;
-  monthlyCommission?: number;
   partnerShareRate: number;
   onContinue?: () => void;
   continueLabel?: string;
@@ -38,8 +36,6 @@ export default function PartnerCatalogPicker({
   wizard,
   selectedSkus,
   onChange,
-  additionalMarkup,
-  monthlyCommission = 0,
   partnerShareRate,
   onContinue,
   continueLabel = "המשך לסיכום העסקה",
@@ -51,13 +47,7 @@ export default function PartnerCatalogPicker({
   const selected = new Set(selectedSkus);
   const packageSku = selectedSkus.find((sku) => isMainPackageSku(sku)) || "";
   const covered = wizard.coveredByPackage?.[packageSku] || [];
-  const preview = computeDealPreview(
-    items,
-    selectedSkus,
-    additionalMarkup,
-    partnerShareRate,
-    monthlyCommission
-  );
+  const preview = computeDealPreview(items, selectedSkus, partnerShareRate);
 
   const businessGroup = (wizard.packages || []).filter(
     (item) => item.packageGroup === "bizuply_business"

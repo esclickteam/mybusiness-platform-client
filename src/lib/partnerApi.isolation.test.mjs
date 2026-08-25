@@ -109,10 +109,11 @@ test("public partner deal link hides footer and support bot", () => {
 
 test("partner deal math keeps wholesale + markup split", () => {
   const src = readFileSync(join(ROOT, "lib/partnerDealMath.ts"), "utf8");
-  assert.equal(src.includes("monthlyCommission"), true);
   assert.equal(src.includes("partnerPaysBizuply"), true);
   assert.equal(src.includes("partnerCommission"), true);
   assert.equal(src.includes("export function isCommissionSku"), true);
+  assert.equal(src.includes("quotePreviewComponents"), true);
+  assert.equal(src.includes("additionalMarkup"), false);
 });
 
 test("partnerApiError reads interceptor Error.message when response is missing", () => {
@@ -375,8 +376,12 @@ test("public partner plans page shows only final customer prices", () => {
   assert.equal(pricing.includes("מחיר בסיס"), true);
   const wizard = readFileSync(join(ROOT, "pages/partner/PartnerClientWizard.tsx"), "utf8");
   assert.equal(wizard.includes("fetchPartnerPricebook"), true);
-  assert.equal(wizard.includes("oneTimeMarkupEnabled"), true);
-  assert.equal(wizard.includes("עמלות המוצרים מגיעות ממסך מוצרים וחבילות"), true);
+  assert.equal(wizard.includes("עמלת עסקה כללית"), false);
+  assert.equal(wizard.includes("עמלה חד-פעמית נוספת לעסקה זו"), false);
+  assert.equal(wizard.includes("עמלה חודשית נוספת לעסקה זו"), false);
+  assert.equal(wizard.includes("additionalMarkup"), false);
+  assert.equal(wizard.includes("setMonthlyCommission"), false);
+  assert.equal(wizard.includes("המחיר נבנה רק מהמוצרים שנבחרו"), true);
   const money = readFileSync(join(ROOT, "lib/partnerMoney.ts"), "utf8");
   assert.equal(money.includes("recurringIntervalLabel"), true);
   assert.equal(money.includes('billing === "recurring_year" ? "לשנה"'), true);
