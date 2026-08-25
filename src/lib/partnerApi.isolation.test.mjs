@@ -53,6 +53,8 @@ test("shared Business layout uses Partner managed context, not impersonation", (
   assert.equal(src.includes("layout.partnerImpersonationText"), true);
   assert.equal(src.includes("layout.backToPartner"), true);
   assert.equal(src.includes("layout.partnerManagedPartnerLine"), true);
+  assert.equal(src.includes("partnerFacingLogo"), true);
+  assert.equal(src.includes("hidesBizuplyChrome"), true);
   assert.equal(src.includes("CRMClient"), false);
   assert.equal(src.includes("/crm-clients"), false);
 
@@ -229,6 +231,7 @@ test("login branding resolves from hostname helper, not scattered partner ifs", 
   assert.equal(branding.includes("hideBizuplyBranding"), true);
   assert.equal(branding.includes("isPartnerWhiteLabelHostname"), true);
   assert.equal(branding.includes("absoluteCustomerUrl"), true);
+  assert.equal(branding.includes("hidesBizuplyChrome(branding, hostname)"), true);
   const storefront = readFileSync(join(ROOT, "pages/public/PartnerStorefront.tsx"), "utf8");
   assert.equal(storefront.includes("PublicPartnerShell"), true);
   assert.equal(storefront.includes("Powered by Bizuply"), false);

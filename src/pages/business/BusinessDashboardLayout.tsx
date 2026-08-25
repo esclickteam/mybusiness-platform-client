@@ -25,7 +25,13 @@ import {
 import { ensurePushSubscription, listenForPushSubscriptionChange } from "../../utils/push";
 import { clearManagedBusinessContext } from "../../lib/partnerManagedContext";
 import { refreshAccessTokenOnce } from "../../utils/tokenRefresh";
-import { applyPartnerFavicon, brandingFromUser } from "../../lib/partnerBranding";
+import {
+  applyPartnerFavicon,
+  brandingFromUser,
+  hidesBizuplyChrome,
+  partnerFacingLogo,
+  partnerFacingName,
+} from "../../lib/partnerBranding";
 
 import FacebookStyleNotifications from "../../components/FacebookStyleNotifications";
 import BusinessWorkspaceNav from "../../components/BusinessWorkspaceNav";
@@ -196,12 +202,24 @@ export default function BusinessDashboardLayout() {
   const isAdmin = user?.role === "admin";
   const layoutDir = getTextDirection(i18n.language);
   const isRtl = isHebrewLanguage(i18n.language);
-  const partnerBranding = brandingFromUser(user);
+  const host = typeof window !== "undefined" ? window.location.hostname : "";
+  const partnerBranding = brandingFromUser(user, host);
+  const partnerLogo = partnerFacingLogo(partnerBranding, host);
+  const partnerName = partnerFacingName(partnerBranding, host);
+  const hideBizuplyChrome = hidesBizuplyChrome(partnerBranding, host);
 
   useEffect(() => {
-    applyPartnerFavicon(partnerBranding?.faviconUrl || "");
+    applyPartnerFavicon(
+      hideBizuplyChrome
+        ? partnerBranding?.faviconUrl || partnerBranding?.stored?.faviconUrl || ""
+        : ""
+    );
     return () => applyPartnerFavicon("");
-  }, [partnerBranding?.faviconUrl]);
+  }, [
+    hideBizuplyChrome,
+    partnerBranding?.faviconUrl,
+    partnerBranding?.stored?.faviconUrl,
+  ]);
 
   const sidebarRef = useRef<HTMLElement | null>(null);
 
@@ -612,10 +630,11 @@ export default function BusinessDashboardLayout() {
                     ${sidebarCollapsed && !isMobile ? "h-10 w-10" : "h-full min-w-0 flex-1"}
                   `}
                 >
-                  <img
-                    src={partnerBranding?.logoUrl || "/bizuply logo.png"}
-                    alt={partnerBranding?.brandName || "BizUply Logo"}
-                    className={`
+                  {partnerLogo ? (
+                    <img
+                      src={partnerLogo}
+                      alt={partnerName || ""}
+                      className={`
                       object-contain transition-transform duration-300
                       ${
                         sidebarCollapsed && !isMobile
@@ -623,7 +642,25 @@ export default function BusinessDashboardLayout() {
                           : "h-10 w-auto max-w-full origin-center scale-[2]"
                       }
                     `}
-                  />
+                    />
+                  ) : hideBizuplyChrome && partnerName ? (
+                    <span className="text-lg font-black tracking-tight text-slate-900">
+                      {partnerName}
+                    </span>
+                  ) : hideBizuplyChrome ? null : (
+                    <img
+                      src="/bizuply logo.png"
+                      alt="BizUply Logo"
+                      className={`
+                      object-contain transition-transform duration-300
+                      ${
+                        sidebarCollapsed && !isMobile
+                          ? "h-10 w-10"
+                          : "h-10 w-auto max-w-full origin-center scale-[2]"
+                      }
+                    `}
+                    />
+                  )}
                 </div>
 
                 {!isMobile && (

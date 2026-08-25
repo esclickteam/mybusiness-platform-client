@@ -40,9 +40,13 @@ export function applyPartnerFavicon(url?: string | null) {
   document.head.appendChild(link);
 }
 
-export function brandingFromUser(user: { partnerBranding?: PublicPartnerBranding } | null | undefined) {
+export function brandingFromUser(
+  user: { partnerBranding?: PublicPartnerBranding } | null | undefined,
+  hostname?: string
+) {
   const branding = user?.partnerBranding;
-  if (!branding?.whiteLabelEnabled) return null;
+  if (!branding) return null;
+  if (!hidesBizuplyChrome(branding, hostname)) return null;
   return branding;
 }
 
