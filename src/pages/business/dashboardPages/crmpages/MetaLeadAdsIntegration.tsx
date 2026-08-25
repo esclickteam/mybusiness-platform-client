@@ -3,8 +3,10 @@ import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router-dom";
 import BizuplyLoader from "../../../../components/ui/BizuplyLoader";
 import {
+  canNavigateToMetaLeadWizardStep,
   deriveMetaLeadWizardStep,
   isMetaLeadSetupComplete,
+  persistedMetaLeadWizardStep,
   type MetaLeadWizardSnapshot,
   type MetaLeadWizardStep,
 } from "./metaLeadAdsWizard";
@@ -110,7 +112,9 @@ export default function MetaLeadAdsIntegration({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [editingSetup, setEditingSetup] = useState(false);
+  const [viewingStep, setViewingStep] = useState<MetaLeadWizardStep | null>(
+    null
+  );
 
   const [connectedPage, setConnectedPage] = useState<ConnectedPage | null>(null);
   const [pages, setPages] = useState<MetaPage[]>([]);
@@ -158,10 +162,25 @@ export default function MetaLeadAdsIntegration({
     ]
   );
 
+  const persistedStep = persistedMetaLeadWizardStep(wizardSnapshot);
   const wizardStep: MetaLeadWizardStep = deriveMetaLeadWizardStep(
     wizardSnapshot,
-    { editingSetup }
+    { viewingStep }
   );
+  const setupComplete = isMetaLeadSetupComplete(wizardSnapshot);
+
+  const openWizardStep = (step: MetaLeadWizardStep) => {
+    if (!canNavigateToMetaLeadWizardStep(wizardSnapshot, step)) return;
+    setError("");
+    if (step === persistedStep) {
+      setViewingStep(null);
+      return;
+    }
+    setViewingStep(step);
+    if (step === 2 && isConnected) {
+      void refreshForms();
+    }
+  };
 
   const applyStatusPayload = (data: StatusPayload) => {
     const nextConnectedPage = data.connectedPage || null;
@@ -195,7 +214,7 @@ export default function MetaLeadAdsIntegration({
       selectedForms: nextSelectedForms,
     });
 
-    const complete = isMetaLeadSetupComplete({
+    return isMetaLeadSetupComplete({
       metaAccountConnected:
         data.metaAccountConnected ??
         Boolean((data.pages || []).length || nextConnectedPage?.pageId),
@@ -206,8 +225,6 @@ export default function MetaLeadAdsIntegration({
         nextSelectedForms[0]?.formId ||
         "",
     });
-    if (complete) setEditingSetup(false);
-    return complete;
   };
 
   const loadStatus = async () => {
@@ -248,14 +265,14 @@ export default function MetaLeadAdsIntegration({
     if (!metaConnected && !metaError) return;
 
     if (metaConnected) {
-      setEditingSetup(true);
+      setViewingStep(2);
       setSuccess(t(`${T}.wizard.accountConnected`));
       void loadStatus();
     }
 
     if (metaError) {
       setError(metaError);
-      setEditingSetup(true);
+      setViewingStep(1);
     }
 
     const next = new URLSearchParams(searchParams);
@@ -315,7 +332,7 @@ export default function MetaLeadAdsIntegration({
         setSelectedForms(data.selectedForms);
       }
       setSuccess(t(`${T}.successPageConnected`));
-      setEditingSetup(true);
+      setViewingStep(2);
 
       await loadStatus();
     } catch (err) {
@@ -343,7 +360,7 @@ export default function MetaLeadAdsIntegration({
       setSelectedForm(null);
       setSelectedForms([]);
       setSelectedPageId("");
-      setEditingSetup(true);
+      setViewingStep(null);
       setSuccess(t(`${T}.successDisconnected`));
 
       if ((data?.purgedHistorical || 0) > 0) {
@@ -381,7 +398,7 @@ export default function MetaLeadAdsIntegration({
         t(`${T}.successFormRemoved`, { name: form.formName || form.formId })
       );
       if (!(data.selectedForms || []).length) {
-        setEditingSetup(true);
+        setViewingStep(2);
       }
       await loadStatus();
     } catch (err) {
@@ -509,7 +526,7 @@ export default function MetaLeadAdsIntegration({
 
       setSelectedForm(data.selectedForm);
       setSelectedForms(data.selectedForms || (data.selectedForm ? [data.selectedForm] : []));
-      setEditingSetup(false);
+      setViewingStep(null);
       if (isAdminCrm) {
         const synced = applySyncResult(data.sync);
         if (!synced) {
@@ -576,23 +593,44 @@ export default function MetaLeadAdsIntegration({
             <div className="mt-5 grid gap-2 sm:grid-cols-3">
               {stepItems.map((item) => {
                 const active = wizardStep === item.id;
-                const done = wizardStep > item.id;
+                const persistedDone =
+                  persistedStep > item.id || (item.id === 3 && setupComplete);
+                const done = persistedDone && !active;
+                const clickable = canNavigateToMetaLeadWizardStep(
+                  wizardSnapshot,
+                  item.id
+                );
+                const className = [
+                  "rounded-xl border px-4 py-3 text-start text-xs font-black",
+                  active
+                    ? "border-violet-200 bg-violet-600 text-white"
+                    : done
+                      ? "border-emerald-200 bg-emerald-50 text-emerald-700"
+                      : "border-slate-200 bg-slate-50 text-slate-400",
+                  clickable
+                    ? "cursor-pointer transition hover:brightness-95"
+                    : "cursor-default",
+                ].join(" ");
+                const label = `${done ? "✓ " : `${item.id}. `}${item.label}`;
+
+                if (!clickable) {
+                  return (
+                    <div key={item.id} className={className}>
+                      {label}
+                    </div>
+                  );
+                }
 
                 return (
-                  <div
+                  <button
                     key={item.id}
-                    className={[
-                      "rounded-xl border px-4 py-3 text-xs font-black",
-                      active
-                        ? "border-violet-200 bg-violet-600 text-white"
-                        : done
-                          ? "border-emerald-200 bg-emerald-50 text-emerald-700"
-                          : "border-slate-200 bg-slate-50 text-slate-400",
-                    ].join(" ")}
+                    type="button"
+                    className={className}
+                    aria-current={active ? "step" : undefined}
+                    onClick={() => openWizardStep(item.id)}
                   >
-                    {done ? "✓ " : `${item.id}. `}
-                    {item.label}
-                  </div>
+                    {label}
+                  </button>
                 );
               })}
             </div>
@@ -650,8 +688,17 @@ export default function MetaLeadAdsIntegration({
                       {t(`${T}.wizard.step1Title`)}
                     </h2>
                     <p className="mt-2 max-w-xl text-sm font-semibold leading-6 text-slate-500">
-                      {t(`${T}.wizard.step1Desc`)}
+                      {persistedStep > 1
+                        ? t(`${T}.wizard.step1ConnectedDesc`)
+                        : t(`${T}.wizard.step1Desc`)}
                     </p>
+
+                    {persistedStep > 1 && (
+                      <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-black text-emerald-700">
+                        <CheckCircle2 className="h-3.5 w-3.5" />
+                        {t(`${T}.wizard.accountConnected`)}
+                      </div>
+                    )}
 
                     <button
                       type="button"
@@ -664,7 +711,9 @@ export default function MetaLeadAdsIntegration({
                       ) : (
                         <Plug className="h-4 w-4" />
                       )}
-                      {t(`${T}.wizard.step1Cta`)}
+                      {persistedStep > 1
+                        ? t(`${T}.wizard.step1CtaReconnect`)
+                        : t(`${T}.wizard.step1Cta`)}
                     </button>
 
                     <p className="mt-3 text-xs font-bold text-slate-400">
@@ -894,7 +943,7 @@ export default function MetaLeadAdsIntegration({
                       <div className="flex flex-wrap gap-2">
                         <button
                           type="button"
-                          onClick={() => setEditingSetup(true)}
+                          onClick={() => openWizardStep(2)}
                           className="inline-flex h-10 items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-4 text-xs font-black text-slate-700 transition hover:bg-white"
                         >
                           {isAdminCrm

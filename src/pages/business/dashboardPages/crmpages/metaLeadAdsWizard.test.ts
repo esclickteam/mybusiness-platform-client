@@ -1,8 +1,15 @@
 import { describe, expect, it } from "vitest";
 import {
+  canNavigateToMetaLeadWizardStep,
   deriveMetaLeadWizardStep,
   isMetaLeadSetupComplete,
 } from "./metaLeadAdsWizard";
+
+const completeSnapshot = {
+  metaAccountConnected: true,
+  connectedPageId: "page-1",
+  selectedLeadFormId: "form-1",
+};
 
 describe("deriveMetaLeadWizardStep", () => {
   it("stays on step 1 until the Meta account is connected", () => {
@@ -34,12 +41,18 @@ describe("deriveMetaLeadWizardStep", () => {
   });
 
   it("goes to step 3 when account, page, and form are persisted", () => {
+    expect(deriveMetaLeadWizardStep(completeSnapshot)).toBe(3);
+  });
+
+  it("lets the stepper reopen step 1 or 2 after completion", () => {
     expect(
-      deriveMetaLeadWizardStep({
-        metaAccountConnected: true,
-        connectedPageId: "page-1",
-        selectedLeadFormId: "form-1",
-      })
+      deriveMetaLeadWizardStep(completeSnapshot, { viewingStep: 1 })
+    ).toBe(1);
+    expect(
+      deriveMetaLeadWizardStep(completeSnapshot, { viewingStep: 2 })
+    ).toBe(2);
+    expect(
+      deriveMetaLeadWizardStep(completeSnapshot, { viewingStep: 3 })
     ).toBe(3);
   });
 
@@ -61,5 +74,24 @@ describe("deriveMetaLeadWizardStep", () => {
     };
     expect(isMetaLeadSetupComplete(snapshot)).toBe(true);
     expect(deriveMetaLeadWizardStep(snapshot)).toBe(3);
+  });
+
+  it("does not open step 2 or 3 before those prerequisites exist", () => {
+    const accountOnly = {
+      metaAccountConnected: true,
+      connectedPageId: "",
+      selectedLeadFormId: "",
+    };
+    expect(canNavigateToMetaLeadWizardStep(accountOnly, 2)).toBe(true);
+    expect(canNavigateToMetaLeadWizardStep(accountOnly, 3)).toBe(false);
+    expect(deriveMetaLeadWizardStep(accountOnly, { viewingStep: 3 })).toBe(2);
+
+    const empty = {
+      metaAccountConnected: false,
+      connectedPageId: "",
+      selectedLeadFormId: "",
+    };
+    expect(canNavigateToMetaLeadWizardStep(empty, 2)).toBe(false);
+    expect(deriveMetaLeadWizardStep(empty, { viewingStep: 2 })).toBe(1);
   });
 });

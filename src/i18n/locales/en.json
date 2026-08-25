@@ -1700,6 +1700,8 @@
           "step1Title": "Step 1 · Connect ad account",
           "step1Desc": "First connect the business Meta / Facebook account. Only after that can you choose a Page and lead form.",
           "step1Cta": "Connect ad account",
+          "step1CtaReconnect": "Connect a different ad account",
+          "step1ConnectedDesc": "You can connect a different ad account without removing the integration. Only the ad account is updated, then you can choose a Page and form again.",
           "step1Hint": "You will be asked to approve Facebook permissions during connection.",
           "step2Title": "Step 2 · Choose Page and lead form",
           "step2Desc": "Select the Facebook Page, then the Lead Ads form that should send leads into the CRM.",
