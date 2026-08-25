@@ -268,11 +268,13 @@ export default function ProposalBuilderModal({
   customerId,
   onClose,
   onIssued,
+  onOpenEnterprise,
 }: {
   open: boolean;
   customerId: string;
   onClose: () => void;
   onIssued?: (proposal: any) => void;
+  onOpenEnterprise?: () => void;
 }) {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -455,18 +457,6 @@ export default function ProposalBuilderModal({
     else addItem(item, fromInterest);
   }
 
-  function toggleEnterprise() {
-    const monthly = catalog.find((c) => c.sku === ENTERPRISE_MONTHLY_SKU);
-    const setup = catalog.find((c) => c.sku === ENTERPRISE_SETUP_SKU);
-    if (!monthly || !setup) return;
-    if (selected[ENTERPRISE_MONTHLY_SKU] || selected[ENTERPRISE_SETUP_SKU]) {
-      removeItem(ENTERPRISE_MONTHLY_SKU);
-      removeItem(ENTERPRISE_SETUP_SKU);
-      return;
-    }
-    addItem(monthly);
-    addItem(setup);
-  }
 
   function setLinePrice(sku: string, value: number) {
     setSelected((prev) => {
@@ -540,19 +530,6 @@ export default function ProposalBuilderModal({
     setSaving(true);
     setError("");
     try {
-      const enterpriseSelected = Boolean(
-        selected[ENTERPRISE_MONTHLY_SKU] || selected[ENTERPRISE_SETUP_SKU]
-      );
-      const enterpriseHasPrice = linesPayload.some(
-        (line) =>
-          (line.sku === ENTERPRISE_MONTHLY_SKU || line.sku === ENTERPRISE_SETUP_SKU) &&
-          Number(line.amountIls || 0) > 0
-      );
-      if (enterpriseSelected && !enterpriseHasPrice) {
-        setError("לחבילת Enterprise יש להזין סכום חודשי או חד־פעמי");
-        setSaving(false);
-        return;
-      }
       if (!linesPayload.length) {
         setError("יש לבחור לפחות רכיב אחד להצעה");
         setSaving(false);
@@ -605,12 +582,6 @@ export default function ProposalBuilderModal({
   const selectedList = Object.values(selected)
     .map((line) => ({ line, item: catalog.find((c) => c.sku === line.sku) }))
     .filter((x) => x.item && !x.item.proposalOnly);
-
-  const enterpriseOn = Boolean(
-    selected[ENTERPRISE_MONTHLY_SKU] || selected[ENTERPRISE_SETUP_SKU]
-  );
-  const enterpriseMonthly = catalog.find((c) => c.sku === ENTERPRISE_MONTHLY_SKU);
-  const enterpriseSetup = catalog.find((c) => c.sku === ENTERPRISE_SETUP_SKU);
 
   function catalogCardExtras(item: CatalogItem) {
     const line = selected[item.sku];
@@ -807,7 +778,7 @@ export default function ProposalBuilderModal({
             <p className="mt-1 text-xs font-semibold text-slate-500">
               אפשר לשנות סכום חודשי או חד־פעמי לכל רכיב. השינוי חל רק על ההצעה הזו.
             </p>
-            {!selectedList.length && !enterpriseOn ? (
+            {!selectedList.length ? (
               <p className="mt-4 text-sm font-bold text-slate-500">
                 עדיין לא נוספו רכיבים — בחרו מהקטלוג למטה, כולל Enterprise בהתאמה אישית.
               </p>
@@ -993,78 +964,21 @@ export default function ProposalBuilderModal({
             </section>
           ) : null}
 
-          <section className="rounded-3xl border-2 border-slate-900 bg-gradient-to-l from-violet-50 to-white p-4 sm:p-5">
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <p className="text-[11px] font-black uppercase tracking-wide text-[#6D28D9]">
-                  Enterprise
-                </p>
-                <h3 className="mt-1 text-lg font-black text-slate-900">
-                  חבילה ומערכת בהתאמה אישית
-                </h3>
-                <p className="mt-1 max-w-xl text-xs font-semibold text-slate-500">
-                  מחיר מותאם — חודשי, שנתי או חד־פעמי. אפשר למלא סכום מנוי וסכום הקמה.
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={toggleEnterprise}
-                className={[
-                  "min-h-10 rounded-xl px-4 text-xs font-black",
-                  enterpriseOn
-                    ? "border border-slate-300 bg-white text-slate-700"
-                    : "bg-[#6D28D9] text-white",
-                ].join(" ")}
-              >
-                {enterpriseOn ? "הסרה" : "הוסף Enterprise"}
-              </button>
-            </div>
-            {enterpriseOn && enterpriseMonthly && enterpriseSetup ? (
-              <div className="mt-4 grid grid-cols-1 gap-3 lg:grid-cols-2">
-                {[enterpriseMonthly, enterpriseSetup].map((item) => {
-                  const line = selected[item.sku];
-                  if (!line) return null;
-                  return (
-                    <div key={item.sku} className="rounded-2xl border border-slate-200 bg-white p-4">
-                      <p className="font-black text-slate-900">{line.nameHe}</p>
-                      <p className="mt-1 text-xs font-semibold text-slate-500">{item.summaryHe}</p>
-                      <LinePriceEditor
-                        line={line}
-                        item={item}
-                        priceValue={
-                          priceInput[item.sku] !== undefined
-                            ? priceInput[item.sku]
-                            : String(line.amountIls || "")
-                        }
-                        onPriceChange={(raw) => onPriceChange(item.sku, raw)}
-                        onBillingChange={(billing) => setLineBilling(item.sku, billing)}
-                        onNameChange={(name) => setLineName(item.sku, name)}
-                      />
-                      <label className="mt-3 block text-xs font-bold">
-                        מה כלול בהצעה זו
-                        <textarea
-                          className="mt-1 min-h-20 w-full rounded-xl border p-2 text-sm"
-                          value={(line.bullets || []).join("\n")}
-                          onChange={(e) =>
-                            setSelected((prev) => ({
-                              ...prev,
-                              [item.sku]: {
-                                ...prev[item.sku],
-                                bullets: e.target.value
-                                  .split("\n")
-                                  .map((x) => x.trim())
-                                  .filter(Boolean),
-                              },
-                            }))
-                          }
-                        />
-                      </label>
-                    </div>
-                  );
-                })}
-              </div>
-            ) : null}
-          </section>
+          <button
+            type="button"
+            onClick={() => onOpenEnterprise?.()}
+            className="w-full rounded-3xl border-2 border-slate-900 bg-gradient-to-l from-violet-50 to-white p-5 text-right"
+          >
+            <p className="text-[11px] font-black uppercase tracking-wide text-[#6D28D9]">
+              Enterprise
+            </p>
+            <h3 className="mt-1 text-lg font-black text-slate-900">
+              חבילה ומערכת בהתאמה אישית
+            </h3>
+            <p className="mt-1 text-xs font-semibold text-slate-500">
+              פתיחת מודאל נפרד להצעת Enterprise — מחיר הקמה, מנוי חודשי ותוכן מותאם.
+            </p>
+          </button>
 
           <section>
             <h3 className="mb-3 font-black">חבילות ותוספים פעילים</h3>

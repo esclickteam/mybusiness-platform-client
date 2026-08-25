@@ -147,6 +147,8 @@ export const adminCrmApi = {
     API.post(`/admin/crm/proposals/${proposalId}/issue`),
   reviseProposal: (proposalId: string) =>
     API.post(`/admin/crm/proposals/${proposalId}/revise`),
+  voidProposal: (proposalId: string) =>
+    API.post(`/admin/crm/proposals/${proposalId}/void`),
 };
 
 export default adminCrmApi;
