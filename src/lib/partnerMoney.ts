@@ -91,7 +91,8 @@ export function quotePreviewComponents(item: {
     ) || 0
   );
   const oneTimeEnabled = Boolean(item.oneTimeMarkupEnabled);
-  const recurringEnabled = Boolean(item.recurringMarkupEnabled);
+  const allowsRecurring = skuAllowsRecurringMarkup(item.billing);
+  const recurringEnabled = allowsRecurring && Boolean(item.recurringMarkupEnabled);
   const dualSpecified =
     item.oneTimeMarkupEnabled != null ||
     item.recurringMarkupEnabled != null ||
@@ -105,7 +106,7 @@ export function quotePreviewComponents(item: {
     const legacy = round(Number(item.markup ?? item.markupIls) || 0);
     if (item.billing === "one_time") {
       oneTimeMarkup = legacy;
-    } else {
+    } else if (allowsRecurring) {
       recurringMarkup = legacy;
     }
   }
@@ -123,6 +124,16 @@ export function quotePreviewComponents(item: {
 
 export function recurringIntervalLabel(billing?: string) {
   return billing === "recurring_year" ? "לשנה" : "לחודש";
+}
+
+export function catalogBillingLabel(billing?: string) {
+  if (billing === "recurring_year") return "לשנה";
+  if (billing === "recurring_month") return "לחודש";
+  return "חד-פעמי";
+}
+
+export function skuAllowsRecurringMarkup(billing?: string) {
+  return String(billing || "").startsWith("recurring_");
 }
 
 export function formatPublicCustomerPrice(product: {

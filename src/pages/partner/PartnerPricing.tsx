@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { fetchPartnerPricebook, updatePricebookItem } from "../../lib/partnerApi";
-import { formatIls, quotePreviewComponents, recurringIntervalLabel } from "../../lib/partnerMoney";
+import { formatIls, quotePreviewComponents, recurringIntervalLabel, catalogBillingLabel, skuAllowsRecurringMarkup } from "../../lib/partnerMoney";
 import type { PartnerPriceLine } from "../../types/partner";
 import PartnerPageHeader from "../../components/partner/PartnerPageHeader";
 
@@ -28,13 +28,22 @@ export default function PartnerPricing() {
     setSaving(item.sku);
     setError("");
     try {
-      const updated = await updatePricebookItem(item.sku, {
+      const body: {
+        oneTimeMarkupEnabled: boolean;
+        oneTimeMarkupAmount: number;
+        recurringMarkupEnabled?: boolean;
+        recurringMarkupAmount?: number;
+        enabledInStorefront: boolean;
+      } = {
         oneTimeMarkupEnabled: payload.oneTimeMarkupEnabled,
         oneTimeMarkupAmount: payload.oneTimeMarkupAmount,
-        recurringMarkupEnabled: payload.recurringMarkupEnabled,
-        recurringMarkupAmount: payload.recurringMarkupAmount,
         enabledInStorefront: payload.enabled,
-      });
+      };
+      if (skuAllowsRecurringMarkup(item.billing)) {
+        body.recurringMarkupEnabled = payload.recurringMarkupEnabled;
+        body.recurringMarkupAmount = payload.recurringMarkupAmount;
+      }
+      const updated = await updatePricebookItem(item.sku, body);
       setItems((prev) => prev.map((row) => (row.sku === item.sku ? { ...row, ...updated } : row)));
     } catch (err: any) {
       setError(err.response?.data?.error || "שגיאה בשמירה");
@@ -48,7 +57,7 @@ export default function PartnerPricing() {
       <PartnerPageHeader
         eyebrow="מוצרים וחבילות"
         title="מוצרים וחבילות"
-        subtitle="רק חבילות Bizuply פעילות שמותרות למכירת פרטנר. מחיר הבסיס לקריאה בלבד. אפשר להוסיף עמלה חד-פעמית, עמלה חודשית, שתיהן, או אף אחת."
+        subtitle="מחיר Bizuply לקריאה בלבד. עמלה מתחדשת אפשרית רק על מוצר עם חיוב מתחדש, באותו מחזור של המוצר."
       />
       {error ? (
         <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-bold text-rose-700">
@@ -100,6 +109,11 @@ function PriceRow({
     recurringMarkupAmount: recurringAmount,
   });
   const intervalLabel = recurringIntervalLabel(item.billing);
+  const allowsRecurring = skuAllowsRecurringMarkup(item.billing);
+  const bizuplyAmount =
+    item.billing === "one_time"
+      ? Number(item.amountIls ?? quoted.oneTimeBase) || 0
+      : Number(item.amountIls ?? quoted.recurringBase) || 0;
   const recurringToggleLabel =
     item.billing === "recurring_year" ? "הוסף עמלה שנתית מתחדשת" : "הוסף עמלה חודשית מתחדשת";
   const recurringAmountLabel =
@@ -130,7 +144,11 @@ function PriceRow({
         </label>
       </div>
 
-      <div className="mt-4 grid gap-4 md:grid-cols-2">
+      <p className="mt-4 text-sm font-black text-slate-800">
+        מחיר Bizuply: {formatIls(bizuplyAmount)} {catalogBillingLabel(item.billing)}
+      </p>
+
+      <div className={`mt-4 grid gap-4 ${allowsRecurring ? "md:grid-cols-2" : ""}`}>
         <section className="rounded-2xl border border-violet-100 bg-violet-50/60 p-4">
           <label className="flex items-center gap-2 text-sm font-black text-violet-900">
             <input
@@ -169,6 +187,7 @@ function PriceRow({
           </dl>
         </section>
 
+        {allowsRecurring ? (
         <section className="rounded-2xl border border-sky-100 bg-sky-50/60 p-4">
           <label className="flex items-center gap-2 text-sm font-black text-sky-900">
             <input
@@ -213,6 +232,7 @@ function PriceRow({
             </div>
           </dl>
         </section>
+        ) : null}
       </div>
 
       <button
@@ -222,8 +242,8 @@ function PriceRow({
           onSave(item, {
             oneTimeMarkupEnabled: oneTimeEnabled,
             oneTimeMarkupAmount: oneTimeAmount,
-            recurringMarkupEnabled: recurringEnabled,
-            recurringMarkupAmount: recurringAmount,
+            recurringMarkupEnabled: allowsRecurring ? recurringEnabled : false,
+            recurringMarkupAmount: allowsRecurring ? recurringAmount : 0,
             enabled,
           })
         }

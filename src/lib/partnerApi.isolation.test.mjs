@@ -372,6 +372,9 @@ test("public partner plans page shows only final customer prices", () => {
   assert.equal(pricing.includes("הוסף עמלה חד-פעמית"), true);
   assert.equal(pricing.includes("הוסף עמלה חודשית מתחדשת"), true);
   assert.equal(pricing.includes("הוסף עמלה שנתית מתחדשת"), true);
+  assert.equal(pricing.includes("skuAllowsRecurringMarkup"), true);
+  assert.equal(pricing.includes("מחיר Bizuply"), true);
+  assert.equal(pricing.includes("{allowsRecurring ?"), true);
   assert.equal(pricing.includes("recurringIntervalLabel"), true);
   assert.equal(pricing.includes("מחיר בסיס"), true);
   const wizard = readFileSync(join(ROOT, "pages/partner/PartnerClientWizard.tsx"), "utf8");
@@ -384,6 +387,8 @@ test("public partner plans page shows only final customer prices", () => {
   assert.equal(wizard.includes("המחיר נבנה רק מהמוצרים שנבחרו"), true);
   const money = readFileSync(join(ROOT, "lib/partnerMoney.ts"), "utf8");
   assert.equal(money.includes("recurringIntervalLabel"), true);
+  assert.equal(money.includes("catalogBillingLabel"), true);
+  assert.equal(money.includes("skuAllowsRecurringMarkup"), true);
   assert.equal(money.includes('billing === "recurring_year" ? "לשנה"'), true);
 });
 
