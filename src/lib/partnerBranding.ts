@@ -101,10 +101,8 @@ export function partnerSiteSuffix(hostname?: string) {
 }
 
 export function partnerPersonalUrl({
-  subdomain: _subdomain,
   urls,
   slug,
-  hostname: _hostname,
 }: {
   subdomain?: string;
   urls?: PublicPartnerBranding["urls"];
