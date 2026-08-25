@@ -243,9 +243,18 @@ test("dashboard surfaces paid-unactivated deals without changing home routing", 
   const src = readFileSync(join(ROOT, "pages/partner/PartnerDashboard.tsx"), "utf8");
   assert.equal(src.includes("attentionDeals"), true);
   assert.equal(src.includes("/partner/dashboard/deals/"), true);
+  assert.equal(src.includes("data.referrals?.qualifying"), true);
+  assert.equal(src.includes("/partner/dashboard/referrals"), true);
   const app = readFileSync(join(ROOT, "App.jsx"), "utf8");
   const dashboardAt = app.indexOf('path="/partner/dashboard"');
   const indexAt = app.indexOf("<Route index element={<PartnerDashboard />} />");
   assert.ok(dashboardAt > 0);
   assert.ok(indexAt > dashboardAt);
+});
+
+test("my page warns when the sales page has no products", () => {
+  const src = readFileSync(join(ROOT, "pages/partner/PartnerMyPage.tsx"), "utf8");
+  assert.equal(src.includes("fetchPartnerPricebook"), true);
+  assert.equal(src.includes("אין חבילות בעמוד המכירה"), true);
+  assert.equal(src.includes("/partner/dashboard/pricing"), true);
 });

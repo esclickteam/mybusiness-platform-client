@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import {
   fetchPartnerBranding,
   fetchPartnerMe,
+  fetchPartnerPricebook,
   partnerApiError,
   updatePartnerBranding,
   uploadPartnerLogo,
@@ -30,9 +31,14 @@ export default function PartnerMyPage() {
   const [saved, setSaved] = useState("");
   const [saving, setSaving] = useState(false);
   const [copied, setCopied] = useState("");
+  const [salesCount, setSalesCount] = useState<number | null>(null);
 
   async function load() {
-    const [me, data] = await Promise.all([fetchPartnerMe(), fetchPartnerBranding()]);
+    const [me, data, pricebook] = await Promise.all([
+      fetchPartnerMe(),
+      fetchPartnerBranding(),
+      fetchPartnerPricebook().catch(() => []),
+    ]);
     setPartner(me);
     setBranding(data.branding);
     setUrls(data.urls || data.branding?.urls || {});
@@ -41,6 +47,9 @@ export default function PartnerMyPage() {
     setSubdomain(data.branding?.stored?.subdomain || data.branding?.subdomain || "");
     setSupportEmail(data.branding?.supportEmail || "");
     setSupportPhone(data.branding?.supportPhone || "");
+    setSalesCount(
+      pricebook.filter((row) => row.enabledInStorefront || row.visibleOnSalesPage).length
+    );
   }
 
   useEffect(() => {
@@ -146,9 +155,23 @@ export default function PartnerMyPage() {
         <p className="text-xs font-bold text-slate-500">
           קטלוג ציבורי להצגת מוצרים ושירותים. רכישה מתבצעת מול הפרטנר, או בעמוד החבילות אם הלקוח משלם אונליין.
         </p>
-        <Link to="/partner/dashboard/storefront" className="text-sm font-black text-violet-700">
-          הגדרות קטלוג מוצרים
-        </Link>
+        {salesCount === 0 ? (
+          <p className="rounded-2xl bg-amber-50 px-4 py-3 text-sm font-bold text-amber-800">
+            אין חבילות בעמוד המכירה. הפעילו לפחות מוצר אחד במוצרים וחבילות עם הסימון הצג בעמוד המכירה.
+          </p>
+        ) : salesCount != null ? (
+          <p className="text-xs font-bold text-emerald-700">
+            {salesCount} חבילות מוצגות לרכישה עצמאית בעמוד החבילות.
+          </p>
+        ) : null}
+        <div className="flex flex-wrap gap-3">
+          <Link to="/partner/dashboard/pricing" className="text-sm font-black text-violet-700">
+            מוצרים וחבילות
+          </Link>
+          <Link to="/partner/dashboard/storefront" className="text-sm font-black text-violet-700">
+            הגדרות קטלוג מוצרים
+          </Link>
+        </div>
       </PartnerCard>
 
       <PartnerCard className="space-y-4 p-6">

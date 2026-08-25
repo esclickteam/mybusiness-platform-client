@@ -125,6 +125,7 @@ export type PartnerPriceLine = {
   partnerCostToBizuply?: number;
   discountRate?: number;
   enabledInStorefront?: boolean;
+  visibleOnSalesPage?: boolean;
   descriptionHe?: string;
   uxCategory?: string;
   isMainPackage?: boolean;
@@ -340,6 +341,18 @@ export type PartnerDashboardPayload = {
   recentClients?: PartnerClient[];
   recentActivity?: PartnerDashboardActivity[];
   attentionDeals?: PartnerDeal[];
+  referrals?: {
+    qualifying?: Array<{
+      _id: string;
+      referredName?: string;
+      daysActive?: number;
+      qualificationDays?: number;
+      eligibleAt?: string | null;
+      rewardAmount?: number;
+    }>;
+    posted?: number;
+    cancelled?: number;
+  };
 };
 
 export type AdminPartnerRow = {

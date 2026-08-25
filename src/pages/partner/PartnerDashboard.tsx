@@ -197,6 +197,35 @@ export default function PartnerDashboard() {
             </PartnerCard>
           ) : null}
 
+          {data.referrals?.qualifying?.length ? (
+            <PartnerCard className="space-y-3 border border-violet-200 bg-violet-50 p-5">
+              <div>
+                <p className="text-xs font-black uppercase tracking-[0.16em] text-violet-800">
+                  צירוף פרטנר – ₪500
+                </p>
+                <p className="mt-1 text-sm font-bold text-violet-900">
+                  התגמול נזקף אוטומטית אחרי 40 ימי פעילות. כניסה ללוח זה מריצה את הבדיקה.
+                </p>
+              </div>
+              <ul className="space-y-2">
+                {data.referrals.qualifying.map((row) => (
+                  <li key={row._id} className="flex flex-wrap items-center justify-between gap-2">
+                    <span className="text-sm font-black text-slate-800">
+                      {row.referredName || "פרטנר שהופנה"} — יום {row.daysActive ?? 0} מתוך{" "}
+                      {row.qualificationDays || 40}
+                    </span>
+                    <Link
+                      to="/partner/dashboard/referrals"
+                      className="rounded-2xl bg-slate-900 px-3 py-1.5 text-xs font-black text-white"
+                    >
+                      מעקב הפניות
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </PartnerCard>
+          ) : null}
+
           <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px]">
             <div className="space-y-4">
               <div className="grid gap-4 sm:grid-cols-3">
