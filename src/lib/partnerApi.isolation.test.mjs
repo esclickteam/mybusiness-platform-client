@@ -508,6 +508,8 @@ test("partner settings expose white-label branding fields and personal link acti
   assert.equal(dashboard.includes("הקישור האישי שלי"), true);
   assert.equal(dashboard.includes('"Copy"'), true);
   assert.equal(dashboard.includes("Open"), true);
+  assert.equal(dashboard.includes("partnerPersonalUrl"), true);
+  assert.equal(dashboard.includes("`https://${"), false);
   const hook = readFileSync(join(ROOT, "hooks/usePartnerHostBranding.ts"), "utf8");
   assert.equal(hook.includes("fetchPublicPartnerBranding"), true);
   assert.equal(hook.includes("whiteLabelEnabled"), true);

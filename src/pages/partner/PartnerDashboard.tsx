@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { fetchPartnerClients, fetchPartnerDashboard, fetchPartnerMe, partnerApiError } from "../../lib/partnerApi";
+import { partnerPersonalUrl } from "../../lib/partnerBranding";
 import type {
   PartnerClient,
   PartnerDashboardPayload,
@@ -99,8 +100,13 @@ export default function PartnerDashboard() {
   useEffect(() => {
     fetchPartnerMe()
       .then((me) => {
-        setPersonalUrl(me.urls?.personalUrl || me.urls?.slugUrl || (me.slug ? `${window.location.origin}/p/${me.slug}` : ""));
-        setPlansUrl(me.urls?.plansUrl || (me.slug ? `${window.location.origin}/p/${me.slug}/plans` : ""));
+        setPersonalUrl(
+          partnerPersonalUrl({
+            urls: me.urls,
+            slug: me.slug,
+          })
+        );
+        setPlansUrl(me.urls?.plansUrl || "");
       })
       .catch(() => {});
   }, []);
