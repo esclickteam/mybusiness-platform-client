@@ -13,7 +13,7 @@ import StaffSoftphoneHost from "./components/staff/StaffSoftphoneHost";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
-import { partnerHostAllowsPath } from "./lib/partnerHost.mjs";
+import { partnerHostDeniedRedirect } from "./lib/partnerHost.mjs";
 import RedirectIfPartnerHost from "./pages/public/RedirectIfPartnerHost";
 import { usePartnerHostBranding } from "./hooks/usePartnerHostBranding";
 const BusinessDashboardRoutes = lazyWithRetry(() =>
@@ -840,6 +840,7 @@ export default function App() {
     ready: partnerHostReady,
     isResolvedPartnerHost: isPartnerHost,
     looksLikePartnerHost,
+    branding: partnerHostBranding,
   } = usePartnerHostBranding();
   const isPartnerHostPublicChrome =
     isPartnerHost &&
@@ -937,8 +938,14 @@ export default function App() {
     );
   }
 
-  if (isPartnerHost && !partnerHostAllowsPath(location.pathname)) {
-    return <Navigate to="/plans" replace />;
+  const partnerHostRedirect = looksLikePartnerHost
+    ? partnerHostDeniedRedirect(location.pathname, {
+        entitled: isPartnerHost,
+        slug: partnerHostBranding?.slug,
+      })
+    : "";
+  if (partnerHostRedirect) {
+    return <Navigate to={partnerHostRedirect} replace />;
   }
 
   return (

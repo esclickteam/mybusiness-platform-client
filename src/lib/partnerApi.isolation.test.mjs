@@ -301,7 +301,7 @@ test("partner pipeline routes are registered in App", () => {
   assert.equal(app.includes("/p/:slug/checkout/success"), true);
   assert.equal(app.includes('path="/checkout/success"'), true);
   assert.equal(app.includes("usePartnerHostBranding"), true);
-  assert.equal(app.includes("partnerHostAllowsPath"), true);
+  assert.equal(app.includes("partnerHostDeniedRedirect"), true);
   assert.equal(app.includes("isPartnerHostPublicChrome"), true);
   assert.equal(app.includes("RedirectIfPartnerHost"), true);
   assert.equal(app.includes("<Route index element={<PartnerDashboard />} />"), true);
@@ -452,7 +452,9 @@ test("white-label host home sends anonymous visitors to plans without changing p
   assert.equal(home.includes("HomePage"), true);
   const app = readFileSync(join(ROOT, "App.jsx"), "utf8");
   assert.equal(app.includes("PartnerHostHome"), true);
-  assert.equal(app.includes("partnerHostAllowsPath"), true);
+  assert.equal(app.includes("partnerHostDeniedRedirect"), true);
+  assert.equal(app.includes("looksLikePartnerHost"), true);
+  assert.equal(app.includes("<Route index element={<PartnerDashboard />} />"), true);
   const dashboardAt = app.indexOf('path="/partner/dashboard"');
   const indexAt = app.indexOf("<Route index element={<PartnerDashboard />} />");
   assert.ok(dashboardAt > 0);

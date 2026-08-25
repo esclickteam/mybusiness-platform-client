@@ -66,3 +66,14 @@ export function partnerHostAllowsPath(pathname) {
   if (path.startsWith("/partner/")) return true;
   return false;
 }
+
+export function partnerHostDeniedRedirect(
+  pathname,
+  { entitled = false, slug = "" } = {}
+) {
+  if (partnerHostAllowsPath(pathname)) return "";
+  if (entitled) return "/plans";
+  const clean = String(slug || "").trim();
+  if (clean) return `/p/${encodeURIComponent(clean)}/plans`;
+  return "/";
+}
