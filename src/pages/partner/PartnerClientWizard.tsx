@@ -64,6 +64,7 @@ export default function PartnerClientWizard() {
   const [partnerShareRate, setPartnerShareRate] = useState(0.75);
   const [clientId, setClientId] = useState(existingClientId);
   const [clientStatus, setClientStatus] = useState("");
+  const [ownedSkus, setOwnedSkus] = useState<string[]>([]);
   const [contact, setContact] = useState({
     businessName: "",
     contactName: "",
@@ -113,6 +114,12 @@ export default function PartnerClientWizard() {
         const client = data.client;
         setClientId(client._id);
         setClientStatus(String(client.status || ""));
+        const owned = (client.selectedSkus || [])
+          .map((line) => String(line.sku || "").trim())
+          .filter(Boolean);
+        if (["active", "provisioning"].includes(String(client.status || ""))) {
+          setOwnedSkus(owned);
+        }
         setContact({
           businessName: client.contact.businessName || "",
           contactName: client.contact.contactName || "",
@@ -180,10 +187,12 @@ export default function PartnerClientWizard() {
   }
 
   function dealLines() {
-    return selectedSkus.map((sku) => ({
-      sku,
-      displayNameHe: lineNames[sku],
-    }));
+    return selectedSkus
+      .filter((sku) => !ownedSkus.includes(sku))
+      .map((sku) => ({
+        sku,
+        displayNameHe: lineNames[sku],
+      }));
   }
 
   async function persistQuote() {
@@ -232,7 +241,11 @@ export default function PartnerClientWizard() {
       <PartnerPageHeader
         eyebrow={existingClientId ? "עסקה נוספת" : "לקוח חדש"}
         title={existingClientId ? "הוספת שירותים לעסקה חדשה" : "אשף יצירת לקוח"}
-        subtitle="חבילה, תוספות, מחיר ללקוח, ואז קישור לסיכום עסקה. הלקוח משלם לכם, ואתם משלמים ל-Bizuply."
+        subtitle={
+          existingClientId
+            ? "בחרו רק תוספות חדשות. חבילות שכבר פעילות אצל הלקוח נשארות נעולות ולא נגבות שוב."
+            : "חבילה, תוספות, מחיר ללקוח, ואז קישור לסיכום עסקה. הלקוח משלם לכם, ואתם משלמים ל-Bizuply."
+        }
       />
 
       <ol className="grid gap-2 sm:grid-cols-5">
@@ -325,6 +338,7 @@ export default function PartnerClientWizard() {
           items={items}
           wizard={wizard}
           selectedSkus={selectedSkus}
+          lockedSkus={ownedSkus}
           onChange={setSelectedSkus}
           partnerShareRate={partnerShareRate}
           onContinue={() => setStep(step === 2 ? 3 : 4)}

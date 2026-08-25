@@ -339,11 +339,17 @@ test("amendment wizard skips quote persist for active or provisioning clients", 
   assert.equal(wizard.includes("setClientStatus"), true);
   assert.equal(wizard.includes('["active", "provisioning"].includes(clientStatus)'), true);
   assert.equal(wizard.includes("kind: existingClientId ? \"amendment\" : \"initial\""), true);
+  assert.equal(wizard.includes("setOwnedSkus"), true);
+  assert.match(wizard, /filter\(\(sku\) => !ownedSkus.includes\(sku\)\)/);
   const createStart = wizard.indexOf("async function createDeal");
   const createFn = wizard.slice(createStart, wizard.indexOf("const shareUrl"));
   assert.ok(createStart > 0);
   assert.match(createFn, /quoteLocked/);
   assert.match(createFn, /if \(!quoteLocked\) \{\s*await persistQuote\(\);/);
+  const picker = readFileSync(join(ROOT, "components/partner/PartnerCatalogPicker.tsx"), "utf8");
+  assert.equal(picker.includes("lockedSkus"), true);
+  assert.equal(picker.includes("כבר פעיל אצל הלקוח"), true);
+  assert.equal(picker.includes("if (locked.has(sku)) return;"), true);
 });
 
 test("self-serve success page polls until payment and activation settle", () => {
