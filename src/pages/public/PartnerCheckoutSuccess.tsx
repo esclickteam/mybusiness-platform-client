@@ -16,9 +16,25 @@ export default function PartnerCheckoutSuccess() {
       setError("הזמנה לא נמצאה");
       return;
     }
-    fetchPublicCheckoutStatus(slug, sessionId)
-      .then(setData)
-      .catch((err) => setError(partnerApiError(err, "לא ניתן לטעון את סטטוס ההזמנה")));
+    let cancelled = false;
+    (async () => {
+      try {
+        let payload = await fetchPublicCheckoutStatus(slug, sessionId);
+        if (cancelled) return;
+        setData(payload);
+        for (let attempt = 0; attempt < 12 && !cancelled && !payload.paid; attempt += 1) {
+          await new Promise((resolve) => setTimeout(resolve, 2000));
+          payload = await fetchPublicCheckoutStatus(slug, sessionId);
+          if (cancelled) return;
+          setData(payload);
+        }
+      } catch (err: unknown) {
+        if (!cancelled) setError(partnerApiError(err, "לא ניתן לטעון את סטטוס ההזמנה"));
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, [slug, sessionId]);
 
   const activation = data?.activationStatus;

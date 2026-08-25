@@ -37,18 +37,31 @@ export default function PartnerDealDetail() {
   const [paying, setPaying] = useState(false);
   const [email, setEmail] = useState("");
   const [businessId, setBusinessId] = useState("");
+  const paidReturn = params.get("paid") === "1";
   const [recovering, setRecovering] = useState("");
+  const [confirmingPayment, setConfirmingPayment] = useState(paidReturn);
 
   useEffect(() => {
     if (!dealId) return;
-    fetchPartnerDeal(dealId)
-      .then((data) => {
-        setDeal(data.deal);
-        setClient(data.client);
+    let cancelled = false;
+
+    function applyDeal(
+      data: {
+        deal: PartnerDeal;
+        client?: PartnerClient | null;
+        stripeItems?: any[];
+        serviceRows?: PartnerServiceRow[];
+        billingSafety?: { enabled?: boolean; mode?: string; message?: string } | null;
+      },
+      { hydrateForm = false } = {}
+    ) {
+      setDeal(data.deal);
+      setClient(data.client || null);
+      setStripeItems(data.stripeItems || []);
+      setServiceRows(data.serviceRows || []);
+      setBillingSafety(data.billingSafety || null);
+      if (hydrateForm) {
         setEmail(data.client?.contact?.email || "");
-        setStripeItems(data.stripeItems || []);
-        setServiceRows(data.serviceRows || []);
-        setBillingSafety(data.billingSafety || null);
         setPackageDisplayName(publicPackageLabel(data.deal.packageDisplayName));
         setPackageDescription(data.deal.packageDescription || "");
         const names: Record<string, string> = {};
@@ -57,9 +70,42 @@ export default function PartnerDealDetail() {
           names[line.sku] = publicPackageLabel(line.displayNameHe || line.nameHe, line.nameHe || line.sku);
         }
         setLineNames(names);
-      })
-      .catch((err) => setError(partnerApiError(err, "לא ניתן לטעון עסקה")));
-  }, [dealId]);
+      }
+      return data.deal;
+    }
+
+    function isPaid(row?: PartnerDeal | null) {
+      return row?.paymentStatus === "paid" || row?.status === "paid";
+    }
+
+    (async () => {
+      try {
+        const first = applyDeal(await fetchPartnerDeal(dealId), { hydrateForm: true });
+        if (cancelled) return;
+        if (!paidReturn || isPaid(first)) {
+          setConfirmingPayment(false);
+          return;
+        }
+        setConfirmingPayment(true);
+        for (let attempt = 0; attempt < 12 && !cancelled; attempt += 1) {
+          await new Promise((resolve) => setTimeout(resolve, 2000));
+          const next = applyDeal(await fetchPartnerDeal(dealId));
+          if (cancelled) return;
+          if (isPaid(next)) {
+            setConfirmingPayment(false);
+            return;
+          }
+        }
+        if (!cancelled) setConfirmingPayment(false);
+      } catch (err: unknown) {
+        if (!cancelled) setError(partnerApiError(err, "לא ניתן לטעון עסקה"));
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [dealId, paidReturn]);
 
   if (!deal && !error) return <BizuplyLoader label="טוען עסקה..." />;
   if (!deal) {
@@ -67,7 +113,7 @@ export default function PartnerDealDetail() {
   }
 
   const totals = deal.totals || ({} as PartnerDeal["totals"]);
-  const paidFlag = params.get("paid") === "1";
+  const isPaid = deal.paymentStatus === "paid" || deal.status === "paid";
   const canceled = params.get("canceled") === "1";
   const publicUrl = `${window.location.origin}${deal.publicUrl || `/partner/deals/${deal._id}`}`;
 
@@ -110,7 +156,12 @@ export default function PartnerDealDetail() {
         title={client?.contact?.businessName || "סיכום עסקה"}
         subtitle="הלקוח רואה מחיר אחיד: מחיר פרטנר + עמלה. כאן אתם רואים לכל שירות את מחיר הלקוח, התשלום ל-Bizuply, והעמלה החד-פעמית והחודשית."
       />
-      {paidFlag || deal.status === "paid" ? (
+      {confirmingPayment && !isPaid ? (
+        <p className="rounded-2xl bg-amber-50 px-4 py-3 text-sm font-black text-amber-800">
+          מאשרים את התשלום מול Stripe. העמלה עדיין לא זמינה למשיכה עד שהלקוח יופעל.
+        </p>
+      ) : null}
+      {isPaid ? (
         <div className="space-y-2 rounded-2xl bg-emerald-50 px-4 py-3 text-sm font-black text-emerald-800">
           <p>התשלום ל-Bizuply התקבל.</p>
           {(deal as any).pipelineStatus === "completed" ? (
@@ -376,7 +427,7 @@ export default function PartnerDealDetail() {
         <a href={publicUrl} className="rounded-2xl border px-4 py-2 text-sm font-black" target="_blank" rel="noreferrer">
           צפייה בסיכום ללקוח
         </a>
-        {deal.status !== "paid" ? (
+        {!isPaid ? (
           <button
             type="button"
             disabled={paying}

@@ -215,6 +215,14 @@ test("public checkout client sends sku and contact, never a customer price", () 
   assert.equal(fn.includes("/public/p/"), true);
 });
 
+test("self-serve success page polls until payment is confirmed", () => {
+  const src = readFileSync(join(ROOT, "pages/public/PartnerCheckoutSuccess.tsx"), "utf8");
+  assert.equal(src.includes("fetchPublicCheckoutStatus"), true);
+  assert.equal(src.includes("payload.paid"), true);
+  assert.equal(src.includes("החשבון עדיין דורש טיפול"), true);
+  assert.equal(src.includes("CRMClient"), false);
+});
+
 test("partner pipeline routes are registered in App", () => {
   const app = readFileSync(join(ROOT, "App.jsx"), "utf8");
   assert.equal(app.includes('path="page"'), true);
@@ -238,6 +246,8 @@ test("paid deal copy does not treat payment as withdrawable commission", () => {
   assert.equal(src.includes("תשלום שולם אינו זמין למשיכה"), true);
   assert.equal(src.includes("needsAttention"), true);
   assert.equal(src.includes("retryPartnerDealActivation"), true);
+  assert.equal(src.includes("מאשרים את התשלום מול Stripe"), true);
+  assert.equal(src.includes("paidReturn"), true);
 });
 
 test("dashboard surfaces paid-unactivated deals without changing home routing", () => {
