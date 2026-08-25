@@ -101,20 +101,18 @@ export function partnerSiteSuffix(hostname?: string) {
 }
 
 export function partnerPersonalUrl({
-  subdomain,
+  subdomain: _subdomain,
   urls,
   slug,
-  hostname,
+  hostname: _hostname,
 }: {
   subdomain?: string;
   urls?: PublicPartnerBranding["urls"];
   slug?: string;
   hostname?: string;
 } = {}) {
-  const fromApi = String(urls?.subdomainUrl || "").replace(/\/+$/, "");
-  if (fromApi) return fromApi;
-  const sub = String(subdomain || "").trim();
-  if (sub) return `https://${sub}${partnerSiteSuffix(hostname)}`;
+  const subdomainUrl = String(urls?.subdomainUrl || "").replace(/\/+$/, "");
+  if (subdomainUrl) return subdomainUrl;
   const personal = String(urls?.personalUrl || urls?.slugUrl || "").replace(/\/+$/, "");
   if (personal) return personal;
   if (slug && typeof window !== "undefined") return `${window.location.origin}/p/${slug}`;

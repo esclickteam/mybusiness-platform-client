@@ -8,6 +8,7 @@ import {
 } from "../../lib/partnerApi";
 import { partnerPersonalUrl } from "../../lib/partnerBranding";
 import PartnerBrandingCard from "../../components/partner/PartnerBrandingCard";
+import PartnerPageHeader from "../../components/partner/PartnerPageHeader";
 import {
   PartnerCard,
   PartnerPrimaryButton,
@@ -94,7 +95,7 @@ export default function PartnerMyPage() {
           </PartnerGhostButton>
         </div>
         <p className="text-xs font-bold text-slate-500">
-          קטלוג ציבורי להצגת מוצרים ושירותים. רכישה מתבצעת מול הפרטנר, או בעמוד החבילות אם הלקוח משלם אונליין.
+          הקטלוג מציג מוצרים בלבד. רכישה עצמאית מתבצעת בעמוד החבילות ומשויכת אליכם אוטומטית.
           קישור /p/slug נשאר זמין כגיבוי.
         </p>
         {salesCount === 0 ? (

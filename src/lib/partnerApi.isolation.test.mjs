@@ -465,8 +465,14 @@ test("partner settings expose white-label branding fields and personal link acti
   assert.equal(brandingLib.includes(".bizuply.com"), true);
   assert.equal(brandingLib.includes(".bizuply.co.il"), true);
   assert.equal(brandingLib.includes("partnerPersonalUrl"), true);
+  assert.equal(brandingLib.includes("urls?.subdomainUrl"), true);
+  assert.equal(brandingLib.includes("urls?.personalUrl"), true);
+  assert.equal(brandingLib.includes("if (sub) return `https://${sub}${partnerSiteSuffix(hostname)}`;"), false);
   const myPage = readFileSync(join(ROOT, "pages/partner/PartnerMyPage.tsx"), "utf8");
   assert.equal(myPage.includes("partnerPersonalUrl"), true);
+  assert.equal(myPage.includes('from "../../components/partner/PartnerPageHeader"'), true);
+  assert.equal(myPage.includes("רכישה מתבצעת מול הפרטנר"), false);
+  assert.equal(myPage.includes("רכישה עצמאית מתבצעת בעמוד החבילות"), true);
   assert.equal(myPage.includes(".bizuply.com"), false);
   assert.equal(card.includes("עדיין לא מאומתת בייצור"), true);
   const settings = readFileSync(join(ROOT, "pages/partner/PartnerSettings.tsx"), "utf8");
