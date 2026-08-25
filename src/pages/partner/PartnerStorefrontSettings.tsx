@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import { fetchPartnerStorefront, updatePartnerStorefront } from "../../lib/partnerApi";
 import PartnerPageHeader from "../../components/partner/PartnerPageHeader";
 import {
@@ -25,6 +24,7 @@ export default function PartnerStorefrontSettings() {
   const [meta, setMeta] = useState({
     canHideBizuplyBranding: false,
     customDomainEligible: false,
+    personalUrl: "",
   });
   const [error, setError] = useState("");
   const [saved, setSaved] = useState("");
@@ -47,6 +47,7 @@ export default function PartnerStorefrontSettings() {
         setMeta({
           canHideBizuplyBranding: Boolean(data.canHideBizuplyBranding),
           customDomainEligible: Boolean(data.customDomainEligible),
+          personalUrl: data.urls?.personalUrl || "",
         });
       })
       .catch((err) => setError(err.response?.data?.error || "שגיאה בטעינת חנות"));
@@ -140,9 +141,14 @@ export default function PartnerStorefrontSettings() {
         </p>
       ) : null}
       {form.slug ? (
-        <Link to={`/p/${form.slug}`} className="block text-sm font-black text-[#7C4DFF]">
-          תצוגה מקדימה: /p/{form.slug}
-        </Link>
+        <a
+          href={meta.personalUrl || `/p/${form.slug}`}
+          target="_blank"
+          rel="noreferrer"
+          className="block text-sm font-black text-[#7C4DFF]"
+        >
+          תצוגה מקדימה: {meta.personalUrl || `/p/${form.slug}`}
+        </a>
       ) : null}
       <PartnerPrimaryButton type="submit">שמור</PartnerPrimaryButton>
       </PartnerCard>

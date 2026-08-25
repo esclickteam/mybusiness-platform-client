@@ -28,7 +28,10 @@ export default function PartnerHostHome() {
   if (branding === undefined) {
     return <BizuplyLoader fullScreen label="טוען..." />;
   }
-  if (branding?.whiteLabelEnabled && branding.slug) {
+  const hostSales = Boolean(
+    branding?.slug && (branding.whiteLabelEnabled || branding.urls?.subdomainUrl)
+  );
+  if (hostSales) {
     return <Navigate to="/plans" replace />;
   }
   return <HomePage />;

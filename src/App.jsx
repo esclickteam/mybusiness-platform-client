@@ -836,7 +836,9 @@ export default function App() {
   const isPublicPartnerSales =
     location.pathname.startsWith("/p/") ||
     location.pathname === "/plans" ||
-    location.pathname.startsWith("/plans/");
+    location.pathname.startsWith("/plans/") ||
+    location.pathname === "/checkout/success" ||
+    location.pathname.startsWith("/checkout/success/");
   const isDashboardRoute =
     location.pathname.includes("/dashboard") ||
     isAdminRoute ||
@@ -845,6 +847,7 @@ export default function App() {
     (location.pathname.startsWith("/partner") && !isPublicPartnerDeal) ||
     location.pathname.startsWith("/p/") ||
     location.pathname === "/plans" ||
+    location.pathname === "/checkout/success" ||
     location.pathname.includes("/messages");
 
   const isPublicBusinessProfile = /^\/business\/[^/]+$/.test(

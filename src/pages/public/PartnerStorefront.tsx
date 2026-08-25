@@ -7,6 +7,21 @@ function ils(value?: number) {
   return `₪${Number(value || 0).toLocaleString("he-IL")}`;
 }
 
+function plansHref(slug: string | undefined, data: any) {
+  const hostPlans = String(data?.urls?.plansUrl || "").trim();
+  try {
+    if (hostPlans && typeof window !== "undefined") {
+      const url = new URL(hostPlans);
+      if (url.hostname === window.location.hostname) {
+        return `${url.pathname}${url.search}` || "/plans";
+      }
+    }
+  } catch {
+    /* fall through to catalog path */
+  }
+  return `/p/${slug}/plans`;
+}
+
 export default function PartnerStorefront() {
   const { slug } = useParams();
   const [data, setData] = useState<any>(null);
@@ -45,7 +60,7 @@ export default function PartnerStorefront() {
               קטלוג ציבורי להצגת מוצרים ושירותים. רכישה מתבצעת מול הפרטנר.
             </p>
             <a
-              href={`/p/${slug}/plans`}
+              href={plansHref(slug, data)}
               className="mt-3 inline-flex rounded-2xl bg-slate-900 px-4 py-2 text-sm font-black text-white"
             >
               לעמוד החבילות

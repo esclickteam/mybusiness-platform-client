@@ -235,8 +235,9 @@ export default function PartnerMyPage() {
             https://{subdomain || "mybrand"}.bizuply.com
           </span>
           <span className="mt-1 block text-xs font-bold text-slate-500">
-            כתובת המשנה נשמרת במערכת. הפניית DNS / wildcard לדומיין עדיין לא פעילה בסביבת הייצור — עד אז
-            השתמשו בקישור /p/slug.
+            זו כתובת עמוד המכירה, ההצלחה אחרי תשלום וההתחברות של הלקוחות. קישור /p/slug
+            נשאר זמין כגיבוי. כדי שהכתובת תיפתח, הפניית DNS / wildcard של *.bizuply.com צריכה
+            להצביע על האפליקציה.
           </span>
         </label>
         <div className="grid gap-3 sm:grid-cols-2">

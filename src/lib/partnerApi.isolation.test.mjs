@@ -236,6 +236,7 @@ test("partner pipeline routes are registered in App", () => {
   assert.equal(app.includes("/p/:slug/checkout/success"), true);
   assert.equal(app.includes('path="/checkout/success"'), true);
   assert.equal(app.includes("<Route index element={<PartnerDashboard />} />"), true);
+  assert.equal(app.includes('location.pathname === "/checkout/success"'), true);
   assert.equal(app.includes("/admin/partners/referrals"), true);
   assert.equal(app.includes("/admin/partners/attention"), true);
 });
@@ -312,6 +313,8 @@ test("my page warns when the sales page has no products", () => {
   assert.equal(src.includes("fetchPartnerPricebook"), true);
   assert.equal(src.includes("אין חבילות בעמוד המכירה"), true);
   assert.equal(src.includes("/partner/dashboard/pricing"), true);
+  assert.equal(src.includes("קישור /p/slug"), true);
+  assert.equal(src.includes("עדיין לא פעילה בסביבת הייצור — עד אז"), false);
 });
 
 test("bizuply.com /plans without a partner host falls back to pricing", () => {
@@ -342,10 +345,21 @@ test("public partner plans page shows only final customer prices", () => {
   assert.equal(money.includes('billing === "recurring_year" ? "לשנה"'), true);
 });
 
+test("catalog and settings prefer branded host URLs without changing dashboard home", () => {
+  const store = readFileSync(join(ROOT, "pages/public/PartnerStorefront.tsx"), "utf8");
+  assert.equal(store.includes("function plansHref"), true);
+  assert.equal(store.includes("urls?.plansUrl"), true);
+  const settings = readFileSync(join(ROOT, "pages/partner/PartnerStorefrontSettings.tsx"), "utf8");
+  assert.equal(settings.includes("personalUrl"), true);
+  assert.equal(settings.includes("CRMClient"), false);
+  const app = readFileSync(join(ROOT, "App.jsx"), "utf8");
+  assert.equal(app.includes("<Route index element={<PartnerDashboard />} />"), true);
+});
+
 test("white-label host home sends anonymous visitors to plans without changing partner dashboard", () => {
   const home = readFileSync(join(ROOT, "pages/public/PartnerHostHome.tsx"), "utf8");
   assert.equal(home.includes("fetchPublicPartnerBranding"), true);
-  assert.equal(home.includes("whiteLabelEnabled"), true);
+  assert.equal(home.includes("urls?.subdomainUrl"), true);
   assert.equal(home.includes('to="/plans"'), true);
   assert.equal(home.includes("/partner/dashboard"), false);
   const app = readFileSync(join(ROOT, "App.jsx"), "utf8");
