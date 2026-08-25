@@ -13,6 +13,7 @@ import StaffSoftphoneHost from "./components/staff/StaffSoftphoneHost";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
+import { isPartnerWhiteLabelHostname } from "./lib/partnerHost.mjs";
 const BusinessDashboardRoutes = lazyWithRetry(() =>
   import("./pages/business/BusinessDashboardRoutes")
 );
@@ -833,12 +834,21 @@ export default function App() {
     location.pathname.includes("/chat");
 
   const isPublicPartnerDeal = location.pathname.startsWith("/partner/deals/");
+  const isPartnerHost = isPartnerWhiteLabelHostname(
+    typeof window !== "undefined" ? window.location.hostname : ""
+  );
+  const isPartnerHostPublicChrome =
+    isPartnerHost &&
+    !location.pathname.includes("/dashboard") &&
+    !isAdminRoute &&
+    !isStaffRoute;
   const isPublicPartnerSales =
     location.pathname.startsWith("/p/") ||
     location.pathname === "/plans" ||
     location.pathname.startsWith("/plans/") ||
     location.pathname === "/checkout/success" ||
-    location.pathname.startsWith("/checkout/success/");
+    location.pathname.startsWith("/checkout/success/") ||
+    isPartnerHostPublicChrome;
   const isDashboardRoute =
     location.pathname.includes("/dashboard") ||
     isAdminRoute ||
