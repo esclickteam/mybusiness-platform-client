@@ -200,7 +200,8 @@ test("public partner deal is a summary, not a fake checkout", () => {
   const src = readFileSync(join(ROOT, "pages/partner/PartnerPublicDeal.tsx"), "utf8");
   assert.equal(src.includes("לתשלום עכשיו"), false);
   assert.equal(src.includes("סיכום ההצעה"), true);
-  assert.equal(src.includes("התשלום והפעלת השירות מתבצעים מול הפרטנר שלך"), true);
+  assert.equal(src.includes("התשלום והפעלת השירות מתבצעים מול"), true);
+  assert.equal(src.includes("מול הפרטנר שלך"), false);
   assert.equal(src.includes("noindex"), true);
 });
 
@@ -220,6 +221,7 @@ test("login branding resolves from hostname helper, not scattered partner ifs", 
   assert.equal(src.includes("usePartnerHostBranding"), true);
   assert.equal(src.includes("hidesBizuplyChrome"), true);
   assert.equal(src.includes("hidesBizuplyChrome(branding, host)"), true);
+  assert.equal(src.includes("partnerFacingName(branding, host)"), true);
   assert.equal(src.includes("CRMClient"), false);
   const login = readFileSync(join(ROOT, "pages/Login.tsx"), "utf8");
   assert.equal(login.includes("usePartnerHostBranding"), true);
@@ -274,6 +276,9 @@ test("self-serve success page polls until payment and activation settle", () => 
   assert.equal(src.includes("requires_action"), true);
   assert.equal(src.includes("החשבון עדיין דורש טיפול"), true);
   assert.equal(src.includes("welcomeEmailSent"), true);
+  assert.equal(src.includes("partnerFacingName"), true);
+  assert.equal(src.includes("פנו לפרטנר"), false);
+  assert.equal(src.includes("צוות הפרטנר"), false);
   assert.equal(src.includes("CRMClient"), false);
   assert.equal(src.includes("[slug, sessionId, resolving, error]"), false);
 });

@@ -3,6 +3,8 @@ import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { Banknote, BadgePercent, Bell, CalendarCheck, Handshake, LayoutDashboard, LogOut, Menu, Settings, Store, UserPlus, Users, Wallet, X } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { PARTNER_FONT } from "../../components/partner/partnerUi";
+import { usePartnerHostBranding } from "../../hooks/usePartnerHostBranding";
+import { hidesBizuplyChrome, partnerFacingName } from "../../lib/partnerBranding";
 
 type NavItem = {
   to: string;
@@ -82,6 +84,12 @@ export default function PartnerLayout() {
   const navigate = useNavigate();
   const location = useLocation();
   const [open, setOpen] = useState(false);
+  const { branding } = usePartnerHostBranding();
+  const host = typeof window !== "undefined" ? window.location.hostname : "";
+  const brandName = hidesBizuplyChrome(branding, host)
+    ? partnerFacingName(branding, host)
+    : "";
+  const productMark = brandName || "Bizuply Partner";
 
   const title = useMemo(
     () => TITLES.find((item) => item.test(location.pathname))?.title || "לוח פרטנר",
@@ -108,7 +116,7 @@ export default function PartnerLayout() {
         </span>
         <div>
           <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#7C3AED]">
-            Bizuply Partner
+            {productMark}
           </p>
           <p className="text-sm font-black text-slate-900">פרטנר דשבורד</p>
         </div>

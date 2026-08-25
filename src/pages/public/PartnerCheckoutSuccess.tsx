@@ -7,7 +7,7 @@ import {
 } from "../../lib/partnerApi";
 import PublicPartnerShell from "../../components/partner/PublicPartnerShell";
 import { partnerStatusLabel } from "../../lib/partnerLabels";
-import type { PublicPartnerBranding } from "../../lib/partnerBranding";
+import { partnerFacingName, type PublicPartnerBranding } from "../../lib/partnerBranding";
 
 function checkoutSettled(payload: { paid?: boolean; activationStatus?: string } | null) {
   if (!payload?.paid) return false;
@@ -77,6 +77,9 @@ export default function PartnerCheckoutSuccess() {
 
   const activation = data?.activationStatus;
   const paid = Boolean(data?.paid);
+  const host = typeof window !== "undefined" ? window.location.hostname : "";
+  const brandName = partnerFacingName(data?.branding || hostBranding, host);
+  const supportLabel = brandName || "הצוות";
 
   return (
     <PublicPartnerShell branding={data?.branding || hostBranding} title="הרכישה התקבלה" noIndex>
@@ -98,7 +101,7 @@ export default function PartnerCheckoutSuccess() {
             <>
               <h1 className="text-2xl font-black">החשבון שלך מוכן.</h1>
               <p className="font-bold text-slate-600">
-                אם לא קיבלת מייל עם פרטי כניסה, פנו לפרטנר. עסקה {data.dealNumber}
+                אם לא קיבלת מייל עם פרטי כניסה, פנו ל{supportLabel}. עסקה {data.dealNumber}
               </p>
               <a href="/login" className="inline-block font-black text-[#7C4DFF]">
                 התחברות לחשבון
@@ -113,7 +116,7 @@ export default function PartnerCheckoutSuccess() {
             <>
               <h1 className="text-2xl font-black">התשלום התקבל.</h1>
               <p className="font-bold text-amber-800">
-                החשבון עדיין דורש טיפול: {partnerStatusLabel(activation)}. צוות הפרטנר יטפל בהפעלה.
+                החשבון עדיין דורש טיפול: {partnerStatusLabel(activation)}. {brandName ? `${brandName} יטפל בהפעלה.` : "נטפל בהפעלה."}
               </p>
             </>
           ) : (

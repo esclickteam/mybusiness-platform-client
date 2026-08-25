@@ -166,13 +166,15 @@ export function AuthCard({
   children: ReactNode;
 }) {
   const branding = useLoginBranding();
-  const whiteLabel = Boolean(branding?.whiteLabelEnabled);
+  const host = typeof window !== "undefined" ? window.location.hostname : "";
+  const whiteLabel = hidesBizuplyChrome(branding, host);
+  const brandName = partnerFacingName(branding, host);
   return (
     <div className="rounded-[32px] border border-white bg-white p-7 shadow-[0_28px_80px_rgba(15,23,42,0.10)] sm:p-9">
       <div className="flex flex-col items-center text-center">
         <BrandMark size="sm" />
         <h1 className="mt-5 text-3xl font-black tracking-tight text-slate-900">
-          {whiteLabel && branding?.brandName ? branding.brandName : title}
+          {whiteLabel && brandName ? brandName : title}
         </h1>
         {subtitle && !whiteLabel ? (
           <p className="mt-2 text-sm font-semibold text-slate-500">{subtitle}</p>

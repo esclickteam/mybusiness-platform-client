@@ -90,7 +90,7 @@ export default function PartnerPublicDeal() {
   const pay = summary.payment || {};
   const date = summary.dealDate ? new Date(summary.dealDate).toLocaleDateString("he-IL") : "";
   const logo = brandLogo || summary.business?.logo;
-  const heading = brandName || "פרטנר";
+  const heading = brandName || "נותן השירות";
   const products: PublicProduct[] = [
     summary.package
       ? {
@@ -195,7 +195,7 @@ export default function PartnerPublicDeal() {
               </p>
             ) : null}
             <p className="mt-5 text-sm font-bold leading-6 text-white/75">
-              התשלום והפעלת השירות מתבצעים מול הפרטנר שלך. עמוד זה מציג את סיכום המוצרים והשירותים שנבחרו עבורך.
+              התשלום והפעלת השירות מתבצעים מול {brandName || "נותן השירות"} שלך. עמוד זה מציג את סיכום המוצרים והשירותים שנבחרו עבורך.
             </p>
           </section>
         </div>
