@@ -255,6 +255,16 @@ test("dashboard surfaces paid-unactivated deals without changing home routing", 
   assert.ok(indexAt > dashboardAt);
 });
 
+test("transactions page links deals and separates pending from eligible commission", () => {
+  const src = readFileSync(join(ROOT, "pages/partner/PartnerTransactions.tsx"), "utf8");
+  assert.equal(src.includes('from "../../components/partner/partnerUi"'), true);
+  assert.equal(src.includes("/partner/dashboard/deals/"), true);
+  assert.equal(src.includes("eligibleCommission"), true);
+  assert.equal(src.includes("זמינה למשיכה"), true);
+  assert.equal(src.includes("colSpan={11}"), true);
+  assert.equal(src.includes("CRMClient"), false);
+});
+
 test("CRM dossier retries paid-deal activation without using Direct CRM", () => {
   const src = readFileSync(join(ROOT, "pages/partner/PartnerClientDossier.tsx"), "utf8");
   assert.equal(src.includes("activatePartnerClient"), true);

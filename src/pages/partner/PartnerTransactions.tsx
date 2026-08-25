@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { fetchPartnerTransactions, partnerApiError } from "../../lib/partnerApi";
 import { formatIls } from "../../lib/partnerMoney";
 import { DateRangeBar } from "./PartnerDashboard";
 import PartnerPageHeader from "../../components/partner/PartnerPageHeader";
+import { PartnerCard } from "../../components/partner/partnerUi";
 import { partnerStatusLabel } from "../../lib/partnerLabels";
 
 const PAYMENT_STATUSES = [
@@ -124,10 +126,11 @@ export default function PartnerTransactions() {
         />
       </div>
       {totals ? (
-        <section className="grid gap-3 sm:grid-cols-4">
+        <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">
           <Kpi label="סך העסקאות" value={ils(totals.totalSales)} />
           <Kpi label="העמלה שלך" value={ils(totals.partnerCommission)} />
           <Kpi label="עמלה ממתינה" value={ils(totals.pendingCommission)} />
+          <Kpi label="זמינה למשיכה" value={ils(totals.eligibleCommission)} />
           <Kpi label="עמלה ששולמה" value={ils(totals.paidCommission)} />
         </section>
       ) : null}
@@ -157,7 +160,18 @@ export default function PartnerTransactions() {
                     : "—"}
                 </td>
                 <td className="px-3 py-3 font-bold">{row.clientName || "—"}</td>
-                <td className="px-3 py-3">{row.dealNumber || "—"}</td>
+                <td className="px-3 py-3">
+                  {row.dealId ? (
+                    <Link
+                      className="font-black text-violet-700 hover:underline"
+                      to={`/partner/dashboard/deals/${row.dealId}`}
+                    >
+                      {row.dealNumber || "עסקה"}
+                    </Link>
+                  ) : (
+                    row.dealNumber || "—"
+                  )}
+                </td>
                 <td className="px-3 py-3">{row.product || "—"}</td>
                 <td className="px-3 py-3">{ils(row.customerFinalPrice)}</td>
                 <td className="px-3 py-3 font-black">{ils(row.partnerCommissionAmount)}</td>
@@ -177,7 +191,7 @@ export default function PartnerTransactions() {
             ))}
             {!rows.length ? (
               <tr>
-                <td className="px-3 py-8 text-center font-bold text-slate-400" colSpan={10}>
+                <td className="px-3 py-8 text-center font-bold text-slate-400" colSpan={11}>
                   אין עסקאות בטווח שנבחר
                 </td>
               </tr>

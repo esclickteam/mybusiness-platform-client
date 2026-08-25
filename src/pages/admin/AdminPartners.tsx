@@ -315,6 +315,7 @@ export default function AdminPartners() {
             <table className="min-w-full text-right text-sm">
               <thead className="bg-slate-50 text-xs font-black text-slate-500">
                 <tr>
+                  <th className="px-3 py-2">Deal</th>
                   <th className="px-3 py-2">לקוח</th>
                   <th className="px-3 py-2">מוצר</th>
                   <th className="px-3 py-2">שילם הלקוח</th>
@@ -326,6 +327,18 @@ export default function AdminPartners() {
               <tbody>
                 {financeRows.map((row) => (
                   <tr key={row._id} className="border-t">
+                    <td className="px-3 py-2">
+                      {row.dealNumber || row.dealId ? (
+                        <Link
+                          className="font-black text-violet-700"
+                          to={`/admin/partners/${financePartnerId}`}
+                        >
+                          {row.dealNumber || "עסקה"}
+                        </Link>
+                      ) : (
+                        "—"
+                      )}
+                    </td>
                     <td className="px-3 py-2">{row.clientName || "—"}</td>
                     <td className="px-3 py-2">{row.product || row.sku}</td>
                     <td className="px-3 py-2">{ils(row.customerFinalPrice)}</td>
