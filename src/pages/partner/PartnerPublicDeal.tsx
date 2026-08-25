@@ -156,7 +156,9 @@ export default function PartnerPublicDeal() {
             </p>
             <div className="mt-4 space-y-2 font-black">
               <Row label="מחיר חד-פעמי" value={formatIls(pay.oneTime)} />
-              <Row label="מחיר כל חודש" value={`${formatIls(pay.monthly)} / חודש`} />
+              {pay.monthly ? (
+                <Row label="מחיר כל חודש" value={`${formatIls(pay.monthly)} / חודש`} />
+              ) : null}
               {pay.annual ? <Row label="שנתי" value={`${formatIls(pay.annual)} / שנה`} /> : null}
               <Row label="סה״כ ההצעה" value={formatIls(pay.dueNow)} large />
             </div>

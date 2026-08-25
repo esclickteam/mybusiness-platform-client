@@ -296,6 +296,7 @@ test("CRM dossier retries paid-deal activation without using Direct CRM", () => 
   assert.equal(src.includes("activatePartnerClient"), true);
   assert.equal(src.includes("/partner/dashboard/deals/"), true);
   assert.equal(src.includes("הפעלת חשבון אחרי תשלום"), true);
+  assert.equal(src.includes("paymentStatus === \"paid\""), true);
   assert.equal(src.includes("CRMClient"), false);
   assert.equal(src.includes("/api/crm"), false);
 });

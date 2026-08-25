@@ -196,8 +196,8 @@ export function computeDealPreview(
     totals.customerNow = roundIls(
       totals.customerNow +
         (hasDual
-          ? oneTimeAmt + (bucket === "annual" ? 0 : recurringAmt)
-          : bucket === "oneTime" || bucket === "monthly"
+          ? oneTimeAmt + recurringAmt
+          : bucket === "oneTime" || bucket === "monthly" || bucket === "annual"
             ? customer
             : 0)
     );
