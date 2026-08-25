@@ -102,8 +102,11 @@ export default function PartnerStorefront() {
         </div>
       </header>
       <div className="mt-8 grid gap-4">
-        {(data.products || []).map((product: any) => (
-          <article key={product.sku} className="rounded-2xl border border-slate-200 bg-white p-5">
+        {(data.products || []).map((product: any, index: number) => (
+          <article
+            key={`${product.nameHe || product.name || "product"}-${index}`}
+            className="rounded-2xl border border-slate-200 bg-white p-5"
+          >
             <h2 className="text-lg font-black">{publicPackageLabel(product.nameHe || product.name)}</h2>
             <p className="text-sm text-slate-600">{publicProductCopy(product.description)}</p>
             <p className="mt-3 text-2xl font-black">{formatPublicCustomerPrice(product)}</p>

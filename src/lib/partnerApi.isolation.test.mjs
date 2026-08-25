@@ -254,6 +254,7 @@ test("login branding resolves from hostname helper, not scattered partner ifs", 
   assert.equal(storefront.includes("fetchPublicPartnerBranding"), true);
   assert.equal(storefront.includes("publicPackageLabel"), true);
   assert.equal(storefront.includes("publicProductCopy"), true);
+  assert.equal(storefront.includes("key={product.sku}"), false);
   assert.equal(storefront.includes("Powered by Bizuply"), false);
   assert.equal(storefront.includes("רכישה מתבצעת בעמוד החבילות"), true);
   assert.equal(storefront.includes("רכישה מתבצעת מול הפרטנר."), false);
