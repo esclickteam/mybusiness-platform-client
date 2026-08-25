@@ -221,6 +221,7 @@ test("self-serve success page polls until payment and activation settle", () => 
   assert.equal(src.includes("checkoutSettled"), true);
   assert.equal(src.includes("requires_action"), true);
   assert.equal(src.includes("החשבון עדיין דורש טיפול"), true);
+  assert.equal(src.includes("welcomeEmailSent"), true);
   assert.equal(src.includes("CRMClient"), false);
 });
 

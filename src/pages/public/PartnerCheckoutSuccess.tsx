@@ -52,10 +52,17 @@ export default function PartnerCheckoutSuccess() {
       {!error && !data ? <p className="font-bold text-slate-500">בודקים את ההזמנה...</p> : null}
       {data ? (
         <div className="space-y-4 rounded-3xl bg-white p-6 shadow-sm">
-          {paid && activation === "active" ? (
+          {paid && activation === "active" && data.welcomeEmailSent ? (
             <>
               <h1 className="text-2xl font-black">החשבון שלך מוכן. פרטי הכניסה נשלחו אליך.</h1>
               <p className="font-bold text-slate-600">עסקה {data.dealNumber}</p>
+            </>
+          ) : paid && activation === "active" ? (
+            <>
+              <h1 className="text-2xl font-black">החשבון שלך מוכן.</h1>
+              <p className="font-bold text-slate-600">
+                אם לא קיבלת מייל עם פרטי כניסה, פנו לפרטנר. עסקה {data.dealNumber}
+              </p>
             </>
           ) : paid && (activation === "pending" || activation === "processing") ? (
             <>
