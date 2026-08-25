@@ -354,7 +354,7 @@ export default function PartnerClientWizard() {
 
       {step === 2 || step === 3 ? (
         <PartnerCatalogPicker
-          items={items}
+          items={previewCatalog}
           wizard={wizard}
           selectedSkus={selectedSkus}
           onChange={setSelectedSkus}
