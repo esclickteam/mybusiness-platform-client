@@ -249,7 +249,9 @@ test("login branding resolves from hostname helper, not scattered partner ifs", 
   assert.equal(branding.includes("stored?.brandName"), true);
   assert.equal(branding.includes("return Boolean(branding?.whiteLabelEnabled)"), false);
   const storefront = readFileSync(join(ROOT, "pages/public/PartnerStorefront.tsx"), "utf8");
+  assert.equal(storefront.includes('from "../../components/partner/PublicPartnerShell"'), true);
   assert.equal(storefront.includes("PublicPartnerShell"), true);
+  assert.equal(storefront.includes("fetchPublicPartnerBranding"), true);
   assert.equal(storefront.includes("publicPackageLabel"), true);
   assert.equal(storefront.includes("publicProductCopy"), true);
   assert.equal(storefront.includes("Powered by Bizuply"), false);

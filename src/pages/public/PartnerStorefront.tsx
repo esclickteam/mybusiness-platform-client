@@ -1,8 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { fetchPublicStorefront } from "../../lib/partnerApi";
+import {
+  fetchPublicPartnerBranding,
+  fetchPublicStorefront,
+} from "../../lib/partnerApi";
 import { formatPublicCustomerPrice } from "../../lib/partnerMoney";
 import { publicPackageLabel, publicProductCopy } from "../../lib/partnerDealMath";
+import PublicPartnerShell from "../../components/partner/PublicPartnerShell";
+import { type PublicPartnerBranding } from "../../lib/partnerBranding";
 
 function ils(value?: number) {
   return `₪${Number(value || 0).toLocaleString("he-IL")}`;
@@ -26,28 +31,53 @@ function plansHref(slug: string | undefined, data: any) {
 export default function PartnerStorefront() {
   const { slug } = useParams();
   const [data, setData] = useState<any>(null);
+  const [branding, setBranding] = useState<PublicPartnerBranding | null>(null);
   const [error, setError] = useState("");
 
   useEffect(() => {
     if (!slug) return;
-    fetchPublicStorefront(slug)
-      .then(setData)
-      .catch((err) => setError(err.response?.data?.error || "העמוד לא נמצא"));
+    let cancelled = false;
+    (async () => {
+      const hostBrand = await fetchPublicPartnerBranding({
+        slug,
+        host: typeof window !== "undefined" ? window.location.host : "",
+      }).catch(() => null);
+      if (cancelled) return;
+      if (hostBrand) setBranding(hostBrand);
+      try {
+        const page = await fetchPublicStorefront(slug);
+        if (cancelled) return;
+        setData(page);
+        setBranding(page?.branding || hostBrand);
+        setError("");
+      } catch (err: any) {
+        if (!cancelled) setError(err.response?.data?.error || "העמוד לא נמצא");
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, [slug]);
 
   if (error) {
     return (
-      <PublicPartnerShell title="קטלוג">
+      <PublicPartnerShell branding={branding} title="קטלוג">
         <div className="text-center">
           <h1 className="text-2xl font-black">{error}</h1>
         </div>
       </PublicPartnerShell>
     );
   }
-  if (!data) return null;
+  if (!data) {
+    return (
+      <PublicPartnerShell branding={branding} title="קטלוג">
+        <p className="font-bold text-slate-500">טוען קטלוג...</p>
+      </PublicPartnerShell>
+    );
+  }
 
   return (
-    <PublicPartnerShell branding={data.branding} title={data.name || "קטלוג"}>
+    <PublicPartnerShell branding={data.branding || branding} title={data.name || "קטלוג"}>
       <header className="rounded-[32px] bg-white px-6 py-10 shadow-sm">
         <div className="flex items-center gap-4">
           {data.logoUrl ? (
