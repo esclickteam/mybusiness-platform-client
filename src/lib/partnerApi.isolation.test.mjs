@@ -219,6 +219,7 @@ test("self-serve success page polls until payment and activation settle", () => 
   const src = readFileSync(join(ROOT, "pages/public/PartnerCheckoutSuccess.tsx"), "utf8");
   assert.equal(src.includes("fetchPublicCheckoutStatus"), true);
   assert.equal(src.includes("fetchPublicPartnerBranding"), true);
+  assert.equal(src.includes('href="/login"'), true);
   assert.equal(src.includes("checkoutSettled"), true);
   assert.equal(src.includes("requires_action"), true);
   assert.equal(src.includes("החשבון עדיין דורש טיפול"), true);

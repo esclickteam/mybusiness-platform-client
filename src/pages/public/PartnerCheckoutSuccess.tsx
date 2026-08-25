@@ -7,6 +7,7 @@ import {
 } from "../../lib/partnerApi";
 import PublicPartnerShell from "../../components/partner/PublicPartnerShell";
 import { partnerStatusLabel } from "../../lib/partnerLabels";
+import type { PublicPartnerBranding } from "../../lib/partnerBranding";
 
 function checkoutSettled(payload: { paid?: boolean; activationStatus?: string } | null) {
   if (!payload?.paid) return false;
@@ -20,6 +21,7 @@ export default function PartnerCheckoutSuccess() {
   const slugFromQuery = (params.get("slug") || "").trim();
   const sessionId = params.get("session_id") || "";
   const [hostSlug, setHostSlug] = useState<string | null>(null);
+  const [hostBranding, setHostBranding] = useState<PublicPartnerBranding | null>(null);
   const [data, setData] = useState<any>(null);
   const [error, setError] = useState("");
 
@@ -32,7 +34,10 @@ export default function PartnerCheckoutSuccess() {
     (async () => {
       try {
         const branding = await fetchPublicPartnerBranding({ host: window.location.host });
-        if (!cancelled) setHostSlug(String(branding?.slug || "").trim());
+        if (!cancelled) {
+          setHostSlug(String(branding?.slug || "").trim());
+          setHostBranding(branding || null);
+        }
       } catch {
         if (!cancelled) setHostSlug("");
       }
@@ -74,7 +79,7 @@ export default function PartnerCheckoutSuccess() {
   const paid = Boolean(data?.paid);
 
   return (
-    <PublicPartnerShell branding={data?.branding} title="הרכישה התקבלה" noIndex>
+    <PublicPartnerShell branding={data?.branding || hostBranding} title="הרכישה התקבלה" noIndex>
       {error ? <p className="font-black text-rose-700">{error}</p> : null}
       {!error && (awaitingHostSlug || !data) ? (
         <p className="font-bold text-slate-500">בודקים את ההזמנה...</p>
@@ -85,6 +90,9 @@ export default function PartnerCheckoutSuccess() {
             <>
               <h1 className="text-2xl font-black">החשבון שלך מוכן. פרטי הכניסה נשלחו אליך.</h1>
               <p className="font-bold text-slate-600">עסקה {data.dealNumber}</p>
+              <a href="/login" className="inline-block font-black text-[#7C4DFF]">
+                התחברות לחשבון
+              </a>
             </>
           ) : paid && activation === "active" ? (
             <>
@@ -92,6 +100,9 @@ export default function PartnerCheckoutSuccess() {
               <p className="font-bold text-slate-600">
                 אם לא קיבלת מייל עם פרטי כניסה, פנו לפרטנר. עסקה {data.dealNumber}
               </p>
+              <a href="/login" className="inline-block font-black text-[#7C4DFF]">
+                התחברות לחשבון
+              </a>
             </>
           ) : paid && (activation === "pending" || activation === "processing") ? (
             <>
