@@ -57,6 +57,12 @@ export function hidesBizuplyChrome(
   return Boolean(branding?.whiteLabelEnabled);
 }
 
+export function isResolvedPartnerHost(branding?: PublicPartnerBranding | null) {
+  return Boolean(
+    branding?.partnerId && (branding.whiteLabelEnabled || branding.whiteLabelEntitled)
+  );
+}
+
 export function partnerFacingName(
   branding?: PublicPartnerBranding | null,
   hostname?: string

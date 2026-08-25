@@ -60,7 +60,7 @@ export default function PartnerStorefront() {
               {data.contact?.phone} {data.contact?.email} {data.contact?.whatsapp}
             </p>
             <p className="mt-3 text-xs font-bold text-slate-500">
-              קטלוג ציבורי להצגת מוצרים ושירותים. רכישה מתבצעת מול הפרטנר.
+              קטלוג ציבורי להצגת מוצרים ושירותים. רכישה מתבצעת בעמוד החבילות.
             </p>
             <a
               href={plansHref(slug, data)}

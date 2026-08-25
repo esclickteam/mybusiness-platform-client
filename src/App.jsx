@@ -838,7 +838,7 @@ export default function App() {
   const isPublicPartnerDeal = location.pathname.startsWith("/partner/deals/");
   const {
     ready: partnerHostReady,
-    whiteLabelEnabled: isPartnerHost,
+    isResolvedPartnerHost: isPartnerHost,
     looksLikePartnerHost,
   } = usePartnerHostBranding();
   const isPartnerHostPublicChrome =

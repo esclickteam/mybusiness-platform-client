@@ -5,9 +5,9 @@ import { usePartnerHostBranding } from "../../hooks/usePartnerHostBranding";
 const HomePage = lazy(() => import("../Home"));
 
 export default function PartnerHostHome() {
-  const { ready, whiteLabelEnabled } = usePartnerHostBranding();
+  const { ready, isResolvedPartnerHost } = usePartnerHostBranding();
   if (!ready) return null;
-  if (whiteLabelEnabled) {
+  if (isResolvedPartnerHost) {
     return <Navigate to="/plans" replace />;
   }
   return <HomePage />;

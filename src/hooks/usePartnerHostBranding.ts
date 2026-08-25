@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { fetchPublicPartnerBranding } from "../lib/partnerApi";
 import type { PublicPartnerBranding } from "../lib/partnerBranding";
+import { isResolvedPartnerHost } from "../lib/partnerBranding";
 import { isPartnerWhiteLabelHostname } from "../lib/partnerHost.mjs";
 
 export function usePartnerHostBranding() {
@@ -36,5 +37,6 @@ export function usePartnerHostBranding() {
     ready,
     looksLikePartnerHost,
     whiteLabelEnabled: Boolean(branding?.whiteLabelEnabled),
+    isResolvedPartnerHost: isResolvedPartnerHost(branding),
   };
 }

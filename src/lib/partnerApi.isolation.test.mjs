@@ -219,7 +219,7 @@ test("login branding resolves from hostname helper, not scattered partner ifs", 
   assert.equal(src.includes("CRMClient"), false);
   const login = readFileSync(join(ROOT, "pages/Login.tsx"), "utf8");
   assert.equal(login.includes("usePartnerHostBranding"), true);
-  assert.equal(login.includes("whiteLabelEnabled"), true);
+  assert.equal(login.includes("isResolvedPartnerHost"), true);
   assert.equal(login.includes('? "/plans"'), true);
   const reset = readFileSync(join(ROOT, "pages/ResetPassword.jsx"), "utf8");
   assert.equal(reset.includes("AuthShell"), true);
@@ -235,6 +235,7 @@ test("login branding resolves from hostname helper, not scattered partner ifs", 
   const branding = readFileSync(join(ROOT, "lib/partnerBranding.ts"), "utf8");
   assert.equal(branding.includes("whiteLabelEntitled"), true);
   assert.equal(branding.includes("hideBizuplyBranding"), true);
+  assert.equal(branding.includes("isResolvedPartnerHost"), true);
   assert.equal(branding.includes("isPartnerWhiteLabelHostname"), false);
   assert.equal(branding.includes("absoluteCustomerUrl"), true);
   assert.equal(branding.includes("hidesBizuplyChrome(branding, hostname)"), true);
@@ -242,6 +243,8 @@ test("login branding resolves from hostname helper, not scattered partner ifs", 
   const storefront = readFileSync(join(ROOT, "pages/public/PartnerStorefront.tsx"), "utf8");
   assert.equal(storefront.includes("PublicPartnerShell"), true);
   assert.equal(storefront.includes("Powered by Bizuply"), false);
+  assert.equal(storefront.includes("רכישה מתבצעת בעמוד החבילות"), true);
+  assert.equal(storefront.includes("רכישה מתבצעת מול הפרטנר."), false);
 });
 
 test("public checkout client sends sku and contact, never a customer price", () => {
@@ -412,7 +415,7 @@ test("catalog and settings prefer branded host URLs without changing dashboard h
 test("white-label host home sends anonymous visitors to plans without changing partner dashboard", () => {
   const home = readFileSync(join(ROOT, "pages/public/PartnerHostHome.tsx"), "utf8");
   assert.equal(home.includes("usePartnerHostBranding"), true);
-  assert.equal(home.includes("whiteLabelEnabled"), true);
+  assert.equal(home.includes("isResolvedPartnerHost"), true);
   assert.equal(home.includes('to="/plans"'), true);
   assert.equal(home.includes("/partner/dashboard"), false);
   assert.equal(home.includes("HomePage"), true);
