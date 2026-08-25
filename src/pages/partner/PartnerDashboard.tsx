@@ -254,6 +254,34 @@ export default function PartnerDashboard() {
                   iconClassName="bg-rose-100 text-rose-600"
                 />
               </div>
+              {metrics?.pendingCommission != null || metrics?.eligibleCommission != null ? (
+                <div className="grid gap-4 sm:grid-cols-3">
+                  <PartnerMetricCard
+                    label="עמלה ממתינה"
+                    value={ils(metrics?.pendingCommission)}
+                    hint="מחכה להפעלת הלקוח והמוצרים"
+                    href="/partner/dashboard/transactions"
+                    icon={<Wallet className="h-5 w-5" />}
+                    iconClassName="bg-amber-100 text-amber-700"
+                  />
+                  <PartnerMetricCard
+                    label="זמינה למשיכה"
+                    value={ils(metrics?.eligibleCommission)}
+                    hint="רק אחרי שהעסקה הושלמה"
+                    href="/partner/dashboard/withdrawals"
+                    icon={<Wallet className="h-5 w-5" />}
+                    iconClassName="bg-emerald-100 text-emerald-700"
+                  />
+                  <PartnerMetricCard
+                    label="עמלה ששולמה"
+                    value={ils(metrics?.paidCommission)}
+                    hint="כבר הועברה"
+                    href="/partner/dashboard/withdrawals"
+                    icon={<Wallet className="h-5 w-5" />}
+                    iconClassName="bg-slate-100 text-slate-700"
+                  />
+                </div>
+              ) : null}
 
               <PartnerCard className="overflow-hidden">
                 <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 px-5 py-4">

@@ -11,6 +11,7 @@ import {
   User,
 } from "lucide-react";
 import {
+  activatePartnerClient,
   addPartnerNote,
   addPartnerTask,
   enterPartnerClient,
@@ -58,6 +59,7 @@ export default function PartnerClientDossier() {
   const [task, setTask] = useState("");
   const [tab, setTab] = useState("overview");
   const [entering, setEntering] = useState(false);
+  const [activating, setActivating] = useState(false);
 
   useEffect(() => {
     if (!clientId) return;
@@ -113,6 +115,22 @@ export default function PartnerClientDossier() {
     }
   }
 
+  async function activateClient() {
+    if (!clientId) return;
+    setActivating(true);
+    setError("");
+    try {
+      await activatePartnerClient(clientId);
+      const refreshed = await fetchPartnerClient(clientId);
+      setClient(refreshed.client);
+      setDeals(refreshed.deals || []);
+    } catch (err: unknown) {
+      setError(partnerApiError(err, "לא ניתן להפעיל את הלקוח"));
+    } finally {
+      setActivating(false);
+    }
+  }
+
   if (loading) return <BizuplyLoader label="טוען תיק לקוח..." />;
   if (!client) {
     return (
@@ -159,21 +177,37 @@ export default function PartnerClientDossier() {
         title={client.contact.businessName}
         subtitle={`${client.contact.contactName} · ${client.contact.email}`}
         actions={
-          client.canEnterClient ? (
-            <button
-              type="button"
-              disabled={entering}
-              onClick={enterClient}
-              className="inline-flex items-center gap-2 rounded-2xl bg-slate-900 px-4 py-2.5 text-sm font-black text-white shadow-lg shadow-slate-900/15"
-            >
-              <LogIn className="h-4 w-4" />
-              {entering ? "נכנס לניהול..." : "כניסה לניהול הלקוח"}
-            </button>
-          ) : (
-            <span className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-2 text-sm font-black text-amber-800">
-              כניסה לניהול זמינה אחרי הפעלה
-            </span>
-          )
+          <>
+            {deals.some(
+              (deal) =>
+                deal.needsAttention ||
+                (deal.paymentStatus === "paid" && deal.activationStatus !== "active")
+            ) ? (
+              <button
+                type="button"
+                disabled={activating}
+                onClick={activateClient}
+                className="inline-flex items-center gap-2 rounded-2xl bg-amber-600 px-4 py-2.5 text-sm font-black text-white"
+              >
+                {activating ? "מפעיל..." : "הפעלת חשבון אחרי תשלום"}
+              </button>
+            ) : null}
+            {client.canEnterClient ? (
+              <button
+                type="button"
+                disabled={entering}
+                onClick={enterClient}
+                className="inline-flex items-center gap-2 rounded-2xl bg-slate-900 px-4 py-2.5 text-sm font-black text-white shadow-lg shadow-slate-900/15"
+              >
+                <LogIn className="h-4 w-4" />
+                {entering ? "נכנס לניהול..." : "כניסה לניהול הלקוח"}
+              </button>
+            ) : (
+              <span className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-2 text-sm font-black text-amber-800">
+                כניסה לניהול זמינה אחרי הפעלה
+              </span>
+            )}
+          </>
         }
       />
 
@@ -258,12 +292,20 @@ export default function PartnerClientDossier() {
         <MoneyCell label="עמלה שנצברה" value={formatIls(partnerShare)} />
       </section>
       {deals[0] ? (
-        <Link
-          to={`/partner/deals/${deals[deals.length - 1]._id}`}
-          className="inline-flex rounded-2xl border border-violet-200 bg-violet-50 px-4 py-2 text-sm font-black text-violet-800"
-        >
-          צפייה בסיכום העסקה
-        </Link>
+        <div className="flex flex-wrap gap-2">
+          <Link
+            to={`/partner/dashboard/deals/${deals[deals.length - 1]._id}`}
+            className="inline-flex rounded-2xl border border-violet-200 bg-violet-50 px-4 py-2 text-sm font-black text-violet-800"
+          >
+            תיק העסקה – תשלום והפעלה
+          </Link>
+          <Link
+            to={`/partner/deals/${deals[deals.length - 1]._id}`}
+            className="inline-flex rounded-2xl border px-4 py-2 text-sm font-black text-slate-600"
+          >
+            סיכום ללקוח
+          </Link>
+        </div>
       ) : null}
 
       {client.contact.notes ? (

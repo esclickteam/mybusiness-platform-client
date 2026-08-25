@@ -246,11 +246,22 @@ test("dashboard surfaces paid-unactivated deals without changing home routing", 
   assert.equal(src.includes("/partner/dashboard/deals/"), true);
   assert.equal(src.includes("data.referrals?.qualifying"), true);
   assert.equal(src.includes("/partner/dashboard/referrals"), true);
+  assert.equal(src.includes("pendingCommission"), true);
+  assert.equal(src.includes("eligibleCommission"), true);
   const app = readFileSync(join(ROOT, "App.jsx"), "utf8");
   const dashboardAt = app.indexOf('path="/partner/dashboard"');
   const indexAt = app.indexOf("<Route index element={<PartnerDashboard />} />");
   assert.ok(dashboardAt > 0);
   assert.ok(indexAt > dashboardAt);
+});
+
+test("CRM dossier retries paid-deal activation without using Direct CRM", () => {
+  const src = readFileSync(join(ROOT, "pages/partner/PartnerClientDossier.tsx"), "utf8");
+  assert.equal(src.includes("activatePartnerClient"), true);
+  assert.equal(src.includes("/partner/dashboard/deals/"), true);
+  assert.equal(src.includes("הפעלת חשבון אחרי תשלום"), true);
+  assert.equal(src.includes("CRMClient"), false);
+  assert.equal(src.includes("/api/crm"), false);
 });
 
 test("my page warns when the sales page has no products", () => {
