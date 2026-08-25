@@ -14,6 +14,7 @@ import Header from "./components/Header";
 import Footer from "./components/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
 import { isPartnerWhiteLabelHostname } from "./lib/partnerHost.mjs";
+import RedirectIfPartnerHost from "./pages/public/RedirectIfPartnerHost";
 const BusinessDashboardRoutes = lazyWithRetry(() =>
   import("./pages/business/BusinessDashboardRoutes")
 );
@@ -1060,16 +1061,44 @@ export default function App() {
                         />
 
                         <Route path="/how-it-works" element={<HowItWorks />} />
-                        <Route path="/pricing" element={<Pricing />} />
-                        <Route path="/Pricing" element={<Pricing />} />
+                        <Route
+                          path="/pricing"
+                          element={
+                            <RedirectIfPartnerHost>
+                              <Pricing />
+                            </RedirectIfPartnerHost>
+                          }
+                        />
+                        <Route
+                          path="/Pricing"
+                          element={
+                            <RedirectIfPartnerHost>
+                              <Pricing />
+                            </RedirectIfPartnerHost>
+                          }
+                        />
                         <Route path="/p/:slug" element={<PartnerStorefront />} />
                         <Route path="/p/:slug/plans" element={<PartnerPublicPlans />} />
                         <Route path="/p/:slug/checkout/success" element={<PartnerCheckoutSuccess />} />
                         <Route path="/checkout/success" element={<PartnerCheckoutSuccess />} />
                         <Route path="/plans" element={<PartnerPublicPlans />} />
-                        <Route path="/partner/register" element={<PartnerRegister />} />
+                        <Route
+                          path="/partner/register"
+                          element={
+                            <RedirectIfPartnerHost>
+                              <PartnerRegister />
+                            </RedirectIfPartnerHost>
+                          }
+                        />
                         <Route path="/partner/deals/:dealId" element={<PartnerPublicDeal />} />
-                        <Route path="/checkout" element={<Checkout />} />
+                        <Route
+                          path="/checkout"
+                          element={
+                            <RedirectIfPartnerHost>
+                              <Checkout />
+                            </RedirectIfPartnerHost>
+                          }
+                        />
                         <Route path="/faq" element={<FAQ />} />
                         <Route path="/accessibility" element={<Accessibility />} />
                         <Route path="/terms" element={<Terms />} />
@@ -1118,7 +1147,14 @@ export default function App() {
                           path="/book/:businessId"
                           element={<BookRouteDispatch />}
                         />
-                        <Route path="/register" element={<Register />} />
+                        <Route
+                          path="/register"
+                          element={
+                            <RedirectIfPartnerHost>
+                              <Register />
+                            </RedirectIfPartnerHost>
+                          }
+                        />
                         {/* Hidden private offer — reachable only via direct URL.
                             NOT linked from nav/footer/pricing/sitemap. */}
                         <Route path="/offer/crm" element={<CrmOfferPage />} />
