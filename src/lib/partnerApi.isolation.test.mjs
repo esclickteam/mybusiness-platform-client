@@ -213,12 +213,13 @@ test("partner public plans page shows customer price only", () => {
 
 test("login branding resolves from hostname helper, not scattered partner ifs", () => {
   const src = readFileSync(join(ROOT, "components/auth/AuthShell.tsx"), "utf8");
-  assert.equal(src.includes("fetchPublicPartnerBranding"), true);
+  assert.equal(src.includes("usePartnerHostBranding"), true);
   assert.equal(src.includes("hidesBizuplyChrome"), true);
   assert.equal(src.includes("hidesBizuplyChrome(branding, host)"), true);
   assert.equal(src.includes("CRMClient"), false);
   const login = readFileSync(join(ROOT, "pages/Login.tsx"), "utf8");
-  assert.equal(login.includes("isPartnerWhiteLabelHostname"), true);
+  assert.equal(login.includes("usePartnerHostBranding"), true);
+  assert.equal(login.includes("whiteLabelEnabled"), true);
   assert.equal(login.includes('? "/plans"'), true);
   const shell = readFileSync(join(ROOT, "components/partner/PublicPartnerShell.tsx"), "utf8");
   assert.equal(shell.includes("hidesBizuplyChrome"), true);
@@ -230,9 +231,10 @@ test("login branding resolves from hostname helper, not scattered partner ifs", 
   const branding = readFileSync(join(ROOT, "lib/partnerBranding.ts"), "utf8");
   assert.equal(branding.includes("whiteLabelEntitled"), true);
   assert.equal(branding.includes("hideBizuplyBranding"), true);
-  assert.equal(branding.includes("isPartnerWhiteLabelHostname"), true);
+  assert.equal(branding.includes("isPartnerWhiteLabelHostname"), false);
   assert.equal(branding.includes("absoluteCustomerUrl"), true);
   assert.equal(branding.includes("hidesBizuplyChrome(branding, hostname)"), true);
+  assert.equal(branding.includes("return Boolean(branding?.whiteLabelEnabled)"), true);
   const storefront = readFileSync(join(ROOT, "pages/public/PartnerStorefront.tsx"), "utf8");
   assert.equal(storefront.includes("PublicPartnerShell"), true);
   assert.equal(storefront.includes("Powered by Bizuply"), false);
@@ -268,7 +270,7 @@ test("partner pipeline routes are registered in App", () => {
   assert.equal(app.includes("/p/:slug/plans"), true);
   assert.equal(app.includes("/p/:slug/checkout/success"), true);
   assert.equal(app.includes('path="/checkout/success"'), true);
-  assert.equal(app.includes("isPartnerWhiteLabelHostname"), true);
+  assert.equal(app.includes("usePartnerHostBranding"), true);
   assert.equal(app.includes("partnerHostAllowsPath"), true);
   assert.equal(app.includes("isPartnerHostPublicChrome"), true);
   assert.equal(app.includes("RedirectIfPartnerHost"), true);
@@ -405,7 +407,8 @@ test("catalog and settings prefer branded host URLs without changing dashboard h
 
 test("white-label host home sends anonymous visitors to plans without changing partner dashboard", () => {
   const home = readFileSync(join(ROOT, "pages/public/PartnerHostHome.tsx"), "utf8");
-  assert.equal(home.includes("isPartnerWhiteLabelHostname"), true);
+  assert.equal(home.includes("usePartnerHostBranding"), true);
+  assert.equal(home.includes("whiteLabelEnabled"), true);
   assert.equal(home.includes('to="/plans"'), true);
   assert.equal(home.includes("/partner/dashboard"), false);
   assert.equal(home.includes("HomePage"), true);
@@ -416,4 +419,26 @@ test("white-label host home sends anonymous visitors to plans without changing p
   const indexAt = app.indexOf("<Route index element={<PartnerDashboard />} />");
   assert.ok(dashboardAt > 0);
   assert.ok(indexAt > dashboardAt);
+});
+
+test("partner settings expose white-label branding fields and personal link actions", () => {
+  const card = readFileSync(join(ROOT, "components/partner/PartnerBrandingCard.tsx"), "utf8");
+  assert.equal(card.includes("מיתוג וכתובת אישית"), true);
+  assert.equal(card.includes("Brand Name"), true);
+  assert.equal(card.includes("Favicon (אופציונלי)"), true);
+  assert.equal(card.includes("Subdomain"), true);
+  assert.equal(card.includes("הקישור האישי שלי"), true);
+  assert.equal(card.includes('"Copy"'), true);
+  assert.equal(card.includes("Open"), true);
+  assert.equal(card.includes(".bizuply.com"), true);
+  assert.equal(card.includes("עדיין לא מאומתת בייצור"), true);
+  const settings = readFileSync(join(ROOT, "pages/partner/PartnerSettings.tsx"), "utf8");
+  assert.equal(settings.includes("PartnerBrandingCard"), true);
+  const dashboard = readFileSync(join(ROOT, "pages/partner/PartnerDashboard.tsx"), "utf8");
+  assert.equal(dashboard.includes("הקישור האישי שלי"), true);
+  assert.equal(dashboard.includes('"Copy"'), true);
+  assert.equal(dashboard.includes("Open"), true);
+  const hook = readFileSync(join(ROOT, "hooks/usePartnerHostBranding.ts"), "utf8");
+  assert.equal(hook.includes("fetchPublicPartnerBranding"), true);
+  assert.equal(hook.includes("whiteLabelEnabled"), true);
 });

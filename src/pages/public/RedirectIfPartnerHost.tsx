@@ -1,6 +1,6 @@
 import React, { type ReactNode } from "react";
 import { Navigate } from "react-router-dom";
-import { isPartnerWhiteLabelHostname } from "../../lib/partnerHost.mjs";
+import { usePartnerHostBranding } from "../../hooks/usePartnerHostBranding";
 
 export default function RedirectIfPartnerHost({
   children,
@@ -9,7 +9,8 @@ export default function RedirectIfPartnerHost({
   children: ReactNode;
   to?: string;
 }) {
-  const host = typeof window !== "undefined" ? window.location.hostname : "";
-  if (isPartnerWhiteLabelHostname(host)) return <Navigate to={to} replace />;
+  const { ready, whiteLabelEnabled } = usePartnerHostBranding();
+  if (!ready) return null;
+  if (whiteLabelEnabled) return <Navigate to={to} replace />;
   return <>{children}</>;
 }

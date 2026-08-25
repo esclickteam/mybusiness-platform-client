@@ -1,5 +1,3 @@
-import { isPartnerWhiteLabelHostname } from "./partnerHost.mjs";
-
 export type PublicPartnerBranding = {
   partnerId?: string | null;
   slug?: string;
@@ -23,6 +21,8 @@ export type PublicPartnerBranding = {
     logoUrl?: string;
     faviconUrl?: string;
     subdomain?: string;
+    supportEmail?: string;
+    supportPhone?: string;
   };
 };
 
@@ -52,15 +52,9 @@ export function brandingFromUser(
 
 export function hidesBizuplyChrome(
   branding?: PublicPartnerBranding | null,
-  hostname?: string
+  _hostname?: string
 ) {
-  if (hostname && isPartnerWhiteLabelHostname(hostname)) return true;
-  return Boolean(
-    branding?.whiteLabelEnabled ||
-      branding?.whiteLabelEntitled ||
-      branding?.urls?.subdomainUrl ||
-      branding?.hideBizuplyBranding
-  );
+  return Boolean(branding?.whiteLabelEnabled);
 }
 
 export function partnerFacingName(

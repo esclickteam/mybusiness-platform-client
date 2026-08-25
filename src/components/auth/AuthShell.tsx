@@ -1,4 +1,4 @@
-import React, { createContext, type ReactNode, useContext, useEffect, useState } from "react";
+import React, { createContext, type ReactNode, useContext, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Bot,
@@ -7,7 +7,7 @@ import {
   Megaphone,
   Users,
 } from "lucide-react";
-import { fetchPublicPartnerBranding } from "../../lib/partnerApi";
+import { usePartnerHostBranding } from "../../hooks/usePartnerHostBranding";
 import {
   applyPartnerFavicon,
   hidesBizuplyChrome,
@@ -18,7 +18,7 @@ import {
 
 const LoginBrandingContext = createContext<PublicPartnerBranding | null>(null);
 
-function useLoginBranding() {
+export function useLoginBranding() {
   return useContext(LoginBrandingContext);
 }
 
@@ -64,7 +64,7 @@ export default function AuthShell({
 }: AuthShellProps) {
   const { t, i18n } = useTranslation();
   const dir = i18n.dir();
-  const [branding, setBranding] = useState<PublicPartnerBranding | null>(null);
+  const { branding } = usePartnerHostBranding();
   const host = typeof window !== "undefined" ? window.location.hostname : "";
   const whiteLabel = hidesBizuplyChrome(branding, host);
   const brandName = partnerFacingName(branding, host);
@@ -75,12 +75,6 @@ export default function AuthShell({
     { title: t("login.featureWebsiteTitle"), subtitle: t("login.featureWebsiteText"), icon: Globe2 },
     { title: t("login.featureMetaLeadsTitle"), subtitle: t("login.featureMetaLeadsText"), icon: Megaphone },
   ];
-
-  useEffect(() => {
-    fetchPublicPartnerBranding({ host: window.location.host })
-      .then((data) => setBranding(data || null))
-      .catch(() => setBranding(null));
-  }, []);
 
   useEffect(() => {
     applyPartnerFavicon(whiteLabel ? branding?.faviconUrl || branding?.stored?.faviconUrl : "");

@@ -1,12 +1,13 @@
 import React, { lazy } from "react";
 import { Navigate } from "react-router-dom";
-import { isPartnerWhiteLabelHostname } from "../../lib/partnerHost.mjs";
+import { usePartnerHostBranding } from "../../hooks/usePartnerHostBranding";
 
 const HomePage = lazy(() => import("../Home"));
 
 export default function PartnerHostHome() {
-  const host = typeof window !== "undefined" ? window.location.hostname : "";
-  if (isPartnerWhiteLabelHostname(host)) {
+  const { ready, whiteLabelEnabled } = usePartnerHostBranding();
+  if (!ready) return null;
+  if (whiteLabelEnabled) {
     return <Navigate to="/plans" replace />;
   }
   return <HomePage />;

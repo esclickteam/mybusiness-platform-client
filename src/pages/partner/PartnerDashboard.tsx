@@ -153,17 +153,17 @@ export default function PartnerDashboard() {
                     setTimeout(() => setCopied(false), 1500);
                   }}
                 >
-                  {copied ? "הועתק" : "העתק קישור"}
+                  {copied ? "הועתק" : "Copy"}
                 </button>
                 <a href={personalUrl} target="_blank" rel="noreferrer" className="rounded-2xl border px-4 py-2 text-sm font-black">
-                  הצג עמוד
+                  Open
                 </a>
                 {plansUrl ? (
                   <a href={plansUrl} target="_blank" rel="noreferrer" className="rounded-2xl border px-4 py-2 text-sm font-black">
                     עמוד חבילות
                   </a>
                 ) : null}
-                <Link to="/partner/dashboard/page" className="rounded-2xl border px-4 py-2 text-sm font-black">
+                <Link to="/partner/dashboard/settings" className="rounded-2xl border px-4 py-2 text-sm font-black">
                   מיתוג
                 </Link>
               </div>

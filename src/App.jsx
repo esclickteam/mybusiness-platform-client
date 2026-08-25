@@ -13,8 +13,9 @@ import StaffSoftphoneHost from "./components/staff/StaffSoftphoneHost";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
-import { isPartnerWhiteLabelHostname, partnerHostAllowsPath } from "./lib/partnerHost.mjs";
+import { partnerHostAllowsPath } from "./lib/partnerHost.mjs";
 import RedirectIfPartnerHost from "./pages/public/RedirectIfPartnerHost";
+import { usePartnerHostBranding } from "./hooks/usePartnerHostBranding";
 const BusinessDashboardRoutes = lazyWithRetry(() =>
   import("./pages/business/BusinessDashboardRoutes")
 );
@@ -835,9 +836,11 @@ export default function App() {
     location.pathname.includes("/chat");
 
   const isPublicPartnerDeal = location.pathname.startsWith("/partner/deals/");
-  const isPartnerHost = isPartnerWhiteLabelHostname(
-    typeof window !== "undefined" ? window.location.hostname : ""
-  );
+  const {
+    ready: partnerHostReady,
+    whiteLabelEnabled: isPartnerHost,
+    looksLikePartnerHost,
+  } = usePartnerHostBranding();
   const isPartnerHostPublicChrome =
     isPartnerHost &&
     !location.pathname.includes("/dashboard") &&
@@ -919,6 +922,14 @@ export default function App() {
     // The /login route has its own layout-matched skeleton to avoid a large
     // layout shift when this app-level auth check resolves and the real
     // page mounts. Every other route keeps the original full-screen loader.
+    return location.pathname === "/login" ? (
+      <LoginFormSkeleton />
+    ) : (
+      <LoginSkeleton />
+    );
+  }
+
+  if (looksLikePartnerHost && !partnerHostReady) {
     return location.pathname === "/login" ? (
       <LoginFormSkeleton />
     ) : (

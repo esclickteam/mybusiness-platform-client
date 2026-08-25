@@ -7,7 +7,7 @@ import { useNotifications } from "../context/NotificationsContext";
 import { lazyWithPreload } from "../utils/lazyWithPreload";
 import AuthShell, { AuthCard } from "../components/auth/AuthShell";
 import { LoginFormSkeleton } from "../components/auth/LoginFormSkeleton";
-import { isPartnerWhiteLabelHostname } from "../lib/partnerHost.mjs";
+import { usePartnerHostBranding } from "../hooks/usePartnerHostBranding";
 import {
   clearPostLoginRedirect,
   isCompatibleRedirect,
@@ -52,6 +52,7 @@ export default function Login() {
   const { login, error: authError } = useAuth();
   const { fetchNotifications } = useNotifications();
   const { i18n, t } = useTranslation();
+  const { whiteLabelEnabled } = usePartnerHostBranding();
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -326,13 +327,7 @@ export default function Login() {
           <p className="pt-2 text-center text-sm font-semibold text-slate-600">
             {t("login.noAccount")}{" "}
             <Link
-              to={
-                isPartnerWhiteLabelHostname(
-                  typeof window !== "undefined" ? window.location.hostname : ""
-                )
-                  ? "/plans"
-                  : "/pricing"
-              }
+              to={whiteLabelEnabled ? "/plans" : "/pricing"}
               className="font-black text-violet-700 transition hover:text-indigo-700"
             >
               {t("login.registerCta")}
