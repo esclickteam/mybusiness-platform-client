@@ -37,9 +37,7 @@ export default function PartnerMyPage() {
             slug: me.slug,
           })
         );
-        setPlansUrl(
-          urls.plansUrl || (me.slug ? `${window.location.origin}/p/${me.slug}/plans` : "")
-        );
+        setPlansUrl(urls.plansUrl || "");
         setSalesCount(
           pricebook.filter((row) => row.enabledInStorefront || row.visibleOnSalesPage).length
         );

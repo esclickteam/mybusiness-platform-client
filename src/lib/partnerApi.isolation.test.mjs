@@ -487,6 +487,8 @@ test("partner settings expose white-label branding fields and personal link acti
   assert.equal(brandingLib.includes("if (sub) return `https://${sub}${partnerSiteSuffix(hostname)}`;"), false);
   const myPage = readFileSync(join(ROOT, "pages/partner/PartnerMyPage.tsx"), "utf8");
   assert.equal(myPage.includes("partnerPersonalUrl"), true);
+  assert.equal(myPage.includes("urls.plansUrl"), true);
+  assert.equal(myPage.includes("${window.location.origin}/p/${me.slug}/plans"), false);
   assert.equal(myPage.includes('from "../../components/partner/PartnerPageHeader"'), true);
   assert.equal(myPage.includes("רכישה מתבצעת מול הפרטנר"), false);
   assert.equal(myPage.includes("רכישה עצמאית מתבצעת בעמוד החבילות"), true);
