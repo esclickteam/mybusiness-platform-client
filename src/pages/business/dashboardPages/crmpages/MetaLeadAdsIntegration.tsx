@@ -1,7 +1,13 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useSearchParams } from "react-router-dom";
 import BizuplyLoader from "../../../../components/ui/BizuplyLoader";
+import {
+  deriveMetaLeadWizardStep,
+  isMetaLeadSetupComplete,
+  type MetaLeadWizardSnapshot,
+  type MetaLeadWizardStep,
+} from "./metaLeadAdsWizard";
 import {
   AlertCircle,
   ArrowRight,
@@ -65,7 +71,18 @@ type MetaLeadAdsIntegrationProps = {
   onLeadsSynced?: (summary: AdminMetaSyncSummary) => void;
 };
 
-type WizardStep = 1 | 2 | 3;
+type StatusPayload = {
+  success: boolean;
+  connectedPage: ConnectedPage | null;
+  pages?: MetaPage[];
+  forms?: MetaLeadForm[];
+  selectedForm?: SelectedForm | null;
+  selectedForms?: SelectedForm[];
+  purgedHistorical?: number;
+  metaAccountConnected?: boolean;
+  connectedPageId?: string | null;
+  selectedLeadFormId?: string | null;
+};
 
 const T = "crm.leads.metaIntegration";
 
@@ -93,7 +110,7 @@ export default function MetaLeadAdsIntegration({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
-  const [forceSetup, setForceSetup] = useState(false);
+  const [editingSetup, setEditingSetup] = useState(false);
 
   const [connectedPage, setConnectedPage] = useState<ConnectedPage | null>(null);
   const [pages, setPages] = useState<MetaPage[]>([]);
@@ -103,11 +120,14 @@ export default function MetaLeadAdsIntegration({
   const [selectedPageId, setSelectedPageId] = useState("");
   const [syncing, setSyncing] = useState(false);
   const [syncSummary, setSyncSummary] = useState<AdminMetaSyncSummary | null>(null);
+  const [statusSnapshot, setStatusSnapshot] = useState<MetaLeadWizardSnapshot>({});
 
   const isAdminCrm = destination === "admin_crm";
   const isConnected = Boolean(connectedPage?.pageId);
-  const hasAccount = pages.length > 0 || isConnected;
   const hasForm = Boolean(selectedForm?.formId) || selectedForms.length > 0;
+  const pageAlreadyConnected =
+    Boolean(connectedPage?.pageId) &&
+    selectedPageId === connectedPage?.pageId;
   const tenantParams = isAdminCrm
     ? { destination: "admin_crm" }
     : businessId
@@ -115,44 +135,91 @@ export default function MetaLeadAdsIntegration({
       : undefined;
   const emDash = t(`${T}.emDash`);
 
-  const wizardStep: WizardStep = !hasAccount
-    ? 1
-    : !isConnected || !hasForm || forceSetup
-      ? 2
-      : 3;
+  const wizardSnapshot = useMemo<MetaLeadWizardSnapshot>(
+    () => ({
+      metaAccountConnected: statusSnapshot.metaAccountConnected,
+      connectedPageId: statusSnapshot.connectedPageId || connectedPage?.pageId || "",
+      selectedLeadFormId:
+        statusSnapshot.selectedLeadFormId ||
+        selectedForm?.formId ||
+        selectedForms[0]?.formId ||
+        "",
+      pagesCount: pages.length,
+      connectedPage,
+      selectedForm,
+      selectedForms,
+    }),
+    [
+      statusSnapshot,
+      connectedPage,
+      selectedForm,
+      selectedForms,
+      pages.length,
+    ]
+  );
+
+  const wizardStep: MetaLeadWizardStep = deriveMetaLeadWizardStep(
+    wizardSnapshot,
+    { editingSetup }
+  );
+
+  const applyStatusPayload = (data: StatusPayload) => {
+    const nextConnectedPage = data.connectedPage || null;
+    const nextForms = nextConnectedPage?.pageId ? data.forms || [] : [];
+    const nextSelectedForm = nextConnectedPage?.pageId
+      ? data.selectedForm || null
+      : null;
+    const nextSelectedForms = nextConnectedPage?.pageId
+      ? data.selectedForms || (data.selectedForm ? [data.selectedForm] : [])
+      : [];
+
+    setConnectedPage(nextConnectedPage);
+    setPages(data.pages || []);
+    setForms(nextForms);
+    setSelectedForm(nextSelectedForm);
+    setSelectedForms(nextSelectedForms);
+    setSelectedPageId(nextConnectedPage?.pageId || "");
+    setStatusSnapshot({
+      metaAccountConnected:
+        data.metaAccountConnected ??
+        Boolean((data.pages || []).length || nextConnectedPage?.pageId),
+      connectedPageId: data.connectedPageId || nextConnectedPage?.pageId || "",
+      selectedLeadFormId:
+        data.selectedLeadFormId ||
+        nextSelectedForm?.formId ||
+        nextSelectedForms[0]?.formId ||
+        "",
+      pagesCount: (data.pages || []).length,
+      connectedPage: nextConnectedPage,
+      selectedForm: nextSelectedForm,
+      selectedForms: nextSelectedForms,
+    });
+
+    const complete = isMetaLeadSetupComplete({
+      metaAccountConnected:
+        data.metaAccountConnected ??
+        Boolean((data.pages || []).length || nextConnectedPage?.pageId),
+      connectedPageId: data.connectedPageId || nextConnectedPage?.pageId || "",
+      selectedLeadFormId:
+        data.selectedLeadFormId ||
+        nextSelectedForm?.formId ||
+        nextSelectedForms[0]?.formId ||
+        "",
+    });
+    if (complete) setEditingSetup(false);
+    return complete;
+  };
 
   const loadStatus = async () => {
     try {
       setLoading(true);
       setError("");
 
-      const { data } = await API.get<{
-        success: boolean;
-        connectedPage: ConnectedPage | null;
-        pages?: MetaPage[];
-        forms?: MetaLeadForm[];
-        selectedForm?: SelectedForm | null;
-        selectedForms?: SelectedForm[];
-        purgedHistorical?: number;
-      }>("/meta-leads/status", {
+      const { data } = await API.get<StatusPayload>("/meta-leads/status", {
         params: tenantParams,
       });
 
-      const nextConnectedPage = data.connectedPage || null;
-
-      setConnectedPage(nextConnectedPage);
-      setPages(data.pages || []);
-      setForms(nextConnectedPage?.pageId ? data.forms || [] : []);
-      setSelectedForm(nextConnectedPage?.pageId ? data.selectedForm || null : null);
-      setSelectedForms(
-        nextConnectedPage?.pageId ? data.selectedForms || (data.selectedForm ? [data.selectedForm] : []) : []
-      );
-
-      if (nextConnectedPage?.pageId) {
-        setSelectedPageId(nextConnectedPage.pageId);
-      } else {
-        setSelectedPageId("");
-      }
+      applyStatusPayload(data);
 
       if ((data.purgedHistorical || 0) > 0) {
         window.dispatchEvent(new CustomEvent("bizuply:leads-updated"));
@@ -181,14 +248,14 @@ export default function MetaLeadAdsIntegration({
     if (!metaConnected && !metaError) return;
 
     if (metaConnected) {
-      setForceSetup(true);
+      setEditingSetup(true);
       setSuccess(t(`${T}.wizard.accountConnected`));
       void loadStatus();
     }
 
     if (metaError) {
       setError(metaError);
-      setForceSetup(true);
+      setEditingSetup(true);
     }
 
     const next = new URLSearchParams(searchParams);
@@ -248,7 +315,7 @@ export default function MetaLeadAdsIntegration({
         setSelectedForms(data.selectedForms);
       }
       setSuccess(t(`${T}.successPageConnected`));
-      setForceSetup(true);
+      setEditingSetup(true);
 
       await loadStatus();
     } catch (err) {
@@ -276,7 +343,7 @@ export default function MetaLeadAdsIntegration({
       setSelectedForm(null);
       setSelectedForms([]);
       setSelectedPageId("");
-      setForceSetup(true);
+      setEditingSetup(true);
       setSuccess(t(`${T}.successDisconnected`));
 
       if ((data?.purgedHistorical || 0) > 0) {
@@ -314,8 +381,9 @@ export default function MetaLeadAdsIntegration({
         t(`${T}.successFormRemoved`, { name: form.formName || form.formId })
       );
       if (!(data.selectedForms || []).length) {
-        setForceSetup(true);
+        setEditingSetup(true);
       }
+      await loadStatus();
     } catch (err) {
       setError(
         err instanceof Error ? err.message : t(`${T}.errors.disconnectForm`)
@@ -441,7 +509,7 @@ export default function MetaLeadAdsIntegration({
 
       setSelectedForm(data.selectedForm);
       setSelectedForms(data.selectedForms || (data.selectedForm ? [data.selectedForm] : []));
-      setForceSetup(false);
+      setEditingSetup(false);
       if (isAdminCrm) {
         const synced = applySyncResult(data.sync);
         if (!synced) {
@@ -660,15 +728,22 @@ export default function MetaLeadAdsIntegration({
                             ))}
                           </select>
 
-                          <button
-                            type="button"
-                            onClick={connectPage}
-                            disabled={busy || !selectedPageId}
-                            className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-violet-600 px-4 text-sm font-black text-white transition hover:bg-violet-500 disabled:opacity-60 sm:w-auto"
-                          >
-                            <Webhook className="h-4 w-4" />
-                            {t(`${T}.connectPage`)}
-                          </button>
+                          {pageAlreadyConnected ? (
+                            <div className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 text-sm font-black text-emerald-700 sm:w-auto">
+                              <CheckCircle2 className="h-4 w-4" />
+                              {t(`${T}.pageConnectedSuccess`)}
+                            </div>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={connectPage}
+                              disabled={busy || !selectedPageId}
+                              className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-violet-600 px-4 text-sm font-black text-white transition hover:bg-violet-500 disabled:opacity-60 sm:w-auto"
+                            >
+                              <Webhook className="h-4 w-4" />
+                              {t(`${T}.connectPage`)}
+                            </button>
+                          )}
                         </div>
 
                         {isConnected && (
@@ -806,12 +881,20 @@ export default function MetaLeadAdsIntegration({
                             ? t(`${T}.wizard.readyDescAdmin`)
                             : t(`${T}.wizard.readyDesc`)}
                         </p>
+                        <p className="mt-2 text-sm font-black text-emerald-700">
+                          {t(`${T}.wizard.readyListening`, {
+                            form:
+                              selectedForm?.formName ||
+                              selectedForms[0]?.formName ||
+                              emDash,
+                          })}
+                        </p>
                       </div>
 
                       <div className="flex flex-wrap gap-2">
                         <button
                           type="button"
-                          onClick={() => setForceSetup(true)}
+                          onClick={() => setEditingSetup(true)}
                           className="inline-flex h-10 items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-4 text-xs font-black text-slate-700 transition hover:bg-white"
                         >
                           {isAdminCrm

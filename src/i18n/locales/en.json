@@ -1696,7 +1696,7 @@
         "wizard": {
           "step1Label": "Ad account",
           "step2Label": "Page & form",
-          "step3Label": "Ready",
+          "step3Label": "Connection completed",
           "step1Title": "Step 1 · Connect ad account",
           "step1Desc": "First connect the business Meta / Facebook account. Only after that can you choose a Page and lead form.",
           "step1Cta": "Connect ad account",
@@ -1708,9 +1708,10 @@
           "step2FormLocked": "Connect a Page first, then you can choose a form.",
           "accountConnected": "Meta account connected",
           "reconnectAccount": "Reconnect account",
-          "readyTitle": "Connection ready",
-          "readyDesc": "The Page and form are connected. Only new leads submitted from now on enter the CRM — historical form leads are not imported.",
-          "readyDescAdmin": "The selected forms stay connected in parallel. Existing leads from those forms are synced into Admin CRM, and new leads continue to arrive automatically.",
+          "readyTitle": "Connection completed",
+          "readyDesc": "The integration is ready. New leads from the selected form will now enter the CRM automatically.",
+          "readyDescAdmin": "The integration is ready. The selected forms stay connected, and new leads from them will enter Admin CRM automatically.",
+          "readyListening": "Bizuply is now listening to {{form}}. New leads will enter the CRM.",
           "step2DescAdmin": "Choose one or more Pages from the account, then select as many lead forms as you need. Each selected form stays connected.",
           "changeSetup": "Change setup",
           "backToLeads": "Back to lead management"
