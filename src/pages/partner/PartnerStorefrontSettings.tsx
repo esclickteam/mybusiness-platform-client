@@ -17,7 +17,6 @@ export default function PartnerStorefrontSettings() {
     email: "",
     whatsapp: "",
     heroText: "",
-    hideBizuplyBranding: false,
     showRetailComparison: false,
   });
   const [meta, setMeta] = useState({
@@ -39,7 +38,6 @@ export default function PartnerStorefrontSettings() {
           email: data.branding?.email || "",
           whatsapp: data.branding?.whatsapp || "",
           heroText: data.branding?.heroText || "",
-          hideBizuplyBranding: Boolean(data.branding?.hideBizuplyBranding),
           showRetailComparison: Boolean(data.branding?.showRetailComparison),
         });
         setMeta({
@@ -120,14 +118,9 @@ export default function PartnerStorefrontSettings() {
         הצג מחיר Retail להשוואה בלבד
       </label>
       {meta.canHideBizuplyBranding ? (
-        <label className="block text-sm font-bold">
-          <input
-            type="checkbox"
-            checked={form.hideBizuplyBranding}
-            onChange={(e) => setForm({ ...form, hideBizuplyBranding: e.target.checked })}
-          />{" "}
-          הסתר מיתוג Bizuply בעמוד המכירה
-        </label>
+        <p className="text-xs font-bold text-slate-500">
+          מיתוג Bizuply מוסתר אוטומטית במסלול Premium כשיש שם מותג.
+        </p>
       ) : null}
       {meta.customDomainEligible ? (
         <p className="text-sm font-bold text-slate-500">

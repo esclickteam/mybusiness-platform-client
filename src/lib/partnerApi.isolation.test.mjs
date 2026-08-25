@@ -263,6 +263,8 @@ test("login branding resolves from hostname helper, not scattered partner ifs", 
   assert.equal(settings.includes("רכישה מתבצעת מול הפרטנר"), false);
   assert.equal(settings.includes("הפעל עמוד מכירה"), false);
   assert.equal(settings.includes("form.enabled"), false);
+  assert.equal(settings.includes("הסתר מיתוג Bizuply בעמוד המכירה"), false);
+  assert.equal(settings.includes("form.hideBizuplyBranding"), false);
 });
 
 test("public checkout client sends sku and contact, never a customer price", () => {
@@ -404,6 +406,8 @@ test("public partner plans page shows only final customer prices", () => {
   assert.equal(pricing.includes("הוסף עמלה שנתית מתחדשת"), true);
   assert.equal(pricing.includes("skuAllowsRecurringMarkup"), true);
   assert.equal(pricing.includes("מחיר Bizuply"), true);
+  assert.equal(pricing.includes("הצג בעמוד המכירה"), true);
+  assert.equal(pricing.includes("הצג בעמוד האישי"), false);
   assert.equal(pricing.includes("{allowsRecurring ?"), true);
   assert.equal(pricing.includes("recurringIntervalLabel"), true);
   assert.equal(pricing.includes("מחיר בסיס"), true);
@@ -431,13 +435,19 @@ test("catalog and settings prefer branded host URLs without changing dashboard h
   assert.equal(settings.includes("CRMClient"), false);
   const app = readFileSync(join(ROOT, "App.jsx"), "utf8");
   assert.equal(app.includes("<Route index element={<PartnerDashboard />} />"), true);
+  const revenue = readFileSync(join(ROOT, "pages/partner/PartnerRevenue.tsx"), "utf8");
+  assert.equal(revenue.includes("הלקוח משלם ל-Bizuply"), false);
+  assert.equal(revenue.includes("בעסקה ידנית"), true);
 });
 
 test("white-label host home sends anonymous visitors to plans without changing partner dashboard", () => {
   const home = readFileSync(join(ROOT, "pages/public/PartnerHostHome.tsx"), "utf8");
   assert.equal(home.includes("usePartnerHostBranding"), true);
   assert.equal(home.includes("isResolvedPartnerHost"), true);
+  assert.equal(home.includes("looksLikePartnerHost"), true);
   assert.equal(home.includes('to="/plans"'), true);
+  assert.equal(home.includes("/p/${encodeURIComponent(slug)}/plans"), true);
+  assert.equal(home.includes("העמוד לא נמצא"), true);
   assert.equal(home.includes("/partner/dashboard"), false);
   assert.equal(home.includes("HomePage"), true);
   const app = readFileSync(join(ROOT, "App.jsx"), "utf8");

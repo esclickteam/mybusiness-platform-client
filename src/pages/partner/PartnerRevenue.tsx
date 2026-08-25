@@ -66,7 +66,7 @@ export default function PartnerRevenue() {
             עסקאות לקוחות אינן חוב של Partner
           </p>
           <p className="mt-2 text-sm font-bold text-slate-600">
-            הלקוח משלם ל-Bizuply. העמלות מופיעות במסך עסקאות ועמלות.
+            בעסקה ידנית הלקוח משלם לפרטנר. ברכישה עצמית התשלום עובר ב-Stripe. העמלות מופיעות במסך עסקאות ועמלות.
           </p>
         </PartnerCard>
       </section>
