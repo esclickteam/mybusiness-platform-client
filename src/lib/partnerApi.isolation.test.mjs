@@ -259,6 +259,13 @@ test("my page warns when the sales page has no products", () => {
   assert.equal(src.includes("/partner/dashboard/pricing"), true);
 });
 
+test("bizuply.com /plans without a partner host falls back to pricing", () => {
+  const src = readFileSync(join(ROOT, "pages/public/PartnerPublicPlans.tsx"), "utf8");
+  assert.equal(src.includes('to="/pricing"'), true);
+  assert.equal(src.includes("setFallbackToPricing"), true);
+  assert.equal(src.includes("fetchPublicPartnerBranding"), true);
+});
+
 test("white-label host home sends anonymous visitors to plans without changing partner dashboard", () => {
   const home = readFileSync(join(ROOT, "pages/public/PartnerHostHome.tsx"), "utf8");
   assert.equal(home.includes("fetchPublicPartnerBranding"), true);

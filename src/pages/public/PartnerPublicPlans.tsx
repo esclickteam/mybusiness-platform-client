@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams, useSearchParams } from "react-router-dom";
+import { Navigate, useParams, useSearchParams } from "react-router-dom";
 import {
   fetchPublicPartnerBranding,
   fetchPublicPartnerPlans,
@@ -17,6 +17,7 @@ export default function PartnerPublicPlans() {
   const [slug, setSlug] = useState(slugParam || "");
   const [page, setPage] = useState<any>(null);
   const [branding, setBranding] = useState<PublicPartnerBranding | null>(null);
+  const [fallbackToPricing, setFallbackToPricing] = useState(false);
   const [error, setError] = useState("");
   const [buying, setBuying] = useState("");
   const [sku, setSku] = useState("");
@@ -38,7 +39,10 @@ export default function PartnerPublicPlans() {
           if (!cancelled) setBranding(hostBranding);
         }
         if (!nextSlug) {
-          if (!cancelled) setError("עמוד החבילות לא נמצא");
+          if (!cancelled) {
+            if (!slugParam) setFallbackToPricing(true);
+            else setError("עמוד החבילות לא נמצא");
+          }
           return;
         }
         if (!cancelled) setSlug(nextSlug);
@@ -50,7 +54,10 @@ export default function PartnerPublicPlans() {
         setPage(sales);
         setBranding(brand || sales.partner);
       } catch (err: unknown) {
-        if (!cancelled) setError(partnerApiError(err, "עמוד החבילות לא נמצא"));
+        if (!cancelled) {
+          if (!slugParam) setFallbackToPricing(true);
+          else setError(partnerApiError(err, "עמוד החבילות לא נמצא"));
+        }
       }
     })();
     return () => {
@@ -70,6 +77,10 @@ export default function PartnerPublicPlans() {
       setError(partnerApiError(err, "לא ניתן לפתוח תשלום"));
       setBuying("");
     }
+  }
+
+  if (fallbackToPricing) {
+    return <Navigate to="/pricing" replace />;
   }
 
   const products = page?.products || [];
