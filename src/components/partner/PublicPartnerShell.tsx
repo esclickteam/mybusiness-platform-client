@@ -19,9 +19,10 @@ export default function PublicPartnerShell({
   noIndex?: boolean;
   children: ReactNode;
 }) {
-  const whiteLabel = hidesBizuplyChrome(branding);
-  const logoUrl = partnerFacingLogo(branding);
-  const brandName = partnerFacingName(branding);
+  const host = typeof window !== "undefined" ? window.location.hostname : "";
+  const whiteLabel = hidesBizuplyChrome(branding, host);
+  const logoUrl = partnerFacingLogo(branding, host);
+  const brandName = partnerFacingName(branding, host);
 
   useEffect(() => {
     applyPartnerFavicon(whiteLabel ? branding?.faviconUrl || branding?.stored?.faviconUrl : "");

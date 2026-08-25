@@ -1,3 +1,5 @@
+import { isPartnerWhiteLabelHostname } from "./partnerHost.mjs";
+
 export type PublicPartnerBranding = {
   partnerId?: string | null;
   slug?: string;
@@ -6,6 +8,7 @@ export type PublicPartnerBranding = {
   faviconUrl?: string;
   whiteLabelEnabled?: boolean;
   whiteLabelEntitled?: boolean;
+  hideBizuplyBranding?: boolean;
   supportEmail?: string;
   supportPhone?: string;
   subdomain?: string;
@@ -43,20 +46,31 @@ export function brandingFromUser(user: { partnerBranding?: PublicPartnerBranding
   return branding;
 }
 
-export function hidesBizuplyChrome(branding?: PublicPartnerBranding | null) {
+export function hidesBizuplyChrome(
+  branding?: PublicPartnerBranding | null,
+  hostname?: string
+) {
+  if (hostname && isPartnerWhiteLabelHostname(hostname)) return true;
   return Boolean(
     branding?.whiteLabelEnabled ||
       branding?.whiteLabelEntitled ||
-      branding?.urls?.subdomainUrl
+      branding?.urls?.subdomainUrl ||
+      branding?.hideBizuplyBranding
   );
 }
 
-export function partnerFacingName(branding?: PublicPartnerBranding | null) {
-  if (!hidesBizuplyChrome(branding)) return "";
+export function partnerFacingName(
+  branding?: PublicPartnerBranding | null,
+  hostname?: string
+) {
+  if (!hidesBizuplyChrome(branding, hostname)) return "";
   return String(branding?.brandName || branding?.stored?.brandName || "").trim();
 }
 
-export function partnerFacingLogo(branding?: PublicPartnerBranding | null) {
-  if (!hidesBizuplyChrome(branding)) return "";
+export function partnerFacingLogo(
+  branding?: PublicPartnerBranding | null,
+  hostname?: string
+) {
+  if (!hidesBizuplyChrome(branding, hostname)) return "";
   return String(branding?.logoUrl || branding?.stored?.logoUrl || "").trim();
 }

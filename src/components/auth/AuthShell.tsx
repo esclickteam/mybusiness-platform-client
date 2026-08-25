@@ -24,9 +24,11 @@ function useLoginBranding() {
 
 export function BrandMark({ size = "md" }: { size?: "sm" | "md" }) {
   const branding = useLoginBranding();
+  const host = typeof window !== "undefined" ? window.location.hostname : "";
   const text = size === "sm" ? "text-2xl" : "text-3xl";
-  const logoUrl = partnerFacingLogo(branding);
-  const brandName = partnerFacingName(branding);
+  const hideChrome = hidesBizuplyChrome(branding, host);
+  const logoUrl = partnerFacingLogo(branding, host);
+  const brandName = partnerFacingName(branding, host);
   if (logoUrl) {
     return (
       <img
@@ -36,10 +38,10 @@ export function BrandMark({ size = "md" }: { size?: "sm" | "md" }) {
       />
     );
   }
-  if (hidesBizuplyChrome(branding) && brandName) {
+  if (hideChrome && brandName) {
     return <span className={`${text} font-black tracking-tight text-slate-900`}>{brandName}</span>;
   }
-  if (hidesBizuplyChrome(branding)) {
+  if (hideChrome) {
     return null;
   }
   return (
@@ -63,8 +65,9 @@ export default function AuthShell({
   const { t, i18n } = useTranslation();
   const dir = i18n.dir();
   const [branding, setBranding] = useState<PublicPartnerBranding | null>(null);
-  const whiteLabel = hidesBizuplyChrome(branding);
-  const brandName = partnerFacingName(branding);
+  const host = typeof window !== "undefined" ? window.location.hostname : "";
+  const whiteLabel = hidesBizuplyChrome(branding, host);
+  const brandName = partnerFacingName(branding, host);
   const featureCards = [
     { title: t("login.featureCrmTitle"), subtitle: t("login.featureCrmText"), icon: Users },
     { title: t("login.featureAppointmentsTitle"), subtitle: t("login.featureAppointmentsText"), icon: CalendarDays },

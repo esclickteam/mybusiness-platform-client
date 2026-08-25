@@ -54,7 +54,7 @@ export default function PartnerPublicPlans() {
         ]);
         if (cancelled) return;
         setPage(sales);
-        setBranding(brand || sales.partner);
+        setBranding(brand || sales.branding || sales.partner);
       } catch (err: unknown) {
         if (!cancelled) {
           if (!slugParam && !isPartnerWhiteLabelHostname(window.location.hostname)) {
