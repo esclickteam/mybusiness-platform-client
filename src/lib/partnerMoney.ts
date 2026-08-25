@@ -92,10 +92,23 @@ export function quotePreviewComponents(item: {
   );
   const oneTimeEnabled = Boolean(item.oneTimeMarkupEnabled);
   const recurringEnabled = Boolean(item.recurringMarkupEnabled);
-  const oneTimeMarkup = oneTimeEnabled ? round(Number(item.oneTimeMarkupAmount) || 0) : 0;
-  const recurringMarkup = recurringEnabled
+  const dualSpecified =
+    item.oneTimeMarkupEnabled != null ||
+    item.recurringMarkupEnabled != null ||
+    item.oneTimeMarkupAmount != null ||
+    item.recurringMarkupAmount != null;
+  let oneTimeMarkup = oneTimeEnabled ? round(Number(item.oneTimeMarkupAmount) || 0) : 0;
+  let recurringMarkup = recurringEnabled
     ? round(Number(item.recurringMarkupAmount) || 0)
     : 0;
+  if (!dualSpecified) {
+    const legacy = round(Number(item.markup ?? item.markupIls) || 0);
+    if (item.billing === "one_time") {
+      oneTimeMarkup = legacy;
+    } else {
+      recurringMarkup = legacy;
+    }
+  }
   return {
     oneTimeBase,
     recurringBase,
@@ -108,6 +121,10 @@ export function quotePreviewComponents(item: {
   };
 }
 
+export function recurringIntervalLabel(billing?: string) {
+  return billing === "recurring_year" ? "לשנה" : "לחודש";
+}
+
 export function formatPublicCustomerPrice(product: {
   billing?: string;
   customerFinalPrice?: number;
@@ -116,7 +133,7 @@ export function formatPublicCustomerPrice(product: {
 }) {
   const oneTime = Number(product.customerOneTimeAmount) || 0;
   const recurring = Number(product.customerRecurringAmount) || 0;
-  const interval = product.billing === "recurring_year" ? "לשנה" : "לחודש";
+  const interval = recurringIntervalLabel(product.billing);
   if (oneTime > 0 && recurring > 0) {
     return `${formatIls(oneTime)} חד-פעמי + ${formatIls(recurring)} ${interval}`;
   }

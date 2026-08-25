@@ -1,4 +1,5 @@
 import type { PartnerPriceLine } from "../types/partner";
+import { quotePreviewComponents } from "./partnerMoney";
 
 export const COMMISSION_ONE_TIME_SKU = "partner_commission_onetime";
 export const COMMISSION_MONTHLY_SKU = "partner_commission_monthly";
@@ -104,13 +105,32 @@ export function computeDealPreview(
   const monthlyFee = Math.max(0, Number(monthlyCommission) || 0);
   const share = Number(partnerShareRate) || 0;
   const lines: PartnerPriceLine[] = selected.map((line) => {
-    const wholesale = Number(line.partnerWholesalePrice) || 0;
+    const quoted = quotePreviewComponents({ ...line, partnerShareRate: share });
+    const markup = roundIls(quoted.oneTimeMarkup + quoted.recurringMarkup);
+    const partnerShare = roundIls(
+      quoted.oneTimePartnerShare + quoted.recurringPartnerShare
+    );
+    const wholesale =
+      roundIls(quoted.oneTimeBase + quoted.recurringBase) ||
+      roundIls(Number(line.partnerWholesalePrice) || 0);
+    const recurringPrimary = String(line.billing || "").startsWith("recurring_");
+    const quotedCustomer =
+      (recurringPrimary
+        ? quoted.customerRecurringAmount
+        : quoted.customerOneTimeAmount) ||
+      quoted.customerRecurringAmount ||
+      quoted.customerOneTimeAmount;
     return {
       ...line,
-      markup: 0,
-      customerFinalPrice: roundIls(wholesale),
-      partnerMarkupShare: 0,
-      bizuplyMarkupShare: 0,
+      markup,
+      customerFinalPrice: roundIls(quotedCustomer || Number(line.partnerWholesalePrice) || 0),
+      customerOneTimeAmount: quoted.customerOneTimeAmount,
+      customerRecurringAmount: quoted.customerRecurringAmount,
+      partnerMarkupShare: partnerShare,
+      bizuplyMarkupShare: roundIls(markup - partnerShare),
+      partnerWholesalePrice: wholesale,
+      baseOneTimeAmount: quoted.oneTimeBase,
+      baseRecurringAmount: quoted.recurringBase,
     };
   });
   if (oneTimeFee > 0) {
@@ -155,18 +175,32 @@ export function computeDealPreview(
   };
   for (const line of lines) {
     const customer = Number(line.customerFinalPrice) || 0;
+    const oneTimeAmt = Number(line.customerOneTimeAmount) || 0;
+    const recurringAmt = Number(line.customerRecurringAmount) || 0;
+    const hasDual = !isCommissionSku(line.sku) && (oneTimeAmt > 0 || recurringAmt > 0);
     const wholesale = Number(line.partnerWholesalePrice) || 0;
     const bizShare = Number(line.bizuplyMarkupShare) || 0;
     const partnerShare = Number(line.partnerMarkupShare) || 0;
     const bucket = billingBucket(line.billing);
-    totals[bucket] = roundIls(totals[bucket] + customer);
+    if (hasDual) {
+      totals.oneTime = roundIls(totals.oneTime + oneTimeAmt);
+      if (bucket === "annual") totals.annual = roundIls(totals.annual + recurringAmt);
+      else totals.monthly = roundIls(totals.monthly + recurringAmt);
+    } else {
+      totals[bucket] = roundIls(totals[bucket] + customer);
+    }
     totals.wholesale = roundIls(totals.wholesale + wholesale);
     totals.bizuplyShare = roundIls(totals.bizuplyShare + bizShare);
     totals.partnerCommission = roundIls(totals.partnerCommission + partnerShare);
     totals.partnerPaysBizuply = roundIls(totals.partnerPaysBizuply + wholesale + bizShare);
-    if (bucket === "oneTime" || bucket === "monthly") {
-      totals.customerNow = roundIls(totals.customerNow + customer);
-    }
+    totals.customerNow = roundIls(
+      totals.customerNow +
+        (hasDual
+          ? oneTimeAmt + (bucket === "annual" ? 0 : recurringAmt)
+          : bucket === "oneTime" || bucket === "monthly"
+            ? customer
+            : 0)
+    );
     if (line.sku === COMMISSION_ONE_TIME_SKU) {
       totals.partnerOneTimeCommission = partnerShare;
       totals.bizuplyOneTimeShare = bizShare;

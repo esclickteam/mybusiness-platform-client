@@ -16,6 +16,7 @@ import {
   fetchPartnerCatalog,
   fetchPartnerClient,
   fetchPartnerMe,
+  fetchPartnerPricebook,
   partnerApiError,
   updatePartnerClient,
 } from "../../lib/partnerApi";
@@ -81,9 +82,18 @@ export default function PartnerClientWizard() {
   );
 
   useEffect(() => {
-    fetchPartnerCatalog()
-      .then((data) => {
-        setItems(data.items || []);
+    Promise.all([
+      fetchPartnerCatalog(),
+      fetchPartnerPricebook().catch(() => [] as PartnerPriceLine[]),
+    ])
+      .then(([data, pricebook]) => {
+        const bySku = new Map((pricebook || []).map((row) => [row.sku, row]));
+        setItems(
+          (data.items || []).map((item) => {
+            const row = bySku.get(item.sku);
+            return row ? { ...item, ...row } : item;
+          })
+        );
         setWizard(data.wizard || { packages: [], categories: [] });
         setPartnerShareRate(Number(data.partnerShareRate) || 0.75);
       })
@@ -114,16 +124,28 @@ export default function PartnerClientWizard() {
       .catch((err) => setError(partnerApiError(err, "לא ניתן לטעון לקוח")));
   }, [existingClientId]);
 
+  const previewCatalog = useMemo(() => {
+    if (!(additionalMarkup > 0 || monthlyCommission > 0)) return items;
+    return items.map((item) => ({
+      ...item,
+      oneTimeMarkupEnabled: false,
+      oneTimeMarkupAmount: 0,
+      recurringMarkupEnabled: false,
+      recurringMarkupAmount: 0,
+      markup: 0,
+      markupIls: 0,
+    }));
+  }, [items, additionalMarkup, monthlyCommission]);
   const preview = useMemo(
     () =>
       computeDealPreview(
-        items,
+        previewCatalog,
         selectedSkus,
         additionalMarkup,
         partnerShareRate,
         monthlyCommission
       ),
-    [items, selectedSkus, additionalMarkup, partnerShareRate, monthlyCommission]
+    [previewCatalog, selectedSkus, additionalMarkup, partnerShareRate, monthlyCommission]
   );
   const bizuplyShareRate = Math.max(0, 1 - Number(partnerShareRate || 0));
   const defaultPackageName = publicPackageLabel(
@@ -175,10 +197,31 @@ export default function PartnerClientWizard() {
     }
   }
 
+  function dealLines() {
+    const extraFees = additionalMarkup > 0 || monthlyCommission > 0;
+    return selectedSkus.map((sku) => {
+      const item = items.find((row) => row.sku === sku);
+      const dual =
+        !extraFees &&
+        (item?.oneTimeMarkupEnabled != null || item?.recurringMarkupEnabled != null);
+      return {
+        sku,
+        displayNameHe: lineNames[sku],
+        ...(dual
+          ? {
+              oneTimeMarkupEnabled: Boolean(item?.oneTimeMarkupEnabled),
+              oneTimeMarkupAmount: Number(item?.oneTimeMarkupAmount) || 0,
+              recurringMarkupEnabled: Boolean(item?.recurringMarkupEnabled),
+              recurringMarkupAmount: Number(item?.recurringMarkupAmount) || 0,
+            }
+          : { markupIls: extraFees ? 0 : Number(item?.markupIls ?? item?.markup) || 0 }),
+      };
+    });
+  }
+
   async function persistQuote() {
     if (!clientId) return;
-    const lines = selectedSkus.map((sku) => ({ sku, markupIls: 0 }));
-    await updatePartnerClient(clientId, { lines, managementMode });
+    await updatePartnerClient(clientId, { lines: dealLines(), managementMode });
   }
 
   async function createDeal() {
@@ -192,7 +235,7 @@ export default function PartnerClientWizard() {
     try {
       await persistQuote();
       const data = await createPartnerDeal(clientId, {
-        lines: selectedSkus.map((sku) => ({ sku, markupIls: 0, displayNameHe: lineNames[sku] })),
+        lines: dealLines(),
         additionalMarkup,
         oneTimeCommission: additionalMarkup,
         monthlyCommission,
@@ -328,11 +371,11 @@ export default function PartnerClientWizard() {
         <section className="space-y-4 rounded-3xl border border-slate-200 bg-white p-6">
           <h3 className="text-lg font-black">תמחור ללקוח</h3>
           <p className="text-sm font-bold text-slate-500">
-            הלקוח רואה מחיר חד-פעמי ומחיר לכל חודש, כולל העמלה. Bizuply מקבלת {formatPct(bizuplyShareRate)} מכל עמלה לפי חבילת הפרטנר, ואתם מקבלים {formatPct(partnerShareRate)}.
+            עמלות המוצרים מגיעות ממסך מוצרים וחבילות ונכנסות למחיר הלקוח. כאן אפשר להוסיף עמלה נוספת לעסקה זו בלבד. Bizuply מקבלת {formatPct(bizuplyShareRate)} מכל עמלה לפי חבילת הפרטנר, ואתם מקבלים {formatPct(partnerShareRate)}.
           </p>
           <div className="grid gap-4 md:grid-cols-2">
             <label className="rounded-3xl border border-violet-200 bg-violet-50 p-4">
-              <span className="text-xs font-black text-violet-700">עמלה חד-פעמית על העסקה</span>
+              <span className="text-xs font-black text-violet-700">עמלה חד-פעמית נוספת לעסקה זו</span>
               <input
                 type="number"
                 min={0}
@@ -345,7 +388,7 @@ export default function PartnerClientWizard() {
               </p>
             </label>
             <label className="rounded-3xl border border-sky-200 bg-sky-50 p-4">
-              <span className="text-xs font-black text-sky-800">עמלה חודשית קבועה (אופציונלי)</span>
+              <span className="text-xs font-black text-sky-800">עמלה חודשית נוספת לעסקה זו (אופציונלי)</span>
               <input
                 type="number"
                 min={0}

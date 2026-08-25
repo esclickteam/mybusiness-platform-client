@@ -323,7 +323,16 @@ test("public partner plans page shows only final customer prices", () => {
   const pricing = readFileSync(join(ROOT, "pages/partner/PartnerPricing.tsx"), "utf8");
   assert.equal(pricing.includes("הוסף עמלה חד-פעמית"), true);
   assert.equal(pricing.includes("הוסף עמלה חודשית מתחדשת"), true);
+  assert.equal(pricing.includes("הוסף עמלה שנתית מתחדשת"), true);
+  assert.equal(pricing.includes("recurringIntervalLabel"), true);
   assert.equal(pricing.includes("מחיר בסיס"), true);
+  const wizard = readFileSync(join(ROOT, "pages/partner/PartnerClientWizard.tsx"), "utf8");
+  assert.equal(wizard.includes("fetchPartnerPricebook"), true);
+  assert.equal(wizard.includes("oneTimeMarkupEnabled"), true);
+  assert.equal(wizard.includes("עמלות המוצרים מגיעות ממסך מוצרים וחבילות"), true);
+  const money = readFileSync(join(ROOT, "lib/partnerMoney.ts"), "utf8");
+  assert.equal(money.includes("recurringIntervalLabel"), true);
+  assert.equal(money.includes('billing === "recurring_year" ? "לשנה"'), true);
 });
 
 test("white-label host home sends anonymous visitors to plans without changing partner dashboard", () => {

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { fetchPartnerPricebook, updatePricebookItem } from "../../lib/partnerApi";
-import { formatIls, quotePreviewComponents } from "../../lib/partnerMoney";
+import { formatIls, quotePreviewComponents, recurringIntervalLabel } from "../../lib/partnerMoney";
 import type { PartnerPriceLine } from "../../types/partner";
 import PartnerPageHeader from "../../components/partner/PartnerPageHeader";
 
@@ -99,6 +99,11 @@ function PriceRow({
     recurringMarkupEnabled: recurringEnabled,
     recurringMarkupAmount: recurringAmount,
   });
+  const intervalLabel = recurringIntervalLabel(item.billing);
+  const recurringToggleLabel =
+    item.billing === "recurring_year" ? "הוסף עמלה שנתית מתחדשת" : "הוסף עמלה חודשית מתחדשת";
+  const recurringAmountLabel =
+    item.billing === "recurring_year" ? "עמלה שנתית: ₪" : "עמלה חודשית: ₪";
 
   return (
     <article className="rounded-[16px] border border-slate-100 bg-white p-5 shadow-[0_4px_20px_rgba(15,23,42,0.05)]">
@@ -172,11 +177,11 @@ function PriceRow({
               onChange={(e) => setRecurringEnabled(e.target.checked)}
               className="accent-sky-700"
             />
-            הוסף עמלה חודשית מתחדשת
+            {recurringToggleLabel}
           </label>
           {recurringEnabled ? (
             <label className="mt-3 block text-sm font-black text-sky-900">
-              עמלה חודשית: ₪
+              {recurringAmountLabel}
               <input
                 type="number"
                 min={0}
@@ -184,21 +189,27 @@ function PriceRow({
                 onChange={(e) => setRecurringAmount(Number(e.target.value) || 0)}
                 className="mt-2 w-full rounded-xl border border-sky-200 bg-white px-3 py-2 text-lg font-black text-slate-900"
               />
-              <span className="mt-1 block text-[11px] font-bold text-sky-700">לחודש</span>
+              <span className="mt-1 block text-[11px] font-bold text-sky-700">{intervalLabel}</span>
             </label>
           ) : null}
           <dl className="mt-3 space-y-1 text-sm font-bold text-slate-700">
             <div className="flex justify-between gap-3">
               <dt>מחיר בסיס</dt>
-              <dd>{formatIls(quoted.recurringBase)} לחודש</dd>
+              <dd>
+                {formatIls(quoted.recurringBase)} {intervalLabel}
+              </dd>
             </div>
             <div className="flex justify-between gap-3">
               <dt>העמלה שלך</dt>
-              <dd>{formatIls(quoted.recurringMarkup)} לחודש</dd>
+              <dd>
+                {formatIls(quoted.recurringMarkup)} {intervalLabel}
+              </dd>
             </div>
             <div className="flex justify-between gap-3 font-black text-slate-900">
               <dt>מחיר ללקוח</dt>
-              <dd>{formatIls(quoted.customerRecurringAmount)} לחודש</dd>
+              <dd>
+                {formatIls(quoted.customerRecurringAmount)} {intervalLabel}
+              </dd>
             </div>
           </dl>
         </section>
