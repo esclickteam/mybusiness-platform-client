@@ -22,13 +22,20 @@ type CatalogItem = {
   defaultNotIncluded?: string[];
   hidden?: boolean;
   allowQuantity?: boolean;
+  allowBillingChange?: boolean;
+  allowNameEdit?: boolean;
+  customizable?: boolean;
+  proposalOnly?: boolean;
   parentSku?: string | null;
 };
 
 type LineDraft = {
   sku: string;
+  nameHe: string;
   amountIls: number;
   catalogAmountIls: number;
+  billing: string;
+  catalogBilling: string;
   priceEdited: boolean;
   quantity: number;
   bullets: string[];
@@ -41,6 +48,15 @@ type LineDraft = {
   highlightedByCustomer?: boolean;
   customerInterestSource?: string;
 };
+
+const BILLING_OPTIONS = [
+  { value: "recurring_month", label: "חודשי" },
+  { value: "recurring_year", label: "שנתי" },
+  { value: "one_time", label: "חד־פעמי" },
+];
+
+const ENTERPRISE_MONTHLY_SKU = "enterprise_custom";
+const ENTERPRISE_SETUP_SKU = "enterprise_setup";
 
 function defaultExpiryIso() {
   const d = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000);
@@ -63,25 +79,107 @@ function billingSuffix(billing?: string) {
   return "₪ חד־פעמי";
 }
 
+function billingLabelOf(billing?: string) {
+  return BILLING_OPTIONS.find((o) => o.value === billing)?.label || billing || "";
+}
+
+function isPriceEdited(line: Pick<LineDraft, "amountIls" | "catalogAmountIls" | "billing" | "catalogBilling">) {
+  return line.amountIls !== line.catalogAmountIls || line.billing !== line.catalogBilling;
+}
+
 function formatMoney(n: number) {
   if (Number(n) === 0) return "ללא עלות";
   return `₪${Number(n).toLocaleString("he-IL")}`;
 }
 
+function LinePriceEditor({
+  line,
+  item,
+  priceValue,
+  onPriceChange,
+  onBillingChange,
+  onNameChange,
+}: {
+  line: LineDraft;
+  item: CatalogItem;
+  priceValue: string;
+  onPriceChange: (raw: string) => void;
+  onBillingChange: (billing: string) => void;
+  onNameChange?: (name: string) => void;
+}) {
+  return (
+    <div className="mt-3 space-y-2 rounded-xl border border-violet-100 bg-violet-50/60 p-3">
+      {item.allowNameEdit && onNameChange ? (
+        <label className="block text-xs font-black text-slate-700">
+          שם בהצעה
+          <input
+            className="mt-1 min-h-10 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm font-bold"
+            value={line.nameHe}
+            onChange={(e) => onNameChange(e.target.value)}
+          />
+        </label>
+      ) : null}
+      <div className="flex flex-wrap items-end gap-2">
+        <label className="min-w-[140px] flex-1 text-xs font-black text-slate-700">
+          מחיר בהצעה
+          <div className="mt-1 flex items-center gap-2">
+            <input
+              type="text"
+              inputMode="decimal"
+              className="min-h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm font-black"
+              value={priceValue}
+              onChange={(e) => onPriceChange(e.target.value)}
+            />
+            <span className="shrink-0 text-[11px] font-bold text-slate-500">
+              {billingSuffix(line.billing)}
+            </span>
+          </div>
+        </label>
+        <label className="min-w-[120px] text-xs font-black text-slate-700">
+          סוג חיוב
+          <select
+            className="mt-1 min-h-11 w-full rounded-xl border border-slate-200 bg-white px-2 text-sm font-black"
+            value={line.billing}
+            onChange={(e) => onBillingChange(e.target.value)}
+          >
+            {BILLING_OPTIONS.map((opt) => (
+              <option key={opt.value} value={opt.value}>
+                {opt.label}
+              </option>
+            ))}
+          </select>
+        </label>
+      </div>
+      <p className="text-[11px] font-bold text-slate-500">
+        מחיר קטלוג: {formatMoney(line.catalogAmountIls)} · {billingLabelOf(line.catalogBilling)}
+        {isPriceEdited(line) ? " · מחיר/חיוב מותאם להצעה זו בלבד" : ""}
+      </p>
+    </div>
+  );
+}
+
 function CatalogCard({
   item,
   selected,
+  line,
+  priceValue,
   interestBadge,
   onToggle,
   onExpand,
   expanded,
+  onPriceChange,
+  onBillingChange,
 }: {
   item: CatalogItem;
   selected: boolean;
+  line?: LineDraft;
+  priceValue?: string;
   interestBadge?: string;
   onToggle: () => void;
   onExpand: () => void;
   expanded: boolean;
+  onPriceChange?: (raw: string) => void;
+  onBillingChange?: (billing: string) => void;
 }) {
   return (
     <div
@@ -129,6 +227,15 @@ function CatalogCard({
           {selected ? "הוסר" : "הוסף"}
         </button>
       </div>
+      {selected && line && onPriceChange && onBillingChange ? (
+        <LinePriceEditor
+          line={line}
+          item={item}
+          priceValue={priceValue ?? String(line.amountIls)}
+          onPriceChange={onPriceChange}
+          onBillingChange={onBillingChange}
+        />
+      ) : null}
       <button
         type="button"
         className="mt-3 text-xs font-black text-[#6D28D9]"
@@ -242,10 +349,21 @@ export default function ProposalBuilderModal({
   }, [context, interested]);
 
   const linesPayload = useMemo(() => {
-    return Object.values(selected).map((line) => {
+    return Object.values(selected)
+      .filter((line) => {
+        if (
+          (line.sku === ENTERPRISE_MONTHLY_SKU || line.sku === ENTERPRISE_SETUP_SKU) &&
+          Number(line.amountIls || 0) <= 0
+        ) {
+          return false;
+        }
+        return true;
+      })
+      .map((line) => {
       const item = catalog.find((c) => c.sku === line.sku);
       return {
         sku: line.sku,
+        nameHe: line.nameHe || item?.nameHe,
         amountIls: line.amountIls,
         proposalPrice: line.amountIls,
         catalogPrice: line.catalogAmountIls,
@@ -266,9 +384,8 @@ export default function ProposalBuilderModal({
         customerInterestSource:
           line.customerInterestSource ||
           (interested.has(line.sku) ? "post_demo_questionnaire" : ""),
-        nameHe: item?.nameHe,
         category: item?.category,
-        billing: item?.billing,
+        billing: line.billing || item?.billing,
       };
     });
   }, [selected, catalog, interested]);
@@ -294,8 +411,11 @@ export default function ProposalBuilderModal({
         ...prev,
         [item.sku]: {
           sku: item.sku,
+          nameHe: item.nameHe,
           amountIls: item.amountIls,
           catalogAmountIls: item.amountIls,
+          billing: item.billing,
+          catalogBilling: item.billing,
           priceEdited: false,
           quantity: 1,
           bullets: [...(item.defaultBullets || [])],
@@ -311,7 +431,10 @@ export default function ProposalBuilderModal({
         },
       };
     });
-    setPriceInput((prev) => ({ ...prev, [item.sku]: String(item.amountIls) }));
+    setPriceInput((prev) => ({
+      ...prev,
+      [item.sku]: item.amountIls ? String(item.amountIls) : "",
+    }));
   }
 
   function removeItem(sku: string) {
@@ -332,21 +455,57 @@ export default function ProposalBuilderModal({
     else addItem(item, fromInterest);
   }
 
+  function toggleEnterprise() {
+    const monthly = catalog.find((c) => c.sku === ENTERPRISE_MONTHLY_SKU);
+    const setup = catalog.find((c) => c.sku === ENTERPRISE_SETUP_SKU);
+    if (!monthly || !setup) return;
+    if (selected[ENTERPRISE_MONTHLY_SKU] || selected[ENTERPRISE_SETUP_SKU]) {
+      removeItem(ENTERPRISE_MONTHLY_SKU);
+      removeItem(ENTERPRISE_SETUP_SKU);
+      return;
+    }
+    addItem(monthly);
+    addItem(setup);
+  }
+
   function setLinePrice(sku: string, value: number) {
     setSelected((prev) => {
       const row = prev[sku];
       if (!row) return prev;
       const amountIls = Math.max(0, Math.round(value * 100) / 100);
+      const next = { ...row, amountIls };
       return {
         ...prev,
         [sku]: {
-          ...row,
-          amountIls,
-          priceEdited: amountIls !== row.catalogAmountIls,
+          ...next,
+          priceEdited: isPriceEdited(next),
         },
       };
     });
     setPriceInput((prev) => ({ ...prev, [sku]: String(value) }));
+  }
+
+  function setLineBilling(sku: string, billing: string) {
+    setSelected((prev) => {
+      const row = prev[sku];
+      if (!row) return prev;
+      const next = { ...row, billing };
+      return {
+        ...prev,
+        [sku]: {
+          ...next,
+          priceEdited: isPriceEdited(next),
+        },
+      };
+    });
+  }
+
+  function setLineName(sku: string, nameHe: string) {
+    setSelected((prev) => {
+      const row = prev[sku];
+      if (!row) return prev;
+      return { ...prev, [sku]: { ...row, nameHe } };
+    });
   }
 
   function onPriceChange(sku: string, raw: string) {
@@ -381,6 +540,24 @@ export default function ProposalBuilderModal({
     setSaving(true);
     setError("");
     try {
+      const enterpriseSelected = Boolean(
+        selected[ENTERPRISE_MONTHLY_SKU] || selected[ENTERPRISE_SETUP_SKU]
+      );
+      const enterpriseHasPrice = linesPayload.some(
+        (line) =>
+          (line.sku === ENTERPRISE_MONTHLY_SKU || line.sku === ENTERPRISE_SETUP_SKU) &&
+          Number(line.amountIls || 0) > 0
+      );
+      if (enterpriseSelected && !enterpriseHasPrice) {
+        setError("לחבילת Enterprise יש להזין סכום חודשי או חד־פעמי");
+        setSaving(false);
+        return;
+      }
+      if (!linesPayload.length) {
+        setError("יש לבחור לפחות רכיב אחד להצעה");
+        setSaving(false);
+        return;
+      }
       await persistDraft();
       setStep("preview");
     } catch (err: any) {
@@ -406,7 +583,11 @@ export default function ProposalBuilderModal({
     }
   }
 
-  const plans = catalog.filter((c) => c.category === "plan" || c.category === "addon");
+  const plans = catalog.filter(
+    (c) =>
+      (c.category === "plan" || c.category === "addon") &&
+      !c.proposalOnly
+  );
   const interestedSkuSet = useMemo(() => {
     const set = new Set<string>();
     for (const g of interestGroups) {
@@ -423,7 +604,28 @@ export default function ProposalBuilderModal({
 
   const selectedList = Object.values(selected)
     .map((line) => ({ line, item: catalog.find((c) => c.sku === line.sku) }))
-    .filter((x) => x.item);
+    .filter((x) => x.item && !x.item.proposalOnly);
+
+  const enterpriseOn = Boolean(
+    selected[ENTERPRISE_MONTHLY_SKU] || selected[ENTERPRISE_SETUP_SKU]
+  );
+  const enterpriseMonthly = catalog.find((c) => c.sku === ENTERPRISE_MONTHLY_SKU);
+  const enterpriseSetup = catalog.find((c) => c.sku === ENTERPRISE_SETUP_SKU);
+
+  function catalogCardExtras(item: CatalogItem) {
+    const line = selected[item.sku];
+    return {
+      line,
+      priceValue:
+        priceInput[item.sku] !== undefined
+          ? priceInput[item.sku]
+          : line
+            ? String(line.amountIls || "")
+            : "",
+      onPriceChange: (raw: string) => onPriceChange(item.sku, raw),
+      onBillingChange: (billing: string) => setLineBilling(item.sku, billing),
+    };
+  }
 
   return (
     <AdminModal
@@ -603,11 +805,11 @@ export default function ProposalBuilderModal({
           <section className="rounded-3xl border-2 border-[#6D28D9]/30 bg-violet-50/30 p-4 sm:p-5">
             <h3 className="text-lg font-black text-slate-900">רכיבי ההצעה שנבחרו</h3>
             <p className="mt-1 text-xs font-semibold text-slate-500">
-              כאן עורכים מחיר ידני לכל רכיב. השינוי חל רק על ההצעה הזו.
+              אפשר לשנות סכום חודשי או חד־פעמי לכל רכיב. השינוי חל רק על ההצעה הזו.
             </p>
-            {!selectedList.length ? (
+            {!selectedList.length && !enterpriseOn ? (
               <p className="mt-4 text-sm font-bold text-slate-500">
-                עדיין לא נוספו רכיבים — בחרו מהקטלוג למטה.
+                עדיין לא נוספו רכיבים — בחרו מהקטלוג למטה, כולל Enterprise בהתאמה אישית.
               </p>
             ) : (
               <div className="mt-4 space-y-3">
@@ -618,9 +820,9 @@ export default function ProposalBuilderModal({
                   >
                     <div className="flex flex-wrap items-start justify-between gap-3">
                       <div>
-                        <p className="font-black text-slate-900">{item!.nameHe}</p>
+                        <p className="font-black text-slate-900">{line.nameHe || item!.nameHe}</p>
                         <p className="mt-1 text-xs font-bold text-slate-500">
-                          {item!.categoryLabel} · {item!.billingLabel}
+                          {item!.categoryLabel} · {billingLabelOf(line.billing)}
                         </p>
                         {line.highlightedByCustomer || line.customerInterestSource ? (
                           <p className="mt-1 text-[11px] font-black text-amber-700">
@@ -637,67 +839,34 @@ export default function ProposalBuilderModal({
                       </button>
                     </div>
 
-                    <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">
-                      <div className="rounded-xl bg-slate-50 p-3 text-xs font-bold text-slate-600">
-                        <p>מחיר קטלוג</p>
-                        <p
-                          className={[
-                            "mt-1 text-sm font-black text-slate-800",
-                            line.priceEdited ? "line-through opacity-60" : "",
-                          ].join(" ")}
-                        >
-                          {formatMoney(line.catalogAmountIls)} · {item!.billingLabel}
-                        </p>
-                      </div>
-                      <div className="rounded-xl border border-violet-100 bg-violet-50/50 p-3">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <p className="text-xs font-black text-slate-700">מחיר בהצעה</p>
-                          {line.priceEdited ? (
-                            <span className="rounded-full bg-amber-100 px-2 py-0.5 text-[11px] font-black text-amber-800">
-                              מחיר מותאם
-                            </span>
-                          ) : null}
-                        </div>
-                        <div className="mt-2 flex items-center gap-2">
-                          <input
-                            type="text"
-                            inputMode="decimal"
-                            className="min-h-11 w-full max-w-[160px] rounded-xl border border-slate-200 bg-white px-3 text-sm font-black"
-                            value={
-                              priceInput[line.sku] !== undefined
-                                ? priceInput[line.sku]
-                                : String(line.amountIls)
-                            }
-                            onChange={(e) => onPriceChange(line.sku, e.target.value)}
-                            onBlur={() => {
-                              const parsed = sanitizePriceInput(
-                                priceInput[line.sku] ?? String(line.amountIls)
-                              );
-                              if (parsed == null) {
-                                setPriceInput((prev) => ({
-                                  ...prev,
-                                  [line.sku]: String(line.amountIls),
-                                }));
-                              } else {
-                                setLinePrice(line.sku, parsed);
-                              }
-                            }}
-                          />
-                          <span className="shrink-0 text-xs font-bold text-slate-500">
-                            {billingSuffix(item!.billing)}
-                          </span>
-                        </div>
-                        {line.priceEdited ? (
-                          <button
-                            type="button"
-                            className="mt-2 text-xs font-black text-[#6D28D9]"
-                            onClick={() => setLinePrice(line.sku, line.catalogAmountIls)}
-                          >
-                            איפוס למחיר קטלוג
-                          </button>
-                        ) : null}
-                      </div>
-                    </div>
+                    <LinePriceEditor
+                      line={line}
+                      item={item!}
+                      priceValue={
+                        priceInput[line.sku] !== undefined
+                          ? priceInput[line.sku]
+                          : String(line.amountIls || "")
+                      }
+                      onPriceChange={(raw) => onPriceChange(line.sku, raw)}
+                      onBillingChange={(billing) => setLineBilling(line.sku, billing)}
+                      onNameChange={
+                        item!.allowNameEdit
+                          ? (name) => setLineName(line.sku, name)
+                          : undefined
+                      }
+                    />
+                    {line.priceEdited && !item!.customizable ? (
+                      <button
+                        type="button"
+                        className="mt-2 text-xs font-black text-[#6D28D9]"
+                        onClick={() => {
+                          setLineBilling(line.sku, line.catalogBilling);
+                          setLinePrice(line.sku, line.catalogAmountIls);
+                        }}
+                      >
+                        איפוס למחיר וסוג חיוב בקטלוג
+                      </button>
+                    ) : null}
 
                     {item!.allowQuantity ? (
                       <label className="mt-3 block text-xs font-bold">
@@ -814,6 +983,7 @@ export default function ProposalBuilderModal({
                               s === `interest-${item.sku}` ? "" : `interest-${item.sku}`
                             )
                           }
+                          {...catalogCardExtras(item)}
                         />
                       ))}
                     </div>
@@ -822,6 +992,79 @@ export default function ProposalBuilderModal({
               })}
             </section>
           ) : null}
+
+          <section className="rounded-3xl border-2 border-slate-900 bg-gradient-to-l from-violet-50 to-white p-4 sm:p-5">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div>
+                <p className="text-[11px] font-black uppercase tracking-wide text-[#6D28D9]">
+                  Enterprise
+                </p>
+                <h3 className="mt-1 text-lg font-black text-slate-900">
+                  חבילה ומערכת בהתאמה אישית
+                </h3>
+                <p className="mt-1 max-w-xl text-xs font-semibold text-slate-500">
+                  מחיר מותאם — חודשי, שנתי או חד־פעמי. אפשר למלא סכום מנוי וסכום הקמה.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={toggleEnterprise}
+                className={[
+                  "min-h-10 rounded-xl px-4 text-xs font-black",
+                  enterpriseOn
+                    ? "border border-slate-300 bg-white text-slate-700"
+                    : "bg-[#6D28D9] text-white",
+                ].join(" ")}
+              >
+                {enterpriseOn ? "הסרה" : "הוסף Enterprise"}
+              </button>
+            </div>
+            {enterpriseOn && enterpriseMonthly && enterpriseSetup ? (
+              <div className="mt-4 grid grid-cols-1 gap-3 lg:grid-cols-2">
+                {[enterpriseMonthly, enterpriseSetup].map((item) => {
+                  const line = selected[item.sku];
+                  if (!line) return null;
+                  return (
+                    <div key={item.sku} className="rounded-2xl border border-slate-200 bg-white p-4">
+                      <p className="font-black text-slate-900">{line.nameHe}</p>
+                      <p className="mt-1 text-xs font-semibold text-slate-500">{item.summaryHe}</p>
+                      <LinePriceEditor
+                        line={line}
+                        item={item}
+                        priceValue={
+                          priceInput[item.sku] !== undefined
+                            ? priceInput[item.sku]
+                            : String(line.amountIls || "")
+                        }
+                        onPriceChange={(raw) => onPriceChange(item.sku, raw)}
+                        onBillingChange={(billing) => setLineBilling(item.sku, billing)}
+                        onNameChange={(name) => setLineName(item.sku, name)}
+                      />
+                      <label className="mt-3 block text-xs font-bold">
+                        מה כלול בהצעה זו
+                        <textarea
+                          className="mt-1 min-h-20 w-full rounded-xl border p-2 text-sm"
+                          value={(line.bullets || []).join("\n")}
+                          onChange={(e) =>
+                            setSelected((prev) => ({
+                              ...prev,
+                              [item.sku]: {
+                                ...prev[item.sku],
+                                bullets: e.target.value
+                                  .split("\n")
+                                  .map((x) => x.trim())
+                                  .filter(Boolean),
+                              },
+                            }))
+                          }
+                        />
+                      </label>
+                    </div>
+                  );
+                })}
+              </div>
+            ) : null}
+          </section>
 
           <section>
             <h3 className="mb-3 font-black">חבילות ותוספים פעילים</h3>
@@ -834,6 +1077,7 @@ export default function ProposalBuilderModal({
                   onToggle={() => toggleSku(item)}
                   expanded={expandedSku === item.sku}
                   onExpand={() => setExpandedSku((s) => (s === item.sku ? "" : item.sku))}
+                  {...catalogCardExtras(item)}
                 />
               ))}
             </div>
@@ -850,6 +1094,7 @@ export default function ProposalBuilderModal({
                   onToggle={() => toggleSku(item)}
                   expanded={expandedSku === item.sku}
                   onExpand={() => setExpandedSku((s) => (s === item.sku ? "" : item.sku))}
+                  {...catalogCardExtras(item)}
                 />
               ))}
             </div>
