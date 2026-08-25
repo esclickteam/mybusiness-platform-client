@@ -108,6 +108,7 @@ test("partner deal math keeps wholesale + markup split", () => {
   assert.equal(src.includes("monthlyCommission"), true);
   assert.equal(src.includes("partnerPaysBizuply"), true);
   assert.equal(src.includes("partnerCommission"), true);
+  assert.equal(src.includes("export function isCommissionSku"), true);
 });
 
 test("partnerApiError reads interceptor Error.message when response is missing", () => {

@@ -3,6 +3,11 @@ import type { PartnerPriceLine } from "../types/partner";
 export const COMMISSION_ONE_TIME_SKU = "partner_commission_onetime";
 export const COMMISSION_MONTHLY_SKU = "partner_commission_monthly";
 
+export function isCommissionSku(sku?: string) {
+  const key = String(sku || "");
+  return key === COMMISSION_ONE_TIME_SKU || key === COMMISSION_MONTHLY_SKU;
+}
+
 export function roundIls(value: number) {
   return Math.round((Number(value) || 0) * 100) / 100;
 }
