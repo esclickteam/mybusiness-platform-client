@@ -114,9 +114,12 @@ export default function PartnerClientWizard() {
         const client = data.client;
         setClientId(client._id);
         setClientStatus(String(client.status || ""));
-        const fromCatalog = (client.selectedSkus || [])
-          .map((line) => String(line.sku || "").trim())
-          .filter(Boolean);
+        const liveOwned = ["active", "provisioning"].includes(String(client.status || ""));
+        const fromCatalog = liveOwned
+          ? (client.selectedSkus || [])
+              .map((line) => String(line.sku || "").trim())
+              .filter(Boolean)
+          : [];
         const fromDeals = (data.deals || [])
           .filter((deal) => String(deal.status || "") !== "reversed")
           .flatMap((deal) =>

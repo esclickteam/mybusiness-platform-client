@@ -339,6 +339,8 @@ test("amendment wizard skips quote persist when the client already has a catalog
   assert.equal(wizard.includes("setClientStatus"), true);
   assert.equal(wizard.includes('["active", "provisioning"].includes(clientStatus)'), true);
   assert.equal(wizard.includes("fromCatalog"), true);
+  assert.equal(wizard.includes("liveOwned"), true);
+  assert.match(wizard, /fromCatalog = liveOwned/);
   assert.equal(wizard.includes("fromDeals"), true);
   assert.equal(wizard.includes('String(deal.status || "") !== "reversed"'), true);
   assert.equal(wizard.includes("setOwnedSkus([...new Set([...fromCatalog, ...fromDeals])])"), true);
