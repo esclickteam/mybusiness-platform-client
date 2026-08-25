@@ -204,6 +204,16 @@ test("login branding resolves from hostname helper, not scattered partner ifs", 
   assert.equal(src.includes("CRMClient"), false);
 });
 
+test("public checkout client sends sku and contact, never a customer price", () => {
+  const api = readFileSync(join(ROOT, "lib/partnerApi.ts"), "utf8");
+  const start = api.indexOf("export async function startPublicPartnerCheckout");
+  const fn = api.slice(start, api.indexOf("export async function fetchPublicCheckoutStatus"));
+  assert.ok(start > 0);
+  assert.equal(fn.includes("customerPrice"), false);
+  assert.equal(fn.includes("wholesale"), false);
+  assert.equal(fn.includes("/public/p/"), true);
+});
+
 test("partner pipeline routes are registered in App", () => {
   const app = readFileSync(join(ROOT, "App.jsx"), "utf8");
   assert.equal(app.includes('path="page"'), true);
