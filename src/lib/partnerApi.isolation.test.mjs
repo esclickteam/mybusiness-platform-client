@@ -396,6 +396,9 @@ test("partner pipeline routes are registered in App", () => {
   assert.equal(app.includes('location.pathname === "/checkout/success"'), true);
   assert.equal(app.includes("/admin/partners/referrals"), true);
   assert.equal(app.includes("/admin/partners/attention"), true);
+  const adminAttn = readFileSync(join(ROOT, "pages/admin/AdminPartnerAttentionDeals.tsx"), "utf8");
+  assert.equal(adminAttn.includes("adminChangeDealEmail"), true);
+  assert.equal(adminAttn.includes("שמירת אימייל"), true);
 });
 
 test("partner CRM shows self-serve vs manual source column", () => {
@@ -411,6 +414,8 @@ test("paid deal copy does not treat payment as withdrawable commission", () => {
   assert.equal(src.includes("תשלום שולם אינו זמין למשיכה"), true);
   assert.equal(src.includes("needsAttention"), true);
   assert.equal(src.includes("retryPartnerDealActivation"), true);
+  assert.equal(src.includes("abandonPartnerDeal"), true);
+  assert.equal(src.includes("ביטול עסקה שלא שולמה"), true);
   assert.equal(src.includes("מאשרים את התשלום מול Stripe"), true);
   assert.equal(src.includes("paidReturn"), true);
   assert.equal(src.includes("activationSettled"), true);

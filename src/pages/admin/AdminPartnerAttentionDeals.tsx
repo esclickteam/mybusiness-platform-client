@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import AdminHeader from "./AdminsHeader";
 import {
+  adminChangeDealEmail,
   adminLinkDealBusiness,
   adminRetryDealActivation,
   fetchAdminPartnerAttentionDeals,
@@ -13,6 +14,7 @@ export default function AdminPartnerAttentionDeals() {
   const [items, setItems] = useState<any[]>([]);
   const [error, setError] = useState("");
   const [businessId, setBusinessId] = useState("");
+  const [email, setEmail] = useState("");
   const [busy, setBusy] = useState("");
 
   function load() {
@@ -86,6 +88,32 @@ export default function AdminPartnerAttentionDeals() {
                       >
                         ניסיון הפעלה מחדש
                       </button>
+                      <div className="flex gap-1">
+                        <input
+                          className="w-28 rounded-xl border px-2 py-1 text-xs"
+                          placeholder="אימייל חדש"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                        />
+                        <button
+                          type="button"
+                          className="rounded-xl border px-2 text-xs font-black"
+                          disabled={Boolean(busy)}
+                          onClick={async () => {
+                            setBusy(row._id);
+                            try {
+                              await adminChangeDealEmail(row.partnerId, row._id, email);
+                              load();
+                            } catch (err: unknown) {
+                              setError(partnerApiError(err, "עדכון האימייל נכשל"));
+                            } finally {
+                              setBusy("");
+                            }
+                          }}
+                        >
+                          שמירת אימייל
+                        </button>
+                      </div>
                       <div className="flex gap-1">
                         <input
                           className="w-28 rounded-xl border px-2 py-1 text-xs"

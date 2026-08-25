@@ -8,6 +8,7 @@ import {
   retryPartnerDealActivation,
   changePartnerDealEmail,
   linkPartnerDealBusiness,
+  abandonPartnerDeal,
   type PartnerServiceRow,
 } from "../../lib/partnerApi";
 import { partnerStatusLabel } from "../../lib/partnerLabels";
@@ -460,7 +461,7 @@ export default function PartnerDealDetail() {
         <a href={publicUrl} className="rounded-2xl border px-4 py-2 text-sm font-black" target="_blank" rel="noreferrer">
           צפייה בסיכום ללקוח
         </a>
-        {!isPaid ? (
+        {!isPaid && deal.status !== "reversed" ? (
           <button
             type="button"
             disabled={paying}
@@ -469,9 +470,32 @@ export default function PartnerDealDetail() {
           >
             {paying ? "פותח Stripe..." : "מעבר לתשלום ל-Bizuply"}
           </button>
-        ) : (
+        ) : isPaid ? (
           <p className="rounded-2xl bg-emerald-50 px-4 py-2 text-sm font-black text-emerald-800">שולם ל-Bizuply</p>
+        ) : (
+          <p className="rounded-2xl bg-slate-100 px-4 py-2 text-sm font-black text-slate-600">העסקה בוטלה</p>
         )}
+        {!isPaid && deal.status !== "reversed" ? (
+          <button
+            type="button"
+            disabled={Boolean(recovering)}
+            onClick={async () => {
+              if (!dealId) return;
+              setRecovering("abandon");
+              try {
+                const data = await abandonPartnerDeal(dealId);
+                setDeal(data.deal);
+              } catch (err: unknown) {
+                setError(partnerApiError(err, "לא ניתן לבטל את העסקה"));
+              } finally {
+                setRecovering("");
+              }
+            }}
+            className="rounded-2xl border border-rose-200 px-4 py-2 text-sm font-black text-rose-700"
+          >
+            {recovering === "abandon" ? "מבטל..." : "ביטול עסקה שלא שולמה"}
+          </button>
+        ) : null}
         {client?._id ? (
           <Link to={`/partner/dashboard/crm/${client._id}`} className="rounded-2xl border px-4 py-2 text-sm font-black">
             תיק הלקוח

@@ -495,6 +495,11 @@ export async function linkPartnerDealBusiness(dealId: string, businessId: string
   return data;
 }
 
+export async function abandonPartnerDeal(dealId: string, reason = "") {
+  const { data } = await API.post(`/partner/deals/${dealId}/abandon`, { reason });
+  return data;
+}
+
 export async function fetchPartnerBranding() {
   const { data } = await API.get("/partner/branding");
   return data;
@@ -579,6 +584,13 @@ export async function adminRetryDealActivation(partnerId: string, dealId: string
 export async function adminLinkDealBusiness(partnerId: string, dealId: string, businessId: string) {
   const { data } = await API.post(`/admin/partners/${partnerId}/deals/${dealId}/link-business`, {
     businessId,
+  });
+  return data;
+}
+
+export async function adminChangeDealEmail(partnerId: string, dealId: string, email: string) {
+  const { data } = await API.post(`/admin/partners/${partnerId}/deals/${dealId}/change-email`, {
+    email,
   });
   return data;
 }
