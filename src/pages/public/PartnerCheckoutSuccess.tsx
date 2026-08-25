@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
-import { fetchPublicCheckoutStatus, partnerApiError } from "../../lib/partnerApi";
+import {
+  fetchPublicCheckoutStatus,
+  fetchPublicPartnerBranding,
+  partnerApiError,
+} from "../../lib/partnerApi";
 import PublicPartnerShell from "../../components/partner/PublicPartnerShell";
 import { partnerStatusLabel } from "../../lib/partnerLabels";
 
@@ -11,13 +15,35 @@ function checkoutSettled(payload: { paid?: boolean; activationStatus?: string } 
 }
 
 export default function PartnerCheckoutSuccess() {
-  const { slug } = useParams();
+  const { slug: slugParam } = useParams();
   const [params] = useSearchParams();
+  const slugFromQuery = (params.get("slug") || "").trim();
   const sessionId = params.get("session_id") || "";
+  const [hostSlug, setHostSlug] = useState<string | null>(null);
   const [data, setData] = useState<any>(null);
   const [error, setError] = useState("");
 
+  const slug = slugParam || slugFromQuery || hostSlug || "";
+  const awaitingHostSlug = !slugParam && !slugFromQuery && hostSlug === null;
+
   useEffect(() => {
+    if (slugParam || slugFromQuery) return undefined;
+    let cancelled = false;
+    (async () => {
+      try {
+        const branding = await fetchPublicPartnerBranding({ host: window.location.host });
+        if (!cancelled) setHostSlug(String(branding?.slug || "").trim());
+      } catch {
+        if (!cancelled) setHostSlug("");
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [slugParam, slugFromQuery]);
+
+  useEffect(() => {
+    if (awaitingHostSlug) return;
     if (!slug || !sessionId) {
       setError("הזמנה לא נמצאה");
       return;
@@ -25,6 +51,7 @@ export default function PartnerCheckoutSuccess() {
     let cancelled = false;
     (async () => {
       try {
+        setError("");
         let payload = await fetchPublicCheckoutStatus(slug, sessionId);
         if (cancelled) return;
         setData(payload);
@@ -41,7 +68,7 @@ export default function PartnerCheckoutSuccess() {
     return () => {
       cancelled = true;
     };
-  }, [slug, sessionId]);
+  }, [slug, sessionId, awaitingHostSlug]);
 
   const activation = data?.activationStatus;
   const paid = Boolean(data?.paid);
@@ -49,7 +76,9 @@ export default function PartnerCheckoutSuccess() {
   return (
     <PublicPartnerShell branding={data?.branding} title="הרכישה התקבלה" noIndex>
       {error ? <p className="font-black text-rose-700">{error}</p> : null}
-      {!error && !data ? <p className="font-bold text-slate-500">בודקים את ההזמנה...</p> : null}
+      {!error && (awaitingHostSlug || !data) ? (
+        <p className="font-bold text-slate-500">בודקים את ההזמנה...</p>
+      ) : null}
       {data ? (
         <div className="space-y-4 rounded-3xl bg-white p-6 shadow-sm">
           {paid && activation === "active" && data.welcomeEmailSent ? (

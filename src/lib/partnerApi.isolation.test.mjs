@@ -218,11 +218,13 @@ test("public checkout client sends sku and contact, never a customer price", () 
 test("self-serve success page polls until payment and activation settle", () => {
   const src = readFileSync(join(ROOT, "pages/public/PartnerCheckoutSuccess.tsx"), "utf8");
   assert.equal(src.includes("fetchPublicCheckoutStatus"), true);
+  assert.equal(src.includes("fetchPublicPartnerBranding"), true);
   assert.equal(src.includes("checkoutSettled"), true);
   assert.equal(src.includes("requires_action"), true);
   assert.equal(src.includes("החשבון עדיין דורש טיפול"), true);
   assert.equal(src.includes("welcomeEmailSent"), true);
   assert.equal(src.includes("CRMClient"), false);
+  assert.equal(src.includes("[slug, sessionId, resolving, error]"), false);
 });
 
 test("partner pipeline routes are registered in App", () => {
@@ -231,6 +233,8 @@ test("partner pipeline routes are registered in App", () => {
   assert.equal(app.includes('path="referrals"'), true);
   assert.equal(app.includes("/p/:slug/plans"), true);
   assert.equal(app.includes("/p/:slug/checkout/success"), true);
+  assert.equal(app.includes('path="/checkout/success"'), true);
+  assert.equal(app.includes("<Route index element={<PartnerDashboard />} />"), true);
   assert.equal(app.includes("/admin/partners/referrals"), true);
   assert.equal(app.includes("/admin/partners/attention"), true);
 });

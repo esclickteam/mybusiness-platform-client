@@ -1052,6 +1052,7 @@ export default function App() {
                         <Route path="/p/:slug" element={<PartnerStorefront />} />
                         <Route path="/p/:slug/plans" element={<PartnerPublicPlans />} />
                         <Route path="/p/:slug/checkout/success" element={<PartnerCheckoutSuccess />} />
+                        <Route path="/checkout/success" element={<PartnerCheckoutSuccess />} />
                         <Route path="/plans" element={<PartnerPublicPlans />} />
                         <Route path="/partner/register" element={<PartnerRegister />} />
                         <Route path="/partner/deals/:dealId" element={<PartnerPublicDeal />} />
