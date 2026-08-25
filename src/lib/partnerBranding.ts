@@ -42,3 +42,21 @@ export function brandingFromUser(user: { partnerBranding?: PublicPartnerBranding
   if (!branding?.whiteLabelEnabled) return null;
   return branding;
 }
+
+export function hidesBizuplyChrome(branding?: PublicPartnerBranding | null) {
+  return Boolean(
+    branding?.whiteLabelEnabled ||
+      branding?.whiteLabelEntitled ||
+      branding?.urls?.subdomainUrl
+  );
+}
+
+export function partnerFacingName(branding?: PublicPartnerBranding | null) {
+  if (!hidesBizuplyChrome(branding)) return "";
+  return String(branding?.brandName || branding?.stored?.brandName || "").trim();
+}
+
+export function partnerFacingLogo(branding?: PublicPartnerBranding | null) {
+  if (!hidesBizuplyChrome(branding)) return "";
+  return String(branding?.logoUrl || branding?.stored?.logoUrl || "").trim();
+}

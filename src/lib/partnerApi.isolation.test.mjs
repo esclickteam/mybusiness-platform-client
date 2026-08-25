@@ -201,11 +201,17 @@ test("partner public plans page shows customer price only", () => {
 test("login branding resolves from hostname helper, not scattered partner ifs", () => {
   const src = readFileSync(join(ROOT, "components/auth/AuthShell.tsx"), "utf8");
   assert.equal(src.includes("fetchPublicPartnerBranding"), true);
-  assert.equal(src.includes("whiteLabelEnabled"), true);
+  assert.equal(src.includes("hidesBizuplyChrome"), true);
   assert.equal(src.includes("CRMClient"), false);
   const login = readFileSync(join(ROOT, "pages/Login.tsx"), "utf8");
   assert.equal(login.includes("isPartnerWhiteLabelHostname"), true);
   assert.equal(login.includes('? "/plans"'), true);
+  const shell = readFileSync(join(ROOT, "components/partner/PublicPartnerShell.tsx"), "utf8");
+  assert.equal(shell.includes("hidesBizuplyChrome"), true);
+  assert.equal(shell.includes("partnerFacingName"), true);
+  const branding = readFileSync(join(ROOT, "lib/partnerBranding.ts"), "utf8");
+  assert.equal(branding.includes("whiteLabelEntitled"), true);
+  assert.equal(branding.includes("urls?.subdomainUrl"), true);
 });
 
 test("public checkout client sends sku and contact, never a customer price", () => {

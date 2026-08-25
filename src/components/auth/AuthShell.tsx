@@ -8,7 +8,13 @@ import {
   Users,
 } from "lucide-react";
 import { fetchPublicPartnerBranding } from "../../lib/partnerApi";
-import { applyPartnerFavicon, type PublicPartnerBranding } from "../../lib/partnerBranding";
+import {
+  applyPartnerFavicon,
+  hidesBizuplyChrome,
+  partnerFacingLogo,
+  partnerFacingName,
+  type PublicPartnerBranding,
+} from "../../lib/partnerBranding";
 
 const LoginBrandingContext = createContext<PublicPartnerBranding | null>(null);
 
@@ -19,17 +25,22 @@ function useLoginBranding() {
 export function BrandMark({ size = "md" }: { size?: "sm" | "md" }) {
   const branding = useLoginBranding();
   const text = size === "sm" ? "text-2xl" : "text-3xl";
-  if (branding?.whiteLabelEnabled && branding.logoUrl) {
+  const logoUrl = partnerFacingLogo(branding);
+  const brandName = partnerFacingName(branding);
+  if (logoUrl) {
     return (
       <img
-        src={branding.logoUrl}
-        alt={branding.brandName || ""}
+        src={logoUrl}
+        alt={brandName || ""}
         className={size === "sm" ? "h-10 max-w-[180px] object-contain" : "h-14 max-w-[220px] object-contain"}
       />
     );
   }
-  if (branding?.whiteLabelEnabled && branding.brandName) {
-    return <span className={`${text} font-black tracking-tight text-slate-900`}>{branding.brandName}</span>;
+  if (hidesBizuplyChrome(branding) && brandName) {
+    return <span className={`${text} font-black tracking-tight text-slate-900`}>{brandName}</span>;
+  }
+  if (hidesBizuplyChrome(branding)) {
+    return null;
   }
   return (
     <span className={`${text} font-black tracking-tight text-slate-900`}>
@@ -52,7 +63,8 @@ export default function AuthShell({
   const { t, i18n } = useTranslation();
   const dir = i18n.dir();
   const [branding, setBranding] = useState<PublicPartnerBranding | null>(null);
-  const whiteLabel = Boolean(branding?.whiteLabelEnabled);
+  const whiteLabel = hidesBizuplyChrome(branding);
+  const brandName = partnerFacingName(branding);
   const featureCards = [
     { title: t("login.featureCrmTitle"), subtitle: t("login.featureCrmText"), icon: Users },
     { title: t("login.featureAppointmentsTitle"), subtitle: t("login.featureAppointmentsText"), icon: CalendarDays },
@@ -68,9 +80,9 @@ export default function AuthShell({
   }, []);
 
   useEffect(() => {
-    applyPartnerFavicon(whiteLabel ? branding?.faviconUrl : "");
+    applyPartnerFavicon(whiteLabel ? branding?.faviconUrl || branding?.stored?.faviconUrl : "");
     return () => applyPartnerFavicon("");
-  }, [whiteLabel, branding?.faviconUrl]);
+  }, [whiteLabel, branding?.faviconUrl, branding?.stored?.faviconUrl]);
 
   return (
     <LoginBrandingContext.Provider value={branding}>
@@ -95,9 +107,9 @@ export default function AuthShell({
         {whiteLabel ? (
           <section className="hidden text-center lg:flex lg:flex-col lg:items-center lg:justify-center">
             <BrandMark />
-            {branding?.brandName ? (
+            {brandName ? (
               <h2 className="mt-8 max-w-xl text-4xl font-black leading-[1.15] tracking-tight text-slate-900">
-                {branding.brandName}
+                {brandName}
               </h2>
             ) : null}
           </section>
