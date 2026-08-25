@@ -114,7 +114,6 @@ export function partnerSiteSuffix(hostname?: string) {
 
 export function partnerPersonalUrl({
   urls,
-  slug,
 }: {
   subdomain?: string;
   urls?: PublicPartnerBranding["urls"];
@@ -125,7 +124,6 @@ export function partnerPersonalUrl({
   if (subdomainUrl) return subdomainUrl;
   const personal = String(urls?.personalUrl || urls?.slugUrl || "").replace(/\/+$/, "");
   if (personal) return personal;
-  if (slug && typeof window !== "undefined") return `${window.location.origin}/p/${slug}`;
   return "";
 }
 

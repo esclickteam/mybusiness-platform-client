@@ -131,7 +131,11 @@ export function isBillingReturnSearch(
  * Anonymous first visits must not hit the endpoint (browser logs every 401 in red).
  */
 export function shouldAttemptRefresh() {
-  if (isRefreshDead()) return false;
+  const billingReturn =
+    typeof window !== "undefined" && isBillingReturnSearch(window.location.search);
+  // Stripe return must retry the refresh cookie even if a prior 401 marked
+  // this tab dead — the partner was authenticated when they left for Checkout.
+  if (isRefreshDead() && !billingReturn) return false;
   // Lazy import avoided — session gate is checked by api.js via isSessionInvalidated().
   // Keep this function free of a circular dependency on sessionInvalidation.
   if (localStorage.getItem("impersonatedBy")) return false;
@@ -173,7 +177,7 @@ export async function refreshAccessTokenOnce() {
     throw new Error("Refresh disabled during impersonation");
   }
 
-  if (isRefreshDead()) {
+  if (isRefreshDead() && !isBillingReturnSearch()) {
     throwHardRefreshError("NO_REFRESH_TOKEN");
   }
 

@@ -90,4 +90,16 @@ describe("billing return refresh gate", () => {
     );
     expect(shouldAttemptRefresh()).toBe(true);
   });
+
+  it("retries refresh on Stripe return even if this tab was marked dead", () => {
+    sessionStorage.setItem("bizuply:refreshDead", "1");
+    window.history.replaceState(
+      {},
+      "",
+      "/partner/dashboard/deals/64a000000000000000000001?paid=1"
+    );
+    expect(shouldAttemptRefresh()).toBe(true);
+    window.history.replaceState({}, "", "/partner/dashboard");
+    expect(shouldAttemptRefresh()).toBe(false);
+  });
 });

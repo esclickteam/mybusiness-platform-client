@@ -1,4 +1,5 @@
 import API from "@api";
+import { extendAccessToken } from "../utils/tokenRefresh";
 import type {
   AmountDue,
   PartnerClient,
@@ -233,6 +234,11 @@ export async function fetchPartnerDeal(dealId: string) {
 }
 
 export async function startPartnerDealCheckout(dealId: string) {
+  try {
+    await extendAccessToken();
+  } catch {
+    /* checkout will surface auth failures */
+  }
   const { data } = await API.post(`/partner/deals/${dealId}/checkout`);
   return data as { url: string; sessionId: string; livemode?: boolean };
 }

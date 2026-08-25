@@ -383,6 +383,11 @@ test("paid deal copy does not treat payment as withdrawable commission", () => {
   assert.equal(src.includes("מאשרים את התשלום מול Stripe"), true);
   assert.equal(src.includes("paidReturn"), true);
   assert.equal(src.includes("activationSettled"), true);
+  const api = readFileSync(join(ROOT, "lib/partnerApi.ts"), "utf8");
+  const start = api.indexOf("export async function startPartnerDealCheckout");
+  const fn = api.slice(start, api.indexOf("export async function fetchPublicPartnerDeal"));
+  assert.ok(start > 0);
+  assert.equal(fn.includes("extendAccessToken"), true);
 });
 
 test("referrals page lists 40-day pending rewards above the intake form", () => {
@@ -536,6 +541,7 @@ test("partner settings expose white-label branding fields and personal link acti
   assert.equal(brandingLib.includes("partnerPersonalUrl"), true);
   assert.equal(brandingLib.includes("urls?.subdomainUrl"), true);
   assert.equal(brandingLib.includes("urls?.personalUrl"), true);
+  assert.equal(brandingLib.includes("${window.location.origin}/p/${slug}"), false);
   assert.equal(brandingLib.includes("if (sub) return `https://${sub}${partnerSiteSuffix(hostname)}`;"), false);
   const myPage = readFileSync(join(ROOT, "pages/partner/PartnerMyPage.tsx"), "utf8");
   assert.equal(myPage.includes("partnerPersonalUrl"), true);
