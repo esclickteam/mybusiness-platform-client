@@ -117,9 +117,7 @@ export default function PartnerClientWizard() {
         const owned = (client.selectedSkus || [])
           .map((line) => String(line.sku || "").trim())
           .filter(Boolean);
-        if (["active", "provisioning"].includes(String(client.status || ""))) {
-          setOwnedSkus(owned);
-        }
+        setOwnedSkus(owned);
         setContact({
           businessName: client.contact.businessName || "",
           contactName: client.contact.contactName || "",
@@ -196,13 +194,14 @@ export default function PartnerClientWizard() {
   }
 
   async function persistQuote() {
-    if (!clientId) return;
+    if (!clientId || ownedSkus.length) return;
     await updatePartnerClient(clientId, { lines: dealLines(), managementMode });
   }
 
   async function createDeal() {
     if (!clientId) return;
-    if (!selectedSkus.length) {
+    const newLines = dealLines();
+    if (!newLines.length) {
       setError("יש לבחור חבילה או שירות");
       return;
     }
@@ -211,16 +210,17 @@ export default function PartnerClientWizard() {
     try {
       const quoteLocked =
         ["active", "provisioning"].includes(clientStatus) ||
+        ownedSkus.length > 0 ||
         Boolean(existingClientId && !clientStatus);
       if (!quoteLocked) {
         await persistQuote();
       }
       const data = await createPartnerDeal(clientId, {
-        lines: dealLines(),
+        lines: newLines,
         packageDisplayName,
         packageDescription,
         logoUrl,
-        kind: existingClientId ? "amendment" : "initial",
+        kind: ownedSkus.length ? "amendment" : "initial",
       });
       setCreatedDeal({
         id: data.deal._id,

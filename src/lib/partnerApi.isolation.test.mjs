@@ -334,18 +334,24 @@ test("public checkout client sends sku and contact, never a customer price", () 
   assert.match(fn, /host,/);
 });
 
-test("amendment wizard skips quote persist for active or provisioning clients", () => {
+test("amendment wizard skips quote persist when the client already has a catalog", () => {
   const wizard = readFileSync(join(ROOT, "pages/partner/PartnerClientWizard.tsx"), "utf8");
   assert.equal(wizard.includes("setClientStatus"), true);
   assert.equal(wizard.includes('["active", "provisioning"].includes(clientStatus)'), true);
-  assert.equal(wizard.includes("kind: existingClientId ? \"amendment\" : \"initial\""), true);
-  assert.equal(wizard.includes("setOwnedSkus"), true);
+  assert.equal(wizard.includes("setOwnedSkus(owned)"), true);
+  assert.equal(wizard.includes('if (["active", "provisioning"].includes(String(client.status || "")))'), false);
+  assert.equal(wizard.includes("kind: existingClientId ? \"amendment\" : \"initial\""), false);
+  assert.equal(wizard.includes('kind: ownedSkus.length ? "amendment" : "initial"'), true);
   assert.match(wizard, /filter\(\(sku\) => !ownedSkus.includes\(sku\)\)/);
   const createStart = wizard.indexOf("async function createDeal");
   const createFn = wizard.slice(createStart, wizard.indexOf("const shareUrl"));
   assert.ok(createStart > 0);
   assert.match(createFn, /quoteLocked/);
+  assert.match(createFn, /ownedSkus\.length > 0/);
   assert.match(createFn, /if \(!quoteLocked\) \{\s*await persistQuote\(\);/);
+  assert.match(createFn, /const newLines = dealLines\(\);/);
+  assert.match(createFn, /if \(!newLines\.length\)/);
+  assert.match(wizard, /if \(!clientId \|\| ownedSkus\.length\) return;/);
   const picker = readFileSync(join(ROOT, "components/partner/PartnerCatalogPicker.tsx"), "utf8");
   assert.equal(picker.includes("lockedSkus"), true);
   assert.equal(picker.includes("כבר פעיל אצל הלקוח"), true);
