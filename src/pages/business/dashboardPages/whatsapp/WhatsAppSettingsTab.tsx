@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
@@ -148,6 +148,18 @@ export default function WhatsAppSettingsTab() {
   const [actionInfo, setActionInfo] = useState("");
   const sessionRef = useRef<SessionAssets | null>(null);
 
+  const keepEmbeddedSignupVoiceSession = useCallback(async () => {
+    if (!businessId) return null;
+    const result = await startWhatsAppVoiceVerification(businessId, {
+      source: "embedded_signup",
+      wabaId: sessionRef.current?.wabaId,
+      phoneNumberId: sessionRef.current?.phoneNumberId,
+      metaBusinessId: sessionRef.current?.metaBusinessId,
+    });
+    setVoiceSession(result.session);
+    return result;
+  }, [businessId]);
+
   const load = async () => {
     if (!businessId) return;
     setLoading(true);
@@ -265,27 +277,11 @@ export default function WhatsAppSettingsTab() {
           }
         }
 
-        // Meta voice OTP is chosen inside the popup (e.g. "שיחת טלפון") before FINISH.
-        // Keep/refresh the waiting session if we learn the user is on phone verification.
-        const currentStep = String(data?.data?.current_step || "").trim();
-        if (
-          businessId &&
-          (currentStep === "PHONE_NUMBER_VERIFICATION" ||
-            currentStep === "PHONE_NUMBER_SETUP")
-        ) {
-          void (async () => {
-            try {
-              const result = await startWhatsAppVoiceVerification(businessId, {
-                source: "embedded_signup",
-                wabaId: sessionRef.current?.wabaId,
-                phoneNumberId: sessionRef.current?.phoneNumberId,
-                metaBusinessId: sessionRef.current?.metaBusinessId,
-              });
-              setVoiceSession(result.session);
-            } catch {
-              // Session may already exist, or DID may be unmapped — connect can continue.
-            }
-          })();
+        // Meta voice OTP happens inside the popup before FINISH and does not
+        // always emit PHONE_NUMBER_VERIFICATION. Keep the DID session alive
+        // on any Embedded Signup event except cancel.
+        if (businessId && data.event !== "CANCEL") {
+          void keepEmbeddedSignupVoiceSession().catch(() => {});
         }
       } catch {
         // Ignore non-JSON postMessages from the popup.
@@ -294,7 +290,7 @@ export default function WhatsAppSettingsTab() {
 
     window.addEventListener("message", onMessage);
     return () => window.removeEventListener("message", onMessage);
-  }, [businessId]);
+  }, [businessId, keepEmbeddedSignupVoiceSession]);
 
   const handleConnect = async () => {
     setActionError("");
@@ -317,6 +313,7 @@ export default function WhatsAppSettingsTab() {
       return;
     }
 
+    let voiceKeepAlive: ReturnType<typeof setInterval> | undefined;
     try {
       setConnecting(true);
 
@@ -343,19 +340,20 @@ export default function WhatsAppSettingsTab() {
       }
 
       // Create waiting_for_call session BEFORE Meta popup can place a voice OTP call.
-      // Meta does not expose a reliable pre-call callback for "שיחת טלפון".
+      // Keep it alive until FB.login returns — Meta "send code again" does not
+      // re-enter handleConnect, and phone_number_id is not available yet.
       try {
         setActionInfo("Preparing voice verification…");
-        const voice = await startWhatsAppVoiceVerification(businessId, {
-          source: "embedded_signup",
-        });
-        setVoiceSession(voice.session);
+        const voice = await keepEmbeddedSignupVoiceSession();
         console.info("[whatsapp] Voice verification session ready", {
-          sessionId: voice.session?.sessionId,
-          created: voice.created,
-          status: voice.session?.status,
-          telnyxDid: voice.session?.telnyxDid,
+          sessionId: voice?.session?.sessionId,
+          created: voice?.created,
+          status: voice?.session?.status,
+          telnyxDid: voice?.session?.telnyxDid,
         });
+        voiceKeepAlive = window.setInterval(() => {
+          void keepEmbeddedSignupVoiceSession().catch(() => {});
+        }, 20000);
       } catch (voiceError: any) {
         const code = String(voiceError?.response?.data?.code || "");
         console.warn("[whatsapp] Voice session start before ES failed", {
@@ -498,6 +496,9 @@ export default function WhatsAppSettingsTab() {
       setActionInfo("");
       toast.error(msg);
     } finally {
+      if (voiceKeepAlive) {
+        window.clearInterval(voiceKeepAlive);
+      }
       setConnecting(false);
     }
   };
