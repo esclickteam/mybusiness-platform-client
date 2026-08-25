@@ -3,11 +3,17 @@ import adminCrmApi from "../../../../api/adminCrmApi";
 import { Badge, formatIsraelDate } from "../adminCrmLabels";
 import { CrmCard, PrimaryButton, SecondaryButton } from "../AdminCrmUi";
 import ProposalBuilderModal from "./ProposalBuilderModal";
+import EnterpriseProposalModal from "./EnterpriseProposalModal";
 import ProposalDocumentView from "./ProposalDocumentView";
+import EnterpriseProposalView from "./EnterpriseProposalView";
 import { PROPOSAL_STATUS_LABELS } from "./proposalLabels";
 import { AdminModal } from "../AdminModal";
 
-const STATUS_LABELS = PROPOSAL_STATUS_LABELS;
+const STATUS_LABELS: Record<string, string> = {
+  ...PROPOSAL_STATUS_LABELS,
+  issued: "נשלחה",
+  declined: "בוטלה",
+};
 
 export default function CustomerProposalsSection({
   customerId,
@@ -20,6 +26,8 @@ export default function CustomerProposalsSection({
 }) {
   const [items, setItems] = useState<any[]>([]);
   const [builderOpen, setBuilderOpen] = useState(false);
+  const [enterpriseOpen, setEnterpriseOpen] = useState(false);
+  const [editingEnterprise, setEditingEnterprise] = useState<any>(null);
   const [preview, setPreview] = useState<any>(null);
 
   async function load() {
@@ -45,6 +53,18 @@ export default function CustomerProposalsSection({
     void load();
   }
 
+  function closeEnterprise() {
+    setEnterpriseOpen(false);
+    setEditingEnterprise(null);
+    void load();
+  }
+
+  function openEnterprise(row?: any) {
+    setBuilderOpen(false);
+    setEditingEnterprise(row || null);
+    setEnterpriseOpen(true);
+  }
+
   return (
     <>
       <CrmCard className="lg:col-span-2">
@@ -53,9 +73,14 @@ export default function CustomerProposalsSection({
             <h3 className="text-lg font-black text-slate-900">הצעות מחיר</h3>
             <p className="text-sm font-bold text-slate-500">יצירה, הנפקה ומעקב אחרי הצעות ללקוח</p>
           </div>
-          <PrimaryButton compact onClick={() => setBuilderOpen(true)}>
-            יצירת הצעה
-          </PrimaryButton>
+          <div className="flex flex-wrap gap-2">
+            <SecondaryButton compact onClick={() => openEnterprise()}>
+              הצעת Enterprise
+            </SecondaryButton>
+            <PrimaryButton compact onClick={() => setBuilderOpen(true)}>
+              יצירת הצעה
+            </PrimaryButton>
+          </div>
         </div>
 
         <div className="mt-4 space-y-3">
@@ -67,17 +92,25 @@ export default function CustomerProposalsSection({
               <div className="flex flex-wrap items-start justify-between gap-2">
                 <div>
                   <p className="font-black text-slate-900">
-                    {row.proposalNumber} · גרסה {row.version}
+                    {row.kind === "enterprise" ? "Enterprise · " : ""}
+                    {row.enterprise?.title || row.proposalNumber} · גרסה {row.version}
                   </p>
                   <p className="mt-1 text-xs text-slate-500">
                     נוצר {formatIsraelDate(row.createdAt, true)} · בתוקף עד{" "}
                     {formatIsraelDate(row.expiresAt, true)}
                   </p>
-                  <p className="mt-1 text-xs text-slate-600">
-                    חודשי ₪{row.totals?.monthlyIls || 0} · חד־פעמי ₪
-                    {(row.totals?.oneTimeIls || 0) + (row.totals?.servicesIls || 0)} · שנתי ₪
-                    {row.totals?.yearlyIls || 0}
-                  </p>
+                  {row.kind === "enterprise" ? (
+                    <p className="mt-1 text-xs text-slate-600">
+                      הקמה ₪{row.enterprise?.setupPriceIls || row.totals?.oneTimeIls || 0} · חודשי ₪
+                      {row.enterprise?.monthlyPriceIls || row.totals?.monthlyIls || 0}
+                    </p>
+                  ) : (
+                    <p className="mt-1 text-xs text-slate-600">
+                      חודשי ₪{row.totals?.monthlyIls || 0} · חד־פעמי ₪
+                      {(row.totals?.oneTimeIls || 0) + (row.totals?.servicesIls || 0)} · שנתי ₪
+                      {row.totals?.yearlyIls || 0}
+                    </p>
+                  )}
                   <p className="mt-1 text-xs text-slate-500">
                     צפיות: {row.viewCount || 0}
                     {row.lastViewedAt
@@ -88,19 +121,8 @@ export default function CustomerProposalsSection({
                   {row.approvedByName ? (
                     <p className="mt-1 text-xs font-black text-emerald-700">
                       נחתם: {row.approvedByName}
-                      {row.approvedByIdNumber ? ` · ת״ז ${row.approvedByIdNumber}` : ""}
-                      {row.approvedByBusinessNumber
-                        ? ` · ח״פ ${row.approvedByBusinessNumber}`
-                        : ""}
                       {row.paidAt ? ` · שולם ${formatIsraelDate(row.paidAt, true)}` : ""}
                     </p>
-                  ) : null}
-                  {row.signatureData ? (
-                    <img
-                      src={row.signatureData}
-                      alt="חתימה"
-                      className="mt-2 h-14 rounded-lg border border-slate-200 bg-white p-1"
-                    />
                   ) : null}
                 </div>
                 <Badge
@@ -109,8 +131,8 @@ export default function CustomerProposalsSection({
                       ? "bg-emerald-50 text-emerald-700 border-emerald-200"
                       : row.status === "signed" || row.status === "payment_pending"
                         ? "bg-sky-50 text-sky-800 border-sky-200"
-                        : row.status === "question_asked" || row.status === "thinking"
-                          ? "bg-amber-50 text-amber-800 border-amber-200"
+                        : row.status === "declined" || row.status === "expired"
+                          ? "bg-slate-100 text-slate-600 border-slate-200"
                           : "bg-violet-50 text-violet-700 border-violet-100"
                   }
                 >
@@ -119,7 +141,7 @@ export default function CustomerProposalsSection({
               </div>
               <div className="mt-3 flex flex-wrap gap-2">
                 <SecondaryButton compact onClick={() => setPreview(row)}>
-                  צפייה / Preview
+                  תצוגה מקדימה
                 </SecondaryButton>
                 {row.publicUrl ? (
                   <SecondaryButton
@@ -129,27 +151,52 @@ export default function CustomerProposalsSection({
                     העתקת קישור
                   </SecondaryButton>
                 ) : null}
-                {row.status !== "draft" ? (
-                  <SecondaryButton
-                    compact
-                    onClick={async () => {
-                      await adminCrmApi.reviseProposal(row.id);
-                      await load();
-                      setBuilderOpen(true);
-                    }}
-                  >
-                    יצירת גרסה חדשה
-                  </SecondaryButton>
-                ) : (
+                {row.publicUrl ? (
                   <SecondaryButton
                     compact
                     onClick={() => {
-                      setBuilderOpen(true);
+                      const text = encodeURIComponent(
+                        `היי, הכנו לך הצעה מותאמת ב-BizUply:\n${row.publicUrl}`
+                      );
+                      window.open(`https://wa.me/?text=${text}`, "_blank");
                     }}
                   >
-                    המשך עריכה
+                    שליחה ללקוח
                   </SecondaryButton>
-                )}
+                ) : null}
+                {row.status === "draft" ? (
+                  <SecondaryButton
+                    compact
+                    onClick={() => {
+                      if (row.kind === "enterprise") openEnterprise(row);
+                      else setBuilderOpen(true);
+                    }}
+                  >
+                    עריכה
+                  </SecondaryButton>
+                ) : null}
+                <SecondaryButton
+                  compact
+                  onClick={async () => {
+                    const { data } = await adminCrmApi.reviseProposal(row.id);
+                    await load();
+                    if (row.kind === "enterprise") openEnterprise(data.proposal);
+                    else setBuilderOpen(true);
+                  }}
+                >
+                  שכפול
+                </SecondaryButton>
+                {row.status !== "paid" && row.status !== "accepted" && row.status !== "declined" ? (
+                  <SecondaryButton
+                    compact
+                    onClick={async () => {
+                      await adminCrmApi.voidProposal(row.id);
+                      await load();
+                    }}
+                  >
+                    ביטול הצעה
+                  </SecondaryButton>
+                ) : null}
               </div>
             </div>
           ))}
@@ -164,6 +211,15 @@ export default function CustomerProposalsSection({
         customerId={customerId}
         onClose={closeBuilder}
         onIssued={() => void load()}
+        onOpenEnterprise={() => openEnterprise()}
+      />
+
+      <EnterpriseProposalModal
+        open={enterpriseOpen}
+        customerId={customerId}
+        existing={editingEnterprise}
+        onClose={closeEnterprise}
+        onIssued={() => void load()}
       />
 
       <AdminModal
@@ -172,7 +228,11 @@ export default function CustomerProposalsSection({
         title={preview?.proposalNumber || "תצוגת הצעה"}
         size="xl"
       >
-        {preview ? <ProposalDocumentView interactive proposal={preview} /> : null}
+        {preview?.kind === "enterprise" || preview?.enterprise ? (
+          <EnterpriseProposalView proposal={preview} />
+        ) : preview ? (
+          <ProposalDocumentView interactive proposal={preview} />
+        ) : null}
       </AdminModal>
     </>
   );

@@ -7,6 +7,7 @@ const SIZE_CLASS = {
   md: "max-w-2xl",
   lg: "max-w-3xl",
   xl: "max-w-4xl",
+  full: "max-w-6xl",
 } as const;
 
 export function AdminModal({
