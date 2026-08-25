@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { fetchPublicStorefront } from "../../lib/partnerApi";
 import { formatPublicCustomerPrice } from "../../lib/partnerMoney";
-import PublicPartnerShell from "../../components/partner/PublicPartnerShell";
+import { publicPackageLabel, publicProductCopy } from "../../lib/partnerDealMath";
 
 function ils(value?: number) {
   return `₪${Number(value || 0).toLocaleString("he-IL")}`;
@@ -74,8 +74,8 @@ export default function PartnerStorefront() {
       <div className="mt-8 grid gap-4">
         {(data.products || []).map((product: any) => (
           <article key={product.sku} className="rounded-2xl border border-slate-200 bg-white p-5">
-            <h2 className="text-lg font-black">{product.nameHe || product.name}</h2>
-            <p className="text-sm text-slate-600">{product.description}</p>
+            <h2 className="text-lg font-black">{publicPackageLabel(product.nameHe || product.name)}</h2>
+            <p className="text-sm text-slate-600">{publicProductCopy(product.description)}</p>
             <p className="mt-3 text-2xl font-black">{formatPublicCustomerPrice(product)}</p>
             {product.retailComparisonPrice ? (
               <p className="text-xs text-slate-500">

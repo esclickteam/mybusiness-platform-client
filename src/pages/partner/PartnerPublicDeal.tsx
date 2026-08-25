@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Helmet } from "react-helmet-async";
 import { useParams } from "react-router-dom";
 import { fetchPublicPartnerDeal } from "../../lib/partnerApi";
-import { billingLabel } from "../../lib/partnerDealMath";
+import { billingLabel, publicPackageLabel, publicProductCopy } from "../../lib/partnerDealMath";
 import { formatIls } from "../../lib/partnerMoney";
 import {
   applyPartnerFavicon,
@@ -140,9 +140,9 @@ export default function PartnerPublicDeal() {
 
           <section>
             <p className="text-xs font-black uppercase tracking-[0.16em] text-violet-700">פירוט מוצרים</p>
-            <h2 className="mt-1 text-3xl font-black">{summary.package?.name}</h2>
-            {summary.package?.description ? (
-              <p className="mt-2 font-bold text-slate-500">{summary.package.description}</p>
+            <h2 className="mt-1 text-3xl font-black">{publicPackageLabel(summary.package?.name)}</h2>
+            {publicProductCopy(summary.package?.description) ? (
+              <p className="mt-2 font-bold text-slate-500">{publicProductCopy(summary.package?.description)}</p>
             ) : null}
             <div className="mt-4 space-y-2">
               {products.map((item) => (
@@ -150,9 +150,9 @@ export default function PartnerPublicDeal() {
                   key={`${item.name}-${item.billing}`}
                   className="rounded-2xl border border-slate-100 px-4 py-3"
                 >
-                  <p className="font-black">{item.name}</p>
-                  {item.description ? (
-                    <p className="text-sm font-bold text-slate-500">{item.description}</p>
+                  <p className="font-black">{publicPackageLabel(item.name)}</p>
+                  {publicProductCopy(item.description) ? (
+                    <p className="text-sm font-bold text-slate-500">{publicProductCopy(item.description)}</p>
                   ) : null}
                   <p className="text-xs font-bold text-slate-400">{billingLabel(item.billing)}</p>
                 </div>

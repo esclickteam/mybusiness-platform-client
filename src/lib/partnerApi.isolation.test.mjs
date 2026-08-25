@@ -93,6 +93,8 @@ test("public partner deal page shows products without line prices", () => {
   assert.equal(src.includes("customerFinalPrice"), false);
   assert.equal(src.includes("פירוט מוצרים"), true);
   assert.equal(src.includes("partnerFacingName"), true);
+  assert.equal(src.includes("publicPackageLabel"), true);
+  assert.equal(src.includes("publicProductCopy"), true);
   assert.equal(src.includes("BizuplyLoader"), false);
 });
 
@@ -205,6 +207,8 @@ test("public partner deal is a summary, not a fake checkout", () => {
 test("partner public plans page shows customer price only", () => {
   const src = readFileSync(join(ROOT, "pages/public/PartnerPublicPlans.tsx"), "utf8");
   assert.equal(src.includes("formatPublicCustomerPrice"), true);
+  assert.equal(src.includes("publicPackageLabel"), true);
+  assert.equal(src.includes("publicProductCopy"), true);
   assert.equal(src.includes("wholesale"), false);
   assert.equal(src.includes("partnerWholesalePrice"), false);
   assert.equal(src.includes("commission"), false);
@@ -239,9 +243,13 @@ test("login branding resolves from hostname helper, not scattered partner ifs", 
   assert.equal(branding.includes("isPartnerWhiteLabelHostname"), false);
   assert.equal(branding.includes("absoluteCustomerUrl"), true);
   assert.equal(branding.includes("hidesBizuplyChrome(branding, hostname)"), true);
-  assert.equal(branding.includes("return Boolean(branding?.whiteLabelEnabled)"), true);
+  assert.equal(branding.includes("whiteLabelEntitled"), true);
+  assert.equal(branding.includes("stored?.brandName"), true);
+  assert.equal(branding.includes("return Boolean(branding?.whiteLabelEnabled)"), false);
   const storefront = readFileSync(join(ROOT, "pages/public/PartnerStorefront.tsx"), "utf8");
   assert.equal(storefront.includes("PublicPartnerShell"), true);
+  assert.equal(storefront.includes("publicPackageLabel"), true);
+  assert.equal(storefront.includes("publicProductCopy"), true);
   assert.equal(storefront.includes("Powered by Bizuply"), false);
   assert.equal(storefront.includes("רכישה מתבצעת בעמוד החבילות"), true);
   assert.equal(storefront.includes("רכישה מתבצעת מול הפרטנר."), false);
