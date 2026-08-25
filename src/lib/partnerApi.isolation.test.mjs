@@ -158,6 +158,9 @@ test("Partner shell uses sidebar + pill navigation without Direct CRM", () => {
   assert.equal(layout.includes("/partner/dashboard/tasks"), true);
   assert.equal(layout.includes("/partner/dashboard/reminders"), true);
   assert.equal(layout.includes("/partner/dashboard/withdrawals"), true);
+  assert.equal(layout.includes("/partner/dashboard/page"), true);
+  assert.equal(layout.includes("/partner/dashboard/referrals"), true);
+  assert.equal(layout.includes("/partner/dashboard/team"), true);
   assert.equal(layout.includes("CRMClient"), false);
   assert.equal(layout.includes("/api/crm"), false);
 
@@ -175,4 +178,38 @@ test("partner work helpers stay on PartnerClient tasks", () => {
   assert.equal(src.includes("PartnerClient"), true);
   assert.equal(src.includes("CRMClient"), false);
   assert.equal(src.includes("/api/crm"), false);
+});
+
+test("public partner deal is a summary, not a fake checkout", () => {
+  const src = readFileSync(join(ROOT, "pages/partner/PartnerPublicDeal.tsx"), "utf8");
+  assert.equal(src.includes("לתשלום עכשיו"), false);
+  assert.equal(src.includes("סיכום ההצעה"), true);
+  assert.equal(src.includes("התשלום והפעלת השירות מתבצעים מול הפרטנר שלך"), true);
+  assert.equal(src.includes("noindex"), true);
+});
+
+test("partner public plans page shows customer price only", () => {
+  const src = readFileSync(join(ROOT, "pages/public/PartnerPublicPlans.tsx"), "utf8");
+  assert.equal(src.includes("customerFinalPrice"), true);
+  assert.equal(src.includes("wholesale"), false);
+  assert.equal(src.includes("partnerWholesalePrice"), false);
+  assert.equal(src.includes("commission"), false);
+  assert.equal(src.includes("CRMClient"), false);
+});
+
+test("login branding resolves from hostname helper, not scattered partner ifs", () => {
+  const src = readFileSync(join(ROOT, "components/auth/AuthShell.tsx"), "utf8");
+  assert.equal(src.includes("fetchPublicPartnerBranding"), true);
+  assert.equal(src.includes("whiteLabelEnabled"), true);
+  assert.equal(src.includes("CRMClient"), false);
+});
+
+test("partner pipeline routes are registered in App", () => {
+  const app = readFileSync(join(ROOT, "App.jsx"), "utf8");
+  assert.equal(app.includes('path="page"'), true);
+  assert.equal(app.includes('path="referrals"'), true);
+  assert.equal(app.includes("/p/:slug/plans"), true);
+  assert.equal(app.includes("/p/:slug/checkout/success"), true);
+  assert.equal(app.includes("/admin/partners/referrals"), true);
+  assert.equal(app.includes("/admin/partners/attention"), true);
 });

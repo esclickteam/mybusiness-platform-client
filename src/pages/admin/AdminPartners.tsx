@@ -71,6 +71,14 @@ export default function AdminPartners() {
       <AdminHeader />
       <main className="mx-auto max-w-[1480px] px-4 py-6">
         <h1 className="mb-4 text-2xl font-black">פרטנרים</h1>
+        <div className="mb-4 flex flex-wrap gap-3">
+          <Link className="rounded-2xl bg-amber-100 px-4 py-2 text-sm font-black text-amber-900" to="/admin/partners/attention">
+            שולם – נדרש טיפול בהפעלת הלקוח
+          </Link>
+          <Link className="rounded-2xl bg-violet-100 px-4 py-2 text-sm font-black text-violet-900" to="/admin/partners/referrals">
+            צירופי פרטנרים
+          </Link>
+        </div>
         {monthSummary ? (
           <section className="mb-4 grid gap-3 sm:grid-cols-3 lg:grid-cols-6">
             <MiniKpi label="בקשות משיכה החודש" value={String(monthSummary.count || 0)} />

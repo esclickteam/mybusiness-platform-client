@@ -10,7 +10,7 @@ import {
   Wallet,
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { fetchPartnerClients, fetchPartnerDashboard, partnerApiError } from "../../lib/partnerApi";
+import { fetchPartnerClients, fetchPartnerDashboard, fetchPartnerMe, partnerApiError } from "../../lib/partnerApi";
 import type {
   PartnerClient,
   PartnerDashboardPayload,
@@ -56,6 +56,9 @@ export default function PartnerDashboard() {
   const [error, setError] = useState("");
   const [data, setData] = useState<PartnerDashboardPayload | null>(null);
   const [clients, setClients] = useState<PartnerClient[]>([]);
+  const [personalUrl, setPersonalUrl] = useState("");
+  const [plansUrl, setPlansUrl] = useState("");
+  const [copied, setCopied] = useState(false);
   const [preset, setPreset] = useState("month");
   const [from, setFrom] = useState("");
   const [to, setTo] = useState("");
@@ -93,6 +96,15 @@ export default function PartnerDashboard() {
     };
   }, [preset, from, to]);
 
+  useEffect(() => {
+    fetchPartnerMe()
+      .then((me) => {
+        setPersonalUrl(me.urls?.personalUrl || me.urls?.slugUrl || (me.slug ? `${window.location.origin}/p/${me.slug}` : ""));
+        setPlansUrl(me.urls?.plansUrl || (me.slug ? `${window.location.origin}/p/${me.slug}/plans` : ""));
+      })
+      .catch(() => {});
+  }, []);
+
   if (loading && !data) return <BizuplyLoader fullScreen label="טוען לוח פרטנר..." />;
 
   const partner = data?.partner as PartnerMe | undefined;
@@ -124,6 +136,39 @@ export default function PartnerDashboard() {
             onFrom={setFrom}
             onTo={setTo}
           />
+
+          {personalUrl ? (
+            <PartnerCard className="flex flex-wrap items-center justify-between gap-3 p-5">
+              <div>
+                <p className="text-xs font-black uppercase tracking-[0.16em] text-violet-700">הקישור האישי שלי</p>
+                <p className="mt-1 break-all text-sm font-bold text-slate-700">{personalUrl}</p>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <button
+                  type="button"
+                  className="rounded-2xl bg-slate-900 px-4 py-2 text-sm font-black text-white"
+                  onClick={async () => {
+                    await navigator.clipboard.writeText(personalUrl);
+                    setCopied(true);
+                    setTimeout(() => setCopied(false), 1500);
+                  }}
+                >
+                  {copied ? "הועתק" : "העתק קישור"}
+                </button>
+                <a href={personalUrl} target="_blank" rel="noreferrer" className="rounded-2xl border px-4 py-2 text-sm font-black">
+                  הצג עמוד
+                </a>
+                {plansUrl ? (
+                  <a href={plansUrl} target="_blank" rel="noreferrer" className="rounded-2xl border px-4 py-2 text-sm font-black">
+                    עמוד חבילות
+                  </a>
+                ) : null}
+                <Link to="/partner/dashboard/page" className="rounded-2xl border px-4 py-2 text-sm font-black">
+                  מיתוג
+                </Link>
+              </div>
+            </PartnerCard>
+          ) : null}
 
           <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px]">
             <div className="space-y-4">
@@ -254,13 +299,13 @@ export default function PartnerDashboard() {
                   tone="violet"
                 />
                 <PartnerQuickAction
-                  to="/partner/dashboard/tasks"
+                  to="/partner/dashboard/tasks?new=1"
                   label="משימה חדשה"
                   icon={<CalendarCheck className="h-4 w-4" />}
                   tone="emerald"
                 />
                 <PartnerQuickAction
-                  to="/partner/dashboard/reminders"
+                  to="/partner/dashboard/reminders?new=1"
                   label="תזכורת חדשה"
                   icon={<Bell className="h-4 w-4" />}
                   tone="orange"

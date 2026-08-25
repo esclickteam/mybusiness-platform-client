@@ -5,8 +5,12 @@ import {
   partnerApiError,
   startPartnerDealCheckout,
   updatePartnerDeal,
+  retryPartnerDealActivation,
+  changePartnerDealEmail,
+  linkPartnerDealBusiness,
   type PartnerServiceRow,
 } from "../../lib/partnerApi";
+import { partnerStatusLabel } from "../../lib/partnerLabels";
 import { billingLabel, isCommissionSku, publicPackageLabel } from "../../lib/partnerDealMath";
 import { formatIls } from "../../lib/partnerMoney";
 import PartnerPageHeader from "../../components/partner/PartnerPageHeader";
@@ -31,6 +35,9 @@ export default function PartnerDealDetail() {
   const [savingName, setSavingName] = useState(false);
   const [error, setError] = useState("");
   const [paying, setPaying] = useState(false);
+  const [email, setEmail] = useState("");
+  const [businessId, setBusinessId] = useState("");
+  const [recovering, setRecovering] = useState("");
 
   useEffect(() => {
     if (!dealId) return;
@@ -38,6 +45,7 @@ export default function PartnerDealDetail() {
       .then((data) => {
         setDeal(data.deal);
         setClient(data.client);
+        setEmail(data.client?.contact?.email || "");
         setStripeItems(data.stripeItems || []);
         setServiceRows(data.serviceRows || []);
         setBillingSafety(data.billingSafety || null);
@@ -178,7 +186,104 @@ export default function PartnerDealDetail() {
       </section>
 
       <section className="grid gap-3 md:grid-cols-4">
-        <Stat label="סטטוס" value={deal.status} />
+        <Stat label="תשלום ל-Bizuply" value={partnerStatusLabel((deal as any).paymentStatus || deal.status)} />
+        <Stat label="הפעלת חשבון הלקוח" value={partnerStatusLabel((deal as any).activationStatus)} />
+        <Stat
+          label="מוצרים דיגיטליים"
+          value={
+            (deal as any).fulfillment
+              ? `${(deal as any).fulfillment.softwareFulfilled} מתוך ${(deal as any).fulfillment.softwareTotal} הופעלו`
+              : "—"
+          }
+        />
+        <Stat label="עמלה" value={partnerStatusLabel((deal as any).commissionStatus)} />
+      </section>
+      {(deal as any).needsAttention ? (
+        <div className="space-y-3 rounded-3xl border border-amber-200 bg-amber-50 p-5">
+          <p className="font-black text-amber-900">התשלום התקבל, אך העסק עדיין לא הופעל.</p>
+          <p className="text-sm font-bold text-amber-800">
+            {(deal as any).activationErrorMessage || "נדרש טיפול בהפעלת הלקוח"}
+          </p>
+          <div className="grid gap-3 md:grid-cols-3">
+            <button
+              type="button"
+              disabled={Boolean(recovering)}
+              onClick={async () => {
+                if (!dealId) return;
+                setRecovering("retry");
+                try {
+                  const data = await retryPartnerDealActivation(dealId);
+                  setDeal(data.deal);
+                } catch (err: unknown) {
+                  setError(partnerApiError(err, "ניסיון ההפעלה נכשל"));
+                } finally {
+                  setRecovering("");
+                }
+              }}
+              className="rounded-2xl bg-slate-900 py-2 text-sm font-black text-white"
+            >
+              {recovering === "retry" ? "מפעיל..." : "ניסיון הפעלה מחדש"}
+            </button>
+            <div className="flex gap-2">
+              <input
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="flex-1 rounded-2xl border px-3 py-2 text-sm font-bold"
+                placeholder="אימייל חדש"
+              />
+              <button
+                type="button"
+                disabled={Boolean(recovering)}
+                onClick={async () => {
+                  if (!dealId) return;
+                  setRecovering("email");
+                  try {
+                    const data = await changePartnerDealEmail(dealId, email);
+                    setDeal(data.deal);
+                  } catch (err: unknown) {
+                    setError(partnerApiError(err, "לא ניתן לשנות אימייל"));
+                  } finally {
+                    setRecovering("");
+                  }
+                }}
+                className="rounded-2xl border px-3 text-sm font-black"
+              >
+                שמירת אימייל
+              </button>
+            </div>
+            <div className="flex gap-2">
+              <input
+                value={businessId}
+                onChange={(e) => setBusinessId(e.target.value)}
+                className="flex-1 rounded-2xl border px-3 py-2 text-sm font-bold"
+                placeholder="מזהה עסק קיים"
+              />
+              <button
+                type="button"
+                disabled={Boolean(recovering)}
+                onClick={async () => {
+                  if (!dealId) return;
+                  setRecovering("link");
+                  try {
+                    const data = await linkPartnerDealBusiness(dealId, businessId);
+                    setDeal(data.deal);
+                  } catch (err: unknown) {
+                    setError(partnerApiError(err, "לא ניתן לקשר עסק"));
+                  } finally {
+                    setRecovering("");
+                  }
+                }}
+                className="rounded-2xl border px-3 text-sm font-black"
+              >
+                קישור לעסק קיים
+              </button>
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      <section className="grid gap-3 md:grid-cols-4">
+        <Stat label="סטטוס עסקה" value={partnerStatusLabel((deal as any).pipelineStatus || deal.status)} />
         <Stat label="חד-פעמי ללקוח" value={formatIls(totals.oneTime)} />
         <Stat label="חודשי ללקוח" value={formatIls(totals.monthly)} />
         <Stat label="שנתי ללקוח" value={formatIls(totals.annual)} />

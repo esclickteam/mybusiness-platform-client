@@ -57,6 +57,9 @@ export default function PartnerRevenue() {
           <p className="mt-3 text-sm font-bold text-slate-500">
             חוב מנוי פתוח: {ils(due?.openPartnerSubscriptionDebtIls)}
           </p>
+          <p className="mt-3 rounded-2xl bg-slate-50 px-3 py-2 text-sm font-bold text-slate-600">
+            החיוב מנוהל כרגע על ידי Bizuply
+          </p>
         </PartnerCard>
         <PartnerCard className="p-5">
           <p className="text-xs font-black uppercase tracking-[0.16em] text-[#7C4DFF]">

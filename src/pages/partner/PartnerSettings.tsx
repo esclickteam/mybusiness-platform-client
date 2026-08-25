@@ -136,6 +136,11 @@ export default function PartnerSettings() {
         title="הגדרות פרטנר"
         subtitle="פרטי חשבון, ת״ז, תעודת עוסק ואישור ניהול חשבון — הכול מועבר לאדמין כולל חשבון הבנק."
       />
+      {partner?.billingCheckoutAvailable === false ? (
+        <p className="rounded-2xl bg-slate-50 px-4 py-3 text-sm font-bold text-slate-600">
+          החיוב מנוהל כרגע על ידי Bizuply. אין אפשרות לתשלום מנוי עצמאי מהמערכת.
+        </p>
+      ) : null}
 
       <PartnerCard className="space-y-4 p-6">
         {error ? <p className="text-sm font-bold text-rose-600">{error}</p> : null}

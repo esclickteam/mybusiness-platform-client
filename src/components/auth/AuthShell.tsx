@@ -1,4 +1,4 @@
-import React, { type ReactNode } from "react";
+import React, { createContext, type ReactNode, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Bot,
@@ -7,10 +7,30 @@ import {
   Megaphone,
   Users,
 } from "lucide-react";
+import { fetchPublicPartnerBranding } from "../../lib/partnerApi";
+import { applyPartnerFavicon, type PublicPartnerBranding } from "../../lib/partnerBranding";
+
+const LoginBrandingContext = createContext<PublicPartnerBranding | null>(null);
+
+function useLoginBranding() {
+  return useContext(LoginBrandingContext);
+}
 
 export function BrandMark({ size = "md" }: { size?: "sm" | "md" }) {
+  const branding = useLoginBranding();
   const text = size === "sm" ? "text-2xl" : "text-3xl";
-
+  if (branding?.whiteLabelEnabled && branding.logoUrl) {
+    return (
+      <img
+        src={branding.logoUrl}
+        alt={branding.brandName || ""}
+        className={size === "sm" ? "h-10 max-w-[180px] object-contain" : "h-14 max-w-[220px] object-contain"}
+      />
+    );
+  }
+  if (branding?.whiteLabelEnabled && branding.brandName) {
+    return <span className={`${text} font-black tracking-tight text-slate-900`}>{branding.brandName}</span>;
+  }
   return (
     <span className={`${text} font-black tracking-tight text-slate-900`}>
       BizUply
@@ -31,6 +51,8 @@ export default function AuthShell({
 }: AuthShellProps) {
   const { t, i18n } = useTranslation();
   const dir = i18n.dir();
+  const [branding, setBranding] = useState<PublicPartnerBranding | null>(null);
+  const whiteLabel = Boolean(branding?.whiteLabelEnabled);
   const featureCards = [
     { title: t("login.featureCrmTitle"), subtitle: t("login.featureCrmText"), icon: Users },
     { title: t("login.featureAppointmentsTitle"), subtitle: t("login.featureAppointmentsText"), icon: CalendarDays },
@@ -38,7 +60,20 @@ export default function AuthShell({
     { title: t("login.featureWebsiteTitle"), subtitle: t("login.featureWebsiteText"), icon: Globe2 },
     { title: t("login.featureMetaLeadsTitle"), subtitle: t("login.featureMetaLeadsText"), icon: Megaphone },
   ];
+
+  useEffect(() => {
+    fetchPublicPartnerBranding({ host: window.location.host })
+      .then((data) => setBranding(data || null))
+      .catch(() => setBranding(null));
+  }, []);
+
+  useEffect(() => {
+    applyPartnerFavicon(whiteLabel ? branding?.faviconUrl : "");
+    return () => applyPartnerFavicon("");
+  }, [whiteLabel, branding?.faviconUrl]);
+
   return (
+    <LoginBrandingContext.Provider value={branding}>
     <div
       dir={dir}
       className="relative min-h-screen overflow-hidden bg-[#F7F8FC] text-slate-800"
@@ -57,6 +92,16 @@ export default function AuthShell({
           {children}
         </section>
 
+        {whiteLabel ? (
+          <section className="hidden text-center lg:flex lg:flex-col lg:items-center lg:justify-center">
+            <BrandMark />
+            {branding?.brandName ? (
+              <h2 className="mt-8 max-w-xl text-4xl font-black leading-[1.15] tracking-tight text-slate-900">
+                {branding.brandName}
+              </h2>
+            ) : null}
+          </section>
+        ) : (
         <section className="hidden text-center lg:flex lg:flex-col lg:items-center lg:justify-center">
           <BrandMark />
 
@@ -95,8 +140,10 @@ export default function AuthShell({
             ))}
           </div>
         </section>
+        )}
       </main>
     </div>
+    </LoginBrandingContext.Provider>
   );
 }
 
@@ -109,14 +156,16 @@ export function AuthCard({
   subtitle?: string;
   children: ReactNode;
 }) {
+  const branding = useLoginBranding();
+  const whiteLabel = Boolean(branding?.whiteLabelEnabled);
   return (
     <div className="rounded-[32px] border border-white bg-white p-7 shadow-[0_28px_80px_rgba(15,23,42,0.10)] sm:p-9">
       <div className="flex flex-col items-center text-center">
         <BrandMark size="sm" />
         <h1 className="mt-5 text-3xl font-black tracking-tight text-slate-900">
-          {title}
+          {whiteLabel && branding?.brandName ? branding.brandName : title}
         </h1>
-        {subtitle ? (
+        {subtitle && !whiteLabel ? (
           <p className="mt-2 text-sm font-semibold text-slate-500">{subtitle}</p>
         ) : null}
         <div className="mt-5 flex w-full items-center gap-3">

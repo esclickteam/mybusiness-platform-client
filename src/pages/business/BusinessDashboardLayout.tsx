@@ -25,6 +25,7 @@ import {
 import { ensurePushSubscription, listenForPushSubscriptionChange } from "../../utils/push";
 import { clearManagedBusinessContext } from "../../lib/partnerManagedContext";
 import { refreshAccessTokenOnce } from "../../utils/tokenRefresh";
+import { applyPartnerFavicon, brandingFromUser } from "../../lib/partnerBranding";
 
 import FacebookStyleNotifications from "../../components/FacebookStyleNotifications";
 import BusinessWorkspaceNav from "../../components/BusinessWorkspaceNav";
@@ -39,6 +40,13 @@ type AuthUser = {
   name?: string;
   email?: string;
   role?: string;
+  partnerBranding?: {
+    whiteLabelEnabled?: boolean;
+    logoUrl?: string;
+    brandName?: string;
+    faviconUrl?: string;
+    partnerId?: string | null;
+  } | null;
 
   businessId?: string;
   businessName?: string;
@@ -188,6 +196,12 @@ export default function BusinessDashboardLayout() {
   const isAdmin = user?.role === "admin";
   const layoutDir = getTextDirection(i18n.language);
   const isRtl = isHebrewLanguage(i18n.language);
+  const partnerBranding = brandingFromUser(user);
+
+  useEffect(() => {
+    applyPartnerFavicon(partnerBranding?.faviconUrl || "");
+    return () => applyPartnerFavicon("");
+  }, [partnerBranding?.faviconUrl]);
 
   const sidebarRef = useRef<HTMLElement | null>(null);
 
@@ -599,8 +613,8 @@ export default function BusinessDashboardLayout() {
                   `}
                 >
                   <img
-                    src="/bizuply logo.png"
-                    alt="BizUply Logo"
+                    src={partnerBranding?.logoUrl || "/bizuply logo.png"}
+                    alt={partnerBranding?.brandName || "BizUply Logo"}
                     className={`
                       object-contain transition-transform duration-300
                       ${

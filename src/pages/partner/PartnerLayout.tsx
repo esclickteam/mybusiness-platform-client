@@ -18,8 +18,11 @@ const SIDEBAR: NavItem[] = [
   { to: "/partner/dashboard/reminders", label: "תזכורות", icon: Bell },
   { to: "/partner/dashboard/tasks", label: "משימות", icon: CalendarCheck },
   { to: "/partner/dashboard/transactions", label: "עסקאות", icon: Handshake },
-  { to: "/partner/dashboard/withdrawals", label: "משיכת עמלה", icon: Banknote },
-  { to: "/partner/dashboard/pricing", label: "מוצרים ושירותים", icon: BadgePercent },
+  { to: "/partner/dashboard/withdrawals", label: "עמלות / משיכות", icon: Banknote },
+  { to: "/partner/dashboard/pricing", label: "מוצרים וחבילות", icon: BadgePercent },
+  { to: "/partner/dashboard/page", label: "העמוד שלי", icon: Store },
+  { to: "/partner/dashboard/referrals", label: "צירוף פרטנר", icon: Handshake },
+  { to: "/partner/dashboard/team", label: "צוות", icon: Users },
   { to: "/partner/dashboard/revenue", label: "דוחות", icon: Wallet },
   { to: "/partner/dashboard/settings", label: "הגדרות", icon: Settings },
 ];
@@ -27,18 +30,13 @@ const SIDEBAR: NavItem[] = [
 const PILLS: NavItem[] = [
   { to: "/partner/dashboard", label: "סקירה", icon: LayoutDashboard, end: true },
   { to: "/partner/dashboard/crm", label: "לקוחות", icon: Users },
-  { to: "/partner/dashboard/clients/new", label: "לקוח חדש", icon: UserPlus },
-  { to: "/partner/dashboard/tasks", label: "משימות", icon: CalendarCheck },
   { to: "/partner/dashboard/transactions", label: "עסקאות", icon: Handshake },
-  { to: "/partner/dashboard/withdrawals", label: "משיכת עמלה", icon: Banknote },
-  { to: "/partner/dashboard/pricing", label: "מוצרים ושירותים", icon: BadgePercent },
-  { to: "/partner/dashboard/revenue", label: "דוחות", icon: Wallet },
+  { to: "/partner/dashboard/withdrawals", label: "עמלות", icon: Banknote },
+  { to: "/partner/dashboard/pricing", label: "מוצרים", icon: BadgePercent },
+  { to: "/partner/dashboard/page", label: "העמוד שלי", icon: Store },
+  { to: "/partner/dashboard/referrals", label: "צירוף פרטנר", icon: Handshake },
+  { to: "/partner/dashboard/team", label: "צוות", icon: Users },
   { to: "/partner/dashboard/settings", label: "הגדרות", icon: Settings },
-];
-
-const TOOLS = [
-  { to: "/partner/dashboard/storefront", label: "חנות" },
-  { to: "/partner/dashboard/team", label: "צוות" },
 ];
 
 const TITLES: Array<{ test: (path: string) => boolean; title: string }> = [
@@ -48,9 +46,10 @@ const TITLES: Array<{ test: (path: string) => boolean; title: string }> = [
   { test: (path) => path.includes("/reminders"), title: "תזכורות" },
   { test: (path) => path.includes("/tasks"), title: "משימות" },
   { test: (path) => path.includes("/transactions"), title: "עסקאות" },
-  { test: (path) => path.includes("/pricing"), title: "מוצרים ושירותים" },
-  { test: (path) => path.includes("/storefront"), title: "חנות" },
-  { test: (path) => path.includes("/withdrawals"), title: "משיכת עמלות" },
+  { test: (path) => path.includes("/pricing"), title: "מוצרים וחבילות" },
+  { test: (path) => path.includes("/storefront") || path.includes("/page"), title: "העמוד שלי" },
+  { test: (path) => path.includes("/referrals"), title: "צירוף פרטנר" },
+  { test: (path) => path.includes("/withdrawals"), title: "עמלות ומשיכות" },
   { test: (path) => path.includes("/revenue"), title: "דוחות" },
   { test: (path) => path.includes("/team"), title: "צוות" },
   { test: (path) => path.includes("/settings"), title: "הגדרות" },
@@ -83,7 +82,6 @@ export default function PartnerLayout() {
   const navigate = useNavigate();
   const location = useLocation();
   const [open, setOpen] = useState(false);
-  const [toolsOpen, setToolsOpen] = useState(false);
 
   const title = useMemo(
     () => TITLES.find((item) => item.test(location.pathname))?.title || "לוח פרטנר",
@@ -198,30 +196,6 @@ export default function PartnerLayout() {
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <div className="relative">
-                  <button
-                    type="button"
-                    onClick={() => setToolsOpen((value) => !value)}
-                    className="hidden items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2 text-sm font-black text-slate-600 shadow-sm sm:inline-flex"
-                  >
-                    <Store className="h-4 w-4" />
-                    כלים
-                  </button>
-                  {toolsOpen ? (
-                    <div className="absolute left-0 top-full z-20 mt-2 w-48 rounded-2xl border border-slate-100 bg-white p-2 shadow-[0_12px_32px_rgba(15,23,42,0.12)]">
-                      {TOOLS.map((item) => (
-                        <NavLink
-                          key={item.to}
-                          to={item.to}
-                          onClick={() => setToolsOpen(false)}
-                          className="block rounded-xl px-3 py-2 text-sm font-bold text-slate-700 hover:bg-violet-50"
-                        >
-                          {item.label}
-                        </NavLink>
-                      ))}
-                    </div>
-                  ) : null}
-                </div>
                 <NavLink
                   to="/partner/dashboard/settings"
                   className="rounded-2xl border border-slate-200 bg-white p-2 text-slate-500 shadow-sm"

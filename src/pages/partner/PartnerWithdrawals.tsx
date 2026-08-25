@@ -21,6 +21,7 @@ export default function PartnerWithdrawals() {
   const [items, setItems] = useState<any[]>([]);
   const [balances, setBalances] = useState<any>(null);
   const [cycle, setCycle] = useState<any>(null);
+  const [kyc, setKyc] = useState<{ approved?: boolean; reviewStatus?: string } | null>(null);
   const [error, setError] = useState("");
   const [amount, setAmount] = useState("");
   const [receiptNumber, setReceiptNumber] = useState("");
@@ -33,6 +34,7 @@ export default function PartnerWithdrawals() {
     setItems(data.items || []);
     setBalances(data.balances);
     setCycle(data.cycle);
+    setKyc(data.kyc || null);
     if (!amount && data.balances?.eligible) setAmount(String(data.balances.eligible));
   }
 
@@ -65,7 +67,8 @@ export default function PartnerWithdrawals() {
     }
   }
 
-  const canSubmit = Boolean(file && receiptNumber.trim() && Number(amount) > 0);
+  const kycBlocked = kyc && kyc.approved === false;
+  const canSubmit = Boolean(file && receiptNumber.trim() && Number(amount) > 0 && !kycBlocked);
 
   return (
     <div className="space-y-5">
@@ -81,6 +84,11 @@ export default function PartnerWithdrawals() {
         </Link>
         .
       </p>
+      {kycBlocked ? (
+        <p className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-black text-amber-900">
+          יש להשלים ולאשר את פרטי הזיהוי והבנק לפני שניתן למשוך עמלות.
+        </p>
+      ) : null}
       {cycle?.copy ? (
         <p className="rounded-2xl border border-violet-100 bg-violet-50 px-4 py-3 text-sm font-bold text-violet-800">
           {cycle.copy}

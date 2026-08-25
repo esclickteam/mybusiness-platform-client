@@ -9,6 +9,7 @@ import {
   partnerApiError,
 } from "../../lib/partnerApi";
 import { formatIls } from "../../lib/partnerMoney";
+import { partnerStatusLabel } from "../../lib/partnerLabels";
 
 const TABS = [
   ["overview", "סקירה"],
@@ -86,7 +87,7 @@ export default function AdminPartnerDossier() {
         </Link>
         <h1 className="mt-2 text-3xl font-black">{partner.name}</h1>
         <p className="font-bold text-slate-500">
-          {plan.nameHe || partner.planKey} · {partner.status}
+          {plan.nameHe || partner.planKey} · {partnerStatusLabel(partner.status)}
         </p>
         {error ? <p className="mt-3 font-black text-rose-700">{error}</p> : null}
 
@@ -117,8 +118,8 @@ export default function AdminPartnerDossier() {
 
         {tab === "overview" ? (
           <section className="mt-5 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            <Kpi label="Plan" value={plan.nameHe || partner.planKey} />
-            <Kpi label="Status" value={partner.status} />
+            <Kpi label="מסלול" value={plan.nameHe || partner.planKey} />
+            <Kpi label="סטטוס" value={partnerStatusLabel(partner.status)} />
             <Kpi label="Setup" value={formatIls(plan.setupIls)} />
             <Kpi label="Monthly subscription" value={formatIls(plan.monthlyIls)} />
             <Kpi label="Customers" value={String((data.clients || []).length)} />
@@ -245,7 +246,11 @@ const clientCols = [
 ];
 const dealCols = [
   ["dealNumber", "Deal"],
-  ["status", "סטטוס"],
+  ["salesSource", "מקור"],
+  ["paymentStatus", "תשלום"],
+  ["activationStatus", "הפעלה"],
+  ["commissionStatus", "עמלה"],
+  ["status", "סטטוס עסקה"],
   ["totals.customerNow", "סכום ללקוח"],
   ["totals.partnerPaysBizuply", "לתשלום ל-Bizuply"],
   ["paidAt", "שולם"],
@@ -307,6 +312,8 @@ function Table({
                     ? formatIls(value)
                     : typeof value === "number" && (path.includes("mrr") || path.includes("Price") || path.includes("totals"))
                       ? formatIls(value)
+                    : path.toLowerCase().includes("status") || path === "salesSource"
+                      ? partnerStatusLabel(String(value ?? ""))
                       : String(value ?? "—");
                 return (
                   <td key={path} className="px-3 py-3">

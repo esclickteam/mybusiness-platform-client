@@ -3,7 +3,7 @@ import { fetchPartnerTransactions, partnerApiError } from "../../lib/partnerApi"
 import { formatIls } from "../../lib/partnerMoney";
 import { DateRangeBar } from "./PartnerDashboard";
 import PartnerPageHeader from "../../components/partner/PartnerPageHeader";
-import { PartnerCard } from "../../components/partner/partnerUi";
+import { partnerStatusLabel } from "../../lib/partnerLabels";
 
 const PAYMENT_STATUSES = [
   { id: "", label: "כל תשלומי הלקוח" },
@@ -140,11 +140,12 @@ export default function PartnerTransactions() {
               <th className="px-3 py-3">Deal</th>
               <th className="px-3 py-3">מוצר</th>
               <th className="px-3 py-3">סכום העסקה</th>
-              <th className="px-3 py-3">Partner commission</th>
-              <th className="px-3 py-3">Bizuply amount</th>
-              <th className="px-3 py-3">payment status</th>
-              <th className="px-3 py-3">commission status</th>
-              <th className="px-3 py-3">Stripe reference</th>
+              <th className="px-3 py-3">עמלה</th>
+              <th className="px-3 py-3">חלק Bizuply</th>
+              <th className="px-3 py-3">סטטוס תשלום</th>
+              <th className="px-3 py-3">סטטוס עמלה</th>
+              <th className="px-3 py-3">מקור</th>
+              <th className="px-3 py-3">אסמכתת תשלום</th>
             </tr>
           </thead>
           <tbody>
@@ -161,8 +162,14 @@ export default function PartnerTransactions() {
                 <td className="px-3 py-3">{ils(row.customerFinalPrice)}</td>
                 <td className="px-3 py-3 font-black">{ils(row.partnerCommissionAmount)}</td>
                 <td className="px-3 py-3">{ils(row.bizuplyGrossAmount || row.bizuplyMarkupShare)}</td>
-                <td className="px-3 py-3">{row.customerPaymentStatus}</td>
-                <td className="px-3 py-3">{row.commissionStatus}</td>
+                <td className="px-3 py-3">{partnerStatusLabel(row.customerPaymentStatus)}</td>
+                <td className="px-3 py-3">{partnerStatusLabel(row.commissionStatus)}</td>
+                <td className="px-3 py-3">
+                  {partnerStatusLabel(row.salesSource || row.sourceType || row.commissionType)}
+                  {row.sourceType === "renewal" || row.commissionType === "customer_renewal"
+                    ? " · חידוש"
+                    : ""}
+                </td>
                 <td className="px-3 py-3 text-xs">
                   {row.stripePaymentIntentId || row.reference || row.transactionId}
                 </td>

@@ -28,7 +28,12 @@ export async function registerPartner(payload: {
 
 export async function fetchPartnerMe() {
   const { data } = await API.get("/partner/me");
-  return data.partner as PartnerMe;
+  return {
+    ...(data.partner || {}),
+    branding: data.branding || data.partner?.branding,
+    urls: data.urls,
+    billingCheckoutAvailable: Boolean(data.billingCheckoutAvailable),
+  } as PartnerMe;
 }
 
 export function partnerApiError(err: unknown, fallback: string) {
@@ -443,6 +448,117 @@ export async function fetchAdminPartnerTransactions(partnerId: string) {
 export async function adminSuspendPartner(id: string, resume = false) {
   const { data } = await API.post(`/admin/partners/${id}/suspend`, {
     status: resume ? "active" : "suspended",
+  });
+  return data;
+}
+
+export async function createPartnerWorkItem(payload: {
+  clientId: string;
+  title: string;
+  description?: string;
+  dueAt?: string;
+  kind?: "task" | "reminder";
+  dealId?: string;
+}) {
+  const { data } = await API.post("/partner/work-items", payload);
+  return data;
+}
+
+export async function retryPartnerDealActivation(dealId: string) {
+  const { data } = await API.post(`/partner/deals/${dealId}/retry-activation`);
+  return data;
+}
+
+export async function changePartnerDealEmail(dealId: string, email: string) {
+  const { data } = await API.post(`/partner/deals/${dealId}/change-email`, { email });
+  return data;
+}
+
+export async function linkPartnerDealBusiness(dealId: string, businessId: string) {
+  const { data } = await API.post(`/partner/deals/${dealId}/link-business`, { businessId });
+  return data;
+}
+
+export async function fetchPartnerBranding() {
+  const { data } = await API.get("/partner/branding");
+  return data;
+}
+
+export async function updatePartnerBranding(payload: Record<string, unknown>) {
+  const { data } = await API.patch("/partner/branding", payload);
+  return data;
+}
+
+export async function uploadPartnerLogo(file: File, kind: "logo" | "favicon" = "logo") {
+  const form = new FormData();
+  form.append("file", file);
+  form.append("kind", kind);
+  const { data } = await API.post("/partner/branding/logo", form);
+  return data;
+}
+
+export async function fetchPartnerReferrals() {
+  const { data } = await API.get("/partner/referrals");
+  return data;
+}
+
+export async function submitPartnerReferral(payload: Record<string, string>) {
+  const { data } = await API.post("/partner/referrals", payload);
+  return data;
+}
+
+export async function fetchPublicPartnerBranding(params?: { host?: string; slug?: string }) {
+  const { data } = await API.get("/public/branding", { params });
+  return data.branding;
+}
+
+export async function fetchPublicPartnerPlans(slug: string) {
+  const { data } = await API.get(`/public/p/${encodeURIComponent(slug)}/plans`);
+  return data;
+}
+
+export async function startPublicPartnerCheckout(
+  slug: string,
+  payload: { sku: string; email: string; name?: string; phone?: string; businessName?: string }
+) {
+  const { data } = await API.post(`/public/p/${encodeURIComponent(slug)}/checkout`, payload);
+  return data;
+}
+
+export async function fetchPublicCheckoutStatus(slug: string, sessionId: string) {
+  const { data } = await API.get(
+    `/public/p/${encodeURIComponent(slug)}/checkout/${encodeURIComponent(sessionId)}`
+  );
+  return data;
+}
+
+export async function fetchAdminPartnerAttentionDeals() {
+  const { data } = await API.get("/admin/partners/deals/needs-attention");
+  return data as { items: any[] };
+}
+
+export async function fetchAdminPartnerReferrals() {
+  const { data } = await API.get("/admin/partners/referrals");
+  return data as { items: any[] };
+}
+
+export async function adminPartnerReferralAction(
+  referralId: string,
+  action: string,
+  payload: Record<string, unknown> = {}
+) {
+  const { data } = await API.post(`/admin/partners/referrals/${referralId}/${action}`, payload);
+  return data;
+}
+
+export async function adminRetryDealActivation(partnerId: string, dealId: string) {
+  const { data } = await API.post(`/admin/partners/${partnerId}/deals/${dealId}/retry-activation`);
+  return data;
+}
+
+export async function adminLinkDealBusiness(partnerId: string, dealId: string, businessId: string) {
+  const { data } = await API.post(`/admin/partners/${partnerId}/deals/${dealId}/link-business`, {
+    businessId,
   });
   return data;
 }

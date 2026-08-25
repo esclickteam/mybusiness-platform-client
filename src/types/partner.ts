@@ -87,6 +87,13 @@ export type PartnerMe = {
   lastPaymentAt?: string | null;
   nextRenewalAt?: string | null;
   branding?: Record<string, unknown>;
+  urls?: {
+    slugUrl?: string;
+    plansUrl?: string;
+    subdomainUrl?: string;
+    personalUrl?: string;
+  };
+  billingCheckoutAvailable?: boolean;
   storefront?: Record<string, unknown>;
   compliance?: PartnerCompliance;
   teamSeatLimit: number;
@@ -165,6 +172,12 @@ export type PartnerDeal = {
   dealId?: string;
   dealNumber: string;
   status: string;
+  paymentStatus?: string;
+  activationStatus?: string;
+  commissionStatus?: string;
+  salesSource?: string;
+  pipelineStatus?: string;
+  needsAttention?: boolean;
   kind?: string;
   packageSku?: string;
   packageDisplayName?: string;

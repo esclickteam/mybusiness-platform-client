@@ -40,6 +40,15 @@ export default function PartnerStorefront() {
             <p className="mt-2 text-sm">
               {data.contact?.phone} {data.contact?.email} {data.contact?.whatsapp}
             </p>
+            <p className="mt-3 text-xs font-bold text-slate-500">
+              קטלוג ציבורי להצגת מוצרים ושירותים. רכישה מתבצעת מול הפרטנר.
+            </p>
+            <a
+              href={`/p/${slug}/plans`}
+              className="mt-3 inline-flex rounded-2xl bg-slate-900 px-4 py-2 text-sm font-black text-white"
+            >
+              לעמוד החבילות
+            </a>
           </div>
         </div>
       </header>

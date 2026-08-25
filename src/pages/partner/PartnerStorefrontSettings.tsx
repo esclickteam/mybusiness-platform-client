@@ -68,9 +68,9 @@ export default function PartnerStorefrontSettings() {
   return (
     <form onSubmit={save} className="space-y-5">
       <PartnerPageHeader
-        eyebrow="חנות"
-        title="הגדרות חנות"
-        subtitle="עמוד המכירה הציבורי של הפרטנר."
+        eyebrow="קטלוג"
+        title="הגדרות קטלוג מוצרים"
+        subtitle="קטלוג ציבורי להצגת מוצרים ושירותים. רכישה מתבצעת מול הפרטנר, או בעמוד החבילות אם הופעל."
       />
       <PartnerCard className="space-y-4 p-6">
       {error ? <p className="text-sm font-bold text-rose-600">{error}</p> : null}

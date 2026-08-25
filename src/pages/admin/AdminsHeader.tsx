@@ -21,6 +21,7 @@ const NAV_ITEMS = [
   { path: "/admin/businesses", label: "עסקים" },
   { path: "/admin/affiliates", label: "שותפים" },
   { path: "/admin/partners", label: "פרטנרים" },
+  { path: "/admin/partners/referrals", label: "צירופי פרטנרים" },
   { path: "/admin/marketers", label: "משווקים" },
   { path: "/admin/withdrawals", label: "משיכות" },
   { path: "/admin/support-chat", label: "צ'אט תמיכה" },

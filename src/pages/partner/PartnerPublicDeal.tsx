@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Helmet } from "react-helmet-async";
 import { useParams } from "react-router-dom";
 import { fetchPublicPartnerDeal } from "../../lib/partnerApi";
 import { billingLabel } from "../../lib/partnerDealMath";
@@ -40,6 +41,16 @@ export default function PartnerPublicDeal() {
   const [error, setError] = useState("");
 
   useEffect(() => {
+    const meta = document.createElement("meta");
+    meta.name = "robots";
+    meta.content = "noindex,nofollow";
+    document.head.appendChild(meta);
+    return () => {
+      meta.remove();
+    };
+  }, []);
+
+  useEffect(() => {
     if (!dealId) return;
     fetchPublicPartnerDeal(dealId)
       .then((data) => setSummary(data as PublicSummary))
@@ -71,6 +82,9 @@ export default function PartnerPublicDeal() {
 
   return (
     <div dir="rtl" className="min-h-screen bg-[#f6f4ff] px-4 py-10" style={{ fontFamily: '"Assistant","Rubik",sans-serif' }}>
+      <Helmet>
+        <meta name="robots" content="noindex,nofollow" />
+      </Helmet>
       <article className="mx-auto max-w-3xl overflow-hidden rounded-[32px] border border-white bg-white shadow-[0_24px_80px_rgba(76,29,149,0.12)]">
         <header className="bg-gradient-to-l from-[#4C1D95] to-[#7C4DFF] px-8 py-8 text-white">
           <div className="flex items-center gap-4">
@@ -136,7 +150,7 @@ export default function PartnerPublicDeal() {
           </section>
 
           <section className="rounded-[28px] bg-slate-900 p-6 text-white">
-            <h3 className="text-lg font-black">תשלום</h3>
+            <h3 className="text-lg font-black">סיכום ההצעה</h3>
             <p className="mt-1 text-sm font-bold text-white/60">
               מחיר אחיד לרישיון ולשירותים — הסכום הסופי כולל את כל הרכיבים.
             </p>
@@ -144,7 +158,7 @@ export default function PartnerPublicDeal() {
               <Row label="מחיר חד-פעמי" value={formatIls(pay.oneTime)} />
               <Row label="מחיר כל חודש" value={`${formatIls(pay.monthly)} / חודש`} />
               {pay.annual ? <Row label="שנתי" value={`${formatIls(pay.annual)} / שנה`} /> : null}
-              <Row label="לתשלום עכשיו" value={formatIls(pay.dueNow)} large />
+              <Row label="סה״כ ההצעה" value={formatIls(pay.dueNow)} large />
             </div>
             {pay.renewalMonthly ? (
               <p className="mt-4 text-sm font-bold text-white/70">
@@ -155,6 +169,9 @@ export default function PartnerPublicDeal() {
                 מתחדש ב-{formatIls(pay.renewalAnnual)} לשנה
               </p>
             ) : null}
+            <p className="mt-5 text-sm font-bold leading-6 text-white/75">
+              התשלום והפעלת השירות מתבצעים מול הפרטנר שלך. עמוד זה מציג את סיכום המוצרים והשירותים שנבחרו עבורך.
+            </p>
           </section>
         </div>
       </article>

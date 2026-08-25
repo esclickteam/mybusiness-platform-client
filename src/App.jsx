@@ -203,6 +203,12 @@ const PartnerDealDetail = lazy(() => import("./pages/partner/PartnerDealDetail")
 const PartnerPublicDeal = lazy(() => import("./pages/partner/PartnerPublicDeal"));
 const PartnerRegister = lazy(() => import("./pages/partner/PartnerRegister"));
 const PartnerStorefront = lazy(() => import("./pages/public/PartnerStorefront"));
+const PartnerPublicPlans = lazy(() => import("./pages/public/PartnerPublicPlans"));
+const PartnerCheckoutSuccess = lazy(() => import("./pages/public/PartnerCheckoutSuccess"));
+const PartnerMyPage = lazy(() => import("./pages/partner/PartnerMyPage"));
+const PartnerReferrals = lazy(() => import("./pages/partner/PartnerReferrals"));
+const AdminPartnerReferrals = lazy(() => import("./pages/admin/AdminPartnerReferrals"));
+const AdminPartnerAttentionDeals = lazy(() => import("./pages/admin/AdminPartnerAttentionDeals"));
 
 const AffiliatePage = lazy(() =>
   import("./pages/business/dashboardPages/AffiliatePage")
@@ -826,6 +832,10 @@ export default function App() {
     location.pathname.includes("/chat");
 
   const isPublicPartnerDeal = location.pathname.startsWith("/partner/deals/");
+  const isPublicPartnerSales =
+    location.pathname.startsWith("/p/") ||
+    location.pathname === "/plans" ||
+    location.pathname.startsWith("/plans/");
   const isDashboardRoute =
     location.pathname.includes("/dashboard") ||
     isAdminRoute ||
@@ -833,6 +843,7 @@ export default function App() {
     location.pathname.startsWith("/client") ||
     (location.pathname.startsWith("/partner") && !isPublicPartnerDeal) ||
     location.pathname.startsWith("/p/") ||
+    location.pathname === "/plans" ||
     location.pathname.includes("/messages");
 
   const isPublicBusinessProfile = /^\/business\/[^/]+$/.test(
@@ -909,6 +920,7 @@ export default function App() {
           !isAdminRoute &&
           !isStaffRoute &&
           !isPublicPartnerDeal &&
+          !isPublicPartnerSales &&
           !isGuidedDemoRoute &&
           !isPublicProposalRoute &&
           !isBizuplyPublicBookingRoute && <Header />}
@@ -1037,6 +1049,9 @@ export default function App() {
                         <Route path="/pricing" element={<Pricing />} />
                         <Route path="/Pricing" element={<Pricing />} />
                         <Route path="/p/:slug" element={<PartnerStorefront />} />
+                        <Route path="/p/:slug/plans" element={<PartnerPublicPlans />} />
+                        <Route path="/p/:slug/checkout/success" element={<PartnerCheckoutSuccess />} />
+                        <Route path="/plans" element={<PartnerPublicPlans />} />
                         <Route path="/partner/register" element={<PartnerRegister />} />
                         <Route path="/partner/deals/:dealId" element={<PartnerPublicDeal />} />
                         <Route path="/checkout" element={<Checkout />} />
@@ -1489,6 +1504,22 @@ export default function App() {
                           }
                         />
                         <Route
+                          path="/admin/partners/referrals"
+                          element={
+                            <ProtectedRoute roles={["admin"]}>
+                              <AdminPartnerReferrals />
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
+                          path="/admin/partners/attention"
+                          element={
+                            <ProtectedRoute roles={["admin"]}>
+                              <AdminPartnerAttentionDeals />
+                            </ProtectedRoute>
+                          }
+                        />
+                        <Route
                           path="/admin/partners/:partnerId"
                           element={
                             <ProtectedRoute roles={["admin"]}>
@@ -1554,6 +1585,8 @@ export default function App() {
                           <Route path="reminders" element={<PartnerWorkboard />} />
                           <Route path="pricing" element={<PartnerPricing />} />
                           <Route path="storefront" element={<PartnerStorefrontSettings />} />
+                          <Route path="page" element={<PartnerMyPage />} />
+                          <Route path="referrals" element={<PartnerReferrals />} />
                           <Route path="transactions" element={<PartnerTransactions />} />
                           <Route path="withdrawals" element={<PartnerWithdrawals />} />
                           <Route path="deals/:dealId" element={<PartnerDealDetail />} />
@@ -1582,12 +1615,13 @@ export default function App() {
           !isGuidedDemoRoute &&
           !isPublicProposalRoute &&
           !isPublicPartnerDeal &&
+          !isPublicPartnerSales &&
           !isBizuplyPublicBookingRoute && <Footer />}
       </div>
 
       <GuidedDemoHost />
 
-      {!user && !isEarlyAccessLanding && !isHiddenOffer && !isBizuplyPublicBookingRoute && !isPublicProposalRoute && !isPublicPartnerDeal && (
+      {!user && !isEarlyAccessLanding && !isHiddenOffer && !isBizuplyPublicBookingRoute && !isPublicProposalRoute && !isPublicPartnerDeal && !isPublicPartnerSales && (
         <PreLoginBot />
       )}
 
@@ -1605,6 +1639,7 @@ export default function App() {
         !isGuidedDemoRoute &&
         !isPublicProposalRoute &&
         !isPublicPartnerDeal &&
+        !isPublicPartnerSales &&
         !isBizuplyPublicBookingRoute &&
         !location.pathname.startsWith("/embed/") &&
         !isMiniSiteHost && (
@@ -1618,6 +1653,7 @@ export default function App() {
         !isMiniSiteHost &&
         !isPublicProposalRoute &&
         !isPublicPartnerDeal &&
+        !isPublicPartnerSales &&
         !isBizuplyPublicBookingRoute && (
           <AccessibilityWidget siteKey="bizuply-platform" mode="live" />
         )}

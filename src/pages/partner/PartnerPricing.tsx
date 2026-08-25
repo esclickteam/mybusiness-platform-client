@@ -37,7 +37,7 @@ export default function PartnerPricing() {
       <PartnerPageHeader
         eyebrow="תמחור"
         title="מחירון פרטנר"
-        subtitle="אפשר לערוך רק את העמלה הנוספת ואת ההצגה בחנות. מחיר Bizuply עבורך מחושב לפי המסלול, כולל אחוז ל-Bizuply וכמה נשאר לכם."
+        subtitle="אפשר לערוך את העמלה הנוספת ואת ההצגה בעמוד המכירה. המחיר הסופי ללקוח = מחיר סיטונאי + תוספת. הלקוח רואה רק את המחיר הסופי."
       />
       {error ? (
         <div className="rounded-2xl border border-rose-200 bg-rose-50 px-4 py-3 text-sm font-bold text-rose-700">
@@ -72,6 +72,14 @@ function PriceRow({
         <div>
           <h3 className="text-lg font-black">{item.nameHe || item.sku}</h3>
           <p className="text-xs font-bold text-slate-400">{item.sku}</p>
+          <p className="mt-2 text-sm font-black text-slate-900">
+            מחיר סופי ללקוח: {formatIls(quoted.customerFinalPrice)}
+          </p>
+          {item.category === "human_service" ? (
+            <p className="mt-1 text-xs font-black text-amber-700">
+              שירות אנושי – אינו מפעיל מודול אוטומטית.
+            </p>
+          ) : null}
         </div>
         <label className="inline-flex items-center gap-2 rounded-full bg-slate-50 px-3 py-1 text-sm font-bold">
           <input
@@ -80,7 +88,7 @@ function PriceRow({
             onChange={(e) => setEnabled(e.target.checked)}
             className="accent-violet-700"
           />
-          הצג בחנות
+          הצג בעמוד המכירה
         </label>
       </div>
 
