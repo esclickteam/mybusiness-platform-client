@@ -171,6 +171,8 @@ test("Partner shell uses sidebar + pill navigation without Direct CRM", () => {
   assert.equal(layout.includes("/partner/dashboard/team"), true);
   assert.equal(layout.includes("CRMClient"), false);
   assert.equal(layout.includes("/api/crm"), false);
+  assert.equal(layout.includes("looksLikePartnerHost"), true);
+  assert.equal(layout.includes('looksLikePartnerHost ? "פרטנר" : "Bizuply Partner"'), true);
 
   const app = readFileSync(join(ROOT, "App.jsx"), "utf8");
   assert.equal(app.includes('path="tasks"'), true);
@@ -517,4 +519,6 @@ test("partner settings expose white-label branding fields and personal link acti
   const hook = readFileSync(join(ROOT, "hooks/usePartnerHostBranding.ts"), "utf8");
   assert.equal(hook.includes("fetchPublicPartnerBranding"), true);
   assert.equal(hook.includes("whiteLabelEnabled"), true);
+  assert.equal(hook.includes("loadPartnerHostBranding"), true);
+  assert.equal(hook.includes("resolvedHost"), true);
 });

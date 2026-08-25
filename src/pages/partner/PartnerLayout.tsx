@@ -84,12 +84,12 @@ export default function PartnerLayout() {
   const navigate = useNavigate();
   const location = useLocation();
   const [open, setOpen] = useState(false);
-  const { branding } = usePartnerHostBranding();
+  const { branding, looksLikePartnerHost } = usePartnerHostBranding();
   const host = typeof window !== "undefined" ? window.location.hostname : "";
   const brandName = hidesBizuplyChrome(branding, host)
     ? partnerFacingName(branding, host)
     : "";
-  const productMark = brandName || "Bizuply Partner";
+  const productMark = brandName || (looksLikePartnerHost ? "פרטנר" : "Bizuply Partner");
 
   const title = useMemo(
     () => TITLES.find((item) => item.test(location.pathname))?.title || "לוח פרטנר",
