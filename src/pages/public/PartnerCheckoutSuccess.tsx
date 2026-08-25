@@ -4,6 +4,12 @@ import { fetchPublicCheckoutStatus, partnerApiError } from "../../lib/partnerApi
 import PublicPartnerShell from "../../components/partner/PublicPartnerShell";
 import { partnerStatusLabel } from "../../lib/partnerLabels";
 
+function checkoutSettled(payload: { paid?: boolean; activationStatus?: string } | null) {
+  if (!payload?.paid) return false;
+  const activation = payload.activationStatus;
+  return activation === "active" || activation === "requires_action" || activation === "failed";
+}
+
 export default function PartnerCheckoutSuccess() {
   const { slug } = useParams();
   const [params] = useSearchParams();
@@ -22,7 +28,7 @@ export default function PartnerCheckoutSuccess() {
         let payload = await fetchPublicCheckoutStatus(slug, sessionId);
         if (cancelled) return;
         setData(payload);
-        for (let attempt = 0; attempt < 12 && !cancelled && !payload.paid; attempt += 1) {
+        for (let attempt = 0; attempt < 12 && !cancelled && !checkoutSettled(payload); attempt += 1) {
           await new Promise((resolve) => setTimeout(resolve, 2000));
           payload = await fetchPublicCheckoutStatus(slug, sessionId);
           if (cancelled) return;

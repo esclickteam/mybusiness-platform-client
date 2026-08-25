@@ -78,20 +78,26 @@ export default function PartnerDealDetail() {
       return row?.paymentStatus === "paid" || row?.status === "paid";
     }
 
+    function activationSettled(row?: PartnerDeal | null) {
+      const activation = row?.activationStatus;
+      return activation === "active" || activation === "requires_action" || activation === "failed";
+    }
+
     (async () => {
       try {
         const first = applyDeal(await fetchPartnerDeal(dealId), { hydrateForm: true });
         if (cancelled) return;
-        if (!paidReturn || isPaid(first)) {
+        if (!paidReturn || (isPaid(first) && activationSettled(first))) {
           setConfirmingPayment(false);
           return;
         }
-        setConfirmingPayment(true);
+        setConfirmingPayment(!isPaid(first));
         for (let attempt = 0; attempt < 12 && !cancelled; attempt += 1) {
           await new Promise((resolve) => setTimeout(resolve, 2000));
           const next = applyDeal(await fetchPartnerDeal(dealId));
           if (cancelled) return;
-          if (isPaid(next)) {
+          setConfirmingPayment(!isPaid(next));
+          if (isPaid(next) && activationSettled(next)) {
             setConfirmingPayment(false);
             return;
           }
