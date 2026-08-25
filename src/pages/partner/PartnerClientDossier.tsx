@@ -17,6 +17,7 @@ import {
   enterPartnerClient,
   fetchPartnerClient,
   partnerApiError,
+  retryPartnerDealActivation,
   togglePartnerTask,
 } from "../../lib/partnerApi";
 import { formatIls } from "../../lib/partnerMoney";
@@ -120,7 +121,16 @@ export default function PartnerClientDossier() {
     setActivating(true);
     setError("");
     try {
-      await activatePartnerClient(clientId);
+      const paidDeal = deals.find(
+        (deal) =>
+          deal.needsAttention ||
+          (deal.paymentStatus === "paid" && deal.activationStatus !== "active")
+      );
+      if (paidDeal?._id) {
+        await retryPartnerDealActivation(paidDeal._id);
+      } else {
+        await activatePartnerClient(clientId);
+      }
       const refreshed = await fetchPartnerClient(clientId);
       setClient(refreshed.client);
       setDeals(refreshed.deals || []);
@@ -161,6 +171,11 @@ export default function PartnerClientDossier() {
     0
   );
   const dueTotal = wholesaleTotal + bizuplyShare;
+  const attentionDeal = deals.find(
+    (deal) =>
+      deal.needsAttention ||
+      (deal.paymentStatus === "paid" && deal.activationStatus !== "active")
+  );
 
   return (
     <div className="space-y-5">
@@ -178,19 +193,23 @@ export default function PartnerClientDossier() {
         subtitle={`${client.contact.contactName} · ${client.contact.email}`}
         actions={
           <>
-            {deals.some(
-              (deal) =>
-                deal.needsAttention ||
-                (deal.paymentStatus === "paid" && deal.activationStatus !== "active")
-            ) ? (
-              <button
-                type="button"
-                disabled={activating}
-                onClick={activateClient}
-                className="inline-flex items-center gap-2 rounded-2xl bg-amber-600 px-4 py-2.5 text-sm font-black text-white"
-              >
-                {activating ? "מפעיל..." : "הפעלת חשבון אחרי תשלום"}
-              </button>
+            {attentionDeal ? (
+              <>
+                <button
+                  type="button"
+                  disabled={activating}
+                  onClick={activateClient}
+                  className="inline-flex items-center gap-2 rounded-2xl bg-amber-600 px-4 py-2.5 text-sm font-black text-white"
+                >
+                  {activating ? "מפעיל..." : "הפעלת חשבון אחרי תשלום"}
+                </button>
+                <Link
+                  to={`/partner/dashboard/deals/${attentionDeal._id}`}
+                  className="inline-flex items-center rounded-2xl border border-amber-300 bg-white px-4 py-2.5 text-sm font-black text-amber-900"
+                >
+                  טיפול באימייל / עסק קיים
+                </Link>
+              </>
             ) : null}
             {client.canEnterClient ? (
               <button

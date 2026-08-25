@@ -176,6 +176,8 @@ test("Partner shell uses sidebar + pill navigation without Direct CRM", () => {
   assert.equal(layout.includes("looksLikePartnerHost"), true);
   assert.equal(layout.includes("partnerDisplayName"), true);
   assert.equal(layout.includes('looksLikePartnerHost ? "פרטנר" : "Bizuply Partner"'), true);
+  assert.equal(layout.includes("fetchPartnerMe"), true);
+  assert.equal(layout.includes("payment_due"), true);
 
   const app = readFileSync(join(ROOT, "App.jsx"), "utf8");
   assert.equal(app.includes('path="tasks"'), true);
@@ -432,7 +434,9 @@ test("transactions page links deals and separates pending from eligible commissi
 test("CRM dossier retries paid-deal activation without using Direct CRM", () => {
   const src = readFileSync(join(ROOT, "pages/partner/PartnerClientDossier.tsx"), "utf8");
   assert.equal(src.includes("activatePartnerClient"), true);
+  assert.equal(src.includes("retryPartnerDealActivation"), true);
   assert.equal(src.includes("/partner/dashboard/deals/"), true);
+  assert.equal(src.includes("טיפול באימייל / עסק קיים"), true);
   assert.equal(src.includes("הפעלת חשבון אחרי תשלום"), true);
   assert.equal(src.includes("paymentStatus === \"paid\""), true);
   assert.equal(src.includes("CRMClient"), false);
