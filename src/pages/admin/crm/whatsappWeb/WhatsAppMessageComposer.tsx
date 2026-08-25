@@ -231,7 +231,7 @@ export function WhatsAppMessageComposer({
 
         <textarea
           ref={textareaRef}
-          className="max-h-36 min-h-[44px] min-w-0 flex-1 resize-none rounded-[24px] border-none bg-white px-4 py-2.5 text-[15px] leading-5 text-[#111b21] outline-none"
+          className="max-h-36 min-h-[44px] min-w-0 flex-1 resize-none overflow-y-auto rounded-[24px] border-none bg-white px-4 py-2.5 text-[15px] leading-5 text-[#111b21] outline-none"
           placeholder={
             stagedFile
               ? supportsCaption(stagedFile.messageType)
