@@ -4,7 +4,7 @@ import { Banknote, BadgePercent, Bell, CalendarCheck, Handshake, LayoutDashboard
 import { useAuth } from "../../context/AuthContext";
 import { PARTNER_FONT } from "../../components/partner/partnerUi";
 import { usePartnerHostBranding } from "../../hooks/usePartnerHostBranding";
-import { hidesBizuplyChrome, partnerFacingName } from "../../lib/partnerBranding";
+import { hidesBizuplyChrome, partnerDisplayName, partnerFacingName } from "../../lib/partnerBranding";
 
 type NavItem = {
   to: string;
@@ -88,7 +88,9 @@ export default function PartnerLayout() {
   const host = typeof window !== "undefined" ? window.location.hostname : "";
   const brandName = hidesBizuplyChrome(branding, host)
     ? partnerFacingName(branding, host)
-    : "";
+    : looksLikePartnerHost
+      ? partnerDisplayName(branding)
+      : "";
   const productMark = brandName || (looksLikePartnerHost ? "פרטנר" : "Bizuply Partner");
 
   const title = useMemo(

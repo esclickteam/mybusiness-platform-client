@@ -10,7 +10,7 @@ import { formatPublicCustomerPrice } from "../../lib/partnerMoney";
 import { billingLabel, publicPackageLabel, publicProductCopy } from "../../lib/partnerDealMath";
 import PublicPartnerShell from "../../components/partner/PublicPartnerShell";
 import { isPartnerWhiteLabelHostname } from "../../lib/partnerHost.mjs";
-import { partnerFacingName, type PublicPartnerBranding } from "../../lib/partnerBranding";
+import { partnerDisplayName, partnerFacingName, type PublicPartnerBranding } from "../../lib/partnerBranding";
 
 export default function PartnerPublicPlans() {
   const { slug: slugParam } = useParams();
@@ -89,7 +89,7 @@ export default function PartnerPublicPlans() {
   const products = page?.products || [];
   const selected = products.find((item: any) => item.sku === sku);
   const host = typeof window !== "undefined" ? window.location.hostname : "";
-  const heading = partnerFacingName(branding, host) || page?.partner?.name || "חבילות";
+  const heading = partnerFacingName(branding, host) || partnerDisplayName(branding) || page?.partner?.name || "חבילות";
 
   return (
     <PublicPartnerShell

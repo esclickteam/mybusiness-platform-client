@@ -172,6 +172,7 @@ test("Partner shell uses sidebar + pill navigation without Direct CRM", () => {
   assert.equal(layout.includes("CRMClient"), false);
   assert.equal(layout.includes("/api/crm"), false);
   assert.equal(layout.includes("looksLikePartnerHost"), true);
+  assert.equal(layout.includes("partnerDisplayName"), true);
   assert.equal(layout.includes('looksLikePartnerHost ? "פרטנר" : "Bizuply Partner"'), true);
 
   const app = readFileSync(join(ROOT, "App.jsx"), "utf8");
@@ -181,6 +182,39 @@ test("Partner shell uses sidebar + pill navigation without Direct CRM", () => {
   const tasksAt = app.indexOf('path="tasks"');
   assert.ok(tasksAt > 0);
   assert.ok(catchAllAt > tasksAt);
+});
+
+test("leftover Basic storefront uses stored brand without hiding Powered by Bizuply", () => {
+  const branding = readFileSync(join(ROOT, "lib/partnerBranding.ts"), "utf8");
+  const displayNameAt = branding.indexOf("export function partnerDisplayName");
+  const displayLogoAt = branding.indexOf("export function partnerDisplayLogo");
+  const facingNameAt = branding.indexOf("export function partnerFacingName");
+  const facingLogoAt = branding.indexOf("export function partnerFacingLogo");
+  const hideAt = branding.indexOf("export function hidesBizuplyChrome");
+  const resolvedAt = branding.indexOf("export function isResolvedPartnerHost");
+  assert.ok(displayNameAt > 0);
+  assert.ok(displayLogoAt > displayNameAt);
+  assert.equal(branding.slice(displayNameAt, displayLogoAt).includes("hidesBizuplyChrome"), false);
+  assert.equal(branding.slice(facingNameAt, facingLogoAt).includes("hidesBizuplyChrome"), true);
+  assert.equal(branding.slice(hideAt, resolvedAt).includes("whiteLabelEntitled"), true);
+  assert.equal(branding.includes("return Boolean(branding?.partnerId)"), true);
+
+  const shell = readFileSync(join(ROOT, "components/partner/PublicPartnerShell.tsx"), "utf8");
+  assert.equal(shell.includes("partnerDisplayName(branding)"), true);
+  assert.equal(shell.includes("Powered by Bizuply"), true);
+  assert.equal(shell.includes("{!whiteLabel ?"), true);
+
+  const auth = readFileSync(join(ROOT, "components/auth/AuthShell.tsx"), "utf8");
+  assert.equal(auth.includes("isPartnerHostBranding(branding)"), true);
+  assert.equal(auth.includes("partnerChrome"), true);
+  assert.equal(auth.includes("partnerDisplayName(branding)"), true);
+
+  const success = readFileSync(join(ROOT, "pages/public/PartnerCheckoutSuccess.tsx"), "utf8");
+  assert.equal(success.includes("partnerDisplayName"), true);
+  const deal = readFileSync(join(ROOT, "pages/partner/PartnerPublicDeal.tsx"), "utf8");
+  assert.equal(deal.includes("partnerDisplayName"), true);
+  const app = readFileSync(join(ROOT, "App.jsx"), "utf8");
+  assert.equal(app.includes("<Route index element={<PartnerDashboard />} />"), true);
 });
 
 test("partner work helpers stay on PartnerClient tasks", () => {
@@ -224,6 +258,8 @@ test("login branding resolves from hostname helper, not scattered partner ifs", 
   assert.equal(src.includes("hidesBizuplyChrome"), true);
   assert.equal(src.includes("hidesBizuplyChrome(branding, host)"), true);
   assert.equal(src.includes("partnerFacingName(branding, host)"), true);
+  assert.equal(src.includes("partnerDisplayName"), true);
+  assert.equal(src.includes("isPartnerHostBranding"), true);
   assert.equal(src.includes("CRMClient"), false);
   const login = readFileSync(join(ROOT, "pages/Login.tsx"), "utf8");
   assert.equal(login.includes("usePartnerHostBranding"), true);
@@ -240,13 +276,21 @@ test("login branding resolves from hostname helper, not scattered partner ifs", 
   assert.equal(shell.includes("hidesBizuplyChrome"), true);
   assert.equal(shell.includes("hidesBizuplyChrome(branding, host)"), true);
   assert.equal(shell.includes("partnerFacingName"), true);
+  assert.equal(shell.includes("partnerDisplayName"), true);
+  assert.equal(shell.includes("partnerDisplayLogo"), true);
+  assert.equal(shell.includes("isPartnerHostBranding"), true);
+  assert.equal(shell.includes("Powered by Bizuply"), true);
   const plans = readFileSync(join(ROOT, "pages/public/PartnerPublicPlans.tsx"), "utf8");
   assert.equal(plans.includes("sales.branding"), true);
   assert.equal(plans.includes("partnerFacingName"), true);
+  assert.equal(plans.includes("partnerDisplayName"), true);
   const branding = readFileSync(join(ROOT, "lib/partnerBranding.ts"), "utf8");
   assert.equal(branding.includes("whiteLabelEntitled"), true);
   assert.equal(branding.includes("hideBizuplyBranding"), true);
   assert.equal(branding.includes("isResolvedPartnerHost"), true);
+  assert.equal(branding.includes("export function partnerDisplayName"), true);
+  assert.equal(branding.includes("export function partnerDisplayLogo"), true);
+  assert.equal(branding.includes("export function isPartnerHostBranding"), true);
   assert.equal(branding.includes("isPartnerWhiteLabelHostname"), false);
   assert.equal(branding.includes("absoluteCustomerUrl"), true);
   assert.equal(branding.includes("hidesBizuplyChrome(branding, hostname)"), true);

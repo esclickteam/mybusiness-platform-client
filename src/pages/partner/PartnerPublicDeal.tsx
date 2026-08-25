@@ -6,6 +6,8 @@ import { billingLabel, publicPackageLabel, publicProductCopy } from "../../lib/p
 import { formatIls } from "../../lib/partnerMoney";
 import {
   applyPartnerFavicon,
+  partnerDisplayLogo,
+  partnerDisplayName,
   partnerFacingLogo,
   partnerFacingName,
   type PublicPartnerBranding,
@@ -64,8 +66,16 @@ export default function PartnerPublicDeal() {
   }, [dealId]);
 
   const host = typeof window !== "undefined" ? window.location.hostname : "";
-  const brandName = partnerFacingName(summary?.branding, host) || summary?.partner?.name || "";
-  const brandLogo = partnerFacingLogo(summary?.branding, host) || summary?.partner?.logo || "";
+  const brandName =
+    partnerFacingName(summary?.branding, host) ||
+    partnerDisplayName(summary?.branding) ||
+    summary?.partner?.name ||
+    "";
+  const brandLogo =
+    partnerFacingLogo(summary?.branding, host) ||
+    partnerDisplayLogo(summary?.branding) ||
+    summary?.partner?.logo ||
+    "";
 
   useEffect(() => {
     applyPartnerFavicon(summary?.branding?.faviconUrl || summary?.branding?.stored?.faviconUrl || "");

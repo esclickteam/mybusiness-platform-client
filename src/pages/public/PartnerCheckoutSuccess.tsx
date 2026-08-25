@@ -7,7 +7,7 @@ import {
 } from "../../lib/partnerApi";
 import PublicPartnerShell from "../../components/partner/PublicPartnerShell";
 import { partnerStatusLabel } from "../../lib/partnerLabels";
-import { partnerFacingName, type PublicPartnerBranding } from "../../lib/partnerBranding";
+import { partnerDisplayName, partnerFacingName, type PublicPartnerBranding } from "../../lib/partnerBranding";
 
 function checkoutSettled(payload: { paid?: boolean; activationStatus?: string } | null) {
   if (!payload?.paid) return false;
@@ -78,7 +78,9 @@ export default function PartnerCheckoutSuccess() {
   const activation = data?.activationStatus;
   const paid = Boolean(data?.paid);
   const host = typeof window !== "undefined" ? window.location.hostname : "";
-  const brandName = partnerFacingName(data?.branding || hostBranding, host);
+  const brandName =
+    partnerFacingName(data?.branding || hostBranding, host) ||
+    partnerDisplayName(data?.branding || hostBranding);
   const supportLabel = brandName || "הצוות";
 
   return (

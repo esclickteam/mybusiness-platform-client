@@ -84,6 +84,18 @@ export function partnerFacingLogo(
   return String(branding?.logoUrl || branding?.stored?.logoUrl || "").trim();
 }
 
+export function partnerDisplayName(branding?: PublicPartnerBranding | null) {
+  return String(branding?.brandName || branding?.stored?.brandName || "").trim();
+}
+
+export function partnerDisplayLogo(branding?: PublicPartnerBranding | null) {
+  return String(branding?.logoUrl || branding?.stored?.logoUrl || "").trim();
+}
+
+export function isPartnerHostBranding(branding?: PublicPartnerBranding | null) {
+  return Boolean(branding?.partnerId);
+}
+
 export function partnerSiteSuffix(hostname?: string) {
   const host = String(
     hostname || (typeof window !== "undefined" ? window.location.hostname : "")

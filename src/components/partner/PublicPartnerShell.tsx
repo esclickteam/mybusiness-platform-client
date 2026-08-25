@@ -3,6 +3,9 @@ import { Helmet } from "react-helmet-async";
 import {
   applyPartnerFavicon,
   hidesBizuplyChrome,
+  isPartnerHostBranding,
+  partnerDisplayLogo,
+  partnerDisplayName,
   partnerFacingLogo,
   partnerFacingName,
   type PublicPartnerBranding,
@@ -21,13 +24,15 @@ export default function PublicPartnerShell({
 }) {
   const host = typeof window !== "undefined" ? window.location.hostname : "";
   const whiteLabel = hidesBizuplyChrome(branding, host);
-  const logoUrl = partnerFacingLogo(branding, host);
-  const brandName = partnerFacingName(branding, host);
+  const partnerHost = isPartnerHostBranding(branding);
+  const logoUrl = partnerFacingLogo(branding, host) || partnerDisplayLogo(branding);
+  const brandName = partnerFacingName(branding, host) || partnerDisplayName(branding);
+  const faviconUrl = branding?.faviconUrl || branding?.stored?.faviconUrl || "";
 
   useEffect(() => {
-    applyPartnerFavicon(whiteLabel ? branding?.faviconUrl || branding?.stored?.faviconUrl : "");
+    applyPartnerFavicon(whiteLabel || partnerHost ? faviconUrl : "");
     return () => applyPartnerFavicon("");
-  }, [whiteLabel, branding?.faviconUrl, branding?.stored?.faviconUrl]);
+  }, [whiteLabel, partnerHost, faviconUrl]);
 
   return (
     <div
@@ -38,8 +43,8 @@ export default function PublicPartnerShell({
       <Helmet>
         {title ? <title>{title}</title> : null}
         {noIndex ? <meta name="robots" content="noindex,nofollow" /> : null}
-        {whiteLabel && (branding?.faviconUrl || branding?.stored?.faviconUrl) ? (
-          <link rel="icon" href={branding?.faviconUrl || branding?.stored?.faviconUrl} />
+        {(whiteLabel || partnerHost) && faviconUrl ? (
+          <link rel="icon" href={faviconUrl} />
         ) : null}
       </Helmet>
       <header className="border-b border-white/80 bg-white/90 px-4 py-5">
@@ -48,10 +53,10 @@ export default function PublicPartnerShell({
             <img src={logoUrl} alt={brandName || ""} className="h-12 w-12 rounded-2xl object-contain" />
           ) : brandName ? (
             <span className="text-xl font-black">{brandName}</span>
-          ) : whiteLabel ? null : (
+          ) : whiteLabel || partnerHost ? null : (
             <span className="text-xl font-black tracking-tight">BizUply</span>
           )}
-          {whiteLabel && brandName && logoUrl ? (
+          {brandName && logoUrl ? (
             <p className="text-lg font-black">{brandName}</p>
           ) : null}
         </div>
