@@ -1,6 +1,12 @@
 import { showLocalNotification } from "./push";
 
-export type AdminStaffAlertKind = "support" | "calendar_booking" | "calendar_reminder";
+export type AdminStaffAlertKind =
+  | "support"
+  | "calendar_booking"
+  | "calendar_reminder"
+  | "guided_demo"
+  | "sales_proposal"
+  | "crm_lead";
 
 export type AdminStaffAlert = {
   id: string;
