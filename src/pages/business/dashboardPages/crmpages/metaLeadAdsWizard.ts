@@ -59,16 +59,36 @@ export function isMetaLeadSetupComplete(
   );
 }
 
+export function persistedMetaLeadWizardStep(
+  snapshot: MetaLeadWizardSnapshot
+): MetaLeadWizardStep {
+  if (!resolveMetaAccountConnected(snapshot)) return 1;
+  if (isMetaLeadSetupComplete(snapshot)) return 3;
+  return 2;
+}
+
+export function canNavigateToMetaLeadWizardStep(
+  snapshot: MetaLeadWizardSnapshot,
+  step: MetaLeadWizardStep
+): boolean {
+  if (step === 1) return true;
+  if (step === 2) return resolveMetaAccountConnected(snapshot);
+  return isMetaLeadSetupComplete(snapshot);
+}
+
 /**
  * Wizard step is derived from persisted integration state.
  * After reload, complete setup always opens on step 3.
- * Local "change setup" may temporarily show step 2.
+ * The stepper can temporarily open step 1 or 2 without wiping the connection.
  */
 export function deriveMetaLeadWizardStep(
   snapshot: MetaLeadWizardSnapshot,
-  options: { editingSetup?: boolean } = {}
+  options: { viewingStep?: MetaLeadWizardStep | null; editingSetup?: boolean } = {}
 ): MetaLeadWizardStep {
-  if (!resolveMetaAccountConnected(snapshot)) return 1;
-  if (isMetaLeadSetupComplete(snapshot) && !options.editingSetup) return 3;
-  return 2;
+  const persisted = persistedMetaLeadWizardStep(snapshot);
+  const viewingStep = options.viewingStep ?? (options.editingSetup ? 2 : null);
+
+  if (!viewingStep || viewingStep === persisted) return persisted;
+  if (!canNavigateToMetaLeadWizardStep(snapshot, viewingStep)) return persisted;
+  return viewingStep;
 }
