@@ -88,8 +88,17 @@ export default function AdminPartnerReferrals() {
                       "—"
                     )}
                   </td>
-                  <td className="px-3 py-3">{row.daysActive ?? "—"}</td>
-                  <td className="px-3 py-3">{partnerStatusLabel(row.rewardStatus)}</td>
+                  <td className="px-3 py-3">
+                    {row.qualificationStartDate
+                      ? `יום ${row.daysActive ?? 0} מתוך ${row.qualificationDays || 40}`
+                      : "—"}
+                  </td>
+                  <td className="px-3 py-3">
+                    {partnerStatusLabel(row.rewardStatus)}
+                    {row.rewardStatus === "pending" && row.qualificationStartDate ? (
+                      <span className="block text-xs text-slate-500">ממתינה ל־40 ימי פעילות</span>
+                    ) : null}
+                  </td>
                   <td className="px-3 py-3">{formatIls(row.rewardAmount || 500)}</td>
                   <td className="px-3 py-3">
                     <div className="flex min-w-[220px] flex-col gap-1">

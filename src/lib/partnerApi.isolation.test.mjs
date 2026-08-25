@@ -252,6 +252,20 @@ test("paid deal copy does not treat payment as withdrawable commission", () => {
   assert.equal(src.includes("activationSettled"), true);
 });
 
+test("referrals page lists 40-day pending rewards above the intake form", () => {
+  const src = readFileSync(join(ROOT, "pages/partner/PartnerReferrals.tsx"), "utf8");
+  const tableAt = src.indexOf("מעקב הפניות");
+  const formAt = src.indexOf("טופס צירוף");
+  assert.ok(tableAt > 0);
+  assert.ok(formAt > tableAt);
+  assert.equal(src.includes("qualificationStartDate"), true);
+  assert.equal(src.includes("daysActive"), true);
+  assert.equal(src.includes("ממתינה לזכאות"), true);
+  assert.equal(src.includes("מעקב 40 יום"), true);
+  assert.equal(src.includes("/partner/dashboard"), false);
+  assert.equal(src.includes("CRMClient"), false);
+});
+
 test("dashboard surfaces paid-unactivated deals without changing home routing", () => {
   const src = readFileSync(join(ROOT, "pages/partner/PartnerDashboard.tsx"), "utf8");
   assert.equal(src.includes("attentionDeals"), true);
