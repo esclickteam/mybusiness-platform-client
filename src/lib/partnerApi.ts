@@ -253,6 +253,15 @@ export async function fetchPartnerWithdrawals() {
       paid: number;
     };
     cycle: { copy: string; afterCutoff: boolean; expectedPaymentBy: string; cutoffDate: string };
+    kyc?: {
+      approved?: boolean;
+      reviewStatus?: "incomplete" | "submitted" | "approved" | "rejected";
+      missing?: string[];
+      complete?: boolean;
+      adminFeedback?: string;
+      fieldLabels?: Record<string, string>;
+      documentLabels?: Record<string, string>;
+    };
   };
 }
 

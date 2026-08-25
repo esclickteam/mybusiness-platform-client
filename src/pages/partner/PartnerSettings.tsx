@@ -40,6 +40,17 @@ const STATUS_HE: Record<string, string> = {
   rejected: "נדחה — יש לתקן ולשלוח שוב",
 };
 
+const REQUIRED_KEYS = [
+  "accountHolderName",
+  "idNumber",
+  "bankName",
+  "branch",
+  "account",
+  "accountManagementAuth",
+  "dealerCertificate",
+  "idPhoto",
+] as const;
+
 const emptyCompliance = (): PartnerCompliance => ({
   accountHolderName: "",
   idNumber: "",
@@ -54,7 +65,22 @@ const emptyCompliance = (): PartnerCompliance => ({
     idPhoto: null,
   },
   reviewStatus: "incomplete",
+  missing: [...REQUIRED_KEYS],
+  complete: false,
 });
+
+function currentMissing(form: PartnerCompliance): string[] {
+  return REQUIRED_KEYS.filter((key) => {
+    if (key === "accountManagementAuth" || key === "dealerCertificate" || key === "idPhoto") {
+      return !form.documents?.[key]?.url;
+    }
+    return !String(form[key] || "").trim();
+  });
+}
+
+function labelFor(form: PartnerCompliance, key: string): string {
+  return form.fieldLabels?.[key] || form.documentLabels?.[key] || key;
+}
 
 export default function PartnerSettings() {
   const [partner, setPartner] = useState<PartnerMe | null>(null);
@@ -105,7 +131,16 @@ export default function PartnerSettings() {
         account: form.account,
       });
       applyCompliance(compliance, name);
-      setSaved("פרטי החשבון נשמרו והועברו לאדמין");
+      if (!compliance.complete) {
+        const stillMissing = (compliance.missing || []).map((key) => labelFor(compliance, key));
+        setSaved(
+          stillMissing.length
+            ? `הפרטים נשמרו. עדיין חסר: ${stillMissing.join(" · ")}.`
+            : "הפרטים נשמרו. עדיין חסרים פריטים לפני שליחה לאדמין."
+        );
+      } else {
+        setSaved("פרטי החשבון נשמרו והועברו לאדמין");
+      }
     } catch (err: unknown) {
       setError(partnerApiError(err, "שגיאה בשמירה"));
     } finally {
@@ -129,6 +164,8 @@ export default function PartnerSettings() {
   }
 
   const status = form.reviewStatus || "incomplete";
+  const missing = currentMissing(form);
+  const missingLabels = missing.map((key) => labelFor(form, key));
 
   return (
     <div className="space-y-5">
@@ -171,6 +208,14 @@ export default function PartnerSettings() {
             משוב אדמין: {form.adminFeedback}
           </p>
         ) : null}
+        {missingLabels.length ? (
+          <p className="rounded-2xl bg-amber-50 px-4 py-3 text-sm font-bold text-amber-900">
+            חסר להשלמה: {missingLabels.join(" · ")}
+          </p>
+        ) : null}
+        <p className="text-sm font-bold text-slate-500">
+          מסמכים מועלים מיד. פרטי בנק, ת״ז וחשבון נשמרים רק בלחיצה על שמירת פרטים.
+        </p>
       </PartnerCard>
 
       <PartnerCard className="space-y-4 p-6">

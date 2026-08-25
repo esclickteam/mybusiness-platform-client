@@ -454,6 +454,16 @@ test("partner settings expose white-label branding fields and personal link acti
   assert.equal(card.includes("עדיין לא מאומתת בייצור"), true);
   const settings = readFileSync(join(ROOT, "pages/partner/PartnerSettings.tsx"), "utf8");
   assert.equal(settings.includes("PartnerBrandingCard"), true);
+  assert.equal(settings.includes("compliance.missing"), true);
+  assert.equal(settings.includes("currentMissing"), true);
+  assert.equal(settings.includes("עדיין חסר"), true);
+  const withdrawals = readFileSync(join(ROOT, "pages/partner/PartnerWithdrawals.tsx"), "utf8");
+  assert.equal(withdrawals.includes("reviewStatus"), true);
+  assert.equal(withdrawals.includes("missing"), true);
+  assert.equal(withdrawals.includes("kycMissingLabels"), true);
+  const api = readFileSync(join(ROOT, "lib/partnerApi.ts"), "utf8");
+  assert.equal(api.includes("fieldLabels"), true);
+  assert.equal(api.includes("reviewStatus"), true);
   const dashboard = readFileSync(join(ROOT, "pages/partner/PartnerDashboard.tsx"), "utf8");
   assert.equal(dashboard.includes("הקישור האישי שלי"), true);
   assert.equal(dashboard.includes('"Copy"'), true);

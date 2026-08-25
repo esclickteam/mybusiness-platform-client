@@ -66,6 +66,7 @@ export type PartnerCompliance = {
     idPhoto: PartnerComplianceDocument;
   };
   documentLabels?: Record<string, string>;
+  fieldLabels?: Record<string, string>;
   reviewStatus: "incomplete" | "submitted" | "approved" | "rejected";
   adminFeedback?: string;
   submittedAt?: string | null;

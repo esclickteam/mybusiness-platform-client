@@ -400,7 +400,9 @@ function KycPanel({
         <p className="mt-1 text-xl font-black">{compliance.reviewStatus || "incomplete"}</p>
         {(compliance.missing || []).length ? (
           <p className="mt-2 text-sm font-bold text-amber-700">
-            חסר: {(compliance.missing || []).join(", ")}
+            חסר: {(compliance.missing || [])
+              .map((key) => compliance.fieldLabels?.[key] || key)
+              .join(" · ")}
           </p>
         ) : null}
         <textarea
