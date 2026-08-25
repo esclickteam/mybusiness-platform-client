@@ -9,6 +9,8 @@ test("partner white-label host helper matches Premium subdomains only", () => {
   assert.equal(isPartnerWhiteLabelHostname("app.bizuply.com"), false);
   assert.equal(isPartnerWhiteLabelHostname("api.bizuply.com"), false);
   assert.equal(isPartnerWhiteLabelHostname("shop.sites.bizuply.com"), false);
+  assert.equal(isPartnerWhiteLabelHostname("sites.bizuply.com"), false);
+  assert.equal(isPartnerWhiteLabelHostname("sites-staging.bizuply.com"), false);
   assert.equal(isPartnerWhiteLabelHostname("demo.sites-staging.bizuply.com"), false);
   assert.equal(isPartnerWhiteLabelHostname("foo.bar.bizuply.com"), false);
   assert.equal(isPartnerWhiteLabelHostname("localhost"), false);
@@ -25,6 +27,8 @@ test("partner host keeps sales/login/app paths and sends marketing pages to /pla
   assert.equal(partnerHostAllowsPath("/p/acme/plans"), true);
   assert.equal(partnerHostAllowsPath("/login"), true);
   assert.equal(partnerHostAllowsPath("/forgot-password"), true);
+  assert.equal(partnerHostAllowsPath("/reset-password"), true);
+  assert.equal(partnerHostAllowsPath("/reset-password?token=abc"), true);
   assert.equal(partnerHostAllowsPath("/partner/dashboard"), true);
   assert.equal(partnerHostAllowsPath("/partner/deals/abc"), true);
   assert.equal(partnerHostAllowsPath("/business/xyz/dashboard"), true);

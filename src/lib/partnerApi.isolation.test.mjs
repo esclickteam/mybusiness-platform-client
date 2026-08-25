@@ -221,6 +221,10 @@ test("login branding resolves from hostname helper, not scattered partner ifs", 
   assert.equal(login.includes("usePartnerHostBranding"), true);
   assert.equal(login.includes("whiteLabelEnabled"), true);
   assert.equal(login.includes('? "/plans"'), true);
+  const reset = readFileSync(join(ROOT, "pages/ResetPassword.jsx"), "utf8");
+  assert.equal(reset.includes("AuthShell"), true);
+  assert.equal(reset.includes("AuthCard"), true);
+  assert.equal(reset.includes("forgot-password-overlay"), false);
   const shell = readFileSync(join(ROOT, "components/partner/PublicPartnerShell.tsx"), "utf8");
   assert.equal(shell.includes("hidesBizuplyChrome"), true);
   assert.equal(shell.includes("hidesBizuplyChrome(branding, host)"), true);
