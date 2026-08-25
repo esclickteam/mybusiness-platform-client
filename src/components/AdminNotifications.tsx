@@ -11,6 +11,7 @@ import {
   CheckCheck,
   Headphones,
   ListChecks,
+  UserPlus,
   Loader2,
   Settings,
   Smartphone,
@@ -463,7 +464,8 @@ export default function AdminNotifications() {
       latest.kind === "calendar_booking" || latest.kind === "calendar_reminder";
     const isGuidedDemo = latest.kind === "guided_demo";
     const isSalesProposal = latest.kind === "sales_proposal";
-    if (isGuidedDemo || isSalesProposal) {
+    const isCrmLead = latest.kind === "crm_lead";
+    if (isGuidedDemo || isSalesProposal || isCrmLead) {
       const url =
         latest.targetUrl ||
         (latest.adminCustomerId
@@ -885,7 +887,9 @@ export default function AdminNotifications() {
                               alert.kind === "calendar_reminder";
                             const isGuidedDemo = alert.kind === "guided_demo";
                             const isSalesProposal = alert.kind === "sales_proposal";
-                            const isViolet = isCalendar || isGuidedDemo || isSalesProposal;
+                            const isCrmLead = alert.kind === "crm_lead";
+                            const isViolet =
+                              isCalendar || isGuidedDemo || isSalesProposal || isCrmLead;
                             return (
                               <button
                                 type="button"
@@ -906,7 +910,9 @@ export default function AdminNotifications() {
                                       : "bg-sky-50 text-sky-700 ring-sky-100",
                                   ].join(" ")}
                                 >
-                                  {isViolet ? (
+                                  {isCrmLead ? (
+                                    <UserPlus className="h-5 w-5" />
+                                  ) : isViolet ? (
                                     <CalendarDays className="h-5 w-5" />
                                   ) : (
                                     <Headphones className="h-5 w-5" />
@@ -922,13 +928,15 @@ export default function AdminNotifications() {
                                           : "bg-sky-50 text-sky-700 ring-sky-100",
                                       ].join(" ")}
                                     >
-                                      {isSalesProposal
-                                        ? "הצעת מחיר"
-                                        : isGuidedDemo
-                                          ? "דמו מודרך"
-                                          : isCalendar
-                                            ? "יומן BizUply"
-                                            : "צ׳אט תמיכה"}
+                                      {isCrmLead
+                                        ? "ליד חדש"
+                                        : isSalesProposal
+                                          ? "הצעת מחיר"
+                                          : isGuidedDemo
+                                            ? "דמו מודרך"
+                                            : isCalendar
+                                              ? "יומן BizUply"
+                                              : "צ׳אט תמיכה"}
                                     </span>
                                     <span className="shrink-0 text-[11px] font-black text-slate-400">
                                       {timeAgo(alert.at)}
