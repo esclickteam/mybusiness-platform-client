@@ -93,6 +93,8 @@ test("public partner deal page shows products without line prices", () => {
   assert.equal(src.includes("customerFinalPrice"), false);
   assert.equal(src.includes("פירוט מוצרים"), true);
   assert.equal(src.includes("partnerFacingName"), true);
+  assert.equal(src.includes("PublicPartnerShell"), true);
+  assert.equal(src.includes("from-[#4C1D95]"), false);
   assert.equal(src.includes("publicPackageLabel"), true);
   assert.equal(src.includes("publicProductCopy"), true);
   assert.equal(src.includes("BizuplyLoader"), false);
@@ -213,6 +215,7 @@ test("leftover Basic storefront uses stored brand without hiding Powered by Bizu
   assert.equal(success.includes("partnerDisplayName"), true);
   const deal = readFileSync(join(ROOT, "pages/partner/PartnerPublicDeal.tsx"), "utf8");
   assert.equal(deal.includes("partnerDisplayName"), true);
+  assert.equal(deal.includes("PublicPartnerShell"), true);
   const app = readFileSync(join(ROOT, "App.jsx"), "utf8");
   assert.equal(app.includes("<Route index element={<PartnerDashboard />} />"), true);
 });
@@ -227,6 +230,7 @@ test("partner work helpers stay on PartnerClient tasks", () => {
 test("partner deal share links stay absolute on Premium hosts", () => {
   const wizard = readFileSync(join(ROOT, "pages/partner/PartnerClientWizard.tsx"), "utf8");
   assert.equal(wizard.includes("absoluteCustomerUrl"), true);
+  assert.equal(wizard.includes("mybusiness-platform-client-staging.vercel.app"), false);
   const detail = readFileSync(join(ROOT, "pages/partner/PartnerDealDetail.tsx"), "utf8");
   assert.equal(detail.includes("absoluteCustomerUrl"), true);
   assert.equal(detail.includes("${window.location.origin}${deal.publicUrl"), false);
@@ -238,7 +242,7 @@ test("public partner deal is a summary, not a fake checkout", () => {
   assert.equal(src.includes("סיכום ההצעה"), true);
   assert.equal(src.includes("התשלום והפעלת השירות מתבצעים מול"), true);
   assert.equal(src.includes("מול הפרטנר שלך"), false);
-  assert.equal(src.includes("noindex"), true);
+  assert.equal(src.includes("noIndex"), true);
 });
 
 test("partner public plans page shows customer price only", () => {

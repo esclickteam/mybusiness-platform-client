@@ -218,11 +218,7 @@ export default function PartnerClientWizard() {
     }
   }
 
-  const publicOrigin =
-    typeof window !== "undefined" ? window.location.origin : "https://mybusiness-platform-client-staging.vercel.app";
-  const shareUrl = createdDeal
-    ? absoluteCustomerUrl(createdDeal.publicUrl, publicOrigin)
-    : "";
+  const shareUrl = createdDeal ? absoluteCustomerUrl(createdDeal.publicUrl) : "";
 
   return (
     <div className="space-y-6 pb-24 lg:pb-8">

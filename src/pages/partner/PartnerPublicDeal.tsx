@@ -1,14 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Helmet } from "react-helmet-async";
 import { useParams } from "react-router-dom";
 import { fetchPublicPartnerDeal } from "../../lib/partnerApi";
 import { billingLabel, publicPackageLabel, publicProductCopy } from "../../lib/partnerDealMath";
 import { formatIls } from "../../lib/partnerMoney";
+import PublicPartnerShell from "../../components/partner/PublicPartnerShell";
 import {
-  applyPartnerFavicon,
-  partnerDisplayLogo,
   partnerDisplayName,
-  partnerFacingLogo,
   partnerFacingName,
   type PublicPartnerBranding,
 } from "../../lib/partnerBranding";
@@ -49,16 +46,6 @@ export default function PartnerPublicDeal() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const meta = document.createElement("meta");
-    meta.name = "robots";
-    meta.content = "noindex,nofollow";
-    document.head.appendChild(meta);
-    return () => {
-      meta.remove();
-    };
-  }, []);
-
-  useEffect(() => {
     if (!dealId) return;
     fetchPublicPartnerDeal(dealId)
       .then((data) => setSummary(data as PublicSummary))
@@ -71,35 +58,24 @@ export default function PartnerPublicDeal() {
     partnerDisplayName(summary?.branding) ||
     summary?.partner?.name ||
     "";
-  const brandLogo =
-    partnerFacingLogo(summary?.branding, host) ||
-    partnerDisplayLogo(summary?.branding) ||
-    summary?.partner?.logo ||
-    "";
-
-  useEffect(() => {
-    applyPartnerFavicon(summary?.branding?.faviconUrl || summary?.branding?.stored?.faviconUrl || "");
-    return () => applyPartnerFavicon("");
-  }, [summary?.branding?.faviconUrl, summary?.branding?.stored?.faviconUrl]);
 
   if (!summary && !error) {
     return (
-      <div dir="rtl" className="grid min-h-screen place-items-center bg-[#f6f4ff] font-black text-slate-500">
-        טוען סיכום עסקה...
-      </div>
+      <PublicPartnerShell title="סיכום עסקה" noIndex>
+        <p className="font-bold text-slate-500">טוען סיכום עסקה...</p>
+      </PublicPartnerShell>
     );
   }
   if (!summary) {
     return (
-      <div dir="rtl" className="mx-auto max-w-3xl p-8 text-center font-black text-rose-700">
-        {error}
-      </div>
+      <PublicPartnerShell title="סיכום עסקה" noIndex>
+        <p className="font-black text-rose-700">{error}</p>
+      </PublicPartnerShell>
     );
   }
 
   const pay = summary.payment || {};
   const date = summary.dealDate ? new Date(summary.dealDate).toLocaleDateString("he-IL") : "";
-  const logo = brandLogo || summary.business?.logo;
   const heading = brandName || "נותן השירות";
   const products: PublicProduct[] = [
     summary.package
@@ -113,30 +89,13 @@ export default function PartnerPublicDeal() {
   ].filter(Boolean) as PublicProduct[];
 
   return (
-    <div dir="rtl" className="min-h-screen bg-[#f6f4ff] px-4 py-10" style={{ fontFamily: '"Assistant","Rubik",sans-serif' }}>
-      <Helmet>
-        <meta name="robots" content="noindex,nofollow" />
-        {heading ? <title>{heading}</title> : null}
-      </Helmet>
-      <article className="mx-auto max-w-3xl overflow-hidden rounded-[32px] border border-white bg-white shadow-[0_24px_80px_rgba(76,29,149,0.12)]">
-        <header className="bg-gradient-to-l from-[#4C1D95] to-[#7C4DFF] px-8 py-8 text-white">
-          <div className="flex items-center gap-4">
-            {logo ? (
-              <img src={logo} alt="" className="h-14 w-14 rounded-2xl bg-white object-cover" />
-            ) : (
-              <div className="grid h-14 w-14 place-items-center rounded-2xl bg-white/15 text-lg font-black">
-                {heading.slice(0, 1)}
-              </div>
-            )}
-            <div>
-              <p className="text-xs font-black uppercase tracking-[0.18em] text-white/70">החבילה שלך</p>
-              <h1 className="text-2xl font-black">{heading}</h1>
-              <p className="text-sm font-bold text-white/80">
-                {[summary.partner?.phone, summary.partner?.email].filter(Boolean).join(" · ")}
-              </p>
-            </div>
-          </div>
-        </header>
+    <PublicPartnerShell branding={summary.branding} title={heading} noIndex>
+      <article className="overflow-hidden rounded-[32px] border border-white bg-white shadow-[0_24px_80px_rgba(15,23,42,0.08)]">
+        {summary.partner?.phone || summary.partner?.email ? (
+          <p className="px-8 pt-6 text-sm font-bold text-slate-500">
+            {[summary.partner?.phone, summary.partner?.email].filter(Boolean).join(" · ")}
+          </p>
+        ) : null}
 
         <div className="space-y-8 px-8 py-8">
           <section className="grid gap-3 sm:grid-cols-2">
@@ -210,7 +169,7 @@ export default function PartnerPublicDeal() {
           </section>
         </div>
       </article>
-    </div>
+    </PublicPartnerShell>
   );
 }
 
