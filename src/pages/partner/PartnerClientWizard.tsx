@@ -63,6 +63,7 @@ export default function PartnerClientWizard() {
   const [wizard, setWizard] = useState<PartnerWizardCatalog>({ packages: [], categories: [] });
   const [partnerShareRate, setPartnerShareRate] = useState(0.75);
   const [clientId, setClientId] = useState(existingClientId);
+  const [clientStatus, setClientStatus] = useState("");
   const [contact, setContact] = useState({
     businessName: "",
     contactName: "",
@@ -111,6 +112,7 @@ export default function PartnerClientWizard() {
       .then((data) => {
         const client = data.client;
         setClientId(client._id);
+        setClientStatus(String(client.status || ""));
         setContact({
           businessName: client.contact.businessName || "",
           contactName: client.contact.contactName || "",
@@ -198,7 +200,12 @@ export default function PartnerClientWizard() {
     setSaving(true);
     setError("");
     try {
-      await persistQuote();
+      const quoteLocked =
+        ["active", "provisioning"].includes(clientStatus) ||
+        Boolean(existingClientId && !clientStatus);
+      if (!quoteLocked) {
+        await persistQuote();
+      }
       const data = await createPartnerDeal(clientId, {
         lines: dealLines(),
         packageDisplayName,

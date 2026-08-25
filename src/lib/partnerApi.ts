@@ -537,7 +537,11 @@ export async function startPublicPartnerCheckout(
   slug: string,
   payload: { sku: string; email: string; name?: string; phone?: string; businessName?: string }
 ) {
-  const { data } = await API.post(`/public/p/${encodeURIComponent(slug)}/checkout`, payload);
+  const host = typeof window !== "undefined" ? window.location.host : "";
+  const { data } = await API.post(`/public/p/${encodeURIComponent(slug)}/checkout`, {
+    ...payload,
+    host,
+  });
   return data;
 }
 

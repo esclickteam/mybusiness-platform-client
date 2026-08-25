@@ -330,6 +330,20 @@ test("public checkout client sends sku and contact, never a customer price", () 
   assert.equal(fn.includes("customerPrice"), false);
   assert.equal(fn.includes("wholesale"), false);
   assert.equal(fn.includes("/public/p/"), true);
+  assert.equal(fn.includes("window.location.host"), true);
+  assert.match(fn, /host,/);
+});
+
+test("amendment wizard skips quote persist for active or provisioning clients", () => {
+  const wizard = readFileSync(join(ROOT, "pages/partner/PartnerClientWizard.tsx"), "utf8");
+  assert.equal(wizard.includes("setClientStatus"), true);
+  assert.equal(wizard.includes('["active", "provisioning"].includes(clientStatus)'), true);
+  assert.equal(wizard.includes("kind: existingClientId ? \"amendment\" : \"initial\""), true);
+  const createStart = wizard.indexOf("async function createDeal");
+  const createFn = wizard.slice(createStart, wizard.indexOf("const shareUrl"));
+  assert.ok(createStart > 0);
+  assert.match(createFn, /quoteLocked/);
+  assert.match(createFn, /if \(!quoteLocked\) \{\s*await persistQuote\(\);/);
 });
 
 test("self-serve success page polls until payment and activation settle", () => {
