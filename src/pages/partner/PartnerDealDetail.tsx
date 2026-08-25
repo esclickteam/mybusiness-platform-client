@@ -112,7 +112,15 @@ export default function PartnerDealDetail() {
       />
       {paidFlag || deal.status === "paid" ? (
         <div className="space-y-2 rounded-2xl bg-emerald-50 px-4 py-3 text-sm font-black text-emerald-800">
-          <p>התשלום ל-Bizuply התקבל. העמלות והשירותים עודכנו אצל האדמין.</p>
+          <p>התשלום ל-Bizuply התקבל.</p>
+          {(deal as any).pipelineStatus === "completed" ? (
+            <p>הלקוח הופעל. העמלה זכאית למשיכה רק אחרי שהעסקה הושלמה, ולא אוטומטית עם התשלום.</p>
+          ) : (
+            <p>
+              העמלה ממתינה עד שהעסק יופעל והמוצרים הדיגיטליים יופעלו. תשלום שולם אינו זמין למשיכה
+              אוטומטית.
+            </p>
+          )}
           {deal.clientProvisioning?.status === "created" ? (
             <p>
               נפתח משתמש ללקוח

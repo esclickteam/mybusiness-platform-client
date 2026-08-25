@@ -7,6 +7,7 @@ import {
   PARTNER_CLIENT_STATUSES,
   PARTNER_STATUS_LABEL,
   PARTNER_STATUS_TONE,
+  partnerStatusLabel,
 } from "../../lib/partnerLabels";
 import BizuplyLoader from "../../components/ui/BizuplyLoader";
 import {
@@ -154,6 +155,7 @@ export default function PartnerClients() {
                   <th className="px-3 py-3">איש קשר</th>
                   <th className="px-3 py-3">טלפון</th>
                   <th className="px-3 py-3">סוג אירוע</th>
+                  <th className="px-3 py-3">מקור</th>
                   <th className="px-3 py-3">תאריך יעד</th>
                   <th className="px-3 py-3">משימות</th>
                   <th className="px-3 py-3" />
@@ -193,6 +195,9 @@ export default function PartnerClients() {
                       {row.contact?.phone || "—"}
                     </td>
                     <td className="px-3 py-4 font-bold text-slate-600">{eventTypeLabel(row)}</td>
+                    <td className="px-3 py-4 font-bold text-slate-600">
+                      {partnerStatusLabel(row.source)}
+                    </td>
                     <td className="px-3 py-4 font-bold text-slate-600">
                       {formatPartnerDate(nextTaskDue(row) || row.nextBillingDate)}
                     </td>
@@ -246,7 +251,7 @@ export default function PartnerClients() {
                 ))}
                 {!items.length ? (
                   <tr>
-                    <td colSpan={8} className="px-4 py-12 text-center font-bold text-slate-400">
+                    <td colSpan={9} className="px-4 py-12 text-center font-bold text-slate-400">
                       אין לקוחות להצגה — התחילו באשף לקוח חדש
                     </td>
                   </tr>

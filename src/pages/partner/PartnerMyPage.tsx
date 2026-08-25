@@ -211,6 +211,10 @@ export default function PartnerMyPage() {
           <span className="mt-1 block text-xs font-bold text-slate-500" dir="ltr">
             https://{subdomain || "mybrand"}.bizuply.com
           </span>
+          <span className="mt-1 block text-xs font-bold text-slate-500">
+            כתובת המשנה נשמרת במערכת. הפניית DNS / wildcard לדומיין עדיין לא פעילה בסביבת הייצור — עד אז
+            השתמשו בקישור /p/slug.
+          </span>
         </label>
         <div className="grid gap-3 sm:grid-cols-2">
           <label className="text-sm font-black">

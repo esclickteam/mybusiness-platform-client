@@ -213,3 +213,29 @@ test("partner pipeline routes are registered in App", () => {
   assert.equal(app.includes("/admin/partners/referrals"), true);
   assert.equal(app.includes("/admin/partners/attention"), true);
 });
+
+test("partner CRM shows self-serve vs manual source column", () => {
+  const src = readFileSync(join(ROOT, "pages/partner/PartnerClients.tsx"), "utf8");
+  assert.equal(src.includes("מקור"), true);
+  assert.equal(src.includes("row.source"), true);
+  assert.equal(src.includes("partnerStatusLabel(row.source)"), true);
+  assert.equal(src.includes("colSpan={9}"), true);
+});
+
+test("paid deal copy does not treat payment as withdrawable commission", () => {
+  const src = readFileSync(join(ROOT, "pages/partner/PartnerDealDetail.tsx"), "utf8");
+  assert.equal(src.includes("תשלום שולם אינו זמין למשיכה"), true);
+  assert.equal(src.includes("needsAttention"), true);
+  assert.equal(src.includes("retryPartnerDealActivation"), true);
+});
+
+test("dashboard surfaces paid-unactivated deals without changing home routing", () => {
+  const src = readFileSync(join(ROOT, "pages/partner/PartnerDashboard.tsx"), "utf8");
+  assert.equal(src.includes("attentionDeals"), true);
+  assert.equal(src.includes("/partner/dashboard/deals/"), true);
+  const app = readFileSync(join(ROOT, "App.jsx"), "utf8");
+  const dashboardAt = app.indexOf('path="/partner/dashboard"');
+  const indexAt = app.indexOf("<Route index element={<PartnerDashboard />} />");
+  assert.ok(dashboardAt > 0);
+  assert.ok(indexAt > dashboardAt);
+});

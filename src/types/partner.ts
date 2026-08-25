@@ -246,6 +246,7 @@ export type PartnerClient = {
   tasks?: PartnerTask[];
   createdAt?: string;
   updatedAt?: string;
+  source?: string;
   activatedAt?: string | null;
   joinedAt?: string | null;
   nextBillingDate?: string | null;
@@ -338,6 +339,7 @@ export type PartnerDashboardPayload = {
   metrics?: PartnerDashboardMetrics;
   recentClients?: PartnerClient[];
   recentActivity?: PartnerDashboardActivity[];
+  attentionDeals?: PartnerDeal[];
 };
 
 export type AdminPartnerRow = {
