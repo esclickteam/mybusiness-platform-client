@@ -37,7 +37,30 @@ export function isPartnerWhiteLabelHostname(hostname) {
   } else {
     return false;
   }
-  const sub = prefix.split(".").filter(Boolean)[0] || "";
+  const labels = prefix.split(".").filter(Boolean);
+  if (labels.length !== 1) return false;
+  const sub = labels[0];
   if (!sub || PARTNER_HOST_BLOCKLIST.has(sub)) return false;
   return true;
+}
+
+export function partnerHostAllowsPath(pathname) {
+  const path = String(pathname || "").split("?")[0] || "/";
+  if (path === "/" || path === "") return true;
+  if (path === "/plans" || path.startsWith("/plans/")) return true;
+  if (path === "/checkout/success" || path.startsWith("/checkout/success/")) return true;
+  if (path.startsWith("/p/")) return true;
+  if (path === "/login" || path.startsWith("/login/")) return true;
+  if (path.startsWith("/forgot-password")) return true;
+  if (path.startsWith("/reset-password")) return true;
+  if (path.startsWith("/change-password")) return true;
+  if (path.includes("/dashboard")) return true;
+  if (path.startsWith("/admin")) return true;
+  if (path.startsWith("/staff")) return true;
+  if (path.startsWith("/client")) return true;
+  if (path.includes("/messages")) return true;
+  if (path.includes("/chat")) return true;
+  if (path.startsWith("/partner/register")) return false;
+  if (path.startsWith("/partner/")) return true;
+  return false;
 }

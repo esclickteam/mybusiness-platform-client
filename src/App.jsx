@@ -13,7 +13,7 @@ import StaffSoftphoneHost from "./components/staff/StaffSoftphoneHost";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import ProtectedRoute from "./components/ProtectedRoute";
-import { isPartnerWhiteLabelHostname } from "./lib/partnerHost.mjs";
+import { isPartnerWhiteLabelHostname, partnerHostAllowsPath } from "./lib/partnerHost.mjs";
 import RedirectIfPartnerHost from "./pages/public/RedirectIfPartnerHost";
 const BusinessDashboardRoutes = lazyWithRetry(() =>
   import("./pages/business/BusinessDashboardRoutes")
@@ -924,6 +924,10 @@ export default function App() {
     ) : (
       <LoginSkeleton />
     );
+  }
+
+  if (isPartnerHost && !partnerHostAllowsPath(location.pathname)) {
+    return <Navigate to="/plans" replace />;
   }
 
   return (

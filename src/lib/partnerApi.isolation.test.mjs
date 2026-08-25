@@ -203,6 +203,9 @@ test("login branding resolves from hostname helper, not scattered partner ifs", 
   assert.equal(src.includes("fetchPublicPartnerBranding"), true);
   assert.equal(src.includes("whiteLabelEnabled"), true);
   assert.equal(src.includes("CRMClient"), false);
+  const login = readFileSync(join(ROOT, "pages/Login.tsx"), "utf8");
+  assert.equal(login.includes("isPartnerWhiteLabelHostname"), true);
+  assert.equal(login.includes('? "/plans"'), true);
 });
 
 test("public checkout client sends sku and contact, never a customer price", () => {
@@ -236,6 +239,7 @@ test("partner pipeline routes are registered in App", () => {
   assert.equal(app.includes("/p/:slug/checkout/success"), true);
   assert.equal(app.includes('path="/checkout/success"'), true);
   assert.equal(app.includes("isPartnerWhiteLabelHostname"), true);
+  assert.equal(app.includes("partnerHostAllowsPath"), true);
   assert.equal(app.includes("isPartnerHostPublicChrome"), true);
   assert.equal(app.includes("RedirectIfPartnerHost"), true);
   assert.equal(app.includes("<Route index element={<PartnerDashboard />} />"), true);
@@ -324,6 +328,7 @@ test("bizuply.com /plans without a partner host falls back to pricing", () => {
   const src = readFileSync(join(ROOT, "pages/public/PartnerPublicPlans.tsx"), "utf8");
   assert.equal(src.includes('to="/pricing"'), true);
   assert.equal(src.includes("setFallbackToPricing"), true);
+  assert.equal(src.includes("isPartnerWhiteLabelHostname"), true);
   assert.equal(src.includes("fetchPublicPartnerBranding"), true);
 });
 
@@ -361,12 +366,13 @@ test("catalog and settings prefer branded host URLs without changing dashboard h
 
 test("white-label host home sends anonymous visitors to plans without changing partner dashboard", () => {
   const home = readFileSync(join(ROOT, "pages/public/PartnerHostHome.tsx"), "utf8");
-  assert.equal(home.includes("fetchPublicPartnerBranding"), true);
-  assert.equal(home.includes("urls?.subdomainUrl"), true);
+  assert.equal(home.includes("isPartnerWhiteLabelHostname"), true);
   assert.equal(home.includes('to="/plans"'), true);
   assert.equal(home.includes("/partner/dashboard"), false);
+  assert.equal(home.includes("HomePage"), true);
   const app = readFileSync(join(ROOT, "App.jsx"), "utf8");
   assert.equal(app.includes("PartnerHostHome"), true);
+  assert.equal(app.includes("partnerHostAllowsPath"), true);
   const dashboardAt = app.indexOf('path="/partner/dashboard"');
   const indexAt = app.indexOf("<Route index element={<PartnerDashboard />} />");
   assert.ok(dashboardAt > 0);

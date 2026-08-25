@@ -9,6 +9,7 @@ import {
 import { formatPublicCustomerPrice } from "../../lib/partnerMoney";
 import { billingLabel } from "../../lib/partnerDealMath";
 import PublicPartnerShell from "../../components/partner/PublicPartnerShell";
+import { isPartnerWhiteLabelHostname } from "../../lib/partnerHost.mjs";
 import type { PublicPartnerBranding } from "../../lib/partnerBranding";
 
 export default function PartnerPublicPlans() {
@@ -40,8 +41,9 @@ export default function PartnerPublicPlans() {
         }
         if (!nextSlug) {
           if (!cancelled) {
-            if (!slugParam) setFallbackToPricing(true);
-            else setError("עמוד החבילות לא נמצא");
+            if (!slugParam && !isPartnerWhiteLabelHostname(window.location.hostname)) {
+              setFallbackToPricing(true);
+            } else setError("עמוד החבילות לא נמצא");
           }
           return;
         }
@@ -55,8 +57,9 @@ export default function PartnerPublicPlans() {
         setBranding(brand || sales.partner);
       } catch (err: unknown) {
         if (!cancelled) {
-          if (!slugParam) setFallbackToPricing(true);
-          else setError(partnerApiError(err, "עמוד החבילות לא נמצא"));
+          if (!slugParam && !isPartnerWhiteLabelHostname(window.location.hostname)) {
+            setFallbackToPricing(true);
+          } else setError(partnerApiError(err, "עמוד החבילות לא נמצא"));
         }
       }
     })();
