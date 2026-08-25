@@ -52,7 +52,15 @@ export default function Login() {
   const { login, error: authError } = useAuth();
   const { fetchNotifications } = useNotifications();
   const { i18n, t } = useTranslation();
-  const { isResolvedPartnerHost } = usePartnerHostBranding();
+  const { isResolvedPartnerHost, looksLikePartnerHost, branding } =
+    usePartnerHostBranding();
+  const registerHref = isResolvedPartnerHost
+    ? "/plans"
+    : looksLikePartnerHost && branding?.slug
+      ? `/p/${encodeURIComponent(branding.slug)}/plans`
+      : looksLikePartnerHost
+        ? "/"
+        : "/pricing";
 
   const navigate = useNavigate();
   const location = useLocation();
@@ -327,7 +335,7 @@ export default function Login() {
           <p className="pt-2 text-center text-sm font-semibold text-slate-600">
             {t("login.noAccount")}{" "}
             <Link
-              to={isResolvedPartnerHost ? "/plans" : "/pricing"}
+              to={registerHref}
               className="font-black text-violet-700 transition hover:text-indigo-700"
             >
               {t("login.registerCta")}

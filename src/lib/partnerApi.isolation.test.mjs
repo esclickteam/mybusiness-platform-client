@@ -226,7 +226,10 @@ test("login branding resolves from hostname helper, not scattered partner ifs", 
   const login = readFileSync(join(ROOT, "pages/Login.tsx"), "utf8");
   assert.equal(login.includes("usePartnerHostBranding"), true);
   assert.equal(login.includes("isResolvedPartnerHost"), true);
+  assert.equal(login.includes("looksLikePartnerHost"), true);
+  assert.equal(login.includes("registerHref"), true);
   assert.equal(login.includes('? "/plans"'), true);
+  assert.equal(login.includes('to={isResolvedPartnerHost ? "/plans" : "/pricing"}'), false);
   const reset = readFileSync(join(ROOT, "pages/ResetPassword.jsx"), "utf8");
   assert.equal(reset.includes("AuthShell"), true);
   assert.equal(reset.includes("AuthCard"), true);
@@ -303,6 +306,8 @@ test("partner pipeline routes are registered in App", () => {
   assert.equal(app.includes("usePartnerHostBranding"), true);
   assert.equal(app.includes("partnerHostDeniedRedirect"), true);
   assert.equal(app.includes("isPartnerHostPublicChrome"), true);
+  assert.equal(app.includes("looksLikePartnerHost &&"), true);
+  assert.equal(app.includes("isPartnerHost &&"), false);
   assert.equal(app.includes("RedirectIfPartnerHost"), true);
   assert.equal(app.includes("<Route index element={<PartnerDashboard />} />"), true);
   assert.equal(app.includes('location.pathname === "/checkout/success"'), true);

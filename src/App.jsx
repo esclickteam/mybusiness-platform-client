@@ -843,7 +843,7 @@ export default function App() {
     branding: partnerHostBranding,
   } = usePartnerHostBranding();
   const isPartnerHostPublicChrome =
-    isPartnerHost &&
+    looksLikePartnerHost &&
     !location.pathname.includes("/dashboard") &&
     !isAdminRoute &&
     !isStaffRoute;
