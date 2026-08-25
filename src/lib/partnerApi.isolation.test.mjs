@@ -258,3 +258,17 @@ test("my page warns when the sales page has no products", () => {
   assert.equal(src.includes("אין חבילות בעמוד המכירה"), true);
   assert.equal(src.includes("/partner/dashboard/pricing"), true);
 });
+
+test("white-label host home sends anonymous visitors to plans without changing partner dashboard", () => {
+  const home = readFileSync(join(ROOT, "pages/public/PartnerHostHome.tsx"), "utf8");
+  assert.equal(home.includes("fetchPublicPartnerBranding"), true);
+  assert.equal(home.includes("whiteLabelEnabled"), true);
+  assert.equal(home.includes('to="/plans"'), true);
+  assert.equal(home.includes("/partner/dashboard"), false);
+  const app = readFileSync(join(ROOT, "App.jsx"), "utf8");
+  assert.equal(app.includes("PartnerHostHome"), true);
+  const dashboardAt = app.indexOf('path="/partner/dashboard"');
+  const indexAt = app.indexOf("<Route index element={<PartnerDashboard />} />");
+  assert.ok(dashboardAt > 0);
+  assert.ok(indexAt > dashboardAt);
+});

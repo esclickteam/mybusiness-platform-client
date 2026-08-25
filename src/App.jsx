@@ -204,6 +204,7 @@ const PartnerPublicDeal = lazy(() => import("./pages/partner/PartnerPublicDeal")
 const PartnerRegister = lazy(() => import("./pages/partner/PartnerRegister"));
 const PartnerStorefront = lazy(() => import("./pages/public/PartnerStorefront"));
 const PartnerPublicPlans = lazy(() => import("./pages/public/PartnerPublicPlans"));
+const PartnerHostHome = lazy(() => import("./pages/public/PartnerHostHome"));
 const PartnerCheckoutSuccess = lazy(() => import("./pages/public/PartnerCheckoutSuccess"));
 const PartnerMyPage = lazy(() => import("./pages/partner/PartnerMyPage"));
 const PartnerReferrals = lazy(() => import("./pages/partner/PartnerReferrals"));
@@ -1004,7 +1005,7 @@ export default function App() {
                                 <HomePage />
                               )
                             ) : (
-                              <HomePage />
+                              <PartnerHostHome />
                             )
                           }
                         />
