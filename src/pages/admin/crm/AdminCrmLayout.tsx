@@ -1,5 +1,5 @@
 import React from "react";
-import { NavLink, Outlet, useNavigate } from "react-router-dom";
+import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { useAuth } from "../../../context/AuthContext";
 import { ADMIN_PAGE_SHELL_CLASS } from "../../../utils/adminResponsive";
 import AdminHeader from "../AdminsHeader";
@@ -16,6 +16,8 @@ const TABS = [
 
 export default function AdminCrmLayout() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const isWhatsApp = location.pathname.startsWith("/admin/crm/whatsapp");
   const { user, socket } = useAuth() as {
     user: { role?: string } | null;
     socket?: { emit?: (event: string, ...args: any[]) => void; on?: Function; off?: Function; connected?: boolean } | null;
@@ -36,10 +38,26 @@ export default function AdminCrmLayout() {
   }, [socket]);
 
   return (
-    <div className={ADMIN_PAGE_SHELL_CLASS} dir="rtl" style={{ fontFamily: '"Assistant", "Rubik", sans-serif' }}>
-      <AdminHeader />
-      <main className="mx-auto mt-5 max-w-[1480px]">
-        <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+    <div
+      className={
+        isWhatsApp
+          ? "flex h-[100dvh] min-h-0 flex-col overflow-hidden bg-[#f6f2fb] px-3 py-3 text-right text-slate-800 sm:px-4 sm:py-4 md:px-8"
+          : ADMIN_PAGE_SHELL_CLASS
+      }
+      dir="rtl"
+      style={{ fontFamily: '"Assistant", "Rubik", sans-serif' }}
+    >
+      <div className="shrink-0">
+        <AdminHeader />
+      </div>
+      <main
+        className={
+          isWhatsApp
+            ? "mx-auto mt-3 flex min-h-0 w-full flex-1 flex-col overflow-hidden"
+            : "mx-auto mt-5 max-w-[1480px]"
+        }
+      >
+        <div className="mb-3 flex shrink-0 flex-col gap-3 sm:mb-5 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <p className="text-xs font-black text-[#7C4DFF]">פאנל ניהול</p>
             <h1 className="text-2xl font-black text-purple-950 sm:text-3xl">CRM וניהול לקוחות</h1>
@@ -48,7 +66,7 @@ export default function AdminCrmLayout() {
             </p>
           </div>
         </div>
-        <nav className="mb-5 flex gap-2 overflow-x-auto pb-1">
+        <nav className="mb-3 flex shrink-0 gap-2 overflow-x-auto pb-1 sm:mb-5">
           {TABS.map((tab) => (
             <NavLink
               key={tab.to}
@@ -67,7 +85,13 @@ export default function AdminCrmLayout() {
             </NavLink>
           ))}
         </nav>
-        <Outlet />
+        {isWhatsApp ? (
+          <div className="min-h-0 min-w-0 flex-1 overflow-hidden">
+            <Outlet />
+          </div>
+        ) : (
+          <Outlet />
+        )}
       </main>
     </div>
   );

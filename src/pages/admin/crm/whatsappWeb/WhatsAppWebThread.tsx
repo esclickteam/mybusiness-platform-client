@@ -16,6 +16,11 @@ import {
   mergeMessages,
   type PublicWhatsAppMessage,
 } from "./whatsAppWebMessages";
+import {
+  isNearBottom,
+  preserveScrollerOnResize,
+  scrollScrollerToBottom,
+} from "./whatsAppWebScroll";
 
 type Template = {
   id: string;
@@ -73,7 +78,7 @@ export default function WhatsAppWebThread({
   const [unseen, setUnseen] = useState(0);
   const stickRef = useRef(true);
   const scrollerRef = useRef<HTMLDivElement | null>(null);
-  const bottomRef = useRef<HTMLDivElement | null>(null);
+  const lastScrollTopRef = useRef(0);
 
   const templates: Template[] = data?.bizuplyManaged?.templates || [];
   const selected = templates.find((t) => t.id === templateId);
@@ -107,10 +112,7 @@ export default function WhatsAppWebThread({
     "";
 
   const scrollToBottom = useCallback((smooth = false) => {
-    bottomRef.current?.scrollIntoView({
-      block: "end",
-      behavior: smooth ? "smooth" : "auto",
-    });
+    scrollScrollerToBottom(scrollerRef.current, smooth);
   }, []);
 
   const loadMessages = useCallback(
@@ -170,6 +172,19 @@ export default function WhatsAppWebThread({
   }, [load]);
 
   useEffect(() => {
+    const el = scrollerRef.current;
+    if (!el || typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver(() => {
+      preserveScrollerOnResize(el, {
+        wasNearBottom: stickRef.current,
+        previousScrollTop: lastScrollTopRef.current,
+      });
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [customerId, threadId]);
+
+  useEffect(() => {
     if (!selected) return;
     setVars((prev) => ({ ...(selected.prefill || {}), ...prev }));
   }, [templateId]);
@@ -219,8 +234,14 @@ export default function WhatsAppWebThread({
       loadMessages(since)
         .then((rows) => {
           if (!rows.length) return;
-          setMessages((prev) => mergeMessages(prev, rows));
-          if (stickRef.current) requestAnimationFrame(() => scrollToBottom(false));
+          setMessages((prev) => {
+            const next = mergeMessages(prev, rows);
+            const added = next.length > prev.length;
+            if (added && stickRef.current) {
+              requestAnimationFrame(() => scrollToBottom(false));
+            }
+            return next;
+          });
         })
         .catch(() => null);
     },
@@ -351,7 +372,7 @@ export default function WhatsAppWebThread({
 
   if (error) {
     return (
-      <div className="flex h-full flex-col items-center justify-center gap-3 bg-[#efeae2] p-6">
+      <div className="flex h-full w-full flex-col items-center justify-center gap-3 bg-[#efeae2] p-6">
         <p className="font-bold text-rose-700">{error}</p>
         <SecondaryButton onClick={load}>נסה שוב</SecondaryButton>
       </div>
@@ -360,14 +381,14 @@ export default function WhatsAppWebThread({
 
   if (!data && customerId) {
     return (
-      <div className="flex h-full items-center justify-center bg-[#efeae2] text-sm font-bold text-slate-500">
+      <div className="flex h-full w-full items-center justify-center bg-[#efeae2] text-sm font-bold text-slate-500">
         טוען שיחה…
       </div>
     );
   }
 
   return (
-    <div className="flex h-full min-h-0 flex-col overflow-hidden bg-[#efeae2]" dir="rtl">
+    <div className="flex h-full min-h-0 w-full min-w-0 flex-col overflow-hidden bg-[#efeae2]" dir="rtl">
       <header className="flex shrink-0 items-center gap-3 border-b border-black/5 bg-[#f0f2f5] px-3 py-2">
         {onBack ? (
           <button
@@ -427,15 +448,15 @@ export default function WhatsAppWebThread({
 
       <div
         ref={scrollerRef}
-        className="relative min-h-0 flex-1 overflow-x-hidden overflow-y-auto px-3 py-3 sm:px-8"
+        className="relative min-h-0 flex-1 overflow-x-hidden overflow-y-auto px-3 py-3 sm:px-8 [overflow-anchor:none]"
         onScroll={(e) => {
           const el = e.currentTarget;
-          const distance = el.scrollHeight - el.scrollTop - el.clientHeight;
-          stickRef.current = distance < 72;
+          lastScrollTopRef.current = el.scrollTop;
+          stickRef.current = isNearBottom(el);
           if (stickRef.current) setUnseen(0);
         }}
       >
-        <div className="mx-auto flex max-w-[760px] flex-col">
+        <div className="flex w-full min-w-0 flex-col">
           {!feed.length ? (
             <div className="my-10 text-center text-sm font-bold text-[#667781]">
               אין שיחה עדיין. אפשר להתחיל לשלוח הודעה מכאן.
@@ -488,7 +509,6 @@ export default function WhatsAppWebThread({
               </div>
             );
           })}
-          <div ref={bottomRef} />
         </div>
         {unseen > 0 ? (
           <button
