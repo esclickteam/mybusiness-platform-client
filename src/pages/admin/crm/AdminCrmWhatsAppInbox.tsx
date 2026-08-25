@@ -187,15 +187,15 @@ export default function AdminCrmWhatsAppInbox() {
 
   return (
     <div
-      className="overflow-hidden rounded-[24px] border border-purple-100 bg-white shadow-[0_18px_50px_rgba(124,77,255,0.06)]"
+      className="flex h-full min-h-0 flex-col overflow-hidden rounded-[24px] border border-purple-100 bg-white shadow-[0_18px_50px_rgba(124,77,255,0.06)]"
       dir="rtl"
     >
       {banner ? (
-        <div className="border-b border-purple-100 bg-violet-50 px-4 py-2 text-sm font-bold text-[#7C4DFF]">
+        <div className="shrink-0 border-b border-purple-100 bg-violet-50 px-4 py-2 text-sm font-bold text-[#7C4DFF]">
           {banner}
         </div>
       ) : null}
-      <div className="flex h-[min(780px,calc(100vh-210px))] min-h-[520px]">
+      <div className="flex min-h-0 min-w-0 flex-1">
         <aside
           className={[
             "flex w-full shrink-0 flex-col border-purple-100 bg-white lg:w-[360px] lg:border-s",
@@ -363,7 +363,7 @@ export default function AdminCrmWhatsAppInbox() {
 
         <section
           className={[
-            "min-w-0 flex-1",
+            "min-h-0 min-w-0 w-full flex-1 flex-col",
             mobileChat ? "flex" : "hidden lg:flex",
           ].join(" ")}
         >
@@ -386,7 +386,7 @@ export default function AdminCrmWhatsAppInbox() {
               onOpenSendDemo={() => setDemoOpen(true)}
             />
           ) : (
-            <div className="flex h-full w-full flex-col items-center justify-center bg-[#f0f2f5] text-center">
+            <div className="flex h-full min-h-0 w-full flex-1 flex-col items-center justify-center bg-[#f0f2f5] text-center">
               <div className="max-w-sm px-6">
                 <p className="text-2xl font-black text-[#41525d]">WhatsApp של BizUply</p>
                 <p className="mt-3 text-sm font-bold leading-6 text-[#667781]">

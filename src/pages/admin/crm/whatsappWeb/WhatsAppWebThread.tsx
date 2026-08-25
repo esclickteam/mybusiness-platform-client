@@ -16,6 +16,11 @@ import {
   mergeMessages,
   type PublicWhatsAppMessage,
 } from "./whatsAppWebMessages";
+import {
+  isNearBottom,
+  preserveScrollerOnResize,
+  scrollScrollerToBottom,
+} from "./whatsAppWebScroll";
 
 type Template = {
   id: string;
@@ -27,6 +32,15 @@ type Template = {
   variables: string[];
   body?: string;
   prefill?: Record<string, string>;
+};
+
+const CHAT_COLUMN_CLASS =
+  "mx-auto flex h-full min-h-0 w-full min-w-0 max-w-[920px] flex-col";
+
+const CHAT_WALLPAPER_STYLE: React.CSSProperties = {
+  backgroundColor: "#efeae2",
+  backgroundImage:
+    "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72' viewBox='0 0 72 72'%3E%3Cg fill='%23c9c2b8' fill-opacity='0.22'%3E%3Ccircle cx='8' cy='10' r='1.1'/%3E%3Ccircle cx='40' cy='18' r='1.1'/%3E%3Ccircle cx='22' cy='46' r='1.1'/%3E%3Ccircle cx='58' cy='52' r='1.1'/%3E%3C/g%3E%3C/svg%3E\")",
 };
 
 export default function WhatsAppWebThread({
@@ -73,7 +87,7 @@ export default function WhatsAppWebThread({
   const [unseen, setUnseen] = useState(0);
   const stickRef = useRef(true);
   const scrollerRef = useRef<HTMLDivElement | null>(null);
-  const bottomRef = useRef<HTMLDivElement | null>(null);
+  const lastScrollTopRef = useRef(0);
 
   const templates: Template[] = data?.bizuplyManaged?.templates || [];
   const selected = templates.find((t) => t.id === templateId);
@@ -107,10 +121,7 @@ export default function WhatsAppWebThread({
     "";
 
   const scrollToBottom = useCallback((smooth = false) => {
-    bottomRef.current?.scrollIntoView({
-      block: "end",
-      behavior: smooth ? "smooth" : "auto",
-    });
+    scrollScrollerToBottom(scrollerRef.current, smooth);
   }, []);
 
   const loadMessages = useCallback(
@@ -170,6 +181,19 @@ export default function WhatsAppWebThread({
   }, [load]);
 
   useEffect(() => {
+    const el = scrollerRef.current;
+    if (!el || typeof ResizeObserver === "undefined") return;
+    const ro = new ResizeObserver(() => {
+      preserveScrollerOnResize(el, {
+        wasNearBottom: stickRef.current,
+        previousScrollTop: lastScrollTopRef.current,
+      });
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [customerId, threadId]);
+
+  useEffect(() => {
     if (!selected) return;
     setVars((prev) => ({ ...(selected.prefill || {}), ...prev }));
   }, [templateId]);
@@ -219,8 +243,14 @@ export default function WhatsAppWebThread({
       loadMessages(since)
         .then((rows) => {
           if (!rows.length) return;
-          setMessages((prev) => mergeMessages(prev, rows));
-          if (stickRef.current) requestAnimationFrame(() => scrollToBottom(false));
+          setMessages((prev) => {
+            const next = mergeMessages(prev, rows);
+            const added = next.length > prev.length;
+            if (added && stickRef.current) {
+              requestAnimationFrame(() => scrollToBottom(false));
+            }
+            return next;
+          });
         })
         .catch(() => null);
     },
@@ -351,7 +381,7 @@ export default function WhatsAppWebThread({
 
   if (error) {
     return (
-      <div className="flex h-full flex-col items-center justify-center gap-3 bg-[#efeae2] p-6">
+      <div className="flex h-full w-full flex-col items-center justify-center gap-3 bg-[#efeae2] p-6">
         <p className="font-bold text-rose-700">{error}</p>
         <SecondaryButton onClick={load}>נסה שוב</SecondaryButton>
       </div>
@@ -360,14 +390,19 @@ export default function WhatsAppWebThread({
 
   if (!data && customerId) {
     return (
-      <div className="flex h-full items-center justify-center bg-[#efeae2] text-sm font-bold text-slate-500">
+      <div className="flex h-full w-full items-center justify-center bg-[#efeae2] text-sm font-bold text-slate-500">
         טוען שיחה…
       </div>
     );
   }
 
   return (
-    <div className="flex h-full min-h-0 flex-col overflow-hidden bg-[#efeae2]" dir="rtl">
+    <div
+      className="flex h-full min-h-0 w-full min-w-0 flex-col overflow-hidden"
+      dir="rtl"
+      style={CHAT_WALLPAPER_STYLE}
+    >
+      <div className={CHAT_COLUMN_CLASS}>
       <header className="flex shrink-0 items-center gap-3 border-b border-black/5 bg-[#f0f2f5] px-3 py-2">
         {onBack ? (
           <button
@@ -427,15 +462,15 @@ export default function WhatsAppWebThread({
 
       <div
         ref={scrollerRef}
-        className="relative min-h-0 flex-1 overflow-x-hidden overflow-y-auto px-3 py-3 sm:px-8"
+        className="relative min-h-0 flex-1 overflow-x-hidden overflow-y-auto px-4 py-3 [overflow-anchor:none]"
         onScroll={(e) => {
           const el = e.currentTarget;
-          const distance = el.scrollHeight - el.scrollTop - el.clientHeight;
-          stickRef.current = distance < 72;
+          lastScrollTopRef.current = el.scrollTop;
+          stickRef.current = isNearBottom(el);
           if (stickRef.current) setUnseen(0);
         }}
       >
-        <div className="mx-auto flex max-w-[760px] flex-col">
+        <div className="flex w-full min-w-0 flex-col">
           {!feed.length ? (
             <div className="my-10 text-center text-sm font-bold text-[#667781]">
               אין שיחה עדיין. אפשר להתחיל לשלוח הודעה מכאן.
@@ -463,7 +498,7 @@ export default function WhatsAppWebThread({
               >
                 <div
                   className={[
-                    "relative max-w-[75%] rounded-lg px-[9px] pb-[6px] pt-[6px] text-[14.2px] leading-[19px] shadow-[0_1px_0.5px_rgba(11,20,26,0.13)]",
+                    "relative max-w-[65%] rounded-lg px-[9px] pb-[6px] pt-[6px] text-[14.2px] leading-[19px] shadow-[0_1px_0.5px_rgba(11,20,26,0.13)]",
                     outbound
                       ? "rounded-ee-none bg-[#d9fdd3] text-[#111b21]"
                       : "rounded-es-none bg-white text-[#111b21]",
@@ -488,7 +523,6 @@ export default function WhatsAppWebThread({
               </div>
             );
           })}
-          <div ref={bottomRef} />
         </div>
         {unseen > 0 ? (
           <button
@@ -505,7 +539,7 @@ export default function WhatsAppWebThread({
         ) : null}
       </div>
 
-      <div className="shrink-0 border-t border-black/5 bg-[#f0f2f5] px-2 py-2">
+      <div className="shrink-0 border-t border-black/5 bg-[#f0f2f5] px-3 py-2">
         {!canSend ? (
           <p className="mb-2 px-2 text-xs font-bold text-rose-700">אין הרשאה לשלוח WhatsApp.</p>
         ) : null}
@@ -630,7 +664,7 @@ export default function WhatsAppWebThread({
           onStageFile={setStagedFile}
           onSend={() => void send()}
         />
-        <p className="mt-1 px-2 text-[11px] font-bold text-[#667781]">
+        <p className="mt-1 px-2 text-[11px] font-semibold text-[#8696a0]">
           {sessionOpen ? (
             <>
               <Badge tone="bg-emerald-50 text-emerald-700 border-emerald-200">הודעה חופשית</Badge>
@@ -640,6 +674,7 @@ export default function WhatsAppWebThread({
             "חלון 24 השעות סגור — שליחה בתבנית מאושרת בלבד"
           )}
         </p>
+      </div>
       </div>
     </div>
   );

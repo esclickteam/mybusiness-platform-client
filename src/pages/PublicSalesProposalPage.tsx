@@ -3,6 +3,7 @@ import { Link, useParams, useSearchParams } from "react-router-dom";
 import SignatureCanvas from "react-signature-canvas";
 import API from "../api";
 import ProposalDocumentView from "./admin/crm/proposals/ProposalDocumentView";
+import EnterpriseProposalView from "./admin/crm/proposals/EnterpriseProposalView";
 import BizuplyLoader from "../components/ui/BizuplyLoader";
 
 const THINKING_OPTIONS = [
@@ -216,13 +217,15 @@ export default function PublicSalesProposalPage() {
   }
 
   const alreadyPaid = ["paid", "accepted"].includes(proposal.status);
+  const isEnterprise = proposal.kind === "enterprise" || Boolean(proposal.enterprise);
+  const DocumentView = isEnterprise ? EnterpriseProposalView : ProposalDocumentView;
 
   return (
     <div
       className="min-h-screen w-full bg-[linear-gradient(180deg,#f8f5ff_0%,#f5f6fb_40%,#ffffff_100%)] px-3 py-6 sm:px-6 sm:py-10"
       dir="rtl"
     >
-      <ProposalDocumentView
+      <DocumentView
         interactive
         proposal={proposal}
         footer={
@@ -235,7 +238,7 @@ export default function PublicSalesProposalPage() {
                   onClick={() => void startSigning()}
                   className="min-h-12 w-full rounded-2xl bg-[#6D28D9] px-4 py-3 text-base font-black text-white disabled:opacity-60"
                 >
-                  אני רוצה להתחיל
+                  {isEnterprise ? "אישור ההצעה ומעבר לתשלום" : "אני רוצה להתחיל"}
                 </button>
                 <button
                   type="button"
