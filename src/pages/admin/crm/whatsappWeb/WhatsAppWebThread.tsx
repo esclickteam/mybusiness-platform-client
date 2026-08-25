@@ -34,6 +34,15 @@ type Template = {
   prefill?: Record<string, string>;
 };
 
+const CHAT_COLUMN_CLASS =
+  "mx-auto flex h-full min-h-0 w-full min-w-0 max-w-[920px] flex-col";
+
+const CHAT_WALLPAPER_STYLE: React.CSSProperties = {
+  backgroundColor: "#efeae2",
+  backgroundImage:
+    "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='72' height='72' viewBox='0 0 72 72'%3E%3Cg fill='%23c9c2b8' fill-opacity='0.22'%3E%3Ccircle cx='8' cy='10' r='1.1'/%3E%3Ccircle cx='40' cy='18' r='1.1'/%3E%3Ccircle cx='22' cy='46' r='1.1'/%3E%3Ccircle cx='58' cy='52' r='1.1'/%3E%3C/g%3E%3C/svg%3E\")",
+};
+
 export default function WhatsAppWebThread({
   customerId,
   threadId,
@@ -388,7 +397,12 @@ export default function WhatsAppWebThread({
   }
 
   return (
-    <div className="flex h-full min-h-0 w-full min-w-0 flex-col overflow-hidden bg-[#efeae2]" dir="rtl">
+    <div
+      className="flex h-full min-h-0 w-full min-w-0 flex-col overflow-hidden"
+      dir="rtl"
+      style={CHAT_WALLPAPER_STYLE}
+    >
+      <div className={CHAT_COLUMN_CLASS}>
       <header className="flex shrink-0 items-center gap-3 border-b border-black/5 bg-[#f0f2f5] px-3 py-2">
         {onBack ? (
           <button
@@ -448,7 +462,7 @@ export default function WhatsAppWebThread({
 
       <div
         ref={scrollerRef}
-        className="relative min-h-0 flex-1 overflow-x-hidden overflow-y-auto px-3 py-3 sm:px-8 [overflow-anchor:none]"
+        className="relative min-h-0 flex-1 overflow-x-hidden overflow-y-auto px-4 py-3 [overflow-anchor:none]"
         onScroll={(e) => {
           const el = e.currentTarget;
           lastScrollTopRef.current = el.scrollTop;
@@ -484,7 +498,7 @@ export default function WhatsAppWebThread({
               >
                 <div
                   className={[
-                    "relative max-w-[75%] rounded-lg px-[9px] pb-[6px] pt-[6px] text-[14.2px] leading-[19px] shadow-[0_1px_0.5px_rgba(11,20,26,0.13)]",
+                    "relative max-w-[65%] rounded-lg px-[9px] pb-[6px] pt-[6px] text-[14.2px] leading-[19px] shadow-[0_1px_0.5px_rgba(11,20,26,0.13)]",
                     outbound
                       ? "rounded-ee-none bg-[#d9fdd3] text-[#111b21]"
                       : "rounded-es-none bg-white text-[#111b21]",
@@ -525,7 +539,7 @@ export default function WhatsAppWebThread({
         ) : null}
       </div>
 
-      <div className="shrink-0 border-t border-black/5 bg-[#f0f2f5] px-2 py-2">
+      <div className="shrink-0 border-t border-black/5 bg-[#f0f2f5] px-3 py-2">
         {!canSend ? (
           <p className="mb-2 px-2 text-xs font-bold text-rose-700">אין הרשאה לשלוח WhatsApp.</p>
         ) : null}
@@ -650,7 +664,7 @@ export default function WhatsAppWebThread({
           onStageFile={setStagedFile}
           onSend={() => void send()}
         />
-        <p className="mt-1 px-2 text-[11px] font-bold text-[#667781]">
+        <p className="mt-1 px-2 text-[11px] font-semibold text-[#8696a0]">
           {sessionOpen ? (
             <>
               <Badge tone="bg-emerald-50 text-emerald-700 border-emerald-200">הודעה חופשית</Badge>
@@ -660,6 +674,7 @@ export default function WhatsAppWebThread({
             "חלון 24 השעות סגור — שליחה בתבנית מאושרת בלבד"
           )}
         </p>
+      </div>
       </div>
     </div>
   );
