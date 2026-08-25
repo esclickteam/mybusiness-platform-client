@@ -338,7 +338,10 @@ test("amendment wizard skips quote persist when the client already has a catalog
   const wizard = readFileSync(join(ROOT, "pages/partner/PartnerClientWizard.tsx"), "utf8");
   assert.equal(wizard.includes("setClientStatus"), true);
   assert.equal(wizard.includes('["active", "provisioning"].includes(clientStatus)'), true);
-  assert.equal(wizard.includes("setOwnedSkus(owned)"), true);
+  assert.equal(wizard.includes("fromCatalog"), true);
+  assert.equal(wizard.includes("fromDeals"), true);
+  assert.equal(wizard.includes('String(deal.status || "") !== "reversed"'), true);
+  assert.equal(wizard.includes("setOwnedSkus([...new Set([...fromCatalog, ...fromDeals])])"), true);
   assert.equal(wizard.includes('if (["active", "provisioning"].includes(String(client.status || "")))'), false);
   assert.equal(wizard.includes("kind: existingClientId ? \"amendment\" : \"initial\""), false);
   assert.equal(wizard.includes('kind: ownedSkus.length ? "amendment" : "initial"'), true);
