@@ -13,6 +13,7 @@ import {
 import { partnerStatusLabel } from "../../lib/partnerLabels";
 import { billingLabel, isCommissionSku, publicPackageLabel } from "../../lib/partnerDealMath";
 import { formatIls } from "../../lib/partnerMoney";
+import { absoluteCustomerUrl } from "../../lib/partnerBranding";
 import PartnerPageHeader from "../../components/partner/PartnerPageHeader";
 import BizuplyLoader from "../../components/ui/BizuplyLoader";
 import type { PartnerClient, PartnerDeal } from "../../types/partner";
@@ -121,7 +122,7 @@ export default function PartnerDealDetail() {
   const totals = deal.totals || ({} as PartnerDeal["totals"]);
   const isPaid = deal.paymentStatus === "paid" || deal.status === "paid";
   const canceled = params.get("canceled") === "1";
-  const publicUrl = `${window.location.origin}${deal.publicUrl || `/partner/deals/${deal._id}`}`;
+  const publicUrl = absoluteCustomerUrl(deal.publicUrl || `/partner/deals/${deal._id}`);
 
   async function payBizuply() {
     if (!dealId) return;

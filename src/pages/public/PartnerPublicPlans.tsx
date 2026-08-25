@@ -10,7 +10,7 @@ import { formatPublicCustomerPrice } from "../../lib/partnerMoney";
 import { billingLabel } from "../../lib/partnerDealMath";
 import PublicPartnerShell from "../../components/partner/PublicPartnerShell";
 import { isPartnerWhiteLabelHostname } from "../../lib/partnerHost.mjs";
-import type { PublicPartnerBranding } from "../../lib/partnerBranding";
+import { partnerFacingName, type PublicPartnerBranding } from "../../lib/partnerBranding";
 
 export default function PartnerPublicPlans() {
   const { slug: slugParam } = useParams();
@@ -88,13 +88,15 @@ export default function PartnerPublicPlans() {
 
   const products = page?.products || [];
   const selected = products.find((item: any) => item.sku === sku);
+  const host = typeof window !== "undefined" ? window.location.hostname : "";
+  const heading = partnerFacingName(branding, host) || page?.partner?.name || "חבילות";
 
   return (
     <PublicPartnerShell
       branding={branding}
-      title={page?.partner?.name ? `${page.partner.name} — חבילות` : "חבילות"}
+      title={heading !== "חבילות" ? `${heading} — חבילות` : "חבילות"}
     >
-      <h1 className="text-3xl font-black">{page?.partner?.name || "חבילות"}</h1>
+      <h1 className="text-3xl font-black">{heading}</h1>
       <p className="mt-2 text-sm font-bold text-slate-500">
         בחרו חבילה והשלימו רכישה. המחיר המוצג הוא המחיר הסופי ללקוח.
       </p>

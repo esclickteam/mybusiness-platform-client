@@ -74,3 +74,13 @@ export function partnerFacingLogo(
   if (!hidesBizuplyChrome(branding, hostname)) return "";
   return String(branding?.logoUrl || branding?.stored?.logoUrl || "").trim();
 }
+
+export function absoluteCustomerUrl(pathOrUrl: string, fallbackOrigin?: string) {
+  const value = String(pathOrUrl || "").trim();
+  if (/^https?:\/\//i.test(value)) return value;
+  const origin = String(
+    fallbackOrigin || (typeof window !== "undefined" ? window.location.origin : "")
+  ).replace(/\/+$/, "");
+  if (!value) return origin;
+  return `${origin}${value.startsWith("/") ? value : `/${value}`}`;
+}

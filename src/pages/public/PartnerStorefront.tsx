@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { fetchPublicStorefront } from "../../lib/partnerApi";
 import { formatPublicCustomerPrice } from "../../lib/partnerMoney";
+import PublicPartnerShell from "../../components/partner/PublicPartnerShell";
 
 function ils(value?: number) {
   return `₪${Number(value || 0).toLocaleString("he-IL")}`;
@@ -36,17 +37,19 @@ export default function PartnerStorefront() {
 
   if (error) {
     return (
-      <div dir="rtl" className="mx-auto max-w-3xl px-4 py-16 text-center">
-        <h1 className="text-2xl font-black">{error}</h1>
-      </div>
+      <PublicPartnerShell title="קטלוג">
+        <div className="text-center">
+          <h1 className="text-2xl font-black">{error}</h1>
+        </div>
+      </PublicPartnerShell>
     );
   }
   if (!data) return null;
 
   return (
-    <div dir="rtl" className="min-h-screen bg-slate-50 text-slate-900">
-      <header className="bg-white px-4 py-10">
-        <div className="mx-auto flex max-w-4xl items-center gap-4">
+    <PublicPartnerShell branding={data.branding} title={data.name || "קטלוג"}>
+      <header className="rounded-[32px] bg-white px-6 py-10 shadow-sm">
+        <div className="flex items-center gap-4">
           {data.logoUrl ? (
             <img src={data.logoUrl} alt={data.name} className="h-16 w-16 rounded-2xl object-cover" />
           ) : null}
@@ -68,7 +71,7 @@ export default function PartnerStorefront() {
           </div>
         </div>
       </header>
-      <main className="mx-auto grid max-w-4xl gap-4 px-4 py-8">
+      <div className="mt-8 grid gap-4">
         {(data.products || []).map((product: any) => (
           <article key={product.sku} className="rounded-2xl border border-slate-200 bg-white p-5">
             <h2 className="text-lg font-black">{product.nameHe || product.name}</h2>
@@ -81,12 +84,7 @@ export default function PartnerStorefront() {
             ) : null}
           </article>
         ))}
-      </main>
-      {!data.hideBizuplyBranding ? (
-        <footer className="py-6 text-center text-xs font-bold text-slate-400">
-          Powered by Bizuply
-        </footer>
-      ) : null}
-    </div>
+      </div>
+    </PublicPartnerShell>
   );
 }

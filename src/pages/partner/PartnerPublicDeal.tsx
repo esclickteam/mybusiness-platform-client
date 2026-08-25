@@ -4,7 +4,12 @@ import { useParams } from "react-router-dom";
 import { fetchPublicPartnerDeal } from "../../lib/partnerApi";
 import { billingLabel } from "../../lib/partnerDealMath";
 import { formatIls } from "../../lib/partnerMoney";
-import BizuplyLoader from "../../components/ui/BizuplyLoader";
+import {
+  applyPartnerFavicon,
+  partnerFacingLogo,
+  partnerFacingName,
+  type PublicPartnerBranding,
+} from "../../lib/partnerBranding";
 
 type PublicProduct = {
   name?: string;
@@ -15,6 +20,7 @@ type PublicProduct = {
 type PublicSummary = {
   dealNumber?: string;
   dealDate?: string;
+  branding?: PublicPartnerBranding;
   business?: { name?: string; contactName?: string; phone?: string; email?: string; logo?: string };
   partner?: { name?: string; logo?: string; phone?: string; email?: string };
   package?: {
@@ -57,7 +63,22 @@ export default function PartnerPublicDeal() {
       .catch(() => setError("העסקה לא נמצאה"));
   }, [dealId]);
 
-  if (!summary && !error) return <BizuplyLoader fullScreen label="טוען סיכום עסקה..." />;
+  const host = typeof window !== "undefined" ? window.location.hostname : "";
+  const brandName = partnerFacingName(summary?.branding, host) || summary?.partner?.name || "";
+  const brandLogo = partnerFacingLogo(summary?.branding, host) || summary?.partner?.logo || "";
+
+  useEffect(() => {
+    applyPartnerFavicon(summary?.branding?.faviconUrl || summary?.branding?.stored?.faviconUrl || "");
+    return () => applyPartnerFavicon("");
+  }, [summary?.branding?.faviconUrl, summary?.branding?.stored?.faviconUrl]);
+
+  if (!summary && !error) {
+    return (
+      <div dir="rtl" className="grid min-h-screen place-items-center bg-[#f6f4ff] font-black text-slate-500">
+        טוען סיכום עסקה...
+      </div>
+    );
+  }
   if (!summary) {
     return (
       <div dir="rtl" className="mx-auto max-w-3xl p-8 text-center font-black text-rose-700">
@@ -68,7 +89,8 @@ export default function PartnerPublicDeal() {
 
   const pay = summary.payment || {};
   const date = summary.dealDate ? new Date(summary.dealDate).toLocaleDateString("he-IL") : "";
-  const logo = summary.partner?.logo || summary.business?.logo;
+  const logo = brandLogo || summary.business?.logo;
+  const heading = brandName || "פרטנר";
   const products: PublicProduct[] = [
     summary.package
       ? {
@@ -84,6 +106,7 @@ export default function PartnerPublicDeal() {
     <div dir="rtl" className="min-h-screen bg-[#f6f4ff] px-4 py-10" style={{ fontFamily: '"Assistant","Rubik",sans-serif' }}>
       <Helmet>
         <meta name="robots" content="noindex,nofollow" />
+        {heading ? <title>{heading}</title> : null}
       </Helmet>
       <article className="mx-auto max-w-3xl overflow-hidden rounded-[32px] border border-white bg-white shadow-[0_24px_80px_rgba(76,29,149,0.12)]">
         <header className="bg-gradient-to-l from-[#4C1D95] to-[#7C4DFF] px-8 py-8 text-white">
@@ -92,12 +115,12 @@ export default function PartnerPublicDeal() {
               <img src={logo} alt="" className="h-14 w-14 rounded-2xl bg-white object-cover" />
             ) : (
               <div className="grid h-14 w-14 place-items-center rounded-2xl bg-white/15 text-lg font-black">
-                {(summary.partner?.name || summary.business?.name || "P").slice(0, 1)}
+                {heading.slice(0, 1)}
               </div>
             )}
             <div>
               <p className="text-xs font-black uppercase tracking-[0.18em] text-white/70">החבילה שלך</p>
-              <h1 className="text-2xl font-black">{summary.partner?.name || "פרטנר"}</h1>
+              <h1 className="text-2xl font-black">{heading}</h1>
               <p className="text-sm font-bold text-white/80">
                 {[summary.partner?.phone, summary.partner?.email].filter(Boolean).join(" · ")}
               </p>

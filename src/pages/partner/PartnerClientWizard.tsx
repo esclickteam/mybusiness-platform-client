@@ -22,6 +22,7 @@ import {
 } from "../../lib/partnerApi";
 import { computeDealPreview, isCommissionSku, publicPackageLabel, billingLabel } from "../../lib/partnerDealMath";
 import { formatIls, formatPct } from "../../lib/partnerMoney";
+import { absoluteCustomerUrl } from "../../lib/partnerBranding";
 import type {
   ManagementMode,
   PartnerPriceLine,
@@ -258,6 +259,9 @@ export default function PartnerClientWizard() {
 
   const publicOrigin =
     typeof window !== "undefined" ? window.location.origin : "https://mybusiness-platform-client-staging.vercel.app";
+  const shareUrl = createdDeal
+    ? absoluteCustomerUrl(createdDeal.publicUrl, publicOrigin)
+    : "";
 
   return (
     <div className="space-y-6 pb-24 lg:pb-8">
@@ -499,13 +503,12 @@ export default function PartnerClientWizard() {
             <div className="rounded-3xl border border-emerald-200 bg-emerald-50 p-5">
               <p className="font-black text-emerald-800">עסקה {createdDeal.number} נוצרה</p>
               <p className="mt-2 break-all text-sm font-bold">
-                {publicOrigin}
-                {createdDeal.publicUrl}
+                {shareUrl}
               </p>
               <div className="mt-3 flex flex-wrap gap-2">
                 <button
                   type="button"
-                  onClick={() => navigator.clipboard.writeText(`${publicOrigin}${createdDeal.publicUrl}`)}
+                  onClick={() => navigator.clipboard.writeText(shareUrl)}
                   className="rounded-2xl bg-emerald-700 px-4 py-2 text-sm font-black text-white"
                 >
                   העתקת קישור ללקוח

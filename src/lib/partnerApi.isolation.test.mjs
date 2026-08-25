@@ -90,6 +90,8 @@ test("public partner deal page shows products without line prices", () => {
   assert.equal(src.includes("setupAmount"), false);
   assert.equal(src.includes("customerFinalPrice"), false);
   assert.equal(src.includes("פירוט מוצרים"), true);
+  assert.equal(src.includes("partnerFacingName"), true);
+  assert.equal(src.includes("BizuplyLoader"), false);
 });
 
 test("public partner deal link hides footer and support bot", () => {
@@ -181,6 +183,14 @@ test("partner work helpers stay on PartnerClient tasks", () => {
   assert.equal(src.includes("/api/crm"), false);
 });
 
+test("partner deal share links stay absolute on Premium hosts", () => {
+  const wizard = readFileSync(join(ROOT, "pages/partner/PartnerClientWizard.tsx"), "utf8");
+  assert.equal(wizard.includes("absoluteCustomerUrl"), true);
+  const detail = readFileSync(join(ROOT, "pages/partner/PartnerDealDetail.tsx"), "utf8");
+  assert.equal(detail.includes("absoluteCustomerUrl"), true);
+  assert.equal(detail.includes("${window.location.origin}${deal.publicUrl"), false);
+});
+
 test("public partner deal is a summary, not a fake checkout", () => {
   const src = readFileSync(join(ROOT, "pages/partner/PartnerPublicDeal.tsx"), "utf8");
   assert.equal(src.includes("לתשלום עכשיו"), false);
@@ -213,10 +223,15 @@ test("login branding resolves from hostname helper, not scattered partner ifs", 
   assert.equal(shell.includes("partnerFacingName"), true);
   const plans = readFileSync(join(ROOT, "pages/public/PartnerPublicPlans.tsx"), "utf8");
   assert.equal(plans.includes("sales.branding"), true);
+  assert.equal(plans.includes("partnerFacingName"), true);
   const branding = readFileSync(join(ROOT, "lib/partnerBranding.ts"), "utf8");
   assert.equal(branding.includes("whiteLabelEntitled"), true);
   assert.equal(branding.includes("hideBizuplyBranding"), true);
   assert.equal(branding.includes("isPartnerWhiteLabelHostname"), true);
+  assert.equal(branding.includes("absoluteCustomerUrl"), true);
+  const storefront = readFileSync(join(ROOT, "pages/public/PartnerStorefront.tsx"), "utf8");
+  assert.equal(storefront.includes("PublicPartnerShell"), true);
+  assert.equal(storefront.includes("Powered by Bizuply"), false);
 });
 
 test("public checkout client sends sku and contact, never a customer price", () => {
