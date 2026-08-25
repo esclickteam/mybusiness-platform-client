@@ -67,10 +67,12 @@ type NavItemConfig = {
  *
  * - 6a452720016d081ad1d6e328 — Managed-host / early WhatsApp pilot
  * - 6a1c7b9c17abeea4a444f6fa — bdika (private WhatsApp Embedded Signup enabled)
+ * - 6a8df4e95c704a03773a9966 — Invistimo Support workspace (regular business, full product)
  */
 const RESTRICTED_NAV_ALLOWED_BUSINESS_IDS = new Set([
   "6a452720016d081ad1d6e328",
   "6a1c7b9c17abeea4a444f6fa",
+  "6a8df4e95c704a03773a9966",
 ]);
 
 /** Allowlist only: an unresolved or unlisted business never sees the entries. */
