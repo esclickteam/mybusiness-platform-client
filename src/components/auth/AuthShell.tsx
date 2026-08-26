@@ -30,7 +30,6 @@ export function BrandMark({ size = "md" }: { size?: "sm" | "md" }) {
   const host = typeof window !== "undefined" ? window.location.hostname : "";
   const text = size === "sm" ? "text-2xl" : "text-3xl";
   const hideChrome = hidesBizuplyChrome(branding, host);
-  const partnerHost = isPartnerHostBranding(branding);
   const logoUrl = partnerFacingLogo(branding, host) || partnerDisplayLogo(branding);
   const brandName = partnerFacingName(branding, host) || partnerDisplayName(branding);
   if (logoUrl) {
@@ -45,7 +44,7 @@ export function BrandMark({ size = "md" }: { size?: "sm" | "md" }) {
   if (brandName) {
     return <span className={`${text} font-black tracking-tight text-slate-900`}>{brandName}</span>;
   }
-  if (hideChrome || partnerHost) {
+  if (hideChrome) {
     return null;
   }
   return (
@@ -71,8 +70,8 @@ export default function AuthShell({
   const { branding } = usePartnerHostBranding();
   const host = typeof window !== "undefined" ? window.location.hostname : "";
   const whiteLabel = hidesBizuplyChrome(branding, host);
-  const partnerHost = isPartnerHostBranding(branding);
-  const partnerChrome = whiteLabel || partnerHost;
+  const leftoverHost = isPartnerHostBranding(branding);
+  const partnerChrome = whiteLabel;
   const brandName = partnerFacingName(branding, host) || partnerDisplayName(branding);
   const faviconUrl = branding?.faviconUrl || branding?.stored?.faviconUrl || "";
   const featureCards = [
@@ -84,9 +83,9 @@ export default function AuthShell({
   ];
 
   useEffect(() => {
-    applyPartnerFavicon(partnerChrome ? faviconUrl : "");
+    applyPartnerFavicon(partnerChrome || leftoverHost ? faviconUrl : "");
     return () => applyPartnerFavicon("");
-  }, [partnerChrome, faviconUrl]);
+  }, [partnerChrome, leftoverHost, faviconUrl]);
 
   return (
     <LoginBrandingContext.Provider value={branding}>
@@ -175,8 +174,7 @@ export function AuthCard({
   const branding = useLoginBranding();
   const host = typeof window !== "undefined" ? window.location.hostname : "";
   const whiteLabel = hidesBizuplyChrome(branding, host);
-  const partnerHost = isPartnerHostBranding(branding);
-  const partnerChrome = whiteLabel || partnerHost;
+  const partnerChrome = whiteLabel;
   const brandName = partnerFacingName(branding, host) || partnerDisplayName(branding);
   return (
     <div className="rounded-[32px] border border-white bg-white p-7 shadow-[0_28px_80px_rgba(15,23,42,0.10)] sm:p-9">

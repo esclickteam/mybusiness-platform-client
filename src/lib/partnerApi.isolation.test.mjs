@@ -210,7 +210,8 @@ test("leftover Basic storefront uses stored brand without hiding Powered by Bizu
 
   const auth = readFileSync(join(ROOT, "components/auth/AuthShell.tsx"), "utf8");
   assert.equal(auth.includes("isPartnerHostBranding(branding)"), true);
-  assert.equal(auth.includes("partnerChrome"), true);
+  assert.equal(auth.includes("const partnerChrome = whiteLabel"), true);
+  assert.equal(auth.includes("whiteLabel || partnerHost"), false);
   assert.equal(auth.includes("partnerDisplayName(branding)"), true);
 
   const success = readFileSync(join(ROOT, "pages/public/PartnerCheckoutSuccess.tsx"), "utf8");
@@ -285,6 +286,7 @@ test("login branding resolves from hostname helper, not scattered partner ifs", 
   assert.equal(shell.includes("partnerDisplayName"), true);
   assert.equal(shell.includes("partnerDisplayLogo"), true);
   assert.equal(shell.includes("isPartnerHostBranding"), true);
+  assert.equal(shell.includes("whiteLabel || partnerHost"), false);
   assert.equal(shell.includes("Powered by Bizuply"), true);
   const plans = readFileSync(join(ROOT, "pages/public/PartnerPublicPlans.tsx"), "utf8");
   assert.equal(plans.includes("sales.branding"), true);

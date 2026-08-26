@@ -24,15 +24,15 @@ export default function PublicPartnerShell({
 }) {
   const host = typeof window !== "undefined" ? window.location.hostname : "";
   const whiteLabel = hidesBizuplyChrome(branding, host);
-  const partnerHost = isPartnerHostBranding(branding);
+  const leftoverHost = isPartnerHostBranding(branding);
   const logoUrl = partnerFacingLogo(branding, host) || partnerDisplayLogo(branding);
   const brandName = partnerFacingName(branding, host) || partnerDisplayName(branding);
   const faviconUrl = branding?.faviconUrl || branding?.stored?.faviconUrl || "";
 
   useEffect(() => {
-    applyPartnerFavicon(whiteLabel || partnerHost ? faviconUrl : "");
+    applyPartnerFavicon(whiteLabel || leftoverHost ? faviconUrl : "");
     return () => applyPartnerFavicon("");
-  }, [whiteLabel, partnerHost, faviconUrl]);
+  }, [whiteLabel, leftoverHost, faviconUrl]);
 
   return (
     <div
@@ -43,7 +43,7 @@ export default function PublicPartnerShell({
       <Helmet>
         {title ? <title>{title}</title> : null}
         {noIndex ? <meta name="robots" content="noindex,nofollow" /> : null}
-        {(whiteLabel || partnerHost) && faviconUrl ? (
+        {(whiteLabel || leftoverHost) && faviconUrl ? (
           <link rel="icon" href={faviconUrl} />
         ) : null}
       </Helmet>
@@ -53,7 +53,7 @@ export default function PublicPartnerShell({
             <img src={logoUrl} alt={brandName || ""} className="h-12 w-12 rounded-2xl object-contain" />
           ) : brandName ? (
             <span className="text-xl font-black">{brandName}</span>
-          ) : whiteLabel || partnerHost ? null : (
+          ) : whiteLabel ? null : (
             <span className="text-xl font-black tracking-tight">BizUply</span>
           )}
           {brandName && logoUrl ? (
