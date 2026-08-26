@@ -40,6 +40,11 @@ import {
   voiceVerificationErrorCode,
 } from "./embeddedSignupVoiceGate";
 import {
+  extractEmbeddedSignupEnteredPhone,
+  normalizeEnteredSignupPhone,
+  splitE164ForMetaPrefill,
+} from "./embeddedSignupEnteredPhone";
+import {
   btnPrimary,
   btnSecondary,
   cardBase,
@@ -144,6 +149,9 @@ export default function WhatsAppSettingsTab() {
     []
   );
   const [testPhone, setTestPhone] = useState("");
+  const [enteredSignupPhone, setEnteredSignupPhone] = useState("");
+  const enteredSignupPhoneRef = useRef("");
+  enteredSignupPhoneRef.current = enteredSignupPhone;
   const [testTemplateId, setTestTemplateId] = useState("");
   const [testConsent, setTestConsent] = useState(false);
   const [registerPin, setRegisterPin] = useState("");
@@ -153,8 +161,16 @@ export default function WhatsAppSettingsTab() {
 
   const keepEmbeddedSignupVoiceSession = useCallback(async () => {
     if (!businessId) return null;
+    const entered = normalizeEnteredSignupPhone(enteredSignupPhoneRef.current);
+    if (!entered) {
+      const err = new Error("ENTERED_PHONE_REQUIRED");
+      (err as Error & { code: string }).code = "ENTERED_PHONE_REQUIRED";
+      throw err;
+    }
     const result = await startWhatsAppVoiceVerification(businessId, {
       source: "embedded_signup",
+      telnyxDid: entered.e164,
+      metaDisplayPhoneNumber: entered.e164,
       wabaId: sessionRef.current?.wabaId,
       phoneNumberId: sessionRef.current?.phoneNumberId,
       metaBusinessId: sessionRef.current?.metaBusinessId,
@@ -280,9 +296,14 @@ export default function WhatsAppSettingsTab() {
           }
         }
 
+        const eventPhone = extractEmbeddedSignupEnteredPhone(data);
+        if (eventPhone) {
+          enteredSignupPhoneRef.current = eventPhone;
+          setEnteredSignupPhone(eventPhone);
+        }
+
         // Meta voice OTP happens inside the popup before FINISH and does not
-        // always emit PHONE_NUMBER_VERIFICATION. Keep the DID session alive
-        // on any Embedded Signup event except cancel.
+        // return E.164. Keep the session for the number the user entered here.
         if (businessId && data.event !== "CANCEL") {
           void keepEmbeddedSignupVoiceSession().catch(() => {});
         }
@@ -315,6 +336,17 @@ export default function WhatsAppSettingsTab() {
       toast.error(msg);
       return;
     }
+
+    const entered = normalizeEnteredSignupPhone(enteredSignupPhone);
+    if (!entered) {
+      const msg = t("whatsapp.settings.enteredPhoneRequired");
+      setActionError(msg);
+      setActionInfo("");
+      toast.error(msg);
+      return;
+    }
+    enteredSignupPhoneRef.current = entered.e164;
+    setEnteredSignupPhone(entered.e164);
 
     let voiceKeepAlive: ReturnType<typeof setInterval> | undefined;
     try {
@@ -364,7 +396,10 @@ export default function WhatsAppSettingsTab() {
           message: voiceError?.response?.data?.error || voiceError?.message,
         });
         if (shouldAbortEmbeddedSignupForVoiceError(code)) {
-          const msg = t("whatsapp.settings.verificationDidMissing");
+          const msg =
+            code === "ENTERED_PHONE_REQUIRED"
+              ? t("whatsapp.settings.enteredPhoneRequired")
+              : t("whatsapp.settings.verificationDidMissing");
           setActionError(msg);
           setActionInfo("");
           toast.error(msg);
@@ -475,7 +510,12 @@ export default function WhatsAppSettingsTab() {
               response_type: "code",
               override_default_response_type: true,
               extras: {
-                setup: {},
+                setup: (() => {
+                  const prefill = splitE164ForMetaPrefill(entered.e164);
+                  return prefill
+                    ? { business: { phone: prefill } }
+                    : {};
+                })(),
                 featureType: "",
                 sessionInfoVersion: "3",
               },
@@ -540,10 +580,17 @@ export default function WhatsAppSettingsTab() {
 
   const handleStartVoiceVerification = async () => {
     if (!businessId) return;
+    const entered = normalizeEnteredSignupPhone(enteredSignupPhone);
+    if (!entered) {
+      toast.error(t("whatsapp.settings.enteredPhoneRequired"));
+      return;
+    }
     try {
       setStartingVoiceVerification(true);
       const result = await startWhatsAppVoiceVerification(businessId, {
         source: "manual",
+        telnyxDid: entered.e164,
+        metaDisplayPhoneNumber: entered.e164,
       });
       setVoiceSession(result.session);
       try {
@@ -755,6 +802,25 @@ export default function WhatsAppSettingsTab() {
                 ? t("whatsapp.settings.connectOwnIntro")
                 : t("whatsapp.settings.connectIntro")}
             </p>
+            {canConnectOwn ? (
+              <label className="block space-y-1">
+                <span className="text-xs font-bold text-slate-700">
+                  {t("whatsapp.settings.enteredPhoneLabel")}
+                </span>
+                <input
+                  className={inputBase}
+                  dir="ltr"
+                  inputMode="tel"
+                  autoComplete="tel"
+                  placeholder="+972555072093"
+                  value={enteredSignupPhone}
+                  onChange={(event) => setEnteredSignupPhone(event.target.value)}
+                />
+                <span className="block text-[11px] font-medium text-slate-500">
+                  {t("whatsapp.settings.enteredPhoneHint")}
+                </span>
+              </label>
+            ) : null}
             {canConnectOwn ? (
               <button
                 type="button"
@@ -994,6 +1060,25 @@ export default function WhatsAppSettingsTab() {
             )}
 
             <div className="flex flex-wrap gap-2">
+              {canConnectOwn ? (
+                <label className="w-full space-y-1">
+                  <span className="text-xs font-bold text-slate-700">
+                    {t("whatsapp.settings.enteredPhoneLabel")}
+                  </span>
+                  <input
+                    className={inputBase}
+                    dir="ltr"
+                    inputMode="tel"
+                    autoComplete="tel"
+                    placeholder="+972555072093"
+                    value={enteredSignupPhone}
+                    onChange={(event) => setEnteredSignupPhone(event.target.value)}
+                  />
+                  <span className="block text-[11px] font-medium text-slate-500">
+                    {t("whatsapp.settings.enteredPhoneHint")}
+                  </span>
+                </label>
+              ) : null}
               {canConnectOwn ? (
                 <button
                   type="button"
