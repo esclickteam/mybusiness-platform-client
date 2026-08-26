@@ -193,6 +193,7 @@ export type PartnerDeal = {
   pipelineStatus?: string;
   needsAttention?: boolean;
   welcomeNeedsResend?: boolean;
+  welcomeSendInFlight?: boolean;
   kind?: string;
   packageSku?: string;
   packageDisplayName?: string;
@@ -224,6 +225,7 @@ export type PartnerDeal = {
     existingBusinessClaimable?: boolean;
     welcomeEmailSent?: boolean;
     welcomeEmailSentAt?: string | null;
+    welcomeEmailSendingAt?: string | null;
     temporaryPasswordIssuedAt?: string | null;
     error?: string;
   } | null;

@@ -130,6 +130,7 @@ export default function PartnerDealDetail() {
         deal.clientProvisioning?.temporaryPasswordIssuedAt &&
         !deal.clientProvisioning?.welcomeEmailSent)
   );
+  const welcomeSendInFlight = Boolean((deal as any).welcomeSendInFlight);
   const hideRawBusinessId =
     deal.clientProvisioning?.status === "email_exists" &&
     !deal.clientProvisioning?.existingBusinessClaimable;
@@ -218,11 +219,13 @@ export default function PartnerDealDetail() {
         <div className="space-y-3 rounded-3xl border border-amber-200 bg-amber-50 p-5">
           <p className="font-black text-amber-900">סיסמת הכניסה הזמנית לא נשלחה ללקוח.</p>
           <p className="text-sm font-bold text-amber-800">
-            ההפעלה הצליחה, אבל המייל נכשל. אפשר לשלוח סיסמה חד-פעמית חדשה בלי לפתוח משתמש נוסף.
+            {welcomeSendInFlight
+              ? "המייל עדיין בשליחה. לא מחליפים סיסמה עד שהשליחה הנוכחית מסתיימת."
+              : "ההפעלה הצליחה, אבל המייל נכשל. אפשר לשלוח סיסמה חד-פעמית חדשה בלי לפתוח משתמש נוסף."}
           </p>
           <button
             type="button"
-            disabled={Boolean(recovering)}
+            disabled={Boolean(recovering) || welcomeSendInFlight}
             onClick={async () => {
               if (!dealId) return;
               setRecovering("welcome");
@@ -237,7 +240,7 @@ export default function PartnerDealDetail() {
             }}
             className="rounded-2xl bg-violet-700 px-4 py-2 text-sm font-black text-white disabled:opacity-60"
           >
-            {recovering === "welcome" ? "שולח..." : "שליחת פרטי כניסה מחדש"}
+            {recovering === "welcome" || welcomeSendInFlight ? "שולח..." : "שליחת פרטי כניסה מחדש"}
           </button>
         </div>
       ) : null}
