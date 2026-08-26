@@ -124,6 +124,7 @@ test("partnerApiError reads interceptor Error.message when response is missing",
   const api = readFileSync(join(ROOT, "lib/partnerApi.ts"), "utf8");
   assert.equal(api.includes("err instanceof Error"), true);
   assert.equal(api.includes("err.message"), true);
+  assert.equal(api.includes("export function partnerErrorCode"), true);
   const fnStart = api.indexOf("export function partnerApiError");
   const fn = api.slice(fnStart, fnStart + 900);
   assert.equal(fn.includes("response?.error || response?.message || fallback"), false);
@@ -430,6 +431,10 @@ test("paid deal copy does not treat payment as withdrawable commission", () => {
   assert.equal(src.includes("welcomeSendInFlight"), true);
   assert.equal(src.includes("activationInFlight"), true);
   assert.equal(src.includes("ההפעלה עדיין רצה ברקע"), true);
+  assert.equal(src.includes("refreshDealFromError"), true);
+  assert.equal(src.includes("ACTIVATION_IN_FLIGHT"), true);
+  assert.equal(src.includes("WELCOME_IN_FLIGHT"), true);
+  assert.equal(src.includes("partnerErrorCode"), true);
   assert.equal(src.includes("המייל עדיין בשליחה"), true);
   assert.equal(src.includes("hideRawBusinessId"), true);
   assert.equal(src.includes("abandonPartnerDeal"), true);
@@ -496,6 +501,8 @@ test("CRM dossier retries paid-deal activation without using Direct CRM", () => 
   assert.equal(src.includes("הפעלת חשבון אחרי תשלום"), true);
   assert.equal(src.includes("activationInFlight"), true);
   assert.equal(src.includes("welcomeNeedsResend"), true);
+  assert.equal(src.includes("ACTIVATION_IN_FLIGHT"), true);
+  assert.equal(src.includes("partnerErrorCode"), true);
   assert.equal(src.includes("שליחת פרטי כניסה מחדש"), true);
   assert.equal(src.includes("paymentStatus === \"paid\""), true);
   assert.equal(src.includes("CRMClient"), false);

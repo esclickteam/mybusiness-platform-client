@@ -3,6 +3,7 @@ import { Link, useParams, useSearchParams } from "react-router-dom";
 import {
   fetchPartnerDeal,
   partnerApiError,
+  partnerErrorCode,
   startPartnerDealCheckout,
   updatePartnerDeal,
   retryPartnerDealActivation,
@@ -114,6 +115,23 @@ export default function PartnerDealDetail() {
       cancelled = true;
     };
   }, [dealId, paidReturn]);
+
+  async function refreshDealFromError(err: unknown) {
+    const code = partnerErrorCode(err);
+    if (
+      (code !== "ACTIVATION_IN_FLIGHT" && code !== "WELCOME_IN_FLIGHT") ||
+      !dealId
+    ) {
+      return;
+    }
+    try {
+      const data = await fetchPartnerDeal(dealId);
+      setDeal(data.deal);
+      if (data.client) setClient(data.client);
+    } catch {
+      /* keep the original error */
+    }
+  }
 
   if (!deal && !error) return <BizuplyLoader label="טוען עסקה..." />;
   if (!deal) {
@@ -234,6 +252,7 @@ export default function PartnerDealDetail() {
                 const data = await retryPartnerDealActivation(dealId);
                 setDeal(data.deal);
               } catch (err: unknown) {
+                await refreshDealFromError(err);
                 setError(partnerApiError(err, "שליחת פרטי הכניסה נכשלה"));
               } finally {
                 setRecovering("");
@@ -332,6 +351,7 @@ export default function PartnerDealDetail() {
                   const data = await linkPartnerDealBusiness(dealId, existingId);
                   setDeal(data.deal);
                 } catch (err: unknown) {
+                  await refreshDealFromError(err);
                   setError(partnerApiError(err, "לא ניתן לקשר לחשבון הקיים"));
                 } finally {
                   setRecovering("");
@@ -353,6 +373,7 @@ export default function PartnerDealDetail() {
                   const data = await retryPartnerDealActivation(dealId);
                   setDeal(data.deal);
                 } catch (err: unknown) {
+                  await refreshDealFromError(err);
                   setError(partnerApiError(err, "ניסיון ההפעלה נכשל"));
                 } finally {
                   setRecovering("");
@@ -379,6 +400,7 @@ export default function PartnerDealDetail() {
                     const data = await changePartnerDealEmail(dealId, email);
                     setDeal(data.deal);
                   } catch (err: unknown) {
+                    await refreshDealFromError(err);
                     setError(partnerApiError(err, "לא ניתן לשנות אימייל"));
                   } finally {
                     setRecovering("");
@@ -407,6 +429,7 @@ export default function PartnerDealDetail() {
                       const data = await linkPartnerDealBusiness(dealId, businessId);
                       setDeal(data.deal);
                     } catch (err: unknown) {
+                      await refreshDealFromError(err);
                       setError(partnerApiError(err, "לא ניתן לקשר עסק"));
                     } finally {
                       setRecovering("");

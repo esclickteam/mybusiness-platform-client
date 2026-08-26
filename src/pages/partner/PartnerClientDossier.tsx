@@ -17,6 +17,7 @@ import {
   enterPartnerClient,
   fetchPartnerClient,
   partnerApiError,
+  partnerErrorCode,
   retryPartnerDealActivation,
   togglePartnerTask,
 } from "../../lib/partnerApi";
@@ -136,6 +137,15 @@ export default function PartnerClientDossier() {
       setClient(refreshed.client);
       setDeals(refreshed.deals || []);
     } catch (err: unknown) {
+      if (partnerErrorCode(err) === "ACTIVATION_IN_FLIGHT" || partnerErrorCode(err) === "WELCOME_IN_FLIGHT") {
+        try {
+          const refreshed = await fetchPartnerClient(clientId);
+          setClient(refreshed.client);
+          setDeals(refreshed.deals || []);
+        } catch {
+          /* keep the in-flight error */
+        }
+      }
       setError(partnerApiError(err, "לא ניתן להפעיל את הלקוח"));
     } finally {
       setActivating(false);

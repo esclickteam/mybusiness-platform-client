@@ -37,6 +37,13 @@ export async function fetchPartnerMe() {
   } as PartnerMe;
 }
 
+export function partnerErrorCode(err: unknown): string {
+  const data = (
+    err as { response?: { data?: { code?: string } } }
+  )?.response?.data;
+  return String(data?.code || "").trim();
+}
+
 export function partnerApiError(err: unknown, fallback: string) {
   const data = (
     err as {
