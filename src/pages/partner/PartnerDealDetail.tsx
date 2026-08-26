@@ -241,8 +241,6 @@ export default function PartnerDealDetail() {
           </button>
         </div>
       ) : null}
-        </div>
-      ) : null}
       {canceled ? (
         <p className="rounded-2xl bg-amber-50 px-4 py-3 text-sm font-black text-amber-800">
           התשלום בוטל. העסקה ממתינה לתשלום ל-Bizuply.
@@ -385,35 +383,34 @@ export default function PartnerDealDetail() {
                 שמירת אימייל
               </button>
             </div>
-            </div>
             {hideRawBusinessId ? null : (
-            <div className="flex gap-2">
-              <input
-                value={businessId}
-                onChange={(e) => setBusinessId(e.target.value)}
-                className="flex-1 rounded-2xl border px-3 py-2 text-sm font-bold"
-                placeholder="מזהה עסק קיים"
-              />
-              <button
-                type="button"
-                disabled={Boolean(recovering)}
-                onClick={async () => {
-                  if (!dealId) return;
-                  setRecovering("link");
-                  try {
-                    const data = await linkPartnerDealBusiness(dealId, businessId);
-                    setDeal(data.deal);
-                  } catch (err: unknown) {
-                    setError(partnerApiError(err, "לא ניתן לקשר עסק"));
-                  } finally {
-                    setRecovering("");
-                  }
-                }}
-                className="rounded-2xl border px-3 text-sm font-black"
-              >
-                קישור לעסק קיים
-              </button>
-            </div>
+              <div className="flex gap-2">
+                <input
+                  value={businessId}
+                  onChange={(e) => setBusinessId(e.target.value)}
+                  className="flex-1 rounded-2xl border px-3 py-2 text-sm font-bold"
+                  placeholder="מזהה עסק קיים"
+                />
+                <button
+                  type="button"
+                  disabled={Boolean(recovering)}
+                  onClick={async () => {
+                    if (!dealId) return;
+                    setRecovering("link");
+                    try {
+                      const data = await linkPartnerDealBusiness(dealId, businessId);
+                      setDeal(data.deal);
+                    } catch (err: unknown) {
+                      setError(partnerApiError(err, "לא ניתן לקשר עסק"));
+                    } finally {
+                      setRecovering("");
+                    }
+                  }}
+                  className="rounded-2xl border px-3 text-sm font-black"
+                >
+                  קישור לעסק קיים
+                </button>
+              </div>
             )}
           </div>
         </div>

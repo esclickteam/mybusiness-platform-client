@@ -432,6 +432,7 @@ test("paid deal copy does not treat payment as withdrawable commission", () => {
   assert.equal(src.includes("מאשרים את התשלום מול Stripe"), true);
   assert.equal(src.includes("paidReturn"), true);
   assert.equal(src.includes("activationSettled"), true);
+  assert.equal((src.match(/<div\b/g) || []).length, (src.match(/<\/div>/g) || []).length);
   const api = readFileSync(join(ROOT, "lib/partnerApi.ts"), "utf8");
   const start = api.indexOf("export async function startPartnerDealCheckout");
   const fn = api.slice(start, api.indexOf("export async function fetchPublicPartnerDeal"));
