@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { Link } from "react-router-dom";
 import { Search } from "lucide-react";
 
@@ -117,6 +117,44 @@ export function PartnerGhostButton({
     >
       {children}
     </button>
+  );
+}
+
+export function PartnerFileButton({
+  accept,
+  disabled,
+  onFile,
+  children,
+  className = "",
+  variant = "primary",
+}: {
+  accept: string;
+  disabled?: boolean;
+  onFile: (file: File) => void;
+  children: React.ReactNode;
+  className?: string;
+  variant?: "primary" | "ghost";
+}) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const Button = variant === "ghost" ? PartnerGhostButton : PartnerPrimaryButton;
+  return (
+    <span className={`relative inline-flex ${className}`.trim()}>
+      <input
+        ref={inputRef}
+        type="file"
+        accept={accept}
+        className="sr-only"
+        disabled={disabled}
+        onChange={(event) => {
+          const file = event.target.files?.[0];
+          if (file) onFile(file);
+          event.target.value = "";
+        }}
+      />
+      <Button type="button" disabled={disabled} className="w-full" onClick={() => inputRef.current?.click()}>
+        {children}
+      </Button>
+    </span>
   );
 }
 

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { Upload } from "lucide-react";
 import {
   fetchPartnerMe,
   partnerApiError,
@@ -10,6 +11,7 @@ import PartnerPageHeader from "../../components/partner/PartnerPageHeader";
 import PartnerBrandingCard from "../../components/partner/PartnerBrandingCard";
 import {
   PartnerCard,
+  PartnerFileButton,
   PartnerInput,
   PartnerPrimaryButton,
   PartnerBadge,
@@ -131,11 +133,11 @@ export default function PartnerSettings() {
   const status = form.reviewStatus || "incomplete";
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       <PartnerPageHeader
         eyebrow="הגדרות"
         title="הגדרות פרטנר"
-        subtitle="מיתוג White Label, כתובת אישית, ופרטי חשבון שמועברים לאדמין."
+        subtitle="מיתוג White Label וכתובת אישית בחבילת Premium, ופרטי חשבון שמועברים לאדמין."
       />
       {partner?.billingCheckoutAvailable === false ? (
         <p className="rounded-2xl bg-slate-50 px-4 py-3 text-sm font-bold text-slate-600">
@@ -174,7 +176,10 @@ export default function PartnerSettings() {
       </PartnerCard>
 
       <PartnerCard className="space-y-4 p-6">
-        <h2 className="text-lg font-black">פרטי חשבון</h2>
+        <div>
+          <h2 className="text-lg font-black">פרטי חשבון</h2>
+          <p className="mt-1 text-sm font-bold text-slate-500">הפרטים האלה מופיעים לאדמין לצורך אישור החשבון.</p>
+        </div>
         <label className="block text-sm font-black text-slate-600">
           שם פרטנר
           <PartnerInput value={name} onChange={(e) => setName(e.target.value)} className="mt-1" />
@@ -217,7 +222,10 @@ export default function PartnerSettings() {
       </PartnerCard>
 
       <PartnerCard className="space-y-4 p-6">
-        <h2 className="text-lg font-black">פרטי חשבון בנק</h2>
+        <div>
+          <h2 className="text-lg font-black">פרטי חשבון בנק</h2>
+          <p className="mt-1 text-sm font-bold text-slate-500">נדרש למשיכות עמלות אחרי אישור KYC.</p>
+        </div>
         <div className="grid gap-3 sm:grid-cols-3">
           <label className="text-sm font-black text-slate-600">
             בנק
@@ -248,13 +256,16 @@ export default function PartnerSettings() {
       </PartnerCard>
 
       <PartnerCard className="space-y-4 p-6">
-        <h2 className="text-lg font-black">מסמכים</h2>
-        <p className="text-sm font-bold text-slate-500">PDF, JPG או PNG עד 8MB. המסמכים מופיעים במלואם לאדמין.</p>
+        <div>
+          <h2 className="text-lg font-black">מסמכים</h2>
+          <p className="mt-1 text-sm font-bold text-slate-500">PDF, JPG או PNG עד 8MB. המסמכים מופיעים במלואם לאדמין.</p>
+        </div>
         <div className="grid gap-3 md:grid-cols-3">
           {DOCUMENTS.map((item) => {
             const current = form.documents?.[item.kind];
+            const busy = uploading === item.kind;
             return (
-              <label key={item.kind} className="rounded-3xl border border-slate-100 bg-slate-50 p-4">
+              <div key={item.kind} className="flex flex-col rounded-3xl border border-slate-100 bg-slate-50 p-4">
                 <p className="font-black text-slate-900">{item.label}</p>
                 <p className="mt-1 text-[11px] font-bold text-slate-500">{item.hint}</p>
                 {current?.url ? (
@@ -269,17 +280,19 @@ export default function PartnerSettings() {
                 ) : (
                   <p className="mt-2 text-sm font-bold text-amber-700">טרם הועלה</p>
                 )}
-                <input
-                  type="file"
-                  accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"
-                  className="mt-3 w-full text-sm"
-                  disabled={uploading === item.kind}
-                  onChange={(e) => uploadDoc(item.kind, e.target.files?.[0])}
-                />
-                {uploading === item.kind ? (
-                  <p className="mt-2 text-xs font-bold text-slate-500">מעלה...</p>
-                ) : null}
-              </label>
+                <div className="mt-auto pt-3">
+                  <PartnerFileButton
+                    accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"
+                    disabled={busy}
+                    onFile={(file) => uploadDoc(item.kind, file)}
+                    variant="ghost"
+                    className="w-full"
+                  >
+                    <Upload className="h-4 w-4" />
+                    {busy ? "מעלה..." : current?.url ? "החלפת מסמך" : "העלאת מסמך"}
+                  </PartnerFileButton>
+                </div>
+              </div>
             );
           })}
         </div>
