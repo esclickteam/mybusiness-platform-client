@@ -194,6 +194,7 @@ export type PartnerDeal = {
   needsAttention?: boolean;
   welcomeNeedsResend?: boolean;
   welcomeSendInFlight?: boolean;
+  activationInFlight?: boolean;
   kind?: string;
   packageSku?: string;
   packageDisplayName?: string;

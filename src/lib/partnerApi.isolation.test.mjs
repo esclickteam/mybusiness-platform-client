@@ -404,6 +404,7 @@ test("partner pipeline routes are registered in App", () => {
   assert.equal(adminAttn.includes("adminChangeDealEmail"), true);
   assert.equal(adminAttn.includes("שמירת אימייל"), true);
   assert.equal(adminAttn.includes("welcomeNeedsResend"), true);
+  assert.equal(adminAttn.includes("activationInFlight"), true);
   assert.equal(adminAttn.includes("סיסמת הכניסה לא נשלחה"), true);
 });
 
@@ -427,6 +428,8 @@ test("paid deal copy does not treat payment as withdrawable commission", () => {
   assert.equal(src.includes("temporaryPasswordIssuedAt"), true);
   assert.equal(src.includes("welcomeNeedsResend"), true);
   assert.equal(src.includes("welcomeSendInFlight"), true);
+  assert.equal(src.includes("activationInFlight"), true);
+  assert.equal(src.includes("ההפעלה עדיין רצה ברקע"), true);
   assert.equal(src.includes("המייל עדיין בשליחה"), true);
   assert.equal(src.includes("hideRawBusinessId"), true);
   assert.equal(src.includes("abandonPartnerDeal"), true);

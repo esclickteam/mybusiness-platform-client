@@ -68,7 +68,9 @@ export default function AdminPartnerAttentionDeals() {
                   </td>
                   <td className="px-3 py-3">{partnerStatusLabel(row.commissionStatus || row.pipeline?.commissionStatus)}</td>
                   <td className="px-3 py-3 text-xs">
-                    {row.pipeline?.welcomeNeedsResend && !row.pipeline?.needsAttention
+                    {row.pipeline?.activationInFlight
+                      ? "ההפעלה עדיין בתהליך"
+                      : row.pipeline?.welcomeNeedsResend && !row.pipeline?.needsAttention
                       ? "סיסמת הכניסה לא נשלחה"
                       : row.activationErrorMessage || row.badge || "—"}
                   </td>
@@ -77,7 +79,7 @@ export default function AdminPartnerAttentionDeals() {
                       <button
                         type="button"
                         className="rounded-xl bg-slate-900 py-1 text-xs font-black text-white"
-                        disabled={Boolean(busy)}
+                        disabled={Boolean(busy) || Boolean(row.pipeline?.activationInFlight)}
                         onClick={async () => {
                           setBusy(row._id);
                           try {
@@ -102,7 +104,7 @@ export default function AdminPartnerAttentionDeals() {
                         <button
                           type="button"
                           className="rounded-xl border px-2 text-xs font-black"
-                          disabled={Boolean(busy)}
+                          disabled={Boolean(busy) || Boolean(row.pipeline?.activationInFlight)}
                           onClick={async () => {
                             setBusy(row._id);
                             try {

@@ -131,6 +131,7 @@ export default function PartnerDealDetail() {
         !deal.clientProvisioning?.welcomeEmailSent)
   );
   const welcomeSendInFlight = Boolean((deal as any).welcomeSendInFlight);
+  const activationInFlight = Boolean((deal as any).activationInFlight);
   const hideRawBusinessId =
     deal.clientProvisioning?.status === "email_exists" &&
     !deal.clientProvisioning?.existingBusinessClaimable;
@@ -313,13 +314,15 @@ export default function PartnerDealDetail() {
         <div className="space-y-3 rounded-3xl border border-amber-200 bg-amber-50 p-5">
           <p className="font-black text-amber-900">התשלום התקבל, אך העסק עדיין לא הופעל.</p>
           <p className="text-sm font-bold text-amber-800">
-            {(deal as any).activationErrorMessage || "נדרש טיפול בהפעלת הלקוח"}
+            {activationInFlight
+              ? "ההפעלה עדיין רצה ברקע. לא משנים אימייל ולא מפעילים שוב עד שהיא מסתיימת."
+              : (deal as any).activationErrorMessage || "נדרש טיפול בהפעלת הלקוח"}
           </p>
           {deal.clientProvisioning?.existingBusinessClaimable &&
           deal.clientProvisioning?.existingBusinessId ? (
             <button
               type="button"
-              disabled={Boolean(recovering)}
+              disabled={Boolean(recovering) || activationInFlight}
               onClick={async () => {
                 if (!dealId) return;
                 const existingId = String(deal.clientProvisioning?.existingBusinessId || "");
@@ -342,7 +345,7 @@ export default function PartnerDealDetail() {
           <div className="grid gap-3 md:grid-cols-3">
             <button
               type="button"
-              disabled={Boolean(recovering)}
+              disabled={Boolean(recovering) || activationInFlight}
               onClick={async () => {
                 if (!dealId) return;
                 setRecovering("retry");
@@ -357,7 +360,7 @@ export default function PartnerDealDetail() {
               }}
               className="rounded-2xl bg-slate-900 py-2 text-sm font-black text-white"
             >
-              {recovering === "retry" ? "מפעיל..." : "ניסיון הפעלה מחדש"}
+              {recovering === "retry" || activationInFlight ? "מפעיל..." : "ניסיון הפעלה מחדש"}
             </button>
             <div className="flex gap-2">
               <input
@@ -368,7 +371,7 @@ export default function PartnerDealDetail() {
               />
               <button
                 type="button"
-                disabled={Boolean(recovering)}
+                disabled={Boolean(recovering) || activationInFlight}
                 onClick={async () => {
                   if (!dealId) return;
                   setRecovering("email");
@@ -396,7 +399,7 @@ export default function PartnerDealDetail() {
                 />
                 <button
                   type="button"
-                  disabled={Boolean(recovering)}
+                  disabled={Boolean(recovering) || activationInFlight}
                   onClick={async () => {
                     if (!dealId) return;
                     setRecovering("link");
