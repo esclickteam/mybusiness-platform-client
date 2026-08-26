@@ -54,7 +54,18 @@ export function hidesBizuplyChrome(
   branding?: PublicPartnerBranding | null,
   _hostname?: string
 ) {
-  return Boolean(branding?.whiteLabelEnabled);
+  if (!branding) return false;
+  if (branding.whiteLabelEnabled) return true;
+  if (!branding.whiteLabelEntitled) return false;
+  return Boolean(
+    String(branding.brandName || branding.stored?.brandName || "").trim()
+  );
+}
+
+export function isResolvedPartnerHost(branding?: PublicPartnerBranding | null) {
+  return Boolean(
+    branding?.partnerId && (branding.whiteLabelEnabled || branding.whiteLabelEntitled)
+  );
 }
 
 export function partnerFacingName(
@@ -71,6 +82,49 @@ export function partnerFacingLogo(
 ) {
   if (!hidesBizuplyChrome(branding, hostname)) return "";
   return String(branding?.logoUrl || branding?.stored?.logoUrl || "").trim();
+}
+
+export function partnerDisplayName(branding?: PublicPartnerBranding | null) {
+  return String(branding?.brandName || branding?.stored?.brandName || "").trim();
+}
+
+export function partnerDisplayLogo(branding?: PublicPartnerBranding | null) {
+  return String(branding?.logoUrl || branding?.stored?.logoUrl || "").trim();
+}
+
+export function isPartnerHostBranding(branding?: PublicPartnerBranding | null) {
+  return Boolean(branding?.partnerId);
+}
+
+export function partnerSiteSuffix(hostname?: string) {
+  const host = String(
+    hostname || (typeof window !== "undefined" ? window.location.hostname : "")
+  )
+    .toLowerCase()
+    .split(":")[0];
+  if (
+    host === "bizuply.co.il" ||
+    host === "www.bizuply.co.il" ||
+    host.endsWith(".bizuply.co.il")
+  ) {
+    return ".bizuply.co.il";
+  }
+  return ".bizuply.com";
+}
+
+export function partnerPersonalUrl({
+  urls,
+}: {
+  subdomain?: string;
+  urls?: PublicPartnerBranding["urls"];
+  slug?: string;
+  hostname?: string;
+} = {}) {
+  const subdomainUrl = String(urls?.subdomainUrl || "").replace(/\/+$/, "");
+  if (subdomainUrl) return subdomainUrl;
+  const personal = String(urls?.personalUrl || urls?.slugUrl || "").replace(/\/+$/, "");
+  if (personal) return personal;
+  return "";
 }
 
 export function absoluteCustomerUrl(pathOrUrl: string, fallbackOrigin?: string) {

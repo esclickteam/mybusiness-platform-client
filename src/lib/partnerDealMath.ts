@@ -39,6 +39,12 @@ export function publicPackageLabel(name?: string, fallback = "רישיון שי�
   return fallback;
 }
 
+export function publicProductCopy(value?: string) {
+  const text = String(value || "").trim();
+  if (!text || isBizuplyBrandedName(text)) return "";
+  return text;
+}
+
 export function computeDealPreview(
   items: PartnerPriceLine[],
   selectedSkus: string[],

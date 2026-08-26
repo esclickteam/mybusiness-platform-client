@@ -63,6 +63,8 @@ export default function PartnerClientWizard() {
   const [wizard, setWizard] = useState<PartnerWizardCatalog>({ packages: [], categories: [] });
   const [partnerShareRate, setPartnerShareRate] = useState(0.75);
   const [clientId, setClientId] = useState(existingClientId);
+  const [clientStatus, setClientStatus] = useState("");
+  const [ownedSkus, setOwnedSkus] = useState<string[]>([]);
   const [contact, setContact] = useState({
     businessName: "",
     contactName: "",
@@ -111,6 +113,20 @@ export default function PartnerClientWizard() {
       .then((data) => {
         const client = data.client;
         setClientId(client._id);
+        setClientStatus(String(client.status || ""));
+        const liveOwned = ["active", "provisioning"].includes(String(client.status || ""));
+        const fromCatalog = liveOwned
+          ? (client.selectedSkus || [])
+              .map((line) => String(line.sku || "").trim())
+              .filter(Boolean)
+          : [];
+        const fromDeals = (data.deals || [])
+          .filter((deal) => String(deal.status || "") !== "reversed")
+          .flatMap((deal) =>
+            (deal.lines || []).map((line) => String(line.sku || "").trim())
+          )
+          .filter(Boolean);
+        setOwnedSkus([...new Set([...fromCatalog, ...fromDeals])]);
         setContact({
           businessName: client.contact.businessName || "",
           contactName: client.contact.contactName || "",
@@ -178,33 +194,42 @@ export default function PartnerClientWizard() {
   }
 
   function dealLines() {
-    return selectedSkus.map((sku) => ({
-      sku,
-      displayNameHe: lineNames[sku],
-    }));
+    return selectedSkus
+      .filter((sku) => !ownedSkus.includes(sku))
+      .map((sku) => ({
+        sku,
+        displayNameHe: lineNames[sku],
+      }));
   }
 
   async function persistQuote() {
-    if (!clientId) return;
+    if (!clientId || ownedSkus.length) return;
     await updatePartnerClient(clientId, { lines: dealLines(), managementMode });
   }
 
   async function createDeal() {
     if (!clientId) return;
-    if (!selectedSkus.length) {
+    const newLines = dealLines();
+    if (!newLines.length) {
       setError("יש לבחור חבילה או שירות");
       return;
     }
     setSaving(true);
     setError("");
     try {
-      await persistQuote();
+      const quoteLocked =
+        ["active", "provisioning"].includes(clientStatus) ||
+        ownedSkus.length > 0 ||
+        Boolean(existingClientId && !clientStatus);
+      if (!quoteLocked) {
+        await persistQuote();
+      }
       const data = await createPartnerDeal(clientId, {
-        lines: dealLines(),
+        lines: newLines,
         packageDisplayName,
         packageDescription,
         logoUrl,
-        kind: existingClientId ? "amendment" : "initial",
+        kind: ownedSkus.length ? "amendment" : "initial",
       });
       setCreatedDeal({
         id: data.deal._id,
@@ -218,18 +243,18 @@ export default function PartnerClientWizard() {
     }
   }
 
-  const publicOrigin =
-    typeof window !== "undefined" ? window.location.origin : "https://mybusiness-platform-client-staging.vercel.app";
-  const shareUrl = createdDeal
-    ? absoluteCustomerUrl(createdDeal.publicUrl, publicOrigin)
-    : "";
+  const shareUrl = createdDeal ? absoluteCustomerUrl(createdDeal.publicUrl) : "";
 
   return (
     <div className="space-y-6 pb-24 lg:pb-8">
       <PartnerPageHeader
         eyebrow={existingClientId ? "עסקה נוספת" : "לקוח חדש"}
         title={existingClientId ? "הוספת שירותים לעסקה חדשה" : "אשף יצירת לקוח"}
-        subtitle="חבילה, תוספות, מחיר ללקוח, ואז קישור לסיכום עסקה. הלקוח משלם לכם, ואתם משלמים ל-Bizuply."
+        subtitle={
+          existingClientId
+            ? "בחרו רק תוספות חדשות. חבילות שכבר פעילות אצל הלקוח נשארות נעולות ולא נגבות שוב."
+            : "חבילה, תוספות, מחיר ללקוח, ואז קישור לסיכום עסקה. הלקוח משלם לכם, ואתם משלמים ל-Bizuply."
+        }
       />
 
       <ol className="grid gap-2 sm:grid-cols-5">
@@ -322,6 +347,7 @@ export default function PartnerClientWizard() {
           items={items}
           wizard={wizard}
           selectedSkus={selectedSkus}
+          lockedSkus={ownedSkus}
           onChange={setSelectedSkus}
           partnerShareRate={partnerShareRate}
           onContinue={() => setStep(step === 2 ? 3 : 4)}

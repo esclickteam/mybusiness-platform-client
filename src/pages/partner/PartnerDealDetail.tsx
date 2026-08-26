@@ -3,11 +3,13 @@ import { Link, useParams, useSearchParams } from "react-router-dom";
 import {
   fetchPartnerDeal,
   partnerApiError,
+  partnerErrorCode,
   startPartnerDealCheckout,
   updatePartnerDeal,
   retryPartnerDealActivation,
   changePartnerDealEmail,
   linkPartnerDealBusiness,
+  abandonPartnerDeal,
   type PartnerServiceRow,
 } from "../../lib/partnerApi";
 import { partnerStatusLabel } from "../../lib/partnerLabels";
@@ -76,6 +78,7 @@ export default function PartnerDealDetail() {
     }
 
     function isPaid(row?: PartnerDeal | null) {
+      if (!row || row.status === "reversed" || row.paymentStatus === "refunded") return false;
       return row?.paymentStatus === "paid" || row?.status === "paid";
     }
 
@@ -114,15 +117,46 @@ export default function PartnerDealDetail() {
     };
   }, [dealId, paidReturn]);
 
+  async function refreshDealFromError(err: unknown) {
+    const code = partnerErrorCode(err);
+    if (
+      (code !== "ACTIVATION_IN_FLIGHT" && code !== "WELCOME_IN_FLIGHT") ||
+      !dealId
+    ) {
+      return;
+    }
+    try {
+      const data = await fetchPartnerDeal(dealId);
+      setDeal(data.deal);
+      if (data.client) setClient(data.client);
+    } catch {
+      /* keep the original error */
+    }
+  }
+
   if (!deal && !error) return <BizuplyLoader label="טוען עסקה..." />;
   if (!deal) {
     return <p className="font-black text-rose-700">{error}</p>;
   }
 
   const totals = deal.totals || ({} as PartnerDeal["totals"]);
-  const isPaid = deal.paymentStatus === "paid" || deal.status === "paid";
+  const isPaid =
+    deal.status !== "reversed" &&
+    deal.paymentStatus !== "refunded" &&
+    (deal.paymentStatus === "paid" || deal.status === "paid");
   const canceled = params.get("canceled") === "1";
   const publicUrl = absoluteCustomerUrl(deal.publicUrl || `/partner/deals/${deal._id}`);
+  const welcomeNeedsResend = Boolean(
+    isPaid &&
+      ((deal as any).welcomeNeedsResend ||
+        (deal.clientProvisioning?.temporaryPasswordIssuedAt &&
+          !deal.clientProvisioning?.welcomeEmailSent))
+  );
+  const welcomeSendInFlight = Boolean((deal as any).welcomeSendInFlight);
+  const activationInFlight = Boolean((deal as any).activationInFlight);
+  const hideRawBusinessId =
+    deal.clientProvisioning?.status === "email_exists" &&
+    !deal.clientProvisioning?.existingBusinessClaimable;
 
   async function payBizuply() {
     if (!dealId) return;
@@ -192,11 +226,46 @@ export default function PartnerDealDetail() {
             <p>ללקוח כבר יש משתמש פעיל במערכת.</p>
           ) : null}
           {deal.clientProvisioning?.status === "email_exists" ? (
-            <p>לא נפתח משתמש חדש — האימייל כבר קיים במערכת.</p>
+            <p>
+              לא נפתח משתמש חדש — האימייל כבר קיים במערכת.
+              {deal.clientProvisioning.existingBusinessClaimable
+                ? " אפשר לקשר את העסקה לחשבון הקיים בלי לפתוח משתמש חדש."
+                : " אפשר לשנות את האימייל כדי לפתוח חשבון חדש."}
+            </p>
           ) : null}
           {deal.clientProvisioning?.status === "failed" ? (
             <p>פתיחת המשתמש נכשלה{deal.clientProvisioning.error ? `: ${deal.clientProvisioning.error}` : ""}.</p>
           ) : null}
+        </div>
+      ) : null}
+      {welcomeNeedsResend ? (
+        <div className="space-y-3 rounded-3xl border border-amber-200 bg-amber-50 p-5">
+          <p className="font-black text-amber-900">סיסמת הכניסה הזמנית לא נשלחה ללקוח.</p>
+          <p className="text-sm font-bold text-amber-800">
+            {welcomeSendInFlight
+              ? "המייל עדיין בשליחה. לא מחליפים סיסמה עד שהשליחה הנוכחית מסתיימת."
+              : "ההפעלה הצליחה, אבל המייל נכשל. אפשר לשלוח סיסמה חד-פעמית חדשה בלי לפתוח משתמש נוסף."}
+          </p>
+          <button
+            type="button"
+            disabled={Boolean(recovering) || welcomeSendInFlight}
+            onClick={async () => {
+              if (!dealId) return;
+              setRecovering("welcome");
+              try {
+                const data = await retryPartnerDealActivation(dealId);
+                setDeal(data.deal);
+              } catch (err: unknown) {
+                await refreshDealFromError(err);
+                setError(partnerApiError(err, "שליחת פרטי הכניסה נכשלה"));
+              } finally {
+                setRecovering("");
+              }
+            }}
+            className="rounded-2xl bg-violet-700 px-4 py-2 text-sm font-black text-white disabled:opacity-60"
+          >
+            {recovering === "welcome" || welcomeSendInFlight ? "שולח..." : "שליחת פרטי כניסה מחדש"}
+          </button>
         </div>
       ) : null}
       {canceled ? (
@@ -268,12 +337,39 @@ export default function PartnerDealDetail() {
         <div className="space-y-3 rounded-3xl border border-amber-200 bg-amber-50 p-5">
           <p className="font-black text-amber-900">התשלום התקבל, אך העסק עדיין לא הופעל.</p>
           <p className="text-sm font-bold text-amber-800">
-            {(deal as any).activationErrorMessage || "נדרש טיפול בהפעלת הלקוח"}
+            {activationInFlight
+              ? "ההפעלה עדיין רצה ברקע. לא משנים אימייל ולא מפעילים שוב עד שהיא מסתיימת."
+              : (deal as any).activationErrorMessage || "נדרש טיפול בהפעלת הלקוח"}
           </p>
+          {deal.clientProvisioning?.existingBusinessClaimable &&
+          deal.clientProvisioning?.existingBusinessId ? (
+            <button
+              type="button"
+              disabled={Boolean(recovering) || activationInFlight}
+              onClick={async () => {
+                if (!dealId) return;
+                const existingId = String(deal.clientProvisioning?.existingBusinessId || "");
+                if (!existingId) return;
+                setRecovering("claim");
+                try {
+                  const data = await linkPartnerDealBusiness(dealId, existingId);
+                  setDeal(data.deal);
+                } catch (err: unknown) {
+                  await refreshDealFromError(err);
+                  setError(partnerApiError(err, "לא ניתן לקשר לחשבון הקיים"));
+                } finally {
+                  setRecovering("");
+                }
+              }}
+              className="rounded-2xl bg-violet-700 py-2 text-sm font-black text-white disabled:opacity-60"
+            >
+              {recovering === "claim" ? "מקשר..." : "קישור לחשבון הקיים"}
+            </button>
+          ) : null}
           <div className="grid gap-3 md:grid-cols-3">
             <button
               type="button"
-              disabled={Boolean(recovering)}
+              disabled={Boolean(recovering) || activationInFlight}
               onClick={async () => {
                 if (!dealId) return;
                 setRecovering("retry");
@@ -281,6 +377,7 @@ export default function PartnerDealDetail() {
                   const data = await retryPartnerDealActivation(dealId);
                   setDeal(data.deal);
                 } catch (err: unknown) {
+                  await refreshDealFromError(err);
                   setError(partnerApiError(err, "ניסיון ההפעלה נכשל"));
                 } finally {
                   setRecovering("");
@@ -288,7 +385,7 @@ export default function PartnerDealDetail() {
               }}
               className="rounded-2xl bg-slate-900 py-2 text-sm font-black text-white"
             >
-              {recovering === "retry" ? "מפעיל..." : "ניסיון הפעלה מחדש"}
+              {recovering === "retry" || activationInFlight ? "מפעיל..." : "ניסיון הפעלה מחדש"}
             </button>
             <div className="flex gap-2">
               <input
@@ -299,7 +396,7 @@ export default function PartnerDealDetail() {
               />
               <button
                 type="button"
-                disabled={Boolean(recovering)}
+                disabled={Boolean(recovering) || activationInFlight}
                 onClick={async () => {
                   if (!dealId) return;
                   setRecovering("email");
@@ -307,6 +404,7 @@ export default function PartnerDealDetail() {
                     const data = await changePartnerDealEmail(dealId, email);
                     setDeal(data.deal);
                   } catch (err: unknown) {
+                    await refreshDealFromError(err);
                     setError(partnerApiError(err, "לא ניתן לשנות אימייל"));
                   } finally {
                     setRecovering("");
@@ -317,33 +415,36 @@ export default function PartnerDealDetail() {
                 שמירת אימייל
               </button>
             </div>
-            <div className="flex gap-2">
-              <input
-                value={businessId}
-                onChange={(e) => setBusinessId(e.target.value)}
-                className="flex-1 rounded-2xl border px-3 py-2 text-sm font-bold"
-                placeholder="מזהה עסק קיים"
-              />
-              <button
-                type="button"
-                disabled={Boolean(recovering)}
-                onClick={async () => {
-                  if (!dealId) return;
-                  setRecovering("link");
-                  try {
-                    const data = await linkPartnerDealBusiness(dealId, businessId);
-                    setDeal(data.deal);
-                  } catch (err: unknown) {
-                    setError(partnerApiError(err, "לא ניתן לקשר עסק"));
-                  } finally {
-                    setRecovering("");
-                  }
-                }}
-                className="rounded-2xl border px-3 text-sm font-black"
-              >
-                קישור לעסק קיים
-              </button>
-            </div>
+            {hideRawBusinessId ? null : (
+              <div className="flex gap-2">
+                <input
+                  value={businessId}
+                  onChange={(e) => setBusinessId(e.target.value)}
+                  className="flex-1 rounded-2xl border px-3 py-2 text-sm font-bold"
+                  placeholder="מזהה עסק קיים"
+                />
+                <button
+                  type="button"
+                  disabled={Boolean(recovering) || activationInFlight}
+                  onClick={async () => {
+                    if (!dealId) return;
+                    setRecovering("link");
+                    try {
+                      const data = await linkPartnerDealBusiness(dealId, businessId);
+                      setDeal(data.deal);
+                    } catch (err: unknown) {
+                      await refreshDealFromError(err);
+                      setError(partnerApiError(err, "לא ניתן לקשר עסק"));
+                    } finally {
+                      setRecovering("");
+                    }
+                  }}
+                  className="rounded-2xl border px-3 text-sm font-black"
+                >
+                  קישור לעסק קיים
+                </button>
+              </div>
+            )}
           </div>
         </div>
       ) : null}
@@ -460,7 +561,7 @@ export default function PartnerDealDetail() {
         <a href={publicUrl} className="rounded-2xl border px-4 py-2 text-sm font-black" target="_blank" rel="noreferrer">
           צפייה בסיכום ללקוח
         </a>
-        {!isPaid ? (
+        {!isPaid && deal.status !== "reversed" ? (
           <button
             type="button"
             disabled={paying}
@@ -469,9 +570,32 @@ export default function PartnerDealDetail() {
           >
             {paying ? "פותח Stripe..." : "מעבר לתשלום ל-Bizuply"}
           </button>
-        ) : (
+        ) : isPaid ? (
           <p className="rounded-2xl bg-emerald-50 px-4 py-2 text-sm font-black text-emerald-800">שולם ל-Bizuply</p>
+        ) : (
+          <p className="rounded-2xl bg-slate-100 px-4 py-2 text-sm font-black text-slate-600">העסקה בוטלה</p>
         )}
+        {!isPaid && deal.status !== "reversed" ? (
+          <button
+            type="button"
+            disabled={Boolean(recovering)}
+            onClick={async () => {
+              if (!dealId) return;
+              setRecovering("abandon");
+              try {
+                const data = await abandonPartnerDeal(dealId);
+                setDeal(data.deal);
+              } catch (err: unknown) {
+                setError(partnerApiError(err, "לא ניתן לבטל את העסקה"));
+              } finally {
+                setRecovering("");
+              }
+            }}
+            className="rounded-2xl border border-rose-200 px-4 py-2 text-sm font-black text-rose-700"
+          >
+            {recovering === "abandon" ? "מבטל..." : "ביטול עסקה שלא שולמה"}
+          </button>
+        ) : null}
         {client?._id ? (
           <Link to={`/partner/dashboard/crm/${client._id}`} className="rounded-2xl border px-4 py-2 text-sm font-black">
             תיק הלקוח

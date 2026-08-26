@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { Helmet } from "react-helmet-async";
 import { useParams } from "react-router-dom";
 import { fetchPublicPartnerDeal } from "../../lib/partnerApi";
-import { billingLabel } from "../../lib/partnerDealMath";
+import { billingLabel, publicPackageLabel, publicProductCopy } from "../../lib/partnerDealMath";
 import { formatIls } from "../../lib/partnerMoney";
+import PublicPartnerShell from "../../components/partner/PublicPartnerShell";
 import {
-  applyPartnerFavicon,
-  partnerFacingLogo,
+  partnerDisplayName,
   partnerFacingName,
   type PublicPartnerBranding,
 } from "../../lib/partnerBranding";
@@ -47,16 +46,6 @@ export default function PartnerPublicDeal() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    const meta = document.createElement("meta");
-    meta.name = "robots";
-    meta.content = "noindex,nofollow";
-    document.head.appendChild(meta);
-    return () => {
-      meta.remove();
-    };
-  }, []);
-
-  useEffect(() => {
     if (!dealId) return;
     fetchPublicPartnerDeal(dealId)
       .then((data) => setSummary(data as PublicSummary))
@@ -64,33 +53,30 @@ export default function PartnerPublicDeal() {
   }, [dealId]);
 
   const host = typeof window !== "undefined" ? window.location.hostname : "";
-  const brandName = partnerFacingName(summary?.branding, host) || summary?.partner?.name || "";
-  const brandLogo = partnerFacingLogo(summary?.branding, host) || summary?.partner?.logo || "";
-
-  useEffect(() => {
-    applyPartnerFavicon(summary?.branding?.faviconUrl || summary?.branding?.stored?.faviconUrl || "");
-    return () => applyPartnerFavicon("");
-  }, [summary?.branding?.faviconUrl, summary?.branding?.stored?.faviconUrl]);
+  const brandName =
+    partnerFacingName(summary?.branding, host) ||
+    partnerDisplayName(summary?.branding) ||
+    summary?.partner?.name ||
+    "";
 
   if (!summary && !error) {
     return (
-      <div dir="rtl" className="grid min-h-screen place-items-center bg-[#f6f4ff] font-black text-slate-500">
-        טוען סיכום עסקה...
-      </div>
+      <PublicPartnerShell title="סיכום עסקה" noIndex>
+        <p className="font-bold text-slate-500">טוען סיכום עסקה...</p>
+      </PublicPartnerShell>
     );
   }
   if (!summary) {
     return (
-      <div dir="rtl" className="mx-auto max-w-3xl p-8 text-center font-black text-rose-700">
-        {error}
-      </div>
+      <PublicPartnerShell title="סיכום עסקה" noIndex>
+        <p className="font-black text-rose-700">{error}</p>
+      </PublicPartnerShell>
     );
   }
 
   const pay = summary.payment || {};
   const date = summary.dealDate ? new Date(summary.dealDate).toLocaleDateString("he-IL") : "";
-  const logo = brandLogo || summary.business?.logo;
-  const heading = brandName || "פרטנר";
+  const heading = brandName || "נותן השירות";
   const products: PublicProduct[] = [
     summary.package
       ? {
@@ -103,30 +89,13 @@ export default function PartnerPublicDeal() {
   ].filter(Boolean) as PublicProduct[];
 
   return (
-    <div dir="rtl" className="min-h-screen bg-[#f6f4ff] px-4 py-10" style={{ fontFamily: '"Assistant","Rubik",sans-serif' }}>
-      <Helmet>
-        <meta name="robots" content="noindex,nofollow" />
-        {heading ? <title>{heading}</title> : null}
-      </Helmet>
-      <article className="mx-auto max-w-3xl overflow-hidden rounded-[32px] border border-white bg-white shadow-[0_24px_80px_rgba(76,29,149,0.12)]">
-        <header className="bg-gradient-to-l from-[#4C1D95] to-[#7C4DFF] px-8 py-8 text-white">
-          <div className="flex items-center gap-4">
-            {logo ? (
-              <img src={logo} alt="" className="h-14 w-14 rounded-2xl bg-white object-cover" />
-            ) : (
-              <div className="grid h-14 w-14 place-items-center rounded-2xl bg-white/15 text-lg font-black">
-                {heading.slice(0, 1)}
-              </div>
-            )}
-            <div>
-              <p className="text-xs font-black uppercase tracking-[0.18em] text-white/70">החבילה שלך</p>
-              <h1 className="text-2xl font-black">{heading}</h1>
-              <p className="text-sm font-bold text-white/80">
-                {[summary.partner?.phone, summary.partner?.email].filter(Boolean).join(" · ")}
-              </p>
-            </div>
-          </div>
-        </header>
+    <PublicPartnerShell branding={summary.branding} title={heading} noIndex>
+      <article className="overflow-hidden rounded-[32px] border border-white bg-white shadow-[0_24px_80px_rgba(15,23,42,0.08)]">
+        {summary.partner?.phone || summary.partner?.email ? (
+          <p className="px-8 pt-6 text-sm font-bold text-slate-500">
+            {[summary.partner?.phone, summary.partner?.email].filter(Boolean).join(" · ")}
+          </p>
+        ) : null}
 
         <div className="space-y-8 px-8 py-8">
           <section className="grid gap-3 sm:grid-cols-2">
@@ -140,9 +109,9 @@ export default function PartnerPublicDeal() {
 
           <section>
             <p className="text-xs font-black uppercase tracking-[0.16em] text-violet-700">פירוט מוצרים</p>
-            <h2 className="mt-1 text-3xl font-black">{summary.package?.name}</h2>
-            {summary.package?.description ? (
-              <p className="mt-2 font-bold text-slate-500">{summary.package.description}</p>
+            <h2 className="mt-1 text-3xl font-black">{publicPackageLabel(summary.package?.name)}</h2>
+            {publicProductCopy(summary.package?.description) ? (
+              <p className="mt-2 font-bold text-slate-500">{publicProductCopy(summary.package?.description)}</p>
             ) : null}
             <div className="mt-4 space-y-2">
               {products.map((item) => (
@@ -150,9 +119,9 @@ export default function PartnerPublicDeal() {
                   key={`${item.name}-${item.billing}`}
                   className="rounded-2xl border border-slate-100 px-4 py-3"
                 >
-                  <p className="font-black">{item.name}</p>
-                  {item.description ? (
-                    <p className="text-sm font-bold text-slate-500">{item.description}</p>
+                  <p className="font-black">{publicPackageLabel(item.name)}</p>
+                  {publicProductCopy(item.description) ? (
+                    <p className="text-sm font-bold text-slate-500">{publicProductCopy(item.description)}</p>
                   ) : null}
                   <p className="text-xs font-bold text-slate-400">{billingLabel(item.billing)}</p>
                 </div>
@@ -195,12 +164,12 @@ export default function PartnerPublicDeal() {
               </p>
             ) : null}
             <p className="mt-5 text-sm font-bold leading-6 text-white/75">
-              התשלום והפעלת השירות מתבצעים מול הפרטנר שלך. עמוד זה מציג את סיכום המוצרים והשירותים שנבחרו עבורך.
+              התשלום והפעלת השירות מתבצעים מול {brandName || "נותן השירות"} שלך. עמוד זה מציג את סיכום המוצרים והשירותים שנבחרו עבורך.
             </p>
           </section>
         </div>
       </article>
-    </div>
+    </PublicPartnerShell>
   );
 }
 

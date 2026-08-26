@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import AdminHeader from "./AdminsHeader";
 import {
+  adminChangeDealEmail,
   adminLinkDealBusiness,
   adminRetryDealActivation,
   fetchAdminPartnerAttentionDeals,
@@ -13,6 +14,7 @@ export default function AdminPartnerAttentionDeals() {
   const [items, setItems] = useState<any[]>([]);
   const [error, setError] = useState("");
   const [businessId, setBusinessId] = useState("");
+  const [email, setEmail] = useState("");
   const [busy, setBusy] = useState("");
 
   function load() {
@@ -65,13 +67,19 @@ export default function AdminPartnerAttentionDeals() {
                       : "—"}
                   </td>
                   <td className="px-3 py-3">{partnerStatusLabel(row.commissionStatus || row.pipeline?.commissionStatus)}</td>
-                  <td className="px-3 py-3 text-xs">{row.activationErrorMessage || row.badge || "—"}</td>
+                  <td className="px-3 py-3 text-xs">
+                    {row.pipeline?.activationInFlight
+                      ? "ההפעלה עדיין בתהליך"
+                      : row.pipeline?.welcomeNeedsResend && !row.pipeline?.needsAttention
+                      ? "סיסמת הכניסה לא נשלחה"
+                      : row.activationErrorMessage || row.badge || "—"}
+                  </td>
                   <td className="px-3 py-3">
                     <div className="flex flex-col gap-1">
                       <button
                         type="button"
                         className="rounded-xl bg-slate-900 py-1 text-xs font-black text-white"
-                        disabled={Boolean(busy)}
+                        disabled={Boolean(busy) || Boolean(row.pipeline?.activationInFlight)}
                         onClick={async () => {
                           setBusy(row._id);
                           try {
@@ -86,6 +94,32 @@ export default function AdminPartnerAttentionDeals() {
                       >
                         ניסיון הפעלה מחדש
                       </button>
+                      <div className="flex gap-1">
+                        <input
+                          className="w-28 rounded-xl border px-2 py-1 text-xs"
+                          placeholder="אימייל חדש"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                        />
+                        <button
+                          type="button"
+                          className="rounded-xl border px-2 text-xs font-black"
+                          disabled={Boolean(busy) || Boolean(row.pipeline?.activationInFlight)}
+                          onClick={async () => {
+                            setBusy(row._id);
+                            try {
+                              await adminChangeDealEmail(row.partnerId, row._id, email);
+                              load();
+                            } catch (err: unknown) {
+                              setError(partnerApiError(err, "עדכון האימייל נכשל"));
+                            } finally {
+                              setBusy("");
+                            }
+                          }}
+                        >
+                          שמירת אימייל
+                        </button>
+                      </div>
                       <div className="flex gap-1">
                         <input
                           className="w-28 rounded-xl border px-2 py-1 text-xs"

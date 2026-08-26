@@ -11,6 +11,9 @@ import { usePartnerHostBranding } from "../../hooks/usePartnerHostBranding";
 import {
   applyPartnerFavicon,
   hidesBizuplyChrome,
+  isPartnerHostBranding,
+  partnerDisplayLogo,
+  partnerDisplayName,
   partnerFacingLogo,
   partnerFacingName,
   type PublicPartnerBranding,
@@ -27,8 +30,8 @@ export function BrandMark({ size = "md" }: { size?: "sm" | "md" }) {
   const host = typeof window !== "undefined" ? window.location.hostname : "";
   const text = size === "sm" ? "text-2xl" : "text-3xl";
   const hideChrome = hidesBizuplyChrome(branding, host);
-  const logoUrl = partnerFacingLogo(branding, host);
-  const brandName = partnerFacingName(branding, host);
+  const logoUrl = partnerFacingLogo(branding, host) || partnerDisplayLogo(branding);
+  const brandName = partnerFacingName(branding, host) || partnerDisplayName(branding);
   if (logoUrl) {
     return (
       <img
@@ -38,7 +41,7 @@ export function BrandMark({ size = "md" }: { size?: "sm" | "md" }) {
       />
     );
   }
-  if (hideChrome && brandName) {
+  if (brandName) {
     return <span className={`${text} font-black tracking-tight text-slate-900`}>{brandName}</span>;
   }
   if (hideChrome) {
@@ -67,7 +70,10 @@ export default function AuthShell({
   const { branding } = usePartnerHostBranding();
   const host = typeof window !== "undefined" ? window.location.hostname : "";
   const whiteLabel = hidesBizuplyChrome(branding, host);
-  const brandName = partnerFacingName(branding, host);
+  const leftoverHost = isPartnerHostBranding(branding);
+  const partnerChrome = whiteLabel;
+  const brandName = partnerFacingName(branding, host) || partnerDisplayName(branding);
+  const faviconUrl = branding?.faviconUrl || branding?.stored?.faviconUrl || "";
   const featureCards = [
     { title: t("login.featureCrmTitle"), subtitle: t("login.featureCrmText"), icon: Users },
     { title: t("login.featureAppointmentsTitle"), subtitle: t("login.featureAppointmentsText"), icon: CalendarDays },
@@ -77,9 +83,9 @@ export default function AuthShell({
   ];
 
   useEffect(() => {
-    applyPartnerFavicon(whiteLabel ? branding?.faviconUrl || branding?.stored?.faviconUrl : "");
+    applyPartnerFavicon(partnerChrome || leftoverHost ? faviconUrl : "");
     return () => applyPartnerFavicon("");
-  }, [whiteLabel, branding?.faviconUrl, branding?.stored?.faviconUrl]);
+  }, [partnerChrome, leftoverHost, faviconUrl]);
 
   return (
     <LoginBrandingContext.Provider value={branding}>
@@ -101,7 +107,7 @@ export default function AuthShell({
           {children}
         </section>
 
-        {whiteLabel ? (
+        {partnerChrome ? (
           <section className="hidden text-center lg:flex lg:flex-col lg:items-center lg:justify-center">
             <BrandMark />
             {brandName ? (
@@ -166,15 +172,18 @@ export function AuthCard({
   children: ReactNode;
 }) {
   const branding = useLoginBranding();
-  const whiteLabel = Boolean(branding?.whiteLabelEnabled);
+  const host = typeof window !== "undefined" ? window.location.hostname : "";
+  const whiteLabel = hidesBizuplyChrome(branding, host);
+  const partnerChrome = whiteLabel;
+  const brandName = partnerFacingName(branding, host) || partnerDisplayName(branding);
   return (
     <div className="rounded-[32px] border border-white bg-white p-7 shadow-[0_28px_80px_rgba(15,23,42,0.10)] sm:p-9">
       <div className="flex flex-col items-center text-center">
         <BrandMark size="sm" />
         <h1 className="mt-5 text-3xl font-black tracking-tight text-slate-900">
-          {whiteLabel && branding?.brandName ? branding.brandName : title}
+          {partnerChrome && brandName ? brandName : title}
         </h1>
-        {subtitle && !whiteLabel ? (
+        {subtitle && !partnerChrome ? (
           <p className="mt-2 text-sm font-semibold text-slate-500">{subtitle}</p>
         ) : null}
         <div className="mt-5 flex w-full items-center gap-3">

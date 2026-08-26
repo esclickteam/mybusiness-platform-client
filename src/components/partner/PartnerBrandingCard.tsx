@@ -7,6 +7,7 @@ import {
   uploadPartnerLogo,
 } from "../../lib/partnerApi";
 import type { PublicPartnerBranding } from "../../lib/partnerBranding";
+import { partnerPersonalUrl, partnerSiteSuffix } from "../../lib/partnerBranding";
 import {
   PartnerCard,
   PartnerInput,
@@ -44,11 +45,12 @@ export default function PartnerBrandingCard({ showPersonalLink = true }: { showP
   }, []);
 
   const savedSubdomain = String(branding?.stored?.subdomain || branding?.subdomain || "").trim();
-  const personalUrl = savedSubdomain
-    ? `https://${savedSubdomain}.bizuply.com`
-    : urls?.personalUrl ||
-      urls?.slugUrl ||
-      (slug ? `${typeof window !== "undefined" ? window.location.origin : ""}/p/${slug}` : "");
+  const siteSuffix = partnerSiteSuffix();
+  const personalUrl = partnerPersonalUrl({
+    subdomain: savedSubdomain,
+    urls,
+    slug,
+  });
   const logoUrl = branding?.stored?.logoUrl || branding?.logoUrl || "";
   const active = Boolean(branding?.whiteLabelEnabled);
 
@@ -191,11 +193,11 @@ export default function PartnerBrandingCard({ showPersonalLink = true }: { showP
           dir="ltr"
         />
         <span className="mt-1 block text-xs font-bold text-slate-500" dir="ltr">
-          https://{subdomain || "mybrand"}.bizuply.com
+          https://{subdomain || "mybrand"}{siteSuffix}
         </span>
         <span className="mt-1 block text-xs font-bold text-slate-500">
           אותיות לטיניות, ספרות ומקף. ייחודית במערכת. White Label דורש גם לוגו ושם מותג.
-          הפניית DNS / wildcard של *.bizuply.com עדיין לא מאומתת בייצור.
+          הפניית DNS / wildcard של *{siteSuffix} עדיין לא מאומתת בייצור.
         </span>
       </label>
       <div className="grid gap-3 sm:grid-cols-2">

@@ -140,7 +140,7 @@ function PriceRow({
             onChange={(e) => setEnabled(e.target.checked)}
             className="accent-violet-700"
           />
-          הצג בעמוד האישי
+          הצג בעמוד המכירה
         </label>
       </div>
 

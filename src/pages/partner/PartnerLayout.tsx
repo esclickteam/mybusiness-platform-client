@@ -1,8 +1,11 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { Banknote, BadgePercent, Bell, CalendarCheck, Handshake, LayoutDashboard, LogOut, Menu, Settings, Store, UserPlus, Users, Wallet, X } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { PARTNER_FONT } from "../../components/partner/partnerUi";
+import { usePartnerHostBranding } from "../../hooks/usePartnerHostBranding";
+import { hidesBizuplyChrome, partnerDisplayName, partnerFacingName } from "../../lib/partnerBranding";
+import { fetchPartnerMe } from "../../lib/partnerApi";
 
 type NavItem = {
   to: string;
@@ -82,11 +85,32 @@ export default function PartnerLayout() {
   const navigate = useNavigate();
   const location = useLocation();
   const [open, setOpen] = useState(false);
+  const [partnerStatus, setPartnerStatus] = useState("");
+  const { branding, looksLikePartnerHost } = usePartnerHostBranding();
+  const host = typeof window !== "undefined" ? window.location.hostname : "";
+  const brandName = hidesBizuplyChrome(branding, host)
+    ? partnerFacingName(branding, host)
+    : looksLikePartnerHost
+      ? partnerDisplayName(branding)
+      : "";
+  const productMark = brandName || (looksLikePartnerHost ? "פרטנר" : "Bizuply Partner");
 
   const title = useMemo(
     () => TITLES.find((item) => item.test(location.pathname))?.title || "לוח פרטנר",
     [location.pathname]
   );
+
+  useEffect(() => {
+    let cancelled = false;
+    fetchPartnerMe()
+      .then((me) => {
+        if (!cancelled) setPartnerStatus(String(me.status || ""));
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
   const displayName = user?.name || user?.email || "פרטנר";
   const initials = displayName
     .split(/\s+/)
@@ -108,7 +132,7 @@ export default function PartnerLayout() {
         </span>
         <div>
           <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#7C3AED]">
-            Bizuply Partner
+            {productMark}
           </p>
           <p className="text-sm font-black text-slate-900">פרטנר דשבורד</p>
         </div>
@@ -226,6 +250,11 @@ export default function PartnerLayout() {
             </nav>
           </header>
           <main className="px-4 py-6 md:px-6 lg:px-8">
+            {partnerStatus === "payment_due" ? (
+              <div className="mb-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-bold text-amber-900">
+                יש יתרת תשלום ל-Bizuply. אפשר להשלים עסקאות קיימות ולהפעיל לקוחות ששולמו, אך לא ליצור עסקאות חדשות או למשוך עמלות.
+              </div>
+            ) : null}
             <Outlet />
           </main>
         </div>

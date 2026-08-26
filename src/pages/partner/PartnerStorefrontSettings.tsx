@@ -17,8 +17,6 @@ export default function PartnerStorefrontSettings() {
     email: "",
     whatsapp: "",
     heroText: "",
-    enabled: false,
-    hideBizuplyBranding: false,
     showRetailComparison: false,
   });
   const [meta, setMeta] = useState({
@@ -40,8 +38,6 @@ export default function PartnerStorefrontSettings() {
           email: data.branding?.email || "",
           whatsapp: data.branding?.whatsapp || "",
           heroText: data.branding?.heroText || "",
-          enabled: Boolean(data.storefront?.enabled),
-          hideBizuplyBranding: Boolean(data.branding?.hideBizuplyBranding),
           showRetailComparison: Boolean(data.branding?.showRetailComparison),
         });
         setMeta({
@@ -71,7 +67,7 @@ export default function PartnerStorefrontSettings() {
       <PartnerPageHeader
         eyebrow="קטלוג"
         title="הגדרות קטלוג מוצרים"
-        subtitle="קטלוג ציבורי להצגת מוצרים ושירותים. רכישה מתבצעת מול הפרטנר, או בעמוד החבילות אם הופעל."
+        subtitle="קטלוג ציבורי להצגת מוצרים ושירותים. הרכישה מתבצעת בעמוד החבילות (/plans) או בדומיין הפרמיום."
       />
       <PartnerCard className="space-y-4 p-6">
       {error ? <p className="text-sm font-bold text-rose-600">{error}</p> : null}
@@ -109,14 +105,10 @@ export default function PartnerStorefrontSettings() {
         onChange={(e) => setForm({ ...form, whatsapp: e.target.value })}
         placeholder="WhatsApp"
       />
-      <label className="block text-sm font-bold">
-        <input
-          type="checkbox"
-          checked={form.enabled}
-          onChange={(e) => setForm({ ...form, enabled: e.target.checked })}
-        />{" "}
-        הפעל עמוד מכירה
-      </label>
+      <p className="text-xs font-bold text-slate-500">
+        הקישור האישי מציג את הקטלוג כל עוד החשבון פעיל. כיבוי מוצר בודד נעשה במחירון.
+        רכישה עצמית מתבצעת בעמוד החבילות, לא בעמוד הקטלוג.
+      </p>
       <label className="block text-sm font-bold">
         <input
           type="checkbox"
@@ -126,14 +118,9 @@ export default function PartnerStorefrontSettings() {
         הצג מחיר Retail להשוואה בלבד
       </label>
       {meta.canHideBizuplyBranding ? (
-        <label className="block text-sm font-bold">
-          <input
-            type="checkbox"
-            checked={form.hideBizuplyBranding}
-            onChange={(e) => setForm({ ...form, hideBizuplyBranding: e.target.checked })}
-          />{" "}
-          הסתר מיתוג Bizuply בעמוד המכירה
-        </label>
+        <p className="text-xs font-bold text-slate-500">
+          מיתוג Bizuply מוסתר אוטומטית במסלול Premium כשיש שם מותג.
+        </p>
       ) : null}
       {meta.customDomainEligible ? (
         <p className="text-sm font-bold text-slate-500">

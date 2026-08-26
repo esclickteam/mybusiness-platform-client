@@ -101,7 +101,7 @@ export function clearRefreshDead() {
 }
 
 /**
- * Stripe Checkout return flags on the manage/plugins URL.
+ * Stripe Checkout return flags (plugin portal, or Partner deal paid/canceled).
  * Safe recovery signal: only attempt cookie refresh when these are present.
  */
 export function isBillingReturnSearch(
@@ -111,11 +111,15 @@ export function isBillingReturnSearch(
     const params = new URLSearchParams(search || "");
     const portal = params.get("portalBilling");
     const plugin = params.get("pluginBilling");
+    const paid = params.get("paid");
+    const canceled = params.get("canceled");
     return (
       portal === "success" ||
       portal === "cancel" ||
       plugin === "success" ||
-      plugin === "cancel"
+      plugin === "cancel" ||
+      paid === "1" ||
+      canceled === "1"
     );
   } catch {
     return false;
@@ -127,7 +131,11 @@ export function isBillingReturnSearch(
  * Anonymous first visits must not hit the endpoint (browser logs every 401 in red).
  */
 export function shouldAttemptRefresh() {
-  if (isRefreshDead()) return false;
+  const billingReturn =
+    typeof window !== "undefined" && isBillingReturnSearch(window.location.search);
+  // Stripe return must retry the refresh cookie even if a prior 401 marked
+  // this tab dead — the partner was authenticated when they left for Checkout.
+  if (isRefreshDead() && !billingReturn) return false;
   // Lazy import avoided — session gate is checked by api.js via isSessionInvalidated().
   // Keep this function free of a circular dependency on sessionInvalidation.
   if (localStorage.getItem("impersonatedBy")) return false;
@@ -169,7 +177,7 @@ export async function refreshAccessTokenOnce() {
     throw new Error("Refresh disabled during impersonation");
   }
 
-  if (isRefreshDead()) {
+  if (isRefreshDead() && !isBillingReturnSearch()) {
     throwHardRefreshError("NO_REFRESH_TOKEN");
   }
 

@@ -66,6 +66,7 @@ export type PartnerCompliance = {
     idPhoto: PartnerComplianceDocument;
   };
   documentLabels?: Record<string, string>;
+  fieldLabels?: Record<string, string>;
   reviewStatus: "incomplete" | "submitted" | "approved" | "rejected";
   adminFeedback?: string;
   submittedAt?: string | null;
@@ -191,6 +192,9 @@ export type PartnerDeal = {
   salesSource?: string;
   pipelineStatus?: string;
   needsAttention?: boolean;
+  welcomeNeedsResend?: boolean;
+  welcomeSendInFlight?: boolean;
+  activationInFlight?: boolean;
   kind?: string;
   packageSku?: string;
   packageDisplayName?: string;
@@ -216,8 +220,13 @@ export type PartnerDeal = {
   clientProvisioning?: {
     status?: string;
     email?: string;
+    userId?: string | null;
+    existingUserId?: string | null;
+    existingBusinessId?: string | null;
+    existingBusinessClaimable?: boolean;
     welcomeEmailSent?: boolean;
     welcomeEmailSentAt?: string | null;
+    welcomeEmailSendingAt?: string | null;
     temporaryPasswordIssuedAt?: string | null;
     error?: string;
   } | null;

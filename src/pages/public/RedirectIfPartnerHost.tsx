@@ -9,8 +9,8 @@ export default function RedirectIfPartnerHost({
   children: ReactNode;
   to?: string;
 }) {
-  const { ready, whiteLabelEnabled } = usePartnerHostBranding();
+  const { ready, isResolvedPartnerHost } = usePartnerHostBranding();
   if (!ready) return null;
-  if (whiteLabelEnabled) return <Navigate to={to} replace />;
+  if (isResolvedPartnerHost) return <Navigate to={to} replace />;
   return <>{children}</>;
 }

@@ -6,8 +6,9 @@ import {
   fetchPartnerPricebook,
   partnerApiError,
 } from "../../lib/partnerApi";
-import PartnerPageHeader from "../../components/partner/PartnerPageHeader";
+import { partnerPersonalUrl } from "../../lib/partnerBranding";
 import PartnerBrandingCard from "../../components/partner/PartnerBrandingCard";
+import PartnerPageHeader from "../../components/partner/PartnerPageHeader";
 import {
   PartnerCard,
   PartnerPrimaryButton,
@@ -30,15 +31,13 @@ export default function PartnerMyPage() {
       .then(([me, data, pricebook]) => {
         const urls = data.urls || data.branding?.urls || {};
         setPersonalUrl(
-          data.branding?.stored?.subdomain || data.branding?.subdomain
-            ? `https://${data.branding.stored?.subdomain || data.branding.subdomain}.bizuply.com`
-            : urls.personalUrl ||
-              urls.slugUrl ||
-              (me.slug ? `${window.location.origin}/p/${me.slug}` : "")
+          partnerPersonalUrl({
+            subdomain: data.branding?.stored?.subdomain || data.branding?.subdomain,
+            urls,
+            slug: me.slug,
+          })
         );
-        setPlansUrl(
-          urls.plansUrl || (me.slug ? `${window.location.origin}/p/${me.slug}/plans` : "")
-        );
+        setPlansUrl(urls.plansUrl || "");
         setSalesCount(
           pricebook.filter((row) => row.enabledInStorefront || row.visibleOnSalesPage).length
         );
@@ -94,7 +93,7 @@ export default function PartnerMyPage() {
           </PartnerGhostButton>
         </div>
         <p className="text-xs font-bold text-slate-500">
-          קטלוג ציבורי להצגת מוצרים ושירותים. רכישה מתבצעת מול הפרטנר, או בעמוד החבילות אם הלקוח משלם אונליין.
+          הקטלוג מציג מוצרים בלבד. רכישה עצמאית מתבצעת בעמוד החבילות ומשויכת אליכם אוטומטית.
           קישור /p/slug נשאר זמין כגיבוי.
         </p>
         {salesCount === 0 ? (

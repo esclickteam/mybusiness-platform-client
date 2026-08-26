@@ -93,6 +93,10 @@ test("public partner deal page shows products without line prices", () => {
   assert.equal(src.includes("customerFinalPrice"), false);
   assert.equal(src.includes("פירוט מוצרים"), true);
   assert.equal(src.includes("partnerFacingName"), true);
+  assert.equal(src.includes("PublicPartnerShell"), true);
+  assert.equal(src.includes("from-[#4C1D95]"), false);
+  assert.equal(src.includes("publicPackageLabel"), true);
+  assert.equal(src.includes("publicProductCopy"), true);
   assert.equal(src.includes("BizuplyLoader"), false);
 });
 
@@ -120,6 +124,7 @@ test("partnerApiError reads interceptor Error.message when response is missing",
   const api = readFileSync(join(ROOT, "lib/partnerApi.ts"), "utf8");
   assert.equal(api.includes("err instanceof Error"), true);
   assert.equal(api.includes("err.message"), true);
+  assert.equal(api.includes("export function partnerErrorCode"), true);
   const fnStart = api.indexOf("export function partnerApiError");
   const fn = api.slice(fnStart, fnStart + 900);
   assert.equal(fn.includes("response?.error || response?.message || fallback"), false);
@@ -169,6 +174,11 @@ test("Partner shell uses sidebar + pill navigation without Direct CRM", () => {
   assert.equal(layout.includes("/partner/dashboard/team"), true);
   assert.equal(layout.includes("CRMClient"), false);
   assert.equal(layout.includes("/api/crm"), false);
+  assert.equal(layout.includes("looksLikePartnerHost"), true);
+  assert.equal(layout.includes("partnerDisplayName"), true);
+  assert.equal(layout.includes('looksLikePartnerHost ? "פרטנר" : "Bizuply Partner"'), true);
+  assert.equal(layout.includes("fetchPartnerMe"), true);
+  assert.equal(layout.includes("payment_due"), true);
 
   const app = readFileSync(join(ROOT, "App.jsx"), "utf8");
   assert.equal(app.includes('path="tasks"'), true);
@@ -177,6 +187,41 @@ test("Partner shell uses sidebar + pill navigation without Direct CRM", () => {
   const tasksAt = app.indexOf('path="tasks"');
   assert.ok(tasksAt > 0);
   assert.ok(catchAllAt > tasksAt);
+});
+
+test("leftover Basic storefront uses stored brand without hiding Powered by Bizuply", () => {
+  const branding = readFileSync(join(ROOT, "lib/partnerBranding.ts"), "utf8");
+  const displayNameAt = branding.indexOf("export function partnerDisplayName");
+  const displayLogoAt = branding.indexOf("export function partnerDisplayLogo");
+  const facingNameAt = branding.indexOf("export function partnerFacingName");
+  const facingLogoAt = branding.indexOf("export function partnerFacingLogo");
+  const hideAt = branding.indexOf("export function hidesBizuplyChrome");
+  const resolvedAt = branding.indexOf("export function isResolvedPartnerHost");
+  assert.ok(displayNameAt > 0);
+  assert.ok(displayLogoAt > displayNameAt);
+  assert.equal(branding.slice(displayNameAt, displayLogoAt).includes("hidesBizuplyChrome"), false);
+  assert.equal(branding.slice(facingNameAt, facingLogoAt).includes("hidesBizuplyChrome"), true);
+  assert.equal(branding.slice(hideAt, resolvedAt).includes("whiteLabelEntitled"), true);
+  assert.equal(branding.includes("return Boolean(branding?.partnerId)"), true);
+
+  const shell = readFileSync(join(ROOT, "components/partner/PublicPartnerShell.tsx"), "utf8");
+  assert.equal(shell.includes("partnerDisplayName(branding)"), true);
+  assert.equal(shell.includes("Powered by Bizuply"), true);
+  assert.equal(shell.includes("{!whiteLabel ?"), true);
+
+  const auth = readFileSync(join(ROOT, "components/auth/AuthShell.tsx"), "utf8");
+  assert.equal(auth.includes("isPartnerHostBranding(branding)"), true);
+  assert.equal(auth.includes("const partnerChrome = whiteLabel"), true);
+  assert.equal(auth.includes("whiteLabel || partnerHost"), false);
+  assert.equal(auth.includes("partnerDisplayName(branding)"), true);
+
+  const success = readFileSync(join(ROOT, "pages/public/PartnerCheckoutSuccess.tsx"), "utf8");
+  assert.equal(success.includes("partnerDisplayName"), true);
+  const deal = readFileSync(join(ROOT, "pages/partner/PartnerPublicDeal.tsx"), "utf8");
+  assert.equal(deal.includes("partnerDisplayName"), true);
+  assert.equal(deal.includes("PublicPartnerShell"), true);
+  const app = readFileSync(join(ROOT, "App.jsx"), "utf8");
+  assert.equal(app.includes("<Route index element={<PartnerDashboard />} />"), true);
 });
 
 test("partner work helpers stay on PartnerClient tasks", () => {
@@ -189,6 +234,7 @@ test("partner work helpers stay on PartnerClient tasks", () => {
 test("partner deal share links stay absolute on Premium hosts", () => {
   const wizard = readFileSync(join(ROOT, "pages/partner/PartnerClientWizard.tsx"), "utf8");
   assert.equal(wizard.includes("absoluteCustomerUrl"), true);
+  assert.equal(wizard.includes("mybusiness-platform-client-staging.vercel.app"), false);
   const detail = readFileSync(join(ROOT, "pages/partner/PartnerDealDetail.tsx"), "utf8");
   assert.equal(detail.includes("absoluteCustomerUrl"), true);
   assert.equal(detail.includes("${window.location.origin}${deal.publicUrl"), false);
@@ -198,13 +244,16 @@ test("public partner deal is a summary, not a fake checkout", () => {
   const src = readFileSync(join(ROOT, "pages/partner/PartnerPublicDeal.tsx"), "utf8");
   assert.equal(src.includes("לתשלום עכשיו"), false);
   assert.equal(src.includes("סיכום ההצעה"), true);
-  assert.equal(src.includes("התשלום והפעלת השירות מתבצעים מול הפרטנר שלך"), true);
-  assert.equal(src.includes("noindex"), true);
+  assert.equal(src.includes("התשלום והפעלת השירות מתבצעים מול"), true);
+  assert.equal(src.includes("מול הפרטנר שלך"), false);
+  assert.equal(src.includes("noIndex"), true);
 });
 
 test("partner public plans page shows customer price only", () => {
   const src = readFileSync(join(ROOT, "pages/public/PartnerPublicPlans.tsx"), "utf8");
   assert.equal(src.includes("formatPublicCustomerPrice"), true);
+  assert.equal(src.includes("publicPackageLabel"), true);
+  assert.equal(src.includes("publicProductCopy"), true);
   assert.equal(src.includes("wholesale"), false);
   assert.equal(src.includes("partnerWholesalePrice"), false);
   assert.equal(src.includes("commission"), false);
@@ -216,28 +265,64 @@ test("login branding resolves from hostname helper, not scattered partner ifs", 
   assert.equal(src.includes("usePartnerHostBranding"), true);
   assert.equal(src.includes("hidesBizuplyChrome"), true);
   assert.equal(src.includes("hidesBizuplyChrome(branding, host)"), true);
+  assert.equal(src.includes("partnerFacingName(branding, host)"), true);
+  assert.equal(src.includes("partnerDisplayName"), true);
+  assert.equal(src.includes("isPartnerHostBranding"), true);
   assert.equal(src.includes("CRMClient"), false);
   const login = readFileSync(join(ROOT, "pages/Login.tsx"), "utf8");
   assert.equal(login.includes("usePartnerHostBranding"), true);
-  assert.equal(login.includes("whiteLabelEnabled"), true);
+  assert.equal(login.includes("isResolvedPartnerHost"), true);
+  assert.equal(login.includes("looksLikePartnerHost"), true);
+  assert.equal(login.includes("registerHref"), true);
   assert.equal(login.includes('? "/plans"'), true);
+  assert.equal(login.includes('to={isResolvedPartnerHost ? "/plans" : "/pricing"}'), false);
+  const reset = readFileSync(join(ROOT, "pages/ResetPassword.jsx"), "utf8");
+  assert.equal(reset.includes("AuthShell"), true);
+  assert.equal(reset.includes("AuthCard"), true);
+  assert.equal(reset.includes("forgot-password-overlay"), false);
   const shell = readFileSync(join(ROOT, "components/partner/PublicPartnerShell.tsx"), "utf8");
   assert.equal(shell.includes("hidesBizuplyChrome"), true);
   assert.equal(shell.includes("hidesBizuplyChrome(branding, host)"), true);
   assert.equal(shell.includes("partnerFacingName"), true);
+  assert.equal(shell.includes("partnerDisplayName"), true);
+  assert.equal(shell.includes("partnerDisplayLogo"), true);
+  assert.equal(shell.includes("isPartnerHostBranding"), true);
+  assert.equal(shell.includes("whiteLabel || partnerHost"), false);
+  assert.equal(shell.includes("Powered by Bizuply"), true);
   const plans = readFileSync(join(ROOT, "pages/public/PartnerPublicPlans.tsx"), "utf8");
   assert.equal(plans.includes("sales.branding"), true);
   assert.equal(plans.includes("partnerFacingName"), true);
+  assert.equal(plans.includes("partnerDisplayName"), true);
   const branding = readFileSync(join(ROOT, "lib/partnerBranding.ts"), "utf8");
   assert.equal(branding.includes("whiteLabelEntitled"), true);
   assert.equal(branding.includes("hideBizuplyBranding"), true);
+  assert.equal(branding.includes("isResolvedPartnerHost"), true);
+  assert.equal(branding.includes("export function partnerDisplayName"), true);
+  assert.equal(branding.includes("export function partnerDisplayLogo"), true);
+  assert.equal(branding.includes("export function isPartnerHostBranding"), true);
   assert.equal(branding.includes("isPartnerWhiteLabelHostname"), false);
   assert.equal(branding.includes("absoluteCustomerUrl"), true);
   assert.equal(branding.includes("hidesBizuplyChrome(branding, hostname)"), true);
-  assert.equal(branding.includes("return Boolean(branding?.whiteLabelEnabled)"), true);
+  assert.equal(branding.includes("whiteLabelEntitled"), true);
+  assert.equal(branding.includes("stored?.brandName"), true);
+  assert.equal(branding.includes("return Boolean(branding?.whiteLabelEnabled)"), false);
   const storefront = readFileSync(join(ROOT, "pages/public/PartnerStorefront.tsx"), "utf8");
+  assert.equal(storefront.includes('from "../../components/partner/PublicPartnerShell"'), true);
   assert.equal(storefront.includes("PublicPartnerShell"), true);
+  assert.equal(storefront.includes("fetchPublicPartnerBranding"), true);
+  assert.equal(storefront.includes("publicPackageLabel"), true);
+  assert.equal(storefront.includes("publicProductCopy"), true);
+  assert.equal(storefront.includes("key={product.sku}"), false);
   assert.equal(storefront.includes("Powered by Bizuply"), false);
+  assert.equal(storefront.includes("רכישה מתבצעת בעמוד החבילות"), true);
+  assert.equal(storefront.includes("רכישה מתבצעת מול הפרטנר."), false);
+  const settings = readFileSync(join(ROOT, "pages/partner/PartnerStorefrontSettings.tsx"), "utf8");
+  assert.equal(settings.includes("הרכישה מתבצעת בעמוד החבילות"), true);
+  assert.equal(settings.includes("רכישה מתבצעת מול הפרטנר"), false);
+  assert.equal(settings.includes("הפעל עמוד מכירה"), false);
+  assert.equal(settings.includes("form.enabled"), false);
+  assert.equal(settings.includes("הסתר מיתוג Bizuply בעמוד המכירה"), false);
+  assert.equal(settings.includes("form.hideBizuplyBranding"), false);
 });
 
 test("public checkout client sends sku and contact, never a customer price", () => {
@@ -248,6 +333,37 @@ test("public checkout client sends sku and contact, never a customer price", () 
   assert.equal(fn.includes("customerPrice"), false);
   assert.equal(fn.includes("wholesale"), false);
   assert.equal(fn.includes("/public/p/"), true);
+  assert.equal(fn.includes("window.location.host"), true);
+  assert.match(fn, /host,/);
+});
+
+test("amendment wizard skips quote persist when the client already has a catalog", () => {
+  const wizard = readFileSync(join(ROOT, "pages/partner/PartnerClientWizard.tsx"), "utf8");
+  assert.equal(wizard.includes("setClientStatus"), true);
+  assert.equal(wizard.includes('["active", "provisioning"].includes(clientStatus)'), true);
+  assert.equal(wizard.includes("fromCatalog"), true);
+  assert.equal(wizard.includes("liveOwned"), true);
+  assert.match(wizard, /fromCatalog = liveOwned/);
+  assert.equal(wizard.includes("fromDeals"), true);
+  assert.equal(wizard.includes('String(deal.status || "") !== "reversed"'), true);
+  assert.equal(wizard.includes("setOwnedSkus([...new Set([...fromCatalog, ...fromDeals])])"), true);
+  assert.equal(wizard.includes('if (["active", "provisioning"].includes(String(client.status || "")))'), false);
+  assert.equal(wizard.includes("kind: existingClientId ? \"amendment\" : \"initial\""), false);
+  assert.equal(wizard.includes('kind: ownedSkus.length ? "amendment" : "initial"'), true);
+  assert.match(wizard, /filter\(\(sku\) => !ownedSkus.includes\(sku\)\)/);
+  const createStart = wizard.indexOf("async function createDeal");
+  const createFn = wizard.slice(createStart, wizard.indexOf("const shareUrl"));
+  assert.ok(createStart > 0);
+  assert.match(createFn, /quoteLocked/);
+  assert.match(createFn, /ownedSkus\.length > 0/);
+  assert.match(createFn, /if \(!quoteLocked\) \{\s*await persistQuote\(\);/);
+  assert.match(createFn, /const newLines = dealLines\(\);/);
+  assert.match(createFn, /if \(!newLines\.length\)/);
+  assert.match(wizard, /if \(!clientId \|\| ownedSkus\.length\) return;/);
+  const picker = readFileSync(join(ROOT, "components/partner/PartnerCatalogPicker.tsx"), "utf8");
+  assert.equal(picker.includes("lockedSkus"), true);
+  assert.equal(picker.includes("כבר פעיל אצל הלקוח"), true);
+  assert.equal(picker.includes("if (locked.has(sku)) return;"), true);
 });
 
 test("self-serve success page polls until payment and activation settle", () => {
@@ -259,6 +375,9 @@ test("self-serve success page polls until payment and activation settle", () => 
   assert.equal(src.includes("requires_action"), true);
   assert.equal(src.includes("החשבון עדיין דורש טיפול"), true);
   assert.equal(src.includes("welcomeEmailSent"), true);
+  assert.equal(src.includes("partnerFacingName"), true);
+  assert.equal(src.includes("פנו לפרטנר"), false);
+  assert.equal(src.includes("צוות הפרטנר"), false);
   assert.equal(src.includes("CRMClient"), false);
   assert.equal(src.includes("[slug, sessionId, resolving, error]"), false);
 });
@@ -271,13 +390,23 @@ test("partner pipeline routes are registered in App", () => {
   assert.equal(app.includes("/p/:slug/checkout/success"), true);
   assert.equal(app.includes('path="/checkout/success"'), true);
   assert.equal(app.includes("usePartnerHostBranding"), true);
-  assert.equal(app.includes("partnerHostAllowsPath"), true);
+  assert.equal(app.includes("partnerHostDeniedRedirect"), true);
   assert.equal(app.includes("isPartnerHostPublicChrome"), true);
+  assert.equal(app.includes("looksLikePartnerHost &&"), true);
+  assert.equal(app.includes("isPartnerHost &&"), false);
+  assert.equal(app.includes("const isPartnerHostPublicChrome = looksLikePartnerHost"), true);
+  assert.equal(app.includes("!location.pathname.includes(\"/dashboard\") &&"), false);
   assert.equal(app.includes("RedirectIfPartnerHost"), true);
   assert.equal(app.includes("<Route index element={<PartnerDashboard />} />"), true);
   assert.equal(app.includes('location.pathname === "/checkout/success"'), true);
   assert.equal(app.includes("/admin/partners/referrals"), true);
   assert.equal(app.includes("/admin/partners/attention"), true);
+  const adminAttn = readFileSync(join(ROOT, "pages/admin/AdminPartnerAttentionDeals.tsx"), "utf8");
+  assert.equal(adminAttn.includes("adminChangeDealEmail"), true);
+  assert.equal(adminAttn.includes("שמירת אימייל"), true);
+  assert.equal(adminAttn.includes("welcomeNeedsResend"), true);
+  assert.equal(adminAttn.includes("activationInFlight"), true);
+  assert.equal(adminAttn.includes("סיסמת הכניסה לא נשלחה"), true);
 });
 
 test("partner CRM shows self-serve vs manual source column", () => {
@@ -293,9 +422,35 @@ test("paid deal copy does not treat payment as withdrawable commission", () => {
   assert.equal(src.includes("תשלום שולם אינו זמין למשיכה"), true);
   assert.equal(src.includes("needsAttention"), true);
   assert.equal(src.includes("retryPartnerDealActivation"), true);
+  assert.equal(src.includes("קישור לחשבון הקיים"), true);
+  assert.equal(src.includes("existingBusinessClaimable"), true);
+  assert.equal(src.includes("existingBusinessId"), true);
+  assert.equal(src.includes("שליחת פרטי כניסה מחדש"), true);
+  assert.equal(src.includes("temporaryPasswordIssuedAt"), true);
+  assert.equal(src.includes("welcomeNeedsResend"), true);
+  assert.equal(src.includes("welcomeSendInFlight"), true);
+  assert.equal(src.includes("activationInFlight"), true);
+  assert.equal(src.includes("ההפעלה עדיין רצה ברקע"), true);
+  assert.equal(src.includes("refreshDealFromError"), true);
+  assert.equal(src.includes("ACTIVATION_IN_FLIGHT"), true);
+  assert.equal(src.includes("WELCOME_IN_FLIGHT"), true);
+  assert.equal(src.includes("partnerErrorCode"), true);
+  assert.equal(src.includes("המייל עדיין בשליחה"), true);
+  assert.equal(src.includes("hideRawBusinessId"), true);
+  assert.equal(src.includes("abandonPartnerDeal"), true);
+  assert.equal(src.includes("ביטול עסקה שלא שולמה"), true);
   assert.equal(src.includes("מאשרים את התשלום מול Stripe"), true);
   assert.equal(src.includes("paidReturn"), true);
   assert.equal(src.includes("activationSettled"), true);
+  assert.equal(src.includes('row.status === "reversed"'), true);
+  assert.equal(src.includes('row.paymentStatus === "refunded"'), true);
+  assert.equal(src.includes("isPaid &&"), true);
+  assert.equal((src.match(/<div\b/g) || []).length, (src.match(/<\/div>/g) || []).length);
+  const api = readFileSync(join(ROOT, "lib/partnerApi.ts"), "utf8");
+  const start = api.indexOf("export async function startPartnerDealCheckout");
+  const fn = api.slice(start, api.indexOf("export async function fetchPublicPartnerDeal"));
+  assert.ok(start > 0);
+  assert.equal(fn.includes("extendAccessToken"), true);
 });
 
 test("referrals page lists 40-day pending rewards above the intake form", () => {
@@ -315,6 +470,9 @@ test("referrals page lists 40-day pending rewards above the intake form", () => 
 test("dashboard surfaces paid-unactivated deals without changing home routing", () => {
   const src = readFileSync(join(ROOT, "pages/partner/PartnerDashboard.tsx"), "utf8");
   assert.equal(src.includes("attentionDeals"), true);
+  assert.equal(src.includes("welcomeNeedsResend"), true);
+  assert.equal(src.includes("שליחת פרטי כניסה"), true);
+  assert.equal(src.includes("דורשות טיפול"), true);
   assert.equal(src.includes("/partner/dashboard/deals/"), true);
   assert.equal(src.includes("data.referrals?.qualifying"), true);
   assert.equal(src.includes("/partner/dashboard/referrals"), true);
@@ -340,9 +498,18 @@ test("transactions page links deals and separates pending from eligible commissi
 test("CRM dossier retries paid-deal activation without using Direct CRM", () => {
   const src = readFileSync(join(ROOT, "pages/partner/PartnerClientDossier.tsx"), "utf8");
   assert.equal(src.includes("activatePartnerClient"), true);
+  assert.equal(src.includes("retryPartnerDealActivation"), true);
   assert.equal(src.includes("/partner/dashboard/deals/"), true);
+  assert.equal(src.includes("טיפול באימייל / עסק קיים"), true);
   assert.equal(src.includes("הפעלת חשבון אחרי תשלום"), true);
+  assert.equal(src.includes("activationInFlight"), true);
+  assert.equal(src.includes("welcomeNeedsResend"), true);
+  assert.equal(src.includes("ACTIVATION_IN_FLIGHT"), true);
+  assert.equal(src.includes("partnerErrorCode"), true);
+  assert.equal(src.includes("שליחת פרטי כניסה מחדש"), true);
   assert.equal(src.includes("paymentStatus === \"paid\""), true);
+  assert.equal(src.includes('deal.status !== "reversed"'), true);
+  assert.equal(src.includes('deal.paymentStatus !== "refunded"'), true);
   assert.equal(src.includes("CRMClient"), false);
   assert.equal(src.includes("/api/crm"), false);
 });
@@ -376,6 +543,8 @@ test("public partner plans page shows only final customer prices", () => {
   assert.equal(pricing.includes("הוסף עמלה שנתית מתחדשת"), true);
   assert.equal(pricing.includes("skuAllowsRecurringMarkup"), true);
   assert.equal(pricing.includes("מחיר Bizuply"), true);
+  assert.equal(pricing.includes("הצג בעמוד המכירה"), true);
+  assert.equal(pricing.includes("הצג בעמוד האישי"), false);
   assert.equal(pricing.includes("{allowsRecurring ?"), true);
   assert.equal(pricing.includes("recurringIntervalLabel"), true);
   assert.equal(pricing.includes("מחיר בסיס"), true);
@@ -403,18 +572,26 @@ test("catalog and settings prefer branded host URLs without changing dashboard h
   assert.equal(settings.includes("CRMClient"), false);
   const app = readFileSync(join(ROOT, "App.jsx"), "utf8");
   assert.equal(app.includes("<Route index element={<PartnerDashboard />} />"), true);
+  const revenue = readFileSync(join(ROOT, "pages/partner/PartnerRevenue.tsx"), "utf8");
+  assert.equal(revenue.includes("הלקוח משלם ל-Bizuply"), false);
+  assert.equal(revenue.includes("בעסקה ידנית"), true);
 });
 
 test("white-label host home sends anonymous visitors to plans without changing partner dashboard", () => {
   const home = readFileSync(join(ROOT, "pages/public/PartnerHostHome.tsx"), "utf8");
   assert.equal(home.includes("usePartnerHostBranding"), true);
-  assert.equal(home.includes("whiteLabelEnabled"), true);
+  assert.equal(home.includes("isResolvedPartnerHost"), true);
+  assert.equal(home.includes("looksLikePartnerHost"), true);
   assert.equal(home.includes('to="/plans"'), true);
+  assert.equal(home.includes("/p/${encodeURIComponent(slug)}/plans"), true);
+  assert.equal(home.includes("העמוד לא נמצא"), true);
   assert.equal(home.includes("/partner/dashboard"), false);
   assert.equal(home.includes("HomePage"), true);
   const app = readFileSync(join(ROOT, "App.jsx"), "utf8");
   assert.equal(app.includes("PartnerHostHome"), true);
-  assert.equal(app.includes("partnerHostAllowsPath"), true);
+  assert.equal(app.includes("partnerHostDeniedRedirect"), true);
+  assert.equal(app.includes("looksLikePartnerHost"), true);
+  assert.equal(app.includes("<Route index element={<PartnerDashboard />} />"), true);
   const dashboardAt = app.indexOf('path="/partner/dashboard"');
   const indexAt = app.indexOf("<Route index element={<PartnerDashboard />} />");
   assert.ok(dashboardAt > 0);
@@ -430,15 +607,47 @@ test("partner settings expose white-label branding fields and personal link acti
   assert.equal(card.includes("הקישור האישי שלי"), true);
   assert.equal(card.includes('"Copy"'), true);
   assert.equal(card.includes("Open"), true);
-  assert.equal(card.includes(".bizuply.com"), true);
+  assert.equal(card.includes("partnerPersonalUrl"), true);
+  assert.equal(card.includes("partnerSiteSuffix"), true);
+  assert.equal(card.includes("`https://${savedSubdomain}.bizuply.com`"), false);
+  const brandingLib = readFileSync(join(ROOT, "lib/partnerBranding.ts"), "utf8");
+  assert.equal(brandingLib.includes(".bizuply.com"), true);
+  assert.equal(brandingLib.includes(".bizuply.co.il"), true);
+  assert.equal(brandingLib.includes("partnerPersonalUrl"), true);
+  assert.equal(brandingLib.includes("urls?.subdomainUrl"), true);
+  assert.equal(brandingLib.includes("urls?.personalUrl"), true);
+  assert.equal(brandingLib.includes("${window.location.origin}/p/${slug}"), false);
+  assert.equal(brandingLib.includes("if (sub) return `https://${sub}${partnerSiteSuffix(hostname)}`;"), false);
+  const myPage = readFileSync(join(ROOT, "pages/partner/PartnerMyPage.tsx"), "utf8");
+  assert.equal(myPage.includes("partnerPersonalUrl"), true);
+  assert.equal(myPage.includes("urls.plansUrl"), true);
+  assert.equal(myPage.includes("${window.location.origin}/p/${me.slug}/plans"), false);
+  assert.equal(myPage.includes('from "../../components/partner/PartnerPageHeader"'), true);
+  assert.equal(myPage.includes("רכישה מתבצעת מול הפרטנר"), false);
+  assert.equal(myPage.includes("רכישה עצמאית מתבצעת בעמוד החבילות"), true);
+  assert.equal(myPage.includes(".bizuply.com"), false);
   assert.equal(card.includes("עדיין לא מאומתת בייצור"), true);
   const settings = readFileSync(join(ROOT, "pages/partner/PartnerSettings.tsx"), "utf8");
   assert.equal(settings.includes("PartnerBrandingCard"), true);
+  assert.equal(settings.includes("compliance.missing"), true);
+  assert.equal(settings.includes("currentMissing"), true);
+  assert.equal(settings.includes("עדיין חסר"), true);
+  const withdrawals = readFileSync(join(ROOT, "pages/partner/PartnerWithdrawals.tsx"), "utf8");
+  assert.equal(withdrawals.includes("reviewStatus"), true);
+  assert.equal(withdrawals.includes("missing"), true);
+  assert.equal(withdrawals.includes("kycMissingLabels"), true);
+  const api = readFileSync(join(ROOT, "lib/partnerApi.ts"), "utf8");
+  assert.equal(api.includes("fieldLabels"), true);
+  assert.equal(api.includes("reviewStatus"), true);
   const dashboard = readFileSync(join(ROOT, "pages/partner/PartnerDashboard.tsx"), "utf8");
   assert.equal(dashboard.includes("הקישור האישי שלי"), true);
   assert.equal(dashboard.includes('"Copy"'), true);
   assert.equal(dashboard.includes("Open"), true);
+  assert.equal(dashboard.includes("partnerPersonalUrl"), true);
+  assert.equal(dashboard.includes("`https://${"), false);
   const hook = readFileSync(join(ROOT, "hooks/usePartnerHostBranding.ts"), "utf8");
   assert.equal(hook.includes("fetchPublicPartnerBranding"), true);
   assert.equal(hook.includes("whiteLabelEnabled"), true);
+  assert.equal(hook.includes("loadPartnerHostBranding"), true);
+  assert.equal(hook.includes("resolvedHost"), true);
 });

@@ -1,6 +1,10 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { isPartnerWhiteLabelHostname, partnerHostAllowsPath } from "./partnerHost.mjs";
+import {
+  isPartnerWhiteLabelHostname,
+  partnerHostAllowsPath,
+  partnerHostDeniedRedirect,
+} from "./partnerHost.mjs";
 
 test("partner white-label host helper matches Premium subdomains only", () => {
   assert.equal(isPartnerWhiteLabelHostname("acme.bizuply.com"), true);
@@ -9,6 +13,8 @@ test("partner white-label host helper matches Premium subdomains only", () => {
   assert.equal(isPartnerWhiteLabelHostname("app.bizuply.com"), false);
   assert.equal(isPartnerWhiteLabelHostname("api.bizuply.com"), false);
   assert.equal(isPartnerWhiteLabelHostname("shop.sites.bizuply.com"), false);
+  assert.equal(isPartnerWhiteLabelHostname("sites.bizuply.com"), false);
+  assert.equal(isPartnerWhiteLabelHostname("sites-staging.bizuply.com"), false);
   assert.equal(isPartnerWhiteLabelHostname("demo.sites-staging.bizuply.com"), false);
   assert.equal(isPartnerWhiteLabelHostname("foo.bar.bizuply.com"), false);
   assert.equal(isPartnerWhiteLabelHostname("localhost"), false);
@@ -25,6 +31,8 @@ test("partner host keeps sales/login/app paths and sends marketing pages to /pla
   assert.equal(partnerHostAllowsPath("/p/acme/plans"), true);
   assert.equal(partnerHostAllowsPath("/login"), true);
   assert.equal(partnerHostAllowsPath("/forgot-password"), true);
+  assert.equal(partnerHostAllowsPath("/reset-password"), true);
+  assert.equal(partnerHostAllowsPath("/reset-password?token=abc"), true);
   assert.equal(partnerHostAllowsPath("/partner/dashboard"), true);
   assert.equal(partnerHostAllowsPath("/partner/deals/abc"), true);
   assert.equal(partnerHostAllowsPath("/business/xyz/dashboard"), true);
@@ -36,4 +44,12 @@ test("partner host keeps sales/login/app paths and sends marketing pages to /pla
   assert.equal(partnerHostAllowsPath("/checkout"), false);
   assert.equal(partnerHostAllowsPath("/faq"), false);
   assert.equal(partnerHostAllowsPath("/contact"), false);
+  assert.equal(partnerHostDeniedRedirect("/plans", { entitled: true }), "");
+  assert.equal(partnerHostDeniedRedirect("/about", { entitled: true }), "/plans");
+  assert.equal(
+    partnerHostDeniedRedirect("/about", { entitled: false, slug: "plain" }),
+    "/p/plain/plans"
+  );
+  assert.equal(partnerHostDeniedRedirect("/pricing", { entitled: false }), "/");
+  assert.equal(partnerHostDeniedRedirect("/p/plain/plans", { slug: "plain" }), "");
 });

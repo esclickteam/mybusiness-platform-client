@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
 import { fetchPartnerClients, fetchPartnerDashboard, fetchPartnerMe, partnerApiError } from "../../lib/partnerApi";
+import { partnerPersonalUrl } from "../../lib/partnerBranding";
 import type {
   PartnerClient,
   PartnerDashboardPayload,
@@ -99,8 +100,13 @@ export default function PartnerDashboard() {
   useEffect(() => {
     fetchPartnerMe()
       .then((me) => {
-        setPersonalUrl(me.urls?.personalUrl || me.urls?.slugUrl || (me.slug ? `${window.location.origin}/p/${me.slug}` : ""));
-        setPlansUrl(me.urls?.plansUrl || (me.slug ? `${window.location.origin}/p/${me.slug}/plans` : ""));
+        setPersonalUrl(
+          partnerPersonalUrl({
+            urls: me.urls,
+            slug: me.slug,
+          })
+        );
+        setPlansUrl(me.urls?.plansUrl || "");
       })
       .catch(() => {});
   }, []);
@@ -177,8 +183,8 @@ export default function PartnerDashboard() {
                   שולם – דורש טיפול
                 </p>
                 <p className="mt-1 text-sm font-bold text-amber-900">
-                  יש {data.attentionDeals.length} עסקאות ששולמו אך הלקוח עדיין לא הופעל. העמלה ממתינה
-                  עד השלמת ההפעלה.
+                  יש {data.attentionDeals.length} עסקאות ששולמו ודורשות טיפול — הפעלת לקוח או שליחת פרטי
+                  כניסה. עמלה זכאית למשיכה רק אחרי שההפעלה הושלמה.
                 </p>
               </div>
               <ul className="space-y-2">
@@ -189,7 +195,9 @@ export default function PartnerDashboard() {
                       to={`/partner/dashboard/deals/${deal._id}`}
                       className="rounded-2xl bg-slate-900 px-3 py-1.5 text-xs font-black text-white"
                     >
-                      טיפול בהפעלה
+                      {(deal as any).welcomeNeedsResend && !(deal as any).needsAttention
+                        ? "שליחת פרטי כניסה"
+                        : "טיפול בהפעלה"}
                     </Link>
                   </li>
                 ))}

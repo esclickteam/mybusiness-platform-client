@@ -1,4 +1,5 @@
 import API from "@api";
+import { extendAccessToken } from "../utils/tokenRefresh";
 import type {
   AmountDue,
   PartnerClient,
@@ -34,6 +35,13 @@ export async function fetchPartnerMe() {
     urls: data.urls,
     billingCheckoutAvailable: Boolean(data.billingCheckoutAvailable),
   } as PartnerMe;
+}
+
+export function partnerErrorCode(err: unknown): string {
+  const data = (
+    err as { response?: { data?: { code?: string } } }
+  )?.response?.data;
+  return String(data?.code || "").trim();
 }
 
 export function partnerApiError(err: unknown, fallback: string) {
@@ -233,6 +241,11 @@ export async function fetchPartnerDeal(dealId: string) {
 }
 
 export async function startPartnerDealCheckout(dealId: string) {
+  try {
+    await extendAccessToken();
+  } catch {
+    /* checkout will surface auth failures */
+  }
   const { data } = await API.post(`/partner/deals/${dealId}/checkout`);
   return data as { url: string; sessionId: string; livemode?: boolean };
 }
@@ -253,6 +266,15 @@ export async function fetchPartnerWithdrawals() {
       paid: number;
     };
     cycle: { copy: string; afterCutoff: boolean; expectedPaymentBy: string; cutoffDate: string };
+    kyc?: {
+      approved?: boolean;
+      reviewStatus?: "incomplete" | "submitted" | "approved" | "rejected";
+      missing?: string[];
+      complete?: boolean;
+      adminFeedback?: string;
+      fieldLabels?: Record<string, string>;
+      documentLabels?: Record<string, string>;
+    };
   };
 }
 
@@ -480,6 +502,11 @@ export async function linkPartnerDealBusiness(dealId: string, businessId: string
   return data;
 }
 
+export async function abandonPartnerDeal(dealId: string, reason = "") {
+  const { data } = await API.post(`/partner/deals/${dealId}/abandon`, { reason });
+  return data;
+}
+
 export async function fetchPartnerBranding() {
   const { data } = await API.get("/partner/branding");
   return data;
@@ -522,7 +549,11 @@ export async function startPublicPartnerCheckout(
   slug: string,
   payload: { sku: string; email: string; name?: string; phone?: string; businessName?: string }
 ) {
-  const { data } = await API.post(`/public/p/${encodeURIComponent(slug)}/checkout`, payload);
+  const host = typeof window !== "undefined" ? window.location.host : "";
+  const { data } = await API.post(`/public/p/${encodeURIComponent(slug)}/checkout`, {
+    ...payload,
+    host,
+  });
   return data;
 }
 
@@ -560,6 +591,13 @@ export async function adminRetryDealActivation(partnerId: string, dealId: string
 export async function adminLinkDealBusiness(partnerId: string, dealId: string, businessId: string) {
   const { data } = await API.post(`/admin/partners/${partnerId}/deals/${dealId}/link-business`, {
     businessId,
+  });
+  return data;
+}
+
+export async function adminChangeDealEmail(partnerId: string, dealId: string, email: string) {
+  const { data } = await API.post(`/admin/partners/${partnerId}/deals/${dealId}/change-email`, {
+    email,
   });
   return data;
 }

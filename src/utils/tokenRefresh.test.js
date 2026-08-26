@@ -63,6 +63,9 @@ describe("billing return refresh gate", () => {
     );
     expect(isBillingReturnSearch("?pluginBilling=cancel")).toBe(true);
     expect(isBillingReturnSearch("?section=plugins")).toBe(false);
+    expect(isBillingReturnSearch("?paid=1")).toBe(true);
+    expect(isBillingReturnSearch("?canceled=1")).toBe(true);
+    expect(isBillingReturnSearch("?paid=0")).toBe(false);
   });
 
   it("allows refresh attempt on Stripe return without local token", () => {
@@ -76,6 +79,27 @@ describe("billing return refresh gate", () => {
 
   it("does not refresh for anonymous visits", () => {
     window.history.replaceState({}, "", "/login");
+    expect(shouldAttemptRefresh()).toBe(false);
+  });
+
+  it("allows refresh on Partner deal Stripe return without local token", () => {
+    window.history.replaceState(
+      {},
+      "",
+      "/partner/dashboard/deals/64a000000000000000000001?paid=1"
+    );
+    expect(shouldAttemptRefresh()).toBe(true);
+  });
+
+  it("retries refresh on Stripe return even if this tab was marked dead", () => {
+    sessionStorage.setItem("bizuply:refreshDead", "1");
+    window.history.replaceState(
+      {},
+      "",
+      "/partner/dashboard/deals/64a000000000000000000001?paid=1"
+    );
+    expect(shouldAttemptRefresh()).toBe(true);
+    window.history.replaceState({}, "", "/partner/dashboard");
     expect(shouldAttemptRefresh()).toBe(false);
   });
 });

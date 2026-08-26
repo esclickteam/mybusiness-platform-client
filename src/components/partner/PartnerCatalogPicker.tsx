@@ -15,6 +15,7 @@ type Props = {
   items: PartnerPriceLine[];
   wizard: PartnerWizardCatalog;
   selectedSkus: string[];
+  lockedSkus?: string[];
   onChange: (skus: string[]) => void;
   partnerShareRate: number;
   onContinue?: () => void;
@@ -35,6 +36,7 @@ export default function PartnerCatalogPicker({
   items,
   wizard,
   selectedSkus,
+  lockedSkus = [],
   onChange,
   partnerShareRate,
   onContinue,
@@ -45,7 +47,11 @@ export default function PartnerCatalogPicker({
   const [billingFilter, setBillingFilter] = useState("all");
   const [drawerOpen, setDrawerOpen] = useState(false);
   const selected = new Set(selectedSkus);
-  const packageSku = selectedSkus.find((sku) => isMainPackageSku(sku)) || "";
+  const locked = new Set(lockedSkus);
+  const packageSku =
+    selectedSkus.find((sku) => isMainPackageSku(sku)) ||
+    lockedSkus.find((sku) => isMainPackageSku(sku)) ||
+    "";
   const covered = wizard.coveredByPackage?.[packageSku] || [];
   const preview = computeDealPreview(items, selectedSkus, partnerShareRate);
 
@@ -57,6 +63,7 @@ export default function PartnerCatalogPicker({
   );
 
   function toggleSku(sku: string, exclusiveGroup?: string[]) {
+    if (locked.has(sku)) return;
     if (selected.has(sku)) {
       onChange(selectedSkus.filter((item) => item !== sku));
       return;
@@ -115,6 +122,7 @@ export default function PartnerCatalogPicker({
               <PackageCard
                 items={businessGroup}
                 selectedSku={packageSku}
+                lockedSkus={lockedSkus}
                 onSelect={(sku) =>
                   toggleSku(
                     sku,
@@ -128,6 +136,7 @@ export default function PartnerCatalogPicker({
                 key={item.sku}
                 items={[item]}
                 selectedSku={packageSku}
+                lockedSkus={lockedSkus}
                 onSelect={(sku) =>
                   toggleSku(
                     sku,
@@ -187,7 +196,10 @@ export default function PartnerCatalogPicker({
                   const included = isCovered(item.sku);
                   const added = selected.has(item.sku);
                   const missingWebsite =
-                    Boolean(item.websiteRequired) && !hasWebsite(selectedSkus) && !included;
+                    Boolean(item.websiteRequired) &&
+                    !hasWebsite([...selectedSkus, ...lockedSkus]) &&
+                    !included;
+                  const alreadyOwned = locked.has(item.sku);
                   return (
                     <article
                       key={item.sku}
@@ -215,6 +227,11 @@ export default function PartnerCatalogPicker({
                         <p className="mt-3 inline-flex items-center gap-1 rounded-full bg-emerald-50 px-3 py-1 text-xs font-black text-emerald-700">
                           <Check className="h-3.5 w-3.5" />
                           כלול בחבילה
+                        </p>
+                      ) : alreadyOwned ? (
+                        <p className="mt-3 inline-flex items-center gap-1 rounded-full bg-slate-100 px-3 py-1 text-xs font-black text-slate-600">
+                          <Check className="h-3.5 w-3.5" />
+                          כבר פעיל אצל הלקוח
                         </p>
                       ) : missingWebsite ? (
                         <div className="mt-3 space-y-2">
@@ -307,10 +324,12 @@ function PackageCard({
   items,
   selectedSku,
   onSelect,
+  lockedSkus = [],
 }: {
   items: PartnerPriceLine[];
   selectedSku: string;
   onSelect: (sku: string) => void;
+  lockedSkus?: string[];
 }) {
   const [intervalSku, setIntervalSku] = useState(
     items.find((item) => item.sku === selectedSku)?.sku || items[0]?.sku || ""
@@ -318,6 +337,7 @@ function PackageCard({
   const current = items.find((item) => item.sku === intervalSku) || items[0];
   if (!current) return null;
   const selected = items.some((item) => item.sku === selectedSku);
+  const lockedCurrent = lockedSkus.includes(current.sku);
   return (
     <article
       className={[
@@ -374,14 +394,17 @@ function PackageCard({
       <button
         type="button"
         onClick={() => onSelect(current.sku)}
+        disabled={lockedCurrent}
         className={[
           "mt-4 w-full rounded-2xl px-4 py-3 text-sm font-black",
-          selected && selectedSku === current.sku
+          lockedCurrent
+            ? "cursor-not-allowed bg-slate-100 text-slate-500"
+            : selected && selectedSku === current.sku
             ? "bg-emerald-600 text-white"
             : "bg-slate-900 text-white",
         ].join(" ")}
       >
-        {selected && selectedSku === current.sku ? "נבחרה" : "בחר חבילה"}
+        {lockedCurrent ? "כבר פעיל אצל הלקוח" : selected && selectedSku === current.sku ? "נבחרה" : "בחר חבילה"}
       </button>
     </article>
   );
