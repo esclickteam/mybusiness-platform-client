@@ -127,6 +127,7 @@ export function PartnerFileButton({
   children,
   className = "",
   variant = "primary",
+  inputId,
 }: {
   accept: string;
   disabled?: boolean;
@@ -134,12 +135,14 @@ export function PartnerFileButton({
   children: React.ReactNode;
   className?: string;
   variant?: "primary" | "ghost";
+  inputId?: string;
 }) {
   const inputRef = useRef<HTMLInputElement>(null);
   const Button = variant === "ghost" ? PartnerGhostButton : PartnerPrimaryButton;
   return (
     <span className={`relative inline-flex ${className}`.trim()}>
       <input
+        id={inputId}
         ref={inputRef}
         type="file"
         accept={accept}

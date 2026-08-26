@@ -295,20 +295,39 @@ export default function PartnerBrandingCard({ showPersonalLink = true }: { showP
           <h3 className="text-sm font-black text-slate-900">לוגו</h3>
           <p className="text-xs font-bold text-slate-500">JPG, PNG או WEBP עד 2MB. מוצג בעמוד שלכם ובמקום Bizuply.</p>
         </div>
-        <div className="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-4 sm:flex-row sm:items-center">
-          <div className="grid h-24 w-24 shrink-0 place-items-center overflow-hidden rounded-2xl border border-slate-100 bg-slate-50">
+        <div
+          className="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-4 sm:flex-row sm:items-center"
+          onDragOver={(event) => {
+            event.preventDefault();
+          }}
+          onDrop={(event) => {
+            event.preventDefault();
+            if (uploadingLogo) return;
+            const file = event.dataTransfer.files?.[0];
+            if (file) void onLogo(file);
+          }}
+        >
+          <label
+            htmlFor="partner-logo-file"
+            className="grid h-24 w-24 shrink-0 cursor-pointer place-items-center overflow-hidden rounded-2xl border border-dashed border-violet-200 bg-violet-50/60"
+          >
             {logoUrl ? (
               <img src={logoUrl} alt="לוגו המותג" className="h-full w-full object-contain p-2" />
             ) : (
-              <div className="flex flex-col items-center gap-1 text-slate-400">
+              <div className="flex flex-col items-center gap-1 text-violet-500">
                 <ImagePlus className="h-6 w-6" />
-                <span className="text-[11px] font-black">אין לוגו</span>
+                <span className="text-[11px] font-black">העלאה</span>
               </div>
             )}
-          </div>
+          </label>
           <div className="min-w-0 flex-1 space-y-3">
             <div className="flex flex-wrap gap-2">
-              <PartnerFileButton accept={LOGO_ACCEPT} disabled={uploadingLogo} onFile={onLogo}>
+              <PartnerFileButton
+                inputId="partner-logo-file"
+                accept={LOGO_ACCEPT}
+                disabled={uploadingLogo}
+                onFile={onLogo}
+              >
                 {uploadingLogo ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin" />
