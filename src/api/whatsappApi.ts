@@ -146,6 +146,7 @@ export async function startWhatsAppVoiceVerification(
     phoneNumberId?: string;
     metaBusinessId?: string;
     metaDisplayPhoneNumber?: string;
+    telnyxDid?: string;
   } = {}
 ) {
   const { data } = await API.post("/whatsapp/voice-verification/start", {

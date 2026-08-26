@@ -15,7 +15,10 @@ describe("embeddedSignupVoiceGate", () => {
     ).toBe("VERIFICATION_DID_MISSING");
   });
 
-  it("aborts Embedded Signup when the business has no verification DID", () => {
+  it("aborts Embedded Signup when the entered phone is missing", () => {
+    expect(shouldAbortEmbeddedSignupForVoiceError("ENTERED_PHONE_REQUIRED")).toBe(
+      true
+    );
     expect(shouldAbortEmbeddedSignupForVoiceError("VERIFICATION_DID_MISSING")).toBe(
       true
     );

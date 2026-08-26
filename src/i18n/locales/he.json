@@ -5337,6 +5337,9 @@
       "managedHostBody": "המספר המוצג הוא החיבור המרכזי של הפלטפורמה. עסק לקוח שמחבר מספר משלו עושה זאת מההגדרות של אותו עסק — לא מכאן.",
       "managedHostNoDisconnect": "לא ניתן לנתק את החיבור המרכזי המנוהל ממסך העסק. ניהול מתבצע ב־Admin → WhatsApp Managed. עסק שרוצה מספר פרטי מחבר אותו מההגדרות של העסק שלו.",
       "managedHostNoConnectOwn": "בעסק המארח של Managed אי אפשר להחליף את המספר המרכזי ב־Embedded Signup. כדי לחבר מספר פרטי — היכנסו להגדרות WhatsApp של העסק הרצוי.",
+      "enteredPhoneLabel": "המספר שתזינו לאימות ב-Meta",
+      "enteredPhoneHint": "הזינו בדיוק את המספר שתקלידו ב-Embedded Signup. BizUply שומרת אותו על ה-session של העסק — בלי לבחור מספר אוטומטית.",
+      "enteredPhoneRequired": "יש להזין את מספר הטלפון שתאמתו ב-Meta לפני החיבור.",
       "verificationDidMissing": "אין מספר Telnyx לאימות קולי לעסק הזה. אי אפשר להמשיך בחיבור עד שממפים Verification DID."
     },
     "errors": {
