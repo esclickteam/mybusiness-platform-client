@@ -124,9 +124,11 @@ export default function PartnerClientDossier() {
     try {
       const paidDeal = deals.find(
         (deal) =>
-          deal.needsAttention ||
-          deal.welcomeNeedsResend ||
-          (deal.paymentStatus === "paid" && deal.activationStatus !== "active")
+          deal.status !== "reversed" &&
+          deal.paymentStatus !== "refunded" &&
+          (deal.needsAttention ||
+            deal.welcomeNeedsResend ||
+            (deal.paymentStatus === "paid" && deal.activationStatus !== "active"))
       );
       if (paidDeal?._id) {
         await retryPartnerDealActivation(paidDeal._id);
@@ -184,8 +186,10 @@ export default function PartnerClientDossier() {
   const dueTotal = wholesaleTotal + bizuplyShare;
   const attentionDeal = deals.find(
     (deal) =>
-      deal.needsAttention ||
-      (deal.paymentStatus === "paid" && deal.activationStatus !== "active")
+      deal.status !== "reversed" &&
+      deal.paymentStatus !== "refunded" &&
+      (deal.needsAttention ||
+        (deal.paymentStatus === "paid" && deal.activationStatus !== "active"))
   );
   const welcomeDeal = deals.find((deal) => deal.welcomeNeedsResend && !attentionDeal);
   const activationInFlight = Boolean(attentionDeal?.activationInFlight);

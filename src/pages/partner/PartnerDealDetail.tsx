@@ -78,6 +78,7 @@ export default function PartnerDealDetail() {
     }
 
     function isPaid(row?: PartnerDeal | null) {
+      if (!row || row.status === "reversed" || row.paymentStatus === "refunded") return false;
       return row?.paymentStatus === "paid" || row?.status === "paid";
     }
 
@@ -139,7 +140,10 @@ export default function PartnerDealDetail() {
   }
 
   const totals = deal.totals || ({} as PartnerDeal["totals"]);
-  const isPaid = deal.paymentStatus === "paid" || deal.status === "paid";
+  const isPaid =
+    deal.status !== "reversed" &&
+    deal.paymentStatus !== "refunded" &&
+    (deal.paymentStatus === "paid" || deal.status === "paid");
   const canceled = params.get("canceled") === "1";
   const publicUrl = absoluteCustomerUrl(deal.publicUrl || `/partner/deals/${deal._id}`);
   const welcomeNeedsResend = Boolean(

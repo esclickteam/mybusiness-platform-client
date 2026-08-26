@@ -442,6 +442,8 @@ test("paid deal copy does not treat payment as withdrawable commission", () => {
   assert.equal(src.includes("מאשרים את התשלום מול Stripe"), true);
   assert.equal(src.includes("paidReturn"), true);
   assert.equal(src.includes("activationSettled"), true);
+  assert.equal(src.includes('row.status === "reversed"'), true);
+  assert.equal(src.includes('row.paymentStatus === "refunded"'), true);
   assert.equal((src.match(/<div\b/g) || []).length, (src.match(/<\/div>/g) || []).length);
   const api = readFileSync(join(ROOT, "lib/partnerApi.ts"), "utf8");
   const start = api.indexOf("export async function startPartnerDealCheckout");
@@ -505,6 +507,8 @@ test("CRM dossier retries paid-deal activation without using Direct CRM", () => 
   assert.equal(src.includes("partnerErrorCode"), true);
   assert.equal(src.includes("שליחת פרטי כניסה מחדש"), true);
   assert.equal(src.includes("paymentStatus === \"paid\""), true);
+  assert.equal(src.includes('deal.status !== "reversed"'), true);
+  assert.equal(src.includes('deal.paymentStatus !== "refunded"'), true);
   assert.equal(src.includes("CRMClient"), false);
   assert.equal(src.includes("/api/crm"), false);
 });
