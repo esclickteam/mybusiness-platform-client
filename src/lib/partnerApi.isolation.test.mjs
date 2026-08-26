@@ -421,6 +421,10 @@ test("paid deal copy does not treat payment as withdrawable commission", () => {
   assert.equal(src.includes("קישור לחשבון הקיים"), true);
   assert.equal(src.includes("existingBusinessClaimable"), true);
   assert.equal(src.includes("existingBusinessId"), true);
+  assert.equal(src.includes("שליחת פרטי כניסה מחדש"), true);
+  assert.equal(src.includes("temporaryPasswordIssuedAt"), true);
+  assert.equal(src.includes("welcomeNeedsResend"), true);
+  assert.equal(src.includes("hideRawBusinessId"), true);
   assert.equal(src.includes("abandonPartnerDeal"), true);
   assert.equal(src.includes("ביטול עסקה שלא שולמה"), true);
   assert.equal(src.includes("מאשרים את התשלום מול Stripe"), true);

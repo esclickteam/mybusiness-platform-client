@@ -124,6 +124,14 @@ export default function PartnerDealDetail() {
   const isPaid = deal.paymentStatus === "paid" || deal.status === "paid";
   const canceled = params.get("canceled") === "1";
   const publicUrl = absoluteCustomerUrl(deal.publicUrl || `/partner/deals/${deal._id}`);
+  const welcomeNeedsResend = Boolean(
+    isPaid &&
+      deal.clientProvisioning?.temporaryPasswordIssuedAt &&
+      !deal.clientProvisioning?.welcomeEmailSent
+  );
+  const hideRawBusinessId =
+    deal.clientProvisioning?.status === "email_exists" &&
+    !deal.clientProvisioning?.existingBusinessClaimable;
 
   async function payBizuply() {
     if (!dealId) return;
@@ -197,12 +205,41 @@ export default function PartnerDealDetail() {
               לא נפתח משתמש חדש — האימייל כבר קיים במערכת.
               {deal.clientProvisioning.existingBusinessClaimable
                 ? " אפשר לקשר את העסקה לחשבון הקיים בלי לפתוח משתמש חדש."
-                : " אפשר לשנות את האימייל כדי לפתוח חשבון חדש, או לקשר לעסק שכבר בניהולכם."}
+                : " אפשר לשנות את האימייל כדי לפתוח חשבון חדש."}
             </p>
           ) : null}
           {deal.clientProvisioning?.status === "failed" ? (
             <p>פתיחת המשתמש נכשלה{deal.clientProvisioning.error ? `: ${deal.clientProvisioning.error}` : ""}.</p>
           ) : null}
+        </div>
+      ) : null}
+      {welcomeNeedsResend ? (
+        <div className="space-y-3 rounded-3xl border border-amber-200 bg-amber-50 p-5">
+          <p className="font-black text-amber-900">סיסמת הכניסה הזמנית לא נשלחה ללקוח.</p>
+          <p className="text-sm font-bold text-amber-800">
+            ההפעלה הצליחה, אבל המייל נכשל. אפשר לשלוח סיסמה חד-פעמית חדשה בלי לפתוח משתמש נוסף.
+          </p>
+          <button
+            type="button"
+            disabled={Boolean(recovering)}
+            onClick={async () => {
+              if (!dealId) return;
+              setRecovering("welcome");
+              try {
+                const data = await retryPartnerDealActivation(dealId);
+                setDeal(data.deal);
+              } catch (err: unknown) {
+                setError(partnerApiError(err, "שליחת פרטי הכניסה נכשלה"));
+              } finally {
+                setRecovering("");
+              }
+            }}
+            className="rounded-2xl bg-violet-700 px-4 py-2 text-sm font-black text-white disabled:opacity-60"
+          >
+            {recovering === "welcome" ? "שולח..." : "שליחת פרטי כניסה מחדש"}
+          </button>
+        </div>
+      ) : null}
         </div>
       ) : null}
       {canceled ? (
@@ -347,6 +384,8 @@ export default function PartnerDealDetail() {
                 שמירת אימייל
               </button>
             </div>
+            </div>
+            {hideRawBusinessId ? null : (
             <div className="flex gap-2">
               <input
                 value={businessId}
@@ -374,6 +413,7 @@ export default function PartnerDealDetail() {
                 קישור לעסק קיים
               </button>
             </div>
+            )}
           </div>
         </div>
       ) : null}
