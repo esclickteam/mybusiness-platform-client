@@ -498,6 +498,20 @@ export async function uploadPartnerLogo(file: File, kind: "logo" | "favicon" = "
   return data;
 }
 
+export type PartnerSubdomainCheck = {
+  value: string;
+  available: boolean;
+  code: string;
+  message: string;
+};
+
+export async function checkPartnerSubdomain(subdomain: string) {
+  const { data } = await API.get("/partner/branding/subdomain", {
+    params: { value: subdomain },
+  });
+  return data as PartnerSubdomainCheck;
+}
+
 export async function fetchPartnerReferrals() {
   const { data } = await API.get("/partner/referrals");
   return data;
