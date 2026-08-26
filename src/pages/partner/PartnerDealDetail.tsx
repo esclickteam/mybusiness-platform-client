@@ -147,10 +147,10 @@ export default function PartnerDealDetail() {
   const canceled = params.get("canceled") === "1";
   const publicUrl = absoluteCustomerUrl(deal.publicUrl || `/partner/deals/${deal._id}`);
   const welcomeNeedsResend = Boolean(
-    (deal as any).welcomeNeedsResend ||
-      (isPaid &&
-        deal.clientProvisioning?.temporaryPasswordIssuedAt &&
-        !deal.clientProvisioning?.welcomeEmailSent)
+    isPaid &&
+      ((deal as any).welcomeNeedsResend ||
+        (deal.clientProvisioning?.temporaryPasswordIssuedAt &&
+          !deal.clientProvisioning?.welcomeEmailSent))
   );
   const welcomeSendInFlight = Boolean((deal as any).welcomeSendInFlight);
   const activationInFlight = Boolean((deal as any).activationInFlight);

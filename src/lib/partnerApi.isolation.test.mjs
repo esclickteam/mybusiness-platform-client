@@ -444,6 +444,7 @@ test("paid deal copy does not treat payment as withdrawable commission", () => {
   assert.equal(src.includes("activationSettled"), true);
   assert.equal(src.includes('row.status === "reversed"'), true);
   assert.equal(src.includes('row.paymentStatus === "refunded"'), true);
+  assert.equal(src.includes("isPaid &&"), true);
   assert.equal((src.match(/<div\b/g) || []).length, (src.match(/<\/div>/g) || []).length);
   const api = readFileSync(join(ROOT, "lib/partnerApi.ts"), "utf8");
   const start = api.indexOf("export async function startPartnerDealCheckout");

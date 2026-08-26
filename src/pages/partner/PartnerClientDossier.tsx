@@ -191,7 +191,13 @@ export default function PartnerClientDossier() {
       (deal.needsAttention ||
         (deal.paymentStatus === "paid" && deal.activationStatus !== "active"))
   );
-  const welcomeDeal = deals.find((deal) => deal.welcomeNeedsResend && !attentionDeal);
+  const welcomeDeal = deals.find(
+    (deal) =>
+      deal.status !== "reversed" &&
+      deal.paymentStatus !== "refunded" &&
+      deal.welcomeNeedsResend &&
+      !attentionDeal
+  );
   const activationInFlight = Boolean(attentionDeal?.activationInFlight);
 
   return (
