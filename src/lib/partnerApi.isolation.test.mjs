@@ -494,6 +494,7 @@ test("CRM dossier retries paid-deal activation without using Direct CRM", () => 
   assert.equal(src.includes("/partner/dashboard/deals/"), true);
   assert.equal(src.includes("טיפול באימייל / עסק קיים"), true);
   assert.equal(src.includes("הפעלת חשבון אחרי תשלום"), true);
+  assert.equal(src.includes("activationInFlight"), true);
   assert.equal(src.includes("welcomeNeedsResend"), true);
   assert.equal(src.includes("שליחת פרטי כניסה מחדש"), true);
   assert.equal(src.includes("paymentStatus === \"paid\""), true);

@@ -178,6 +178,7 @@ export default function PartnerClientDossier() {
       (deal.paymentStatus === "paid" && deal.activationStatus !== "active")
   );
   const welcomeDeal = deals.find((deal) => deal.welcomeNeedsResend && !attentionDeal);
+  const activationInFlight = Boolean(attentionDeal?.activationInFlight);
 
   return (
     <div className="space-y-5">
@@ -199,11 +200,11 @@ export default function PartnerClientDossier() {
               <>
                 <button
                   type="button"
-                  disabled={activating}
+                  disabled={activating || activationInFlight}
                   onClick={activateClient}
                   className="inline-flex items-center gap-2 rounded-2xl bg-amber-600 px-4 py-2.5 text-sm font-black text-white"
                 >
-                  {activating ? "מפעיל..." : "הפעלת חשבון אחרי תשלום"}
+                  {activating || activationInFlight ? "מפעיל..." : "הפעלת חשבון אחרי תשלום"}
                 </button>
                 <Link
                   to={`/partner/dashboard/deals/${attentionDeal._id}`}
