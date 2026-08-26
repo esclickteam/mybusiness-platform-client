@@ -67,7 +67,11 @@ export default function AdminPartnerAttentionDeals() {
                       : "—"}
                   </td>
                   <td className="px-3 py-3">{partnerStatusLabel(row.commissionStatus || row.pipeline?.commissionStatus)}</td>
-                  <td className="px-3 py-3 text-xs">{row.activationErrorMessage || row.badge || "—"}</td>
+                  <td className="px-3 py-3 text-xs">
+                    {row.pipeline?.welcomeNeedsResend && !row.pipeline?.needsAttention
+                      ? "סיסמת הכניסה לא נשלחה"
+                      : row.activationErrorMessage || row.badge || "—"}
+                  </td>
                   <td className="px-3 py-3">
                     <div className="flex flex-col gap-1">
                       <button

@@ -125,9 +125,10 @@ export default function PartnerDealDetail() {
   const canceled = params.get("canceled") === "1";
   const publicUrl = absoluteCustomerUrl(deal.publicUrl || `/partner/deals/${deal._id}`);
   const welcomeNeedsResend = Boolean(
-    isPaid &&
-      deal.clientProvisioning?.temporaryPasswordIssuedAt &&
-      !deal.clientProvisioning?.welcomeEmailSent
+    (deal as any).welcomeNeedsResend ||
+      (isPaid &&
+        deal.clientProvisioning?.temporaryPasswordIssuedAt &&
+        !deal.clientProvisioning?.welcomeEmailSent)
   );
   const hideRawBusinessId =
     deal.clientProvisioning?.status === "email_exists" &&

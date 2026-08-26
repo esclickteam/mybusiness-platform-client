@@ -192,6 +192,7 @@ export type PartnerDeal = {
   salesSource?: string;
   pipelineStatus?: string;
   needsAttention?: boolean;
+  welcomeNeedsResend?: boolean;
   kind?: string;
   packageSku?: string;
   packageDisplayName?: string;

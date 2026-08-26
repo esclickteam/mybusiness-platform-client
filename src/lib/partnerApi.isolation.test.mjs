@@ -403,6 +403,8 @@ test("partner pipeline routes are registered in App", () => {
   const adminAttn = readFileSync(join(ROOT, "pages/admin/AdminPartnerAttentionDeals.tsx"), "utf8");
   assert.equal(adminAttn.includes("adminChangeDealEmail"), true);
   assert.equal(adminAttn.includes("שמירת אימייל"), true);
+  assert.equal(adminAttn.includes("welcomeNeedsResend"), true);
+  assert.equal(adminAttn.includes("סיסמת הכניסה לא נשלחה"), true);
 });
 
 test("partner CRM shows self-serve vs manual source column", () => {
@@ -454,6 +456,9 @@ test("referrals page lists 40-day pending rewards above the intake form", () => 
 test("dashboard surfaces paid-unactivated deals without changing home routing", () => {
   const src = readFileSync(join(ROOT, "pages/partner/PartnerDashboard.tsx"), "utf8");
   assert.equal(src.includes("attentionDeals"), true);
+  assert.equal(src.includes("welcomeNeedsResend"), true);
+  assert.equal(src.includes("שליחת פרטי כניסה"), true);
+  assert.equal(src.includes("דורשות טיפול"), true);
   assert.equal(src.includes("/partner/dashboard/deals/"), true);
   assert.equal(src.includes("data.referrals?.qualifying"), true);
   assert.equal(src.includes("/partner/dashboard/referrals"), true);
@@ -483,6 +488,8 @@ test("CRM dossier retries paid-deal activation without using Direct CRM", () => 
   assert.equal(src.includes("/partner/dashboard/deals/"), true);
   assert.equal(src.includes("טיפול באימייל / עסק קיים"), true);
   assert.equal(src.includes("הפעלת חשבון אחרי תשלום"), true);
+  assert.equal(src.includes("welcomeNeedsResend"), true);
+  assert.equal(src.includes("שליחת פרטי כניסה מחדש"), true);
   assert.equal(src.includes("paymentStatus === \"paid\""), true);
   assert.equal(src.includes("CRMClient"), false);
   assert.equal(src.includes("/api/crm"), false);

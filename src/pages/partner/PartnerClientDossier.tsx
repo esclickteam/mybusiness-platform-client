@@ -124,6 +124,7 @@ export default function PartnerClientDossier() {
       const paidDeal = deals.find(
         (deal) =>
           deal.needsAttention ||
+          deal.welcomeNeedsResend ||
           (deal.paymentStatus === "paid" && deal.activationStatus !== "active")
       );
       if (paidDeal?._id) {
@@ -176,6 +177,7 @@ export default function PartnerClientDossier() {
       deal.needsAttention ||
       (deal.paymentStatus === "paid" && deal.activationStatus !== "active")
   );
+  const welcomeDeal = deals.find((deal) => deal.welcomeNeedsResend && !attentionDeal);
 
   return (
     <div className="space-y-5">
@@ -208,6 +210,23 @@ export default function PartnerClientDossier() {
                   className="inline-flex items-center rounded-2xl border border-amber-300 bg-white px-4 py-2.5 text-sm font-black text-amber-900"
                 >
                   טיפול באימייל / עסק קיים
+                </Link>
+              </>
+            ) : welcomeDeal ? (
+              <>
+                <button
+                  type="button"
+                  disabled={activating}
+                  onClick={activateClient}
+                  className="inline-flex items-center gap-2 rounded-2xl bg-amber-600 px-4 py-2.5 text-sm font-black text-white"
+                >
+                  {activating ? "שולח..." : "שליחת פרטי כניסה מחדש"}
+                </button>
+                <Link
+                  to={`/partner/dashboard/deals/${welcomeDeal._id}`}
+                  className="inline-flex items-center rounded-2xl border border-amber-300 bg-white px-4 py-2.5 text-sm font-black text-amber-900"
+                >
+                  פתיחת העסקה
                 </Link>
               </>
             ) : null}
