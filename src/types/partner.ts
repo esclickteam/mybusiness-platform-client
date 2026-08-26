@@ -217,6 +217,10 @@ export type PartnerDeal = {
   clientProvisioning?: {
     status?: string;
     email?: string;
+    userId?: string | null;
+    existingUserId?: string | null;
+    existingBusinessId?: string | null;
+    existingBusinessClaimable?: boolean;
     welcomeEmailSent?: boolean;
     welcomeEmailSentAt?: string | null;
     temporaryPasswordIssuedAt?: string | null;

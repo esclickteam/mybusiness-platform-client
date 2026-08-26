@@ -193,7 +193,12 @@ export default function PartnerDealDetail() {
             <p>ללקוח כבר יש משתמש פעיל במערכת.</p>
           ) : null}
           {deal.clientProvisioning?.status === "email_exists" ? (
-            <p>לא נפתח משתמש חדש — האימייל כבר קיים במערכת.</p>
+            <p>
+              לא נפתח משתמש חדש — האימייל כבר קיים במערכת.
+              {deal.clientProvisioning.existingBusinessClaimable
+                ? " אפשר לקשר את העסקה לחשבון הקיים בלי לפתוח משתמש חדש."
+                : " אפשר לשנות את האימייל כדי לפתוח חשבון חדש, או לקשר לעסק שכבר בניהולכם."}
+            </p>
           ) : null}
           {deal.clientProvisioning?.status === "failed" ? (
             <p>פתיחת המשתמש נכשלה{deal.clientProvisioning.error ? `: ${deal.clientProvisioning.error}` : ""}.</p>
@@ -271,6 +276,30 @@ export default function PartnerDealDetail() {
           <p className="text-sm font-bold text-amber-800">
             {(deal as any).activationErrorMessage || "נדרש טיפול בהפעלת הלקוח"}
           </p>
+          {deal.clientProvisioning?.existingBusinessClaimable &&
+          deal.clientProvisioning?.existingBusinessId ? (
+            <button
+              type="button"
+              disabled={Boolean(recovering)}
+              onClick={async () => {
+                if (!dealId) return;
+                const existingId = String(deal.clientProvisioning?.existingBusinessId || "");
+                if (!existingId) return;
+                setRecovering("claim");
+                try {
+                  const data = await linkPartnerDealBusiness(dealId, existingId);
+                  setDeal(data.deal);
+                } catch (err: unknown) {
+                  setError(partnerApiError(err, "לא ניתן לקשר לחשבון הקיים"));
+                } finally {
+                  setRecovering("");
+                }
+              }}
+              className="rounded-2xl bg-violet-700 py-2 text-sm font-black text-white disabled:opacity-60"
+            >
+              {recovering === "claim" ? "מקשר..." : "קישור לחשבון הקיים"}
+            </button>
+          ) : null}
           <div className="grid gap-3 md:grid-cols-3">
             <button
               type="button"
