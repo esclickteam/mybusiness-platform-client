@@ -35,7 +35,10 @@ import {
 import MetaBillingAccountCards from "../../../../components/meta/MetaBillingAccountCards";
 import { loadFacebookSdk } from "../../../../utils/loadFacebookSdk";
 import { getApiErrorMessage } from "../../../../utils/apiErrorMessage";
-import { shouldAbortEmbeddedSignupForVoiceError } from "./embeddedSignupVoiceGate";
+import {
+  shouldAbortEmbeddedSignupForVoiceError,
+  voiceVerificationErrorCode,
+} from "./embeddedSignupVoiceGate";
 import {
   btnPrimary,
   btnSecondary,
@@ -355,7 +358,7 @@ export default function WhatsAppSettingsTab() {
           void keepEmbeddedSignupVoiceSession().catch(() => {});
         }, 20000);
       } catch (voiceError: any) {
-        const code = String(voiceError?.response?.data?.code || "");
+        const code = voiceVerificationErrorCode(voiceError);
         console.warn("[whatsapp] Voice session start before ES failed", {
           code,
           message: voiceError?.response?.data?.error || voiceError?.message,
