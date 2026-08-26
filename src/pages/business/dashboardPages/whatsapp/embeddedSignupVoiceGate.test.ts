@@ -1,6 +1,20 @@
-import { shouldAbortEmbeddedSignupForVoiceError } from "./embeddedSignupVoiceGate";
+import {
+  shouldAbortEmbeddedSignupForVoiceError,
+  voiceVerificationErrorCode,
+} from "./embeddedSignupVoiceGate";
 
 describe("embeddedSignupVoiceGate", () => {
+  it("reads interceptor-shaped error.code when response.data is stripped", () => {
+    expect(
+      voiceVerificationErrorCode({ code: "VERIFICATION_DID_MISSING" })
+    ).toBe("VERIFICATION_DID_MISSING");
+    expect(
+      voiceVerificationErrorCode({
+        response: { data: { code: "VERIFICATION_DID_MISSING" } },
+      })
+    ).toBe("VERIFICATION_DID_MISSING");
+  });
+
   it("aborts Embedded Signup when the business has no verification DID", () => {
     expect(shouldAbortEmbeddedSignupForVoiceError("VERIFICATION_DID_MISSING")).toBe(
       true
