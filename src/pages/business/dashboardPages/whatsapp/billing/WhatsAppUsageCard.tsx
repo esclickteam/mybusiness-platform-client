@@ -64,7 +64,7 @@ export default function WhatsAppUsageCard({
   if (error && !usage) {
     return (
       <div className="wa-billing-card wa-billing-card--error" role="status">
-        <p>לא הצלחנו לטעון את נתוני חיוב WhatsApp כרגע.</p>
+        <p>לא הצלחנו לטעון את נתוני חיוב וואטסאפ כרגע.</p>
         <button type="button" className="wa-billing-btn wa-billing-btn--secondary" onClick={onRetry}>
           <RefreshCw size={14} />
           נסו שוב
@@ -106,13 +106,13 @@ export default function WhatsAppUsageCard({
     return (
       <div className="wa-billing-card wa-billing-card--setup" dir="rtl">
         <div className="wa-billing-card__body">
-          <strong>WhatsApp</strong>
+          <strong>וואטסאפ</strong>
           <p className="wa-billing-card__plan">חיוב לפי שימוש</p>
           <p className="wa-billing-card__counts">
             {formatHeIls(unitPrice)} להודעה
           </p>
           <p className="wa-billing-card__status" role="status">
-            חיוב WhatsApp לא הוגדר
+            חיוב וואטסאפ לא הוגדר
           </p>
         </div>
         <button
@@ -120,7 +120,7 @@ export default function WhatsAppUsageCard({
           className="wa-billing-btn wa-billing-btn--primary"
           onClick={onOpenSetup}
         >
-          הגדרת חיוב WhatsApp
+          הגדרת חיוב וואטסאפ
         </button>
       </div>
     );
@@ -136,7 +136,7 @@ export default function WhatsAppUsageCard({
     <div className={`wa-billing-card ${cardMod}`.trim()} dir="rtl">
       {error ? (
         <div className="wa-billing-card__inline-error" role="status">
-          <span>לא הצלחנו לטעון את נתוני חיוב WhatsApp כרגע.</span>
+          <span>לא הצלחנו לטעון את נתוני חיוב וואטסאפ כרגע.</span>
           <button
             type="button"
             className="wa-billing-btn wa-billing-btn--secondary"
@@ -157,10 +157,10 @@ export default function WhatsAppUsageCard({
 
       <div className="wa-billing-card__header">
         <div>
-          <h3 className="wa-billing-card__title">WhatsApp</h3>
+          <h3 className="wa-billing-card__title">וואטסאפ</h3>
           <p className="wa-billing-card__plan">חיוב לפי שימוש</p>
           <p className="wa-billing-card__status wa-billing-card__status--active">
-            חיוב WhatsApp פעיל
+            חיוב וואטסאפ פעיל
           </p>
         </div>
         <button
@@ -187,14 +187,14 @@ export default function WhatsAppUsageCard({
       </div>
 
       <p className="wa-billing-card__note">
-        אין חבילות WhatsApp — מחויבים רק לפי הודעות שנשלחו בפועל.
+        אין חבילות וואטסאפ — מחויבים רק לפי הודעות שנשלחו בפועל.
       </p>
 
       {inPaymentGrace ? (
         <div className="wa-billing-alert wa-billing-alert--warn" role="status">
           <AlertTriangle size={16} aria-hidden />
           <div>
-            <strong>יש בעיה בתשלום עבור חיוב WhatsApp</strong>
+            <strong>יש בעיה בתשלום עבור חיוב וואטסאפ</strong>
             <p>
               השליחה תמשיך זמנית. מומלץ להסדיר את התשלום כדי למנוע עצירה.
               {graceLabel ? ` עד ${graceLabel}.` : ""}
@@ -214,7 +214,7 @@ export default function WhatsAppUsageCard({
         <div className="wa-billing-alert wa-billing-alert--blocked" role="alert">
           <AlertTriangle size={16} aria-hidden />
           <div>
-            <strong>שליחת WhatsApp חסומה עקב מצב החיוב</strong>
+            <strong>שליחת וואטסאפ חסומה עקב מצב החיוב</strong>
             <p>יש להסדיר אמצעי תשלום כדי להמשיך לשלוח הודעות.</p>
             <button
               type="button"
@@ -222,7 +222,7 @@ export default function WhatsAppUsageCard({
               onClick={isSetupReason(usage.blockReason) ? onOpenSetup : onOpenManage}
             >
               {isSetupReason(usage.blockReason)
-                ? "הגדרת חיוב WhatsApp"
+                ? "הגדרת חיוב וואטסאפ"
                 : "הסדרת תשלום"}
             </button>
           </div>

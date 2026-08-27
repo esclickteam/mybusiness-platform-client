@@ -1,487 +1,538 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { toast } from "react-toastify";
-import {
-  Bell,
-  Bold,
-  Check,
-  ChevronDown,
-  Copy,
-  ExternalLink,
-  FileText,
-  Globe,
-  Image as ImageIcon,
-  Italic,
-  KeyRound,
-  Loader2,
-  Megaphone,
-  MessageSquare,
-  Phone,
-  Plus,
-  Strikethrough,
-  Video,
-  X,
-} from "lucide-react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Check, ChevronDown, Loader2, Plus, X } from "lucide-react";
+import { toast } from "sonner";
 import {
   saveWhatsAppTemplateDraft,
   submitWhatsAppTemplateToMeta,
-  type WhatsAppHeaderType,
   type WhatsAppTemplateButton,
   type WhatsAppTemplateSubmitPayload,
-} from "../../../../api/whatsappApi";
+} from "@/api/whatsappApi";
 import "./whatsappMetaTemplateWizard.css";
 
-type Props = {
-  businessId: string;
-  onClose: () => void;
-  onSubmitted: () => void;
-};
-
 type MetaCategory = "MARKETING" | "UTILITY" | "AUTHENTICATION";
+type HeaderType = "none" | "text" | "image" | "video" | "document";
+type TemplateKind = "default" | "catalog" | "flows" | "call_permission" | "otp";
 type Step = 0 | 1 | 2;
+type ButtonType = WhatsAppTemplateButton["type"];
 
 type FormState = {
-  metaCategory: MetaCategory;
-  marketingType: "default" | "catalog" | "flows" | "call_permission";
   name: string;
   language: string;
-  variableType: "number" | "name";
-  headerType: WhatsAppHeaderType;
+  metaCategory: MetaCategory;
+  templateKind: TemplateKind;
+  headerType: HeaderType;
   headerText: string;
-  headerMediaUrl: string;
+  headerHandle: string;
   body: string;
   footer: string;
-  exampleValues: Record<string, string>;
+  securityRecommendation: boolean;
   buttons: WhatsAppTemplateButton[];
+  exampleValues: Record<string, string>;
 };
 
+const NAME_MAX = 512;
+const HEADER_TEXT_MAX = 60;
 const BODY_MAX = 1024;
-const HEADER_MAX = 60;
 const FOOTER_MAX = 60;
 const BUTTON_TEXT_MAX = 25;
 const URL_MAX = 2000;
+const MAX_BUTTONS = 10;
+const OTP_BODY_DEFAULT = "{{1}} הוא קוד האימות שלכם.";
+const SECURITY_FOOTER = "למען האבטחה, אל תשתפו את הקוד הזה.";
 
-const LANGUAGES: Array<{ code: string; label: string }> = [
+const LANGUAGES = [
   { code: "he", label: "עברית" },
-  { code: "en_US", label: "אנגלית (ארה״ב)" },
-  { code: "en_GB", label: "אנגלית (בריטניה)" },
   { code: "en", label: "אנגלית" },
   { code: "ar", label: "ערבית" },
-  { code: "fr", label: "צרפתית" },
   { code: "es", label: "ספרדית" },
-  { code: "es_ES", label: "ספרדית (ספרד)" },
-  { code: "es_MX", label: "ספרדית (מקסיקו)" },
+  { code: "fr", label: "צרפתית" },
   { code: "pt_BR", label: "פורטוגזית (ברזיל)" },
-  { code: "pt_PT", label: "פורטוגזית (פורטוגל)" },
-  { code: "de", label: "גרמנית" },
-  { code: "it", label: "איטלקית" },
-  { code: "ru", label: "רוסית" },
-  { code: "tr", label: "טורקית" },
-  { code: "hi", label: "הינדי" },
-  { code: "id", label: "אינדונזית" },
+] as const;
+
+const CATEGORIES: Array<{
+  value: MetaCategory;
+  title: string;
+  description: string;
+}> = [
+  {
+    value: "MARKETING",
+    title: "שיווק",
+    description:
+      "מבצעים, עדכוני מוצרים והודעות שיווקיות. נשלחות רק ללקוחות שהסכימו לקבל אותן.",
+  },
+  {
+    value: "UTILITY",
+    title: "שירות ציבורי",
+    description:
+      "עדכוני הזמנות, תזכורות ותגובות לבקשות של הלקוח. לא מיועדות לקידום מכירות.",
+  },
+  {
+    value: "AUTHENTICATION",
+    title: "אימות",
+    description: "קוד חד-פעמי לכניסה, אימות זהות או אישור פעולה.",
+  },
 ];
 
-const emptyForm: FormState = {
-  metaCategory: "MARKETING",
-  marketingType: "default",
-  name: "",
-  language: "he",
-  variableType: "number",
-  headerType: "none",
-  headerText: "",
-  headerMediaUrl: "",
-  body: "",
-  footer: "",
-  exampleValues: {},
-  buttons: [],
+const SUBTYPES: Record<
+  MetaCategory,
+  Array<{ value: TemplateKind; title: string; description: string }>
+> = {
+  MARKETING: [
+    {
+      value: "default",
+      title: "ברירת מחדל",
+      description: "תבנית שיווקית רגילה עם כותרת, גוף, כותרת תחתונה ולחצנים.",
+    },
+    {
+      value: "catalog",
+      title: "קטלוג",
+      description: "הודעה שמציגה פריטים מהקטלוג של העסק בוואטסאפ.",
+    },
+    {
+      value: "flows",
+      title: "תהליכים",
+      description: "הודעה שפותחת תהליך איסוף פרטים או פעולה בתוך וואטסאפ.",
+    },
+    {
+      value: "call_permission",
+      title: "בקשה להרשאות שיחה",
+      description: "בקשה מהלקוח לאשר שיחות עתידיות מהעסק.",
+    },
+  ],
+  UTILITY: [
+    {
+      value: "default",
+      title: "ברירת מחדל",
+      description: "תבנית שירות רגילה עם כותרת, גוף, כותרת תחתונה ולחצנים.",
+    },
+    {
+      value: "flows",
+      title: "תהליכים",
+      description: "תהליך שירות לאיסוף פרטים או השלמת פעולה.",
+    },
+    {
+      value: "call_permission",
+      title: "בקשה להרשאות שיחה",
+      description: "בקשת הרשאה לשיחה בהקשר של שירות קיים.",
+    },
+  ],
+  AUTHENTICATION: [
+    {
+      value: "otp",
+      title: "קוד אימות חד-פעמי (OTP)",
+      description: "שליחת קוד חד-פעמי לאימות זהות. זה סוג האימות הנתמך כרגע.",
+    },
+  ],
 };
 
-const STEPS = ["הגדרת תבנית", "עריכת תבנית", "שליחה לבדיקה"] as const;
-
-const BUTTON_MENU: Array<{
-  type: WhatsAppTemplateButton["type"];
-  label: string;
-  icon: typeof Globe;
-}> = [
-  { type: "quick_reply", label: "בהתאמה אישית", icon: MessageSquare },
-  { type: "url", label: "ביקור באתר האינטרנט", icon: Globe },
-  { type: "phone_number", label: "התקשרות למספר הטלפון", icon: Phone },
-  { type: "copy_code", label: "העתקת קוד המבצע", icon: Copy },
+const HEADER_OPTIONS: Array<{ value: HeaderType; label: string }> = [
+  { value: "none", label: "ללא" },
+  { value: "text", label: "טקסט" },
+  { value: "image", label: "תמונה" },
+  { value: "video", label: "וידאו" },
+  { value: "document", label: "מסמך" },
 ];
 
-function extractVars(body: string, variableType: "number" | "name") {
-  const re =
-    variableType === "name"
-      ? /\{\{\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*\}\}/g
-      : /\{\{\s*(\d+)\s*\}\}/g;
-  const matches = Array.from(String(body).matchAll(re));
-  const seen = new Set<string>();
-  const vars: string[] = [];
-  for (const match of matches) {
-    const key = match[1];
-    if (!key || seen.has(key)) continue;
-    seen.add(key);
-    vars.push(key);
-  }
-  if (variableType === "number") {
-    return vars.sort((a, b) => Number(a) - Number(b));
-  }
-  return vars;
+const BUTTON_MENU: Array<{
+  type: ButtonType;
+  title: string;
+  description: string;
+}> = [
+  {
+    type: "quick_reply",
+    title: "תשובה מהירה / בהתאמה אישית",
+    description: "הלקוח שולח תשובה קצרה בלחיצה אחת.",
+  },
+  {
+    type: "url",
+    title: "ביקור באתר",
+    description: "פותח כתובת אתר סטטית או דינמית.",
+  },
+  {
+    type: "phone_number",
+    title: "התקשרות למספר טלפון",
+    description: "מתקשר למספר שהוגדר מראש.",
+  },
+  {
+    type: "copy_code",
+    title: "העתקת קוד",
+    description: "מעתיק קוד מבצע או קוד אימות ללוח.",
+  },
+];
+
+const STEPS = [
+  { title: "הגדרת תבנית", hint: "קטגוריה ותת-קטגוריה" },
+  { title: "עריכת תבנית", hint: "שם, שפה ותוכן" },
+  { title: "שליחה לבדיקה", hint: "סקירה לפני מטא" },
+] as const;
+
+const emptyForm = (): FormState => ({
+  name: "",
+  language: "he",
+  metaCategory: "MARKETING",
+  templateKind: "default",
+  headerType: "none",
+  headerText: "",
+  headerHandle: "",
+  body: "",
+  footer: "",
+  securityRecommendation: false,
+  buttons: [],
+  exampleValues: {},
+});
+
+function extractVariables(text: string): string[] {
+  const matches = text.matchAll(/\{\{\s*([1-9]\d*)\s*\}\}/g);
+  return [...new Set([...matches].map((match) => match[1]))].sort(
+    (a, b) => Number(a) - Number(b)
+  );
 }
 
-function nextVarToken(body: string, variableType: "number" | "name") {
-  if (variableType === "name") {
-    const existing = extractVars(body, "name");
-    let i = 1;
-    let candidate = `var_${i}`;
-    while (existing.includes(candidate)) {
-      i += 1;
-      candidate = `var_${i}`;
-    }
-    return `{{${candidate}}}`;
-  }
-  const nums = extractVars(body, "number").map(Number);
-  const next = (nums.length ? Math.max(...nums) : 0) + 1;
-  return `{{${next}}}`;
-}
-
-function normalizeName(raw: string) {
-  return raw
-    .toLowerCase()
-    .replace(/\s+/g, "_")
-    .replace(/[^a-z0-9_]/g, "")
-    .slice(0, 512);
+function nextVariableIndex(text: string): number {
+  const vars = extractVariables(text).map(Number);
+  return vars.length ? Math.max(...vars) + 1 : 1;
 }
 
 function wrapSelection(
-  textarea: HTMLTextAreaElement | null,
   value: string,
+  start: number,
+  end: number,
   before: string,
-  after: string,
-  onChange: (next: string) => void
-) {
-  if (!textarea) {
-    onChange(`${value}${before}${after}`.slice(0, BODY_MAX));
-    return;
-  }
-  const start = textarea.selectionStart ?? value.length;
-  const end = textarea.selectionEnd ?? value.length;
-  const selected = value.slice(start, end) || "טקסט";
-  const next = (
-    value.slice(0, start) +
-    before +
-    selected +
-    after +
-    value.slice(end)
-  ).slice(0, BODY_MAX);
-  onChange(next);
-  requestAnimationFrame(() => {
-    const pos = start + before.length + selected.length + after.length;
-    textarea.focus();
-    textarea.setSelectionRange(pos, pos);
-  });
+  after: string
+): string {
+  return `${value.slice(0, start)}${before}${value.slice(start, end) || "טקסט"}${after}${value.slice(end)}`;
 }
 
-function renderPreviewBody(body: string, samples: Record<string, string>) {
-  return String(body || "").replace(/\{\{\s*([a-zA-Z0-9_]+)\s*\}\}/g, (_, key) =>
-    samples[key] ? String(samples[key]) : `{{${key}}}`
+function categoryLabel(value: MetaCategory): string {
+  return CATEGORIES.find((item) => item.value === value)?.title || value;
+}
+
+function kindLabel(category: MetaCategory, kind: TemplateKind): string {
+  return (
+    SUBTYPES[category].find((item) => item.value === kind)?.title || kind
   );
 }
 
-function categoryLabel(value: MetaCategory) {
-  if (value === "MARKETING") return "שיווק";
-  if (value === "UTILITY") return "שירות";
-  return "אימות";
+function buttonTypeLabel(type: ButtonType): string {
+  return BUTTON_MENU.find((item) => item.type === type)?.title || type;
 }
 
-function buttonTypeLabel(type: WhatsAppTemplateButton["type"]) {
-  return BUTTON_MENU.find((item) => item.type === type)?.label || type;
+function allowedHeaderOptions(category: MetaCategory): HeaderType[] {
+  if (category === "AUTHENTICATION") return ["none"];
+  return ["none", "text", "image", "video", "document"];
 }
 
-function defaultButtonText(type: WhatsAppTemplateButton["type"]) {
-  if (type === "copy_code") return "העתקת קוד";
-  if (type === "url") return "לחצו כאן";
-  if (type === "phone_number") return "התקשרו עכשיו";
-  return "לחצן";
+function allowedButtons(category: MetaCategory): ButtonType[] {
+  if (category === "AUTHENTICATION") return ["copy_code"];
+  return ["quick_reply", "url", "phone_number", "copy_code"];
 }
 
-export default function WhatsAppCreateTemplateWizard({
+export function WhatsAppCreateTemplateWizard({
   businessId,
   onClose,
   onSubmitted,
-}: Props) {
-  const bodyRef = useRef<HTMLTextAreaElement | null>(null);
-  const addMenuRef = useRef<HTMLDivElement | null>(null);
+}: {
+  businessId: string;
+  onClose: () => void;
+  onSubmitted: () => void;
+}) {
   const [step, setStep] = useState<Step>(0);
   const [form, setForm] = useState<FormState>(emptyForm);
   const [saving, setSaving] = useState(false);
-  const [error, setError] = useState("");
-  const [addMenuOpen, setAddMenuOpen] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [menuUp, setMenuUp] = useState(false);
+  const bodyRef = useRef<HTMLTextAreaElement>(null);
+  const addBtnRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   const variables = useMemo(
-    () => extractVars(form.body, form.variableType),
-    [form.body, form.variableType]
+    () => extractVariables(`${form.headerText}\n${form.body}`),
+    [form.headerText, form.body]
   );
+  const previewBody = useMemo(() => {
+    let text = form.body || "כאן יופיע גוף ההודעה.";
+    variables.forEach((variable) => {
+      text = text.replaceAll(
+        `{{${variable}}}`,
+        form.exampleValues[variable] || `{{${variable}}}`
+      );
+    });
+    return text;
+  }, [form.body, form.exampleValues, variables]);
 
   const nameValid = /^[a-z0-9_]+$/.test(form.name) && form.name.length > 0;
-  const samplesComplete = variables.every((v) =>
-    String(form.exampleValues[v] || "").trim()
-  );
-  const bodyValid = form.body.trim().length > 0;
-  const languageValid = Boolean(form.language);
-  const mediaOk =
-    form.headerType === "none" ||
-    form.headerType === "text" ||
-    Boolean(form.headerMediaUrl.trim());
-
-  const canGoEdit = nameValid && languageValid && Boolean(form.metaCategory);
+  const canGoEdit = Boolean(form.metaCategory && form.templateKind);
   const canGoReview =
-    canGoEdit &&
-    bodyValid &&
-    samplesComplete &&
-    mediaOk &&
-    !/^\{\{/.test(form.body.trim()) &&
-    !/\}\}$/.test(form.body.trim());
-
-  const previewBody = renderPreviewBody(form.body, form.exampleValues);
-  const previewHeader =
-    form.headerType === "text"
-      ? renderPreviewBody(form.headerText, form.exampleValues)
-      : "";
+    nameValid &&
+    Boolean(form.language) &&
+    Boolean(form.body.trim()) &&
+    (form.headerType !== "text" || Boolean(form.headerText.trim())) &&
+    (form.headerType === "none" ||
+      form.headerType === "text" ||
+      Boolean(form.headerHandle.trim()));
 
   useEffect(() => {
-    if (!addMenuOpen) return;
-    const onDown = (event: MouseEvent) => {
-      if (
-        addMenuRef.current &&
-        !addMenuRef.current.contains(event.target as Node)
-      ) {
-        setAddMenuOpen(false);
-      }
+    if (!menuOpen) return;
+    const place = () => {
+      const button = addBtnRef.current;
+      if (!button) return;
+      const rect = button.getBoundingClientRect();
+      const spaceBelow = window.innerHeight - rect.bottom;
+      const spaceAbove = rect.top;
+      setMenuUp(spaceBelow < 280 && spaceAbove > spaceBelow);
     };
-    document.addEventListener("mousedown", onDown);
-    return () => document.removeEventListener("mousedown", onDown);
-  }, [addMenuOpen]);
+    place();
+    window.addEventListener("resize", place);
+    window.addEventListener("scroll", place, true);
+    return () => {
+      window.removeEventListener("resize", place);
+      window.removeEventListener("scroll", place, true);
+    };
+  }, [menuOpen]);
 
-  const buildPayload = (): WhatsAppTemplateSubmitPayload => ({
-    name: form.name,
-    metaTemplateName: form.name,
-    language: form.language,
-    metaCategory: form.metaCategory,
-    category: form.metaCategory === "MARKETING" ? "promotion" : "custom",
-    variableType: form.variableType,
-    headerType: form.headerType,
-    headerText: form.headerText,
-    headerMediaUrl: form.headerMediaUrl,
-    body: form.body,
-    footer: form.footer,
-    exampleValues: form.exampleValues,
-    buttons: form.buttons,
-  });
+  useEffect(() => {
+    if (!menuOpen) return;
+    const onPointer = (event: MouseEvent) => {
+      const target = event.target as Node;
+      if (
+        menuRef.current?.contains(target) ||
+        addBtnRef.current?.contains(target)
+      ) {
+        return;
+      }
+      setMenuOpen(false);
+    };
+    document.addEventListener("mousedown", onPointer);
+    return () => document.removeEventListener("mousedown", onPointer);
+  }, [menuOpen]);
 
-  const insertVariable = () => {
-    const token = nextVarToken(form.body, form.variableType);
-    const textarea = bodyRef.current;
-    if (!textarea) {
-      setForm((prev) => ({
-        ...prev,
-        body: `${prev.body}${prev.body && !/\s$/.test(prev.body) ? " " : ""}${token}`.slice(
-          0,
-          BODY_MAX
-        ),
-      }));
-      return;
-    }
-    const start = textarea.selectionStart ?? form.body.length;
-    const end = textarea.selectionEnd ?? form.body.length;
-    const next = (
-      form.body.slice(0, start) +
-      token +
-      form.body.slice(end)
-    ).slice(0, BODY_MAX);
-    setForm((prev) => ({ ...prev, body: next }));
-    requestAnimationFrame(() => {
-      const pos = start + token.length;
-      textarea.focus();
-      textarea.setSelectionRange(pos, pos);
-    });
+  const update = <K extends keyof FormState>(key: K, value: FormState[K]) => {
+    setForm((prev) => ({ ...prev, [key]: value }));
   };
 
-  const addButton = (type: WhatsAppTemplateButton["type"]) => {
-    setAddMenuOpen(false);
-    setForm((prev) => {
-      if (prev.buttons.length >= 10) return prev;
-      return {
-        ...prev,
-        buttons: [
-          ...prev.buttons,
-          {
-            type,
-            text: defaultButtonText(type),
-            url: type === "url" ? "https://" : "",
-            urlType: "static",
-            exampleUrl: "",
-            phoneNumber: "",
-          },
-        ],
-      };
-    });
+  const selectCategory = (value: MetaCategory) => {
+    const firstKind = SUBTYPES[value][0]?.value || "default";
+    setForm((prev) => ({
+      ...prev,
+      metaCategory: value,
+      templateKind: firstKind,
+      headerType: value === "AUTHENTICATION" ? "none" : prev.headerType,
+      headerText: value === "AUTHENTICATION" ? "" : prev.headerText,
+      headerHandle: value === "AUTHENTICATION" ? "" : prev.headerHandle,
+      body:
+        value === "AUTHENTICATION" && !prev.body.trim()
+          ? OTP_BODY_DEFAULT
+          : prev.body,
+      footer:
+        value === "AUTHENTICATION" && prev.securityRecommendation
+          ? SECURITY_FOOTER
+          : prev.footer,
+      buttons:
+        value === "AUTHENTICATION"
+          ? prev.buttons.filter((button) => button.type === "copy_code")
+          : prev.buttons,
+    }));
+  };
+
+  const insertFormat = (before: string, after: string) => {
+    const el = bodyRef.current;
+    if (!el) return;
+    const start = el.selectionStart;
+    const end = el.selectionEnd;
+    update("body", wrapSelection(form.body, start, end, before, after));
+  };
+
+  const insertVariable = () => {
+    const index = nextVariableIndex(form.body);
+    const el = bodyRef.current;
+    if (!el) {
+      update("body", `${form.body}{{${index}}}`);
+      return;
+    }
+    const start = el.selectionStart;
+    update(
+      "body",
+      `${form.body.slice(0, start)}{{${index}}}${form.body.slice(start)}`
+    );
+  };
+
+  const addButton = (type: ButtonType) => {
+    if (form.buttons.length >= MAX_BUTTONS) return;
+    const next: WhatsAppTemplateButton = {
+      type,
+      text:
+        type === "url"
+          ? "ביקור באתר"
+          : type === "phone_number"
+            ? "התקשרות"
+            : type === "copy_code"
+              ? "העתקת קוד"
+              : "תשובה מהירה",
+      url: type === "url" ? "" : undefined,
+      urlType: type === "url" ? "static" : undefined,
+      phoneNumber: type === "phone_number" ? "" : undefined,
+      exampleUrl: type === "copy_code" ? "" : undefined,
+    };
+    update("buttons", [...form.buttons, next]);
+    setMenuOpen(false);
   };
 
   const updateButton = (
     index: number,
     patch: Partial<WhatsAppTemplateButton>
   ) => {
-    setForm((prev) => ({
-      ...prev,
-      buttons: prev.buttons.map((button, i) =>
+    update(
+      "buttons",
+      form.buttons.map((button, i) =>
         i === index ? { ...button, ...patch } : button
-      ),
-    }));
+      )
+    );
   };
 
+  const buildPayload = (): WhatsAppTemplateSubmitPayload => ({
+    name: form.name.trim(),
+    language: form.language,
+    metaCategory: form.metaCategory,
+    headerType: form.headerType,
+    headerText: form.headerType === "text" ? form.headerText : undefined,
+    headerMediaUrl:
+      form.headerType === "image" ||
+      form.headerType === "video" ||
+      form.headerType === "document"
+        ? form.headerHandle
+        : undefined,
+    body: form.body,
+    footer: form.footer || undefined,
+    buttons: form.buttons,
+    exampleValues: form.exampleValues,
+  });
+
   const handleSaveDraft = async () => {
+    setSaving(true);
+    setError(null);
     try {
-      setSaving(true);
-      setError("");
       await saveWhatsAppTemplateDraft(businessId, buildPayload());
       toast.success("הטיוטה נשמרה");
       onSubmitted();
       onClose();
-    } catch (err: any) {
-      const msg = err?.response?.data?.error || "שמירת הטיוטה נכשלה";
-      setError(msg);
-      toast.error(msg);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "שמירת הטיוטה נכשלה");
     } finally {
       setSaving(false);
     }
   };
 
   const handleSubmit = async () => {
+    setSaving(true);
+    setError(null);
     try {
-      setSaving(true);
-      setError("");
       const result = await submitWhatsAppTemplateToMeta(
         businessId,
         buildPayload()
       );
+      const rawStatus = String(result.meta?.status || "").toUpperCase();
+      const status =
+        rawStatus === "PENDING"
+          ? "ממתין"
+          : rawStatus === "APPROVED"
+            ? "מאושרת"
+            : rawStatus === "REJECTED"
+              ? "נדחתה"
+              : rawStatus === "DRAFT"
+                ? "טיוטה"
+                : result.meta?.status || "ממתין";
       toast.success(
-        `נשלחה לבדיקה במטא · סטטוס: ${result.meta?.status || "PENDING"}`
+        result.meta?.id
+          ? `התבנית נשלחה לבדיקה. הסטטוס: ${status}.`
+          : "התבנית נשמרה כטיוטה כי אין חיבור מטא פעיל."
       );
       onSubmitted();
       onClose();
-    } catch (err: any) {
-      const msg =
-        err?.response?.data?.error || "שליחת התבנית למטא נכשלה";
-      setError(msg);
-      toast.error(msg);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "שליחת התבנית נכשלה");
     } finally {
       setSaving(false);
     }
   };
 
-  const previewTime = new Date().toLocaleTimeString("he-IL", {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  const headerOptions = HEADER_OPTIONS.filter((option) =>
+    allowedHeaderOptions(form.metaCategory).includes(option.value)
+  );
+  const buttonMenu = BUTTON_MENU.filter((item) =>
+    allowedButtons(form.metaCategory).includes(item.type)
+  );
+  const subtypes = SUBTYPES[form.metaCategory];
 
   return (
-    <section className="wa-meta-wizard" dir="rtl">
-      <div className="wa-meta-wizard__header">
+    <section className="wa-meta-wizard" dir="rtl" aria-label="יצירת תבנית">
+      <header className="wa-meta-wizard__top">
         <div>
-          <h3 className="wa-meta-wizard__title">יצירת תבנית</h3>
-          <p className="wa-meta-wizard__subtitle">
-            אותו מבנה וזרימה כמו ב-WhatsApp Manager של Meta
-          </p>
+          <p className="wa-meta-kicker">תבניות הודעה</p>
+          <h3>יצירת תבנית</h3>
         </div>
-        <span className="wa-meta-wizard__badge">Meta Cloud API</span>
-      </div>
+        <div className="wa-meta-wizard__top-actions">
+          <span className="wa-meta-badge">ממשק מטא</span>
+          <button
+            type="button"
+            className="wa-meta-icon-btn"
+            onClick={onClose}
+            aria-label="סגירה"
+          >
+            <X className="h-4 w-4" />
+          </button>
+        </div>
+      </header>
 
-      <div className="wa-meta-wizard__stepper" role="list">
-        {STEPS.map((label, index) => {
-          const done = step > index;
-          const active = step === index;
+      <ol className="wa-meta-stepper">
+        {STEPS.map((item, index) => {
+          const state =
+            step === index ? "current" : step > index ? "done" : "todo";
           return (
-            <React.Fragment key={label}>
-              {index > 0 ? (
-                <span className="wa-meta-wizard__step-line" aria-hidden />
-              ) : null}
-              <div
-                role="listitem"
-                className={[
-                  "wa-meta-wizard__step",
-                  active ? "is-active" : "",
-                  done ? "is-done" : "",
-                ]
-                  .filter(Boolean)
-                  .join(" ")}
-              >
-                <span className="wa-meta-wizard__step-index">
-                  {done ? <Check className="h-3.5 w-3.5" /> : index + 1}
-                </span>
-                {label}
-              </div>
-            </React.Fragment>
+            <li key={item.title} className={`is-${state}`}>
+              <span className="wa-meta-stepper__num">
+                {state === "done" ? <Check className="h-3.5 w-3.5" /> : index + 1}
+              </span>
+              <span>
+                <strong>{item.title}</strong>
+                <em>{item.hint}</em>
+              </span>
+            </li>
           );
         })}
-      </div>
+      </ol>
 
       <div className="wa-meta-wizard__body" dir="ltr">
         <aside className="wa-meta-preview" dir="rtl">
-          <div className="wa-meta-preview__head">
-            <h4>תצוגה מקדימה של התבנית</h4>
-            <p>מתעדכנת בזמן אמת לפי השדות וערכי הדוגמה</p>
+          <div className="wa-meta-preview__chrome">
+            <strong>תצוגה מקדימה</strong>
+            <span>וואטסאפ · עסק</span>
           </div>
           <div className="wa-meta-preview__stage">
             <div className="wa-meta-bubble">
+              {form.headerType === "text" && form.headerText && (
+                <p className="wa-meta-bubble__header">{form.headerText}</p>
+              )}
               {form.headerType === "image" && (
-                <div className="wa-meta-bubble__media">
-                  {form.headerMediaUrl ? (
-                    <img src={form.headerMediaUrl} alt="" />
-                  ) : (
-                    <>
-                      <ImageIcon className="h-6 w-6" />
-                      תמונה
-                    </>
-                  )}
-                </div>
+                <div className="wa-meta-bubble__media">תמונה</div>
               )}
               {form.headerType === "video" && (
-                <div className="wa-meta-bubble__media">
-                  <Video className="h-6 w-6" />
-                  וידאו
-                </div>
+                <div className="wa-meta-bubble__media">וידאו</div>
               )}
               {form.headerType === "document" && (
-                <div className="wa-meta-bubble__media">
-                  <FileText className="h-5 w-5" />
-                  מסמך לדוגמה
-                </div>
+                <div className="wa-meta-bubble__media">מסמך</div>
               )}
-              <div className="wa-meta-bubble__content">
-                {previewHeader ? (
-                  <p className="wa-meta-bubble__header">{previewHeader}</p>
-                ) : null}
-                <p className="wa-meta-bubble__body">
-                  {previewBody || "גוף ההודעה יופיע כאן"}
-                </p>
-                {form.footer ? (
-                  <p className="wa-meta-bubble__footer-text">{form.footer}</p>
-                ) : null}
-                <p className="wa-meta-bubble__time">{previewTime}</p>
-              </div>
+              <p className="wa-meta-bubble__body">{previewBody}</p>
+              {form.footer && (
+                <p className="wa-meta-bubble__footer">{form.footer}</p>
+              )}
+              <time>12:00</time>
               {form.buttons.length > 0 && (
-                <div className="wa-meta-bubble__actions">
-                  {form.buttons.map((btn, i) => (
-                    <div key={i} className="wa-meta-bubble__action">
-                      {btn.type === "url" ? (
-                        <ExternalLink className="h-3.5 w-3.5" />
-                      ) : btn.type === "phone_number" ? (
-                        <Phone className="h-3.5 w-3.5" />
-                      ) : btn.type === "copy_code" ? (
-                        <Copy className="h-3.5 w-3.5" />
-                      ) : null}
-                      {btn.text || `לחצן ${i + 1}`}
-                    </div>
+                <div className="wa-meta-bubble__buttons">
+                  {form.buttons.map((button, index) => (
+                    <span key={`${button.type}-${index}`}>
+                      {button.text || buttonTypeLabel(button.type)}
+                    </span>
                   ))}
                 </div>
               )}
@@ -491,379 +542,260 @@ export default function WhatsAppCreateTemplateWizard({
 
         <div className="wa-meta-editor" dir="rtl">
           {step === 0 && (
-            <>
-              <div className="wa-meta-card">
-                <h4>להגדיר את התבנית שלך</h4>
+            <div className="wa-meta-card">
+              <h4>קטגוריה</h4>
+              <p className="wa-meta-help">
+                בחרו קטגוריה ותת-קטגוריה. שם התבנית והשפה יוגדרו בשלב העריכה.
+              </p>
+              <div className="wa-meta-choice-list" style={{ marginTop: 16 }}>
+                {CATEGORIES.map((item) => (
+                  <button
+                    key={item.value}
+                    type="button"
+                    className={`wa-meta-choice ${form.metaCategory === item.value ? "is-selected" : ""}`}
+                    onClick={() => selectCategory(item.value)}
+                  >
+                    <span className="wa-meta-radio" />
+                    <span>
+                      <strong>{item.title}</strong>
+                      <em>{item.description}</em>
+                    </span>
+                  </button>
+                ))}
+              </div>
+
+              <div className="wa-meta-section-divider">
+                <h4>תת-קטגוריה</h4>
                 <p className="wa-meta-help">
-                  בחרו קטגוריה שמתאימה למטרת ההודעה. Meta בודקת את הקטגוריה כחלק
-                  מתהליך האישור.
+                  האפשרויות משתנות לפי הקטגוריה שנבחרה.
                 </p>
-                <div className="wa-meta-cats">
-                  {(
-                    [
-                      ["MARKETING", "שיווק", Megaphone],
-                      ["UTILITY", "שירות", Bell],
-                      ["AUTHENTICATION", "אימות", KeyRound],
-                    ] as const
-                  ).map(([value, label, Icon]) => (
+                <div className="wa-meta-choice-list" style={{ marginTop: 12 }}>
+                  {subtypes.map((item) => (
                     <button
-                      key={value}
+                      key={item.value}
                       type="button"
-                      className={[
-                        "wa-meta-cat",
-                        form.metaCategory === value ? "is-selected" : "",
-                      ]
-                        .filter(Boolean)
-                        .join(" ")}
-                      onClick={() =>
-                        setForm((prev) => ({ ...prev, metaCategory: value }))
-                      }
+                      className={`wa-meta-choice ${form.templateKind === item.value ? "is-selected" : ""}`}
+                      onClick={() => update("templateKind", item.value)}
                     >
-                      <Icon className="h-5 w-5" />
-                      {label}
+                      <span className="wa-meta-radio" />
+                      <span>
+                        <strong>{item.title}</strong>
+                        <em>{item.description}</em>
+                      </span>
                     </button>
                   ))}
                 </div>
-                {form.metaCategory === "MARKETING" && (
-                  <div className="wa-meta-radios">
-                    {(
-                      [
-                        [
-                          "default",
-                          "ברירת מחדל",
-                          "מאפשרת מדיה, טקסט מותאם ולחצני פעולה.",
-                        ],
-                        [
-                          "catalog",
-                          "קטלוג",
-                          "שליחת פריטים מתוך קטלוג המוצרים המחובר.",
-                        ],
-                        [
-                          "flows",
-                          "תהליכים",
-                          "פתיחת תהליך WhatsApp Flows אצל הלקוח.",
-                        ],
-                        [
-                          "call_permission",
-                          "בקשה להרשאות שיחה",
-                          "בקשה מהלקוח לאשר שיחות עתידיות.",
-                        ],
-                      ] as const
-                    ).map(([value, title, desc]) => (
-                      <label
-                        key={value}
-                        className={[
-                          "wa-meta-radio",
-                          form.marketingType === value ? "is-selected" : "",
-                        ]
-                          .filter(Boolean)
-                          .join(" ")}
-                      >
-                        <input
-                          type="radio"
-                          checked={form.marketingType === value}
-                          onChange={() =>
-                            setForm((prev) => ({
-                              ...prev,
-                              marketingType: value,
-                            }))
-                          }
-                        />
-                        <span>
-                          <strong>{title}</strong>
-                          <span>{desc}</span>
-                        </span>
-                      </label>
-                    ))}
-                  </div>
-                )}
-                {form.metaCategory === "AUTHENTICATION" && (
-                  <p className="wa-meta-help" style={{ marginTop: 12 }}>
-                    הודעות אימות פגות כברירת מחדל לאחר 10 דקות. אפשר להגדיר תוקף
-                    מותאם ב-WhatsApp Manager אחרי האישור.
-                  </p>
-                )}
               </div>
-
-              <div className="wa-meta-grid-2">
-                <label>
-                  <span className="wa-meta-label">שם התבנית</span>
-                  <input
-                    className="wa-meta-input"
-                    dir="ltr"
-                    value={form.name}
-                    onChange={(e) =>
-                      setForm((prev) => ({
-                        ...prev,
-                        name: normalizeName(e.target.value),
-                      }))
-                    }
-                    placeholder="order_update"
-                  />
-                  <p className="wa-meta-help">
-                    אותיות אנגליות קטנות, מספרים וקו תחתון בלבד ·{" "}
-                    <span dir="ltr">{form.name || "template_name"}</span>
-                  </p>
-                  {form.name && !nameValid && (
-                    <p className="wa-meta-error">שם התבנית אינו תקין</p>
-                  )}
-                </label>
-                <label>
-                  <span className="wa-meta-label">שפה</span>
-                  <select
-                    className="wa-meta-select"
-                    value={form.language}
-                    onChange={(e) =>
-                      setForm((prev) => ({
-                        ...prev,
-                        language: e.target.value,
-                      }))
-                    }
-                  >
-                    {LANGUAGES.map((lang) => (
-                      <option key={lang.code} value={lang.code}>
-                        {lang.label} ({lang.code})
-                      </option>
-                    ))}
-                  </select>
-                </label>
-              </div>
-            </>
+            </div>
           )}
 
           {step === 1 && (
-            <>
-              <div className="wa-meta-card">
+            <div className="wa-meta-card wa-meta-editor-flow">
+              <label>
                 <div className="wa-meta-field-row">
-                  <h4>כותרת · לא חובה</h4>
+                  <span className="wa-meta-label">שם התבנית</span>
                   <span className="wa-meta-counter">
-                    {form.headerText.length}/{HEADER_MAX}
+                    {form.name.length}/{NAME_MAX}
                   </span>
                 </div>
+                <input
+                  className="wa-meta-input"
+                  dir="ltr"
+                  maxLength={NAME_MAX}
+                  value={form.name}
+                  onChange={(e) =>
+                    update("name", e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, "_"))
+                  }
+                  placeholder="welcome_offer"
+                />
                 <p className="wa-meta-help">
-                  אפשר להוסיף טקסט קצר או מדיה בראש ההודעה.
+                  אותיות אנגליות קטנות, מספרים וקו תחתון בלבד. לא יוצג ללקוחות.
                 </p>
-                <div className="wa-meta-media" style={{ marginTop: 12 }}>
-                  {(
-                    [
-                      ["none", "ללא", null],
-                      ["text", "טקסט", null],
-                      ["image", "תמונה", ImageIcon],
-                      ["video", "וידאו", Video],
-                      ["document", "מסמך", FileText],
-                    ] as const
-                  ).map(([value, label, Icon]) => (
-                    <button
-                      key={value}
-                      type="button"
-                      className={form.headerType === value ? "is-selected" : ""}
-                      onClick={() =>
-                        setForm((prev) => ({
-                          ...prev,
-                          headerType: value,
-                          headerText: value === "text" ? prev.headerText : "",
-                        }))
-                      }
-                    >
-                      {Icon ? <Icon className="h-4 w-4" /> : null}
-                      {label}
-                    </button>
-                  ))}
-                </div>
-                {(form.headerType === "none" || form.headerType === "text") && (
-                  <input
-                    className="wa-meta-input"
-                    style={{ marginTop: 12 }}
-                    maxLength={HEADER_MAX}
-                    value={form.headerText}
-                    onChange={(e) =>
-                      setForm((prev) => ({
-                        ...prev,
-                        headerText: e.target.value,
-                        headerType: e.target.value.trim() ? "text" : "none",
-                      }))
-                    }
-                    placeholder="הוסיפו כותרת קצרה"
-                  />
-                )}
-                {["image", "video", "document"].includes(form.headerType) && (
-                  <div style={{ marginTop: 12 }}>
-                    <input
-                      className="wa-meta-input"
-                      dir="ltr"
-                      value={form.headerMediaUrl}
-                      onChange={(e) =>
-                        setForm((prev) => ({
-                          ...prev,
-                          headerMediaUrl: e.target.value,
-                        }))
-                      }
-                      placeholder="https://example.com/sample.jpg"
-                    />
-                    <p className="wa-meta-help">
-                      כותרות מדיה נשמרות בטיוטה מקומית. שליחה למטא תומכת כרגע
-                      בכותרת טקסט (נדרש handle להעלאת מדיה).
-                    </p>
-                    {form.headerMediaUrl && (
-                      <button
-                        type="button"
-                        className="wa-meta-btn wa-meta-btn--secondary"
-                        style={{ marginTop: 8 }}
-                        onClick={() =>
-                          setForm((prev) => ({
-                            ...prev,
-                            headerMediaUrl: "",
-                          }))
-                        }
-                      >
-                        הסרה
-                      </button>
-                    )}
-                  </div>
-                )}
-              </div>
+              </label>
 
-              <div className="wa-meta-card">
+              <label>
+                <span className="wa-meta-label">שפה</span>
+                <select
+                  className="wa-meta-select"
+                  value={form.language}
+                  onChange={(e) => update("language", e.target.value)}
+                >
+                  {LANGUAGES.map((lang) => (
+                    <option key={lang.code} value={lang.code}>
+                      {lang.label}
+                    </option>
+                  ))}
+                </select>
+                <p className="wa-meta-help">
+                  השפה שבה ייכתב תוכן התבנית. אפשר להוסיף גרסאות נוספות מאוחר יותר.
+                </p>
+              </label>
+
+              {form.metaCategory === "AUTHENTICATION" && (
+                <div className="wa-meta-auth-panel">
+                  <h4>אפשרויות אימות</h4>
+                  <p className="wa-meta-help">
+                    מוצגות רק האפשרויות שנתמכות בפועל בשליחה למטא. כניסה בלחיצה
+                    אחת וכניסה ללא לחיצה אינן זמינות כרגע.
+                  </p>
+                  <div className="wa-meta-auth-row">
+                    <strong>קוד OTP</strong>
+                    <span>הגוף חייב לכלול את המשתנה {"{{1}}"} לקוד האימות.</span>
+                  </div>
+                  <label className="wa-meta-check">
+                    <input
+                      type="checkbox"
+                      checked={form.securityRecommendation}
+                      onChange={(e) => {
+                        const checked = e.target.checked;
+                        setForm((prev) => ({
+                          ...prev,
+                          securityRecommendation: checked,
+                          footer: checked ? SECURITY_FOOTER : "",
+                        }));
+                      }}
+                    />
+                    <span>
+                      <strong>המלצת אבטחה</strong>
+                      <em>מוסיפה כותרת תחתונה שממליצה לא לשתף את הקוד.</em>
+                    </span>
+                  </label>
+                  <div className="wa-meta-auth-row">
+                    <strong>זמן תפוגת הקוד</strong>
+                    <span>
+                      מטא מציגה תפוגה של 10 דקות. אין שדה נפרד שנתמך כרגע בחיבור
+                      שלנו.
+                    </span>
+                  </div>
+                  <div className="wa-meta-auth-row">
+                    <strong>העתקת קוד</strong>
+                    <span>אפשר להוסיף לחצן העתקה באזור הלחצנים למטה.</span>
+                  </div>
+                </div>
+              )}
+
+              {form.metaCategory !== "AUTHENTICATION" && (
+                <div>
+                  <span className="wa-meta-label">כותרת</span>
+                  <p className="wa-meta-help">
+                    בחרו סוג כותרת. יוצג רק השדה הרלוונטי לבחירה.
+                  </p>
+                  <div className="wa-meta-pills" role="radiogroup" aria-label="סוג כותרת">
+                    {headerOptions.map((option) => (
+                      <button
+                        key={option.value}
+                        type="button"
+                        className={form.headerType === option.value ? "is-selected" : ""}
+                        onClick={() => update("headerType", option.value)}
+                      >
+                        {option.label}
+                      </button>
+                    ))}
+                  </div>
+                  {form.headerType === "text" && (
+                    <label style={{ marginTop: 12 }}>
+                      <div className="wa-meta-field-row">
+                        <span className="wa-meta-label">טקסט כותרת</span>
+                        <span className="wa-meta-counter">
+                          {form.headerText.length}/{HEADER_TEXT_MAX}
+                        </span>
+                      </div>
+                      <input
+                        className="wa-meta-input"
+                        maxLength={HEADER_TEXT_MAX}
+                        value={form.headerText}
+                        onChange={(e) => update("headerText", e.target.value)}
+                        placeholder="לדוגמה: מבצע לחברים"
+                      />
+                    </label>
+                  )}
+                  {(form.headerType === "image" ||
+                    form.headerType === "video" ||
+                    form.headerType === "document") && (
+                    <label style={{ marginTop: 12 }}>
+                      <span className="wa-meta-label">
+                        {form.headerType === "image"
+                          ? "מזהה מדיה לתמונה"
+                          : form.headerType === "video"
+                            ? "מזהה מדיה לווידאו"
+                            : "מזהה מדיה למסמך"}
+                      </span>
+                      <input
+                        className="wa-meta-input"
+                        dir="ltr"
+                        value={form.headerHandle}
+                        onChange={(e) => update("headerHandle", e.target.value)}
+                        placeholder="מזהה מדיה שהתקבל מהעלאה"
+                      />
+                      <p className="wa-meta-help">
+                        מטא דורשת מזהה מדיה שהועלה מראש. בלי מזהה אי אפשר לשלוח
+                        לבדיקה.
+                      </p>
+                    </label>
+                  )}
+                </div>
+              )}
+
+              <div>
                 <div className="wa-meta-field-row">
-                  <h4>גוף</h4>
+                  <span className="wa-meta-label">גוף</span>
                   <span className="wa-meta-counter">
                     {form.body.length}/{BODY_MAX}
                   </span>
                 </div>
-                <p className="wa-meta-help">
-                  הזינו את תוכן ההודעה. אפשר להוסיף משתנים ועיצוב כמו ב-Meta.
-                </p>
-                <label className="wa-meta-label" style={{ marginTop: 12 }}>
-                  סוג משתנים
-                </label>
-                <select
-                  className="wa-meta-select"
-                  value={form.variableType}
-                  onChange={(e) =>
-                    setForm((prev) => ({
-                      ...prev,
-                      variableType: e.target.value as "number" | "name",
-                    }))
-                  }
-                >
-                  <option value="number">מספרי · {"{{1}} {{2}} {{3}}"}</option>
-                  <option value="name">
-                    שמות · {"{{customer_name}} {{appointment_date}}"}
-                  </option>
-                </select>
+                <div className="wa-meta-toolbar">
+                  <button type="button" onClick={() => insertFormat("*", "*")}>
+                    מודגש
+                  </button>
+                  <button type="button" onClick={() => insertFormat("_", "_")}>
+                    נטוי
+                  </button>
+                  <button type="button" onClick={() => insertFormat("~", "~")}>
+                    קו חוצה
+                  </button>
+                  <button type="button" onClick={() => insertFormat("```", "```")}>
+                    קוד
+                  </button>
+                  <button type="button" onClick={insertVariable}>
+                    + משתנה
+                  </button>
+                </div>
                 <textarea
                   ref={bodyRef}
                   className="wa-meta-textarea"
-                  style={{ marginTop: 12 }}
                   maxLength={BODY_MAX}
                   value={form.body}
-                  onChange={(e) =>
-                    setForm((prev) => ({
-                      ...prev,
-                      body: e.target.value.slice(0, BODY_MAX),
-                    }))
+                  onChange={(e) => update("body", e.target.value)}
+                  placeholder={
+                    form.metaCategory === "AUTHENTICATION"
+                      ? OTP_BODY_DEFAULT
+                      : "כתבו את גוף ההודעה. השתמשו ב-{{1}} למשתנים."
                   }
-                  placeholder={"שלום {{1}},\nאיך אפשר לעזור?"}
                 />
-                <div className="wa-meta-toolbar">
-                  <button
-                    type="button"
-                    className="wa-meta-icon-btn"
-                    onClick={insertVariable}
-                  >
-                    <Plus className="h-3.5 w-3.5" />
-                    הוספת משתנה
-                  </button>
-                  <button
-                    type="button"
-                    className="wa-meta-icon-btn"
-                    aria-label="מודגש"
-                    onClick={() =>
-                      wrapSelection(
-                        bodyRef.current,
-                        form.body,
-                        "*",
-                        "*",
-                        (next) => setForm((prev) => ({ ...prev, body: next }))
-                      )
-                    }
-                  >
-                    <Bold className="h-3.5 w-3.5" />
-                  </button>
-                  <button
-                    type="button"
-                    className="wa-meta-icon-btn"
-                    aria-label="נטוי"
-                    onClick={() =>
-                      wrapSelection(
-                        bodyRef.current,
-                        form.body,
-                        "_",
-                        "_",
-                        (next) => setForm((prev) => ({ ...prev, body: next }))
-                      )
-                    }
-                  >
-                    <Italic className="h-3.5 w-3.5" />
-                  </button>
-                  <button
-                    type="button"
-                    className="wa-meta-icon-btn"
-                    aria-label="קו חוצה"
-                    onClick={() =>
-                      wrapSelection(
-                        bodyRef.current,
-                        form.body,
-                        "~",
-                        "~",
-                        (next) => setForm((prev) => ({ ...prev, body: next }))
-                      )
-                    }
-                  >
-                    <Strikethrough className="h-3.5 w-3.5" />
-                  </button>
-                  <button
-                    type="button"
-                    className="wa-meta-icon-btn"
-                    onClick={() =>
-                      wrapSelection(
-                        bodyRef.current,
-                        form.body,
-                        "```",
-                        "```",
-                        (next) => setForm((prev) => ({ ...prev, body: next }))
-                      )
-                    }
-                  >
-                    קוד
-                  </button>
-                </div>
+                <p className="wa-meta-help">
+                  אפשר להוסיף משתנים במבנה {"{{1}}"}, {"{{2}}"}. התצוגה המקדימה
+                  מתעדכנת בזמן אמת.
+                </p>
               </div>
 
               {variables.length > 0 && (
-                <div className="wa-meta-card">
-                  <h4>דגימות של משתנים</h4>
+                <div>
+                  <span className="wa-meta-label">ערכי דוגמה למשתנים</span>
                   <p className="wa-meta-help">
-                    Meta צריכה דוגמאות לבדיקת התבנית. אל תכללו מידע רגיש או פרטי
-                    לקוח אמיתיים.
+                    מטא דורשת דוגמאות לכל משתנה לפני בדיקה.
                   </p>
-                  <div style={{ marginTop: 12, display: "grid", gap: 10 }}>
-                    {variables.map((key) => (
-                      <label key={key}>
-                        <span className="wa-meta-label">
-                          גוף · <span dir="ltr">{`{{${key}}}`}</span>
-                        </span>
+                  <div className="wa-meta-var-grid">
+                    {variables.map((variable) => (
+                      <label key={variable}>
+                        <span className="wa-meta-label">{`{{${variable}}}`}</span>
                         <input
                           className="wa-meta-input"
-                          value={form.exampleValues[key] || ""}
+                          value={form.exampleValues[variable] || ""}
                           onChange={(e) =>
-                            setForm((prev) => ({
-                              ...prev,
-                              exampleValues: {
-                                ...prev.exampleValues,
-                                [key]: e.target.value,
-                              },
-                            }))
+                            update("exampleValues", {
+                              ...form.exampleValues,
+                              [variable]: e.target.value,
+                            })
                           }
                           placeholder="ערך לדוגמה"
                         />
@@ -873,83 +805,80 @@ export default function WhatsAppCreateTemplateWizard({
                 </div>
               )}
 
-              <div className="wa-meta-card">
+              <label>
                 <div className="wa-meta-field-row">
-                  <h4>כותרת תחתונה · לא חובה</h4>
+                  <span className="wa-meta-label">כותרת תחתונה</span>
                   <span className="wa-meta-counter">
                     {form.footer.length}/{FOOTER_MAX}
                   </span>
                 </div>
-                <p className="wa-meta-help">
-                  שורה קצרה בתחתית ההודעה, ללא משתנים.
-                </p>
                 <input
                   className="wa-meta-input"
-                  style={{ marginTop: 12 }}
                   maxLength={FOOTER_MAX}
                   value={form.footer}
-                  onChange={(e) =>
-                    setForm((prev) => ({
-                      ...prev,
-                      footer: e.target.value.replace(/\{\{[^}]*\}\}/g, ""),
-                    }))
-                  }
-                  placeholder="לדוגמה: אל תשיבו להודעה זו"
+                  onChange={(e) => update("footer", e.target.value)}
+                  placeholder="לא חובה"
                 />
-              </div>
-
-              <div className="wa-meta-card">
-                <h4>לחצנים · לא חובה</h4>
                 <p className="wa-meta-help">
-                  לחצנים מאפשרים ללקוחות להגיב או לבצע פעולה. עד 10 לחצנים.
+                  טקסט קצר בתחתית ההודעה. אפשר להשאיר ריק.
                 </p>
-                <div ref={addMenuRef} className="wa-meta-add-wrap" style={{ marginTop: 12 }}>
+              </label>
+
+              <div>
+                <div className="wa-meta-field-row">
+                  <span className="wa-meta-label">לחצנים</span>
+                  <span className="wa-meta-help" style={{ margin: 0 }}>
+                    עד {MAX_BUTTONS} לחצנים
+                  </span>
+                </div>
+                <div className="wa-meta-add-wrap">
                   <button
+                    ref={addBtnRef}
                     type="button"
                     className="wa-meta-btn wa-meta-btn--secondary"
-                    disabled={form.buttons.length >= 10}
-                    onClick={() => setAddMenuOpen((open) => !open)}
+                    disabled={form.buttons.length >= MAX_BUTTONS}
+                    onClick={() => setMenuOpen((open) => !open)}
                   >
-                    <Plus className="h-3.5 w-3.5" />
+                    <Plus className="h-4 w-4" />
                     הוספת לחצן
-                    <ChevronDown className="h-3.5 w-3.5" />
+                    <ChevronDown className="h-4 w-4" />
                   </button>
-                  {addMenuOpen && (
-                    <div className="wa-meta-menu" role="menu">
-                      {BUTTON_MENU.map((item) => (
+                  {menuOpen && (
+                    <div
+                      ref={menuRef}
+                      className={`wa-meta-menu ${menuUp ? "is-up" : ""}`}
+                    >
+                      {buttonMenu.map((item) => (
                         <button
                           key={item.type}
                           type="button"
-                          role="menuitem"
                           onClick={() => addButton(item.type)}
                         >
-                          <item.icon className="h-4 w-4" />
-                          {item.label}
+                          <strong>{item.title}</strong>
+                          <span>{item.description}</span>
                         </button>
                       ))}
                     </div>
                   )}
                 </div>
                 {form.buttons.map((btn, index) => (
-                  <div key={index} className="wa-meta-btn-row">
-                    <div className="wa-meta-btn-row__top">
-                      <span className="wa-meta-label" style={{ margin: 0 }}>
-                        {buttonTypeLabel(btn.type)}
-                      </span>
+                  <div key={`${btn.type}-${index}`} className="wa-meta-button-card">
+                    <header>
+                      <strong>{buttonTypeLabel(btn.type)}</strong>
                       <button
                         type="button"
-                        className="wa-meta-x"
-                        aria-label="מחיקת לחצן"
+                        className="wa-meta-icon-btn"
                         onClick={() =>
-                          setForm((prev) => ({
-                            ...prev,
-                            buttons: prev.buttons.filter((_, i) => i !== index),
-                          }))
+                          update(
+                            "buttons",
+                            form.buttons.filter((_, i) => i !== index)
+                          )
                         }
+                        aria-label="הסרת לחצן"
                       >
                         <X className="h-4 w-4" />
                       </button>
-                    </div>
+                    </header>
                     {btn.type !== "copy_code" && (
                       <label>
                         <div className="wa-meta-field-row">
@@ -960,12 +889,11 @@ export default function WhatsAppCreateTemplateWizard({
                         </div>
                         <input
                           className="wa-meta-input"
-                          value={btn.text}
                           maxLength={BUTTON_TEXT_MAX}
+                          value={btn.text}
                           onChange={(e) =>
                             updateButton(index, { text: e.target.value })
                           }
-                          placeholder="טקסט הלחצן"
                         />
                       </label>
                     )}
@@ -1044,7 +972,7 @@ export default function WhatsAppCreateTemplateWizard({
                     )}
                     {btn.type === "copy_code" && (
                       <label>
-                        <span className="wa-meta-label">קוד מבצע לדוגמה</span>
+                        <span className="wa-meta-label">קוד לדוגמה</span>
                         <input
                           className="wa-meta-input"
                           dir="ltr"
@@ -1054,23 +982,27 @@ export default function WhatsAppCreateTemplateWizard({
                               exampleUrl: e.target.value,
                             })
                           }
-                          placeholder="SAVE20"
+                          placeholder="123456"
                         />
                       </label>
                     )}
                   </div>
                 ))}
               </div>
-            </>
+            </div>
           )}
 
           {step === 2 && (
             <div className="wa-meta-card wa-meta-review">
               <h4>בדיקה לפני שליחה</h4>
               <p className="wa-meta-help">
-                ודאו שהפרטים נכונים לפני השליחה לבדיקה של Meta.
+                ודאו שהפרטים נכונים לפני השליחה לבדיקה של מטא.
               </p>
               <dl style={{ marginTop: 14 }}>
+                <dt>קטגוריה</dt>
+                <dd>{categoryLabel(form.metaCategory)}</dd>
+                <dt>תת-קטגוריה</dt>
+                <dd>{kindLabel(form.metaCategory, form.templateKind)}</dd>
                 <dt>שם התבנית</dt>
                 <dd dir="ltr">{form.name || "—"}</dd>
                 <dt>שפה</dt>
@@ -1078,8 +1010,6 @@ export default function WhatsAppCreateTemplateWizard({
                   {LANGUAGES.find((lang) => lang.code === form.language)?.label ||
                     form.language}
                 </dd>
-                <dt>קטגוריה</dt>
-                <dd>{categoryLabel(form.metaCategory)}</dd>
                 <dt>כותרת</dt>
                 <dd>
                   {form.headerType === "text"
@@ -1120,7 +1050,7 @@ export default function WhatsAppCreateTemplateWizard({
               </dl>
               <p className="wa-meta-alert wa-meta-alert--warn">
                 שליחה מעבירה את התבנית לבדיקה במטא. הסטטוס יוצג כממתין עד שמטא
-                תחזיר מאושרת או נדחתה. לא מוצג סטטוס מאושר מדומה.
+                תחזיר מאושרת או נדחתה.
               </p>
             </div>
           )}
@@ -1130,24 +1060,6 @@ export default function WhatsAppCreateTemplateWizard({
       </div>
 
       <div className="wa-meta-wizard__footer">
-        <div className="wa-meta-wizard__footer-cluster">
-          <button
-            type="button"
-            className="wa-meta-btn wa-meta-btn--ghost"
-            onClick={onClose}
-          >
-            סגירה
-          </button>
-          <button
-            type="button"
-            className="wa-meta-btn wa-meta-btn--secondary"
-            disabled={saving || !form.name}
-            onClick={handleSaveDraft}
-          >
-            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
-            שמירה כטיוטה
-          </button>
-        </div>
         <div className="wa-meta-wizard__footer-cluster">
           {step > 0 && (
             <button
@@ -1179,7 +1091,27 @@ export default function WhatsAppCreateTemplateWizard({
             </button>
           )}
         </div>
+        <div className="wa-meta-wizard__footer-cluster">
+          <button
+            type="button"
+            className="wa-meta-btn wa-meta-btn--secondary"
+            disabled={saving || !form.name}
+            onClick={handleSaveDraft}
+          >
+            {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+            שמירה כטיוטה
+          </button>
+          <button
+            type="button"
+            className="wa-meta-btn wa-meta-btn--ghost"
+            onClick={onClose}
+          >
+            סגירה
+          </button>
+        </div>
       </div>
     </section>
   );
 }
+
+export default WhatsAppCreateTemplateWizard;

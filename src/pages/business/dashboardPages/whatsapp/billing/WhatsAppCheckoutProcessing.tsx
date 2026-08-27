@@ -120,13 +120,13 @@ export default function WhatsAppCheckoutProcessing({
               <Loader2 size={28} className="wa-billing-spin" />
             </div>
             <h2 id={titleId}>התשלום התקבל</h2>
-            <p>מעדכנים את חיוב WhatsApp...</p>
+            <p>מעדכנים את חיוב וואטסאפ...</p>
           </>
         ) : null}
 
         {phase === "success" ? (
           <>
-            <h2 id={titleId}>חיוב WhatsApp הופעל בהצלחה</h2>
+            <h2 id={titleId}>חיוב וואטסאפ הופעל בהצלחה</h2>
             <p>אפשר לחזור ולשלוח הודעות — החיוב לפי השימוש בפועל.</p>
             <button
               type="button"

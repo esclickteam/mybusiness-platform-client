@@ -145,8 +145,8 @@ export default function WhatsAppBillingSetupModal({
 
   const heading =
     mode === "manage" && hasActiveLike
-      ? "ניהול חיוב WhatsApp"
-      : "הגדרת חיוב WhatsApp";
+      ? "ניהול חיוב וואטסאפ"
+      : "הגדרת חיוב וואטסאפ";
 
   return (
     <div
@@ -178,7 +178,7 @@ export default function WhatsAppBillingSetupModal({
 
         {mode === "setup" || !hasActiveLike ? (
           <>
-            <p>נדרש אמצעי תשלום עבור הודעות WhatsApp</p>
+            <p>נדרש אמצעי תשלום עבור הודעות וואטסאפ</p>
             <p>
               האוטומציות והשליחה מחויבות לפי שימוש בפועל — אין חבילות הודעות
               מראש.

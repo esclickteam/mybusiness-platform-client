@@ -52,7 +52,7 @@ export function useWhatsAppBilling(businessId: string | null) {
   return {
     loading: Boolean(businessId) && query.isLoading && !query.data,
     error: query.isError
-      ? "לא הצלחנו לטעון את נתוני חיוב WhatsApp כרגע."
+      ? "לא הצלחנו לטעון את נתוני חיוב וואטסאפ כרגע."
       : null,
     usage: (query.data as WhatsAppBillingUsageOverview | null) || null,
     refresh,
