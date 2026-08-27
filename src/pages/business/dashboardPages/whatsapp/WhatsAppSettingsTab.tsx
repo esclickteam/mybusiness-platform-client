@@ -338,15 +338,10 @@ export default function WhatsAppSettingsTab() {
     }
 
     const entered = normalizeEnteredSignupPhone(enteredSignupPhone);
-    if (!entered) {
-      const msg = t("whatsapp.settings.enteredPhoneRequired");
-      setActionError(msg);
-      setActionInfo("");
-      toast.error(msg);
-      return;
+    if (entered) {
+      enteredSignupPhoneRef.current = entered.e164;
+      setEnteredSignupPhone(entered.e164);
     }
-    enteredSignupPhoneRef.current = entered.e164;
-    setEnteredSignupPhone(entered.e164);
 
     let voiceKeepAlive: ReturnType<typeof setInterval> | undefined;
     try {
@@ -395,22 +390,29 @@ export default function WhatsAppSettingsTab() {
           code,
           message: voiceError?.response?.data?.error || voiceError?.message,
         });
-        if (shouldAbortEmbeddedSignupForVoiceError(code)) {
-          const msg =
-            code === "ENTERED_PHONE_REQUIRED"
-              ? t("whatsapp.settings.enteredPhoneRequired")
-              : t("whatsapp.settings.verificationDidMissing");
+        if (
+          shouldAbortEmbeddedSignupForVoiceError(code) &&
+          code !== "ENTERED_PHONE_REQUIRED"
+        ) {
+          const msg = t("whatsapp.settings.verificationDidMissing");
           setActionError(msg);
           setActionInfo("");
           toast.error(msg);
           return;
         }
-        toast.warning(
-          getApiErrorMessage(
-            voiceError,
-            "Voice verification session could not be prepared. SMS may still work."
-          )
-        );
+        // Number arrives from Embedded Signup; keep retrying so the session
+        // can be created as soon as Meta posts the phone.
+        voiceKeepAlive = window.setInterval(() => {
+          void keepEmbeddedSignupVoiceSession().catch(() => {});
+        }, 20000);
+        if (code !== "ENTERED_PHONE_REQUIRED") {
+          toast.warning(
+            getApiErrorMessage(
+              voiceError,
+              "Voice verification session could not be prepared. SMS may still work."
+            )
+          );
+        }
       }
 
       setActionInfo(t("whatsapp.settings.connecting"));
@@ -511,7 +513,7 @@ export default function WhatsAppSettingsTab() {
               override_default_response_type: true,
               extras: {
                 setup: (() => {
-                  const prefill = splitE164ForMetaPrefill(entered.e164);
+                  const prefill = splitE164ForMetaPrefill(entered?.e164);
                   return prefill
                     ? { business: { phone: prefill } }
                     : {};
@@ -803,25 +805,6 @@ export default function WhatsAppSettingsTab() {
                 : t("whatsapp.settings.connectIntro")}
             </p>
             {canConnectOwn ? (
-              <label className="block space-y-1">
-                <span className="text-xs font-bold text-slate-700">
-                  {t("whatsapp.settings.enteredPhoneLabel")}
-                </span>
-                <input
-                  className={inputBase}
-                  dir="ltr"
-                  inputMode="tel"
-                  autoComplete="tel"
-                  placeholder="+972555072093"
-                  value={enteredSignupPhone}
-                  onChange={(event) => setEnteredSignupPhone(event.target.value)}
-                />
-                <span className="block text-[11px] font-medium text-slate-500">
-                  {t("whatsapp.settings.enteredPhoneHint")}
-                </span>
-              </label>
-            ) : null}
-            {canConnectOwn ? (
               <button
                 type="button"
                 className={btnPrimary}
@@ -1060,25 +1043,6 @@ export default function WhatsAppSettingsTab() {
             )}
 
             <div className="flex flex-wrap gap-2">
-              {canConnectOwn ? (
-                <label className="w-full space-y-1">
-                  <span className="text-xs font-bold text-slate-700">
-                    {t("whatsapp.settings.enteredPhoneLabel")}
-                  </span>
-                  <input
-                    className={inputBase}
-                    dir="ltr"
-                    inputMode="tel"
-                    autoComplete="tel"
-                    placeholder="+972555072093"
-                    value={enteredSignupPhone}
-                    onChange={(event) => setEnteredSignupPhone(event.target.value)}
-                  />
-                  <span className="block text-[11px] font-medium text-slate-500">
-                    {t("whatsapp.settings.enteredPhoneHint")}
-                  </span>
-                </label>
-              ) : null}
               {canConnectOwn ? (
                 <button
                   type="button"
