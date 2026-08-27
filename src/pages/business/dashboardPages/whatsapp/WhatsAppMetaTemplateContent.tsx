@@ -1,10 +1,14 @@
-import { useEffect, useRef, useState, type RefObject } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ChevronDown,
   Copy,
+  CornerUpLeft,
   ExternalLink,
-  MessageSquareText,
+  FileText,
+  Image as ImageIcon,
+  MapPin,
   Phone,
+  PlayCircle,
   Plus,
   X,
 } from "lucide-react";
@@ -15,7 +19,8 @@ import type {
 import "./whatsappMetaTemplateWizard.css";
 
 type ButtonType = WhatsAppTemplateButton["type"];
-type HeaderType = Exclude<WhatsAppHeaderType, "location">;
+type VariableType = "number" | "name";
+type MediaSample = "none" | "image" | "video" | "document" | "location";
 
 const HEADER_TEXT_MAX = 60;
 const BODY_MAX = 1024;
@@ -24,12 +29,21 @@ const BUTTON_TEXT_MAX = 25;
 const URL_MAX = 2000;
 const MAX_BUTTONS = 10;
 
-const HEADER_OPTIONS: Array<{ value: HeaderType; label: string }> = [
-  { value: "none", label: "ללא" },
-  { value: "text", label: "טקסט" },
-  { value: "image", label: "תמונה" },
-  { value: "video", label: "וידאו" },
-  { value: "document", label: "מסמך" },
+const VARIABLE_OPTIONS: Array<{ value: VariableType; label: string }> = [
+  { value: "name", label: "שם" },
+  { value: "number", label: "מספר" },
+];
+
+const MEDIA_OPTIONS: Array<{
+  value: MediaSample;
+  label: string;
+  Icon?: typeof ImageIcon;
+}> = [
+  { value: "none", label: "בלי" },
+  { value: "image", label: "תמונה", Icon: ImageIcon },
+  { value: "video", label: "סרטון", Icon: PlayCircle },
+  { value: "document", label: "מסמך", Icon: FileText },
+  { value: "location", label: "מיקום", Icon: MapPin },
 ];
 
 const BUTTON_MENU: Array<{
@@ -40,19 +54,19 @@ const BUTTON_MENU: Array<{
 }> = [
   {
     type: "quick_reply",
-    title: "תשובה מהירה / בהתאמה אישית",
+    title: "בהתאמה אישית",
     description: "הלקוח שולח תשובה קצרה בלחיצה אחת.",
-    Icon: MessageSquareText,
+    Icon: CornerUpLeft,
   },
   {
     type: "url",
-    title: "ביקור באתר",
+    title: "ביקור באתר האינטרנט",
     description: "פותח כתובת אתר סטטית או דינמית.",
     Icon: ExternalLink,
   },
   {
     type: "phone_number",
-    title: "התקשרות למספר טלפון",
+    title: "התקשרות למספר הטלפון",
     description: "מתקשר למספר שהוגדר מראש.",
     Icon: Phone,
   },
@@ -108,6 +122,133 @@ function defaultButton(type: ButtonType): WhatsAppTemplateButton {
   };
 }
 
+function mediaFromHeader(headerType: WhatsAppHeaderType): MediaSample {
+  if (
+    headerType === "image" ||
+    headerType === "video" ||
+    headerType === "document" ||
+    headerType === "location"
+  ) {
+    return headerType;
+  }
+  return "none";
+}
+
+function resolveHeaderType(
+  media: MediaSample,
+  headerText: string
+): WhatsAppHeaderType {
+  if (media !== "none") return media;
+  return headerText.trim() ? "text" : "none";
+}
+
+function MetaSelect<T extends string>({
+  label,
+  value,
+  options,
+  onChange,
+  info,
+  radioEnd,
+}: {
+  label: string;
+  value: T;
+  options: Array<{ value: T; label: string; Icon?: typeof ImageIcon }>;
+  onChange: (value: T) => void;
+  info?: boolean;
+  radioEnd?: boolean;
+}) {
+  const [open, setOpen] = useState(false);
+  const [up, setUp] = useState(false);
+  const btnRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
+  const selected = options.find((option) => option.value === value);
+
+  useEffect(() => {
+    if (!open) return;
+    const place = () => {
+      const button = btnRef.current;
+      if (!button) return;
+      const rect = button.getBoundingClientRect();
+      const spaceBelow = window.innerHeight - rect.bottom;
+      setUp(spaceBelow < 280 && rect.top > spaceBelow);
+    };
+    place();
+    const onPointer = (event: MouseEvent) => {
+      const target = event.target as Node;
+      if (menuRef.current?.contains(target) || btnRef.current?.contains(target)) {
+        return;
+      }
+      setOpen(false);
+    };
+    window.addEventListener("resize", place);
+    window.addEventListener("scroll", place, true);
+    document.addEventListener("mousedown", onPointer);
+    return () => {
+      window.removeEventListener("resize", place);
+      window.removeEventListener("scroll", place, true);
+      document.removeEventListener("mousedown", onPointer);
+    };
+  }, [open]);
+
+  return (
+    <div className="wa-meta-dd">
+      <div className="wa-meta-dd__label">
+        <span>{label}</span>
+        {info ? (
+          <span className="wa-meta-dd__info" aria-hidden>
+            i
+          </span>
+        ) : null}
+      </div>
+      <button
+        ref={btnRef}
+        type="button"
+        className={`wa-meta-dd__trigger ${open ? "is-open" : ""}`}
+        aria-expanded={open}
+        onClick={() => setOpen((current) => !current)}
+      >
+        <span>{selected?.label}</span>
+        <ChevronDown className="h-4 w-4" />
+      </button>
+      {open && (
+        <div
+          ref={menuRef}
+          className={`wa-meta-dd__menu ${up ? "is-up" : ""} ${radioEnd ? "is-radio-end" : ""}`}
+          role="listbox"
+        >
+          {options.map((option) => {
+            const Icon = option.Icon;
+            const selectedOption = option.value === value;
+            return (
+              <button
+                key={option.value}
+                type="button"
+                role="option"
+                aria-selected={selectedOption}
+                className={selectedOption ? "is-selected" : ""}
+                onClick={() => {
+                  onChange(option.value);
+                  setOpen(false);
+                }}
+              >
+                <span className="wa-meta-dd__radio" />
+                <span className="wa-meta-dd__option">
+                  {Icon ? (
+                    <span className="wa-meta-dd__option-icon" aria-hidden>
+                      <Icon className="h-4 w-4" />
+                    </span>
+                  ) : null}
+                  {option.label}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
 export function WhatsAppMetaTemplateContent({
   headerType,
   headerText,
@@ -116,10 +257,10 @@ export function WhatsAppMetaTemplateContent({
   footer,
   buttons,
   exampleValues,
+  variableType = "number",
   showHeader = true,
   allowedButtons,
   bodyPlaceholder = "כתבו את גוף ההודעה. השתמשו ב-{{1}} למשתנים.",
-  bodyRef: bodyRefProp,
   onChange,
 }: {
   headerType: WhatsAppHeaderType;
@@ -129,10 +270,10 @@ export function WhatsAppMetaTemplateContent({
   footer: string;
   buttons: WhatsAppTemplateButton[];
   exampleValues: Record<string, string>;
+  variableType?: VariableType;
   showHeader?: boolean;
   allowedButtons: ButtonType[];
   bodyPlaceholder?: string;
-  bodyRef?: RefObject<HTMLTextAreaElement | null>;
   onChange: (patch: {
     headerType?: WhatsAppHeaderType;
     headerText?: string;
@@ -141,18 +282,17 @@ export function WhatsAppMetaTemplateContent({
     footer?: string;
     buttons?: WhatsAppTemplateButton[];
     exampleValues?: Record<string, string>;
+    variableType?: VariableType;
   }) => void;
 }) {
-  const innerBodyRef = useRef<HTMLTextAreaElement>(null);
-  const bodyRef = bodyRefProp || innerBodyRef;
+  const headerRef = useRef<HTMLInputElement>(null);
+  const bodyRef = useRef<HTMLTextAreaElement>(null);
   const addBtnRef = useRef<HTMLButtonElement>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [menuUp, setMenuUp] = useState(false);
+  const media = mediaFromHeader(headerType);
   const variables = extractVariables(`${headerText}\n${body}`);
-  const headerOptions = HEADER_OPTIONS.filter((option) =>
-    showHeader ? true : option.value === "none"
-  );
   const buttonMenu = BUTTON_MENU.filter((item) =>
     allowedButtons.includes(item.type)
   );
@@ -164,33 +304,59 @@ export function WhatsAppMetaTemplateContent({
       if (!button) return;
       const rect = button.getBoundingClientRect();
       const spaceBelow = window.innerHeight - rect.bottom;
-      const spaceAbove = rect.top;
-      setMenuUp(spaceBelow < 320 && spaceAbove > spaceBelow);
+      setMenuUp(spaceBelow < 320 && rect.top > spaceBelow);
     };
     place();
-    window.addEventListener("resize", place);
-    window.addEventListener("scroll", place, true);
-    return () => {
-      window.removeEventListener("resize", place);
-      window.removeEventListener("scroll", place, true);
-    };
-  }, [menuOpen]);
-
-  useEffect(() => {
-    if (!menuOpen) return;
     const onPointer = (event: MouseEvent) => {
       const target = event.target as Node;
-      if (
-        menuRef.current?.contains(target) ||
-        addBtnRef.current?.contains(target)
-      ) {
+      if (menuRef.current?.contains(target) || addBtnRef.current?.contains(target)) {
         return;
       }
       setMenuOpen(false);
     };
+    window.addEventListener("resize", place);
+    window.addEventListener("scroll", place, true);
     document.addEventListener("mousedown", onPointer);
-    return () => document.removeEventListener("mousedown", onPointer);
+    return () => {
+      window.removeEventListener("resize", place);
+      window.removeEventListener("scroll", place, true);
+      document.removeEventListener("mousedown", onPointer);
+    };
   }, [menuOpen]);
+
+  const insertAt = (
+    el: HTMLInputElement | HTMLTextAreaElement | null,
+    value: string,
+    token: string,
+    key: "headerText" | "body"
+  ) => {
+    if (!el) {
+      onChange({ [key]: `${value}${token}` });
+      return;
+    }
+    const start = el.selectionStart ?? value.length;
+    onChange({
+      [key]: `${value.slice(0, start)}${token}${value.slice(start)}`,
+    });
+  };
+
+  const insertHeaderVariable = () => {
+    insertAt(
+      headerRef.current,
+      headerText,
+      `{{${nextVariableIndex(`${headerText}\n${body}`)}}}` ,
+      "headerText"
+    );
+  };
+
+  const insertBodyVariable = () => {
+    insertAt(
+      bodyRef.current,
+      body,
+      `{{${nextVariableIndex(`${headerText}\n${body}`)}}}` ,
+      "body"
+    );
+  };
 
   const insertFormat = (before: string, after: string) => {
     const el = bodyRef.current;
@@ -200,16 +366,17 @@ export function WhatsAppMetaTemplateContent({
     });
   };
 
-  const insertVariable = () => {
-    const index = nextVariableIndex(body);
-    const el = bodyRef.current;
-    if (!el) {
-      onChange({ body: `${body}{{${index}}}` });
-      return;
-    }
-    const start = el.selectionStart;
+  const setMedia = (next: MediaSample) => {
     onChange({
-      body: `${body.slice(0, start)}{{${index}}}${body.slice(start)}`,
+      headerType: resolveHeaderType(next, headerText),
+      headerMediaUrl: next === "none" || next === "location" ? "" : headerMediaUrl,
+    });
+  };
+
+  const setHeaderText = (next: string) => {
+    onChange({
+      headerText: next,
+      headerType: resolveHeaderType(media, next),
     });
   };
 
@@ -230,74 +397,41 @@ export function WhatsAppMetaTemplateContent({
     });
   };
 
-  const resolvedHeader: HeaderType =
-    headerType === "location" ? "none" : headerType;
-
   return (
     <div className="wa-meta-content">
       <div className="wa-meta-content__intro">
         <h4>תוכן</h4>
         <p className="wa-meta-help">
-          הוסיפו כותרת, גוף, כותרת תחתונה ולחצנים. המשתנים נכתבים במבנה{" "}
-          {"{{1}}"}, {"{{2}}"}.
+          יש להוסיף כותרת, גוף וחתימה לתבנית שלכם. המשתנים נכתבים במבנה {"{{1}}"}
+          , {"{{2}}"}.
         </p>
       </div>
 
       {showHeader && (
-        <section className="wa-meta-content__block">
-          <h5>כותרת</h5>
-          <p className="wa-meta-help">
-            בחרו סוג כותרת. יוצג רק השדה הרלוונטי לבחירה.
-          </p>
-          <div className="wa-meta-pills" role="radiogroup" aria-label="סוג כותרת">
-            {headerOptions.map((option) => (
-              <button
-                key={option.value}
-                type="button"
-                className={resolvedHeader === option.value ? "is-selected" : ""}
-                onClick={() =>
-                  onChange({
-                    headerType: option.value,
-                    headerText: option.value === "text" ? headerText : "",
-                    headerMediaUrl:
-                      option.value === "image" ||
-                      option.value === "video" ||
-                      option.value === "document"
-                        ? headerMediaUrl
-                        : "",
-                  })
-                }
-              >
-                {option.label}
-              </button>
-            ))}
-          </div>
-          {resolvedHeader === "text" && (
-            <label className="wa-meta-content__field">
-              <div className="wa-meta-field-row">
-                <span className="wa-meta-label">טקסט כותרת</span>
-                <span className="wa-meta-counter">
-                  {headerText.length}/{HEADER_TEXT_MAX}
-                </span>
-              </div>
-              <input
-                className="wa-meta-input"
-                maxLength={HEADER_TEXT_MAX}
-                value={headerText}
-                onChange={(e) => onChange({ headerText: e.target.value })}
-                placeholder="הוסיפו שורת טקסט קצרה לכותרת ההודעה"
-              />
-            </label>
-          )}
-          {(resolvedHeader === "image" ||
-            resolvedHeader === "video" ||
-            resolvedHeader === "document") && (
+        <>
+          <MetaSelect
+            label="סוג המשתנה"
+            info
+            value={variableType}
+            options={VARIABLE_OPTIONS}
+            onChange={(next) => onChange({ variableType: next })}
+          />
+
+          <MetaSelect
+            label="דגימת מדיה · לא חובה"
+            value={media}
+            options={MEDIA_OPTIONS}
+            radioEnd
+            onChange={setMedia}
+          />
+
+          {(media === "image" || media === "video" || media === "document") && (
             <label className="wa-meta-content__field">
               <span className="wa-meta-label">
-                {resolvedHeader === "image"
+                {media === "image"
                   ? "מזהה מדיה לתמונה"
-                  : resolvedHeader === "video"
-                    ? "מזהה מדיה לווידאו"
+                  : media === "video"
+                    ? "מזהה מדיה לסרטון"
                     : "מזהה מדיה למסמך"}
               </span>
               <input
@@ -307,19 +441,40 @@ export function WhatsAppMetaTemplateContent({
                 onChange={(e) => onChange({ headerMediaUrl: e.target.value })}
                 placeholder="מזהה מדיה שהתקבל מהעלאה"
               />
-              <p className="wa-meta-help">
-                מטא דורשת מזהה מדיה שהועלה מראש. בלי מזהה אי אפשר לשלוח לבדיקה.
-              </p>
             </label>
           )}
-        </section>
+
+          <section className="wa-meta-content__block">
+            <div className="wa-meta-field-row">
+              <span className="wa-meta-label">כותרת · לא חובה</span>
+              <span className="wa-meta-counter">
+                {headerText.length}/{HEADER_TEXT_MAX}
+              </span>
+            </div>
+            <input
+              ref={headerRef}
+              className="wa-meta-input"
+              maxLength={HEADER_TEXT_MAX}
+              value={headerText}
+              onChange={(e) => setHeaderText(e.target.value)}
+              placeholder="הוספת שורת טקסט קצרה לכותרת ההודעה"
+            />
+            <button
+              type="button"
+              className="wa-meta-link-btn"
+              onClick={insertHeaderVariable}
+            >
+              + הוספת משתנה
+            </button>
+          </section>
+        </>
       )}
 
       <section className="wa-meta-content__block">
         <h5>גוף</h5>
         <div className="wa-meta-toolbar-row">
           <div className="wa-meta-toolbar">
-            <button type="button" onClick={insertVariable}>
+            <button type="button" onClick={insertBodyVariable}>
               + משתנה
             </button>
             <button type="button" onClick={() => insertFormat("```", "```")}>
@@ -356,9 +511,7 @@ export function WhatsAppMetaTemplateContent({
       {variables.length > 0 && (
         <section className="wa-meta-content__block">
           <h5>ערכי דוגמה למשתנים</h5>
-          <p className="wa-meta-help">
-            מטא דורשת דוגמאות לכל משתנה לפני בדיקה.
-          </p>
+          <p className="wa-meta-help">מטא דורשת דוגמאות לכל משתנה לפני בדיקה.</p>
           <div className="wa-meta-var-grid">
             {variables.map((variable) => (
               <label key={variable}>
@@ -389,9 +542,7 @@ export function WhatsAppMetaTemplateContent({
             {footer.length}/{FOOTER_MAX}
           </span>
         </div>
-        <p className="wa-meta-help">
-          טקסט קצר בתחתית ההודעה. אפשר להשאיר ריק.
-        </p>
+        <p className="wa-meta-help">טקסט קצר בתחתית ההודעה. אפשר להשאיר ריק.</p>
         <input
           className="wa-meta-input"
           maxLength={FOOTER_MAX}
@@ -404,8 +555,8 @@ export function WhatsAppMetaTemplateContent({
       <section className="wa-meta-content__block">
         <h5>לחצנים · לא חובה</h5>
         <p className="wa-meta-help">
-          לחצנים מאפשרים ללקוחות להגיב או לבצע פעולה. ניתן להוסיף עד {MAX_BUTTONS}{" "}
-          לחצנים.
+          יצירת לחצנים שיאפשרו ללקוחות להשיב להודעה שלכם או לבצע פעולה. ניתן
+          להוסיף עד {MAX_BUTTONS} לחצנים.
         </p>
         <div className="wa-meta-add-wrap">
           <button
@@ -526,10 +677,6 @@ export function WhatsAppMetaTemplateContent({
                       }
                       placeholder="https://www.example.com/offer"
                     />
-                    <p className="wa-meta-help">
-                      לסיום הבדיקה יש לספק דוגמה לחלק הדינמי. בלי נתוני לקוח
-                      אמיתיים.
-                    </p>
                   </label>
                 )}
               </>

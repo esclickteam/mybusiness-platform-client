@@ -4,6 +4,7 @@ import { toast } from "react-toastify";
 import {
   saveWhatsAppTemplateDraft,
   submitWhatsAppTemplateToMeta,
+  type WhatsAppHeaderType,
   type WhatsAppTemplateButton,
   type WhatsAppTemplateSubmitPayload,
 } from "@/api/whatsappApi";
@@ -14,7 +15,6 @@ import {
 import "./whatsappMetaTemplateWizard.css";
 
 type MetaCategory = "MARKETING" | "UTILITY" | "AUTHENTICATION";
-type HeaderType = "none" | "text" | "image" | "video" | "document";
 type TemplateKind = "default" | "catalog" | "flows" | "call_permission" | "otp";
 type Step = 0 | 1 | 2;
 type ButtonType = WhatsAppTemplateButton["type"];
@@ -24,7 +24,8 @@ type FormState = {
   language: string;
   metaCategory: MetaCategory;
   templateKind: TemplateKind;
-  headerType: HeaderType;
+  variableType: "number" | "name";
+  headerType: WhatsAppHeaderType;
   headerText: string;
   headerHandle: string;
   body: string;
@@ -134,6 +135,7 @@ const emptyForm = (): FormState => ({
   language: "he",
   metaCategory: "MARKETING",
   templateKind: "default",
+  variableType: "number",
   headerType: "none",
   headerText: "",
   headerHandle: "",
@@ -238,6 +240,7 @@ export function WhatsAppCreateTemplateWizard({
     name: form.name.trim(),
     language: form.language,
     metaCategory: form.metaCategory,
+    variableType: form.variableType,
     headerType: form.headerType,
     headerText: form.headerType === "text" ? form.headerText : undefined,
     headerMediaUrl:
@@ -359,6 +362,9 @@ export function WhatsAppCreateTemplateWizard({
               )}
               {form.headerType === "document" && (
                 <div className="wa-meta-bubble__media">מסמך</div>
+              )}
+              {form.headerType === "location" && (
+                <div className="wa-meta-bubble__media">מיקום</div>
               )}
               <p className="wa-meta-bubble__body">{previewBody}</p>
               {form.footer && (
@@ -520,6 +526,7 @@ export function WhatsAppCreateTemplateWizard({
                 footer={form.footer}
                 buttons={form.buttons}
                 exampleValues={form.exampleValues}
+                variableType={form.variableType}
                 showHeader={form.metaCategory !== "AUTHENTICATION"}
                 allowedButtons={allowedButtons(form.metaCategory)}
                 bodyPlaceholder={
@@ -572,7 +579,9 @@ export function WhatsAppCreateTemplateWizard({
                         ? "תמונה"
                         : form.headerType === "video"
                           ? "וידאו"
-                          : "מסמך"}
+                          : form.headerType === "location"
+                            ? "מיקום"
+                            : "מסמך"}
                 </dd>
                 <dt>גוף</dt>
                 <dd style={{ whiteSpace: "pre-wrap", fontWeight: 500 }}>
