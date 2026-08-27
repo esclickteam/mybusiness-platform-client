@@ -157,7 +157,13 @@ function kindLabel(category: MetaCategory, kind: TemplateKind): string {
 
 function allowedButtons(category: MetaCategory): ButtonType[] {
   if (category === "AUTHENTICATION") return ["copy_code"];
-  return ["quick_reply", "url", "phone_number", "copy_code"];
+  return [
+    "quick_reply",
+    "url",
+    "voice_call",
+    "phone_number",
+    "request_contact_info",
+  ];
 }
 
 export function WhatsAppCreateTemplateWizard({
