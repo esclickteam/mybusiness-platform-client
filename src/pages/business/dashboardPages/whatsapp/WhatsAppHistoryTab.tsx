@@ -250,7 +250,7 @@ export default function WhatsAppHistoryTab() {
                   )}
                   {log.providerMessageId && (
                     <p className="mt-1 break-all font-mono text-[11px] font-semibold text-slate-500" dir="ltr">
-                      Meta Message ID: {log.providerMessageId}
+                      מזהה הודעה במטא: {log.providerMessageId}
                     </p>
                   )}
                   {log.error && (

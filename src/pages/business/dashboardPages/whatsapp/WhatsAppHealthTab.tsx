@@ -74,13 +74,13 @@ const HEALTH_LABEL_HE: Record<string, string> = {
   templatesRejected: "תבניות שנדחו",
   templatesPaused: "תבניות מושהות",
   templatesDisabled: "תבניות מושבתות",
-  lastMetaSyncAt: "סנכרון אחרון מ-Meta",
+  lastMetaSyncAt: "סנכרון אחרון ממטא",
   lastWebhookAt: "וובהוק אחרון",
   webhookHealth: "סטטוס וובהוק",
   lastSuccessfulMessageAt: "הודעה אחרונה שהצליחה",
   lastFailedMessageAt: "הודעה אחרונה שנכשלה",
   rateLimitErrors: "שגיאות מגבלת קצב",
-  metaErrorCodes: "קודי שגיאה של Meta",
+  metaErrorCodes: "קודי שגיאה של מטא",
 };
 
 const HEALTH_SOURCE_HE: Record<string, string> = {

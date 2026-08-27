@@ -100,12 +100,12 @@ export default function MetaBillingAccountCards({
     <div className={["space-y-3", className].join(" ")} dir="rtl">
       {showBoth ? (
         <p className="text-xs font-semibold text-slate-500">
-          הוצאות פרסום וחיוב הודעות WhatsApp מחויבים בנפרד על ידי Meta.
+          הוצאות פרסום וחיוב הודעות וואטסאפ מחויבים בנפרד על ידי מטא.
           הכרטיסים האלה לא חולקים אמצעי תשלום.
         </p>
       ) : showAdAccount ? (
         <p className="text-xs font-semibold text-slate-500">
-          הוצאות הפרסום מחויבות על ידי Meta באמצעי התשלום של חשבון המודעות שנבחר.
+          הוצאות הפרסום מחויבות על ידי מטא באמצעי התשלום של חשבון המודעות שנבחר.
         </p>
       ) : null}
 
@@ -166,7 +166,7 @@ export default function MetaBillingAccountCards({
               <p className="text-[11px] font-semibold leading-relaxed text-slate-500">
                 {showWaba
                   ? adAccountBilling.billingSeparationNote
-                  : "הוצאות הפרסום מחויבות על ידי Meta באמצעי התשלום של חשבון המודעות הזה."}
+                  : "הוצאות הפרסום מחויבות על ידי מטא באמצעי התשלום של חשבון המודעות הזה."}
               </p>
               {(adAccountBilling.issues || []).map((issue) => (
                 <p
@@ -194,8 +194,8 @@ export default function MetaBillingAccountCards({
 
         {showWaba ? (
         <BillingCardShell
-          title="חשבון WhatsApp Business"
-          subtitle="חיוב הודעות WhatsApp"
+          title="חשבון וואטסאפ עסקי"
+          subtitle="חיוב הודעות וואטסאפ"
           icon={<MessageCircle className="h-5 w-5" />}
           severity={
             wabaBilling?.connected ? wabaBilling.severity : "warning"
@@ -203,28 +203,28 @@ export default function MetaBillingAccountCards({
         >
           {!wabaBilling?.connected ? (
             <div className="space-y-2 text-sm font-semibold text-slate-700">
-              <p>WhatsApp Business אינו מחובר לסביבת העבודה הזו.</p>
+              <p>וואטסאפ עסקי אינו מחובר לסביבת העבודה הזו.</p>
               {onOpenWhatsAppSettings ? (
                 <button
                   type="button"
                   onClick={onOpenWhatsAppSettings}
                   className={`${btnSecondary} inline-flex`}
                 >
-                  פתיחת הגדרות WhatsApp
+                  פתיחת הגדרות וואטסאפ
                 </button>
               ) : (
                 <Link
                   to={whatsappSettingsPath}
                   className={`${btnSecondary} inline-flex`}
                 >
-                  פתיחת הגדרות WhatsApp
+                  פתיחת הגדרות וואטסאפ
                 </Link>
               )}
             </div>
           ) : (
             <div className="space-y-2 text-sm">
               <p className="font-bold text-slate-900">
-                {wabaBilling.wabaName || "WhatsApp Business"}
+                {wabaBilling.wabaName || "וואטסאפ עסקי"}
               </p>
               <p className="text-xs font-semibold text-slate-600">
                 סטטוס החשבון: {wabaBilling.status || "—"}
@@ -262,7 +262,7 @@ export default function MetaBillingAccountCards({
                 wabaBilling.hasPrimaryFundingId === false) ? (
                 <p className="inline-flex items-center gap-1 text-xs font-bold text-amber-800">
                   <AlertTriangle className="h-3.5 w-3.5" />
-                  אין אמצעי תשלום — הוסיפו אחד בהגדרות חשבון WhatsApp במטא
+                  אין אמצעי תשלום — הוסיפו אחד בהגדרות חשבון וואטסאפ במטא
                 </p>
               ) : null}
               {!wabaBilling.paymentMethodDisplay &&
@@ -273,10 +273,10 @@ export default function MetaBillingAccountCards({
                 <p className="inline-flex items-start gap-1 text-xs font-semibold text-slate-600">
                   <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-600" />
                   <span>
-                    אמצעי תשלום: בדקו בהגדרות חשבון WhatsApp במטא
+                    אמצעי תשלום: בדקו בהגדרות חשבון וואטסאפ במטא
                     <span className="mt-0.5 block font-medium text-slate-500">
-                      Meta מציגה את הכרטיס שם (סיכום ← אמצעי תשלום). האפליקציה
-                      לא מקבלת מותג/4 ספרות אחרונות בסגנון חשבון מודעות עבור WhatsApp.
+                      מטא מציגה את הכרטיס שם (סיכום ← אמצעי תשלום). האפליקציה
+                      לא מקבלת מותג/4 ספרות אחרונות בסגנון חשבון מודעות עבור וואטסאפ.
                     </span>
                   </span>
                 </p>
@@ -306,7 +306,7 @@ export default function MetaBillingAccountCards({
                   rel="noreferrer"
                   className={`${btnSecondary} inline-flex items-center gap-1.5`}
                 >
-                  {wabaBilling.actionLabel || "בדיקת חיוב WhatsApp"}
+                  {wabaBilling.actionLabel || "בדיקת חיוב וואטסאפ"}
                   <ExternalLink className="h-3.5 w-3.5" />
                 </a>
               ) : null}

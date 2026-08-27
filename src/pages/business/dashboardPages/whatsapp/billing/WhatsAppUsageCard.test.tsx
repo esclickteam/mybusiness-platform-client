@@ -57,11 +57,11 @@ describe("WhatsAppUsageCard", () => {
         onReactivate={() => {}}
       />
     );
-    expect(screen.getByText("WhatsApp")).toBeInTheDocument();
+    expect(screen.getByText("וואטסאפ")).toBeInTheDocument();
     expect(screen.getByText("חיוב לפי שימוש")).toBeInTheDocument();
-    expect(screen.getByText("חיוב WhatsApp לא הוגדר")).toBeInTheDocument();
+    expect(screen.getByText("חיוב וואטסאפ לא הוגדר")).toBeInTheDocument();
     fireEvent.click(
-      screen.getByRole("button", { name: "הגדרת חיוב WhatsApp" })
+      screen.getByRole("button", { name: "הגדרת חיוב וואטסאפ" })
     );
     expect(onOpenSetup).toHaveBeenCalledTimes(1);
   });
@@ -98,7 +98,7 @@ describe("WhatsAppUsageCard", () => {
         onReactivate={() => {}}
       />
     );
-    expect(screen.getByText("חיוב WhatsApp פעיל")).toBeInTheDocument();
+    expect(screen.getByText("חיוב וואטסאפ פעיל")).toBeInTheDocument();
     expect(screen.getByText(/327 הודעות החודש/)).toBeInTheDocument();
     expect(screen.getByText(/חיוב משוער:/)).toBeInTheDocument();
     expect(screen.getByText(/65\.40 ₪/)).toBeInTheDocument();
