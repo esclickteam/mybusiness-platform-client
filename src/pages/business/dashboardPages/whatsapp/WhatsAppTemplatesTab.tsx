@@ -465,7 +465,7 @@ export default function WhatsAppTemplatesTab() {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" dir="rtl">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 className="text-lg font-black text-slate-900">
@@ -528,7 +528,7 @@ export default function WhatsAppTemplatesTab() {
               </p>
             </div>
             <span className="rounded-md border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[11px] font-black text-emerald-700">
-              Local draft
+              טיוטה מקומית
             </span>
           </div>
 
@@ -727,7 +727,7 @@ export default function WhatsAppTemplatesTab() {
               <button
                 type="button"
                 className={btnSecondary}
-                title="Bold"
+                title="מודגש"
                 onClick={() =>
                   wrapSelection(
                     bodyRef.current,
@@ -744,7 +744,7 @@ export default function WhatsAppTemplatesTab() {
               <button
                 type="button"
                 className={btnSecondary}
-                title="Italic"
+                title="נטוי"
                 onClick={() =>
                   wrapSelection(
                     bodyRef.current,
@@ -761,7 +761,7 @@ export default function WhatsAppTemplatesTab() {
               <button
                 type="button"
                 className={btnSecondary}
-                title="Strikethrough"
+                title="קו חוצה"
                 onClick={() =>
                   wrapSelection(
                     bodyRef.current,
@@ -778,7 +778,7 @@ export default function WhatsAppTemplatesTab() {
               <button
                 type="button"
                 className={btnSecondary}
-                title="Monospace"
+                title="גופן קבוע"
                 onClick={() =>
                   wrapSelection(
                     bodyRef.current,
