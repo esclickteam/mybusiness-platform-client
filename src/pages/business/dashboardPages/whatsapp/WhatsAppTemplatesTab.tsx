@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
+﻿import React, { useEffect, useMemo, useState } from "react";
 import {
   useNavigate,
   useOutletContext,
@@ -7,20 +7,13 @@ import {
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
 import {
-  Bold,
-  FileText,
-  Image as ImageIcon,
-  Italic,
   Loader2,
-  MapPin,
   Pencil,
   Plus,
   RefreshCw,
   Send,
   Settings2,
-  Strikethrough,
   Trash2,
-  Video,
 } from "lucide-react";
 import {
   createWhatsAppTemplate,
@@ -40,6 +33,7 @@ import {
   inputBase,
 } from "../../../../styles/bizuplyUi";
 import WhatsAppCreateTemplateWizard from "./WhatsAppCreateTemplateWizard";
+import { WhatsAppMetaTemplateContent } from "./WhatsAppMetaTemplateContent";
 import WhatsAppVariableMappingScreen from "./WhatsAppVariableMappingScreen";
 
 type TranslateFn = (key: string, options?: Record<string, unknown>) => string;
@@ -120,8 +114,6 @@ const CATEGORIES = [
 const BODY_MAX = 1024;
 const HEADER_MAX = 60;
 const FOOTER_MAX = 60;
-const BUTTON_TEXT_MAX = 40;
-const URL_MAX = 2000;
 
 type TemplateForm = {
   name: string;
@@ -164,37 +156,6 @@ function extractMetaVariables(body: string) {
   return vars.sort((a, b) => Number(a) - Number(b));
 }
 
-function nextMetaVariableToken(body: string) {
-  const nums = extractMetaVariables(body).map(Number);
-  const next = (nums.length ? Math.max(...nums) : 0) + 1;
-  return `{{${next}}}`;
-}
-
-function wrapSelection(
-  textarea: HTMLTextAreaElement | null,
-  value: string,
-  before: string,
-  after: string,
-  onChange: (next: string) => void,
-  defaultSelectedText: string
-) {
-  if (!textarea) {
-    onChange(`${value}${before}${after}`);
-    return;
-  }
-  const start = textarea.selectionStart ?? value.length;
-  const end = textarea.selectionEnd ?? value.length;
-  const selected = value.slice(start, end) || defaultSelectedText;
-  const next =
-    value.slice(0, start) + before + selected + after + value.slice(end);
-  onChange(next.slice(0, BODY_MAX));
-  requestAnimationFrame(() => {
-    const pos = start + before.length + selected.length + after.length;
-    textarea.focus();
-    textarea.setSelectionRange(pos, pos);
-  });
-}
-
 function normalizeExampleValues(
   raw: WhatsAppTemplate["exampleValues"]
 ): Record<string, string> {
@@ -210,7 +171,6 @@ export default function WhatsAppTemplatesTab() {
   const { businessId } = useOutletContext<OutletCtx>();
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
-  const bodyRef = useRef<HTMLTextAreaElement | null>(null);
   const [loading, setLoading] = useState(true);
   const [syncing, setSyncing] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -281,7 +241,7 @@ export default function WhatsAppTemplatesTab() {
       const statusSummary = (result.rawStatuses || [])
         .map((row) => `${row.name}: ${row.labelHe || row.status}`)
         .slice(0, 5)
-        .join(" · ");
+        .join(" ֲ· ");
       toast.success(
         statusSummary
           ? t("whatsapp.templates.syncedWithSummary", {
@@ -335,46 +295,6 @@ export default function WhatsAppTemplatesTab() {
       })),
     });
     setShowForm(true);
-  };
-
-  const insertVariable = () => {
-    const token = nextMetaVariableToken(form.body);
-    const textarea = bodyRef.current;
-    if (!textarea) {
-      setForm((prev) => ({
-        ...prev,
-        body: `${prev.body}${prev.body && !/\s$/.test(prev.body) ? " " : ""}${token}`.slice(
-          0,
-          BODY_MAX
-        ),
-      }));
-      return;
-    }
-    const start = textarea.selectionStart ?? form.body.length;
-    const end = textarea.selectionEnd ?? form.body.length;
-    const next = (
-      form.body.slice(0, start) +
-      token +
-      form.body.slice(end)
-    ).slice(0, BODY_MAX);
-    setForm((prev) => ({ ...prev, body: next }));
-    requestAnimationFrame(() => {
-      const pos = start + token.length;
-      textarea.focus();
-      textarea.setSelectionRange(pos, pos);
-    });
-  };
-
-  const updateButton = (
-    index: number,
-    patch: Partial<WhatsAppTemplateButton>
-  ) => {
-    setForm((prev) => ({
-      ...prev,
-      buttons: prev.buttons.map((btn, i) =>
-        i === index ? { ...btn, ...patch } : btn
-      ),
-    }));
   };
 
   const handleSave = async () => {
@@ -528,7 +448,7 @@ export default function WhatsAppTemplatesTab() {
               </p>
             </div>
             <span className="rounded-md border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[11px] font-black text-emerald-700">
-              טיוטה מקומית
+              ׳˜׳™׳•׳˜׳” ׳׳§׳•׳׳™׳×
             </span>
           </div>
 
@@ -568,497 +488,18 @@ export default function WhatsAppTemplatesTab() {
             </label>
           </div>
 
-          {/* Variable type — like Meta */}
-          <div className="grid gap-1.5">
-            <span className="text-xs font-black text-slate-600">
-              {t("whatsapp.templates.variableType")}
-            </span>
-            <div className="grid gap-2 sm:grid-cols-2">
-              {(
-                [
-                  ["number", "whatsapp.templates.variableTypeNumber"],
-                  ["name", "whatsapp.templates.variableTypeName"],
-                ] as const
-              ).map(([value, labelKey]) => (
-                <button
-                  key={value}
-                  type="button"
-                  onClick={() =>
-                    setForm((prev) => ({ ...prev, variableType: value }))
-                  }
-                  className={[
-                    "rounded-xl border px-3 py-3 text-start text-sm font-bold transition",
-                    form.variableType === value
-                      ? "border-sky-300 bg-sky-50 text-sky-900"
-                      : "border-slate-200 bg-white text-slate-600 hover:border-sky-200",
-                  ].join(" ")}
-                >
-                  {t(labelKey)}
-                  {value === "number" && (
-                    <span dir="ltr" className="mt-1 block text-xs font-medium text-slate-400">
-                      {"{{1}} {{2}} {{3}}"}
-                    </span>
-                  )}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Media sample — like Meta */}
-          <div className="grid gap-1.5">
-            <span className="text-xs font-black text-slate-600">
-              {t("whatsapp.templates.mediaSample")}
-            </span>
-            <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
-              {(
-                [
-                  ["none", "whatsapp.templates.mediaNone", null],
-                  ["image", "whatsapp.templates.mediaImage", ImageIcon],
-                  ["video", "whatsapp.templates.mediaVideo", Video],
-                  ["document", "whatsapp.templates.mediaDocument", FileText],
-                  ["location", "whatsapp.templates.mediaLocation", MapPin],
-                ] as const
-              ).map(([value, labelKey, Icon]) => (
-                <button
-                  key={value}
-                  type="button"
-                  onClick={() =>
-                    setForm((prev) => ({
-                      ...prev,
-                      headerType: value,
-                      headerText: prev.headerText,
-                    }))
-                  }
-                  className={[
-                    "flex flex-col items-center gap-1.5 rounded-xl border px-2 py-3 text-center text-xs font-bold transition",
-                    form.headerType === value
-                      ? "border-sky-300 bg-sky-50 text-sky-900"
-                      : "border-slate-200 bg-white text-slate-600 hover:border-sky-200",
-                  ].join(" ")}
-                >
-                  {Icon ? <Icon className="h-4 w-4" /> : null}
-                  {t(labelKey)}
-                </button>
-              ))}
-            </div>
-            {form.headerType !== "none" && form.headerType !== "text" && (
-              <label className="mt-2 grid gap-1.5">
-                <span className="text-xs font-black text-slate-600">
-                  {t("whatsapp.templates.mediaUrl")}
-                </span>
-                <input
-                  className={inputBase}
-                  dir="ltr"
-                  value={form.headerMediaUrl}
-                  onChange={(e) =>
-                    setForm((prev) => ({
-                      ...prev,
-                      headerMediaUrl: e.target.value,
-                    }))
-                  }
-                  placeholder="https://..."
-                />
-              </label>
-            )}
-          </div>
-
-          {/* Header text */}
-          <label className="grid gap-1.5">
-            <div className="flex items-center justify-between gap-2">
-              <span className="text-xs font-black text-slate-600">
-                {t("whatsapp.templates.header")}
-              </span>
-              <span className="text-[11px] font-bold text-slate-400">
-                {form.headerText.length}/{HEADER_MAX}
-              </span>
-            </div>
-            <input
-              className={inputBase}
-              value={form.headerText}
-              maxLength={HEADER_MAX}
-              onChange={(e) =>
-                setForm((prev) => ({
-                  ...prev,
-                  headerText: e.target.value,
-                  headerType:
-                    e.target.value.trim() && prev.headerType === "none"
-                      ? "text"
-                      : prev.headerType === "text" && !e.target.value.trim()
-                        ? "none"
-                        : prev.headerType,
-                }))
-              }
-              placeholder={t("whatsapp.templates.headerPlaceholder")}
+          <div className="wa-meta-wizard" style={{ border: 0, boxShadow: "none" }}>
+            <WhatsAppMetaTemplateContent
+              headerType={form.headerType}
+              headerText={form.headerText}
+              headerMediaUrl={form.headerMediaUrl}
+              body={form.body}
+              footer={form.footer}
+              buttons={form.buttons}
+              exampleValues={form.exampleValues}
+              allowedButtons={["quick_reply", "url", "phone_number", "copy_code"]}
+              onChange={(patch) => setForm((prev) => ({ ...prev, ...patch }))}
             />
-          </label>
-
-          {/* Body */}
-          <div className="grid gap-1.5">
-            <div className="flex items-center justify-between gap-2">
-              <span className="text-xs font-black text-slate-600">
-                {t("whatsapp.templates.body")}
-              </span>
-              <span className="text-[11px] font-bold text-slate-400">
-                {form.body.length}/{BODY_MAX}
-              </span>
-            </div>
-            <textarea
-              ref={bodyRef}
-              className={`${inputBase} min-h-[160px] py-3`}
-              value={form.body}
-              maxLength={BODY_MAX}
-              onChange={(e) =>
-                setForm((prev) => ({
-                  ...prev,
-                  body: e.target.value.slice(0, BODY_MAX),
-                }))
-              }
-              placeholder={t("whatsapp.templates.bodyPlaceholder")}
-            />
-            <div className="flex flex-wrap items-center gap-1.5">
-              <button
-                type="button"
-                className={btnSecondary}
-                onClick={insertVariable}
-              >
-                <Plus className="h-3.5 w-3.5" />
-                {t("whatsapp.templates.addVariable")}
-              </button>
-              <button
-                type="button"
-                className={btnSecondary}
-                title="מודגש"
-                onClick={() =>
-                  wrapSelection(
-                    bodyRef.current,
-                    form.body,
-                    "*",
-                    "*",
-                    (next) => setForm((prev) => ({ ...prev, body: next })),
-                    t("whatsapp.templates.defaultWrapText")
-                  )
-                }
-              >
-                <Bold className="h-3.5 w-3.5" />
-              </button>
-              <button
-                type="button"
-                className={btnSecondary}
-                title="נטוי"
-                onClick={() =>
-                  wrapSelection(
-                    bodyRef.current,
-                    form.body,
-                    "_",
-                    "_",
-                    (next) => setForm((prev) => ({ ...prev, body: next })),
-                    t("whatsapp.templates.defaultWrapText")
-                  )
-                }
-              >
-                <Italic className="h-3.5 w-3.5" />
-              </button>
-              <button
-                type="button"
-                className={btnSecondary}
-                title="קו חוצה"
-                onClick={() =>
-                  wrapSelection(
-                    bodyRef.current,
-                    form.body,
-                    "~",
-                    "~",
-                    (next) => setForm((prev) => ({ ...prev, body: next })),
-                    t("whatsapp.templates.defaultWrapText")
-                  )
-                }
-              >
-                <Strikethrough className="h-3.5 w-3.5" />
-              </button>
-              <button
-                type="button"
-                className={btnSecondary}
-                title="גופן קבוע"
-                onClick={() =>
-                  wrapSelection(
-                    bodyRef.current,
-                    form.body,
-                    "```",
-                    "```",
-                    (next) => setForm((prev) => ({ ...prev, body: next })),
-                    t("whatsapp.templates.defaultWrapText")
-                  )
-                }
-              >
-                {"</>"}
-              </button>
-            </div>
-          </div>
-
-          {/* Variable samples — like Meta */}
-          {bodyVariables.length > 0 && (
-            <div className="rounded-xl border border-slate-200 bg-slate-50/70 p-4">
-              <h4 className="text-sm font-black text-slate-900">
-                {t("whatsapp.templates.variableSamples")}
-              </h4>
-              <p className="mt-1 text-xs font-medium leading-relaxed text-slate-500">
-                {t("whatsapp.templates.variableSamplesHint")}
-              </p>
-              <div className="mt-3 grid gap-3">
-                <p className="text-xs font-black uppercase tracking-wide text-slate-500">
-                  {t("whatsapp.templates.body")}
-                </p>
-                {bodyVariables.map((key) => (
-                  <label key={key} className="grid gap-1.5">
-                    <span dir="ltr" className="text-xs font-black text-sky-700">
-                      {`{{${key}}}`}
-                    </span>
-                    <input
-                      className={inputBase}
-                      value={form.exampleValues[key] || ""}
-                      onChange={(e) =>
-                        setForm((prev) => ({
-                          ...prev,
-                          exampleValues: {
-                            ...prev.exampleValues,
-                            [key]: e.target.value,
-                          },
-                        }))
-                      }
-                      placeholder={t("whatsapp.templates.samplePlaceholder", {
-                        n: key,
-                      })}
-                    />
-                  </label>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Footer */}
-          <label className="grid gap-1.5">
-            <div className="flex items-center justify-between gap-2">
-              <span className="text-xs font-black text-slate-600">
-                {t("whatsapp.templates.footer")}
-              </span>
-              <span className="text-[11px] font-bold text-slate-400">
-                {form.footer.length}/{FOOTER_MAX}
-              </span>
-            </div>
-            <input
-              className={inputBase}
-              value={form.footer}
-              maxLength={FOOTER_MAX}
-              onChange={(e) =>
-                setForm((prev) => ({ ...prev, footer: e.target.value }))
-              }
-              placeholder={t("whatsapp.templates.footerPlaceholder")}
-            />
-          </label>
-
-          {/* Buttons — like Meta */}
-          <div className="rounded-xl border border-slate-200 p-4">
-            <div className="flex flex-wrap items-start justify-between gap-3">
-              <div>
-                <h4 className="text-sm font-black text-slate-900">
-                  {t("whatsapp.templates.buttons")}
-                </h4>
-                <p className="mt-1 text-xs font-medium text-slate-500">
-                  {t("whatsapp.templates.buttonsHint")}
-                </p>
-              </div>
-              <button
-                type="button"
-                className={btnSecondary}
-                disabled={form.buttons.length >= 10}
-                onClick={() =>
-                  setForm((prev) => ({
-                    ...prev,
-                    buttons: [
-                      ...prev.buttons,
-                      {
-                        type: "url",
-                        text: "",
-                        url: "",
-                        urlType: "dynamic",
-                        exampleUrl: "",
-                        phoneNumber: "",
-                      },
-                    ],
-                  }))
-                }
-              >
-                <Plus className="h-3.5 w-3.5" />
-                {t("whatsapp.templates.addButton")}
-              </button>
-            </div>
-
-            <div className="mt-4 space-y-4">
-              {form.buttons.map((btn, index) => (
-                <div
-                  key={index}
-                  className="rounded-xl border border-slate-200 bg-white p-3"
-                >
-                  <div className="mb-3 flex items-center justify-between gap-2">
-                    <span className="text-xs font-black text-slate-600">
-                      {t("whatsapp.templates.buttonN", { n: index + 1 })}
-                    </span>
-                    <button
-                      type="button"
-                      className={btnSecondary}
-                      onClick={() =>
-                        setForm((prev) => ({
-                          ...prev,
-                          buttons: prev.buttons.filter((_, i) => i !== index),
-                        }))
-                      }
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                    </button>
-                  </div>
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    <label className="grid gap-1.5">
-                      <span className="text-xs font-black text-slate-600">
-                        {t("whatsapp.templates.buttonAction")}
-                      </span>
-                      <select
-                        className={inputBase}
-                        value={btn.type}
-                        onChange={(e) =>
-                          updateButton(index, {
-                            type: e.target.value as WhatsAppTemplateButton["type"],
-                          })
-                        }
-                      >
-                        <option value="url">
-                          {t("whatsapp.templates.buttonVisitWebsite")}
-                        </option>
-                        <option value="phone_number">
-                          {t("whatsapp.templates.buttonCallPhone")}
-                        </option>
-                        <option value="quick_reply">
-                          {t("whatsapp.templates.buttonQuickReply")}
-                        </option>
-                      </select>
-                    </label>
-                    <label className="grid gap-1.5">
-                      <div className="flex items-center justify-between gap-2">
-                        <span className="text-xs font-black text-slate-600">
-                          {t("whatsapp.templates.buttonText")}
-                        </span>
-                        <span className="text-[11px] font-bold text-slate-400">
-                          {(btn.text || "").length}/{BUTTON_TEXT_MAX}
-                        </span>
-                      </div>
-                      <input
-                        className={inputBase}
-                        maxLength={BUTTON_TEXT_MAX}
-                        value={btn.text}
-                        onChange={(e) =>
-                          updateButton(index, { text: e.target.value })
-                        }
-                      />
-                    </label>
-                    {btn.type === "url" && (
-                      <>
-                        <label className="grid gap-1.5">
-                          <span className="text-xs font-black text-slate-600">
-                            {t("whatsapp.templates.urlType")}
-                          </span>
-                          <select
-                            className={inputBase}
-                            value={btn.urlType || "static"}
-                            onChange={(e) =>
-                              updateButton(index, {
-                                urlType: e.target
-                                  .value as WhatsAppTemplateButton["urlType"],
-                              })
-                            }
-                          >
-                            <option value="static">
-                              {t("whatsapp.templates.urlStatic")}
-                            </option>
-                            <option value="dynamic">
-                              {t("whatsapp.templates.urlDynamic")}
-                            </option>
-                          </select>
-                        </label>
-                        <label className="grid gap-1.5">
-                          <div className="flex items-center justify-between gap-2">
-                            <span className="text-xs font-black text-slate-600">
-                              {t("whatsapp.templates.websiteUrl")}
-                            </span>
-                            <span
-                              dir="ltr"
-                              className="text-[11px] font-bold text-sky-700"
-                            >
-                              {btn.urlType === "dynamic" ? "{{1}}" : ""}
-                            </span>
-                          </div>
-                          <input
-                            className={inputBase}
-                            dir="ltr"
-                            maxLength={URL_MAX}
-                            value={btn.url || ""}
-                            onChange={(e) =>
-                              updateButton(index, { url: e.target.value })
-                            }
-                            placeholder="https://example.com/path"
-                          />
-                        </label>
-                        {btn.urlType === "dynamic" && (
-                          <label className="grid gap-1.5 sm:col-span-2">
-                            <div className="flex items-center justify-between gap-2">
-                              <span className="text-xs font-black text-slate-600">
-                                {t("whatsapp.templates.sampleUrl")}
-                              </span>
-                              <span
-                                dir="ltr"
-                                className="text-[11px] font-bold text-sky-700"
-                              >
-                                {"{{1}}"}
-                              </span>
-                            </div>
-                            <p className="text-xs font-medium text-slate-500">
-                              {t("whatsapp.templates.sampleUrlHint")}
-                            </p>
-                            <input
-                              className={inputBase}
-                              dir="ltr"
-                              value={btn.exampleUrl || ""}
-                              onChange={(e) =>
-                                updateButton(index, {
-                                  exampleUrl: e.target.value,
-                                })
-                              }
-                              placeholder="abc123?token=sample"
-                            />
-                          </label>
-                        )}
-                      </>
-                    )}
-                    {btn.type === "phone_number" && (
-                      <label className="grid gap-1.5 sm:col-span-2">
-                        <span className="text-xs font-black text-slate-600">
-                          {t("whatsapp.templates.phoneNumber")}
-                        </span>
-                        <input
-                          className={inputBase}
-                          dir="ltr"
-                          value={btn.phoneNumber || ""}
-                          onChange={(e) =>
-                            updateButton(index, {
-                              phoneNumber: e.target.value,
-                            })
-                          }
-                          placeholder="+972501234567"
-                        />
-                      </label>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
           </div>
 
           <div className="flex flex-wrap gap-2">
@@ -1103,7 +544,7 @@ export default function WhatsAppTemplatesTab() {
                     {tpl.name}
                   </h3>
                   <p className="mt-0.5 text-xs font-semibold text-slate-500">
-                    {tpl.language} ·{" "}
+                    {tpl.language} ֲ·{" "}
                     {tpl.source === "meta"
                       ? t("whatsapp.templates.sourceMeta")
                       : t("whatsapp.templates.sourceLocal")}
