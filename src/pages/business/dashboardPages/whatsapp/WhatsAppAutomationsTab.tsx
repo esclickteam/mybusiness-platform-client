@@ -289,7 +289,7 @@ export default function WhatsAppAutomationsTab({
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" dir="rtl">
       <section className={`${cardBase} p-4 sm:p-5`}>
         <div className="flex items-start gap-3">
           <div className="grid h-10 w-10 place-items-center rounded-xl border border-emerald-100 bg-emerald-50 text-emerald-700">

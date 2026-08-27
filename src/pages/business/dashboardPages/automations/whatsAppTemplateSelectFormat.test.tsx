@@ -93,7 +93,7 @@ describe("whatsAppTemplateSelectFormat", () => {
         metaTemplateName: "new_lead_received",
         name: "new_lead_received",
       })
-    ).toBe("New Lead Received");
+    ).toBe("התקבל ליד חדש");
   });
 
   it("keeps technical name visible in secondary line", () => {
@@ -119,7 +119,7 @@ describe("whatsAppTemplateSelectFormat", () => {
       formatWhatsAppTemplateCategory({ metaCategory: "AUTHENTICATION" })
     ).toBe("אימות");
     expect(formatWhatsAppTemplateLanguage("he_IL")).toBe("עברית");
-    expect(formatWhatsAppTemplateLanguage("en_US")).toBe("English");
+    expect(formatWhatsAppTemplateLanguage("en_US")).toBe("אנגלית");
   });
 
   it("formats variable counts and omits zero", () => {

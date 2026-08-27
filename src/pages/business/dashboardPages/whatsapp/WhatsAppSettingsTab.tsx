@@ -60,42 +60,43 @@ type SessionAssets = {
 };
 
 function voiceSessionStatusLabel(
-  session: WhatsAppVoiceVerificationSession | null
+  session: WhatsAppVoiceVerificationSession | null,
+  t: (key: string) => string
 ): string {
   if (!session) return "";
   switch (session.status) {
     case "waiting_for_call":
-      return "Waiting for Meta to call your verification number…";
+      return t("whatsapp.settings.voiceWaitingCall");
     case "call_received":
-      return "Call received";
+      return t("whatsapp.settings.voiceCallReceived");
     case "answered":
-      return "Call answered";
+      return t("whatsapp.settings.voiceCallAnswered");
     case "capturing":
-      return "Listening for verification code…";
+      return t("whatsapp.settings.voiceCapturing");
     case "otp_captured":
       if (session.metaVerifyStatus === "verified") {
-        return "Verification code submitted to Meta successfully";
+        return t("whatsapp.settings.voiceSubmittedOk");
       }
       if (session.metaVerifyStatus === "failed") {
-        return "Auto-submit to Meta failed — enter the code manually in Meta if needed";
+        return t("whatsapp.settings.voiceAutoFailed");
       }
       if (session.metaVerifyStatus === "submitted") {
-        return "Submitting verification code to Meta…";
+        return t("whatsapp.settings.voiceSubmitting");
       }
       if (session.metaVerifyStatus === "skipped_missing_credentials") {
-        return "Code captured — connect WhatsApp credentials to auto-submit, or enter it in Meta";
+        return t("whatsapp.settings.voiceCapturedNeedCreds");
       }
-      return "Verification code captured";
+      return t("whatsapp.settings.voiceCaptured");
     case "ambiguous":
-      return "Could not hear a clear code — retry the voice call from Meta";
+      return t("whatsapp.settings.voiceAmbiguous");
     case "failed":
-      return "Voice verification failed — start capture again and retry from Meta";
+      return t("whatsapp.settings.voiceFailed");
     case "expired":
-      return "Voice verification expired — start capture again";
+      return t("whatsapp.settings.voiceExpired");
     case "consumed":
       return session.metaVerifyStatus === "verified"
-        ? "Verification complete"
-        : "Verification code used";
+        ? t("whatsapp.settings.voiceComplete")
+        : t("whatsapp.settings.voiceUsed");
     default:
       return session.status.replace(/_/g, " ");
   }
@@ -373,7 +374,7 @@ export default function WhatsAppSettingsTab() {
       // Keep it alive until FB.login returns — Meta "send code again" does not
       // re-enter handleConnect, and phone_number_id is not available yet.
       try {
-        setActionInfo("Preparing voice verification…");
+        setActionInfo(t("whatsapp.settings.voicePreparing"));
         const voice = await keepEmbeddedSignupVoiceSession();
         console.info("[whatsapp] Voice verification session ready", {
           sessionId: voice?.session?.sessionId,
@@ -409,7 +410,7 @@ export default function WhatsAppSettingsTab() {
           toast.warning(
             getApiErrorMessage(
               voiceError,
-              "Voice verification session could not be prepared. SMS may still work."
+              t("whatsapp.settings.voicePrepareWarn")
             )
           );
         }
@@ -597,17 +598,13 @@ export default function WhatsAppSettingsTab() {
       setVoiceSession(result.session);
       try {
         await requestWhatsAppVoiceVerificationCode(businessId);
-        toast.info(
-          "Voice verification is ready. Meta should call your verification number."
-        );
+        toast.info(t("whatsapp.settings.voiceReadyCall"));
       } catch {
-        toast.info(
-          "Voice verification is ready. Request a voice call from Meta."
-        );
+        toast.info(t("whatsapp.settings.voiceReadyRequest"));
       }
     } catch (error: any) {
       toast.error(
-        getApiErrorMessage(error, "Could not start voice verification")
+        getApiErrorMessage(error, t("whatsapp.settings.voiceStartFailed"))
       );
     } finally {
       setStartingVoiceVerification(false);
@@ -618,7 +615,7 @@ export default function WhatsAppSettingsTab() {
     if (!businessId || !voiceSession?.otpCode || !voiceSession.sessionId) return;
     try {
       await navigator.clipboard.writeText(voiceSession.otpCode);
-      toast.success("Verification code copied");
+      toast.success(t("whatsapp.settings.voiceCopied"));
       try {
         const result = await consumeWhatsAppVoiceOtp(
           businessId,
@@ -629,7 +626,7 @@ export default function WhatsAppSettingsTab() {
         // Keep showing code if consume races with auto-verify.
       }
     } catch {
-      toast.error("Could not copy verification code");
+      toast.error(t("whatsapp.settings.voiceCopyFailed"));
     }
   };
 
@@ -641,10 +638,10 @@ export default function WhatsAppSettingsTab() {
         voiceSession.sessionId
       );
       if (result.session) setVoiceSession(result.session);
-      toast.success("Submitted verification code to Meta");
+      toast.success(t("whatsapp.settings.voiceCodeSubmitted"));
     } catch (error: any) {
       toast.error(
-        getApiErrorMessage(error, "Could not submit verification code to Meta")
+        getApiErrorMessage(error, t("whatsapp.settings.voiceCodeSubmitFailed"))
       );
       try {
         const status = await getWhatsAppVoiceVerificationStatus(businessId);
@@ -763,7 +760,7 @@ export default function WhatsAppSettingsTab() {
         : t("whatsapp.settings.disconnectedHint");
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4" dir="rtl">
       <MetaBillingAccountCards
         adAccountBilling={adAccountBilling}
         wabaBilling={connection?.wabaBillingHealth || null}
@@ -871,7 +868,7 @@ export default function WhatsAppSettingsTab() {
                   <ShieldAlert className={`h-5 w-5 ${tone.icon}`} />
                 )}
                 <p className={`text-sm font-black ${tone.title}`}>
-                  {connection?.readinessLabel || statusTitle}
+                  {statusTitle}
                 </p>
               </div>
               <dl className="mt-3 grid gap-2 text-sm">
@@ -960,11 +957,11 @@ export default function WhatsAppSettingsTab() {
                 <div className="flex items-center gap-2">
                   <PhoneCall className="h-4 w-4 text-sky-700" />
                   <p className="text-sm font-black text-slate-900">
-                    Voice verification code
+                    {t("whatsapp.settings.voiceTitle")}
                   </p>
                 </div>
                 <p className="mt-1 text-xs font-medium text-slate-600">
-                  Start listening, then ask Meta to call your verification number.
+                  {t("whatsapp.settings.voiceHint")}
                 </p>
                 {voiceSession?.otpAvailable && voiceSession.otpCode ? (
                   <div className="mt-3 space-y-2">
@@ -972,7 +969,7 @@ export default function WhatsAppSettingsTab() {
                       type="button"
                       className="w-full rounded-lg bg-white px-3 py-2 text-center font-mono text-2xl font-black tracking-[0.3em] text-slate-900"
                       dir="ltr"
-                      aria-label="Captured voice verification code — click to copy"
+                      aria-label={t("whatsapp.settings.voiceCopyAria")}
                       onClick={() => {
                         void handleCopyVoiceOtp();
                       }}
@@ -981,14 +978,14 @@ export default function WhatsAppSettingsTab() {
                     </button>
                     {voiceSession.metaVerifyStatus === "verified" ? (
                       <p className="text-xs font-bold text-emerald-800">
-                        Submitted to Meta successfully
+                        {t("whatsapp.settings.voiceSubmitted")}
                       </p>
                     ) : null}
                     {voiceSession.metaVerifyStatus === "failed" ? (
                       <div className="space-y-2">
                         <p className="text-xs font-bold text-rose-700">
                           {voiceSession.metaVerifyError ||
-                            "Auto-submit failed — enter this code in Meta, or retry"}
+                            t("whatsapp.settings.voiceSubmitFailed")}
                         </p>
                         <button
                           type="button"
@@ -997,19 +994,21 @@ export default function WhatsAppSettingsTab() {
                             void handleRetryMetaVerify();
                           }}
                         >
-                          Retry Meta submit
+                          {t("whatsapp.settings.voiceRetry")}
                         </button>
                       </div>
                     ) : null}
                   </div>
                 ) : voiceSession ? (
                   <p className="mt-3 text-xs font-bold text-sky-800">
-                    {voiceSessionStatusLabel(voiceSession)}
+                    {voiceSessionStatusLabel(voiceSession, t)}
                   </p>
                 ) : null}
                 {voiceSession?.metaVerifyStatus ? (
-                  <p className="mt-2 text-[11px] font-semibold text-slate-500" dir="ltr">
-                    Meta verify: {voiceSession.metaVerifyStatus}
+                  <p className="mt-2 text-[11px] font-semibold text-slate-500">
+                    {t("whatsapp.settings.voiceMetaVerify", {
+                      status: voiceSession.metaVerifyStatus,
+                    })}
                     {voiceSession.metaVerifyError
                       ? ` — ${voiceSession.metaVerifyError}`
                       : ""}
@@ -1036,7 +1035,7 @@ export default function WhatsAppSettingsTab() {
                   ) : (
                     <PhoneCall className="h-4 w-4" />
                   )}
-                  Start voice capture
+                  {t("whatsapp.settings.voiceStart")}
                 </button>
               </div>
               </>

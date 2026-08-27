@@ -523,7 +523,7 @@ export default function WhatsAppComposeTab() {
   }
 
   return (
-    <div className="grid gap-4 xl:grid-cols-[1.35fr_0.95fr]">
+    <div className="grid gap-4 xl:grid-cols-[1.35fr_0.95fr]" dir="rtl">
       <div className="space-y-4">
         {!connection?.connected && (
           <div className="flex flex-col gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-900 sm:flex-row sm:items-center sm:justify-between">

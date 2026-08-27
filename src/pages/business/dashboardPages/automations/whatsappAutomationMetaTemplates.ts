@@ -73,8 +73,8 @@ export const LEGACY_MANAGED_META_TEMPLATE_NAMES = new Set(["new_lead_received"])
 
 export const MANAGED_TEMPLATE_DISPLAY_NAMES: Record<string, string> = {
   appointment_confirmation: "אישור פגישה",
-  new_lead_received_utility: "New Lead Received",
-  new_lead_received: "New Lead Received",
+  new_lead_received_utility: "התקבל ליד חדש",
+  new_lead_received: "התקבל ליד חדש",
 };
 
 export const isTestTemplateName = (name: string) =>
