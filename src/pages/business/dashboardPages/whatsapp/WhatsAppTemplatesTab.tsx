@@ -497,6 +497,7 @@ export default function WhatsAppTemplatesTab() {
               footer={form.footer}
               buttons={form.buttons}
               exampleValues={form.exampleValues}
+              variableType={form.variableType}
               allowedButtons={["quick_reply", "url", "phone_number", "copy_code"]}
               onChange={(patch) => setForm((prev) => ({ ...prev, ...patch }))}
             />
