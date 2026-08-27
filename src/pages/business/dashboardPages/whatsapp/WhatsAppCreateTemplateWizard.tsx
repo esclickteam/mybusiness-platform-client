@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Check, ChevronDown, Loader2, Plus, X } from "lucide-react";
-import { toast } from "sonner";
+import { toast } from "react-toastify";
 import {
   saveWhatsAppTemplateDraft,
   submitWhatsAppTemplateToMeta,
