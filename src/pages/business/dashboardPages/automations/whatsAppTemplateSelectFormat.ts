@@ -37,7 +37,7 @@ export function resolveWhatsAppTemplateDisplayName(
 export function formatWhatsAppTemplateLanguage(language = ""): string {
   const lang = String(language || "").toLowerCase().replace(/-/g, "_");
   if (lang.startsWith("he")) return "עברית";
-  if (lang.startsWith("en")) return "English";
+  if (lang.startsWith("en")) return "אנגלית";
   if (lang.startsWith("ar")) return "العربية";
   if (lang.startsWith("fr")) return "Français";
   if (lang.startsWith("es")) return "Español";

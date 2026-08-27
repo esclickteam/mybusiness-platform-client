@@ -149,7 +149,7 @@ export default function WhatsAppListsTab() {
   }
 
   return (
-    <div className="grid gap-4 xl:grid-cols-[0.9fr_1.2fr]">
+    <div className="grid gap-4 xl:grid-cols-[0.9fr_1.2fr]" dir="rtl">
       <section className={`${cardBase} p-4 sm:p-5`}>
         <h2 className="text-base font-black text-slate-900">
           {t("whatsapp.lists.title")}

@@ -156,7 +156,7 @@ export default function WhatsAppInboxTab() {
   }
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[0.9fr_1.3fr]">
+    <div className="grid gap-4 lg:grid-cols-[0.9fr_1.3fr]" dir="rtl">
       <section className={`${cardBase} overflow-hidden`}>
         <div className="border-b border-slate-100 px-4 py-4">
           <h2 className="text-lg font-black text-slate-900">

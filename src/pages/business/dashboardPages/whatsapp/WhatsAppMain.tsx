@@ -21,7 +21,6 @@ import {
   Workflow,
 } from "lucide-react";
 import { useAuth } from "../../../../context/AuthContext";
-import { useLocaleDir } from "../../../../hooks/useLocaleDir";
 import { normalizeBusinessId } from "../../../../utils/notificationNavigation";
 import { reactivateWhatsAppBilling } from "../../../../api/whatsappBillingApi";
 import { useWhatsAppBilling } from "./billing/useWhatsAppBilling";
@@ -57,7 +56,6 @@ function readWaBillingFlag(searchParams: URLSearchParams) {
 
 export default function WhatsAppMain() {
   const { t } = useTranslation();
-  const dir = useLocaleDir();
   const location = useLocation();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -140,7 +138,7 @@ export default function WhatsAppMain() {
 
   return (
     <section
-      dir={dir}
+      dir="rtl"
       className="min-h-[calc(100vh-72px)] bg-[#F7F8FC] px-3 py-4 text-start text-slate-900 sm:px-5 sm:py-5 lg:px-6"
     >
       <div className="mx-auto w-full max-w-[1920px]">
