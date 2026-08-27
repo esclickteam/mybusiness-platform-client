@@ -7,9 +7,11 @@ import {
   FileText,
   Image as ImageIcon,
   MapPin,
+  MessageCircle,
   Phone,
   PlayCircle,
   Plus,
+  User,
   X,
 } from "lucide-react";
 import type {
@@ -65,10 +67,22 @@ const BUTTON_MENU: Array<{
     Icon: ExternalLink,
   },
   {
+    type: "voice_call",
+    title: "שיחה בוואטסאפ",
+    description: "פותח שיחה קולית בוואטסאפ עם העסק.",
+    Icon: MessageCircle,
+  },
+  {
     type: "phone_number",
     title: "התקשרות למספר הטלפון",
     description: "מתקשר למספר שהוגדר מראש.",
     Icon: Phone,
+  },
+  {
+    type: "request_contact_info",
+    title: "שיתוף הפרטים ליצירת קשר",
+    description: "מבקש מהלקוח לשתף את פרטי הקשר שלו.",
+    Icon: User,
   },
   {
     type: "copy_code",
@@ -112,9 +126,13 @@ function defaultButton(type: ButtonType): WhatsAppTemplateButton {
         ? "ביקור באתר"
         : type === "phone_number"
           ? "התקשרות"
-          : type === "copy_code"
-            ? "העתקת קוד"
-            : "תשובה מהירה",
+          : type === "voice_call"
+            ? "שיחה בוואטסאפ"
+            : type === "request_contact_info"
+              ? "שיתוף הפרטים ליצירת קשר"
+              : type === "copy_code"
+                ? "העתקת קוד"
+                : "בהתאמה אישית",
     url: type === "url" ? "" : undefined,
     urlType: type === "url" ? "static" : undefined,
     phoneNumber: type === "phone_number" ? "" : undefined,
@@ -616,7 +634,8 @@ export function WhatsAppMetaTemplateContent({
                 <X className="h-4 w-4" />
               </button>
             </header>
-            {btn.type !== "copy_code" && (
+            {btn.type !== "copy_code" &&
+              btn.type !== "request_contact_info" && (
               <label>
                 <div className="wa-meta-field-row">
                   <span className="wa-meta-label">טקסט הלחצן</span>
@@ -694,6 +713,11 @@ export function WhatsAppMetaTemplateContent({
                   placeholder="+972501234567"
                 />
               </label>
+            )}
+            {btn.type === "request_contact_info" && (
+              <p className="wa-meta-help">
+                מטא קובעת את טקסט הלחצן. אי אפשר לערוך אותו.
+              </p>
             )}
             {btn.type === "copy_code" && (
               <label>

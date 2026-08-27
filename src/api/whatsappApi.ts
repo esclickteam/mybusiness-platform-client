@@ -227,7 +227,13 @@ export type WhatsAppHeaderType =
   | "location";
 
 export type WhatsAppTemplateButton = {
-  type: "url" | "phone_number" | "quick_reply" | "copy_code";
+  type:
+    | "url"
+    | "phone_number"
+    | "quick_reply"
+    | "copy_code"
+    | "voice_call"
+    | "request_contact_info";
   text: string;
   url?: string;
   urlType?: "static" | "dynamic";
