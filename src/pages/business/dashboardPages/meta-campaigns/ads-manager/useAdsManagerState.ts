@@ -1,5 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createDefaultAdsManagerState } from "./adsManagerDefaults";
+import {
+  adsManagerStateFromAiProposal,
+  type AiProposalHandoff,
+} from "./adsManagerFromAiProposal";
 import type {
   AdDraft,
   AdsManagerLevel,
@@ -72,9 +76,11 @@ export function getLevelValidation(state: AdsManagerState): {
   return { campaign, adset, ad: adSeverity };
 }
 
-export function useAdsManagerState() {
+export function useAdsManagerState(initialHandoff?: AiProposalHandoff | null) {
   const [state, setState] = useState<AdsManagerState>(() =>
-    createDefaultAdsManagerState()
+    initialHandoff?.proposal
+      ? adsManagerStateFromAiProposal(initialHandoff)
+      : createDefaultAdsManagerState()
   );
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 

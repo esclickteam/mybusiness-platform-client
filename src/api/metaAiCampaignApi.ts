@@ -38,6 +38,63 @@ export type AiCampaignMessage = {
   createdAt?: string;
 };
 
+export type AiCampaignProposal = {
+  campaign: {
+    name: string;
+    objectiveKey: string | null;
+    metaObjective: string | null;
+  };
+  adSet: {
+    dailyBudget: { amount: number; currency: string } | null;
+    lifetimeBudget: { amount: number; currency: string } | null;
+    locations: Array<{ kind?: string; name?: string; country?: string }>;
+    audience: {
+      summary: string;
+      ageMin: number;
+      ageMax: number;
+      gender: string;
+      interests: string[];
+    };
+    placements: { recommendation: string; surfaces: string[] };
+    optimizationKey: string | null;
+  };
+  creative: {
+    primaryText: string;
+    headline: string;
+    description: string;
+    ctaKey: string;
+    media: {
+      status: "MISSING" | "PROVIDED";
+      url?: string | null;
+      fileName?: string | null;
+      kind?: string | null;
+    };
+  };
+  leadForm: {
+    mode: "EXISTING" | "DRAFT";
+    existingFormId?: string | null;
+    existingFormName?: string | null;
+    draft?: {
+      name?: string;
+      introTitle?: string;
+      introBody?: string;
+      thankYouTitle?: string;
+      thankYouBody?: string;
+      fields?: string[];
+    } | null;
+  } | null;
+  strategy: {
+    audienceWhy: string;
+    creativeWhy: string;
+    settingsWhy: string;
+  };
+  graphSafe?: {
+    objective: string | null;
+    optimizationGoal: string | null;
+    cta: string | null;
+  };
+};
+
 export type AiCampaignSessionResponse = {
   success?: boolean;
   sessionId: string;
@@ -53,8 +110,13 @@ export type AiCampaignSessionResponse = {
   ready?: {
     message: string;
     generateEnabled: boolean;
-    placeholder: string;
+    placeholder?: string | null;
   } | null;
+  proposal?: AiCampaignProposal | null;
+  generation?: {
+    status: "IDLE" | "GENERATING" | "READY" | "FAILED";
+    meta?: Record<string, unknown>;
+  };
   resumable?: boolean;
 };
 
@@ -117,6 +179,45 @@ export async function sendAiCampaignMessage(
   const { data } = await API.post<AiCampaignSessionResponse>(
     `${BASE}/sessions/${sessionId}/messages`,
     { text, businessId },
+    withBusiness(businessId)
+  );
+  return data;
+}
+
+export async function generateAiCampaign(
+  businessId: string | undefined,
+  sessionId: string,
+  regenerate = false
+) {
+  const { data } = await API.post<AiCampaignSessionResponse>(
+    `${BASE}/sessions/${sessionId}/generate`,
+    { regenerate, businessId },
+    withBusiness(businessId)
+  );
+  return data;
+}
+
+export async function reviseAiCampaign(
+  businessId: string | undefined,
+  sessionId: string,
+  instruction: string
+) {
+  const { data } = await API.post<AiCampaignSessionResponse>(
+    `${BASE}/sessions/${sessionId}/revisions`,
+    { instruction, businessId },
+    withBusiness(businessId)
+  );
+  return data;
+}
+
+export async function patchAiCampaignProposal(
+  businessId: string | undefined,
+  sessionId: string,
+  patch: Record<string, unknown>
+) {
+  const { data } = await API.patch<AiCampaignSessionResponse>(
+    `${BASE}/sessions/${sessionId}/proposal`,
+    { patch, businessId },
     withBusiness(businessId)
   );
   return data;

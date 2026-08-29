@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
-import { Link, useOutletContext, useParams } from "react-router-dom";
+import { Link, useNavigate, useOutletContext, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
   ArrowLeft,
@@ -18,13 +18,18 @@ import {
 import { useLocaleDir } from "../../../../hooks/useLocaleDir";
 import {
   answerAiCampaignSession,
+  generateAiCampaign,
   getAiCampaignSession,
+  patchAiCampaignProposal,
+  reviseAiCampaign,
   sendAiCampaignMessage,
   sessionStorageKey,
   startAiCampaignSession,
   type AiCampaignQuestion,
   type AiCampaignSessionResponse,
 } from "../../../../api/metaAiCampaignApi";
+import MetaAiCampaignPreview from "./MetaAiCampaignPreview";
+import type { AiProposalHandoff } from "./ads-manager/adsManagerFromAiProposal";
 
 type OutletCtx = { businessId: string | null };
 
@@ -64,6 +69,7 @@ function readPersisted(businessId: string) {
 export default function MetaAiCampaignWizardPage() {
   const { t, i18n } = useTranslation();
   const dir = useLocaleDir();
+  const navigate = useNavigate();
   const { businessId } = useOutletContext<OutletCtx>();
   const { businessId: urlBusinessId } = useParams<{ businessId: string }>();
   const tenantId = urlBusinessId || businessId || "";
@@ -84,6 +90,7 @@ export default function MetaAiCampaignWizardPage() {
   const [budgetDraft, setBudgetDraft] = useState("");
   const [locationDraft, setLocationDraft] = useState("");
   const [lastMessage, setLastMessage] = useState("");
+  const [pendingAction, setPendingAction] = useState<string | null>(null);
 
   const applySession = useCallback(
     (next: AiCampaignSessionResponse) => {
@@ -192,6 +199,96 @@ export default function MetaAiCampaignWizardPage() {
     }
   };
 
+  const handleGenerate = async (regenerate = false) => {
+    if (!session?.sessionId || busy) return;
+    if (session.status !== "READY_FOR_GENERATION") return;
+    if (!regenerate && !session.ready?.generateEnabled) return;
+    setBusy(true);
+    setPendingAction(regenerate ? "regenerate" : "generate");
+    setError(null);
+    try {
+      const next = await generateAiCampaign(
+        tenantId,
+        session.sessionId,
+        regenerate
+      );
+      applySession(next);
+    } catch (err) {
+      setError(readError(err, t("metaCampaigns.ai.errorGeneric")));
+    } finally {
+      setBusy(false);
+      setPendingAction(null);
+    }
+  };
+
+  const handleRevise = async (instruction: string) => {
+    if (!session?.sessionId || busy) return;
+    setBusy(true);
+    setPendingAction("revise");
+    setError(null);
+    try {
+      const next = await reviseAiCampaign(
+        tenantId,
+        session.sessionId,
+        instruction
+      );
+      applySession(next);
+    } catch (err) {
+      setError(readError(err, t("metaCampaigns.ai.aiUnavailable")));
+    } finally {
+      setBusy(false);
+      setPendingAction(null);
+    }
+  };
+
+  const handlePatch = async (patch: Record<string, unknown>) => {
+    if (!session?.sessionId || busy) return;
+    setBusy(true);
+    setPendingAction("patch");
+    setError(null);
+    try {
+      const next = await patchAiCampaignProposal(
+        tenantId,
+        session.sessionId,
+        patch
+      );
+      applySession(next);
+    } catch (err) {
+      setError(readError(err, t("metaCampaigns.ai.errorGeneric")));
+    } finally {
+      setBusy(false);
+      setPendingAction(null);
+    }
+  };
+
+  const handleUploadCreative = (file: File) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      void handlePatch({
+        creative: {
+          media: {
+            status: "PROVIDED",
+            url: typeof reader.result === "string" ? reader.result : null,
+            fileName: file.name,
+            kind: file.type.startsWith("video/") ? "video" : "image",
+          },
+        },
+      });
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleManualEdit = () => {
+    if (!session?.proposal) return;
+    const dest = (session.intent as { destination?: { value?: { key?: string } } })
+      ?.destination?.value?.key;
+    const handoff: AiProposalHandoff = {
+      proposal: session.proposal,
+      destinationKey: dest || (session.proposal.leadForm ? "LEAD_FORM" : null),
+    };
+    navigate(manualPath, { state: { aiProposal: handoff } });
+  };
+
   const progressLabel = useMemo(() => {
     const confirmed = session?.progress?.confirmed ?? 0;
     const required = session?.progress?.required ?? 5;
@@ -200,6 +297,8 @@ export default function MetaAiCampaignWizardPage() {
 
   const question = session?.question || null;
   const isReady = session?.status === "READY_FOR_GENERATION";
+  const hasProposal =
+    Boolean(session?.proposal) && session?.generation?.status === "READY";
 
   return (
     <div dir={dir} className="space-y-4" data-testid="meta-ai-campaign-wizard">
@@ -278,17 +377,36 @@ export default function MetaAiCampaignWizardPage() {
               </button>
             </div>
           </div>
+        ) : isReady && hasProposal && session.proposal ? (
+          <MetaAiCampaignPreview
+            session={session}
+            busy={busy}
+            pendingAction={pendingAction}
+            onRevise={(instruction) => void handleRevise(instruction)}
+            onRegenerate={() => void handleGenerate(true)}
+            onManualEdit={handleManualEdit}
+            onPatch={(patch) => void handlePatch(patch)}
+            onUploadCreative={handleUploadCreative}
+          />
         ) : isReady && session?.ready ? (
           <div className="space-y-4" data-testid="meta-ai-ready">
             <p className="text-base font-black text-slate-900">
               {session.ready.message}
             </p>
-            <button type="button" className={btnPrimary} disabled>
-              {t("metaCampaigns.ai.readyGenerate")}
+            <button
+              type="button"
+              className={btnPrimary}
+              data-testid="meta-ai-generate"
+              disabled={busy || !session.ready.generateEnabled}
+              onClick={() => void handleGenerate(false)}
+            >
+              {pendingAction === "generate" ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : null}
+              {pendingAction === "generate"
+                ? t("metaCampaigns.ai.generating")
+                : t("metaCampaigns.ai.readyGenerate")}
             </button>
-            <p className="text-sm font-semibold text-slate-500">
-              {session.ready.placeholder || t("metaCampaigns.ai.readyPlaceholder")}
-            </p>
           </div>
         ) : (
           <div className="space-y-5">

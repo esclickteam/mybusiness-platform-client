@@ -43,12 +43,88 @@ const api = vi.hoisted(() => ({
   getAiCampaignSession: vi.fn(),
   answerAiCampaignSession: vi.fn(),
   sendAiCampaignMessage: vi.fn(),
+  generateAiCampaign: vi.fn(),
+  reviseAiCampaign: vi.fn(),
+  patchAiCampaignProposal: vi.fn(),
   sessionStorageKey: (id: string) => `bizuply.meta-ai-campaign.session.${id}`,
 }));
 
 vi.mock("../../../../api/metaAiCampaignApi", () => api);
 
 import MetaAiCampaignWizardPage from "./MetaAiCampaignWizardPage";
+
+function sampleProposal(overrides: Record<string, unknown> = {}) {
+  return {
+    campaign: { name: "Facial — לידים", objectiveKey: "LEADS", metaObjective: "OUTCOME_LEADS" },
+    adSet: {
+      dailyBudget: { amount: 70, currency: "ILS" },
+      lifetimeBudget: null,
+      locations: [{ kind: "city", name: "חיפה", country: "IL" }],
+      audience: {
+        summary: "נשים באזור חיפה שמתעניינות בטיפולי פנים",
+        ageMin: 25,
+        ageMax: 45,
+        gender: "female",
+        interests: ["beauty"],
+      },
+      placements: { recommendation: "ADVANTAGE", surfaces: ["ADVANTAGE"] },
+      optimizationKey: "LEAD_GENERATION",
+    },
+    creative: {
+      primaryText: "השאירו פרטים ונחזור אליכן.",
+      headline: "טיפול פנים בחיפה",
+      description: "קליניקה מקומית",
+      ctaKey: "SIGN_UP",
+      media: { status: "MISSING", url: null, fileName: null, kind: null },
+    },
+    leadForm: {
+      mode: "DRAFT",
+      existingFormId: null,
+      existingFormName: null,
+      draft: {
+        name: "Facial form",
+        introTitle: "השאירו פרטים",
+        introBody: "נחזור אליכן",
+        thankYouTitle: "תודה",
+        thankYouBody: "קיבלנו",
+        fields: ["FULL_NAME", "PHONE"],
+      },
+    },
+    strategy: {
+      audienceWhy: "הקהל קרוב לעסק",
+      creativeWhy: "הטקסט ברור",
+      settingsWhy: "טופס לידים מתאים למטרה",
+    },
+    graphSafe: {
+      objective: "OUTCOME_LEADS",
+      optimizationGoal: "LEAD_GENERATION",
+      cta: "SIGN_UP",
+    },
+    ...overrides,
+  };
+}
+
+function readySession(overrides: Record<string, unknown> = {}) {
+  return questionSession({
+    status: "READY_FOR_GENERATION",
+    question: null,
+    missingFields: [],
+    progress: { confirmed: 5, required: 5 },
+    ready: {
+      message: "מעולה, יש לי את כל המידע הדרוש להכנת הקמפיין.",
+      generateEnabled: true,
+      placeholder: null,
+    },
+    intent: {
+      promotedItem: { state: "CONFIRMED", value: { name: "טיפול פנים" } },
+      objective: { state: "CONFIRMED", value: { key: "LEADS" } },
+      destination: { state: "CONFIRMED", value: { key: "LEAD_FORM" } },
+    },
+    generation: { status: "IDLE", meta: {} },
+    proposal: null,
+    ...overrides,
+  });
+}
 
 function questionSession(overrides: Record<string, unknown> = {}) {
   return {
@@ -197,28 +273,156 @@ describe("MetaAiCampaignWizardPage conversation", () => {
     expect(screen.getByRole("button", { name: "כן" })).toBeTruthy();
   });
 
-  it("renders READY_FOR_GENERATION without enabling generation", async () => {
-    api.startAiCampaignSession.mockResolvedValue(
-      questionSession({
-        status: "READY_FOR_GENERATION",
-        question: null,
-        missingFields: [],
-        progress: { confirmed: 5, required: 5 },
-        ready: {
-          message: "מעולה, יש לי את כל המידע הדרוש להכנת הקמפיין.",
-          generateEnabled: false,
-          placeholder: "יצירת הקמפיין תתווסף בשלב הבא",
+  it("enables generation only when the session is READY_FOR_GENERATION", async () => {
+    api.startAiCampaignSession.mockResolvedValue(readySession());
+    renderWizard();
+    await waitFor(() => screen.getByTestId("meta-ai-ready"));
+    const generate = screen.getByTestId("meta-ai-generate") as HTMLButtonElement;
+    expect(generate.disabled).toBe(false);
+    expect(generate.textContent).toContain(he.metaCampaigns.ai.readyGenerate);
+    expect(screen.queryByTestId("meta-ai-composer")).toBeNull();
+  });
+
+  it("opens the preview after generation and keeps missing creative visible", async () => {
+    api.startAiCampaignSession.mockResolvedValue(readySession());
+    api.generateAiCampaign.mockResolvedValue(
+      readySession({
+        proposal: sampleProposal(),
+        generation: {
+          status: "READY",
+          meta: {
+            availableLeadForms: [{ id: "form_9", name: "Clinic form" }],
+            durationMs: 42,
+          },
         },
       })
     );
     renderWizard();
-    await waitFor(() => screen.getByTestId("meta-ai-ready"));
-    const generate = screen.getByRole("button", {
-      name: he.metaCampaigns.ai.readyGenerate,
+    await waitFor(() => screen.getByTestId("meta-ai-generate"));
+    fireEvent.click(screen.getByTestId("meta-ai-generate"));
+    await waitFor(() => screen.getByTestId("meta-ai-preview"));
+    expect(api.generateAiCampaign).toHaveBeenCalledWith("biz-1", "sess-1", false);
+    expect(screen.getByText(he.metaCampaigns.ai.preview.title)).toBeTruthy();
+    expect(screen.getByTestId("meta-ai-missing-creative").textContent).toContain(
+      he.metaCampaigns.ai.preview.missingCreative
+    );
+    expect(screen.getByTestId("meta-ai-lead-form")).toBeTruthy();
+    expect(screen.getByText("טיפול פנים בחיפה")).toBeTruthy();
+    expect(screen.getByText("השאירו פרטים ונחזור אליכן.")).toBeTruthy();
+  });
+
+  it("sends a partial AI revision and a regenerate from the same session", async () => {
+    api.startAiCampaignSession.mockResolvedValue(
+      readySession({
+        proposal: sampleProposal(),
+        generation: { status: "READY", meta: {} },
+      })
+    );
+    api.reviseAiCampaign.mockResolvedValue(
+      readySession({
+        proposal: sampleProposal({
+          creative: {
+            ...sampleProposal().creative,
+            headline: "כותרת רכה",
+          },
+        }),
+        generation: { status: "READY", meta: { changedPaths: ["creative.headline"] } },
+      })
+    );
+    api.generateAiCampaign.mockResolvedValue(
+      readySession({
+        proposal: sampleProposal({ campaign: { name: "Facial v2", objectiveKey: "LEADS", metaObjective: "OUTCOME_LEADS" } }),
+        generation: { status: "READY", meta: { mode: "regenerate" } },
+      })
+    );
+    renderWizard();
+    await waitFor(() => screen.getByTestId("meta-ai-revise"));
+    fireEvent.change(screen.getByPlaceholderText(he.metaCampaigns.ai.preview.revisePlaceholder), {
+      target: { value: "תן לי כותרת פחות מכירתית" },
     });
-    expect((generate as HTMLButtonElement).disabled).toBe(true);
-    expect(screen.getByText(he.metaCampaigns.ai.readyPlaceholder)).toBeTruthy();
-    expect(screen.queryByTestId("meta-ai-composer")).toBeNull();
+    fireEvent.click(screen.getByRole("button", { name: he.metaCampaigns.ai.preview.reviseSubmit }));
+    await waitFor(() =>
+      expect(api.reviseAiCampaign).toHaveBeenCalledWith(
+        "biz-1",
+        "sess-1",
+        "תן לי כותרת פחות מכירתית"
+      )
+    );
+    fireEvent.click(screen.getByTestId("meta-ai-regenerate"));
+    await waitFor(() =>
+      expect(api.generateAiCampaign).toHaveBeenCalledWith("biz-1", "sess-1", true)
+    );
+  });
+
+  it("patches CTA locally without calling OpenAI generate or revise", async () => {
+    api.startAiCampaignSession.mockResolvedValue(
+      readySession({
+        proposal: sampleProposal(),
+        generation: { status: "READY", meta: {} },
+      })
+    );
+    api.patchAiCampaignProposal.mockResolvedValue(
+      readySession({
+        proposal: sampleProposal({
+          creative: { ...sampleProposal().creative, ctaKey: "LEARN_MORE" },
+        }),
+        generation: { status: "READY", meta: {} },
+      })
+    );
+    renderWizard();
+    await waitFor(() => screen.getByTestId("meta-ai-cta"));
+    fireEvent.change(screen.getByTestId("meta-ai-cta"), {
+      target: { value: "LEARN_MORE" },
+    });
+    await waitFor(() =>
+      expect(api.patchAiCampaignProposal).toHaveBeenCalledWith(
+        "biz-1",
+        "sess-1",
+        { creative: { ctaKey: "LEARN_MORE" } }
+      )
+    );
+    expect(api.generateAiCampaign).not.toHaveBeenCalled();
+    expect(api.reviseAiCampaign).not.toHaveBeenCalled();
+  });
+
+  it("hands the proposal to the existing Ads Manager for manual edit", async () => {
+    api.startAiCampaignSession.mockResolvedValue(
+      readySession({
+        proposal: sampleProposal(),
+        generation: { status: "READY", meta: {} },
+      })
+    );
+    renderWizard();
+    await waitFor(() => screen.getByTestId("meta-ai-manual-edit"));
+    fireEvent.click(screen.getByTestId("meta-ai-manual-edit"));
+    await waitFor(() => screen.getByText("manual-create-page"));
+  });
+
+  it("renders English preview copy", async () => {
+    localeRef.current = en as Record<string, unknown>;
+    api.startAiCampaignSession.mockResolvedValue(
+      readySession({
+        proposal: sampleProposal(),
+        generation: { status: "READY", meta: {} },
+      })
+    );
+    renderWizard();
+    await waitFor(() => screen.getByText(en.metaCampaigns.ai.preview.title));
+    expect(screen.getByText(en.metaCampaigns.ai.preview.manualEdit)).toBeTruthy();
+    expect(screen.getByText(en.metaCampaigns.ai.preview.regenerate)).toBeTruthy();
+  });
+
+  it("keeps preview actions stacked on mobile", async () => {
+    api.startAiCampaignSession.mockResolvedValue(
+      readySession({
+        proposal: sampleProposal(),
+        generation: { status: "READY", meta: {} },
+      })
+    );
+    renderWizard();
+    await waitFor(() => screen.getByTestId("meta-ai-revise"));
+    expect(screen.getByTestId("meta-ai-revise").className).toMatch(/flex-col/);
+    expect(screen.getByTestId("meta-ai-revise").className).toMatch(/sm:flex-row/);
   });
 
   it("links the manual fallback to /create", async () => {
