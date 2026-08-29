@@ -13,9 +13,6 @@ import {
 import AdPlacementPreview from "./AdPlacementPreview";
 import MetaLeadFormLivePreview from "./MetaLeadFormLivePreview";
 import MetaAiDraftPublishPanel from "./MetaAiDraftPublishPanel";
-import MetaAiAutomationRecommendations, {
-  type EnableAllResult,
-} from "./MetaAiAutomationRecommendations";
 import { META_AD_CTAS, metaCtaLabel } from "./ads-manager/metaAdCtas";
 
 type AvailableLeadForm = { id: string; name?: string | null };
@@ -61,13 +58,6 @@ export default function MetaAiCampaignPreview({
   onEditBeforePublish,
   onViewCampaign,
   onBackToCampaigns,
-  businessId,
-  automationsLoading,
-  enablingKey,
-  enableAllResult,
-  onEnableAutomation,
-  onEnableAllAutomations,
-  onDismissAutomation,
 }: {
   session: AiCampaignSessionResponse;
   busy: boolean;
@@ -88,13 +78,6 @@ export default function MetaAiCampaignPreview({
   onEditBeforePublish: () => void;
   onViewCampaign: () => void;
   onBackToCampaigns: () => void;
-  businessId: string;
-  automationsLoading: boolean;
-  enablingKey: string | null;
-  enableAllResult: EnableAllResult;
-  onEnableAutomation: (key: string) => void;
-  onEnableAllAutomations: () => void;
-  onDismissAutomation: (key: string) => void;
 }) {
   const { t, i18n } = useTranslation();
   const [reviseDraft, setReviseDraft] = useState("");
@@ -437,17 +420,6 @@ export default function MetaAiCampaignPreview({
       </div>
       </>
       )}
-
-      <MetaAiAutomationRecommendations
-        session={session}
-        businessId={businessId}
-        loading={automationsLoading}
-        enablingKey={enablingKey}
-        enableAllResult={enableAllResult}
-        onEnable={onEnableAutomation}
-        onEnableAll={onEnableAllAutomations}
-        onDismiss={onDismissAutomation}
-      />
     </div>
   );
 }

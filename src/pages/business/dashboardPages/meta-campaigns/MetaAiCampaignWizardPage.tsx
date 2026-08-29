@@ -21,13 +21,9 @@ import {
   answerAiCampaignSession,
   confirmAiDraftLocations,
   createAiCampaignMetaDraft,
-  dismissAiCampaignAutomation,
-  enableAiCampaignAutomation,
-  enableAllAiCampaignAutomations,
   generateAiCampaign,
   getAiCampaignSession,
   patchAiCampaignProposal,
-  recommendAiCampaignAutomations,
   retryAiCampaignMetaDraft,
   reviseAiCampaign,
   sendAiCampaignMessage,
@@ -37,7 +33,6 @@ import {
   type AiCampaignSessionResponse,
   type AiUnresolvedLocation,
 } from "../../../../api/metaAiCampaignApi";
-import type { EnableAllResult } from "./MetaAiAutomationRecommendations";
 import MetaAiCampaignPreview from "./MetaAiCampaignPreview";
 import type { AiProposalHandoff } from "./ads-manager/adsManagerFromAiProposal";
 
@@ -121,10 +116,6 @@ export default function MetaAiCampaignWizardPage() {
   const [lastMessage, setLastMessage] = useState("");
   const [pendingAction, setPendingAction] = useState<string | null>(null);
   const draftLockRef = useRef(false);
-  const automationsKeyRef = useRef("");
-  const [automationsLoading, setAutomationsLoading] = useState(false);
-  const [enablingKey, setEnablingKey] = useState<string | null>(null);
-  const [enableAllResult, setEnableAllResult] = useState<EnableAllResult>(null);
   const [confirmPublish, setConfirmPublish] = useState(false);
   const [activationTree, setActivationTree] = useState<
     { campaign?: string | null; adSet?: string | null; ad?: string | null } | undefined
@@ -414,75 +405,6 @@ export default function MetaAiCampaignWizardPage() {
     );
   };
 
-  const loadAutomations = useCallback(
-    async (sid: string) => {
-      if (!tenantId || !sid) return;
-      setAutomationsLoading(true);
-      try {
-        const next = await recommendAiCampaignAutomations(tenantId, sid, false);
-        if (next?.sessionId) applySession(next);
-      } catch {
-        /* recommendations are optional — keep the proposal visible */
-      } finally {
-        setAutomationsLoading(false);
-      }
-    },
-    [applySession, tenantId]
-  );
-
-  useEffect(() => {
-    if (!session?.sessionId || !session.proposal) return;
-    const stamp = `${session.sessionId}:${session.metaDraft?.campaignId || "none"}`;
-    if (automationsKeyRef.current === stamp) return;
-    automationsKeyRef.current = stamp;
-    void loadAutomations(session.sessionId);
-  }, [session?.sessionId, session?.proposal, session?.metaDraft?.campaignId, loadAutomations]);
-
-  const handleEnableAutomation = async (key: string) => {
-    if (!session?.sessionId || enablingKey) return;
-    setEnablingKey(key);
-    setEnableAllResult(null);
-    try {
-      const next = await enableAiCampaignAutomation(tenantId, session.sessionId, key);
-      if (next?.sessionId) applySession(next);
-    } catch (err) {
-      setError(readError(err, t("metaCampaigns.ai.errorGeneric")));
-    } finally {
-      setEnablingKey(null);
-    }
-  };
-
-  const handleEnableAllAutomations = async () => {
-    if (!session?.sessionId || enablingKey) return;
-    setEnablingKey("all");
-    try {
-      const next = await enableAllAiCampaignAutomations(tenantId, session.sessionId);
-      if (next?.sessionId) applySession(next);
-      setEnableAllResult({
-        enabledCount: next?.enabledCount || 0,
-        failedCount: next?.failedCount || 0,
-        failed: next?.failed || [],
-      });
-    } catch (err) {
-      setError(readError(err, t("metaCampaigns.ai.errorGeneric")));
-    } finally {
-      setEnablingKey(null);
-    }
-  };
-
-  const handleDismissAutomation = async (key: string) => {
-    if (!session?.sessionId || enablingKey) return;
-    setEnablingKey(key);
-    try {
-      const next = await dismissAiCampaignAutomation(tenantId, session.sessionId, key);
-      if (next?.sessionId) applySession(next);
-    } catch (err) {
-      setError(readError(err, t("metaCampaigns.ai.errorGeneric")));
-    } finally {
-      setEnablingKey(null);
-    }
-  };
-
   const handleEditBeforePublish = () => {
     if (campaignId) {
       navigate(editPath);
@@ -600,13 +522,6 @@ export default function MetaAiCampaignWizardPage() {
             onEditBeforePublish={handleEditBeforePublish}
             onViewCampaign={() => navigate(editPath)}
             onBackToCampaigns={() => navigate(overviewPath)}
-            businessId={tenantId}
-            automationsLoading={automationsLoading}
-            enablingKey={enablingKey}
-            enableAllResult={enableAllResult}
-            onEnableAutomation={(key) => void handleEnableAutomation(key)}
-            onEnableAllAutomations={() => void handleEnableAllAutomations()}
-            onDismissAutomation={(key) => void handleDismissAutomation(key)}
           />
         ) : isReady && session?.ready ? (
           <div className="space-y-4" data-testid="meta-ai-ready">
