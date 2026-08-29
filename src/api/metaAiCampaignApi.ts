@@ -158,6 +158,13 @@ export type AiCampaignSessionResponse = {
   };
   metaDraft?: AiCampaignMetaDraft;
   lifecycle?: AiCampaignLifecycle;
+  automationRecommendations?: AiAutomationRecommendation[];
+  enabledCount?: number;
+  failedCount?: number;
+  enabled?: Array<{ key: string; automationWorkflowId?: string; alreadyCreated?: boolean }>;
+  failed?: Array<{ key: string; reason: string }>;
+  alreadyCreated?: boolean;
+  automationWorkflowId?: string;
   publishId?: string;
   meta?: {
     campaignId?: string | null;
@@ -172,6 +179,26 @@ export type AiCampaignSessionResponse = {
     ad?: string | null;
   };
   resumable?: boolean;
+};
+
+export type AiAutomationRecommendationStatus =
+  | "RECOMMENDED"
+  | "CREATED"
+  | "DISMISSED"
+  | "UNAVAILABLE";
+
+export type AiAutomationRecommendation = {
+  key: string;
+  status: AiAutomationRecommendationStatus;
+  name?: string;
+  description?: string;
+  reason?: string;
+  priority?: string;
+  normalizedWorkflow?: Record<string, unknown>;
+  automationWorkflowId?: string | null;
+  blockedReason?: string | null;
+  createdAt?: string;
+  updatedAt?: string;
 };
 
 export type AiCampaignContextResponse = {
@@ -323,6 +350,57 @@ export async function activateAiCampaign(
   const { data } = await API.post<AiCampaignSessionResponse>(
     `${BASE}/sessions/${sessionId}/activate`,
     { confirm, businessId },
+    withBusiness(businessId)
+  );
+  return data;
+}
+
+export async function recommendAiCampaignAutomations(
+  businessId: string | undefined,
+  sessionId: string,
+  refresh = false
+) {
+  const { data } = await API.post<AiCampaignSessionResponse>(
+    `${BASE}/sessions/${sessionId}/automations/recommend`,
+    { refresh, businessId },
+    withBusiness(businessId)
+  );
+  return data;
+}
+
+export async function enableAiCampaignAutomation(
+  businessId: string | undefined,
+  sessionId: string,
+  key: string
+) {
+  const { data } = await API.post<AiCampaignSessionResponse>(
+    `${BASE}/sessions/${sessionId}/automations/enable`,
+    { key, businessId },
+    withBusiness(businessId)
+  );
+  return data;
+}
+
+export async function enableAllAiCampaignAutomations(
+  businessId: string | undefined,
+  sessionId: string
+) {
+  const { data } = await API.post<AiCampaignSessionResponse>(
+    `${BASE}/sessions/${sessionId}/automations/enable-all`,
+    { businessId },
+    withBusiness(businessId)
+  );
+  return data;
+}
+
+export async function dismissAiCampaignAutomation(
+  businessId: string | undefined,
+  sessionId: string,
+  key: string
+) {
+  const { data } = await API.post<AiCampaignSessionResponse>(
+    `${BASE}/sessions/${sessionId}/automations/dismiss`,
+    { key, businessId },
     withBusiness(businessId)
   );
   return data;

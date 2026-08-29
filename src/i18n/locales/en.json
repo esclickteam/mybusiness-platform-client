@@ -5657,6 +5657,23 @@
         "treeCampaign": "Campaign",
         "treeAdSet": "Ad set",
         "treeAd": "Ad"
+      },
+      "automations": {
+        "badge": "BizUply AI",
+        "title": "✨ Recommended automations",
+        "loading": "Checking recommended automations for this campaign...",
+        "empty": "There are no recommended automations for this campaign yet.",
+        "enable": "Enable",
+        "enableAll": "Enable all automations",
+        "enableAllResult": "{{enabled}} enabled, {{failed}} not enabled",
+        "edit": "Edit",
+        "dismiss": "Dismiss",
+        "dismissed": "Dismissed",
+        "active": "Active",
+        "needsWhatsApp": "Requires a WhatsApp connection",
+        "connectWhatsApp": "Connect WhatsApp",
+        "needsTemplate": "Requires an approved WhatsApp template",
+        "needsCampaign": "Available after the Meta draft is created"
       }
     },
     "kpis": {

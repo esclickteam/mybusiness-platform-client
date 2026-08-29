@@ -50,6 +50,10 @@ const api = vi.hoisted(() => ({
   confirmAiDraftLocations: vi.fn(),
   retryAiCampaignMetaDraft: vi.fn(),
   activateAiCampaign: vi.fn(),
+  recommendAiCampaignAutomations: vi.fn(),
+  enableAiCampaignAutomation: vi.fn(),
+  enableAllAiCampaignAutomations: vi.fn(),
+  dismissAiCampaignAutomation: vi.fn(),
   sessionStorageKey: (id: string) => `bizuply.meta-ai-campaign.session.${id}`,
 }));
 
@@ -172,6 +176,14 @@ function renderWizard() {
           <Route path="edit/:campaignId" element={<div>edit-campaign-page</div>} />
           <Route path="settings" element={<div>settings-page</div>} />
         </Route>
+        <Route
+          path="/business/:businessId/dashboard/automations/:workflowId"
+          element={<div>automation-editor-page</div>}
+        />
+        <Route
+          path="/business/:businessId/dashboard/whatsapp/settings"
+          element={<div>whatsapp-settings-page</div>}
+        />
       </Routes>
     </MemoryRouter>
   );
@@ -735,6 +747,163 @@ describe("Meta AI draft + explicit publish", () => {
     const row = screen.getByTestId("meta-ai-publish").parentElement;
     expect(row?.className).toMatch(/flex-col/);
     expect(row?.className).toMatch(/sm:flex-row/);
+  });
+});
+
+function sampleRecs() {
+  return [
+    {
+      key: "meta_lead_whatsapp",
+      status: "RECOMMENDED" as const,
+      name: "שליחת WhatsApp לליד חדש",
+      description: "כאשר ליד מגיע מהקמפיין",
+    },
+    {
+      key: "meta_lead_task",
+      status: "RECOMMENDED" as const,
+      name: "צור משימת מעקב",
+      description: "צור משימה לצוות",
+    },
+  ];
+}
+
+describe("Meta AI campaign automations (H)", () => {
+  beforeEach(() => {
+    localeRef.current = he as Record<string, unknown>;
+    sessionStorage.clear();
+    vi.clearAllMocks();
+    api.getAiCampaignSession.mockRejectedValue(new Error("missing"));
+  });
+
+  it("loads recommended automations after a proposal is ready", async () => {
+    api.startAiCampaignSession.mockResolvedValue(proposalReady());
+    api.recommendAiCampaignAutomations.mockResolvedValue(
+      proposalReady({ automationRecommendations: sampleRecs() })
+    );
+    renderWizard();
+    await waitFor(() =>
+      expect(api.recommendAiCampaignAutomations).toHaveBeenCalledWith(
+        "biz-1",
+        "sess-1",
+        false
+      )
+    );
+    expect(await screen.findAllByTestId("meta-ai-automation-card")).toHaveLength(2);
+    expect(screen.getByText(he.metaCampaigns.ai.automations.title)).toBeTruthy();
+  });
+
+  it("enables a single automation", async () => {
+    api.startAiCampaignSession.mockResolvedValue(
+      proposalReady({ automationRecommendations: sampleRecs() })
+    );
+    api.recommendAiCampaignAutomations.mockResolvedValue(
+      proposalReady({ automationRecommendations: sampleRecs() })
+    );
+    api.enableAiCampaignAutomation.mockResolvedValue(
+      proposalReady({
+        automationRecommendations: [
+          { ...sampleRecs()[0], status: "CREATED", automationWorkflowId: "wf-1" },
+          sampleRecs()[1],
+        ],
+      })
+    );
+    renderWizard();
+    const enable = await screen.findAllByTestId("meta-ai-automation-enable");
+    fireEvent.click(enable[0]);
+    await waitFor(() =>
+      expect(api.enableAiCampaignAutomation).toHaveBeenCalledWith(
+        "biz-1",
+        "sess-1",
+        "meta_lead_whatsapp"
+      )
+    );
+    expect(await screen.findByTestId("meta-ai-automation-active")).toBeTruthy();
+  });
+
+  it("shows a partial enable-all result", async () => {
+    api.startAiCampaignSession.mockResolvedValue(
+      proposalReady({ automationRecommendations: sampleRecs() })
+    );
+    api.recommendAiCampaignAutomations.mockResolvedValue(
+      proposalReady({ automationRecommendations: sampleRecs() })
+    );
+    api.enableAllAiCampaignAutomations.mockResolvedValue(
+      proposalReady({
+        automationRecommendations: [
+          { ...sampleRecs()[0], status: "CREATED", automationWorkflowId: "wf-1" },
+          sampleRecs()[1],
+        ],
+        enabledCount: 1,
+        failedCount: 1,
+        failed: [{ key: "meta_lead_task", reason: "WHATSAPP_TEMPLATE_REQUIRED" }],
+      })
+    );
+    renderWizard();
+    fireEvent.click(await screen.findByTestId("meta-ai-automation-enable-all"));
+    await waitFor(() =>
+      expect(screen.getByTestId("meta-ai-automations-partial").textContent).toMatch(/1/)
+    );
+  });
+
+  it("dismisses a recommendation and opens the existing editor", async () => {
+    api.startAiCampaignSession.mockResolvedValue(
+      proposalReady({
+        automationRecommendations: [
+          {
+            key: "meta_lead_task",
+            status: "CREATED",
+            name: "צור משימת מעקב",
+            automationWorkflowId: "wf-9",
+          },
+          {
+            key: "meta_lead_whatsapp",
+            status: "RECOMMENDED",
+            name: "שליחת WhatsApp לליד חדש",
+          },
+        ],
+      })
+    );
+    api.recommendAiCampaignAutomations.mockResolvedValue(
+      proposalReady({
+        automationRecommendations: [
+          {
+            key: "meta_lead_task",
+            status: "CREATED",
+            name: "צור משימת מעקב",
+            automationWorkflowId: "wf-9",
+          },
+          {
+            key: "meta_lead_whatsapp",
+            status: "RECOMMENDED",
+            name: "שליחת WhatsApp לליד חדש",
+          },
+        ],
+      })
+    );
+    api.dismissAiCampaignAutomation.mockResolvedValue(
+      proposalReady({
+        automationRecommendations: [
+          {
+            key: "meta_lead_task",
+            status: "CREATED",
+            name: "צור משימת מעקב",
+            automationWorkflowId: "wf-9",
+          },
+          {
+            key: "meta_lead_whatsapp",
+            status: "DISMISSED",
+            name: "שליחת WhatsApp לליד חדש",
+          },
+        ],
+      })
+    );
+    renderWizard();
+    await waitFor(() => screen.getByTestId("meta-ai-automation-edit"));
+    expect(screen.getByTestId("meta-ai-automation-edit").getAttribute("href")).toBe(
+      "/business/biz-1/dashboard/automations/wf-9"
+    );
+    fireEvent.click(screen.getByTestId("meta-ai-automation-dismiss"));
+    await waitFor(() => screen.getByTestId("meta-ai-automation-dismissed"));
   });
 });
 

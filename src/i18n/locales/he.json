@@ -5677,6 +5677,23 @@
         "treeCampaign": "קמפיין",
         "treeAdSet": "סט מודעות",
         "treeAd": "מודעה"
+      },
+      "automations": {
+        "badge": "BizUply AI",
+        "title": "✨ אוטומציות מומלצות",
+        "loading": "בודק אוטומציות מומלצות לקמפיין...",
+        "empty": "אין כרגע אוטומציות מומלצות לקמפיין הזה.",
+        "enable": "הפעל",
+        "enableAll": "הפעל את כל האוטומציות",
+        "enableAllResult": "{{enabled}} הופעלו, {{failed}} לא הופעלו",
+        "edit": "ערוך",
+        "dismiss": "הסתר",
+        "dismissed": "נדחה",
+        "active": "פעיל",
+        "needsWhatsApp": "דורש חיבור WhatsApp",
+        "connectWhatsApp": "חבר WhatsApp",
+        "needsTemplate": "דורש תבנית WhatsApp מאושרת",
+        "needsCampaign": "זמין לאחר יצירת טיוטת הקמפיין ב-Meta"
       }
     },
     "kpis": {
