@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link, useNavigate, useOutletContext, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import {
@@ -17,16 +17,21 @@ import {
 } from "../../../../styles/bizuplyUi";
 import { useLocaleDir } from "../../../../hooks/useLocaleDir";
 import {
+  activateAiCampaign,
   answerAiCampaignSession,
+  confirmAiDraftLocations,
+  createAiCampaignMetaDraft,
   generateAiCampaign,
   getAiCampaignSession,
   patchAiCampaignProposal,
+  retryAiCampaignMetaDraft,
   reviseAiCampaign,
   sendAiCampaignMessage,
   sessionStorageKey,
   startAiCampaignSession,
   type AiCampaignQuestion,
   type AiCampaignSessionResponse,
+  type AiUnresolvedLocation,
 } from "../../../../api/metaAiCampaignApi";
 import MetaAiCampaignPreview from "./MetaAiCampaignPreview";
 import type { AiProposalHandoff } from "./ads-manager/adsManagerFromAiProposal";
@@ -37,14 +42,33 @@ type AiError = {
   retry?: boolean;
   manual?: boolean;
   message: string;
+  code?: string;
+  unresolvedLocations?: AiUnresolvedLocation[];
+  tree?: { campaign?: string | null; adSet?: string | null; ad?: string | null };
 };
 
 function readError(error: unknown, fallback: string): AiError {
-  const response = (error as { response?: { status?: number; data?: { message?: string; details?: { retry?: boolean; manualPath?: string } } } })
-    ?.response;
+  const response = (error as {
+    response?: {
+      status?: number;
+      data?: {
+        message?: string;
+        details?: {
+          retry?: boolean;
+          manualPath?: string;
+          code?: string;
+          unresolvedLocations?: AiUnresolvedLocation[];
+          tree?: { campaign?: string | null; adSet?: string | null; ad?: string | null };
+        };
+      };
+    };
+  })?.response;
   const message = response?.data?.message || fallback;
   return {
     message,
+    code: response?.data?.details?.code,
+    unresolvedLocations: response?.data?.details?.unresolvedLocations,
+    tree: response?.data?.details?.tree,
     retry: Boolean(response?.data?.details?.retry) || response?.status === 503,
     manual: true,
   };
@@ -91,6 +115,11 @@ export default function MetaAiCampaignWizardPage() {
   const [locationDraft, setLocationDraft] = useState("");
   const [lastMessage, setLastMessage] = useState("");
   const [pendingAction, setPendingAction] = useState<string | null>(null);
+  const draftLockRef = useRef(false);
+  const [confirmPublish, setConfirmPublish] = useState(false);
+  const [activationTree, setActivationTree] = useState<
+    { campaign?: string | null; adSet?: string | null; ad?: string | null } | undefined
+  >(undefined);
 
   const applySession = useCallback(
     (next: AiCampaignSessionResponse) => {
@@ -289,6 +318,101 @@ export default function MetaAiCampaignWizardPage() {
     navigate(manualPath, { state: { aiProposal: handoff } });
   };
 
+  const campaignId =
+    session?.meta?.campaignId || session?.metaDraft?.campaignId || "";
+  const editPath = campaignId
+    ? `/business/${tenantId}/dashboard/meta-campaigns/edit/${campaignId}`
+    : manualPath;
+
+  const mergeDraftError = (err: unknown, fallback: string) => {
+    const parsed = readError(err, fallback);
+    setError(parsed);
+    if (parsed.unresolvedLocations?.length && session) {
+      setSession({
+        ...session,
+        metaDraft: {
+          status: session.metaDraft?.status || "IDLE",
+          ...session.metaDraft,
+          pendingLocations: parsed.unresolvedLocations,
+        },
+      });
+    }
+    if (parsed.tree) setActivationTree(parsed.tree);
+    if (
+      (parsed.code === "PARTIAL_ACTIVATION" || parsed.code === "META_DRAFT_FAILED") &&
+      session
+    ) {
+      setSession({
+        ...session,
+        lifecycle: "META_FAILED",
+        metaDraft: {
+          status: "META_FAILED",
+          ...session.metaDraft,
+          error: parsed.message,
+        },
+      });
+    }
+    return parsed;
+  };
+
+  const runDraftAction = async (
+    action: string,
+    runner: () => Promise<AiCampaignSessionResponse>
+  ) => {
+    if (!session?.sessionId || busy || draftLockRef.current) return;
+    draftLockRef.current = true;
+    setBusy(true);
+    setPendingAction(action);
+    setError(null);
+    const poll = window.setInterval(() => {
+      if (!session.sessionId) return;
+      void getAiCampaignSession(tenantId, session.sessionId)
+        .then((next) => setSession(next))
+        .catch(() => undefined);
+    }, 1500);
+    try {
+      const next = await runner();
+      applySession(next);
+    } catch (err) {
+      mergeDraftError(err, t("metaCampaigns.ai.errorGeneric"));
+    } finally {
+      window.clearInterval(poll);
+      draftLockRef.current = false;
+      setBusy(false);
+      setPendingAction(null);
+    }
+  };
+
+  const handleCreateDraft = () =>
+    void runDraftAction("draft", () =>
+      createAiCampaignMetaDraft(tenantId, session!.sessionId)
+    );
+
+  const handleRetryDraft = () =>
+    void runDraftAction("draft", () =>
+      retryAiCampaignMetaDraft(tenantId, session!.sessionId)
+    );
+
+  const handleConfirmLocations = (choices: Array<Record<string, unknown>>) =>
+    void runDraftAction("draft", () =>
+      confirmAiDraftLocations(tenantId, session!.sessionId, choices)
+    );
+
+  const handleConfirmPublish = () => {
+    setConfirmPublish(false);
+    void runDraftAction("activate", () =>
+      activateAiCampaign(tenantId, session!.sessionId, true)
+    );
+  };
+
+  const handleEditBeforePublish = () => {
+    if (campaignId) {
+      navigate(editPath);
+      return;
+    }
+    handleManualEdit();
+  };
+
   const progressLabel = useMemo(() => {
     const confirmed = session?.progress?.confirmed ?? 0;
     const required = session?.progress?.required ?? 5;
@@ -387,6 +511,17 @@ export default function MetaAiCampaignWizardPage() {
             onManualEdit={handleManualEdit}
             onPatch={(patch) => void handlePatch(patch)}
             onUploadCreative={handleUploadCreative}
+            onCreateDraft={handleCreateDraft}
+            onRetryDraft={handleRetryDraft}
+            onConfirmLocations={handleConfirmLocations}
+            onRequestPublish={() => setConfirmPublish(true)}
+            onConfirmPublish={handleConfirmPublish}
+            onCancelPublish={() => setConfirmPublish(false)}
+            confirmOpen={confirmPublish}
+            activationTree={activationTree}
+            onEditBeforePublish={handleEditBeforePublish}
+            onViewCampaign={() => navigate(editPath)}
+            onBackToCampaigns={() => navigate(overviewPath)}
           />
         ) : isReady && session?.ready ? (
           <div className="space-y-4" data-testid="meta-ai-ready">

@@ -46,6 +46,10 @@ const api = vi.hoisted(() => ({
   generateAiCampaign: vi.fn(),
   reviseAiCampaign: vi.fn(),
   patchAiCampaignProposal: vi.fn(),
+  createAiCampaignMetaDraft: vi.fn(),
+  confirmAiDraftLocations: vi.fn(),
+  retryAiCampaignMetaDraft: vi.fn(),
+  activateAiCampaign: vi.fn(),
   sessionStorageKey: (id: string) => `bizuply.meta-ai-campaign.session.${id}`,
 }));
 
@@ -165,6 +169,7 @@ function renderWizard() {
           <Route path="create-ai" element={<MetaAiCampaignWizardPage />} />
           <Route path="overview" element={<div>overview-page</div>} />
           <Route path="create" element={<div>manual-create-page</div>} />
+          <Route path="edit/:campaignId" element={<div>edit-campaign-page</div>} />
           <Route path="settings" element={<div>settings-page</div>} />
         </Route>
       </Routes>
@@ -488,6 +493,248 @@ describe("MetaAiCampaignWizardPage conversation", () => {
     expect(
       screen.getByRole("link", { name: he.metaCampaigns.ai.connectMeta }).getAttribute("href")
     ).toBe("/business/biz-1/dashboard/meta-campaigns/settings");
+  });
+});
+
+function proposalReady(overrides: Record<string, unknown> = {}) {
+  return readySession({
+    proposal: sampleProposal({
+      creative: {
+        ...sampleProposal().creative,
+        media: { status: "PROVIDED", url: "https://cdn.example/a.jpg", kind: "image" },
+      },
+    }),
+    generation: { status: "READY", meta: {} },
+    lifecycle: "PROPOSAL_READY",
+    metaDraft: { status: "IDLE", pendingLocations: [], approvedDailyBudget: 70 },
+    ...overrides,
+  });
+}
+
+function draftedSession(overrides: Record<string, unknown> = {}) {
+  return proposalReady({
+    lifecycle: "META_DRAFT_CREATED",
+    metaDraft: {
+      status: "META_DRAFT_CREATED",
+      campaignId: "120",
+      adSetId: "121",
+      adId: "122",
+      approvedDailyBudget: 70,
+      pendingLocations: [],
+    },
+    meta: { campaignId: "120", adSetId: "121", adId: "122", status: "PAUSED" },
+    ...overrides,
+  });
+}
+
+describe("Meta AI draft + explicit publish", () => {
+  beforeEach(() => {
+    localeRef.current = he as Record<string, unknown>;
+    sessionStorage.clear();
+    vi.clearAllMocks();
+    api.getAiCampaignSession.mockRejectedValue(new Error("missing"));
+  });
+
+  it("shows the create CTA and paused warning", async () => {
+    api.startAiCampaignSession.mockResolvedValue(proposalReady());
+    renderWizard();
+    await waitFor(() => screen.getByTestId("meta-ai-create-draft"));
+    expect(screen.getByText(he.metaCampaigns.ai.draft.approveCreate)).toBeTruthy();
+    expect(screen.getByTestId("meta-ai-paused-warning").textContent).toContain(
+      he.metaCampaigns.ai.draft.pausedWarning
+    );
+  });
+
+  it("shows real creation progress without a fake percentage", async () => {
+    let resolveDraft: (value: unknown) => void = () => undefined;
+    api.startAiCampaignSession.mockResolvedValue(proposalReady());
+    api.createAiCampaignMetaDraft.mockImplementation(
+      () =>
+        new Promise((resolve) => {
+          resolveDraft = resolve;
+        })
+    );
+    api.getAiCampaignSession.mockResolvedValue(
+      proposalReady({
+        lifecycle: "CREATING_META_DRAFT",
+        metaDraft: { status: "CREATING_META_DRAFT", stage: "media" },
+      })
+    );
+    renderWizard();
+    await waitFor(() => screen.getByTestId("meta-ai-create-draft"));
+    fireEvent.click(screen.getByTestId("meta-ai-create-draft"));
+    await waitFor(() => screen.getByTestId("meta-ai-draft-progress"));
+    expect(screen.getByText(he.metaCampaigns.ai.draft.creating)).toBeTruthy();
+    expect(screen.queryByText("%")).toBeNull();
+    resolveDraft(
+      draftedSession()
+    );
+    await waitFor(() => screen.getByTestId("meta-ai-draft-success"));
+  });
+
+  it("blocks a double click from creating two drafts", async () => {
+    api.startAiCampaignSession.mockResolvedValue(proposalReady());
+    api.createAiCampaignMetaDraft.mockImplementation(
+      () =>
+        new Promise(() => {
+          /* hang */
+        })
+    );
+    renderWizard();
+    await waitFor(() => screen.getByTestId("meta-ai-create-draft"));
+    fireEvent.click(screen.getByTestId("meta-ai-create-draft"));
+    expect(api.createAiCampaignMetaDraft).toHaveBeenCalledTimes(1);
+    expect(screen.queryByTestId("meta-ai-create-draft")).toBeNull();
+    expect(screen.getByTestId("meta-ai-draft-progress")).toBeTruthy();
+  });
+
+  it("shows the paused success state after a Meta draft is created", async () => {
+    api.startAiCampaignSession.mockResolvedValue(draftedSession());
+    renderWizard();
+    await waitFor(() => screen.getByTestId("meta-ai-draft-success"));
+    expect(screen.getByText(he.metaCampaigns.ai.draft.successTitle)).toBeTruthy();
+    expect(screen.getByTestId("meta-ai-draft-status").textContent).toContain(
+      he.metaCampaigns.ai.draft.statusPaused
+    );
+    expect(screen.getByTestId("meta-ai-draft-budget").textContent).toContain("70");
+  });
+
+  it("shows a Meta error and retry", async () => {
+    api.startAiCampaignSession.mockResolvedValue(
+      proposalReady({
+        lifecycle: "META_FAILED",
+        metaDraft: { status: "META_FAILED", error: "Graph timeout" },
+      })
+    );
+    renderWizard();
+    await waitFor(() => screen.getByTestId("meta-ai-draft-error"));
+    expect(screen.getByText("Graph timeout")).toBeTruthy();
+    fireEvent.click(screen.getByTestId("meta-ai-draft-retry"));
+    await waitFor(() => expect(api.retryAiCampaignMetaDraft).toHaveBeenCalledWith("biz-1", "sess-1"));
+  });
+
+  it("blocks create when creative is missing", async () => {
+    api.startAiCampaignSession.mockResolvedValue(
+      readySession({
+        proposal: sampleProposal(),
+        generation: { status: "READY", meta: {} },
+      })
+    );
+    renderWizard();
+    await waitFor(() => screen.getByTestId("meta-ai-missing-creative"));
+    expect((screen.getByTestId("meta-ai-create-draft") as HTMLButtonElement).disabled).toBe(true);
+    expect(screen.getByTestId("meta-ai-draft-missing-creative")).toBeTruthy();
+  });
+
+  it("lets the user pick an unresolved location", async () => {
+    api.startAiCampaignSession.mockResolvedValue(
+      proposalReady({
+        metaDraft: {
+          status: "IDLE",
+          pendingLocations: [
+            {
+              query: "קריות",
+              options: [
+                { key: "1", name: "Kiryat Ata", type: "city" },
+                { key: "2", name: "Kiryat Bialik", type: "city" },
+              ],
+            },
+          ],
+        },
+      })
+    );
+    api.confirmAiDraftLocations.mockResolvedValue(draftedSession());
+    renderWizard();
+    await waitFor(() => screen.getByTestId("meta-ai-location-unresolved"));
+    expect(screen.getByText(he.metaCampaigns.ai.draft.locationUnresolved)).toBeTruthy();
+    fireEvent.change(screen.getByTestId("meta-ai-location-option"), {
+      target: { value: "1" },
+    });
+    fireEvent.click(screen.getByTestId("meta-ai-location-confirm"));
+    await waitFor(() =>
+      expect(api.confirmAiDraftLocations).toHaveBeenCalledWith(
+        "biz-1",
+        "sess-1",
+        [expect.objectContaining({ key: "1", name: "Kiryat Ata" })]
+      )
+    );
+  });
+
+  it("opens a publish confirmation with budget and stays paused on cancel", async () => {
+    api.startAiCampaignSession.mockResolvedValue(draftedSession());
+    renderWizard();
+    await waitFor(() => screen.getByTestId("meta-ai-publish"));
+    fireEvent.click(screen.getByTestId("meta-ai-publish"));
+    await waitFor(() => screen.getByTestId("meta-ai-publish-modal"));
+    expect(screen.getByTestId("meta-ai-publish-budget").textContent).toContain("70");
+    fireEvent.click(screen.getByTestId("meta-ai-publish-cancel"));
+    await waitFor(() => expect(screen.queryByTestId("meta-ai-publish-modal")).toBeNull());
+    expect(api.activateAiCampaign).not.toHaveBeenCalled();
+    expect(screen.getByTestId("meta-ai-draft-status").textContent).toContain(
+      he.metaCampaigns.ai.draft.statusPaused
+    );
+  });
+
+  it("publishes only after explicit confirm and shows ACTIVE", async () => {
+    api.startAiCampaignSession.mockResolvedValue(draftedSession());
+    api.activateAiCampaign.mockResolvedValue(
+      draftedSession({
+        lifecycle: "PUBLISHED",
+        metaDraft: { status: "PUBLISHED", campaignId: "120", approvedDailyBudget: 70 },
+        meta: { campaignId: "120", status: "ACTIVE", budget: 70 },
+      })
+    );
+    renderWizard();
+    await waitFor(() => screen.getByTestId("meta-ai-publish"));
+    fireEvent.click(screen.getByTestId("meta-ai-publish"));
+    fireEvent.click(screen.getByTestId("meta-ai-publish-confirm"));
+    await waitFor(() =>
+      expect(api.activateAiCampaign).toHaveBeenCalledWith("biz-1", "sess-1", true)
+    );
+    await waitFor(() => screen.getByTestId("meta-ai-published"));
+    expect(screen.getByText(he.metaCampaigns.ai.publish.successTitle)).toBeTruthy();
+    expect(screen.getByTestId("meta-ai-active-campaign-id").textContent).toContain("120");
+  });
+
+  it("reports partial activation instead of a full success", async () => {
+    api.startAiCampaignSession.mockResolvedValue(draftedSession());
+    api.activateAiCampaign.mockRejectedValue({
+      response: {
+        status: 502,
+        data: {
+          message: he.metaCampaigns.ai.publish.partialTitle,
+          details: {
+            code: "PARTIAL_ACTIVATION",
+            tree: { campaign: "ACTIVE", adSet: "PAUSED", ad: "PAUSED" },
+          },
+        },
+      },
+    });
+    renderWizard();
+    await waitFor(() => screen.getByTestId("meta-ai-publish"));
+    fireEvent.click(screen.getByTestId("meta-ai-publish"));
+    fireEvent.click(screen.getByTestId("meta-ai-publish-confirm"));
+    await waitFor(() => screen.getByTestId("meta-ai-partial-tree"));
+    expect(screen.queryByTestId("meta-ai-published")).toBeNull();
+    expect(screen.getByTestId("meta-ai-partial-tree").textContent).toMatch(/ACTIVE/);
+    expect(screen.getByTestId("meta-ai-partial-tree").textContent).toMatch(/PAUSED/);
+  });
+
+  it("renders English draft copy", async () => {
+    localeRef.current = en as Record<string, unknown>;
+    api.startAiCampaignSession.mockResolvedValue(proposalReady());
+    renderWizard();
+    await waitFor(() => screen.getByText(en.metaCampaigns.ai.draft.approveCreate));
+    expect(screen.getByText(en.metaCampaigns.ai.draft.pausedWarning)).toBeTruthy();
+  });
+
+  it("keeps draft actions stacked on mobile", async () => {
+    api.startAiCampaignSession.mockResolvedValue(draftedSession());
+    renderWizard();
+    await waitFor(() => screen.getByTestId("meta-ai-draft-success"));
+    const row = screen.getByTestId("meta-ai-publish").parentElement;
+    expect(row?.className).toMatch(/flex-col/);
+    expect(row?.className).toMatch(/sm:flex-row/);
   });
 });
 

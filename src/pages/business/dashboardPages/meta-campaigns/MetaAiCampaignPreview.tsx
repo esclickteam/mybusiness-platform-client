@@ -12,6 +12,7 @@ import {
 } from "../../../../api/metaAiCampaignApi";
 import AdPlacementPreview from "./AdPlacementPreview";
 import MetaLeadFormLivePreview from "./MetaLeadFormLivePreview";
+import MetaAiDraftPublishPanel from "./MetaAiDraftPublishPanel";
 import { META_AD_CTAS, metaCtaLabel } from "./ads-manager/metaAdCtas";
 
 type AvailableLeadForm = { id: string; name?: string | null };
@@ -46,6 +47,17 @@ export default function MetaAiCampaignPreview({
   onManualEdit,
   onPatch,
   onUploadCreative,
+  onCreateDraft,
+  onRetryDraft,
+  onConfirmLocations,
+  onRequestPublish,
+  onConfirmPublish,
+  onCancelPublish,
+  confirmOpen,
+  activationTree,
+  onEditBeforePublish,
+  onViewCampaign,
+  onBackToCampaigns,
 }: {
   session: AiCampaignSessionResponse;
   busy: boolean;
@@ -55,6 +67,17 @@ export default function MetaAiCampaignPreview({
   onManualEdit: () => void;
   onPatch: (patch: Record<string, unknown>) => void;
   onUploadCreative: (file: File) => void;
+  onCreateDraft: () => void;
+  onRetryDraft: () => void;
+  onConfirmLocations: (choices: Array<Record<string, unknown>>) => void;
+  onRequestPublish: () => void;
+  onConfirmPublish: () => void;
+  onCancelPublish: () => void;
+  confirmOpen: boolean;
+  activationTree?: { campaign?: string | null; adSet?: string | null; ad?: string | null };
+  onEditBeforePublish: () => void;
+  onViewCampaign: () => void;
+  onBackToCampaigns: () => void;
 }) {
   const { t, i18n } = useTranslation();
   const [reviseDraft, setReviseDraft] = useState("");
@@ -124,6 +147,11 @@ export default function MetaAiCampaignPreview({
   );
 
   const draft = proposal.leadForm?.draft;
+  const lifecycle = session.lifecycle || session.metaDraft?.status || "IDLE";
+  const lockedAfterDraft =
+    lifecycle === "META_DRAFT_CREATED" ||
+    lifecycle === "PUBLISHED" ||
+    lifecycle === "CREATING_META_DRAFT";
 
   return (
     <div className="space-y-5" data-testid="meta-ai-preview">
@@ -302,6 +330,33 @@ export default function MetaAiCampaignPreview({
         ) : null}
       </div>
 
+      <MetaAiDraftPublishPanel
+        session={session}
+        busy={busy}
+        pendingAction={pendingAction}
+        mediaMissing={mediaMissing}
+        budgetLabel={
+          budget
+            ? `${budget.amount} ${budget.currency} ${t("metaCampaigns.ai.preview.perDay")}`
+            : "—"
+        }
+        locationsLabel={locations}
+        objectiveLabel={objectiveLabel}
+        activationTree={activationTree}
+        onCreateDraft={onCreateDraft}
+        onRetryDraft={onRetryDraft}
+        onConfirmLocations={onConfirmLocations}
+        onRequestPublish={onRequestPublish}
+        onConfirmPublish={onConfirmPublish}
+        onCancelPublish={onCancelPublish}
+        confirmOpen={confirmOpen}
+        onEditBeforePublish={onEditBeforePublish}
+        onViewCampaign={onViewCampaign}
+        onBackToCampaigns={onBackToCampaigns}
+      />
+
+      {lockedAfterDraft ? null : (
+      <>
       <form
         className="flex flex-col gap-2 sm:flex-row"
         data-testid="meta-ai-revise"
@@ -363,6 +418,8 @@ export default function MetaAiCampaignPreview({
           {t("metaCampaigns.ai.preview.regenerate")}
         </button>
       </div>
+      </>
+      )}
     </div>
   );
 }

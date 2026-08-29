@@ -95,6 +95,45 @@ export type AiCampaignProposal = {
   };
 };
 
+export type AiCampaignLifecycle =
+  | "COLLECTING"
+  | "READY_FOR_GENERATION"
+  | "PROPOSAL_READY"
+  | "CREATING_META_DRAFT"
+  | "META_DRAFT_CREATED"
+  | "PUBLISHED"
+  | "META_FAILED"
+  | "CANCELLED";
+
+export type AiUnresolvedLocation = {
+  query: string;
+  options: Array<{
+    key: string;
+    name: string;
+    type?: string;
+    countryCode?: string;
+    region?: string;
+  }>;
+};
+
+export type AiCampaignMetaDraft = {
+  status:
+    | "IDLE"
+    | "CREATING_META_DRAFT"
+    | "META_DRAFT_CREATED"
+    | "PUBLISHED"
+    | "META_FAILED";
+  stage?: string | null;
+  error?: string;
+  publishId?: string | null;
+  campaignId?: string | null;
+  adSetId?: string | null;
+  adId?: string | null;
+  approvedDailyBudget?: number | null;
+  approvedLifetimeBudget?: number | null;
+  pendingLocations?: AiUnresolvedLocation[];
+};
+
 export type AiCampaignSessionResponse = {
   success?: boolean;
   sessionId: string;
@@ -116,6 +155,21 @@ export type AiCampaignSessionResponse = {
   generation?: {
     status: "IDLE" | "GENERATING" | "READY" | "FAILED";
     meta?: Record<string, unknown>;
+  };
+  metaDraft?: AiCampaignMetaDraft;
+  lifecycle?: AiCampaignLifecycle;
+  publishId?: string;
+  meta?: {
+    campaignId?: string | null;
+    adSetId?: string | null;
+    adId?: string | null;
+    status?: string | null;
+    budget?: number | null;
+  };
+  tree?: {
+    campaign?: string | null;
+    adSet?: string | null;
+    ad?: string | null;
   };
   resumable?: boolean;
 };
@@ -218,6 +272,57 @@ export async function patchAiCampaignProposal(
   const { data } = await API.patch<AiCampaignSessionResponse>(
     `${BASE}/sessions/${sessionId}/proposal`,
     { patch, businessId },
+    withBusiness(businessId)
+  );
+  return data;
+}
+
+export async function createAiCampaignMetaDraft(
+  businessId: string | undefined,
+  sessionId: string,
+  locationChoices: Array<Record<string, unknown>> = []
+) {
+  const { data } = await API.post<AiCampaignSessionResponse>(
+    `${BASE}/sessions/${sessionId}/meta-draft`,
+    { locationChoices, businessId },
+    withBusiness(businessId)
+  );
+  return data;
+}
+
+export async function confirmAiDraftLocations(
+  businessId: string | undefined,
+  sessionId: string,
+  choices: Array<Record<string, unknown>>
+) {
+  const { data } = await API.post<AiCampaignSessionResponse>(
+    `${BASE}/sessions/${sessionId}/meta-draft/locations`,
+    { choices, businessId },
+    withBusiness(businessId)
+  );
+  return data;
+}
+
+export async function retryAiCampaignMetaDraft(
+  businessId: string | undefined,
+  sessionId: string
+) {
+  const { data } = await API.post<AiCampaignSessionResponse>(
+    `${BASE}/sessions/${sessionId}/meta-draft/retry`,
+    { businessId },
+    withBusiness(businessId)
+  );
+  return data;
+}
+
+export async function activateAiCampaign(
+  businessId: string | undefined,
+  sessionId: string,
+  confirm: boolean
+) {
+  const { data } = await API.post<AiCampaignSessionResponse>(
+    `${BASE}/sessions/${sessionId}/activate`,
+    { confirm, businessId },
     withBusiness(businessId)
   );
   return data;
