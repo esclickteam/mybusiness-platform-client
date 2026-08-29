@@ -5518,6 +5518,28 @@
       "delete": "Delete",
       "viewDetails": "View details"
     },
+    "creationMode": {
+      "title": "New campaign",
+      "subtitle": "Choose how to start — create it yourself or with AI.",
+      "close": "Close",
+      "manual": {
+        "title": "Create manually",
+        "description": "Set up the campaign yourself with full control over audience, budget, creative, and Meta settings.",
+        "cta": "Continue to manual creation"
+      },
+      "ai": {
+        "title": "✨ Create campaign with AI",
+        "description": "Tell us what you want to promote, and BizUply AI will help build the campaign, audience, ads, and recommended automations.",
+        "cta": "Create with AI"
+      }
+    },
+    "ai": {
+      "badge": "BizUply AI",
+      "title": "✨ Create campaign with AI",
+      "subtitle": "BizUply AI will help you build a campaign tailored to your business. We'll use information already in the system and only ask for what's missing.",
+      "placeholder": "Getting your campaign ready...",
+      "back": "Back to overview"
+    },
     "kpis": {
       "roas": "ROAS",
       "roasHint": "Return on ad spend",

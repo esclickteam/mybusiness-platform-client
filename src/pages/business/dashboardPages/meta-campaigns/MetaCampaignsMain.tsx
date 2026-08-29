@@ -17,6 +17,7 @@ import {
   normalizeLanguage,
   setSessionLanguageOverride,
 } from "../../../../i18n/localeUtils";
+import { isMetaCampaignsKnownChildPath } from "./campaignCreationMode";
 
 type MetaCampaignsTab = {
   path: string;
@@ -70,6 +71,7 @@ export default function MetaCampaignsMain() {
   const isKnownTab = useMemo(
     () =>
       tabs.some((tab) => tab.path === currentTab) ||
+      isMetaCampaignsKnownChildPath(currentTab) ||
       currentTab === "edit" ||
       /^\d+$/.test(currentTab),
     [currentTab]

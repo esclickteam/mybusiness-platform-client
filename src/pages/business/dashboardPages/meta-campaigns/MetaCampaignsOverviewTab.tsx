@@ -29,7 +29,6 @@ import {
   Pause,
   Pencil,
   Play,
-  Plus,
   RefreshCw,
   Sparkles,
   Target,
@@ -51,6 +50,7 @@ import BizuplyLoader from "../../../../components/ui/BizuplyLoader";
 import { btnPrimary, btnSecondary, cardBase } from "../../../../styles/bizuplyUi";
 import { getIntlLocale } from "../../../../i18n/localeUtils";
 import MetaAdsReviewCaptions from "./MetaAdsReviewCaptions";
+import CreateCampaignButton from "./CreateCampaignButton";
 import {
   DATE_RANGE_OPTIONS,
   daysAgoIso,
@@ -505,10 +505,7 @@ export default function MetaCampaignsOverviewTab() {
             )}
             {t("metaCampaigns.actions.refresh")}
           </button>
-          <Link to={`${basePath}/create`} className={btnPrimary}>
-            <Plus className="h-4 w-4" />
-            {t("metaCampaigns.actions.create")}
-          </Link>
+          <CreateCampaignButton basePath={basePath} />
         </div>
       </div>
 
