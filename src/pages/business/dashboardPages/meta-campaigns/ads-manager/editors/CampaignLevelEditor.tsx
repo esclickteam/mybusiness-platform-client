@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import type { CampaignDraft } from "../adsManagerTypes";
 import {
   MetaField,
@@ -10,13 +11,13 @@ import {
   metaSelectClass,
 } from "../metaAdsUi";
 
-const OBJECTIVES: Array<{ id: CampaignDraft["objective"]; label: string }> = [
-  { id: "OUTCOME_AWARENESS", label: "Awareness" },
-  { id: "OUTCOME_TRAFFIC", label: "Traffic" },
-  { id: "OUTCOME_ENGAGEMENT", label: "Engagement" },
-  { id: "OUTCOME_LEADS", label: "Leads" },
-  { id: "OUTCOME_APP_PROMOTION", label: "App promotion" },
-  { id: "OUTCOME_SALES", label: "Sales" },
+const OBJECTIVES: Array<{ id: CampaignDraft["objective"] }> = [
+  { id: "OUTCOME_AWARENESS" },
+  { id: "OUTCOME_TRAFFIC" },
+  { id: "OUTCOME_ENGAGEMENT" },
+  { id: "OUTCOME_LEADS" },
+  { id: "OUTCOME_APP_PROMOTION" },
+  { id: "OUTCOME_SALES" },
 ];
 
 type Props = {
@@ -25,17 +26,19 @@ type Props = {
 };
 
 export default function CampaignLevelEditor({ campaign, onChange }: Props) {
+  const { t } = useTranslation();
+
   return (
     <div className="mx-auto max-w-[760px] space-y-4 pb-24">
       <MetaSection
-        title="Campaign name"
+        title={t("metaCampaigns.adsManager.campaignName")}
         action={
           <button type="button" className={metaBtnSecondary}>
-            Create template
+            {t("metaCampaigns.adsManager.createTemplate")}
           </button>
         }
       >
-        <MetaField label="Campaign name">
+        <MetaField label={t("metaCampaigns.adsManager.campaignName")}>
           <input
             className={metaInputClass}
             value={campaign.name}
@@ -44,9 +47,9 @@ export default function CampaignLevelEditor({ campaign, onChange }: Props) {
         </MetaField>
       </MetaSection>
 
-      <MetaSection title="Campaign details">
+      <MetaSection title={t("metaCampaigns.adsManager.campaignDetails")}>
         <div className="grid gap-4 sm:grid-cols-2">
-          <MetaField label="Buying type">
+          <MetaField label={t("metaCampaigns.adsManager.buyingType")}>
             <select
               className={metaSelectClass}
               value={campaign.buyingType}
@@ -56,11 +59,15 @@ export default function CampaignLevelEditor({ campaign, onChange }: Props) {
                 })
               }
             >
-              <option value="auction">Auction</option>
-              <option value="reserved">Reserved</option>
+              <option value="auction">
+                {t("metaCampaigns.adsManager.auction")}
+              </option>
+              <option value="reserved">
+                {t("metaCampaigns.adsManager.reserved")}
+              </option>
             </select>
           </MetaField>
-          <MetaField label="Campaign objective">
+          <MetaField label={t("metaCampaigns.adsManager.campaignObjective")}>
             <select
               className={metaSelectClass}
               value={campaign.objective}
@@ -72,7 +79,7 @@ export default function CampaignLevelEditor({ campaign, onChange }: Props) {
             >
               {OBJECTIVES.map((obj) => (
                 <option key={obj.id} value={obj.id}>
-                  {obj.label}
+                  {t(`metaCampaigns.adsManager.objectives.${obj.id}`)}
                 </option>
               ))}
             </select>
@@ -83,40 +90,44 @@ export default function CampaignLevelEditor({ campaign, onChange }: Props) {
             onChange({ showMoreDetails: !campaign.showMoreDetails })
           }
         >
-          {campaign.showMoreDetails ? "Hide options" : "Show more options"}
+          {campaign.showMoreDetails
+            ? t("metaCampaigns.adsManager.hideOptions")
+            : t("metaCampaigns.adsManager.showMoreOptions")}
         </MetaLinkButton>
         {campaign.showMoreDetails ? (
           <MetaField
-            label="Special ad categories"
-            hint="Declare if your ads are related to credit, employment, housing, or social issues."
+            label={t("metaCampaigns.adsManager.specialAdCategories")}
+            hint={t("metaCampaigns.adsManager.specialAdHint")}
           >
             <select className={metaSelectClass} defaultValue="">
-              <option value="">None</option>
-              <option value="credit">Credit</option>
-              <option value="employment">Employment</option>
-              <option value="housing">Housing</option>
+              <option value="">{t("metaCampaigns.adsManager.none")}</option>
+              <option value="credit">{t("metaCampaigns.adsManager.credit")}</option>
+              <option value="employment">
+                {t("metaCampaigns.adsManager.employment")}
+              </option>
+              <option value="housing">{t("metaCampaigns.adsManager.housing")}</option>
             </select>
           </MetaField>
         ) : null}
       </MetaSection>
 
-      <MetaSection title="Budget">
+      <MetaSection title={t("metaCampaigns.adsManager.budget")}>
         <div>
           <p className="mb-2 text-[13px] font-semibold text-[#65676B]">
-            Budget strategy
+            {t("metaCampaigns.adsManager.budgetStrategy")}
           </p>
           <div className="grid gap-2">
             <MetaRadioCard
               checked={campaign.budgetStrategy === "campaign"}
               onSelect={() => onChange({ budgetStrategy: "campaign" })}
-              title="Campaign budget"
-              description="Set one budget at the campaign level and distribute it across ad sets."
+              title={t("metaCampaigns.adsManager.campaignBudget")}
+              description={t("metaCampaigns.adsManager.campaignBudgetHint")}
             />
             <MetaRadioCard
               checked={campaign.budgetStrategy === "adset"}
               onSelect={() => onChange({ budgetStrategy: "adset" })}
-              title="Ad set budget"
-              description="Control budget separately for each ad set."
+              title={t("metaCampaigns.adsManager.adSetBudget")}
+              description={t("metaCampaigns.adsManager.adSetBudgetHint")}
             />
           </div>
         </div>
@@ -131,8 +142,12 @@ export default function CampaignLevelEditor({ campaign, onChange }: Props) {
               })
             }
           >
-            <option value="daily">Daily budget</option>
-            <option value="lifetime">Lifetime budget</option>
+            <option value="daily">
+              {t("metaCampaigns.adsManager.dailyBudget")}
+            </option>
+            <option value="lifetime">
+              {t("metaCampaigns.adsManager.lifetimeBudget")}
+            </option>
           </select>
           <input
             className={metaInputClass}
@@ -147,19 +162,25 @@ export default function CampaignLevelEditor({ campaign, onChange }: Props) {
           />
         </div>
         <p className="text-[13px] text-[#65676B]">
-          You’ll spend an average of {campaign.currency} {campaign.budgetAmount}{" "}
-          per day. Actual daily spend may vary.
+          {t("metaCampaigns.adsManager.budgetAverage", {
+            currency: campaign.currency,
+            amount: campaign.budgetAmount,
+          })}
         </p>
 
-        <MetaField label="Campaign bid strategy">
+        <MetaField label={t("metaCampaigns.adsManager.bidStrategy")}>
           <select
             className={metaSelectClass}
             value={campaign.bidStrategy}
             onChange={(e) => onChange({ bidStrategy: e.target.value })}
           >
-            <option>Highest volume</option>
-            <option>Cost per result goal</option>
-            <option>Bid cap</option>
+            <option value="Highest volume">
+              {t("metaCampaigns.adsManager.highestVolume")}
+            </option>
+            <option value="Cost per result goal">
+              {t("metaCampaigns.adsManager.costPerResult")}
+            </option>
+            <option value="Bid cap">{t("metaCampaigns.adsManager.bidCap")}</option>
           </select>
         </MetaField>
 
@@ -169,18 +190,26 @@ export default function CampaignLevelEditor({ campaign, onChange }: Props) {
               onChange({ showMoreBudget: !campaign.showMoreBudget })
             }
           >
-            {campaign.showMoreBudget ? "Hide settings" : "Show more settings"}
+            {campaign.showMoreBudget
+              ? t("metaCampaigns.adsManager.hideSettings")
+              : t("metaCampaigns.adsManager.showMoreSettings")}
           </MetaLinkButton>
-          <MetaLinkButton>Budget scheduling</MetaLinkButton>
+          <MetaLinkButton>
+            {t("metaCampaigns.adsManager.budgetScheduling")}
+          </MetaLinkButton>
         </div>
         {campaign.showMoreBudget ? (
           <MetaField
-            label="Delivery type"
-            hint="Standard delivery spends your budget evenly. Accelerated spends as quickly as possible."
+            label={t("metaCampaigns.adsManager.deliveryType")}
+            hint={t("metaCampaigns.adsManager.deliveryHint")}
           >
             <select className={metaSelectClass} defaultValue="standard">
-              <option value="standard">Standard</option>
-              <option value="accelerated">Accelerated</option>
+              <option value="standard">
+                {t("metaCampaigns.adsManager.standard")}
+              </option>
+              <option value="accelerated">
+                {t("metaCampaigns.adsManager.accelerated")}
+              </option>
             </select>
           </MetaField>
         ) : null}

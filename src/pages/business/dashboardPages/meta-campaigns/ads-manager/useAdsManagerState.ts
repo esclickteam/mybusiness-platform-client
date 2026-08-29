@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { createDefaultAdsManagerState } from "./adsManagerDefaults";
 import {
   adsManagerStateFromAiProposal,
@@ -16,18 +17,6 @@ import type {
   CampaignObjective,
   ValidationSeverity,
 } from "./adsManagerTypes";
-
-function campaignNameForObjective(objective: CampaignObjective): string {
-  const map: Record<CampaignObjective, string> = {
-    OUTCOME_AWARENESS: "New awareness campaign",
-    OUTCOME_TRAFFIC: "New traffic campaign",
-    OUTCOME_ENGAGEMENT: "New engagement campaign",
-    OUTCOME_LEADS: "New leads campaign",
-    OUTCOME_APP_PROMOTION: "New app promotion campaign",
-    OUTCOME_SALES: "New sales campaign",
-  };
-  return map[objective] || "New campaign";
-}
 
 function deepCloneState(state: AdsManagerState): AdsManagerState {
   return JSON.parse(JSON.stringify(state)) as AdsManagerState;
@@ -77,6 +66,7 @@ export function getLevelValidation(state: AdsManagerState): {
 }
 
 export function useAdsManagerState(initialHandoff?: AiProposalHandoff | null) {
+  const { t } = useTranslation();
   const [state, setState] = useState<AdsManagerState>(() =>
     initialHandoff?.proposal
       ? adsManagerStateFromAiProposal(initialHandoff)
@@ -109,26 +99,26 @@ export function useAdsManagerState(initialHandoff?: AiProposalHandoff | null) {
     const campaignNode: AdsManagerTreeNode = {
       id: state.campaign.id,
       level: "campaign",
-      name: state.campaign.name || "Untitled campaign",
+      name: state.campaign.name || t("metaCampaigns.adsManager.campaignNames.fallback"),
       parentId: null,
       validation: validation.campaign,
     };
     const adSetNodes = state.adSets.map((adSet) => ({
       id: adSet.id,
       level: "adset" as const,
-      name: adSet.name || "Untitled ad set",
+      name: adSet.name || t("metaCampaigns.adsManager.adSetSuffix"),
       parentId: state.campaign.id,
       validation: validation.adset,
     }));
     const adNodes = state.ads.map((ad) => ({
       id: ad.id,
       level: "ad" as const,
-      name: ad.name || "Untitled ad",
+      name: ad.name || t("metaCampaigns.adsManager.adSuffix"),
       parentId: state.adSets[0]?.id || null,
       validation: validation.ad,
     }));
     return [campaignNode, ...adSetNodes, ...adNodes];
-  }, [state, validation]);
+  }, [state, validation, t]);
 
   const selectedAdSet = state.adSets[0];
   const selectedAd = state.ads[0];
@@ -203,9 +193,11 @@ export function useAdsManagerState(initialHandoff?: AiProposalHandoff | null) {
 
   const applyCreateChoice = useCallback(
     (choice: { buyingType: BuyingType; objective: CampaignObjective }) => {
-      const campaignName = campaignNameForObjective(choice.objective);
-      const adSetName = `${campaignName} — Ad set`;
-      const adName = `${campaignName} — Ad`;
+      const campaignName = t(
+        `metaCampaigns.adsManager.campaignNames.${choice.objective}`
+      );
+      const adSetName = `${campaignName} — ${t("metaCampaigns.adsManager.adSetSuffix")}`;
+      const adName = `${campaignName} — ${t("metaCampaigns.adsManager.adSuffix")}`;
       const isLeads = choice.objective === "OUTCOME_LEADS";
 
       setState((prev) => {
@@ -254,7 +246,7 @@ export function useAdsManagerState(initialHandoff?: AiProposalHandoff | null) {
         };
       });
     },
-    []
+    [t]
   );
 
   const setAudienceEstimate = useCallback(
