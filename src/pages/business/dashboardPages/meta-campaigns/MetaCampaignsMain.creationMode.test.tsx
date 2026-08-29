@@ -1,6 +1,6 @@
 import React from "react";
 import { describe, expect, it, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 
 vi.mock("../../../../context/AuthContext", () => ({
@@ -9,6 +9,27 @@ vi.mock("../../../../context/AuthContext", () => ({
 
 vi.mock("../../../../hooks/useLocaleDir", () => ({
   useLocaleDir: () => "rtl",
+}));
+
+vi.mock("../../../../api/metaAiCampaignApi", () => ({
+  startAiCampaignSession: vi.fn().mockResolvedValue({
+    sessionId: "sess-1",
+    status: "COLLECTING",
+    assistantMessage: "שאלה",
+    question: {
+      field: "promotedItem",
+      type: "single_select",
+      message: "שאלה",
+      options: [],
+    },
+    missingFields: ["promotedItem"],
+    progress: { confirmed: 0, required: 5 },
+    messages: [],
+  }),
+  getAiCampaignSession: vi.fn().mockRejectedValue(new Error("missing")),
+  answerAiCampaignSession: vi.fn(),
+  sendAiCampaignMessage: vi.fn(),
+  sessionStorageKey: (id: string) => `bizuply.meta-ai-campaign.session.${id}`,
 }));
 
 vi.mock("react-i18next", () => ({
@@ -47,9 +68,12 @@ describe("Meta Campaigns creation-mode routing", () => {
     expect(screen.queryByText("overview-page")).toBeNull();
   });
 
-  it("keeps direct navigation to /create-ai on the AI wizard shell", () => {
+  it("keeps direct navigation to /create-ai on the AI wizard shell", async () => {
     renderCampaigns("/business/biz-1/dashboard/meta-campaigns/create-ai");
     expect(screen.getByTestId("meta-ai-campaign-wizard")).toBeTruthy();
+    await waitFor(() =>
+      expect(screen.queryByTestId("meta-ai-loading")).toBeNull()
+    );
     expect(screen.queryByText("overview-page")).toBeNull();
     expect(screen.queryByText("manual-ads-manager")).toBeNull();
   });
