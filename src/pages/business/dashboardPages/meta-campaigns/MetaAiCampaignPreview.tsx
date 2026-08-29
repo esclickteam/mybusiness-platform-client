@@ -9,6 +9,7 @@ import {
 import {
   type AiCampaignProposal,
   type AiCampaignSessionResponse,
+  type AiCreativeReview,
 } from "../../../../api/metaAiCampaignApi";
 import AdPlacementPreview from "./AdPlacementPreview";
 import MetaLeadFormLivePreview from "./MetaLeadFormLivePreview";
@@ -31,6 +32,84 @@ function destinationKey(session: AiCampaignSessionResponse) {
   const value = intentField(session, "destination") as { key?: string } | string | null;
   if (!value) return session.proposal?.campaign ? null : null;
   return typeof value === "string" ? value : value.key || null;
+}
+
+function CreativeReviewCard({
+  review,
+  busy,
+  onUploadCreative,
+}: {
+  review: AiCreativeReview | null;
+  busy: boolean;
+  onUploadCreative: (file: File) => void;
+}) {
+  const { t } = useTranslation();
+  const improvements = review?.improvements || [];
+  const strengths = review?.strengths || [];
+  return (
+    <div
+      className="space-y-3 rounded-md border border-violet-100 bg-violet-50/70 p-3"
+      data-testid="meta-ai-creative-review"
+    >
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <p className="text-xs font-black uppercase tracking-wide text-violet-800">
+            {t("metaCampaigns.ai.preview.reviewTitle")}
+          </p>
+          {review?.score ? (
+            <p className="mt-1 text-sm font-black text-slate-900">
+              {t("metaCampaigns.ai.preview.reviewScore", { score: review.score })}
+            </p>
+          ) : null}
+          {review?.summary ? (
+            <p className="mt-1 text-sm font-semibold text-slate-700">{review.summary}</p>
+          ) : null}
+        </div>
+        <label className={`${btnSecondary} cursor-pointer`}>
+          <ImagePlus className="h-4 w-4" />
+          {t("metaCampaigns.ai.preview.replaceCreative")}
+          <input
+            type="file"
+            accept="image/*,video/*"
+            className="hidden"
+            disabled={busy}
+            data-testid="meta-ai-creative-replace"
+            onChange={(event) => {
+              const file = event.target.files?.[0];
+              if (file) onUploadCreative(file);
+            }}
+          />
+        </label>
+      </div>
+      {strengths.length ? (
+        <div>
+          <p className="text-[11px] font-black uppercase text-slate-500">
+            {t("metaCampaigns.ai.preview.reviewStrengths")}
+          </p>
+          <ul className="mt-1 list-disc space-y-1 ps-5 text-sm font-semibold text-slate-700">
+            {strengths.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+      {improvements.length ? (
+        <div>
+          <p className="text-[11px] font-black uppercase text-slate-500">
+            {t("metaCampaigns.ai.preview.reviewImprovements")}
+          </p>
+          <ul
+            className="mt-1 list-disc space-y-1 ps-5 text-sm font-semibold text-slate-700"
+            data-testid="meta-ai-creative-improvements"
+          >
+            {improvements.map((item) => (
+              <li key={item}>{item}</li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+    </div>
+  );
 }
 
 function availableLeadForms(session: AiCampaignSessionResponse): AvailableLeadForm[] {
@@ -230,7 +309,17 @@ export default function MetaAiCampaignPreview({
             />
           </label>
         </div>
-      ) : null}
+      ) : (
+        <CreativeReviewCard
+          review={
+            session.creativeReview ||
+            (proposal.creative as { review?: typeof session.creativeReview }).review ||
+            null
+          }
+          busy={busy}
+          onUploadCreative={onUploadCreative}
+        />
+      )}
 
       <MetaAiDraftPublishPanel
         session={session}

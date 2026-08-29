@@ -141,18 +141,23 @@ function questionSession(overrides: Record<string, unknown> = {}) {
     sessionId: "sess-1",
     status: "COLLECTING",
     metaConnected: true,
-    assistantMessage: "איזה שירות תרצה לקדם?",
+    assistantMessage: "מה התקציב היומי שתרצה להשקיע?",
     question: {
-      field: "promotedItem",
-      type: "single_select",
-      message: "איזה שירות תרצה לקדם?",
-      options: [
-        { value: "service:123", label: "טיפול פנים" },
-        { value: "service:456", label: "איפור קבוע" },
-      ],
+      field: "budget",
+      type: "currency",
+      currency: "ILS",
+      message: "מה התקציב היומי שתרצה להשקיע?",
+      options: [{ value: "RECOMMEND", label: "תמליץ לי" }],
     },
-    missingFields: ["promotedItem", "objective", "budget", "locations", "destination"],
-    progress: { confirmed: 0, required: 5 },
+    missingFields: ["budget"],
+    progress: { confirmed: 0, remaining: 1, required: 1 },
+    offerings: [
+      { id: "123", type: "service", name: "טיפול פנים" },
+      { id: "456", type: "service", name: "איפור קבוע" },
+    ],
+    intent: {
+      promotedItem: { state: "CONFIRMED", value: { name: "טיפול פנים ואיפור קבוע" } },
+    },
     messages: [
       { role: "assistant", text: "מצאתי את Beauty Clinic." },
       { role: "assistant", text: "איזה שירות תרצה לקדם?" },
@@ -211,142 +216,67 @@ describe("MetaAiCampaignWizardPage conversation", () => {
     expect(screen.getByTestId("meta-ai-loading")).toBeTruthy();
     expect(screen.getByText(he.metaCampaigns.ai.checking)).toBeTruthy();
     resolveStart(questionSession());
-    await waitFor(() => expect(screen.getByTestId("meta-ai-question")).toBeTruthy());
+    await waitFor(() => expect(screen.getByTestId("meta-ai-owner-lite")).toBeTruthy());
     expect(api.startAiCampaignSession).toHaveBeenCalled();
   });
 
-  it("renders a single-select question and advances on answer", async () => {
-    const next = questionSession({
-      question: {
-        field: "objective",
-        type: "single_select",
-        message: "מה המטרה העיקרית של הקמפיין?",
-        options: [{ value: "LEADS", label: "קבלת לידים" }],
-      },
-      missingFields: ["budget"],
-      progress: { confirmed: 4, remaining: 1, required: 1 },
-      assistantMessage: "מה המטרה העיקרית של הקמפיין?",
-    });
-    api.answerAiCampaignSession.mockResolvedValue(next);
+  it("shows optional service focus and budget only — no conversation steps", async () => {
     renderWizard();
-    await waitFor(() => screen.getByTestId("meta-ai-question"));
-    expect(screen.getByTestId("meta-ai-question").getAttribute("data-type")).toBe(
-      "single_select"
-    );
+    await waitFor(() => screen.getByTestId("meta-ai-owner-lite"));
+    expect(screen.getByTestId("meta-ai-optional-focus")).toBeTruthy();
+    expect(screen.getByTestId("meta-ai-currency")).toBeTruthy();
+    expect(screen.queryByTestId("meta-ai-composer")).toBeNull();
+    expect(screen.queryByText("שירות אחר")).toBeNull();
+    expect(screen.getByTestId("meta-ai-progress").textContent).toContain("נשאר רק לאשר");
     fireEvent.click(screen.getByRole("button", { name: "טיפול פנים" }));
     await waitFor(() =>
-      expect(screen.getByText("מה המטרה העיקרית של הקמפיין?")).toBeTruthy()
-    );
-    expect(api.answerAiCampaignSession).toHaveBeenCalledWith(
-      "biz-1",
-      "sess-1",
-      {
-        field: "promotedItem",
-        answer: {
-          value: "service:123",
-          label: "טיפול פנים",
-          itemType: undefined,
-          itemId: undefined,
-          itemName: undefined,
-        },
-      }
-    );
-    expect(screen.queryByText("טיפול פנים")).toBeNull();
-    expect(screen.getByTestId("meta-ai-progress").textContent).toContain("חסר פרט אחד");
-    expect(screen.queryByText("OTHER")).toBeNull();
-  });
-
-  it("renders OTHER as שירות אחר and opens a text input", async () => {
-    api.answerAiCampaignSession.mockResolvedValue(
-      questionSession({
-        question: {
+      expect(api.answerAiCampaignSession).toHaveBeenCalledWith(
+        "biz-1",
+        "sess-1",
+        {
           field: "promotedItem",
-          type: "text",
-          message: "מה תרצה לקדם?",
-          placeholder: "הקלד את השירות או המוצר שתרצה לקדם",
-        },
-        messages: [
-          { role: "assistant", text: "איזה שירות תרצה לקדם?" },
-          { role: "user", text: "שירות אחר" },
-          { role: "assistant", text: "מה תרצה לקדם?" },
-        ],
-      })
-    );
-    api.startAiCampaignSession.mockResolvedValue(
-      questionSession({
-        question: {
-          field: "promotedItem",
-          type: "single_select",
-          message: "איזה שירות תרצה לקדם?",
-          options: [
-            { value: "service:123", label: "טיפול פנים" },
-            { value: "OTHER", label: "שירות אחר" },
-          ],
-        },
-      })
-    );
-    renderWizard();
-    await waitFor(() => screen.getByTestId("meta-ai-options"));
-    fireEvent.click(screen.getByRole("button", { name: "שירות אחר" }));
-    await waitFor(() => screen.getByTestId("meta-ai-text"));
-    expect(screen.getByTestId("meta-ai-question").getAttribute("data-type")).toBe("text");
-    expect(screen.queryByText("OTHER")).toBeNull();
-    expect(screen.getByText("שירות אחר")).toBeTruthy();
-    expect(screen.getByPlaceholderText("הקלד את השירות או המוצר שתרצה לקדם")).toBeTruthy();
-  });
-
-  it("does not keep a duplicated promotedItem question after submit", async () => {
-    api.answerAiCampaignSession.mockResolvedValue(
-      questionSession({
-        question: {
-          field: "objective",
-          type: "single_select",
-          message: "מה המטרה העיקרית של הקמפיין?",
-          options: [{ value: "LEADS", label: "קבלת לידים" }],
-        },
-        progress: { confirmed: 1, required: 5 },
-        messages: [
-          { role: "user", text: "טיפול פנים" },
-          { role: "assistant", text: "מה המטרה העיקרית של הקמפיין?" },
-        ],
-      })
-    );
-    renderWizard();
-    await waitFor(() => screen.getByTestId("meta-ai-question"));
-    fireEvent.click(screen.getByRole("button", { name: "טיפול פנים" }));
-    await waitFor(() =>
-      expect(screen.getByTestId("meta-ai-question").getAttribute("data-field")).toBe(
-        "objective"
+          answer: {
+            value: "service:123",
+            label: "טיפול פנים",
+            itemType: "service",
+            itemId: "123",
+            itemName: "טיפול פנים",
+          },
+        }
       )
     );
-    expect(screen.getAllByText("מה המטרה העיקרית של הקמפיין?")).toHaveLength(1);
   });
 
-  it("restores the current step from a server GET after refresh", async () => {
-    api.getAiCampaignSession.mockResolvedValue(
-      questionSession({
-        question: {
-          field: "objective",
-          type: "single_select",
-          message: "מה המטרה העיקרית של הקמפיין?",
-          options: [{ value: "LEADS", label: "קבלת לידים" }],
-        },
-        progress: { confirmed: 4, remaining: 1, required: 1 },
-        missingFields: ["budget"],
-      })
+  it("does not force a typed service after All services", async () => {
+    api.answerAiCampaignSession.mockResolvedValue(questionSession());
+    renderWizard();
+    await waitFor(() => screen.getByTestId("meta-ai-focus-all"));
+    fireEvent.click(screen.getByTestId("meta-ai-focus-all"));
+    await waitFor(() =>
+      expect(api.answerAiCampaignSession).toHaveBeenCalledWith(
+        "biz-1",
+        "sess-1",
+        { field: "promotedItem", answer: { value: "ALL_SERVICES" } }
+      )
     );
+    expect(screen.queryByTestId("meta-ai-text")).toBeNull();
+    expect(screen.getByTestId("meta-ai-currency")).toBeTruthy();
+  });
+
+  it("restores budget-only setup from a server GET after refresh", async () => {
+    api.getAiCampaignSession.mockResolvedValue(questionSession());
     sessionStorage.setItem("bizuply.meta-ai-campaign.session.biz-1", "sess-1");
     renderWizard();
     await waitFor(() =>
       expect(screen.getByTestId("meta-ai-question").getAttribute("data-field")).toBe(
-        "objective"
+        "budget"
       )
     );
-    expect(screen.getByTestId("meta-ai-progress").textContent).toContain("חסר פרט אחד");
+    expect(screen.getByTestId("meta-ai-progress").textContent).toContain("נשאר רק לאשר");
     expect(api.startAiCampaignSession).not.toHaveBeenCalled();
   });
 
-  it("shows the generation CTA at 5/5", async () => {
+  it("shows the generation CTA when budget is confirmed", async () => {
     api.startAiCampaignSession.mockResolvedValue({
       ...questionSession(),
       status: "READY_FOR_GENERATION",
@@ -380,7 +310,7 @@ describe("MetaAiCampaignWizardPage conversation", () => {
     expect(screen.getByTestId("meta-ai-question").getAttribute("data-type")).toBe(
       "currency"
     );
-    expect(screen.getByRole("button", { name: "תמליץ לי" })).toBeTruthy();
+    expect(screen.getByTestId("meta-ai-recommend-budget")).toBeTruthy();
   });
 
   it("renders a confirmation question", async () => {
@@ -432,8 +362,6 @@ describe("MetaAiCampaignWizardPage conversation", () => {
       })
     );
     renderWizard();
-    await waitFor(() => screen.getByTestId("meta-ai-generate"));
-    fireEvent.click(screen.getByTestId("meta-ai-generate"));
     await waitFor(() => screen.getByTestId("meta-ai-preview"));
     expect(api.generateAiCampaign).toHaveBeenCalledWith("biz-1", "sess-1", false);
     expect(screen.getByText(he.metaCampaigns.ai.preview.title)).toBeTruthy();
@@ -443,6 +371,36 @@ describe("MetaAiCampaignWizardPage conversation", () => {
     expect(screen.getByTestId("meta-ai-lead-form")).toBeTruthy();
     expect(screen.getByText("טיפול פנים בחיפה")).toBeTruthy();
     expect(screen.getByText("השאירו פרטים ונחזור אליכן.")).toBeTruthy();
+  });
+
+  it("shows AI creative review after an image is attached", async () => {
+    api.startAiCampaignSession.mockResolvedValue(
+      readySession({
+        proposal: sampleProposal({
+          creative: {
+            ...sampleProposal().creative,
+            media: { status: "PROVIDED", url: "https://cdn.example/a.jpg", kind: "image" },
+            review: {
+              score: 8,
+              summary: "אפשר להשתמש בתמונה.",
+              strengths: ["ברורה"],
+              improvements: ["העדיפו יחס 4:5"],
+            },
+          },
+        }),
+        generation: { status: "READY", meta: {} },
+        creativeReview: {
+          score: 8,
+          summary: "אפשר להשתמש בתמונה.",
+          strengths: ["ברורה"],
+          improvements: ["העדיפו יחס 4:5"],
+        },
+      })
+    );
+    renderWizard();
+    await waitFor(() => screen.getByTestId("meta-ai-creative-review"));
+    expect(screen.getByTestId("meta-ai-creative-improvements").textContent).toContain("4:5");
+    expect(screen.queryByTestId("meta-ai-missing-creative")).toBeNull();
   });
 
   it("sends a partial AI revision and a regenerate from the same session", async () => {
@@ -602,13 +560,13 @@ describe("MetaAiCampaignWizardPage conversation", () => {
     renderWizard();
     await waitFor(() => screen.getByText(en.metaCampaigns.ai.title));
     expect(screen.getByText(en.metaCampaigns.ai.subtitle)).toBeTruthy();
-    expect(screen.getByText("What should we promote?")).toBeTruthy();
+    expect(screen.getByText(en.metaCampaigns.ai.ownerLiteTitle)).toBeTruthy();
   });
 
   it("uses responsive layout classes for mobile and desktop", async () => {
     renderWizard();
-    await waitFor(() => screen.getByTestId("meta-ai-question"));
-    const options = screen.getByTestId("meta-ai-options");
+    await waitFor(() => screen.getByTestId("meta-ai-optional-focus"));
+    const options = screen.getByTestId("meta-ai-optional-focus").querySelector("div.flex");
     expect(options?.className).toMatch(/flex-col/);
     expect(options?.className).toMatch(/sm:flex-row/);
   });
