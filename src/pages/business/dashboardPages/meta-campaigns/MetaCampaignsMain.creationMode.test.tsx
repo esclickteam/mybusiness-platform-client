@@ -50,6 +50,7 @@ function renderCampaigns(initial: string) {
           path="/business/:businessId/dashboard/meta-campaigns"
           element={<MetaCampaignsMain />}
         >
+          <Route index element={<div>index-should-redirect</div>} />
           <Route path="overview" element={<div>overview-page</div>} />
           <Route path="create" element={<div>manual-ads-manager</div>} />
           <Route path="create-ai" element={<MetaAiCampaignWizardPage />} />
@@ -62,6 +63,13 @@ function renderCampaigns(initial: string) {
 }
 
 describe("Meta Campaigns creation-mode routing", () => {
+  it("sends the Meta Campaigns root to overview", async () => {
+    renderCampaigns("/business/biz-1/dashboard/meta-campaigns");
+    await waitFor(() => expect(screen.getByText("overview-page")).toBeTruthy());
+    expect(screen.queryByText("manual-ads-manager")).toBeNull();
+    expect(screen.queryByText("index-should-redirect")).toBeNull();
+  });
+
   it("keeps direct navigation to /create on the Ads Manager page", () => {
     renderCampaigns("/business/biz-1/dashboard/meta-campaigns/create");
     expect(screen.getByText("manual-ads-manager")).toBeTruthy();
