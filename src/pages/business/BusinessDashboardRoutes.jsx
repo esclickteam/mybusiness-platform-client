@@ -168,6 +168,9 @@ const MetaCampaignEditorPage = lazy(() =>
 const MetaAdsManagerPage = lazy(() =>
   import("./dashboardPages/meta-campaigns/ads-manager/MetaAdsManagerPage")
 );
+const MetaAiCampaignWizardPage = lazy(() =>
+  import("./dashboardPages/meta-campaigns/MetaAiCampaignWizardPage")
+);
 const MetaCampaignsSettingsTab = lazy(() =>
   import("./dashboardPages/meta-campaigns/MetaCampaignsSettingsTab")
 );
@@ -559,6 +562,7 @@ const BusinessDashboardRoutes = () => {
             <Route index element={<Navigate to="overview" replace />} />
             <Route path="overview" element={<MetaCampaignsOverviewTab />} />
             <Route path="create" element={<MetaAdsManagerPage />} />
+            <Route path="create-ai" element={<MetaAiCampaignWizardPage />} />
             <Route path="edit/:campaignId" element={<MetaCampaignEditorPage />} />
             <Route path="settings" element={<MetaCampaignsSettingsTab />} />
             <Route path="*" element={<Navigate to="overview" replace />} />

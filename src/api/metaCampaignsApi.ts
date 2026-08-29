@@ -820,6 +820,136 @@ export async function listMetaPublishes(businessId: string) {
   return data.publishes || [];
 }
 
+export type CampaignHealthStatus =
+  | "HEALTHY"
+  | "WATCH"
+  | "ACTION_RECOMMENDED"
+  | "CRITICAL";
+
+export type CampaignHealthMetrics = {
+  spend?: number;
+  impressions?: number;
+  ctr?: number;
+  cpc?: number;
+  cpl?: number;
+  leads?: number;
+  roas?: number;
+  frequency?: number;
+};
+
+export type AiCampaignRecommendation = {
+  id: string;
+  businessId: string;
+  metaCampaignId: string;
+  campaignName?: string;
+  sourceRuleKeys: string[];
+  severity: "INFO" | "OPPORTUNITY" | "WARNING" | "CRITICAL";
+  title: string;
+  finding: string;
+  explanation: string;
+  recommendedActionType: string;
+  recommendedAction: string;
+  requiresApproval: boolean;
+  status: "OPEN" | "VIEWED" | "ACCEPTED" | "DISMISSED" | "EXPIRED";
+  metricsSummary?: {
+    current?: CampaignHealthMetrics;
+    previous?: CampaignHealthMetrics;
+    changes?: Record<string, number | null>;
+  };
+  aiGenerated: boolean;
+  healthStatus?: CampaignHealthStatus;
+  createdAt?: string;
+  updatedAt?: string;
+};
+
+export type CampaignHealth = {
+  metaCampaignId: string;
+  healthStatus: CampaignHealthStatus;
+  metrics: CampaignHealthMetrics;
+  changes?: Record<string, number | null>;
+  recommendation: AiCampaignRecommendation | null;
+};
+
+export async function getMetaCampaignHealth(
+  businessId: string,
+  campaignId: string
+) {
+  const { data } = await API.get<{ success: boolean; health: CampaignHealth }>(
+    `/meta-campaigns/campaigns/${campaignId}/health`,
+    withBusiness(businessId)
+  );
+  return data.health;
+}
+
+export async function getMetaCampaignHealthSummary(
+  businessId: string,
+  campaignIds: string[] = []
+) {
+  const { data } = await API.get<{
+    success: boolean;
+    items: Array<{
+      metaCampaignId: string;
+      healthStatus: CampaignHealthStatus;
+      recommendation: AiCampaignRecommendation | null;
+    }>;
+  }>(
+    "/meta-campaigns/health-summary",
+    withBusiness(businessId, {
+      campaignIds: campaignIds.join(","),
+    })
+  );
+  return data.items || [];
+}
+
+export async function listAiCampaignRecommendations(
+  businessId: string,
+  status?: "open" | "closed"
+) {
+  const { data } = await API.get<{
+    success: boolean;
+    recommendations: AiCampaignRecommendation[];
+  }>(
+    "/meta-campaigns/recommendations",
+    withBusiness(businessId, status ? { status } : undefined)
+  );
+  return data.recommendations || [];
+}
+
+export async function getAiCampaignRecommendation(
+  businessId: string,
+  recommendationId: string
+) {
+  const { data } = await API.get<{
+    success: boolean;
+    recommendation: AiCampaignRecommendation;
+  }>(`/meta-campaigns/recommendations/${recommendationId}`, withBusiness(businessId));
+  return data.recommendation;
+}
+
+export async function viewAiCampaignRecommendation(
+  businessId: string,
+  recommendationId: string
+) {
+  const { data } = await API.post<{
+    success: boolean;
+    recommendation: AiCampaignRecommendation;
+  }>(`/meta-campaigns/recommendations/${recommendationId}/view`, { businessId });
+  return data.recommendation;
+}
+
+export async function dismissAiCampaignRecommendation(
+  businessId: string,
+  recommendationId: string
+) {
+  const { data } = await API.post<{
+    success: boolean;
+    recommendation: AiCampaignRecommendation;
+  }>(`/meta-campaigns/recommendations/${recommendationId}/dismiss`, {
+    businessId,
+  });
+  return data.recommendation;
+}
+
 export async function pollMetaPublishes(businessId: string) {
   const { data } = await API.post<{
     success: boolean;

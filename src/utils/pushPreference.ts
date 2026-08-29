@@ -12,6 +12,7 @@ export type PushPreferenceSettings = {
   message?: boolean;
   lead?: boolean;
   task?: boolean;
+  aiCampaign?: boolean;
 };
 
 type CachedPreference = {

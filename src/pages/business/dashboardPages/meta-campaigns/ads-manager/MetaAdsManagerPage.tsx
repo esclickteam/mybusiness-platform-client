@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Link, useNavigate, useOutletContext } from "react-router-dom";
+import { Link, useLocation, useNavigate, useOutletContext } from "react-router-dom";
 import { toast } from "react-toastify";
 import { Check, ChevronRight, Loader2 } from "lucide-react";
 import {
@@ -27,6 +27,7 @@ import {
   validateAdsManagerClient,
 } from "./buildPublishPayload";
 import { useAdsManagerState } from "./useAdsManagerState";
+import type { AiProposalHandoff } from "./adsManagerFromAiProposal";
 import {
   metaBtnPrimary,
   metaBtnSecondary,
@@ -37,8 +38,12 @@ type OutletCtx = { businessId: string | null };
 
 export default function MetaAdsManagerPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const { businessId } = useOutletContext<OutletCtx>();
-  const ctrl = useAdsManagerState();
+  const aiHandoff =
+    (location.state as { aiProposal?: AiProposalHandoff } | null)?.aiProposal ||
+    null;
+  const ctrl = useAdsManagerState(aiHandoff);
   const {
     state,
     tree,
@@ -67,8 +72,12 @@ export default function MetaAdsManagerPage() {
     useState<MetaCampaignPublishRecord | null>(null);
   const [modalOpen, setModalOpen] = useState(false);
   // Meta-style gate: choose objective before opening the Ads Manager editor.
-  const [createChooserOpen, setCreateChooserOpen] = useState(true);
-  const [campaignStarted, setCampaignStarted] = useState(false);
+  const [createChooserOpen, setCreateChooserOpen] = useState(
+    () => !aiHandoff?.proposal
+  );
+  const [campaignStarted, setCampaignStarted] = useState(() =>
+    Boolean(aiHandoff?.proposal)
+  );
 
   const loadLeadForms = async (pageId?: string | null) => {
     if (!businessId || !pageId || pageId.startsWith("page_")) {
