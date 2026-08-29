@@ -454,6 +454,9 @@ export default function MetaAiCampaignWizardPage() {
     const remaining =
       session?.progress?.remaining ?? session?.missingFields?.length ?? 0;
     if (remaining <= 0) return "";
+    if (session?.missingFields?.length === 1 && session.missingFields[0] === "budget") {
+      return t("metaCampaigns.ai.budgetOnlyMissing");
+    }
     if (remaining === 1) return t("metaCampaigns.ai.oneDetailMissing");
     return t("metaCampaigns.ai.detailsMissing", { count: remaining });
   }, [session, t]);
@@ -462,6 +465,27 @@ export default function MetaAiCampaignWizardPage() {
   const isReady = session?.status === "READY_FOR_GENERATION";
   const hasProposal =
     Boolean(session?.proposal) && session?.generation?.status === "READY";
+  const autoGenRef = useRef<string | null>(null);
+
+  useEffect(() => {
+    if (!session?.sessionId || !tenantId || busy || loading) return;
+    if (!isReady || hasProposal) return;
+    if (!session.ready?.generateEnabled) return;
+    if (autoGenRef.current === session.sessionId) return;
+    autoGenRef.current = session.sessionId;
+    setBusy(true);
+    setPendingAction("generate");
+    setError(null);
+    void Promise.resolve(generateAiCampaign(tenantId, session.sessionId, false))
+      .then((next) => {
+        if (next?.sessionId) applySession(next);
+      })
+      .catch((err) => setError(readError(err, t("metaCampaigns.ai.errorGeneric"))))
+      .finally(() => {
+        setBusy(false);
+        setPendingAction(null);
+      });
+  }, [applySession, busy, hasProposal, isReady, loading, session, t, tenantId]);
 
   return (
     <div dir={dir} className="space-y-4" data-testid="meta-ai-campaign-wizard">
@@ -618,24 +642,16 @@ export default function MetaAiCampaignWizardPage() {
           </div>
         ) : (
           <div className="space-y-5">
-            <ConversationTrail
-              messages={session?.messages || []}
-              fallback={question ? "" : session?.assistantMessage || ""}
-              hideText={question?.message}
+            <OwnerLiteSetup
+              session={session}
+              question={question}
+              busy={busy}
+              budgetDraft={budgetDraft}
+              onBudgetDraft={setBudgetDraft}
+              onAnswer={handleAnswer}
             />
-            {question ? (
-              <QuestionCard
-                question={question}
-                busy={busy}
-                budgetDraft={budgetDraft}
-                locationDraft={locationDraft}
-                onBudgetDraft={setBudgetDraft}
-                onLocationDraft={setLocationDraft}
-                onAnswer={handleAnswer}
-              />
-            ) : null}
 
-            {session?.status === "COLLECTING" ? (
+            {session?.status === "COLLECTING" && question && question.field !== "budget" && question.type !== "currency" ? (
               <form
                 className="flex flex-col gap-2 sm:flex-row"
                 data-testid="meta-ai-composer"
@@ -770,6 +786,143 @@ function humanizeAnswer(text: string, t: (key: string) => string) {
   }
   if (/^OUTCOME_/.test(raw)) return raw.replace(/^OUTCOME_/, "").replace(/_/g, " ");
   return raw;
+}
+
+function plannedOfferName(session: AiCampaignSessionResponse | null) {
+  const value = (session?.intent as { promotedItem?: { value?: { name?: string } } } | undefined)
+    ?.promotedItem?.value;
+  return value?.name || "";
+}
+
+function OwnerLiteSetup({
+  session,
+  question,
+  busy,
+  budgetDraft,
+  onBudgetDraft,
+  onAnswer,
+}: {
+  session: AiCampaignSessionResponse | null;
+  question: AiCampaignQuestion | null;
+  busy: boolean;
+  budgetDraft: string;
+  onBudgetDraft: (value: string) => void;
+  onAnswer: (field: string, answer: unknown) => void | Promise<void>;
+}) {
+  const { t } = useTranslation();
+  const offerings = session?.offerings || [];
+  const currentName = plannedOfferName(session);
+
+  return (
+    <div className="space-y-5" data-testid="meta-ai-owner-lite">
+      <div className="space-y-2">
+        <h3 className="text-base font-black text-slate-900">
+          {t("metaCampaigns.ai.ownerLiteTitle")}
+        </h3>
+        <p className="text-sm font-semibold text-slate-600">
+          {t("metaCampaigns.ai.ownerLiteBody")}
+        </p>
+        {currentName ? (
+          <p className="text-sm font-semibold text-violet-800" data-testid="meta-ai-planned-offer">
+            {currentName}
+          </p>
+        ) : null}
+      </div>
+
+      {offerings.length > 1 ? (
+        <div className="space-y-2" data-testid="meta-ai-optional-focus">
+          <p className="text-sm font-black text-slate-900">
+            {t("metaCampaigns.ai.optionalFocus")}
+          </p>
+          <p className="text-xs font-semibold text-slate-500">
+            {t("metaCampaigns.ai.optionalFocusHint")}
+          </p>
+          <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap">
+            {offerings.map((item) => (
+              <button
+                key={`${item.type}:${item.id || item.name}`}
+                type="button"
+                className={btnSecondary}
+                disabled={busy}
+                data-testid="meta-ai-focus-option"
+                onClick={() =>
+                  void onAnswer("promotedItem", {
+                    value: `${item.type}:${item.id || item.name}`,
+                    label: item.name,
+                    itemType: item.type,
+                    itemId: item.id,
+                    itemName: item.name,
+                  })
+                }
+              >
+                {item.name}
+              </button>
+            ))}
+            <button
+              type="button"
+              className={btnSecondary}
+              disabled={busy}
+              data-testid="meta-ai-focus-all"
+              onClick={() => void onAnswer("promotedItem", { value: "ALL_SERVICES" })}
+            >
+              {t("metaCampaigns.ai.allServices")}
+            </button>
+          </div>
+        </div>
+      ) : null}
+
+      {question?.field === "budget" ? (
+        <form
+          className="flex flex-col gap-2 sm:flex-row"
+          data-testid="meta-ai-question"
+          data-field="budget"
+          data-type="currency"
+          onSubmit={(event) => {
+            event.preventDefault();
+            const amount = Number(String(budgetDraft).replace(/[^\d.]/g, ""));
+            if (amount > 0) void onAnswer("budget", amount);
+          }}
+        >
+          <p className="w-full text-sm font-black text-slate-900 sm:col-span-2">
+            {question.message}
+          </p>
+          <input
+            className={inputBase}
+            inputMode="decimal"
+            value={budgetDraft}
+            onChange={(event) => onBudgetDraft(event.target.value)}
+            placeholder={t("metaCampaigns.ai.budgetPlaceholder")}
+            data-testid="meta-ai-currency"
+            disabled={busy}
+          />
+          <button type="submit" className={btnPrimary} disabled={busy || !budgetDraft}>
+            {t("metaCampaigns.ai.budgetSubmit")}
+          </button>
+          {(question.options || []).some((item) => item.value === "RECOMMEND") ? (
+            <button
+              type="button"
+              className={btnSecondary}
+              disabled={busy}
+              data-testid="meta-ai-recommend-budget"
+              onClick={() => void onAnswer("budget", { value: "RECOMMEND" })}
+            >
+              {t("metaCampaigns.ai.recommendedBudget")}
+            </button>
+          ) : null}
+        </form>
+      ) : question ? (
+        <QuestionCard
+          question={question}
+          busy={busy}
+          budgetDraft={budgetDraft}
+          locationDraft=""
+          onBudgetDraft={onBudgetDraft}
+          onLocationDraft={() => undefined}
+          onAnswer={onAnswer}
+        />
+      ) : null}
+    </div>
+  );
 }
 
 function ConversationTrail({

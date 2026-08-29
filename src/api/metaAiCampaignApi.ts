@@ -70,6 +70,7 @@ export type AiCampaignProposal = {
       fileName?: string | null;
       kind?: string | null;
     };
+    review?: AiCreativeReview | null;
   };
   leadForm: {
     mode: "EXISTING" | "DRAFT";
@@ -135,6 +136,23 @@ export type AiCampaignMetaDraft = {
   pendingLocations?: AiUnresolvedLocation[];
 };
 
+export type AiCreativeReview = {
+  status?: string;
+  usedAi?: boolean;
+  kind?: string;
+  score?: number | null;
+  summary?: string;
+  strengths?: string[];
+  improvements?: string[];
+  canUse?: boolean;
+};
+
+export type AiCampaignOffering = {
+  id?: string | null;
+  type?: string;
+  name: string;
+};
+
 export type AiCampaignSessionResponse = {
   success?: boolean;
   sessionId: string;
@@ -180,6 +198,8 @@ export type AiCampaignSessionResponse = {
     ad?: string | null;
   };
   resumable?: boolean;
+  offerings?: AiCampaignOffering[];
+  creativeReview?: AiCreativeReview | null;
 };
 
 export type AiAutomationRecommendationStatus =
