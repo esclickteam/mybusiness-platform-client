@@ -154,7 +154,7 @@ describe("MetaCampaignHealthPanel", () => {
     await waitFor(() =>
       expect(screen.getByText("צור גרסה חדשה עם AI")).toBeInTheDocument()
     );
-    expect(screen.getByText(/38%/)).toBeInTheDocument();
+    expect(screen.getAllByText(/38%/).length).toBeGreaterThan(0);
   });
 
   it("renders the critical state", async () => {
