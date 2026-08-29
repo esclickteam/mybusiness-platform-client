@@ -222,8 +222,8 @@ describe("MetaAiCampaignWizardPage conversation", () => {
         message: "מה המטרה העיקרית של הקמפיין?",
         options: [{ value: "LEADS", label: "קבלת לידים" }],
       },
-      missingFields: ["objective", "budget", "locations", "destination"],
-      progress: { confirmed: 1, required: 5 },
+      missingFields: ["budget"],
+      progress: { confirmed: 4, remaining: 1, required: 1 },
       assistantMessage: "מה המטרה העיקרית של הקמפיין?",
     });
     api.answerAiCampaignSession.mockResolvedValue(next);
@@ -251,7 +251,7 @@ describe("MetaAiCampaignWizardPage conversation", () => {
       }
     );
     expect(screen.queryByText("טיפול פנים")).toBeNull();
-    expect(screen.getByTestId("meta-ai-progress").textContent).toContain("1 מתוך 5");
+    expect(screen.getByTestId("meta-ai-progress").textContent).toContain("חסר פרט אחד");
     expect(screen.queryByText("OTHER")).toBeNull();
   });
 
@@ -330,7 +330,8 @@ describe("MetaAiCampaignWizardPage conversation", () => {
           message: "מה המטרה העיקרית של הקמפיין?",
           options: [{ value: "LEADS", label: "קבלת לידים" }],
         },
-        progress: { confirmed: 1, required: 5 },
+        progress: { confirmed: 4, remaining: 1, required: 1 },
+        missingFields: ["budget"],
       })
     );
     sessionStorage.setItem("bizuply.meta-ai-campaign.session.biz-1", "sess-1");
@@ -340,7 +341,7 @@ describe("MetaAiCampaignWizardPage conversation", () => {
         "objective"
       )
     );
-    expect(screen.getByTestId("meta-ai-progress").textContent).toContain("1 מתוך 5");
+    expect(screen.getByTestId("meta-ai-progress").textContent).toContain("חסר פרט אחד");
     expect(api.startAiCampaignSession).not.toHaveBeenCalled();
   });
 

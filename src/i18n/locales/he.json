@@ -5497,7 +5497,7 @@
     },
     "nav": {
       "overview": "סקירה",
-      "create": "Ads Manager",
+      "create": "מנהל המודעות",
       "settings": "חיבור Meta"
     },
     "overview": {
@@ -5506,27 +5506,27 @@
       "account": "חשבון מודעות",
       "spendCard": "הוצאה בתקופה",
       "spendCardHint": "סה״כ הוצאה לפי טווח התאריכים שנבחר",
-      "adAccountId": "Ad Account ID: {{id}}",
-      "accountStatusLabel": "Status: {{status}}",
-      "currencyLabel": "Currency: {{currency}}",
-      "connectedThroughMeta": "Connected through Meta",
+      "adAccountId": "מזהה חשבון מודעות: {{id}}",
+      "accountStatusLabel": "סטטוס: {{status}}",
+      "currencyLabel": "מטבע: {{currency}}",
+      "connectedThroughMeta": "מחובר דרך Meta",
       "switchAccount": "בחירת חשבון מודעות",
       "lastUpdated": "עודכן לאחרונה: {{time}}"
     },
     "accountStatus": {
-      "active": "Active",
-      "disabled": "Disabled",
-      "unsettled": "Unsettled",
-      "pendingRisk": "Pending risk review",
-      "pendingSettlement": "Pending settlement",
-      "inGrace": "In grace period",
-      "pendingClosure": "Pending closure",
-      "closed": "Closed",
+      "active": "פעיל",
+      "disabled": "מושבת",
+      "unsettled": "לא מסולק",
+      "pendingRisk": "בבדיקת סיכון",
+      "pendingSettlement": "ממתין לסליקה",
+      "inGrace": "בתקופת חסד",
+      "pendingClosure": "ממתין לסגירה",
+      "closed": "סגור",
       "unknown": "—",
-      "other": "Other"
+      "other": "אחר"
     },
     "details": {
-      "badge": "ads_read · Read only",
+      "badge": "ads_read · קריאה בלבד",
       "readOnlyHint": "פרטי קמפיין לקריאה בלבד — ללא עריכה או שינוי תקציב."
     },
     "actions": {
@@ -5631,10 +5631,12 @@
     "ai": {
       "badge": "BizUply AI",
       "title": "✨ יצירת קמפיין באמצעות AI",
-      "subtitle": "נשתמש בפרטי העסק שכבר קיימים ונשאל רק על מה שחסר.",
+      "subtitle": "מצאתי את פרטי העסק שלך ואני יכול להכין עבורך את הקמפיין.",
       "placeholder": "מתחילים בהכנת הקמפיין שלך...",
       "checking": "אני בודק את פרטי העסק שלך...",
       "progress": "{{confirmed}} מתוך {{required}} פרטים הושלמו",
+      "oneDetailMissing": "חסר פרט אחד כדי להכין את הקמפיין",
+      "detailsMissing": "חסרים {{count}} פרטים כדי להכין את הקמפיין",
       "back": "חזרה לסקירה",
       "metaDisconnected": "יש לחבר חשבון Meta לפני שנוכל לפרסם את הקמפיין.",
       "connectMeta": "חיבור Meta",
@@ -6325,7 +6327,23 @@
       "signUp": "הרשמה",
       "contactUs": "צרו קשר",
       "shopNow": "קנו עכשיו",
-      "whatsapp": "וואטסאפ"
+      "whatsapp": "וואטסאפ",
+      "OPEN_LINK": "לפרטים נוספים",
+      "LEARN_MORE": "מידע נוסף",
+      "SUBSCRIBE": "הרשמה",
+      "BOOK_TRAVEL": "קבע עכשיו",
+      "SIGN_UP": "להרשמה",
+      "APPLY_NOW": "הגש בקשה",
+      "DOWNLOAD": "הורדה",
+      "GET_OFFER": "לקבלת ההצעה",
+      "GET_QUOTE": "לקבלת הצעת מחיר",
+      "CONTACT_US": "צור קשר",
+      "SHOP_NOW": "לקנייה",
+      "CALL_NOW": "התקשר עכשיו",
+      "SEND_MESSAGE": "שלח הודעה",
+      "WHATSAPP_MESSAGE": "שלח WhatsApp",
+      "WATCH_MORE": "צפה עוד",
+      "ORDER_NOW": "להזמנה"
     },
     "preview": {
       "localTitle": "תצוגה מקדימה של הפוסט",

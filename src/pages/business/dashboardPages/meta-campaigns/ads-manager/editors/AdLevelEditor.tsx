@@ -10,13 +10,14 @@ import {
   Video,
 } from "lucide-react";
 import { toast } from "react-toastify";
+import { useTranslation } from "react-i18next";
 import {
   uploadMetaMedia,
   type MetaAdsPage,
 } from "../../../../../../api/metaCampaignsApi";
 import type { AdDraft, InstantFormItem } from "../adsManagerTypes";
 import AdsManagerCreateLeadFormModal from "../AdsManagerCreateLeadFormModal";
-import { META_AD_CTAS, metaCtaLabel } from "../metaAdCtas";
+import { metaCtaLabel, metaCtaOptions } from "../metaAdCtas";
 import {
   MetaField,
   MetaLinkButton,
@@ -50,6 +51,7 @@ export default function AdLevelEditor({
   onChange,
   onFormsRefresh,
 }: Props) {
+  const { t } = useTranslation();
   const visibleForms = forms.filter((f) => f.status === ad.formTab);
   const fileRef = useRef<HTMLInputElement | null>(null);
   const [mediaMenuOpen, setMediaMenuOpen] = useState(false);
@@ -461,11 +463,12 @@ export default function AdLevelEditor({
         </div>
         <div className="relative" ref={ctaRef}>
           <p className="mb-1.5 flex items-center gap-1 text-[13px] font-semibold text-[#65676B]">
-            Call to action
+            {t("metaCampaigns.ai.preview.cta")}
             <Info className="h-3.5 w-3.5 text-[#8A8D91]" />
           </p>
           <button
             type="button"
+            data-testid="meta-ads-cta-dropdown"
             className={[
               metaInputClass,
               "flex items-center justify-between text-left",
@@ -474,13 +477,16 @@ export default function AdLevelEditor({
             onClick={() => setCtaOpen((v) => !v)}
           >
             <span className="font-semibold">
-              {metaCtaLabel(ad.callToAction)}
+              {metaCtaLabel(ad.callToAction, t)}
             </span>
             <ChevronDown className="h-4 w-4 text-[#65676B]" />
           </button>
           {ctaOpen ? (
-            <div className="absolute z-40 mt-1 max-h-64 w-full overflow-y-auto rounded-lg border border-[#CED0D4] bg-white shadow-xl">
-              {META_AD_CTAS.map((cta) => {
+            <div
+              data-testid="meta-ads-cta-menu"
+              className="absolute z-40 mt-1 max-h-64 w-full overflow-y-auto rounded-lg border border-[#CED0D4] bg-white shadow-xl"
+            >
+              {metaCtaOptions(t).map((cta) => {
                 const selected = ad.callToAction === cta.value;
                 return (
                   <button

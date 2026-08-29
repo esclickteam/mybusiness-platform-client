@@ -13,7 +13,7 @@ import {
 import AdPlacementPreview from "./AdPlacementPreview";
 import MetaLeadFormLivePreview from "./MetaLeadFormLivePreview";
 import MetaAiDraftPublishPanel from "./MetaAiDraftPublishPanel";
-import { META_AD_CTAS, metaCtaLabel } from "./ads-manager/metaAdCtas";
+import { metaCtaLabel, metaCtaOptions } from "./ads-manager/metaAdCtas";
 
 type AvailableLeadForm = { id: string; name?: string | null };
 
@@ -96,7 +96,7 @@ export default function MetaAiCampaignPreview({
     .map((item) => item.name)
     .filter(Boolean)
     .join(", ");
-  const ctaLabel = metaCtaLabel(proposal.creative.ctaKey);
+  const ctaLabel = metaCtaLabel(proposal.creative.ctaKey, t);
   const pageName = t("metaCampaigns.ai.preview.pageFallback");
   const objectiveKey = proposal.campaign.objectiveKey;
   const objectiveLabel = objectiveKey
@@ -133,6 +133,7 @@ export default function MetaAiCampaignPreview({
         value: proposal.adSet.audience.summary || "—",
       },
       { label: t("metaCampaigns.ai.preview.placements"), value: placementLabel },
+      { label: t("metaCampaigns.ai.preview.cta"), value: ctaLabel },
     ],
     [
       budget,
@@ -141,6 +142,7 @@ export default function MetaAiCampaignPreview({
       objectiveLabel,
       placementLabel,
       proposal.adSet.audience.summary,
+      ctaLabel,
       session,
       t,
     ]
@@ -281,7 +283,7 @@ export default function MetaAiCampaignPreview({
                 onPatch({ creative: { ctaKey: event.target.value } })
               }
             >
-              {META_AD_CTAS.map((item) => (
+              {metaCtaOptions(t).map((item) => (
                 <option key={item.value} value={item.value}>
                   {item.label}
                 </option>

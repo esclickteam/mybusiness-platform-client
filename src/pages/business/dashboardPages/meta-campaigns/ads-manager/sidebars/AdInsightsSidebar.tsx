@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { AlertTriangle, Eye, MonitorSmartphone, Smartphone } from "lucide-react";
 import type { MetaLeadForm } from "../../../../../../api/metaCampaignsApi";
 import type { AdDraft, InstantFormItem } from "../adsManagerTypes";
@@ -24,6 +25,7 @@ export default function AdInsightsSidebar({
   selectedLeadForm,
   score,
 }: Props) {
+  const { t } = useTranslation();
   const [previewOn, setPreviewOn] = useState(true);
   const [tab, setTab] = useState<"ad" | "destination">("ad");
   const [device, setDevice] = useState<"mobile" | "desktop">("mobile");
@@ -38,7 +40,7 @@ export default function AdInsightsSidebar({
         } as MetaLeadForm)
       : null);
 
-  const ctaLabel = metaCtaLabel(ad.callToAction) || "Sign up";
+  const ctaLabel = metaCtaLabel(ad.callToAction, t) || t("metaCampaigns.cta.SIGN_UP");
   const issues = useMemo(() => {
     const list: string[] = [];
     if (!ad.imagePreviewUrl && !ad.videoId) list.push("Add image or video");

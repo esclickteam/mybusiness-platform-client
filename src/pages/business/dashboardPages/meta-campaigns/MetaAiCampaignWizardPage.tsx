@@ -414,9 +414,11 @@ export default function MetaAiCampaignWizardPage() {
   };
 
   const progressLabel = useMemo(() => {
-    const confirmed = session?.progress?.confirmed ?? 0;
-    const required = session?.progress?.required ?? 5;
-    return t("metaCampaigns.ai.progress", { confirmed, required });
+    const remaining =
+      session?.progress?.remaining ?? session?.missingFields?.length ?? 0;
+    if (remaining <= 0) return "";
+    if (remaining === 1) return t("metaCampaigns.ai.oneDetailMissing");
+    return t("metaCampaigns.ai.detailsMissing", { count: remaining });
   }, [session, t]);
 
   const question = session?.question || null;
@@ -438,7 +440,7 @@ export default function MetaAiCampaignWizardPage() {
           <p className="mt-1 max-w-2xl text-sm font-semibold text-slate-500">
             {t("metaCampaigns.ai.subtitle")}
           </p>
-          {session && !isReady ? (
+          {session && !isReady && progressLabel ? (
             <p
               className="mt-2 text-xs font-bold text-violet-700"
               data-testid="meta-ai-progress"
@@ -525,6 +527,17 @@ export default function MetaAiCampaignWizardPage() {
           />
         ) : isReady && session?.ready ? (
           <div className="space-y-4" data-testid="meta-ai-ready">
+            {question?.field === "creative" ? (
+              <QuestionCard
+                question={question}
+                busy={busy}
+                budgetDraft={budgetDraft}
+                locationDraft={locationDraft}
+                onBudgetDraft={setBudgetDraft}
+                onLocationDraft={setLocationDraft}
+                onAnswer={handleAnswer}
+              />
+            ) : null}
             <p className="text-base font-black text-slate-900">
               {session.ready.message}
             </p>

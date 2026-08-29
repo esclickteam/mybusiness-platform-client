@@ -89,6 +89,6 @@ export function getDefaultDashboardPath(businessId, enabledModules) {
     return `${base}/website`;
   }
   if (normalized.includes("crm")) return `${base}/crm`;
-  if (normalized.includes("meta-campaigns")) return `${base}/meta-campaigns`;
+  if (normalized.includes("meta-campaigns")) return `${base}/meta-campaigns/overview`;
   return `${base}/${normalized[0]}`;
 }
