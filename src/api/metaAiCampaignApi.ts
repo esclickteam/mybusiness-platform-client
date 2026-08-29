@@ -29,6 +29,7 @@ export type AiCampaignQuestion = {
   currency?: string;
   suggestedValue?: unknown;
   suggestedState?: string;
+  placeholder?: string;
 };
 
 export type AiCampaignMessage = {

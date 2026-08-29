@@ -11,9 +11,22 @@ vi.mock("react-toastify", () => ({
 
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
-    t: (key: string) => key,
+    t: (key: string, opts?: Record<string, unknown>) => {
+      let value = resolveKey(en, key);
+      if (typeof value !== "string") return key;
+      if (opts) {
+        for (const [name, raw] of Object.entries(opts)) {
+          value = value.replace(new RegExp(`{{${name}}}`, "g"), String(raw));
+        }
+      }
+      return value;
+    },
     i18n: { language: "en" },
   }),
+}));
+
+vi.mock("../../../../../hooks/useLocaleDir", () => ({
+  useLocaleDir: () => "ltr",
 }));
 
 vi.mock("../../../../../api/metaCampaignsApi", () => ({
@@ -25,7 +38,18 @@ vi.mock("../../../../../api/metaCampaignsApi", () => ({
   syncMetaPublish: vi.fn(),
 }));
 
+import en from "../../../../../i18n/locales/en.json";
 import MetaAdsManagerPage from "./MetaAdsManagerPage";
+
+function resolveKey(locale: unknown, key: string) {
+  return key.split(".").reduce<unknown>(
+    (acc, segment) =>
+      acc && typeof acc === "object"
+        ? (acc as Record<string, unknown>)[segment]
+        : undefined,
+    locale
+  );
+}
 
 function renderManager(state?: unknown) {
   return render(

@@ -622,6 +622,36 @@ export default function MetaAiCampaignWizardPage() {
   );
 }
 
+function humanizeAnswer(text: string, t: (key: string) => string) {
+  const raw = String(text || "").trim();
+  if (!raw) return raw;
+  const labels: Record<string, string> = {
+    OTHER: t("metaCampaigns.ai.answerLabels.OTHER"),
+    LEADS: t("metaCampaigns.ai.objectives.LEADS"),
+    WHATSAPP: t("metaCampaigns.ai.objectives.WHATSAPP"),
+    BOOKINGS: t("metaCampaigns.ai.objectives.BOOKINGS"),
+    SALES: t("metaCampaigns.ai.objectives.SALES"),
+    TRAFFIC: t("metaCampaigns.ai.objectives.TRAFFIC"),
+    PHONE: t("metaCampaigns.ai.objectives.PHONE"),
+    AWARENESS: t("metaCampaigns.ai.objectives.AWARENESS"),
+    LEAD_FORM: t("metaCampaigns.ai.destinations.LEAD_FORM"),
+    WEBSITE: t("metaCampaigns.ai.destinations.WEBSITE"),
+    BOOKING: t("metaCampaigns.ai.destinations.BOOKING"),
+    CONFIRM_SUGGESTED: t("metaCampaigns.ai.answerLabels.CONFIRM_SUGGESTED"),
+    ALL_IL: t("metaCampaigns.ai.answerLabels.ALL_IL"),
+    CUSTOM: t("metaCampaigns.ai.answerLabels.CUSTOM"),
+    RECOMMEND: t("metaCampaigns.ai.answerLabels.RECOMMEND"),
+    NONE: t("metaCampaigns.ai.answerLabels.NONE"),
+    LATER: t("metaCampaigns.ai.answerLabels.LATER"),
+  };
+  if (labels[raw]) return labels[raw];
+  if (/^(service|product|offer):/i.test(raw)) {
+    return raw.split(":").slice(1).join(":");
+  }
+  if (/^OUTCOME_/.test(raw)) return raw.replace(/^OUTCOME_/, "").replace(/_/g, " ");
+  return raw;
+}
+
 function ConversationTrail({
   messages,
   fallback,
@@ -631,6 +661,7 @@ function ConversationTrail({
   fallback: string;
   hideText?: string;
 }) {
+  const { t } = useTranslation();
   const visible = messages.filter((item) => item.text && item.text !== hideText);
   const rows = visible.length
     ? visible.slice(-8)
@@ -649,7 +680,7 @@ function ConversationTrail({
               : "me-8 rounded-md bg-slate-50 px-3 py-2 text-sm font-semibold text-slate-700"
           }
         >
-          {item.text}
+          {item.role === "user" ? humanizeAnswer(item.text, t) : item.text}
         </div>
       ))}
     </div>
@@ -675,10 +706,36 @@ function QuestionCard({
 }) {
   const { t } = useTranslation();
   const options = question.options || [];
+  const [textDraft, setTextDraft] = useState("");
 
   return (
     <div className="space-y-3" data-testid="meta-ai-question" data-field={question.field} data-type={question.type}>
       <p className="text-sm font-black text-slate-900">{question.message}</p>
+
+      {question.type === "text" ? (
+        <form
+          className="flex flex-col gap-2 sm:flex-row"
+          onSubmit={(event) => {
+            event.preventDefault();
+            const value = textDraft.trim();
+            if (value) void onAnswer(question.field, value);
+          }}
+        >
+          <input
+            className={inputBase}
+            value={textDraft}
+            onChange={(event) => setTextDraft(event.target.value)}
+            placeholder={
+              question.placeholder || t("metaCampaigns.ai.otherItemPlaceholder")
+            }
+            data-testid="meta-ai-text"
+            disabled={busy}
+          />
+          <button type="submit" className={btnPrimary} disabled={busy || !textDraft.trim()}>
+            {t("metaCampaigns.ai.send")}
+          </button>
+        </form>
+      ) : null}
 
       {question.type === "currency" ? (
         <form
@@ -754,7 +811,15 @@ function QuestionCard({
               disabled={busy}
               data-testid="meta-ai-option"
               data-value={option.value}
-              onClick={() => void onAnswer(question.field, option.value)}
+              onClick={() =>
+                void onAnswer(question.field, {
+                  value: option.value,
+                  label: option.label,
+                  itemType: option.itemType,
+                  itemId: option.itemId,
+                  itemName: option.itemName,
+                })
+              }
             >
               {option.label}
             </button>

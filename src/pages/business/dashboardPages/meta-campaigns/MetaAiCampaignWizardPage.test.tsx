@@ -239,10 +239,125 @@ describe("MetaAiCampaignWizardPage conversation", () => {
     expect(api.answerAiCampaignSession).toHaveBeenCalledWith(
       "biz-1",
       "sess-1",
-      { field: "promotedItem", answer: "service:123" }
+      {
+        field: "promotedItem",
+        answer: {
+          value: "service:123",
+          label: "טיפול פנים",
+          itemType: undefined,
+          itemId: undefined,
+          itemName: undefined,
+        },
+      }
     );
     expect(screen.queryByText("טיפול פנים")).toBeNull();
     expect(screen.getByTestId("meta-ai-progress").textContent).toContain("1 מתוך 5");
+    expect(screen.queryByText("OTHER")).toBeNull();
+  });
+
+  it("renders OTHER as שירות אחר and opens a text input", async () => {
+    api.answerAiCampaignSession.mockResolvedValue(
+      questionSession({
+        question: {
+          field: "promotedItem",
+          type: "text",
+          message: "מה תרצה לקדם?",
+          placeholder: "הקלד את השירות או המוצר שתרצה לקדם",
+        },
+        messages: [
+          { role: "assistant", text: "איזה שירות תרצה לקדם?" },
+          { role: "user", text: "שירות אחר" },
+          { role: "assistant", text: "מה תרצה לקדם?" },
+        ],
+      })
+    );
+    api.startAiCampaignSession.mockResolvedValue(
+      questionSession({
+        question: {
+          field: "promotedItem",
+          type: "single_select",
+          message: "איזה שירות תרצה לקדם?",
+          options: [
+            { value: "service:123", label: "טיפול פנים" },
+            { value: "OTHER", label: "שירות אחר" },
+          ],
+        },
+      })
+    );
+    renderWizard();
+    await waitFor(() => screen.getByTestId("meta-ai-options"));
+    fireEvent.click(screen.getByRole("button", { name: "שירות אחר" }));
+    await waitFor(() => screen.getByTestId("meta-ai-text"));
+    expect(screen.getByTestId("meta-ai-question").getAttribute("data-type")).toBe("text");
+    expect(screen.queryByText("OTHER")).toBeNull();
+    expect(screen.getByText("שירות אחר")).toBeTruthy();
+    expect(screen.getByPlaceholderText("הקלד את השירות או המוצר שתרצה לקדם")).toBeTruthy();
+  });
+
+  it("does not keep a duplicated promotedItem question after submit", async () => {
+    api.answerAiCampaignSession.mockResolvedValue(
+      questionSession({
+        question: {
+          field: "objective",
+          type: "single_select",
+          message: "מה המטרה העיקרית של הקמפיין?",
+          options: [{ value: "LEADS", label: "קבלת לידים" }],
+        },
+        progress: { confirmed: 1, required: 5 },
+        messages: [
+          { role: "user", text: "טיפול פנים" },
+          { role: "assistant", text: "מה המטרה העיקרית של הקמפיין?" },
+        ],
+      })
+    );
+    renderWizard();
+    await waitFor(() => screen.getByTestId("meta-ai-question"));
+    fireEvent.click(screen.getByRole("button", { name: "טיפול פנים" }));
+    await waitFor(() =>
+      expect(screen.getByTestId("meta-ai-question").getAttribute("data-field")).toBe(
+        "objective"
+      )
+    );
+    expect(screen.getAllByText("מה המטרה העיקרית של הקמפיין?")).toHaveLength(1);
+  });
+
+  it("restores the current step from a server GET after refresh", async () => {
+    api.getAiCampaignSession.mockResolvedValue(
+      questionSession({
+        question: {
+          field: "objective",
+          type: "single_select",
+          message: "מה המטרה העיקרית של הקמפיין?",
+          options: [{ value: "LEADS", label: "קבלת לידים" }],
+        },
+        progress: { confirmed: 1, required: 5 },
+      })
+    );
+    sessionStorage.setItem("bizuply.meta-ai-campaign.session.biz-1", "sess-1");
+    renderWizard();
+    await waitFor(() =>
+      expect(screen.getByTestId("meta-ai-question").getAttribute("data-field")).toBe(
+        "objective"
+      )
+    );
+    expect(screen.getByTestId("meta-ai-progress").textContent).toContain("1 מתוך 5");
+    expect(api.startAiCampaignSession).not.toHaveBeenCalled();
+  });
+
+  it("shows the generation CTA at 5/5", async () => {
+    api.startAiCampaignSession.mockResolvedValue({
+      ...questionSession(),
+      status: "READY_FOR_GENERATION",
+      question: null,
+      progress: { confirmed: 5, required: 5 },
+      ready: {
+        message: "מעולה, יש לי את כל המידע הדרוש להכנת הקמפיין.",
+        generateEnabled: true,
+      },
+    });
+    renderWizard();
+    await waitFor(() => screen.getByTestId("meta-ai-generate"));
+    expect(screen.getByText(he.metaCampaigns.ai.readyGenerate)).toBeTruthy();
   });
 
   it("renders a currency question", async () => {
