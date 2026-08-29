@@ -50,6 +50,7 @@ const api = vi.hoisted(() => ({
   confirmAiDraftLocations: vi.fn(),
   retryAiCampaignMetaDraft: vi.fn(),
   activateAiCampaign: vi.fn(),
+  cancelAiCampaignSession: vi.fn(),
   recommendAiCampaignAutomations: vi.fn(),
   enableAiCampaignAutomation: vi.fn(),
   enableAllAiCampaignAutomations: vi.fn(),
@@ -863,6 +864,90 @@ describe("Meta AI draft + explicit publish", () => {
     const row = screen.getByTestId("meta-ai-publish").parentElement;
     expect(row?.className).toMatch(/flex-col/);
     expect(row?.className).toMatch(/sm:flex-row/);
+  });
+});
+
+describe("Meta AI campaign cancel draft", () => {
+  beforeEach(() => {
+    localeRef.current = he as Record<string, unknown>;
+    sessionStorage.clear();
+    vi.clearAllMocks();
+    api.getAiCampaignSession.mockRejectedValue(new Error("missing"));
+    api.cancelAiCampaignSession.mockResolvedValue({
+      sessionId: "sess-1",
+      status: "CANCELLED",
+    });
+  });
+
+  it("shows cancel draft on the ready preview and keeps the draft if dismissed", async () => {
+    api.startAiCampaignSession.mockResolvedValue(
+      readySession({
+        proposal: sampleProposal(),
+        generation: { status: "READY", meta: {} },
+      })
+    );
+    renderWizard();
+    await waitFor(() => screen.getByTestId("meta-ai-preview"));
+    expect(screen.getByTestId("meta-ai-cancel-draft").textContent).toContain(
+      he.metaCampaigns.ai.cancelDraft
+    );
+    fireEvent.click(screen.getByTestId("meta-ai-cancel-draft"));
+    await waitFor(() => screen.getByTestId("meta-ai-cancel-draft-modal"));
+    fireEvent.click(screen.getByTestId("meta-ai-cancel-draft-keep"));
+    await waitFor(() =>
+      expect(screen.queryByTestId("meta-ai-cancel-draft-modal")).toBeNull()
+    );
+    expect(api.cancelAiCampaignSession).not.toHaveBeenCalled();
+    expect(screen.getByTestId("meta-ai-preview")).toBeTruthy();
+  });
+
+  it("cancels the draft, clears storage, and returns to overview", async () => {
+    sessionStorage.setItem("bizuply.meta-ai-campaign.session.biz-1", "sess-1");
+    api.getAiCampaignSession.mockResolvedValue(
+      readySession({
+        proposal: sampleProposal(),
+        generation: { status: "READY", meta: {} },
+      })
+    );
+    renderWizard();
+    await waitFor(() => screen.getByTestId("meta-ai-preview"));
+    fireEvent.click(screen.getByTestId("meta-ai-cancel-draft"));
+    fireEvent.click(screen.getByTestId("meta-ai-cancel-draft-confirm"));
+    await waitFor(() =>
+      expect(api.cancelAiCampaignSession).toHaveBeenCalledWith("biz-1", "sess-1")
+    );
+    await waitFor(() => screen.getByText("overview-page"));
+    expect(sessionStorage.getItem("bizuply.meta-ai-campaign.session.biz-1")).toBeNull();
+    expect(api.startAiCampaignSession).not.toHaveBeenCalled();
+  });
+
+  it("cancels a resumable draft without starting a new session", async () => {
+    api.startAiCampaignSession.mockResolvedValue({
+      ...questionSession(),
+      resumable: true,
+    });
+    renderWizard();
+    await waitFor(() => screen.getByTestId("meta-ai-resume"));
+    fireEvent.click(screen.getByTestId("meta-ai-resume-cancel-draft"));
+    fireEvent.click(screen.getByTestId("meta-ai-cancel-draft-confirm"));
+    await waitFor(() =>
+      expect(api.cancelAiCampaignSession).toHaveBeenCalledWith("biz-1", "sess-1")
+    );
+    await waitFor(() => screen.getByText("overview-page"));
+    expect(sessionStorage.getItem("bizuply.meta-ai-campaign.session.biz-1")).toBeNull();
+  });
+
+  it("hides cancel draft after the campaign is published", async () => {
+    api.startAiCampaignSession.mockResolvedValue(
+      draftedSession({
+        lifecycle: "PUBLISHED",
+        metaDraft: { status: "PUBLISHED", campaignId: "120", approvedDailyBudget: 70 },
+        meta: { campaignId: "120", status: "ACTIVE", budget: 70 },
+      })
+    );
+    renderWizard();
+    await waitFor(() => screen.getByTestId("meta-ai-published"));
+    expect(screen.queryByTestId("meta-ai-cancel-draft")).toBeNull();
   });
 });
 

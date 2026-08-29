@@ -229,6 +229,18 @@ export async function startAiCampaignSession(
   return data;
 }
 
+export async function cancelAiCampaignSession(
+  businessId: string | undefined,
+  sessionId: string
+) {
+  const { data } = await API.post<{
+    success?: boolean;
+    sessionId: string;
+    status: "CANCELLED";
+  }>(`${BASE}/sessions/${sessionId}/cancel`, { businessId }, withBusiness(businessId));
+  return data;
+}
+
 export async function getAiCampaignSession(
   businessId: string | undefined,
   sessionId: string

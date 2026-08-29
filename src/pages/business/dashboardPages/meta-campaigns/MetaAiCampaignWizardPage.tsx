@@ -8,6 +8,7 @@ import {
   Plug,
   Send,
   Sparkles,
+  X,
 } from "lucide-react";
 import {
   btnPrimary,
@@ -19,6 +20,7 @@ import { useLocaleDir } from "../../../../hooks/useLocaleDir";
 import {
   activateAiCampaign,
   answerAiCampaignSession,
+  cancelAiCampaignSession,
   confirmAiDraftLocations,
   createAiCampaignMetaDraft,
   generateAiCampaign,
@@ -82,6 +84,14 @@ function persistSession(businessId: string, sessionId: string) {
   }
 }
 
+function clearPersisted(businessId: string) {
+  try {
+    sessionStorage.removeItem(sessionStorageKey(businessId));
+  } catch {
+    /* ignore */
+  }
+}
+
 function readPersisted(businessId: string) {
   try {
     return sessionStorage.getItem(sessionStorageKey(businessId));
@@ -117,6 +127,7 @@ export default function MetaAiCampaignWizardPage() {
   const [pendingAction, setPendingAction] = useState<string | null>(null);
   const draftLockRef = useRef(false);
   const [confirmPublish, setConfirmPublish] = useState(false);
+  const [confirmCancel, setConfirmCancel] = useState(false);
   const [activationTree, setActivationTree] = useState<
     { campaign?: string | null; adSet?: string | null; ad?: string | null } | undefined
   >(undefined);
@@ -225,6 +236,32 @@ export default function MetaAiCampaignWizardPage() {
       setError(readError(err, t("metaCampaigns.ai.errorGeneric")));
     } finally {
       setBusy(false);
+    }
+  };
+
+  const draftSessionId = session?.sessionId || resumeCandidate?.sessionId || null;
+  const isPublished =
+    session?.lifecycle === "PUBLISHED" ||
+    session?.metaDraft?.status === "PUBLISHED";
+  const canCancelDraft = Boolean(draftSessionId) && !isPublished;
+
+  const handleCancelDraft = async () => {
+    if (!draftSessionId || busy) return;
+    setBusy(true);
+    setPendingAction("cancel-draft");
+    setError(null);
+    try {
+      await cancelAiCampaignSession(tenantId, draftSessionId);
+      if (tenantId) clearPersisted(tenantId);
+      setConfirmCancel(false);
+      setSession(null);
+      setResumeCandidate(null);
+      navigate(overviewPath);
+    } catch (err) {
+      setError(readError(err, t("metaCampaigns.ai.cancelDraftError")));
+    } finally {
+      setBusy(false);
+      setPendingAction(null);
     }
   };
 
@@ -449,10 +486,24 @@ export default function MetaAiCampaignWizardPage() {
             </p>
           ) : null}
         </div>
-        <Link to={overviewPath} className={btnSecondary}>
-          <ArrowLeft className="h-4 w-4 rtl:rotate-180" />
-          {t("metaCampaigns.ai.back")}
-        </Link>
+        <div className="flex flex-col gap-2 sm:items-end">
+          <Link to={overviewPath} className={btnSecondary}>
+            <ArrowLeft className="h-4 w-4 rtl:rotate-180" />
+            {t("metaCampaigns.ai.back")}
+          </Link>
+          {canCancelDraft ? (
+            <button
+              type="button"
+              className={`${btnSecondary} border-rose-200 text-rose-700 hover:border-rose-300 hover:bg-rose-50`}
+              data-testid="meta-ai-cancel-draft"
+              disabled={busy}
+              onClick={() => setConfirmCancel(true)}
+            >
+              <X className="h-4 w-4" />
+              {t("metaCampaigns.ai.cancelDraft")}
+            </button>
+          ) : null}
+        </div>
       </div>
 
       {session && session.metaConnected === false ? (
@@ -500,6 +551,15 @@ export default function MetaAiCampaignWizardPage() {
                 disabled={busy}
               >
                 {t("metaCampaigns.ai.resumeRestart")}
+              </button>
+              <button
+                type="button"
+                className={`${btnSecondary} border-rose-200 text-rose-700 hover:border-rose-300 hover:bg-rose-50`}
+                data-testid="meta-ai-resume-cancel-draft"
+                disabled={busy}
+                onClick={() => setConfirmCancel(true)}
+              >
+                {t("metaCampaigns.ai.cancelDraft")}
               </button>
             </div>
           </div>
@@ -600,6 +660,53 @@ export default function MetaAiCampaignWizardPage() {
             ) : null}
           </div>
         )}
+
+        {confirmCancel ? (
+          <div
+            className="fixed inset-0 z-50 flex items-end justify-center bg-slate-900/50 p-4 sm:items-center"
+            data-testid="meta-ai-cancel-draft-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="meta-ai-cancel-draft-title"
+          >
+            <div className="w-full max-w-md space-y-4 rounded-lg bg-white p-5 shadow-xl">
+              <h3
+                id="meta-ai-cancel-draft-title"
+                className="text-lg font-black text-slate-900"
+              >
+                {t("metaCampaigns.ai.cancelDraftConfirmTitle")}
+              </h3>
+              <p className="text-sm font-semibold text-slate-600">
+                {t("metaCampaigns.ai.cancelDraftConfirm")}
+              </p>
+              <div className="flex flex-col gap-2 sm:flex-row">
+                <button
+                  type="button"
+                  className={btnSecondary}
+                  data-testid="meta-ai-cancel-draft-keep"
+                  disabled={busy}
+                  onClick={() => setConfirmCancel(false)}
+                >
+                  {t("metaCampaigns.ai.cancelDraftConfirmNo")}
+                </button>
+                <button
+                  type="button"
+                  className={`${btnSecondary} border-rose-200 text-rose-700 hover:border-rose-300 hover:bg-rose-50`}
+                  data-testid="meta-ai-cancel-draft-confirm"
+                  disabled={busy}
+                  onClick={() => void handleCancelDraft()}
+                >
+                  {pendingAction === "cancel-draft" ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <X className="h-4 w-4" />
+                  )}
+                  {t("metaCampaigns.ai.cancelDraftConfirmYes")}
+                </button>
+              </div>
+            </div>
+          </div>
+        ) : null}
 
         {error ? (
           <div className="mt-4 space-y-3 rounded-md border border-amber-200 bg-amber-50 p-3">
