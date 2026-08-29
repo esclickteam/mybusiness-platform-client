@@ -17,6 +17,7 @@ import {
   Share,
   Smartphone,
   Star,
+  Sparkles,
   UserPlus,
 } from "lucide-react";
 import BizuplyLoader from "../components/ui/BizuplyLoader";
@@ -64,6 +65,7 @@ type NotificationSettingsState = {
   message: boolean;
   lead: boolean;
   task: boolean;
+  aiCampaign: boolean;
 };
 
 type CategoryKey = keyof Omit<NotificationSettingsState, "master" | "pushEnabled">;
@@ -82,6 +84,7 @@ const DEFAULT_SETTINGS: NotificationSettingsState = {
   message: true,
   lead: true,
   task: true,
+  aiCampaign: true,
 };
 
 const CATEGORIES: {
@@ -125,6 +128,12 @@ const CATEGORIES: {
     label: "משימות ותזכורות",
     description: "משימות חדשות ותזכורות לטיפול",
     icon: <ListChecks className="h-4 w-4" />,
+  },
+  {
+    key: "aiCampaign",
+    label: "התראות קמפיין AI",
+    description: "המלצות ביצועים לקמפיינים ב-Meta — אזהרה וקריטי בלבד",
+    icon: <Sparkles className="h-4 w-4" />,
   },
 ];
 
