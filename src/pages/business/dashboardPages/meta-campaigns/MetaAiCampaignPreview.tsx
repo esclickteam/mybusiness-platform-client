@@ -230,6 +230,31 @@ export default function MetaAiCampaignPreview({
         </div>
       ) : null}
 
+      <MetaAiDraftPublishPanel
+        session={session}
+        busy={busy}
+        pendingAction={pendingAction}
+        mediaMissing={mediaMissing}
+        budgetLabel={
+          budget
+            ? `${budget.amount} ${budget.currency} ${t("metaCampaigns.ai.preview.perDay")}`
+            : "—"
+        }
+        locationsLabel={locations}
+        objectiveLabel={objectiveLabel}
+        activationTree={activationTree}
+        onCreateDraft={onCreateDraft}
+        onRetryDraft={onRetryDraft}
+        onConfirmLocations={onConfirmLocations}
+        onRequestPublish={onRequestPublish}
+        onConfirmPublish={onConfirmPublish}
+        onCancelPublish={onCancelPublish}
+        confirmOpen={confirmOpen}
+        onEditBeforePublish={onEditBeforePublish}
+        onViewCampaign={onViewCampaign}
+        onBackToCampaigns={onBackToCampaigns}
+      />
+
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
         <div>
           <p className="mb-2 text-xs font-black uppercase tracking-wide text-slate-500">
@@ -329,31 +354,6 @@ export default function MetaAiCampaignPreview({
           </div>
         ) : null}
       </div>
-
-      <MetaAiDraftPublishPanel
-        session={session}
-        busy={busy}
-        pendingAction={pendingAction}
-        mediaMissing={mediaMissing}
-        budgetLabel={
-          budget
-            ? `${budget.amount} ${budget.currency} ${t("metaCampaigns.ai.preview.perDay")}`
-            : "—"
-        }
-        locationsLabel={locations}
-        objectiveLabel={objectiveLabel}
-        activationTree={activationTree}
-        onCreateDraft={onCreateDraft}
-        onRetryDraft={onRetryDraft}
-        onConfirmLocations={onConfirmLocations}
-        onRequestPublish={onRequestPublish}
-        onConfirmPublish={onConfirmPublish}
-        onCancelPublish={onCancelPublish}
-        confirmOpen={confirmOpen}
-        onEditBeforePublish={onEditBeforePublish}
-        onViewCampaign={onViewCampaign}
-        onBackToCampaigns={onBackToCampaigns}
-      />
 
       {lockedAfterDraft ? null : (
       <>
