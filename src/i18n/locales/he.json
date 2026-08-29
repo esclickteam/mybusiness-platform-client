@@ -5809,6 +5809,31 @@
       "step3": "שיוך הליד למנהל ב-CRM",
       "cta": "יצירה / עריכת אוטומציה"
     },
+    "campaignHealth": {
+      "title": "✨ מצב הקמפיין ב-AI",
+      "status": {
+        "HEALTHY": "🟢 מצב הקמפיין: טוב",
+        "WATCH": "🟡 כדאי לעקוב",
+        "ACTION_RECOMMENDED": "🟠 מומלץ לבדוק",
+        "CRITICAL": "🔴 נדרשת פעולה"
+      },
+      "cpl": "עלות לליד",
+      "ctr": "CTR",
+      "cpc": "CPC",
+      "noChanges": "אין כרגע שינויים מומלצים.",
+      "seeRecommendation": "ראה המלצה",
+      "openList": "המלצות פתוחות",
+      "closedList": "המלצות שטופלו",
+      "aiLabel": "AI",
+      "recommendationLabel": "המלצה",
+      "createVariant": "צור גרסה חדשה עם AI",
+      "openCampaign": "פתח קמפיין",
+      "notNow": "לא עכשיו",
+      "versusPrevious": "לעומת התקופה הקודמת",
+      "loading": "טוען מצב קמפיין...",
+      "error": "לא ניתן לטעון את מצב הקמפיין.",
+      "empty": "אין עדיין המלצות ביצועים."
+    },
     "empty": {
       "notConnectedTitle": "לא נמצא חשבון מודעות מחובר",
       "notConnectedBody": "יש לחבר חשבון Meta כדי לצפות בנתוני הקמפיינים.",

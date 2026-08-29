@@ -48,6 +48,7 @@ import {
   type MetaLeadForm,
   type MetaLocationTarget,
 } from "../../../../api/metaCampaignsApi";
+import MetaCampaignHealthPanel from "./MetaCampaignHealthPanel";
 import BizuplyLoader from "../../../../components/ui/BizuplyLoader";
 import {
   btnGhost,
@@ -2529,7 +2530,15 @@ export default function MetaCampaignEditorPage() {
             </div>
           </div>
 
-          <aside className={`${cardBase} p-4`}>
+          <aside className="space-y-4">
+            {(businessId || urlBusinessId) && campaignId ? (
+              <MetaCampaignHealthPanel
+                businessId={String(urlBusinessId || businessId)}
+                campaignId={campaignId}
+                currency={currency}
+              />
+            ) : null}
+          <div className={`${cardBase} p-4`}>
             <p className="text-sm font-black text-slate-900">
               {t("metaCampaigns.form.metricsTitle")}
             </p>
@@ -2593,6 +2602,7 @@ export default function MetaCampaignEditorPage() {
                 </dd>
               </div>
             </dl>
+          </div>
           </aside>
         </div>
       ) : null}

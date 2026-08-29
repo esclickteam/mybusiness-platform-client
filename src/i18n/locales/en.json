@@ -5789,6 +5789,31 @@
       "step3": "Assign the lead to a CRM owner",
       "cta": "Create / edit automation"
     },
+    "campaignHealth": {
+      "title": "✨ AI Campaign Health",
+      "status": {
+        "HEALTHY": "🟢 Campaign status: healthy",
+        "WATCH": "🟡 Worth watching",
+        "ACTION_RECOMMENDED": "🟠 Review recommended",
+        "CRITICAL": "🔴 Action needed"
+      },
+      "cpl": "Cost per lead",
+      "ctr": "CTR",
+      "cpc": "CPC",
+      "noChanges": "No recommended changes right now.",
+      "seeRecommendation": "See recommendation",
+      "openList": "Open recommendations",
+      "closedList": "Handled recommendations",
+      "aiLabel": "AI",
+      "recommendationLabel": "Recommendation",
+      "createVariant": "Create a new AI variant",
+      "openCampaign": "Open campaign",
+      "notNow": "Not now",
+      "versusPrevious": "versus the previous period",
+      "loading": "Loading campaign health...",
+      "error": "Could not load campaign health.",
+      "empty": "No performance recommendations yet."
+    },
     "empty": {
       "notConnectedTitle": "No connected ad account found",
       "notConnectedBody": "Connect a Meta account to view campaign data.",

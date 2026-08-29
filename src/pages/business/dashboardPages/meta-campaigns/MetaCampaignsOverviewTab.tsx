@@ -4,6 +4,7 @@ import {
   useNavigate,
   useOutletContext,
   useParams,
+  useSearchParams,
 } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { toast } from "react-toastify";
@@ -51,6 +52,7 @@ import { btnPrimary, btnSecondary, cardBase } from "../../../../styles/bizuplyUi
 import { getIntlLocale } from "../../../../i18n/localeUtils";
 import MetaAdsReviewCaptions from "./MetaAdsReviewCaptions";
 import CreateCampaignButton from "./CreateCampaignButton";
+import MetaCampaignHealthPanel from "./MetaCampaignHealthPanel";
 import {
   DATE_RANGE_OPTIONS,
   daysAgoIso,
@@ -211,6 +213,9 @@ export default function MetaCampaignsOverviewTab() {
   const navigate = useNavigate();
   const { businessId } = useOutletContext<OutletCtx>();
   const { businessId: urlBusinessId } = useParams<{ businessId: string }>();
+  const [searchParams] = useSearchParams();
+  const queryCampaignId = searchParams.get("campaignId") || "";
+  const queryRecommendationId = searchParams.get("recommendationId") || "";
   const basePath = `/business/${urlBusinessId || businessId}/dashboard/meta-campaigns`;
   const locale = getIntlLocale(i18n.language);
 
@@ -313,6 +318,12 @@ export default function MetaCampaignsOverviewTab() {
       return true;
     });
   }, [data?.campaigns, segment]);
+
+  useEffect(() => {
+    if (!queryCampaignId) return;
+    const match = (data?.campaigns || []).find((item) => item.id === queryCampaignId);
+    if (match) setDetailsCampaign(match);
+  }, [queryCampaignId, data?.campaigns]);
 
   const kpis = data?.kpis;
   const hasInsightSignal = Boolean(
@@ -1061,6 +1072,18 @@ export default function MetaCampaignsOverviewTab() {
         </div>
 
         <aside className="space-y-4">
+          {businessId || urlBusinessId ? (
+            <MetaCampaignHealthPanel
+              businessId={String(urlBusinessId || businessId)}
+              currency={currency}
+              variant="list"
+              highlightRecommendationId={queryRecommendationId || undefined}
+              onOpenCampaign={(id) => {
+                const match = (data?.campaigns || []).find((item) => item.id === id);
+                if (match) setDetailsCampaign(match);
+              }}
+            />
+          ) : null}
           <div className={`${cardBase} p-4`}>
             <div className="flex items-center gap-2">
               <Sparkles className="h-4 w-4 text-violet-600" />
@@ -1162,6 +1185,16 @@ export default function MetaCampaignsOverviewTab() {
               </button>
             </div>
             <dl className="flex-1 overflow-y-auto px-4 py-2">
+              {businessId || urlBusinessId ? (
+                <div className="mb-3">
+                  <MetaCampaignHealthPanel
+                    businessId={String(urlBusinessId || businessId)}
+                    campaignId={detailsCampaign.id}
+                    currency={currency}
+                    highlightRecommendationId={queryRecommendationId || undefined}
+                  />
+                </div>
+              ) : null}
               <DetailRow
                 label="Campaign name"
                 value={detailsCampaign.name || "—"}
