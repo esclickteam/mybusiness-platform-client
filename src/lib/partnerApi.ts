@@ -418,6 +418,11 @@ export async function adminRecordPayment(id: string, amountIls: number) {
   return data;
 }
 
+export async function adminSeedShowcaseDemo() {
+  const { data } = await API.post("/admin/partners/showcase-demo");
+  return data;
+}
+
 export async function adminChangePartnerPlan(id: string, planKey: PartnerPlanKey) {
   const { data } = await API.post(`/admin/partners/${id}/plan`, { planKey });
   return data;

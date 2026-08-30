@@ -1,4 +1,8 @@
-export type PartnerPlanKey = "partner_basic" | "partner_pro" | "partner_premium";
+export type PartnerPlanKey =
+  | "partner_basic"
+  | "partner_pro"
+  | "partner_premium"
+  | "partner_percent";
 
 export type PartnerStatus =
   | "pending_setup"
@@ -43,6 +47,9 @@ export type PartnerPlan = {
   additionalTeamUsers: number;
   customDomainEligible: boolean;
   canHideBizuplyBranding: boolean;
+  isPaid?: boolean;
+  commissionModel?: "markup_share" | "percent_of_sale";
+  saleCommissionRate?: number;
 };
 
 export type PartnerComplianceDocument = {
