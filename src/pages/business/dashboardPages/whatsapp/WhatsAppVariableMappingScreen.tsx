@@ -29,6 +29,13 @@ type Props = {
   onSaved?: (template: WhatsAppTemplate) => void;
 };
 
+function rowIsMapped(row: WhatsAppVariableMapping) {
+  if (!row?.source) return false;
+  if (row.source === "manual") return true;
+  if (row.source === "constant") return Boolean(String(row.constantValue || "").trim());
+  return Boolean(row.field);
+}
+
 function emptyRow(variable: string, template: WhatsAppTemplate): WhatsAppVariableMapping {
   return {
     variable,
@@ -447,6 +454,10 @@ export default function WhatsAppVariableMappingScreen({
           const fields = fieldsForSource(row.source || "");
           const formats = formatsForRow(row);
           const report = reportFor(row.variable);
+          const mapped = rowIsMapped(row);
+          const isSuggested = report?.status === "suggested" && !mapped;
+          const isAutoApplied =
+            mapped && row.mappingOrigin !== "user" && !isSuggested;
           const sourceMeta = catalog?.sources?.find((s) => s.id === row.source);
           const fieldMeta = sourceMeta?.fields?.find((f) => f.id === row.field);
           const sourceLabel =
@@ -455,7 +466,7 @@ export default function WhatsAppVariableMappingScreen({
           const showChangeForm =
             editingVariable === row.variable ||
             report?.status === "unknown" ||
-            !report;
+            (!mapped && !isSuggested && !report);
           return (
             <article
               key={row.variable}
@@ -490,14 +501,14 @@ export default function WhatsAppVariableMappingScreen({
                 </p>
               ) : null}
 
-              {report?.status === "applied" ? (
+              {isAutoApplied ? (
                 <p className="mb-3 flex items-center gap-1 text-xs font-bold text-emerald-700">
                   <Check className="h-3.5 w-3.5" />
                   {t("whatsapp.mapping.autoDetected")}
                 </p>
               ) : null}
 
-              {report?.status === "suggested" && report.labelHe ? (
+              {isSuggested && report?.labelHe ? (
                 <div className="mb-3 flex flex-wrap items-center gap-2">
                   <p className="text-sm font-semibold text-amber-800">
                     {t("whatsapp.mapping.autoProbably", {
@@ -530,7 +541,7 @@ export default function WhatsAppVariableMappingScreen({
                 </p>
               ) : null}
 
-              {(report?.status === "applied" || report?.status === "user") &&
+              {(isAutoApplied || (mapped && !isSuggested)) &&
               editingVariable !== row.variable ? (
                 <button
                   type="button"
