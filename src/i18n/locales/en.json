@@ -419,8 +419,8 @@
     "collapseSidebar": "Collapse sidebar",
     "expandSidebar": "Expand sidebar",
     "ariaLabel": "Business workspace navigation",
-    "whatsapp": "WhatsApp Messages",
-    "metaCampaigns": "Meta Campaign Management",
+    "whatsapp": "WhatsApp API",
+    "metaCampaigns": "Campaigns",
     "socialSchedule": "Schedule Posts & Stories"
   },
   "automations": {
@@ -439,6 +439,7 @@
     "partnerImpersonationTitle": "Partner mode — client management",
     "partnerImpersonationText": "You are currently managing: {{name}}",
     "partnerManagedPartnerLine": "Partner: {{name}}",
+    "showcaseDemoSafeLine": "Demo account — click everything. Messages are not sent, and site publish or billing stay inside the demo.",
     "backToAdmin": "Exit management mode",
     "backToMarketer": "Back to marketer dashboard",
     "backToPartner": "Back to partner dashboard",

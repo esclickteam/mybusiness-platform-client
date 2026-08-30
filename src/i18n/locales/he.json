@@ -419,8 +419,8 @@
     "collapseSidebar": "כיווץ תפריט צד",
     "expandSidebar": "הרחבת תפריט צד",
     "ariaLabel": "ניווט סביבת העבודה העסקית",
-    "whatsapp": "שליחת הודעות וואטסאפ",
-    "metaCampaigns": "ניהול קמפיינים מטא",
+    "whatsapp": "וואטסאפ API",
+    "metaCampaigns": "קמפיינים",
     "socialSchedule": "תזמון פוסטים וסטוריז"
   },
   "automations": {
@@ -439,6 +439,7 @@
     "partnerImpersonationTitle": "מצב פרטנר — כניסה לניהול הלקוח",
     "partnerImpersonationText": "אתה מנהל כרגע את: {{name}}",
     "partnerManagedPartnerLine": "Partner: {{name}}",
+    "showcaseDemoSafeLine": "חשבון דמו — אפשר ללחוץ על הכל. הודעות לא נשלחות החוצה, פרסום אתר וחיוב נשארים בדמו בלבד.",
     "backToAdmin": "יציאה ממצב ניהול",
     "backToMarketer": "חזרה ללוח המשווק",
     "backToPartner": "חזרה ללוח הפרטנר",
