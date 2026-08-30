@@ -466,6 +466,7 @@ export default function MetaAiCampaignWizardPage() {
   const hasProposal =
     Boolean(session?.proposal) && session?.generation?.status === "READY";
   const autoGenRef = useRef<string | null>(null);
+  const autoDraftRef = useRef<string | null>(null);
 
   useEffect(() => {
     if (!session?.sessionId || !tenantId || busy || loading) return;
@@ -486,6 +487,39 @@ export default function MetaAiCampaignWizardPage() {
         setPendingAction(null);
       });
   }, [applySession, busy, hasProposal, isReady, loading, session, t, tenantId]);
+
+  useEffect(() => {
+    if (!session?.sessionId || !tenantId || busy || loading) return;
+    if (!hasProposal) return;
+    const media = session.proposal?.creative?.media as
+      | { status?: string; url?: string | null; imageHash?: string | null }
+      | undefined;
+    const mediaOk =
+      media?.status === "PROVIDED" || Boolean(media?.url) || Boolean(media?.imageHash);
+    if (!mediaOk) return;
+    const status = String(session.lifecycle || session.metaDraft?.status || "");
+    if (status && !["IDLE", "PROPOSAL_READY", "READY_FOR_GENERATION"].includes(status)) {
+      return;
+    }
+    if (session.metaDraft?.campaignId || session.metaDraft?.publishId) return;
+    if ((session.metaDraft?.pendingLocations || []).length) return;
+    if (autoDraftRef.current === session.sessionId) return;
+    autoDraftRef.current = session.sessionId;
+    draftLockRef.current = true;
+    setBusy(true);
+    setPendingAction("draft");
+    setError(null);
+    void Promise.resolve(createAiCampaignMetaDraft(tenantId, session.sessionId))
+      .then((next) => {
+        if (next?.sessionId) applySession(next);
+      })
+      .catch((err) => mergeDraftError(err, t("metaCampaigns.ai.errorGeneric")))
+      .finally(() => {
+        draftLockRef.current = false;
+        setBusy(false);
+        setPendingAction(null);
+      });
+  }, [applySession, busy, hasProposal, loading, mergeDraftError, session, t, tenantId]);
 
   return (
     <div dir={dir} className="space-y-4" data-testid="meta-ai-campaign-wizard">

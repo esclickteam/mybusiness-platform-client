@@ -669,14 +669,15 @@ describe("Meta AI draft + explicit publish", () => {
     api.getAiCampaignSession.mockRejectedValue(new Error("missing"));
   });
 
-  it("shows the create CTA and paused warning", async () => {
+  it("auto-creates the paused Meta draft when the proposal is ready", async () => {
     api.startAiCampaignSession.mockResolvedValue(proposalReady());
+    api.createAiCampaignMetaDraft.mockResolvedValue(draftedSession());
     renderWizard();
-    await waitFor(() => screen.getByTestId("meta-ai-create-draft"));
-    expect(screen.getByText(he.metaCampaigns.ai.draft.approveCreate)).toBeTruthy();
-    expect(screen.getByTestId("meta-ai-paused-warning").textContent).toContain(
-      he.metaCampaigns.ai.draft.pausedWarning
+    await waitFor(() =>
+      expect(api.createAiCampaignMetaDraft).toHaveBeenCalledWith("biz-1", "sess-1")
     );
+    await waitFor(() => screen.getByTestId("meta-ai-draft-success"));
+    expect(screen.getByText(he.metaCampaigns.ai.draft.successTitle)).toBeTruthy();
   });
 
   it("shows real creation progress without a fake percentage", async () => {
@@ -695,8 +696,6 @@ describe("Meta AI draft + explicit publish", () => {
       })
     );
     renderWizard();
-    await waitFor(() => screen.getByTestId("meta-ai-create-draft"));
-    fireEvent.click(screen.getByTestId("meta-ai-create-draft"));
     await waitFor(() => screen.getByTestId("meta-ai-draft-progress"));
     expect(screen.getByText(he.metaCampaigns.ai.draft.creating)).toBeTruthy();
     expect(screen.queryByText("%")).toBeNull();
@@ -715,9 +714,8 @@ describe("Meta AI draft + explicit publish", () => {
         })
     );
     renderWizard();
-    await waitFor(() => screen.getByTestId("meta-ai-create-draft"));
-    fireEvent.click(screen.getByTestId("meta-ai-create-draft"));
-    expect(api.createAiCampaignMetaDraft).toHaveBeenCalledTimes(1);
+    await waitFor(() => expect(api.createAiCampaignMetaDraft).toHaveBeenCalledTimes(1));
+    fireEvent.click(screen.queryByTestId("meta-ai-create-draft") || document.body);
     expect(screen.queryByTestId("meta-ai-create-draft")).toBeNull();
     expect(screen.getByTestId("meta-ai-draft-progress")).toBeTruthy();
   });
@@ -870,9 +868,10 @@ describe("Meta AI draft + explicit publish", () => {
   it("renders English draft copy", async () => {
     localeRef.current = en as Record<string, unknown>;
     api.startAiCampaignSession.mockResolvedValue(proposalReady());
+    api.createAiCampaignMetaDraft.mockResolvedValue(draftedSession());
     renderWizard();
-    await waitFor(() => screen.getByText(en.metaCampaigns.ai.draft.approveCreate));
-    expect(screen.getByText(en.metaCampaigns.ai.draft.pausedWarning)).toBeTruthy();
+    await waitFor(() => screen.getByTestId("meta-ai-draft-success"));
+    expect(screen.getByText(en.metaCampaigns.ai.draft.successTitle)).toBeTruthy();
   });
 
   it("keeps draft actions stacked on mobile", async () => {
