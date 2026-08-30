@@ -5950,6 +5950,7 @@
       "createTitle": "Create Meta campaign",
       "createSubtitleSteps": "Step 1 Campaign · Step 2 Audience · Step 3 Ad & form — with live preview.",
       "editTitle": "Edit Meta campaign",
+      "editSubtitle": "Edit objective, audience, ad, and form — then save when ready.",
       "subtitle": "Set objective, budget, and status — then activate when ready.",
       "optional": "optional",
       "noEndDateHint": "The campaign will keep running with no end date until you pause it manually.",

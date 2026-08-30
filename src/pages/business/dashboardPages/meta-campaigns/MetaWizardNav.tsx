@@ -12,6 +12,7 @@ type Props = {
   isLeads: boolean;
   onJumpMain?: (main: WizardMainStep) => void;
   onJumpSub?: (sub: number) => void;
+  allowFreeJump?: boolean;
 };
 
 const MAIN_KEYS: Record<WizardMainStep, string> = {
@@ -26,6 +27,7 @@ export default function MetaWizardNav({
   isLeads,
   onJumpMain,
   onJumpSub,
+  allowFreeJump = false,
 }: Props) {
   const { t } = useTranslation();
   const definition = getWizardDefinition(isLeads);
@@ -37,7 +39,7 @@ export default function MetaWizardNav({
         {definition.map((mainDef) => {
           const isCurrent = mainDef.main === mainStep;
           const isCompleted = mainDef.main < mainStep;
-          const canJump = isCompleted && onJumpMain;
+          const canJump = Boolean(onJumpMain) && (allowFreeJump || isCompleted);
 
           return (
             <button
@@ -87,7 +89,8 @@ export default function MetaWizardNav({
           {currentMainDef.subs.map((sub, index) => {
             const isCurrent = index === subStep;
             const isCompleted = index < subStep;
-            const canJump = (isCompleted || isCurrent) && onJumpSub;
+            const canJump =
+              Boolean(onJumpSub) && (allowFreeJump || isCompleted || isCurrent);
 
             return (
               <button

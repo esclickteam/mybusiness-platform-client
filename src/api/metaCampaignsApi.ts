@@ -62,6 +62,34 @@ export type MetaCampaign = {
   startTime?: string | null;
   stopTime?: string | null;
   metrics: MetaCampaignMetrics;
+  pageId?: string;
+  locations?: MetaLocationTarget[];
+  locationMode?: "places" | "radius";
+  interests?: MetaInterestTarget[];
+  ageMin?: number | null;
+  ageMax?: number | null;
+  genders?: number[];
+  gender?: "all" | "1" | "2" | string;
+  advantageAudience?: boolean;
+  placementMode?: "advantage" | "facebook" | "instagram" | "both" | string;
+  publisherPlatforms?: string[];
+  facebookPositions?: string[];
+  instagramPositions?: string[];
+  leadFormId?: string;
+  formId?: string;
+  primaryText?: string;
+  headline?: string;
+  description?: string;
+  link?: string;
+  displayLink?: string;
+  imageHash?: string;
+  imageUrl?: string;
+  picture?: string;
+  videoId?: string;
+  creativeFormat?: "single" | "video" | "carousel" | string;
+  callToAction?: string;
+  ctaCustom?: string;
+  carouselCards?: MetaCarouselCard[];
 };
 
 export type MetaCampaignSeriesPoint = {
@@ -195,6 +223,7 @@ export type MetaAdsConnectionStatus = {
   callToActions?: MetaLabeledOption[];
   previewFormats?: MetaLabeledOption[];
   leadFormQuestionTypes?: MetaLeadFormQuestionType[];
+  isShowcaseDemo?: boolean;
 };
 
 export type MetaCampaignsOverview = {
