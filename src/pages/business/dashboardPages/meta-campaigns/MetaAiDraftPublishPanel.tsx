@@ -344,7 +344,9 @@ export default function MetaAiDraftPublishPanel({
             {t("metaCampaigns.ai.draft.metaError")}
           </p>
           <p className="mt-1 text-sm font-semibold text-rose-800">
-            {session.metaDraft?.error || t("metaCampaigns.ai.errorGeneric")}
+            {/invalid parameter/i.test(String(session.metaDraft?.error || ""))
+              ? t("metaCampaigns.ai.draft.invalidParameter")
+              : session.metaDraft?.error || t("metaCampaigns.ai.errorGeneric")}
           </p>
           {activationTree ? (
             <dl className="mt-2 grid grid-cols-1 gap-1 text-sm" data-testid="meta-ai-partial-tree">
