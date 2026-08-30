@@ -1,8 +1,14 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { Banknote, BadgePercent, Bell, CalendarCheck, Handshake, LayoutDashboard, LogOut, Menu, Settings, Store, UserPlus, Users, Wallet, X } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { PARTNER_FONT } from "../../components/partner/partnerUi";
+import { exitPartnerManagedContext } from "../../lib/partnerApi";
+import {
+  clearManagedBusinessContext,
+  getManagedBusinessId,
+} from "../../lib/partnerManagedContext";
+import BizuplyLoader from "../../components/ui/BizuplyLoader";
 
 type NavItem = {
   to: string;
@@ -75,13 +81,55 @@ function navClass(isActive: boolean, variant: "side" | "pill") {
 }
 
 export default function PartnerLayout() {
-  const { user, logout } = useAuth() as {
-    user: { name?: string; email?: string } | null;
+  const { user, logout, loginWithToken } = useAuth() as {
+    user: {
+      name?: string;
+      email?: string;
+      role?: string;
+      managedBusinessId?: string | null;
+    } | null;
     logout: () => void;
+    loginWithToken?: (
+      nextUser: unknown,
+      token: string,
+      options?: { skipRedirect?: boolean }
+    ) => void;
   };
   const navigate = useNavigate();
   const location = useLocation();
   const [open, setOpen] = useState(false);
+  const [workspaceReady, setWorkspaceReady] = useState(() => !getManagedBusinessId());
+
+  useEffect(() => {
+    const leftoverManagedId =
+      getManagedBusinessId() ||
+      (user?.role === "partner" ? String(user.managedBusinessId || "").trim() : "");
+    if (!leftoverManagedId) {
+      setWorkspaceReady(true);
+      return;
+    }
+    if (!user) return;
+    setWorkspaceReady(false);
+    let cancelled = false;
+    (async () => {
+      try {
+        const data = await exitPartnerManagedContext();
+        if (cancelled) return;
+        loginWithToken?.(data.user, data.token, { skipRedirect: true });
+      } catch {
+        // Drop the leftover client-management session even if exit fails,
+        // so partner CRM can load instead of showing a context mismatch.
+      } finally {
+        if (!cancelled) {
+          clearManagedBusinessContext();
+          setWorkspaceReady(true);
+        }
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [user, loginWithToken]);
 
   const title = useMemo(
     () => TITLES.find((item) => item.test(location.pathname))?.title || "לוח פרטנר",
@@ -226,7 +274,7 @@ export default function PartnerLayout() {
             </nav>
           </header>
           <main className="px-4 py-6 md:px-6 lg:px-8">
-            <Outlet />
+            {workspaceReady ? <Outlet /> : <BizuplyLoader label="חוזרים ללוח הפרטנר..." />}
           </main>
         </div>
       </div>

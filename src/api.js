@@ -15,6 +15,7 @@ import {
   registerAuthRetryAbort,
 } from "./utils/sessionInvalidation";
 import { getAdminActiveBusinessId, getBusinessIdFromPath } from "./utils/adminTenant";
+import { shouldAttachManagedBusinessHeader } from "./lib/partnerManagedContext";
 
 const envApiUrl = String(import.meta.env.VITE_API_URL || "")
   .trim()
@@ -139,7 +140,15 @@ API.interceptors.request.use(
 
     try {
       const managedBusinessId = localStorage.getItem("managedBusinessId");
-      if (managedBusinessId) {
+      const pagePath =
+        typeof window !== "undefined" ? String(window.location?.pathname || "") : "";
+      if (
+        managedBusinessId &&
+        shouldAttachManagedBusinessHeader({
+          pagePath,
+          requestUrl: config.url,
+        })
+      ) {
         config.headers["X-Managed-Business-Id"] = managedBusinessId;
       } else {
         delete config.headers["X-Managed-Business-Id"];
