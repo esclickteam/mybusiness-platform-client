@@ -1,4 +1,4 @@
-﻿import React, { useEffect, useMemo, useState } from "react";
+﻿import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   useNavigate,
   useOutletContext,
@@ -35,6 +35,7 @@ import {
 import WhatsAppCreateTemplateWizard from "./WhatsAppCreateTemplateWizard";
 import { WhatsAppMetaTemplateContent } from "./WhatsAppMetaTemplateContent";
 import WhatsAppVariableMappingScreen from "./WhatsAppVariableMappingScreen";
+import { formatWhatsAppTemplateCategory } from "../automations/whatsAppTemplateSelectFormat";
 
 type TranslateFn = (key: string, options?: Record<string, unknown>) => string;
 
@@ -180,6 +181,7 @@ export default function WhatsAppTemplatesTab() {
   const [showForm, setShowForm] = useState(false);
   const [mappingTemplate, setMappingTemplate] =
     useState<WhatsAppTemplate | null>(null);
+  const previousMetaStatus = useRef<Record<string, string>>({});
 
   const bodyVariables = useMemo(
     () => extractMetaVariables(form.body),
@@ -217,18 +219,35 @@ export default function WhatsAppTemplatesTab() {
     });
   }, [bodyVariables]);
 
-  const load = async () => {
+  const notifyApprovals = (rows: WhatsAppTemplate[]) => {
+    const prev = previousMetaStatus.current;
+    rows.forEach((tpl) => {
+      const current = String(tpl.metaStatus || "").toUpperCase();
+      const before = prev[tpl._id];
+      if (before === "PENDING" && current === "APPROVED") {
+        toast.success(
+          t("whatsapp.templates.approvedAutoToast", { name: tpl.name })
+        );
+      }
+      prev[tpl._id] = current;
+    });
+  };
+
+  const load = async (opts: { quiet?: boolean } = {}) => {
     if (!businessId) return;
-    setLoading(true);
+    if (!opts.quiet) setLoading(true);
     try {
       const data = await listWhatsAppTemplates(businessId);
       setTemplates(data);
+      notifyApprovals(data);
     } catch (error: any) {
-      toast.error(
-        error?.response?.data?.error || t("whatsapp.errors.loadTemplates")
-      );
+      if (!opts.quiet) {
+        toast.error(
+          error?.response?.data?.error || t("whatsapp.errors.loadTemplates")
+        );
+      }
     } finally {
-      setLoading(false);
+      if (!opts.quiet) setLoading(false);
     }
   };
 
@@ -265,6 +284,20 @@ export default function WhatsAppTemplatesTab() {
     load();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [businessId]);
+
+  const hasPendingReview = templates.some((tpl) => {
+    const status = String(tpl.metaStatus || "").toUpperCase();
+    return status === "PENDING" || status === "IN_APPEAL";
+  });
+
+  useEffect(() => {
+    if (!businessId || !hasPendingReview) return;
+    const timer = window.setInterval(() => {
+      void load({ quiet: true });
+    }, 15000);
+    return () => window.clearInterval(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [businessId, hasPendingReview]);
 
   const resetForm = () => {
     setForm(emptyForm);
@@ -447,9 +480,9 @@ export default function WhatsAppTemplatesTab() {
                 {t("whatsapp.templates.metaEditorHint")}
               </p>
             </div>
-            <span className="rounded-md border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[11px] font-black text-emerald-700">
-              ׳˜׳™׳•׳˜׳” ׳׳§׳•׳׳™׳×
-            </span>
+              <span className="rounded-md border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[11px] font-black text-emerald-700">
+                {t("whatsapp.templates.localDraftBadge")}
+              </span>
           </div>
 
           <div className="grid gap-3 sm:grid-cols-2">
@@ -529,8 +562,14 @@ export default function WhatsAppTemplatesTab() {
       <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
         {templates.map((tpl) => {
           const isApproved = tpl.metaStatus === "APPROVED";
+          const isPending =
+            String(tpl.metaStatus || "").toUpperCase() === "PENDING" ||
+            String(tpl.metaStatus || "").toUpperCase() === "IN_APPEAL";
           const isReady = Boolean(tpl.mappingReady || tpl.mappingStatus === "ready");
           const hasVars = (tpl.variables || []).length > 0;
+          const mappingByVar = new Map(
+            (tpl.variableMappings || []).map((row) => [String(row.variable), row])
+          );
           const mappingLabel = t(
             isReady || !hasVars
               ? "whatsapp.templates.editMapping"
@@ -541,11 +580,8 @@ export default function WhatsAppTemplatesTab() {
             <article key={tpl._id} className={`${cardBase} flex flex-col p-4`}>
               <div className="flex items-start justify-between gap-2">
                 <div>
-                  <p className="text-[11px] font-black uppercase tracking-wide text-emerald-700">
-                    {tpl.metaCategory ||
-                      t(`whatsapp.categories.${tpl.category}`, {
-                        defaultValue: tpl.category,
-                      })}
+                  <p className="text-[11px] font-black tracking-wide text-emerald-700">
+                    {formatWhatsAppTemplateCategory(tpl)}
                   </p>
                   <h3 className="mt-1 text-base font-black text-slate-900">
                     {tpl.name}
@@ -622,18 +658,29 @@ export default function WhatsAppTemplatesTab() {
                     const label = /^\d+$/.test(String(variable))
                       ? String(variable)
                       : String(index + 1);
+                    const friendly = mappingByVar.get(String(variable))
+                      ?.friendlyName;
                     return (
                       <span
                         key={`${label}-${index}`}
-                        dir="ltr"
-                        className="rounded-md border border-emerald-100 bg-emerald-50 px-2 py-0.5 text-[11px] font-bold text-emerald-700"
+                        className="inline-flex items-center gap-1 rounded-md border border-emerald-100 bg-emerald-50 px-2 py-0.5 text-[11px] font-bold text-emerald-700"
                       >
-                        {`{{${label}}}`}
+                        <span dir="ltr">{`{{${label}}}`}</span>
+                        {friendly ? (
+                          <span className="font-semibold text-emerald-800">
+                            {friendly}
+                          </span>
+                        ) : null}
                       </span>
                     );
                   })}
                 </div>
               )}
+              {isPending ? (
+                <p className="mt-3 text-xs font-semibold text-amber-800">
+                  {t("whatsapp.templates.pendingAutoHint")}
+                </p>
+              ) : null}
               <div className="mt-4 flex flex-wrap gap-2">
                 {isApproved ? (
                   <>

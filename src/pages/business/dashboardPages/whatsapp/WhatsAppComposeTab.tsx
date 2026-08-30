@@ -886,11 +886,17 @@ export default function WhatsAppComposeTab() {
                     <th className="px-3 py-2 font-bold">
                       {t("whatsapp.compose.colAppointment")}
                     </th>
-                    {campaignVariableKeys.map((key) => (
-                      <th key={key} className="px-3 py-2 font-bold" dir="ltr">
-                        {`{{${key}}}`}
-                      </th>
-                    ))}
+                    {campaignVariableKeys.map((key) => {
+                      const friendly = mappings.find(
+                        (row) => String(row.variable) === String(key)
+                      )?.friendlyName;
+                      return (
+                        <th key={key} className="px-3 py-2 font-bold">
+                          <span dir="ltr">{`{{${key}}}`}</span>
+                          {friendly ? ` · ${friendly}` : ""}
+                        </th>
+                      );
+                    })}
                     <th className="px-3 py-2 font-bold">
                       {t("whatsapp.compose.colStatus")}
                     </th>
