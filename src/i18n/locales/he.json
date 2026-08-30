@@ -5766,7 +5766,8 @@
         "locationConfirm": "המשך עם האזור שנבחר",
         "missingCreativeBlock": "חסר קריאייטיב לקמפיין.",
         "retry": "נסה שוב ליצור",
-        "metaError": "יצירת הקמפיין ב-Meta נכשלה."
+        "metaError": "יצירת הקמפיין ב-Meta נכשלה.",
+        "invalidParameter": "Meta דחתה פרמטר ביצירת הקמפיין. לחצו נסה שוב — תיקנו את השליחה (שעת התחלה וקהל)."
       },
       "publish": {
         "confirmTitle": "להתחיל לפרסם את הקמפיין?",

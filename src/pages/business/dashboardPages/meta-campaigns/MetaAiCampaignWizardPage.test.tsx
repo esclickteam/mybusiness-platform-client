@@ -747,6 +747,19 @@ describe("Meta AI draft + explicit publish", () => {
     await waitFor(() => expect(api.retryAiCampaignMetaDraft).toHaveBeenCalledWith("biz-1", "sess-1"));
   });
 
+  it("explains Meta Invalid parameter instead of showing the raw Graph string", async () => {
+    api.startAiCampaignSession.mockResolvedValue(
+      proposalReady({
+        lifecycle: "META_FAILED",
+        metaDraft: { status: "META_FAILED", error: "Invalid parameter" },
+      })
+    );
+    renderWizard();
+    await waitFor(() => screen.getByTestId("meta-ai-draft-error"));
+    expect(screen.getByText(he.metaCampaigns.ai.draft.invalidParameter)).toBeTruthy();
+    expect(screen.queryByText("Invalid parameter")).toBeNull();
+  });
+
   it("blocks create when creative is missing", async () => {
     api.startAiCampaignSession.mockResolvedValue(
       readySession({

@@ -5746,7 +5746,8 @@
         "locationConfirm": "Continue with the selected area",
         "missingCreativeBlock": "The campaign is missing creative.",
         "retry": "Try creating again",
-        "metaError": "Creating the campaign in Meta failed."
+        "metaError": "Creating the campaign in Meta failed.",
+        "invalidParameter": "Meta rejected a campaign parameter. Retry — start time and audience targeting were corrected."
       },
       "publish": {
         "confirmTitle": "Start publishing this campaign?",
