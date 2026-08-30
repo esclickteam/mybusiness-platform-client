@@ -63,6 +63,13 @@ import MetaAudienceHealthBanner from "./MetaAudienceHealthBanner";
 import MetaAudienceTargetingPanel, {
   DEFAULT_ISRAEL_LOCATION,
 } from "./MetaAudienceTargetingPanel";
+import {
+  campaignToForm,
+  defaultStopLocal,
+  EMPTY_CARD,
+  EMPTY_FORM,
+  type CampaignEditorFormState as FormState,
+} from "./campaignEditorForm";
 import MetaLeadFormLivePreview from "./MetaLeadFormLivePreview";
 import MetaPlacementCropPreview from "./MetaPlacementCropPreview";
 import MetaSavedAudiences, {
@@ -93,116 +100,6 @@ import {
 
 type OutletCtx = { businessId: string | null };
 
-type CarouselCard = {
-  headline: string;
-  description: string;
-  link: string;
-  imageHash: string;
-  imageUrl: string;
-};
-
-type FormState = {
-  name: string;
-  objective: string;
-  status: string;
-  dailyBudget: string;
-  lifetimeBudget: string;
-  specialAdCategories: string[];
-  startTime: string;
-  stopTime: string;
-  pageId: string;
-  locations: MetaLocationTarget[];
-  locationMode: "places" | "radius";
-  interests: MetaInterestTarget[];
-  ageMin: string;
-  ageMax: string;
-  gender: "all" | "1" | "2";
-  advantageAudience: boolean;
-  placementMode: "advantage" | "facebook" | "instagram" | "both";
-  facebookFeed: boolean;
-  facebookStory: boolean;
-  facebookReels: boolean;
-  instagramFeed: boolean;
-  instagramStory: boolean;
-  instagramReels: boolean;
-  leadFormId: string;
-  primaryText: string;
-  headline: string;
-  description: string;
-  link: string;
-  displayLink: string;
-  imageHash: string;
-  imagePreviewUrl: string;
-  videoId: string;
-  creativeFormat: "single" | "video" | "carousel";
-  callToAction: string;
-  ctaCustom: string;
-  carouselCards: CarouselCard[];
-};
-
-function defaultStartLocal() {
-  const d = new Date();
-  d.setMinutes(0, 0, 0);
-  return d.toISOString().slice(0, 16);
-}
-
-function defaultStopLocal() {
-  const d = new Date();
-  d.setDate(d.getDate() + 30);
-  d.setMinutes(0, 0, 0);
-  return d.toISOString().slice(0, 16);
-}
-
-const EMPTY_CARD: CarouselCard = {
-  headline: "",
-  description: "",
-  link: "",
-  imageHash: "",
-  imageUrl: "",
-};
-
-const EMPTY_FORM: FormState = {
-  name: "",
-  objective: "OUTCOME_LEADS",
-  status: "PAUSED",
-  dailyBudget: "50",
-  lifetimeBudget: "",
-  specialAdCategories: [],
-  startTime: defaultStartLocal(),
-  stopTime: "",
-  pageId: "",
-  locations: [{ ...DEFAULT_ISRAEL_LOCATION }],
-  locationMode: "places",
-  interests: [],
-  ageMin: "18",
-  ageMax: "65",
-  gender: "all",
-  advantageAudience: true,
-  placementMode: "both",
-  facebookFeed: true,
-  facebookStory: true,
-  facebookReels: true,
-  instagramFeed: true,
-  instagramStory: true,
-  instagramReels: true,
-  leadFormId: "",
-  primaryText: "",
-  headline: "",
-  description: "",
-  link: "",
-  displayLink: "",
-  imageHash: "",
-  imagePreviewUrl: "",
-  videoId: "",
-  creativeFormat: "single",
-  callToAction: "SIGN_UP",
-  ctaCustom: "",
-  carouselCards: [
-    { ...EMPTY_CARD },
-    { ...EMPTY_CARD },
-  ],
-};
-
 const OBJECTIVE_ICONS: Record<string, React.ElementType> = {
   OUTCOME_AWARENESS: Eye,
   OUTCOME_TRAFFIC: MousePointerClick,
@@ -213,30 +110,6 @@ const OBJECTIVE_ICONS: Record<string, React.ElementType> = {
 };
 
 const ALL_PREVIEW_FORMATS: MetaPreviewFormat[] = [...META_PREVIEW_FORMATS];
-
-function toInputDate(value?: string | null) {
-  if (!value) return "";
-  const d = new Date(value);
-  if (Number.isNaN(d.getTime())) return "";
-  return d.toISOString().slice(0, 16);
-}
-
-function campaignToForm(campaign: MetaCampaign, pageId = ""): FormState {
-  return {
-    ...EMPTY_FORM,
-    name: campaign.name || "",
-    objective: campaign.objective || "OUTCOME_LEADS",
-    status: campaign.status || "PAUSED",
-    dailyBudget: campaign.dailyBudget ? String(campaign.dailyBudget) : "",
-    lifetimeBudget: campaign.lifetimeBudget
-      ? String(campaign.lifetimeBudget)
-      : "",
-    specialAdCategories: campaign.specialAdCategories || [],
-    startTime: toInputDate(campaign.startTime) || defaultStartLocal(),
-    stopTime: toInputDate(campaign.stopTime) || "",
-    pageId,
-  };
-}
 
 export default function MetaCampaignEditorPage() {
   const { t, i18n } = useTranslation();
@@ -536,11 +409,11 @@ export default function MetaCampaignEditorPage() {
   };
 
   useEffect(() => {
-    if (!isEdit && currentSubId === "lead-form-select" && isLeads && form.pageId) {
+    if (currentSubId === "lead-form-select" && isLeads && form.pageId) {
       loadLeadForms(form.pageId);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentSubId, isLeads, form.pageId, isEdit]);
+  }, [currentSubId, isLeads, form.pageId]);
 
   useEffect(() => {
     if (currentFlatIndex < 0 && flatSteps.length > 0) {
@@ -845,12 +718,12 @@ export default function MetaCampaignEditorPage() {
   };
 
   const jumpMain = (main: WizardMainStep) => {
-    if (main >= mainStep) return;
+    if (!isEdit && main > mainStep) return;
     goToFlatIndex(findWizardIndex(main, 0, isLeads));
   };
 
   const jumpSub = (sub: number) => {
-    if (sub > subStep) return;
+    if (!isEdit && sub > subStep) return;
     goToFlatIndex(findWizardIndex(mainStep, sub, isLeads));
   };
 
@@ -882,6 +755,7 @@ export default function MetaCampaignEditorPage() {
 
   const loadPreviews = async (formats?: string[]) => {
     if (!businessId) return;
+    if (connection?.isShowcaseDemo) return;
     if (!form.pageId || !form.primaryText.trim() || !form.headline.trim()) {
       return;
     }
@@ -928,7 +802,7 @@ export default function MetaCampaignEditorPage() {
   };
 
   useEffect(() => {
-    if (isEdit) return;
+    if (connection?.isShowcaseDemo) return;
     if (currentSubId !== "creative-text" && currentSubId !== "preview-publish") {
       return;
     }
@@ -940,7 +814,7 @@ export default function MetaCampaignEditorPage() {
     return () => window.clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    isEdit,
+    connection?.isShowcaseDemo,
     currentSubId,
     form.primaryText,
     form.headline,
@@ -1053,26 +927,21 @@ export default function MetaCampaignEditorPage() {
         toast.error(t("metaCampaigns.form.nameRequired"));
         return;
       }
+      if (!validateCreative()) return;
       try {
         setSaving(true);
-        const dailyBudget = form.dailyBudget ? Number(form.dailyBudget) : null;
-        const lifetimeBudget = form.lifetimeBudget
-          ? Number(form.lifetimeBudget)
-          : null;
-        const result = await updateMetaCampaign(businessId, campaignId!, {
-          name: form.name.trim(),
-          status: form.status,
-          dailyBudget,
-          lifetimeBudget: dailyBudget ? null : lifetimeBudget,
-          specialAdCategories: form.specialAdCategories,
-          startTime: form.startTime
-            ? new Date(form.startTime).toISOString()
-            : null,
-          stopTime: form.stopTime
-            ? new Date(form.stopTime).toISOString()
-            : null,
-        });
+        const result = await updateMetaCampaign(
+          businessId,
+          campaignId!,
+          buildFullPayload()
+        );
         setCampaign(result.campaign);
+        setForm(
+          campaignToForm(
+            result.campaign,
+            result.campaign.pageId || form.pageId
+          )
+        );
         toast.success(t("metaCampaigns.toasts.updated"));
       } catch (error: any) {
         toast.error(
@@ -1114,6 +983,10 @@ export default function MetaCampaignEditorPage() {
       setStatusBusy(true);
       const result = await setMetaCampaignStatus(businessId, campaignId, next);
       setCampaign(result.campaign);
+      setForm((prev) => ({
+        ...prev,
+        status: result.campaign.status || next,
+      }));
       toast.success(
         next === "ACTIVE"
           ? t("metaCampaigns.toasts.activated")
@@ -1205,7 +1078,9 @@ export default function MetaCampaignEditorPage() {
           className={btnPrimary}
         >
           {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />}
-          {t("metaCampaigns.form.createFull")}
+          {isEdit
+            ? t("metaCampaigns.form.save")
+            : t("metaCampaigns.form.createFull")}
         </button>
       ) : (
         <button type="button" onClick={() => void nextStep()} className={btnPrimary}>
@@ -2351,7 +2226,7 @@ export default function MetaCampaignEditorPage() {
             </h2>
             <p className="mt-1 text-sm font-semibold text-slate-500">
               {isEdit
-                ? t("metaCampaigns.form.subtitle")
+                ? t("metaCampaigns.form.editSubtitle")
                 : t("metaCampaigns.form.createSubtitleSteps")}
             </p>
           </div>
@@ -2379,12 +2254,12 @@ export default function MetaCampaignEditorPage() {
         </div>
       </div>
 
-      {!isEdit ? (
-        <>
+      <>
           <MetaWizardNav
             mainStep={mainStep}
             subStep={subStep}
             isLeads={isLeads}
+            allowFreeJump={isEdit}
             onJumpMain={jumpMain}
             onJumpSub={jumpSub}
           />
@@ -2464,72 +2339,9 @@ export default function MetaCampaignEditorPage() {
             ) : null}
           </div>
         </>
-      ) : null}
-
 
       {isEdit ? (
-        <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_320px]">
-          <div className={`${cardBase} space-y-4 p-5`}>
-            <label className="block">
-              <span className="mb-1.5 block text-xs font-black text-slate-500">
-                {t("metaCampaigns.form.name")}
-              </span>
-              <input
-                className={inputBase}
-                value={form.name}
-                onChange={(e) => updateField("name", e.target.value)}
-              />
-            </label>
-            <div className="grid gap-4 sm:grid-cols-2">
-              <label className="block">
-                <span className="mb-1.5 block text-xs font-black text-slate-500">
-                  {t("metaCampaigns.form.startTime")}
-                </span>
-                <input
-                  type="datetime-local"
-                  className={inputBase}
-                  value={form.startTime}
-                  onChange={(e) => updateField("startTime", e.target.value)}
-                />
-              </label>
-              <label className="block">
-                <span className="mb-1.5 block text-xs font-black text-slate-500">
-                  {t("metaCampaigns.form.stopTime")}
-                </span>
-                <input
-                  type="datetime-local"
-                  className={inputBase}
-                  value={form.stopTime}
-                  onChange={(e) => updateField("stopTime", e.target.value)}
-                />
-              </label>
-              <label className="block">
-                <span className="mb-1.5 block text-xs font-black text-slate-500">
-                  {t("metaCampaigns.form.dailyBudget")}
-                </span>
-                <input
-                  type="number"
-                  className={inputBase}
-                  value={form.dailyBudget}
-                  onChange={(e) => updateField("dailyBudget", e.target.value)}
-                />
-              </label>
-              <label className="block">
-                <span className="mb-1.5 block text-xs font-black text-slate-500">
-                  {t("metaCampaigns.form.status")}
-                </span>
-                <select
-                  className={inputBase}
-                  value={form.status}
-                  onChange={(e) => updateField("status", e.target.value)}
-                >
-                  <option value="PAUSED">{t("metaCampaigns.status.paused")}</option>
-                  <option value="ACTIVE">{t("metaCampaigns.status.active")}</option>
-                </select>
-              </label>
-            </div>
-          </div>
-
+        <div className="grid gap-4 xl:grid-cols-2">
           <aside className="space-y-4">
             {(businessId || urlBusinessId) && campaignId ? (
               <MetaCampaignHealthPanel
