@@ -66,11 +66,10 @@ function getMetaStatusLabel(tpl: WhatsAppTemplate, t: TranslateFn): string {
 
 function getMappingStatusKey(tpl: WhatsAppTemplate): string | null {
   if (String(tpl.metaStatus || "").toUpperCase() !== "APPROVED") return null;
+  if (!(tpl.variables || []).length) return null;
   const mapping = (tpl.mappingStatus || "") as WhatsAppMappingStatus;
   if (mapping === "ready" || tpl.mappingReady) return "ready";
   if (mapping === "partial") return "partial";
-  const hasVars = (tpl.variables || []).length > 0;
-  if (!hasVars) return "ready";
   return "unmapped";
 }
 
@@ -684,6 +683,8 @@ export default function WhatsAppTemplatesTab() {
               <div className="mt-4 flex flex-wrap gap-2">
                 {isApproved ? (
                   <>
+                    {hasVars ? (
+                      <>
                     <button
                       type="button"
                       className={btnSecondary}
@@ -699,6 +700,8 @@ export default function WhatsAppTemplatesTab() {
                     >
                       {t("whatsapp.templates.testMapping")}
                     </button>
+                      </>
+                    ) : null}
                     <button
                       type="button"
                       className={btnPrimary}
