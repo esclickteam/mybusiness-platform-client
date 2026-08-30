@@ -5747,7 +5747,7 @@
         "missingCreativeBlock": "The campaign is missing creative.",
         "retry": "Try creating again",
         "metaError": "Creating the campaign in Meta failed.",
-        "invalidParameter": "Meta rejected a campaign parameter. Retry — start time and audience targeting were corrected."
+        "invalidParameter": "Meta rejected a campaign parameter. Retry — the draft is rebuilt with a valid Instant Form link and audience."
       },
       "publish": {
         "confirmTitle": "Start publishing this campaign?",
