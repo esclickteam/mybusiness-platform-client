@@ -5493,7 +5493,13 @@
       "selectAppointment": "בחרו פגישה",
       "selectAppointmentToTest": "בחרו פגישה כדי לבדוק את המיפוי.",
       "noAppointments": "לא נמצאו פגישות קרובות לעסק זה.",
-      "noAppointmentsForClient": "לא נמצאה פגישה ללקוח הזה."
+      "noAppointmentsForClient": "לא נמצאה פגישה ללקוח הזה.",
+      "autoDetected": "זוהה אוטומטית",
+      "autoProbably": "כנראה {{label}}",
+      "autoUnknown": "לא הצלחנו לזהות את {{var}} – יש לבחור מקור נתון.",
+      "confirmSuggestion": "אישור",
+      "changeMapping": "שינוי",
+      "sourceFieldLine": "{{source}} → {{field}}"
     }
   },
   "metaCampaigns": {

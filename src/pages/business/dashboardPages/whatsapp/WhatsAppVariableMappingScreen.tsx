@@ -1,12 +1,13 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Loader2, Save, Eye, ArrowRight } from "lucide-react";
+import { Loader2, Save, Eye, ArrowRight, Check } from "lucide-react";
 import {
   getWhatsAppTemplateVariableMappings,
   listWhatsAppMappingAppointments,
   listWhatsAppRecipients,
   previewWhatsAppTemplateMappings,
   saveWhatsAppTemplateVariableMappings,
+  type WhatsAppAutoMappingReport,
   type WhatsAppMappingAppointment,
   type WhatsAppMappingCatalog,
   type WhatsAppMappingStatus,
@@ -73,6 +74,10 @@ export default function WhatsAppVariableMappingScreen({
   const [testClientId, setTestClientId] = useState("");
   const [appointmentId, setAppointmentId] = useState("");
   const [selectAppointmentMessage, setSelectAppointmentMessage] = useState("");
+  const [autoReports, setAutoReports] = useState<WhatsAppAutoMappingReport[]>(
+    []
+  );
+  const [editingVariable, setEditingVariable] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -92,6 +97,7 @@ export default function WhatsAppVariableMappingScreen({
             : (data.variables || []).map((v) => emptyRow(v, template))
         );
         setMappingStatus(data.mappingStatus);
+        setAutoReports(data.autoMapping || []);
         setClients(people);
       } catch (err: unknown) {
         if (!cancelled) {
@@ -153,6 +159,49 @@ export default function WhatsAppVariableMappingScreen({
     return mappingStatus;
   }, [mappingStatus, t]);
 
+  const reportFor = (variable: string) =>
+    autoReports.find((row) => String(row.variable) === String(variable));
+
+  const confirmSuggestion = async (index: number, report: WhatsAppAutoMappingReport) => {
+    const next = mappings.map((row, i) =>
+      i === index
+        ? {
+            ...row,
+            source: report.source || row.source,
+            field: report.field || row.field,
+            format: report.format || row.format,
+            friendlyName: row.friendlyName || report.labelHe || "",
+            mappingOrigin: "user" as const,
+            mappingConfirmed: true,
+          }
+        : row
+    );
+    setMappings(next);
+    setEditingVariable(null);
+    setSaving(true);
+    setError("");
+    try {
+      const data = await saveWhatsAppTemplateVariableMappings(
+        businessId,
+        template._id,
+        next
+      );
+      setMappings(data.mappings);
+      setMappingStatus(data.mappingStatus);
+      setAutoReports(data.autoMapping || []);
+      onSaved?.(data.template);
+    } catch (err: unknown) {
+      setError(
+        (err as { response?: { data?: { error?: string } } })?.response?.data
+          ?.error ||
+          (err as Error)?.message ||
+          t("whatsapp.mapping.saveFailed")
+      );
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const componentLabel = (component: string) => {
     if (component === "header") return t("whatsapp.mapping.componentHeader");
     if (component === "button") return t("whatsapp.mapping.componentButton");
@@ -189,6 +238,7 @@ export default function WhatsAppVariableMappingScreen({
       );
       setMappings(data.mappings);
       setMappingStatus(data.mappingStatus);
+      setAutoReports(data.autoMapping || []);
       onSaved?.(data.template);
     } catch (err: unknown) {
       setError(
@@ -396,6 +446,16 @@ export default function WhatsAppVariableMappingScreen({
         {mappings.map((row, index) => {
           const fields = fieldsForSource(row.source || "");
           const formats = formatsForRow(row);
+          const report = reportFor(row.variable);
+          const sourceMeta = catalog?.sources?.find((s) => s.id === row.source);
+          const fieldMeta = sourceMeta?.fields?.find((f) => f.id === row.field);
+          const sourceLabel =
+            report?.sourceLabelHe || sourceMeta?.label || "";
+          const fieldLabel = report?.fieldLabelHe || fieldMeta?.label || "";
+          const showChangeForm =
+            editingVariable === row.variable ||
+            report?.status === "unknown" ||
+            !report;
           return (
             <article
               key={row.variable}
@@ -408,22 +468,81 @@ export default function WhatsAppVariableMappingScreen({
                 >
                   {`{{${row.variable}}}`}
                 </span>
-                {row.friendlyName ? (
-                  <span className="text-sm font-black text-slate-800">
-                    {row.friendlyName}
-                  </span>
-                ) : (
-                  <span className="text-xs font-semibold text-slate-400">
-                    {t("whatsapp.mapping.friendlyNamePlaceholder")}
-                  </span>
-                )}
+                <span className="text-sm font-black text-slate-800">
+                  {row.friendlyName ||
+                    report?.labelHe ||
+                    (report?.status === "unknown"
+                      ? ""
+                      : t("whatsapp.mapping.friendlyNamePlaceholder"))}
+                </span>
                 <span className="text-xs font-bold text-slate-500">
                   {t("whatsapp.mapping.componentLabel")}{" "}
                   {componentLabel(row.component || "body")}
                 </span>
               </div>
 
-              <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+              {sourceLabel && fieldLabel ? (
+                <p className="mb-2 text-sm font-semibold text-slate-600">
+                  {t("whatsapp.mapping.sourceFieldLine", {
+                    source: sourceLabel,
+                    field: fieldLabel,
+                  })}
+                </p>
+              ) : null}
+
+              {report?.status === "applied" ? (
+                <p className="mb-3 flex items-center gap-1 text-xs font-bold text-emerald-700">
+                  <Check className="h-3.5 w-3.5" />
+                  {t("whatsapp.mapping.autoDetected")}
+                </p>
+              ) : null}
+
+              {report?.status === "suggested" && report.labelHe ? (
+                <div className="mb-3 flex flex-wrap items-center gap-2">
+                  <p className="text-sm font-semibold text-amber-800">
+                    {t("whatsapp.mapping.autoProbably", {
+                      label: report.labelHe,
+                    })}
+                  </p>
+                  <button
+                    type="button"
+                    className={btnPrimary}
+                    disabled={saving}
+                    onClick={() => void confirmSuggestion(index, report)}
+                  >
+                    {t("whatsapp.mapping.confirmSuggestion")}
+                  </button>
+                  <button
+                    type="button"
+                    className={btnSecondary}
+                    onClick={() => setEditingVariable(row.variable)}
+                  >
+                    {t("whatsapp.mapping.changeMapping")}
+                  </button>
+                </div>
+              ) : null}
+
+              {report?.status === "unknown" ? (
+                <p className="mb-3 text-sm font-semibold text-amber-800">
+                  {t("whatsapp.mapping.autoUnknown", {
+                    var: `{{${row.variable}}}`,
+                  })}
+                </p>
+              ) : null}
+
+              {(report?.status === "applied" || report?.status === "user") &&
+              editingVariable !== row.variable ? (
+                <button
+                  type="button"
+                  className={`${btnSecondary} mb-3`}
+                  onClick={() => setEditingVariable(row.variable)}
+                >
+                  {t("whatsapp.mapping.changeMapping")}
+                </button>
+              ) : null}
+
+              {showChangeForm ? (
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <label className="block text-xs font-bold text-slate-600">
                   {t("whatsapp.mapping.friendlyName")}
                   <input
@@ -601,6 +720,7 @@ export default function WhatsAppVariableMappingScreen({
                   {t("whatsapp.mapping.requiredField")}
                 </label>
               </div>
+              ) : null}
             </article>
           );
         })}

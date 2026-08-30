@@ -261,6 +261,28 @@ export type WhatsAppMappingStatus =
   | "partial"
   | "ready";
 
+export type WhatsAppAutoMappingStatus = "applied" | "suggested" | "unknown" | "user";
+
+export type WhatsAppAutoMappingReport = {
+  variable: string;
+  status: WhatsAppAutoMappingStatus;
+  confidence?: number;
+  labelHe?: string;
+  source?: string;
+  field?: string;
+  format?: string;
+  sourceLabelHe?: string;
+  fieldLabelHe?: string;
+  alternatives?: Array<{
+    source: string;
+    field: string;
+    friendlyName?: string;
+    sourceLabelHe?: string;
+    fieldLabelHe?: string;
+    score?: number;
+  }>;
+};
+
 export type WhatsAppVariableMapping = {
   variable: string;
   component?: "body" | "header" | "button";
@@ -274,6 +296,10 @@ export type WhatsAppVariableMapping = {
   prefix?: string;
   suffix?: string;
   required?: boolean;
+  mappingOrigin?: "" | "user" | "auto" | "auto_suggested";
+  mappingConfidence?: number;
+  mappingConfirmed?: boolean;
+  contextSignature?: string;
 };
 
 export type WhatsAppMappingCatalogField = {
@@ -764,6 +790,7 @@ export async function getWhatsAppTemplateVariableMappings(
     catalog: WhatsAppMappingCatalog;
     variables: string[];
     mappingStatus: WhatsAppMappingStatus;
+    autoMapping?: WhatsAppAutoMappingReport[];
   };
 }
 
@@ -783,6 +810,7 @@ export async function saveWhatsAppTemplateVariableMappings(
     catalog: WhatsAppMappingCatalog;
     variables: string[];
     mappingStatus: WhatsAppMappingStatus;
+    autoMapping?: WhatsAppAutoMappingReport[];
   };
 }
 

@@ -5473,7 +5473,13 @@
       "selectAppointment": "Select an appointment",
       "selectAppointmentToTest": "Select an appointment to test this mapping.",
       "noAppointments": "No upcoming appointments found for this business.",
-      "noAppointmentsForClient": "No appointment found for this client."
+      "noAppointmentsForClient": "No appointment found for this client.",
+      "autoDetected": "Detected automatically",
+      "autoProbably": "Probably {{label}}",
+      "autoUnknown": "We could not identify {{var}} — choose a data source.",
+      "confirmSuggestion": "Confirm",
+      "changeMapping": "Change",
+      "sourceFieldLine": "{{source}} → {{field}}"
     }
   },
   "metaCampaigns": {
