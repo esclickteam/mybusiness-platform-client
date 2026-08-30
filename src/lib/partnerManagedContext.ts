@@ -1,3 +1,17 @@
+/** Partner CRM ids are not business ids. Never attach leftover managed context there. */
+export function shouldAttachManagedBusinessHeader({
+  pagePath = "",
+  requestUrl = "",
+}: {
+  pagePath?: string;
+  requestUrl?: string;
+} = {}) {
+  const path = String(pagePath || "").split("?")[0];
+  if (path === "/partner" || path.startsWith("/partner/")) return false;
+  const url = String(requestUrl || "").split("?")[0];
+  return !/(?:^|\/)partner(?:\/|$)/.test(url);
+}
+
 export function getManagedBusinessId() {
   try {
     return String(localStorage.getItem("managedBusinessId") || "").trim();
