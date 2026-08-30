@@ -408,6 +408,15 @@ export default function WhatsAppVariableMappingScreen({
                 >
                   {`{{${row.variable}}}`}
                 </span>
+                {row.friendlyName ? (
+                  <span className="text-sm font-black text-slate-800">
+                    {row.friendlyName}
+                  </span>
+                ) : (
+                  <span className="text-xs font-semibold text-slate-400">
+                    {t("whatsapp.mapping.friendlyNamePlaceholder")}
+                  </span>
+                )}
                 <span className="text-xs font-bold text-slate-500">
                   {t("whatsapp.mapping.componentLabel")}{" "}
                   {componentLabel(row.component || "body")}
@@ -503,6 +512,7 @@ export default function WhatsAppVariableMappingScreen({
                       onChange={(e) =>
                         updateRow(index, { constantValue: e.target.value })
                       }
+                      placeholder={t("whatsapp.mapping.constantValuePlaceholder")}
                     />
                   </label>
                 ) : null}
@@ -552,6 +562,7 @@ export default function WhatsAppVariableMappingScreen({
                     onChange={(e) =>
                       updateRow(index, { fallbackValue: e.target.value })
                     }
+                    placeholder={t("whatsapp.mapping.fallbackValuePlaceholder")}
                   />
                 </label>
 
@@ -563,6 +574,7 @@ export default function WhatsAppVariableMappingScreen({
                     onChange={(e) =>
                       updateRow(index, { prefix: e.target.value })
                     }
+                    placeholder={t("whatsapp.mapping.prefixPlaceholder")}
                   />
                 </label>
 
@@ -574,6 +586,7 @@ export default function WhatsAppVariableMappingScreen({
                     onChange={(e) =>
                       updateRow(index, { suffix: e.target.value })
                     }
+                    placeholder={t("whatsapp.mapping.suffixPlaceholder")}
                   />
                 </label>
 
@@ -608,8 +621,16 @@ export default function WhatsAppVariableMappingScreen({
           </p>
           {missing.length ? (
             <p className="mt-2 text-xs font-bold text-amber-700">
-              {t("whatsapp.mapping.missingValues", {
-                vars: missing.map((v) => `{{${v}}}`).join(", "),
+                {t("whatsapp.mapping.missingValues", {
+                vars: missing
+                  .map((v) => {
+                    const row = mappings.find((m) => m.variable === v);
+                    const token = `{{${v}}}`;
+                    return row?.friendlyName
+                      ? `${token} (${row.friendlyName})`
+                      : token;
+                  })
+                  .join(", "),
               })}
             </p>
           ) : (

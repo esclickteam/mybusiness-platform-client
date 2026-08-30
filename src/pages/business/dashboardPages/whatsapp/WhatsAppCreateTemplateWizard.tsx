@@ -481,7 +481,7 @@ export function WhatsAppCreateTemplateWizard({
                     אחת וכניסה ללא לחיצה אינן זמינות כרגע.
                   </p>
                   <div className="wa-meta-auth-row">
-                    <strong>קוד OTP</strong>
+                    <strong>קוד חד-פעמי</strong>
                     <span>הגוף חייב לכלול את המשתנה {"{{1}}"} לקוד האימות.</span>
                   </div>
                   <label className="wa-meta-check">
