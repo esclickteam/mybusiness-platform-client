@@ -789,9 +789,14 @@ function humanizeAnswer(text: string, t: (key: string) => string) {
 }
 
 function plannedOfferName(session: AiCampaignSessionResponse | null) {
-  const value = (session?.intent as { promotedItem?: { value?: { name?: string } } } | undefined)
-    ?.promotedItem?.value;
-  return value?.name || "";
+  const field = (session?.intent as
+    | { promotedItem?: { state?: string; value?: { name?: string } } }
+    | undefined)?.promotedItem;
+  if (field?.state && field.state !== "CONFIRMED") return "";
+  const name = String(field?.value?.name || "").replace(/\s+/g, " ").trim();
+  if (!name) return "";
+  if (/^(העסק|the business)$/i.test(name)) return "";
+  return name;
 }
 
 function OwnerLiteSetup({

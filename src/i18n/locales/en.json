@@ -5611,7 +5611,7 @@
     "ai": {
       "badge": "BizUply AI",
       "title": "✨ Create campaign with AI",
-      "subtitle": "I will build the campaign. You only need to confirm a budget — a service focus and a photo or video are optional.",
+      "subtitle": "I build from the service type and profile — not the business name. If that is missing I will ask. Then confirm the budget. Photo or video are optional.",
       "placeholder": "Getting your campaign ready...",
       "checking": "I'm reviewing your business details...",
       "progress": "{{confirmed}} of {{required}} details completed",
@@ -5619,7 +5619,7 @@
       "detailsMissing": "{{count}} details are still needed to prepare the campaign",
       "budgetOnlyMissing": "Just confirm the daily budget",
       "ownerLiteTitle": "I am preparing the campaign for you",
-      "ownerLiteBody": "Goal, audience, placements, call to action and copy are built automatically. You can optionally emphasize one service.",
+      "ownerLiteBody": "If the business has services or a description, I use those. If not, I ask what to advertise. The business name is not a service type.",
       "optionalFocus": "Want to emphasize a specific service?",
       "optionalFocusHint": "Optional. If you skip this, we will use all of the business services.",
       "allServices": "All services",

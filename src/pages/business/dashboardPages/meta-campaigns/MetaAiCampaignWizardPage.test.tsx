@@ -220,6 +220,53 @@ describe("MetaAiCampaignWizardPage conversation", () => {
     expect(api.startAiCampaignSession).toHaveBeenCalled();
   });
 
+  it("asks for the service when the profile has no offerings", async () => {
+    api.startAiCampaignSession.mockResolvedValue(
+      questionSession({
+        offerings: [],
+        missingFields: ["promotedItem", "budget"],
+        progress: { confirmed: 0, remaining: 2, required: 2 },
+        intent: { promotedItem: { state: "UNKNOWN", value: null } },
+        assistantMessage: "מה השירות או המוצר שתרצי לקדם?",
+        question: {
+          field: "promotedItem",
+          type: "text",
+          message: "מה השירות או המוצר שתרצי לקדם? לא מצאתי את סוג השירות בפרופיל העסק.",
+          placeholder: "לדוגמה: אישורי הגעה לחתונות",
+        },
+      })
+    );
+    renderWizard();
+    await waitFor(() => screen.getByTestId("meta-ai-text"));
+    expect(screen.queryByTestId("meta-ai-optional-focus")).toBeNull();
+    expect(screen.queryByTestId("meta-ai-planned-offer")).toBeNull();
+    expect(screen.queryByText("Invistimo Support")).toBeNull();
+    expect(screen.getByText(/מה השירות או המוצר/)).toBeTruthy();
+    fireEvent.change(screen.getByTestId("meta-ai-text"), {
+      target: { value: "אישורי הגעה לחתונות" },
+    });
+    fireEvent.submit(screen.getByTestId("meta-ai-text").closest("form") as HTMLFormElement);
+    await waitFor(() =>
+      expect(api.answerAiCampaignSession).toHaveBeenCalledWith(
+        "biz-1",
+        "sess-1",
+        { field: "promotedItem", answer: "אישורי הגעה לחתונות" }
+      )
+    );
+  });
+
+  it("does not show a business-name placeholder as the planned offer", async () => {
+    api.startAiCampaignSession.mockResolvedValue(
+      questionSession({
+        offerings: [],
+        intent: { promotedItem: { state: "CONFIRMED", value: { name: "העסק" } } },
+      })
+    );
+    renderWizard();
+    await waitFor(() => screen.getByTestId("meta-ai-owner-lite"));
+    expect(screen.queryByTestId("meta-ai-planned-offer")).toBeNull();
+  });
+
   it("shows optional service focus and budget only — no conversation steps", async () => {
     renderWizard();
     await waitFor(() => screen.getByTestId("meta-ai-owner-lite"));
