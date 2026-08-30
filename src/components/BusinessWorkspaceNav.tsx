@@ -220,7 +220,8 @@ export default function BusinessWorkspaceNav({
   // by visiting another business path; the URL is only a fallback for admins,
   // who carry no businessId of their own.
   const showRestrictedNav =
-    canSeeRestrictedNav(user?.businessId || businessId) &&
+    (canSeeRestrictedNav(user?.businessId || businessId) ||
+      Boolean(user?.isShowcaseDemo)) &&
     !Boolean(user?.isGuidedDemo);
 
   const items: NavItemConfig[] = [
@@ -335,6 +336,12 @@ export default function BusinessWorkspaceNav({
       return false;
     }
     if (item.moduleKey === "website" && showWebsiteUpsell) return true;
+    if (
+      user?.isShowcaseDemo &&
+      (item.moduleKey === "whatsapp" || item.moduleKey === "meta-campaigns")
+    ) {
+      return true;
+    }
     return isModuleEnabled(enabledModules, item.moduleKey);
   });
 

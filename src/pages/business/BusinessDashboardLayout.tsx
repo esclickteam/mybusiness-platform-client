@@ -79,6 +79,7 @@ type AuthUser = {
   partnerName?: string | null;
   partnerId?: string | null;
   enabledModules?: string[] | null;
+  isShowcaseDemo?: boolean;
 };
 
 type AuthContextValue = {
@@ -534,6 +535,11 @@ export default function BusinessDashboardLayout() {
                         name: partnerDisplayName,
                       })}
                     </span>
+                    {user?.isShowcaseDemo ? (
+                      <span className="mt-1 block text-xs font-bold text-amber-900">
+                        {t("layout.showcaseDemoSafeLine")}
+                      </span>
+                    ) : null}
                   </>
                 ) : (
                   <>

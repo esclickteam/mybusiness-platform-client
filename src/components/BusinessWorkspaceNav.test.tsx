@@ -198,4 +198,20 @@ describe("BusinessWorkspaceNav restricted nav allowlist", () => {
       document.querySelector(`a[href="/business/${OTHER_BUSINESS_ID}"]`)
     ).toBeNull();
   });
+
+  it("shows WhatsApp API and Campaigns on a showcase demo workspace", async () => {
+    await renderNav({
+      user: {
+        businessId: OTHER_BUSINESS_ID,
+        role: "partner",
+        isShowcaseDemo: true,
+        enabledModules: ["dashboard", "crm", "automations", "website"],
+      },
+      urlBusinessId: OTHER_BUSINESS_ID,
+    });
+
+    expect(whatsappLink(OTHER_BUSINESS_ID)).not.toBeNull();
+    expect(metaCampaignsLink(OTHER_BUSINESS_ID)).not.toBeNull();
+    expect(navLink(OTHER_BUSINESS_ID, "crm")).not.toBeNull();
+  });
 });
