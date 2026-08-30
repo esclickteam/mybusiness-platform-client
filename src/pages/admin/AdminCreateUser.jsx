@@ -41,6 +41,11 @@ const PARTNER_PLAN_OPTIONS = [
     label: "Partner Premium",
     details: "₪2,490 הקמה · ₪1,199 לחודש · עד 20% הנחת Partner · 95% מהעמלה הנוספת · עד 5 משתמשי צוות נוספים",
   },
+  {
+    planKey: "partner_percent",
+    label: "אחוזים בלבד",
+    details: "חינם · בלי דמי הקמה ובלי מנוי · 15% מכל עסקה · עד 2 משתמשי צוות נוספים · אין עמלה ₪500 על צירוף פרטנר במסלול זה",
+  },
 ];
 
 const PAYMENT_MODES = [
@@ -205,6 +210,9 @@ export default function AdminCreateUser() {
     setForm((prev) => ({
       ...prev,
       [name]: type === "checkbox" ? checked : value,
+      ...(name === "partnerPlanKey" && value === "partner_percent"
+        ? { partnerStatus: "active" }
+        : {}),
     }));
   };
 

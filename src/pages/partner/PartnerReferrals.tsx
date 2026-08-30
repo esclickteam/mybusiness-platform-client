@@ -65,6 +65,9 @@ export default function PartnerReferrals() {
   const qualifying = items.filter(
     (row) => row.rewardStatus === "pending" && row.qualificationStartDate
   );
+  const awaitingPaid = items.filter(
+    (row) => row.rewardStatus === "pending" && row.rewardBlockedReason === "awaiting_paid_package"
+  );
 
   return (
     <div className="space-y-5">
@@ -75,20 +78,35 @@ export default function PartnerReferrals() {
       />
       {error ? <p className="text-sm font-bold text-rose-700">{error}</p> : null}
       <PartnerCard className="space-y-3 p-6 text-sm font-bold leading-6 text-slate-600">
-        <p>הפנו אותו אלינו, ואם הוא מצטרף ונשאר פרטנר פעיל מעל 40 ימים – תקבלו עמלה חד-פעמית של ₪500.</p>
+        <p>הפנו אותו אלינו. אם הוא מצטרף, רוכש חבילת פרטנר בתשלום, ונשאר פעיל מעל 40 ימים – תקבלו עמלה חד-פעמית של ₪500.</p>
         <ul className="list-disc pr-5">
           <li>התגמול חד-פעמי.</li>
-          <li>הוא משולם רק לאחר שהפרטנר המצורף פעיל מעל 40 ימים.</li>
+          <li>הוא משולם רק אם הפרטנר המצורף רוכש חבילה בתשלום (לא מסלול אחוזים בלבד).</li>
+          <li>אחרי הרכישה הוא צריך להישאר פעיל מעל 40 ימים.</li>
           <li>עצם מילוי הטופס לא מזכה בעמלה.</li>
           <li>ההצטרפות כפופה לאישור Bizuply.</li>
           <li>אין עמלה אם ההצטרפות בוטלה/הושעתה לפני מועד הזכאות.</li>
         </ul>
       </PartnerCard>
 
+      {awaitingPaid.length ? (
+        <PartnerCard className="space-y-3 border border-amber-200 bg-amber-50 p-5">
+          <p className="text-xs font-black uppercase tracking-[0.16em] text-amber-800">
+            ממתין לרכישת חבילה בתשלום
+          </p>
+          <ul className="space-y-2">
+            {awaitingPaid.map((row) => (
+              <li key={row._id} className="text-sm font-black text-slate-800">
+                {row.referredName || "פרטנר שהופנה"} — ₪500 ישולם רק אחרי רכישת Partner / Pro / Premium
+              </li>
+            ))}
+          </ul>
+        </PartnerCard>
+      ) : null}
       {qualifying.length ? (
         <PartnerCard className="space-y-3 border border-violet-200 bg-violet-50 p-5">
           <p className="text-xs font-black uppercase tracking-[0.16em] text-violet-800">
-            מעקב 40 יום – ₪500
+            מעקב 40 יום אחרי רכישת חבילה בתשלום – ₪500
           </p>
           <ul className="space-y-2">
             {qualifying.map((row) => (

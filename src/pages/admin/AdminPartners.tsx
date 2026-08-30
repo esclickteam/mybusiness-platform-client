@@ -9,6 +9,7 @@ import {
   adminPostMonthly,
   adminRecordPayment,
   adminReverseCommission,
+  adminSeedShowcaseDemo,
   adminSuspendPartner,
   fetchAdminPartners,
   fetchAdminPartnerTransactions,
@@ -30,6 +31,8 @@ export default function AdminPartners() {
   const [financeRows, setFinanceRows] = useState<any[]>([]);
   const [monthSummary, setMonthSummary] = useState<any>(null);
   const [recentPayments, setRecentPayments] = useState<any[]>([]);
+  const [showcaseBusy, setShowcaseBusy] = useState(false);
+  const [showcaseResult, setShowcaseResult] = useState<any>(null);
 
   function describeLoadError(err: any) {
     const status = err?.response?.status;
@@ -78,7 +81,43 @@ export default function AdminPartners() {
           <Link className="rounded-2xl bg-violet-100 px-4 py-2 text-sm font-black text-violet-900" to="/admin/partners/referrals">
             צירופי פרטנרים
           </Link>
+          <button
+            type="button"
+            disabled={showcaseBusy}
+            onClick={async () => {
+              setShowcaseBusy(true);
+              setError("");
+              try {
+                const data = await adminSeedShowcaseDemo();
+                setShowcaseResult(data);
+                await refresh();
+              } catch (err: any) {
+                setError(describeLoadError(err));
+              } finally {
+                setShowcaseBusy(false);
+              }
+            }}
+            className="rounded-2xl bg-emerald-100 px-4 py-2 text-sm font-black text-emerald-900 disabled:opacity-60"
+          >
+            {showcaseBusy ? "יוצר חשבונות דמו..." : "יצירת חשבונות דמו להצגה"}
+          </button>
         </div>
+        {showcaseResult ? (
+          <section className="mb-4 rounded-2xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-950">
+            <p className="font-black">חשבונות דמו מוכנים להצגה לפרטנרים:</p>
+            <p className="mt-1">
+              פרטנר חינמי (אחוזים בלבד): {showcaseResult.partner?.email} · סיסמה {showcaseResult.partner?.password}
+            </p>
+            <p>
+              לקוח דמו: {showcaseResult.customer?.email} · סיסמה {showcaseResult.customer?.password}
+            </p>
+            {showcaseResult.partner?.teamEmail ? (
+              <p>
+                משתמש צוות: {showcaseResult.partner.teamEmail} · סיסמה {showcaseResult.partner.teamPassword}
+              </p>
+            ) : null}
+          </section>
+        ) : null}
         {monthSummary ? (
           <section className="mb-4 grid gap-3 sm:grid-cols-3 lg:grid-cols-6">
             <MiniKpi label="בקשות משיכה החודש" value={String(monthSummary.count || 0)} />
@@ -241,6 +280,7 @@ export default function AdminPartners() {
                         <option value="partner_basic">Partner</option>
                         <option value="partner_pro">Pro</option>
                         <option value="partner_premium">Premium</option>
+                        <option value="partner_percent">אחוזים בלבד</option>
                       </select>
                       <button
                         type="button"

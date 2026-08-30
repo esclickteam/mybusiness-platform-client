@@ -71,8 +71,10 @@ export default function PartnerRegister() {
                   checked={form.planKey === plan.planKey}
                   onChange={() => setForm({ ...form, planKey: plan.planKey })}
                 />{" "}
-                <strong>{plan.nameHe}</strong> · הקמה ₪{plan.setupIls} · חודשי ₪{plan.monthlyIls} ·
-                חלק עמלה {Math.round(plan.partnerMarkupShare * 100)}% · צוות {plan.additionalTeamUsers}
+                <strong>{plan.nameHe}</strong>
+                {plan.commissionModel === "percent_of_sale" || plan.planKey === "partner_percent"
+                  ? ` · חינם · ${Math.round((plan.saleCommissionRate || 0.15) * 100)}% מכל עסקה · צוות ${plan.additionalTeamUsers}`
+                  : ` · הקמה ₪${plan.setupIls} · חודשי ₪${plan.monthlyIls} · חלק עמלה ${Math.round(plan.partnerMarkupShare * 100)}% · צוות ${plan.additionalTeamUsers}`}
               </label>
             ))}
           </div>

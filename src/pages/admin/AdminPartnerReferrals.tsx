@@ -96,7 +96,10 @@ export default function AdminPartnerReferrals() {
                   <td className="px-3 py-3">
                     {partnerStatusLabel(row.rewardStatus)}
                     {row.rewardStatus === "pending" && row.qualificationStartDate ? (
-                      <span className="block text-xs text-slate-500">ממתינה ל־40 ימי פעילות</span>
+                      <span className="block text-xs text-slate-500">ממתינה ל־40 ימי פעילות אחרי רכישת חבילה בתשלום</span>
+                    ) : null}
+                    {row.rewardBlockedReason === "awaiting_paid_package" ? (
+                      <span className="block text-xs text-amber-700">ממתין לרכישת חבילה בתשלום</span>
                     ) : null}
                   </td>
                   <td className="px-3 py-3">{formatIls(row.rewardAmount || 500)}</td>
