@@ -1,13 +1,14 @@
-import React, { useCallback, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Link2, MessageSquare, RefreshCw, Shield } from "lucide-react";
 
 import {
+  completeAdminManagedEmbeddedSignup,
+  getAdminManagedEmbeddedSignupConfig,
   getAdminManagedWhatsAppHealth,
   getAdminManagedWhatsAppStatus,
   listAdminManagedWhatsAppAudit,
   saveAndVerifyAdminManagedWhatsAppConnection,
-  createAdminManagedWhatsAppConnection,
-  deleteAdminManagedWhatsAppConnection,
   registerAdminManagedWhatsAppPhone,
   syncAdminManagedWhatsAppTemplates,
   updateAdminManagedWhatsAppSettings,
@@ -17,6 +18,8 @@ import {
   type ManagedWhatsAppAllowlistMode,
   type ManagedWhatsAppConnectionSummary,
 } from "../../api/adminManagedWhatsAppApi";
+import { splitE164ForMetaPrefill } from "../business/dashboardPages/whatsapp/embeddedSignupEnteredPhone";
+import { loadFacebookSdk } from "../../utils/loadFacebookSdk";
 import {
   getAdminWhatsAppBillingMargin,
   type WhatsAppBillingMarginReport,
@@ -25,6 +28,65 @@ import { useAuth } from "../../context/AuthContext";
 import AdminHeader from "./AdminsHeader";
 
 const DEFAULT_CONNECTION_ID = "IL_MANAGED";
+const US_CONNECTION_ID = "US_MANAGED";
+const US_DISPLAY_PHONE = "+1 210 944 4809";
+const US_E164 = "+12109444809";
+
+const FIXED_MANAGED_SLOTS: Array<{
+  connectionId: string;
+  flag: string;
+  label: string;
+  country: string;
+  expectedDisplayPhone?: string;
+}> = [
+  {
+    connectionId: DEFAULT_CONNECTION_ID,
+    flag: "🇮🇱",
+    label: "Israel",
+    country: "IL",
+  },
+  {
+    connectionId: US_CONNECTION_ID,
+    flag: "🇺🇸",
+    label: "USA",
+    country: "US",
+    expectedDisplayPhone: US_DISPLAY_PHONE,
+  },
+];
+
+type EmbeddedSignupSession = {
+  phoneNumberId: string;
+  wabaId: string;
+  metaBusinessId?: string;
+};
+
+function connectionSummaryFromStatus(
+  connections: ManagedWhatsAppConnectionSummary[] | undefined,
+  connectionId: string
+): ManagedWhatsAppConnectionSummary {
+  const slot = FIXED_MANAGED_SLOTS.find((s) => s.connectionId === connectionId)!;
+  const found = (connections || []).find(
+    (c) => String(c.connectionId || "").trim().toUpperCase() === connectionId
+  );
+  return {
+    ...slot,
+    ...found,
+    connectionId,
+    country: slot.country,
+    label: found?.label || slot.label,
+    flag: found?.flag || slot.flag,
+    enabled: found?.enabled !== false,
+    isFixed: true,
+    expectedDisplayPhone:
+      found?.expectedDisplayPhone || slot.expectedDisplayPhone,
+  };
+}
+
+function isManagedConnectionReady(conn?: ManagedWhatsAppConnectionSummary | null) {
+  const status = String(conn?.connectionStatus || "").toUpperCase();
+  if (status === "READY" || status === "CONNECTED") return true;
+  return Boolean(conn?.credentialsConfigured);
+}
 
 function connectionTabLabel(conn: ManagedWhatsAppConnectionSummary) {
   const flag =
@@ -37,56 +99,6 @@ function connectionTabLabel(conn: ManagedWhatsAppConnectionSummary) {
     return `${flag ? `${flag} ` : ""}${title}`;
   }
   return `${flag ? `${flag} ` : ""}${title}`;
-}
-
-/** Dedupe tabs by connectionId; keep a single Israel (prefer IL_MANAGED). */
-function uniqueConnectionTabs(
-  connections: ManagedWhatsAppConnectionSummary[] = []
-): ManagedWhatsAppConnectionSummary[] {
-  const byId = new Map<string, ManagedWhatsAppConnectionSummary>();
-  let israel: ManagedWhatsAppConnectionSummary | null = null;
-
-  for (const raw of connections) {
-    if (!raw) continue;
-    const id = String(raw.connectionId || "")
-      .trim()
-      .toUpperCase();
-    if (!id) continue;
-    const country = String(raw.country || "")
-      .trim()
-      .toUpperCase();
-    const isIsrael =
-      country === "IL" ||
-      id === "IL_MANAGED" ||
-      id === "ISRAEL" ||
-      id === "ISRAEL_MANAGED";
-
-    if (isIsrael) {
-      if (!israel) {
-        israel = { ...raw, connectionId: id === "IL_MANAGED" ? "IL_MANAGED" : raw.connectionId };
-      } else if (id === "IL_MANAGED") {
-        israel = { ...raw, connectionId: "IL_MANAGED" };
-      }
-      continue;
-    }
-
-    // Non-Israel: only show when enabled (empty shells filtered server-side too).
-    if (raw.enabled === false) continue;
-    if (!byId.has(id)) byId.set(id, raw);
-  }
-
-  const out: ManagedWhatsAppConnectionSummary[] = [];
-  if (israel) {
-    out.push({
-      ...israel,
-      connectionId: "IL_MANAGED",
-      country: "IL",
-      label: israel.label || "Israel",
-      isDefault: true,
-    });
-  }
-  for (const conn of byId.values()) out.push(conn);
-  return out;
 }
 
 function formatDate(value?: string | null) {
@@ -276,6 +288,7 @@ function ManagedConnectionHealthPanel({
 
 export default function AdminManagedWhatsApp() {
   const { user } = useAuth() as { user: { role?: string } | null };
+  const navigate = useNavigate();
   const [status, setStatus] = useState<AdminManagedWhatsAppStatus | null>(null);
   const [audit, setAudit] = useState<AdminManagedWhatsAppAuditItem[]>([]);
   const [marginReport, setMarginReport] =
@@ -286,6 +299,7 @@ export default function AdminManagedWhatsApp() {
   const [saving, setSaving] = useState(false);
   const [verifying, setVerifying] = useState(false);
   const [syncing, setSyncing] = useState(false);
+  const [connectingUs, setConnectingUs] = useState(false);
   const [error, setError] = useState("");
   const [syncFlash, setSyncFlash] = useState("");
   const [allowlistText, setAllowlistText] = useState("");
@@ -297,16 +311,10 @@ export default function AdminManagedWhatsApp() {
   const [registering, setRegistering] = useState(false);
   const [activeConnectionId, setActiveConnectionId] =
     useState(DEFAULT_CONNECTION_ID);
-  const [showAddForm, setShowAddForm] = useState(false);
-  const [creating, setCreating] = useState(false);
-  const [newConnectionName, setNewConnectionName] = useState("");
-  const [newCountry, setNewCountry] = useState("US");
-  const [newPhone, setNewPhone] = useState("");
-  const [newWabaId, setNewWabaId] = useState("");
-  const [newPhoneNumberId, setNewPhoneNumberId] = useState("");
-  const [newAccessToken, setNewAccessToken] = useState("");
-  const [newEnabled, setNewEnabled] = useState(true);
   const [connectionEnabled, setConnectionEnabled] = useState(true);
+  const embeddedSessionRef = useRef<EmbeddedSignupSession | null>(null);
+  const statusSectionRef = useRef<HTMLElement | null>(null);
+  const templatesSectionRef = useRef<HTMLElement | null>(null);
 
   const isAdmin = String(user?.role || "").toLowerCase() === "admin";
 
@@ -378,6 +386,127 @@ export default function AdminManagedWhatsApp() {
   useEffect(() => {
     void loadMargin();
   }, [loadMargin]);
+
+  useEffect(() => {
+    const onMessage = (event: MessageEvent) => {
+      if (
+        event.origin !== "https://www.facebook.com" &&
+        event.origin !== "https://web.facebook.com"
+      ) {
+        return;
+      }
+      try {
+        const data =
+          typeof event.data === "string" ? JSON.parse(event.data) : event.data;
+        if (data?.type !== "WA_EMBEDDED_SIGNUP") return;
+        if (data.event === "FINISH" || data.event === "FINISH_ONLY_WABA") {
+          const phoneNumberId = String(data?.data?.phone_number_id || "").trim();
+          const wabaId = String(data?.data?.waba_id || "").trim();
+          const metaBusinessId = String(data?.data?.business_id || "").trim();
+          if (phoneNumberId && wabaId) {
+            embeddedSessionRef.current = { phoneNumberId, wabaId, metaBusinessId };
+          }
+        }
+      } catch {
+        // Ignore non-JSON postMessages from the popup.
+      }
+    };
+    window.addEventListener("message", onMessage);
+    return () => window.removeEventListener("message", onMessage);
+  }, []);
+
+  async function connectUsEmbeddedSignup() {
+    if (!isAdmin || connectingUs) return;
+    setConnectingUs(true);
+    setError("");
+    setSyncFlash("");
+    embeddedSessionRef.current = null;
+    try {
+      const signup = await getAdminManagedEmbeddedSignupConfig();
+      if (!signup.appId || !signup.configId) {
+        throw new Error("חסרה הגדרת Embedded Signup בשרת");
+      }
+      if (!signup.encryptionReady || !signup.ready) {
+        throw new Error("Embedded Signup אינו מוכן — בדוק META_APP_SECRET והרשאות");
+      }
+
+      const FB = await loadFacebookSdk(
+        signup.appId,
+        signup.graphVersion || "v21.0"
+      );
+      const prefill = splitE164ForMetaPrefill(US_E164);
+
+      await new Promise<void>((resolve, reject) => {
+        let settled = false;
+        const finish = (fn: () => void) => {
+          if (settled) return;
+          settled = true;
+          fn();
+        };
+
+        FB.login(
+          (response) => {
+            void (async () => {
+              try {
+                const code = response?.authResponse?.code;
+                if (!code) {
+                  finish(() => reject(new Error("חיבור Meta בוטל")));
+                  return;
+                }
+                await new Promise((r) => setTimeout(r, 600));
+                const assets = embeddedSessionRef.current;
+                if (!assets?.phoneNumberId || !assets?.wabaId) {
+                  finish(() =>
+                    reject(new Error("חסרים phone_number_id / waba_id מ-Embedded Signup"))
+                  );
+                  return;
+                }
+                const data = await completeAdminManagedEmbeddedSignup({
+                  managedConnectionId: US_CONNECTION_ID,
+                  code,
+                  phoneNumberId: assets.phoneNumberId,
+                  wabaId: assets.wabaId,
+                  metaBusinessId: assets.metaBusinessId,
+                });
+                applyStatus(data);
+                setActiveConnectionId(US_CONNECTION_ID);
+                setSyncFlash("חיבור USA הושלם — Embedded Signup");
+                const aud = await listAdminManagedWhatsAppAudit(30).catch(() => ({
+                  items: [],
+                }));
+                setAudit(aud.items || []);
+                finish(resolve);
+              } catch (err: any) {
+                finish(() =>
+                  reject(
+                    new Error(
+                      err?.response?.data?.error ||
+                        err?.message ||
+                        "השלמת Embedded Signup נכשלה"
+                    )
+                  )
+                );
+              }
+            })();
+          },
+          {
+            config_id: signup.configId,
+            response_type: "code",
+            override_default_response_type: true,
+            extras: {
+              setup: prefill ? { business: { phone: prefill } } : {},
+              featureType: "",
+              sessionInfoVersion: "3",
+            },
+          }
+        );
+      });
+    } catch (err: any) {
+      setError(err?.message || "חיבור Embedded Signup נכשל");
+    } finally {
+      setConnectingUs(false);
+    }
+  }
 
   async function selectConnection(connectionId: string) {
     if (connectionId === activeConnectionId && status) return;
@@ -532,64 +661,8 @@ export default function AdminManagedWhatsApp() {
     }
   }
 
-  async function createConnection() {
-    if (!isAdmin || creating) return;
-    setCreating(true);
-    setError("");
-    setSyncFlash("");
-    try {
-      const data = await createAdminManagedWhatsAppConnection({
-        connectionName: newConnectionName.trim() || undefined,
-        country: newCountry,
-        label: newConnectionName.trim() || undefined,
-        phoneNumber: newPhone.trim() || undefined,
-        wabaId: newWabaId.trim() || undefined,
-        phoneNumberId: newPhoneNumberId.trim() || undefined,
-        accessToken: newAccessToken.trim() || undefined,
-        enabled: newEnabled,
-      });
-      applyStatus(data);
-      setShowAddForm(false);
-      setNewConnectionName("");
-      setNewPhone("");
-      setNewWabaId("");
-      setNewPhoneNumberId("");
-      setNewAccessToken("");
-      setNewEnabled(true);
-      setSyncFlash(
-        `נוסף חיבור Managed: ${data.activeManagedConnectionId || data.connectionMeta?.connectionId || ""}`
-      );
-      const aud = await listAdminManagedWhatsAppAudit(30).catch(() => ({
-        items: [],
-      }));
-      setAudit(aud.items || []);
-    } catch (err: any) {
-      setError(err?.response?.data?.error || err?.message || "יצירת חיבור נכשלה");
-    } finally {
-      setCreating(false);
-    }
-  }
-
-  async function removeConnection(connectionId: string) {
-    if (!isAdmin || connectionId === DEFAULT_CONNECTION_ID) return;
-    if (
-      !window.confirm(
-        `למחוק את החיבור ${connectionId}? החיבור הישראלי לא ייפגע.`
-      )
-    ) {
-      return;
-    }
-    setSaving(true);
-    setError("");
-    try {
-      const data = await deleteAdminManagedWhatsAppConnection(connectionId);
-      applyStatus(data);
-      setSyncFlash(`החיבור ${connectionId} הוסר`);
-    } catch (err: any) {
-      setError(err?.response?.data?.error || err?.message || "מחיקה נכשלה");
-    } finally {
-      setSaving(false);
-    }
+  function scrollToSection(ref: React.RefObject<HTMLElement | null>) {
+    ref.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
   if (!isAdmin) {
@@ -613,6 +686,14 @@ export default function AdminManagedWhatsApp() {
     status?.registration?.phoneRegistered || status?.registration?.sendReady
   );
   const needsRegistration = connectionReady && !sendRegistered;
+  const fixedConnections = FIXED_MANAGED_SLOTS.map((slot) =>
+    connectionSummaryFromStatus(status?.connections, slot.connectionId)
+  );
+  const usSummary = fixedConnections.find((c) => c.connectionId === US_CONNECTION_ID);
+  const usReady = isManagedConnectionReady(usSummary);
+  const showIlCredentialForm = activeConnectionId === DEFAULT_CONNECTION_ID;
+  const showUsDetailPanel =
+    activeConnectionId === US_CONNECTION_ID && usReady;
 
   return (
     <div dir="rtl" style={{ minHeight: "100vh", background: "#f6f7fb" }}>
@@ -633,188 +714,165 @@ export default function AdminManagedWhatsApp() {
         {status ? (
           <div
             style={{
-              display: "flex",
-              flexWrap: "wrap",
-              gap: 8,
-              alignItems: "center",
+              display: "grid",
+              gap: 12,
               marginBottom: 16,
             }}
           >
-            {uniqueConnectionTabs(status.connections || []).map((conn) => {
+            {fixedConnections.map((conn) => {
               const active = conn.connectionId === activeConnectionId;
+              const ready = isManagedConnectionReady(conn);
+              const isUs = conn.connectionId === US_CONNECTION_ID;
+              const phoneLabel =
+                conn.displayPhoneMasked ||
+                conn.expectedDisplayPhone ||
+                (isUs ? US_DISPLAY_PHONE : "");
               return (
-                <button
+                <div
                   key={conn.connectionId}
-                  type="button"
+                  role="button"
+                  tabIndex={0}
                   onClick={() => void selectConnection(conn.connectionId)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      e.preventDefault();
+                      void selectConnection(conn.connectionId);
+                    }
+                  }}
                   style={{
                     border: active ? "2px solid #0f172a" : "1px solid #e2e8f0",
-                    background: active ? "#0f172a" : "#fff",
-                    color: active ? "#fff" : "#0f172a",
-                    borderRadius: 999,
-                    padding: "8px 14px",
-                    fontWeight: 700,
+                    background: "#fff",
+                    borderRadius: 14,
+                    padding: "14px 16px",
                     cursor: "pointer",
-                    fontSize: 14,
+                    boxShadow: "0 1px 3px rgba(15,23,42,0.06)",
                   }}
                 >
-                  {connectionTabLabel(conn)}
-                  {!conn.enabled ? " (כבוי)" : ""}
-                </button>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexWrap: "wrap",
+                      gap: 12,
+                      alignItems: "center",
+                      justifyContent: "space-between",
+                    }}
+                  >
+                    <div>
+                      <strong style={{ fontSize: 16 }}>
+                        {conn.flag} {conn.label}
+                      </strong>
+                      {phoneLabel ? (
+                        <div
+                          style={{
+                            marginTop: 4,
+                            color: "#64748b",
+                            fontSize: 14,
+                          }}
+                          dir="ltr"
+                        >
+                          {phoneLabel}
+                        </div>
+                      ) : null}
+                      <div style={{ marginTop: 8 }}>
+                        {ready ? (
+                          <StatusPill
+                            ok
+                            labelOk="Connected ✅ (READY)"
+                            labelBad=""
+                          />
+                        ) : isUs ? (
+                          <span style={{ color: "#64748b", fontSize: 13, fontWeight: 600 }}>
+                            Not connected to WhatsApp
+                          </span>
+                        ) : (
+                          <StatusPill
+                            ok={false}
+                            labelOk=""
+                            labelBad="NOT READY"
+                          />
+                        )}
+                      </div>
+                    </div>
+                    <div
+                      style={{ display: "flex", flexWrap: "wrap", gap: 8 }}
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      {isUs && !ready ? (
+                        <button
+                          type="button"
+                          onClick={() => void connectUsEmbeddedSignup()}
+                          disabled={connectingUs}
+                          style={{
+                            border: "none",
+                            borderRadius: 10,
+                            padding: "10px 14px",
+                            background: "#0369a1",
+                            color: "#fff",
+                            fontWeight: 700,
+                            cursor: connectingUs ? "wait" : "pointer",
+                          }}
+                        >
+                          {connectingUs ? "מתחבר…" : "Connect WhatsApp"}
+                        </button>
+                      ) : null}
+                      {isUs && ready ? (
+                        <>
+                          <button
+                            type="button"
+                            onClick={() => navigate("/admin/crm/whatsapp")}
+                            style={{
+                              border: "1px solid #e2e8f0",
+                              borderRadius: 10,
+                              padding: "8px 12px",
+                              background: "#fff",
+                              fontWeight: 600,
+                              cursor: "pointer",
+                            }}
+                          >
+                            Open Inbox
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              void selectConnection(US_CONNECTION_ID);
+                              scrollToSection(templatesSectionRef);
+                            }}
+                            style={{
+                              border: "1px solid #e2e8f0",
+                              borderRadius: 10,
+                              padding: "8px 12px",
+                              background: "#fff",
+                              fontWeight: 600,
+                              cursor: "pointer",
+                            }}
+                          >
+                            Templates
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              void selectConnection(US_CONNECTION_ID);
+                              scrollToSection(statusSectionRef);
+                            }}
+                            style={{
+                              border: "1px solid #e2e8f0",
+                              borderRadius: 10,
+                              padding: "8px 12px",
+                              background: "#fff",
+                              fontWeight: 600,
+                              cursor: "pointer",
+                            }}
+                          >
+                            Connection status
+                          </button>
+                        </>
+                      ) : null}
+                    </div>
+                  </div>
+                </div>
               );
             })}
-            <button
-              type="button"
-              onClick={() => setShowAddForm((v) => !v)}
-              style={{
-                border: "1px dashed #94a3b8",
-                background: "#fff",
-                color: "#0f172a",
-                borderRadius: 999,
-                padding: "8px 14px",
-                fontWeight: 700,
-                cursor: "pointer",
-                fontSize: 14,
-              }}
-            >
-              + Add Managed WhatsApp Connection
-            </button>
           </div>
-        ) : null}
-
-        {showAddForm ? (
-          <section
-            style={{
-              background: "#fff",
-              borderRadius: 14,
-              padding: 20,
-              boxShadow: "0 1px 3px rgba(15,23,42,0.06)",
-              marginBottom: 16,
-            }}
-          >
-            <strong>חיבור Managed חדש</strong>
-            <p style={{ color: "#64748b", fontSize: 14 }}>
-              לא דורס את החיבור הישראלי. מומלץ להתחיל עם USA / US_MANAGED.
-            </p>
-            <div style={{ display: "grid", gap: 12, marginTop: 12 }}>
-              <label style={{ display: "grid", gap: 6 }}>
-                <span style={{ fontWeight: 600, fontSize: 13 }}>
-                  Connection name
-                </span>
-                <input
-                  style={fieldStyle}
-                  value={newConnectionName}
-                  onChange={(e) => setNewConnectionName(e.target.value)}
-                  placeholder="USA"
-                />
-              </label>
-              <label style={{ display: "grid", gap: 6 }}>
-                <span style={{ fontWeight: 600, fontSize: 13 }}>Country</span>
-                <select
-                  style={fieldStyle}
-                  value={newCountry}
-                  onChange={(e) => setNewCountry(e.target.value)}
-                >
-                  <option value="US">🇺🇸 USA</option>
-                  <option value="GB">🇬🇧 UK</option>
-                  <option value="EU">🇪🇺 EU</option>
-                  {/* Israel is a singleton (IL_MANAGED) — do not offer a second IL create */}
-                </select>
-              </label>
-              <label style={{ display: "grid", gap: 6 }}>
-                <span style={{ fontWeight: 600, fontSize: 13 }}>
-                  Phone number
-                </span>
-                <input
-                  style={fieldStyle}
-                  dir="ltr"
-                  value={newPhone}
-                  onChange={(e) => setNewPhone(e.target.value)}
-                  placeholder="+1..."
-                />
-              </label>
-              <label style={{ display: "grid", gap: 6 }}>
-                <span style={{ fontWeight: 600, fontSize: 13 }}>WABA ID</span>
-                <input
-                  style={fieldStyle}
-                  dir="ltr"
-                  value={newWabaId}
-                  onChange={(e) => setNewWabaId(e.target.value)}
-                />
-              </label>
-              <label style={{ display: "grid", gap: 6 }}>
-                <span style={{ fontWeight: 600, fontSize: 13 }}>
-                  Phone Number ID
-                </span>
-                <input
-                  style={fieldStyle}
-                  dir="ltr"
-                  value={newPhoneNumberId}
-                  onChange={(e) => setNewPhoneNumberId(e.target.value)}
-                />
-              </label>
-              <label style={{ display: "grid", gap: 6 }}>
-                <span style={{ fontWeight: 600, fontSize: 13 }}>
-                  Access Token
-                </span>
-                <input
-                  style={fieldStyle}
-                  dir="ltr"
-                  type="password"
-                  value={newAccessToken}
-                  onChange={(e) => setNewAccessToken(e.target.value)}
-                  autoComplete="new-password"
-                />
-              </label>
-              <label
-                style={{
-                  display: "flex",
-                  gap: 8,
-                  alignItems: "center",
-                  fontWeight: 600,
-                }}
-              >
-                <input
-                  type="checkbox"
-                  checked={newEnabled}
-                  onChange={(e) => setNewEnabled(e.target.checked)}
-                />
-                Active
-              </label>
-            </div>
-            <div style={{ display: "flex", gap: 10, marginTop: 14 }}>
-              <button
-                type="button"
-                onClick={() => void createConnection()}
-                disabled={creating}
-                style={{
-                  border: "none",
-                  borderRadius: 10,
-                  padding: "10px 14px",
-                  background: "#0f172a",
-                  color: "#fff",
-                  fontWeight: 600,
-                  cursor: creating ? "wait" : "pointer",
-                }}
-              >
-                {creating ? "יוצר…" : "צור חיבור"}
-              </button>
-              <button
-                type="button"
-                onClick={() => setShowAddForm(false)}
-                style={{
-                  border: "1px solid #e2e8f0",
-                  borderRadius: 10,
-                  padding: "10px 14px",
-                  background: "#fff",
-                  fontWeight: 600,
-                  cursor: "pointer",
-                }}
-              >
-                ביטול
-              </button>
-            </div>
-          </section>
         ) : null}
 
         {error ? (
@@ -849,6 +907,7 @@ export default function AdminManagedWhatsApp() {
         ) : (
           <>
             <section
+              ref={statusSectionRef}
               style={{
                 background: "#fff",
                 borderRadius: 14,
@@ -1095,7 +1154,12 @@ export default function AdminManagedWhatsApp() {
                   disabled={saving}
                   onChange={(e) => void setSendFrom(e.target.value)}
                 >
-                  {(uniqueConnectionTabs(status.connections || [])).map((conn) => (
+                  {(fixedConnections.filter((conn) =>
+                    isManagedConnectionReady(conn)
+                  ).length
+                    ? fixedConnections.filter((conn) => isManagedConnectionReady(conn))
+                    : fixedConnections
+                  ).map((conn) => (
                     <option key={conn.connectionId} value={conn.connectionId}>
                       {connectionTabLabel(conn)}
                     </option>
@@ -1109,6 +1173,7 @@ export default function AdminManagedWhatsApp() {
                   : "כאשר כבוי: אין fallback לחיבור המרכזי — נדרש חיבור WhatsApp של העסק."}
               </p>
 
+              <div ref={templatesSectionRef} style={{ marginTop: 8 }}>
               <button
                 type="button"
                 onClick={() => void runSync()}
@@ -1135,8 +1200,10 @@ export default function AdminManagedWhatsApp() {
                 <RefreshCw size={16} />
                 {syncing ? "מסנכרן…" : "סנכרון תבניות Meta"}
               </button>
+              </div>
             </section>
 
+            {(showIlCredentialForm || showUsDetailPanel) ? (
             <section
               style={{
                 background: "#fff",
@@ -1154,47 +1221,31 @@ export default function AdminManagedWhatsApp() {
                 </strong>
               </div>
               <p style={{ color: "#64748b", fontSize: 14 }}>
-                הגדרה ידנית של WABA הפלטפורמה לחיבור זה בלבד (ללא OAuth). ה-Access
-                Token נשמר מוצפן בשרת ולא מוחזר ללקוח. תבניות מסונכרנות שייכות רק
-                ל־WABA של החיבור הפעיל.
+                {showIlCredentialForm
+                  ? "עריכת WABA ישראל (IL_MANAGED) — ה-Access Token נשמר מוצפן בשרת. לא משנים חיבור זה ללא צורך."
+                  : "חיבור USA דרך Embedded Signup — סטטוס, בריאות ורישום PIN בלבד."}
               </p>
-              <label
-                style={{
-                  display: "flex",
-                  gap: 8,
-                  alignItems: "center",
-                  fontWeight: 600,
-                  marginBottom: 12,
-                }}
-              >
-                <input
-                  type="checkbox"
-                  checked={connectionEnabled}
-                  onChange={(e) => setConnectionEnabled(e.target.checked)}
-                />
-                Active / Enabled
-              </label>
-              {activeConnectionId !== DEFAULT_CONNECTION_ID ? (
-                <button
-                  type="button"
-                  onClick={() => void removeConnection(activeConnectionId)}
-                  disabled={saving}
+              {showIlCredentialForm ? (
+                <label
                   style={{
-                    marginBottom: 12,
-                    border: "1px solid #fecaca",
-                    background: "#fef2f2",
-                    color: "#b91c1c",
-                    borderRadius: 10,
-                    padding: "8px 12px",
+                    display: "flex",
+                    gap: 8,
+                    alignItems: "center",
                     fontWeight: 600,
-                    cursor: "pointer",
+                    marginBottom: 12,
                   }}
                 >
-                  מחק חיבור זה
-                </button>
+                  <input
+                    type="checkbox"
+                    checked={connectionEnabled}
+                    onChange={(e) => setConnectionEnabled(e.target.checked)}
+                  />
+                  Active / Enabled
+                </label>
               ) : null}
               <ManagedConnectionHealthPanel health={status.health} />
-              {!status.connection?.managedBusinessIdConfigured ? (
+              {showIlCredentialForm &&
+              !status.connection?.managedBusinessIdConfigured ? (
                 <div
                   style={{
                     padding: 12,
@@ -1211,6 +1262,8 @@ export default function AdminManagedWhatsApp() {
                 </div>
               ) : null}
 
+              {showIlCredentialForm ? (
+                <>
               <div
                 style={{
                   display: "grid",
@@ -1305,8 +1358,10 @@ export default function AdminManagedWhatsApp() {
                 <Link2 size={16} />
                 {verifying ? "מאמת מול Meta…" : "שמור ובדוק חיבור"}
               </button>
+                </>
+              ) : null}
 
-              {sendRegistered ? (
+              {(showIlCredentialForm || showUsDetailPanel) && sendRegistered ? (
                 <div
                   style={{
                     marginTop: 18,
@@ -1321,7 +1376,7 @@ export default function AdminManagedWhatsApp() {
                 >
                   רישום לשליחה: רשום
                 </div>
-              ) : needsRegistration ? (
+              ) : (showIlCredentialForm || showUsDetailPanel) && needsRegistration ? (
                 <div
                 style={{
                   marginTop: 18,
@@ -1399,6 +1454,7 @@ export default function AdminManagedWhatsApp() {
               </div>
               ) : null}
             </section>
+            ) : null}
 
             <section
               style={{

@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import adminCrmApi from "../../../../api/adminCrmApi";
+import { getAdminManagedWhatsAppStatus } from "../../../../api/adminManagedWhatsAppApi";
 import { Badge, WHATSAPP_INBOX_STATUS_LABELS } from "../adminCrmLabels";
 import { SecondaryButton } from "../AdminCrmUi";
 import { WhatsAppMessageBody } from "./WhatsAppMediaBubble";
@@ -36,6 +37,20 @@ type Template = {
 
 const CHAT_COLUMN_CLASS =
   "mx-auto flex h-full min-h-0 w-full min-w-0 max-w-[920px] flex-col";
+
+const SEND_FROM_OPTIONS = [
+  { id: "IL_MANAGED", flag: "🇮🇱", label: "Israel" },
+  { id: "US_MANAGED", flag: "🇺🇸", label: "USA" },
+] as const;
+
+function inboundReceivedOnLabel(message: PublicWhatsAppMessage) {
+  if (message.receivedOnLabel) return message.receivedOnLabel;
+  const id = String(message.managedConnectionId || "").trim().toUpperCase();
+  const preset = SEND_FROM_OPTIONS.find((row) => row.id === id);
+  if (preset) return `${preset.flag} ${preset.label}`;
+  if (message.sendFromLabel) return message.sendFromLabel;
+  return "";
+}
 
 const CHAT_WALLPAPER_STYLE: React.CSSProperties = {
   backgroundColor: "#efeae2",
@@ -85,6 +100,13 @@ export default function WhatsAppWebThread({
   const [sending, setSending] = useState(false);
   const [stagedFile, setStagedFile] = useState<StagedWhatsAppFile | null>(null);
   const [unseen, setUnseen] = useState(0);
+  const [sendFromConnectionId, setSendFromConnectionId] = useState("IL_MANAGED");
+  const [managedConnections, setManagedConnections] = useState<
+    Array<{ connectionId: string; ready: boolean }>
+  >([
+    { connectionId: "IL_MANAGED", ready: true },
+    { connectionId: "US_MANAGED", ready: false },
+  ]);
   const stickRef = useRef(true);
   const scrollerRef = useRef<HTMLDivElement | null>(null);
   const lastScrollTopRef = useRef(0);
@@ -96,6 +118,7 @@ export default function WhatsAppWebThread({
   const senderReady = Boolean(
     sender.sendReady ?? (sender.ready && sender.registrationStatus !== "required")
   );
+  const composerSendReady = sendFromReady && senderReady;
   const needsRegistration =
     Boolean(sender.ready) &&
     (sender.phoneRegistered === false ||
@@ -179,6 +202,45 @@ export default function WhatsAppWebThread({
   useEffect(() => {
     load();
   }, [load]);
+
+  useEffect(() => {
+    getAdminManagedWhatsAppStatus()
+      .then((st) => {
+        const rows = (st.connections || [])
+          .filter((conn) => {
+            const id = String(conn.connectionId || "").toUpperCase();
+            return id === "IL_MANAGED" || id === "US_MANAGED";
+          })
+          .map((conn) => {
+            const status = String(conn.connectionStatus || "").toUpperCase();
+            const ready =
+              status === "READY" ||
+              status === "CONNECTED" ||
+              Boolean(conn.credentialsConfigured);
+            return {
+              connectionId: String(conn.connectionId || "").toUpperCase(),
+              ready,
+            };
+          });
+        if (rows.length) setManagedConnections(rows);
+        const defaultId = String(
+          st.defaultManagedConnectionId || "IL_MANAGED"
+        ).toUpperCase();
+        if (defaultId === "IL_MANAGED" || defaultId === "US_MANAGED") {
+          setSendFromConnectionId(defaultId);
+        }
+      })
+      .catch(() => null);
+  }, []);
+
+  const sendFromReady = useMemo(() => {
+    const row = managedConnections.find(
+      (conn) => conn.connectionId === sendFromConnectionId
+    );
+    return row?.ready !== false;
+  }, [managedConnections, sendFromConnectionId]);
+
+  const sendFromOptions = useMemo(() => SEND_FROM_OPTIONS, []);
 
   useEffect(() => {
     const el = scrollerRef.current;
@@ -337,6 +399,7 @@ export default function WhatsAppWebThread({
         previewConfirmed: Boolean(preview || !(selected?.variables || []).length),
         demoModules: modules,
         paymentPlan,
+        managedConnectionId: sendFromConnectionId,
       };
       if (uploadedMedia) {
         payload.mediaType = uploadedMedia.messageType;
@@ -487,6 +550,7 @@ export default function WhatsAppWebThread({
               );
             }
             const outbound = item.message.direction !== "inbound";
+            const receivedOn = !outbound ? inboundReceivedOnLabel(item.message) : "";
             return (
               <div
                 key={item.key}
@@ -509,6 +573,11 @@ export default function WhatsAppWebThread({
                     customerId={customerId}
                     threadId={threadId}
                   />
+                  {receivedOn ? (
+                    <p className="mt-1 text-[11px] font-bold text-[#667781]">
+                      Received on: {receivedOn}
+                    </p>
+                  ) : null}
                   {item.message.templateName ? (
                     <p className="mt-1 text-[11px] text-[#667781]">{item.message.templateName}</p>
                   ) : null}
@@ -548,7 +617,7 @@ export default function WhatsAppWebThread({
             השיחה עדיין לא משויכת ללקוח — ניתן לקרוא, לא לשלוח.
           </p>
         ) : null}
-        {!senderReady && customerId ? (
+        {!composerSendReady && customerId ? (
           <p className="mb-2 px-2 text-xs font-bold text-rose-700">
             {needsRegistration ? (
               <>
@@ -556,11 +625,32 @@ export default function WhatsAppWebThread({
                 <Link className="underline" to="/admin/managed-whatsapp">
                   WhatsApp Managed
                 </Link>
+                {sendFromConnectionId === "US_MANAGED" ? " (USA)" : " (Israel)"}
               </>
+            ) : !sendFromReady ? (
+              "חיבור USA אינו מחובר — בחר Israel או חבר USA ב-WhatsApp Managed."
             ) : (
               "ערוץ WhatsApp של BizUply אינו זמין."
             )}
           </p>
+        ) : null}
+
+        {customerId && canSend ? (
+          <div className="mb-2 flex flex-wrap items-center gap-2 px-1">
+            <span className="text-xs font-bold text-[#667781]">Send from:</span>
+            <select
+              className="min-h-9 rounded-full border-none bg-white px-3 text-sm font-bold"
+              value={sendFromConnectionId}
+              onChange={(e) => setSendFromConnectionId(e.target.value)}
+              dir="ltr"
+            >
+              {sendFromOptions.map((opt) => (
+                <option key={opt.id} value={opt.id}>
+                  {opt.flag} {opt.label}
+                </option>
+              ))}
+            </select>
+          </div>
         ) : null}
 
         <div className="mb-2 flex flex-wrap gap-1 px-1">
@@ -656,7 +746,7 @@ export default function WhatsAppWebThread({
         <WhatsAppMessageComposer
           body={body}
           onBodyChange={setBody}
-          disabled={!canSend || !customerId || !senderReady}
+          disabled={!canSend || !customerId || !composerSendReady}
           sending={sending}
           sessionOpen={sessionOpen}
           hasTemplate={Boolean(templateId)}
