@@ -30,7 +30,63 @@ function connectionTabLabel(conn: ManagedWhatsAppConnectionSummary) {
   const flag =
     conn.flag ||
     (conn.country === "IL" ? "🇮🇱" : conn.country === "US" ? "🇺🇸" : "");
-  return `${flag ? `${flag} ` : ""}${conn.label || conn.connectionId}`;
+  const title = conn.label || conn.connectionId;
+  // Include connectionId so IL_MANAGED vs accidental ISRAEL duplicates are visible.
+  const id = String(conn.connectionId || "").trim();
+  if (id && id !== title && id !== title.toUpperCase()) {
+    return `${flag ? `${flag} ` : ""}${title}`;
+  }
+  return `${flag ? `${flag} ` : ""}${title}`;
+}
+
+/** Dedupe tabs by connectionId; keep a single Israel (prefer IL_MANAGED). */
+function uniqueConnectionTabs(
+  connections: ManagedWhatsAppConnectionSummary[] = []
+): ManagedWhatsAppConnectionSummary[] {
+  const byId = new Map<string, ManagedWhatsAppConnectionSummary>();
+  let israel: ManagedWhatsAppConnectionSummary | null = null;
+
+  for (const raw of connections) {
+    if (!raw) continue;
+    const id = String(raw.connectionId || "")
+      .trim()
+      .toUpperCase();
+    if (!id) continue;
+    const country = String(raw.country || "")
+      .trim()
+      .toUpperCase();
+    const isIsrael =
+      country === "IL" ||
+      id === "IL_MANAGED" ||
+      id === "ISRAEL" ||
+      id === "ISRAEL_MANAGED";
+
+    if (isIsrael) {
+      if (!israel) {
+        israel = { ...raw, connectionId: id === "IL_MANAGED" ? "IL_MANAGED" : raw.connectionId };
+      } else if (id === "IL_MANAGED") {
+        israel = { ...raw, connectionId: "IL_MANAGED" };
+      }
+      continue;
+    }
+
+    // Non-Israel: only show when enabled (empty shells filtered server-side too).
+    if (raw.enabled === false) continue;
+    if (!byId.has(id)) byId.set(id, raw);
+  }
+
+  const out: ManagedWhatsAppConnectionSummary[] = [];
+  if (israel) {
+    out.push({
+      ...israel,
+      connectionId: "IL_MANAGED",
+      country: "IL",
+      label: israel.label || "Israel",
+      isDefault: true,
+    });
+  }
+  for (const conn of byId.values()) out.push(conn);
+  return out;
 }
 
 function formatDate(value?: string | null) {
@@ -584,7 +640,7 @@ export default function AdminManagedWhatsApp() {
               marginBottom: 16,
             }}
           >
-            {(status.connections || []).map((conn) => {
+            {uniqueConnectionTabs(status.connections || []).map((conn) => {
               const active = conn.connectionId === activeConnectionId;
               return (
                 <button
@@ -660,9 +716,9 @@ export default function AdminManagedWhatsApp() {
                   onChange={(e) => setNewCountry(e.target.value)}
                 >
                   <option value="US">🇺🇸 USA</option>
-                  <option value="IL">🇮🇱 Israel</option>
                   <option value="GB">🇬🇧 UK</option>
                   <option value="EU">🇪🇺 EU</option>
+                  {/* Israel is a singleton (IL_MANAGED) — do not offer a second IL create */}
                 </select>
               </label>
               <label style={{ display: "grid", gap: 6 }}>
@@ -1039,7 +1095,7 @@ export default function AdminManagedWhatsApp() {
                   disabled={saving}
                   onChange={(e) => void setSendFrom(e.target.value)}
                 >
-                  {(status.connections || []).map((conn) => (
+                  {(uniqueConnectionTabs(status.connections || [])).map((conn) => (
                     <option key={conn.connectionId} value={conn.connectionId}>
                       {connectionTabLabel(conn)}
                     </option>
