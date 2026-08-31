@@ -6,6 +6,8 @@ import {
   getAdminManagedWhatsAppStatus,
   listAdminManagedWhatsAppAudit,
   saveAndVerifyAdminManagedWhatsAppConnection,
+  createAdminManagedWhatsAppConnection,
+  deleteAdminManagedWhatsAppConnection,
   registerAdminManagedWhatsAppPhone,
   syncAdminManagedWhatsAppTemplates,
   updateAdminManagedWhatsAppSettings,
@@ -13,6 +15,7 @@ import {
   type AdminManagedWhatsAppHealth,
   type AdminManagedWhatsAppStatus,
   type ManagedWhatsAppAllowlistMode,
+  type ManagedWhatsAppConnectionSummary,
 } from "../../api/adminManagedWhatsAppApi";
 import {
   getAdminWhatsAppBillingMargin,
@@ -20,6 +23,15 @@ import {
 } from "../../api/whatsappBillingApi";
 import { useAuth } from "../../context/AuthContext";
 import AdminHeader from "./AdminsHeader";
+
+const DEFAULT_CONNECTION_ID = "IL_MANAGED";
+
+function connectionTabLabel(conn: ManagedWhatsAppConnectionSummary) {
+  const flag =
+    conn.flag ||
+    (conn.country === "IL" ? "🇮🇱" : conn.country === "US" ? "🇺🇸" : "");
+  return `${flag ? `${flag} ` : ""}${conn.label || conn.connectionId}`;
+}
 
 function formatDate(value?: string | null) {
   if (!value) return "—";
@@ -227,6 +239,18 @@ export default function AdminManagedWhatsApp() {
   const [accessToken, setAccessToken] = useState("");
   const [registerPin, setRegisterPin] = useState("");
   const [registering, setRegistering] = useState(false);
+  const [activeConnectionId, setActiveConnectionId] =
+    useState(DEFAULT_CONNECTION_ID);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [creating, setCreating] = useState(false);
+  const [newConnectionName, setNewConnectionName] = useState("");
+  const [newCountry, setNewCountry] = useState("US");
+  const [newPhone, setNewPhone] = useState("");
+  const [newWabaId, setNewWabaId] = useState("");
+  const [newPhoneNumberId, setNewPhoneNumberId] = useState("");
+  const [newAccessToken, setNewAccessToken] = useState("");
+  const [newEnabled, setNewEnabled] = useState(true);
+  const [connectionEnabled, setConnectionEnabled] = useState(true);
 
   const isAdmin = String(user?.role || "").toLowerCase() === "admin";
 
@@ -236,36 +260,51 @@ export default function AdminManagedWhatsApp() {
     setWabaId(st.configForm?.wabaId || "");
     setPhoneNumberId(st.configForm?.phoneNumberId || "");
     setDisplayPhoneNumber(st.configForm?.displayPhoneNumber || "");
-    // Never prefill token — leave blank; existing token stays server-side.
     setAccessToken("");
+    const active =
+      st.activeManagedConnectionId ||
+      st.connection?.managedConnectionId ||
+      st.defaultManagedConnectionId ||
+      DEFAULT_CONNECTION_ID;
+    setActiveConnectionId(active);
+    setConnectionEnabled(
+      st.connection?.enabled !== false &&
+        st.connectionMeta?.enabled !== false
+    );
   }, []);
 
-  const load = useCallback(async () => {
-    setLoading(true);
-    setError("");
-    try {
-      const [st, aud, liveHealth] = await Promise.all([
-        getAdminManagedWhatsAppStatus(),
-        listAdminManagedWhatsAppAudit(30).catch(() => ({ items: [] })),
-        getAdminManagedWhatsAppHealth().catch(() => null),
-      ]);
-      if (liveHealth) {
-        const health = liveHealth.health || liveHealth;
-        applyStatus({ ...st, health });
-      } else {
-        applyStatus(st);
+  const load = useCallback(
+    async (connectionId?: string) => {
+      setLoading(true);
+      setError("");
+      const target = connectionId || activeConnectionId || DEFAULT_CONNECTION_ID;
+      try {
+        const [st, aud, liveHealth] = await Promise.all([
+          getAdminManagedWhatsAppStatus(target),
+          listAdminManagedWhatsAppAudit(30).catch(() => ({ items: [] })),
+          getAdminManagedWhatsAppHealth(target).catch(() => null),
+        ]);
+        if (liveHealth) {
+          const health = liveHealth.health || liveHealth;
+          applyStatus({ ...st, health });
+        } else {
+          applyStatus(st);
+        }
+        setAudit(aud.items || []);
+      } catch (err: any) {
+        setError(err?.message || "טעינת הסטטוס נכשלה");
+      } finally {
+        setLoading(false);
       }
-      setAudit(aud.items || []);
-    } catch (err: any) {
-      setError(err?.message || "טעינת הסטטוס נכשלה");
-    } finally {
-      setLoading(false);
-    }
-  }, [applyStatus]);
+    },
+    [applyStatus, activeConnectionId]
+  );
 
   useEffect(() => {
-    void load();
-  }, [load]);
+    void load(DEFAULT_CONNECTION_ID);
+    // initial load only
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const loadMargin = useCallback(async () => {
     setMarginLoading(true);
@@ -284,6 +323,12 @@ export default function AdminManagedWhatsApp() {
     void loadMargin();
   }, [loadMargin]);
 
+  async function selectConnection(connectionId: string) {
+    if (connectionId === activeConnectionId && status) return;
+    setActiveConnectionId(connectionId);
+    await load(connectionId);
+  }
+
   async function toggleManagedMode(next: boolean) {
     if (!isAdmin || saving) return;
     setSaving(true);
@@ -291,10 +336,29 @@ export default function AdminManagedWhatsApp() {
     try {
       const data = await updateAdminManagedWhatsAppSettings({
         managedModeEnabled: next,
+        managedConnectionId: activeConnectionId,
       });
       applyStatus(data);
     } catch (err: any) {
       setError(err?.message || "שמירת ההגדרה נכשלה");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  async function setSendFrom(connectionId: string) {
+    if (!isAdmin || saving) return;
+    setSaving(true);
+    setError("");
+    try {
+      const data = await updateAdminManagedWhatsAppSettings({
+        defaultManagedConnectionId: connectionId,
+        managedConnectionId: activeConnectionId,
+      });
+      applyStatus(data);
+      setSyncFlash(`Send from: ${connectionId}`);
+    } catch (err: any) {
+      setError(err?.message || "עדכון חיבור השליחה נכשל");
     } finally {
       setSaving(false);
     }
@@ -312,6 +376,7 @@ export default function AdminManagedWhatsApp() {
       const data = await updateAdminManagedWhatsAppSettings({
         allowlistMode: mode,
         allowlistBusinessIds: mode === "allowlist" ? ids : [],
+        managedConnectionId: activeConnectionId,
       });
       applyStatus(data);
     } catch (err: any) {
@@ -328,10 +393,12 @@ export default function AdminManagedWhatsApp() {
     setSyncFlash("");
     try {
       const data = await saveAndVerifyAdminManagedWhatsAppConnection({
+        managedConnectionId: activeConnectionId,
         wabaId: wabaId.trim(),
         phoneNumberId: phoneNumberId.trim(),
         displayPhoneNumber: displayPhoneNumber.trim(),
         accessToken: accessToken.trim() || undefined,
+        enabled: connectionEnabled,
       });
       applyStatus(data);
       const liveOk = data.liveTest?.ok ?? data.health?.status === "healthy";
@@ -364,7 +431,10 @@ export default function AdminManagedWhatsApp() {
     setError("");
     setSyncFlash("");
     try {
-      const data = await registerAdminManagedWhatsAppPhone(pin);
+      const data = await registerAdminManagedWhatsAppPhone(
+        pin,
+        activeConnectionId
+      );
       applyStatus(data);
       setRegisterPin("");
       setSyncFlash(
@@ -389,11 +459,11 @@ export default function AdminManagedWhatsApp() {
     setError("");
     setSyncFlash("");
     try {
-      const data = await syncAdminManagedWhatsAppTemplates();
+      const data = await syncAdminManagedWhatsAppTemplates(activeConnectionId);
       applyStatus(data);
       const c = data.sync?.counts || data.templates;
       setSyncFlash(
-        `סנכרון הושלם: APPROVED ${c?.APPROVED ?? 0} · PENDING ${c?.PENDING ?? 0} · REJECTED ${c?.REJECTED ?? 0}`
+        `סנכרון הושלם (${activeConnectionId}): APPROVED ${c?.APPROVED ?? 0} · PENDING ${c?.PENDING ?? 0} · REJECTED ${c?.REJECTED ?? 0}`
       );
       const aud = await listAdminManagedWhatsAppAudit(30).catch(() => ({
         items: [],
@@ -403,6 +473,66 @@ export default function AdminManagedWhatsApp() {
       setError(err?.message || "סנכרון תבניות נכשל");
     } finally {
       setSyncing(false);
+    }
+  }
+
+  async function createConnection() {
+    if (!isAdmin || creating) return;
+    setCreating(true);
+    setError("");
+    setSyncFlash("");
+    try {
+      const data = await createAdminManagedWhatsAppConnection({
+        connectionName: newConnectionName.trim() || undefined,
+        country: newCountry,
+        label: newConnectionName.trim() || undefined,
+        phoneNumber: newPhone.trim() || undefined,
+        wabaId: newWabaId.trim() || undefined,
+        phoneNumberId: newPhoneNumberId.trim() || undefined,
+        accessToken: newAccessToken.trim() || undefined,
+        enabled: newEnabled,
+      });
+      applyStatus(data);
+      setShowAddForm(false);
+      setNewConnectionName("");
+      setNewPhone("");
+      setNewWabaId("");
+      setNewPhoneNumberId("");
+      setNewAccessToken("");
+      setNewEnabled(true);
+      setSyncFlash(
+        `נוסף חיבור Managed: ${data.activeManagedConnectionId || data.connectionMeta?.connectionId || ""}`
+      );
+      const aud = await listAdminManagedWhatsAppAudit(30).catch(() => ({
+        items: [],
+      }));
+      setAudit(aud.items || []);
+    } catch (err: any) {
+      setError(err?.response?.data?.error || err?.message || "יצירת חיבור נכשלה");
+    } finally {
+      setCreating(false);
+    }
+  }
+
+  async function removeConnection(connectionId: string) {
+    if (!isAdmin || connectionId === DEFAULT_CONNECTION_ID) return;
+    if (
+      !window.confirm(
+        `למחוק את החיבור ${connectionId}? החיבור הישראלי לא ייפגע.`
+      )
+    ) {
+      return;
+    }
+    setSaving(true);
+    setError("");
+    try {
+      const data = await deleteAdminManagedWhatsAppConnection(connectionId);
+      applyStatus(data);
+      setSyncFlash(`החיבור ${connectionId} הוסר`);
+    } catch (err: any) {
+      setError(err?.response?.data?.error || err?.message || "מחיקה נכשלה");
+    } finally {
+      setSaving(false);
     }
   }
 
@@ -438,10 +568,198 @@ export default function AdminManagedWhatsApp() {
             <h1 style={{ margin: 0, fontSize: 26 }}>WhatsApp Managed Mode</h1>
           </div>
           <p style={{ margin: "8px 0 0", color: "#64748b", maxWidth: 640 }}>
-            חיבור WhatsApp מרכזי של Bizuply לעסקים מורשים — עד ש-Meta יאשרו WABA
-            נפרד לכל לקוח. ההגדרה וה-token נשמרים בשרת בלבד (מוצפנים).
+            חיבורי WhatsApp מרכזיים של Bizuply (ישראל / USA) לעסקים מורשים.
+            לכל חיבור הגדרות, סטטוס ותבניות נפרדים. ההגדרה וה-token נשמרים
+            בשרת בלבד (מוצפנים) — Admin only.
           </p>
         </header>
+
+        {status ? (
+          <div
+            style={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: 8,
+              alignItems: "center",
+              marginBottom: 16,
+            }}
+          >
+            {(status.connections || []).map((conn) => {
+              const active = conn.connectionId === activeConnectionId;
+              return (
+                <button
+                  key={conn.connectionId}
+                  type="button"
+                  onClick={() => void selectConnection(conn.connectionId)}
+                  style={{
+                    border: active ? "2px solid #0f172a" : "1px solid #e2e8f0",
+                    background: active ? "#0f172a" : "#fff",
+                    color: active ? "#fff" : "#0f172a",
+                    borderRadius: 999,
+                    padding: "8px 14px",
+                    fontWeight: 700,
+                    cursor: "pointer",
+                    fontSize: 14,
+                  }}
+                >
+                  {connectionTabLabel(conn)}
+                  {!conn.enabled ? " (כבוי)" : ""}
+                </button>
+              );
+            })}
+            <button
+              type="button"
+              onClick={() => setShowAddForm((v) => !v)}
+              style={{
+                border: "1px dashed #94a3b8",
+                background: "#fff",
+                color: "#0f172a",
+                borderRadius: 999,
+                padding: "8px 14px",
+                fontWeight: 700,
+                cursor: "pointer",
+                fontSize: 14,
+              }}
+            >
+              + Add Managed WhatsApp Connection
+            </button>
+          </div>
+        ) : null}
+
+        {showAddForm ? (
+          <section
+            style={{
+              background: "#fff",
+              borderRadius: 14,
+              padding: 20,
+              boxShadow: "0 1px 3px rgba(15,23,42,0.06)",
+              marginBottom: 16,
+            }}
+          >
+            <strong>חיבור Managed חדש</strong>
+            <p style={{ color: "#64748b", fontSize: 14 }}>
+              לא דורס את החיבור הישראלי. מומלץ להתחיל עם USA / US_MANAGED.
+            </p>
+            <div style={{ display: "grid", gap: 12, marginTop: 12 }}>
+              <label style={{ display: "grid", gap: 6 }}>
+                <span style={{ fontWeight: 600, fontSize: 13 }}>
+                  Connection name
+                </span>
+                <input
+                  style={fieldStyle}
+                  value={newConnectionName}
+                  onChange={(e) => setNewConnectionName(e.target.value)}
+                  placeholder="USA"
+                />
+              </label>
+              <label style={{ display: "grid", gap: 6 }}>
+                <span style={{ fontWeight: 600, fontSize: 13 }}>Country</span>
+                <select
+                  style={fieldStyle}
+                  value={newCountry}
+                  onChange={(e) => setNewCountry(e.target.value)}
+                >
+                  <option value="US">🇺🇸 USA</option>
+                  <option value="IL">🇮🇱 Israel</option>
+                  <option value="GB">🇬🇧 UK</option>
+                  <option value="EU">🇪🇺 EU</option>
+                </select>
+              </label>
+              <label style={{ display: "grid", gap: 6 }}>
+                <span style={{ fontWeight: 600, fontSize: 13 }}>
+                  Phone number
+                </span>
+                <input
+                  style={fieldStyle}
+                  dir="ltr"
+                  value={newPhone}
+                  onChange={(e) => setNewPhone(e.target.value)}
+                  placeholder="+1..."
+                />
+              </label>
+              <label style={{ display: "grid", gap: 6 }}>
+                <span style={{ fontWeight: 600, fontSize: 13 }}>WABA ID</span>
+                <input
+                  style={fieldStyle}
+                  dir="ltr"
+                  value={newWabaId}
+                  onChange={(e) => setNewWabaId(e.target.value)}
+                />
+              </label>
+              <label style={{ display: "grid", gap: 6 }}>
+                <span style={{ fontWeight: 600, fontSize: 13 }}>
+                  Phone Number ID
+                </span>
+                <input
+                  style={fieldStyle}
+                  dir="ltr"
+                  value={newPhoneNumberId}
+                  onChange={(e) => setNewPhoneNumberId(e.target.value)}
+                />
+              </label>
+              <label style={{ display: "grid", gap: 6 }}>
+                <span style={{ fontWeight: 600, fontSize: 13 }}>
+                  Access Token
+                </span>
+                <input
+                  style={fieldStyle}
+                  dir="ltr"
+                  type="password"
+                  value={newAccessToken}
+                  onChange={(e) => setNewAccessToken(e.target.value)}
+                  autoComplete="new-password"
+                />
+              </label>
+              <label
+                style={{
+                  display: "flex",
+                  gap: 8,
+                  alignItems: "center",
+                  fontWeight: 600,
+                }}
+              >
+                <input
+                  type="checkbox"
+                  checked={newEnabled}
+                  onChange={(e) => setNewEnabled(e.target.checked)}
+                />
+                Active
+              </label>
+            </div>
+            <div style={{ display: "flex", gap: 10, marginTop: 14 }}>
+              <button
+                type="button"
+                onClick={() => void createConnection()}
+                disabled={creating}
+                style={{
+                  border: "none",
+                  borderRadius: 10,
+                  padding: "10px 14px",
+                  background: "#0f172a",
+                  color: "#fff",
+                  fontWeight: 600,
+                  cursor: creating ? "wait" : "pointer",
+                }}
+              >
+                {creating ? "יוצר…" : "צור חיבור"}
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowAddForm(false)}
+                style={{
+                  border: "1px solid #e2e8f0",
+                  borderRadius: 10,
+                  padding: "10px 14px",
+                  background: "#fff",
+                  fontWeight: 600,
+                  cursor: "pointer",
+                }}
+              >
+                ביטול
+              </button>
+            </div>
+          </section>
+        ) : null}
 
         {error ? (
           <div
@@ -493,7 +811,9 @@ export default function AdminManagedWhatsApp() {
                 }}
               >
                 <div>
-                  <strong style={{ fontSize: 16 }}>סטטוס מערכת</strong>
+                  <strong style={{ fontSize: 16 }}>
+                    סטטוס מערכת · {activeConnectionId}
+                  </strong>
                   <div
                     style={{
                       display: "flex",
@@ -690,6 +1010,43 @@ export default function AdminManagedWhatsApp() {
                 </div>
               </div>
 
+              <div
+                style={{
+                  marginTop: 16,
+                  padding: 14,
+                  borderRadius: 12,
+                  background: "#f8fafc",
+                  border: "1px solid #e2e8f0",
+                  display: "flex",
+                  flexWrap: "wrap",
+                  gap: 12,
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <div>
+                  <strong style={{ fontSize: 14 }}>Send from</strong>
+                  <p style={{ margin: "4px 0 0", color: "#64748b", fontSize: 13 }}>
+                    ברירת המחדל לשליחות Managed בכל המערכת (כרגע Israel כדי למנוע
+                    רגרסיה). בהמשך ניתן לשייך חיבור לכל עסק/אוטומציה.
+                  </p>
+                </div>
+                <select
+                  style={{ ...fieldStyle, maxWidth: 260 }}
+                  value={
+                    status.defaultManagedConnectionId || DEFAULT_CONNECTION_ID
+                  }
+                  disabled={saving}
+                  onChange={(e) => void setSendFrom(e.target.value)}
+                >
+                  {(status.connections || []).map((conn) => (
+                    <option key={conn.connectionId} value={conn.connectionId}>
+                      {connectionTabLabel(conn)}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
               <p style={{ marginTop: 16, color: "#475569", fontSize: 14 }}>
                 {modeOn
                   ? "כאשר פעיל: עסקים מורשים משתמשים בחיבור המרכזי, בלי לחבר WABA משלהם, ובוחרים רק תבנית מאושרת."
@@ -735,12 +1092,51 @@ export default function AdminManagedWhatsApp() {
             >
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <Link2 size={18} />
-                <strong>חיבור WhatsApp מרכזי</strong>
+                <strong>
+                  חיבור WhatsApp מרכזי ·{" "}
+                  {status.connectionMeta?.label || activeConnectionId}
+                </strong>
               </div>
               <p style={{ color: "#64748b", fontSize: 14 }}>
-                הגדרה ידנית של WABA הפלטפורמה (ללא OAuth). ה-Access Token נשמר
-                מוצפן בשרת בלבד ולא מוחזר ללקוח.
+                הגדרה ידנית של WABA הפלטפורמה לחיבור זה בלבד (ללא OAuth). ה-Access
+                Token נשמר מוצפן בשרת ולא מוחזר ללקוח. תבניות מסונכרנות שייכות רק
+                ל־WABA של החיבור הפעיל.
               </p>
+              <label
+                style={{
+                  display: "flex",
+                  gap: 8,
+                  alignItems: "center",
+                  fontWeight: 600,
+                  marginBottom: 12,
+                }}
+              >
+                <input
+                  type="checkbox"
+                  checked={connectionEnabled}
+                  onChange={(e) => setConnectionEnabled(e.target.checked)}
+                />
+                Active / Enabled
+              </label>
+              {activeConnectionId !== DEFAULT_CONNECTION_ID ? (
+                <button
+                  type="button"
+                  onClick={() => void removeConnection(activeConnectionId)}
+                  disabled={saving}
+                  style={{
+                    marginBottom: 12,
+                    border: "1px solid #fecaca",
+                    background: "#fef2f2",
+                    color: "#b91c1c",
+                    borderRadius: 10,
+                    padding: "8px 12px",
+                    fontWeight: 600,
+                    cursor: "pointer",
+                  }}
+                >
+                  מחק חיבור זה
+                </button>
+              ) : null}
               <ManagedConnectionHealthPanel health={status.health} />
               {!status.connection?.managedBusinessIdConfigured ? (
                 <div
