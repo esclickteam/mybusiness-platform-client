@@ -26,6 +26,9 @@ export type PublicWhatsAppMessage = {
   mediaId?: string;
   /** Temporary client-only preview while upload/send is in flight */
   localPreviewUrl?: string;
+  managedConnectionId?: string;
+  receivedOnLabel?: string;
+  sendFromLabel?: string;
 };
 
 export type PublicWhatsAppThread = {

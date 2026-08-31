@@ -15,6 +15,11 @@ export type ManagedWhatsAppConnectionSummary = {
   flag?: string;
   enabled: boolean;
   isDefault?: boolean;
+  isFixed?: boolean;
+  expectedDisplayPhone?: string;
+  credentialsConfigured?: boolean;
+  connectionStatus?: "READY" | "CONNECTED" | "NOT_CONNECTED" | string;
+  displayPhoneMasked?: string;
   credentialBusinessIdConfigured?: boolean;
   credentialBusinessId?: string;
   lastError?: string;
@@ -238,4 +243,36 @@ export async function listAdminManagedWhatsAppAudit(limit = 50) {
     params: { limit },
   });
   return data as { success: boolean; items: AdminManagedWhatsAppAuditItem[] };
+}
+
+export type AdminManagedEmbeddedSignupConfig = {
+  success?: boolean;
+  appId?: string;
+  configId?: string;
+  graphVersion?: string;
+  ready?: boolean;
+  encryptionReady?: boolean;
+  permissions?: string[];
+};
+
+export async function getAdminManagedEmbeddedSignupConfig() {
+  const { data } = await API.get(
+    "/admin/managed-whatsapp/embedded-signup/config"
+  );
+  return data as AdminManagedEmbeddedSignupConfig;
+}
+
+export async function completeAdminManagedEmbeddedSignup(payload: {
+  managedConnectionId: string;
+  code: string;
+  phoneNumberId: string;
+  wabaId: string;
+  metaBusinessId?: string;
+  pin?: string;
+}) {
+  const { data } = await API.post(
+    "/admin/managed-whatsapp/embedded-signup/complete",
+    payload
+  );
+  return data as AdminManagedWhatsAppStatus;
 }
