@@ -8,6 +8,20 @@ export type ManagedWhatsAppHealthStatus =
   | "failed"
   | "not_configured";
 
+export type ManagedWhatsAppConnectionSummary = {
+  connectionId: string;
+  country: string;
+  label: string;
+  flag?: string;
+  enabled: boolean;
+  isDefault?: boolean;
+  credentialBusinessIdConfigured?: boolean;
+  credentialBusinessId?: string;
+  lastError?: string;
+  createdAt?: string | null;
+  updatedAt?: string | null;
+};
+
 export type AdminManagedWhatsAppHealth = {
   status: ManagedWhatsAppHealthStatus | string;
   tokenConfigured: boolean;
@@ -55,6 +69,10 @@ export type AdminManagedWhatsAppStatus = {
     businessName?: string;
     email?: string;
   }>;
+  defaultManagedConnectionId?: string;
+  activeManagedConnectionId?: string;
+  connections?: ManagedWhatsAppConnectionSummary[];
+  connectionMeta?: ManagedWhatsAppConnectionSummary | null;
   lastError?: string;
   updatedAt?: string | null;
   healthy?: boolean;
@@ -64,6 +82,7 @@ export type AdminManagedWhatsAppStatus = {
   connection: {
     managedBusinessIdConfigured: boolean;
     managedBusinessId?: string;
+    managedConnectionId?: string;
     wabaConnected: boolean;
     phoneNumberConnected: boolean;
     accessToken: "configured" | "missing" | string;
@@ -75,6 +94,7 @@ export type AdminManagedWhatsAppStatus = {
     connectionReason?: string;
     connectionStatus?: "READY" | "NOT_READY" | string;
     statusSource?: "platform_managed_only" | string;
+    enabled?: boolean;
   };
   registration?: {
     status?: string;
@@ -113,8 +133,16 @@ export type AdminManagedWhatsAppAuditItem = {
   createdAt?: string;
 };
 
-export async function getAdminManagedWhatsAppStatus() {
-  const { data } = await API.get("/admin/managed-whatsapp");
+function withConnectionParams(managedConnectionId?: string) {
+  return managedConnectionId
+    ? { managedConnectionId }
+    : undefined;
+}
+
+export async function getAdminManagedWhatsAppStatus(managedConnectionId?: string) {
+  const { data } = await API.get("/admin/managed-whatsapp", {
+    params: withConnectionParams(managedConnectionId),
+  });
   return data as AdminManagedWhatsAppStatus;
 }
 
@@ -122,45 +150,86 @@ export async function updateAdminManagedWhatsAppSettings(payload: {
   managedModeEnabled?: boolean;
   allowlistMode?: ManagedWhatsAppAllowlistMode;
   allowlistBusinessIds?: string[];
+  defaultManagedConnectionId?: string;
+  managedConnectionId?: string;
 }) {
   const { data } = await API.put("/admin/managed-whatsapp", payload);
   return data as AdminManagedWhatsAppStatus & { settings?: unknown };
 }
 
 export async function saveAndVerifyAdminManagedWhatsAppConnection(payload: {
+  managedConnectionId?: string;
   wabaId: string;
   phoneNumberId: string;
   displayPhoneNumber: string;
   accessToken?: string;
+  enabled?: boolean;
 }) {
   const { data } = await API.post("/admin/managed-whatsapp/connection", payload);
   return data as AdminManagedWhatsAppStatus;
 }
 
-export async function getAdminManagedWhatsAppHealth() {
-  const { data } = await API.get("/admin/managed-whatsapp/health");
+export async function createAdminManagedWhatsAppConnection(payload: {
+  connectionName?: string;
+  connectionId?: string;
+  country: string;
+  label?: string;
+  phoneNumber?: string;
+  wabaId?: string;
+  phoneNumberId?: string;
+  accessToken?: string;
+  enabled?: boolean;
+}) {
+  const { data } = await API.post("/admin/managed-whatsapp/connections", payload);
+  return data as AdminManagedWhatsAppStatus;
+}
+
+export async function deleteAdminManagedWhatsAppConnection(connectionId: string) {
+  const { data } = await API.delete(
+    `/admin/managed-whatsapp/connections/${encodeURIComponent(connectionId)}`
+  );
+  return data as AdminManagedWhatsAppStatus;
+}
+
+export async function getAdminManagedWhatsAppHealth(managedConnectionId?: string) {
+  const { data } = await API.get("/admin/managed-whatsapp/health", {
+    params: withConnectionParams(managedConnectionId),
+  });
   return data as { success?: boolean; health: AdminManagedWhatsAppHealth } & AdminManagedWhatsAppHealth;
 }
 
-export async function testAdminManagedWhatsAppConnection() {
-  const { data } = await API.post("/admin/managed-whatsapp/test");
+export async function testAdminManagedWhatsAppConnection(managedConnectionId?: string) {
+  const { data } = await API.post(
+    "/admin/managed-whatsapp/test",
+    withConnectionParams(managedConnectionId) || {}
+  );
   return data as { success?: boolean; health: AdminManagedWhatsAppHealth } & AdminManagedWhatsAppHealth;
 }
 
-export async function syncAdminManagedWhatsAppTemplates() {
-  const { data } = await API.post("/admin/managed-whatsapp/sync-templates");
+export async function syncAdminManagedWhatsAppTemplates(managedConnectionId?: string) {
+  const { data } = await API.post(
+    "/admin/managed-whatsapp/sync-templates",
+    withConnectionParams(managedConnectionId) || {}
+  );
   return data as AdminManagedWhatsAppStatus & {
     sync?: {
       synced: number;
       totalFromMeta: number;
       counts: AdminManagedWhatsAppStatus["templates"];
       lastTemplatesSyncAt?: string;
+      managedConnectionId?: string;
     };
   };
 }
 
-export async function registerAdminManagedWhatsAppPhone(pin: string) {
-  const { data } = await API.post("/admin/managed-whatsapp/register", { pin });
+export async function registerAdminManagedWhatsAppPhone(
+  pin: string,
+  managedConnectionId?: string
+) {
+  const { data } = await API.post("/admin/managed-whatsapp/register", {
+    pin,
+    ...(managedConnectionId ? { managedConnectionId } : {}),
+  });
   return data as AdminManagedWhatsAppStatus;
 }
 
