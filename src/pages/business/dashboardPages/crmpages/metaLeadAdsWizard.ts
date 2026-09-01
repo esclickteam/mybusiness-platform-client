@@ -8,6 +8,8 @@ export type MetaLeadWizardSnapshot = {
   connectedPage?: { pageId?: string | null } | null;
   selectedForm?: { formId?: string | null; id?: string | null } | null;
   selectedForms?: Array<{ formId?: string | null; id?: string | null }>;
+  reconnectRequired?: boolean | null;
+  connectionHealthy?: boolean | null;
 };
 
 export function cleanId(value: unknown): string {
@@ -49,9 +51,23 @@ export function resolveMetaAccountConnected(
   );
 }
 
+export function isMetaLeadReconnectRequired(
+  snapshot: MetaLeadWizardSnapshot
+): boolean {
+  if (snapshot.reconnectRequired === true) return true;
+  if (
+    snapshot.connectionHealthy === false &&
+    Boolean(resolveConnectedPageId(snapshot))
+  ) {
+    return true;
+  }
+  return false;
+}
+
 export function isMetaLeadSetupComplete(
   snapshot: MetaLeadWizardSnapshot
 ): boolean {
+  if (isMetaLeadReconnectRequired(snapshot)) return false;
   return (
     resolveMetaAccountConnected(snapshot) &&
     Boolean(resolveConnectedPageId(snapshot)) &&
@@ -62,6 +78,7 @@ export function isMetaLeadSetupComplete(
 export function persistedMetaLeadWizardStep(
   snapshot: MetaLeadWizardSnapshot
 ): MetaLeadWizardStep {
+  if (isMetaLeadReconnectRequired(snapshot)) return 1;
   if (!resolveMetaAccountConnected(snapshot)) return 1;
   if (isMetaLeadSetupComplete(snapshot)) return 3;
   return 2;

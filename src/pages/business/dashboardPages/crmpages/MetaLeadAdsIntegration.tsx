@@ -84,6 +84,10 @@ type StatusPayload = {
   metaAccountConnected?: boolean;
   connectedPageId?: string | null;
   selectedLeadFormId?: string | null;
+  connectionHealthy?: boolean;
+  reconnectRequired?: boolean;
+  healthReasons?: string[];
+  lastError?: string;
 };
 
 const T = "crm.leads.metaIntegration";
@@ -127,9 +131,14 @@ export default function MetaLeadAdsIntegration({
   const [statusSnapshot, setStatusSnapshot] = useState<MetaLeadWizardSnapshot>({});
 
   const isAdminCrm = destination === "admin_crm";
-  const isConnected = Boolean(connectedPage?.pageId);
+  const reconnectRequired = Boolean(statusSnapshot.reconnectRequired);
+  const isConnected =
+    Boolean(connectedPage?.pageId) &&
+    !reconnectRequired &&
+    statusSnapshot.connectionHealthy !== false;
   const hasForm = Boolean(selectedForm?.formId) || selectedForms.length > 0;
   const pageAlreadyConnected =
+    isConnected &&
     Boolean(connectedPage?.pageId) &&
     selectedPageId === connectedPage?.pageId;
   const tenantParams = isAdminCrm
@@ -152,6 +161,8 @@ export default function MetaLeadAdsIntegration({
       connectedPage,
       selectedForm,
       selectedForms,
+      reconnectRequired: statusSnapshot.reconnectRequired,
+      connectionHealthy: statusSnapshot.connectionHealthy,
     }),
     [
       statusSnapshot,
@@ -212,6 +223,8 @@ export default function MetaLeadAdsIntegration({
       connectedPage: nextConnectedPage,
       selectedForm: nextSelectedForm,
       selectedForms: nextSelectedForms,
+      reconnectRequired: Boolean(data.reconnectRequired),
+      connectionHealthy: data.connectionHealthy,
     });
 
     return isMetaLeadSetupComplete({
@@ -224,6 +237,8 @@ export default function MetaLeadAdsIntegration({
         nextSelectedForm?.formId ||
         nextSelectedForms[0]?.formId ||
         "",
+      reconnectRequired: Boolean(data.reconnectRequired),
+      connectionHealthy: data.connectionHealthy,
     });
   };
 
@@ -236,7 +251,12 @@ export default function MetaLeadAdsIntegration({
         params: tenantParams,
       });
 
-      applyStatusPayload(data);
+      const complete = applyStatusPayload(data);
+      if (data.reconnectRequired) {
+        setViewingStep(1);
+      } else if (complete) {
+        setViewingStep(null);
+      }
 
       if ((data.purgedHistorical || 0) > 0) {
         window.dispatchEvent(new CustomEvent("bizuply:leads-updated"));
@@ -657,6 +677,26 @@ export default function MetaLeadAdsIntegration({
                   </div>
                 )}
 
+                {reconnectRequired ? (
+                  <div className="mb-4 rounded-2xl border border-amber-200 bg-amber-50 p-4">
+                    <p className="text-sm font-black text-amber-800">
+                      {t(`${T}.reconnectRequired`)}
+                    </p>
+                    <p className="mt-1 text-xs font-bold leading-5 text-amber-700">
+                      {t(`${T}.reconnectRequiredDesc`)}
+                    </p>
+                    <button
+                      type="button"
+                      onClick={connectFacebook}
+                      disabled={busy}
+                      className="mt-3 inline-flex h-10 items-center gap-2 rounded-xl bg-amber-600 px-4 text-xs font-black text-white transition hover:bg-amber-500 disabled:opacity-60"
+                    >
+                      <Plug className="h-4 w-4" />
+                      {t(`${T}.wizard.reconnectAccount`)}
+                    </button>
+                  </div>
+                ) : null}
+
                 {isAdminCrm && (syncing || syncSummary) ? (
                   <div className="mb-4 rounded-2xl border border-violet-200 bg-violet-50 p-4">
                     <p className="text-sm font-black text-violet-800">
@@ -688,12 +728,14 @@ export default function MetaLeadAdsIntegration({
                       {t(`${T}.wizard.step1Title`)}
                     </h2>
                     <p className="mt-2 max-w-xl text-sm font-semibold leading-6 text-slate-500">
-                      {persistedStep > 1
+                      {reconnectRequired
+                        ? t(`${T}.reconnectRequiredDesc`)
+                        : persistedStep > 1
                         ? t(`${T}.wizard.step1ConnectedDesc`)
                         : t(`${T}.wizard.step1Desc`)}
                     </p>
 
-                    {persistedStep > 1 && (
+                    {persistedStep > 1 && !reconnectRequired && (
                       <div className="mt-4 inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-black text-emerald-700">
                         <CheckCircle2 className="h-3.5 w-3.5" />
                         {t(`${T}.wizard.accountConnected`)}
@@ -711,7 +753,7 @@ export default function MetaLeadAdsIntegration({
                       ) : (
                         <Plug className="h-4 w-4" />
                       )}
-                      {persistedStep > 1
+                      {reconnectRequired || persistedStep > 1
                         ? t(`${T}.wizard.step1CtaReconnect`)
                         : t(`${T}.wizard.step1Cta`)}
                     </button>
@@ -748,9 +790,22 @@ export default function MetaLeadAdsIntegration({
                         </button>
                       </div>
 
-                      <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1.5 text-xs font-black text-emerald-700">
-                        <CheckCircle2 className="h-3.5 w-3.5" />
-                        {t(`${T}.wizard.accountConnected`)}
+                      <div
+                        className={[
+                          "mb-4 inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-xs font-black",
+                          reconnectRequired
+                            ? "border-amber-200 bg-amber-50 text-amber-800"
+                            : "border-emerald-200 bg-emerald-50 text-emerald-700",
+                        ].join(" ")}
+                      >
+                        {reconnectRequired ? (
+                          <AlertCircle className="h-3.5 w-3.5" />
+                        ) : (
+                          <CheckCircle2 className="h-3.5 w-3.5" />
+                        )}
+                        {reconnectRequired
+                          ? t(`${T}.reconnectRequired`)
+                          : t(`${T}.wizard.accountConnected`)}
                       </div>
 
                       <div className="rounded-2xl border border-slate-200 bg-[#F4F5F8] p-4">
