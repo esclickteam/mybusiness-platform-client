@@ -6,7 +6,8 @@ export type AdminStaffAlertKind =
   | "calendar_reminder"
   | "guided_demo"
   | "sales_proposal"
-  | "crm_lead";
+  | "crm_lead"
+  | "whatsapp_message";
 
 export type AdminStaffAlert = {
   id: string;
@@ -110,9 +111,9 @@ export async function notifyAdminStaffEvent(options: {
     server: Boolean(options.id),
   };
 
-  const dedupeKey = `${alert.kind}|${alert.id}|${alert.title}|${alert.body}`;
+  const dedupeKey = `${alert.kind}|${alert.conversationId || ""}|${alert.adminCustomerId || ""}|${alert.title}|${alert.body}`;
   const now = Date.now();
-  if (dedupeKey === lastNotifyKey && now - lastNotifyAt < 2500) {
+  if (dedupeKey === lastNotifyKey && now - lastNotifyAt < 4000) {
     return null;
   }
   lastNotifyKey = dedupeKey;

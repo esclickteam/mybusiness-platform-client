@@ -550,29 +550,24 @@ export default function AdminNotifications() {
 
     const onVisitorMessage = (payload: any) => {
       if (payload?.message?.senderType !== "visitor") return;
+      // WhatsApp inbound is notified once via adminStaff:notify (wamid-idempotent).
+      // Web support still uses support:notify — do not also create "הודעה חדשה מלקוח".
       if (onSupportPage()) {
         setBadge((n) => n + 1);
-        return;
       }
-      const conversationId = payload?.conversation?._id
-        ? String(payload.conversation._id)
-        : null;
-      const name = payload?.conversation?.name || "לקוח";
-      const body = payload?.message?.text || "הודעה חדשה";
-      void notifyAdminStaffEvent({
-        kind: "support",
-        title: "הודעה חדשה מלקוח",
-        body: `${name}: ${body}`,
-        conversationId,
-        skipOsNotification: false,
-      }).then((alert) => {
-        if (alert) pushAlert(alert);
-      });
     };
 
     const onNotify = (payload: any) => {
       if (onSupportPage()) {
         setBadge((n) => n + 1);
+        return;
+      }
+      // WhatsApp uses durable staff notifications; ignore legacy support:notify for WA.
+      if (
+        payload?.kind === "whatsapp" ||
+        payload?.conversation?.channel === "whatsapp" ||
+        payload?.providerMessageId
+      ) {
         return;
       }
       const conversationId =

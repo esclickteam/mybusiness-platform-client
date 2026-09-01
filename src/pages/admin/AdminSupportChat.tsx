@@ -541,10 +541,13 @@ export default function AdminSupportChat() {
         });
       }
       if (message?.senderType === "visitor" || message?.direction === "inbound") {
+        // Inbound WhatsApp alerts come from adminStaff:notify (one per wamid).
+        // Avoid a second "הודעה חדשה ב-WhatsApp" from the chat message event.
+        if (conversation?.channel === "whatsapp") {
+          return;
+        }
         showLocalAlert(
-          conversation?.channel === "whatsapp"
-            ? "הודעה חדשה ב-WhatsApp"
-            : "הודעה חדשה בתמיכה",
+          "הודעה חדשה בתמיכה",
           `${conversation?.name || conversation?.phone || "אורח"}: ${message.text || ""}`,
           conversation?._id
         );
@@ -578,6 +581,14 @@ export default function AdminSupportChat() {
 
     const onNotify = (payload: any) => {
       if (payload?.conversation) upsertConversation(payload.conversation);
+      // WhatsApp inbound is handled by adminStaff:notify — skip duplicate toast.
+      if (
+        payload?.kind === "whatsapp" ||
+        payload?.conversation?.channel === "whatsapp" ||
+        payload?.providerMessageId
+      ) {
+        return;
+      }
       showLocalAlert(
         payload?.title || "פניית תמיכה",
         payload?.body || "יש פנייה חדשה",
