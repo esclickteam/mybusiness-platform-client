@@ -118,6 +118,12 @@ export default function WhatsAppWebThread({
   const senderReady = Boolean(
     sender.sendReady ?? (sender.ready && sender.registrationStatus !== "required")
   );
+  const sendFromReady = useMemo(() => {
+    const row = managedConnections.find(
+      (conn) => conn.connectionId === sendFromConnectionId
+    );
+    return row?.ready !== false;
+  }, [managedConnections, sendFromConnectionId]);
   const composerSendReady = sendFromReady && senderReady;
   const needsRegistration =
     Boolean(sender.ready) &&
@@ -232,13 +238,6 @@ export default function WhatsAppWebThread({
       })
       .catch(() => null);
   }, []);
-
-  const sendFromReady = useMemo(() => {
-    const row = managedConnections.find(
-      (conn) => conn.connectionId === sendFromConnectionId
-    );
-    return row?.ready !== false;
-  }, [managedConnections, sendFromConnectionId]);
 
   const sendFromOptions = useMemo(() => SEND_FROM_OPTIONS, []);
 
