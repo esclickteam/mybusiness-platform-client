@@ -741,6 +741,7 @@ async function ensureTelnyxClient(auth: SoftphoneAuthPayload) {
         setSoftphoneOpen(true);
         // OS banner is owned by Web Push (softphoneNotify). Local Notification
         // here duplicated the same call on devices that already received push.
+      }
 
       if (
         (telnyxCall === call || pendingIncomingTelnyxCall === call) &&
