@@ -508,17 +508,13 @@ export default function AdminSupportChat() {
       setToast(`${title}: ${body}`);
       window.setTimeout(() => setToast(""), 5000);
 
-      const sameConversationOpen =
-        !!conversationId &&
-        String(selectedIdRef.current) === String(conversationId);
-      const skipOsNotification =
-        sameConversationOpen && !document.hidden && document.hasFocus();
-
+      // Web Push owns the OS banner for support events (notifySupportAdmins).
+      // Socket path only drives in-app toast / center — never a second Notification.
       void notifyAdminSupportEvent({
         title,
         body,
         conversationId,
-        skipOsNotification,
+        skipOsNotification: true,
       }).then((alert) => {
         if (!alert) return;
         window.dispatchEvent(
@@ -542,15 +538,9 @@ export default function AdminSupportChat() {
       }
       if (message?.senderType === "visitor" || message?.direction === "inbound") {
         // Inbound WhatsApp alerts come from adminStaff:notify (one per wamid).
-        // Avoid a second "הודעה חדשה ב-WhatsApp" from the chat message event.
-        if (conversation?.channel === "whatsapp") {
-          return;
-        }
-        showLocalAlert(
-          "הודעה חדשה בתמיכה",
-          `${conversation?.name || conversation?.phone || "אורח"}: ${message.text || ""}`,
-          conversation?._id
-        );
+        // Web support OS/toast alerts come from support:notify (notifySupportAdmins).
+        // Avoid a second banner/toast from the chat message event.
+        return;
       }
     };
 

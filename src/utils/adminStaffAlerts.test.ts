@@ -39,15 +39,28 @@ describe("notifyAdminStaffEvent WhatsApp OS dedupe", () => {
     expect(showLocalNotification).not.toHaveBeenCalled();
   });
 
-  it("still shows local OS notification for calendar without wamid", async () => {
+  it("still shows local OS notification when socket owns delivery", async () => {
     const { notifyAdminStaffEvent } = await import("./adminStaffAlerts");
     await notifyAdminStaffEvent({
       id: "n3",
       kind: "calendar_booking",
       title: "שיחה",
       body: "נקבעה",
+      osDelivery: "socket_or_push",
       skipOsNotification: false,
     });
     expect(showLocalNotification).toHaveBeenCalledTimes(1);
+  });
+
+  it("skips local OS when osDelivery is web_push", async () => {
+    const { notifyAdminStaffEvent } = await import("./adminStaffAlerts");
+    await notifyAdminStaffEvent({
+      id: "n4",
+      kind: "calendar_booking",
+      title: "שיחה",
+      body: "נקבעה",
+      osDelivery: "web_push",
+    });
+    expect(showLocalNotification).not.toHaveBeenCalled();
   });
 });
