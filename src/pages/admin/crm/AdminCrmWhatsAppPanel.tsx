@@ -19,7 +19,7 @@ export default function AdminCrmWhatsAppPanel({
   onOpenSendDemo?: () => void;
 }) {
   return (
-    <div className="h-[min(720px,calc(100vh-220px))] min-h-[520px] overflow-hidden rounded-[24px] border border-purple-100">
+    <div className="h-[min(720px,calc(100dvh-220px))] min-h-[520px] overflow-hidden rounded-[24px] border border-purple-100">
       <WhatsAppWebThread
         customerId={customerId}
         canSend={canSend}

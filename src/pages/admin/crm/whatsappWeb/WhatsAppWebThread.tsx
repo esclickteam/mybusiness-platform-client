@@ -38,6 +38,7 @@ type Template = {
     buttonText?: string;
     kind?: string;
   }>;
+  headerVariables?: string[];
   body?: string;
   prefill?: Record<string, string>;
 };
@@ -262,6 +263,11 @@ export default function WhatsAppWebThread({
   }, [customerId, threadId]);
 
   useEffect(() => {
+    if (!templateId) {
+      setVars({});
+      setPreview("");
+      return;
+    }
     if (!selected) return;
     setVars((prev) => ({ ...(selected.prefill || {}), ...prev }));
   }, [templateId]);
@@ -405,6 +411,7 @@ export default function WhatsAppWebThread({
         previewConfirmed: Boolean(
           preview ||
             (!(selected?.variables || []).length &&
+              !(selected?.headerVariables || []).length &&
               !(selected?.buttonVariables || []).length)
         ),
         demoModules: modules,
@@ -432,11 +439,19 @@ export default function WhatsAppWebThread({
             ? "תבנית WhatsApp נשלחה מערוץ BizUply"
             : "הודעת WhatsApp נשלחה מערוץ BizUply"
       );
-      setBody("");
+      // Only after success: collapse template composer so the chat regains height.
+      setTemplateId("");
+      setVars({});
       setPreview("");
+      setBody("");
       setStagedFile(null);
-      requestAnimationFrame(() => scrollToBottom(true));
+      stickRef.current = true;
+      // Wait for React layout (composer shrink) before scrolling to the new message.
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => scrollToBottom(true));
+      });
     } catch (err: any) {
+      // Keep template + vars + preview on failure so the user can retry.
       setMessages((prev) =>
         applyStatusPatch(prev, {
           id: optimistic.id,
@@ -618,7 +633,7 @@ export default function WhatsAppWebThread({
         ) : null}
       </div>
 
-      <div className="shrink-0 border-t border-black/5 bg-[#f0f2f5] px-3 py-2">
+      <div className="max-h-[min(42vh,380px)] shrink-0 overflow-x-hidden overflow-y-auto border-t border-black/5 bg-[#f0f2f5] px-3 py-2">
         {!canSend ? (
           <p className="mb-2 px-2 text-xs font-bold text-rose-700">אין הרשאה לשלוח WhatsApp.</p>
         ) : null}
@@ -732,8 +747,19 @@ export default function WhatsAppWebThread({
           </select>
         ) : null}
 
-        {(selected?.variables?.length || selected?.buttonVariables?.length) ? (
+        {(selected?.variables?.length ||
+          selected?.headerVariables?.length ||
+          selected?.buttonVariables?.length) ? (
           <div className="mb-2 space-y-2 px-1">
+            {(selected.headerVariables || []).map((key) => (
+              <input
+                key={`hdr-${key}`}
+                className="min-h-10 w-full rounded-2xl border-none bg-white px-3 text-sm"
+                placeholder={`HEADER {{${String(key).replace(/^header_/, "")}}}`}
+                value={mappedVars[key] || ""}
+                onChange={(e) => setVars((prev) => ({ ...prev, [key]: e.target.value }))}
+              />
+            ))}
             {(selected.variables || []).map((key) => (
               <input
                 key={`body-${key}`}
