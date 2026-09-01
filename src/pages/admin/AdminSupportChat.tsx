@@ -11,7 +11,7 @@ import {
 
 import API from "../../api";
 import { useAuth } from "../../context/AuthContext";
-import { notifyAdminSupportEvent } from "../../utils/adminSupportAlerts";
+import { notifyAdminSupportEvent } from "../../utils/adminStaffAlerts";
 import AdminHeader from "./AdminsHeader";
 import {
   deliveryStatusLabel,

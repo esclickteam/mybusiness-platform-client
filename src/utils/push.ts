@@ -434,7 +434,12 @@ export async function unsubscribeFromPush(): Promise<void> {
   }
 }
 
-/** Show a device notification from the open page (fallback when push fails). */
+/**
+ * Show a device notification from the open page.
+ * FORBIDDEN for authenticated-system events with osDelivery=web_push —
+ * those must use claimed Web Push via the shared server stack only.
+ * Prefer adminStaffAlerts (which skips OS unless osDelivery=socket_or_push).
+ */
 export async function showLocalNotification(options: {
   title: string;
   body: string;
