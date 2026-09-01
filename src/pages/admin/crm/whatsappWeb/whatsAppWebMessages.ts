@@ -24,6 +24,7 @@ export type PublicWhatsAppMessage = {
   caption?: string;
   mediaSize?: number;
   hasMedia?: boolean;
+  canRetrieveMedia?: boolean;
   mediaPath?: string;
   mediaId?: string;
   /** Temporary client-only preview while upload/send is in flight */

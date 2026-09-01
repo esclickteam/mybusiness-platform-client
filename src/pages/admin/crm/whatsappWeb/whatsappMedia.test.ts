@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { validateWhatsAppFile, inferMessageTypeFromFile } from "./whatsappMedia";
+import { validateWhatsAppFile, inferMessageTypeFromFile, isPdfDocument } from "./whatsappMedia";
 
 describe("whatsappMedia validation", () => {
   it("accepts png image", () => {
@@ -15,5 +15,11 @@ describe("whatsappMedia validation", () => {
       type: "application/zip",
     });
     expect(validateWhatsAppFile(file)).toMatch(/נתמך/);
+  });
+
+  it("detects pdf documents by mime or filename", () => {
+    expect(isPdfDocument("application/pdf", "x")).toBe(true);
+    expect(isPdfDocument("application/octet-stream", "contract.pdf")).toBe(true);
+    expect(isPdfDocument("text/plain", "notes.txt")).toBe(false);
   });
 });
