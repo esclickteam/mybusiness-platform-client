@@ -134,11 +134,12 @@ export async function notifyAdminStaffEvent(options: {
 
   playAlertBeep();
 
-  // WhatsApp inbound is delivered by Web Push / SW. Showing a second
-  // Notification API banner for the same wamid duplicates on that device.
+  // Authenticated-user OS banners are owned by Web Push (osDelivery=web_push).
+  // Only show a page-local Notification when the caller explicitly opts into
+  // socket-owned OS delivery (legacy edge — prefer Web Push).
   const skipOs =
     Boolean(options.skipOsNotification) ||
-    options.osDelivery === "web_push" ||
+    options.osDelivery !== "socket_or_push" ||
     alert.kind === "whatsapp_message" ||
     Boolean(providerMessageId);
 

@@ -25,7 +25,7 @@ vi.mock("./AdminsHeader", () => ({
   default: () => <div>admin-header</div>,
 }));
 
-vi.mock("../../utils/adminSupportAlerts", () => ({
+vi.mock("../../utils/adminStaffAlerts", () => ({
   notifyAdminSupportEvent: vi.fn(async () => null),
 }));
 

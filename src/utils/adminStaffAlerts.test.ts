@@ -52,14 +52,13 @@ describe("notifyAdminStaffEvent WhatsApp OS dedupe", () => {
     expect(showLocalNotification).toHaveBeenCalledTimes(1);
   });
 
-  it("skips local OS when osDelivery is web_push", async () => {
+  it("skips local OS by default when osDelivery is omitted", async () => {
     const { notifyAdminStaffEvent } = await import("./adminStaffAlerts");
     await notifyAdminStaffEvent({
-      id: "n4",
+      id: "n5",
       kind: "calendar_booking",
       title: "שיחה",
       body: "נקבעה",
-      osDelivery: "web_push",
     });
     expect(showLocalNotification).not.toHaveBeenCalled();
   });

@@ -268,8 +268,10 @@ export default function ChatBot({
       if (mapped.id && lastNotifiedIdRef.current === String(mapped.id)) return;
       if (mapped.id) lastNotifiedIdRef.current = String(mapped.id);
       setUnreadCount((n) => n + 1);
+      // GUEST_ONLY: isolated browser Notification (guest-support-* tags).
+      // Authenticated admins/business users must not use this path.
       showBrowserNotify(title || t("chatbot.humanTitle"), body || mapped.text, {
-        tag: `bizuply-support-${mapped.id || "msg"}`,
+        tag: `guest-support-${mapped.id || "msg"}`,
         onClick: () => setChatOpen(true),
       });
     },

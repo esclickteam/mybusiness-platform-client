@@ -235,14 +235,24 @@ export function disconnectSupportGuestSocket() {
   }
 }
 
+/**
+ * GUEST_ONLY browser Notification for unauthenticated support-chat visitors.
+ * Must never be used for admin/business/partner users (they use Web Push).
+ * Tags are prefixed with `guest-support-` so they cannot collide with SW push tags.
+ */
 export function showBrowserNotify(title, body, { tag, onClick } = {}) {
   try {
     if (typeof Notification === "undefined") return;
     if (Notification.permission !== "granted") return;
 
+    const rawTag = String(tag || "message").trim() || "message";
+    const guestTag = rawTag.startsWith("guest-support-")
+      ? rawTag
+      : `guest-support-${rawTag}`;
+
     const n = new Notification(title, {
       body,
-      tag: tag || "bizuply-support",
+      tag: guestTag,
       renotify: true,
     });
     if (typeof onClick === "function") {

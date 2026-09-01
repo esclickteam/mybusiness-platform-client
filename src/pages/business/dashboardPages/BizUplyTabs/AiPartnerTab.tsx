@@ -363,12 +363,8 @@ export default function AiPartnerTab({
     socket.on("newAiSuggestion", (suggestion: RawRecommendation) => {
       void notificationSound.current?.play().catch(() => undefined);
 
-      if ("Notification" in window && Notification.permission === "granted") {
-        new Notification("הודעת AI חדשה", {
-          body: suggestion.text || suggestion.recommendation || "",
-          icon: "/logo192.png",
-        });
-      }
+      // OS banners for business users go through claimed Web Push / notification
+      // center — do not call Notification API here (duplicates the shared stack).
 
       setSuggestions((prev) => {
         const incomingId = suggestion.id || suggestion.recommendationId;
