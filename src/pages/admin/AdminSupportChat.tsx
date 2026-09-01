@@ -343,6 +343,8 @@ export default function AdminSupportChat() {
   const stickToBottomRef = useRef(true);
   const lastScrolledMsgIdRef = useRef<string | null>(null);
   const prevSelectedForScrollRef = useRef<string | null>(null);
+  /** Sync guard — React state alone cannot stop double Enter/click before re-render. */
+  const sendingRef = useRef(false);
 
   useEffect(() => {
     selectedIdRef.current = selectedId;
@@ -724,19 +726,44 @@ export default function AdminSupportChat() {
     }
   }
 
-  async function sendViaRest(conversationId: string, text: string) {
+  async function sendViaRest(
+    conversationId: string,
+    text: string,
+    clientRequestId: string
+  ) {
     const { data } = await API.post(`/support-chat/${conversationId}/messages`, {
       text,
+      clientRequestId,
     });
     applySendResult(data);
   }
 
+  async function reloadConversationMessages(conversationId: string) {
+    const { data } = await API.get(`/support-chat/${conversationId}/messages`);
+    if (selectedIdRef.current !== conversationId) return;
+    setMessages(data.messages || []);
+    if (data.conversation) {
+      setConversations((prev) =>
+        prev.map((c) =>
+          c._id === data.conversation._id ? data.conversation : c
+        )
+      );
+    }
+  }
+
   async function sendMessage() {
     const text = input.trim();
-    if (!text || !selectedId || sending) return;
+    if (!text || !selectedId || sendingRef.current) return;
+    sendingRef.current = true;
     setSending(true);
     setInput("");
     const conversationId = selectedId;
+    const selectedConversation = conversations.find((c) => c._id === conversationId);
+    const isWhatsApp = selectedConversation?.channel === "whatsapp";
+    const clientRequestId =
+      typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
+        ? crypto.randomUUID()
+        : `req-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
 
     stickToBottomRef.current = true;
 
@@ -745,21 +772,28 @@ export default function AdminSupportChat() {
         try {
           await new Promise<void>((resolve, reject) => {
             let settled = false;
+            // WhatsApp Meta send often exceeds 2.5s; a short timeout + REST
+            // fallback caused real duplicate Meta deliveries (two wamids).
+            const ackTimeoutMs = isWhatsApp ? 45000 : 8000;
             const timer = window.setTimeout(() => {
               if (settled) return;
               settled = true;
-              reject(new Error("timeout"));
-            }, 2500);
+              reject(Object.assign(new Error("timeout"), { code: "ACK_TIMEOUT" }));
+            }, ackTimeoutMs);
 
             socket.emit(
               "support:sendMessage",
-              { conversationId, text },
+              { conversationId, text, clientRequestId },
               (ack: any) => {
                 if (settled) return;
                 settled = true;
                 window.clearTimeout(timer);
                 if (!ack?.ok) {
-                  reject(new Error(ack?.error || "send failed"));
+                  reject(
+                    Object.assign(new Error(ack?.error || "send failed"), {
+                      code: "ACK_FAILED",
+                    })
+                  );
                   return;
                 }
                 applySendResult(ack);
@@ -767,17 +801,28 @@ export default function AdminSupportChat() {
               }
             );
           });
-        } catch {
-          // Socket ack failed / timed out — REST fallback
-          await sendViaRest(conversationId, text);
+        } catch (err: any) {
+          // Never re-POST WhatsApp after the socket emit already left — Meta may
+          // already have accepted the first call. Refresh UI instead.
+          if (isWhatsApp) {
+            await reloadConversationMessages(conversationId).catch(() => null);
+            if (err?.code === "ACK_TIMEOUT") {
+              setToast("ההודעה נשלחה — מרעננים את השיחה");
+              window.setTimeout(() => setToast(""), 2500);
+              return;
+            }
+            throw err;
+          }
+          await sendViaRest(conversationId, text, clientRequestId);
         }
       } else {
-        await sendViaRest(conversationId, text);
+        await sendViaRest(conversationId, text, clientRequestId);
       }
     } catch (err: any) {
       setError(err?.message || "שליחת ההודעה נכשלה");
       setInput(text);
     } finally {
+      sendingRef.current = false;
       setSending(false);
     }
   }
