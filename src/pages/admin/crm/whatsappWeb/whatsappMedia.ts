@@ -34,11 +34,19 @@ export function inferMessageTypeFromFile(file: File): StagedWhatsAppFile["messag
     mime === "application/pdf" ||
     mime.startsWith("application/vnd.") ||
     mime === "application/msword" ||
-    mime === "text/plain"
+    mime === "text/plain" ||
+    mime === "text/csv" ||
+    mime === "application/csv"
   ) {
     return "document";
   }
   return null;
+}
+
+export function isPdfDocument(mimeType?: string | null, filename?: string | null) {
+  const mime = String(mimeType || "").toLowerCase();
+  if (mime.includes("pdf")) return true;
+  return /\.pdf$/i.test(String(filename || ""));
 }
 
 export function validateWhatsAppFile(file: File): string | null {
