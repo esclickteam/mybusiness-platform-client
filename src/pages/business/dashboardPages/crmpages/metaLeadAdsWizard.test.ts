@@ -76,6 +76,19 @@ describe("deriveMetaLeadWizardStep", () => {
     expect(deriveMetaLeadWizardStep(snapshot)).toBe(3);
   });
 
+  it("does not treat a persisted page and form as complete when Meta reconnect is required", () => {
+    const snapshot = {
+      metaAccountConnected: true,
+      connectedPageId: "1326020490583991",
+      selectedLeadFormId: "1720163819102905",
+      reconnectRequired: true,
+      connectionHealthy: false,
+    };
+    expect(isMetaLeadSetupComplete(snapshot)).toBe(false);
+    expect(deriveMetaLeadWizardStep(snapshot)).toBe(1);
+    expect(canNavigateToMetaLeadWizardStep(snapshot, 3)).toBe(false);
+  });
+
   it("does not open step 2 or 3 before those prerequisites exist", () => {
     const accountOnly = {
       metaAccountConnected: true,
