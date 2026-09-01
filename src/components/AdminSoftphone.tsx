@@ -739,12 +739,8 @@ async function ensureTelnyxClient(auth: SoftphoneAuthPayload) {
           mode: "voip",
         });
         setSoftphoneOpen(true);
-        void showIncomingCallNotification({
-          fromNumber: from,
-          contactName: "שיחה נכנסת",
-          callSid,
-        });
-      }
+        // OS banner is owned by Web Push (softphoneNotify). Local Notification
+        // here duplicated the same call on devices that already received push.
 
       if (
         (telnyxCall === call || pendingIncomingTelnyxCall === call) &&

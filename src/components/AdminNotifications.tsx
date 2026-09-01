@@ -602,7 +602,9 @@ export default function AdminNotifications() {
         title: payload?.title || "פניית תמיכה",
         body: payload?.body || "יש פנייה חדשה מלקוח",
         conversationId,
-        skipOsNotification: false,
+        pushTag: payload?.pushTag || null,
+        osDelivery: payload?.osDelivery || "web_push",
+        skipOsNotification: true,
       }).then((alert) => {
         if (alert) pushAlert(alert);
       });
@@ -619,7 +621,8 @@ export default function AdminNotifications() {
         title: "לקוח ממתין לנציג",
         body: `${conversation?.name || "אורח"} מבקש נציג אנושי`,
         conversationId: conversation?._id,
-        skipOsNotification: false,
+        skipOsNotification: true,
+        osDelivery: "web_push",
       }).then((alert) => {
         if (alert) pushAlert(alert);
       });
