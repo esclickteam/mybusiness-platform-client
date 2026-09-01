@@ -31,6 +31,13 @@ type Template = {
   status: string;
   statusLabel?: string;
   variables: string[];
+  buttonVariables?: Array<{
+    key: string;
+    label?: string;
+    buttonIndex?: number;
+    buttonText?: string;
+    kind?: string;
+  }>;
   body?: string;
   prefill?: Record<string, string>;
 };
@@ -395,7 +402,11 @@ export default function WhatsAppWebThread({
         templateId: templateId || null,
         body: text,
         vars: mappedVars,
-        previewConfirmed: Boolean(preview || !(selected?.variables || []).length),
+        previewConfirmed: Boolean(
+          preview ||
+            (!(selected?.variables || []).length &&
+              !(selected?.buttonVariables || []).length)
+        ),
         demoModules: modules,
         paymentPlan,
         managedConnectionId: sendFromConnectionId,
@@ -721,15 +732,26 @@ export default function WhatsAppWebThread({
           </select>
         ) : null}
 
-        {selected?.variables?.length ? (
+        {(selected?.variables?.length || selected?.buttonVariables?.length) ? (
           <div className="mb-2 space-y-2 px-1">
-            {selected.variables.map((key) => (
+            {(selected.variables || []).map((key) => (
               <input
-                key={key}
+                key={`body-${key}`}
                 className="min-h-10 w-full rounded-2xl border-none bg-white px-3 text-sm"
-                placeholder={key}
+                placeholder={`BODY {{${key}}}`}
                 value={mappedVars[key] || ""}
                 onChange={(e) => setVars((prev) => ({ ...prev, [key]: e.target.value }))}
+              />
+            ))}
+            {(selected.buttonVariables || []).map((row) => (
+              <input
+                key={`btn-${row.key}`}
+                className="min-h-10 w-full rounded-2xl border-none bg-white px-3 text-sm"
+                placeholder={row.label || `כפתור URL · ${row.key}`}
+                value={mappedVars[row.key] || ""}
+                onChange={(e) =>
+                  setVars((prev) => ({ ...prev, [row.key]: e.target.value }))
+                }
               />
             ))}
             <SecondaryButton type="button" className="!min-h-9 !text-xs" onClick={buildPreview}>
