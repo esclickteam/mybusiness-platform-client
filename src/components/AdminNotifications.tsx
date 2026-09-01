@@ -404,7 +404,12 @@ export default function AdminNotifications() {
   const mergeAlerts = useCallback((incoming: AdminStaffAlert[]) => {
     const map = new Map<string, AdminStaffAlert>();
     for (const item of incoming) {
-      map.set(item.id, item);
+      const key =
+        (item.providerMessageId && `wamid:${item.providerMessageId}`) ||
+        (item.pushTag && `tag:${item.pushTag}`) ||
+        item.id;
+      const prev = map.get(key);
+      if (!prev || item.at >= prev.at) map.set(key, item);
     }
     return [...map.values()].sort((a, b) => b.at - a.at).slice(0, 40);
   }, []);
@@ -412,6 +417,12 @@ export default function AdminNotifications() {
   const pushAlert = useCallback((alert: AdminStaffAlert) => {
     setAlerts((prev) => {
       if (prev.some((a) => a.id === alert.id)) return prev;
+      if (
+        alert.providerMessageId &&
+        prev.some((a) => a.providerMessageId === alert.providerMessageId)
+      ) {
+        return prev;
+      }
       const next = mergeAlerts([alert, ...prev]);
       persistSupportAlerts(next);
       return next;
@@ -511,16 +522,30 @@ export default function AdminNotifications() {
         : payload
           ? [payload]
           : [];
+      const kind = payload?.kind || "calendar_booking";
+      const providerMessageId =
+        payload?.providerMessageId ||
+        rows.find((r: any) => r?.providerMessageId)?.providerMessageId ||
+        null;
+      const pushTag = payload?.pushTag || null;
+      const skipOsNotification =
+        kind === "whatsapp_message" ||
+        payload?.osDelivery === "web_push" ||
+        Boolean(providerMessageId);
+
       for (const row of rows) {
         void notifyAdminStaffEvent({
           id: row.id,
-          kind: row.kind || payload?.kind || "calendar_booking",
+          kind: row.kind || kind,
           title: row.title || payload?.title || "התראה",
           body: row.body || payload?.body || "",
           targetUrl: row.targetUrl || payload?.targetUrl || "",
           bookingId: row.bookingId || payload?.bookingId || null,
           adminCustomerId: row.adminCustomerId || payload?.adminCustomerId || null,
-          skipOsNotification: false,
+          providerMessageId: row.providerMessageId || providerMessageId,
+          pushTag: row.pushTag || pushTag,
+          osDelivery: payload?.osDelivery || null,
+          skipOsNotification,
         }).then((alert) => {
           if (alert) pushAlert(alert);
         });

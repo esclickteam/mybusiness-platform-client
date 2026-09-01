@@ -18,6 +18,8 @@ export type AdminStaffAlert = {
   conversationId?: string | null;
   bookingId?: string | null;
   adminCustomerId?: string | null;
+  providerMessageId?: string | null;
+  pushTag?: string | null;
   at: number;
   read?: boolean;
   server?: boolean;
@@ -95,8 +97,14 @@ export async function notifyAdminStaffEvent(options: {
   conversationId?: string | null;
   bookingId?: string | null;
   adminCustomerId?: string | null;
+  providerMessageId?: string | null;
+  pushTag?: string | null;
+  /** When Web Push already delivered the OS banner for this event. */
   skipOsNotification?: boolean;
+  osDelivery?: "web_push" | "socket_or_push" | string | null;
 }): Promise<AdminStaffAlert | null> {
+  const providerMessageId = String(options.providerMessageId || "").trim() || null;
+  const pushTag = String(options.pushTag || "").trim() || null;
   const alert: AdminStaffAlert = {
     id: options.id || `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
     kind: options.kind || "support",
@@ -106,12 +114,17 @@ export async function notifyAdminStaffEvent(options: {
     conversationId: options.conversationId || null,
     bookingId: options.bookingId || null,
     adminCustomerId: options.adminCustomerId || null,
+    providerMessageId,
+    pushTag,
     at: Date.now(),
     read: false,
     server: Boolean(options.id),
   };
 
-  const dedupeKey = `${alert.kind}|${alert.conversationId || ""}|${alert.adminCustomerId || ""}|${alert.title}|${alert.body}`;
+  const dedupeKey =
+    providerMessageId ||
+    pushTag ||
+    `${alert.kind}|${alert.id}|${alert.conversationId || ""}|${alert.adminCustomerId || ""}|${alert.title}|${alert.body}`;
   const now = Date.now();
   if (dedupeKey === lastNotifyKey && now - lastNotifyAt < 4000) {
     return null;
@@ -121,7 +134,15 @@ export async function notifyAdminStaffEvent(options: {
 
   playAlertBeep();
 
-  if (!options.skipOsNotification) {
+  // WhatsApp inbound is delivered by Web Push / SW. Showing a second
+  // Notification API banner for the same wamid duplicates on that device.
+  const skipOs =
+    Boolean(options.skipOsNotification) ||
+    options.osDelivery === "web_push" ||
+    alert.kind === "whatsapp_message" ||
+    Boolean(providerMessageId);
+
+  if (!skipOs) {
     const url =
       alert.targetUrl ||
       (alert.conversationId
@@ -133,7 +154,11 @@ export async function notifyAdminStaffEvent(options: {
       title: `BizUply · ${alert.title}`,
       body: alert.body,
       url,
-      tag: alert.kind === "support" ? `support-${alert.conversationId || alert.id}` : alert.id,
+      tag:
+        pushTag ||
+        (alert.kind === "support"
+          ? `support-${alert.conversationId || alert.id}`
+          : alert.id),
     });
   }
 
