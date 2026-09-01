@@ -118,6 +118,7 @@ export default function WhatsAppWebThread({
   const stickRef = useRef(true);
   const scrollerRef = useRef<HTMLDivElement | null>(null);
   const lastScrollTopRef = useRef(0);
+  const sendingRef = useRef(false);
 
   const templates: Template[] = data?.bizuplyManaged?.templates || [];
   const selected = templates.find((t) => t.id === templateId);
@@ -349,7 +350,7 @@ export default function WhatsAppWebThread({
   }
 
   async function send() {
-    if (!canSend || !customerId) return;
+    if (!canSend || !customerId || sendingRef.current) return;
     if (intent === "demo" && !canDemo) {
       onBanner("אין הרשאה לשליחת דמו");
       return;
@@ -366,9 +367,14 @@ export default function WhatsAppWebThread({
       return;
     }
 
+    sendingRef.current = true;
     setSending(true);
+    const clientRequestId =
+      typeof crypto !== "undefined" && typeof crypto.randomUUID === "function"
+        ? crypto.randomUUID()
+        : `req-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
     const optimistic: PublicWhatsAppMessage = {
-      id: `tmp-${Date.now()}`,
+      id: `tmp-${clientRequestId}`,
       direction: "outbound",
       status: "queued",
       timestamp: new Date().toISOString(),
@@ -383,6 +389,7 @@ export default function WhatsAppWebThread({
       hasMedia: Boolean(stagedFile),
       kind: templateId ? "template" : "free_form",
       pending: true,
+      clientRequestId,
       localPreviewUrl: stagedFile?.previewUrl || "",
     };
     stickRef.current = true;
@@ -417,6 +424,7 @@ export default function WhatsAppWebThread({
         demoModules: modules,
         paymentPlan,
         managedConnectionId: sendFromConnectionId,
+        clientRequestId,
       };
       if (uploadedMedia) {
         payload.mediaType = uploadedMedia.messageType;
@@ -430,7 +438,15 @@ export default function WhatsAppWebThread({
 
       const { data: res } = await adminCrmApi.whatsappSend(customerId, payload);
       if (res.message) {
-        setMessages((prev) => mergeMessages(prev, res.message));
+        setMessages((prev) => {
+          const withoutTmp = prev.filter((m) => m.id !== optimistic.id);
+          return mergeMessages(withoutTmp, {
+            ...res.message,
+            clientRequestId,
+          });
+        });
+      } else {
+        setMessages((prev) => prev.filter((m) => m.id !== optimistic.id));
       }
       onBanner(
         res.kind === "media"
@@ -461,6 +477,7 @@ export default function WhatsAppWebThread({
       );
       onBanner(err?.response?.data?.error || "השליחה נכשלה. הטיוטה נשמרה.");
     } finally {
+      sendingRef.current = false;
       setSending(false);
     }
   }

@@ -65,6 +65,7 @@ describe("whatsAppWebMessages", () => {
       timestamp: "2026-08-21T08:00:00.000Z",
       bodyPreview: "שלום",
       pending: true,
+      clientRequestId: "req-1",
     });
     const confirmed = mergeMessages(pending, {
       id: "log-1",
@@ -73,11 +74,42 @@ describe("whatsAppWebMessages", () => {
       timestamp: "2026-08-21T08:00:01.000Z",
       bodyPreview: "שלום",
       providerMessageId: "wamid.out",
+      clientRequestId: "req-1",
     });
     expect(confirmed).toHaveLength(1);
     expect(confirmed[0].id).toBe("log-1");
     expect(confirmed[0].status).toBe("sent");
     expect(confirmed[0].pending).toBe(false);
+  });
+
+  it("upserts websocket + http duplicates by wamid instead of appending", () => {
+    const first = mergeMessages([], {
+      id: "tmp-1",
+      direction: "outbound",
+      status: "queued",
+      timestamp: "2026-08-21T08:00:00.000Z",
+      bodyPreview: "שלום",
+      pending: true,
+      clientRequestId: "req-2",
+    });
+    const viaSocket = mergeMessages(first, {
+      id: "log-1",
+      direction: "outbound",
+      status: "sent",
+      timestamp: "2026-08-21T08:00:01.000Z",
+      bodyPreview: "שלום",
+      providerMessageId: "wamid.out",
+    });
+    const viaHttp = mergeMessages(viaSocket, {
+      id: "log-1",
+      direction: "outbound",
+      status: "sent",
+      timestamp: "2026-08-21T08:00:01.000Z",
+      bodyPreview: "שלום",
+      providerMessageId: "wamid.out",
+    });
+    expect(viaHttp).toHaveLength(1);
+    expect(messageKey(viaHttp[0])).toBe("wamid:wamid.out");
   });
 
   it("applies delivery and read status by wamid", () => {

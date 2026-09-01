@@ -16,6 +16,8 @@ export type PublicWhatsAppMessage = {
   error?: string;
   providerMessageId?: string;
   pending?: boolean;
+  /** Client-generated id for one send attempt (optimistic ↔ server upsert). */
+  clientRequestId?: string;
   messageType?: string;
   mimeType?: string;
   filename?: string;
@@ -92,9 +94,13 @@ export function mergeMessages(
         return true;
       }
       if (row.id && item.id === row.id) return true;
+      if (row.clientRequestId && item.clientRequestId === row.clientRequestId) {
+        return true;
+      }
       if (
         item.pending &&
         row.direction === "outbound" &&
+        item.direction === "outbound" &&
         item.bodyPreview === row.bodyPreview
       ) {
         return true;
@@ -102,17 +108,41 @@ export function mergeMessages(
       return false;
     });
     if (idx >= 0) {
-      next[idx] = { ...next[idx], ...row, pending: false };
+      const prev = next[idx];
+      next[idx] = {
+        ...prev,
+        ...row,
+        pending: false,
+        localPreviewUrl: row.localPreviewUrl || prev.localPreviewUrl || "",
+        clientRequestId: row.clientRequestId || prev.clientRequestId,
+      };
     } else {
       next.push({ ...row, pending: Boolean(row.pending) });
     }
   }
-  next.sort((a, b) => {
+  // Final pass: collapse any remaining wamid duplicates (e.g. after refresh).
+  const seen = new Map<string, number>();
+  const deduped: PublicWhatsAppMessage[] = [];
+  for (const msg of next) {
+    const k = messageKey(msg);
+    const existingIdx = seen.get(k);
+    if (existingIdx === undefined) {
+      seen.set(k, deduped.length);
+      deduped.push(msg);
+    } else {
+      deduped[existingIdx] = {
+        ...deduped[existingIdx],
+        ...msg,
+        pending: false,
+      };
+    }
+  }
+  deduped.sort((a, b) => {
     const delta = timeMs(a.timestamp) - timeMs(b.timestamp);
     if (delta !== 0) return delta;
     return String(a.id).localeCompare(String(b.id));
   });
-  return next;
+  return deduped;
 }
 
 export function applyStatusPatch(
