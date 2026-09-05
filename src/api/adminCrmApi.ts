@@ -55,7 +55,8 @@ export const adminCrmApi = {
   subscription: (id: string) => API.get(`/admin/crm/customers/${id}/subscription`),
   products: (id: string) => API.get(`/admin/crm/customers/${id}/products`),
   websites: (id: string) => API.get(`/admin/crm/customers/${id}/websites`),
-  whatsapp: (id: string) => API.get(`/admin/crm/customers/${id}/whatsapp`),
+  whatsapp: (id: string, params: AdminCrmListQuery = {}) =>
+    API.get(`/admin/crm/customers/${id}/whatsapp${qs(params)}`),
   automations: (id: string) => API.get(`/admin/crm/customers/${id}/automations`),
   billing: (id: string) => API.get(`/admin/crm/customers/${id}/billing`),
   previewPlan: (id: string, body: Record<string, unknown>) =>
@@ -93,7 +94,8 @@ export const adminCrmApi = {
     });
   },
   whatsappRead: (id: string) => API.post(`/admin/crm/customers/${id}/whatsapp/read`),
-  whatsappTemplates: () => API.get("/admin/crm/whatsapp/templates"),
+  whatsappTemplates: (params: AdminCrmListQuery = {}) =>
+    API.get(`/admin/crm/whatsapp/templates${qs(params)}`),
   whatsappInbox: (params: AdminCrmListQuery = {}) =>
     API.get(`/admin/crm/whatsapp/inbox${qs(params)}`),
   whatsappSync: () =>

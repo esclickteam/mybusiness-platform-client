@@ -19,6 +19,9 @@ export type ManagedWhatsAppConnectionSummary = {
   expectedDisplayPhone?: string;
   credentialsConfigured?: boolean;
   connectionStatus?: "READY" | "CONNECTED" | "NOT_CONNECTED" | string;
+  phoneRegistered?: boolean;
+  registrationStatus?: string;
+  sendReady?: boolean;
   displayPhoneMasked?: string;
   credentialBusinessIdConfigured?: boolean;
   credentialBusinessId?: string;
