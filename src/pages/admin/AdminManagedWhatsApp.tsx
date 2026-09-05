@@ -83,9 +83,27 @@ function connectionSummaryFromStatus(
 }
 
 function isManagedConnectionReady(conn?: ManagedWhatsAppConnectionSummary | null) {
+  if (conn?.credentialsConfigured) return true;
   const status = String(conn?.connectionStatus || "").toUpperCase();
-  if (status === "READY" || status === "CONNECTED") return true;
-  return Boolean(conn?.credentialsConfigured);
+  return status === "READY" || status === "CONNECTED";
+}
+
+/** True only when Meta registration completed and the number can send. */
+function isManagedConnectionSendReady(
+  conn?: ManagedWhatsAppConnectionSummary | null
+) {
+  if (conn?.sendReady) return true;
+  if (conn?.phoneRegistered && isManagedConnectionReady(conn)) return true;
+  const status = String(conn?.connectionStatus || "").toUpperCase();
+  return status === "READY" && Boolean(conn?.phoneRegistered !== false);
+}
+
+function connectionNeedsPin(conn?: ManagedWhatsAppConnectionSummary | null) {
+  if (!isManagedConnectionReady(conn)) return false;
+  if (conn?.sendReady || conn?.phoneRegistered) return false;
+  const reg = String(conn?.registrationStatus || "").toLowerCase();
+  if (reg === "registered") return false;
+  return true;
 }
 
 function connectionTabLabel(conn: ManagedWhatsAppConnectionSummary) {
@@ -467,10 +485,21 @@ export default function AdminManagedWhatsApp() {
                   phoneNumberId: assets.phoneNumberId,
                   wabaId: assets.wabaId,
                   metaBusinessId: assets.metaBusinessId,
+                  // PIN is collected separately after ES — never invent/skip it.
                 });
                 applyStatus(data);
                 setActiveConnectionId(US_CONNECTION_ID);
-                setSyncFlash("חיבור USA הושלם — Embedded Signup");
+                const registered = Boolean(
+                  data.registration?.phoneRegistered || data.registration?.sendReady
+                );
+                if (registered) {
+                  setSyncFlash("חיבור USA הושלם — Embedded Signup + רישום");
+                } else {
+                  setSyncFlash(
+                    "חיבור USA נשמר מול Meta — הזינו PIN דו-שלבי להשלמת הרישום לשליחה"
+                  );
+                  setRegisterPin("");
+                }
                 const aud = await listAdminManagedWhatsAppAudit(30).catch(() => ({
                   items: [],
                 }));
@@ -692,8 +721,15 @@ export default function AdminManagedWhatsApp() {
   const usSummary = fixedConnections.find((c) => c.connectionId === US_CONNECTION_ID);
   const usReady = isManagedConnectionReady(usSummary);
   const showIlCredentialForm = activeConnectionId === DEFAULT_CONNECTION_ID;
+  // Show USA detail + PIN whenever credentials exist or active status needs registration —
+  // never hide the PIN form behind a misleading "Not connected" card state.
   const showUsDetailPanel =
-    activeConnectionId === US_CONNECTION_ID && usReady;
+    activeConnectionId === US_CONNECTION_ID &&
+    (usReady ||
+      connectionReady ||
+      Boolean(status?.connection?.wabaConnected) ||
+      Boolean(status?.configForm?.phoneNumberId) ||
+      needsRegistration);
 
   return (
     <div dir="rtl" style={{ minHeight: "100vh", background: "#f6f7fb" }}>
@@ -722,6 +758,8 @@ export default function AdminManagedWhatsApp() {
             {fixedConnections.map((conn) => {
               const active = conn.connectionId === activeConnectionId;
               const ready = isManagedConnectionReady(conn);
+              const sendReady = isManagedConnectionSendReady(conn);
+              const pinNeeded = connectionNeedsPin(conn);
               const isUs = conn.connectionId === US_CONNECTION_ID;
               const phoneLabel =
                 conn.displayPhoneMasked ||
@@ -774,10 +812,22 @@ export default function AdminManagedWhatsApp() {
                         </div>
                       ) : null}
                       <div style={{ marginTop: 8 }}>
-                        {ready ? (
+                        {sendReady ? (
                           <StatusPill
                             ok
-                            labelOk="Connected ✅ (READY)"
+                            labelOk="מוכן לשליחה"
+                            labelBad=""
+                          />
+                        ) : pinNeeded ? (
+                          <StatusPill
+                            ok={false}
+                            labelOk=""
+                            labelBad="מחובר · נדרש PIN לרישום"
+                          />
+                        ) : ready ? (
+                          <StatusPill
+                            ok
+                            labelOk="מחובר (הגדרות)"
                             labelBad=""
                           />
                         ) : isUs ? (
@@ -815,22 +865,44 @@ export default function AdminManagedWhatsApp() {
                           {connectingUs ? "מתחבר…" : "Connect WhatsApp"}
                         </button>
                       ) : null}
+                      {isUs && ready && pinNeeded ? (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            void selectConnection(US_CONNECTION_ID);
+                            scrollToSection(statusSectionRef);
+                          }}
+                          style={{
+                            border: "none",
+                            borderRadius: 10,
+                            padding: "10px 14px",
+                            background: "#c2410c",
+                            color: "#fff",
+                            fontWeight: 700,
+                            cursor: "pointer",
+                          }}
+                        >
+                          הזן PIN לרישום
+                        </button>
+                      ) : null}
                       {isUs && ready ? (
                         <>
-                          <button
-                            type="button"
-                            onClick={() => navigate("/admin/crm/whatsapp")}
-                            style={{
-                              border: "1px solid #e2e8f0",
-                              borderRadius: 10,
-                              padding: "8px 12px",
-                              background: "#fff",
-                              fontWeight: 600,
-                              cursor: "pointer",
-                            }}
-                          >
-                            Open Inbox
-                          </button>
+                          {!pinNeeded ? (
+                            <button
+                              type="button"
+                              onClick={() => navigate("/admin/crm/whatsapp")}
+                              style={{
+                                border: "1px solid #e2e8f0",
+                                borderRadius: 10,
+                                padding: "8px 12px",
+                                background: "#fff",
+                                fontWeight: 600,
+                                cursor: "pointer",
+                              }}
+                            >
+                              Open Inbox
+                            </button>
+                          ) : null}
                           <button
                             type="button"
                             onClick={() => {
@@ -865,6 +937,23 @@ export default function AdminManagedWhatsApp() {
                           >
                             Connection status
                           </button>
+                          {!pinNeeded ? null : (
+                            <button
+                              type="button"
+                              onClick={() => void connectUsEmbeddedSignup()}
+                              disabled={connectingUs}
+                              style={{
+                                border: "1px solid #e2e8f0",
+                                borderRadius: 10,
+                                padding: "8px 12px",
+                                background: "#fff",
+                                fontWeight: 600,
+                                cursor: connectingUs ? "wait" : "pointer",
+                              }}
+                            >
+                              {connectingUs ? "מתחבר…" : "Reconnect"}
+                            </button>
+                          )}
                         </>
                       ) : null}
                     </div>
@@ -955,7 +1044,11 @@ export default function AdminManagedWhatsApp() {
                     />
                     <StatusPill
                       ok={connectionReady}
-                      labelOk="Connection: READY"
+                      labelOk={
+                        sendRegistered
+                          ? "Connection: READY"
+                          : "Connection: CONFIGURED"
+                      }
                       labelBad="Connection: NOT READY"
                     />
                     <StatusPill
@@ -1103,7 +1196,11 @@ export default function AdminManagedWhatsApp() {
                       Managed connection
                     </div>
                     <div style={{ fontSize: 16, fontWeight: 700 }}>
-                      {connectionReady ? "READY" : "NOT READY"}
+                      {!connectionReady
+                        ? "NOT READY"
+                        : sendRegistered
+                          ? "READY TO SEND"
+                          : "CONFIGURED · PIN REQUIRED"}
                     </div>
                   </div>
                   <div>

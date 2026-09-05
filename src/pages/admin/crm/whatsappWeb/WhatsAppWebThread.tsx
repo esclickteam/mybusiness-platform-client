@@ -110,10 +110,10 @@ export default function WhatsAppWebThread({
   const [unseen, setUnseen] = useState(0);
   const [sendFromConnectionId, setSendFromConnectionId] = useState("IL_MANAGED");
   const [managedConnections, setManagedConnections] = useState<
-    Array<{ connectionId: string; ready: boolean }>
+    Array<{ connectionId: string; ready: boolean; sendReady: boolean }>
   >([
-    { connectionId: "IL_MANAGED", ready: true },
-    { connectionId: "US_MANAGED", ready: false },
+    { connectionId: "IL_MANAGED", ready: true, sendReady: true },
+    { connectionId: "US_MANAGED", ready: false, sendReady: false },
   ]);
   const stickRef = useRef(true);
   const scrollerRef = useRef<HTMLDivElement | null>(null);
@@ -133,13 +133,21 @@ export default function WhatsAppWebThread({
     );
     return row?.ready !== false;
   }, [managedConnections, sendFromConnectionId]);
-  const composerSendReady = sendFromReady && senderReady;
+  const sendFromRegistered = useMemo(() => {
+    const row = managedConnections.find(
+      (conn) => conn.connectionId === sendFromConnectionId
+    );
+    if (row && typeof row.sendReady === "boolean") return row.sendReady;
+    return senderReady;
+  }, [managedConnections, sendFromConnectionId, senderReady]);
+  const composerSendReady = sendFromReady && sendFromRegistered && senderReady;
   const needsRegistration =
-    Boolean(sender.ready) &&
+    Boolean(sender.ready || sendFromReady) &&
     (sender.phoneRegistered === false ||
       sender.registrationStatus === "required" ||
       sender.registrationStatus === "failed" ||
-      sender.registrationStatus === "pending");
+      sender.registrationStatus === "pending" ||
+      sendFromRegistered === false);
   const linkedCustomerId =
     customerId ||
     data?.bizuplyManaged?.thread?.adminCustomerId ||
@@ -202,8 +210,14 @@ export default function WhatsAppWebThread({
       const nextMessages = await loadMessages();
       setMessages(nextMessages);
       if (customerId) {
-        const { data: wa } = await adminCrmApi.whatsapp(customerId);
+        const { data: wa } = await adminCrmApi.whatsapp(customerId, {
+          managedConnectionId: sendFromConnectionId,
+        });
         setData(wa);
+        const catalogIds = new Set(
+          (wa.bizuplyManaged?.templates || []).map((t: Template) => String(t.id))
+        );
+        setTemplateId((prev) => (prev && catalogIds.has(prev) ? prev : ""));
         if ((wa.bizuplyManaged?.thread?.unreadCount || 0) > 0) {
           await adminCrmApi.whatsappRead(customerId).catch(() => null);
         }
@@ -212,7 +226,7 @@ export default function WhatsAppWebThread({
     } catch (err: any) {
       setError(err?.response?.data?.error || "טעינת WhatsApp נכשלה");
     }
-  }, [customerId, loadMessages, scrollToBottom]);
+  }, [customerId, loadMessages, scrollToBottom, sendFromConnectionId]);
 
   useEffect(() => {
     load();
@@ -232,9 +246,14 @@ export default function WhatsAppWebThread({
               status === "READY" ||
               status === "CONNECTED" ||
               Boolean(conn.credentialsConfigured);
+            const sendReady =
+              Boolean(conn.sendReady) ||
+              (Boolean(conn.phoneRegistered) && ready) ||
+              (status === "READY" && conn.phoneRegistered !== false);
             return {
               connectionId: String(conn.connectionId || "").toUpperCase(),
               ready,
+              sendReady,
             };
           });
         if (rows.length) setManagedConnections(rows);
@@ -671,6 +690,14 @@ export default function WhatsAppWebThread({
               </>
             ) : !sendFromReady ? (
               "חיבור USA אינו מחובר — בחר Israel או חבר USA ב-WhatsApp Managed."
+            ) : !sendFromRegistered ? (
+              <>
+                נדרש רישום PIN לחיבור{" "}
+                {sendFromConnectionId === "US_MANAGED" ? "USA" : "Israel"} ב-
+                <Link className="underline" to="/admin/managed-whatsapp">
+                  WhatsApp Managed
+                </Link>
+              </>
             ) : (
               "ערוץ WhatsApp של BizUply אינו זמין."
             )}
