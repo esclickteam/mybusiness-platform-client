@@ -8,6 +8,7 @@ import storeExactLexicon from "./templateExactLexicon.store.json";
 import sharedExactLexicon from "./templateExactLexicon.shared.json";
 import heroesExactLexicon from "./templateExactLexicon.heroes.json";
 import beautyExactLexicon from "./templateExactLexicon.beauty.json";
+import bodyExactLexicon from "./templateExactLexicon.body.json";
 import { TEMPLATE_EXACT_LEXICON, type LocaleCopy } from "./templateExactLexicon";
 
 type PhraseTranslation = {
@@ -28,6 +29,7 @@ const EXACT_LEXICON: Record<string, PhraseTranslation | LocaleCopy> = {
   ...(sharedExactLexicon as Record<string, PhraseTranslation>),
   ...(heroesExactLexicon as Record<string, PhraseTranslation>),
   ...(beautyExactLexicon as Record<string, PhraseTranslation>),
+  ...(bodyExactLexicon as Record<string, PhraseTranslation>),
   ...TEMPLATE_EXACT_LEXICON,
 };
 
@@ -86,6 +88,18 @@ const CATALOG_CATEGORY: Record<string, PhraseTranslation> = {
   שיער: { en: "hair", es: "cabello", "pt-BR": "cabelo", ar: "شعر" },
   מיטות: { en: "beds", es: "camas", "pt-BR": "camas", ar: "أسرّة" },
 };
+
+const STORY_OF_BRAND_RE = /^הסיפור של ([A-Za-z][\w.-]*)\.$/;
+
+function localizeStoryOfBrand(text: string, locale: string): string {
+  const match = text.match(STORY_OF_BRAND_RE);
+  if (!match) return "";
+  const brand = match[1];
+  if (locale === "es") return `La historia de ${brand}.`;
+  if (locale === "pt-BR") return `A história de ${brand}.`;
+  if (locale === "ar") return `قصة ${brand}.`;
+  return `The story of ${brand}.`;
+}
 
 function localizeCatalogProductLine(text: string, locale: string): string {
   const match = text.match(CATALOG_PRODUCT_RE);
@@ -154,6 +168,11 @@ export function localizeBuiltInText(text: string, language?: string): string {
   const catalogLine = localizeCatalogProductLine(text, locale);
   if (isUsableTranslation(text, catalogLine, locale)) {
     return adaptBuiltInDirectionalCss(catalogLine, locale);
+  }
+
+  const storyLine = localizeStoryOfBrand(text, locale);
+  if (isUsableTranslation(text, storyLine, locale)) {
+    return adaptBuiltInDirectionalCss(storyLine, locale);
   }
 
   const bookHit = pickLocaleCopy(book[text], locale);

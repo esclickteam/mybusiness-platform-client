@@ -204,6 +204,18 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("מוצר ירקות מתוך קטלוג Greenbite.", "es")).toMatch(
       /verduras|Greenbite/i,
     );
+    expect(localizeBuiltInText("הסיפור של Burgerhaus.", "en")).toBe(
+      "The story of Burgerhaus.",
+    );
+    expect(localizeBuiltInText("נולדנו מהקמח.", "en")).toBe(
+      "We were born from flour.",
+    );
+    expect(localizeBuiltInText("רפואה רגועה,\nמדויקת ואנושית.", "es")).toMatch(
+      /Medicina/i,
+    );
+    expect(localizeBuiltInText("דרופ חצות", "en")).toBe("Midnight drop");
+    expect(localizeBuiltInText("חדש בקולקציה", "en")).toBe("New in the collection");
+    expect(localizeBuiltInText("הוסף לסל", "es")).toMatch(/carrito/i);
   });
 
   it("does not rewrite saved customer copy over localized defaults", () => {

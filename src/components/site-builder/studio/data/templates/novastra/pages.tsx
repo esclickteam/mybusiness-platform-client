@@ -449,7 +449,7 @@ function Header({
             className="relative inline-flex h-10 items-center gap-2 rounded-full bg-zinc-950 px-4 text-sm font-black text-white transition hover:bg-zinc-800"
           >
             <ShoppingBag className="h-4 w-4" />
-            סל
+            {tx("סל")}
             {cartCount > 0 ? (
               <span className="absolute -right-2 -top-2 grid h-6 min-w-6 place-items-center rounded-full bg-white px-1.5 text-[11px] font-black text-zinc-950 ring-1 ring-zinc-200">
                 {cartCount}
@@ -501,7 +501,7 @@ function Header({
           </div>
 
           <div className="mt-10 space-y-3">
-            {[...navItems, { id: "cart", label: `סל קניות (${cartCount})` }].map(
+            {[...navItems, { id: "cart", label: `${tx("סל קניות")} (${cartCount})` }].map(
               (item) => (
                 <button
                   key={item.id}
