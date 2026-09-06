@@ -19,7 +19,7 @@ const headingBase = {
   color: "#0f172a",
   fontWeight: "900",
   lineHeight: "1.05",
-  textAlign: "right",
+  textAlign: "start",
 };
 
 const paragraphBase = {
@@ -27,7 +27,7 @@ const paragraphBase = {
   fontSize: "18px",
   fontWeight: "500",
   lineHeight: "1.75",
-  textAlign: "right",
+  textAlign: "start",
 };
 
 export const ELEMENT_LIBRARY: VisualLibraryElementItem[] = [

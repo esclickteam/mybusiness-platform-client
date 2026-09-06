@@ -1,8 +1,9 @@
 import i18n from "./i18n";
-import { normalizeLanguage } from "./languages";
+import { getTextDirection, normalizeLanguage } from "./languages";
 import { resolveTemplateLanguage } from "./templateDir";
 import phrasebook from "./templateSeedPhrasebook.json";
 import generatedExactLexicon from "./templateExactLexicon.generated.json";
+import studioExactLexicon from "./templateExactLexicon.studio.json";
 import { TEMPLATE_EXACT_LEXICON, type LocaleCopy } from "./templateExactLexicon";
 
 type PhraseTranslation = {
@@ -15,9 +16,10 @@ type PhraseTranslation = {
 const book = phrasebook as Record<string, PhraseTranslation>;
 const HE = /[\u0590-\u05FF]/;
 
-/** Generated rows first; hand-written lexicon always wins on the same source. */
+/** Generated rows first; studio chrome next; hand-written lexicon always wins. */
 const EXACT_LEXICON: Record<string, PhraseTranslation | LocaleCopy> = {
   ...(generatedExactLexicon as Record<string, PhraseTranslation>),
+  ...(studioExactLexicon as Record<string, PhraseTranslation>),
   ...TEMPLATE_EXACT_LEXICON,
 };
 
@@ -55,17 +57,49 @@ function isUsableTranslation(source: string, translated: string, locale: string)
 const exactKeys = Object.keys(EXACT_LEXICON).sort((a, b) => b.length - a.length);
 const bookKeys = Object.keys(book).sort((a, b) => b.length - a.length);
 
+function adaptBuiltInDirectionalCss(text: string, locale: string): string {
+  if (locale === "he") return text;
+  if (!/direction\s*:|text-align\s*:/i.test(text)) return text;
+  const dir = getTextDirection(locale);
+  return text
+    .replace(/direction:\s*rtl/gi, `direction:${dir}`)
+    .replace(/text-align:\s*right/gi, "text-align:start");
+}
+
+/** Rewrite baked-in RTL library styles so new inserts follow the dashboard language. */
+export function localizeLibraryInsertStyle<T extends Record<string, any>>(
+  style: T | undefined,
+  language?: string,
+): T | undefined {
+  if (!style) return style;
+  const locale = localeKey(language);
+  if (locale === "he") return style;
+  const dir = getTextDirection(locale);
+  const next = { ...style };
+  if (next.direction === "rtl" || next.direction === "ltr") {
+    next.direction = dir;
+  }
+  if (next.textAlign === "right" || next.textAlign === "left") {
+    next.textAlign = "start";
+  }
+  return next;
+}
+
 export function localizeBuiltInText(text: string, language?: string): string {
   if (!text) return text;
   const locale = localeKey(language);
   if (locale === "he") return text;
-  if (!HE.test(text)) return text;
+  if (!HE.test(text)) return adaptBuiltInDirectionalCss(text, locale);
 
   const exact = pickLocaleCopy(EXACT_LEXICON[text], locale);
-  if (isUsableTranslation(text, exact, locale)) return exact;
+  if (isUsableTranslation(text, exact, locale)) {
+    return adaptBuiltInDirectionalCss(exact, locale);
+  }
 
   const bookHit = pickLocaleCopy(book[text], locale);
-  if (isUsableTranslation(text, bookHit, locale)) return bookHit;
+  if (isUsableTranslation(text, bookHit, locale)) {
+    return adaptBuiltInDirectionalCss(bookHit, locale);
+  }
 
   let out = text;
   for (const source of exactKeys) {
@@ -80,8 +114,8 @@ export function localizeBuiltInText(text: string, language?: string): string {
     if (!isUsableTranslation(source, translated, locale)) continue;
     out = out.split(source).join(translated);
   }
-  if (isUsableTranslation(text, out, locale)) return out;
-  return text;
+  const result = isUsableTranslation(text, out, locale) ? out : text;
+  return adaptBuiltInDirectionalCss(result, locale);
 }
 
 export function localizeBuiltInTemplateSeed<T>(data: T, language?: string): T {

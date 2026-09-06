@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import i18n from "../../../../../i18n/i18n";
-import { localizeBuiltInTemplateSeed, localizeBuiltInText } from "../../../../../i18n/localizeBuiltInTemplateSeed";
+import { localizeBuiltInTemplateSeed, localizeBuiltInText, localizeLibraryInsertStyle } from "../../../../../i18n/localizeBuiltInTemplateSeed";
 import type { AnimationPresetValue, StylePatch } from "../../types";
 import type { StudioTemplateRenderer } from "../../data/templates/templateEditorTypes";
 
@@ -977,7 +977,7 @@ function getDefaultInsertedElementPayload(
         fontSize: "32px",
         fontWeight: "800",
         lineHeight: "1.2",
-        textAlign: "right",
+        textAlign: "start",
       },
       layout: {
         position: "absolute",
@@ -3787,11 +3787,14 @@ export function useVisualEditorState({
             next = writeVisualStyleItem(
               next,
               id,
-              themeLibraryNodeStyle(
-                nodeTemplate.style,
-                nodeTemplate.type,
-                sectionTheme,
-                { lockPalette },
+              localizeLibraryInsertStyle(
+                themeLibraryNodeStyle(
+                  nodeTemplate.style,
+                  nodeTemplate.type,
+                  sectionTheme,
+                  { lockPalette },
+                ),
+                i18n.language,
               ) as StylePatch,
             );
           }
@@ -3946,7 +3949,7 @@ export function useVisualEditorState({
           });
           if (nodeTemplate.content || preservedContent) {
             next = writeVisualContentItem(next, id, {
-              ...(nodeTemplate.content || {}),
+              ...localizeBuiltInTemplateSeed(nodeTemplate.content || {}, i18n.language),
               ...(preservedContent || {}),
             });
           }
@@ -3954,11 +3957,14 @@ export function useVisualEditorState({
             next = writeVisualStyleItem(
               next,
               id,
-              themeLibraryNodeStyle(
-                nodeTemplate.style,
-                nodeTemplate.type,
-                sectionTheme,
-                { lockPalette },
+              localizeLibraryInsertStyle(
+                themeLibraryNodeStyle(
+                  nodeTemplate.style,
+                  nodeTemplate.type,
+                  sectionTheme,
+                  { lockPalette },
+                ),
+                i18n.language,
               ) as StylePatch,
             );
           }
@@ -5005,7 +5011,7 @@ export function useVisualEditorState({
             next = writeVisualStyleItem(
               next,
               id,
-              nodeTemplate.style as StylePatch,
+              localizeLibraryInsertStyle(nodeTemplate.style, i18n.language) as StylePatch,
             );
           }
 

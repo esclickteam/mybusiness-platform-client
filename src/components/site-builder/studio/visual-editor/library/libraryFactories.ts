@@ -43,8 +43,7 @@ export function textNode(
     tagName: "div",
     content: { text },
     style: {
-      direction: "rtl",
-      textAlign: "right",
+      textAlign: "start",
       ...style,
     },
     layout,

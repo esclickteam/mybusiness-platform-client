@@ -5,6 +5,7 @@ import React, {
   useState,
 } from "react";
 import { useTranslation } from "react-i18next";
+import { localizeBuiltInText } from "../../../../i18n/templateCopy";
 import { getTextDirection } from "../../../../i18n/localeUtils";
 import {
   DndContext,
@@ -63,7 +64,9 @@ import {
   getSectionsByCategory,
 } from "./library/sectionLibrary";
 import {
+  studioPageDescription,
   studioPageNavLabel,
+  studioPageTitle,
   studioPortalPageNavLabel,
   studioPortalSectionNavLabel,
   studioSectionDescription,
@@ -287,7 +290,7 @@ function SortableSectionRow({
       <button
         type="button"
         onClick={onSelect}
-        className="min-w-0 flex-1 rounded-xl px-1 py-1 text-right"
+        className="min-w-0 flex-1 rounded-xl px-1 py-1 text-start"
       >
         <span className="block truncate text-sm font-black text-slate-900">
           {item.label}
@@ -395,14 +398,17 @@ function ElementPreview({
   thumbnail?: string;
   barePreview?: boolean;
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const localizedPreviewHtml = previewHtml
+    ? localizeBuiltInText(previewHtml, i18n.language)
+    : undefined;
   if (barePreview || kind === "raw") {
     return (
       <div className="flex h-full items-center justify-center bg-transparent px-4">
-        {previewHtml ? (
+        {localizedPreviewHtml ? (
           <div
             className="w-full"
-            dangerouslySetInnerHTML={{ __html: previewHtml }}
+            dangerouslySetInnerHTML={{ __html: localizedPreviewHtml }}
           />
         ) : (
           <span className="text-3xl font-black tracking-tight text-slate-900">
@@ -426,13 +432,13 @@ function ElementPreview({
     );
   }
 
-  if (previewHtml || kind === "html") {
+  if (localizedPreviewHtml || kind === "html") {
     return (
       <div className="flex h-full items-center justify-center bg-[#f8fafc] px-3 py-2">
         <div
           className="w-full max-h-full overflow-hidden"
           dangerouslySetInnerHTML={{
-            __html: previewHtml || "",
+            __html: localizedPreviewHtml || "",
           }}
         />
       </div>
@@ -505,10 +511,10 @@ function ElementPreview({
     // Raw data preview only — no card chrome behind the CRM value.
     return (
       <div className="flex h-full flex-col items-center justify-center bg-transparent px-3">
-        {previewHtml ? (
+        {localizedPreviewHtml ? (
           <div
             className="w-full text-center"
-            dangerouslySetInnerHTML={{ __html: previewHtml }}
+            dangerouslySetInnerHTML={{ __html: localizedPreviewHtml }}
           />
         ) : (
           <span className="text-3xl font-black tracking-tight text-slate-900">
@@ -1002,7 +1008,7 @@ export default function VisualAddLayersPanel({
                 category: "crm" as const,
                 preview: "crm" as const,
                 barePreview: true,
-                previewHtml: `<div style="font-size:14px;font-weight:800;color:#64748b;text-align:right">${label}</div><div style="font-size:22px;font-weight:800;color:#0f172a;text-align:right">${sampleValue}</div>`,
+                previewHtml: `<div style="font-size:14px;font-weight:800;color:#64748b;text-align:start">${label}</div><div style="font-size:22px;font-weight:800;color:#0f172a;text-align:start">${sampleValue}</div>`,
                 action: () =>
                   editor?.addCrmField?.({
                     fieldKey: field.key,
@@ -1037,10 +1043,10 @@ export default function VisualAddLayersPanel({
       return {
         id: item.id,
         title: t(`studio.library.items.${item.id}.title`, {
-          defaultValue: item.title,
+          defaultValue: localizeBuiltInText(item.title, i18n.language),
         }),
         description: t(`studio.library.items.${item.id}.description`, {
-          defaultValue: item.description,
+          defaultValue: localizeBuiltInText(item.description, i18n.language),
         }),
         category,
         preview: isCrm
@@ -1065,7 +1071,7 @@ export default function VisualAddLayersPanel({
       merged.push(item);
     });
     return merged;
-  }, [clientPortalPluginEnabled, crmFields, editor, t]);
+  }, [clientPortalPluginEnabled, crmFields, editor, i18n.language, t]);
 
   const visibleElementCategories = useMemo(
     () =>
@@ -1227,30 +1233,55 @@ export default function VisualAddLayersPanel({
           );
         }
       }
-      return base.filter((item) => {
-        if (!normalizedSearch) return true;
-        return `${item.title} ${item.description} ${(item.keywords || []).join(" ")}`
-          .toLowerCase()
-          .includes(normalizedSearch);
-      });
+      return base
+        .filter((item) => {
+          if (!normalizedSearch) return true;
+          const title = studioPageTitle(t, item.id, item.title);
+          const description = studioPageDescription(
+            t,
+            item.id,
+            item.description || "",
+          );
+          return `${title} ${description} ${(item.keywords || []).join(" ")}`
+            .toLowerCase()
+            .includes(normalizedSearch);
+        })
+        .map((item) => ({
+          ...item,
+          title: studioPageTitle(t, item.id, item.title),
+          description: studioPageDescription(t, item.id, item.description || ""),
+        }));
     }
 
     const base = getPagesByCategory(pageCategory).filter(
       (item) => item.category !== "portal",
     );
 
-    return base.filter((item) => {
-      if (!normalizedSearch) return true;
-      return `${item.title} ${item.description} ${(item.keywords || []).join(" ")}`
-        .toLowerCase()
-        .includes(normalizedSearch);
-    });
+    return base
+      .filter((item) => {
+        if (!normalizedSearch) return true;
+        const title = studioPageTitle(t, item.id, item.title);
+        const description = studioPageDescription(
+          t,
+          item.id,
+          item.description || "",
+        );
+        return `${title} ${description} ${(item.keywords || []).join(" ")}`
+          .toLowerCase()
+          .includes(normalizedSearch);
+      })
+      .map((item) => ({
+        ...item,
+        title: studioPageTitle(t, item.id, item.title),
+        description: studioPageDescription(t, item.id, item.description || ""),
+      }));
   }, [
     clientPortalPluginEnabled,
     searchQuery,
     pageCategory,
     pageLibraryMode,
     portalPageKind,
+    t,
   ]);
 
   useEffect(() => {
@@ -1738,7 +1769,7 @@ export default function VisualAddLayersPanel({
                           }
                         }}
                         className={[
-                          "mb-1 flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-right text-xs font-black transition",
+                          "mb-1 flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-start text-xs font-black transition",
                           (pageLibraryMode === "portal"
                             ? portalPageKind
                             : pageCategory) === categoryItem.id
@@ -1818,7 +1849,7 @@ export default function VisualAddLayersPanel({
                           sectionIds: [],
                         });
                       }}
-                      className="mb-5 flex w-full items-center justify-between gap-4 overflow-hidden rounded-[22px] border border-dashed border-slate-300 bg-white px-5 py-4 text-right shadow-sm transition hover:-translate-y-0.5 hover:border-slate-500 hover:shadow-md"
+                      className="mb-5 flex w-full items-center justify-between gap-4 overflow-hidden rounded-[22px] border border-dashed border-slate-300 bg-white px-5 py-4 text-start shadow-sm transition hover:-translate-y-0.5 hover:border-slate-500 hover:shadow-md"
                     >
                       <div>
                         <p className="text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">
@@ -1843,7 +1874,7 @@ export default function VisualAddLayersPanel({
                           key={page.id}
                           type="button"
                           onClick={() => handleAddLibraryPage(page)}
-                          className="group overflow-hidden rounded-[18px] border border-slate-200 bg-white text-right shadow-[0_2px_12px_rgba(15,23,42,0.06)] transition duration-200 hover:-translate-y-1 hover:border-slate-400 hover:shadow-[0_18px_40px_rgba(15,23,42,0.14)]"
+                          className="group overflow-hidden rounded-[18px] border border-slate-200 bg-white text-start shadow-[0_2px_12px_rgba(15,23,42,0.06)] transition duration-200 hover:-translate-y-1 hover:border-slate-400 hover:shadow-[0_18px_40px_rgba(15,23,42,0.14)]"
                         >
                           <div className="relative h-[340px] overflow-hidden border-b border-slate-100 bg-[#eef0f3]">
                             <PageLibraryCardPreview
@@ -2083,7 +2114,7 @@ export default function VisualAddLayersPanel({
                                 )
                               }
                               className={[
-                                "group overflow-hidden text-right transition duration-200 hover:-translate-y-1",
+                                "group overflow-hidden text-start transition duration-200 hover:-translate-y-1",
                                 item.barePreview
                                   ? "rounded-2xl border border-transparent bg-transparent shadow-none hover:border-slate-200 hover:bg-white/70"
                                   : "rounded-[22px] border border-slate-200 bg-white shadow-sm hover:border-violet-300 hover:shadow-[0_18px_40px_rgba(91,33,182,0.12)]",
@@ -2137,7 +2168,7 @@ export default function VisualAddLayersPanel({
                               type="button"
                               onClick={() => setPortalSectionKind(kindItem.id)}
                               className={[
-                                "mb-1 flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-right text-xs font-black transition",
+                                "mb-1 flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-start text-xs font-black transition",
                                 portalSectionKind === kindItem.id
                                   ? "bg-slate-100 text-slate-800"
                                   : "text-slate-600 hover:bg-slate-50",
@@ -2182,7 +2213,7 @@ export default function VisualAddLayersPanel({
                                     setSectionCategory("all");
                                   }}
                                   className={[
-                                    "flex w-full items-center justify-between rounded-lg px-3 py-2 text-right text-xs font-bold transition",
+                                    "flex w-full items-center justify-between rounded-lg px-3 py-2 text-start text-xs font-bold transition",
                                     sectionQuickFilter === id
                                       ? "border border-slate-200 bg-slate-100 text-slate-800"
                                       : "text-slate-600 hover:bg-slate-50",
@@ -2215,7 +2246,7 @@ export default function VisualAddLayersPanel({
                                   setSectionCategory(categoryItem.id);
                                 }}
                                 className={[
-                                  "mb-1 flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-right text-xs font-black transition",
+                                  "mb-1 flex w-full items-center justify-between rounded-xl px-3 py-2.5 text-start text-xs font-black transition",
                                   sectionCategory === categoryItem.id
                                     ? "bg-slate-100 text-slate-800"
                                     : "text-slate-600 hover:bg-slate-50",
@@ -2292,7 +2323,7 @@ export default function VisualAddLayersPanel({
                             ({ item, top, right, width, height }) => (
                             <article
                               key={item.id}
-                              className="group relative overflow-hidden rounded-xl border border-slate-200 bg-white text-right shadow-[0_2px_10px_rgba(15,23,42,0.06)] transition duration-200 hover:-translate-y-0.5 hover:border-slate-400 hover:shadow-[0_16px_38px_rgba(15,23,42,0.14)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2"
+                              className="group relative overflow-hidden rounded-xl border border-slate-200 bg-white text-start shadow-[0_2px_10px_rgba(15,23,42,0.06)] transition duration-200 hover:-translate-y-0.5 hover:border-slate-400 hover:shadow-[0_16px_38px_rgba(15,23,42,0.14)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2"
                               style={{
                                 position: "absolute",
                                 top,
@@ -2307,7 +2338,7 @@ export default function VisualAddLayersPanel({
                                   setPreviewDevice("desktop");
                                   setPreviewSection(item);
                                 }}
-                                className="block w-full text-right"
+                                className="block w-full text-start"
                                 aria-label={t("studio.addLayers.previewAria", { title: item.title })}
                               >
                               <div className="relative h-[220px] overflow-hidden bg-[#f5f5f3] p-3">
@@ -2548,7 +2579,7 @@ export default function VisualAddLayersPanel({
                             item.id,
                           )
                         }
-                        className="flex w-full items-center gap-2 rounded-xl p-2 text-right"
+                        className="flex w-full items-center gap-2 rounded-xl p-2 text-start"
                       >
                         <MousePointer2 className="h-4 w-4 shrink-0 text-violet-600" />
 
