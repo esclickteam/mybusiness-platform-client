@@ -348,6 +348,13 @@ describe("localizeBuiltInTemplateSeed", () => {
         "ar",
       ),
     ).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("לא נמצא", "en")).toBe("Not found");
+    expect(
+      localizeBuiltInText(
+        "לא. הפגישה נועדה להבין את המקרה, לבדוק התאמה ולהציג כיווני פעולה אפשריים.",
+        "es",
+      ),
+    ).not.toMatch(/[\u0590-\u05FF]/);
   });
 
   it("does not rewrite saved customer copy over localized defaults", () => {
