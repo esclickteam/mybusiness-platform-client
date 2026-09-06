@@ -37,6 +37,7 @@ import unique22ExactLexicon from "./templateExactLexicon.unique22.json";
 import unique23ExactLexicon from "./templateExactLexicon.unique23.json";
 import unique24ExactLexicon from "./templateExactLexicon.unique24.json";
 import unique25ExactLexicon from "./templateExactLexicon.unique25.json";
+import unique26ExactLexicon from "./templateExactLexicon.unique26.json";
 import { TEMPLATE_EXACT_LEXICON, type LocaleCopy } from "./templateExactLexicon";
 
 type PhraseTranslation = {
@@ -86,6 +87,7 @@ const EXACT_LEXICON: Record<string, PhraseTranslation | LocaleCopy> = {
   ...(unique23ExactLexicon as Record<string, PhraseTranslation>),
   ...(unique24ExactLexicon as Record<string, PhraseTranslation>),
   ...(unique25ExactLexicon as Record<string, PhraseTranslation>),
+  ...(unique26ExactLexicon as Record<string, PhraseTranslation>),
   ...TEMPLATE_EXACT_LEXICON,
 };
 
@@ -701,6 +703,8 @@ function localizeOpeningHours(text: string, locale: string): string {
     "מוצ״ש": { en: "Sat night", es: "sáb. noche", "pt-BR": "sáb. noite", ar: "مساء السبت" },
     "א׳–ה׳": { en: "Sun–Thu", es: "dom–jue", "pt-BR": "dom–qui", ar: "أحد–خميس" },
     "א'–ה'": { en: "Sun–Thu", es: "dom–jue", "pt-BR": "dom–qui", ar: "أحد–خميس" },
+    "א׳-ה׳": { en: "Sun–Thu", es: "dom–jue", "pt-BR": "dom–qui", ar: "أحد–خميس" },
+    "א'-ה'": { en: "Sun–Thu", es: "dom–jue", "pt-BR": "dom–qui", ar: "أحد–خميس" },
     "ו׳–ש׳": { en: "Fri–Sat", es: "vie–sáb", "pt-BR": "sex–sáb", ar: "جمعة–سبت" },
     "ו'–ש'": { en: "Fri–Sat", es: "vie–sáb", "pt-BR": "sex–sáb", ar: "جمعة–سبت" },
     שבת: { en: "Sat", es: "sáb", "pt-BR": "sáb", ar: "سبت" },

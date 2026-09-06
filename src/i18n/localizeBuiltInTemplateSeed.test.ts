@@ -616,6 +616,13 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("כמה זמן לוקח לקבל תור?", "pt-BR")).toMatch(/horário/i);
   });
 
+  it("localizes unique26 leftover titles and hyphen opening hours", () => {
+    expect(localizeBuiltInText("מאידאה למוצר ולשוק.", "en")).toMatch(/idea/i);
+    expect(localizeBuiltInText("מאידאה למוצר ולשוק.", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("א׳-ה׳ 08:30-19:00", "en")).toMatch(/Sun–Thu/i);
+    expect(localizeBuiltInText("א׳-ה׳ 08:30-19:00", "en")).not.toMatch(/[\u0590-\u05FF]/);
+  });
+
   it("keeps a saved rich-store headline over localized unique17 defaults", () => {
     const defaults = localizeBuiltInTemplateSeed(
       { brandName: "סטודיו מסחר עשיר", productsEyebrow: "בחירות החנות" },
