@@ -167,5 +167,40 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("שנות ניסיון", "en")).toBe("Years of experience");
     expect(localizeBuiltInText("שעות פעילות", "es")).toMatch(/Horario/i);
     expect(localizeBuiltInText("לצפייה בתפריט", "en")).toBe("See the menu");
+    expect(localizeBuiltInText("משלוחים והחזרות", "en")).toBe("Shipping and returns");
+    expect(localizeBuiltInText("צריכים עזרה בבחירה?", "es")).toMatch(/ayuda/i);
+    expect(localizeBuiltInText("45-75 דק׳", "en")).toBe("45-75 min");
+    expect(localizeBuiltInText("משך משוער", "es")).toMatch(/Duraci[oó]n/i);
+    expect(localizeBuiltInText("קבלת פנים", "en")).toBe("Reception");
+    expect(localizeBuiltInText("מומחית", "pt-BR")).toBe("Especialista");
+    expect(localizeBuiltInText("שם המותג", "en")).toBe("Brand name");
+    expect(localizeBuiltInText("רעבים?", "en")).toBe("Hungry?");
+    expect(
+      localizeBuiltInText(
+        "לא מתחילות טיפול לפני התאמת ציפיות ותיעוד מלא.",
+        "en",
+      ),
+    ).toMatch(/expectations|notes/i);
+    expect(
+      localizeBuiltInText("טוען מוצרים מתוסף החנות...", "ar"),
+    ).not.toMatch(/[\u0590-\u05FF]/);
+  });
+
+  it("does not rewrite saved customer copy over localized defaults", () => {
+    const defaults = localizeBuiltInTemplateSeed(
+      { heroTitle: "צור קשר", heroPrimary: "הזמינו פיצה" },
+      "en",
+    );
+    const saved = {
+      heroTitle: "Custom headline from the client",
+      __content: { "home.hero.h1": { text: "Our edited hero" } },
+    };
+    const merged = { ...defaults, ...saved };
+    expect(merged.heroTitle).toBe("Custom headline from the client");
+    expect(merged.__content["home.hero.h1"].text).toBe("Our edited hero");
+    expect(merged.heroPrimary).toBe("Order pizza");
+    expect(localizeBuiltInText("Custom headline from the client", "en")).toBe(
+      "Custom headline from the client",
+    );
   });
 });

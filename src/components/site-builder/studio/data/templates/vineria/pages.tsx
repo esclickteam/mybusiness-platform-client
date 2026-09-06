@@ -45,7 +45,7 @@ function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>;
               style={{ color: currentPage === id ? "#9b2335" : "#a8959a" }}>{label}</button>
           ))}
         </nav>
-        <button type="button" aria-expanded={navOpen} aria-label={navOpen ? "סגור תפריט" : "פתח תפריט"} onClick={() => setNavOpen((o) => !o)} className="inline-flex h-10 w-10 items-center justify-center border lg:hidden" style={{ borderColor: "rgba(245,235,224,0.2)", color: "#f5ebe0" }}>
+        <button type="button" aria-expanded={navOpen} aria-label={navOpen ? tx("סגור תפריט") : tx("פתח תפריט")} onClick={() => setNavOpen((o) => !o)} className="inline-flex h-10 w-10 items-center justify-center border lg:hidden" style={{ borderColor: "rgba(245,235,224,0.2)", color: "#f5ebe0" }}>
           <span className="flex w-4 flex-col gap-1"><span className={`h-0.5 bg-current transition ${navOpen ? "translate-y-1.5 rotate-45" : ""}`} /><span className={`h-0.5 bg-current transition ${navOpen ? "opacity-0" : ""}`} /><span className={`h-0.5 bg-current transition ${navOpen ? "-translate-y-1.5 -rotate-45" : ""}`} /></span>
         </button>
       </div>
@@ -115,7 +115,7 @@ function CorkBadges({ data }: { data: Record<string, any> }) {
       <div className="mx-auto flex max-w-7xl flex-wrap justify-center gap-5">
         {corks.map((c, i) => (
           <Reveal key={c} delayMs={i * 70} variant="scale">
-            <div className="tpl-cork flex h-16 w-12 items-center justify-center rounded-sm text-[10px] font-bold tracking-wider" style={{ background: "#c4a574", color: "#0c080c", animationDelay: `${i * 0.3}s` }}>{c}</div>
+            <div className="tpl-cork flex h-16 w-12 items-center justify-center rounded-sm text-[10px] font-bold tracking-wider" style={{ background: "#c4a574", color: "#0c080c", animationDelay: `${i * 0.3}s` }}>{tx(c)}</div>
           </Reveal>
         ))}
       </div>
@@ -328,7 +328,7 @@ function VisitBlock({ data }: { data: Record<string, any> }) {
 }
 
 function Insights({ data }: { data: Record<string, any> }) {
-  const posts = [1, 2, 3].map((i) => ({ title: v(data, `insight${i}Title`), text: v(data, `insight${i}Text`), image: v(data, `insight${i}Image`), tag: i === 1 ? "מדריך" : i === 2 ? "סיפור" : "טיפים" }));
+  const posts = [1, 2, 3].map((i) => ({ title: v(data, `insight${i}Title`), text: v(data, `insight${i}Text`), image: v(data, `insight${i}Image`), tag: i === 1 ? tx("מדריך") : i === 2 ? tx("סיפור") : tx("טיפים") }));
   const [featured, ...rest] = posts;
   return (
     <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{ borderColor: "rgba(245,235,224,0.12)" }}>

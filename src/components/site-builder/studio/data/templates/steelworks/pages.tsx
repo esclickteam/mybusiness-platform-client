@@ -380,7 +380,7 @@ function SteelMarquee({ data }: { data: Record<string, any> }) {
     getValue(data, "brandName"),
     getValue(data, "tagline"),
     getValue(data, "heroEyebrow"),
-    "דיוק",
+    tx("דיוק"),
     "ייצור",
     "לוגיסטיקה",
   ];

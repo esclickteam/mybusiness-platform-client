@@ -643,7 +643,7 @@ function ProcessSection({ data }: { data: TemplateData }) {
   const steps = [1, 2, 3, 4].map((index) => ({
     title: getValue(data, `process${["One", "Two", "Three", "Four"][index - 1]}Title`),
     text: getValue(data, `process${["One", "Two", "Three", "Four"][index - 1]}Text`),
-    label: ["גילוי", "מידול", "ביצוע", "חיזוק"][index - 1],
+    label: ["גילוי", "מידול", tx("ביצוע"), "חיזוק"][index - 1],
   }));
 
   return (

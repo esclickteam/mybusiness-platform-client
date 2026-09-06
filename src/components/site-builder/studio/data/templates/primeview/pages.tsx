@@ -112,7 +112,7 @@ function BeforeAfterShowcase({ data }: { data: Record<string, any> }) {
   );
 }
 function ValueBands({ data }: { data: Record<string, any> }) {
-  const bands = [["שקיפות","מחירים אמיתיים"],["פוטנציאל","ראו מה אפשר"],["ליווי","עד סגירה"]];
+  const bands = [[tx("שקיפות"),"מחירים אמיתיים"],["פוטנציאל","ראו מה אפשר"],["ליווי","עד סגירה"]];
   return (
     <section className="grid md:grid-cols-3">
       {bands.map(([t,x])=>(<div key={t} className="border-t px-6 py-10 text-center md:border-l" style={{ borderColor:"rgba(15,23,42,0.1)", background:"#ffffff" }}>

@@ -133,7 +133,7 @@ function readInitialActivePageId(data: Record<string, any>) {
   );
 }
 
-function mergeVisualData(
+export function mergeVisualData(
   ...sources: Array<Record<string, any> | undefined | null>
 ) {
   const merged: Record<string, any> = {};
