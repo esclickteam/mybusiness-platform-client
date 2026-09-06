@@ -99,6 +99,19 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(he).toMatch(/פריט/);
   });
 
+  it("translates store hero copy without leftover Hebrew hybrids", () => {
+    const hero = localizeBuiltInText(
+      "מצעים ובדים שנבחרים לפי מגע, לא רק לפי צבע.",
+      "en",
+    );
+    expect(hero).toMatch(/Bedding and fabrics chosen by touch/i);
+    expect(hero).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("דרופ. קורט. תרבות.", "en")).toBe(
+      "Drop. Court. Culture.",
+    );
+    expect(localizeBuiltInText("הסל שלכם", "he")).toBe("הסל שלכם");
+  });
+
   it("rewrites library insert styles to follow the dashboard language", () => {
     expect(
       localizeLibraryInsertStyle(

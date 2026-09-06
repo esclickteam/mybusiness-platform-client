@@ -4,6 +4,7 @@ import { resolveTemplateLanguage } from "./templateDir";
 import phrasebook from "./templateSeedPhrasebook.json";
 import generatedExactLexicon from "./templateExactLexicon.generated.json";
 import studioExactLexicon from "./templateExactLexicon.studio.json";
+import storeExactLexicon from "./templateExactLexicon.store.json";
 import { TEMPLATE_EXACT_LEXICON, type LocaleCopy } from "./templateExactLexicon";
 
 type PhraseTranslation = {
@@ -20,6 +21,7 @@ const HE = /[\u0590-\u05FF]/;
 const EXACT_LEXICON: Record<string, PhraseTranslation | LocaleCopy> = {
   ...(generatedExactLexicon as Record<string, PhraseTranslation>),
   ...(studioExactLexicon as Record<string, PhraseTranslation>),
+  ...(storeExactLexicon as Record<string, PhraseTranslation>),
   ...TEMPLATE_EXACT_LEXICON,
 };
 
@@ -114,8 +116,11 @@ export function localizeBuiltInText(text: string, language?: string): string {
     if (!isUsableTranslation(source, translated, locale)) continue;
     out = out.split(source).join(translated);
   }
-  const result = isUsableTranslation(text, out, locale) ? out : text;
-  return adaptBuiltInDirectionalCss(result, locale);
+  // Longest-key replacement may leave stray Hebrew words. Reject hybrids.
+  if (isUsableTranslation(text, out, locale) && hebrewScore(out) === 0) {
+    return adaptBuiltInDirectionalCss(out, locale);
+  }
+  return adaptBuiltInDirectionalCss(text, locale);
 }
 
 export function localizeBuiltInTemplateSeed<T>(data: T, language?: string): T {
