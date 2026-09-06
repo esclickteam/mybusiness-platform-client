@@ -105,6 +105,13 @@ export function localizeBuiltInText(text: string, language?: string): string {
     return adaptBuiltInDirectionalCss(bookHit, locale);
   }
 
+  // Short punchy lines must be exact. Word-by-word smash turns
+  // "לילה קטן. טעמים גדולים." into "night small. flavors large."
+  // Composed chrome like "דף הבית – פתיחה מפוצלת" can still use fragments.
+  if (text.length <= 48 && !/[–·]/.test(text)) {
+    return adaptBuiltInDirectionalCss(text, locale);
+  }
+
   let out = text;
   for (const source of exactKeys) {
     if (!out.includes(source)) continue;

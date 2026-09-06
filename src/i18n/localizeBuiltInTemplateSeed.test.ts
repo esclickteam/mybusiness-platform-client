@@ -99,6 +99,16 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(he).toMatch(/פריט/);
   });
 
+  it("does not smash short hero lines into broken word-by-word English", () => {
+    expect(localizeBuiltInText("לילה קטן. טעמים גדולים.", "en")).toBe(
+      "A small night. Big flavors.",
+    );
+    expect(localizeBuiltInText("הזמינו בר", "en")).toBe("Book the bar");
+    expect(localizeBuiltInText("בוקר שנמשך עד הצהריים.", "en")).toBe(
+      "A morning that lasts until noon.",
+    );
+  });
+
   it("translates shared restaurant and course defaultData sentences", () => {
     expect(
       localizeBuiltInText("ספרו לנו מתי אתם מגיעים, כמה סועדים ומה חשוב לכם — ואנחנו נכין את השולחן.", "en"),

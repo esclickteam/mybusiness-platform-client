@@ -278,5 +278,64 @@
     "es": "Una pregunta rápida",
     "pt-BR": "Uma pergunta rápida",
     "ar": "سؤال سريع"
+  },
+  "טאפס": { "en": "Tapas", "es": "Tapas", "pt-BR": "Tapas", "ar": "تاباس" },
+  "הבר": { "en": "The bar", "es": "La barra", "pt-BR": "O bar", "ar": "البار" },
+  "טאפס · בר לילה": {
+    "en": "Tapas · night bar",
+    "es": "Tapas · bar nocturno",
+    "pt-BR": "Tapas · bar noturno",
+    "ar": "تاباس · بار ليلي"
+  },
+  "לילה קטן. טעמים גדולים.": {
+    "en": "A small night. Big flavors.",
+    "es": "Una noche pequeña. Sabores grandes.",
+    "pt-BR": "Uma noite pequena. Sabores grandes.",
+    "ar": "ليلة صغيرة. نكهات كبيرة."
+  },
+  "Tapasora — טאפס ספרדיים, קוקטיילים חמים ומוזיקה עד מאוחר. באו לשתף צלחות.": {
+    "en": "Tapasora — Spanish tapas, warm cocktails, and music late into the night. Come share plates.",
+    "es": "Tapasora — tapas españolas, cócteles cálidos y música hasta tarde. Venid a compartir platos.",
+    "pt-BR": "Tapasora — tapas espanholas, cocktails quentes e música até tarde. Venham partilhar pratos.",
+    "ar": "Tapasora — تاباس إسبانية وكوكتيلات دافئة وموسيقى حتى وقت متأخر. تعالوا تشاركوا الأطباق."
+  },
+  "הזמינו בר": {
+    "en": "Book the bar",
+    "es": "Reservad la barra",
+    "pt-BR": "Reservem o bar",
+    "ar": "احجزوا البار"
+  },
+  "לטאפס": { "en": "See the tapas", "es": "Ver las tapas", "pt-BR": "Ver as tapas", "ar": "إلى التاباس" },
+  "בראנץ׳": { "en": "Brunch", "es": "Brunch", "pt-BR": "Brunch", "ar": "برانش" },
+  "קפה": { "en": "Coffee", "es": "Café", "pt-BR": "Café", "ar": "قهوة" },
+  "בראנץ׳ · קפה": {
+    "en": "Brunch · coffee",
+    "es": "Brunch · café",
+    "pt-BR": "Brunch · café",
+    "ar": "برانش · قهوة"
+  },
+  "בוקר שנמשך עד הצהריים.": {
+    "en": "A morning that lasts until noon.",
+    "es": "Una mañana que dura hasta el mediodía.",
+    "pt-BR": "Uma manhã que dura até ao meio-dia.",
+    "ar": "صباح يمتد حتى الظهيرة."
+  },
+  "Brunchhaus — פנקייקים, ביצים, לחם מחמצת וקפה שנקלה במקום. השולחן של סוף השבוע.": {
+    "en": "Brunchhaus — pancakes, eggs, sourdough, and coffee roasted on site. The weekend table.",
+    "es": "Brunchhaus — pancakes, huevos, masa madre y café tostado en casa. La mesa del fin de semana.",
+    "pt-BR": "Brunchhaus — panquecas, ovos, pão de massa mãe e café torrado no sítio. A mesa de fim de semana.",
+    "ar": "Brunchhaus — بانكيك وبيض وخبز حامض وقهوة محمّصة في المكان. طاولة عطلة نهاية الأسبوع."
+  },
+  "שמרו שולחן": {
+    "en": "Reserve a table",
+    "es": "Reservad mesa",
+    "pt-BR": "Reservem mesa",
+    "ar": "احفظوا طاولة"
+  },
+  "לתפריט בראנץ׳": {
+    "en": "See the brunch menu",
+    "es": "Ver el menú de brunch",
+    "pt-BR": "Ver o cardápio de brunch",
+    "ar": "إلى قائمة البرانش"
   }
 }
