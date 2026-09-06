@@ -397,6 +397,24 @@ describe("localizeBuiltInTemplateSeed", () => {
         "es",
       ),
     ).not.toMatch(/[\u0590-\u05FF]/);
+    expect(
+      localizeBuiltInText(
+        "אנחנו בונים חנות בית ועיצוב שמכבדת גם עיצוב וגם תפעול: קטגוריות, סינונים, עמודי מוצר וסל — והכול מחובר לתוסף החנות.",
+        "en",
+      ),
+    ).toMatch(/home and design/i);
+    expect(
+      localizeBuiltInText(
+        "אנחנו בונים חנות בית ועיצוב שמכבדת גם עיצוב וגם תפעול: קטגוריות, סינונים, עמודי מוצר וסל — והכול מחובר לתוסף החנות.",
+        "en",
+      ),
+    ).not.toMatch(/[\u0590-\u05FF]/);
+    expect(
+      localizeBuiltInText(
+        "תקציב, יעד, קהל, דדליין. אנחנו נחזור עם כיוון ראשוני ומה צריך לקרות כדי לבדוק אותו מהר.",
+        "ar",
+      ),
+    ).not.toMatch(/[\u0590-\u05FF]/);
   });
 
   it("does not rewrite saved customer copy over localized defaults", () => {

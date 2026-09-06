@@ -23,6 +23,7 @@ import unique8ExactLexicon from "./templateExactLexicon.unique8.json";
 import unique9ExactLexicon from "./templateExactLexicon.unique9.json";
 import unique10ExactLexicon from "./templateExactLexicon.unique10.json";
 import unique11ExactLexicon from "./templateExactLexicon.unique11.json";
+import unique12ExactLexicon from "./templateExactLexicon.unique12.json";
 import { TEMPLATE_EXACT_LEXICON, type LocaleCopy } from "./templateExactLexicon";
 
 type PhraseTranslation = {
@@ -58,6 +59,7 @@ const EXACT_LEXICON: Record<string, PhraseTranslation | LocaleCopy> = {
   ...(unique9ExactLexicon as Record<string, PhraseTranslation>),
   ...(unique10ExactLexicon as Record<string, PhraseTranslation>),
   ...(unique11ExactLexicon as Record<string, PhraseTranslation>),
+  ...(unique12ExactLexicon as Record<string, PhraseTranslation>),
   ...TEMPLATE_EXACT_LEXICON,
 };
 
@@ -154,6 +156,8 @@ const STORE_SITE_DASH_RE =
   /^חנות (.+) מלאה עם 8 עמודים, סינונים ומוצרים מתוסף החנות\.$/;
 const STORE_SITE_PAGES_RE =
   /^חנות (.+) מלאה עם עמודים, תתי[־-]עמודים, קטגוריות וסינונים — מחוברת לתוסף החנות\.$/;
+const STORE_BUILD_RE =
+  /^אנחנו בונים חנות (.+) שמכבדת גם עיצוב וגם תפעול: קטגוריות, סינונים, עמודי מוצר וסל — והכול מחובר לתוסף החנות\.$/;
 const STORE_EXPERIENCE_RE = /^([A-Za-z][\w.-]*) — (.+) עם חוויית חנות מלאה\.$/;
 const STORE_POWERED_RE = /^([A-Za-z][\w.-]*) · (.+) · Powered by Bizuply$/;
 const PROJECT_CODE_RE = /^פרויקט (Alpha|Beta|Gamma)$/;
@@ -577,6 +581,23 @@ function localizeStoreSiteLine(text: string, locale: string): string {
   return `Full ${kind} store with 8 pages, filters, and products from the store add-on.`;
 }
 
+function localizeStoreBuildLine(text: string, locale: string): string {
+  const match = text.match(STORE_BUILD_RE);
+  if (!match) return "";
+  const kind = localizeFragment(match[1], locale);
+  if (!kind) return "";
+  if (locale === "es") {
+    return `Construimos una tienda de ${kind} que respeta diseño y operación: categorías, filtros, páginas de producto y carrito — todo conectado al extra de tienda.`;
+  }
+  if (locale === "pt-BR") {
+    return `Construímos uma loja de ${kind} que respeita design e operação: categorias, filtros, páginas de produto e carrinho — tudo ligado ao extra da loja.`;
+  }
+  if (locale === "ar") {
+    return `نبني متجر ${kind} يحترم التصميم والتشغيل معاً: فئات وفلاتر وصفحات منتج وسلة — والكل مربوط بإضافة المتجر.`;
+  }
+  return `We build a ${kind} store that respects both design and operations: categories, filters, product pages, and a cart — all connected to the store add-on.`;
+}
+
 function isUsableTranslation(source: string, translated: string, locale: string): boolean {
   if (!translated || translated === source) return false;
   if (locale === "he") return true;
@@ -707,6 +728,11 @@ export function localizeBuiltInText(text: string, language?: string): string {
   const storeSiteLine = localizeStoreSiteLine(text, locale);
   if (isUsableTranslation(text, storeSiteLine, locale)) {
     return adaptBuiltInDirectionalCss(storeSiteLine, locale);
+  }
+
+  const storeBuildLine = localizeStoreBuildLine(text, locale);
+  if (isUsableTranslation(text, storeBuildLine, locale)) {
+    return adaptBuiltInDirectionalCss(storeBuildLine, locale);
   }
 
   const storeExperienceLine = localizeStoreExperienceLine(text, locale);
