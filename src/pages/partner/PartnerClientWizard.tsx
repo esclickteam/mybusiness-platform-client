@@ -8,6 +8,7 @@ import {
   Store,
   Wallet,
 } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import PartnerCatalogPicker from "../../components/partner/PartnerCatalogPicker";
 import PartnerPageHeader from "../../components/partner/PartnerPageHeader";
 import {
@@ -30,29 +31,30 @@ import type {
 } from "../../types/partner";
 
 const STEPS = [
-  { id: 1, label: "פרטי לקוח", icon: Store },
-  { id: 2, label: "חבילה ראשית", icon: Sparkles },
-  { id: 3, label: "שירותים ותוספות", icon: Sparkles },
-  { id: 4, label: "תמחור ללקוח", icon: Wallet },
-  { id: 5, label: "סיכום עסקה", icon: CreditCard },
+  { id: 1, labelKey: "partner.stepContact", icon: Store },
+  { id: 2, labelKey: "partner.stepPackage", icon: Sparkles },
+  { id: 3, labelKey: "partner.stepAddons", icon: Sparkles },
+  { id: 4, labelKey: "partner.stepPricing", icon: Wallet },
+  { id: 5, labelKey: "partner.stepSummary", icon: CreditCard },
 ];
 
-const MODE_COPY: Record<ManagementMode, { title: string; text: string }> = {
+const MODE_COPY: Record<ManagementMode, { titleKey: string; textKey: string }> = {
   partner: {
-    title: "הפרטנר מנהל",
-    text: "אתם מנהלים את העסק עבור הלקוח. הלקוח יכול לקבל גישה לפי הצורך.",
+    titleKey: "partner.modePartnerTitle",
+    textKey: "partner.modePartnerText",
   },
   customer: {
-    title: "הלקוח מנהל",
-    text: "הלקוח הוא האדמין הראשי. עדיין תוכלו להיכנס לניהול ולבצע פעולות.",
+    titleKey: "partner.modeCustomerTitle",
+    textKey: "partner.modeCustomerText",
   },
   shared: {
-    title: "ניהול משותף",
-    text: "גם אתם וגם הלקוח יכולים לנהל את העסק. מומלץ כברירת מחדל.",
+    titleKey: "partner.modeSharedTitle",
+    textKey: "partner.modeSharedText",
   },
 };
 
 export default function PartnerClientWizard() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const existingClientId = params.get("clientId") || "";
@@ -96,14 +98,14 @@ export default function PartnerClientWizard() {
         setWizard(data.wizard || { packages: [], categories: [] });
         setPartnerShareRate(Number(data.partnerShareRate) || 0.75);
       })
-      .catch(() => setError("לא ניתן לטעון קטלוג"));
+      .catch(() => setError(t("partner.errors.catalog")));
     fetchPartnerMe()
       .then((data) => {
         const branding = data.branding || {};
         setLogoUrl(String(branding.logoUrl || ""));
       })
       .catch(() => undefined);
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     if (!existingClientId) return;
@@ -120,8 +122,8 @@ export default function PartnerClientWizard() {
         });
         setManagementMode(client.managementMode || "shared");
       })
-      .catch((err) => setError(partnerApiError(err, "לא ניתן לטעון לקוח")));
-  }, [existingClientId]);
+      .catch((err) => setError(partnerApiError(err, t("partner.errors.loadClient"))));
+  }, [existingClientId, t]);
 
   const preview = useMemo(
     () => computeDealPreview(items, selectedSkus, partnerShareRate),
@@ -130,7 +132,8 @@ export default function PartnerClientWizard() {
   const bizuplyShareRate = Math.max(0, 1 - Number(partnerShareRate || 0));
   const defaultPackageName = publicPackageLabel(
     preview.primary?.displayNameHe || preview.primary?.nameHe || "",
-    "רישיון שימוש במערכת"
+    undefined,
+    t
   );
 
   useEffect(() => {
@@ -142,13 +145,14 @@ export default function PartnerClientWizard() {
         const item = items.find((row) => row.sku === sku);
         next[sku] = publicPackageLabel(
           item?.displayNameHe || item?.nameHe,
-          item?.nameHe || sku
+          item?.nameHe || sku,
+          t
         );
         changed = true;
       }
       return changed ? next : prev;
     });
-  }, [selectedSkus, items]);
+  }, [selectedSkus, items, t]);
 
   useEffect(() => {
     if (packageDisplayName || !defaultPackageName) return;
@@ -157,7 +161,7 @@ export default function PartnerClientWizard() {
 
   async function createDraft() {
     if (!contact.businessName.trim() || !contact.contactName.trim() || !contact.email.trim()) {
-      setError("יש למלא שם עסק, איש קשר ואימייל");
+      setError(t("partner.errors.requiredContact"));
       return;
     }
     setSaving(true);
@@ -171,7 +175,7 @@ export default function PartnerClientWizard() {
       setClientId(data.client._id);
       setStep(2);
     } catch (err: unknown) {
-      setError(partnerApiError(err, "שגיאה ביצירת לקוח"));
+      setError(partnerApiError(err, t("partner.errors.createClient")));
     } finally {
       setSaving(false);
     }
@@ -192,7 +196,7 @@ export default function PartnerClientWizard() {
   async function createDeal() {
     if (!clientId) return;
     if (!selectedSkus.length) {
-      setError("יש לבחור חבילה או שירות");
+      setError(t("partner.errors.selectPackage"));
       return;
     }
     setSaving(true);
@@ -212,7 +216,7 @@ export default function PartnerClientWizard() {
         publicUrl: data.publicUrl,
       });
     } catch (err: unknown) {
-      setError(partnerApiError(err, "שגיאה ביצירת עסקה"));
+      setError(partnerApiError(err, t("partner.errors.createDeal")));
     } finally {
       setSaving(false);
     }
@@ -227,9 +231,9 @@ export default function PartnerClientWizard() {
   return (
     <div className="space-y-6 pb-24 lg:pb-8">
       <PartnerPageHeader
-        eyebrow={existingClientId ? "עסקה נוספת" : "לקוח חדש"}
-        title={existingClientId ? "הוספת שירותים לעסקה חדשה" : "אשף יצירת לקוח"}
-        subtitle="חבילה, תוספות, מחיר ללקוח, ואז קישור לסיכום עסקה. הלקוח משלם לכם, ואתם משלמים ל-Bizuply."
+        eyebrow={existingClientId ? t("partner.wizard.extraDeal") : t("partner.newClient")}
+        title={existingClientId ? t("partner.wizard.addServices") : t("partner.wizard.title")}
+        subtitle={t("partner.wizard.subtitle")}
       />
 
       <ol className="grid gap-2 sm:grid-cols-5">
@@ -257,7 +261,7 @@ export default function PartnerClientWizard() {
               >
                 {done ? <Check className="h-3.5 w-3.5" /> : <Icon className="h-3.5 w-3.5" />}
               </span>
-              {item.label}
+              {t(item.labelKey)}
             </li>
           );
         })}
@@ -271,16 +275,16 @@ export default function PartnerClientWizard() {
 
       {step === 1 ? (
         <section className="grid gap-4 rounded-3xl border border-slate-200 bg-white p-6">
-          <h3 className="text-lg font-black">פרטי העסק ואיש הקשר</h3>
+          <h3 className="text-lg font-black">{t("partner.wizard.businessDetails")}</h3>
           <div className="grid gap-3 sm:grid-cols-2">
             {[
-              ["businessName", "שם העסק"],
-              ["contactName", "איש קשר"],
-              ["email", "אימייל"],
-              ["phone", "טלפון"],
-            ].map(([key, label]) => (
+              ["businessName", "partner.wizard.businessName"],
+              ["contactName", "partner.wizard.contactName"],
+              ["email", "partner.email"],
+              ["phone", "partner.phone"],
+            ].map(([key, labelKey]) => (
               <label key={key} className="block text-sm font-black text-slate-600">
-                {label}
+                {t(labelKey)}
                 <input
                   value={contact[key as keyof typeof contact]}
                   onChange={(e) => setContact({ ...contact, [key]: e.target.value })}
@@ -301,8 +305,8 @@ export default function PartnerClientWizard() {
                 ].join(" ")}
               >
                 <Shield className="mb-2 h-4 w-4 text-violet-600" />
-                <p className="font-black">{MODE_COPY[mode].title}</p>
-                <p className="mt-1 text-xs font-bold text-slate-500">{MODE_COPY[mode].text}</p>
+                <p className="font-black">{t(MODE_COPY[mode].titleKey)}</p>
+                <p className="mt-1 text-xs font-bold text-slate-500">{t(MODE_COPY[mode].textKey)}</p>
               </button>
             ))}
           </div>
@@ -312,7 +316,7 @@ export default function PartnerClientWizard() {
             onClick={createDraft}
             className="rounded-2xl bg-slate-900 px-5 py-3 text-sm font-black text-white disabled:opacity-60"
           >
-            {saving ? "שומר..." : "המשך לבחירת חבילה"}
+            {saving ? t("partner.saving") : t("partner.wizard.continuePackage")}
           </button>
         </section>
       ) : null}
@@ -325,28 +329,33 @@ export default function PartnerClientWizard() {
           onChange={setSelectedSkus}
           partnerShareRate={partnerShareRate}
           onContinue={() => setStep(step === 2 ? 3 : 4)}
-          continueLabel={step === 2 ? "המשך לתוספות" : "המשך לתמחור ללקוח"}
+          continueLabel={step === 2 ? t("partner.wizard.continueAddons") : t("partner.wizard.continuePricing")}
           mode={step === 2 ? "packages" : "addons"}
         />
       ) : null}
 
       {step === 4 ? (
         <section className="space-y-4 rounded-3xl border border-slate-200 bg-white p-6">
-          <h3 className="text-lg font-black">תמחור ללקוח</h3>
+          <h3 className="text-lg font-black">{t("partner.wizard.pricingTitle")}</h3>
           <p className="text-sm font-bold text-slate-500">
-            המחיר נבנה רק מהמוצרים שנבחרו: מחיר Bizuply + העמלה החד-פעמית והחודשית שהוגדרו לכל מוצר במחירון. Bizuply מקבלת {formatPct(bizuplyShareRate)} מכל עמלה לפי חבילת הפרטנר, ואתם מקבלים {formatPct(partnerShareRate)}.
+            {t("partner.wizard.pricingHint", {
+              defaultValue:
+                "המחיר נבנה רק מהמוצרים שנבחרו: מחיר Bizuply + העמלה החד-פעמית והחודשית שהוגדרו לכל מוצר במחירון. Bizuply מקבלת {{bizuply}} מכל עמלה לפי חבילת הפרטנר, ואתם מקבלים {{partner}}.",
+              bizuply: formatPct(bizuplyShareRate),
+              partner: formatPct(partnerShareRate),
+            })}
           </p>
           <div className="grid gap-4 md:grid-cols-2">
-            <Metric label="עלות השירותים שלך מ-Bizuply" value={formatIls(preview.totals.wholesale)} />
-            <Metric label="העמלה שלך (חד-פעמי + חודשי)" value={formatIls(preview.totals.partnerCommission)} />
-            <Metric label="מחיר חד-פעמי ללקוח" value={formatIls(preview.totals.oneTime)} />
-            <Metric label="מחיר כל חודש ללקוח" value={formatIls(preview.totals.monthly)} />
-            <Metric label="לתשלום עכשיו ללקוח" value={formatIls(preview.totals.customerNow)} />
-            <Metric label="חלק Bizuply" value={formatIls(preview.totals.bizuplyShare)} />
-            <Metric label="הסכום לתשלום ל-Bizuply" value={formatIls(preview.totals.partnerPaysBizuply)} />
+            <Metric label={t("partner.wizard.yourServiceCost")} value={formatIls(preview.totals.wholesale)} />
+            <Metric label={t("partner.wizard.yourCommission")} value={formatIls(preview.totals.partnerCommission)} />
+            <Metric label={t("partner.wizard.oneTimeCustomer")} value={formatIls(preview.totals.oneTime)} />
+            <Metric label={t("partner.wizard.monthlyCustomer")} value={formatIls(preview.totals.monthly)} />
+            <Metric label={t("partner.wizard.dueNow")} value={formatIls(preview.totals.customerNow)} />
+            <Metric label={t("partner.wizard.bizuplyShare")} value={formatIls(preview.totals.bizuplyShare)} />
+            <Metric label={t("partner.wizard.payBizuply")} value={formatIls(preview.totals.partnerPaysBizuply)} />
           </div>
           <details className="rounded-2xl border border-slate-200 p-4">
-            <summary className="cursor-pointer font-black">פירוט התמחור</summary>
+            <summary className="cursor-pointer font-black">{t("partner.wizard.pricingBreakdown")}</summary>
             <div className="mt-3 space-y-2 text-sm font-bold text-slate-600">
               {preview.lines.map((line) => (
                 <div key={line.sku} className="flex justify-between gap-3">
@@ -362,14 +371,14 @@ export default function PartnerClientWizard() {
           </details>
           <div className="flex flex-wrap gap-2">
             <button type="button" onClick={() => setStep(3)} className="rounded-2xl border px-4 py-2 font-black">
-              חזרה
+              {t("partner.back")}
             </button>
             <button
               type="button"
               onClick={() => setStep(5)}
               className="rounded-2xl bg-slate-900 px-4 py-2 font-black text-white"
             >
-              המשך לתצוגה מקדימה
+              {t("partner.wizard.continuePreview")}
             </button>
           </div>
         </section>
@@ -377,29 +386,29 @@ export default function PartnerClientWizard() {
 
       {step === 5 ? (
         <section className="space-y-4 rounded-3xl border border-slate-200 bg-white p-6">
-          <h3 className="text-lg font-black">תצוגה מקדימה ללקוח</h3>
+          <h3 className="text-lg font-black">{t("partner.wizard.previewTitle")}</h3>
           <p className="text-sm font-bold text-slate-500">
-            כך הלקוח יראה את המוצרים ואת הסכום הסופי בלבד. פירוט המחירים נשאר אצלך בעמוד העסקה.
+            {t("partner.wizard.previewText")}
           </p>
           <div className="rounded-[28px] border border-slate-100 bg-slate-50 p-5">
             {logoUrl ? (
               <img src={logoUrl} alt="" className="mb-4 h-14 w-14 rounded-2xl bg-white object-cover" />
             ) : null}
             <label className="block">
-              <span className="text-xs font-black text-slate-400">שם הרישיון / החבילה בהצעה ללקוח</span>
+              <span className="text-xs font-black text-slate-400">{t("partner.wizard.offerLicenseName")}</span>
               <input
                 value={packageDisplayName}
                 onChange={(e) => setPackageDisplayName(e.target.value)}
-                placeholder={defaultPackageName || "שם החבילה"}
+                placeholder={defaultPackageName || t("partner.wizard.packageName")}
                 className="mt-1 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 text-2xl font-black outline-none focus:border-violet-400"
               />
             </label>
             <label className="mt-3 block">
-              <span className="text-xs font-black text-slate-400">תיאור הרישיון ללקוח</span>
+              <span className="text-xs font-black text-slate-400">{t("partner.wizard.licenseDescription")}</span>
               <textarea
                 value={packageDescription}
                 onChange={(e) => setPackageDescription(e.target.value)}
-                placeholder="רישיון שימוש במערכת ניהול עסק מלאה"
+                placeholder={t("partner.wizard.licenseName")}
                 rows={2}
                 className="mt-1 w-full rounded-2xl border border-slate-200 bg-white px-3 py-2 font-bold outline-none focus:border-violet-400"
               />
@@ -407,7 +416,7 @@ export default function PartnerClientWizard() {
             <div className="mt-4 space-y-2">
               {preview.lines.filter((line) => !isCommissionSku(line.sku)).map((line) => (
                 <label key={line.sku} className="block">
-                  <span className="text-[11px] font-black text-slate-400">שם השירות ללקוח</span>
+                  <span className="text-[11px] font-black text-slate-400">{t("partner.wizard.serviceNameForCustomer")}</span>
                   <input
                     value={lineNames[line.sku] || ""}
                     onChange={(e) => setLineNames((prev) => ({ ...prev, [line.sku]: e.target.value }))}
@@ -416,25 +425,30 @@ export default function PartnerClientWizard() {
                 </label>
               ))}
             </div>
-            <p className="mt-4 text-xs font-black uppercase tracking-[0.16em] text-violet-700">פירוט מוצרים</p>
+            <p className="mt-4 text-xs font-black uppercase tracking-[0.16em] text-violet-700">{t("partner.wizard.productBreakdown")}</p>
             <div className="mt-2 space-y-2">
               {preview.lines.filter((line) => !isCommissionSku(line.sku)).map((line) => (
                 <div key={line.sku} className="rounded-2xl border border-slate-100 bg-white px-3 py-2">
-                  <p className="font-black">{lineNames[line.sku] || publicPackageLabel(line.displayNameHe || line.nameHe, line.nameHe)}</p>
-                  <p className="text-xs font-bold text-slate-400">{billingLabel(line.billing)}</p>
+                  <p className="font-black">{lineNames[line.sku] || publicPackageLabel(line.displayNameHe || line.nameHe, line.nameHe, t)}</p>
+                  <p className="text-xs font-bold text-slate-400">{billingLabel(line.billing, t)}</p>
                 </div>
               ))}
             </div>
-            <p className="mt-4 text-sm font-black">מחיר חד-פעמי {formatIls(preview.totals.oneTime)}</p>
-            <p className="text-sm font-black">מחיר כל חודש {formatIls(preview.totals.monthly)}</p>
+            <p className="mt-4 text-sm font-black">{t("partner.publicDeal.oneTimePrice")} {formatIls(preview.totals.oneTime)}</p>
+            <p className="text-sm font-black">{t("partner.publicDeal.monthlyPrice")} {formatIls(preview.totals.monthly)}</p>
             {preview.totals.annual ? (
-              <p className="text-sm font-black">שנתי {formatIls(preview.totals.annual)}</p>
+              <p className="text-sm font-black">{t("partner.billing.annual")} {formatIls(preview.totals.annual)}</p>
             ) : null}
-            <p className="mt-3 text-xl font-black">לתשלום עכשיו {formatIls(preview.totals.customerNow)}</p>
+            <p className="mt-3 text-xl font-black">{t("partner.catalog.dueNow")} {formatIls(preview.totals.customerNow)}</p>
           </div>
           {createdDeal ? (
             <div className="rounded-3xl border border-emerald-200 bg-emerald-50 p-5">
-              <p className="font-black text-emerald-800">עסקה {createdDeal.number} נוצרה</p>
+              <p className="font-black text-emerald-800">
+                {t("partner.wizard.dealCreated", {
+                  defaultValue: "עסקה {{number}} נוצרה",
+                  number: createdDeal.number,
+                })}
+              </p>
               <p className="mt-2 break-all text-sm font-bold">
                 {shareUrl}
               </p>
@@ -444,32 +458,32 @@ export default function PartnerClientWizard() {
                   onClick={() => navigator.clipboard.writeText(shareUrl)}
                   className="rounded-2xl bg-emerald-700 px-4 py-2 text-sm font-black text-white"
                 >
-                  העתקת קישור ללקוח
+                  {t("partner.wizard.copyCustomerLink")}
                 </button>
                 <Link
                   to={`/partner/dashboard/deals/${createdDeal.id}`}
                   className="rounded-2xl bg-slate-900 px-4 py-2 text-sm font-black text-white"
                 >
-                  מעבר לתשלום ל-Bizuply
+                  {t("partner.wizard.payBizuplyCta")}
                 </Link>
                 <Link
                   to={`/partner/dashboard/crm/${clientId}`}
                   className="rounded-2xl border px-4 py-2 text-sm font-black"
                 >
-                  תיק הלקוח
+                  {t("partner.wizard.clientFile")}
                 </Link>
                 <Link
                   to="/partner/dashboard/withdrawals"
                   className="rounded-2xl border px-4 py-2 text-sm font-black"
                 >
-                  משיכת עמלה
+                  {t("partner.wizard.withdrawCommission")}
                 </Link>
               </div>
             </div>
           ) : (
             <div className="flex flex-wrap gap-2">
               <button type="button" onClick={() => setStep(4)} className="rounded-2xl border px-4 py-2 font-black">
-                חזרה
+                {t("partner.back")}
               </button>
               <button
                 type="button"
@@ -477,7 +491,7 @@ export default function PartnerClientWizard() {
                 onClick={createDeal}
                 className="rounded-2xl bg-violet-700 px-4 py-2 font-black text-white disabled:opacity-60"
               >
-                {saving ? "יוצר עסקה..." : "יצירת Deal וקישור ללקוח"}
+                {saving ? t("partner.wizard.creatingDeal") : t("partner.wizard.createDeal")}
               </button>
             </div>
           )}

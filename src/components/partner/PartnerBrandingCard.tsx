@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Check, Copy, ExternalLink, ImagePlus, Loader2, Upload } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import {
   checkPartnerSubdomain,
   fetchPartnerBranding,
@@ -36,6 +37,7 @@ function ChecklistItem({ done, label }: { done: boolean; label: string }) {
 }
 
 export default function PartnerBrandingCard({ showPersonalLink = true }: { showPersonalLink?: boolean }) {
+  const { t } = useTranslation();
   const [branding, setBranding] = useState<PublicPartnerBranding | null>(null);
   const [urls, setUrls] = useState<PublicPartnerBranding["urls"]>({});
   const [entitled, setEntitled] = useState(false);
@@ -65,8 +67,8 @@ export default function PartnerBrandingCard({ showPersonalLink = true }: { showP
   }
 
   useEffect(() => {
-    load().catch((err) => setError(partnerApiError(err, "שגיאה בטעינת מיתוג")));
-  }, []);
+    load().catch((err) => setError(partnerApiError(err, t("partner.errors.branding"))));
+  }, [t]);
 
   const savedSubdomain = String(branding?.stored?.subdomain || branding?.subdomain || "").trim();
   const personalUrl = savedSubdomain
@@ -94,7 +96,7 @@ export default function PartnerBrandingCard({ showPersonalLink = true }: { showP
         value,
         available: true,
         code: "SUBDOMAIN_CURRENT",
-        message: "זו הכתובת הפעילה שלכם",
+        message: t("partner.branding.thisIsLive", { defaultValue: "זו הכתובת הפעילה שלכם" }),
       });
       setCheckingSubdomain(false);
       return;
@@ -104,7 +106,7 @@ export default function PartnerBrandingCard({ showPersonalLink = true }: { showP
         value,
         available: false,
         code: "SUBDOMAIN_SHORT",
-        message: "הכתובת חייבת להכיל לפחות 3 תווים",
+        message: t("partner.branding.minChars", { defaultValue: "הכתובת חייבת להכיל לפחות 3 תווים" }),
       });
       setCheckingSubdomain(false);
       return;
@@ -123,7 +125,7 @@ export default function PartnerBrandingCard({ showPersonalLink = true }: { showP
               value,
               available: false,
               code: "SUBDOMAIN_CHECK_FAILED",
-              message: partnerApiError(err, "לא ניתן לבדוק אם הכתובת פנויה"),
+              message: partnerApiError(err, t("partner.errors.slugCheck")),
             });
           }
         })
@@ -136,29 +138,29 @@ export default function PartnerBrandingCard({ showPersonalLink = true }: { showP
       cancelled = true;
       window.clearTimeout(timer);
     };
-  }, [subdomain, savedSubdomain]);
+  }, [subdomain, savedSubdomain, t]);
 
   const subdomainStatus = useMemo(() => {
     if (!subdomain.trim()) {
-      return { tone: "slate", text: "בחרו כתובת באנגלית כדי לבדוק אם היא פנויה" };
+      return { tone: "slate", text: t("partner.branding.typeToCheck", { defaultValue: "בחרו כתובת באנגלית כדי לבדוק אם היא פנויה" }) };
     }
     if (checkingSubdomain) {
-      return { tone: "slate", text: "בודקים אם הכתובת פנויה..." };
+      return { tone: "slate", text: t("partner.branding.checking", { defaultValue: "בודקים אם הכתובת פנויה..." }) };
     }
     if (!subdomainCheck) {
-      return { tone: "slate", text: "בודקים אם הכתובת פנויה..." };
+      return { tone: "slate", text: t("partner.branding.checking", { defaultValue: "בודקים אם הכתובת פנויה..." }) };
     }
     if (subdomainCheck.available) {
       return {
         tone: "emerald",
-        text: subdomainCheck.message || "הכתובת פנויה",
+        text: subdomainCheck.message || t("partner.branding.available", { defaultValue: "הכתובת פנויה" }),
       };
     }
     return {
       tone: "rose",
-      text: subdomainCheck.message || "הכתובת לא זמינה",
+      text: subdomainCheck.message || t("partner.branding.unavailable", { defaultValue: "הכתובת לא זמינה" }),
     };
-  }, [subdomain, checkingSubdomain, subdomainCheck]);
+  }, [subdomain, checkingSubdomain, subdomainCheck, t]);
 
   async function copy(url: string, key: string) {
     try {
@@ -166,13 +168,13 @@ export default function PartnerBrandingCard({ showPersonalLink = true }: { showP
       setCopied(key);
       setTimeout(() => setCopied(""), 2000);
     } catch {
-      setError("לא ניתן להעתיק");
+      setError(t("partner.errors.copy"));
     }
   }
 
   async function saveBranding() {
     if (subdomain.trim() && subdomainCheck?.available === false) {
-      setError(subdomainCheck.message || "הכתובת לא פנויה");
+      setError(subdomainCheck.message || t("partner.errors.slugTaken", { defaultValue: "הכתובת לא פנויה" }));
       return;
     }
     setSaving(true);
@@ -187,9 +189,9 @@ export default function PartnerBrandingCard({ showPersonalLink = true }: { showP
       });
       setBranding(data.branding);
       setUrls(data.urls || data.branding?.urls || {});
-      setSaved(active || entitled ? "המיתוג נשמר" : "המיתוג נשמר. יוצג ללקוחות אחרי שדרוג ל-Premium.");
+      setSaved(active || entitled ? t("partner.branding.saved") : t("partner.branding.savedPremium"));
     } catch (err: unknown) {
-      setError(partnerApiError(err, "שגיאה בשמירת מיתוג"));
+      setError(partnerApiError(err, t("partner.errors.saveBranding")));
     } finally {
       setSaving(false);
     }
@@ -202,9 +204,9 @@ export default function PartnerBrandingCard({ showPersonalLink = true }: { showP
     try {
       const data = await uploadPartnerLogo(file, "logo");
       setBranding(data.branding || data);
-      setSaved("הלוגו עודכן");
+      setSaved(t("partner.branding.logoUpdated"));
     } catch (err: unknown) {
-      setError(partnerApiError(err, "שגיאה בהעלאת לוגו"));
+      setError(partnerApiError(err, t("partner.errors.logoUpload")));
     } finally {
       setUploadingLogo(false);
     }
@@ -215,9 +217,9 @@ export default function PartnerBrandingCard({ showPersonalLink = true }: { showP
     try {
       const data = await updatePartnerBranding({ logoUrl: "" });
       setBranding(data.branding);
-      setSaved("הלוגו הוסר");
+      setSaved(t("partner.branding.logoRemoved"));
     } catch (err: unknown) {
-      setError(partnerApiError(err, "לא ניתן להסיר לוגו"));
+      setError(partnerApiError(err, t("partner.errors.logoRemove")));
     }
   }
 
@@ -227,22 +229,22 @@ export default function PartnerBrandingCard({ showPersonalLink = true }: { showP
     <PartnerCard className="space-y-6 p-6">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <h2 className="text-lg font-black">מיתוג וכתובת אישית</h2>
+          <h2 className="text-lg font-black">{t("partner.branding.title", { defaultValue: "מיתוג וכתובת אישית" })}</h2>
           <p className="mt-1 text-sm font-bold text-slate-500">
-            שם מותג, לוגו וכתובת משנה. ב-Premium הלקוחות רואים את המותג שלכם במקום Bizuply.
+            {t("partner.branding.intro")}
           </p>
         </div>
         {active ? (
           <span className="rounded-full bg-emerald-100 px-3 py-1 text-xs font-black text-emerald-800">
-            White Label פעיל
+            {t("partner.branding.whiteLabelOn")}
           </span>
         ) : entitled ? (
           <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-black text-amber-800">
-            חסרים פרטים להפעלה
+            {t("partner.branding.missingDetails")}
           </span>
         ) : (
           <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-black text-slate-600">
-            Premium בלבד
+            {t("partner.branding.premiumOnly")}
           </span>
         )}
       </div>
@@ -252,30 +254,30 @@ export default function PartnerBrandingCard({ showPersonalLink = true }: { showP
 
       {!entitled ? (
         <p className="rounded-2xl bg-amber-50 px-4 py-3 text-sm font-bold text-amber-800">
-          White Label פעיל רק במסלול Premium. אפשר לשמור מיתוג כבר עכשיו — הלקוחות ימשיכו לראות את Bizuply עד שדרוג.
+          {t("partner.branding.premiumHint")}
         </p>
       ) : !active ? (
         <p className="rounded-2xl bg-amber-50 px-4 py-3 text-sm font-bold text-amber-800">
-          כדי להפעיל White Label נדרשים שם מותג, לוגו וכתובת משנה פנויה.
+          {t("partner.branding.needAll")}
         </p>
       ) : null}
 
       <ul className="grid gap-2 rounded-2xl bg-slate-50 p-4 sm:grid-cols-3">
-        <ChecklistItem done={hasBrandName} label="שם מותג" />
-        <ChecklistItem done={hasLogo} label="לוגו" />
-        <ChecklistItem done={subdomainReady} label="כתובת משנה פנויה" />
+        <ChecklistItem done={hasBrandName} label={t("partner.branding.brandName", { defaultValue: "שם מותג" })} />
+        <ChecklistItem done={hasLogo} label={t("partner.branding.logo")} />
+        <ChecklistItem done={subdomainReady} label={t("partner.branding.availableSubdomain")} />
       </ul>
 
       {showPersonalLink && personalUrl ? (
         <div className="rounded-2xl border border-slate-100 bg-slate-50/80 p-4">
-          <p className="text-sm font-black">הקישור האישי שלי</p>
+          <p className="text-sm font-black">{t("partner.branding.personalLink", { defaultValue: "הקישור האישי שלי" })}</p>
           <p className="mt-1 break-all text-sm font-bold text-violet-700" dir="ltr">
             {personalUrl}
           </p>
           <div className="mt-3 flex flex-wrap gap-2">
             <PartnerPrimaryButton type="button" onClick={() => copy(personalUrl, "home")}>
               <Copy className="h-4 w-4" />
-              {copied === "home" ? "הועתק" : "העתקה"}
+              {copied === "home" ? t("partner.copied") : t("partner.copy", { defaultValue: "העתקה" })}
             </PartnerPrimaryButton>
             <a
               href={personalUrl}
@@ -284,7 +286,7 @@ export default function PartnerBrandingCard({ showPersonalLink = true }: { showP
               className="inline-flex items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-600 shadow-sm"
             >
               <ExternalLink className="h-4 w-4" />
-              תצוגה מקדימה
+              {t("partner.branding.preview", { defaultValue: "תצוגה מקדימה" })}
             </a>
           </div>
         </div>
@@ -292,8 +294,8 @@ export default function PartnerBrandingCard({ showPersonalLink = true }: { showP
 
       <section className="space-y-3">
         <div>
-          <h3 className="text-sm font-black text-slate-900">לוגו</h3>
-          <p className="text-xs font-bold text-slate-500">JPG, PNG או WEBP עד 2MB. מוצג בעמוד שלכם ובמקום Bizuply.</p>
+          <h3 className="text-sm font-black text-slate-900">{t("partner.branding.logo")}</h3>
+          <p className="text-xs font-bold text-slate-500">{t("partner.branding.logoHint")}</p>
         </div>
         <div
           className="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-4 sm:flex-row sm:items-center"
@@ -312,11 +314,11 @@ export default function PartnerBrandingCard({ showPersonalLink = true }: { showP
             className="grid h-24 w-24 shrink-0 cursor-pointer place-items-center overflow-hidden rounded-2xl border border-dashed border-violet-200 bg-violet-50/60"
           >
             {logoUrl ? (
-              <img src={logoUrl} alt="לוגו המותג" className="h-full w-full object-contain p-2" />
+              <img src={logoUrl} alt={t("partner.branding.logo")} className="h-full w-full object-contain p-2" />
             ) : (
               <div className="flex flex-col items-center gap-1 text-violet-500">
                 <ImagePlus className="h-6 w-6" />
-                <span className="text-[11px] font-black">העלאה</span>
+                <span className="text-[11px] font-black">{t("partner.branding.upload")}</span>
               </div>
             )}
           </label>
@@ -331,39 +333,39 @@ export default function PartnerBrandingCard({ showPersonalLink = true }: { showP
                 {uploadingLogo ? (
                   <>
                     <Loader2 className="h-4 w-4 animate-spin" />
-                    מעלה לוגו...
+                    {t("partner.branding.uploading")}
                   </>
                 ) : (
                   <>
                     <Upload className="h-4 w-4" />
-                    {logoUrl ? "החלפת לוגו" : "העלאת לוגו"}
+                    {logoUrl ? t("partner.branding.replaceLogo") : t("partner.branding.uploadLogo", { defaultValue: "העלאת לוגו" })}
                   </>
                 )}
               </PartnerFileButton>
               {logoUrl ? (
                 <PartnerGhostButton type="button" onClick={removeLogo}>
-                  הסרת לוגו
+                  {t("partner.branding.removeLogo")}
                 </PartnerGhostButton>
               ) : null}
             </div>
-            <p className="text-xs font-bold text-slate-500">לחצו על הכפתור ובחרו קובץ מהמחשב. אין צורך בשמירה נוספת אחרי ההעלאה.</p>
+            <p className="text-xs font-bold text-slate-500">{t("partner.branding.uploadHint")}</p>
           </div>
         </div>
       </section>
 
       <label className="block text-sm font-black text-slate-800">
-        שם מותג
+        {t("partner.branding.brandName", { defaultValue: "שם מותג" })}
         <PartnerInput
           value={brandName}
           onChange={(e) => setBrandName(e.target.value)}
           className="mt-1"
-          placeholder="השם שהלקוחות יראו"
+          placeholder={t("partner.branding.customersSee")}
         />
       </label>
 
       <section className="space-y-2">
         <label className="block text-sm font-black text-slate-800">
-          כתובת משנה
+          {t("partner.branding.subdomain", { defaultValue: "כתובת משנה" })}
           <div className="mt-1 flex flex-wrap items-center gap-2 rounded-2xl border border-slate-200 bg-white px-3 py-2" dir="ltr">
             <span className="text-sm font-bold text-slate-400">https://</span>
             <input
@@ -389,23 +391,23 @@ export default function PartnerBrandingCard({ showPersonalLink = true }: { showP
           {subdomainStatus.text}
         </p>
         <p className="text-xs font-bold text-slate-500">
-          אותיות לטיניות, ספרות ומקף. ייחודית במערכת. White Label דורש גם לוגו ושם מותג.
+          {t("partner.branding.slugHint")}
         </p>
       </section>
 
       <div className="grid gap-3 sm:grid-cols-2">
         <label className="text-sm font-black text-slate-800">
-          אימייל תמיכה (אופציונלי)
+          {t("partner.branding.supportEmail")}
           <PartnerInput value={supportEmail} onChange={(e) => setSupportEmail(e.target.value)} className="mt-1" />
         </label>
         <label className="text-sm font-black text-slate-800">
-          טלפון תמיכה (אופציונלי)
+          {t("partner.branding.supportPhone")}
           <PartnerInput value={supportPhone} onChange={(e) => setSupportPhone(e.target.value)} className="mt-1" />
         </label>
       </div>
 
       <PartnerPrimaryButton type="button" disabled={saveBlocked} onClick={saveBranding}>
-        {saving ? "שומר..." : "שמירת מיתוג"}
+        {saving ? t("partner.saving") : t("partner.branding.saveBranding")}
       </PartnerPrimaryButton>
     </PartnerCard>
   );

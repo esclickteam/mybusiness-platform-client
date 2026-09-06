@@ -1,14 +1,15 @@
 import React, { useMemo, useState } from "react";
 import { Check, Minus, Plus, Search, X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { formatIls } from "../../lib/partnerMoney";
 import { billingLabel, computeDealPreview, isMainPackageSku } from "../../lib/partnerDealMath";
 import type { PartnerPriceLine, PartnerWizardCatalog } from "../../types/partner";
 
 const BILLING_FILTERS = [
-  { id: "all", label: "הכול" },
-  { id: "recurring_month", label: "חודשי" },
-  { id: "recurring_year", label: "שנתי" },
-  { id: "one_time", label: "חד-פעמי" },
+  { id: "all", labelKey: "partner.catalog.all" },
+  { id: "recurring_month", labelKey: "partner.billing.monthly" },
+  { id: "recurring_year", labelKey: "partner.billing.annual" },
+  { id: "one_time", labelKey: "partner.billing.oneTime" },
 ];
 
 type Props = {
@@ -38,9 +39,11 @@ export default function PartnerCatalogPicker({
   onChange,
   partnerShareRate,
   onContinue,
-  continueLabel = "המשך לסיכום העסקה",
+  continueLabel,
   mode = "all",
 }: Props) {
+  const { t } = useTranslation();
+  const resolvedContinueLabel = continueLabel || t("partner.catalog.continueSummary");
   const [query, setQuery] = useState("");
   const [billingFilter, setBillingFilter] = useState("all");
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -97,7 +100,7 @@ export default function PartnerCatalogPicker({
       selectedSkus={selectedSkus}
       preview={preview}
       onContinue={onContinue}
-      continueLabel={continueLabel}
+      continueLabel={resolvedContinueLabel}
     />
   );
 
@@ -106,9 +109,9 @@ export default function PartnerCatalogPicker({
       <div className="space-y-8">
         {mode !== "addons" ? (
         <section>
-          <h3 className="mb-1 text-xl font-black">חבילה ראשית</h3>
+          <h3 className="mb-1 text-xl font-black">{t("partner.catalog.mainPackage")}</h3>
           <p className="mb-4 text-sm font-bold text-slate-500">
-            בחרו חבילה אחת. חיוב חודשי ושנתי מוצגים כאותה חבילה.
+            {t("partner.catalog.chooseOne")}
           </p>
           <div className="grid gap-4 md:grid-cols-2">
             {businessGroup.length ? (
@@ -143,9 +146,9 @@ export default function PartnerCatalogPicker({
         {mode !== "packages" ? (
         <section className="space-y-4">
           <div>
-            <h3 className="text-xl font-black">שירותים ותוספות</h3>
+            <h3 className="text-xl font-black">{t("partner.catalog.addons")}</h3>
             <p className="text-sm font-bold text-slate-500">
-              מוסיפים רק מה שלא כלול בחבילה. המחיר בכרטיס הוא מחיר Bizuply עבורכם לפני עמלה נוספת.
+              {t("partner.catalog.addonsHint")}
             </p>
           </div>
           <div className="flex flex-col gap-3 sm:flex-row">
@@ -154,7 +157,7 @@ export default function PartnerCatalogPicker({
               <input
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="חיפוש שירות או תוסף"
+                placeholder={t("partner.catalog.search")}
                 className="w-full rounded-2xl border border-slate-200 bg-white py-2.5 pr-10 pl-3 text-sm font-bold outline-none focus:border-violet-400"
               />
             </label>
@@ -171,7 +174,7 @@ export default function PartnerCatalogPicker({
                       : "border border-slate-200 bg-white text-slate-600",
                   ].join(" ")}
                 >
-                  {item.label}
+                  {t(item.labelKey)}
                 </button>
               ))}
             </div>
@@ -203,44 +206,44 @@ export default function PartnerCatalogPicker({
                             {item.displayNameHe || item.nameHe}
                           </h5>
                           <p className="mt-1 text-sm font-bold leading-5 text-slate-500">
-                            {item.taglineHe || item.descriptionHe || billingLabel(item.billing)}
+                            {item.taglineHe || item.descriptionHe || billingLabel(item.billing, t)}
                           </p>
                         </div>
                         <span className="shrink-0 rounded-full bg-slate-100 px-2 py-1 text-[11px] font-black text-slate-600">
-                          {billingLabel(item.billing)}
+                          {billingLabel(item.billing, t)}
                         </span>
                       </div>
                       <p className="mt-3 text-lg font-black">{formatIls(item.partnerWholesalePrice)}</p>
                       {included ? (
                         <p className="mt-3 inline-flex items-center gap-1 rounded-full bg-emerald-50 px-3 py-1 text-xs font-black text-emerald-700">
                           <Check className="h-3.5 w-3.5" />
-                          כלול בחבילה
+                          {t("partner.catalog.included")}
                         </p>
                       ) : missingWebsite ? (
                         <div className="mt-3 space-y-2">
                           <p className="text-xs font-bold text-amber-700">
-                            נדרש אתר כדי להפעיל תוסף זה
+                            {t("partner.catalog.needsWebsite")}
                           </p>
                           <button
                             type="button"
                             onClick={() => toggleSku("website_addon")}
                             className="rounded-2xl border border-amber-200 bg-amber-50 px-3 py-2 text-xs font-black text-amber-800"
                           >
-                            הוספת אתר
+                            {t("partner.catalog.addWebsite")}
                           </button>
                         </div>
                       ) : added ? (
                         <div className="mt-3 flex items-center justify-between">
                           <span className="inline-flex items-center gap-1 text-sm font-black text-emerald-700">
                             <Check className="h-4 w-4" />
-                            נוסף לעסקה
+                            {t("partner.catalog.addedToDeal")}
                           </span>
                           <button
                             type="button"
                             onClick={() => toggleSku(item.sku)}
                             className="rounded-2xl border border-slate-200 px-3 py-1.5 text-xs font-black text-slate-600"
                           >
-                            הסרה
+                            {t("partner.catalog.remove")}
                           </button>
                         </div>
                       ) : (
@@ -250,7 +253,7 @@ export default function PartnerCatalogPicker({
                           className="mt-3 inline-flex items-center gap-1 rounded-2xl bg-slate-900 px-3 py-2 text-sm font-black text-white"
                         >
                           <Plus className="h-4 w-4" />
-                          הוספה
+                          {t("partner.catalog.add")}
                         </button>
                       )}
                     </article>
@@ -274,9 +277,13 @@ export default function PartnerCatalogPicker({
           className="flex w-full items-center justify-between rounded-2xl bg-slate-900 px-4 py-3 text-sm font-black text-white"
         >
           <span>
-            סיכום · {selectedSkus.length} פריטים · {formatIls(preview.totals.customerNow)}
+            {t("partner.catalog.mobileSummary", {
+              defaultValue: "סיכום · {{count}} פריטים · {{amount}}",
+              count: selectedSkus.length,
+              amount: formatIls(preview.totals.customerNow),
+            })}
           </span>
-          <span>פתיחה</span>
+          <span>{t("partner.catalog.open")}</span>
         </button>
       </div>
 
@@ -286,11 +293,11 @@ export default function PartnerCatalogPicker({
             type="button"
             className="absolute inset-0 bg-slate-900/40"
             onClick={() => setDrawerOpen(false)}
-            aria-label="סגירה"
+            aria-label={t("partner.catalog.close")}
           />
           <div className="absolute inset-x-0 bottom-0 max-h-[80vh] overflow-y-auto rounded-t-3xl bg-white p-4">
             <div className="mb-3 flex items-center justify-between">
-              <h4 className="font-black">סיכום העסקה</h4>
+              <h4 className="font-black">{t("partner.catalog.dealSummary")}</h4>
               <button type="button" onClick={() => setDrawerOpen(false)}>
                 <X className="h-5 w-5" />
               </button>
@@ -312,6 +319,7 @@ function PackageCard({
   selectedSku: string;
   onSelect: (sku: string) => void;
 }) {
+  const { t } = useTranslation();
   const [intervalSku, setIntervalSku] = useState(
     items.find((item) => item.sku === selectedSku)?.sku || items[0]?.sku || ""
   );
@@ -328,11 +336,11 @@ function PackageCard({
       <div className="mb-3 flex flex-wrap gap-2">
         {current.packageInterval === "month" || current.packageInterval === "year" ? (
           <span className="rounded-full bg-violet-50 px-2.5 py-1 text-[11px] font-black text-violet-700">
-            חבילה עסקית
+            {t("partner.catalog.businessPackage")}
           </span>
         ) : (
           <span className="rounded-full bg-slate-100 px-2.5 py-1 text-[11px] font-black text-slate-600">
-            חבילה ייעודית
+            {t("partner.catalog.dedicatedPackage")}
           </span>
         )}
       </div>
@@ -352,7 +360,7 @@ function PackageCard({
                   : "border border-slate-200 bg-slate-50 text-slate-600",
               ].join(" ")}
             >
-              {item.packageInterval === "year" ? "שנתי" : "חודשי"}
+              {item.packageInterval === "year" ? t("partner.billing.annual") : t("partner.billing.monthly")}
               <span className="mt-1 block text-xs opacity-80">
                 {formatIls(item.partnerWholesalePrice)}
               </span>
@@ -360,7 +368,7 @@ function PackageCard({
           ))}
         </div>
       ) : (
-        <p className="mt-4 text-sm font-black text-slate-500">{billingLabel(current.billing)}</p>
+        <p className="mt-4 text-sm font-black text-slate-500">{billingLabel(current.billing, t)}</p>
       )}
       <ul className="mt-4 space-y-1.5 text-sm font-bold text-slate-600">
         {(current.includedHe || []).map((row) => (
@@ -381,7 +389,7 @@ function PackageCard({
             : "bg-slate-900 text-white",
         ].join(" ")}
       >
-        {selected && selectedSku === current.sku ? "נבחרה" : "בחר חבילה"}
+        {selected && selectedSku === current.sku ? t("partner.catalog.selected") : t("partner.catalog.choosePackage")}
       </button>
     </article>
   );
@@ -402,6 +410,7 @@ function DealStickySummary({
   onContinue?: () => void;
   continueLabel: string;
 }) {
+  const { t } = useTranslation();
   const pkg = items.find((item) => item.sku === packageSku);
   const addons = selectedSkus
     .filter((sku) => sku !== packageSku)
@@ -409,12 +418,12 @@ function DealStickySummary({
     .filter(Boolean) as PartnerPriceLine[];
   return (
     <section className="rounded-3xl border border-slate-200 bg-white p-5 shadow-[0_18px_50px_rgba(15,23,42,0.08)]">
-      <h4 className="text-lg font-black">סיכום העסקה</h4>
-      <p className="mt-3 text-sm font-bold text-slate-500">חבילה</p>
-      <p className="font-black">{pkg?.displayNameHe || pkg?.nameHe || "לא נבחרה"}</p>
+      <h4 className="text-lg font-black">{t("partner.catalog.dealSummary")}</h4>
+      <p className="mt-3 text-sm font-bold text-slate-500">{t("partner.catalog.package")}</p>
+      <p className="font-black">{pkg?.displayNameHe || pkg?.nameHe || t("partner.catalog.notSelected")}</p>
       {addons.length ? (
         <>
-          <p className="mt-3 text-sm font-bold text-slate-500">תוספות</p>
+          <p className="mt-3 text-sm font-bold text-slate-500">{t("partner.catalog.extras")}</p>
           <ul className="space-y-1 text-sm font-black text-slate-800">
             {addons.map((item) => (
               <li key={item.sku}>{item.displayNameHe || item.nameHe}</li>
@@ -423,12 +432,12 @@ function DealStickySummary({
         </>
       ) : null}
       <div className="mt-4 space-y-2 border-t border-slate-100 pt-4 text-sm font-black">
-        <Row label="מחיר חד-פעמי ללקוח" value={formatIls(preview.totals.oneTime)} />
-        <Row label="מחיר כל חודש ללקוח" value={formatIls(preview.totals.monthly)} />
+        <Row label={t("partner.catalog.oneTimeCustomer")} value={formatIls(preview.totals.oneTime)} />
+        <Row label={t("partner.catalog.monthlyCustomer")} value={formatIls(preview.totals.monthly)} />
         {preview.totals.annual ? (
-          <Row label="שנתי" value={formatIls(preview.totals.annual)} />
+          <Row label={t("partner.billing.annual")} value={formatIls(preview.totals.annual)} />
         ) : null}
-        <Row label="לתשלום עכשיו" value={formatIls(preview.totals.customerNow)} strong />
+        <Row label={t("partner.catalog.dueNow")} value={formatIls(preview.totals.customerNow)} strong />
       </div>
       {onContinue ? (
         <button

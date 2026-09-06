@@ -19,10 +19,12 @@ export function billingBucket(billing?: string) {
   return "oneTime" as const;
 }
 
-export function billingLabel(billing?: string) {
-  if (billing === "recurring_month") return "חודשי";
-  if (billing === "recurring_year") return "שנתי";
-  return "חד-פעמי";
+type TranslateFn = (key: string, options?: Record<string, unknown>) => string;
+
+export function billingLabel(billing?: string, t?: TranslateFn) {
+  const key = billing === "recurring_month" ? "monthly" : billing === "recurring_year" ? "annual" : "oneTime";
+  const fallback = key === "monthly" ? "חודשי" : key === "annual" ? "שנתי" : "חד-פעמי";
+  return t ? t(`partner.billing.${key}`, { defaultValue: fallback }) : fallback;
 }
 
 export function isMainPackageSku(sku?: string) {
@@ -33,10 +35,13 @@ export function isBizuplyBrandedName(value?: string) {
   return /bizuply/i.test(String(value || ""));
 }
 
-export function publicPackageLabel(name?: string, fallback = "רישיון שימוש במערכת") {
+export function publicPackageLabel(name?: string, fallback?: string, t?: TranslateFn) {
   const trimmed = String(name || "").trim();
   if (trimmed && !isBizuplyBrandedName(trimmed)) return trimmed;
-  return fallback;
+  if (fallback != null && fallback !== "") return fallback;
+  return t
+    ? t("partner.licenseFallback", { defaultValue: "רישיון שימוש במערכת ניהול עסק מלאה" })
+    : "רישיון שימוש במערכת";
 }
 
 export function computeDealPreview(

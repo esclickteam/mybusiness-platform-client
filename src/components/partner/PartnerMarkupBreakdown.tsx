@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { formatIls, formatPct, quotePreviewLine } from "../../lib/partnerMoney";
 
 export type MarkupLineInput = {
@@ -30,6 +31,7 @@ export default function PartnerMarkupBreakdown({
   compact = false,
   showTitle = true,
 }: Props) {
+  const { t } = useTranslation();
   const preview = quotePreviewLine(line);
   const partnerShare = Number(line.partnerMarkupShare ?? preview.partnerMarkupShare);
   const bizuplyShare = Number(line.bizuplyMarkupShare ?? preview.bizuplyMarkupShare);
@@ -57,31 +59,34 @@ export default function PartnerMarkupBreakdown({
 
       <div className="grid gap-2 sm:grid-cols-3">
         <Metric
-          label="מחיר Bizuply עבורך"
+          label={t("partner.markup.yourBizuplyPrice")}
           value={formatIls(wholesale)}
-          hint="עלות סיטונאית לפי המסלול"
+          hint={t("partner.markup.wholesale")}
         />
         <Metric
-          label="עמלה נוספת"
+          label={t("partner.markup.extraCommission")}
           value={formatIls(markup)}
-          hint="התוספת שאתם מוסיפים למחיר הלקוח"
+          hint={t("partner.markup.extraHint")}
           accent
         />
         <Metric
-          label="מחיר סופי ללקוח"
+          label={t("partner.markup.finalCustomer")}
           value={formatIls(finalPrice)}
-          hint="סיטונאות + עמלה נוספת"
+          hint={t("partner.markup.wholesalePlus")}
           strong
         />
       </div>
 
       <div className="rounded-2xl border border-violet-100 bg-gradient-to-l from-[#f7f3ff] via-white to-[#eef6ff] p-4">
         <div className="mb-3 flex items-center justify-between gap-3">
-          <p className="text-xs font-black text-violet-800">פיצול העמלה הנוספת</p>
+          <p className="text-xs font-black text-violet-800">{t("partner.markup.splitTitle")}</p>
           <p className="text-[11px] font-bold text-slate-500">
             {markup > 0
-              ? `${formatPct(partnerRate)} לפרטנר · ${formatPct(bizuplyRate)} ל-Bizuply`
-              : "אין עמלה נוספת על המוצר הזה"}
+              ? t("partner.markup.splitRates", {
+                  partner: formatPct(partnerRate),
+                  bizuply: formatPct(bizuplyRate),
+                })
+              : t("partner.markup.noExtra")}
           </p>
         </div>
         <div className="mb-3 flex h-2.5 overflow-hidden rounded-full bg-slate-100">
@@ -97,34 +102,43 @@ export default function PartnerMarkupBreakdown({
         <div className="grid gap-2 sm:grid-cols-2">
           <SplitRow
             tone="partner"
-            title="העמלה שלך"
+            title={t("partner.markup.yourCommission")}
             percent={formatPct(partnerRate)}
             amount={formatIls(partnerShare)}
-            detail={`${formatPct(partnerRate)} = ${formatIls(partnerShare)} מהעמלה הנוספת`}
+            detail={t("partner.markup.partnerShare", {
+              rate: formatPct(partnerRate),
+              amount: formatIls(partnerShare),
+            })}
           />
           <SplitRow
             tone="bizuply"
-            title="חלק Bizuply"
+            title={t("partner.markup.bizuplyShare")}
             percent={formatPct(bizuplyRate)}
             amount={formatIls(bizuplyShare)}
-            detail={`${formatPct(bizuplyRate)} = ${formatIls(bizuplyShare)} מתוך העמלה הנוספת`}
+            detail={t("partner.markup.bizuplyShareValue", {
+              rate: formatPct(bizuplyRate),
+              amount: formatIls(bizuplyShare),
+            })}
           />
         </div>
       </div>
 
       <div className="grid gap-2 rounded-xl bg-slate-50 px-3 py-3 text-sm sm:grid-cols-2">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <span className="font-bold text-slate-500">הלקוח משלם</span>
+          <span className="font-bold text-slate-500">{t("partner.markup.customerPays")}</span>
           <span className="font-black text-slate-900">{formatIls(finalPrice)}</span>
         </div>
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <span className="font-bold text-slate-500">העמלה שלך</span>
+          <span className="font-bold text-slate-500">{t("partner.markup.yourCommission")}</span>
           <span className="font-black text-violet-800">{formatIls(partnerShare)}</span>
         </div>
       </div>
       {line.retailPrice || line.retailIls ? (
         <p className="text-[11px] font-bold text-slate-400">
-          מחיר רגיל להשוואה בלבד: {formatIls(line.retailPrice ?? line.retailIls)} — לא נכנס לחישוב
+          {t("partner.markup.retailCompare", {
+            defaultValue: "מחיר רגיל להשוואה בלבד: {{amount}} — לא נכנס לחישוב",
+            amount: formatIls(line.retailPrice ?? line.retailIls),
+          })}
         </p>
       ) : null}
     </div>
