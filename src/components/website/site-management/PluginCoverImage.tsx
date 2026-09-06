@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { LucideIcon } from "lucide-react";
 
 import { getPluginCoverUrl } from "../../../data/pluginCoverArt";
@@ -20,6 +21,7 @@ export default function PluginCoverImage({
   className = "",
   variant = "card",
 }: PluginCoverImageProps) {
+  const { t } = useTranslation();
   const [failed, setFailed] = useState(false);
   const coverUrl = getPluginCoverUrl(pluginKey);
 
@@ -47,7 +49,10 @@ export default function PluginCoverImage({
     <div className={`relative overflow-hidden bg-slate-100 ${className}`}>
       <img
         src={coverUrl}
-        alt={`${pluginName} — תצוגה מקדימה`}
+        alt={t("leftover.templatePreview.pluginPreview", {
+          name: pluginName,
+          defaultValue: "{{name}} — preview",
+        })}
         className={`h-full w-full object-cover transition duration-300 ${
           variant === "card" ? "group-hover:scale-[1.02]" : ""
         }`}

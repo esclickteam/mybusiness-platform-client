@@ -1,3 +1,4 @@
+import i18n from "../i18n/i18n";
 import API from "../api";
 
 export type AiResultCategory = "leads" | "drafts" | "digests" | "tasks" | "other";
@@ -72,15 +73,30 @@ export async function getAiAutomationResult(
   return data?.item || null;
 }
 
-export const AI_TEMPLATE_LABELS: Record<string, string> = {
-  ai_lead_scoring: "דירוג לידים אוטומטי",
-  ai_lead_classify: "סיווג ליד אוטומטי",
-  ai_lead_auto_tag: "תיוג אוטומטי של לידים",
-  ai_hot_lead: "זיהוי לידים חמים",
-  ai_lead_brief: "סיכום ליד לפני שיחת מכירה",
-  ai_followup_draft: "ניסוח Follow-up",
-  ai_email_draft: "ניסוח מייל",
-  ai_next_action: "הצעת הפעולה הבאה",
-  ai_daily_leads_digest: "תקציר יומי לידים",
-  ai_daily_agenda_digest: "תקציר יומי משימות/פגישות",
+const AI_TEMPLATE_FALLBACK: Record<string, string> = {
+  ai_lead_scoring: "Automatic lead scoring",
+  ai_lead_classify: "Automatic lead classification",
+  ai_lead_auto_tag: "Automatic lead tagging",
+  ai_hot_lead: "Hot lead detection",
+  ai_lead_brief: "Lead brief before a sales call",
+  ai_followup_draft: "Follow-up draft",
+  ai_email_draft: "Email draft",
+  ai_next_action: "Next-action suggestion",
+  ai_daily_leads_digest: "Daily leads digest",
+  ai_daily_agenda_digest: "Daily tasks / meetings digest",
 };
+
+export function getAiTemplateLabel(templateKey: string) {
+  return i18n.t(`leftover.aiTemplate.${templateKey}`, {
+    defaultValue: AI_TEMPLATE_FALLBACK[templateKey] || templateKey,
+  });
+}
+
+export const AI_TEMPLATE_LABELS: Record<string, string> = new Proxy(
+  {},
+  {
+    get(_target, prop: string) {
+      return getAiTemplateLabel(prop);
+    },
+  }
+);

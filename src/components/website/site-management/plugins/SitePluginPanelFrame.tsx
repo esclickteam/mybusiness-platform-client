@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { ExternalLink, Save, Settings2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import type { LucideIcon } from "lucide-react";
@@ -186,6 +187,7 @@ export function SitePluginPanelFrame({
   sidebar,
   children,
 }: SitePluginPanelFrameProps) {
+  const { t } = useTranslation();
   return (
     <div dir="rtl" className="space-y-0">
       {/* Plugin management header */}
@@ -209,7 +211,7 @@ export function SitePluginPanelFrame({
               <div className="flex items-center gap-2">
                 <Settings2 size={14} className="text-slate-400" />
                 <span className="text-xs font-medium text-slate-500">
-                  ניהול תוסף
+                  {t("leftover.pluginFrame.manage", "Plugin management")}
                 </span>
               </div>
               <h2 className="mt-0.5 text-xl font-bold text-slate-900">{title}</h2>
@@ -224,7 +226,7 @@ export function SitePluginPanelFrame({
               className="inline-flex h-10 items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 text-xs font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50"
             >
               <ExternalLink size={14} />
-              הוספה בעורך
+              {t("leftover.pluginFrame.addEditor", "Add in editor")}
             </Link>
           </div>
         </div>
@@ -246,7 +248,10 @@ export function SitePluginPanelFrame({
           <div className="min-w-0 flex-1">
             {loading ? (
               <div className="grid min-h-[240px] place-items-center rounded-xl border border-dashed border-slate-200 bg-slate-50/50">
-                <BizuplyLoader size="sm" label="טוען הגדרות..." />
+                <BizuplyLoader
+                  size="sm"
+                  label={t("leftover.pluginFrame.loading", "Loading settings...")}
+                />
               </div>
             ) : (
               <div className="space-y-6">{children}</div>
@@ -263,7 +268,10 @@ export function SitePluginPanelFrame({
         {!loading ? (
           <div className="sticky bottom-0 flex items-center justify-between gap-4 border-t border-slate-100 bg-white/95 px-5 py-4 backdrop-blur-sm md:px-6">
             <p className="text-xs text-slate-500">
-              שינויים נשמרים לכל האתר
+              {t(
+                "leftover.pluginFrame.savedSitewide",
+                "Changes are saved for the whole site"
+              )}
             </p>
             <button
               type="button"
@@ -276,7 +284,7 @@ export function SitePluginPanelFrame({
               ) : (
                 <Save size={16} />
               )}
-              שמירת הגדרות
+              {t("leftover.pluginFrame.save", "Save settings")}
             </button>
           </div>
         ) : null}

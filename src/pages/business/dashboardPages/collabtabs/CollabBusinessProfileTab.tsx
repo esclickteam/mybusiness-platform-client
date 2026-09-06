@@ -665,7 +665,12 @@ export default function CollabBusinessProfileTab(_props: CollabBusinessProfileTa
                 </div>
               </FormField>
 
-              <FormField label="מספר התראות WhatsApp (E.164)">
+              <FormField
+                label={t(
+                  "leftover.collabProfile.waNotify",
+                  "WhatsApp notification number (E.164)"
+                )}
+              >
                 <div dir="ltr" className="text-left">
                   <PhoneInput
                     country="il"

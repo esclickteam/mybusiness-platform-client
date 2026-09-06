@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { ExternalLink, Settings2 } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -15,15 +16,23 @@ export default function SiteGenericPluginPanel({
   plugin,
   editorHref,
 }: SiteGenericPluginPanelProps) {
+  const { t } = useTranslation();
   const Icon = getPluginIcon(plugin.key);
   const accent = getPluginAccent(plugin.key, plugin.accent);
   const price =
     plugin.priceLabel ||
     (plugin.priceMonthly != null
       ? plugin.priceMax
-        ? `₪${plugin.priceMonthly}–${plugin.priceMax}/חודש`
-        : `₪${plugin.priceMonthly}/חודש`
-      : "כלול בחבילה");
+        ? t("leftover.pluginGeneric.priceRange", {
+            min: plugin.priceMonthly,
+            max: plugin.priceMax,
+            defaultValue: "₪{{min}}–{{max}}/month",
+          })
+        : t("leftover.pluginGeneric.priceMonth", {
+            price: plugin.priceMonthly,
+            defaultValue: "₪{{price}}/month",
+          })
+      : t("leftover.pluginGeneric.included", "Included in the plan"));
 
   return (
     <div className="mx-auto max-w-lg rounded-2xl border border-violet-100 bg-gradient-to-b from-violet-50/50 to-white p-8 text-center shadow-sm">
@@ -42,12 +51,15 @@ export default function SiteGenericPluginPanel({
 
       <div className="mt-5 inline-flex items-center gap-2 rounded-full bg-emerald-50 px-4 py-2 text-xs font-semibold text-emerald-700 ring-1 ring-emerald-100">
         <Settings2 size={14} />
-        התוסף מותקן — הגדרה בעורך בקרוב
+        {t(
+          "leftover.pluginGeneric.installedSoon",
+          "Plugin installed — editor setup coming soon"
+        )}
       </div>
 
       <Link to={editorHref} className={`mt-6 ${btnPrimary}`}>
         <ExternalLink size={15} />
-        פתיחה בעורך
+        {t("leftover.pluginGeneric.openEditor", "Open in editor")}
       </Link>
     </div>
   );

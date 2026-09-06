@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { CreditCard } from "lucide-react";
 
 import BizuplyLoader from "../../ui/BizuplyLoader";
@@ -24,6 +25,7 @@ type SitePaymentsPanelProps = {
 };
 
 export default function SitePaymentsPanel({ businessId }: SitePaymentsPanelProps) {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [disconnecting, setDisconnecting] = useState(false);
@@ -49,12 +51,12 @@ export default function SitePaymentsPanel({ businessId }: SitePaymentsPanelProps
         text:
           err?.response?.data?.error ||
           err?.message ||
-          "שגיאה בטעינת ספקי התשלום",
+          t("leftover.sitePayments.loadError", "Could not load payment providers"),
       });
     } finally {
       setLoading(false);
     }
-  }, [businessId]);
+  }, [businessId, t]);
 
   useEffect(() => {
     loadProviders();
@@ -129,7 +131,10 @@ export default function SitePaymentsPanel({ businessId }: SitePaymentsPanelProps
 
       setMessage({
         type: "success",
-        text: `${activeCatalogItem.name} חובר בהצלחה`,
+        text: t("leftover.sitePayments.connectedOk", {
+          name: activeCatalogItem.name,
+          defaultValue: "{{name}} connected successfully",
+        }),
       });
       setActiveKey(null);
     } catch (err: any) {
@@ -138,7 +143,7 @@ export default function SitePaymentsPanel({ businessId }: SitePaymentsPanelProps
         text:
           err?.response?.data?.error ||
           err?.message ||
-          "שגיאה בחיבור ספק התשלום",
+          t("leftover.sitePayments.connectError", "Could not connect the payment provider"),
       });
     } finally {
       setSaving(false);
@@ -147,7 +152,15 @@ export default function SitePaymentsPanel({ businessId }: SitePaymentsPanelProps
 
   async function handleDisconnect() {
     if (!businessId || !activeCatalogItem) return;
-    if (!window.confirm(`לנתק את ${activeCatalogItem.name}?`)) return;
+    if (
+      !window.confirm(
+        t("leftover.sitePayments.disconnectConfirm", {
+          name: activeCatalogItem.name,
+          defaultValue: "Disconnect {{name}}?",
+        })
+      )
+    )
+      return;
 
     setDisconnecting(true);
     setMessage(null);
@@ -168,7 +181,10 @@ export default function SitePaymentsPanel({ businessId }: SitePaymentsPanelProps
 
       setMessage({
         type: "success",
-        text: `${activeCatalogItem.name} נותק בהצלחה`,
+        text: t("leftover.sitePayments.disconnectedOk", {
+          name: activeCatalogItem.name,
+          defaultValue: "{{name}} disconnected successfully",
+        }),
       });
       setActiveKey(null);
     } catch (err: any) {
@@ -177,7 +193,7 @@ export default function SitePaymentsPanel({ businessId }: SitePaymentsPanelProps
         text:
           err?.response?.data?.error ||
           err?.message ||
-          "שגיאה בניתוק ספק התשלום",
+          t("leftover.sitePayments.disconnectError", "Could not disconnect the payment provider"),
       });
     } finally {
       setDisconnecting(false);
@@ -187,7 +203,10 @@ export default function SitePaymentsPanel({ businessId }: SitePaymentsPanelProps
   if (loading) {
     return (
       <div className="grid min-h-[40vh] place-items-center">
-        <BizuplyLoader size="md" label="טוען ספקי תשלום..." />
+        <BizuplyLoader
+          size="md"
+          label={t("leftover.sitePayments.loading", "Loading payment providers...")}
+        />
       </div>
     );
   }
@@ -197,8 +216,11 @@ export default function SitePaymentsPanel({ businessId }: SitePaymentsPanelProps
       <SitePanelHero
         icon={CreditCard}
         accent="#059669"
-        title="תשלומים"
-        description="חברו ספקי סליקה לאתר. הקופה באתר החי תשתמש בספק המחובר שסימנתם כראשי (PayPal, Stripe ועוד)."
+        title={t("leftover.sitePayments.title", "Payments")}
+        description={t(
+          "leftover.sitePayments.description",
+          "Connect checkout providers to the site. The live-site cart uses the connected provider you mark as primary (PayPal, Stripe, and more)."
+        )}
       />
 
       {message ? (
@@ -228,14 +250,29 @@ export default function SitePaymentsPanel({ businessId }: SitePaymentsPanelProps
           {primaryConnected ? (
             <SitePanelCard className="text-right">
               <h3 className="text-sm font-bold text-slate-900">
-                {primaryConnected.label || primaryConnected.provider} מחובר לאתר
+                {t("leftover.sitePayments.connectedToSite", {
+                  name: primaryConnected.label || primaryConnected.provider,
+                  defaultValue: "{{name}} is connected to the site",
+                })}
               </h3>
               <ol className="mt-2 space-y-1 text-sm text-slate-600">
-                <li>1. הוסיפו מוצרים מהחנות / התבנית לסל באתר החי.</li>
-                <li>2. לחצו מעבר לתשלום — הקופה נפתחת לפי הספק המחובר.</li>
                 <li>
-                  3. הלקוח משלם דרך{" "}
-                  {primaryConnected.label || primaryConnected.provider}.
+                  {t(
+                    "leftover.sitePayments.stepAdd",
+                    "1. Add products from the store / template to the live-site cart."
+                  )}
+                </li>
+                <li>
+                  {t(
+                    "leftover.sitePayments.stepCheckout",
+                    "2. Click checkout — the cart opens with the connected provider."
+                  )}
+                </li>
+                <li>
+                  {t("leftover.sitePayments.stepPay", {
+                    name: primaryConnected.label || primaryConnected.provider,
+                    defaultValue: "3. The customer pays through {{name}}.",
+                  })}
                 </li>
               </ol>
             </SitePanelCard>

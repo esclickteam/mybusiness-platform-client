@@ -353,6 +353,7 @@ export function NotificationSettingsPanel({
     subscribed,
     deviceCount,
     ios: isIos(),
+    t,
   });
   const supportBanner = resolvePushSupportBanner({
     supported,

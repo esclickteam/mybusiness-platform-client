@@ -35,7 +35,7 @@ export const CHECKOUT_APPEARANCE_PRESETS: Array<{
 }> = [
   {
     id: "classic",
-    label: "קלאסי",
+    label: "Classic",
     values: {
       primaryColor: "#0f172a",
       accentColor: "#0f172a",
@@ -48,7 +48,7 @@ export const CHECKOUT_APPEARANCE_PRESETS: Array<{
   },
   {
     id: "violet",
-    label: "סגול מותג",
+    label: "Brand purple",
     values: {
       primaryColor: "#6d28d9",
       accentColor: "#7c3aed",
@@ -61,7 +61,7 @@ export const CHECKOUT_APPEARANCE_PRESETS: Array<{
   },
   {
     id: "luxury",
-    label: "יוקרה",
+    label: "Luxury",
     values: {
       primaryColor: "#111111",
       accentColor: "#111111",
@@ -74,7 +74,7 @@ export const CHECKOUT_APPEARANCE_PRESETS: Array<{
   },
   {
     id: "emerald",
-    label: "ירוק",
+    label: "Green",
     values: {
       primaryColor: "#047857",
       accentColor: "#059669",
@@ -87,7 +87,7 @@ export const CHECKOUT_APPEARANCE_PRESETS: Array<{
   },
   {
     id: "rose",
-    label: "ורוד",
+    label: "Pink",
     values: {
       primaryColor: "#be123c",
       accentColor: "#e11d48",

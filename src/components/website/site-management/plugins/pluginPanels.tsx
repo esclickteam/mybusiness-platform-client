@@ -194,7 +194,7 @@ export const SiteClubPanel = makePanel(
     <>
       <Field label={t("sitePlugins.club.name")}>
         <TextInput
-          value={str(settings.clubName, "מועדון לקוחות")}
+          value={str(settings.clubName, t("leftover.pluginDefaults.clubName", "Customer club"))}
           onChange={(v) => updateField("clubName", v)}
         />
       </Field>
@@ -325,13 +325,13 @@ export const SiteServiceFinderPanel = makePanel(
     <>
       <Field label={t("sitePlugins.finder.quizTitle")}>
         <TextInput
-          value={str(settings.title, "מצאו את השירות המתאים")}
+          value={str(settings.title, t("leftover.pluginDefaults.findService", "Find the right service"))}
           onChange={(v) => updateField("title", v)}
         />
       </Field>
       <Field label={t("sitePlugins.finder.resultCta")}>
         <TextInput
-          value={str(settings.resultCta, "צרו קשר")}
+          value={str(settings.resultCta, t("leftover.pluginDefaults.contactCta", "Contact us"))}
           onChange={(v) => updateField("resultCta", v)}
         />
       </Field>
@@ -478,7 +478,7 @@ export const SiteWhatsAppFloatPanel = makePanel(
       />
       <Field label={t("sitePlugins.whatsapp.offline")}>
         <TextInput
-          value={str(settings.offlineMessage, "נחזור אליכם בשעות הפעילות")}
+          value={str(settings.offlineMessage, t("leftover.pluginDefaults.offline", "We’ll get back to you during business hours"))}
           onChange={(v) => updateField("offlineMessage", v)}
         />
       </Field>

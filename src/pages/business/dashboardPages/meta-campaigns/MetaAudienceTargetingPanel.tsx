@@ -430,7 +430,10 @@ export default function MetaAudienceTargetingPanel({
       setLocationOpen(false);
       if (!point) {
         setLocationError(
-          "העיר נבחרה, אבל לא הצלחנו לצייר את הרדיוס במפה. נסו עיר אחרת או רעננו."
+          t(
+            "leftover.audience.radiusDrawFail",
+            "The city was selected, but we could not draw the radius on the map. Try another city or refresh."
+          )
         );
       } else {
         setLocationError("");
@@ -627,7 +630,10 @@ export default function MetaAudienceTargetingPanel({
         {locationMode === "radius" ? (
           <div className="mb-3 rounded-xl border border-[#1877F2]/20 bg-[#1877F2]/5 p-3">
             <p className="mb-2 text-xs font-black text-[#1877F2]">
-              כמו בפייסבוק: בחרו עיר ← הוסיפו ← הגדירו רדיוס רק סביב העיר הזו
+              {t(
+                "leftover.audience.hintPick",
+                "Like Facebook: choose a city → add → set a radius only around that city"
+              )}
             </p>
             <label className="block">
               <span className="mb-1.5 block text-xs font-black text-slate-600">
@@ -645,8 +651,15 @@ export default function MetaAudienceTargetingPanel({
               />
               <span className="mt-1 block text-[11px] font-semibold text-slate-500">
                 {locations[0]?.name
-                  ? `רדיוס אמיתי סביב ${locations[0].name}: ${radiusKm} ק״מ`
-                  : "קודם חפשו והוסיפו עיר — ואז הרדיוס יופיע סביבה במפה"}
+                  ? t("leftover.audience.radiusAround", {
+                      name: locations[0].name,
+                      km: radiusKm,
+                      defaultValue: "Real radius around {{name}}: {{km}} km",
+                    })
+                  : t(
+                      "leftover.audience.addCityFirst",
+                      "First search and add a city — then the radius appears around it on the map"
+                    )}
               </span>
             </label>
           </div>
@@ -777,7 +790,10 @@ export default function MetaAudienceTargetingPanel({
             })
           ) : locationMode === "radius" ? (
             <p className="text-xs font-semibold text-slate-400">
-              חפשו עיר (לדוגמה: באר שבע / חיפה) והוסיפו — ואז הגדירו רדיוס סביבה
+              {t(
+                "leftover.audience.searchCity",
+                "Search for a city (for example: Beer Sheva / Haifa) and add it — then set a radius around it"
+              )}
             </p>
           ) : null}
         </div>
@@ -788,7 +804,10 @@ export default function MetaAudienceTargetingPanel({
           onSelectLocation={setActiveLocationKey}
           hint={
             locationMode === "radius"
-              ? "כמו בפייסבוק: העיגול הוא רדיוס אמיתי בק״מ רק סביב העיר שנבחרה. זום המפה מציג מה נכלל בתוך הרדיוס."
+              ? t(
+                  "leftover.audience.radiusExplain",
+                  "Like Facebook: the circle is a real km radius only around the selected city. Map zoom shows what is inside the radius."
+                )
               : t("metaCampaigns.form.locationsMapHint")
           }
         />
@@ -881,7 +900,10 @@ export default function MetaAudienceTargetingPanel({
         !interestResults.length &&
         !interestError ? (
           <p className="mb-2 text-xs font-semibold text-slate-400">
-            לא נמצאו תחומי עניין במטא ל־“{interestQuery.trim()}”
+            {t("leftover.audience.noInterests", {
+              query: interestQuery.trim(),
+              defaultValue: "No Meta interests found for “{{query}}”",
+            })}
           </p>
         ) : null}
 

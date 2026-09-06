@@ -1,6 +1,7 @@
 // src/pages/business/dashboardPages/Profile.jsx
 
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import API from "@api";
 import "./Profile.css";
 import ProfileHeader from "../../../components/shared/ProfileHeader";
@@ -46,6 +47,7 @@ const fallbackBusiness = {
 };
 
 export default function Profile() {
+  const { t } = useTranslation();
   const [businessData, setBusinessData] = useState(null);
   const [faqs, setFaqs] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -81,7 +83,7 @@ export default function Profile() {
   }, []);
 
   if (loading) {
-    return <BizuplyLoader fullScreen label="טוען..." />;
+    return <BizuplyLoader fullScreen label={t("leftover.profile.loading", "Loading...")} />;
   }
 
   return (

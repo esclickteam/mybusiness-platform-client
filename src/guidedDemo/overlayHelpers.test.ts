@@ -51,12 +51,12 @@ describe("guided demo intro categories", () => {
   it("shows a short visual set instead of a long checklist", () => {
     expect(INTRO_CATEGORIES).toHaveLength(6);
     expect(INTRO_CATEGORIES.map((item) => item.title)).toEqual([
-      "דשבורד",
-      "CRM ולידים",
-      "פגישות ויומן",
-      "אוטומציות",
-      "כלים לצמיחה",
-      "בניית אתר",
+      "Dashboard",
+      "CRM and leads",
+      "Meetings and calendar",
+      "Automations",
+      "Growth tools",
+      "Website builder",
     ]);
     expect(INTRO_CATEGORIES.map((item) => item.title)).not.toContain("עמוד עסקי");
   });

@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { CalendarDays, ExternalLink, Users } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -15,6 +16,7 @@ export default function SiteBookingPanel({
   businessId,
   siteId,
 }: SiteBookingPanelProps) {
+  const { t } = useTranslation();
   const basePath = `/business/${businessId}/dashboard`;
 
   return (
@@ -22,8 +24,11 @@ export default function SiteBookingPanel({
       <SitePanelHero
         icon={CalendarDays}
         accent="#0284C7"
-        title="יומן ותורים"
-        description="הגדירו שעות פעילות, שירותים ותורים — הלקוחות יוכלו להזמין תור ישירות מהאתר."
+        title={t("leftover.siteBooking.title", "Calendar and appointments")}
+        description={t(
+          "leftover.siteBooking.description",
+          "Set business hours, services, and appointments — customers can book directly from the site."
+        )}
         actions={
           <>
             <Link
@@ -31,7 +36,7 @@ export default function SiteBookingPanel({
               className={btnSecondary + " h-10 text-xs"}
             >
               <CalendarDays size={15} />
-              לוח תורים
+              {t("leftover.siteBooking.board", "Appointment board")}
               <ExternalLink size={13} />
             </Link>
             <Link
@@ -39,7 +44,7 @@ export default function SiteBookingPanel({
               className={btnSecondary + " h-10 text-xs"}
             >
               <Users size={15} />
-              שירותים
+              {t("leftover.siteBooking.services", "Services")}
               <ExternalLink size={13} />
             </Link>
           </>
@@ -47,20 +52,28 @@ export default function SiteBookingPanel({
       />
 
       <SitePanelCard>
-        <h3 className="mb-4 text-base font-bold text-slate-900">שעות פעילות</h3>
+        <h3 className="mb-4 text-base font-bold text-slate-900">
+          {t("leftover.siteBooking.hours", "Business hours")}
+        </h3>
         <WorkHoursTab variant="settings" />
       </SitePanelCard>
 
       <div className="rounded-2xl border border-dashed border-teal-200 bg-teal-50/40 p-4 text-sm leading-relaxed text-slate-600">
-        הגדירו כאן שעות ושירותים — סקשן{" "}
-        <strong>יומן פגישות</strong> בעורך (
+        {t("leftover.siteBooking.hintBefore", "Set hours and services here — the")}{" "}
+        <strong>
+          {t("leftover.siteBooking.calendarSection", "Appointment calendar")}
+        </strong>{" "}
+        {t("leftover.siteBooking.hintMid", "in the editor (")}
         <Link
           to={`${basePath}/website/sites/${siteId}/edit?addSection=section-booking-showcase-month-centered`}
           className="font-semibold text-teal-700 hover:underline"
         >
-          פתיחה עם לוח חודשי
+          {t("leftover.siteBooking.openMonth", "Open with monthly board")}
         </Link>
-        ) מתחבר אוטומטית ליומן ה-CRM, בלי תוסף נפרד.
+        {t(
+          "leftover.siteBooking.hintAfter",
+          ") connects automatically to the CRM calendar, without a separate plugin."
+        )}
       </div>
     </div>
   );

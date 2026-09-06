@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Check, Loader2, MessageCircle, Settings, X } from "lucide-react";
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -17,7 +18,8 @@ import AdsManagerFormSettingsModal, {
   type FormSharing,
   type FormTrackingParam,
 } from "./AdsManagerFormSettingsModal";
-import { isRtlLeadFormLocale } from "./metaLeadFormLocales";
+import { formLocaleToAppLng, isRtlLeadFormLocale } from "./metaLeadFormLocales";
+import i18n from "../../../../../i18n/i18n";
 import { metaBtnPrimary, metaBtnSecondary, metaInputClass } from "./metaAdsUi";
 
 type AdditionalAction = "website" | "file" | "call" | "whatsapp";
@@ -76,6 +78,7 @@ export default function AdsManagerCreateLeadFormModal({
   onClose,
   onCreated,
 }: Props) {
+  const { t } = useTranslation();
   const [step, setStep] = useState<Step>("type");
   const [busy, setBusy] = useState(false);
   const [formType, setFormType] = useState<"volume" | "intent" | "rich">(
@@ -94,8 +97,8 @@ export default function AdsManagerCreateLeadFormModal({
   const [thankYouBody, setThankYouBody] = useState(
     "Your information was submitted. We’ll be in touch soon."
   );
-  const [thankYouButton, setThankYouButton] = useState(
-    "שלחו הודעה לקבלת הצעת מחיר"
+  const [thankYouButton, setThankYouButton] = useState(() =>
+    t("leftover.instantForm.quoteCta", "Send a message to get a quote")
   );
   const [additionalAction, setAdditionalAction] =
     useState<AdditionalAction>("website");
@@ -156,9 +159,11 @@ export default function AdsManagerCreateLeadFormModal({
 
   useEffect(() => {
     if (additionalAction === "whatsapp" && !thankYouButton.trim()) {
-      setThankYouButton("שלחו הודעה לקבלת הצעת מחיר");
+      setThankYouButton(
+        t("leftover.instantForm.quoteCta", "Send a message to get a quote")
+      );
     }
-  }, [additionalAction, thankYouButton]);
+  }, [additionalAction, thankYouButton, t]);
 
   const stepIndex = STEPS.findIndex((s) => s.id === step);
 
@@ -182,7 +187,12 @@ export default function AdsManagerCreateLeadFormModal({
 
   const handleSave = async () => {
     if (!businessId) {
-      toast.error("לא הצלחנו לזהות את העסק. רעננו את העמוד.");
+      toast.error(
+        t(
+          "leftover.calendar.noBusiness",
+          "We could not identify the business. Refresh the page."
+        )
+      );
       return;
     }
     if (!pageId) {
@@ -250,9 +260,10 @@ export default function AdsManagerCreateLeadFormModal({
         introTitle: introTitle.trim(),
         introDescription: introDescription.trim() || undefined,
         privacyPolicyUrl: privacyUrl.trim() || undefined,
-        privacyPolicyLinkText: isRtlLeadFormLocale(locale)
-          ? "מדיניות פרטיות"
-          : "Privacy Policy",
+        privacyPolicyLinkText: i18n.t("leftover.instantForm.privacy", {
+          lng: formLocaleToAppLng(locale),
+          defaultValue: "Privacy policy",
+        }),
         thankYouTitle: thankYouTitle.trim(),
         thankYouBody: thankYouBody.trim() || undefined,
         thankYouButtonText: thankYouButton.trim() || undefined,
@@ -649,15 +660,15 @@ export default function AdsManagerCreateLeadFormModal({
               introDescription={introDescription}
               contactFields={contactTypes}
               customQuestions={customQuestions}
-              privacyLinkText={
+              privacyLinkText={i18n.t(
                 privacyUrl
-                  ? isRtlLeadFormLocale(locale)
-                    ? "מדיניות פרטיות"
-                    : "Privacy policy"
-                  : isRtlLeadFormLocale(locale)
-                    ? "פרטיות"
-                    : "Privacy"
-              }
+                  ? "leftover.instantForm.privacy"
+                  : "leftover.instantForm.privacyShort",
+                {
+                  lng: formLocaleToAppLng(locale),
+                  defaultValue: privacyUrl ? "Privacy policy" : "Privacy",
+                }
+              )}
               thankYouTitle={thankYouTitle}
               thankYouBody={thankYouBody}
               thankYouButton={thankYouButton}

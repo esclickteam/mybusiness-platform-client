@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import type { MetaLocationTarget } from "../../../../api/metaCampaignsApi";
@@ -47,6 +48,7 @@ export default function MetaLocationsMap({
   focusKey = null,
   onSelectLocation,
 }: Props) {
+  const { t } = useTranslation();
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<L.Map | null>(null);
   const layerRef = useRef<L.LayerGroup | null>(null);
@@ -130,9 +132,12 @@ export default function MetaLocationsMap({
       marker.bindPopup(
         `<strong>${point.name}</strong>${
           point.radiusKm != null
-            ? `<br/>רדיוס אמיתי: ${point.radiusKm} ק״מ סביב העיר`
+            ? t("leftover.metaMap.realRadius", {
+                km: point.radiusKm,
+                defaultValue: "<br/>Real radius: {{km}} km around the city",
+              })
             : point.isCountry
-              ? "<br/>מדינה שלמה"
+              ? t("leftover.metaMap.wholeCountry", "<br/>Whole country")
               : ""
         }`
       );
@@ -148,7 +153,13 @@ export default function MetaLocationsMap({
           fillOpacity: 0.2,
           opacity: 1,
         });
-        circle.bindTooltip(`${point.name} · רדיוס ${point.radiusKm} ק״מ`, {
+        circle.bindTooltip(
+          t("leftover.metaMap.tooltip", {
+            name: point.name,
+            km: point.radiusKm,
+            defaultValue: "{{name}} · {{km}} km radius",
+          }),
+          {
           sticky: true,
           direction: "center",
         });
@@ -173,7 +184,7 @@ export default function MetaLocationsMap({
     window.setTimeout(() => map.invalidateSize(), 80);
     window.setTimeout(() => map.invalidateSize(), 250);
     window.setTimeout(() => map.invalidateSize(), 600);
-  }, [points, focusKey, onSelectLocation]);
+  }, [points, focusKey, onSelectLocation, t]);
 
   const focusPoint = points.find((p) => p.identity === focusKey && p.radiusKm != null);
   const selectedWithoutCoords =
@@ -192,13 +203,20 @@ export default function MetaLocationsMap({
       <div ref={containerRef} className="h-[360px] w-full" />
       {focusPoint ? (
         <p className="border-t border-slate-200 bg-[#1877F2]/5 px-3 py-2 text-[11px] font-black text-[#1877F2]">
-          רדיוס אמיתי סביב {focusPoint.name}: {focusPoint.radiusKm} ק״מ — העיגול
-          במפה בקנה מידה גאוגרפי
+          {t("leftover.metaMap.aroundScale", {
+            name: focusPoint.name,
+            km: focusPoint.radiusKm,
+            defaultValue:
+              "Real radius around {{name}}: {{km}} km — the circle on the map is geographic scale",
+          })}
         </p>
       ) : null}
       {selectedWithoutCoords ? (
         <p className="border-t border-amber-200 bg-amber-50 px-3 py-2 text-[11px] font-black text-amber-700">
-          העיר נבחרה, אבל עדיין אין נקודה על המפה. מנסים לאתר קואורדינטות…
+          {t(
+            "leftover.metaMap.locating",
+            "The city was selected, but there is still no point on the map. Looking up coordinates…"
+          )}
         </p>
       ) : null}
       {hint ? (

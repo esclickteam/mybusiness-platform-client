@@ -387,10 +387,10 @@ export function isWebsitePublishStep(step: { id?: string; target?: string } | nu
 }
 
 export const INTRO_CATEGORIES = [
-  { key: "dash", title: "דשבורד", titleKey: "leftover.guided.introDash", hint: "מדדים ופעילות", hintKey: "leftover.guided.introDashHint", icon: "dashboard" },
-  { key: "crm", title: "CRM ולידים", titleKey: "leftover.guided.introCrm", hint: "פניות ומעקב", hintKey: "leftover.guided.introCrmHint", icon: "crm" },
-  { key: "work", title: "פגישות ויומן", titleKey: "leftover.guided.introWork", hint: "תורים ויומן", hintKey: "leftover.guided.introWorkHint", icon: "work" },
-  { key: "auto", title: "אוטומציות", titleKey: "leftover.guided.introAuto", hint: "טריגרים ופעולות", hintKey: "leftover.guided.introAutoHint", icon: "auto" },
-  { key: "growth", title: "כלים לצמיחה", titleKey: "leftover.guided.introGrowth", hint: "שותפים ויועץ", hintKey: "leftover.guided.introGrowthHint", icon: "growth" },
-  { key: "web", title: "בניית אתר", titleKey: "leftover.guided.introWeb", hint: "תבניות ופרסום", hintKey: "leftover.guided.introWebHint", icon: "web" },
+  { key: "dash", title: "Dashboard", titleKey: "leftover.guided.introDash", hint: "Metrics and activity", hintKey: "leftover.guided.introDashHint", icon: "dashboard" },
+  { key: "crm", title: "CRM and leads", titleKey: "leftover.guided.introCrm", hint: "Inquiries and follow-up", hintKey: "leftover.guided.introCrmHint", icon: "crm" },
+  { key: "work", title: "Meetings and calendar", titleKey: "leftover.guided.introWork", hint: "Appointments and calendar", hintKey: "leftover.guided.introWorkHint", icon: "work" },
+  { key: "auto", title: "Automations", titleKey: "leftover.guided.introAuto", hint: "Triggers and actions", hintKey: "leftover.guided.introAutoHint", icon: "auto" },
+  { key: "growth", title: "Growth tools", titleKey: "leftover.guided.introGrowth", hint: "Partners and advisor", hintKey: "leftover.guided.introGrowthHint", icon: "growth" },
+  { key: "web", title: "Website builder", titleKey: "leftover.guided.introWeb", hint: "Templates and publish", hintKey: "leftover.guided.introWebHint", icon: "web" },
 ];

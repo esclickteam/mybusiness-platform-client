@@ -293,7 +293,10 @@ export default function WhatsAppInboxTab() {
             target="whatsapp-demo-send"
             className="mb-3 w-full rounded-2xl border border-amber-200 bg-amber-50 px-4 py-2 text-xs font-black text-amber-900"
           >
-            שלחו הודעת הדגמה — לא נשלחת ללקוח אמיתי
+            {t(
+              "leftover.waInbox.demoSend",
+              "Send a demo message — it is not sent to a real customer"
+            )}
           </GuidedDemoSandboxButton>
           <p className="mb-2 text-xs font-medium text-slate-500">
             {t("whatsapp.inbox.sessionHint")}

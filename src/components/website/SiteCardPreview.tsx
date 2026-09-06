@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 const PREVIEW_WIDTH = 1280;
 const PREVIEW_HEIGHT = 1600;
@@ -68,6 +69,7 @@ export default function SiteCardPreview({
   css = "",
   title,
 }: SiteCardPreviewProps) {
+  const { t } = useTranslation();
   const frameRef = useRef<HTMLDivElement>(null);
   const [frameWidth, setFrameWidth] = useState(420);
   const [isVisible, setIsVisible] = useState(false);
@@ -132,7 +134,7 @@ export default function SiteCardPreview({
           }}
         >
           <iframe
-            title={title || "תצוגה מקדימה של האתר"}
+            title={title || t("leftover.templatePreview.sitePreview", "Website preview")}
             srcDoc={srcDoc}
             sandbox=""
             tabIndex={-1}

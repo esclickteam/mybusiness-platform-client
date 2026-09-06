@@ -52,9 +52,22 @@ export function isRtlLeadFormLocale(locale: string) {
 export function leadFormContactLabel(
   type: string,
   locale: string,
-  fields: Array<{ type: string; labelHe: string; labelEn: string }>
+  fields: Array<{ type: string; labelEn?: string; labelHe?: string }>
 ) {
   const field = fields.find((item) => item.type === type);
   if (!field) return type;
-  return i18n.t(`leftover.metaLeadForm.${type}`, field.labelEn || field.labelHe || type);
+  const lng = formLocaleToAppLng(locale);
+  return i18n.t(`leftover.metaLeadForm.${type}`, {
+    lng,
+    defaultValue: field.labelEn || field.labelHe || type,
+  });
+}
+
+export function formLocaleToAppLng(locale: string) {
+  const code = String(locale || "").toLowerCase().replace("_", "-");
+  if (code.startsWith("he")) return "he";
+  if (code.startsWith("ar")) return "ar";
+  if (code.startsWith("es")) return "es";
+  if (code.startsWith("pt-br") || code.startsWith("ptbr")) return "pt-BR";
+  return "en";
 }

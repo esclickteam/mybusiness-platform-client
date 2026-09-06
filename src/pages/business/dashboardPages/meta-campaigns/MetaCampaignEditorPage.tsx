@@ -137,9 +137,15 @@ export default function MetaCampaignEditorPage() {
   const [introTitle, setIntroTitle] = useState("");
   const [introDescription, setIntroDescription] = useState("");
   const [privacyPolicyUrl, setPrivacyPolicyUrl] = useState("");
-  const [thankYouTitle, setThankYouTitle] = useState("תודה!");
-  const [thankYouBody, setThankYouBody] = useState("ניצור איתכם קשר בהקדם.");
-  const [thankYouButton, setThankYouButton] = useState("לאתר");
+  const [thankYouTitle, setThankYouTitle] = useState(() =>
+    t("leftover.instantForm.thanks", "Thanks!")
+  );
+  const [thankYouBody, setThankYouBody] = useState(() =>
+    t("leftover.instantForm.thanksBody", "We’ll be in touch soon.")
+  );
+  const [thankYouButton, setThankYouButton] = useState(() =>
+    t("leftover.instantForm.toSite", "To the site")
+  );
   const [formPreviewScreen, setFormPreviewScreen] = useState<
     "intro" | "questions" | "privacy" | "thanks"
   >("intro");

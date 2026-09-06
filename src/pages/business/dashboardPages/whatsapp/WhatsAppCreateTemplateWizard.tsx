@@ -39,8 +39,12 @@ type FormState = {
 };
 
 const NAME_MAX = 512;
-const OTP_BODY_DEFAULT = "{{1}} הוא קוד האימות שלכם.";
-const SECURITY_FOOTER = "למען האבטחה, אל תשתפו את הקוד הזה.";
+function otpBodyDefault(t: TFunction) {
+  return t("leftover.waOtp.body", "{{1}} is your verification code.");
+}
+function securityFooter(t: TFunction) {
+  return t("leftover.waOtp.footer", "For security, do not share this code.");
+}
 
 const LANGUAGE_CODES = ["he", "en", "ar", "es", "fr", "pt_BR"] as const;
 
@@ -216,11 +220,11 @@ export function WhatsAppCreateTemplateWizard({
       headerHandle: value === "AUTHENTICATION" ? "" : prev.headerHandle,
       body:
         value === "AUTHENTICATION" && !prev.body.trim()
-          ? OTP_BODY_DEFAULT
+          ? otpBodyDefault(t)
           : prev.body,
       footer:
         value === "AUTHENTICATION" && prev.securityRecommendation
-          ? SECURITY_FOOTER
+          ? securityFooter(t)
           : prev.footer,
       buttons:
         value === "AUTHENTICATION"
@@ -490,7 +494,7 @@ export function WhatsAppCreateTemplateWizard({
                         setForm((prev) => ({
                           ...prev,
                           securityRecommendation: checked,
-                          footer: checked ? SECURITY_FOOTER : "",
+                          footer: checked ? securityFooter(t) : "",
                         }));
                       }}
                     />
@@ -525,7 +529,7 @@ export function WhatsAppCreateTemplateWizard({
                 allowedButtons={allowedButtons(form.metaCategory)}
                 bodyPlaceholder={
                   form.metaCategory === "AUTHENTICATION"
-                    ? OTP_BODY_DEFAULT
+                    ? otpBodyDefault(t)
                     : t("whatsapp.wizard.bodyPlaceholder")
                 }
                 onChange={(patch) =>

@@ -64,6 +64,14 @@ describe("hardcoded i18n audit scope", () => {
         "components/site-builder/studio/visual-editor/library/sectionCategories.ts"
       )
     ).toBe("D");
+    expect(
+      classifySourcePath(
+        "components/site-builder/studio/visual-editor/library/elementLibrary.ts"
+      )
+    ).toBe("D");
+    expect(
+      classifySourcePath("guidedDemo/postDemoQuestionnaire/types.ts")
+    ).toBe("D");
   });
 
   it("flags Business, Partner, and Marketer UI as category E", () => {

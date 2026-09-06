@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import API from "../../../../../../api";
 import MonthCalendar from "../../../../../../components/MonthCalendar";
 import PhoneInput from "react-phone-input-2";
@@ -49,6 +50,7 @@ export default function ClientCalendar({
   onBackToList,
   businessId,
 }: ClientCalendarProps) {
+  const { t } = useTranslation();
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
   const [month, setMonth] = useState<number>(new Date().getMonth());
   const [year, setYear] = useState<number>(new Date().getFullYear());
@@ -133,7 +135,12 @@ export default function ClientCalendar({
 
   const loadBookedSlots = async () => {
     if (!businessId) {
-      setError("לא הצלחנו לזהות את העסק. רעננו את העמוד.");
+      setError(
+        t(
+          "leftover.calendar.noBusiness",
+          "We could not identify the business. Refresh the page."
+        )
+      );
       return;
     }
 
@@ -305,7 +312,12 @@ export default function ClientCalendar({
     }
 
     if (!businessId) {
-      alert("לא הצלחנו לזהות את העסק. רעננו את העמוד ונסו שוב.");
+      alert(
+        t(
+          "leftover.calendar.noBusinessRetry",
+          "We could not identify the business. Refresh the page and try again."
+        )
+      );
       return false;
     }
 
@@ -605,18 +617,18 @@ export default function ClientCalendar({
                     />
                   </FormField>
 
-                  <FormField label="אימייל" required>
+                  <FormField label={t("common.email", "Email")} required>
                     <input
                       type="email"
                       name="email"
                       value={clientEmail}
                       onChange={(event) => setClientEmail(event.target.value)}
-                      placeholder="אימייל"
+                      placeholder={t("common.email", "Email")}
                       autoComplete="email"
                       inputMode="email"
                       required
                       dir="ltr"
-                      aria-label="אימייל"
+                      aria-label={t("common.email", "Email")}
                       className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-400 focus:bg-white focus:ring-4 focus:ring-violet-100"
                     />
                   </FormField>

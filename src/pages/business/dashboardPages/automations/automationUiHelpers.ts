@@ -25,21 +25,20 @@ export function getStatusLabel(
   status: AutomationStatus | string,
   t?: TFunction
 ): string {
-  const label = (key: string, en: string, he: string) =>
-    t ? t(key, en) : he;
+  const label = (key: string, en: string) => (t ? t(key, en) : en);
   switch (status) {
     case "active":
-      return label("automations.toolbar.active", "Active", "פעילה");
+      return label("automations.toolbar.active", "Active");
     case "draft":
-      return label("automations.toolbar.draft", "Draft", "טיוטה");
+      return label("automations.toolbar.draft", "Draft");
     case "paused":
-      return label("automations.toolbar.paused", "Paused", "מושהית");
+      return label("automations.toolbar.paused", "Paused");
     case "failed":
-      return label("automations.list.statusFailed", "Error", "שגיאה");
+      return label("automations.list.statusFailed", "Error");
     case "archived":
-      return label("automations.list.statusArchived", "Archived", "ארכיון");
+      return label("automations.list.statusArchived", "Archived");
     default:
-      return label("automations.toolbar.draft", "Draft", "טיוטה");
+      return label("automations.toolbar.draft", "Draft");
   }
 }
 
@@ -56,30 +55,29 @@ export function getLastResultLabel(
   lastExecution?: AutomationLastExecution,
   t?: TFunction
 ): { label: string; tone: "success" | "failed" | "neutral" | "running" } {
-  const label = (key: string, en: string, he: string) =>
-    t ? t(key, en) : he;
+  const label = (key: string, en: string) => (t ? t(key, en) : en);
   if (!lastExecution?.status) {
     return {
-      label: label("automations.list.resultNone", "None yet", "אין עדיין"),
+      label: label("automations.list.resultNone", "None yet"),
       tone: "neutral",
     };
   }
   const status = String(lastExecution.status).toLowerCase();
   if (status === "completed" || status === "success") {
     return {
-      label: label("automations.runs.success", "Success", "הצלחה"),
+      label: label("automations.runs.success", "Success"),
       tone: "success",
     };
   }
   if (status === "failed" || status === "error") {
     return {
-      label: label("automations.runs.failed", "Failed", "נכשלה"),
+      label: label("automations.runs.failed", "Failed"),
       tone: "failed",
     };
   }
   if (status === "running" || status === "waiting") {
     return {
-      label: label("automations.list.resultRunning", "Running", "רצה"),
+      label: label("automations.list.resultRunning", "Running"),
       tone: "running",
     };
   }

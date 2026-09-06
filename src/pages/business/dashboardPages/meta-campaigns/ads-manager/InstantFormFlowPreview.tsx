@@ -5,7 +5,9 @@ import type {
   MetaLeadFormQuestion,
 } from "../../../../../api/metaCampaignsApi";
 import { LEAD_FORM_CONTACT_FIELDS } from "../metaCampaignUtils";
+import i18n from "../../../../../i18n/i18n";
 import {
+  formLocaleToAppLng,
   isRtlLeadFormLocale,
   leadFormContactLabel,
 } from "./metaLeadFormLocales";
@@ -95,7 +97,9 @@ export default function InstantFormFlowPreview({
   const screen = screens[index] || null;
   const total = Math.max(screens.length, 1);
   const progress = ((index + 1) / total) * 100;
-  const he = locale.toLowerCase().startsWith("he");
+  const formLng = formLocaleToAppLng(locale);
+  const tf = (key: string, en: string, vars?: Record<string, string>) =>
+    i18n.t(`leftover.instantForm.${key}`, { lng: formLng, defaultValue: en, ...vars });
 
   const introTitle =
     form?.contextCard?.title?.trim() ||
@@ -104,9 +108,9 @@ export default function InstantFormFlowPreview({
     "Lead form";
   const introBody = form?.contextCard?.content?.trim() || "";
 
-  const continueLabel = he ? "המשך" : "Continue";
-  const submitLabel = he ? "שלח" : "Submit";
-  const answerPlaceholder = he ? "הזן את תשובתך" : "Enter your answer";
+  const continueLabel = tf("continue", "Continue");
+  const submitLabel = tf("submit", "Submit");
+  const answerPlaceholder = tf("answerPh", "Enter your answer");
 
   if (!form) {
     return (
@@ -177,7 +181,7 @@ export default function InstantFormFlowPreview({
               {screen?.kind === "contact" ? (
                 <div className="space-y-3">
                   <p className="text-[14px] font-black text-[#050505]">
-                    {he ? "פרטי התקשרות" : "Contact information"}
+                    {tf("contactInfo", "Contact information")}
                   </p>
                   {screen.fields.map((field) => {
                     const label = leadFormContactLabel(
@@ -185,8 +189,7 @@ export default function InstantFormFlowPreview({
                       locale,
                       LEAD_FORM_CONTACT_FIELDS as unknown as Array<{
                         type: string;
-                        labelHe: string;
-                        labelEn: string;
+                        labelEn?: string;
                       }>
                     );
                     return (
@@ -206,15 +209,15 @@ export default function InstantFormFlowPreview({
               {screen?.kind === "privacy" ? (
                 <div className="space-y-3">
                   <p className="text-[14px] font-black text-[#050505]">
-                    {he ? "מדיניות פרטיות" : "Privacy policy"}
+                    {tf("privacy", "Privacy policy")}
                   </p>
                   <p className="text-[12px] font-semibold leading-relaxed text-[#65676B]">
-                    {he
-                      ? `הפרטים שתשלחו ישמשו ליצירת קשר עם ${pageName || "העסק"}.`
-                      : `By continuing, you agree that ${pageName || "this business"} may contact you.`}
+                    {tf("privacyBody", "By continuing, you agree that {{name}} may contact you.", {
+                      name: pageName || tf("businessFallback", "this business"),
+                    })}
                   </p>
                   <p className="text-[12px] font-bold text-[#1877F2] underline">
-                    {he ? "מדיניות פרטיות" : "Privacy policy"}
+                    {tf("privacy", "Privacy policy")}
                   </p>
                 </div>
               ) : null}
@@ -222,14 +225,11 @@ export default function InstantFormFlowPreview({
               {screen?.kind === "thanks" ? (
                 <div className="space-y-3 pt-4 text-center">
                   <h3 className="text-[18px] font-black text-[#050505]">
-                    {form.thankYouPage?.title?.trim() ||
-                      (he ? "תודה!" : "Thanks!")}
+                    {form.thankYouPage?.title?.trim() || tf("thanks", "Thanks!")}
                   </h3>
                   <p className="text-[12px] font-semibold text-[#65676B]">
                     {form.thankYouPage?.body?.trim() ||
-                      (he
-                        ? "ניצור איתכם קשר בהקדם."
-                        : "We’ll be in touch soon.")}
+                      tf("thanksBody", "We’ll be in touch soon.")}
                   </p>
                 </div>
               ) : null}
@@ -247,8 +247,7 @@ export default function InstantFormFlowPreview({
                 className="flex h-10 w-full items-center justify-center rounded-md bg-[#1877F2] text-[14px] font-bold text-white"
               >
                 {screen?.kind === "thanks"
-                  ? form.thankYouPage?.buttonText?.trim() ||
-                    (he ? "סיום" : "Done")
+                  ? form.thankYouPage?.buttonText?.trim() || tf("done", "Done")
                   : screen?.kind === "privacy"
                     ? submitLabel
                     : continueLabel}

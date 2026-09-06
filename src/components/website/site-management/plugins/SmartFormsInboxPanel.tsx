@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { FormInput } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -27,6 +28,7 @@ type Submission = {
 };
 
 export default function SmartFormsInboxPanel(props: PluginPanelProps) {
+  const { t } = useTranslation();
   const { settings, loading: settingsLoading, saving, message, save, updateField } =
     useSitePluginSettings(props.siteId, "smart-forms");
   const [loading, setLoading] = React.useState(true);
@@ -49,7 +51,10 @@ export default function SmartFormsInboxPanel(props: PluginPanelProps) {
         setCounts(data?.counts && typeof data.counts === "object" ? data.counts : {});
       } catch (err: any) {
         if (!cancelled) {
-          setError(err?.response?.data?.error || "לא ניתן לטעון את תיבת הפניות");
+          setError(
+            err?.response?.data?.error ||
+              t("leftover.smartForms.loadError", "Could not load the inbox")
+          );
         }
       } finally {
         if (!cancelled) setLoading(false);
@@ -59,26 +64,29 @@ export default function SmartFormsInboxPanel(props: PluginPanelProps) {
     return () => {
       cancelled = true;
     };
-  }, [props.siteId]);
+  }, [props.siteId, t]);
 
   return (
     <SitePluginPanelFrame
       {...props}
       icon={FormInput}
       accent="#4F46E5"
-      title="טפסים חכמים Pro"
-      description="תיבת פניות לפי טופס, כולל קבצים שצורפו. הטפסים הבסיסיים נשארים בבילדר."
+      title={t("leftover.smartForms.title", "Smart Forms Pro")}
+      description={t(
+        "leftover.smartForms.description",
+        "Inbox by form, including attached files. Basic forms stay in the builder."
+      )}
       loading={loading || settingsLoading}
       saving={saving}
       message={message}
       onSave={() => save()}
     >
       <Toggle
-        label="תוסף פעיל"
+        label={t("leftover.smartForms.active", "Plugin is active")}
         checked={bool(settings.isActive, true)}
         onChange={(v) => updateField("isActive", v)}
       />
-      <Field label="מעקב לפי טופס">
+      <Field label={t("leftover.smartForms.trackByForm", "Track by form")}>
         <div className="flex flex-wrap gap-2">
           {Object.keys(counts).length ? (
             Object.entries(counts).map(([formId, count]) => (
@@ -91,7 +99,7 @@ export default function SmartFormsInboxPanel(props: PluginPanelProps) {
             ))
           ) : (
             <span className="text-sm font-bold text-slate-500">
-              עדיין אין שליחות מהאתר הזה
+              {t("leftover.smartForms.empty", "No submissions from this site yet")}
             </span>
           )}
         </div>
@@ -108,7 +116,7 @@ export default function SmartFormsInboxPanel(props: PluginPanelProps) {
             >
               <div className="flex items-center justify-between gap-3">
                 <strong className="text-sm text-slate-900">
-                  {row.name || "ליד מהאתר"}
+                  {row.name || t("leftover.smartForms.leadFromSite", "Lead from the site")}
                 </strong>
                 <span className="text-xs font-bold text-slate-500">
                   {row.formId || "website-form"}
@@ -156,7 +164,7 @@ export default function SmartFormsInboxPanel(props: PluginPanelProps) {
               </button>
               {row.attachments?.length ? (
                 <p className="mt-2 text-xs font-bold text-indigo-700">
-                  קבצים:{" "}
+                  {t("leftover.smartForms.files", "Files:")}{" "}
                   {row.attachments
                     .map((file) => file.originalName || file.fieldId)
                     .filter(Boolean)
@@ -173,7 +181,7 @@ export default function SmartFormsInboxPanel(props: PluginPanelProps) {
           to={`/business/${props.businessId}/dashboard/crm/leads`}
           className={btnSecondary}
         >
-          פתיחה ב-CRM
+          {t("leftover.smartForms.openCrm", "Open in CRM")}
         </Link>
       ) : null}
     </SitePluginPanelFrame>

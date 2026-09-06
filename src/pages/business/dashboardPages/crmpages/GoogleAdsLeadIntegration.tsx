@@ -7,6 +7,7 @@ import {
   Info,
   Unplug,
 } from "lucide-react";
+import i18n from "../../../../i18n/i18n";
 import API from "@api";
 import BizuplyLoader from "../../../../components/ui/BizuplyLoader";
 import { getApiErrorMessage as getSharedApiErrorMessage } from "../../../../utils/apiErrorMessage";
@@ -67,7 +68,10 @@ type GoogleAdsLeadIntegrationProps = {
 };
 
 function getApiErrorMessage(err: unknown): string {
-  return getSharedApiErrorMessage(err, "הפעולה נכשלה. נסו שוב.");
+  return getSharedApiErrorMessage(
+    err,
+    i18n.t("leftover.adsLead.failed", "The action failed. Try again.")
+  );
 }
 
 function mapGoogleAdsError(raw: string, fallback: string): string {

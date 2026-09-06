@@ -1,4 +1,5 @@
 import { useCallback, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   getWhatsAppBillingUsage,
@@ -7,6 +8,7 @@ import {
 import { automationQueryKeys } from "../../automations/automationsQueryKeys";
 
 export function useWhatsAppBilling(businessId: string | null) {
+  const { t } = useTranslation();
   const queryClient = useQueryClient();
   const queryKey = businessId
     ? automationQueryKeys.whatsappBillingUsage(businessId)
@@ -52,7 +54,10 @@ export function useWhatsAppBilling(businessId: string | null) {
   return {
     loading: Boolean(businessId) && query.isLoading && !query.data,
     error: query.isError
-      ? "לא הצלחנו לטעון את נתוני חיוב וואטסאפ כרגע."
+      ? t(
+          "leftover.waBilling.loadError",
+          "We could not load WhatsApp billing data right now."
+        )
       : null,
     usage: (query.data as WhatsAppBillingUsageOverview | null) || null,
     refresh,

@@ -65,7 +65,24 @@ export function classifySourcePath(rel) {
     r.endsWith("automations/templateCategoryMapping.ts") ||
     r.endsWith("automations/runsUiHelpers.ts") ||
     r.endsWith("automations/billing/automationPlanCatalog.ts") ||
-    r.endsWith("visual-editor/library/sectionCategories.ts")
+    r.endsWith("visual-editor/library/sectionCategories.ts") ||
+    r.endsWith("visual-editor/library/sectionCatalogBuilders.ts") ||
+    r.endsWith("visual-editor/library/elementLibrary.ts") ||
+    r.endsWith("visual-editor/library/lottieLibrary.ts") ||
+    r.endsWith("visual-editor/library/extraWebsiteElements.ts") ||
+    r.endsWith("visual-editor/library/cardVariants.ts") ||
+    r.endsWith("visual-editor/library/carePlanPortalSections.ts") ||
+    r.endsWith("visual-editor/library/crmDynamicElementLibrary.ts") ||
+    r.endsWith("visual-editor/library/mediaLibrary.ts") ||
+    r.endsWith("visual-editor/library/buttonLibrary.ts") ||
+    r.endsWith("grapes/grapesBlocks.ts") ||
+    r.endsWith("grapes/studioTemplates.ts") ||
+    r.endsWith("studio/data/pageTemplates.ts") ||
+    r.endsWith("studio/data/themePalettes.ts") ||
+    r.endsWith("guidedDemo/postDemoQuestionnaire/types.ts") ||
+    r.endsWith("guidedDemo/demoOverlayData.ts") ||
+    r.endsWith("i18n/templateSeedPhrasebook.json") ||
+    r.endsWith("i18n/localizeBuiltInTemplateSeed.ts")
   ) {
     return "D";
   }

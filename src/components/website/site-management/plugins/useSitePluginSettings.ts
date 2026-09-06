@@ -1,4 +1,5 @@
 import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 import {
   getSitePluginSettings,
@@ -6,6 +7,7 @@ import {
 } from "../../../../api/sitePluginSettingsApi";
 
 export function useSitePluginSettings(siteId: string, pluginKey: string) {
+  const { t } = useTranslation();
   const [settings, setSettings] = useState<Record<string, unknown>>({});
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -23,12 +25,12 @@ export function useSitePluginSettings(siteId: string, pluginKey: string) {
     } catch (err: any) {
       setMessage({
         type: "error",
-        text: err?.response?.data?.error || "שגיאה בטעינת הגדרות",
+        text: err?.response?.data?.error || t("leftover.pluginSettings.loadError", "Could not load settings"),
       });
     } finally {
       setLoading(false);
     }
-  }, [siteId, pluginKey]);
+  }, [siteId, pluginKey, t]);
 
   useEffect(() => {
     load();
@@ -42,11 +44,11 @@ export function useSitePluginSettings(siteId: string, pluginKey: string) {
     try {
       const saved = await saveSitePluginSettings(siteId, pluginKey, payload);
       setSettings(saved);
-      setMessage({ type: "success", text: "ההגדרות נשמרו" });
+      setMessage({ type: "success", text: t("leftover.pluginSettings.saved", "Settings saved") });
     } catch (err: any) {
       setMessage({
         type: "error",
-        text: err?.response?.data?.error || "שגיאה בשמירה",
+        text: err?.response?.data?.error || t("leftover.pluginSettings.saveError", "Could not save"),
       });
     } finally {
       setSaving(false);
