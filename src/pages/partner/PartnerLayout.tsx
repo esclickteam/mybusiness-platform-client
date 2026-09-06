@@ -280,7 +280,7 @@ export default function PartnerLayout() {
             </nav>
           </header>
           <main className="px-4 py-6 md:px-6 lg:px-8">
-            {workspaceReady ? <Outlet /> : <BizuplyLoader label="חוזרים ללוח הפרטנר..." />}
+            {workspaceReady ? <Outlet /> : <BizuplyLoader label={t("partner.returningToWorkspace")} />}
           </main>
         </div>
       </div>
