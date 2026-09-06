@@ -7,6 +7,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { createRequire } from "node:module";
 import { extraLocaleObject } from "./i18n-batch-site-studio-faqs.mjs";
+import { extraPanelsLocaleObject } from "./i18n-batch-panels-faqs.mjs";
 
 const require = createRequire(import.meta.url);
 const { categoryNamesCatalog } = require("../src/i18n/businessCategoryLabels.js");
@@ -311,7 +312,10 @@ for (const locale of LOCALES) {
   const file = path.join(ROOT, "src/i18n/locales", `${locale}.json`);
   const current = JSON.parse(fs.readFileSync(file, "utf8"));
   const beforePartner = current?.partner?.register?.title;
-  const merged = deepMerge(deepMerge(current, localeObject(locale)), extraLocaleObject(locale));
+  const merged = deepMerge(
+    deepMerge(deepMerge(current, localeObject(locale)), extraLocaleObject(locale)),
+    extraPanelsLocaleObject(locale)
+  );
   const afterPartner = merged?.partner?.register?.title;
   if (beforePartner && beforePartner !== afterPartner) {
     throw new Error(`Refusing to write ${locale}.json — partner.register.title changed`);

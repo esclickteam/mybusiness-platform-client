@@ -5900,6 +5900,174 @@
           "answer": "Run focused marketing campaigns, keep a current professional profile, add quality photos and videos, manage availability and reduce no-shows, ask customers for reviews, analyze trends, and use CRM and analytics well."
         }
       }
+    },
+    "profile": {
+      "title": "FAQ — Business profile",
+      "items": {
+        "tabs": {
+          "question": "How do I use the tabs on the business page?",
+          "answer": "The BizUply business page is a site you build and manage in the website builder. Tabs keep the information organized.\n\nHome: overview — name, description, and contact.\nGallery: photos and videos.\nReviews: customer ratings and performance.\nFAQ: common questions answered by the owner.\nCalendar: appointments and service bookings.\n\nEach tab gives visitors and the owner a focused, easy view."
+        },
+        "changesNotShowing": {
+          "question": "What if my changes do not appear on the business page?",
+          "answer": "After saving, try a hard refresh (Ctrl + F5 / Cmd + Shift + R), clear cache and cookies, check the internet, try another browser or device, wait 5–10 minutes, then sign out and back in. If it continues, contact support with screenshots."
+        },
+        "editDetails": {
+          "question": "How do I add or edit business details?",
+          "answer": "Open the business page editor from the dashboard. You can update the name, description, phone, email, city, category, logo, and gallery. Click Save changes to apply."
+        },
+        "gallery": {
+          "question": "How do I manage the business photo gallery?",
+          "answer": "Main gallery: up to 5 primary photos on the profile.\nExtended gallery: more photos and videos under the Gallery tab.\nUse quality images and keep the content current."
+        },
+        "categoryLocation": {
+          "question": "Why do the business category and location matter?",
+          "answer": "Accurate category and location improve visibility and relevance: more exposure, more inquiries, better conversion, and better collaboration matches. Wrong settings can hide the business."
+        },
+        "accessIssue": {
+          "question": "What if I cannot access the business page or the system?",
+          "answer": "Check the internet, try another browser, clear cache and cookies, hard-refresh, and try another device or network. If it continues, contact support with screenshots."
+        },
+        "videos": {
+          "question": "How do I add videos to the business page, and why?",
+          "answer": "Add videos in the Gallery tab. They show services visually, build trust, and raise engagement. Use MP4 and stay within the size limit."
+        },
+        "services": {
+          "question": "How do I add services or service categories?",
+          "answer": "Services and categories are managed from the Calendar tab and the CRM. That improves booking, organization, marketing, and conversions."
+        },
+        "contactDetails": {
+          "question": "How do I manage and customize contact details?",
+          "answer": "Contact details are managed in the dashboard and site editor. You can update phone, email, and address, add social links, and control what the public sees."
+        },
+        "uploadSave": {
+          "question": "What if image uploads or saving changes fail?",
+          "answer": "Check file format (JPG/PNG, MP4), size limits, hard-refresh, cache, internet, another browser, and that you clicked Save. If it continues, contact support with screenshots."
+        }
+      }
+    },
+    "collaborations": {
+      "title": "Business collaborations — FAQ",
+      "items": {
+        "whatIs": {
+          "question": "What is a business collaboration and how can it grow the business?",
+          "answer": "A collaboration is two or more businesses working together on marketing, sales, or services.\n\nBenefits: wider reach, shared marketing cost, new audiences, more trust, and a better customer experience.\n\nChoose partners with matching values and goals."
+        },
+        "publish": {
+          "question": "How do I publish a new collaboration offer on BizUply?",
+          "answer": "Fill the collaboration form with a clear title and description, what you offer and expect, plus contact, budget, and an expiry date. Offers are then matched to relevant businesses by category, location, and type."
+        },
+        "choosePartner": {
+          "question": "How do I find and choose the right collaboration partner?",
+          "answer": "Match values and goals, complementary audiences, reputation, added value, and a kickoff meeting for roles. Track KPIs so the collaboration stays on course."
+        },
+        "manageWell": {
+          "question": "What are the best ways to manage collaborations?",
+          "answer": "Set goals and KPIs, assign roles, agree timelines, keep records, communicate clearly, track results, and handle issues early. BizUply has tools for structured collaboration."
+        },
+        "received": {
+          "question": "How do I view and manage incoming collaboration offers?",
+          "answer": "In Received offers you can view, filter, and search incoming proposals, judge fit, budget, and timeline, then approve or decline. Fast professional replies raise success."
+        },
+        "sent": {
+          "question": "What are Sent offers and how do I manage them?",
+          "answer": "Sent offers are the proposals you sent to other businesses. Track replies, keep notes, set follow-up reminders, and stay proactive in negotiation."
+        },
+        "expiry": {
+          "question": "Do collaboration offers expire?",
+          "answer": "Yes. You can set an expiry and optional start/end dates. That keeps offers controlled, professional, and flexible. BizUply also supports digital agreements and e-signatures."
+        },
+        "cannotSend": {
+          "question": "What if I cannot send or publish a collaboration?",
+          "answer": "Fill required fields, check the internet, hard-refresh, try another browser, confirm permissions, and look for maintenance messages. Contact support if it continues."
+        },
+        "communicate": {
+          "question": "How do I communicate with a potential partner?",
+          "answer": "Use the contact details on the offer, BizUply messaging, meetings as needed, and keep written notes of agreements. Clear, professional communication is essential."
+        },
+        "disputes": {
+          "question": "How should I handle disputes in collaborations?",
+          "answer": "Stay transparent, keep written agreements, set ground rules early, track expectations, mediate if needed, and hold review meetings. BizUply tools help track and resolve issues."
+        }
+      }
+    },
+    "advisor": {
+      "title": "FAQ — Business advisor",
+      "items": {
+        "whatIs": {
+          "question": "What is the business advisor and how can it help me?",
+          "answer": "The BizUply advisor is AI business and marketing guidance from your real data: analysis, tailored recommendations, copy-ready wording, and planning.\n\nIt does not run actions. Build those in Automations / AI Automations."
+        },
+        "whereAutomations": {
+          "question": "Where do I build AI automations?",
+          "answer": "Build them in the existing automation builder:\n\n1. Open the AI Automations tab inside the advisor.\n2. Pick an AI recipe (for example lead scoring or call summaries).\n3. The builder opens with the recipe ready to edit.\n\nThe advisor recommends. Automations execute."
+        },
+        "readyOrFree": {
+          "question": "How do I pick a ready question or ask a free question?",
+          "answer": "Ready questions give fast focused tips (what to do today, leads to handle, follow-up copy).\nFree questions get a tailored answer and next-step ideas — without running automations.\nFor automatic execution, go to AI Automations."
+        },
+        "allBusinesses": {
+          "question": "Do the answers fit every type of business?",
+          "answer": "The advisor uses AI plus your real business data: profile, performance history, current activity, and goals. Complex legal or financial topics may still need a human expert."
+        },
+        "notInList": {
+          "question": "What if my question is not in the list?",
+          "answer": "Ask anything in the free input. The advisor analyzes it in real time, answers, and suggests next steps you can do manually or turn into an automation."
+        },
+        "available247": {
+          "question": "Is the service available 24/7?",
+          "answer": "Yes. The advisor is available 24/7 for guidance, so you can decide faster at any hour."
+        },
+        "maximize": {
+          "question": "How do I get the most from the business advisor?",
+          "answer": "Apply recommendations daily, build AI automations for repeat work, track results, and ask follow-up questions. The advisor advises. Automations execute."
+        }
+      }
+    },
+    "customerMessages": {
+      "title": "FAQs — Client messages",
+      "items": {
+        "viewMessages": {
+          "question": "How can I view messages with clients?",
+          "answer": "In Client Messages you can see every client with an active conversation.\n\n• Chats are ordered by most recent activity\n• Messages update in real time\n• Click a client to open the full history\n• Conversations are saved for later review"
+        },
+        "sendNew": {
+          "question": "How do I send a new message to a client?",
+          "answer": "Select the client, type in the input, then click Send or press Enter. Messages are delivered instantly. You can also attach files, images, and links."
+        },
+        "notSent": {
+          "question": "What should I do if a message is not sent?",
+          "answer": "Check the internet, hard-refresh, look for maintenance notices, try another browser, and confirm attachments meet size and format limits. Contact support if it continues."
+        },
+        "readReceipt": {
+          "question": "How will I know if the client has read my message?",
+          "answer": "The system does not show read receipts. Chats update in real time and you can see when the client replies or starts typing. If confirmation is critical, ask directly or use another channel."
+        },
+        "historical": {
+          "question": "Can I view historical messages with clients?",
+          "answer": "Yes. All messages are stored. Scroll older chats, search by keyword or date, and keep continuity with each client."
+        },
+        "notUpdating": {
+          "question": "What if client messages are not updating in real time?",
+          "answer": "Check the internet, refresh, clear cache and cookies, try another browser or device, and look for maintenance. Contact support with screenshots if it continues."
+        },
+        "sendFiles": {
+          "question": "Can I send files or links in messages?",
+          "answer": "Yes: documents (PDF, DOC), images (JPG, PNG), and external links. Stay within the size limit (usually up to 5MB) and supported formats."
+        },
+        "mistaken": {
+          "question": "How do I handle incorrect or duplicate messages sent by mistake?",
+          "answer": "Messages cannot be edited or deleted after sending. Send a clarification, apologize if needed, and review carefully before the next send."
+        },
+        "listNotLoad": {
+          "question": "What if the chat or client list does not load?",
+          "answer": "Check the internet, refresh, clear cache and cookies, try another browser or device, and look at system status. Contact support with screenshots and timing if it continues."
+        },
+        "multiple": {
+          "question": "Can I manage multiple client conversations at the same time?",
+          "answer": "Yes. Switch from the side list, get new-message notifications, and keep chats open. That improves response speed."
+        }
+      }
     }
   },
   "productPages": {
@@ -6668,6 +6836,59 @@
         "delivered": "Delivered {{count}}",
         "read": "Read {{count}}",
         "failed": "Failed {{count}}"
+      },
+      "labels": {
+        "wabaName": "WhatsApp Business account name",
+        "wabaId": "WABA ID",
+        "displayPhoneNumber": "Connected phone number",
+        "phoneNumberId": "Phone number ID",
+        "verifiedName": "Verified name",
+        "connectionStatus": "Connection status",
+        "qualityRating": "Quality rating",
+        "messagingLimitTier": "Messaging limit",
+        "accountReviewStatus": "Account status",
+        "sent7d": "Messages sent in the last 7 days",
+        "delivered7d": "Messages delivered in the last 7 days",
+        "read7d": "Messages read in the last 7 days",
+        "failed7d": "Messages failed in the last 7 days",
+        "uniqueRecipients7d": "Unique recipients",
+        "inbound7d": "Inbound messages",
+        "outbound7d": "Outbound messages",
+        "deliveryRate": "Delivery rate",
+        "readRate": "Read rate",
+        "failRate": "Fail rate",
+        "templatesApproved": "Approved templates",
+        "templatesPending": "Templates in review",
+        "templatesRejected": "Rejected templates",
+        "templatesPaused": "Paused templates",
+        "templatesDisabled": "Disabled templates",
+        "lastMetaSyncAt": "Last Meta sync",
+        "lastWebhookAt": "Last webhook",
+        "webhookHealth": "Webhook status",
+        "lastSuccessfulMessageAt": "Last successful message",
+        "lastFailedMessageAt": "Last failed message",
+        "rateLimitErrors": "Rate-limit errors",
+        "metaErrorCodes": "Meta error codes"
+      },
+      "sources": {
+        "Meta": "Meta",
+        "Webhook": "Webhook",
+        "history": "BizUply message history"
+      },
+      "values": {
+        "Connected": "Connected",
+        "Disconnected": "Disconnected",
+        "Error": "Error",
+        "Green": "Green",
+        "Yellow": "Yellow",
+        "Red": "Red",
+        "Unknown": "Unknown",
+        "Unlimited": "Unlimited",
+        "Active": "Active",
+        "inactive": "Inactive recently",
+        "waiting": "Waiting for events",
+        "Approved": "Approved",
+        "brand": "WhatsApp"
       }
     },
     "mapping": {
@@ -13610,6 +13831,162 @@
       "actionContact": "Contact",
       "actionEnd": "End conversation",
       "actionLink": "Open a link"
+    },
+    "morning": {
+      "loadError": "Could not load Morning settings",
+      "saved": "Settings saved successfully",
+      "saveError": "Could not save",
+      "testOk": "Connection succeeded{{suffix}}",
+      "testFail": "Connection test failed",
+      "loading": "Loading Morning settings...",
+      "title": "Morning — Green Invoice",
+      "description": "Connect the Morning API to issue tax invoices / receipts automatically on paid store orders. Requires a Morning Best plan or higher.",
+      "guideTitle": "Connection guide — 4 steps",
+      "step1Title": "1. Best+ plan",
+      "step1Body": "Make sure you have a Morning Best plan or higher. For tests you can use a sandbox account:",
+      "sandboxSignup": "Sign up for a test account",
+      "step2Title": "2. Create an API key",
+      "step2Body": "In Morning: Personal area → Developer tools → API keys → Save. You get a Key ID + Secret (shown only once).",
+      "step3Title": "3. Paste here",
+      "step3Body": "Enter both values below, click Test connection, then Save.",
+      "step4Title": "4. Automatic issue",
+      "step4Body": "When an order is marked Paid, Morning issues an invoice automatically.",
+      "secretHint": "The secret is stored encrypted on the BizUply server and is not shown again. If you lost it, create a new key in Morning.",
+      "connectionSettings": "Connection settings",
+      "connected": "Connected",
+      "connectError": "Connection error",
+      "notConnected": "Not connected",
+      "environment": "Environment",
+      "liveAccount": "Live account",
+      "testAccount": "Test account",
+      "enable": "Enable Morning for this business",
+      "keyId": "Key ID (API Key ID)",
+      "keyIdPlaceholder": "Paste the key ID from Morning",
+      "secret": "Secret (API Secret)",
+      "secretSaved": "— saved ({{preview}})",
+      "secretKeep": "Leave empty to keep the current secret, or paste a new one",
+      "secretPaste": "Paste the secret (shown only once)",
+      "documentType": "Document type",
+      "paymentType": "Payment type",
+      "vat": "VAT",
+      "autoIssue": "Issue automatically when an order is paid",
+      "save": "Save",
+      "test": "Test connection",
+      "doc320": "Tax invoice / receipt (320)",
+      "doc305": "Tax invoice (305)",
+      "doc400": "Receipt (400)",
+      "payCard": "Credit card (3)",
+      "payCash": "Cash (1)",
+      "payBank": "Bank transfer (4)",
+      "payOther": "Other (11)",
+      "vatIncl": "Including VAT",
+      "vatExcl": "Before VAT",
+      "vatExempt": "VAT exempt"
+    },
+    "dynamic": {
+      "fallbackPage": "Page",
+      "fallbackDescription": "Plugin settings and connection to site pages",
+      "openEditor": "Open editor",
+      "addInEditor": "Add in editor",
+      "overlayHint": "Floating plugin: after saving it appears automatically on the site and in the editor — no need to add a page component.",
+      "sectionHint": "On-page section: install keeps the plugin here. To show a calendar / reviews / lead form on a page, click Add in editor.",
+      "activation": "Activation",
+      "pluginActive": "Plugin active on the site",
+      "display": "Display",
+      "displayHint": "Where the plugin appears on the site",
+      "siteWide": "Entire site",
+      "selectedPages": "Selected pages",
+      "sitePages": "Site pages",
+      "noPages": "No pages yet — create pages in the site editor.",
+      "waNumber": "WhatsApp number",
+      "waHint": "Required for the button to work. Use 0501234567 or 972501234567",
+      "startMessage": "Opening message",
+      "defaultHello": "Hi, I would like details",
+      "showMobile": "Also show on mobile",
+      "xPos": "Horizontal position (%)",
+      "xHint": "From the right · 5–95. You can also drag the button in the editor",
+      "yPos": "Vertical position (%)",
+      "yHint": "From the top · 5–95",
+      "barContent": "Bar content",
+      "message": "Message",
+      "messagePlaceholder": "Free shipping until Thursday",
+      "linkOptional": "Link (optional)",
+      "linkText": "Link text",
+      "details": "Details",
+      "dismissible": "Can be dismissed",
+      "cookieBanner": "Cookie banner",
+      "accept": "Accept label",
+      "acceptDefault": "I agree",
+      "decline": "Decline label",
+      "declineDefault": "Decline",
+      "policyUrl": "Privacy policy link",
+      "popup": "Lead popup",
+      "headline": "Title",
+      "subheadline": "Subtitle",
+      "cta": "Button text",
+      "delay": "Delay in seconds (if relevant)",
+      "trigger": "Trigger",
+      "showEvery": "Show again every N days",
+      "success": "Success message",
+      "requirePhone": "Phone required",
+      "sync": "Sync",
+      "syncStore": "Sync with store products"
+    },
+    "benefitsWheel": {
+      "pill": "Pill",
+      "rounded": "Rounded square",
+      "circle": "Circle",
+      "defaultTitle": "Benefits wheel",
+      "defaultModal": "The benefits wheel",
+      "defaultSubtitle": "Spin and see what you won!",
+      "removeConfirm": "Remove the benefits wheel from the site? The plugin will be fully removed from the plugin list and settings.",
+      "removeFailed": "Could not remove the plugin. Try again.",
+      "title": "Benefits wheel",
+      "description": "A spinning wheel in a modal — opens on the first site visit. Drag the floating button in the editor.",
+      "activation": "Activation",
+      "activationHint": "When the plugin appears on the site",
+      "pluginActive": "Plugin active on the site",
+      "autoOpen": "Open automatically on first visit",
+      "showTrigger": "Show floating button",
+      "trigger": "Floating button",
+      "triggerHint": "Text, icon, colors, and shape",
+      "preview": "Preview",
+      "buttonText": "Text on the button",
+      "showIcon": "Show an icon next to the text",
+      "icon": "Icon",
+      "none": "None",
+      "shape": "Button shape",
+      "circleHint": "On a circle only the icon is shown",
+      "primary": "Primary color",
+      "secondary": "Secondary color",
+      "textColor": "Text color",
+      "modal": "Modal content",
+      "modalHint": "Title, description, and spin limit",
+      "modalTitle": "Modal title",
+      "subtitle": "Subtitle",
+      "spins": "Spins per visitor",
+      "segments": "Wheel slices",
+      "segmentsHint": "Benefits, colors, and coupon codes",
+      "sliceCount": "{{count}} slices on the wheel",
+      "add": "Add",
+      "perkN": "Perk {{n}}",
+      "remove": "Remove",
+      "colorN": "Color {{n}}",
+      "perkCode": "Perk code",
+      "editorTip": "In the editor: Add → Plugins → Benefits wheel. Drag the floating button. To remove it from the page use Remove in the plugins panel.",
+      "removeTitle": "Remove the plugin from the site",
+      "removeHint": "Fully removes the benefits wheel from the active plugins list.",
+      "removing": "Removing...",
+      "removeCta": "Remove plugin from site",
+      "winsTitle": "Saved wins ({{count}})",
+      "winsHint": "Visitor win list",
+      "iconFerris": "Wheel",
+      "iconGift": "Gift",
+      "iconSparkles": "Sparkles",
+      "iconTag": "Tag",
+      "iconPercent": "Discount",
+      "iconStar": "Star",
+      "iconTrophy": "Trophy"
     }
   },
   "sitePortal": {
@@ -14078,6 +14455,101 @@
       "pdf": "Could not download the PDF",
       "notFound": "Agreement not found",
       "proposalMissing": "Proposal data is missing"
+    }
+  },
+  "payments": {
+    "gallery": {
+      "title": "Connect payment methods",
+      "subtitle": "Choose how to take payments from customers for your business in {{country}}",
+      "israel": "Israel",
+      "connected": "Connected",
+      "fees": "Fees vary by business location and provider.",
+      "manage": "Manage",
+      "connect": "Connect",
+      "back": "Back to providers",
+      "connectTitle": "Connect {{name}}",
+      "instructions": "Connection instructions",
+      "contact": "Contact {{name}}",
+      "createAccount": "Create a {{name}} account",
+      "currencyNote": "Important: the site currency must match the provider account currency. ILS (₪) is recommended for businesses in Israel.",
+      "accountDetails": "Account details",
+      "mode": "Mode",
+      "liveMode": "Live",
+      "testMode": "Test",
+      "installments": "Installments",
+      "installmentsHint": "Let customers pay in installments",
+      "availableMethods": "Payment methods available with {{name}}",
+      "availableHint": "Credit and debit cards per the provider. After connecting, live checkout uses this provider.",
+      "cancel": "Cancel",
+      "disconnect": "Disconnect",
+      "show": "Show",
+      "hide": "Hide"
+    },
+    "fields": {
+      "publicKey": "Publishable key",
+      "apiSecret": "Secret key",
+      "webhookSecret": "Webhook secret (optional)",
+      "terminalNumber": "Terminal / Masof",
+      "apiKey": "API Key",
+      "accountId": "Email",
+      "merchantId": "Licensed business",
+      "pageCode": "Payment page / max installments",
+      "keepSecret": "Leave empty to keep the current secret"
+    },
+    "providers": {
+      "stripe": {
+        "description": "Take card payments through Stripe — secure international checkout.",
+        "badgeRecurring": "Supports recurring charges",
+        "badgeIntl": "International",
+        "step1": "Open the Stripe Dashboard and copy the Publishable key and Secret key.",
+        "step2": "Paste the keys in the form and click Connect.",
+        "step3": "Optional: set a Stripe webhook to api.bizuply.com/api/store/stripe/webhook/{businessId} and paste the webhook secret."
+      },
+      "hyp": {
+        "description": "Take card or debit payments through Max.",
+        "badgePayments": "Supports payments",
+        "badgeRecurring": "Supports recurring charges",
+        "step1": "Enter the Masof terminal number and API key from the Max by Hyp account.",
+        "step2": "Click Connect to save the details on the site.",
+        "step3": "Make sure the site currency matches the Max account (₪ recommended)."
+      },
+      "paypal": {
+        "description": "Take payments through PayPal.",
+        "step1": "Enter the business PayPal email.",
+        "step2": "Click Connect. You can complete the PayPal redirect later.",
+        "step3": "Make sure the site currency matches the PayPal account."
+      },
+      "payme": {
+        "description": "Take card and bit app payments.",
+        "subtitle": "Provider: Isracard powered by PayMe",
+        "step1": "Enter the API key and email from the PayMe account.",
+        "step2": "Click Connect to link the bit account to the site.",
+        "step3": "Make sure the site currency matches PayMe (₪ recommended)."
+      },
+      "grow": {
+        "description": "Take payments through Grow (Meshulam).",
+        "step1": "Enter the licensed business ID and password from Grow.",
+        "step2": "Click Connect to link the account to the site.",
+        "step3": "Make sure the site currency matches Grow (₪ recommended)."
+      },
+      "payplus": {
+        "description": "Take card payments through PayPlus.",
+        "step1": "Enter the API key and Payment Page UID.",
+        "step2": "Click Connect to link PayPlus to the site.",
+        "step3": "Make sure the site currency matches PayPlus (₪ recommended)."
+      },
+      "tranzila": {
+        "description": "Take card payments through Tranzila.",
+        "step1": "Enter the terminal number and registered email from Tranzila.",
+        "step2": "Click Connect to link the account to the site.",
+        "step3": "Make sure the site currency matches Tranzila (₪ recommended)."
+      },
+      "cal": {
+        "description": "Take card payments through Cal.",
+        "step1": "Enter the API key and email from the Cal account.",
+        "step2": "Click Connect to link Cal to the site.",
+        "step3": "Make sure the site currency matches Cal (₪ recommended)."
+      }
     }
   }
 }

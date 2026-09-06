@@ -52,7 +52,8 @@ export function classifySourcePath(rel) {
     r.endsWith("data/pricingAddonsData.ts") ||
     r.endsWith("data/pricingPackagesData.ts") ||
     r.endsWith("data/pluginEditorRegistry.ts") ||
-    r.endsWith("data/sitePluginNav.ts")
+    r.endsWith("data/sitePluginNav.ts") ||
+    r.endsWith("payments/paymentProvidersCatalog.ts")
   ) {
     return "D";
   }

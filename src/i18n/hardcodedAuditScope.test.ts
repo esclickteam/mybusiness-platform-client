@@ -32,6 +32,11 @@ describe("hardcoded i18n audit scope", () => {
     expect(classifySourcePath("lib/partnerLabels.ts")).toBe("D");
     expect(classifySourcePath("i18n/businessCategoryLabels.js")).toBe("D");
     expect(classifySourcePath("data/categories.js")).toBe("D");
+    expect(
+      classifySourcePath(
+        "components/website/site-management/payments/paymentProvidersCatalog.ts"
+      )
+    ).toBe("D");
   });
 
   it("flags Business, Partner, and Marketer UI as category E", () => {

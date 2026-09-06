@@ -1,140 +1,16 @@
-import React, { useState } from "react";
-import "./faq.css";
-import HelpArticleLayout from "./HelpArticleLayout";
+import React from "react";
+import HelpFaqArticle from "./HelpFaqArticle";
 
-const faqData = [
-  {
-    question: "מהו היועץ העסקי ואיך הוא יכול לעזור לי",
-    answer: `
-היועץ העסקי של BizUply הוא מערכת ייעוץ עסקי ושיווקי מבוססת בינה מלאכותית.
-
-הוא מספק:
-• ניתוח לפי נתוני העסק האמיתיים
-• המלצות מותאמות אישית
-• נוסחים מוכנים להעתקה
-• תכנון אסטרטגי ותפעולי
-
-חשוב: היועץ לא מבצע פעולות במערכת. פעולות אוטומטיות מתקדמות נבנות בבונה האוטומציות / אוטומציות AI.
-    `,
-  },
-  {
-    question: "איפה בונים אוטומציות AI?",
-    answer: `
-הכי נכון לבנות אותן בבונה האוטומציות הקיים:
-
-1. נכנסים לטאב "אוטומציות AI" בתוך היועץ העסקי
-2. בוחרים מתכון AI (למשל דירוג לידים / סיכום שיחות)
-3. נפתח בונה האוטומציות עם המתכון מוכן לעריכה
-
-היועץ ממליץ. האוטומציות מבצעות.
-    `,
-  },
-  {
-    question: "איך בוחרים שאלה מוכנה או שואלים שאלה חופשית",
-    answer: `
-ניתן להשתמש ביועץ בשתי דרכים:
-
-שאלות מוכנות:
-• מה כדאי לעשות היום, לידים לטיפול, ניסוח מעקב ועוד
-• קבלו המלצות מהירות וממוקדות
-
-שאלות חופשיות:
-• שאלו שאלה ספציפית או מורכבת
-• קבלו תשובה מותאמת אישית
-• קבלו הצעות להמשך — בלי ביצוע אוטומטי
-
-ליישום אוטומטי — עברו לאוטומציות AI.
-    `,
-  },
-  {
-    question: "האם התשובות מתאימות לכל סוגי העסקים",
-    answer: `
-היועץ העסקי משתמש בבינה מלאכותית בשילוב עם נתוני העסק האמיתיים שלכם כדי ליצור תובנות מותאמות אישית.
-
-התשובות מותאמות ל:
-• פרופיל העסק שלכם
-• היסטוריית ביצועים
-• פעילות נוכחית
-• מטרות עסקיות
-
-למרות שהיועץ יעיל מאוד, נושאים משפטיים או פיננסיים מורכבים עשויים עדיין לדרוש ייעוץ אנושי מומחה.
-    `,
-  },
-  {
-    question: "מה אם השאלה שלי לא מופיעה ברשימה",
-    answer: `
-ניתן לשאול כל שאלה בחופשיות באמצעות שדה הקלט החופשי.
-
-היועץ:
-• מנתח את השאלה בזמן אמת
-• מספק תשובה מקצועית ורלוונטית
-• מציע צעדים להמשך שתוכלו לבצע ידנית או לבנות כאוטומציה
-
-כך מבטיחים הנחיה מדויקת גם במצבים ייחודיים.
-    `,
-  },
-  {
-    question: "האם השירות זמין 24/7",
-    answer: `
-כן. היועץ העסקי זמין 24/7 לייעוץ והמלצות.
-
-זה מאפשר:
-• הנחיה מיידית בכל שעה
-• קבלת החלטות מהירה יותר
-• הפחתת עיכובים ולחץ
-    `,
-  },
-  {
-    question: "איך ממקסמים את הערך מהיועץ העסקי",
-    answer: `
-כדי להפיק את המירב:
-• יישמו המלצות בפעילות היומיומית
-• בנו אוטומציות AI לפעולות שחוזרות על עצמן
-• עקבו אחר תוצאות הביצועים
-• שאלו שאלות המשך
-
-היועץ לייעוץ. האוטומציות לביצוע.
-    `,
-  },
+const FAQ_KEYS = [
+  "whatIs",
+  "whereAutomations",
+  "readyOrFree",
+  "allBusinesses",
+  "notInList",
+  "available247",
+  "maximize",
 ];
 
 export default function BizUplyAdvisorFAQ() {
-  const [openIndex, setOpenIndex] = useState(null);
-
-  const toggleIndex = (index) => {
-    setOpenIndex(openIndex === index ? null : index);
-  };
-
-  return (
-    <HelpArticleLayout>
-      <h1 className="faq-title">שאלות נפוצות – היועץ העסקי</h1>
-
-      <div className="faq-list">
-        {faqData.map((faq, idx) => {
-          const isOpen = openIndex === idx;
-
-          return (
-            <div
-              key={idx}
-              className={`faq-item ${isOpen ? "open" : ""}`}
-              onClick={() => toggleIndex(idx)}
-            >
-              <div className="faq-question">
-                <span>{faq.question}</span>
-                <span className="faq-toggle">{isOpen ? "−" : "+"}</span>
-              </div>
-
-              {isOpen && (
-                <div className="faq-answer">
-                  <pre style={{ whiteSpace: "pre-wrap", fontFamily: "inherit" }}>
-                    {faq.answer.trim()}
-                  </pre>
-                </div>
-              )}
-            </div>
-          );
-        })}
-      </div>
-    </HelpArticleLayout>
-  );
+  return <HelpFaqArticle ns="helpFaqs.advisor" keys={FAQ_KEYS} />;
 }

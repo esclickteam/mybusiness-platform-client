@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Puzzle } from "lucide-react";
 
 import { getMySite } from "../../../../api/mySitesApi";
@@ -33,6 +34,7 @@ export default function SiteDynamicPluginPanel({
   pluginKey,
   plugin,
 }: SiteDynamicPluginPanelProps) {
+  const { t } = useTranslation();
   const { settings, loading, saving, message, save, updateField } =
     useSitePluginSettings(siteId, pluginKey);
   const [pages, setPages] = useState<SitePageOption[]>([]);
@@ -44,18 +46,18 @@ export default function SiteDynamicPluginPanel({
         setPages(
           list.map((p: any) => ({
             id: String(p.id || p._id || ""),
-            title: String(p.title || p.name || "עמוד"),
+            title: String(p.title || p.name || t("sitePlugins.dynamic.fallbackPage")),
           }))
         );
       })
       .catch(() => setPages([]));
-  }, [siteId]);
+  }, [siteId, t]);
 
   const Icon = getPluginIcon(pluginKey);
   const accent = getPluginAccent(pluginKey, plugin?.accent);
   const title = plugin?.name || pluginKey;
   const description =
-    plugin?.description || "הגדרות התוסף וחיבור לעמודים באתר";
+    plugin?.description || t("sitePlugins.dynamic.fallbackDescription");
   const editorAction = getPluginEditorAction(pluginKey);
   const editorAddHref =
     editorAction.kind === "section" && editorAction.sectionId
@@ -105,39 +107,35 @@ export default function SiteDynamicPluginPanel({
           className="inline-flex h-10 items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 text-xs font-semibold text-slate-700 transition hover:bg-slate-50"
         >
           <Puzzle size={14} />
-          {editorAction.kind === "overlay" ? "פתיחת עורך" : "הוספה בעורך"}
+          {editorAction.kind === "overlay"
+            ? t("sitePlugins.dynamic.openEditor")
+            : t("sitePlugins.dynamic.addInEditor")}
         </a>
       }
       sidebar={
         <InfoCallout>
-          {editorAction.kind === "overlay" ? (
-            <>
-              <strong>תוסף צף:</strong> אחרי שמירה הוא מופיע אוטומטית באתר
-              ובעורך — אין צורך להוסיף רכיב לעמוד.
-            </>
-          ) : (
-            <>
-              <strong>סקשן בעמוד:</strong> ההתקנה שומרת את התוסף כאן. כדי
-              לראות יומן / ביקורות / טופס לידים בעמוד — לחצו{" "}
-              <strong>הוספה בעורך</strong>.
-            </>
-          )}
+          {editorAction.kind === "overlay"
+            ? t("sitePlugins.dynamic.overlayHint")
+            : t("sitePlugins.dynamic.sectionHint")}
         </InfoCallout>
       }
     >
-      <SettingsSection title="הפעלה">
+      <SettingsSection title={t("sitePlugins.dynamic.activation")}>
         <Toggle
-          label="תוסף פעיל באתר"
+          label={t("sitePlugins.dynamic.pluginActive")}
           checked={bool(settings.isActive, true)}
           onChange={(v) => updateField("isActive", v)}
         />
       </SettingsSection>
 
-      <SettingsSection title="הצגה" description="היכן התוסף יופיע באתר">
+      <SettingsSection
+        title={t("sitePlugins.dynamic.display")}
+        description={t("sitePlugins.dynamic.displayHint")}
+      >
         <div className="flex flex-wrap gap-2">
           {[
-            { value: "site-wide", label: "בכל האתר" },
-            { value: "pages", label: "בעמודים נבחרים" },
+            { value: "site-wide", label: t("sitePlugins.dynamic.siteWide") },
+            { value: "pages", label: t("sitePlugins.dynamic.selectedPages") },
           ].map((opt) => (
             <button
               key={opt.value}
@@ -155,10 +153,10 @@ export default function SiteDynamicPluginPanel({
         </div>
 
         {scope === "pages" ? (
-          <Field label="עמודים באתר">
+          <Field label={t("sitePlugins.dynamic.sitePages")}>
             {pages.length === 0 ? (
               <p className="text-xs text-slate-500">
-                אין עמודים עדיין — צרו עמודים בעורך האתר.
+                {t("sitePlugins.dynamic.noPages")}
               </p>
             ) : (
               <div className="max-h-48 space-y-1 overflow-y-auto rounded-xl border border-slate-200 p-2">
@@ -192,8 +190,8 @@ export default function SiteDynamicPluginPanel({
       {pluginKey === "whatsapp-float" ? (
         <SettingsSection title="WhatsApp">
           <Field
-            label="מספר WhatsApp"
-            hint="חובה כדי שהכפתור יעבוד. אפשר 0501234567 או 972501234567"
+            label={t("sitePlugins.dynamic.waNumber")}
+            hint={t("sitePlugins.dynamic.waHint")}
           >
             <TextInput
               value={str(settings.phone)}
@@ -201,20 +199,20 @@ export default function SiteDynamicPluginPanel({
               placeholder="0501234567"
             />
           </Field>
-          <Field label="הודעה התחלתית">
+          <Field label={t("sitePlugins.dynamic.startMessage")}>
             <TextInput
-              value={str(settings.message, "שלום, אשמח לפרטים")}
+              value={str(settings.message, t("sitePlugins.dynamic.defaultHello"))}
               onChange={(v) => updateField("message", v)}
             />
           </Field>
           <Toggle
-            label="הצגה גם במובייל"
+            label={t("sitePlugins.dynamic.showMobile")}
             checked={bool(settings.showOnMobile, true)}
             onChange={(v) => updateField("showOnMobile", v)}
           />
           <Field
-            label="מיקום אופקי (%)"
-            hint="מימין · 5–95. אפשר גם לגרור את הכפתור בעורך"
+            label={t("sitePlugins.dynamic.xPos")}
+            hint={t("sitePlugins.dynamic.xHint")}
           >
             <TextInput
               type="number"
@@ -236,7 +234,7 @@ export default function SiteDynamicPluginPanel({
               }
             />
           </Field>
-          <Field label="מיקום אנכי (%)" hint="מלמעלה · 5–95">
+          <Field label={t("sitePlugins.dynamic.yPos")} hint={t("sitePlugins.dynamic.yHint")}>
             <TextInput
               type="number"
               value={String(
@@ -261,30 +259,30 @@ export default function SiteDynamicPluginPanel({
       ) : null}
 
       {pluginKey === "announcement-bar" ? (
-        <SettingsSection title="תוכן הפס">
-          <Field label="הודעה">
+        <SettingsSection title={t("sitePlugins.dynamic.barContent")}>
+          <Field label={t("sitePlugins.dynamic.message")}>
             <TextInput
               value={str(settings.message)}
               onChange={(v) => updateField("message", v)}
-              placeholder="משלוח חינם עד חמישי"
+              placeholder={t("sitePlugins.dynamic.messagePlaceholder")}
             />
           </Field>
-          <Field label="קישור (אופציונלי)">
+          <Field label={t("sitePlugins.dynamic.linkOptional")}>
             <TextInput
               value={str(settings.linkUrl)}
               onChange={(v) => updateField("linkUrl", v)}
               placeholder="https://"
             />
           </Field>
-          <Field label="טקסט קישור">
+          <Field label={t("sitePlugins.dynamic.linkText")}>
             <TextInput
               value={str(settings.linkLabel)}
               onChange={(v) => updateField("linkLabel", v)}
-              placeholder="לפרטים"
+              placeholder={t("sitePlugins.dynamic.details")}
             />
           </Field>
           <Toggle
-            label="ניתן לסגירה"
+            label={t("sitePlugins.dynamic.dismissible")}
             checked={bool(settings.dismissible, true)}
             onChange={(v) => updateField("dismissible", v)}
           />
@@ -292,26 +290,26 @@ export default function SiteDynamicPluginPanel({
       ) : null}
 
       {pluginKey === "cookie-banner" ? (
-        <SettingsSection title="באנר עוגיות">
-          <Field label="הודעה">
+        <SettingsSection title={t("sitePlugins.dynamic.cookieBanner")}>
+          <Field label={t("sitePlugins.dynamic.message")}>
             <TextInput
               value={str(settings.message)}
               onChange={(v) => updateField("message", v)}
             />
           </Field>
-          <Field label="טקסט אישור">
+          <Field label={t("sitePlugins.dynamic.accept")}>
             <TextInput
-              value={str(settings.acceptLabel, "אני מסכים/ה")}
+              value={str(settings.acceptLabel, t("sitePlugins.dynamic.acceptDefault"))}
               onChange={(v) => updateField("acceptLabel", v)}
             />
           </Field>
-          <Field label="טקסט דחייה">
+          <Field label={t("sitePlugins.dynamic.decline")}>
             <TextInput
-              value={str(settings.declineLabel, "דחייה")}
+              value={str(settings.declineLabel, t("sitePlugins.dynamic.declineDefault"))}
               onChange={(v) => updateField("declineLabel", v)}
             />
           </Field>
-          <Field label="קישור למדיניות פרטיות">
+          <Field label={t("sitePlugins.dynamic.policyUrl")}>
             <TextInput
               value={str(settings.policyUrl, "/privacy")}
               onChange={(v) => updateField("policyUrl", v)}
@@ -321,54 +319,54 @@ export default function SiteDynamicPluginPanel({
       ) : null}
 
       {pluginKey === "exit-popup" ? (
-        <SettingsSection title="פופאפ לידים">
-          <Field label="כותרת">
+        <SettingsSection title={t("sitePlugins.dynamic.popup")}>
+          <Field label={t("sitePlugins.dynamic.headline")}>
             <TextInput
               value={str(settings.headline)}
               onChange={(v) => updateField("headline", v)}
             />
           </Field>
-          <Field label="תת־כותרת">
+          <Field label={t("sitePlugins.dynamic.subheadline")}>
             <TextInput
               value={str(settings.subheadline)}
               onChange={(v) => updateField("subheadline", v)}
             />
           </Field>
-          <Field label="טקסט כפתור">
+          <Field label={t("sitePlugins.dynamic.cta")}>
             <TextInput
               value={str(settings.ctaLabel)}
               onChange={(v) => updateField("ctaLabel", v)}
             />
           </Field>
-          <Field label="השהייה בשניות (אם רלוונטי)">
+          <Field label={t("sitePlugins.dynamic.delay")}>
             <TextInput
               value={String(num(settings.delaySeconds, 25))}
               onChange={(v) => updateField("delaySeconds", Number(v) || 25)}
               type="number"
             />
           </Field>
-          <Field label="טריגר">
+          <Field label={t("sitePlugins.dynamic.trigger")}>
             <TextInput
               value={str(settings.trigger, "exit-or-delay")}
               onChange={(v) => updateField("trigger", v)}
               placeholder="exit / delay / exit-or-delay"
             />
           </Field>
-          <Field label="הצגה חוזרת כל כמה ימים">
+          <Field label={t("sitePlugins.dynamic.showEvery")}>
             <TextInput
               value={String(num(settings.showOncePerDays, 7))}
               onChange={(v) => updateField("showOncePerDays", Number(v) || 0)}
               type="number"
             />
           </Field>
-          <Field label="הודעת הצלחה">
+          <Field label={t("sitePlugins.dynamic.success")}>
             <TextInput
               value={str(settings.successMessage)}
               onChange={(v) => updateField("successMessage", v)}
             />
           </Field>
           <Toggle
-            label="טלפון חובה"
+            label={t("sitePlugins.dynamic.requirePhone")}
             checked={bool(settings.requirePhone, true)}
             onChange={(v) => updateField("requirePhone", v)}
           />
@@ -376,9 +374,9 @@ export default function SiteDynamicPluginPanel({
       ) : null}
 
       {pluginKey === "whatsapp-catalog" ? (
-        <SettingsSection title="סנכרון">
+        <SettingsSection title={t("sitePlugins.dynamic.sync")}>
           <Toggle
-            label="סנכרון עם מוצרי החנות"
+            label={t("sitePlugins.dynamic.syncStore")}
             checked={bool(settings.syncWithStore, true)}
             onChange={(v) => updateField("syncWithStore", v)}
           />

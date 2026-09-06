@@ -5900,6 +5900,174 @@
           "answer": "Haz campañas, mantén el perfil al día, añade fotos, gestiona disponibilidad, pide reseñas, analiza tendencias y usa el CRM."
         }
       }
+    },
+    "profile": {
+      "title": "FAQ — Perfil de negocio",
+      "items": {
+        "tabs": {
+          "question": "¿Cómo uso las pestañas de la página del negocio?",
+          "answer": "La página del negocio se construye en el editor. Las pestañas organizan: Inicio, Galería, Reseñas, FAQ y Calendario."
+        },
+        "changesNotShowing": {
+          "question": "¿Qué hago si no veo mis cambios?",
+          "answer": "Tras guardar: refresco forzado, borra caché, revisa internet, prueba otro navegador, espera 5–10 minutos y cierra sesión. Si sigue, contacta a soporte."
+        },
+        "editDetails": {
+          "question": "¿Cómo edito los datos del negocio?",
+          "answer": "Abre el editor desde el panel y actualiza nombre, descripción, contacto, ciudad, categoría, logo y galería. Pulsa Guardar."
+        },
+        "gallery": {
+          "question": "¿Cómo gestiono la galería?",
+          "answer": "Galería principal: hasta 5 fotos. Galería extendida: más fotos y videos. Usa imágenes de calidad."
+        },
+        "categoryLocation": {
+          "question": "¿Por qué importan categoría y ubicación?",
+          "answer": "Una categoría y ubicación precisas mejoran visibilidad, consultas, conversión y colaboraciones."
+        },
+        "accessIssue": {
+          "question": "¿Qué hago si no puedo acceder?",
+          "answer": "Revisa internet, prueba otro navegador, borra caché, refresca y prueba otra red. Si sigue, contacta a soporte."
+        },
+        "videos": {
+          "question": "¿Cómo añado videos y por qué?",
+          "answer": "Añádelos en Galería. Muestran servicios, generan confianza y engagement. Usa MP4 y el tamaño permitido."
+        },
+        "services": {
+          "question": "¿Cómo añado servicios?",
+          "answer": "Se gestionan en Calendario y CRM. Mejora reservas, organización, marketing y conversión."
+        },
+        "contactDetails": {
+          "question": "¿Cómo personalizo los datos de contacto?",
+          "answer": "En el panel y el editor: teléfono, email, dirección, redes y qué se muestra al público."
+        },
+        "uploadSave": {
+          "question": "¿Qué hago si falla la subida o el guardado?",
+          "answer": "Revisa formato, tamaño, refresco, caché, internet, otro navegador y que pulsaste Guardar. Si sigue, contacta a soporte."
+        }
+      }
+    },
+    "collaborations": {
+      "title": "Colaboraciones — FAQ",
+      "items": {
+        "whatIs": {
+          "question": "¿Qué es una colaboración y cómo crece el negocio?",
+          "answer": "Es una alianza para marketing, ventas o servicios. Amplía alcance, comparte costes y genera confianza. Elige socios alineados."
+        },
+        "publish": {
+          "question": "¿Cómo publico una oferta de colaboración?",
+          "answer": "Completa título, descripción, oferta/expectativa, contacto, presupuesto y caducidad. Se envía a negocios relevantes."
+        },
+        "choosePartner": {
+          "question": "¿Cómo elijo al socio adecuado?",
+          "answer": "Alinea valores, audiencias, reputación y una reunión de roles. Sigue KPI."
+        },
+        "manageWell": {
+          "question": "¿Cómo gestiono colaboraciones bien?",
+          "answer": "Define metas, roles, plazos, registros, comunicación y seguimiento. BizUply da herramientas."
+        },
+        "received": {
+          "question": "¿Cómo gestiono ofertas recibidas?",
+          "answer": "En Recibidas puedes ver, filtrar, valorar e aprobar o rechazar. Responde rápido."
+        },
+        "sent": {
+          "question": "¿Qué son las ofertas enviadas?",
+          "answer": "Son las que enviaste. Sigue respuestas, anota, recuerda y negocia."
+        },
+        "expiry": {
+          "question": "¿Caducan las ofertas?",
+          "answer": "Sí: caducidad y fechas opcionales. BizUply también admite acuerdos digitales."
+        },
+        "cannotSend": {
+          "question": "¿Qué hago si no puedo publicar?",
+          "answer": "Completa campos, revisa internet, refresca, prueba otro navegador y permisos. Si sigue, contacta a soporte."
+        },
+        "communicate": {
+          "question": "¿Cómo hablo con un socio potencial?",
+          "answer": "Usa el contacto de la oferta, mensajes de BizUply, reuniones y notas. La claridad es clave."
+        },
+        "disputes": {
+          "question": "¿Cómo gestiono conflictos?",
+          "answer": "Sé transparente, guarda acuerdos, define reglas, sigue expectativas y reúnete. BizUply ayuda a resolver."
+        }
+      }
+    },
+    "advisor": {
+      "title": "FAQ — Asesor de negocio",
+      "items": {
+        "whatIs": {
+          "question": "¿Qué es el asesor y cómo me ayuda?",
+          "answer": "Es guía de IA con tus datos: análisis, recomendaciones y textos. No ejecuta; eso va en Automatizaciones."
+        },
+        "whereAutomations": {
+          "question": "¿Dónde construyo automatizaciones IA?",
+          "answer": "En Automatizaciones IA dentro del asesor: elige una receta y edítala. El asesor recomienda; las automatizaciones ejecutan."
+        },
+        "readyOrFree": {
+          "question": "¿Pregunta lista o libre?",
+          "answer": "Listas: tips rápidos. Libres: respuesta a medida sin ejecutar. Para ejecutar, ve a Automatizaciones."
+        },
+        "allBusinesses": {
+          "question": "¿Las respuestas valen para cualquier negocio?",
+          "answer": "Usa IA y tus datos reales. Temas legales o financieros complejos pueden requerir un experto."
+        },
+        "notInList": {
+          "question": "¿Y si mi pregunta no está en la lista?",
+          "answer": "Pregunta en el campo libre. Analiza, responde y sugiere pasos o una automatización."
+        },
+        "available247": {
+          "question": "¿Está disponible 24/7?",
+          "answer": "Sí, 24/7 para orientación en cualquier momento."
+        },
+        "maximize": {
+          "question": "¿Cómo saco más del asesor?",
+          "answer": "Aplica consejos, crea automatizaciones, sigue resultados y pregunta más. El asesor guía; las automatizaciones ejecutan."
+        }
+      }
+    },
+    "customerMessages": {
+      "title": "FAQ — Mensajes de clientes",
+      "items": {
+        "viewMessages": {
+          "question": "¿Cómo veo los mensajes con clientes?",
+          "answer": "En Mensajes de clientes ves cada conversación activa, ordenada por actividad reciente y actualizada en tiempo real."
+        },
+        "sendNew": {
+          "question": "¿Cómo envío un mensaje nuevo?",
+          "answer": "Elige el cliente, escribe y pulsa Enviar o Enter. También puedes adjuntar archivos, imágenes y enlaces."
+        },
+        "notSent": {
+          "question": "¿Qué hago si no se envía el mensaje?",
+          "answer": "Revisa internet, refresca, avisos de mantenimiento, otro navegador y límites de archivos. Si sigue, contacta a soporte."
+        },
+        "readReceipt": {
+          "question": "¿Cómo sé si el cliente leyó el mensaje?",
+          "answer": "No hay confirmación de lectura. El chat se actualiza en vivo. Si es crítico, pídelo o usa otro canal."
+        },
+        "historical": {
+          "question": "¿Puedo ver el historial?",
+          "answer": "Sí. Todo se guarda. Desplázate, busca por palabra o fecha y mantén continuidad."
+        },
+        "notUpdating": {
+          "question": "¿Y si no se actualizan en tiempo real?",
+          "answer": "Revisa internet, refresca, borra caché, prueba otro navegador y mantenimiento. Si sigue, contacta a soporte."
+        },
+        "sendFiles": {
+          "question": "¿Puedo enviar archivos o enlaces?",
+          "answer": "Sí: documentos, imágenes y enlaces. Respeta el tamaño (hasta 5MB) y los formatos."
+        },
+        "mistaken": {
+          "question": "¿Qué hago con un mensaje enviado por error?",
+          "answer": "No se puede editar ni borrar. Envía una aclaración, discúlpate si hace falta y revisa antes de enviar."
+        },
+        "listNotLoad": {
+          "question": "¿Y si no carga el chat o la lista?",
+          "answer": "Revisa internet, refresca, borra caché, prueba otro navegador y el estado del sistema. Si sigue, contacta a soporte."
+        },
+        "multiple": {
+          "question": "¿Puedo gestionar varias conversaciones?",
+          "answer": "Sí. Cambia desde la lista, recibe avisos y deja chats abiertos. Mejora la velocidad de respuesta."
+        }
+      }
     }
   },
   "productPages": {
@@ -6668,6 +6836,59 @@
         "delivered": "Entregado {{count}}",
         "read": "Leer {{count}}",
         "failed": "Falló {{count}}"
+      },
+      "labels": {
+        "wabaName": "Nombre de la cuenta WhatsApp Business",
+        "wabaId": "ID de WABA",
+        "displayPhoneNumber": "Número conectado",
+        "phoneNumberId": "ID del número",
+        "verifiedName": "Nombre verificado",
+        "connectionStatus": "Estado de conexión",
+        "qualityRating": "Calificación de calidad",
+        "messagingLimitTier": "Límite de mensajería",
+        "accountReviewStatus": "Estado de la cuenta",
+        "sent7d": "Mensajes enviados en 7 días",
+        "delivered7d": "Mensajes entregados en 7 días",
+        "read7d": "Mensajes leídos en 7 días",
+        "failed7d": "Mensajes fallidos en 7 días",
+        "uniqueRecipients7d": "Destinatarios únicos",
+        "inbound7d": "Mensajes entrantes",
+        "outbound7d": "Mensajes salientes",
+        "deliveryRate": "Tasa de entrega",
+        "readRate": "Tasa de lectura",
+        "failRate": "Tasa de fallo",
+        "templatesApproved": "Plantillas aprobadas",
+        "templatesPending": "Plantillas en revisión",
+        "templatesRejected": "Plantillas rechazadas",
+        "templatesPaused": "Plantillas en pausa",
+        "templatesDisabled": "Plantillas desactivadas",
+        "lastMetaSyncAt": "Última sincronización de Meta",
+        "lastWebhookAt": "Último webhook",
+        "webhookHealth": "Estado del webhook",
+        "lastSuccessfulMessageAt": "Último mensaje correcto",
+        "lastFailedMessageAt": "Último mensaje fallido",
+        "rateLimitErrors": "Errores de límite de ritmo",
+        "metaErrorCodes": "Códigos de error de Meta"
+      },
+      "sources": {
+        "Meta": "Meta",
+        "Webhook": "Webhook",
+        "history": "Historial de mensajes de BizUply"
+      },
+      "values": {
+        "Connected": "Conectado",
+        "Disconnected": "Desconectado",
+        "Error": "Error",
+        "Green": "Verde",
+        "Yellow": "Amarillo",
+        "Red": "Rojo",
+        "Unknown": "Desconocido",
+        "Unlimited": "Ilimitado",
+        "Active": "Activo",
+        "inactive": "Inactivo recientemente",
+        "waiting": "Esperando eventos",
+        "Approved": "Aprobado",
+        "brand": "WhatsApp"
       }
     },
     "mapping": {
@@ -13610,6 +13831,162 @@
       "actionContact": "Contacto",
       "actionEnd": "Terminar conversación",
       "actionLink": "Abrir un enlace"
+    },
+    "morning": {
+      "loadError": "No se pudieron cargar los ajustes de Morning",
+      "saved": "Ajustes guardados",
+      "saveError": "No se pudo guardar",
+      "testOk": "Conexión correcta{{suffix}}",
+      "testFail": "Falló la prueba de conexión",
+      "loading": "Cargando ajustes de Morning...",
+      "title": "Morning — factura verde",
+      "description": "Conecta Morning para emitir facturas automáticamente en pedidos pagados. Requiere plan Best o superior.",
+      "guideTitle": "Guía de conexión — 4 pasos",
+      "step1Title": "1. Plan Best+",
+      "step1Body": "Asegúrate de tener plan Best o superior. Para pruebas usa una cuenta sandbox:",
+      "sandboxSignup": "Crear cuenta de prueba",
+      "step2Title": "2. Crear clave API",
+      "step2Body": "En Morning: área personal → herramientas de desarrollador → claves API. Recibes ID + secreto (una sola vez).",
+      "step3Title": "3. Pega aquí",
+      "step3Body": "Introduce ambos valores, pulsa Probar conexión y luego Guardar.",
+      "step4Title": "4. Emisión automática",
+      "step4Body": "Cuando un pedido está Pagado, Morning emite la factura sola.",
+      "secretHint": "El secreto se guarda cifrado y no se vuelve a mostrar. Si lo perdiste, crea una clave nueva.",
+      "connectionSettings": "Ajustes de conexión",
+      "connected": "Conectado",
+      "connectError": "Error de conexión",
+      "notConnected": "No conectado",
+      "environment": "Entorno",
+      "liveAccount": "Cuenta real",
+      "testAccount": "Cuenta de prueba",
+      "enable": "Activar Morning en este negocio",
+      "keyId": "ID de clave (API Key ID)",
+      "keyIdPlaceholder": "Pega el ID de clave de Morning",
+      "secret": "Secreto (API Secret)",
+      "secretSaved": "— guardado ({{preview}})",
+      "secretKeep": "Déjalo vacío para conservar el actual o pega uno nuevo",
+      "secretPaste": "Pega el secreto (se muestra una sola vez)",
+      "documentType": "Tipo de documento",
+      "paymentType": "Tipo de pago",
+      "vat": "IVA",
+      "autoIssue": "Emitir automáticamente al pagar el pedido",
+      "save": "Guardar",
+      "test": "Probar conexión",
+      "doc320": "Factura / recibo (320)",
+      "doc305": "Factura (305)",
+      "doc400": "Recibo (400)",
+      "payCard": "Tarjeta (3)",
+      "payCash": "Efectivo (1)",
+      "payBank": "Transferencia (4)",
+      "payOther": "Otro (11)",
+      "vatIncl": "Con IVA",
+      "vatExcl": "Antes de IVA",
+      "vatExempt": "Exento de IVA"
+    },
+    "dynamic": {
+      "fallbackPage": "Página",
+      "fallbackDescription": "Ajustes del plugin y conexión a páginas",
+      "openEditor": "Abrir editor",
+      "addInEditor": "Añadir en el editor",
+      "overlayHint": "Plugin flotante: tras guardar aparece solo en el sitio y el editor.",
+      "sectionHint": "Sección de página: la instalación lo guarda aquí. Para verlo en una página, pulsa Añadir en el editor.",
+      "activation": "Activación",
+      "pluginActive": "Plugin activo en el sitio",
+      "display": "Visualización",
+      "displayHint": "Dónde aparece el plugin",
+      "siteWide": "En todo el sitio",
+      "selectedPages": "Páginas seleccionadas",
+      "sitePages": "Páginas del sitio",
+      "noPages": "Aún no hay páginas — créalas en el editor.",
+      "waNumber": "Número de WhatsApp",
+      "waHint": "Obligatorio. Usa 0501234567 o 972501234567",
+      "startMessage": "Mensaje inicial",
+      "defaultHello": "Hola, quiero más detalles",
+      "showMobile": "Mostrar también en móvil",
+      "xPos": "Posición horizontal (%)",
+      "xHint": "Desde la derecha · 5–95. También puedes arrastrar el botón",
+      "yPos": "Posición vertical (%)",
+      "yHint": "Desde arriba · 5–95",
+      "barContent": "Contenido de la barra",
+      "message": "Mensaje",
+      "messagePlaceholder": "Envío gratis hasta el jueves",
+      "linkOptional": "Enlace (opcional)",
+      "linkText": "Texto del enlace",
+      "details": "Detalles",
+      "dismissible": "Se puede cerrar",
+      "cookieBanner": "Banner de cookies",
+      "accept": "Texto de aceptar",
+      "acceptDefault": "Acepto",
+      "decline": "Texto de rechazo",
+      "declineDefault": "Rechazar",
+      "policyUrl": "Enlace de privacidad",
+      "popup": "Popup de leads",
+      "headline": "Título",
+      "subheadline": "Subtítulo",
+      "cta": "Texto del botón",
+      "delay": "Retraso en segundos",
+      "trigger": "Disparador",
+      "showEvery": "Mostrar de nuevo cada N días",
+      "success": "Mensaje de éxito",
+      "requirePhone": "Teléfono obligatorio",
+      "sync": "Sincronización",
+      "syncStore": "Sincronizar con productos de la tienda"
+    },
+    "benefitsWheel": {
+      "pill": "Pastilla",
+      "rounded": "Cuadrado",
+      "circle": "Círculo",
+      "defaultTitle": "Ruleta de beneficios",
+      "defaultModal": "La ruleta de beneficios",
+      "defaultSubtitle": "¡Gira y mira qué ganaste!",
+      "removeConfirm": "¿Quitar la ruleta del sitio? Se eliminará de la lista y los ajustes.",
+      "removeFailed": "No se pudo quitar el plugin. Inténtalo de nuevo.",
+      "title": "Ruleta de beneficios",
+      "description": "Ruleta en un modal — se abre en la primera visita. Arrastra el botón flotante en el editor.",
+      "activation": "Activación",
+      "activationHint": "Cuándo aparece el plugin",
+      "pluginActive": "Plugin activo en el sitio",
+      "autoOpen": "Abrir solo en la primera visita",
+      "showTrigger": "Mostrar botón flotante",
+      "trigger": "Botón flotante",
+      "triggerHint": "Texto, icono, colores y forma",
+      "preview": "Vista previa",
+      "buttonText": "Texto del botón",
+      "showIcon": "Mostrar icono junto al texto",
+      "icon": "Icono",
+      "none": "Ninguno",
+      "shape": "Forma del botón",
+      "circleHint": "En círculo solo se ve el icono",
+      "primary": "Color principal",
+      "secondary": "Color secundario",
+      "textColor": "Color del texto",
+      "modal": "Contenido del modal",
+      "modalHint": "Título, descripción y límite de giros",
+      "modalTitle": "Título del modal",
+      "subtitle": "Subtítulo",
+      "spins": "Giros por visitante",
+      "segments": "Porciones de la ruleta",
+      "segmentsHint": "Premios, colores y cupones",
+      "sliceCount": "{{count}} porciones en la ruleta",
+      "add": "Añadir",
+      "perkN": "Premio {{n}}",
+      "remove": "Quitar",
+      "colorN": "Color {{n}}",
+      "perkCode": "Código del premio",
+      "editorTip": "En el editor: Añadir → Plugins → Ruleta. Arrastra el botón. Para quitarlo usa Quitar en el panel.",
+      "removeTitle": "Quitar el plugin del sitio",
+      "removeHint": "Quita la ruleta por completo de los plugins activos.",
+      "removing": "Quitando...",
+      "removeCta": "Quitar plugin del sitio",
+      "winsTitle": "Premios guardados ({{count}})",
+      "winsHint": "Lista de premios de visitantes",
+      "iconFerris": "Ruleta",
+      "iconGift": "Regalo",
+      "iconSparkles": "Destellos",
+      "iconTag": "Etiqueta",
+      "iconPercent": "Descuento",
+      "iconStar": "Estrella",
+      "iconTrophy": "Trofeo"
     }
   },
   "sitePortal": {
@@ -14078,6 +14455,101 @@
       "pdf": "No se pudo descargar el PDF",
       "notFound": "Acuerdo no encontrado",
       "proposalMissing": "Faltan los datos de la propuesta"
+    }
+  },
+  "payments": {
+    "gallery": {
+      "title": "Conectar métodos de pago",
+      "subtitle": "Elige cómo cobrar a tus clientes en {{country}}",
+      "israel": "Israel",
+      "connected": "Conectado",
+      "fees": "Las comisiones varían según ubicación y proveedor.",
+      "manage": "Gestionar",
+      "connect": "Conectar",
+      "back": "Volver a proveedores",
+      "connectTitle": "Conectar {{name}}",
+      "instructions": "Instrucciones de conexión",
+      "contact": "Contactar {{name}}",
+      "createAccount": "Crear cuenta de {{name}}",
+      "currencyNote": "Importante: la moneda del sitio debe coincidir con la del proveedor. Se recomienda ILS (₪) en Israel.",
+      "accountDetails": "Datos de la cuenta",
+      "mode": "Modo",
+      "liveMode": "Real (Live)",
+      "testMode": "Prueba (Test)",
+      "installments": "Cuotas",
+      "installmentsHint": "Permite pagar a plazos",
+      "availableMethods": "Métodos disponibles con {{name}}",
+      "availableHint": "Tarjetas según el proveedor. Tras conectar, el checkout en vivo lo usará.",
+      "cancel": "Cancelar",
+      "disconnect": "Desconectar",
+      "show": "Mostrar",
+      "hide": "Ocultar"
+    },
+    "fields": {
+      "publicKey": "Publishable key",
+      "apiSecret": "Secret key",
+      "webhookSecret": "Webhook secret (opcional)",
+      "terminalNumber": "Terminal / Masof",
+      "apiKey": "API Key",
+      "accountId": "Correo",
+      "merchantId": "Negocio autorizado",
+      "pageCode": "Página de pago / cuotas máx.",
+      "keepSecret": "Déjalo vacío para conservar el secreto"
+    },
+    "providers": {
+      "stripe": {
+        "description": "Cobra con tarjeta vía Stripe — cobro internacional seguro.",
+        "badgeRecurring": "Admite cargos recurrentes",
+        "badgeIntl": "Internacional",
+        "step1": "Abre el Dashboard de Stripe y copia Publishable key y Secret key.",
+        "step2": "Pega las claves y pulsa Conectar.",
+        "step3": "Opcional: webhook en Stripe a api.bizuply.com/api/store/stripe/webhook/{businessId}."
+      },
+      "hyp": {
+        "description": "Cobra con tarjeta o débito vía Max.",
+        "badgePayments": "Admite pagos",
+        "badgeRecurring": "Admite cargos recurrentes",
+        "step1": "Introduce el Masof y la clave API de Max by Hyp.",
+        "step2": "Pulsa Conectar para guardar los datos.",
+        "step3": "La moneda del sitio debe coincidir con Max (se recomienda ₪)."
+      },
+      "paypal": {
+        "description": "Cobra a través de PayPal.",
+        "step1": "Introduce el email de PayPal Business.",
+        "step2": "Pulsa Conectar. Luego puedes completar la redirección a PayPal.",
+        "step3": "La moneda del sitio debe coincidir con PayPal."
+      },
+      "payme": {
+        "description": "Cobra con tarjeta y la app bit.",
+        "subtitle": "Proveedor: Isracard powered by PayMe",
+        "step1": "Introduce la clave API y el email de PayMe.",
+        "step2": "Pulsa Conectar para vincular bit al sitio.",
+        "step3": "La moneda del sitio debe coincidir con PayMe (se recomienda ₪)."
+      },
+      "grow": {
+        "description": "Cobra a través de Grow (Meshulam).",
+        "step1": "Introduce el negocio autorizado y la contraseña de Grow.",
+        "step2": "Pulsa Conectar para vincular la cuenta.",
+        "step3": "La moneda del sitio debe coincidir con Grow (se recomienda ₪)."
+      },
+      "payplus": {
+        "description": "Cobra con tarjeta vía PayPlus.",
+        "step1": "Introduce la clave API y el Payment Page UID.",
+        "step2": "Pulsa Conectar para vincular PayPlus.",
+        "step3": "La moneda del sitio debe coincidir con PayPlus (se recomienda ₪)."
+      },
+      "tranzila": {
+        "description": "Cobra con tarjeta vía Tranzila.",
+        "step1": "Introduce el terminal y el email de Tranzila.",
+        "step2": "Pulsa Conectar para vincular la cuenta.",
+        "step3": "La moneda del sitio debe coincidir con Tranzila (se recomienda ₪)."
+      },
+      "cal": {
+        "description": "Cobra con tarjeta vía Cal.",
+        "step1": "Introduce la clave API y el email de Cal.",
+        "step2": "Pulsa Conectar para vincular Cal.",
+        "step3": "La moneda del sitio debe coincidir con Cal (se recomienda ₪)."
+      }
     }
   }
 }

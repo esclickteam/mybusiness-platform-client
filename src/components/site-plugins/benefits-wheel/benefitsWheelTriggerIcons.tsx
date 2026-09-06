@@ -17,14 +17,14 @@ export const TRIGGER_ICON_OPTIONS: {
   label: string;
   Icon: LucideIcon;
 }[] = [
-  { value: "ferris-wheel", label: "גלגל", Icon: FerrisWheel },
-  { value: "gift", label: "מתנה", Icon: Gift },
-  { value: "sparkles", label: "ניצוצות", Icon: Sparkles },
-  { value: "tag", label: "תגית", Icon: Tag },
-  { value: "percent", label: "הנחה", Icon: Percent },
-  { value: "star", label: "כוכב", Icon: Star },
-  { value: "trophy", label: "גביע", Icon: Trophy },
-  { value: "none", label: "ללא", Icon: Tag },
+  { value: "ferris-wheel", label: "Wheel", Icon: FerrisWheel },
+  { value: "gift", label: "Gift", Icon: Gift },
+  { value: "sparkles", label: "Sparkles", Icon: Sparkles },
+  { value: "tag", label: "Tag", Icon: Tag },
+  { value: "percent", label: "Discount", Icon: Percent },
+  { value: "star", label: "Star", Icon: Star },
+  { value: "trophy", label: "Trophy", Icon: Trophy },
+  { value: "none", label: "None", Icon: Tag },
 ];
 
 const ICON_MAP: Record<Exclude<BenefitsWheelTriggerIcon, "none">, LucideIcon> = {

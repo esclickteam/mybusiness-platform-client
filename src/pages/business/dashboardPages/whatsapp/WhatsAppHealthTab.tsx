@@ -14,6 +14,7 @@ import {
   btnSecondary,
   cardBase,
 } from "../../../../styles/bizuplyUi";
+import { getIntlLocale, getTextDirection } from "../../../../i18n/localeUtils";
 
 type OutletCtx = { businessId: string | null };
 
@@ -49,74 +50,33 @@ function formatMetricValue(
   return JSON.stringify(value);
 }
 
-const HEALTH_LABEL_HE: Record<string, string> = {
-  wabaName: "שם חשבון WhatsApp Business",
-  wabaId: "מזהה WABA",
-  displayPhoneNumber: "מספר טלפון מחובר",
-  phoneNumberId: "מזהה מספר הטלפון",
-  verifiedName: "שם מאומת",
-  connectionStatus: "סטטוס חיבור",
-  qualityRating: "דירוג איכות",
-  messagingLimitTier: "מגבלת התכתבות",
-  accountReviewStatus: "סטטוס החשבון",
-  sent7d: "הודעות שנשלחו ב־7 הימים האחרונים",
-  delivered7d: "הודעות שנמסרו ב־7 הימים האחרונים",
-  read7d: "הודעות שנקראו ב־7 הימים האחרונים",
-  failed7d: "הודעות שנכשלו ב־7 הימים האחרונים",
-  uniqueRecipients7d: "נמענים ייחודיים",
-  inbound7d: "הודעות נכנסות",
-  outbound7d: "הודעות יוצאות",
-  deliveryRate: "שיעור מסירה",
-  readRate: "שיעור קריאה",
-  failRate: "שיעור כשל",
-  templatesApproved: "תבניות מאושרות",
-  templatesPending: "תבניות בבדיקה",
-  templatesRejected: "תבניות שנדחו",
-  templatesPaused: "תבניות מושהות",
-  templatesDisabled: "תבניות מושבתות",
-  lastMetaSyncAt: "סנכרון אחרון ממטא",
-  lastWebhookAt: "וובהוק אחרון",
-  webhookHealth: "סטטוס וובהוק",
-  lastSuccessfulMessageAt: "הודעה אחרונה שהצליחה",
-  lastFailedMessageAt: "הודעה אחרונה שנכשלה",
-  rateLimitErrors: "שגיאות מגבלת קצב",
-  metaErrorCodes: "קודי שגיאה של מטא",
-};
+type Translate = (key: string, options?: Record<string, unknown>) => string;
 
-const HEALTH_SOURCE_HE: Record<string, string> = {
-  Meta: "מטא",
-  Webhook: "וובהוק",
-  "BizUply message history": "היסטוריית ההודעות של BizUply",
-};
-
-const HEALTH_VALUE_HE: Record<string, string> = {
-  Connected: "מחובר",
-  Disconnected: "מנותק",
-  Error: "שגיאה",
-  Green: "ירוק",
-  Yellow: "צהוב",
-  Red: "אדום",
-  Unknown: "לא ידוע",
-  Unlimited: "ללא הגבלה",
-  Active: "פעיל",
-  "Inactive recently": "לא פעיל לאחרונה",
-  "Waiting for events": "ממתין לאירועים",
-  Approved: "מאושר",
-};
-
-function localizeHealthLabel(metric: WhatsAppHealthMetric) {
-  return HEALTH_LABEL_HE[metric.key] || metric.label;
+function localizeHealthLabel(metric: WhatsAppHealthMetric, t: Translate) {
+  return t(`whatsapp.health.labels.${metric.key}`, { defaultValue: metric.label });
 }
 
-function localizeHealthSource(source: string) {
-  return HEALTH_SOURCE_HE[source] || source;
+function localizeHealthSource(source: string, t: Translate) {
+  const sourceKey =
+    source === "BizUply message history"
+      ? "history"
+      : source === "Meta"
+        ? "Meta"
+        : source === "Webhook"
+          ? "Webhook"
+          : source;
+  return t(`whatsapp.health.sources.${sourceKey}`, { defaultValue: source });
 }
 
-function localizeHealthValue(value: unknown) {
-  if (typeof value === "string") {
-    return HEALTH_VALUE_HE[value] || value;
-  }
-  return value;
+function localizeHealthValue(value: unknown, t: Translate) {
+  if (typeof value !== "string") return value;
+  const valueKey =
+    value === "Inactive recently"
+      ? "inactive"
+      : value === "Waiting for events"
+        ? "waiting"
+        : value;
+  return t(`whatsapp.health.values.${valueKey}`, { defaultValue: value });
 }
 
 function sourceBadgeClass(source: string) {
@@ -129,22 +89,24 @@ function sourceBadgeClass(source: string) {
 function MetricCard({
   metric,
   locale,
+  t,
 }: {
   metric: WhatsAppHealthMetric;
   locale: string | undefined;
+  t: Translate;
 }) {
   return (
     <article className={`${cardBase} p-4`}>
       <div className="flex items-start justify-between gap-2">
-        <p className="text-xs font-bold text-slate-500">{localizeHealthLabel(metric)}</p>
+        <p className="text-xs font-bold text-slate-500">{localizeHealthLabel(metric, t)}</p>
         <span
           className={`rounded-md border px-2 py-0.5 text-[10px] font-black ${sourceBadgeClass(metric.source)}`}
         >
-          {localizeHealthSource(metric.source)}
+          {localizeHealthSource(metric.source, t)}
         </span>
       </div>
       <p className="mt-2 break-words text-base font-black text-slate-900">
-        {formatMetricValue(localizeHealthValue(metric.value), locale)}
+        {formatMetricValue(localizeHealthValue(metric.value, t), locale)}
       </p>
     </article>
   );
@@ -169,7 +131,7 @@ function MessagingLimitsPanel({
           </h3>
           <p className="mt-1 text-xs font-semibold text-slate-500">
             {t("whatsapp.health.sourceLine", {
-              source: localizeHealthSource(limits.source),
+              source: localizeHealthSource(limits.source, t),
             })}
             {limits.updatedAt
               ? t("whatsapp.health.updatedAt", {
@@ -179,7 +141,7 @@ function MessagingLimitsPanel({
           </p>
         </div>
         <span className="rounded-md border border-sky-100 bg-sky-50 px-2 py-0.5 text-[10px] font-black text-sky-700">
-          מטא
+          {t("whatsapp.health.sources.Meta")}
         </span>
       </div>
 
@@ -236,7 +198,8 @@ export default function WhatsAppHealthTab() {
   const [error, setError] = useState("");
   const [health, setHealth] = useState<WhatsAppAccountHealth | null>(null);
 
-  const locale = i18n.language;
+  const locale = getIntlLocale(i18n.language);
+  const pageDir = getTextDirection(i18n.language);
 
   const load = useCallback(async () => {
     if (!businessId) return;
@@ -327,12 +290,12 @@ export default function WhatsAppHealthTab() {
   }
 
   return (
-    <div className="space-y-4" dir="rtl">
+    <div className="space-y-4" dir={pageDir}>
       <header className={`${cardBase} flex flex-wrap items-center justify-between gap-3 p-4`}>
         <div>
           <p className="inline-flex items-center gap-1.5 text-[11px] font-black uppercase tracking-wide text-emerald-700">
             <Activity className="h-3.5 w-3.5" />
-            וואטסאפ
+            {t("whatsapp.health.values.brand")}
           </p>
           <h2 className="mt-1 text-lg font-black text-slate-900">
             {t("whatsapp.health.title")}
@@ -407,7 +370,7 @@ export default function WhatsAppHealthTab() {
 
           <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
             {(health.metrics || []).map((metric) => (
-              <MetricCard key={metric.key} metric={metric} locale={locale} />
+              <MetricCard key={metric.key} metric={metric} locale={locale} t={t} />
             ))}
           </div>
 
