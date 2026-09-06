@@ -1,5 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
+import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../../../../../i18n/localeUtils";
 import {
   Check,
   Crop,
@@ -69,12 +71,12 @@ const EDIT_TOOLS: Array<{
   min: number;
   max: number;
 }> = [
-  { key: "brightness", label: "בהירות", min: 0, max: 200 },
-  { key: "contrast", label: "ניגודיות", min: 0, max: 200 },
-  { key: "saturation", label: "רוויה", min: 0, max: 200 },
-  { key: "exposure", label: "חשיפה", min: 0, max: 200 },
-  { key: "sharpness", label: "חדות", min: 0, max: 100 },
-  { key: "vignette", label: "וינייט", min: 0, max: 100 },
+  { key: "brightness", label: "Brightness", min: 0, max: 200 },
+  { key: "contrast", label: "Contrast", min: 0, max: 200 },
+  { key: "saturation", label: "Saturation", min: 0, max: 200 },
+  { key: "exposure", label: "Exposure", min: 0, max: 200 },
+  { key: "sharpness", label: "Sharpness", min: 0, max: 100 },
+  { key: "vignette", label: "Vignette", min: 0, max: 100 },
 ];
 
 function isMediaUrl(value: string) {
@@ -92,6 +94,7 @@ function isMediaUrl(value: string) {
 
 function collectSiteMedia(
   data: Record<string, any> | undefined,
+  fallbackLabel: string,
 ): Array<{ id: string; src: string; alt: string; label: string }> {
   const seen = new Map<
     string,
@@ -108,7 +111,7 @@ function collectSiteMedia(
         id: clean,
         src: clean,
         alt,
-        label: label || "קובץ מהאתר",
+        label: label || fallbackLabel,
       });
     }
   };
@@ -152,7 +155,7 @@ export default function VisualMediaModal({
   open,
   mode,
   elementId,
-  elementLabel = "מדיה",
+  elementLabel,
   currentSrc = "",
   currentAlt = "",
   mediaType = "image",
@@ -165,6 +168,9 @@ export default function VisualMediaModal({
   onApplyEdit,
   onResetEdit,
 }: VisualMediaModalProps) {
+  const { t, i18n } = useTranslation();
+  const pageDir = getTextDirection(i18n.language);
+  const resolvedLabel = elementLabel || t("studio.mediaModal.media");
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const [changeTab, setChangeTab] = useState<ChangeTab>("pexels");
@@ -180,8 +186,8 @@ export default function VisualMediaModal({
     useState<VisualMediaEditValues>(DEFAULT_EDIT_VALUES);
 
   const siteMedia = useMemo(
-    () => collectSiteMedia(editorData),
-    [editorData],
+    () => collectSiteMedia(editorData, t("studio.mediaModal.siteFile")),
+    [editorData, t],
   );
 
   const previewSrc = selectedSrc || currentSrc;
@@ -241,7 +247,7 @@ export default function VisualMediaModal({
 
     onApplyMedia({
       src,
-      alt: altValue || elementLabel,
+      alt: altValue || resolvedLabel,
       mediaType: selectedMediaType,
     });
     onClose();
@@ -267,17 +273,17 @@ export default function VisualMediaModal({
   });
 
   const changeTabs: Array<{ id: ChangeTab; label: string }> = [
-    { id: "pexels", label: "תמונות וסרטונים" },
-    { id: "site", label: "קבצי האתר" },
-    { id: "library", label: "ספרייה" },
-    { id: "upload", label: "העלאה" },
-    { id: "url", label: "כתובת" },
+    { id: "pexels", label: t("studio.mediaModal.pexels") },
+    { id: "site", label: t("studio.mediaModal.siteFiles") },
+    { id: "library", label: t("studio.mediaModal.library") },
+    { id: "upload", label: t("studio.mediaModal.upload") },
+    { id: "url", label: t("studio.mediaModal.url") },
   ];
 
   const handlePexelsSelect = (item: PexelsMediaItem) => {
     applySelectedMedia(
       item.src,
-      item.alt || item.title || elementLabel,
+      item.alt || item.title || resolvedLabel,
       item.mediaType === "video" ? "video" : "image",
     );
   };
@@ -285,7 +291,7 @@ export default function VisualMediaModal({
   return createPortal(
     <div
       className="fixed inset-0 z-[2147483600] flex items-center justify-center border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800/55 p-4 backdrop-blur-sm"
-      dir="rtl"
+      dir={pageDir}
       onMouseDown={(event) => {
         if (event.target === event.currentTarget) onClose();
       }}
@@ -300,17 +306,19 @@ export default function VisualMediaModal({
               type="button"
               onClick={onClose}
               className="flex h-10 w-10 items-center justify-center rounded-2xl border border-slate-200 text-slate-500 transition hover:bg-slate-50"
-              aria-label="סגירה"
+              aria-label={t("studio.mediaModal.close")}
             >
               <X className="h-4 w-4" />
             </button>
 
             <div>
               <h2 className="text-lg font-black text-slate-900">
-                {mode === "change" ? "בחירת מדיה" : "סטודיו תמונה"}
+                {mode === "change"
+                  ? t("studio.mediaModal.chooseMedia")
+                  : t("studio.mediaModal.imageStudio")}
               </h2>
               <p className="text-sm font-semibold text-slate-500">
-                {elementLabel}
+                {resolvedLabel}
               </p>
             </div>
           </div>
@@ -326,7 +334,7 @@ export default function VisualMediaModal({
                   : "text-slate-500 hover:text-slate-800",
               ].join(" ")}
             >
-              שינוי
+              {t("studio.mediaModal.change")}
             </button>
             <button
               type="button"
@@ -339,7 +347,7 @@ export default function VisualMediaModal({
                   : "text-slate-500 hover:text-slate-800",
               ].join(" ")}
             >
-              עריכה
+              {t("studio.mediaModal.edit")}
             </button>
           </div>
         </header>
@@ -353,7 +361,7 @@ export default function VisualMediaModal({
                 className="mb-4 flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-4 py-3 text-sm font-black text-black transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
               >
                 <Upload className="h-4 w-4" />
-                העלאת מדיה
+                {t("studio.mediaModal.uploadMedia")}
               </button>
 
               <nav className="space-y-1">
@@ -394,7 +402,7 @@ export default function VisualMediaModal({
                   <input
                     value={searchQuery}
                     onChange={(event) => setSearchQuery(event.target.value)}
-                    placeholder="חיפוש בספרייה..."
+                    placeholder={t("studio.mediaModal.searchLibrary")}
                     className="h-12 w-full rounded-2xl border border-slate-200 bg-white pr-11 pl-4 text-sm font-bold text-slate-800 outline-none transition focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
                   />
                 </div>
@@ -407,18 +415,17 @@ export default function VisualMediaModal({
                       <Upload className="h-7 w-7" />
                     </div>
                     <h3 className="text-lg font-black text-slate-900">
-                      העלאת תמונה או סרטון
+                      {t("studio.mediaModal.uploadFile")}
                     </h3>
                     <p className="mt-2 max-w-md text-sm font-semibold leading-7 text-slate-500">
-                      בחרו קובץ מהמחשב. הקובץ יוצג מיד באתר ויועלה לענן
-                      ברקע.
+                      {t("studio.mediaModal.uploadHint")}
                     </p>
                     <button
                       type="button"
                       onClick={() => fileInputRef.current?.click()}
                       className="mt-6 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
                     >
-                      בחירת קובץ
+                      {t("studio.mediaModal.chooseFile")}
                     </button>
                   </div>
                 ) : null}
@@ -426,7 +433,7 @@ export default function VisualMediaModal({
                 {changeTab === "url" ? (
                   <div className="mx-auto flex max-w-xl flex-col gap-4">
                     <label className="text-sm font-black text-slate-700">
-                      כתובת תמונה או סרטון
+                      {t("studio.mediaModal.urlLabel")}
                     </label>
                     <input
                       value={urlValue}
@@ -443,12 +450,12 @@ export default function VisualMediaModal({
                       className="h-12 rounded-2xl border border-slate-200 px-4 text-left text-sm font-bold text-slate-800 outline-none transition focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
                     />
                     <label className="text-sm font-black text-slate-700">
-                      טקסט חלופי (Alt)
+                      {t("studio.mediaModal.alt")}
                     </label>
                     <input
                       value={altValue}
                       onChange={(event) => setAltValue(event.target.value)}
-                      placeholder="תיאור קצר של התמונה"
+                      placeholder={t("studio.mediaModal.altPh")}
                       className="h-12 rounded-2xl border border-slate-200 px-4 text-sm font-bold text-slate-800 outline-none transition focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
                     />
                   </div>
@@ -490,7 +497,7 @@ export default function VisualMediaModal({
                     ))}
                     {!filteredSiteMedia.length ? (
                       <div className="col-span-full rounded-[24px] border border-dashed border-slate-200 bg-slate-50 px-6 py-16 text-center text-sm font-bold text-slate-500">
-                        עדיין אין קבצים באתר. העלו תמונה או בחרו מהספרייה.
+                        {t("studio.mediaModal.noSiteFiles")}
                       </div>
                     ) : null}
                   </div>
@@ -539,7 +546,7 @@ export default function VisualMediaModal({
 
             <aside className="flex min-h-0 flex-col border-t border-slate-200 bg-slate-50/60 p-4 lg:border-t-0 lg:border-r">
               <div className="mb-4 text-sm font-black text-slate-700">
-                תצוגה מקדימה
+                {t("studio.mediaModal.preview")}
               </div>
 
               <div className="overflow-hidden rounded-[24px] border border-slate-200 bg-white shadow-sm">
@@ -555,20 +562,20 @@ export default function VisualMediaModal({
                     ) : (
                       <img
                         src={previewSrc}
-                        alt={altValue || elementLabel}
+                        alt={altValue || resolvedLabel}
                         className="h-full w-full object-cover"
                       />
                     )
                   ) : (
                     <div className="flex h-full items-center justify-center text-sm font-bold text-slate-400">
-                      אין תצוגה מקדימה
+                      {t("studio.mediaModal.noPreview")}
                     </div>
                   )}
                 </div>
               </div>
 
               <div className="mt-4 rounded-2xl border border-slate-200 bg-white p-3 text-xs font-semibold leading-6 text-slate-500">
-                מזהה: <span dir="ltr">{elementId}</span>
+                {t("studio.mediaModal.idLabel")}<span dir="ltr">{elementId}</span>
               </div>
 
               <button
@@ -577,7 +584,7 @@ export default function VisualMediaModal({
                 onClick={handleApply}
                 className="mt-auto rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-5 py-3 text-sm font-black text-black transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {isUploading ? "מעלה..." : "בחירת מדיה"}
+                {isUploading ? t("studio.mediaModal.uploading") : t("studio.mediaModal.chooseMedia")}
               </button>
             </aside>
           </div>
@@ -586,16 +593,16 @@ export default function VisualMediaModal({
             <aside className="border-b border-slate-200 bg-slate-50/70 p-4 lg:border-b-0 lg:border-l">
               <div className="space-y-1">
                 {[
-                  { icon: <Crop className="h-4 w-4" />, label: "חיתוך והרחבה" },
-                  { icon: <SlidersHorizontal className="h-4 w-4" />, label: "התאמה" },
-                  { icon: <Wand2 className="h-4 w-4" />, label: "פילטרים" },
-                  { icon: <Sparkles className="h-4 w-4" />, label: "שיפור אוטומטי" },
+                  { icon: <Crop className="h-4 w-4" />, label: t("studio.mediaModal.crop"), id: "crop" },
+                  { icon: <SlidersHorizontal className="h-4 w-4" />, label: t("studio.mediaModal.adjust"), id: "adjust" },
+                  { icon: <Wand2 className="h-4 w-4" />, label: t("studio.mediaModal.filters"), id: "filters" },
+                  { icon: <Sparkles className="h-4 w-4" />, label: t("studio.mediaModal.autoEnhance"), id: "auto" },
                 ].map((tool) => (
                   <div
-                    key={tool.label}
+                    key={tool.id}
                     className={[
                       "flex items-center gap-3 rounded-2xl px-4 py-3 text-sm font-black",
-                      tool.label === "התאמה"
+                      tool.id === "adjust"
                         ? "bg-white text-violet-700 shadow-sm"
                         : "text-slate-500",
                     ].join(" ")}
@@ -610,7 +617,7 @@ export default function VisualMediaModal({
             <section className="flex min-h-0 flex-col">
               <div className="flex items-center justify-between border-b border-slate-200 px-5 py-3">
                 <div className="text-sm font-black text-slate-700">
-                  התאמת תמונה
+                  {t("studio.mediaModal.imageAdjust")}
                 </div>
                 <div className="flex items-center gap-2">
                   <button
@@ -622,7 +629,7 @@ export default function VisualMediaModal({
                     className="inline-flex items-center gap-2 rounded-xl border border-slate-200 px-3 py-2 text-xs font-black text-slate-600 transition hover:bg-slate-50"
                   >
                     <RotateCcw className="h-3.5 w-3.5" />
-                    איפוס
+                    {t("studio.mediaModal.reset")}
                   </button>
                 </div>
               </div>
@@ -632,13 +639,13 @@ export default function VisualMediaModal({
                   {previewSrc ? (
                     <img
                       src={previewSrc}
-                      alt={altValue || elementLabel}
+                      alt={altValue || resolvedLabel}
                       className="max-h-[58vh] max-w-full rounded-[24px] object-contain shadow-[0_24px_80px_rgba(15,23,42,0.18)]"
                       style={{ filter: buildMediaEditFilter(editValues) }}
                     />
                   ) : (
                     <div className="text-sm font-bold text-slate-500">
-                      אין תמונה לעריכה
+                      {t("studio.mediaModal.noImage")}
                     </div>
                   )}
                 </div>
@@ -646,7 +653,7 @@ export default function VisualMediaModal({
                 <div className="overflow-y-auto border-t border-slate-200 p-5 xl:border-t-0 xl:border-r">
                   <div className="mb-4 flex items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-3">
                     <span className="text-sm font-black text-slate-700">
-                      שיפור אוטומטי
+                      {t("studio.mediaModal.autoEnhance")}
                     </span>
                     <button
                       type="button"
@@ -663,7 +670,7 @@ export default function VisualMediaModal({
                       className="inline-flex items-center gap-2 rounded-xl bg-violet-50 px-3 py-1.5 text-xs font-black text-violet-700"
                     >
                       <Sparkles className="h-3.5 w-3.5" />
-                      הפעלה
+                      {t("studio.mediaModal.enable")}
                     </button>
                   </div>
 
@@ -674,7 +681,7 @@ export default function VisualMediaModal({
                         className="block rounded-2xl border border-slate-200 bg-white px-4 py-3"
                       >
                         <div className="mb-2 flex items-center justify-between text-sm font-black text-slate-700">
-                          <span>{tool.label}</span>
+                          <span>{t(`studio.mediaModal.${tool.key}`, tool.label)}</span>
                           <span>{editValues[tool.key]}</span>
                         </div>
                         <input
@@ -702,8 +709,8 @@ export default function VisualMediaModal({
         <footer className="flex shrink-0 items-center justify-between border-t border-slate-200 px-5 py-4">
           <div className="text-xs font-semibold text-slate-500">
             {mode === "change"
-              ? "בחרו מדיה מהספרייה, מהאתר או העלו קובץ חדש"
-              : "השינויים נשמרים על התמונה הנבחרת"}
+              ? t("studio.mediaModal.pickHint")
+              : t("studio.mediaModal.saveHint")}
           </div>
 
           <div className="flex items-center gap-2">
@@ -712,7 +719,7 @@ export default function VisualMediaModal({
               onClick={onClose}
               className="rounded-2xl border border-slate-200 px-5 py-3 text-sm font-black text-slate-700 transition hover:bg-slate-50"
             >
-              ביטול
+              {t("studio.mediaModal.cancel")}
             </button>
 
             {mode === "edit" ? (
@@ -722,7 +729,7 @@ export default function VisualMediaModal({
                 className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-5 py-3 text-sm font-black text-black transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
               >
                 <Check className="h-4 w-4" />
-                שמירה
+                {t("studio.mediaModal.save")}
               </button>
             ) : (
               <button
@@ -732,7 +739,7 @@ export default function VisualMediaModal({
                 className="inline-flex items-center gap-2 rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-5 py-3 text-sm font-black text-black transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100 disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <ImageIcon className="h-4 w-4" />
-                {isUploading ? "מעלה..." : "בחירת מדיה"}
+                {isUploading ? t("studio.mediaModal.uploading") : t("studio.mediaModal.chooseMedia")}
               </button>
             )}
           </div>
