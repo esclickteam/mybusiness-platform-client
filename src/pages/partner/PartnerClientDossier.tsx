@@ -384,9 +384,9 @@ export default function PartnerClientDossier() {
             </div>
             <div className="mt-3 grid gap-2 sm:grid-cols-3 text-sm font-bold">
               <p>
-                {t("partner.dossier.priceLabel", { defaultValue: "מחיר" })}{" "}
+                {t("partner.dossier.priceLabel")}{" "}
                 {Number(line.customerOneTimeAmount) || Number(line.customerRecurringAmount)
-                  ? `${Number(line.customerOneTimeAmount) ? t("partner.dossier.oneTimeAmount", { defaultValue: "{{amount}} חד-פעמי", amount: formatIls(line.customerOneTimeAmount) }) : ""}${
+                  ? `${Number(line.customerOneTimeAmount) ? t("partner.dossier.oneTimeAmount", { amount: formatIls(line.customerOneTimeAmount) }) : ""}${
                       Number(line.customerOneTimeAmount) && Number(line.customerRecurringAmount)
                         ? " + "
                         : ""
@@ -395,13 +395,11 @@ export default function PartnerClientDossier() {
               </p>
               <p>
                 {t("partner.dossier.oneTimeIncome", {
-                  defaultValue: "הכנסה חד-פעמית {{amount}}",
                   amount: formatIls(line.oneTimePartnerShare),
                 })}
               </p>
               <p>
                 {t("partner.dossier.monthlyIncome", {
-                  defaultValue: "הכנסה חודשית {{amount}} / חודש",
                   amount: formatIls(line.recurringPartnerShare),
                 })}
               </p>

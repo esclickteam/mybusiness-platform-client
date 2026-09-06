@@ -136,7 +136,6 @@ export default function PartnerMarkupBreakdown({
       {line.retailPrice || line.retailIls ? (
         <p className="text-[11px] font-bold text-slate-400">
           {t("partner.markup.retailCompare", {
-            defaultValue: "מחיר רגיל להשוואה בלבד: {{amount}} — לא נכנס לחישוב",
             amount: formatIls(line.retailPrice ?? line.retailIls),
           })}
         </p>

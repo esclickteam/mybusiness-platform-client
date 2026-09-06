@@ -278,7 +278,6 @@ export default function PartnerCatalogPicker({
         >
           <span>
             {t("partner.catalog.mobileSummary", {
-              defaultValue: "סיכום · {{count}} פריטים · {{amount}}",
               count: selectedSkus.length,
               amount: formatIls(preview.totals.customerNow),
             })}

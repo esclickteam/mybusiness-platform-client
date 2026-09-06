@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { AlertCircle, Check, ChevronLeft, X } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { lockPageScroll } from "../../utils/pageScrollLock";
 import { createServiceOrderCheckout } from "../../utils/serviceOrders";
 import {
@@ -15,16 +16,17 @@ import {
   savePendingPurchaseIntent,
 } from "../../utils/pendingPurchaseIntent";
 import { WEBSITE_ADDON } from "../../data/pricingPackagesData";
+import { getIntlLocale } from "../../i18n/localeUtils";
 
 const PLAN_OPTIONS = [
-  { key: "website", he: "אתר בלבד", en: "Website only", amount: 600, billing: "year" },
-  { key: "monthly", he: "חבילה חודשית", en: "Monthly plan", amount: 149, billing: "month" },
-  { key: "yearly", he: "חבילה שנתית", en: "Yearly plan", amount: 1490, billing: "year" },
+  { key: "website", amount: 600, billing: "year" },
+  { key: "monthly", amount: 149, billing: "month" },
+  { key: "yearly", amount: 1490, billing: "year" },
 ];
 const LAUNCH_MARKER_KEY = "bizuply_service_checkout_launch";
 
-function money(value, isHe) {
-  return new Intl.NumberFormat(isHe ? "he-IL" : "en-IL", {
+function money(value, locale) {
+  return new Intl.NumberFormat(locale, {
     style: "currency",
     currency: "ILS",
     maximumFractionDigits: 0,
@@ -62,11 +64,22 @@ export default function ServicePurchasePanel({
   onClose,
   user,
   activePlan,
-  isHe,
   restoredIntent,
   autoContinue = false,
 }) {
+  const { t, i18n } = useTranslation();
+  const locale = getIntlLocale(i18n.language);
   const navigate = useNavigate();
+  const planName = (key) =>
+    key === "website"
+      ? t("billing.purchase.websitePlan")
+      : key === "monthly"
+        ? t("billing.purchase.monthlyPlan")
+        : key === "yearly"
+          ? t("billing.purchase.yearlyPlan")
+          : "";
+  const planPeriod = (billing) =>
+    billing === "month" ? t("billing.purchase.perMonth") : t("billing.purchase.perYear");
   const restored = restoredIntent?.serviceKey;
   const initialTrack = Math.max(
     0,
@@ -199,9 +212,9 @@ export default function ServicePurchasePanel({
     onClose();
     navigate("/contact", {
       state: {
-        prefillMessage: isHe
-          ? `אשמח לקבל הצעה עבור ${service?.displayName || "השירות"}`
-          : `I'd like a quote for ${service?.displayName || "this service"}`,
+        prefillMessage: t("billing.purchase.quotePrefill", {
+          service: service?.displayName || t("billing.purchase.theService"),
+        }),
       },
     });
   };
@@ -281,11 +294,7 @@ export default function ServicePurchasePanel({
     } catch (checkoutError) {
       sessionStorage.removeItem(LAUNCH_MARKER_KEY);
       setLoading(false);
-      setError(
-        isHe
-          ? "לא הצלחנו לפתוח את התשלום המאובטח. נסו שוב."
-          : "We couldn't open secure checkout. Please try again."
-      );
+      setError(t("billing.purchase.checkoutError"));
       console.error("Service checkout failed", checkoutError);
     }
   };
@@ -312,24 +321,18 @@ export default function ServicePurchasePanel({
 
   const title =
     step === "mode"
-      ? isHe
-        ? "איך תרצו לרכוש את השירות?"
-        : "How would you like to purchase this service?"
+      ? t("billing.purchase.howToPurchase")
       : step === "plan"
-        ? isHe
-          ? "בחירת חבילה"
-          : "Choose a plan"
+        ? t("billing.purchase.choosePlan")
         : step === "summary"
-          ? isHe
-            ? "סיכום הרכישה"
-            : "Purchase summary"
+          ? t("billing.purchase.summaryTitle")
           : service.displayName;
 
   return createPortal(
     <div className="fixed inset-0 z-[90] flex items-end justify-center sm:items-center sm:p-6">
       <button
         type="button"
-        aria-label={isHe ? "סגירה" : "Close"}
+        aria-label={t("billing.purchase.close")}
         className="absolute inset-0 bg-slate-950/60 backdrop-blur-sm"
         onClick={onClose}
       />
@@ -360,14 +363,14 @@ export default function ServicePurchasePanel({
               {purchase.trackOptions?.length ? (
                 <div className="space-y-2">
                   <h3 className="text-start text-sm font-black text-slate-700">
-                    {isHe ? "בחירת מסלול" : "Choose a service track"}
+                    {t("billing.purchase.chooseTrack")}
                   </h3>
                   {purchase.trackOptions.map((option, index) => (
                     <SelectionCard
                       key={`${service.key}-${index}`}
                       selected={trackIndex === index}
                       onClick={() => setTrackIndex(index)}
-                      title={service.displayTracks?.[index]?.label || `${isHe ? "מסלול" : "Track"} ${index + 1}`}
+                      title={service.displayTracks?.[index]?.label || t("billing.purchase.trackN", { number: index + 1 })}
                       text={service.displayTracks?.[index]?.price}
                     />
                   ))}
@@ -381,7 +384,7 @@ export default function ServicePurchasePanel({
               {purchase.addOnOptions?.length ? (
                 <div className="space-y-2">
                   <h3 className="text-start text-sm font-black text-slate-700">
-                    {isHe ? "תוספות לבחירה" : "Optional add-ons"}
+                    {t("billing.purchase.optionalAddons")}
                   </h3>
                   {purchase.addOnOptions.map((option, index) => {
                     const selected = selectedAddOns.has(option.addOnKey);
@@ -410,7 +413,7 @@ export default function ServicePurchasePanel({
                         </label>
                         {selected && option.allowQuantity ? (
                           <input
-                            aria-label={isHe ? "כמות" : "Quantity"}
+                            aria-label={t("billing.purchase.quantity")}
                             type="number"
                             min="1"
                             max="50"
@@ -437,24 +440,18 @@ export default function ServicePurchasePanel({
               <SelectionCard
                 selected={purchaseMode === "bundle"}
                 onClick={() => selectMode("bundle")}
-                title={activePlan ? (isHe ? "הוספה לחבילה הקיימת שלי" : "Add to my existing plan") : (isHe ? "הוספה לחבילה" : "Add to a plan")}
+                title={activePlan ? t("billing.purchase.addToExisting") : t("billing.purchase.addToPlan")}
                 text={
                   activePlan
-                    ? `${isHe ? "החבילה הפעילה" : "Active plan"}: ${activePlan.name}. ${isHe ? "החבילה לא תחויב מחדש." : "Your plan will not be charged again."}`
-                    : isHe
-                      ? "שלבו את השירות עם חבילת אתר, חבילה עסקית חודשית או חבילה עסקית שנתית."
-                      : "Combine the service with a website, monthly business, or yearly business plan."
+                    ? t("billing.purchase.activePlanLine", { name: activePlan.name })
+                    : t("billing.purchase.bundleHint")
                 }
               />
               <SelectionCard
                 selected={purchaseMode === "standalone"}
                 onClick={() => selectMode("standalone")}
-                title={isHe ? "רכישה נפרדת" : "Purchase separately"}
-                text={
-                  isHe
-                    ? "רכשו רק את השירות, בלי לשנות את החבילה שלכם."
-                    : "Purchase only the service without changing your plan."
-                }
+                title={t("billing.purchase.standalone")}
+                text={t("billing.purchase.standaloneHint")}
               />
             </div>
           ) : null}
@@ -466,12 +463,10 @@ export default function ServicePurchasePanel({
                   key={option.key}
                   selected={selectedPlanKey === option.key}
                   onClick={() => selectPlan(option.key)}
-                  title={`${isHe ? option.he : option.en} · ${money(option.amount, isHe)}${option.billing === "month" ? (isHe ? " לחודש" : "/month") : (isHe ? " לשנה" : "/year")}`}
+                  title={`${planName(option.key)} · ${money(option.amount, locale)}${planPeriod(option.billing)}`}
                   text={
                     option.key === "website"
-                      ? isHe
-                        ? "תשלום ידני חד־פעמי עבור שנת האתר."
-                        : "One manual payment for the website year."
+                      ? t("billing.purchase.websiteYearHint")
                       : undefined
                   }
                 />
@@ -493,10 +488,10 @@ export default function ServicePurchasePanel({
                   />
                   <span className="min-w-0">
                     <span className="block text-sm font-black leading-5 text-slate-900">
-                      {isHe ? WEBSITE_ADDON.labelHe : WEBSITE_ADDON.labelEn}
+                      {t("pricing.websiteAddon.label")}
                     </span>
                     <span className="mt-1 block text-xs font-semibold leading-5 text-slate-500">
-                      {isHe ? WEBSITE_ADDON.hintHe : WEBSITE_ADDON.hintEn}
+                      {t("pricing.websiteAddon.hint")}
                     </span>
                   </span>
                 </label>
@@ -507,46 +502,45 @@ export default function ServicePurchasePanel({
           {step === "summary" ? (
             <div className="space-y-4 text-start">
               <div className="rounded-2xl bg-slate-900 p-5 text-white">
-                <p className="text-xs font-bold text-slate-300">{isHe ? "לתשלום היום" : "Payment today"}</p>
-                <p className="mt-1 text-3xl font-black">{money(paymentToday, isHe)}</p>
+                <p className="text-xs font-bold text-slate-300">{t("billing.purchase.payToday")}</p>
+                <p className="mt-1 text-3xl font-black">{money(paymentToday, locale)}</p>
                 <p className="mt-2 text-xs font-semibold text-slate-300">
-                  {isHe ? "המחירים במסך זה לתצוגה בלבד. הסכום הסופי נקבע בשרת." : "Displayed prices are estimates. The server determines the final amount."}
+                  {t("billing.purchase.estimateNote")}
                 </p>
               </div>
               <div className="grid gap-3 sm:grid-cols-3">
                 <div className="rounded-2xl border border-slate-200 p-4">
-                  <p className="text-xs font-bold text-slate-500">{isHe ? "חודשי חוזר" : "Monthly recurring"}</p>
-                  <p className="mt-1 font-black">{money(monthlyTotal, isHe)}</p>
+                  <p className="text-xs font-bold text-slate-500">{t("billing.purchase.monthlyRecurring")}</p>
+                  <p className="mt-1 font-black">{money(monthlyTotal, locale)}</p>
                 </div>
                 <div className="rounded-2xl border border-slate-200 p-4">
-                  <p className="text-xs font-bold text-slate-500">{isHe ? "שנתי חוזר" : "Yearly recurring"}</p>
-                  <p className="mt-1 font-black">{money(yearlyTotal, isHe)}</p>
+                  <p className="text-xs font-bold text-slate-500">{t("billing.purchase.yearlyRecurring")}</p>
+                  <p className="mt-1 font-black">{money(yearlyTotal, locale)}</p>
                 </div>
                 <div className="rounded-2xl border border-slate-200 p-4">
-                  <p className="text-xs font-bold text-slate-500">{isHe ? "פריטים חד־פעמיים" : "One-time items"}</p>
-                  <p className="mt-1 font-black">{money(oneTimeTotal, isHe)}</p>
+                  <p className="text-xs font-bold text-slate-500">{t("billing.purchase.oneTimeItems")}</p>
+                  <p className="mt-1 font-black">{money(oneTimeTotal, locale)}</p>
                 </div>
               </div>
               <div className="rounded-2xl border border-slate-200 p-4 text-sm font-bold text-slate-700">
                 <p>{service.displayName}</p>
                 <p className="mt-1 text-xs text-slate-500">
                   {purchaseMode === "bundle"
-                    ? `${isHe ? "בחבילה" : "Plan"}: ${activePlan?.name || (isHe ? plan?.he : plan?.en)}`
-                    : isHe
-                      ? "רכישה נפרדת"
-                      : "Standalone purchase"}
+                    ? t("billing.purchase.inPlan", { name: activePlan?.name || planName(plan?.key) })
+                    : t("billing.purchase.standaloneSummary")}
                 </p>
                                 {websiteAddonAmount > 0 ? (
                   <p data-testid="website-addon-summary" className="mt-2 text-xs text-emerald-700">
-                    {isHe
-                      ? `כולל תוספת אתר ${money(WEBSITE_ADDON.price, isHe)} חד־פעמי`
-                      : `Includes website add-on ${money(WEBSITE_ADDON.price, isHe)} one-time`}
+                    {t("billing.purchase.includesWebsiteAddon", {
+                      amount: money(WEBSITE_ADDON.price, locale),
+                    })}
                   </p>
                 ) : null}
 {activePlan?.nextRenewal ? (
                   <p className="mt-2 text-xs text-slate-500">
-                    {isHe ? "החידוש הבא" : "Next renewal"}:{" "}
-                    {new Date(activePlan.nextRenewal).toLocaleDateString(isHe ? "he-IL" : "en-IL")}
+                    {t("billing.purchase.nextRenewal", {
+                      date: new Date(activePlan.nextRenewal).toLocaleDateString(locale),
+                    })}
                   </p>
                 ) : null}
               </div>
@@ -554,9 +548,7 @@ export default function ServicePurchasePanel({
                 <div className="flex gap-3 rounded-2xl border border-amber-300 bg-amber-50 p-4 text-sm font-bold leading-6 text-amber-900">
                   <AlertCircle className="mt-0.5 shrink-0" size={20} />
                   <p>
-                    {isHe
-                      ? "חשוב: החבילה החודשית והשירות החודשי הם שני מנויים נפרדים. תעברו בשני תשלומי Stripe מאובטחים, אחד אחרי השני."
-                      : "Important: the monthly plan and monthly service are two separate subscriptions. You will complete two secure Stripe Checkouts, one after the other."}
+                    {t("billing.purchase.sequentialCheckout")}
                   </p>
                 </div>
               ) : null}
@@ -565,9 +557,7 @@ export default function ServicePurchasePanel({
                   role="status"
                   className="rounded-2xl border border-indigo-200 bg-indigo-50 p-4 text-sm font-bold text-indigo-800"
                 >
-                  {isHe
-                    ? "ממתינים לאישור החבילה הפעילה. התשלום הבא ייפתח אוטומטית."
-                    : "Waiting for your active plan to be confirmed. The next checkout will open automatically."}
+                  {t("billing.purchase.waitingPlan")}
                 </p>
               ) : null}
               {error ? <p role="alert" className="rounded-2xl bg-rose-50 p-4 text-sm font-bold text-rose-700">{error}</p> : null}
@@ -579,17 +569,17 @@ export default function ServicePurchasePanel({
           {step !== "details" ? (
             <button type="button" disabled={loading || waitingForActivePlan} onClick={() => setStep(step === "summary" ? (purchaseMode === "standalone" || activePlan ? "mode" : "plan") : step === "plan" ? "mode" : "details")} className="inline-flex items-center gap-1 text-sm font-black text-slate-600 disabled:opacity-50">
               <ChevronLeft size={16} className="rtl:rotate-180" />
-              {isHe ? "חזרה" : "Back"}
+              {t("billing.purchase.back")}
             </button>
           ) : <span />}
           {step === "details" ? (
             <button type="button" onClick={proceedFromDetails} className="rounded-full bg-slate-900 px-6 py-3 text-sm font-black text-white">
-              {isHe ? "לבחירת רכישה" : "Choose purchase"}
+              {t("billing.purchase.choosePurchase")}
             </button>
           ) : null}
           {step === "plan" ? (
             <button type="button" disabled={!selectedPlanKey} onClick={() => setStep("summary")} className="rounded-full bg-slate-900 px-6 py-3 text-sm font-black text-white disabled:opacity-40">
-              {isHe ? "המשך לסיכום" : "Continue to summary"}
+              {t("billing.purchase.continueSummary")}
             </button>
           ) : null}
           {step === "summary" && user ? (
@@ -606,8 +596,8 @@ export default function ServicePurchasePanel({
               className="rounded-full bg-gradient-to-l from-indigo-600 to-violet-600 px-6 py-3 text-sm font-black text-white disabled:opacity-60"
             >
               {loading
-                ? isHe ? "פותחים תשלום..." : "Opening checkout..."
-                : isHe ? "המשך לתשלום מאובטח" : "Continue to secure payment"}
+                ? t("billing.purchase.openingCheckout")
+                : t("billing.purchase.continueSecure")}
             </button>
           ) : null}
           {step === "summary" && !user ? (
@@ -618,7 +608,7 @@ export default function ServicePurchasePanel({
                 onClick={() => launchCheckout()}
                 className="rounded-full bg-slate-900 px-6 py-3 text-sm font-black text-white disabled:opacity-50"
               >
-                {isHe ? "התחברות והמשך" : "Log in and continue"}
+                {t("billing.purchase.loginContinue")}
               </button>
               <button
                 type="button"
@@ -626,7 +616,7 @@ export default function ServicePurchasePanel({
                 onClick={registerAndContinue}
                 className="rounded-full border border-slate-300 bg-white px-6 py-3 text-sm font-black text-slate-800 disabled:opacity-50"
               >
-                {isHe ? "הרשמה והמשך" : "Register and continue"}
+                {t("billing.purchase.registerContinue")}
               </button>
             </div>
           ) : null}

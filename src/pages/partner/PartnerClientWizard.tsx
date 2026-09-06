@@ -445,7 +445,6 @@ export default function PartnerClientWizard() {
             <div className="rounded-3xl border border-emerald-200 bg-emerald-50 p-5">
               <p className="font-black text-emerald-800">
                 {t("partner.wizard.dealCreated", {
-                  defaultValue: "עסקה {{number}} נוצרה",
                   number: createdDeal.number,
                 })}
               </p>

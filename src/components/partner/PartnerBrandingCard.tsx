@@ -96,7 +96,7 @@ export default function PartnerBrandingCard({ showPersonalLink = true }: { showP
         value,
         available: true,
         code: "SUBDOMAIN_CURRENT",
-        message: t("partner.branding.thisIsLive", { defaultValue: "זו הכתובת הפעילה שלכם" }),
+        message: t("partner.branding.thisIsLive"),
       });
       setCheckingSubdomain(false);
       return;
@@ -106,7 +106,7 @@ export default function PartnerBrandingCard({ showPersonalLink = true }: { showP
         value,
         available: false,
         code: "SUBDOMAIN_SHORT",
-        message: t("partner.branding.minChars", { defaultValue: "הכתובת חייבת להכיל לפחות 3 תווים" }),
+        message: t("partner.branding.minChars"),
       });
       setCheckingSubdomain(false);
       return;
@@ -142,13 +142,13 @@ export default function PartnerBrandingCard({ showPersonalLink = true }: { showP
 
   const subdomainStatus = useMemo(() => {
     if (!subdomain.trim()) {
-      return { tone: "slate", text: t("partner.branding.typeToCheck", { defaultValue: "בחרו כתובת באנגלית כדי לבדוק אם היא פנויה" }) };
+      return { tone: "slate", text: t("partner.branding.typeToCheck") };
     }
     if (checkingSubdomain) {
-      return { tone: "slate", text: t("partner.branding.checking", { defaultValue: "בודקים אם הכתובת פנויה..." }) };
+      return { tone: "slate", text: t("partner.branding.checking") };
     }
     if (!subdomainCheck) {
-      return { tone: "slate", text: t("partner.branding.checking", { defaultValue: "בודקים אם הכתובת פנויה..." }) };
+      return { tone: "slate", text: t("partner.branding.checking") };
     }
     if (subdomainCheck.available) {
       return {
@@ -158,7 +158,7 @@ export default function PartnerBrandingCard({ showPersonalLink = true }: { showP
     }
     return {
       tone: "rose",
-      text: subdomainCheck.message || t("partner.branding.unavailable", { defaultValue: "הכתובת לא זמינה" }),
+        text: subdomainCheck.message || t("partner.branding.unavailable"),
     };
   }, [subdomain, checkingSubdomain, subdomainCheck, t]);
 
@@ -174,7 +174,7 @@ export default function PartnerBrandingCard({ showPersonalLink = true }: { showP
 
   async function saveBranding() {
     if (subdomain.trim() && subdomainCheck?.available === false) {
-      setError(subdomainCheck.message || t("partner.errors.slugTaken", { defaultValue: "הכתובת לא פנויה" }));
+      setError(subdomainCheck.message || t("partner.errors.slugTaken"));
       return;
     }
     setSaving(true);

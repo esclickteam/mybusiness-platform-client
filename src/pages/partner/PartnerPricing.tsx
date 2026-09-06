@@ -113,8 +113,8 @@ function PriceRow({
   });
   const intervalLabel =
     item.billing === "recurring_year"
-      ? t("partner.pricing.perYearShort", { defaultValue: "לשנה" })
-      : t("partner.pricing.perMonthShort", { defaultValue: "לחודש" });
+      ? t("partner.pricing.perYearShort")
+      : t("partner.pricing.perMonthShort");
   const allowsRecurring = skuAllowsRecurringMarkup(item.billing);
   const bizuplyAmount =
     item.billing === "one_time"
@@ -122,12 +122,14 @@ function PriceRow({
       : Number(item.amountIls ?? quoted.recurringBase) || 0;
   const catalogBilling =
     item.billing === "recurring_year"
-      ? t("partner.pricing.perYearShort", { defaultValue: "לשנה" })
+      ? t("partner.pricing.perYearShort")
       : item.billing === "recurring_month"
-        ? t("partner.pricing.perMonthShort", { defaultValue: "לחודש" })
+        ? t("partner.pricing.perMonthShort")
         : t("partner.billing.oneTime");
   const recurringToggleLabel =
-    item.billing === "recurring_year" ? t("partner.pricing.addYearly") : t("partner.pricing.addMonthly");
+    item.billing === "recurring_year"
+      ? t("partner.pricing.addYearly", { defaultValue: "הוסף עמלה שנתית מתחדשת" })
+      : t("partner.pricing.addMonthly", { defaultValue: "הוסף עמלה חודשית מתחדשת" });
   const recurringAmountLabel =
     item.billing === "recurring_year" ? t("partner.pricing.yearlyPrefix") : t("partner.pricing.monthlyPrefix");
 
@@ -173,7 +175,7 @@ function PriceRow({
               onChange={(e) => setOneTimeEnabled(e.target.checked)}
               className="accent-violet-700"
             />
-            {t("partner.pricing.addOneTime")}
+            {t("partner.pricing.addOneTime", { defaultValue: "הוסף עמלה חד-פעמית" })}
           </label>
           {oneTimeEnabled ? (
             <label className="mt-3 block text-sm font-black text-violet-900">
@@ -189,7 +191,7 @@ function PriceRow({
           ) : null}
           <dl className="mt-3 space-y-1 text-sm font-bold text-slate-700">
             <div className="flex justify-between gap-3">
-              <dt>{t("partner.pricing.basePrice")}</dt>
+              <dt>{t("partner.pricing.basePrice", { defaultValue: "מחיר בסיס" })}</dt>
               <dd>{formatIls(quoted.oneTimeBase)}</dd>
             </div>
             <div className="flex justify-between gap-3">

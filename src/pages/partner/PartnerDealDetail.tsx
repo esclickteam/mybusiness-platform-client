@@ -182,7 +182,7 @@ export default function PartnerDealDetail() {
           )}
           {deal.clientProvisioning?.status === "created" ? (
             <p>
-              {t("partner.deal.userCreated", { defaultValue: "נפתח משתמש ללקוח" })}
+              {t("partner.deal.userCreated")}
               {deal.clientProvisioning.email ? ` (${deal.clientProvisioning.email})` : ""}.
               {deal.clientProvisioning.welcomeEmailSent
                 ? ` ${t("partner.deal.passwordSent")}`
@@ -196,7 +196,7 @@ export default function PartnerDealDetail() {
             <p>{t("partner.deal.emailExists")}</p>
           ) : null}
           {deal.clientProvisioning?.status === "failed" ? (
-            <p>{t("partner.deal.userCreateFailed", { defaultValue: "פתיחת המשתמש נכשלה" })}{deal.clientProvisioning.error ? `: ${deal.clientProvisioning.error}` : ""}.</p>
+            <p>{t("partner.deal.userCreateFailed")}{deal.clientProvisioning.error ? `: ${deal.clientProvisioning.error}` : ""}.</p>
           ) : null}
         </div>
       ) : null}
@@ -208,7 +208,7 @@ export default function PartnerDealDetail() {
       {error ? <p className="font-black text-rose-700">{error}</p> : null}
       {billingSafety && billingSafety.enabled === false ? (
         <p className="rounded-2xl bg-amber-50 px-4 py-3 text-sm font-black text-amber-800">
-          {t("partner.deal.billingDisabled", { defaultValue: "תשלום ל-Bizuply כבוי בסביבה זו" })}
+          {t("partner.deal.billingDisabled")}
           {billingSafety.message ? ` — ${billingSafety.message}` : ""}
         </p>
       ) : null}
@@ -413,7 +413,7 @@ export default function PartnerDealDetail() {
                   {formatIls(row.customerPrice)}
                   {row.customerSetup ? (
                     <span className="block text-[11px] text-slate-500">
-                      {t("partner.deal.setupFee", { defaultValue: "+ {{amount}} הקמה", amount: formatIls(row.customerSetup) })}
+                      {t("partner.deal.setupFee", { amount: formatIls(row.customerSetup) })}
                     </span>
                   ) : null}
                 </td>
@@ -422,7 +422,6 @@ export default function PartnerDealDetail() {
                   {row.payBizuplySetupShare ? (
                     <span className="block text-[11px] text-slate-500">
                       {t("partner.deal.bizuplySetupShare", {
-                        defaultValue: "+ {{amount}} חלק Bizuply בהקמה",
                         amount: formatIls(row.payBizuplySetupShare),
                       })}
                     </span>
@@ -430,7 +429,6 @@ export default function PartnerDealDetail() {
                   {row.payBizuplyMonthlyShare ? (
                     <span className="block text-[11px] text-slate-500">
                       {t("partner.deal.bizuplyMonthlyShare", {
-                        defaultValue: "+ {{amount}} / חודש חלק Bizuply",
                         amount: formatIls(row.payBizuplyMonthlyShare),
                       })}
                     </span>
