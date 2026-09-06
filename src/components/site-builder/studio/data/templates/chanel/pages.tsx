@@ -1,6 +1,7 @@
 import React from "react";
 import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
+import i18n from "../../../../../../i18n/i18n";
 
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import {
@@ -131,7 +132,7 @@ function sectionProps(
     ...visualProps(id, "section", label),
     "data-template-section-id": id,
     "data-section-kind": kind,
-    "data-section-title": label,
+    "data-section-title": tx(label),
     "data-bizuply-block": "section",
   };
 }
@@ -874,10 +875,12 @@ function ProductDetailPage({
           ) : null}
 
           {live && !live.inStock ? (
-            <p className="mt-4 text-sm font-medium text-rose-700">{tx("אזל מהמלאי")}</p>
+            <p className="mt-4 text-sm font-medium text-rose-700">
+              {i18n.t("publicWidgets.store.soldOut")}
+            </p>
           ) : live && live.trackStock && live.stock <= 3 ? (
             <p className="mt-4 text-sm font-medium text-amber-700">
-              נותרו {live.stock} במלאי
+              {i18n.t("publicWidgets.store.leftInStock", { count: live.stock })}
             </p>
           ) : null}
 
@@ -929,8 +932,8 @@ function ProductDetailPage({
             >
               <span data-editable="text">
                 {live && !live.inStock
-                  ? "אזל מהמלאי"
-                  : fallback.primaryButton || "הוספה לסל"}
+                  ? i18n.t("publicWidgets.store.soldOut")
+                  : fallback.primaryButton || tx("הוספה לסל")}
               </span>
             </button>
 
@@ -1222,7 +1225,7 @@ export default function ChanelPages({
   const addToCart = React.useCallback(
     (product: StoreCatalogProduct, amount = 1, variantId?: string) => {
       if (product.variants.length > 0 && !variantId) {
-        setStockMessage("בחרו וריאציה לפני הוספה לסל");
+        setStockMessage(i18n.t("publicWidgets.store.chooseVariant"));
         openProduct(product.id);
         return false;
       }
@@ -1243,8 +1246,11 @@ export default function ChanelPages({
       ) {
         setStockMessage(
           available <= 0
-            ? `"${product.name}" אזל מהמלאי`
-            : `מלאי לא מספיק. זמין: ${available}`,
+            ? i18n.t("publicWidgets.store.outOfStock", { name: product.name })
+            : i18n.t("publicWidgets.store.notEnoughStock", {
+                name: product.name,
+                count: available,
+              }),
         );
         return false;
       }
@@ -1262,7 +1268,12 @@ export default function ChanelPages({
             nextQty > available
           ) {
             rejected = true;
-            setStockMessage(`מלאי לא מספיק. זמין: ${available}`);
+            setStockMessage(
+              i18n.t("publicWidgets.store.notEnoughStock", {
+                name: product.name,
+                count: available,
+              }),
+            );
             return prev;
           }
           next = prev.map((item) =>

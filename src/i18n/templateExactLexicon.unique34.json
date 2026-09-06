@@ -1,0 +1,380 @@
+{
+  "הוספת תמונה / וידאו": {
+    "en": "Add image / video",
+    "es": "Añadir imagen / vídeo",
+    "pt-BR": "Adicionar imagem / vídeo",
+    "ar": "إضافة صورة / فيديو"
+  },
+  "בקשת הצעת מחיר": {
+    "en": "Request a quote",
+    "es": "Pedir presupuesto",
+    "pt-BR": "Pedir orçamento",
+    "ar": "طلب عرض سعر"
+  },
+  "הנהלת חשבונות": {
+    "en": "Bookkeeping",
+    "es": "Contabilidad",
+    "pt-BR": "Contabilidade",
+    "ar": "محاسبة"
+  },
+  "שירות פרימיום": {
+    "en": "Premium service",
+    "es": "Servicio premium",
+    "pt-BR": "Serviço premium",
+    "ar": "خدمة مميزة"
+  },
+  "המלצות לקוחות": {
+    "en": "Customer reviews",
+    "es": "Reseñas de clientes",
+    "pt-BR": "Avaliações de clientes",
+    "ar": "آراء العملاء"
+  },
+  "מוצרים נבחרים": {
+    "en": "Featured products",
+    "es": "Productos destacados",
+    "pt-BR": "Produtos em destaque",
+    "ar": "منتجات مختارة"
+  },
+  "הכירו את כולם": {
+    "en": "Meet everyone",
+    "es": "Conoce a todos",
+    "pt-BR": "Conheçam todos",
+    "ar": "تعرّفوا على الجميع"
+  },
+  "עיצוב אירועים": {
+    "en": "Event design",
+    "es": "Diseño de eventos",
+    "pt-BR": "Design de eventos",
+    "ar": "تصميم فعاليات"
+  },
+  "תמונה + טקסט": {
+    "en": "Image + text",
+    "es": "Imagen + texto",
+    "pt-BR": "Imagem + texto",
+    "ar": "صورة + نص"
+  },
+  "פרטים נוספים": {
+    "en": "More details",
+    "es": "Más detalles",
+    "pt-BR": "Mais detalhes",
+    "ar": "تفاصيل إضافية"
+  },
+  "כל הפרויקטים": {
+    "en": "All projects",
+    "es": "Todos los proyectos",
+    "pt-BR": "Todos os projetos",
+    "ar": "كل المشاريع"
+  },
+  "הצטרפו אלינו": {
+    "en": "Join us",
+    "es": "Únete",
+    "pt-BR": "Junte-se a nós",
+    "ar": "انضموا إلينا"
+  },
+  "חנות אונליין": {
+    "en": "Online store",
+    "es": "Tienda online",
+    "pt-BR": "Loja online",
+    "ar": "متجر إلكتروني"
+  },
+  "שירות לקוחות": {
+    "en": "Customer service",
+    "es": "Atención al cliente",
+    "pt-BR": "Atendimento ao cliente",
+    "ar": "خدمة العملاء"
+  },
+  "הרשמה מוקדמת": {
+    "en": "Early registration",
+    "es": "Inscripción temprana",
+    "pt-BR": "Inscrição antecipada",
+    "ar": "تسجيل مبكر"
+  },
+  "שירותי חשמל": {
+    "en": "Electrical services",
+    "es": "Servicios eléctricos",
+    "pt-BR": "Serviços elétricos",
+    "ar": "خدمات كهرباء"
+  },
+  "לכל העבודות": {
+    "en": "See all work",
+    "es": "Ver todos los trabajos",
+    "pt-BR": "Ver todos os trabalhos",
+    "ar": "لكل الأعمال"
+  },
+  "ייעוץ משפטי": {
+    "en": "Legal advice",
+    "es": "Asesoría legal",
+    "pt-BR": "Consultoria jurídica",
+    "ar": "استشارة قانونية"
+  },
+  "הכירו אותנו": {
+    "en": "Meet us",
+    "es": "Conócenos",
+    "pt-BR": "Conheça-nos",
+    "ar": "تعرّفوا علينا"
+  },
+  "עיצוב פנים": {
+    "en": "Interior design",
+    "es": "Diseño de interiores",
+    "pt-BR": "Design de interiores",
+    "ar": "تصميم داخلي"
+  },
+  "כהה יוקרתי": {
+    "en": "Dark and luxurious",
+    "es": "Oscuro y lujoso",
+    "pt-BR": "Escuro e luxuoso",
+    "ar": "داكن فاخر"
+  },
+  "קבלת קופון": {
+    "en": "Get a coupon",
+    "es": "Recibir cupón",
+    "pt-BR": "Receber cupom",
+    "ar": "الحصول على قسيمة"
+  },
+  "הבלוג שלנו": {
+    "en": "Our blog",
+    "es": "Nuestro blog",
+    "pt-BR": "Nosso blog",
+    "ar": "مدوّنتنا"
+  },
+  "שאלו אותנו": {
+    "en": "Ask us",
+    "es": "Pregúntanos",
+    "pt-BR": "Pergunte-nos",
+    "ar": "اسألونا"
+  },
+  "כתבה ראשית": {
+    "en": "Featured article",
+    "es": "Artículo destacado",
+    "pt-BR": "Artigo principal",
+    "ar": "مقال رئيسي"
+  },
+  "בחרו חבילה": {
+    "en": "Choose a pack",
+    "es": "Elige un pack",
+    "pt-BR": "Escolha um pacote",
+    "ar": "اختاروا باقة"
+  },
+  "ליווי מלא": {
+    "en": "Full support",
+    "es": "Acompañamiento completo",
+    "pt-BR": "Acompanhamento completo",
+    "ar": "مرافقة كاملة"
+  },
+  "מורה פרטי": {
+    "en": "Private tutor",
+    "es": "Profesor particular",
+    "pt-BR": "Professor particular",
+    "ar": "معلم خصوصي"
+  },
+  "בניית אתר": {
+    "en": "Website building",
+    "es": "Creación de web",
+    "pt-BR": "Criação de site",
+    "ar": "بناء موقع"
+  },
+  "תמונת קשר": {
+    "en": "Contact photo",
+    "es": "Foto de contacto",
+    "pt-BR": "Foto de contato",
+    "ar": "صورة تواصل"
+  },
+  "נושא נוסף": {
+    "en": "Another topic",
+    "es": "Otro tema",
+    "pt-BR": "Outro tema",
+    "ar": "موضوع إضافي"
+  },
+  "פורטפוליו": {
+    "en": "Portfolio",
+    "es": "Portafolio",
+    "pt-BR": "Portfólio",
+    "ar": "معرض أعمال"
+  },
+  "נטוורקינג.": {
+    "en": "Networking.",
+    "es": "Networking.",
+    "pt-BR": "Networking.",
+    "ar": "تواصل مهني."
+  },
+  "צ׳ק אין.": {
+    "en": "Check-in.",
+    "es": "Check-in.",
+    "pt-BR": "Check-in.",
+    "ar": "تسجيل وصول."
+  },
+  "עד הבית.": {
+    "en": "To your door.",
+    "es": "A domicilio.",
+    "pt-BR": "Até em casa.",
+    "ar": "حتى الباب."
+  },
+  "״מקצועי״": {
+    "en": "“Professional”",
+    "es": "“Profesional”",
+    "pt-BR": "“Profissional”",
+    "ar": "«احترافي»"
+  },
+  "יום מלא.": {
+    "en": "A full day.",
+    "es": "Un día completo.",
+    "pt-BR": "Um dia inteiro.",
+    "ar": "يوم كامل."
+  },
+  "יום ראשון.": {
+    "en": "Sunday.",
+    "es": "Domingo.",
+    "pt-BR": "Domingo.",
+    "ar": "الأحد."
+  },
+  "מהסטודיו.": {
+    "en": "From the studio.",
+    "es": "Desde el estudio.",
+    "pt-BR": "Do estúdio.",
+    "ar": "من الاستوديو."
+  },
+  "מפתח API": {
+    "en": "API developer",
+    "es": "Desarrollador API",
+    "pt-BR": "Desenvolvedor de API",
+    "ar": "مطوّر API"
+  },
+  "קומפוזיציה בהירה.": {
+    "en": "A bright composition.",
+    "es": "Composición luminosa.",
+    "pt-BR": "Composição clara.",
+    "ar": "تكوين مضيء."
+  },
+  "רשת שיתופי פעולה.": {
+    "en": "A partner network.",
+    "es": "Red de colaboraciones.",
+    "pt-BR": "Rede de parcerias.",
+    "ar": "شبكة تعاون."
+  },
+  "חומרים אמיתיים.": {
+    "en": "Real materials.",
+    "es": "Materiales reales.",
+    "pt-BR": "Materiais reais.",
+    "ar": "مواد حقيقية."
+  },
+  "דרמה מבוקרת.": {
+    "en": "Controlled drama.",
+    "es": "Drama controlado.",
+    "pt-BR": "Drama controlado.",
+    "ar": "دراما محسوبة."
+  },
+  "רגע מדויק.": {
+    "en": "A precise moment.",
+    "es": "Un momento preciso.",
+    "pt-BR": "Um momento preciso.",
+    "ar": "لحظة دقيقة."
+  },
+  "עבודת דגל.": {
+    "en": "A flagship piece.",
+    "es": "Obra insignia.",
+    "pt-BR": "Obra de destaque.",
+    "ar": "عمل بارز."
+  },
+  "הכי נצפה.": {
+    "en": "Most viewed.",
+    "es": "Más visto.",
+    "pt-BR": "Mais visto.",
+    "ar": "الأكثر مشاهدة."
+  },
+  "אוהבים הגזרה": {
+    "en": "They love the cut",
+    "es": "Les encanta el corte",
+    "pt-BR": "Amam o caimento",
+    "ar": "يعشقون القصة"
+  },
+  "אזל מהמלאי": {
+    "en": "Out of stock",
+    "es": "Agotado",
+    "pt-BR": "Esgotado",
+    "ar": "نفد من المخزون"
+  },
+  "בחרו וריאציה לפני הוספה לסל": {
+    "en": "Choose a variant before adding to the cart",
+    "es": "Elige una variante antes de añadir al carrito",
+    "pt-BR": "Escolha uma variação antes de adicionar ao carrinho",
+    "ar": "اختاروا خياراً قبل الإضافة إلى السلة"
+  },
+  "בנינו את העסק סביב אמון – והלקוחות מרגישים את זה בכל מפגש.": {
+    "en": "We built the business around trust — and customers feel it in every meeting.",
+    "es": "Construimos el negocio sobre confianza — y los clientes lo sienten en cada encuentro.",
+    "pt-BR": "Construímos o negócio em torno da confiança — e os clientes sentem isso em cada encontro.",
+    "ar": "بنينا النشاط حول الثقة — والعملاء يشعرون بذلك في كل لقاء."
+  },
+  "עיצוב טוב מרגישים עוד לפני שמסבירים אותו.": {
+    "en": "Good design is felt before it is explained.",
+    "es": "Un buen diseño se siente antes de explicarlo.",
+    "pt-BR": "Um bom design se sente antes de explicá-lo.",
+    "ar": "التصميم الجيد يُحس قبل أن يُشرح."
+  },
+  "ליווי מקצועי מותאם למטרות העסק שלכם.": {
+    "en": "Professional support tailored to your business goals.",
+    "es": "Acompañamiento profesional adaptado a vuestros objetivos.",
+    "pt-BR": "Acompanhamento profissional alinhado aos objetivos do seu negócio.",
+    "ar": "مرافقة مهنية مكيّفة لأهداف نشاطكم."
+  },
+  "עורכים טקסטים, תמונות וצבעים בקלות.": {
+    "en": "Edit texts, images, and colors easily.",
+    "es": "Edita textos, imágenes y colores con facilidad.",
+    "pt-BR": "Edite textos, imagens e cores com facilidade.",
+    "ar": "حرّروا النصوص والصور والألوان بسهولة."
+  },
+  "זמינות גבוהה וליווי לאורך כל הדרך.": {
+    "en": "High availability and support all the way.",
+    "es": "Alta disponibilidad y acompañamiento en todo el camino.",
+    "pt-BR": "Alta disponibilidade e acompanhamento o tempo todo.",
+    "ar": "توفّر عالٍ ومرافقة على طول الطريق."
+  },
+  "מחירון נקי ומקצועי שמוביל לפנייה.": {
+    "en": "A clean, professional price list that leads to contact.",
+    "es": "Una tarifa limpia y profesional que lleva al contacto.",
+    "pt-BR": "Uma tabela limpa e profissional que leva ao contato.",
+    "ar": "قائمة أسعار نظيفة واحترافية تقود إلى التواصل."
+  },
+  "ממשק נקי, ברור ומדויק למותג שלכם.": {
+    "en": "A clean, clear interface that matches your brand.",
+    "es": "Una interfaz limpia, clara y fiel a vuestra marca.",
+    "pt-BR": "Uma interface limpa, clara e fiel à sua marca.",
+    "ar": "واجهة نظيفة وواضحة ودقيقة لعلامتكم."
+  },
+  "אסטרטגיה שמביאה לידים איכותיים.": {
+    "en": "A strategy that brings quality leads.",
+    "es": "Una estrategia que trae leads de calidad.",
+    "pt-BR": "Uma estratégia que traz leads de qualidade.",
+    "ar": "استراتيجية تجلب عملاء محتملين بجودة عالية."
+  },
+  "צבעים וטיפוגרפיה שמייצגים אתכם.": {
+    "en": "Colors and typography that represent you.",
+    "es": "Colores y tipografía que os representan.",
+    "pt-BR": "Cores e tipografia que representam vocês.",
+    "ar": "ألوان وخطوط تمثّلكم."
+  },
+  "מועדון לקוחות שמייצר חזרה לעסק": {
+    "en": "A customer club that brings people back",
+    "es": "Un club de clientes que genera repetición",
+    "pt-BR": "Um clube de clientes que gera retorno",
+    "ar": "نادي عملاء يعيد الزيارة للنشاط"
+  },
+  "אזור פרויקטים, תהליך והוכחות חברתיות.": {
+    "en": "A projects area, process, and social proof.",
+    "es": "Zona de proyectos, proceso y prueba social.",
+    "pt-BR": "Área de projetos, processo e prova social.",
+    "ar": "منطقة مشاريع وعملية وإثبات اجتماعي."
+  },
+  "תיקונים, התקנות, שדרוגים ותחזוקה — עם מבנה תואם למוקאפ.": {
+    "en": "Repairs, installs, upgrades, and maintenance — in a mockup-ready layout.",
+    "es": "Reparaciones, instalaciones, mejoras y mantenimiento — con estructura de mockup.",
+    "pt-BR": "Reparos, instalações, upgrades e manutenção — com estrutura de mockup.",
+    "ar": "إصلاحات وتركيب وترقيات وصيانة — ببنية توافق النموذج."
+  },
+  "בקבוקי וינטג'": {
+    "en": "Vintage bottles",
+    "es": "Botellas vintage",
+    "pt-BR": "Garrafas vintage",
+    "ar": "زجاجات عتيقة"
+  }
+}

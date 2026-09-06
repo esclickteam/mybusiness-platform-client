@@ -1975,6 +1975,18 @@
         "trigger": "לקוח לא פעיל",
         "result1": "הודעת נגיעה WhatsApp"
       }
+    },
+    "readiness": {
+      "comingSoon": "בקרוב — עדיין לא זמין להפעלה",
+      "connectWhatsapp": "חברו WhatsApp Business (Bizuply) כדי להפעיל",
+      "noApprovedTemplates": "אין תבניות WhatsApp מאושרות (APPROVED) לבחירה",
+      "notAvailable": "האוטומציה עדיין לא זמינה להפעלה במערכת",
+      "connectCalendar": "חברו Google Calendar במסך החיבורים כדי להפעיל",
+      "cannotEnable": "לא ניתן להפעיל תבנית זו",
+      "noSupportedTrigger": "אין טריגר נתמך להפעלת האוטומציה הזו כרגע",
+      "missingApproved": "חסרות תבניות WhatsApp מאושרות: {{names}}",
+      "recipeNotAvailable": "המתכון עדיין לא זמין להפעלה בחשבון הזה",
+      "recipeMissing": "המתכון לא נמצא בשרת"
     }
   },
   "layout": {
@@ -18267,7 +18279,10 @@
       "backToStore": "חזרה לחנות",
       "addToCart": "הוספה לסל",
       "sampleProduct": "מוצר לדוגמה × 1",
-      "sampleExtra": "תוספת × 2"
+      "sampleExtra": "תוספת × 2",
+      "chooseVariant": "בחרו וריאציה לפני הוספה לסל",
+      "leftInStock": "נותרו {{count}} במלאי",
+      "soldOut": "אזל מהמלאי"
     },
     "site": {
       "skipLink": "דלג לתוכן הראשי",

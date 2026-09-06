@@ -62,6 +62,7 @@ import {
   workingTemplateSearchHaystack,
 } from "../../../../i18n/workingTemplateCopy";
 import { localizeBuiltInText } from "../../../../i18n/localizeBuiltInTemplateSeed";
+import { translateReadinessBlocker } from "../../../../i18n/automationReadinessCopy";
 import {
   WORKING_TEMPLATES,
   buildWhatsAppSimpleGraph,
@@ -688,7 +689,10 @@ export default function AutomationsTemplatesPage() {
         navigate(`/business/${businessId}/dashboard/whatsapp`);
         return;
       }
-      toast.error(card.readiness.blocker || t("automations.toasts.notReady"));
+      toast.error(
+        translateReadinessBlocker(t, card.readiness.blocker) ||
+          t("automations.toasts.notReady"),
+      );
       return;
     }
 
@@ -909,6 +913,7 @@ export default function AutomationsTemplatesPage() {
                 : isAi
                   ? t("automations.templates.ctaEnableAi")
                   : t("automations.templates.ctaEnableNow");
+            const blockerText = translateReadinessBlocker(t, readiness.blocker);
 
             return (
               <article
@@ -978,8 +983,8 @@ export default function AutomationsTemplatesPage() {
                   </span>
                 </div>
 
-                {!readiness.ready && readiness.blocker ? (
-                  <p className="ax-template-card__blocker">{readiness.blocker}</p>
+                {!readiness.ready && blockerText ? (
+                  <p className="ax-template-card__blocker">{blockerText}</p>
                 ) : isWa ? (
                   <p className="ax-template-card__hint">
                     {readiness.suggestedWaTemplateName
@@ -1001,7 +1006,7 @@ export default function AutomationsTemplatesPage() {
                     !hasPlan
                       ? t("automations.templates.planRequiredTitle")
                       : !readiness.ready
-                        ? readiness.blocker
+                        ? blockerText
                         : writeBlockedTitle
                   }
                   onClick={() => {

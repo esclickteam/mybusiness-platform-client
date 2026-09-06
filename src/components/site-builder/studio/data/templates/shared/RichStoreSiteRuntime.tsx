@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { templateDir } from "../../../../../../i18n/templateDir";
 import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
+import i18n from "../../../../../../i18n/i18n";
 
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { Reveal } from "./Reveal";
@@ -109,7 +110,7 @@ function sectionProps(id: string, kind: string, label: string) {
     "data-template-section-id": id,
     "data-template-section-type": kind,
     "data-section-kind": kind,
-    "data-section-title": label,
+    "data-section-title": tx(label),
     "data-bizuply-block":
       kind === "products" || kind === "store" ? "products" : "section",
     "data-bizuply-block-products":
@@ -1083,7 +1084,7 @@ export default function RichStoreSiteRuntime({
   ) => {
     if (product.variants.length > 0 && !variantId && product.id !== selectedProductId) {
       openProduct(product);
-      setStockMessage("בחרו וריאציה לפני הוספה לסל");
+      setStockMessage(i18n.t("publicWidgets.store.chooseVariant"));
       return;
     }
 
@@ -1100,7 +1101,7 @@ export default function RichStoreSiteRuntime({
       product.variants.find((entry) => entry.id === resolvedVariantId) || null;
 
     if (product.variants.length > 0 && !variant) {
-      setStockMessage("בחרו וריאציה לפני הוספה לסל");
+      setStockMessage(i18n.t("publicWidgets.store.chooseVariant"));
       return;
     }
 
@@ -1120,8 +1121,11 @@ export default function RichStoreSiteRuntime({
     ) {
       setStockMessage(
         available <= 0
-          ? `"${product.name}" אזל מהמלאי`
-          : `מלאי לא מספיק. זמין: ${available}`
+          ? i18n.t("publicWidgets.store.outOfStock", { name: product.name })
+          : i18n.t("publicWidgets.store.notEnoughStock", {
+              name: product.name,
+              count: available,
+            })
       );
       return;
     }
@@ -1136,7 +1140,12 @@ export default function RichStoreSiteRuntime({
           !product.allowBackorder &&
           nextQty > available
         ) {
-          setStockMessage(`מלאי לא מספיק. זמין: ${available}`);
+          setStockMessage(
+            i18n.t("publicWidgets.store.notEnoughStock", {
+              name: product.name,
+              count: available,
+            })
+          );
           return prev;
         }
         return prev.map((item) =>
@@ -1313,8 +1322,8 @@ export default function RichStoreSiteRuntime({
           </p>
           <p className="mt-4 text-xs font-bold uppercase tracking-[0.18em] text-[var(--accent)]">
             {fromPlugin
-              ? "מציג את המוצרים מניהול החנות שלך"
-              : "מצב דמו — הוסיפו מוצרים בפאנל חנות בעורך כדי להחליף את הדוגמאות"}
+              ? tx("מציג את המוצרים מניהול החנות שלך")
+              : tx("מצב דמו — הוסיפו מוצרים בפאנל חנות בעורך כדי להחליף את הדוגמאות")}
           </p>
         </div>
         <div className="text-start">
@@ -1515,9 +1524,9 @@ export default function RichStoreSiteRuntime({
   );
 
   const journalPosts = [
-    { title: g("journalOneTitle"), text: g("journalOneText"), image: g("lookOne"), tag: "מדריך" },
-    { title: g("journalTwoTitle"), text: g("journalTwoText"), image: g("lookTwo"), tag: "סיפור" },
-    { title: g("journalThreeTitle"), text: g("journalThreeText"), image: g("lookThree"), tag: "טיפים" },
+    { title: g("journalOneTitle"), text: g("journalOneText"), image: g("lookOne"), tag: tx("מדריך") },
+    { title: g("journalTwoTitle"), text: g("journalTwoText"), image: g("lookTwo"), tag: tx("סיפור") },
+    { title: g("journalThreeTitle"), text: g("journalThreeText"), image: g("lookThree"), tag: tx("טיפים") },
   ];
 
   const JournalSection = ({
@@ -1791,7 +1800,7 @@ export default function RichStoreSiteRuntime({
             </div>
           </section>
           <section {...sectionProps("cellar-vault-columns", "categories", "עמודי קמרון")} className={cx("px-5 py-20 lg:px-8", skin.dark)}><div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-4">{categoryTiles.slice(0, 4).map((cat, index) => <CategoryTile key={cat.id} cat={cat} index={index} className="aspect-[2/5] rounded-t-full border-white/20" />)}</div></section>
-          <ProductRail id="cellar-vintages" label="בקבוקי וינטג'" title={g("productsTitle")} text={g("productsText")} railClassName="lg:grid-cols-3" />
+          <ProductRail id="cellar-vintages" label={tx("בקבוקי וינטג'")} title={g("productsTitle")} text={g("productsText")} railClassName="lg:grid-cols-3" />
           <SimpleInfoSection id="cellar-tasting-notes" kind="features" label={tx("טעימות")} title={g("productDetailOne")} text={g("productDetailTwo")} className={skin.alt} />
           <ValuesSection id="cellar-sommelier-values" />
           <GalleryTriptych id="cellar-archive" label={tx("ארכיון מרתף")} className={skin.dark} />

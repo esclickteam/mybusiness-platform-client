@@ -1975,6 +1975,18 @@
         "trigger": "عميل غير نشط",
         "result1": "لمسة واتساب"
       }
+    },
+    "readiness": {
+      "comingSoon": "قريباً — غير متاح للتفعيل بعد",
+      "connectWhatsapp": "اربطوا واتساب للأعمال (Bizuply) للتفعيل",
+      "noApprovedTemplates": "لا توجد قوالب واتساب معتمدة (APPROVED) للاختيار",
+      "notAvailable": "هذه الأتمتة غير متاحة للتفعيل في النظام بعد",
+      "connectCalendar": "اربطوا تقويم Google في شاشة الاتصالات للتفعيل",
+      "cannotEnable": "لا يمكن تفعيل هذا القالب",
+      "noSupportedTrigger": "لا يوجد مشغّل مدعوم لتفعيل هذه الأتمتة الآن",
+      "missingApproved": "قوالب واتساب المعتمدة ناقصة: {{names}}",
+      "recipeNotAvailable": "هذه الوصفة غير متاحة للتفعيل في هذا الحساب بعد",
+      "recipeMissing": "لم يُعثر على الوصفة في الخادم"
     }
   },
   "layout": {
@@ -18278,7 +18290,10 @@
       "backToStore": "العودة للمتجر",
       "addToCart": "إضافة إلى السلة",
       "sampleProduct": "منتج تجريبي × 1",
-      "sampleExtra": "إضافة × 2"
+      "sampleExtra": "إضافة × 2",
+      "chooseVariant": "اختاروا خياراً قبل الإضافة إلى السلة",
+      "leftInStock": "تبقّى {{count}} في المخزون",
+      "soldOut": "نفد من المخزون"
     },
     "site": {
       "skipLink": "تخطٍّ إلى المحتوى الرئيسي",

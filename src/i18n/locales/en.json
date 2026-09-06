@@ -1975,6 +1975,18 @@
         "trigger": "Inactive client",
         "result1": "WhatsApp nudge"
       }
+    },
+    "readiness": {
+      "comingSoon": "Coming soon — not available to enable yet",
+      "connectWhatsapp": "Connect WhatsApp Business (Bizuply) to enable",
+      "noApprovedTemplates": "No approved WhatsApp templates (APPROVED) to choose from",
+      "notAvailable": "This automation is not available to enable in the system yet",
+      "connectCalendar": "Connect Google Calendar on the connections screen to enable",
+      "cannotEnable": "This template cannot be enabled",
+      "noSupportedTrigger": "There is no supported trigger to enable this automation right now",
+      "missingApproved": "Missing approved WhatsApp templates: {{names}}",
+      "recipeNotAvailable": "This recipe is not available to enable on this account yet",
+      "recipeMissing": "The recipe was not found on the server"
     }
   },
   "layout": {
@@ -18278,7 +18290,10 @@
       "backToStore": "Back to store",
       "addToCart": "Add to cart",
       "sampleProduct": "Sample product × 1",
-      "sampleExtra": "Add-on × 2"
+      "sampleExtra": "Add-on × 2",
+      "chooseVariant": "Choose a variant before adding to the cart",
+      "leftInStock": "{{count}} left in stock",
+      "soldOut": "Out of stock"
     },
     "site": {
       "skipLink": "Skip to main content",

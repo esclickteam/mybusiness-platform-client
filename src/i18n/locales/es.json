@@ -1975,6 +1975,18 @@
         "trigger": "Cliente inactivo",
         "result1": "Toque de WhatsApp"
       }
+    },
+    "readiness": {
+      "comingSoon": "Próximamente — aún no se puede activar",
+      "connectWhatsapp": "Conecta WhatsApp Business (Bizuply) para activar",
+      "noApprovedTemplates": "No hay plantillas de WhatsApp aprobadas (APPROVED) para elegir",
+      "notAvailable": "Esta automatización aún no se puede activar en el sistema",
+      "connectCalendar": "Conecta Google Calendar en conexiones para activar",
+      "cannotEnable": "No se puede activar esta plantilla",
+      "noSupportedTrigger": "No hay un disparador compatible para activarla ahora",
+      "missingApproved": "Faltan plantillas de WhatsApp aprobadas: {{names}}",
+      "recipeNotAvailable": "Esta receta aún no se puede activar en esta cuenta",
+      "recipeMissing": "No se encontró la receta en el servidor"
     }
   },
   "layout": {
@@ -18278,7 +18290,10 @@
       "backToStore": "Volver a la tienda",
       "addToCart": "Añadir al carrito",
       "sampleProduct": "Producto de ejemplo × 1",
-      "sampleExtra": "Extra × 2"
+      "sampleExtra": "Extra × 2",
+      "chooseVariant": "Elige una variante antes de añadir al carrito",
+      "leftInStock": "Quedan {{count}} en stock",
+      "soldOut": "Agotado"
     },
     "site": {
       "skipLink": "Saltar al contenido principal",

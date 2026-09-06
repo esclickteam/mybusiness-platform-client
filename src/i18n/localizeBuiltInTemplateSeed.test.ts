@@ -668,6 +668,21 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("צ׳אט ומייל.", "es")).not.toMatch(/[\u0590-\u05FF]/);
   });
 
+  it("localizes unique34 leftover quote, reviews, and store chrome", () => {
+    expect(localizeBuiltInText("בקשת הצעת מחיר", "en")).toMatch(/quote/i);
+    expect(localizeBuiltInText("בקשת הצעת מחיר", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("המלצות לקוחות", "es")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("מוצרים נבחרים", "pt-BR")).toMatch(/produto/i);
+    expect(localizeBuiltInText("אזל מהמלאי", "ar")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("הבלוג שלנו", "en")).toMatch(/blog/i);
+    expect(
+      localizeBuiltInText("עיצוב טוב מרגישים עוד לפני שמסבירים אותו.", "pt-BR"),
+    ).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("פורטפוליו", "es")).toMatch(/portafolio/i);
+    expect(localizeBuiltInText("בקבוקי וינטג'", "en")).toMatch(/vintage/i);
+    expect(localizeBuiltInText("בקבוקי וינטג'", "en")).not.toMatch(/[\u0590-\u05FF]/);
+  });
+
   it("keeps a saved rich-store headline over localized unique17 defaults", () => {
     const defaults = localizeBuiltInTemplateSeed(
       { brandName: "סטודיו מסחר עשיר", productsEyebrow: "בחירות החנות" },
