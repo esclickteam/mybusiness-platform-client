@@ -310,6 +310,36 @@ function localeObject(locale) {
         elements: pickNested(STUDIO_ELEMENTS, locale),
         items: pickNested(STUDIO_ITEMS, locale),
       },
+      readyTemplates: {
+        apply: {
+          en: "Apply ready website",
+          he: "החל אתר מוכן",
+          es: "Aplicar sitio listo",
+          "pt-BR": "Aplicar site pronto",
+          ar: "تطبيق موقع جاهز",
+        }[locale],
+        category: {
+          en: "Category",
+          he: "קטגוריה",
+          es: "Categoría",
+          "pt-BR": "Categoria",
+          ar: "الفئة",
+        }[locale],
+        layout: {
+          en: "Layout",
+          he: "מבנה",
+          es: "Estructura",
+          "pt-BR": "Estrutura",
+          ar: "الهيكل",
+        }[locale],
+        blockCount: {
+          en: "{{count}} blocks",
+          he: "{{count}} בלוקים",
+          es: "{{count}} bloques",
+          "pt-BR": "{{count}} blocos",
+          ar: "{{count}} كتل",
+        }[locale],
+      },
     },
   };
 }

@@ -13079,6 +13079,12 @@
       "pickSection": "اختر قسماً من المكتبة",
       "sectionFailed": "فشل تنويع القسم",
       "siteFailed": "فشل تحسين الموقع"
+    },
+    "readyTemplates": {
+      "apply": "تطبيق موقع جاهز",
+      "category": "الفئة",
+      "layout": "الهيكل",
+      "blockCount": "{{count}} كتل"
     }
   },
   "partnerNav": {

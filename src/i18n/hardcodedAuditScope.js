@@ -28,12 +28,14 @@ export function classifySourcePath(rel) {
     r.includes("AdminNotifications") ||
     r.includes("AdminPushPermission") ||
     r.includes("AdminDialButton") ||
+    r.endsWith("utils/adminSoftphoneStore.ts") ||
     /(^|\/)components\/Admin[^/]+$/.test(r)
   ) {
     return "A";
   }
   if (
     r.startsWith("pages/staff/") ||
+    r.startsWith("pages/manager/") ||
     r === "pages/StaffLogin.jsx" ||
     r.includes("/staff/") ||
     r.includes("StaffSoftphone")
@@ -45,6 +47,9 @@ export function classifySourcePath(rel) {
     r.includes(".test.") ||
     r.includes(".spec.") ||
     r.includes("/__tests__/") ||
+    r.startsWith("pages/dev/") ||
+    r.includes("/pages/dev/") ||
+    r.endsWith("i18n/languages.js") ||
     r.endsWith(".css") ||
     r.endsWith(".md") ||
     r.endsWith("partnerLabels.ts") ||

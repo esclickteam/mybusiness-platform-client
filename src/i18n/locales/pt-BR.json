@@ -13079,6 +13079,12 @@
       "pickSection": "Selecione uma seção da biblioteca",
       "sectionFailed": "A variação da seção falhou",
       "siteFailed": "Falha ao melhorar o site"
+    },
+    "readyTemplates": {
+      "apply": "Aplicar site pronto",
+      "category": "Categoria",
+      "layout": "Estrutura",
+      "blockCount": "{{count}} blocos"
     }
   },
   "partnerNav": {

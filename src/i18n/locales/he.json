@@ -13068,6 +13068,12 @@
       "pickSection": "נא לבחור סקשן מהספרייה (או סקשן עם libraryId)",
       "sectionFailed": "וריאציית סקשן נכשלה",
       "siteFailed": "שיפור האתר נכשל"
+    },
+    "readyTemplates": {
+      "apply": "החל אתר מוכן",
+      "category": "קטגוריה",
+      "layout": "מבנה",
+      "blockCount": "{{count}} בלוקים"
     }
   },
   "partnerNav": {

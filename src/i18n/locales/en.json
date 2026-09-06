@@ -13079,6 +13079,12 @@
       "pickSection": "Select a library section (or a section with a libraryId)",
       "sectionFailed": "The section variation failed",
       "siteFailed": "Improving the site failed"
+    },
+    "readyTemplates": {
+      "apply": "Apply ready website",
+      "category": "Category",
+      "layout": "Layout",
+      "blockCount": "{{count}} blocks"
     }
   },
   "partnerNav": {

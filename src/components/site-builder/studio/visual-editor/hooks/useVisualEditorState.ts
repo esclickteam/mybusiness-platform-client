@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
+import i18n from "../../../../../i18n/i18n";
+import { localizeBuiltInTemplateSeed, localizeBuiltInText } from "../../../../../i18n/localizeBuiltInTemplateSeed";
 import type { AnimationPresetValue, StylePatch } from "../../types";
 import type { StudioTemplateRenderer } from "../../data/templates/templateEditorTypes";
 
@@ -3724,7 +3726,7 @@ export function useVisualEditorState({
           id: sectionId,
           anchorId,
           placement,
-          label: template.title,
+          label: localizeBuiltInText(template.title, i18n.language),
           libraryId: template.id,
           createdAt: new Date().toISOString(),
           updatedAt: new Date().toISOString(),
@@ -3759,7 +3761,7 @@ export function useVisualEditorState({
             type: nodeTemplate.type,
             parentId: resolvedParentId,
             sectionId,
-            label: nodeTemplate.label,
+            label: localizeBuiltInText(nodeTemplate.label, i18n.language),
             tagName: nodeTemplate.tagName,
             libraryId: template.id,
             localKey: nodeTemplate.key,
@@ -3768,7 +3770,11 @@ export function useVisualEditorState({
           });
 
           if (nodeTemplate.content) {
-            next = writeVisualContentItem(next, id, nodeTemplate.content);
+            next = writeVisualContentItem(
+              next,
+              id,
+              localizeBuiltInTemplateSeed(nodeTemplate.content, i18n.language),
+            );
           }
           if (nodeTemplate.style) {
             next = writeVisualStyleItem(
@@ -3891,7 +3897,7 @@ export function useVisualEditorState({
         next = writeVisualInsertedSection(next, {
           ...insertedSections[sectionId],
           id: sectionId,
-          label: template.title,
+          label: localizeBuiltInText(template.title, i18n.language),
           libraryId: template.id,
           updatedAt: new Date().toISOString(),
         });
@@ -3924,7 +3930,7 @@ export function useVisualEditorState({
             type: nodeTemplate.type,
             parentId: resolvedParentId,
             sectionId,
-            label: nodeTemplate.label,
+            label: localizeBuiltInText(nodeTemplate.label, i18n.language),
             tagName: nodeTemplate.tagName,
             libraryId: template.id,
             localKey: nodeTemplate.key,
@@ -4034,7 +4040,7 @@ export function useVisualEditorState({
             id,
             anchorId,
             placement,
-            label: "סקשן חדש",
+            label: localizeBuiltInText("סקשן חדש", i18n.language),
             createdAt: new Date().toISOString(),
           },
         );
@@ -4961,7 +4967,7 @@ export function useVisualEditorState({
             type: nodeTemplate.type,
             parentId: resolvedParentId,
             sectionId,
-            label: nodeTemplate.label,
+            label: localizeBuiltInText(nodeTemplate.label, i18n.language),
             tagName: nodeTemplate.tagName,
             libraryId,
             groupId,
@@ -4971,7 +4977,11 @@ export function useVisualEditorState({
           });
 
           if (nodeTemplate.content) {
-            next = writeVisualContentItem(next, id, nodeTemplate.content);
+            next = writeVisualContentItem(
+              next,
+              id,
+              localizeBuiltInTemplateSeed(nodeTemplate.content, i18n.language),
+            );
           }
 
           if (nodeTemplate.style) {

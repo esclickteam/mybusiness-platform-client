@@ -7,6 +7,9 @@ import { createMySite, listMySites } from "../api/mySitesApi";
 import { getStudioTemplateById, getStudioTemplateSeedById } from "../components/site-builder/studio/data/templates";
 import { getStudioTemplateRenderer } from "../components/site-builder/studio/data/templates/templateRendererRegistry";
 import { isGuidedDemoActive } from "@/guidedDemo/sessionStore";
+import i18n from "../i18n/i18n";
+import { localizeBuiltInTemplateSeed } from "../i18n/localizeBuiltInTemplateSeed";
+import { getTextDirection } from "../i18n/localeUtils";
 
 export default function WebsiteTemplatePreviewPage() {
   const navigate = useNavigate();
@@ -182,7 +185,10 @@ export default function WebsiteTemplatePreviewPage() {
     const Component = renderer.Component as React.ComponentType<
       Record<string, unknown>
     >;
-    const data = (renderer.defaultData || {}) as Record<string, unknown>;
+    const data = localizeBuiltInTemplateSeed(
+      (renderer.defaultData || {}) as Record<string, unknown>,
+      i18n.language,
+    );
     const pageId = String(previewPageId || homePageId);
     const pageSlug = String(previewPage?.slug || homePage?.slug || "/");
     const key = String(renderer.key || cleanTemplateId).toLowerCase();
@@ -205,7 +211,7 @@ export default function WebsiteTemplatePreviewPage() {
         <div
           className="relative min-h-[100dvh] w-full overflow-x-hidden overflow-y-visible"
           data-template-id={key}
-          dir="rtl"
+          dir={getTextDirection(i18n.language)}
         >
           <Component
             initialPage={pageId}

@@ -16,6 +16,7 @@ describe("hardcoded i18n audit scope", () => {
   it("treats Employee/Staff-only files as acceptable Hebrew (B)", () => {
     expect(classifySourcePath("pages/staff/StaffDashboard.jsx")).toBe("B");
     expect(classifySourcePath("pages/StaffLogin.jsx")).toBe("B");
+    expect(classifySourcePath("pages/manager/EmployeeDashboard.jsx")).toBe("B");
   });
 
   it("treats website templates and default site content as category C", () => {
@@ -33,6 +34,9 @@ describe("hardcoded i18n audit scope", () => {
   });
 
   it("treats tests as category D", () => {
+    expect(classifySourcePath("pages/dev/AiAutomationTemplatesVisualPage.tsx")).toBe("D");
+    expect(classifySourcePath("i18n/languages.js")).toBe("D");
+    expect(classifySourcePath("utils/adminSoftphoneStore.ts")).toBe("A");
     expect(classifySourcePath("i18n/localeCatalogParity.test.ts")).toBe("D");
     expect(classifySourcePath("lib/partnerLabels.ts")).toBe("D");
     expect(classifySourcePath("i18n/businessCategoryLabels.js")).toBe("D");

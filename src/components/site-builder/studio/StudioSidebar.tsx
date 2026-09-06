@@ -24,6 +24,7 @@ import {
   studioSectionKindLabel,
   studioSectionTitle,
 } from "../../../i18n/studioLibraryLabels";
+import { localizeBuiltInText } from "../../../i18n/localizeBuiltInTemplateSeed";
 import { fontOptions, themePalettes } from "./data/themePalettes";
 import { useAuth } from "../../../context/AuthContext";
 
@@ -346,7 +347,7 @@ export default function StudioSidebar({
   };
 
   const handleAddHtml = (html: string, label = t("studio.theSection")) => {
-    onAddHtml(html);
+    onAddHtml(localizeBuiltInText(html));
     setSuccessMessage(t("studio.addedToPage", { label }));
   };
 

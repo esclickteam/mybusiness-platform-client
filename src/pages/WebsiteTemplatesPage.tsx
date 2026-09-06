@@ -29,6 +29,7 @@ import { getTemplateFullPageScreenshotUrl } from "../utils/templateScreenshot";
 import { getApiErrorMessage } from "../utils/apiErrorMessage";
 import { useLocaleDir } from "../hooks/useLocaleDir";
 import i18n from "../i18n/i18n";
+import { localizeBuiltInText } from "../i18n/localizeBuiltInTemplateSeed";
 import { isGuidedDemoActive } from "@/guidedDemo/sessionStore";
 
 type WebsiteTemplateBlock = {
@@ -332,17 +333,20 @@ function mapDefinitionToGalleryTemplate(
     key: String(definition?.id || definition?.key || "").toLowerCase(),
     name: definition?.name || definition?.id || "Website template",
     category: definition?.category || seed.category || "business",
-    categoryLabel:
-      definition?.categoryLabel || seed.categoryLabel || definition?.category,
-    description: definition?.description || seed.description || "",
+    categoryLabel: localizeBuiltInText(
+      definition?.categoryLabel || seed.categoryLabel || definition?.category || "",
+    ),
+    description: localizeBuiltInText(
+      definition?.description || seed.description || "",
+    ),
     niche: seed.niche,
     layout: seed.layout,
     image,
     heroTitle: seed.heroTitle || defaultData.heroTitle || definition?.name,
     heroSubtitle:
       seed.heroSubtitle || defaultData.heroSubtitle || definition?.description,
-    isNew: badge === "חדש" || badge === "NEW",
-    badge,
+    isNew: badge === "חדש" || badge === "NEW" || badge === "New",
+    badge: localizeBuiltInText(badge),
     thumbnailUrl: image,
     previewImageUrl: image,
     fullPagePreview:
