@@ -35,6 +35,7 @@ import unique20ExactLexicon from "./templateExactLexicon.unique20.json";
 import unique21ExactLexicon from "./templateExactLexicon.unique21.json";
 import unique22ExactLexicon from "./templateExactLexicon.unique22.json";
 import unique23ExactLexicon from "./templateExactLexicon.unique23.json";
+import unique24ExactLexicon from "./templateExactLexicon.unique24.json";
 import { TEMPLATE_EXACT_LEXICON, type LocaleCopy } from "./templateExactLexicon";
 
 type PhraseTranslation = {
@@ -82,6 +83,7 @@ const EXACT_LEXICON: Record<string, PhraseTranslation | LocaleCopy> = {
   ...(unique21ExactLexicon as Record<string, PhraseTranslation>),
   ...(unique22ExactLexicon as Record<string, PhraseTranslation>),
   ...(unique23ExactLexicon as Record<string, PhraseTranslation>),
+  ...(unique24ExactLexicon as Record<string, PhraseTranslation>),
   ...TEMPLATE_EXACT_LEXICON,
 };
 
@@ -213,6 +215,8 @@ const BOWL_PATH_RE = /^(.+) — כל קערה היא מסלול טעמים\.$/;
 const JUICE_NOW_RE = /^(.+) — סחוט עכשיו — נשתייה מיד\.$/;
 const MELT_EXPERIENCE_RE = /^(.+) — ההמסה היא חלק מהחוויה\.$/;
 const PERFECT_DISH_RE = /^המנה של (.+) הייתה מושלמת\.$/;
+const KNOW_ALL_RE = /^(.+) — כל מה שצריך לדעת\.$/;
+const INGREDIENT_FIT_RE = /^חומרי גלם שמתאימים ל(.+)$/;
 
 const HEBREW_WEEKDAYS: Record<string, PhraseTranslation> = {
   ראשון: { en: "Sunday", es: "domingo", "pt-BR": "domingo", ar: "الأحد" },
@@ -631,6 +635,23 @@ const MELT_EXPERIENCE_COPY: PhraseTranslation = {
   "pt-BR": "o derretimento faz parte da experiência.",
   ar: "الذوبان جزء من التجربة.",
 };
+const KNOW_ALL_COPY: PhraseTranslation = {
+  en: "everything you need to know.",
+  es: "todo lo que hay que saber.",
+  "pt-BR": "tudo o que vocês precisam saber.",
+  ar: "كل ما تحتاجون معرفته.",
+};
+
+function localizeIngredientFit(text: string, locale: string): string {
+  const match = text.match(INGREDIENT_FIT_RE);
+  if (!match) return "";
+  const cuisine = localizeFragment(match[1], locale) || (HE.test(match[1]) ? "" : match[1]);
+  if (!cuisine) return "";
+  if (locale === "es") return `Ingredientes que encajan con ${cuisine}.`;
+  if (locale === "pt-BR") return `Ingredientes que combinam com ${cuisine}.`;
+  if (locale === "ar") return `مكونات تناسب ${cuisine}.`;
+  return `Ingredients that fit ${cuisine}.`;
+}
 
 function localizePerfectDish(text: string, locale: string): string {
   const match = text.match(PERFECT_DISH_RE);
@@ -1049,6 +1070,14 @@ function localizePlainBuiltInText(text: string, locale: string): string {
   const perfectDish = localizePerfectDish(text, locale);
   if (isUsableTranslation(text, perfectDish, locale)) {
     return adaptBuiltInDirectionalCss(perfectDish, locale);
+  }
+  const knowAll = localizeDishSuffix(text, locale, KNOW_ALL_RE, KNOW_ALL_COPY);
+  if (isUsableTranslation(text, knowAll, locale)) {
+    return adaptBuiltInDirectionalCss(knowAll, locale);
+  }
+  const ingredientFit = localizeIngredientFit(text, locale);
+  if (isUsableTranslation(text, ingredientFit, locale)) {
+    return adaptBuiltInDirectionalCss(ingredientFit, locale);
   }
 
   const bookHit = pickLocaleCopy(book[text], locale);

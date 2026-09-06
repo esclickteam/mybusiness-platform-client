@@ -601,6 +601,13 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("הזמינו טאקוס — נצרוב עכשיו.", "pt-BR")).toMatch(/tacos/i);
   });
 
+  it("localizes unique24 leftover sentences, know-all, and ingredient-fit", () => {
+    expect(localizeBuiltInText("מיצים — כל מה שצריך לדעת.", "en")).toMatch(/juice/i);
+    expect(localizeBuiltInText("מיצים — כל מה שצריך לדעת.", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("חומרי גלם שמתאימים לסושי", "es")).toMatch(/sushi/i);
+    expect(localizeBuiltInText("כל הזכויות שמורות © 2026", "pt-BR")).toMatch(/direitos reservados/i);
+  });
+
   it("keeps a saved rich-store headline over localized unique17 defaults", () => {
     const defaults = localizeBuiltInTemplateSeed(
       { brandName: "סטודיו מסחר עשיר", productsEyebrow: "בחירות החנות" },
