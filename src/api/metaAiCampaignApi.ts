@@ -69,6 +69,7 @@ export type AiCampaignProposal = {
       url?: string | null;
       fileName?: string | null;
       kind?: string | null;
+      source?: string | null;
     };
     review?: AiCreativeReview | null;
   };
@@ -199,6 +200,16 @@ export type AiCampaignSessionResponse = {
   };
   resumable?: boolean;
   offerings?: AiCampaignOffering[];
+  priorCampaigns?: {
+    hasPriorCampaigns?: boolean;
+    campaigns?: Array<{
+      campaignId?: string;
+      name?: string;
+      lesson?: string | null;
+    }>;
+    primaryLesson?: string | null;
+  };
+  creativeReview?: AiCreativeReview | null;
   creativeReview?: AiCreativeReview | null;
 };
 

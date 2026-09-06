@@ -169,7 +169,10 @@ export default function MetaAiCampaignPreview({
     : "he";
   const dest = destinationKey(session) || (proposal.leadForm ? "LEAD_FORM" : null);
   const forms = availableLeadForms(session);
-  const mediaMissing = proposal.creative.media?.status !== "PROVIDED";
+  const media = proposal.creative.media;
+  const mediaMissing =
+    media?.status !== "PROVIDED" && !media?.url && !(media as { imageHash?: string })?.imageHash;
+  const usedBusinessPhoto = media?.source === "business_profile";
   const budget = proposal.adSet.dailyBudget || proposal.adSet.lifetimeBudget;
   const locations = (proposal.adSet.locations || [])
     .map((item) => item.name)
@@ -244,6 +247,16 @@ export default function MetaAiCampaignPreview({
         <h3 className="mt-1 text-xl font-black tracking-tight text-slate-900">
           {t("metaCampaigns.ai.preview.title")}
         </h3>
+        {session.priorCampaigns?.hasPriorCampaigns ? (
+          <p className="mt-2 text-sm font-semibold text-violet-800" data-testid="meta-ai-prior-campaign">
+            {t("metaCampaigns.ai.priorCampaignNote")}
+          </p>
+        ) : null}
+        {usedBusinessPhoto ? (
+          <p className="mt-1 text-sm font-semibold text-slate-600" data-testid="meta-ai-business-photo">
+            {t("metaCampaigns.ai.usingBusinessPhoto")}
+          </p>
+        ) : null}
       </div>
 
       <dl className="grid grid-cols-1 gap-3 sm:grid-cols-2" data-testid="meta-ai-preview-summary">

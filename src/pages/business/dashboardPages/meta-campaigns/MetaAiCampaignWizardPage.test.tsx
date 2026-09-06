@@ -420,6 +420,70 @@ describe("MetaAiCampaignWizardPage conversation", () => {
     expect(screen.getByText("השאירו פרטים ונחזור אליכן.")).toBeTruthy();
   });
 
+  it("retries generation without starting a new session", async () => {
+    api.startAiCampaignSession.mockResolvedValue(readySession());
+    api.generateAiCampaign.mockRejectedValueOnce({
+      response: {
+        status: 503,
+        data: {
+          message: "לא הצלחנו להכין את הקמפיין כרגע.",
+          details: { retry: true },
+        },
+      },
+    });
+    api.generateAiCampaign.mockResolvedValueOnce(
+      readySession({
+        proposal: sampleProposal(),
+        generation: { status: "READY", meta: {} },
+      })
+    );
+    renderWizard();
+    await waitFor(() => screen.getByTestId("meta-ai-retry"));
+    expect(screen.getByText("לא הצלחנו להכין את הקמפיין כרגע.")).toBeTruthy();
+    fireEvent.click(screen.getByTestId("meta-ai-retry"));
+    await waitFor(() => expect(api.generateAiCampaign).toHaveBeenCalledTimes(2));
+    await waitFor(() => screen.getByTestId("meta-ai-preview"));
+    expect(api.startAiCampaignSession).toHaveBeenCalledTimes(1);
+  });
+
+  it("shows that a previous campaign will steer the new one", async () => {
+    api.startAiCampaignSession.mockResolvedValue(
+      questionSession({
+        priorCampaigns: {
+          hasPriorCampaigns: true,
+          primaryLesson: "refresh_creative",
+          campaigns: [{ campaignId: "1200", name: "Facial" }],
+        },
+      })
+    );
+    renderWizard();
+    await waitFor(() => screen.getByTestId("meta-ai-prior-campaign"));
+    expect(screen.getByText(he.metaCampaigns.ai.priorCampaignNote)).toBeTruthy();
+  });
+
+  it("uses a business profile photo instead of blocking on missing creative", async () => {
+    api.startAiCampaignSession.mockResolvedValue(
+      readySession({
+        proposal: sampleProposal({
+          creative: {
+            ...sampleProposal().creative,
+            media: {
+              status: "PROVIDED",
+              url: "https://cdn.example/clinic.jpg",
+              kind: "image",
+              source: "business_profile",
+            },
+          },
+        }),
+        generation: { status: "READY", meta: { usedBusinessPhoto: true } },
+      })
+    );
+    renderWizard();
+    await waitFor(() => screen.getByTestId("meta-ai-business-photo"));
+    expect(screen.getByText(he.metaCampaigns.ai.usingBusinessPhoto)).toBeTruthy();
+    expect(screen.queryByTestId("meta-ai-missing-creative")).toBeNull();
+  });
+
   it("shows AI creative review after an image is attached", async () => {
     api.startAiCampaignSession.mockResolvedValue(
       readySession({

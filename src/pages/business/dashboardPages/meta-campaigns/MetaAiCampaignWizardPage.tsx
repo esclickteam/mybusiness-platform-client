@@ -128,6 +128,7 @@ export default function MetaAiCampaignWizardPage() {
   const draftLockRef = useRef(false);
   const [confirmPublish, setConfirmPublish] = useState(false);
   const [confirmCancel, setConfirmCancel] = useState(false);
+  const [failedAction, setFailedAction] = useState<string | null>(null);
   const [activationTree, setActivationTree] = useState<
     { campaign?: string | null; adSet?: string | null; ad?: string | null } | undefined
   >(undefined);
@@ -190,6 +191,7 @@ export default function MetaAiCampaignWizardPage() {
       setBudgetDraft("");
       setLocationDraft("");
     } catch (err) {
+      setFailedAction("answer");
       setError(readError(err, t("metaCampaigns.ai.errorGeneric")));
     } finally {
       setBusy(false);
@@ -212,6 +214,7 @@ export default function MetaAiCampaignWizardPage() {
       applySession(next);
       setDraft("");
     } catch (err) {
+      setFailedAction("message");
       setError(readError(err, t("metaCampaigns.ai.aiUnavailable")));
     } finally {
       setBusy(false);
@@ -279,7 +282,9 @@ export default function MetaAiCampaignWizardPage() {
         regenerate
       );
       applySession(next);
+      setFailedAction(null);
     } catch (err) {
+      setFailedAction("generate");
       setError(readError(err, t("metaCampaigns.ai.errorGeneric")));
     } finally {
       setBusy(false);
@@ -363,6 +368,7 @@ export default function MetaAiCampaignWizardPage() {
 
   const mergeDraftError = (err: unknown, fallback: string) => {
     const parsed = readError(err, fallback);
+    setFailedAction("draft");
     setError(parsed);
     if (parsed.unresolvedLocations?.length && session) {
       setSession({
@@ -450,6 +456,22 @@ export default function MetaAiCampaignWizardPage() {
     handleManualEdit();
   };
 
+  const handleRetry = () => {
+    if (failedAction === "generate") {
+      void handleGenerate(false);
+      return;
+    }
+    if (failedAction === "draft") {
+      handleRetryDraft();
+      return;
+    }
+    if (failedAction === "message" && lastMessage) {
+      void handleMessage(lastMessage);
+      return;
+    }
+    void boot();
+  };
+
   const progressLabel = useMemo(() => {
     const remaining =
       session?.progress?.remaining ?? session?.missingFields?.length ?? 0;
@@ -479,9 +501,15 @@ export default function MetaAiCampaignWizardPage() {
     setError(null);
     void Promise.resolve(generateAiCampaign(tenantId, session.sessionId, false))
       .then((next) => {
-        if (next?.sessionId) applySession(next);
+        if (next?.sessionId) {
+          applySession(next);
+          setFailedAction(null);
+        }
       })
-      .catch((err) => setError(readError(err, t("metaCampaigns.ai.errorGeneric"))))
+      .catch((err) => {
+        setFailedAction("generate");
+        setError(readError(err, t("metaCampaigns.ai.errorGeneric")));
+      })
       .finally(() => {
         setBusy(false);
         setPendingAction(null);
@@ -511,7 +539,10 @@ export default function MetaAiCampaignWizardPage() {
     setError(null);
     void Promise.resolve(createAiCampaignMetaDraft(tenantId, session.sessionId))
       .then((next) => {
-        if (next?.sessionId) applySession(next);
+        if (next?.sessionId) {
+          applySession(next);
+          setFailedAction(null);
+        }
       })
       .catch((err) => mergeDraftError(err, t("metaCampaigns.ai.errorGeneric")))
       .finally(() => {
@@ -766,14 +797,18 @@ export default function MetaAiCampaignWizardPage() {
                 <button
                   type="button"
                   className={btnPrimary}
-                  onClick={() =>
-                    lastMessage ? void handleMessage(lastMessage) : void boot()
-                  }
+                  data-testid="meta-ai-retry"
+                  onClick={handleRetry}
                 >
                   {t("metaCampaigns.ai.retry")}
                 </button>
               ) : (
-                <button type="button" className={btnSecondary} onClick={() => void boot()}>
+                <button
+                  type="button"
+                  className={btnSecondary}
+                  data-testid="meta-ai-retry"
+                  onClick={handleRetry}
+                >
                   {t("metaCampaigns.ai.retry")}
                 </button>
               )}
@@ -861,6 +896,14 @@ function OwnerLiteSetup({
         <p className="text-sm font-semibold text-slate-600">
           {t("metaCampaigns.ai.ownerLiteBody")}
         </p>
+        {session?.priorCampaigns?.hasPriorCampaigns ? (
+          <p
+            className="text-sm font-semibold text-violet-800"
+            data-testid="meta-ai-prior-campaign"
+          >
+            {t("metaCampaigns.ai.priorCampaignNote")}
+          </p>
+        ) : null}
         {currentName ? (
           <p className="text-sm font-semibold text-violet-800" data-testid="meta-ai-planned-offer">
             {currentName}
