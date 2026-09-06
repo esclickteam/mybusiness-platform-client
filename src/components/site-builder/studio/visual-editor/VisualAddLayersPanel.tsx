@@ -62,6 +62,10 @@ import {
   getSectionsByCategory,
 } from "./library/sectionLibrary";
 import {
+  studioSectionDescription,
+  studioSectionTitle,
+} from "../../../../i18n/studioLibraryLabels";
+import {
   PORTAL_SECTION_KIND_NAV,
   SECTION_LIBRARY_NAV,
   type SectionLibraryNavId,
@@ -1119,12 +1123,24 @@ export default function VisualAddLayersPanel({
           base = base.filter((item) => item.id.startsWith(nav.prefix));
         }
       }
-      return base.filter((item) => {
-        if (!normalizedSearch) return true;
-        return `${item.title} ${item.description} ${(item.keywords || []).join(" ")}`
-          .toLowerCase()
-          .includes(normalizedSearch);
-      });
+      return base
+        .filter((item) => {
+          if (!normalizedSearch) return true;
+          const title = studioSectionTitle(t, item.id, item.title);
+          const description = studioSectionDescription(
+            t,
+            item.id,
+            item.description || ""
+          );
+          return `${title} ${description} ${(item.keywords || []).join(" ")}`
+            .toLowerCase()
+            .includes(normalizedSearch);
+        })
+        .map((item) => ({
+          ...item,
+          title: studioSectionTitle(t, item.id, item.title),
+          description: studioSectionDescription(t, item.id, item.description || ""),
+        }));
     }
 
     let base =
@@ -1155,12 +1171,24 @@ export default function VisualAddLayersPanel({
         .slice(0, 36);
     }
 
-    return base.filter((item) => {
-      if (!normalizedSearch) return true;
-      return `${item.title} ${item.description} ${(item.keywords || []).join(" ")}`
-        .toLowerCase()
-        .includes(normalizedSearch);
-    });
+    return base
+      .filter((item) => {
+        if (!normalizedSearch) return true;
+        const title = studioSectionTitle(t, item.id, item.title);
+        const description = studioSectionDescription(
+          t,
+          item.id,
+          item.description || ""
+        );
+        return `${title} ${description} ${(item.keywords || []).join(" ")}`
+          .toLowerCase()
+          .includes(normalizedSearch);
+      })
+      .map((item) => ({
+        ...item,
+        title: studioSectionTitle(t, item.id, item.title),
+        description: studioSectionDescription(t, item.id, item.description || ""),
+      }));
   }, [
     clientPortalPluginEnabled,
     favoriteSectionIds,
@@ -1170,6 +1198,7 @@ export default function VisualAddLayersPanel({
     sectionLibraryMode,
     sectionQuickFilter,
     portalSectionKind,
+    t,
   ]);
 
   const filteredPages = useMemo(() => {

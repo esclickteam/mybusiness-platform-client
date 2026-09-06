@@ -321,7 +321,6 @@ function buildMappingsFromTemplate(
 import { automationNodeTypes } from "./FlowNodes";
 import {
   AI_AUTOMATION_CATALOG,
-  AI_BILLING_SAFE_MESSAGE,
   getAiTemplateByKey,
   listSupportedAiTemplates,
 } from "./aiAutomationCatalog";
@@ -2640,7 +2639,7 @@ function EditorInner({
                 {selectedAiTemplate ? (
                   <section className="af-ai-config">
                     <p className="af-inspector__hint-inline">
-                      {AI_BILLING_SAFE_MESSAGE}
+                      {t("automations.aiTab.billing")}
                     </p>
                     <p className="af-trigger-fields__heading">{t("automations.editor.aiSettings")}</p>
                     {selectedAiTemplate.requiredConfiguration

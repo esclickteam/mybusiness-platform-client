@@ -7,6 +7,10 @@
 import type { TFunction } from "i18next";
 import i18n from "../../../../i18n/i18n";
 import { listSupportedAiTemplates } from "./aiAutomationCatalog";
+import {
+  aiTemplateDescription,
+  aiTemplateTitle,
+} from "../../../../i18n/aiAutomationLabels";
 
 type TranslateFn = TFunction;
 
@@ -208,8 +212,8 @@ export function getSystemAutomationCatalog(
       id: template.templateKey,
       recipeKey: template.recipeKey,
       kind: "ai" as const,
-      title: template.titleHe,
-      description: template.description,
+      title: aiTemplateTitle(t, template),
+      description: aiTemplateDescription(t, template),
       triggerLabel: template.customerExplanation.startsWhen,
       resultLabels: [
         template.customerExplanation.aiDoes,

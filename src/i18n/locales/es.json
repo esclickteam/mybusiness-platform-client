@@ -1260,6 +1260,89 @@
     "errors": {
       "missingTrigger": "Falta un disparador aprobado",
       "missingGraph": "Esta plantilla no tiene un grafo de activación"
+    },
+    "aiTab": {
+      "title": "Automatizaciones IA",
+      "subtitle": "Elige una plantilla lista y adáptala a tu negocio.",
+      "hint": "El asesor analiza y recomienda. Aquí descubres plantillas de IA y las revisas antes de activarlas.",
+      "empty": "Ahora no hay plantillas de IA. Inténtalo más tarde.",
+      "viewTemplate": "Ver plantilla",
+      "billing": "Una acción de IA cuenta como una acción de automatización de tu plan."
+    },
+    "aiTemplates": {
+      "ai_lead_scoring": {
+        "title": "Puntuación automática de leads",
+        "description": "Puntúa leads nuevos por calidad y potencial."
+      },
+      "ai_lead_classify": {
+        "title": "Clasificación automática de leads",
+        "description": "Clasifica leads nuevos en categorías."
+      },
+      "ai_lead_auto_tag": {
+        "title": "Etiquetado automático de leads",
+        "description": "Añade etiquetas relevantes."
+      },
+      "ai_hot_lead": {
+        "title": "Detectar leads calientes",
+        "description": "Encuentra leads que necesitan seguimiento rápido."
+      },
+      "ai_lead_brief": {
+        "title": "Resumen del lead antes de una llamada",
+        "description": "Prepara un resumen corto."
+      },
+      "ai_followup_draft": {
+        "title": "Redactar un seguimiento",
+        "description": "Redacta solo un borrador de seguimiento."
+      },
+      "ai_email_draft": {
+        "title": "Redactar un email",
+        "description": "Redacta solo un borrador de email."
+      },
+      "ai_next_action": {
+        "title": "Sugerir la siguiente acción",
+        "description": "Sugiere el siguiente paso."
+      },
+      "ai_daily_leads_digest": {
+        "title": "Resumen diario de leads",
+        "description": "Resume los leads de hoy."
+      },
+      "ai_daily_agenda_digest": {
+        "title": "Resumen diario de tareas y reuniones",
+        "description": "Resume tareas y reuniones."
+      },
+      "ai_summarize_calls": {
+        "title": "Resumen de llamadas"
+      },
+      "ai_auto_reply": {
+        "title": "Respuesta automática"
+      },
+      "ai_risk_lead": {
+        "title": "Detectar leads en riesgo"
+      },
+      "ai_campaign_change": {
+        "title": "Cambio de campaña"
+      },
+      "ai_tasks_from_chat": {
+        "title": "Crear tareas desde el chat"
+      },
+      "ai_intent_detect": {
+        "title": "Detectar intención"
+      },
+      "ai_extract_message": {
+        "title": "Extraer datos de un mensaje"
+      },
+      "ai_objections": {
+        "title": "Detectar objeciones"
+      },
+      "ai_sentiment": {
+        "title": "Análisis de sentimiento"
+      },
+      "ai_crm_cleanup": {
+        "title": "Limpieza de CRM"
+      },
+      "ai_task_prioritization": {
+        "title": "Priorizar tareas"
+      }
     }
   },
   "layout": {
@@ -11829,6 +11912,64 @@
           "title": "Fila social",
           "description": "Fila horizontal de iconos"
         }
+      },
+      "sections": {
+        "section-hero-business": {
+          "title": "Hero de negocio",
+          "description": "Titular, párrafo, dos botones e imagen"
+        },
+        "section-hero-beauty": {
+          "title": "Hero de belleza",
+          "description": "Diseño suave con degradado e imagen"
+        },
+        "section-about-split": {
+          "title": "Acerca — texto e imagen",
+          "description": "Diseño de dos columnas"
+        },
+        "section-services-cards": {
+          "title": "Tres servicios",
+          "description": "Titular y tres tarjetas"
+        },
+        "section-gallery-grid": {
+          "title": "Galería de trabajos",
+          "description": "Seis proyectos con nombre, categoría y descripción"
+        },
+        "section-testimonials": {
+          "title": "Testimonios",
+          "description": "Tres reseñas con valoración"
+        },
+        "section-pricing": {
+          "title": "Precios",
+          "description": "Tres paquetes de precio"
+        },
+        "section-faq": {
+          "title": "FAQ",
+          "description": "Titular y cuatro preguntas"
+        },
+        "section-team": {
+          "title": "Equipo",
+          "description": "Tres miembros con rol y bio"
+        },
+        "section-stats": {
+          "title": "Números y datos",
+          "description": "Titular, texto y cuatro datos"
+        },
+        "section-video-text": {
+          "title": "Video con texto",
+          "description": "Video completo con texto y botón"
+        },
+        "section-contact": {
+          "title": "Contacto",
+          "description": "Datos de contacto y formulario"
+        },
+        "section-cta-gradient": {
+          "title": "Llamada a la acción",
+          "description": "Degradado, titular y botón"
+        },
+        "section-footer": {
+          "title": "Pie completo",
+          "description": "Logo, navegación y contacto"
+        }
       }
     },
     "linkModal": {
@@ -14626,6 +14767,80 @@
         "step2": "Pulsa Conectar para vincular Cal.",
         "step3": "La moneda del sitio debe coincidir con Cal (se recomienda ₪)."
       }
+    }
+  },
+  "helpArticles": {
+    "buildBusiness": {
+      "title": "Editar la página del negocio en Bizuply",
+      "whyTitle": "Por qué importa editar la página",
+      "why1": "La página del negocio es tu tienda virtual. Con el editor, plantillas e IA creas una presencia profesional donde los clientes deciden contactarte.",
+      "why2": "Una página clara genera confianza, reduce fricción y aumenta conversiones.",
+      "mainTitle": "Pestaña Inicio: información esencial",
+      "nameTitle": "Nombre del negocio",
+      "nameBody": "El nombre aparece en búsquedas y en la cabecera. Que sea claro y profesional.",
+      "bestPractices": "Buenas prácticas:",
+      "nameTip1": "Usa el nombre oficial o tu marca personal.",
+      "nameTip2": "Incluye la especialidad principal para más claridad y visibilidad.",
+      "examples": "Ejemplos:",
+      "nameEx1": "Emily Cohen — cuidado natural de la piel",
+      "nameEx2": "Michael Levy — fontanería y emergencias",
+      "descTitle": "Descripción del negocio",
+      "descBody": "Explica quién eres, qué ofreces y por qué elegirte. Es una de las partes más influyentes.",
+      "include": "Qué incluir:",
+      "include1": "El servicio o especialidad principal",
+      "include2": "Años de experiencia, licencias o certificaciones",
+      "include3": "Tu enfoque o método profesional",
+      "include4": "Qué te diferencia de la competencia",
+      "contactTitle": "Datos de contacto",
+      "contactBody": "Datos precisos facilitan el contacto. Revisa teléfonos y emails.",
+      "categoryTitle": "Categoría del negocio",
+      "categoryBody": "Elige la categoría que mejor represente tu servicio principal.",
+      "areaTitle": "Área de servicio o ciudad",
+      "areaBody": "Elige la ciudad o zona principal donde más trabajas.",
+      "galleryTitle": "Pestaña Galería: primera impresión visual",
+      "galleryBody": "La galería muestra tu trabajo antes del contacto. Fotos y videos de calidad aumentan confianza.",
+      "recommended": "Contenido recomendado:",
+      "rec1": "Antes/después o proyectos terminados",
+      "rec2": "El espacio, herramientas o estudio",
+      "rec3": "Videos cortos de tu proceso o profesionalidad",
+      "galleryTip1": "Usa fotos nítidas y bien iluminadas.",
+      "galleryTip2": "La calidad importa más que la cantidad.",
+      "galleryTip3": "Evita filtros pesados para mantener autenticidad.",
+      "reviewsTitle": "Pestaña Reseñas: generar confianza",
+      "reviewsBody": "Las reseñas son de clientes reales. Las valoraciones afectan visibilidad y decisiones.",
+      "reviewsWhy": "Por qué importan:",
+      "reviewsWhy1": "Generan prueba social y confianza.",
+      "reviewsWhy2": "Mejoran visibilidad y ranking.",
+      "reviewsWhy3": "Reducen la duda de clientes nuevos.",
+      "askReviews": "Cómo pedir reseñas:",
+      "askReviewsBody": "Si quedaste contento con el servicio, una reseña corta en mi perfil de Bizuply ayuda a nuevos clientes.",
+      "calendarTitle": "Pestaña Calendario: reservas online",
+      "calendarBody": "El calendario permite reservar desde la página, sin llamadas.",
+      "serviceGuide": "Consejos para servicios:",
+      "service1": "Un nombre de servicio claro",
+      "service2": "Duración estimada (minutos)",
+      "service3": "Precio",
+      "service4": "Una descripción breve de lo incluido",
+      "faqTitle": "Pestaña FAQ",
+      "faqBody": "El FAQ responde preguntas repetidas de antemano. Ahorra tiempo y se ve más profesional.",
+      "qCol": "Pregunta",
+      "aCol": "Respuesta",
+      "q1": "¿Aceptáis tarjetas?",
+      "a1": "Sí. Aceptamos tarjetas y apps de pago populares.",
+      "q2": "¿Hay garantía?",
+      "a2": "Sí. Una corrección incluida, válida 60 días.",
+      "q3": "¿Hay citas el fin de semana?",
+      "a3": "Sí. Fines de semana con cita previa.",
+      "saveTitle": "Guardar y revisar",
+      "save1": "Tras completar las secciones, pulsa Guardar todo y revisa Ver perfil.",
+      "save2": "Comprueba que las imágenes cargan, los servicios están claros y la información es precisa.",
+      "checklistTitle": "Lista final",
+      "check1": "Nombre claro con especialidad definida",
+      "check2": "Descripción profesional con propuesta de valor",
+      "check3": "Fotos de calidad y auténticas",
+      "check4": "Servicios claros con precios y duraciones",
+      "check5": "Respuestas listas a preguntas frecuentes",
+      "check6": "Una invitación a dejar reseñas"
     }
   }
 }

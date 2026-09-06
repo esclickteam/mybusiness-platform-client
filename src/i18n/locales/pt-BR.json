@@ -1260,6 +1260,89 @@
     "errors": {
       "missingTrigger": "Falta um gatilho aprovado",
       "missingGraph": "Este modelo não tem um grafo de ativação"
+    },
+    "aiTab": {
+      "title": "Automações de IA",
+      "subtitle": "Escolha um modelo pronto e adapte ao seu negócio.",
+      "hint": "O consultor analisa e recomenda. Aqui você descobre modelos de IA e revisa antes de ativar.",
+      "empty": "Não há modelos de IA agora. Tente mais tarde.",
+      "viewTemplate": "Ver modelo",
+      "billing": "Uma ação de IA conta como uma ação de automação do seu plano."
+    },
+    "aiTemplates": {
+      "ai_lead_scoring": {
+        "title": "Pontuação automática de leads",
+        "description": "Pontua leads novos por qualidade e potencial."
+      },
+      "ai_lead_classify": {
+        "title": "Classificação automática de leads",
+        "description": "Classifica leads novos em categorias."
+      },
+      "ai_lead_auto_tag": {
+        "title": "Marcação automática de leads",
+        "description": "Adiciona tags relevantes."
+      },
+      "ai_hot_lead": {
+        "title": "Detectar leads quentes",
+        "description": "Encontra leads que precisam de acompanhamento rápido."
+      },
+      "ai_lead_brief": {
+        "title": "Resumo do lead antes da ligação",
+        "description": "Prepara um resumo curto."
+      },
+      "ai_followup_draft": {
+        "title": "Redigir um follow-up",
+        "description": "Redige só um rascunho de follow-up."
+      },
+      "ai_email_draft": {
+        "title": "Redigir um e-mail",
+        "description": "Redige só um rascunho de e-mail."
+      },
+      "ai_next_action": {
+        "title": "Sugerir a próxima ação",
+        "description": "Sugere o próximo passo."
+      },
+      "ai_daily_leads_digest": {
+        "title": "Resumo diário de leads",
+        "description": "Resume os leads de hoje."
+      },
+      "ai_daily_agenda_digest": {
+        "title": "Resumo diário de tarefas e reuniões",
+        "description": "Resume tarefas e reuniões."
+      },
+      "ai_summarize_calls": {
+        "title": "Resumo de chamadas"
+      },
+      "ai_auto_reply": {
+        "title": "Resposta automática"
+      },
+      "ai_risk_lead": {
+        "title": "Detectar leads em risco"
+      },
+      "ai_campaign_change": {
+        "title": "Mudança de campanha"
+      },
+      "ai_tasks_from_chat": {
+        "title": "Criar tarefas do chat"
+      },
+      "ai_intent_detect": {
+        "title": "Detectar intenção"
+      },
+      "ai_extract_message": {
+        "title": "Extrair dados de uma mensagem"
+      },
+      "ai_objections": {
+        "title": "Detectar objeções"
+      },
+      "ai_sentiment": {
+        "title": "Análise de sentimento"
+      },
+      "ai_crm_cleanup": {
+        "title": "Limpeza de CRM"
+      },
+      "ai_task_prioritization": {
+        "title": "Priorizar tarefas"
+      }
     }
   },
   "layout": {
@@ -11829,6 +11912,64 @@
           "title": "Linha social",
           "description": "Linha horizontal de ícones"
         }
+      },
+      "sections": {
+        "section-hero-business": {
+          "title": "Hero de negócio",
+          "description": "Título, parágrafo, dois botões e imagem"
+        },
+        "section-hero-beauty": {
+          "title": "Hero de beleza",
+          "description": "Design suave com degradê e imagem"
+        },
+        "section-about-split": {
+          "title": "Sobre — texto e imagem",
+          "description": "Layout de duas colunas"
+        },
+        "section-services-cards": {
+          "title": "Três serviços",
+          "description": "Título e três cartões"
+        },
+        "section-gallery-grid": {
+          "title": "Galeria de trabalhos",
+          "description": "Seis projetos com nome, categoria e descrição"
+        },
+        "section-testimonials": {
+          "title": "Depoimentos",
+          "description": "Três avaliações com nota"
+        },
+        "section-pricing": {
+          "title": "Preços",
+          "description": "Três pacotes de preço"
+        },
+        "section-faq": {
+          "title": "FAQ",
+          "description": "Título e quatro perguntas"
+        },
+        "section-team": {
+          "title": "Equipe",
+          "description": "Três membros com função e bio"
+        },
+        "section-stats": {
+          "title": "Números e dados",
+          "description": "Título, texto e quatro dados"
+        },
+        "section-video-text": {
+          "title": "Vídeo com texto",
+          "description": "Vídeo completo com texto e botão"
+        },
+        "section-contact": {
+          "title": "Contato",
+          "description": "Dados de contato e formulário"
+        },
+        "section-cta-gradient": {
+          "title": "Chamada para ação",
+          "description": "Degradê, título e botão"
+        },
+        "section-footer": {
+          "title": "Rodapé completo",
+          "description": "Logo, navegação e contato"
+        }
       }
     },
     "linkModal": {
@@ -14626,6 +14767,80 @@
         "step2": "Clique Conectar para ligar a Cal.",
         "step3": "A moeda do site deve coincidir com a Cal (recomendado ₪)."
       }
+    }
+  },
+  "helpArticles": {
+    "buildBusiness": {
+      "title": "Editar a página do negócio na Bizuply",
+      "whyTitle": "Por que editar a página importa",
+      "why1": "A página do negócio é sua loja virtual. Com o editor, modelos e IA você cria uma presença profissional onde os clientes decidem falar com você.",
+      "why2": "Uma página clara gera confiança, reduz atrito e aumenta conversões.",
+      "mainTitle": "Aba Início: informação essencial",
+      "nameTitle": "Nome do negócio",
+      "nameBody": "O nome aparece nas buscas e no topo. Seja claro e profissional.",
+      "bestPractices": "Boas práticas:",
+      "nameTip1": "Use o nome oficial ou sua marca pessoal.",
+      "nameTip2": "Inclua a especialidade principal para clareza e visibilidade.",
+      "examples": "Exemplos:",
+      "nameEx1": "Emily Cohen — cuidados naturais de pele",
+      "nameEx2": "Michael Levy — encanamento e emergências",
+      "descTitle": "Descrição do negócio",
+      "descBody": "Explique quem você é, o que oferece e por que escolher você. É uma das partes mais influentes.",
+      "include": "O que incluir:",
+      "include1": "O serviço ou especialidade principal",
+      "include2": "Anos de experiência, licenças ou certificações",
+      "include3": "Sua abordagem ou método profissional",
+      "include4": "O que o diferencia da concorrência",
+      "contactTitle": "Dados de contato",
+      "contactBody": "Dados precisos facilitam o contato. Confira telefones e e-mails.",
+      "categoryTitle": "Categoria do negócio",
+      "categoryBody": "Escolha a categoria que melhor representa seu serviço principal.",
+      "areaTitle": "Área de serviço ou cidade",
+      "areaBody": "Escolha a cidade ou área principal onde mais trabalha.",
+      "galleryTitle": "Aba Galeria: primeira impressão visual",
+      "galleryBody": "A galeria mostra seu trabalho antes do contato. Fotos e vídeos de qualidade aumentam confiança.",
+      "recommended": "Conteúdo recomendado:",
+      "rec1": "Antes/depois ou projetos concluídos",
+      "rec2": "O espaço, ferramentas ou estúdio",
+      "rec3": "Vídeos curtos do processo ou profissionalismo",
+      "galleryTip1": "Use fotos nítidas e bem iluminadas.",
+      "galleryTip2": "Qualidade importa mais que quantidade.",
+      "galleryTip3": "Evite filtros pesados para manter autenticidade.",
+      "reviewsTitle": "Aba Avaliações: gerar confiança",
+      "reviewsBody": "As avaliações são de clientes reais. As notas afetam visibilidade e decisões.",
+      "reviewsWhy": "Por que importam:",
+      "reviewsWhy1": "Geram prova social e confiança.",
+      "reviewsWhy2": "Melhoram visibilidade e ranking.",
+      "reviewsWhy3": "Reduzem a dúvida de novos clientes.",
+      "askReviews": "Como pedir avaliações:",
+      "askReviewsBody": "Se ficou satisfeito, uma avaliação curta no meu perfil Bizuply ajuda novos clientes.",
+      "calendarTitle": "Aba Agenda: reservas online",
+      "calendarBody": "A agenda permite reservar na página, sem ligações.",
+      "serviceGuide": "Dicas para serviços:",
+      "service1": "Um nome de serviço claro",
+      "service2": "Duração estimada (minutos)",
+      "service3": "Preço",
+      "service4": "Uma descrição breve do que está incluído",
+      "faqTitle": "Aba FAQ",
+      "faqBody": "O FAQ responde perguntas repetidas antecipadamente. Poupa tempo e parece mais profissional.",
+      "qCol": "Pergunta",
+      "aCol": "Resposta",
+      "q1": "Vocês aceitam cartão?",
+      "a1": "Sim. Aceitamos cartões e apps de pagamento populares.",
+      "q2": "Há garantia?",
+      "a2": "Sim. Um reparo incluído, válido por 60 dias.",
+      "q3": "Há horários no fim de semana?",
+      "a3": "Sim. Fim de semana com agendamento prévio.",
+      "saveTitle": "Salvar e revisar",
+      "save1": "Após completar as seções, clique Salvar tudo e veja Ver perfil.",
+      "save2": "Confira se as imagens carregam, os serviços estão claros e as informações são precisas.",
+      "checklistTitle": "Lista final",
+      "check1": "Nome claro com especialidade definida",
+      "check2": "Descrição profissional com proposta de valor",
+      "check3": "Fotos de qualidade e autênticas",
+      "check4": "Serviços claros com preços e durações",
+      "check5": "Respostas prontas para perguntas frequentes",
+      "check6": "Um convite para deixar avaliações"
     }
   }
 }

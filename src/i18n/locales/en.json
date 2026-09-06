@@ -1260,6 +1260,89 @@
     "errors": {
       "missingTrigger": "An approved trigger is missing",
       "missingGraph": "This template has no activation graph"
+    },
+    "aiTab": {
+      "title": "AI automations",
+      "subtitle": "Pick a ready template and adapt it to your business.",
+      "hint": "The business advisor analyzes and recommends. Here you discover AI templates and review them before turning them on.",
+      "empty": "No AI templates are available to view right now. Try again later.",
+      "viewTemplate": "View template",
+      "billing": "An AI action counts as an automation action in your plan."
+    },
+    "aiTemplates": {
+      "ai_lead_scoring": {
+        "title": "Automatic lead scoring",
+        "description": "Scores new leads by quality and potential."
+      },
+      "ai_lead_classify": {
+        "title": "Automatic lead classification",
+        "description": "Classifies new leads into categories."
+      },
+      "ai_lead_auto_tag": {
+        "title": "Automatic lead tagging",
+        "description": "Adds relevant tags."
+      },
+      "ai_hot_lead": {
+        "title": "Detect hot leads",
+        "description": "Finds leads that need fast follow-up."
+      },
+      "ai_lead_brief": {
+        "title": "Lead brief before a sales call",
+        "description": "Prepares a short lead brief."
+      },
+      "ai_followup_draft": {
+        "title": "Draft a follow-up",
+        "description": "Drafts a follow-up message only."
+      },
+      "ai_email_draft": {
+        "title": "Draft an email",
+        "description": "Drafts an email only."
+      },
+      "ai_next_action": {
+        "title": "Suggest the next action",
+        "description": "Suggests the next step."
+      },
+      "ai_daily_leads_digest": {
+        "title": "Daily leads digest",
+        "description": "Summarizes today's leads."
+      },
+      "ai_daily_agenda_digest": {
+        "title": "Daily tasks and meetings digest",
+        "description": "Summarizes tasks and meetings."
+      },
+      "ai_summarize_calls": {
+        "title": "Call summaries"
+      },
+      "ai_auto_reply": {
+        "title": "Automatic reply"
+      },
+      "ai_risk_lead": {
+        "title": "Detect at-risk leads"
+      },
+      "ai_campaign_change": {
+        "title": "Campaign change"
+      },
+      "ai_tasks_from_chat": {
+        "title": "Create tasks from chat"
+      },
+      "ai_intent_detect": {
+        "title": "Detect intent"
+      },
+      "ai_extract_message": {
+        "title": "Extract info from a message"
+      },
+      "ai_objections": {
+        "title": "Detect objections"
+      },
+      "ai_sentiment": {
+        "title": "Sentiment analysis"
+      },
+      "ai_crm_cleanup": {
+        "title": "CRM cleanup"
+      },
+      "ai_task_prioritization": {
+        "title": "Prioritize tasks"
+      }
     }
   },
   "layout": {
@@ -11829,6 +11912,64 @@
           "title": "Social row",
           "description": "Horizontal row of icons"
         }
+      },
+      "sections": {
+        "section-hero-business": {
+          "title": "Business hero",
+          "description": "Headline, paragraph, two buttons, and an image"
+        },
+        "section-hero-beauty": {
+          "title": "Beauty hero",
+          "description": "Soft gradient design with an image"
+        },
+        "section-about-split": {
+          "title": "About — text and image",
+          "description": "Clean two-column layout"
+        },
+        "section-services-cards": {
+          "title": "Three services",
+          "description": "Headline and three cards"
+        },
+        "section-gallery-grid": {
+          "title": "Work gallery",
+          "description": "Six projects with name, category, and description"
+        },
+        "section-testimonials": {
+          "title": "Customer testimonials",
+          "description": "Three reviews with ratings"
+        },
+        "section-pricing": {
+          "title": "Pricing",
+          "description": "Three price packages"
+        },
+        "section-faq": {
+          "title": "FAQ",
+          "description": "Headline and four questions"
+        },
+        "section-team": {
+          "title": "Team",
+          "description": "Three team members with role and bio"
+        },
+        "section-stats": {
+          "title": "Numbers and stats",
+          "description": "Headline, copy, and four labeled stats"
+        },
+        "section-video-text": {
+          "title": "Video with caption",
+          "description": "Full video with text overlay and a button"
+        },
+        "section-contact": {
+          "title": "Contact",
+          "description": "Contact details and a form"
+        },
+        "section-cta-gradient": {
+          "title": "Call to action",
+          "description": "Gradient, headline, and button"
+        },
+        "section-footer": {
+          "title": "Full footer",
+          "description": "Logo, navigation, and contact details"
+        }
       }
     },
     "linkModal": {
@@ -14626,6 +14767,80 @@
         "step2": "Click Connect to link Cal to the site.",
         "step3": "Make sure the site currency matches Cal (₪ recommended)."
       }
+    }
+  },
+  "helpArticles": {
+    "buildBusiness": {
+      "title": "Editing the business page in Bizuply",
+      "whyTitle": "Why editing the business page matters",
+      "why1": "Your Bizuply business page is more than a digital profile — it is your virtual store. With the site builder, ready templates, and AI Studio you can create a professional presence. This is where potential customers form a first impression, understand your services, and decide to contact you or book.",
+      "why2": "A clear, well-built page builds trust, reduces friction, and increases conversions. Every section helps guide customers to act.",
+      "mainTitle": "Home tab: core business information",
+      "nameTitle": "Business name",
+      "nameBody": "The name appears in search results, at the top of the page, and wherever the business is shown. Keep it clear, professional, and descriptive.",
+      "bestPractices": "Best practices:",
+      "nameTip1": "Use the official business name or your personal brand.",
+      "nameTip2": "Include the main specialty to improve clarity and search visibility.",
+      "examples": "Examples:",
+      "nameEx1": "Emily Cohen — natural skin care",
+      "nameEx2": "Michael Levy — plumbing and emergency service",
+      "descTitle": "Business description",
+      "descBody": "Explain who you are, what you offer, and why customers should choose you. This is one of the most influential parts of the page.",
+      "include": "What to include:",
+      "include1": "The main service or specialty",
+      "include2": "Years of experience, licenses, or certifications",
+      "include3": "Your professional approach or method",
+      "include4": "What sets you apart from competitors",
+      "contactTitle": "Contact details",
+      "contactBody": "Accurate contact details make it easy for customers to reach you. Double-check phone numbers and emails so you do not miss opportunities.",
+      "categoryTitle": "Business category",
+      "categoryBody": "Choose the category that best represents your main service. If you offer several services, focus on the keyword customers are most likely to search.",
+      "areaTitle": "Service area or city",
+      "areaBody": "Choose the main city or service area. If you cover several areas, pick the one where most of the work happens.",
+      "galleryTitle": "Gallery tab: first visual impression",
+      "galleryBody": "The gallery lets customers judge your work visually before they contact you. Quality photos and videos raise trust and engagement.",
+      "recommended": "Recommended content:",
+      "rec1": "Before-and-after results or completed projects",
+      "rec2": "The workspace, tools, or studio",
+      "rec3": "Short videos that show your process or professionalism",
+      "galleryTip1": "Use high-resolution photos with good lighting.",
+      "galleryTip2": "Quality matters more than quantity.",
+      "galleryTip3": "Avoid heavy filters so the work stays authentic.",
+      "reviewsTitle": "Reviews tab: building trust",
+      "reviewsBody": "Reviews come only from real customers, which keeps them credible. Ratings affect visibility and help new customers decide.",
+      "reviewsWhy": "Why reviews matter:",
+      "reviewsWhy1": "They build social proof and trust.",
+      "reviewsWhy2": "They improve visibility and ranking.",
+      "reviewsWhy3": "They reduce hesitation for new customers.",
+      "askReviews": "How to ask for reviews:",
+      "askReviewsBody": "If you were happy with the service, I would really appreciate a short review on my Bizuply profile. It helps new customers find and trust my work.",
+      "calendarTitle": "Calendar tab: online booking",
+      "calendarBody": "The calendar lets customers book directly from the page, without phone tag.",
+      "serviceGuide": "Service setup tips:",
+      "service1": "A clear service name",
+      "service2": "Estimated duration (minutes)",
+      "service3": "Price",
+      "service4": "A short description of what is included",
+      "faqTitle": "FAQ tab",
+      "faqBody": "The FAQ answers repeated questions in advance. That saves time, reduces repeat inquiries, and looks more professional.",
+      "qCol": "Question",
+      "aCol": "Answer",
+      "q1": "Do you accept credit cards?",
+      "a1": "Yes. We accept credit cards and popular payment apps.",
+      "q2": "Is there a warranty on the service?",
+      "a2": "Yes. One included fix, valid for up to 60 days.",
+      "q3": "Are weekend appointments available?",
+      "a3": "Yes. Weekend bookings are available by prior arrangement.",
+      "saveTitle": "Save and review",
+      "save1": "After completing every section, click Save all. Use View profile to see how the page looks to customers.",
+      "save2": "Make sure images load, services are clearly defined, and all information is accurate and easy to understand.",
+      "checklistTitle": "Final checklist",
+      "check1": "A clear business name with a defined specialty",
+      "check2": "A professional description with a clear value offer",
+      "check3": "Quality, authentic photos",
+      "check4": "Well-defined services with prices and durations",
+      "check5": "Answers ready for common questions",
+      "check6": "A prompt for customers to leave reviews"
     }
   }
 }

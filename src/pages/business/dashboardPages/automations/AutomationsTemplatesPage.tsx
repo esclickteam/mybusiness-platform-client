@@ -52,10 +52,11 @@ import {
 } from "../../../../api/whatsappApi";
 import { readAutomationErrorMessage } from "./automationUiHelpers";
 import { TEMPLATE_CATEGORIES, type TemplateCategoryId } from "./templateCategoryMapping";
+import { getAiTemplateByKey } from "./aiAutomationCatalog";
 import {
-  AI_BILLING_SAFE_MESSAGE,
-  getAiTemplateByKey,
-} from "./aiAutomationCatalog";
+  aiTemplateDescription,
+  aiTemplateTitle,
+} from "../../../../i18n/aiAutomationLabels";
 import {
   WORKING_TEMPLATES,
   buildWhatsAppSimpleGraph,
@@ -942,8 +943,26 @@ export default function AutomationsTemplatesPage() {
                   </div>
                 </div>
 
-                <h3 className="ax-template-card__title">{template.name}</h3>
-                <p className="ax-template-card__desc">{template.description}</p>
+                <h3 className="ax-template-card__title">
+                  {(() => {
+                    const catalog = getAiTemplateByKey(
+                      template.key || template.recipeKey
+                    );
+                    return catalog
+                      ? aiTemplateTitle(t, catalog)
+                      : template.name;
+                  })()}
+                </h3>
+                <p className="ax-template-card__desc">
+                  {(() => {
+                    const catalog = getAiTemplateByKey(
+                      template.key || template.recipeKey
+                    );
+                    return catalog
+                      ? aiTemplateDescription(t, catalog)
+                      : template.description;
+                  })()}
+                </p>
 
                 <div className="ax-template-card__flow">
                   <span className="ax-flow-chip">
@@ -1014,7 +1033,16 @@ export default function AutomationsTemplatesPage() {
             >
               <X size={16} />
             </button>
-            <h2>{aiPreview.template.name}</h2>
+            <h2>
+              {(() => {
+                const catalog = getAiTemplateByKey(
+                  aiPreview.template.recipeKey || aiPreview.template.key
+                );
+                return catalog
+                  ? aiTemplateTitle(t, catalog)
+                  : aiPreview.template.name;
+              })()}
+            </h2>
             {(() => {
               const catalog = getAiTemplateByKey(
                 aiPreview.template.recipeKey || aiPreview.template.key

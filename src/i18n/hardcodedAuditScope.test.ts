@@ -25,6 +25,11 @@ describe("hardcoded i18n audit scope", () => {
     expect(
       classifySourcePath("pages/business/dashboardPages/automations/workingTemplates.ts")
     ).toBe("C");
+    expect(
+      classifySourcePath(
+        "components/site-builder/studio/visual-editor/library/sectionLibrary.ts"
+      )
+    ).toBe("C");
   });
 
   it("treats tests as category D", () => {
@@ -39,6 +44,11 @@ describe("hardcoded i18n audit scope", () => {
     ).toBe("D");
     expect(
       classifySourcePath("components/site-plugins/countdown/countdownUtils.ts")
+    ).toBe("D");
+    expect(
+      classifySourcePath(
+        "pages/business/dashboardPages/automations/aiAutomationCatalog.ts"
+      )
     ).toBe("D");
   });
 

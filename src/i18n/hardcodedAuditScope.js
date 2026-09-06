@@ -15,6 +15,7 @@ const C_MARKERS = [
   "appointmentConfirmationEmail",
   "leadWelcomeEmail",
   "studio/data/elementLibrary.ts",
+  "visual-editor/library/sectionLibrary.ts",
 ];
 
 export function classifySourcePath(rel) {
@@ -54,7 +55,8 @@ export function classifySourcePath(rel) {
     r.endsWith("data/pluginEditorRegistry.ts") ||
     r.endsWith("data/sitePluginNav.ts") ||
     r.endsWith("payments/paymentProvidersCatalog.ts") ||
-    r.endsWith("countdown/countdownUtils.ts")
+    r.endsWith("countdown/countdownUtils.ts") ||
+    r.endsWith("automations/aiAutomationCatalog.ts")
   ) {
     return "D";
   }

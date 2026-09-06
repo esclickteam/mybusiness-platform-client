@@ -8,6 +8,7 @@ import path from "node:path";
 import { createRequire } from "node:module";
 import { extraLocaleObject } from "./i18n-batch-site-studio-faqs.mjs";
 import { extraPanelsLocaleObject } from "./i18n-batch-panels-faqs.mjs";
+import { extraAiHelpStudioLocaleObject } from "./i18n-batch-ai-help-studio.mjs";
 
 const require = createRequire(import.meta.url);
 const { categoryNamesCatalog } = require("../src/i18n/businessCategoryLabels.js");
@@ -313,8 +314,11 @@ for (const locale of LOCALES) {
   const current = JSON.parse(fs.readFileSync(file, "utf8"));
   const beforePartner = current?.partner?.register?.title;
   const merged = deepMerge(
-    deepMerge(deepMerge(current, localeObject(locale)), extraLocaleObject(locale)),
-    extraPanelsLocaleObject(locale)
+    deepMerge(
+      deepMerge(deepMerge(current, localeObject(locale)), extraLocaleObject(locale)),
+      extraPanelsLocaleObject(locale)
+    ),
+    extraAiHelpStudioLocaleObject(locale)
   );
   const afterPartner = merged?.partner?.register?.title;
   if (beforePartner && beforePartner !== afterPartner) {
