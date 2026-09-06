@@ -33,6 +33,8 @@ import BizuplyLoader from "../components/ui/BizuplyLoader";
 import { PLUGIN_PANEL_MAP } from "../components/website/site-management/plugins/pluginPanels";
 import SiteDynamicPluginPanel from "../components/website/site-management/plugins/SiteDynamicPluginPanel";
 import { btnPrimary, btnSecondary } from "../components/website/site-management/siteManagementUi";
+import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../i18n/localeUtils";
 import {
   getPluginAccent,
   getPluginIcon,
@@ -51,6 +53,8 @@ const CORE_PLUGIN_KEYS = new Set([
 ]);
 
 export default function SiteManagementPanelPage() {
+  const { t, i18n } = useTranslation();
+  const pageDir = getTextDirection(i18n.language);
   const { businessId = "", siteId = "" } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
@@ -59,7 +63,7 @@ export default function SiteManagementPanelPage() {
   const [loading, setLoading] = useState(true);
   const [savingPlugins, setSavingPlugins] = useState(false);
   const [savingKey, setSavingKey] = useState<string | null>(null);
-  const [siteName, setSiteName] = useState("האתר שלי");
+  const [siteName, setSiteName] = useState("");
   const [sitePublished, setSitePublished] = useState(false);
   const [publicUrl, setPublicUrl] = useState("");
   const [templateKey, setTemplateKey] = useState("");
@@ -91,11 +95,11 @@ export default function SiteManagementPanelPage() {
       ]);
 
       if (!site) {
-        setError("האתר לא נמצא");
+        setError(t("sitePlugins.management.siteNotFound"));
         return;
       }
 
-      setSiteName(String(site.name || "האתר שלי"));
+      setSiteName(String(site.name || t("sitePlugins.management.fallbackSite")));
       setSitePublished(Boolean(site.published || site.status === "published"));
       setPublicUrl(String(site.publicUrl || ""));
       setTemplateKey(
@@ -107,11 +111,11 @@ export default function SiteManagementPanelPage() {
       setEnabledPlugins(plugins.enabledPlugins);
       setDetectedFromSite(plugins.detectedFromSite || []);
     } catch (err: any) {
-      setError(err?.response?.data?.error || err?.message || "שגיאה בטעינת הפאנל");
+      setError(err?.response?.data?.error || err?.message || t("sitePlugins.management.loadError"));
     } finally {
       setLoading(false);
     }
-  }, [siteId]);
+  }, [siteId, t]);
 
   useEffect(() => {
     loadPanel();
@@ -166,7 +170,7 @@ export default function SiteManagementPanelPage() {
       return;
     }
     const pluginKey =
-      getSectionMetaForPlugin(activeSection, catalog).pluginKey ||
+      getSectionMetaForPlugin(activeSection, catalog, t).pluginKey ||
       catalog.find((p) => resolvePluginSection(p.key) === activeSection)?.key ||
       "";
     if (pluginKey && !enabledPlugins.includes(pluginKey)) {
@@ -194,7 +198,7 @@ export default function SiteManagementPanelPage() {
     return items;
   }, [enabledPlugins, portalEntitled]);
 
-  const activeMeta = getSectionMetaForPlugin(activeSection, catalog);
+  const activeMeta = getSectionMetaForPlugin(activeSection, catalog, t);
 
   function handlePluginUninstalled(pluginKey: string) {
     setEnabledPlugins((prev) => prev.filter((key) => key !== pluginKey));
@@ -223,7 +227,7 @@ export default function SiteManagementPanelPage() {
         err?.response?.data?.error ||
         err?.response?.data?.message ||
         err?.message ||
-        "פתיחת תשלום לתוסף נכשלה";
+        t("sitePlugins.management.checkoutFailed");
       window.alert(serverError);
     } finally {
       setSavingPlugins(false);
@@ -292,7 +296,7 @@ export default function SiteManagementPanelPage() {
         !err.message.startsWith("Request failed with status code")
           ? err.message
           : null);
-      alert(serverError || "עדכון התוסף נכשל — נסו שוב");
+      alert(serverError || t("sitePlugins.management.updateFailed"));
     } finally {
       setSavingPlugins(false);
     }
@@ -300,15 +304,15 @@ export default function SiteManagementPanelPage() {
 
   if (loading) {
     return (
-      <div dir="rtl" className="grid min-h-[50vh] place-items-center bg-gradient-to-b from-violet-50/30 to-white">
-        <BizuplyLoader size="md" label="טוען פאנל ניהול..." />
+      <div dir={pageDir} className="grid min-h-[50vh] place-items-center bg-gradient-to-b from-violet-50/30 to-white">
+        <BizuplyLoader size="md" label={t("sitePlugins.management.loading")} />
       </div>
     );
   }
 
   if (error) {
     return (
-      <div dir="rtl" className="mx-auto max-w-xl px-6 py-16 text-center">
+      <div dir={pageDir} className="mx-auto max-w-xl px-6 py-16 text-center">
         <p className="text-sm font-semibold text-rose-600">{error}</p>
         <button
           type="button"
@@ -316,7 +320,7 @@ export default function SiteManagementPanelPage() {
           className={`mt-4 ${btnPrimary}`}
         >
           <ArrowRight size={16} />
-          חזרה לאתרים שלי
+          {t("sitePlugins.management.backToSites")}
         </button>
       </div>
     );
@@ -324,7 +328,7 @@ export default function SiteManagementPanelPage() {
 
   return (
     <div
-      dir="rtl"
+      dir={pageDir}
       className={`min-h-[calc(100vh-64px)] ${
         activeSection === "plugins"
           ? "bg-[#f8f9fa]"
@@ -338,7 +342,7 @@ export default function SiteManagementPanelPage() {
               type="button"
               onClick={() => navigate(`${basePath}/website`)}
               className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-violet-100/80 bg-gradient-to-br from-violet-50 to-sky-50 text-violet-700 transition hover:border-sky-200 hover:text-sky-700"
-              aria-label="חזרה לאתרים שלי"
+              aria-label={t("sitePlugins.management.backToSites")}
             >
               <ArrowRight size={16} />
             </button>
@@ -355,7 +359,7 @@ export default function SiteManagementPanelPage() {
                       : "bg-amber-50 text-amber-700 ring-1 ring-amber-100"
                   }`}
                 >
-                  {sitePublished ? "מפורסם" : "טיוטה"}
+                  {sitePublished ? t("sitePlugins.management.published") : t("sitePlugins.management.draft")}
                 </span>
               </div>
               {publicUrl ? (
@@ -369,7 +373,7 @@ export default function SiteManagementPanelPage() {
           <div className="flex shrink-0 items-center gap-2">
             <Link to={editorHref} className={btnSecondary + " h-9 px-3 text-xs"}>
               <ExternalLink size={14} />
-              עורך
+              {t("sitePlugins.management.editor")}
             </Link>
             {sitePublished && publicUrl ? (
               <a
@@ -379,7 +383,7 @@ export default function SiteManagementPanelPage() {
                 className={btnSecondary + " h-9 px-3 text-xs hover:border-emerald-200 hover:text-emerald-700"}
               >
                 <Globe2 size={14} />
-                אתר חי
+                {t("sitePlugins.management.liveSite")}
               </a>
             ) : null}
           </div>
@@ -389,7 +393,7 @@ export default function SiteManagementPanelPage() {
           <nav className="flex min-w-max gap-0.5 border-t border-violet-50 pt-0.5">
             {navSections.map((section) => {
               const Icon = getSectionIcon(section);
-              const meta = getSectionMetaForPlugin(section, catalog);
+              const meta = getSectionMetaForPlugin(section, catalog, t);
               const active = activeSection === section;
 
               return (
@@ -433,19 +437,19 @@ export default function SiteManagementPanelPage() {
             <div className="grid gap-4 sm:grid-cols-3">
               {[
                 {
-                  label: "תוספים פעילים",
+                  label: t("sitePlugins.management.activePlugins"),
                   value: enabledPlugins.length,
                   accent: "border-violet-400",
                   bg: "from-violet-50/80",
                 },
                 {
-                  label: "סטטוס אתר",
-                  value: sitePublished ? "מפורסם" : "טיוטה",
+                  label: t("sitePlugins.management.siteStatus"),
+                  value: sitePublished ? t("sitePlugins.management.published") : t("sitePlugins.management.draft"),
                   accent: sitePublished ? "border-emerald-400" : "border-amber-400",
                   bg: sitePublished ? "from-emerald-50/80" : "from-amber-50/80",
                 },
                 {
-                  label: "זמין בחנות",
+                  label: t("sitePlugins.management.availableInStore"),
                   value: catalog.length - enabledPlugins.length,
                   accent: "border-indigo-400",
                   bg: "from-indigo-50/80",
@@ -468,9 +472,9 @@ export default function SiteManagementPanelPage() {
                     <Sparkles size={18} />
                   </div>
                   <div>
-                    <h2 className="text-base font-bold text-slate-900">ניהול מהיר</h2>
+                    <h2 className="text-base font-bold text-slate-900">{t("sitePlugins.management.quickManage")}</h2>
                     <p className="mt-0.5 text-sm text-slate-500">
-                      גישה מהירה לתוספים והגדרות של האתר
+                      {t("sitePlugins.management.quickManageHint")}
                     </p>
                   </div>
                 </div>
@@ -480,7 +484,7 @@ export default function SiteManagementPanelPage() {
                   className={btnPrimary + " h-10 text-xs"}
                 >
                   <Puzzle size={14} />
-                  חנות תוספים
+                  {t("sitePlugins.management.pluginStore")}
                 </button>
               </div>
 
@@ -514,7 +518,7 @@ export default function SiteManagementPanelPage() {
                           <span className="block truncate text-sm font-semibold text-slate-800">
                             {plugin.name}
                           </span>
-                          <span className="text-[11px] text-sky-700">לחצו לניהול</span>
+                          <span className="text-[11px] text-sky-700">{t("sitePlugins.management.clickToManage")}</span>
                         </div>
                       </button>
                     );
@@ -524,14 +528,14 @@ export default function SiteManagementPanelPage() {
                 <div className="mt-5 rounded-md border border-dashed border-violet-200/70 bg-gradient-to-b from-violet-50/30 to-white py-8 text-center">
                   <Layers size={28} className="mx-auto text-sky-400/70" />
                   <p className="mt-2 text-sm text-slate-500">
-                    עדיין לא הותקנו תוספים
+                    {t("sitePlugins.management.noPlugins")}
                   </p>
                   <button
                     type="button"
                     onClick={() => setActiveSection("plugins")}
                     className={`mt-3 ${btnSecondary} text-xs`}
                   >
-                    גלו את חנות התוספים
+                    {t("sitePlugins.management.discoverStore")}
                   </button>
                 </div>
               )}

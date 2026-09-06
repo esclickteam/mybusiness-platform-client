@@ -5716,6 +5716,190 @@
           "answer": "Después de publicar:\nCopiar el enlace de \"Mis sitios\" o el botón \"Compartir\"\nEnviarlo a través de WhatsApp, redes sociales, firma de correo electrónico o tarjeta de visita\nAñade el enlace a tu perfil de negocio de BizUply\n\nEl panel de control mostrará las estadísticas de tráfico y de visualización del sitio."
         }
       }
+    },
+    "troubleshooting": {
+      "title": "Solución de problemas y errores — FAQ",
+      "items": {
+        "notLoading": {
+          "question": "El sistema no carga — ¿qué hago?",
+          "answer": "Si el sistema no carga, sigue estos pasos en orden:\n\n1. Comprueba la conexión a internet y prueba otro sitio.\n2. Actualiza la página: F5 (Windows) o Cmd + R (Mac).\n3. Borra la caché del navegador (imágenes/archivos en caché y cookies).\n4. Cierra sesión y vuelve a entrar tras 2–3 minutos.\n5. Prueba otro navegador o dispositivo.\n6. Desactiva extensiones de bloqueo o seguridad.\n\nSi continúa, contacta a soporte con capturas y datos del navegador/SO."
+        },
+        "server500": {
+          "question": "Recibí un error 500 — ¿qué hago?",
+          "answer": "Un error 500 indica un problema en el servidor. Prueba actualizar, borrar caché, esperar unos minutos, otro navegador y desactivar extensiones. Si sigue, contacta a soporte con capturas y la hora."
+        },
+        "cannotLogin": {
+          "question": "No puedo iniciar sesión — ¿qué puedo hacer?",
+          "answer": "Si no puedes entrar: revisa usuario/contraseña e idioma del teclado, usa Olvidé la contraseña, revisa spam, espera 15 minutos si hay bloqueo y prueba incógnito u otro navegador. Si sigue fallando, contacta a soporte."
+        },
+        "filesNotLoading": {
+          "question": "Los archivos no cargan — ¿qué hago?",
+          "answer": "Si no cargan: confirma un formato compatible, el tamaño permitido, que el archivo no esté dañado, actualiza, prueba otro navegador o ventana privada y contacta a soporte."
+        },
+        "autoLogout": {
+          "question": "El sistema me cierra la sesión solo — ¿qué hago?",
+          "answer": "Los cierres inesperados pueden deberse a internet inestable, caché o extensiones, ahorro de energía o VPN/proxy. Prueba otro navegador y contacta a soporte si continúa."
+        },
+        "reportBugs": {
+          "question": "¿Cómo reporto errores del sistema?",
+          "answer": "Describe la acción, adjunta capturas, incluye dispositivo/SO/navegador/versión, fecha y hora, y envía a support@bizuply.com o abre un ticket."
+        },
+        "accountBlocked": {
+          "question": "Mi cuenta se bloqueó sin motivo — ¿qué hago?",
+          "answer": "Confirma el bloqueo al iniciar sesión, revisa el email (incluido spam), contacta a soporte con los datos de la cuenta y describe las últimas acciones."
+        },
+        "blankScreen": {
+          "question": "Veo una página en blanco — ¿cómo lo arreglo?",
+          "answer": "Comprueba internet, borra caché y cookies, desactiva extensiones, prueba incógnito y otro navegador o dispositivo."
+        },
+        "timeout": {
+          "question": "Error de timeout — el sitio se desconecta o no responde",
+          "answer": "Un timeout suele indicar una conexión lenta o interrumpida. Revisa la red, cierra apps pesadas, actualiza, inténtalo más tarde y contacta a soporte si se repite."
+        }
+      }
+    },
+    "technical": {
+      "title": "Soporte técnico — FAQ",
+      "items": {
+        "getHelp": {
+          "question": "¿Cómo obtengo ayuda técnica?",
+          "answer": "Revisa la ayuda y las FAQ, usa el bot de soporte, prueba refrescar/borrar caché/resetear contraseña, o escribe a support@bizuply.com con capturas y datos del dispositivo."
+        },
+        "resetPassword": {
+          "question": "¿Cómo restablezco la contraseña?",
+          "answer": "Entra a iniciar sesión, pulsa Olvidé la contraseña, introduce el email, revisa bandeja y spam, abre el enlace y confirma la nueva contraseña. Si no llega, verifica el email o contacta a soporte."
+        },
+        "notifications": {
+          "question": "¿Cómo funcionan las notificaciones?",
+          "answer": "Se envían solas para eventos clave (colaboraciones, citas, actualizaciones) y aparecen en el icono de campana. No hay que configurarlas; el push depende de los permisos."
+        },
+        "noUpdates": {
+          "question": "¿Por qué no veo actualizaciones nuevas?",
+          "answer": "Revisa internet, actualiza (F5 / Cmd + R), borra caché, actualiza el navegador y prueba otro dispositivo. Si sigue, contacta a soporte."
+        },
+        "clearCache": {
+          "question": "¿Cómo borro caché y cookies?",
+          "answer": "En Chrome: menú → Ajustes → Privacidad → Borrar datos de navegación → Todo el tiempo → cookies y archivos en caché → Borrar. Similar en Firefox, Edge y Safari."
+        },
+        "slowSite": {
+          "question": "¿Qué hago si el sitio va lento o se traba?",
+          "answer": "Revisa la red, cierra apps en segundo plano, borra caché, prueba otro navegador y actualiza SO/navegador. Si sigue lento, contacta a soporte."
+        },
+        "myProblemOrSystem": {
+          "question": "¿Cómo sé si el problema es mío o del sistema?",
+          "answer": "Prueba otro dispositivo y otra red, borra caché, desactiva extensiones y revisa el firewall. Si ocurre en todos lados, suele ser del sistema: contacta a soporte."
+        },
+        "oldBrowsers": {
+          "question": "¿El sistema admite navegadores antiguos?",
+          "answer": "Está pensado para navegadores modernos. Los antiguos pueden fallar en pantalla, ir lentos o perder funciones. Actualiza o cambia a uno compatible."
+        },
+        "accountSecurity": {
+          "question": "¿Qué hago ante un problema de seguridad de la cuenta?",
+          "answer": "Cambia la contraseña, revisa la actividad, desconecta dispositivos desconocidos, usa contraseñas fuertes y pasa un antivirus. Si no hay acceso, contacta a soporte ya."
+        },
+        "recoverAccount": {
+          "question": "¿Cómo recupero la cuenta si olvidé el acceso?",
+          "answer": "Usa Olvidé la contraseña, busca emails antiguos del sistema y contacta a soporte con datos identificativos si no se recupera."
+        }
+      }
+    },
+    "crm": {
+      "title": "CRM y agenda — FAQ",
+      "items": {
+        "getLeads": {
+          "question": "¿Cómo llego leads al CRM?",
+          "answer": "Ve a CRM → Leads, publica un sitio con formulario, conecta Meta Lead Ads en Ajustes y también puedes añadir leads a mano. Los nuevos aparecen en el CRM y el panel."
+        },
+        "bookAppointment": {
+          "question": "¿Cómo reservo una cita para un cliente?",
+          "answer": "Ve a CRM → Citas, pulsa Nueva cita, elige o crea un cliente, elige servicio/fecha/hora y guarda. Se sincroniza con el calendario y puedes enviar un recordatorio."
+        },
+        "whatIsCrm": {
+          "question": "¿Qué es un CRM y cómo ayuda al negocio?",
+          "answer": "Un CRM guarda las relaciones con clientes en un solo lugar: datos, citas, comunicación, análisis y decisiones. En BizUply está integrado con agenda, panel y analítica."
+        },
+        "clientProfile": {
+          "question": "¿Qué datos hay en el perfil del cliente?",
+          "answer": "Incluye contacto, historial, citas, notas y un registro. Úsalo para personalizar, retener, vender mejor y coordinar al equipo."
+        },
+        "scheduling": {
+          "question": "¿Cómo se gestionan citas y reservas en el CRM?",
+          "answer": "Hay una vista de reservas y disponibilidad: alta, edición, cancelación, avisos, sincronización, pagos previos y recordatorios."
+        },
+        "editCancel": {
+          "question": "¿Puedo editar o cancelar reservas existentes?",
+          "answer": "Sí: edita o cancela desde la agenda. Se avisa al cliente, queda historial y se actualiza la disponibilidad. Usa recordatorios y una política clara."
+        },
+        "services": {
+          "question": "¿Cómo añado o actualizo servicios y productos?",
+          "answer": "En la pestaña Servicios defines descripción, precio, duración y condiciones. Una ficha precisa evita choques de agenda."
+        },
+        "clientList": {
+          "question": "¿Cómo gestiono la lista de clientes y las búsquedas?",
+          "answer": "La pestaña Clientes tiene lista, búsqueda, filtros, historial, notas y estados."
+        },
+        "dataNotUpdating": {
+          "question": "¿Qué hago si los datos no se actualizan?",
+          "answer": "Haz un refresco forzado, revisa internet, cierra sesión, borra caché, prueba otro navegador y busca avisos de mantenimiento. Si sigue, contacta a soporte."
+        },
+        "analyze": {
+          "question": "¿Cómo analizo el rendimiento de clientes con el CRM?",
+          "answer": "Ayudan a ver clientes de valor, campañas, tiempos de respuesta, riesgo de baja, ofertas a medida y KPI."
+        },
+        "crmVsBooking": {
+          "question": "¿En qué se diferencia un CRM de solo citas?",
+          "answer": "La agenda solo gestiona tiempo. El CRM añade perfiles, historial, informes, recordatorios y marketing. Juntos cubren la gestión del negocio."
+        },
+        "errors": {
+          "question": "¿Qué hago si hay errores en el CRM o las citas?",
+          "answer": "Revisa internet, actualiza, mira avisos de mantenimiento, verifica los datos, documenta con capturas y contacta a soporte."
+        }
+      }
+    },
+    "dashboard": {
+      "title": "Ayuda detallada — panel de negocio",
+      "items": {
+        "whatShows": {
+          "question": "¿Qué muestra el panel de mi negocio?",
+          "answer": "Es un centro en tiempo real: citas por estado, reseñas, vistas de perfil, gráficos y un calendario."
+        },
+        "viewAppointments": {
+          "question": "¿Cómo veo todas las citas de la semana o el mes?",
+          "answer": "En Citas hay calendario mensual, listas diarias, tabla con filtros y exportación a Excel/PDF."
+        },
+        "notUpdating": {
+          "question": "¿Qué hago si citas o vistas no se actualizan?",
+          "answer": "Revisa internet, refresca, borra caché, prueba otro navegador, cierra sesión, espera 5–10 minutos y mira avisos. Si sigue, contacta a soporte."
+        },
+        "calendar": {
+          "question": "¿Qué representa el calendario del panel?",
+          "answer": "Es una vista de citas. Un día marcado tiene al menos una. Pulsa el día para verlas por hora y navega entre meses."
+        },
+        "clientsChart": {
+          "question": "¿Cómo leo el gráfico de clientes que reservaron por mes?",
+          "answer": "Muestra cuántos clientes reservaron cada mes, en barras, línea o tabla, y ayuda a ver picos de temporada."
+        },
+        "smartTips": {
+          "question": "¿Qué son las recomendaciones inteligentes del panel?",
+          "answer": "Salen del análisis: promocionar cuando baja la actividad, pedir reseñas, optimizar la agenda y mejorar el engagement. Se actualizan en tiempo real."
+        },
+        "wrongData": {
+          "question": "¿Qué hago si veo datos incorrectos o faltantes?",
+          "answer": "Confirma citas y estados, revisa la sincronización, refresca o entra de nuevo y, si sigue, informa a soporte con capturas."
+        },
+        "summary": {
+          "question": "¿Cómo obtengo un resumen semanal o mensual?",
+          "answer": "Hay informes con citas, exposición del perfil y reseñas. Puedes verlos, descargar PDF/Excel y compartirlos."
+        },
+        "notRealtime": {
+          "question": "¿Y si los datos del panel no se actualizan en tiempo real?",
+          "answer": "Si se ven viejos: revisa internet, refresca, borra caché, prueba otro navegador, mira mantenimiento, cierra sesión y espera unos minutos. Contacta a soporte si sigue."
+        },
+        "improve": {
+          "question": "¿Cómo mejoro las métricas y la actividad?",
+          "answer": "Haz campañas, mantén el perfil al día, añade fotos, gestiona disponibilidad, pide reseñas, analiza tendencias y usa el CRM."
+        }
+      }
     }
   },
   "productPages": {
@@ -11425,6 +11609,313 @@
           "description": "Fila horizontal de iconos"
         }
       }
+    },
+    "linkModal": {
+      "defaultLabel": "Enlace",
+      "mapsPreview": "Google Maps · dirección del negocio",
+      "noLink": "Aún no hay enlace",
+      "ariaEdit": "Editar enlace",
+      "title": "Añadir enlace",
+      "close": "Cerrar",
+      "pickPage": "Elige una página del sitio",
+      "noPages": "No hay páginas disponibles",
+      "pickSection": "Elige una sección",
+      "noSections": "No hay secciones disponibles",
+      "fileUrl": "Dirección del archivo",
+      "siteUrl": "Dirección del sitio",
+      "urlHint": "Puedes pegar una dirección completa. Si falta https:// se añade solo.",
+      "waNumber": "Número de WhatsApp",
+      "readyMessage": "Mensaje preparado",
+      "messagePlaceholder": "Hola, me gustaría más detalles...",
+      "emailAddress": "Dirección de email",
+      "subject": "Asunto",
+      "subjectPlaceholder": "Asunto del email",
+      "body": "Cuerpo del mensaje",
+      "phone": "Número de teléfono",
+      "phoneHint": "En el móvil el número se abre en el marcador.",
+      "address": "Dirección del negocio",
+      "addressPlaceholder": "Calle, ciudad, país",
+      "mapsHint": "El enlace abrirá una búsqueda de Google Maps.",
+      "scrollWhere": "¿Adónde desplazarse?",
+      "pageTop": "Inicio de la página",
+      "pageBottom": "Final de la página",
+      "preview": "Vista previa del enlace",
+      "remove": "Quitar enlace",
+      "cancel": "Cancelar",
+      "save": "Guardar enlace",
+      "tabs": {
+        "web": {
+          "label": "Web",
+          "description": "Sitio o URL"
+        },
+        "whatsapp": {
+          "label": "WhatsApp",
+          "description": "Abrir un chat directo"
+        },
+        "phone": {
+          "label": "Teléfono",
+          "description": "Llamar al tocar"
+        },
+        "email": {
+          "label": "Email",
+          "description": "Abrir un mensaje nuevo"
+        },
+        "page": {
+          "label": "Página",
+          "description": "Otra página del sitio"
+        },
+        "section": {
+          "label": "Sección",
+          "description": "Desplazarse a una zona"
+        },
+        "document": {
+          "label": "Documento",
+          "description": "PDF o archivo para descargar"
+        },
+        "address": {
+          "label": "Dirección",
+          "description": "Abrir en mapas"
+        },
+        "anchor": {
+          "label": "Inicio / final",
+          "description": "Navegación rápida en la página"
+        }
+      }
+    },
+    "lottie": {
+      "all": "Todo",
+      "business": "Negocios",
+      "commerce": "Tiendas",
+      "communication": "Contacto",
+      "success": "Éxito",
+      "decorative": "Decorativo",
+      "forward": "Adelante",
+      "reverse": "Atrás",
+      "bounce": "Adelante y atrás",
+      "reverseBounce": "Atrás y adelante",
+      "search": "Busca una animación en hebreo o inglés...",
+      "upload": "Subir JSON / Lottie",
+      "addFromUrl": "Añadir desde URL",
+      "autoplay": "Reproducción automática",
+      "loop": "Bucle",
+      "hover": "Reproducir al pasar",
+      "playback": "Modo de reproducción",
+      "speed": "Velocidad: {{value}}×",
+      "size": "Tamaño: {{value}}px",
+      "subtitle": "Animaciones Lottie vectoriales con fondo transparente",
+      "count": "{{count}} animaciones",
+      "uploadBadge": "Subida",
+      "urlBadge": "Enlace",
+      "adding": "Añadiendo a la página...",
+      "addToPage": "Añadir a la página",
+      "empty": "No se encontraron animaciones",
+      "emptyHint": "Prueba otra búsqueda, ve a Todo o sube un JSON / Lottie",
+      "readFailed": "No se pudo leer el archivo de animación",
+      "noAddHtml": "El editor no tiene función para añadir HTML.",
+      "htmlFailed": "No se pudo crear un elemento HTML en el lienzo",
+      "badFile": "{{name}} no es un JSON o Lottie válido",
+      "tooBig": "{{name}} es demasiado grande. El máximo es 4MB",
+      "badJson": "El JSON {{name}} no es válido",
+      "uploadedDesc": "Animación subida desde este ordenador",
+      "uploadedDot": "Archivo dotLottie subido desde este ordenador",
+      "addedLocal": "Se añadieron {{count}} animaciones a la biblioteca local",
+      "pasteUrl": "Pega un enlace a un JSON o Lottie",
+      "badUrl": "El enlace no es válido",
+      "httpOnly": "Solo se pueden añadir enlaces HTTP o HTTPS",
+      "urlDesc": "Animación desde un enlace externo",
+      "urlAdded": "La animación del enlace se añadió a la galería",
+      "noSource": "No se encontró un origen de animación válido",
+      "addedPage": "{{title}} se añadió a la página",
+      "addFailed": "No se pudo añadir la animación"
+    },
+    "portalVars": {
+      "types": {
+        "text": "Texto corto",
+        "textarea": "Texto largo",
+        "number": "Número",
+        "date": "Fecha",
+        "checkbox": "Casilla",
+        "checklist": "Lista de comprobación",
+        "status": "Estado",
+        "file": "Archivo",
+        "image": "Imagen",
+        "email": "Email",
+        "phone": "Teléfono"
+      },
+      "sources": {
+        "business_input": "Lo rellena el negocio",
+        "client_input": "Lo rellena el cliente",
+        "crm_client": "Desde el expediente del cliente",
+        "appointments": "Desde las citas",
+        "payments": "Desde los pagos",
+        "tasks": "Desde las tareas",
+        "files": "Desde los archivos",
+        "custom": "Personalizado"
+      }
+    },
+    "pluginActions": {
+      "fallback": {
+        "label": "Ajustes del plugin",
+        "description": "Se gestiona en el panel — no es un elemento del lienzo"
+      },
+      "benefits-wheel": {
+        "label": "Ruleta flotante",
+        "description": "Modal + botón flotante — no es una sección"
+      },
+      "smart-search": {
+        "label": "Botón de búsqueda",
+        "description": "Un clic abre la barra de búsqueda"
+      },
+      "accessibility": {
+        "label": "Menú de accesibilidad",
+        "description": "Botón flotante + menú de accesibilidad de BizUply — sin UserWay"
+      },
+      "smart-bot": {
+        "label": "Bot inteligente flotante",
+        "description": "Botón flotante que abre un chat — no es un widget de página"
+      },
+      "whatsapp-float": {
+        "label": "Botón flotante de WhatsApp",
+        "description": "Botón verde fijo en la esquina — no es un widget de página"
+      },
+      "announcement-bar": {
+        "label": "Barra de anuncios",
+        "description": "Barra superior en todo el sitio — no es una sección"
+      },
+      "cookie-banner": {
+        "label": "Banner de cookies",
+        "description": "Banner de consentimiento abajo — no es un widget de página"
+      },
+      "exit-popup": {
+        "label": "Popup de salida",
+        "description": "Ventana de leads al salir o tras una espera — no es una sección"
+      },
+      "multi-language": {
+        "label": "Selector de idioma",
+        "description": "Botón de idioma flotante — no es un elemento del lienzo"
+      },
+      "social-proof": {
+        "label": "Prueba social",
+        "description": "Avisos de conversión flotantes — no es un elemento del lienzo"
+      },
+      "floating-contact-bar": {
+        "label": "Barra de contacto",
+        "description": "Barra flotante en todo el sitio — no es un elemento del lienzo"
+      },
+      "faq-pro": {
+        "label": "FAQ Pro",
+        "description": "Widget FAQ desde el panel — no es un marcador de página"
+      },
+      "analytics-pro": {
+        "label": "Analytics Pro",
+        "description": "Ajustes de analítica en el panel — no es un elemento del editor"
+      },
+      "seo-pro": {
+        "label": "SEO Pro",
+        "description": "Auditoría y ajustes SEO en el panel — no es un elemento del editor"
+      },
+      "refer-a-friend": {
+        "label": "Recomienda a un amigo",
+        "description": "Campaña de referidos en ajustes — no es un elemento del editor"
+      },
+      "birthday-club": {
+        "label": "Club de cumpleaños",
+        "description": "Ajustes de CRM/automatización en el panel — no es un elemento del editor"
+      },
+      "form-to-pdf": {
+        "label": "Formulario a PDF",
+        "description": "Generación de PDF desde ajustes — no es un elemento del editor"
+      },
+      "smart-forms": {
+        "label": "Formularios inteligentes Pro",
+        "description": "Gestión de formularios en el panel — no es un marcador de página"
+      },
+      "qr-generator": {
+        "label": "Generador QR",
+        "description": "Crea QR en el panel — no es un marcador de página"
+      },
+      "store": {
+        "label": "Página de productos / tienda",
+        "description": "Se sincroniza automáticamente con los productos"
+      },
+      "client-portal": {
+        "label": "Área personal",
+        "description": "Añade páginas de acceso, registro y cuenta"
+      },
+      "testimonials-carousel": {
+        "label": "Carrusel de testimonios"
+      },
+      "pricing-table": {
+        "label": "Tabla de precios"
+      },
+      "timeline": {
+        "label": "Línea de tiempo"
+      },
+      "tabs": {
+        "label": "Pestañas / servicios"
+      },
+      "logo-carousel": {
+        "label": "Carrusel de logos"
+      },
+      "events-calendar": {
+        "label": "Página de eventos"
+      },
+      "whatsapp-catalog": {
+        "label": "Catálogo de productos",
+        "description": "Pedido por WhatsApp"
+      },
+      "digital-menu": {
+        "label": "Menú digital"
+      },
+      "multi-step-form": {
+        "label": "Formulario por pasos"
+      },
+      "customer-counter": {
+        "label": "Contador de clientes"
+      },
+      "google-maps": {
+        "label": "Mapa + contacto"
+      },
+      "countdown": {
+        "label": "Cuenta atrás",
+        "description": "Temporizador en vivo — añádelo desde Plugins"
+      }
+    },
+    "pluginsAdd": {
+      "noneInstalled": "No hay plugins instalados",
+      "installHint": "Instala plugins desde el panel → Tienda de plugins y vuelve aquí",
+      "search": "Busca un plugin...",
+      "installedCount": "{{count}} plugins instalados — los flotantes se activan al instante; pulsa Añadir para secciones",
+      "title": "Plugins",
+      "saveFirst": "Guarda el sitio para añadir plugins desde el editor",
+      "loading": "Cargando plugins...",
+      "activeEditor": "Activo en el editor y en el sitio",
+      "waiting": "Esperando activación",
+      "activePage": "Activo en la página actual",
+      "addPage": "Añadir página",
+      "addSection": "Añadir sección a la página",
+      "settings": "Ajustes en el panel",
+      "addWidget": "Añadir componente",
+      "remove": "Quitar del sitio",
+      "refresh": "Actualizar",
+      "activate": "Activar en el editor",
+      "openSettings": "Abrir ajustes",
+      "addAgain": "Añadir de nuevo",
+      "addAndOpen": "Añadir y abrir en el editor",
+      "noneFound": "Ningún plugin coincide con la búsqueda",
+      "activatedWa": "«{{name}}» está activo — introduce un WhatsApp en el panel",
+      "activated": "«{{name}}» está activo en el editor y en el sitio",
+      "activateFailed": "No se pudo activar {{name}}",
+      "removeConfirm": "¿Quitar «{{name}}» del sitio por completo?\nTambién se quitará de ajustes y de la tienda.",
+      "removed": "Se quitó «{{name}}» del sitio",
+      "removeFailed": "No se pudo quitar {{name}}",
+      "managed": "«{{name}}» se gestiona en el panel — no se añade como componente",
+      "settingsFailed": "No se pudieron abrir los ajustes de {{name}}",
+      "pagesAdded": "Se añadieron {{count}} páginas — {{name}} está activo",
+      "pageAdded": "Se añadió la página «{{title}}» — {{name}} está activo",
+      "addedBottom": "«{{name}}» se añadió al final — desplázate para verlo",
+      "savedHint": "«{{name}}» se guardó; añádelo desde una sección adecuada",
+      "addedActive": "«{{name}}» se añadió y está activo en la página"
     }
   },
   "partnerNav": {
@@ -12920,6 +13411,205 @@
     "pdf": {
       "description": "Crear un PDF desde un envío, hebreo RTL y marca.",
       "includeLogo": "Incluir logo"
+    },
+    "nav": {
+      "overview": {
+        "label": "Resumen",
+        "description": "Vista general del sitio y los plugins activos"
+      },
+      "plugins": {
+        "label": "Tienda de plugins",
+        "description": "Instala y quita plugins del sitio"
+      },
+      "portal": {
+        "label": "Área personal",
+        "description": "Inicio de sesión de clientes del sitio y páginas privadas del editor — no es una cuenta BizUply"
+      },
+      "store": {
+        "label": "Gestión de tienda",
+        "description": "Productos, categorías, envíos y pedidos"
+      },
+      "booking": {
+        "label": "Agenda y citas",
+        "description": "Horario, servicios y citas"
+      },
+      "payments": {
+        "label": "Pagos",
+        "description": "Conecta proveedores de pago y métodos de cobro"
+      },
+      "invoices": {
+        "label": "Facturas Morning",
+        "description": "Conecta Morning y emite facturas automáticamente"
+      },
+      "leads": {
+        "label": "Formulario de leads",
+        "description": "Gestiona consultas de clientes"
+      },
+      "reviews": {
+        "label": "Reseñas",
+        "description": "Gestiona reseñas de clientes"
+      },
+      "club": {
+        "label": "Club de clientes",
+        "description": "Área de clientes y beneficios"
+      },
+      "heatmap": {
+        "label": "Mapa de calor",
+        "description": "Análisis de clics y desplazamiento"
+      },
+      "form-abandonment": {
+        "label": "Abandono de formularios",
+        "description": "Analiza formularios incompletos"
+      },
+      "journey-recording": {
+        "label": "Viaje del cliente",
+        "description": "Grabaciones del recorrido"
+      },
+      "countdown": {
+        "label": "Cuenta atrás",
+        "description": "Temporizador de promociones"
+      },
+      "benefits-wheel": {
+        "label": "Ruleta de beneficios",
+        "description": "Juego de premios para conversiones"
+      },
+      "smart-search": {
+        "label": "Búsqueda inteligente",
+        "description": "Botón de búsqueda con barra en el sitio"
+      },
+      "smart-bot": {
+        "label": "Bot inteligente",
+        "description": "Árboles de conversación, contacto y botón de ayuda"
+      },
+      "service-finder": {
+        "label": "Encontrar servicio",
+        "description": "Cuestionario de coincidencia"
+      },
+      "accessibility": {
+        "label": "Accesibilidad",
+        "description": "Herramientas de accesibilidad"
+      },
+      "whatsapp-float": {
+        "label": "WhatsApp flotante",
+        "description": "Botón de chat de WhatsApp"
+      },
+      "exit-popup": {
+        "label": "Popup de leads",
+        "description": "Ventana emergente con formulario"
+      },
+      "smart-forms": {
+        "label": "Formularios inteligentes Pro",
+        "description": "Campos condicionales, pasos y archivos"
+      },
+      "announcement-bar": {
+        "label": "Barra de anuncios",
+        "description": "Mensaje fijo en la parte superior"
+      },
+      "cookie-banner": {
+        "label": "Banner de cookies",
+        "description": "Consentimiento de cookies y privacidad"
+      }
+    },
+    "management": {
+      "fallbackSite": "Mi sitio",
+      "siteNotFound": "No se encontró el sitio",
+      "loadError": "No se pudo cargar el panel",
+      "checkoutFailed": "No se pudo abrir el pago del plugin",
+      "updateFailed": "La actualización del plugin falló — inténtalo de nuevo",
+      "loading": "Cargando el panel...",
+      "backToSites": "Volver a mis sitios",
+      "published": "Publicado",
+      "draft": "Borrador",
+      "editor": "Editor",
+      "liveSite": "Sitio en vivo",
+      "activePlugins": "Plugins activos",
+      "siteStatus": "Estado del sitio",
+      "availableInStore": "Disponible en la tienda",
+      "quickManage": "Gestión rápida",
+      "quickManageHint": "Acceso rápido a plugins y ajustes",
+      "pluginStore": "Tienda de plugins",
+      "clickToManage": "Clic para gestionar",
+      "noPlugins": "Aún no hay plugins instalados",
+      "discoverStore": "Explora la tienda de plugins"
+    },
+    "smartBot": {
+      "hexHint": "Código HEX",
+      "defaultTrigger": "¿Necesitas ayuda?",
+      "defaultName": "Bot inteligente",
+      "defaultWelcome": "¡Hola! ¿Cómo podemos ayudarte hoy?",
+      "preview": "Vista previa",
+      "previewHint": "El botón como aparecerá en el sitio",
+      "online": "En línea · responde al instante",
+      "editorTip": "En el editor: Plugins → arrastra el botón del bot. En el sitio en vivo, un clic abre el chat según el árbol que definiste.",
+      "stepN": "Paso {{n}}",
+      "defaultStepMessage": "Mensaje del bot en este paso...",
+      "continue": "Continuar",
+      "title": "Bot inteligente",
+      "description": "Árboles de conversación, botón de ayuda, diseño del chat y opción de contacto.",
+      "activation": "Activación",
+      "activationHint": "Disponibilidad del plugin en el sitio",
+      "pluginActive": "Plugin activo en el sitio",
+      "botName": "Nombre del bot",
+      "welcome": "Mensaje de apertura",
+      "trigger": "Botón de activación",
+      "triggerHint": "Cómo se ve el disparador que abre el bot",
+      "triggerStyle": "Estilo del botón",
+      "styleIcon": "Solo icono del bot",
+      "styleLabel": "Solo texto",
+      "styleBoth": "Icono + texto",
+      "triggerText": "Texto del botón",
+      "triggerColor": "Color del botón",
+      "textColor": "Color del texto",
+      "window": "Ventana de chat",
+      "windowHint": "Diseño de la ventana de chat del sitio",
+      "headerColor": "Color del encabezado",
+      "windowBg": "Fondo de la ventana",
+      "botBubble": "Burbuja del bot",
+      "botBubbleText": "Texto de la burbuja del bot",
+      "userBubble": "Burbuja del usuario",
+      "userBubbleText": "Texto de la burbuja del usuario",
+      "contact": "Contacto",
+      "contactHint": "Permitir contacto desde el chat",
+      "showContact": "Mostrar opción de contacto",
+      "contactLabel": "Etiqueta del botón",
+      "defaultContact": "Contáctanos",
+      "phone": "Teléfono",
+      "whatsappHint": "Número internacional sin +, por ejemplo 97250...",
+      "email": "Email",
+      "trees": "Árboles de conversación",
+      "treesHint": "Construye el recorrido — pasos, mensajes y botones",
+      "startStep": "Paso inicial",
+      "delete": "Eliminar",
+      "stepTitle": "Título del paso",
+      "botMessage": "Mensaje del bot",
+      "optionsHint": "Opciones — inventa respuestas y lo que sigue",
+      "newOption": "Nueva opción",
+      "defaultReply": "Escribe aquí la respuesta del bot...",
+      "addOption": "Añadir opción",
+      "optionLabel": "Texto del botón para el visitante",
+      "optionPlaceholder": "Por ejemplo: ¿Cuál es el precio?",
+      "afterClick": "Qué ocurre después del clic",
+      "deleteOption": "Eliminar opción",
+      "endMessage": "Mensaje final (manual)",
+      "manualReply": "Respuesta del bot (manual)",
+      "replyPlaceholder": "Escribe la respuesta que mostrará el bot...",
+      "askPrompt": "Pregunta al visitante antes de escribir",
+      "askPlaceholder": "Escribe aquí tu pregunta o los detalles:",
+      "afterVisitor": "Respuesta del bot después de que el visitante escriba",
+      "thanksPlaceholder": "¡Gracias! Recibimos tu mensaje...",
+      "linkUrl": "Dirección del enlace",
+      "opensContact": "Abre las opciones de contacto definidas arriba",
+      "thenGo": "Luego ir a un paso (opcional)",
+      "newStepMessage": "Mensaje del bot en el nuevo paso...",
+      "noNext": "Sin cambio de paso",
+      "createStep": "+ Crear un paso nuevo",
+      "addStep": "Añadir un paso al árbol",
+      "actionNext": "Ir a un paso",
+      "actionReply": "Respuesta manual (texto)",
+      "actionAsk": "Respuesta libre del visitante",
+      "actionContact": "Contacto",
+      "actionEnd": "Terminar conversación",
+      "actionLink": "Abrir un enlace"
     }
   },
   "sitePortal": {

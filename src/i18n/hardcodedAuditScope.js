@@ -14,6 +14,7 @@ const C_MARKERS = [
   "localTemplateGraphs.ts",
   "appointmentConfirmationEmail",
   "leadWelcomeEmail",
+  "studio/data/elementLibrary.ts",
 ];
 
 export function classifySourcePath(rel) {
@@ -49,7 +50,9 @@ export function classifySourcePath(rel) {
     r.endsWith("businessCategoryLabels.js") ||
     r.endsWith("data/categories.js") ||
     r.endsWith("data/pricingAddonsData.ts") ||
-    r.endsWith("data/pricingPackagesData.ts")
+    r.endsWith("data/pricingPackagesData.ts") ||
+    r.endsWith("data/pluginEditorRegistry.ts") ||
+    r.endsWith("data/sitePluginNav.ts")
   ) {
     return "D";
   }

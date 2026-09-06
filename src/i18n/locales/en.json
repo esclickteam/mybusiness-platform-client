@@ -5716,6 +5716,190 @@
           "answer": "After publishing:\n• Copy the link from \"My Sites\" or the \"Share\" button\n• Send it via WhatsApp, social media, email signature, or business card\n• Add the link to your Bizuply business profile\n\nThe dashboard will show view and traffic statistics for the site."
         }
       }
+    },
+    "troubleshooting": {
+      "title": "Troubleshooting and errors — FAQ",
+      "items": {
+        "notLoading": {
+          "question": "The system does not load — what should I do?",
+          "answer": "When the system does not load, follow these steps in order:\n\n1. Check the internet connection: make sure the device is connected and the signal is stable. Try opening another site.\n2. Refresh the page: press F5 (Windows) or Cmd + R (Mac).\n3. Clear the browser cache: Chrome → Settings → Privacy and security → Clear browsing data. Select cached images/files and cookies, then clear.\n4. Sign out and sign back in: wait 2–3 minutes before signing in again.\n5. Try another browser or device: Firefox, Edge, Safari, or a different device.\n6. Disable extensions: temporarily turn off ad blockers or security add-ons.\n\nIf the issue continues, contact support with screenshots and browser/OS details."
+        },
+        "server500": {
+          "question": "I got a 500 server error — what should I do?",
+          "answer": "A 500 error means a server-side problem. Try:\n\n1. Refresh the page.\n2. Clear cache and cookies.\n3. Wait a few minutes and try again.\n4. Check from another browser or device.\n5. Disable extensions that block content.\n\nIf it continues, contact support with screenshots, the time it happened, and browser/OS details."
+        },
+        "cannotLogin": {
+          "question": "I cannot sign in — what can I do?",
+          "answer": "If you cannot sign in:\n\n1. Check the username/password and keyboard language.\n2. Use Forgot password.\n3. Check spam for the reset email.\n4. Wait 15 minutes if the account was locked temporarily.\n5. Try incognito mode or another browser.\n\nIf sign-in still fails, contact support with the account details."
+        },
+        "filesNotLoading": {
+          "question": "Files do not load or display — what should I do?",
+          "answer": "If files do not load:\n\n1. Confirm a supported format (JPG, PNG, PDF, MP4).\n2. Confirm the file is within the allowed size.\n3. Check that the file is not damaged.\n4. Refresh and try again.\n5. Try another browser or a private window.\n6. Contact support with the error details."
+        },
+        "autoLogout": {
+          "question": "The system signs me out automatically — what should I do?",
+          "answer": "Unexpected sign-outs can come from:\n\n1. An unstable internet connection.\n2. Browser cache or extension conflicts.\n3. Power-saving or sleep settings.\n4. VPN or proxy interference.\n\nTry another browser or device and contact support if it continues."
+        },
+        "reportBugs": {
+          "question": "How do I report bugs in the system?",
+          "answer": "For an effective bug report:\n\n1. Describe the action that caused the issue.\n2. Attach screenshots.\n3. Include device, OS, browser, and version.\n4. Note the date and time.\n5. Send details to support@bizuply.com or open a support ticket."
+        },
+        "accountBlocked": {
+          "question": "My account was blocked for no reason — what should I do?",
+          "answer": "If the account is blocked:\n\n1. Confirm the block by trying to sign in.\n2. Check email (including spam).\n3. Contact support with the account details.\n4. Describe the last actions before the block."
+        },
+        "blankScreen": {
+          "question": "I see a blank page or white screen — how do I fix it?",
+          "answer": "To fix blank screens:\n\n1. Check the internet connection.\n2. Clear cache and cookies.\n3. Temporarily disable extensions.\n4. Try incognito mode.\n5. Try another browser or device."
+        },
+        "timeout": {
+          "question": "Timeout error — the site disconnects or does not respond",
+          "answer": "A timeout usually means a slow or interrupted connection.\n\n1. Check internet speed and stability.\n2. Close apps that use a lot of bandwidth.\n3. Refresh and try again.\n4. Try later if servers are busy.\n5. Contact support if it keeps happening."
+        }
+      }
+    },
+    "technical": {
+      "title": "Technical support — FAQ",
+      "items": {
+        "getHelp": {
+          "question": "How do I get technical help?",
+          "answer": "For fast technical help we recommend:\n\n• Help center and FAQ: review guides and common solutions.\n• Support bot: use the built-in bot for routine issues.\n• Self-service: refresh, clear cache, or reset the password.\n• Contact support: email support@bizuply.com and include screenshots, browser, device, and the time of the issue."
+        },
+        "resetPassword": {
+          "question": "How do I reset a password?",
+          "answer": "To reset a password:\n\n1. Go to the sign-in page.\n2. Click Forgot password.\n3. Enter the account email.\n4. Check inbox and spam.\n5. Open the reset link.\n6. Set and confirm a new password.\n\nIf the email does not arrive, confirm the address and try again or contact support."
+        },
+        "notifications": {
+          "question": "How do notifications work in the system?",
+          "answer": "Notifications are sent automatically for key events such as collaborations, appointments, and system updates.\n\nThey appear under the bell icon in the top corner.\n\nNo manual setup is required. Push notifications depend on browser or device permissions."
+        },
+        "noUpdates": {
+          "question": "Why am I not seeing new updates in the system?",
+          "answer": "• Check that the internet connection is stable.\n• Refresh the page (F5 / Cmd + R).\n• Clear the browser cache.\n• Make sure the browser or app is up to date.\n• Try another browser or device.\n\nIf it continues, contact support with device and browser details."
+        },
+        "clearCache": {
+          "question": "How do I clear cache and cookies?",
+          "answer": "In Google Chrome:\n\n1. Open the menu → Settings.\n2. Go to Privacy and security.\n3. Choose Clear browsing data.\n4. Select All time.\n5. Check cookies and cached files.\n6. Click Clear data and restart the browser.\n\nThe process is similar in Firefox, Edge, and Safari."
+        },
+        "slowSite": {
+          "question": "What should I do if the site is slow or freezes?",
+          "answer": "• Check internet speed and stability.\n• Close background apps.\n• Clear the browser cache.\n• Try another browser.\n• Make sure the OS and browser are up to date.\n\nIf performance issues continue, contact support with details."
+        },
+        "myProblemOrSystem": {
+          "question": "How do I know if the problem is on my side or in the system?",
+          "answer": "• Try another device.\n• Try another network.\n• Clear cache and disable extensions.\n• Check firewall or security software.\n\nIf the issue appears everywhere, it is likely on the system side. Contact support with your findings."
+        },
+        "oldBrowsers": {
+          "question": "Does the system support old browsers?",
+          "answer": "The system is built for modern browsers to keep performance, security, and stability.\n\nOld browsers can cause display errors, slow performance, or missing features.\n\nWe strongly recommend updating the browser or switching to a supported one."
+        },
+        "accountSecurity": {
+          "question": "What should I do if there is an account security problem?",
+          "answer": "• Change the password immediately.\n• Review account activity.\n• Disconnect unknown devices.\n• Use strong unique passwords.\n• Run an antivirus check on the device.\n\nIf you cannot access the account, contact support immediately."
+        },
+        "recoverAccount": {
+          "question": "How do I recover an account if I forgot the sign-in details?",
+          "answer": "• Use Forgot password.\n• Search old emails from the system for username hints.\n• Contact support with identifying details if recovery fails."
+        }
+      }
+    },
+    "crm": {
+      "title": "CRM and scheduling — FAQ",
+      "items": {
+        "getLeads": {
+          "question": "How do I get leads into the CRM?",
+          "answer": "To get leads into the Bizuply CRM:\n\n1. Go to CRM → Leads.\n2. Make sure a published site has a contact form — site leads enter automatically.\n3. To connect Meta Lead Ads: CRM → Settings → Meta Lead Ads connection.\n4. You can also add a lead manually in the Leads tab.\n\nNew leads appear in the CRM and dashboard, and you can update status (new, in progress, converted, and more)."
+        },
+        "bookAppointment": {
+          "question": "How do I book an appointment for a customer?",
+          "answer": "To book an appointment:\n\n1. Go to CRM → Appointments.\n2. Click New appointment (+).\n3. Choose an existing customer — or add a new one.\n4. Choose a service, date, and available time.\n5. Click Save.\n\nThe appointment syncs with the calendar, and you can send a reminder."
+        },
+        "whatIsCrm": {
+          "question": "What is a CRM and how does it help run the business?",
+          "answer": "A CRM (customer relationship management) system keeps customer relationships in one place.\n\nIt lets you:\n• Store and organize customer information\n• Track appointments, services, and interactions\n• Improve communication and retention\n• Analyze customer behavior and performance\n• Make data-based business decisions\n\nIn BizUply the CRM is fully integrated with appointments, the dashboard, and analytics."
+        },
+        "clientProfile": {
+          "question": "What data is in a customer profile and how do I use it?",
+          "answer": "A customer profile includes contact details, service and purchase history, upcoming and past appointments, notes, and an interaction log.\n\nUse it to personalize service, improve retention, spot sales opportunities, reduce no-shows with reminders, and improve internal coordination."
+        },
+        "scheduling": {
+          "question": "How are scheduling and bookings managed in the CRM?",
+          "answer": "Scheduling is managed in a dedicated interface that shows all bookings and availability.\n\nFeatures include adding, editing, and cancelling appointments, automatic customer alerts, calendar sync, optional prepayments, and reminder messages."
+        },
+        "editCancel": {
+          "question": "Can I edit or cancel existing bookings, and how does it work?",
+          "answer": "Yes. Edit or cancel bookings directly from the scheduling interface.\n\nThe system notifies customers automatically, keeps a full history, and updates availability in real time.\n\nTo reduce cancellations: use reminders, set a clear cancellation policy, and offer flexible rescheduling."
+        },
+        "services": {
+          "question": "How do I add or update services and products in the CRM?",
+          "answer": "Services are managed in the Services tab.\n\nYou can set a description, price, duration, and special terms.\n\nAccurate service setup prevents scheduling clashes and improves the customer experience."
+        },
+        "clientList": {
+          "question": "How do I manage the customer list and run searches?",
+          "answer": "The Customers tab provides a full list, advanced search and filters, appointment and communication history, notes, and status marks."
+        },
+        "dataNotUpdating": {
+          "question": "What should I do if data is not updating or there is a system issue?",
+          "answer": "Try a hard refresh (Ctrl + F5 / Cmd + Shift + R), check the internet, sign out and back in, clear cache and cookies, try another browser or device, and look for maintenance messages.\n\nIf it continues, contact support with screenshots and details."
+        },
+        "analyze": {
+          "question": "How do I analyze and improve customer performance with the CRM?",
+          "answer": "CRM analytics help you spot high-value customers, track campaign responses, improve service response times, detect churn risk early, create tailored offers, and set KPIs."
+        },
+        "crmVsBooking": {
+          "question": "What is the difference between a CRM and an appointments-only system?",
+          "answer": "An appointments system focuses only on scheduling and time.\n\nA CRM adds full customer profiles, interaction history, reports, automatic reminders, and marketing/retention tools.\n\nTogether they are a complete business-management solution."
+        },
+        "errors": {
+          "question": "What should I do if I hit errors in the CRM or appointments system?",
+          "answer": "Check the internet, refresh, look at maintenance messages, confirm the input is accurate, document the issue with screenshots, and contact support with full details."
+        }
+      }
+    },
+    "dashboard": {
+      "title": "Detailed help — business dashboard",
+      "items": {
+        "whatShows": {
+          "question": "What does my business dashboard show?",
+          "answer": "The dashboard is a real-time control center for business activity.\n\nIt includes appointments by status, review and rating trends, profile views, visual charts, and an interactive calendar."
+        },
+        "viewAppointments": {
+          "question": "How do I see all appointments scheduled for the week or month?",
+          "answer": "In the Appointments section you can use a monthly calendar, daily lists with customer and service details, a sortable table, and Excel/PDF export."
+        },
+        "notUpdating": {
+          "question": "What should I do if appointments or views are not updating on the dashboard?",
+          "answer": "Check the internet, hard-refresh, clear cache and cookies, try another browser or device, sign out and back in, wait 5–10 minutes for sync, and look for maintenance messages. If it continues, contact support."
+        },
+        "calendar": {
+          "question": "What does the dashboard calendar represent?",
+          "answer": "The calendar is a visual overview of scheduled appointments. A marked day means at least one appointment. Click a day to see hourly appointments and move between months to plan ahead."
+        },
+        "clientsChart": {
+          "question": "How do I read the chart of customers who booked by month?",
+          "answer": "The chart shows how many customers booked appointments each month. It is available as bars, a line, or a table, and helps spot seasonal peaks for marketing and budgeting."
+        },
+        "smartTips": {
+          "question": "What are the smart action recommendations on the dashboard?",
+          "answer": "Smart recommendations are generated from system analytics: promote a service when activity drops, ask for reviews, optimize the schedule, and improve customer engagement. They update in real time from your data."
+        },
+        "wrongData": {
+          "question": "What should I do if I notice wrong or missing dashboard data?",
+          "answer": "Confirm appointments and statuses are correct, check for sync issues, refresh or sign in again, review system messages, and if it continues report with screenshots to support."
+        },
+        "summary": {
+          "question": "How do I get a weekly or monthly business summary?",
+          "answer": "The dashboard provides summary reports with total appointments, profile-exposure metrics, and a reviews overview. You can view them online, download PDF or Excel, and share with the team."
+        },
+        "notRealtime": {
+          "question": "What if dashboard data is not updating in real time?",
+          "answer": "If data looks stale: check the internet, hard-refresh, clear cache and cookies, try another browser or device, look for maintenance alerts, sign out and back in, and wait a few minutes for sync. Contact support if it continues."
+        },
+        "improve": {
+          "question": "How do I improve dashboard metrics and increase business activity?",
+          "answer": "Run focused marketing campaigns, keep a current professional profile, add quality photos and videos, manage availability and reduce no-shows, ask customers for reviews, analyze trends, and use CRM and analytics well."
+        }
+      }
     }
   },
   "productPages": {
@@ -11425,6 +11609,313 @@
           "description": "Horizontal row of icons"
         }
       }
+    },
+    "linkModal": {
+      "defaultLabel": "Link",
+      "mapsPreview": "Google Maps · business address",
+      "noLink": "No link set yet",
+      "ariaEdit": "Edit link",
+      "title": "Add a link",
+      "close": "Close",
+      "pickPage": "Choose a site page",
+      "noPages": "No pages available",
+      "pickSection": "Choose a section",
+      "noSections": "No sections available",
+      "fileUrl": "File address",
+      "siteUrl": "Website address",
+      "urlHint": "You can paste a full address. If https:// is missing it is added automatically.",
+      "waNumber": "WhatsApp number",
+      "readyMessage": "Prepared message",
+      "messagePlaceholder": "Hi, I would like more details...",
+      "emailAddress": "Email address",
+      "subject": "Subject",
+      "subjectPlaceholder": "Email subject",
+      "body": "Message body",
+      "phone": "Phone number",
+      "phoneHint": "On mobile the number opens directly in the dialer.",
+      "address": "Business address",
+      "addressPlaceholder": "Street, city, country",
+      "mapsHint": "The link will open a Google Maps search.",
+      "scrollWhere": "Where should it scroll?",
+      "pageTop": "Top of the page",
+      "pageBottom": "Bottom of the page",
+      "preview": "Link preview",
+      "remove": "Remove link",
+      "cancel": "Cancel",
+      "save": "Save link",
+      "tabs": {
+        "web": {
+          "label": "Web",
+          "description": "Website or URL"
+        },
+        "whatsapp": {
+          "label": "WhatsApp",
+          "description": "Open a direct chat"
+        },
+        "phone": {
+          "label": "Phone",
+          "description": "Tap to call"
+        },
+        "email": {
+          "label": "Email",
+          "description": "Open a new message"
+        },
+        "page": {
+          "label": "Page",
+          "description": "Another page on the site"
+        },
+        "section": {
+          "label": "Section",
+          "description": "Scroll to an area on the page"
+        },
+        "document": {
+          "label": "Document",
+          "description": "PDF or a file to download"
+        },
+        "address": {
+          "label": "Address",
+          "description": "Open in maps"
+        },
+        "anchor": {
+          "label": "Top / bottom",
+          "description": "Quick in-page navigation"
+        }
+      }
+    },
+    "lottie": {
+      "all": "All",
+      "business": "Business",
+      "commerce": "Stores",
+      "communication": "Contact",
+      "success": "Success",
+      "decorative": "Decorative",
+      "forward": "Forward",
+      "reverse": "Reverse",
+      "bounce": "Forward and back",
+      "reverseBounce": "Back and forward",
+      "search": "Search an animation in Hebrew or English...",
+      "upload": "Upload JSON / Lottie",
+      "addFromUrl": "Add from URL",
+      "autoplay": "Autoplay",
+      "loop": "Loop",
+      "hover": "Play on hover",
+      "playback": "Playback mode",
+      "speed": "Speed: {{value}}×",
+      "size": "Size: {{value}}px",
+      "subtitle": "Vector Lottie animations with a transparent background",
+      "count": "{{count}} animations",
+      "uploadBadge": "Upload",
+      "urlBadge": "Link",
+      "adding": "Adding to the page...",
+      "addToPage": "Add to page",
+      "empty": "No animations found",
+      "emptyHint": "Try another search, switch to All, or upload a JSON / Lottie file",
+      "readFailed": "Could not read the animation file",
+      "noAddHtml": "The editor has no function to add HTML. Connect onAddHtml or editor.addHtml.",
+      "htmlFailed": "Could not create an HTML element on the canvas",
+      "badFile": "{{name}} is not a valid JSON or Lottie file",
+      "tooBig": "{{name}} is too large. The maximum size is 4MB",
+      "badJson": "The JSON file {{name}} is not valid",
+      "uploadedDesc": "Animation uploaded from this computer",
+      "uploadedDot": "dotLottie file uploaded from this computer",
+      "addedLocal": "{{count}} animations were added to the local library",
+      "pasteUrl": "Paste a link to a JSON or Lottie file",
+      "badUrl": "The link you entered is not valid",
+      "httpOnly": "Only HTTP or HTTPS links can be added",
+      "urlDesc": "Animation from an external link",
+      "urlAdded": "The animation from the link was added to the gallery",
+      "noSource": "No valid animation source was found",
+      "addedPage": "{{title}} was added to the page",
+      "addFailed": "Adding the animation failed"
+    },
+    "portalVars": {
+      "types": {
+        "text": "Short text",
+        "textarea": "Long text",
+        "number": "Number",
+        "date": "Date",
+        "checkbox": "Checkbox",
+        "checklist": "Checklist",
+        "status": "Status",
+        "file": "File",
+        "image": "Image",
+        "email": "Email",
+        "phone": "Phone"
+      },
+      "sources": {
+        "business_input": "Filled by the business",
+        "client_input": "Filled by the customer",
+        "crm_client": "From the customer file",
+        "appointments": "From appointments",
+        "payments": "From payments",
+        "tasks": "From tasks",
+        "files": "From files",
+        "custom": "Custom"
+      }
+    },
+    "pluginActions": {
+      "fallback": {
+        "label": "Plugin settings",
+        "description": "Managed in the panel — not a canvas element"
+      },
+      "benefits-wheel": {
+        "label": "Floating benefits wheel",
+        "description": "Modal + floating button — not a page section"
+      },
+      "smart-search": {
+        "label": "Search button",
+        "description": "A click opens the site search bar"
+      },
+      "accessibility": {
+        "label": "Accessibility menu",
+        "description": "Floating button + BizUply accessibility menu — no UserWay"
+      },
+      "smart-bot": {
+        "label": "Floating smart bot",
+        "description": "Floating button that opens a chat — not an on-page widget"
+      },
+      "whatsapp-float": {
+        "label": "Floating WhatsApp button",
+        "description": "Fixed green button in the corner — not an on-page widget"
+      },
+      "announcement-bar": {
+        "label": "Announcement bar",
+        "description": "Top bar on every page — not a section"
+      },
+      "cookie-banner": {
+        "label": "Cookie banner",
+        "description": "Consent banner at the bottom — not an on-page widget"
+      },
+      "exit-popup": {
+        "label": "Exit popup",
+        "description": "Lead window on exit or after a delay — not a section"
+      },
+      "multi-language": {
+        "label": "Language switcher",
+        "description": "Floating language button — not a canvas element"
+      },
+      "social-proof": {
+        "label": "Social proof",
+        "description": "Floating conversion toasts — not a canvas element"
+      },
+      "floating-contact-bar": {
+        "label": "Contact bar",
+        "description": "Site-wide floating bar — not a canvas element"
+      },
+      "faq-pro": {
+        "label": "FAQ Pro",
+        "description": "FAQ widget from panel settings — not an on-page placeholder"
+      },
+      "analytics-pro": {
+        "label": "Analytics Pro",
+        "description": "Analytics settings in the management panel — not an editor element"
+      },
+      "seo-pro": {
+        "label": "SEO Pro",
+        "description": "SEO audit and settings in the panel — not an editor element"
+      },
+      "refer-a-friend": {
+        "label": "Refer a friend",
+        "description": "Referral campaign in settings — not an editor element"
+      },
+      "birthday-club": {
+        "label": "Birthday club",
+        "description": "CRM / automation settings in the panel — not an editor element"
+      },
+      "form-to-pdf": {
+        "label": "Form to PDF",
+        "description": "PDF generation from settings — not an editor element"
+      },
+      "smart-forms": {
+        "label": "Smart forms Pro",
+        "description": "Form management in the panel — not an on-page placeholder"
+      },
+      "qr-generator": {
+        "label": "QR Generator",
+        "description": "Create QR codes in the management panel — not an on-page placeholder"
+      },
+      "store": {
+        "label": "Products / store page",
+        "description": "Syncs automatically with store products"
+      },
+      "client-portal": {
+        "label": "Personal area",
+        "description": "Adds login, signup, and account pages for site customers"
+      },
+      "testimonials-carousel": {
+        "label": "Testimonials carousel"
+      },
+      "pricing-table": {
+        "label": "Pricing table"
+      },
+      "timeline": {
+        "label": "Timeline"
+      },
+      "tabs": {
+        "label": "Tabs / services"
+      },
+      "logo-carousel": {
+        "label": "Logo carousel"
+      },
+      "events-calendar": {
+        "label": "Events page"
+      },
+      "whatsapp-catalog": {
+        "label": "Product catalog",
+        "description": "Order on WhatsApp"
+      },
+      "digital-menu": {
+        "label": "Digital menu"
+      },
+      "multi-step-form": {
+        "label": "Multi-step form"
+      },
+      "customer-counter": {
+        "label": "Customer counter"
+      },
+      "google-maps": {
+        "label": "Map + contact"
+      },
+      "countdown": {
+        "label": "Countdown",
+        "description": "Live timer — add it to the page from Plugins"
+      }
+    },
+    "pluginsAdd": {
+      "noneInstalled": "No plugins installed",
+      "installHint": "Install plugins from the management panel → Plugin store, then come back here",
+      "search": "Search a plugin...",
+      "installedCount": "{{count}} installed plugins — floating plugins go live immediately; click Add for on-page sections",
+      "title": "Plugins",
+      "saveFirst": "Save the site to add plugins from the editor",
+      "loading": "Loading plugins...",
+      "activeEditor": "Active in the editor and on the site",
+      "waiting": "Waiting to activate",
+      "activePage": "Active on the current page",
+      "addPage": "Add page",
+      "addSection": "Add section to the page",
+      "settings": "Settings in the panel",
+      "addWidget": "Add component",
+      "remove": "Remove from site",
+      "refresh": "Refresh",
+      "activate": "Activate in the editor",
+      "openSettings": "Open settings",
+      "addAgain": "Add again",
+      "addAndOpen": "Add and open in the editor",
+      "noneFound": "No plugins match the search",
+      "activatedWa": "«{{name}}» is on — enter a WhatsApp number in the plugin management panel",
+      "activated": "«{{name}}» is active in the editor and on the site",
+      "activateFailed": "Could not activate {{name}}",
+      "removeConfirm": "Remove «{{name}}» from the site completely?\nThe plugin will also be removed from settings and the plugin store.",
+      "removed": "«{{name}}» was removed from the site",
+      "removeFailed": "Could not remove {{name}}",
+      "managed": "«{{name}}» is managed in the panel settings — it is not added as a page component",
+      "settingsFailed": "Could not open settings for {{name}}",
+      "pagesAdded": "{{count}} pages were added — {{name}} is active",
+      "pageAdded": "Page «{{title}}» was added — {{name}} is active",
+      "addedBottom": "«{{name}}» was added at the bottom of the page — scroll to see the section",
+      "savedHint": "«{{name}}» was saved; add it through a matching section",
+      "addedActive": "«{{name}}» was added and is active on the page"
     }
   },
   "partnerNav": {
@@ -12920,6 +13411,205 @@
     "pdf": {
       "description": "Create a PDF from a submission, Hebrew RTL, and branding.",
       "includeLogo": "Include logo"
+    },
+    "nav": {
+      "overview": {
+        "label": "Overview",
+        "description": "A general view of the site and active plugins"
+      },
+      "plugins": {
+        "label": "Plugin store",
+        "description": "Install and remove site plugins"
+      },
+      "portal": {
+        "label": "Personal area",
+        "description": "Site-customer login plus private pages built in the editor — not a BizUply account"
+      },
+      "store": {
+        "label": "Store management",
+        "description": "Products, categories, shipping, and orders"
+      },
+      "booking": {
+        "label": "Calendar and appointments",
+        "description": "Business hours, services, and appointments"
+      },
+      "payments": {
+        "label": "Payments",
+        "description": "Connect payment providers and checkout methods"
+      },
+      "invoices": {
+        "label": "Morning invoices",
+        "description": "Connect Morning and issue invoices automatically"
+      },
+      "leads": {
+        "label": "Lead form",
+        "description": "Manage customer inquiries"
+      },
+      "reviews": {
+        "label": "Reviews",
+        "description": "Manage customer reviews"
+      },
+      "club": {
+        "label": "Customer club",
+        "description": "Customer area and perks"
+      },
+      "heatmap": {
+        "label": "Heatmap",
+        "description": "Click and scroll analysis"
+      },
+      "form-abandonment": {
+        "label": "Form abandonment",
+        "description": "Analyze unfinished forms"
+      },
+      "journey-recording": {
+        "label": "Customer journey",
+        "description": "Visitor path recordings"
+      },
+      "countdown": {
+        "label": "Countdown",
+        "description": "Dynamic promo timer"
+      },
+      "benefits-wheel": {
+        "label": "Benefits wheel",
+        "description": "Perk game for conversions"
+      },
+      "smart-search": {
+        "label": "Smart search",
+        "description": "Search button with a site search bar"
+      },
+      "smart-bot": {
+        "label": "Smart bot",
+        "description": "Conversation trees, contact, and a help button"
+      },
+      "service-finder": {
+        "label": "Find a service",
+        "description": "Matching questionnaire"
+      },
+      "accessibility": {
+        "label": "Accessibility",
+        "description": "Site accessibility tools"
+      },
+      "whatsapp-float": {
+        "label": "Floating WhatsApp",
+        "description": "WhatsApp chat button"
+      },
+      "exit-popup": {
+        "label": "Lead popup",
+        "description": "Popup with a lead form"
+      },
+      "smart-forms": {
+        "label": "Smart forms Pro",
+        "description": "Conditional fields, steps, files, and an inbox"
+      },
+      "announcement-bar": {
+        "label": "Announcement bar",
+        "description": "Fixed message at the top of the site"
+      },
+      "cookie-banner": {
+        "label": "Cookie banner",
+        "description": "Cookie consent and privacy policy"
+      }
+    },
+    "management": {
+      "fallbackSite": "My site",
+      "siteNotFound": "The site was not found",
+      "loadError": "Could not load the management panel",
+      "checkoutFailed": "Could not open plugin checkout",
+      "updateFailed": "Updating the plugin failed — try again",
+      "loading": "Loading management panel...",
+      "backToSites": "Back to my sites",
+      "published": "Published",
+      "draft": "Draft",
+      "editor": "Editor",
+      "liveSite": "Live site",
+      "activePlugins": "Active plugins",
+      "siteStatus": "Site status",
+      "availableInStore": "Available in store",
+      "quickManage": "Quick management",
+      "quickManageHint": "Quick access to the site plugins and settings",
+      "pluginStore": "Plugin store",
+      "clickToManage": "Click to manage",
+      "noPlugins": "No plugins installed yet",
+      "discoverStore": "Browse the plugin store"
+    },
+    "smartBot": {
+      "hexHint": "HEX code",
+      "defaultTrigger": "Need help?",
+      "defaultName": "Smart bot",
+      "defaultWelcome": "Hi! How can we help you today?",
+      "preview": "Preview",
+      "previewHint": "The button as it will appear on the site",
+      "online": "Online · replies instantly",
+      "editorTip": "In the editor: Plugins → drag the bot button to the place you want. On the live site a click opens the chat window using the conversation tree you set.",
+      "stepN": "Step {{n}}",
+      "defaultStepMessage": "Bot message for this step...",
+      "continue": "Continue",
+      "title": "Smart bot",
+      "description": "Conversation trees the business builds, a custom help button, chat-window design, and a contact option.",
+      "activation": "Activation",
+      "activationHint": "Plugin availability on the site",
+      "pluginActive": "Plugin active on the site",
+      "botName": "Bot name",
+      "welcome": "Opening message",
+      "trigger": "Trigger button",
+      "triggerHint": "How the trigger that opens the bot looks",
+      "triggerStyle": "Button style",
+      "styleIcon": "Bot icon only",
+      "styleLabel": "Label only",
+      "styleBoth": "Icon + label",
+      "triggerText": "Button text",
+      "triggerColor": "Button color",
+      "textColor": "Text color",
+      "window": "Chat window",
+      "windowHint": "Design of the chat window that opens on the site",
+      "headerColor": "Header color",
+      "windowBg": "Window background",
+      "botBubble": "Bot bubble",
+      "botBubbleText": "Bot bubble text",
+      "userBubble": "User bubble",
+      "userBubbleText": "User bubble text",
+      "contact": "Contact",
+      "contactHint": "Allow contact from inside the chat",
+      "showContact": "Show a contact option",
+      "contactLabel": "Button label",
+      "defaultContact": "Contact us",
+      "phone": "Phone",
+      "whatsappHint": "International number without +, for example 97250...",
+      "email": "Email",
+      "trees": "Conversation trees",
+      "treesHint": "Build the path — steps, messages, and choice buttons",
+      "startStep": "Start step",
+      "delete": "Delete",
+      "stepTitle": "Step title",
+      "botMessage": "Bot message",
+      "optionsHint": "Choice options — invent replies and what happens next",
+      "newOption": "New option",
+      "defaultReply": "Write the bot reply here...",
+      "addOption": "Add option",
+      "optionLabel": "Button text for the visitor",
+      "optionPlaceholder": "For example: What is the price?",
+      "afterClick": "What happens after a click",
+      "deleteOption": "Delete option",
+      "endMessage": "End message (manual)",
+      "manualReply": "Bot reply (manual)",
+      "replyPlaceholder": "Write the reply the bot will show...",
+      "askPrompt": "Question for the visitor before they type",
+      "askPlaceholder": "Write your question or details here:",
+      "afterVisitor": "Bot reply after the visitor writes",
+      "thanksPlaceholder": "Thanks! We received your message...",
+      "linkUrl": "Link address",
+      "opensContact": "Opens the contact options defined above",
+      "thenGo": "Then go to a step (optional)",
+      "newStepMessage": "Bot message in the new step...",
+      "noNext": "No step change",
+      "createStep": "+ Create a new step",
+      "addStep": "Add a step to the conversation tree",
+      "actionNext": "Go to a step",
+      "actionReply": "Manual reply (text)",
+      "actionAsk": "Free reply from the visitor",
+      "actionContact": "Contact",
+      "actionEnd": "End conversation",
+      "actionLink": "Open a link"
     }
   },
   "sitePortal": {

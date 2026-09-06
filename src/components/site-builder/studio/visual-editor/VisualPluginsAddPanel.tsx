@@ -1,5 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Download, Puzzle, Search, Trash2 } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { getPluginEditorAction, buildPluginWidgetMarker } from "../../../../data/pluginEditorRegistry";
 
 import {
   getSitePlugins,
@@ -8,10 +10,6 @@ import {
 } from "../../../../api/sitePluginsApi";
 import { saveSitePluginSettings, getSitePluginSettings } from "../../../../api/sitePluginSettingsApi";
 import { getPluginAccent, getPluginIcon } from "../../../../data/sitePluginNav";
-import {
-  buildPluginWidgetMarker,
-  getPluginEditorAction,
-} from "../../../../data/pluginEditorRegistry";
 import { pageHasCountdownWidget } from "../../../site-plugins/countdown/mountCountdownWidgets";
 import { getPageTemplateById } from "./library/pageLibrary";
 import type { VisualLibraryPageTemplate } from "./library/visualLibraryTypes";
@@ -71,6 +69,7 @@ export default function VisualPluginsAddPanel({
   onAdded,
   onOverlayInstalled,
 }: VisualPluginsAddPanelProps) {
+  const { t } = useTranslation();
   const [loading, setLoading] = useState(Boolean(siteId));
   const [catalog, setCatalog] = useState<SitePluginDefinition[]>([]);
   const [enabledPlugins, setEnabledPlugins] = useState<string[]>([]);
@@ -144,19 +143,19 @@ export default function VisualPluginsAddPanel({
         if (!silent) {
           if (plugin.key === "whatsapp-float" && !String(nextSettings.phone || "").trim()) {
             onAdded?.(
-              `«${plugin.name}» הופעל — הזינו מספר WhatsApp בפאנל הניהול של התוסף`
+              t("studio.pluginsAdd.activatedWa", { name: plugin.name })
             );
           } else {
-            onAdded?.(`«${plugin.name}» פעיל בעורך ובאתר`);
+            onAdded?.(t("studio.pluginsAdd.activated", { name: plugin.name }));
           }
         }
         return true;
       } catch {
-        if (!silent) onAdded?.(`שגיאה בהפעלת ${plugin.name}`);
+        if (!silent) onAdded?.(t("studio.pluginsAdd.activateFailed", { name: plugin.name }));
         return false;
       }
     },
-    [onAdded, siteId]
+    [onAdded, siteId, t]
   );
 
   const loadAndActivateOverlays = useCallback(
@@ -262,7 +261,7 @@ export default function VisualPluginsAddPanel({
     if (!siteId) return;
     if (
       !window.confirm(
-        `להסיר את «${plugin.name}» מהאתר לגמרי?\nהתוסף יוסר גם מהגדרות ומחנות התוספים.`
+        t("studio.pluginsAdd.removeConfirm", { name: plugin.name })
       )
     ) {
       return;
@@ -276,9 +275,9 @@ export default function VisualPluginsAddPanel({
       setEnabledPlugins(result.enabledPlugins);
       setOverlayActive((prev) => ({ ...prev, [plugin.key]: false }));
       onOverlayInstalled?.();
-      onAdded?.(`«${plugin.name}» הוסר מהאתר`);
+      onAdded?.(t("studio.pluginsAdd.removed", { name: plugin.name }));
     } catch {
-      onAdded?.(`שגיאה בהסרת ${plugin.name}`);
+      onAdded?.(t("studio.pluginsAdd.removeFailed", { name: plugin.name }));
     }
   }
 
@@ -321,10 +320,10 @@ export default function VisualPluginsAddPanel({
           window.open(manageUrl, "_blank", "noopener,noreferrer");
         }
         onAdded?.(
-          `«${plugin.name}» מנוהל בהגדרות הפאנל — לא מתווסף כרכיב לעמוד`
+          t("studio.pluginsAdd.managed", { name: plugin.name })
         );
       } catch {
-        onAdded?.(`שגיאה בפתיחת הגדרות ${plugin.name}`);
+        onAdded?.(t("studio.pluginsAdd.settingsFailed", { name: plugin.name }));
       }
       return;
     }
@@ -355,8 +354,8 @@ export default function VisualPluginsAddPanel({
         }, 700);
         onAdded?.(
           addedTitles.length > 1
-            ? `נוספו ${addedTitles.length} עמודים — ${plugin.name} פעיל`
-            : `עמוד «${addedTitles[0]}» נוסף — ${plugin.name} פעיל`,
+            ? t("studio.pluginsAdd.pagesAdded", { count: addedTitles.length, name: plugin.name })
+            : t("studio.pluginsAdd.pageAdded", { title: addedTitles[0], name: plugin.name }),
         );
         return;
       }
@@ -382,7 +381,7 @@ export default function VisualPluginsAddPanel({
       scrollPluginSectionIntoView(editor, action.sectionId);
       setContentActive((prev) => ({ ...prev, [plugin.key]: true }));
       setPageWidgetsEpoch((e) => e + 1);
-      onAdded?.(`«${plugin.name}» נוסף בתחתית העמוד — גללו לראות את הסקשן`);
+      onAdded?.(t("studio.pluginsAdd.addedBottom", { name: plugin.name }));
       return;
     }
 
@@ -398,21 +397,21 @@ export default function VisualPluginsAddPanel({
     } else if (typeof editor?.insertHtmlAtSelection === "function") {
       editor.insertHtmlAtSelection(html);
     } else {
-      onAdded?.(`«${plugin.name}» — נשמר; הוסיפו דרך סקשן מתאים`);
+      onAdded?.(t("studio.pluginsAdd.savedHint", { name: plugin.name }));
       return;
     }
     setContentActive((prev) => ({ ...prev, [plugin.key]: true }));
     setPageWidgetsEpoch((epoch) => epoch + 1);
-    onAdded?.(`«${plugin.name}» נוסף ופעיל בעמוד`);
+    onAdded?.(t("studio.pluginsAdd.addedActive", { name: plugin.name }));
   }
 
   if (!siteId) {
     return (
       <div className="flex flex-1 flex-col items-center justify-center p-8 text-center">
         <Puzzle className="h-10 w-10 text-violet-400" />
-        <p className="mt-3 text-sm font-bold text-slate-700">תוספים</p>
+        <p className="mt-3 text-sm font-bold text-slate-700">{t("studio.pluginsAdd.title")}</p>
         <p className="mt-1 max-w-xs text-xs text-slate-500">
-          שמרו את האתר כדי להוסיף תוספים מהעורך
+          {t("studio.pluginsAdd.saveFirst")}
         </p>
       </div>
     );
@@ -421,7 +420,7 @@ export default function VisualPluginsAddPanel({
   if (loading) {
     return (
       <div className="grid flex-1 place-items-center">
-        <BizuplyLoader size="sm" label="טוען תוספים..." />
+        <BizuplyLoader size="sm" label={t("studio.pluginsAdd.loading")} />
       </div>
     );
   }
@@ -430,9 +429,9 @@ export default function VisualPluginsAddPanel({
     return (
       <div className="flex flex-1 flex-col items-center justify-center p-8 text-center">
         <Puzzle className="h-10 w-10 text-violet-400" />
-        <p className="mt-3 text-sm font-bold text-slate-700">אין תוספים מותקנים</p>
+        <p className="mt-3 text-sm font-bold text-slate-700">{t("studio.pluginsAdd.noneInstalled")}</p>
         <p className="mt-1 max-w-sm text-xs leading-relaxed text-slate-500">
-          התקינו תוספים מפאנל הניהול → חנות תוספים, ואז חזרו לכאן
+          {t("studio.pluginsAdd.installHint")}
         </p>
       </div>
     );
@@ -447,12 +446,12 @@ export default function VisualPluginsAddPanel({
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder="חיפוש תוסף..."
+            placeholder={t("studio.pluginsAdd.search")}
             className="min-w-0 flex-1 bg-transparent text-sm font-bold text-slate-800 outline-none"
           />
         </label>
         <p className="mt-3 text-xs font-bold text-slate-500">
-          {installed.length} תוספים מותקנים — תוספים צפים פעילים מיד; לחצו «הוספה» לסקשנים בעמוד
+          {t("studio.pluginsAdd.installedCount", { count: installed.length })}
         </p>
       </div>
 
@@ -501,17 +500,17 @@ export default function VisualPluginsAddPanel({
                   <Download className="h-3 w-3" />
                   {isOverlay
                     ? isOverlayActive
-                      ? "פעיל בעורך ובאתר"
-                      : "ממתין להפעלה"
+                      ? t("studio.pluginsAdd.activeEditor")
+                      : t("studio.pluginsAdd.waiting")
                     : isContentActive
-                      ? "פעיל בעמוד הנוכחי"
+                      ? t("studio.pluginsAdd.activePage")
                       : action.kind === "page"
-                        ? "הוספת עמוד"
+                        ? t("studio.pluginsAdd.addPage")
                         : action.kind === "section"
-                          ? "הוספת סקשן לעמוד"
+                          ? t("studio.pluginsAdd.addSection")
                           : action.kind === "settings"
-                            ? "הגדרות בפאנל"
-                            : "הוספת רכיב"}
+                            ? t("studio.pluginsAdd.settings")
+                            : t("studio.pluginsAdd.addWidget")}
                 </span>
 
                 <div className="mt-3 flex flex-wrap gap-2">
@@ -523,14 +522,14 @@ export default function VisualPluginsAddPanel({
                         className="inline-flex flex-1 items-center justify-center gap-1 rounded-xl border border-rose-200 bg-rose-50 px-3 py-2 text-[11px] font-black text-rose-600 transition hover:bg-rose-100"
                       >
                         <Trash2 className="h-3.5 w-3.5" />
-                        הסרה מהאתר
+                        {t("studio.pluginsAdd.remove")}
                       </button>
                       <button
                         type="button"
                         onClick={() => activateOverlay(plugin).then((ok) => ok && onOverlayInstalled?.())}
                         className="inline-flex flex-1 items-center justify-center rounded-xl border border-violet-200 bg-violet-50 px-3 py-2 text-[11px] font-black text-violet-700 transition hover:bg-violet-100"
                       >
-                        רענון
+                        {t("studio.pluginsAdd.refresh")}
                       </button>
                     </>
                   ) : (
@@ -544,12 +543,12 @@ export default function VisualPluginsAddPanel({
                       }`}
                     >
                       {isOverlay
-                        ? "הפעלה בעורך"
+                        ? t("studio.pluginsAdd.activate")
                         : action.kind === "settings"
-                          ? "פתח הגדרות"
+                          ? t("studio.pluginsAdd.openSettings")
                           : isContentActive
-                            ? "הוספה שוב"
-                            : "הוספה ופתיחה בעורך"}
+                            ? t("studio.pluginsAdd.addAgain")
+                            : t("studio.pluginsAdd.addAndOpen")}
                     </button>
                   )}
                 </div>
@@ -560,7 +559,7 @@ export default function VisualPluginsAddPanel({
 
         {installed.length === 0 ? (
           <p className="py-12 text-center text-sm font-bold text-slate-500">
-            לא נמצאו תוספים לחיפוש
+            {t("studio.pluginsAdd.noneFound")}
           </p>
         ) : null}
       </div>

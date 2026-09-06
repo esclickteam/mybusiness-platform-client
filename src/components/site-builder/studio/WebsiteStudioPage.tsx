@@ -679,29 +679,15 @@ function extractSectionsFromEditor(
 }
 
 function clientPortalVariableTypeLabel(type: ClientPortalVariableType) {
-  if (type === "text") return "טקסט קצר";
-  if (type === "textarea") return "טקסט ארוך";
-  if (type === "number") return "מספר";
-  if (type === "date") return "תאריך";
-  if (type === "checkbox") return "צ׳קבוקס";
-  if (type === "checklist") return "רשימת סימון";
-  if (type === "status") return "סטטוס";
-  if (type === "file") return "קובץ";
-  if (type === "image") return "תמונה";
-  if (type === "email") return "מייל";
-  if (type === "phone") return "טלפון";
-  return type;
+  const key = `studio.portalVars.types.${type}`;
+  const translated = i18n.t(key);
+  return translated === key ? String(type) : translated;
 }
 
 function clientPortalVariableSourceLabel(source: ClientPortalVariableSource) {
-  if (source === "business_input") return "העסק ממלא";
-  if (source === "client_input") return "הלקוח ממלא";
-  if (source === "crm_client") return "נמשך מתיק הלקוח";
-  if (source === "appointments") return "נמשך מפגישות";
-  if (source === "payments") return "נמשך מתשלומים";
-  if (source === "tasks") return "נמשך ממשימות";
-  if (source === "files") return "נמשך מקבצים";
-  return "מותאם אישית";
+  const key = `studio.portalVars.sources.${source}`;
+  const translated = i18n.t(key);
+  return translated === key ? i18n.t("studio.portalVars.sources.custom") : translated;
 }
 
 function cleanVariableKey(value: string) {
