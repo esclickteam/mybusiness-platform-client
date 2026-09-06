@@ -16,7 +16,7 @@ export function flattenPartnerTasks(clients: PartnerClient[] = []): PartnerWorkI
     for (const task of client.tasks || []) {
       items.push({
         clientId: client._id,
-        clientName: client.contact?.businessName || "לקוח",
+        clientName: client.contact?.businessName || client.contact?.contactName || "—",
         contactName: client.contact?.contactName || "",
         taskId: String(task._id || `${client._id}-${task.title}`),
         title: task.title,
@@ -55,22 +55,22 @@ export function nextTaskDue(client: Pick<PartnerClient, "tasks">): string | null
   return open[0]?.dueAt || null;
 }
 
-export function formatPartnerDate(value?: string | null): string {
+export function formatPartnerDate(value?: string | null, locale = "he-IL"): string {
   if (!value) return "—";
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "—";
-  return date.toLocaleDateString("he-IL", {
+  return date.toLocaleDateString(locale, {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
   });
 }
 
-export function formatPartnerDateTime(value?: string | null): string {
+export function formatPartnerDateTime(value?: string | null, locale = "he-IL"): string {
   if (!value) return "—";
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) return "—";
-  return date.toLocaleString("he-IL", {
+  return date.toLocaleString(locale, {
     day: "2-digit",
     month: "2-digit",
     hour: "2-digit",

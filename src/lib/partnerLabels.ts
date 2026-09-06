@@ -33,9 +33,20 @@ export const PARTNER_STATUS_BADGE_TONE: Record<
   cancelled: "slate",
 };
 
-export function partnerStatusLabel(value?: string | null) {
+type TranslateFn = (key: string, options?: { defaultValue?: string }) => string;
+
+export function partnerStatusKey(value: string) {
+  return `partner.status.${value}`;
+}
+
+/**
+ * Partner UI should pass `t`. Admin/staff can omit it and keep Hebrew fallbacks.
+ */
+export function partnerStatusLabel(value?: string | null, t?: TranslateFn) {
   if (!value) return "—";
-  return PARTNER_ENUM_LABEL[value] || PARTNER_STATUS_LABEL[value] || value;
+  const fallback = PARTNER_ENUM_LABEL[value] || PARTNER_STATUS_LABEL[value] || value;
+  if (!t) return fallback;
+  return t(partnerStatusKey(value), { defaultValue: fallback });
 }
 
 export const PARTNER_ENUM_LABEL: Record<string, string> = {
