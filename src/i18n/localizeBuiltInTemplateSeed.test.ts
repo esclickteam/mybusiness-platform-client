@@ -367,6 +367,36 @@ describe("localizeBuiltInTemplateSeed", () => {
         "en",
       ),
     ).not.toMatch(/[\u0590-\u05FF]/);
+    expect(
+      localizeBuiltInText(
+        "חנות בית ועיצוב מלאה עם עמודים, תתי־עמודים, קטגוריות וסינונים — מחוברת לתוסף החנות.",
+        "en",
+      ),
+    ).toMatch(/home and design|store add-on/i);
+    expect(
+      localizeBuiltInText(
+        "חנות בית ועיצוב מלאה עם עמודים, תתי־עמודים, קטגוריות וסינונים — מחוברת לתוסף החנות.",
+        "en",
+      ),
+    ).not.toMatch(/[\u0590-\u05FF]/);
+    expect(
+      localizeBuiltInText(
+        "חנות קוסמטיקה ויופי מלאה עם עמודים, תתי־עמודים, קטגוריות וסינונים — מחוברת לתוסף החנות.",
+        "pt-BR",
+      ),
+    ).not.toMatch(/[\u0590-\u05FF]/);
+    expect(
+      localizeBuiltInText(
+        "סינדר היא בית קלייה ושולחן טעימות. פולים טריים, חליטות מדויקות, ואווירה בלי הצגות.",
+        "en",
+      ),
+    ).toMatch(/roast|tasting/i);
+    expect(
+      localizeBuiltInText(
+        "סינדר היא בית קלייה ושולחן טעימות. פולים טריים, חליטות מדויקות, ואווירה בלי הצגות.",
+        "es",
+      ),
+    ).not.toMatch(/[\u0590-\u05FF]/);
   });
 
   it("does not rewrite saved customer copy over localized defaults", () => {

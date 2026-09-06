@@ -22,6 +22,7 @@ import unique7ExactLexicon from "./templateExactLexicon.unique7.json";
 import unique8ExactLexicon from "./templateExactLexicon.unique8.json";
 import unique9ExactLexicon from "./templateExactLexicon.unique9.json";
 import unique10ExactLexicon from "./templateExactLexicon.unique10.json";
+import unique11ExactLexicon from "./templateExactLexicon.unique11.json";
 import { TEMPLATE_EXACT_LEXICON, type LocaleCopy } from "./templateExactLexicon";
 
 type PhraseTranslation = {
@@ -56,6 +57,7 @@ const EXACT_LEXICON: Record<string, PhraseTranslation | LocaleCopy> = {
   ...(unique8ExactLexicon as Record<string, PhraseTranslation>),
   ...(unique9ExactLexicon as Record<string, PhraseTranslation>),
   ...(unique10ExactLexicon as Record<string, PhraseTranslation>),
+  ...(unique11ExactLexicon as Record<string, PhraseTranslation>),
   ...TEMPLATE_EXACT_LEXICON,
 };
 
@@ -150,6 +152,8 @@ const STORE_SITE_COLON_RE =
   /^חנות (.+) מלאה: 8 עמודים, קטגוריות, סינונים, סל ומוצרים מתוסף החנות\.$/;
 const STORE_SITE_DASH_RE =
   /^חנות (.+) מלאה עם 8 עמודים, סינונים ומוצרים מתוסף החנות\.$/;
+const STORE_SITE_PAGES_RE =
+  /^חנות (.+) מלאה עם עמודים, תתי[־-]עמודים, קטגוריות וסינונים — מחוברת לתוסף החנות\.$/;
 const STORE_EXPERIENCE_RE = /^([A-Za-z][\w.-]*) — (.+) עם חוויית חנות מלאה\.$/;
 const STORE_POWERED_RE = /^([A-Za-z][\w.-]*) · (.+) · Powered by Bizuply$/;
 const PROJECT_CODE_RE = /^פרויקט (Alpha|Beta|Gamma)$/;
@@ -550,7 +554,8 @@ function localizeAgencySiteLine(text: string, locale: string): string {
 function localizeStoreSiteLine(text: string, locale: string): string {
   const colon = text.match(STORE_SITE_COLON_RE);
   const dash = text.match(STORE_SITE_DASH_RE);
-  const match = colon || dash;
+  const pages = text.match(STORE_SITE_PAGES_RE);
+  const match = colon || dash || pages;
   if (!match) return "";
   const kind = localizeFragment(match[1], locale);
   if (!kind) return "";
@@ -559,6 +564,12 @@ function localizeStoreSiteLine(text: string, locale: string): string {
     if (locale === "pt-BR") return `Loja completa de ${kind}: 8 páginas, categorias, filtros, carrinho e produtos do extra da loja.`;
     if (locale === "ar") return `متجر ${kind} كامل: 8 صفحات وفئات وفلاتر وسلة ومنتجات من إضافة المتجر.`;
     return `Full ${kind} store: 8 pages, categories, filters, cart, and products from the store add-on.`;
+  }
+  if (pages) {
+    if (locale === "es") return `Tienda completa de ${kind} con páginas, subpáginas, categorías y filtros — conectada al extra de tienda.`;
+    if (locale === "pt-BR") return `Loja completa de ${kind} com páginas, subpáginas, categorias e filtros — ligada ao extra da loja.`;
+    if (locale === "ar") return `متجر ${kind} كامل بصفحات وصفحات فرعية وفئات وفلاتر — مربوط بإضافة المتجر.`;
+    return `Full ${kind} store with pages, subpages, categories, and filters — connected to the store add-on.`;
   }
   if (locale === "es") return `Tienda completa de ${kind} con 8 páginas, filtros y productos del extra de tienda.`;
   if (locale === "pt-BR") return `Loja completa de ${kind} com 8 páginas, filtros e produtos do extra da loja.`;
