@@ -487,7 +487,7 @@ function ScheduleBoard() {
         <KineticSectionTitle
           eyebrow="מערכת שעות"
           title={tx("עמודים בנויים להנעה מהירה לפעולה.")}
-          text="הטמפלט מחזיק מסלולי אימון, לוח שיעורים, קירות תוצאה ודפי יצירת קשר בלי לאבד את שפת המותג."
+          text={tx("הטמפלט מחזיק מסלולי אימון, לוח שיעורים, קירות תוצאה ודפי יצירת קשר בלי לאבד את שפת המותג.")}
           light
         />
         <div className="mt-12 border border-white/10">
@@ -680,7 +680,7 @@ function ServicesPage({ data }: { data: Record<string, any> }) {
       <PageHero
         title={getNavLabel(data, "services")}
         eyebrow={getValue(data, "servicesEyebrow")}
-        text="עמוד שירותים שבנוי כמו לוח אימון: מסלולים ברורים, עצימות, שגרה ותנועה ישירה לעבר ההרשמה."
+        text={tx("עמוד שירותים שבנוי כמו לוח אימון: מסלולים ברורים, עצימות, שגרה ותנועה ישירה לעבר ההרשמה.")}
         image={getValue(data, "heroImage")}
       />
       <ProgramGrid data={data} />
@@ -697,7 +697,7 @@ function WorkPage({ data }: { data: Record<string, any> }) {
       <PageHero
         title={getNavLabel(data, "work")}
         eyebrow={getValue(data, "workEyebrow")}
-        text="הצלחות, מסלולי התקדמות ושפה תחרותית שממחישה איך העבודה נראית מבפנים ולא רק איך היא משווקת."
+        text={tx("הצלחות, מסלולי התקדמות ושפה תחרותית שממחישה איך העבודה נראית מבפנים ולא רק איך היא משווקת.")}
         image={getValue(data, "heroImage")}
       />
       <ResultsWall data={data} />

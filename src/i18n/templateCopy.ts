@@ -80,7 +80,8 @@ export function localizeBuiltInText(text: string, language?: string): string {
     if (!isUsableTranslation(source, translated, locale)) continue;
     out = out.split(source).join(translated);
   }
-  return out;
+  if (isUsableTranslation(text, out, locale)) return out;
+  return text;
 }
 
 export function localizeBuiltInTemplateSeed<T>(data: T, language?: string): T {

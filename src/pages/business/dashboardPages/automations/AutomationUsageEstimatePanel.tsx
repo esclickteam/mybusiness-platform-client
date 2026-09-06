@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../../../../i18n/localeUtils";
 import { AlertTriangle } from "lucide-react";
 import { formatHeNumber } from "./billing/automationBillingFormat";
 import {
@@ -27,7 +28,7 @@ export default function AutomationUsageEstimatePanel({
   planName,
   onOpenPlans,
 }: Props) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const normalized = useMemo(
     () => normalizeScheduleConfig(schedule || {}),
     [schedule]
@@ -61,7 +62,7 @@ export default function AutomationUsageEstimatePanel({
   if (!normalized) return null;
 
   return (
-    <aside className="af-usage-estimate" dir="rtl" role="status">
+    <aside className="af-usage-estimate" dir={getTextDirection(i18n.language)} role="status">
       <strong className="af-usage-estimate__title">
         {t("automations.estimate.title", "Monthly usage estimate")}
       </strong>

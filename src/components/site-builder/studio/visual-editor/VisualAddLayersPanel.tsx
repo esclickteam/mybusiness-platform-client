@@ -5,6 +5,7 @@ import React, {
   useState,
 } from "react";
 import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../../../../i18n/localeUtils";
 import {
   DndContext,
   DragOverlay,
@@ -579,7 +580,7 @@ export default function VisualAddLayersPanel({
   clientPortalPluginEnabled = false,
   onOverlayInstalled,
 }: VisualAddLayersPanelProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [layers, setLayers] =
     useState<LayerItem[]>([]);
   const [sections, setSections] = useState<SectionItem[]>([]);
@@ -1482,7 +1483,7 @@ export default function VisualAddLayersPanel({
         ]
           .filter(Boolean)
           .join(" ")}
-        dir="rtl"
+        dir={getTextDirection(i18n.language)}
         role={mode === "add" ? "dialog" : undefined}
         aria-modal={mode === "add" ? "true" : undefined}
         aria-label={mode === "add" ? title : undefined}
@@ -2799,7 +2800,7 @@ export default function VisualAddLayersPanel({
       )}
 
       {mode === "add" && previewSection ? (
-        <div className="absolute inset-0 z-[100] flex flex-col bg-white" dir="rtl">
+        <div className="absolute inset-0 z-[100] flex flex-col bg-white" dir={getTextDirection(i18n.language)}>
           <header className="flex h-[74px] shrink-0 items-center justify-between border-b border-slate-200 px-6">
             <div className="min-w-0">
               <p className="text-[11px] font-bold text-slate-400">

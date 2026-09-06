@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 
 import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../../../i18n/localeUtils";
 
 import type { SitePluginDefinition } from "../../../api/sitePluginsApi";
 import { getPluginAccent, getPluginIcon } from "../../../data/sitePluginNav";
@@ -41,7 +42,7 @@ export default function SitePluginHelpModal({
   onClose,
   onToggle,
 }: SitePluginHelpModalProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const previousFocusRef = useRef<HTMLElement | null>(null);
   const closeLabel = t("leftover.pluginHelp.close", "Close");
@@ -109,7 +110,7 @@ export default function SitePluginHelpModal({
   const modal = (
     <div
       ref={dialogRef}
-      dir="rtl"
+      dir={getTextDirection(i18n.language)}
       className={
         contained
           ? "pointer-events-none absolute inset-0 z-40"

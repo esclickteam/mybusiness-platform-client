@@ -2014,7 +2014,7 @@ export default function ShinoraPages(props: ShinoraPagesProps) {
                 <PageHero
                   data={data}
                   title={tx("מחירון")}
-                  text="חבילות ברורות לטיפולים, אירועים ותחזוקה חודשית."
+                  text={tx("חבילות ברורות לטיפולים, אירועים ותחזוקה חודשית.")}
                 />
                 <PricingSection data={data} />
               </>
@@ -2027,7 +2027,7 @@ export default function ShinoraPages(props: ShinoraPagesProps) {
                 <PageHero
                   data={data}
                   title={tx("גלריה")}
-                  text="תמונות אווירה, טיפולים ותוצאות מתוך הסלון."
+                  text={tx("תמונות אווירה, טיפולים ותוצאות מתוך הסלון.")}
                 />
                 <GallerySection data={data} />
               </>
@@ -2040,7 +2040,7 @@ export default function ShinoraPages(props: ShinoraPagesProps) {
                 <PageHero
                   data={data}
                   title={tx("חנות")}
-                  text="מוצרי טיפוח משלימים לחוויית סלון גם בבית."
+                  text={tx("מוצרי טיפוח משלימים לחוויית סלון גם בבית.")}
                 />
                 <ProductsSection data={data} businessId={props.businessId} />
               </>
@@ -2053,7 +2053,7 @@ export default function ShinoraPages(props: ShinoraPagesProps) {
                 <PageHero
                   data={data}
                   title={tx("בלוג")}
-                  text="טיפים, מדריכים ורעיונות לטיפוח, שיער ואיפור."
+                  text={tx("טיפים, מדריכים ורעיונות לטיפוח, שיער ואיפור.")}
                 />
                 <BlogSection
                   data={data}

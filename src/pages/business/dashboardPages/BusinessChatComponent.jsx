@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Paperclip, Mic, Image, FileText, Send, ScrollText, FileSignature } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../../../i18n/localeUtils";
 import API from "@api"; // use API instead of axios
 
 const BusinessChat = ({ currentUser, partnerId, partnerName, demoMessages }) => {
@@ -10,6 +12,7 @@ const BusinessChat = ({ currentUser, partnerId, partnerName, demoMessages }) => 
   const messagesEndRef = useRef(null);
 
   const isDemo = partnerId === "demo123";
+  const { i18n } = useTranslation();
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -115,7 +118,7 @@ const BusinessChat = ({ currentUser, partnerId, partnerName, demoMessages }) => 
   };
 
   return (
-    <div className="chat-card mx-auto max-w-3xl w-full bg-white rounded-2xl shadow border p-4" dir="rtl">
+    <div className="chat-card mx-auto max-w-3xl w-full bg-white rounded-2xl shadow border p-4" dir={getTextDirection(i18n.language)}>
       <div className="flex justify-between items-center border-b pb-3 mb-4">
         <h3 className="text-xl font-bold text-purple-700">💬 Chat with {partnerName}</h3>
         <ScrollText className="text-purple-400" />

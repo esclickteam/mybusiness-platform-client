@@ -198,4 +198,76 @@ export const TEMPLATE_EXACT_LEXICON: Record<string, LocaleCopy> = {
     "Modo demo — adicione produtos no painel da loja para substituir os exemplos",
     "وضع تجريبي — أضيفوا منتجات من لوحة المتجر لاستبدال هذه الأمثلة"
   ),
+  "לקביעת ייעוץ": r("Book a consultation", "Reservar consulta", "Marcar consultoria", "احجزوا استشارة"),
+  "לקביעת תור": r("Book an appointment", "Reservar cita", "Marcar horário", "احجزوا موعداً"),
+  "לקביעת שיחת היכרות": r("Book an intro call", "Reservar llamada inicial", "Marcar chamada inicial", "احجزوا مكالمة تعارف"),
+  "לקביעת תור אישי": r("Book a personal appointment", "Reservar cita personal", "Marcar horário pessoal", "احجزوا موعداً شخصياً"),
+  "לראות שירותים": r("See services", "Ver servicios", "Ver serviços", "رؤية الخدمات"),
+  ייעוץ: r("Consultation", "Consulta", "Consultoria", "استشارة"),
+  מחירון: r("Price list", "Lista de precios", "Lista de preços", "قائمة أسعار"),
+  בלוג: r("Blog", "Blog", "Blog", "مدونة"),
+  סלון: r("Salon", "Salón", "Salão", "صالون"),
+  "לפרטים נוספים": r("More details", "Más detalles", "Mais detalhes", "المزيد من التفاصيل"),
+  "שם מלא": r("Full name", "Nombre completo", "Nome completo", "الاسم الكامل"),
+  "ברוכים הבאים": r("Welcome", "Bienvenidos", "Bem-vindos", "أهلاً وسهلاً"),
+  "בואו נדבר": r("Let's talk", "Hablemos", "Vamos conversar", "لنتحدث"),
+  "פתרונות חכמים לעסק": r(
+    "Smart solutions for your business",
+    "Soluciones inteligentes para tu negocio",
+    "Soluções inteligentes para o seu negócio",
+    "حلول ذكية لأعمالكم"
+  ),
+  "שליחת פנייה": r("Send inquiry", "Enviar consulta", "Enviar pedido", "إرسال استفسار"),
+  "נשמח לשמוע מכם": r("We'd love to hear from you", "Nos encantará saber de ti", "Adoraríamos ouvir vocês", "يسعدنا سماعكم"),
+  חדש: r("New", "Nuevo", "Novo", "جديد"),
+  כלול: r("Included", "Incluido", "Incluído", "مشمول"),
+  "חבילות ברורות, בלי אותיות קטנות.": r(
+    "Clear packages, no fine print.",
+    "Paquetes claros, sin letra pequeña.",
+    "Pacotes claros, sem letras miúdas.",
+    "باقات واضحة بلا حروف صغيرة."
+  ),
+  "חבילות ברורות לטיפולים, אירועים ותחזוקה חודשית.": r(
+    "Clear packages for treatments, events, and monthly care.",
+    "Paquetes claros para tratamientos, eventos y cuidado mensual.",
+    "Pacotes claros para tratamentos, eventos e cuidado mensal.",
+    "باقات واضحة للعلاجات والمناسبات والعناية الشهرية."
+  ),
+  "תמונות אווירה, טיפולים ותוצאות מתוך הסלון.": r(
+    "Atmosphere photos, treatments, and results from the salon.",
+    "Fotos de ambiente, tratamientos y resultados del salón.",
+    "Fotos de ambiente, tratamentos e resultados do salão.",
+    "صور أجواء وعلاجات ونتائج من الصالون."
+  ),
+  "מוצרי טיפוח משלימים לחוויית סלון גם בבית.": r(
+    "Care products that bring the salon experience home.",
+    "Productos de cuidado que llevan el salón a casa.",
+    "Produtos de cuidado que levam o salão para casa.",
+    "منتجات عناية تنقل تجربة الصالون إلى البيت."
+  ),
+  "טיפים, מדריכים ורעיונות לטיפוח, שיער ואיפור.": r(
+    "Tips, guides, and ideas for care, hair, and makeup.",
+    "Consejos, guías e ideas de cuidado, cabello y maquillaje.",
+    "Dicas, guias e ideias de cuidado, cabelo e maquilhagem.",
+    "نصائح وأدلة وأفكار للعناية والشعر والمكياج."
+  ),
+  שינורה: r("Shinora", "Shinora", "Shinora", "شينورا"),
+  "להבליט את היופי שלך ולתת לך לזהור": r(
+    "Bring out your beauty and let it glow",
+    "Resalta tu belleza y deja que brille",
+    "Realce a sua beleza e deixe-a brilhar",
+    "أبرزوا جمالك ودعوه يتألق"
+  ),
+  "אנחנו מאמינות שכל לקוחה צריכה יחס אישי, אבחון מדויק וטיפול שמותאם בדיוק לעור, לשיער ולסגנון שלה — כדי לצאת מהסלון רעננה, בטוחה וזוהרת.": r(
+    "We believe every client deserves personal attention, a precise diagnosis, and a treatment matched to her skin, hair, and style — so she leaves the salon fresh, confident, and glowing.",
+    "Creemos que cada clienta merece atención personal, un diagnóstico preciso y un tratamiento a su piel, cabello y estilo — para salir del salón fresca, segura y radiante.",
+    "Acreditamos que cada cliente merece atenção pessoal, um diagnóstico preciso e um tratamento à pele, ao cabelo e ao estilo — para sair do salão fresca, confiante e radiante.",
+    "نؤمن أن كل عميلة تستحق اهتماماً شخصياً وتشخيصاً دقيقاً وعلاجاً يناسب بشرتها وشعرها وأسلوبها — لتخرج من الصالون منتعشة وواثقة ومتألقة."
+  ),
+  "אבחון קצר לפני טיפול": r(
+    "A short diagnosis before treatment",
+    "Un diagnóstico breve antes del tratamiento",
+    "Um diagnóstico breve antes do tratamento",
+    "تشخيص قصير قبل العلاج"
+  ),
 };

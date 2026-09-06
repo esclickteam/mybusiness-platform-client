@@ -969,7 +969,7 @@ function ProcessSection({ data }: { data: Record<string, any> }) {
           <SectionTitle
             eyebrow={getValue(data, "processEyebrow")}
             title={getValue(data, "processTitle")}
-            text="Sticky storytelling: צד אחד נשאר, והשלבים עוברים לידו בצורה ברורה."
+            text={tx("Sticky storytelling: צד אחד נשאר, והשלבים עוברים לידו בצורה ברורה.")}
           />
 
           <div className="mt-8 rounded-[34px] border border-[#244236]/10 bg-[#244236] p-6 text-[#fbf6ec] shadow-2xl shadow-[#244236]/16">
@@ -1047,7 +1047,7 @@ function PricingSection({
           center
           eyebrow={getValue(data, "pricingEyebrow")}
           title={getValue(data, "pricingTitle")}
-          text="מחירון ברור עם מסלול מומלץ, מיקרו־אינטראקציות וקריאה לפעולה."
+          text={tx("מחירון ברור עם מסלול מומלץ, מיקרו־אינטראקציות וקריאה לפעולה.")}
         />
 
         <div className="mt-14 grid gap-5 lg:grid-cols-3">
@@ -1145,7 +1145,7 @@ function GallerySection({ data }: { data: Record<string, any> }) {
           center
           eyebrow={getValue(data, "galleryEyebrow")}
           title={getValue(data, "galleryTitle")}
-          text="גריד מגזיני כמו תבנית פרימיום, לא ארבע תמונות משעממות בשורה."
+          text={tx("גריד מגזיני כמו תבנית פרימיום, לא ארבע תמונות משעממות בשורה.")}
         />
 
         <div className="mt-14 grid gap-5 lg:grid-cols-4 lg:grid-rows-[280px_280px_300px]">
@@ -1200,7 +1200,7 @@ function BlogSection({ data }: { data: Record<string, any> }) {
           center
           eyebrow={getValue(data, "blogEyebrow")}
           title={getValue(data, "blogTitle")}
-          text="כרטיסי תוכן שנותנים אמון לפני שהלקוח משאיר פרטים."
+          text={tx("כרטיסי תוכן שנותנים אמון לפני שהלקוח משאיר פרטים.")}
         />
 
         <div className="mt-14 grid gap-5 lg:grid-cols-3">
@@ -1266,7 +1266,7 @@ function FaqSection({ data }: { data: Record<string, any> }) {
         <SectionTitle
           eyebrow={getValue(data, "faqEyebrow")}
           title={getValue(data, "faqTitle")}
-          text="אקורדיון חלק ב־Tailwind בלבד, בלי CSS מותאם."
+          text={tx("אקורדיון חלק ב־Tailwind בלבד, בלי CSS מותאם.")}
         />
 
         <div className="space-y-4">

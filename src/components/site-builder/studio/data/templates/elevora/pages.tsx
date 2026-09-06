@@ -935,7 +935,7 @@ function ServicesPage({ data, onNavigate }: SharedProps & NavigateProps) {
       <PageHero
         eyebrow="השירותים שלנו"
         title={tx("פתרונות עסקיים לאתר מקצועי, לידים ותהליך מכירה ברור.")}
-        text="עמוד שירותים שמתאים לעסקים שרוצים להסביר במה הם עוזרים, למה לבחור בהם ואיך להשאיר פרטים."
+        text={tx("עמוד שירותים שמתאים לעסקים שרוצים להסביר במה הם עוזרים, למה לבחור בהם ואיך להשאיר פרטים.")}
       />
 
       <ServicesSection data={data} onNavigate={onNavigate} />

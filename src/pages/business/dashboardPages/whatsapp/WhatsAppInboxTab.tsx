@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../../../../i18n/localeUtils";
 import { toast } from "react-toastify";
 import { Loader2, Send, Trash2 } from "lucide-react";
 import {
@@ -30,7 +31,7 @@ function statusClass(status: string) {
 }
 
 export default function WhatsAppInboxTab() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { businessId } = useOutletContext<OutletCtx>();
   const [loading, setLoading] = useState(true);
   const [conversations, setConversations] = useState<WhatsAppConversation[]>(
@@ -156,7 +157,7 @@ export default function WhatsAppInboxTab() {
   }
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[0.9fr_1.3fr]" dir="rtl">
+    <div className="grid gap-4 lg:grid-cols-[0.9fr_1.3fr]" dir={getTextDirection(i18n.language)}>
       <section className={`${cardBase} overflow-hidden`}>
         <div className="border-b border-slate-100 px-4 py-4">
           <h2 className="text-lg font-black text-slate-900">

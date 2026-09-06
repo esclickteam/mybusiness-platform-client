@@ -1176,7 +1176,7 @@ function ServicesSection({
           scope={`${scope}.heading`}
           eyebrow="השירותים שלנו"
           title={tx("כל שירותי החשמל במקום אחד")}
-          text="כרטיסים נקיים וברורים כמו במוקאפ — אייקון כתום, כותרת, תיאור קצר וקריאה לפעולה."
+          text={tx("כרטיסים נקיים וברורים כמו במוקאפ — אייקון כתום, כותרת, תיאור קצר וקריאה לפעולה.")}
         />
 
         <div className="servora-services-grid">
@@ -1586,7 +1586,7 @@ function PricingSection({
           scope={`${scope}.heading`}
           eyebrow="מחירים הוגנים"
           title={tx("חבילות מומלצות")}
-          text="מחירים התחלתיים וברורים לפני שמשאירים פרטים."
+          text={tx("מחירים התחלתיים וברורים לפני שמשאירים פרטים.")}
         />
 
         <div className="servora-pricing-grid">
@@ -1863,7 +1863,7 @@ function ServicesPage({ data, onNavigate }: SharedProps & NavigateProps) {
         scope="services.pageHero"
         eyebrow="שירותי חשמל"
         title={tx("כל שירותי החשמל במקום אחד")}
-        text="תיקונים, התקנות, שדרוגים ותחזוקה — עם מבנה תואם למוקאפ."
+        text={tx("תיקונים, התקנות, שדרוגים ותחזוקה — עם מבנה תואם למוקאפ.")}
       />
 
       <ServicesSection
@@ -1890,7 +1890,7 @@ function PricingPage({ data, onNavigate }: SharedProps & NavigateProps) {
         scope="pricing.pageHero"
         eyebrow="מחירים"
         title={tx("חבילות ומחירים ברורים")}
-        text="מחירון נקי ומקצועי שמוביל לפנייה."
+        text={tx("מחירון נקי ומקצועי שמוביל לפנייה.")}
       />
 
       <PricingSection
@@ -1911,7 +1911,7 @@ function GalleryPage({ data, onNavigate }: SharedProps & NavigateProps) {
         scope="gallery.pageHero"
         eyebrow="עבודות"
         title={tx("עבודות חשמל מסודרות ומקצועיות")}
-        text="אזור פרויקטים, תהליך והוכחות חברתיות."
+        text={tx("אזור פרויקטים, תהליך והוכחות חברתיות.")}
       />
 
       <FeatureSection

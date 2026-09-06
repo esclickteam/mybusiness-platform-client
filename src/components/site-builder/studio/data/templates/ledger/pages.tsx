@@ -414,7 +414,7 @@ function RegisterTable() {
         <LedgerSectionTitle
           eyebrow="תצוגת Ledger"
           title={tx("מבנה עמודים שנראה כמו מסמך עבודה ולא רק שיווק.")}
-          text="הטמפלט בנוי עם יחידות טבלה, שורות בקרה ותאי מידע שמשרתים משרדי כספים, רואי חשבון וייעוץ הנהלה."
+          text={tx("הטמפלט בנוי עם יחידות טבלה, שורות בקרה ותאי מידע שמשרתים משרדי כספים, רואי חשבון וייעוץ הנהלה.")}
         />
         <div className="mt-12 border border-[#102018]/10">
           {registerRows.map(([quarter, scope]) => (
@@ -624,7 +624,7 @@ function ServicesPage({ data }: { data: Record<string, any> }) {
       <PageHero
         title={getNavLabel(data, "services")}
         eyebrow={getValue(data, "servicesEyebrow")}
-        text="עמוד שירותים שנבנה כמו מסמך Scope: טבלאות, תאי בקרה ותחומי אחריות ברורים לכל שלב."
+        text={tx("עמוד שירותים שנבנה כמו מסמך Scope: טבלאות, תאי בקרה ותחומי אחריות ברורים לכל שלב.")}
         image={getValue(data, "heroImage")}
       />
       <ServicesLedger data={data} />
@@ -641,7 +641,7 @@ function WorkPage({ data }: { data: Record<string, any> }) {
       <PageHero
         title={getNavLabel(data, "work")}
         eyebrow={getValue(data, "workEyebrow")}
-        text="פרויקטים מוצגים כלוג עבודה: מה הבעיה, מה בוצע, ומה היה השינוי העסקי אחרי הסגירה."
+        text={tx("פרויקטים מוצגים כלוג עבודה: מה הבעיה, מה בוצע, ומה היה השינוי העסקי אחרי הסגירה.")}
         image={getValue(data, "heroImage")}
       />
       <WorkRegister data={data} />

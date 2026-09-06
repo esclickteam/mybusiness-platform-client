@@ -482,7 +482,7 @@ function DistrictTable() {
         <SectionTitle
           eyebrow="סריקת שוק"
           title={tx("שכונות, מגמות והזדמנויות בזמן אמת.")}
-          text="מבנה התוכן משלב דפי תדמית, מלאי נכסים ותובנות שוק כדי לייצר חוויית נדל״ן מלאה ולא רק עמוד נחיתה."
+          text={tx("מבנה התוכן משלב דפי תדמית, מלאי נכסים ותובנות שוק כדי לייצר חוויית נדל״ן מלאה ולא רק עמוד נחיתה.")}
         />
         <div className="mt-12 border border-[#1c1c1c]/10">
           {districtRows.map(([area, focus, signal], index) => (
@@ -716,7 +716,7 @@ function ServicesPage({ data }: { data: Record<string, any> }) {
       <PageHero
         title={getNavLabel(data, "services")}
         eyebrow={getValue(data, "servicesEyebrow")}
-        text="דף שירותים מלא עם רמות ליווי, מהלכי ביצוע ומבנה ברור שמרגיש כמו משרד בוטיק לנכסי יוקרה."
+        text={tx("דף שירותים מלא עם רמות ליווי, מהלכי ביצוע ומבנה ברור שמרגיש כמו משרד בוטיק לנכסי יוקרה.")}
         image={getValue(data, "heroImage")}
       />
       <ServiceGrid data={data} />
@@ -733,7 +733,7 @@ function WorkPage({ data }: { data: Record<string, any> }) {
       <PageHero
         title={getNavLabel(data, "work")}
         eyebrow={getValue(data, "workEyebrow")}
-        text="נכסים, פרויקטים ומסלולי עבודה שמודגשים כשילוב של מלאי איכותי, מידע שיווקי וסטוריטלינג מכירתי."
+        text={tx("נכסים, פרויקטים ומסלולי עבודה שמודגשים כשילוב של מלאי איכותי, מידע שיווקי וסטוריטלינג מכירתי.")}
         image={getValue(data, "heroImage")}
       />
       <PropertyShowcase data={data} />
@@ -750,7 +750,7 @@ function InsightsPage({ data }: { data: Record<string, any> }) {
       <PageHero
         title={getNavLabel(data, "insights")}
         eyebrow={getValue(data, "insightsEyebrow")}
-        text="עמוד תובנות שמרחיב את הנראות המקצועית עם מאמרים, סיגנלים שוקיים ומבנה קריא של דוח פנימי."
+        text={tx("עמוד תובנות שמרחיב את הנראות המקצועית עם מאמרים, סיגנלים שוקיים ומבנה קריא של דוח פנימי.")}
         image={getValue(data, "aboutImage")}
       />
       <InsightPanels data={data} />

@@ -5,6 +5,7 @@ import {
   useSearchParams,
 } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../../../../i18n/localeUtils";
 import { toast } from "react-toastify";
 import {
   CheckCircle2,
@@ -45,7 +46,7 @@ type OutletCtx = { businessId: string | null };
 type AudienceType = "selected_clients" | "mailing_list";
 
 export default function WhatsAppComposeTab() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { businessId } = useOutletContext<OutletCtx>();
@@ -523,7 +524,7 @@ export default function WhatsAppComposeTab() {
   }
 
   return (
-    <div className="grid gap-4 xl:grid-cols-[1.35fr_0.95fr]" dir="rtl">
+    <div className="grid gap-4 xl:grid-cols-[1.35fr_0.95fr]" dir={getTextDirection(i18n.language)}>
       <div className="space-y-4">
         {!connection?.connected && (
           <div className="flex flex-col gap-3 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-semibold text-amber-900 sm:flex-row sm:items-center sm:justify-between">

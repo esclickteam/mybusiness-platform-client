@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from "react";
 import { useNavigate, useOutletContext, useSearchParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../../../../i18n/localeUtils";
 import { useQuery } from "@tanstack/react-query";
 import { Loader2, RefreshCw, Search, Sparkles, ExternalLink } from "lucide-react";
 import {
@@ -97,7 +98,7 @@ export default function AutomationsAiResultsPage() {
   }
 
   return (
-    <div className="auto-page ai-results-page" dir="rtl">
+    <div className="auto-page ai-results-page" dir={getTextDirection(i18n.language)}>
       <header className="ai-results-header">
         <div>
           <h1>

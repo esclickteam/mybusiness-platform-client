@@ -1107,7 +1107,7 @@ function LawyersSection({ data }: { data: Record<string, any> }) {
             <SectionTitle
               eyebrow="הצוות המשפטי"
               title={tx("עזרה משפטית מקצועית שמובילה לתוצאה טובה יותר.")}
-              text="שילוב של ערך, נקודות מקצועיות ותמונות אמינות של עורכי דין."
+              text={tx("שילוב של ערך, נקודות מקצועיות ותמונות אמינות של עורכי דין.")}
             />
 
             <div className="mt-10 grid gap-4">
@@ -1181,7 +1181,7 @@ function CasesSection({
           <SectionTitle
             eyebrow="תיקים והצלחות"
             title={tx("סיפורי הצלחה משפטיים")}
-            text="כרטיסי תיקים גדולים עם סכום, תחום ותיאור — כדי להראות ניסיון בלי להעמיס."
+            text={tx("כרטיסי תיקים גדולים עם סכום, תחום ותיאור — כדי להראות ניסיון בלי להעמיס.")}
           />
 
           <a
@@ -1360,7 +1360,7 @@ function TestimonialsSection({ data }: { data: Record<string, any> }) {
           <SectionTitle
             eyebrow="לקוחות מספרים"
             title={tx("מה לקוחות אומרים?")}
-            text="המלצות ברורות ואמינות שמחזקות את תחושת הביטחון לפני הפנייה."
+            text={tx("המלצות ברורות ואמינות שמחזקות את תחושת הביטחון לפני הפנייה.")}
           />
         </div>
 
@@ -1463,7 +1463,7 @@ function BlogSection({
           <SectionTitle
             eyebrow="מאמרים"
             title={tx("ידע משפטי שמחזק אמון לפני שיחת הייעוץ.")}
-            text="שני מאמרים גדולים, תגית, תאריך וטקסט קצר — כדי לתת ערך ולא רק למכור."
+            text={tx("שני מאמרים גדולים, תגית, תאריך וטקסט קצר — כדי לתת ערך ולא רק למכור.")}
           />
 
           <a
@@ -1544,7 +1544,7 @@ function SocialFeedSection({ data }: { data: Record<string, any> }) {
           center
           eyebrow="גלריית משרד"
           title={tx("תמונות שמייצרות אמון ותחושת משרד פעיל.")}
-          text="אזור תמונות רחב שנותן חיים, אמינות ותחושה מקצועית."
+          text={tx("אזור תמונות רחב שנותן חיים, אמינות ותחושה מקצועית.")}
         />
 
         <div className="mt-14 grid grid-cols-2 gap-4 md:grid-cols-4">
@@ -1592,7 +1592,7 @@ function FaqSection({ data }: { data: Record<string, any> }) {
         <SectionTitle
           eyebrow="שאלות נפוצות"
           title={getHebrewValue(data, "faqTitle", "לפני שקובעים ייעוץ — כל מה שחשוב לדעת.")}
-          text="שאלות נפוצות לפני שיחת ייעוץ ראשונית."
+          text={tx("שאלות נפוצות לפני שיחת ייעוץ ראשונית.")}
         />
 
         <div className="space-y-4">

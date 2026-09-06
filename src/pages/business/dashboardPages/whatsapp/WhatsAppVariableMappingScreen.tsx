@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../../../../i18n/localeUtils";
 import { Loader2, Save, Eye, ArrowRight, Check } from "lucide-react";
 import {
   getWhatsAppTemplateVariableMappings,
@@ -61,7 +62,7 @@ export default function WhatsAppVariableMappingScreen({
   onClose,
   onSaved,
 }: Props) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [previewing, setPreviewing] = useState(false);
@@ -335,7 +336,7 @@ export default function WhatsAppVariableMappingScreen({
   }
 
   return (
-    <section className={`${cardBase} space-y-4 p-4 sm:p-5`} dir="rtl">
+    <section className={`${cardBase} space-y-4 p-4 sm:p-5`} dir={getTextDirection(i18n.language)}>
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <button

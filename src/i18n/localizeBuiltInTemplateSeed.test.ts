@@ -48,6 +48,23 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("הזמינו פיצה", "ar")).toBe("اطلبوا البيتزا");
   });
 
+  it("does not smash leftover Hebrew into hybrid sentences", () => {
+    const smashed = localizeBuiltInText(
+      "אנחנו מאמינות שכל לקוחה צריכה יחס אישי, אבחון מדויק וטיפול שמותאם בדיוק לעור, לשיער ולסגנון שלה — כדי לצאת מהסלון רעננה, בטוחה וזוהרת.",
+      "en",
+    );
+    expect(smashed).not.toMatch(/Client/);
+    expect(smashed).toMatch(/personal attention|client/i);
+  });
+
+  it("translates booking CTAs without leftover Hebrew", () => {
+    expect(localizeBuiltInText("לקביעת ייעוץ", "en")).toBe("Book a consultation");
+    expect(localizeBuiltInText("לקביעת תור", "es")).toBe("Reservar cita");
+    expect(localizeBuiltInText("לראות שירותים", "pt-BR")).toBe("Ver serviços");
+    expect(localizeBuiltInText("לקביעת ייעוץ", "ar")).toBe("احجزوا استشارة");
+    expect(localizeBuiltInText("לקביעת ייעוץ", "en")).not.toMatch(/[\u0590-\u05FF]/);
+  });
+
   it("uses the generated exact lexicon for gallery template descriptions", () => {
     expect(
       localizeBuiltInText(

@@ -5,6 +5,7 @@ import {
   useSearchParams,
 } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../../../../i18n/localeUtils";
 import { toast } from "react-toastify";
 import {
   Loader2,
@@ -167,7 +168,7 @@ function normalizeExampleValues(
 }
 
 export default function WhatsAppTemplatesTab() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { businessId } = useOutletContext<OutletCtx>();
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -417,7 +418,7 @@ export default function WhatsAppTemplatesTab() {
   }
 
   return (
-    <div className="space-y-4" dir="rtl">
+    <div className="space-y-4" dir={getTextDirection(i18n.language)}>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
           <h2 className="text-lg font-black text-slate-900">

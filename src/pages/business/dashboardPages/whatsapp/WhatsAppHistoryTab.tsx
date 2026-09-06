@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../../../../i18n/localeUtils";
 import { toast } from "react-toastify";
 import { Loader2, Trash2 } from "lucide-react";
 import {
@@ -29,7 +30,7 @@ function statusClass(status: string) {
 }
 
 export default function WhatsAppHistoryTab() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { businessId } = useOutletContext<OutletCtx>();
   const [loading, setLoading] = useState(true);
   const [clearing, setClearing] = useState(false);
@@ -90,7 +91,7 @@ export default function WhatsAppHistoryTab() {
   }
 
   return (
-    <div className="space-y-4" dir="rtl">
+    <div className="space-y-4" dir={getTextDirection(i18n.language)}>
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div />
         <button

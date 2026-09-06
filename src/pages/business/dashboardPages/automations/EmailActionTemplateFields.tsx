@@ -1,5 +1,6 @@
 import React, { useRef } from "react";
 import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../../../../i18n/localeUtils";
 import type { TFunction } from "i18next";
 import {
   emailVariablesForTrigger,
@@ -98,7 +99,7 @@ export function EmailActionTemplateFields({
   previewToLabel,
   businessName,
 }: Props) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const focusRef = useRef<EmailField>("html");
   const subjectRef = useRef<HTMLInputElement | null>(null);
   const htmlRef = useRef<HTMLTextAreaElement | null>(null);
@@ -146,7 +147,7 @@ export function EmailActionTemplateFields({
 
   return (
     <>
-      <div className="af-email-vars" dir="rtl">
+      <div className="af-email-vars" dir={getTextDirection(i18n.language)}>
         <strong className="af-email-vars__label">
           {t("automations.emailFields.availableVars", "Available variables")}
         </strong>
@@ -200,7 +201,7 @@ export function EmailActionTemplateFields({
           value={html}
           placeholder={t("automations.emailFields.htmlPh", {
             token: "{{lead.name}}",
-            defaultValue: '<div dir="rtl"><p>Hello {{token}}</p></div>',
+            defaultValue: '<div dir="ltr"><p>Hello {{token}}</p></div>',
           })}
           onFocus={() => {
             focusRef.current = "html";
@@ -232,7 +233,7 @@ export function EmailActionTemplateFields({
         />
       </label>
 
-      <div className="af-gmail-preview" dir="rtl">
+      <div className="af-gmail-preview" dir={getTextDirection(i18n.language)}>
         <strong>{t("automations.emailFields.preview", "Preview")}</strong>
         <div className="af-gmail-preview__headers">
           <span>

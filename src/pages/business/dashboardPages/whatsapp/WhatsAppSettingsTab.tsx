@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { useOutletContext } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../../../../i18n/localeUtils";
 import { toast } from "react-toastify";
 import {
   CheckCircle2,
@@ -132,7 +133,7 @@ function readinessTone(connection: WhatsAppConnection | null) {
 }
 
 export default function WhatsAppSettingsTab() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { businessId } = useOutletContext<OutletCtx>();
   const [loading, setLoading] = useState(true);
   const [connecting, setConnecting] = useState(false);
@@ -760,7 +761,7 @@ export default function WhatsAppSettingsTab() {
         : t("whatsapp.settings.disconnectedHint");
 
   return (
-    <div className="space-y-4" dir="rtl">
+    <div className="space-y-4" dir={getTextDirection(i18n.language)}>
       <MetaBillingAccountCards
         adAccountBilling={adAccountBilling}
         wabaBilling={connection?.wabaBillingHealth || null}

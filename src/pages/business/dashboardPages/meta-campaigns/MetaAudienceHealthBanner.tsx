@@ -1,5 +1,6 @@
 import React, { useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../../../../i18n/localeUtils";
 import { AlertTriangle, Users } from "lucide-react";
 import type {
   MetaInterestTarget,
@@ -44,7 +45,7 @@ export default function MetaAudienceHealthBanner({
   advantageAudience,
   placementMode,
 }: Props) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const health = useMemo(() => {
     const hasLocations = locations.length > 0;
@@ -125,7 +126,7 @@ export default function MetaAudienceHealthBanner({
         "rounded-2xl border p-4",
         tone.bg,
       ].join(" ")}
-      dir="rtl"
+      dir={getTextDirection(i18n.language)}
     >
       <div className="flex flex-wrap items-center gap-4">
         <div className="relative flex h-20 w-20 shrink-0 items-center justify-center">

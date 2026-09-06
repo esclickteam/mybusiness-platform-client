@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../../../i18n/localeUtils";
 import { CreditCard } from "lucide-react";
 
 import BizuplyLoader from "../../ui/BizuplyLoader";
@@ -25,7 +26,7 @@ type SitePaymentsPanelProps = {
 };
 
 export default function SitePaymentsPanel({ businessId }: SitePaymentsPanelProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [disconnecting, setDisconnecting] = useState(false);
@@ -212,7 +213,7 @@ export default function SitePaymentsPanel({ businessId }: SitePaymentsPanelProps
   }
 
   return (
-    <div dir="rtl" className="space-y-5 text-right">
+    <div dir={getTextDirection(i18n.language)} className="space-y-5 text-start">
       <SitePanelHero
         icon={CreditCard}
         accent="#059669"

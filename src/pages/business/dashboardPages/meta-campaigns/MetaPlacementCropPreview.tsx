@@ -1,5 +1,6 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../../../../i18n/localeUtils";
 import { ImagePlus } from "lucide-react";
 
 type CropCard = {
@@ -47,7 +48,7 @@ export default function MetaPlacementCropPreview({
   showVertical = true,
   showHorizontal = true,
 }: Props) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const visibility: Record<CropCard["id"], boolean> = {
     square:
@@ -67,7 +68,7 @@ export default function MetaPlacementCropPreview({
   const visibleCards = CROP_CARDS.filter((card) => visibility[card.id]);
 
   return (
-    <div className="grid gap-4 sm:grid-cols-3" dir="rtl">
+    <div className="grid gap-4 sm:grid-cols-3" dir={getTextDirection(i18n.language)}>
       {(visibleCards.length ? visibleCards : CROP_CARDS).map((card) => (
         <div
           key={card.id}

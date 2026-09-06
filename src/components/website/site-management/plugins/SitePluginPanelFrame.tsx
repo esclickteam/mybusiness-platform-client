@@ -1,5 +1,6 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../../../../i18n/localeUtils";
 import { ExternalLink, Save, Settings2 } from "lucide-react";
 import { Link } from "react-router-dom";
 import type { LucideIcon } from "lucide-react";
@@ -187,9 +188,9 @@ export function SitePluginPanelFrame({
   sidebar,
   children,
 }: SitePluginPanelFrameProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   return (
-    <div dir="rtl" className="space-y-0">
+    <div dir={getTextDirection(i18n.language)} className="space-y-0">
       {/* Plugin management header */}
       <div className="overflow-hidden rounded-xl border border-slate-200/90 bg-white shadow-sm">
         <div

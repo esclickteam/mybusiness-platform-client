@@ -1,5 +1,6 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../../../../i18n/localeUtils";
 import { Check } from "lucide-react";
 import {
   getWizardDefinition,
@@ -29,12 +30,12 @@ export default function MetaWizardNav({
   onJumpSub,
   allowFreeJump = false,
 }: Props) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const definition = getWizardDefinition(isLeads);
   const currentMainDef = definition.find((item) => item.main === mainStep);
 
   return (
-    <div className="space-y-4" dir="rtl">
+    <div className="space-y-4" dir={getTextDirection(i18n.language)}>
       <div className="grid grid-cols-3 gap-2 sm:gap-3">
         {definition.map((mainDef) => {
           const isCurrent = mainDef.main === mainStep;

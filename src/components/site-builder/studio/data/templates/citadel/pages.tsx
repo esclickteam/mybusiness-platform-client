@@ -561,7 +561,7 @@ function ServicesSection({ data }: { data: TemplateData }) {
         <SectionHeading
           label="שירותים"
           title={getValue(data, "servicesTitle")}
-          text="תוכניות ייעוץ, יישום ותגובה בשכבות — שנועדו להקטין חשיפה בלי להאט את המסירה."
+          text={tx("תוכניות ייעוץ, יישום ותגובה בשכבות — שנועדו להקטין חשיפה בלי להאט את המסירה.")}
           center
         />
         <div className="mt-12 grid gap-0 md:grid-cols-2 xl:grid-cols-4">
@@ -607,7 +607,7 @@ function WorkSection({ data }: { data: TemplateData }) {
         <SectionHeading
           label="תיקים"
           title={getValue(data, "workTitle")}
-          text="פרויקטים נבחרים עם דגש על חוסן, כיסוי בקרות וזמן תגובה מהיר יותר בסביבות סיכון גבוה."
+          text={tx("פרויקטים נבחרים עם דגש על חוסן, כיסוי בקרות וזמן תגובה מהיר יותר בסביבות סיכון גבוה.")}
         />
         <div className="mt-12 grid gap-0 lg:grid-cols-3">
           {workItems.map((item, index) => (
@@ -652,7 +652,7 @@ function ProcessSection({ data }: { data: TemplateData }) {
         <SectionHeading
           label="תהליך"
           title={getValue(data, "processTitle")}
-          text="מודל תפעול ממושמע שעובר מגילוי חשיפות לחיזוק, אימות ושיפור מתמשך."
+          text={tx("מודל תפעול ממושמע שעובר מגילוי חשיפות לחיזוק, אימות ושיפור מתמשך.")}
         />
         <div className="mt-12 grid gap-0 md:grid-cols-2 xl:grid-cols-4">
           {steps.map((step, index) => (
@@ -694,7 +694,7 @@ function InsightsSection({ data }: { data: TemplateData }) {
         <SectionHeading
           label="מודיעין"
           title={getValue(data, "insightsTitle")}
-          text="ניתוח מעשי לצוותים שצריכים לתדרך הנהלה, לתעדף תיקון ולהישאר לפני סטייה תפעולית."
+          text={tx("ניתוח מעשי לצוותים שצריכים לתדרך הנהלה, לתעדף תיקון ולהישאר לפני סטייה תפעולית.")}
         />
         <div className="mt-12 grid gap-0 lg:grid-cols-2">
           {insights.map((insight) => (
