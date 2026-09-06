@@ -1,0 +1,1004 @@
+{
+  "תות שדה": {
+    "en": "Strawberry",
+    "es": "Fresa",
+    "pt-BR": "Morango",
+    "ar": "فراولة"
+  },
+  "סיפור": {
+    "en": "Story",
+    "es": "Historia",
+    "pt-BR": "História",
+    "ar": "قصة"
+  },
+  "טיפים": {
+    "en": "Tips",
+    "es": "Consejos",
+    "pt-BR": "Dicas",
+    "ar": "نصائح"
+  },
+  "מפרט": {
+    "en": "Spec",
+    "es": "Especificación",
+    "pt-BR": "Especificação",
+    "ar": "مواصفة"
+  },
+  "להרגיע": {
+    "en": "Soothe",
+    "es": "Calmar",
+    "pt-BR": "Acalmar",
+    "ar": "تهدئة"
+  },
+  "לעטוף": {
+    "en": "Wrap",
+    "es": "Envolver",
+    "pt-BR": "Envolver",
+    "ar": "تغليف"
+  },
+  "לשחק": {
+    "en": "Play",
+    "es": "Jugar",
+    "pt-BR": "Brincar",
+    "ar": "لعب"
+  },
+  "לגדול": {
+    "en": "Grow",
+    "es": "Crecer",
+    "pt-BR": "Crescer",
+    "ar": "نمو"
+  },
+  "כיף": {
+    "en": "Fun",
+    "es": "Diversión",
+    "pt-BR": "Diversão",
+    "ar": "مرح"
+  },
+  "נשנוש": {
+    "en": "Snack",
+    "es": "Tentempié",
+    "pt-BR": "Lanchinho",
+    "ar": "وجبة خفيفة"
+  },
+  "טיול": {
+    "en": "Walk",
+    "es": "Paseo",
+    "pt-BR": "Passeio",
+    "ar": "نزهة"
+  },
+  "חיתוך": {
+    "en": "Cut",
+    "es": "Corte",
+    "pt-BR": "Corte",
+    "ar": "قص"
+  },
+  "חיבור": {
+    "en": "Join",
+    "es": "Unión",
+    "pt-BR": "Ligação",
+    "ar": "توصيل"
+  },
+  "מתעדפים את מה שמייצר תוצאות מדידות.": {
+    "en": "We prioritize what produces measurable results.",
+    "es": "Priorizamos lo que produce resultados medibles.",
+    "pt-BR": "Priorizamos o que produz resultados mensuráveis.",
+    "ar": "نُقدّم ما يولّد نتائج قابلة للقياس."
+  },
+  "פרטים קטנים שיוצרים תחושת בית גדולה": {
+    "en": "Small details that create a large sense of home",
+    "es": "Detalles pequeños que crean una sensación grande de hogar",
+    "pt-BR": "Detalhes pequenos que criam uma grande sensação de casa",
+    "ar": "تفاصيل صغيرة تصنع شعور بيت كبير"
+  },
+  "האם התבנית מתאימה לסוכן נדל״ן יחיד?": {
+    "en": "Does this template fit a solo real-estate agent?",
+    "es": "¿Esta plantilla encaja con un agente inmobiliario solo?",
+    "pt-BR": "Este modelo serve para um corretor imobiliário solo?",
+    "ar": "هل القالب يناسب وكيل عقارات منفردًا؟"
+  },
+  "איך יודעים שהגיע הזמן להתחיל טיפול?": {
+    "en": "How do you know it is time to start treatment?",
+    "es": "¿Cómo se sabe que llegó el momento de empezar un tratamiento?",
+    "pt-BR": "Como saber que chegou a hora de começar um tratamento?",
+    "ar": "كيف تعرفون أن وقت بدء العلاج قد حان؟"
+  },
+  "האם מקבלים הנחיות להמשך טיפול בבית?": {
+    "en": "Do you get guidance for continuing care at home?",
+    "es": "¿Reciben indicaciones para seguir el tratamiento en casa?",
+    "pt-BR": "Vocês recebem orientações para continuar o cuidado em casa?",
+    "ar": "هل تتلقون إرشادات لمتابعة العلاج في البيت؟"
+  },
+  "רופאים מומחים שמדברים בגובה העיניים": {
+    "en": "Specialist doctors who speak at eye level",
+    "es": "Médicos especialistas que hablan a la altura de los ojos",
+    "pt-BR": "Médicos especialistas que falam na altura dos olhos",
+    "ar": "أطباء مختصون يتحدثون في مستوى النظر"
+  },
+  "מים על הרצפה, קצר בלוח או קיר פתוח?": {
+    "en": "Water on the floor, a short in the panel, or an open wall?",
+    "es": "¿Agua en el piso, un corto en el tablero o una pared abierta?",
+    "pt-BR": "Água no chão, curto no quadro ou parede aberta?",
+    "ar": "ماء على الأرض، قصر في اللوحة، أو جدار مفتوح؟"
+  },
+  "פרוגרסיה חכמה, טכניקה ומעקב עומסים.": {
+    "en": "Smart progression, technique, and load tracking.",
+    "es": "Progresión inteligente, técnica y seguimiento de cargas.",
+    "pt-BR": "Progressão inteligente, técnica e acompanhamento de cargas.",
+    "ar": "تدرّج ذكي وتقنية وتتبع أحمال."
+  },
+  "טקסטורות של שקט שממשיכות אחרי המזרן": {
+    "en": "Quiet textures that continue after the mattress",
+    "es": "Texturas de calma que siguen después del colchón",
+    "pt-BR": "Texturas de silêncio que continuam depois do colchão",
+    "ar": "ملامس هدوء تستمر بعد المرتبة"
+  },
+  "מהמתרגלים מדווחים על שינה טובה יותר": {
+    "en": "Practitioners report sleeping better",
+    "es": "Quienes practican reportan un mejor sueño",
+    "pt-BR": "Quem pratica relata um sono melhor",
+    "ar": "الممارسون يبلّغون عن نوم أفضل"
+  },
+  "סידור עמוק לארוחות, הצעות ואירועים.": {
+    "en": "A deep arrangement for meals, proposals, and events.",
+    "es": "Un arreglo profundo para comidas, propuestas y eventos.",
+    "pt-BR": "Um arranjo profundo para refeições, propostas e eventos.",
+    "ar": "تنسيق عميق للوجبات والعروض والمناسبات."
+  },
+  "בוחרים אירוע, צבע, תקציב וטון רגשי.": {
+    "en": "You choose the event, color, budget, and emotional tone.",
+    "es": "Eligen evento, color, presupuesto y tono emocional.",
+    "pt-BR": "Escolhem evento, cor, orçamento e tom emocional.",
+    "ar": "تختارون المناسبة واللون والميزانية والنبرة العاطفية."
+  },
+  "קו ראשון, מרפסת ארוכה ובריזה פתוחה.": {
+    "en": "A front line, a long balcony, and an open breeze.",
+    "es": "Primera línea, balcón largo y brisa abierta.",
+    "pt-BR": "Primeira linha, varanda longa e brisa aberta.",
+    "ar": "خط أول وشرفة طويلة ونسيم مفتوح."
+  },
+  "סטודיו אדריכלות עם שפה שיטתית וחדה.": {
+    "en": "An architecture studio with a systematic, sharp language.",
+    "es": "Un estudio de arquitectura con un lenguaje sistemático y nítido.",
+    "pt-BR": "Um estúdio de arquitetura com uma linguagem sistemática e nítida.",
+    "ar": "استوديو عمارة بلغة منهجية حادة."
+  },
+  "שלחו תמונות — נעריך עלות ופוטנציאל.": {
+    "en": "Send photos — we will estimate cost and potential.",
+    "es": "Envíen fotos — evaluaremos costo y potencial.",
+    "pt-BR": "Enviem fotos — vamos avaliar custo e potencial.",
+    "ar": "أرسلوا صورًا — سنقدّر التكلفة والإمكان."
+  },
+  "מספרים טובים מובילים לעסקאות טובות.": {
+    "en": "Good numbers lead to good deals.",
+    "es": "Buenos números llevan a buenas operaciones.",
+    "pt-BR": "Números bons levam a bons negócios.",
+    "ar": "أرقام جيدة تقود إلى صفقات جيدة."
+  },
+  "המרה עלתה ב-61% אחרי ריסטראקט משפך.": {
+    "en": "Conversion rose 61% after a funnel restructure.",
+    "es": "La conversión subió un 61% tras reestructurar el embudo.",
+    "pt-BR": "A conversão subiu 61% depois de reestruturar o funil.",
+    "ar": "ارتفع التحويل 61% بعد إعادة هيكلة القمع."
+  },
+  "חומרים, תשובות ומדדי אמון למשקיעים.": {
+    "en": "Materials, answers, and trust metrics for investors.",
+    "es": "Materiales, respuestas y métricas de confianza para inversores.",
+    "pt-BR": "Materiais, respostas e métricas de confiança para investidores.",
+    "ar": "مواد وإجابات ومؤشرات ثقة للمستثمرين."
+  },
+  "מודל עסקי שמובן גם בלי גיליון פתוח.": {
+    "en": "A business model that is clear even without an open spreadsheet.",
+    "es": "Un modelo de negocio que se entiende también sin una hoja abierta.",
+    "pt-BR": "Um modelo de negócio que se entende mesmo sem uma planilha aberta.",
+    "ar": "نموذج أعمال يُفهم حتى بلا جدول مفتوح."
+  },
+  "נכסים שאפשר להפעיל גם במדיה בתשלום.": {
+    "en": "Assets you can also run in paid media.",
+    "es": "Activos que también se pueden activar en media de pago.",
+    "pt-BR": "Ativos que também dá para ativar em mídia paga.",
+    "ar": "أصول يمكن تشغيلها أيضًا في إعلانات مدفوعة."
+  },
+  "לא רודפים אחרי מילה שלא מביאה לקוח.": {
+    "en": "We do not chase a word that does not bring a customer.",
+    "es": "No perseguimos una palabra que no trae un cliente.",
+    "pt-BR": "Não corremos atrás de uma palavra que não traz cliente.",
+    "ar": "لا نطارد كلمة لا تجلب زبونًا."
+  },
+  "צמיחה דרך שותפים שמביאים אמון קיים.": {
+    "en": "Growth through partners who bring existing trust.",
+    "es": "Crecimiento a través de socios que traen confianza existente.",
+    "pt-BR": "Crescimento por meio de parceiros que trazem confiança já existente.",
+    "ar": "نمو عبر شركاء يجلبون ثقة قائمة."
+  },
+  "תובנה טובה מקצרת חודשים של ניחושים.": {
+    "en": "A good insight shortens months of guessing.",
+    "es": "Una buena intuición acorta meses de conjeturas.",
+    "pt-BR": "Uma boa intuição encurta meses de palpites.",
+    "ar": "بصيرة جيدة تختصر أشهرًا من التخمين."
+  },
+  "ראיונות עומק שמגלים טריגרים וחסמים.": {
+    "en": "Depth interviews that reveal triggers and barriers.",
+    "es": "Entrevistas en profundidad que revelan disparadores y barreras.",
+    "pt-BR": "Entrevistas em profundidade que revelam gatilhos e barreiras.",
+    "ar": "مقابلات عمق تكشف محفزات وعوائق."
+  },
+  "מבנה נבחן לפני שמחליטים על אסתטיקה.": {
+    "en": "Structure is examined before deciding on aesthetics.",
+    "es": "La estructura se examina antes de decidir la estética.",
+    "pt-BR": "A estrutura é examinada antes de decidir a estética.",
+    "ar": "يُفحص الهيكل قبل اختيار الجمالية."
+  },
+  "הארגון מדבר לפני שהרעש מכתיב נרטיב.": {
+    "en": "The organization speaks before noise dictates the narrative.",
+    "es": "La organización habla antes de que el ruido dicte el relato.",
+    "pt-BR": "A organização fala antes que o ruído dite a narrativa.",
+    "ar": "المنظمة تتكلم قبل أن يفرض الضجيج السرد."
+  },
+  "נתונים הופכים לטיעון שאפשר לדון בו.": {
+    "en": "Data becomes an argument you can actually discuss.",
+    "es": "Los datos se convierten en un argumento que se puede discutir.",
+    "pt-BR": "Os dados viram um argumento que dá para discutir.",
+    "ar": "البيانات تتحول إلى حجة يمكن مناقشتها."
+  },
+  "איך מחברים אינטרסים בלי לטשטש אותם.": {
+    "en": "How to connect interests without blurring them.",
+    "es": "Cómo unir intereses sin desdibujarlos.",
+    "pt-BR": "Como ligar interesses sem desfocá-los.",
+    "ar": "كيف تربط المصالح دون طمسها."
+  },
+  "לא מגייסים זכיין לפני שהשיטה כתובה.": {
+    "en": "We do not recruit a franchisee before the method is written.",
+    "es": "No reclutamos un franquiciado antes de que el método esté escrito.",
+    "pt-BR": "Não recrutamos franqueado antes de o método estar escrito.",
+    "ar": "لا نجنّد صاحب امتياز قبل أن تُكتب الطريقة."
+  },
+  "מסננים לפי יכולת והתאמה, לא רק כסף.": {
+    "en": "We filter by capability and fit, not only money.",
+    "es": "Filtramos por capacidad y encaje, no solo por dinero.",
+    "pt-BR": "Filtramos por capacidade e encaixe, não só por dinheiro.",
+    "ar": "نُصفّي حسب القدرة والملاءمة لا المال فقط."
+  },
+  "עננים, בדים ופינות קטנות לגדול בהן.": {
+    "en": "Clouds, fabrics, and small corners to grow in.",
+    "es": "Nubes, telas y rincones pequeños para crecer.",
+    "pt-BR": "Nuvens, tecidos e cantinhos pequenos para crescer.",
+    "ar": "غيوم وأقمشة وزوايا صغيرة للنمو."
+  },
+  "בלופרינט, שבבי עבודה וכלי על הספסל.": {
+    "en": "A blueprint, work chips, and tools on the bench.",
+    "es": "Un blueprint, fichas de trabajo y herramientas en el banco.",
+    "pt-BR": "Um blueprint, fichas de trabalho e ferramentas na bancada.",
+    "ar": "مخطط رقائق عمل وأدوات على الطاولة."
+  },
+  "דירוג חווית המנטורינג במפגשים חיים.": {
+    "en": "Mentoring-experience ratings from live sessions.",
+    "es": "Puntuación de la experiencia de mentoring en encuentros en vivo.",
+    "pt-BR": "Nota da experiência de mentoria em encontros ao vivo.",
+    "ar": "تقييم تجربة الإرشاد في لقاءات حية."
+  },
+  "מפגשי תרגול עם מורה ודוברים נוספים.": {
+    "en": "Practice sessions with a teacher and extra speakers.",
+    "es": "Encuentros de práctica con un profesor y más hablantes.",
+    "pt-BR": "Encontros de prática com um professor e outros falantes.",
+    "ar": "لقاءات تدريب مع معلم ومتحدثين إضافيين."
+  },
+  "מדווחים על ביטחון גבוה יותר בדיבור.": {
+    "en": "They report higher confidence when speaking.",
+    "es": "Reportan más confianza al hablar.",
+    "pt-BR": "Relatam mais confiança ao falar.",
+    "ar": "يبلّغون عن ثقة أعلى في الكلام."
+  },
+  "שגרה קטנה שמייצרת אוצר מילים אמיתי.": {
+    "en": "A small routine that builds a real vocabulary.",
+    "es": "Una rutina pequeña que genera un vocabulario real.",
+    "pt-BR": "Uma rotina pequena que gera um vocabulário de verdade.",
+    "ar": "روتين صغير يولّد حصيلة مفردات حقيقية."
+  },
+  "מסלולים מותאמים לגילאי גן עד יסודי.": {
+    "en": "Tracks tailored from preschool through elementary ages.",
+    "es": "Rutas adaptadas de edad de jardín a primaria.",
+    "pt-BR": "Trilhas adaptadas da idade de jardim até o fundamental.",
+    "ar": "مسارات ملائمة من سن الروضة حتى الابتدائي."
+  },
+  "שאלות שיעזרו למצוא חומר שמתאים לכם.": {
+    "en": "Questions that help you find material that fits you.",
+    "es": "Preguntas que ayudan a encontrar material que les encaje.",
+    "pt-BR": "Perguntas que ajudam a achar material que combina com vocês.",
+    "ar": "أسئلة تساعدكم على إيجاد مادة تناسبكم."
+  },
+  "איך לקבל ביקורת ולהפוך אותה לתיקון.": {
+    "en": "How to take critique and turn it into a fix.",
+    "es": "Cómo recibir crítica y convertirla en una corrección.",
+    "pt-BR": "Como receber crítica e transformá-la em correção.",
+    "ar": "كيف تتلقون نقدًا وتحوّلونه إلى تصحيح."
+  },
+  "דוחות התקדמות קצרים שמראים מה לחזק.": {
+    "en": "Short progress reports that show what to strengthen.",
+    "es": "Informes cortos de progreso que muestran qué reforzar.",
+    "pt-BR": "Relatórios curtos de progresso que mostram o que reforçar.",
+    "ar": "تقارير تقدّم قصيرة تُظهر ما يجب تعزيزه."
+  },
+  "ספרו כמה סועדים — נרכיב תאלי מותאם.": {
+    "en": "Tell us how many diners — we will build a custom thali.",
+    "es": "Digan cuántos comensales — armaremos un thali a medida.",
+    "pt-BR": "Contem quantos comensais — vamos montar um thali sob medida.",
+    "ar": "أخبرونا بعدد الضيوف — سنركّب ثاليًا مخصصًا."
+  },
+  "כתבו תאריך ומיקום — נגיע עם המשאית.": {
+    "en": "Write a date and location — we will arrive with the truck.",
+    "es": "Escriban fecha y ubicación — llegaremos con el camión.",
+    "pt-BR": "Escrevam data e local — chegamos com o caminhão.",
+    "ar": "اكتبوا تاريخًا وموقعًا — سنصل بالشاحنة."
+  },
+  "איך בונים סלסה, צורבים בשר ומגישים.": {
+    "en": "How we build salsa, sear meat, and plate it.",
+    "es": "Cómo armamos salsa, sellamos carne y emplatamos.",
+    "pt-BR": "Como montamos salsa, selamos carne e servimos.",
+    "ar": "كيف نبني الصلصة ونشوي اللحم ونقدّم."
+  },
+  "חוויית ייעוץ פרקטית, חדה ומודרנית.": {
+    "en": "A consulting experience that is practical, sharp, and modern.",
+    "es": "Una experiencia de consultoría práctica, nítida y moderna.",
+    "pt-BR": "Uma experiência de consultoria prática, nítida e moderna.",
+    "ar": "تجربة استشارة عملية حادة وحديثة."
+  },
+  "עיצוב חוויות שנבנות בדיוק ובבהירות": {
+    "en": "Experience design built with precision and clarity",
+    "es": "Diseño de experiencias construidas con precisión y claridad",
+    "pt-BR": "Design de experiências construídas com precisão e clareza",
+    "ar": "تصميم تجارب تُبنى بالدقة والوضوح"
+  },
+  "למה חוויית מותג משנה בנדל״ן יוקרתי": {
+    "en": "Why brand experience matters in luxury real estate",
+    "es": "Por qué la experiencia de marca importa en inmobiliaria de lujo",
+    "pt-BR": "Por que a experiência de marca importa no imóvel de luxo",
+    "ar": "لماذا تجربة العلامة تهم في العقار الفاخر"
+  },
+  "חבילות ברורות בלי עומס ובלי בלבול.": {
+    "en": "Clear packages without overload and without confusion.",
+    "es": "Paquetes claros sin sobrecarga y sin confusión.",
+    "pt-BR": "Pacotes claros sem sobrecarga e sem confusão.",
+    "ar": "باقات واضحة بلا حمل زائد وبلا ارتباك."
+  },
+  "לארגונים עם דרישות מתקדמות ואבטחה.": {
+    "en": "For organizations with advanced requirements and security.",
+    "es": "Para organizaciones con requisitos avanzados y seguridad.",
+    "pt-BR": "Para organizações com requisitos avançados e segurança.",
+    "ar": "لمؤسسات ذات متطلبات متقدمة وأمان."
+  },
+  "לא רק קריאה — שיחה מקצועית שמקדמת.": {
+    "en": "Not just a reading — a professional conversation that moves you forward.",
+    "es": "No solo una lectura — una conversación profesional que avanza.",
+    "pt-BR": "Não só uma leitura — uma conversa profissional que faz avançar.",
+    "ar": "ليست قراءة فقط — حديث مهني يدفع للأمام."
+  },
+  "מטופלים מספרים על טיפול בטוח וברור": {
+    "en": "Patients describe care that is safe and clear",
+    "es": "Pacientes cuentan un tratamiento seguro y claro",
+    "pt-BR": "Pacientes relatam um cuidado seguro e claro",
+    "ar": "المرضى يروون علاجًا آمنًا وواضحًا"
+  },
+  "זיגזג מהיר בין רעיון, דאטה וביצוע.": {
+    "en": "A fast zigzag between idea, data, and execution.",
+    "es": "Un zigzag rápido entre idea, datos y ejecución.",
+    "pt-BR": "Um zigue-zague rápido entre ideia, dados e execução.",
+    "ar": "تعرّج سريع بين فكرة وبيانات وتنفيذ."
+  },
+  "החזר מדיה בקמפיינים שהבשילו לסקייל": {
+    "en": "Media return on campaigns that matured to scale",
+    "es": "Retorno de media en campañas que maduraron a escala",
+    "pt-BR": "Retorno de mídia em campanhas que amadureceram para escala",
+    "ar": "عائد إعلامي لحملات نضجت إلى مقياس"
+  },
+  "קילוגרמים ירדו בממוצע במחזור חיטוב": {
+    "en": "Average kilograms dropped in a cutting cycle",
+    "es": "Kilos promedio bajados en un ciclo de definición",
+    "pt-BR": "Quilos médios perdidos em um ciclo de definição",
+    "ar": "كيلوغرامات نزلت بالمتوسط في دورة تنحيف"
+  },
+  "מתאים לזוגות שרוצים חתימה ויזואלית": {
+    "en": "Fits couples who want a visual signature",
+    "es": "Encaja en parejas que quieren una firma visual",
+    "pt-BR": "Serve para casais que querem uma assinatura visual",
+    "ar": "يناسب الأزواج الذين يريدون توقيعًا بصريًا"
+  },
+  "מרחבים נפרדים למשחק, מנוחה ופנסיון": {
+    "en": "Separate spaces for play, rest, and boarding",
+    "es": "Espacios separados para juego, descanso y pensión",
+    "pt-BR": "Espaços separados para brincar, descansar e pensão",
+    "ar": "مساحات منفصلة للعب والراحة والإقامة"
+  },
+  "שמירת פריטים עד 24 שעות אחרי ביקור": {
+    "en": "Item hold for up to 24 hours after a visit",
+    "es": "Reserva de artículos hasta 24 horas después de la visita",
+    "pt-BR": "Guarda de itens até 24 horas depois da visita",
+    "ar": "حفظ القطع حتى 24 ساعة بعد الزيارة"
+  },
+  "מוזאיקת זרים שמחליפה צבע עם העונה.": {
+    "en": "A mosaic of bouquets that changes color with the season.",
+    "es": "Un mosaico de ramos que cambia de color con la estación.",
+    "pt-BR": "Um mosaico de buquês que troca de cor com a estação.",
+    "ar": "فسيفساء باقات تبدّل اللون مع الموسم."
+  },
+  "בריכת אבן, שער פרטי ושביל אל החוף.": {
+    "en": "A stone pool, a private gate, and a path to the beach.",
+    "es": "Piscina de piedra, portón privado y sendero hacia la playa.",
+    "pt-BR": "Piscina de pedra, portão privado e caminho até a praia.",
+    "ar": "بركة حجر وبوابة خاصة وممر إلى الشاطئ."
+  },
+  "פוטנציאל שינוי ייעוד · טווח בינוני": {
+    "en": "Rezoning potential · mid-term horizon",
+    "es": "Potencial de cambio de uso · horizonte medio",
+    "pt-BR": "Potencial de mudança de uso · prazo médio",
+    "ar": "إمكانية تغيير الاستخدام · مدى متوسط"
+  },
+  "עבדנו עם מותגים שאוהבים את התוצאה.": {
+    "en": "We have worked with brands that love the result.",
+    "es": "Hemos trabajado con marcas que aman el resultado.",
+    "pt-BR": "Trabalhamos com marcas que amam o resultado.",
+    "ar": "عملنا مع علامات تحب النتيجة."
+  },
+  "מיטת שיזוף פרטית וארוחת בוקר בחול.": {
+    "en": "A private sunbed and breakfast in the sand.",
+    "es": "Tumbona privada y desayuno en la arena.",
+    "pt-BR": "Espreguiçadeira privada e café da manhã na areia.",
+    "ar": "سرير تشمس خاص وفطور على الرمل."
+  },
+  "מיקום טוב הוא השקעה — לא רק כתובת.": {
+    "en": "A good location is an investment — not just an address.",
+    "es": "Una buena ubicación es una inversión — no solo una dirección.",
+    "pt-BR": "Uma boa localização é investimento — não só um endereço.",
+    "ar": "الموقع الجيد استثمار — وليس عنوانًا فقط."
+  },
+  "עסקה טובה נחתמת בביטחון — לא בלחץ.": {
+    "en": "A good deal is signed with confidence — not pressure.",
+    "es": "Una buena operación se firma con seguridad — no con presión.",
+    "pt-BR": "Um bom negócio se assina com confiança — não com pressão.",
+    "ar": "صفقة جيدة تُوقَّع بثقة — لا بضغط."
+  },
+  "השוואת פוליסות בלי לוותר על כיסוי.": {
+    "en": "Compare policies without giving up coverage.",
+    "es": "Comparar pólizas sin renunciar a la cobertura.",
+    "pt-BR": "Comparar apólices sem abrir mão da cobertura.",
+    "ar": "مقارنة وثائق دون التنازل عن التغطية."
+  },
+  "מעטפת מלאה עם חיסכון שנתי משמעותי.": {
+    "en": "A full wrap with meaningful yearly savings.",
+    "es": "Una cobertura completa con un ahorro anual significativo.",
+    "pt-BR": "Uma cobertura completa com economia anual significativa.",
+    "ar": "غلاف كامل مع توفير سنوي ملموس."
+  },
+  "שאלות קשות נכנסות לתהליך, לא בסוף.": {
+    "en": "Hard questions enter the process, not at the end.",
+    "es": "Las preguntas difíciles entran al proceso, no al final.",
+    "pt-BR": "Perguntas difíceis entram no processo, não no fim.",
+    "ar": "الأسئلة الصعبة تدخل العملية لا في النهاية."
+  },
+  "איך בונים סדרה ולא הברקה חד פעמית.": {
+    "en": "How to build a series, not a one-off spark.",
+    "es": "Cómo construir una serie y no un destello único.",
+    "pt-BR": "Como construir uma série e não um brilho único.",
+    "ar": "كيف تبنون سلسلة لا ومضة لمرة واحدة."
+  },
+  "קודים ולינקים שמחברים תוכן להכנסה.": {
+    "en": "Codes and links that connect content to revenue.",
+    "es": "Códigos y enlaces que unen contenido con ingresos.",
+    "pt-BR": "Códigos e links que ligam conteúdo à receita.",
+    "ar": "رموز وروابط تربط المحتوى بالدخل."
+  },
+  "מילה גדולה יכולה להיות קטנה עסקית.": {
+    "en": "A big word can be small for the business.",
+    "es": "Una palabra grande puede ser pequeña para el negocio.",
+    "pt-BR": "Uma palavra grande pode ser pequena para o negócio.",
+    "ar": "كلمة كبيرة قد تكون صغيرة تجاريًا."
+  },
+  "לוח תוכן צריך עורך, לא רק תאריכים.": {
+    "en": "A content calendar needs an editor, not just dates.",
+    "es": "Un calendario de contenidos necesita un editor, no solo fechas.",
+    "pt-BR": "Um calendário de conteúdo precisa de editor, não só de datas.",
+    "ar": "جدول محتوى يحتاج محررًا لا تواريخ فقط."
+  },
+  "עמודים וחומרים עונים לשאלות מוקדם.": {
+    "en": "Pages and materials answer questions early.",
+    "es": "Páginas y materiales responden preguntas temprano.",
+    "pt-BR": "Páginas e materiais respondem perguntas cedo.",
+    "ar": "صفحات ومواد تجيب على الأسئلة مبكرًا."
+  },
+  "השקה היא לא יום. היא הצתה מתוכננת.": {
+    "en": "A launch is not a day. It is a planned ignition.",
+    "es": "Un lanzamiento no es un día. Es una ignición planificada.",
+    "pt-BR": "Um lançamento não é um dia. É uma ignição planejada.",
+    "ar": "الإطلاق ليس يومًا. إنه إشعال مخطط."
+  },
+  "איך לבנות מערכת יחסים ולא רק לינק.": {
+    "en": "How to build a relationship, not just a link.",
+    "es": "Cómo construir una relación y no solo un enlace.",
+    "pt-BR": "Como construir um relacionamento e não só um link.",
+    "ar": "كيف تبنون علاقة لا مجرد رابط."
+  },
+  "מנהלים מבינים מה לעשות ביום שאחרי.": {
+    "en": "Managers know what to do the day after.",
+    "es": "Los gerentes entienden qué hacer el día después.",
+    "pt-BR": "Gestores entendem o que fazer no dia seguinte.",
+    "ar": "المديرون يفهمون ماذا يفعلون في اليوم التالي."
+  },
+  "בדיקות עם משתמשים ותיעדוף תיקונים.": {
+    "en": "User tests and prioritized fixes.",
+    "es": "Pruebas con usuarios y priorización de correcciones.",
+    "pt-BR": "Testes com usuários e priorização de correções.",
+    "ar": "اختبارات مع المستخدمين وترتيب التصحيحات."
+  },
+  "כל פרק הופך לקליפים, פוסטים ומייל.": {
+    "en": "Every episode becomes clips, posts, and email.",
+    "es": "Cada capítulo se convierte en clips, posts y email.",
+    "pt-BR": "Cada episódio vira clips, posts e e-mail.",
+    "ar": "كل حلقة تتحول إلى مقاطع ومنشورات وبريد."
+  },
+  "מסרים פנימיים וחיצוניים ייצבו שיח.": {
+    "en": "Internal and external messages will stabilize the conversation.",
+    "es": "Mensajes internos y externos estabilizarán el diálogo.",
+    "pt-BR": "Mensagens internas e externas vão estabilizar o diálogo.",
+    "ar": "رسائل داخلية وخارجية تثبّت الحوار."
+  },
+  "לא מחליטים מי מאשר כשהטלפון מצלצל.": {
+    "en": "We do not decide who approves when the phone rings.",
+    "es": "No decidimos quién aprueba cuando suena el teléfono.",
+    "pt-BR": "Não decidimos quem aprova quando o telefone toca.",
+    "ar": "لا نقرر من يوافق عندما يرن الهاتف."
+  },
+  "אמפתיה, עובדות ואחריות בסדר הנכון.": {
+    "en": "Empathy, facts, and responsibility in the right order.",
+    "es": "Empatía, hechos y responsabilidad en el orden correcto.",
+    "pt-BR": "Empatia, fatos e responsabilidade na ordem certa.",
+    "ar": "تعاطف ووقائع ومسؤولية بالترتيب الصحيح."
+  },
+  "נהלים ובקרה שומרים על חוויית לקוח.": {
+    "en": "Procedures and control protect the customer experience.",
+    "es": "Procedimientos y control cuidan la experiencia del cliente.",
+    "pt-BR": "Procedimentos e controle protegem a experiência do cliente.",
+    "ar": "إجراءات ورقابة تحفظ تجربة العميل."
+  },
+  "רצועות אלכסוניות, כפות ורגעי שמחה.": {
+    "en": "Diagonal straps, paws, and moments of joy.",
+    "es": "Correas diagonales, patas y momentos de alegría.",
+    "pt-BR": "Tiras diagonais, patas e momentos de alegria.",
+    "ar": "أشرطة مائلة وأكف ولحظات فرح."
+  },
+  "נייר, גודל וכריכה שמשנים את ההרגל.": {
+    "en": "Paper, size, and binding that change the habit.",
+    "es": "Papel, tamaño y encuadernación que cambian el hábito.",
+    "pt-BR": "Papel, tamanho e capa que mudam o hábito.",
+    "ar": "ورق وحجم وغلاف يغيّر العادة."
+  },
+  "סאונד חד כמו במה חיה — בסלון שלכם.": {
+    "en": "Sound as sharp as a live stage — in your living room.",
+    "es": "Sonido nítido como un escenario en vivo — en su salón.",
+    "pt-BR": "Som nítido como um palco ao vivo — na sala de vocês.",
+    "ar": "صوت حاد كمنصة حية — في صالونكم."
+  },
+  "סניקרס ודרופים שמגיעים ישר מהרחוב.": {
+    "en": "Sneakers and drops that arrive straight from the street.",
+    "es": "Sneakers y drops que llegan directo de la calle.",
+    "pt-BR": "Tênis e drops que chegam direto da rua.",
+    "ar": "سنيكرز ودروبات تصل مباشرة من الشارع."
+  },
+  "סיכום התקדמות ותוכנית המשך עצמאית.": {
+    "en": "A progress summary and an independent next-step plan.",
+    "es": "Un resumen de progreso y un plan de continuación independiente.",
+    "pt-BR": "Um resumo de progresso e um plano de continuação independente.",
+    "ar": "ملخص تقدّم وخطة متابعة مستقلة."
+  },
+  "מה חייב להופיע בפרויקט תיק עבודות.": {
+    "en": "What must appear in a portfolio project.",
+    "es": "Qué debe aparecer en un proyecto de portafolio.",
+    "pt-BR": "O que precisa aparecer em um projeto de portfólio.",
+    "ar": "ما يجب أن يظهر في مشروع ملف أعمال."
+  },
+  "פותחים שאלה מסקרנת או אתגר צבעוני.": {
+    "en": "Open with a curious question or a colorful challenge.",
+    "es": "Abren con una pregunta curiosa o un reto colorido.",
+    "pt-BR": "Abrem com uma pergunta curiosa ou um desafio colorido.",
+    "ar": "يفتتحون بسؤال مثير أو تحدٍ ملون."
+  },
+  "בונים לוח שיעורים, מטלות ומרתונים.": {
+    "en": "We build a lesson board, assignments, and marathons.",
+    "es": "Construimos un tablero de clases, tareas y maratones.",
+    "pt-BR": "Montamos um quadro de aulas, tarefas e maratonas.",
+    "ar": "نبني لوحة دروس وواجبات وماراثونات."
+  },
+  "פסטה טרייה כל יום. ביצים מקמפיליה.": {
+    "en": "Fresh pasta every day. Eggs from Campania.",
+    "es": "Pasta fresca todos los días. Huevos de Campania.",
+    "pt-BR": "Massa fresca todos os dias. Ovos da Campânia.",
+    "ar": "معكرونة طازجة كل يوم. بيض من كامبانيا."
+  },
+  "לצוותים גדולים עם מערכות מורכבות.": {
+    "en": "For large teams with complex systems.",
+    "es": "Para equipos grandes con sistemas complejos.",
+    "pt-BR": "Para equipes grandes com sistemas complexos.",
+    "ar": "لفرق كبيرة ذات أنظمة معقدة."
+  },
+  "פיתוח והשקה שמקדמים את העסק קדימה": {
+    "en": "Development and launch that move the business forward",
+    "es": "Desarrollo y lanzamiento que empujan el negocio hacia adelante",
+    "pt-BR": "Desenvolvimento e lançamento que levam o negócio adiante",
+    "ar": "تطوير وإطلاق يدفعان العمل إلى الأمام"
+  },
+  "תוכן שמחזק אמון לפני שהלקוח פונה.": {
+    "en": "Content that builds trust before the customer reaches out.",
+    "es": "Contenido que refuerza la confianza antes de que el cliente contacte.",
+    "pt-BR": "Conteúdo que reforça a confiança antes de o cliente falar.",
+    "ar": "محتوى يعزّز الثقة قبل أن يتواصل العميل."
+  },
+  "רוצה לבדוק התאמה? נשמח לשמוע ממך.": {
+    "en": "Want to check fit? We would love to hear from you.",
+    "es": "¿Quiere revisar encaje? Nos encantará saber de usted.",
+    "pt-BR": "Quer checar o encaixe? Vamos adorar ouvir você.",
+    "ar": "تريد فحص الملاءمة؟ يسعدنا سماعك."
+  },
+  "שותף מייסד • ליטיגציה ומשפט מסחרי": {
+    "en": "Founding partner • litigation and commercial law",
+    "es": "Socio fundador • litigios y derecho comercial",
+    "pt-BR": "Sócio fundador • litígios e direito comercial",
+    "ar": "شريك مؤسس • تقاضي وقانون تجاري"
+  },
+  "מה חשוב לבדוק לפני חתימה על חוזה?": {
+    "en": "What is important to check before signing a contract?",
+    "es": "¿Qué es importante revisar antes de firmar un contrato?",
+    "pt-BR": "O que é importante checar antes de assinar um contrato?",
+    "ar": "ما المهم فحصه قبل توقيع عقد؟"
+  },
+  "בעיה בבית? סוגרים אותה כמו שצריך.": {
+    "en": "A problem at home? We close it the right way.",
+    "es": "¿Un problema en casa? Lo cerramos como corresponde.",
+    "pt-BR": "Problema em casa? Fechamos do jeito certo.",
+    "ar": "مشكلة في البيت؟ نغلقها كما ينبغي."
+  },
+  "לא עדויות יפות. תגובות אחרי השקה.": {
+    "en": "Not pretty testimonials. Reactions after launch.",
+    "es": "No testimonios bonitos. Reacciones después del lanzamiento.",
+    "pt-BR": "Não depoimentos bonitos. Reações depois do lançamento.",
+    "ar": "ليست شهادات جميلة. ردود بعد الإطلاق."
+  },
+  "שירותי טיפול רכים, ברורים ושקופים": {
+    "en": "Care services that are gentle, clear, and transparent",
+    "es": "Servicios de cuidado suaves, claros y transparentes",
+    "pt-BR": "Serviços de cuidado suaves, claros e transparentes",
+    "ar": "خدمات رعاية لطيفة وواضحة وشفافة"
+  },
+  "הבעלים רגועים, החיות חוזרות שמחות": {
+    "en": "Owners stay calm, the animals come home happy",
+    "es": "Los dueños quedan tranquilos, los animales vuelven felices",
+    "pt-BR": "Os donos ficam calmos, os animais voltam felizes",
+    "ar": "أصحاب هادئون والحيوانات تعود سعيدة"
+  },
+  "כוס חמה, מים בצד והמלצה לפול הבא.": {
+    "en": "A hot cup, water on the side, and a tip for the next pour.",
+    "es": "Una taza caliente, agua al lado y una recomendación para el siguiente pour.",
+    "pt-BR": "Uma xícara quente, água ao lado e uma dica para o próximo pour.",
+    "ar": "كأس ساخنة وماء جانبي ونصيحة للصب التالي."
+  },
+  "תנו לפרחים להגיד את המשפט הראשון.": {
+    "en": "Let the flowers say the first sentence.",
+    "es": "Dejen que las flores digan la primera frase.",
+    "pt-BR": "Deixem as flores dizerem a primeira frase.",
+    "ar": "دعوا الزهور تقول الجملة الأولى."
+  },
+  "פחות עיצוב ראווה. יותר מערכת חיה.": {
+    "en": "Less showcase design. More living system.",
+    "es": "Menos diseño de exhibición. Más sistema vivo.",
+    "pt-BR": "Menos design de vitrine. Mais sistema vivo.",
+    "ar": "أقل تصميم استعراض. أكثر نظامًا حيًا."
+  },
+  "כמה סועדים ומתי — נשמור לכם מקום.": {
+    "en": "How many diners and when — we will hold a table.",
+    "es": "Cuántos comensales y cuándo — les guardaremos un lugar.",
+    "pt-BR": "Quantos comensais e quando — vamos guardar um lugar.",
+    "ar": "كم عدد الضيوف ومتى — سنحجز لكم مكانًا."
+  },
+  "בחרו טיפול ותאריך — נאשר תוך שעה.": {
+    "en": "Choose a treatment and a date — we will confirm within an hour.",
+    "es": "Elijan tratamiento y fecha — confirmaremos en una hora.",
+    "pt-BR": "Escolham tratamento e data — confirmamos em uma hora.",
+    "ar": "اختاروا علاجًا وتاريخًا — سنؤكّد خلال ساعة."
+  },
+  "כתבו נפח וסוג מוצר — נשלח מחירון.": {
+    "en": "Write volume and product type — we will send a price list.",
+    "es": "Escriban volumen y tipo de producto — enviaremos un tarifario.",
+    "pt-BR": "Escrevam volume e tipo de produto — enviaremos uma tabela de preços.",
+    "ar": "اكتبوا الحجم ونوع المنتج — سنرسل قائمة أسعار."
+  },
+  "שתי קומות, מרפסת שמש וחניה כפולה.": {
+    "en": "Two floors, a sun terrace, and double parking.",
+    "es": "Dos plantas, terraza al sol y parking doble.",
+    "pt-BR": "Dois andares, terraço ao sol e vaga dupla.",
+    "ar": "طابقان وشرفة شمس وموقف مزدوج."
+  },
+  "בית טוב נמדד בזרימה — לא רק במ״ר.": {
+    "en": "A good home is measured by flow — not only square meters.",
+    "es": "Una buena casa se mide por el flujo — no solo por m².",
+    "pt-BR": "Uma boa casa se mede pelo fluxo — não só pelos m².",
+    "ar": "البيت الجيد يُقاس بالتدفّق — لا بالمتر المربع فقط."
+  },
+  "מגדל טוב נמדד בנוף — לא רק בגובה.": {
+    "en": "A good tower is measured by the view — not only height.",
+    "es": "Una buena torre se mide por la vista — no solo por la altura.",
+    "pt-BR": "Uma boa torre se mede pela vista — não só pela altura.",
+    "ar": "البرج الجيد يُقاس بالإطلالة — لا بالارتفاع فقط."
+  },
+  "תוכן שמזין את המשפך ולא מת במדיה.": {
+    "en": "Content that feeds the funnel and does not die in media.",
+    "es": "Contenido que alimenta el embudo y no muere en media.",
+    "pt-BR": "Conteúdo que alimenta o funil e não morre na mídia.",
+    "ar": "محتوى يغذّي القمع ولا يموت في الإعلام."
+  },
+  "חיים, בריאות וסיעוד בהתאמה אישית.": {
+    "en": "Life, health, and long-term care tailored to you.",
+    "es": "Vida, salud y cuidados de larga duración a medida.",
+    "pt-BR": "Vida, saúde e cuidados de longa duração sob medida.",
+    "ar": "حياة وصحة ورعاية طويلة مخصصة."
+  },
+  "תמונות מערכת מתוך שבוע של כותרות.": {
+    "en": "Editorial photos from a week of headlines.",
+    "es": "Fotos de redacción de una semana de titulares.",
+    "pt-BR": "Fotos de redação de uma semana de manchetes.",
+    "ar": "صور تحريرية من أسبوع عناوين."
+  },
+  "ניהול זכויות לתוכן ממומן ואורגני.": {
+    "en": "Rights management for paid and organic content.",
+    "es": "Gestión de derechos para contenido pagado y orgánico.",
+    "pt-BR": "Gestão de direitos para conteúdo pago e orgânico.",
+    "ar": "إدارة حقوق للمحتوى المدفوع والعضوي."
+  },
+  "קמפיין מיקרו השיג מכירות בסניפים.": {
+    "en": "A micro campaign drove in-store sales.",
+    "es": "Una microcampaña logró ventas en sucursales.",
+    "pt-BR": "Uma microcampanha gerou vendas nas lojas.",
+    "ar": "حملة صغيرة حققت مبيعات في الفروع."
+  },
+  "סגנון עקבי בין מדריך, מייל ופוסט.": {
+    "en": "A consistent style across guide, email, and post.",
+    "es": "Un estilo coherente entre guía, email y post.",
+    "pt-BR": "Um estilo consistente entre guia, e-mail e post.",
+    "ar": "أسلوب متسق بين دليل وبريد ومنشور."
+  },
+  "לקוח מגיע כשהוא כבר מבין את הערך.": {
+    "en": "A customer arrives already understanding the value.",
+    "es": "El cliente llega cuando ya entiende el valor.",
+    "pt-BR": "O cliente chega quando já entende o valor.",
+    "ar": "يصل العميل وهو يفهم القيمة أصلًا."
+  },
+  "מראים ערך דרך מסכים, לא רק מילים.": {
+    "en": "We show value through screens, not only words.",
+    "es": "Mostramos valor a través de pantallas, no solo palabras.",
+    "pt-BR": "Mostramos valor por telas, não só por palavras.",
+    "ar": "نُظهر القيمة عبر الشاشات لا بالكلمات فقط."
+  },
+  "בלי בחירת זירה, כל מסר נשמע כללי.": {
+    "en": "Without choosing an arena, every message sounds generic.",
+    "es": "Sin elegir una arena, cada mensaje suena genérico.",
+    "pt-BR": "Sem escolher uma arena, cada mensagem soa genérica.",
+    "ar": "بلا اختيار ساحة، كل رسالة تبدو عامة."
+  },
+  "חומרים שמאפשרים לשותף למכור נכון.": {
+    "en": "Materials that let a partner sell the right way.",
+    "es": "Materiales que permiten al socio vender bien.",
+    "pt-BR": "Materiais que permitem ao parceiro vender certo.",
+    "ar": "مواد تمكّن الشريك من البيع بشكل صحيح."
+  },
+  "שותפי אינטגרציה יצרו 31% מהדמוים.": {
+    "en": "Integration partners created 31% of demos.",
+    "es": "Los socios de integración crearon el 31% de las demos.",
+    "pt-BR": "Parceiros de integração criaram 31% das demos.",
+    "ar": "شركاء التكامل أنشأوا 31% من العروض."
+  },
+  "איך למנוע ספרייה שאף אחד לא פותח.": {
+    "en": "How to avoid a library nobody opens.",
+    "es": "Cómo evitar una biblioteca que nadie abre.",
+    "pt-BR": "Como evitar uma biblioteca que ninguém abre.",
+    "ar": "كيف تمنعون مكتبة لا يفتحها أحد."
+  },
+  "הפקה מנוהלת בזמן, תקציב ואישורים.": {
+    "en": "Production managed on time, budget, and approvals.",
+    "es": "Producción gestionada en tiempo, presupuesto y aprobaciones.",
+    "pt-BR": "Produção gerida em prazo, orçamento e aprovações.",
+    "ar": "إنتاج يُدار بالوقت والميزانية والموافقات."
+  },
+  "גזרות לכל ערוץ בלי להרגיש ממוחזר.": {
+    "en": "Cuts for every channel without feeling recycled.",
+    "es": "Cortes para cada canal sin sentirse reciclados.",
+    "pt-BR": "Cortes para cada canal sem parecer reciclado.",
+    "ar": "قصّات لكل قناة دون شعور بالتكرار."
+  },
+  "כל אירוע הופך לפרוטוקול טוב יותר.": {
+    "en": "Every event becomes a better protocol.",
+    "es": "Cada evento se convierte en un protocolo mejor.",
+    "pt-BR": "Cada evento vira um protocolo melhor.",
+    "ar": "كل حدث يتحول إلى بروتوكول أفضل."
+  },
+  "כלכלה, תמלוגים, טריטוריות ותנאים.": {
+    "en": "Economics, royalties, territories, and terms.",
+    "es": "Economía, regalías, territorios y condiciones.",
+    "pt-BR": "Economia, royalties, territórios e condições.",
+    "ar": "اقتصاد وعوائد ومناطق وشروط."
+  },
+  "זכיין מבין השקעה, תפעול ורווחיות.": {
+    "en": "A franchisee understands investment, operations, and profit.",
+    "es": "Un franquiciado entiende inversión, operación y rentabilidad.",
+    "pt-BR": "Um franqueado entende investimento, operação e lucratividade.",
+    "ar": "صاحب الامتياز يفهم الاستثمار والتشغيل والربحية."
+  },
+  "גאדג׳טים על מסילת תצוגה קולנועית.": {
+    "en": "Gadgets on a cinematic display rail.",
+    "es": "Gadgets en un riel de exhibición cinematográfico.",
+    "pt-BR": "Gadgets em um trilho de exibição cinematográfico.",
+    "ar": "أدوات على سكة عرض سينمائية."
+  },
+  "תוצרת שנראית כמו דוכן שישי בבוקר.": {
+    "en": "Produce that looks like a Friday-morning stall.",
+    "es": "Producto que se ve como un puesto de viernes por la mañana.",
+    "pt-BR": "Produção que parece uma barraca de sexta de manhã.",
+    "ar": "محصول يبدو ككشك جمعة صباحًا."
+  },
+  "מחלקות אימון לפי יעד, לא לפי מדף.": {
+    "en": "Training departments by goal, not by shelf.",
+    "es": "Departamentos de entrenamiento por objetivo, no por estante.",
+    "pt-BR": "Departamentos de treino por objetivo, não por prateleira.",
+    "ar": "أقسام تدريب حسب الهدف لا حسب الرف."
+  },
+  "גודל, רכות ובד שעושים הבדל בשגרה.": {
+    "en": "Size, softness, and fabric that change the daily routine.",
+    "es": "Tamaño, suavidad y tela que marcan la diferencia en la rutina.",
+    "pt-BR": "Tamanho, maciez e tecido que fazem diferença na rotina.",
+    "ar": "حجم ونعومة وقماش يصنع فرقًا في الروتين."
+  },
+  "יינות שנבחרו למרתף, לא למדף גנרי.": {
+    "en": "Wines chosen for a cellar, not a generic shelf.",
+    "es": "Vinos elegidos para una bodega, no para un estante genérico.",
+    "pt-BR": "Vinhos escolhidos para uma adega, não para uma prateleira genérica.",
+    "ar": "نبيذ اختير للقبو لا لرف عام."
+  },
+  "אופניים ואביזרים שנבנו לקצב שלכם.": {
+    "en": "Bikes and accessories built for your pace.",
+    "es": "Bicicletas y accesorios construidos a su ritmo.",
+    "pt-BR": "Bicicletas e acessórios feitos no ritmo de vocês.",
+    "ar": "دراجات وإكسسوارات بُنيت على وتيرتكم."
+  },
+  "למה הלמידה כאן מחזיקה עד הקרדיטים": {
+    "en": "Why learning here lasts through the credits",
+    "es": "Por qué el aprendizaje aquí se sostiene hasta los créditos",
+    "pt-BR": "Por que o aprendizado aqui se sustenta até os créditos",
+    "ar": "لماذا التعلّم هنا يثبت حتى نهاية الاعتمادات"
+  },
+  "למה תלמידים מתחילים לדבר מהר יותר": {
+    "en": "Why students start speaking faster",
+    "es": "Por qué los alumnos empiezan a hablar más rápido",
+    "pt-BR": "Por que os alunos começam a falar mais rápido",
+    "ar": "لماذا يبدأ الطلاب الكلام أسرع"
+  },
+  "למה הדיפלוי שלכם לא נשאר בתיאוריה": {
+    "en": "Why your deploy does not stay theoretical",
+    "es": "Por qué su deploy no se queda en la teoría",
+    "pt-BR": "Por que o deploy de vocês não fica na teoria",
+    "ar": "لماذا نشركم لا يبقى نظريًا"
+  },
+  "אפשרויות נגינה קבוצתיות בכל חודש.": {
+    "en": "Group playing options every month.",
+    "es": "Opciones de tocar en grupo cada mes.",
+    "pt-BR": "Opções de tocar em grupo todos os meses.",
+    "ar": "خيارات عزف جماعي كل شهر."
+  },
+  "חלוקה של 20 דקות שמייצרת התקדמות.": {
+    "en": "A 20-minute split that produces progress.",
+    "es": "Una división de 20 minutos que genera progreso.",
+    "pt-BR": "Uma divisão de 20 minutos que gera progresso.",
+    "ar": "تقسيم 20 دقيقة يولّد تقدّمًا."
+  },
+  "שאלות קטנות שכדאי לשאול אחרי חוג.": {
+    "en": "Small questions worth asking after class.",
+    "es": "Preguntas pequeñas que conviene hacer después de un taller.",
+    "pt-BR": "Perguntas pequenas que vale perguntar depois da aula.",
+    "ar": "أسئلة صغيرة يجدر طرحها بعد الحصة."
+  },
+  "נבחר מסלול אימון ויעד ביצוע מדיד.": {
+    "en": "We choose a training track and a measurable performance goal.",
+    "es": "Elegimos una ruta de entrenamiento y un objetivo de desempeño medible.",
+    "pt-BR": "Escolhemos uma trilha de treino e uma meta de desempenho mensurável.",
+    "ar": "نختار مسار تدريب وهدف أداء قابل للقياس."
+  },
+  "מפגשי ליבה עם קריאה, צפייה ודיון.": {
+    "en": "Core sessions with reading, viewing, and discussion.",
+    "es": "Encuentros nucleares con lectura, visionado y debate.",
+    "pt-BR": "Encontros centrais com leitura, exibição e discussão.",
+    "ar": "لقاءات جوهر مع قراءة ومشاهدة ونقاش."
+  },
+  "יחס מרצה-משתתפים במסלולי פרימיום.": {
+    "en": "Instructor-to-participant ratio on premium tracks.",
+    "es": "Relación profesor-participantes en rutas premium.",
+    "pt-BR": "Relação professor-participantes em trilhas premium.",
+    "ar": "نسبة محاضر-مشاركين في مسارات بريميوم."
+  },
+  "איסוף עצמי ומסירה באזור עד 3 ק״מ.": {
+    "en": "Pickup and local delivery within 3 km.",
+    "es": "Recogida propia y entrega en la zona hasta 3 km.",
+    "pt-BR": "Retirada e entrega na região até 3 km.",
+    "ar": "استلام ذاتي وتوصيل في المنطقة حتى 3 كم."
+  },
+  "בחרו את החבילה שמתאימה לעסק שלכם": {
+    "en": "Choose the package that fits your business",
+    "es": "Elijan el paquete que encaja con su negocio",
+    "pt-BR": "Escolham o pacote que combina com o negócio de vocês",
+    "ar": "اختاروا الباقة التي تناسب عملكم"
+  },
+  "קבלו 20% הנחה על הקפסולה הראשונה": {
+    "en": "Get 20% off the first capsule",
+    "es": "Obtengan 20% de descuento en la primera cápsula",
+    "pt-BR": "Ganhem 20% de desconto na primeira cápsula",
+    "ar": "احصلوا على خصم 20% على الكبسولة الأولى"
+  },
+  "מהרעיון להרצה מלאה בשלושה צעדים.": {
+    "en": "From idea to a full run in three steps.",
+    "es": "De la idea a una ejecución completa en tres pasos.",
+    "pt-BR": "Da ideia à execução completa em três passos.",
+    "ar": "من الفكرة إلى تشغيل كامل في ثلاث خطوات."
+  },
+  "כל מה שרציתם לדעת לפני שמתחילים.": {
+    "en": "Everything you wanted to know before you start.",
+    "es": "Todo lo que querían saber antes de empezar.",
+    "pt-BR": "Tudo o que vocês queriam saber antes de começar.",
+    "ar": "كل ما أردتم معرفته قبل البدء."
+  },
+  "רפואה פנימית וקרדיולוגיה מניעתית": {
+    "en": "Internal medicine and preventive cardiology",
+    "es": "Medicina interna y cardiología preventiva",
+    "pt-BR": "Medicina interna e cardiologia preventiva",
+    "ar": "طب باطني وقلب وقائي"
+  },
+  "תיאום ביקור בלי בירוקרטיה מיותרת": {
+    "en": "Visit booking without extra bureaucracy",
+    "es": "Coordinar una visita sin burocracia innecesaria",
+    "pt-BR": "Agendar visita sem burocracia extra",
+    "ar": "تنسيق زيارة بلا بيروقراطية زائدة"
+  },
+  "מרפאה שמחזירה שקט לתהליך הרפואי.": {
+    "en": "A clinic that returns calm to the medical process.",
+    "es": "Una clínica que devuelve calma al proceso médico.",
+    "pt-BR": "Uma clínica que devolve calma ao processo médico.",
+    "ar": "عيادة تعيد الهدوء إلى المسار الطبي."
+  },
+  "צוותים לפי אזור, לא הבטחה באוויר": {
+    "en": "Teams by area, not a promise in the air",
+    "es": "Equipos por zona, no una promesa en el aire",
+    "pt-BR": "Equipes por região, não uma promessa no ar",
+    "ar": "فرق حسب المنطقة لا وعدًا في الهواء"
+  },
+  "בואו למצוא את השיעור הראשון שלכם": {
+    "en": "Come find your first class",
+    "es": "Vengan a encontrar su primera clase",
+    "pt-BR": "Venham encontrar a primeira aula de vocês",
+    "ar": "تعالوا نجد درسكم الأول"
+  },
+  "שירות פרטי. בלי רשימות ציבוריות.": {
+    "en": "Private service. No public lists.",
+    "es": "Servicio privado. Sin listas públicas.",
+    "pt-BR": "Serviço privado. Sem listas públicas.",
+    "ar": "خدمة خاصة. بلا قوائم عامة."
+  },
+  "מעטפת משפטית ופיננסית מקצה לקצה.": {
+    "en": "End-to-end legal and financial wrap.",
+    "es": "Una cobertura legal y financiera de punta a punta.",
+    "pt-BR": "Uma cobertura jurídica e financeira de ponta a ponta.",
+    "ar": "غلاف قانوني ومالي من الطرف إلى الطرف."
+  },
+  "מספרים לא משקרים. עיצוב לא צריך.": {
+    "en": "Numbers do not lie. Design does not have to.",
+    "es": "Los números no mienten. El diseño no tiene que hacerlo.",
+    "pt-BR": "Números não mentem. O design não precisa.",
+    "ar": "الأرقام لا تكذب. التصميم لا يجب أن يفعل."
+  },
+  "ספרו על העסקה — נתחיל את התהליך.": {
+    "en": "Tell us about the deal — we will start the process.",
+    "es": "Cuéntenos sobre la operación — empezaremos el proceso.",
+    "pt-BR": "Contem sobre o negócio — vamos começar o processo.",
+    "ar": "أخبرونا عن الصفقة — سنبدأ العملية."
+  }
+}

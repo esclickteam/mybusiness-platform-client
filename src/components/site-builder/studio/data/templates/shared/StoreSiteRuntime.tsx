@@ -81,7 +81,7 @@ function sectionProps(id: string, kind: string, label: string) {
     "data-template-section-id": id,
     "data-template-section-type": kind,
     "data-section-kind": kind,
-    "data-section-title": label,
+    "data-section-title": tx(label),
     "data-bizuply-block": kind === "products" || kind === "store" ? "products" : "section",
     "data-bizuply-block-products": kind === "products" || kind === "store" ? "true" : undefined,
     "data-visual-edit-id": id,
@@ -531,7 +531,7 @@ export default function StoreSiteRuntime({
           <button
             type="button"
             aria-expanded={navOpen}
-            aria-label={navOpen ? "סגור תפריט" : "פתח תפריט"}
+            aria-label={navOpen ? tx("סגור תפריט") : tx("פתח תפריט")}
             onClick={() => setNavOpen((open) => !open)}
             className="inline-flex h-10 w-10 items-center justify-center border border-[var(--line)] xl:hidden"
           >
@@ -575,8 +575,8 @@ export default function StoreSiteRuntime({
           <p className="mt-4 max-w-md text-sm leading-7 text-white/70">{g("footerText")}</p>
           <p className="mt-4 text-xs font-bold uppercase tracking-[0.18em] text-[var(--accent)]">
             {fromPlugin
-              ? "מציג את המוצרים מניהול החנות שלך"
-              : "מצב דמו — הוסיפו מוצרים בפאנל חנות בעורך כדי להחליף את הדוגמאות"}
+              ? tx("מציג את המוצרים מניהול החנות שלך")
+              : tx("מצב דמו — הוסיפו מוצרים בפאנל חנות בעורך כדי להחליף את הדוגמאות")}
           </p>
         </div>
         <div className="text-start">
@@ -747,7 +747,7 @@ export default function StoreSiteRuntime({
                   </div>
                   <div className={cx("flex flex-col justify-center text-start", featured ? "p-6 sm:p-8 lg:p-10" : "p-5 sm:p-6")}>
                     <p className="text-[10px] font-black uppercase tracking-[0.24em] text-[var(--p)]">
-                      {post.tag}
+                      {tx(post.tag)}
                     </p>
                     <h3 className={cx("store-display mt-3 font-black leading-tight", featured ? "text-2xl sm:text-3xl md:text-4xl" : "text-xl sm:text-2xl")}>
                       {post.title}
@@ -847,7 +847,7 @@ export default function StoreSiteRuntime({
                 <p className="mt-6 max-w-2xl text-lg leading-8 text-white/75">{g("heroSubtitle")}</p>
                 <div className="mt-9 flex flex-wrap gap-3">
                   <button type="button" onClick={() => goToPage("shop")} className="bg-[var(--p)] px-7 py-4 text-sm font-black text-[var(--on-p)]">{g("heroPrimaryButton")}</button>
-                  <button type="button" onClick={() => goToPage("collections")} className="border border-white/40 px-7 py-4 text-sm font-black text-white">{g("navCollections") || "קולקציות"}</button>
+                  <button type="button" onClick={() => goToPage("collections")} className="border border-white/40 px-7 py-4 text-sm font-black text-white">{g("navCollections") || tx("קולקציות")}</button>
                 </div>
               </Reveal>
               {hero ? (
@@ -857,7 +857,7 @@ export default function StoreSiteRuntime({
           </section>
           <section {...sectionProps("neon-rails", "features", "מסילות ניאון")} className="bg-black px-5 py-10 text-white lg:px-8">
             <div className="mx-auto grid max-w-7xl gap-3 md:grid-cols-4">
-              {["SYNC", "4K READY", "FAST CHARGE", "SMART HOME"].map((value, i) => <StatPill key={value} value={value} label={`מפרט 0${i + 1}`} className="bg-cyan-300/5" />)}
+              {["SYNC", "4K READY", "FAST CHARGE", "SMART HOME"].map((value, i) => <StatPill key={value} value={value} label={tx(`מפרט 0${i + 1}`)} className="bg-cyan-300/5" />)}
             </div>
           </section>
           <ProductRail id="cinema-scroll" label={tx("סקרולר מוצרים")} title={g("productsTitle")} text={g("productsText")} className="bg-[#03080d] text-white" railClassName="flex snap-x overflow-x-auto pb-4 sm:grid-cols-none lg:grid-cols-none [&>*]:min-w-[280px]" />
@@ -1020,7 +1020,7 @@ export default function StoreSiteRuntime({
           </section>
           <section {...sectionProps("pastel-path", "features", "שביל פסטל")} className="px-5 py-12 lg:px-8">
             <div className="mx-auto grid max-w-7xl gap-5 md:grid-cols-4">
-              {["להרגיע", "לעטוף", "לשחק", "לגדול"].map((step, index) => <StatPill key={step} value={`0${index + 1}`} label={step} className="rounded-[2rem]" />)}
+              {["להרגיע", "לעטוף", "לשחק", "לגדול"].map((step, index) => <StatPill key={step} value={`0${index + 1}`} label={tx(step)} className="rounded-[2rem]" />)}
             </div>
           </section>
           <ProductRail id="gentle-carousel" label={tx("קרוסלת מוצרים עדינה")} title={g("productsTitle")} text={g("productsText")} railClassName="flex overflow-x-auto pb-4 sm:grid-cols-none lg:grid-cols-none [&>*]:min-w-[260px]" />
@@ -1110,7 +1110,7 @@ export default function StoreSiteRuntime({
               <StoreImage src={g("heroImage")} alt="" fallbackLabel={g("brandName")} className="store-wiggle aspect-[5/4] w-full rounded-[2rem] object-cover" />
             </div>
           </section>
-          <section {...sectionProps("paw-stats", "features", "טביעות כף")} className="px-5 py-12 lg:px-8"><div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-4">{["כיף", "נשנוש", "טיול", "שינה"].map((x, i) => <StatPill key={x} value="PAW" label={`${x} 0${i + 1}`} className="rounded-[2rem]" />)}</div></section>
+          <section {...sectionProps("paw-stats", "features", "טביעות כף")} className="px-5 py-12 lg:px-8"><div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-4">{["כיף", "נשנוש", "טיול", "שינה"].map((x, i) => <StatPill key={x} value="PAW" label={tx(`${x} 0${i + 1}`)} className="rounded-[2rem]" />)}</div></section>
           <section {...sectionProps("pet-rounded-tiles", "categories", "אריחי חיות")} className="bg-[var(--bg-soft)] px-5 py-20 lg:px-8"><div className="mx-auto grid max-w-7xl gap-5 sm:grid-cols-2 lg:grid-cols-4">{categoryTiles.slice(0, 4).map((cat, index) => <CategoryTile key={cat.id} cat={cat} index={index} className="aspect-square rounded-[2.5rem]" />)}</div></section>
           <ProductRail id="pet-toy-products" label={tx("צעצועים ומוצרים")} title={g("productsTitle")} text={g("productsText")} railClassName="lg:grid-cols-4" />
           <section {...sectionProps("pet-story", "about", "סיפור להקה")} className="px-5 py-20 lg:px-8"><div className="mx-auto grid max-w-7xl gap-8 rounded-[3rem] bg-[var(--accent)]/30 p-8 md:grid-cols-2"><StoreImage src={g("aboutImage")} alt="" fallbackLabel={g("aboutTitle")} className="aspect-square rounded-[2rem] object-cover" /><SectionHeading eyebrow={g("aboutEyebrow")} title={g("aboutTitle")} text={g("aboutText")} /></div></section>
@@ -1185,7 +1185,7 @@ export default function StoreSiteRuntime({
               <StoreImage src={g("heroImage")} alt="" fallbackLabel={g("brandName")} className="aspect-square object-cover" />
             </div>
           </section>
-          <section {...sectionProps("numbered-process", "features", "תהליך ממוספר")} className="px-5 py-16 lg:px-8"><div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-4">{["מדידה", "חיתוך", "חיבור", "בדיקה"].map((x, i) => <StatPill key={x} value={`0${i + 1}`} label={x} />)}</div></section>
+          <section {...sectionProps("numbered-process", "features", "תהליך ממוספר")} className="px-5 py-16 lg:px-8"><div className="mx-auto grid max-w-7xl gap-4 md:grid-cols-4">{["מדידה", "חיתוך", "חיבור", "בדיקה"].map((x, i) => <StatPill key={x} value={`0${i + 1}`} label={tx(x)} />)}</div></section>
           <ProductRail id="tool-benches" label={tx("ספסלי מוצרים")} title={g("productsTitle")} text={g("productsText")} className="bg-[var(--dark)] text-white" railClassName="lg:grid-cols-4" />
           <section {...sectionProps("yard-categories", "categories", "קירות כלים")} className="px-5 py-20 lg:px-8"><div className="mx-auto grid max-w-7xl gap-3 md:grid-cols-4">{categoryTiles.slice(0, 4).map((cat, index) => <CategoryTile key={cat.id} cat={cat} index={index} className="aspect-[4/5]" />)}</div></section>
           <section {...sectionProps("spec-table", "features", "טבלת מפרטים")} className="bg-slate-950 px-5 py-20 text-white lg:px-8"><div className="mx-auto max-w-7xl divide-y divide-yellow-300/30 border-y border-yellow-300/30">{[g("productDetailOne"), g("productDetailTwo"), g("productDetailThree")].map((text, i) => <div key={tx(text)} className="grid gap-4 py-6 md:grid-cols-[120px_1fr]"><strong>SPEC 0{i + 1}</strong><p>{tx(text)}</p></div>)}</div></section>
