@@ -129,61 +129,61 @@
         "name": "دانا ليفي",
         "initials": "DL",
         "service": "تجديد المطبخ",
-        "source": "Meta"
+        "source": "meta"
       },
       {
         "name": "أمير كوهين",
         "initials": "AC",
         "service": "طلب عرض أسعار",
-        "source": "الموقع"
+        "source": "site"
       },
       {
         "name": "رونيت بار",
         "initials": "RB",
         "service": "الاستشارة الأولى",
-        "source": "Google"
+        "source": "google"
       },
       {
         "name": "يوفال ساد",
         "initials": "YS",
         "service": "تجديد العقد",
-        "source": "WhatsApp"
+        "source": "whatsapp"
       },
       {
         "name": "نوا أفراهام",
         "initials": "NA",
         "service": "احجز موعد",
-        "source": "Meta"
+        "source": "meta"
       },
       {
         "name": "تومر شابيرا",
         "initials": "TS",
         "service": "عرض المنتج",
-        "source": "الموقع"
+        "source": "site"
       },
       {
         "name": "ميخال ليفي",
         "initials": "ML",
         "service": "موقع وتخزين حزمة",
-        "source": "Google"
+        "source": "google"
       },
       {
         "name": "عيدان الجولان",
         "initials": "IG",
         "service": "خدمة التجنيب الشهرية",
-        "source": "Meta"
+        "source": "meta"
       },
       {
         "name": "هيلة ديفيد",
         "initials": "HD",
         "service": "تصوير الحدث",
-        "source": "WhatsApp"
+        "source": "whatsapp"
       },
       {
         "name": "إيلي شيمش",
         "initials": "ES",
         "service": "جلسة استشارية",
-        "source": "الموقع"
+        "source": "site"
       }
     ],
     "sourcesEyebrow": "من أين تأتي الاستفسارات",

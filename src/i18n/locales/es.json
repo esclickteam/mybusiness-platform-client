@@ -129,61 +129,61 @@
         "name": "Dana Levi",
         "initials": "DL",
         "service": "Renovación de cocina",
-        "source": "Meta"
+        "source": "meta"
       },
       {
         "name": "Amir Cohen",
         "initials": "AC",
         "service": "Solicitud de presupuesto",
-        "source": "sitio"
+        "source": "site"
       },
       {
         "name": "Bar Ronit",
         "initials": "RB",
         "service": "Primera consulta",
-        "source": "Google"
+        "source": "google"
       },
       {
         "name": "Yuval Sade",
         "initials": "YS",
         "service": "Renovación de contrato",
-        "source": "WhatsApp"
+        "source": "whatsapp"
       },
       {
         "name": "Noa Avraham",
         "initials": "NA",
         "service": "Reserva una cita",
-        "source": "Meta"
+        "source": "meta"
       },
       {
         "name": "Tomer Shapira",
         "initials": "TS",
         "service": "Demostración de producto",
-        "source": "sitio"
+        "source": "site"
       },
       {
         "name": "Michal Levi",
         "initials": "ML",
         "service": "Sitio y paquete de la tienda",
-        "source": "Google"
+        "source": "google"
       },
       {
         "name": "Idan Golan",
         "initials": "IG",
         "service": "Retenedor mensual",
-        "source": "Meta"
+        "source": "meta"
       },
       {
         "name": "Hila David",
         "initials": "HD",
         "service": "Fotografía de eventos",
-        "source": "WhatsApp"
+        "source": "whatsapp"
       },
       {
         "name": "Eli Shemesh",
         "initials": "ES",
         "service": "Sesión de consultoría",
-        "source": "sitio"
+        "source": "site"
       }
     ],
     "sourcesEyebrow": "De dónde vienen las investigaciones",

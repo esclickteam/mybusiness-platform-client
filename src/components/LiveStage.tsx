@@ -4,9 +4,10 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { useTranslation } from "react-i18next";
 import { getTextDirection } from "../i18n/localeUtils";
+import { normalizeLiveSource, type LiveDemoSource } from "../i18n/liveDemo";
 import { Bell, MessageCircle, Phone } from "lucide-react";
 
-type Source = "meta" | "site" | "google" | "whatsapp";
+type Source = LiveDemoSource;
 type Status = "new" | "contacted" | "interested" | "won";
 
 type Lead = {
@@ -59,13 +60,16 @@ export default function LiveStage() {
   const { t, i18n } = useTranslation();
   const reduceMotion = useReducedMotion();
 
-  const people = useMemo(
-    () =>
+  const people = useMemo(() => {
+    const raw =
       (t("live.people", { returnObjects: true }) as unknown as
-        | { name: string; initials: string; service: string; source: Source }[]
-        | undefined) || [],
-    [t],
-  );
+        | { name: string; initials: string; service: string; source: string }[]
+        | undefined) || [];
+    return raw.map((person) => ({
+      ...person,
+      source: normalizeLiveSource(person.source),
+    }));
+  }, [t]);
 
   const [rows, setRows] = useState<Lead[]>([]);
   const [counts, setCounts] = useState({
