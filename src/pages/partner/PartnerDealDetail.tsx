@@ -167,7 +167,7 @@ export default function PartnerDealDetail() {
       />
       {confirmingPayment && !isPaid ? (
         <p className="rounded-2xl bg-amber-50 px-4 py-3 text-sm font-black text-amber-800">
-          {t("partner.deal.confirmingStripe")}
+          {t("partner.deal.confirmingStripe", { defaultValue: "מאשרים את התשלום מול Stripe. העמלה עדיין לא זמינה למשיכה עד שהלקוח יופעל." })}
         </p>
       ) : null}
       {isPaid ? (
@@ -177,7 +177,7 @@ export default function PartnerDealDetail() {
             <p>{t("partner.deal.activatedEligible")}</p>
           ) : (
             <p>
-              {t("partner.deal.pendingUntilActive")}
+              {t("partner.deal.pendingUntilActive", { defaultValue: "העמלה ממתינה עד שהעסק יופעל והמוצרים הדיגיטליים יופעלו. תשלום שולם אינו זמין למשיכה אוטומטית." })}
             </p>
           )}
           {deal.clientProvisioning?.status === "created" ? (
