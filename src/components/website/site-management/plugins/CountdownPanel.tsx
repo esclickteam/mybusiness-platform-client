@@ -1,4 +1,5 @@
 import React, { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { LayoutTemplate, Palette, Sparkles, Timer } from "lucide-react";
 
 import { useSitePluginSettings } from "./useSitePluginSettings";
@@ -95,6 +96,7 @@ function ColorField({
 }
 
 export default function SiteCountdownPanel(props: PluginPanelProps) {
+  const { t } = useTranslation();
   const { settings, loading, saving, message, save, updateField } =
     useSitePluginSettings(props.siteId, "countdown");
 
@@ -127,20 +129,20 @@ export default function SiteCountdownPanel(props: PluginPanelProps) {
       {...props}
       icon={Timer}
       accent="#A855F7"
-      title="ספירה לאחור"
-      description="טיימר דינמי למבצעים, השקות ואירועים — הוסיפו לעמוד דרך העורך → תוספים."
+      title={t("sitePlugins.countdown.title")}
+      description={t("sitePlugins.countdown.description")}
       loading={loading}
       saving={saving}
       message={message}
       onSave={() => save({ ...settings })}
     >
       <Toggle
-        label="תוסף פעיל באתר"
+        label={t("sitePlugins.countdown.pluginActive")}
         checked={bool(settings.isActive, true)}
         onChange={(v) => updateField("isActive", v)}
       />
 
-      <SectionCard icon={LayoutTemplate} title="סגנון וגודל" accent="#A855F7">
+      <SectionCard icon={LayoutTemplate} title={t("sitePlugins.countdown.styleSize")} accent="#A855F7">
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
           {COUNTDOWN_STYLE_PRESETS.map((preset) => (
             <button
@@ -153,14 +155,22 @@ export default function SiteCountdownPanel(props: PluginPanelProps) {
                   : "border-slate-200 bg-white hover:border-violet-200"
               }`}
             >
-              <p className="text-xs font-black text-slate-800">{preset.label}</p>
-              <p className="mt-1 text-[10px] leading-4 text-slate-500">{preset.description}</p>
+              <p className="text-xs font-black text-slate-800">
+                {t(`sitePlugins.countdown.style${preset.value[0].toUpperCase()}${preset.value.slice(1)}`, {
+                  defaultValue: preset.label,
+                })}
+              </p>
+              <p className="mt-1 text-[10px] leading-4 text-slate-500">
+                {t(`sitePlugins.countdown.style${preset.value[0].toUpperCase()}${preset.value.slice(1)}Hint`, {
+                  defaultValue: preset.description,
+                })}
+              </p>
             </button>
           ))}
         </div>
 
         <div>
-          <p className="mb-2 text-[11px] font-bold text-slate-500">תצוגה בעמוד</p>
+          <p className="mb-2 text-[11px] font-bold text-slate-500">{t("sitePlugins.countdown.pageDisplay")}</p>
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
             {COUNTDOWN_LAYOUT_MODES.map((mode) => (
               <button
@@ -173,15 +183,23 @@ export default function SiteCountdownPanel(props: PluginPanelProps) {
                     : "border-slate-200 bg-white hover:border-violet-200"
                 }`}
               >
-                <p className="text-xs font-black text-slate-800">{mode.label}</p>
-                <p className="mt-1 text-[10px] leading-4 text-slate-500">{mode.description}</p>
+                <p className="text-xs font-black text-slate-800">
+                  {t(`sitePlugins.countdown.layout${mode.value[0].toUpperCase()}${mode.value.slice(1)}`, {
+                    defaultValue: mode.label,
+                  })}
+                </p>
+                <p className="mt-1 text-[10px] leading-4 text-slate-500">
+                  {t(`sitePlugins.countdown.layout${mode.value[0].toUpperCase()}${mode.value.slice(1)}Hint`, {
+                    defaultValue: mode.description,
+                  })}
+                </p>
               </button>
             ))}
           </div>
         </div>
 
         <div>
-          <p className="mb-2 text-[11px] font-bold text-slate-500">גודל</p>
+          <p className="mb-2 text-[11px] font-bold text-slate-500">{t("sitePlugins.countdown.size")}</p>
           <div className="grid grid-cols-3 gap-2">
             {COUNTDOWN_SIZE_PRESETS.map((size) => (
               <button
@@ -194,7 +212,9 @@ export default function SiteCountdownPanel(props: PluginPanelProps) {
                     : "border-slate-200 bg-white text-slate-600"
                 }`}
               >
-                {size.label}
+                {t(`sitePlugins.countdown.size${size.value[0].toUpperCase()}${size.value.slice(1)}`, {
+                  defaultValue: size.label,
+                })}
               </button>
             ))}
           </div>
@@ -202,40 +222,40 @@ export default function SiteCountdownPanel(props: PluginPanelProps) {
 
         <div className="overflow-visible rounded-2xl border border-dashed border-violet-200 bg-slate-50 p-4">
           <p className="mb-3 text-center text-[11px] font-bold uppercase tracking-wide text-violet-500">
-            תצוגה מקדימה
+            {t("sitePlugins.countdown.preview")}
           </p>
           <CountdownWidget settings={previewSettings} preview />
         </div>
       </SectionCard>
 
-      <SectionCard icon={Timer} title="תוכן וזמן" accent="#6366F1">
-        <Field label="כותרת">
+      <SectionCard icon={Timer} title={t("sitePlugins.countdown.contentTime")} accent="#6366F1">
+        <Field label={t("sitePlugins.countdown.headline")}>
           <TextInput
-            value={str(settings.title, "המבצע מסתיים בעוד")}
+            value={str(settings.title, t("sitePlugins.countdown.defaultTitle"))}
             onChange={(v) => updateField("title", v)}
           />
         </Field>
-        <Field label="תאריך ושעת סיום">
+        <Field label={t("sitePlugins.countdown.endDate")}>
           <TextInput
             value={str(settings.endDate)}
             onChange={(v) => updateField("endDate", v)}
             type="datetime-local"
           />
         </Field>
-        <Field label="הודעה כשהמבצע נגמר">
+        <Field label={t("sitePlugins.countdown.expiredMessage")}>
           <TextInput
-            value={str(settings.expiredMessage, "המבצע הסתיים")}
+            value={str(settings.expiredMessage, t("sitePlugins.countdown.defaultExpired"))}
             onChange={(v) => updateField("expiredMessage", v)}
           />
         </Field>
         <Toggle
-          label="סדר יחידות הפוך (שניות ← חודשים)"
+          label={t("sitePlugins.countdown.reverseUnits")}
           checked={bool(settings.unitOrderReversed, true)}
           onChange={(v) => updateField("unitOrderReversed", v)}
         />
 
         <div>
-          <p className="mb-2 text-[11px] font-bold text-slate-500">אופן הצגת זמן</p>
+          <p className="mb-2 text-[11px] font-bold text-slate-500">{t("sitePlugins.countdown.unitFormat")}</p>
           <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
             {COUNTDOWN_UNIT_FORMATS.map((format) => (
               <button
@@ -248,8 +268,26 @@ export default function SiteCountdownPanel(props: PluginPanelProps) {
                     : "border-slate-200 bg-white hover:border-indigo-200"
                 }`}
               >
-                <p className="text-xs font-black text-slate-800">{format.label}</p>
-                <p className="mt-1 text-[10px] leading-4 text-slate-500">{format.description}</p>
+                <p className="text-xs font-black text-slate-800">
+                  {t(
+                    format.value === "daysOnly"
+                      ? "sitePlugins.countdown.formatDays"
+                      : format.value === "weeksOnly"
+                        ? "sitePlugins.countdown.formatWeeks"
+                        : "sitePlugins.countdown.formatStandard",
+                    { defaultValue: format.label }
+                  )}
+                </p>
+                <p className="mt-1 text-[10px] leading-4 text-slate-500">
+                  {t(
+                    format.value === "daysOnly"
+                      ? "sitePlugins.countdown.formatDaysHint"
+                      : format.value === "weeksOnly"
+                        ? "sitePlugins.countdown.formatWeeksHint"
+                        : "sitePlugins.countdown.formatStandardHint",
+                    { defaultValue: format.description }
+                  )}
+                </p>
               </button>
             ))}
           </div>
@@ -258,12 +296,12 @@ export default function SiteCountdownPanel(props: PluginPanelProps) {
         {isStandardFormat ? (
           <>
             <Toggle
-              label="המר חודשים לימים (30 יום = חודש)"
+              label={t("sitePlugins.countdown.monthsAsDays")}
               checked={bool(settings.monthsAsDays, false)}
               onChange={(v) => updateField("monthsAsDays", v)}
             />
             <Toggle
-              label="המר שבועות לימים (7 יום = שבוע)"
+              label={t("sitePlugins.countdown.weeksAsDays")}
               checked={bool(settings.weeksAsDays, false)}
               onChange={(v) => updateField("weeksAsDays", v)}
             />
@@ -273,46 +311,46 @@ export default function SiteCountdownPanel(props: PluginPanelProps) {
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
           {isStandardFormat ? (
             <Toggle
-              label="חודשים"
+              label={t("sitePlugins.countdown.months")}
               checked={bool(settings.showMonths, true)}
               onChange={(v) => updateField("showMonths", v)}
             />
           ) : null}
           {unitFormat !== "daysOnly" ? (
-            <Toggle label="שבועות" checked={bool(settings.showWeeks, true)} onChange={(v) => updateField("showWeeks", v)} />
+            <Toggle label={t("sitePlugins.countdown.weeks")} checked={bool(settings.showWeeks, true)} onChange={(v) => updateField("showWeeks", v)} />
           ) : null}
           {unitFormat !== "weeksOnly" ? (
-            <Toggle label="ימים" checked={bool(settings.showDays, true)} onChange={(v) => updateField("showDays", v)} />
+            <Toggle label={t("sitePlugins.countdown.days")} checked={bool(settings.showDays, true)} onChange={(v) => updateField("showDays", v)} />
           ) : null}
-          <Toggle label="שעות" checked={bool(settings.showHours, true)} onChange={(v) => updateField("showHours", v)} />
-          <Toggle label="דקות" checked={bool(settings.showMinutes, true)} onChange={(v) => updateField("showMinutes", v)} />
-          <Toggle label="שניות" checked={bool(settings.showSeconds, true)} onChange={(v) => updateField("showSeconds", v)} />
+          <Toggle label={t("sitePlugins.countdown.hours")} checked={bool(settings.showHours, true)} onChange={(v) => updateField("showHours", v)} />
+          <Toggle label={t("sitePlugins.countdown.minutes")} checked={bool(settings.showMinutes, true)} onChange={(v) => updateField("showMinutes", v)} />
+          <Toggle label={t("sitePlugins.countdown.seconds")} checked={bool(settings.showSeconds, true)} onChange={(v) => updateField("showSeconds", v)} />
         </div>
 
         {isStandardFormat && (settings.monthsAsDays || settings.weeksAsDays) ? (
           <p className="text-[11px] leading-relaxed text-slate-500">
             {settings.monthsAsDays && settings.weeksAsDays
-              ? "כל הזמן מוצג כימים בלבד (חודשים ושבועות מומרים)."
+              ? t("sitePlugins.countdown.convertBothHint")
               : settings.monthsAsDays
-                ? "חודשים מומרים לימים. אפשר להשאיר שבועות לפירוט או להמיר גם אותם."
-                : "שבועות מומרים לימים. חודשים נשארים כרטיס נפרד."}
+                ? t("sitePlugins.countdown.convertMonthsHint")
+                : t("sitePlugins.countdown.convertWeeksHint")}
           </p>
         ) : null}
         {unitFormat === "daysOnly" ? (
           <p className="text-[11px] leading-relaxed text-slate-500">
-            כל הזמן הנותר מוצג כסה״כ ימים, ואחריו שעות/דקות/שניות.
+            {t("sitePlugins.countdown.daysOnlyHint")}
           </p>
         ) : null}
         {unitFormat === "weeksOnly" ? (
           <p className="text-[11px] leading-relaxed text-slate-500">
-            הזמן מוצג כסה״כ שבועות. אפשר להוסיף גם ימים לשארית בתוך השבוע הנוכחי.
+            {t("sitePlugins.countdown.weeksOnlyHint")}
           </p>
         ) : null}
       </SectionCard>
 
-      <SectionCard icon={Sparkles} title="אפקטים" accent="#F59E0B">
+      <SectionCard icon={Sparkles} title={t("sitePlugins.countdown.effects")} accent="#F59E0B">
         <div>
-          <p className="mb-2 text-[11px] font-bold text-slate-500">סוג אפקט</p>
+          <p className="mb-2 text-[11px] font-bold text-slate-500">{t("sitePlugins.countdown.effectType")}</p>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-5">
             {COUNTDOWN_EFFECT_MODES.map((effect) => (
               <button
@@ -325,14 +363,17 @@ export default function SiteCountdownPanel(props: PluginPanelProps) {
                     : "border-slate-200 bg-white text-slate-600"
                 }`}
               >
-                {effect.label}
+                {t(
+                  `sitePlugins.countdown.effect${effect.value[0].toUpperCase()}${effect.value.slice(1)}`,
+                  { defaultValue: effect.label }
+                )}
               </button>
             ))}
           </div>
         </div>
         {(settings.effectMode || "none") !== "none" ? (
           <div>
-            <p className="mb-2 text-[11px] font-bold text-slate-500">מתי להציג</p>
+            <p className="mb-2 text-[11px] font-bold text-slate-500">{t("sitePlugins.countdown.effectWhen")}</p>
             <div className="grid grid-cols-3 gap-2">
               {COUNTDOWN_EFFECT_WHEN.map((when) => (
                 <button
@@ -345,7 +386,14 @@ export default function SiteCountdownPanel(props: PluginPanelProps) {
                       : "border-slate-200 bg-white text-slate-600"
                   }`}
                 >
-                  {when.label}
+                  {t(
+                    when.value === "onExpire"
+                      ? "sitePlugins.countdown.whenExpire"
+                      : when.value === "both"
+                        ? "sitePlugins.countdown.whenBoth"
+                        : "sitePlugins.countdown.whenDuring",
+                    { defaultValue: when.label }
+                  )}
                 </button>
               ))}
             </div>
@@ -353,9 +401,9 @@ export default function SiteCountdownPanel(props: PluginPanelProps) {
         ) : null}
       </SectionCard>
 
-      <SectionCard icon={Palette} title="צבעים, פונט וצל" accent="#EC4899">
+      <SectionCard icon={Palette} title={t("sitePlugins.countdown.colors")} accent="#EC4899">
         <div>
-          <p className="mb-2 text-[11px] font-bold text-slate-500">פונט</p>
+          <p className="mb-2 text-[11px] font-bold text-slate-500">{t("sitePlugins.countdown.font")}</p>
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
             {COUNTDOWN_FONT_PRESETS.map((font) => (
               <button
@@ -369,7 +417,10 @@ export default function SiteCountdownPanel(props: PluginPanelProps) {
                 }`}
                 style={{ fontFamily: font.css }}
               >
-                {font.label}
+                {t(
+                  `sitePlugins.countdown.font${font.value[0].toUpperCase()}${font.value.slice(1)}`,
+                  { defaultValue: font.label }
+                )}
               </button>
             ))}
           </div>
@@ -377,42 +428,42 @@ export default function SiteCountdownPanel(props: PluginPanelProps) {
 
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
           <ColorField
-            label="רקע"
+            label={t("sitePlugins.countdown.background")}
             value={str(settings.backgroundColor, PRESET_DEFAULT_COLORS[selectedPreset].backgroundColor || "transparent")}
             onChange={(v) => updateField("backgroundColor", v)}
           />
           {isCards ? (
             <ColorField
-              label="צבע כרטיסיות"
+              label={t("sitePlugins.countdown.cardColor")}
               value={str(settings.cardBackgroundColor, PRESET_DEFAULT_COLORS.cards.cardBackgroundColor || "#ffffff")}
               onChange={(v) => updateField("cardBackgroundColor", v)}
             />
           ) : null}
           <ColorField
-            label="צבע מספרים"
+            label={t("sitePlugins.countdown.numberColor")}
             value={str(settings.numberColor, PRESET_DEFAULT_COLORS[selectedPreset].numberColor || "#1e293b")}
             onChange={(v) => updateField("numberColor", v)}
           />
           <ColorField
-            label="צבע תוויות"
+            label={t("sitePlugins.countdown.labelColor")}
             value={str(settings.labelColor, PRESET_DEFAULT_COLORS[selectedPreset].labelColor || "#94a3b8")}
             onChange={(v) => updateField("labelColor", v)}
           />
           <ColorField
-            label="צבע הדגשה"
+            label={t("sitePlugins.countdown.accentColor")}
             value={str(settings.accentColor, PRESET_DEFAULT_COLORS[selectedPreset].accentColor || "#7C3AED")}
             onChange={(v) => updateField("accentColor", v)}
           />
         </div>
 
         <Toggle
-          label="צל להדגשה"
+          label={t("sitePlugins.countdown.shadow")}
           checked={bool(settings.shadowEnabled, true)}
           onChange={(v) => updateField("shadowEnabled", v)}
         />
         {settings.shadowEnabled !== false ? (
           <ColorField
-            label="צבע צל"
+            label={t("sitePlugins.countdown.shadowColor")}
             value={str(settings.shadowColor, "rgba(15,23,42,0.12)")}
             onChange={(v) => updateField("shadowColor", v)}
           />
@@ -420,9 +471,7 @@ export default function SiteCountdownPanel(props: PluginPanelProps) {
       </SectionCard>
 
       <p className="text-xs leading-relaxed text-slate-500">
-        בעורך: <strong className="text-slate-700">הוספה → תוספים → ספירה לאחור</strong>.
-        הרכיב יופיע בגודל ברירת מחדל — <strong className="text-slate-700">גררו ושנו גודל</strong> כמו תמונה.
-        «צף קבוע» — רק לאתר החי.
+        {t("sitePlugins.countdown.editorTip")}
       </p>
     </SitePluginPanelFrame>
   );

@@ -37,6 +37,9 @@ describe("hardcoded i18n audit scope", () => {
         "components/website/site-management/payments/paymentProvidersCatalog.ts"
       )
     ).toBe("D");
+    expect(
+      classifySourcePath("components/site-plugins/countdown/countdownUtils.ts")
+    ).toBe("D");
   });
 
   it("flags Business, Partner, and Marketer UI as category E", () => {
