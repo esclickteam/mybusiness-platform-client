@@ -16,6 +16,7 @@ import path from "node:path";
 import {
   classifySourcePath,
   isDefaultSiteContentString,
+  isNonChromeHebrewHit,
 } from "../src/i18n/hardcodedAuditScope.js";
 
 const ROOT = path.resolve(path.dirname(new URL(import.meta.url).pathname), "..", "src");
@@ -85,7 +86,10 @@ for (const file of files) {
   const source = cat === "D" ? raw : stripComments(raw);
   const hits = extractHebrewStrings(source, { ignoreTranslationFallbacks: cat === "E" });
   if (cat === "E") {
-    const chromeHits = hits.filter((value) => !isDefaultSiteContentString(value));
+    const chromeHits = hits.filter(
+      (value) =>
+        !isDefaultSiteContentString(value) && !isNonChromeHebrewHit(source, value)
+    );
     const contentHits = hits.filter((value) => isDefaultSiteContentString(value));
     if (contentHits.length) {
       buckets.C.push({

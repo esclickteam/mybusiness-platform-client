@@ -29,6 +29,7 @@ export function classifySourcePath(rel) {
     r.includes("AdminPushPermission") ||
     r.includes("AdminDialButton") ||
     r.endsWith("utils/adminSoftphoneStore.ts") ||
+    r.endsWith("utils/softphoneMicrophone.ts") ||
     /(^|\/)components\/Admin[^/]+$/.test(r)
   ) {
     return "A";
@@ -102,7 +103,8 @@ export function classifySourcePath(rel) {
     r.endsWith("guidedDemo/adminSendForm.ts") ||
     r.endsWith("visual-editor/utils/visualSelectors.ts") ||
     r.endsWith("visual-editor/utils/applySitePageNavSubmenusToDom.ts") ||
-    r.endsWith("visual-editor/utils/bindClientPortalVariables.ts")
+    r.endsWith("visual-editor/utils/bindClientPortalVariables.ts") ||
+    r.endsWith("utils/syncExistingWebsiteTemplatesToMongo.ts")
   ) {
     return "D";
   }
@@ -116,4 +118,33 @@ export function isDefaultSiteContentString(value) {
   if (/<[a-zA-Z][\s\S]*?>/.test(text)) return true;
   if (/<\/[a-zA-Z]/.test(text)) return true;
   return false;
+}
+
+/**
+ * Hebrew that is not Business/Partner chrome: logs, stored-value matchers,
+ * phrasebook lookup keys, and option enum values.
+ */
+export function isNonChromeHebrewHit(source, value) {
+  const text = String(value || "");
+  if (!text) return false;
+  const escaped = text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const patterns = [
+    new RegExp(
+      String.raw`console\.(?:error|log|warn|info|debug)\s*\([\s\S]{0,240}['"\`]${escaped}`
+    ),
+    new RegExp(String.raw`localizeBuiltInText\s*\(\s*['"\`]${escaped}`),
+    new RegExp(
+      String.raw`\.(?:includes|startsWith|endsWith)\s*\(\s*['"\`]${escaped}`
+    ),
+    new RegExp(String.raw`(?:===|!==)\s*['"\`]${escaped}`),
+    new RegExp(String.raw`['"\`]${escaped}['"\`]\s*(?:===|!==)`),
+    new RegExp(String.raw`\bvalue\s*=\s*['"\`]${escaped}['"\`]`),
+    new RegExp(
+      String.raw`\/(?:\\\/|[^/\n])*${escaped}(?:\\\/|[^/\n])*\/[gimsuy]*`
+    ),
+    new RegExp(
+      String.raw`(?:KNOWN_[A-Z0-9_]+|LEGACY_[A-Z0-9_]+|[A-Z0-9_]+_(?:LABELS|PREFIXES|MATCHERS|ALIASES))\s*=\s*\[[^\]]{0,500}['"\`]${escaped}`
+    ),
+  ];
+  return patterns.some((pattern) => pattern.test(String(source || "")));
 }

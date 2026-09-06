@@ -7,6 +7,7 @@ import React, {
 } from "react";
 import { useAuth } from "./AuthContext.jsx";
 import API from "../api";
+import i18n from "../i18n/i18n";
 
 const NotificationsContext = createContext();
 
@@ -129,7 +130,10 @@ export function NotificationsProvider({ children }) {
       // ⭐ ביקורות
       socket.on("newReview", (review) => {
         const clientName =
-          review?.client?.name || review?.clientName || review?.name || "לקוח";
+          review?.client?.name ||
+          review?.clientName ||
+          review?.name ||
+          i18n.t("notifications.clientFallback");
         const commentPreview = String(review?.comment || "").trim();
         const reviewId = review?._id || review?.id || "";
 
@@ -138,8 +142,11 @@ export function NotificationsProvider({ children }) {
           payload: {
             type: "review",
             text: commentPreview
-              ? `⭐ ביקורת חדשה מ-${clientName}: "${commentPreview.slice(0, 80)}"`
-              : `⭐ ביקורת חדשה מ-${clientName}`,
+              ? i18n.t("notifications.reviewFromComment", {
+                  clientName,
+                  comment: commentPreview.slice(0, 80),
+                })
+              : i18n.t("notifications.reviewFrom", { clientName }),
             timestamp: review.createdAt || new Date().toISOString(),
             actorName: clientName,
             reviewId,

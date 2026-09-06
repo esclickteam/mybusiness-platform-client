@@ -259,7 +259,7 @@ export default function WhatsAppTemplatesTab() {
       const statusSummary = (result.rawStatuses || [])
         .map((row) => `${row.name}: ${row.labelHe || row.status}`)
         .slice(0, 5)
-        .join(" ֲ· ");
+        .join(" · ");
       toast.success(
         statusSummary
           ? t("whatsapp.templates.syncedWithSummary", {
@@ -586,7 +586,7 @@ export default function WhatsAppTemplatesTab() {
                     {tpl.name}
                   </h3>
                   <p className="mt-0.5 text-xs font-semibold text-slate-500">
-                    {tpl.language} ֲ·{" "}
+                    {tpl.language} ·{" "}
                     {tpl.source === "meta"
                       ? t("whatsapp.templates.sourceMeta")
                       : t("whatsapp.templates.sourceLocal")}

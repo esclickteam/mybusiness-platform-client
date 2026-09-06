@@ -4047,7 +4047,7 @@ export function useVisualEditorState({
             id,
             anchorId,
             placement,
-            label: localizeBuiltInText("סקשן חדש", i18n.language),
+            label: i18n.t("studio.defaults.newSection"),
             createdAt: new Date().toISOString(),
           },
         );

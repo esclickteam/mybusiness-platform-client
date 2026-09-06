@@ -3551,7 +3551,10 @@
     "emptyTitle": "אין התראות חדשות",
     "emptySubtitle": "כשייכנס ליד חדש או כשיגיע זמן טיפול במשימה, זה יופיע כאן.",
     "leadLabel": "ליד:",
-    "dueTime": "זמן טיפול:"
+    "dueTime": "זמן טיפול:",
+    "clientFallback": "לקוח",
+    "reviewFrom": "⭐ ביקורת חדשה מ-{{clientName}}",
+    "reviewFromComment": "⭐ ביקורת חדשה מ-{{clientName}}: \"{{comment}}\""
   },
   "chatbot": {
     "openAria": "פתיחת העוזר החכם של Bizuply",
@@ -12823,7 +12826,8 @@
       "pageAdded": "עמוד «{{title}}» נוסף — {{name}} פעיל",
       "addedBottom": "«{{name}}» נוסף בתחתית העמוד — גללו לראות את הסקשן",
       "savedHint": "«{{name}}» — נשמר; הוסיפו דרך סקשן מתאים",
-      "addedActive": "«{{name}}» נוסף ופעיל בעמוד"
+      "addedActive": "«{{name}}» נוסף ופעיל בעמוד",
+      "announcementDefault": "משלוח חינם בהזמנות מעל 300 ₪ — לפרטים לחצו כאן"
     },
     "sectionNav": {
       "all": "הכול",
@@ -16974,7 +16978,8 @@
       "whenClosedPaid": "גם כש-Bizuply לא פתוחה · 29 ₪ לחודש",
       "enablePushShort": "הפעלת Push",
       "free7Push": "7 ימים של התראות Push חינם"
-    }
+    },
+    "subscriptionLabel": "מנוי Push"
   },
   "publicWidgets": {
     "common": {
@@ -18401,6 +18406,14 @@
       "sale20": "20% הנחה",
       "upgrade": "שדרוג חינם",
       "tryAgain": "נסו שוב"
+    },
+    "demo": {
+      "sandboxMessage": "הודעת הדגמה"
+    },
+    "templates": {
+      "defaultCategory": "תבנית אתר",
+      "defaultHeroTitle": "אתר עסקי מוכן",
+      "defaultHeroSubtitle": "תבנית אתר מוכנה לעריכה מלאה."
     }
   }
 }

@@ -218,9 +218,9 @@ function parseMailtoHref(href: string) {
 }
 
 function buildMailtoHref(email: string, subject: string, body: string) {
-  const cleanאימייל = String(email || "").trim();
+  const cleanEmail = String(email || "").trim();
 
-  if (!cleanאימייל) return "";
+  if (!cleanEmail) return "";
 
   const params = new URLSearchParams();
 
@@ -234,18 +234,18 @@ function buildMailtoHref(email: string, subject: string, body: string) {
 
   const query = params.toString();
 
-  return `mailto:${cleanאימייל}${query ? `?${query}` : ""}`;
+  return `mailto:${cleanEmail}${query ? `?${query}` : ""}`;
 }
 
-function buildכתובתHref(address: string) {
-  const cleanכתובת = String(address || "").trim();
+function buildAddressHref(address: string) {
+  const cleanAddress = String(address || "").trim();
 
-  if (!cleanכתובת) return "";
+  if (!cleanAddress) return "";
 
-  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(cleanכתובת)}`;
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(cleanAddress)}`;
 }
 
-function parseכתובתHref(href: string) {
+function parseAddressHref(href: string) {
   const clean = String(href || "");
 
   if (!clean.includes("google.com/maps")) return "";
@@ -312,7 +312,7 @@ export default function LinkSettingsModal({
 
   const initialMail = parseMailtoHref(currentHref);
   const initialWhatsapp = parseWhatsappHref(currentHref);
-  const initialכתובת = parseכתובתHref(currentHref);
+  const initialAddress = parseAddressHref(currentHref);
 
   const [mode, setMode] = React.useState<LinkMode>(() => detectModeFromHref(currentHref));
   const [showMoreMenu, setShowMoreMenu] = React.useState(false);
@@ -323,9 +323,9 @@ export default function LinkSettingsModal({
   const [pageId, setPageId] = React.useState(initialPageId);
   const [sectionId, setSectionId] = React.useState(initialSectionId);
   const [urlValue, setUrlValue] = React.useState(currentHref || "");
-  const [emailValue, setאימיילValue] = React.useState(initialMail.email);
-  const [emailSubject, setאימיילSubject] = React.useState(initialMail.subject);
-  const [emailBody, setאימיילBody] = React.useState(initialMail.body);
+  const [emailValue, setEmailValue] = React.useState(initialMail.email);
+  const [emailSubject, setEmailSubject] = React.useState(initialMail.subject);
+  const [emailBody, setEmailBody] = React.useState(initialMail.body);
   const [phoneValue, setPhoneValue] = React.useState(
     currentHref.startsWith("tel:") ? currentHref.replace(/^tel:/, "") : "",
   );
@@ -333,8 +333,8 @@ export default function LinkSettingsModal({
   const [whatsappMessage, setWhatsappMessage] = React.useState(
     initialWhatsapp.message,
   );
-  const [addressValue, setכתובתValue] = React.useState(initialכתובת);
-  const [popupId, setפופאפId] = React.useState(
+  const [addressValue, setAddressValue] = React.useState(initialAddress);
+  const [popupId, setPopupId] = React.useState(
     currentHref.startsWith("#popup-") ? currentHref.replace(/^#popup-/, "") : "contact",
   );
   const [topBottom, setTopBottom] = React.useState<"top" | "bottom">(
@@ -363,14 +363,14 @@ export default function LinkSettingsModal({
         : safeSections[0]?.id || "",
     );
     setUrlValue(currentHref || "");
-    setאימיילValue(nextMail.email);
-    setאימיילSubject(nextMail.subject);
-    setאימיילBody(nextMail.body);
+    setEmailValue(nextMail.email);
+    setEmailSubject(nextMail.subject);
+    setEmailBody(nextMail.body);
     setPhoneValue(currentHref.startsWith("tel:") ? currentHref.replace(/^tel:/, "") : "");
     setWhatsappPhone(nextWhatsapp.phone);
     setWhatsappMessage(nextWhatsapp.message);
-    setכתובתValue(parseכתובתHref(currentHref));
-    setפופאפId(
+    setAddressValue(parseAddressHref(currentHref));
+    setPopupId(
       currentHref.startsWith("#popup-")
         ? currentHref.replace(/^#popup-/, "")
         : "contact",
@@ -406,7 +406,7 @@ export default function LinkSettingsModal({
     }
 
     if (mode === "address") {
-      return buildכתובתHref(addressValue);
+      return buildAddressHref(addressValue);
     }
 
 
@@ -615,7 +615,7 @@ export default function LinkSettingsModal({
                 </span>
                 <input
                   value={emailValue}
-                  onChange={(event) => setאימיילValue(event.target.value)}
+                  onChange={(event) => setEmailValue(event.target.value)}
                   placeholder="hello@example.com"
                   dir="ltr"
                   className="h-14 w-full rounded-[20px] border border-slate-200 bg-white px-4 text-left text-base font-bold text-slate-800 outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
@@ -628,7 +628,7 @@ export default function LinkSettingsModal({
                 </span>
                 <input
                   value={emailSubject}
-                  onChange={(event) => setאימיילSubject(event.target.value)}
+                  onChange={(event) => setEmailSubject(event.target.value)}
                   placeholder={t("studio.linkSettings.subjectPlaceholder")}
                   className="h-14 w-full rounded-[20px] border border-slate-200 bg-white px-4 text-right text-base font-bold text-slate-800 outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
                 />
@@ -695,7 +695,7 @@ export default function LinkSettingsModal({
                 <Search className="pointer-events-none absolute right-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" />
                 <input
                   value={addressValue}
-                  onChange={(event) => setכתובתValue(event.target.value)}
+                  onChange={(event) => setAddressValue(event.target.value)}
                   placeholder={t("studio.linkSettings.addressPlaceholder")}
                   className="h-14 w-full rounded-[20px] border border-slate-200 bg-white px-4 pr-12 text-right text-base font-bold text-slate-800 outline-none transition focus:border-blue-300 focus:ring-4 focus:ring-blue-100"
                 />
