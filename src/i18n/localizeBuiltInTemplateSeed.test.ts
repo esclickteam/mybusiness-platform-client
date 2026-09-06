@@ -318,6 +318,24 @@ describe("localizeBuiltInTemplateSeed", () => {
         "es",
       ),
     ).not.toMatch(/[\u0590-\u05FF]/);
+    expect(
+      localizeBuiltInText(
+        "מכינים תוכניות, מפרטים וספקים כדי שכל פרט יהיה ברור לפני הביצוע.",
+        "en",
+      ),
+    ).toMatch(/plans|specs|suppliers/i);
+    expect(
+      localizeBuiltInText(
+        "מכינים תוכניות, מפרטים וספקים כדי שכל פרט יהיה ברור לפני הביצוע.",
+        "en",
+      ),
+    ).not.toMatch(/[\u0590-\u05FF]/);
+    expect(
+      localizeBuiltInText(
+        "כן, אפשר להתחיל בחינם לגמרי וללא כרטיס אשראי, ולשדרג רק כשמוכנים.",
+        "pt-BR",
+      ),
+    ).not.toMatch(/[\u0590-\u05FF]/);
   });
 
   it("does not rewrite saved customer copy over localized defaults", () => {
