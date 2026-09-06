@@ -117,6 +117,14 @@ describe("priority resolution", () => {
 describe("languageFromUrl", () => {
   const originalSearch = window.location.search;
 
+  beforeEach(() => {
+    localStorage.clear();
+    document.cookie.split(";").forEach((cookie) => {
+      const name = cookie.split("=")[0].trim();
+      if (name) document.cookie = `${name}=; Path=/; Max-Age=0`;
+    });
+  });
+
   afterEach(() => {
     window.history.replaceState({}, "", `/${originalSearch || ""}`);
   });
