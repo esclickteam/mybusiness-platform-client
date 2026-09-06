@@ -1,3 +1,7 @@
+import i18n from "../../../../i18n/i18n";
+
+const t = (key: string, opts?: Record<string, unknown>) => String(i18n.t(key, opts));
+
 export type GscCheckId =
   | "site"
   | "robots"
@@ -77,31 +81,31 @@ export async function runGscReadinessChecks(
     return [
       {
         id: "site",
-        label: "האתר הציבורי זמין",
+        label: t("studio.gsc.siteAvailable"),
         ok: false,
-        detail: "אין כתובת אתר לבדיקה",
+        detail: t("studio.gsc.noUrl"),
       },
       {
         id: "robots",
-        label: "robots.txt זמין",
+        label: t("studio.gsc.robotsAvailable"),
         ok: false,
         skipped: true,
       },
       {
         id: "sitemap",
-        label: "sitemap.xml זמין",
+        label: t("studio.gsc.sitemapAvailable"),
         ok: false,
         skipped: true,
       },
       {
         id: "meta",
-        label: "קוד אימות Meta נמצא באתר",
+        label: t("studio.gsc.metaOnSite"),
         ok: false,
         skipped: true,
       },
       {
         id: "htmlFile",
-        label: "קובץ האימות זמין בכתובת האתר",
+        label: t("studio.gsc.fileOnSite"),
         ok: false,
         skipped: true,
       },
@@ -122,7 +126,7 @@ export async function runGscReadinessChecks(
   ]);
 
   let metaOk = false;
-  let metaDetail = "לא הוגדר קוד אימות Meta";
+  let metaDetail = t("studio.gsc.noMetaCode");
   if (!token) {
     metaOk = false;
   } else if (seoHeadRes.ok && seoHeadRes.text) {
@@ -138,18 +142,18 @@ export async function runGscReadinessChecks(
         json.headHtml.includes(token);
       metaOk = saved === token || inHead;
       metaDetail = metaOk
-        ? "קוד האימות מופיע ב־HTML של האתר"
-        : "הקוד נשמר אצלנו, אבל עדיין לא מופיע באתר הציבורי — שמרו ופרסמו";
+        ? t("studio.gsc.metaInHtml")
+        : t("studio.gsc.metaSavedNotLive");
     } catch {
       metaOk = false;
-      metaDetail = "לא הצלחנו לקרוא את ה־HTML של האתר";
+      metaDetail = t("studio.gsc.htmlReadFailed");
     }
   } else {
-    metaDetail = "לא הצלחנו לבדוק את ה־HTML של האתר";
+    metaDetail = t("studio.gsc.htmlCheckFailed");
   }
 
   let htmlOk = false;
-  let htmlDetail = "לא הועלה קובץ אימות";
+  let htmlDetail = t("studio.gsc.noFileUploaded");
   let htmlSkipped = !htmlFile;
   if (htmlFile) {
     const apiFile = `/api/site-builder/public/by-host/google-html?host=${q}&file=${encodeURIComponent(
@@ -163,57 +167,55 @@ export async function runGscReadinessChecks(
     htmlSkipped = false;
     htmlOk = apiRes.ok || publicRes.ok;
     if (publicRes.ok) {
-      htmlDetail = `הקובץ זמין בכתובת האתר (${publicRes.status})`;
+      htmlDetail = t("studio.gsc.fileAtUrl", { status: publicRes.status });
     } else if (apiRes.ok) {
-      htmlDetail =
-        "הקובץ זמין דרך BizUply. אם הבדיקה בכתובת האתר נכשלה בגלל הרשאות דפדפן — בדקו ידנית את הקישור.";
+      htmlDetail = t("studio.gsc.fileViaBizuply");
     } else {
-      htmlDetail =
-        "הקובץ לא נמצא באתר אחרי השמירה. שמרו, פרסמו, ואז לחצו בדיקה מחדש.";
+      htmlDetail = t("studio.gsc.fileNotLive");
     }
   }
 
   return [
     {
       id: "site",
-      label: "האתר הציבורי זמין",
+      label: t("studio.gsc.siteAvailable"),
       ok: siteRes.ok,
       detail: siteRes.ok
         ? `HTTP ${siteRes.status || 200}`
         : siteRes.status
           ? `HTTP ${siteRes.status}`
-          : "האתר לא נמצא / לא פורסם",
+          : t("studio.gsc.siteNotFound"),
     },
     {
       id: "robots",
-      label: "robots.txt זמין",
+      label: t("studio.gsc.robotsAvailable"),
       ok: robotsRes.ok,
       detail: robotsRes.ok
         ? `HTTP ${robotsRes.status || 200}`
         : robotsRes.status
           ? `HTTP ${robotsRes.status}`
-          : "לא זמין",
+          : t("studio.gsc.unavailable"),
     },
     {
       id: "sitemap",
-      label: "sitemap.xml זמין",
+      label: t("studio.gsc.sitemapAvailable"),
       ok: sitemapRes.ok,
       detail: sitemapRes.ok
         ? `HTTP ${sitemapRes.status || 200}`
         : sitemapRes.status
           ? `HTTP ${sitemapRes.status}`
-          : "לא זמין",
+          : t("studio.gsc.unavailable"),
     },
     {
       id: "meta",
-      label: "קוד אימות Meta נמצא באתר",
+      label: t("studio.gsc.metaOnSite"),
       ok: token ? metaOk : false,
       skipped: !token,
       detail: metaDetail,
     },
     {
       id: "htmlFile",
-      label: "קובץ האימות זמין בכתובת האתר",
+      label: t("studio.gsc.fileOnSite"),
       ok: htmlOk,
       skipped: htmlSkipped,
       detail: htmlDetail,

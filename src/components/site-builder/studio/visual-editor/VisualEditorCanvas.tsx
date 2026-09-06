@@ -5,6 +5,8 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { useTranslation } from "react-i18next";
+import i18n from "../../../../i18n/i18n";
 
 import { VisualLibraryPageProvider } from "../../runtime/visualLibraryPage";
 
@@ -235,9 +237,13 @@ function getDeviceMaxWidth(device: VisualDeviceMode, preview = false) {
 
 function getPreviewDeviceLabel(device: VisualDeviceMode) {
   const frame = TEMPLATE_BREAKPOINTS.editorFrame;
-  if (device === "mobile") return `מובייל · ${frame.mobile}px`;
-  if (device === "tablet") return `טאבלט · ${frame.tablet}px`;
-  return `דסקטופ · ${frame.desktop}px`;
+  if (device === "mobile") {
+    return String(i18n.t("studio.canvas.deviceMobile", { px: frame.mobile }));
+  }
+  if (device === "tablet") {
+    return String(i18n.t("studio.canvas.deviceTablet", { px: frame.tablet }));
+  }
+  return String(i18n.t("studio.canvas.deviceDesktop", { px: frame.desktop }));
 }
 
 function isHTMLElement(value: unknown): value is HTMLElement {
@@ -827,6 +833,7 @@ export default function VisualEditorCanvas({
   className = "",
   siteId,
 }: VisualEditorCanvasProps) {
+  const { t } = useTranslation();
   const rootRef = useRef<HTMLDivElement | null>(null);
   const editingNodeRef = useRef<HTMLElement | null>(null);
   const originalTextRef = useRef("");
@@ -2407,11 +2414,11 @@ export default function VisualEditorCanvas({
       <div className="flex h-full min-h-0 items-center justify-center bg-slate-100 p-8">
         <div className="max-w-xl rounded-[28px] border border-slate-200 bg-white p-8 text-center shadow-sm">
           <p className="text-sm font-black text-slate-400">
-            לא נמצא Component לתבנית
+            {t("studio.canvas.missingComponent")}
           </p>
 
           <h2 className="mt-3 text-2xl font-black text-slate-800">
-            צריך לבדוק את renderer
+            {t("studio.canvas.checkRenderer")}
           </h2>
         </div>
       </div>
@@ -2503,8 +2510,8 @@ export default function VisualEditorCanvas({
             <button
               type="button"
               data-visual-drag-handle="true"
-              aria-label="גרירת אלמנט"
-              title="גרירת אלמנט"
+              aria-label={t("studio.canvas.dragElement")}
+              title={t("studio.canvas.dragElement")}
               onPointerDown={startMove}
               onPointerMove={handlePointerMove}
               onPointerUp={finishDrag}
@@ -2737,7 +2744,7 @@ export default function VisualEditorCanvas({
       >
         {isPreviewMode ? (
           <div className="mb-4 flex items-center gap-2 rounded-full border border-slate-200/80 bg-white/90 px-4 py-1.5 text-xs font-black text-slate-600 shadow-sm backdrop-blur">
-            <span>תצוגה מקדימה</span>
+            <span>{t("studio.preview")}</span>
             <span className="h-1 w-1 rounded-full bg-slate-300" />
             <span>{getPreviewDeviceLabel(deviceMode)}</span>
           </div>

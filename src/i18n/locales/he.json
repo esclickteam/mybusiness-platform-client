@@ -10708,7 +10708,10 @@
     "publishSuccessTitle": "האתר פורסם בהצלחה",
     "publishSuccessText": "האתר שלך באוויר. אפשר לפתוח אותו, להעתיק את הקישור או להמשיך לערוך.",
     "loadingSavedSite": "טוען את האתר השמור... מכין את העורך עם הנתונים האחרונים",
-    "pages": "עמודים",
+    "pages": {
+      "home": "דף הבית",
+      "pageN": "עמוד {{n}}"
+    },
     "headerFooter": "הידר, פוטר וקישורי טפסים",
     "layers": "שכבות",
     "customCode": "קוד מותאם",
@@ -11793,7 +11796,10 @@
         "number": "[מספר]",
         "value": "[{{label}}]",
         "fallbackLabel": "ערך מהתיק"
-      }
+      },
+      "greetingPreview": "שלום, [שם לקוח]",
+      "blankKeyword": "ריק",
+      "editKeyword": "עריכה"
     },
     "inspectorPanel": {
       "weightRegular": "רגיל",
@@ -11960,7 +11966,22 @@
       "passed": "עבר",
       "failed": "נכשל",
       "clickRecheck": "לחצו \"בדיקה מחדש\" כדי לבדוק את האתר.",
-      "footer": "האימות מתבצע ישירות מול Google. BizUply מכינה את האתר לאימות ומנחה אותך בתהליך. אין חיבור אוטומטי ל־Google Search Console בשלב זה."
+      "footer": "האימות מתבצע ישירות מול Google. BizUply מכינה את האתר לאימות ומנחה אותך בתהליך. אין חיבור אוטומטי ל־Google Search Console בשלב זה.",
+      "siteAvailable": "האתר הציבורי זמין",
+      "robotsAvailable": "robots.txt זמין",
+      "sitemapAvailable": "sitemap.xml זמין",
+      "metaOnSite": "קוד אימות Meta נמצא באתר",
+      "fileOnSite": "קובץ האימות זמין בכתובת האתר",
+      "noMetaCode": "לא הוגדר קוד אימות Meta",
+      "metaInHtml": "קוד האימות מופיע ב־HTML של האתר",
+      "metaSavedNotLive": "הקוד נשמר אצלנו, אבל עדיין לא מופיע באתר הציבורי — שמרו ופרסמו",
+      "htmlReadFailed": "לא הצלחנו לקרוא את ה־HTML של האתר",
+      "htmlCheckFailed": "לא הצלחנו לבדוק את ה־HTML של האתר",
+      "noFileUploaded": "לא הועלה קובץ אימות",
+      "fileAtUrl": "הקובץ זמין בכתובת האתר ({{status}})",
+      "fileViaBizuply": "הקובץ זמין דרך BizUply. אם הבדיקה בכתובת האתר נכשלה בגלל הרשאות דפדפן — בדקו ידנית את הקישור.",
+      "siteNotFound": "האתר לא נמצא / לא פורסם",
+      "unavailable": "לא זמין"
     },
     "seoUi": {
       "excellent": "מצוין",
@@ -13611,6 +13632,184 @@
       "requiredText": "לא ניתן לשלוח בלי למלא",
       "insertToPage": "הכנסה לעמוד",
       "delete": "מחיקה"
+    },
+    "upload": {
+      "signFailed": "יצירת חתימת העלאה נכשלה",
+      "cannotStart": "לא ניתן להתחיל את ההעלאה כרגע. נסו שוב.",
+      "fileFailed": "העלאת הקובץ נכשלה. נסו שוב.",
+      "mediaFailed": "העלאת המדיה נכשלה",
+      "unsavedBeforePublish": "יש שינויים שעדיין לא נשמרו. נסי שוב לפני הפרסום."
+    },
+    "defaults": {
+      "newText": "טקסט חדש",
+      "newButton": "כפתור חדש",
+      "newImage": "תמונה חדשה",
+      "newVideo": "סרטון חדש",
+      "divider": "קו מפריד",
+      "newBox": "קופסה חדשה",
+      "newElement": "אלמנט חדש",
+      "newSection": "סקשן חדש",
+      "media": "מדיה",
+      "link": "קישור",
+      "plugin": "תוסף",
+      "section": "סקשן",
+      "element": "אלמנט",
+      "copy": "{{label}} (עותק)",
+      "fieldN": "שדה {{n}}",
+      "tableLabel": "טבלה {{rows}}×{{cols}}",
+      "crmField": "נתון",
+      "crmLabel": "תווית CRM · {{label}}",
+      "crmValue": "נתון CRM · {{label}}",
+      "crmValuePlain": "נתון CRM",
+      "clientName": "שם לקוח",
+      "clientNameSample": "[שם לקוח]",
+      "sampleValue": "[ערך מהתיק]",
+      "samplePerson": "ישראל ישראלי",
+      "greeting": "שלום, {{name}}",
+      "greetingLabel": "שלום, שם לקוח"
+    },
+    "schema": {
+      "localBusiness": "עסק מקומי",
+      "localBusinessDesc": "כתובת, טלפון ושעות — מפעיל את כרטיס העסק בגוגל.",
+      "service": "שירות",
+      "serviceDesc": "שירות שהעסק מספק, כולל מחיר ואזור שירות.",
+      "faq": "שאלות ותשובות",
+      "faqDesc": "בלוק שו״ת שיכול להופיע ישירות בתוצאות החיפוש.",
+      "product": "מוצר",
+      "productDesc": "מוצר עם מחיר וזמינות — תוצאות עשירות.",
+      "organization": "ארגון",
+      "organizationDesc": "זהות העסק, לוגו וקישורים. מומלץ ברמת האתר.",
+      "website": "אתר אינטרנט",
+      "websiteDesc": "שם האתר ותיבת חיפוש. מומלץ ברמת האתר.",
+      "websiteHint": "מומלץ להגדיר WebSite פעם אחת (בדף הבית). האתר כרגע חד‑לשוני (he‑IL).",
+      "breadcrumb": "פירורי לחם",
+      "breadcrumbDesc": "היררכיית ניווט שמופיעה בתוצאות החיפוש.",
+      "custom": "מותאם אישית",
+      "siteLevel": "רמת אתר",
+      "formMode": "מצב טופס",
+      "manualJson": "JSON ידני",
+      "internalName": "שם פנימי (לזיהוי)",
+      "manualEditHint": "הקוד נערך ידנית. הטופס מוסתר כדי לא לדרוס את השינויים. אפשר \"יצירה מחדש מהטופס\" בעורך למטה כדי לחזור למצב טופס.",
+      "customOnly": "Schema מותאם אישית — עריכה ידנית של ה‑JSON בלבד.",
+      "cannotSave": "לא ניתן לשמור: {{summary}}",
+      "recommendedComplete": "מומלץ להשלים: {{items}}",
+      "saveSchema": "שמירת Schema",
+      "testGoogle": "בדיקה ב-Google",
+      "savedOnCard": "נשמר בכרטיס — לחצי \"שמירה\" למטה כדי לפרסם.",
+      "unsavedOnCard": "יש שינויים שלא נשמרו בכרטיס",
+      "confirmAdvanced": "עריכה ידנית של הקוד תעבור למצב מתקדם. שינויים עתידיים בטופס עלולים לדרוס את הקוד הידני.\n\nלהמשיך לעריכה מתקדמת?",
+      "confirmRegenerate": "הפעולה תחליף את קוד ה‑JSON הידני בקוד חדש לפי נתוני הטופס. להמשיך?",
+      "jsonLdTitle": "תצוגת JSON-LD ועריכה מתקדמת",
+      "editedManually": "נערך ידנית",
+      "autoFromForm": "הקוד נוצר אוטומטית מהטופס. כדי לערוך ידנית לחצו \"מעבר לעריכה מתקדמת\".",
+      "switchAdvanced": "מעבר לעריכה מתקדמת",
+      "regenerateFromForm": "יצירה מחדש מהטופס",
+      "format": "פורמט",
+      "copied": "הועתק",
+      "copy": "העתקה",
+      "jsonValid": "JSON תקין",
+      "question": "שאלה",
+      "questionPh": "השאלה",
+      "answerPh": "התשובה",
+      "moveUp": "הזזה למעלה",
+      "moveDown": "הזזה למטה",
+      "duplicateQuestion": "שאלה כפולה — שנו או מחקו.",
+      "addAtLeastOne": "הוסיפו לפחות שאלה אחת.",
+      "addQuestion": "הוספת שאלה",
+      "siteName": "שם האתר",
+      "siteUrl": "כתובת האתר",
+      "siteLanguage": "שפת האתר",
+      "siteOwner": "בעל האתר",
+      "enableSearch": "לאפשר תיבת חיפוש באתר בתוצאות גוגל",
+      "searchUrlTemplate": "תבנית כתובת חיפוש",
+      "searchTermHint": "חייב להכיל {search_term_string}",
+      "exampleQuestion": "שאלה לדוגמה?",
+      "exampleAnswer": "תשובה לדוגמה.",
+      "jsonEmpty": "ה‑JSON ריק",
+      "empty": "ריק",
+      "jsonTooLong": "ה‑JSON ארוך מדי",
+      "tooLong": "ארוך מדי",
+      "invalidJson": "JSON לא תקין",
+      "mustBeObject": "ה‑Schema חייב להיות אובייקט",
+      "invalidStructure": "מבנה לא תקין",
+      "nameRequired": "name (שם)",
+      "productNameRequired": "name (שם המוצר)",
+      "validPriceInOffers": "מחיר תקין ב‑offers",
+      "atLeastOneQuestion": "לפחות שאלה אחת",
+      "emptyQuestionAnswer": "יש שאלה/תשובה ריקה",
+      "duplicateQuestions": "יש שאלות כפולות",
+      "atLeastOneItem": "לפחות פריט אחד",
+      "positionsNotSequential": "מיקומים לא רציפים",
+      "invalidUrl": "יש כתובת URL לא תקינה",
+      "missing": "חסר: {{items}}",
+      "valid": "תקין"
+    },
+    "forms": {
+      "contactTitle": "טופס יצירת קשר",
+      "submit": "שליחת הודעה",
+      "success": "תודה! קיבלנו את הפנייה ונחזור אליך בהקדם.",
+      "fullName": "שם מלא",
+      "phone": "טלפון",
+      "message": "הודעה",
+      "messagePh": "איך אפשר לעזור?",
+      "optionN": "אפשרות {{n}}",
+      "chooseOption": "בחרו אפשרות",
+      "clickToChooseFile": "לחצו לבחירת קובץ",
+      "upload": "העלאה",
+      "letsTalk": "בואו נדבר",
+      "formEmpty": "הטופס עדיין ריק",
+      "addFieldsHint": "הוסיפו שדות מתוך עורך הטופס",
+      "formBadge": "תגית טופס",
+      "weWouldLove": "נשמח לשמוע מכם",
+      "formDescription": "תיאור טופס",
+      "leaveDetails": "השאירו פרטים ונחזור אליכם בהקדם."
+    },
+    "canvas": {
+      "deviceMobile": "מובייל · {{px}}px",
+      "deviceTablet": "טאבלט · {{px}}px",
+      "deviceDesktop": "דסקטופ · {{px}}px",
+      "dragElement": "גרירת אלמנט",
+      "missingComponent": "לא נמצא Component לתבנית",
+      "checkRenderer": "צריך לבדוק את renderer"
+    },
+    "seoImage": {
+      "uploadFailed": "העלאת התמונה נכשלה",
+      "noImage": "אין תמונה",
+      "uploading": "מעלה...",
+      "uploadFromComputer": "העלאה מהמחשב",
+      "removeImage": "הסרת תמונה",
+      "formats": "PNG, JPG, WEBP או ICO",
+      "orPasteUrl": "או הדביקי כתובת URL"
+    },
+    "templatePreview": {
+      "back": "חזרה",
+      "edit": "עריכה",
+      "useTemplate": "שימוש בתבנית",
+      "notFound": "התבנית לא נמצאה",
+      "notFoundHint": "התבנית שנבחרה לא קיימת או לא רשומה בתיקיית התבניות.",
+      "backToTemplates": "חזרה לתבניות",
+      "noPreview": "אין תצוגה מקדימה לתבנית"
+    },
+    "pluginStore": {
+      "loadFailed": "טעינת חנות התוספים נכשלה",
+      "checkoutPortalFailed": "פתיחת תשלום לאזור אישי נכשלה",
+      "checkoutPluginFailed": "פתיחת תשלום לתוסף נכשלה",
+      "updateFailed": "עדכון התוסף נכשל",
+      "title": "חנות תוספים",
+      "subtitle": "התקינו תוספים ישירות מתוך עריכת האתר",
+      "saveFirst": "שמרו את האתר כדי לפתוח את חנות התוספים",
+      "loading": "טוען חנות תוספים..."
+    },
+    "sectionLabels": {
+      "header": "כותרת עליונה",
+      "footer": "פוטר",
+      "nav": "ניווט",
+      "hero": "אזור פתיחה",
+      "contact": "יצירת קשר",
+      "services": "שירותים",
+      "about": "אודות",
+      "projects": "פרויקטים",
+      "block": "בלוק"
     }
   },
   "partnerNav": {
@@ -17863,6 +18062,201 @@
       "title": "מוצרים, קטגוריות והגדרות חנות",
       "hint": "כאן מוסיפים מוצרים פעם אחת. המוצרים נשמרים בשרת, מופיעים אוטומטית בגריד החנות באתר, וכל מוצר יקבל דף מוצר אוטומטי לפי העיצוב שתבחרי.",
       "backStudio": "חזרה לסטודיו"
+    },
+    "pluginHelp": {
+      "fallbackDesc": "תוסף זה מרחיב את יכולות האתר. לאחר ההתקנה ניתן להגדיר אותו בפאנל הניהול.",
+      "closeHelpAria": "סגירת עזרת תוסף",
+      "close": "סגירה",
+      "backStore": "חזרה לחנות",
+      "activeSub": "מנוי פעיל",
+      "remove": "הסרת תוסף",
+      "install": "התקנה",
+      "about": "על התוסף",
+      "examples": "דוגמאות שימוש",
+      "details": "פרטים",
+      "category": "קטגוריה",
+      "price": "מחיר",
+      "futurePrice": "מחיר עתידי",
+      "afterInstall": "לאחר ההתקנה — הגדרות בלשונית הניהול של התוסף, והוספה לעמודים דרך עורך האתר → תוספים."
+    },
+    "sitePayments": {
+      "loadError": "שגיאה בטעינת ספקי התשלום",
+      "connectedOk": "{{name}} חובר בהצלחה",
+      "connectError": "שגיאה בחיבור ספק התשלום",
+      "disconnectConfirm": "לנתק את {{name}}?",
+      "disconnectedOk": "{{name}} נותק בהצלחה",
+      "disconnectError": "שגיאה בניתוק ספק התשלום",
+      "loading": "טוען ספקי תשלום...",
+      "title": "תשלומים",
+      "description": "חברו ספקי סליקה לאתר. הקופה באתר החי תשתמש בספק המחובר שסימנתם כראשי (PayPal, Stripe ועוד).",
+      "connectedToSite": "{{name}} מחובר לאתר",
+      "stepAdd": "1. הוסיפו מוצרים מהחנות / התבנית לסל באתר החי.",
+      "stepCheckout": "2. לחצו מעבר לתשלום — הקופה נפתחת לפי הספק המחובר.",
+      "stepPay": "3. הלקוח משלם דרך {{name}}."
+    },
+    "siteBooking": {
+      "title": "יומן ותורים",
+      "description": "הגדירו שעות פעילות, שירותים ותורים — הלקוחות יוכלו להזמין תור ישירות מהאתר.",
+      "board": "לוח תורים",
+      "services": "שירותים",
+      "hours": "שעות פעילות",
+      "hintBefore": "הגדירו כאן שעות ושירותים — סקשן",
+      "calendarSection": "יומן פגישות",
+      "hintMid": "בעורך (",
+      "openMonth": "פתיחה עם לוח חודשי",
+      "hintAfter": ") מתחבר אוטומטית ליומן ה-CRM, בלי תוסף נפרד."
+    },
+    "smartForms": {
+      "loadError": "לא ניתן לטעון את תיבת הפניות",
+      "title": "טפסים חכמים Pro",
+      "description": "תיבת פניות לפי טופס, כולל קבצים שצורפו. הטפסים הבסיסיים נשארים בבילדר.",
+      "active": "תוסף פעיל",
+      "trackByForm": "מעקב לפי טופס",
+      "empty": "עדיין אין שליחות מהאתר הזה",
+      "leadFromSite": "ליד מהאתר",
+      "files": "קבצים:",
+      "openCrm": "פתיחה ב-CRM"
+    },
+    "storeOrder": {
+      "new": "חדשה",
+      "pending_payment": "ממתינה לתשלום",
+      "paid": "שולמה",
+      "processing": "בטיפול",
+      "shipped": "נשלחה",
+      "completed": "הושלמה",
+      "cancelled": "בוטלה"
+    },
+    "aiTemplate": {
+      "ai_lead_scoring": "דירוג לידים אוטומטי",
+      "ai_lead_classify": "סיווג ליד אוטומטי",
+      "ai_lead_auto_tag": "תיוג אוטומטי של לידים",
+      "ai_hot_lead": "זיהוי לידים חמים",
+      "ai_lead_brief": "סיכום ליד לפני שיחת מכירה",
+      "ai_followup_draft": "ניסוח Follow-up",
+      "ai_email_draft": "ניסוח מייל",
+      "ai_next_action": "הצעת הפעולה הבאה",
+      "ai_daily_leads_digest": "תקציר יומי לידים",
+      "ai_daily_agenda_digest": "תקציר יומי משימות/פגישות"
+    },
+    "pushToggle": {
+      "blocked": "חסום בהגדרות הדפדפן/המכשיר",
+      "onOther": "פעיל במכשיר מותקן · {{count}} מכשיר רשום",
+      "unsupportedIos": "לא ניתן להפעיל מכאן — פתחו מ-Safari דרך האייקון במסך הבית",
+      "unsupported": "הדפדפן הזה לא תומך ב-Push",
+      "onReady": "מופעל · {{count}} מכשיר רשום",
+      "onUnbound": "מופעל במכשיר, אבל עדיין לא רשום בשרת — לחץ בדיקה",
+      "needRebind": "יש הרשאה, אבל אין רישום במכשיר — לחץ לרישום מחדש",
+      "off": "כבוי — לחץ להפעלה לקבלת התראות לטלפון"
+    },
+    "instantForm": {
+      "continue": "המשך",
+      "submit": "שלח",
+      "answerPh": "הזן את תשובתך",
+      "contactInfo": "פרטי התקשרות",
+      "privacy": "מדיניות פרטיות",
+      "privacyShort": "פרטיות",
+      "privacyBody": "הפרטים שתשלחו ישמשו ליצירת קשר עם {{name}}.",
+      "businessFallback": "העסק",
+      "thanks": "תודה!",
+      "thanksBody": "ניצור איתכם קשר בהקדם.",
+      "done": "סיום",
+      "toSite": "לאתר",
+      "quoteCta": "שלחו הודעה לקבלת הצעת מחיר"
+    },
+    "pluginGeneric": {
+      "priceRange": "₪{{min}}–{{max}}/חודש",
+      "priceMonth": "₪{{price}}/חודש",
+      "included": "כלול בחבילה",
+      "installedSoon": "התוסף מותקן — הגדרה בעורך בקרוב",
+      "openEditor": "פתיחה בעורך"
+    },
+    "pluginFrame": {
+      "manage": "ניהול תוסף",
+      "addEditor": "הוספה בעורך",
+      "loading": "טוען הגדרות...",
+      "savedSitewide": "שינויים נשמרים לכל האתר",
+      "save": "שמירת הגדרות"
+    },
+    "aiRecs": {
+      "load": "לא הצלחנו לטעון את ההמלצות. נסו שוב.",
+      "approve": "לא הצלחנו לאשר את ההמלצה. נסו שוב.",
+      "reject": "לא הצלחנו לדחות את ההמלצה. נסו שוב.",
+      "saveDraft": "לא הצלחנו לשמור את הטיוטה. נסו שוב.",
+      "saveApprove": "לא הצלחנו לשמור ולאשר. נסו שוב."
+    },
+    "pluginDefaults": {
+      "clubName": "מועדון לקוחות",
+      "findService": "מצאו את השירות המתאים",
+      "contactCta": "צרו קשר",
+      "offline": "נחזור אליכם בשעות הפעילות"
+    },
+    "pluginSettings": {
+      "loadError": "שגיאה בטעינת הגדרות",
+      "saved": "ההגדרות נשמרו",
+      "saveError": "שגיאה בשמירה"
+    },
+    "audience": {
+      "radiusDrawFail": "העיר נבחרה, אבל לא הצלחנו לצייר את הרדיוס במפה. נסו עיר אחרת או רעננו.",
+      "hintPick": "כמו בפייסבוק: בחרו עיר ← הוסיפו ← הגדירו רדיוס רק סביב העיר הזו",
+      "radiusAround": "רדיוס אמיתי סביב {{name}}: {{km}} ק״מ",
+      "addCityFirst": "קודם חפשו והוסיפו עיר — ואז הרדיוס יופיע סביבה במפה",
+      "searchCity": "חפשו עיר (לדוגמה: באר שבע / חיפה) והוסיפו — ואז הגדירו רדיוס סביבה",
+      "radiusExplain": "כמו בפייסבוק: העיגול הוא רדיוס אמיתי בק״מ רק סביב העיר שנבחרה. זום המפה מציג מה נכלל בתוך הרדיוס.",
+      "noInterests": "לא נמצאו תחומי עניין במטא ל־“{{query}}”"
+    },
+    "checkoutTheme": {
+      "classic": "קלאסי",
+      "violet": "סגול מותג",
+      "luxury": "יוקרה",
+      "emerald": "ירוק",
+      "rose": "ורוד"
+    },
+    "templatePreview": {
+      "comingSoon": "צילום תבנית בקרוב",
+      "preview": "תצוגה מקדימה",
+      "fullShot": "צילום מסך מלא של התבנית",
+      "mySite": "האתר שלי",
+      "sitePreview": "תצוגה מקדימה של האתר",
+      "pluginPreview": "{{name}} — תצוגה מקדימה"
+    },
+    "calendar": {
+      "noBusiness": "לא הצלחנו לזהות את העסק. רעננו את העמוד.",
+      "noBusinessRetry": "לא הצלחנו לזהות את העסק. רעננו את העמוד ונסו שוב."
+    },
+    "metaMap": {
+      "realRadius": "<br/>רדיוס אמיתי: {{km}} ק״מ סביב העיר",
+      "wholeCountry": "<br/>מדינה שלמה",
+      "tooltip": "{{name}} · רדיוס {{km}} ק״מ",
+      "aroundScale": "רדיוס אמיתי סביב {{name}}: {{km}} ק״מ — העיגול במפה בקנה מידה גאוגרפי",
+      "locating": "העיר נבחרה, אבל עדיין אין נקודה על המפה. מנסים לאתר קואורדינטות…"
+    },
+    "profile": {
+      "loading": "טוען..."
+    },
+    "upgrade": {
+      "title": "שדרוג מנוי"
+    },
+    "adsLead": {
+      "failed": "הפעולה נכשלה. נסו שוב."
+    },
+    "waInbox": {
+      "demoSend": "שלחו הודעת הדגמה — לא נשלחת ללקוח אמיתי"
+    },
+    "waBilling": {
+      "loadError": "לא הצלחנו לטעון את נתוני חיוב וואטסאפ כרגע."
+    },
+    "waOtp": {
+      "body": "{{1}} הוא קוד האימות שלכם.",
+      "footer": "למען האבטחה, אל תשתפו את הקוד הזה."
+    },
+    "sessionFields": {
+      "tabDesc": "ערכים אישיים לפי השדות שהוגדרו ב-CRM"
+    },
+    "collabProfile": {
+      "waNotify": "מספר התראות WhatsApp (E.164)"
+    },
+    "waHistory": {
+      "metaId": "מזהה הודעה במטא: {{id}}"
     }
   }
 }

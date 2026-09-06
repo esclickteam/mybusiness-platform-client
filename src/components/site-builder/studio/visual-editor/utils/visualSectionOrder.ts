@@ -1,3 +1,4 @@
+import i18n from "../../../../../i18n/i18n";
 import { safeCssSelectorValue } from "./visualSelectors";
 import {
   readVisualInsertedSections,
@@ -93,11 +94,11 @@ function deriveSectionLabel(node: HTMLElement, fallback: string) {
   if (headingText) return headingText;
 
   const tag = String(node.tagName || "section").toLowerCase();
-  if (tag === "header") return "כותרת עליונה";
-  if (tag === "footer") return "פוטר";
-  if (tag === "nav") return "ניווט";
+  if (tag === "header") return String(i18n.t("studio.sectionLabels.header"));
+  if (tag === "footer") return String(i18n.t("studio.sectionLabels.footer"));
+  if (tag === "nav") return String(i18n.t("studio.sectionLabels.nav"));
 
-  return fallback || "בלוק";
+  return fallback || String(i18n.t("studio.sectionLabels.block"));
 }
 
 export function isPinnedVisualSection(node: HTMLElement) {
@@ -314,15 +315,15 @@ export function collectVisualSectionItems(
 
 function labelFromSectionKey(key: string) {
   const clean = normalizeKey(key);
-  if (!clean) return "בלוק";
-  if (clean === "header") return "כותרת עליונה";
-  if (clean === "footer") return "פוטר";
-  if (clean === "nav") return "ניווט";
-  if (clean === "hero") return "אזור פתיחה";
-  if (clean === "contact") return "יצירת קשר";
-  if (clean === "services") return "שירותים";
-  if (clean === "about") return "אודות";
-  if (clean === "projects") return "פרויקטים";
+  if (!clean) return String(i18n.t("studio.sectionLabels.block"));
+  if (clean === "header") return String(i18n.t("studio.sectionLabels.header"));
+  if (clean === "footer") return String(i18n.t("studio.sectionLabels.footer"));
+  if (clean === "nav") return String(i18n.t("studio.sectionLabels.nav"));
+  if (clean === "hero") return String(i18n.t("studio.sectionLabels.hero"));
+  if (clean === "contact") return String(i18n.t("studio.sectionLabels.contact"));
+  if (clean === "services") return String(i18n.t("studio.sectionLabels.services"));
+  if (clean === "about") return String(i18n.t("studio.sectionLabels.about"));
+  if (clean === "projects") return String(i18n.t("studio.sectionLabels.projects"));
   return clean.replace(/[-_]+/g, " ");
 }
 

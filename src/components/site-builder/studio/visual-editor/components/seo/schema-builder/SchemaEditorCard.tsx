@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Braces,
   CheckCircle2,
@@ -69,6 +70,7 @@ export default function SchemaEditorCard({
   onDuplicate,
   onDelete,
 }: Props) {
+  const { t } = useTranslation();
   const schemaType = (entry.schemaType || "Custom") as SeoSchemaType;
   const supportsForm = schemaType !== "Custom";
 
@@ -179,7 +181,7 @@ export default function SchemaEditorCard({
               ) : null}
             </span>
             <span className="mt-0.5 flex items-center gap-1.5 text-[11px] font-bold text-slate-400">
-              {mode === "form" ? "מצב טופס" : "JSON ידני"}
+              {mode === "form" ? t("studio.schema.formMode") : t("studio.schema.manualJson")}
             </span>
           </span>
           <ChevronDown
@@ -194,7 +196,7 @@ export default function SchemaEditorCard({
             type="button"
             onClick={onDuplicate}
             className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 hover:bg-slate-50"
-            aria-label="שכפול"
+            aria-label={t("studio.sitePages.duplicate")}
           >
             <Copy className="h-4 w-4" />
           </button>
@@ -202,7 +204,7 @@ export default function SchemaEditorCard({
             type="button"
             onClick={onDelete}
             className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-rose-500 hover:bg-rose-50"
-            aria-label="מחיקה"
+            aria-label={t("studio.grapes.delete")}
           >
             <Trash2 className="h-4 w-4" />
           </button>
@@ -219,7 +221,7 @@ export default function SchemaEditorCard({
                 setName(event.target.value);
                 setDirty(true);
               }}
-              placeholder="שם פנימי (לזיהוי)"
+              placeholder={t("studio.schema.internalName")}
               className="h-9 min-w-0 flex-1 rounded-lg border border-slate-200 bg-white px-3 text-right text-xs font-bold text-slate-800 outline-none focus:border-blue-400"
             />
           </label>
@@ -228,12 +230,11 @@ export default function SchemaEditorCard({
             renderForm(schemaType, formData, handleFormChange)
           ) : supportsForm && mode === "custom" ? (
             <p className="rounded-xl bg-amber-50 px-3 py-2 text-[11px] font-semibold text-amber-800">
-              הקוד נערך ידנית. הטופס מוסתר כדי לא לדרוס את השינויים. אפשר "יצירה
-              מחדש מהטופס" בעורך למטה כדי לחזור למצב טופס.
+              {t("studio.schema.manualEditHint")}
             </p>
           ) : (
             <p className="rounded-xl bg-slate-50 px-3 py-2 text-[11px] font-semibold text-slate-500">
-              Schema מותאם אישית — עריכה ידנית של ה‑JSON בלבד.
+              {t("studio.schema.customOnly")}
             </p>
           )}
 
@@ -248,11 +249,13 @@ export default function SchemaEditorCard({
 
           {validation.blocking ? (
             <p className="text-[11px] font-bold text-rose-600">
-              לא ניתן לשמור: {validation.summary}
+              {t("studio.schema.cannotSave", { summary: validation.summary })}
             </p>
           ) : validation.recommendedMissing.length ? (
             <p className="text-[11px] font-bold text-amber-600">
-              מומלץ להשלים: {validation.recommendedMissing.join(" · ")}
+              {t("studio.schema.recommendedComplete", {
+                items: validation.recommendedMissing.join(" · "),
+              })}
             </p>
           ) : null}
 
@@ -263,7 +266,7 @@ export default function SchemaEditorCard({
               disabled={validation.blocking}
               className="flex h-10 items-center gap-2 rounded-xl bg-blue-600 px-4 text-sm font-black text-black transition hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-40"
             >
-              <Save className="h-4 w-4" /> שמירת Schema
+              <Save className="h-4 w-4" /> {t("studio.schema.saveSchema")}
             </button>
             <a
               href={richResultsUrl}
@@ -271,16 +274,15 @@ export default function SchemaEditorCard({
               rel="noreferrer"
               className="flex h-10 items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 text-xs font-black text-slate-700 transition hover:bg-slate-50"
             >
-              <ExternalLink className="h-3.5 w-3.5" /> בדיקה ב-Google
+              <ExternalLink className="h-3.5 w-3.5" /> {t("studio.schema.testGoogle")}
             </a>
             {savedFlash ? (
               <span className="flex items-center gap-1.5 text-xs font-black text-emerald-600">
-                <CheckCircle2 className="h-4 w-4" /> נשמר בכרטיס — לחצי "שמירה"
-                למטה כדי לפרסם.
+                <CheckCircle2 className="h-4 w-4" /> {t("studio.schema.savedOnCard")}
               </span>
             ) : dirty ? (
               <span className="text-xs font-bold text-amber-600">
-                יש שינויים שלא נשמרו בכרטיס
+                {t("studio.schema.unsavedOnCard")}
               </span>
             ) : null}
           </div>

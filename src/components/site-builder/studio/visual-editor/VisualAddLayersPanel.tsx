@@ -940,12 +940,12 @@ export default function VisualAddLayersPanel({
             preview: "crm",
             barePreview: true,
             previewHtml:
-              '<div style="font-size:20px;font-weight:800;color:#0f172a;white-space:nowrap">שלום, [שם לקוח]</div>',
+              `<div style="font-size:20px;font-weight:800;color:#0f172a;white-space:nowrap">${t("studio.addLayers.greetingPreview")}</div>`,
             action: () =>
               editor?.addCrmField?.({
                 fieldKey: "client_name",
-                label: "שם לקוח",
-                sampleValue: "[שם לקוח]",
+                label: t("studio.defaults.clientName"),
+                sampleValue: t("studio.defaults.clientNameSample"),
                 format: "greeting",
                 asPair: false,
               }),
@@ -959,12 +959,12 @@ export default function VisualAddLayersPanel({
             preview: "crm",
             barePreview: true,
             previewHtml:
-              '<div style="font-size:14px;font-weight:800;color:#64748b">שם לקוח</div><div style="font-size:22px;font-weight:800;color:#0f172a">[שם לקוח]</div>',
+              `<div style="font-size:14px;font-weight:800;color:#64748b">${t("studio.defaults.clientName")}</div><div style="font-size:22px;font-weight:800;color:#0f172a">${t("studio.defaults.clientNameSample")}</div>`,
             action: () =>
               editor?.addCrmField?.({
                 fieldKey: "client_name",
-                label: "שם לקוח",
-                sampleValue: "[שם לקוח]",
+                label: t("studio.defaults.clientName"),
+                sampleValue: t("studio.defaults.clientNameSample"),
                 asPair: true,
               }),
           },
@@ -977,11 +977,11 @@ export default function VisualAddLayersPanel({
             preview: "crm",
             barePreview: true,
             previewHtml:
-              '<div style="font-size:14px;font-weight:800;color:#64748b">שם הנתון</div><div style="font-size:22px;font-weight:800;color:#0f172a">[ערך מהתיק]</div>',
+              `<div style="font-size:14px;font-weight:800;color:#64748b">${t("studio.defaults.crmField")}</div><div style="font-size:22px;font-weight:800;color:#0f172a">${t("studio.defaults.sampleValue")}</div>`,
             action: () =>
               editor?.addCrmField?.({
-                label: "שם הנתון",
-                sampleValue: "[ערך מהתיק]",
+                label: t("studio.defaults.crmField"),
+                sampleValue: t("studio.defaults.sampleValue"),
                 asPair: true,
               }),
           },
@@ -1809,7 +1809,11 @@ export default function VisualAddLayersPanel({
                           title,
                           description: t("studio.addLayers.blankPage"),
                           slugSuggestion: "new-page",
-                          keywords: ["ריק", "עריכה", "blank"],
+                          keywords: [
+                            t("studio.addLayers.blankKeyword"),
+                            t("studio.addLayers.editKeyword"),
+                            "blank",
+                          ],
                           sectionIds: [],
                         });
                       }}

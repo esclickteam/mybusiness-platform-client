@@ -1,4 +1,5 @@
 import React, { useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { ImagePlus, Loader2, Trash2, Upload } from "lucide-react";
 
 import { uploadMediaToCloudinary } from "../../../utils/uploadMediaToCloudinary";
@@ -26,6 +27,7 @@ export default function SeoImageUploader({
   previewAspect = "social",
   placeholder = "https://...",
 }: Props) {
+  const { t } = useTranslation();
   const inputRef = useRef<HTMLInputElement>(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
@@ -45,7 +47,7 @@ export default function SeoImageUploader({
       setError(
         uploadError instanceof Error
           ? uploadError.message
-          : "העלאת התמונה נכשלה",
+          : t("studio.seoImage.uploadFailed"),
       );
     } finally {
       setUploading(false);
@@ -74,7 +76,7 @@ export default function SeoImageUploader({
             ) : (
               <div className="flex flex-col items-center gap-1 p-3 text-slate-400">
                 <ImagePlus className="h-6 w-6" />
-                <span className="text-[10px] font-bold">אין תמונה</span>
+                <span className="text-[10px] font-bold">{t("studio.seoImage.noImage")}</span>
               </div>
             )}
           </div>
@@ -96,11 +98,11 @@ export default function SeoImageUploader({
             >
               {uploading ? (
                 <>
-                  <BizuplyLoader size="xs" compact /> מעלה...
+                  <BizuplyLoader size="xs" compact /> {t("studio.seoImage.uploading")}
                 </>
               ) : (
                 <>
-                  <Upload className="h-4 w-4" /> העלאה מהמחשב
+                  <Upload className="h-4 w-4" /> {t("studio.seoImage.uploadFromComputer")}
                 </>
               )}
             </button>
@@ -111,19 +113,19 @@ export default function SeoImageUploader({
                 onClick={() => onChange("")}
                 className="flex h-10 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white text-sm font-bold text-rose-600 transition hover:bg-rose-50"
               >
-                <Trash2 className="h-4 w-4" /> הסרת תמונה
+                <Trash2 className="h-4 w-4" /> {t("studio.seoImage.removeImage")}
               </button>
             ) : null}
 
             <p className="text-[11px] font-semibold leading-5 text-slate-500">
-              {hint || "PNG, JPG, WEBP או ICO"}
+              {hint || t("studio.seoImage.formats")}
             </p>
           </div>
         </div>
 
         <label className="mt-3 block space-y-1.5">
           <span className="text-[11px] font-black text-slate-500">
-            או הדביקי כתובת URL
+            {t("studio.seoImage.orPasteUrl")}
           </span>
           <input
             value={value}

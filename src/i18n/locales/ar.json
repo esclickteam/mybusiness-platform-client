@@ -10719,7 +10719,10 @@
     "publishSuccessTitle": "تم نشر الموقع بنجاح",
     "publishSuccessText": "موقعك على الانترنت. افتحه أو انسخ الرابط أو استمر في التحرير.",
     "loadingSavedSite": "تحميل الموقع المحفوظ وإعداد المحرر...",
-    "pages": "الصفحات",
+    "pages": {
+      "home": "الصفحة الرئيسية",
+      "pageN": "صفحة {{n}}"
+    },
     "headerFooter": "الرأس والتذييل وروابط النماذج",
     "layers": "الطبقات",
     "customCode": "رمز مخصص",
@@ -11804,7 +11807,10 @@
         "number": "[رقم]",
         "value": "[{{label}}]",
         "fallbackLabel": "قيمة من الملف"
-      }
+      },
+      "greetingPreview": "مرحباً، [اسم العميل]",
+      "blankKeyword": "فارغ",
+      "editKeyword": "تحرير"
     },
     "inspectorPanel": {
       "weightRegular": "عادي",
@@ -11971,7 +11977,22 @@
       "passed": "نجح",
       "failed": "فشل",
       "clickRecheck": "انقروا \"إعادة الفحص\" لفحص الموقع.",
-      "footer": "يتم التحقق مباشرة مع Google. تجهّز BizUply الموقع وترشدك في العملية. لا يوجد اتصال تلقائي بـ Google Search Console في هذه المرحلة."
+      "footer": "يتم التحقق مباشرة مع Google. تجهّز BizUply الموقع وترشدك في العملية. لا يوجد اتصال تلقائي بـ Google Search Console في هذه المرحلة.",
+      "siteAvailable": "الموقع العام متاح",
+      "robotsAvailable": "robots.txt متاح",
+      "sitemapAvailable": "sitemap.xml متاح",
+      "metaOnSite": "رمز تحقق Meta موجود في الموقع",
+      "fileOnSite": "ملف التحقق متاح على عنوان الموقع",
+      "noMetaCode": "لم يُضبط رمز تحقق Meta",
+      "metaInHtml": "رمز التحقق يظهر في HTML الموقع",
+      "metaSavedNotLive": "الكود محفوظ لدينا لكنه لم يظهر بعد في الموقع العام — احفظي وانشري",
+      "htmlReadFailed": "تعذّر قراءة HTML الموقع",
+      "htmlCheckFailed": "تعذّر فحص HTML الموقع",
+      "noFileUploaded": "لم يُرفع ملف تحقق",
+      "fileAtUrl": "الملف متاح على عنوان الموقع ({{status}})",
+      "fileViaBizuply": "الملف متاح عبر BizUply. إذا فشل الفحص على عنوان الموقع بسبب صلاحيات المتصفح — راجعي الرابط يدوياً.",
+      "siteNotFound": "الموقع غير موجود / غير منشور",
+      "unavailable": "غير متاح"
     },
     "seoUi": {
       "excellent": "ممتاز",
@@ -13622,6 +13643,184 @@
       "requiredText": "لا يمكن الإرسال دون تعبئة",
       "insertToPage": "إدراج في الصفحة",
       "delete": "حذف"
+    },
+    "upload": {
+      "signFailed": "تعذّر إنشاء توقيع الرفع",
+      "cannotStart": "تعذّر بدء الرفع الآن. حاولي مرة أخرى.",
+      "fileFailed": "فشل رفع الملف. حاولي مرة أخرى.",
+      "mediaFailed": "فشل رفع الوسائط",
+      "unsavedBeforePublish": "هناك تغييرات غير محفوظة. حاولي مرة أخرى قبل النشر."
+    },
+    "defaults": {
+      "newText": "نص جديد",
+      "newButton": "زر جديد",
+      "newImage": "صورة جديدة",
+      "newVideo": "فيديو جديد",
+      "divider": "فاصل",
+      "newBox": "صندوق جديد",
+      "newElement": "عنصر جديد",
+      "newSection": "قسم جديد",
+      "media": "وسائط",
+      "link": "رابط",
+      "plugin": "إضافة",
+      "section": "قسم",
+      "element": "عنصر",
+      "copy": "{{label}} (نسخة)",
+      "fieldN": "حقل {{n}}",
+      "tableLabel": "جدول {{rows}}×{{cols}}",
+      "crmField": "بيان",
+      "crmLabel": "تسمية CRM · {{label}}",
+      "crmValue": "بيان CRM · {{label}}",
+      "crmValuePlain": "بيان CRM",
+      "clientName": "اسم العميل",
+      "clientNameSample": "[اسم العميل]",
+      "sampleValue": "[قيمة من الملف]",
+      "samplePerson": "ليلى أحمد",
+      "greeting": "مرحباً، {{name}}",
+      "greetingLabel": "مرحباً، اسم العميل"
+    },
+    "schema": {
+      "localBusiness": "عمل محلي",
+      "localBusinessDesc": "العنوان والهاتف والساعات — يفعّل بطاقة العمل في جوجل.",
+      "service": "خدمة",
+      "serviceDesc": "خدمة يقدمها العمل، مع السعر ومنطقة الخدمة.",
+      "faq": "أسئلة وأجوبة",
+      "faqDesc": "كتلة أسئلة يمكن أن تظهر في نتائج البحث.",
+      "product": "منتج",
+      "productDesc": "منتج بسعر وتوفر — نتائج غنية.",
+      "organization": "مؤسسة",
+      "organizationDesc": "هوية العمل والشعار والروابط. يُفضَّل على مستوى الموقع.",
+      "website": "موقع",
+      "websiteDesc": "اسم الموقع ومربع البحث. يُفضَّل على مستوى الموقع.",
+      "websiteHint": "عرّفي WebSite مرة واحدة (في الصفحة الرئيسية). الموقع حالياً أحادي اللغة.",
+      "breadcrumb": "مسار التنقل",
+      "breadcrumbDesc": "تسلسل التنقل في نتائج البحث.",
+      "custom": "مخصّص",
+      "siteLevel": "مستوى الموقع",
+      "formMode": "وضع النموذج",
+      "manualJson": "JSON يدوي",
+      "internalName": "اسم داخلي (للتعريف)",
+      "manualEditHint": "تم تحرير الكود يدوياً. النموذج مخفي حتى لا يُستبدل. يمكنك إعادة إنشائه من النموذج أدناه.",
+      "customOnly": "مخطط مخصّص — تحرير JSON يدوياً فقط.",
+      "cannotSave": "تعذّر الحفظ: {{summary}}",
+      "recommendedComplete": "يُفضَّل إكمال: {{items}}",
+      "saveSchema": "حفظ المخطط",
+      "testGoogle": "اختبار في Google",
+      "savedOnCard": "حُفظ في البطاقة — انقري «حفظ» أدناه للنشر.",
+      "unsavedOnCard": "هناك تغييرات غير محفوظة في البطاقة",
+      "confirmAdvanced": "التحرير اليدوي ينتقل إلى الوضع المتقدم. قد تستبدل تغييرات النموذج لاحقاً الكود اليدوي.\n\nالمتابعة؟",
+      "confirmRegenerate": "سيستبدل هذا JSON اليدوي بكود جديد من بيانات النموذج. المتابعة؟",
+      "jsonLdTitle": "عرض JSON-LD والتحرير المتقدم",
+      "editedManually": "حُرّر يدوياً",
+      "autoFromForm": "يُنشأ الكود تلقائياً من النموذج. للتحرير اليدوي انقري «الانتقال للتحرير المتقدم».",
+      "switchAdvanced": "الانتقال للتحرير المتقدم",
+      "regenerateFromForm": "إعادة الإنشاء من النموذج",
+      "format": "تنسيق",
+      "copied": "تم النسخ",
+      "copy": "نسخ",
+      "jsonValid": "JSON صالح",
+      "question": "سؤال",
+      "questionPh": "السؤال",
+      "answerPh": "الإجابة",
+      "moveUp": "تحريك لأعلى",
+      "moveDown": "تحريك لأسفل",
+      "duplicateQuestion": "سؤال مكرر — غيّريه أو احذفيه.",
+      "addAtLeastOne": "أضيفي سؤالاً واحداً على الأقل.",
+      "addQuestion": "إضافة سؤال",
+      "siteName": "اسم الموقع",
+      "siteUrl": "رابط الموقع",
+      "siteLanguage": "لغة الموقع",
+      "siteOwner": "مالك الموقع",
+      "enableSearch": "السماح بمربع بحث الموقع في نتائج جوجل",
+      "searchUrlTemplate": "قالب رابط البحث",
+      "searchTermHint": "يجب أن يتضمن {search_term_string}",
+      "exampleQuestion": "سؤال تجريبي؟",
+      "exampleAnswer": "إجابة تجريبية.",
+      "jsonEmpty": "JSON فارغ",
+      "empty": "فارغ",
+      "jsonTooLong": "JSON طويل جداً",
+      "tooLong": "طويل جداً",
+      "invalidJson": "JSON غير صالح",
+      "mustBeObject": "يجب أن يكون المخطط كائناً",
+      "invalidStructure": "هيكل غير صالح",
+      "nameRequired": "name (الاسم)",
+      "productNameRequired": "name (اسم المنتج)",
+      "validPriceInOffers": "سعر صالح في offers",
+      "atLeastOneQuestion": "سؤال واحد على الأقل",
+      "emptyQuestionAnswer": "هناك سؤال/إجابة فارغة",
+      "duplicateQuestions": "هناك أسئلة مكررة",
+      "atLeastOneItem": "عنصر واحد على الأقل",
+      "positionsNotSequential": "المواضع غير متتالية",
+      "invalidUrl": "هناك رابط غير صالح",
+      "missing": "ناقص: {{items}}",
+      "valid": "صالح"
+    },
+    "forms": {
+      "contactTitle": "نموذج تواصل",
+      "submit": "إرسال رسالة",
+      "success": "شكراً! استلمنا طلبك وسنعود إليك قريباً.",
+      "fullName": "الاسم الكامل",
+      "phone": "هاتف",
+      "message": "رسالة",
+      "messagePh": "كيف يمكننا المساعدة؟",
+      "optionN": "خيار {{n}}",
+      "chooseOption": "اختاري خياراً",
+      "clickToChooseFile": "انقري لاختيار ملف",
+      "upload": "رفع",
+      "letsTalk": "لنتحدث",
+      "formEmpty": "النموذج ما زال فارغاً",
+      "addFieldsHint": "أضيفي حقولاً من محرر النموذج",
+      "formBadge": "وسم النموذج",
+      "weWouldLove": "يسعدنا سماعك",
+      "formDescription": "وصف النموذج",
+      "leaveDetails": "اتركي بياناتك وسنعود إليك قريباً."
+    },
+    "canvas": {
+      "deviceMobile": "جوال · {{px}}px",
+      "deviceTablet": "لوحي · {{px}}px",
+      "deviceDesktop": "سطح المكتب · {{px}}px",
+      "dragElement": "سحب العنصر",
+      "missingComponent": "لم يتم العثور على مكوّن للقالب",
+      "checkRenderer": "يلزم فحص العارض"
+    },
+    "seoImage": {
+      "uploadFailed": "فشل رفع الصورة",
+      "noImage": "لا توجد صورة",
+      "uploading": "جارٍ الرفع...",
+      "uploadFromComputer": "رفع من الجهاز",
+      "removeImage": "إزالة الصورة",
+      "formats": "PNG أو JPG أو WEBP أو ICO",
+      "orPasteUrl": "أو الصقي رابط URL"
+    },
+    "templatePreview": {
+      "back": "رجوع",
+      "edit": "تحرير",
+      "useTemplate": "استخدام القالب",
+      "notFound": "القالب غير موجود",
+      "notFoundHint": "القالب المحدد غير موجود أو غير مسجّل في مجلد القوالب.",
+      "backToTemplates": "العودة إلى القوالب",
+      "noPreview": "لا توجد معاينة لهذا القالب"
+    },
+    "pluginStore": {
+      "loadFailed": "فشل تحميل متجر الإضافات",
+      "checkoutPortalFailed": "فشل فتح دفع المنطقة الشخصية",
+      "checkoutPluginFailed": "فشل فتح دفع الإضافة",
+      "updateFailed": "فشل تحديث الإضافة",
+      "title": "متجر الإضافات",
+      "subtitle": "ثبّتي الإضافات مباشرة من محرر الموقع",
+      "saveFirst": "احفظي الموقع لفتح متجر الإضافات",
+      "loading": "جارٍ تحميل متجر الإضافات..."
+    },
+    "sectionLabels": {
+      "header": "ترويسة",
+      "footer": "تذييل",
+      "nav": "تنقل",
+      "hero": "منطقة الافتتاح",
+      "contact": "تواصل",
+      "services": "خدمات",
+      "about": "حول",
+      "projects": "مشاريع",
+      "block": "كتلة"
     }
   },
   "partnerNav": {
@@ -17874,6 +18073,201 @@
       "title": "المنتجات والفئات وإعدادات المتجر",
       "hint": "أضيفي المنتجات مرة واحدة. تُحفظ في الخادم وتظهر تلقائياً في شبكة المتجر، ولكل منتج صفحة تلقائية حسب التصميم الذي تختارينه.",
       "backStudio": "العودة إلى الاستوديو"
+    },
+    "pluginHelp": {
+      "fallbackDesc": "هذه الإضافة توسّع الموقع. بعد التثبيت يمكن ضبطها في لوحة الإدارة.",
+      "closeHelpAria": "إغلاق مساعدة الإضافة",
+      "close": "إغلاق",
+      "backStore": "العودة إلى المتجر",
+      "activeSub": "اشتراك نشط",
+      "remove": "إزالة الإضافة",
+      "install": "تثبيت",
+      "about": "عن الإضافة",
+      "examples": "أمثلة استخدام",
+      "details": "التفاصيل",
+      "category": "الفئة",
+      "price": "السعر",
+      "futurePrice": "السعر المستقبلي",
+      "afterInstall": "بعد التثبيت — الإعدادات في تبويب إدارة الإضافة، وتُضاف للصفحات من المحرر → الإضافات."
+    },
+    "sitePayments": {
+      "loadError": "تعذّر تحميل مزودي الدفع",
+      "connectedOk": "تم ربط {{name}} بنجاح",
+      "connectError": "تعذّر ربط مزود الدفع",
+      "disconnectConfirm": "فصل {{name}}؟",
+      "disconnectedOk": "تم فصل {{name}} بنجاح",
+      "disconnectError": "تعذّر فصل مزود الدفع",
+      "loading": "جارٍ تحميل مزودي الدفع...",
+      "title": "المدفوعات",
+      "description": "اربط مزودي التحصيل بالموقع. سلة الموقع الحي تستخدم المزود الرئيسي (PayPal وStripe وغيرها).",
+      "connectedToSite": "{{name}} متصل بالموقع",
+      "stepAdd": "1. أضف منتجات من المتجر / القالب إلى سلة الموقع الحي.",
+      "stepCheckout": "2. انقر للدفع — تُفتح الصندوق حسب المزود المتصل.",
+      "stepPay": "3. يدفع العميل عبر {{name}}."
+    },
+    "siteBooking": {
+      "title": "التقويم والمواعيد",
+      "description": "حدّد ساعات العمل والخدمات والمواعيد — يمكن للعملاء الحجز من الموقع.",
+      "board": "لوحة المواعيد",
+      "services": "الخدمات",
+      "hours": "ساعات العمل",
+      "hintBefore": "حدّد الساعات والخدمات هنا — قسم",
+      "calendarSection": "تقويم المواعيد",
+      "hintMid": "في المحرر (",
+      "openMonth": "فتح بلوحة شهرية",
+      "hintAfter": ") يتصل تلقائياً بتقويم CRM دون إضافة منفصلة."
+    },
+    "smartForms": {
+      "loadError": "تعذّر تحميل صندوق الرسائل",
+      "title": "نماذج ذكية Pro",
+      "description": "صندوق حسب النموذج مع الملفات. النماذج الأساسية تبقى في المحرر.",
+      "active": "الإضافة نشطة",
+      "trackByForm": "تتبع حسب النموذج",
+      "empty": "لا توجد إرسالات من هذا الموقع بعد",
+      "leadFromSite": "عميل محتمل من الموقع",
+      "files": "ملفات:",
+      "openCrm": "فتح في CRM"
+    },
+    "storeOrder": {
+      "new": "جديدة",
+      "pending_payment": "بانتظار الدفع",
+      "paid": "مدفوعة",
+      "processing": "قيد المعالجة",
+      "shipped": "أُرسلت",
+      "completed": "مكتملة",
+      "cancelled": "ملغاة"
+    },
+    "aiTemplate": {
+      "ai_lead_scoring": "تقييم تلقائي للعملاء المحتملين",
+      "ai_lead_classify": "تصنيف تلقائي للعملاء المحتملين",
+      "ai_lead_auto_tag": "وسم تلقائي للعملاء المحتملين",
+      "ai_hot_lead": "اكتشاف العملاء المحتملين الساخنين",
+      "ai_lead_brief": "ملخص العميل المحتمل قبل مكالمة البيع",
+      "ai_followup_draft": "مسودة متابعة",
+      "ai_email_draft": "مسودة بريد",
+      "ai_next_action": "اقتراح الإجراء التالي",
+      "ai_daily_leads_digest": "ملخص يومي للعملاء المحتملين",
+      "ai_daily_agenda_digest": "ملخص يومي للمهام/الاجتماعات"
+    },
+    "pushToggle": {
+      "blocked": "محظور في إعدادات المتصفح/الجهاز",
+      "onOther": "نشط على جهاز مثبت · {{count}} جهاز مسجّل",
+      "unsupportedIos": "لا يمكن التفعيل من هنا — افتح Safari من أيقونة الشاشة الرئيسية",
+      "unsupported": "هذا المتصفح لا يدعم الإشعارات",
+      "onReady": "مفعّل · {{count}} جهاز مسجّل",
+      "onUnbound": "مفعّل على الجهاز لكن غير مسجّل في الخادم — اضغط اختبار",
+      "needRebind": "هناك إذن لكن الجهاز غير مسجّل — اضغط لإعادة التسجيل",
+      "off": "إيقاف — اضغط للتفعيل واستلام التنبيهات على الهاتف"
+    },
+    "instantForm": {
+      "continue": "متابعة",
+      "submit": "إرسال",
+      "answerPh": "أدخل إجابتك",
+      "contactInfo": "بيانات التواصل",
+      "privacy": "سياسة الخصوصية",
+      "privacyShort": "الخصوصية",
+      "privacyBody": "بالمتابعة توافق أن يتواصل معك {{name}}.",
+      "businessFallback": "هذا العمل",
+      "thanks": "شكراً!",
+      "thanksBody": "سنتواصل معكم قريباً.",
+      "done": "تم",
+      "toSite": "إلى الموقع",
+      "quoteCta": "أرسل رسالة لطلب عرض سعر"
+    },
+    "pluginGeneric": {
+      "priceRange": "₪{{min}}–{{max}}/شهر",
+      "priceMonth": "₪{{price}}/شهر",
+      "included": "مشمول في الخطة",
+      "installedSoon": "الإضافة مثبتة — الإعداد في المحرر قريباً",
+      "openEditor": "فتح في المحرر"
+    },
+    "pluginFrame": {
+      "manage": "إدارة الإضافة",
+      "addEditor": "إضافة في المحرر",
+      "loading": "جارٍ تحميل الإعدادات...",
+      "savedSitewide": "تُحفظ التغييرات لكل الموقع",
+      "save": "حفظ الإعدادات"
+    },
+    "aiRecs": {
+      "load": "تعذّر تحميل التوصيات. حاول مرة أخرى.",
+      "approve": "تعذّر اعتماد التوصية. حاول مرة أخرى.",
+      "reject": "تعذّر رفض التوصية. حاول مرة أخرى.",
+      "saveDraft": "تعذّر حفظ المسودة. حاول مرة أخرى.",
+      "saveApprove": "تعذّر الحفظ والاعتماد. حاول مرة أخرى."
+    },
+    "pluginDefaults": {
+      "clubName": "نادي العملاء",
+      "findService": "اعثر على الخدمة المناسبة",
+      "contactCta": "تواصل معنا",
+      "offline": "سنرد عليكم في ساعات العمل"
+    },
+    "pluginSettings": {
+      "loadError": "تعذّر تحميل الإعدادات",
+      "saved": "تم حفظ الإعدادات",
+      "saveError": "تعذّر الحفظ"
+    },
+    "audience": {
+      "radiusDrawFail": "تم اختيار المدينة لكن تعذّر رسم النطاق على الخريطة. جرّب مدينة أخرى أو حدّث.",
+      "hintPick": "مثل فيسبوك: اختر مدينة ← أضف ← حدّد نطاقاً حول تلك المدينة فقط",
+      "radiusAround": "نطاق حقيقي حول {{name}}: {{km}} كم",
+      "addCityFirst": "ابحث أولاً وأضف مدينة — ثم يظهر النطاق حولها على الخريطة",
+      "searchCity": "ابحث عن مدينة (مثلاً بئر السبع / حيفا) وأضفها — ثم حدّد نطاقاً حولها",
+      "radiusExplain": "مثل فيسبوك: الدائرة نطاق حقيقي بالكيلومتر حول المدينة المختارة. الزوم يُظهر ما يدخل فيه.",
+      "noInterests": "لا توجد اهتمامات في ميتا لـ “{{query}}”"
+    },
+    "checkoutTheme": {
+      "classic": "كلاسيكي",
+      "violet": "بنفسجي العلامة",
+      "luxury": "فاخر",
+      "emerald": "أخضر",
+      "rose": "وردي"
+    },
+    "templatePreview": {
+      "comingSoon": "صورة القالب قريباً",
+      "preview": "معاينة",
+      "fullShot": "لقطة كاملة للقالب",
+      "mySite": "موقعي",
+      "sitePreview": "معاينة الموقع",
+      "pluginPreview": "{{name}} — معاينة"
+    },
+    "calendar": {
+      "noBusiness": "تعذّر التعرف على العمل. حدّث الصفحة.",
+      "noBusinessRetry": "تعذّر التعرف على العمل. حدّث الصفحة وحاول مرة أخرى."
+    },
+    "metaMap": {
+      "realRadius": "<br/>نطاق حقيقي: {{km}} كم حول المدينة",
+      "wholeCountry": "<br/>البلد بالكامل",
+      "tooltip": "{{name}} · نطاق {{km}} كم",
+      "aroundScale": "نطاق حقيقي حول {{name}}: {{km}} كم — الدائرة على الخريطة بمقياس جغرافي",
+      "locating": "تم اختيار المدينة لكن لا توجد نقطة بعد. جارٍ تحديد الإحداثيات…"
+    },
+    "profile": {
+      "loading": "جارٍ التحميل..."
+    },
+    "upgrade": {
+      "title": "ترقية الاشتراك"
+    },
+    "adsLead": {
+      "failed": "فشلت العملية. حاول مرة أخرى."
+    },
+    "waInbox": {
+      "demoSend": "أرسل رسالة تجريبية — لا تُرسل لعميل حقيقي"
+    },
+    "waBilling": {
+      "loadError": "تعذّر تحميل بيانات فوترة واتساب الآن."
+    },
+    "waOtp": {
+      "body": "{{1}} هو رمز التحقق الخاص بكم.",
+      "footer": "لأمانكم لا تشاركوا هذا الرمز."
+    },
+    "sessionFields": {
+      "tabDesc": "قيم شخصية حسب الحقول المعرّفة في CRM"
+    },
+    "collabProfile": {
+      "waNotify": "رقم تنبيهات واتساب (E.164)"
+    },
+    "waHistory": {
+      "metaId": "معرّف رسالة ميتا: {{id}}"
     }
   }
 }

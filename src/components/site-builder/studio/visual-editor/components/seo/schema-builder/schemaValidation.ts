@@ -1,5 +1,8 @@
+import i18n from "../../../../../../../i18n/i18n";
 import type { SeoSchemaType, SeoStructuredDataEntry } from "../../../../types";
 import { safeParse } from "./schemaParsers";
+
+const t = (key: string, opts?: Record<string, unknown>) => String(i18n.t(key, opts));
 
 export type SchemaValidationLevel = "valid" | "warn" | "error";
 
@@ -43,10 +46,10 @@ export function validateSchemaEntry(
     return {
       level: "error",
       blocking: true,
-      jsonError: "ה‑JSON ריק",
+      jsonError: t("studio.schema.jsonEmpty"),
       requiredMissing: [],
       recommendedMissing: [],
-      summary: "ריק",
+      summary: t("studio.schema.empty"),
     };
   }
 
@@ -54,10 +57,10 @@ export function validateSchemaEntry(
     return {
       level: "error",
       blocking: true,
-      jsonError: "ה‑JSON ארוך מדי",
+      jsonError: t("studio.schema.jsonTooLong"),
       requiredMissing: [],
       recommendedMissing: [],
-      summary: "ארוך מדי",
+      summary: t("studio.schema.tooLong"),
     };
   }
 
@@ -68,10 +71,10 @@ export function validateSchemaEntry(
     return {
       level: "error",
       blocking: true,
-      jsonError: error instanceof Error ? error.message : "JSON לא תקין",
+      jsonError: error instanceof Error ? error.message : t("studio.schema.invalidJson"),
       requiredMissing: [],
       recommendedMissing: [],
-      summary: "JSON לא תקין",
+      summary: t("studio.schema.invalidJson"),
     };
   }
 
@@ -80,10 +83,10 @@ export function validateSchemaEntry(
     return {
       level: "error",
       blocking: true,
-      jsonError: "ה‑Schema חייב להיות אובייקט",
+      jsonError: t("studio.schema.mustBeObject"),
       requiredMissing: [],
       recommendedMissing: [],
-      summary: "מבנה לא תקין",
+      summary: t("studio.schema.invalidStructure"),
     };
   }
 
@@ -103,25 +106,25 @@ export function validateSchemaEntry(
     case "LocalBusiness":
     case "Organization":
     case "Service":
-      if (!String(obj.name || "").trim()) requiredMissing.push("name (שם)");
+      if (!String(obj.name || "").trim()) requiredMissing.push(t("studio.schema.nameRequired"));
       break;
     case "Product":
-      if (!String(obj.name || "").trim()) requiredMissing.push("name (שם המוצר)");
+      if (!String(obj.name || "").trim()) requiredMissing.push(t("studio.schema.productNameRequired"));
       if (obj.offers && obj.offers.price) {
         const price = Number(obj.offers.price);
         if (!Number.isFinite(price))
-          requiredMissing.push("מחיר תקין ב‑offers");
+          requiredMissing.push(t("studio.schema.validPriceInOffers"));
       }
       break;
     case "FAQPage": {
       const list = Array.isArray(obj.mainEntity) ? obj.mainEntity : [];
-      if (list.length === 0) requiredMissing.push("לפחות שאלה אחת");
+      if (list.length === 0) requiredMissing.push(t("studio.schema.atLeastOneQuestion"));
       const emptyQ = list.some(
         (q: any) =>
           !String(q?.name || "").trim() ||
           !String(q?.acceptedAnswer?.text || "").trim(),
       );
-      if (emptyQ) recommendedMissing.push("יש שאלה/תשובה ריקה");
+      if (emptyQ) recommendedMissing.push(t("studio.schema.emptyQuestionAnswer"));
       const seen = new Set<string>();
       let dup = false;
       list.forEach((q: any) => {
@@ -129,25 +132,25 @@ export function validateSchemaEntry(
         if (key && seen.has(key)) dup = true;
         seen.add(key);
       });
-      if (dup) recommendedMissing.push("יש שאלות כפולות");
+      if (dup) recommendedMissing.push(t("studio.schema.duplicateQuestions"));
       break;
     }
     case "BreadcrumbList": {
       const list = Array.isArray(obj.itemListElement)
         ? obj.itemListElement
         : [];
-      if (list.length === 0) requiredMissing.push("לפחות פריט אחד");
+      if (list.length === 0) requiredMissing.push(t("studio.schema.atLeastOneItem"));
       const positionsOk = list.every(
         (li: any, i: number) => Number(li?.position) === i + 1,
       );
-      if (!positionsOk) recommendedMissing.push("מיקומים לא רציפים");
+      if (!positionsOk) recommendedMissing.push(t("studio.schema.positionsNotSequential"));
       break;
     }
     default:
       break;
   }
 
-  if (badUrl) recommendedMissing.push("יש כתובת URL לא תקינה");
+  if (badUrl) recommendedMissing.push(t("studio.schema.invalidUrl"));
 
   if (requiredMissing.length) {
     return {
@@ -156,7 +159,7 @@ export function validateSchemaEntry(
       jsonError: "",
       requiredMissing,
       recommendedMissing,
-      summary: `חסר: ${requiredMissing.join(", ")}`,
+      summary: t("studio.schema.missing", { items: requiredMissing.join(", ") }),
     };
   }
 
@@ -177,7 +180,7 @@ export function validateSchemaEntry(
     jsonError: "",
     requiredMissing,
     recommendedMissing,
-    summary: "תקין",
+    summary: t("studio.schema.valid"),
   };
 }
 

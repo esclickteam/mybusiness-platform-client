@@ -1,4 +1,5 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import { ChevronDown, ChevronUp, Copy, Plus, Trash2 } from "lucide-react";
 
 import type { FaqFormData, FaqItem } from "../schemaTypes";
@@ -10,6 +11,7 @@ type Props = {
 };
 
 export default function FaqSchemaForm({ value, onChange }: Props) {
+  const { t } = useTranslation();
   const items: FaqItem[] = Array.isArray(value.items) ? value.items : [];
 
   const setItems = (next: FaqItem[]) => onChange({ ...value, items: next });
@@ -58,14 +60,14 @@ export default function FaqSchemaForm({ value, onChange }: Props) {
               <span className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 text-xs font-black text-blue-700">
                 {index + 1}
               </span>
-              <span className="text-xs font-black text-slate-500">שאלה</span>
+              <span className="text-xs font-black text-slate-500">{t("studio.schema.question")}</span>
               <div className="ms-auto flex items-center gap-1">
                 <button
                   type="button"
                   onClick={() => move(index, -1)}
                   disabled={index === 0}
                   className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 disabled:opacity-30 hover:bg-slate-50"
-                  aria-label="הזזה למעלה"
+                  aria-label={t("studio.schema.moveUp")}
                 >
                   <ChevronUp className="h-4 w-4" />
                 </button>
@@ -74,7 +76,7 @@ export default function FaqSchemaForm({ value, onChange }: Props) {
                   onClick={() => move(index, 1)}
                   disabled={index === items.length - 1}
                   className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 disabled:opacity-30 hover:bg-slate-50"
-                  aria-label="הזזה למטה"
+                  aria-label={t("studio.schema.moveDown")}
                 >
                   <ChevronDown className="h-4 w-4" />
                 </button>
@@ -82,7 +84,7 @@ export default function FaqSchemaForm({ value, onChange }: Props) {
                   type="button"
                   onClick={() => duplicate(item.id)}
                   className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-500 hover:bg-slate-50"
-                  aria-label="שכפול"
+                  aria-label={t("studio.sitePages.duplicate")}
                 >
                   <Copy className="h-4 w-4" />
                 </button>
@@ -90,7 +92,7 @@ export default function FaqSchemaForm({ value, onChange }: Props) {
                   type="button"
                   onClick={() => remove(item.id)}
                   className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-rose-500 hover:bg-rose-50"
-                  aria-label="מחיקה"
+                  aria-label={t("studio.grapes.delete")}
                 >
                   <Trash2 className="h-4 w-4" />
                 </button>
@@ -99,18 +101,18 @@ export default function FaqSchemaForm({ value, onChange }: Props) {
             <input
               value={item.question}
               onChange={(event) => update(item.id, { question: event.target.value })}
-              placeholder="השאלה"
+              placeholder={t("studio.schema.questionPh")}
               className="h-11 w-full max-w-full rounded-xl border border-slate-200 bg-white px-3 text-right text-sm font-bold text-slate-900 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
             />
             <textarea
               value={item.answer}
               onChange={(event) => update(item.id, { answer: event.target.value })}
-              placeholder="התשובה"
+              placeholder={t("studio.schema.answerPh")}
               className="min-h-[72px] w-full max-w-full resize-y rounded-xl border border-slate-200 bg-white px-3 py-2 text-right text-sm font-semibold leading-6 text-slate-900 outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100"
             />
             {dup ? (
               <p className="text-[11px] font-bold text-amber-600">
-                שאלה כפולה — שנו או מחקו.
+                {t("studio.schema.duplicateQuestion")}
               </p>
             ) : null}
           </div>
@@ -119,7 +121,7 @@ export default function FaqSchemaForm({ value, onChange }: Props) {
 
       {items.length === 0 ? (
         <p className="rounded-2xl border border-dashed border-slate-200 bg-white px-4 py-4 text-center text-xs font-semibold text-amber-600">
-          הוסיפו לפחות שאלה אחת.
+          {t("studio.schema.addAtLeastOne")}
         </p>
       ) : null}
 
@@ -128,7 +130,7 @@ export default function FaqSchemaForm({ value, onChange }: Props) {
         onClick={add}
         className="flex h-11 items-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-black text-slate-700 transition hover:bg-slate-50"
       >
-        <Plus className="h-4 w-4" /> הוספת שאלה
+        <Plus className="h-4 w-4" /> {t("studio.schema.addQuestion")}
       </button>
     </div>
   );

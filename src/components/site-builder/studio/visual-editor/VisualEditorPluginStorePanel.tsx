@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Puzzle, X } from "lucide-react";
 
 import {
@@ -37,6 +38,7 @@ export default function VisualEditorPluginStorePanel({
   onClose,
   onInstalled,
 }: VisualEditorPluginStorePanelProps) {
+  const { t } = useTranslation();
   const [catalog, setCatalog] = useState<SitePluginDefinition[]>([]);
   const [enabledPlugins, setEnabledPlugins] = useState<string[]>([]);
   const [detectedFromSite, setDetectedFromSite] = useState<string[]>([]);
@@ -60,12 +62,12 @@ export default function VisualEditorPluginStorePanel({
       );
     } catch (err) {
       setError(
-        err instanceof Error ? err.message : "טעינת חנות התוספים נכשלה",
+        err instanceof Error ? err.message : t("studio.pluginStore.loadFailed"),
       );
     } finally {
       setLoading(false);
     }
-  }, [siteId]);
+  }, [siteId, t]);
 
   useEffect(() => {
     if (!open) return;
@@ -139,7 +141,7 @@ export default function VisualEditorPluginStorePanel({
           setError(
             checkoutErr instanceof Error
               ? checkoutErr.message
-              : "פתיחת תשלום לאזור אישי נכשלה",
+              : t("studio.pluginStore.checkoutPortalFailed"),
           );
           return;
         }
@@ -152,13 +154,13 @@ export default function VisualEditorPluginStorePanel({
           setError(
             checkoutErr instanceof Error
               ? checkoutErr.message
-              : "פתיחת תשלום לתוסף נכשלה",
+              : t("studio.pluginStore.checkoutPluginFailed"),
           );
           return;
         }
       }
       setError(
-        err instanceof Error ? err.message : "עדכון התוסף נכשל",
+        err instanceof Error ? err.message : t("studio.pluginStore.updateFailed"),
       );
     } finally {
       setSavingKey(null);
@@ -181,10 +183,10 @@ export default function VisualEditorPluginStorePanel({
             </span>
             <div className="min-w-0">
               <h2 className="text-xl font-black text-slate-800">
-                חנות תוספים
+                {t("studio.pluginStore.title")}
               </h2>
               <p className="mt-1 text-xs font-bold text-slate-400">
-                התקינו תוספים ישירות מתוך עריכת האתר
+                {t("studio.pluginStore.subtitle")}
               </p>
             </div>
           </div>
@@ -192,7 +194,7 @@ export default function VisualEditorPluginStorePanel({
             type="button"
             onClick={onClose}
             className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-100 text-slate-600 transition hover:bg-slate-200"
-            aria-label="סגירה"
+            aria-label={t("studio.closePanel")}
           >
             <X className="h-5 w-5" />
           </button>
@@ -207,12 +209,12 @@ export default function VisualEditorPluginStorePanel({
         {!siteId ? (
           <div className="grid flex-1 place-items-center p-8 text-center">
             <p className="text-sm font-black text-slate-700">
-              שמרו את האתר כדי לפתוח את חנות התוספים
+              {t("studio.pluginStore.saveFirst")}
             </p>
           </div>
         ) : loading ? (
           <div className="grid flex-1 place-items-center">
-            <BizuplyLoader size="sm" label="טוען חנות תוספים..." />
+            <BizuplyLoader size="sm" label={t("studio.pluginStore.loading")} />
           </div>
         ) : (
           <div className="min-h-0 flex-1 overflow-y-auto p-5">
@@ -231,7 +233,7 @@ export default function VisualEditorPluginStorePanel({
                     setError(
                       checkoutErr instanceof Error
                         ? checkoutErr.message
-                        : "פתיחת תשלום לתוסף נכשלה",
+                        : t("studio.pluginStore.checkoutPluginFailed"),
                     );
                   })
                   .finally(() => setSavingKey(null));

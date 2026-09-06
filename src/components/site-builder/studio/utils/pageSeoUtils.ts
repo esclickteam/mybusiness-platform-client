@@ -10,6 +10,7 @@ import type {
   SiteSeoSettings,
   StudioSitePage,
 } from "../types";
+import i18n from "../../../../i18n/i18n";
 import { getPublicSiteDomain } from "../../../../utils/publicSiteHost";
 
 const ROBOTS_DIRECTIVES: SeoRobotsDirective[] = [
@@ -597,8 +598,11 @@ export const STRUCTURED_DATA_PRESETS: StructuredDataPreset[] = [
         mainEntity: [
           {
             "@type": "Question",
-            name: "שאלה לדוגמה?",
-            acceptedAnswer: { "@type": "Answer", text: "תשובה לדוגמה." },
+            name: String(i18n.t("studio.schema.exampleQuestion")),
+            acceptedAnswer: {
+              "@type": "Answer",
+              text: String(i18n.t("studio.schema.exampleAnswer")),
+            },
           },
         ],
       }),

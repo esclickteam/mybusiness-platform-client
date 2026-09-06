@@ -10719,7 +10719,10 @@
     "publishSuccessTitle": "El sitio web fue publicado con éxito",
     "publishSuccessText": "Tu sitio está en vivo. Ábrelo, copia el enlace o sigue editando.",
     "loadingSavedSite": "Cargando el sitio web guardado y preparando el editor...",
-    "pages": "Páginas",
+    "pages": {
+      "home": "Página de inicio",
+      "pageN": "Página {{n}}"
+    },
     "headerFooter": "Encabezado, pie y enlaces de formularios",
     "layers": "Capas",
     "customCode": "Código personalizado",
@@ -11804,7 +11807,10 @@
         "number": "[número]",
         "value": "[{{label}}]",
         "fallbackLabel": "valor del expediente"
-      }
+      },
+      "greetingPreview": "Hola, [Nombre del cliente]",
+      "blankKeyword": "vacío",
+      "editKeyword": "editar"
     },
     "inspectorPanel": {
       "weightRegular": "Normal",
@@ -11971,7 +11977,22 @@
       "passed": "Correcto",
       "failed": "Falló",
       "clickRecheck": "Haz clic en \"Volver a comprobar\" para revisar el sitio.",
-      "footer": "La verificación se hace directamente con Google. BizUply prepara el sitio y te guía. No hay conexión automática con Google Search Console en esta etapa."
+      "footer": "La verificación se hace directamente con Google. BizUply prepara el sitio y te guía. No hay conexión automática con Google Search Console en esta etapa.",
+      "siteAvailable": "El sitio público está disponible",
+      "robotsAvailable": "robots.txt está disponible",
+      "sitemapAvailable": "sitemap.xml está disponible",
+      "metaOnSite": "El código Meta está en el sitio",
+      "fileOnSite": "El archivo de verificación está en la dirección del sitio",
+      "noMetaCode": "No hay código Meta configurado",
+      "metaInHtml": "El código aparece en el HTML del sitio",
+      "metaSavedNotLive": "El código está guardado, pero aún no está en el sitio público — guarda y publica",
+      "htmlReadFailed": "No pudimos leer el HTML del sitio",
+      "htmlCheckFailed": "No pudimos comprobar el HTML del sitio",
+      "noFileUploaded": "No se subió un archivo de verificación",
+      "fileAtUrl": "El archivo está en la dirección del sitio ({{status}})",
+      "fileViaBizuply": "El archivo está disponible vía BizUply. Si la comprobación falló por permisos del navegador, revisa el enlace a mano.",
+      "siteNotFound": "El sitio no se encontró / no está publicado",
+      "unavailable": "No disponible"
     },
     "seoUi": {
       "excellent": "Excelente",
@@ -13622,6 +13643,184 @@
       "requiredText": "No se puede enviar vacío",
       "insertToPage": "Insertar en la página",
       "delete": "Eliminar"
+    },
+    "upload": {
+      "signFailed": "No se pudo crear la firma de subida",
+      "cannotStart": "No se puede iniciar la subida ahora. Inténtalo de nuevo.",
+      "fileFailed": "La subida del archivo falló. Inténtalo de nuevo.",
+      "mediaFailed": "La subida de media falló",
+      "unsavedBeforePublish": "Hay cambios sin guardar. Inténtalo de nuevo antes de publicar."
+    },
+    "defaults": {
+      "newText": "Texto nuevo",
+      "newButton": "Botón nuevo",
+      "newImage": "Imagen nueva",
+      "newVideo": "Vídeo nuevo",
+      "divider": "Separador",
+      "newBox": "Caja nueva",
+      "newElement": "Elemento nuevo",
+      "newSection": "Sección nueva",
+      "media": "Media",
+      "link": "Enlace",
+      "plugin": "Plugin",
+      "section": "Sección",
+      "element": "Elemento",
+      "copy": "{{label}} (copia)",
+      "fieldN": "Campo {{n}}",
+      "tableLabel": "Tabla {{rows}}×{{cols}}",
+      "crmField": "Dato",
+      "crmLabel": "Etiqueta CRM · {{label}}",
+      "crmValue": "Dato CRM · {{label}}",
+      "crmValuePlain": "Dato CRM",
+      "clientName": "Nombre del cliente",
+      "clientNameSample": "[Nombre del cliente]",
+      "sampleValue": "[Valor del expediente]",
+      "samplePerson": "Ana Pérez",
+      "greeting": "Hola, {{name}}",
+      "greetingLabel": "Hola, nombre del cliente"
+    },
+    "schema": {
+      "localBusiness": "Negocio local",
+      "localBusinessDesc": "Dirección, teléfono y horario — activa la ficha de Google.",
+      "service": "Servicio",
+      "serviceDesc": "Un servicio que ofrece el negocio, con precio y área.",
+      "faq": "Preguntas frecuentes",
+      "faqDesc": "Un bloque de preguntas que puede aparecer en los resultados.",
+      "product": "Producto",
+      "productDesc": "Producto con precio y disponibilidad — resultados enriquecidos.",
+      "organization": "Organización",
+      "organizationDesc": "Identidad, logo y enlaces. Recomendado a nivel de sitio.",
+      "website": "Sitio web",
+      "websiteDesc": "Nombre del sitio y buscador. Recomendado a nivel de sitio.",
+      "websiteHint": "Define WebSite una vez (en inicio). El sitio es actualmente monolingüe.",
+      "breadcrumb": "Migas de pan",
+      "breadcrumbDesc": "Jerarquía de navegación en los resultados.",
+      "custom": "Personalizado",
+      "siteLevel": "Nivel de sitio",
+      "formMode": "Modo formulario",
+      "manualJson": "JSON manual",
+      "internalName": "Nombre interno (identificación)",
+      "manualEditHint": "El código se editó a mano. El formulario está oculto para no sobrescribir. Puedes regenerarlo desde el formulario abajo.",
+      "customOnly": "Schema personalizado — solo edición manual de JSON.",
+      "cannotSave": "No se puede guardar: {{summary}}",
+      "recommendedComplete": "Recomendado completar: {{items}}",
+      "saveSchema": "Guardar schema",
+      "testGoogle": "Probar en Google",
+      "savedOnCard": "Guardado en la tarjeta — pulsa “Guardar” abajo para publicar.",
+      "unsavedOnCard": "Hay cambios sin guardar en la tarjeta",
+      "confirmAdvanced": "La edición manual pasa a modo avanzado. Cambios posteriores del formulario pueden sobrescribir el código.\n\n¿Continuar?",
+      "confirmRegenerate": "Esto reemplazará el JSON manual con código nuevo del formulario. ¿Continuar?",
+      "jsonLdTitle": "Vista JSON-LD y edición avanzada",
+      "editedManually": "Editado a mano",
+      "autoFromForm": "El código se genera solo desde el formulario. Para editarlo, pulsa “Pasar a edición avanzada”.",
+      "switchAdvanced": "Pasar a edición avanzada",
+      "regenerateFromForm": "Regenerar desde el formulario",
+      "format": "Formato",
+      "copied": "Copiado",
+      "copy": "Copiar",
+      "jsonValid": "JSON válido",
+      "question": "Pregunta",
+      "questionPh": "La pregunta",
+      "answerPh": "La respuesta",
+      "moveUp": "Subir",
+      "moveDown": "Bajar",
+      "duplicateQuestion": "Pregunta duplicada — cámbiala o elimínala.",
+      "addAtLeastOne": "Añade al menos una pregunta.",
+      "addQuestion": "Añadir pregunta",
+      "siteName": "Nombre del sitio",
+      "siteUrl": "URL del sitio",
+      "siteLanguage": "Idioma del sitio",
+      "siteOwner": "Propietario del sitio",
+      "enableSearch": "Permitir un buscador del sitio en Google",
+      "searchUrlTemplate": "Plantilla de URL de búsqueda",
+      "searchTermHint": "Debe incluir {search_term_string}",
+      "exampleQuestion": "¿Pregunta de ejemplo?",
+      "exampleAnswer": "Respuesta de ejemplo.",
+      "jsonEmpty": "El JSON está vacío",
+      "empty": "Vacío",
+      "jsonTooLong": "El JSON es demasiado largo",
+      "tooLong": "Demasiado largo",
+      "invalidJson": "JSON no válido",
+      "mustBeObject": "El schema debe ser un objeto",
+      "invalidStructure": "Estructura no válida",
+      "nameRequired": "name (nombre)",
+      "productNameRequired": "name (nombre del producto)",
+      "validPriceInOffers": "Un precio válido en offers",
+      "atLeastOneQuestion": "Al menos una pregunta",
+      "emptyQuestionAnswer": "Hay una pregunta/respuesta vacía",
+      "duplicateQuestions": "Hay preguntas duplicadas",
+      "atLeastOneItem": "Al menos un elemento",
+      "positionsNotSequential": "Las posiciones no son consecutivas",
+      "invalidUrl": "Hay una URL no válida",
+      "missing": "Falta: {{items}}",
+      "valid": "Válido"
+    },
+    "forms": {
+      "contactTitle": "Formulario de contacto",
+      "submit": "Enviar mensaje",
+      "success": "¡Gracias! Recibimos tu consulta y te responderemos pronto.",
+      "fullName": "Nombre completo",
+      "phone": "Teléfono",
+      "message": "Mensaje",
+      "messagePh": "¿Cómo podemos ayudar?",
+      "optionN": "Opción {{n}}",
+      "chooseOption": "Elige una opción",
+      "clickToChooseFile": "Pulsa para elegir un archivo",
+      "upload": "Subir",
+      "letsTalk": "Hablemos",
+      "formEmpty": "El formulario aún está vacío",
+      "addFieldsHint": "Añade campos desde el editor de formularios",
+      "formBadge": "Etiqueta de formulario",
+      "weWouldLove": "Nos encantará saber de ti",
+      "formDescription": "Descripción del formulario",
+      "leaveDetails": "Deja tus datos y te responderemos pronto."
+    },
+    "canvas": {
+      "deviceMobile": "Móvil · {{px}}px",
+      "deviceTablet": "Tableta · {{px}}px",
+      "deviceDesktop": "Escritorio · {{px}}px",
+      "dragElement": "Arrastrar elemento",
+      "missingComponent": "No se encontró un componente para la plantilla",
+      "checkRenderer": "Hay que revisar el renderer"
+    },
+    "seoImage": {
+      "uploadFailed": "La subida de la imagen falló",
+      "noImage": "Sin imagen",
+      "uploading": "Subiendo...",
+      "uploadFromComputer": "Subir del ordenador",
+      "removeImage": "Quitar imagen",
+      "formats": "PNG, JPG, WEBP o ICO",
+      "orPasteUrl": "O pega una URL"
+    },
+    "templatePreview": {
+      "back": "Volver",
+      "edit": "Editar",
+      "useTemplate": "Usar plantilla",
+      "notFound": "Plantilla no encontrada",
+      "notFoundHint": "La plantilla seleccionada no existe o no está registrada.",
+      "backToTemplates": "Volver a plantillas",
+      "noPreview": "Esta plantilla no tiene vista previa"
+    },
+    "pluginStore": {
+      "loadFailed": "No se pudo cargar la tienda de plugins",
+      "checkoutPortalFailed": "No se pudo abrir el pago del área personal",
+      "checkoutPluginFailed": "No se pudo abrir el pago del plugin",
+      "updateFailed": "No se pudo actualizar el plugin",
+      "title": "Tienda de plugins",
+      "subtitle": "Instala plugins desde el editor del sitio",
+      "saveFirst": "Guarda el sitio para abrir la tienda de plugins",
+      "loading": "Cargando la tienda de plugins..."
+    },
+    "sectionLabels": {
+      "header": "Cabecera",
+      "footer": "Pie de página",
+      "nav": "Navegación",
+      "hero": "Área de apertura",
+      "contact": "Contacto",
+      "services": "Servicios",
+      "about": "Acerca de",
+      "projects": "Proyectos",
+      "block": "Bloque"
     }
   },
   "partnerNav": {
@@ -17874,6 +18073,201 @@
       "title": "Productos, categorías y ajustes de tienda",
       "hint": "Añade productos una vez. Se guardan en el servidor, aparecen en la tienda y cada uno tiene una página automática según el diseño que elijas.",
       "backStudio": "Volver al estudio"
+    },
+    "pluginHelp": {
+      "fallbackDesc": "Este complemento amplía el sitio. Tras instalarlo puedes configurarlo en el panel.",
+      "closeHelpAria": "Cerrar la ayuda del complemento",
+      "close": "Cerrar",
+      "backStore": "Volver a la tienda",
+      "activeSub": "Suscripción activa",
+      "remove": "Quitar complemento",
+      "install": "Instalar",
+      "about": "Sobre el complemento",
+      "examples": "Ejemplos de uso",
+      "details": "Detalles",
+      "category": "Categoría",
+      "price": "Precio",
+      "futurePrice": "Precio futuro",
+      "afterInstall": "Tras instalar — ajustes en la pestaña del complemento, y se añade a páginas desde el editor → Complementos."
+    },
+    "sitePayments": {
+      "loadError": "No se pudieron cargar los proveedores",
+      "connectedOk": "{{name}} se conectó correctamente",
+      "connectError": "No se pudo conectar el proveedor",
+      "disconnectConfirm": "¿Desconectar {{name}}?",
+      "disconnectedOk": "{{name}} se desconectó correctamente",
+      "disconnectError": "No se pudo desconectar el proveedor",
+      "loading": "Cargando proveedores...",
+      "title": "Pagos",
+      "description": "Conecta proveedores de cobro. El carrito del sitio usará el proveedor principal (PayPal, Stripe y más).",
+      "connectedToSite": "{{name}} está conectado al sitio",
+      "stepAdd": "1. Añade productos de la tienda / plantilla al carrito.",
+      "stepCheckout": "2. Pulsa pagar — la caja se abre con el proveedor conectado.",
+      "stepPay": "3. El cliente paga a través de {{name}}."
+    },
+    "siteBooking": {
+      "title": "Calendario y citas",
+      "description": "Define horario, servicios y citas — los clientes pueden reservar desde el sitio.",
+      "board": "Tablero de citas",
+      "services": "Servicios",
+      "hours": "Horario",
+      "hintBefore": "Define horario y servicios aquí — la sección",
+      "calendarSection": "Calendario de citas",
+      "hintMid": "en el editor (",
+      "openMonth": "Abrir con tablero mensual",
+      "hintAfter": ") se conecta solo al calendario del CRM, sin un complemento aparte."
+    },
+    "smartForms": {
+      "loadError": "No se pudo cargar la bandeja",
+      "title": "Formularios inteligentes Pro",
+      "description": "Bandeja por formulario, con archivos. Los formularios básicos siguen en el editor.",
+      "active": "El complemento está activo",
+      "trackByForm": "Seguimiento por formulario",
+      "empty": "Aún no hay envíos de este sitio",
+      "leadFromSite": "Lead del sitio",
+      "files": "Archivos:",
+      "openCrm": "Abrir en CRM"
+    },
+    "storeOrder": {
+      "new": "Nueva",
+      "pending_payment": "Pendiente de pago",
+      "paid": "Pagada",
+      "processing": "En proceso",
+      "shipped": "Enviada",
+      "completed": "Completada",
+      "cancelled": "Cancelada"
+    },
+    "aiTemplate": {
+      "ai_lead_scoring": "Puntuación automática de leads",
+      "ai_lead_classify": "Clasificación automática de leads",
+      "ai_lead_auto_tag": "Etiquetado automático de leads",
+      "ai_hot_lead": "Detección de leads calientes",
+      "ai_lead_brief": "Resumen del lead antes de la llamada",
+      "ai_followup_draft": "Borrador de seguimiento",
+      "ai_email_draft": "Borrador de email",
+      "ai_next_action": "Sugerencia de siguiente acción",
+      "ai_daily_leads_digest": "Resumen diario de leads",
+      "ai_daily_agenda_digest": "Resumen diario de tareas/reuniones"
+    },
+    "pushToggle": {
+      "blocked": "Bloqueado en el navegador / dispositivo",
+      "onOther": "Activo en un dispositivo instalado · {{count}} dispositivo",
+      "unsupportedIos": "No se puede activar aquí — ábrelo en Safari desde el icono de inicio",
+      "unsupported": "Este navegador no admite Push",
+      "onReady": "Activado · {{count}} dispositivo",
+      "onUnbound": "Activado en el dispositivo, pero aún no registrado — pulsa Probar",
+      "needRebind": "Hay permiso, pero el dispositivo no está registrado — pulsa para registrar de nuevo",
+      "off": "Desactivado — pulsa para recibir avisos en el teléfono"
+    },
+    "instantForm": {
+      "continue": "Continuar",
+      "submit": "Enviar",
+      "answerPh": "Escribe tu respuesta",
+      "contactInfo": "Información de contacto",
+      "privacy": "Política de privacidad",
+      "privacyShort": "Privacidad",
+      "privacyBody": "Al continuar, aceptas que {{name}} pueda contactarte.",
+      "businessFallback": "este negocio",
+      "thanks": "¡Gracias!",
+      "thanksBody": "Nos pondremos en contacto pronto.",
+      "done": "Listo",
+      "toSite": "Al sitio",
+      "quoteCta": "Envía un mensaje para recibir presupuesto"
+    },
+    "pluginGeneric": {
+      "priceRange": "₪{{min}}–{{max}}/mes",
+      "priceMonth": "₪{{price}}/mes",
+      "included": "Incluido en el plan",
+      "installedSoon": "Complemento instalado — ajustes en el editor pronto",
+      "openEditor": "Abrir en el editor"
+    },
+    "pluginFrame": {
+      "manage": "Gestión del complemento",
+      "addEditor": "Añadir en el editor",
+      "loading": "Cargando ajustes...",
+      "savedSitewide": "Los cambios se guardan en todo el sitio",
+      "save": "Guardar ajustes"
+    },
+    "aiRecs": {
+      "load": "No pudimos cargar las recomendaciones. Inténtalo de nuevo.",
+      "approve": "No pudimos aprobar la recomendación. Inténtalo de nuevo.",
+      "reject": "No pudimos rechazar la recomendación. Inténtalo de nuevo.",
+      "saveDraft": "No pudimos guardar el borrador. Inténtalo de nuevo.",
+      "saveApprove": "No pudimos guardar y aprobar. Inténtalo de nuevo."
+    },
+    "pluginDefaults": {
+      "clubName": "Club de clientes",
+      "findService": "Encuentra el servicio adecuado",
+      "contactCta": "Contactar",
+      "offline": "Te responderemos en horario laboral"
+    },
+    "pluginSettings": {
+      "loadError": "No se pudieron cargar los ajustes",
+      "saved": "Ajustes guardados",
+      "saveError": "No se pudo guardar"
+    },
+    "audience": {
+      "radiusDrawFail": "Se eligió la ciudad, pero no pudimos dibujar el radio. Prueba otra o recarga.",
+      "hintPick": "Como en Facebook: elige una ciudad → añade → define un radio solo alrededor",
+      "radiusAround": "Radio real alrededor de {{name}}: {{km}} km",
+      "addCityFirst": "Primero busca y añade una ciudad — luego verás el radio",
+      "searchCity": "Busca una ciudad (p. ej. Beer Sheva / Haifa) y añádela — luego define el radio",
+      "radiusExplain": "Como en Facebook: el círculo es un radio real en km solo alrededor de la ciudad. El zoom muestra qué entra.",
+      "noInterests": "No hay intereses de Meta para “{{query}}”"
+    },
+    "checkoutTheme": {
+      "classic": "Clásico",
+      "violet": "Morado de marca",
+      "luxury": "Lujo",
+      "emerald": "Verde",
+      "rose": "Rosa"
+    },
+    "templatePreview": {
+      "comingSoon": "Foto de plantilla pronto",
+      "preview": "Vista previa",
+      "fullShot": "Captura completa de la plantilla",
+      "mySite": "Mi sitio",
+      "sitePreview": "Vista previa del sitio",
+      "pluginPreview": "{{name}} — vista previa"
+    },
+    "calendar": {
+      "noBusiness": "No identificamos el negocio. Recarga la página.",
+      "noBusinessRetry": "No identificamos el negocio. Recarga e inténtalo de nuevo."
+    },
+    "metaMap": {
+      "realRadius": "<br/>Radio real: {{km}} km alrededor de la ciudad",
+      "wholeCountry": "<br/>País completo",
+      "tooltip": "{{name}} · radio {{km}} km",
+      "aroundScale": "Radio real alrededor de {{name}}: {{km}} km — el círculo está a escala",
+      "locating": "Se eligió la ciudad, pero aún no hay punto. Buscando coordenadas…"
+    },
+    "profile": {
+      "loading": "Cargando..."
+    },
+    "upgrade": {
+      "title": "Mejorar suscripción"
+    },
+    "adsLead": {
+      "failed": "La acción falló. Inténtalo de nuevo."
+    },
+    "waInbox": {
+      "demoSend": "Envía un mensaje de demo — no se envía a un cliente real"
+    },
+    "waBilling": {
+      "loadError": "No pudimos cargar la facturación de WhatsApp ahora."
+    },
+    "waOtp": {
+      "body": "{{1}} es tu código de verificación.",
+      "footer": "Por seguridad, no compartas este código."
+    },
+    "sessionFields": {
+      "tabDesc": "Valores personales según los campos del CRM"
+    },
+    "collabProfile": {
+      "waNotify": "Número de avisos de WhatsApp (E.164)"
+    },
+    "waHistory": {
+      "metaId": "ID de mensaje de Meta: {{id}}"
     }
   }
 }

@@ -1,3 +1,4 @@
+import i18n from "../i18n/i18n";
 import {
   getSectionTemplateById,
   SECTION_LIBRARY,
@@ -275,7 +276,11 @@ export function materializeAiSitePlan(plan: AiSitePlan) {
 
     return {
       id: pageId,
-      title: page.title || (isHome ? "דף הבית" : `עמוד ${index + 1}`),
+      title:
+        page.title ||
+        (isHome
+          ? String(i18n.t("studio.pages.home"))
+          : String(i18n.t("studio.pages.pageN", { n: index + 1 }))),
       slug: isHome ? "" : String(page.slug || pageId).replace(/^\//, ""),
       type: page.type || (isHome ? "home" : "blank"),
       isHome,
