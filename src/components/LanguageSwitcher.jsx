@@ -1,32 +1,25 @@
-// src/components/LanguageSwitcher.jsx
-import React, { useEffect, useRef, useState } from "react";
-import { Globe } from "lucide-react";
+import React, { useEffect, useId, useRef, useState } from "react";
+import { FaGlobe } from "react-icons/fa";
 import { useTranslation } from "react-i18next";
-import { setSessionLanguageOverride } from "../i18n/localeUtils";
+import { LANGUAGE_META, getShortLanguageLabel } from "../i18n/languages";
+import { coerceSupportedLanguage, getTextDirection } from "../i18n/localeUtils";
+import { changeAppLanguage } from "../i18n/persistLanguage";
 
-const languages = [
-  { code: "en", label: "English" },
-  { code: "he", label: "עברית" },
-  { code: "fr", label: "Français" },
-  { code: "de", label: "Deutsch" },
-  { code: "es", label: "Español" },
-  { code: "nl", label: "Nederlands" },
-  { code: "it", label: "Italiano" },
-];
-
-export default function LanguageSwitcher() {
-  const { i18n } = useTranslation();
+export default function LanguageSwitcher({
+  compact = true,
+  className = "",
+  align = "end",
+} = {}) {
+  const { i18n, t } = useTranslation();
   const [open, setOpen] = useState(false);
   const wrapperRef = useRef(null);
-
-  const currentLangCode = i18n.language?.split("-")?.[0] || "he";
-
-  const currentLanguage =
-    languages.find((lang) => lang.code === currentLangCode) || languages[0];
+  const menuId = useId();
+  const currentLang = coerceSupportedLanguage(i18n.language);
+  const shortLabel = getShortLanguageLabel(currentLang);
+  const dir = getTextDirection(currentLang);
 
   const changeLanguage = async (lng) => {
-    setSessionLanguageOverride(lng);
-    await i18n.changeLanguage(lng);
+    await changeAppLanguage(lng);
     setOpen(false);
   };
 
@@ -37,60 +30,82 @@ export default function LanguageSwitcher() {
       }
     }
 
+    function handleKey(event) {
+      if (event.key === "Escape") setOpen(false);
+    }
+
     document.addEventListener("mousedown", handleClickOutside);
+    document.addEventListener("keydown", handleKey);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
+      document.removeEventListener("keydown", handleKey);
     };
   }, []);
 
+  const menuAlign =
+    align === "start"
+      ? "inset-inline-start-0"
+      : "inset-inline-end-0";
+
   return (
-    <div ref={wrapperRef} className="relative">
+    <div ref={wrapperRef} className={`relative ${className}`} dir={dir}>
       <button
         type="button"
         onClick={() => setOpen((prev) => !prev)}
-        className={`flex h-[58px] w-[58px] items-center justify-center rounded-2xl shadow-[0_12px_30px_rgba(79,70,229,0.22)] transition hover:-translate-y-0.5 ${
-          open
-            ? "bg-gradient-to-br from-indigo-600 to-violet-700 text-white"
-            : "bg-indigo-50 text-indigo-700 hover:bg-indigo-100"
-        }`}
-        aria-label="Change language"
-        title={currentLanguage.label}
+        className={
+          compact
+            ? "site-header__icon-btn"
+            : `flex h-[58px] w-[58px] items-center justify-center rounded-2xl shadow-[0_12px_30px_rgba(79,70,229,0.22)] transition hover:-translate-y-0.5 ${
+                open
+                  ? "bg-gradient-to-br from-indigo-600 to-violet-700 text-white"
+                  : "bg-indigo-50 text-indigo-700 hover:bg-indigo-100"
+              }`
+        }
+        aria-label={t("common.changeLanguage")}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        aria-controls={menuId}
+        title={t("common.changeLanguage")}
       >
-        <Globe className="h-7 w-7" strokeWidth={2.4} />
+        <span className="site-header__lang-code">{shortLabel}</span>
+        <FaGlobe size={compact ? 16 : 22} aria-hidden="true" />
       </button>
 
       {open && (
-        <div className="absolute right-1/2 top-[74px] z-[9999] w-[260px] translate-x-1/2 rounded-[1.7rem] border border-slate-200 bg-white p-3 shadow-[0_28px_80px_rgba(15,23,42,0.18)]">
-          <div className="absolute -top-2.5 right-1/2 h-5 w-5 translate-x-1/2 rotate-45 border-l border-t border-slate-200 bg-white" />
+        <div
+          id={menuId}
+          role="listbox"
+          aria-label={t("common.changeLanguage")}
+          className={`absolute top-[calc(100%+0.45rem)] z-[9999] w-[240px] ${menuAlign} rounded-2xl border border-slate-200 bg-white p-2 shadow-[0_18px_50px_rgba(15,23,42,0.16)]`}
+        >
+          {LANGUAGE_META.map((lang) => {
+            const isActive = currentLang === lang.code;
 
-          <div className="relative border-b border-slate-100 px-4 pb-4 pt-3 text-lg font-black text-slate-800">
-            Change language
-          </div>
-
-          <div className="relative mt-3 space-y-2">
-            {languages.map((lang) => {
-              const isActive = currentLangCode === lang.code;
-
-              return (
-                <button
-                  key={lang.code}
-                  type="button"
-                  onClick={() => changeLanguage(lang.code)}
-                  className={`flex w-full items-center justify-between rounded-2xl px-5 py-4 text-left text-base font-black transition ${
-                    isActive
-                      ? "bg-gradient-to-r from-indigo-600 to-violet-700 text-white shadow-lg shadow-indigo-200"
-                      : "bg-white text-slate-700 hover:bg-slate-50 hover:text-indigo-700"
-                  }`}
-                >
-                  <span>{lang.label}</span>
-
-                  {isActive && (
-                    <span className="text-lg font-black leading-none">✓</span>
-                  )}
-                </button>
-              );
-            })}
-          </div>
+            return (
+              <button
+                key={lang.code}
+                type="button"
+                role="option"
+                aria-selected={isActive}
+                onClick={() => changeLanguage(lang.code)}
+                className={`flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-start text-sm font-bold transition ${
+                  isActive
+                    ? "bg-violet-50 text-violet-800"
+                    : "text-slate-700 hover:bg-slate-50"
+                }`}
+              >
+                <span className="text-base leading-none" aria-hidden="true">
+                  {lang.flag}
+                </span>
+                <span className="min-w-0 flex-1">{lang.nativeLabel}</span>
+                {isActive ? (
+                  <span className="text-violet-700" aria-hidden="true">
+                    ✓
+                  </span>
+                ) : null}
+              </button>
+            );
+          })}
         </div>
       )}
     </div>

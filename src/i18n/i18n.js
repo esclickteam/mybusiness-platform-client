@@ -4,19 +4,19 @@ import LanguageDetector from "i18next-browser-languagedetector";
 
 import en from "./locales/en.json";
 import he from "./locales/he.json";
-import fr from "./locales/fr.json";
-import de from "./locales/de.json";
 import es from "./locales/es.json";
-import nl from "./locales/nl.json";
-import it from "./locales/it.json";
+import ptBR from "./locales/pt-BR.json";
+import ar from "./locales/ar.json";
 import {
+  FALLBACK_LANGUAGE,
   applyDocumentLocale,
   applyLanguageFromUrl,
-  DEFAULT_LANGUAGE,
+  fetchGeoLanguage,
   getManualLanguageChoice,
+  hasManualLanguageChoice,
+  resolvePreferredLanguage,
 } from "./localeUtils";
-
-const supportedLanguages = ["en", "he", "fr", "de", "es", "nl", "it"];
+import { SUPPORTED_LANGUAGES } from "./languages";
 
 const browserGeoDetector = {
   name: "browserGeo",
@@ -24,11 +24,10 @@ const browserGeoDetector = {
     const fromUrl = applyLanguageFromUrl();
     if (fromUrl) return fromUrl;
 
-    // An explicit user choice always wins, even across reloads.
-    const manual = getManualLanguageChoice();
-    if (manual && supportedLanguages.includes(manual)) return manual;
-
-    return DEFAULT_LANGUAGE;
+    return resolvePreferredLanguage({
+      allowGeo: true,
+      allowBrowser: true,
+    });
   },
 };
 
@@ -42,15 +41,14 @@ i18n
     resources: {
       en: { translation: en },
       he: { translation: he },
-      fr: { translation: fr },
-      de: { translation: de },
       es: { translation: es },
-      nl: { translation: nl },
-      it: { translation: it },
+      "pt-BR": { translation: ptBR },
+      ar: { translation: ar },
     },
 
-    fallbackLng: DEFAULT_LANGUAGE,
-    supportedLngs: supportedLanguages,
+    fallbackLng: FALLBACK_LANGUAGE,
+    supportedLngs: [...SUPPORTED_LANGUAGES],
+    nonExplicitSupportedLngs: false,
 
     interpolation: {
       escapeValue: false,
@@ -61,8 +59,9 @@ i18n
       caches: [],
     },
 
-    load: "languageOnly",
-    cleanCode: true,
+    // Keep pt-BR as a regional locale instead of collapsing to "pt".
+    load: "currentOnly",
+    cleanCode: false,
   });
 
 i18n.on("languageChanged", (lng) => {
@@ -70,5 +69,18 @@ i18n.on("languageChanged", (lng) => {
 });
 
 applyDocumentLocale(i18n.language);
+
+if (
+  typeof window !== "undefined" &&
+  import.meta.env.MODE !== "test" &&
+  !hasManualLanguageChoice()
+) {
+  void fetchGeoLanguage().then((geoLanguage) => {
+    if (!geoLanguage || hasManualLanguageChoice()) return;
+    if (getManualLanguageChoice()) return;
+    if (i18n.language === geoLanguage) return;
+    void i18n.changeLanguage(geoLanguage);
+  });
+}
 
 export default i18n;

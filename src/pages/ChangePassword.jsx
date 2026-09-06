@@ -1,12 +1,16 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import API from "../api";
 import { useAuth } from "../context/AuthContext";
 import AuthShell, { AuthCard } from "../components/auth/AuthShell";
 import { resolvePostLoginDestination } from "../utils/safeInternalRedirect";
+import { useLocaleDir } from "../hooks/useLocaleDir";
 import "../styles/ChangePassword.css";
 
 const ChangePassword = () => {
+  const { t } = useTranslation();
+  const dir = useLocaleDir();
   const { user, refreshUser } = useAuth();
   const navigate = useNavigate();
 
@@ -32,17 +36,17 @@ const ChangePassword = () => {
     const { currentPassword, newPassword, confirmPassword } = form;
 
     if (!currentPassword || !newPassword || !confirmPassword) {
-      setError("יש למלא את כל השדות");
+      setError(t("changePassword.fillAll"));
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      setError("הסיסמה החדשה ואישור הסיסמה אינם תואמים");
+      setError(t("changePassword.mismatch"));
       return;
     }
 
     if (newPassword.length < 6) {
-      setError("הסיסמה החדשה חייבת להכיל 6 תווים לפחות");
+      setError(t("changePassword.tooShort"));
       return;
     }
 
@@ -53,7 +57,7 @@ const ChangePassword = () => {
         newPassword,
       });
 
-      setSuccess("הסיסמה עודכנה בהצלחה");
+      setSuccess(t("changePassword.success"));
       const updatedUser = (await refreshUser(true)) || user;
       const dest = resolvePostLoginDestination({
         role: updatedUser?.role,
@@ -63,7 +67,16 @@ const ChangePassword = () => {
       });
       setTimeout(() => navigate(dest, { replace: true }), 600);
     } catch (err) {
-      setError(err.response?.data?.error || err.response?.data?.message || "שגיאת שרת. נסו שוב.");
+      const code = err.response?.data?.code;
+      if (code === "WRONG_CURRENT_PASSWORD") {
+        setError(t("changePassword.wrongCurrent"));
+      } else if (code === "PASSWORD_TOO_SHORT") {
+        setError(t("changePassword.tooShort"));
+      } else if (code === "FILL_ALL") {
+        setError(t("changePassword.fillAll"));
+      } else {
+        setError(t("changePassword.serverError"));
+      }
     } finally {
       setLoading(false);
     }
@@ -71,44 +84,52 @@ const ChangePassword = () => {
 
   return (
     <AuthShell>
-      <AuthCard title="הגדרת סיסמה חדשה" subtitle="הסיסמה החד-פעמית מיועדת לכניסה ראשונה בלבד. בחרו סיסמה אישית להמשך.">
-        <form onSubmit={handleSubmit} className="space-y-4" dir="rtl">
+      <AuthCard
+        title={t("changePassword.title")}
+        subtitle={t("changePassword.subtitle")}
+      >
+        <form onSubmit={handleSubmit} className="space-y-4" dir={dir}>
           <input
             type="password"
             name="currentPassword"
-            placeholder="סיסמה חד-פעמית / נוכחית"
+            placeholder={t("changePassword.currentPlaceholder")}
             value={form.currentPassword}
             onChange={handleChange}
             required
-            className="w-full rounded-2xl border border-slate-200 px-4 py-3 font-bold"
+            dir="ltr"
+            className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-start font-bold"
           />
           <input
             type="password"
             name="newPassword"
-            placeholder="סיסמה חדשה"
+            placeholder={t("changePassword.newPlaceholder")}
             value={form.newPassword}
             onChange={handleChange}
             required
-            className="w-full rounded-2xl border border-slate-200 px-4 py-3 font-bold"
+            dir="ltr"
+            className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-start font-bold"
           />
           <input
             type="password"
             name="confirmPassword"
-            placeholder="אישור סיסמה חדשה"
+            placeholder={t("changePassword.confirmPlaceholder")}
             value={form.confirmPassword}
             onChange={handleChange}
             required
-            className="w-full rounded-2xl border border-slate-200 px-4 py-3 font-bold"
+            dir="ltr"
+            className="w-full rounded-2xl border border-slate-200 px-4 py-3 text-start font-bold"
           />
           <button
             className="w-full rounded-2xl bg-slate-900 py-3 font-black text-white disabled:opacity-60"
             type="submit"
             disabled={loading}
           >
-            {loading ? "שומר..." : "שמירת סיסמה"}
+            {loading ? t("changePassword.saving") : t("changePassword.submit")}
           </button>
           {error ? <p className="font-bold text-rose-700">{error}</p> : null}
-          {success ? <p className="font-bold text-emerald-700">{success}</p> : null}
+          {success ? (
+            <p className="font-bold text-emerald-700">{success}</p>
+          ) : null}
         </form>
       </AuthCard>
     </AuthShell>

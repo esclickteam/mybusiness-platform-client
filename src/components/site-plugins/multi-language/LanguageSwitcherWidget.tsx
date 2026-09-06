@@ -5,16 +5,20 @@ type Lang = { code: string; label: string; dir?: string };
 function dirFor(lang?: Lang, code?: string) {
   const explicit = String(lang?.dir || "").toLowerCase();
   if (explicit === "ltr" || explicit === "rtl") return explicit;
-  const resolved = String(code || lang?.code || "he").toLowerCase();
-  return resolved === "en" || resolved.startsWith("en-") ? "ltr" : "rtl";
+  const resolved = String(code || lang?.code || "en").toLowerCase();
+  return resolved === "he" || resolved.startsWith("he-") || resolved === "ar" || resolved.startsWith("ar-")
+    ? "rtl"
+    : "ltr";
 }
 
 export default function LanguageSwitcherWidget({
   languages,
   current,
+  applyToDocument = true,
 }: {
   languages: Lang[];
   current?: string;
+  applyToDocument?: boolean;
 }) {
   const list = languages?.length ? languages : [
     { code: "he", label: "HE", dir: "rtl" },
@@ -29,6 +33,7 @@ export default function LanguageSwitcherWidget({
   const activeLang = list.find((lang) => lang.code === active) || list[0];
 
   useLayoutEffect(() => {
+    if (!applyToDocument) return;
     if (typeof document === "undefined" || !active) return;
     const nextDir = dirFor(activeLang, active);
     document.documentElement.lang = active;
@@ -36,7 +41,7 @@ export default function LanguageSwitcherWidget({
     document.documentElement.setAttribute("lang", active);
     document.documentElement.setAttribute("dir", nextDir);
     if (document.body) document.body.setAttribute("dir", nextDir);
-  }, [active, activeLang]);
+  }, [active, activeLang, applyToDocument]);
 
   function hrefFor(code: string) {
     const path = typeof window === "undefined" ? "/" : window.location.pathname;

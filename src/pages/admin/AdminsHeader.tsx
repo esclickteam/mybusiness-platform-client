@@ -4,30 +4,35 @@ import { Crown, LogOut, Settings } from "lucide-react";
 
 import AdminNotifications from "../../components/AdminNotifications";
 import AdminSoftphoneLauncher from "../../components/AdminSoftphoneLauncher";
+import LanguageSwitcher from "../../components/LanguageSwitcher";
 import { useAuth } from "../../context/AuthContext";
+import { getTextDirection } from "../../i18n/localeUtils";
+import { useTranslation } from "react-i18next";
 import API from "../../api";
 
 const NAV_ITEMS = [
-  { path: "/admin/dashboard", label: "דשבורד" },
-  { path: "/admin/crm", label: "CRM וניהול לקוחות" },
-  { path: "/admin/customers", label: "לקוחות" },
-  { path: "/admin/early-access", label: "הרשמה מוקדמת" },
-  { path: "/admin/guided-demos", label: "דמואים מודרכים" },
-  { path: "/admin/calendar", label: "יומן BizUply" },
-  { path: "/admin/automations", label: "אוטומציות אדמין" },
-  { path: "/admin/managed-whatsapp", label: "WhatsApp Managed" },
-  { path: "/admin/users", label: "משתמשים" },
-  { path: "/admin/create-user", label: "יצירת משתמש" },
-  { path: "/admin/businesses", label: "עסקים" },
-  { path: "/admin/affiliates", label: "שותפים" },
-  { path: "/admin/partners", label: "פרטנרים" },
-  { path: "/admin/partners/referrals", label: "צירופי פרטנרים" },
-  { path: "/admin/marketers", label: "משווקים" },
-  { path: "/admin/withdrawals", label: "משיכות" },
-  { path: "/admin/support-chat", label: "צ'אט תמיכה" },
+  { path: "/admin/dashboard", labelKey: "adminNav.dashboard" },
+  { path: "/admin/crm", labelKey: "adminNav.crm" },
+  { path: "/admin/customers", labelKey: "adminNav.customers" },
+  { path: "/admin/early-access", labelKey: "adminNav.earlyAccess" },
+  { path: "/admin/guided-demos", labelKey: "adminNav.guidedDemos" },
+  { path: "/admin/calendar", labelKey: "adminNav.calendar" },
+  { path: "/admin/automations", labelKey: "adminNav.automations" },
+  { path: "/admin/managed-whatsapp", labelKey: "adminNav.managedWhatsapp" },
+  { path: "/admin/users", labelKey: "adminNav.users" },
+  { path: "/admin/create-user", labelKey: "adminNav.createUser" },
+  { path: "/admin/businesses", labelKey: "adminNav.businesses" },
+  { path: "/admin/affiliates", labelKey: "adminNav.affiliates" },
+  { path: "/admin/partners", labelKey: "adminNav.partners" },
+  { path: "/admin/partners/referrals", labelKey: "adminNav.partnerReferrals" },
+  { path: "/admin/marketers", labelKey: "adminNav.marketers" },
+  { path: "/admin/withdrawals", labelKey: "adminNav.withdrawals" },
+  { path: "/admin/support-chat", labelKey: "adminNav.supportChat" },
 ] as const;
 
 function AdminHeader() {
+  const { t, i18n } = useTranslation();
+  const headerDir = getTextDirection(i18n.language);
   const { user, logout, socket } = useAuth() as {
     user: { name?: string; email?: string } | null;
     logout: (opts?: { callServer?: boolean; redirect?: boolean }) => Promise<void>;
@@ -37,7 +42,7 @@ function AdminHeader() {
   const location = useLocation();
   const [supportBadge, setSupportBadge] = useState(0);
 
-  const displayName = user?.name || user?.email || "מנהל";
+  const displayName = user?.name || user?.email || t("adminNav.adminFallback");
   const initials = String(displayName)
     .trim()
     .split(/\s+/)
@@ -140,7 +145,7 @@ function AdminHeader() {
                 : "text-slate-500 hover:text-slate-800",
           ].join(" ")}
         >
-          {item.label}
+          {t(item.labelKey)}
           {isSupport && supportBadge > 0 && (
             <span
               data-testid="admin-support-unread-badge"
@@ -159,8 +164,8 @@ function AdminHeader() {
 
   return (
     <header
-      dir="rtl"
-      className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/95 px-3 pt-[max(0.75rem,env(safe-area-inset-top))] pb-3 text-right text-slate-800 shadow-[0_2px_16px_rgba(124,77,255,0.06)] backdrop-blur-xl sm:px-4 md:px-8"
+      dir={headerDir}
+      className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/95 px-3 pt-[max(0.75rem,env(safe-area-inset-top))] pb-3 text-start text-slate-800 shadow-[0_2px_16px_rgba(124,77,255,0.06)] backdrop-blur-xl sm:px-4 md:px-8"
       style={{ fontFamily: '"Assistant", "Inter", "Rubik", sans-serif' }}
     >
       <div className="mx-auto flex max-w-[1480px] flex-col gap-3">
@@ -176,7 +181,7 @@ function AdminHeader() {
 
             <span className="min-w-0">
               <strong className="block truncate text-base font-black text-slate-900 md:text-lg">
-                פאנל ניהול
+                {t("adminNav.dashboard")}
               </strong>
               <small className="hidden text-xs font-bold text-slate-400 xs:block sm:block">
                 Bizuply Admin
@@ -184,20 +189,18 @@ function AdminHeader() {
             </span>
           </button>
 
-          <div
-            dir="ltr"
-            className="flex shrink-0 items-center justify-end gap-1.5 sm:gap-3"
-          >
-            <div className="hidden items-center gap-3 sm:flex" dir="rtl">
+          <div className="flex shrink-0 items-center justify-end gap-1.5 sm:gap-3">
+            <LanguageSwitcher />
+            <div className="hidden items-center gap-3 sm:flex">
               <span className="grid h-11 w-11 place-items-center rounded-full bg-gradient-to-br from-[#7C4DFF] to-[#A78BFA] text-sm font-black text-white shadow-md shadow-[#7C4DFF]/25">
                 {initials}
               </span>
-              <div className="hidden text-right md:block">
+              <div className="hidden text-start md:block">
                 <span className="block text-sm font-black text-slate-900">
                   {displayName}
                 </span>
                 <small className="block text-xs font-bold text-slate-400">
-                  מנהל מערכת
+                  {t("adminNav.adminFallback")}
                 </small>
               </div>
             </div>
@@ -205,7 +208,7 @@ function AdminHeader() {
             <button
               type="button"
               onClick={() => navigate("/admin/settings")}
-              aria-label="הגדרות"
+              aria-label={t("common.settings")}
               className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-500 shadow-sm transition hover:-translate-y-0.5 hover:border-violet-200 hover:text-[#7C4DFF] hover:shadow-md sm:h-12 sm:w-12"
             >
               <Settings className="h-5 w-5" strokeWidth={2.2} />
@@ -218,11 +221,11 @@ function AdminHeader() {
             <button
               type="button"
               onClick={handleLogout}
-              aria-label="התנתקות"
+              aria-label={t("common.logOut")}
               className="inline-flex h-11 min-w-11 items-center justify-center gap-2 rounded-2xl bg-[#7C4DFF] px-3 text-sm font-black text-white shadow-md shadow-[#7C4DFF]/25 transition hover:-translate-y-0.5 hover:bg-[#6B3FE0] sm:h-12 sm:px-4"
             >
               <LogOut className="h-4 w-4 sm:hidden" />
-              <span className="hidden sm:inline">התנתקות</span>
+              <span className="hidden sm:inline">{t("common.logOut")}</span>
             </button>
           </div>
         </div>
@@ -230,7 +233,7 @@ function AdminHeader() {
         {/* Mobile: horizontal scroll chips */}
         <nav
           className="-mx-3 flex gap-1.5 overflow-x-auto px-3 pb-0.5 [scrollbar-width:none] sm:-mx-4 sm:px-4 md:hidden [&::-webkit-scrollbar]:hidden"
-          aria-label="ניווט אדמין"
+          aria-label={t("nav.mainAria", { defaultValue: "Main navigation" })}
         >
           {renderNav(true)}
         </nav>

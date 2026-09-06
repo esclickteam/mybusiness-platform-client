@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { Mail } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import API from "../api";
 import AuthShell, { AuthCard } from "../components/auth/AuthShell";
@@ -20,6 +21,7 @@ type ApiError = {
 };
 
 export default function ForgotPassword({ closePopup }: ForgotPasswordProps) {
+  const { t } = useTranslation();
   const [email, setEmail] = useState<string>("");
   const [message, setMessage] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
@@ -30,7 +32,7 @@ export default function ForgotPassword({ closePopup }: ForgotPasswordProps) {
 
     if (!email.trim()) {
       setSuccess(false);
-      setMessage("אנא הזינו כתובת אימייל");
+      setMessage(t("login.forgotInvalidEmail"));
       return;
     }
 
@@ -44,7 +46,7 @@ export default function ForgotPassword({ closePopup }: ForgotPasswordProps) {
       });
 
       setSuccess(true);
-      setMessage("נשלח אליכם קישור לאיפוס סיסמה למייל.");
+      setMessage(t("login.forgotSuccess"));
     } catch (error) {
       const apiError = error as ApiError;
       console.error("Error sending reset link:", apiError);
@@ -52,7 +54,7 @@ export default function ForgotPassword({ closePopup }: ForgotPasswordProps) {
       setMessage(
         apiError.response?.data?.error ||
           apiError.response?.data?.message ||
-          "אירעה שגיאה. נסו שוב מאוחר יותר."
+          t("login.forgotError")
       );
     } finally {
       setLoading(false);
@@ -61,29 +63,29 @@ export default function ForgotPassword({ closePopup }: ForgotPasswordProps) {
 
   const card = (
     <AuthCard
-      title="שכחתי סיסמה"
-      subtitle="הזינו את האימייל שלכם ונשלח קישור מאובטח לאיפוס הסיסמה"
+      title={t("login.forgotTitle")}
+      subtitle={t("login.forgotSubtitle")}
     >
       <form onSubmit={handleSendReset} className="space-y-4">
-        <div className="text-right">
+        <div className="text-start">
           <label
             htmlFor="reset-email"
             className="mb-2 block text-sm font-bold text-slate-700"
           >
-            אימייל
+            {t("login.emailLabel")}
           </label>
           <div className="relative">
-            <Mail className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+            <Mail className="pointer-events-none absolute inset-inline-end-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
             <input
               id="reset-email"
               type="email"
-              placeholder="name@company.com"
+              placeholder={t("login.emailPlaceholder")}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               disabled={loading}
               autoComplete="email"
               dir="ltr"
-              className="h-12 w-full rounded-2xl border border-slate-200 bg-white pr-11 pl-4 text-left text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:ring-4 focus:ring-violet-100 disabled:opacity-70"
+              className="h-12 w-full rounded-2xl border border-slate-200 bg-white pe-11 ps-4 text-start text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:ring-4 focus:ring-violet-100 disabled:opacity-70"
             />
           </div>
         </div>
@@ -106,8 +108,7 @@ export default function ForgotPassword({ closePopup }: ForgotPasswordProps) {
           disabled={loading}
           className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-l from-sky-500 via-indigo-500 to-violet-600 text-base font-black text-white shadow-[0_14px_30px_rgba(99,102,241,0.35)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-70"
         >
-          {loading ? "שולח..." : "שליחת קישור לאיפוס"}
-          {!loading ? <span aria-hidden>←</span> : null}
+          {loading ? t("common.loading") : t("login.forgotSubmit")}
         </button>
 
         {closePopup ? (
@@ -116,16 +117,15 @@ export default function ForgotPassword({ closePopup }: ForgotPasswordProps) {
             onClick={closePopup}
             className="inline-flex h-12 w-full items-center justify-center rounded-2xl border border-slate-200 bg-white text-sm font-black text-slate-700 transition hover:border-violet-200 hover:text-violet-700"
           >
-            סגירה
+            {t("common.close")}
           </button>
         ) : (
           <p className="pt-1 text-center text-sm font-semibold text-slate-600">
-            נזכרתם בסיסמה?{" "}
             <Link
               to="/login"
               className="font-black text-violet-700 transition hover:text-indigo-700"
             >
-              חזרה להתחברות
+              {t("login.backToLogin")}
             </Link>
           </p>
         )}
@@ -143,7 +143,7 @@ export default function ForgotPassword({ closePopup }: ForgotPasswordProps) {
       >
         <button
           type="button"
-          aria-label="סגירת חלון איפוס סיסמה"
+          aria-label={t("common.close")}
           onClick={closePopup}
           className="absolute inset-0 h-full w-full cursor-default"
         />
@@ -152,22 +152,5 @@ export default function ForgotPassword({ closePopup }: ForgotPasswordProps) {
     );
   }
 
-  return (
-    <AuthShell
-      headline={
-        <>
-          איפוס סיסמה{" "}
-          <span className="bg-gradient-to-l from-sky-500 via-indigo-500 to-violet-600 bg-clip-text text-transparent">
-            בקלות
-          </span>
-          <br />
-          <span className="bg-gradient-to-l from-sky-500 via-indigo-500 to-violet-600 bg-clip-text text-transparent">
-            ובצורה מאובטחת
-          </span>
-        </>
-      }
-    >
-      {card}
-    </AuthShell>
-  );
+  return <AuthShell>{card}</AuthShell>;
 }

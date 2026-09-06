@@ -42,7 +42,8 @@ import {
 import { isAllowedPluginBillingReturn } from "../utils/pluginBillingReturn";
 import BizuplyLoader from "../components/ui/BizuplyLoader";
 import { isPublicCustomerSiteHost } from "../utils/publicSiteHost";
-import { clearPushEnabledPreferenceCache } from "../utils/pushPreference";
+import { syncLanguageOnLogin } from "../i18n/persistLanguage";
+import i18n from "../i18n/i18n";
 
 /* ===========================
    🧩 Normalize User
@@ -305,6 +306,7 @@ export function AuthProvider({ children }) {
     let normalizedUser = normalizeUser(userFromServer);
     setUser(normalizedUser);
     localStorage.setItem("businessDetails", JSON.stringify(normalizedUser));
+    syncLanguageOnLogin(normalizedUser);
 
     try {
       const payload = decodeJwtPayload(accessToken) || {};
@@ -433,6 +435,7 @@ export function AuthProvider({ children }) {
       }
       setUser(normalizedUser);
       localStorage.setItem("businessDetails", JSON.stringify(normalizedUser));
+      syncLanguageOnLogin(normalizedUser);
 
       document.body.style.background =
         "linear-gradient(to bottom, #f6f7fb, #e8ebf8)";
@@ -521,8 +524,8 @@ export function AuthProvider({ children }) {
     } catch (err) {
       setError(
         err.response?.status >= 400 && err.response?.status < 500
-          ? "❌ אימייל או סיסמה שגויים"
-          : "❌ שגיאת שרת"
+          ? i18n.t("login.errors.incorrectCredentials")
+          : i18n.t("login.errors.serverError")
       );
 
       throw err;
@@ -558,13 +561,14 @@ export function AuthProvider({ children }) {
       const normalized = normalizeUser(staffUser);
       setUser(normalized);
       localStorage.setItem("businessDetails", JSON.stringify(normalized));
+      syncLanguageOnLogin(normalized);
 
       refreshUser(true).catch(() => {});
       setLoading(false);
 
       return normalized;
     } catch (err) {
-      setError("❌ שם משתמש או סיסמה שגויים");
+      setError(i18n.t("login.errors.staffCredentials"));
       setLoading(false);
       throw err;
     }
@@ -585,6 +589,7 @@ export function AuthProvider({ children }) {
       const normalized = normalizeUser(data);
       setUser(normalized);
       localStorage.setItem("businessDetails", JSON.stringify(normalized));
+      syncLanguageOnLogin(normalized);
 
       setToken(null);
       refreshUser(true).catch(() => {});
@@ -592,7 +597,7 @@ export function AuthProvider({ children }) {
       setLoading(false);
       return normalized;
     } catch (err) {
-      setError(getApiErrorMessage(err, "אירעה שגיאה. נסו שוב."));
+      setError(getApiErrorMessage(err, i18n.t("login.errors.generic")));
       setLoading(false);
       throw err;
     }
@@ -771,6 +776,8 @@ export function AuthProvider({ children }) {
         if (!freshUser) {
           throw new Error("Missing user");
         }
+
+        syncLanguageOnLogin(freshUser);
 
         if (cancelled) return;
 
@@ -1099,7 +1106,7 @@ export function AuthProvider({ children }) {
           } catch (retryErr) {
             console.warn("fetchWithAuth retry failed:", retryErr?.message || retryErr);
           }
-          setError("❌ שגיאת הרשאה — נסה שוב");
+          setError(i18n.t("login.errors.permission"));
         }
 
         throw err;
@@ -1118,7 +1125,7 @@ export function AuthProvider({ children }) {
   =========================== */
   // Never block published customer sites behind the Bizuply splash.
   if (loading && !initialized && !isPublicCustomerSiteHost()) {
-    return <BizuplyLoader fullScreen label="Loading..." />;
+    return <BizuplyLoader fullScreen label={i18n.t("common.loading")} />;
   }
 
   /* ===========================

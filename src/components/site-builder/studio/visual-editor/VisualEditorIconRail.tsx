@@ -10,6 +10,8 @@ import {
   Puzzle,
   ShoppingBag,
 } from "lucide-react";
+import { useLocaleDir } from "../../../../hooks/useLocaleDir";
+import { useTranslation } from "react-i18next";
 
 export type VisualEditorSidePanelMode =
   | "add"
@@ -82,21 +84,23 @@ export default function VisualEditorIconRail({
   onOpenAdd,
   onOpenPlugins,
 }: VisualEditorIconRailProps) {
+  const railDir = useLocaleDir();
+  const { t } = useTranslation();
   return (
     <aside
       data-visual-editor-icon-rail="true"
-      className="relative z-[2147483600] flex w-[72px] shrink-0 flex-col items-center border-l border-slate-200 bg-white/95 py-2 shadow-sm backdrop-blur-xl"
-      dir="rtl"
+      className="relative z-[2147483600] flex w-[72px] shrink-0 flex-col items-center border-s border-slate-200 bg-white/95 py-2 shadow-sm backdrop-blur-xl"
+      dir={railDir}
     >
       <div className="flex flex-col items-center gap-1 px-1">
-        <RailButton title="חזרה" onClick={onBack} disabled={!onBack}>
-          <ArrowLeft className="h-5 w-5" />
+        <RailButton title={t("studio.back")} onClick={onBack} disabled={!onBack}>
+          <ArrowLeft className="rtl-flip h-5 w-5" />
         </RailButton>
       </div>
 
       <div className="mt-2 flex flex-1 flex-col items-center gap-1 overflow-y-auto px-1">
         <RailButton
-          title="הוספה"
+          title={t("studio.add")}
           testId="visual-editor-add"
           active={sidePanelMode === "add"}
           onClick={onOpenAdd}
@@ -105,7 +109,7 @@ export default function VisualEditorIconRail({
         </RailButton>
 
         <RailButton
-          title="חנות תוספים"
+          title={t("studio.plugins")}
           testId="visual-editor-plugins"
           active={sidePanelMode === "plugins"}
           onClick={onOpenPlugins}
@@ -114,7 +118,7 @@ export default function VisualEditorIconRail({
         </RailButton>
 
         <RailButton
-          title="עמודים"
+          title={t("studio.pages")}
           testId="visual-editor-pages"
           active={sidePanelMode === "pages"}
           onClick={() => onTogglePanel("pages")}
@@ -128,7 +132,7 @@ export default function VisualEditorIconRail({
         </RailButton>
 
         <RailButton
-          title="הידר, פוטר וקישורי טפסים"
+          title={t("studio.headerFooter")}
           active={sidePanelMode === "header"}
           onClick={() => onTogglePanel("header")}
         >
@@ -136,7 +140,7 @@ export default function VisualEditorIconRail({
         </RailButton>
 
         <RailButton
-          title="שכבות"
+          title={t("studio.layers")}
           active={sidePanelMode === "layers"}
           onClick={() => onTogglePanel("layers")}
         >
@@ -144,7 +148,7 @@ export default function VisualEditorIconRail({
         </RailButton>
 
         <RailButton
-          title="קוד מותאם"
+          title={t("studio.customCode")}
           active={sidePanelMode === "code"}
           onClick={() => onTogglePanel("code")}
         >
@@ -153,7 +157,7 @@ export default function VisualEditorIconRail({
 
         {storePluginEnabled ? (
           <RailButton
-            title="חנות"
+            title={t("studio.store")}
             active={sidePanelMode === "store"}
             onClick={() => onTogglePanel("store")}
           >
@@ -162,7 +166,7 @@ export default function VisualEditorIconRail({
         ) : null}
 
         <RailButton
-          title={hasDomain ? "ניהול דומיין" : "חיבור דומיין"}
+          title={hasDomain ? t("studio.manageDomain") : t("studio.connectDomain")}
           onClick={onOpenDomain}
         >
           <Globe2 className="h-5 w-5" />

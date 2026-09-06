@@ -1,11 +1,11 @@
-// src/pages/ResetPassword.jsx
-
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import API from "../api";
-import "../styles/ForgotPassword.css";
+import AuthShell, { AuthCard } from "../components/auth/AuthShell";
 
-const ResetPassword = () => {
+export default function ResetPassword() {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
@@ -19,9 +19,9 @@ const ResetPassword = () => {
 
   useEffect(() => {
     if (!token || !email) {
-      setError("Invalid password reset link");
+      setError(t("login.resetInvalidLink"));
     }
-  }, [token, email]);
+  }, [token, email, t]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -29,60 +29,69 @@ const ResetPassword = () => {
     setError("");
 
     if (!password || !confirmPassword) {
-      setError("Please fill in all fields");
+      setError(t("login.resetFillAll"));
       return;
     }
     if (password !== confirmPassword) {
-      setError("Passwords do not match");
+      setError(t("login.resetMismatch"));
       return;
     }
 
     setLoading(true);
     try {
-      const res = await API.post("/auth/reset-password", {
+      await API.post("/auth/reset-password", {
         email,
         token,
         newPassword: password,
       });
-      setMessage(res.data.message);
+      setMessage(t("login.resetSuccess"));
       setTimeout(() => navigate("/login"), 1500);
     } catch (err) {
-      console.error("❌ Password reset error:", err);
-      setError(err.response?.data?.message || "Server error");
+      console.error("Password reset error:", err);
+      setError(err.response?.data?.message || t("login.forgotError"));
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="forgot-password-overlay">
-      <div className="forgot-password-modal">
-        <h2>Reset Password</h2>
-        {error && <p className="error-message">{error}</p>}
+    <AuthShell>
+      <AuthCard title={t("login.resetTitle")} subtitle={t("login.resetSubtitle")}>
+        {error ? (
+          <p className="mb-4 rounded-2xl border border-rose-100 bg-rose-50 px-4 py-3 text-sm font-bold text-rose-600" role="alert">
+            {error}
+          </p>
+        ) : null}
         {message ? (
-          <p className="success-message">{message}</p>
+          <p className="rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-sm font-bold text-emerald-700" role="status">
+            {message}
+          </p>
         ) : (
-          <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit} className="space-y-4">
             <input
               type="password"
-              placeholder="New password"
+              placeholder={t("login.newPassword")}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
+              className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-900 outline-none focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
             />
             <input
               type="password"
-              placeholder="Confirm password"
+              placeholder={t("login.confirmPassword")}
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
+              className="h-12 w-full rounded-2xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-900 outline-none focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
             />
-            <button className="send-button" type="submit" disabled={loading || error}>
-              {loading ? "🔄 Saving..." : "Reset Password"}
+            <button
+              className="inline-flex h-12 w-full items-center justify-center rounded-2xl bg-gradient-to-l from-sky-500 via-indigo-500 to-violet-600 text-base font-black text-white disabled:opacity-70"
+              type="submit"
+              disabled={loading || Boolean(error && !password)}
+            >
+              {loading ? t("common.loading") : t("login.resetSubmit")}
             </button>
           </form>
         )}
-      </div>
-    </div>
+      </AuthCard>
+    </AuthShell>
   );
-};
-
-export default ResetPassword;
+}

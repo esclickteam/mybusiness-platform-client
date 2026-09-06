@@ -10,6 +10,7 @@ import React, {
 } from "react";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { getIntlLocale, getTextDirection } from "../../../i18n/localeUtils";
 import {
   Activity,
   Bell,
@@ -177,8 +178,7 @@ function getTodayIso(): string {
 }
 
 function getLocale(language?: string): string {
-  const lang = String(language || "en").split("-")[0].toLowerCase();
-  return lang === "he" ? "he-IL" : "en-US";
+  return getIntlLocale(language);
 }
 
 
@@ -1776,7 +1776,7 @@ export default function DashboardPage() {
     syncedStats.rating ??
     (syncedStats.reviews_count ? 4.9 : 0);
 
-  const pageDir = String(i18n.language || "en").split("-")[0] === "he" ? "rtl" : "ltr";
+  const pageDir = getTextDirection(i18n.language);
 
   return (
     <div

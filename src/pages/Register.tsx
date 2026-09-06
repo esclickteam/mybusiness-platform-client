@@ -5,12 +5,14 @@ import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
 
 import API from "../api";
+import { useTranslation } from "react-i18next";
 import AuthShell, { AuthCard } from "../components/auth/AuthShell";
 import { useAuth } from "../context/AuthContext";
 import {
   detectPhoneCountry,
   detectPhoneCountrySync,
 } from "../utils/detectPhoneCountry";
+import { getManualLanguageChoice } from "../i18n/localeUtils";
 import { loadPendingPurchaseIntent } from "../utils/pendingPurchaseIntent";
 
 declare global {
@@ -43,11 +45,11 @@ type ApiError = {
 
 type PricingPlan = "monthly" | "yearly" | "website" | "crm_only";
 
-const PLAN_LABELS: Record<PricingPlan, string> = {
-  monthly: "חבילה עסקית חודשית — 149₪ לחודש, חיוב חודשי מתחדש",
-  yearly: "חבילה עסקית שנתית — 1,490₪ לשנה, חיוב שנתי מתחדש",
-  website: "בניית אתר בלבד — 600₪ לשנה, תשלום חד־פעמי ללא חידוש אוטומטי",
-  crm_only: "CRM בלבד — 89₪ לחודש, חיוב חודשי מתחדש",
+const PLAN_LABEL_KEYS: Record<PricingPlan, string> = {
+  monthly: "register.planMonthly",
+  yearly: "register.planYearly",
+  website: "register.planWebsite",
+  crm_only: "register.planCrm",
 };
 
 function parsePlan(value: string | null): PricingPlan | null {
@@ -63,6 +65,7 @@ function parsePlan(value: string | null): PricingPlan | null {
 }
 
 export default function Register() {
+  const { t, i18n } = useTranslation();
   const [formData, setFormData] = useState<RegisterFormData>({
     name: "",
     email: "",
@@ -176,27 +179,27 @@ export default function Register() {
     } = formData;
 
     if (!name.trim() || !email.trim() || !password || !confirmPassword) {
-      setError("אנא מלאו את כל השדות החובה");
+      setError(t("register.fillRequired"));
       return;
     }
 
     if (!businessName.trim()) {
-      setError("אנא הזינו שם עסק");
+      setError(t("register.enterBusinessName"));
       return;
     }
 
     if (!phone.trim()) {
-      setError("אנא הזינו מספר טלפון");
+      setError(t("register.enterPhone"));
       return;
     }
 
     if (!isValidPhone(phone.trim())) {
-      setError("אנא הזינו מספר טלפון תקין");
+      setError(t("register.invalidPhone"));
       return;
     }
 
     if (password !== confirmPassword) {
-      setError("הסיסמאות אינן תואמות");
+      setError(t("register.passwordMismatch"));
       return;
     }
 
@@ -215,6 +218,7 @@ export default function Register() {
             businessName: businessName.trim(),
             plan: selectedPlan,
             includeWebsiteAddon,
+            language: getManualLanguageChoice() || i18n.language,
             referralCode:
               referralCode ||
               localStorage.getItem("affiliate_referral") ||
@@ -223,7 +227,7 @@ export default function Register() {
         );
 
         if (!data?.url) {
-          setError(data?.error || "נכשל בפתיחת תשלום. נסו שוב.");
+          setError(data?.error || t("register.checkoutFailed"));
           return;
         }
 
@@ -238,9 +242,7 @@ export default function Register() {
       if (pendingPurchaseSignup) {
         if (!loadPendingPurchaseIntent()) {
           setPurchaseIntentValidationFailed(true);
-          setError(
-            "בקשת הרכישה חסרה או שפג תוקפה. חזרו לעמוד המחירים ובחרו את השירות מחדש."
-          );
+          setError(t("register.purchaseIntentExpired"));
           return;
         }
         const { data } = await API.post<{
@@ -254,6 +256,7 @@ export default function Register() {
           password,
           userType: "business",
           businessName: businessName.trim(),
+          language: getManualLanguageChoice() || i18n.language,
           referralCode:
             referralCode ||
             localStorage.getItem("affiliate_referral") ||
@@ -261,7 +264,7 @@ export default function Register() {
         });
 
         if (!data?.accessToken || !data?.user) {
-          setError(data?.error || "ההרשמה נכשלה. נסו שוב.");
+          setError(data?.error || t("register.registerFailed"));
           return;
         }
 
@@ -282,11 +285,11 @@ export default function Register() {
       );
 
       if (apiError.response?.status === 400) {
-        setError(apiError.response.data?.error || "האימייל כבר קיים במערכת");
+        setError(t("register.emailExists"));
         return;
       }
 
-      setError("אירעה שגיאה. נסו שוב מאוחר יותר.");
+      setError(t("register.genericError"));
     } finally {
       setLoading(false);
     }
@@ -297,45 +300,53 @@ export default function Register() {
       cardMaxWidthClassName="max-w-[480px]"
       headline={
         <>
-          פתחו חשבון ל{" "}
+          {t("register.headline")}{" "}
           <span className="bg-gradient-to-l from-sky-500 via-indigo-500 to-violet-600 bg-clip-text text-transparent">
-            מערכת ההפעלה
+            {t("register.heroOs")}
           </span>
-          <br />
-          <span className="bg-gradient-to-l from-sky-500 via-indigo-500 to-violet-600 bg-clip-text text-transparent">
-            העסקית
-          </span>
+          {t("register.heroBusiness") ? (
+            <>
+              <br />
+              <span className="bg-gradient-to-l from-sky-500 via-indigo-500 to-violet-600 bg-clip-text text-transparent">
+                {t("register.heroBusiness")}
+              </span>
+            </>
+          ) : null}
         </>
       }
     >
       <AuthCard
-        title="הרשמה כעסק"
+        title={t("register.businessSignupTitle")}
         subtitle={
           isPaidSignupFlow
-            ? "מלאו פרטים, המשיכו לתשלום — החשבון נפתח רק אחרי התשלום"
-            : "צרו חשבון עסקי ב-BizUply והתחילו לנהל הכל במקום אחד"
+            ? t("register.paidSubtitle")
+            : t("register.freeSubtitle")
         }
       >
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="rounded-2xl border border-violet-100 bg-violet-50 px-4 py-3 text-right">
-            <p className="text-sm font-black text-violet-800">סוג חשבון: בעל עסק</p>
+          <div className="rounded-2xl border border-violet-100 bg-violet-50 px-4 py-3 text-start">
+            <p className="text-sm font-black text-violet-800">
+              {t("register.accountTypeTitle")}
+            </p>
             <p className="mt-1 text-xs font-semibold text-violet-700/70">
-              מוגדר אוטומטית — אין צורך לבחור. ניהול לקוחות, CRM, תורים, אתר וכלים עסקיים
+              {t("register.accountTypeHint")}
             </p>
           </div>
 
           {selectedPlan ? (
-            <div className="rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-right">
+            <div className="rounded-2xl border border-emerald-100 bg-emerald-50 px-4 py-3 text-start">
               <p className="text-sm font-black text-emerald-800">
-                חבילה נבחרת: {PLAN_LABELS[selectedPlan]}
+                {t("register.selectedPlan", {
+                  plan: t(PLAN_LABEL_KEYS[selectedPlan]),
+                })}
               </p>
               {includeWebsiteAddon ? (
                 <p className="mt-1 text-xs font-semibold text-emerald-700/80">
-                  כולל תוספת אתר חד־פעמית
+                  {t("register.websiteAddonNote")}
                 </p>
               ) : null}
               <p className="mt-1 text-xs font-semibold text-emerald-700/70">
-                אחרי השליחה תועברו לתשלום מאובטח בסטרייפ
+                {t("register.stripeCheckoutNote")}
               </p>
             </div>
           ) : null}
@@ -345,34 +356,34 @@ export default function Register() {
               className="rounded-2xl border border-amber-100 bg-amber-50 px-4 py-3 text-sm font-bold leading-6 text-amber-700"
               role="status"
             >
-              התשלום בוטל. אפשר לעדכן פרטים ולהמשיך שוב לתשלום.
+              {t("register.checkoutCancelled")}
             </p>
           ) : null}
 
-          <div className="text-right">
+          <div className="text-start">
             <label className="mb-2 block text-sm font-bold text-slate-700">
-              שם מלא
+              {t("register.name")}
             </label>
             <div className="relative">
-              <User className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <User className="pointer-events-none absolute end-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
               <input
                 type="text"
                 name="name"
-                placeholder="השם המלא שלכם"
+                placeholder={t("register.namePlaceholder")}
                 value={formData.name}
                 onChange={handleChange}
                 required
-                className="h-12 w-full rounded-2xl border border-slate-200 bg-white pr-11 pl-4 text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
+                className="h-12 w-full rounded-2xl border border-slate-200 bg-white pe-11 ps-4 text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
               />
             </div>
           </div>
 
-          <div className="text-right">
+          <div className="text-start">
             <label className="mb-2 block text-sm font-bold text-slate-700">
-              אימייל
+              {t("register.email")}
             </label>
             <div className="relative">
-              <Mail className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <Mail className="pointer-events-none absolute end-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
               <input
                 type="email"
                 name="email"
@@ -381,32 +392,32 @@ export default function Register() {
                 onChange={handleChange}
                 required
                 dir="ltr"
-                className="h-12 w-full rounded-2xl border border-slate-200 bg-white pr-11 pl-4 text-left text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
+                className="h-12 w-full rounded-2xl border border-slate-200 bg-white pe-11 ps-4 text-start text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
               />
             </div>
           </div>
 
-          <div className="text-right">
+          <div className="text-start">
             <label className="mb-2 block text-sm font-bold text-slate-700">
-              שם העסק
+              {t("register.businessName")}
             </label>
             <div className="relative">
-              <Building2 className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <Building2 className="pointer-events-none absolute end-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
               <input
                 type="text"
                 name="businessName"
-                placeholder="שם העסק"
+                placeholder={t("register.businessNamePlaceholder")}
                 value={formData.businessName}
                 onChange={handleChange}
                 required
-                className="h-12 w-full rounded-2xl border border-slate-200 bg-white pr-11 pl-4 text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
+                className="h-12 w-full rounded-2xl border border-slate-200 bg-white pe-11 ps-4 text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
               />
             </div>
           </div>
 
-          <div className="text-right">
+          <div className="text-start">
             <label className="mb-2 block text-sm font-bold text-slate-700">
-              טלפון
+              {t("register.phone")}
             </label>
             <div className="rounded-2xl border border-slate-200 bg-white px-2 py-1.5 transition focus-within:border-violet-300 focus-within:ring-4 focus-within:ring-violet-100">
               <div className="flex items-center gap-2">
@@ -454,9 +465,9 @@ export default function Register() {
           </div>
 
           {formData.referralCode ? (
-            <div className="text-right">
+            <div className="text-start">
               <label className="mb-2 block text-sm font-bold text-slate-700">
-                קוד הפניה
+                {t("register.referralCode")}
               </label>
               <input
                 type="text"
@@ -468,40 +479,40 @@ export default function Register() {
             </div>
           ) : null}
 
-          <div className="text-right">
+          <div className="text-start">
             <label className="mb-2 block text-sm font-bold text-slate-700">
-              סיסמה
+              {t("register.password")}
             </label>
             <div className="relative">
-              <Lock className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <Lock className="pointer-events-none absolute end-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
               <input
                 type="password"
                 name="password"
-                placeholder="בחרו סיסמה"
+                placeholder={t("register.passwordPlaceholder")}
                 value={formData.password}
                 onChange={handleChange}
                 required
                 dir="ltr"
-                className="h-12 w-full rounded-2xl border border-slate-200 bg-white pr-11 pl-4 text-left text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
+                className="h-12 w-full rounded-2xl border border-slate-200 bg-white pe-11 ps-4 text-start text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
               />
             </div>
           </div>
 
-          <div className="text-right">
+          <div className="text-start">
             <label className="mb-2 block text-sm font-bold text-slate-700">
-              אימות סיסמה
+              {t("register.confirmPassword")}
             </label>
             <div className="relative">
-              <Lock className="pointer-events-none absolute right-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+              <Lock className="pointer-events-none absolute end-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
               <input
                 type="password"
                 name="confirmPassword"
-                placeholder="הזינו שוב את הסיסמה"
+                placeholder={t("register.confirmPasswordPlaceholder")}
                 value={formData.confirmPassword}
                 onChange={handleChange}
                 required
                 dir="ltr"
-                className="h-12 w-full rounded-2xl border border-slate-200 bg-white pr-11 pl-4 text-left text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
+                className="h-12 w-full rounded-2xl border border-slate-200 bg-white pe-11 ps-4 text-start text-sm font-semibold text-slate-900 outline-none transition placeholder:text-slate-400 focus:border-violet-300 focus:ring-4 focus:ring-violet-100"
               />
             </div>
           </div>
@@ -522,21 +533,21 @@ export default function Register() {
           >
             {loading
               ? isPaidSignupFlow
-                ? "מעביר לתשלום..."
-                : "נרשם..."
+                ? t("register.redirectingToPayment")
+                : t("register.submitting")
               : isPaidSignupFlow
-                ? "המשך לתשלום"
-                : "הרשמה"}
-            {!loading ? <span aria-hidden>←</span> : null}
+                ? t("register.continueToPayment")
+                : t("register.submit")}
+            {!loading ? <span aria-hidden className="rtl-flip">←</span> : null}
           </button>
 
           <p className="pt-1 text-center text-sm font-semibold text-slate-600">
-            כבר יש לכם חשבון?{" "}
+            {t("register.haveAccount")}{" "}
             <Link
               to="/login"
               className="font-black text-violet-700 transition hover:text-indigo-700"
             >
-              התחברות
+              {t("register.loginCta")}
             </Link>
           </p>
         </form>

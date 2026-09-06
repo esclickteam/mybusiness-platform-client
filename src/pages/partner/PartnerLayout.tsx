@@ -1,8 +1,11 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { NavLink, Outlet, useLocation, useNavigate } from "react-router-dom";
 import { Banknote, BadgePercent, Bell, CalendarCheck, Handshake, LayoutDashboard, LogOut, Menu, Settings, Store, UserPlus, Users, Wallet, X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../../context/AuthContext";
 import { PARTNER_FONT } from "../../components/partner/partnerUi";
+import LanguageSwitcher from "../../components/LanguageSwitcher";
+import { getTextDirection } from "../../i18n/localeUtils";
 import { exitPartnerManagedContext } from "../../lib/partnerApi";
 import {
   clearManagedBusinessContext,
@@ -12,55 +15,55 @@ import BizuplyLoader from "../../components/ui/BizuplyLoader";
 
 type NavItem = {
   to: string;
-  label: string;
+  labelKey: string;
   icon: typeof LayoutDashboard;
   end?: boolean;
 };
 
 const SIDEBAR: NavItem[] = [
-  { to: "/partner/dashboard", label: "לוח פרטנר", icon: LayoutDashboard, end: true },
-  { to: "/partner/dashboard/crm", label: "לקוחות", icon: Users },
-  { to: "/partner/dashboard/clients/new", label: "לקוח חדש", icon: UserPlus },
-  { to: "/partner/dashboard/reminders", label: "תזכורות", icon: Bell },
-  { to: "/partner/dashboard/tasks", label: "משימות", icon: CalendarCheck },
-  { to: "/partner/dashboard/transactions", label: "עסקאות", icon: Handshake },
-  { to: "/partner/dashboard/withdrawals", label: "עמלות / משיכות", icon: Banknote },
-  { to: "/partner/dashboard/pricing", label: "מוצרים וחבילות", icon: BadgePercent },
-  { to: "/partner/dashboard/page", label: "העמוד שלי", icon: Store },
-  { to: "/partner/dashboard/referrals", label: "צירוף פרטנר", icon: Handshake },
-  { to: "/partner/dashboard/team", label: "צוות", icon: Users },
-  { to: "/partner/dashboard/revenue", label: "דוחות", icon: Wallet },
-  { to: "/partner/dashboard/settings", label: "הגדרות", icon: Settings },
+  { to: "/partner/dashboard", labelKey: "partnerNav.overview", icon: LayoutDashboard, end: true },
+  { to: "/partner/dashboard/crm", labelKey: "partnerNav.customers", icon: Users },
+  { to: "/partner/dashboard/clients/new", labelKey: "partnerNav.newClient", icon: UserPlus },
+  { to: "/partner/dashboard/reminders", labelKey: "partnerNav.reminders", icon: Bell },
+  { to: "/partner/dashboard/tasks", labelKey: "partnerNav.tasks", icon: CalendarCheck },
+  { to: "/partner/dashboard/transactions", labelKey: "partnerNav.deals", icon: Handshake },
+  { to: "/partner/dashboard/withdrawals", labelKey: "partnerNav.commissions", icon: Banknote },
+  { to: "/partner/dashboard/pricing", labelKey: "partnerNav.products", icon: BadgePercent },
+  { to: "/partner/dashboard/page", labelKey: "partnerNav.myPage", icon: Store },
+  { to: "/partner/dashboard/referrals", labelKey: "partnerNav.referPartner", icon: Handshake },
+  { to: "/partner/dashboard/team", labelKey: "partnerNav.team", icon: Users },
+  { to: "/partner/dashboard/revenue", labelKey: "partnerNav.reports", icon: Wallet },
+  { to: "/partner/dashboard/settings", labelKey: "partnerNav.settings", icon: Settings },
 ];
 
 const PILLS: NavItem[] = [
-  { to: "/partner/dashboard", label: "סקירה", icon: LayoutDashboard, end: true },
-  { to: "/partner/dashboard/crm", label: "לקוחות", icon: Users },
-  { to: "/partner/dashboard/transactions", label: "עסקאות", icon: Handshake },
-  { to: "/partner/dashboard/withdrawals", label: "עמלות", icon: Banknote },
-  { to: "/partner/dashboard/pricing", label: "מוצרים", icon: BadgePercent },
-  { to: "/partner/dashboard/page", label: "העמוד שלי", icon: Store },
-  { to: "/partner/dashboard/referrals", label: "צירוף פרטנר", icon: Handshake },
-  { to: "/partner/dashboard/team", label: "צוות", icon: Users },
-  { to: "/partner/dashboard/settings", label: "הגדרות", icon: Settings },
+  { to: "/partner/dashboard", labelKey: "partnerNav.overview", icon: LayoutDashboard, end: true },
+  { to: "/partner/dashboard/crm", labelKey: "partnerNav.customers", icon: Users },
+  { to: "/partner/dashboard/transactions", labelKey: "partnerNav.deals", icon: Handshake },
+  { to: "/partner/dashboard/withdrawals", labelKey: "partnerNav.commissionsShort", icon: Banknote },
+  { to: "/partner/dashboard/pricing", labelKey: "partnerNav.productsShort", icon: BadgePercent },
+  { to: "/partner/dashboard/page", labelKey: "partnerNav.myPage", icon: Store },
+  { to: "/partner/dashboard/referrals", labelKey: "partnerNav.referPartner", icon: Handshake },
+  { to: "/partner/dashboard/team", labelKey: "partnerNav.team", icon: Users },
+  { to: "/partner/dashboard/settings", labelKey: "partnerNav.settings", icon: Settings },
 ];
 
-const TITLES: Array<{ test: (path: string) => boolean; title: string }> = [
-  { test: (path) => path.endsWith("/clients/new"), title: "לקוח חדש" },
-  { test: (path) => /\/crm\/[^/]+$/.test(path), title: "תיק לקוח" },
-  { test: (path) => path.includes("/crm"), title: "לקוחות" },
-  { test: (path) => path.includes("/reminders"), title: "תזכורות" },
-  { test: (path) => path.includes("/tasks"), title: "משימות" },
-  { test: (path) => path.includes("/transactions"), title: "עסקאות" },
-  { test: (path) => path.includes("/pricing"), title: "מוצרים וחבילות" },
-  { test: (path) => path.includes("/storefront") || path.includes("/page"), title: "העמוד שלי" },
-  { test: (path) => path.includes("/referrals"), title: "צירוף פרטנר" },
-  { test: (path) => path.includes("/withdrawals"), title: "עמלות ומשיכות" },
-  { test: (path) => path.includes("/revenue"), title: "דוחות" },
-  { test: (path) => path.includes("/team"), title: "צוות" },
-  { test: (path) => path.includes("/settings"), title: "הגדרות" },
-  { test: (path) => path.includes("/deals/"), title: "סיכום עסקה" },
-  { test: () => true, title: "לוח פרטנר" },
+const TITLES: Array<{ test: (path: string) => boolean; titleKey: string }> = [
+  { test: (path) => path.endsWith("/clients/new"), titleKey: "partnerNav.newClient" },
+  { test: (path) => /\/crm\/[^/]+$/.test(path), titleKey: "partnerNav.clientFile" },
+  { test: (path) => path.includes("/crm"), titleKey: "partnerNav.customers" },
+  { test: (path) => path.includes("/reminders"), titleKey: "partnerNav.reminders" },
+  { test: (path) => path.includes("/tasks"), titleKey: "partnerNav.tasks" },
+  { test: (path) => path.includes("/transactions"), titleKey: "partnerNav.deals" },
+  { test: (path) => path.includes("/pricing"), titleKey: "partnerNav.products" },
+  { test: (path) => path.includes("/storefront") || path.includes("/page"), titleKey: "partnerNav.myPage" },
+  { test: (path) => path.includes("/referrals"), titleKey: "partnerNav.referPartner" },
+  { test: (path) => path.includes("/withdrawals"), titleKey: "partnerNav.commissions" },
+  { test: (path) => path.includes("/revenue"), titleKey: "partnerNav.reports" },
+  { test: (path) => path.includes("/team"), titleKey: "partnerNav.team" },
+  { test: (path) => path.includes("/settings"), titleKey: "partnerNav.settings" },
+  { test: (path) => path.includes("/deals/"), titleKey: "partnerNav.dealSummary" },
+  { test: () => true, titleKey: "partnerNav.dashboard" },
 ];
 
 function navClass(isActive: boolean, variant: "side" | "pill") {
@@ -81,6 +84,8 @@ function navClass(isActive: boolean, variant: "side" | "pill") {
 }
 
 export default function PartnerLayout() {
+  const { t, i18n } = useTranslation();
+  const layoutDir = getTextDirection(i18n.language);
   const { user, logout, loginWithToken } = useAuth() as {
     user: {
       name?: string;
@@ -132,10 +137,10 @@ export default function PartnerLayout() {
   }, [user, loginWithToken]);
 
   const title = useMemo(
-    () => TITLES.find((item) => item.test(location.pathname))?.title || "לוח פרטנר",
-    [location.pathname]
+    () => t(TITLES.find((item) => item.test(location.pathname))?.titleKey || "partnerNav.dashboard"),
+    [location.pathname, t]
   );
-  const displayName = user?.name || user?.email || "פרטנר";
+  const displayName = user?.name || user?.email || t("partnerNav.partnerFallback");
   const initials = displayName
     .split(/\s+/)
     .slice(0, 2)
@@ -158,7 +163,7 @@ export default function PartnerLayout() {
           <p className="text-[10px] font-black uppercase tracking-[0.18em] text-[#7C3AED]">
             Bizuply Partner
           </p>
-          <p className="text-sm font-black text-slate-900">פרטנר דשבורד</p>
+          <p className="text-sm font-black text-slate-900">{t("partnerNav.dashboard")}</p>
         </div>
       </div>
       <nav className="flex-1 space-y-1 px-3">
@@ -173,7 +178,7 @@ export default function PartnerLayout() {
               className={({ isActive }) => navClass(isActive, "side")}
             >
               <Icon className="h-4 w-4" />
-              {item.label}
+              {t(item.labelKey)}
             </NavLink>
           );
         })}
@@ -185,7 +190,7 @@ export default function PartnerLayout() {
           className="flex w-full items-center gap-3 rounded-2xl px-3 py-2.5 text-sm font-black text-slate-500 hover:bg-white/70 hover:text-slate-800"
         >
           <LogOut className="h-4 w-4" />
-          יציאה
+          {t("partnerNav.signOut")}
         </button>
       </div>
     </div>
@@ -193,7 +198,7 @@ export default function PartnerLayout() {
 
   return (
     <div
-      dir="rtl"
+      dir={layoutDir}
       className="min-h-screen bg-[#F7F8FA] text-slate-800"
       style={{ fontFamily: PARTNER_FONT }}
     >
@@ -206,11 +211,11 @@ export default function PartnerLayout() {
           <div className="fixed inset-0 z-50 lg:hidden">
             <button
               type="button"
-              aria-label="סגירה"
+              aria-label={t("common.closeMenu")}
               className="absolute inset-0 bg-slate-900/30"
               onClick={() => setOpen(false)}
             />
-            <aside className="absolute inset-y-0 right-0 w-[248px] bg-[#F1ECFB] shadow-2xl">
+            <aside className="absolute inset-y-0 inset-inline-end-0 w-[248px] bg-[#F1ECFB] shadow-2xl">
               <button
                 type="button"
                 onClick={() => setOpen(false)}
@@ -244,6 +249,7 @@ export default function PartnerLayout() {
                 </div>
               </div>
               <div className="flex items-center gap-2">
+                <LanguageSwitcher />
                 <NavLink
                   to="/partner/dashboard/settings"
                   className="rounded-2xl border border-slate-200 bg-white p-2 text-slate-500 shadow-sm"
@@ -268,7 +274,7 @@ export default function PartnerLayout() {
                   end={item.end}
                   className={({ isActive }) => navClass(isActive, "pill")}
                 >
-                  {item.label}
+                  {t(item.labelKey)}
                 </NavLink>
               ))}
             </nav>
