@@ -72,7 +72,7 @@ function mediaProps(id: string, label?: string) {
     "data-field": id,
     "data-image-field": id,
     "data-visual-image-field": id,
-    ...(label ? { "data-visual-edit-label": label } : {}),
+    ...(label ? { "data-visual-edit-label": tx(label) } : {}),
   } as Record<string, string>;
 }
 

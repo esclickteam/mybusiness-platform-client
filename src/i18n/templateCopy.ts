@@ -12,6 +12,8 @@ import bodyExactLexicon from "./templateExactLexicon.body.json";
 import galleryExactLexicon from "./templateExactLexicon.gallery.json";
 import catalogExactLexicon from "./templateExactLexicon.catalog.json";
 import moreExactLexicon from "./templateExactLexicon.more.json";
+import uniqueExactLexicon from "./templateExactLexicon.unique.json";
+import unique2ExactLexicon from "./templateExactLexicon.unique2.json";
 import { TEMPLATE_EXACT_LEXICON, type LocaleCopy } from "./templateExactLexicon";
 
 type PhraseTranslation = {
@@ -36,6 +38,8 @@ const EXACT_LEXICON: Record<string, PhraseTranslation | LocaleCopy> = {
   ...(galleryExactLexicon as Record<string, PhraseTranslation>),
   ...(catalogExactLexicon as Record<string, PhraseTranslation>),
   ...(moreExactLexicon as Record<string, PhraseTranslation>),
+  ...(uniqueExactLexicon as Record<string, PhraseTranslation>),
+  ...(unique2ExactLexicon as Record<string, PhraseTranslation>),
   ...TEMPLATE_EXACT_LEXICON,
 };
 
@@ -130,6 +134,106 @@ const STORE_SITE_COLON_RE =
   /^חנות (.+) מלאה: 8 עמודים, קטגוריות, סינונים, סל ומוצרים מתוסף החנות\.$/;
 const STORE_SITE_DASH_RE =
   /^חנות (.+) מלאה עם 8 עמודים, סינונים ומוצרים מתוסף החנות\.$/;
+const STORE_EXPERIENCE_RE = /^([A-Za-z][\w.-]*) — (.+) עם חוויית חנות מלאה\.$/;
+const STORE_POWERED_RE = /^([A-Za-z][\w.-]*) · (.+) · Powered by Bizuply$/;
+const PROJECT_CODE_RE = /^פרויקט (Alpha|Beta|Gamma)$/;
+const HEBREW_DATE_RE = /^(\d{1,2})\s*(?:ב)?([א-ת׳']+)\s*,?\s*(\d{4})$/;
+const MONTH_YEAR_RE = /^([א-ת׳']+)\s+(\d{4})$/;
+const WEEKDAY_TIME_RE = /^(ראשון|שני|שלישי|רביעי|חמישי|שישי|שבת)\s+(\d{1,2}:\d{2})$/;
+const DURATION_RE = /^(\d+)\s*(דק׳|דקות|ש׳|שעות)$/;
+const DURATION_STUCK_RE = /^(\d+)(ד׳|ש׳)$/;
+const BURGER_SMASH_RE = /^(.+) — לחמנייה, בשר, גבינה — בלי פילוסופיה\.$/;
+const AGENCY_SHARP_RE = /^([A-Za-z][\w.-]*) — סוכנות (.+) עם תהליך חד ותוצאות מדידות\.$/;
+const INDEXED_LABEL_RE = /^(.+?)\s+(\d+(?:\.\d+)?)$/;
+
+const HEBREW_WEEKDAYS: Record<string, PhraseTranslation> = {
+  ראשון: { en: "Sunday", es: "domingo", "pt-BR": "domingo", ar: "الأحد" },
+  שני: { en: "Monday", es: "lunes", "pt-BR": "segunda-feira", ar: "الاثنين" },
+  שלישי: { en: "Tuesday", es: "martes", "pt-BR": "terça-feira", ar: "الثلاثاء" },
+  רביעי: { en: "Wednesday", es: "miércoles", "pt-BR": "quarta-feira", ar: "الأربعاء" },
+  חמישי: { en: "Thursday", es: "jueves", "pt-BR": "quinta-feira", ar: "الخميس" },
+  שישי: { en: "Friday", es: "viernes", "pt-BR": "sexta-feira", ar: "الجمعة" },
+  שבת: { en: "Saturday", es: "sábado", "pt-BR": "sábado", ar: "السبت" },
+};
+
+const INDEXED_LABELS: Record<string, PhraseTranslation> = {
+  "כותרת שירות": { en: "Service title", es: "Título del servicio", "pt-BR": "Título do serviço", ar: "عنوان الخدمة" },
+  שאלה: { en: "Question", es: "Pregunta", "pt-BR": "Pergunta", ar: "سؤال" },
+  מוצר: { en: "Product", es: "Producto", "pt-BR": "Produto", ar: "منتج" },
+  המלצה: { en: "Testimonial", es: "Testimonio", "pt-BR": "Depoimento", ar: "شهادة" },
+  "שם מוצר": { en: "Product name", es: "Nombre del producto", "pt-BR": "Nome do produto", ar: "اسم المنتج" },
+  "כותרת שלב": { en: "Step title", es: "Título del paso", "pt-BR": "Título da etapa", ar: "عنوان الخطوة" },
+  "קישור ניווט": { en: "Nav link", es: "Enlace de navegación", "pt-BR": "Link de navegação", ar: "رابط التنقل" },
+  "טקסט עמוד": { en: "Page text", es: "Texto de página", "pt-BR": "Texto da página", ar: "نص الصفحة" },
+  תשובה: { en: "Answer", es: "Respuesta", "pt-BR": "Resposta", ar: "إجابة" },
+  "כותרת עמוד": { en: "Page title", es: "Título de página", "pt-BR": "Título da página", ar: "عنوان الصفحة" },
+  "אייברו עמוד": { en: "Page eyebrow", es: "Cejilla de página", "pt-BR": "Olho da página", ar: "عنوان فرعي للصفحة" },
+  "שם ממליץ": { en: "Reviewer name", es: "Nombre del recomendante", "pt-BR": "Nome de quem recomenda", ar: "اسم المُوصي" },
+  "שם חבילה": { en: "Package name", es: "Nombre del paquete", "pt-BR": "Nome do pacote", ar: "اسم الباقة" },
+  "תג תובנה": { en: "Insight tag", es: "Etiqueta de insight", "pt-BR": "Tag de insight", ar: "وسم رؤية" },
+  "תיאור שלב": { en: "Step description", es: "Descripción del paso", "pt-BR": "Descrição da etapa", ar: "وصف الخطوة" },
+  "מחיר מוצר": { en: "Product price", es: "Precio del producto", "pt-BR": "Preço do produto", ar: "سعر المنتج" },
+  "תג פרויקט": { en: "Project tag", es: "Etiqueta de proyecto", "pt-BR": "Tag de projeto", ar: "وسم المشروع" },
+  "חבילת מחיר": { en: "Price package", es: "Paquete de precio", "pt-BR": "Pacote de preço", ar: "باقة سعر" },
+  "מחיר חבילה": { en: "Package price", es: "Precio del paquete", "pt-BR": "Preço do pacote", ar: "سعر الباقة" },
+  "טקסט שירות": { en: "Service text", es: "Texto del servicio", "pt-BR": "Texto do serviço", ar: "نص الخدمة" },
+  "תמונת מוצר": { en: "Product image", es: "Imagen del producto", "pt-BR": "Imagem do produto", ar: "صورة المنتج" },
+  "מדיה מרחפת": { en: "Hover media", es: "Media al pasar", "pt-BR": "Mídia ao passar", ar: "وسائط عند التمرير" },
+  "טקסט תובנה": { en: "Insight text", es: "Texto de insight", "pt-BR": "Texto de insight", ar: "نص الرؤية" },
+  "כרטיס שירות": { en: "Service card", es: "Tarjeta de servicio", "pt-BR": "Cartão de serviço", ar: "بطاقة الخدمة" },
+  "תיאור שירות": { en: "Service description", es: "Descripción del servicio", "pt-BR": "Descrição do serviço", ar: "وصف الخدمة" },
+  "כפתור שירות": { en: "Service button", es: "Botón del servicio", "pt-BR": "Botão do serviço", ar: "زر الخدمة" },
+  "תיאור חבילה": { en: "Package description", es: "Descripción del paquete", "pt-BR": "Descrição do pacote", ar: "وصف الباقة" },
+  "קישור תחתון": { en: "Footer link", es: "Enlace de pie", "pt-BR": "Link do rodapé", ar: "رابط التذييل" },
+  "טקסט פרויקט": { en: "Project text", es: "Texto del proyecto", "pt-BR": "Texto do projeto", ar: "نص المشروع" },
+  "כותרת תובנה": { en: "Insight title", es: "Título de insight", "pt-BR": "Título de insight", ar: "عنوان الرؤية" },
+  "תמונת פروיקט": { en: "Project image", es: "Imagen del proyecto", "pt-BR": "Imagem do projeto", ar: "صورة المشروع" },
+  "כותרת פרויקט": { en: "Project title", es: "Título del proyecto", "pt-BR": "Título do projeto", ar: "عنوان المشروع" },
+  "תמונת שירות": { en: "Service image", es: "Imagen del servicio", "pt-BR": "Imagem do serviço", ar: "صورة الخدمة" },
+  "קטגוריית שירות": { en: "Service category", es: "Categoría del servicio", "pt-BR": "Categoria do serviço", ar: "فئة الخدمة" },
+  "מחיר שירות": { en: "Service price", es: "Precio del servicio", "pt-BR": "Preço do serviço", ar: "سعر الخدمة" },
+  סטטיסטיקה: { en: "Statistic", es: "Estadística", "pt-BR": "Estatística", ar: "إحصائية" },
+  "סטטיסטיקה מנהלת": { en: "Director statistic", es: "Estadística de dirección", "pt-BR": "Estatística da direção", ar: "إحصائية الإدارة" },
+  "כרטיס המלצה": { en: "Testimonial card", es: "Tarjeta de testimonio", "pt-BR": "Cartão de depoimento", ar: "بطاقة شهادة" },
+  "טקסט המלצה": { en: "Testimonial text", es: "Texto del testimonio", "pt-BR": "Texto do depoimento", ar: "نص الشهادة" },
+  "תמונת ממליצה": { en: "Reviewer photo", es: "Foto de quien recomienda", "pt-BR": "Foto de quem recomenda", ar: "صورة المُوصية" },
+  "שם ממליצה": { en: "Reviewer name", es: "Nombre de quien recomienda", "pt-BR": "Nome de quem recomenda", ar: "اسم المُوصية" },
+  "תפקיד ממליצה": { en: "Reviewer role", es: "Cargo de quien recomienda", "pt-BR": "Cargo de quem recomenda", ar: "دور المُوصية" },
+  מותג: { en: "Brand", es: "Marca", "pt-BR": "Marca", ar: "علامة" },
+  "כרטיס בלוג": { en: "Blog card", es: "Tarjeta de blog", "pt-BR": "Cartão de blog", ar: "بطاقة مدونة" },
+  "תמונת מאמר": { en: "Article image", es: "Imagen del artículo", "pt-BR": "Imagem do artigo", ar: "صورة المقال" },
+  "תאריך מאמר": { en: "Article date", es: "Fecha del artículo", "pt-BR": "Data do artigo", ar: "تاريخ المقال" },
+  "כותרת מאמר": { en: "Article title", es: "Título del artículo", "pt-BR": "Título do artigo", ar: "عنوان المقال" },
+  "טקסט מאמר": { en: "Article text", es: "Texto del artículo", "pt-BR": "Texto do artigo", ar: "نص المقال" },
+  "כפתור מאמר": { en: "Article button", es: "Botón del artículo", "pt-BR": "Botão do artigo", ar: "زر المقال" },
+  "מסגרת תמונת גלריה": { en: "Gallery image frame", es: "Marco de imagen de galería", "pt-BR": "Moldura de imagem da galeria", ar: "إطار صورة المعرض" },
+  "תמונת גלריה": { en: "Gallery image", es: "Imagen de galería", "pt-BR": "Imagem da galeria", ar: "صورة المعرض" },
+  "סעיף חבילה": { en: "Package item", es: "Ítem del paquete", "pt-BR": "Item do pacote", ar: "بند الباقة" },
+  "איש צוות": { en: "Team member", es: "Miembro del equipo", "pt-BR": "Membro da equipe", ar: "عضو الفريق" },
+  "תמונת איש צוות": { en: "Team member photo", es: "Foto del miembro", "pt-BR": "Foto do membro", ar: "صورة عضو الفريق" },
+  "שם איש צוות": { en: "Team member name", es: "Nombre del miembro", "pt-BR": "Nome do membro", ar: "اسم عضو الفريق" },
+  "תפקיד איש צוות": { en: "Team member role", es: "Cargo del miembro", "pt-BR": "Cargo do membro", ar: "دور عضو الفريق" },
+  "כותרת קבוצת פוטר": { en: "Footer group title", es: "Título de grupo del pie", "pt-BR": "Título do grupo do rodapé", ar: "عنوان مجموعة التذييل" },
+  "קישור פוטר": { en: "Footer link", es: "Enlace de pie", "pt-BR": "Link do rodapé", ar: "رابط التذييل" },
+  ניווט: { en: "Nav", es: "Navegación", "pt-BR": "Navegação", ar: "تنقل" },
+  "פתיחת שאלה": { en: "Question open", es: "Apertura de pregunta", "pt-BR": "Abertura da pergunta", ar: "فتح السؤال" },
+  "תגית מוצר": { en: "Product tag", es: "Etiqueta de producto", "pt-BR": "Tag do produto", ar: "وسم المنتج" },
+};
+
+const HEBREW_MONTHS: Record<string, PhraseTranslation> = {
+  ינואר: { en: "January", es: "enero", "pt-BR": "janeiro", ar: "يناير" },
+  פברואר: { en: "February", es: "febrero", "pt-BR": "fevereiro", ar: "فبراير" },
+  מרץ: { en: "March", es: "marzo", "pt-BR": "março", ar: "مارس" },
+  אפריל: { en: "April", es: "abril", "pt-BR": "abril", ar: "أبريل" },
+  מאי: { en: "May", es: "mayo", "pt-BR": "maio", ar: "مايو" },
+  יוני: { en: "June", es: "junio", "pt-BR": "junho", ar: "يونيو" },
+  יולי: { en: "July", es: "julio", "pt-BR": "julho", ar: "يوليو" },
+  אוגוסט: { en: "August", es: "agosto", "pt-BR": "agosto", ar: "أغسطس" },
+  ספטמבר: { en: "September", es: "septiembre", "pt-BR": "setembro", ar: "سبتمبر" },
+  אוקטובר: { en: "October", es: "octubre", "pt-BR": "outubro", ar: "أكتوبر" },
+  נובמבר: { en: "November", es: "noviembre", "pt-BR": "novembro", ar: "نوفمبر" },
+  דצמבר: { en: "December", es: "diciembre", "pt-BR": "dezembro", ar: "ديسمبر" },
+};
 
 function localizeStoryOfBrand(text: string, locale: string): string {
   const match = text.match(STORY_OF_BRAND_RE);
@@ -191,6 +295,127 @@ function localizeFragment(text: string, locale: string): string {
   if (!HE.test(text)) return text;
   const exact = pickLocaleCopy(EXACT_LEXICON[text], locale);
   if (isUsableTranslation(text, exact, locale)) return exact;
+  const category = pickLocaleCopy(CATALOG_CATEGORY[text], locale);
+  if (isUsableTranslation(text, category, locale)) return category;
+  const indexed = pickLocaleCopy(INDEXED_LABELS[text], locale);
+  if (isUsableTranslation(text, indexed, locale)) return indexed;
+  return "";
+}
+
+function localizeStoreExperienceLine(text: string, locale: string): string {
+  const match = text.match(STORE_EXPERIENCE_RE);
+  if (!match) return "";
+  const brand = match[1];
+  const category = localizeFragment(match[2], locale);
+  if (!category) return "";
+  if (locale === "es") return `${brand} — ${category} con una experiencia de tienda completa.`;
+  if (locale === "pt-BR") return `${brand} — ${category} com uma experiência de loja completa.`;
+  if (locale === "ar") return `${brand} — ${category} مع تجربة متجر كاملة.`;
+  return `${brand} — ${category} with a full store experience.`;
+}
+
+function localizeStorePoweredLine(text: string, locale: string): string {
+  const match = text.match(STORE_POWERED_RE);
+  if (!match) return "";
+  const brand = match[1];
+  const category = localizeFragment(match[2], locale);
+  if (!category) return "";
+  return `${brand} · ${category} · Powered by Bizuply`;
+}
+
+function localizeProjectCode(text: string, locale: string): string {
+  const match = text.match(PROJECT_CODE_RE);
+  if (!match) return "";
+  const code = match[1];
+  if (locale === "es") return `Proyecto ${code}`;
+  if (locale === "pt-BR") return `Projeto ${code}`;
+  if (locale === "ar") return `مشروع ${code}`;
+  return `Project ${code}`;
+}
+
+function localizeHebrewDate(text: string, locale: string): string {
+  const match = text.match(HEBREW_DATE_RE);
+  if (!match) return "";
+  const day = match[1];
+  const month = pickLocaleCopy(HEBREW_MONTHS[match[2]], locale);
+  const year = match[3];
+  if (!month) return "";
+  if (locale === "es") return `${day} de ${month} de ${year}`;
+  if (locale === "pt-BR") return `${day} de ${month} de ${year}`;
+  if (locale === "ar") return `${day} ${month} ${year}`;
+  return `${month} ${day}, ${year}`;
+}
+
+function localizeMonthYear(text: string, locale: string): string {
+  const match = text.match(MONTH_YEAR_RE);
+  if (!match) return "";
+  const month = pickLocaleCopy(HEBREW_MONTHS[match[1]], locale);
+  if (!month) return "";
+  return `${month} ${match[2]}`;
+}
+
+function localizeWeekdayTime(text: string, locale: string): string {
+  const match = text.match(WEEKDAY_TIME_RE);
+  if (!match) return "";
+  const day = pickLocaleCopy(HEBREW_WEEKDAYS[match[1]], locale);
+  if (!day) return "";
+  return `${day} ${match[2]}`;
+}
+
+function localizeDuration(text: string, locale: string): string {
+  const match = text.match(DURATION_RE) || text.match(DURATION_STUCK_RE);
+  if (!match) return "";
+  const n = match[1];
+  const isMin = /ד/.test(match[2]);
+  if (locale === "es") return isMin ? `${n} min` : `${n} h`;
+  if (locale === "pt-BR") return isMin ? `${n} min` : `${n} h`;
+  if (locale === "ar") return isMin ? `${n} د` : `${n} س`;
+  return isMin ? `${n} min` : `${n} h`;
+}
+
+function localizeBurgerSmash(text: string, locale: string): string {
+  const match = text.match(BURGER_SMASH_RE);
+  if (!match) return "";
+  const name = localizeFragment(match[1], locale) || (HE.test(match[1]) ? "" : match[1]);
+  if (!name) return "";
+  if (locale === "es") return `${name} — pan, carne, queso — sin filosofía.`;
+  if (locale === "pt-BR") return `${name} — pão, carne, queijo — sem filosofia.`;
+  if (locale === "ar") return `${name} — خبز ولحم وجبن — بلا فلسفة.`;
+  return `${name} — bun, beef, cheese — no philosophy.`;
+}
+
+function localizeAgencySharpLine(text: string, locale: string): string {
+  const match = text.match(AGENCY_SHARP_RE);
+  if (!match) return "";
+  const brand = match[1];
+  const kind = localizeFragment(match[2], locale);
+  if (!kind) return "";
+  if (locale === "es") return `${brand} — agencia de ${kind} con un proceso nítido y resultados medibles.`;
+  if (locale === "pt-BR") return `${brand} — agência de ${kind} com processo nítido e resultados mensuráveis.`;
+  if (locale === "ar") return `${brand} — وكالة ${kind} بعملية حادة ونتائج قابلة للقياس.`;
+  return `${brand} — a ${kind} agency with a sharp process and measurable results.`;
+}
+
+function localizeIndexedEditorLabel(text: string, locale: string): string {
+  const match = text.match(INDEXED_LABEL_RE);
+  if (!match) return "";
+  const prefix = localizeFragment(match[1], locale);
+  if (!prefix) return "";
+  return `${prefix} ${match[2]}`;
+}
+
+function localizePrefixedEditorLabel(text: string, locale: string): string {
+  const prefixes = Object.keys(INDEXED_LABELS).sort((a, b) => b.length - a.length);
+  for (const prefix of prefixes) {
+    if (!text.startsWith(`${prefix} `)) continue;
+    const rest = text.slice(prefix.length + 1);
+    if (/^\d+(?:\.\d+)?$/.test(rest)) continue;
+    const locPrefix = localizeFragment(prefix, locale);
+    if (!locPrefix) continue;
+    const locRest = HE.test(rest) ? localizeFragment(rest, locale) : rest;
+    if (!locRest || HE.test(locRest)) continue;
+    return `${locPrefix} ${locRest}`;
+  }
   return "";
 }
 
@@ -285,6 +510,51 @@ export function localizeBuiltInText(text: string, language?: string): string {
     return adaptBuiltInDirectionalCss(exact, locale);
   }
 
+  const categoryHit = pickLocaleCopy(CATALOG_CATEGORY[text], locale);
+  if (isUsableTranslation(text, categoryHit, locale)) {
+    return adaptBuiltInDirectionalCss(categoryHit, locale);
+  }
+
+  const indexedExact = pickLocaleCopy(INDEXED_LABELS[text], locale);
+  if (isUsableTranslation(text, indexedExact, locale)) {
+    return adaptBuiltInDirectionalCss(indexedExact, locale);
+  }
+
+  const projectCode = localizeProjectCode(text, locale);
+  if (isUsableTranslation(text, projectCode, locale)) {
+    return adaptBuiltInDirectionalCss(projectCode, locale);
+  }
+
+  const hebrewDate = localizeHebrewDate(text, locale);
+  if (isUsableTranslation(text, hebrewDate, locale)) {
+    return adaptBuiltInDirectionalCss(hebrewDate, locale);
+  }
+
+  const monthYear = localizeMonthYear(text, locale);
+  if (isUsableTranslation(text, monthYear, locale)) {
+    return adaptBuiltInDirectionalCss(monthYear, locale);
+  }
+
+  const weekdayTime = localizeWeekdayTime(text, locale);
+  if (isUsableTranslation(text, weekdayTime, locale)) {
+    return adaptBuiltInDirectionalCss(weekdayTime, locale);
+  }
+
+  const duration = localizeDuration(text, locale);
+  if (isUsableTranslation(text, duration, locale)) {
+    return adaptBuiltInDirectionalCss(duration, locale);
+  }
+
+  const indexedLabel = localizeIndexedEditorLabel(text, locale);
+  if (isUsableTranslation(text, indexedLabel, locale)) {
+    return adaptBuiltInDirectionalCss(indexedLabel, locale);
+  }
+
+  const prefixedLabel = localizePrefixedEditorLabel(text, locale);
+  if (isUsableTranslation(text, prefixedLabel, locale)) {
+    return adaptBuiltInDirectionalCss(prefixedLabel, locale);
+  }
+
   const catalogLine = localizeCatalogProductLine(text, locale);
   if (isUsableTranslation(text, catalogLine, locale)) {
     return adaptBuiltInDirectionalCss(catalogLine, locale);
@@ -313,6 +583,26 @@ export function localizeBuiltInText(text: string, language?: string): string {
   const storeSiteLine = localizeStoreSiteLine(text, locale);
   if (isUsableTranslation(text, storeSiteLine, locale)) {
     return adaptBuiltInDirectionalCss(storeSiteLine, locale);
+  }
+
+  const storeExperienceLine = localizeStoreExperienceLine(text, locale);
+  if (isUsableTranslation(text, storeExperienceLine, locale)) {
+    return adaptBuiltInDirectionalCss(storeExperienceLine, locale);
+  }
+
+  const storePoweredLine = localizeStorePoweredLine(text, locale);
+  if (isUsableTranslation(text, storePoweredLine, locale)) {
+    return adaptBuiltInDirectionalCss(storePoweredLine, locale);
+  }
+
+  const burgerSmash = localizeBurgerSmash(text, locale);
+  if (isUsableTranslation(text, burgerSmash, locale)) {
+    return adaptBuiltInDirectionalCss(burgerSmash, locale);
+  }
+
+  const agencySharp = localizeAgencySharpLine(text, locale);
+  if (isUsableTranslation(text, agencySharp, locale)) {
+    return adaptBuiltInDirectionalCss(agencySharp, locale);
   }
 
   const bookHit = pickLocaleCopy(book[text], locale);

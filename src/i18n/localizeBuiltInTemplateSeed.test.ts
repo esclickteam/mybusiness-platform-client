@@ -231,6 +231,48 @@ describe("localizeBuiltInTemplateSeed", () => {
     ).toMatch(/balayage/i);
   });
 
+  it("localizes store experience, project codes, dates, and unique rows", () => {
+    expect(
+      localizeBuiltInText("Vinora — יקב ויינות עם חוויית חנות מלאה.", "en"),
+    ).toBe("Vinora — winery and wines with a full store experience.");
+    expect(
+      localizeBuiltInText("Vinora — יקב ויינות עם חוויית חנות מלאה.", "es"),
+    ).not.toMatch(/[\u0590-\u05FF]/);
+    expect(
+      localizeBuiltInText("Vinora · יקב ויינות · Powered by Bizuply", "en"),
+    ).toBe("Vinora · winery and wines · Powered by Bizuply");
+    expect(localizeBuiltInText("פרויקט Alpha", "en")).toBe("Project Alpha");
+    expect(localizeBuiltInText("פרויקט Beta", "es")).toBe("Proyecto Beta");
+    expect(localizeBuiltInText("פרויקט Gamma", "pt-BR")).toBe("Projeto Gamma");
+    expect(localizeBuiltInText("28 במאי 2026", "en")).toBe("May 28, 2026");
+    expect(localizeBuiltInText("27 פברואר, 2026", "es")).toMatch(/27 de febrero de 2026/i);
+    expect(localizeBuiltInText("קפה ספיישלטי", "en")).toBe("specialty coffee");
+    expect(localizeBuiltInText("תאריך", "en")).toBe("Date");
+    expect(localizeBuiltInText("וילות", "es")).toBe("Villas");
+    expect(localizeBuiltInText("נשמח לקבל אתכם.", "en")).toMatch(/welcome/i);
+    expect(localizeBuiltInText("Vinora — יקב ויינות עם חוויית חנות מלאה.", "ar")).not.toMatch(
+      /[\u0590-\u05FF]/,
+    );
+    expect(localizeBuiltInText("כותרת שירות 1", "en")).toBe("Service title 1");
+    expect(localizeBuiltInText("שאלה 3", "es")).toMatch(/Pregunta 3/);
+    expect(localizeBuiltInText("מאי 2026", "en")).toBe("May 2026");
+    expect(localizeBuiltInText("שבת 19:00", "en")).toMatch(/Saturday 19:00/);
+    expect(localizeBuiltInText("15 דק׳", "en")).toBe("15 min");
+    expect(
+      localizeBuiltInText("בייקון סמאש — לחמנייה, בשר, גבינה — בלי פילוסופיה.", "en"),
+    ).toMatch(/Bacon smash/);
+    expect(
+      localizeBuiltInText("בייקון סמאש — לחמנייה, בשר, גבינה — בלי פילוסופיה.", "en"),
+    ).not.toMatch(/[\u0590-\u05FF]/);
+    expect(
+      localizeBuiltInText("Adspire — סוכנות פרסום עם תהליך חד ותוצאות מדידות.", "en"),
+    ).not.toMatch(/[\u0590-\u05FF]/);
+    expect(
+      localizeBuiltInText("מיפוי אור, רעש, תנועה, שכנים, מגבלות וחומר מקומי.", "en"),
+    ).toMatch(/light|noise|neighbors/i);
+    expect(localizeBuiltInText("אזל מהמלאי", "es")).toMatch(/Agotado/i);
+  });
+
   it("does not rewrite saved customer copy over localized defaults", () => {
     const defaults = localizeBuiltInTemplateSeed(
       { heroTitle: "צור קשר", heroPrimary: "הזמינו פיצה" },

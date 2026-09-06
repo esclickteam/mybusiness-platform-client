@@ -1,5 +1,6 @@
 import React from "react";
 import i18n from "../../../../../i18n/i18n";
+import { tx } from "../../../../../i18n/localizeBuiltInTemplateSeed";
 
 import { readVisualContent } from "../utils/visualData";
 
@@ -72,7 +73,7 @@ export default function VisualLink({
           "data-visual-editable": "true",
           "data-visual-edit-id": id,
           "data-visual-edit-type": "button",
-          "data-visual-edit-label": label,
+          "data-visual-edit-label": tx(label),
           "data-visual-link-href": finalHref,
           "data-visual-link-target": finalTarget,
           "data-link-url": finalHref,

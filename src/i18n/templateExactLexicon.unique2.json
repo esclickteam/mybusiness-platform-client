@@ -1,0 +1,1244 @@
+{
+  "טיפוח ורחצה": {
+    "en": "Care and bath",
+    "es": "Cuidado y baño",
+    "pt-BR": "Cuidado e banho",
+    "ar": "عناية واستحمام"
+  },
+  "סלמון קלאסי": {
+    "en": "Classic salmon",
+    "es": "Salmón clásico",
+    "pt-BR": "Salmão clássico",
+    "ar": "سلمون كلاسيكي"
+  },
+  "קערת שורשים": {
+    "en": "Root bowl",
+    "es": "Bol de raíces",
+    "pt-BR": "Tigela de raízes",
+    "ar": "وعاء جذور"
+  },
+  "שווארמה הודו": {
+    "en": "Turkey shawarma",
+    "es": "Shawarma de pavo",
+    "pt-BR": "Shawarma de peru",
+    "ar": "شاورما ديك رومي"
+  },
+  "טארטלט לימון": {
+    "en": "Lemon tartlet",
+    "es": "Tartaleta de limón",
+    "pt-BR": "Tortinha de limão",
+    "ar": "تارت ليمون"
+  },
+  "כתום ג׳ינג׳ר": {
+    "en": "Orange ginger",
+    "es": "Naranja jengibre",
+    "pt-BR": "Laranja gengibre",
+    "ar": "برتقال زنجبيل"
+  },
+  "שיאו לונג באו": {
+    "en": "Xiao long bao",
+    "es": "Xiao long bao",
+    "pt-BR": "Xiao long bao",
+    "ar": "شياو لونغ باو"
+  },
+  "ברסקט 12 שעות": {
+    "en": "12-hour brisket",
+    "es": "Brisket de 12 horas",
+    "pt-BR": "Brisket de 12 horas",
+    "ar": "بريسكت 12 ساعة"
+  },
+  "קאצ׳יו אה פפה": {
+    "en": "Cacio e pepe",
+    "es": "Cacio e pepe",
+    "pt-BR": "Cacio e pepe",
+    "ar": "كاتشيو إي بيبي"
+  },
+  "פיסטוק סיציליאני": {
+    "en": "Sicilian pistachio",
+    "es": "Pistacho siciliano",
+    "pt-BR": "Pistache siciliano",
+    "ar": "فستق صقلي"
+  },
+  "דירת טיילת": {
+    "en": "Promenade apartment",
+    "es": "Piso del paseo",
+    "pt-BR": "Apartamento da orla",
+    "ar": "شقة الممشى"
+  },
+  "AI ליוצרים": {
+    "en": "AI for creators",
+    "es": "IA para creadores",
+    "pt-BR": "IA para criadores",
+    "ar": "ذكاء اصطناعي للمبدعين"
+  },
+  "צדפות חיות": {
+    "en": "Live oysters",
+    "es": "Ostras vivas",
+    "pt-BR": "Ostras vivas",
+    "ar": "محار حي"
+  },
+  "בייקון סמאש": {
+    "en": "Bacon smash",
+    "es": "Smash de bacon",
+    "pt-BR": "Smash de bacon",
+    "ar": "سماش بيكون"
+  },
+  "פטריות סויה": {
+    "en": "Soy mushrooms",
+    "es": "Champiñones de soja",
+    "pt-BR": "Cogumelos de soja",
+    "ar": "فطر الصويا"
+  },
+  "צ׳ילי קראנץ׳": {
+    "en": "Chili crunch",
+    "es": "Chili crunch",
+    "pt-BR": "Chili crunch",
+    "ar": "تشيلي كرنش"
+  },
+  "קריספי צ׳יקן": {
+    "en": "Crispy chicken",
+    "es": "Pollo crujiente",
+    "pt-BR": "Frango crocante",
+    "ar": "دجاج مقرمش"
+  },
+  "אזל מהמלאי": {
+    "en": "Out of stock",
+    "es": "Agotado",
+    "pt-BR": "Esgotado",
+    "ar": "نفد المخزون"
+  },
+  "בחירת שירות": {
+    "en": "Choose a service",
+    "es": "Elegir servicio",
+    "pt-BR": "Escolher serviço",
+    "ar": "اختيار خدمة"
+  },
+  "קביעת פגישה": {
+    "en": "Book a meeting",
+    "es": "Concertar reunión",
+    "pt-BR": "Agendar reunião",
+    "ar": "تحديد موعد"
+  },
+  "תקציב קמפיין": {
+    "en": "Campaign budget",
+    "es": "Presupuesto de campaña",
+    "pt-BR": "Orçamento de campanha",
+    "ar": "ميزانية حملة"
+  },
+  "אימון ניסיון": {
+    "en": "Trial session",
+    "es": "Entrenamiento de prueba",
+    "pt-BR": "Treino experimental",
+    "ar": "تمرين تجريبي"
+  },
+  "אומנות הייצור": {
+    "en": "The craft of making",
+    "es": "El arte de fabricar",
+    "pt-BR": "A arte de fabricar",
+    "ar": "فن التصنيع"
+  },
+  "זרימת מוביליטי": {
+    "en": "Mobility flow",
+    "es": "Flujo de movilidad",
+    "pt-BR": "Fluxo de mobilidade",
+    "ar": "تدفق الحركة"
+  },
+  "מעולה!": {
+    "en": "Excellent!",
+    "es": "¡Excelente!",
+    "pt-BR": "Excelente!",
+    "ar": "ممتاز!"
+  },
+  "מצוין!": {
+    "en": "Great!",
+    "es": "¡Genial!",
+    "pt-BR": "Ótimo!",
+    "ar": "رائع!"
+  },
+  "מעצבים": {
+    "en": "Designers",
+    "es": "Diseñadores",
+    "pt-BR": "Designers",
+    "ar": "مصممون"
+  },
+  "משופצת": {
+    "en": "Renovated",
+    "es": "Reformado",
+    "pt-BR": "Reformado",
+    "ar": "مجدّد"
+  },
+  "קפסולה": {
+    "en": "Capsule",
+    "es": "Cápsula",
+    "pt-BR": "Cápsula",
+    "ar": "كبسولة"
+  },
+  "מהיומן": {
+    "en": "From the diary",
+    "es": "Del diario",
+    "pt-BR": "Do diário",
+    "ar": "من اليومية"
+  },
+  "רישיון": {
+    "en": "License",
+    "es": "Licencia",
+    "pt-BR": "Licença",
+    "ar": "رخصة"
+  },
+  "מוכרים": {
+    "en": "Sellers",
+    "es": "Vendedores",
+    "pt-BR": "Vendedores",
+    "ar": "بائعون"
+  },
+  "15 דק׳": {
+    "en": "15 min",
+    "es": "15 min",
+    "pt-BR": "15 min",
+    "ar": "15 د"
+  },
+  "ברונזה": {
+    "en": "Bronze",
+    "es": "Bronce",
+    "pt-BR": "Bronze",
+    "ar": "برونز"
+  },
+  "מקורות": {
+    "en": "Sources",
+    "es": "Fuentes",
+    "pt-BR": "Fontes",
+    "ar": "مصادر"
+  },
+  "בוקינג": {
+    "en": "Booking",
+    "es": "Reserva",
+    "pt-BR": "Reserva",
+    "ar": "حجز"
+  },
+  "אספרסו": {
+    "en": "Espresso",
+    "es": "Espresso",
+    "pt-BR": "Espresso",
+    "ar": "إسبريسو"
+  },
+  "עירוני": {
+    "en": "Urban",
+    "es": "Urbano",
+    "pt-BR": "Urbano",
+    "ar": "حضري"
+  },
+  "ציבורי": {
+    "en": "Public",
+    "es": "Público",
+    "pt-BR": "Público",
+    "ar": "عام"
+  },
+  "מדינות": {
+    "en": "Countries",
+    "es": "Países",
+    "pt-BR": "Países",
+    "ar": "دول"
+  },
+  "הפתעות": {
+    "en": "Surprises",
+    "es": "Sorpresas",
+    "pt-BR": "Surpresas",
+    "ar": "مفاجآت"
+  },
+  "שווקים": {
+    "en": "Markets",
+    "es": "Mercados",
+    "pt-BR": "Mercados",
+    "ar": "أسواق"
+  },
+  "דוברים": {
+    "en": "Speakers",
+    "es": "Ponentes",
+    "pt-BR": "Palestrantes",
+    "ar": "متحدثون"
+  },
+  "משיבים": {
+    "en": "Respondents",
+    "es": "Encuestados",
+    "pt-BR": "Respondentes",
+    "ar": "مجيبون"
+  },
+  "ארגזים": {
+    "en": "Crates",
+    "es": "Cajas",
+    "pt-BR": "Caixas",
+    "ar": "صناديق"
+  },
+  "בסטסלר": {
+    "en": "Bestseller",
+    "es": "Más vendido",
+    "pt-BR": "Mais vendido",
+    "ar": "الأكثر مبيعاً"
+  },
+  "אוצרות": {
+    "en": "Treasures",
+    "es": "Tesoros",
+    "pt-BR": "Tesouros",
+    "ar": "كنوز"
+  },
+  "המורים": {
+    "en": "The teachers",
+    "es": "Los profesores",
+    "pt-BR": "Os professores",
+    "ar": "المعلمون"
+  },
+  "צלילים": {
+    "en": "Sounds",
+    "es": "Sonidos",
+    "pt-BR": "Sons",
+    "ar": "أصوات"
+  },
+  "משפטים": {
+    "en": "Sentences",
+    "es": "Frases",
+    "pt-BR": "Frases",
+    "ar": "جمل"
+  },
+  "6 רמות": {
+    "en": "6 levels",
+    "es": "6 niveles",
+    "pt-BR": "6 níveis",
+    "ar": "6 مستويات"
+  },
+  "כוונון": {
+    "en": "Tuning",
+    "es": "Ajuste",
+    "pt-BR": "Ajuste",
+    "ar": "ضبط"
+  },
+  "האמנים": {
+    "en": "The artists",
+    "es": "Los artistas",
+    "pt-BR": "Os artistas",
+    "ar": "الفنانون"
+  },
+  "18 נק׳": {
+    "en": "18 pts",
+    "es": "18 pts",
+    "pt-BR": "18 pts",
+    "ar": "18 نقطة"
+  },
+  "עוגיות": {
+    "en": "Cookies",
+    "es": "Galletas",
+    "pt-BR": "Biscoitos",
+    "ar": "بسكويت"
+  },
+  "חמיצות": {
+    "en": "Acidity",
+    "es": "Acidez",
+    "pt-BR": "Acidez",
+    "ar": "حموضة"
+  },
+  "כוסברה": {
+    "en": "Cilantro",
+    "es": "Cilantro",
+    "pt-BR": "Coentro",
+    "ar": "كزبرة"
+  },
+  "רעננות": {
+    "en": "Freshness",
+    "es": "Frescura",
+    "pt-BR": "Frescor",
+    "ar": "انتعاش"
+  },
+  "איסוף?": {
+    "en": "Pickup?",
+    "es": "¿Recogida?",
+    "pt-BR": "Retirada?",
+    "ar": "استلام؟"
+  },
+  "מומחיות": {
+    "en": "Expertise",
+    "es": "Pericia",
+    "pt-BR": "Especialidade",
+    "ar": "خبرة"
+  },
+  "אנימציה": {
+    "en": "Animation",
+    "es": "Animación",
+    "pt-BR": "Animação",
+    "ar": "رسوم متحركة"
+  },
+  "בסיסיים": {
+    "en": "Basics",
+    "es": "Básicos",
+    "pt-BR": "Básicos",
+    "ar": "أساسيات"
+  },
+  "קישורים": {
+    "en": "Links",
+    "es": "Enlaces",
+    "pt-BR": "Links",
+    "ar": "روابط"
+  },
+  "טאצ׳ אפ": {
+    "en": "Touch-up",
+    "es": "Retoque",
+    "pt-BR": "Retoque",
+    "ar": "لمسة أخيرة"
+  },
+  "הרופאים": {
+    "en": "The doctors",
+    "es": "Los médicos",
+    "pt-BR": "Os médicos",
+    "ar": "الأطباء"
+  },
+  "משתתפים": {
+    "en": "Participants",
+    "es": "Participantes",
+    "pt-BR": "Participantes",
+    "ar": "مشاركون"
+  },
+  "קליניקה": {
+    "en": "Clinic",
+    "es": "Clínica",
+    "pt-BR": "Clínica",
+    "ar": "عيادة"
+  },
+  "מעורבות": {
+    "en": "Engagement",
+    "es": "Implicación",
+    "pt-BR": "Engajamento",
+    "ar": "مشاركة"
+  },
+  "מינויים": {
+    "en": "Subscriptions",
+    "es": "Suscripciones",
+    "pt-BR": "Assinaturas",
+    "ar": "اشتراكات"
+  },
+  "מדריכים": {
+    "en": "Guides",
+    "es": "Guías",
+    "pt-BR": "Guias",
+    "ar": "أدلة"
+  },
+  "פופולרי": {
+    "en": "Popular",
+    "es": "Popular",
+    "pt-BR": "Popular",
+    "ar": "شائع"
+  },
+  "הסדנאות": {
+    "en": "The workshops",
+    "es": "Los talleres",
+    "pt-BR": "As oficinas",
+    "ar": "الورش"
+  },
+  "המאמנים": {
+    "en": "The coaches",
+    "es": "Los entrenadores",
+    "pt-BR": "Os treinadores",
+    "ar": "المدربون"
+  },
+  "מרגריטה": {
+    "en": "Margherita",
+    "es": "Margarita",
+    "pt-BR": "Margherita",
+    "ar": "مارغريتا"
+  },
+  "טייסט 3": {
+    "en": "Tasting 3",
+    "es": "Cata 3",
+    "pt-BR": "Degustação 3",
+    "ar": "تذوق 3"
+  },
+  "טייסט 5": {
+    "en": "Tasting 5",
+    "es": "Cata 5",
+    "pt-BR": "Degustação 5",
+    "ar": "تذوق 5"
+  },
+  "למינציה": {
+    "en": "Lamination",
+    "es": "Laminado",
+    "pt-BR": "Laminação",
+    "ar": "تصفيح"
+  },
+  "סוכריות": {
+    "en": "Candies",
+    "es": "Caramelos",
+    "pt-BR": "Balas",
+    "ar": "حلويات"
+  },
+  "קיפולים": {
+    "en": "Folds",
+    "es": "Pliegues",
+    "pt-BR": "Dobras",
+    "ar": "طيات"
+  },
+  "טבעוני?": {
+    "en": "Vegan?",
+    "es": "¿Vegano?",
+    "pt-BR": "Vegano?",
+    "ar": "نباتي؟"
+  },
+  "אפליקציה": {
+    "en": "App",
+    "es": "App",
+    "pt-BR": "App",
+    "ar": "تطبيق"
+  },
+  "משכנתאות": {
+    "en": "Mortgages",
+    "es": "Hipotecas",
+    "pt-BR": "Hipotecas",
+    "ar": "رهون"
+  },
+  "אדריכלים": {
+    "en": "Architects",
+    "es": "Arquitectos",
+    "pt-BR": "Arquitetos",
+    "ar": "مهندسون معماريون"
+  },
+  "סטריטוור": {
+    "en": "Streetwear",
+    "es": "Streetwear",
+    "pt-BR": "Streetwear",
+    "ar": "ستريتوير"
+  },
+  "סטייטמנט": {
+    "en": "Statement",
+    "es": "Statement",
+    "pt-BR": "Statement",
+    "ar": "ستيتمنت"
+  },
+  "סטיילינג": {
+    "en": "Styling",
+    "es": "Styling",
+    "pt-BR": "Styling",
+    "ar": "ستايلنغ"
+  },
+  "3 הרכבים": {
+    "en": "3 lineups",
+    "es": "3 alineaciones",
+    "pt-BR": "3 formações",
+    "ar": "3 تشكيلات"
+  },
+  "4 גילאים": {
+    "en": "4 ages",
+    "es": "4 edades",
+    "pt-BR": "4 idades",
+    "ar": "4 أعمار"
+  },
+  "9 יחידות": {
+    "en": "9 units",
+    "es": "9 unidades",
+    "pt-BR": "9 unidades",
+    "ar": "9 وحدات"
+  },
+  "3 מאמנים": {
+    "en": "3 coaches",
+    "es": "3 entrenadores",
+    "pt-BR": "3 treinadores",
+    "ar": "3 مدربين"
+  },
+  "המאסטרים": {
+    "en": "The masters",
+    "es": "Los maestros",
+    "pt-BR": "Os mestres",
+    "ar": "الأساتذة"
+  },
+  "נייל־ארט": {
+    "en": "Nail art",
+    "es": "Nail art",
+    "pt-BR": "Nail art",
+    "ar": "فن أظافر"
+  },
+  "פרנץ׳ דק": {
+    "en": "Thin French",
+    "es": "French fino",
+    "pt-BR": "French fino",
+    "ar": "فرنش رفيع"
+  },
+  "פילוסופיה": {
+    "en": "Philosophy",
+    "es": "Filosofía",
+    "pt-BR": "Filosofia",
+    "ar": "فلسفة"
+  },
+  "דיסקרטיות": {
+    "en": "Discretion",
+    "es": "Discreción",
+    "pt-BR": "Discrição",
+    "ar": "كتمان"
+  },
+  "פלייבוקים": {
+    "en": "Playbooks",
+    "es": "Playbooks",
+    "pt-BR": "Playbooks",
+    "ar": "كتب لعب"
+  },
+  "סט פיג׳מה": {
+    "en": "Pajama set",
+    "es": "Conjunto de pijama",
+    "pt-BR": "Conjunto de pijama",
+    "ar": "طقم بيجاما"
+  },
+  "42 קבוצות": {
+    "en": "42 groups",
+    "es": "42 grupos",
+    "pt-BR": "42 grupos",
+    "ar": "42 مجموعة"
+  },
+  "שערה-שערה": {
+    "en": "Hair by hair",
+    "es": "Pelo a pelo",
+    "pt-BR": "Fio a fio",
+    "ar": "شعرة بشعرة"
+  },
+  "פיגמנטציה": {
+    "en": "Pigmentation",
+    "es": "Pigmentación",
+    "pt-BR": "Pigmentação",
+    "ar": "تصبغ"
+  },
+  "בליאז׳ רך": {
+    "en": "Soft balayage",
+    "es": "Balayage suave",
+    "pt-BR": "Balayage suave",
+    "ar": "بالياج ناعم"
+  },
+  "קרואסונים": {
+    "en": "Croissants",
+    "es": "Cruasanes",
+    "pt-BR": "Croissants",
+    "ar": "كرواسون"
+  },
+  "מתוק-חריף": {
+    "en": "Sweet-spicy",
+    "es": "Dulce-picante",
+    "pt-BR": "Doce-picante",
+    "ar": "حلو-حار"
+  },
+  "כמה חריף?": {
+    "en": "How spicy?",
+    "es": "¿Cuánto picante?",
+    "pt-BR": "Quão picante?",
+    "ar": "كم الحرارة؟"
+  },
+  "מלוח-קרמל": {
+    "en": "Salted caramel",
+    "es": "Caramelo salado",
+    "pt-BR": "Caramelo salgado",
+    "ar": "كراميل مالح"
+  },
+  "דאבל צ׳דר": {
+    "en": "Double cheddar",
+    "es": "Doble cheddar",
+    "pt-BR": "Cheddar duplo",
+    "ar": "تشيدر مزدوج"
+  },
+  "הירו": {
+    "en": "Hero",
+    "es": "Hero",
+    "pt-BR": "Hero",
+    "ar": "هيرو"
+  },
+  "נסגר": {
+    "en": "Closed",
+    "es": "Cerrado",
+    "pt-BR": "Fechado",
+    "ar": "مغلق"
+  },
+  "פתוח": {
+    "en": "Open",
+    "es": "Abierto",
+    "pt-BR": "Aberto",
+    "ar": "مفتوح"
+  },
+  "דקות": {
+    "en": "Minutes",
+    "es": "Minutos",
+    "pt-BR": "Minutos",
+    "ar": "دقائق"
+  },
+  "בואו": {
+    "en": "Come in",
+    "es": "Venid",
+    "pt-BR": "Venham",
+    "ar": "تعالوا"
+  },
+  "כמות": {
+    "en": "Quantity",
+    "es": "Cantidad",
+    "pt-BR": "Quantidade",
+    "ar": "كمية"
+  },
+  "סה״כ": {
+    "en": "Total",
+    "es": "Total",
+    "pt-BR": "Total",
+    "ar": "المجموع"
+  },
+  "רגיל": {
+    "en": "Regular",
+    "es": "Normal",
+    "pt-BR": "Normal",
+    "ar": "عادي"
+  },
+  "מידע": {
+    "en": "Info",
+    "es": "Info",
+    "pt-BR": "Info",
+    "ar": "معلومات"
+  },
+  "נמכר": {
+    "en": "Sold",
+    "es": "Vendido",
+    "pt-BR": "Vendido",
+    "ar": "مباع"
+  },
+  "ציור": {
+    "en": "Painting",
+    "es": "Pintura",
+    "pt-BR": "Pintura",
+    "ar": "رسم"
+  },
+  "הדפס": {
+    "en": "Print",
+    "es": "Grabado",
+    "pt-BR": "Print",
+    "ar": "طباعة"
+  },
+  "24ש׳": {
+    "en": "24 h",
+    "es": "24 h",
+    "pt-BR": "24 h",
+    "ar": "24 س"
+  },
+  "72ש׳": {
+    "en": "72 h",
+    "es": "72 h",
+    "pt-BR": "72 h",
+    "ar": "72 س"
+  },
+  "42ד׳": {
+    "en": "42 min",
+    "es": "42 min",
+    "pt-BR": "42 min",
+    "ar": "42 د"
+  },
+  "₪38 לעובד": {
+    "en": "₪38 per employee",
+    "es": "₪38 por empleado",
+    "pt-BR": "₪38 por funcionário",
+    "ar": "٣٨ ₪ لكل موظف"
+  },
+  "מיפוי אור, רעש, תנועה, שכנים, מגבלות וחומר מקומי.": {
+    "en": "Mapping light, noise, traffic, neighbors, limits, and local material.",
+    "es": "Mapeamos luz, ruido, tráfico, vecinos, límites y material local.",
+    "pt-BR": "Mapeamos luz, ruído, tráfego, vizinhos, limites e material local.",
+    "ar": "نرسم الضوء والضوضاء والحركة والجيران والحدود والخامة المحلية."
+  },
+  "פרוטוקול מבוקר לשינוי גוון טבעי ללא מראה מלאכותי.": {
+    "en": "A controlled protocol for a natural tone shift without a fake look.",
+    "es": "Un protocolo controlado para un cambio de tono natural, sin aspecto artificial.",
+    "pt-BR": "Um protocolo controlado para mudança de tom natural, sem aparência artificial.",
+    "ar": "بروتوكول مضبوط لتغيير لون طبيعي دون مظهر اصطناعي."
+  },
+  "לפני ואחרי שמרגיש טבעי - לא דרמטי מדי, פשוט נכון.": {
+    "en": "Before and after that feels natural — not too dramatic, just right.",
+    "es": "Antes y después que se siente natural — no demasiado dramático, simplemente bien.",
+    "pt-BR": "Antes e depois que parece natural — nada dramático demais, só certo.",
+    "ar": "قبل وبعد يبدو طبيعياً — ليس درامياً أكثر من اللازم، فقط صحيح."
+  },
+  "תערובת הבית, גוף שוקולדי, קרמה עבה וסיומת אגוזית.": {
+    "en": "The house blend: chocolate body, thick crema, and a nutty finish.",
+    "es": "La mezcla de la casa: cuerpo a chocolate, crema espesa y final a nuez.",
+    "pt-BR": "O blend da casa: corpo de chocolate, crema densa e final de noz.",
+    "ar": "خلطة البيت: جسم شوكولاتي وكريمة كثيفة ونهاية بندقية."
+  },
+  "קקאו מריר, אספרסו כפול ומלח ים עדין בכוס חרס חמה.": {
+    "en": "Bitter cocoa, a double espresso, and a pinch of sea salt in a warm clay cup.",
+    "es": "Cacao amargo, espresso doble y una pizca de sal marina en una taza de barro caliente.",
+    "pt-BR": "Cacau amargo, espresso duplo e um toque de sal marinho numa xícara de barro quente.",
+    "ar": "كاكاو مر وإسبريسو مزدوج وملح بحر خفيف في كوب طين دافئ."
+  },
+  "כשבית יושב נכון מול הים, אין צורך להגביה את הקול.": {
+    "en": "When a house sits right on the sea, there is no need to raise your voice.",
+    "es": "Cuando una casa se sienta bien frente al mar, no hace falta alzar la voz.",
+    "pt-BR": "Quando uma casa se senta bem diante do mar, não é preciso erguer a voz.",
+    "ar": "عندما يجلس البيت صحيحاً أمام البحر، لا حاجة لرفع الصوت."
+  },
+  "מגדלים, פנטהאוזים ונכסים עם מעלית ישירה ללב העיר.": {
+    "en": "Towers, penthouses, and properties with a direct lift into the heart of the city.",
+    "es": "Torres, áticos e inmuebles con ascensor directo al corazón de la ciudad.",
+    "pt-BR": "Torres, coberturas e imóveis com elevador direto ao coração da cidade.",
+    "ar": "أبراج وبنتهاوس وعقارات بمصعد مباشر إلى قلب المدينة."
+  },
+  "רחובות שקטים ליד פארק, חוף ותחבורה ציבורית צפופה.": {
+    "en": "Quiet streets near a park, the beach, and dense public transit.",
+    "es": "Calles quietas junto a un parque, la playa y un transporte público denso.",
+    "pt-BR": "Ruas quietas perto de um parque, da praia e de transporte público denso.",
+    "ar": "شوارع هادئة قرب حديقة وشاطئ ونقل عام كثيف."
+  },
+  "מתווים תוכנית פעולה משפטית ופיננסית מותאמת אישית.": {
+    "en": "We outline a legal and financial action plan tailored to you.",
+    "es": "Trazamos un plan de acción jurídico y financiero a medida.",
+    "pt-BR": "Traçamos um plano de ação jurídico e financeiro sob medida.",
+    "ar": "نضع خطة عمل قانونية ومالية مخصصة لكم."
+  },
+  "שיקום שיניים מתקדם עם השתלות בטכנולוגיה דיגיטלית.": {
+    "en": "Advanced dental restoration with digitally planned implants.",
+    "es": "Rehabilitación dental avanzada con implantes de tecnología digital.",
+    "pt-BR": "Reabilitação dentária avançada com implantes de tecnologia digital.",
+    "ar": "ترميم أسنان متقدم بزراعات بتقنية رقمية."
+  },
+  "מפתחים שפה חזותית ועיצוב שמתאים בדיוק למותג שלכם.": {
+    "en": "We develop a visual language and design that fits your brand exactly.",
+    "es": "Desarrollamos un lenguaje visual y un diseño que encaja exactamente con vuestra marca.",
+    "pt-BR": "Desenvolvemos uma linguagem visual e um design que encaixa exatamente na marca de vocês.",
+    "ar": "نطوّر لغة بصرية وتصميماً يناسب علامتكم تماماً."
+  },
+  "השאירו פרטים — נתאים קורס לפי רמת ניסיון וזמינות.": {
+    "en": "Leave your details — we will match a course to your experience and availability.",
+    "es": "Dejad vuestros datos — ajustaremos un curso según experiencia y disponibilidad.",
+    "pt-BR": "Deixem os dados — vamos combinar um curso com experiência e disponibilidade.",
+    "ar": "اتركوا التفاصيل — سنلائم دورة حسب الخبرة والتوفر."
+  },
+  "שלושה חיבורים שמצמצמים כבלים ומשפרים זרימת עבודה.": {
+    "en": "Three connections that cut cables and improve workflow.",
+    "es": "Tres conexiones que reducen cables y mejoran el flujo de trabajo.",
+    "pt-BR": "Três conexões que reduzem cabos e melhoram o fluxo de trabalho.",
+    "ar": "ثلاثة توصيلات تقلل الكابلات وتحسّن سير العمل."
+  },
+  "מענה אנושי לבחירת כמויות, החלפות ומוצרים עונתיים.": {
+    "en": "A human answer for quantities, swaps, and seasonal products.",
+    "es": "Respuesta humana para cantidades, cambios y productos de temporada.",
+    "pt-BR": "Resposta humana para quantidades, trocas e produtos sazonais.",
+    "ar": "رد بشري لاختيار الكميات والاستبدال والمنتجات الموسمية."
+  },
+  "סימנים קטנים לזיהוי מתיקות, מרקם וזמן אכילה נכון.": {
+    "en": "Small cues for sweetness, texture, and the right time to eat.",
+    "es": "Señales pequeñas para dulzor, textura y el momento justo de comer.",
+    "pt-BR": "Sinais pequenos para doçura, textura e a hora certa de comer.",
+    "ar": "إشارات صغيرة لتمييز الحلاوة والقوام ووقت الأكل الصحيح."
+  },
+  "מקור, עונה ושימושים קולינריים מוצגים בעמוד המוצר.": {
+    "en": "Origin, season, and culinary uses are shown on the product page.",
+    "es": "Origen, temporada y usos culinarios aparecen en la página del producto.",
+    "pt-BR": "Origem, estação e usos culinários aparecem na página do produto.",
+    "ar": "المصدر والموسم والاستخدامات الطهوية تظهر في صفحة المنتج."
+  },
+  "התייעצות על מידות והתאמה זמינה לפני שמוסיפים לסל.": {
+    "en": "Sizing advice is available before you add to cart.",
+    "es": "La consulta de tallas y ajuste está disponible antes de añadir al carrito.",
+    "pt-BR": "A consulta de tamanhos e ajuste está disponível antes de adicionar ao carrinho.",
+    "ar": "الاستشارة عن المقاسات متاحة قبل الإضافة إلى السلة."
+  },
+  "מידות, חומר, צבע והמלצת שילוב מוצגים בעמוד המוצר.": {
+    "en": "Sizes, material, color, and a pairing suggestion are shown on the product page.",
+    "es": "Tallas, material, color y una sugerencia de combinación aparecen en la página del producto.",
+    "pt-BR": "Tamanhos, material, cor e uma sugestão de combinação aparecem na página do produto.",
+    "ar": "المقاسات والخامة واللون واقتراح الدمج تظهر في صفحة المنتج."
+  },
+  "כל מוצר מקבל הקשר: ז׳אנר, גיל, מתנה או רגע כתיבה.": {
+    "en": "Every product gets context: genre, age, gift, or a writing moment.",
+    "es": "Cada producto recibe contexto: género, edad, regalo o un momento de escritura.",
+    "pt-BR": "Cada produto recebe contexto: gênero, idade, presente ou um momento de escrita.",
+    "ar": "كل منتج يحصل على سياق: نوع وعمر وهدية أو لحظة كتابة."
+  },
+  "הלוקבוק מציג פרויקטים במקום תמונות אווירה כלליות.": {
+    "en": "The lookbook shows projects instead of generic mood photos.",
+    "es": "El lookbook muestra proyectos en lugar de fotos de ambiente genéricas.",
+    "pt-BR": "O lookbook mostra projetos em vez de fotos de clima genéricas.",
+    "ar": "الكتاب البصري يعرض مشاريع بدل صور أجواء عامة."
+  },
+  "לוקבוק מינימלי עם במה לכל פריט במקום עומס קטלוגי.": {
+    "en": "A minimal lookbook with a stage for each piece instead of catalog clutter.",
+    "es": "Un lookbook mínimo con un escenario para cada pieza en lugar de un catálogo saturado.",
+    "pt-BR": "Um lookbook mínimo com palco para cada peça em vez de catálogo sobrecarregado.",
+    "ar": "كتاب بصري بسيط مع منصة لكل قطعة بدل ازدحام كتالوج."
+  },
+  "ייעוץ אישי זמין לבחירת מידה, התאמה וחריטה עתידית.": {
+    "en": "Personal advice is available for size, fit, and future engraving.",
+    "es": "Asesoría personal disponible para talla, ajuste y un grabado futuro.",
+    "pt-BR": "Aconselhamento pessoal disponível para tamanho, ajuste e gravação futura.",
+    "ar": "استشارة شخصية متاحة لاختيار المقاس والملاءمة والنقش لاحقاً."
+  },
+  "פרקים קצרים עם פתיח, תרגול וסיכום שמחזיקים ריכוז.": {
+    "en": "Short chapters with an intro, a drill, and a recap that hold focus.",
+    "es": "Capítulos cortos con apertura, práctica y cierre que sostienen la atención.",
+    "pt-BR": "Capítulos curtos com abertura, prática e resumo que sustentam o foco.",
+    "ar": "فصول قصيرة مع افتتاح وتمرين وخلاصة تُبقي التركيز."
+  },
+  "נבחר יחד מסלול, קצב למידה ופרויקט גמר שמתאים לכם.": {
+    "en": "Together we will pick a track, a learning pace, and a final project that fits you.",
+    "es": "Elegiremos juntos un itinerario, un ritmo de aprendizaje y un proyecto final que os encaje.",
+    "pt-BR": "Vamos escolher juntos um percurso, um ritmo de aprendizagem e um projeto final que sirva a vocês.",
+    "ar": "نختار معاً مساراً ووتيرة تعلّم ومشروع تخرج يناسبكم."
+  },
+  "אקדמיית מאסטרקלאס לאנשים שרוצים עומק, במה וסטנדרט": {
+    "en": "A masterclass academy for people who want depth, a stage, and a standard",
+    "es": "Una academia de masterclass para quienes quieren profundidad, escenario y estándar",
+    "pt-BR": "Uma academia de masterclass para quem quer profundidade, palco e padrão",
+    "ar": "أكاديمية ماستركلاس لمن يريد عمقاً ومنصة ومعياراً"
+  },
+  "פסטה פסטו קשיו — מהאדמה לצלחת — בלי פשרות על טעם.": {
+    "en": "Cashew pesto pasta — from the soil to the plate — no compromise on taste.",
+    "es": "Pasta al pesto de anacardo — de la tierra al plato — sin ceder en el sabor.",
+    "pt-BR": "Massa ao pesto de caju — da terra ao prato — sem abrir mão do sabor.",
+    "ar": "باستا بيستو الكاجو — من الأرض إلى الصحن — بلا تنازل عن الطعم."
+  },
+  "מבינים מטרה, אזור, תקציב פנימי, זמן ותנאים חשובים.": {
+    "en": "We understand the goal, the area, the internal budget, the timing, and the key terms.",
+    "es": "Entendemos objetivo, zona, presupuesto interno, tiempo y condiciones importantes.",
+    "pt-BR": "Entendemos objetivo, região, orçamento interno, tempo e condições importantes.",
+    "ar": "نفهم الهدف والمنطقة والميزانية الداخلية والوقت والشروط المهمة."
+  },
+  "ספרו תקציב ואזור מועדף — ונחזור עם התאמות מדויקות.": {
+    "en": "Tell us a budget and a preferred area — we will come back with precise matches.",
+    "es": "Decid presupuesto y zona preferida — volveremos con encajes precisos.",
+    "pt-BR": "Digam orçamento e região preferida — voltamos com encaixes precisos.",
+    "ar": "أخبرونا بالميزانية والمنطقة المفضلة — نعود بملاءمات دقيقة."
+  },
+  "חותכים את הבריף עד שנשאר מסר אחד שאפשר לבדוק בשוק.": {
+    "en": "We cut the brief until one message remains that the market can test.",
+    "es": "Cortamos el brief hasta que queda un mensaje que se puede probar en el mercado.",
+    "pt-BR": "Cortamos o brief até restar uma mensagem que dá para testar no mercado.",
+    "ar": "نقصّ الموجز حتى تبقى رسالة واحدة يمكن اختبارها في السوق."
+  },
+  "בדרך כלל 35-45 דקות. חבילת Full Ritual נמשכת כשעה.": {
+    "en": "Usually 35–45 minutes. The Full Ritual package lasts about an hour.",
+    "es": "Suele durar 35-45 minutos. El paquete Full Ritual dura alrededor de una hora.",
+    "pt-BR": "Em geral 35-45 minutos. O pacote Full Ritual dura cerca de uma hora.",
+    "ar": "عادةً 35-45 دقيقة. باقة Full Ritual تستمر نحو ساعة."
+  },
+  "תהליך ברור, תקשורת מצוינת ותוצאה שעברה את הציפיות.": {
+    "en": "A clear process, excellent communication, and a result that beat expectations.",
+    "es": "Un proceso claro, una comunicación excelente y un resultado que superó las expectativas.",
+    "pt-BR": "Um processo claro, comunicação excelente e um resultado que superou as expectativas.",
+    "ar": "عملية واضحة وتواصل ممتاز ونتيجة تجاوزت التوقعات."
+  },
+  "אנחנו בשטח, אתם עם המשפחה, החברים והרגעים החשובים.": {
+    "en": "We are on site; you stay with family, friends, and the moments that matter.",
+    "es": "Nosotros en el terreno; vosotros con la familia, los amigos y los momentos importantes.",
+    "pt-BR": "Nós no campo; vocês com a família, os amigos e os momentos importantes.",
+    "ar": "نحن في الميدان، وأنتم مع العائلة والأصدقاء واللحظات المهمة."
+  },
+  "ניתוח אתר, שפת חומר, מסה ראשונית וסיפור מותג לחלל.": {
+    "en": "Site analysis, material language, a first massing, and a brand story for the space.",
+    "es": "Análisis de solar, lenguaje de material, masa inicial e historia de marca para el espacio.",
+    "pt-BR": "Análise do terreno, linguagem de material, massa inicial e história de marca para o espaço.",
+    "ar": "تحليل الموقع ولغة المادة وكتلة أولى وقصة علامة للمكان."
+  },
+  "תהליך אנכי, החלטות חדות, תוצאה שמרגישה בלתי נמנעת.": {
+    "en": "A vertical process, sharp decisions, a result that feels inevitable.",
+    "es": "Un proceso vertical, decisiones nítidas, un resultado que se siente inevitable.",
+    "pt-BR": "Um processo vertical, decisões nítidas, um resultado que parece inevitável.",
+    "ar": "عملية عمودية وقرارات حادة ونتيجة تبدو حتمية."
+  },
+  "טכנולוגיה שמעלימה חיכוך, ונוחות שמרגישה כמו אירוח.": {
+    "en": "Technology that removes friction, and comfort that feels like hospitality.",
+    "es": "Tecnología que elimina fricción, y una comodidad que se siente como hospitalidad.",
+    "pt-BR": "Tecnologia que tira o atrito, e um conforto que parece hospitalidade.",
+    "ar": "تقنية تزيل الاحتكاك وراحة تشبه الضيافة."
+  },
+  "יסמין, הדרים ודבש בהיר מחוות גבוהות באזור יירגשפה.": {
+    "en": "Jasmine, citrus, and light honey from high farms in the Yirgacheffe region.",
+    "es": "Jazmín, cítricos y miel clara de fincas altas en la zona de Yirgacheffe.",
+    "pt-BR": "Jasmim, cítricos e mel claro de fazendas altas na região de Yirgacheffe.",
+    "ar": "ياسمين وحمضيات وعسل فاتح من مزارع مرتفعة في منطقة يرگاتشيف."
+  },
+  "הגנה הידרופובית, עומק צבע וקלות שטיפה ל-24 חודשים.": {
+    "en": "Hydrophobic protection, color depth, and easy washing for 24 months.",
+    "es": "Protección hidrófoba, profundidad de color y facilidad de lavado durante 24 meses.",
+    "pt-BR": "Proteção hidrofóbica, profundidade de cor e facilidade de lavagem por 24 meses.",
+    "ar": "حماية طاردة للماء وعمق لون وسهولة غسل لمدة 24 شهراً."
+  },
+  "תיקון צבע מלא, ציפוי קרמי, פנים עמוק וגימור תצוגה.": {
+    "en": "A full color correction, ceramic coating, deep interior, and a show finish.",
+    "es": "Corrección de color completa, recubrimiento cerámico, interior profundo y un acabado de exposición.",
+    "pt-BR": "Correção de cor completa, revestimento cerâmico, interior profundo e um acabamento de vitrine.",
+    "ar": "تصحيح لون كامل وطلاء سيراميك وداخل عميق وتشطيب عرض."
+  },
+  "נבנה לארגונים שלא יכולים להרשות לעצמם קופסה שחורה.": {
+    "en": "Built for organizations that cannot afford a black box.",
+    "es": "Construido para organizaciones que no pueden permitirse una caja negra.",
+    "pt-BR": "Feito para organizações que não podem se dar ao luxo de uma caixa-preta.",
+    "ar": "مبني لمنظمات لا يمكنها تحمّل صندوق أسود."
+  },
+  "עצים בוגרים שמרככים את החום ומייצרים פרטיות טבעית.": {
+    "en": "Mature trees that soften the heat and create natural privacy.",
+    "es": "Árboles maduros que suavizan el calor y crean privacidad natural.",
+    "pt-BR": "Árvores maduras que suavizam o calor e criam privacidade natural.",
+    "ar": "أشجار ناضجة تلطّف الحرارة وتصنع خصوصية طبيعية."
+  },
+  "אנחנו לא רק פותרים בעיות — אנחנו מונעים אותן מראש.": {
+    "en": "We do not only solve problems — we prevent them in advance.",
+    "es": "No solo resolvemos problemas — los prevenimos de antemano.",
+    "pt-BR": "Não só resolvemos problemas — nós os prevenimos de antemão.",
+    "ar": "نحن لا نحل المشكلات فقط — نمنعها مسبقاً."
+  },
+  "מענה מהיר, שקיפות מלאה ועדכון שוטף בכל שלב בתהליך.": {
+    "en": "A fast reply, full transparency, and a live update at every step.",
+    "es": "Respuesta rápida, transparencia total y actualización continua en cada etapa.",
+    "pt-BR": "Resposta rápida, transparência total e atualização contínua em cada etapa.",
+    "ar": "رد سريع وشفافية كاملة وتحديث مستمر في كل مرحلة."
+  },
+  "מבינים את המותג, הקהל והמטרות — ובונים כיוון ברור.": {
+    "en": "We understand the brand, the audience, and the goals — and we build a clear direction.",
+    "es": "Entendemos la marca, el público y los objetivos — y construimos una dirección clara.",
+    "pt-BR": "Entendemos a marca, o público e os objetivos — e construímos uma direção clara.",
+    "ar": "نفهم العلامة والجمهور والأهداف — ونبني اتجاهاً واضحاً."
+  },
+  "כתבו גובה, משקל ורמת גלישה — נמליץ על הדגם המדויק.": {
+    "en": "Write height, weight, and surfing level — we will recommend the exact model.",
+    "es": "Escribid altura, peso y nivel de surf — recomendaremos el modelo exacto.",
+    "pt-BR": "Escrevam altura, peso e nível de surf — vamos recomendar o modelo exato.",
+    "ar": "اكتبوا الطول والوزن ومستوى التزلج — سنوصي بالموديل الدقيق."
+  },
+  "מפרטים, חיבורים ותרחישי שימוש מופיעים בעמוד המוצר.": {
+    "en": "Specs, connections, and use cases appear on the product page.",
+    "es": "Especificaciones, conexiones y escenarios de uso aparecen en la página del producto.",
+    "pt-BR": "Especificações, conexões e cenários de uso aparecem na página do produto.",
+    "ar": "المواصفات والتوصيلات وسيناريوهات الاستخدام تظهر في صفحة المنتج."
+  },
+  "משלוחים מתאימים לפריטים עדינים, גדולים או משלימים.": {
+    "en": "Shipping that fits delicate, large, or complementary items.",
+    "es": "Envíos adecuados para artículos delicados, grandes o complementarios.",
+    "pt-BR": "Envios adequados para itens delicados, grandes ou complementares.",
+    "ar": "شحن يناسب القطع الرقيقة أو الكبيرة أو المكملة."
+  },
+  "מדריכים קצרים לבחירת מידה, מתנה וטיפול בפריט עדין.": {
+    "en": "Short guides for choosing a size, a gift, and care for a delicate piece.",
+    "es": "Guías cortas para elegir talla, regalo y el cuidado de una pieza delicada.",
+    "pt-BR": "Guias curtos para escolher tamanho, presente e o cuidado de uma peça delicada.",
+    "ar": "أدلة قصيرة لاختيار المقاس والهدية والعناية بقطعة رقيقة."
+  },
+  "מתכת, מידה, גימור והמלצת ענידה מוצגים בעמוד המוצר.": {
+    "en": "Metal, size, finish, and a wearing suggestion are shown on the product page.",
+    "es": "Metal, talla, acabado y una sugerencia de uso aparecen en la página del producto.",
+    "pt-BR": "Metal, tamanho, acabamento e uma sugestão de uso aparecem na página do produto.",
+    "ar": "المعدن والمقاس والتشطيب واقتراح الارتداء تظهر في صفحة المنتج."
+  },
+  "כל מסלול מסתיים בתוצר שאפשר להציג ללקוח או למעסיק.": {
+    "en": "Every track ends with work you can show a client or an employer.",
+    "es": "Cada itinerario termina con un resultado que se puede mostrar a un cliente o a un empleador.",
+    "pt-BR": "Cada percurso termina com um resultado que dá para mostrar a um cliente ou empregador.",
+    "ar": "كل مسار ينتهي بمنجز يمكن عرضه على عميل أو صاحب عمل."
+  },
+  "אזור שאלות שמוריד התנגדויות ומוביל את הלקוח לפנייה.": {
+    "en": "A Q&A zone that lowers objections and leads the client to reach out.",
+    "es": "Una zona de preguntas que baja objeciones y lleva al cliente a contactar.",
+    "pt-BR": "Uma zona de perguntas que reduz objeções e leva o cliente a entrar em contato.",
+    "ar": "منطقة أسئلة تخفّض الاعتراضات وتقود العميل إلى التواصل."
+  },
+  "אתר משפטי שמרגיש חד, יוקרתי ומוביל לפניות איכותיות.": {
+    "en": "A legal site that feels sharp, luxurious, and leads to quality inquiries.",
+    "es": "Una web jurídica que se siente nítida, de lujo y conduce a consultas de calidad.",
+    "pt-BR": "Um site jurídico que parece nítido, de luxo e leva a consultas de qualidade.",
+    "ar": "موقع قانوني يبدو حاداً وفاخراً ويقود إلى استفسارات نوعية."
+  },
+  "חבילת טיפוח מלאה לפני אירוע, צילומים או התחלה חדשה.": {
+    "en": "A full care package before an event, a shoot, or a new start.",
+    "es": "Un paquete de cuidado completo antes de un evento, una sesión o un nuevo comienzo.",
+    "pt-BR": "Um pacote de cuidado completo antes de um evento, um ensaio ou um recomeço.",
+    "ar": "باقة عناية كاملة قبل مناسبة أو تصوير أو بداية جديدة."
+  },
+  "תפריט טעימות של 7 מנות בליווי יינות — כל יום חמישי.": {
+    "en": "A 7-course tasting menu with wines — every Thursday.",
+    "es": "Un menú degustación de 7 platos con vinos — todos los jueves.",
+    "pt-BR": "Um menu degustação de 7 pratos com vinhos — toda quinta-feira.",
+    "ar": "قائمة تذوق من 7 أطباق مع نبيذ — كل خميس."
+  },
+  "תכניות אדריכלות מלאות, תיאומים ופרטי מעטפת מדויקים.": {
+    "en": "Full architectural plans, coordination, and precise envelope details.",
+    "es": "Planos de arquitectura completos, coordinaciones y detalles de envolvente precisos.",
+    "pt-BR": "Plantas de arquitetura completas, coordenações e detalhes de envoltória precisos.",
+    "ar": "مخططات معمارية كاملة وتنسيقات وتفاصيل غلاف دقيقة."
+  },
+  "רופאים שמדברים בשקט, מתכננים לעומק ומבצעים בעדינות.": {
+    "en": "Doctors who speak quietly, plan in depth, and work with a light hand.",
+    "es": "Médicos que hablan en voz baja, planifican a fondo y ejecutan con suavidad.",
+    "pt-BR": "Médicos que falam baixo, planejam a fundo e executam com suavidade.",
+    "ar": "أطباء يتحدثون بهدوء ويخططون بعمق وينفّذون بلطف."
+  },
+  "אגוזי לוז, גוף מלא ומתיקות טבעית לקפוצ'ינו של בוקר.": {
+    "en": "Hazelnuts, a full body, and natural sweetness for a morning cappuccino.",
+    "es": "Avellanas, cuerpo completo y dulzor natural para un capuchino de mañana.",
+    "pt-BR": "Avelãs, corpo cheio e doçura natural para um cappuccino de manhã.",
+    "ar": "بندق وجسم كامل وحلاوة طبيعية لكابتشينو الصباح."
+  },
+  "12 סוכנים|מקורות ללא הגבלה|אישורים אנושיים|SLA עסקי": {
+    "en": "12 agents | unlimited sources | human approvals | business SLA",
+    "es": "12 agentes | fuentes ilimitadas | aprobaciones humanas | SLA de negocio",
+    "pt-BR": "12 agentes | fontes ilimitadas | aprovações humanas | SLA de negócio",
+    "ar": "12 وكيلاً | مصادر بلا حد | موافقات بشرية | اتفاقية مستوى خدمة للأعمال"
+  },
+  "תכנון נקי, חלונות רחבים וחניה שמורה במרחק דקה מהים.": {
+    "en": "Clean planning, wide windows, and a reserved parking spot a minute from the sea.",
+    "es": "Planta limpia, ventanas amplias y parking reservado a un minuto del mar.",
+    "pt-BR": "Planta limpa, janelas amplas e vaga reservada a um minuto do mar.",
+    "ar": "تخطيط نظيف ونوافذ واسعة وموقف محفوظ على بعد دقيقة من البحر."
+  },
+  "מגרש ירוק, הרבה אור טבעי ושביל אופניים שמגיע לפארק.": {
+    "en": "A green lot, lots of daylight, and a bike path that reaches the park.",
+    "es": "Un solar verde, mucha luz natural y un carril bici que llega al parque.",
+    "pt-BR": "Um lote verde, muita luz natural e uma ciclovia que chega ao parque.",
+    "ar": "قطعة خضراء وكثير من الضوء الطبيعي ومسار دراجات يصل إلى الحديقة."
+  },
+  "מבט פתוח שמחזיק אור לאורך היום ולא נחסם בעונה הבאה.": {
+    "en": "An open view that holds light all day and will not be blocked next season.",
+    "es": "Una vista abierta que sostiene la luz todo el día y no se tapa la próxima temporada.",
+    "pt-BR": "Uma vista aberta que segura a luz o dia todo e não será bloqueada na próxima estação.",
+    "ar": "إطلالة مفتوحة تمسك الضوء طوال اليوم ولن تُحجب في الموسم القادم."
+  },
+  "אור בוקר ממזרח, סלון גבוה ומרפסת שמרגישה כמו תצפית.": {
+    "en": "Morning light from the east, a tall living room, and a terrace that feels like a lookout.",
+    "es": "Luz de mañana desde el este, un salón alto y una terraza que se siente como un mirador.",
+    "pt-BR": "Luz da manhã do leste, uma sala alta e uma varanda que parece um mirante.",
+    "ar": "ضوء صباح من الشرق وصالة مرتفعة وشرفة تشبه نقطة مراقبة."
+  },
+  "ספרו על הצרכים שלכם — נשלח תוכניות וסיורים מותאמים.": {
+    "en": "Tell us your needs — we will send tailored plans and tours.",
+    "es": "Contadnos vuestras necesidades — enviaremos planos y visitas a medida.",
+    "pt-BR": "Contem as necessidades de vocês — enviaremos plantas e visitas sob medida.",
+    "ar": "أخبرونا باحتياجاتكم — سنرسل مخططات وجولات مخصصة."
+  },
+  "מערכת תוכן שנראית כמו מגזין ומוכרת כמו צוות מכירות.": {
+    "en": "A content system that looks like a magazine and sells like a sales team.",
+    "es": "Un sistema de contenido que parece una revista y vende como un equipo comercial.",
+    "pt-BR": "Um sistema de conteúdo que parece uma revista e vende como uma equipe comercial.",
+    "ar": "نظام محتوى يبدو كمجلة ويبيع كفريق مبيعات."
+  },
+  "כל מוצר מקבל הקשר: ריצה, כוח, מוביליטי או התאוששות.": {
+    "en": "Every product gets context: running, strength, mobility, or recovery.",
+    "es": "Cada producto recibe contexto: carrera, fuerza, movilidad o recuperación.",
+    "pt-BR": "Cada produto recebe contexto: corrida, força, mobilidade ou recuperação.",
+    "ar": "كل منتج يحصل على سياق: ركض أو قوة أو حركة أو استشفاء."
+  },
+  "מידות, משקל, אחיזה ותרחיש אימון מוצגים בעמוד המוצר.": {
+    "en": "Sizes, weight, grip, and a training scenario are shown on the product page.",
+    "es": "Tallas, peso, agarre y un escenario de entrenamiento aparecen en la página del producto.",
+    "pt-BR": "Tamanhos, peso, pegada e um cenário de treino aparecem na página do produto.",
+    "ar": "المقاسات والوزن والقبضة وسيناريو التمرين تظهر في صفحة المنتج."
+  },
+  "טיפים קצרים לבחירת ביגוד, משחקים וציוד חדר בלי לחץ.": {
+    "en": "Short tips for choosing apparel, games, and room gear without pressure.",
+    "es": "Consejos cortos para elegir ropa, juegos y equipo de habitación sin presión.",
+    "pt-BR": "Dicas curtas para escolher roupa, jogos e equipamento de quarto sem pressão.",
+    "ar": "نصائح قصيرة لاختيار الملابس والألعاب ومعدات الغرفة بلا ضغط."
+  },
+  "איך לבחור מקור אור לפי אווירה, גובה וקירבה לרהיטים.": {
+    "en": "How to choose a light source by mood, height, and distance from furniture.",
+    "es": "Cómo elegir una fuente de luz según ambiente, altura y cercanía a los muebles.",
+    "pt-BR": "Como escolher uma fonte de luz segundo clima, altura e proximidade aos móveis.",
+    "ar": "كيف تختارون مصدر ضوء حسب الجو والارتفاع والقرب من الأثاث."
+  },
+  "הקופי מחבר מוצר להרגל: לעיסה, ריצה, מנוחה או טיפוח.": {
+    "en": "The copy ties a product to a habit: chewing, running, rest, or care.",
+    "es": "El copy une producto y hábito: masticar, correr, descansar o cuidarse.",
+    "pt-BR": "O copy liga produto ao hábito: mastigar, correr, descansar ou cuidar.",
+    "ar": "النصوص تربط المنتج بعادة: مضغ أو ركض أو راحة أو عناية."
+  },
+  "גודל, חומר, סוג חיה והתאמת גיל מופיעים בעמוד המוצר.": {
+    "en": "Size, material, animal type, and age fit appear on the product page.",
+    "es": "Tamaño, material, tipo de animal y ajuste de edad aparecen en la página del producto.",
+    "pt-BR": "Tamanho, material, tipo de animal e adequação de idade aparecem na página do produto.",
+    "ar": "الحجم والخامة ونوع الحيوان وملاءمة العمر تظهر في صفحة المنتج."
+  },
+  "אפשר להתייעץ על ספר מתנה, מחברת או כלי כתיבה מתאים.": {
+    "en": "You can ask about a gift book, a notebook, or the right writing tool.",
+    "es": "Podéis consultar sobre un libro de regalo, un cuaderno o una herramienta de escritura adecuada.",
+    "pt-BR": "Dá para consultar sobre um livro de presente, um caderno ou a ferramenta de escrita certa.",
+    "ar": "يمكن الاستشارة عن كتاب هدية أو دفتر أو أداة كتابة مناسبة."
+  },
+  "משלוח ואיסוף נוחים לספרים, מחברות ומתנות רגע אחרון.": {
+    "en": "Easy delivery and pickup for books, notebooks, and last-minute gifts.",
+    "es": "Envío y recogida cómodos para libros, cuadernos y regalos de último momento.",
+    "pt-BR": "Entrega e retirada cômodas para livros, cadernos e presentes de última hora.",
+    "ar": "توصيل واستلام مريحان للكتب والدفاتر وهدايا اللحظة الأخيرة."
+  },
+  "מרקם, גוון, סוג עור וסדר שימוש מופיעים בעמוד המוצר.": {
+    "en": "Texture, tone, skin type, and usage order appear on the product page.",
+    "es": "Textura, tono, tipo de piel y orden de uso aparecen en la página del producto.",
+    "pt-BR": "Textura, tom, tipo de pele e ordem de uso aparecem na página do produto.",
+    "ar": "القوام والدرجة ونوع البشرة وترتيب الاستخدام تظهر في صفحة المنتج."
+  },
+  "הניווט בנוי כמו גלריה: התבוננות, אוסף, מוצר ואז סל.": {
+    "en": "The navigation is built like a gallery: look, collection, product, then cart.",
+    "es": "La navegación está hecha como una galería: mirar, colección, producto y luego carrito.",
+    "pt-BR": "A navegação é feita como uma galeria: olhar, coleção, produto e depois carrinho.",
+    "ar": "التنقل مبني كمعرض: تأمل، مجموعة، منتج ثم سلة."
+  },
+  "סוף סוף אנחנו מבינים את הנתונים שלנו ומה לעשות הלאה.": {
+    "en": "At last we understand our data and what to do next.",
+    "es": "Por fin entendemos nuestros datos y qué hacer a continuación.",
+    "pt-BR": "Finalmente entendemos os nossos dados e o que fazer a seguir.",
+    "ar": "أخيراً نفهم بياناتنا وماذا نفعل بعد ذلك."
+  },
+  "בונים דרך פעולה למכירה או קנייה בלי הצפה ובלי בלבול.": {
+    "en": "We build a path to sell or buy without overwhelm and without confusion.",
+    "es": "Construimos un camino de acción para vender o comprar sin saturación ni confusión.",
+    "pt-BR": "Construímos um caminho de ação para vender ou comprar sem saturação nem confusão.",
+    "ar": "نبني مسار عمل للبيع أو الشراء بلا إغراق وبلا ارتباك."
+  },
+  "גנאש 70%, קרמל מלוח, פצפוצי קקאו וגלידת וניל בורבון.": {
+    "en": "70% ganache, salted caramel, cacao nibs, and bourbon vanilla ice cream.",
+    "es": "Ganache 70%, caramelo salado, nibs de cacao y helado de vainilla bourbon.",
+    "pt-BR": "Ganache 70%, caramelo salgado, nibs de cacau e sorvete de baunilha bourbon.",
+    "ar": "غناش 70٪ وكراميل مالح وحبيبات كاكاو وآيس كريم فانيليا بوربون."
+  },
+  "כל בוקר מחכה לכם אוסף מדויק של מה שכדאי לקרוא עכשיו.": {
+    "en": "Every morning a precise set of what is worth reading now is waiting for you.",
+    "es": "Cada mañana os espera una selección precisa de lo que conviene leer ahora.",
+    "pt-BR": "Toda manhã espera vocês uma seleção precisa do que vale ler agora.",
+    "ar": "كل صباح ينتظركم مجموعة دقيقة مما يستحق القراءة الآن."
+  },
+  "דנים בקהילה, שומרים לצוות, ובונים הרגל למידה מקצועי.": {
+    "en": "Discuss in the community, save for the team, and build a professional learning habit.",
+    "es": "Debatid en la comunidad, guardad para el equipo y construid un hábito de aprendizaje profesional.",
+    "pt-BR": "Discutam na comunidade, guardem para a equipe e construam um hábito de aprendizagem profissional.",
+    "ar": "ناقشوا في المجتمع واحفظوا للفريق وابنوا عادة تعلّم مهنية."
+  },
+  "מרחבים סגורים לפי סטאק — React, Go, Kubernetes ועוד.": {
+    "en": "Closed rooms by stack — React, Go, Kubernetes, and more.",
+    "es": "Espacios cerrados por stack — React, Go, Kubernetes y más.",
+    "pt-BR": "Espaços fechados por stack — React, Go, Kubernetes e mais.",
+    "ar": "مساحات مغلقة حسب التقنية — React وGo وKubernetes والمزيد."
+  },
+  "חידוד סיפור עסקי, דאטה רום ופיץ׳ שמדבר בשפת משקיעים.": {
+    "en": "Sharpening the business story, a data room, and a pitch that speaks investor language.",
+    "es": "Afinar la historia de negocio, un data room y un pitch que habla el idioma inversor.",
+    "pt-BR": "Afiar a história de negócio, um data room e um pitch que fala a língua de investidores.",
+    "ar": "صقل قصة العمل وغرفة بيانات وعرض يتحدث لغة المستثمرين."
+  },
+  "פרוגרסיה שבועית חכמה שמאתגרת את הגוף בלי לשבור אותו.": {
+    "en": "A smart weekly progression that challenges the body without breaking it.",
+    "es": "Una progresión semanal inteligente que reta al cuerpo sin romperlo.",
+    "pt-BR": "Uma progressão semanal inteligente que desafia o corpo sem quebrá-lo.",
+    "ar": "تقدّم أسبوعي ذكي يتحدى الجسم دون كسره."
+  },
+  "מרכזים מסמכים, חשבוניות ותנועות בנק בערוץ אחד מסודר.": {
+    "en": "We centralize documents, invoices, and bank movements in one tidy channel.",
+    "es": "Centralizamos documentos, facturas y movimientos bancarios en un canal ordenado.",
+    "pt-BR": "Centralizamos documentos, faturas e movimentações bancárias num canal organizado.",
+    "ar": "نجمع المستندات والفواتير وحركات البنك في قناة واحدة مرتبة."
+  },
+  "ביקורות שטח, החלטות מהירות ושמירה על האינטנט המקורי.": {
+    "en": "Field reviews, fast decisions, and keeping the original intent.",
+    "es": "Revisiones de campo, decisiones rápidas y preservar la intención original.",
+    "pt-BR": "Revisões de campo, decisões rápidas e preservação da intenção original.",
+    "ar": "مراجعات ميدانية وقرارات سريعة والحفاظ على النية الأصلية."
+  },
+  "המקום ללוק חד כשצריך להראות כאילו לא ניסית יותר מדי.": {
+    "en": "The place for a sharp look when you need to seem like you barely tried.",
+    "es": "El lugar para un look nítido cuando hay que parecer que no se ha intentado demasiado.",
+    "pt-BR": "O lugar para um look nítido quando é preciso parecer que vocês mal tentaram.",
+    "ar": "المكان لإطلالة حادة حين تحتاجون أن تبدوا وكأنكم لم تحاولوا كثيراً."
+  },
+  "ספרו על השטח, הכיוון והתקציב — ונחזור עם הצעת תהליך.": {
+    "en": "Tell us about the site, the direction, and the budget — we will come back with a process offer.",
+    "es": "Contadnos el solar, la dirección y el presupuesto — volveremos con una propuesta de proceso.",
+    "pt-BR": "Contem o terreno, a direção e o orçamento — voltamos com uma proposta de processo.",
+    "ar": "أخبرونا عن الأرض والاتجاه والميزانية — نعود بعرض للعملية."
+  }
+}

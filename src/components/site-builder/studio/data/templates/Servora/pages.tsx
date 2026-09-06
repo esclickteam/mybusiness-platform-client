@@ -54,7 +54,7 @@ function visualProps(
     "data-visual-edit-type": type,
     "data-visual-type": type,
     "data-visual-editable": "true",
-    ...(label ? { "data-visual-edit-label": label } : {}),
+    ...(label ? { "data-visual-edit-label": tx(label) } : {}),
   };
 }
 

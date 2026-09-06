@@ -3,6 +3,7 @@
  * Adds stable IDs so the studio can select, replace, and persist media/text
  * without relying only on fragile auto-generated DOM paths.
  */
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 
 export type TemplateVisualElementType =
   | "text"
@@ -26,7 +27,7 @@ export function templateVisualProps(
     "data-visual-edit-type": type,
     "data-visual-type": type,
     "data-visual-editable": "true",
-    ...(label ? { "data-visual-edit-label": label } : {}),
+    ...(label ? { "data-visual-edit-label": tx(label) } : {}),
   };
 }
 

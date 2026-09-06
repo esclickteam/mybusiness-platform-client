@@ -175,7 +175,7 @@ function mediaProps(id: string, label?: string) {
     "data-field": id,
     "data-image-field": id,
     "data-visual-image-field": id,
-    ...(label ? { "data-visual-edit-label": label } : {}),
+    ...(label ? { "data-visual-edit-label": tx(label) } : {}),
   } as Record<string, string>;
 }
 
@@ -185,7 +185,7 @@ function sectionProps(id: string, label: string, kind?: string) {
     "data-visual-edit-type": "section",
     "data-visual-type": "section",
     "data-visual-editable": "true",
-    "data-visual-edit-label": label,
+    "data-visual-edit-label": tx(label),
     "data-template-section-id": id,
     "data-section-kind": kind || id,
     "data-section-title": label,

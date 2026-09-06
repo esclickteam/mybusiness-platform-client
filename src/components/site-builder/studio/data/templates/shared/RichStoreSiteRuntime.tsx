@@ -103,7 +103,7 @@ function textProps(id: string, label?: string) {
     "data-visual-edit-id": id,
     "data-visual-edit-type": "text",
     "data-visual-editable": "true",
-    ...(label ? { "data-visual-edit-label": label } : {}),
+    ...(label ? { "data-visual-edit-label": tx(label) } : {}),
   };
 }
 
@@ -112,7 +112,7 @@ function imageProps(id: string, label?: string) {
     "data-visual-edit-id": id,
     "data-visual-edit-type": "image",
     "data-visual-editable": "true",
-    ...(label ? { "data-visual-edit-label": label } : {}),
+    ...(label ? { "data-visual-edit-label": tx(label) } : {}),
   };
 }
 
