@@ -335,6 +335,12 @@ const beauty = {
   "איפור מערכת": row("Editorial makeup", "Maquillaje editorial", "Maquiagem editorial", "مكياج تحريري"),
   "סרגל גבות": row("Brow bar", "Barra de cejas", "Barra de sobrancelhas", "بار الحواجب"),
   "עבודות": row("Work", "Trabajos", "Trabalhos", "أعمال"),
+  "הקמנו מקום שמקשיב קודם כל לאדם שמולנו, לפני בחירת צבע, חומר או פרוטוקול.": row(
+    "We built a place that listens to the person in front of us first, before choosing a color, product, or protocol.",
+    "Creamos un lugar que escucha primero a la persona de enfrente, antes de elegir color, material o protocolo.",
+    "Criámos um lugar que escuta primeiro a pessoa à frente, antes de escolher cor, material ou protocolo.",
+    "بنينا مكاناً يستمع أولاً إلى الشخص أمامنا، قبل اختيار اللون أو المادة أو البروتوكول.",
+  ),
 };
 
 const studioFile = path.join(ROOT, "src/i18n/templateExactLexicon.studio.json");

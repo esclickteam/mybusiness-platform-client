@@ -646,5 +646,101 @@
     "es": "Trabajos",
     "pt-BR": "Trabalhos",
     "ar": "أعمال"
+  },
+  "הקמנו מקום שמקשיב קודם כל לאדם שמולנו, לפני בחירת צבע, חומר או פרוטוקול.": {
+    "en": "We built a place that listens to the person in front of us first, before choosing a color, product, or protocol.",
+    "es": "Creamos un lugar que escucha primero a la persona de enfrente, antes de elegir color, material o protocolo.",
+    "pt-BR": "Criámos um lugar que escuta primeiro a pessoa à frente, antes de escolher cor, material ou protocolo.",
+    "ar": "بنينا مكاناً يستمع أولاً إلى الشخص أمامنا، قبل اختيار اللون أو المادة أو البروتوكول."
+  },
+  "כל טיפול מתועד בכרטיס לקוחה, עם העדפות, תגובות עור והמלצות המשך ברורות.": {
+    "en": "Every treatment is recorded on the client card, with preferences, skin reactions, and clear next-step notes.",
+    "es": "Cada tratamiento se documenta en la ficha, con preferencias, reacciones de la piel y recomendaciones claras.",
+    "pt-BR": "Cada tratamento fica registado na ficha, com preferências, reações da pele e recomendações claras.",
+    "ar": "كل علاج يُوثَّق في بطاقة الزبونة مع التفضيلات وتفاعلات البشرة وتوصيات واضحة."
+  },
+  "הצוות נפגש בכל שבוע לסקירת תוצאות, שיפור תהליכים ובדיקת חומרי עבודה חדשים.": {
+    "en": "The team meets every week to review results, improve the process, and test new products.",
+    "es": "El equipo se reúne cada semana para revisar resultados, mejorar procesos y probar materiales nuevos.",
+    "pt-BR": "A equipe reúne-se todas as semanas para rever resultados, melhorar processos e testar materiais novos.",
+    "ar": "يلتقي الفريق كل أسبوع لمراجعة النتائج وتحسين العمليات وفحص مواد عمل جديدة."
+  },
+  "רגליים מלאות": {
+    "en": "Full legs",
+    "es": "Piernas completas",
+    "pt-BR": "Pernas completas",
+    "ar": "الساقان بالكامل"
+  },
+  "ברזילאי": {
+    "en": "Brazilian",
+    "es": "Brasileño",
+    "pt-BR": "Brasileiro",
+    "ar": "برازيلي"
+  },
+  "פנים מדויק": {
+    "en": "Precise face",
+    "es": "Rostro preciso",
+    "pt-BR": "Rosto preciso",
+    "ar": "وجه دقيق"
+  },
+  "ייעוץ והתאמה": {
+    "en": "Consult and fitting",
+    "es": "Consulta y ajuste",
+    "pt-BR": "Consulta e ajuste",
+    "ar": "استشارة وملاءمة"
+  },
+  "כולל אבחון קצר, התאמה אישית, עבודה מדויקת והמלצות המשך כתובות כדי שהתוצאה תישאר יפה גם אחרי היציאה מהסטודיו.": {
+    "en": "Includes a short assessment, a personal fit, precise work, and written aftercare so the result stays beautiful after you leave the studio.",
+    "es": "Incluye un diagnóstico breve, un ajuste personal, trabajo preciso y recomendaciones escritas para que el resultado se mantenga al salir del estudio.",
+    "pt-BR": "Inclui um diagnóstico curto, um ajuste pessoal, trabalho preciso e recomendações escritas para o resultado permanecer bonito depois de sair do estúdio.",
+    "ar": "يشمل تقييماً قصيراً وملاءمة شخصية وعملاً دقيقاً وتوصيات مكتوبة حتى تبقى النتيجة جميلة بعد مغادرة الاستوديو."
+  },
+  "שעווה רכה ותוצאה אחידה. כולל אבחון קצר, התאמה אישית, עבודה מדויקת והמלצות המשך כתובות כדי שהתוצאה תישאר יפה גם אחרי היציאה מהסטודיו.": {
+    "en": "Soft wax and an even result. Includes a short assessment, a personal fit, precise work, and written aftercare so the result stays beautiful after you leave the studio.",
+    "es": "Cera suave y un resultado uniforme. Incluye un diagnóstico breve, un ajuste personal, trabajo preciso y recomendaciones escritas para que el resultado se mantenga al salir del estudio.",
+    "pt-BR": "Cera suave e um resultado uniforme. Inclui um diagnóstico curto, um ajuste pessoal, trabalho preciso e recomendações escritas para o resultado permanecer bonito depois de sair do estúdio.",
+    "ar": "شمع ناعم ونتيجة متساوية. يشمل تقييماً قصيراً وملاءمة شخصية وعملاً دقيقاً وتوصيات مكتوبة حتى تبقى النتيجة جميلة بعد مغادرة الاستوديو."
+  },
+  "טכניקה מדויקת ורגישה. כולל אבחון קצר, התאמה אישית, עבודה מדויקת והמלצות המשך כתובות כדי שהתוצאה תישאר יפה גם אחרי היציאה מהסטודיו.": {
+    "en": "A precise, gentle technique. Includes a short assessment, a personal fit, precise work, and written aftercare so the result stays beautiful after you leave the studio.",
+    "es": "Una técnica precisa y sensible. Incluye un diagnóstico breve, un ajuste personal, trabajo preciso y recomendaciones escritas para que el resultado se mantenga al salir del estudio.",
+    "pt-BR": "Uma técnica precisa e sensível. Inclui um diagnóstico curto, um ajuste pessoal, trabalho preciso e recomendações escritas para o resultado permanecer bonito depois de sair do estúdio.",
+    "ar": "تقنية دقيقة ولطيفة. يشمل تقييماً قصيراً وملاءمة شخصية وعملاً دقيقاً وتوصيات مكتوبة حتى تبقى النتيجة جميلة بعد مغادرة الاستوديو."
+  },
+  "שפם, סנטר וקווי מתאר. כולל אבחון קצר, התאמה אישית, עבודה מדויקת והמלצות המשך כתובות כדי שהתוצאה תישאר יפה גם אחרי היציאה מהסטודיו.": {
+    "en": "Lip, chin, and contour lines. Includes a short assessment, a personal fit, precise work, and written aftercare so the result stays beautiful after you leave the studio.",
+    "es": "Labio, mentón y líneas de contorno. Incluye un diagnóstico breve, un ajuste personal, trabajo preciso y recomendaciones escritas para que el resultado se mantenga al salir del estudio.",
+    "pt-BR": "Lábio, queixo e linhas de contorno. Inclui um diagnóstico curto, um ajuste pessoal, trabalho preciso e recomendações escritas para o resultado permanecer bonito depois de sair do estúdio.",
+    "ar": "شارب وذقن وخطوط تحديد. يشمل تقييماً قصيراً وملاءمة شخصية وعملاً دقيقاً وتوصيات مكتوبة حتى تبقى النتيجة جميلة بعد مغادرة الاستوديو."
+  },
+  "שיחת התאמה קצרה לבחירת הטיפול הנכון. כולל אבחון קצר, התאמה אישית, עבודה מדויקת והמלצות המשך כתובות כדי שהתוצאה תישאר יפה גם אחרי היציאה מהסטודיו.": {
+    "en": "A short fitting conversation to choose the right treatment. Includes a short assessment, a personal fit, precise work, and written aftercare so the result stays beautiful after you leave the studio.",
+    "es": "Una conversación breve para elegir el tratamiento adecuado. Incluye un diagnóstico breve, un ajuste personal, trabajo preciso y recomendaciones escritas para que el resultado se mantenga al salir del estudio.",
+    "pt-BR": "Uma conversa curta para escolher o tratamento certo. Inclui um diagnóstico curto, um ajuste pessoal, trabalho preciso e recomendações escritas para o resultado permanecer bonito depois de sair do estúdio.",
+    "ar": "حديث ملاءمة قصير لاختيار العلاج المناسب. يشمل تقييماً قصيراً وملاءمة شخصية وعملاً دقيقاً وتوصيات مكتوبة حتى تبقى النتيجة جميلة بعد مغادرة الاستوديو."
+  },
+  "מנהלת מקצועית": {
+    "en": "Clinical director",
+    "es": "Directora profesional",
+    "pt-BR": "Diretora profissional",
+    "ar": "مديرة مهنية"
+  },
+  "מומחית טיפולים": {
+    "en": "Treatment specialist",
+    "es": "Especialista en tratamientos",
+    "pt-BR": "Especialista em tratamentos",
+    "ar": "أخصائية علاجات"
+  },
+  "אחראית חוויית לקוחה": {
+    "en": "Client experience lead",
+    "es": "Responsable de experiencia",
+    "pt-BR": "Responsável pela experiência",
+    "ar": "مسؤولة تجربة الزبونة"
+  },
+  "לקוחה קבועה": {
+    "en": "Regular client",
+    "es": "Clienta habitual",
+    "pt-BR": "Cliente frequente",
+    "ar": "زبونة دائمة"
   }
 }

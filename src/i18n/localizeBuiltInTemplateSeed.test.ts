@@ -184,6 +184,20 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(
       localizeBuiltInText("טוען מוצרים מתוסף החנות...", "ar"),
     ).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("שיחה", "en")).toBe("Consult");
+    expect(
+      localizeBuiltInText(
+        "הקמנו מקום שמקשיב קודם כל לאדם שמולנו, לפני בחירת צבע, חומר או פרוטוקול.",
+        "en",
+      ),
+    ).toMatch(/listens|person/i);
+    expect(localizeBuiltInText("רגליים מלאות", "en")).toBe("Full legs");
+    expect(
+      localizeBuiltInText(
+        "שעווה רכה ותוצאה אחידה. כולל אבחון קצר, התאמה אישית, עבודה מדויקת והמלצות המשך כתובות כדי שהתוצאה תישאר יפה גם אחרי היציאה מהסטודיו.",
+        "en",
+      ),
+    ).not.toMatch(/[\u0590-\u05FF]/);
   });
 
   it("does not rewrite saved customer copy over localized defaults", () => {

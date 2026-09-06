@@ -59,7 +59,8 @@ function isUsableTranslation(source: string, translated: string, locale: string)
   const srcHe = hebrewScore(source);
   const outHe = hebrewScore(translated);
   if (srcHe === 0) return translated !== source;
-  return outHe <= Math.floor(srcHe * 0.25);
+  // Any leftover Hebrew is a hybrid smash. Exact rows must be fully translated.
+  return outHe === 0;
 }
 
 const exactKeys = Object.keys(EXACT_LEXICON).sort((a, b) => b.length - a.length);
