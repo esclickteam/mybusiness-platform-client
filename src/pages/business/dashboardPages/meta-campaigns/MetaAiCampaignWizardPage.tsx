@@ -496,7 +496,7 @@ export default function MetaAiCampaignWizardPage() {
     if (session?.missingFields?.length === 1 && session.missingFields[0] === "budget") {
       return t("metaCampaigns.ai.budgetOnlyMissing");
     }
-    if (remaining === 1) return t("metaCampaigns.ai.oneDetailMissing");
+    if (remaining === 1) return t("metaCampaigns.ai.detailsMissing", { count: 1 });
     return t("metaCampaigns.ai.detailsMissing", { count: remaining });
   }, [session, t]);
 
@@ -733,7 +733,11 @@ export default function MetaAiCampaignWizardPage() {
               onAnswer={handleAnswer}
             />
 
-            {session?.status === "COLLECTING" && question && question.field !== "budget" && question.type !== "currency" ? (
+            {session?.status === "COLLECTING" &&
+            question &&
+            question.field !== "budget" &&
+            question.type !== "currency" &&
+            question.type !== "text" ? (
               <form
                 className="flex flex-col gap-2 sm:flex-row"
                 data-testid="meta-ai-composer"
@@ -885,6 +889,14 @@ function plannedOfferName(session: AiCampaignSessionResponse | null) {
   return name;
 }
 
+function plannedDestinationKey(session: AiCampaignSessionResponse | null) {
+  const field = (session?.intent as
+    | { destination?: { state?: string; value?: { key?: string } } }
+    | undefined)?.destination;
+  if (field?.state && field.state !== "CONFIRMED") return "";
+  return String(field?.value?.key || "").trim();
+}
+
 function OwnerLiteSetup({
   session,
   question,
@@ -903,6 +915,17 @@ function OwnerLiteSetup({
   const { t } = useTranslation();
   const offerings = session?.offerings || [];
   const currentName = plannedOfferName(session);
+  const destKey = plannedDestinationKey(session);
+  const destLabel = destKey
+    ? t(`metaCampaigns.ai.destinations.${destKey}`, { defaultValue: destKey })
+    : "";
+  const objectiveKey = String(
+    (session?.intent as { objective?: { value?: { key?: string } } } | undefined)
+      ?.objective?.value?.key || ""
+  );
+  const objectiveLabel = objectiveKey
+    ? t(`metaCampaigns.ai.objectives.${objectiveKey}`, { defaultValue: objectiveKey })
+    : "";
 
   return (
     <div className="space-y-5" data-testid="meta-ai-owner-lite">
@@ -924,6 +947,11 @@ function OwnerLiteSetup({
         {currentName ? (
           <p className="text-sm font-semibold text-violet-800" data-testid="meta-ai-planned-offer">
             {currentName}
+          </p>
+        ) : null}
+        {destLabel ? (
+          <p className="text-sm font-semibold text-slate-700" data-testid="meta-ai-planned-destination">
+            {objectiveLabel ? `${objectiveLabel} · ${destLabel}` : destLabel}
           </p>
         ) : null}
       </div>

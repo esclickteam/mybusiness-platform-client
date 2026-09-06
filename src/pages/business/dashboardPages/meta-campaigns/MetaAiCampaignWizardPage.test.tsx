@@ -294,6 +294,44 @@ describe("MetaAiCampaignWizardPage conversation", () => {
     );
   });
 
+  it("shows the planned destination and collects a missing website URL", async () => {
+    api.startAiCampaignSession.mockResolvedValue(
+      questionSession({
+        missingFields: ["website"],
+        progress: { confirmed: 0, remaining: 1, required: 1 },
+        intent: {
+          promotedItem: { state: "CONFIRMED", value: { name: "טיפול פנים" } },
+          objective: { state: "CONFIRMED", value: { key: "TRAFFIC" } },
+          destination: { state: "CONFIRMED", value: { key: "WEBSITE" } },
+        },
+        question: {
+          field: "website",
+          type: "text",
+          message: "לקמפיין תנועה צריך קישור לאתר או לדף נחיתה. הדביקי קישור.",
+          placeholder: "https://",
+        },
+      })
+    );
+    renderWizard();
+    await waitFor(() => screen.getByTestId("meta-ai-planned-destination"));
+    expect(screen.getByTestId("meta-ai-planned-destination").textContent).toContain(
+      "תנועה לאתר"
+    );
+    expect(screen.getByTestId("meta-ai-planned-destination").textContent).toContain("אתר");
+    expect(screen.getByTestId("meta-ai-progress").textContent).toContain("חסרים 1 פרטים");
+    fireEvent.change(screen.getByTestId("meta-ai-text"), {
+      target: { value: "https://clinic.example" },
+    });
+    fireEvent.submit(screen.getByTestId("meta-ai-text").closest("form") as HTMLFormElement);
+    await waitFor(() =>
+      expect(api.answerAiCampaignSession).toHaveBeenCalledWith(
+        "biz-1",
+        "sess-1",
+        { field: "website", answer: "https://clinic.example" }
+      )
+    );
+  });
+
   it("does not force a typed service after All services", async () => {
     api.answerAiCampaignSession.mockResolvedValue(questionSession());
     renderWizard();
