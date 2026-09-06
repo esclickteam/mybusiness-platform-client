@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Sparkles,
   AlignLeft,
@@ -12,6 +13,7 @@ import {
 } from "lucide-react";
 import API from "../../../../api";
 import BizuplyLoader from "../../../../components/ui/BizuplyLoader";
+import { getTextDirection } from "../../../../i18n/localeUtils";
 
 type Props = {
   selectedText?: string;
@@ -41,13 +43,15 @@ export default function VisualAiToolsPanel({
   onApplySectionContent,
   onApplySitePatch,
 }: Props) {
+  const { t, i18n } = useTranslation();
+  const pageDir = getTextDirection(i18n.language);
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState("");
   const [error, setError] = useState("");
 
   async function runTextAction(action: string, targetLanguage?: string) {
     if (!selectedText?.trim()) {
-      setError("נא לבחור אלמנט טקסט בעורך");
+      setError(t("studio.aiTools.pickText"));
       return;
     }
 
@@ -64,7 +68,7 @@ export default function VisualAiToolsPanel({
         onApplyText?.(String(data.text));
       }
     } catch (err: any) {
-      setError(err?.message || "פעולת AI על הטקסט נכשלה");
+      setError(err?.message || t("studio.aiTools.textFailed"));
     } finally {
       setBusy("");
     }
@@ -72,7 +76,7 @@ export default function VisualAiToolsPanel({
 
   async function runSectionVariation() {
     if (!selectedSectionLibraryId) {
-      setError("נא לבחור סקשן מהספרייה (או סקשן עם libraryId)");
+      setError(t("studio.aiTools.pickSection"));
       return;
     }
 
@@ -94,7 +98,7 @@ export default function VisualAiToolsPanel({
         });
       }
     } catch (err: any) {
-      setError(err?.message || "וריאציית סקשן נכשלה");
+      setError(err?.message || t("studio.aiTools.sectionFailed"));
     } finally {
       setBusy("");
     }
@@ -115,14 +119,14 @@ export default function VisualAiToolsPanel({
         onApplySitePatch?.(data.patch);
       }
     } catch (err: any) {
-      setError(err?.message || "שיפור האתר נכשל");
+      setError(err?.message || t("studio.aiTools.siteFailed"));
     } finally {
       setBusy("");
     }
   }
 
   return (
-    <div className="pointer-events-none absolute bottom-4 left-4 z-[60]" dir="rtl">
+    <div className="pointer-events-none absolute bottom-4 left-4 z-[60]" dir={pageDir}>
       {!open ? (
         <button
           type="button"
@@ -130,14 +134,14 @@ export default function VisualAiToolsPanel({
           className="pointer-events-auto inline-flex items-center gap-2 rounded-full bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70 px-4 py-2.5 text-sm font-semibold text-black shadow-lg shadow-violet-600/30 hover:from-violet-200/70 hover:via-sky-100 hover:to-cyan-100"
         >
           <Sparkles className="h-4 w-4" />
-          AI בעורך
+          {t("studio.aiTools.open")}
         </button>
       ) : (
         <div className="pointer-events-auto w-[300px] overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl">
           <div className="flex items-center justify-between border-b border-slate-100 px-3 py-2.5">
             <div className="flex items-center gap-2 text-sm font-bold text-slate-900">
               <Sparkles className="h-4 w-4 text-violet-600" />
-              כלי AI
+              {t("studio.aiTools.title")}
             </div>
             <button
               type="button"
@@ -151,39 +155,39 @@ export default function VisualAiToolsPanel({
           <div className="space-y-3 p-3">
             <div>
               <p className="mb-1.5 text-[11px] font-semibold text-slate-500">
-                טקסט נבחר {selectedElementId ? `(${selectedElementId})` : ""}
+                {t("studio.aiTools.selectedText")} {selectedElementId ? `(${selectedElementId})` : ""}
               </p>
               <div className="mb-2 max-h-16 overflow-auto rounded-lg bg-slate-50 px-2 py-1.5 text-[11px] text-slate-600">
-                {selectedText?.trim() || "לא נבחר טקסט"}
+                {selectedText?.trim() || t("studio.aiTools.noText")}
               </div>
               <div className="grid grid-cols-2 gap-1.5">
                 <ToolBtn
                   icon={RefreshCw}
-                  label="כתיבה מחדש"
+                  label={t("studio.aiTools.rewrite")}
                   busy={busy === "rewrite"}
                   onClick={() => runTextAction("rewrite")}
                 />
                 <ToolBtn
                   icon={Minimize2}
-                  label="קיצור"
+                  label={t("studio.aiTools.shorten")}
                   busy={busy === "shorten"}
                   onClick={() => runTextAction("shorten")}
                 />
                 <ToolBtn
                   icon={Maximize2}
-                  label="הרחבה"
+                  label={t("studio.aiTools.expand")}
                   busy={busy === "expand"}
                   onClick={() => runTextAction("expand")}
                 />
                 <ToolBtn
                   icon={Languages}
-                  label="תרגום EN"
+                  label={t("studio.aiTools.translateEn")}
                   busy={busy === "translate"}
                   onClick={() => runTextAction("translate", "en")}
                 />
                 <ToolBtn
                   icon={AlignLeft}
-                  label="שינוי סגנון"
+                  label={t("studio.aiTools.restyle")}
                   busy={busy === "style"}
                   onClick={() => runTextAction("style")}
                 />
@@ -192,11 +196,11 @@ export default function VisualAiToolsPanel({
 
             <div className="border-t border-slate-100 pt-3">
               <p className="mb-1.5 text-[11px] font-semibold text-slate-500">
-                סקשן
+                {t("studio.aiTools.section")}
               </p>
               <ToolBtn
                 icon={RefreshCw}
-                label="וריאציה לסקשן"
+                label={t("studio.aiTools.sectionVariation")}
                 busy={busy === "section"}
                 onClick={runSectionVariation}
                 full
@@ -205,18 +209,18 @@ export default function VisualAiToolsPanel({
 
             <div className="border-t border-slate-100 pt-3">
               <p className="mb-1.5 text-[11px] font-semibold text-slate-500">
-                האתר כולו
+                {t("studio.aiTools.wholeSite")}
               </p>
               <div className="grid grid-cols-2 gap-1.5">
                 <ToolBtn
                   icon={AlignLeft}
-                  label="שיפור SEO"
+                  label={t("studio.aiTools.improveSeo")}
                   busy={busy === "seo"}
                   onClick={() => runSiteImprove("seo")}
                 />
                 <ToolBtn
                   icon={Palette}
-                  label="מיתוג/צבעים"
+                  label={t("studio.aiTools.brandColors")}
                   busy={busy === "brand"}
                   onClick={() => runSiteImprove("brand")}
                 />

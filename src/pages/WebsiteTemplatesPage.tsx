@@ -28,6 +28,7 @@ import TemplateCardPreview from "../components/website/TemplateCardPreview";
 import { getTemplateFullPageScreenshotUrl } from "../utils/templateScreenshot";
 import { getApiErrorMessage } from "../utils/apiErrorMessage";
 import { useLocaleDir } from "../hooks/useLocaleDir";
+import i18n from "../i18n/i18n";
 import { isGuidedDemoActive } from "@/guidedDemo/sessionStore";
 
 type WebsiteTemplateBlock = {
@@ -164,7 +165,9 @@ async function apiRequest<T>(url: string, options: RequestInit = {}): Promise<T>
   const data = await res.json().catch(() => null);
 
   if (!res.ok) {
-    throw new Error(data?.message || data?.error || "לא הצלחנו להשלים את הפעולה");
+    throw new Error(
+      data?.message || data?.error || i18n.t("sites.templates.actionFailed"),
+    );
   }
 
   return data as T;
@@ -1188,7 +1191,7 @@ export default function WebsiteTemplatesPage() {
                       >
                         <div className="h-8 w-8 animate-pulse rounded-full bg-slate-200" />
                         <p className="text-xs font-bold text-slate-400">
-                          טוען עוד תבניות…
+                          {t("sites.templates.loadingMore")}
                         </p>
                         <button
                           type="button"
@@ -1202,8 +1205,9 @@ export default function WebsiteTemplatesPage() {
                           }
                           className="rounded-lg border border-slate-200 bg-white px-4 py-2 text-xs font-black text-slate-700 transition hover:bg-slate-50"
                         >
-                          הצג עוד (
-                          {filteredTemplates.length - visibleCount})
+                          {t("sites.templates.showMore", {
+                            count: filteredTemplates.length - visibleCount,
+                          })}
                         </button>
                       </div>
                     ) : null}

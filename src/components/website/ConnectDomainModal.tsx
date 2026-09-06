@@ -1,9 +1,11 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Globe2, X } from "lucide-react";
 
 import DomainSearch from "./DomainSearch";
 import DomainRenewalPanel from "./DomainRenewalPanel";
 import { connectSiteCustomDomain, getMySite } from "../../api/mySitesApi";
+import { getTextDirection } from "../../i18n/localeUtils";
 import { buildPublicSiteUrl, getPublicSiteDomain } from "../../utils/publicSiteHost";
 
 type ConnectDomainModalProps = {
@@ -51,6 +53,8 @@ export default function ConnectDomainModal({
   initialCustomDomain = "",
   onConnected,
 }: ConnectDomainModalProps) {
+  const { t, i18n } = useTranslation();
+  const pageDir = getTextDirection(i18n.language);
   const [customDomain, setCustomDomain] = useState(initialCustomDomain);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -103,7 +107,7 @@ export default function ConnectDomainModal({
 
     if (!siteId) {
       setCustomDomain(clean);
-      setSuccess(`הדומיין ${clean} נרשם. שמרו את האתר כדי לקשר אותו אליו.`);
+      setSuccess(t("sites.domain.registeredKeep", { domain: clean }));
       onConnected?.({
         customDomain: clean,
         provisioningStatus: "",
@@ -116,7 +120,7 @@ export default function ConnectDomainModal({
     try {
       const result = await connectSiteCustomDomain(siteId, clean);
       setCustomDomain(result.customDomain);
-      setSuccess(`הדומיין ${result.customDomain} נרכש וחובר לאתר`);
+      setSuccess(t("sites.domain.purchased", { domain: result.customDomain }));
       onConnected?.({
         customDomain: result.customDomain,
         publicUrl: result.publicUrl,
@@ -129,7 +133,7 @@ export default function ConnectDomainModal({
       setError(
         requestError instanceof Error
           ? requestError.message
-          : "הרישום הצליח, אבל חיבור הדומיין לאתר נכשל",
+          : t("sites.domain.connectFailed"),
       );
     }
   }
@@ -137,20 +141,20 @@ export default function ConnectDomainModal({
   return (
     <div className="fixed inset-0 z-[2147483600] flex items-center justify-center bg-slate-950/45 p-4 backdrop-blur-sm">
       <div
-        dir="rtl"
+        dir={pageDir}
         className="relative flex max-h-[92vh] w-full max-w-4xl flex-col overflow-hidden rounded-[28px] border border-slate-200 bg-white shadow-[0_30px_90px_rgba(15,23,42,0.28)]"
       >
         <div className="flex items-start justify-between gap-4 border-b border-slate-200 px-5 py-4 sm:px-6">
           <div>
             <div className="inline-flex items-center gap-2 rounded-full border border-violet-100 bg-violet-50 px-3 py-1 text-xs font-black text-violet-700">
               <Globe2 className="h-3.5 w-3.5" />
-              רכישת דומיין
+              {t("sites.domain.buy")}
             </div>
             <h2 className="mt-3 text-xl font-black text-slate-900">
-              רכישת דומיין חדש לאתר
+              {t("sites.domain.buyTitle")}
             </h2>
             <p className="mt-1 text-sm font-semibold text-slate-500">
-              בדקו זמינות, רכשו דומיין — והוא יקושר אוטומטית לאתר.
+              {t("sites.domain.buyHint")}
             </p>
           </div>
 
@@ -158,7 +162,7 @@ export default function ConnectDomainModal({
             type="button"
             onClick={onClose}
             className="inline-flex h-10 w-10 items-center justify-center rounded-2xl border border-slate-200 bg-white text-slate-500 transition hover:bg-slate-50"
-            aria-label="סגירה"
+            aria-label={t("sites.domain.close")}
           >
             <X className="h-4 w-4" />
           </button>
@@ -173,7 +177,7 @@ export default function ConnectDomainModal({
               {customDomain ? `https://${customDomain}` : platformUrl}
             </span>
             <span className="shrink-0 text-xs font-black text-violet-700">
-              {customDomain ? "דומיין מחובר" : "רכישת דומיין חדש"}
+              {customDomain ? t("sites.domain.connected") : t("sites.domain.buyingNew")}
             </span>
           </div>
         </div>
@@ -192,8 +196,7 @@ export default function ConnectDomainModal({
 
           {!siteId ? (
             <div className="mb-4 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-bold text-amber-800">
-              מומלץ לשמור או לפרסם את האתר לפני הרכישה, כדי שהדומיין יקושר אליו
-              אוטומטית.
+              {t("sites.domain.saveFirst")}
             </div>
           ) : null}
 

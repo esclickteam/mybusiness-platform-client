@@ -1,55 +1,85 @@
 import type { SitePluginDefinition } from "../../../api/sitePluginsApi";
 
 export const CATEGORY_LABELS: Record<string, string> = {
-  all: "הכול",
-  commerce: "מסחר",
-  scheduling: "תזמון",
-  finance: "כספים",
-  marketing: "שיווק",
-  engagement: "מעורבות",
-  analytics: "אנליטיקה",
-  conversion: "המרות",
+  all: "All",
+  commerce: "Commerce",
+  scheduling: "Scheduling",
+  finance: "Finance",
+  marketing: "Marketing",
+  engagement: "Engagement",
+  analytics: "Analytics",
+  conversion: "Conversions",
   ai: "AI",
-  accessibility: "נגישות",
-  navigation: "ניווט",
-  content: "תוכן",
-  trust: "אמון",
-  media: "מדיה",
-  utility: "כלים",
+  accessibility: "Accessibility",
+  navigation: "Navigation",
+  content: "Content",
+  trust: "Trust",
+  media: "Media",
+  utility: "Tools",
+};
+
+export const CATEGORY_LABEL_KEYS: Record<string, string> = {
+  all: "sites.plugins.all",
+  commerce: "sites.plugins.catCommerce",
+  scheduling: "sites.plugins.catScheduling",
+  finance: "sites.plugins.catFinance",
+  marketing: "sites.plugins.catMarketing",
+  engagement: "sites.plugins.catEngagement",
+  analytics: "sites.plugins.catAnalytics",
+  conversion: "sites.plugins.catConversion",
+  ai: "sites.plugins.catAi",
+  accessibility: "sites.plugins.catAccessibility",
+  navigation: "sites.plugins.catNavigation",
+  content: "sites.plugins.catContent",
+  trust: "sites.plugins.catTrust",
+  media: "sites.plugins.catMedia",
+  utility: "sites.plugins.catUtility",
 };
 
 export const CATEGORY_GROUPS: Array<{
+  id: string;
   title: string;
   categories: string[];
 }> = [
   {
-    title: "מסחר ומעורבות",
+    id: "commerce",
+    title: "Commerce and engagement",
     categories: ["commerce", "engagement"],
   },
   {
-    title: "תזמון ושיווק",
+    id: "scheduling",
+    title: "Scheduling and marketing",
     categories: ["scheduling", "marketing", "conversion"],
   },
   {
-    title: "AI וניווט",
+    id: "ai",
+    title: "AI and navigation",
     categories: ["ai", "navigation"],
   },
   {
-    title: "כלים ונגישות",
+    id: "tools",
+    title: "Tools and accessibility",
     categories: ["utility", "accessibility"],
   },
 ];
+
+export const CATEGORY_GROUP_KEYS: Record<string, string> = {
+  commerce: "sites.plugins.groupCommerce",
+  scheduling: "sites.plugins.groupScheduling",
+  ai: "sites.plugins.groupAi",
+  tools: "sites.plugins.groupTools",
+};
 export type SortOption = "relevant" | "name-asc" | "name-desc" | "price-asc";
 export type InstallFilter = "all" | "installed" | "available";
 
 export function formatPluginPrice(plugin: SitePluginDefinition) {
   if (plugin.displayPriceLabel) return plugin.displayPriceLabel;
   if (plugin.priceLabel) return plugin.priceLabel;
-  if (plugin.priceMonthly == null) return "כלול בחבילה";
+  if (plugin.priceMonthly == null) return "Included in the plan";
   if (plugin.priceMax && plugin.priceMax > (plugin.priceMonthly || 0)) {
-    return `₪${plugin.priceMonthly}–${plugin.priceMax}/חודש`;
+    return `₪${plugin.priceMonthly}–${plugin.priceMax}/month`;
   }
-  return `₪${plugin.priceMonthly}/חודש`;
+  return `₪${plugin.priceMonthly}/month`;
 }
 
 /** Stable visual rating for store cards (4.0–4.9) */

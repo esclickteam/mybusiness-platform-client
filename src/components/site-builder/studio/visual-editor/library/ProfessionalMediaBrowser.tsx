@@ -5,6 +5,7 @@ import React, {
   useState,
   type ChangeEvent,
 } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Check,
   ExternalLink,
@@ -17,6 +18,7 @@ import {
 } from "lucide-react";
 
 import BizuplyLoader from "../../../../../components/ui/BizuplyLoader";
+import { getTextDirection } from "../../../../../i18n/localeUtils";
 import {
   PEXELS_MEDIA_CATEGORIES,
   searchPexelsMedia,
@@ -50,6 +52,8 @@ export default function ProfessionalMediaBrowser({
   showUploadButton = false,
   className = "",
 }: ProfessionalMediaBrowserProps) {
+  const { t, i18n } = useTranslation();
+  const pageDir = getTextDirection(i18n.language);
   const [category, setCategory] =
     useState<PexelsCategory>("business");
   const [mediaType, setMediaType] =
@@ -110,7 +114,7 @@ export default function ProfessionalMediaBrowser({
       setError(
         loadError instanceof Error
           ? loadError.message
-          : "לא ניתן לטעון את ספריית Pexels",
+          : t("studio.mediaBrowser.pexelsFailed"),
       );
     } finally {
       if (!controller.signal.aborted) {
@@ -144,10 +148,25 @@ export default function ProfessionalMediaBrowser({
   };
 
   const actionLabel =
-    mode === "select" ? "בחירה" : "הוספה";
+    mode === "select"
+      ? t("studio.mediaBrowser.select")
+      : t("studio.mediaBrowser.add");
+
+  const categoryLabelKey: Record<string, string> = {
+    business: "studio.mediaBrowser.catBusiness",
+    beauty: "studio.mediaBrowser.catBeauty",
+    restaurant: "studio.mediaBrowser.catRestaurant",
+    "real-estate": "studio.mediaBrowser.catRealEstate",
+    technology: "studio.mediaBrowser.catTechnology",
+    wellness: "studio.mediaBrowser.catWellness",
+    construction: "studio.mediaBrowser.catConstruction",
+    travel: "studio.mediaBrowser.catTravel",
+    fashion: "studio.mediaBrowser.catFashion",
+    finance: "studio.mediaBrowser.catFinance",
+  };
 
   return (
-    <div className={`flex min-h-0 flex-1 flex-col ${className}`}>
+    <div className={`flex min-h-0 flex-1 flex-col ${className}`} dir={pageDir}>
       <div className="shrink-0 border-b border-slate-200 bg-white px-6 py-4">
         <div className="grid grid-cols-2 gap-3">
           <button
@@ -164,7 +183,7 @@ export default function ProfessionalMediaBrowser({
             ].join(" ")}
           >
             <ImageIcon className="h-4 w-4" />
-            תמונות
+            {t("studio.mediaBrowser.photos")}
           </button>
 
           <button
@@ -181,7 +200,7 @@ export default function ProfessionalMediaBrowser({
             ].join(" ")}
           >
             <Film className="h-4 w-4" />
-            סרטונים
+            {t("studio.mediaBrowser.videos")}
           </button>
         </div>
 
@@ -195,8 +214,8 @@ export default function ProfessionalMediaBrowser({
               }
               placeholder={
                 mediaType === "videos"
-                  ? "חיפוש סרטונים מקצועיים..."
-                  : "חיפוש תמונות מקצועיות..."
+                  ? t("studio.mediaBrowser.searchVideos")
+                  : t("studio.mediaBrowser.searchPhotos")
               }
               className="min-w-0 flex-1 bg-transparent text-sm font-bold text-slate-800 outline-none placeholder:text-slate-400"
             />
@@ -209,7 +228,7 @@ export default function ProfessionalMediaBrowser({
               className="inline-flex h-12 shrink-0 items-center gap-2 rounded-2xl border border-slate-200 bg-white px-4 text-sm font-black text-violet-700 transition hover:border-violet-300 hover:bg-violet-50"
             >
               <Upload className="h-4 w-4" />
-              העלאה
+              {t("studio.mediaBrowser.upload")}
             </button>
           ) : null}
         </div>
@@ -231,7 +250,7 @@ export default function ProfessionalMediaBrowser({
                   : "bg-slate-100 text-slate-600 hover:bg-slate-200",
               ].join(" ")}
             >
-              {item.label}
+              {t(categoryLabelKey[item.id] || item.label)}
             </button>
           ))}
         </div>
@@ -241,7 +260,7 @@ export default function ProfessionalMediaBrowser({
         {error ? (
           <div className="rounded-3xl border border-rose-200 bg-rose-50 p-5 text-center">
             <p className="text-sm font-black text-rose-700">
-              טעינת המדיה נכשלה
+              {t("studio.mediaBrowser.loadFailed")}
             </p>
             <p className="mt-1 text-xs font-bold text-rose-500">{error}</p>
             <button
@@ -250,7 +269,7 @@ export default function ProfessionalMediaBrowser({
               className="mt-4 inline-flex h-10 items-center gap-2 rounded-xl bg-white px-4 text-xs font-black text-rose-700 shadow-sm"
             >
               <RefreshCw className="h-3.5 w-3.5" />
-              נסו שוב
+              {t("studio.mediaBrowser.tryAgain")}
             </button>
           </div>
         ) : null}
@@ -261,8 +280,8 @@ export default function ProfessionalMediaBrowser({
               <BizuplyLoader size="lg" />
               <p className="mt-3 text-sm font-black text-slate-700">
                 {mediaType === "videos"
-                  ? "טוען סרטונים מקצועיים..."
-                  : "טוען תמונות מקצועיות..."}
+                  ? t("studio.mediaBrowser.loadingVideos")
+                  : t("studio.mediaBrowser.loadingPhotos")}
               </p>
             </div>
           </div>
@@ -277,7 +296,7 @@ export default function ProfessionalMediaBrowser({
                 <ImageIcon className="mx-auto h-9 w-9 text-slate-300" />
               )}
               <p className="mt-3 text-sm font-black text-slate-700">
-                לא נמצאו תוצאות
+                {t("studio.mediaBrowser.empty")}
               </p>
             </div>
           </div>
@@ -350,7 +369,7 @@ export default function ProfessionalMediaBrowser({
                       ) : (
                         <ImageIcon className="h-3.5 w-3.5" />
                       )}
-                      {isAdded || isSelected ? "נבחר" : actionLabel}
+                      {isAdded || isSelected ? t("studio.mediaBrowser.selected") : actionLabel}
                     </button>
 
                     {item.sourceUrl ? (
@@ -358,7 +377,7 @@ export default function ProfessionalMediaBrowser({
                         href={item.sourceUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        title="פתיחת המדיה ב־Pexels"
+                        title={t("studio.mediaBrowser.openPexels")}
                         className="flex h-10 w-10 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-600 transition hover:border-violet-300 hover:text-violet-700"
                       >
                         <ExternalLink className="h-3.5 w-3.5" />
@@ -387,12 +406,12 @@ export default function ProfessionalMediaBrowser({
             ) : (
               <ImageIcon className="h-4 w-4" />
             )}
-            טעינת תוצאות נוספות
+            {t("studio.mediaBrowser.loadMore")}
           </button>
         ) : null}
 
         <p className="mt-5 px-2 text-center text-[10px] font-bold leading-5 text-slate-400">
-          תמונות וסרטונים מסופקים על ידי{" "}
+          {t("studio.mediaBrowser.credit")}{" "}
           <a
             href="https://www.pexels.com"
             target="_blank"

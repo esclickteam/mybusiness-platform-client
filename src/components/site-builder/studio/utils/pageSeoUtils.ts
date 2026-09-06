@@ -108,8 +108,8 @@ export function applyTitleTemplate(
   siteName: string,
 ) {
   const cleanTemplate = safeString(template) || "%page% | %site%";
-  const page = safeString(pageTitle) || "עמוד";
-  const site = safeString(siteName) || "האתר שלי";
+  const page = safeString(pageTitle) || "Page";
+  const site = safeString(siteName) || "My website";
 
   return cleanTemplate
     .replace(/%page%/g, page)
@@ -331,7 +331,7 @@ export function validateJsonLd(value: string): { valid: boolean; error: string }
   } catch (error) {
     return {
       valid: false,
-      error: error instanceof Error ? error.message : "JSON לא תקין",
+      error: error instanceof Error ? error.message : "Invalid JSON",
     };
   }
 }
@@ -423,8 +423,8 @@ export function resolvePageSeoMeta(input: {
   const siteName =
     safeString(input.siteName) ||
     safeString(siteSeoSettings.title) ||
-    "האתר שלי";
-  const pageTitle = safeString(page?.title) || "עמוד";
+    "My website";
+  const pageTitle = safeString(page?.title) || "Page";
   const pagePath = buildPagePath(page);
   const baseUrl =
     safeString(input.publicUrl) || buildPublicSiteUrl(safeString(input.siteSlug));
@@ -516,9 +516,9 @@ function jsonld(value: Record<string, any>) {
 export const STRUCTURED_DATA_PRESETS: StructuredDataPreset[] = [
   {
     id: "Organization",
-    label: "ארגון / עסק (Organization)",
-    description: "פרטי העסק, לוגו וקישורים לרשתות.",
-    tips: "מלאו: logo (קישור ללוגו), ו‑sameAs (קישורים לפייסבוק/אינסטגרם/לינקדאין).",
+    label: "Organization / business",
+    description: "Business details, logo, and social links.",
+    tips: "Fill: logo (logo URL) and sameAs (Facebook / Instagram / LinkedIn links).",
     build: ({ siteName, url }) =>
       jsonld({
         "@context": "https://schema.org",
@@ -531,9 +531,9 @@ export const STRUCTURED_DATA_PRESETS: StructuredDataPreset[] = [
   },
   {
     id: "LocalBusiness",
-    label: "עסק מקומי (LocalBusiness)",
-    description: "כתובת, טלפון ושעות פעילות — מצוין ל‑Local SEO.",
-    tips: "מלאו: telephone (טלפון), address (רחוב, עיר), ו‑openingHours (שעות פעילות). זה מה שמופיע בכרטיס גוגל.",
+    label: "Local business",
+    description: "Address, phone, and hours — great for local SEO.",
+    tips: "Fill: telephone, address (street, city), and openingHours. This is what appears on the Google card.",
     build: ({ siteName, url }) =>
       jsonld({
         "@context": "https://schema.org",
@@ -552,9 +552,9 @@ export const STRUCTURED_DATA_PRESETS: StructuredDataPreset[] = [
   },
   {
     id: "Service",
-    label: "שירות (Service)",
-    description: "תיאור שירות שהעסק מספק.",
-    tips: "מלאו: name (שם השירות), description (תיאור), ו‑areaServed (אזור השירות).",
+    label: "Service",
+    description: "A service the business provides.",
+    tips: "Fill: name, description, and areaServed.",
     build: ({ siteName, pageTitle }) =>
       jsonld({
         "@context": "https://schema.org",
@@ -567,9 +567,9 @@ export const STRUCTURED_DATA_PRESETS: StructuredDataPreset[] = [
   },
   {
     id: "Product",
-    label: "מוצר (Product)",
-    description: "מוצר עם מחיר ודירוג — מפעיל תוצאות עשירות.",
-    tips: "מלאו: name (שם המוצר), image (קישור לתמונה), ובתוך offers את price (מחיר). כך גוגל מציג מחיר.",
+    label: "Product",
+    description: "A product with price and rating — enables rich results.",
+    tips: "Fill: name, image, and price inside offers. Google can then show the price.",
     build: ({ pageTitle }) =>
       jsonld({
         "@context": "https://schema.org",
@@ -587,9 +587,9 @@ export const STRUCTURED_DATA_PRESETS: StructuredDataPreset[] = [
   },
   {
     id: "FAQPage",
-    label: "שאלות ותשובות (FAQPage)",
-    description: "בלוק שו״ת שיכול להופיע ישירות בגוגל.",
-    tips: "החליפו את name (השאלה) ואת text (התשובה). אפשר לשכפל שורות כדי להוסיף עוד שאלות.",
+    label: "FAQ",
+    description: "A Q&A block that can appear directly on Google.",
+    tips: "Replace name (the question) and text (the answer). Duplicate rows to add more questions.",
     build: () =>
       jsonld({
         "@context": "https://schema.org",
@@ -605,9 +605,9 @@ export const STRUCTURED_DATA_PRESETS: StructuredDataPreset[] = [
   },
   {
     id: "BreadcrumbList",
-    label: "פירורי לחם (BreadcrumbList)",
-    description: "היררכיית ניווט שמופיעה בתוצאות החיפוש.",
-    tips: "עדכנו את name (שם כל שלב) ואת item (הקישור לכל שלב) לפי מבנה האתר.",
+    label: "Breadcrumbs",
+    description: "Navigation hierarchy that appears in search results.",
+    tips: "Update name (each step) and item (the URL for each step) to match the site structure.",
     build: ({ siteName, pageTitle, url }) =>
       jsonld({
         "@context": "https://schema.org",
@@ -620,9 +620,9 @@ export const STRUCTURED_DATA_PRESETS: StructuredDataPreset[] = [
   },
   {
     id: "Article",
-    label: "מאמר / בלוג (Article)",
-    description: "כתבה או פוסט בלוג עם מחבר ותאריך.",
-    tips: "מלאו: headline (כותרת הכתבה), author (מחבר), ו‑datePublished (תאריך פרסום בפורמט 2026-07-19).",
+    label: "Article / blog",
+    description: "An article or blog post with author and date.",
+    tips: "Fill: headline, author, and datePublished (YYYY-MM-DD).",
     build: ({ siteName, pageTitle, url }) =>
       jsonld({
         "@context": "https://schema.org",
@@ -749,13 +749,13 @@ export function buildSmartPageSeo(input: {
   });
 
   const pageText = extractPlainTextFromHtml(input.pageHtml || "");
-  const siteName = safeString(input.siteName) || "האתר שלי";
-  const pageTitle = safeString(input.page?.title) || "עמוד";
+  const siteName = safeString(input.siteName) || "My website";
+  const pageTitle = safeString(input.page?.title) || "Page";
 
   const generatedTitle = meta.titleTag;
   const generatedDescription =
     deriveMetaDescription(pageText) ||
-    `${pageTitle} — ${siteName}. צרו קשר לפרטים נוספים.`;
+    `${pageTitle} — ${siteName}. Contact us for more details.`;
   const generatedKeywords =
     deriveKeywords(`${pageTitle} ${siteName} ${pageText}`) ||
     [pageTitle, siteName].filter(Boolean).join(", ");

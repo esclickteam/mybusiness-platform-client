@@ -253,12 +253,17 @@ export default function VisualMediaModal({
     onClose();
   };
 
+  const libraryLabel = (item: (typeof MEDIA_LIBRARY)[number]) =>
+    t(`studio.mediaBrowser.${String(item.id || "").replace(/^media-/, "")}`, {
+      defaultValue: item.title,
+    });
+
   const filteredLibrary = MEDIA_LIBRARY.filter((item) => {
     const query = String(searchQuery || "").trim().toLowerCase();
 
     if (!query) return true;
 
-    return [item.title, item.description, ...(item.keywords || [])]
+    return [libraryLabel(item), item.title, item.description, ...(item.keywords || [])]
       .join(" ")
       .toLowerCase()
       .includes(query);
@@ -512,7 +517,7 @@ export default function VisualMediaModal({
                         onClick={() => {
                           applySelectedMedia(
                             item.src,
-                            item.alt || item.title,
+                            item.alt || libraryLabel(item),
                             detectMediaType(item.src, item.mediaType),
                           );
                         }}
@@ -526,13 +531,13 @@ export default function VisualMediaModal({
                         <div className="aspect-[4/3] overflow-hidden bg-slate-100">
                           <img
                             src={item.thumbnail || item.src}
-                            alt={item.alt || item.title}
+                            alt={item.alt || libraryLabel(item)}
                             className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
                           />
                         </div>
                         <div className="px-3 py-2">
                           <div className="truncate text-xs font-black text-slate-800">
-                            {item.title}
+                            {libraryLabel(item)}
                           </div>
                         </div>
                       </button>

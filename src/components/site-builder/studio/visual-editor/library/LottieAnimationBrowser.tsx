@@ -94,6 +94,33 @@ const LOTTIE_PLAYBACK_KEYS: Record<PlaybackMode, string> = {
   "reverse-bounce": "studio.lottie.reverseBounce",
 };
 
+const LOTTIE_STARTER_KEYS: Record<string, { title: string; description: string }> = {
+  "success-check": {
+    title: "studio.lottie.successCheckTitle",
+    description: "studio.lottie.successCheckDesc",
+  },
+  "analytics-growth": {
+    title: "studio.lottie.analyticsTitle",
+    description: "studio.lottie.analyticsDesc",
+  },
+  "messages-flow": {
+    title: "studio.lottie.messagesTitle",
+    description: "studio.lottie.messagesDesc",
+  },
+  "rocket-launch": {
+    title: "studio.lottie.rocketTitle",
+    description: "studio.lottie.rocketDesc",
+  },
+  "commerce-bag": {
+    title: "studio.lottie.commerceTitle",
+    description: "studio.lottie.commerceDesc",
+  },
+  "target-focus": {
+    title: "studio.lottie.targetTitle",
+    description: "studio.lottie.targetDesc",
+  },
+};
+
 const WEB_PLAYER_MODULE_URL =
   "https://cdn.jsdelivr.net/npm/@lottiefiles/dotlottie-web/+esm";
 
@@ -1011,8 +1038,8 @@ function buildTargetAnimation() {
 const STARTER_ANIMATIONS: LottieSource[] = [
   {
     id: "success-check",
-    title: "הצלחה מקצועית",
-    description: "סימון הצלחה עם ניצוצות ורקע שקוף",
+    title: "Professional success",
+    description: "A success check with sparks and a transparent background",
     category: "success",
     keywords: [
       "success",
@@ -1028,8 +1055,8 @@ const STARTER_ANIMATIONS: LottieSource[] = [
   },
   {
     id: "analytics-growth",
-    title: "צמיחה ונתונים",
-    description: "גרף עסקי עם עמודות וקו צמיחה",
+    title: "Growth and data",
+    description: "A business chart with bars and a growth line",
     category: "business",
     keywords: [
       "analytics",
@@ -1045,8 +1072,8 @@ const STARTER_ANIMATIONS: LottieSource[] = [
   },
   {
     id: "messages-flow",
-    title: "שיחה והודעות",
-    description: "בועות שיחה מודרניות בתנועה חלקה",
+    title: "Chat and messages",
+    description: "Modern chat bubbles with a smooth motion",
     category: "communication",
     keywords: [
       "messages",
@@ -1062,8 +1089,8 @@ const STARTER_ANIMATIONS: LottieSource[] = [
   },
   {
     id: "rocket-launch",
-    title: "השקה וצמיחה",
-    description: "רקטה מונפשת להשקות ועמודי מוצר",
+    title: "Launch and growth",
+    description: "An animated rocket for launches and product pages",
     category: "business",
     keywords: [
       "rocket",
@@ -1079,8 +1106,8 @@ const STARTER_ANIMATIONS: LottieSource[] = [
   },
   {
     id: "commerce-bag",
-    title: "חנות ומכירות",
-    description: "שקית קניות עם תנועה וניצוצות",
+    title: "Store and sales",
+    description: "A shopping bag with motion and sparks",
     category: "commerce",
     keywords: [
       "shop",
@@ -1096,8 +1123,8 @@ const STARTER_ANIMATIONS: LottieSource[] = [
   },
   {
     id: "target-focus",
-    title: "מטרה ומיקוד",
-    description: "מטרה עם טבעות וחץ בתנועה",
+    title: "Goal and focus",
+    description: "A target with rings and a moving arrow",
     category: "decorative",
     keywords: [
       "target",
@@ -1143,13 +1170,13 @@ function arrayBufferToDataUrl(
         return;
       }
 
-      reject(new Error("לא ניתן היה לקרוא את קובץ האנימציה"));
+      reject(new Error("Could not read the animation file"));
     };
 
     reader.onerror = () => {
       reject(
         reader.error ||
-          new Error("לא ניתן היה לקרוא את קובץ האנימציה"),
+          new Error("Could not read the animation file"),
       );
     };
 
@@ -1311,7 +1338,7 @@ async function insertHtmlIntoEditor({
 
   if (typeof editor?.addElement !== "function") {
     throw new Error(
-      "לא נמצאה בעורך פונקציה להוספת HTML. צריך לחבר onAddHtml או editor.addHtml.",
+      "The editor has no function to add HTML. Connect onAddHtml or editor.addHtml.",
     );
   }
 
@@ -1319,7 +1346,7 @@ async function insertHtmlIntoEditor({
   const elementId = extractElementId(created) || String(created || "");
 
   if (!elementId) {
-    throw new Error("לא ניתן היה ליצור אלמנט HTML בקנבס");
+    throw new Error("Could not create an HTML element on the canvas");
   }
 
   let contentUpdated = false;
@@ -1647,7 +1674,7 @@ export default function LottieAnimationBrowser({
       );
     }
 
-    throw new Error("לא נמצא מקור תקין לאנימציה");
+    throw new Error("No valid animation source was found");
   };
 
   const addAnimationToCanvas = async (
@@ -1972,10 +1999,14 @@ export default function LottieAnimationBrowser({
 
                   <div className="p-4">
                     <h3 className="text-sm font-black text-slate-800">
-                      {animation.title}
+                      {LOTTIE_STARTER_KEYS[animation.id]
+                        ? t(LOTTIE_STARTER_KEYS[animation.id].title)
+                        : animation.title}
                     </h3>
                     <p className="mt-1 min-h-10 text-xs font-bold leading-5 text-slate-400">
-                      {animation.description}
+                      {LOTTIE_STARTER_KEYS[animation.id]
+                        ? t(LOTTIE_STARTER_KEYS[animation.id].description)
+                        : animation.description}
                     </p>
 
                     <button

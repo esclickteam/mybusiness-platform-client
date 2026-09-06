@@ -5,8 +5,10 @@ import React, {
 } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { motion } from "motion/react";
+import { useTranslation } from "react-i18next";
 import * as TablerIcons from "@tabler/icons-react";
 import BizuplyLoader from "../../../../../components/ui/BizuplyLoader";
+import { getTextDirection } from "../../../../../i18n/localeUtils";
 import {
   AlertCircle,
   Check,
@@ -64,19 +66,39 @@ type AnimationOption = {
   description: string;
 };
 
+const ICON_CATEGORY_KEYS: Record<IconCategory, string> = {
+  all: "studio.icons.all",
+  business: "studio.icons.business",
+  contact: "studio.icons.contact",
+  commerce: "studio.icons.commerce",
+  social: "studio.icons.social",
+  interface: "studio.icons.interface",
+};
+
+const ICON_ANIMATION_KEYS: Record<
+  AnimationPreset,
+  { label: string; description: string }
+> = {
+  "": { label: "studio.icons.none", description: "studio.icons.noneHint" },
+  "float-soft": { label: "studio.icons.float", description: "studio.icons.floatHint" },
+  "pulse-soft": { label: "studio.icons.pulse", description: "studio.icons.pulseHint" },
+  "fade-up": { label: "studio.icons.fadeUp", description: "studio.icons.fadeUpHint" },
+  "zoom-in": { label: "studio.icons.zoomIn", description: "studio.icons.zoomInHint" },
+  "slide-right": { label: "studio.icons.slideRight", description: "studio.icons.slideRightHint" },
+  "slide-left": { label: "studio.icons.slideLeft", description: "studio.icons.slideLeftHint" },
+  "blur-reveal": { label: "studio.icons.blur", description: "studio.icons.blurHint" },
+};
+
 const CATEGORY_OPTIONS: Array<{
   id: IconCategory;
-  label: string;
   keywords: string[];
 }> = [
   {
     id: "all",
-    label: "הכול",
     keywords: [],
   },
   {
     id: "business",
-    label: "עסקים",
     keywords: [
       "briefcase",
       "building",
@@ -105,7 +127,6 @@ const CATEGORY_OPTIONS: Array<{
   },
   {
     id: "contact",
-    label: "יצירת קשר",
     keywords: [
       "phone",
       "mail",
@@ -125,7 +146,6 @@ const CATEGORY_OPTIONS: Array<{
   },
   {
     id: "commerce",
-    label: "חנות",
     keywords: [
       "shopping",
       "cart",
@@ -150,7 +170,6 @@ const CATEGORY_OPTIONS: Array<{
   },
   {
     id: "social",
-    label: "רשתות",
     keywords: [
       "brand",
       "share",
@@ -173,7 +192,6 @@ const CATEGORY_OPTIONS: Array<{
   },
   {
     id: "interface",
-    label: "ממשק",
     keywords: [
       "arrow",
       "chevron",
@@ -204,43 +222,43 @@ const CATEGORY_OPTIONS: Array<{
 const ANIMATION_OPTIONS: AnimationOption[] = [
   {
     value: "",
-    label: "ללא אנימציה",
-    description: "אייקון רגיל",
+    label: "No animation",
+    description: "A regular icon",
   },
   {
     value: "float-soft",
-    label: "ריחוף עדין",
-    description: "תנועה קבועה למעלה ולמטה",
+    label: "Gentle float",
+    description: "A steady up-and-down motion",
   },
   {
     value: "pulse-soft",
-    label: "פעימה",
-    description: "הגדלה והקטנה עדינות בלולאה",
+    label: "Pulse",
+    description: "A gentle grow-and-shrink loop",
   },
   {
     value: "fade-up",
-    label: "כניסה מלמטה",
-    description: "הופעה עם שקיפות ותנועה",
+    label: "Enter from below",
+    description: "Appear with fade and motion",
   },
   {
     value: "zoom-in",
-    label: "כניסת זום",
-    description: "הופעה בהגדלה עדינה",
+    label: "Zoom in",
+    description: "Appear with a gentle zoom",
   },
   {
     value: "slide-right",
-    label: "כניסה מימין",
-    description: "החלקה מצד ימין",
+    label: "Enter from the right",
+    description: "Slide in from the right",
   },
   {
     value: "slide-left",
-    label: "כניסה משמאל",
-    description: "החלקה מצד שמאל",
+    label: "Enter from the left",
+    description: "Slide in from the left",
   },
   {
     value: "blur-reveal",
-    label: "חשיפה מטושטשת",
-    description: "מעבר מטשטוש לתמונה חדה",
+    label: "Blur reveal",
+    description: "From blur to a sharp image",
   },
 ];
 
@@ -513,6 +531,8 @@ export default function AnimatedIconBrowser({
   editor,
   onInserted,
 }: AnimatedIconBrowserProps) {
+  const { t, i18n } = useTranslation();
+  const pageDir = getTextDirection(i18n.language);
   const [searchQuery, setSearchQuery] = useState("");
   const [category, setCategory] =
     useState<IconCategory>("all");
@@ -592,15 +612,11 @@ export default function AnimatedIconBrowser({
 
     try {
       if (typeof editor?.addElement !== "function") {
-        throw new Error(
-          "הפונקציה addElement לא קיימת בעורך. ודאי שהקובץ useVisualEditorState המעודכן מחובר.",
-        );
+        throw new Error(t("studio.icons.missingAdd"));
       }
 
       if (typeof editor?.updateImage !== "function") {
-        throw new Error(
-          "הפונקציה updateImage לא קיימת בעורך.",
-        );
+        throw new Error(t("studio.icons.missingUpdate"));
       }
 
       const svgMarkup = renderToStaticMarkup(
@@ -619,9 +635,7 @@ export default function AnimatedIconBrowser({
       const elementId = await editor.addElement("image");
 
       if (!elementId) {
-        throw new Error(
-          "לא ניתן היה ליצור את האייקון בקנבס.",
-        );
+        throw new Error(t("studio.icons.createFailed"));
       }
 
       editor.updateImage(elementId, {
@@ -684,7 +698,7 @@ export default function AnimatedIconBrowser({
       }, 120);
 
       onInserted?.(elementId);
-      setSuccess(`האייקון ${icon.title} נוסף לעמוד`);
+      setSuccess(t("studio.icons.added", { title: icon.title }));
     } catch (caughtError) {
       console.error(
         "[Bizuply Animated Icons] add failed",
@@ -694,7 +708,7 @@ export default function AnimatedIconBrowser({
       setError(
         caughtError instanceof Error
           ? caughtError.message
-          : "הוספת האייקון נכשלה",
+          : t("studio.icons.addFailed"),
       );
     } finally {
       setAddingIconId("");
@@ -702,7 +716,7 @@ export default function AnimatedIconBrowser({
   };
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col bg-[#f7f8fb]">
+    <div className="flex min-h-0 flex-1 flex-col bg-[#f7f8fb]" dir={pageDir}>
       <div className="shrink-0 border-b border-slate-200 bg-white px-6 py-4">
         <div className="grid grid-cols-[minmax(0,1fr)_220px] gap-3">
           <label className="flex h-12 items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 px-4 transition focus-within:border-violet-400 focus-within:bg-white focus-within:ring-4 focus-within:ring-violet-100">
@@ -714,7 +728,7 @@ export default function AnimatedIconBrowser({
               onChange={(event) =>
                 setSearchQuery(event.target.value)
               }
-              placeholder="חיפוש אייקון בעברית או באנגלית..."
+              placeholder={t("studio.icons.search")}
               className="min-w-0 flex-1 bg-transparent text-sm font-bold text-slate-800 outline-none placeholder:text-slate-400"
             />
           </label>
@@ -734,7 +748,7 @@ export default function AnimatedIconBrowser({
                   key={item.value || "none"}
                   value={item.value}
                 >
-                  {item.label}
+                  {t(ICON_ANIMATION_KEYS[item.value].label)}
                 </option>
               ))}
             </select>
@@ -746,7 +760,7 @@ export default function AnimatedIconBrowser({
         <div className="mt-4 flex flex-wrap items-center gap-3 rounded-2xl border border-slate-200 bg-slate-50 p-3">
           <label className="flex items-center gap-2">
             <span className="text-xs font-black text-slate-600">
-              צבע
+              {t("studio.icons.color")}
             </span>
             <span className="relative h-9 w-12 overflow-hidden rounded-xl border border-slate-200 bg-white">
               <input
@@ -756,7 +770,7 @@ export default function AnimatedIconBrowser({
                   setIconColor(event.target.value)
                 }
                 className="absolute -inset-2 h-14 w-16 cursor-pointer border-0 bg-transparent"
-                aria-label="צבע אייקון"
+                aria-label={t("studio.icons.colorAria")}
               />
             </span>
             <input
@@ -774,7 +788,7 @@ export default function AnimatedIconBrowser({
 
           <label className="flex min-w-[190px] flex-1 items-center gap-3">
             <span className="whitespace-nowrap text-xs font-black text-slate-600">
-              גודל: {iconSize}px
+              {t("studio.icons.size", { value: iconSize })}
             </span>
             <input
               type="range"
@@ -793,7 +807,7 @@ export default function AnimatedIconBrowser({
 
           <label className="flex min-w-[185px] flex-1 items-center gap-3">
             <span className="whitespace-nowrap text-xs font-black text-slate-600">
-              עובי: {strokeWidth.toFixed(1)}
+              {t("studio.icons.stroke", { value: strokeWidth.toFixed(1) })}
             </span>
             <input
               type="range"
@@ -822,7 +836,7 @@ export default function AnimatedIconBrowser({
                   : "bg-slate-100 text-slate-600 hover:bg-slate-200",
               ].join(" ")}
             >
-              {item.label}
+              {t(ICON_CATEGORY_KEYS[item.id])}
             </button>
           ))}
         </div>
@@ -831,13 +845,13 @@ export default function AnimatedIconBrowser({
           <div className="flex min-w-0 items-center gap-2">
             <Sparkles className="h-4 w-4 shrink-0 text-violet-600" />
             <p className="truncate text-xs font-bold text-slate-500">
-              {selectedAnimation.label} —{" "}
-              {selectedAnimation.description}
+              {t(ICON_ANIMATION_KEYS[selectedAnimation.value].label)} —{" "}
+              {t(ICON_ANIMATION_KEYS[selectedAnimation.value].description)}
             </p>
           </div>
 
           <span className="shrink-0 rounded-full bg-violet-50 px-3 py-1.5 text-xs font-black text-violet-700">
-            {filteredIcons.length.toLocaleString("he-IL")} אייקונים
+            {t("studio.icons.count", { count: filteredIcons.length })}
           </span>
         </div>
 
@@ -873,7 +887,7 @@ export default function AnimatedIconBrowser({
                     onClick={() =>
                       void addIconToCanvas(icon)
                     }
-                    title={`הוספת ${icon.title}`}
+                    title={t("studio.icons.addTitle", { title: icon.title })}
                     className="group overflow-hidden rounded-[22px] border border-slate-200 bg-white text-right shadow-sm transition duration-200 hover:-translate-y-1 hover:border-violet-300 hover:shadow-[0_18px_40px_rgba(91,33,182,0.12)] disabled:cursor-wait disabled:opacity-70"
                   >
                     <div className="flex h-[128px] items-center justify-center overflow-hidden border-b border-slate-100 bg-gradient-to-br from-white to-slate-50">
@@ -926,7 +940,7 @@ export default function AnimatedIconBrowser({
                   }
                   className="inline-flex h-11 items-center justify-center rounded-2xl border border-slate-200 bg-white px-6 text-sm font-black text-slate-700 shadow-sm transition hover:border-violet-300 hover:bg-violet-50 hover:text-violet-700"
                 >
-                  הצגת עוד 120 אייקונים
+                  {t("studio.icons.showMore")}
                 </button>
               </div>
             ) : null}
@@ -935,10 +949,10 @@ export default function AnimatedIconBrowser({
           <div className="flex h-full min-h-[320px] flex-col items-center justify-center rounded-[28px] border-2 border-dashed border-slate-200 bg-white px-8 text-center">
             <Search className="h-10 w-10 text-slate-300" />
             <h3 className="mt-4 text-base font-black text-slate-900">
-              לא נמצאו אייקונים
+              {t("studio.icons.empty")}
             </h3>
             <p className="mt-2 text-sm font-bold text-slate-400">
-              נסו מילה אחרת או עברו לקטגוריית הכול
+              {t("studio.icons.emptyHint")}
             </p>
           </div>
         )}

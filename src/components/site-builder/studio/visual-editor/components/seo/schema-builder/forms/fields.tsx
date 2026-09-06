@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Plus, X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 const inputClass =
   "h-11 w-full max-w-full rounded-xl border border-slate-200/90 bg-white px-3 text-right text-sm font-semibold text-slate-900 shadow-[inset_0_1px_0_rgba(255,255,255,0.8)] outline-none transition placeholder:text-slate-400 focus:border-blue-500 focus:ring-2 focus:ring-blue-100/80";
@@ -164,6 +165,7 @@ export function TagsField({
   const [draft, setDraft] = useState("");
   const list = Array.isArray(values) ? values : [];
 
+  const { t } = useTranslation();
   const add = () => {
     const clean = draft.trim();
     if (!clean) return;
@@ -191,7 +193,7 @@ export function TagsField({
           type="button"
           onClick={add}
           className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-slate-200 bg-white text-blue-600 transition hover:bg-blue-50"
-          aria-label="הוספה"
+          aria-label={t("studio.seo.add")}
         >
           <Plus className="h-4 w-4" />
         </button>
@@ -209,7 +211,7 @@ export function TagsField({
                 type="button"
                 onClick={() => onChange(list.filter((_, i) => i !== index))}
                 className="text-slate-400 hover:text-rose-500"
-                aria-label="הסרה"
+                aria-label={t("studio.seo.remove")}
               >
                 <X className="h-3.5 w-3.5" />
               </button>

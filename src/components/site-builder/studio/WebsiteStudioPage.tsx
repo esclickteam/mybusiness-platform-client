@@ -5938,7 +5938,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
 
   const addBusinessPage = (title: string) => {
     runEditor((editor) => {
-      const cleanTitle = title.trim() || "עמוד חדש";
+      const cleanTitle = title.trim() || t("studio.newPage");
       const id = uid("page");
 
       const nextPage: StudioSitePageWithPortal = {
@@ -5995,7 +5995,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     const title =
       canonicalizePortalPageTitle(pageTemplate) ||
       String(pageTemplate.title || "").trim() ||
-      "עמוד חדש";
+      t("studio.newPage");
     const slugSuggestion =
       String(pageTemplate.slugSuggestion || "").trim() || title;
 
@@ -6132,7 +6132,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       const id = uid("page");
       const title =
         String(pageTemplate.title || "").trim() ||
-        "עמוד חדש";
+        t("studio.newPage");
       const slugSuggestion =
         String(pageTemplate.slugSuggestion || "").trim() ||
         title;
@@ -6592,7 +6592,9 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
           visualEditorPayload: (target as any)?.visualEditorPayload,
         }) || {};
 
-      const copyTitle = `${String(target.title || "עמוד").trim()} (עותק)`;
+      const copyTitle = t("studio.sitePages.pageCopyTitle", {
+        title: String(target.title || t("studio.page")).trim(),
+      });
       const nextPage = {
         ...target,
         id: newId,
@@ -6694,11 +6696,13 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
       if (!parentId) return;
 
       const parentPage = pages.find((page) => page.id === parentId);
-      const defaultTitle = `${String(parentPage?.title || "עמוד").trim()} — חדש`;
+      const defaultTitle = t("studio.sitePages.newSubpageTitle", {
+        title: String(parentPage?.title || t("studio.page")).trim(),
+      });
       const nextTitle = window.prompt(
         parentPage
-          ? `שם לעמוד משנה תחת "${parentPage.title}"`
-          : "שם לעמוד המשנה",
+          ? t("studio.sitePages.subpageNamePrompt", { title: parentPage.title })
+          : t("studio.sitePages.subpageNameFallback"),
         defaultTitle,
       );
       if (nextTitle == null) return;
@@ -7129,7 +7133,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         ? templatePage?.html || defaultWebsiteHtml
         : active?.isHome
           ? defaultWebsiteHtml
-          : createBlankPageHtml(active?.title || "עמוד חדש");
+          : createBlankPageHtml(active?.title || t("studio.newPage"));
 
       editor.setComponents(html);
       editor.setStyle(
@@ -9569,28 +9573,31 @@ function StudioWixRail({
   onOpenMedia: () => void;
   onOpenClientPortal: () => void;
 }) {
+  const { t } = useTranslation();
   const items = [
-    { id: "add", label: "הוסף", icon: "+", onClick: onOpenAdd },
+    { id: "add", label: t("studio.add"), icon: "+", onClick: onOpenAdd },
     {
       id: "pages",
-      label: "דפים",
+      label: t("studio.pages"),
       icon: "▦",
       onClick: onOpenPages,
       active: activePanel === "pages",
     },
     {
       id: "sections",
-      label: "סקשנים",
+      label: t("studio.sections"),
       icon: "≡",
       onClick: onOpenSections,
       active: activePanel === "sections",
     },
-    { id: "media", label: "מדיה", icon: "◐", onClick: onOpenMedia },
+    { id: "media", label: t("studio.media"), icon: "◐", onClick: onOpenMedia },
     ...(clientPortalPluginEnabled
       ? [
           {
             id: "portal",
-            label: clientPortalEnabled ? "אזור אישי" : "דינמי",
+            label: clientPortalEnabled
+              ? t("studio.sitePages.personalAreaShort")
+              : t("studio.sitePages.dynamicShort"),
             icon: "⚙",
             onClick: onOpenClientPortal,
           },
