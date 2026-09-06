@@ -26,7 +26,7 @@ const PACKAGES = {
       "Build a professional site yourself from a template — publish, get inquiries, and everything links to the CRM.",
       "בונים אתר מקצועי לבד מתבנית — מפרסמים, מקבלים פניות, והכול מקושר ל-CRM.",
       "Crea un sitio profesional desde una plantilla — publica, recibe consultas y todo se conecta al CRM.",
-      "Crie um site profissional a partir de um modelo — publique, receba contactos e tudo liga ao CRM.",
+      "Crie um site profissional a partir de um modelo — publique, receba contatos e tudo liga ao CRM.",
       "ابنوا موقعاً مهنياً من قالب — انشروا واستقبلوا الاستفسارات وكل شيء يرتبط بالـ CRM."
     ),
     note: row(

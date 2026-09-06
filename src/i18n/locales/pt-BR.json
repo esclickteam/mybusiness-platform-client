@@ -2430,7 +2430,7 @@
       "website": {
         "name": "Apenas website",
         "badge": "Self-service",
-        "description": "Crie um site profissional a partir de um modelo — publique, receba contactos e tudo liga ao CRM.",
+        "description": "Crie um site profissional a partir de um modelo — publique, receba contatos e tudo liga ao CRM.",
         "note": "Pagamento único — sem compromisso e sem renovação automática",
         "button": "Começar com um site",
         "pricePeriod": "/ano",
@@ -2463,7 +2463,7 @@
           "5": "Rede de colaborações de negócio",
           "6": "Automações inteligentes",
           "7": "Consultor de IA da BizUply e insights",
-          "8": "Tarefas, registo de chamadas e alertas",
+          "8": "Tarefas, registro de chamadas e alertas",
           "9": "Análises e painel de desempenho",
           "10": "Opção de adicionar agentes humanos",
           "11": "Opção de adicionar o site à parte"
@@ -2473,7 +2473,7 @@
         "name": "BizUply Business anual",
         "badge": "Melhor valor",
         "description": "O sistema de negócio a um melhor preço anual — CRM, marcações, colaborações e IA. O site não está incluído.",
-        "note": "Cobrança anual renovável · poupe {{savings}} face ao mensal",
+        "note": "Cobrança anual renovável · economize {{savings}} em relação ao mensal",
         "button": "Começar anual",
         "pricePeriod": "/ano",
         "features": {

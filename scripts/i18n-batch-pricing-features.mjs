@@ -142,7 +142,7 @@ const FEATURES = {
       "Tasks, call logging, and alerts",
       "משימות, תיעוד שיחות והתראות",
       "Tareas, registro de llamadas y alertas",
-      "Tarefas, registo de chamadas e alertas",
+      "Tarefas, registro de chamadas e alertas",
       "مهام وتسجيل مكالمات وتنبيهات"
     ),
     9: row(
@@ -246,7 +246,7 @@ const SHARED = {
     "Renewing yearly billing · save {{savings}} vs monthly",
     "חיוב שנתי מתחדש · חיסכון של {{savings}} לעומת חודשי",
     "Facturación anual renovable · ahorra {{savings}} frente al mensual",
-    "Cobrança anual renovável · poupe {{savings}} face ao mensal",
+    "Cobrança anual renovável · economize {{savings}} em relação ao mensal",
     "فوترة سنوية متجددة · وفّروا {{savings}} مقابل الشهري"
   ),
 };
