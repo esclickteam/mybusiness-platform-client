@@ -84,7 +84,8 @@
     "automations": "Automations",
     "agents": "Business Agents",
     "contact": "Contact",
-    "cta": "Get Started"
+    "cta": "Get Started",
+    "mainAria": "Main navigation"
   },
   "seo": {
     "homeTitle": "Bizuply — Run your business. All in one place.",
@@ -8092,7 +8093,8 @@
       "currencyLabel": "Currency: {{currency}}",
       "connectedThroughMeta": "Connected through Meta",
       "switchAccount": "Select ad account",
-      "lastUpdated": "Last updated: {{time}}"
+      "lastUpdated": "Last updated: {{time}}",
+      "lastUpdatedLabel": "Last updated"
     },
     "accountStatus": {
       "active": "Active",
@@ -8117,7 +8119,14 @@
       "pause": "Pause",
       "activate": "Activate",
       "delete": "Delete",
-      "viewDetails": "View details"
+      "viewDetails": "View details",
+      "resume": "Resume",
+      "resumeHint": "Resume this campaign",
+      "pauseHint": "Pause this campaign",
+      "confirmPauseTitle": "Pause campaign?",
+      "confirmPauseBody": "Pause {{name}} in Meta? Ads will stop running until you resume it.",
+      "confirmResumeTitle": "Resume campaign?",
+      "confirmResumeBody": "Resume {{name}} in Meta? Ads will start running again with the saved settings."
     },
     "creationMode": {
       "title": "New campaign",
@@ -8532,7 +8541,10 @@
       "loadingFromMeta": "Loading campaign data from Meta...",
       "noCampaignsInRange": "No campaigns found for the selected date range.",
       "permissionTitle": "No permission to read account data",
-      "permissionBody": "Please reconnect your Meta account."
+      "permissionBody": "Please reconnect your Meta account.",
+      "selectAccountTitle": "Select an ad account",
+      "selectAccountBody": "Choose a Meta ad account to load campaigns and performance.",
+      "selectAccountCta": "Choose ad account"
     },
     "form": {
       "back": "Back to overview",
@@ -9010,7 +9022,23 @@
       "budgetTitle": "Monthly budget tracking",
       "budgetHint": "Used by the budget utilization KPI on the overview.",
       "monthlyBudget": "Monthly budget cap",
-      "saveBudget": "Save budget"
+      "saveBudget": "Save budget",
+      "business": "Meta business",
+      "businessHint": "Choose the Meta Business Portfolio that owns or shares the ad accounts you will manage.",
+      "businessPlaceholder": "Select a Meta business",
+      "businessTitle": "Meta Business Portfolio",
+      "connectHint": "Sign in with Facebook Login and grant ads_read, ads_management, and business_management.",
+      "grantedPermissions": "Granted permissions",
+      "noBusinesses": "No Meta businesses were returned. Reconnect and grant business_management.",
+      "permissionWhyTitle": "Why these permissions",
+      "permissionWhyAdsRead": "ads_read — load campaigns and performance from Meta.",
+      "permissionWhyAdsManagement": "ads_management — pause or resume campaigns from BizUply.",
+      "permissionWhyBusinessManagement": "business_management — list Business Portfolios and their ad accounts.",
+      "saveAccountHint": "Save the selected ad account for campaign management.",
+      "saveBusiness": "Save Meta business",
+      "saveBusinessHint": "Save the selected Meta Business Portfolio, then pick an ad account.",
+      "selectBusinessRequired": "Please select a Meta business",
+      "tokenInvalid": "The Meta token is no longer valid. Reconnect to continue."
     },
     "toasts": {
       "connected": "Meta Ads connected successfully",
@@ -9027,7 +9055,8 @@
       "activated": "Campaign activated",
       "paused": "Campaign paused",
       "mediaUploaded": "Media uploaded to Meta",
-      "leadFormCreated": "Lead form created"
+      "leadFormCreated": "Lead form created",
+      "businessSelected": "Meta business saved"
     },
     "errors": {
       "loadOverview": "Failed to load campaign overview",
@@ -9046,7 +9075,24 @@
       "disconnect": "Failed to disconnect Meta Ads",
       "mediaUpload": "Media upload failed",
       "leadForms": "Failed to load lead forms",
-      "createLeadForm": "Failed to create lead form"
+      "createLeadForm": "Failed to create lead form",
+      "selectBusiness": "Could not save the Meta business",
+      "statusNotPersisted": "Meta updated the campaign, but BizUply could not save the new status. Refresh and try again."
+    },
+    "review": {
+      "captionsAuth": "App Review · Facebook Login · ads_read · ads_management · business_management",
+      "captionsUse": "App Review · ads_read · ads_management · business_management",
+      "hideCaptions": "Hide",
+      "managementBadge": "ads_management",
+      "captionN": "Caption {{n}}",
+      "settingsCaption1": "The business owner signs in to BizUply, then starts Facebook Login to connect Meta Ads.",
+      "settingsCaption2": "Facebook Login asks the user to grant ads_read, ads_management, and business_management.",
+      "settingsCaption3": "BizUply uses business_management to list Business Portfolios and the Ad Accounts owned or shared by the selected business.",
+      "settingsCaption4": "After authorization, the user selects their Meta Business Portfolio, then the Ad Account used to retrieve and manage campaigns.",
+      "overviewCaption1": "BizUply uses ads_read to retrieve the authenticated business's advertising campaigns and performance metrics from Meta.",
+      "overviewCaption2": "The dashboard shows campaign names, statuses, spend, impressions, reach, clicks, and the selected date range.",
+      "overviewCaption3": "BizUply uses ads_management so the business owner can pause or resume a campaign from BizUply.",
+      "overviewCaption4": "After Pause or Resume, BizUply reads the campaign back from Meta and shows the updated status."
     }
   },
   "socialSchedule": {
@@ -14239,7 +14285,10 @@
       "about": "About",
       "projects": "Projects",
       "block": "Block"
-    }
+    },
+    "pagesNav": "Pages",
+    "sitePagesNav": "Site pages",
+    "pageChip": "Page"
   },
   "partnerNav": {
     "brand": "Bizuply Partner",
@@ -15085,7 +15134,8 @@
         "cancelled": "Cancelled"
       }
     },
-    "licenseFallback": "License to use a full business-management system"
+    "licenseFallback": "License to use a full business-management system",
+    "statusLabel": "Status"
   },
   "storeManager": {
     "noBusinessId": "No business ID found. Sign in as a business owner to manage the store.",

@@ -252,7 +252,7 @@ export default function PartnerClientDossier() {
 
       {tab === "overview" || tab === "details" || tab === "history" ? (
       <section className="grid gap-3 md:grid-cols-4">
-        <InfoCard icon={User} label={t("partner.status")} value={partnerStatusLabel(client.status, t)} />
+        <InfoCard icon={User} label={t("partner.statusLabel")} value={partnerStatusLabel(client.status, t)} />
         <InfoCard
           icon={Shield}
           label={t("partner.dossier.managementMode")}

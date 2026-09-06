@@ -84,7 +84,8 @@
     "automations": "Automações",
     "agents": "Agentes de negócio",
     "contact": "Contato",
-    "cta": "Começar"
+    "cta": "Começar",
+    "mainAria": "Navegação principal"
   },
   "seo": {
     "homeTitle": "BizUply — Administre seu negócio. Tudo em um só lugar.",
@@ -8092,7 +8093,8 @@
       "currencyLabel": "Moeda: {{currency}}",
       "connectedThroughMeta": "Conectado através da Meta",
       "switchAccount": "Selecione a conta de anúncio",
-      "lastUpdated": "Última atualização: {{time}}"
+      "lastUpdated": "Última atualização: {{time}}",
+      "lastUpdatedLabel": "Última atualização"
     },
     "accountStatus": {
       "active": "Ativo",
@@ -8117,7 +8119,14 @@
       "pause": "Pausa",
       "activate": "Ativar",
       "delete": "Excluir",
-      "viewDetails": "Ver detalhes"
+      "viewDetails": "Ver detalhes",
+      "resume": "Retomar",
+      "resumeHint": "Retomar esta campanha",
+      "pauseHint": "Pausar esta campanha",
+      "confirmPauseTitle": "Pausar a campanha?",
+      "confirmPauseBody": "Pausar {{name}} no Meta? Os anúncios param até você retomar.",
+      "confirmResumeTitle": "Retomar a campanha?",
+      "confirmResumeBody": "Retomar {{name}} no Meta? Os anúncios voltam a rodar com as configurações salvas."
     },
     "creationMode": {
       "title": "Nova campanha",
@@ -8532,7 +8541,10 @@
       "loadingFromMeta": "Carregando dados da campanha do Meta...",
       "noCampaignsInRange": "Nenhuma campanha foi encontrada para o intervalo de datas selecionado.",
       "permissionTitle": "Sem permissão para ler dados da conta",
-      "permissionBody": "Por favor, reconecte sua conta Meta."
+      "permissionBody": "Por favor, reconecte sua conta Meta.",
+      "selectAccountTitle": "Selecione uma conta de anúncios",
+      "selectAccountBody": "Escolha uma conta de anúncios do Meta para carregar campanhas e resultados.",
+      "selectAccountCta": "Escolher conta de anúncios"
     },
     "form": {
       "back": "Voltar à visão geral",
@@ -9010,7 +9022,23 @@
       "budgetTitle": "Rastreamento mensal do orçamento",
       "budgetHint": "Usado pelo KPI de utilização do orçamento na visão geral.",
       "monthlyBudget": "Limite de orçamento mensal",
-      "saveBudget": "Salvar orçamento"
+      "saveBudget": "Salvar orçamento",
+      "business": "Negócio do Meta",
+      "businessHint": "Escolha o portfólio do Meta que possui ou compartilha as contas de anúncios que você vai gerenciar.",
+      "businessPlaceholder": "Selecione um negócio do Meta",
+      "businessTitle": "Portfólio de negócio do Meta",
+      "connectHint": "Entre com o Facebook Login e conceda ads_read, ads_management e business_management.",
+      "grantedPermissions": "Permissões concedidas",
+      "noBusinesses": "O Meta não devolveu negócios. Reconecte e conceda business_management.",
+      "permissionWhyTitle": "Por que estas permissões",
+      "permissionWhyAdsRead": "ads_read — carregar campanhas e resultados do Meta.",
+      "permissionWhyAdsManagement": "ads_management — pausar ou retomar campanhas pelo BizUply.",
+      "permissionWhyBusinessManagement": "business_management — listar portfólios e suas contas de anúncios.",
+      "saveAccountHint": "Salvar a conta de anúncios selecionada para gerenciar campanhas.",
+      "saveBusiness": "Salvar negócio do Meta",
+      "saveBusinessHint": "Salve o portfólio do Meta e depois escolha uma conta de anúncios.",
+      "selectBusinessRequired": "Selecione um negócio do Meta",
+      "tokenInvalid": "O token do Meta não é mais válido. Reconecte para continuar."
     },
     "toasts": {
       "connected": "Meta Ads conectados com sucesso",
@@ -9027,7 +9055,8 @@
       "activated": "Campanha ativada",
       "paused": "Campanha pausada",
       "mediaUploaded": "Mídia enviada para Meta",
-      "leadFormCreated": "Formulário de lead criado"
+      "leadFormCreated": "Formulário de lead criado",
+      "businessSelected": "Negócio do Meta salvo"
     },
     "errors": {
       "loadOverview": "Falha ao carregar a visão geral da campanha",
@@ -9046,7 +9075,24 @@
       "disconnect": "Falha ao desconectar o Meta Ads",
       "mediaUpload": "Falha no upload de mídia",
       "leadForms": "Falha ao carregar formulários de lead",
-      "createLeadForm": "Falha ao criar o formulário de lead"
+      "createLeadForm": "Falha ao criar o formulário de lead",
+      "selectBusiness": "Não foi possível salvar o negócio do Meta",
+      "statusNotPersisted": "O Meta atualizou a campanha, mas o BizUply não conseguiu salvar o novo status. Atualize e tente de novo."
+    },
+    "review": {
+      "captionsAuth": "Revisão do app · Facebook Login · ads_read · ads_management · business_management",
+      "captionsUse": "Revisão do app · ads_read · ads_management · business_management",
+      "hideCaptions": "Ocultar",
+      "managementBadge": "ads_management",
+      "captionN": "Legenda {{n}}",
+      "settingsCaption1": "O dono entra no BizUply e inicia o Facebook Login para conectar o Meta Ads.",
+      "settingsCaption2": "O Facebook Login pede ads_read, ads_management e business_management.",
+      "settingsCaption3": "O BizUply usa business_management para listar portfólios e contas de anúncios do negócio escolhido.",
+      "settingsCaption4": "Depois da autorização, escolha o portfólio do Meta e a conta de anúncios para ver e gerenciar campanhas.",
+      "overviewCaption1": "O BizUply usa ads_read para buscar no Meta as campanhas e métricas do negócio autenticado.",
+      "overviewCaption2": "O painel mostra nomes, status, gasto, impressões, alcance, cliques e o período selecionado.",
+      "overviewCaption3": "O BizUply usa ads_management para pausar ou retomar uma campanha pelo BizUply.",
+      "overviewCaption4": "Depois de Pausar ou Retomar, o BizUply lê a campanha de novo no Meta e mostra o status atualizado."
     }
   },
   "socialSchedule": {
@@ -14239,7 +14285,10 @@
       "about": "Sobre",
       "projects": "Projetos",
       "block": "Bloco"
-    }
+    },
+    "pagesNav": "Páginas",
+    "sitePagesNav": "Páginas do site",
+    "pageChip": "Página"
   },
   "partnerNav": {
     "brand": "Parceiro BizUply",
@@ -15085,7 +15134,8 @@
         "cancelled": "Cancelado"
       }
     },
-    "licenseFallback": "Licença de uso de um sistema completo de gestão empresarial"
+    "licenseFallback": "Licença de uso de um sistema completo de gestão empresarial",
+    "statusLabel": "Status"
   },
   "storeManager": {
     "noBusinessId": "Não encontramos o ID do negócio. Entre como dono para gerenciar a loja.",
@@ -18038,15 +18088,15 @@
       "notFound": "O caminho não foi encontrado no servidor.",
       "invalidDomain": "Introduza um domínio válido, por exemplo mybusiness.co.il",
       "checkFailed": "Falha ao verificar disponibilidade do domínio",
-      "contactDomainRequired": "É preciso um domínio válido para criar o contacto",
-      "contactFailed": "Falha ao criar o contacto",
+      "contactDomainRequired": "É preciso um domínio válido para criar o contato",
+      "contactFailed": "Falha ao criar o contato",
       "estimateMissing": "Falta o domínio para estimar o preço",
       "estimateFailed": "Falha ao estimar o preço do domínio",
       "estimateInvalid": "A estimativa devolveu um preço inválido",
       "missingRegistrationId": "Falta o ID de registo",
       "quoteFailed": "Não foi possível obter o preço do domínio",
       "checkoutFailed": "Não foi possível criar o pagamento do domínio",
-      "registerMissingId": "Falta o ID. Crie um contacto antes de registar o domínio",
+      "registerMissingId": "Falta o ID. Crie um contato antes de registrar o domínio",
       "registerFailed": "Falha no registo do domínio",
       "loadFailed": "Não foi possível carregar os registos",
       "renewMissingId": "Falta o ID do domínio para renovar",
@@ -18075,13 +18125,13 @@
       "loadFailed": "Não foi possível carregar o convite",
       "acceptFailed": "Não foi possível aceitar o convite",
       "title": "Convite para o site no Bizuply",
-      "loading": "A carregar convite...",
+      "loading": "Carregando convite...",
       "home": "Voltar ao início",
-      "accepted": "Convite aceite. A ir para Os meus sites...",
+      "accepted": "Convite aceito. Levando você para Meus sites...",
       "invitedTo": "Foi convidado para {{name}}",
       "forEmail": "para {{email}}",
       "transfer": "É uma transferência total: depois de aceitar, o site só aparece na sua conta.",
-      "share": "É uma partilha adicional: terá acesso de {{role}}.",
+      "share": "É um compartilhamento adicional: você terá acesso de {{role}}.",
       "viewer": "visualização",
       "editor": "edição",
       "accept": "Aceitar convite"
@@ -18094,7 +18144,7 @@
       "featureHistory": "Histórico de atividade CRM",
       "featureDash": "Painel e dados de CRM",
       "payError": "Não foi possível iniciar o pagamento. Tente de novo.",
-      "alreadyActive": "Já existe uma assinatura ativa. Gira-a na faturação.",
+      "alreadyActive": "Já existe uma assinatura ativa. Gerencie-a no faturamento.",
       "seoTitle": "Só CRM — BizUply",
       "badge": "Oferta especial",
       "title": "Só CRM",
@@ -18138,7 +18188,7 @@
       "openFailed": "Não foi possível abrir a demo.",
       "expiredTitle": "Esta ligação da demo já não está ativa",
       "expiredBody": "A demo expirou. Se quiser vê-la de novo, peça-nos uma nova ligação.",
-      "contactCta": "Quer uma nova demo? Fale connosco",
+      "contactCta": "Quer uma nova demo? Fale conosco",
       "opening": "A abrir…",
       "enter": "Entrar na demo",
       "introDash": "Painel",
@@ -18198,7 +18248,7 @@
       "blockerMigration": "Mudar de um sistema atual",
       "blockerTime": "Tempo de implementação",
       "blockerMissing": "Falta-me algo no sistema",
-      "blockerInfo": "Preciso entender como funcionaria connosco",
+      "blockerInfo": "Preciso entender como funcionaria conosco",
       "blockerConsult": "Preciso consultar outra pessoa",
       "blockerFit": "Ainda não tenho a certeza de que encaixa",
       "blockerNone": "Nada me atrasa neste momento",
@@ -18334,7 +18384,7 @@
       "siteDesc": "Ainda não há um site publicado — criar um ajuda a conseguir leads.",
       "siteAction": "Criar um site",
       "seoTitle": "Conclua o SEO",
-      "seoDesc": "Ao site \"O meu site\" faltam definições SEO.",
+      "seoDesc": "Ao site \"Meu site\" faltam configurações SEO.",
       "seoAction": "Editar SEO"
     },
     "miniSite": {
@@ -18366,12 +18416,12 @@
       "loadError": "Não foi possível carregar o modelo",
       "missingBusiness": "Não foi encontrado o ID do negócio. Não é possível guardar.",
       "mySiteTitle": "{{name}} | O meu site",
-      "mySite": "O meu site",
+      "mySite": "Meu site",
       "professionalSite": "Um site profissional criado com a Bizuply",
-      "myBusiness": "O meu negócio",
+      "myBusiness": "Meu negócio",
       "noHtml": "O site não foi publicado porque não foi criado HTML.",
       "saveFailed": "Erro ao guardar o site. Veja a consola.",
-      "loadingEditor": "A carregar o modelo no editor... {{id}}",
+      "loadingEditor": "Carregando o modelo no editor... {{id}}",
       "openFailed": "Não foi possível abrir o modelo",
       "notFound": "Não encontrado",
       "tryAgain": "Tentar de novo",
@@ -18507,7 +18557,7 @@
       "category": "Categoria",
       "price": "Preço",
       "futurePrice": "Preço futuro",
-      "afterInstall": "Após instalar — definições no separador do extra, e adicione-o às páginas no editor → Extras."
+      "afterInstall": "Após instalar — configurações na aba do extra, e adicione-o às páginas no editor → Extras."
     },
     "sitePayments": {
       "loadError": "Não foi possível carregar os provedores",
@@ -18516,7 +18566,7 @@
       "disconnectConfirm": "Desligar {{name}}?",
       "disconnectedOk": "{{name}} desligado com sucesso",
       "disconnectError": "Não foi possível desligar o provedor",
-      "loading": "A carregar provedores...",
+      "loading": "Carregando provedores...",
       "title": "Pagamentos",
       "description": "Ligue provedores de cobrança. O carrinho do site usará o provedor principal (PayPal, Stripe e mais).",
       "connectedToSite": "{{name}} está ligado ao site",
@@ -18571,24 +18621,24 @@
     "pushToggle": {
       "blocked": "Bloqueado no navegador / dispositivo",
       "onOther": "Ativo num dispositivo instalado · {{count}} dispositivo",
-      "unsupportedIos": "Não dá para ativar daqui — abra no Safari pelo ícone no ecrã inicial",
+      "unsupportedIos": "Não dá para ativar daqui — abra no Safari pelo ícone na tela inicial",
       "unsupported": "Este navegador não suporta Push",
       "onReady": "Ativado · {{count}} dispositivo",
-      "onUnbound": "Ativado no dispositivo, mas ainda não registado — toque em Testar",
-      "needRebind": "Há permissão, mas o dispositivo não está registado — toque para registar de novo",
-      "off": "Desligado — toque para ativar avisos no telemóvel"
+      "onUnbound": "Ativado no dispositivo, mas ainda não registrado — toque em Testar",
+      "needRebind": "Há permissão, mas o dispositivo não está registrado — toque para registrar de novo",
+      "off": "Desligado — toque para ativar avisos no celular"
     },
     "instantForm": {
       "continue": "Continuar",
       "submit": "Enviar",
       "answerPh": "Escreva a sua resposta",
-      "contactInfo": "Informações de contacto",
+      "contactInfo": "Informações de contato",
       "privacy": "Política de privacidade",
       "privacyShort": "Privacidade",
-      "privacyBody": "Ao continuar, aceita que {{name}} possa contactá-lo.",
+      "privacyBody": "Ao continuar, você aceita que {{name}} possa contatá-lo.",
       "businessFallback": "este negócio",
       "thanks": "Obrigado!",
-      "thanksBody": "Entraremos em contacto em breve.",
+      "thanksBody": "Entraremos em contato em breve.",
       "done": "Concluído",
       "toSite": "Para o site",
       "quoteCta": "Envie uma mensagem para orçamento"
@@ -18603,9 +18653,9 @@
     "pluginFrame": {
       "manage": "Gestão do extra",
       "addEditor": "Adicionar no editor",
-      "loading": "A carregar definições...",
+      "loading": "Carregando configurações...",
       "savedSitewide": "As alterações ficam para todo o site",
-      "save": "Guardar definições"
+      "save": "Salvar configurações"
     },
     "aiRecs": {
       "load": "Não foi possível carregar as recomendações. Tente de novo.",
@@ -18621,8 +18671,8 @@
       "offline": "Responderemos no horário de funcionamento"
     },
     "pluginSettings": {
-      "loadError": "Não foi possível carregar as definições",
-      "saved": "Definições guardadas",
+      "loadError": "Não foi possível carregar as configurações",
+      "saved": "Configurações salvas",
       "saveError": "Não foi possível guardar"
     },
     "audience": {
@@ -18661,7 +18711,7 @@
       "locating": "A cidade foi escolhida, mas ainda sem ponto. A localizar coordenadas…"
     },
     "profile": {
-      "loading": "A carregar...",
+      "loading": "Carregando...",
       "logo": "Logótipo do negócio",
       "businessName": "Nome do negócio",
       "editProfile": "Editar perfil",
@@ -18677,7 +18727,7 @@
       "demoSend": "Envie uma mensagem de demo — não vai a um cliente real"
     },
     "waBilling": {
-      "loadError": "Não foi possível carregar a faturação do WhatsApp agora."
+      "loadError": "Não foi possível carregar o faturamento do WhatsApp agora."
     },
     "waOtp": {
       "body": "{{1}} é o seu código de verificação.",

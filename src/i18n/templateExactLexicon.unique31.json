@@ -1,0 +1,398 @@
+{
+  "כלכלה שקופה": {
+    "en": "Transparent economics",
+    "es": "Economía transparente",
+    "pt-BR": "Economia transparente",
+    "ar": "اقتصاد شفاف"
+  },
+  "איכות אחידה": {
+    "en": "Consistent quality",
+    "es": "Calidad uniforme",
+    "pt-BR": "Qualidade uniforme",
+    "ar": "جودة موحّدة"
+  },
+  "גזרות חכמות": {
+    "en": "Smart cuts",
+    "es": "Cortes inteligentes",
+    "pt-BR": "Cortes inteligentes",
+    "ar": "قصّات ذكية"
+  },
+  "שליחת הרשמה": {
+    "en": "Send registration",
+    "es": "Enviar inscripción",
+    "pt-BR": "Enviar inscrição",
+    "ar": "إرسال التسجيل"
+  },
+  "יועצת בכירה": {
+    "en": "A senior consultant",
+    "es": "Una consultora sénior",
+    "pt-BR": "Uma consultora sênior",
+    "ar": "مستشارة أولى"
+  },
+  "סגירה ובקרה": {
+    "en": "Closing and control",
+    "es": "Cierre y control",
+    "pt-BR": "Fechamento e controle",
+    "ar": "إغلاق ورقابة"
+  },
+  "כפפות אימון": {
+    "en": "Training gloves",
+    "es": "Guantes de entrenamiento",
+    "pt-BR": "Luvas de treino",
+    "ar": "قفازات تدريب"
+  },
+  "הפעלה רציפה": {
+    "en": "Continuous operation",
+    "es": "Operación continua",
+    "pt-BR": "Operação contínua",
+    "ar": "تشغيل مستمر"
+  },
+  "הכנסה חוזרת": {
+    "en": "Recurring revenue",
+    "es": "Ingresos recurrentes",
+    "pt-BR": "Receita recorrente",
+    "ar": "دخل متكرر"
+  },
+  "תגמול שמניע": {
+    "en": "A motivating reward",
+    "es": "Una recompensa que motiva",
+    "pt-BR": "Uma recompensa que motiva",
+    "ar": "مكافأة محفّزة"
+  },
+  "בהצעת מומחה": {
+    "en": "In an expert proposal",
+    "es": "En una propuesta de experto",
+    "pt-BR": "Em uma proposta de especialista",
+    "ar": "في عرض خبير"
+  },
+  "רגעים מהדרך": {
+    "en": "Moments from the road",
+    "es": "Momentos del camino",
+    "pt-BR": "Momentos da estrada",
+    "ar": "لحظات من الطريق"
+  },
+  "נתחיל בשיחה": {
+    "en": "Let's start with a talk",
+    "es": "Empecemos con una conversación",
+    "pt-BR": "Vamos começar com uma conversa",
+    "ar": "لنبدأ بحديث"
+  },
+  "בקבוק השבוע": {
+    "en": "Bottle of the week",
+    "es": "Botella de la semana",
+    "pt-BR": "Garrafa da semana",
+    "ar": "زجاجة الأسبوع"
+  },
+  "פולים טריים": {
+    "en": "Fresh beans",
+    "es": "Granos frescos",
+    "pt-BR": "Grãos frescos",
+    "ar": "حبوب طازجة"
+  },
+  "חליטה ידנית": {
+    "en": "Hand brewing",
+    "es": "Infusionado a mano",
+    "pt-BR": "Infusão manual",
+    "ar": "تحضير يدوي"
+  },
+  "משחזת זווית": {
+    "en": "An angle grinder",
+    "es": "Una amoladora angular",
+    "pt-BR": "Uma esmerilhadeira angular",
+    "ar": "جلّاخ زاوية"
+  },
+  "מדפים לסדנה": {
+    "en": "Workshop shelves",
+    "es": "Estantes de taller",
+    "pt-BR": "Prateleiras de oficina",
+    "ar": "رفوف للورشة"
+  },
+  "כפפות עבודה": {
+    "en": "Work gloves",
+    "es": "Guantes de trabajo",
+    "pt-BR": "Luvas de trabalho",
+    "ar": "قفازات عمل"
+  },
+  "מדידה קשוחה": {
+    "en": "A tough measurement",
+    "es": "Una medición dura",
+    "pt-BR": "Uma medição rígida",
+    "ar": "قياس صارم"
+  },
+  "עיסוי קטיפה": {
+    "en": "A velvet massage",
+    "es": "Un masaje de terciopelo",
+    "pt-BR": "Uma massagem de veludo",
+    "ar": "مساج مخملي"
+  },
+  "שניות לטאקו": {
+    "en": "Seconds to taco",
+    "es": "Segundos al taco",
+    "pt-BR": "Segundos ao taco",
+    "ar": "ثوانٍ للتاكو"
+  },
+  "חטיפי אימון": {
+    "en": "Training snacks",
+    "es": "Snacks de entrenamiento",
+    "pt-BR": "Lanches de treino",
+    "ar": "وجبات تدريب"
+  },
+  "פורמט מחזיק": {
+    "en": "A format that holds",
+    "es": "Un formato que sostiene",
+    "pt-BR": "Um formato que segura",
+    "ar": "صيغة تثبت"
+  },
+  "משרדי הנהלה": {
+    "en": "Executive offices",
+    "es": "Oficinas de dirección",
+    "pt-BR": "Escritórios da diretoria",
+    "ar": "مكاتب الإدارة"
+  },
+  "פיקוח עליון": {
+    "en": "Top-level supervision",
+    "es": "Supervisión superior",
+    "pt-BR": "Supervisão de topo",
+    "ar": "رقابة عليا"
+  },
+  "ברסקט מעושן": {
+    "en": "Smoked brisket",
+    "es": "Brisket ahumado",
+    "pt-BR": "Brisket defumado",
+    "ar": "بريسكت مدخّن"
+  },
+  "טיוטת תגובה": {
+    "en": "A response draft",
+    "es": "Un borrador de respuesta",
+    "pt-BR": "Um rascunho de resposta",
+    "ar": "مسودة رد"
+  },
+  "מיקום מדויק": {
+    "en": "A precise location",
+    "es": "Una ubicación precisa",
+    "pt-BR": "Um local preciso",
+    "ar": "موقع دقيق"
+  },
+  "ארגזי העונה": {
+    "en": "Season crates",
+    "es": "Cajas de la temporada",
+    "pt-BR": "Caixas da estação",
+    "ar": "صناديق الموسم"
+  },
+  "סרטון הסלון": {
+    "en": "The living-room video",
+    "es": "El vídeo del salón",
+    "pt-BR": "O vídeo da sala",
+    "ar": "فيديو الصالون"
+  },
+  "משפחה צעירה": {
+    "en": "A young family",
+    "es": "Una familia joven",
+    "pt-BR": "Uma família jovem",
+    "ar": "عائلة شابة"
+  },
+  "שיתוף בצוות": {
+    "en": "Team sharing",
+    "es": "Compartir en equipo",
+    "pt-BR": "Compartilhar em equipe",
+    "ar": "مشاركة في الفريق"
+  },
+  "מצעים עננים": {
+    "en": "Cloud bedding",
+    "es": "Ropa de cama de nubes",
+    "pt-BR": "Roupa de cama nuvem",
+    "ar": "أغطية غيم"
+  },
+  "שיעור מוקרן": {
+    "en": "A projected lesson",
+    "es": "Una clase proyectada",
+    "pt-BR": "Uma aula projetada",
+    "ar": "درس معروض"
+  },
+  "בימוי למידה": {
+    "en": "Learning direction",
+    "es": "Dirección de aprendizaje",
+    "pt-BR": "Direção de aprendizagem",
+    "ar": "إخراج تعلّم"
+  },
+  "תכנון מפורט": {
+    "en": "Detailed planning",
+    "es": "Planificación detallada",
+    "pt-BR": "Planejamento detalhado",
+    "ar": "تخطيط مفصّل"
+  },
+  "רגעים מהחלל": {
+    "en": "Moments from the space",
+    "es": "Momentos del espacio",
+    "pt-BR": "Momentos do espaço",
+    "ar": "لحظات من الفراغ"
+  },
+  "ווייב בגלים": {
+    "en": "A wave vibe",
+    "es": "Un vibe de olas",
+    "pt-BR": "Um vibe em ondas",
+    "ar": "أجواء موجات"
+  },
+  "פסנתר קלאסי": {
+    "en": "A classical piano",
+    "es": "Un piano clásico",
+    "pt-BR": "Um piano clássico",
+    "ar": "بيانو كلاسيكي"
+  },
+  "נכסים במאגר": {
+    "en": "Properties in stock",
+    "es": "Inmuebles en el inventario",
+    "pt-BR": "Imóveis no acervo",
+    "ar": "عقارات في المخزون"
+  },
+  "רפואת חירום": {
+    "en": "Emergency medicine",
+    "es": "Medicina de urgencias",
+    "pt-BR": "Medicina de emergência",
+    "ar": "طب طوارئ"
+  },
+  "קמפוס למידה": {
+    "en": "A learning campus",
+    "es": "Un campus de aprendizaje",
+    "pt-BR": "Um campus de aprendizagem",
+    "ar": "حرم تعلّم"
+  },
+  "מסלול קמפוס": {
+    "en": "A campus track",
+    "es": "Una ruta de campus",
+    "pt-BR": "Uma trilha de campus",
+    "ar": "مسار حرم"
+  },
+  "עבודה מוכחת": {
+    "en": "Proven work",
+    "es": "Trabajo demostrado",
+    "pt-BR": "Trabalho comprovado",
+    "ar": "عمل مُثبت"
+  },
+  "התאמת חלוקה": {
+    "en": "A split match",
+    "es": "Ajuste de reparto",
+    "pt-BR": "Ajuste de divisão",
+    "ar": "مواءمة تقسيم"
+  },
+  "שרשרת שכבות": {
+    "en": "A layer chain",
+    "es": "Una cadena de capas",
+    "pt-BR": "Uma cadeia de camadas",
+    "ar": "سلسلة طبقات"
+  },
+  "עגילי חישוק": {
+    "en": "Hoop earrings",
+    "es": "Pendientes de aro",
+    "pt-BR": "Brincos de argola",
+    "ar": "أقراط حلق"
+  },
+  "תזמון מדויק": {
+    "en": "Precise timing",
+    "es": "Temporización precisa",
+    "pt-BR": "Tempo preciso",
+    "ar": "توقيت دقيق"
+  },
+  "דפדוף מסודר": {
+    "en": "Orderly paging",
+    "es": "Paginación ordenada",
+    "pt-BR": "Paginação ordenada",
+    "ar": "تصفّح مرتّب"
+  },
+  "שימוש מעורב": {
+    "en": "Mixed use",
+    "es": "Uso mixto",
+    "pt-BR": "Uso misto",
+    "ar": "استخدام مختلط"
+  },
+  "סכסוך מסחרי": {
+    "en": "A commercial dispute",
+    "es": "Un conflicto comercial",
+    "pt-BR": "Um conflito comercial",
+    "ar": "نزاع تجاري"
+  },
+  "דירות במאגר": {
+    "en": "Apartments in stock",
+    "es": "Pisos en el inventario",
+    "pt-BR": "Apartamentos no acervo",
+    "ar": "شقق في المخزون"
+  },
+  "מומחה אופנה": {
+    "en": "A fashion expert",
+    "es": "Un experto en moda",
+    "pt-BR": "Um especialista em moda",
+    "ar": "خبير أزياء"
+  },
+  "אורחת קבועה": {
+    "en": "A regular guest",
+    "es": "Una invitada habitual",
+    "pt-BR": "Uma hóspede regular",
+    "ar": "ضيفة دائمة"
+  },
+  "בחירת האופה": {
+    "en": "The baker's pick",
+    "es": "La elección del panadero",
+    "pt-BR": "A escolha do padeiro",
+    "ar": "اختيار الخبّاز"
+  },
+  "הזמנת מאפים": {
+    "en": "Order pastries",
+    "es": "Pedir bollería",
+    "pt-BR": "Pedir padaria",
+    "ar": "طلب معجنات"
+  },
+  "בייגל זרעים": {
+    "en": "A seed bagel",
+    "es": "Un bagel de semillas",
+    "pt-BR": "Um bagel de sementes",
+    "ar": "بيغل بذور"
+  },
+  "ראייה עסקית": {
+    "en": "A business view",
+    "es": "Una visión de negocio",
+    "pt-BR": "Uma visão de negócio",
+    "ar": "رؤية أعمال"
+  },
+  "שלושה צעדים": {
+    "en": "Three steps",
+    "es": "Tres pasos",
+    "pt-BR": "Três passos",
+    "ar": "ثلاث خطوات"
+  },
+  "ידיים בחומר": {
+    "en": "Hands in the material",
+    "es": "Manos en el material",
+    "pt-BR": "Mãos no material",
+    "ar": "أيدٍ في المادة"
+  },
+  "הדגמה צמודה": {
+    "en": "A close demo",
+    "es": "Una demo cercana",
+    "pt-BR": "Uma demonstração próxima",
+    "ar": "عرض ملاصق"
+  },
+  "שיעור סגירה": {
+    "en": "A closing lesson",
+    "es": "Una clase de cierre",
+    "pt-BR": "Uma aula de fechamento",
+    "ar": "درس إغلاق"
+  },
+  "מחזור ממוצע": {
+    "en": "Average turnover",
+    "es": "Ciclo medio",
+    "pt-BR": "Ciclo médio",
+    "ar": "دورة متوسطة"
+  },
+  "נהלי הפעלה": {
+    "en": "Operating procedures",
+    "es": "Procedimientos de operación",
+    "pt-BR": "Procedimentos de operação",
+    "ar": "إجراءات تشغيل"
+  },
+  "טרמינל אירוח / מדבר": {
+    "en": "A hospitality terminal / desert",
+    "es": "Una terminal de hospitalidad / desierto",
+    "pt-BR": "Um terminal de hospitalidade / deserto",
+    "ar": "محطة ضيافة / صحراء"
+  }
+}

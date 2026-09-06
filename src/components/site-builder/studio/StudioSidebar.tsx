@@ -99,7 +99,7 @@ export default function StudioSidebar({
     { key: "add", label: t("studio.elements"), icon: "+", hint: t("studio.elementsHint") },
     { key: "sections", label: t("studio.sections"), icon: "▭", hint: t("studio.sectionsHint") },
     { key: "theme", label: t("studio.design"), icon: "◐", hint: t("studio.designHint") },
-    { key: "pages", label: t("studio.pages"), icon: "▤", hint: t("studio.pagesHint") },
+    { key: "pages", label: t("studio.pagesNav"), icon: "▤", hint: t("studio.pagesHint") },
     { key: "media", label: t("studio.media"), icon: "▧", hint: t("studio.mediaHint") },
     { key: "store", label: t("studio.store"), icon: "◈", hint: t("studio.storeHint") },
     { key: "services", label: t("studio.services"), icon: "◇", hint: t("studio.servicesHint") },
@@ -129,7 +129,7 @@ export default function StudioSidebar({
       subtitle: t("studio.designSubtitle"),
     },
     pages: {
-      title: t("studio.pages"),
+      title: t("studio.pagesNav"),
       subtitle: t("studio.pagesSubtitle"),
     },
     media: {
@@ -850,7 +850,7 @@ function PagesHierarchyPanel({
 
       <div className="rounded-2xl border border-slate-200 bg-slate-50 p-2">
         <div className="mb-2 flex items-center justify-between px-2 py-1">
-          <p className="text-xs font-black text-slate-500">{t("studio.sitePages")}</p>
+          <p className="text-xs font-black text-slate-500">{t("studio.sitePagesNav")}</p>
           <span className="rounded-full bg-white px-3 py-1 text-[11px] font-black text-slate-400">
             {pages.length}
           </span>

@@ -84,7 +84,8 @@
     "automations": "אוטומציות",
     "agents": "נציגים לעסק",
     "contact": "צרו קשר",
-    "cta": "הירשמו עכשיו"
+    "cta": "הירשמו עכשיו",
+    "mainAria": "ניווט ראשי"
   },
   "seo": {
     "homeTitle": "Bizuply — נהלו את העסק שלכם. במקום אחד.",
@@ -8081,7 +8082,8 @@
       "currencyLabel": "מטבע: {{currency}}",
       "connectedThroughMeta": "מחובר דרך Meta",
       "switchAccount": "בחירת חשבון מודעות",
-      "lastUpdated": "עודכן לאחרונה: {{time}}"
+      "lastUpdated": "עודכן לאחרונה: {{time}}",
+      "lastUpdatedLabel": "עודכן לאחרונה"
     },
     "accountStatus": {
       "active": "פעיל",
@@ -8106,7 +8108,14 @@
       "pause": "השהיה",
       "activate": "הפעלה",
       "delete": "מחיקה",
-      "viewDetails": "צפייה בפרטים"
+      "viewDetails": "צפייה בפרטים",
+      "resume": "הפעלה מחדש",
+      "resumeHint": "הפעלה מחדש של הקמפיין",
+      "pauseHint": "השהיית הקמפיין",
+      "confirmPauseTitle": "להשהות את הקמפיין?",
+      "confirmPauseBody": "להשהות את {{name}} במטא? המודעות יופסקו עד שתפעילו מחדש.",
+      "confirmResumeTitle": "להפעיל מחדש את הקמפיין?",
+      "confirmResumeBody": "להפעיל מחדש את {{name}} במטא? המודעות יחזרו לרוץ לפי ההגדרות השמורות."
     },
     "creationMode": {
       "title": "קמפיין חדש",
@@ -8521,7 +8530,10 @@
       "loadingFromMeta": "טוען נתוני קמפיינים מ-Meta...",
       "noCampaignsInRange": "לא נמצאו קמפיינים בטווח התאריכים שנבחר.",
       "permissionTitle": "אין הרשאה לקריאת נתוני החשבון",
-      "permissionBody": "יש לחבר מחדש את חשבון Meta."
+      "permissionBody": "יש לחבר מחדש את חשבון Meta.",
+      "selectAccountTitle": "בחירת חשבון מודעות",
+      "selectAccountBody": "בחרו חשבון מודעות במטא כדי לטעון קמפיינים וביצועים.",
+      "selectAccountCta": "בחירת חשבון מודעות"
     },
     "form": {
       "back": "חזרה לסקירה",
@@ -8999,7 +9011,23 @@
       "budgetTitle": "תקציב חודשי למעקב",
       "budgetHint": "משמש לכרטיס ה-KPI של ניצול תקציב בסקירה.",
       "monthlyBudget": "תקרת תקציב חודשית",
-      "saveBudget": "שמירת תקציב"
+      "saveBudget": "שמירת תקציב",
+      "business": "עסק במטא",
+      "businessHint": "בחרו את תיק העסקים במטא שבבעלותו או בשיתוף איתו חשבונות המודעות שתנהלו.",
+      "businessPlaceholder": "בחירת עסק במטא",
+      "businessTitle": "תיק עסקים במטא",
+      "connectHint": "התחברו עם פייסבוק ואשרו ads_read, ads_management ו-business_management.",
+      "grantedPermissions": "הרשאות שאושרו",
+      "noBusinesses": "לא חזרו עסקים ממטא. חברו מחדש ואשרו business_management.",
+      "permissionWhyTitle": "למה ההרשאות האלה",
+      "permissionWhyAdsRead": "ads_read — טעינת קמפיינים וביצועים ממטא.",
+      "permissionWhyAdsManagement": "ads_management — השהיה או הפעלה מחדש של קמפיינים מתוך BizUply.",
+      "permissionWhyBusinessManagement": "business_management — הצגת תיקי עסקים וחשבונות המודעות שלהם.",
+      "saveAccountHint": "שמירת חשבון המודעות שנבחר לניהול קמפיינים.",
+      "saveBusiness": "שמירת עסק במטא",
+      "saveBusinessHint": "שמירת תיק העסקים שנבחר במטא, ואז בחירת חשבון מודעות.",
+      "selectBusinessRequired": "יש לבחור עסק במטא",
+      "tokenInvalid": "אסימון מטא אינו תקף יותר. חברו מחדש כדי להמשיך."
     },
     "toasts": {
       "connected": "חשבון Meta Ads חובר בהצלחה",
@@ -9016,7 +9044,8 @@
       "activated": "הקמפיין הופעל",
       "paused": "הקמפיין הושהה",
       "mediaUploaded": "המדיה הועלתה למטא",
-      "leadFormCreated": "טופס הלידים נוצר"
+      "leadFormCreated": "טופס הלידים נוצר",
+      "businessSelected": "העסק במטא נשמר"
     },
     "errors": {
       "loadOverview": "טעינת סקירת הקמפיינים נכשלה",
@@ -9035,7 +9064,24 @@
       "disconnect": "ניתוק Meta Ads נכשל",
       "mediaUpload": "העלאת המדיה נכשלה",
       "leadForms": "טעינת טפסי לידים נכשלה",
-      "createLeadForm": "יצירת טופס לידים נכשלה"
+      "createLeadForm": "יצירת טופס לידים נכשלה",
+      "selectBusiness": "שמירת העסק במטא נכשלה",
+      "statusNotPersisted": "מטא עדכנה את הקמפיין, אבל BizUply לא הצליחה לשמור את הסטטוס החדש. רעננו ונסו שוב."
+    },
+    "review": {
+      "captionsAuth": "בדיקת אפליקציה · התחברות לפייסבוק · ads_read · ads_management · business_management",
+      "captionsUse": "בדיקת אפליקציה · ads_read · ads_management · business_management",
+      "hideCaptions": "הסתרה",
+      "managementBadge": "ads_management",
+      "captionN": "כיתוב {{n}}",
+      "settingsCaption1": "בעל העסק נכנס ל-BizUply ואז מתחיל התחברות לפייסבוק כדי לחבר את Meta Ads.",
+      "settingsCaption2": "התחברות לפייסבוק מבקשת הרשאות ads_read, ads_management ו-business_management.",
+      "settingsCaption3": "BizUply משתמשת ב-business_management כדי להציג תיקי עסקים וחשבונות מודעות שבבעלות העסק שנבחר או משותפים איתו.",
+      "settingsCaption4": "אחרי האישור בוחרים תיק עסקים במטא ואז את חשבון המודעות שממנו נטענים ומנוהלים הקמפיינים.",
+      "overviewCaption1": "BizUply משתמשת ב-ads_read כדי לשלוף ממטא את הקמפיינים והמדדים של העסק המחובר.",
+      "overviewCaption2": "הלוח מציג שמות קמפיינים, סטטוסים, הוצאה, חשיפות, טווח, קליקים וטווח התאריכים שנבחר.",
+      "overviewCaption3": "BizUply משתמשת ב-ads_management כדי שבעל העסק יוכל להשהות או להפעיל מחדש קמפיין מתוך BizUply.",
+      "overviewCaption4": "אחרי השהיה או הפעלה מחדש BizUply קוראת שוב את הקמפיין ממטא ומציגה את הסטטוס המעודכן."
     }
   },
   "socialSchedule": {
@@ -14228,7 +14274,10 @@
       "about": "אודות",
       "projects": "פרויקטים",
       "block": "בלוק"
-    }
+    },
+    "pagesNav": "עמודים",
+    "sitePagesNav": "עמודי האתר",
+    "pageChip": "עמוד"
   },
   "partnerNav": {
     "brand": "Bizuply Partner",
@@ -15074,7 +15123,8 @@
         "cancelled": "בוטל"
       }
     },
-    "licenseFallback": "רישיון שימוש במערכת ניהול עסק מלאה"
+    "licenseFallback": "רישיון שימוש במערכת ניהול עסק מלאה",
+    "statusLabel": "סטטוס"
   },
   "storeManager": {
     "noBusinessId": "לא נמצא businessId. צריך להיכנס כבעל עסק כדי לנהל חנות.",

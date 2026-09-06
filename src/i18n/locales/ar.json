@@ -84,7 +84,8 @@
     "automations": "الأتمتة",
     "agents": "وكلاء الأعمال",
     "contact": "تواصل",
-    "cta": "ابدأ الآن"
+    "cta": "ابدأ الآن",
+    "mainAria": "التنقل الرئيسي"
   },
   "seo": {
     "homeTitle": "BizUply - إدارة الأعمال الخاصة بك. كل ذلك في مكان واحد.",
@@ -8092,7 +8093,8 @@
       "currencyLabel": "العملة: {{currency}}",
       "connectedThroughMeta": "متصل من خلال Meta",
       "switchAccount": "اختر حساب إعلان",
-      "lastUpdated": "تم تحديثه آخر مرة بتاريخ: {{time}}"
+      "lastUpdated": "تم تحديثه آخر مرة بتاريخ: {{time}}",
+      "lastUpdatedLabel": "آخر تحديث"
     },
     "accountStatus": {
       "active": "نشط",
@@ -8117,7 +8119,14 @@
       "pause": "وقفة",
       "activate": "تفعيل",
       "delete": "حذف",
-      "viewDetails": "عرض التفاصيل"
+      "viewDetails": "عرض التفاصيل",
+      "resume": "استئناف",
+      "resumeHint": "استئناف هذه الحملة",
+      "pauseHint": "إيقاف هذه الحملة مؤقتاً",
+      "confirmPauseTitle": "إيقاف الحملة مؤقتاً؟",
+      "confirmPauseBody": "إيقاف {{name}} مؤقتاً في ميتا؟ ستتوقف الإعلانات حتى تستأنفوها.",
+      "confirmResumeTitle": "استئناف الحملة؟",
+      "confirmResumeBody": "استئناف {{name}} في ميتا؟ ستعود الإعلانات للعمل حسب الإعدادات المحفوظة."
     },
     "creationMode": {
       "title": "حملة جديدة",
@@ -8532,7 +8541,10 @@
       "loadingFromMeta": "تحميل بيانات الحملة من Meta...",
       "noCampaignsInRange": "لم يتم العثور على حملات لنطاق التاريخ المحدد.",
       "permissionTitle": "لا إذن لقراءة بيانات الحساب",
-      "permissionBody": "يرجى إعادة ربط حساب Meta الخاص بك."
+      "permissionBody": "يرجى إعادة ربط حساب Meta الخاص بك.",
+      "selectAccountTitle": "اختيار حساب إعلانات",
+      "selectAccountBody": "اختاروا حساب إعلانات ميتا لتحميل الحملات والأداء.",
+      "selectAccountCta": "اختيار حساب الإعلانات"
     },
     "form": {
       "back": "العودة إلى نظرة عامة",
@@ -9010,7 +9022,23 @@
       "budgetTitle": "تتبع الميزانية الشهرية",
       "budgetHint": "استخدمت من قبل استخدام الميزانية KPI على نظرة عامة.",
       "monthlyBudget": "سقف الميزانية الشهرية",
-      "saveBudget": "حفظ الميزانية"
+      "saveBudget": "حفظ الميزانية",
+      "business": "نشاط ميتا",
+      "businessHint": "اختاروا محفظة أعمال ميتا التي تملك أو تشارك حسابات الإعلانات التي ستُدار.",
+      "businessPlaceholder": "اختيار نشاط ميتا",
+      "businessTitle": "محفظة أعمال ميتا",
+      "connectHint": "سجّلوا الدخول عبر فيسبوك وامنحوا ads_read وads_management وbusiness_management.",
+      "grantedPermissions": "الصلاحيات الممنوحة",
+      "noBusinesses": "لم تُرجع ميتا أي أنشطة. أعيدوا الربط وامنحوا business_management.",
+      "permissionWhyTitle": "لماذا هذه الصلاحيات",
+      "permissionWhyAdsRead": "ads_read — تحميل الحملات والأداء من ميتا.",
+      "permissionWhyAdsManagement": "ads_management — إيقاف الحملات مؤقتاً أو استئنافها من BizUply.",
+      "permissionWhyBusinessManagement": "business_management — عرض محافظ الأعمال وحسابات إعلاناتها.",
+      "saveAccountHint": "حفظ حساب الإعلانات المختار لإدارة الحملات.",
+      "saveBusiness": "حفظ نشاط ميتا",
+      "saveBusinessHint": "احفظوا محفظة ميتا ثم اختاروا حساب إعلانات.",
+      "selectBusinessRequired": "يرجى اختيار نشاط ميتا",
+      "tokenInvalid": "رمز ميتا لم يعد صالحاً. أعيدوا الربط للمتابعة."
     },
     "toasts": {
       "connected": "إعلانات Meta متصلة بنجاح",
@@ -9027,7 +9055,8 @@
       "activated": "تم تفعيل الحملة",
       "paused": "الحملة متوقفة",
       "mediaUploaded": "وسائل الإعلام التي تم تحميلها إلى Meta",
-      "leadFormCreated": "تم إنشاء نموذج عميل محتمل"
+      "leadFormCreated": "تم إنشاء نموذج عميل محتمل",
+      "businessSelected": "تم حفظ نشاط ميتا"
     },
     "errors": {
       "loadOverview": "فشل تحميل نظرة عامة على الحملة",
@@ -9046,7 +9075,24 @@
       "disconnect": "فشل في فصل إعلانات Meta",
       "mediaUpload": "فشل تحميل الوسائط",
       "leadForms": "فشل تحميل نماذج عميل محتمل",
-      "createLeadForm": "فشل في إنشاء نموذج عميل محتمل"
+      "createLeadForm": "فشل في إنشاء نموذج عميل محتمل",
+      "selectBusiness": "تعذّر حفظ نشاط ميتا",
+      "statusNotPersisted": "حدّثت ميتا الحملة لكن تعذّر على BizUply حفظ الحالة الجديدة. حدّثوا الصفحة وحاولوا مرة أخرى."
+    },
+    "review": {
+      "captionsAuth": "مراجعة التطبيق · تسجيل فيسبوك · ads_read · ads_management · business_management",
+      "captionsUse": "مراجعة التطبيق · ads_read · ads_management · business_management",
+      "hideCaptions": "إخفاء",
+      "managementBadge": "ads_management",
+      "captionN": "تعليق {{n}}",
+      "settingsCaption1": "يسجّل صاحب العمل الدخول إلى BizUply ثم يبدأ تسجيل فيسبوك لربط إعلانات ميتا.",
+      "settingsCaption2": "يطلب تسجيل فيسبوك صلاحيات ads_read وads_management وbusiness_management.",
+      "settingsCaption3": "يستخدم BizUply business_management لعرض محافظ الأعمال وحسابات الإعلانات المملوكة أو المشتركة مع النشاط المختار.",
+      "settingsCaption4": "بعد التفويض يختار المستخدم محفظة أعمال ميتا ثم حساب الإعلانات لتحميل الحملات وإدارتها.",
+      "overviewCaption1": "يستخدم BizUply ads_read لجلب حملات النشاط المصادق عليه ومقاييس الأداء من ميتا.",
+      "overviewCaption2": "تعرض اللوحة أسماء الحملات والحالات والإنفاق والظهور والوصول والنقرات ونطاق التاريخ.",
+      "overviewCaption3": "يستخدم BizUply ads_management حتى يتمكن صاحب العمل من إيقاف حملة مؤقتاً أو استئنافها من BizUply.",
+      "overviewCaption4": "بعد الإيقاف المؤقت أو الاستئناف يقرأ BizUply الحملة من ميتا ويعرض الحالة المحدّثة."
     }
   },
   "socialSchedule": {
@@ -14239,7 +14285,10 @@
       "about": "حول",
       "projects": "مشاريع",
       "block": "كتلة"
-    }
+    },
+    "pagesNav": "صفحات",
+    "sitePagesNav": "صفحات الموقع",
+    "pageChip": "صفحة"
   },
   "partnerNav": {
     "brand": "شريك BizUply",
@@ -15085,7 +15134,8 @@
         "cancelled": "ملغى"
       }
     },
-    "licenseFallback": "رخصة استخدام نظام إدارة أعمال كامل"
+    "licenseFallback": "رخصة استخدام نظام إدارة أعمال كامل",
+    "statusLabel": "الحالة"
   },
   "storeManager": {
     "noBusinessId": "لم يتم العثور على معرّف النشاط. سجّل الدخول كمالك لإدارة المتجر.",

@@ -9582,7 +9582,7 @@ function StudioWixRail({
     { id: "add", label: t("studio.add"), icon: "+", onClick: onOpenAdd },
     {
       id: "pages",
-      label: t("studio.pages"),
+      label: t("studio.pagesNav"),
       icon: "▦",
       onClick: onOpenPages,
       active: activePanel === "pages",
@@ -9612,7 +9612,7 @@ function StudioWixRail({
   return (
     <aside className="absolute left-4 top-4 z-30 flex w-[82px] flex-col items-center gap-3 rounded-[28px] border border-white/80 bg-white/95 p-2 shadow-[0_22px_70px_rgba(15,23,42,0.14)] backdrop-blur-2xl">
       <div className="mb-1 w-full rounded-[22px] border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800">
-        <p className="truncate text-[10px] font-black text-black/55">PAGE</p>
+        <p className="truncate text-[10px] font-black text-black/55">{t("studio.pageChip")}</p>
         <p className="mt-1 truncate text-xs font-black">{activePageTitle}</p>
       </div>
 

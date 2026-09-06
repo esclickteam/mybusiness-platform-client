@@ -642,6 +642,14 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("4 חד׳ · נוף", "en")).toMatch(/view/i);
     expect(localizeBuiltInText("צבע וגוונים", "es")).toMatch(/color/i);
     expect(localizeBuiltInText("ליווי ציבורי שוטף.", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("יצירת קשר", "pt-BR")).toBe("Fale conosco");
+    expect(localizeBuiltInText("השירותים שלנו", "pt-BR")).toBe("Nossos serviços");
+    expect(localizeBuiltInText("הטיפולים שלנו", "pt-BR")).toBe("Nossos tratamentos");
+    expect(localizeBuiltInText("כלכלה שקופה", "en")).toMatch(/transparent/i);
+    expect(localizeBuiltInText("כלכלה שקופה", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("נתחיל בשיחה", "es")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("עיסוי קטיפה", "pt-BR")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("ברסקט מעושן", "ar")).not.toMatch(/[\u0590-\u05FF]/);
   });
 
   it("keeps a saved rich-store headline over localized unique17 defaults", () => {

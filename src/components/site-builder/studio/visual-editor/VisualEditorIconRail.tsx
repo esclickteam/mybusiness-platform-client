@@ -118,7 +118,7 @@ export default function VisualEditorIconRail({
         </RailButton>
 
         <RailButton
-          title={t("studio.pages")}
+          title={t("studio.pagesNav")}
           testId="visual-editor-pages"
           active={sidePanelMode === "pages"}
           onClick={() => onTogglePanel("pages")}

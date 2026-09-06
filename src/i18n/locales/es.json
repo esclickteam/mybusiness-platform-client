@@ -84,7 +84,8 @@
     "automations": "Automatizaciones",
     "agents": "Agentes de negocio",
     "contact": "Contacto",
-    "cta": "Empezar"
+    "cta": "Empezar",
+    "mainAria": "Navegación principal"
   },
   "seo": {
     "homeTitle": "BizUply — Administra tu negocio. Todo en un solo lugar.",
@@ -8092,7 +8093,8 @@
       "currencyLabel": "Moneda: {{currency}}",
       "connectedThroughMeta": "Conectado a través de Meta",
       "switchAccount": "Seleccione una cuenta de anuncios",
-      "lastUpdated": "Última actualización: {{time}}"
+      "lastUpdated": "Última actualización: {{time}}",
+      "lastUpdatedLabel": "Última actualización"
     },
     "accountStatus": {
       "active": "Activo",
@@ -8117,7 +8119,14 @@
       "pause": "Pausa",
       "activate": "Activar",
       "delete": "Eliminar",
-      "viewDetails": "Ver detalles"
+      "viewDetails": "Ver detalles",
+      "resume": "Reanudar",
+      "resumeHint": "Reanudar esta campaña",
+      "pauseHint": "Pausar esta campaña",
+      "confirmPauseTitle": "¿Pausar la campaña?",
+      "confirmPauseBody": "¿Pausar {{name}} en Meta? Los anuncios se detendrán hasta que la reanudes.",
+      "confirmResumeTitle": "¿Reanudar la campaña?",
+      "confirmResumeBody": "¿Reanudar {{name}} en Meta? Los anuncios volverán a publicarse con los ajustes guardados."
     },
     "creationMode": {
       "title": "Nueva campaña",
@@ -8532,7 +8541,10 @@
       "loadingFromMeta": "Cargando datos de la campaña desde Meta...",
       "noCampaignsInRange": "No se han encontrado campañas para el intervalo de fechas seleccionado.",
       "permissionTitle": "No hay permiso para leer los datos de la cuenta",
-      "permissionBody": "Por favor, vuelva a conectar su cuenta Meta."
+      "permissionBody": "Por favor, vuelva a conectar su cuenta Meta.",
+      "selectAccountTitle": "Selecciona una cuenta publicitaria",
+      "selectAccountBody": "Elige una cuenta publicitaria de Meta para cargar campañas y resultados.",
+      "selectAccountCta": "Elegir cuenta publicitaria"
     },
     "form": {
       "back": "Volver a la vista general",
@@ -9010,7 +9022,23 @@
       "budgetTitle": "Seguimiento mensual del presupuesto",
       "budgetHint": "Utilizado por el KPI de utilización del presupuesto en la descripción general.",
       "monthlyBudget": "Límite presupuestario mensual",
-      "saveBudget": "Ahorrar presupuesto"
+      "saveBudget": "Ahorrar presupuesto",
+      "business": "Negocio de Meta",
+      "businessHint": "Elige la cartera de Meta que posee o comparte las cuentas publicitarias que vas a gestionar.",
+      "businessPlaceholder": "Selecciona un negocio de Meta",
+      "businessTitle": "Cartera de negocio de Meta",
+      "connectHint": "Inicia sesión con Facebook Login y concede ads_read, ads_management y business_management.",
+      "grantedPermissions": "Permisos concedidos",
+      "noBusinesses": "Meta no devolvió negocios. Vuelve a conectar y concede business_management.",
+      "permissionWhyTitle": "Por qué estos permisos",
+      "permissionWhyAdsRead": "ads_read — cargar campañas y resultados desde Meta.",
+      "permissionWhyAdsManagement": "ads_management — pausar o reanudar campañas desde BizUply.",
+      "permissionWhyBusinessManagement": "business_management — listar carteras de negocio y sus cuentas publicitarias.",
+      "saveAccountHint": "Guardar la cuenta publicitaria seleccionada para gestionar campañas.",
+      "saveBusiness": "Guardar negocio de Meta",
+      "saveBusinessHint": "Guarda la cartera de Meta y luego elige una cuenta publicitaria.",
+      "selectBusinessRequired": "Selecciona un negocio de Meta",
+      "tokenInvalid": "El token de Meta ya no es válido. Vuelve a conectar para continuar."
     },
     "toasts": {
       "connected": "Meta Ads conectado correctamente",
@@ -9027,7 +9055,8 @@
       "activated": "Campaña activada",
       "paused": "Campaña pausada",
       "mediaUploaded": "Medios subidos a Meta",
-      "leadFormCreated": "Formulario de lead creado"
+      "leadFormCreated": "Formulario de lead creado",
+      "businessSelected": "Negocio de Meta guardado"
     },
     "errors": {
       "loadOverview": "No se pudo cargar la descripción general de la campaña",
@@ -9046,7 +9075,24 @@
       "disconnect": "No se pudo desconectar Meta Ads",
       "mediaUpload": "Fallo en la carga de medios",
       "leadForms": "No se pudo cargar formularios de lead",
-      "createLeadForm": "No se pudo crear la formulario de lead"
+      "createLeadForm": "No se pudo crear la formulario de lead",
+      "selectBusiness": "No se pudo guardar el negocio de Meta",
+      "statusNotPersisted": "Meta actualizó la campaña, pero BizUply no pudo guardar el nuevo estado. Actualiza e inténtalo de nuevo."
+    },
+    "review": {
+      "captionsAuth": "Revisión de la app · Facebook Login · ads_read · ads_management · business_management",
+      "captionsUse": "Revisión de la app · ads_read · ads_management · business_management",
+      "hideCaptions": "Ocultar",
+      "managementBadge": "ads_management",
+      "captionN": "Leyenda {{n}}",
+      "settingsCaption1": "El dueño inicia sesión en BizUply y luego abre Facebook Login para conectar Meta Ads.",
+      "settingsCaption2": "Facebook Login pide ads_read, ads_management y business_management.",
+      "settingsCaption3": "BizUply usa business_management para listar carteras de negocio y las cuentas publicitarias del negocio elegido.",
+      "settingsCaption4": "Tras autorizar, elige la cartera de Meta y luego la cuenta publicitaria para ver y gestionar campañas.",
+      "overviewCaption1": "BizUply usa ads_read para traer de Meta las campañas y métricas del negocio autenticado.",
+      "overviewCaption2": "El panel muestra nombres, estados, gasto, impresiones, alcance, clics y el rango de fechas.",
+      "overviewCaption3": "BizUply usa ads_management para pausar o reanudar una campaña desde BizUply.",
+      "overviewCaption4": "Tras Pausar o Reanudar, BizUply vuelve a leer la campaña en Meta y muestra el estado actualizado."
     }
   },
   "socialSchedule": {
@@ -14239,7 +14285,10 @@
       "about": "Acerca de",
       "projects": "Proyectos",
       "block": "Bloque"
-    }
+    },
+    "pagesNav": "Páginas",
+    "sitePagesNav": "Páginas del sitio",
+    "pageChip": "Página"
   },
   "partnerNav": {
     "brand": "Socio de BizUply",
@@ -15085,7 +15134,8 @@
         "cancelled": "Cancelado"
       }
     },
-    "licenseFallback": "Licencia de uso de un sistema completo de gestión empresarial"
+    "licenseFallback": "Licencia de uso de un sistema completo de gestión empresarial",
+    "statusLabel": "Estado"
   },
   "storeManager": {
     "noBusinessId": "No se encontró el ID del negocio. Inicie sesión como dueño para gestionar la tienda.",

@@ -5,18 +5,18 @@ const CAPTIONS_STORAGE_KEY = "bizuply_meta_ads_review_captions_hidden";
 
 type CaptionSet = "settings" | "overview";
 
-const SETTINGS_CAPTIONS = [
-  "The business owner signs in to Bizuply, then starts Facebook Login to connect Meta Ads.",
-  "Facebook Login asks the user to grant ads_read, ads_management, and business_management.",
-  "Bizuply uses business_management to list Business Portfolios and the Ad Accounts owned or shared by the selected business.",
-  "After authorization, the user selects their Meta Business Portfolio, then the Ad Account used to retrieve and manage campaigns.",
+const SETTINGS_CAPTION_KEYS = [
+  "metaCampaigns.review.settingsCaption1",
+  "metaCampaigns.review.settingsCaption2",
+  "metaCampaigns.review.settingsCaption3",
+  "metaCampaigns.review.settingsCaption4",
 ] as const;
 
-const OVERVIEW_CAPTIONS = [
-  "Bizuply uses ads_read to retrieve the authenticated business's advertising campaigns and performance metrics from Meta.",
-  "The dashboard shows campaign names, statuses, spend, impressions, reach, clicks, and the selected date range.",
-  "Bizuply uses ads_management so the business owner can pause or resume a campaign from Bizuply.",
-  "After Pause or Resume, Bizuply reads the campaign back from Meta and shows the updated status.",
+const OVERVIEW_CAPTION_KEYS = [
+  "metaCampaigns.review.overviewCaption1",
+  "metaCampaigns.review.overviewCaption2",
+  "metaCampaigns.review.overviewCaption3",
+  "metaCampaigns.review.overviewCaption4",
 ] as const;
 
 export default function MetaAdsReviewCaptions({
@@ -25,7 +25,8 @@ export default function MetaAdsReviewCaptions({
   set?: CaptionSet;
 }) {
   const { t } = useTranslation();
-  const captions = set === "settings" ? SETTINGS_CAPTIONS : OVERVIEW_CAPTIONS;
+  const captionKeys = set === "settings" ? SETTINGS_CAPTION_KEYS : OVERVIEW_CAPTION_KEYS;
+  const captions = captionKeys.map((key) => t(key));
   const [show, setShow] = useState(() => {
     try {
       return sessionStorage.getItem(CAPTIONS_STORAGE_KEY) !== "1";
@@ -82,7 +83,7 @@ export default function MetaAdsReviewCaptions({
                   "h-1.5 w-6 rounded-full",
                   captionIndex === index ? "bg-violet-500" : "bg-slate-200",
                 ].join(" ")}
-                aria-label={`Caption ${captionIndex + 1}`}
+                aria-label={t("metaCampaigns.review.captionN", { n: captionIndex + 1 })}
               />
             ))}
           </div>
