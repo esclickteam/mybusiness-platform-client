@@ -119,7 +119,7 @@ describe("whatsApp action preview interpolation", () => {
       [{ variable: "1", source: "", field: "" }],
       "new_lead_welcome"
     );
-    expect(empty).toContain("[שם הליד]");
+    expect(empty).toContain("[Lead name]");
     expect(empty).not.toContain("{{1}}");
     const mapped = interpolateWhatsAppPreviewText(
       template.body,
@@ -128,7 +128,7 @@ describe("whatsApp action preview interpolation", () => {
     );
     expect(mapped).toContain(WA_PREVIEW_SAMPLE_DATA.leadName);
     expect(mapped).not.toContain("{{1}}");
-    expect(mapped).not.toContain("[שם הליד]");
+    expect(mapped).not.toContain("[Lead name]");
   });
 
   it("uses appointment date/time samples when mapped", () => {
@@ -139,8 +139,8 @@ describe("whatsApp action preview interpolation", () => {
     });
     expect(model.body).toContain(WA_PREVIEW_SAMPLE_DATA.leadName);
     expect(model.body).toContain(WA_PREVIEW_SAMPLE_DATA.appointmentTime);
-    expect(model.body).toContain("[זמן עד הפגישה]");
-    expect(model.body).toContain("[שירות]");
+    expect(model.body).toContain("[Time until the appointment]");
+    expect(model.body).toContain("[Service]");
   });
 
   it("keeps preview sample data out of returned mappings", () => {

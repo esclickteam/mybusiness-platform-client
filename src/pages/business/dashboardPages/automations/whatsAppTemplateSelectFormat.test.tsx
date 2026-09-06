@@ -93,7 +93,7 @@ describe("whatsAppTemplateSelectFormat", () => {
         metaTemplateName: "new_lead_received",
         name: "new_lead_received",
       })
-    ).toBe("התקבל ליד חדש");
+    ).toBe("New lead received");
   });
 
   it("keeps technical name visible in secondary line", () => {
