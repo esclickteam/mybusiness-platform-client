@@ -300,6 +300,24 @@ describe("localizeBuiltInTemplateSeed", () => {
       localizeBuiltInText("ניהול שוטף לעוסק עם נפח מסמכים קבוע ודוחות חודשיים פשוטים.", "en"),
     ).toMatch(/bookkeeping|monthly reports/i);
     expect(localizeBuiltInText("> מתחילים בדיקת היקף", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(
+      localizeBuiltInText(
+        "ירושלים, מבשרת, מעלה אדומים, גוש עציון ובית שמש בתיאום מוקדם.",
+        "en",
+      ),
+    ).toMatch(/Jerusalem/);
+    expect(
+      localizeBuiltInText(
+        "ירושלים, מבשרת, מעלה אדומים, גוש עציון ובית שמש בתיאום מוקדם.",
+        "en",
+      ),
+    ).not.toMatch(/[\u0590-\u05FF]/);
+    expect(
+      localizeBuiltInText(
+        "הסטודיו מרגיש כמו חדר נשימה בעיר. עדין, מדויק ומאוד לא מתאמץ.",
+        "es",
+      ),
+    ).not.toMatch(/[\u0590-\u05FF]/);
   });
 
   it("does not rewrite saved customer copy over localized defaults", () => {
