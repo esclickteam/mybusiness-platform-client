@@ -608,6 +608,14 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("כל הזכויות שמורות © 2026", "pt-BR")).toMatch(/direitos reservados/i);
   });
 
+  it("localizes unique25 titles, behind-the-scenes, and ₪ unit prices", () => {
+    expect(localizeBuiltInText("המעבדה — מאחורי הקלעים.", "en")).toMatch(/behind the scenes/i);
+    expect(localizeBuiltInText("המעבדה — מאחורי הקלעים.", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("₪42 · 3 יח׳", "en")).toBe("₪42 · 3 pcs");
+    expect(localizeBuiltInText("₪28 · פרוסה", "es")).toMatch(/rebanada/i);
+    expect(localizeBuiltInText("כמה זמן לוקח לקבל תור?", "pt-BR")).toMatch(/horário/i);
+  });
+
   it("keeps a saved rich-store headline over localized unique17 defaults", () => {
     const defaults = localizeBuiltInTemplateSeed(
       { brandName: "סטודיו מסחר עשיר", productsEyebrow: "בחירות החנות" },

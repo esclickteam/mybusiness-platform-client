@@ -36,6 +36,7 @@ import unique21ExactLexicon from "./templateExactLexicon.unique21.json";
 import unique22ExactLexicon from "./templateExactLexicon.unique22.json";
 import unique23ExactLexicon from "./templateExactLexicon.unique23.json";
 import unique24ExactLexicon from "./templateExactLexicon.unique24.json";
+import unique25ExactLexicon from "./templateExactLexicon.unique25.json";
 import { TEMPLATE_EXACT_LEXICON, type LocaleCopy } from "./templateExactLexicon";
 
 type PhraseTranslation = {
@@ -84,6 +85,7 @@ const EXACT_LEXICON: Record<string, PhraseTranslation | LocaleCopy> = {
   ...(unique22ExactLexicon as Record<string, PhraseTranslation>),
   ...(unique23ExactLexicon as Record<string, PhraseTranslation>),
   ...(unique24ExactLexicon as Record<string, PhraseTranslation>),
+  ...(unique25ExactLexicon as Record<string, PhraseTranslation>),
   ...TEMPLATE_EXACT_LEXICON,
 };
 
@@ -217,6 +219,9 @@ const MELT_EXPERIENCE_RE = /^(.+) — ההמסה היא חלק מהחוויה\.$
 const PERFECT_DISH_RE = /^המנה של (.+) הייתה מושלמת\.$/;
 const KNOW_ALL_RE = /^(.+) — כל מה שצריך לדעת\.$/;
 const INGREDIENT_FIT_RE = /^חומרי גלם שמתאימים ל(.+)$/;
+const BEHIND_SCENES_RE = /^(.+) — מאחורי הקלעים\.$/;
+const PRICE_DOT_RE = /^₪(\d+) · (.+)$/;
+const UNIT_COUNT_RE = /^(\d+)\s*יח׳$/;
 
 const HEBREW_WEEKDAYS: Record<string, PhraseTranslation> = {
   ראשון: { en: "Sunday", es: "domingo", "pt-BR": "domingo", ar: "الأحد" },
@@ -471,6 +476,26 @@ function localizeFromPrice(text: string, locale: string): string {
   return `From ${amount}`;
 }
 
+function localizePriceDot(text: string, locale: string): string {
+  const match = text.match(PRICE_DOT_RE);
+  if (!match) return "";
+  const amount = `₪${match[1]}`;
+  const rawUnit = match[2];
+  const unitCount = rawUnit.match(UNIT_COUNT_RE);
+  let unit = "";
+  if (unitCount) {
+    const n = unitCount[1];
+    if (locale === "es") unit = `${n} uds`;
+    else if (locale === "pt-BR") unit = `${n} un.`;
+    else if (locale === "ar") unit = `${n} قطع`;
+    else unit = `${n} pcs`;
+  } else {
+    unit = localizeFragment(rawUnit, locale);
+  }
+  if (!unit || HE.test(unit)) return "";
+  return `${amount} · ${unit}`;
+}
+
 function localizeBurgerSmash(text: string, locale: string): string {
   const match = text.match(BURGER_SMASH_RE);
   if (!match) return "";
@@ -640,6 +665,12 @@ const KNOW_ALL_COPY: PhraseTranslation = {
   es: "todo lo que hay que saber.",
   "pt-BR": "tudo o que vocês precisam saber.",
   ar: "كل ما تحتاجون معرفته.",
+};
+const BEHIND_SCENES_COPY: PhraseTranslation = {
+  en: "behind the scenes.",
+  es: "detrás de cámaras.",
+  "pt-BR": "nos bastidores.",
+  ar: "خلف الكواليس.",
 };
 
 function localizeIngredientFit(text: string, locale: string): string {
@@ -930,6 +961,10 @@ function localizePlainBuiltInText(text: string, locale: string): string {
   if (isUsableTranslation(text, fromPrice, locale)) {
     return adaptBuiltInDirectionalCss(fromPrice, locale);
   }
+  const priceDot = localizePriceDot(text, locale);
+  if (isUsableTranslation(text, priceDot, locale)) {
+    return adaptBuiltInDirectionalCss(priceDot, locale);
+  }
 
   const openingHours = localizeOpeningHours(text, locale);
   if (isUsableTranslation(text, openingHours, locale)) {
@@ -1078,6 +1113,10 @@ function localizePlainBuiltInText(text: string, locale: string): string {
   const ingredientFit = localizeIngredientFit(text, locale);
   if (isUsableTranslation(text, ingredientFit, locale)) {
     return adaptBuiltInDirectionalCss(ingredientFit, locale);
+  }
+  const behindScenes = localizeDishSuffix(text, locale, BEHIND_SCENES_RE, BEHIND_SCENES_COPY);
+  if (isUsableTranslation(text, behindScenes, locale)) {
+    return adaptBuiltInDirectionalCss(behindScenes, locale);
   }
 
   const bookHit = pickLocaleCopy(book[text], locale);
