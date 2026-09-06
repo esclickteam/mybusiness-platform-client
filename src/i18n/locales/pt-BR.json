@@ -3551,7 +3551,10 @@
     "emptyTitle": "Sem novas notificações",
     "emptySubtitle": "Quando uma nova lead chegar ou uma tarefa for devida, ela aparecerá aqui.",
     "leadLabel": "lead:",
-    "dueTime": "-Devido:"
+    "dueTime": "-Devido:",
+    "clientFallback": "Cliente",
+    "reviewFrom": "⭐ Nova avaliação de {{clientName}}",
+    "reviewFromComment": "⭐ Nova avaliação de {{clientName}}: \"{{comment}}\""
   },
   "chatbot": {
     "openAria": "Abra o assistente inteligente BizUply",
@@ -12834,7 +12837,8 @@
       "pageAdded": "A página «{{title}}» foi adicionada — {{name}} está ativo",
       "addedBottom": "«{{name}}» foi adicionado no final — role para ver",
       "savedHint": "«{{name}}» foi salvo; adicione por uma seção adequada",
-      "addedActive": "«{{name}}» foi adicionado e está ativo na página"
+      "addedActive": "«{{name}}» foi adicionado e está ativo na página",
+      "announcementDefault": "Frete grátis em pedidos acima de 300 ₪ — toque aqui para detalhes"
     },
     "sectionNav": {
       "all": "Tudo",
@@ -16985,7 +16989,8 @@
       "whenClosedPaid": "Mesmo com o Bizuply fechado · ₪29 / mês",
       "enablePushShort": "Ativar Push",
       "free7Push": "7 dias de alertas Push grátis"
-    }
+    },
+    "subscriptionLabel": "Assinatura Push"
   },
   "publicWidgets": {
     "common": {
@@ -18412,6 +18417,14 @@
       "sale20": "20% de desconto",
       "upgrade": "Upgrade grátis",
       "tryAgain": "Tente de novo"
+    },
+    "demo": {
+      "sandboxMessage": "Mensagem de demonstração"
+    },
+    "templates": {
+      "defaultCategory": "Modelo de site",
+      "defaultHeroTitle": "Site de negócio pronto",
+      "defaultHeroSubtitle": "Modelo de site pronto para edição completa."
     }
   }
 }

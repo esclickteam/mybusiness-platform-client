@@ -173,7 +173,9 @@ export async function runDemoSpecialAction(step: { id?: string; target?: string 
     return data?.session;
   }
   if (step?.target === "messages-demo-send" || step?.target === "whatsapp-demo-send") {
-    const data = await sendGuidedDemoSandboxMessage("הודעת הדגמה");
+    const data = await sendGuidedDemoSandboxMessage(
+      i18n.t("leftover.demo.sandboxMessage")
+    );
     if (data?.session) demoProgress.emit(data.session);
     return data?.session;
   }

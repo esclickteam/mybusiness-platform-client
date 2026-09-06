@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   classifySourcePath,
   isDefaultSiteContentString,
+  isNonChromeHebrewHit,
 } from "./hardcodedAuditScope.js";
 
 describe("hardcoded i18n audit scope", () => {
@@ -73,6 +74,8 @@ describe("hardcoded i18n audit scope", () => {
       classifySourcePath("guidedDemo/postDemoQuestionnaire/types.ts")
     ).toBe("D");
     expect(classifySourcePath("utils/materializeAiSitePlan.ts")).toBe("D");
+    expect(classifySourcePath("utils/syncExistingWebsiteTemplatesToMongo.ts")).toBe("D");
+    expect(classifySourcePath("utils/softphoneMicrophone.ts")).toBe("A");
   });
 
   it("flags Business, Partner, and Marketer UI as category E", () => {
@@ -89,5 +92,35 @@ describe("hardcoded i18n audit scope", () => {
       )
     ).toBe(true);
     expect(isDefaultSiteContentString("כותרת ענקית")).toBe(false);
+  });
+
+  it("does not count matchers, logs, or phrasebook keys as chrome", () => {
+    expect(
+      isNonChromeHebrewHit('console.error("שגיאה בטעינת העסק:", err);', "שגיאה בטעינת העסק:")
+    ).toBe(true);
+    expect(
+      isNonChromeHebrewHit('if (rawLabel.includes("דפי נחיתה")) return "landing";', "דפי נחיתה")
+    ).toBe(true);
+    expect(
+      isNonChromeHebrewHit('return clean !== "" && clean !== "כללי";', "כללי")
+    ).toBe(true);
+    expect(
+      isNonChromeHebrewHit('label: localizeBuiltInText("סקשן חדש", i18n.language)', "סקשן חדש")
+    ).toBe(true);
+    expect(
+      isNonChromeHebrewHit('<option value="חד צדדי">One-sided</option>', "חד צדדי")
+    ).toBe(true);
+    expect(
+      isNonChromeHebrewHit(
+        'const KNOWN_OTHER_LABELS = ["אחר / קטגוריה מותאמת", "Other / custom category"];',
+        "אחר / קטגוריה מותאמת"
+      )
+    ).toBe(true);
+    expect(
+      isNonChromeHebrewHit(
+        'text: `⭐ ביקורת חדשה מ-${clientName}`',
+        "⭐ ביקורת חדשה מ-${clientName}"
+      )
+    ).toBe(false);
   });
 });

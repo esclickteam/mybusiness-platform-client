@@ -2,6 +2,7 @@ import {
   studioTemplateDefinitions,
   getStudioTemplateSeedById,
 } from "../components/site-builder/studio/data/templates";
+import i18n from "../i18n/i18n";
 
 const RAW_API_BASE =
   import.meta.env.VITE_API_URL || import.meta.env.VITE_API_BASE_URL || "";
@@ -59,7 +60,7 @@ function normalizeTemplateForMongo(template: any, index: number) {
       template.categoryLabel ||
       template.category ||
       seed?.category ||
-      "תבנית אתר",
+      i18n.t("leftover.templates.defaultCategory"),
 
     description: template.description || seed?.description || "",
 
@@ -75,13 +76,13 @@ function normalizeTemplateForMongo(template: any, index: number) {
       seed?.heroTitle ||
       template.heroTitle ||
       template.name ||
-      "אתר עסקי מוכן",
+      i18n.t("leftover.templates.defaultHeroTitle"),
 
     heroSubtitle:
       seed?.heroSubtitle ||
       template.description ||
       seed?.description ||
-      "תבנית אתר מוכנה לעריכה מלאה.",
+      i18n.t("leftover.templates.defaultHeroSubtitle"),
 
     palette: seed?.palette || {
       primary: "#111827",

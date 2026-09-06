@@ -387,7 +387,7 @@ export default function FaqTab({
                       >
                         {isSavingEdit
                           ? t("business.faq.saving", "שומר...")
-                          : `💾 ${t("common.save", "שמירה")}`}
+                          : `💾 ${t("common.save")}`}
                       </button>
 
                       <button

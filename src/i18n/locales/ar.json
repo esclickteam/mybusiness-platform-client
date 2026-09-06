@@ -3551,7 +3551,10 @@
     "emptyTitle": "لا إشعارات جديدة",
     "emptySubtitle": "عندما يأتي دليل جديد أو مهمة مستحقة ، ستظهر هنا.",
     "leadLabel": "عميل محتمل:",
-    "dueTime": "مستحق:"
+    "dueTime": "مستحق:",
+    "clientFallback": "عميل",
+    "reviewFrom": "⭐ تقييم جديد من {{clientName}}",
+    "reviewFromComment": "⭐ تقييم جديد من {{clientName}}: \"{{comment}}\""
   },
   "chatbot": {
     "openAria": "مساعد ذكي BizUply",
@@ -12834,7 +12837,8 @@
       "pageAdded": "أُضيفت الصفحة «{{title}}» — {{name}} نشط",
       "addedBottom": "أُضيف «{{name}}» أسفل الصفحة — مرّر لرؤية القسم",
       "savedHint": "حُفظ «{{name}}»؛ أضفه عبر قسم مناسب",
-      "addedActive": "أُضيف «{{name}}» وهو نشط في الصفحة"
+      "addedActive": "أُضيف «{{name}}» وهو نشط في الصفحة",
+      "announcementDefault": "شحن مجاني للطلبات فوق 300 ₪ — اضغطوا هنا للتفاصيل"
     },
     "sectionNav": {
       "all": "الكل",
@@ -16985,7 +16989,8 @@
       "whenClosedPaid": "حتى عندما لا يكون Bizuply مفتوحاً · 29 ₪ / شهر",
       "enablePushShort": "تفعيل الدفع",
       "free7Push": "7 أيام من تنبيهات الدفع المجانية"
-    }
+    },
+    "subscriptionLabel": "اشتراك Push"
   },
   "publicWidgets": {
     "common": {
@@ -18412,6 +18417,14 @@
       "sale20": "خصم 20%",
       "upgrade": "ترقية مجانية",
       "tryAgain": "حاولوا مرة أخرى"
+    },
+    "demo": {
+      "sandboxMessage": "رسالة تجريبية"
+    },
+    "templates": {
+      "defaultCategory": "قالب موقع",
+      "defaultHeroTitle": "موقع أعمال جاهز",
+      "defaultHeroSubtitle": "قالب موقع جاهز للتحرير بالكامل."
     }
   }
 }

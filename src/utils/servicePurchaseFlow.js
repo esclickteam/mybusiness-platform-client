@@ -1,3 +1,5 @@
+import i18n from "../i18n/i18n";
+
 const ACTIVE_PLAN_KEYS = new Set(["monthly", "yearly", "website"]);
 const PAID_STATUSES = new Set(["active", "paid", "valid"]);
 
@@ -101,11 +103,7 @@ export function getActivePricingPlan(user) {
     name:
       user.subscriptionPlanName ||
       user.planName ||
-      (key === "monthly"
-        ? "חבילה עסקית חודשית"
-        : key === "yearly"
-          ? "חבילה עסקית שנתית"
-          : "בניית אתר בלבד"),
+      i18n.t(`billing.planNames.${key}`),
     nextRenewal: accessEnd,
   };
 }

@@ -1,4 +1,5 @@
 import API from "@api";
+import i18n from "../i18n/i18n";
 
 export const PUSH_BILLING_API_CODES = {
   ENTITLEMENT_REQUIRED: "PUSH_ENTITLEMENT_REQUIRED",
@@ -79,9 +80,9 @@ export function pushPlanAmountIls(plan: PushBillingPlan | null | undefined): num
 }
 
 export function pushPlanLabelHe(plan: PushBillingPlan | null | undefined): string {
-  if (plan === "monthly") return "חודשי";
-  if (plan === "annual") return "שנתי";
-  return "מנוי Push";
+  if (plan === "monthly") return i18n.t("billing.plans.monthly");
+  if (plan === "annual") return i18n.t("billing.plans.yearly");
+  return i18n.t("push.subscriptionLabel");
 }
 
 export async function getPushBillingStatus(): Promise<PushBillingStatus> {

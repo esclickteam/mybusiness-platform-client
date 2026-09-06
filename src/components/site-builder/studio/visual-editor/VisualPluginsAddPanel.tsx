@@ -127,8 +127,7 @@ export default function VisualPluginsAddPanel({
 
         if (plugin.key === "announcement-bar") {
           if (!String(nextSettings.message || "").trim()) {
-            nextSettings.message =
-              "משלוח חינם בהזמנות מעל 300 ₪ — לפרטים לחצו כאן";
+            nextSettings.message = t("studio.pluginsAdd.announcementDefault");
           }
           if (!String(nextSettings.backgroundColor || "").trim()) {
             nextSettings.backgroundColor = "#0F172A";
