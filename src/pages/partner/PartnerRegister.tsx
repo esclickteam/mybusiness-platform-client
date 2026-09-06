@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import AuthShell, { AuthCard } from "../../components/auth/AuthShell";
 import { fetchPartnerPlans, registerPartner } from "../../lib/partnerApi";
 import type { PartnerPlan } from "../../types/partner";
+import { getTextDirection } from "../../i18n/localeUtils";
 
 export default function PartnerRegister() {
+  const { t, i18n } = useTranslation();
+  const formDir = getTextDirection(i18n.language);
   const navigate = useNavigate();
   const [plans, setPlans] = useState<PartnerPlan[]>([]);
   const [error, setError] = useState("");
@@ -27,39 +31,39 @@ export default function PartnerRegister() {
       await registerPartner(form);
       navigate("/login", { replace: true });
     } catch (err: any) {
-      setError(err.response?.data?.error || "שגיאה ברישום");
+      setError(err.response?.data?.error || t("partner.errors.register"));
     }
   }
 
   return (
     <AuthShell>
-      <AuthCard title="הרשמת פרטנר" subtitle="Staging בלבד — בלי Stripe LIVE">
-        <form onSubmit={submit} className="space-y-3" dir="rtl">
+      <AuthCard title={t("partner.register.title")} subtitle={t("partner.register.stagingOnly")}>
+        <form onSubmit={submit} className="space-y-3" dir={formDir}>
           {error ? <p className="text-sm font-bold text-rose-600">{error}</p> : null}
           <input
             value={form.name}
             onChange={(e) => setForm({ ...form, name: e.target.value })}
-            placeholder="שם מלא"
+            placeholder={t("partner.register.fullName")}
             className="w-full rounded-xl border border-slate-200 px-3 py-2"
           />
           <input
             value={form.businessName}
             onChange={(e) => setForm({ ...form, businessName: e.target.value })}
-            placeholder="שם העסק / המותג"
+            placeholder={t("partner.register.brandName")}
             className="w-full rounded-xl border border-slate-200 px-3 py-2"
           />
           <input
             type="email"
             value={form.email}
             onChange={(e) => setForm({ ...form, email: e.target.value })}
-            placeholder="אימייל"
+            placeholder={t("partner.email")}
             className="w-full rounded-xl border border-slate-200 px-3 py-2"
           />
           <input
             type="password"
             value={form.password}
             onChange={(e) => setForm({ ...form, password: e.target.value })}
-            placeholder="סיסמה"
+            placeholder={t("common.password")}
             className="w-full rounded-xl border border-slate-200 px-3 py-2"
           />
           <div className="grid gap-2">
@@ -73,16 +77,24 @@ export default function PartnerRegister() {
                 />{" "}
                 <strong>{plan.nameHe}</strong>
                 {plan.commissionModel === "percent_of_sale" || plan.planKey === "partner_percent"
-                  ? ` · חינם · ${Math.round((plan.saleCommissionRate || 0.15) * 100)}% מכל עסקה · צוות ${plan.additionalTeamUsers}`
-                  : ` · הקמה ₪${plan.setupIls} · חודשי ₪${plan.monthlyIls} · חלק עמלה ${Math.round(plan.partnerMarkupShare * 100)}% · צוות ${plan.additionalTeamUsers}`}
+                  ? ` · ${t("partner.register.freePlan", {
+                      percent: Math.round((plan.saleCommissionRate || 0.15) * 100),
+                      team: plan.additionalTeamUsers,
+                    })}`
+                  : ` · ${t("partner.register.paidPlan", {
+                      setup: plan.setupIls,
+                      monthly: plan.monthlyIls,
+                      share: Math.round(plan.partnerMarkupShare * 100),
+                      team: plan.additionalTeamUsers,
+                    })}`}
               </label>
             ))}
           </div>
           <button type="submit" className="w-full rounded-xl bg-slate-900 py-2 font-black text-white">
-            יצירת חשבון
+            {t("partner.register.createAccount")}
           </button>
           <p className="text-center text-sm">
-            כבר רשומים? <Link to="/login">התחברות</Link>
+            {t("partner.register.alreadyRegistered")} <Link to="/login">{t("partner.register.signIn")}</Link>
           </p>
         </form>
       </AuthCard>

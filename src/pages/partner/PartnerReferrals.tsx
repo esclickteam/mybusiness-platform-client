@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   fetchPartnerReferrals,
   partnerApiError,
@@ -13,8 +14,12 @@ import {
   PartnerPrimaryButton,
   PartnerTextarea,
 } from "../../components/partner/partnerUi";
+import { formatPartnerDate } from "../../lib/partnerWork";
+import { getIntlLocale } from "../../i18n/localeUtils";
 
 export default function PartnerReferrals() {
+  const { t, i18n } = useTranslation();
+  const locale = getIntlLocale(i18n.language);
   const [items, setItems] = useState<any[]>([]);
   const [error, setError] = useState("");
   const [saved, setSaved] = useState("");
@@ -31,12 +36,13 @@ export default function PartnerReferrals() {
   function load() {
     fetchPartnerReferrals()
       .then((data) => setItems(data.items || []))
-      .catch((err) => setError(partnerApiError(err, "שגיאה בטעינת הפניות")));
+      .catch((err) => setError(partnerApiError(err, t("partner.errors.referrals"))));
   }
 
   useEffect(() => {
     load();
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [t]);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -53,10 +59,10 @@ export default function PartnerReferrals() {
         referredIndustry: "",
         notes: "",
       });
-      setSaved("ההפניה נשלחה. עצם מילוי הטופס לא מזכה בעמלה.");
+      setSaved(t("partner.referrals.sent"));
       load();
     } catch (err: unknown) {
-      setError(partnerApiError(err, "לא ניתן לשלוח הפניה"));
+      setError(partnerApiError(err, t("partner.errors.sendReferral")));
     } finally {
       setSaving(false);
     }
@@ -72,32 +78,34 @@ export default function PartnerReferrals() {
   return (
     <div className="space-y-5">
       <PartnerPageHeader
-        eyebrow="צירוף פרטנר"
-        title="צירוף פרטנר"
-        subtitle="מכירים בעל עסק או נותן שירות שמתאים למסלול הפרטנרים של Bizuply?"
+        eyebrow={t("partner.referrals.title")}
+        title={t("partner.referrals.title")}
+        subtitle={t("partner.referrals.intro")}
       />
       {error ? <p className="text-sm font-bold text-rose-700">{error}</p> : null}
       <PartnerCard className="space-y-3 p-6 text-sm font-bold leading-6 text-slate-600">
-        <p>הפנו אותו אלינו. אם הוא מצטרף, רוכש חבילת פרטנר בתשלום, ונשאר פעיל מעל 40 ימים – תקבלו עמלה חד-פעמית של ₪500.</p>
+        <p>{t("partner.referrals.rules")}</p>
         <ul className="list-disc pr-5">
-          <li>התגמול חד-פעמי.</li>
-          <li>הוא משולם רק אם הפרטנר המצורף רוכש חבילה בתשלום (לא מסלול אחוזים בלבד).</li>
-          <li>אחרי הרכישה הוא צריך להישאר פעיל מעל 40 ימים.</li>
-          <li>עצם מילוי הטופס לא מזכה בעמלה.</li>
-          <li>ההצטרפות כפופה לאישור Bizuply.</li>
-          <li>אין עמלה אם ההצטרפות בוטלה/הושעתה לפני מועד הזכאות.</li>
+          <li>{t("partner.referrals.oneTime")}</li>
+          <li>{t("partner.referrals.paidOnly")}</li>
+          <li>{t("partner.referrals.fortyDays")}</li>
+          <li>{t("partner.referrals.formNotEnough")}</li>
+          <li>{t("partner.referrals.approval")}</li>
+          <li>{t("partner.referrals.cancelled")}</li>
         </ul>
       </PartnerCard>
 
       {awaitingPaid.length ? (
         <PartnerCard className="space-y-3 border border-amber-200 bg-amber-50 p-5">
           <p className="text-xs font-black uppercase tracking-[0.16em] text-amber-800">
-            ממתין לרכישת חבילה בתשלום
+            {t("partner.referrals.waitingPaid")}
           </p>
           <ul className="space-y-2">
             {awaitingPaid.map((row) => (
               <li key={row._id} className="text-sm font-black text-slate-800">
-                {row.referredName || "פרטנר שהופנה"} — ₪500 ישולם רק אחרי רכישת Partner / Pro / Premium
+                {t("partner.referrals.awaitingPaidItem", {
+                  name: row.referredName || t("partner.referrals.referred"),
+                })}
               </li>
             ))}
           </ul>
@@ -106,13 +114,16 @@ export default function PartnerReferrals() {
       {qualifying.length ? (
         <PartnerCard className="space-y-3 border border-violet-200 bg-violet-50 p-5">
           <p className="text-xs font-black uppercase tracking-[0.16em] text-violet-800">
-            מעקב 40 יום אחרי רכישת חבילה בתשלום – ₪500
+            {t("partner.referrals.track40")}
           </p>
           <ul className="space-y-2">
             {qualifying.map((row) => (
               <li key={row._id} className="text-sm font-black text-slate-800">
-                {row.referredName || "פרטנר שהופנה"} — יום {row.daysActive ?? 0} מתוך{" "}
-                {row.qualificationDays || 40}
+                {row.referredName || t("partner.referrals.referred")} —{" "}
+                {t("partner.dashboard.referralDay", {
+                  current: row.daysActive ?? 0,
+                  total: row.qualificationDays || 40,
+                })}
               </li>
             ))}
           </ul>
@@ -121,16 +132,16 @@ export default function PartnerReferrals() {
 
       <PartnerCard className="overflow-x-auto">
         <div className="border-b border-slate-100 px-4 py-3">
-          <h2 className="text-lg font-black">מעקב הפניות</h2>
-          <p className="text-xs font-bold text-slate-500">סטטוס 40 ימי הפעילות והתגמול החד-פעמי.</p>
+          <h2 className="text-lg font-black">{t("partner.referrals.tracking")}</h2>
+          <p className="text-xs font-bold text-slate-500">{t("partner.referrals.trackingHint")}</p>
         </div>
         <table className="min-w-full text-right text-sm">
           <thead className="bg-slate-50 text-xs font-black text-slate-500">
             <tr>
-              <th className="px-3 py-3">פרטנר שהופנה</th>
-              <th className="px-3 py-3">תאריך</th>
-              <th className="px-3 py-3">סטטוס</th>
-              <th className="px-3 py-3">תגמול</th>
+              <th className="px-3 py-3">{t("partner.referrals.referred")}</th>
+              <th className="px-3 py-3">{t("partner.date")}</th>
+              <th className="px-3 py-3">{t("common.status")}</th>
+              <th className="px-3 py-3">{t("partner.referrals.reward")}</th>
             </tr>
           </thead>
           <tbody>
@@ -140,14 +151,15 @@ export default function PartnerReferrals() {
                   {row.referredName}
                   <span className="block text-xs text-slate-500">{row.referredBusinessName}</span>
                 </td>
+                <td className="px-3 py-3">{formatPartnerDate(row.createdAt, locale)}</td>
                 <td className="px-3 py-3">
-                  {row.createdAt ? new Date(row.createdAt).toLocaleDateString("he-IL") : "—"}
-                </td>
-                <td className="px-3 py-3">
-                  {partnerStatusLabel(row.status)}
+                  {partnerStatusLabel(row.status, t)}
                   {row.qualificationStartDate && row.rewardStatus === "pending" ? (
                     <span className="block text-xs text-slate-500">
-                      פעיל – יום {row.daysActive} מתוך {row.qualificationDays || 40}
+                      {t("partner.referrals.activeDay", {
+                        current: row.daysActive,
+                        total: row.qualificationDays || 40,
+                      })}
                     </span>
                   ) : null}
                 </td>
@@ -156,14 +168,14 @@ export default function PartnerReferrals() {
                     ? "—"
                     : row.rewardStatus === "eligible" || row.rewardStatus === "approved" || row.rewardStatus === "paid"
                       ? formatIls(row.rewardAmount || 500)
-                      : "ממתינה לזכאות"}
+                      : t("partner.referrals.pendingEligibility")}
                 </td>
               </tr>
             ))}
             {!items.length ? (
               <tr>
                 <td colSpan={4} className="px-3 py-8 text-center text-slate-400">
-                  אין הפניות עדיין
+                  {t("partner.referrals.empty")}
                 </td>
               </tr>
             ) : null}
@@ -173,11 +185,11 @@ export default function PartnerReferrals() {
 
       <form onSubmit={submit}>
         <PartnerCard className="space-y-4 p-6">
-          <h2 className="text-lg font-black">טופס צירוף</h2>
+          <h2 className="text-lg font-black">{t("partner.referrals.formTitle")}</h2>
           {saved ? <p className="text-sm font-bold text-emerald-700">{saved}</p> : null}
           <div className="grid gap-3 sm:grid-cols-2">
             <label className="text-sm font-black">
-              שם מלא
+              {t("partner.referrals.fullName")}
               <PartnerInput
                 required
                 className="mt-1"
@@ -186,7 +198,7 @@ export default function PartnerReferrals() {
               />
             </label>
             <label className="text-sm font-black">
-              שם העסק
+              {t("partner.referrals.businessName")}
               <PartnerInput
                 required
                 className="mt-1"
@@ -195,7 +207,7 @@ export default function PartnerReferrals() {
               />
             </label>
             <label className="text-sm font-black">
-              טלפון
+              {t("partner.phone")}
               <PartnerInput
                 className="mt-1"
                 value={form.referredPhone}
@@ -203,7 +215,7 @@ export default function PartnerReferrals() {
               />
             </label>
             <label className="text-sm font-black">
-              אימייל
+              {t("partner.email")}
               <PartnerInput
                 required
                 type="email"
@@ -214,7 +226,7 @@ export default function PartnerReferrals() {
             </label>
           </div>
           <label className="block text-sm font-black">
-            תחום פעילות
+            {t("partner.referrals.field")}
             <PartnerInput
               className="mt-1"
               value={form.referredIndustry}
@@ -222,7 +234,7 @@ export default function PartnerReferrals() {
             />
           </label>
           <label className="block text-sm font-black">
-            הערה (אופציונלי)
+            {t("partner.referrals.noteOptional")}
             <PartnerTextarea
               className="mt-1"
               value={form.notes}
@@ -230,7 +242,7 @@ export default function PartnerReferrals() {
             />
           </label>
           <PartnerPrimaryButton type="submit" disabled={saving}>
-            {saving ? "שולח..." : "שליחת הפניה"}
+            {saving ? t("partner.referrals.sending") : t("partner.referrals.send")}
           </PartnerPrimaryButton>
         </PartnerCard>
       </form>

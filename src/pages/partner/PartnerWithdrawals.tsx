@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   fetchPartnerWithdrawals,
   partnerApiError,
@@ -7,17 +8,21 @@ import {
 } from "../../lib/partnerApi";
 import { formatIls } from "../../lib/partnerMoney";
 import PartnerPageHeader from "../../components/partner/PartnerPageHeader";
+import { formatPartnerDate } from "../../lib/partnerWork";
+import { getIntlLocale } from "../../i18n/localeUtils";
 
-const STATUS_HE: Record<string, string> = {
-  submitted: "נשלחה",
-  under_review: "בבדיקה",
-  approved: "מאושרת",
-  rejected: "נדחתה",
-  paid: "שולמה",
-  cancelled: "בוטלה",
+const STATUS_KEY: Record<string, string> = {
+  submitted: "submitted",
+  under_review: "review",
+  approved: "approved",
+  rejected: "rejected",
+  paid: "paid",
+  cancelled: "cancelled",
 };
 
 export default function PartnerWithdrawals() {
+  const { t, i18n } = useTranslation();
+  const locale = getIntlLocale(i18n.language);
   const [items, setItems] = useState<any[]>([]);
   const [balances, setBalances] = useState<any>(null);
   const [cycle, setCycle] = useState<any>(null);
@@ -39,13 +44,13 @@ export default function PartnerWithdrawals() {
   }
 
   useEffect(() => {
-    refresh().catch((err) => setError(partnerApiError(err, "שגיאה בטעינת משיכות")));
+    refresh().catch((err) => setError(partnerApiError(err, t("partner.errors.withdrawals"))));
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [t]);
 
   async function submit() {
     if (!file) {
-      setError("יש לצרף קבלה");
+      setError(t("partner.errors.receiptRequired"));
       return;
     }
     setSaving(true);
@@ -61,7 +66,7 @@ export default function PartnerWithdrawals() {
       setReceiptNumber("");
       await refresh();
     } catch (err: unknown) {
-      setError(partnerApiError(err, "לא ניתן לשלוח בקשה"));
+      setError(partnerApiError(err, t("partner.errors.sendRequest")));
     } finally {
       setSaving(false);
     }
@@ -70,23 +75,28 @@ export default function PartnerWithdrawals() {
   const kycBlocked = kyc && kyc.approved === false;
   const canSubmit = Boolean(file && receiptNumber.trim() && Number(amount) > 0 && !kycBlocked);
 
+  function statusLabel(status: string) {
+    const key = STATUS_KEY[status] || status;
+    return t(`partner.withdrawals.status.${key}`, { defaultValue: status });
+  }
+
   return (
     <div className="space-y-5">
       <PartnerPageHeader
-        eyebrow="משיכת עמלות"
-        title="בקשת משיכה"
-        subtitle="ניתן לשלוח בקשת משיכה עד ה-20 לכל חודש. העמלה תיכנס עד ה-1 לכל חודש. כל בקשה לאחר ה-20 תיכנס לחודש העוקב."
+        eyebrow={t("partner.withdrawals.title")}
+        title={t("partner.withdrawals.requestTitle")}
+        subtitle={t("partner.withdrawals.policy")}
       />
       <p className="rounded-2xl border border-slate-100 bg-white px-4 py-3 text-sm font-bold text-slate-600">
-        לפני משיכה ודאו שפרטי חשבון הבנק, הת״ז והמסמכים מעודכנים ב{" "}
+        {t("partner.withdrawals.settingsReminder")}{" "}
         <Link to="/partner/dashboard/settings" className="font-black text-violet-700">
-          הגדרות פרטנר
+          {t("partner.settings.subtitle")}
         </Link>
         .
       </p>
       {kycBlocked ? (
         <p className="rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm font-black text-amber-900">
-          יש להשלים ולאשר את פרטי הזיהוי והבנק לפני שניתן למשוך עמלות.
+          {t("partner.withdrawals.completeKyc")}
         </p>
       ) : null}
       {cycle?.copy ? (
@@ -95,24 +105,24 @@ export default function PartnerWithdrawals() {
         </p>
       ) : null}
       <section className="grid gap-3 sm:grid-cols-3">
-        <Kpi label="בקשות עד" value="ה-20 בחודש" />
-        <Kpi label="העמלה נכנסת עד" value="ה-1 בחודש" />
-        <Kpi label="אחרי ה-20" value="עובר לחודש הבא" />
+        <Kpi label={t("partner.withdrawals.requestsUntil")} value={t("partner.withdrawals.twentieth")} />
+        <Kpi label={t("partner.withdrawals.paidBy")} value={t("partner.withdrawals.first")} />
+        <Kpi label={t("partner.withdrawals.afterTwentieth")} value={t("partner.withdrawals.nextMonth")} />
       </section>
       {error ? <p className="font-black text-rose-700">{error}</p> : null}
 
       <section className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <Kpi label="יתרה זמינה למשיכה" value={formatIls(balances?.eligible)} />
-        <Kpi label="עמלה ממתינה" value={formatIls(balances?.pending)} />
-        <Kpi label="בבקשות משיכה" value={formatIls(balances?.requested)} />
-        <Kpi label="שולמה" value={formatIls(balances?.paid)} />
+        <Kpi label={t("partner.withdrawals.available")} value={formatIls(balances?.eligible)} />
+        <Kpi label={t("partner.withdrawals.pending")} value={formatIls(balances?.pending)} />
+        <Kpi label={t("partner.withdrawals.inRequests")} value={formatIls(balances?.requested)} />
+        <Kpi label={t("partner.withdrawals.status.paid")} value={formatIls(balances?.paid)} />
       </section>
 
       <section className="rounded-[16px] border border-slate-100 bg-white p-5 shadow-[0_4px_20px_rgba(15,23,42,0.05)]">
-        <h3 className="mb-4 font-black">בקשת משיכה</h3>
+        <h3 className="mb-4 font-black">{t("partner.withdrawals.requestTitle")}</h3>
         <div className="grid gap-3 sm:grid-cols-2">
           <label className="text-sm font-black">
-            סכום
+            {t("partner.withdrawals.amount")}
             <input
               type="number"
               min={0}
@@ -122,7 +132,7 @@ export default function PartnerWithdrawals() {
             />
           </label>
           <label className="text-sm font-black">
-            מספר קבלה
+            {t("partner.withdrawals.receiptNumber")}
             <input
               value={receiptNumber}
               onChange={(e) => setReceiptNumber(e.target.value)}
@@ -130,7 +140,7 @@ export default function PartnerWithdrawals() {
             />
           </label>
           <label className="text-sm font-black">
-            סכום בקבלה
+            {t("partner.withdrawals.receiptAmount")}
             <input
               type="number"
               value={receiptAmount}
@@ -139,7 +149,7 @@ export default function PartnerWithdrawals() {
             />
           </label>
           <label className="text-sm font-black">
-            קבלה (PDF / JPG / PNG)
+            {t("partner.withdrawals.receiptFile")}
             <input
               type="file"
               accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"
@@ -154,7 +164,7 @@ export default function PartnerWithdrawals() {
           onClick={submit}
           className="mt-4 rounded-2xl bg-slate-900 px-4 py-2 text-sm font-black text-white disabled:opacity-50"
         >
-          {saving ? "שולח..." : "בקשת משיכה"}
+          {saving ? t("partner.withdrawals.sending") : t("partner.withdrawals.requestTitle")}
         </button>
       </section>
 
@@ -162,43 +172,35 @@ export default function PartnerWithdrawals() {
         <table className="min-w-full text-right text-sm">
           <thead className="bg-slate-50 text-xs font-black text-slate-500">
             <tr>
-              <th className="px-3 py-3">מספר בקשה</th>
-              <th className="px-3 py-3">תאריך</th>
-              <th className="px-3 py-3">סכום</th>
-              <th className="px-3 py-3">קבלה</th>
-              <th className="px-3 py-3">תשלום צפוי</th>
-              <th className="px-3 py-3">סטטוס</th>
-              <th className="px-3 py-3">משוב</th>
-              <th className="px-3 py-3">תאריך תשלום</th>
-              <th className="px-3 py-3">אסמכתא</th>
+              <th className="px-3 py-3">{t("partner.withdrawals.requestNumber")}</th>
+              <th className="px-3 py-3">{t("partner.date")}</th>
+              <th className="px-3 py-3">{t("partner.withdrawals.amount")}</th>
+              <th className="px-3 py-3">{t("partner.withdrawals.receipt")}</th>
+              <th className="px-3 py-3">{t("partner.withdrawals.expectedPayment")}</th>
+              <th className="px-3 py-3">{t("common.status")}</th>
+              <th className="px-3 py-3">{t("partner.withdrawals.feedback")}</th>
+              <th className="px-3 py-3">{t("partner.withdrawals.paidAt")}</th>
+              <th className="px-3 py-3">{t("partner.withdrawals.reference")}</th>
             </tr>
           </thead>
           <tbody>
             {items.map((row) => (
               <tr key={row._id} className="border-t">
                 <td className="px-3 py-3 font-black">{row.requestNumber}</td>
-                <td className="px-3 py-3">
-                  {row.submittedAt ? new Date(row.submittedAt).toLocaleDateString("he-IL") : "—"}
-                </td>
+                <td className="px-3 py-3">{formatPartnerDate(row.submittedAt, locale)}</td>
                 <td className="px-3 py-3">{formatIls(row.amount)}</td>
                 <td className="px-3 py-3">{row.receiptNumber}</td>
-                <td className="px-3 py-3">
-                  {row.expectedPaymentBy
-                    ? new Date(row.expectedPaymentBy).toLocaleDateString("he-IL")
-                    : "—"}
-                </td>
-                <td className="px-3 py-3">{STATUS_HE[row.status] || row.status}</td>
+                <td className="px-3 py-3">{formatPartnerDate(row.expectedPaymentBy, locale)}</td>
+                <td className="px-3 py-3">{statusLabel(row.status)}</td>
                 <td className="px-3 py-3">{row.adminFeedback || "—"}</td>
-                <td className="px-3 py-3">
-                  {row.paidAt ? new Date(row.paidAt).toLocaleDateString("he-IL") : "—"}
-                </td>
+                <td className="px-3 py-3">{formatPartnerDate(row.paidAt, locale)}</td>
                 <td className="px-3 py-3">{row.paymentReference || "—"}</td>
               </tr>
             ))}
             {!items.length ? (
               <tr>
                 <td colSpan={9} className="px-3 py-8 text-center font-bold text-slate-400">
-                  אין עדיין בקשות משיכה
+                  {t("partner.withdrawals.empty")}
                 </td>
               </tr>
             ) : null}

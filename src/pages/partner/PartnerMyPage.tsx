@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   fetchPartnerBranding,
   fetchPartnerMe,
@@ -15,6 +16,7 @@ import {
 } from "../../components/partner/partnerUi";
 
 export default function PartnerMyPage() {
+  const { t } = useTranslation();
   const [personalUrl, setPersonalUrl] = useState("");
   const [plansUrl, setPlansUrl] = useState("");
   const [error, setError] = useState("");
@@ -43,8 +45,8 @@ export default function PartnerMyPage() {
           pricebook.filter((row) => row.enabledInStorefront || row.visibleOnSalesPage).length
         );
       })
-      .catch((err) => setError(partnerApiError(err, "שגיאה בטעינת העמוד")));
-  }, []);
+      .catch((err) => setError(partnerApiError(err, t("partner.errors.page"))));
+  }, [t]);
 
   async function copy(url: string, key: string) {
     try {
@@ -52,26 +54,26 @@ export default function PartnerMyPage() {
       setCopied(key);
       setTimeout(() => setCopied(""), 2000);
     } catch {
-      setError("לא ניתן להעתיק");
+      setError(t("partner.errors.copy"));
     }
   }
 
   return (
     <div className="space-y-5">
       <PartnerPageHeader
-        eyebrow="העמוד שלי"
-        title="הקישור האישי שלי"
-        subtitle="שלחו ללקוחות את עמוד החבילות. רכישה עצמאית משויכת אליכם אוטומטית."
+        eyebrow={t("partner.myPage.title")}
+        title={t("partner.myPage.personalLink")}
+        subtitle={t("partner.myPage.intro")}
       />
 
       {error ? <p className="rounded-2xl bg-rose-50 px-4 py-3 text-sm font-bold text-rose-700">{error}</p> : null}
 
       <PartnerCard className="space-y-4 p-6">
-        <h2 className="text-lg font-black">הקישור האישי שלי</h2>
+        <h2 className="text-lg font-black">{t("partner.myPage.personalLink")}</h2>
         <p className="break-all text-sm font-bold text-violet-700">{personalUrl}</p>
         <div className="flex flex-wrap gap-2">
           <PartnerPrimaryButton type="button" onClick={() => copy(personalUrl, "home")}>
-            {copied === "home" ? "הועתק" : "Copy"}
+            {copied === "home" ? t("partner.copied") : t("partner.copy")}
           </PartnerPrimaryButton>
           <a
             href={personalUrl}
@@ -79,7 +81,7 @@ export default function PartnerMyPage() {
             rel="noreferrer"
             className="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-600 shadow-sm"
           >
-            Open
+            {t("partner.open")}
           </a>
           <a
             href={plansUrl}
@@ -87,34 +89,31 @@ export default function PartnerMyPage() {
             rel="noreferrer"
             className="inline-flex items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-600 shadow-sm"
           >
-            עמוד חבילות
+            {t("partner.myPage.plansPage")}
           </a>
           <PartnerGhostButton type="button" onClick={() => copy(plansUrl, "plans")}>
-            {copied === "plans" ? "הועתק" : "העתק עמוד חבילות"}
+            {copied === "plans" ? t("partner.copied") : t("partner.myPage.copyPlans")}
           </PartnerGhostButton>
         </div>
-        <p className="text-xs font-bold text-slate-500">
-          קטלוג ציבורי להצגת מוצרים ושירותים. רכישה מתבצעת מול הפרטנר, או בעמוד החבילות אם הלקוח משלם אונליין.
-          קישור /p/slug נשאר זמין כגיבוי.
-        </p>
+        <p className="text-xs font-bold text-slate-500">{t("partner.myPage.catalogHint")}</p>
         {salesCount === 0 ? (
           <p className="rounded-2xl bg-amber-50 px-4 py-3 text-sm font-bold text-amber-800">
-            אין חבילות בעמוד המכירה. הפעילו לפחות מוצר אחד במוצרים וחבילות עם הסימון הצג בעמוד המכירה.
+            {t("partner.myPage.noSaleItems")}
           </p>
         ) : salesCount != null ? (
           <p className="text-xs font-bold text-emerald-700">
-            {salesCount} חבילות מוצגות לרכישה עצמאית בעמוד החבילות.
+            {t("partner.myPage.salesCount", { count: salesCount })}
           </p>
         ) : null}
         <div className="flex flex-wrap gap-3">
           <Link to="/partner/dashboard/pricing" className="text-sm font-black text-violet-700">
-            מוצרים וחבילות
+            {t("partner.myPage.products")}
           </Link>
           <Link to="/partner/dashboard/storefront" className="text-sm font-black text-violet-700">
-            הגדרות קטלוג מוצרים
+            {t("partner.myPage.catalogSettings")}
           </Link>
           <Link to="/partner/dashboard/settings" className="text-sm font-black text-violet-700">
-            מיתוג וכתובת אישית
+            {t("partner.myPage.branding")}
           </Link>
         </div>
       </PartnerCard>

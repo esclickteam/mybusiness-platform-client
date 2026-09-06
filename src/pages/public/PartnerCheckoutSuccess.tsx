@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   fetchPublicCheckoutStatus,
   fetchPublicPartnerBranding,
@@ -16,6 +17,7 @@ function checkoutSettled(payload: { paid?: boolean; activationStatus?: string } 
 }
 
 export default function PartnerCheckoutSuccess() {
+  const { t } = useTranslation();
   const { slug: slugParam } = useParams();
   const [params] = useSearchParams();
   const slugFromQuery = (params.get("slug") || "").trim();
@@ -50,7 +52,7 @@ export default function PartnerCheckoutSuccess() {
   useEffect(() => {
     if (awaitingHostSlug) return;
     if (!slug || !sessionId) {
-      setError("הזמנה לא נמצאה");
+      setError(t("partner.errors.orderNotFound"));
       return;
     }
     let cancelled = false;
@@ -67,57 +69,57 @@ export default function PartnerCheckoutSuccess() {
           setData(payload);
         }
       } catch (err: unknown) {
-        if (!cancelled) setError(partnerApiError(err, "לא ניתן לטעון את סטטוס ההזמנה"));
+        if (!cancelled) setError(partnerApiError(err, t("partner.errors.orderStatus")));
       }
     })();
     return () => {
       cancelled = true;
     };
-  }, [slug, sessionId, awaitingHostSlug]);
+  }, [slug, sessionId, awaitingHostSlug, t]);
 
   const activation = data?.activationStatus;
   const paid = Boolean(data?.paid);
 
   return (
-    <PublicPartnerShell branding={data?.branding || hostBranding} title="הרכישה התקבלה" noIndex>
+    <PublicPartnerShell branding={data?.branding || hostBranding} title={t("partner.public.purchaseReceived")} noIndex>
       {error ? <p className="font-black text-rose-700">{error}</p> : null}
       {!error && (awaitingHostSlug || !data) ? (
-        <p className="font-bold text-slate-500">בודקים את ההזמנה...</p>
+        <p className="font-bold text-slate-500">{t("partner.public.checkingOrder")}</p>
       ) : null}
       {data ? (
         <div className="space-y-4 rounded-3xl bg-white p-6 shadow-sm">
           {paid && activation === "active" && data.welcomeEmailSent ? (
             <>
-              <h1 className="text-2xl font-black">החשבון שלך מוכן. פרטי הכניסה נשלחו אליך.</h1>
-              <p className="font-bold text-slate-600">עסקה {data.dealNumber}</p>
+              <h1 className="text-2xl font-black">{t("partner.public.accountReadySent")}</h1>
+              <p className="font-bold text-slate-600">{t("partner.public.dealNumber", { number: data.dealNumber })}</p>
               <a href="/login" className="inline-block font-black text-[#7C4DFF]">
-                התחברות לחשבון
+                {t("partner.public.loginAccount")}
               </a>
             </>
           ) : paid && activation === "active" ? (
             <>
-              <h1 className="text-2xl font-black">החשבון שלך מוכן.</h1>
+              <h1 className="text-2xl font-black">{t("partner.public.accountReady")}</h1>
               <p className="font-bold text-slate-600">
-                אם לא קיבלת מייל עם פרטי כניסה, פנו לפרטנר. עסקה {data.dealNumber}
+                {t("partner.public.noWelcomeEmail", { number: data.dealNumber })}
               </p>
               <a href="/login" className="inline-block font-black text-[#7C4DFF]">
-                התחברות לחשבון
+                {t("partner.public.loginAccount")}
               </a>
             </>
           ) : paid && (activation === "pending" || activation === "processing") ? (
             <>
-              <h1 className="text-2xl font-black">התשלום התקבל והחשבון שלך נמצא בהקמה.</h1>
-              <p className="font-bold text-slate-600">נעדכן ברגע שהחשבון יהיה מוכן.</p>
+              <h1 className="text-2xl font-black">{t("partner.public.provisioning")}</h1>
+              <p className="font-bold text-slate-600">{t("partner.public.weWillUpdate")}</p>
             </>
           ) : paid ? (
             <>
-              <h1 className="text-2xl font-black">התשלום התקבל.</h1>
+              <h1 className="text-2xl font-black">{t("partner.public.paymentReceived")}</h1>
               <p className="font-bold text-amber-800">
-                החשבון עדיין דורש טיפול: {partnerStatusLabel(activation)}. צוות הפרטנר יטפל בהפעלה.
+                {t("partner.public.needsAttention", { status: partnerStatusLabel(activation, t) })}
               </p>
             </>
           ) : (
-            <h1 className="text-2xl font-black">ממתינים לאישור התשלום.</h1>
+            <h1 className="text-2xl font-black">{t("partner.public.waitingPaymentConfirm")}</h1>
           )}
         </div>
       ) : null}

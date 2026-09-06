@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Navigate, useParams, useSearchParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   fetchPublicPartnerBranding,
   fetchPublicPartnerPlans,
@@ -7,12 +8,18 @@ import {
   startPublicPartnerCheckout,
 } from "../../lib/partnerApi";
 import { formatPublicCustomerPrice } from "../../lib/partnerMoney";
-import { billingLabel } from "../../lib/partnerDealMath";
 import PublicPartnerShell from "../../components/partner/PublicPartnerShell";
 import { isPartnerWhiteLabelHostname } from "../../lib/partnerHost.mjs";
 import { partnerFacingName, type PublicPartnerBranding } from "../../lib/partnerBranding";
 
+function billingKey(billing?: string) {
+  if (billing === "recurring_month") return "partner.billing.monthly";
+  if (billing === "recurring_year") return "partner.billing.annual";
+  return "partner.billing.oneTime";
+}
+
 export default function PartnerPublicPlans() {
+  const { t } = useTranslation();
   const { slug: slugParam } = useParams();
   const [params] = useSearchParams();
   const [slug, setSlug] = useState(slugParam || "");
@@ -43,7 +50,7 @@ export default function PartnerPublicPlans() {
           if (!cancelled) {
             if (!slugParam && !isPartnerWhiteLabelHostname(window.location.hostname)) {
               setFallbackToPricing(true);
-            } else setError("עמוד החבילות לא נמצא");
+            } else setError(t("partner.errors.plansNotFound"));
           }
           return;
         }
@@ -59,14 +66,14 @@ export default function PartnerPublicPlans() {
         if (!cancelled) {
           if (!slugParam && !isPartnerWhiteLabelHostname(window.location.hostname)) {
             setFallbackToPricing(true);
-          } else setError(partnerApiError(err, "עמוד החבילות לא נמצא"));
+          } else setError(partnerApiError(err, t("partner.errors.plansNotFound")));
         }
       }
     })();
     return () => {
       cancelled = true;
     };
-  }, [slugParam]);
+  }, [slugParam, t]);
 
   async function buy(e: React.FormEvent) {
     e.preventDefault();
@@ -77,7 +84,7 @@ export default function PartnerPublicPlans() {
       const data = await startPublicPartnerCheckout(slug, { sku, ...contact });
       if (data.url) window.location.href = data.url;
     } catch (err: unknown) {
-      setError(partnerApiError(err, "לא ניתן לפתוח תשלום"));
+      setError(partnerApiError(err, t("partner.errors.openPayment")));
       setBuying("");
     }
   }
@@ -89,20 +96,19 @@ export default function PartnerPublicPlans() {
   const products = page?.products || [];
   const selected = products.find((item: any) => item.sku === sku);
   const host = typeof window !== "undefined" ? window.location.hostname : "";
-  const heading = partnerFacingName(branding, host) || page?.partner?.name || "חבילות";
+  const plansFallback = t("partner.public.plans");
+  const heading = partnerFacingName(branding, host) || page?.partner?.name || plansFallback;
 
   return (
     <PublicPartnerShell
       branding={branding}
-      title={heading !== "חבילות" ? `${heading} — חבילות` : "חבילות"}
+      title={heading !== plansFallback ? t("partner.public.plansTitle", { name: heading }) : plansFallback}
     >
       <h1 className="text-3xl font-black">{heading}</h1>
-      <p className="mt-2 text-sm font-bold text-slate-500">
-        בחרו חבילה והשלימו רכישה. המחיר המוצג הוא המחיר הסופי ללקוח.
-      </p>
+      <p className="mt-2 text-sm font-bold text-slate-500">{t("partner.public.chooseAndPay")}</p>
       {params.get("canceled") === "1" ? (
         <p className="mt-4 rounded-2xl bg-amber-50 px-4 py-3 text-sm font-bold text-amber-800">
-          התשלום בוטל. אפשר לבחור חבילה שוב.
+          {t("partner.public.paymentCancelled")}
         </p>
       ) : null}
       {error ? <p className="mt-4 font-black text-rose-700">{error}</p> : null}
@@ -121,10 +127,10 @@ export default function PartnerPublicPlans() {
                 {product.descriptionHe ? (
                   <p className="mt-1 text-sm font-bold text-slate-500">{product.descriptionHe}</p>
                 ) : null}
-                <p className="mt-2 text-xs font-bold text-slate-400">{billingLabel(product.billing)}</p>
+                <p className="mt-2 text-xs font-bold text-slate-400">{t(billingKey(product.billing))}</p>
                 {product.humanService ? (
                   <p className="mt-2 text-xs font-black text-amber-700">
-                    שירות אנושי – אינו מפעיל מודול אוטומטית.
+                    {t("partner.pricing.humanService")}
                   </p>
                 ) : null}
               </div>
@@ -137,28 +143,32 @@ export default function PartnerPublicPlans() {
               onClick={() => setSku(product.sku)}
               className="mt-4 rounded-2xl bg-slate-900 px-4 py-2 text-sm font-black text-white"
             >
-              {sku === product.sku ? "נבחר" : "בחירת חבילה"}
+              {sku === product.sku ? t("partner.public.selected") : t("partner.public.choosePlan")}
             </button>
           </article>
         ))}
         {!products.length && page ? (
-          <p className="font-bold text-slate-400">אין חבילות להצגה כרגע.</p>
+          <p className="font-bold text-slate-400">{t("partner.public.noPlans")}</p>
         ) : null}
       </div>
 
       {selected ? (
         <form onSubmit={buy} className="mt-8 space-y-3 rounded-3xl border border-violet-100 bg-white p-5">
-          <h3 className="text-lg font-black">פרטי לקוח לרכישת {selected.nameHe}</h3>
-          <p className="text-sm font-bold text-slate-500">לתשלום: {formatPublicCustomerPrice(selected)}</p>
+          <h3 className="text-lg font-black">
+            {t("partner.public.customerDetails", { name: selected.nameHe })}
+          </h3>
+          <p className="text-sm font-bold text-slate-500">
+            {t("partner.public.toPay", { amount: formatPublicCustomerPrice(selected) })}
+          </p>
           <input
             required
-            placeholder="שם מלא"
+            placeholder={t("partner.public.fullName")}
             className="w-full rounded-2xl border px-4 py-3 text-sm font-bold"
             value={contact.name}
             onChange={(e) => setContact({ ...contact, name: e.target.value })}
           />
           <input
-            placeholder="שם העסק"
+            placeholder={t("partner.public.businessName")}
             className="w-full rounded-2xl border px-4 py-3 text-sm font-bold"
             value={contact.businessName}
             onChange={(e) => setContact({ ...contact, businessName: e.target.value })}
@@ -166,13 +176,13 @@ export default function PartnerPublicPlans() {
           <input
             required
             type="email"
-            placeholder="אימייל"
+            placeholder={t("partner.email")}
             className="w-full rounded-2xl border px-4 py-3 text-sm font-bold"
             value={contact.email}
             onChange={(e) => setContact({ ...contact, email: e.target.value })}
           />
           <input
-            placeholder="טלפון"
+            placeholder={t("partner.phone")}
             className="w-full rounded-2xl border px-4 py-3 text-sm font-bold"
             value={contact.phone}
             onChange={(e) => setContact({ ...contact, phone: e.target.value })}
@@ -182,7 +192,7 @@ export default function PartnerPublicPlans() {
             disabled={Boolean(buying)}
             className="w-full rounded-2xl bg-[#6D28D9] py-3 text-sm font-black text-white disabled:opacity-60"
           >
-            {buying ? "פותח תשלום..." : "המשך לתשלום"}
+            {buying ? t("partner.public.openingPayment") : t("partner.public.continueToPayment")}
           </button>
         </form>
       ) : null}

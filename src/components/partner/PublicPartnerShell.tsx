@@ -1,5 +1,6 @@
 import React, { type ReactNode, useEffect } from "react";
 import { Helmet } from "react-helmet-async";
+import { useTranslation } from "react-i18next";
 import {
   applyPartnerFavicon,
   hidesBizuplyChrome,
@@ -7,6 +8,7 @@ import {
   partnerFacingName,
   type PublicPartnerBranding,
 } from "../../lib/partnerBranding";
+import { getTextDirection } from "../../i18n/localeUtils";
 
 export default function PublicPartnerShell({
   branding,
@@ -19,6 +21,8 @@ export default function PublicPartnerShell({
   noIndex?: boolean;
   children: ReactNode;
 }) {
+  const { i18n } = useTranslation();
+  const pageDir = getTextDirection(i18n.language);
   const host = typeof window !== "undefined" ? window.location.hostname : "";
   const whiteLabel = hidesBizuplyChrome(branding, host);
   const logoUrl = partnerFacingLogo(branding, host);
@@ -31,7 +35,7 @@ export default function PublicPartnerShell({
 
   return (
     <div
-      dir="rtl"
+      dir={pageDir}
       className="min-h-screen bg-[#F7F8FC] text-slate-900"
       style={{ fontFamily: '"Assistant","Heebo","Rubik",sans-serif' }}
     >

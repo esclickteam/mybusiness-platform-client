@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { Upload } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import {
   fetchPartnerMe,
   partnerApiError,
@@ -20,26 +21,26 @@ import {
 const DOCUMENTS = [
   {
     kind: "accountManagementAuth",
-    label: "אישור ניהול חשבון",
-    hint: "מסמך הרשאה לניהול חשבון / ייפוי כוח",
+    labelKey: "partner.settings.docKinds.managementAuth",
+    hintKey: "partner.settings.docKinds.managementAuthHint",
   },
   {
     kind: "dealerCertificate",
-    label: "תעודת עוסק",
-    hint: "תעודת עוסק מורשה / פטור",
+    labelKey: "partner.settings.docKinds.businessCert",
+    hintKey: "partner.settings.docKinds.businessCertHint",
   },
   {
     kind: "idPhoto",
-    label: "צילום תעודה מזהה",
-    hint: "צילום ת״ז ברור משני הצדדים אם אפשר",
+    labelKey: "partner.settings.docKinds.idScan",
+    hintKey: "partner.settings.docKinds.idScanHint",
   },
 ] as const;
 
-const STATUS_HE: Record<string, string> = {
-  incomplete: "חסרים פרטים",
-  submitted: "ממתין לבדיקת אדמין",
-  approved: "אושר",
-  rejected: "נדחה — יש לתקן ולשלוח שוב",
+const KYC_KEY: Record<string, string> = {
+  incomplete: "missing",
+  submitted: "pending",
+  approved: "approved",
+  rejected: "rejected",
 };
 
 const emptyCompliance = (): PartnerCompliance => ({
@@ -59,6 +60,7 @@ const emptyCompliance = (): PartnerCompliance => ({
 });
 
 export default function PartnerSettings() {
+  const { t } = useTranslation();
   const [partner, setPartner] = useState<PartnerMe | null>(null);
   const [name, setName] = useState("");
   const [form, setForm] = useState<PartnerCompliance>(emptyCompliance());
@@ -83,8 +85,8 @@ export default function PartnerSettings() {
         setPartner(data);
         applyCompliance(data.compliance, data.name);
       })
-      .catch((err) => setError(partnerApiError(err, "שגיאה בטעינת הגדרות")));
-  }, []);
+      .catch((err) => setError(partnerApiError(err, t("partner.errors.settings"))));
+  }, [t]);
 
   function setField<K extends keyof PartnerCompliance>(key: K, value: PartnerCompliance[K]) {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -107,9 +109,9 @@ export default function PartnerSettings() {
         account: form.account,
       });
       applyCompliance(compliance, name);
-      setSaved("פרטי החשבון נשמרו והועברו לאדמין");
+      setSaved(t("partner.settings.savedToAdmin"));
     } catch (err: unknown) {
-      setError(partnerApiError(err, "שגיאה בשמירה"));
+      setError(partnerApiError(err, t("partner.errors.save")));
     } finally {
       setSaving(false);
     }
@@ -122,26 +124,27 @@ export default function PartnerSettings() {
     try {
       const compliance = await uploadPartnerComplianceDocument(kind, file);
       applyCompliance(compliance, name);
-      setSaved("המסמך הועלה");
+      setSaved(t("partner.settings.uploaded"));
     } catch (err: unknown) {
-      setError(partnerApiError(err, "שגיאה בהעלאת מסמך"));
+      setError(partnerApiError(err, t("partner.errors.uploadDoc")));
     } finally {
       setUploading("");
     }
   }
 
   const status = form.reviewStatus || "incomplete";
+  const kycKey = KYC_KEY[status] || status;
 
   return (
     <div className="space-y-6">
       <PartnerPageHeader
-        eyebrow="הגדרות"
-        title="הגדרות פרטנר"
-        subtitle="מיתוג White Label וכתובת אישית בחבילת Premium, ופרטי חשבון שמועברים לאדמין."
+        eyebrow={t("partner.settings.title")}
+        title={t("partner.settings.subtitle")}
+        subtitle={t("partner.settings.intro")}
       />
       {partner?.billingCheckoutAvailable === false ? (
         <p className="rounded-2xl bg-slate-50 px-4 py-3 text-sm font-bold text-slate-600">
-          החיוב מנוהל כרגע על ידי Bizuply. אין אפשרות לתשלום מנוי עצמאי מהמערכת.
+          {t("partner.settings.billingManaged")}
         </p>
       ) : null}
 
@@ -162,31 +165,31 @@ export default function PartnerSettings() {
                     : "amber"
             }
           >
-            {STATUS_HE[status] || status}
+            {t(`partner.settings.kyc.${kycKey}`, { defaultValue: status })}
           </PartnerBadge>
           <p className="text-sm font-bold text-slate-500">
-            מסלול: {partner?.plan?.nameHe || partner?.planKey}
+            {t("partner.settings.planLabel", { name: partner?.plan?.nameHe || partner?.planKey })}
           </p>
         </div>
         {form.adminFeedback ? (
           <p className="rounded-2xl bg-rose-50 px-4 py-3 text-sm font-bold text-rose-800">
-            משוב אדמין: {form.adminFeedback}
+            {t("partner.settings.adminFeedback", { feedback: form.adminFeedback })}
           </p>
         ) : null}
       </PartnerCard>
 
       <PartnerCard className="space-y-4 p-6">
         <div>
-          <h2 className="text-lg font-black">פרטי חשבון</h2>
-          <p className="mt-1 text-sm font-bold text-slate-500">הפרטים האלה מופיעים לאדמין לצורך אישור החשבון.</p>
+          <h2 className="text-lg font-black">{t("partner.settings.accountDetails")}</h2>
+          <p className="mt-1 text-sm font-bold text-slate-500">{t("partner.settings.accountHint")}</p>
         </div>
         <label className="block text-sm font-black text-slate-600">
-          שם פרטנר
+          {t("partner.settings.partnerName")}
           <PartnerInput value={name} onChange={(e) => setName(e.target.value)} className="mt-1" />
         </label>
         <div className="grid gap-3 sm:grid-cols-2">
           <label className="text-sm font-black text-slate-600">
-            שם בעל החשבון
+            {t("partner.settings.ownerName")}
             <PartnerInput
               value={form.accountHolderName}
               onChange={(e) => setField("accountHolderName", e.target.value)}
@@ -194,7 +197,7 @@ export default function PartnerSettings() {
             />
           </label>
           <label className="text-sm font-black text-slate-600">
-            ת״ז
+            {t("partner.settings.nationalId")}
             <PartnerInput
               value={form.idNumber}
               onChange={(e) => setField("idNumber", e.target.value)}
@@ -203,7 +206,7 @@ export default function PartnerSettings() {
             />
           </label>
           <label className="text-sm font-black text-slate-600">
-            ח.פ / עוסק
+            {t("partner.settings.companyId")}
             <PartnerInput
               value={form.taxNumber}
               onChange={(e) => setField("taxNumber", e.target.value)}
@@ -211,7 +214,7 @@ export default function PartnerSettings() {
             />
           </label>
           <label className="text-sm font-black text-slate-600">
-            טלפון
+            {t("partner.phone")}
             <PartnerInput
               value={form.phone}
               onChange={(e) => setField("phone", e.target.value)}
@@ -223,12 +226,12 @@ export default function PartnerSettings() {
 
       <PartnerCard className="space-y-4 p-6">
         <div>
-          <h2 className="text-lg font-black">פרטי חשבון בנק</h2>
-          <p className="mt-1 text-sm font-bold text-slate-500">נדרש למשיכות עמלות אחרי אישור KYC.</p>
+          <h2 className="text-lg font-black">{t("partner.settings.bankDetails")}</h2>
+          <p className="mt-1 text-sm font-bold text-slate-500">{t("partner.settings.bankHint")}</p>
         </div>
         <div className="grid gap-3 sm:grid-cols-3">
           <label className="text-sm font-black text-slate-600">
-            בנק
+            {t("partner.settings.bank")}
             <PartnerInput
               value={form.bankName}
               onChange={(e) => setField("bankName", e.target.value)}
@@ -236,7 +239,7 @@ export default function PartnerSettings() {
             />
           </label>
           <label className="text-sm font-black text-slate-600">
-            סניף
+            {t("partner.settings.branch")}
             <PartnerInput
               value={form.branch}
               onChange={(e) => setField("branch", e.target.value)}
@@ -244,7 +247,7 @@ export default function PartnerSettings() {
             />
           </label>
           <label className="text-sm font-black text-slate-600">
-            מספר חשבון
+            {t("partner.settings.accountNumber")}
             <PartnerInput
               value={form.account}
               onChange={(e) => setField("account", e.target.value)}
@@ -257,8 +260,8 @@ export default function PartnerSettings() {
 
       <PartnerCard className="space-y-4 p-6">
         <div>
-          <h2 className="text-lg font-black">מסמכים</h2>
-          <p className="mt-1 text-sm font-bold text-slate-500">PDF, JPG או PNG עד 8MB. המסמכים מופיעים במלואם לאדמין.</p>
+          <h2 className="text-lg font-black">{t("partner.settings.documents")}</h2>
+          <p className="mt-1 text-sm font-bold text-slate-500">{t("partner.settings.documentsHint")}</p>
         </div>
         <div className="grid gap-3 md:grid-cols-3">
           {DOCUMENTS.map((item) => {
@@ -266,8 +269,8 @@ export default function PartnerSettings() {
             const busy = uploading === item.kind;
             return (
               <div key={item.kind} className="flex flex-col rounded-3xl border border-slate-100 bg-slate-50 p-4">
-                <p className="font-black text-slate-900">{item.label}</p>
-                <p className="mt-1 text-[11px] font-bold text-slate-500">{item.hint}</p>
+                <p className="font-black text-slate-900">{t(item.labelKey)}</p>
+                <p className="mt-1 text-[11px] font-bold text-slate-500">{t(item.hintKey)}</p>
                 {current?.url ? (
                   <a
                     href={current.url}
@@ -275,10 +278,10 @@ export default function PartnerSettings() {
                     rel="noreferrer"
                     className="mt-2 inline-block text-sm font-black text-violet-700"
                   >
-                    {current.originalName || "מסמך הועלה"}
+                    {current.originalName || t("partner.settings.uploaded")}
                   </a>
                 ) : (
-                  <p className="mt-2 text-sm font-bold text-amber-700">טרם הועלה</p>
+                  <p className="mt-2 text-sm font-bold text-amber-700">{t("partner.settings.notUploaded")}</p>
                 )}
                 <div className="mt-auto pt-3">
                   <PartnerFileButton
@@ -289,7 +292,11 @@ export default function PartnerSettings() {
                     className="w-full"
                   >
                     <Upload className="h-4 w-4" />
-                    {busy ? "מעלה..." : current?.url ? "החלפת מסמך" : "העלאת מסמך"}
+                    {busy
+                      ? t("partner.settings.uploading")
+                      : current?.url
+                        ? t("partner.settings.replaceDoc")
+                        : t("partner.settings.uploadDoc")}
                   </PartnerFileButton>
                 </div>
               </div>
@@ -299,7 +306,7 @@ export default function PartnerSettings() {
       </PartnerCard>
 
       <PartnerPrimaryButton type="button" disabled={saving} onClick={saveDetails}>
-        {saving ? "שומר..." : "שמירת פרטים ושליחה לאדמין"}
+        {saving ? t("partner.saving") : t("partner.settings.saveAndSend")}
       </PartnerPrimaryButton>
     </div>
   );

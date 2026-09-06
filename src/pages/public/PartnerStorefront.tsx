@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { fetchPublicStorefront } from "../../lib/partnerApi";
 import { formatPublicCustomerPrice } from "../../lib/partnerMoney";
 import PublicPartnerShell from "../../components/partner/PublicPartnerShell";
+import { getIntlLocale } from "../../i18n/localeUtils";
 
-function ils(value?: number) {
-  return `₪${Number(value || 0).toLocaleString("he-IL")}`;
+function ils(value?: number, locale = "he-IL") {
+  return `₪${Number(value || 0).toLocaleString(locale)}`;
 }
 
 function plansHref(slug: string | undefined, data: any) {
@@ -24,6 +26,8 @@ function plansHref(slug: string | undefined, data: any) {
 }
 
 export default function PartnerStorefront() {
+  const { t, i18n } = useTranslation();
+  const locale = getIntlLocale(i18n.language);
   const { slug } = useParams();
   const [data, setData] = useState<any>(null);
   const [error, setError] = useState("");
@@ -32,12 +36,12 @@ export default function PartnerStorefront() {
     if (!slug) return;
     fetchPublicStorefront(slug)
       .then(setData)
-      .catch((err) => setError(err.response?.data?.error || "העמוד לא נמצא"));
-  }, [slug]);
+      .catch((err) => setError(err.response?.data?.error || t("partner.errors.pageNotFound")));
+  }, [slug, t]);
 
   if (error) {
     return (
-      <PublicPartnerShell title="קטלוג">
+      <PublicPartnerShell title={t("partner.public.catalog")}>
         <div className="text-center">
           <h1 className="text-2xl font-black">{error}</h1>
         </div>
@@ -47,7 +51,7 @@ export default function PartnerStorefront() {
   if (!data) return null;
 
   return (
-    <PublicPartnerShell branding={data.branding} title={data.name || "קטלוג"}>
+    <PublicPartnerShell branding={data.branding} title={data.name || t("partner.public.catalog")}>
       <header className="rounded-[32px] bg-white px-6 py-10 shadow-sm">
         <div className="flex items-center gap-4">
           {data.logoUrl ? (
@@ -59,14 +63,12 @@ export default function PartnerStorefront() {
             <p className="mt-2 text-sm">
               {data.contact?.phone} {data.contact?.email} {data.contact?.whatsapp}
             </p>
-            <p className="mt-3 text-xs font-bold text-slate-500">
-              קטלוג ציבורי להצגת מוצרים ושירותים. רכישה מתבצעת מול הפרטנר.
-            </p>
+            <p className="mt-3 text-xs font-bold text-slate-500">{t("partner.public.catalogHint")}</p>
             <a
               href={plansHref(slug, data)}
               className="mt-3 inline-flex rounded-2xl bg-slate-900 px-4 py-2 text-sm font-black text-white"
             >
-              לעמוד החבילות
+              {t("partner.public.goToPlans")}
             </a>
           </div>
         </div>
@@ -79,7 +81,7 @@ export default function PartnerStorefront() {
             <p className="mt-3 text-2xl font-black">{formatPublicCustomerPrice(product)}</p>
             {product.retailComparisonPrice ? (
               <p className="text-xs text-slate-500">
-                מחיר מחירון להשוואה: {ils(product.retailComparisonPrice)}
+                {t("partner.public.retailCompare", { amount: ils(product.retailComparisonPrice, locale) })}
               </p>
             ) : null}
           </article>
