@@ -18268,6 +18268,25 @@
     },
     "waHistory": {
       "metaId": "ID da mensagem na Meta: {{id}}"
+    },
+    "autosave": {
+      "saved": "Salvo",
+      "saving": "Salvando...",
+      "error": "Falha ao salvar",
+      "offline": "Sem conexão — será salvo ao voltar",
+      "retry": "Tentar de novo"
+    },
+    "storePanel": {
+      "closeAria": "Fechar a gestão da loja",
+      "title": "Gestão da loja",
+      "subtitle": "Produtos, estoque, pedidos e ajustes",
+      "missingBusiness": "Não encontramos o ID do negócio",
+      "missingHint": "Atualize o editor ou abra o site pelo painel"
+    },
+    "appError": {
+      "title": "Ocorreu um erro temporário",
+      "body": "Não foi possível carregar a página. Atualize e tente de novo.",
+      "refresh": "Atualizar a página"
     }
   }
 }

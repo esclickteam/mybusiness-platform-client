@@ -82,7 +82,27 @@ export function classifySourcePath(rel) {
     r.endsWith("guidedDemo/postDemoQuestionnaire/types.ts") ||
     r.endsWith("guidedDemo/demoOverlayData.ts") ||
     r.endsWith("i18n/templateSeedPhrasebook.json") ||
-    r.endsWith("i18n/localizeBuiltInTemplateSeed.ts")
+    r.endsWith("i18n/localizeBuiltInTemplateSeed.ts") ||
+    r.endsWith("grapes/BizuplyWebsiteStudio.tsx") ||
+    r.endsWith("grapes/canvasTheme.ts") ||
+    r.endsWith("grapes/grapesTheme.ts") ||
+    r.endsWith("studio/grapes/initEditor.ts") ||
+    r.endsWith("public/PublicVisualSiteRenderer.jsx") ||
+    r.endsWith("public/mountPublicLeadForms.js") ||
+    r.endsWith("visual-editor/library/pexelsMediaService.ts") ||
+    r.endsWith("visual-editor/library/tableBuilder.ts") ||
+    r.endsWith("visual-editor/library/libraryFactories.ts") ||
+    r.endsWith("visual-editor/library/LottieAnimationBrowser.tsx") ||
+    r.endsWith("pages/business/dashboardPages/meta-campaigns/ads-manager/metaLeadFormLocales.ts") ||
+    r.endsWith("pages/business/dashboardPages/crmpages/clientSessionConsumption.ts") ||
+    r.endsWith("utils/materializeAiSitePlan.ts") ||
+    r.endsWith("studio/utils/pageSeoUtils.ts") ||
+    r.endsWith("lib/partnerMoney.ts") ||
+    r.endsWith("lib/partnerDealMath.ts") ||
+    r.endsWith("guidedDemo/adminSendForm.ts") ||
+    r.endsWith("visual-editor/utils/visualSelectors.ts") ||
+    r.endsWith("visual-editor/utils/applySitePageNavSubmenusToDom.ts") ||
+    r.endsWith("visual-editor/utils/bindClientPortalVariables.ts")
   ) {
     return "D";
   }

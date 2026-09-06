@@ -18268,6 +18268,25 @@
     },
     "waHistory": {
       "metaId": "Meta message ID: {{id}}"
+    },
+    "autosave": {
+      "saved": "Saved",
+      "saving": "Saving...",
+      "error": "Save failed",
+      "offline": "No connection — changes will save when you are back online",
+      "retry": "Try again"
+    },
+    "storePanel": {
+      "closeAria": "Close store management",
+      "title": "Store management",
+      "subtitle": "Products, inventory, orders, and settings",
+      "missingBusiness": "No business ID was found for store management",
+      "missingHint": "Refresh the editor or open the site from the dashboard"
+    },
+    "appError": {
+      "title": "A temporary error occurred",
+      "body": "We could not load the page. Refresh and try again.",
+      "refresh": "Refresh the page"
     }
   }
 }

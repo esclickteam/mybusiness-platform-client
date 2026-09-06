@@ -1,13 +1,5 @@
+import { useTranslation } from "react-i18next";
 import type { VisualAutosaveStatus as AutosaveStatus } from "../utils/visualAutosaveController";
-
-const LABELS: Record<AutosaveStatus, string> = {
-  clean: "נשמר",
-  dirty: "",
-  saving: "שומר...",
-  saved: "נשמר",
-  error: "השמירה נכשלה",
-  offline: "אין חיבור — השינויים יישמרו כשיחזור",
-};
 
 type VisualAutosaveStatusProps = {
   status: AutosaveStatus;
@@ -18,7 +10,16 @@ export default function VisualAutosaveStatus({
   status,
   onRetry,
 }: VisualAutosaveStatusProps) {
-  const label = LABELS[status] || "";
+  const { t } = useTranslation();
+  const labels: Record<AutosaveStatus, string> = {
+    clean: t("leftover.autosave.saved"),
+    dirty: "",
+    saving: t("leftover.autosave.saving"),
+    saved: t("leftover.autosave.saved"),
+    error: t("leftover.autosave.error"),
+    offline: t("leftover.autosave.offline"),
+  };
+  const label = labels[status] || "";
 
   return (
     <div
@@ -47,7 +48,7 @@ export default function VisualAutosaveStatus({
           onClick={onRetry}
           className="shrink-0 text-[11px] font-black text-violet-700 underline-offset-2 hover:underline"
         >
-          נסה שוב
+          {t("leftover.autosave.retry")}
         </button>
       ) : null}
     </div>

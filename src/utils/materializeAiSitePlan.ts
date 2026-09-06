@@ -1,4 +1,5 @@
 import i18n from "../i18n/i18n";
+import { localizeBuiltInTemplateSeed } from "../i18n/localizeBuiltInTemplateSeed";
 import {
   getSectionTemplateById,
   SECTION_LIBRARY,
@@ -539,26 +540,29 @@ export function buildClientAiSitePlan(input: {
   // Ensure home is first
   pages.sort((a, b) => Number(b.isHome) - Number(a.isHome));
 
-  return {
-    siteName: businessName,
-    hostTemplateKey: "adion",
-    templateKey: "adion",
-    palette: {
-      primary: input.primaryColor || "#4c1d95",
-      secondary: input.secondaryColor || "#0ea5e9",
-      ...paletteBase,
+  return localizeBuiltInTemplateSeed(
+    {
+      siteName: businessName,
+      hostTemplateKey: "adion",
+      templateKey: "adion",
+      palette: {
+        primary: input.primaryColor || "#4c1d95",
+        secondary: input.secondaryColor || "#0ea5e9",
+        ...paletteBase,
+      },
+      brand: {
+        businessName,
+        tagline: description.slice(0, 90) || `${businessName} — ${niche}`,
+      },
+      seo: {
+        title: `${businessName} | ${niche}`,
+        description:
+          description ||
+          `${businessName} — ${niche}. שירות מקצועי, שקיפות ותוצאות.`,
+        keywords: [businessName, niche, audience].filter(Boolean),
+      },
+      pages,
     },
-    brand: {
-      businessName,
-      tagline: description.slice(0, 90) || `${businessName} — ${niche}`,
-    },
-    seo: {
-      title: `${businessName} | ${niche}`,
-      description:
-        description ||
-        `${businessName} — ${niche}. שירות מקצועי, שקיפות ותוצאות.`,
-      keywords: [businessName, niche, audience].filter(Boolean),
-    },
-    pages,
-  };
+    i18n.language,
+  );
 }

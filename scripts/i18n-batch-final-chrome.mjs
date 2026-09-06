@@ -286,6 +286,28 @@ const COLLAB_PROFILE = {
   waNotify: row("WhatsApp notification number (E.164)", "מספר התראות WhatsApp (E.164)", "Número de avisos de WhatsApp (E.164)", "Número de avisos WhatsApp (E.164)", "رقم تنبيهات واتساب (E.164)"),
 };
 
+const AUTOSAVE = {
+  saved: row("Saved", "נשמר", "Guardado", "Salvo", "تم الحفظ"),
+  saving: row("Saving...", "שומר...", "Guardando...", "Salvando...", "جارٍ الحفظ..."),
+  error: row("Save failed", "השמירה נכשלה", "Error al guardar", "Falha ao salvar", "فشل الحفظ"),
+  offline: row("No connection — changes will save when you are back online", "אין חיבור — השינויים יישמרו כשיחזור", "Sin conexión — se guardará al volver", "Sem conexão — será salvo ao voltar", "لا اتصال — سيُحفظ عند العودة"),
+  retry: row("Try again", "נסה שוב", "Reintentar", "Tentar de novo", "حاول مرة أخرى"),
+};
+
+const STORE_PANEL = {
+  closeAria: row("Close store management", "סגירת ניהול חנות", "Cerrar la gestión de la tienda", "Fechar a gestão da loja", "إغلاق إدارة المتجر"),
+  title: row("Store management", "ניהול חנות", "Gestión de la tienda", "Gestão da loja", "إدارة المتجر"),
+  subtitle: row("Products, inventory, orders, and settings", "מוצרים, מלאי, הזמנות והגדרות", "Productos, stock, pedidos y ajustes", "Produtos, estoque, pedidos e ajustes", "منتجات ومخزون وطلبات وإعدادات"),
+  missingBusiness: row("No business ID was found for store management", "לא נמצא מזהה עסק לניהול החנות", "No se encontró el ID del negocio", "Não encontramos o ID do negócio", "لم يُعثر على معرّف العمل"),
+  missingHint: row("Refresh the editor or open the site from the dashboard", "רעננו את העורך או פתחו את האתר מתוך לוח הבקרה", "Actualiza el editor o abre el sitio desde el panel", "Atualize o editor ou abra o site pelo painel", "حدّث المحرر أو افتح الموقع من لوحة التحكم"),
+};
+
+const APP_ERROR = {
+  title: row("A temporary error occurred", "אירעה שגיאה זמנית", "Ocurrió un error temporal", "Ocorreu um erro temporário", "حدث خطأ مؤقت"),
+  body: row("We could not load the page. Refresh and try again.", "לא הצלחנו לטעון את העמוד. רעננו ונסו שוב.", "No pudimos cargar la página. Actualiza e inténtalo de nuevo.", "Não foi possível carregar a página. Atualize e tente de novo.", "تعذّر تحميل الصفحة. حدّث وحاول مرة أخرى."),
+  refresh: row("Refresh the page", "רענון העמוד", "Actualizar la página", "Atualizar a página", "تحديث الصفحة"),
+};
+
 const WA_HISTORY = {
   metaId: row("Meta message ID: {{id}}", "מזהה הודעה במטא: {{id}}", "ID de mensaje de Meta: {{id}}", "ID da mensagem na Meta: {{id}}", "معرّف رسالة ميتا: {{id}}"),
 };
@@ -320,6 +342,9 @@ export function extraFinalChromeLocaleObject(locale) {
       sessionFields: pickLocaleMap(SESSION_FIELDS, locale),
       collabProfile: pickLocaleMap(COLLAB_PROFILE, locale),
       waHistory: pickLocaleMap(WA_HISTORY, locale),
+      autosave: pickLocaleMap(AUTOSAVE, locale),
+      storePanel: pickLocaleMap(STORE_PANEL, locale),
+      appError: pickLocaleMap(APP_ERROR, locale),
     },
   };
 }

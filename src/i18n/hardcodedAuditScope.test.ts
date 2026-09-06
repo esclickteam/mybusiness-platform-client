@@ -72,6 +72,7 @@ describe("hardcoded i18n audit scope", () => {
     expect(
       classifySourcePath("guidedDemo/postDemoQuestionnaire/types.ts")
     ).toBe("D");
+    expect(classifySourcePath("utils/materializeAiSitePlan.ts")).toBe("D");
   });
 
   it("flags Business, Partner, and Marketer UI as category E", () => {

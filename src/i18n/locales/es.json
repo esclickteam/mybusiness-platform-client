@@ -18268,6 +18268,25 @@
     },
     "waHistory": {
       "metaId": "ID de mensaje de Meta: {{id}}"
+    },
+    "autosave": {
+      "saved": "Guardado",
+      "saving": "Guardando...",
+      "error": "Error al guardar",
+      "offline": "Sin conexión — se guardará al volver",
+      "retry": "Reintentar"
+    },
+    "storePanel": {
+      "closeAria": "Cerrar la gestión de la tienda",
+      "title": "Gestión de la tienda",
+      "subtitle": "Productos, stock, pedidos y ajustes",
+      "missingBusiness": "No se encontró el ID del negocio",
+      "missingHint": "Actualiza el editor o abre el sitio desde el panel"
+    },
+    "appError": {
+      "title": "Ocurrió un error temporal",
+      "body": "No pudimos cargar la página. Actualiza e inténtalo de nuevo.",
+      "refresh": "Actualizar la página"
     }
   }
 }
