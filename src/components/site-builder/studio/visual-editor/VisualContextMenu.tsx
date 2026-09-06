@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef } from "react";
+import { useTranslation } from "react-i18next";
 import {
   Copy,
   CornerUpLeft,
@@ -95,6 +96,7 @@ function getElementType(editor: any) {
 export default function VisualContextMenu({
   editor,
 }: VisualContextMenuProps) {
+  const { t } = useTranslation();
   const menu = editor?.contextMenu;
   const menuRef = useRef<HTMLDivElement | null>(null);
 
@@ -194,7 +196,6 @@ export default function VisualContextMenu({
   return (
     <div
       ref={menuRef}
-      dir="rtl"
       data-visual-context-menu="true"
       className="fixed z-[2147483640] w-[248px] overflow-hidden rounded-[20px] border border-slate-200 bg-white/95 p-2 shadow-[0_22px_80px_rgba(15,23,42,0.24)] backdrop-blur-2xl"
       style={position}
@@ -208,7 +209,7 @@ export default function VisualContextMenu({
       <div className="mb-2 flex items-center justify-between gap-3 border-b border-slate-100 px-2 pb-2 pt-1">
         <div className="min-w-0">
           <p className="truncate text-xs font-black uppercase tracking-[0.14em] text-violet-500">
-            פעולות אלמנט
+            {t("studio.elementActions")}
           </p>
 
           <p className="mt-1 truncate text-xs font-bold text-slate-400">
@@ -218,7 +219,7 @@ export default function VisualContextMenu({
 
         <button
           type="button"
-          title="סגירה"
+          title={t("studio.close")}
           onClick={close}
           className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
         >
@@ -228,7 +229,7 @@ export default function VisualContextMenu({
 
       <div className="grid gap-1">
         <ContextAction
-          label="בחירת האלמנט ההורה"
+          label={t("studio.selectParent")}
           icon={<CornerUpLeft className="h-4 w-4" />}
           onClick={() =>
             runAndClose(() => {
@@ -238,7 +239,7 @@ export default function VisualContextMenu({
         />
 
         <ContextAction
-          label="העתק"
+          label={t("studio.copy")}
           icon={<Copy className="h-4 w-4" />}
           disabled={locked}
           onClick={() =>
@@ -249,7 +250,7 @@ export default function VisualContextMenu({
         />
 
         <ContextAction
-          label="הדבק (שכפול)"
+          label={t("studio.pasteDuplicate")}
           icon={<ClipboardList className="h-4 w-4" />}
           disabled={locked}
           onClick={() =>
@@ -260,7 +261,7 @@ export default function VisualContextMenu({
         />
 
         <ContextAction
-          label="שכפול"
+          label={t("studio.duplicate")}
           icon={<Copy className="h-4 w-4" />}
           disabled={locked}
           onClick={() =>
@@ -277,7 +278,7 @@ export default function VisualContextMenu({
 
         {canEditLink ? (
           <ContextAction
-            label="עריכת קישור"
+            label={t("studio.editLink")}
             icon={<Link2 className="h-4 w-4" />}
             disabled={locked}
             onClick={() =>
@@ -290,7 +291,7 @@ export default function VisualContextMenu({
 
         {canEditForm ? (
           <ContextAction
-            label="עריכת טופס"
+            label={t("studio.editForm")}
             icon={<ClipboardList className="h-4 w-4" />}
             disabled={locked}
             onClick={() =>
@@ -304,7 +305,7 @@ export default function VisualContextMenu({
         <div className="my-1 h-px bg-slate-100" />
 
         <ContextAction
-          label="שכבה קדימה"
+          label={t("studio.bringForwardLayer")}
           icon={<MoveUp className="h-4 w-4" />}
           disabled={locked}
           onClick={() =>
@@ -315,7 +316,7 @@ export default function VisualContextMenu({
         />
 
         <ContextAction
-          label="שכבה אחורה"
+          label={t("studio.sendBackwardLayer")}
           icon={<MoveDown className="h-4 w-4" />}
           disabled={locked}
           onClick={() =>
@@ -326,7 +327,7 @@ export default function VisualContextMenu({
         />
 
         <ContextAction
-          label={locked ? "פתיחת נעילה" : "נעילת אלמנט"}
+          label={locked ? t("studio.unlock") : t("studio.lockElement")}
           icon={
             locked ? (
               <Unlock className="h-4 w-4" />
@@ -348,7 +349,7 @@ export default function VisualContextMenu({
         />
 
         <ContextAction
-          label={hidden ? "הצגת אלמנט" : "הסתרת אלמנט"}
+          label={hidden ? t("studio.showElement") : t("studio.hideElement")}
           icon={
             hidden ? (
               <Eye className="h-4 w-4" />
@@ -370,7 +371,7 @@ export default function VisualContextMenu({
         />
 
         <ContextAction
-          label="איפוס עיצוב"
+          label={t("studio.resetStyle")}
           icon={<RotateCcw className="h-4 w-4" />}
           disabled={locked}
           onClick={() =>
@@ -383,7 +384,7 @@ export default function VisualContextMenu({
         <div className="my-1 h-px bg-slate-100" />
 
         <ContextAction
-          label="מחיקה"
+          label={t("studio.delete")}
           icon={<Trash2 className="h-4 w-4" />}
           danger
           disabled={locked}

@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import type {
   ElementCategory,
   PageTemplate,
@@ -50,22 +51,6 @@ type Props = {
   onOpenSectionsPanel?: (kind?: string) => void;
 };
 
-const navItems: { key: StudioPanel; label: string; icon: string; hint: string }[] = [
-  { key: "add", label: "אלמנטים", icon: "+", hint: "אלמנטים קטנים" },
-  { key: "sections", label: "סקשנים", icon: "▭", hint: "סקשנים לעמוד הפעיל" },
-  { key: "theme", label: "עיצוב", icon: "◐", hint: "צבעים ופונטים" },
-  { key: "pages", label: "דפים", icon: "▤", hint: "עמודים נפרדים" },
-  { key: "media", label: "מדיה", icon: "▧", hint: "תמונות ווידאו" },
-  { key: "store", label: "חנות", icon: "◈", hint: "מוצרים" },
-  { key: "services", label: "שירותים", icon: "◇", hint: "שירותי העסק" },
-  { key: "bookings", label: "תורים", icon: "◷", hint: "יומן וזמנים" },
-  { key: "club", label: "מועדון", icon: "♛", hint: "לקוחות" },
-  { key: "leads", label: "לידים", icon: "✉", hint: "טפסים" },
-  { key: "animations", label: "תנועה", icon: "✺", hint: "אפקטים" },
-  { key: "seo", label: "SEO", icon: "⌕", hint: "גוגל ושיתוף" },
-  { key: "settings", label: "הגדרות", icon: "⚙", hint: "דומיין ופרסום" },
-];
-
 const smartBlockIds = [
   "bizuply-services",
   "bizuply-booking",
@@ -74,99 +59,6 @@ const smartBlockIds = [
   "bizuply-reviews",
   "bizuply-club",
 ];
-
-const sectionKindLabels: Record<string, string> = {
-  header: "Header",
-  hero: "פתיח",
-  welcome: "Welcome",
-  about: "אודות",
-  team: "צוות",
-  services: "שירותים",
-  gallery: "גלריה",
-  contact: "יצירת קשר",
-  promotion: "מבצע",
-  subscribe: "הרשמה",
-  testimonials: "המלצות",
-  reviews: "ביקורות",
-  clients: "לקוחות",
-  store: "חנות / מוצרים",
-  booking: "תיאום תורים",
-  bookings: "תיאום תורים",
-  events: "אירועים",
-  club: "מועדון",
-  bot: "בוט",
-  social: "סושיאל",
-  course: "קורס",
-  miniSaas: "Mini SaaS",
-  basic: "בסיסי",
-  text: "טקסט",
-  list: "רשימה",
-  form: "טופס",
-  forms: "טופס",
-  section: "סקשן",
-  footer: "Footer",
-};
-
-const panelTitles: Record<StudioPanel, { title: string; subtitle: string }> = {
-  templates: {
-    title: "תבניות לעמוד",
-    subtitle: "תבנית מחליפה רק את העמוד הפעיל.",
-  },
-  add: {
-    title: "אלמנטים",
-    subtitle: "טקסט, כפתור, תמונה, טופס, וידאו ועוד.",
-  },
-  sections: {
-    title: "סקשנים",
-    subtitle: "הוספת סקשן לעמוד הפעיל.",
-  },
-  theme: {
-    title: "עיצוב כללי",
-    subtitle: "ערכות צבעים ופונטים לאתר.",
-  },
-  pages: {
-    title: "דפים",
-    subtitle: "עמוד נפרד, ובתוכו סקשנים.",
-  },
-  media: {
-    title: "מדיה",
-    subtitle: "תמונות, וידאו ורקעים לאתר.",
-  },
-  store: {
-    title: "חנות",
-    subtitle: "ניהול חנות: מוצרים, קטגוריות, הגדרות, קופונים והזמנות.",
-  },
-  services: {
-    title: "שירותים",
-    subtitle: "בלוקים להצגת שירותים, מחירים וכפתורי פעולה.",
-  },
-  bookings: {
-    title: "תורים",
-    subtitle: "בלוקים ליומן, שעות פנויות וקביעת תור.",
-  },
-  club: {
-    title: "מועדון",
-    subtitle: "מועדון לקוחות, הטבות וקופונים.",
-  },
-  leads: {
-    title: "לידים",
-    subtitle: "טפסים, וואטסאפ, יצירת קשר ואיסוף פניות.",
-  },
-  animations: {
-    title: "תנועה",
-    subtitle: "אפקטים מקצועיים לאנימציות וכניסות.",
-  },
-  seo: {
-    title: "SEO",
-    subtitle: "כותרות, תיאורים ותצוגת שיתוף.",
-  },
-  settings: {
-    title: "הגדרות",
-    subtitle: "דומיין, סטטוס פרסום, שפה וחיבורים.",
-  },
-};
-
-
 
 export default function StudioSidebar({
   activePanel,
@@ -188,9 +80,85 @@ export default function StudioSidebar({
   onMoveSectionDown,
   onOpenSectionsPanel,
 }: Props) {
+  const { t } = useTranslation();
   const navigate = useNavigate();
   const { user } = useAuth() as {
     user?: { businessId?: string; business?: { _id?: string } } | null;
+  };
+
+  const navItems: { key: StudioPanel; label: string; icon: string; hint: string }[] = [
+    { key: "add", label: t("studio.elements"), icon: "+", hint: t("studio.elementsHint") },
+    { key: "sections", label: t("studio.sections"), icon: "▭", hint: t("studio.sectionsHint") },
+    { key: "theme", label: t("studio.design"), icon: "◐", hint: t("studio.designHint") },
+    { key: "pages", label: t("studio.pages"), icon: "▤", hint: t("studio.pagesHint") },
+    { key: "media", label: t("studio.media"), icon: "▧", hint: t("studio.mediaHint") },
+    { key: "store", label: t("studio.store"), icon: "◈", hint: t("studio.storeHint") },
+    { key: "services", label: t("studio.services"), icon: "◇", hint: t("studio.servicesHint") },
+    { key: "bookings", label: t("studio.bookings"), icon: "◷", hint: t("studio.bookingsHint") },
+    { key: "club", label: t("studio.club"), icon: "♛", hint: t("studio.clubHint") },
+    { key: "leads", label: t("studio.leads"), icon: "✉", hint: t("studio.leadsHint") },
+    { key: "animations", label: t("studio.motion"), icon: "✺", hint: t("studio.motionHint") },
+    { key: "seo", label: t("studio.seo"), icon: "⌕", hint: t("studio.seoHint") },
+    { key: "settings", label: t("studio.settings"), icon: "⚙", hint: t("studio.settingsHint") },
+  ];
+
+  const panelTitles: Record<StudioPanel, { title: string; subtitle: string }> = {
+    templates: {
+      title: t("studio.pageTemplates"),
+      subtitle: t("studio.pageTemplatesHint"),
+    },
+    add: {
+      title: t("studio.elements"),
+      subtitle: t("studio.elementsSubtitle"),
+    },
+    sections: {
+      title: t("studio.sections"),
+      subtitle: t("studio.sectionsSubtitle"),
+    },
+    theme: {
+      title: t("studio.designTitle"),
+      subtitle: t("studio.designSubtitle"),
+    },
+    pages: {
+      title: t("studio.pages"),
+      subtitle: t("studio.pagesSubtitle"),
+    },
+    media: {
+      title: t("studio.media"),
+      subtitle: t("studio.mediaSubtitle"),
+    },
+    store: {
+      title: t("studio.store"),
+      subtitle: t("studio.storeSubtitle"),
+    },
+    services: {
+      title: t("studio.services"),
+      subtitle: t("studio.servicesSubtitle"),
+    },
+    bookings: {
+      title: t("studio.bookings"),
+      subtitle: t("studio.bookingsSubtitle"),
+    },
+    club: {
+      title: t("studio.club"),
+      subtitle: t("studio.clubSubtitle"),
+    },
+    leads: {
+      title: t("studio.leads"),
+      subtitle: t("studio.leadsSubtitle"),
+    },
+    animations: {
+      title: t("studio.motion"),
+      subtitle: t("studio.motionSubtitle"),
+    },
+    seo: {
+      title: t("studio.seo"),
+      subtitle: t("studio.seoSubtitle"),
+    },
+    settings: {
+      title: t("studio.settings"),
+      subtitle: t("studio.settingsSubtitle"),
+    },
   };
 
   const businessId = user?.businessId || user?.business?._id || "";
@@ -323,9 +291,9 @@ export default function StudioSidebar({
     clearSearch();
   };
 
-  const handleAddHtml = (html: string, label = "הסקשן") => {
+  const handleAddHtml = (html: string, label = t("studio.theSection")) => {
     onAddHtml(html);
-    setSuccessMessage(`${label} נוסף לעמוד הפעיל`);
+    setSuccessMessage(t("studio.addedToPage", { label }));
   };
 
   const handleApplyPalette = (palette: ThemePalette) => {
@@ -340,20 +308,20 @@ export default function StudioSidebar({
     root.style.setProperty("--biz-heading-font", palette.font.heading);
     root.style.setProperty("--biz-body-font", palette.font.body);
 
-    setSuccessMessage(`ערכת העיצוב ${palette.name} הוחלה`);
+    setSuccessMessage(t("studio.paletteApplied", { name: palette.name }));
   };
 
   const handleAddPage = () => {
     const title = newPageTitle.trim();
 
     if (!title) {
-      setSuccessMessage("כתבי שם לעמוד החדש");
+      setSuccessMessage(t("studio.enterPageName"));
       return;
     }
 
     onAddPage?.(title, "blank");
     setNewPageTitle("");
-    setSuccessMessage(`העמוד ${title} נוצר`);
+    setSuccessMessage(t("studio.pageCreated", { title }));
   };
 
   const togglePage = (pageId: string) => {
@@ -374,7 +342,6 @@ export default function StudioSidebar({
 
   return (
     <aside
-      dir="rtl"
       className={[
         "grid min-h-0 overflow-hidden border-l border-slate-200 bg-white shadow-[0_18px_70px_rgba(15,23,42,0.06)] transition-[grid-template-columns] duration-300",
         isPanelOpen ? "grid-cols-[96px_minmax(390px,430px)]" : "grid-cols-[96px_0px]",
@@ -451,7 +418,7 @@ export default function StudioSidebar({
                 <SearchBox
                   value={search}
                   onChange={setSearch}
-                  placeholder="חיפוש אלמנט..."
+                  placeholder={t("studio.searchElement")}
                 />
 
                 <CategoryGrid>
@@ -486,12 +453,14 @@ export default function StudioSidebar({
                 <SearchBox
                   value={search}
                   onChange={setSearch}
-                  placeholder="חיפוש סקשן..."
+                  placeholder={t("studio.searchSection")}
                 />
 
                 <CompactNotice
-                  title="הוספת סקשן"
-                  text={`הסקשן יתווסף לעמוד: ${activePage?.title || "לא נבחר"}`}
+                  title={t("studio.addSection")}
+                  text={t("studio.sectionWillBeAdded", {
+                    title: activePage?.title || t("studio.noPageSelected"),
+                  })}
                 />
 
                 <CategoryGrid>
@@ -523,8 +492,8 @@ export default function StudioSidebar({
             {currentPanel === "theme" && (
               <Panel>
                 <CompactNotice
-                  title="עיצוב כללי"
-                  text="בחירת ערכה מעדכנת צבעים ופונטים באתר."
+                  title={t("studio.designTitle")}
+                  text={t("studio.designNotice")}
                 />
 
                 <div className="space-y-3">
@@ -538,7 +507,7 @@ export default function StudioSidebar({
                 </div>
 
                 <p className="mb-3 mt-6 text-sm font-black text-slate-900">
-                  פונטים
+                  {t("studio.fonts")}
                 </p>
 
                 <div className="grid grid-cols-2 gap-2">
@@ -548,7 +517,7 @@ export default function StudioSidebar({
                       type="button"
                       onClick={() =>
                         setSuccessMessage(
-                          `הפונט ${font} נבחר דרך ערכת העיצוב.`
+                          t("studio.fontSelectedViaTheme", { font })
                         )
                       }
                       className="rounded-2xl border border-slate-200 bg-white px-3 py-3 text-xs font-black text-slate-600 transition hover:border-violet-300 hover:bg-violet-50 hover:text-violet-700"
@@ -593,13 +562,13 @@ export default function StudioSidebar({
                   onClick={onOpenMedia}
                   className="w-full rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-4 py-4 text-sm font-black text-black shadow-xl shadow-violet-100 transition hover:-translate-y-0.5"
                 >
-                  פתיחת מנהל מדיה
+                  {t("studio.openMediaManager")}
                 </button>
 
                 <div className="mt-4 grid gap-3">
-                  <Info title="תמונה רגילה" text="הוספת תמונה לתוך סקשן או אלמנט." />
-                  <Info title="רקע לסקשן" text="בחירת תמונה כרקע לסקשן." />
-                  <Info title="וידאו" text="אפשר להוסיף דרך אלמנטים / Embed." />
+                  <Info title={t("studio.regularImage")} text={t("studio.regularImageHint")} />
+                  <Info title={t("studio.sectionBackground")} text={t("studio.sectionBackgroundHint")} />
+                  <Info title={t("studio.video")} text={t("studio.videoHint")} />
                 </div>
               </Panel>
             )}
@@ -609,11 +578,10 @@ export default function StudioSidebar({
                 <div className="space-y-5">
                   <div className="rounded-[1.6rem] border border-violet-100 bg-gradient-to-br from-violet-50 via-white to-fuchsia-50 p-5">
                     <p className="text-sm font-black text-violet-900">
-                      ניהול חנות בעמוד מלא
+                      {t("studio.storeFullPage")}
                     </p>
                     <p className="mt-2 text-xs font-bold leading-6 text-slate-500">
-                      מוצרים, קטגוריות, הגדרות, קופונים והזמנות מנוהלים בעמוד נפרד ונוח.
-                      כאן בסטודיו מוסיפים רק תצוגות חנות דינמיות לאתר.
+                      {t("studio.storeFullPageText")}
                     </p>
 
                     <button
@@ -621,49 +589,48 @@ export default function StudioSidebar({
                       onClick={openStoreManagementPage}
                       className="mt-4 w-full rounded-2xl bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-4 py-4 text-sm font-black text-black shadow-xl shadow-violet-100 transition hover:-translate-y-0.5"
                     >
-                      פתיחת ניהול חנות
+                      {t("studio.openStoreManagement")}
                     </button>
                   </div>
 
                   <div className="grid gap-3">
                     <StoreNavButton
-                      title="הוספת מוצרים"
-                      text="פותח עמוד מלא להוספת מוצר, תמונות, מחיר, מלאי וקטגוריה."
+                      title={t("studio.addProducts")}
+                      text={t("studio.addProductsHint")}
                       onClick={openStoreManagementPage}
                     />
 
                     <StoreNavButton
-                      title="רשימת מוצרים"
-                      text="ניהול גריד המוצרים, עריכה, מחיקה וסינון לפי קטגוריות."
+                      title={t("studio.productList")}
+                      text={t("studio.productListHint")}
                       onClick={openStoreManagementPage}
                     />
 
                     <StoreNavButton
-                      title="הגדרות חנות"
-                      text="מטבע, משלוחים, וואטסאפ, מדיניות החזרות ועיצוב הסל."
+                      title={t("studio.storeSettings")}
+                      text={t("studio.storeSettingsHint")}
                       onClick={openStoreManagementPage}
                     />
 
                     <StoreNavButton
-                      title="קטגוריות מוצרים"
-                      text="יצירת קטגוריות ועמודי קטגוריה כמו Shopify."
+                      title={t("studio.productCategories")}
+                      text={t("studio.productCategoriesHint")}
                       onClick={openStoreManagementPage}
                     />
 
                     <StoreNavButton
-                      title="קופונים והזמנות"
-                      text="ניהול מבצעים, קודי קופון והזמנות לקוחות."
+                      title={t("studio.couponsOrders")}
+                      text={t("studio.couponsOrdersHint")}
                       onClick={openStoreManagementPage}
                     />
                   </div>
 
                   <div className="rounded-[1.4rem] border border-slate-200 bg-slate-50 p-4">
                     <p className="text-sm font-black text-slate-900">
-                      תצוגת חנות באתר
+                      {t("studio.storeDisplay")}
                     </p>
                     <p className="mt-1 text-xs font-bold leading-5 text-slate-500">
-                      אחרי שהמוצרים נשמרים בעמוד הניהול, הוסיפי לעמוד סקשן חנות.
-                      הסקשן ימשוך אוטומטית את המוצרים מהשרת.
+                      {t("studio.storeDisplayText")}
                     </p>
                   </div>
 
@@ -672,14 +639,14 @@ export default function StudioSidebar({
                       <SmartButton
                         key={section.id}
                         title={section.title}
-                        text={section.description || "תצוגת חנות דינמית לעמוד הפעיל"}
+                        text={section.description || t("studio.storeSectionDefault")}
                         onClick={() => handleAddHtml(section.html, section.title)}
                       />
                     ))}
                   </div>
 
                   {storeSectionTemplates.length === 0 && (
-                    <EmptyState text="לא נמצאו תצוגות חנות. צריך לוודא שיש סקשנים מסוג store בקובץ sectionTemplates.ts." />
+                    <EmptyState text={t("studio.noStoreViews")} />
                   )}
                 </div>
               </Panel>
@@ -694,24 +661,24 @@ export default function StudioSidebar({
                     <SmartButton
                       key={block.id}
                       title={block.label}
-                      text={block.description || "בלוק חכם שמתחבר למערכת"}
+                      text={block.description || t("studio.smartBlockDefault")}
                       onClick={() => handleAddHtml(block.html, block.label)}
                     />
                   ))}
                 </div>
 
                 {smartBlocks.length === 0 && (
-                  <EmptyState text="לא נמצאו בלוקים חכמים. צריך לעדכן את elementLibrary.ts." />
+                  <EmptyState text={t("studio.noSmartBlocks")} />
                 )}
               </Panel>
             )}
 
             {currentPanel === "animations" && (
               <Panel>
-                <Info title="Fade Up" text="כניסה מלמטה עם שקיפות." />
-                <Info title="Zoom In" text="כניסה עם הגדלה עדינה." />
-                <Info title="Slide Right" text="כניסה מצד ימין." />
-                <Info title="Blur Reveal" text="חשיפה עם טשטוש יוקרתי." />
+                <Info title="Fade Up" text={t("studio.fadeUpHint")} />
+                <Info title="Zoom In" text={t("studio.zoomInHint")} />
+                <Info title="Slide Right" text={t("studio.slideRightHint")} />
+                <Info title="Blur Reveal" text={t("studio.blurRevealHint")} />
               </Panel>
             )}
 
@@ -719,25 +686,24 @@ export default function StudioSidebar({
               <Panel>
                 <div className="space-y-3 p-1">
                   <p className="text-sm font-black text-slate-900">
-                    SEO ו-Google Search Console
+                    {t("studio.seoGscTitle")}
                   </p>
                   <p className="text-xs font-semibold leading-5 text-slate-500">
-                    מדריך שלבים לאימות ידני מול Google, שמירת קוד/קובץ אימות,
-                    ושליחת Sitemap — בלי חיבור אוטומטי ל־Google.
+                    {t("studio.seoGscText")}
                   </p>
                   <button
                     type="button"
                     onClick={() => onOpenPageSeo?.("advanced")}
                     className="flex h-12 w-full items-center justify-center rounded-2xl bg-violet-700 px-4 text-sm font-black text-white transition hover:bg-violet-800"
                   >
-                    פתיחת מדריך האימות
+                    {t("studio.openVerificationGuide")}
                   </button>
                   <button
                     type="button"
                     onClick={() => onOpenPageSeo?.("seo")}
                     className="flex h-11 w-full items-center justify-center rounded-2xl border border-slate-200 bg-white px-4 text-xs font-black text-slate-700 transition hover:bg-slate-50"
                   >
-                    SEO בסיסי לעמוד
+                    {t("studio.basicPageSeo")}
                   </button>
                 </div>
               </Panel>
@@ -745,9 +711,9 @@ export default function StudioSidebar({
 
             {currentPanel === "settings" && (
               <Panel>
-                <Info title="דומיין" text="hadar-beauty.bizuply.com או דומיין אישי." />
-                <Info title="אנליטיקס" text="חיבור Google Analytics / Pixel." />
-                <Info title="סטטוס פרסום" text="טיוטה / פורסם / לא פעיל." />
+                <Info title={t("studio.domain")} text={t("studio.domainHint", { slug: "your-business" })} />
+                <Info title={t("studio.analytics")} text={t("studio.analyticsHint")} />
+                <Info title={t("studio.publishStatus")} text={t("studio.publishStatusHint")} />
               </Panel>
             )}
           </div>
@@ -798,6 +764,7 @@ function PagesHierarchyPanel({
   onMoveSectionDown: (sectionId: string) => void;
   onOpenSectionVariants: (kind?: string) => void;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="space-y-3">
       <div className="grid grid-cols-[1fr_auto] gap-2">
@@ -807,7 +774,7 @@ function PagesHierarchyPanel({
           onKeyDown={(event) => {
             if (event.key === "Enter") onAddPage();
           }}
-          placeholder="שם עמוד חדש..."
+          placeholder={t("studio.newPagePlaceholder")}
           className="h-11 rounded-xl border border-slate-200 bg-white px-4 text-sm font-bold text-slate-900 outline-none placeholder:text-slate-400 focus:border-violet-400"
         />
 
@@ -816,19 +783,19 @@ function PagesHierarchyPanel({
           onClick={onAddPage}
           className="h-11 rounded-xl bg-violet-700 px-4 text-xs font-black text-black shadow-lg shadow-violet-100 transition hover:bg-violet-800"
         >
-          + עמוד
+          {t("studio.addPage")}
         </button>
       </div>
 
       <SearchBox
         value={search}
         onChange={setSearch}
-        placeholder="חיפוש עמוד..."
+        placeholder={t("studio.searchPage")}
       />
 
       <div className="rounded-2xl border border-slate-200 bg-slate-50 p-2">
         <div className="mb-2 flex items-center justify-between px-2 py-1">
-          <p className="text-xs font-black text-slate-500">עמודים באתר</p>
+          <p className="text-xs font-black text-slate-500">{t("studio.sitePages")}</p>
           <span className="rounded-full bg-white px-3 py-1 text-[11px] font-black text-slate-400">
             {pages.length}
           </span>
@@ -862,9 +829,9 @@ function PagesHierarchyPanel({
 
           {pages.length === 0 && (
             <div className="rounded-xl border border-dashed border-slate-300 bg-white p-5 text-center">
-              <p className="text-sm font-black text-slate-700">אין עמודים</p>
+              <p className="text-sm font-black text-slate-700">{t("studio.noPages")}</p>
               <p className="mt-1 text-xs font-bold text-slate-400">
-                צרי עמוד חדש כדי להתחיל.
+                {t("studio.noPagesHint")}
               </p>
             </div>
           )}
@@ -905,6 +872,7 @@ function LightPageRow({
   onMoveSectionDown: (sectionId: string) => void;
   onOpenSectionVariants: (kind?: string) => void;
 }) {
+  const { t } = useTranslation();
   const [editingTitle, setEditingTitle] = useState(page.title);
 
   useEffect(() => {
@@ -937,7 +905,7 @@ function LightPageRow({
               "grid h-7 w-7 place-items-center rounded-lg text-xs transition",
               active ? "bg-violet-100 text-violet-700" : "text-slate-400 hover:bg-slate-100",
             ].join(" ")}
-            title={page.isHome ? "דף הבית" : "פתח עמוד"}
+            title={page.isHome ? t("studio.homePage") : t("studio.openPage")}
           >
             {page.isHome ? "⌂" : "▦"}
           </button>
@@ -957,19 +925,19 @@ function LightPageRow({
         </div>
 
         <div className="flex items-center">
-          <LightToolButton title="פתח עמוד" onClick={onSelectPage}>
-            {active ? "פתוח" : "פתח"}
+          <LightToolButton title={t("studio.openPage")} onClick={onSelectPage}>
+            {active ? t("studio.opened") : t("studio.open")}
           </LightToolButton>
 
-          <LightIconButton title="עיצוב" onClick={onSelectPage}>
+          <LightIconButton title={t("studio.design")} onClick={onSelectPage}>
             🎨
           </LightIconButton>
 
-          <LightIconButton title="הגדרות" onClick={onSelectPage}>
+          <LightIconButton title={t("studio.settings")} onClick={onSelectPage}>
             ⚙
           </LightIconButton>
 
-          <LightIconButton title="גרירה">
+          <LightIconButton title={t("studio.drag")}>
             ⠿
           </LightIconButton>
         </div>
@@ -981,7 +949,7 @@ function LightPageRow({
             <>
               <div className="mb-2 flex items-center justify-between">
                 <span className="text-[11px] font-black text-slate-500">
-                  סקשנים בעמוד
+                  {t("studio.pageSections")}
                 </span>
 
                 <button
@@ -989,7 +957,7 @@ function LightPageRow({
                   onClick={onAddSection}
                   className="h-8 rounded-lg bg-violet-700 px-3 text-[11px] font-black text-black transition hover:bg-violet-800"
                 >
-                  + סקשן
+                  {t("studio.addSection")}
                 </button>
               </div>
 
@@ -1014,14 +982,14 @@ function LightPageRow({
                   {sections.length === 0 && (
                     <div className="rounded-xl border border-dashed border-slate-300 bg-white p-4 text-center">
                       <p className="text-xs font-bold text-slate-500">
-                        אין סקשנים בעמוד הזה.
+                        {t("studio.noSectionsOnPage")}
                       </p>
                       <button
                         type="button"
                         onClick={onAddSection}
                         className="mt-3 rounded-lg bg-violet-700 px-4 py-2 text-xs font-black text-black"
                       >
-                        הוסף סקשן ראשון
+                        {t("studio.addFirstSection")}
                       </button>
                     </div>
                   )}
@@ -1034,7 +1002,7 @@ function LightPageRow({
               onClick={onSelectPage}
               className="w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-xs font-black text-slate-500 transition hover:border-violet-300 hover:bg-violet-50 hover:text-violet-700"
             >
-              פתחי את העמוד כדי לראות את הסקשנים שלו
+              {t("studio.openPageToSeeSections")}
             </button>
           )}
         </div>
@@ -1062,7 +1030,10 @@ function LightSectionRow({
   onMoveDown: () => void;
   onOpenVariants: () => void;
 }) {
-  const kindLabel = sectionKindLabels[section.kind] || section.kind || "סקשן";
+  const { t } = useTranslation();
+  const kindLabel = t(`studio.kind.${section.kind}`, {
+    defaultValue: section.kind || t("studio.kind.section"),
+  });
 
   return (
     <div className="relative pr-4">
@@ -1082,22 +1053,22 @@ function LightSectionRow({
         </button>
 
         <div className="flex items-center">
-          <LightToolButton title="בחר" onClick={onSelect}>
-            עריכה
+          <LightToolButton title={t("studio.select")} onClick={onSelect}>
+            {t("studio.edit")}
           </LightToolButton>
-          <LightIconButton title="מבנה" onClick={onOpenVariants}>
+          <LightIconButton title={t("studio.structure")} onClick={onOpenVariants}>
             🎨
           </LightIconButton>
-          <LightIconButton title="שכפל" onClick={onDuplicate}>
+          <LightIconButton title={t("studio.duplicate")} onClick={onDuplicate}>
             ⧉
           </LightIconButton>
-          <LightIconButton title="למעלה" onClick={onMoveUp}>
+          <LightIconButton title={t("studio.moveUp")} onClick={onMoveUp}>
             ↑
           </LightIconButton>
-          <LightIconButton title="למטה" onClick={onMoveDown}>
+          <LightIconButton title={t("studio.moveDown")} onClick={onMoveDown}>
             ↓
           </LightIconButton>
-          <LightIconButton title="מחק" onClick={onDelete}>
+          <LightIconButton title={t("studio.delete")} onClick={onDelete}>
             🗑
           </LightIconButton>
         </div>
@@ -1166,6 +1137,7 @@ function PanelHeader({
   subtitle: string;
   onClose: () => void;
 }) {
+  const { t } = useTranslation();
   return (
     <div className="border-b border-slate-200 bg-white px-5 py-5">
       <div className="flex items-start justify-between gap-4">
@@ -1182,7 +1154,7 @@ function PanelHeader({
           type="button"
           onClick={onClose}
           className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl border border-slate-200 bg-white text-lg font-black text-slate-400 shadow-sm transition hover:border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 hover:text-white"
-          title="סגירת פאנל"
+          title={t("studio.closePanel")}
         >
           ×
         </button>
@@ -1314,6 +1286,7 @@ function SectionCard({
   section: SectionTemplate;
   onClick: () => void;
 }) {
+  const { t } = useTranslation();
   return (
     <button
       type="button"
@@ -1328,7 +1301,7 @@ function SectionCard({
         />
 
         <span className="absolute left-2 top-2 rounded-full bg-white/90 px-3 py-1 text-[11px] font-black text-violet-700 shadow-sm">
-          הוספה
+          {t("studio.add")}
         </span>
       </div>
 
@@ -1348,6 +1321,7 @@ function PaletteCard({
   palette: ThemePalette;
   onClick: () => void;
 }) {
+  const { t } = useTranslation();
   const swatches = [
     "bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/70",
     "bg-fuchsia-500",
@@ -1371,7 +1345,7 @@ function PaletteCard({
               "h-9 w-9 rounded-xl border border-white shadow",
               swatch,
             ].join(" ")}
-            title={`צבע ${index + 1}`}
+            title={t("studio.colorN", { n: index + 1 })}
           />
         ))}
       </div>
@@ -1384,11 +1358,11 @@ function PaletteCard({
 
       <div className="mt-3 flex flex-wrap items-center gap-2">
         <span className="rounded-full bg-slate-100 px-3 py-1 text-[11px] font-black text-slate-500">
-          כותרות: {palette.font.heading}
+          {t("studio.headings")}: {palette.font.heading}
         </span>
 
         <span className="rounded-full bg-slate-100 px-3 py-1 text-[11px] font-black text-slate-500">
-          טקסט: {palette.font.body}
+          {t("studio.bodyText")}: {palette.font.body}
         </span>
       </div>
     </button>
@@ -1464,11 +1438,12 @@ function Info({ title, text }: { title: string; text: string }) {
 
 
 function EmptyState({ text }: { text?: string }) {
+  const { t } = useTranslation();
   return (
     <div className="rounded-2xl border border-dashed border-slate-300 bg-white p-6 text-center">
-      <p className="text-sm font-black text-slate-700">לא נמצאו תוצאות</p>
+      <p className="text-sm font-black text-slate-700">{t("studio.noResults")}</p>
       <p className="mt-1 text-xs font-bold text-slate-400">
-        {text || "נסי לבחור קטגוריה אחרת או למחוק את החיפוש."}
+        {text || t("studio.noResultsHint")}
       </p>
     </div>
   );

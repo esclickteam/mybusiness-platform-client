@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { DeviceMode } from "./types";
 import ConnectDomainModal from "../../website/ConnectDomainModal";
 
@@ -20,32 +21,6 @@ type Props = {
   onPublish: () => void;
 };
 
-const devices: {
-  value: DeviceMode;
-  label: string;
-  icon: string;
-  title: string;
-}[] = [
-  {
-    value: "Desktop",
-    label: "דסקטופ",
-    icon: "▭",
-    title: "תצוגת דסקטופ",
-  },
-  {
-    value: "Tablet",
-    label: "טאבלט",
-    icon: "▯",
-    title: "תצוגת טאבלט",
-  },
-  {
-    value: "Mobile",
-    label: "מובייל",
-    icon: "▮",
-    title: "תצוגת מובייל",
-  },
-];
-
 export default function StudioTopbar({
   slug,
   setSlug,
@@ -63,8 +38,34 @@ export default function StudioTopbar({
   onSaveDraft,
   onPublish,
 }: Props) {
+  const { t } = useTranslation();
   const canSave = ready && slugValid;
   const [connectDomainOpen, setConnectDomainOpen] = useState(false);
+  const devices: {
+    value: DeviceMode;
+    label: string;
+    icon: string;
+    title: string;
+  }[] = [
+    {
+      value: "Desktop",
+      label: t("studio.desktop"),
+      icon: "▭",
+      title: t("studio.desktopTitle"),
+    },
+    {
+      value: "Tablet",
+      label: t("studio.tablet"),
+      icon: "▯",
+      title: t("studio.tabletTitle"),
+    },
+    {
+      value: "Mobile",
+      label: t("studio.mobile"),
+      icon: "▮",
+      title: t("studio.mobileTitle"),
+    },
+  ];
   const [linkedCustomDomain, setLinkedCustomDomain] = useState(
     String(customDomain || "").trim().toLowerCase(),
   );
@@ -94,7 +95,7 @@ export default function StudioTopbar({
             Bizuply Studio
           </p>
           <p className="mt-1 truncate text-xs font-bold leading-none text-slate-400">
-            בונה אתרים מקצועי לעסקים
+            {t("studio.tagline")}
           </p>
         </div>
       </div>
@@ -132,7 +133,7 @@ export default function StudioTopbar({
         onClick={() => setConnectDomainOpen(true)}
         className="hidden shrink-0 text-sm font-black text-violet-700 transition hover:text-violet-900 xl:inline"
       >
-        {linkedCustomDomain ? "ניהול דומיין" : "חיבור דומיין"}
+        {linkedCustomDomain ? t("studio.manageDomain") : t("studio.connectDomain")}
       </button>
 
       {/* ACTIONS */}
@@ -140,17 +141,17 @@ export default function StudioTopbar({
         <button
           type="button"
           onClick={() => setConnectDomainOpen(true)}
-          title="חיבור דומיין"
+          title={t("studio.connectDomain")}
           className="shrink-0 rounded-2xl border border-violet-200 bg-violet-50 px-3.5 py-3 text-xs font-black text-violet-700 transition hover:-translate-y-0.5 hover:bg-violet-100 xl:hidden"
         >
-          דומיין
+          {t("studio.domain")}
         </button>
-        <IconButton title="ביטול פעולה אחרונה" onClick={onUndo} icon="↶">
-          ביטול
+        <IconButton title={t("studio.undoTitle")} onClick={onUndo} icon="↶">
+          {t("studio.undo")}
         </IconButton>
 
-        <IconButton title="ביצוע מחדש" onClick={onRedo} icon="↷">
-          שוב
+        <IconButton title={t("studio.redoTitle")} onClick={onRedo} icon="↷">
+          {t("studio.redo")}
         </IconButton>
 
         <Divider />
@@ -171,23 +172,23 @@ export default function StudioTopbar({
 
         <Divider />
 
-        <IconButton title="ניהול תמונות ומדיה" onClick={onMedia} icon="▧">
-          מדיה
+        <IconButton title={t("studio.mediaTitle")} onClick={onMedia} icon="▧">
+          {t("studio.media")}
         </IconButton>
 
         <span data-demo-target="website-preview">
-          <IconButton title="תצוגה מקדימה" onClick={onPreview} icon="👁">
-            תצוגה
+          <IconButton title={t("studio.previewTitle")} onClick={onPreview} icon="👁">
+            {t("studio.preview")}
           </IconButton>
         </span>
 
-        <IconButton title="איפוס האתר לברירת מחדל" onClick={onReset} icon="↺">
-          איפוס
+        <IconButton title={t("studio.resetTitle")} onClick={onReset} icon="↺">
+          {t("studio.reset")}
         </IconButton>
 
         <button
           type="button"
-          title="בנייה חכמה עם AI"
+          title={t("studio.aiTitle")}
           className="group shrink-0 rounded-2xl border border-violet-200 bg-gradient-to-br from-violet-50 to-fuchsia-50 px-4 py-3 text-xs font-black text-violet-700 transition hover:-translate-y-0.5 hover:border-violet-300 hover:shadow-lg hover:shadow-violet-100"
         >
           <span className="ml-1 inline-block transition group-hover:rotate-12">
@@ -201,7 +202,7 @@ export default function StudioTopbar({
           onClick={onSaveDraft}
           disabled={!canSave}
           data-demo-target="website-save"
-          title={!slugValid ? "הכתובת לא תקינה" : "שמירה כטיוטה"}
+          title={!slugValid ? t("studio.invalidSlug") : t("studio.saveDraft")}
           className={[
             "shrink-0 rounded-2xl border px-4 py-3 text-xs font-black shadow-sm transition",
             canSave
@@ -209,7 +210,7 @@ export default function StudioTopbar({
               : "cursor-not-allowed border-slate-200 bg-slate-100 text-slate-400",
           ].join(" ")}
         >
-          שמירה
+          {t("studio.save")}
         </button>
 
         <button
@@ -217,7 +218,7 @@ export default function StudioTopbar({
           onClick={onPublish}
           disabled={!canSave}
           data-demo-target="website-publish"
-          title={!slugValid ? "הכתובת לא תקינה" : "פרסום האתר"}
+          title={!slugValid ? t("studio.invalidSlug") : t("studio.publishTitle")}
           className={[
             "shrink-0 rounded-2xl px-5 py-3 text-xs font-black text-black shadow-xl transition",
             canSave
@@ -225,7 +226,7 @@ export default function StudioTopbar({
               : "cursor-not-allowed bg-slate-300 shadow-none",
           ].join(" ")}
         >
-          פרסום 🚀
+          {t("studio.publish")} 🚀
         </button>
       </div>
 
