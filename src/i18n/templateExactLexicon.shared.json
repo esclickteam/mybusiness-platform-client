@@ -430,5 +430,989 @@
     "es": "Capítulo",
     "pt-BR": "Capítulo",
     "ar": "فصل"
+  },
+  "שנות ניסיון": {
+    "en": "Years of experience",
+    "es": "Años de experiencia",
+    "pt-BR": "Anos de experiência",
+    "ar": "سنوات خبرة"
+  },
+  "שעות פעילות": {
+    "en": "Opening hours",
+    "es": "Horario",
+    "pt-BR": "Horário de funcionamento",
+    "ar": "ساعات العمل"
+  },
+  "למה אנחנו": {
+    "en": "Why us",
+    "es": "Por qué nosotros",
+    "pt-BR": "Por que nós",
+    "ar": "لماذا نحن"
+  },
+  "שליחת בקשה": {
+    "en": "Send request",
+    "es": "Enviar solicitud",
+    "pt-BR": "Enviar pedido",
+    "ar": "إرسال طلب"
+  },
+  "יש חניה?": {
+    "en": "Is there parking?",
+    "es": "¿Hay aparcamiento?",
+    "pt-BR": "Tem estacionamento?",
+    "ar": "هل يوجد موقف؟"
+  },
+  "תל אביב, ישראל": {
+    "en": "Tel Aviv, Israel",
+    "es": "Tel Aviv, Israel",
+    "pt-BR": "Tel Aviv, Israel",
+    "ar": "تل أبيب، إسرائيل"
+  },
+  "טיפולים": {
+    "en": "Treatments",
+    "es": "Tratamientos",
+    "pt-BR": "Tratamentos",
+    "ar": "علاجات"
+  },
+  "לפני ואחרי": {
+    "en": "Before and after",
+    "es": "Antes y después",
+    "pt-BR": "Antes e depois",
+    "ar": "قبل وبعد"
+  },
+  "לקוחה קבועה": {
+    "en": "Regular client",
+    "es": "Clienta habitual",
+    "pt-BR": "Cliente frequente",
+    "ar": "عميلة دائمة"
+  },
+  "כלה": {
+    "en": "Bride",
+    "es": "Novia",
+    "pt-BR": "Noiva",
+    "ar": "عروس"
+  },
+  "הטיפולים שלנו": {
+    "en": "Our treatments",
+    "es": "Nuestros tratamientos",
+    "pt-BR": "Os nossos tratamentos",
+    "ar": "علاجاتنا"
+  },
+  "אבחון": {
+    "en": "Diagnosis",
+    "es": "Diagnóstico",
+    "pt-BR": "Diagnóstico",
+    "ar": "تشخيص"
+  },
+  "הגשה": {
+    "en": "Presentation",
+    "es": "Presentación",
+    "pt-BR": "Apresentação",
+    "ar": "تقديم"
+  },
+  "מסלולים": {
+    "en": "Tracks",
+    "es": "Recorridos",
+    "pt-BR": "Percursos",
+    "ar": "مسارات"
+  },
+  "מי אנחנו": {
+    "en": "Who we are",
+    "es": "Quiénes somos",
+    "pt-BR": "Quem somos",
+    "ar": "من نحن"
+  },
+  "קטגוריות": {
+    "en": "Categories",
+    "es": "Categorías",
+    "pt-BR": "Categorias",
+    "ar": "فئات"
+  },
+  "נבחרים": {
+    "en": "Featured",
+    "es": "Destacados",
+    "pt-BR": "Destaques",
+    "ar": "مختارات"
+  },
+  "החנות": {
+    "en": "The store",
+    "es": "La tienda",
+    "pt-BR": "A loja",
+    "ar": "المتجر"
+  },
+  "החזרות עד 14 יום": {
+    "en": "Returns within 14 days",
+    "es": "Devoluciones en 14 días",
+    "pt-BR": "Devoluções em 14 dias",
+    "ar": "إرجاع خلال 14 يوماً"
+  },
+  "שירות לקוחות אנושי": {
+    "en": "Human customer service",
+    "es": "Atención humana",
+    "pt-BR": "Atendimento humano",
+    "ar": "خدمة عملاء بشرية"
+  },
+  "מה אנחנו מביאים לשולחן.": {
+    "en": "What we bring to the table.",
+    "es": "Lo que ponemos sobre la mesa.",
+    "pt-BR": "O que levamos à mesa.",
+    "ar": "ما نحضره إلى الطاولة."
+  },
+  "עבודות מהשטח.": {
+    "en": "Work from the field.",
+    "es": "Trabajos del terreno.",
+    "pt-BR": "Trabalhos do terreno.",
+    "ar": "أعمال من الميدان."
+  },
+  "האנשים מאחורי התוצאות.": {
+    "en": "The people behind the results.",
+    "es": "Las personas detrás de los resultados.",
+    "pt-BR": "As pessoas por trás dos resultados.",
+    "ar": "الأشخاص خلف النتائج."
+  },
+  "נקודות מבט מהשטח.": {
+    "en": "Perspectives from the field.",
+    "es": "Perspectivas del terreno.",
+    "pt-BR": "Perspetivas do terreno.",
+    "ar": "وجهات نظر من الميدان."
+  },
+  "איך בונים תוכנית רבעונית שעובדת": {
+    "en": "How to build a quarterly plan that works",
+    "es": "Cómo construir un plan trimestral que funciona",
+    "pt-BR": "Como construir um plano trimestral que funciona",
+    "ar": "كيف تبنون خطة ربع سنوية تعمل"
+  },
+  "מסגרת פשוטה לתעדוף מהלכים לפי השפעה.": {
+    "en": "A simple frame for prioritizing moves by impact.",
+    "es": "Un marco simple para priorizar acciones por impacto.",
+    "pt-BR": "Um quadro simples para priorizar ações por impacto.",
+    "ar": "إطار بسيط لترتيب التحركات حسب الأثر."
+  },
+  "סימנים מוקדמים שכדאי לתפוס": {
+    "en": "Early signs worth catching",
+    "es": "Señales tempranas que conviene pillar",
+    "pt-BR": "Sinais cedo que vale apanhar",
+    "ar": "إشارات مبكرة يستحق التقاطها"
+  },
+  "מה למדנו מקמפיינים ותהליכים שנכשלו.": {
+    "en": "What we learned from campaigns and processes that failed.",
+    "es": "Lo que aprendimos de campañas y procesos que fallaron.",
+    "pt-BR": "O que aprendemos de campanhas e processos que falharam.",
+    "ar": "ما تعلمناه من حملات وعمليات فشلت."
+  },
+  "מדדי הצלחה שסוכנות חייבת": {
+    "en": "Success metrics an agency must have",
+    "es": "Métricas de éxito que una agencia debe tener",
+    "pt-BR": "Métricas de sucesso que uma agência precisa",
+    "ar": "مؤشرات نجاح يجب أن تملكها الوكالة"
+  },
+  "KPI ברורים ללקוח, לצוות ולהנהלה.": {
+    "en": "Clear KPIs for the client, the team, and leadership.",
+    "es": "KPI claros para el cliente, el equipo y la dirección.",
+    "pt-BR": "KPIs claros para o cliente, a equipe e a liderança.",
+    "ar": "مؤشرات واضحة للعميل والفريق والإدارة."
+  },
+  "איך העבודה נראית בפועל.": {
+    "en": "How the work looks in practice.",
+    "es": "Cómo se ve el trabajo en la práctica.",
+    "pt-BR": "Como o trabalho parece na prática.",
+    "ar": "كيف يبدو العمل فعلياً."
+  },
+  "הבנת מצב, יעדים ואילוצים.": {
+    "en": "Understanding the situation, goals, and constraints.",
+    "es": "Entender la situación, objetivos y límites.",
+    "pt-BR": "Entender a situação, objetivos e limites.",
+    "ar": "فهم الوضع والأهداف والقيود."
+  },
+  "מפת דרכים, תקציב ולוחות זמנים.": {
+    "en": "A roadmap, budget, and timelines.",
+    "es": "Hoja de ruta, presupuesto y plazos.",
+    "pt-BR": "Roteiro, orçamento e prazos.",
+    "ar": "خارطة طريق وميزانية وجداول زمنية."
+  },
+  "יישום מדורג עם שקיפות מלאה.": {
+    "en": "Phased delivery with full transparency.",
+    "es": "Implementación por fases con transparencia total.",
+    "pt-BR": "Implementação faseada com transparência total.",
+    "ar": "تنفيذ متدرج بشفافية كاملة."
+  },
+  "דוחות, תובנות ושיפור מתמשך.": {
+    "en": "Reports, insights, and ongoing improvement.",
+    "es": "Informes, insights y mejora continua.",
+    "pt-BR": "Relatórios, insights e melhoria contínua.",
+    "ar": "تقارير ورؤى وتحسين مستمر."
+  },
+  "מוכנים לדבר על הצעד הבא?": {
+    "en": "Ready to talk about the next step?",
+    "es": "¿Listos para hablar del siguiente paso?",
+    "pt-BR": "Prontos para falar do próximo passo?",
+    "ar": "جاهزون للحديث عن الخطوة التالية؟"
+  },
+  "השאירו פרטים ונחזור עם מסלול ברור.": {
+    "en": "Leave your details and we will come back with a clear path.",
+    "es": "Dejad los datos y volveremos con un recorrido claro.",
+    "pt-BR": "Deixem os dados e voltamos com um caminho claro.",
+    "ar": "اتركوا التفاصيل وسنعود بمسار واضح."
+  },
+  "אתר מלא לסוכנות — 8 עמודים עם תנועה ואפקטים.": {
+    "en": "A full agency site — 8 pages with motion and effects.",
+    "es": "Un sitio de agencia completo — 8 páginas con movimiento y efectos.",
+    "pt-BR": "Um site completo de agência — 8 páginas com movimento e efeitos.",
+    "ar": "موقع وكالة كامل — 8 صفحات بحركة وتأثيرات."
+  },
+  "האתר נראה פרימיום והמוצרים מתעדכנים ישר מהחנות.": {
+    "en": "The site looks premium and products update straight from the store.",
+    "es": "El sitio se ve premium y los productos se actualizan directo desde la tienda.",
+    "pt-BR": "O site parece premium e os produtos atualizam direto da loja.",
+    "ar": "الموقع يبدو فجماً والمنتجات تتحدث مباشرة من المتجر."
+  },
+  "מבצעים, קולקציות וטיפים ישירות למייל.": {
+    "en": "Promos, collections, and tips straight to your inbox.",
+    "es": "Promos, colecciones y consejos directo al correo.",
+    "pt-BR": "Promoções, coleções e dicas direto no e-mail.",
+    "ar": "عروض ومجموعات ونصائح مباشرة إلى البريد."
+  },
+  "שנות מטבח": {
+    "en": "Years in the kitchen",
+    "es": "Años de cocina",
+    "pt-BR": "Anos de cozinha",
+    "ar": "سنوات مطبخ"
+  },
+  "דירוג סועדים": {
+    "en": "Guest rating",
+    "es": "Valoración de comensales",
+    "pt-BR": "Avaliação dos clientes",
+    "ar": "تقييم الضيوف"
+  },
+  "יינות במרתף": {
+    "en": "Wines in the cellar",
+    "es": "Vinos en la bodega",
+    "pt-BR": "Vinhos na adega",
+    "ar": "نبيذ في القبو"
+  },
+  "ערב שף מיוחד": {
+    "en": "A special chef evening",
+    "es": "Una noche especial de chef",
+    "pt-BR": "Uma noite especial de chef",
+    "ar": "أمسية شيف خاصة"
+  },
+  "חמישי": {
+    "en": "Thursday",
+    "es": "Jueves",
+    "pt-BR": "Quinta",
+    "ar": "الخميس"
+  },
+  "התמחויות": {
+    "en": "Specialties",
+    "es": "Especialidades",
+    "pt-BR": "Especialidades",
+    "ar": "تخصصات"
+  },
+  "רופאים": {
+    "en": "Doctors",
+    "es": "Médicos",
+    "pt-BR": "Médicos",
+    "ar": "أطباء"
+  },
+  "לומדים": {
+    "en": "Students",
+    "es": "Alumnos",
+    "pt-BR": "Alunos",
+    "ar": "دارسون"
+  },
+  "לחבילות": {
+    "en": "See packages",
+    "es": "Ver paquetes",
+    "pt-BR": "Ver pacotes",
+    "ar": "إلى الباقات"
+  },
+  "למחירון": {
+    "en": "See the price list",
+    "es": "Ver la lista de precios",
+    "pt-BR": "Ver a lista de preços",
+    "ar": "إلى قائمة الأسعار"
+  },
+  "לפרוטוקולים": {
+    "en": "See protocols",
+    "es": "Ver protocolos",
+    "pt-BR": "Ver protocolos",
+    "ar": "إلى البروتوكولات"
+  },
+  "אודות המרפאה": {
+    "en": "About the clinic",
+    "es": "Sobre la clínica",
+    "pt-BR": "Sobre a clínica",
+    "ar": "عن العيادة"
+  },
+  "בדיקה ראשונית": {
+    "en": "First check",
+    "es": "Primera revisión",
+    "pt-BR": "Primeira avaliação",
+    "ar": "فحص أولي"
+  },
+  "גלריית העונה": {
+    "en": "Season gallery",
+    "es": "Galería de la temporada",
+    "pt-BR": "Galeria da temporada",
+    "ar": "معرض الموسم"
+  },
+  "דוחות נסגרים לפני הדדליין": {
+    "en": "Reports close before the deadline",
+    "es": "Los informes se cierran antes del plazo",
+    "pt-BR": "Relatórios fecham antes do prazo",
+    "ar": "التقارير تُغلق قبل الموعد"
+  },
+  "דירוג לקוחות": {
+    "en": "Client rating",
+    "es": "Valoración de clientes",
+    "pt-BR": "Avaliação de clientes",
+    "ar": "تقييم العملاء"
+  },
+  "דירוג מטופלים": {
+    "en": "Patient rating",
+    "es": "Valoración de pacientes",
+    "pt-BR": "Avaliação de pacientes",
+    "ar": "تقييم المرضى"
+  },
+  "דירוג מתאמנים": {
+    "en": "Trainee rating",
+    "es": "Valoración de alumnos",
+    "pt-BR": "Avaliação de alunos",
+    "ar": "تقييم المتدربين"
+  },
+  "הזמינו זר": {
+    "en": "Order a bouquet",
+    "es": "Pedir un ramo",
+    "pt-BR": "Pedir um buquê",
+    "ar": "اطلبوا باقة"
+  },
+  "הזמנת צוות": {
+    "en": "Book the team",
+    "es": "Reservar el equipo",
+    "pt-BR": "Reservar a equipe",
+    "ar": "حجز الفريق"
+  },
+  "הזמנת צילום": {
+    "en": "Book a shoot",
+    "es": "Reservar una sesión",
+    "pt-BR": "Reservar um ensaio",
+    "ar": "حجز تصوير"
+  },
+  "הזמנת קייטרינג": {
+    "en": "Book catering",
+    "es": "Reservar catering",
+    "pt-BR": "Reservar catering",
+    "ar": "حجز تموين"
+  },
+  "החזר השקעה": {
+    "en": "Return on investment",
+    "es": "Retorno de inversión",
+    "pt-BR": "Retorno do investimento",
+    "ar": "عائد الاستثمار"
+  },
+  "המשרד": {
+    "en": "The office",
+    "es": "El despacho",
+    "pt-BR": "O escritório",
+    "ar": "المكتب"
+  },
+  "הסיפור": {
+    "en": "The story",
+    "es": "La historia",
+    "pt-BR": "A história",
+    "ar": "القصة"
+  },
+  "הצטרפות": {
+    "en": "Join",
+    "es": "Unirse",
+    "pt-BR": "Entrar",
+    "ar": "انضمام"
+  },
+  "התחלה": {
+    "en": "Start",
+    "es": "Empezar",
+    "pt-BR": "Começar",
+    "ar": "بداية"
+  },
+  "התפריט": {
+    "en": "The menu",
+    "es": "El menú",
+    "pt-BR": "O cardápio",
+    "ar": "القائمة"
+  },
+  "זמן המתנה ממוצע במרפאה": {
+    "en": "Average wait time at the clinic",
+    "es": "Tiempo medio de espera en la clínica",
+    "pt-BR": "Tempo médio de espera na clínica",
+    "ar": "متوسط الانتظار في العيادة"
+  },
+  "זמן תגובה ממוצע": {
+    "en": "Average response time",
+    "es": "Tiempo medio de respuesta",
+    "pt-BR": "Tempo médio de resposta",
+    "ar": "متوسط زمن الرد"
+  },
+  "חברות בליווי הנהלה פעיל": {
+    "en": "Companies with active leadership support",
+    "es": "Empresas con acompañamiento directivo activo",
+    "pt-BR": "Empresas com acompanhamento de gestão ativo",
+    "ar": "شركات بمرافقة إدارة نشطة"
+  },
+  "חודשי אחריות כתובה": {
+    "en": "Months of written warranty",
+    "es": "Meses de garantía escrita",
+    "pt-BR": "Meses de garantia escrita",
+    "ar": "أشهر ضمان مكتوب"
+  },
+  "ייעוץ משפטי ראשוני": {
+    "en": "Initial legal consult",
+    "es": "Consulta jurídica inicial",
+    "pt-BR": "Consultoria jurídica inicial",
+    "ar": "استشارة قانونية أولى"
+  },
+  "ירידה ממוצעת": {
+    "en": "Average drop",
+    "es": "Bajada media",
+    "pt-BR": "Queda média",
+    "ar": "انخفاض متوسط"
+  },
+  "להחלמה": {
+    "en": "See recovery",
+    "es": "Ver la recuperación",
+    "pt-BR": "Ver a recuperação",
+    "ar": "إلى التعافي"
+  },
+  "להירשם": {
+    "en": "Sign up",
+    "es": "Inscribirse",
+    "pt-BR": "Inscrever-se",
+    "ar": "سجّلوا"
+  },
+  "לחבילות התכנון": {
+    "en": "See planning packages",
+    "es": "Ver paquetes de planificación",
+    "pt-BR": "Ver pacotes de planeamento",
+    "ar": "إلى باقات التخطيط"
+  },
+  "לחבילות כלה": {
+    "en": "See bridal packages",
+    "es": "Ver paquetes de novia",
+    "pt-BR": "Ver pacotes de noiva",
+    "ar": "إلى باقات العروس"
+  },
+  "לטראקים": {
+    "en": "See tracks",
+    "es": "Ver tracks",
+    "pt-BR": "Ver tracks",
+    "ar": "إلى المسارات"
+  },
+  "לכישורים": {
+    "en": "See skills",
+    "es": "Ver habilidades",
+    "pt-BR": "Ver competências",
+    "ar": "إلى المهارات"
+  },
+  "לכיתות": {
+    "en": "See classes",
+    "es": "Ver clases",
+    "pt-BR": "Ver turmas",
+    "ar": "إلى الصفوف"
+  },
+  "ללוח זמנים": {
+    "en": "See the schedule",
+    "es": "Ver el horario",
+    "pt-BR": "Ver o horário",
+    "ar": "إلى الجدول"
+  },
+  "ללוקים": {
+    "en": "See looks",
+    "es": "Ver looks",
+    "pt-BR": "Ver looks",
+    "ar": "إلى الإطلالات"
+  },
+  "למניפות הצבעים": {
+    "en": "See color fans",
+    "es": "Ver abanicos de color",
+    "pt-BR": "Ver leques de cor",
+    "ar": "إلى مراوح الألوان"
+  },
+  "למקצועות": {
+    "en": "See professions",
+    "es": "Ver profesiones",
+    "pt-BR": "Ver profissões",
+    "ar": "إلى المهن"
+  },
+  "לנכסים נבחרים": {
+    "en": "See selected properties",
+    "es": "Ver inmuebles destacados",
+    "pt-BR": "Ver imóveis escolhidos",
+    "ar": "إلى العقارات المختارة"
+  },
+  "לסגנונות": {
+    "en": "See styles",
+    "es": "Ver estilos",
+    "pt-BR": "Ver estilos",
+    "ar": "إلى الأساليب"
+  },
+  "לסילבוס": {
+    "en": "See the syllabus",
+    "es": "Ver el temario",
+    "pt-BR": "Ver o programa",
+    "ar": "إلى المنهج"
+  },
+  "לסקירת התחומים": {
+    "en": "See the practice areas",
+    "es": "Ver las áreas",
+    "pt-BR": "Ver as áreas",
+    "ar": "إلى استعراض المجالات"
+  },
+  "לעבודות שלנו": {
+    "en": "See our work",
+    "es": "Ver nuestros trabajos",
+    "pt-BR": "Ver os nossos trabalhos",
+    "ar": "إلى أعمالنا"
+  },
+  "לפעילויות": {
+    "en": "See activities",
+    "es": "Ver actividades",
+    "pt-BR": "Ver atividades",
+    "ar": "إلى الأنشطة"
+  },
+  "לצפייה בתפריט": {
+    "en": "See the menu",
+    "es": "Ver el menú",
+    "pt-BR": "Ver o cardápio",
+    "ar": "مشاهدة القائمة"
+  },
+  "לקוחות מרוצים": {
+    "en": "Happy clients",
+    "es": "Clientes satisfechos",
+    "pt-BR": "Clientes satisfeitos",
+    "ar": "عملاء راضون"
+  },
+  "לקוחות ששיפרו KPI מרכזי תוך רבעון": {
+    "en": "Clients who improved a core KPI in a quarter",
+    "es": "Clientes que mejoraron un KPI clave en un trimestre",
+    "pt-BR": "Clientes que melhoraram um KPI central num trimestre",
+    "ar": "عملاء حسّنوا مؤشراً أساسياً خلال ربع"
+  },
+  "לקורסים": {
+    "en": "See courses",
+    "es": "Ver cursos",
+    "pt-BR": "Ver cursos",
+    "ar": "إلى الدورات"
+  },
+  "לקטלוג": {
+    "en": "See the catalog",
+    "es": "Ver el catálogo",
+    "pt-BR": "Ver o catálogo",
+    "ar": "إلى الكتالوج"
+  },
+  "לראות את השירותים": {
+    "en": "See the services",
+    "es": "Ver los servicios",
+    "pt-BR": "Ver os serviços",
+    "ar": "رؤية الخدمات"
+  },
+  "לראות שיעורים": {
+    "en": "See lessons",
+    "es": "Ver clases",
+    "pt-BR": "Ver aulas",
+    "ar": "رؤية الدروس"
+  },
+  "לראות תוכניות": {
+    "en": "See programs",
+    "es": "Ver programas",
+    "pt-BR": "Ver programas",
+    "ar": "رؤية البرامج"
+  },
+  "לראות תפריט": {
+    "en": "See a menu",
+    "es": "Ver un menú",
+    "pt-BR": "Ver um cardápio",
+    "ar": "رؤية قائمة"
+  },
+  "לרשימת הטיפולים": {
+    "en": "See the treatment list",
+    "es": "Ver la lista de tratamientos",
+    "pt-BR": "Ver a lista de tratamentos",
+    "ar": "إلى قائمة العلاجات"
+  },
+  "לשיטות": {
+    "en": "See methods",
+    "es": "Ver métodos",
+    "pt-BR": "Ver métodos",
+    "ar": "إلى الأساليب"
+  },
+  "לשמוע מסלולים": {
+    "en": "Hear the tracks",
+    "es": "Escuchar recorridos",
+    "pt-BR": "Ouvir percursos",
+    "ar": "استمعوا إلى المسارات"
+  },
+  "לתאם שיעור ניסיון": {
+    "en": "Book a trial lesson",
+    "es": "Reservar una clase de prueba",
+    "pt-BR": "Marcar uma aula experimental",
+    "ar": "تنسيق درس تجريبي"
+  },
+  "לתהליך": {
+    "en": "See the process",
+    "es": "Ver el proceso",
+    "pt-BR": "Ver o processo",
+    "ar": "إلى العملية"
+  },
+  "לתוכנית": {
+    "en": "See the program",
+    "es": "Ver el programa",
+    "pt-BR": "Ver o programa",
+    "ar": "إلى البرنامج"
+  },
+  "לתחומי העיסוק": {
+    "en": "See practice areas",
+    "es": "Ver áreas de práctica",
+    "pt-BR": "Ver áreas de atuação",
+    "ar": "إلى مجالات العمل"
+  },
+  "לתיאום פגישת ייעוץ": {
+    "en": "Book a consult meeting",
+    "es": "Agendar una reunión de consulta",
+    "pt-BR": "Agendar uma reunião de consultoria",
+    "ar": "لتنسيق اجتماع استشارة"
+  },
+  "לתפריט צבע": {
+    "en": "See the color menu",
+    "es": "Ver el menú de color",
+    "pt-BR": "Ver o cardápio de cor",
+    "ar": "إلى قائمة الألوان"
+  },
+  "מדיה שנוהלה": {
+    "en": "Media managed",
+    "es": "Medios gestionados",
+    "pt-BR": "Mídia gerida",
+    "ar": "وسائط أُديرت"
+  },
+  "מחירון זהב": {
+    "en": "Gold price list",
+    "es": "Lista de precios oro",
+    "pt-BR": "Lista de preços ouro",
+    "ar": "قائمة أسعار ذهبية"
+  },
+  "מחירון כרום": {
+    "en": "Chrome price list",
+    "es": "Lista de precios chrome",
+    "pt-BR": "Lista de preços chrome",
+    "ar": "قائمة أسعار كروم"
+  },
+  "מטופלים מרוצים": {
+    "en": "Satisfied patients",
+    "es": "Pacientes satisfechos",
+    "pt-BR": "Pacientes satisfeitos",
+    "ar": "مرضى راضون"
+  },
+  "מטופלים פעילים": {
+    "en": "Active patients",
+    "es": "Pacientes activos",
+    "pt-BR": "Pacientes ativos",
+    "ar": "مرضى نشطون"
+  },
+  "מענה לקריאות דחופות": {
+    "en": "Response to urgent calls",
+    "es": "Respuesta a llamadas urgentes",
+    "pt-BR": "Resposta a chamadas urgentes",
+    "ar": "الرد على النداءات العاجلة"
+  },
+  "מענה מהיר": {
+    "en": "Fast reply",
+    "es": "Respuesta rápida",
+    "pt-BR": "Resposta rápida",
+    "ar": "رد سريع"
+  },
+  "מפתחים פעילים": {
+    "en": "Active developers",
+    "es": "Desarrolladores activos",
+    "pt-BR": "Desenvolvedores ativos",
+    "ar": "مطورون نشطون"
+  },
+  "מקורות אמינים": {
+    "en": "Trusted sources",
+    "es": "Fuentes fiables",
+    "pt-BR": "Fontes fiáveis",
+    "ar": "مصادر موثوقة"
+  },
+  "מקרי בוחן": {
+    "en": "Case studies",
+    "es": "Casos de estudio",
+    "pt-BR": "Estudos de caso",
+    "ar": "دراسات حالة"
+  },
+  "משפחות ליווינו": {
+    "en": "Families we accompanied",
+    "es": "Familias que acompañamos",
+    "pt-BR": "Famílias que acompanhámos",
+    "ar": "عائلات رافقناها"
+  },
+  "מתאמנים פעילים": {
+    "en": "Active trainees",
+    "es": "Alumnos activos",
+    "pt-BR": "Alunos ativos",
+    "ar": "متدربون نشطون"
+  },
+  "ספרים": {
+    "en": "Books",
+    "es": "Libros",
+    "pt-BR": "Livros",
+    "ar": "كتب"
+  },
+  "עסקאות שנסגרו": {
+    "en": "Deals closed",
+    "es": "Operaciones cerradas",
+    "pt-BR": "Negócios fechados",
+    "ar": "صفقات أُغلقت"
+  },
+  "עסקים בליווי שוטף": {
+    "en": "Businesses in ongoing support",
+    "es": "Negocios en acompañamiento continuo",
+    "pt-BR": "Negócios em acompanhamento contínuo",
+    "ar": "أعمال بمرافقة مستمرة"
+  },
+  "פרסים בעיצוב": {
+    "en": "Design awards",
+    "es": "Premios de diseño",
+    "pt-BR": "Prémios de design",
+    "ar": "جوائز في التصميم"
+  },
+  "צוותי שטח בפריסה יומית": {
+    "en": "Field teams on daily coverage",
+    "es": "Equipos de campo en cobertura diaria",
+    "pt-BR": "Equipas de campo em cobertura diária",
+    "ar": "فرق ميدانية بتغطية يومية"
+  },
+  "צוותים פעילים": {
+    "en": "Active teams",
+    "es": "Equipos activos",
+    "pt-BR": "Equipas ativas",
+    "ar": "فرق نشطة"
+  },
+  "צפו בדמו": {
+    "en": "Watch the demo",
+    "es": "Ver la demo",
+    "pt-BR": "Ver a demo",
+    "ar": "شاهدوا العرض"
+  },
+  "צפו בלוקבוק": {
+    "en": "See the lookbook",
+    "es": "Ver el lookbook",
+    "pt-BR": "Ver o lookbook",
+    "ar": "شاهدوا الكتالوج"
+  },
+  "צפו במוזאיקה": {
+    "en": "See the mosaic",
+    "es": "Ver el mosaico",
+    "pt-BR": "Ver o mosaico",
+    "ar": "شاهدوا الفسيفساء"
+  },
+  "צפו בפיד לדוגמה": {
+    "en": "See a sample feed",
+    "es": "Ver un feed de ejemplo",
+    "pt-BR": "Ver um feed de exemplo",
+    "ar": "شاهدوا موجزاً تجريبياً"
+  },
+  "צפיה בשירותים": {
+    "en": "View services",
+    "es": "Ver servicios",
+    "pt-BR": "Ver serviços",
+    "ar": "عرض الخدمات"
+  },
+  "צפייה בטיפולים": {
+    "en": "View treatments",
+    "es": "Ver tratamientos",
+    "pt-BR": "Ver tratamentos",
+    "ar": "عرض العلاجات"
+  },
+  "צפייה בפרויקטים": {
+    "en": "View projects",
+    "es": "Ver proyectos",
+    "pt-BR": "Ver projetos",
+    "ar": "عرض المشاريع"
+  },
+  "צפייה בתפריט": {
+    "en": "View the menu",
+    "es": "Ver el menú",
+    "pt-BR": "Ver o cardápio",
+    "ar": "عرض القائمة"
+  },
+  "קביעת ייעוץ אישי": {
+    "en": "Book a personal consult",
+    "es": "Reservar una consulta personal",
+    "pt-BR": "Marcar uma consultoria pessoal",
+    "ar": "حجز استشارة شخصية"
+  },
+  "קביעת תור ייעוץ": {
+    "en": "Book a consult appointment",
+    "es": "Reservar una cita de consulta",
+    "pt-BR": "Marcar um horário de consultoria",
+    "ar": "حجز موعد استشارة"
+  },
+  "קבעו ביקור פרטי": {
+    "en": "Book a private visit",
+    "es": "Reserven una visita privada",
+    "pt-BR": "Agendem uma visita privada",
+    "ar": "احجزوا زيارة خاصة"
+  },
+  "קבעו דמו חי": {
+    "en": "Book a live demo",
+    "es": "Reserven una demo en vivo",
+    "pt-BR": "Agendem uma demo ao vivo",
+    "ar": "احجزوا عرضاً حياً"
+  },
+  "קמפיינים": {
+    "en": "Campaigns",
+    "es": "Campañas",
+    "pt-BR": "Campanhas",
+    "ar": "حملات"
+  },
+  "קריאה דחופה": {
+    "en": "Urgent call",
+    "es": "Llamada urgente",
+    "pt-BR": "Chamada urgente",
+    "ar": "نداء عاجل"
+  },
+  "ראו את הזרימה": {
+    "en": "See the flow",
+    "es": "Ver el flujo",
+    "pt-BR": "Ver o fluxo",
+    "ar": "شاهدوا التدفق"
+  },
+  "ראו את השירותים": {
+    "en": "See the services",
+    "es": "Ver los servicios",
+    "pt-BR": "Ver os serviços",
+    "ar": "شاهدوا الخدمات"
+  },
+  "ראו טיפולים": {
+    "en": "See treatments",
+    "es": "Ver tratamientos",
+    "pt-BR": "Ver tratamentos",
+    "ar": "شاهدوا العلاجات"
+  },
+  "ראו קמפיינים": {
+    "en": "See campaigns",
+    "es": "Ver campañas",
+    "pt-BR": "Ver campanhas",
+    "ar": "شاهدوا الحملات"
+  },
+  "רופאות ורופאים מומחים": {
+    "en": "Specialist doctors",
+    "es": "Médicas y médicos especialistas",
+    "pt-BR": "Médicas e médicos especialistas",
+    "ar": "طبيبات وأطباء مختصون"
+  },
+  "רלוונטיות ממוצעת": {
+    "en": "Average relevance",
+    "es": "Relevancia media",
+    "pt-BR": "Relevância média",
+    "ar": "متوسط الصلة"
+  },
+  "שווי תיקים": {
+    "en": "Portfolio value",
+    "es": "Valor de carteras",
+    "pt-BR": "Valor de carteiras",
+    "ar": "قيمة المحافظ"
+  },
+  "שיחה עם מתאמת רפואית": {
+    "en": "A call with a medical coordinator",
+    "es": "Una llamada con una coordinadora médica",
+    "pt-BR": "Uma chamada com uma coordenadora médica",
+    "ar": "مكالمة مع منسّقة طبية"
+  },
+  "שיחת היכרות רגועה": {
+    "en": "A calm intro call",
+    "es": "Una llamada de presentación tranquila",
+    "pt-BR": "Uma chamada de apresentação calma",
+    "ar": "مكالمة تعارف هادئة"
+  },
+  "שלחו בריף": {
+    "en": "Send a brief",
+    "es": "Enviar un brief",
+    "pt-BR": "Enviar um brief",
+    "ar": "أرسلوا موجزاً"
+  },
+  "שנות הופעה וניהול עסקאות": {
+    "en": "Years of performance and deal-making",
+    "es": "Años de escenario y cierre de operaciones",
+    "pt-BR": "Anos de palco e fecho de negócios",
+    "ar": "سنوات أداء وإدارة صفقات"
+  },
+  "שנות ניסיון בצמיחה ותפעול": {
+    "en": "Years of experience in growth and operations",
+    "es": "Años de experiencia en crecimiento y operación",
+    "pt-BR": "Anos de experiência em crescimento e operação",
+    "ar": "سنوات خبرة في النمو والتشغيل"
+  },
+  "שריינו יום ניסיון": {
+    "en": "Reserve a trial day",
+    "es": "Reservad un día de prueba",
+    "pt-BR": "Reservem um dia experimental",
+    "ar": "احجزوا يوم تجربة"
+  },
+  "שריינו תור": {
+    "en": "Reserve an appointment",
+    "es": "Reservad cita",
+    "pt-BR": "Reservem horário",
+    "ar": "احجزوا موعداً"
+  },
+  "תור": {
+    "en": "Appointment",
+    "es": "Cita",
+    "pt-BR": "Horário",
+    "ar": "موعد"
+  },
+  "תיאום": {
+    "en": "Booking",
+    "es": "Coordinación",
+    "pt-BR": "Agendamento",
+    "ar": "تنسيق"
+  },
+  "תיאום פגישת סטודיו": {
+    "en": "Book a studio meeting",
+    "es": "Agendar una reunión de estudio",
+    "pt-BR": "Agendar uma reunião de estúdio",
+    "ar": "تنسيق اجتماع استوديو"
+  },
+  "תיאום פגישת קונספט": {
+    "en": "Book a concept meeting",
+    "es": "Agendar una reunión de concepto",
+    "pt-BR": "Agendar uma reunião de conceito",
+    "ar": "تنسيق اجتماع مفهوم"
+  },
+  "תיאום שיחת ייעוץ": {
+    "en": "Book a consult call",
+    "es": "Agendar una llamada de consulta",
+    "pt-BR": "Agendar uma chamada de consultoria",
+    "ar": "تنسيق مكالمة استشارة"
+  },
+  "תיקים והסכמים": {
+    "en": "Files and agreements",
+    "es": "Expedientes y acuerdos",
+    "pt-BR": "Processos e acordos",
+    "ar": "ملفات واتفاقيات"
+  },
+  "תיקים שטופלו": {
+    "en": "Cases handled",
+    "es": "Expedientes tratados",
+    "pt-BR": "Processos tratados",
+    "ar": "ملفات عولجت"
+  },
+  "תיקים שנוהלו": {
+    "en": "Cases managed",
+    "es": "Expedientes gestionados",
+    "pt-BR": "Processos geridos",
+    "ar": "ملفات أُديرت"
+  },
+  "תספורות": {
+    "en": "Haircuts",
+    "es": "Cortes",
+    "pt-BR": "Cortes",
+    "ar": "قصات شعر"
   }
 }

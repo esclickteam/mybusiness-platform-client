@@ -164,5 +164,8 @@ describe("localizeBuiltInTemplateSeed", () => {
     ).toMatch(/next step|short conversation/i);
     expect(localizeBuiltInText("אבחון לפני התחלה", "pt-BR")).toMatch(/Diagnóstico/i);
     expect(localizeBuiltInText("ביטול עד 24 שעות ללא חיוב", "ar")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("שנות ניסיון", "en")).toBe("Years of experience");
+    expect(localizeBuiltInText("שעות פעילות", "es")).toMatch(/Horario/i);
+    expect(localizeBuiltInText("לצפייה בתפריט", "en")).toBe("See the menu");
   });
 });
