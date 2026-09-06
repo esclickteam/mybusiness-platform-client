@@ -1,11 +1,18 @@
 import type { Editor } from "grapesjs";
+import i18n from "../../../i18n/i18n";
+
+function t(key: string) {
+  return String(i18n.t(key));
+}
 
 export function registerBizuplyBlocks(editor: Editor) {
   const bm = editor.BlockManager;
+  const category = t("studio.blocks.categoryBizuply");
+  const smart = t("studio.blocks.categorySmart");
 
   bm.add("biz-hero-luxury", {
-    label: "Hero יוקרתי",
-    category: "Bizuply",
+    label: t("studio.blocks.heroLuxury"),
+    category,
     media: "✨",
     content: `
 <section class="biz-section-full biz-hero">
@@ -26,8 +33,8 @@ export function registerBizuplyBlocks(editor: Editor) {
   });
 
   bm.add("biz-about", {
-    label: "אודות",
-    category: "Bizuply",
+    label: t("studio.blocks.about"),
+    category,
     media: "📝",
     content: `
 <section class="biz-section">
@@ -41,8 +48,8 @@ export function registerBizuplyBlocks(editor: Editor) {
   });
 
   bm.add("biz-services", {
-    label: "שירותים מהעסק",
-    category: "Bizuply Smart",
+    label: t("studio.blocks.services"),
+    category: smart,
     media: "💎",
     content: `
 <section class="biz-section" data-bizuply-block="services">
@@ -83,8 +90,8 @@ export function registerBizuplyBlocks(editor: Editor) {
   });
 
   bm.add("biz-products", {
-    label: "מוצרים וסליקה",
-    category: "Bizuply Smart",
+    label: t("studio.blocks.products"),
+    category: smart,
     media: "🛒",
     content: `
 <section class="biz-section" data-bizuply-block="products">
@@ -125,8 +132,8 @@ export function registerBizuplyBlocks(editor: Editor) {
   });
 
   bm.add("biz-gallery", {
-    label: "גלריה",
-    category: "Bizuply",
+    label: t("studio.blocks.gallery"),
+    category,
     media: "🖼",
     content: `
 <section class="biz-section">
@@ -142,8 +149,8 @@ export function registerBizuplyBlocks(editor: Editor) {
   });
 
   bm.add("biz-reviews", {
-    label: "ביקורות",
-    category: "Bizuply Smart",
+    label: t("studio.blocks.reviews"),
+    category: smart,
     media: "⭐",
     content: `
 <section class="biz-section" data-bizuply-block="reviews">
@@ -172,8 +179,8 @@ export function registerBizuplyBlocks(editor: Editor) {
   });
 
   bm.add("biz-booking", {
-    label: "תיאום תורים",
-    category: "Bizuply Smart",
+    label: t("studio.blocks.booking"),
+    category: smart,
     media: "📅",
     content: `
 <section class="biz-section">
@@ -204,8 +211,8 @@ export function registerBizuplyBlocks(editor: Editor) {
   });
 
   bm.add("biz-lead-form", {
-    label: "טופס ליד",
-    category: "Bizuply Smart",
+    label: t("studio.blocks.leadForm"),
+    category: smart,
     media: "📩",
     content: `
 <section class="biz-section" data-bizuply-block="lead-form">
@@ -224,8 +231,8 @@ export function registerBizuplyBlocks(editor: Editor) {
   });
 
   bm.add("biz-club", {
-    label: "מועדון לקוחות",
-    category: "Bizuply Smart",
+    label: t("studio.blocks.club"),
+    category: smart,
     media: "👑",
     content: `
 <section class="biz-section" data-bizuply-block="customer-club">
@@ -239,8 +246,8 @@ export function registerBizuplyBlocks(editor: Editor) {
   });
 
   bm.add("biz-contact", {
-    label: "יצירת קשר",
-    category: "Bizuply",
+    label: t("studio.blocks.contact"),
+    category,
     media: "☎️",
     content: `
 <footer class="biz-footer">

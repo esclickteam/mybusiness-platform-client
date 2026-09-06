@@ -1,6 +1,7 @@
+import i18n from "../../../../i18n/i18n";
 import type { FontOption, ThemePalette } from "../types";
 
-export const themePalettes: ThemePalette[] = [
+const themePaletteSeeds: ThemePalette[] = [
   {
     id: "luxury-purple",
     name: "Luxury Purple",
@@ -342,6 +343,22 @@ export const themePalettes: ThemePalette[] = [
     },
   },
 ];
+
+export function getThemePalettes(): ThemePalette[] {
+  return themePaletteSeeds.map((palette) => ({
+    ...palette,
+    name: String(
+      i18n.t(`studio.palettes.${palette.id}.name`, { defaultValue: palette.name }),
+    ),
+    description: String(
+      i18n.t(`studio.palettes.${palette.id}.description`, {
+        defaultValue: palette.description,
+      }),
+    ),
+  }));
+}
+
+export const themePalettes = getThemePalettes();
 
 export const fontOptions: FontOption[] = [
   "Heebo",

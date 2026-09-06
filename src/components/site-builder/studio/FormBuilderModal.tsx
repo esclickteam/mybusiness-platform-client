@@ -1,5 +1,6 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
+import i18n from "../../../i18n/i18n";
 import { useLocaleDir } from "../../../hooks/useLocaleDir";
 import {
   normalizeCondition,
@@ -196,10 +197,10 @@ function normalizeFieldWidth(field: Partial<BizuplyFormField>): "half" | "full" 
 function normalizeForm(form: BizuplyFormConfig): BizuplyFormConfig {
   return {
     id: String(form?.id || "contact-form"),
-    title: String(form?.title || "טופס יצירת קשר"),
-    submitText: String(form?.submitText || "שליחת הודעה"),
+    title: String(form?.title || i18n.t("studio.formBuilder.defaults.title")),
+    submitText: String(form?.submitText || i18n.t("studio.formBuilder.defaults.submit")),
     successMessage: String(
-      form?.successMessage || "תודה! קיבלנו את הפנייה ונחזור אליך בהקדם."
+      form?.successMessage || i18n.t("studio.formBuilder.defaults.success")
     ),
     colors: normalizeFormColors(form?.colors),
     redirectUrl: String(form?.redirectUrl || ""),
@@ -207,7 +208,7 @@ function normalizeForm(form: BizuplyFormConfig): BizuplyFormConfig {
     fields: Array.isArray(form?.fields)
       ? form.fields.map((field, index) => ({
           id: String(field?.id || `field-${index + 1}`),
-          label: String(field?.label || `שדה ${index + 1}`),
+          label: String(field?.label || i18n.t("studio.formBuilder.defaults.fieldN", { count: index + 1 })),
           type: normalizeFieldType(field?.type),
           placeholder: String(field?.placeholder || ""),
           required: Boolean(field?.required),
@@ -241,9 +242,9 @@ function createField(type: BizuplyFormFieldType): BizuplyFormField {
   if (type === "email") {
     return {
       id,
-      label: "כתובת אימייל",
+      label: String(i18n.t("studio.formBuilder.defaults.email")),
       type,
-      placeholder: "כתובת אימייל",
+      placeholder: String(i18n.t("studio.formBuilder.defaults.email")),
       required: false,
       width: "half",
       options: [],
@@ -253,9 +254,9 @@ function createField(type: BizuplyFormFieldType): BizuplyFormField {
   if (type === "phone") {
     return {
       id,
-      label: "טלפון",
+      label: String(i18n.t("studio.formBuilder.defaults.phone")),
       type,
-      placeholder: "טלפון",
+      placeholder: String(i18n.t("studio.formBuilder.defaults.phone")),
       required: false,
       width: "half",
       options: [],
@@ -265,9 +266,9 @@ function createField(type: BizuplyFormFieldType): BizuplyFormField {
   if (type === "textarea") {
     return {
       id,
-      label: "הודעה",
+      label: String(i18n.t("studio.formBuilder.defaults.message")),
       type,
-      placeholder: "כתבו כאן...",
+      placeholder: String(i18n.t("studio.formBuilder.defaults.messagePh")),
       required: false,
       width: "full",
       options: [],
@@ -277,9 +278,9 @@ function createField(type: BizuplyFormFieldType): BizuplyFormField {
   if (type === "number") {
     return {
       id,
-      label: "מספר",
+      label: String(i18n.t("studio.formBuilder.defaults.number")),
       type,
-      placeholder: "הזינו מספר",
+      placeholder: String(i18n.t("studio.formBuilder.defaults.numberPh")),
       required: false,
       width: "half",
       options: [],
@@ -289,7 +290,7 @@ function createField(type: BizuplyFormFieldType): BizuplyFormField {
   if (type === "date") {
     return {
       id,
-      label: "תאריך",
+      label: String(i18n.t("studio.formBuilder.defaults.date")),
       type,
       placeholder: "",
       required: false,
@@ -301,19 +302,23 @@ function createField(type: BizuplyFormFieldType): BizuplyFormField {
   if (type === "select") {
     return {
       id,
-      label: "בחירה",
+      label: String(i18n.t("studio.formBuilder.defaults.choice")),
       type,
       placeholder: "",
       required: false,
       width: "full",
-      options: ["אפשרות 1", "אפשרות 2", "אפשרות 3"],
+      options: [
+        String(i18n.t("studio.formBuilder.defaults.option1")),
+        String(i18n.t("studio.formBuilder.defaults.option2")),
+        String(i18n.t("studio.formBuilder.defaults.option3")),
+      ],
     };
   }
 
   if (type === "checkbox") {
     return {
       id,
-      label: "אני מאשר/ת",
+      label: String(i18n.t("studio.formBuilder.defaults.consent")),
       type,
       placeholder: "",
       required: false,
@@ -325,7 +330,7 @@ function createField(type: BizuplyFormFieldType): BizuplyFormField {
   if (type === "file") {
     return {
       id,
-      label: "העלאת קובץ",
+      label: String(i18n.t("studio.formBuilder.defaults.uploadFile")),
       type,
       placeholder: "",
       required: false,
@@ -336,9 +341,9 @@ function createField(type: BizuplyFormFieldType): BizuplyFormField {
 
   return {
     id,
-    label: "שדה חדש",
+    label: String(i18n.t("studio.formBuilder.defaults.newField")),
     type: "text",
-    placeholder: "הקלידו כאן",
+    placeholder: String(i18n.t("studio.formBuilder.defaults.typeHere")),
     required: false,
     width: "half",
     options: [],
@@ -510,7 +515,7 @@ function FieldPreviewInput({
         <option value="" disabled>
           {field.placeholder || field.label}
         </option>
-        {(field.options?.length ? field.options : ["אפשרות 1"]).map((option) => (
+        {(field.options?.length ? field.options : [t("studio.formBuilder.defaults.option1")]).map((option) => (
           <option key={option} value={option}>
             {option}
           </option>
@@ -897,9 +902,9 @@ export default function FormBuilderModal({
                         updateWholeForm({
                           steps: event.target.checked
                             ? [
-                                { id: "step-1", title: "פרטים" },
-                                { id: "step-2", title: "בחירה" },
-                                { id: "step-3", title: "שליחה" },
+                                { id: "step-1", title: t("studio.formBuilder.defaults.stepDetails") },
+                                { id: "step-2", title: t("studio.formBuilder.defaults.stepChoice") },
+                                { id: "step-3", title: t("studio.formBuilder.defaults.stepSubmit") },
                               ]
                             : [],
                           fields: safeForm.fields.map((field, index) => ({
@@ -1527,7 +1532,7 @@ export default function FormBuilderModal({
                 disabled
                 className="mt-7 h-16 w-full rounded-[22px] bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 border border-violet-200/80 px-6 text-center text-lg font-black text-slate-800 shadow-[0_20px_50px_rgba(79,70,229,0.28)]"
               >
-                {safeForm.submitText || "שליחת הודעה"}
+                {safeForm.submitText || t("studio.formBuilder.defaults.submit")}
               </button>
             </div>
           </div>

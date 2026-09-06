@@ -1,3 +1,5 @@
+import i18n from "../../../../i18n/i18n";
+import { isRtlLanguage } from "../../../../i18n/languages";
 import type { ThemePalette } from "../types";
 
 export function createCanvasCss(palette?: ThemePalette) {
@@ -54,7 +56,7 @@ html {
 
 body {
   margin: 0;
-  direction: rtl;
+  direction: ${isRtlLanguage(i18n.language) ? "rtl" : "ltr"};
   font-family: var(--biz-body-font);
   color: var(--biz-text);
   background: var(--biz-bg);
@@ -946,24 +948,33 @@ iframe {
 
 export const defaultCanvasCss = createCanvasCss();
 
-export const defaultWebsiteHtml = `
+export function getDefaultWebsiteHtml() {
+  const brand = String(i18n.t("studio.nav.businessName"));
+  const field = String(i18n.t("studio.nav.businessField"));
+  const home = String(i18n.t("studio.nav.home"));
+  const about = String(i18n.t("studio.nav.about"));
+  const services = String(i18n.t("studio.nav.services"));
+  const gallery = String(i18n.t("studio.nav.gallery"));
+  const products = String(i18n.t("studio.nav.products"));
+  const contact = String(i18n.t("studio.nav.contact"));
+  return `
 <div class="biz-page" data-bizuply-page="true">
   <header class="biz-nav">
     <div class="biz-brand">
       <div class="biz-logo">B</div>
       <div>
-        <p class="biz-brand-title">שם העסק</p>
-        <p class="biz-brand-subtitle">תחום העסק</p>
+        <p class="biz-brand-title">${brand}</p>
+        <p class="biz-brand-subtitle">${field}</p>
       </div>
     </div>
 
     <nav class="biz-nav-links">
-      <a>דף הבית</a>
-      <a>אודות</a>
-      <a>שירותים</a>
-      <a>גלריה</a>
-      <a>מוצרים</a>
-      <a>צור קשר</a>
+      <a>${home}</a>
+      <a>${about}</a>
+      <a>${services}</a>
+      <a>${gallery}</a>
+      <a>${products}</a>
+      <a>${contact}</a>
     </nav>
   </header>
 
@@ -1055,3 +1066,6 @@ export const defaultWebsiteHtml = `
   </section>
 </div>
 `;
+}
+
+export const defaultWebsiteHtml = getDefaultWebsiteHtml();

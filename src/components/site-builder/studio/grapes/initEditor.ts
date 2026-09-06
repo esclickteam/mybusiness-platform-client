@@ -1,12 +1,32 @@
 import grapesjs, { Editor } from "grapesjs";
 import "grapesjs/dist/css/grapes.min.css";
 
+import i18n from "../../../../i18n/i18n";
+import { coerceSupportedLanguage, isRtlLanguage } from "../../../../i18n/languages";
 import { studioElements } from "../data/elementLibrary";
 import {
   getSectionLayoutVariants,
   type SectionKind,
   type SectionLayoutVariant,
 } from "../data/sectionLayoutVariants";
+
+function t(key: string, options?: Record<string, unknown>) {
+  return String(i18n.t(key, options as any));
+}
+
+function grapesEditorLocale() {
+  return coerceSupportedLanguage(i18n.language);
+}
+
+function grapesEditorDir() {
+  return isRtlLanguage(i18n.language) ? "rtl" : "ltr";
+}
+
+function kindLabel(kind: string) {
+  const key = `studio.kind.${kind}`;
+  const translated = t(key);
+  return translated === key ? kind : translated;
+}
 
 type InitEditorArgs = {
   container: HTMLElement;
@@ -322,40 +342,48 @@ function forceCanvasFullBleed(editor: Editor) {
 }
 
 
-const sectionKindOptions: { kind: SectionKind; label: string; icon: string }[] =
-  [
-    { kind: "header", label: "הידר", icon: "▤" },
-    { kind: "hero", label: "דף הבית", icon: "★" },
-    { kind: "welcome", label: "Welcome", icon: "✦" },
-    { kind: "about", label: "אודות", icon: "ℹ" },
-    { kind: "team", label: "צוות", icon: "◉" },
-    { kind: "services", label: "שירותים", icon: "✦" },
-    { kind: "gallery", label: "גלריה", icon: "▧" },
-    { kind: "contact", label: "צור קשר", icon: "@" },
-    { kind: "promotion", label: "מבצע", icon: "%" },
-    { kind: "subscribe", label: "הרשמה", icon: "+" },
-    { kind: "testimonials", label: "המלצות", icon: "❝" },
-    { kind: "reviews", label: "ביקורות", icon: "★" },
-    { kind: "clients", label: "לקוחות", icon: "◫" },
-    { kind: "store", label: "חנות", icon: "₪" },
-    { kind: "booking", label: "תיאום תורים", icon: "☷" },
-    { kind: "bookings", label: "תיאום תורים", icon: "☷" },
-    { kind: "events", label: "אירועים", icon: "◇" },
-    { kind: "club", label: "מועדון", icon: "♛" },
-    { kind: "bot", label: "בוט חכם", icon: "AI" },
-    { kind: "social", label: "רשתות", icon: "#" },
-    { kind: "course", label: "קורס", icon: "▶" },
-    { kind: "miniSaas", label: "Mini SaaS", icon: "S" },
-    { kind: "basic", label: "בסיסי", icon: "+" },
-    { kind: "text", label: "טקסט", icon: "T" },
-    { kind: "list", label: "רשימה", icon: "☰" },
-    { kind: "form", label: "טופס", icon: "▣" },
-    { kind: "forms", label: "טפסים", icon: "▣" },
-    { kind: "savedSections", label: "סקשנים שמורים", icon: "♡" },
-  ];
+const sectionKindIcons: { kind: SectionKind; icon: string }[] = [
+  { kind: "header", icon: "▤" },
+  { kind: "hero", icon: "★" },
+  { kind: "welcome", icon: "✦" },
+  { kind: "about", icon: "ℹ" },
+  { kind: "team", icon: "◉" },
+  { kind: "services", icon: "✦" },
+  { kind: "gallery", icon: "▧" },
+  { kind: "contact", icon: "@" },
+  { kind: "promotion", icon: "%" },
+  { kind: "subscribe", icon: "+" },
+  { kind: "testimonials", icon: "❝" },
+  { kind: "reviews", icon: "★" },
+  { kind: "clients", icon: "◫" },
+  { kind: "store", icon: "₪" },
+  { kind: "booking", icon: "☷" },
+  { kind: "bookings", icon: "☷" },
+  { kind: "events", icon: "◇" },
+  { kind: "club", icon: "♛" },
+  { kind: "bot", icon: "AI" },
+  { kind: "social", icon: "#" },
+  { kind: "course", icon: "▶" },
+  { kind: "miniSaas", icon: "S" },
+  { kind: "basic", icon: "+" },
+  { kind: "text", icon: "T" },
+  { kind: "list", icon: "☰" },
+  { kind: "form", icon: "▣" },
+  { kind: "forms", icon: "▣" },
+  { kind: "savedSections", icon: "♡" },
+];
+
+function getSectionKindOptions(): { kind: SectionKind; label: string; icon: string }[] {
+  return sectionKindIcons.map((item) => ({
+    ...item,
+    label: kindLabel(item.kind),
+  }));
+}
 
 function registerSectionVariantBlocks(editor: Editor) {
-  sectionKindOptions.forEach((sectionOption) => {
+  const dir = grapesEditorDir();
+  const align = dir === "rtl" ? "right" : "left";
+  getSectionKindOptions().forEach((sectionOption) => {
     if (sectionOption.kind === "savedSections") return;
 
     const variants = getSectionLayoutVariants(sectionOption.kind);
@@ -368,13 +396,13 @@ function registerSectionVariantBlocks(editor: Editor) {
 
       editor.BlockManager.add(blockId, {
         label: `
-          <div style="direction:rtl;text-align:right;font-family:Assistant,Heebo,Arial,sans-serif;">
+          <div style="direction:${dir};text-align:${align};font-family:Assistant,Heebo,Arial,sans-serif;">
             <div style="font-size:12px;font-weight:1000;color:#0f172a;line-height:1.4;">${variant.title}</div>
             <div style="margin-top:4px;font-size:10px;font-weight:800;color:#94a3b8;">${sectionOption.label} · ${index + 1}/${variants.length}</div>
           </div>
         `,
         media: `<span style="display:grid;place-items:center;width:34px;height:34px;border-radius:14px;background:#f3e8ff;color:#7c3aed;font-size:12px;font-weight:1000;">${sectionOption.icon}</span>`,
-        category: `סקשנים / ${sectionOption.label}`,
+        category: t("studio.grapes.sectionsCategory", { label: sectionOption.label }),
         content: variant.html,
         attributes: {
           title: `${sectionOption.label} — ${variant.title}`,
@@ -392,6 +420,8 @@ export function initBizuplyEditor({
   onReady,
   onSelect,
 }: InitEditorArgs) {
+  const locale = grapesEditorLocale();
+  container.dir = grapesEditorDir();
   const editor = grapesjs.init({
     container,
     height: "100%",
@@ -423,7 +453,7 @@ export function initBizuplyEditor({
       appendTo: stylesContainer || undefined,
       sectors: [
         {
-          name: "צבעים ורקע",
+          name: t("studio.grapes.colorsBg"),
           open: false,
           properties: [
             "color",
@@ -437,7 +467,7 @@ export function initBizuplyEditor({
           ],
         },
         {
-          name: "טיפוגרפיה",
+          name: t("studio.grapes.typography"),
           open: false,
           properties: [
             "font-family",
@@ -450,7 +480,7 @@ export function initBizuplyEditor({
           ],
         },
         {
-          name: "גודל ומיקום",
+          name: t("studio.grapes.sizePosition"),
           open: false,
           properties: [
             "display",
@@ -469,7 +499,7 @@ export function initBizuplyEditor({
           ],
         },
         {
-          name: "Flex / Grid",
+          name: t("studio.grapes.flexGrid"),
           open: false,
           properties: [
             "flex-direction",
@@ -480,12 +510,12 @@ export function initBizuplyEditor({
           ],
         },
         {
-          name: "מרווחים",
+          name: t("studio.grapes.spacing"),
           open: false,
           properties: ["margin", "padding"],
         },
         {
-          name: "פינות, גבול וצל",
+          name: t("studio.grapes.cornersBorderShadow"),
           open: false,
           properties: [
             "border-radius",
@@ -495,7 +525,7 @@ export function initBizuplyEditor({
           ],
         },
         {
-          name: "אפקטים ותנועה",
+          name: t("studio.grapes.effectsMotion"),
           open: false,
           properties: [
             "transform",
@@ -516,9 +546,9 @@ export function initBizuplyEditor({
 
     deviceManager: {
       devices: [
-        { name: "Desktop", width: "" },
-        { name: "Tablet", width: "768px", widthMedia: "992px" },
-        { name: "Mobile", width: "390px", widthMedia: "480px" },
+        { name: t("studio.desktop"), width: "" },
+        { name: t("studio.tablet"), width: "768px", widthMedia: "992px" },
+        { name: t("studio.mobile"), width: "390px", widthMedia: "480px" },
       ],
     },
 
@@ -528,21 +558,21 @@ export function initBizuplyEditor({
     },
 
     i18n: {
-      locale: "he",
-      localeFallback: "he",
+      locale,
+      localeFallback: "en",
       messages: {
-        he: {
+        [locale]: {
           styleManager: {
-            empty: "בחרי אלמנט כדי לערוך עיצוב",
+            empty: t("studio.grapes.styleEmpty"),
           },
           traitManager: {
-            empty: "בחרי אלמנט כדי לערוך הגדרות",
+            empty: t("studio.grapes.traitsEmpty"),
           },
           assetManager: {
-            addButton: "הוספת תמונה",
-            inputPlh: "מקור מדיה",
-            modalTitle: "ניהול מדיה",
-            uploadTitle: "גררי תמונות או סרטונים לכאן",
+            addButton: t("studio.grapes.addImage"),
+            inputPlh: t("studio.grapes.mediaSource"),
+            modalTitle: t("studio.grapes.mediaModal"),
+            uploadTitle: t("studio.grapes.uploadDrop"),
           },
         },
       },
@@ -947,96 +977,96 @@ function setHeaderTraits(component: any) {
   if (!isHeaderComponent(component)) return;
 
   component.set({
-    name: "הידר",
+    name: t("studio.grapes.headerName"),
     traits: [
       {
         type: "select",
         name: "dir",
-        label: "כיוון הידר",
+        label: t("studio.grapes.headerDir"),
         options: [
-          { id: "rtl", label: "ימין לשמאל" },
-          { id: "ltr", label: "שמאל לימין" },
+          { id: "rtl", label: t("studio.grapes.rtl") },
+          { id: "ltr", label: t("studio.grapes.ltr") },
         ],
       },
       {
         type: "text",
         name: "data-header-bg",
-        label: "צבע רקע Header",
+        label: t("studio.grapes.headerBg"),
         placeholder: "#FFFFFF / rgba(...)",
       },
       {
         type: "text",
         name: "data-header-text",
-        label: "צבע טקסט",
+        label: t("studio.grapes.textColor"),
         placeholder: "#0F172A",
       },
       {
         type: "text",
         name: "data-header-muted",
-        label: "צבע טקסט משני",
+        label: t("studio.grapes.mutedText"),
         placeholder: "#64748B",
       },
       {
         type: "text",
         name: "data-header-border",
-        label: "צבע גבול",
+        label: t("studio.grapes.borderColor"),
         placeholder: "#E2E8F0",
       },
       {
         type: "text",
         name: "data-header-button-bg",
-        label: "צבע כפתור",
+        label: t("studio.grapes.buttonColor"),
         placeholder: "#7C3AED",
       },
       {
         type: "text",
         name: "data-header-button-text",
-        label: "צבע טקסט כפתור",
+        label: t("studio.grapes.buttonTextColor"),
         placeholder: "#FFFFFF",
       },
       {
         type: "select",
         name: "data-header-radius",
-        label: "צורת Header",
+        label: t("studio.grapes.headerShape"),
         options: [
-          { id: "", label: "לפי התבנית" },
-          { id: "0px", label: "מרובע חד" },
-          { id: "12px", label: "מלבני עדין" },
-          { id: "24px", label: "מעוגל עדין" },
-          { id: "999px", label: "קפסולה" },
+          { id: "", label: t("studio.grapes.fromTemplate") },
+          { id: "0px", label: t("studio.grapes.sharpRect") },
+          { id: "12px", label: t("studio.grapes.softRect") },
+          { id: "24px", label: t("studio.grapes.softRound") },
+          { id: "999px", label: t("studio.grapes.capsule") },
         ],
       },
       {
         type: "select",
         name: "data-header-width",
-        label: "רוחב Header",
+        label: t("studio.grapes.headerWidth"),
         options: [
-          { id: "", label: "לפי התבנית" },
-          { id: "100%", label: "רוחב מלא" },
-          { id: "min(1280px, calc(100% - 32px))", label: "צף רחב" },
-          { id: "min(1120px, calc(100% - 32px))", label: "צף צר" },
+          { id: "", label: t("studio.grapes.fromTemplate") },
+          { id: "100%", label: t("studio.grapes.fullWidth") },
+          { id: "min(1280px, calc(100% - 32px))", label: t("studio.grapes.floatWide") },
+          { id: "min(1120px, calc(100% - 32px))", label: t("studio.grapes.floatNarrow") },
         ],
       },
       {
         type: "select",
         name: "data-header-shadow",
-        label: "צל Header",
+        label: t("studio.grapes.headerShadow"),
         options: [
-          { id: "", label: "לפי התבנית" },
-          { id: "none", label: "בלי צל" },
-          { id: "0 10px 40px rgba(15,23,42,.08)", label: "צל עדין" },
-          { id: "0 24px 90px rgba(15,23,42,.16)", label: "צל פרימיום" },
+          { id: "", label: t("studio.grapes.fromTemplate") },
+          { id: "none", label: t("studio.grapes.noShadow") },
+          { id: "0 10px 40px rgba(15,23,42,.08)", label: t("studio.grapes.softShadow") },
+          { id: "0 24px 90px rgba(15,23,42,.16)", label: t("studio.grapes.premiumShadow") },
         ],
       },
       {
         type: "select",
         name: "data-header-padding",
-        label: "גובה Header",
+        label: t("studio.grapes.headerHeight"),
         options: [
-          { id: "", label: "לפי התבנית" },
-          { id: "12px 20px", label: "נמוך" },
-          { id: "16px 24px", label: "רגיל" },
-          { id: "22px 32px", label: "גבוה" },
+          { id: "", label: t("studio.grapes.fromTemplate") },
+          { id: "12px 20px", label: t("studio.grapes.low") },
+          { id: "16px 24px", label: t("studio.grapes.regular") },
+          { id: "22px 32px", label: t("studio.grapes.high") },
         ],
       },
     ],
@@ -1067,12 +1097,12 @@ function setHeaderChildTraits(component: any) {
 
   if (attrs["data-header-logo-slot"] === "true") {
     component.set({
-      name: "לוגו",
+      name: t("studio.grapes.logo"),
       traits: [
         {
           type: "text",
           name: "data-header-logo-slot",
-          label: "אזור לוגו",
+          label: t("studio.grapes.logoArea"),
         },
       ],
     });
@@ -1080,18 +1110,18 @@ function setHeaderChildTraits(component: any) {
 
   if (attrs["data-header-link"]) {
     component.set({
-      name: "קישור עמוד",
+      name: t("studio.grapes.pageLink"),
       traits: [
         {
           type: "text",
           name: "href",
-          label: "קישור",
+          label: t("studio.grapes.link"),
           placeholder: "#about",
         },
         {
           type: "text",
           name: "data-header-link",
-          label: "מזהה עמוד",
+          label: t("studio.grapes.pageId"),
         },
       ],
     });
@@ -1099,12 +1129,12 @@ function setHeaderChildTraits(component: any) {
 
   if (attrs["data-header-login"] === "true" || attrs["data-header-logout"] === "true") {
     component.set({
-      name: attrs["data-header-login"] === "true" ? "כפתור התחברות" : "כפתור התנתקות",
+      name: attrs["data-header-login"] === "true" ? t("studio.grapes.loginButton") : t("studio.grapes.logoutButton"),
       traits: [
         {
           type: "text",
           name: "href",
-          label: "קישור",
+          label: t("studio.grapes.link"),
           placeholder: "/login",
         },
       ],
@@ -1113,12 +1143,12 @@ function setHeaderChildTraits(component: any) {
 
   if (attrs["data-header-cta"] === "true") {
     component.set({
-      name: "כפתור פעולה",
+      name: t("studio.grapes.actionButton"),
       traits: [
         {
           type: "text",
           name: "href",
-          label: "קישור",
+          label: t("studio.grapes.link"),
           placeholder: "#contact",
         },
       ],
@@ -1219,7 +1249,7 @@ function uploadHeaderLogo(editor: Editor) {
   const header = findSelectedHeader(editor);
 
   if (!header) {
-    alert("בחרי את ההידר ואז לחצי לוגו");
+    alert(t("studio.grapes.selectHeaderThenLogo"));
     return;
   }
 
@@ -1231,7 +1261,7 @@ function uploadHeaderLogo(editor: Editor) {
     }
 
     if (!logoSlot) {
-      alert("לא הצלחתי ליצור אזור לוגו בהידר הזה");
+      alert(t("studio.grapes.logoAreaFailed"));
       return;
     }
 
@@ -1248,7 +1278,7 @@ function toggleHeaderDirection(editor: Editor) {
   const header = findSelectedHeader(editor);
 
   if (!header) {
-    alert("בחרי Header כדי לשנות כיוון");
+    alert(t("studio.grapes.selectHeaderDir"));
     return;
   }
 
@@ -1264,7 +1294,7 @@ function quickHeaderColors(editor: Editor) {
   const header = findSelectedHeader(editor);
 
   if (!header) {
-    alert("בחרי Header כדי לשנות צבעים");
+    alert(t("studio.grapes.selectHeaderColors"));
     return;
   }
 
@@ -1318,28 +1348,28 @@ function ensureComponentEditable(component: any) {
     toolbar: isHeader
       ? [
           {
-            label: "מבנה",
+            label: t("studio.grapes.layout"),
             attributes: {
-              title: "בחירת מבנה Header מקצועי",
+              title: t("studio.grapes.chooseHeaderLayout"),
             },
             command: "bizuply-change-layout",
           },
           {
-            label: "לוגו",
+            label: t("studio.grapes.logo"),
             attributes: {
-              title: "העלאת לוגו להידר",
+              title: t("studio.grapes.uploadHeaderLogo"),
             },
             command: "bizuply-upload-header-logo",
           },
           {
-            label: "צבע",
+            label: t("studio.grapes.color"),
             attributes: {
-              title: "שינוי צבע Header, טקסט וכפתור",
+              title: t("studio.grapes.changeHeaderColors"),
             },
             command: "bizuply-header-quick-colors",
           },
           {
-            label: "כיוון",
+            label: t("studio.grapes.direction"),
             attributes: {
               title: "RTL / LTR",
             },
@@ -1348,21 +1378,21 @@ function ensureComponentEditable(component: any) {
           {
             attributes: {
               class: "fa fa-arrows",
-              title: "גרירה",
+              title: t("studio.grapes.drag"),
             },
             command: "tlb-move",
           },
           {
             attributes: {
               class: "fa fa-clone",
-              title: "שכפול",
+              title: t("studio.grapes.duplicate"),
             },
             command: "bizuply-duplicate",
           },
           {
             attributes: {
               class: "fa fa-trash",
-              title: "מחיקה",
+              title: t("studio.grapes.delete"),
             },
             command: "bizuply-delete",
           },
@@ -1370,81 +1400,81 @@ function ensureComponentEditable(component: any) {
       : isSection
       ? [
           {
-            label: "מבנה",
+            label: t("studio.grapes.layout"),
             attributes: {
-              title: "בחירת מבנה מקצועי לסקשן",
+              title: t("studio.grapes.chooseSectionLayout"),
             },
             command: "bizuply-change-layout",
           },
           {
-            label: "+מדיה",
+            label: t("studio.grapes.addMedia"),
             attributes: {
-              title: "הוספת תמונה או סרטון מהמחשב לסקשן",
+              title: t("studio.grapes.addMediaToSection"),
             },
             command: "bizuply-add-media-to-section",
           },
           {
-            label: "רקע",
+            label: t("studio.grapes.background"),
             attributes: {
-              title: "הגדרת תמונה מהמחשב כרקע לסקשן",
+              title: t("studio.grapes.setSectionBackground"),
             },
             command: "bizuply-set-section-bg-image",
           },
           {
-            label: "מדיה",
+            label: t("studio.grapes.media"),
             attributes: {
-              title: "החלפת תמונה או סרטון מהמחשב",
+              title: t("studio.grapes.replaceMedia"),
             },
             command: "bizuply-replace-image",
           },
           {
             attributes: {
               class: "fa fa-arrows",
-              title: "גרירה",
+              title: t("studio.grapes.drag"),
             },
             command: "tlb-move",
           },
           {
             attributes: {
               class: "fa fa-clone",
-              title: "שכפול",
+              title: t("studio.grapes.duplicate"),
             },
             command: "bizuply-duplicate",
           },
           {
             attributes: {
               class: "fa fa-trash",
-              title: "מחיקה",
+              title: t("studio.grapes.delete"),
             },
             command: "bizuply-delete",
           },
         ]
       : [
           {
-            label: "מדיה",
+            label: t("studio.grapes.media"),
             attributes: {
-              title: "החלפת תמונה / וידאו / עריכת מדיה",
+              title: t("studio.grapes.replaceEditMedia"),
             },
             command: "bizuply-replace-image",
           },
           {
             attributes: {
               class: "fa fa-arrows",
-              title: "גרירה",
+              title: t("studio.grapes.drag"),
             },
             command: "tlb-move",
           },
           {
             attributes: {
               class: "fa fa-clone",
-              title: "שכפול",
+              title: t("studio.grapes.duplicate"),
             },
             command: "bizuply-duplicate",
           },
           {
             attributes: {
               class: "fa fa-trash",
-              title: "מחיקה",
+              title: t("studio.grapes.delete"),
             },
             command: "bizuply-delete",
           },
@@ -1465,16 +1495,16 @@ function ensureComponentEditable(component: any) {
         {
           type: "text",
           name: "href",
-          label: "קישור",
+          label: t("studio.grapes.link"),
           placeholder: "https://...",
         },
         {
           type: "select",
           name: "target",
-          label: "פתיחה",
+          label: t("studio.grapes.open"),
           options: [
-            { id: "", label: "באותו חלון" },
-            { id: "_blank", label: "בטאב חדש" },
+            { id: "", label: t("studio.grapes.sameWindow") },
+            { id: "_blank", label: t("studio.grapes.newTab") },
           ],
         },
       ],
@@ -1487,12 +1517,12 @@ function ensureComponentEditable(component: any) {
         {
           type: "text",
           name: "src",
-          label: "מקור תמונה",
+          label: t("studio.grapes.imageSource"),
         },
         {
           type: "text",
           name: "alt",
-          label: "טקסט חלופי",
+          label: t("studio.grapes.altText"),
         },
       ],
     });
@@ -1504,27 +1534,27 @@ function ensureComponentEditable(component: any) {
         {
           type: "text",
           name: "src",
-          label: "מקור וידאו",
+          label: t("studio.grapes.videoSource"),
         },
         {
           type: "checkbox",
           name: "controls",
-          label: "פקדי וידאו",
+          label: t("studio.grapes.videoControls"),
         },
         {
           type: "checkbox",
           name: "autoplay",
-          label: "ניגון אוטומטי",
+          label: t("studio.grapes.autoplay"),
         },
         {
           type: "checkbox",
           name: "muted",
-          label: "השתקה",
+          label: t("studio.grapes.mute"),
         },
         {
           type: "checkbox",
           name: "loop",
-          label: "לופ",
+          label: t("studio.grapes.loop"),
         },
       ],
     });
@@ -1538,7 +1568,7 @@ function ensureComponentEditable(component: any) {
         {
           type: "text",
           name: "href",
-          label: "קישור וואטסאפ",
+          label: t("studio.grapes.whatsappLink"),
           placeholder: "https://wa.me/972...",
         },
       ],
@@ -1551,13 +1581,13 @@ function ensureComponentEditable(component: any) {
         {
           type: "text",
           name: "href",
-          label: "קישור לרשת חברתית",
+          label: t("studio.grapes.socialLink"),
           placeholder: "https://...",
         },
         {
           type: "text",
           name: "data-social-link",
-          label: "שם רשת",
+          label: t("studio.grapes.networkName"),
         },
       ],
     });
@@ -1569,7 +1599,7 @@ function ensureComponentEditable(component: any) {
         {
           type: "text",
           name: "data-mini-saas-action",
-          label: "פעולת Mini SaaS",
+          label: t("studio.grapes.miniSaasAction"),
         },
       ],
     });
@@ -1722,7 +1752,7 @@ function registerCustomComponentTypes(editor: Editor) {
     },
     model: {
       defaults: {
-        name: "סקשן",
+        name: t("studio.grapes.section"),
         draggable: true,
         droppable: true,
         copyable: true,
@@ -1749,7 +1779,7 @@ function registerCustomComponentTypes(editor: Editor) {
     },
     model: {
       defaults: {
-        name: "כפתור",
+        name: t("studio.grapes.button"),
         draggable: true,
         droppable: false,
         copyable: true,
@@ -1763,16 +1793,16 @@ function registerCustomComponentTypes(editor: Editor) {
           {
             type: "text",
             name: "href",
-            label: "קישור",
+            label: t("studio.grapes.link"),
             placeholder: "https://...",
           },
           {
             type: "select",
             name: "target",
-            label: "פתיחה",
+            label: t("studio.grapes.open"),
             options: [
-              { id: "", label: "באותו חלון" },
-              { id: "_blank", label: "בטאב חדש" },
+              { id: "", label: t("studio.grapes.sameWindow") },
+              { id: "_blank", label: t("studio.grapes.newTab") },
             ],
           },
         ],
@@ -1792,7 +1822,7 @@ function registerCustomComponentTypes(editor: Editor) {
     },
     model: {
       defaults: {
-        name: "תמונה",
+        name: t("studio.grapes.image"),
         draggable: true,
         droppable: false,
         copyable: true,
@@ -1807,12 +1837,12 @@ function registerCustomComponentTypes(editor: Editor) {
           {
             type: "text",
             name: "src",
-            label: "מקור תמונה",
+            label: t("studio.grapes.imageSource"),
           },
           {
             type: "text",
             name: "alt",
-            label: "טקסט חלופי",
+            label: t("studio.grapes.altText"),
           },
         ],
       },
@@ -1830,7 +1860,7 @@ function registerCustomComponentTypes(editor: Editor) {
     },
     model: {
       defaults: {
-        name: "וידאו",
+        name: t("studio.grapes.video"),
         draggable: true,
         droppable: false,
         copyable: true,
@@ -1845,27 +1875,27 @@ function registerCustomComponentTypes(editor: Editor) {
           {
             type: "text",
             name: "src",
-            label: "מקור וידאו",
+            label: t("studio.grapes.videoSource"),
           },
           {
             type: "checkbox",
             name: "controls",
-            label: "פקדי וידאו",
+            label: t("studio.grapes.videoControls"),
           },
           {
             type: "checkbox",
             name: "autoplay",
-            label: "ניגון אוטומטי",
+            label: t("studio.grapes.autoplay"),
           },
           {
             type: "checkbox",
             name: "muted",
-            label: "השתקה",
+            label: t("studio.grapes.mute"),
           },
           {
             type: "checkbox",
             name: "loop",
-            label: "לופ",
+            label: t("studio.grapes.loop"),
           },
         ],
       },
@@ -2121,12 +2151,12 @@ function pickMediaFromComputer(
     const isVideo = file.type.startsWith("video/");
 
     if (options.imagesOnly && !isImage) {
-      alert("בחרי קובץ תמונה בלבד");
+      alert(t("studio.grapes.imageOnly"));
       return;
     }
 
     if (!isImage && !isVideo) {
-      alert("בחרי קובץ תמונה או סרטון בלבד");
+      alert(t("studio.grapes.imageOrVideoOnly"));
       return;
     }
 
@@ -2303,7 +2333,7 @@ function openDesignPanel(editor: Editor, stylesContainer?: HTMLElement | null) {
   const selected = editor.getSelected();
 
   if (!selected) {
-    alert("בחרי אלמנט באתר ואז לחצי עיצוב");
+    alert(t("studio.grapes.selectThenDesign"));
     return;
   }
 
@@ -2354,7 +2384,7 @@ function registerCommands(editor: Editor, stylesContainer?: HTMLElement | null) 
       const section = findSelectedSection(currentEditor);
 
       if (!section) {
-        alert("בחרי סקשן כדי לשנות לו מבנה");
+        alert(t("studio.grapes.selectSectionLayout"));
         return;
       }
 
@@ -2362,7 +2392,7 @@ function registerCommands(editor: Editor, stylesContainer?: HTMLElement | null) 
       const variants = getSectionLayoutVariants(kind);
 
       if (!variants.length) {
-        alert("אין עדיין מבנים לסקשן הזה");
+        alert(t("studio.grapes.noLayoutsYet"));
         return;
       }
 
@@ -2375,7 +2405,7 @@ function registerCommands(editor: Editor, stylesContainer?: HTMLElement | null) 
       const section = findSelectedSection(currentEditor);
 
       if (!section) {
-        alert("בחרי סקשן כדי להוסיף אליו תמונה");
+        alert(t("studio.grapes.selectSectionAddImage"));
         return;
       }
 
@@ -2390,7 +2420,7 @@ function registerCommands(editor: Editor, stylesContainer?: HTMLElement | null) 
       const section = findSelectedSection(currentEditor);
 
       if (!section) {
-        alert("בחרי סקשן כדי להוסיף אליו תמונה");
+        alert(t("studio.grapes.selectSectionAddImage"));
         return;
       }
 
@@ -2405,14 +2435,14 @@ function registerCommands(editor: Editor, stylesContainer?: HTMLElement | null) 
       const selected = currentEditor.getSelected();
 
       if (!selected) {
-        alert("בחרי תמונה או סקשן שיש בו תמונה");
+        alert(t("studio.grapes.selectImageOrSection"));
         return;
       }
 
       const media = findFirstMedia(selected) || findFirstImage(selected);
 
       if (!media) {
-        alert("לא נמצאה תמונה או וידאו באלמנט הנבחר");
+        alert(t("studio.grapes.noMediaFound"));
         return;
       }
 
@@ -2427,7 +2457,7 @@ function registerCommands(editor: Editor, stylesContainer?: HTMLElement | null) 
       const section = findSelectedSection(currentEditor);
 
       if (!section) {
-        alert("בחרי סקשן כדי להגדיר לו תמונת רקע");
+        alert(t("studio.grapes.selectSectionBackground"));
         return;
       }
 
@@ -2511,7 +2541,7 @@ function openLayoutVariantsModal(
   variants: SectionLayoutVariant[]
 ) {
   const content = document.createElement("div");
-  content.dir = "rtl";
+  content.dir = grapesEditorDir();
 
   content.style.cssText = `
     width:100%;
@@ -2521,43 +2551,12 @@ function openLayoutVariantsModal(
     font-family:Assistant,Heebo,Arial,sans-serif;
   `;
 
-  const kindLabel: Record<SectionKind, string> = {
-  header: "הידר",
-  hero: "דף הבית",
-  welcome: "Welcome",
-  about: "אודות",
-  team: "צוות",
-  services: "שירותים",
-  gallery: "גלריה",
-  contact: "יצירת קשר",
-  promotion: "מבצע",
-  subscribe: "הרשמה",
-  testimonials: "המלצות",
-  reviews: "ביקורות",
-  clients: "לקוחות",
-  store: "חנות",
-  booking: "תיאום תורים",
-  bookings: "תיאום תורים",
-  events: "אירועים",
-  club: "מועדון לקוחות",
-  bot: "בוט חכם",
-  social: "רשתות חברתיות",
-  course: "קורס דיגיטלי",
-  miniSaas: "מיני SaaS",
-  basic: "סקשן חופשי",
-  text: "טקסט",
-  list: "רשימה",
-  form: "טופס",
-  forms: "טפסים",
-  savedSections: "סקשנים שמורים",
-};
-
   let activeKind: SectionKind = kind;
   let activeVariants = variants.length ? variants : getSectionLayoutVariants(activeKind);
   let selectedVariantId = activeVariants[0]?.id || "";
 
   const visibleCategories = () =>
-    sectionKindOptions.filter((item) => getSectionLayoutVariants(item.kind).length > 0);
+    getSectionKindOptions().filter((item) => getSectionLayoutVariants(item.kind).length > 0);
 
   const escapeHtml = (value: string) =>
     String(value || "")
@@ -2569,12 +2568,23 @@ function openLayoutVariantsModal(
   const getVariantMeta = (variant: SectionLayoutVariant) => {
     const title = escapeHtml(variant.title);
     const description = escapeHtml(variant.description);
-    const badge = escapeHtml(variant.badge || "מבנה");
+    const badge = escapeHtml(variant.badge || t("studio.grapes.layoutBadge"));
 
     const isHeader = variant.kind === "header";
     const features = isHeader
-      ? ["לוגו", "עמודים", "כניסה/יציאה", "CTA", "RTL/LTR"]
-      : ["טקסט", "תמונה", "כפתורים", "עריכה מלאה"];
+      ? [
+          t("studio.grapes.featLogo"),
+          t("studio.grapes.featPages"),
+          t("studio.grapes.featAuth"),
+          t("studio.grapes.featCta"),
+          t("studio.grapes.featDir"),
+        ]
+      : [
+          t("studio.grapes.featText"),
+          t("studio.grapes.featImage"),
+          t("studio.grapes.featButtons"),
+          t("studio.grapes.featFullEdit"),
+        ];
 
     return { title, description, badge, features };
   };
@@ -2584,7 +2594,7 @@ function openLayoutVariantsModal(
       return `
         <div class="biz-layout-category-note">
           <span class="biz-layout-note-icon">▤</span>
-          <span>מצב Header — כל התבניות מוצגות יחד, בלי סינונים מיותרים</span>
+          <span>${t("studio.grapes.headerModeNote")}</span>
           <strong>${activeVariants.length}</strong>
         </div>
       `;
@@ -2621,7 +2631,7 @@ function openLayoutVariantsModal(
         data-variant-id="${variant.id}"
         class="biz-layout-card ${isActive ? "is-selected" : ""} ${isHeader ? "is-header-card" : ""}"
       >
-        <button type="button" class="biz-layout-card-click" aria-label="בחירת ${meta.title}"></button>
+        <button type="button" class="biz-layout-card-click" aria-label="${t("studio.grapes.chooseAria", { title: meta.title })}"></button>
 
         <div class="biz-layout-preview ${isHeader ? "is-header-preview" : ""}">
           <div class="biz-layout-preview-top">
@@ -2647,9 +2657,9 @@ function openLayoutVariantsModal(
           </div>
 
           <div class="biz-layout-card-footer">
-            <span>Preview אמיתי</span>
+            <span>${t("studio.grapes.realPreview")}</span>
             <button type="button" data-apply-variant="${variant.id}">
-              בחרי תבנית
+              ${t("studio.grapes.chooseTemplate")}
             </button>
           </div>
         </div>
@@ -2705,7 +2715,8 @@ function openLayoutVariantsModal(
 
   const renderModal = () => {
     const activeLabel =
-      sectionKindOptions.find((item) => item.kind === activeKind)?.label || kindLabel[activeKind];
+      getSectionKindOptions().find((item) => item.kind === activeKind)?.label ||
+      kindLabel(activeKind);
 
     const selectedVariant = activeVariants.find((variant) => variant.id === selectedVariantId) || activeVariants[0];
 
@@ -3186,24 +3197,24 @@ function openLayoutVariantsModal(
             </div>
 
             <h1 class="biz-layout-title">
-              ${activeKind === "header" ? "בחרי Header מקצועי" : "בחרי מבנה מקצועי"}
+              ${activeKind === "header" ? t("studio.grapes.chooseProHeader") : t("studio.grapes.chooseProLayout")}
             </h1>
 
             <p class="biz-layout-subtitle">
               ${
                 activeKind === "header"
-                  ? "כאן רואים ממש את ההידר לפני הבחירה: לוגו, תפריט, התחברות/התנתקות, כפתור פעולה וכיוון RTL/LTR."
-                  : "בחרי תבנית מוכנה, יפה וברורה. הבחירה מחליפה מיד את הסקשן באתר."
+                  ? t("studio.grapes.headerPreviewHint")
+                  : t("studio.grapes.layoutPreviewHint")
               }
             </p>
 
             <div class="biz-layout-stats">
               <div class="biz-layout-stat">
-                <span>תבניות</span>
+                <span>${t("studio.grapes.templates")}</span>
                 <strong>${activeVariants.length}</strong>
               </div>
               <div class="biz-layout-stat">
-                <span>נבחר</span>
+                <span>${t("studio.grapes.selected")}</span>
                 <strong>${selectedVariant ? activeVariants.indexOf(selectedVariant) + 1 : 1}</strong>
               </div>
             </div>
@@ -3214,7 +3225,7 @@ function openLayoutVariantsModal(
 
             <div class="biz-layout-side-preview">
               <div class="biz-layout-side-preview-head">
-                <span>Preview גדול</span>
+                <span>${t("studio.grapes.largePreview")}</span>
                 <strong>${selectedVariant ? escapeHtml(selectedVariant.title) : ""}</strong>
               </div>
               <div class="biz-layout-side-preview-body">
@@ -3228,8 +3239,8 @@ function openLayoutVariantsModal(
               <div class="biz-layout-tabs-title">
                 <span>${activeKind === "header" ? "▤" : "✦"}</span>
                 <div>
-                  <h2>${activeKind === "header" ? "תבניות Header" : `תבניות ${activeLabel}`}</h2>
-                  <p>לחיצה על כרטיס מסמנת אותו, לחיצה על “בחרי תבנית” מחליפה באתר</p>
+                  <h2>${activeKind === "header" ? t("studio.grapes.headerTemplates") : t("studio.grapes.kindTemplates", { label: activeLabel })}</h2>
+                  <p>${t("studio.grapes.clickHint")}</p>
                 </div>
               </div>
 

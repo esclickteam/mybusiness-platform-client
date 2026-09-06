@@ -6,6 +6,7 @@
   כל תבנית בנויה מה־sectionLayoutVariants החדשים, כדי שלא תהיה כפילות.
 */
 
+import i18n from "../../../../i18n/i18n";
 import type { PageTemplate, PageTemplateKind, StudioPageTemplate } from "../types";
 import {
   sectionLayoutVariants,
@@ -69,7 +70,7 @@ function pickVariant(request: PageSectionRequest) {
 }
 
 function fallbackSection(request: PageSectionRequest) {
-  const title = request.fallbackTitle || "סקשן חדש";
+  const title = request.fallbackTitle || String(i18n.t("studio.pagePicker.newSection"));
   return `
 <section
   data-section-kind="${request.kind}"
@@ -83,7 +84,7 @@ function fallbackSection(request: PageSectionRequest) {
       ${title}
     </h2>
     <p class="mt-4 text-base font-bold leading-8 text-slate-500">
-      לא נמצאה עדיין תבנית לסוג הזה. אפשר לערוך או להחליף מבנה בהמשך.
+      ${i18n.t("studio.pagePicker.missingTemplate")}
     </p>
   </div>
 </section>
@@ -98,7 +99,7 @@ function ensureRootKind(html: string, kind: SectionKind) {
   if (/<section\b/i.test(html)) {
     return html.replace(/<section\b/i, `<section data-section-kind="${kind}"`);
   }
-  return fallbackSection({ kind, fallbackTitle: "סקשן" });
+  return fallbackSection({ kind, fallbackTitle: String(i18n.t("studio.pagePicker.section")) });
 }
 
 function renderSection(request: PageSectionRequest) {
@@ -347,20 +348,24 @@ const fullPagePresets: FullPagePreset[] = [
   },
 ];
 
+function pickerText(id: string, field: "title" | "description" | "badge" | "preview", fallback: string) {
+  return String(i18n.t(`studio.pagePicker.${id}.${field}`, { defaultValue: fallback }));
+}
+
 export const pageTemplates: PageTemplate[] = fullPagePresets.map((preset) => ({
   id: preset.id,
   name: preset.name,
   category: preset.category,
-  description: preset.description,
-  preview: firstPreviewImage(preset) || preset.preview,
+  description: pickerText(preset.id, "description", preset.description),
+  preview: firstPreviewImage(preset) || pickerText(preset.id, "preview", preset.preview),
   html: renderPage(preset),
 }));
 
 export const studioPageTemplates: StudioPageTemplate[] = fullPagePresets.map((preset) => ({
   id: preset.id,
-  title: preset.title,
-  description: preset.description,
-  badge: preset.badge,
+  title: pickerText(preset.id, "title", preset.title),
+  description: pickerText(preset.id, "description", preset.description),
+  badge: pickerText(preset.id, "badge", preset.badge),
   kind: preset.kind,
   previewImage: firstPreviewImage(preset),
   html: renderPage(preset),

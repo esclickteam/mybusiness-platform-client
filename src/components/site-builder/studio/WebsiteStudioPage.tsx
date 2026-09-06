@@ -62,6 +62,7 @@ import {
   createCanvasCss,
   defaultCanvasCss,
   defaultWebsiteHtml,
+  getDefaultWebsiteHtml,
 } from "./grapes/canvasTheme";
 
 import { normalizePageSlug } from "./data/linkUtils";
@@ -377,14 +378,14 @@ function createBlankPageHtml(pageTitle: string) {
 <main data-studio-page="true" class="min-h-screen bg-white">
   <section
     data-section-kind="basic"
-    data-section-title="עמוד ריק"
+    data-section-title="${i18n.t("studio.emptyPage.sectionTitle")}"
     class="mx-auto flex min-h-[460px] w-full max-w-[1180px] items-center justify-center px-6 py-24 text-center"
   >
     <div class="mx-auto max-w-xl rounded-[32px] border border-dashed border-slate-200 bg-slate-50 px-8 py-10">
-      <p class="mb-3 text-sm font-black text-violet-700">עמוד חדש</p>
+      <p class="mb-3 text-sm font-black text-violet-700">${i18n.t("studio.emptyPage.heading")}</p>
       <h1 class="text-4xl font-black tracking-[-0.04em] text-slate-800">${pageTitle}</h1>
       <p class="mt-4 text-base font-bold leading-8 text-slate-500">
-        התחילי להוסיף סקשנים מהתפריט בצד.
+        ${i18n.t("studio.emptyPage.hint")}
       </p>
     </div>
   </section>
@@ -455,11 +456,11 @@ function createInitialPages(): StudioSitePageWithPortal[] {
   return [
     {
       id: "home",
-      title: "דף הבית",
+      title: String(i18n.t("studio.homePage")),
       slug: "",
       type: "home",
       isHome: true,
-      html: defaultWebsiteHtml,
+      html: getDefaultWebsiteHtml(),
       css: defaultCanvasCss,
       createdAt: now,
       updatedAt: now,
@@ -1877,20 +1878,24 @@ function createGenericTemplatePages(
   const text = getSeedPaletteValue(seed, "text", "#0f172a");
   const muted = getSeedPaletteValue(seed, "muted", "#64748b");
   const name = escapeHtml(seed.name || "BizUply Template");
-  const title = escapeHtml(seed.heroTitle || seed.name || "אתר עסקי מוכן");
+  const title = escapeHtml(seed.heroTitle || seed.name || String(i18n.t("studio.seed.readyTitle")));
   const subtitle = escapeHtml(
-    seed.heroSubtitle || seed.description || "תבנית אתר מוכנה לעריכה מלאה.",
+    seed.heroSubtitle || seed.description || String(i18n.t("studio.seed.readySubtitle")),
   );
+  const aboutNav = escapeHtml(String(i18n.t("studio.nav.about")));
+  const servicesNav = escapeHtml(String(i18n.t("studio.nav.services")));
+  const contactNav = escapeHtml(String(i18n.t("studio.nav.contact")));
+  const blockHint = escapeHtml(String(i18n.t("studio.seed.blockHint")));
 
   const sections = (Array.isArray(seed.blocks) ? seed.blocks : [])
     .map((block: any, index) => {
       const kind = escapeHtml(block.type || "section");
       const blockTitle = escapeHtml(block.title || `${kind} ${index + 1}`);
-      return `<section id="${kind}-${index}" data-section-kind="${kind}" data-section-title="${blockTitle}" class="px-6 py-24" style="background:${index % 2 ? "#ffffff" : background};color:${text};"><div class="mx-auto max-w-6xl"><p class="text-sm font-black uppercase tracking-[0.24em]" style="color:${muted};">${kind}</p><h2 class="mt-4 text-5xl font-black tracking-[-0.05em]">${blockTitle}</h2><p class="mt-5 max-w-2xl text-base leading-8" style="color:${muted};">בלוק מוכן מתוך התבנית. אפשר לבחור אותו, לערוך טקסטים, לשנות צבעים ולהחליף תמונות.</p></div></section>`;
+      return `<section id="${kind}-${index}" data-section-kind="${kind}" data-section-title="${blockTitle}" class="px-6 py-24" style="background:${index % 2 ? "#ffffff" : background};color:${text};"><div class="mx-auto max-w-6xl"><p class="text-sm font-black uppercase tracking-[0.24em]" style="color:${muted};">${kind}</p><h2 class="mt-4 text-5xl font-black tracking-[-0.05em]">${blockTitle}</h2><p class="mt-5 max-w-2xl text-base leading-8" style="color:${muted};">${blockHint}</p></div></section>`;
     })
     .join("");
 
-  const html = `<main data-studio-page="true" data-bizuply-site="true" data-template-id="${escapeHtml(getTemplateIdFromSeed(seed))}" class="bizuply-template-site min-h-screen" style="background:${background};color:${text};"><header data-section-kind="header" data-section-title="Header" class="sticky top-0 z-40 bg-white/90 px-6 py-5 backdrop-blur-xl"><div class="mx-auto flex max-w-6xl items-center justify-between rounded-2xl border border-slate-200 bg-white px-6 py-4 shadow-sm"><div class="text-2xl font-black">${name}</div><nav class="hidden gap-6 text-sm font-bold text-slate-500 md:flex"><a data-editable-link="true" href="#about">אודות</a><a data-editable-link="true" href="#services">שירותים</a><a data-editable-link="true" href="#contact">צור קשר</a></nav></div></header><section id="hero" data-section-kind="hero" data-section-title="Hero" class="px-6 py-28 text-center"><h1 class="mx-auto max-w-5xl text-6xl font-black tracking-[-0.06em] md:text-8xl">${title}</h1><p class="mx-auto mt-7 max-w-2xl text-lg leading-9" style="color:${muted};">${subtitle}</p><a data-editable-link="true" href="#contact" class="mt-9 inline-flex rounded-2xl px-8 py-4 text-sm font-black text-black" style="background:${primary};">יצירת קשר</a></section>${sections}<footer data-section-kind="footer" data-section-title="Footer" class="px-6 py-14" style="background:${primary};color:white;"><div class="mx-auto max-w-6xl"><div class="text-3xl font-black">${name}</div><p class="mt-3 max-w-md text-sm leading-7 text-white/70">${escapeHtml(seed.description || "")}</p></div></footer></main>`;
+  const html = `<main data-studio-page="true" data-bizuply-site="true" data-template-id="${escapeHtml(getTemplateIdFromSeed(seed))}" class="bizuply-template-site min-h-screen" style="background:${background};color:${text};"><header data-section-kind="header" data-section-title="Header" class="sticky top-0 z-40 bg-white/90 px-6 py-5 backdrop-blur-xl"><div class="mx-auto flex max-w-6xl items-center justify-between rounded-2xl border border-slate-200 bg-white px-6 py-4 shadow-sm"><div class="text-2xl font-black">${name}</div><nav class="hidden gap-6 text-sm font-bold text-slate-500 md:flex"><a data-editable-link="true" href="#about">${aboutNav}</a><a data-editable-link="true" href="#services">${servicesNav}</a><a data-editable-link="true" href="#contact">${contactNav}</a></nav></div></header><section id="hero" data-section-kind="hero" data-section-title="Hero" class="px-6 py-28 text-center"><h1 class="mx-auto max-w-5xl text-6xl font-black tracking-[-0.06em] md:text-8xl">${title}</h1><p class="mx-auto mt-7 max-w-2xl text-lg leading-9" style="color:${muted};">${subtitle}</p><a data-editable-link="true" href="#contact" class="mt-9 inline-flex rounded-2xl px-8 py-4 text-sm font-black text-black" style="background:${primary};">${contactNav}</a></section>${sections}<footer data-section-kind="footer" data-section-title="Footer" class="px-6 py-14" style="background:${primary};color:white;"><div class="mx-auto max-w-6xl"><div class="text-3xl font-black">${name}</div><p class="mt-3 max-w-md text-sm leading-7 text-white/70">${escapeHtml(seed.description || "")}</p></div></footer></main>`;
 
   return {
     slug:
@@ -1899,7 +1904,7 @@ function createGenericTemplatePages(
     pages: [
       {
         id: "home",
-        title: "דף הבית",
+        title: String(i18n.t("studio.homePage")),
         slug: "",
         type: "home",
         isHome: true,
@@ -4896,7 +4901,7 @@ export default function WebsiteStudioPage({
     resolve: () => void;
     reject: (error: unknown) => void;
   } | null>(null);
-  const [siteName, setSiteName] = useState("האתר שלי");
+  const [siteName, setSiteName] = useState(() => String(i18n.t("studio.seed.mySite")));
   const [customDomain, setCustomDomain] = useState("");
   const [customDomainProvisioningStatus, setCustomDomainProvisioningStatus] =
     useState("");
@@ -6276,7 +6281,7 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
     const variable: ClientPortalVariable = {
       id: uid("var"),
       key: `custom_${count}`,
-      label: `משתנה ${count}`,
+      label: t("studio.seed.variableN", { count }),
       type: "text",
       source: "business_input",
       scope: "per_client",
@@ -7130,9 +7135,9 @@ const getSafeAppendTarget = (editor: Editor | null | undefined) => {
         templatePages.find((page) => page.id === "home");
 
       const html = selectedTemplateSeed
-        ? templatePage?.html || defaultWebsiteHtml
+        ? templatePage?.html || getDefaultWebsiteHtml()
         : active?.isHome
-          ? defaultWebsiteHtml
+          ? getDefaultWebsiteHtml()
           : createBlankPageHtml(active?.title || t("studio.newPage"));
 
       editor.setComponents(html);
@@ -9661,10 +9666,12 @@ function ClientPortalSettingsModal({
   onDeleteVariable: (variableId: string) => void;
   onInsertVariable: (variable: ClientPortalVariable) => void;
 }) {
+  const { t } = useTranslation();
+  const dir = useLocaleDir();
   return (
     <div className="fixed inset-0 z-[999999] grid place-items-center border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800/55 p-4 backdrop-blur-md">
       <div
-        dir="rtl"
+        dir={dir}
         className="flex max-h-[92vh] w-full max-w-6xl overflow-hidden rounded-[34px] bg-white shadow-[0_40px_140px_rgba(15,23,42,0.35)]"
       >
         <aside className="hidden w-[320px] shrink-0 border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 lg:block">
@@ -9676,23 +9683,22 @@ function ClientPortalSettingsModal({
               {pageTitle}
             </h2>
             <p className="mt-3 text-sm font-bold leading-7 text-white/55">
-              כאן העסק מגדיר אילו משתנים קיימים בעמוד. אחר כך ב־CRM מחברים
-              לקוחות, והמערכת מושכת לכל לקוח את הנתונים שלו.
+              {t("studio.portalPage.sideHint")}
             </p>
           </div>
 
           <div className="mt-4 grid gap-3">
             <SideInfo
-              label="סטטוס"
-              value={config.enabled ? "עמוד אזור אישי" : "עמוד רגיל"}
+              label={t("studio.portalPage.status")}
+              value={config.enabled ? t("studio.portalPage.badge") : t("studio.portalPage.regularPage")}
             />
-            <SideInfo label="משתנים" value={String(config.variables.length)} />
+            <SideInfo label={t("studio.portalPage.variables")} value={String(config.variables.length)} />
             <SideInfo
-              label="נתונים"
+              label={t("studio.portalPage.data")}
               value={
                 config.dataMode === "per_client"
-                  ? "אישיים לפי לקוח"
-                  : "גלובליים"
+                  ? t("studio.portalPage.perClient")
+                  : t("studio.portalPage.global")
               }
             />
           </div>
@@ -9702,14 +9708,13 @@ function ClientPortalSettingsModal({
           <header className="flex items-start justify-between gap-4 border-b border-slate-100 p-5 md:p-6">
             <div>
               <div className="inline-flex items-center rounded-full bg-violet-50 px-3 py-1 text-xs font-black text-violet-700">
-                עמוד אזור אישי
+                {t("studio.portalPage.badge")}
               </div>
               <h2 className="mt-3 text-3xl font-black tracking-tight text-slate-800">
-                הגדרת עמוד דינמי ללקוחות
+                {t("studio.portalPage.title")}
               </h2>
               <p className="mt-2 text-sm font-bold leading-7 text-slate-500">
-                אחרי התחברות כל לקוח רואה רק את הנתונים האישיים שלו מתיק ה-CRM —
-                לא אותו ערך לכולם.
+                {t("studio.portalPage.subtitle")}
               </p>
             </div>
 
@@ -9726,8 +9731,8 @@ function ClientPortalSettingsModal({
             <section className="rounded-[28px] border border-slate-200 bg-white p-5 shadow-sm">
               <div className="grid gap-4 md:grid-cols-2">
                 <ToggleCard
-                  title="הפוך לעמוד אזור אישי"
-                  text="העמוד יהיה זמין רק ללקוחות שמחוברים או משויכים."
+                  title={t("studio.portalPage.enableTitle")}
+                  text={t("studio.portalPage.enableText")}
                   checked={config.enabled}
                   onChange={(checked) =>
                     onUpdateConfig({
@@ -9739,8 +9744,8 @@ function ClientPortalSettingsModal({
                 />
 
                 <ToggleCard
-                  title="דורש התחברות לקוח"
-                  text="לקוח יראה את העמוד רק אחרי התחברות עם מייל וסיסמה."
+                  title={t("studio.portalPage.loginTitle")}
+                  text={t("studio.portalPage.loginText")}
                   checked={config.loginRequired}
                   onChange={(checked) =>
                     onUpdateConfig({ loginRequired: checked })
@@ -9750,7 +9755,7 @@ function ClientPortalSettingsModal({
 
               <div className="mt-5 grid gap-4 md:grid-cols-3">
                 <SelectBlock
-                  label="מי יכול לראות"
+                  label={t("studio.portalPage.whoCanSee")}
                   value={config.accessMode}
                   onChange={(value) =>
                     onUpdateConfig({
@@ -9758,14 +9763,14 @@ function ClientPortalSettingsModal({
                     })
                   }
                   options={[
-                    { value: "assigned_clients", label: "לקוחות משויכים בלבד" },
-                    { value: "paid_clients", label: "לקוחות משלמים בלבד" },
-                    { value: "all_clients", label: "כל הלקוחות המחוברים" },
+                    { value: "assigned_clients", label: t("studio.portalPage.assignedOnly") },
+                    { value: "paid_clients", label: t("studio.portalPage.paidOnly") },
+                    { value: "all_clients", label: t("studio.portalPage.allSignedIn") },
                   ]}
                 />
 
                 <SelectBlock
-                  label="סוג נתונים"
+                  label={t("studio.portalPage.dataType")}
                   value={config.dataMode}
                   onChange={(value) =>
                     onUpdateConfig({
@@ -9773,13 +9778,13 @@ function ClientPortalSettingsModal({
                     })
                   }
                   options={[
-                    { value: "per_client", label: "נתונים אישיים לפי לקוח" },
-                    { value: "global", label: "נתון כללי לכולם" },
+                    { value: "per_client", label: t("studio.portalPage.personalData") },
+                    { value: "global", label: t("studio.portalPage.sharedData") },
                   ]}
                 />
 
                 <InputBlock
-                  label="מחיר חודשי לעמוד"
+                  label={t("studio.portalPage.monthlyPrice")}
                   value={String(config.monthlyPrice)}
                   type="number"
                   onChange={(value) =>
@@ -9795,12 +9800,10 @@ function ClientPortalSettingsModal({
               <div className="mb-5 flex flex-col justify-between gap-4 md:flex-row md:items-center">
                 <div>
                   <h3 className="text-2xl font-black text-slate-800">
-                    משתנים דינמיים בעמוד
+                    {t("studio.portalPage.dynamicVars")}
                   </h3>
                   <p className="mt-1 text-sm font-bold leading-7 text-slate-500">
-                    כל משתנה הוא דאטה שהעסק יכול להציג ללקוח או לקבל מהלקוח.
-                    לדוגמה: כותרת, סטטוס, רשימת משימות, קובץ, תאריך, תשלום,
-                    פגישה.
+                    {t("studio.portalPage.dynamicVarsHint")}
                   </p>
                 </div>
 
@@ -9809,18 +9812,17 @@ function ClientPortalSettingsModal({
                   onClick={onAddVariable}
                   className="inline-flex h-12 items-center justify-center rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800 transition hover:from-violet-200/80 hover:via-sky-100 hover:to-cyan-100"
                 >
-                  + הוספת משתנה
+                  {t("studio.portalPage.addVariable")}
                 </button>
               </div>
 
               {config.variables.length === 0 ? (
                 <div className="rounded-[26px] border border-dashed border-violet-200 bg-violet-50/40 p-8 text-center">
                   <h4 className="text-xl font-black text-slate-800">
-                    עדיין אין משתנים בעמוד
+                    {t("studio.portalPage.noVariables")}
                   </h4>
                   <p className="mx-auto mt-2 max-w-xl text-sm font-bold leading-7 text-slate-500">
-                    לחצי על “הוספת משתנה” כדי לאפשר לעסק להגדיר איזה מידע יופיע
-                    ללקוח בעמוד הזה.
+                    {t("studio.portalPage.noVariablesHint")}
                   </p>
                 </div>
               ) : (
@@ -9855,76 +9857,77 @@ function VariableEditorCard({
   onDelete: () => void;
   onInsert: () => void;
 }) {
+  const { t } = useTranslation();
   return (
     <article className="rounded-[24px] border border-slate-200 bg-white p-4 shadow-sm">
       <div className="grid gap-4 lg:grid-cols-[1fr_180px_190px]">
         <InputBlock
-          label="שם לתצוגה"
+          label={t("studio.portalPage.displayName")}
           value={variable.label}
           onChange={(value) => onUpdate({ label: value })}
         />
 
         <SelectBlock
-          label="סוג שדה"
+          label={t("studio.portalPage.fieldType")}
           value={variable.type}
           onChange={(value) =>
             onUpdate({ type: value as ClientPortalVariableType })
           }
           options={[
-            { value: "text", label: "טקסט קצר" },
-            { value: "textarea", label: "טקסט ארוך" },
-            { value: "number", label: "מספר" },
-            { value: "date", label: "תאריך" },
-            { value: "checkbox", label: "צ׳קבוקס" },
-            { value: "checklist", label: "רשימת סימון" },
-            { value: "status", label: "סטטוס" },
-            { value: "file", label: "קובץ" },
-            { value: "image", label: "תמונה" },
-            { value: "email", label: "מייל" },
-            { value: "phone", label: "טלפון" },
+            { value: "text", label: t("studio.portalVars.types.text") },
+            { value: "textarea", label: t("studio.portalVars.types.textarea") },
+            { value: "number", label: t("studio.portalVars.types.number") },
+            { value: "date", label: t("studio.portalVars.types.date") },
+            { value: "checkbox", label: t("studio.portalVars.types.checkbox") },
+            { value: "checklist", label: t("studio.portalVars.types.checklist") },
+            { value: "status", label: t("studio.portalVars.types.status") },
+            { value: "file", label: t("studio.portalVars.types.file") },
+            { value: "image", label: t("studio.portalVars.types.image") },
+            { value: "email", label: t("studio.portalVars.types.email") },
+            { value: "phone", label: t("studio.portalVars.types.phone") },
           ]}
         />
 
         <SelectBlock
-          label="מקור הנתון"
+          label={t("studio.portalPage.dataSource")}
           value={variable.source}
           onChange={(value) =>
             onUpdate({ source: value as ClientPortalVariableSource })
           }
           options={[
-            { value: "business_input", label: "העסק ממלא" },
-            { value: "client_input", label: "הלקוח ממלא" },
-            { value: "crm_client", label: "מתיק הלקוח" },
-            { value: "appointments", label: "מפגישות" },
-            { value: "payments", label: "מתשלומים" },
-            { value: "tasks", label: "ממשימות" },
-            { value: "files", label: "מקבצים" },
-            { value: "custom", label: "מותאם אישית" },
+            { value: "business_input", label: t("studio.portalVars.sources.business_input") },
+            { value: "client_input", label: t("studio.portalVars.sources.client_input") },
+            { value: "crm_client", label: t("studio.portalVars.sources.crm_client") },
+            { value: "appointments", label: t("studio.portalVars.sources.appointments") },
+            { value: "payments", label: t("studio.portalVars.sources.payments") },
+            { value: "tasks", label: t("studio.portalVars.sources.tasks") },
+            { value: "files", label: t("studio.portalVars.sources.files") },
+            { value: "custom", label: t("studio.portalVars.sources.custom") },
           ]}
         />
       </div>
 
       <div className="mt-4 grid gap-4 lg:grid-cols-[1fr_1fr_1fr]">
         <InputBlock
-          label="שם משתנה טכני"
+          label={t("studio.portalPage.technicalName")}
           value={variable.key}
           onChange={(value) => onUpdate({ key: cleanVariableKey(value) })}
         />
 
         <SelectBlock
-          label="היקף נתונים"
+          label={t("studio.portalPage.dataScope")}
           value={variable.scope}
           onChange={(value) =>
             onUpdate({ scope: value as ClientPortalVariable["scope"] })
           }
           options={[
-            { value: "per_client", label: "אישי לפי לקוח" },
-            { value: "global", label: "כללי לכל הלקוחות" },
+            { value: "per_client", label: t("studio.portalPage.personalScope") },
+            { value: "global", label: t("studio.portalPage.globalScope") },
           ]}
         />
 
         <InputBlock
-          label="Placeholder"
+          label={t("studio.portalPage.placeholder")}
           value={variable.placeholder || ""}
           onChange={(value) => onUpdate({ placeholder: value })}
         />
@@ -9933,24 +9936,24 @@ function VariableEditorCard({
       <div className="mt-4 grid gap-3 md:grid-cols-3">
         <ToggleCard
           compact
-          title="מוצג ללקוח"
-          text="הלקוח יראה את המשתנה בעמוד"
+          title={t("studio.portalPage.shownToClient")}
+          text={t("studio.portalPage.shownToClientText")}
           checked={variable.visibleToClient}
           onChange={(checked) => onUpdate({ visibleToClient: checked })}
         />
 
         <ToggleCard
           compact
-          title="הלקוח יכול לערוך"
-          text="הלקוח יוכל להזין או לעדכן את הערך"
+          title={t("studio.portalPage.clientCanEdit")}
+          text={t("studio.portalPage.clientCanEditText")}
           checked={variable.editableByClient}
           onChange={(checked) => onUpdate({ editableByClient: checked })}
         />
 
         <ToggleCard
           compact
-          title="שדה חובה"
-          text="לא ניתן לשלוח בלי למלא"
+          title={t("studio.portalPage.required")}
+          text={t("studio.portalPage.requiredText")}
           checked={variable.required}
           onChange={(checked) => onUpdate({ required: checked })}
         />
@@ -9970,7 +9973,7 @@ function VariableEditorCard({
             onClick={onInsert}
             className="h-11 rounded-2xl bg-violet-700 px-4 text-xs font-black text-black transition hover:bg-violet-800"
           >
-            הכנסה לעמוד
+            {t("studio.portalPage.insertToPage")}
           </button>
 
           <button
@@ -9978,7 +9981,7 @@ function VariableEditorCard({
             onClick={onDelete}
             className="h-11 rounded-2xl bg-rose-50 px-4 text-xs font-black text-rose-600 transition hover:bg-rose-100"
           >
-            מחיקה
+            {t("studio.portalPage.delete")}
           </button>
         </div>
       </div>

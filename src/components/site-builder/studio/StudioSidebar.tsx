@@ -25,7 +25,7 @@ import {
   studioSectionTitle,
 } from "../../../i18n/studioLibraryLabels";
 import { localizeBuiltInText } from "../../../i18n/localizeBuiltInTemplateSeed";
-import { fontOptions, themePalettes } from "./data/themePalettes";
+import { fontOptions, getThemePalettes } from "./data/themePalettes";
 import { useAuth } from "../../../context/AuthContext";
 
 type StudioPageSection = {
@@ -552,7 +552,7 @@ export default function StudioSidebar({
                 />
 
                 <div className="space-y-3">
-                  {themePalettes.map((palette) => (
+                  {getThemePalettes().map((palette) => (
                     <PaletteCard
                       key={palette.id}
                       palette={palette}
