@@ -587,6 +587,13 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("5 אוטומציות שכל עסק צריך לבנות", "es")).toMatch(/automatizaciones/i);
   });
 
+  it("localizes unique22 leftover sentences", () => {
+    expect(localizeBuiltInText("יותר מארוחה — ערב שנשאר איתך.", "en")).toMatch(/evening/i);
+    expect(localizeBuiltInText("יותר מארוחה — ערב שנשאר איתך.", "en")).not.toMatch(/[\u0590-\u05FF]/);
+    expect(localizeBuiltInText("מותגים ומוצרים שעובדים איתנו", "pt-BR")).toMatch(/conosco/i);
+    expect(localizeBuiltInText("סוכר הוא מבנה — לא רק מתיקות.", "ar")).not.toMatch(/[\u0590-\u05FF]/);
+  });
+
   it("keeps a saved rich-store headline over localized unique17 defaults", () => {
     const defaults = localizeBuiltInTemplateSeed(
       { brandName: "סטודיו מסחר עשיר", productsEyebrow: "בחירות החנות" },
