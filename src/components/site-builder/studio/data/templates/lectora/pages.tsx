@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { lectoraDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
@@ -134,7 +135,7 @@ function Courses({ data, openModal }: { data: Record<string, any>; openModal: ()
       <div className="t-marquee flex gap-8 whitespace-nowrap px-4">
         {[...[[getValue(data,"itemOneTitle"),getValue(data,"itemOneText")],[getValue(data,"itemTwoTitle"),getValue(data,"itemTwoText")],[getValue(data,"itemThreeTitle"),getValue(data,"itemThreeText")]], ...[[getValue(data,"itemOneTitle"),getValue(data,"itemOneText")],[getValue(data,"itemTwoTitle"),getValue(data,"itemTwoText")],[getValue(data,"itemThreeTitle"),getValue(data,"itemThreeText")]]].map(([title], i) => (
           <span key={i} className="inline-flex items-center gap-4 text-2xl font-bold text-[var(--p)]">
-            <span className="h-2 w-2 rounded-full bg-[var(--a)]" />{title}<span className="text-[var(--muted)]">· קורס חי</span>
+            <span className="h-2 w-2 rounded-full bg-[var(--a)]" />{title}<span className="text-[var(--muted)]">{tx("· קורס חי")}</span>
           </span>
         ))}
       </div>
@@ -163,7 +164,7 @@ function Curriculum({ data }: { data: Record<string, any> }) {
                 <summary className="flex cursor-pointer list-none items-center gap-5 p-5 font-bold">
                   <span className="t-display text-2xl text-[var(--p)]">{n}</span>{t}
                 </summary>
-                <p className="px-5 pb-5 text-sm text-[var(--muted)]">שיעורים מוקלטים + מפגש חי שבועי עם המנחה.</p>
+                <p className="px-5 pb-5 text-sm text-[var(--muted)]">{tx("שיעורים מוקלטים + מפגש חי שבועי עם המנחה.")}</p>
               </details>
             </Reveal>
           ))}
@@ -307,7 +308,7 @@ function About({ data }: { data: Record<string, any> }) {
         <Reveal className="relative min-h-[360px] overflow-hidden border border-[var(--p)]/25 bg-[var(--surface)]/90">
           <SafeImg src={getValue(data,"sectionImage")} alt="" className="absolute inset-0 h-full w-full object-cover opacity-75" />
           <div className="absolute inset-0 bg-gradient-to-t from-[var(--dark)]/80 to-transparent" />
-          <span className="absolute bottom-6 right-6 rounded-full px-4 py-2 text-sm font-bold bg-[var(--a)] text-white">קולנועי</span>
+          <span className="absolute bottom-6 right-6 rounded-full px-4 py-2 text-sm font-bold bg-[var(--a)] text-white">{tx("קולנועי")}</span>
         </Reveal>
         <Reveal variant="up" className="border border-[var(--p)]/25 bg-[var(--surface)]/90 p-8 lg:p-12">
           <p className="text-xs font-bold uppercase tracking-[0.3em] text-[var(--a)]">{getValue(data,"aboutEyebrow")}</p>
@@ -465,9 +466,9 @@ function Contact({ data, openModal }: { data: Record<string, any>; openModal: ()
           <p className="mt-8 text-sm">{getValue(data,"phone")}</p>
           <p className="text-sm">{getValue(data,"email")}</p></Reveal>
         </div>
-        <form className="grid gap-4 bg-[var(--surface)] p-10 lg:p-14" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="lectora-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-          <input className="border border-[var(--p)]/30 bg-transparent px-5 py-4 outline-none" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-          <input className="border border-[var(--p)]/30 bg-transparent px-5 py-4 outline-none" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+        <form className="grid gap-4 bg-[var(--surface)] p-10 lg:p-14" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="lectora-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+          <input className="border border-[var(--p)]/30 bg-transparent px-5 py-4 outline-none" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+          <input className="border border-[var(--p)]/30 bg-transparent px-5 py-4 outline-none" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
           <button type="submit" onClick={openModal} className="bg-[var(--a)] py-4 text-sm font-bold text-white">{getValue(data,"contactButton")}</button>
         </form>
       </div>
@@ -494,9 +495,9 @@ function ContactModal({ data, open, onClose }: { data: Record<string, any>; open
       <div className="relative w-full max-w-md border border-[var(--p)]/30 bg-[var(--surface)] p-8">
         <button type="button" onClick={onClose} className="absolute left-4 top-4 text-2xl">×</button>
         <h3 className="t-display text-3xl font-bold">{getValue(data, "contactTitle")}</h3>
-        <form className="mt-6 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="lectora-contact-2" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-          <input className="border border-[var(--p)]/20 bg-transparent px-5 py-4 text-right outline-none" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-          <input className="border border-[var(--p)]/20 bg-transparent px-5 py-4 text-right outline-none" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+        <form className="mt-6 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="lectora-contact-2" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+          <input className="border border-[var(--p)]/20 bg-transparent px-5 py-4 text-right outline-none" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+          <input className="border border-[var(--p)]/20 bg-transparent px-5 py-4 text-right outline-none" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
           <button type="submit" className="bg-[var(--p)] py-4 text-sm font-bold text-[var(--dark)]">{getValue(data, "contactButton")}</button>
         </form>
       </div>

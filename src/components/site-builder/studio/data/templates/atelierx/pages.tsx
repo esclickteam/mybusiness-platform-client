@@ -1,4 +1,5 @@
 import React, { useMemo } from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { atelierxDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
@@ -288,16 +289,16 @@ function Contact({ data }: { data: Record<string, any> }) {
           </div>
         </Reveal>
         <Reveal variant="left" delayMs={120}>
-          <form className="border border-black p-6 md:p-8" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="atelierx-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+          <form className="border border-black p-6 md:p-8" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="atelierx-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
             <div className="grid gap-4 md:grid-cols-2">
-              <input aria-label="שם מלא" className="border-b border-black bg-transparent px-0 py-4 text-sm font-bold outline-none focus:border-[var(--a)]" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-              <input aria-label="טלפון" className="border-b border-black bg-transparent px-0 py-4 text-sm font-bold outline-none focus:border-[var(--a)]" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+              <input aria-label={tx("שם מלא")} className="border-b border-black bg-transparent px-0 py-4 text-sm font-bold outline-none focus:border-[var(--a)]" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+              <input aria-label={tx("טלפון")} className="border-b border-black bg-transparent px-0 py-4 text-sm font-bold outline-none focus:border-[var(--a)]" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
             </div>
             <div className="mt-4 grid gap-4 md:grid-cols-2">
-              <input aria-label="מידה" className="border-b border-black bg-transparent px-0 py-4 text-sm font-bold outline-none focus:border-[var(--a)]" placeholder="מידה"  name="other" data-bizuply-form-field-id="other" />
-              <input aria-label="מועד רצוי" className="border-b border-black bg-transparent px-0 py-4 text-sm font-bold outline-none focus:border-[var(--a)]" placeholder="מועד רצוי"  name="other_2" data-bizuply-form-field-id="other_2" />
+              <input aria-label={tx("מידה")} className="border-b border-black bg-transparent px-0 py-4 text-sm font-bold outline-none focus:border-[var(--a)]" placeholder={tx("מידה")}  name="other" data-bizuply-form-field-id="other" />
+              <input aria-label={tx("מועד רצוי")} className="border-b border-black bg-transparent px-0 py-4 text-sm font-bold outline-none focus:border-[var(--a)]" placeholder={tx("מועד רצוי")}  name="other_2" data-bizuply-form-field-id="other_2" />
             </div>
-            <textarea aria-label="מה מחפשים" className="mt-6 min-h-36 w-full border-b border-black bg-transparent px-0 py-4 text-sm font-bold outline-none focus:border-[var(--a)]" placeholder="מה תרצו למדוד או לאיזה אירוע?"  name="other_3" data-bizuply-form-field-id="other_3"></textarea>
+            <textarea aria-label={tx("מה מחפשים")} className="mt-6 min-h-36 w-full border-b border-black bg-transparent px-0 py-4 text-sm font-bold outline-none focus:border-[var(--a)]" placeholder={tx("מה תרצו למדוד או לאיזה אירוע?")}  name="other_3" data-bizuply-form-field-id="other_3"></textarea>
             <button type="submit" className="mt-8 w-full bg-black px-8 py-4 text-xs font-black uppercase tracking-[0.22em] text-white transition hover:bg-[var(--a)]">
               {getValue(data, "contactButton")}
             </button>

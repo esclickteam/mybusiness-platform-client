@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { parcelDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
@@ -26,7 +27,7 @@ function v(data: Record<string, any>, key: string) {
 
 function Header({ data, currentPage, goTo }: { data: Record<string, any>; currentPage: string; goTo: (id: string) => void }) {
   const [open, setOpen] = useState(false);
-  const nav = parcelPages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || p.label] as const);
+  const nav = parcelPages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || tx(p.label)] as const);
   return (
     <header
       data-template-section-type="header"
@@ -115,7 +116,7 @@ function PlotSpecs({ data }: { data: Record<string, any> }) {
             <article key={plot.title} className="tpl-rise grid gap-6 border-b py-9 md:grid-cols-[0.45fr_0.75fr_1fr] md:items-start" style={{ borderColor: "rgba(107,90,46,0.24)", animationDelay: `${index * 0.08}s` }}>
               <div>
                 <p className="text-3xl md:text-6xl font-black leading-none" style={{ color: "#6b5a2e" }}>{plot.size}</p>
-                <p className="mt-2 text-xs font-bold tracking-[0.22em]" style={{ color: "#6e684f" }}>מ״ר</p>
+                <p className="mt-2 text-xs font-bold tracking-[0.22em]" style={{ color: "#6e684f" }}>{tx("מ״ר")}</p>
               </div>
               <div>
                 <h3 className="tpl-display text-3xl font-bold" style={{ color: "#243018" }}>{plot.title}</h3>
@@ -140,7 +141,7 @@ function PlanningSidenotes({ data }: { data: Record<string, any> }) {
     <section className="px-5 py-16 lg:px-8 lg:py-24" style={{ background: "#e4dcc8" }}>
       <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.42fr_1fr]">
         <aside className="border-r pr-6" style={{ borderColor: "#6b5a2e" }}>
-          <p className="text-xs font-bold tracking-[0.32em]" style={{ color: "#6b5a2e" }}>שולי תכנון</p>
+          <p className="text-xs font-bold tracking-[0.32em]" style={{ color: "#6b5a2e" }}>{tx("שולי תכנון")}</p>
           <h2 className="tpl-display mt-4 text-4xl font-bold md:text-5xl" style={{ color: "#243018" }}>{v(data, "planningTitle")}</h2>
           <p className="mt-5 text-base leading-7" style={{ color: "#6e684f" }}>{v(data, "planningIntro")}</p>
         </aside>
@@ -164,16 +165,16 @@ function SurveyRequest({ data }: { data: Record<string, any> }) {
     <section className="border-t px-5 py-16 lg:px-8 lg:py-24" style={{ borderColor: "rgba(107,90,46,0.24)", background: "#efe9da" }}>
       <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.7fr_1fr]">
         <div className="border p-6" style={{ borderColor: "rgba(107,90,46,0.28)", background: "#e4dcc8" }}>
-          <p className="text-xs font-bold tracking-[0.32em]" style={{ color: "#6b5a2e" }}>בקשת סקר</p>
+          <p className="text-xs font-bold tracking-[0.32em]" style={{ color: "#6b5a2e" }}>{tx("בקשת סקר")}</p>
           <h2 className="tpl-display mt-5 text-5xl font-bold md:text-6xl" style={{ color: "#243018" }}>{v(data, "contactTitle")}</h2>
           <p className="mt-5 text-lg leading-8" style={{ color: "#6e684f" }}>{v(data, "contactText")}</p>
           <p className="mt-10 border-t pt-4 text-sm font-bold tracking-[0.18em]" style={{ borderColor: "rgba(107,90,46,0.28)", color: "#6b5a2e" }}>{v(data, "phone")} · {v(data, "email")}</p>
         </div>
-        <form className="grid gap-3 self-start" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="parcel-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-          <input className={field} style={{ borderColor: "rgba(107,90,46,0.28)", color: "#243018" }} placeholder="שם מלא" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-          <input className={field} style={{ borderColor: "rgba(107,90,46,0.28)", color: "#243018" }} placeholder="אזור מבוקש" name="other" data-bizuply-form-field-id="other" />
-          <input className={field} style={{ borderColor: "rgba(107,90,46,0.28)", color: "#243018" }} placeholder="גודל רצוי במ״ר" name="other_2" data-bizuply-form-field-id="other_2" />
-          <textarea className={`${field} min-h-32`} style={{ borderColor: "rgba(107,90,46,0.28)", color: "#243018" }} placeholder="ייעוד, תקציב, הערות תכנון"  name="message" data-bizuply-form-field-id="message"></textarea>
+        <form className="grid gap-3 self-start" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="parcel-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+          <input className={field} style={{ borderColor: "rgba(107,90,46,0.28)", color: "#243018" }} placeholder={tx("שם מלא")} name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+          <input className={field} style={{ borderColor: "rgba(107,90,46,0.28)", color: "#243018" }} placeholder={tx("אזור מבוקש")} name="other" data-bizuply-form-field-id="other" />
+          <input className={field} style={{ borderColor: "rgba(107,90,46,0.28)", color: "#243018" }} placeholder={tx("גודל רצוי במ״ר")} name="other_2" data-bizuply-form-field-id="other_2" />
+          <textarea className={`${field} min-h-32`} style={{ borderColor: "rgba(107,90,46,0.28)", color: "#243018" }} placeholder={tx("ייעוד, תקציב, הערות תכנון")}  name="message" data-bizuply-form-field-id="message"></textarea>
           <button type="submit" className="tpl-sweep px-6 py-4 text-sm font-bold" style={{ background: "#6b5a2e", color: "#efe9da" }}>{v(data, "cta")}</button>
         </form>
       </div>
@@ -231,10 +232,10 @@ export default function ParcelPages({
   );
   const pageContent: Record<string, React.ReactNode> = {
     home: <HomePage data={merged} goTo={goTo} />,
-    plots: <InnerPage data={merged} title="מגרשים"><PlotSpecs data={merged} /><SurveyRequest data={merged} /></InnerPage>,
-    planning: <InnerPage data={merged} title="תכנון"><PlanningSidenotes data={merged} /></InnerPage>,
-    about: <InnerPage data={merged} title="אודות"><PlanningSidenotes data={merged} /><PlotSpecs data={merged} /></InnerPage>,
-    contact: <InnerPage data={merged} title="יצירת קשר"><SurveyRequest data={merged} /></InnerPage>,
+    plots: <InnerPage data={merged} title={tx("מגרשים")}><PlotSpecs data={merged} /><SurveyRequest data={merged} /></InnerPage>,
+    planning: <InnerPage data={merged} title={tx("תכנון")}><PlanningSidenotes data={merged} /></InnerPage>,
+    about: <InnerPage data={merged} title={tx("אודות")}><PlanningSidenotes data={merged} /><PlotSpecs data={merged} /></InnerPage>,
+    contact: <InnerPage data={merged} title={tx("יצירת קשר")}><SurveyRequest data={merged} /></InnerPage>,
   };
   return (
     <div dir="rtl" data-template-id="parcel" className="min-h-screen w-full overflow-x-hidden" style={{ background: "#efe9da", color: "#243018" }}>

@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { studioraDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
@@ -211,30 +212,28 @@ function BookingModal({
         </button>
         <div className="relative z-10">
           <p className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.24em] text-[#c3ff00]">
-            <span className="h-1.5 w-1.5 rounded-full bg-[#c3ff00]" />
-            בריף פרויקט
-          </p>
-          <h3 className="mt-5 text-3xl font-black uppercase text-white">בואו נבנה משהו גדול.</h3>
+            <span className="h-1.5 w-1.5 rounded-full bg-[#c3ff00]" />{tx("בריף פרויקט")}</p>
+          <h3 className="mt-5 text-3xl font-black uppercase text-white">{tx("בואו נבנה משהו גדול.")}</h3>
           <p className="mt-3 text-sm leading-6 text-white/55">{getValue(data, "contactText")}</p>
-          <form className="mt-7 grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="studiora-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+          <form className="mt-7 grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="studiora-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
             <input
               className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-white/40 focus:border-[#c3ff00]"
-              placeholder="שם / חברה"
+              placeholder={tx("שם / חברה")}
              name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
             <input
               className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-white/40 focus:border-[#c3ff00]"
-              placeholder="אימייל"
+              placeholder={tx("אימייל")}
              name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
             <select className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition focus:border-[#c3ff00]">
-              <option>סוג הפרויקט</option>
-              <option>מיתוג וזהות</option>
-              <option>עיצוב UI/UX</option>
-              <option>בניית אתר</option>
-              <option>קמפיין / מושן</option>
+              <option>{tx("סוג הפרויקט")}</option>
+              <option>{tx("מיתוג וזהות")}</option>
+              <option>{tx("עיצוב UI/UX")}</option>
+              <option>{tx("בניית אתר")}</option>
+              <option>{tx("קמפיין / מושן")}</option>
             </select>
             <textarea
               className="min-h-24 rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-white/40 focus:border-[#c3ff00]"
-              placeholder="ספרו לנו על הרעיון"
+              placeholder={tx("ספרו לנו על הרעיון")}
              name="message" data-bizuply-form-field-id="message"></textarea>
             <button
               type="submit"
@@ -577,23 +576,23 @@ function ContactSection({
             ))}
           </div>
         </div>
-        <form className="m-4 rounded-[28px] border border-white/8 bg-[#0a0a0a] p-6 lg:m-6 lg:p-8" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="studiora-contact-2" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+        <form className="m-4 rounded-[28px] border border-white/8 bg-[#0a0a0a] p-6 lg:m-6 lg:p-8" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="studiora-contact-2" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
           <div className="grid gap-4">
             <input
               className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-white/40 focus:border-[#c3ff00]"
-              placeholder="שם / חברה"
+              placeholder={tx("שם / חברה")}
              name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
             <input
               className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-white/40 focus:border-[#c3ff00]"
-              placeholder="אימייל"
+              placeholder={tx("אימייל")}
              name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
             <input
               className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-white/40 focus:border-[#c3ff00]"
-              placeholder="תקציב משוער"
+              placeholder={tx("תקציב משוער")}
              name="other" data-bizuply-form-field-id="other" />
             <textarea
               className="min-h-32 rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-white/40 focus:border-[#c3ff00]"
-              placeholder="ספרו לנו על הפרויקט"
+              placeholder={tx("ספרו לנו על הפרויקט")}
              name="message" data-bizuply-form-field-id="message"></textarea>
             <button
               type="submit"
@@ -653,7 +652,7 @@ function CtaFooter({
         <p>
           © {new Date().getFullYear()} {getValue(data, "brandName")}
         </p>
-        <p>תבנית Studiora · Bizuply Studio</p>
+        <p>{tx("תבנית Studiora · Bizuply Studio")}</p>
       </div>
     </footer>
   );

@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { TemplateText } from "../shared/TemplateText";
@@ -779,7 +780,7 @@ function ContactSection({ data }: { data: TemplateData }) {
           <textarea
             className="min-h-40 border bg-transparent px-5 py-4 text-right text-sm outline-none md:col-span-2"
             style={{ borderColor: citadelTheme.border, color: citadelTheme.light }}
-            placeholder="ספרו לנו על האתגר, הסביבה והדחיפות."
+            placeholder={tx("ספרו לנו על האתגר, הסביבה והדחיפות.")}
             data-visual-editable="true"
             data-visual-edit-id="contact.form.message"
             data-visual-edit-type="control"

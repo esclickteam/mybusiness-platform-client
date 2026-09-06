@@ -1,5 +1,6 @@
 import React from "react";
 
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { SiteTemplateNav } from "../../../visual-editor/utils/SiteTemplateNav";
 import type { SitePageNavSource, TemplateNavItem } from "../../../visual-editor/utils/syncNavWithSitePages";
 
@@ -46,7 +47,7 @@ export function BeautyHeaderNav({
   const items: TemplateNavItem[] = DEFAULT_NAV.map((entry) => ({
     page: entry.page,
     __sitePageId: entry.page,
-    label: String(data?.[entry.navKey] || entry.fallback),
+    label: String(data?.[entry.navKey] || tx(entry.fallback)),
   }));
 
   return (

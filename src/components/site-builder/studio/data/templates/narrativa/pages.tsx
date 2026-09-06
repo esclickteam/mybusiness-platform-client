@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
 import { Reveal } from "../shared/Reveal";
@@ -102,8 +103,8 @@ function About({ data }: { data: Record<string, any> }) {
               {restText}
             </p>
             <div className="mt-8 grid gap-4 border-y border-black/10 py-5 sm:grid-cols-2">
-              <p className="text-sm leading-7 text-[var(--muted)]">מערכת מסרים, דוברות ויחסי עיתונות שנבנים סביב קו editorial אחד.</p>
-              <p className="text-sm leading-7 text-[var(--muted)]">כל לקוח מקבל זווית, לוח פרסום וקצב עבודה ברור מול המדיה.</p>
+              <p className="text-sm leading-7 text-[var(--muted)]">{tx("מערכת מסרים, דוברות ויחסי עיתונות שנבנים סביב קו editorial אחד.")}</p>
+              <p className="text-sm leading-7 text-[var(--muted)]">{tx("כל לקוח מקבל זווית, לוח פרסום וקצב עבודה ברור מול המדיה.")}</p>
             </div>
           </Reveal>
           <Reveal variant="scale">
@@ -284,7 +285,7 @@ function Insights({ data, goTo }: { data: Record<string, any>; goTo: (id: string
                 <blockquote className="mt-6 border-r-4 border-[var(--p)] bg-[var(--surface)] p-5 text-xl font-bold leading-9">
                   "{i === 0 ? "כותרת טובה מתחילה בזווית, לא ברשימת מסרים." : i === 1 ? "מדיה אוהבת קצב עקבי יותר מהבטחה גדולה." : "משבר נמדד בדקות הראשונות ובשקט שאחריו."}"
                 </blockquote>
-                <button type="button" onClick={() => goTo("contact")} className="mt-5 text-sm font-black text-[var(--p)]">שלחו נושא לכתבה</button>
+                <button type="button" onClick={() => goTo("contact")} className="mt-5 text-sm font-black text-[var(--p)]">{tx("שלחו נושא לכתבה")}</button>
               </article>
             </Reveal>
           ))}
@@ -341,11 +342,11 @@ function Contact({ data }: { data: Record<string, any> }) {
             <p>{getValue(data, "address")}</p>
           </div>
         </div>
-        <form className="grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="narrativa-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-          <input className="border border-black/10 bg-[var(--bg)] px-4 py-4 text-right outline-none" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-          <input className="border border-black/10 bg-[var(--bg)] px-4 py-4 text-right outline-none" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-          <input className="border border-black/10 bg-[var(--bg)] px-4 py-4 text-right outline-none" placeholder="נושא / ארגון"  name="other" data-bizuply-form-field-id="other" />
-          <textarea className="min-h-36 border border-black/10 bg-[var(--bg)] px-4 py-4 text-right outline-none" placeholder="מה הסיפור שצריך להגיע לעיתונות?"  name="other_2" data-bizuply-form-field-id="other_2"></textarea>
+        <form className="grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="narrativa-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+          <input className="border border-black/10 bg-[var(--bg)] px-4 py-4 text-right outline-none" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+          <input className="border border-black/10 bg-[var(--bg)] px-4 py-4 text-right outline-none" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+          <input className="border border-black/10 bg-[var(--bg)] px-4 py-4 text-right outline-none" placeholder={tx("נושא / ארגון")}  name="other" data-bizuply-form-field-id="other" />
+          <textarea className="min-h-36 border border-black/10 bg-[var(--bg)] px-4 py-4 text-right outline-none" placeholder={tx("מה הסיפור שצריך להגיע לעיתונות?")}  name="other_2" data-bizuply-form-field-id="other_2"></textarea>
           <button type="submit" className="bg-[var(--p)] px-6 py-4 text-sm font-black text-white">{getValue(data, "contactButton")}</button>
         </form>
       </Reveal>
@@ -366,7 +367,7 @@ function Footer({ data, goTo }: { data: Record<string, any>; goTo: (id: string) 
         </Reveal>
         <div className="mt-10 flex flex-wrap justify-center gap-3">
           {links.map((p) => (
-            <button key={p.id} type="button" onClick={() => goTo(p.id)} className="border border-white/20 px-4 py-2 text-xs font-bold uppercase tracking-[0.14em] text-white/80">{p.label}</button>
+            <button key={p.id} type="button" onClick={() => goTo(p.id)} className="border border-white/20 px-4 py-2 text-xs font-bold uppercase tracking-[0.14em] text-white/80">{tx(p.label)}</button>
           ))}
         </div>
         <p className="mt-10 text-xs text-white/50">© {new Date().getFullYear()} {getValue(data, "brandName")} · {getValue(data, "footerText")}</p>

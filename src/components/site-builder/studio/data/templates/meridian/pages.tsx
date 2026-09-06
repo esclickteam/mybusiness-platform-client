@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { meridianDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
@@ -48,7 +49,7 @@ function Header({
   onCta: () => void;
 }) {
   const [open, setOpen] = useState(false);
-  const nav = meridianPages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || p.label] as const);
+  const nav = meridianPages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || tx(p.label)] as const);
 
   return (
     <header
@@ -120,11 +121,11 @@ function ContactForm({ data, onCta }: { data: Record<string, any>; onCta: () => 
   const field =
     "w-full border bg-transparent px-4 py-3.5 text-right outline-none";
   return (
-    <form className="grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="meridian-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-      <input className={field} style={{ borderColor: "rgba(243,235,225,0.14)", color: "#f3ebe1" }} placeholder="שם מלא" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-      <input className={field} style={{ borderColor: "rgba(243,235,225,0.14)", color: "#f3ebe1" }} placeholder="טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-      <input className={field} style={{ borderColor: "rgba(243,235,225,0.14)", color: "#f3ebe1" }} placeholder="אימייל" name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
-      <textarea className={cx(field, "min-h-28")} style={{ borderColor: "rgba(243,235,225,0.14)", color: "#f3ebe1" }} placeholder="ספרו בקצרה"  name="message" data-bizuply-form-field-id="message"></textarea>
+    <form className="grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="meridian-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+      <input className={field} style={{ borderColor: "rgba(243,235,225,0.14)", color: "#f3ebe1" }} placeholder={tx("שם מלא")} name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+      <input className={field} style={{ borderColor: "rgba(243,235,225,0.14)", color: "#f3ebe1" }} placeholder={tx("טלפון")} name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+      <input className={field} style={{ borderColor: "rgba(243,235,225,0.14)", color: "#f3ebe1" }} placeholder={tx("אימייל")} name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
+      <textarea className={cx(field, "min-h-28")} style={{ borderColor: "rgba(243,235,225,0.14)", color: "#f3ebe1" }} placeholder={tx("ספרו בקצרה")}  name="message" data-bizuply-form-field-id="message"></textarea>
       <button type="submit" className="px-6 py-4 text-sm font-bold" style={{ background: "#c4a574", color: "#0A0908" }}>
         {v(data, "cta")}
       </button>
@@ -291,9 +292,9 @@ function ContactBlock({ data, onCta }: { data: Record<string, any>; onCta: () =>
           <h2 className="tpl-display text-4xl font-bold md:text-5xl">{v(data, "contactTitle")}</h2>
           <p className="mt-5 max-w-md text-base leading-8" style={{ color: "#a89a88" }}>{v(data, "contactText")}</p>
           <div className="mt-10 space-y-4 text-sm">
-            <p><span style={{ color: "#a89a88" }}>טלפון · </span>{v(data, "phone")}</p>
-            <p><span style={{ color: "#a89a88" }}>אימייל · </span>{v(data, "email")}</p>
-            <p><span style={{ color: "#a89a88" }}>כתובת · </span>{v(data, "address")}</p>
+            <p><span style={{ color: "#a89a88" }}>{tx("טלפון ·")}</span>{v(data, "phone")}</p>
+            <p><span style={{ color: "#a89a88" }}>{tx("אימייל ·")}</span>{v(data, "email")}</p>
+            <p><span style={{ color: "#a89a88" }}>{tx("כתובת ·")}</span>{v(data, "address")}</p>
           </div>
         </div>
         <ContactForm data={data} onCta={onCta} />
@@ -307,7 +308,7 @@ function Footer({ data }: { data: Record<string, any> }) {
     <footer className="border-t px-5 py-8 lg:px-8" style={{ borderColor: "rgba(243,235,225,0.14)" }}>
       <div className="mx-auto flex max-w-7xl flex-col items-start justify-between gap-3 text-sm md:flex-row md:items-center" style={{ color: "#a89a88" }}>
         <p>© {new Date().getFullYear()} {v(data, "brandName")}</p>
-        <p>תבנית Meridian · Bizuply Studio</p>
+        <p>{tx("תבנית Meridian · Bizuply Studio")}</p>
       </div>
     </footer>
   );
@@ -380,7 +381,7 @@ export default function MeridianPages({
   for (const p of meridianPages) {
     if (p.id === "home") continue;
     pageContent[p.id] = (
-      <InnerPage data={merged} title={p.label} onCta={() => goTo("contact")}>
+      <InnerPage data={merged} title={tx(p.label)} onCta={() => goTo("contact")}>
         {p.id.includes("contact") ? null : (
           <>
             <ItemsList data={merged} />

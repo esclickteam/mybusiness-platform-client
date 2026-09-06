@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { brunchhausDefaultData } from "./defaultData";
 import { brunchhausEditorCss } from "./editorCss";
@@ -32,7 +33,7 @@ function v(data: Record<string, any>, key: string) {
 function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>; currentPage: string; goTo: (id: string) => void; onCta: () => void }) {
   const [navOpen, setNavOpen] = useState(false);
   const go = (id: string) => { setNavOpen(false); goTo(id); };
-  const nav = brunchhausPages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || p.label] as const);
+  const nav = brunchhausPages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || tx(p.label)] as const);
   return (
     <header data-template-section-type="header" data-section-kind="header" className="sticky top-0 z-50 bg-transparent">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4 lg:px-8">
@@ -93,7 +94,7 @@ function PolaroidScatter({ data }: { data: Record<string, any> }) {
   return (
     <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{ borderColor: "rgba(58,42,30,0.12)", background: "#ffffff" }}>
       <div className="mx-auto max-w-7xl">
-        <Reveal><h2 className="tpl-display text-4xl font-bold md:text-5xl">רגעי בראנץ׳</h2></Reveal>
+        <Reveal><h2 className="tpl-display text-4xl font-bold md:text-5xl">{tx("רגעי בראנץ׳")}</h2></Reveal>
         <div className="mt-12 flex flex-wrap items-end justify-center gap-6">
           {shots.map(([title, meta, img], i) => (
             <Reveal key={title} delayMs={i * 90} variant="scale">
@@ -392,7 +393,7 @@ function AboutBlock({ data }: { data: Record<string, any> }) {
   return (
     <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{ borderColor: "rgba(58,42,30,0.12)" }}>
       <div className="mx-auto max-w-2xl -rotate-1 border-2 border-dashed bg-white p-8 shadow-md" style={{ borderColor: "#f4a261", color: "#3a2a1e" }}>
-        <p className="text-xs font-semibold tracking-[0.2em]" style={{ color: "#f4a261" }}>פתק מהשף</p>
+        <p className="text-xs font-semibold tracking-[0.2em]" style={{ color: "#f4a261" }}>{tx("פתק מהשף")}</p>
         <h2 className="tpl-display mt-4 text-3xl font-bold md:text-4xl">{v(data, "aboutTitle")}</h2>
         <p className="mt-5 text-lg leading-8" style={{ color: "#9a7b62" }}>{v(data, "aboutText")}</p>
         <img src={v(data, "aboutImage")} alt="" className="mt-6 aspect-[16/9] w-full object-cover" />
@@ -408,10 +409,10 @@ function ContactBlock({ data, onCta }: { data: Record<string, any>; onCta: () =>
         <p className="text-center text-xs tracking-[0.3em]" style={{ color: "#f4a261" }}>POSTCARD</p>
         <h2 className="tpl-display mt-3 text-center text-3xl font-bold">{v(data, "contactTitle")}</h2>
         <p className="mt-3 text-center text-sm" style={{ color: "#9a7b62" }}>{v(data, "contactText")}</p>
-        <form className="mt-6 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="brunchhaus-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-          <input className="border-b bg-transparent px-2 py-2 text-right outline-none" style={{ borderColor: "rgba(58,42,30,0.12)" }} placeholder="שם" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-          <input className="border-b bg-transparent px-2 py-2 text-right outline-none" style={{ borderColor: "rgba(58,42,30,0.12)" }} placeholder="טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-          <textarea className="min-h-20 border bg-transparent px-3 py-2 text-right outline-none" style={{ borderColor: "rgba(58,42,30,0.12)" }} placeholder="הודעה קצרה"  name="message" data-bizuply-form-field-id="message"></textarea>
+        <form className="mt-6 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="brunchhaus-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+          <input className="border-b bg-transparent px-2 py-2 text-right outline-none" style={{ borderColor: "rgba(58,42,30,0.12)" }} placeholder={tx("שם")} name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+          <input className="border-b bg-transparent px-2 py-2 text-right outline-none" style={{ borderColor: "rgba(58,42,30,0.12)" }} placeholder={tx("טלפון")} name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+          <textarea className="min-h-20 border bg-transparent px-3 py-2 text-right outline-none" style={{ borderColor: "rgba(58,42,30,0.12)" }} placeholder={tx("הודעה קצרה")}  name="message" data-bizuply-form-field-id="message"></textarea>
           <button type="submit" className="rounded-full px-6 py-3 text-sm font-bold" style={{ background: "#f4a261", color: "#3a2a1e" }}>{v(data, "cta")}</button>
         </form>
       </div>

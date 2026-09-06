@@ -1,7 +1,10 @@
 import React, { useMemo } from "react";
+import { useTranslation } from "react-i18next";
 import { useParams, useSearchParams } from "react-router-dom";
 
 import { getStudioTemplateRenderer } from "../components/site-builder/studio/data/templates/templateRendererRegistry";
+import { localizeBuiltInTemplateSeed } from "../i18n/localizeBuiltInTemplateSeed";
+import { getTextDirection } from "../i18n/localeUtils";
 
 /**
  * Standalone live render of a studio template's homepage for gallery card
@@ -9,10 +12,12 @@ import { getStudioTemplateRenderer } from "../components/site-builder/studio/dat
  * matches Webflow-style marketplace previews (actual site UX, not a screenshot).
  */
 export default function EmbedTemplatePreviewPage() {
+  const { i18n } = useTranslation();
   const { templateKey = "" } = useParams<{ templateKey: string }>();
   const [searchParams] = useSearchParams();
   const modeParam = String(searchParams.get("mode") || "preview").toLowerCase();
   const mode = modeParam === "edit" ? "edit" : "preview";
+  const language = searchParams.get("lang") || i18n.language;
 
   const renderer = useMemo(
     () => getStudioTemplateRenderer(templateKey),
@@ -24,7 +29,10 @@ export default function EmbedTemplatePreviewPage() {
   }
 
   const Component = renderer.Component as React.ComponentType<Record<string, unknown>>;
-  const data = (renderer.defaultData || {}) as Record<string, unknown>;
+  const data = localizeBuiltInTemplateSeed(
+    (renderer.defaultData || {}) as Record<string, unknown>,
+    language,
+  );
   const homePage = renderer.pages?.[0];
   const pageId = homePage?.id || "home";
   const pageSlug = homePage?.slug || "/";
@@ -32,7 +40,7 @@ export default function EmbedTemplatePreviewPage() {
 
   return (
     <div
-      dir="rtl"
+      dir={getTextDirection(language)}
       data-template-card-embed="true"
       data-parity-surface={mode}
       style={{

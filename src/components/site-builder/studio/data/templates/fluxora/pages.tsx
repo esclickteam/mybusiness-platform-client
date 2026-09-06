@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { fluxoraDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
@@ -217,23 +218,21 @@ function BookingModal({
           ×
         </button>
         <div className="relative z-10">
-          <p className="inline-flex rounded-full bg-[#3dffa8]/12 px-4 py-2 text-xs font-semibold tracking-[0.18em] text-[#9dffc9]">
-            הצטרפות
-          </p>
-          <h3 className="mt-5 text-3xl font-bold text-white">בואו נפתח לכם את Fluxora.</h3>
+          <p className="inline-flex rounded-full bg-[#3dffa8]/12 px-4 py-2 text-xs font-semibold tracking-[0.18em] text-[#9dffc9]">{tx("הצטרפות")}</p>
+          <h3 className="mt-5 text-3xl font-bold text-white">{tx("בואו נפתח לכם את Fluxora.")}</h3>
           <p className="mt-3 text-sm leading-6 text-slate-400">{getValue(data, "contactText")}</p>
-          <form className="mt-7 grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="fluxora-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+          <form className="mt-7 grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="fluxora-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
             <input
               className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none placeholder:text-slate-500 focus:border-[#3dffa8]/50"
-              placeholder="שם מלא"
+              placeholder={tx("שם מלא")}
              name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
             <input
               className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none placeholder:text-slate-500 focus:border-[#3dffa8]/50"
-              placeholder="אימייל עבודה"
+              placeholder={tx("אימייל עבודה")}
              name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
             <input
               className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none placeholder:text-slate-500 focus:border-[#3dffa8]/50"
-              placeholder="שם החברה / הצוות"
+              placeholder={tx("שם החברה / הצוות")}
              name="name_2" data-bizuply-form-field-id="name_2" type="text" autoComplete="name" />
             <button
               type="submit"
@@ -340,10 +339,8 @@ function Hero({
           <div className="absolute -inset-4 -z-10 rounded-[36px] bg-gradient-to-br from-[#3dffa8]/15 via-transparent to-[#38bdf8]/10 blur-xl" />
           <div className="overflow-hidden rounded-[32px] border border-white/10 bg-[#0c121a] p-4 shadow-2xl">
             <div className="mb-4 flex items-center justify-between px-1">
-              <p className="text-sm font-bold text-white">הפיד שלי</p>
-              <span className="rounded-full bg-[#3dffa8]/15 px-3 py-1 text-[11px] font-bold text-[#9dffc9]">
-                מותאם אישית
-              </span>
+              <p className="text-sm font-bold text-white">{tx("הפיד שלי")}</p>
+              <span className="rounded-full bg-[#3dffa8]/15 px-3 py-1 text-[11px] font-bold text-[#9dffc9]">{tx("מותאם אישית")}</span>
             </div>
             <FeedPreviewCards data={data} />
           </div>
@@ -530,9 +527,7 @@ function PricingSection({
               )}
             >
               {index === 1 ? (
-                <span className="absolute left-6 top-6 rounded-full bg-[#3dffa8] px-3 py-1 text-xs font-bold text-[#07110c]">
-                  הכי פופולרי
-                </span>
+                <span className="absolute left-6 top-6 rounded-full bg-[#3dffa8] px-3 py-1 text-xs font-bold text-[#07110c]">{tx("הכי פופולרי")}</span>
               ) : null}
               <h3 className="text-xl font-bold text-white">{name}</h3>
               <div className="mt-6 flex items-baseline gap-1">
@@ -716,7 +711,7 @@ function ContactSection({
           data-bizuply-block="lead-form"
           data-bizuply-form-id="fluxora-contact"
           data-bizuply-crm-lead="true"
-          data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם."
+          data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אליכם בהקדם.")}
          data-bizuply-form-skin="template">
           <div className="grid gap-4">
             <input
@@ -724,7 +719,7 @@ function ContactSection({
               autoComplete="name"
               data-bizuply-form-field-id="name"
               className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none placeholder:text-slate-500 focus:border-[#3dffa8]/50"
-              placeholder="שם מלא"
+              placeholder={tx("שם מלא")}
             />
             <input
               name="email"
@@ -732,19 +727,19 @@ function ContactSection({
               autoComplete="email"
               data-bizuply-form-field-id="email"
               className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none placeholder:text-slate-500 focus:border-[#3dffa8]/50"
-              placeholder="אימייל עבודה"
+              placeholder={tx("אימייל עבודה")}
             />
             <input
               name="company"
               data-bizuply-form-field-id="company"
               className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none placeholder:text-slate-500 focus:border-[#3dffa8]/50"
-              placeholder="שם החברה"
+              placeholder={tx("שם החברה")}
             />
             <textarea
               name="message"
               data-bizuply-form-field-id="message"
               className="min-h-32 rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none placeholder:text-slate-500 focus:border-[#3dffa8]/50"
-              placeholder="ספרו לנו על הצוות שלכם"
+              placeholder={tx("ספרו לנו על הצוות שלכם")}
             />
             <button
               type="submit"
@@ -797,7 +792,7 @@ function CtaFooter({
         <p>
           © {new Date().getFullYear()} {getValue(data, "brandName")}
         </p>
-        <p>תבנית Fluxora · Bizuply Studio</p>
+        <p>{tx("תבנית Fluxora · Bizuply Studio")}</p>
       </div>
     </footer>
   );

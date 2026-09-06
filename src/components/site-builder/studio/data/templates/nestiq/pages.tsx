@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { nestiqDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
@@ -47,7 +48,7 @@ function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>;
         <nav className="hidden items-center gap-6 lg:flex">
           {nav.map((item) => (
             <button key={item.id} type="button" onClick={() => goTo(item.id)} className="text-sm font-semibold"
-              style={{ color: currentPage === item.id || currentPage === item.href.replace(/^\//, "") ? "#1e1b4b" : "#6366f1" }}>{item.label}</button>
+              style={{ color: currentPage === item.id || currentPage === item.href.replace(/^\//, "") ? "#1e1b4b" : "#6366f1" }}>{tx(item.label)}</button>
           ))}
         </nav>
         <div className="flex items-center gap-2">
@@ -60,7 +61,7 @@ function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>;
         <div className="border-t px-5 pb-4 lg:hidden" style={{ borderColor: "rgba(30,27,75,0.1)" }}>
           <div className="grid gap-1 pt-3">
             {nav.map((item) => (
-              <button key={item.id} type="button" onClick={() => { goTo(item.id); setOpen(false); }} className="px-3 py-3 text-right text-sm font-semibold">{item.label}</button>
+              <button key={item.id} type="button" onClick={() => { goTo(item.id); setOpen(false); }} className="px-3 py-3 text-right text-sm font-semibold">{tx(item.label)}</button>
             ))}
           </div>
         </div>
@@ -72,11 +73,11 @@ function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>;
 function ContactForm({ data, onCta }: { data: Record<string, any>; onCta: () => void }) {
   const field = "w-full border bg-transparent px-4 py-3.5 text-right outline-none";
   return (
-    <form className="grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="nestiq-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-      <input className={field} style={{ borderColor: "rgba(30,27,75,0.1)", color: "#1e1b4b" }} placeholder="שם מלא" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-      <input className={field} style={{ borderColor: "rgba(30,27,75,0.1)", color: "#1e1b4b" }} placeholder="טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-      <input className={field} style={{ borderColor: "rgba(30,27,75,0.1)", color: "#1e1b4b" }} placeholder="אימייל" name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
-      <textarea className={cx(field, "min-h-28")} style={{ borderColor: "rgba(30,27,75,0.1)", color: "#1e1b4b" }} placeholder="מה אתם מחפשים?"  name="message" data-bizuply-form-field-id="message"></textarea>
+    <form className="grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="nestiq-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+      <input className={field} style={{ borderColor: "rgba(30,27,75,0.1)", color: "#1e1b4b" }} placeholder={tx("שם מלא")} name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+      <input className={field} style={{ borderColor: "rgba(30,27,75,0.1)", color: "#1e1b4b" }} placeholder={tx("טלפון")} name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+      <input className={field} style={{ borderColor: "rgba(30,27,75,0.1)", color: "#1e1b4b" }} placeholder={tx("אימייל")} name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
+      <textarea className={cx(field, "min-h-28")} style={{ borderColor: "rgba(30,27,75,0.1)", color: "#1e1b4b" }} placeholder={tx("מה אתם מחפשים?")}  name="message" data-bizuply-form-field-id="message"></textarea>
       <button type="submit" className="px-6 py-4 text-sm font-bold" style={{ background: "#7c3aed", color: "#ffffff" }}>{v(data, "cta")}</button>
     </form>
   );
@@ -194,7 +195,7 @@ function CounterMarketPulse({ data }: { data: Record<string, any> }) {
   const posts = [[v(data,"insight1Title"),v(data,"insight1Text"),v(data,"insight1Tag")],[v(data,"insight2Title"),v(data,"insight2Text"),v(data,"insight2Tag")],[v(data,"insight3Title"),v(data,"insight3Text"),v(data,"insight3Tag")]];
   return (
     <section className="border-t px-5 py-16 lg:px-8" style={{ borderColor: "rgba(30,27,75,0.1)", background: "#ffffff" }}>
-      <h2 className="tpl-display mx-auto max-w-7xl text-2xl sm:text-4xl font-bold">תובנות Counter</h2>
+      <h2 className="tpl-display mx-auto max-w-7xl text-2xl sm:text-4xl font-bold">{tx("תובנות Counter")}</h2>
       <div className="mx-auto mt-10 grid max-w-7xl gap-5 lg:grid-cols-3">
         {posts.map(([t,x,g]) => (
           <article key={t} className="border p-5" style={{ borderColor: "rgba(30,27,75,0.1)" }}>
@@ -317,7 +318,7 @@ function AboutBlock({ data }: { data: Record<string, any> }) {
     <section className="border-t" style={{ borderColor: "rgba(30,27,75,0.1)" }}>
       <div className="mx-auto grid max-w-7xl lg:grid-cols-[1.1fr_0.9fr]">
         <div className="px-5 py-16 lg:px-8 lg:py-20">
-          <p className="text-xs font-semibold tracking-[0.24em]" style={{ color: "#7c3aed" }}>אודות</p>
+          <p className="text-xs font-semibold tracking-[0.24em]" style={{ color: "#7c3aed" }}>{tx("אודות")}</p>
           <h2 className="tpl-display mt-4 text-4xl font-bold md:text-5xl">{v(data, "aboutTitle")}</h2>
           <p className="mt-6 max-w-xl text-lg leading-8" style={{ color: "#6366f1" }}>{v(data, "aboutText")}</p>
         </div>
@@ -332,7 +333,7 @@ function ContactBlock({ data, onCta }: { data: Record<string, any>; onCta: () =>
     <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{ borderColor: "rgba(30,27,75,0.1)", background: "#ffffff" }}>
       <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-2">
         <div>
-          <p className="text-xs font-semibold tracking-[0.24em]" style={{ color: "#7c3aed" }}>יצירת קשר</p>
+          <p className="text-xs font-semibold tracking-[0.24em]" style={{ color: "#7c3aed" }}>{tx("יצירת קשר")}</p>
           <h2 className="tpl-display mt-4 text-4xl font-bold md:text-5xl">{v(data, "contactTitle")}</h2>
           <p className="mt-6 text-lg leading-8" style={{ color: "#6366f1" }}>{v(data, "contactText")}</p>
           <div className="mt-8 space-y-2 text-sm" style={{ color: "#6366f1" }}>
@@ -423,7 +424,7 @@ export default function NestiqPages({
     ),
   };
     pageContent["listings"] = (
-      <InnerPage data={merged} title="נכסים" onCta={() => goTo("contact")}>
+      <InnerPage data={merged} title={tx("נכסים")} onCta={() => goTo("contact")}>
         <>
           <BadgeCards data={merged} />
       <CounterListingGrid data={merged} />
@@ -434,7 +435,7 @@ export default function NestiqPages({
       </InnerPage>
     );
     pageContent["insights"] = (
-      <InnerPage data={merged} title="תובנות" onCta={() => goTo("contact")}>
+      <InnerPage data={merged} title={tx("תובנות")} onCta={() => goTo("contact")}>
         <>
           <BadgeCards data={merged} />
       <FaqVisual data={merged} />
@@ -445,7 +446,7 @@ export default function NestiqPages({
       </InnerPage>
     );
     pageContent["faq"] = (
-      <InnerPage data={merged} title="שאלות" onCta={() => goTo("contact")}>
+      <InnerPage data={merged} title={tx("שאלות")} onCta={() => goTo("contact")}>
         <>
           <BadgeCards data={merged} />
       <FaqVisual data={merged} />
@@ -456,7 +457,7 @@ export default function NestiqPages({
       </InnerPage>
     );
     pageContent["about"] = (
-      <InnerPage data={merged} title="אודות" onCta={() => goTo("contact")}>
+      <InnerPage data={merged} title={tx("אודות")} onCta={() => goTo("contact")}>
         <>
           <AboutBlock data={merged} />
       <CounterAgentRoster data={merged} />

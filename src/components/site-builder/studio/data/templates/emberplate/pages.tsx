@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { emberplateDefaultData } from "./defaultData";
 import { emberplateEditorCss } from "./editorCss";
@@ -31,7 +32,7 @@ function v(data: Record<string, any>, key: string) {
 function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>; currentPage: string; goTo: (id: string) => void; onCta: () => void }) {
   const [open, setOpen] = useState(false);
   const go = (id: string) => { setOpen(false); goTo(id); };
-  const nav = emberplatePages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || p.label] as const);
+  const nav = emberplatePages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || tx(p.label)] as const);
   return (
     <header data-template-section-type="header" data-section-kind="header" className="sticky top-0 z-50 border-b"
       style={{ background: "#0a0604ee", borderColor: "rgba(246,235,224,0.12)", backdropFilter: "blur(10px)" }}>
@@ -98,7 +99,7 @@ function MeatTimeline({ data }: { data: Record<string, any> }) {
   return (
     <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{ borderColor: "rgba(246,235,224,0.12)", background: "#1f1410" }}>
       <div className="mx-auto max-w-3xl tpl-meat-line pr-8">
-        <Reveal><h2 className="tpl-display text-4xl font-bold md:text-5xl">ציר הבשר</h2></Reveal>
+        <Reveal><h2 className="tpl-display text-4xl font-bold md:text-5xl">{tx("ציר הבשר")}</h2></Reveal>
         <div className="mt-10 grid gap-8">
           {cards.map((c, i) => (
             <Reveal key={c.title} delayMs={i * 100} variant="right">
@@ -404,7 +405,7 @@ function AboutBlock({ data }: { data: Record<string, any> }) {
       <div className="relative mx-auto grid max-w-7xl lg:grid-cols-[0.9fr_1.1fr]">
         <div className="order-2 min-h-[360px] overflow-hidden lg:order-1"><img src={v(data, "aboutImage")} alt="" className="tpl-ken h-full w-full object-cover" /></div>
         <div className="order-1 px-5 py-16 lg:order-2 lg:px-8 lg:py-20">
-          <p className="text-xs font-semibold tracking-[0.24em]" style={{ color: "#e85d04" }}>אודות</p>
+          <p className="text-xs font-semibold tracking-[0.24em]" style={{ color: "#e85d04" }}>{tx("אודות")}</p>
           <h2 className="tpl-display mt-4 text-4xl font-bold md:text-5xl">{v(data, "aboutTitle")}</h2>
           <p className="mt-6 max-w-xl text-lg leading-8" style={{ color: "#b89a82" }}>{v(data, "aboutText")}</p>
         </div>
@@ -418,17 +419,17 @@ function ContactBlock({ data, onCta }: { data: Record<string, any>; onCta: () =>
     <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{ borderColor: "rgba(246,235,224,0.12)", background: "#1f1410" }}>
       <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-2">
         <div>
-          <p className="text-xs font-semibold tracking-[0.24em]" style={{ color: "#e85d04" }}>הזמנה</p>
+          <p className="text-xs font-semibold tracking-[0.24em]" style={{ color: "#e85d04" }}>{tx("הזמנה")}</p>
           <h2 className="tpl-display mt-4 text-4xl font-bold md:text-5xl">{v(data, "contactTitle")}</h2>
           <p className="mt-6 text-lg leading-8" style={{ color: "#b89a82" }}>{v(data, "contactText")}</p>
           <div className="mt-8 space-y-2 text-sm" style={{ color: "#b89a82" }}>
             <p>{v(data, "phone")}</p><p>{v(data, "email")}</p><p>{v(data, "address")}</p>
           </div>
         </div>
-        <form className="tpl-ember-pulse grid gap-3 border p-6" style={{ borderColor: "#e85d04" }} data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="emberplate-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-          <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(246,235,224,0.12)", color: "#f6ebe0" }} placeholder="שם מלא" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-          <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(246,235,224,0.12)", color: "#f6ebe0" }} placeholder="טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-          <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(246,235,224,0.12)", color: "#f6ebe0" }} placeholder="תאריך" name="date" data-bizuply-form-field-id="date" />
+        <form className="tpl-ember-pulse grid gap-3 border p-6" style={{ borderColor: "#e85d04" }} data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="emberplate-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+          <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(246,235,224,0.12)", color: "#f6ebe0" }} placeholder={tx("שם מלא")} name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+          <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(246,235,224,0.12)", color: "#f6ebe0" }} placeholder={tx("טלפון")} name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+          <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(246,235,224,0.12)", color: "#f6ebe0" }} placeholder={tx("תאריך")} name="date" data-bizuply-form-field-id="date" />
           <button type="submit" className="px-6 py-4 text-sm font-bold" style={{ background: "#e85d04", color: "#140c08" }}>{v(data, "cta")}</button>
         </form>
       </div>

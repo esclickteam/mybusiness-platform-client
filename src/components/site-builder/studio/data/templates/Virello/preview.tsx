@@ -1,4 +1,5 @@
 import React from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, MonitorSmartphone, Sparkles } from "lucide-react";
 
@@ -72,9 +73,7 @@ export default function AdionPreview({ onUseTemplate }: AdionPreviewProps) {
               hover:shadow-[0_18px_45px_rgba(255,227,168,0.35)]
               sm:px-6
             "
-          >
-            השתמשי בתבנית
-            <ArrowLeft className="h-4 w-4" />
+          >{tx("השתמשי בתבנית")}<ArrowLeft className="h-4 w-4" />
           </button>
         </header>
 

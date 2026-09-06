@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { vineriaDefaultData } from "./defaultData";
 import { vineriaEditorCss } from "./editorCss";
@@ -32,7 +33,7 @@ function v(data: Record<string, any>, key: string) {
 function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>; currentPage: string; goTo: (id: string) => void; onCta: () => void }) {
   const [navOpen, setNavOpen] = useState(false);
   const go = (id: string) => { setNavOpen(false); goTo(id); };
-  const nav = vineriaPages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || p.label] as const);
+  const nav = vineriaPages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || tx(p.label)] as const);
   return (
     <header data-template-section-type="header" data-section-kind="header" className="sticky top-0 z-50 border-b" style={{ background: "#1a1218f5", borderColor: "rgba(245,235,224,0.12)" }}>
       <div className="mx-auto flex max-w-5xl flex-col items-center gap-3 px-5 py-5">
@@ -87,7 +88,7 @@ function TastingTimeline({ data }: { data: Record<string, any> }) {
   return (
     <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{ borderColor: "rgba(245,235,224,0.12)" }}>
       <div className="mx-auto max-w-3xl">
-        <Reveal><h2 className="tpl-display text-4xl font-semibold md:text-5xl">הערות טעימה</h2></Reveal>
+        <Reveal><h2 className="tpl-display text-4xl font-semibold md:text-5xl">{tx("הערות טעימה")}</h2></Reveal>
         <div className="relative mt-12">
           <div className="absolute right-3 top-0 bottom-0 w-px" style={{ background: "rgba(245,235,224,0.12)" }} />
           {notes.map(([title, meta, text], i) => (
@@ -406,10 +407,10 @@ function ContactBlock({ data, onCta }: { data: Record<string, any>; onCta: () =>
           <p className="mt-4 leading-8" style={{ color: "#a8959a" }}>{v(data, "contactText")}</p>
           <p className="mt-6 text-sm" style={{ color: "#a8959a" }}>{v(data, "phone")} · {v(data, "email")}</p>
         </div>
-        <form className="grid gap-4 border p-6" style={{ borderColor: "rgba(245,235,224,0.12)" }} data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="vineria-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-          <input className="w-full border-b bg-transparent px-2 py-3 text-right outline-none" style={{ borderColor: "rgba(245,235,224,0.12)" }} placeholder="שם מלא" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-          <input className="w-full border-b bg-transparent px-2 py-3 text-right outline-none" style={{ borderColor: "rgba(245,235,224,0.12)" }} placeholder="טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-          <input className="w-full border-b bg-transparent px-2 py-3 text-right outline-none" style={{ borderColor: "rgba(245,235,224,0.12)" }} placeholder="תאריך מועדף" name="date" data-bizuply-form-field-id="date" />
+        <form className="grid gap-4 border p-6" style={{ borderColor: "rgba(245,235,224,0.12)" }} data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="vineria-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+          <input className="w-full border-b bg-transparent px-2 py-3 text-right outline-none" style={{ borderColor: "rgba(245,235,224,0.12)" }} placeholder={tx("שם מלא")} name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+          <input className="w-full border-b bg-transparent px-2 py-3 text-right outline-none" style={{ borderColor: "rgba(245,235,224,0.12)" }} placeholder={tx("טלפון")} name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+          <input className="w-full border-b bg-transparent px-2 py-3 text-right outline-none" style={{ borderColor: "rgba(245,235,224,0.12)" }} placeholder={tx("תאריך מועדף")} name="date" data-bizuply-form-field-id="date" />
           <button type="submit" className="mt-2 px-6 py-3 text-sm font-semibold tracking-wider" style={{ background: "#9b2335", color: "#f5ebe0" }}>{v(data, "cta")}</button>
         </form>
       </div>

@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { urbanixDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
@@ -26,7 +27,7 @@ function v(data: Record<string, any>, key: string) {
 
 function UrbanixAccentHeader({ data, currentPage, goTo, onCta }: { data: Record<string, any>; currentPage: string; goTo: (id: string) => void; onCta: () => void }) {
   const [open, setOpen] = useState(false);
-  const nav = urbanixPages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || p.label] as const);
+  const nav = urbanixPages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || tx(p.label)] as const);
   return (
     <header data-template-section-type="header" data-section-kind="header" className="sticky top-0 z-50 border-b" style={{ background: "rgba(20,21,22,0.94)", borderColor: "rgba(242,242,240,0.12)", backdropFilter: "blur(10px)" }}>
       <div className="mx-auto grid max-w-7xl grid-cols-[auto_1fr_auto] items-center gap-5 px-5 py-4 lg:px-8">
@@ -104,9 +105,9 @@ function UrbanixPriceMenu({ data }: { data: Record<string, any> }) {
         <div className="flex flex-col justify-between gap-5 border-b pb-8 md:flex-row md:items-end" style={{ borderColor: "rgba(242,242,240,0.12)" }}>
           <div>
             <p className="text-xs font-black tracking-[0.34em]" style={{ color: "#c8f542" }}>PRICE MENU</p>
-            <h2 className="tpl-display mt-3 text-5xl font-black md:text-7xl">דירות לפי קצב ומחיר.</h2>
+            <h2 className="tpl-display mt-3 text-5xl font-black md:text-7xl">{tx("דירות לפי קצב ומחיר.")}</h2>
           </div>
-          <p className="max-w-sm text-sm leading-7" style={{ color: "#9a9d98" }}>מחירון טיפוגרפי חד: שם, קו מקווקו, מחיר. בלי כרטיסים.</p>
+          <p className="max-w-sm text-sm leading-7" style={{ color: "#9a9d98" }}>{tx("מחירון טיפוגרפי חד: שם, קו מקווקו, מחיר. בלי כרטיסים.")}</p>
         </div>
         <div className="mt-8">
           {items.map(([title, text, price]) => (
@@ -167,12 +168,12 @@ function UrbanixLimeContact({ data, onCta }: { data: Record<string, any>; onCta:
               <p>{v(data, "address")}</p>
             </div>
           </div>
-          <form className="grid gap-4 md:grid-cols-2" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="urbanix-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-            <input className={field} style={{ borderColor: "rgba(242,242,240,0.14)", color: "#f2f2f0" }} placeholder="שם" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-            <input className={field} style={{ borderColor: "rgba(242,242,240,0.14)", color: "#f2f2f0" }} placeholder="טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-            <input className={field} style={{ borderColor: "rgba(242,242,240,0.14)", color: "#f2f2f0" }} placeholder="שכונה" name="other" data-bizuply-form-field-id="other" />
-            <input className={field} style={{ borderColor: "rgba(242,242,240,0.14)", color: "#f2f2f0" }} placeholder="תקציב" name="other_2" data-bizuply-form-field-id="other_2" />
-            <textarea className={`${field} min-h-28 md:col-span-2`} style={{ borderColor: "rgba(242,242,240,0.14)", color: "#f2f2f0" }} placeholder="מה הדדליין לכניסה?"  name="other_3" data-bizuply-form-field-id="other_3"></textarea>
+          <form className="grid gap-4 md:grid-cols-2" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="urbanix-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+            <input className={field} style={{ borderColor: "rgba(242,242,240,0.14)", color: "#f2f2f0" }} placeholder={tx("שם")} name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+            <input className={field} style={{ borderColor: "rgba(242,242,240,0.14)", color: "#f2f2f0" }} placeholder={tx("טלפון")} name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+            <input className={field} style={{ borderColor: "rgba(242,242,240,0.14)", color: "#f2f2f0" }} placeholder={tx("שכונה")} name="other" data-bizuply-form-field-id="other" />
+            <input className={field} style={{ borderColor: "rgba(242,242,240,0.14)", color: "#f2f2f0" }} placeholder={tx("תקציב")} name="other_2" data-bizuply-form-field-id="other_2" />
+            <textarea className={`${field} min-h-28 md:col-span-2`} style={{ borderColor: "rgba(242,242,240,0.14)", color: "#f2f2f0" }} placeholder={tx("מה הדדליין לכניסה?")}  name="other_3" data-bizuply-form-field-id="other_3"></textarea>
           </form>
         </div>
       </div>

@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { shinoraDefaultData, type ShinoraTemplateData } from "./defaultData";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { useStorePluginCatalog } from "../shared/useStorePluginCatalog";
@@ -323,7 +324,7 @@ function Hero({
             <div className="absolute left-2 top-3 h-[520px] w-[68%] overflow-hidden rounded-[999px] border-[12px] border-white bg-[#efd6c3] shadow-[0_40px_120px_rgba(56,31,22,0.18)] transition duration-700 hover:scale-[1.02]">
               <img
                 src={data.heroImage}
-                alt="סלון יופי פרימיום"
+                alt={tx("סלון יופי פרימיום")}
                 className="h-full w-full object-cover"
                 loading="eager"
                 data-visual-editable="true"
@@ -336,7 +337,7 @@ function Hero({
             <div className="absolute bottom-4 right-0 h-[370px] w-[55%] overflow-hidden rounded-[48px] border-[10px] border-[#fff8f2] bg-[#e7c5ad] shadow-[0_34px_100px_rgba(56,31,22,0.2)] transition duration-700 hover:-translate-y-2">
               <img
                 src={data.heroImageTwo}
-                alt="טיפול שיער בסלון"
+                alt={tx("טיפול שיער בסלון")}
                 className="h-full w-full object-cover"
                 loading="eager"
                 data-visual-editable="true"
@@ -469,9 +470,7 @@ function SalonVideoSection({
               playsInline
               preload="metadata"
             >
-              <source src={data.videoUrl} type="video/mp4" />
-              הדפדפן לא תומך בניגון וידאו.
-            </video>
+              <source src={data.videoUrl} type="video/mp4" />{tx("הדפדפן לא תומך בניגון וידאו.")}</video>
 
             <div className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-[#241612]/35 to-transparent" />
 
@@ -653,9 +652,7 @@ function ServicesSection({
                     data-visual-edit-id={`services.${index}.button`}
                     data-visual-edit-type="button"
                     data-visual-edit-label={`כפתור שירות ${index + 1}`}
-                  >
-                    לפרטי טיפול ←
-                  </button>
+                  >{tx("לפרטי טיפול ←")}</button>
                 </div>
               </article>
             </Reveal>
@@ -722,7 +719,7 @@ function ConsultationSection({ data }: { data: any }) {
             >
               <input
                 className="rounded-full border border-white/10 bg-white/10 px-5 py-4 text-sm font-bold text-white placeholder:text-white/45 outline-none transition focus:border-[#f0cdb4]"
-                placeholder="שם מלא"
+                placeholder={tx("שם מלא")}
                 data-visual-editable="true"
                 data-visual-edit-id="consultation.form.name"
                 data-visual-edit-type="button"
@@ -730,7 +727,7 @@ function ConsultationSection({ data }: { data: any }) {
               />
               <input
                 className="rounded-full border border-white/10 bg-white/10 px-5 py-4 text-sm font-bold text-white placeholder:text-white/45 outline-none transition focus:border-[#f0cdb4]"
-                placeholder="טלפון"
+                placeholder={tx("טלפון")}
                 data-visual-editable="true"
                 data-visual-edit-id="consultation.form.phone"
                 data-visual-edit-type="button"
@@ -738,7 +735,7 @@ function ConsultationSection({ data }: { data: any }) {
               />
               <input
                 className="rounded-full border border-white/10 bg-white/10 px-5 py-4 text-sm font-bold text-white placeholder:text-white/45 outline-none transition focus:border-[#f0cdb4] md:col-span-2"
-                placeholder="איזה טיפול מעניין אותך?"
+                placeholder={tx("איזה טיפול מעניין אותך?")}
                 data-visual-editable="true"
                 data-visual-edit-id="consultation.form.service"
                 data-visual-edit-type="button"
@@ -746,7 +743,7 @@ function ConsultationSection({ data }: { data: any }) {
               />
               <textarea
                 className="min-h-32 rounded-[32px] border border-white/10 bg-white/10 px-5 py-4 text-sm font-bold text-white placeholder:text-white/45 outline-none transition focus:border-[#f0cdb4] md:col-span-2"
-                placeholder="ספרי לנו בקצרה מה חשוב לך"
+                placeholder={tx("ספרי לנו בקצרה מה חשוב לך")}
                 data-visual-editable="true"
                 data-visual-edit-id="consultation.form.message"
                 data-visual-edit-type="button"
@@ -770,7 +767,7 @@ function ConsultationSection({ data }: { data: any }) {
           <div className="absolute inset-0 overflow-hidden rounded-[54px] bg-[#e6c4ac] shadow-[0_40px_120px_rgba(0,0,0,0.22)]">
             <img
               src={data.heroImageThree}
-              alt="ייעוץ חינמי"
+              alt={tx("ייעוץ חינמי")}
               className="h-full w-full object-cover"
               data-visual-editable="true"
               data-visual-edit-id="consultation.image"
@@ -788,9 +785,7 @@ function ConsultationSection({ data }: { data: any }) {
             data-visual-edit-label="תגית Free"
           >
             <div className="text-3xl font-black">Free</div>
-            <div className="mt-1 text-sm font-bold leading-6 text-[#745344]">
-              ייעוץ ראשוני לפני קביעת טיפול
-            </div>
+            <div className="mt-1 text-sm font-bold leading-6 text-[#745344]">{tx("ייעוץ ראשוני לפני קביעת טיפול")}</div>
           </div>
         </Reveal>
       </div>
@@ -840,9 +835,7 @@ function WhySection({
               playsInline
               preload="metadata"
             >
-              <source src={data.videoVerticalUrl || data.videoUrl} type="video/mp4" />
-              הדפדפן לא תומך בניגון וידאו.
-            </video>
+              <source src={data.videoVerticalUrl || data.videoUrl} type="video/mp4" />{tx("הדפדפן לא תומך בניגון וידאו.")}</video>
           </div>
         </Reveal>
 
@@ -920,9 +913,7 @@ function WhySection({
               <ArrowButton
                 variant="ghost"
                 onClick={() => navigateTo("gallery", onNavigate)}
-              >
-                לראות גלריה
-              </ArrowButton>
+              >{tx("לראות גלריה")}</ArrowButton>
             </div>
           </div>
         </Reveal>
@@ -1287,9 +1278,7 @@ function BlogSection({
                     data-visual-edit-id={`blog.${index}.button`}
                     data-visual-edit-type="button"
                     data-visual-edit-label={`כפתור מאמר ${index + 1}`}
-                  >
-                    לקריאה ←
-                  </button>
+                  >{tx("לקריאה ←")}</button>
                 </div>
               </article>
             </Reveal>
@@ -1322,9 +1311,7 @@ function GallerySection({ data }: { data: any }) {
             data-visual-edit-id="gallery.title"
             data-visual-edit-type="text"
             data-visual-edit-label="כותרת גלריה"
-          >
-            גלריית טיפולים ואווירה
-          </h2>
+          >{tx("גלריית טיפולים ואווירה")}</h2>
         </Reveal>
 
         <div className="grid auto-rows-[260px] gap-4 md:grid-cols-4">
@@ -1352,7 +1339,7 @@ function GallerySection({ data }: { data: any }) {
               >
                 <img
                   src={image}
-                  alt="גלריית סלון"
+                  alt={tx("גלריית סלון")}
                   className="h-full w-full object-cover transition duration-700 group-hover:scale-110"
                   data-visual-editable="true"
                   data-visual-edit-id={`gallery.${index}.image`}
@@ -1390,9 +1377,7 @@ function PricingSection({ data }: { data: any }) {
             data-visual-edit-id="pricing.title"
             data-visual-edit-type="text"
             data-visual-edit-label="כותרת מחירון"
-          >
-            מחירון וחבילות
-          </h2>
+          >{tx("מחירון וחבילות")}</h2>
         </Reveal>
 
         <div className="grid gap-5 lg:grid-cols-3">
@@ -1535,9 +1520,7 @@ function ProductsSection({
             data-visual-edit-id="shop.title"
             data-visual-edit-type="text"
             data-visual-edit-label="כותרת חנות"
-          >
-            חנות מוצרי טיפוח
-          </h2>
+          >{tx("חנות מוצרי טיפוח")}</h2>
         </Reveal>
 
         <div className="grid gap-5 lg:grid-cols-3">
@@ -1624,9 +1607,7 @@ function TeamSection({ data }: { data: any }) {
             data-visual-edit-id="team.title"
             data-visual-edit-type="text"
             data-visual-edit-label="כותרת צוות"
-          >
-            הצוות המקצועי
-          </h2>
+          >{tx("הצוות המקצועי")}</h2>
         </Reveal>
 
         <div className="grid gap-5 lg:grid-cols-3">
@@ -1855,7 +1836,7 @@ function Footer({
           <div className="mt-5 flex rounded-full border border-white/10 bg-white/10 p-1">
             <input
               className="min-w-0 flex-1 bg-transparent px-4 text-sm font-bold text-white placeholder:text-white/35 outline-none"
-              placeholder="אימייל"
+              placeholder={tx("אימייל")}
               data-visual-editable="true"
               data-visual-edit-id="footer.newsletter.input"
               data-visual-edit-type="button"
@@ -1868,9 +1849,7 @@ function Footer({
               data-visual-edit-id="footer.newsletter.button"
               data-visual-edit-type="button"
               data-visual-edit-label="כפתור שליחה"
-            >
-              שליחה
-            </button>
+            >{tx("שליחה")}</button>
           </div>
         </div>
       </div>
@@ -1956,7 +1935,7 @@ function HomePage({
 function AboutPage({ data }: { data: any }) {
   return (
     <>
-      <PageHero data={data} title="מי אנחנו" text={data.introText} />
+      <PageHero data={data} title={tx("מי אנחנו")} text={data.introText} />
       <WhySection data={data} />
       <DirectorSection data={data} />
       <TeamSection data={data} />
@@ -1974,7 +1953,7 @@ function ServicesPage({
 }) {
   return (
     <>
-      <PageHero data={data} title="כל השירותים" text={data.servicesText} />
+      <PageHero data={data} title={tx("כל השירותים")} text={data.servicesText} />
       <ServicesSection data={data} onNavigate={onNavigate} />
       <ConsultationSection data={data} />
     </>
@@ -1984,7 +1963,7 @@ function ServicesPage({
 function ContactPage({ data }: { data: any }) {
   return (
     <>
-      <PageHero data={data} title="ייעוץ וקביעת תור" text={data.consultationText} />
+      <PageHero data={data} title={tx("ייעוץ וקביעת תור")} text={data.consultationText} />
       <ConsultationSection data={data} />
     </>
   );
@@ -2033,7 +2012,7 @@ export default function ShinoraPages(props: ShinoraPagesProps) {
               <>
                 <PageHero
                   data={data}
-                  title="מחירון"
+                  title={tx("מחירון")}
                   text="חבילות ברורות לטיפולים, אירועים ותחזוקה חודשית."
                 />
                 <PricingSection data={data} />
@@ -2046,7 +2025,7 @@ export default function ShinoraPages(props: ShinoraPagesProps) {
               <>
                 <PageHero
                   data={data}
-                  title="גלריה"
+                  title={tx("גלריה")}
                   text="תמונות אווירה, טיפולים ותוצאות מתוך הסלון."
                 />
                 <GallerySection data={data} />
@@ -2059,7 +2038,7 @@ export default function ShinoraPages(props: ShinoraPagesProps) {
               <>
                 <PageHero
                   data={data}
-                  title="חנות"
+                  title={tx("חנות")}
                   text="מוצרי טיפוח משלימים לחוויית סלון גם בבית."
                 />
                 <ProductsSection data={data} businessId={props.businessId} />
@@ -2072,7 +2051,7 @@ export default function ShinoraPages(props: ShinoraPagesProps) {
               <>
                 <PageHero
                   data={data}
-                  title="בלוג"
+                  title={tx("בלוג")}
                   text="טיפים, מדריכים ורעיונות לטיפוח, שיער ואיפור."
                 />
                 <BlogSection

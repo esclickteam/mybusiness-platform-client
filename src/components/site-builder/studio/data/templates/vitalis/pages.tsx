@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { vitalisDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
@@ -209,27 +210,25 @@ function BookingModal({
           ×
         </button>
         <div className="relative z-10">
-          <p className="inline-flex rounded-full bg-[#0891b2]/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] text-[#0891b2]">
-            קביעת תור
-          </p>
-          <h3 className="mt-5 text-3xl font-bold text-[#0f2a36]">נשמח לקבל אתכם.</h3>
+          <p className="inline-flex rounded-full bg-[#0891b2]/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.16em] text-[#0891b2]">{tx("קביעת תור")}</p>
+          <h3 className="mt-5 text-3xl font-bold text-[#0f2a36]">{tx("נשמח לקבל אתכם.")}</h3>
           <p className="mt-3 text-sm leading-6 text-[#51707c]">{getValue(data, "contactText")}</p>
-          <form className="mt-7 grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="vitalis-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+          <form className="mt-7 grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="vitalis-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
             <input
               className="rounded-2xl border border-[#0891b2]/15 bg-[#f7fcfc] px-5 py-4 text-right outline-none transition focus:border-[#0891b2]"
-              placeholder="שם מלא"
+              placeholder={tx("שם מלא")}
              name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
             <input
               className="rounded-2xl border border-[#0891b2]/15 bg-[#f7fcfc] px-5 py-4 text-right outline-none transition focus:border-[#0891b2]"
-              placeholder="טלפון"
+              placeholder={tx("טלפון")}
              name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
             <select className="rounded-2xl border border-[#0891b2]/15 bg-[#f7fcfc] px-5 py-4 text-right outline-none transition focus:border-[#0891b2]">
-              <option>סוג הטיפול</option>
-              <option>בדיקה כללית</option>
-              <option>יישור שיניים</option>
-              <option>השתלות</option>
-              <option>אסתטיקה והלבנה</option>
-              <option>טיפול חירום</option>
+              <option>{tx("סוג הטיפול")}</option>
+              <option>{tx("בדיקה כללית")}</option>
+              <option>{tx("יישור שיניים")}</option>
+              <option>{tx("השתלות")}</option>
+              <option>{tx("אסתטיקה והלבנה")}</option>
+              <option>{tx("טיפול חירום")}</option>
             </select>
             <button
               type="submit"
@@ -361,7 +360,7 @@ function AboutSection({ data }: { data: Record<string, any> }) {
           </div>
           <div className="absolute -bottom-6 right-6 rounded-[24px] bg-gradient-to-br from-[#0ea5a4] to-[#0891b2] px-7 py-5 text-white shadow-2xl">
             <div className="text-3xl font-bold">20K+</div>
-            <div className="mt-1 text-xs font-semibold text-white/80">מטופלים מרוצים</div>
+            <div className="mt-1 text-xs font-semibold text-white/80">{tx("מטופלים מרוצים")}</div>
           </div>
         </div>
         <div>
@@ -603,23 +602,23 @@ function ContactSection({
             ))}
           </div>
         </div>
-        <form className="m-4 rounded-[30px] bg-white p-6 lg:m-6 lg:p-8" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="vitalis-contact-2" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+        <form className="m-4 rounded-[30px] bg-white p-6 lg:m-6 lg:p-8" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="vitalis-contact-2" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
           <div className="grid gap-4">
             <input
               className="rounded-2xl border border-[#0891b2]/15 bg-[#f7fcfc] px-5 py-4 text-right outline-none transition focus:border-[#0891b2]"
-              placeholder="שם מלא"
+              placeholder={tx("שם מלא")}
              name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
             <input
               className="rounded-2xl border border-[#0891b2]/15 bg-[#f7fcfc] px-5 py-4 text-right outline-none transition focus:border-[#0891b2]"
-              placeholder="טלפון"
+              placeholder={tx("טלפון")}
              name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
             <input
               className="rounded-2xl border border-[#0891b2]/15 bg-[#f7fcfc] px-5 py-4 text-right outline-none transition focus:border-[#0891b2]"
-              placeholder="אימייל"
+              placeholder={tx("אימייל")}
              name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
             <textarea
               className="min-h-32 rounded-2xl border border-[#0891b2]/15 bg-[#f7fcfc] px-5 py-4 text-right outline-none transition focus:border-[#0891b2]"
-              placeholder="במה נוכל לעזור?"
+              placeholder={tx("במה נוכל לעזור?")}
              name="message" data-bizuply-form-field-id="message"></textarea>
             <button
               type="submit"
@@ -679,7 +678,7 @@ function CtaFooter({
         <p>
           © {new Date().getFullYear()} {getValue(data, "brandName")}
         </p>
-        <p>תבנית Vitalis · Bizuply Studio</p>
+        <p>{tx("תבנית Vitalis · Bizuply Studio")}</p>
       </div>
     </footer>
   );

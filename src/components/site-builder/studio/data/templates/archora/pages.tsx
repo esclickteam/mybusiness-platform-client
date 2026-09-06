@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { archoraDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
@@ -286,7 +287,7 @@ function Stats({ data }: { data: Record<string, any> }) {
       <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[0.7fr_1.3fr] lg:items-center">
         <Reveal variant="right" className="text-right">
           <p className="text-xs font-black uppercase tracking-[0.34em]">{getValue(data, "statsEyebrow")}</p>
-          <h2 className="ar-display mt-4 text-4xl font-extrabold leading-tight md:text-6xl">מספרים עם הד.</h2>
+          <h2 className="ar-display mt-4 text-4xl font-extrabold leading-tight md:text-6xl">{tx("מספרים עם הד.")}</h2>
         </Reveal>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {stats.map(([target, label, suffix], index) => (
@@ -353,11 +354,11 @@ function Contact({ data }: { data: Record<string, any> }) {
           <p className="text-xs font-bold uppercase tracking-[0.34em] text-[var(--p)]">brief intake</p>
           <h2 className="ar-display mt-4 text-3xl font-extrabold leading-tight text-white md:text-5xl">{getValue(data, "contactTitle")}</h2>
           <p className="mt-5 text-base leading-8 text-white/72">{getValue(data, "contactText")}</p>
-          <form className="mt-8 grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="archora-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-            <input className="ar-field px-4 py-4" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-            <input className="ar-field px-4 py-4" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-            <input className="ar-field px-4 py-4" placeholder="סוג הנכס / מיקום"  name="other" data-bizuply-form-field-id="other" />
-            <textarea className="ar-field min-h-[132px] px-4 py-4" placeholder="ספרו לנו מה חייב לקרות בחלל"  name="message" data-bizuply-form-field-id="message"></textarea>
+          <form className="mt-8 grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="archora-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+            <input className="ar-field px-4 py-4" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+            <input className="ar-field px-4 py-4" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+            <input className="ar-field px-4 py-4" placeholder={tx("סוג הנכס / מיקום")}  name="other" data-bizuply-form-field-id="other" />
+            <textarea className="ar-field min-h-[132px] px-4 py-4" placeholder={tx("ספרו לנו מה חייב לקרות בחלל")}  name="message" data-bizuply-form-field-id="message"></textarea>
             <button type="submit" className="bg-[var(--p)] px-7 py-4 text-sm font-black text-[#111] transition hover:bg-white">
               {getValue(data, "contactButton")}
             </button>

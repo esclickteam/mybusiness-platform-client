@@ -1,4 +1,5 @@
 import React from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import {
@@ -843,9 +844,7 @@ function ProductDetailPage({
 
           {live && live.variants.length > 0 ? (
             <div className="mt-6">
-              <p className="mb-2 text-[10px] uppercase tracking-[0.2em] text-[#1a1a1a]/45">
-                בחירת וריאציה
-              </p>
+              <p className="mb-2 text-[10px] uppercase tracking-[0.2em] text-[#1a1a1a]/45">{tx("בחירת וריאציה")}</p>
               <div className="flex flex-wrap gap-2">
                 {live.variants.map((variant) => {
                   const disabled =
@@ -874,7 +873,7 @@ function ProductDetailPage({
           ) : null}
 
           {live && !live.inStock ? (
-            <p className="mt-4 text-sm font-medium text-rose-700">אזל מהמלאי</p>
+            <p className="mt-4 text-sm font-medium text-rose-700">{tx("אזל מהמלאי")}</p>
           ) : live && live.trackStock && live.stock <= 3 ? (
             <p className="mt-4 text-sm font-medium text-amber-700">
               נותרו {live.stock} במלאי
@@ -940,9 +939,7 @@ function ProductDetailPage({
                 disabled={!live.inStock}
                 onClick={onBuyNow}
                 className="border border-[#1a1a1a] px-8 py-3.5 text-[10px] uppercase tracking-[0.22em] transition-colors hover:bg-[#1a1a1a] hover:text-[#f5f0e8] disabled:cursor-not-allowed disabled:opacity-50"
-              >
-                לתשלום
-              </button>
+              >{tx("לתשלום")}</button>
             ) : null}
 
             <button
@@ -1045,9 +1042,7 @@ function CartPage({
                       type="button"
                       className="text-xs text-rose-600"
                       onClick={() => onRemove(item.id)}
-                    >
-                      הסר
-                    </button>
+                    >{tx("הסר")}</button>
                   ) : null}
                 </article>
               ))}
@@ -1095,9 +1090,7 @@ function CartPage({
               type="button"
               onClick={onContinue}
               className="mt-6 border border-[#1a1a1a] px-6 py-3 text-[10px] uppercase tracking-[0.2em]"
-            >
-              לכל המוצרים
-            </button>
+            >{tx("לכל המוצרים")}</button>
           </div>
         )}
       </div>
@@ -1587,7 +1580,7 @@ function Header({
 
         <nav
           className="hidden items-center gap-8 text-[11px] uppercase tracking-[0.2em] md:flex"
-          aria-label="ניווט ראשי"
+          aria-label={tx("ניווט ראשי")}
         >
           {safeArray(data.nav).map((item, index) => (
             <a
@@ -1601,7 +1594,7 @@ function Header({
                 `קישור ניווט ${index + 1}`,
               )}
             >
-              <span data-editable="text">{item.label}</span>
+              <span data-editable="text">{tx(item.label)}</span>
             </a>
           ))}
         </nav>
@@ -1612,7 +1605,7 @@ function Header({
             className="relative flex h-10 items-center justify-center rounded-full border border-[#1a1a1a]/15 px-3 text-[11px] uppercase tracking-[0.12em] transition-colors hover:bg-[#1a1a1a] hover:text-[#f5f0e8]"
             data-editable="link"
             {...visualProps("home.header.cart", "button", "עגלת קניות")}
-            aria-label="עגלת קניות"
+            aria-label={tx("עגלת קניות")}
             onClick={(event) => {
               if (!onOpenCart) return;
               if (isEditorMode(mode) || mode === "preview") {
@@ -1621,7 +1614,7 @@ function Header({
               }
             }}
           >
-            <span data-editable="text">עגלה</span>
+            <span data-editable="text">{tx("עגלה")}</span>
             {cartCount > 0 ? (
               <span className="absolute -left-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-[#1a1a1a] px-1 text-[9px] text-[#f5f0e8]">
                 {cartCount}
@@ -1635,13 +1628,13 @@ function Header({
             data-editable="link"
             {...visualProps("home.header.cta", "button", "כפתור יצירת קשר")}
           >
-            <span data-editable="text">הצטרפו</span>
+            <span data-editable="text">{tx("הצטרפו")}</span>
           </a>
 
           <button
             type="button"
             className="flex h-9 w-9 items-center justify-center md:hidden"
-            aria-label="תפריט"
+            aria-label={tx("תפריט")}
             onClick={() => setMenuOpen((open) => !open)}
             {...visualProps("home.header.menu", "button", "תפריט נייד")}
           >
@@ -1653,7 +1646,7 @@ function Header({
       {menuOpen ? (
         <nav
           className="border-t border-[#1a1a1a]/8 px-5 py-4 md:hidden"
-          aria-label="ניווט נייד"
+          aria-label={tx("ניווט נייד")}
         >
           {safeArray(data.nav).map((item, index) => (
             <a
@@ -1662,7 +1655,7 @@ function Header({
               className="block py-3 text-sm uppercase tracking-[0.15em] text-[#1a1a1a]/70"
               onClick={() => setMenuOpen(false)}
             >
-              {item.label}
+              {tx(item.label)}
             </a>
           ))}
         </nav>
@@ -1682,7 +1675,7 @@ function HeroSection({ data, mode }: SharedProps) {
           value={data.hero.image}
           fallback={chanelDefaultData.hero.image}
           field="hero.image"
-          alt="תמונת אזור פתיחה"
+          alt={tx("תמונת אזור פתיחה")}
           className="h-full w-full object-cover"
           decorative={!isEditorMode(mode)}
         />
@@ -2170,7 +2163,7 @@ function TestimonialsSection({ data, mode }: SharedProps) {
           <button
             type="button"
             onClick={() => move(-1)}
-            aria-label="המלצה קודמת"
+            aria-label={tx("המלצה קודמת")}
             className="flex h-10 w-10 items-center justify-center border border-[#1a1a1a]/20 text-sm transition-colors hover:bg-[#1a1a1a] hover:text-[#f5f0e8]"
             {...visualProps("home.testimonials.previous", "button", "הקודם")}
           >
@@ -2179,7 +2172,7 @@ function TestimonialsSection({ data, mode }: SharedProps) {
           <button
             type="button"
             onClick={() => move(1)}
-            aria-label="המלצה הבאה"
+            aria-label={tx("המלצה הבאה")}
             className="flex h-10 w-10 items-center justify-center border border-[#1a1a1a]/20 text-sm transition-colors hover:bg-[#1a1a1a] hover:text-[#f5f0e8]"
             {...visualProps("home.testimonials.next", "button", "הבא")}
           >
@@ -2204,7 +2197,7 @@ function CraftSection({ data, mode }: SharedProps) {
             value={data.craft.image}
             fallback={chanelDefaultData.craft.image}
             field="craft.image"
-            alt="אומנות הייצור"
+            alt={tx("אומנות הייצור")}
             className="h-full w-full object-cover"
             decorative={!isEditorMode(mode)}
           />
@@ -2414,7 +2407,7 @@ function NewsletterSection({ data, mode }: SharedProps) {
           className="mt-8 flex flex-col gap-3 sm:flex-row"
           onSubmit={handleSubmit}
           data-visual-edit-id="home.newsletter.form"
-          data-visual-edit-type="form" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="chanel-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+          data-visual-edit-type="form" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="chanel-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
           <input
             type="email"
             placeholder={data.newsletter.placeholder}
@@ -2478,7 +2471,7 @@ function Footer({ data }: SharedProps) {
 
           <nav
             className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 text-sm"
-            aria-label="ניווט תחתון"
+            aria-label={tx("ניווט תחתון")}
           >
             {safeArray(data.footer.links).map((item, index) => (
               <a
@@ -2492,7 +2485,7 @@ function Footer({ data }: SharedProps) {
                   `קישור תחתון ${index + 1}`,
                 )}
               >
-                <span data-editable="text">{item.label}</span>
+                <span data-editable="text">{tx(item.label)}</span>
               </a>
             ))}
           </nav>

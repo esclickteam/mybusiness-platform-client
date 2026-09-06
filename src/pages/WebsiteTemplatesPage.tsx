@@ -261,6 +261,22 @@ function getTemplateCategoryId(template: WebsiteTemplate): TemplateCategoryId {
   return "business";
 }
 
+function localizeGalleryTemplate(
+  template: WebsiteTemplate,
+  language?: string,
+): WebsiteTemplate {
+  return {
+    ...template,
+    name: localizeBuiltInText(template.name || "", language),
+    categoryLabel: localizeBuiltInText(template.categoryLabel || "", language),
+    description: localizeBuiltInText(template.description || "", language),
+    niche: localizeBuiltInText(template.niche || "", language),
+    badge: localizeBuiltInText(template.badge || "", language),
+    heroTitle: localizeBuiltInText(template.heroTitle || "", language),
+    heroSubtitle: localizeBuiltInText(template.heroSubtitle || "", language),
+  };
+}
+
 function getTemplateSearchText(template: WebsiteTemplate) {
   return [
     template.name,
@@ -333,12 +349,9 @@ function mapDefinitionToGalleryTemplate(
     key: String(definition?.id || definition?.key || "").toLowerCase(),
     name: definition?.name || definition?.id || "Website template",
     category: definition?.category || seed.category || "business",
-    categoryLabel: localizeBuiltInText(
+    categoryLabel:
       definition?.categoryLabel || seed.categoryLabel || definition?.category || "",
-    ),
-    description: localizeBuiltInText(
-      definition?.description || seed.description || "",
-    ),
+    description: definition?.description || seed.description || "",
     niche: seed.niche,
     layout: seed.layout,
     image,
@@ -346,7 +359,7 @@ function mapDefinitionToGalleryTemplate(
     heroSubtitle:
       seed.heroSubtitle || defaultData.heroSubtitle || definition?.description,
     isNew: badge === "חדש" || badge === "NEW" || badge === "New",
-    badge: localizeBuiltInText(badge),
+    badge,
     thumbnailUrl: image,
     previewImageUrl: image,
     fullPagePreview:
@@ -563,13 +576,18 @@ export default function WebsiteTemplatesPage() {
     return counts;
   }, [templates]);
 
+  const localizedTemplates = useMemo(
+    () => templates.map((template) => localizeGalleryTemplate(template, i18n.language)),
+    [templates, i18n.language],
+  );
+
   const filteredTemplates = useMemo(() => {
     const query = search.trim().toLowerCase();
 
     const categoryTemplates =
       activeCategory === "all"
-        ? templates
-        : templates.filter(
+        ? localizedTemplates
+        : localizedTemplates.filter(
             (template) => getTemplateCategoryId(template) === activeCategory
           );
 
@@ -595,7 +613,7 @@ export default function WebsiteTemplatesPage() {
 
       return String(b._id || b.key).localeCompare(String(a._id || a.key));
     });
-  }, [activeCategory, search, sortValue, templates, i18n.language]);
+  }, [activeCategory, search, sortValue, localizedTemplates, i18n.language]);
 
   useEffect(() => {
     setVisibleCount(GALLERY_INITIAL_SIZE);

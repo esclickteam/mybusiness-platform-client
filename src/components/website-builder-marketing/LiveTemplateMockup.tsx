@@ -5,6 +5,9 @@ import React, {
   useRef,
   useState,
 } from "react";
+import { useTranslation } from "react-i18next";
+import { localizeBuiltInTemplateSeed } from "../../i18n/localizeBuiltInTemplateSeed";
+import { getTextDirection } from "../../i18n/localeUtils";
 import { getStudioTemplateRenderer } from "../site-builder/studio/data/templates/templateRendererRegistry";
 
 const DESIGN_WIDTH = 1440;
@@ -48,6 +51,7 @@ export default function LiveTemplateMockup({
   isCenter = false,
   mountLive = true,
 }: Props) {
+  const { i18n } = useTranslation();
   const frameRef = useRef<HTMLDivElement>(null);
   const [frameWidth, setFrameWidth] = useState(640);
 
@@ -76,7 +80,10 @@ export default function LiveTemplateMockup({
   const Component = renderer?.Component as
     | React.ComponentType<Record<string, unknown>>
     | undefined;
-  const data = (renderer?.defaultData || {}) as Record<string, unknown>;
+  const data = localizeBuiltInTemplateSeed(
+    (renderer?.defaultData || {}) as Record<string, unknown>,
+    i18n.language,
+  );
   const pageId = renderer?.pages?.[0]?.id || "home";
   const pageSlug = renderer?.pages?.[0]?.slug || "/";
 
@@ -174,7 +181,7 @@ export default function LiveTemplateMockup({
                   data-wb-live={templateId}
                   data-template-id={templateId}
                   data-bizuply-preview="hero"
-                  dir="rtl"
+                  dir={getTextDirection(i18n.language)}
                   style={{
                     width: DESIGN_WIDTH,
                     height: DESIGN_VIEW_HEIGHT,

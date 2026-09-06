@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { dwellistDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
@@ -28,7 +29,7 @@ function cx(...xs: Array<string | false | null | undefined>) { return xs.filter(
 
 function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>; currentPage: string; goTo: (id: string) => void; onCta: () => void }) {
   const [open, setOpen] = useState(false);
-  const nav = dwellistPages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || p.label] as const);
+  const nav = dwellistPages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || tx(p.label)] as const);
   return (
     <header data-template-section-type="header" data-section-kind="header" className="sticky top-0 z-50 border-b"
       style={{ background: "#faf8f5f2", borderColor: "rgba(44,36,25,0.12)", backdropFilter: "blur(12px)" }}>
@@ -65,11 +66,11 @@ function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>;
 function ContactForm({ data, onCta }: { data: Record<string, any>; onCta: () => void }) {
   const field = "w-full border bg-transparent px-4 py-3.5 text-right outline-none";
   return (
-    <form className="grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="dwellist-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-      <input className={field} style={{ borderColor: "rgba(44,36,25,0.12)", color: "#2c2419" }} placeholder="שם מלא" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-      <input className={field} style={{ borderColor: "rgba(44,36,25,0.12)", color: "#2c2419" }} placeholder="טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-      <input className={field} style={{ borderColor: "rgba(44,36,25,0.12)", color: "#2c2419" }} placeholder="אימייל" name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
-      <textarea className={cx(field, "min-h-28")} style={{ borderColor: "rgba(44,36,25,0.12)", color: "#2c2419" }} placeholder="מה אתם מחפשים?"  name="message" data-bizuply-form-field-id="message"></textarea>
+    <form className="grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="dwellist-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+      <input className={field} style={{ borderColor: "rgba(44,36,25,0.12)", color: "#2c2419" }} placeholder={tx("שם מלא")} name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+      <input className={field} style={{ borderColor: "rgba(44,36,25,0.12)", color: "#2c2419" }} placeholder={tx("טלפון")} name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+      <input className={field} style={{ borderColor: "rgba(44,36,25,0.12)", color: "#2c2419" }} placeholder={tx("אימייל")} name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
+      <textarea className={cx(field, "min-h-28")} style={{ borderColor: "rgba(44,36,25,0.12)", color: "#2c2419" }} placeholder={tx("מה אתם מחפשים?")}  name="message" data-bizuply-form-field-id="message"></textarea>
       <button type="submit" className="px-6 py-4 text-sm font-bold" style={{ background: "#5c7c6a", color: "#ffffff" }}>{v(data, "cta")}</button>
     </form>
   );
@@ -129,10 +130,10 @@ function MortgageVisual({ data }: { data: Record<string, any> }) {
   return (
     <section className="border-t px-5 py-14 lg:px-8" style={{ borderColor:"rgba(44,36,25,0.12)", background:"#ffffff" }}>
       <div className="mx-auto max-w-md grid gap-3">
-        <p className="tpl-display text-2xl font-bold">מחשבון משכנתא (הדגמה)</p>
+        <p className="tpl-display text-2xl font-bold">{tx("מחשבון משכנתא (הדגמה)")}</p>
         <input readOnly className="border bg-transparent px-4 py-3" style={{ borderColor:"rgba(44,36,25,0.12)" }} defaultValue="סכום: ₪2,400,000" />
         <input readOnly className="border bg-transparent px-4 py-3" style={{ borderColor:"rgba(44,36,25,0.12)" }} defaultValue="ריבית: 4.8%" />
-        <div className="border p-4 text-center font-bold" style={{ borderColor:"#5c7c6a", color:"#5c7c6a" }}>החזר חודשי: ₪12,640</div>
+        <div className="border p-4 text-center font-bold" style={{ borderColor:"#5c7c6a", color:"#5c7c6a" }}>{tx("החזר חודשי: ₪12,640")}</div>
       </div>
     </section>
   );
@@ -197,7 +198,7 @@ function PlanMarketPulse({ data }: { data: Record<string, any> }) {
   const posts = [[v(data,"insight1Title"),v(data,"insight1Text"),v(data,"insight1Tag")],[v(data,"insight2Title"),v(data,"insight2Text"),v(data,"insight2Tag")],[v(data,"insight3Title"),v(data,"insight3Text"),v(data,"insight3Tag")]];
   return (
     <section className="border-t px-5 py-16 lg:px-8" style={{ borderColor: "rgba(44,36,25,0.12)", background: "#ffffff" }}>
-      <h2 className="tpl-display mx-auto max-w-7xl text-2xl sm:text-4xl font-bold">תובנות Plan</h2>
+      <h2 className="tpl-display mx-auto max-w-7xl text-2xl sm:text-4xl font-bold">{tx("תובנות Plan")}</h2>
       <div className="mx-auto mt-10 grid max-w-7xl gap-5 lg:grid-cols-3">
         {posts.map(([t,x,g]) => (
           <article key={t} className="border p-5" style={{ borderColor: "rgba(44,36,25,0.12)" }}>
@@ -320,7 +321,7 @@ function AboutBlock({ data }: { data: Record<string, any> }) {
     <section className="border-t" style={{ borderColor: "rgba(44,36,25,0.12)" }}>
       <div className="mx-auto grid max-w-7xl lg:grid-cols-[1.1fr_0.9fr]">
         <div className="px-5 py-16 lg:px-8 lg:py-20">
-          <p className="text-xs font-semibold tracking-[0.24em]" style={{ color: "#5c7c6a" }}>אודות</p>
+          <p className="text-xs font-semibold tracking-[0.24em]" style={{ color: "#5c7c6a" }}>{tx("אודות")}</p>
           <h2 className="tpl-display mt-4 text-4xl font-bold md:text-5xl">{v(data, "aboutTitle")}</h2>
           <p className="mt-6 max-w-xl text-lg leading-8" style={{ color: "#8a7d6e" }}>{v(data, "aboutText")}</p>
         </div>
@@ -335,7 +336,7 @@ function ContactBlock({ data, onCta }: { data: Record<string, any>; onCta: () =>
     <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{ borderColor: "rgba(44,36,25,0.12)", background: "#ffffff" }}>
       <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-2">
         <div>
-          <p className="text-xs font-semibold tracking-[0.24em]" style={{ color: "#5c7c6a" }}>יצירת קשר</p>
+          <p className="text-xs font-semibold tracking-[0.24em]" style={{ color: "#5c7c6a" }}>{tx("יצירת קשר")}</p>
           <h2 className="tpl-display mt-4 text-4xl font-bold md:text-5xl">{v(data, "contactTitle")}</h2>
           <p className="mt-6 text-lg leading-8" style={{ color: "#8a7d6e" }}>{v(data, "contactText")}</p>
           <div className="mt-8 space-y-2 text-sm" style={{ color: "#8a7d6e" }}>
@@ -426,7 +427,7 @@ export default function DwellistPages({
     ),
   };
     pageContent["listings"] = (
-      <InnerPage data={merged} title="נכסים" onCta={() => goTo("contact")}>
+      <InnerPage data={merged} title={tx("נכסים")} onCta={() => goTo("contact")}>
         <>
           <PlanListingGrid data={merged} />
       <HotspotCards data={merged} />
@@ -437,7 +438,7 @@ export default function DwellistPages({
       </InnerPage>
     );
     pageContent["compare"] = (
-      <InnerPage data={merged} title="השוואה" onCta={() => goTo("contact")}>
+      <InnerPage data={merged} title={tx("השוואה")} onCta={() => goTo("contact")}>
         <>
           <CompareStrip data={merged} />
       <PlanGalleryWall data={merged} />
@@ -448,7 +449,7 @@ export default function DwellistPages({
       </InnerPage>
     );
     pageContent["mortgage"] = (
-      <InnerPage data={merged} title="משכנתא" onCta={() => goTo("contact")}>
+      <InnerPage data={merged} title={tx("משכנתא")} onCta={() => goTo("contact")}>
         <>
           <MortgageVisual data={merged} />
       <PlanStatsRow data={merged} />
@@ -459,7 +460,7 @@ export default function DwellistPages({
       </InnerPage>
     );
     pageContent["about"] = (
-      <InnerPage data={merged} title="אודות" onCta={() => goTo("contact")}>
+      <InnerPage data={merged} title={tx("אודות")} onCta={() => goTo("contact")}>
         <>
           <AboutBlock data={merged} />
       <PlanAgentRoster data={merged} />

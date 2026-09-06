@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
 import { Reveal } from "../shared/Reveal";
@@ -115,11 +116,11 @@ function About({ data }: { data: Record<string, any> }) {
           <div className="mt-8 grid gap-3 sm:grid-cols-2">
             <div className="border border-black/10 bg-[var(--bg)] p-4">
               <p className="text-xs font-black uppercase tracking-[0.18em] text-[var(--p)]">People map</p>
-              <p className="mt-2 text-sm leading-6 text-[var(--muted)]">מיפוי מועמדים לפי מוטיבציה, כישורים וקצב גיוס.</p>
+              <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{tx("מיפוי מועמדים לפי מוטיבציה, כישורים וקצב גיוס.")}</p>
             </div>
             <div className="border border-black/10 bg-[var(--bg)] p-4">
               <p className="text-xs font-black uppercase tracking-[0.18em] text-[var(--p)]">Shortlist</p>
-              <p className="mt-2 text-sm leading-6 text-[var(--muted)]">רשימות קצרות שמרגישות כמו צוות, לא כמו מאגר.</p>
+              <p className="mt-2 text-sm leading-6 text-[var(--muted)]">{tx("רשימות קצרות שמרגישות כמו צוות, לא כמו מאגר.")}</p>
             </div>
           </div>
         </Reveal>
@@ -197,7 +198,7 @@ function Cases({ data }: { data: Record<string, any> }) {
                   </div>
                   <div className="mt-8 border-t border-black/10 pt-4">
                     <p className="text-xs font-black uppercase tracking-[0.22em] text-[var(--muted)]">Outcome</p>
-                    <p className="mt-2 text-lg font-extrabold text-[var(--text)]">מועמדים חתומים, צוות מגייס רגוע ותהליך שקוף.</p>
+                    <p className="mt-2 text-lg font-extrabold text-[var(--text)]">{tx("מועמדים חתומים, צוות מגייס רגוע ותהליך שקוף.")}</p>
                   </div>
                 </div>
               </article>
@@ -246,7 +247,7 @@ function Team({ data }: { data: Record<string, any> }) {
             <aside className="flex h-full flex-col justify-between border border-black/10 bg-[var(--p)] p-7 text-right text-white">
               <div>
                 <p className="text-xs font-black uppercase tracking-[0.24em] text-white/70">Now sourcing</p>
-                <h3 className="ag-display mt-4 text-2xl sm:text-4xl font-extrabold">תפקידים פתוחים שמחכים לאדם הנכון.</h3>
+                <h3 className="ag-display mt-4 text-2xl sm:text-4xl font-extrabold">{tx("תפקידים פתוחים שמחכים לאדם הנכון.")}</h3>
               </div>
               <div className="mt-8 space-y-3">
                 {[getValue(data, "serviceOneTitle"), getValue(data, "serviceTwoTitle"), getValue(data, "serviceThreeTitle")].map((role) => (
@@ -319,7 +320,7 @@ function Insights({ data, goTo }: { data: Record<string, any>; goTo: (id: string
                 <p className="text-xs font-black uppercase tracking-[0.24em] text-[var(--p)]">Recruiter note 0{i + 1}</p>
                 <h3 className="mt-5 text-2xl font-extrabold">{title}</h3>
                 <p className="mt-4 text-sm leading-7 text-[var(--muted)]">{text}</p>
-                <button type="button" onClick={() => goTo("contact")} className="mt-7 border-b border-[var(--p)] pb-1 text-sm font-black text-[var(--p)]">דברו עם מגייס/ת</button>
+                <button type="button" onClick={() => goTo("contact")} className="mt-7 border-b border-[var(--p)] pb-1 text-sm font-black text-[var(--p)]">{tx("דברו עם מגייס/ת")}</button>
               </article>
             </Reveal>
           ))}
@@ -381,11 +382,11 @@ function Contact({ data }: { data: Record<string, any> }) {
           </div>
         </Reveal>
         <Reveal variant="left" delayMs={100} className="bg-[var(--bg)] p-7 md:p-10 lg:[direction:rtl]">
-          <form className="grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="talentix-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-            <input className="border border-black/10 bg-[var(--surface)] px-4 py-4 text-right outline-none" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-            <input className="border border-black/10 bg-[var(--surface)] px-4 py-4 text-right outline-none" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-            <input className="border border-black/10 bg-[var(--surface)] px-4 py-4 text-right outline-none" placeholder="תפקיד / חברה"  name="company" data-bizuply-form-field-id="company" />
-            <textarea className="min-h-36 border border-black/10 bg-[var(--surface)] px-4 py-4 text-right outline-none" placeholder="לשלוח קורות חיים או לדבר עם מגייס/ת?"  name="other" data-bizuply-form-field-id="other"></textarea>
+          <form className="grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="talentix-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+            <input className="border border-black/10 bg-[var(--surface)] px-4 py-4 text-right outline-none" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+            <input className="border border-black/10 bg-[var(--surface)] px-4 py-4 text-right outline-none" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+            <input className="border border-black/10 bg-[var(--surface)] px-4 py-4 text-right outline-none" placeholder={tx("תפקיד / חברה")}  name="company" data-bizuply-form-field-id="company" />
+            <textarea className="min-h-36 border border-black/10 bg-[var(--surface)] px-4 py-4 text-right outline-none" placeholder={tx("לשלוח קורות חיים או לדבר עם מגייס/ת?")}  name="other" data-bizuply-form-field-id="other"></textarea>
             <button type="submit" className="bg-[var(--p)] px-6 py-4 text-sm font-black text-white">{getValue(data, "contactButton")}</button>
           </form>
         </Reveal>
@@ -407,7 +408,7 @@ function Footer({ data, goTo }: { data: Record<string, any>; goTo: (id: string) 
         </Reveal>
         <div className="mt-10 flex flex-wrap justify-center gap-3">
           {links.map((p) => (
-            <button key={p.id} type="button" onClick={() => goTo(p.id)} className="border border-white/20 px-4 py-2 text-xs font-bold uppercase tracking-[0.14em] text-white/80">{p.label}</button>
+            <button key={p.id} type="button" onClick={() => goTo(p.id)} className="border border-white/20 px-4 py-2 text-xs font-bold uppercase tracking-[0.14em] text-white/80">{tx(p.label)}</button>
           ))}
         </div>
         <p className="mt-10 text-xs text-white/50">© {new Date().getFullYear()} {getValue(data, "brandName")} · {getValue(data, "footerText")}</p>
@@ -457,7 +458,7 @@ function Hero({ data, goTo }: { data: Record<string, any>; goTo: (id: string) =>
           <p className="mt-6 max-w-xl text-lg leading-8 text-[var(--muted)]">{getValue(data, "heroSubtitle")}</p>
           <div className="mt-8 flex flex-wrap gap-3">
             <button type="button" onClick={() => goTo("contact")} className="bg-[var(--p)] px-8 py-4 text-sm font-black text-white">{getValue(data, "heroPrimaryButton")}</button>
-            <button type="button" onClick={() => goTo("team")} className="border border-[var(--p)] px-8 py-4 text-sm font-black text-[var(--p)]">הכירו את הצוות</button>
+            <button type="button" onClick={() => goTo("team")} className="border border-[var(--p)] px-8 py-4 text-sm font-black text-[var(--p)]">{tx("הכירו את הצוות")}</button>
           </div>
         </Reveal>
         <Reveal className="lg:col-span-5" delayMs={100}>

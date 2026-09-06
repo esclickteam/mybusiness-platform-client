@@ -1,4 +1,5 @@
 import React, { useMemo } from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { villaireDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
@@ -139,10 +140,10 @@ function NarrowInquiry({ data }: { data: Record<string, any> }) {
         <p className="text-xs font-bold tracking-[0.38em]" style={{ color: "#e2c7a0" }}>PRIVATE REQUEST</p>
         <h2 className="tpl-display mt-5 text-5xl font-bold md:text-6xl" style={{ color: "#f4efe6" }}>{v(data, "contactTitle")}</h2>
         <p className="mx-auto mt-5 max-w-md text-base leading-7" style={{ color: "#a89a86" }}>{v(data, "contactText")}</p>
-        <form className="mt-10 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="villaire-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-          <input className={field} style={{ borderColor: "rgba(226,199,160,0.26)", color: "#f4efe6" }} placeholder="שם" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-          <input className={field} style={{ borderColor: "rgba(226,199,160,0.26)", color: "#f4efe6" }} placeholder="טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-          <textarea className={`${field} min-h-28`} style={{ borderColor: "rgba(226,199,160,0.26)", color: "#f4efe6" }} placeholder="איזו וילה אתם מדמיינים?"  name="other" data-bizuply-form-field-id="other"></textarea>
+        <form className="mt-10 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="villaire-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+          <input className={field} style={{ borderColor: "rgba(226,199,160,0.26)", color: "#f4efe6" }} placeholder={tx("שם")} name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+          <input className={field} style={{ borderColor: "rgba(226,199,160,0.26)", color: "#f4efe6" }} placeholder={tx("טלפון")} name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+          <textarea className={`${field} min-h-28`} style={{ borderColor: "rgba(226,199,160,0.26)", color: "#f4efe6" }} placeholder={tx("איזו וילה אתם מדמיינים?")}  name="other" data-bizuply-form-field-id="other"></textarea>
           <button type="submit" className="tpl-sweep px-6 py-4 text-sm font-bold" style={{ background: "#e2c7a0", color: "#0a0a0a" }}>{v(data, "cta")}</button>
         </form>
       </div>
@@ -199,10 +200,10 @@ export default function VillairePages({
   );
   const pageContent: Record<string, React.ReactNode> = {
     home: <HomePage data={merged} goTo={goTo} />,
-    villas: <InnerPage data={merged} title="וילות"><FeaturedVilla data={merged} /><VillaLedger data={merged} /></InnerPage>,
-    architecture: <InnerPage data={merged} title="אדריכלות"><ChampagnePrinciples data={merged} /></InnerPage>,
-    about: <InnerPage data={merged} title="אודות"><ChampagnePrinciples data={merged} /><FeaturedVilla data={merged} /></InnerPage>,
-    contact: <InnerPage data={merged} title="יצירת קשר"><NarrowInquiry data={merged} /></InnerPage>,
+    villas: <InnerPage data={merged} title={tx("וילות")}><FeaturedVilla data={merged} /><VillaLedger data={merged} /></InnerPage>,
+    architecture: <InnerPage data={merged} title={tx("אדריכלות")}><ChampagnePrinciples data={merged} /></InnerPage>,
+    about: <InnerPage data={merged} title={tx("אודות")}><ChampagnePrinciples data={merged} /><FeaturedVilla data={merged} /></InnerPage>,
+    contact: <InnerPage data={merged} title={tx("יצירת קשר")}><NarrowInquiry data={merged} /></InnerPage>,
   };
   return (
     <div dir="rtl" data-template-id="villaire" className="min-h-screen w-full overflow-x-hidden" style={{ background: "#0a0a0a", color: "#f4efe6" }}>

@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { rivaraDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
@@ -26,7 +27,7 @@ function v(data: Record<string, any>, key: string) {
 
 function Header({ data, currentPage, goTo }: { data: Record<string, any>; currentPage: string; goTo: (id: string) => void }) {
   const [open, setOpen] = useState(false);
-  const nav = rivaraPages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || p.label] as const);
+  const nav = rivaraPages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || tx(p.label)] as const);
   return (
     <header
       data-template-section-type="header"
@@ -161,7 +162,7 @@ function NatureSquares({ data }: { data: Record<string, any> }) {
       <div className="mx-auto max-w-7xl">
         <div className="grid gap-8 lg:grid-cols-[0.55fr_1.45fr] lg:items-end">
           <div>
-            <p className="text-xs font-bold tracking-[0.3em]" style={{ color: "#1f7a78" }}>טבע קרוב</p>
+            <p className="text-xs font-bold tracking-[0.3em]" style={{ color: "#1f7a78" }}>{tx("טבע קרוב")}</p>
             <h2 className="tpl-display mt-4 text-4xl font-bold md:text-5xl">{v(data, "natureTitle")}</h2>
             <p className="mt-5 text-lg leading-8" style={{ color: "#4f6d72" }}>{v(data, "natureIntro")}</p>
           </div>
@@ -190,7 +191,7 @@ function SereneInquiry({ data }: { data: Record<string, any> }) {
     <section className="px-5 py-16 lg:px-8 lg:py-24" style={{ background: "#cfe6e4" }}>
       <div className="mx-auto grid max-w-6xl gap-10 border p-6 md:grid-cols-[0.85fr_1.15fr] md:p-10" style={{ borderColor: "rgba(31,122,120,0.22)", background: "#e8f3f2" }}>
         <div>
-          <p className="text-xs font-bold tracking-[0.3em]" style={{ color: "#1f7a78" }}>שיחה רגועה</p>
+          <p className="text-xs font-bold tracking-[0.3em]" style={{ color: "#1f7a78" }}>{tx("שיחה רגועה")}</p>
           <h2 className="tpl-display mt-4 text-4xl font-bold md:text-5xl">{v(data, "contactTitle")}</h2>
           <p className="mt-5 text-lg leading-8" style={{ color: "#4f6d72" }}>{v(data, "contactText")}</p>
           <div className="mt-8 space-y-3 border-r pr-5 text-sm" style={{ borderColor: "#1f7a78", color: "#4f6d72" }}>
@@ -199,10 +200,10 @@ function SereneInquiry({ data }: { data: Record<string, any> }) {
             <p>{v(data, "address")}</p>
           </div>
         </div>
-        <form className="grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="rivara-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-          <input className={field} style={{ borderColor: "rgba(31,122,120,0.22)", color: "#12343a" }} placeholder="שם מלא" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-          <input className={field} style={{ borderColor: "rgba(31,122,120,0.22)", color: "#12343a" }} placeholder="טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-          <textarea className={`${field} min-h-32`} style={{ borderColor: "rgba(31,122,120,0.22)", color: "#12343a" }} placeholder="מים, פארק, פרטיות - מה חשוב לכם?"  name="other" data-bizuply-form-field-id="other"></textarea>
+        <form className="grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="rivara-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+          <input className={field} style={{ borderColor: "rgba(31,122,120,0.22)", color: "#12343a" }} placeholder={tx("שם מלא")} name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+          <input className={field} style={{ borderColor: "rgba(31,122,120,0.22)", color: "#12343a" }} placeholder={tx("טלפון")} name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+          <textarea className={`${field} min-h-32`} style={{ borderColor: "rgba(31,122,120,0.22)", color: "#12343a" }} placeholder={tx("מים, פארק, פרטיות - מה חשוב לכם?")}  name="other" data-bizuply-form-field-id="other"></textarea>
           <button type="submit" className="tpl-sweep px-6 py-4 text-sm font-bold" style={{ background: "#1f7a78", color: "#e8f3f2" }}>{v(data, "cta")}</button>
         </form>
       </div>
@@ -260,10 +261,10 @@ export default function RivaraPages({
   );
   const pageContent: Record<string, React.ReactNode> = {
     home: <HomePage data={merged} goTo={goTo} />,
-    waterfront: <InnerPage data={merged} title="מול מים"><WaterfrontRows data={merged} /><SereneInquiry data={merged} /></InnerPage>,
-    nature: <InnerPage data={merged} title="טבע"><NatureSquares data={merged} /><SereneInquiry data={merged} /></InnerPage>,
-    about: <InnerPage data={merged} title="אודות"><NatureSquares data={merged} /></InnerPage>,
-    contact: <InnerPage data={merged} title="יצירת קשר"><SereneInquiry data={merged} /></InnerPage>,
+    waterfront: <InnerPage data={merged} title={tx("מול מים")}><WaterfrontRows data={merged} /><SereneInquiry data={merged} /></InnerPage>,
+    nature: <InnerPage data={merged} title={tx("טבע")}><NatureSquares data={merged} /><SereneInquiry data={merged} /></InnerPage>,
+    about: <InnerPage data={merged} title={tx("אודות")}><NatureSquares data={merged} /></InnerPage>,
+    contact: <InnerPage data={merged} title={tx("יצירת קשר")}><SereneInquiry data={merged} /></InnerPage>,
   };
   return (
     <div dir="rtl" data-template-id="rivara" className="min-h-screen w-full overflow-x-hidden" style={{ background: "#e8f3f2", color: "#12343a" }}>

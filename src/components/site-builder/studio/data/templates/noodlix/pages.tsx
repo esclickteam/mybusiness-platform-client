@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { noodlixDefaultData } from "./defaultData";
 import { noodlixEditorCss } from "./editorCss";
@@ -32,7 +33,7 @@ function v(data: Record<string, any>, key: string) {
 function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>; currentPage: string; goTo: (id: string) => void; onCta: () => void }) {
   const [navOpen, setNavOpen] = useState(false);
   const go = (id: string) => { setNavOpen(false); goTo(id); };
-  const nav = noodlixPages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || p.label] as const);
+  const nav = noodlixPages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || tx(p.label)] as const);
   return (
     <header data-template-section-type="header" data-section-kind="header" className="fixed inset-x-0 top-4 z-50 px-4">
       <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 rounded-full border px-5 py-3 shadow-lg"
@@ -88,7 +89,7 @@ function RadialDishes({ data }: { data: Record<string, any> }) {
   return (
     <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{ borderColor: "rgba(238,246,241,0.12)" }}>
       <div className="mx-auto max-w-7xl text-center">
-        <Reveal><h2 className="tpl-display text-4xl font-bold md:text-5xl">קערות היום</h2></Reveal>
+        <Reveal><h2 className="tpl-display text-4xl font-bold md:text-5xl">{tx("קערות היום")}</h2></Reveal>
         <div className="relative mx-auto mt-14 flex max-w-3xl flex-wrap items-center justify-center gap-8">
           <div className="tpl-radial-orbit pointer-events-none absolute inset-0 rounded-full border border-dashed opacity-30" style={{ borderColor: "#3dd6c6" }} />
           {cards.map(([title, meta, text, img], i) => (
@@ -395,7 +396,7 @@ function AboutBlock({ data }: { data: Record<string, any> }) {
       <div className="mx-auto max-w-3xl space-y-4">
         <Reveal>
           <div className="tpl-steam-card rounded-2xl p-6">
-            <p className="text-xs font-semibold tracking-[0.24em]" style={{ color: "#3dd6c6" }}>אודות</p>
+            <p className="text-xs font-semibold tracking-[0.24em]" style={{ color: "#3dd6c6" }}>{tx("אודות")}</p>
             <h2 className="tpl-display mt-3 text-3xl font-bold md:text-4xl">{v(data, "aboutTitle")}</h2>
           </div>
         </Reveal>
@@ -420,9 +421,9 @@ function ContactBlock({ data, onCta }: { data: Record<string, any>; onCta: () =>
       <div className="mx-auto flex max-w-xl flex-col items-center text-center">
         <h2 className="tpl-display text-2xl sm:text-4xl font-bold">{v(data, "contactTitle")}</h2>
         <p className="mt-4 text-lg" style={{ color: "#8aa89a" }}>{v(data, "contactText")}</p>
-        <form className="tpl-steam-card mt-8 grid w-full max-w-md gap-3 rounded-full border p-8" style={{ borderColor: "#3dd6c6" }} data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="noodlix-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-          <input className="w-full rounded-full border bg-transparent px-4 py-3 text-center outline-none" style={{ borderColor: "rgba(238,246,241,0.12)" }} placeholder="שם" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-          <input className="w-full rounded-full border bg-transparent px-4 py-3 text-center outline-none" style={{ borderColor: "rgba(238,246,241,0.12)" }} placeholder="טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+        <form className="tpl-steam-card mt-8 grid w-full max-w-md gap-3 rounded-full border p-8" style={{ borderColor: "#3dd6c6" }} data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="noodlix-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+          <input className="w-full rounded-full border bg-transparent px-4 py-3 text-center outline-none" style={{ borderColor: "rgba(238,246,241,0.12)" }} placeholder={tx("שם")} name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+          <input className="w-full rounded-full border bg-transparent px-4 py-3 text-center outline-none" style={{ borderColor: "rgba(238,246,241,0.12)" }} placeholder={tx("טלפון")} name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
           <button type="submit" className="rounded-full px-6 py-3 text-sm font-bold" style={{ background: "#3dd6c6", color: "#0a1210" }}>{v(data, "cta")}</button>
         </form>
         <p className="mt-6 text-sm" style={{ color: "#8aa89a" }}>{v(data, "phone")} · {v(data, "email")}</p>

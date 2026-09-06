@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { TemplateText } from "../shared/TemplateText";
@@ -416,9 +417,7 @@ function PrismStatsBand({ data }: { data: Record<string, any> }) {
             >
               {getValue(data, labelKey)}
             </TemplateText>
-            <p className="mt-4 text-sm leading-7 text-black/70">
-              מערכת מותגית חדה, ריווח מדויק ושפה טיפוגרפית שמובילה את כל החוויה.
-            </p>
+            <p className="mt-4 text-sm leading-7 text-black/70">{tx("מערכת מותגית חדה, ריווח מדויק ושפה טיפוגרפית שמובילה את כל החוויה.")}</p>
           </div>
         ))}
       </div>
@@ -527,9 +526,7 @@ function PrismServicesBand({
                 {getValue(data, textKey)}
               </TemplateText>
               <div className="mt-8">
-                <PrismButton variant={index % 2 === 0 ? "blue" : "red"} onClick={() => goTo("contact")}>
-                  להתחיל פרויקט
-                </PrismButton>
+                <PrismButton variant={index % 2 === 0 ? "blue" : "red"} onClick={() => goTo("contact")}>{tx("להתחיל פרויקט")}</PrismButton>
               </div>
             </article>
           ))}
@@ -681,12 +678,8 @@ function PrismInsightsBand({
           ))}
           <div className="border-t border-black bg-[#fffef8] px-6 py-8 lg:border-r lg:border-t-0">
             <div className="text-[11px] font-black uppercase tracking-[0.32em] text-black/60">EDITORIAL</div>
-            <TemplateText as="p" className="mt-6 text-3xl font-black uppercase leading-tight text-black">
-              מסר ברור נבנה דרך ניגוד, קצב וחזרתיות.
-            </TemplateText>
-            <TemplateText as="p" className="mt-4 text-sm leading-8 text-[#4d4a43]">
-              כל רכיב ויזואלי בתבנית ממוקם כדי לחזק היררכיה, זכירות ותנועה בין עמודים.
-            </TemplateText>
+            <TemplateText as="p" className="mt-6 text-3xl font-black uppercase leading-tight text-black">{tx("מסר ברור נבנה דרך ניגוד, קצב וחזרתיות.")}</TemplateText>
+            <TemplateText as="p" className="mt-4 text-sm leading-8 text-[#4d4a43]">{tx("כל רכיב ויזואלי בתבנית ממוקם כדי לחזק היררכיה, זכירות ותנועה בין עמודים.")}</TemplateText>
             <div className="mt-8">
               <PrismButton variant="ghost" onClick={() => goTo("insights")}>
                 <TemplateText as="span" editId="navInsights" editLabel="navInsights">
@@ -743,22 +736,22 @@ function PrismContactBand({ data }: { data: Record<string, any> }) {
           </div>
         </div>
 
-        <form className="grid gap-4 border-t border-black bg-[#fffef8] px-6 py-10 md:px-10 lg:border-r lg:border-t-0" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="prism-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+        <form className="grid gap-4 border-t border-black bg-[#fffef8] px-6 py-10 md:px-10 lg:border-r lg:border-t-0" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="prism-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
           <input
             className="border border-black bg-white px-4 py-4 text-right text-sm text-black outline-none placeholder:text-black/45 focus:bg-[#fffdf2]"
-            placeholder="שם מלא"
+            placeholder={tx("שם מלא")}
            name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
           <input
             className="border border-black bg-white px-4 py-4 text-right text-sm text-black outline-none placeholder:text-black/45 focus:bg-[#fffdf2]"
-            placeholder="טלפון"
+            placeholder={tx("טלפון")}
            name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
           <input
             className="border border-black bg-white px-4 py-4 text-right text-sm text-black outline-none placeholder:text-black/45 focus:bg-[#fffdf2]"
-            placeholder="אימייל"
+            placeholder={tx("אימייל")}
            name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
           <textarea
             className="min-h-36 border border-black bg-white px-4 py-4 text-right text-sm text-black outline-none placeholder:text-black/45 focus:bg-[#fffdf2]"
-            placeholder="ספרו על המותג או הפרויקט"
+            placeholder={tx("ספרו על המותג או הפרויקט")}
            name="message" data-bizuply-form-field-id="message"></textarea>
           <PrismButton className="w-full justify-center">
             <TemplateText as="span" editId="contactButton" editLabel="contactButton">

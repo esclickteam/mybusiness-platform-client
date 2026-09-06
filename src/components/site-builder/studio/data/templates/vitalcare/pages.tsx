@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { vitalcareDefaultData } from "./defaultData";
 import { vitalcareEditorCss } from "./editorCss";
@@ -363,30 +364,30 @@ function AppointmentForm({ data, openModal }: { data: Record<string, any>; openM
           <p className="mt-6 max-w-md leading-8 text-white/75">{getValue(data, "contactText")}</p>
           <div className="mt-10 space-y-4 text-sm text-white/75">
             <p>
-              <span className="font-semibold text-white">טלפון</span> · {getValue(data, "phone")}
+              <span className="font-semibold text-white">{tx("טלפון")}</span> · {getValue(data, "phone")}
             </p>
             <p>
-              <span className="font-semibold text-white">אימייל</span> · {getValue(data, "email")}
+              <span className="font-semibold text-white">{tx("אימייל")}</span> · {getValue(data, "email")}
             </p>
             <p>
-              <span className="font-semibold text-white">כתובת</span> · {getValue(data, "address")}
+              <span className="font-semibold text-white">{tx("כתובת")}</span> · {getValue(data, "address")}
             </p>
             <p>
-              <span className="font-semibold text-white">שעות פעילות</span> · {getValue(data, "hours")}
+              <span className="font-semibold text-white">{tx("שעות פעילות")}</span> · {getValue(data, "hours")}
             </p>
           </div>
         </div>
-        <form className="grid content-center gap-4 p-8 md:p-12" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="vitalcare-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+        <form className="grid content-center gap-4 p-8 md:p-12" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="vitalcare-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
           <h3 className="vc-display text-3xl font-semibold text-[var(--vc-text)]">{getValue(data, "contactTitle")}</h3>
-          <input className="vc-input rounded-xl px-5 py-4 text-right outline-none" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-          <input className="vc-input rounded-xl px-5 py-4 text-right outline-none" placeholder="טלפון לחזרה"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-          <input className="vc-input rounded-xl px-5 py-4 text-right outline-none" placeholder="אימייל"  name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
+          <input className="vc-input rounded-xl px-5 py-4 text-right outline-none" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+          <input className="vc-input rounded-xl px-5 py-4 text-right outline-none" placeholder={tx("טלפון לחזרה")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+          <input className="vc-input rounded-xl px-5 py-4 text-right outline-none" placeholder={tx("אימייל")}  name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
           <select className="vc-input rounded-xl px-5 py-4 text-right text-[var(--vc-muted)] outline-none">
-            <option>תחום רפואי מבוקש</option>
-            <option>רפואת משפחה ופנימית</option>
-            <option>קרדיולוגיה מניעתית</option>
-            <option>אורתופדיה וכאב</option>
-            <option>רפואת ילדים</option>
+            <option>{tx("תחום רפואי מבוקש")}</option>
+            <option>{tx("רפואת משפחה ופנימית")}</option>
+            <option>{tx("קרדיולוגיה מניעתית")}</option>
+            <option>{tx("אורתופדיה וכאב")}</option>
+            <option>{tx("רפואת ילדים")}</option>
           </select>
           <button
             type="submit"
@@ -438,15 +439,15 @@ function ContactModal({ data, open, onClose }: { data: Record<string, any>; open
           type="button"
           onClick={onClose}
           className="absolute left-5 top-5 text-2xl leading-none text-[var(--vc-muted)]"
-          aria-label="סגירה"
+          aria-label={tx("סגירה")}
         >
           ×
         </button>
         <h3 className="vc-display text-3xl font-semibold text-[var(--vc-text)]">{getValue(data, "contactTitle")}</h3>
         <p className="mt-3 text-sm leading-7 text-[var(--vc-muted)]">{getValue(data, "contactText")}</p>
-        <form className="mt-6 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="vitalcare-contact-2" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-          <input className="vc-input rounded-xl px-5 py-4 text-right outline-none" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-          <input className="vc-input rounded-xl px-5 py-4 text-right outline-none" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+        <form className="mt-6 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="vitalcare-contact-2" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+          <input className="vc-input rounded-xl px-5 py-4 text-right outline-none" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+          <input className="vc-input rounded-xl px-5 py-4 text-right outline-none" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
           <button
             type="submit"
             className="rounded-xl bg-[var(--vc-primary)] px-7 py-4 text-sm font-semibold text-white transition hover:bg-[var(--vc-secondary)]"

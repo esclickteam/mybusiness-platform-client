@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { nexoraDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
@@ -227,25 +228,23 @@ function BookingModal({
           ×
         </button>
         <div className="relative z-10">
-          <p className="inline-flex rounded-full bg-indigo-500/15 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-indigo-300">
-            תיאום דמו
-          </p>
-          <h3 className="mt-5 text-3xl font-bold text-white">בואו נראה לכם את Nexora בפעולה.</h3>
+          <p className="inline-flex rounded-full bg-indigo-500/15 px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-indigo-300">{tx("תיאום דמו")}</p>
+          <h3 className="mt-5 text-3xl font-bold text-white">{tx("בואו נראה לכם את Nexora בפעולה.")}</h3>
           <p className="mt-3 text-sm leading-6 text-slate-400">
             {getValue(data, "contactText")}
           </p>
-          <form className="mt-7 grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="nexora-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+          <form className="mt-7 grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="nexora-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
             <input
               className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-slate-500 focus:border-indigo-400"
-              placeholder="שם מלא"
+              placeholder={tx("שם מלא")}
              name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
             <input
               className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-slate-500 focus:border-indigo-400"
-              placeholder="אימייל עבודה"
+              placeholder={tx("אימייל עבודה")}
              name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
             <input
               className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-slate-500 focus:border-indigo-400"
-              placeholder="שם החברה"
+              placeholder={tx("שם החברה")}
              name="name_2" data-bizuply-form-field-id="name_2" type="text" autoComplete="name" />
             <button
               type="submit"
@@ -465,9 +464,7 @@ function PricingSection({
               )}
             >
               {index === 1 ? (
-                <span className="absolute left-6 top-6 rounded-full bg-gradient-to-r from-indigo-500 to-violet-500 px-3 py-1 text-xs font-semibold text-white">
-                  הכי פופולרי
-                </span>
+                <span className="absolute left-6 top-6 rounded-full bg-gradient-to-r from-indigo-500 to-violet-500 px-3 py-1 text-xs font-semibold text-white">{tx("הכי פופולרי")}</span>
               ) : null}
               <h3 className="text-xl font-bold text-white">{name}</h3>
               <div className="mt-6 flex items-baseline gap-1">
@@ -644,23 +641,23 @@ function ContactSection({
             ))}
           </div>
         </div>
-        <form className="m-4 rounded-[30px] border border-white/8 bg-[#0b1020]/70 p-6 lg:m-6 lg:p-8" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="nexora-contact-2" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+        <form className="m-4 rounded-[30px] border border-white/8 bg-[#0b1020]/70 p-6 lg:m-6 lg:p-8" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="nexora-contact-2" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
           <div className="grid gap-4">
             <input
               className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-slate-500 focus:border-indigo-400"
-              placeholder="שם מלא"
+              placeholder={tx("שם מלא")}
              name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
             <input
               className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-slate-500 focus:border-indigo-400"
-              placeholder="אימייל עבודה"
+              placeholder={tx("אימייל עבודה")}
              name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
             <input
               className="rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-slate-500 focus:border-indigo-400"
-              placeholder="שם החברה"
+              placeholder={tx("שם החברה")}
              name="name_2" data-bizuply-form-field-id="name_2" type="text" autoComplete="name" />
             <textarea
               className="min-h-32 rounded-2xl border border-white/10 bg-white/5 px-5 py-4 text-right text-white outline-none transition placeholder:text-slate-500 focus:border-indigo-400"
-              placeholder="ספרו לנו על הצוות שלכם"
+              placeholder={tx("ספרו לנו על הצוות שלכם")}
              name="message" data-bizuply-form-field-id="message"></textarea>
             <button
               type="submit"
@@ -714,7 +711,7 @@ function CtaFooter({
         <p>
           © {new Date().getFullYear()} {getValue(data, "brandName")}
         </p>
-        <p>תבנית Nexora · Bizuply Studio</p>
+        <p>{tx("תבנית Nexora · Bizuply Studio")}</p>
       </div>
     </footer>
   );

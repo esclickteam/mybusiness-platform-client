@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { brokeriaDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
@@ -28,7 +29,7 @@ function cx(...xs: Array<string | false | null | undefined>) { return xs.filter(
 
 function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>; currentPage: string; goTo: (id: string) => void; onCta: () => void }) {
   const [open, setOpen] = useState(false);
-  const nav = brokeriaPages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || p.label] as const);
+  const nav = brokeriaPages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || tx(p.label)] as const);
   return (
     <header data-template-section-type="header" data-section-kind="header" className="sticky top-0 z-50 border-b"
       style={{ background: "#0a0f18f2", borderColor: "rgba(240,244,250,0.14)", backdropFilter: "blur(12px)" }}>
@@ -65,11 +66,11 @@ function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>;
 function ContactForm({ data, onCta }: { data: Record<string, any>; onCta: () => void }) {
   const field = "w-full border bg-transparent px-4 py-3.5 text-right outline-none";
   return (
-    <form className="grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="brokeria-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-      <input className={field} style={{ borderColor: "rgba(240,244,250,0.14)", color: "#f0f4fa" }} placeholder="שם מלא" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-      <input className={field} style={{ borderColor: "rgba(240,244,250,0.14)", color: "#f0f4fa" }} placeholder="טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-      <input className={field} style={{ borderColor: "rgba(240,244,250,0.14)", color: "#f0f4fa" }} placeholder="אימייל" name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
-      <textarea className={cx(field, "min-h-28")} style={{ borderColor: "rgba(240,244,250,0.14)", color: "#f0f4fa" }} placeholder="מה אתם מחפשים?"  name="message" data-bizuply-form-field-id="message"></textarea>
+    <form className="grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="brokeria-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+      <input className={field} style={{ borderColor: "rgba(240,244,250,0.14)", color: "#f0f4fa" }} placeholder={tx("שם מלא")} name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+      <input className={field} style={{ borderColor: "rgba(240,244,250,0.14)", color: "#f0f4fa" }} placeholder={tx("טלפון")} name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+      <input className={field} style={{ borderColor: "rgba(240,244,250,0.14)", color: "#f0f4fa" }} placeholder={tx("אימייל")} name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
+      <textarea className={cx(field, "min-h-28")} style={{ borderColor: "rgba(240,244,250,0.14)", color: "#f0f4fa" }} placeholder={tx("מה אתם מחפשים?")}  name="message" data-bizuply-form-field-id="message"></textarea>
       <button type="submit" className="px-6 py-4 text-sm font-bold" style={{ background: "#c9a962", color: "#0a0f18" }}>{v(data, "cta")}</button>
     </form>
   );
@@ -107,7 +108,7 @@ function FeaturedCards({ data }: { data: Record<string, any> }) {
   return (
     <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{ borderColor: "rgba(240,244,250,0.14)", background: "#141c2a" }}>
       <div className="mx-auto max-w-7xl">
-        <h2 className="tpl-display text-4xl font-bold md:text-5xl">נכסים נבחרים</h2>
+        <h2 className="tpl-display text-4xl font-bold md:text-5xl">{tx("נכסים נבחרים")}</h2>
         <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {cards.map((c) => (
             <article key={c.title} className="tpl-zoom-card group overflow-hidden border" style={{ borderColor: "rgba(240,244,250,0.14)", background: "#0a0f18" }}>
@@ -156,7 +157,7 @@ function TickerGalleryWall({ data }: { data: Record<string, any> }) {
   return (
     <section className="border-t overflow-hidden" style={{ borderColor: "rgba(240,244,250,0.14)" }}>
       <div className="mx-auto max-w-7xl px-5 py-16 lg:px-8">
-        <h2 className="tpl-display text-2xl sm:text-4xl font-bold">גלריית נכסים קולנועית</h2>
+        <h2 className="tpl-display text-2xl sm:text-4xl font-bold">{tx("גלריית נכסים קולנועית")}</h2>
         <div className="mt-10 flex gap-4 overflow-x-auto pb-4">
           {items.map((c) => (
             <article key={c.t} className="tpl-zoom-card min-w-[280px] shrink-0 overflow-hidden border" style={{ borderColor: "rgba(240,244,250,0.14)" }}>
@@ -176,7 +177,7 @@ function TickerAgentRoster({ data }: { data: Record<string, any> }) {
   const agents = [1,2,3,4].map((i) => ({ n: v(data, `agent${i}Name`), r: v(data, `agent${i}Role`), d: v(data, `agent${i}Deals`), img: v(data, `agent${i}Image`) }));
   return (
     <section className="border-t px-5 py-16 lg:px-8" style={{ borderColor: "rgba(240,244,250,0.14)", background: "#050810" }}>
-      <h2 className="tpl-display mx-auto max-w-7xl text-2xl sm:text-4xl font-bold">צוות הפרימיום</h2>
+      <h2 className="tpl-display mx-auto max-w-7xl text-2xl sm:text-4xl font-bold">{tx("צוות הפרימיום")}</h2>
       <div className="mx-auto mt-10 grid max-w-7xl gap-5 sm:grid-cols-2 lg:grid-cols-4">
         {agents.map((a,i) => (
           <article key={a.n} className="tpl-climb border text-center" style={{ borderColor: "#c9a96255", animationDelay: `${i*0.08}s` }}>
@@ -214,7 +215,7 @@ function TickerMarketPulse({ data }: { data: Record<string, any> }) {
   const posts = [[v(data,"insight1Title"),v(data,"insight1Text"),v(data,"insight1Tag")],[v(data,"insight2Title"),v(data,"insight2Text"),v(data,"insight2Tag")],[v(data,"insight3Title"),v(data,"insight3Text"),v(data,"insight3Tag")]];
   return (
     <section className="border-t px-5 py-16 lg:px-8" style={{ borderColor: "rgba(240,244,250,0.14)", background: "#141c2a" }}>
-      <h2 className="tpl-display mx-auto max-w-7xl text-2xl sm:text-4xl font-bold">תובנות Ticker</h2>
+      <h2 className="tpl-display mx-auto max-w-7xl text-2xl sm:text-4xl font-bold">{tx("תובנות Ticker")}</h2>
       <div className="mx-auto mt-10 grid max-w-7xl gap-5 lg:grid-cols-3">
         {posts.map(([t,x,g]) => (
           <article key={t} className="border p-5" style={{ borderColor: "rgba(240,244,250,0.14)" }}>
@@ -337,7 +338,7 @@ function AboutBlock({ data }: { data: Record<string, any> }) {
     <section className="border-t" style={{ borderColor: "rgba(240,244,250,0.14)" }}>
       <div className="mx-auto grid max-w-7xl lg:grid-cols-[1.1fr_0.9fr]">
         <div className="px-5 py-16 lg:px-8 lg:py-20">
-          <p className="text-xs font-semibold tracking-[0.24em]" style={{ color: "#c9a962" }}>אודות</p>
+          <p className="text-xs font-semibold tracking-[0.24em]" style={{ color: "#c9a962" }}>{tx("אודות")}</p>
           <h2 className="tpl-display mt-4 text-4xl font-bold md:text-5xl">{v(data, "aboutTitle")}</h2>
           <p className="mt-6 max-w-xl text-lg leading-8" style={{ color: "#8b9cb5" }}>{v(data, "aboutText")}</p>
         </div>
@@ -352,7 +353,7 @@ function ContactBlock({ data, onCta }: { data: Record<string, any>; onCta: () =>
     <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{ borderColor: "rgba(240,244,250,0.14)", background: "#141c2a" }}>
       <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-2">
         <div>
-          <p className="text-xs font-semibold tracking-[0.24em]" style={{ color: "#c9a962" }}>יצירת קשר</p>
+          <p className="text-xs font-semibold tracking-[0.24em]" style={{ color: "#c9a962" }}>{tx("יצירת קשר")}</p>
           <h2 className="tpl-display mt-4 text-4xl font-bold md:text-5xl">{v(data, "contactTitle")}</h2>
           <p className="mt-6 text-lg leading-8" style={{ color: "#8b9cb5" }}>{v(data, "contactText")}</p>
           <div className="mt-8 space-y-2 text-sm" style={{ color: "#8b9cb5" }}>
@@ -443,7 +444,7 @@ export default function BrokeriaPages({
     ),
   };
     pageContent["listings"] = (
-      <InnerPage data={merged} title="נכסים" onCta={() => goTo("contact")}>
+      <InnerPage data={merged} title={tx("נכסים")} onCta={() => goTo("contact")}>
         <>
           <FeaturedCards data={merged} />
       <TickerGalleryWall data={merged} />
@@ -454,7 +455,7 @@ export default function BrokeriaPages({
       </InnerPage>
     );
     pageContent["agents"] = (
-      <InnerPage data={merged} title="סוכנים" onCta={() => goTo("contact")}>
+      <InnerPage data={merged} title={tx("סוכנים")} onCta={() => goTo("contact")}>
         <>
           <TickerAgentRoster data={merged} />
       <TickerAwardsLane data={merged} />
@@ -465,7 +466,7 @@ export default function BrokeriaPages({
       </InnerPage>
     );
     pageContent["about"] = (
-      <InnerPage data={merged} title="אודות" onCta={() => goTo("contact")}>
+      <InnerPage data={merged} title={tx("אודות")} onCta={() => goTo("contact")}>
         <>
           <AboutBlock data={merged} />
       <TickerProcessRail data={merged} />
@@ -476,7 +477,7 @@ export default function BrokeriaPages({
       </InnerPage>
     );
     pageContent["insights"] = (
-      <InnerPage data={merged} title="תובנות" onCta={() => goTo("contact")}>
+      <InnerPage data={merged} title={tx("תובנות")} onCta={() => goTo("contact")}>
         <>
           <TickerMarketPulse data={merged} />
       <TickerFaqPanel data={merged} />

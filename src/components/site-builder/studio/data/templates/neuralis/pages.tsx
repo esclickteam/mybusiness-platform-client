@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { neuralisDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
@@ -147,7 +148,7 @@ function Hero({ data }: { data: Record<string, any> }) {
                 <div className="mt-4 h-2 w-full bg-white/10">
                   <span className="block h-full w-[76%] bg-cyan-300 shadow-[0_0_18px_rgba(34,211,238,0.75)]" />
                 </div>
-                <p className="mt-4 text-sm leading-6 text-cyan-50/72">הסוכן איתר חריגה, יצר הסבר והכין פעולה לאישור.</p>
+                <p className="mt-4 text-sm leading-6 text-cyan-50/72">{tx("הסוכן איתר חריגה, יצר הסבר והכין פעולה לאישור.")}</p>
               </div>
             </div>
           </div>
@@ -382,13 +383,13 @@ function DemoForm({ data }: { data: Record<string, any> }) {
           </div>
         </Reveal>
         <Reveal variant="left" delayMs={120}>
-          <form className="grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="neuralis-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+          <form className="grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="neuralis-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
             <div className="grid gap-4 sm:grid-cols-2">
-              <input className="border border-cyan-300/16 bg-white/[0.045] px-5 py-4 text-right text-white outline-none placeholder:text-cyan-50/28 focus:border-cyan-300" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-              <input className="border border-cyan-300/16 bg-white/[0.045] px-5 py-4 text-right text-white outline-none placeholder:text-cyan-50/28 focus:border-cyan-300" placeholder="אימייל עבודה"  name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
+              <input className="border border-cyan-300/16 bg-white/[0.045] px-5 py-4 text-right text-white outline-none placeholder:text-cyan-50/28 focus:border-cyan-300" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+              <input className="border border-cyan-300/16 bg-white/[0.045] px-5 py-4 text-right text-white outline-none placeholder:text-cyan-50/28 focus:border-cyan-300" placeholder={tx("אימייל עבודה")}  name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
             </div>
-            <input className="border border-cyan-300/16 bg-white/[0.045] px-5 py-4 text-right text-white outline-none placeholder:text-cyan-50/28 focus:border-cyan-300" placeholder="חברה ותפקיד"  name="company" data-bizuply-form-field-id="company" />
-            <textarea className="min-h-36 border border-cyan-300/16 bg-white/[0.045] px-5 py-4 text-right text-white outline-none placeholder:text-cyan-50/28 focus:border-cyan-300" placeholder="איזה תהליך הייתם רוצים להפוך לחכם?"  name="other" data-bizuply-form-field-id="other"></textarea>
+            <input className="border border-cyan-300/16 bg-white/[0.045] px-5 py-4 text-right text-white outline-none placeholder:text-cyan-50/28 focus:border-cyan-300" placeholder={tx("חברה ותפקיד")}  name="company" data-bizuply-form-field-id="company" />
+            <textarea className="min-h-36 border border-cyan-300/16 bg-white/[0.045] px-5 py-4 text-right text-white outline-none placeholder:text-cyan-50/28 focus:border-cyan-300" placeholder={tx("איזה תהליך הייתם רוצים להפוך לחכם?")}  name="other" data-bizuply-form-field-id="other"></textarea>
             <button type="submit" className="bg-cyan-300 px-7 py-4 text-sm font-black uppercase tracking-[0.18em] text-[#050816] transition hover:-translate-y-1">
               {getValue(data, "contactButton")}
             </button>

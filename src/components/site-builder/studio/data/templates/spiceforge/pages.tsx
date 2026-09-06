@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { spiceforgeDefaultData } from "./defaultData";
 import { spiceforgeEditorCss } from "./editorCss";
@@ -32,7 +33,7 @@ function v(data: Record<string, any>, key: string) {
 function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>; currentPage: string; goTo: (id: string) => void; onCta: () => void }) {
   const [navOpen, setNavOpen] = useState(false);
   const go = (id: string) => { setNavOpen(false); goTo(id); };
-  const nav = spiceforgePages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || p.label] as const);
+  const nav = spiceforgePages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || tx(p.label)] as const);
   return (
     <header data-template-section-type="header" data-section-kind="header" className="sticky top-0 z-50 px-4 pt-3">
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 border-2 px-5 py-3 lg:px-8"
@@ -89,7 +90,7 @@ function SpiceWheelMenu({ data }: { data: Record<string, any> }) {
   return (
     <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{ borderColor: "rgba(255,241,224,0.14)", background: "#2a1810" }}>
       <div className="mx-auto max-w-7xl">
-        <Reveal><h2 className="tpl-display text-4xl font-bold md:text-5xl">גלגל התבלינים</h2></Reveal>
+        <Reveal><h2 className="tpl-display text-4xl font-bold md:text-5xl">{tx("גלגל התבלינים")}</h2></Reveal>
         <div className="mt-12 grid items-center gap-10 lg:grid-cols-[280px_1fr]">
           <div className="tpl-spice-wheel mx-auto h-56 w-56 rounded-full border-4 p-8" style={{ borderColor: "#1a0f0a" }}>
             <div className="flex h-full w-full items-center justify-center rounded-full text-center text-sm font-bold" style={{ background: "#1a0f0a" }}>THALI</div>
@@ -395,7 +396,7 @@ function AboutBlock({ data }: { data: Record<string, any> }) {
     <section className="border-t overflow-hidden" style={{ borderColor: "rgba(255,241,224,0.14)", background: "linear-gradient(135deg, #2a1810, #3d2314)" }}>
       <div className="mx-auto grid max-w-7xl lg:grid-cols-2">
         <div className="px-5 py-16 lg:px-8 lg:py-20">
-          <p className="text-xs font-semibold tracking-[0.24em]" style={{ color: "#e76f51" }}>אודות</p>
+          <p className="text-xs font-semibold tracking-[0.24em]" style={{ color: "#e76f51" }}>{tx("אודות")}</p>
           <h2 className="tpl-display mt-4 text-4xl font-bold md:text-5xl">{v(data, "aboutTitle")}</h2>
           <p className="mt-6 text-lg leading-8" style={{ color: "#c4a08a" }}>{v(data, "aboutText")}</p>
         </div>
@@ -415,9 +416,9 @@ function ContactBlock({ data, onCta }: { data: Record<string, any>; onCta: () =>
         <div className="relative flex h-80 w-80 flex-col items-center justify-center rounded-full border-4 p-8 text-center" style={{ borderColor: "#e76f51", background: "#2a1810" }}>
           <h2 className="tpl-display text-2xl font-bold">{v(data, "contactTitle")}</h2>
           <p className="mt-2 text-xs" style={{ color: "#c4a08a" }}>{v(data, "contactText")}</p>
-          <form className="mt-4 grid w-full gap-2" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="spiceforge-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-            <input className="w-full rounded-full border bg-transparent px-3 py-2 text-center text-sm outline-none" style={{ borderColor: "rgba(255,241,224,0.14)" }} placeholder="שם" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-            <input className="w-full rounded-full border bg-transparent px-3 py-2 text-center text-sm outline-none" style={{ borderColor: "rgba(255,241,224,0.14)" }} placeholder="טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+          <form className="mt-4 grid w-full gap-2" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="spiceforge-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+            <input className="w-full rounded-full border bg-transparent px-3 py-2 text-center text-sm outline-none" style={{ borderColor: "rgba(255,241,224,0.14)" }} placeholder={tx("שם")} name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+            <input className="w-full rounded-full border bg-transparent px-3 py-2 text-center text-sm outline-none" style={{ borderColor: "rgba(255,241,224,0.14)" }} placeholder={tx("טלפון")} name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
             <button type="submit" className="rounded-full px-4 py-2 text-sm font-bold" style={{ background: "#e76f51", color: "#1a0f0a" }}>{v(data, "cta")}</button>
           </form>
         </div>

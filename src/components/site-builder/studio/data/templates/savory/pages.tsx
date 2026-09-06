@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { savoryDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
@@ -196,7 +197,7 @@ function Gallery({ data }: { data: Record<string, any> }) {
       <div className="mx-auto max-w-7xl">
         <div className="mb-14 flex flex-col justify-between gap-6 md:flex-row md:items-end">
           <div>
-            <p className="s-section-kicker">גלריה</p>
+            <p className="s-section-kicker">{tx("גלריה")}</p>
             <h2 className="s-display mt-4 text-4xl font-bold text-[var(--s-text)] md:text-6xl">
               {getValue(data, "sectionFourTitle")}
             </h2>
@@ -226,7 +227,7 @@ function Reviews({ data }: { data: Record<string, any> }) {
     <section data-template-section-type="reviews" className="bg-[var(--s-surface)] px-5 py-24 lg:px-8 lg:py-32">
       <div className="mx-auto max-w-7xl">
         <div className="max-w-3xl">
-          <p className="s-section-kicker">ביקורות</p>
+          <p className="s-section-kicker">{tx("ביקורות")}</p>
           <h2 className="s-display mt-4 text-4xl font-bold text-[var(--s-text)] md:text-6xl">
             {getValue(data, "sectionFiveTitle")}
           </h2>
@@ -259,14 +260,12 @@ function Events({ data, openModal }: { data: Record<string, any>; openModal: () 
     <section id="events" data-template-section-type="events" className="bg-[var(--s-bg)] px-5 py-24 lg:px-8 lg:py-32">
       <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.44fr_1fr]">
         <div>
-          <p className="s-section-kicker">אירוח פרטי</p>
+          <p className="s-section-kicker">{tx("אירוח פרטי")}</p>
           <h2 className="s-display mt-4 text-4xl font-bold leading-tight text-[var(--s-text)] md:text-6xl">
             {getValue(data, "sectionSixTitle")}
           </h2>
           <p className="mt-6 leading-8 text-[var(--s-muted)]">{getValue(data, "sectionSixText")}</p>
-          <button type="button" onClick={openModal} className="s-button-secondary mt-9 px-8 py-4 text-sm">
-            בקשת אירוע
-          </button>
+          <button type="button" onClick={openModal} className="s-button-secondary mt-9 px-8 py-4 text-sm">{tx("בקשת אירוע")}</button>
         </div>
         <div className="border-t border-[var(--s-line)]">
           {events.map(([number, title, text]) => (
@@ -295,14 +294,14 @@ function HoursLocation({ data }: { data: Record<string, any> }) {
     <section data-template-section-type="hours-location" className="bg-[var(--s-surface)] px-5 py-24 lg:px-8 lg:py-32">
       <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[1fr_0.86fr]">
         <div>
-          <p className="s-section-kicker">שעות ומיקום</p>
+          <p className="s-section-kicker">{tx("שעות ומיקום")}</p>
           <h2 className="s-display mt-4 text-4xl font-bold text-[var(--s-text)] md:text-6xl">
             {getValue(data, "sectionSevenTitle")}
           </h2>
           <p className="mt-6 max-w-xl leading-8 text-[var(--s-muted)]">{getValue(data, "sectionSevenText")}</p>
           <div className="mt-12 grid gap-8 md:grid-cols-2">
             <div>
-              <p className="text-sm font-extrabold uppercase tracking-[0.22em] text-[var(--s-primary)]">שעות</p>
+              <p className="text-sm font-extrabold uppercase tracking-[0.22em] text-[var(--s-primary)]">{tx("שעות")}</p>
               <div className="mt-5 space-y-4">
                 {hours.map((item) => (
                   <p key={item} className="border-b border-[var(--s-line)] pb-4 text-[var(--s-text)]">
@@ -312,7 +311,7 @@ function HoursLocation({ data }: { data: Record<string, any> }) {
               </div>
             </div>
             <div>
-              <p className="text-sm font-extrabold uppercase tracking-[0.22em] text-[var(--s-primary)]">כתובת</p>
+              <p className="text-sm font-extrabold uppercase tracking-[0.22em] text-[var(--s-primary)]">{tx("כתובת")}</p>
               <p className="mt-5 text-2xl font-bold text-[var(--s-text)]">{getValue(data, "locationArea")}</p>
               <p className="mt-4 leading-7 text-[var(--s-muted)]">{getValue(data, "parkingInfo")}</p>
             </div>
@@ -325,7 +324,7 @@ function HoursLocation({ data }: { data: Record<string, any> }) {
           <div className="relative flex h-full min-h-[356px] flex-col justify-between">
             <p className="s-display s-latin text-2xl md:text-5xl font-bold text-[var(--s-primary)]">{getValue(data, "brandName")}</p>
             <div>
-              <p className="text-xs font-extrabold uppercase tracking-[0.28em] text-[var(--s-muted)]">תל אביב</p>
+              <p className="text-xs font-extrabold uppercase tracking-[0.28em] text-[var(--s-muted)]">{tx("תל אביב")}</p>
               <p className="mt-3 max-w-xs text-2xl font-bold leading-9 text-[var(--s-text)]">{getValue(data, "address")}</p>
             </div>
           </div>
@@ -340,28 +339,28 @@ function Reservation({ data, openModal }: { data: Record<string, any>; openModal
     <section data-template-section-type="reservation" className="bg-[var(--s-bg)] px-5 py-24 lg:px-8 lg:py-32">
       <div className="mx-auto grid max-w-7xl gap-12 border-y border-[var(--s-line)] py-16 lg:grid-cols-[0.88fr_1.12fr]">
         <div>
-          <p className="s-section-kicker">הזמנות</p>
+          <p className="s-section-kicker">{tx("הזמנות")}</p>
           <h2 className="s-display mt-4 text-4xl font-bold leading-tight text-[var(--s-text)] md:text-6xl">
             {getValue(data, "sectionEightTitle")}
           </h2>
           <p className="mt-6 max-w-lg leading-8 text-[var(--s-muted)]">{getValue(data, "contactText")}</p>
           <div className="mt-8 space-y-3 text-sm text-[var(--s-muted)]">
             <p>
-              <span className="font-extrabold text-[var(--s-primary)]">טלפון</span> · {getValue(data, "phone")}
+              <span className="font-extrabold text-[var(--s-primary)]">{tx("טלפון")}</span> · {getValue(data, "phone")}
             </p>
             <p>
-              <span className="font-extrabold text-[var(--s-primary)]">אימייל</span> · {getValue(data, "email")}
+              <span className="font-extrabold text-[var(--s-primary)]">{tx("אימייל")}</span> · {getValue(data, "email")}
             </p>
           </div>
         </div>
-        <form className="grid gap-4 bg-[var(--s-surface)] p-6 md:grid-cols-2 md:p-9" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="savory-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+        <form className="grid gap-4 bg-[var(--s-surface)] p-6 md:grid-cols-2 md:p-9" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="savory-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
           <input
             className="border border-white/10 bg-transparent px-5 py-4 text-right text-[var(--s-text)] outline-none transition placeholder:text-[var(--s-muted)] focus:border-[var(--s-primary)]"
-            placeholder="שם מלא"
+            placeholder={tx("שם מלא")}
            name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
           <input
             className="border border-white/10 bg-transparent px-5 py-4 text-right text-[var(--s-text)] outline-none transition placeholder:text-[var(--s-muted)] focus:border-[var(--s-primary)]"
-            placeholder="טלפון"
+            placeholder={tx("טלפון")}
            name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
           <input
             className="border border-white/10 bg-transparent px-5 py-4 text-right text-[var(--s-text)] outline-none transition placeholder:text-[var(--s-muted)] focus:border-[var(--s-primary)]"
@@ -415,21 +414,21 @@ function ContactModal({ data, open, onClose }: { data: Record<string, any>; open
           type="button"
           onClick={onClose}
           className="absolute left-4 top-4 text-2xl leading-none text-[var(--s-muted)] transition hover:text-[var(--s-primary)]"
-          aria-label="סגירת חלון"
+          aria-label={tx("סגירת חלון")}
         >
           ×
         </button>
-        <p className="s-section-kicker">הזמנה</p>
+        <p className="s-section-kicker">{tx("הזמנה")}</p>
         <h3 className="s-display mt-3 text-3xl font-bold">{getValue(data, "contactTitle")}</h3>
         <p className="mt-3 text-sm leading-7 text-[var(--s-muted)]">{getValue(data, "contactText")}</p>
-        <form className="mt-7 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="savory-contact-2" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+        <form className="mt-7 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="savory-contact-2" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
           <input
             className="border border-white/10 bg-transparent px-5 py-4 text-right outline-none transition placeholder:text-[var(--s-muted)] focus:border-[var(--s-primary)]"
-            placeholder="שם מלא"
+            placeholder={tx("שם מלא")}
            name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
           <input
             className="border border-white/10 bg-transparent px-5 py-4 text-right outline-none transition placeholder:text-[var(--s-muted)] focus:border-[var(--s-primary)]"
-            placeholder="טלפון"
+            placeholder={tx("טלפון")}
            name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
           <button type="submit" className="s-button-primary py-4 text-sm">
             {getValue(data, "contactButton")}

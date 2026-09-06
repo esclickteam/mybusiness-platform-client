@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { aureliaDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
@@ -221,12 +222,8 @@ function BookingModal({
                 ")",
             }}
           >
-            <p className="inline-flex rounded-full bg-[#c9a24b]/20 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-[#c9a24b]">
-              הזמנת שולחן
-            </p>
-            <h3 className="mt-6 font-serif text-4xl font-semibold leading-[1.08] text-[#f5eee1] md:text-5xl">
-              נשמור לכם ערב מושלם.
-            </h3>
+            <p className="inline-flex rounded-full bg-[#c9a24b]/20 px-4 py-2 text-xs font-semibold uppercase tracking-[0.24em] text-[#c9a24b]">{tx("הזמנת שולחן")}</p>
+            <h3 className="mt-6 font-serif text-4xl font-semibold leading-[1.08] text-[#f5eee1] md:text-5xl">{tx("נשמור לכם ערב מושלם.")}</h3>
             <p className="mt-5 text-base leading-7 text-[#e6dcc8]">
               {getValue(data, "hours")}
             </p>
@@ -244,36 +241,36 @@ function BookingModal({
             </div>
           </div>
 
-          <form className="p-6 lg:p-10" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="aurelia-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+          <form className="p-6 lg:p-10" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="aurelia-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
             <div className="grid gap-4">
               <input
                 className="rounded-2xl border border-[#c9a24b]/20 bg-[#221a12] px-5 py-4 text-right text-[#f5eee1] outline-none transition placeholder:text-[#9c8f77] focus:border-[#c9a24b]"
-                placeholder="שם מלא"
+                placeholder={tx("שם מלא")}
                name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
               <input
                 className="rounded-2xl border border-[#c9a24b]/20 bg-[#221a12] px-5 py-4 text-right text-[#f5eee1] outline-none transition placeholder:text-[#9c8f77] focus:border-[#c9a24b]"
-                placeholder="טלפון"
+                placeholder={tx("טלפון")}
                name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <input
                   className="rounded-2xl border border-[#c9a24b]/20 bg-[#221a12] px-5 py-4 text-right text-[#f5eee1] outline-none transition placeholder:text-[#9c8f77] focus:border-[#c9a24b]"
-                  placeholder="תאריך"
+                  placeholder={tx("תאריך")}
                  name="date" data-bizuply-form-field-id="date" />
                 <input
                   className="rounded-2xl border border-[#c9a24b]/20 bg-[#221a12] px-5 py-4 text-right text-[#f5eee1] outline-none transition placeholder:text-[#9c8f77] focus:border-[#c9a24b]"
-                  placeholder="שעה"
+                  placeholder={tx("שעה")}
                  name="other" data-bizuply-form-field-id="other" />
               </div>
               <select className="rounded-2xl border border-[#c9a24b]/20 bg-[#221a12] px-5 py-4 text-right text-[#f5eee1] outline-none transition focus:border-[#c9a24b]">
-                <option>מספר סועדים</option>
-                <option>2 סועדים</option>
-                <option>3-4 סועדים</option>
-                <option>5-6 סועדים</option>
-                <option>7+ / אירוע</option>
+                <option>{tx("מספר סועדים")}</option>
+                <option>{tx("2 סועדים")}</option>
+                <option>{tx("3-4 סועדים")}</option>
+                <option>{tx("5-6 סועדים")}</option>
+                <option>{tx("7+ / אירוע")}</option>
               </select>
               <textarea
                 className="min-h-24 rounded-2xl border border-[#c9a24b]/20 bg-[#221a12] px-5 py-4 text-right text-[#f5eee1] outline-none transition placeholder:text-[#9c8f77] focus:border-[#c9a24b]"
-                placeholder="בקשות מיוחדות"
+                placeholder={tx("בקשות מיוחדות")}
                name="other_2" data-bizuply-form-field-id="other_2"></textarea>
               <button
                 type="submit"
@@ -640,23 +637,23 @@ function ContactSection({
           </div>
         </div>
 
-        <form className="m-4 rounded-[42px] border border-[#c9a24b]/12 bg-[#14100d] p-5 lg:m-6 lg:p-7" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="aurelia-contact-2" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+        <form className="m-4 rounded-[42px] border border-[#c9a24b]/12 bg-[#14100d] p-5 lg:m-6 lg:p-7" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="aurelia-contact-2" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
           <div className="grid gap-4">
             <input
               className="rounded-2xl border border-[#c9a24b]/20 bg-[#221a12] px-5 py-4 text-right text-[#f5eee1] outline-none transition placeholder:text-[#9c8f77] focus:border-[#c9a24b]"
-              placeholder="שם מלא"
+              placeholder={tx("שם מלא")}
              name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
             <input
               className="rounded-2xl border border-[#c9a24b]/20 bg-[#221a12] px-5 py-4 text-right text-[#f5eee1] outline-none transition placeholder:text-[#9c8f77] focus:border-[#c9a24b]"
-              placeholder="טלפון"
+              placeholder={tx("טלפון")}
              name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
             <input
               className="rounded-2xl border border-[#c9a24b]/20 bg-[#221a12] px-5 py-4 text-right text-[#f5eee1] outline-none transition placeholder:text-[#9c8f77] focus:border-[#c9a24b]"
-              placeholder="מספר סועדים"
+              placeholder={tx("מספר סועדים")}
              name="guests" data-bizuply-form-field-id="guests" />
             <textarea
               className="min-h-32 rounded-2xl border border-[#c9a24b]/20 bg-[#221a12] px-5 py-4 text-right text-[#f5eee1] outline-none transition placeholder:text-[#9c8f77] focus:border-[#c9a24b]"
-              placeholder="בקשות מיוחדות"
+              placeholder={tx("בקשות מיוחדות")}
              name="other" data-bizuply-form-field-id="other"></textarea>
             <button
               type="submit"
@@ -697,12 +694,8 @@ function CtaFooter({
           </div>
 
           <div className="rounded-[36px] border border-[#c9a24b]/20 bg-[#14100d] p-6">
-            <div className="text-xs font-semibold uppercase tracking-[0.2em] text-[#a2957c]">
-              מוכנים לערב?
-            </div>
-            <div className="mt-3 font-serif text-2xl font-semibold text-[#f5eee1]">
-              שולחן מחכה לכם.
-            </div>
+            <div className="text-xs font-semibold uppercase tracking-[0.2em] text-[#a2957c]">{tx("מוכנים לערב?")}</div>
+            <div className="mt-3 font-serif text-2xl font-semibold text-[#f5eee1]">{tx("שולחן מחכה לכם.")}</div>
             <div className="mt-6 grid gap-3">
               <button
                 type="button"
@@ -727,7 +720,7 @@ function CtaFooter({
         <p>
           © {new Date().getFullYear()} {getValue(data, "brandName")}
         </p>
-        <p>תבנית Aurelia · Bizuply Studio</p>
+        <p>{tx("תבנית Aurelia · Bizuply Studio")}</p>
       </div>
     </footer>
   );

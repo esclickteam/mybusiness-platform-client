@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { domoraDefaultData, type DomoraDefaultData } from "./defaultData";
 
@@ -294,7 +295,7 @@ function Header({
                   : "text-white/72 hover:bg-white/10 hover:text-white",
               )}
             >
-              {item.label}
+              {tx(item.label)}
             </button>
           ))}
         </nav>
@@ -303,9 +304,7 @@ function Header({
           type="button"
           onClick={() => setPage("contact")}
           className="rounded-full bg-white px-7 py-3 text-sm font-semibold text-[#151d20] transition hover:bg-[#e9e2d2]"
-        >
-          יצירת קשר
-        </button>
+        >{tx("יצירת קשר")}</button>
       </div>
     </header>
   );
@@ -427,9 +426,7 @@ function Properties({
           />
 
           <div className="mb-12 flex justify-start lg:justify-end">
-            <Button variant="dark" onClick={() => setPage("contact")}>
-              לתיאום שיחה
-            </Button>
+            <Button variant="dark" onClick={() => setPage("contact")}>{tx("לתיאום שיחה")}</Button>
           </div>
         </div>
 
@@ -691,7 +688,7 @@ function ContactPage({ data }: { data: DomoraData }) {
 
         <form
           dir="rtl"
-          className="rounded-[2rem] bg-white p-6 text-right shadow-xl shadow-black/[0.04]" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="domora-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+          className="rounded-[2rem] bg-white p-6 text-right shadow-xl shadow-black/[0.04]" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="domora-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
           {[
             ["שם", "השם שלך"],
             ["טלפון", "050-0000000"],
@@ -707,10 +704,10 @@ function ContactPage({ data }: { data: DomoraData }) {
           ))}
 
           <label className="block">
-            <span className="mb-2 block text-sm text-[#85898d]">הודעה</span>
+            <span className="mb-2 block text-sm text-[#85898d]">{tx("הודעה")}</span>
             <textarea
               rows={5}
-              placeholder="ספרו בקצרה מה אתם מחפשים..."
+              placeholder={tx("ספרו בקצרה מה אתם מחפשים...")}
               className="w-full resize-none rounded-2xl border border-black/5 bg-[#f5f5f2] px-5 py-4 outline-none transition placeholder:text-[#9a9fa3] focus:border-[#151d20]"
              name="message" data-bizuply-form-field-id="message"></textarea>
           </label>
@@ -780,7 +777,7 @@ function Footer({
               onClick={() => setPage(item.id as DomoraPageId)}
               className="rounded-full border border-black/5 px-4 py-2 text-sm text-[#6d7378] transition hover:bg-[#151d20] hover:text-white"
             >
-              {item.label}
+              {tx(item.label)}
             </button>
           ))}
         </div>

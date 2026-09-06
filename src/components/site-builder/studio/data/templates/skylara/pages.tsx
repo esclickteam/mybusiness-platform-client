@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { skylaraDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
@@ -26,7 +27,7 @@ function v(data: Record<string, any>, key: string) {
 
 function Header({ data, currentPage, goTo }: { data: Record<string, any>; currentPage: string; goTo: (id: string) => void }) {
   const [open, setOpen] = useState(false);
-  const nav = skylaraPages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || p.label] as const);
+  const nav = skylaraPages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || tx(p.label)] as const);
   return (
     <header
       data-template-section-type="header"
@@ -177,11 +178,11 @@ function CyanContact({ data }: { data: Record<string, any> }) {
           <p className="mt-5 text-lg leading-8" style={{ color: "#7f97b0" }}>{v(data, "contactText")}</p>
           <p className="mt-8 text-sm font-bold tracking-[0.2em]" style={{ color: "#39d0ff" }}>{v(data, "phone")} · {v(data, "email")}</p>
         </div>
-        <form className="grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="skylara-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-          <input className={field} style={{ borderColor: "rgba(57,208,255,0.28)", color: "#e8f1ff" }} placeholder="שם מלא" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-          <input className={field} style={{ borderColor: "rgba(57,208,255,0.28)", color: "#e8f1ff" }} placeholder="קומה רצויה" name="other" data-bizuply-form-field-id="other" />
-          <input className={field} style={{ borderColor: "rgba(57,208,255,0.28)", color: "#e8f1ff" }} placeholder="אזור / מגדל" name="other_2" data-bizuply-form-field-id="other_2" />
-          <textarea className={`${field} min-h-32`} style={{ borderColor: "rgba(57,208,255,0.28)", color: "#e8f1ff" }} placeholder="נוף, מרפסת, שירותי בניין"  name="other_3" data-bizuply-form-field-id="other_3"></textarea>
+        <form className="grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="skylara-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+          <input className={field} style={{ borderColor: "rgba(57,208,255,0.28)", color: "#e8f1ff" }} placeholder={tx("שם מלא")} name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+          <input className={field} style={{ borderColor: "rgba(57,208,255,0.28)", color: "#e8f1ff" }} placeholder={tx("קומה רצויה")} name="other" data-bizuply-form-field-id="other" />
+          <input className={field} style={{ borderColor: "rgba(57,208,255,0.28)", color: "#e8f1ff" }} placeholder={tx("אזור / מגדל")} name="other_2" data-bizuply-form-field-id="other_2" />
+          <textarea className={`${field} min-h-32`} style={{ borderColor: "rgba(57,208,255,0.28)", color: "#e8f1ff" }} placeholder={tx("נוף, מרפסת, שירותי בניין")}  name="other_3" data-bizuply-form-field-id="other_3"></textarea>
           <button type="submit" className="tpl-sweep px-6 py-4 text-sm font-bold" style={{ background: "#39d0ff", color: "#041018" }}>{v(data, "cta")}</button>
         </form>
       </div>
@@ -240,10 +241,10 @@ export default function SkylaraPages({
   );
   const pageContent: Record<string, React.ReactNode> = {
     home: <HomePage data={merged} goTo={goTo} />,
-    towers: <InnerPage data={merged} title="מגדלים"><SkylineBand data={merged} /><AmenityOutlines data={merged} /></InnerPage>,
-    floors: <InnerPage data={merged} title="קומות"><FloorApartments data={merged} /><CyanContact data={merged} /></InnerPage>,
-    about: <InnerPage data={merged} title="אודות"><AmenityOutlines data={merged} /><SkylineBand data={merged} /></InnerPage>,
-    contact: <InnerPage data={merged} title="יצירת קשר"><CyanContact data={merged} /></InnerPage>,
+    towers: <InnerPage data={merged} title={tx("מגדלים")}><SkylineBand data={merged} /><AmenityOutlines data={merged} /></InnerPage>,
+    floors: <InnerPage data={merged} title={tx("קומות")}><FloorApartments data={merged} /><CyanContact data={merged} /></InnerPage>,
+    about: <InnerPage data={merged} title={tx("אודות")}><AmenityOutlines data={merged} /><SkylineBand data={merged} /></InnerPage>,
+    contact: <InnerPage data={merged} title={tx("יצירת קשר")}><CyanContact data={merged} /></InnerPage>,
   };
   return (
     <div dir="rtl" data-template-id="skylara" className="min-h-screen w-full overflow-x-hidden" style={{ background: "#06101c", color: "#e8f1ff" }}>

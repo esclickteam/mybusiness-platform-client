@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { TemplateText } from "../shared/TemplateText";
@@ -434,9 +435,7 @@ function SteelMetricsBand({ data }: { data: Record<string, any> }) {
             >
               {getValue(data, labelKey)}
             </TemplateText>
-            <p className="mt-4 text-sm leading-7 text-[#b7b0a6]">
-              קו ייצור מתוזמן, תיאום שטח קפדני ומדידה שוטפת של כל שלב בפרויקט.
-            </p>
+            <p className="mt-4 text-sm leading-7 text-[#b7b0a6]">{tx("קו ייצור מתוזמן, תיאום שטח קפדני ומדידה שוטפת של כל שלב בפרויקט.")}</p>
           </div>
         ))}
       </div>
@@ -541,9 +540,7 @@ function SteelServicesBand({
                 </TemplateText>
               </div>
               <div className="md:justify-self-end">
-                <SteelButton variant={index % 2 === 0 ? "accent" : "line"} onClick={() => goTo("contact")}>
-                  התחלת תהליך
-                </SteelButton>
+                <SteelButton variant={index % 2 === 0 ? "accent" : "line"} onClick={() => goTo("contact")}>{tx("התחלת תהליך")}</SteelButton>
               </div>
             </article>
           ))}
@@ -686,13 +683,9 @@ function SteelInsightsBand({
             </article>
           ))}
           <div className="border-t border-white/10 px-6 py-8 lg:border-r lg:border-t-0">
-            <div className="text-[11px] font-black uppercase tracking-[0.34em] text-[#ff6b2c]">הערת תפעול</div>
-            <TemplateText as="p" className="mt-5 text-2xl font-black uppercase leading-tight text-[#f3f0ea]">
-              לוחות זמנים נשמרים רק כשכל החלטה פוגשת נתון.
-            </TemplateText>
-            <TemplateText as="p" className="mt-4 text-sm leading-8 text-[#b7b0a6]">
-              תכנון מוקדם, סנכרון ממשקים ובקרת מסירה מצמצמים עיכובים ומגבירים ודאות בשטח.
-            </TemplateText>
+            <div className="text-[11px] font-black uppercase tracking-[0.34em] text-[#ff6b2c]">{tx("הערת תפעול")}</div>
+            <TemplateText as="p" className="mt-5 text-2xl font-black uppercase leading-tight text-[#f3f0ea]">{tx("לוחות זמנים נשמרים רק כשכל החלטה פוגשת נתון.")}</TemplateText>
+            <TemplateText as="p" className="mt-4 text-sm leading-8 text-[#b7b0a6]">{tx("תכנון מוקדם, סנכרון ממשקים ובקרת מסירה מצמצמים עיכובים ומגבירים ודאות בשטח.")}</TemplateText>
             <div className="mt-8">
               <SteelButton variant="accent" onClick={() => goTo("insights")}>
                 <TemplateText as="span" editId="navInsights" editLabel="navInsights">
@@ -746,22 +739,22 @@ function SteelContactBand({ data }: { data: Record<string, any> }) {
             ))}
           </div>
         </div>
-        <form className="grid gap-4 bg-[#111111] px-6 py-10 md:px-10" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="steelworks-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+        <form className="grid gap-4 bg-[#111111] px-6 py-10 md:px-10" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="steelworks-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
           <input
             className="border border-white/10 bg-[#1a1a1a] px-4 py-4 text-right text-sm text-[#f3f0ea] outline-none placeholder:text-[#8f8578] focus:border-[#ff6b2c]"
-            placeholder="שם מלא"
+            placeholder={tx("שם מלא")}
            name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
           <input
             className="border border-white/10 bg-[#1a1a1a] px-4 py-4 text-right text-sm text-[#f3f0ea] outline-none placeholder:text-[#8f8578] focus:border-[#ff6b2c]"
-            placeholder="טלפון"
+            placeholder={tx("טלפון")}
            name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
           <input
             className="border border-white/10 bg-[#1a1a1a] px-4 py-4 text-right text-sm text-[#f3f0ea] outline-none placeholder:text-[#8f8578] focus:border-[#ff6b2c]"
-            placeholder="אימייל"
+            placeholder={tx("אימייל")}
            name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
           <textarea
             className="min-h-36 border border-white/10 bg-[#1a1a1a] px-4 py-4 text-right text-sm text-[#f3f0ea] outline-none placeholder:text-[#8f8578] focus:border-[#ff6b2c]"
-            placeholder="ספרו לנו על הפרויקט"
+            placeholder={tx("ספרו לנו על הפרויקט")}
            name="message" data-bizuply-form-field-id="message"></textarea>
           <SteelButton className="w-full justify-center">
             <TemplateText as="span" editId="contactButton" editLabel="contactButton">

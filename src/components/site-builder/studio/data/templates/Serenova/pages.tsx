@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { serenovaDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
@@ -504,17 +505,11 @@ function BookingModal({
 
         <div className="relative z-10 grid gap-0 lg:grid-cols-[0.9fr_1.1fr]">
           <div className="bg-[#244236] p-8 text-[#fbf6ec] lg:p-10">
-            <p className="inline-flex rounded-full bg-white/10 px-4 py-2 text-sm font-semibold">
-              קביעת שיחת היכרות
-            </p>
+            <p className="inline-flex rounded-full bg-white/10 px-4 py-2 text-sm font-semibold">{tx("קביעת שיחת היכרות")}</p>
 
-            <h3 className="mt-6 text-4xl font-semibold leading-[1.05] tracking-[-0.055em] md:text-5xl">
-              חוויה רגועה שמובילה לפנייה בלי לחץ.
-            </h3>
+            <h3 className="mt-6 text-4xl font-semibold leading-[1.05] tracking-[-0.055em] md:text-5xl">{tx("חוויה רגועה שמובילה לפנייה בלי לחץ.")}</h3>
 
-            <p className="mt-5 text-base leading-7 text-[#fbf6ec]/75">
-              מודאל CTA ממוקד שמאפשר להשאיר פרטים בלי לחפש את הטופס בהמשך העמוד.
-            </p>
+            <p className="mt-5 text-base leading-7 text-[#fbf6ec]/75">{tx("מודאל CTA ממוקד שמאפשר להשאיר פרטים בלי לחפש את הטופס בהמשך העמוד.")}</p>
 
             <div className="mt-8 grid gap-3">
               {[
@@ -681,9 +676,7 @@ function Hero({
             </div>
           </div>
 
-          <div className="absolute left-[30%] top-3 z-40 rounded-full border border-[#244236]/10 bg-white/70 px-4 py-2 text-sm font-semibold text-[#405349] shadow-xl shadow-[#244236]/10 backdrop-blur-xl">
-            חוויה רגועה
-          </div>
+          <div className="absolute left-[30%] top-3 z-40 rounded-full border border-[#244236]/10 bg-white/70 px-4 py-2 text-sm font-semibold text-[#405349] shadow-xl shadow-[#244236]/10 backdrop-blur-xl">{tx("חוויה רגועה")}</div>
         </div>
       </div>
     </section>
@@ -729,9 +722,7 @@ function ExperienceStrip({
             type="button"
             onClick={() => goTo("contact")}
             className="rounded-[30px] bg-[#fbf6ec] px-7 py-5 text-sm font-semibold text-[#244236] transition duration-300 hover:-translate-y-1 lg:min-w-[170px]"
-          >
-            להתחיל תהליך
-          </button>
+          >{tx("להתחיל תהליך")}</button>
         </div>
       </div>
     </section>
@@ -767,9 +758,7 @@ function AboutSection({ data }: { data: Record<string, any> }) {
 
           <div className="absolute -bottom-8 right-6 max-w-[275px] rounded-[32px] border border-white/80 bg-white/82 p-5 shadow-2xl shadow-[#244236]/15 backdrop-blur-xl">
             <div className="text-2xl sm:text-4xl font-semibold tracking-[-0.07em] text-[#20342a]">01</div>
-            <p className="mt-2 text-sm leading-6 text-[#5f6c62]">
-              היררכיה נקייה: קודם אמון, אחר כך שירותים, ואז פנייה ברורה.
-            </p>
+            <p className="mt-2 text-sm leading-6 text-[#5f6c62]">{tx("היררכיה נקייה: קודם אמון, אחר כך שירותים, ואז פנייה ברורה.")}</p>
           </div>
         </div>
 
@@ -867,18 +856,13 @@ function ServicesSection({
               {getValue(data, "servicesTitle")}
             </h2>
 
-            <p className="mt-5 max-w-2xl text-lg leading-8 text-[#5f6c62]">
-              שירותים שמוצגים בצורה אלגנטית, ברורה ולא עמוסה — עם חלוקה נכונה,
-              CTA עדין והיררכיה שמרגישה פרימיום.
-            </p>
+            <p className="mt-5 max-w-2xl text-lg leading-8 text-[#5f6c62]">{tx("שירותים שמוצגים בצורה אלגנטית, ברורה ולא עמוסה — עם חלוקה נכונה,\n              CTA עדין והיררכיה שמרגישה פרימיום.")}</p>
           </div>
 
           <div className="rounded-[34px] border border-[#244236]/10 bg-white/60 p-5 shadow-2xl shadow-[#244236]/8 backdrop-blur-xl">
             <div className="mb-5 flex items-center justify-between">
               <span className="text-sm font-semibold text-[#5b725f]">overview</span>
-              <span className="rounded-full bg-[#244236] px-3 py-1 text-xs font-semibold text-[#fbf6ec]">
-                4 שירותים
-              </span>
+              <span className="rounded-full bg-[#244236] px-3 py-1 text-xs font-semibold text-[#fbf6ec]">{tx("4 שירותים")}</span>
             </div>
 
             <div className="grid gap-3">
@@ -945,7 +929,7 @@ function ServicesSection({
               <div className="relative z-10 mt-8 border-t border-[#244236]/10 pt-5">
                 <div className="mb-4 flex items-center justify-between text-sm">
                   <span className="font-semibold text-[#b99067]">{service.note}</span>
-                  <span className="text-[#6c7871]">בדיקת התאמה ראשונית</span>
+                  <span className="text-[#6c7871]">{tx("בדיקת התאמה ראשונית")}</span>
                 </div>
 
                 <button
@@ -953,7 +937,7 @@ function ServicesSection({
                   onClick={openBooking}
                   className="flex w-full items-center justify-between rounded-full border border-[#244236]/10 bg-white/75 px-5 py-4 text-sm font-semibold text-[#244236] shadow-sm transition duration-300 hover:bg-[#244236] hover:text-[#fbf6ec]"
                 >
-                  <span>לבדוק התאמה</span>
+                  <span>{tx("לבדוק התאמה")}</span>
                   <span className="grid h-9 w-9 place-items-center rounded-full bg-[#244236]/10 text-[#244236]">
                     ↗
                   </span>
@@ -989,9 +973,7 @@ function ProcessSection({ data }: { data: Record<string, any> }) {
 
           <div className="mt-8 rounded-[34px] border border-[#244236]/10 bg-[#244236] p-6 text-[#fbf6ec] shadow-2xl shadow-[#244236]/16">
             <p className="text-sm opacity-70">Client Journey</p>
-            <h3 className="mt-2 text-2xl font-semibold tracking-[-0.05em]">
-              מסע משתמש רגוע, אבל עם תחושת פרימיום אמיתית.
-            </h3>
+            <h3 className="mt-2 text-2xl font-semibold tracking-[-0.05em]">{tx("מסע משתמש רגוע, אבל עם תחושת פרימיום אמיתית.")}</h3>
 
             <div className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-2">
               {["01", "02", "03"].map((step) => (
@@ -1082,13 +1064,9 @@ function PricingSection({
                 <h3 className="text-2xl font-semibold tracking-[-0.04em]">{name}</h3>
 
                 {index === 1 ? (
-                  <span className="rounded-full bg-[#fbf6ec] px-3 py-1 text-xs font-semibold text-[#244236]">
-                    מומלץ
-                  </span>
+                  <span className="rounded-full bg-[#fbf6ec] px-3 py-1 text-xs font-semibold text-[#244236]">{tx("מומלץ")}</span>
                 ) : (
-                  <span className="rounded-full border border-[#244236]/10 px-3 py-1 text-xs font-semibold text-[#66736a]">
-                    רגיל
-                  </span>
+                  <span className="rounded-full border border-[#244236]/10 px-3 py-1 text-xs font-semibold text-[#66736a]">{tx("רגיל")}</span>
                 )}
               </div>
 
@@ -1101,9 +1079,9 @@ function PricingSection({
               </p>
 
               <ul className={cx("mt-7 space-y-3 text-sm", index === 1 ? "text-[#fbf6ec]/80" : "text-[#5f6c62]")}>
-                <li>• התאמה מלאה למובייל</li>
-                <li>• אזורי אמון ו־CTA</li>
-                <li>• מבנה שמוביל לפנייה</li>
+                <li>{tx("• התאמה מלאה למובייל")}</li>
+                <li>{tx("• אזורי אמון ו־CTA")}</li>
+                <li>{tx("• מבנה שמוביל לפנייה")}</li>
               </ul>
 
               <button
@@ -1115,9 +1093,7 @@ function PricingSection({
                     ? "bg-[#fbf6ec] text-[#244236] hover:-translate-y-0.5"
                     : "bg-[#244236] text-[#fbf6ec] hover:-translate-y-0.5",
                 )}
-              >
-                בחירת מסלול
-              </button>
+              >{tx("בחירת מסלול")}</button>
             </article>
           ))}
         </div>
@@ -1262,9 +1238,7 @@ function BlogSection({ data }: { data: Record<string, any> }) {
               <button
                 type="button"
                 className="mt-8 rounded-full border border-[#244236]/15 px-5 py-3 text-sm font-semibold text-[#244236] transition duration-300 hover:bg-white"
-              >
-                לקריאה
-              </button>
+              >{tx("לקריאה")}</button>
             </article>
           ))}
         </div>
@@ -1392,9 +1366,7 @@ function ContactSection({
               type="button"
               onClick={openBooking}
               className="mt-8 rounded-full bg-[#fbf6ec] px-7 py-4 text-sm font-semibold text-[#244236] transition duration-300 hover:-translate-y-0.5"
-            >
-              לפתיחת חלון פנייה מהירה
-            </button>
+            >{tx("לפתיחת חלון פנייה מהירה")}</button>
           </div>
         </div>
 
@@ -1440,9 +1412,7 @@ function CtaFooter({
 
           <div className="rounded-[38px] border border-[#244236]/10 bg-[#244236] p-6 text-[#fbf6ec] shadow-xl shadow-[#244236]/15">
             <div className="text-sm opacity-70">Ready to start?</div>
-            <div className="mt-3 text-2xl font-semibold tracking-[-0.05em]">
-              חוויה רגועה, נקייה ויותר פרימיום.
-            </div>
+            <div className="mt-3 text-2xl font-semibold tracking-[-0.05em]">{tx("חוויה רגועה, נקייה ויותר פרימיום.")}</div>
 
             <div className="mt-6 grid gap-3">
               <button
@@ -1457,9 +1427,7 @@ function CtaFooter({
                 type="button"
                 onClick={() => goTo("services")}
                 className="rounded-full border border-white/15 px-8 py-4 text-base font-semibold text-[#fbf6ec] transition duration-300 hover:bg-white/10"
-              >
-                לראות שירותים
-              </button>
+              >{tx("לראות שירותים")}</button>
             </div>
           </div>
         </div>
@@ -1469,7 +1437,7 @@ function CtaFooter({
         <p>
           © {new Date().getFullYear()} {getValue(data, "brandName")}
         </p>
-        <p>תבנית Serenova · Bizuply Studio</p>
+        <p>{tx("תבנית Serenova · Bizuply Studio")}</p>
       </div>
     </footer>
   );

@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { CrmBookingMount } from "../shared/CrmBookingMount";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { luminelleDefaultData } from "./defaultData";
@@ -378,16 +379,16 @@ function Booking({ data, openModal }: { data: Record<string, any>; openModal: ()
           <p className="mt-6 max-w-xl text-lg leading-9 text-[#d8d2cb]">{getValue(data, "bookingIntro")}</p>
           <div className="mt-10 space-y-3 border-t border-white/12 pt-8 text-sm text-[#d8d2cb]">
             <p>
-              <span className="font-bold text-[var(--l-sage-soft)]">טלפון</span> · {getValue(data, "phone")}
+              <span className="font-bold text-[var(--l-sage-soft)]">{tx("טלפון")}</span> · {getValue(data, "phone")}
             </p>
             <p>
-              <span className="font-bold text-[var(--l-sage-soft)]">אימייל</span> · {getValue(data, "email")}
+              <span className="font-bold text-[var(--l-sage-soft)]">{tx("אימייל")}</span> · {getValue(data, "email")}
             </p>
             <p>
-              <span className="font-bold text-[var(--l-sage-soft)]">כתובת</span> · {getValue(data, "address")}
+              <span className="font-bold text-[var(--l-sage-soft)]">{tx("כתובת")}</span> · {getValue(data, "address")}
             </p>
             <p>
-              <span className="font-bold text-[var(--l-sage-soft)]">שעות</span> · {getValue(data, "hours")}
+              <span className="font-bold text-[var(--l-sage-soft)]">{tx("שעות")}</span> · {getValue(data, "hours")}
             </p>
           </div>
         </div>
@@ -398,7 +399,7 @@ function Booking({ data, openModal }: { data: Record<string, any>; openModal: ()
           data-bizuply-crm-lead="true"
           data-bizuply-form-builder="true" data-bizuply-form-skin="template"
           data-bizuply-form-id="luminelle-booking"
-          data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם."
+          data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}
         >
           <input
             name="name"
@@ -478,7 +479,7 @@ function ContactModal({ data, open, onClose }: { data: Record<string, any>; open
           data-bizuply-crm-lead="true"
           data-bizuply-form-builder="true" data-bizuply-form-skin="template"
           data-bizuply-form-id="luminelle-contact"
-          data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם."
+          data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}
         >
           <input
             name="name"

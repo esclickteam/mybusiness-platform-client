@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import {
   nadlanistDefaultData,
@@ -302,7 +303,7 @@ function Header({
                   : "text-white/58 hover:bg-white/10 hover:text-white",
               )}
             >
-              {item.label}
+              {tx(item.label)}
             </button>
           ))}
         </nav>
@@ -311,9 +312,7 @@ function Header({
           type="button"
           onClick={() => setPage("contact")}
           className="rounded-full bg-[#c9a85f] px-5 py-3 text-xs font-black uppercase tracking-[0.16em] text-[#071426] transition hover:bg-white"
-        >
-          שיחה פרטית
-        </button>
+        >{tx("שיחה פרטית")}</button>
       </div>
 
       <div className="flex gap-2 overflow-x-auto border-t border-white/10 px-4 py-3 lg:hidden">
@@ -329,7 +328,7 @@ function Header({
                 : "border-white/10 bg-white/[0.05] text-white/65",
             )}
           >
-            {item.label}
+            {tx(item.label)}
           </button>
         ))}
       </div>
@@ -940,9 +939,7 @@ function BlogPage({ data }: { data: NadlanistData }) {
                 <h2 className="whitespace-nowrap text-2xl font-black uppercase leading-[1.05] tracking-[-0.04em] text-white">
                   {post.title}
                 </h2>
-                <p className="mt-5 leading-7 text-white/55">
-                  תקציר קצר שיכול להתחבר בהמשך למערכת הבלוג שלך.
-                </p>
+                <p className="mt-5 leading-7 text-white/55">{tx("תקציר קצר שיכול להתחבר בהמשך למערכת הבלוג שלך.")}</p>
               </div>
             </article>
           ))}
@@ -970,7 +967,7 @@ function ContactPage({ data }: { data: NadlanistData }) {
 
         <form
           dir="rtl"
-          className="rounded-[2rem] border border-white/10 bg-[#0a182c] p-6 text-right shadow-xl shadow-black/20 sm:p-8" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="nadlanist-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+          className="rounded-[2rem] border border-white/10 bg-[#0a182c] p-6 text-right shadow-xl shadow-black/20 sm:p-8" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="nadlanist-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
           {[
             ["שם", "השם שלך"],
             ["אימייל", "hello@email.com"],
@@ -988,12 +985,10 @@ function ContactPage({ data }: { data: NadlanistData }) {
           ))}
 
           <label className="block">
-            <span className="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-white/45">
-              הודעה
-            </span>
+            <span className="mb-2 block text-xs font-black uppercase tracking-[0.18em] text-white/45">{tx("הודעה")}</span>
             <textarea
               rows={5}
-              placeholder="ספרו בקצרה מה אתם מחפשים..."
+              placeholder={tx("ספרו בקצרה מה אתם מחפשים...")}
               className="w-full resize-none rounded-2xl border border-white/10 bg-[#06101f] px-5 py-4 text-right text-white outline-none transition placeholder:text-white/25 focus:border-[#c9a85f]"
              name="message" data-bizuply-form-field-id="message"></textarea>
           </label>
@@ -1049,7 +1044,7 @@ function Footer({
               onClick={() => setPage(item.id as NadlanistPageId)}
               className="rounded-full border border-white/10 px-4 py-2 text-xs font-bold uppercase tracking-[0.14em] text-white/52 transition hover:border-[#c9a85f] hover:text-[#c9a85f]"
             >
-              {item.label} 0{index + 1}
+              {tx(item.label)} 0{index + 1}
             </button>
           ))}
 

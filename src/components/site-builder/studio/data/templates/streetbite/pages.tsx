@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { streetbiteDefaultData } from "./defaultData";
 import { streetbiteEditorCss } from "./editorCss";
@@ -32,7 +33,7 @@ function v(data: Record<string, any>, key: string) {
 function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>; currentPage: string; goTo: (id: string) => void; onCta: () => void }) {
   const [navOpen, setNavOpen] = useState(false);
   const go = (id: string) => { setNavOpen(false); goTo(id); };
-  const nav = streetbitePages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || p.label] as const);
+  const nav = streetbitePages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || tx(p.label)] as const);
   return (
     <header data-template-section-type="header" data-section-kind="header" className="sticky top-0 z-50" style={{ background: "transparent" }}>
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4 lg:px-8">
@@ -93,7 +94,7 @@ function NightCardStack({ data }: { data: Record<string, any> }) {
   return (
     <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{ borderColor: "rgba(230,237,243,0.12)" }}>
       <div className="mx-auto max-w-lg">
-        <Reveal><h2 className="tpl-display text-4xl font-black md:text-5xl">ערימת לילה</h2></Reveal>
+        <Reveal><h2 className="tpl-display text-4xl font-black md:text-5xl">{tx("ערימת לילה")}</h2></Reveal>
         <div className="relative mt-10 space-y-4">
           {cards.map(([title, meta, text, img], i) => (
             <Reveal key={title} delayMs={i * 100} variant="up">
@@ -419,8 +420,8 @@ function ContactBlock({ data, onCta }: { data: Record<string, any>; onCta: () =>
           <p className="mb-4 text-center text-xs font-bold" style={{ color: "#8b949e" }}>SMS · Streetbite</p>
           <div className="mb-3 mr-8 rounded-2xl rounded-tr-sm px-4 py-2 text-sm" style={{ background: "#39d353", color: "#0d1117" }}>{v(data, "contactTitle")}</div>
           <div className="mb-4 ml-8 rounded-2xl rounded-tl-sm border px-4 py-2 text-sm" style={{ borderColor: "rgba(230,237,243,0.12)" }}>{v(data, "contactText")}</div>
-          <form className="grid gap-2" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="streetbite-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-            <input className="w-full rounded-full border bg-transparent px-4 py-3 text-right text-sm outline-none" style={{ borderColor: "rgba(230,237,243,0.12)" }} placeholder="הקלידו הודעה..." name="message" data-bizuply-form-field-id="message" />
+          <form className="grid gap-2" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="streetbite-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+            <input className="w-full rounded-full border bg-transparent px-4 py-3 text-right text-sm outline-none" style={{ borderColor: "rgba(230,237,243,0.12)" }} placeholder={tx("הקלידו הודעה...")} name="message" data-bizuply-form-field-id="message" />
             <button type="submit" className="rounded-full px-4 py-3 text-sm font-black" style={{ background: "#39d353", color: "#0d1117" }}>{v(data, "cta")}</button>
           </form>
         </div>

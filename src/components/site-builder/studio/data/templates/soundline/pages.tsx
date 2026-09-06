@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { soundlineDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
@@ -66,7 +67,7 @@ function Header({ data }: { data: Record<string, any> }) {
           <span className="grid h-10 w-10 place-items-center bg-[var(--p)] text-sm font-black text-black">{getValue(data, "logoText")}</span>
           <span className="t-display text-2xl sm:text-4xl leading-none tracking-wide">{getValue(data, "brandName")}</span>
         </a>
-        <nav className="hidden items-center gap-7 text-xs font-bold uppercase tracking-[0.22em] text-white/66 lg:flex" aria-label="ניווט ראשי">
+        <nav className="hidden items-center gap-7 text-xs font-bold uppercase tracking-[0.22em] text-white/66 lg:flex" aria-label={tx("ניווט ראשי")}>
           {links.map(([label, href]) => (
             <a key={label} href={href} className="sound-nav-link">
               {label}
@@ -310,17 +311,17 @@ function EnrollForm({ data }: { data: Record<string, any> }) {
           </div>
         </Reveal>
         <Reveal delayMs={130} variant="left">
-          <form className="grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="soundline-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-            <input aria-label="שם מלא" placeholder="שם מלא" className="sound-input border border-white/18 bg-[var(--surface)] px-5 py-4 text-white outline-none focus:border-[var(--p)]"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-            <input aria-label="טלפון" placeholder="טלפון" className="sound-input border border-white/18 bg-[var(--surface)] px-5 py-4 text-white outline-none focus:border-[var(--p)]"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-            <select aria-label="מסלול" className="sound-input border border-white/18 bg-[var(--surface)] px-5 py-4 text-white outline-none focus:border-[var(--p)]" defaultValue="">
-              <option value="" disabled>בחרו מסלול</option>
-              <option>גיטרה / בס</option>
-              <option>פסנתר / קלידים</option>
-              <option>פיתוח קול</option>
-              <option>הפקה אלקטרונית</option>
+          <form className="grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="soundline-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+            <input aria-label={tx("שם מלא")} placeholder={tx("שם מלא")} className="sound-input border border-white/18 bg-[var(--surface)] px-5 py-4 text-white outline-none focus:border-[var(--p)]"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+            <input aria-label={tx("טלפון")} placeholder={tx("טלפון")} className="sound-input border border-white/18 bg-[var(--surface)] px-5 py-4 text-white outline-none focus:border-[var(--p)]"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+            <select aria-label={tx("מסלול")} className="sound-input border border-white/18 bg-[var(--surface)] px-5 py-4 text-white outline-none focus:border-[var(--p)]" defaultValue="">
+              <option value="" disabled>{tx("בחרו מסלול")}</option>
+              <option>{tx("גיטרה / בס")}</option>
+              <option>{tx("פסנתר / קלידים")}</option>
+              <option>{tx("פיתוח קול")}</option>
+              <option>{tx("הפקה אלקטרונית")}</option>
             </select>
-            <textarea aria-label="ספרו על המטרה שלכם" placeholder="ספרו על המטרה שלכם" rows={4} className="sound-input border border-white/18 bg-[var(--surface)] px-5 py-4 text-white outline-none focus:border-[var(--p)]"  name="message" data-bizuply-form-field-id="message"></textarea>
+            <textarea aria-label={tx("ספרו על המטרה שלכם")} placeholder={tx("ספרו על המטרה שלכם")} rows={4} className="sound-input border border-white/18 bg-[var(--surface)] px-5 py-4 text-white outline-none focus:border-[var(--p)]"  name="message" data-bizuply-form-field-id="message"></textarea>
             <button type="submit" className="bg-[var(--p)] px-8 py-4 text-sm font-black uppercase tracking-[0.2em] text-black hover:bg-white">{getValue(data, "contactButton")}</button>
           </form>
         </Reveal>

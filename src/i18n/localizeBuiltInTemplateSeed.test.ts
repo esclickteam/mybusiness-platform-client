@@ -47,4 +47,13 @@ describe("localizeBuiltInTemplateSeed", () => {
     expect(localizeBuiltInText("פיצה · תנור עצים", "en")).toBe("Pizza · wood oven");
     expect(localizeBuiltInText("הזמינו פיצה", "ar")).toBe("اطلبوا البيتزا");
   });
+
+  it("uses the generated exact lexicon for gallery template descriptions", () => {
+    expect(
+      localizeBuiltInText(
+        "תבנית פיצרייה: הירו באלכסון עם פיצה מסתובבת, תפריט כבלוקי משולשים, רצועת חום תנור וטופס כרטיס הזמנה — אבק קמח ואנימציית stretch.",
+        "en",
+      ),
+    ).toMatch(/pizzeria template/i);
+  });
 });

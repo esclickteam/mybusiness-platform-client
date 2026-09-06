@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { TemplateText } from "../shared/TemplateText";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
@@ -279,7 +280,7 @@ function InquiryModal({
         <TemplateText as="p" className="mt-3 max-w-xl text-sm leading-7 text-[#5e5e5e]">
           {getValue(data, "contactText")}
         </TemplateText>
-        <form className="mt-8 grid gap-0 border-2 border-black" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="framehaus-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+        <form className="mt-8 grid gap-0 border-2 border-black" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="framehaus-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
           {[
             "שם מלא",
             "אימייל",
@@ -294,7 +295,7 @@ function InquiryModal({
           ))}
           <textarea
             className="min-h-32 bg-transparent px-5 py-4 text-right text-sm text-[#111111] outline-none placeholder:text-[#777]"
-            placeholder="ספרו לנו איזה עולם אתם רוצים לבנות בפריים."
+            placeholder={tx("ספרו לנו איזה עולם אתם רוצים לבנות בפריים.")}
            name="message" data-bizuply-form-field-id="message"></textarea>
           <button
             type="submit"
@@ -714,7 +715,7 @@ function ContactSection({
             ))}
           </div>
         </div>
-        <form className="grid gap-0 bg-white" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="framehaus-contact-2" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+        <form className="grid gap-0 bg-white" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="framehaus-contact-2" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
           {[
             "שם מלא",
             "אימייל",
@@ -729,7 +730,7 @@ function ContactSection({
           ))}
           <textarea
             className="min-h-40 border-b-2 border-black bg-transparent px-5 py-4 text-right text-sm text-[#111111] outline-none placeholder:text-[#777]"
-            placeholder="מה אתם רוצים שנראה, נצלם ונגרום לו להרגיש?"
+            placeholder={tx("מה אתם רוצים שנראה, נצלם ונגרום לו להרגיש?")}
            name="other" data-bizuply-form-field-id="other"></textarea>
           <div className="p-5">
             <EditorialButton onClick={openInquiry} className="w-full justify-center bg-[#ff3b30] border-[#ff3b30] hover:bg-[#111111] hover:border-[#111111]">

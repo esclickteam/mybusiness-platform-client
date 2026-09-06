@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { mezzalineDefaultData } from "./defaultData";
 import { mezzalineEditorCss } from "./editorCss";
@@ -32,7 +33,7 @@ function v(data: Record<string, any>, key: string) {
 function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>; currentPage: string; goTo: (id: string) => void; onCta: () => void }) {
   const [navOpen, setNavOpen] = useState(false);
   const go = (id: string) => { setNavOpen(false); goTo(id); };
-  const nav = mezzalinePages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || p.label] as const);
+  const nav = mezzalinePages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || tx(p.label)] as const);
   return (
     <header data-template-section-type="header" data-section-kind="header" className="sticky top-0 z-50" style={{ background: "#f7f1e6f0" }}>
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4 lg:px-8">
@@ -101,7 +102,7 @@ function PlatterScroll({ data }: { data: Record<string, any> }) {
   return (
     <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{ borderColor: "rgba(44,42,34,0.12)", background: "#fffdf8" }}>
       <div className="mx-auto max-w-7xl">
-        <Reveal><h2 className="tpl-display text-4xl font-bold md:text-5xl">מגש משותף</h2></Reveal>
+        <Reveal><h2 className="tpl-display text-4xl font-bold md:text-5xl">{tx("מגש משותף")}</h2></Reveal>
         <div className="tpl-platter-rail mt-10">
           {dishes.map(([title, meta, text, img], i) => (
             <Reveal key={title} delayMs={i * 80} variant="left">
@@ -126,7 +127,7 @@ function ParchmentQuote({ data }: { data: Record<string, any> }) {
     <section className="border-y px-5 py-14 lg:px-8" style={{ borderColor: "rgba(44,42,34,0.12)", background: "#f7f1e6" }}>
       <Reveal variant="fade">
         <blockquote className="mx-auto max-w-3xl text-center">
-          <p className="tpl-display text-2xl font-semibold leading-relaxed md:text-3xl" style={{ color: "#2c2a22" }}>״שולחן מלא צבעים — ככה נראית אהבה ים-תיכונית.״</p>
+          <p className="tpl-display text-2xl font-semibold leading-relaxed md:text-3xl" style={{ color: "#2c2a22" }}>{tx("״שולחן מלא צבעים — ככה נראית אהבה ים-תיכונית.״")}</p>
           <footer className="mt-4 text-sm" style={{ color: "#7a7260" }}>— {v(data, "brandName")}</footer>
         </blockquote>
       </Reveal>
@@ -401,7 +402,7 @@ function AboutBlock({ data }: { data: Record<string, any> }) {
       <div className="mx-auto max-w-7xl">
         <div className="grid gap-8 lg:grid-cols-[1fr_1.2fr] lg:items-end">
           <div>
-            <p className="text-xs font-semibold tracking-[0.24em]" style={{ color: "#5c7a4a" }}>מהגינה</p>
+            <p className="text-xs font-semibold tracking-[0.24em]" style={{ color: "#5c7a4a" }}>{tx("מהגינה")}</p>
             <h2 className="tpl-display mt-4 text-4xl font-bold md:text-5xl">{v(data, "aboutTitle")}</h2>
           </div>
           <p className="text-lg leading-8" style={{ color: "#7a7260" }}>{v(data, "aboutText")}</p>
@@ -410,7 +411,7 @@ function AboutBlock({ data }: { data: Record<string, any> }) {
           <img src={v(data, "aboutImage")} alt="" className="col-span-2 aspect-[16/10] w-full object-cover" />
           <div className="flex flex-col justify-between border p-4" style={{ borderColor: "rgba(44,42,34,0.12)", background: "#f7f1e6" }}>
             <span className="inline-block h-8 w-8 rounded-full" style={{ background: "#5c7a4a" }} />
-            <p className="text-sm font-semibold">עשבי תיבול טריים כל בוקר</p>
+            <p className="text-sm font-semibold">{tx("עשבי תיבול טריים כל בוקר")}</p>
           </div>
         </div>
       </div>
@@ -423,17 +424,17 @@ function ContactBlock({ data, onCta }: { data: Record<string, any>; onCta: () =>
     <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{ borderColor: "rgba(44,42,34,0.12)", background: "#f7f1e6" }}>
       <div className="mx-auto grid max-w-7xl gap-10 lg:grid-cols-[1fr_1fr] lg:items-start">
         <div className="border p-8" style={{ borderColor: "rgba(44,42,34,0.12)", background: "#fffdf8" }}>
-          <p className="text-xs tracking-[0.24em]" style={{ color: "#5c7a4a" }}>שולחן גן</p>
+          <p className="text-xs tracking-[0.24em]" style={{ color: "#5c7a4a" }}>{tx("שולחן גן")}</p>
           <h2 className="tpl-display mt-3 text-2xl sm:text-4xl font-bold">{v(data, "contactTitle")}</h2>
           <p className="mt-4 leading-8" style={{ color: "#7a7260" }}>{v(data, "contactText")}</p>
           <div className="mt-6 space-y-1 text-sm" style={{ color: "#7a7260" }}>
             <p>{v(data, "phone")}</p><p>{v(data, "email")}</p><p>{v(data, "address")}</p>
           </div>
         </div>
-        <form className="grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="mezzaline-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-          <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(44,42,34,0.12)" }} placeholder="שם מלא" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-          <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(44,42,34,0.12)" }} placeholder="טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-          <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(44,42,34,0.12)" }} placeholder="מספר סועדים" name="guests" data-bizuply-form-field-id="guests" />
+        <form className="grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="mezzaline-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+          <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(44,42,34,0.12)" }} placeholder={tx("שם מלא")} name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+          <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(44,42,34,0.12)" }} placeholder={tx("טלפון")} name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+          <input className="w-full border bg-transparent px-4 py-3.5 text-right outline-none" style={{ borderColor: "rgba(44,42,34,0.12)" }} placeholder={tx("מספר סועדים")} name="guests" data-bizuply-form-field-id="guests" />
           <button type="submit" className="px-6 py-4 text-sm font-bold" style={{ background: "#5c7a4a", color: "#f7f1e6" }}>{v(data, "cta")}</button>
         </form>
       </div>
@@ -446,7 +447,7 @@ function Footer({ data }: { data: Record<string, any> }) {
     <footer className="border-t px-5 py-10 lg:px-8" style={{ borderColor: "rgba(44,42,34,0.12)", background: "#fffdf8" }}>
       <div className="mx-auto grid max-w-7xl gap-4 text-sm md:grid-cols-3 md:items-center" style={{ color: "#7a7260" }}>
         <span className="tpl-display text-lg font-bold" style={{ color: "#2c2a22" }}>{v(data, "brandName")}</span>
-        <span className="text-center">מזטה · שמן זית · שולחן משותף</span>
+        <span className="text-center">{tx("מזטה · שמן זית · שולחן משותף")}</span>
         <span className="md:text-left">{v(data, "phone")}</span>
       </div>
     </footer>

@@ -1,6 +1,7 @@
 import i18n from "./i18n";
 import { normalizeLanguage } from "./languages";
 import phrasebook from "./templateSeedPhrasebook.json";
+import generatedExactLexicon from "./templateExactLexicon.generated.json";
 import { TEMPLATE_EXACT_LEXICON, type LocaleCopy } from "./templateExactLexicon";
 
 type PhraseTranslation = {
@@ -12,6 +13,12 @@ type PhraseTranslation = {
 
 const book = phrasebook as Record<string, PhraseTranslation>;
 const HE = /[\u0590-\u05FF]/;
+
+/** Generated rows first; hand-written lexicon always wins on the same source. */
+const EXACT_LEXICON: Record<string, PhraseTranslation | LocaleCopy> = {
+  ...(generatedExactLexicon as Record<string, PhraseTranslation>),
+  ...TEMPLATE_EXACT_LEXICON,
+};
 
 function localeKey(language?: string): "he" | "en" | "es" | "pt-BR" | "ar" {
   const normalized = normalizeLanguage(language || i18n.language);
@@ -44,7 +51,7 @@ function isUsableTranslation(source: string, translated: string, locale: string)
   return outHe <= Math.floor(srcHe * 0.25);
 }
 
-const exactKeys = Object.keys(TEMPLATE_EXACT_LEXICON).sort((a, b) => b.length - a.length);
+const exactKeys = Object.keys(EXACT_LEXICON).sort((a, b) => b.length - a.length);
 const bookKeys = Object.keys(book).sort((a, b) => b.length - a.length);
 
 export function localizeBuiltInText(text: string, language?: string): string {
@@ -53,7 +60,7 @@ export function localizeBuiltInText(text: string, language?: string): string {
   if (locale === "he") return text;
   if (!HE.test(text)) return text;
 
-  const exact = pickLocaleCopy(TEMPLATE_EXACT_LEXICON[text], locale);
+  const exact = pickLocaleCopy(EXACT_LEXICON[text], locale);
   if (isUsableTranslation(text, exact, locale)) return exact;
 
   const bookHit = pickLocaleCopy(book[text], locale);
@@ -62,7 +69,7 @@ export function localizeBuiltInText(text: string, language?: string): string {
   let out = text;
   for (const source of exactKeys) {
     if (!out.includes(source)) continue;
-    const translated = pickLocaleCopy(TEMPLATE_EXACT_LEXICON[source], locale);
+    const translated = pickLocaleCopy(EXACT_LEXICON[source], locale);
     if (!isUsableTranslation(source, translated, locale)) continue;
     out = out.split(source).join(translated);
   }

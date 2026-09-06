@@ -1,77 +1,98 @@
 #!/usr/bin/env node
 /**
- * Wrap Hebrew string literals in studio template pages/previews with tx().
- * Does not touch saved customer websites — only bundled template source.
+ * Wrap Hebrew literals that render in template JSX so they go through tx().
+ * Safe patterns only — never wraps module-level page-label arrays.
  */
 import fs from "node:fs";
 import path from "node:path";
 
-const ROOT = path.resolve(
-  path.dirname(new URL(import.meta.url).pathname),
-  "..",
-  "src/components/site-builder/studio/data/templates"
-);
-const HE = /[\u0590-\u05FF]/;
-const IMPORT = 'import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";\n';
+const ROOT = path.resolve("src/components/site-builder/studio/data/templates");
+const TX_MODULE = path.resolve("src/i18n/localizeBuiltInTemplateSeed");
 
-function walk(dir, out = []) {
+function importLine(filePath) {
+  let rel = path.relative(path.dirname(filePath), TX_MODULE);
+  if (!rel.startsWith(".")) rel = `./${rel}`;
+  return `import { tx } from "${rel.replaceAll("\\", "/")}";`;
+}
+
+function wrapFile(filePath) {
+  const original = fs.readFileSync(filePath, "utf8");
+  let src = original;
+  let changed = 0;
+
+  src = src.replace(/\|\|\s*p\.label\b/g, (match, offset) => {
+    const before = src.slice(Math.max(0, offset - 80), offset);
+    if (before.includes("tx(")) return match;
+    changed += 1;
+    return "|| tx(p.label)";
+  });
+
+  src = src.replace(/\{(item|p|page)\.label\}/g, (full, name) => {
+    if (full.includes("tx(")) return full;
+    changed += 1;
+    return `{tx(${name}.label)}`;
+  });
+
+  src = src.replace(/(?<!=)>([^<{]*[\u0590-\u05FF][^<{]*)</g, (full, text) => {
+    if (text.includes("tx(") || text.includes("{") || text.includes("}") || text.includes("=")) {
+      return full;
+    }
+    const trimmed = String(text).trim();
+    if (!trimmed || trimmed.length > 240) return full;
+    changed += 1;
+    return `>{tx(${JSON.stringify(trimmed)})}<`;
+  });
+
+  src = src.replace(
+    /(placeholder|aria-label|title|alt|data-bizuply-success-message)=(["'])([^"']*[\u0590-\u05FF][^"']*)\2/g,
+    (full, attr, _quote, value) => {
+      if (value.includes("tx(")) return full;
+      changed += 1;
+      return `${attr}={tx(${JSON.stringify(value)})}`;
+    },
+  );
+
+  if (!changed) return 0;
+
+  if (!src.includes("localizeBuiltInTemplateSeed")) {
+    const firstImport = src.indexOf("import ");
+    if (firstImport !== -1) {
+      const insertAt = src.indexOf("\n", firstImport);
+      src = `${src.slice(0, insertAt + 1)}${importLine(filePath)}\n${src.slice(insertAt + 1)}`;
+    }
+  }
+
+  if (src !== original) {
+    fs.writeFileSync(filePath, src);
+    return changed;
+  }
+  return 0;
+}
+
+function walk(dir) {
+  const out = [];
   for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
     const full = path.join(dir, entry.name);
-    if (entry.isDirectory()) walk(full, out);
-    else if (entry.name === "pages.tsx" || entry.name === "preview.tsx") out.push(full);
+    if (entry.isDirectory()) out.push(...walk(full));
+    else if (
+      entry.name === "pages.tsx" ||
+      entry.name === "preview.tsx" ||
+      (dir.endsWith(`${path.sep}shared`) && entry.name.endsWith(".tsx"))
+    ) {
+      out.push(full);
+    }
   }
   return out;
 }
 
-function wrapSource(source) {
-  let next = source;
-  if (!HE.test(next)) return next;
-
-  next = next.replace(/>([^<>{]*[\u0590-\u05FF][^<>{}]*)</g, (full, text) => {
-    const clean = text.trim();
-    if (!clean || clean.includes("{")) return full;
-    return `>{tx(${JSON.stringify(clean)})}<`;
-  });
-
-  next = next.replace(/(["'`])((?:\\.|(?!\1).)*?[\u0590-\u05FF](?:\\.|(?!\1).)*?)\1/g, (full, quote, value) => {
-    if (full.includes("tx(")) return full;
-    if (value.includes("${")) return full;
-    if (value.includes("\\u")) return full;
-    return `tx(${JSON.stringify(value)})`;
-  });
-
-  if (!next.includes("localizeBuiltInTemplateSeed") && !next.includes('from "../../../../../../i18n/')) {
-    const importMatch = next.match(/^import .+$/m);
-    if (importMatch) {
-      next = next.replace(importMatch[0], `${importMatch[0]}\n${IMPORT.trim()}`);
-    } else {
-      next = IMPORT + next;
-    }
-  } else if (!next.includes(" tx ") && !next.includes("{ tx") && !next.includes("tx }")) {
-    next = next.replace(
-      /import \{([^}]+)\} from ["']\.\.\/\.\.\/\.\.\/\.\.\/\.\.\/\.\.\/i18n\/localizeBuiltInTemplateSeed["'];/,
-      (full, names) => {
-        if (names.includes("tx")) return full;
-        return `import {${names}, tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";`;
-      }
-    );
-    if (!next.includes("tx }") && !next.includes("{ tx")) {
-      const importMatch = next.match(/^import .+$/m);
-      if (importMatch) next = next.replace(importMatch[0], `${importMatch[0]}\n${IMPORT.trim()}`);
-    }
-  }
-
-  return next;
-}
-
-const files = walk(ROOT);
-let changed = 0;
-for (const file of files) {
-  const before = fs.readFileSync(file, "utf8");
-  const after = wrapSource(before);
-  if (after !== before) {
-    fs.writeFileSync(file, after);
-    changed += 1;
+let files = 0;
+let wraps = 0;
+for (const file of walk(ROOT)) {
+  const n = wrapFile(file);
+  if (n) {
+    files += 1;
+    wraps += n;
+    process.stdout.write(`${path.relative(process.cwd(), file)} (${n})\n`);
   }
 }
-console.log(`wrapped Hebrew literals in ${changed}/${files.length} template files`);
+process.stdout.write(`\nUpdated ${files} files, ${wraps} replacements.\n`);

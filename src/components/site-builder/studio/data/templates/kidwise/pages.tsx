@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { kidwiseDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
@@ -174,7 +175,7 @@ function Instructors({ data }: { data: Record<string, any> }) {
               <SafeImg src={getValue(data,"sectionImage")} alt="" className="h-full w-full object-cover" />
             </div>
             <p className="mt-3 font-bold text-[var(--dark)]">{n}</p>
-            <p className="text-sm text-[var(--p)]">מורה חברותי/ת</p>
+            <p className="text-sm text-[var(--p)]">{tx("מורה חברותי/ת")}</p>
           </Reveal>
         ))}
       </div>
@@ -204,7 +205,7 @@ function Testimonials({ data }: { data: Record<string, any> }) {
       <div className="mx-auto mt-12 grid max-w-5xl gap-6 md:grid-cols-3">
         {[[getValue(data,"reviewOneText"),getValue(data,"reviewOneName"),getValue(data,"reviewOneRole")],[getValue(data,"reviewTwoText"),getValue(data,"reviewTwoName"),getValue(data,"reviewTwoRole")],[getValue(data,"reviewThreeText"),getValue(data,"reviewThreeName"),getValue(data,"reviewThreeRole")]].map(([text,name],i) => (
           <Reveal key={name} delayMs={i*90} className="t-hover relative rounded-[2rem] bg-[var(--bg)] p-6">
-            <div className="absolute -top-3 right-6 rounded-full bg-[var(--a)] px-3 py-1 text-xs font-bold">הורה</div>
+            <div className="absolute -top-3 right-6 rounded-full bg-[var(--a)] px-3 py-1 text-xs font-bold">{tx("הורה")}</div>
             <p className="mt-2 text-sm leading-7 text-[var(--muted)]">"{text}"</p>
             <p className="mt-4 font-bold text-[var(--p)]">{name}</p>
           </Reveal>
@@ -301,7 +302,7 @@ function About({ data }: { data: Record<string, any> }) {
         <Reveal className="relative min-h-[360px] overflow-hidden rounded-[2.5rem] bg-white shadow-sm">
           <SafeImg src={getValue(data,"sectionImage")} alt="" className="absolute inset-0 h-full w-full object-cover rounded-[2rem]" />
           <div className="absolute inset-0 bg-gradient-to-t from-[var(--dark)]/80 to-transparent" />
-          <span className="absolute bottom-6 right-6 rounded-full px-4 py-2 text-sm font-bold rounded-full bg-[var(--a)] text-[var(--dark)]">ילדים</span>
+          <span className="absolute bottom-6 right-6 rounded-full px-4 py-2 text-sm font-bold rounded-full bg-[var(--a)] text-[var(--dark)]">{tx("ילדים")}</span>
         </Reveal>
         <Reveal variant="up" className="rounded-[2.5rem] bg-white shadow-sm p-8 lg:p-12">
           <p className="text-xs font-bold uppercase tracking-[0.3em] text-[var(--a)]">{getValue(data,"aboutEyebrow")}</p>
@@ -454,11 +455,11 @@ function Contact({ data, openModal }: { data: Record<string, any>; openModal: ()
     <section data-template-section-type="contact" className="px-5 py-12 md:py-24 lg:px-8">
       <div className="mx-auto max-w-lg rounded-[2rem] bg-[var(--a)] p-8 text-[var(--dark)]">
         <Reveal><h2 className="t-display text-3xl font-bold">{getValue(data,"contactTitle")}</h2>
-        <p className="mt-2 text-sm opacity-80">להורים — נחזור אליכם במהירות</p></Reveal>
-        <form className="mt-6 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="kidwise-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-          <input className="rounded-2xl border-0 px-5 py-4 outline-none" placeholder="שם ההורה"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-          <input className="rounded-2xl border-0 px-5 py-4 outline-none" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-          <input className="rounded-2xl border-0 px-5 py-4 outline-none" placeholder="גיל הילד/ה"  name="other" data-bizuply-form-field-id="other" />
+        <p className="mt-2 text-sm opacity-80">{tx("להורים — נחזור אליכם במהירות")}</p></Reveal>
+        <form className="mt-6 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="kidwise-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+          <input className="rounded-2xl border-0 px-5 py-4 outline-none" placeholder={tx("שם ההורה")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+          <input className="rounded-2xl border-0 px-5 py-4 outline-none" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+          <input className="rounded-2xl border-0 px-5 py-4 outline-none" placeholder={tx("גיל הילד/ה")}  name="other" data-bizuply-form-field-id="other" />
           <button type="submit" onClick={openModal} className="rounded-2xl bg-[var(--dark)] py-4 font-bold text-white">{getValue(data,"contactButton")}</button>
         </form>
       </div>
@@ -483,9 +484,9 @@ function ContactModal({ data, open, onClose }: { data: Record<string, any>; open
       <div className="relative w-full max-w-md border border-[var(--p)]/30 bg-[var(--surface)] p-8">
         <button type="button" onClick={onClose} className="absolute left-4 top-4 text-2xl">×</button>
         <h3 className="t-display text-3xl font-bold">{getValue(data, "contactTitle")}</h3>
-        <form className="mt-6 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="kidwise-contact-2" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-          <input className="border border-[var(--p)]/20 bg-transparent px-5 py-4 text-right outline-none" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-          <input className="border border-[var(--p)]/20 bg-transparent px-5 py-4 text-right outline-none" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+        <form className="mt-6 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="kidwise-contact-2" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+          <input className="border border-[var(--p)]/20 bg-transparent px-5 py-4 text-right outline-none" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+          <input className="border border-[var(--p)]/20 bg-transparent px-5 py-4 text-right outline-none" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
           <button type="submit" className="bg-[var(--p)] py-4 text-sm font-bold text-[var(--dark)]">{getValue(data, "contactButton")}</button>
         </form>
       </div>

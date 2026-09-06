@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { verdantDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
@@ -196,9 +197,7 @@ function VirtualTour({ data }: { data: Record<string, any> }) {
           <button
             type="button"
             className="mt-8 border border-[var(--v-moss)] px-6 py-3 text-sm font-semibold text-[var(--v-moss)] transition hover:bg-[var(--v-moss)] hover:text-[#0e1210]"
-          >
-            התחלת סיור
-          </button>
+          >{tx("התחלת סיור")}</button>
         </div>
         <div className="relative min-h-[320px]">
           <img
@@ -271,15 +270,15 @@ function Contact({ data, openModal }: { data: Record<string, any>; openModal: ()
           <h2 className="v-display text-4xl font-semibold md:text-5xl">{getValue(data, "contactTitle")}</h2>
           <p className="mt-4 max-w-md text-[var(--v-muted)]">{getValue(data, "contactText")}</p>
           <div className="mt-8 space-y-3 text-sm">
-            <p><span className="text-[var(--v-moss)]">טלפון</span> · {getValue(data, "phone")}</p>
-            <p><span className="text-[var(--v-moss)]">אימייל</span> · {getValue(data, "email")}</p>
-            <p><span className="text-[var(--v-moss)]">כתובת</span> · {getValue(data, "address")}</p>
+            <p><span className="text-[var(--v-moss)]">{tx("טלפון")}</span> · {getValue(data, "phone")}</p>
+            <p><span className="text-[var(--v-moss)]">{tx("אימייל")}</span> · {getValue(data, "email")}</p>
+            <p><span className="text-[var(--v-moss)]">{tx("כתובת")}</span> · {getValue(data, "address")}</p>
           </div>
         </div>
-        <form className="grid gap-4 bg-[var(--v-surface)] p-8" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="verdant-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-          <input className="border border-white/10 bg-transparent px-5 py-4 text-right outline-none focus:border-[var(--v-moss)]" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-          <input className="border border-white/10 bg-transparent px-5 py-4 text-right outline-none focus:border-[var(--v-moss)]" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-          <input className="border border-white/10 bg-transparent px-5 py-4 text-right outline-none focus:border-[var(--v-moss)]" placeholder="תקציב משוער"  name="other" data-bizuply-form-field-id="other" />
+        <form className="grid gap-4 bg-[var(--v-surface)] p-8" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="verdant-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+          <input className="border border-white/10 bg-transparent px-5 py-4 text-right outline-none focus:border-[var(--v-moss)]" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+          <input className="border border-white/10 bg-transparent px-5 py-4 text-right outline-none focus:border-[var(--v-moss)]" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+          <input className="border border-white/10 bg-transparent px-5 py-4 text-right outline-none focus:border-[var(--v-moss)]" placeholder={tx("תקציב משוער")}  name="other" data-bizuply-form-field-id="other" />
           <button type="submit" onClick={openModal} className="bg-[var(--v-moss)] px-7 py-4 text-sm font-semibold text-[#0e1210]">
             {getValue(data, "contactButton")}
           </button>
@@ -313,9 +312,9 @@ function ContactModal({ data, open, onClose }: { data: Record<string, any>; open
       <div className="relative w-full max-w-md bg-[var(--v-surface)] p-8">
         <button type="button" onClick={onClose} className="absolute left-4 top-4 text-2xl text-white/70">×</button>
         <h3 className="v-display text-3xl font-semibold">{getValue(data, "contactTitle")}</h3>
-        <form className="mt-6 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="verdant-contact-2" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-          <input className="border border-white/10 bg-transparent px-5 py-4 text-right outline-none" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-          <input className="border border-white/10 bg-transparent px-5 py-4 text-right outline-none" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+        <form className="mt-6 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="verdant-contact-2" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+          <input className="border border-white/10 bg-transparent px-5 py-4 text-right outline-none" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+          <input className="border border-white/10 bg-transparent px-5 py-4 text-right outline-none" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
           <button type="submit" className="bg-[var(--v-moss)] py-4 text-sm font-semibold text-[#0e1210]">
             {getValue(data, "contactButton")}
           </button>

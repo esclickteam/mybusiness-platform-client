@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { TemplateText } from "../shared/TemplateText";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
@@ -272,9 +273,7 @@ function HorizonHero({
               <TemplateText as="div" className="text-[11px] font-semibold uppercase tracking-[0.34em] text-[#8f6d4b]">
                 Panorama Index
               </TemplateText>
-              <TemplateText as="div" className="mt-3 max-w-sm text-sm leading-7 text-[#6b645c]">
-                ניהול מלא של נכסי יוקרה, השבחת קרקעות ומעטפת שיווקית שמתחילה במחקר ומסתיימת בחתימה.
-              </TemplateText>
+              <TemplateText as="div" className="mt-3 max-w-sm text-sm leading-7 text-[#6b645c]">{tx("ניהול מלא של נכסי יוקרה, השבחת קרקעות ומעטפת שיווקית שמתחילה במחקר ומסתיימת בחתימה.")}</TemplateText>
             </div>
             {stats.map(([value, label]) => (
               <div key={label} className="border-b border-[#1c1c1c]/10 px-5 py-6 text-right md:border-b-0 md:border-l lg:px-8">
@@ -481,7 +480,7 @@ function DistrictTable() {
       <div className="mx-auto max-w-7xl">
         <SectionTitle
           eyebrow="סריקת שוק"
-          title="שכונות, מגמות והזדמנויות בזמן אמת."
+          title={tx("שכונות, מגמות והזדמנויות בזמן אמת.")}
           text="מבנה התוכן משלב דפי תדמית, מלאי נכסים ותובנות שוק כדי לייצר חוויית נדל״ן מלאה ולא רק עמוד נחיתה."
         />
         <div className="mt-12 border border-[#1c1c1c]/10">
@@ -537,12 +536,8 @@ function InsightPanels({ data }: { data: Record<string, any> }) {
             ))}
           </div>
           <div className="border border-[#1c1c1c]/10 bg-[#1c1c1c] p-8">
-            <TemplateText as="div" className="text-[11px] font-semibold uppercase tracking-[0.34em] text-[#d6c1a7]">
-              דסק ייעוץ
-            </TemplateText>
-            <TemplateText as="h3" className="mt-5 text-2xl sm:text-4xl font-semibold leading-[1.1] text-[#f7f3ed]">
-              תוכן שמשמש גם ככלי מכירה, גם כחומר עבודה פנימי וגם כהוכחת מומחיות.
-            </TemplateText>
+            <TemplateText as="div" className="text-[11px] font-semibold uppercase tracking-[0.34em] text-[#d6c1a7]">{tx("דסק ייעוץ")}</TemplateText>
+            <TemplateText as="h3" className="mt-5 text-2xl sm:text-4xl font-semibold leading-[1.1] text-[#f7f3ed]">{tx("תוכן שמשמש גם ככלי מכירה, גם כחומר עבודה פנימי וגם כהוכחת מומחיות.")}</TemplateText>
             <div className="mt-10 grid gap-5 border-t border-[#b8956b]/20 pt-6">
               {[
                 ["מפת ערך", "ניתוח שכונות, מחירי יעד ומסלולי השבחה."],
@@ -591,17 +586,15 @@ function ContactSection({ data }: { data: Record<string, any> }) {
             ))}
           </div>
         </div>
-        <form className="border border-r-0 border-[#1c1c1c]/10 bg-[#f7f3ed] p-8 lg:p-12" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="horizon-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+        <form className="border border-r-0 border-[#1c1c1c]/10 bg-[#f7f3ed] p-8 lg:p-12" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="horizon-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
           <div className="grid gap-4 md:grid-cols-2">
-            <input className="border border-[#1c1c1c]/12 bg-white px-4 py-4 text-right outline-none" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-            <input className="border border-[#1c1c1c]/12 bg-white px-4 py-4 text-right outline-none" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-            <input className="border border-[#1c1c1c]/12 bg-white px-4 py-4 text-right outline-none md:col-span-2" placeholder="אימייל"  name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
-            <textarea className="min-h-40 border border-[#1c1c1c]/12 bg-white px-4 py-4 text-right outline-none md:col-span-2" placeholder="ספרו לנו על הנכס, הרכישה או ההשבחה שאתם מתכננים."  name="message" data-bizuply-form-field-id="message"></textarea>
+            <input className="border border-[#1c1c1c]/12 bg-white px-4 py-4 text-right outline-none" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+            <input className="border border-[#1c1c1c]/12 bg-white px-4 py-4 text-right outline-none" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+            <input className="border border-[#1c1c1c]/12 bg-white px-4 py-4 text-right outline-none md:col-span-2" placeholder={tx("אימייל")}  name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
+            <textarea className="min-h-40 border border-[#1c1c1c]/12 bg-white px-4 py-4 text-right outline-none md:col-span-2" placeholder={tx("ספרו לנו על הנכס, הרכישה או ההשבחה שאתם מתכננים.")}  name="message" data-bizuply-form-field-id="message"></textarea>
           </div>
           <div className="mt-6 flex flex-wrap items-center justify-between gap-4 border-t border-[#1c1c1c]/10 pt-6">
-            <TemplateText as="p" className="max-w-md text-sm leading-7 text-[#6b645c]">
-              פגישת היכרות כוללת אפיון מלא, בדיקת שוק וסקיצה ראשונית למסלול ההתקדמות.
-            </TemplateText>
+            <TemplateText as="p" className="max-w-md text-sm leading-7 text-[#6b645c]">{tx("פגישת היכרות כוללת אפיון מלא, בדיקת שוק וסקיצה ראשונית למסלול ההתקדמות.")}</TemplateText>
             <button type="submit" className="border border-[#1c1c1c] bg-[#1c1c1c] px-6 py-4 text-sm font-semibold uppercase tracking-[0.2em] text-[#f7f3ed] transition hover:bg-[#2a2a2a]">
               <TemplateText as="span">{getValue(data, "contactButton")}</TemplateText>
             </button>

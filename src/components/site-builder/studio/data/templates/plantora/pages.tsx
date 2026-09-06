@@ -1,4 +1,5 @@
 import React, { useMemo } from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { plantoraDefaultData } from "./defaultData";
 import { plantoraEditorCss } from "./editorCss";
@@ -27,7 +28,7 @@ function v(data: Record<string, any>, key: string) {
 }
 
 function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>; currentPage: string; goTo: (id: string) => void; onCta: () => void }) {
-  const nav = plantoraPages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || p.label] as const);
+  const nav = plantoraPages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || tx(p.label)] as const);
   return (
     <header data-template-section-type="header" data-section-kind="header" className="sticky top-0 z-50" style={{ background: "#f4f7f0f0" }}>
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-5 py-4 lg:px-8">
@@ -429,10 +430,10 @@ function RootReserveForm({ data, onCta }: { data: Record<string, any>; onCta: ()
         <h2 className="tpl-display text-3xl font-bold">{v(data, "contactTitle")}</h2>
         <p className="mt-3 text-sm" style={{ color: "#5c7a5c" }}>{v(data, "contactText")}</p>
         <div className="mt-8 space-y-3">
-          <div className="mr-8 border p-3 text-sm" style={{ borderColor: "rgba(26,46,26,0.12)", background: "#f4f7f0" }}>היי! מתי נוח לכם?</div>
-          <form className="ml-8 grid gap-2 border p-3" style={{ borderColor: "#65a30d" }} data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="plantora-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-            <input className="w-full border bg-transparent px-3 py-2.5 text-right text-sm outline-none" style={{ borderColor: "rgba(26,46,26,0.12)", color: "#1a2e1a" }} placeholder="שם + טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-            <input className="w-full border bg-transparent px-3 py-2.5 text-right text-sm outline-none" style={{ borderColor: "rgba(26,46,26,0.12)", color: "#1a2e1a" }} placeholder="תאריך ושעה" name="date" data-bizuply-form-field-id="date" />
+          <div className="mr-8 border p-3 text-sm" style={{ borderColor: "rgba(26,46,26,0.12)", background: "#f4f7f0" }}>{tx("היי! מתי נוח לכם?")}</div>
+          <form className="ml-8 grid gap-2 border p-3" style={{ borderColor: "#65a30d" }} data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="plantora-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+            <input className="w-full border bg-transparent px-3 py-2.5 text-right text-sm outline-none" style={{ borderColor: "rgba(26,46,26,0.12)", color: "#1a2e1a" }} placeholder={tx("שם + טלפון")} name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+            <input className="w-full border bg-transparent px-3 py-2.5 text-right text-sm outline-none" style={{ borderColor: "rgba(26,46,26,0.12)", color: "#1a2e1a" }} placeholder={tx("תאריך ושעה")} name="date" data-bizuply-form-field-id="date" />
             <button type="submit" className="px-4 py-3 text-sm font-bold" style={{ background: "#65a30d", color: "#65a30dText" }}>{v(data, "cta")}</button>
           </form>
         </div>

@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import {
   ArrowLeft,
   ArrowRight,
@@ -336,7 +337,7 @@ function Header({
           type="button"
           onClick={() => onNavigate("home")}
           className="flex items-center gap-2 text-left"
-          aria-label="Novastra — דף הבית"
+          aria-label={tx("Novastra — דף הבית")}
         >
           <span className="grid h-9 w-9 place-items-center rounded-full bg-zinc-950 text-sm font-black text-white">
             N
@@ -359,9 +360,7 @@ function Header({
             <div className="pointer-events-none absolute left-0 top-full w-[760px] translate-y-4 rounded-[2rem] border border-zinc-200 bg-white p-5 opacity-0 shadow-2xl shadow-zinc-950/15 transition duration-300 group-hover:pointer-events-auto group-hover:translate-y-3 group-hover:opacity-100">
               <div className="grid grid-cols-[1fr_1fr_1.25fr] gap-4">
                 <div className="rounded-[1.5rem] border border-zinc-200 bg-[#fbf7ef] p-4">
-                  <p className="mb-3 text-xs font-black uppercase tracking-[0.22em] text-zinc-500">
-                    קטגוריה
-                  </p>
+                  <p className="mb-3 text-xs font-black uppercase tracking-[0.22em] text-zinc-500">{tx("קטגוריה")}</p>
                   <div className="space-y-2 text-sm font-bold text-zinc-900">
                     {data.megaCategories.map((item) => (
                       <button
@@ -377,9 +376,7 @@ function Header({
                 </div>
 
                 <div className="rounded-[1.5rem] border border-zinc-200 bg-[#fbf7ef] p-4">
-                  <p className="mb-3 text-xs font-black uppercase tracking-[0.22em] text-zinc-500">
-                    קולקציות
-                  </p>
+                  <p className="mb-3 text-xs font-black uppercase tracking-[0.22em] text-zinc-500">{tx("קולקציות")}</p>
                   <div className="space-y-2 text-sm font-bold text-zinc-900">
                     {data.megaCollections.map((item) => (
                       <button
@@ -432,7 +429,7 @@ function Header({
                   : "text-zinc-700",
               )}
             >
-              {item.label}
+              {tx(item.label)}
             </button>
           ))}
         </nav>
@@ -441,7 +438,7 @@ function Header({
           <button
             type="button"
             className="grid h-10 w-10 place-items-center rounded-full border border-zinc-200 bg-white text-zinc-950 transition hover:bg-zinc-950 hover:text-white"
-            aria-label="חיפוש"
+            aria-label={tx("חיפוש")}
           >
             <Search className="h-4 w-4" />
           </button>
@@ -466,7 +463,7 @@ function Header({
             type="button"
             onClick={() => onNavigate("cart")}
             className="relative grid h-11 w-11 place-items-center rounded-full bg-zinc-950 text-white"
-            aria-label="עגלה"
+            aria-label={tx("עגלה")}
           >
             <ShoppingBag className="h-5 w-5" />
             {cartCount > 0 ? (
@@ -480,7 +477,7 @@ function Header({
             type="button"
             onClick={() => setMobileOpen(true)}
             className="grid h-11 w-11 place-items-center rounded-full border border-zinc-200 bg-white text-zinc-950"
-            aria-label="פתיחת תפריט"
+            aria-label={tx("פתיחת תפריט")}
           >
             <Menu className="h-5 w-5" />
           </button>
@@ -497,7 +494,7 @@ function Header({
               type="button"
               onClick={() => setMobileOpen(false)}
               className="grid h-11 w-11 place-items-center rounded-full bg-zinc-950 text-white"
-              aria-label="סגירת תפריט"
+              aria-label={tx("סגירת תפריט")}
             >
               <X className="h-5 w-5" />
             </button>
@@ -515,7 +512,7 @@ function Header({
                   }}
                   className="flex w-full items-center justify-between rounded-[1.5rem] border border-zinc-200 bg-white px-5 py-4 text-xl font-black shadow-sm"
                 >
-                  {item.label}
+                  {tx(item.label)}
                   <ArrowRight className="h-5 w-5" />
                 </button>
               ),
@@ -801,17 +798,13 @@ function ProductGrid({
                     type="button"
                     onClick={() => onProductClick(product)}
                     className="min-h-[42px] rounded-full border border-zinc-300 bg-white px-4 text-xs font-black uppercase tracking-[0.12em] text-zinc-950 transition hover:bg-zinc-100"
-                  >
-                    צפייה
-                  </button>
+                  >{tx("צפייה")}</button>
 
                   <button
                     type="button"
                     onClick={() => onAddToCart(product, 1)}
                     className="min-h-[42px] rounded-full bg-zinc-950 px-4 text-xs font-black uppercase tracking-[0.12em] text-white transition hover:bg-zinc-800"
-                  >
-                    הוסף לסל
-                  </button>
+                  >{tx("הוסף לסל")}</button>
                 </div>
               </div>
             </article>
@@ -852,9 +845,7 @@ function ProductPage({
           onClick={onBack}
           className="mb-6 inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-white px-5 py-3 text-sm font-black text-zinc-950 shadow-sm transition hover:bg-zinc-950 hover:text-white"
         >
-          <ArrowLeft className="h-4 w-4" />
-          חזרה למוצרים
-        </button>
+          <ArrowLeft className="h-4 w-4" />{tx("חזרה למוצרים")}</button>
 
         <div className="grid gap-6 lg:grid-cols-[1.05fr_0.95fr]">
           <div className="overflow-hidden rounded-[2.5rem] border border-zinc-200 bg-white p-3 shadow-xl shadow-zinc-950/5">
@@ -890,20 +881,14 @@ function ProductPage({
                   className="h-4 w-4 fill-zinc-950 text-zinc-950"
                 />
               ))}
-              <span className="text-sm font-bold text-zinc-500">
-                4.9 · 128 ביקורות
-              </span>
+              <span className="text-sm font-bold text-zinc-500">{tx("4.9 · 128 ביקורות")}</span>
             </div>
 
             <p className="mt-6 text-3xl font-black tracking-[-0.05em]">
               {product.price || "₪0"}
             </p>
 
-            <p className="mt-5 max-w-xl text-base leading-8 text-zinc-600">
-              פריט פרימיום מתוך הקולקציה החדשה. מתאים ללוק יומיומי, ערב או
-              סטיילינג מודרני. העיצוב נקי, התמונה גדולה, והלקוחה מקבלת חוויית
-              מוצר מלאה לפני הוספה לסל.
-            </p>
+            <p className="mt-5 max-w-xl text-base leading-8 text-zinc-600">{tx("פריט פרימיום מתוך הקולקציה החדשה. מתאים ללוק יומיומי, ערב או\n              סטיילינג מודרני. העיצוב נקי, התמונה גדולה, והלקוחה מקבלת חוויית\n              מוצר מלאה לפני הוספה לסל.")}</p>
 
             <div className="mt-7 grid gap-3 sm:grid-cols-3">
               {["משלוח מהיר", "החזרה קלה", "תשלום מאובטח"].map((item) => (
@@ -917,9 +902,7 @@ function ProductPage({
             </div>
 
             <div className="mt-7">
-              <p className="mb-3 text-xs font-black uppercase tracking-[0.2em] text-zinc-500">
-                כמות
-              </p>
+              <p className="mb-3 text-xs font-black uppercase tracking-[0.2em] text-zinc-500">{tx("כמות")}</p>
 
               <div className="flex w-fit items-center rounded-full border border-zinc-200 bg-[#fbf7ef] p-1">
                 <button
@@ -949,17 +932,13 @@ function ProductPage({
                 type="button"
                 onClick={() => onAddToCart(product, quantity)}
                 className="min-h-[56px] rounded-full bg-zinc-950 px-7 text-sm font-black uppercase tracking-[0.14em] text-white transition hover:-translate-y-0.5 hover:bg-zinc-800"
-              >
-                הוסף לסל
-              </button>
+              >{tx("הוסף לסל")}</button>
 
               <button
                 type="button"
                 onClick={() => onAddToCart(product, quantity)}
                 className="min-h-[56px] rounded-full border border-zinc-300 bg-white px-7 text-sm font-black uppercase tracking-[0.14em] text-zinc-950 transition hover:bg-zinc-100"
-              >
-                קנה עכשיו
-              </button>
+              >{tx("קנה עכשיו")}</button>
             </div>
           </div>
         </div>
@@ -967,12 +946,8 @@ function ProductPage({
         <div className="mt-14">
           <div className="mb-6 flex flex-col justify-between gap-4 md:flex-row md:items-end">
             <div>
-              <p className="text-xs font-black uppercase tracking-[0.28em] text-zinc-500">
-                מוצרים נוספים
-              </p>
-              <h2 className="mt-3 text-4xl font-black uppercase leading-none tracking-[-0.06em] sm:text-6xl">
-                אולי תאהבי גם
-              </h2>
+              <p className="text-xs font-black uppercase tracking-[0.28em] text-zinc-500">{tx("מוצרים נוספים")}</p>
+              <h2 className="mt-3 text-4xl font-black uppercase leading-none tracking-[-0.06em] sm:text-6xl">{tx("אולי תאהבי גם")}</h2>
             </div>
           </div>
 
@@ -1059,19 +1034,15 @@ function CartPage({
       <div className="mx-auto max-w-[1480px]">
         <div className="mb-8 flex flex-col justify-between gap-4 md:flex-row md:items-end">
           <div>
-            <SectionEyebrow>סל קניות</SectionEyebrow>
-            <h1 className="mt-3 text-5xl font-black uppercase leading-[0.88] tracking-[-0.075em] sm:text-7xl">
-              סל הקניות שלך
-            </h1>
+            <SectionEyebrow>{tx("סל קניות")}</SectionEyebrow>
+            <h1 className="mt-3 text-5xl font-black uppercase leading-[0.88] tracking-[-0.075em] sm:text-7xl">{tx("סל הקניות שלך")}</h1>
           </div>
 
           <button
             type="button"
             onClick={() => onNavigate("collection")}
             className="inline-flex min-h-[48px] items-center justify-center gap-2 rounded-full bg-zinc-950 px-6 text-sm font-black uppercase tracking-[0.12em] text-white transition hover:bg-zinc-800"
-          >
-            המשך קניות
-            <ArrowRight className="h-4 w-4" />
+          >{tx("המשך קניות")}<ArrowRight className="h-4 w-4" />
           </button>
         </div>
 
@@ -1080,15 +1051,9 @@ function CartPage({
             <div className="mx-auto grid h-20 w-20 place-items-center rounded-full bg-[#fbf7ef]">
               <ShoppingBag className="h-9 w-9" />
             </div>
-            <h2 className="mt-6 text-3xl font-black uppercase tracking-[-0.05em]">
-              הסל ריק
-            </h2>
-            <p className="mx-auto mt-3 max-w-md text-sm leading-7 text-zinc-600">
-              עדיין לא הוספת מוצרים לסל. חזרי לקולקציה ובחרי פריטים.
-            </p>
-            <Button dark className="mt-6" onClick={() => onNavigate("collection")}>
-              מעבר לקולקציה
-            </Button>
+            <h2 className="mt-6 text-3xl font-black uppercase tracking-[-0.05em]">{tx("הסל ריק")}</h2>
+            <p className="mx-auto mt-3 max-w-md text-sm leading-7 text-zinc-600">{tx("עדיין לא הוספת מוצרים לסל. חזרי לקולקציה ובחרי פריטים.")}</p>
+            <Button dark className="mt-6" onClick={() => onNavigate("collection")}>{tx("מעבר לקולקציה")}</Button>
           </div>
         ) : (
           <div className="grid gap-6 lg:grid-cols-[1fr_420px]">
@@ -1124,7 +1089,7 @@ function CartPage({
                       type="button"
                       onClick={() => onRemoveItem(item.product)}
                       className="grid h-10 w-10 place-items-center rounded-full border border-zinc-200 bg-white text-zinc-950 transition hover:bg-red-50 hover:text-red-600"
-                      aria-label="הסרת פריט"
+                      aria-label={tx("הסרת פריט")}
                     >
                       <Trash2 className="h-4 w-4" />
                     </button>
@@ -1164,23 +1129,21 @@ function CartPage({
             </div>
 
             <aside className="h-fit rounded-[2.5rem] border border-zinc-200 bg-white p-6 shadow-xl shadow-zinc-950/5 lg:sticky lg:top-32">
-              <h2 className="text-3xl font-black uppercase tracking-[-0.06em]">
-                סיכום הזמנה
-              </h2>
+              <h2 className="text-3xl font-black uppercase tracking-[-0.06em]">{tx("סיכום הזמנה")}</h2>
 
               <div className="mt-6 space-y-4 text-sm font-bold">
                 <div className="flex justify-between border-b border-zinc-200 pb-3">
-                  <span className="text-zinc-500">סכום ביניים</span>
+                  <span className="text-zinc-500">{tx("סכום ביניים")}</span>
                   <span>{formatPrice(subtotal)}</span>
                 </div>
 
                 <div className="flex justify-between border-b border-zinc-200 pb-3">
-                  <span className="text-zinc-500">משלוח</span>
+                  <span className="text-zinc-500">{tx("משלוח")}</span>
                   <span>{shipping === 0 ? "חינם" : formatPrice(shipping)}</span>
                 </div>
 
                 <div className="flex justify-between pt-2 text-xl font-black">
-                  <span>סה״כ</span>
+                  <span>{tx("סה״כ")}</span>
                   <span>{formatPrice(total)}</span>
                 </div>
               </div>
@@ -1188,14 +1151,9 @@ function CartPage({
               <button
                 type="button"
                 className="mt-7 min-h-[56px] w-full rounded-full bg-zinc-950 px-7 text-sm font-black uppercase tracking-[0.14em] text-white transition hover:-translate-y-0.5 hover:bg-zinc-800"
-              >
-                מעבר לתשלום
-              </button>
+              >{tx("מעבר לתשלום")}</button>
 
-              <p className="mt-4 text-center text-xs leading-6 text-zinc-500">
-                זה דמו של סל קניות לתבנית. את החיבור לסליקה ולשרת אפשר לחבר
-                בהמשך לפי המערכת שלך.
-              </p>
+              <p className="mt-4 text-center text-xs leading-6 text-zinc-500">{tx("זה דמו של סל קניות לתבנית. את החיבור לסליקה ולשרת אפשר לחבר\n                בהמשך לפי המערכת שלך.")}</p>
             </aside>
           </div>
         )}
@@ -1346,9 +1304,7 @@ function FeaturedPiece({
               </div>
 
               <div className="flex gap-2">
-                <Button dark onClick={() => onProductClick(featuredProduct)}>
-                  צפייה
-                </Button>
+                <Button dark onClick={() => onProductClick(featuredProduct)}>{tx("צפייה")}</Button>
                 <Button dark onClick={() => onAddToCart(featuredProduct, 1)}>
                   {data.buyCta}
                 </Button>
@@ -1567,7 +1523,7 @@ function FaqNewsletter({
             {data.newsletterText}
           </p>
 
-          <form className="mt-8 flex flex-col gap-3 sm:flex-row" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="novastra-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+          <form className="mt-8 flex flex-col gap-3 sm:flex-row" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="novastra-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
             <input
               type="email"
               placeholder={data.newsletterPlaceholder}
@@ -1671,7 +1627,7 @@ function FloatingChat({ data }: { data: NovastraData }) {
               type="button"
               onClick={() => setOpen(false)}
               className="grid h-8 w-8 place-items-center rounded-full bg-white/10"
-              aria-label="סגירת צ׳אט"
+              aria-label={tx("סגירת צ׳אט")}
             >
               <X className="h-4 w-4" />
             </button>
@@ -1689,7 +1645,7 @@ function FloatingChat({ data }: { data: NovastraData }) {
         type="button"
         onClick={() => setOpen((value) => !value)}
         className="grid h-14 w-14 place-items-center rounded-full bg-white text-zinc-950 shadow-2xl shadow-black/25 ring-1 ring-zinc-200 transition hover:-translate-y-1"
-        aria-label="פתיחת צ׳אט"
+        aria-label={tx("פתיחת צ׳אט")}
       >
         <MessageCircle className="h-6 w-6" />
       </button>

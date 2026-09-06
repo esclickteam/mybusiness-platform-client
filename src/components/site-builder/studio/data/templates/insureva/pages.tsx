@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
 import { Reveal } from "../shared/Reveal";
@@ -195,7 +196,7 @@ function Team({ data }: { data: Record<string, any> }) {
           ))}
         </div>
         <Reveal delayMs={220} className="mx-auto mt-8 max-w-2xl border border-black/10 bg-[var(--bg)] p-6 text-center">
-          <p className="text-sm font-bold leading-7 text-[var(--muted)]">צוות אמון שמכיר פוליסות, תביעות ואנשים — ומחזיק את התיק עד שיש תשובה ברורה.</p>
+          <p className="text-sm font-bold leading-7 text-[var(--muted)]">{tx("צוות אמון שמכיר פוליסות, תביעות ואנשים — ומחזיק את התיק עד שיש תשובה ברורה.")}</p>
         </Reveal>
       </div>
     </section>
@@ -256,7 +257,7 @@ function Insights({ data, goTo }: { data: Record<string, any>; goTo: (id: string
                   </div>
                   <span className="grid h-8 w-8 shrink-0 place-items-center rounded-full border border-black/10 text-xs font-black text-[var(--p)]">?</span>
                 </div>
-                <button type="button" onClick={() => goTo("contact")} className="mt-4 text-sm font-black text-[var(--p)]">שאלו אותנו</button>
+                <button type="button" onClick={() => goTo("contact")} className="mt-4 text-sm font-black text-[var(--p)]">{tx("שאלו אותנו")}</button>
               </article>
             </Reveal>
           ))}
@@ -328,11 +329,11 @@ function Contact({ data }: { data: Record<string, any> }) {
           </div>
         </Reveal>
         <Reveal variant="up" delayMs={100} className="mx-auto mt-10 max-w-xl">
-          <form className="grid gap-3 border border-black/10 bg-[var(--surface)] p-5 md:p-7" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="insureva-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-            <input className="border border-black/10 bg-[var(--bg)] px-4 py-4 text-right outline-none" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-            <input className="border border-black/10 bg-[var(--bg)] px-4 py-4 text-right outline-none" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-            <input className="border border-black/10 bg-[var(--bg)] px-4 py-4 text-right outline-none" placeholder="חברה / תחום"  name="company" data-bizuply-form-field-id="company" />
-            <textarea className="min-h-32 border border-black/10 bg-[var(--bg)] px-4 py-4 text-right outline-none" placeholder="במה נוכל לעזור?"  name="message" data-bizuply-form-field-id="message"></textarea>
+          <form className="grid gap-3 border border-black/10 bg-[var(--surface)] p-5 md:p-7" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="insureva-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+            <input className="border border-black/10 bg-[var(--bg)] px-4 py-4 text-right outline-none" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+            <input className="border border-black/10 bg-[var(--bg)] px-4 py-4 text-right outline-none" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+            <input className="border border-black/10 bg-[var(--bg)] px-4 py-4 text-right outline-none" placeholder={tx("חברה / תחום")}  name="company" data-bizuply-form-field-id="company" />
+            <textarea className="min-h-32 border border-black/10 bg-[var(--bg)] px-4 py-4 text-right outline-none" placeholder={tx("במה נוכל לעזור?")}  name="message" data-bizuply-form-field-id="message"></textarea>
             <button type="submit" className="bg-[var(--p)] px-6 py-4 text-sm font-black text-white">{getValue(data, "contactButton")}</button>
           </form>
         </Reveal>
@@ -354,7 +355,7 @@ function Footer({ data, goTo }: { data: Record<string, any>; goTo: (id: string) 
         </Reveal>
         <div className="mt-10 flex flex-wrap justify-center gap-3">
           {links.map((p) => (
-            <button key={p.id} type="button" onClick={() => goTo(p.id)} className="border border-white/20 px-4 py-2 text-xs font-bold uppercase tracking-[0.14em] text-white/80">{p.label}</button>
+            <button key={p.id} type="button" onClick={() => goTo(p.id)} className="border border-white/20 px-4 py-2 text-xs font-bold uppercase tracking-[0.14em] text-white/80">{tx(p.label)}</button>
           ))}
         </div>
         <p className="mt-10 text-xs text-white/50">© {new Date().getFullYear()} {getValue(data, "brandName")} · {getValue(data, "footerText")}</p>

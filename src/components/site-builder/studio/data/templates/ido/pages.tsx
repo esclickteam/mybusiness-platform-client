@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { TemplateText } from "../shared/TemplateText";
@@ -234,7 +235,7 @@ function Header({
               ].join(" ")}
             >
               <TemplateText as="span" editId={item.editId} editLabel={item.editLabel}>
-                {item.label}
+                {tx(item.label)}
               </TemplateText>
             </button>
           ))}
@@ -246,9 +247,7 @@ function Header({
           className="shrink-0 whitespace-nowrap rounded-full bg-[#c9f4dc] px-5 py-3 text-sm font-black transition duration-500 hover:-translate-y-0.5 hover:bg-white"
           style={{ color: "#07100e" }}
         >
-          <TemplateText as="span" editId="header.cta" editLabel="כפתור קביעת שיחה">
-            קביעת שיחה
-          </TemplateText>
+          <TemplateText as="span" editId="header.cta" editLabel="כפתור קביעת שיחה">{tx("קביעת שיחה")}</TemplateText>
         </button>
       </div>
     </header>
@@ -365,9 +364,7 @@ function Hero({
             editId="hero.eyebrow"
             editLabel="תג הירו"
             className="whitespace-pre-wrap"
-          >
-            אסטרטגיה · תוכן · קמפיינים · צמיחה דיגיטלית
-          </TemplateText>
+          >{tx("אסטרטגיה · תוכן · קמפיינים · צמיחה דיגיטלית")}</TemplateText>
         </div>
 
         <AnimatedTitle
@@ -390,10 +387,7 @@ function Hero({
               : "translate-y-7 opacity-0 blur-md",
           ].join(" ")}
           style={{ transitionDelay: "2350ms" }}
-        >
-          בניית מותג דיגיטלי, תוכן שמייצר אמון וקמפיינים שמביאים לידים,
-          לקוחות ותוצאות מדידות.
-        </TemplateText>
+        >{tx("בניית מותג דיגיטלי, תוכן שמייצר אמון וקמפיינים שמביאים לידים,\n          לקוחות ותוצאות מדידות.")}</TemplateText>
 
         <div
           className={[
@@ -411,9 +405,7 @@ function Hero({
             className="rounded-full bg-[#c9f4dc] px-7 py-4 text-sm font-black shadow-[0_18px_60px_rgba(201,244,220,.22)] transition duration-500 hover:-translate-y-0.5 hover:bg-white"
             style={{ color: "#07100e" }}
           >
-            <TemplateText as="span" editId="hero.cta.primary" editLabel="כפתור ייעוץ">
-              קביעת שיחת ייעוץ
-            </TemplateText>
+            <TemplateText as="span" editId="hero.cta.primary" editLabel="כפתור ייעוץ">{tx("קביעת שיחת ייעוץ")}</TemplateText>
           </button>
 
           <button
@@ -421,9 +413,7 @@ function Hero({
             onClick={() => goTo("services")}
             className="rounded-full border border-white/15 bg-white/[0.09] px-7 py-4 text-sm font-black text-white shadow-2xl backdrop-blur-2xl transition duration-500 hover:-translate-y-0.5 hover:border-[#c9f4dc] hover:bg-white/[0.14]"
           >
-            <TemplateText as="span" editId="hero.cta.secondary" editLabel="כפתור שירותים">
-              צפייה בשירותים
-            </TemplateText>
+            <TemplateText as="span" editId="hero.cta.secondary" editLabel="כפתור שירותים">{tx("צפייה בשירותים")}</TemplateText>
           </button>
         </div>
 
@@ -511,28 +501,21 @@ function Services({
             editId="services.title"
             editLabel="כותרת שירותים"
             className="whitespace-pre-wrap text-4xl font-semibold leading-[1.04] tracking-[-0.055em] md:text-5xl"
-          >
-            אסטרטגיית תוכן שמרגישה כמו מותג, לא כמו עוד פוסט.
-          </TemplateText>
+          >{tx("אסטרטגיית תוכן שמרגישה כמו מותג, לא כמו עוד פוסט.")}</TemplateText>
 
           <TemplateText
             as="p"
             editId="services.body"
             editLabel="תיאור שירותים"
             className="mt-7 whitespace-pre-wrap text-lg leading-8 text-[#111827]/75"
-          >
-            אנחנו בונים לעסק שפה ברורה, מסרים חדים ותוכן שמוביל את הקהל
-            מהיכרות ראשונה ועד פנייה אמיתית.
-          </TemplateText>
+          >{tx("אנחנו בונים לעסק שפה ברורה, מסרים חדים ותוכן שמוביל את הקהל\n            מהיכרות ראשונה ועד פנייה אמיתית.")}</TemplateText>
 
           <button
             type="button"
             onClick={() => goTo("about")}
             className="mt-9 inline-flex items-center gap-3 text-sm font-black uppercase tracking-[0.12em] text-[#111827]"
           >
-            <TemplateText as="span" editId="services.cta" editLabel="כפתור אודות">
-              אודות
-            </TemplateText>
+            <TemplateText as="span" editId="services.cta" editLabel="כפתור אודות">{tx("אודות")}</TemplateText>
             <span className="grid h-8 w-8 place-items-center rounded-md bg-[#111827] text-white">
               ←
             </span>
@@ -601,10 +584,7 @@ function Services({
             editId="services.sideCopy"
             editLabel="טקסט צד שירותים"
             className="whitespace-pre-wrap text-sm font-black uppercase leading-7 tracking-[0.12em] text-[#111827]/80"
-          >
-            ניהול סושיאל, קריאייטיב, קמפיינים, תוכן, דוחות, מסעות לקוח
-            ושיפור מתמיד של הביצועים — במקום אחד.
-          </TemplateText>
+          >{tx("ניהול סושיאל, קריאייטיב, קמפיינים, תוכן, דוחות, מסעות לקוח\n            ושיפור מתמיד של הביצועים — במקום אחד.")}</TemplateText>
 
           <TemplateText
             as="div"
@@ -683,9 +663,7 @@ function About({
               editId="about.eyebrow"
               editLabel="תג אודות"
               className="whitespace-pre-wrap"
-            >
-              לא רק תוכן — מערכת צמיחה
-            </TemplateText>
+            >{tx("לא רק תוכן — מערכת צמיחה")}</TemplateText>
           </div>
 
           <AnimatedTitle
@@ -709,10 +687,7 @@ function About({
                 : "translate-y-8 opacity-0 blur-md",
             ].join(" ")}
             style={{ transitionDelay: "1500ms" }}
-          >
-            הבלוק הזה מציג את הדרך שבה משווק מקצועי הופך נראות דיגיטלית
-            למערכת שמייצרת אמון, תנועה, לידים ומכירות.
-          </TemplateText>
+          >{tx("הבלוק הזה מציג את הדרך שבה משווק מקצועי הופך נראות דיגיטלית\n            למערכת שמייצרת אמון, תנועה, לידים ומכירות.")}</TemplateText>
         </div>
 
         <div
@@ -972,10 +947,7 @@ function Gallery({ editMode = false }: { editMode?: boolean }) {
             editId="gallery.subtitle"
             editLabel="תיאור גלריה"
             className="mx-auto mt-7 max-w-2xl whitespace-pre-wrap text-base leading-8 text-white/64 md:text-lg"
-          >
-            המעגלים מייצגים את מערכת השיווק: חשיפה, מסר, קהל, ליד,
-            מכירה ושיפור מתמיד — כל שכבה מתרחבת ומחזקת את הבאה.
-          </TemplateText>
+          >{tx("המעגלים מייצגים את מערכת השיווק: חשיפה, מסר, קהל, ליד,\n            מכירה ושיפור מתמיד — כל שכבה מתרחבת ומחזקת את הבאה.")}</TemplateText>
         </div>
 
         {orbitImages.map((image) => (
@@ -1064,10 +1036,7 @@ function Booking({
             editId="booking.subtitle"
             editLabel="תיאור ייעוץ"
             className="mt-7 max-w-xl whitespace-pre-wrap text-lg leading-8 text-[#07100e]/65"
-          >
-            אזור שמוכן לחיבור ל־CRM, וואטסאפ, יומן או כל מערכת לידים שתוסיף
-            בהמשך.
-          </TemplateText>
+          >{tx("אזור שמוכן לחיבור ל־CRM, וואטסאפ, יומן או כל מערכת לידים שתוסיף\n            בהמשך.")}</TemplateText>
         </div>
 
         <form
@@ -1087,38 +1056,38 @@ function Booking({
             <FormFieldSlot id="booking.form.name" label="שדה שם מלא">
               <input
                 className="h-14 w-full rounded-2xl border border-[#07100e]/10 bg-[#f7fbf5] px-5 outline-none transition focus:border-[#07100e]"
-                placeholder="שם מלא"
+                placeholder={tx("שם מלא")}
               />
             </FormFieldSlot>
 
             <FormFieldSlot id="booking.form.phone" label="שדה טלפון">
               <input
                 className="h-14 w-full rounded-2xl border border-[#07100e]/10 bg-[#f7fbf5] px-5 outline-none transition focus:border-[#07100e]"
-                placeholder="טלפון"
+                placeholder={tx("טלפון")}
               />
             </FormFieldSlot>
 
             <FormFieldSlot id="booking.form.interest" label="שדה בחירת שירות">
               <select className="h-14 w-full rounded-2xl border border-[#07100e]/10 bg-[#f7fbf5] px-5 outline-none transition focus:border-[#07100e]">
-                <option>מה מעניין אותך?</option>
-                <option>ניהול סושיאל</option>
-                <option>קמפיינים ממומנים</option>
-                <option>אסטרטגיית תוכן</option>
-                <option>מיתוג דיגיטלי</option>
+                <option>{tx("מה מעניין אותך?")}</option>
+                <option>{tx("ניהול סושיאל")}</option>
+                <option>{tx("קמפיינים ממומנים")}</option>
+                <option>{tx("אסטרטגיית תוכן")}</option>
+                <option>{tx("מיתוג דיגיטלי")}</option>
               </select>
             </FormFieldSlot>
 
             <FormFieldSlot id="booking.form.budget" label="שדה תקציב">
               <input
                 className="h-14 w-full rounded-2xl border border-[#07100e]/10 bg-[#f7fbf5] px-5 outline-none transition focus:border-[#07100e]"
-                placeholder="תקציב חודשי משוער"
+                placeholder={tx("תקציב חודשי משוער")}
               />
             </FormFieldSlot>
 
             <FormFieldSlot id="booking.form.message" label="שדה הודעה">
               <textarea
                 className="min-h-32 w-full rounded-2xl border border-[#07100e]/10 bg-[#f7fbf5] px-5 py-4 outline-none transition focus:border-[#07100e]"
-                placeholder="ספרו בקצרה על העסק והמטרה"
+                placeholder={tx("ספרו בקצרה על העסק והמטרה")}
               />
             </FormFieldSlot>
 
@@ -1132,9 +1101,7 @@ function Booking({
                   as="span"
                   editId="booking.form.submitLabel"
                   editLabel="טקסט כפתור שליחה"
-                >
-                  שליחת בקשה לשיחה
-                </TemplateText>
+                >{tx("שליחת בקשה לשיחה")}</TemplateText>
               </button>
             </FormFieldSlot>
           </div>
@@ -1200,9 +1167,7 @@ function Faq({
             editId="faq.title"
             editLabel="כותרת FAQ"
             className="max-w-5xl whitespace-pre-wrap text-4xl font-semibold leading-[1.02] tracking-[-0.055em] text-white md:text-7xl"
-          >
-            שאלות לפני שמתחילים לבנות נוכחות דיגיטלית.
-          </TemplateText>
+          >{tx("שאלות לפני שמתחילים לבנות נוכחות דיגיטלית.")}</TemplateText>
         </div>
 
         <div className="mt-12 space-y-4">
@@ -1263,9 +1228,7 @@ function Footer() {
           editId="footer.tagline"
           editLabel="תיאור בפוטר"
           className="whitespace-pre-wrap text-[#07100e]/60"
-        >
-          תבנית יוקרתית למשווק, איש סושיאל ואסטרטג דיגיטל
-        </TemplateText>
+        >{tx("תבנית יוקרתית למשווק, איש סושיאל ואסטרטג דיגיטל")}</TemplateText>
       </div>
     </footer>
   );

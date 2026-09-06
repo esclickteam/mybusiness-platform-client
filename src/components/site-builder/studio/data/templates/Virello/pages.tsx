@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { virelloDefaultData } from "./defaultData";
@@ -352,7 +353,7 @@ function Header({
               )}
             >
               <VisualText id={`nav.${index}.number`} fallback={item.number} className="mr-2 text-xs opacity-55" />
-              <VisualText id={`nav.${index}.label`} fallback={item.label} />
+              <VisualText id={`nav.${index}.label`} fallback={tx(item.label)} />
             </button>
           ))}
         </nav>
@@ -1086,7 +1087,7 @@ function Footer({ onNavigate }: { onNavigate: (page: VirelloPageId) => void }) {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {base.nav.map((item, index) => (
             <button key={item.id} type="button" onClick={() => onNavigate(item.id as VirelloPageId)} className="w-fit text-sm font-black text-[#301b12]/55 hover:text-[#301b12]">
-              <VisualText id={`nav.${index}.number`} fallback={`(${item.number})`} /> <VisualText id={`nav.${index}.label`} fallback={item.label} />
+              <VisualText id={`nav.${index}.number`} fallback={`(${item.number})`} /> <VisualText id={`nav.${index}.label`} fallback={tx(item.label)} />
             </button>
           ))}
         </div>
@@ -1095,7 +1096,7 @@ function Footer({ onNavigate }: { onNavigate: (page: VirelloPageId) => void }) {
           <VisualText id="footer.newsletterLabel" fallback="הצטרפו לעדכונים" as="label" className="mb-3 block text-sm font-black text-[#301b12]" />
 
           <div className="flex gap-2">
-            <input type="email" placeholder="כתובת אימייל" className="min-w-0 flex-1 rounded-full border border-[#301b12]/10 bg-white px-4 py-3 text-sm font-bold text-[#301b12] outline-none focus:border-[#301b12]" />
+            <input type="email" placeholder={tx("כתובת אימייל")} className="min-w-0 flex-1 rounded-full border border-[#301b12]/10 bg-white px-4 py-3 text-sm font-bold text-[#301b12] outline-none focus:border-[#301b12]" />
 
             <button className="rounded-full bg-[#301b12] px-5 py-3 text-sm font-black text-white">
               <VisualText id="footer.newsletterButton" fallback="הצטרפות" />
@@ -1226,14 +1227,14 @@ function ContactPage() {
           <VisualText id="contact.description" fallback={base.contact.description} as="p" className="mt-8 max-w-xl text-xl font-bold leading-9 text-[#301b12]/62" />
         </div>
 
-        <form data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="virello-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם." className="rounded-[3rem] border border-[#301b12]/10 bg-white/80 p-6 shadow-[0_25px_80px_rgba(48,27,18,.09)] md:p-10">
+        <form data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="virello-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")} className="rounded-[3rem] border border-[#301b12]/10 bg-white/80 p-6 shadow-[0_25px_80px_rgba(48,27,18,.09)] md:p-10">
           <div className="grid gap-4 md:grid-cols-2">
-            <input placeholder="שם מלא" className="rounded-full border border-[#301b12]/10 bg-[#fff8f0] px-5 py-4 text-sm font-bold outline-none"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-            <input placeholder="טלפון" className="rounded-full border border-[#301b12]/10 bg-[#fff8f0] px-5 py-4 text-sm font-bold outline-none"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+            <input placeholder={tx("שם מלא")} className="rounded-full border border-[#301b12]/10 bg-[#fff8f0] px-5 py-4 text-sm font-bold outline-none"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+            <input placeholder={tx("טלפון")} className="rounded-full border border-[#301b12]/10 bg-[#fff8f0] px-5 py-4 text-sm font-bold outline-none"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
           </div>
 
-          <input placeholder="אימייל" className="mt-4 w-full rounded-full border border-[#301b12]/10 bg-[#fff8f0] px-5 py-4 text-sm font-bold outline-none"  name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
-          <textarea placeholder="ספרו לנו על הפרויקט" className="mt-4 min-h-[180px] w-full rounded-[2rem] border border-[#301b12]/10 bg-[#fff8f0] p-5 text-sm font-bold outline-none"  name="message" data-bizuply-form-field-id="message"></textarea>
+          <input placeholder={tx("אימייל")} className="mt-4 w-full rounded-full border border-[#301b12]/10 bg-[#fff8f0] px-5 py-4 text-sm font-bold outline-none"  name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
+          <textarea placeholder={tx("ספרו לנו על הפרויקט")} className="mt-4 min-h-[180px] w-full rounded-[2rem] border border-[#301b12]/10 bg-[#fff8f0] p-5 text-sm font-bold outline-none"  name="message" data-bizuply-form-field-id="message"></textarea>
 
           <button className="mt-4 w-full rounded-full bg-[#301b12] px-6 py-5 text-sm font-black text-white" type="submit">
             <VisualText id="contact.button" fallback={base.contact.button} />

@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { numerisDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
@@ -36,7 +37,7 @@ function Header({ data, openModal }: { data: Record<string, any>; openModal: () 
         </a>
         <nav className="hidden items-center gap-8 text-sm font-semibold text-[var(--muted)] md:flex">
           <a href="#services" className="transition hover:text-[var(--p)]">{getValue(data, "navServices")}</a>
-          <a href="#packages" className="transition hover:text-[var(--p)]">חבילות</a>
+          <a href="#packages" className="transition hover:text-[var(--p)]">{tx("חבילות")}</a>
           <a href="#contact" className="transition hover:text-[var(--p)]">{getValue(data, "navContact")}</a>
         </nav>
         <button type="button" onClick={openModal} className="border border-[var(--p)] bg-white px-5 py-2.5 text-sm font-bold text-[var(--p)] transition hover:bg-[var(--p)] hover:text-white">
@@ -66,7 +67,7 @@ function Hero({ data, openModal }: { data: Record<string, any>; openModal: () =>
             <div className="relative mx-auto aspect-square w-full max-w-[430px] border border-[var(--p)]/18 bg-[var(--bg)] p-5">
               <img src={getValue(data, "heroImage")} alt="" className="h-full w-full object-cover" />
               <div className="absolute -bottom-5 -right-5 border border-[var(--p)] bg-white px-5 py-4 shadow-[0_18px_45px_rgba(15,110,86,0.12)]">
-                <span className="block text-xs font-bold text-[var(--muted)]">דוח חודשי</span>
+                <span className="block text-xs font-bold text-[var(--muted)]">{tx("דוח חודשי")}</span>
                 <strong className="t-display text-3xl text-[var(--p)]">{getValue(data, "heroBadge")}</strong>
               </div>
             </div>
@@ -97,9 +98,9 @@ function ServicesTable({ data }: { data: Record<string, any> }) {
         </Reveal>
         <div className="border border-[var(--p)]/14">
           <div className="grid grid-cols-[0.8fr_1.2fr_0.55fr] bg-[var(--p)] px-4 py-3 text-sm font-bold text-white md:px-6">
-            <span>שירות</span>
-            <span>תיאור</span>
-            <span className="text-left">החל מ-</span>
+            <span>{tx("שירות")}</span>
+            <span>{tx("תיאור")}</span>
+            <span className="text-left">{tx("החל מ-")}</span>
           </div>
           {rows.map(([title, text, price], index) => (
             <Reveal key={title} delayMs={index * 70} variant="up">
@@ -279,17 +280,17 @@ function Contact({ data, openModal }: { data: Record<string, any>; openModal: ()
           <h2 className="t-display mt-3 text-4xl font-bold tracking-[-0.05em] md:text-6xl">{getValue(data, "contactTitle")}</h2>
           <p className="mt-5 text-sm leading-7 text-[var(--muted)]">{getValue(data, "contactText")}</p>
           <div className="mt-8 space-y-3 text-sm text-[var(--muted)]">
-            <p><span className="font-bold text-[var(--p)]">טלפון</span> · {getValue(data, "phone")}</p>
-            <p><span className="font-bold text-[var(--p)]">אימייל</span> · {getValue(data, "email")}</p>
-            <p><span className="font-bold text-[var(--p)]">כתובת</span> · {getValue(data, "address")}</p>
+            <p><span className="font-bold text-[var(--p)]">{tx("טלפון")}</span> · {getValue(data, "phone")}</p>
+            <p><span className="font-bold text-[var(--p)]">{tx("אימייל")}</span> · {getValue(data, "email")}</p>
+            <p><span className="font-bold text-[var(--p)]">{tx("כתובת")}</span> · {getValue(data, "address")}</p>
           </div>
         </Reveal>
         <Reveal variant="left">
-          <form className="grid gap-4 border border-[var(--p)]/14 bg-white p-6 shadow-[0_24px_70px_rgba(15,110,86,0.08)] md:p-8" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="numeris-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-            <input className="border border-[var(--p)]/18 bg-white px-5 py-4 text-right outline-none transition placeholder:text-[var(--muted)]/55 focus:border-[var(--p)]" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-            <input className="border border-[var(--p)]/18 bg-white px-5 py-4 text-right outline-none transition placeholder:text-[var(--muted)]/55 focus:border-[var(--p)]" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-            <input className="border border-[var(--p)]/18 bg-white px-5 py-4 text-right outline-none transition placeholder:text-[var(--muted)]/55 focus:border-[var(--p)]" placeholder="אימייל"  name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
-            <textarea className="min-h-32 border border-[var(--p)]/18 bg-white px-5 py-4 text-right outline-none transition placeholder:text-[var(--muted)]/55 focus:border-[var(--p)]" placeholder="כמה עובדים / חשבוניות בחודש?"  name="other" data-bizuply-form-field-id="other"></textarea>
+          <form className="grid gap-4 border border-[var(--p)]/14 bg-white p-6 shadow-[0_24px_70px_rgba(15,110,86,0.08)] md:p-8" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="numeris-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+            <input className="border border-[var(--p)]/18 bg-white px-5 py-4 text-right outline-none transition placeholder:text-[var(--muted)]/55 focus:border-[var(--p)]" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+            <input className="border border-[var(--p)]/18 bg-white px-5 py-4 text-right outline-none transition placeholder:text-[var(--muted)]/55 focus:border-[var(--p)]" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+            <input className="border border-[var(--p)]/18 bg-white px-5 py-4 text-right outline-none transition placeholder:text-[var(--muted)]/55 focus:border-[var(--p)]" placeholder={tx("אימייל")}  name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
+            <textarea className="min-h-32 border border-[var(--p)]/18 bg-white px-5 py-4 text-right outline-none transition placeholder:text-[var(--muted)]/55 focus:border-[var(--p)]" placeholder={tx("כמה עובדים / חשבוניות בחודש?")}  name="other" data-bizuply-form-field-id="other"></textarea>
             <button type="submit" onClick={openModal} className="bg-[var(--p)] px-7 py-4 text-sm font-bold text-white transition hover:bg-[var(--a)]">{getValue(data, "contactButton")}</button>
           </form>
         </Reveal>
@@ -322,9 +323,9 @@ function ContactModal({ data, open, onClose }: { data: Record<string, any>; open
       <div className="relative w-full max-w-md border border-[var(--p)] bg-white p-8 text-[var(--text)]">
         <button type="button" onClick={onClose} className="absolute left-4 top-4 text-2xl text-[var(--muted)] transition hover:text-[var(--p)]">×</button>
         <h3 className="t-display text-3xl font-bold tracking-[-0.04em]">{getValue(data, "contactTitle")}</h3>
-        <form className="mt-6 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="numeris-contact-2" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-          <input className="border border-[var(--p)]/18 px-5 py-4 text-right outline-none focus:border-[var(--p)]" placeholder="שם מלא"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-          <input className="border border-[var(--p)]/18 px-5 py-4 text-right outline-none focus:border-[var(--p)]" placeholder="טלפון"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+        <form className="mt-6 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="numeris-contact-2" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+          <input className="border border-[var(--p)]/18 px-5 py-4 text-right outline-none focus:border-[var(--p)]" placeholder={tx("שם מלא")}  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+          <input className="border border-[var(--p)]/18 px-5 py-4 text-right outline-none focus:border-[var(--p)]" placeholder={tx("טלפון")}  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
           <button type="submit" className="bg-[var(--p)] py-4 text-sm font-bold text-white">{getValue(data, "contactButton")}</button>
         </form>
       </div>

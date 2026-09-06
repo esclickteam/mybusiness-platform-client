@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { aurayogaDefaultData } from "./defaultData";
 import { useTemplatePageNavigation } from "../shared/useTemplatePageNavigation";
@@ -66,7 +67,7 @@ function Header({ data }: { data: Record<string, any> }) {
           <span className="grid h-11 w-11 place-items-center border border-[var(--p)]/50 bg-white/8 text-sm font-bold text-[var(--p)]">{getValue(data, "logoText")}</span>
           <span className="t-display text-3xl font-semibold tracking-wide text-white">{getValue(data, "brandName")}</span>
         </a>
-        <nav className="hidden items-center gap-8 text-sm font-medium text-white/72 lg:flex" aria-label="ניווט ראשי">
+        <nav className="hidden items-center gap-8 text-sm font-medium text-white/72 lg:flex" aria-label={tx("ניווט ראשי")}>
           {links.map(([label, href]) => (
             <a key={label} href={href} className="aura-nav-link">
               {label}
@@ -336,11 +337,11 @@ function JoinForm({ data }: { data: Record<string, any> }) {
           </div>
         </Reveal>
         <Reveal variant="left" delayMs={120}>
-          <form className="grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="aurayoga-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-            <input aria-label="שם מלא" placeholder="שם מלא" className="aura-input border border-white/12 bg-[var(--dark)] px-5 py-4 text-white outline-none focus:border-[var(--p)]"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-            <input aria-label="טלפון" placeholder="טלפון" className="aura-input border border-white/12 bg-[var(--dark)] px-5 py-4 text-white outline-none focus:border-[var(--p)]"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-            <input aria-label="אימייל" placeholder="אימייל" className="aura-input border border-white/12 bg-[var(--dark)] px-5 py-4 text-white outline-none focus:border-[var(--p)]"  name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
-            <textarea aria-label="מה תרצו לתרגל" placeholder="מה תרצו לתרגל?" rows={4} className="aura-input border border-white/12 bg-[var(--dark)] px-5 py-4 text-white outline-none focus:border-[var(--p)]"  name="other" data-bizuply-form-field-id="other"></textarea>
+          <form className="grid gap-4" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="aurayoga-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+            <input aria-label={tx("שם מלא")} placeholder={tx("שם מלא")} className="aura-input border border-white/12 bg-[var(--dark)] px-5 py-4 text-white outline-none focus:border-[var(--p)]"  name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+            <input aria-label={tx("טלפון")} placeholder={tx("טלפון")} className="aura-input border border-white/12 bg-[var(--dark)] px-5 py-4 text-white outline-none focus:border-[var(--p)]"  name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+            <input aria-label={tx("אימייל")} placeholder={tx("אימייל")} className="aura-input border border-white/12 bg-[var(--dark)] px-5 py-4 text-white outline-none focus:border-[var(--p)]"  name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
+            <textarea aria-label={tx("מה תרצו לתרגל")} placeholder={tx("מה תרצו לתרגל?")} rows={4} className="aura-input border border-white/12 bg-[var(--dark)] px-5 py-4 text-white outline-none focus:border-[var(--p)]"  name="other" data-bizuply-form-field-id="other"></textarea>
             <button type="submit" className="bg-[var(--p)] px-8 py-4 text-sm font-bold text-[var(--dark)] transition hover:bg-white">{getValue(data, "contactButton")}</button>
           </form>
         </Reveal>

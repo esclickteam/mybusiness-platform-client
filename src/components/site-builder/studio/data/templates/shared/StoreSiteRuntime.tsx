@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { Reveal } from "./Reveal";
@@ -233,9 +234,7 @@ function ProductCard({
               type="button"
               onClick={onAdd}
               className="bg-[var(--dark)] px-3 py-2 text-[11px] font-black uppercase tracking-[0.14em] text-white transition hover:bg-[var(--p)] hover:text-[var(--on-p)]"
-            >
-              הוסף
-            </button>
+            >{tx("הוסף")}</button>
           </div>
         </div>
       </article>
@@ -504,7 +503,7 @@ export default function StoreSiteRuntime({
                 currentPage === item.id ? "text-[var(--p)]" : "opacity-70 hover:opacity-100"
               }`}
             >
-              {item.label}
+              {tx(item.label)}
             </button>
           ))}
         </nav>
@@ -558,7 +557,7 @@ export default function StoreSiteRuntime({
                     : "bg-[var(--bg-soft)] text-[var(--text)]",
                 )}
               >
-                {item.label}
+                {tx(item.label)}
               </button>
             ))}
           </div>
@@ -580,17 +579,17 @@ export default function StoreSiteRuntime({
           </p>
         </div>
         <div className="text-right">
-          <p className="text-xs font-black uppercase tracking-[0.2em] text-white/50">ניווט</p>
+          <p className="text-xs font-black uppercase tracking-[0.2em] text-white/50">{tx("ניווט")}</p>
           <div className="mt-4 grid gap-2">
             {pages.map((item) => (
               <button key={item.id} type="button" onClick={() => goToPage(item.id)} className="text-sm opacity-80 hover:opacity-100">
-                {item.label}
+                {tx(item.label)}
               </button>
             ))}
           </div>
         </div>
         <div className="text-right">
-          <p className="text-xs font-black uppercase tracking-[0.2em] text-white/50">יצירת קשר</p>
+          <p className="text-xs font-black uppercase tracking-[0.2em] text-white/50">{tx("יצירת קשר")}</p>
           <p className="mt-4 text-sm">{g("phone")}</p>
           <p className="mt-2 text-sm">{g("email")}</p>
           <p className="mt-2 text-sm text-white/70">{g("address")}</p>
@@ -627,7 +626,7 @@ export default function StoreSiteRuntime({
         <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-black/15 to-transparent" />
         <div className={cx("absolute inset-x-0 bottom-0 p-5 text-white", labelClassName)}>
           <p className="store-display text-2xl font-black">{cat.name}</p>
-          <p className="mt-1 text-xs font-bold uppercase tracking-[0.18em] text-white/70">לצפייה בקטגוריה</p>
+          <p className="mt-1 text-xs font-bold uppercase tracking-[0.18em] text-white/70">{tx("לצפייה בקטגוריה")}</p>
         </div>
       </button>
     </Reveal>
@@ -654,12 +653,10 @@ export default function StoreSiteRuntime({
       <div className="mx-auto max-w-7xl">
         <div className="flex flex-wrap items-end justify-between gap-4">
           <SectionHeading eyebrow={g("productsEyebrow")} title={title} text={text} />
-          <button type="button" onClick={() => goToPage("shop")} className="border border-[var(--line)] px-5 py-3 text-xs font-black uppercase tracking-[0.16em]">
-            לכל המוצרים
-          </button>
+          <button type="button" onClick={() => goToPage("shop")} className="border border-[var(--line)] px-5 py-3 text-xs font-black uppercase tracking-[0.16em]">{tx("לכל המוצרים")}</button>
         </div>
         {loading ? (
-          <p className="mt-10 text-sm text-[var(--muted)]">טוען מוצרים מתוסף החנות...</p>
+          <p className="mt-10 text-sm text-[var(--muted)]">{tx("טוען מוצרים מתוסף החנות...")}</p>
         ) : (
           <div className={cx("mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4", railClassName)}>
             {productsToShow.map((product, index) => (
@@ -761,9 +758,7 @@ export default function StoreSiteRuntime({
                       type="button"
                       onClick={() => goToPage("journal")}
                       className="mt-5 inline-flex w-fit items-center gap-2 text-xs font-black uppercase tracking-[0.18em] text-[var(--p)] transition group-hover:gap-3"
-                    >
-                      להמשך קריאה
-                      <span aria-hidden="true">←</span>
+                    >{tx("להמשך קריאה")}<span aria-hidden="true">←</span>
                     </button>
                   </div>
                 </article>
@@ -785,7 +780,7 @@ export default function StoreSiteRuntime({
             <p className="mt-3 text-[var(--muted)]">{g("newsletterText")}</p>
           </div>
           <form className="flex flex-col gap-3 sm:flex-row" onSubmit={(e) => e.preventDefault()}>
-            <input type="email" placeholder="האימייל שלך" className="min-w-0 flex-1 border border-[var(--line)] bg-[var(--surface)] px-4 py-4 text-sm outline-none focus:border-[var(--p)]" />
+            <input type="email" placeholder={tx("האימייל שלך")} className="min-w-0 flex-1 border border-[var(--line)] bg-[var(--surface)] px-4 py-4 text-sm outline-none focus:border-[var(--p)]" />
             <button type="submit" className="bg-[var(--p)] px-6 py-4 text-sm font-black text-[var(--on-p)]">
               {g("newsletterButton")}
             </button>
@@ -987,7 +982,7 @@ export default function StoreSiteRuntime({
                   <h2 className="store-display mt-4 text-5xl font-black">{product.name}</h2>
                   <p className="mt-4 text-2xl font-black text-[var(--p)]">{formatStorePrice(product.price, currency)}</p>
                   <p className="mt-4 text-[var(--muted)]">{product.shortDescription}</p>
-                  <button type="button" onClick={() => openProduct(product)} className="mt-7 bg-[var(--dark)] px-7 py-4 text-sm font-black text-white">בדיקת ציוד</button>
+                  <button type="button" onClick={() => openProduct(product)} className="mt-7 bg-[var(--dark)] px-7 py-4 text-sm font-black text-white">{tx("בדיקת ציוד")}</button>
                 </Reveal>
               </div>
             </section>
@@ -1221,7 +1216,7 @@ export default function StoreSiteRuntime({
             <section key={item.id} {...sectionProps(`jewel-stage-${index + 1}`, "product", "במת מוצר")} className="px-5 py-20 lg:px-8">
               <div className="mx-auto grid max-w-7xl items-center gap-10 md:grid-cols-2">
                 <StoreImage src={item.image} alt={item.name} fallbackLabel={item.name} className="aspect-[4/5] w-full object-cover" />
-                <Reveal className="text-right"><p className="text-xs uppercase tracking-[0.3em] text-[var(--muted)]">{item.category}</p><h2 className="store-display mt-6 text-6xl font-light">{item.name}</h2><p className="mt-5 text-2xl text-[var(--p)]">{formatStorePrice(item.price, currency)}</p><button type="button" onClick={() => openProduct(item)} className="mt-8 border border-[var(--line)] px-8 py-4 text-xs font-black uppercase tracking-[0.2em]">התבוננות</button></Reveal>
+                <Reveal className="text-right"><p className="text-xs uppercase tracking-[0.3em] text-[var(--muted)]">{item.category}</p><h2 className="store-display mt-6 text-6xl font-light">{item.name}</h2><p className="mt-5 text-2xl text-[var(--p)]">{formatStorePrice(item.price, currency)}</p><button type="button" onClick={() => openProduct(item)} className="mt-8 border border-[var(--line)] px-8 py-4 text-xs font-black uppercase tracking-[0.2em]">{tx("התבוננות")}</button></Reveal>
               </div>
             </section>
           );
@@ -1261,9 +1256,7 @@ export default function StoreSiteRuntime({
               className={`px-4 py-2 text-xs font-black uppercase tracking-[0.14em] ${
                 activeCategory === "all" ? "bg-[var(--p)] text-[var(--on-p)]" : "border border-[var(--line)] bg-[var(--surface)]"
               }`}
-            >
-              הכל
-            </button>
+            >{tx("הכל")}</button>
             {categoryTiles.map((cat) => (
               <button
                 key={cat.id}
@@ -1281,7 +1274,7 @@ export default function StoreSiteRuntime({
             <input
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              placeholder="חיפוש מוצר..."
+              placeholder={tx("חיפוש מוצר...")}
               className="min-w-[200px] flex-1 border border-[var(--line)] bg-[var(--surface)] px-4 py-2.5 text-sm outline-none focus:border-[var(--p)]"
             />
             <select
@@ -1289,10 +1282,10 @@ export default function StoreSiteRuntime({
               onChange={(e) => setSort(e.target.value as typeof sort)}
               className="border border-[var(--line)] bg-[var(--surface)] px-4 py-2.5 text-sm"
             >
-              <option value="featured">נבחרים</option>
-              <option value="price-asc">מחיר: נמוך לגבוה</option>
-              <option value="price-desc">מחיר: גבוה לנמוך</option>
-              <option value="name">שם א-ת</option>
+              <option value="featured">{tx("נבחרים")}</option>
+              <option value="price-asc">{tx("מחיר: נמוך לגבוה")}</option>
+              <option value="price-desc">{tx("מחיר: גבוה לנמוך")}</option>
+              <option value="name">{tx("שם א-ת")}</option>
             </select>
           </div>
         </div>
@@ -1301,7 +1294,7 @@ export default function StoreSiteRuntime({
       <section {...sectionProps("shop-grid", "products", "רשת מוצרים")} className="px-5 py-16 lg:px-8 lg:py-20" data-bizuply-widget="products">
         <div className="mx-auto max-w-7xl">
           {loading ? (
-            <p className="text-sm text-[var(--muted)]">טוען מוצרים מתוסף החנות...</p>
+            <p className="text-sm text-[var(--muted)]">{tx("טוען מוצרים מתוסף החנות...")}</p>
           ) : (
             <>
               <p className="mb-8 text-sm text-[var(--muted)]">
@@ -1324,9 +1317,7 @@ export default function StoreSiteRuntime({
                 ))}
               </div>
               {!filteredProducts.length ? (
-                <div className="mt-16 border border-dashed border-[var(--line)] p-10 text-center text-[var(--muted)]">
-                  לא נמצאו מוצרים בסינון הנוכחי. הוסיפו מוצרים בתוסף החנות או נסו קטגוריה אחרת.
-                </div>
+                <div className="mt-16 border border-dashed border-[var(--line)] p-10 text-center text-[var(--muted)]">{tx("לא נמצאו מוצרים בסינון הנוכחי. הוסיפו מוצרים בתוסף החנות או נסו קטגוריה אחרת.")}</div>
               ) : null}
             </>
           )}
@@ -1353,7 +1344,7 @@ export default function StoreSiteRuntime({
       <section {...sectionProps("collection-rows", "products", "שורות קולקציה")} className="bg-[var(--bg-soft)] px-5 py-16 lg:px-8" data-bizuply-widget="products">
         <div className="mx-auto grid max-w-7xl gap-10">
           {loading ? (
-            <p className="text-sm text-[var(--muted)]">טוען מוצרים מתוסף החנות...</p>
+            <p className="text-sm text-[var(--muted)]">{tx("טוען מוצרים מתוסף החנות...")}</p>
           ) : (
             categoryTiles.slice(0, 4).map((cat) => {
               const items = products.filter((product) => product.categorySlug === cat.slug || product.category === cat.name).slice(0, 4);
@@ -1362,7 +1353,7 @@ export default function StoreSiteRuntime({
                 <div key={cat.id}>
                   <div className="flex items-center justify-between gap-4 border-b border-[var(--line)] pb-4">
                     <h2 className="store-display text-3xl font-black">{cat.name}</h2>
-                    <button type="button" onClick={() => navigateCategory(cat)} className="text-xs font-black uppercase tracking-[0.18em] text-[var(--p)]">לצפייה</button>
+                    <button type="button" onClick={() => navigateCategory(cat)} className="text-xs font-black uppercase tracking-[0.18em] text-[var(--p)]">{tx("לצפייה")}</button>
                   </div>
                   <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
                     {displayItems.map((product, index) => (
@@ -1412,17 +1403,13 @@ export default function StoreSiteRuntime({
                     goToPage("cart");
                   }}
                   className="bg-[var(--p)] px-7 py-3.5 text-sm font-black text-[var(--on-p)]"
-                >
-                  הוספה לסל
-                </button>
-                <button type="button" onClick={() => goToPage("shop")} className="border border-[var(--line)] px-7 py-3.5 text-sm font-black">
-                  חזרה לחנות
-                </button>
+                >{tx("הוספה לסל")}</button>
+                <button type="button" onClick={() => goToPage("shop")} className="border border-[var(--line)] px-7 py-3.5 text-sm font-black">{tx("חזרה לחנות")}</button>
               </div>
             </Reveal>
           </div>
         ) : (
-          <p className="mx-auto max-w-7xl text-[var(--muted)]">אין מוצרים להצגה. הגדירו מוצרים בתוסף החנות.</p>
+          <p className="mx-auto max-w-7xl text-[var(--muted)]">{tx("אין מוצרים להצגה. הגדירו מוצרים בתוסף החנות.")}</p>
         )}
       </section>
 
@@ -1438,7 +1425,7 @@ export default function StoreSiteRuntime({
 
       <section {...sectionProps("product-related", "products", "מוצרים דומים")} className="px-5 py-16 lg:px-8" data-bizuply-widget="products">
         <div className="mx-auto max-w-7xl">
-          <h2 className="store-display text-3xl font-black">אולי גם יעניין אתכם</h2>
+          <h2 className="store-display text-3xl font-black">{tx("אולי גם יעניין אתכם")}</h2>
           <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
             {products
               .filter((p) => p.id !== selectedProduct?.id)
@@ -1471,10 +1458,8 @@ export default function StoreSiteRuntime({
           <div className="mt-10 space-y-4">
             {cart.length === 0 ? (
               <div className="border border-dashed border-[var(--line)] p-10 text-center">
-                <p className="text-[var(--muted)]">הסל ריק כרגע.</p>
-                <button type="button" onClick={() => goToPage("shop")} className="mt-6 bg-[var(--p)] px-6 py-3 text-sm font-black text-[var(--on-p)]">
-                  לעמוד החנות
-                </button>
+                <p className="text-[var(--muted)]">{tx("הסל ריק כרגע.")}</p>
+                <button type="button" onClick={() => goToPage("shop")} className="mt-6 bg-[var(--p)] px-6 py-3 text-sm font-black text-[var(--on-p)]">{tx("לעמוד החנות")}</button>
               </div>
             ) : (
               cart.map((item) => (
@@ -1492,9 +1477,7 @@ export default function StoreSiteRuntime({
                       type="button"
                       className="text-xs font-bold text-red-600"
                       onClick={() => setCart((prev) => prev.filter((x) => x.id !== item.id))}
-                    >
-                      הסר
-                    </button>
+                    >{tx("הסר")}</button>
                   </div>
                 </div>
               ))
@@ -1507,9 +1490,7 @@ export default function StoreSiteRuntime({
                 type="button"
                 onClick={openCheckout}
                 className="bg-[var(--dark)] px-7 py-3.5 text-sm font-black text-white"
-              >
-                המשך לתשלום
-              </button>
+              >{tx("המשך לתשלום")}</button>
             </div>
           ) : null}
         </div>
@@ -1609,7 +1590,7 @@ export default function StoreSiteRuntime({
             </div>
           </Reveal>
           <Reveal variant="left" className="text-right">
-            <p className="text-xs font-black uppercase tracking-[0.28em] text-[var(--p)]">כתבה ראשית</p>
+            <p className="text-xs font-black uppercase tracking-[0.28em] text-[var(--p)]">{tx("כתבה ראשית")}</p>
             <h2 className="store-display mt-4 text-3xl font-black leading-tight sm:text-4xl md:text-5xl">
               {g("journalOneTitle")}
             </h2>
@@ -1648,17 +1629,17 @@ export default function StoreSiteRuntime({
             <h1 className="store-display mt-4 text-5xl font-black">{g("contactTitle")}</h1>
             <p className="mt-4 text-[var(--muted)]">{g("contactText")}</p>
             <div className="mt-8 space-y-3 text-sm">
-              <p><strong>טלפון:</strong> {g("phone")}</p>
-              <p><strong>אימייל:</strong> {g("email")}</p>
-              <p><strong>כתובת:</strong> {g("address")}</p>
+              <p><strong>{tx("טלפון:")}</strong> {g("phone")}</p>
+              <p><strong>{tx("אימייל:")}</strong> {g("email")}</p>
+              <p><strong>{tx("כתובת:")}</strong> {g("address")}</p>
             </div>
           </Reveal>
           <Reveal variant="left">
-            <form className="grid gap-3 border border-[var(--line)] bg-[var(--surface)] p-6" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="store-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-              <input className="border border-[var(--line)] px-4 py-3 text-sm" placeholder="שם מלא" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-              <input className="border border-[var(--line)] px-4 py-3 text-sm" placeholder="טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-              <input className="border border-[var(--line)] px-4 py-3 text-sm" placeholder="אימייל" name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
-              <textarea className="min-h-32 border border-[var(--line)] px-4 py-3 text-sm" placeholder="הודעה"  name="message" data-bizuply-form-field-id="message"></textarea>
+            <form className="grid gap-3 border border-[var(--line)] bg-[var(--surface)] p-6" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="store-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+              <input className="border border-[var(--line)] px-4 py-3 text-sm" placeholder={tx("שם מלא")} name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+              <input className="border border-[var(--line)] px-4 py-3 text-sm" placeholder={tx("טלפון")} name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+              <input className="border border-[var(--line)] px-4 py-3 text-sm" placeholder={tx("אימייל")} name="email" data-bizuply-form-field-id="email" type="email" autoComplete="email" />
+              <textarea className="min-h-32 border border-[var(--line)] px-4 py-3 text-sm" placeholder={tx("הודעה")}  name="message" data-bizuply-form-field-id="message"></textarea>
               <button type="submit" className="bg-[var(--p)] px-5 py-3.5 text-sm font-black text-[var(--on-p)]">{g("contactButton")}</button>
             </form>
           </Reveal>

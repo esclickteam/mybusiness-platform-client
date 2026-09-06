@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { TemplateText } from "../shared/TemplateText";
@@ -337,7 +338,7 @@ function Header({
               <TemplateText
                 as="span"
                 editId={item.key}
-                editLabel={item.label}
+                editLabel={tx(item.label)}
               >
                 {getValue(data, item.key)}
               </TemplateText>
@@ -393,7 +394,7 @@ function Header({
                 <TemplateText
                   as="span"
                   editId={item.key}
-                  editLabel={item.label}
+                  editLabel={tx(item.label)}
                 >
                   {getValue(data, item.key)}
                 </TemplateText>
@@ -532,7 +533,7 @@ function Hero({
               data={data}
               dataKey="heroImage"
               label="תמונת הירו"
-                alt="הירו Monolith"
+                alt={tx("הירו Monolith")}
               className="relative h-[420px] w-full object-cover lg:h-[640px]"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-[#0c1a33] via-[#0c1a33]/20 to-transparent" />
@@ -669,7 +670,7 @@ function AboutSection({ data }: { data: Record<string, any> }) {
             data={data}
             dataKey="aboutImage"
             label="תמונת אודות"
-                alt="אודות Monolith"
+                alt={tx("אודות Monolith")}
             className="h-full min-h-[420px] w-full object-cover lg:min-h-[560px]"
           />
         </Reveal>
@@ -1013,7 +1014,7 @@ function ContactSection({
           >
             <input
               className="border-b border-[#d7c7a5] bg-transparent px-5 py-4 text-right text-sm outline-none placeholder:text-[#7d8596] md:border-l"
-              placeholder="שם מלא"
+              placeholder={tx("שם מלא")}
               data-visual-editable="true"
               data-visual-edit-id="contact.form.name"
               data-visual-edit-type="control"
@@ -1021,7 +1022,7 @@ function ContactSection({
             />
             <input
               className="border-b border-[#d7c7a5] bg-transparent px-5 py-4 text-right text-sm outline-none placeholder:text-[#7d8596]"
-              placeholder="טלפון"
+              placeholder={tx("טלפון")}
               data-visual-editable="true"
               data-visual-edit-id="contact.form.phone"
               data-visual-edit-type="control"
@@ -1029,7 +1030,7 @@ function ContactSection({
             />
             <input
               className="border-b border-[#d7c7a5] bg-transparent px-5 py-4 text-right text-sm outline-none placeholder:text-[#7d8596] md:border-l"
-              placeholder="אימייל"
+              placeholder={tx("אימייל")}
               data-visual-editable="true"
               data-visual-edit-id="contact.form.email"
               data-visual-edit-type="control"
@@ -1037,7 +1038,7 @@ function ContactSection({
             />
             <input
               className="border-b border-[#d7c7a5] bg-transparent px-5 py-4 text-right text-sm outline-none placeholder:text-[#7d8596]"
-              placeholder="תחום ייעוץ"
+              placeholder={tx("תחום ייעוץ")}
               data-visual-editable="true"
               data-visual-edit-id="contact.form.topic"
               data-visual-edit-type="control"
@@ -1045,7 +1046,7 @@ function ContactSection({
             />
             <textarea
               className="min-h-40 border-b border-[#d7c7a5] bg-transparent px-5 py-4 text-right text-sm outline-none placeholder:text-[#7d8596] md:col-span-2"
-              placeholder="ספרו לנו על היעד העסקי, המורכבות הארגונית והטיימינג"
+              placeholder={tx("ספרו לנו על היעד העסקי, המורכבות הארגונית והטיימינג")}
               data-visual-editable="true"
               data-visual-edit-id="contact.form.message"
               data-visual-edit-type="control"
@@ -1183,7 +1184,7 @@ function Footer({
                   <TemplateText
                     as="span"
                     editId={item.key}
-                    editLabel={item.label}
+                    editLabel={tx(item.label)}
                   >
                     {getValue(data, item.key)}
                   </TemplateText>

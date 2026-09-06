@@ -1,4 +1,5 @@
 import React, { useMemo } from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { gelatixDefaultData } from "./defaultData";
 import { gelatixEditorCss } from "./editorCss";
@@ -27,7 +28,7 @@ function v(data: Record<string, any>, key: string) {
 }
 
 function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>; currentPage: string; goTo: (id: string) => void; onCta: () => void }) {
-  const nav = gelatixPages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || p.label] as const);
+  const nav = gelatixPages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || tx(p.label)] as const);
   return (
     <header data-template-section-type="header" data-section-kind="header" className="fixed inset-x-0 top-4 z-50 px-4">
       <div className="mx-auto flex max-w-5xl items-center justify-between gap-3 rounded-full border px-5 py-3" style={{ background: "#ffffffee", borderColor: "rgba(43,24,34,0.1)", backdropFilter: "blur(14px)" }}>
@@ -430,10 +431,10 @@ function MeltReserveForm({ data, onCta }: { data: Record<string, any>; onCta: ()
         <h2 className="tpl-display text-3xl font-bold">{v(data, "contactTitle")}</h2>
         <p className="mt-3 text-sm" style={{ color: "#9a6b7c" }}>{v(data, "contactText")}</p>
         <div className="mt-8 space-y-3">
-          <div className="mr-8 border p-3 text-sm" style={{ borderColor: "rgba(43,24,34,0.1)", background: "#fff5f8" }}>היי! מתי נוח לכם?</div>
-          <form className="ml-8 grid gap-2 border p-3" style={{ borderColor: "#e85a8c" }} data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="gelatix-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-            <input className="w-full border bg-transparent px-3 py-2.5 text-right text-sm outline-none" style={{ borderColor: "rgba(43,24,34,0.1)", color: "#2b1822" }} placeholder="שם + טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
-            <input className="w-full border bg-transparent px-3 py-2.5 text-right text-sm outline-none" style={{ borderColor: "rgba(43,24,34,0.1)", color: "#2b1822" }} placeholder="תאריך ושעה" name="date" data-bizuply-form-field-id="date" />
+          <div className="mr-8 border p-3 text-sm" style={{ borderColor: "rgba(43,24,34,0.1)", background: "#fff5f8" }}>{tx("היי! מתי נוח לכם?")}</div>
+          <form className="ml-8 grid gap-2 border p-3" style={{ borderColor: "#e85a8c" }} data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="gelatix-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+            <input className="w-full border bg-transparent px-3 py-2.5 text-right text-sm outline-none" style={{ borderColor: "rgba(43,24,34,0.1)", color: "#2b1822" }} placeholder={tx("שם + טלפון")} name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+            <input className="w-full border bg-transparent px-3 py-2.5 text-right text-sm outline-none" style={{ borderColor: "rgba(43,24,34,0.1)", color: "#2b1822" }} placeholder={tx("תאריך ושעה")} name="date" data-bizuply-form-field-id="date" />
             <button type="submit" className="px-4 py-3 text-sm font-bold" style={{ background: "#e85a8c", color: "#e85a8cText" }}>{v(data, "cta")}</button>
           </form>
         </div>

@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import { VisualPageStack } from "../../../../runtime/VisualPageStack";
 import { sushisenDefaultData } from "./defaultData";
 import { sushisenEditorCss } from "./editorCss";
@@ -32,7 +33,7 @@ function v(data: Record<string, any>, key: string) {
 function Header({ data, currentPage, goTo, onCta }: { data: Record<string, any>; currentPage: string; goTo: (id: string) => void; onCta: () => void }) {
   const [navOpen, setNavOpen] = useState(false);
   const go = (id: string) => { setNavOpen(false); goTo(id); };
-  const nav = sushisenPages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || p.label] as const);
+  const nav = sushisenPages.map((p) => [p.id, v(data, `nav${p.id[0].toUpperCase()}${p.id.slice(1)}`) || tx(p.label)] as const);
   return (
     <header data-template-section-type="header" data-section-kind="header" className="sticky top-0 z-50 border-b" style={{ background: "#0b0b0b", borderColor: "rgba(242,240,234,0.12)" }}>
       <div className="mx-auto flex max-w-7xl items-center justify-between px-5 py-2.5 lg:px-8">
@@ -92,7 +93,7 @@ function NigiriSnapRail({ data }: { data: Record<string, any> }) {
   return (
     <section className="border-t px-5 py-16 lg:px-8 lg:py-20" style={{ borderColor: "rgba(242,240,234,0.12)", background: "#161616" }}>
       <div className="mx-auto max-w-7xl">
-        <Reveal><h2 className="tpl-display text-4xl font-bold md:text-5xl">מסילת ניגירי</h2></Reveal>
+        <Reveal><h2 className="tpl-display text-4xl font-bold md:text-5xl">{tx("מסילת ניגירי")}</h2></Reveal>
         <div className="tpl-nigiri-rail mt-10 pb-2">
           {boards.map(([title, meta, text, img], i) => (
             <article key={title} className="tpl-nigiri-card border p-3" style={{ borderColor: "rgba(242,240,234,0.12)", background: "#0b0b0b", animationDelay: `${i * 0.5}s` }}>
@@ -394,7 +395,7 @@ function AboutBlock({ data }: { data: Record<string, any> }) {
         <div className="h-72 w-56 overflow-hidden border" style={{ borderColor: "#d4af37" }}>
           <img src={v(data, "aboutImage")} alt="" className="tpl-ken h-full w-full object-cover" />
         </div>
-        <p className="mt-8 text-xs tracking-[0.34em]" style={{ color: "#d4af37" }}>אודות</p>
+        <p className="mt-8 text-xs tracking-[0.34em]" style={{ color: "#d4af37" }}>{tx("אודות")}</p>
         <h2 className="tpl-display mt-3 text-2xl sm:text-4xl font-bold">{v(data, "aboutTitle")}</h2>
         <p className="mt-5 text-lg leading-8" style={{ color: "#9a958c" }}>{v(data, "aboutText")}</p>
       </div>
@@ -409,9 +410,9 @@ function ContactBlock({ data, onCta }: { data: Record<string, any>; onCta: () =>
         <div className="mb-6 h-px w-full" style={{ background: "linear-gradient(90deg, transparent, #d4af37, transparent)" }} />
         <h2 className="tpl-display text-center text-3xl font-bold">{v(data, "contactTitle")}</h2>
         <p className="mt-3 text-center text-sm" style={{ color: "#9a958c" }}>{v(data, "contactText")}</p>
-        <form className="mt-8 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="sushisen-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
-          <input className="w-full border bg-transparent px-4 py-3 text-right outline-none" style={{ borderColor: "rgba(242,240,234,0.12)" }} placeholder="שם" name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
-          <input className="w-full border bg-transparent px-4 py-3 text-right outline-none" style={{ borderColor: "rgba(242,240,234,0.12)" }} placeholder="טלפון" name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
+        <form className="mt-8 grid gap-3" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="sushisen-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
+          <input className="w-full border bg-transparent px-4 py-3 text-right outline-none" style={{ borderColor: "rgba(242,240,234,0.12)" }} placeholder={tx("שם")} name="name" data-bizuply-form-field-id="name" type="text" autoComplete="name" />
+          <input className="w-full border bg-transparent px-4 py-3 text-right outline-none" style={{ borderColor: "rgba(242,240,234,0.12)" }} placeholder={tx("טלפון")} name="phone" data-bizuply-form-field-id="phone" type="tel" autoComplete="tel" />
           <button type="submit" className="px-6 py-3 text-sm font-bold tracking-wider" style={{ background: "#d4af37", color: "#0b0b0b" }}>{v(data, "cta")}</button>
         </form>
         <div className="mt-6 h-px w-full" style={{ background: "linear-gradient(90deg, transparent, #d4af37, transparent)" }} />

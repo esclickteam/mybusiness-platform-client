@@ -169,4 +169,33 @@ export const TEMPLATE_EXACT_LEXICON: Record<string, LocaleCopy> = {
     "450° · 90 segundos · forno a lenha",
     "450° · 90 ثانية · فرن حطب"
   ),
+  "השתמשי בתבנית": r("Use this template", "Usar esta plantilla", "Usar este modelo", "استخدمن هذا القالب"),
+  "חזרה לתבניות": r("Back to templates", "Volver a plantillas", "Voltar aos modelos", "العودة للقوالب"),
+  "יומן פגישות מה-CRM": r("CRM appointment calendar", "Calendario de citas del CRM", "Calendário de reuniões do CRM", "تقويم مواعيد نظام الإدارة"),
+  ניווט: r("Navigation", "Navegación", "Navegação", "تنقل"),
+  פוטר: r("Footer", "Pie", "Rodapé", "تذييل"),
+  כותרת: r("Header", "Encabezado", "Cabeçalho", "ترويسة"),
+  קולקציות: r("Collections", "Colecciones", "Coleções", "مجموعات"),
+  סל: r("Cart", "Carrito", "Carrinho", "سلة"),
+  שאלות: r("FAQ", "Preguntas", "Perguntas", "أسئلة"),
+  משלוחים: r("Shipping", "Envíos", "Envios", "شحن"),
+  לוקבוק: r("Lookbook", "Lookbook", "Lookbook", "كتالوج"),
+  מגזין: r("Magazine", "Revista", "Revista", "مجلة"),
+  קשר: r("Contact", "Contacto", "Contato", "تواصل"),
+  מוצר: r("Product", "Producto", "Produto", "منتج"),
+  "בחירת וריאציה": r("Choose a variant", "Elige una variante", "Escolha uma variação", "اختيار النوع"),
+  "לגלות מוצרים": r("Discover products", "Descubrir productos", "Descobrir produtos", "اكتشفوا المنتجات"),
+  "קולקציה חדשה": r("New collection", "Nueva colección", "Nova coleção", "مجموعة جديدة"),
+  "מציג את המוצרים מניהול החנות שלך": r(
+    "Showing products from your store manager",
+    "Mostrando productos de tu gestor de tienda",
+    "A mostrar produtos do gestor da loja",
+    "عرض المنتجات من مدير متجركم"
+  ),
+  "מצב דמו — הוסיפו מוצרים בפאנל חנות בעורך כדי להחליף את הדוגמאות": r(
+    "Demo mode — add products in the store panel to replace these samples",
+    "Modo demo — añade productos en el panel de tienda para reemplazar los ejemplos",
+    "Modo demo — adicione produtos no painel da loja para substituir os exemplos",
+    "وضع تجريبي — أضيفوا منتجات من لوحة المتجر لاستبدال هذه الأمثلة"
+  ),
 };

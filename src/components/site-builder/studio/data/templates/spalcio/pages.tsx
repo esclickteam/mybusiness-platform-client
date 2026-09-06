@@ -1,4 +1,5 @@
 import React from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 import {
   ArrowLeft,
   BadgeCheck,
@@ -299,7 +300,7 @@ function Header({
   return (
     <header data-visual-flow-lock="true" data-template-section-type="header" data-section-kind="header"
       data-section-id="header"
-      data-section-title="כותרת עליונה"
+      data-section-title={tx("כותרת עליונה")}
       className="sticky top-0 z-40 border-b border-slate-200 bg-white/90 backdrop-blur-xl"
     >
       <div className="mx-auto flex max-w-7xl items-center justify-between px-6 py-4">
@@ -347,7 +348,7 @@ function Header({
                   isActive ? "font-black text-blue-700" : "text-slate-600",
                 ].join(" ")}
               >
-                {item.label}
+                {tx(item.label)}
               </a>
             );
           })}
@@ -359,9 +360,7 @@ function Header({
           data-link-url={getPageHref("contact")}
           onClick={(event) => handlePageClick(event, "contact")}
           className="spalcio-primary-btn hidden rounded-full bg-blue-600 px-5 py-3 text-sm font-bold text-white shadow-[0_16px_40px_rgba(37,99,235,0.24)] transition hover:bg-blue-700 md:inline-flex"
-        >
-          התחלת פרויקט
-        </a>
+        >{tx("התחלת פרויקט")}</a>
       </div>
     </header>
   );
@@ -382,7 +381,7 @@ function Hero({ onNavigate }: { onNavigate: (pageId: SpalcioPageId) => void }) {
       id="hero"
       {...sectionProps("hero", "אזור פתיחה")}
       data-section-id="hero"
-      data-section-title="אזור פתיחה"
+      data-section-title={tx("אזור פתיחה")}
       className="relative overflow-hidden bg-[#f6f3ee]"
     >
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
@@ -496,7 +495,7 @@ function Services() {
       id="services"
       {...sectionProps("services", "שירותים")}
       data-section-id="services"
-      data-section-title="שירותים"
+      data-section-title={tx("שירותים")}
       className="bg-white px-6 py-12 md:py-24"
     >
       <div className="mx-auto max-w-7xl">
@@ -548,9 +547,7 @@ function Services() {
                 {service.text}
               </p>
 
-              <div className="mt-7 inline-flex items-center gap-2 text-sm font-black text-blue-700">
-                לפרטים נוספים
-                <ArrowLeft className="h-4 w-4" />
+              <div className="mt-7 inline-flex items-center gap-2 text-sm font-black text-blue-700">{tx("לפרטים נוספים")}<ArrowLeft className="h-4 w-4" />
               </div>
             </article>
           ))}
@@ -566,7 +563,7 @@ function Projects() {
       id="projects"
       {...sectionProps("projects", "פרויקטים")}
       data-section-id="projects"
-      data-section-title="פרויקטים"
+      data-section-title={tx("פרויקטים")}
       className="bg-[#f6f3ee] px-6 py-12 md:py-24"
     >
       <div className="mx-auto max-w-7xl">
@@ -627,7 +624,7 @@ function About() {
       id="about"
       {...sectionProps("about", "אודות")}
       data-section-id="about"
-      data-section-title="אודות"
+      data-section-title={tx("אודות")}
       className="bg-white px-6 py-12 md:py-24"
     >
       <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
@@ -687,7 +684,7 @@ function Process() {
       id="process"
       {...sectionProps("process", "תהליך עבודה")}
       data-section-id="process"
-      data-section-title="תהליך עבודה"
+      data-section-title={tx("תהליך עבודה")}
       className="relative overflow-hidden bg-[#f6f3ee] px-6 py-12 md:py-24 text-slate-950"
     >
       <div className="pointer-events-none absolute inset-0">
@@ -713,9 +710,7 @@ function Process() {
             </h2>
           </div>
 
-          <div className="rounded-full border border-blue-100 bg-white/80 px-5 py-3 text-sm font-black text-blue-700 shadow-sm">
-            תהליך מדויק שמוביל לפנייה
-          </div>
+          <div className="rounded-full border border-blue-100 bg-white/80 px-5 py-3 text-sm font-black text-blue-700 shadow-sm">{tx("תהליך מדויק שמוביל לפנייה")}</div>
         </div>
 
         <div className="mt-12 grid gap-5 md:grid-cols-3">
@@ -764,7 +759,7 @@ function Testimonials() {
       id="testimonials"
       {...sectionProps("testimonials", "המלצות")}
       data-section-id="testimonials"
-      data-section-title="המלצות"
+      data-section-title={tx("המלצות")}
       className="bg-white px-6 py-12 md:py-24"
     >
       <div className="mx-auto max-w-5xl text-center">
@@ -796,7 +791,7 @@ function Contact() {
       id="contact"
       {...sectionProps("contact", "יצירת קשר")}
       data-section-id="contact"
-      data-section-title="יצירת קשר"
+      data-section-title={tx("יצירת קשר")}
       className="bg-[#f6f3ee] px-6 py-12 md:py-24"
     >
       <div className="mx-auto grid max-w-7xl gap-8 lg:grid-cols-[0.9fr_1.1fr]">
@@ -839,7 +834,7 @@ function Contact() {
           </div>
         </div>
 
-        <form className="spalcio-form rounded-[2rem] bg-white p-7 shadow-sm" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="spalcio-contact" data-bizuply-success-message="תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.">
+        <form className="spalcio-form rounded-[2rem] bg-white p-7 shadow-sm" data-bizuply-block="lead-form" data-bizuply-crm-lead="true" data-bizuply-form-builder="true" data-bizuply-form-skin="template" data-bizuply-form-id="spalcio-contact" data-bizuply-success-message={tx("תודה! קיבלנו את הפנייה ונחזור אלייך בהקדם.")}>
           <div className="grid gap-4 md:grid-cols-2">
             <input
               placeholder={spalcioData.contact.form.firstName}
@@ -879,7 +874,7 @@ function Footer() {
   return (
     <footer
       data-section-id="footer"
-      data-section-title="פוטר"
+      data-section-title={tx("פוטר")}
       className="bg-slate-950 px-6 py-10 text-white"
     >
       <div className="mx-auto flex max-w-7xl flex-col justify-between gap-5 md:flex-row md:items-center">

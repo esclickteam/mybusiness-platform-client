@@ -1,4 +1,5 @@
 import React from "react";
+import { tx } from "../../../../../../i18n/localizeBuiltInTemplateSeed";
 
 import {
   cycloraDefaultData,
@@ -609,7 +610,7 @@ function Header({ data }: SharedProps) {
 
       <nav
         className="hidden items-center gap-7 text-xs font-semibold uppercase tracking-[0.16em] md:flex"
-        aria-label="ניווט ראשי"
+        aria-label={tx("ניווט ראשי")}
       >
         {safeArray(data.nav).map((item, index) => (
           <a
@@ -623,7 +624,7 @@ function Header({ data }: SharedProps) {
               `קישור ניווט ${index + 1}`,
             )}
           >
-            <span data-editable="text">{item.label}</span>
+            <span data-editable="text">{tx(item.label)}</span>
           </a>
         ))}
       </nav>
@@ -638,9 +639,7 @@ function Header({ data }: SharedProps) {
           className={buttonLabelClass("dark")}
           data-editable="text"
           {...visualProps("global.header.cta", "text", "טקסט כפתור יצירת קשר")}
-        >
-          בואו נדבר
-        </span>
+        >{tx("בואו נדבר")}</span>
       </a>
     </header>
   );
@@ -701,7 +700,7 @@ const HeroSection = React.forwardRef<HTMLElement, HeroSectionProps>(
           <div
             className={`${orbitShellClass(mode)} z-30`}
             data-visual-editor-layer="orbit"
-            aria-label="גלריית מדיה מרחפת"
+            aria-label={tx("גלריית מדיה מרחפת")}
             style={{ opacity: orbitOpacity }}
           >
             {safeArray(data.hero.orbitMedia).map((item, index) => {
@@ -809,7 +808,7 @@ const HeroSection = React.forwardRef<HTMLElement, HeroSectionProps>(
 
               <div
                 className="hidden items-center justify-center gap-2 md:flex"
-                aria-label="רשתות חברתיות"
+                aria-label={tx("רשתות חברתיות")}
               >
                 {SOCIAL_LINKS.map((link) => (
                   <a
@@ -1326,7 +1325,7 @@ function TestimonialsSection({ data, mode }: SharedProps) {
                   `כרטיס המלצה ${realIndex + 1}`,
                 )}
               >
-                <div className="text-sm tracking-[0.25em]" aria-label="5 כוכבים">
+                <div className="text-sm tracking-[0.25em]" aria-label={tx("5 כוכבים")}>
                   ★★★★★
                 </div>
 
@@ -1383,7 +1382,7 @@ function TestimonialsSection({ data, mode }: SharedProps) {
           <button
             type="button"
             onClick={() => move(-1)}
-            aria-label="המלצה קודמת"
+            aria-label={tx("המלצה קודמת")}
             className="flex h-12 w-12 items-center justify-center rounded-full border border-black/20 bg-white text-lg text-black transition-colors duration-300 hover:bg-black hover:text-white"
             {...visualProps("home.testimonials.previous", "button", "הקודם")}
           >
@@ -1392,7 +1391,7 @@ function TestimonialsSection({ data, mode }: SharedProps) {
           <button
             type="button"
             onClick={() => move(1)}
-            aria-label="המלצה הבאה"
+            aria-label={tx("המלצה הבאה")}
             className="flex h-12 w-12 items-center justify-center rounded-full border border-black/20 bg-white text-lg text-black transition-colors duration-300 hover:bg-black hover:text-white"
             {...visualProps("home.testimonials.next", "button", "הבא")}
           >
@@ -1505,9 +1504,7 @@ function PricingSection({ data }: SharedProps) {
                 className={`text-[10px] font-black uppercase tracking-[0.18em] ${
                   plan.featured ? "text-black/40" : "text-white/40"
                 }`}
-              >
-                כולל:
-              </small>
+              >{tx("כולל:")}</small>
 
               <ul className="mt-5 space-y-3">
                 {safeArray(plan.features).map((feature, featureIndex) => (
@@ -1805,7 +1802,7 @@ function Footer({ data }: SharedProps) {
 
           <nav
             className="grid grid-cols-2 gap-x-7 gap-y-4 text-sm lg:grid-cols-1"
-            aria-label="ניווט תחתון"
+            aria-label={tx("ניווט תחתון")}
           >
             {safeArray(data.footer.links).map((item, index) => (
               <a
@@ -1819,7 +1816,7 @@ function Footer({ data }: SharedProps) {
                   `קישור תחתון ${index + 1}`,
                 )}
               >
-                <span data-editable="text">{item.label}</span>
+                <span data-editable="text">{tx(item.label)}</span>
               </a>
             ))}
           </nav>
