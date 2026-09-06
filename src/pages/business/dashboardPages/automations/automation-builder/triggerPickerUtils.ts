@@ -1,4 +1,5 @@
 import type { AutomationTriggerOption, PaletteItem } from "../automationFlowTypes";
+import i18n from "../../../../../i18n/i18n";
 
 export const TRIGGER_PICKER_CATEGORY_ORDER = [
   "common",
@@ -19,24 +20,50 @@ export const TRIGGER_PICKER_CATEGORY_ORDER = [
 export type TriggerPickerCategoryId =
   (typeof TRIGGER_PICKER_CATEGORY_ORDER)[number];
 
-export const TRIGGER_PICKER_CATEGORY_LABELS: Record<
+const TRIGGER_PICKER_CATEGORY_KEYS: Record<
   TriggerPickerCategoryId,
-  string
+  { key: string; fallback: string }
 > = {
-  common: "נפוצים",
-  recent: "אחרונים בשימוש",
-  crm: "CRM ולידים",
-  appointments: "פגישות",
-  whatsapp: "WhatsApp",
-  store: "חנות ותשלומים",
-  website: "אתר וטפסים",
-  subscriptions: "מנויים וחיובים",
-  tasks: "משימות וצוות",
-  email: "אימייל",
-  schedule: "לוח זמנים",
-  manual: "אינטגרציות ומערכת",
-  system: "אינטגרציות ומערכת",
+  common: { key: "leftover.triggerPicker.common", fallback: "Popular" },
+  recent: { key: "leftover.triggerPicker.recent", fallback: "Recently used" },
+  crm: { key: "leftover.triggerPicker.crm", fallback: "CRM and leads" },
+  appointments: { key: "leftover.triggerPicker.appointments", fallback: "Appointments" },
+  whatsapp: { key: "leftover.triggerPicker.whatsapp", fallback: "WhatsApp" },
+  store: { key: "leftover.triggerPicker.store", fallback: "Store and payments" },
+  website: { key: "leftover.triggerPicker.website", fallback: "Website and forms" },
+  subscriptions: { key: "leftover.triggerPicker.subscriptions", fallback: "Subscriptions and billing" },
+  tasks: { key: "leftover.triggerPicker.tasks", fallback: "Tasks and team" },
+  email: { key: "leftover.triggerPicker.email", fallback: "Email" },
+  schedule: { key: "leftover.triggerPicker.schedule", fallback: "Schedule" },
+  manual: { key: "leftover.triggerPicker.manual", fallback: "Integrations and system" },
+  system: { key: "leftover.triggerPicker.system", fallback: "Integrations and system" },
 };
+
+export function getTriggerPickerCategoryLabel(id: TriggerPickerCategoryId) {
+  const row = TRIGGER_PICKER_CATEGORY_KEYS[id];
+  return i18n.t(row.key, row.fallback);
+}
+
+export const TRIGGER_PICKER_CATEGORY_LABELS = new Proxy(
+  {} as Record<TriggerPickerCategoryId, string>,
+  {
+    get(_target, prop: string) {
+      if (prop in TRIGGER_PICKER_CATEGORY_KEYS) {
+        return getTriggerPickerCategoryLabel(prop as TriggerPickerCategoryId);
+      }
+      return undefined;
+    },
+    ownKeys() {
+      return Object.keys(TRIGGER_PICKER_CATEGORY_KEYS);
+    },
+    getOwnPropertyDescriptor(_target, prop) {
+      if (prop in TRIGGER_PICKER_CATEGORY_KEYS) {
+        return { configurable: true, enumerable: true };
+      }
+      return undefined;
+    },
+  }
+);
 
 /** Popular keys shown under "נפוצים" when present in the supported catalog. */
 export const COMMON_TRIGGER_KEYS = [

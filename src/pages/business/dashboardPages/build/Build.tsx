@@ -1391,11 +1391,11 @@ export default function Build() {
             <ul className="mt-4 space-y-2">
               {REVIEW_RATING_PARAMETER_DEFINITIONS.map((parameter) => (
                 <li
-                  key={parameter.label}
+                  key={parameter.labelKey}
                   className="flex items-center justify-between gap-3 rounded-xl border border-violet-100/80 bg-white/90 px-4 py-3 text-sm"
                 >
                   <span className="font-black text-slate-800">
-                    {parameter.label}
+                    {t(parameter.labelKey, parameter.fallback)}
                   </span>
 
                   <span

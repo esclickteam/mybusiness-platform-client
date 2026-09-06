@@ -87,6 +87,7 @@ import {
   defaultSelectedLeadContactTypes,
   formatCurrency,
   formatNumber,
+  getLeadFormContactLabel,
   LEAD_FORM_CONTACT_FIELDS,
   META_PREVIEW_FORMATS,
   OBJECTIVE_OPTIONS,
@@ -203,7 +204,7 @@ export default function MetaCampaignEditorPage() {
     () =>
       leadContactTypes.map((type) => {
         const contact = LEAD_FORM_CONTACT_FIELDS.find((item) => item.type === type);
-        return contact ? (isHe ? contact.labelHe : contact.labelEn) : type;
+        return contact ? getLeadFormContactLabel(contact) : type;
       }),
     [leadContactTypes, isHe]
   );
@@ -916,7 +917,7 @@ export default function MetaCampaignEditorPage() {
   }) => {
     const type = String(question.type || "").toUpperCase();
     const contact = LEAD_FORM_CONTACT_FIELDS.find((item) => item.type === type);
-    if (contact) return isHe ? contact.labelHe : contact.labelEn;
+    if (contact) return getLeadFormContactLabel(contact);
     return question.label || question.key || type || "—";
   };
 

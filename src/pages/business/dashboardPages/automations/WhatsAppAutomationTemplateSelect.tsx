@@ -6,7 +6,9 @@
 } from "@headlessui/react";
 import { Check, ChevronsUpDown, Loader2 } from "lucide-react";
 import { useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import type { ApprovedWhatsAppTemplate } from "../../../../api/whatsappApi";
+import { getTextDirection } from "../../../../i18n/localeUtils";
 import {
   TENANT_TEMPLATE_NOT_SENDABLE_HE,
   buildWhatsAppTemplateSecondaryLine,
@@ -39,8 +41,9 @@ function TemplateTwoLine({
   template: Partial<ApprovedWhatsAppTemplate>;
   disabledHint?: string;
 }) {
+  const { i18n } = useTranslation();
   return (
-    <span className="af-wa-tpl-option" dir="rtl">
+    <span className="af-wa-tpl-option" dir={getTextDirection(i18n.language)}>
       <span className="af-wa-tpl-option__title">
         {resolveWhatsAppTemplateDisplayName(template)}
       </span>
@@ -62,6 +65,8 @@ export function WhatsAppAutomationTemplateSelect({
   onChange,
   savedMeta,
 }: WhatsAppAutomationTemplateSelectProps) {
+  const { t, i18n } = useTranslation();
+  const pageDir = getTextDirection(i18n.language);
   const [query, setQuery] = useState("");
 
   const pickerRows = useMemo(
@@ -109,7 +114,7 @@ export function WhatsAppAutomationTemplateSelect({
     selectedSendable || savedUnsendable || unavailablePreview;
 
   return (
-    <div className="af-wa-tpl-select" dir="rtl">
+    <div className="af-wa-tpl-select" dir={pageDir}>
       <Combobox
         value={selectedSendable}
         disabled={disabled || loading}
@@ -136,11 +141,13 @@ export function WhatsAppAutomationTemplateSelect({
             <TemplateTwoLine
               template={closedTemplate}
               disabledHint={
-                savedUnsendable ? TENANT_TEMPLATE_NOT_SENDABLE_HE : ""
+                savedUnsendable ? TENANT_TEMPLATE_NOT_SENDABLE_HE() : ""
               }
             />
           ) : (
-            <span className="af-wa-tpl-select__placeholder">בחרו תבנית</span>
+            <span className="af-wa-tpl-select__placeholder">
+              {t("leftover.waTemplate.pick", "Choose a template")}
+            </span>
           )}
           <span className="af-wa-tpl-select__chevron" aria-hidden>
             {loading ? (
@@ -160,16 +167,18 @@ export function WhatsAppAutomationTemplateSelect({
               type="search"
               value={query}
               onChange={(event) => setQuery(event.target.value)}
-              placeholder="חיפוש לפי שם, שפה או קטגוריה..."
-              aria-label="חיפוש תבניות WhatsApp"
+              placeholder={t("leftover.waTemplate.searchPh", "Search by name, language, or category...")}
+              aria-label={t("leftover.waTemplate.searchAria", "Search WhatsApp templates")}
               className="af-wa-tpl-select__search-input"
-              dir="rtl"
+              dir={pageDir}
               onClick={(event) => event.stopPropagation()}
               onKeyDown={(event) => event.stopPropagation()}
             />
           </div>
           {filtered.length === 0 ? (
-            <div className="af-wa-tpl-select__empty">לא נמצאו תבניות מתאימות</div>
+            <div className="af-wa-tpl-select__empty">
+              {t("leftover.waTemplate.empty", "No matching templates")}
+            </div>
           ) : (
             filtered.map((tpl) => {
               const sendable = isAutomationSendableTemplate(tpl);
@@ -187,7 +196,7 @@ export function WhatsAppAutomationTemplateSelect({
                       <TemplateTwoLine
                         template={tpl}
                         disabledHint={
-                          sendable ? "" : TENANT_TEMPLATE_NOT_SENDABLE_HE
+                          sendable ? "" : TENANT_TEMPLATE_NOT_SENDABLE_HE()
                         }
                       />
                       {isSelected && sendable ? (

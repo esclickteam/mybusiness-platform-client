@@ -28,49 +28,67 @@ type Coupon = {
   validUntil: string;
 };
 
-const benefits: Benefit[] = [
-  {
-    id: "b1",
-    title: "הנחות קבועות לחברי מועדון",
-    description: "לקוחות שנרשמים למועדון מקבלים הטבות מיוחדות לפי החלטת בעל העסק.",
-    tag: "VIP",
-  },
-  {
-    id: "b2",
-    title: "קופון יום הולדת",
-    description: "שליחת הטבה אישית ללקוח בחודש יום ההולדת שלו.",
-    tag: "אוטומטי",
-  },
-  {
-    id: "b3",
-    title: "מבצעים לפי שירותים",
-    description: "אפשר להציע הנחה על טיפול, פגישה, מוצר או חבילה.",
-    tag: "שיווק",
-  },
-];
+function buildBenefits(t: (key: string, fallback: string) => string): Benefit[] {
+  return [
+    {
+      id: "b1",
+      title: t("leftover.miniSite.benefitVipTitle", "Ongoing discounts for club members"),
+      description: t(
+        "leftover.miniSite.benefitVipDesc",
+        "Customers who join the club get special benefits chosen by the business owner."
+      ),
+      tag: "VIP",
+    },
+    {
+      id: "b2",
+      title: t("leftover.miniSite.benefitBdayTitle", "Birthday coupon"),
+      description: t(
+        "leftover.miniSite.benefitBdayDesc",
+        "A personal benefit sent in the customer’s birthday month."
+      ),
+      tag: t("leftover.miniSite.auto", "Automatic"),
+    },
+    {
+      id: "b3",
+      title: t("leftover.miniSite.benefitServiceTitle", "Promos by service"),
+      description: t(
+        "leftover.miniSite.benefitServiceDesc",
+        "You can offer a discount on a treatment, meeting, product, or package."
+      ),
+      tag: t("leftover.miniSite.marketing", "Marketing"),
+    },
+  ];
+}
 
-const coupons: Coupon[] = [
-  {
-    id: "c1",
-    title: "10% הנחה לטיפול ראשון",
-    description: "הטבה למצטרפים חדשים למועדון הלקוחות.",
-    code: "WELCOME10",
-    discount: "10%",
-    validUntil: "30.06.2026",
-  },
-  {
-    id: "c2",
-    title: "50 ₪ הנחה בקביעת תור",
-    description: "מתאים לעידוד לקוחות לקבוע תור דרך האתר.",
-    code: "BOOK50",
-    discount: "₪50",
-    validUntil: "15.07.2026",
-  },
-];
+function buildCoupons(t: (key: string, fallback: string) => string): Coupon[] {
+  return [
+    {
+      id: "c1",
+      title: t("leftover.miniSite.coupon10Title", "10% off the first treatment"),
+      description: t("leftover.miniSite.coupon10Desc", "A benefit for new customer-club members."),
+      code: "WELCOME10",
+      discount: "10%",
+      validUntil: "30.06.2026",
+    },
+    {
+      id: "c2",
+      title: t("leftover.miniSite.coupon50Title", "₪50 off when booking"),
+      description: t(
+        "leftover.miniSite.coupon50Desc",
+        "Helps encourage customers to book through the website."
+      ),
+      code: "BOOK50",
+      discount: "₪50",
+      validUntil: "15.07.2026",
+    },
+  ];
+}
 
 export default function BusinessMiniSiteClub() {
   const { t, i18n } = useTranslation();
   const pageDir = getTextDirection(i18n.language);
+  const benefits = useMemo(() => buildBenefits(t), [t]);
+  const coupons = useMemo(() => buildCoupons(t), [t]);
   const [form, setForm] = useState<ClubForm>({
     fullName: "",
     phone: "",
@@ -123,7 +141,7 @@ export default function BusinessMiniSiteClub() {
               <div>
                 <p className="text-sm font-semibold text-violet-700">Bizuply Mini Site</p>
                 <h1 className="text-lg font-black tracking-tight text-slate-800">
-                  הדר עשת ביוטי
+                  {t("leftover.miniSite.demoName", "Hadar Eshet Beauty")}
                 </h1>
               </div>
             </div>
@@ -220,7 +238,7 @@ export default function BusinessMiniSiteClub() {
                           <div>
                             <p className="text-xs font-bold text-violet-600">{t("business.miniSite.clubCard", "כרטיס מועדון")}</p>
                             <h3 className="text-2xl font-black text-slate-800">
-                              הדר עשת ביוטי
+                              {t("leftover.miniSite.demoName", "Hadar Eshet Beauty")}
                             </h3>
                           </div>
 
@@ -516,9 +534,9 @@ export default function BusinessMiniSiteClub() {
             </div>
 
             {[
-              ["מיכל לוי", "050-1234567", "VIP", "WELCOME10"],
-              ["נועה כהן", "052-7778899", "חדש", "BOOK50"],
-              ["דנה ישראלי", "054-3332211", "פעיל", "WELCOME10"],
+              [t("leftover.miniSite.nameMichal", "Michal Levi"), "050-1234567", t("leftover.miniSite.vip", "VIP"), "WELCOME10"],
+              [t("leftover.miniSite.nameNoa", "Noa Cohen"), "052-7778899", t("leftover.miniSite.newStatus", "New"), "BOOK50"],
+              [t("leftover.miniSite.nameDana", "Dana Israeli"), "054-3332211", t("leftover.miniSite.active", "Active"), "WELCOME10"],
             ].map(([name, phone, status, coupon]) => (
               <div
                 key={phone}

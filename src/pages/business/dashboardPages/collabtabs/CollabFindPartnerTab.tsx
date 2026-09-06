@@ -29,7 +29,7 @@ import { fetchMyBusinessId, resolveBusinessId } from "./collabUtils";
 import { useTranslation } from "react-i18next";
 import { useLocaleDir } from "../../../../hooks/useLocaleDir";
 import { isGuidedDemoActive } from "@/guidedDemo/sessionStore";
-import { DEMO_COLLAB_PARTNERS } from "@/guidedDemo/demoOverlayData";
+import { getDemoCollabPartners } from "@/guidedDemo/demoOverlayData";
 
 type BusinessPartner = {
   _id: string;
@@ -257,7 +257,7 @@ export default function CollabFindPartnerTab({
       const loaded = (partnersRes.data.relevant || []) as BusinessPartner[];
       if (isGuidedDemoActive()) {
         const existingIds = new Set(loaded.map((partner) => String(partner._id)));
-        const extras = DEMO_COLLAB_PARTNERS.filter((partner) => !existingIds.has(partner._id));
+        const extras = getDemoCollabPartners().filter((partner) => !existingIds.has(partner._id));
         setPartners([...extras, ...loaded]);
       } else {
         setPartners(loaded);
@@ -265,7 +265,7 @@ export default function CollabFindPartnerTab({
     } catch (fetchError) {
       console.error("Failed to load partners:", fetchError);
       if (isGuidedDemoActive()) {
-        setPartners(DEMO_COLLAB_PARTNERS);
+        setPartners(getDemoCollabPartners());
         setError(null);
       } else {
         setError(t("collab.findPartner.loadError"));

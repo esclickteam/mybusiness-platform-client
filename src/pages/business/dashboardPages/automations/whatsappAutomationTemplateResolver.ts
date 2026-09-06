@@ -2,6 +2,7 @@
  * Canonical resolver: WhatsApp automation card → approved Meta template.
  * UI readiness and Builder activation must use this — not a stale side list.
  */
+import i18n from "../../../../i18n/i18n";
 import type {
   ApprovedWhatsAppTemplate,
   WhatsAppTemplate,
@@ -16,8 +17,14 @@ import {
   type WaDefaultMapping,
 } from "./whatsappAutomationMetaTemplates";
 
-export const WA_TEMPLATE_UNAVAILABLE_HE =
-  "אין תבנית WhatsApp מאושרת מתאימה לאוטומציה הזו";
+export function getWaTemplateUnavailable() {
+  return i18n.t(
+    "leftover.waTemplate.unavailable",
+    "There is no matching approved WhatsApp template for this automation."
+  );
+}
+
+export const WA_TEMPLATE_UNAVAILABLE_HE = getWaTemplateUnavailable;
 
 export type ResolvedWaAutomationTemplate = {
   automationTemplateKey: string;
@@ -121,7 +128,7 @@ export function resolveApprovedMetaTemplateForAutomation(opts: {
     variableMappings: [],
     recipientType: "lead_phone",
     ready: false,
-    whyNotReady: WA_TEMPLATE_UNAVAILABLE_HE,
+    whyNotReady: getWaTemplateUnavailable(),
   };
 
   if (!preferredMetaName) {
@@ -149,7 +156,7 @@ export function resolveApprovedMetaTemplateForAutomation(opts: {
   if (!exact) {
     return {
       ...base,
-      whyNotReady: WA_TEMPLATE_UNAVAILABLE_HE,
+      whyNotReady: getWaTemplateUnavailable(),
     };
   }
 

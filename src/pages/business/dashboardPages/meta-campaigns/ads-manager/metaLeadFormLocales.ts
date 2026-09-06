@@ -1,3 +1,5 @@
+import i18n from "../../../../../i18n/i18n";
+
 /** Meta Instant Form `locale` values (Graph API enum). */
 export const META_LEAD_FORM_LOCALES = [
   { value: "he_IL", label: "עברית" },
@@ -54,7 +56,5 @@ export function leadFormContactLabel(
 ) {
   const field = fields.find((item) => item.type === type);
   if (!field) return type;
-  return String(locale || "").toLowerCase().startsWith("he")
-    ? field.labelHe
-    : field.labelEn;
+  return i18n.t(`leftover.metaLeadForm.${type}`, field.labelEn || field.labelHe || type);
 }

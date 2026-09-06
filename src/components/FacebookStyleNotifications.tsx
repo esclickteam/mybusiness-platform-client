@@ -1716,14 +1716,14 @@ export default function FacebookStyleNotifications() {
                     <div className="shrink-0 border-b border-sky-100 bg-sky-50/70 px-3 py-2.5">
                       <button
                         type="button"
-                        dir="rtl"
+                        dir={getTextDirection(i18n.language)}
                         onClick={openPushSettings}
                         data-testid="push-center-badge"
                         className="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-sky-100 bg-white px-3 py-2 text-center text-[11px] font-black leading-4 text-sky-700 shadow-sm transition hover:bg-sky-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sky-300"
                       >
                         {pushDiscoverability.trialEligible
-                          ? "7 ימים של התראות Push חינם"
-                          : "הפעלת התראות Push"}
+                          ? t("push.discover.free7Push", "7 days of free Push alerts")
+                          : t("push.discover.enablePush", "Turn on Push alerts")}
                       </button>
                     </div>
                   ) : null}

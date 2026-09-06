@@ -1,5 +1,6 @@
 import { useCallback, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
+import i18n from "../../../../../i18n/i18n";
 import {
   getAutomationBillingUsage,
   type AutomationBillingUsageOverview,
@@ -53,7 +54,7 @@ export function useAutomationBilling(businessId: string | null) {
   return {
     loading: Boolean(businessId) && query.isLoading && !query.data,
     error: query.isError
-      ? "לא הצלחנו לטעון את נתוני החבילה כרגע."
+      ? i18n.t("leftover.autoUi.loadPlanFailed", "We could not load the plan details right now.")
       : null,
     usage: (query.data as AutomationBillingUsageOverview | null) || null,
     refresh,

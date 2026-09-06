@@ -4,73 +4,138 @@ import type {
   WhatsAppTemplateButton,
   WhatsAppVariableMapping,
 } from "../../../../api/whatsappApi";
+import i18n from "../../../../i18n/i18n";
 
-export const WA_PREVIEW_EMPTY_HE = "הצגת ההודעה תופיע לאחר בחירת תבנית";
-export const WA_PREVIEW_ERROR_HE = "לא ניתן להציג כרגע תצוגה מקדימה";
+export function getWaPreviewEmpty() {
+  return i18n.t(
+    "leftover.waPreview.empty",
+    "The message preview appears after you choose a template"
+  );
+}
+
+export function getWaPreviewError() {
+  return i18n.t(
+    "leftover.waPreview.error",
+    "The preview cannot be shown right now"
+  );
+}
+
+/** @deprecated use getWaPreviewEmpty() — kept for tests that read the live string */
+export const WA_PREVIEW_EMPTY_HE = getWaPreviewEmpty;
+/** @deprecated use getWaPreviewError() — kept for tests that read the live string */
+export const WA_PREVIEW_ERROR_HE = getWaPreviewError;
+
+export function getWaPreviewSampleData() {
+  return {
+    leadName: i18n.t("leftover.waPreview.sampleLead", "Alex Rivera"),
+    businessName: i18n.t("leftover.waPreview.sampleBusiness", "Sample business"),
+    appointmentDate: "16/09/2026",
+    appointmentTime: "18:00",
+    phone: "050-1234567",
+  };
+}
 
 export const WA_PREVIEW_SAMPLE_DATA = {
-  leadName: "ישראל ישראלי",
-  businessName: "עסק בדיקה",
+  get leadName() {
+    return getWaPreviewSampleData().leadName;
+  },
+  get businessName() {
+    return getWaPreviewSampleData().businessName;
+  },
   appointmentDate: "16/09/2026",
   appointmentTime: "18:00",
   phone: "050-1234567",
-} as const;
-
-export const WA_PREVIEW_RECIPIENT_LABELS: Record<string, string> = {
-  lead_phone: "טלפון הליד",
-  appointment_customer_phone: "טלפון הלקוח",
-  business_owner: "בעל העסק",
-  lead_owner: "אחראי הליד",
-  fixed_phone: "מספר קבוע",
 };
 
-const WA_PREVIEW_VARIABLE_LABELS: Record<string, Record<string, string>> = {
+const RECIPIENT_LABEL_KEYS: Record<string, { key: string; fallback: string }> = {
+  lead_phone: { key: "leftover.waPreview.leadPhone", fallback: "Lead phone" },
+  appointment_customer_phone: { key: "leftover.waPreview.customerPhone", fallback: "Customer phone" },
+  business_owner: { key: "leftover.waPreview.businessOwner", fallback: "Business owner" },
+  lead_owner: { key: "leftover.waPreview.leadOwner", fallback: "Lead owner" },
+  fixed_phone: { key: "leftover.waPreview.fixedPhone", fallback: "Fixed number" },
+};
+
+export function getWaPreviewRecipientLabels(): Record<string, string> {
+  return Object.fromEntries(
+    Object.entries(RECIPIENT_LABEL_KEYS).map(([id, { key, fallback }]) => [
+      id,
+      i18n.t(key, fallback),
+    ])
+  );
+}
+
+export const WA_PREVIEW_RECIPIENT_LABELS = new Proxy({} as Record<string, string>, {
+  get(_target, prop: string) {
+    return getWaPreviewRecipientLabels()[prop];
+  },
+});
+
+const VARIABLE_LABEL_KEYS: Record<string, Record<string, { key: string; fallback: string }>> = {
   appointment_confirmation: {
-    "1": "שם הלקוח",
-    "2": "שם העסק",
-    "3": "תאריך הפגישה",
-    "4": "שעת הפגישה",
+    "1": { key: "leftover.waPreview.customerName", fallback: "Customer name" },
+    "2": { key: "leftover.waPreview.businessName", fallback: "Business name" },
+    "3": { key: "leftover.waPreview.appointmentDate", fallback: "Appointment date" },
+    "4": { key: "leftover.waPreview.appointmentTime", fallback: "Appointment time" },
   },
   appointment_reminder: {
-    "1": "שם הלקוח",
-    "2": "זמן עד הפגישה",
-    "3": "שעת הפגישה",
-    "4": "שירות",
+    "1": { key: "leftover.waPreview.customerName", fallback: "Customer name" },
+    "2": { key: "leftover.waPreview.timeUntil", fallback: "Time until the appointment" },
+    "3": { key: "leftover.waPreview.appointmentTime", fallback: "Appointment time" },
+    "4": { key: "leftover.waPreview.service", fallback: "Service" },
   },
-  appointment_thanks: { "1": "שם הלקוח", "2": "שירות" },
-  appointment_review: { "1": "שם הלקוח", "2": "שירות" },
-  new_lead_welcome: { "1": "שם הליד" },
-  lead_follow_up: { "1": "שם הליד" },
-  lead_follow_up_2: { "1": "שם הליד" },
-  new_client_welcome: { "1": "שם הלקוח" },
-  inactive_client: { "1": "שם הלקוח" },
+  appointment_thanks: {
+    "1": { key: "leftover.waPreview.customerName", fallback: "Customer name" },
+    "2": { key: "leftover.waPreview.service", fallback: "Service" },
+  },
+  appointment_review: {
+    "1": { key: "leftover.waPreview.customerName", fallback: "Customer name" },
+    "2": { key: "leftover.waPreview.service", fallback: "Service" },
+  },
+  new_lead_welcome: {
+    "1": { key: "leftover.waPreview.leadName", fallback: "Lead name" },
+  },
+  lead_follow_up: {
+    "1": { key: "leftover.waPreview.leadName", fallback: "Lead name" },
+  },
+  lead_follow_up_2: {
+    "1": { key: "leftover.waPreview.leadName", fallback: "Lead name" },
+  },
+  new_client_welcome: {
+    "1": { key: "leftover.waPreview.customerName", fallback: "Customer name" },
+  },
+  inactive_client: {
+    "1": { key: "leftover.waPreview.customerName", fallback: "Customer name" },
+  },
   new_lead_received_utility: {
-    "1": "שם הליד",
-    "2": "טלפון הליד",
-    "3": "מקור הליד",
+    "1": { key: "leftover.waPreview.leadName", fallback: "Lead name" },
+    "2": { key: "leftover.waPreview.leadPhone", fallback: "Lead phone" },
+    "3": { key: "leftover.waPreview.leadSource", fallback: "Lead source" },
   },
   new_lead_received: {
-    "1": "שם הליד",
-    "2": "טלפון הליד",
-    "3": "מקור הליד",
+    "1": { key: "leftover.waPreview.leadName", fallback: "Lead name" },
+    "2": { key: "leftover.waPreview.leadPhone", fallback: "Lead phone" },
+    "3": { key: "leftover.waPreview.leadSource", fallback: "Lead source" },
   },
 };
 
-const SAMPLE_BY_SOURCE_FIELD: Record<string, string> = {
-  "lead:name": WA_PREVIEW_SAMPLE_DATA.leadName,
-  "lead:fullName": WA_PREVIEW_SAMPLE_DATA.leadName,
-  "contact:name": WA_PREVIEW_SAMPLE_DATA.leadName,
-  "contact:fullName": WA_PREVIEW_SAMPLE_DATA.leadName,
-  "appointment:clientName": WA_PREVIEW_SAMPLE_DATA.leadName,
-  "appointment:clientSnapshot.name": WA_PREVIEW_SAMPLE_DATA.leadName,
-  "business:name": WA_PREVIEW_SAMPLE_DATA.businessName,
-  "appointment:date": WA_PREVIEW_SAMPLE_DATA.appointmentDate,
-  "appointment:time": WA_PREVIEW_SAMPLE_DATA.appointmentTime,
-  "lead:phone": WA_PREVIEW_SAMPLE_DATA.phone,
-  "contact:phone": WA_PREVIEW_SAMPLE_DATA.phone,
-  "appointment:clientPhone": WA_PREVIEW_SAMPLE_DATA.phone,
-  "appointment:clientSnapshot.phone": WA_PREVIEW_SAMPLE_DATA.phone,
-};
+function sampleBySourceField(): Record<string, string> {
+  const sample = getWaPreviewSampleData();
+  return {
+    "lead:name": sample.leadName,
+    "lead:fullName": sample.leadName,
+    "contact:name": sample.leadName,
+    "contact:fullName": sample.leadName,
+    "appointment:clientName": sample.leadName,
+    "appointment:clientSnapshot.name": sample.leadName,
+    "business:name": sample.businessName,
+    "appointment:date": sample.appointmentDate,
+    "appointment:time": sample.appointmentTime,
+    "lead:phone": sample.phone,
+    "contact:phone": sample.phone,
+    "appointment:clientPhone": sample.phone,
+    "appointment:clientSnapshot.phone": sample.phone,
+  };
+}
 
 type MetaComponent = {
   type?: string;
@@ -106,7 +171,10 @@ export type WhatsAppPreviewModel = {
 function placeholderForVariable(metaTemplateName: string, variable: string) {
   const tpl = String(metaTemplateName || "").toLowerCase();
   const key = String(variable || "");
-  const label = WA_PREVIEW_VARIABLE_LABELS[tpl]?.[key] || `משתנה ${key || "?"}`;
+  const mapped = VARIABLE_LABEL_KEYS[tpl]?.[key];
+  const label = mapped
+    ? i18n.t(mapped.key, mapped.fallback)
+    : i18n.t("leftover.waPreview.variable", "Variable {{key}}", { key: key || "?" });
   return `[${label}]`;
 }
 
@@ -124,7 +192,7 @@ export function previewValueForMapping(
   if (!source || !field) {
     return placeholderForVariable(metaTemplateName, variable);
   }
-  const sample = SAMPLE_BY_SOURCE_FIELD[`${source}:${field}`];
+  const sample = sampleBySourceField()[`${source}:${field}`];
   if (sample) return sample;
   return placeholderForVariable(metaTemplateName, variable);
 }
@@ -245,7 +313,10 @@ export function buildWhatsAppPreviewModel(args: {
   hasSelection?: boolean;
   forceError?: boolean;
 }): WhatsAppPreviewModel {
-  const senderLabel = String(args.senderLabel || "מספר BizUply המנוהל").trim();
+  const senderLabel = String(
+    args.senderLabel ||
+      i18n.t("leftover.waPreview.managedNumber", "Managed BizUply number")
+  ).trim();
   const recipientLabel = recipientLabelForPreview(
     args.recipientType,
     String(args.template?.metaTemplateName || "")

@@ -17805,7 +17805,8 @@
       "inTwoDays": "in 2 days",
       "in3Days": "in 3 days",
       "inHours": "in {{count}} hours",
-      "inDays": "in {{count}} days"
+      "inDays": "in {{count}} days",
+      "unavailable": "There is no matching approved WhatsApp template for this automation."
     },
     "emailProvider": {
       "required": "To use this automation, connect Gmail or Outlook / Microsoft 365",
@@ -17824,7 +17825,8 @@
       "insertStep": "Add a step on this connection",
       "aiAction": "Automation action",
       "oneAction": "⚡ 1 action",
-      "noCharge": "No charge"
+      "noCharge": "No charge",
+      "loadPlanFailed": "We could not load the plan details right now."
     },
     "dashboard": {
       "recentActivity": "Recent activity",
@@ -17866,6 +17868,12 @@
       "birthday": "Birthday",
       "qrDesc": "Create, download, a dynamic destination, and scan analytics.",
       "faqDesc": "A reusable FAQ set, category, search, and schema."
+    },
+    "store": {
+      "badge": "Store management",
+      "title": "Products, categories, and store settings",
+      "hint": "Add products once. They are saved on the server, appear automatically in the store grid, and each product gets an automatic product page matching the design you choose.",
+      "backStudio": "Back to Studio"
     }
   }
 }

@@ -1,5 +1,9 @@
 import React, { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { Navigate, useParams, useSearchParams } from "react-router-dom";
+
+import i18n from "../i18n/i18n";
+import { getTextDirection } from "../i18n/localeUtils";
 
 import WebsiteStudioPage from "../components/site-builder/studio/WebsiteStudioPage";
 import BizuplyLoader from "../components/ui/BizuplyLoader";
@@ -251,7 +255,7 @@ async function fetchWebsiteTemplateByKey(templateKey: string) {
   const cleanKey = normalizeTemplateId(templateKey);
 
   if (!cleanKey) {
-    throw new Error("לא נמצא מזהה תבנית");
+    throw new Error(i18n.t("leftover.miniBuilder.missingTemplate", "Template ID was not found"));
   }
 
   const data = await apiRequest<{
@@ -263,7 +267,10 @@ async function fetchWebsiteTemplateByKey(templateKey: string) {
   });
 
   if (!data?.success || !data?.template) {
-    throw new Error(data?.message || "לא הצלחנו לטעון את התבנית. נסו שוב.");
+    throw new Error(
+      data?.message ||
+        i18n.t("leftover.miniBuilder.loadFailed", "We could not load the template. Try again.")
+    );
   }
 
   return data.template;
@@ -307,13 +314,13 @@ function mongoTemplateToSeed(
       template.heroTitle ||
       heroBlock?.title ||
       template.name ||
-      "אתר עסקי מוכן",
+      i18n.t("leftover.miniBuilder.readyName", "Ready business website"),
 
     heroSubtitle:
       template.heroSubtitle ||
       heroBlock?.subtitle ||
       template.description ||
-      "תבנית אתר מוכנה לעריכה מלאה.",
+      i18n.t("leftover.miniBuilder.readyDesc", "A ready website template for full editing."),
 
     palette: createSafeTemplatePalette(template.palette),
     blocks,
@@ -361,6 +368,7 @@ function saveSelectedTemplateToLocalStorage(
 export default function BusinessMiniSiteBuilder({
   businessId: businessIdFromProps,
 }: BusinessMiniSiteBuilderProps = {}) {
+  const { t, i18n: i18nInstance } = useTranslation();
   const params = useParams<{ businessId: string }>();
   const businessId = businessIdFromProps || params.businessId || "";
 
@@ -444,7 +452,7 @@ export default function BusinessMiniSiteBuilder({
         if (!alive) return;
 
         setTemplateSeed(undefined);
-        setTemplateError(error?.message || "שגיאה בטעינת התבנית");
+        setTemplateError(error?.message || t("leftover.miniBuilder.loadError", "Could not load the template"));
       } finally {
         if (alive) {
           setTemplateLoading(false);
@@ -457,12 +465,12 @@ export default function BusinessMiniSiteBuilder({
     return () => {
       alive = false;
     };
-  }, [selectedTemplateId]);
+  }, [selectedTemplateId, t]);
 
   const handleSave = async (payload: SiteSavePayload) => {
     if (!businessId) {
       console.error("[BIZUPLY PUBLIC SAVE ERROR] Missing businessId", payload);
-      alert("לא נמצא מזהה עסק. אי אפשר לשמור את האתר.");
+      alert(t("leftover.miniBuilder.missingBusiness", "Business ID was not found. The site cannot be saved."));
       return;
     }
 
@@ -508,13 +516,16 @@ export default function BusinessMiniSiteBuilder({
       },
       seo: payload.seo || {
         title: templateSeed?.name
-          ? `${templateSeed.name} | האתר שלי`
-          : "האתר שלי",
+          ? t("leftover.miniBuilder.mySiteTitle", "{{name}} | My website", {
+              name: templateSeed.name,
+            })
+          : t("leftover.miniBuilder.mySite", "My website"),
         description:
-          templateSeed?.description || "אתר עסקי מקצועי שנבנה עם Bizuply",
+          templateSeed?.description ||
+          t("leftover.miniBuilder.professionalSite", "A professional business website built with Bizuply"),
       },
       brand: payload.brand || {
-        businessName: "העסק שלי",
+        businessName: t("leftover.miniBuilder.myBusiness", "My business"),
       },
     };
 
@@ -539,7 +550,7 @@ export default function BusinessMiniSiteBuilder({
           payload: safePayload,
         });
 
-        alert("האתר לא פורסם כי לא נוצר HTML לפרסום. שלחי לי את הקונסול.");
+        alert(t("leftover.miniBuilder.noHtml", "The site was not published because no HTML was created for publishing."));
         return;
       }
 
@@ -584,7 +595,7 @@ export default function BusinessMiniSiteBuilder({
       // לא שומרים את תגובת השרת ב-localStorage כדי לא להגיע ל-QuotaExceededError.
     } catch (error) {
       console.error("[BIZUPLY PUBLIC SAVE ERROR]", error);
-      alert("אירעה שגיאה בשמירת האתר. פתחי Console ושלחי לי את השגיאה.");
+      alert(t("leftover.miniBuilder.saveFailed", "Saving the site failed. Open the console and check the error."));
     }
   };
 
@@ -596,7 +607,9 @@ export default function BusinessMiniSiteBuilder({
     return (
       <BizuplyLoader
         fullScreen
-        label={`טוען את התבנית לעורך... ${selectedTemplateId}`}
+        label={t("leftover.miniBuilder.loadingEditor", "Loading the template into the editor... {{id}}", {
+          id: selectedTemplateId,
+        })}
       />
     );
   }
@@ -604,12 +617,12 @@ export default function BusinessMiniSiteBuilder({
   if (templateError) {
     return (
       <div
-        dir="rtl"
+        dir={getTextDirection(i18nInstance.language)}
         className="flex min-h-screen items-center justify-center bg-white px-4"
       >
         <div className="max-w-lg rounded-3xl border border-red-200 bg-red-50 p-8 text-center">
           <h1 className="text-2xl font-black text-red-700">
-            לא הצלחנו לפתוח את התבנית
+            {t("leftover.miniBuilder.openFailed", "We could not open the template")}
           </h1>
 
           <p className="mt-3 text-sm font-bold leading-7 text-red-600">
@@ -617,7 +630,7 @@ export default function BusinessMiniSiteBuilder({
           </p>
 
           <p className="mt-3 text-xs font-bold text-red-400">
-            Template: {selectedTemplateId || "לא נמצא"}
+            Template: {selectedTemplateId || t("leftover.miniBuilder.notFound", "Not found")}
           </p>
 
           <button
@@ -625,7 +638,7 @@ export default function BusinessMiniSiteBuilder({
             onClick={() => window.location.reload()}
             className="mt-6 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 text-slate-800"
           >
-            נסי שוב
+            {t("leftover.miniBuilder.tryAgain", "Try again")}
           </button>
         </div>
       </div>
@@ -636,7 +649,9 @@ export default function BusinessMiniSiteBuilder({
     return (
       <BizuplyLoader
         fullScreen
-        label={`מכין את התבנית לעורך... ${selectedTemplateId}`}
+        label={t("leftover.miniBuilder.preparing", "Preparing the template for the editor... {{id}}", {
+          id: selectedTemplateId,
+        })}
       />
     );
   }

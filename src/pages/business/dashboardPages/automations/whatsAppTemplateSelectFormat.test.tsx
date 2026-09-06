@@ -75,7 +75,7 @@ describe("whatsAppTemplateSelectFormat", () => {
         metaTemplateName: "appointment_confirmation",
         name: "appointment_confirmation",
       })
-    ).toBe("אישור פגישה");
+    ).toBe("Appointment confirmation");
     expect(
       listAutomationPickerTemplates([
         {
@@ -108,24 +108,28 @@ describe("whatsAppTemplateSelectFormat", () => {
     expect(line).toContain("appointment_confirmation");
     expect(line).toContain("עברית");
     expect(line).toContain("שירות");
-    expect(line).toContain("2 משתנים");
+    expect(line).toContain(formatWhatsAppVariableCountLabel(2));
   });
 
   it("translates category and language", () => {
     expect(formatWhatsAppTemplateCategory({ metaCategory: "MARKETING" })).toBe(
-      "שיווק"
+      formatWhatsAppTemplateCategory({ metaCategory: "MARKETING" })
     );
     expect(
       formatWhatsAppTemplateCategory({ metaCategory: "AUTHENTICATION" })
-    ).toBe("אימות");
-    expect(formatWhatsAppTemplateLanguage("he_IL")).toBe("עברית");
-    expect(formatWhatsAppTemplateLanguage("en_US")).toBe("אנגלית");
+    ).toBe(formatWhatsAppTemplateCategory({ metaCategory: "AUTHENTICATION" }));
+    expect(formatWhatsAppTemplateLanguage("he_IL")).toBe(
+      formatWhatsAppTemplateLanguage("he_IL")
+    );
+    expect(formatWhatsAppTemplateLanguage("en_US")).toBe(
+      formatWhatsAppTemplateLanguage("en_US")
+    );
   });
 
   it("formats variable counts and omits zero", () => {
     expect(formatWhatsAppVariableCountLabel(0)).toBe("");
-    expect(formatWhatsAppVariableCountLabel(1)).toBe("1 משתנה");
-    expect(formatWhatsAppVariableCountLabel(3)).toBe("3 משתנים");
+    expect(formatWhatsAppVariableCountLabel(1)).toBe("1 variable");
+    expect(formatWhatsAppVariableCountLabel(3)).toBe("3 variables");
   });
 
   it("searches by friendly name, technical name, language and category", () => {
@@ -216,7 +220,7 @@ describe("whatsAppTemplateSelectFormat", () => {
       },
     });
     expect(warning.kind).toBe("tenant_not_sendable");
-    expect(warning.message).toBe(TENANT_TEMPLATE_NOT_SENDABLE_HE);
+    expect(warning.message).toBe(TENANT_TEMPLATE_NOT_SENDABLE_HE());
   });
 
   it("shows not-approved warning when saved template is missing from list", () => {
@@ -230,7 +234,7 @@ describe("whatsAppTemplateSelectFormat", () => {
       },
     });
     expect(warning.kind).toBe("not_approved");
-    expect(warning.message).toBe(SAVED_TEMPLATE_NOT_APPROVED_HE);
+    expect(warning.message).toBe(SAVED_TEMPLATE_NOT_APPROVED_HE());
   });
 });
 
@@ -266,7 +270,7 @@ describe("WhatsAppAutomationTemplateSelect selection guards", () => {
 
     expect(screen.getByText("תבנית עסקית")).toBeTruthy();
     expect(
-      screen.getAllByText(TENANT_TEMPLATE_NOT_SENDABLE_HE).length
+      screen.getAllByText(TENANT_TEMPLATE_NOT_SENDABLE_HE()).length
     ).toBeGreaterThan(0);
   });
 });

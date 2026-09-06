@@ -1,5 +1,7 @@
 import React from "react";
 import { RefreshCw } from "lucide-react";
+import i18n from "../i18n/i18n";
+import { getTextDirection } from "../i18n/localeUtils";
 import {
   clearChunkReloadFlag,
   isChunkLoadError,
@@ -69,23 +71,23 @@ class LazyRouteBoundary extends React.Component {
 
     return (
       <div
-        dir="rtl"
+        dir={getTextDirection(i18n.language)}
         className="mx-auto flex min-h-[50vh] max-w-lg flex-col items-center justify-center px-6 py-16 text-center"
       >
         <div className="rounded-[24px] border border-slate-200 bg-white p-8 shadow-sm">
           <h2 className="text-lg font-black text-slate-800">
             {chunkError
-              ? "גרסה חדשה של האתר זמינה"
+              ? i18n.t("leftover.lazyRoute.newVersion", "A new version of the site is available")
               : domError
-                ? "צריך לרענן את העורך"
-                : "שגיאה בטעינת העמוד"}
+                ? i18n.t("leftover.lazyRoute.refreshEditor", "The editor needs a refresh")
+                : i18n.t("leftover.lazyRoute.pageError", "The page failed to load")}
           </h2>
           <p className="mt-2 text-sm font-bold text-slate-500">
             {chunkError
-              ? "הדפדפן ניסה לטעון קובץ ישן. רענון אחד יפתור את זה."
+              ? i18n.t("leftover.lazyRoute.staleHint", "The browser tried to load an old file. One refresh will fix it.")
               : domError
-                ? "העורך התעדכן בזמן טעינת התבנית. רענון קצר יחזיר אותך לעריכה."
-                : this.state.error?.message || "נסה שוב בעוד רגע."}
+                ? i18n.t("leftover.lazyRoute.editorHint", "The editor updated while the template was loading. A short refresh will return you to editing.")
+                : this.state.error?.message || i18n.t("leftover.lazyRoute.trySoon", "Try again in a moment.")}
           </p>
           <button
             type="button"
@@ -93,7 +95,7 @@ class LazyRouteBoundary extends React.Component {
             className="mt-5 inline-flex h-11 items-center gap-2 rounded-2xl border border-violet-200/80 bg-gradient-to-l from-violet-100 via-sky-100 to-cyan-100 px-5 text-slate-800"
           >
             <RefreshCw size={16} />
-            רענון הדף
+            {i18n.t("leftover.lazyRoute.reload", "Refresh the page")}
           </button>
         </div>
       </div>

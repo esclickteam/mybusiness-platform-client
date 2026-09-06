@@ -1,11 +1,13 @@
 import { FileText, Image as ImageIcon, MapPin, Video } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import type {
   ApprovedWhatsAppTemplate,
   WhatsAppVariableMapping,
 } from "../../../../api/whatsappApi";
+import { getTextDirection } from "../../../../i18n/localeUtils";
 import {
-  WA_PREVIEW_EMPTY_HE,
-  WA_PREVIEW_ERROR_HE,
+  getWaPreviewEmpty,
+  getWaPreviewError,
   buildWhatsAppPreviewModel,
 } from "./whatsAppActionPreviewModel";
 
@@ -22,14 +24,15 @@ function MediaPlaceholder({
 }: {
   kind: "image" | "video" | "document" | "location";
 }) {
+  const { t } = useTranslation();
   const label =
     kind === "image"
-      ? "תמונה"
+      ? t("leftover.waPreview.image", "Image")
       : kind === "video"
-        ? "וידאו"
+        ? t("leftover.waPreview.video", "Video")
         : kind === "document"
-          ? "מסמך"
-          : "מיקום";
+          ? t("leftover.waPreview.document", "Document")
+          : t("leftover.waPreview.location", "Location");
   const Icon =
     kind === "image"
       ? ImageIcon
@@ -53,6 +56,8 @@ export function WhatsAppActionPreview({
   senderLabel,
   hasSelection,
 }: Props) {
+  const { t, i18n } = useTranslation();
+  const pageDir = getTextDirection(i18n.language);
   let model;
   try {
     model = buildWhatsAppPreviewModel({
@@ -73,19 +78,19 @@ export function WhatsAppActionPreview({
   }
 
   return (
-    <section className="af-wa-preview" dir="rtl" data-testid="wa-action-preview">
-      <strong>תצוגה מקדימה</strong>
+    <section className="af-wa-preview" dir={pageDir} data-testid="wa-action-preview">
+      <strong>{t("leftover.waPreview.preview", "Preview")}</strong>
       {model.state === "empty" ? (
-        <div className="af-wa-preview__empty">{WA_PREVIEW_EMPTY_HE}</div>
+        <div className="af-wa-preview__empty">{getWaPreviewEmpty()}</div>
       ) : model.state === "error" ? (
         <div className="af-wa-preview__empty af-wa-preview__empty--error">
-          {WA_PREVIEW_ERROR_HE}
+          {getWaPreviewError()}
         </div>
       ) : (
         <>
           <div className="af-wa-preview__headers">
-            <span>מ: {model.senderLabel}</span>
-            <span>אל: {model.recipientLabel}</span>
+            <span>{t("leftover.waPreview.from", "From: {{label}}", { label: model.senderLabel })}</span>
+            <span>{t("leftover.waPreview.to", "To: {{label}}", { label: model.recipientLabel })}</span>
           </div>
           <div className="af-wa-preview__chat">
             <div className="af-wa-preview__bubble">
@@ -114,7 +119,7 @@ export function WhatsAppActionPreview({
                       role="presentation"
                       aria-hidden="true"
                     >
-                      {btn.text || `כפתור ${index + 1}`}
+                      {btn.text || t("leftover.waPreview.buttonN", "Button {{n}}", { n: index + 1 })}
                     </div>
                   ))}
                 </div>

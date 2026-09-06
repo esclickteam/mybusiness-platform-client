@@ -33,7 +33,7 @@ import { useAuth } from "@/context/AuthContext";
 import { isModuleEnabled } from "@/utils/moduleAccess";
 import { isFeatureAccessible } from "@/utils/entitlementAccess";
 import { isGuidedDemoActive } from "@/guidedDemo/sessionStore";
-import { DEMO_ACTIVITY_TIMELINE, DEMO_DASHBOARD_OVERLAY } from "@/guidedDemo/demoOverlayData";
+import { DEMO_DASHBOARD_OVERLAY, getDemoActivityTimeline } from "@/guidedDemo/demoOverlayData";
 
 import type {
   DashboardFilters,
@@ -619,9 +619,11 @@ export default function DashboardOverview({
 
       {demoMode ? (
         <Panel dataDemoTarget="dashboard-recent-activity">
-          <h3 className="text-lg font-black text-slate-800">פעילות אחרונה</h3>
+          <h3 className="text-lg font-black text-slate-800">
+            {t("leftover.dashboard.recentActivity", "Recent activity")}
+          </h3>
           <ul className="mt-4 space-y-3">
-            {DEMO_ACTIVITY_TIMELINE.map((item) => (
+            {getDemoActivityTimeline().map((item) => (
               <li key={item.id} className="flex items-start justify-between gap-3 border-b border-slate-100 pb-3 last:border-0 last:pb-0">
                 <p className="text-sm font-semibold text-slate-700">{item.text}</p>
                 <span className="shrink-0 text-[11px] font-bold text-slate-400">{item.time}</span>

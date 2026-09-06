@@ -1,7 +1,10 @@
+import i18n from "../../../../i18n/i18n";
+import { getIntlLocale } from "../../../../i18n/localeUtils";
+
 export function formatCurrency(
   value: number,
   currency = "ILS",
-  locale = "he-IL"
+  locale = getIntlLocale(i18n.language)
 ) {
   const amount = Number(value) || 0;
   try {
@@ -15,7 +18,7 @@ export function formatCurrency(
   }
 }
 
-export function formatNumber(value: number, locale = "he-IL") {
+export function formatNumber(value: number, locale = getIntlLocale(i18n.language)) {
   return new Intl.NumberFormat(locale).format(Number(value) || 0);
 }
 
@@ -46,7 +49,7 @@ export function toLocalIsoDate(date = new Date()) {
   return `${y}-${m}-${d}`;
 }
 
-export function formatDateTimeHe(value?: string | Date | null, locale = "he-IL") {
+export function formatDateTimeHe(value?: string | Date | null, locale = getIntlLocale(i18n.language)) {
   if (!value) return "—";
   const date = value instanceof Date ? value : new Date(value);
   if (Number.isNaN(date.getTime())) return "—";
@@ -59,7 +62,7 @@ export function formatDateTimeHe(value?: string | Date | null, locale = "he-IL")
   });
 }
 
-export function formatDateHe(value?: string | Date | null, locale = "he-IL") {
+export function formatDateHe(value?: string | Date | null, locale = getIntlLocale(i18n.language)) {
   if (!value) return "—";
   const date = value instanceof Date ? value : new Date(value);
   if (Number.isNaN(date.getTime())) return "—";
@@ -336,6 +339,17 @@ export function resolveAdAccountId(account?: {
   const graphId = String(account?.id || "").trim();
   if (!graphId) return "";
   return graphId.replace(/^act_/i, "");
+}
+
+export function getLeadFormContactLabel(
+  field: { type?: string; labelHe?: string; labelEn?: string } | string
+) {
+  const type = typeof field === "string" ? field : String(field?.type || "");
+  const fallback =
+    typeof field === "string"
+      ? type
+      : field?.labelEn || field?.labelHe || type;
+  return i18n.t(`leftover.metaLeadForm.${type}`, fallback);
 }
 
 /** Meta Instant Form contact fields (Ads Manager parity). */

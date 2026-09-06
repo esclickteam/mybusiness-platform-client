@@ -6,6 +6,7 @@ import {
   type EdgeProps,
 } from "@xyflow/react";
 import { Plus } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 type InsertEdgeData = {
   onInsert?: (edgeId: string) => void;
@@ -33,6 +34,7 @@ export default function AutomationInsertEdge(props: EdgeProps) {
     sourcePosition,
     targetPosition,
   });
+  const { t } = useTranslation();
   const edgeData = (data || {}) as InsertEdgeData;
   const readOnly = Boolean(edgeData.readOnly);
 
@@ -47,7 +49,7 @@ export default function AutomationInsertEdge(props: EdgeProps) {
             style={{
               transform: `translate(-50%, -50%) translate(${labelX}px, ${labelY}px)`,
             }}
-            title="הוסף שלב בחיבור"
+            title={t("leftover.autoUi.insertStep", "Add a step on this connection")}
             onClick={(event) => {
               event.stopPropagation();
               edgeData.onInsert?.(id);

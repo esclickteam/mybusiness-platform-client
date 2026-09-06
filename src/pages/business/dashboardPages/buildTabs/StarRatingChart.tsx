@@ -1,6 +1,9 @@
 "use client";
 
 import React, { useMemo } from "react";
+import { useTranslation } from "react-i18next";
+
+import { getTextDirection } from "../../../../i18n/localeUtils";
 
 type ReviewValue = string | number | null | undefined;
 
@@ -28,7 +31,8 @@ type StarRatingChartProps = {
 type ParameterItem = {
   key: string;
   fallbackKeys: string[];
-  label: string;
+  labelKey: string;
+  fallback: string;
   icon: string;
 };
 
@@ -36,43 +40,50 @@ const PARAMETERS: ParameterItem[] = [
   {
     key: "service",
     fallbackKeys: ["service"],
-    label: "שירות",
+    labelKey: "leftover.reviews.service",
+    fallback: "Service",
     icon: "🤝",
   },
   {
     key: "professional",
     fallbackKeys: ["professional", "professionalism"],
-    label: "מקצועיות",
+    labelKey: "leftover.reviews.professional",
+    fallback: "Professionalism",
     icon: "💼",
   },
   {
     key: "timing",
     fallbackKeys: ["timing", "timeliness"],
-    label: "עמידה בזמנים",
+    labelKey: "leftover.reviews.timing",
+    fallback: "Punctuality",
     icon: "⏰",
   },
   {
     key: "availability",
     fallbackKeys: ["availability"],
-    label: "זמינות",
+    labelKey: "leftover.reviews.availability",
+    fallback: "Availability",
     icon: "📞",
   },
   {
     key: "value",
     fallbackKeys: ["value", "valueForMoney"],
-    label: "תמורה למחיר",
+    labelKey: "leftover.reviews.value",
+    fallback: "Value for money",
     icon: "💰",
   },
   {
     key: "goal",
     fallbackKeys: ["goal", "goalAchievement"],
-    label: "השגת מטרה",
+    labelKey: "leftover.reviews.goal",
+    fallback: "Goal achieved",
     icon: "🎯",
   },
   {
     key: "experience",
     fallbackKeys: ["experience", "overall"],
-    label: "חוויה כללית",
+    labelKey: "leftover.reviews.experience",
+    fallback: "Overall experience",
     icon: "✨",
   },
 ];
@@ -100,16 +111,16 @@ function getReviewParameterValue(review: ReviewItem, parameter: ParameterItem) {
   return null;
 }
 
-function getRatingLabel(rating: number) {
-  if (!rating) return "אין דירוג";
-  if (rating >= 4.7) return "מצוין";
-  if (rating >= 4.3) return "מעולה";
-  if (rating >= 4) return "טוב מאוד";
-  if (rating >= 3) return "טוב";
-  return "דורש שיפור";
+function getRatingLabel(rating: number, t: (key: string, fallback: string) => string) {
+  if (!rating) return t("leftover.reviews.noRating", "No rating");
+  if (rating >= 4.7) return t("leftover.reviews.outstanding", "Outstanding");
+  if (rating >= 4.3) return t("leftover.reviews.excellent", "Excellent");
+  if (rating >= 4) return t("leftover.reviews.veryGood", "Very good");
+  if (rating >= 3) return t("leftover.reviews.good", "Good");
+  return t("leftover.reviews.needsWork", "Needs improvement");
 }
 
-function StarDisplay({ rating }: { rating: number }) {
+function StarDisplay({ rating, ariaLabel }: { rating: number; ariaLabel: string }) {
   const safeRating = Math.max(0, Math.min(5, rating));
   const full = Math.floor(safeRating);
   const half = safeRating % 1 >= 0.5;
@@ -118,7 +129,7 @@ function StarDisplay({ rating }: { rating: number }) {
   return (
     <span
       dir="ltr"
-      aria-label={`דירוג ${safeRating.toFixed(1)} מתוך 5`}
+      aria-label={ariaLabel}
       className="inline-flex whitespace-nowrap text-sm tracking-[1px] text-amber-400"
     >
       {"★".repeat(full)}
@@ -131,6 +142,9 @@ function StarDisplay({ rating }: { rating: number }) {
 export default function StarRatingChart({
   reviews = [],
 }: StarRatingChartProps) {
+  const { t, i18n } = useTranslation();
+  const pageDir = getTextDirection(i18n.language);
+
   const data = useMemo(() => {
     return PARAMETERS.map((parameter) => {
       const values = reviews
@@ -167,26 +181,34 @@ export default function StarRatingChart({
 
   return (
     <section
-      dir="rtl"
-      className="w-full rounded-[1.75rem] border border-white/80 bg-white p-4 text-right shadow-[0_18px_55px_rgba(15,23,42,0.06)] sm:p-5"
+      dir={pageDir}
+      className={[
+        "w-full rounded-[1.75rem] border border-white/80 bg-white p-4 shadow-[0_18px_55px_rgba(15,23,42,0.06)] sm:p-5",
+        pageDir === "rtl" ? "text-right" : "text-left",
+      ].join(" ")}
     >
       <div className="mb-5 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         <div>
           <div className="inline-flex rounded-full bg-violet-50 px-3 py-1 text-xs font-black text-violet-700">
-            סיכום דירוגים
+            {t("leftover.reviews.chartBadge", "Rating summary")}
           </div>
 
           <h3 className="mt-3 text-xl font-black tracking-tight text-slate-800">
-            דירוג לפי פרמטרים
+            {t("leftover.reviews.chartTitle", "Ratings by parameter")}
           </h3>
 
           <p className="mt-1 text-sm leading-6 text-slate-500">
-            ממוצע הדירוגים לפי חוויית הלקוחות בכל תחום.
+            {t(
+              "leftover.reviews.chartHint",
+              "Average ratings from the customer experience in each area."
+            )}
           </p>
         </div>
 
         <div className="rounded-2xl border border-amber-100 bg-amber-50 px-4 py-3 text-center">
-          <p className="text-xs font-black text-amber-700">ממוצע כללי</p>
+          <p className="text-xs font-black text-amber-700">
+            {t("leftover.reviews.overallAvg", "Overall average")}
+          </p>
 
           <div className="mt-1 flex items-center justify-center gap-2">
             <span className="text-2xl font-black text-slate-800">
@@ -197,7 +219,7 @@ export default function StarRatingChart({
           </div>
 
           <p className="mt-1 text-xs font-bold text-amber-700">
-            {getRatingLabel(overallAverage)}
+            {getRatingLabel(overallAverage, t)}
           </p>
         </div>
       </div>
@@ -209,16 +231,19 @@ export default function StarRatingChart({
           </div>
 
           <h4 className="mt-4 text-base font-black text-slate-800">
-            עדיין אין מספיק דירוגים
+            {t("leftover.reviews.notEnoughTitle", "Not enough ratings yet")}
           </h4>
 
           <p className="mt-2 max-w-sm text-sm leading-7 text-slate-500">
-            אחרי שלקוחות ישאירו ביקורות, יוצג כאן פירוט מקצועי לפי פרמטרים.
+            {t(
+              "leftover.reviews.notEnoughHint",
+              "After customers leave reviews, a professional breakdown by parameter will appear here."
+            )}
           </p>
         </div>
       ) : (
         <div className="grid gap-3">
-          {data.map(({ key, label, icon, average, count, percent }) => {
+          {data.map(({ key, labelKey, fallback, icon, average, count, percent }) => {
             const hasRating = count > 0;
 
             return (
@@ -234,19 +259,24 @@ export default function StarRatingChart({
 
                     <div>
                       <p className="text-sm font-black text-slate-800">
-                        {label}
+                        {t(labelKey, fallback)}
                       </p>
 
                       <p className="mt-0.5 text-xs font-bold text-slate-400">
                         {hasRating
-                          ? `${count} דירוגים`
-                          : "עדיין אין דירוג לפרמטר הזה"}
+                          ? t("leftover.reviews.ratingsCount", "{{count}} ratings", { count })
+                          : t("leftover.reviews.noParamRating", "This parameter has no rating yet")}
                       </p>
                     </div>
                   </div>
 
                   <div className="flex items-center gap-2 sm:justify-end">
-                    <StarDisplay rating={average} />
+                    <StarDisplay
+                      rating={average}
+                      ariaLabel={t("leftover.reviews.starsAria", "Rating {{rating}} out of 5", {
+                        rating: average.toFixed(1),
+                      })}
+                    />
 
                     <span
                       dir="ltr"

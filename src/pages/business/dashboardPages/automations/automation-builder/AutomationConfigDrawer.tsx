@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { X } from "lucide-react";
+import { useTranslation } from "react-i18next";
 import { MixedBidiText } from "./bidiText";
 
 type Props = {
@@ -29,6 +30,7 @@ export default function AutomationConfigDrawer({
   footer,
   allowBackdropClose = true,
 }: Props) {
+  const { t } = useTranslation();
   const [confirmOpen, setConfirmOpen] = useState(false);
 
   const requestClose = () => {
@@ -90,7 +92,7 @@ export default function AutomationConfigDrawer({
           <button
             type="button"
             className="af-drawer__close"
-            aria-label="סגור"
+            aria-label={t("leftover.autoUi.closeAria", "Close")}
             onClick={requestClose}
           >
             <X size={16} />
@@ -102,14 +104,14 @@ export default function AutomationConfigDrawer({
         {confirmOpen ? (
           <div className="af-drawer-confirm" role="alertdialog" aria-modal="true">
             <div className="af-drawer-confirm__card">
-              <p>יש שינויים שלא נשמרו. לצאת בלי לשמור?</p>
+              <p>{t("leftover.autoUi.unsaved", "There are unsaved changes. Leave without saving?")}</p>
               <div className="af-drawer-confirm__actions">
                 <button
                   type="button"
                   className="af-btn af-btn--secondary"
                   onClick={() => setConfirmOpen(false)}
                 >
-                  המשך עריכה
+                  {t("leftover.autoUi.keepEditing", "Keep editing")}
                 </button>
                 <button
                   type="button"
@@ -119,7 +121,7 @@ export default function AutomationConfigDrawer({
                     onClose();
                   }}
                 >
-                  צא בלי לשמור
+                  {t("leftover.autoUi.leave", "Leave without saving")}
                 </button>
               </div>
             </div>

@@ -1,6 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { getTextDirection } from "../i18n/localeUtils";
 import { demoProgress, runDemoSpecialAction, startDemoProgressBridge, stopDemoProgressBridge } from "./demoProgress";
 import { isGuidedDemoActive, readGuidedDemoSession, restorePreviousAuth, clearGuidedDemoLocal } from "./sessionStore";
 import { exitGuidedDemoSession, fetchGuidedDemoSession } from "../api/guidedDemoApi";
@@ -226,6 +228,8 @@ function HandPointer({ hand, visible }: { hand: HandPos | null; visible: boolean
 }
 
 export default function GuidedDemoEngine() {
+  const { t, i18n } = useTranslation();
+  const pageDir = getTextDirection(i18n.language);
   const { user, loginWithToken, logout } = useAuth() as {
     user: { businessId?: string; isGuidedDemo?: boolean } | null;
     loginWithToken: Function;
@@ -819,7 +823,7 @@ export default function GuidedDemoEngine() {
           onClick={() => setTourMinimized(false)}
           className="pointer-events-auto absolute bottom-4 left-1/2 z-[2147483005] -translate-x-1/2 rounded-full border border-violet-200 bg-white px-5 py-2.5 text-sm font-black text-violet-800 shadow-lg"
         >
-          המשך הדמו
+          {t("leftover.guided.resume", "Continue the demo")}
         </button>
       ) : null}
 
@@ -835,7 +839,7 @@ export default function GuidedDemoEngine() {
               onClick={() => setTourMinimized(true)}
               className="rounded-full border border-slate-200/90 bg-white/95 px-3 py-1.5 text-xs font-bold text-slate-600 shadow-sm backdrop-blur"
             >
-              הסתר
+              {t("leftover.guided.hide", "Hide")}
             </button>
           ) : null}
           <button
@@ -843,7 +847,7 @@ export default function GuidedDemoEngine() {
             onClick={() => setFinishConfirm(true)}
             className="rounded-full border border-slate-200/90 bg-white/95 px-3 py-1.5 text-xs font-bold text-slate-600 shadow-sm backdrop-blur"
           >
-            סיום הדמו
+            {t("leftover.guided.finish", "End demo")}
           </button>
         </div>
       ) : null}
@@ -856,11 +860,23 @@ export default function GuidedDemoEngine() {
                 <div className="min-w-0">
                   <p className="truncate text-[11px] font-bold text-violet-700">{currentModule?.title || "BizUply"}</p>
                   <p className="mt-0.5 text-xs font-semibold text-slate-500">
-                    {isFullDemo ? `שלב ${globalStepNum} מתוך ${globalStepTotal || "—"}` : `שלב ${modStepNum} מתוך ${modStepTotal || "—"}`}
+                    {isFullDemo
+                      ? t("leftover.guided.stepOf", "Step {{current}} of {{total}}", {
+                          current: globalStepNum,
+                          total: globalStepTotal || "—",
+                        })
+                      : t("leftover.guided.stepOf", "Step {{current}} of {{total}}", {
+                          current: modStepNum,
+                          total: modStepTotal || "—",
+                        })}
                   </p>
                   {isFullDemo && modStepTotal ? (
                     <p className="mt-0.5 text-[11px] font-semibold text-slate-400">
-                      {currentModule?.title} · שלב {modStepNum} מתוך {modStepTotal} במודול
+                      {t("leftover.guided.moduleStep", "{{title}} · step {{current}} of {{total}} in this module", {
+                        title: currentModule?.title,
+                        current: modStepNum,
+                        total: modStepTotal,
+                      })}
                     </p>
                   ) : null}
                 </div>
@@ -892,7 +908,9 @@ export default function GuidedDemoEngine() {
 
       {showWebsiteHero ? (
         <div className="pointer-events-auto absolute left-1/2 top-[22%] z-[2147483002] w-[min(92vw,560px)] -translate-x-1/2 rounded-[28px] bg-white p-8 text-center shadow-2xl">
-          <p className="text-xs font-black tracking-[0.2em] text-violet-500">סטודיו לצילום · תל אביב</p>
+          <p className="text-xs font-black tracking-[0.2em] text-violet-500">
+            {t("leftover.guided.studioKicker", "Photography studio · Tel Aviv")}
+          </p>
           <h1
             data-demo-target="website-headline"
             contentEditable
@@ -900,7 +918,7 @@ export default function GuidedDemoEngine() {
             onBlur={handleHeadlineBlur}
             className="mt-3 text-3xl font-black text-slate-900 outline-none focus:ring-2 focus:ring-violet-300"
           >
-            {step?.suggestedValue || "סטודיו נועה — רגעים שנשארים"}
+            {step?.suggestedValue || t("leftover.guided.studioHeadline", "Noa Studio — moments that stay")}
           </h1>
           <button
             type="button"
@@ -908,7 +926,7 @@ export default function GuidedDemoEngine() {
             className="mt-6 rounded-full px-6 py-3 text-sm font-black text-white"
             style={{ background: BRAND }}
           >
-            קבעו פגישת ייעוץ
+            {t("leftover.guided.bookConsult", "Book a consultation")}
           </button>
         </div>
       ) : null}
@@ -919,14 +937,20 @@ export default function GuidedDemoEngine() {
             role="dialog"
             aria-modal="true"
             aria-labelledby="guided-demo-intro-title"
-            className="w-full max-w-xl rounded-[28px] bg-white p-6 text-right shadow-2xl sm:p-8"
+            className={[
+              "w-full max-w-xl rounded-[28px] bg-white p-6 shadow-2xl sm:p-8",
+              pageDir === "rtl" ? "text-right" : "text-left",
+            ].join(" ")}
           >
             <p className="text-xs font-black tracking-[0.16em] text-violet-500">BIZUPLY</p>
             <h2 id="guided-demo-intro-title" className="mt-2 text-2xl font-black text-slate-900 sm:text-3xl">
-              הדמו האישי שלכם מוכן
+              {t("leftover.guided.readyTitle", "Your personal demo is ready")}
             </h2>
             <p className="mt-3 text-sm font-semibold leading-7 text-slate-600">
-              בכמה דקות תראו איך BizUply מרכזת את ניהול העסק במקום אחד.
+              {t(
+                "leftover.guided.readyBody",
+                "In a few minutes you will see how BizUply brings business management together in one place."
+              )}
             </p>
             <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
               {INTRO_CATEGORIES.map((item) => {
@@ -939,7 +963,9 @@ export default function GuidedDemoEngine() {
                     <span className="grid h-11 w-11 place-items-center rounded-2xl bg-white text-violet-700 shadow-sm ring-1 ring-violet-100">
                       {Icon ? <Icon className="h-5 w-5" /> : null}
                     </span>
-                    <p className="text-sm font-black leading-5 text-slate-800">{item.title}</p>
+                    <p className="text-sm font-black leading-5 text-slate-800">
+                      {item.titleKey ? t(item.titleKey, item.title) : item.title}
+                    </p>
                   </div>
                 );
               })}
@@ -951,14 +977,14 @@ export default function GuidedDemoEngine() {
               className="mt-6 w-full rounded-2xl px-4 py-3 text-sm font-black text-white"
               style={{ background: BRAND }}
             >
-              התחלת הדמו
+              {t("leftover.guided.start", "Start the demo")}
             </button>
             <button
               type="button"
               onClick={() => void handleExploreAlone()}
               className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm font-black text-slate-600"
             >
-              אעבור לבד
+              {t("leftover.guided.exploreAlone", "I'll look around myself")}
             </button>
           </div>
         </div>
@@ -966,10 +992,22 @@ export default function GuidedDemoEngine() {
 
       {finishConfirm && !isComplete ? (
         <div className="pointer-events-auto absolute inset-0 z-[2147483006] flex items-center justify-center bg-slate-950/55 p-4">
-          <div role="dialog" aria-modal="true" className="w-full max-w-md rounded-[28px] bg-white p-6 text-right shadow-2xl">
-            <h2 className="text-xl font-black text-slate-900">לסיים את הדמו?</h2>
+          <div
+            role="dialog"
+            aria-modal="true"
+            className={[
+              "w-full max-w-md rounded-[28px] bg-white p-6 shadow-2xl",
+              pageDir === "rtl" ? "text-right" : "text-left",
+            ].join(" ")}
+          >
+            <h2 className="text-xl font-black text-slate-900">
+              {t("leftover.guided.finishTitle", "End the demo?")}
+            </h2>
             <p className="mt-2 text-sm font-semibold leading-6 text-slate-600">
-              ההתקדמות נשמרת לפי שלבים. סיום יציג את מסך הסיום בלבד — בלי להשפיע על חשבון אמיתי.
+              {t(
+                "leftover.guided.finishBody",
+                "Progress is saved by step. Ending only shows the finish screen — it does not affect a real account."
+              )}
             </p>
             <button
               type="button"
@@ -977,14 +1015,14 @@ export default function GuidedDemoEngine() {
               className="mt-5 w-full rounded-2xl px-4 py-3 text-sm font-black text-white"
               style={{ background: BRAND }}
             >
-              סיום הדמו
+              {t("leftover.guided.finish", "End demo")}
             </button>
             <button
               type="button"
               onClick={() => setFinishConfirm(false)}
               className="mt-2 w-full rounded-2xl border border-slate-200 px-4 py-3 text-sm font-black text-slate-600"
             >
-              להמשיך במסלול
+              {t("leftover.guided.keepGoing", "Stay on the path")}
             </button>
           </div>
         </div>
@@ -1004,7 +1042,7 @@ export default function GuidedDemoEngine() {
           onClick={() => setPostDemoHidden(false)}
           className="pointer-events-auto absolute bottom-4 left-1/2 z-[2147483005] min-h-11 -translate-x-1/2 rounded-full bg-[#6D28D9] px-5 py-3 text-sm font-black text-white shadow-lg"
         >
-          המשך התאמה אישית
+          {t("leftover.guided.continueMatch", "Continue personalization")}
         </button>
       ) : null}
 
@@ -1013,24 +1051,36 @@ export default function GuidedDemoEngine() {
           ref={cardRef}
           role="status"
           aria-live="polite"
-          className="pointer-events-auto absolute z-[2147483004] rounded-2xl border border-violet-100 bg-white/95 p-4 text-right shadow-xl backdrop-blur transition-all duration-200"
+          className={[
+            "pointer-events-auto absolute z-[2147483004] rounded-2xl border border-violet-100 bg-white/95 p-4 shadow-xl backdrop-blur transition-all duration-200",
+            pageDir === "rtl" ? "text-right" : "text-left",
+          ].join(" ")}
           style={
             cardPos
               ? { top: cardPos.top, left: cardPos.left, width: cardPos.width, maxWidth: "calc(100vw - 16px)" }
               : { bottom: 16, left: "50%", transform: "translateX(-50%)", width: "min(92vw, 420px)" }
           }
         >
-          <p className="text-[11px] font-bold text-violet-700">{currentModule?.title || "דמו"}</p>
+          <p className="text-[11px] font-bold text-violet-700">
+            {currentModule?.title || t("leftover.guided.demoFallback", "Demo")}
+          </p>
           <p className="mt-0.5 text-[11px] font-semibold text-slate-400">
-            שלב {modStepNum} מתוך {modStepTotal || "—"}
+            {t("leftover.guided.stepOf", "Step {{current}} of {{total}}", {
+              current: modStepNum,
+              total: modStepTotal || "—",
+            })}
           </p>
           <h3 className="mt-2 text-base font-black text-slate-900">{step?.title}</h3>
           <p className="mt-1 text-sm font-semibold leading-6 text-slate-600">{step?.instruction}</p>
           {step?.suggestedValue ? (
-            <p className="mt-2 rounded-xl bg-violet-50 px-3 py-2 text-xs font-bold text-violet-800">טקסט מוצע: {step.suggestedValue}</p>
+            <p className="mt-2 rounded-xl bg-violet-50 px-3 py-2 text-xs font-bold text-violet-800">
+              {t("leftover.guided.suggested", "Suggested text: {{value}}", { value: step.suggestedValue })}
+            </p>
           ) : null}
           {nextPreview && stepKind !== "input" ? (
-            <p className="mt-2 text-[11px] font-bold text-slate-400">הבא: {nextPreview.title}</p>
+            <p className="mt-2 text-[11px] font-bold text-slate-400">
+              {t("leftover.guided.next", "Next: {{title}}", { title: nextPreview.title })}
+            </p>
           ) : null}
           <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-slate-100">
             <div className="h-full rounded-full transition-all duration-300" style={{ width: `${modProgressPct}%`, background: BRAND }} />
@@ -1043,7 +1093,7 @@ export default function GuidedDemoEngine() {
                   onClick={() => void handleBack()}
                   className="rounded-xl border border-slate-200 px-3 py-2 text-xs font-black text-slate-600"
                 >
-                  שלב קודם
+                  {t("leftover.guided.previous", "Previous step")}
                 </button>
               ) : null}
               {currentModule && session.modules?.find((m: any) => m.key === currentModule.key)?.skipAllowed !== false ? (
@@ -1052,7 +1102,7 @@ export default function GuidedDemoEngine() {
                   onClick={() => void handleSkipModule()}
                   className="rounded-xl border border-slate-200 px-3 py-2 text-xs font-black text-slate-500"
                 >
-                  דלג על המודול
+                  {t("leftover.guided.skipModule", "Skip this module")}
                 </button>
               ) : null}
             </div>
@@ -1063,7 +1113,7 @@ export default function GuidedDemoEngine() {
                 className="rounded-xl px-4 py-2 text-xs font-black text-white"
                 style={{ background: BRAND }}
               >
-                המשך
+                {t("leftover.guided.continue", "Continue")}
               </button>
             ) : step?.completionRule?.type === "input" && (inputReady || step?.allowSkip) ? (
               <button
@@ -1072,7 +1122,7 @@ export default function GuidedDemoEngine() {
                 className="rounded-xl px-4 py-2 text-xs font-black text-white"
                 style={{ background: BRAND }}
               >
-                {inputReady ? "המשך" : "דלג"}
+                {inputReady ? t("leftover.guided.continue", "Continue") : t("leftover.guided.skip", "Skip")}
               </button>
             ) : step?.target === "website-template-edit" ? (
               <button
@@ -1084,7 +1134,7 @@ export default function GuidedDemoEngine() {
                 className="rounded-xl px-4 py-2 text-xs font-black text-white"
                 style={{ background: BRAND }}
               >
-                עריכה
+                {t("leftover.guided.edit", "Edit")}
               </button>
             ) : step?.target === "website-publish" ? (
               <button
@@ -1098,10 +1148,12 @@ export default function GuidedDemoEngine() {
                 className="rounded-xl px-4 py-2 text-xs font-black text-white"
                 style={{ background: BRAND }}
               >
-                פרסום
+                {t("leftover.guided.publish", "Publish")}
               </button>
             ) : (
-              <span className="text-[11px] font-bold text-slate-400">הדמו יתקדם כשתבצעו את הפעולה</span>
+              <span className="text-[11px] font-bold text-slate-400">
+                {t("leftover.guided.waitAction", "The demo continues after you take the highlighted action")}
+              </span>
             )}
           </div>
         </div>

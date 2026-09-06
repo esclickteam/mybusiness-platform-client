@@ -1,3 +1,5 @@
+import i18n from "../../../../i18n/i18n";
+
 export type DnsRecord = {
   type?: string;
   name?: string;
@@ -58,15 +60,24 @@ export function buildDomainManagerInstructions(args: {
             labels.recordValue.replace("{{value}}", record.value || ""),
           ]
         : [
-            `${index + 1}. סוג: ${record.type || "TXT"}`,
-            `שם / Host: ${record.name || ""}`,
-            `ערך: ${record.value || ""}`,
+            i18n.t("leftover.emailDns.recordType", "{{index}}. Type: {{type}}", {
+              index: index + 1,
+              type: record.type || "TXT",
+            }),
+            i18n.t("leftover.emailDns.recordHost", "Name / Host: {{name}}", {
+              name: record.name || "",
+            }),
+            i18n.t("leftover.emailDns.recordValue", "Value: {{value}}", {
+              value: record.value || "",
+            }),
           ];
       if (record.priority) {
         lines.push(
           labels
             ? labels.recordPriority.replace("{{priority}}", record.priority)
-            : `עדיפות: ${record.priority}`
+            : i18n.t("leftover.emailDns.recordPriority", "Priority: {{priority}}", {
+                priority: record.priority,
+              })
         );
       }
       return lines.join("\n");
@@ -90,16 +101,23 @@ export function buildDomainManagerInstructions(args: {
   }
 
   return [
-    "הוראות אימות שולח מייל עבור Bizuply",
+    i18n.t("leftover.emailDns.title", "Bizuply sender verification instructions"),
     "",
-    `דומיין: ${domain}`,
-    `כתובת שולח: ${email}`,
-    `שם שולח: ${name}`,
+    i18n.t("leftover.emailDns.domain", "Domain: {{domain}}", { domain }),
+    i18n.t("leftover.emailDns.email", "Sender address: {{email}}", { email }),
+    i18n.t("leftover.emailDns.name", "Sender name: {{name}}", { name }),
     "",
-    "יש להוסיף את רשומות ה-DNS הבאות אצל ספק הדומיין:",
+    i18n.t("leftover.emailDns.addDns", "Add the following DNS records at your domain provider:"),
     "",
-    recordBlocks || "אין רשומות זמינות כרגע. נסו לרענן את מסך האימות.",
+    recordBlocks ||
+      i18n.t(
+        "leftover.emailDns.noRecords",
+        "No records are available right now. Try refreshing the verification screen."
+      ),
     "",
-    'אחרי הוספת הרשומות, בעל העסק יוכל ללחוץ על "בדיקת אימות" ב-Bizuply.',
+    i18n.t(
+      "leftover.emailDns.after",
+      'After adding the records, the business owner can click "Check verification" in Bizuply.'
+    ),
   ].join("\n");
 }

@@ -1658,7 +1658,7 @@ export function getTemplateReadiness(
     if (!metaResolved.ready || !metaResolved.metaTemplate) {
       return {
         ready: false,
-        blocker: metaResolved.whyNotReady || WA_TEMPLATE_UNAVAILABLE_HE,
+        blocker: metaResolved.whyNotReady || WA_TEMPLATE_UNAVAILABLE_HE(),
         recipe,
       };
     }
@@ -1679,7 +1679,7 @@ export function getTemplateReadiness(
     if (!pickedId) {
       return {
         ready: false,
-        blocker: WA_TEMPLATE_UNAVAILABLE_HE,
+        blocker: WA_TEMPLATE_UNAVAILABLE_HE(),
         recipe,
         resolvedTriggerKey: triggerKey,
       };
@@ -1742,7 +1742,7 @@ export function getTemplateReadiness(
     if (!metaResolved.ready || !metaResolved.metaTemplate) {
       return {
         ready: false,
-        blocker: metaResolved.whyNotReady || WA_TEMPLATE_UNAVAILABLE_HE,
+        blocker: metaResolved.whyNotReady || WA_TEMPLATE_UNAVAILABLE_HE(),
         recipe,
       };
     }
@@ -1762,7 +1762,7 @@ export function getTemplateReadiness(
     if (!pickedId) {
       return {
         ready: false,
-        blocker: WA_TEMPLATE_UNAVAILABLE_HE,
+        blocker: WA_TEMPLATE_UNAVAILABLE_HE(),
         recipe,
         resolvedTriggerKey: triggerKey,
       };
@@ -1809,7 +1809,7 @@ export function getTemplateReadiness(
       return {
         ready: false,
         blocker: isWhatsAppFacingTemplate(template)
-          ? WA_TEMPLATE_UNAVAILABLE_HE
+          ? WA_TEMPLATE_UNAVAILABLE_HE()
           : "אין טריגר נתמך להפעלת האוטומציה הזו כרגע",
         recipe,
       };

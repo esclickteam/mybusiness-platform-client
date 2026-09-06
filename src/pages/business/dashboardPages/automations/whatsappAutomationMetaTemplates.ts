@@ -1,3 +1,5 @@
+import i18n from "../../../../i18n/i18n";
+
 export type WaDefaultMapping = {
   variable: string;
   source: string;
@@ -71,11 +73,22 @@ export const BUSINESS_ALERT_META_TEMPLATE_NAMES = new Set([
 
 export const LEGACY_MANAGED_META_TEMPLATE_NAMES = new Set(["new_lead_received"]);
 
-export const MANAGED_TEMPLATE_DISPLAY_NAMES: Record<string, string> = {
-  appointment_confirmation: "אישור פגישה",
-  new_lead_received_utility: "התקבל ליד חדש",
-  new_lead_received: "התקבל ליד חדש",
+const MANAGED_TEMPLATE_DISPLAY_KEYS: Record<string, { key: string; fallback: string }> = {
+  appointment_confirmation: { key: "leftover.waTemplate.confirmAppt", fallback: "Appointment confirmation" },
+  new_lead_received_utility: { key: "leftover.waTemplate.newLead", fallback: "New lead received" },
+  new_lead_received: { key: "leftover.waTemplate.newLead", fallback: "New lead received" },
 };
+
+export function getManagedTemplateDisplayName(metaTemplateName = "") {
+  const row = MANAGED_TEMPLATE_DISPLAY_KEYS[String(metaTemplateName || "").toLowerCase()];
+  return row ? i18n.t(row.key, row.fallback) : "";
+}
+
+export const MANAGED_TEMPLATE_DISPLAY_NAMES = new Proxy({} as Record<string, string>, {
+  get(_target, prop: string) {
+    return getManagedTemplateDisplayName(prop);
+  },
+});
 
 export const isTestTemplateName = (name: string) =>
   String(name || "").trim().toLowerCase() === "hello_world";
@@ -93,14 +106,16 @@ export function isLegacyManagedMetaTemplateName(name: string) {
 }
 
 export function formatRelativeTimeHe(hours: number): string {
-  if (hours === 1) return "בעוד שעה";
-  if (hours === 2) return "בעוד שעתיים";
-  if (hours === 24) return "מחר";
-  if (hours === 48) return "בעוד יומיים";
-  if (hours === 72) return "בעוד 3 ימים";
+  if (hours === 1) return i18n.t("leftover.waTemplate.inHour", "in 1 hour");
+  if (hours === 2) return i18n.t("leftover.waTemplate.inTwoHours", "in 2 hours");
+  if (hours === 24) return i18n.t("leftover.waTemplate.tomorrow", "tomorrow");
+  if (hours === 48) return i18n.t("leftover.waTemplate.inTwoDays", "in 2 days");
+  if (hours === 72) return i18n.t("leftover.waTemplate.in3Days", "in 3 days");
   return hours < 24
-    ? `בעוד ${hours} שעות`
-    : `בעוד ${Math.round(hours / 24)} ימים`;
+    ? i18n.t("leftover.waTemplate.inHours", "in {{count}} hours", { count: hours })
+    : i18n.t("leftover.waTemplate.inDays", "in {{count}} days", {
+        count: Math.round(hours / 24),
+      });
 }
 
 export function defaultMappingsForMetaTemplate(name: string) {

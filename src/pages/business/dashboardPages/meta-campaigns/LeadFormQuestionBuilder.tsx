@@ -4,6 +4,7 @@ import { ListChecks, Plus, Trash2, Type } from "lucide-react";
 import { btnGhost, btnSecondary, inputBase } from "../../../../styles/bizuplyUi";
 import {
   createLeadFormCustomQuestion,
+  getLeadFormContactLabel,
   LEAD_FORM_CONTACT_FIELDS,
   type LeadFormAnswerType,
   type LeadFormCustomQuestionDraft,
@@ -98,7 +99,7 @@ export default function LeadFormQuestionBuilder({
         <div className="grid gap-2 sm:grid-cols-2">
           {LEAD_FORM_CONTACT_FIELDS.map((field) => {
             const checked = contactTypes.includes(field.type);
-            const label = isHe ? field.labelHe : field.labelEn;
+            const label = getLeadFormContactLabel(field);
             return (
               <label
                 key={field.type}

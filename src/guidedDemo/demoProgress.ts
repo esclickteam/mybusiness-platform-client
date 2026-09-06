@@ -1,4 +1,5 @@
 import API from "../api";
+import i18n from "../i18n/i18n";
 import {
   reportGuidedDemoProgress,
   triggerGuidedDemoAutomation,
@@ -79,7 +80,12 @@ export const demoProgress = {
     lastWrongClickAt = now;
     window.dispatchEvent(
       new CustomEvent("guided-demo:nudge", {
-        detail: { message: "כדי להמשיך בדמו, בצעו קודם את הפעולה המסומנת." },
+        detail: {
+          message: i18n.t(
+            "leftover.guided.nudge",
+            "To continue the demo, first do the highlighted action."
+          ),
+        },
       })
     );
   },

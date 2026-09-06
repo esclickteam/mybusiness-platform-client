@@ -105,13 +105,13 @@ const OPTIONAL_FIELDS: RatingConfig[] = [
 ];
 
 const RATING_LABEL_FALLBACKS: Record<string, string> = {
-  "business.reviews.experience": "חוויה כללית",
-  "business.reviews.service": "איכות השירות",
-  "business.reviews.professional": "מקצועיות",
-  "business.reviews.timing": "עמידה בזמנים",
-  "business.reviews.availability": "זמינות",
-  "business.reviews.value": "תמורה למחיר",
-  "business.reviews.goal": "השגת מטרה",
+  "business.reviews.experience": "leftover.reviews.experience",
+  "business.reviews.service": "leftover.reviews.serviceQuality",
+  "business.reviews.professional": "leftover.reviews.professional",
+  "business.reviews.timing": "leftover.reviews.timing",
+  "business.reviews.availability": "leftover.reviews.availability",
+  "business.reviews.value": "leftover.reviews.value",
+  "business.reviews.goal": "leftover.reviews.goal",
 };
 
 function getAverage(ratings: Partial<Record<RatingKey, number>>) {
@@ -127,12 +127,12 @@ function getAverage(ratings: Partial<Record<RatingKey, number>>) {
 }
 
 function getRatingLabel(value: number, t: (key: string, fallback: string) => string) {
-  if (value >= 4.8) return t("business.reviews.outstanding", "מצוין");
-  if (value >= 4) return t("business.reviews.excellent", "מעולה");
-  if (value >= 3) return t("business.reviews.good", "טוב");
-  if (value >= 2) return t("business.reviews.okay", "בסדר");
-  if (value > 0) return t("business.reviews.needsWork", "דורש שיפור");
-  return t("business.reviews.notRated", "טרם דורג");
+  if (value >= 4.8) return t("business.reviews.outstanding", t("leftover.reviews.outstanding", "Outstanding"));
+  if (value >= 4) return t("business.reviews.excellent", t("leftover.reviews.excellent", "Excellent"));
+  if (value >= 3) return t("business.reviews.good", t("leftover.reviews.good", "Good"));
+  if (value >= 2) return t("business.reviews.okay", "Okay");
+  if (value > 0) return t("business.reviews.needsWork", t("leftover.reviews.needsWork", "Needs improvement"));
+  return t("business.reviews.notRated", "Not rated");
 }
 
 function StarRating({
@@ -203,7 +203,10 @@ function RatingRow({
 
           <div className="min-w-0 text-right">
             <p className="text-sm font-black text-slate-800">
-              {t(field.label, RATING_LABEL_FALLBACKS[field.label] || field.label)}
+              {t(
+                field.label,
+                t(RATING_LABEL_FALLBACKS[field.label] || field.label)
+              )}
               {field.required && <span className="text-violet-600"> *</span>}
             </p>
             <p className="mt-0.5 text-xs font-semibold text-slate-400">

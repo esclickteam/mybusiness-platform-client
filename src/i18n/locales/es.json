@@ -17805,7 +17805,8 @@
       "inTwoDays": "en 2 días",
       "in3Days": "en 3 días",
       "inHours": "en {{count}} horas",
-      "inDays": "en {{count}} días"
+      "inDays": "en {{count}} días",
+      "unavailable": "No hay una plantilla de WhatsApp aprobada para esta automatización."
     },
     "emailProvider": {
       "required": "Para usarla, conecta Gmail u Outlook / Microsoft 365",
@@ -17824,7 +17825,8 @@
       "insertStep": "Añadir un paso en esta conexión",
       "aiAction": "Acción de automatización",
       "oneAction": "⚡ 1 acción",
-      "noCharge": "Sin cargo"
+      "noCharge": "Sin cargo",
+      "loadPlanFailed": "No pudimos cargar los datos del plan ahora."
     },
     "dashboard": {
       "recentActivity": "Actividad reciente",
@@ -17866,6 +17868,12 @@
       "birthday": "Cumpleaños",
       "qrDesc": "Crear, descargar, destino dinámico y analítica de escaneos.",
       "faqDesc": "Un set de FAQ reutilizable, categoría, búsqueda y schema."
+    },
+    "store": {
+      "badge": "Gestión de tienda",
+      "title": "Productos, categorías y ajustes de tienda",
+      "hint": "Añade productos una vez. Se guardan en el servidor, aparecen en la tienda y cada uno tiene una página automática según el diseño que elijas.",
+      "backStudio": "Volver al estudio"
     }
   }
 }

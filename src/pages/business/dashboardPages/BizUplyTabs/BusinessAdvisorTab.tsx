@@ -30,7 +30,7 @@ import {
 } from "lucide-react";
 import BizuplyLoader from "../../../../components/ui/BizuplyLoader";
 import { isGuidedDemoActive } from "@/guidedDemo/sessionStore";
-import { DEMO_ADVISOR_CHAT } from "@/guidedDemo/demoOverlayData";
+import { getDemoAdvisorChat } from "@/guidedDemo/demoOverlayData";
 import {
   AdvisorActionsPanel,
   AdvisorThinkingLoader,
@@ -399,8 +399,8 @@ export default function BusinessAdvisorTab({
     setMessages(
       isGuidedDemoActive()
         ? [
-            { role: "user", content: DEMO_ADVISOR_CHAT.question },
-            { role: "assistant", content: DEMO_ADVISOR_CHAT.answer },
+            { role: "user", content: getDemoAdvisorChat().question },
+            { role: "assistant", content: getDemoAdvisorChat().answer },
           ]
         : [
             {
@@ -889,10 +889,11 @@ export default function BusinessAdvisorTab({
                     : { displayContent: stripped, extracted: [] as WhatsAppPrepared[] };
                   const displayContent = parsed.displayContent;
                   const demoActive = isGuidedDemoActive();
+                  const demoChat = getDemoAdvisorChat();
                   const isDemoQuestion =
-                    demoActive && !isAssistant && msg.content === DEMO_ADVISOR_CHAT.question;
+                    demoActive && !isAssistant && msg.content === demoChat.question;
                   const isDemoAnswer =
-                    demoActive && isAssistant && msg.content === DEMO_ADVISOR_CHAT.answer;
+                    demoActive && isAssistant && msg.content === demoChat.answer;
 
                   return (
                     <div
@@ -966,7 +967,7 @@ export default function BusinessAdvisorTab({
                                   onClick={() => setDemoActionDone(true)}
                                   className="inline-flex rounded-xl bg-amber-700 px-3 py-2 text-xs font-black text-white"
                                 >
-                                  {DEMO_ADVISOR_CHAT.actionLabel}
+                                  {demoChat.actionLabel}
                                 </button>
                                 <div
                                   data-demo-target="advisor-demo-result"
@@ -977,10 +978,10 @@ export default function BusinessAdvisorTab({
                                   }`}
                                 >
                                   <p className="text-[11px] font-black uppercase tracking-[0.12em] text-emerald-700">
-                                    {DEMO_ADVISOR_CHAT.resultTitle}
+                                    {demoChat.resultTitle}
                                   </p>
                                   <p className="mt-1 text-sm font-semibold leading-6 text-emerald-950">
-                                    {DEMO_ADVISOR_CHAT.resultBody}
+                                    {demoChat.resultBody}
                                   </p>
                                 </div>
                               </div>
